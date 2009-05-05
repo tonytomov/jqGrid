@@ -41,9 +41,9 @@ $.fn.extend({
 			var gID = $t.p.id,
 			IDs = { themodal:'srchmod'+gID,modalhead:'srchhead'+gID,modalcontent:'srchcnt'+gID };
 			if ( $("#"+IDs.themodal).html() != null ) {
-				if( $.isFunction('beforeShowSearch') ) { p.beforeShowSearch($("#srchcnt"+gID)); }
+				if( $.isFunction(p.beforeShowSearch) ) { p.beforeShowSearch($("#srchcnt"+gID)); }
 				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal});
-				if( $.isFunction('afterShowSearch') ) { p.afterShowSearch($("#srchcnt"+gID)); }
+				if( $.isFunction(p.afterShowSearch) ) { p.afterShowSearch($("#srchcnt"+gID)); }
 			} else {
 				var cM = $t.p.colModel;
 				var cNames = "<select id='snames' class='search'>";
@@ -87,10 +87,10 @@ $.fn.extend({
 				var cnt = $("<table width='100%'><tbody><tr style='display:none' id='srcherr'><td colspan='5'></td></tr><tr><td>"+cNames+"</td><td>"+sOpt+"</td><td>"+sField+"</td>"+"<td>"+bSearch+"</div></td>"+"<td>"+bReset+"</td></tr></tbody></table>");
 				p.gbox = "#gbox_"+$t.p.id;
 				createModal(IDs,cnt,p,"#gview_"+$t.p.id,$("#gview_"+$t.p.id)[0]);
-				if ( $.isFunction('onInitializeSearch') ) { p.onInitializeSearch( $("#srchcnt"+gID) ); };
-				if ( $.isFunction('beforeShowSearch') ) { p.beforeShowSearch($("#srchcnt"+gID)); };
+				if ( $.isFunction(p.onInitializeSearch) ) { p.onInitializeSearch( $("#srchcnt"+gID) ); };
+				if ( $.isFunction(p.beforeShowSearch) ) { p.beforeShowSearch($("#srchcnt"+gID)); };
 				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal});
-				if($.isFunction('afterShowSearch')) { p.afterShowSearch($("#srchcnt"+gID)); }
+				if($.isFunction(p.afterShowSearch)) { p.afterShowSearch($("#srchcnt"+gID)); }
 				$("#sbut, #sreset","#"+IDs.modalcontent).addClass('ui-state-default ui-corner-all').height(21)
 				.css({padding:" .2em .5em", cursor: 'pointer'})
 				.hover(
