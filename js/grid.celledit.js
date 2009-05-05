@@ -403,7 +403,7 @@ $.fn.extend({
 		this.each(function(){
 			var $t= this;
 			if (!$t.grid || $t.p.cellEdit !== true ) {return;}
-			$($t.rows).slice(1).each(function(j){
+			$($t.rows).each(function(j){
 				var res = {};
 				if ($(this).hasClass("edited")) {
 					$('td',this).each( function(i) {
@@ -421,7 +421,7 @@ $.fn.extend({
 					res["id"] = this.id;
 					ret.push(res);
 				}
-			})
+			});
 		});
 		return ret;
 	}
