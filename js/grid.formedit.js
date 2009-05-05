@@ -310,14 +310,11 @@ $.fn.extend({
 							case "textarea":
 							case "button":
 								postdata[this.name] = $(this).val();
-								ret = checkValues(postdata[this.name],valref[i],$t);
-								if(ret[0] === false) {
-									suc=false;
-								} else {
-									postdata[this.name] = !$t.p.autoencode ? postdata[this.name] : htmlEncode(postdata[this.name]);
-								}
+								postdata[this.name] = !$t.p.autoencode ? postdata[this.name] : htmlEncode(postdata[this.name]);
 							break;
 						}
+						ret = checkValues(postdata[this.name],valref[i],$t);
+						if(ret[0] === false) {suc=false;}
 						j++;
 						if(!suc) { return false; }
 					});

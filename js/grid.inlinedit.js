@@ -96,9 +96,8 @@ $.fn.extend({
 									tmp[nm] = $("select>option:selected",this).val();
 									tmp2[nm] = $("select>option:selected", this).text();
 								} else {
-									var sel = $("select",this);
+									var sel = $("select",this), selectedText = [];
 									tmp[nm] = $(sel).val();
-									var selectedText = [];
 									$("select > option:selected",this).each(
 										function(i,selected){
 											selectedText[i] = $(selected).text();

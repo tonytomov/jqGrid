@@ -120,8 +120,19 @@ $.fn.extend({
 				nm = $t.p.colModel[iCol].name.replace('.',"\\.");
 				switch ($t.p.colModel[iCol].edittype) {
 					case "select":
-						v = $("#"+iRow+"_"+nm+">option:selected",$t.rows[iRow]).val();
-						v2 = $("#"+iRow+"_"+nm+">option:selected",$t.rows[iRow]).text();
+						if(!$t.p.colModel[iCol].editoptions.multiple) {
+							v = $("#"+iRow+"_"+nm+">option:selected",$t.rows[iRow]).val();
+							v2 = $("#"+iRow+"_"+nm+">option:selected",$t.rows[iRow]).text();
+						} else {
+							var sel = $("#"+iRow+"_"+nm,$t.rows[iRow]), selectedText = [];
+							v = $(sel).val();
+							$("option:selected",sel).each(
+								function(i,selected){
+									selectedText[i] = $(selected).text();
+								}
+							);
+							v2 = selectedText.join(",");
+						}
 						break;
 					case "checkbox":
 						var cbv  = ["Yes","No"];
