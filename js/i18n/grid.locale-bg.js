@@ -111,7 +111,8 @@ $.jgrid = {
 		baseLinkUrl: '',
 		showAction: '',
 		target: '',
-		checkbox : {disabled:true}
+		checkbox : {disabled:true},
+		idName : 'id'
 	}
 }
 })(jQuery);

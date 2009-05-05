@@ -233,13 +233,13 @@
         }
     };
 	$.fn.fmatter.showlink = function(el,cellval,opts) {
-		var op = {baseLinkUrl: opts.baseLinkUrl,showAction:opts.showAction, addParam: opts.addParam, target: opts.target },
+		var op = {baseLinkUrl: opts.baseLinkUrl,showAction:opts.showAction, addParam: opts.addParam, target: opts.target, idName: opts.idName },
 		target = "";
 		if(!isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if(op.target) {target = 'target=' + op.target;}
-		idUrl = op.baseLinkUrl+op.showAction + '?id='+opts.rowId+op.addParam;
+		idUrl = op.baseLinkUrl+op.showAction + '?'+ op.idName+'='+opts.rowId+op.addParam;
         if(isString(cellval)) {	//add this one even if its blank string
 			$(el).html("<a "+target+" href=\"" + idUrl + "\">" + cellval + "</a>");
         }else {
