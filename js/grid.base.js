@@ -639,12 +639,12 @@ $.fn.jqGrid = function( p ) {
             return args[i];
         });
     };
-	$.getAbsoluteIndex = function (t,relIndex){ 
-		var countnotvisible=0,countvisible=0, cell, i;
+	$.getAbsoluteIndex = function (t,rInd){ 
+		var cntnotv=0,cntv=0, cell, i;
 		for (i=0;i<t.cells.length;i++) { 
 			cell=t.cells(i); 
-			if (cell.style.display=='none') countnotvisible++; else countvisible++; 
-			if (countvisible>relIndex) return i; 
+			if (cell.style.display=='none') cntnotv++; else cntv++; 
+			if (cntv>rInd) return i; 
 		}
 		return i; 
 	};
@@ -674,8 +674,8 @@ $.fn.jqGrid = function( p ) {
 		if (isMSIE && /6.0/.test(navigator.userAgent)) {
 			ii = $('<iframe src="javascript:false;document.write(\'\');"></iframe>').css({opacity:0});
 		} else { ii="";}
-		$("<div class='ui-widget-overlay jqgrid-overlay' id=lui_"+this.id+"></div>").append(ii).insertBefore(gv);
-		$("<div class='loading ui-state-default'>"+this.p.loadtext+"</div>").insertBefore(gv);
+		$("<div class='ui-widget-overlay jqgrid-overlay' id='lui_"+this.id+"'></div>").append(ii).insertBefore(gv);
+		$("<div class='loading ui-state-default' id='load_"+this.id+"'>"+this.p.loadtext+"</div>").insertBefore(gv);
 		$(this).attr({cellSpacing:"0",cellPadding:"0",border:"0","role":"grid","aria-multiselectable":this.p.multiselect,"aria-labelledby":"gbox_"+this.id});
 		var ts = this,
 		bSR = $.isFunction(this.p.beforeSelectRow) ? this.p.beforeSelectRow :false,
@@ -973,11 +973,11 @@ $.fn.jqGrid = function( p ) {
 				case "disable":
 					break;
 				case "enable":
-					$(".loading","#gbox_"+ts.p.id).show();
+					$("#load_"+ts.p.id).show();
 					break;
 				case "block":
-					$("#lui_"+ts.p.id+",jqm").show();
-					$(".loading","#gbox_"+ts.p.id).show();
+					$("#lui_"+ts.p.id).show();
+					$("#load_"+ts.p.id).show();
 					break;
 			}
 		},
@@ -987,11 +987,11 @@ $.fn.jqGrid = function( p ) {
 				case "disable":
 					break;
 				case "enable":
-					$(".loading","#gbox_"+ts.p.id).hide();
+					$("#load_"+ts.p.id).hide();
 					break;
 				case "block":
 					$("#lui_"+ts.id).hide();
-					$(".loading","#gbox_"+ts.p.id).hide();
+					$("#load_"+ts.p.id).hide();
 					break;
 			}
 		},
@@ -1233,7 +1233,6 @@ $.fn.jqGrid = function( p ) {
 		},
 		setColWidth = function () {
 			var initwidth = 0, brd=5, l, vc=0,scw=5,cw,hs=false,aw;
-			// Safari is very strange
 			if (isSafari) { brd=0;scw=0;}
 			for(l=0;l<=ts.p.colModel.length-1;l++){
 				if(typeof ts.p.colModel[l].hidden == 'undefined') {ts.p.colModel[l].hidden=false;}
@@ -1322,11 +1321,17 @@ $.fn.jqGrid = function( p ) {
 		}
 		if(this.p.subGrid) {
 			this.p.colNames.unshift("");
-			this.p.colModel.unshift({name:'subgrid',width:22,sortable: false,resizable:false,hidedlg:true,search:false});
+			this.p.colModel.unshift({name:'subgrid',width:20,sortable: false,resizable:false,hidedlg:true,search:false});
+			var cm = this.p.subGridModel;
+			if(cm[0]) {
+				cm[0].align = $.extend([],cm[0].align || []);
+				for(i=0;i<cm[0].name.length;i++) { cm[0].align[i] = cm[0].align[i] || 'left';}
+			}
+			cm = null;
 		}
 		if(this.p.multiselect) {
 			this.p.colNames.unshift("<input id='cb_jqg' class='cbox' type='checkbox'/>");
-			this.p.colModel.unshift({name:'cb',width:27,sortable:false,resizable:false,hidedlg:true,search:false,align:'center'});
+			this.p.colModel.unshift({name:'cb',width:20,sortable:false,resizable:false,hidedlg:true,search:false,align:'center'});
 		}
 		var	xReader = {
 			root: "rows",
