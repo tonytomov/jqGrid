@@ -31,9 +31,8 @@ addSubGrid : function(t,row,pos,rowelem, iRow) {
 				$.each(ts.p.colModel,function(i,v){
 					if(this.hidden === true) {nhc++;}
 				});
-				subdata = "<tr role='row' class='ui-subgrid'>"+atd+"<td><span class='ui-icon ui-icon-carat-1-sw'/></td><td colspan='"+parseInt(ts.p.colNames.length-1-nhc)+"'><div id="+pID+"_"+_id+" class='tablediv'>";
+				subdata = "<tr role='row' class='ui-subgrid'>"+atd+"<td><span class='ui-icon ui-icon-carat-1-sw'/></td><td colspan='"+parseInt(ts.p.colNames.length-1-nhc)+"' class='ui-widget-content subgrid-data'><div id="+pID+"_"+_id+" class='tablediv'>";
 				$(this).parent().after( subdata+ "</div></td></tr>" );
-				//$(".tablediv",ts).css("width", "98%");
 				if( $.isFunction(ts.p.subGridRowExpanded)) {
 					ts.p.subGridRowExpanded(pID+"_"+ _id,_id);
 				} else {
@@ -72,7 +71,7 @@ addSubGrid : function(t,row,pos,rowelem, iRow) {
 			}
 			if(!ts.grid.hDiv.loading) {
 				ts.grid.hDiv.loading = true;
-				$("div.loading",ts.grid.hDiv).fadeIn("fast");
+				$("#load_"+ts.p.id).show();
 				if(!ts.p.subgridtype) ts.p.subgridtype = ts.p.datatype;
 				if($.isFunction(ts.p.subgridtype)) {ts.p.subgridtype(dp);}
 				switch(ts.p.subgridtype) {
@@ -87,31 +86,24 @@ addSubGrid : function(t,row,pos,rowelem, iRow) {
 			return false;
 		};
 		var subGridCell = function(trdiv,cell,pos){
-			var tddiv;
-			tddiv = document.createElement("td");
-			//tddiv.className ='ui-subtblcell';
-			$(tddiv).html(cell);
-			trdiv.appendChild(tddiv);
+			var tddiv = $("<td align='"+ts.p.subGridModel[0].align[pos]+"'></td>").html(cell);
+			$(trdiv).append(tddiv);
 		};
 		var subGridXml = function(sjxml, sbid){
-			var tbl, trdiv, tddiv,result = "", i,cur, sgmap,
-			dummy = document.createElement("table");
-			tbl = document.createElement("tbody");
-			$(dummy).attr({cellSpacing:"0",cellPadding:"0",border:"0"});
-			trdiv = document.createElement("tr");
+			var tddiv, i, cur, sgmap,
+			dummy = $("<table cellspacing='0' cellpadding='0' border='0'><tbody></tbody></table>"),
+			trdiv = $("<tr></tr>");
 			for (i = 0; i<ts.p.subGridModel[0].name.length; i++) {
-				tddiv = document.createElement("th");
-				tddiv.className = "ui-state-default ui-th-column";
+				tddiv = $("<th class='ui-state-default ui-th-column'></th>");
 				$(tddiv).html(ts.p.subGridModel[0].name[i]);
 				$(tddiv).width( ts.p.subGridModel[0].width[i]);
-				trdiv.appendChild(tddiv);
+				$(trdiv).append(tddiv);
 			}
-			tbl.appendChild(trdiv);
+			$(dummy).append(trdiv);
 			if (sjxml){
 				sgmap = ts.p.xmlReader.subgrid;
 				$(sgmap.root+" "+sgmap.row, sjxml).each( function(){
-					trdiv = document.createElement("tr");
-					trdiv.className="ui-widget-content ui-subtblcell";
+					trdiv = $("<tr class='ui-widget-content ui-subtblcell'></tr>");
 					if(sgmap.repeatitems === true) {
 						$(sgmap.cell,this).each( function(i) {
 							subGridCell(trdiv, $(this).text() || '&nbsp;',i);
@@ -124,59 +116,54 @@ addSubGrid : function(t,row,pos,rowelem, iRow) {
 							}
 						}
 					}
-					tbl.appendChild(trdiv);
+					$(dummy).append(trdiv);
 				});
-				var pID = $("table:first",ts.grid.bDiv).attr("id")+"_";
-				$(dummy).append(tbl);
-				$("#"+pID+sbid).append(dummy);
-				sjxml = null;
-				ts.grid.hDiv.loading = false;
-				$("div.loading",ts.grid.hDiv).fadeOut("fast");
 			}
+			var pID = $("table:first",ts.grid.bDiv).attr("id")+"_";
+			$("#"+pID+sbid).append(dummy);
+			ts.grid.hDiv.loading = false;
+			$("#load_"+ts.p.id).hide();
 			return false;
 		};
 		var subGridJson = function(sjxml, sbid){
-			var tbl, trdiv, tddiv,result = "", i,cur, sgmap,
-			dummy = document.createElement("table");
-			tbl = document.createElement("tbody");
-			$(dummy).attr({cellSpacing:"0",cellPadding:"0",border:"0"});
-			trdiv = document.createElement("tr");
+			var tddiv,result , i,cur, sgmap,
+			dummy = $("<table cellspacing='0' cellpadding='0' border='0'><tbody></tbody></table>"),
+			trdiv = $("<tr></tr>");
 			for (i = 0; i<ts.p.subGridModel[0].name.length; i++) {
-				tddiv = document.createElement("th");
-				tddiv.className = "ui-state-default ui-th-column";
+				tddiv = $("<th class='ui-state-default ui-th-column'></th>");
 				$(tddiv).html(ts.p.subGridModel[0].name[i]);
 				$(tddiv).width( ts.p.subGridModel[0].width[i]);
-				trdiv.appendChild(tddiv);
+				$(trdiv).append(tddiv);
 			}
-			tbl.appendChild(trdiv);
+			$(dummy).append(trdiv);
 			if (sjxml){
 				sgmap = ts.p.jsonReader.subgrid;
-				for (i=0;i<sjxml[sgmap.root].length;i++) {
-					cur = sjxml[sgmap.root][i];
-					trdiv = document.createElement("tr");
-					trdiv.className="ui-widget-content ui-subtblcell";
-					if(sgmap.repeatitems === true) {
-						if(sgmap.cell) { cur=cur[sgmap.cell]; }
-						for (var j=0;j<cur.length;j++) {
-							subGridCell(trdiv, cur[j] || '&nbsp;',j);
-						}
-					} else {
-						var f = ts.p.subGridModel[0].mapping;
-						if(f.length) {
-							for (var j=0;j<f.length;j++) {
-								subGridCell(trdiv, cur[f[j]] || '&nbsp;',j);
+				result = sjxml[sgmap.root];
+				if ( typeof result !== 'undefined' ) {
+					for (i=0;i<result.length;i++) {
+						cur = result[i];
+						trdiv = $("<tr class='ui-widget-content ui-subtblcell'></tr>");
+						if(sgmap.repeatitems === true) {
+							if(sgmap.cell) { cur=cur[sgmap.cell]; }
+							for (var j=0;j<cur.length;j++) {
+								subGridCell(trdiv, cur[j] || '&nbsp;',j);
+							}
+						} else {
+							var f = ts.p.subGridModel[0].mapping;
+							if(f.length) {
+								for (var j=0;j<f.length;j++) {
+									subGridCell(trdiv, cur[f[j]] || '&nbsp;',j);
+								}
 							}
 						}
+						$(dummy).append(trdiv);
 					}
-					tbl.appendChild(trdiv);
 				}
-				var pID = $("table:first",ts.grid.bDiv).attr("id")+"_";
-				$(dummy).append(tbl);
-				$("#"+pID+sbid).append(dummy);
-				sjxml = null;
-				ts.grid.hDiv.loading = false;
-				$("div.loading",ts.grid.hDiv).fadeOut("fast");
 			}
+			var pID = $("table:first",ts.grid.bDiv).attr("id")+"_";
+			$("#"+pID+sbid).append(dummy);
+			ts.grid.hDiv.loading = false;
+			$("#load_"+ts.p.id).hide();
 			return false;
 		};
 		ts.subGridXml = function(xml,sid) {subGridXml(xml,sid);};

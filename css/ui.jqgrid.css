@@ -44,6 +44,7 @@
 .ui-jqgrid .ui-subgrid {margin:0em;padding:0em; width:100%; }
 .ui-jqgrid .ui-subgrid table {table-layout: fixed;}
 .ui-jqgrid .ui-subgrid tr.ui-subtblcell td {height:18px;border-right-width: 1px; border-right-color: inherit; border-right-style: solid;border-bottom-width: 1px; border-bottom-color: inherit; border-bottom-style: solid;}
+.ui-jqgrid .ui-subgrid td.subgrid-data {border-top:  0px none !important;}
 /* loading */
 .ui-jqgrid .loading {position: absolute; top: 45%;left: 45%;width: auto;z-index:101;padding: 6px; margin: 5px;text-align: center;font-weight: bold;display: none;border-width: 2px !important;}
 .ui-jqgrid .jqgrid-overlay {display:none;z-index:100;}
