@@ -254,7 +254,6 @@ $.fn.extend({
 				createModal(IDs,frm,p,"#gview_"+$t.p.id,$("#gview_"+$t.p.id)[0]);
 				// here initform - only once
 				if(onInitializeForm) { onInitializeForm($("#"+frmgr)); }
-				//if( p.drag ) { DnRModal("#"+IDs.themodal,"#"+IDs.modalhead); }
 				if(rowid=="_empty") { $("#pData,#nData","#"+frmtb).hide(); } else { $("#pData,#nData","#"+frmtb).show(); }
 				if(onBeforeShow) { onBeforeShow($("#"+frmgr)); }
 				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal});
@@ -333,7 +332,6 @@ $.fn.extend({
 					} else {
 						if(!p.processing) {
 							p.processing = true;
-							//$(".loading","#"+IDs.themodal).fadeIn("fast");
 							$(this).attr("disabled",true);
 							// we add to pos data array the action - the name is oper
 							postdata.oper = postdata.id == "_empty" ? "add" : "edit";
@@ -414,6 +412,12 @@ $.fn.extend({
 											setTimeout(function(){rp_ge.afterComplete(copydata,postdata,$("#"+frmgr));copydata=null;},500);
 										}
 									}
+									p.processing=false;
+									$("#sData", "#"+frmtb).attr("disabled",false);
+								},
+								error:function(xhr,st,err){
+									$("#FormError>td","#"+frmtb).html(st+ " : "+err);
+									$("#FormError","#"+frmtb).show();
 									p.processing=false;
 									$("#sData", "#"+frmtb).attr("disabled",false);
 								}
@@ -667,7 +671,6 @@ $.fn.extend({
 				   function(){$(this).addClass('ui-state-hover');}, 
 				   function(){$(this).removeClass('ui-state-hover');}
 				);
-				//if( p.drag) { DnRModal("#"+IDs.themodal,"#"+IDs.modalhead+" td.modaltext"); }
 				$("#dData","#"+dtbl).click(function(e){
 					var ret=[true,""];
 					var postdata = $("#DelData>td","#"+dtbl).text(); //the pair is name=val1,val2,...
@@ -681,7 +684,6 @@ $.fn.extend({
 					} else {
 						if(!p.processing) {
 							p.processing = true;
-							//$(".loading","#"+IDs.themodal).fadeIn("fast");
 							$(this).attr("disabled",true);
 							var postd = $.extend({oper:"del", id:postdata},p.delData);
 							$.ajax({
@@ -727,8 +729,13 @@ $.fn.extend({
 									}
 									p.processing=false;
 									$("#dData", "#"+dtbl).attr("disabled",false);
-									//$(".loading","#"+IDs.themodal).fadeOut("fast");
 									if(ret[0]) { hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal}); }
+								},
+								error:function(xhr,st,err){
+									$("#DelError>td","#"+dtbl).html(st+ " : "+err);
+									$("#DelError","#"+dtbl).show();
+									p.processing=false;
+									$("#dData", "#"+dtbl).attr("disabled",false);
 								}
 							});
 						}
