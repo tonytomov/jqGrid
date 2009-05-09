@@ -80,7 +80,11 @@ $.fn.jqGrid = function( p ) {
 	multiboxonly : false,
 	deselectAfterSort : true,
 	scrollrows : false,
-	autowidth: false
+	autowidth: false,
+	scrollOffset :18,
+	cellLayout: 5,
+	subGridWidth: 20,
+	multiselectWidth: 20
 	}, $.jgrid.defaults, p || {});
 	var grid={         
 		headers:[],
@@ -456,7 +460,8 @@ $.fn.jqGrid = function( p ) {
 	$.fn.setGridWidth = function(nwidth, shrink) {
 		return this.each(function(){
 			var $t = this, cw,
-			initwidth = 0, brd=5, l, vc=0, isSafari,hs=false, scw=5, aw;
+			initwidth = 0, brd=$t.p.cellLayout, lvc, vc=0, isSafari,hs=false, scw=$t.p.scrollOffset, aw, gw=0, tw=0,
+			msw = $t.p.multiselectWidth, sgw=$t.p.subGridWidth,cr;
 			if (!$t.grid ) {return;}
 			if(typeof shrink != 'boolean') {
 				shrink=$t.p.shrinkToFit;
@@ -464,7 +469,6 @@ $.fn.jqGrid = function( p ) {
 			if(isNaN(nwidth)) {return;}
 			if(nwidth === grid.width) {return;}
 			else { grid.width = $t.p.width = nwidth;}
-			// set the base width
 			$("#gbox_"+$t.p.id).css("width",nwidth+"px");
 			$("#gview_"+$t.p.id).css("width",nwidth+"px");
 			$($t.grid.bDiv).css("width",nwidth+"px");
@@ -474,52 +478,52 @@ $.fn.jqGrid = function( p ) {
 				$($t.grid.uDiv).css("width",nwidth+"px");
 				if($t.p.toolbar[1]=="both") {$($t.grid.ubDiv).css("width",nwidth+"px");}
 			}
+			if(shrink ===false && $t.p.forceFit == true) {$t.p.forceFit=false;}			
 			if(shrink===true) {
-				for(l=0;l<=$t.p.colModel.length-1;l++){
-					if($t.p.colModel[l].hidden === false){
-						initwidth += parseInt($t.p.colModel[l].width,10);
-						vc=vc+1;
+				$.each($t.p.colModel, function(i) {
+					if(this.hidden===false){
+						initwidth += parseInt(this.width,10);
+						vc++;
 					}
-				}
-				$t.p.tblwidth = initwidth;
-				aw = nwidth-brd*vc;
+				});
 				isSafari = $.browser.safari ? true : false;
-				
-				if(shrink ===false && $t.p.forceFit == true) {$t.p.forceFit=false;}
-				if(isNaN($t.p.height)) {
-				} else {
+				if (isSafari) { brd=0; msw +=$t.p.cellLayout; sgw += $t.p.cellLayout;}
+				if($t.p.multiselect) {tw = msw; gw = msw+brd; vc--;}
+				if($t.p.subGrid) {tw += sgw;gw += sgw+brd; vc--;}
+				$t.p.tblwidth = initwidth;
+				aw = nwidth-brd*vc-gw;
+				if(!isNaN($t.p.height)) {
 					if($($t.grid.bDiv)[0].clientHeight < $($t.grid.bDiv)[0].scrollHeight){
 						hs = true;
-						scw = isSafari ? 14 : 22;
 						aw -= scw;
 					}
 				}
-				initwidth =0; vc=0;
-				for(l=0;l<=$t.p.colModel.length-1;l++) {
-					if($t.p.colModel[l].hidden === false){
-						cw = Math.floor((aw)/$t.p.tblwidth*$t.p.colModel[l].width);
-						$t.p.colModel[l].width =cw;
+				initwidth =0;
+				$.each($t.p.colModel, function(i) {
+					if(this.hidden === false && this.name !== 'cb' && this.name !== 'subgrid'){
+						cw = Math.floor((aw)/($t.p.tblwidth-tw)*this.width);
+						this.width =cw;
 						initwidth += cw;
-						$t.grid.headers[l].width=cw;
-						$t.grid.headers[l].el.style.width=cw+"px";
-						$t.grid.cols[l].style.width = cw+"px";
-						vc = l;
+						$t.grid.headers[i].width=cw;
+						$t.grid.headers[i].el.style.width=cw+"px";
+						$t.grid.cols[i].style.width = cw+"px";
+						lvc = i;
 					}
+				});
+				cr =0;
+				if (hs && nwidth-gw-(initwidth+brd*vc) !== scw) {
+					cr = nwidth-gw-(initwidth+brd*vc)-scw;
+				} else if( Math.abs(nwidth-gw-(initwidth+brd*vc)) !== 1) {
+					cr = nwidth-gw-(initwidth+brd*vc);
 				}
-				var cr =0;
-				if (hs && nwidth-(initwidth+brd*vc) !== scw) {
-					cr = nwidth-(initwidth+brd*vc)-scw;
-				} else if(nwidth-(initwidth+brd*vc) !== 0) {
-					cr = nwidth-(initwidth+brd*vc);
-				}
-				$t.p.colModel[vc].width += cr;
-				cw= $t.p.colModel[vc].width;
-				$t.grid.headers[vc].width = cw;
-				$t.grid.headers[vc].el.style.width=cw+"px";
-				$t.grid.cols[vc].style.width = cw+"px";
-				$t.p.tblwidth = initwidth+cr;
-				$('table:first',$t.grid.bDiv).css("width",initwidth+cr+"px");
-				$('table:first',$t.grid.hDiv).css("width",initwidth+cr+"px");
+				$t.p.colModel[lvc].width += cr;
+				cw= $t.p.colModel[lvc].width;
+				$t.grid.headers[lvc].width = cw;
+				$t.grid.headers[lvc].el.style.width=cw+"px";
+				$t.grid.cols[lvc].style.width = cw+"px";
+				$t.p.tblwidth = initwidth+tw+cr;
+				$('table:first',$t.grid.bDiv).css("width",initwidth+tw+cr+"px");
+				$('table:first',$t.grid.hDiv).css("width",initwidth+tw+cr+"px");
 				$t.grid.hDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
 			}
 		});
@@ -1232,44 +1236,46 @@ $.fn.jqGrid = function( p ) {
 			setTimeout(function() {ts.p.scroll=scg;},500);
 		},
 		setColWidth = function () {
-			var initwidth = 0, brd=5, l, vc=0,scw=5,cw,hs=false,aw;
-			if (isSafari) { brd=0;scw=0;}
-			for(l=0;l<=ts.p.colModel.length-1;l++){
-				if(typeof ts.p.colModel[l].hidden == 'undefined') {ts.p.colModel[l].hidden=false;}
-				if(ts.p.colModel[l].hidden===false){
-					initwidth += IntNum(ts.p.colModel[l].width);
+			var initwidth = 0, brd=ts.p.cellLayout, vc=0, lvc, scw=ts.p.scrollOffset,cw,hs=false,aw,tw=0,gw=0,
+			msw = ts.p.multiselectWidth, sgw=ts.p.subGridWidth,cr;
+			$.each(ts.p.colModel, function(i) {
+				if(typeof this.hidden === 'undefined') {this.hidden=false;}
+				if(this.hidden===false){
+					initwidth += IntNum(this.width);
 					vc++;
 				}
-			}
+			});
 			if(isNaN(ts.p.width)) {ts.p.width = grid.width = initwidth;}
 			else { grid.width = ts.p.width}
 			ts.p.tblwidth = initwidth;
-			aw = grid.width-brd*vc;			
 			if(ts.p.shrinkToFit ===false && ts.p.forceFit === true) {ts.p.forceFit=false;}
 			if(ts.p.shrinkToFit===true) {
+				if (isSafari) { brd=0; msw +=ts.p.cellLayout; sgw += ts.p.cellLayout;}
+				if(ts.p.multiselect) {tw = msw; gw = msw+brd; vc--;}
+				if(ts.p.subGrid) {tw += sgw;gw += sgw+brd; vc--;}
+				aw = grid.width-brd*vc-gw;
 				if(isNaN(ts.p.height)) {
 				} else {
-					scw = isSafari ? 18 : 17+brd;
 					aw -= scw;
 					hs = true;
 				}
-				initwidth =0; vc=0;
-				for(l=0;l<=ts.p.colModel.length-1;l++) {
-					if(ts.p.colModel[l].hidden === false){
-						cw = Math.floor(aw/ts.p.tblwidth*ts.p.colModel[l].width);
-						ts.p.colModel[l].width =cw;
+				initwidth =0;
+				$.each(ts.p.colModel, function(i) {
+					if(this.hidden === false && this.name !== 'cb' && this.name !== 'subgrid'){
+						cw = Math.floor(aw/(ts.p.tblwidth-tw)*this.width);
+						this.width =cw;
 						initwidth += cw;
-						vc = l;
+						lvc = i;
 					}
+				});
+				cr =0;
+				if (hs && grid.width-gw-(initwidth+brd*vc) !== scw) {
+					cr = grid.width-gw-(initwidth+brd*vc)-scw;
+				} else if(!hs && Math.abs(grid.width-gw-(initwidth+brd*vc)) !== 1) {
+					cr = grid.width-gw-(initwidth+brd*vc);
 				}
-				var cr =0;
-				if (hs && grid.width-(initwidth+brd*vc) !== scw) {
-					cr = grid.width-(initwidth+brd*vc)-scw;
-				} else if(!hs && grid.width-(initwidth+brd*vc) > 2) {
-					cr = grid.width-(initwidth+brd*vc)-scw;
-				}
-				ts.p.colModel[vc].width += cr;
-				ts.p.tblwidth = initwidth+cr;
+				ts.p.colModel[lvc].width += cr;
+				ts.p.tblwidth = initwidth+tw+cr;
 			}
 		},
 		nextVisible= function(iCol) {
@@ -1321,7 +1327,7 @@ $.fn.jqGrid = function( p ) {
 		}
 		if(this.p.subGrid) {
 			this.p.colNames.unshift("");
-			this.p.colModel.unshift({name:'subgrid',width:20,sortable: false,resizable:false,hidedlg:true,search:false});
+			this.p.colModel.unshift({name:'subgrid',width: isSafari ?  ts.p.subGridWidth+ts.p.cellLayout : ts.p.subGridWidth,sortable: false,resizable:false,hidedlg:true,search:false});
 			var cm = this.p.subGridModel;
 			if(cm[0]) {
 				cm[0].align = $.extend([],cm[0].align || []);
@@ -1331,7 +1337,7 @@ $.fn.jqGrid = function( p ) {
 		}
 		if(this.p.multiselect) {
 			this.p.colNames.unshift("<input id='cb_jqg' class='cbox' type='checkbox'/>");
-			this.p.colModel.unshift({name:'cb',width:20,sortable:false,resizable:false,hidedlg:true,search:false,align:'center'});
+			this.p.colModel.unshift({name:'cb',width:isSafari ?  ts.p.multiselectWidth+ts.p.cellLayout : ts.p.multiselectWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center'});
 		}
 		var	xReader = {
 			root: "rows",
@@ -1597,7 +1603,7 @@ $.fn.jqGrid = function( p ) {
 			function() {arf.removeClass('ui-state-hover');})
 		.append("<span class='ui-icon ui-icon-circle-triangle-n'></span>") : "";
 		$(grid.cDiv).append(arf).append("<span class='ui-jqgrid-title'>"+ts.p.caption+"</span>")
-		.addClass("ui-jqgrid-titlebar ui-widget-header ui-corner-tl ui-corner-tr ui-helper-clearfix");//.css("width",grid.width+"px");
+		.addClass("ui-jqgrid-titlebar ui-widget-header ui-corner-tl ui-corner-tr ui-helper-clearfix");
 		$(grid.cDiv).insertBefore(grid.hDiv);
 		if( ts.p.toolbar[0] ) {
 			grid.uDiv = document.createElement("div");
