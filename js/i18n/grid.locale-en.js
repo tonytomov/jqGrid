@@ -36,7 +36,8 @@ $.jgrid = {
 		    maxValue:"value must be less than or equal to",
 		    email: "is not a valid e-mail",
 		    integer: "Please, enter valid integer value",
-			date: "Please, enter valid date value"
+			date: "Please, enter valid date value",
+			url: "is not a valid URL. Prefix required ('http://' or 'https://')"
 		}
 	},
 	del : {

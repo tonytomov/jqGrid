@@ -313,6 +313,12 @@ function checkValues(val, valref,g) {
 				if(!checkDate (dft, val)) return [false,g.p.colNames[valref]+": "+jQuery.jgrid.edit.msg.date+" - "+dft,""];
 			}
 		}
+        if(edtrul.url === true) {
+            if( !(rqfield === false && isEmpty(val)) ) {
+                var filter = /^(((https?)|(ftp)):\/\/([\-\w]+\.)+\w{2,3}(\/[%\-\w]+(\.\w{2,})?)*(([\w\-\.\?\\/+@&#;`~=%!]*)(\.\w{2,})?)*\/?)/i;
+                if(!filter.test(val)) {return [false,g.p.colNames[valref]+": "+jQuery.jgrid.edit.msg.url,""];}
+            }
+        }
 	}
 	return [true,"",""];
 };
