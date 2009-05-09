@@ -51,7 +51,7 @@ $.fn.extend({
 				var sort = $t.p.colModel[idx].sortable;
 				if ( typeof sort !== 'boolean' ) { sort =  true; }
 				if ( typeof reload !=='boolean' ) { reload = false; }
-				if ( sort ) { $t.sortData(colname, idx, reload); }
+				if ( sort ) { $t.sortData("jqgh_"+colname, idx, reload); }
 			}
 		});
 	},
