@@ -388,13 +388,11 @@ $.fn.jqGrid = function( p ) {
 				}
 				t.p.records++;
 				t.p.reccount++;
-				if(pos=='first' || (pos=='before' && sind==0)){
-					if(t.rows[0]){
-						$("td",t.rows[0]).each( function( k ) {
-							$(this).css("width",grid.headers[k].width+"px");
-							grid.cols[k] = this;
-						});
-					}
+				if(pos=='first' || (pos=='before' && sind==0) ||  t.rows.length === 1 ){
+					$("td",t.rows[0]).each( function( k ) {
+						$(this).css("width",t.grid.headers[k].width+"px");
+						t.grid.cols[k] = this;
+					});
 				}
 				try {t.p.afterInsertRow(row.id,data); } catch(e){}
 				t.updatepager();
@@ -619,7 +617,7 @@ $.fn.jqGrid = function( p ) {
 			if(!$t.grid) {return;}
 			$("tbody tr", $t.grid.bDiv).remove();
 			$t.p.selrow = null; $t.p.selarrrow= []; $t.p.savedRow = [];
-			$t.p.records = '0';$t.p.page='0';$t.p.lastpage='0';$t.p.reccount=0;
+			$t.p.records = 0;$t.p.page='0';$t.p.lastpage='0';$t.p.reccount=0;
 			$t.updatepager();
 		});
 	};
@@ -704,9 +702,9 @@ $.fn.jqGrid = function( p ) {
 			if(ral) { $(elem).css("text-align",ral);}
 			if(ts.p.colModel[pos].hidden===true) {$(elem).css("display","none");}
 			if(row===0) {
-				$(elem).css({width : grid.headers[pos].width+"px"});
-				grid.cols[pos] = $(elem)[0];
-				grid.cols[pos].style.width = grid.headers[pos].width+"px";
+				$(elem).css({width : ts.grid.headers[pos].width+"px"});
+				ts.grid.cols[pos] = $(elem)[0];
+				ts.grid.cols[pos].style.width = ts.grid.headers[pos].width+"px";
 			}
 		},
 		addCell = function(t,row,cell,pos,irow, srvr) {
