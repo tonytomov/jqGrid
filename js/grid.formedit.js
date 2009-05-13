@@ -198,7 +198,7 @@ $.fn.extend({
 				$("#"+IDs.themodal).remove();
 			}
 			if ( $("#"+IDs.themodal).html() != null ) {
-				$(".modaltext","#"+IDs.modalhead).html(p.caption);
+				$(".ui-jqdialog-title","#"+IDs.modalhead).html(p.caption);
 				$("#FormError","#"+frmtb).hide();
 				if(onBeforeInit) { onBeforeInit($("#"+frmgr)); }
 				// filldata
