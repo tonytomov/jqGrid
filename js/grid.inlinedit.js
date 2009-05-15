@@ -9,7 +9,7 @@
 **/ 
 $.fn.extend({
 //Editing
-	editRow : function(rowid,keys,oneditfunc,succesfunc, url, extraparam, aftersavefunc,errorfunc) {
+	editRow : function(rowid,keys,oneditfunc,succesfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
 		return this.each(function(){
 			var $t = this, nm, tmp, editable, cnt=0, focus=null, svr=[], ind;
 			if (!$t.grid ) { return; }
@@ -49,7 +49,7 @@ $.fn.extend({
 						$("td:eq("+focus+") input",$t.rows[ind]).focus();
 						if(keys===true) {
 							$($t.rows[ind]).bind("keydown",function(e) {
-								if (e.keyCode === 27) { $($t).restoreRow(rowid);}
+								if (e.keyCode === 27) {$($t).restoreRow(rowid, afterrestorefunc);}
 								if (e.keyCode === 13) {
 									$($t).saveRow(rowid,succesfunc, url, extraparam, aftersavefunc,errorfunc);
 									return false;
@@ -63,7 +63,7 @@ $.fn.extend({
 			}
 		});
 	},
-	saveRow : function(rowid, succesfunc, url, extraparam, aftersavefunc,errorfunc) {
+	saveRow : function(rowid, succesfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
 		return this.each(function(){
 		var $t = this, nm, tmp={}, tmp2={}, editable, fr, cv, ms, ind;
 		if (!$t.grid ) { return; }
@@ -154,7 +154,7 @@ $.fn.extend({
 									};
 									if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
 									if( $.isFunction(aftersavefunc) ) { aftersavefunc(rowid,res.responseText); }
-								} else { $($t).restoreRow(rowid); }
+								} else { $($t).restoreRow(rowid, afterrestorefunc); }
 							}
 						},
 						error:function(res,stat){
@@ -173,7 +173,7 @@ $.fn.extend({
 		}
 		});
 	},
-	restoreRow : function(rowid) {
+	restoreRow : function(rowid, afterrestorefunc) {
 		return this.each(function(){
 			var $t= this, nm, fr,ind;
 			if (!$t.grid ) { return; }
@@ -186,6 +186,10 @@ $.fn.extend({
 				$($t).setRowData(rowid,$t.p.savedRow[fr]);
 				$($t.rows[ind]).attr("editable","0");
 				$t.p.savedRow.splice(fr,1);
+			}
+			if ($.isFunction(afterrestorefunc))
+			{
+				afterrestorefunc(rowid);
 			}
 		});
 	}
