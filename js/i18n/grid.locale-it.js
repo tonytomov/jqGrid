@@ -1,8 +1,7 @@
 ;(function($){
 /**
- * jqGrid English Translation
- * Tony Tomov tony@trirand.com
- * http://trirand.com/blog/ 
+ * jqGrid Italian Translation
+ * Vincenzo Solomita vincenzosolomita@gmail.com
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
@@ -11,32 +10,32 @@ $.jgrid = {
 	defaults : {
 		recordtext: "View {0} - {1} of {2}",
 	    emptyrecords: "No records to view",
-		loadtext: "Loading...",
+		loadtext: "Caricamento...",
 		pgtext : "Page {0} of {1}"
 	},
 	search : {
-	    caption: "Search...",
-	    Find: "Find",
-	    Reset: "Reset",
+	    caption: "Ricerca...",
+	    Find: "Cerca",
+	    Reset: "Pulisci",
 	    odata : ['equal', 'not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain'],
 	    groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	],
 		matchText: " match",
 		rulesText: " rules"
 	},
 	edit : {
-		addCaption: "Add Record",
-		editCaption: "Edit Record",
-		bSubmit: "Submit",
-		bCancel: "Cancel",
-		bClose: "Close",
-		processData: "Processing...",
-		msg: {
-		    required:"Field is required",
-		    number:"Please, enter valid number",
-		    minValue:"value must be greater than or equal to ",
-		    maxValue:"value must be less than or equal to",
-		    email: "is not a valid e-mail",
-		    integer: "Please, enter valid integer value",
+	    addCaption: "Aggiungi Record",
+	    editCaption: "Modifica Record",
+	    bSubmit: "Invia",
+	    bCancel: "Annulla",
+		bClose: "Chiudi",
+	    processData: "In elaborazione...",
+	    msg: {
+	        required:"Campo richiesto",
+	        number:"Per favore, inserisci un valore valido",
+	        minValue:"il valore deve essere maggiore o uguale a ",
+	        maxValue:"il valore deve essere minore o uguale a",
+	        email: "e-mail non corretta",
+			integer: "Please, enter valid integer value",
 			date: "Please, enter valid date value",
 			url: "is not a valid URL. Prefix required ('http://' or 'https://')"
 		}
@@ -46,43 +45,43 @@ $.jgrid = {
 	    bClose: "Close"
 	},
 	del : {
-		caption: "Delete",
-		msg: "Delete selected record(s)?",
-		bSubmit: "Delete",
-		bCancel: "Cancel",
-		processData: "Processing..."
+	    caption: "Cancella",
+	    msg: "Cancellare record selezionato/i?",
+	    bSubmit: "Cancella",
+	    bCancel: "Annulla",
+	    processData: "In elaborazione..."
 	},
 	nav : {
-		edittext: "",
-		edittitle: "Edit selected row",
-		addtext:"",
-		addtitle: "Add new row",
-		deltext: "",
-		deltitle: "Delete selected row",
-		searchtext: "",
-		searchtitle: "Find records",
-		refreshtext: "",
-		refreshtitle: "Reload Grid",
-		alertcap: "Warning",
-		alerttext: "Please, select row",
+		edittext: " ",
+	    edittitle: "Modifica record selezionato",
+		addtext:" ",
+	    addtitle: "Aggiungi nuovo record",
+	    deltext: " ",
+	    deltitle: "Cancella record selezionato",
+	    searchtext: " ",
+	    searchtitle: "Ricerca record",
+	    refreshtext: "",
+	    refreshtitle: "Aggiorna griglia",
+	    alertcap: "Attenzione",
+	    alerttext: "Per favore, seleziona un record",
 		viewtext: "",
 		viewtitle: "View selected row"
 	},
 	col : {
-		caption: "Show/Hide Columns",
-		bSubmit: "Submit",
-		bCancel: "Cancel"
+	    caption: "Mostra/Nascondi Colonne",
+	    bSubmit: "Invia",
+	    bCancel: "Annulla"	
 	},
 	errors : {
-		errcap : "Error",
-		nourl : "No url is set",
-		norecords: "No records to process",
-		model : "Length of colNames <> colModel!"
+		errcap : "Errore",
+		nourl : "Url non settata",
+		norecords: "Nessun record da elaborare",
+	    model : "Length of colNames <> colModel!"
 	},
 	formatter : {
-		integer : {thousandsSeparator: " ", defaulValue: '0'},
-		number : {decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2, defaulValue: '0.00'},
-		currency : {decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2, prefix: "", suffix:"", defaulValue: '0.00'},
+		integer : {thousandsSeparator: " ", defaulValue: 0},
+		number : {decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2, defaulValue: 0},
+		currency : {decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2, prefix: "", suffix:"", defaulValue: 0},
 		date : {
 			dayNames:   [
 				"Sun", "Mon", "Tue", "Wed", "Thr", "Fri", "Sat",
