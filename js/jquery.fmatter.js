@@ -22,14 +22,7 @@
 		//debug(cellval);
 		// build main options before element iteration
 		opts = $.extend({}, $.jgrid.formatter, opts);
-		return this.each(function() {
-			//debug("in the each");
-			$this = $(this);
-			//for the metaplugin if it exists
-			var o = $.meta ? $.extend({}, opts, $this.data()) : opts;
-			//debug("firing formatter");
-			fireFormatter($this,formatType,cellval, opts, rwd, act); 
-		});
+		return fireFormatter(formatType,cellval, opts, rwd, act); 
 	};
 	$.fmatter.util = {
 		// Taken from YAHOO utils
@@ -95,7 +88,7 @@
 		DateFormat : function (format, date, newformat, opts)  {
 			var	token = /\\.|[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]/g,
 			timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
-			timezoneClip = timezoneClip = /[^-+\dA-Z]/g,
+			timezoneClip = /[^-+\dA-Z]/g,
 			pad = function (value, length) {
 				value = String(value);
 				length = parseInt(length) || 2;
@@ -103,7 +96,7 @@
 				return value;
 			},
 		    ts = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0},
-		    timestamp=0, dM,
+		    timestamp=0, dM, k,hl,
 		    dateFormat=["i18n"];
 			// Internationalization strings
 		    dateFormat["i18n"] = {
@@ -114,16 +107,16 @@
 			date = date.split(/[\\\/:_;.\t\T\s-]/);
 			format = format.split(/[\\\/:_;.\t\T\s-]/);
 			// parsing for month names
-		    for(var i=0;i<format.length;i++){
-				if(format[i] == 'M') {
-					dM = $.inArray(date[i],dateFormat.i18n.monthNames);
-					if(dM !== -1 && dM < 12){date[i] = dM+1;}
+		    for(k=0,hl=format.length;k<hl;k++){
+				if(format[k] == 'M') {
+					dM = $.inArray(date[k],dateFormat.i18n.monthNames);
+					if(dM !== -1 && dM < 12){date[k] = dM+1;}
 				}
-				if(format[i] == 'F') {
-					dM = $.inArray(date[i],dateFormat.i18n.monthNames);
-					if(dM !== -1 && dM > 11){date[i] = dM+1-12;}
+				if(format[k] == 'F') {
+					dM = $.inArray(date[k],dateFormat.i18n.monthNames);
+					if(dM !== -1 && dM > 11){date[k] = dM+1-12;}
 				}
-		        ts[format[i].toLowerCase()] = parseInt(date[i],10);
+		        ts[format[k].toLowerCase()] = parseInt(date[k],10);
 		    }
 		    ts.m = parseInt(ts.m)-1;
 		    var ty = ts.y;
@@ -199,27 +192,27 @@
 			});			
 		}
 	};
-	$.fn.fmatter.defaultFormat = function(el, cellval, opts) {
-		$(el).html((isValue(cellval) && cellval!=="" ) ?  cellval : "&#160;");
+	$.fn.fmatter.defaultFormat = function(cellval, opts) {
+		return (isValue(cellval) && cellval!=="" ) ?  cellval : opts.defaultValue ? opts.defaultValue : "&#160;";
 	};
-	$.fn.fmatter.email = function(el, cellval, opts) {
+	$.fn.fmatter.email = function(cellval, opts) {
 		if(!isEmpty(cellval)) {
-            $(el).html("<a href=\"mailto:" + cellval + "\">" + cellval + "</a>");
+			return "<a href='mailto:" + cellval + "'>" + cellval + "</a>";
         }else {
-           $.fn.fmatter.defaultFormat(el, cellval);
+			return $.fn.fmatter.defaultFormat(cellval,opts );
         }
 	};
-	$.fn.fmatter.checkbox =function(el,cval,opts) {
+	$.fn.fmatter.checkbox =function(cval, opts) {
 		var op = $.extend({},opts.checkbox), ds;
 		if(!isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if(op.disabled===true) {ds = "disabled";} else {ds="";}
 		cval=cval+""; cval=cval.toLowerCase();
-		var bchk = cval.search(/(false|0|no|off)/i)<0 ? " checked=\"checked\"" : "";
-        $(el).html("<input type='checkbox'" + bchk  + " value='"+ cval+"' offval='no' "+ds+ "/>");
+		var bchk = cval.search(/(false|0|no|off)/i)<0 ? " checked='checked' " : "";
+        return "<input type='checkbox' " + bchk  + " value='"+ cval+"' offval='no' "+ds+ "/>";
     },
-	$.fn.fmatter.link = function(el,cellval,opts) {
+	$.fn.fmatter.link = function(cellval, opts) {
 		var op = {target:opts.target };
 		var target = "";
 		if(!isUndefined(opts.colModel.formatoptions)) {
@@ -227,12 +220,12 @@
         }
 		if(op.target) {target = 'target=' + op.target;}
         if(!isEmpty(cellval)) {
-           $(el).html("<a "+target+" href=\"" + cellval + "\">" + cellval + "</a>");
+			return "<a "+target+" href='" + cellval + "'>" + cellval + "</a>";
         }else {
-            $(el).html(isValue(cellval) ? cellval : "");
+            return $.fn.fmatter.defaultFormat(cellval,opts);
         }
     };
-	$.fn.fmatter.showlink = function(el,cellval,opts) {
+	$.fn.fmatter.showlink = function(cellval, opts) {
 		var op = {baseLinkUrl: opts.baseLinkUrl,showAction:opts.showAction, addParam: opts.addParam, target: opts.target, idName: opts.idName },
 		target = "";
 		if(!isUndefined(opts.colModel.formatoptions)) {
@@ -241,68 +234,67 @@
 		if(op.target) {target = 'target=' + op.target;}
 		idUrl = op.baseLinkUrl+op.showAction + '?'+ op.idName+'='+opts.rowId+op.addParam;
         if(isString(cellval)) {	//add this one even if its blank string
-			$(el).html("<a "+target+" href=\"" + idUrl + "\">" + cellval + "</a>");
+			return "<a "+target+" href='" + idUrl + "'>" + cellval + "</a>";
         }else {
-			$.fn.fmatter.defaultFormat(el, cellval);
+			return $.fn.fmatter.defaultFormat(cellval,opts);
 	    }
     };
-	$.fn.fmatter.integer = function(el,cellval,opts) {
+	$.fn.fmatter.integer = function(cellval, opts) {
 		var op = $.extend({},opts.integer);
 		if(!isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if(isEmpty(cellval)) {
-			cellval = op.defaultValue || 0;
+			return op.defaultValue;
 		}
-		$(el).html($.fmatter.util.NumberFormat(cellval,op));
+		return $.fmatter.util.NumberFormat(cellval,op);
 	};
-	$.fn.fmatter.number = function (el,cellval, opts) {
+	$.fn.fmatter.number = function (cellval, opts) {
 		var op = $.extend({},opts.number);
 		if(!isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if(isEmpty(cellval)) {
-			cellval = op.defaultValue || 0;
+			return op.defaultValue;
 		}
-		$(el).html($.fmatter.util.NumberFormat(cellval,op));
+		return $.fmatter.util.NumberFormat(cellval,op);
 	};
-	$.fn.fmatter.currency = function (el,cellval, opts) {
+	$.fn.fmatter.currency = function (cellval, opts) {
 		var op = $.extend({},opts.currency);
 		if(!isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if(isEmpty(cellval)) {
-			cellval = op.defaultValue || 0;
+			return op.defaultValue;
 		}
-		$(el).html($.fmatter.util.NumberFormat(cellval,op));
+		return $.fmatter.util.NumberFormat(cellval,op);
 	};
-	$.fn.fmatter.date = function (el, cellval, opts, act) {
+	$.fn.fmatter.date = function (cellval, opts, act) {
 		var op = $.extend({},opts.date);
 		if(!isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if(!op.reformatAfterEdit && act=='edit'){
-			$.fn.fmatter.defaultFormat(el,cellval);
+			return $.fn.fmatter.defaultFormat(cellval, opts);
 		} else if(!isEmpty(cellval)) {
-			var ndf = $.fmatter.util.DateFormat(op.srcformat,cellval,op.newformat,op);
-			$(el).html(ndf);
+			return  $.fmatter.util.DateFormat(op.srcformat,cellval,op.newformat,op);
 		} else {
-			$.fn.fmatter.defaultFormat(el,cellval);
+			return $.fn.fmatter.defaultFormat(cellval, opts);
 		}
 	};
-	$.fn.fmatter.select = function (el, cellval,opts, act) {
+	$.fn.fmatter.select = function (cellval,opts, act) {
 		// jqGrid specific
 		if(act=='edit') {
-			$.fn.fmatter.defaultFormat(el,cellval);
+			return $.fn.fmatter.defaultFormat(cellval, opts);
 		} else if (!isEmpty(cellval)) {
 			var oSelect = false;
 			if(!isUndefined(opts.colModel.editoptions)){
 				oSelect= opts.colModel.editoptions.value;
 			}
 			if (oSelect) {
-				var ret = [];
-				var msl =  opts.colModel.editoptions.multiple === true ? true : false;
-				var scell = [];
+				var ret = [],
+				msl =  opts.colModel.editoptions.multiple === true ? true : false,
+				scell = [], sv;
 				if(msl) { scell = cellval.split(","); scell = $.map(scell,function(n){return $.trim(n);})}
 				if (isString(oSelect)) {
 					// mybe here we can use some caching with care ????
@@ -328,9 +320,9 @@
 					}
 					ret[0] = oSelect[cellval] || "";
 				}
-				$(el).html(ret.join(", "));
+				return ret.join(", ");
 			} else {
-				$.fn.fmatter.defaultFormat(el,cellval);
+				return $.fn.fmatter.defaultFormat(cellval, opts);
 			}
 		}
 	};
@@ -366,26 +358,23 @@
 					break;
 			}
 		}
-		//else {
-			// Here aditional code to run custom unformater
-		//}
 		return ret ? ret : cnt===true ? $(cellval).text() : $.htmlDecode($(cellval).html());
 	};
-	function fireFormatter(el,formatType,cellval, opts, rwd, act) {
-		//debug("in formatter with " +formatType);
+	function fireFormatter(formatType,cellval, opts, rwd, act) {
 	    formatType = formatType.toLowerCase();
+		var v=cellval;
 	    switch (formatType) {
-	        case 'link': $.fn.fmatter.link(el, cellval, opts); break;
-			case 'showlink': $.fn.fmatter.showlink(el, cellval, opts); break;
-	        case 'email': $.fn.fmatter.email(el, cellval, opts); break;
-			case 'currency': $.fn.fmatter.currency(el, cellval, opts); break;
-	        case 'date': $.fn.fmatter.date(el, cellval, opts, act); break;
-	        case 'number': $.fn.fmatter.number(el, cellval, opts) ; break;
-	        case 'integer': $.fn.fmatter.integer(el, cellval, opts) ; break;
-	        case 'checkbox': $.fn.fmatter.checkbox(el, cellval, opts); break;
-	        case 'select': $.fn.fmatter.select(el, cellval, opts,act); break;
-	        //case 'textbox': s.transparent = false; break;
+	        case 'link': v= $.fn.fmatter.link(cellval, opts); break;
+			case 'showlink': v= $.fn.fmatter.showlink(cellval, opts); break;
+	        case 'email': v= $.fn.fmatter.email(cellval, opts); break;
+			case 'currency': v= $.fn.fmatter.currency( cellval, opts); break;
+	        case 'date': v = $.fn.fmatter.date(cellval, opts, act); break;
+	        case 'number': v= $.fn.fmatter.number(cellval, opts) ; break;
+	        case 'integer': v= $.fn.fmatter.integer(cellval, opts) ; break;
+	        case 'checkbox': v= $.fn.fmatter.checkbox(cellval, opts); break;
+	        case 'select': v=$.fn.fmatter.select(cellval, opts,act); break;
 	    }
+		return v;
 	};
 	//private methods and data
 	function debug($obj) {

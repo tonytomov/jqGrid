@@ -29,9 +29,9 @@
                 var XmlConvert = function (xml,o) {
                     var cnfg = $(o.xmlGrid.config,xml)[0];
                     var xmldata = $(o.xmlGrid.data,xml)[0];
-                    if(xmlJsonClass.xml2json && JSON.parse) {
+                    if(xmlJsonClass.xml2json && $.parse) {
                         var jstr = xmlJsonClass.xml2json(cnfg," ");
-                        var jstr = JSON.parse(jstr);
+                        var jstr = $.parse(jstr);
                         for(var key in jstr) { var jstr1=jstr[key];}
                         if(xmldata) {
                         // save the datatype
@@ -44,12 +44,12 @@
                         }
                         jstr = null;jstr1=null;
                     } else {
-                        alert("xml2json or json.parse are not present");
+                        alert("xml2json or parse are not present");
                     }
                 };
                 var JsonConvert = function (jsonstr,o){
-                    if (jsonstr && typeof jsonstr == 'string' && JSON.parse) {
-                        var json = JSON.parse(jsonstr);
+                    if (jsonstr && typeof jsonstr == 'string') {
+                        var json = $.parse(jsonstr);
                         var gprm = json[o.jsonGrid.config];
                         var jdata = json[o.jsonGrid.data];
                         if(jdata) {
@@ -83,7 +83,7 @@
                     case 'xmlstring' :
                         // we need to make just the conversion and use the same code as xml
                         if(o.impstring && typeof o.impstring == 'string') {
-                            var xmld = xmlJsonClass.parseXml(o.impstring);
+                            var xmld = $.stringToDoc(o.impstring);
                             if(xmld) {
                                 XmlConvert(xmld,o);
                                 if($.isFunction(o.importComplete)) {
@@ -99,7 +99,7 @@
                             url:o.impurl,
                             type:o.mtype,
                             data: o.impData,
-                            dataType:"json",
+                            dataType:"text",
                             complete: function(json,stat) {
                                 if(stat == 'success') {
                                     JsonConvert(json.responseText,o );

@@ -1,11 +1,11 @@
-/**
+/*
  * jqGrid common function
  * Tony Tomov tony@trirand.com
  * http://trirand.com/blog/ 
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
-**/ 
+*/ 
 // Modal functions
 var showModal = function(h) {
 	h.w.show();
@@ -38,14 +38,14 @@ var createModal = function(aIDs, content, p, insertSelector, posSelector, append
 	if ( jQuery.fn.jqm && p.jqModal === true) {
 		if(p.left ==0 && p.top==0) {
 			var pos = [];
-			pos = findPos(posSelector) ;
+			pos = findPos(posSelector);
 			p.left = pos[0] + 4;
 			p.top = pos[1] + 4;
 		}
 	} else {
 		// position relative to grid could be improved - center, right
 		jQuery("a.ui-jqdialog-titlebar-close",mh).click(function(e){
-			hideModal("#"+aIDs.themodal,{gb:p.gbox,jqm:p.jqModal})
+			hideModal("#"+aIDs.themodal,{gb:p.gbox,jqm:p.jqModal});
 			return false;
 		});
 	}
@@ -99,7 +99,7 @@ var viewModal = function (selector,o){
 		onShow: showModal,
 		onHide: closeModal,
 		gbox: '',
-		jqm : true //internal use
+		jqm : true
 	}, o || {});
 	if (jQuery.fn.jqm && o.jqm == true) {
 		jQuery(selector).attr("aria-hidden","false").jqm(o).jqmShow();
@@ -108,7 +108,7 @@ var viewModal = function (selector,o){
 			jQuery(".jqgrid-overlay",o.gbox).show();
 		}
 		jQuery(selector).show().attr("aria-hidden","false");
-		try{$(':input:visible',selector)[0].focus();}catch(_){}
+		try{jQuery(':input:visible',selector)[0].focus();}catch(_){}
 	}
 	return false;
 };
@@ -117,8 +117,8 @@ var hideModal = function (selector,o) {
 	if (jQuery.fn.jqm && o.jqm === true) {
 		jQuery(selector).attr("aria-hidden","true").jqmHide();
 	} else {
-		if(o.gb) {
-			jQuery(".jqgrid-overlay",o.gb).hide();
+		if(o.gb != '') {
+			try {jQuery(".jqgrid-overlay",o.gb).hide();} catch (e){}
 		}
 		jQuery(selector).hide().attr("aria-hidden","true");
 	}
@@ -144,16 +144,16 @@ function info_dialog(caption, content,c_b, pathimg) {
 		closeOnEscape : true },
 		'','',true
 	);
-	$("#closedialog", "#info_id").addClass('ui-state-default ui-corner-all').height(21)
+	jQuery("#closedialog", "#info_id").addClass('ui-state-default ui-corner-all').height(21)
 		.css({padding:" .2em .5em", cursor: 'pointer'})
 		.hover(
-			function(){$(this).addClass('ui-state-hover');}, 
-			function(){$(this).removeClass('ui-state-hover');}
+			function(){jQuery(this).addClass('ui-state-hover');}, 
+			function(){jQuery(this).removeClass('ui-state-hover');}
 	);
-	if(jQuery.fn.jqm) {}
+	if(jQuery.fn.jqm) {;}
 	else {
 		jQuery("#closedialog", "#info_id").click(function(e){
-			hideModal("#info_dialog")
+			hideModal("#info_dialog");
 			return false;
 		});
 	}
@@ -164,7 +164,7 @@ function info_dialog(caption, content,c_b, pathimg) {
 		},
 		modal :true
 	});
-};
+}
 //Helper functions
 function findPos(obj) {
 	var curleft = curtop = 0;
@@ -176,30 +176,49 @@ function findPos(obj) {
 		//do not change obj == obj.offsetParent 
 	}
 	return [curleft,curtop];
-};
+}
 function isArray(obj) {
 	if (obj.constructor.toString().indexOf("Array") == -1) {
 		return false;
 	} else {
 		return true;
 	}
-};
+}
 // Form Functions
 function createEl(eltype,options,vl) {
 	var elem = "";
+	if(options.defaultValue) delete options['defaultValue'];
+	function bindEv (el, opt) {
+		if(jQuery.isFunction(opt.dataInit)) {
+			// datepicker fix 
+			el.id = opt.id;
+			opt.dataInit(el);
+			delete opt['id'];
+			delete opt['dataInit'];
+		}
+		if(opt.dataEvents) {
+		    jQuery.each(opt.dataEvents, function() {
+		        if (this.data != null)
+			        jQuery(el).bind(this.type, this.data, this.fn);
+		        else
+		            jQuery(el).bind(this.type, this.fn);
+		    });
+			delete opt['dataEvents'];
+		}
+		return opt;
+	}
 	switch (eltype)
 	{
 		case "textarea" :
 				elem = document.createElement("textarea");
 				if(!options.cols) {jQuery(elem).css("width","98%");}
-				jQuery(elem).attr(options);
 				if(vl=='&nbsp;' || vl=='&#160;' || (vl.length==1 && vl.charCodeAt(0)==160)) {vl="";}
-				jQuery(elem).val(vl);
+				options = bindEv(elem,options);
+				jQuery(elem).val(vl).attr(options);
 				break;
 		case "checkbox" : //what code for simple checkbox
 			elem = document.createElement("input");
 			elem.type = "checkbox";
-			jQuery(elem).attr({id:options.id,name:options.name});
 			if( !options.value) {
 				vl=vl.toLowerCase();
 				if(vl.search(/(false|0|no|off|undefined)/i)<0 && vl!=="") {
@@ -218,18 +237,41 @@ function createEl(eltype,options,vl) {
 				}
 				elem.value = cbval[0];
 				jQuery(elem).attr("offval",cbval[1]);
+				try {delete options['value'];} catch (e){}
 			}
+			options = bindEv(elem,options);
+			jQuery(elem).attr(options);
 			break;
 		case "select" :
-			elem = document.createElement("select");
 			var msl = options.multiple===true ? true : false;
-			if(options.value) {
+			elem = document.createElement("select");
+			if(options.dataUrl != null) {
+				jQuery.get(options.dataUrl,{_nsd : (new Date().getTime())},function(data){
+					try {delete options['dataUrl'];delete options['value'];} catch (e){}
+					var a = jQuery(data).html();
+					options = bindEv(elem,options);
+					jQuery(elem).html(a).attr(options);
+					jQuery("option",elem).each(function(i){
+						if($(this).text()==vl) {
+							this.selected = "selected";
+							return false;
+						}
+					});
+				},'html');
+			} else if(options.value) {
 				var ovm = [], i;
-				if(msl) {jQuery(elem).attr({multiple:"multiple"}); ovm = vl.split(","); ovm = jQuery.map(ovm,function(n){return jQuery.trim(n)});}
-				if(typeof options.size === 'undefined') {options.size =1;}
+				if(msl) {
+					ovm = vl.split(",");
+					ovm = jQuery.map(ovm,function(n){return jQuery.trim(n)});
+					if(typeof options.size === 'undefined') {options.size = 3;}
+				} else {
+					options.size = 1;
+				}
 				if(typeof options.value === 'string') {
 					var so = options.value.split(";"),sv, ov;
-					jQuery(elem).attr({id:options.id,name:options.name,size:Math.min(options.size,so.length) });
+					try {delete options['value'];} catch (e){}
+					options = bindEv(elem,options);
+					jQuery(elem).attr(options);
 					for(i=0; i<so.length;i++){
 						sv = so[i].split(":");
 						ov = document.createElement("option");
@@ -249,7 +291,9 @@ function createEl(eltype,options,vl) {
 						if (msl && jQuery.inArray(jQuery.trim(oSv[key]),ovm)>-1) ov.selected ="selected";
 						elem.appendChild(ov);
 					}
-					jQuery(elem).attr({id:options.id,name:options.name,size:Math.min(options.size,i) });
+					try {delete options['value'];} catch (e){}
+					options = bindEv(elem,options);
+					jQuery(elem).attr(options);
 				}
 			}
 			break;
@@ -258,7 +302,8 @@ function createEl(eltype,options,vl) {
 		case "button" :
 			elem = document.createElement("input");
 			elem.type = eltype;
-			elem.value = vl;
+			options = bindEv(elem,options);
+			elem.value = jQuery.htmlDecode(vl);
 			if(!options.size) {
 				jQuery(elem).css({width:"98%"});
 			}
@@ -268,65 +313,76 @@ function createEl(eltype,options,vl) {
 		case "file" :
 			elem = document.createElement("input");
 			elem.type = eltype;
+			options = bindEv(elem,options);
 			jQuery(elem).attr(options);
 			break;
 	}
 	return elem;
-};
+}
 function checkValues(val, valref,g) {
-	if(valref >=0) {
+	var edtrul,i, nm;
+	if(typeof(valref)=='string'){
+		for( i =0, len=g.p.colModel.length;i<len; i++){
+			if(g.p.colModel[i].name==valref) {
+				edtrul = g.p.colModel[i].editrules;
+				valref = i;
+				try { nm = g.p.colModel[i].formoptions.label; } catch (e) {}
+				break;
+			}
+		}
+	} else if(valref >=0) {
 		var edtrul = g.p.colModel[valref].editrules;
 	}
 	if(edtrul) {
+		if(!nm) nm = g.p.colNames[valref];
 		if(edtrul.required === true) {
-			if( val.match(/^s+$/) || val == "" )  return [false,g.p.colNames[valref]+": "+jQuery.jgrid.edit.msg.required,""];
+			if( val.match(/^s+$/) || val == "" )  return [false,nm+": "+jQuery.jgrid.edit.msg.required,""];
 		}
 		// force required
 		var rqfield = edtrul.required === false ? false : true;
 		if(edtrul.number === true) {
 			if( !(rqfield === false && isEmpty(val)) ) {
-				if(isNaN(val)) return [false,g.p.colNames[valref]+": "+jQuery.jgrid.edit.msg.number,""];
+				if(isNaN(val)) return [false,nm+": "+jQuery.jgrid.edit.msg.number,""];
 			}
 		}
 		if(edtrul.minValue && !isNaN(edtrul.minValue)) {
-			if (parseFloat(val) < parseFloat(edtrul.minValue) ) return [false,g.p.colNames[valref]+": "+jQuery.jgrid.edit.msg.minValue+" "+edtrul.minValue,""];
+			if (parseFloat(val) < parseFloat(edtrul.minValue) ) return [false,nm+": "+jQuery.jgrid.edit.msg.minValue+" "+edtrul.minValue,""];
 		}
 		if(edtrul.maxValue && !isNaN(edtrul.maxValue)) {
-			if (parseFloat(val) > parseFloat(edtrul.maxValue) ) return [false,g.p.colNames[valref]+": "+jQuery.jgrid.edit.msg.maxValue+" "+edtrul.maxValue,""];
+			if (parseFloat(val) > parseFloat(edtrul.maxValue) ) return [false,nm+": "+jQuery.jgrid.edit.msg.maxValue+" "+edtrul.maxValue,""];
 		}
+		var filter;
 		if(edtrul.email === true) {
 			if( !(rqfield === false && isEmpty(val)) ) {
 			// taken from jquery Validate plugin
-				var filter = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i;
-				if(!filter.test(val)) {return [false,g.p.colNames[valref]+": "+jQuery.jgrid.edit.msg.email,""];}
+				filter = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i;
+				if(!filter.test(val)) {return [false,nm+": "+jQuery.jgrid.edit.msg.email,""];}
 			}
 		}
 		if(edtrul.integer === true) {
 			if( !(rqfield === false && isEmpty(val)) ) {
-				if(isNaN(val)) return [false,g.p.colNames[valref]+": "+jQuery.jgrid.edit.msg.integer,""];
-				if ((val % 1 != 0) || (val.indexOf('.') != -1)) return [false,g.p.colNames[valref]+": "+jQuery.jgrid.edit.msg.integer,""];
+				if(isNaN(val)) return [false,nm+": "+jQuery.jgrid.edit.msg.integer,""];
+				if ((val % 1 != 0) || (val.indexOf('.') != -1)) return [false,nm+": "+jQuery.jgrid.edit.msg.integer,""];
 			}
 		}
 		if(edtrul.date === true) {
 			if( !(rqfield === false && isEmpty(val)) ) {
 				var dft = g.p.colModel[valref].datefmt || "Y-m-d";
-				if(!checkDate (dft, val)) return [false,g.p.colNames[valref]+": "+jQuery.jgrid.edit.msg.date+" - "+dft,""];
+				if(!checkDate (dft, val)) return [false,nm+": "+jQuery.jgrid.edit.msg.date+" - "+dft,""];
 			}
 		}
         if(edtrul.url === true) {
             if( !(rqfield === false && isEmpty(val)) ) {
-                var filter = /^(((https?)|(ftp)):\/\/([\-\w]+\.)+\w{2,3}(\/[%\-\w]+(\.\w{2,})?)*(([\w\-\.\?\\/+@&#;`~=%!]*)(\.\w{2,})?)*\/?)/i;
-                if(!filter.test(val)) {return [false,g.p.colNames[valref]+": "+jQuery.jgrid.edit.msg.url,""];}
+                filter = /^(((https?)|(ftp)):\/\/([\-\w]+\.)+\w{2,3}(\/[%\-\w]+(\.\w{2,})?)*(([\w\-\.\?\\/+@&#;`~=%!]*)(\.\w{2,})?)*\/?)/i;
+                if(!filter.test(val)) {return [false,nm+": "+jQuery.jgrid.edit.msg.url,""];}
             }
         }
 	}
 	return [true,"",""];
-};
+}
 // Date Validation Javascript
 function checkDate (format, date) {
-	var tsp = {};
-	var result =  false;
-	var sep;
+	var tsp = {}, sep;
 	format = format.toLowerCase();
 	//we search for /,-,. for the date separator
 	if(format.indexOf("/") != -1) {

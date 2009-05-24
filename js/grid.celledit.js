@@ -30,7 +30,6 @@ $.fn.extend({
 		return this.each(function (){
 			var $t = this, nm, tmp,cc;
 			if (!$t.grid || $t.p.cellEdit !== true) {return;}
-			var currentFocus = null;
 			iCol = parseInt(iCol,10);
 			// select the row that can be used for other methods
 			$t.p.selrow = $t.rows[iRow].id;
@@ -70,7 +69,7 @@ $.fn.extend({
 				} catch (_) {
 					tmp = $(cc).html();
 				}
-				var opt = $.extend($t.p.colModel[iCol].editoptions || {} ,{id:iRow+"_"+nm,name:nm});
+				var opt = $.extend({}, $t.p.colModel[iCol].editoptions || {} ,{id:iRow+"_"+nm,name:nm});
 				if (!$t.p.colModel[iCol].edittype) {$t.p.colModel[iCol].edittype = "text";}
 				$t.p.savedRow[0] = {id:iRow,ic:iCol,name:nm,v:tmp};
 				if($.isFunction($t.p.formatCell)) {
@@ -112,20 +111,21 @@ $.fn.extend({
 	},
 	saveCell : function (iRow, iCol){
 		return this.each(function(){
-			var $t= this, nm, fr;
+			var $t= this, fr;
 			if (!$t.grid || $t.p.cellEdit !== true) {return;}
 			if ( $t.p.savedRow.length == 1) {fr = 0;} else {fr=null;} 
 			if(fr != null) {
-				var cc = $("td:eq("+iCol+")",$t.rows[iRow]),v,v2;
+				var cc = $("td:eq("+iCol+")",$t.rows[iRow]),v,v2,
 				nm = $t.p.colModel[iCol].name.replace('.',"\\.");
 				switch ($t.p.colModel[iCol].edittype) {
 					case "select":
 						if(!$t.p.colModel[iCol].editoptions.multiple) {
-							v = $("#"+iRow+"_"+nm+">option:selected",$t.rows[iRow]).val();
-							v2 = $("#"+iRow+"_"+nm+">option:selected",$t.rows[iRow]).text();
+							v = $("#"+iRow+"_"+nm.replace('.',"\\.")+">option:selected",$t.rows[iRow]).val();
+							v2 = $("#"+iRow+"_"+nm.replace('.',"\\.")+">option:selected",$t.rows[iRow]).text();
 						} else {
-							var sel = $("#"+iRow+"_"+nm,$t.rows[iRow]), selectedText = [];
+							var sel = $("#"+iRow+"_"+nm.replace('.',"\\."),$t.rows[iRow]), selectedText = [];
 							v = $(sel).val();
+							if(v) v.join(","); else v="";
 							$("option:selected",sel).each(
 								function(i,selected){
 									selectedText[i] = $(selected).text();
@@ -139,14 +139,14 @@ $.fn.extend({
 						if($t.p.colModel[iCol].editoptions){
 							cbv = $t.p.colModel[iCol].editoptions.value.split(":");
 						}
-						v = $("#"+iRow+"_"+nm,$t.rows[iRow]).attr("checked") ? cbv[0] : cbv[1];
+						v = $("#"+iRow+"_"+nm.replace('.',"\\."),$t.rows[iRow]).attr("checked") ? cbv[0] : cbv[1];
 						v2=v;
 						break;
 					case "password":
 					case "text":
 					case "textarea":
 					case "button" :
-						v = !$t.p.autoencode ? $("#"+iRow+"_"+nm,$t.rows[iRow]).val() : htmlEncode($("#"+iRow+"_"+nm,$t.rows[iRow]).val());
+						v = !$t.p.autoencode ? $("#"+iRow+"_"+nm.replace('.',"\\."),$t.rows[iRow]).val() : htmlEncode($("#"+iRow+"_"+nm.replace('.',"\\."),$t.rows[iRow]).val());
 						v2=v;
 						break;
 				}
@@ -248,7 +248,7 @@ $.fn.extend({
 	},
 	restoreCell : function(iRow, iCol) {
 		return this.each(function(){
-			var $t= this, nm, fr;
+			var $t= this, fr;
 			if (!$t.grid || $t.p.cellEdit !== true ) {return;}
 			if ( $t.p.savedRow.length == 1) {fr = 0;} else {fr=null;}
 			if(fr != null) {
@@ -272,7 +272,7 @@ $.fn.extend({
 	},
 	nextCell : function (iRow,iCol) {
 		return this.each(function (){
-			var $t = this, nCol=false, tmp;
+			var $t = this, nCol=false;
 			if (!$t.grid || $t.p.cellEdit !== true) {return;}
 			// try to find next editable cell
 			for (var i=iCol+1; i<$t.p.colModel.length; i++) {
@@ -292,7 +292,7 @@ $.fn.extend({
 	},
 	prevCell : function (iRow,iCol) {
 		return this.each(function (){
-			var $t = this, nCol=false, tmp;
+			var $t = this, nCol=false;
 			if (!$t.grid || $t.p.cellEdit !== true) {return;}
 			// try to find next editable cell
 			for (var i=iCol-1; i>=0; i--) {
@@ -316,7 +316,8 @@ $.fn.extend({
 			if (!$t.grid || $t.p.cellEdit !== true ) {return;}
 			// trick to process keydown on non input elements
 			$t.p.knv = $("table:first",$t.grid.bDiv).attr("id") + "_kn";
-			var selection = $("<span style='width:0px;height:0px;background-color:black;' tabindex='0'><span tabindex='-1' style='width:0px;height:0px;background-color:grey' id='"+$t.p.knv+"'></span></span>");
+			var selection = $("<span style='width:0px;height:0px;background-color:black;' tabindex='0'><span tabindex='-1' style='width:0px;height:0px;background-color:grey' id='"+$t.p.knv+"'></span></span>"),
+			i;
 			$(selection).insertBefore($t.grid.cDiv);
 			$("#"+$t.p.knv).focus();
 			$("#"+$t.p.knv).keydown(function (e){
@@ -335,14 +336,14 @@ $.fn.extend({
 					break;
 					case 37 :
 						if ($t.p.iCol -1 >=  0) {
-							var i = findNextVisible($t.p.iCol-1,'lft');
+							i = findNextVisible($t.p.iCol-1,'lft');
 							scrollGrid($t.p.iRow, i,'h');
 							$($t).editCell($t.p.iRow, i,false);
 						}
 					break;
 					case 39 :
 						if ($t.p.iCol +1 <=  $t.p.colModel.length-1) {
-							var i = findNextVisible($t.p.iCol+1,'rgt');
+							i = findNextVisible($t.p.iCol+1,'rgt');
 							scrollGrid($t.p.iRow,i,'h');
 							$($t).editCell($t.p.iRow,i,false);
 						}
@@ -412,7 +413,7 @@ $.fn.extend({
 		var ret=[];
 		if (!mthd) {mthd='all';}
 		this.each(function(){
-			var $t= this;
+			var $t= this,nm;
 			if (!$t.grid || $t.p.cellEdit !== true ) {return;}
 			$($t.rows).each(function(j){
 				var res = {};

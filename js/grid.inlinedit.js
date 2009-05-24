@@ -11,33 +11,34 @@ $.fn.extend({
 //Editing
 	editRow : function(rowid,keys,oneditfunc,succesfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
 		return this.each(function(){
-			var $t = this, nm, tmp, editable, cnt=0, focus=null, svr=[], ind;
+			var $t = this, nm, tmp, editable, cnt=0, focus=null, svr=[], ind,cm;
 			if (!$t.grid ) { return; }
-			var sz, ml,hc;
+			var hc;
 			if( !$t.p.multiselect ) {
 				ind = $($t).getInd($t.rows,rowid);
 				if( ind === false ) {return;}
 				editable = $($t.rows[ind]).attr("editable") || "0";
 				if (editable == "0") {
+					cm = $t.p.colModel;
 					$('td',$t.rows[ind]).each( function(i) {
-						nm = $t.p.colModel[i].name;
-						hc = $t.p.colModel[i].hidden===true ? true : false;
+						nm = cm[i].name;
+						hc = cm[i].hidden===true ? true : false;
 						try {
-							tmp =  $.unformat(this,{colModel:$t.p.colModel[i]},i);
+							tmp =  $.unformat(this,{colModel:cm[i]},i);
 						} catch (_) {
 							tmp = $(this).html();
 						}
 						svr[nm]=tmp;
-						if ( nm !== 'cb' && nm !== 'subgrid' && $t.p.colModel[i].editable===true && !hc) {
+						if ( nm !== 'cb' && nm !== 'subgrid' && cm[i].editable===true && !hc && nm != 'rn') {
 							if(focus===null) { focus = i; }
 							$(this).html("");
-							var opt = $.extend($t.p.colModel[i].editoptions || {} ,{id:rowid+"_"+nm,name:nm});
-							if(!$t.p.colModel[i].edittype) { $t.p.colModel[i].edittype = "text"; }
-							var elc = createEl($t.p.colModel[i].edittype,opt,tmp,$(this));
+							var opt = $.extend({},cm[i].editoptions || {},{id:rowid+"_"+nm,name:nm});
+							if(!cm[i].edittype) { cm[i].edittype = "text"; }
+							var elc = createEl(cm[i].edittype,opt,tmp,$(this));
 							$(elc).addClass("editable");
 							$(this).append(elc);
-							//Agin IE
-							if($t.p.colModel[i].edittype == "select" && $t.p.colModel[i].editoptions.multiple===true && $.browser.msie) {
+							//Again IE
+							if(cm[i].edittype == "select" && cm[i].editoptions.multiple===true && $.browser.msie) {
 								$(elc).width($(elc).width());
 							}
 							cnt++;
@@ -65,7 +66,7 @@ $.fn.extend({
 	},
 	saveRow : function(rowid, succesfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
 		return this.each(function(){
-		var $t = this, nm, tmp={}, tmp2={}, editable, fr, cv, ms, ind;
+		var $t = this, nm, tmp={}, tmp2={}, editable, fr, cv, ind;
 		if (!$t.grid ) { return; }
 		ind = $($t).getInd($t.rows,rowid);
 		if(ind === false) {return;}
@@ -98,6 +99,7 @@ $.fn.extend({
 								} else {
 									var sel = $("select",this), selectedText = [];
 									tmp[nm] = $(sel).val();
+									if(tmp[nm]) tmp[nm]= tmp[nm].join(","); else tmp[nm] ="";
 									$("select > option:selected",this).each(
 										function(i,selected){
 											selectedText[i] = $(selected).text();
@@ -129,13 +131,13 @@ $.fn.extend({
 				$("div.loading",$t.grid.hDiv).fadeIn("fast");
 				if (url == 'clientArray') {
 					tmp = $.extend({},tmp, tmp2);
-					$($t).setRowData(rowid,tmp);
+					var resp = $($t).setRowData(rowid,tmp);
 					$($t.rows[ind]).attr("editable","0");
 					for( var k=0;k<$t.p.savedRow.length;k++) {
 						if( $t.p.savedRow[k].id===rowid) {fr = k; break;}
 					}
 					if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
-					if( $.isFunction(aftersavefunc) ) { aftersavefunc(rowid,res.responseText); }
+					if( $.isFunction(aftersavefunc) ) { aftersavefunc(rowid,resp); }
 				} else {
 					$.ajax({url:url,
 						data: tmp,
@@ -175,7 +177,7 @@ $.fn.extend({
 	},
 	restoreRow : function(rowid, afterrestorefunc) {
 		return this.each(function(){
-			var $t= this, nm, fr,ind;
+			var $t= this, fr, ind;
 			if (!$t.grid ) { return; }
 			ind = $($t).getInd($t.rows,rowid);
 			if(ind === false) {return;}

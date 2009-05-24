@@ -81,24 +81,5 @@ var JSON = {
         default:
             return 'null';
         }
-    },
-	// Read this if you want to protect your json return string
-	// http://safari.oreilly.com/9780596514839/recipe-1107
-	//
-	// 1.The while(1); construct, located at the beginning of JSON text,
-	// 2.Comments at the beginning and end of the text.
-	// JSON data providers are encouraged to use one or both of these methods
-	// to prevent data execution. Such JSON response may then look like this:
-	// while(1);/*{[
-    //    {"name":"safe value 1"},
-    //    {"name":"safe value 2"},
-    //    ...
-	// ]}*/
-	parse : function(jsonString) {
-		// filter out while statement 
-		var js = jsonString;
-		if (js.substr(0,9) == "while(1);") { js = js.substr(9); }
-		if (js.substr(0,2) == "/*") { js = js.substr(2,js.length-4); }
-		return eval('('+js+')');
-	}
-}
+    }
+};

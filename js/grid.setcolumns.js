@@ -28,12 +28,12 @@ $.fn.extend({
 			var onAfterShow = typeof p.afterShowForm === 'function' ? true: false;
 			var onAfterSubmit = typeof p.afterSubmitForm === 'function' ? true: false;			
 			if(!p.imgpath) { p.imgpath= $t.p.imgpath; } // Added From Tony Tomov
-			var gID = $("table:first",$t.grid.bDiv).attr("id");
+			var gID = $t.p.id;
 			var IDs = {themodal:'colmod'+gID,modalhead:'colhd'+gID,modalcontent:'colcnt'+gID};
 			var dtbl = "ColTbl_"+gID;
 			if ( $("#"+IDs.themodal).html() != null ) {
 				if(onBeforeShow) { p.beforeShowForm($("#"+dtbl)); }
-				viewModal("#"+IDs.themodal,{modal:p.modal});
+				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:false});
 				if(onAfterShow) { p.afterShowForm($("#"+dtbl)); }
 			} else {
 				var tbl =$("<table id='"+dtbl+"' class='ColTable'><tbody></tbody></table>");
@@ -60,12 +60,12 @@ $.fn.extend({
 							}
 						}
 					}
-					$("#"+IDs.themodal).jqmHide();
+					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:false});
 					if (onAfterSubmit) { p.afterSubmitForm($("#"+dtbl)); }
 					return false;
 				});
 				$("#eData", "#"+dtbl).click(function(e){
-					$("#"+IDs.themodal).jqmHide();
+					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:false});
 					return false;
 				});
 				$("#dData, #eData","#"+dtbl).addClass('ui-state-default ui-corner-all')
@@ -75,7 +75,7 @@ $.fn.extend({
 				   function(){$(this).removeClass('ui-state-hover');}
 				);				
 				if(onBeforeShow) { p.beforeShowForm($("#"+dtbl)); }
-				viewModal("#"+IDs.themodal,{modal:p.modal});
+				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:false});
 				if(onAfterShow) { p.afterShowForm($("#"+dtbl)); }
 			}
 		});

@@ -382,7 +382,7 @@ $.fn.extend({
 						break;
 					}
 					if(self.p.formtype=='horizontal'){
-						if(self.p.grodToolbar===true && self.p.gridNames===false) {
+						if(self.p.gridToolbar===true && self.p.gridNames===false) {
 							$(tr).append(td);
 						} else {
 							$(tr).append(tl).append(td);
@@ -428,6 +428,213 @@ $.fn.extend({
 			$(this).append(frm);
 			this.triggerSearch = function () {triggerSearch();};
 			this.clearSearch = function () {clearSearch();};
+		});
+	},
+	filterToolbar : function(p){
+		p = $.extend({
+			autosearch: true, 
+			beforeSearch: null,
+			afterSearch: null,
+			beforeClear: null,
+			afterClear: null,
+			searchurl : ''
+		},p  || {});
+		return this.each(function(){
+			var $t = this;
+			var triggerToolbar = function() {
+				var sdata={}, j=0, v;
+				if($.isFunction(p.beforeSearch)){p.beforeSearch();}
+				$.each($t.p.colModel,function(i,n){
+					switch (this.stype) {
+						case 'select' :
+							v = $("select[name="+this.name+"]",$t.grid.hDiv).val();
+							if(v) {
+								sdata[this.index] = v;
+								j++;
+							} else {
+								try {
+									delete $t.p.postData[this.index];
+								} catch(e) {}
+							}
+							break;
+						case 'text':
+							v = $("input[name="+this.name+"]",$t.grid.hDiv).val();
+							if(v) {
+								sdata[this.index] = v;
+								j++;
+							} else {
+								try {
+									delete $t.p.postData[this.index];
+								} catch (e) {}
+							}
+					}
+				});
+				var sd =  j>0 ? true : false;
+				$t.p.postData = $.extend($t.p.postData,sdata);
+				var saveurl;
+				if($t.p.searchurl) {
+					saveurl = $t.p.url;
+					$($t).setGridParam({url:$t.p.searchurl});
+				}
+				$($t).setGridParam({search:sd,page:1}).trigger("reloadGrid");
+				if(saveurl) {$($t).setGridParam({url:saveurl});}
+				if($.isFunction(p.afterSearch)){p.afterSearch();}
+			};
+			var clearToolbar = function(){
+				var sdata={}, v, j=0;
+				if($.isFunction(p.beforeClear)){p.beforeClear();}
+				$.each($t.p.colModel,function(i,n){
+					v = (this.defval) ? this.defval : "";
+					switch (this.stype) {
+						case 'select' :
+							if(v) {
+								var v1;
+								$("select[name="+this.name+"] option",$t.grid.hDiv).each(function (){
+									if ($(this).text() == v) {
+										this.selected = true;
+										v1 = $(this).val();
+										return false;
+									}
+								});
+								// post the key and not the text
+								sdata[this.index] = v1 || "";
+								j++;
+							} else {
+								try {
+									delete $t.p.postData[this.index];
+								} catch(e) {}
+							}
+							break;
+						case 'text':
+							$("input[name="+this.name+"]",$t.grid.hDiv).val(v);
+							if(v) {
+								sdata[this.index] = v;
+								j++;
+							} else {
+								try {
+									delete $t.p.postData[this.index];
+								} catch(e) {}
+							}
+					}
+				});
+				var sd =  j>0 ? true : false;
+				$t.p.postData = $.extend($t.p.postData,sdata);
+				var saveurl;
+				if($t.p.searchurl) {
+					saveurl = $t.p.url;
+					$($t).setGridParam({url:$t.p.searchurl});
+				}
+				$($t).setGridParam({search:sd,page:1}).trigger("reloadGrid");
+				if(saveurl) {$($t).setGridParam({url:saveurl});}
+				if($.isFunction(p.afterClear)){p.afterClear();}
+			};
+			var toggleToolbar = function(){
+				$("tr.ui-search-toolbar",$t.grid.hDiv).toggle();
+			};
+			// create the row
+			function bindEvents(selector, events) {
+				var jElem = $(selector);
+				if (jElem[0] != null) {
+				    jQuery.each(events, function() {
+				        if (this.data != null)
+				            jElem.bind(this.type, this.data, this.fn);
+				        else
+				            jElem.bind(this.type, this.fn);
+				    });
+				}				
+			}
+			var tr = $("<tr class='ui-search-toolbar' role='rowheader'></tr>"), th,thd, soptions;
+			$.each($t.p.colModel,function(i,n){
+				var cm=this;
+				th = $("<th role='columnheader' class='ui-state-default ui-th-column'></th>");
+				thd = $("<div style='width:100%;position:relative;'></div>");
+				if(this.hidden===true) { $(th).css("display","none");}
+				this.search = this.search === false ? false : true;
+				if(typeof this.stype == 'undefined' ) {this.stype='text';}
+				soptions = $.extend({},this.searchoptions || {});
+				if(this.search){
+					switch (this.stype)
+					{
+					case "select":
+						if(this.surl) {
+							// data returned should have already have constructed html select
+							$(thd).load(this.surl,{_nsd : (new Date().getTime())},function(){
+								if(soptions.defaultValue) $("select",this).val(soptions.defaultValue);
+								$("select",this).attr({name:cm.name, id: "gs_"+cm.name});
+								if(soptions.attr) {$("select",this).attr(soptions.attr);}
+								$("select",this).css({width: "100%"});
+								// preserve autoserch
+								if(soptions.dataInit != null) soptions.dataInit($("select",this)[0]);
+								if(soptions.dataEvents != null) bindEvents($("select",this)[0],soptions.dataEvents);
+								if(p.autosearch===true){
+									$("select",this).change(function(e){
+										triggerToolbar();
+										return false;
+									});
+								}
+							});
+						} else {
+							if(cm.editoptions && cm.editoptions.value) {
+								var oSv = cm.editoptions.value,
+								elem = document.createElement("select");
+								elem.style.width = "100%";
+								$(elem).attr({name:cm.name, id: "gs_"+cm.name});
+								if(typeof oSv === "string") {
+									var so = oSv.split(";"), sv, ov;
+									for(var k=0; k<so.length;k++){
+										sv = so[k].split(":");
+										ov = document.createElement("option");
+										ov.value = sv[0]; ov.innerHTML = sv[1];
+										elem.appendChild(ov);
+									}
+								} else if(typeof oSv === "object" ) {
+									for ( var key in oSv) {
+										i++;
+										ov = document.createElement("option");
+										ov.value = key; ov.innerHTML = oSv[key];
+										elem.appendChild(ov);
+									}
+								}
+								if(soptions.defaultValue) $(elem).val(soptions.defaultValue);
+								if(soptions.attr) {$(elem).attr(soptions.attr);}
+								if(soptions.dataInit != null) soptions.dataInit(elem);
+								if(soptions.dataEvents != null) bindEvents(elem, soptions.dataEvents);
+								$(thd).append(elem);
+								if(p.autosearch===true){
+									$(elem).change(function(e){
+										triggerToolbar();
+										return false;
+									});
+								}
+							}
+						}
+						break;
+					case 'text':
+						var df = soptions.defaultValue ? soptions.defaultValue: "";
+						$(thd).append("<input type='text' style='width:95%;padding:0px;' name='"+cm.name+"' id='gs_"+cm.name+"' value='"+df+"'/>");
+						if(soptions.attr) {$("input",thd).attr(soptions.attr);}
+						if(soptions.dataInit != null) soptions.dataInit($("input",thd)[0]);
+						if(soptions.dataEvents != null) bindEvents($("input",thd)[0], soptions.dataEvents);
+						if(p.autosearch===true){
+							$("input",thd).keypress(function(e){
+								var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+								if(key == 13){
+									triggerToolbar();
+									return false;
+								}
+								return this;
+							});
+						}
+						break;
+					}
+				}
+				$(th).append(thd);
+				$(tr).append(th);
+			});
+			$("table thead",$t.grid.hDiv).append(tr);
+			this.triggerToolbar = function () {triggerToolbar();};
+			this.clearToolbar = function () {clearToolbar();};
+			this.toggleToolbar = function() {toggleToolbar();};
 		});
 	}
 });

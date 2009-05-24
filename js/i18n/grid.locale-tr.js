@@ -9,15 +9,19 @@
 **/
 $.jgrid = {
 	defaults : {
-		recordtext: "Satır(lar)",
+		recordtext: "View {0} - {1} of {2}",
+	    emptyrecords: "No records to view",
 		loadtext: "Yükleniyor...",
-		pgtext : "/"
+		pgtext : "Page {0} of {1}"
 	},
 	search : {
 	    caption: "Arama...",
 	    Find: "Bul",
 	    Reset: "Temizle",
-	    odata : ['eşittir', 'eşit değildir', 'küçük', 'küçük veya eşit','büyük','büyük veya eşit', 'ile başlayan','ile biten','içeren' ]
+	    odata : ['equal', 'not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain'],
+	    groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	],
+		matchText: " match",
+		rulesText: " rules"
 	},
 	edit : {
 	    addCaption: "Kayıt Ekle",
@@ -33,8 +37,12 @@ $.jgrid = {
 	        maxValue:"girilen değer daha küçük ya da buna eşit olmalıdır",
 	        email: "geçerli bir e-posta adresi değildir",
 	        integer: "Lütfen bir tamsayı giriniz",
-			date: "Please, enter valid date value"
-	    }
+			url: "is not a valid URL. Prefix required ('http://' or 'https://')"
+		}
+	},
+	view : {
+	    caption: "View Record",
+	    bClose: "Close"
 	},
 	del : {
 	    caption: "Sil",
@@ -55,7 +63,9 @@ $.jgrid = {
 	    refreshtext: "",
 	    refreshtitle: "Tabloyu yenile",
 	    alertcap: "Uyarı",
-	    alerttext: "Lütfen bir satır seçiniz"
+	    alerttext: "Lütfen bir satır seçiniz",
+		viewtext: "",
+		viewtitle: "View selected row"
 	},
 	col : {
 	    caption: "Sütunları göster/gizle",

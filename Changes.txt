@@ -1,0 +1,693 @@
+Upgrade from 3.4.x to 3.5 beta.
+
+
+1. Installation
+--------------
+Download the jqGrid package from the www.trirand/blog site section downloads.
+Note the new download manager where you can choose which modules you want to
+include in the download.
+
+In order to use jqGrid 3.5, first a UI theme css file should be loaded.
+Download the desired theme (or build a custom one) from jQueryUI site
+(www.jqueryui.com) and point in your link tag in head section the path to the
+theme css
+
+<link rel="stylesheet" type="text/css" media="screen" href="path_to_ui_css_file/jquery-ui-1.7.1.custom.css" />
+
+where the path_to_ui_css_file is a valid path to the ui theme file
+
+Extract the jqGrid package and copy the ui.jqgrid.css from css directory to
+your webserver directory. It is not necessary that the jqgrid css file is in
+the same directory as those of the jquery ui css.
+
+<link rel="stylesheet" type="text/css" media="screen" href="path_to_jqgrid_css_file/ui.jqgrid.css" />
+
+Starting with this version, jqGrid does not use a loader (which loads the
+needed files one by one), but all the needed code is contained in one file.
+The desired modules can be built using the jqGrid download manager from the
+site pointed above. In order to use this, first a language file should be
+loaded and then the jqgrid file.
+
+Copy the desired language file from js/i18n directory to your web server
+directory where you store the java script files. Every language file is
+named grid.locale-XX.js, where XX is a two-letter code for the language.
+Copy the jquery.jqGid.min.js file to the same or other valid directory in
+your web server
+
+Include both the files in script tags in the head section
+
+<script src="path_to_js_files/grid.locale-en.js" type="text/javascript"></script>
+<script src="path_to_js_files/jquery.jqGrid.min.js" type="text/javascript"></script>
+
+For debugging purposes, I have created a grid.loader.js which does the same
+loading of the files as in previous versions. The location of the file is in
+src directory of the package. In order to use this, the variable pathojsfiles
+should be adjusted to point to the appropriate folder - see 3.4.x docs.
+
+
+2. Code changes
+---------------
+2.1 The following grid options are deprecated - i.e. you can remove them from
+the grid options. They are not needed in 3.5 version
+
+imgpath
+sortascimg
+sortdescimg
+firstimg
+previmg
+nextimg
+lastimg
+sortclass
+resizeclass
+
+2.2 Second change is related to custom formatters. Starting with version 3.5,
+the custom formatter is passed the following parameters:
+
+formatter : function ( cellvalue, options, rowObject )
+{
+// format the cellvalue to new format
+return new_formated_cellvalue;
+}
+
+Note the return in the function. This function should always return a value
+in order to work correctly. The parameters are
+
+cellvalue - is the value to be formatted
+options - is an object containing the following element
+
+options :  { rowId: rid, colModel: cm}
+where rid - is the id of the row
+colModel is the object of the properties for this column getted from colModel
+array of jqGrid
+
+rowObject - is a row data represented in the format determined from datatype
+option.
+If we have datatype: xml/xmlstring - the rowObject is xml node,provided
+according to the rules from xmlReader
+If we have datatype: json/jsonstring - the rowObject is array, provided
+according to the rules from jsonReader
+
+Example:
+Code in 3.4.x variant
+
+formatter : function ( elem, cellvalue, options)
+{
+var newval = "<strong>"+cellvalue+"</strong>";
+jQuery(elem).html(newval);
+}
+
+
+Code in 3.5
+
+formatter : function ( cellvalue, options, rowObject )
+{
+return "<strong>"+cellvalue+"</strong>";
+}
+
+
+
+ 
+
+
+Base Module
+============
+Bug fixes
+---------
+- fixed bug in onCellSelect event when used in IE browsers - now the rowIndex
+passed to this event is calculated correctly regardless of hidden columns.
+
+- fixed width bug when multiselect is used. Previously the width of this column
+is recalculated according to table width and when shrinkToFit is set to true.
+Now the column has fixed width and is no longer recalculated when the grid
+width is changed. See documentation for the new options
+
+- fixed width bug when subgrid is used. Previously the width of this column is
+recalculated according to table width and when shrinkToFit is set to true. Now
+the column has fixed width and is no longer recalculated when the grid width
+is changed. See documentation for the new options
+
+- fixed bug in addRowData method when the grid is empty and we try to add one
+or more columns. The width of the data was not being recalculated correctly,
+according to the header elements.
+
+- fixed bug when we use xmlstring and jsonstring to add data. Previously all
+the data from the string is loaded without reference to the rowNum parameter.
+Also this behaviour is changed for xml and json data. In other words, we now
+load only rowNum number of rows even when the request consists of more rows.
+
+- fixed bug when posting values of input of type select set to multiple:true.
+Now in all editing modules the posted values in for multiselect are separated
+with comma 
+ 
+- fixed bug in the size option of multi select. If the size option is not set
+for multiselect the default value is 3
+
+Deprecated options
+----------------
+imgpath: "", in all modules
+sortascimg: "sort_asc.gif",
+sortdescimg: "sort_desc.gif",
+firstimg: "first.gif",
+previmg: "prev.gif",
+nextimg: "next.gif",
+lastimg: "last.gif",
+sortclass: "grid_sort",
+resizeclass: "grid_resize",
+
+Note that imgpath is not used anymore in all modules. 
+The altRows option is still here, but will have no effect until the jQuery
+UI Theme roller supports alternative rows.
+
+
+Note that the table element where we define the grid can not have a class
+scroll - i.e. class scroll in the table definition can be omitted, but this
+is NOT true for the pager element.
+
+New options
+-----------
+datatype can now set as 'script'. In other words, we now support script
+as datatype.
+
+reccount: numeric, Default 0. Determines the exact number of available
+grid rows. Can be <= from rowNum parameter
+
+autowidth: boolean, Default false. When set to true, the grid width is
+recalculated automatically to the width of the parent element. This is done
+only initially when the grid is created. In order to resize the grid when
+the parent element changes width you should apply custom code and use a
+setGridWidth method for this purpose.
+
+scrollOffset: numeric, Default 18. Determines the width of the vertical
+scrollbar. Since different browsers interpret this width differently (and it
+is difficult to calculate it in all  browsers) this can be changed.
+
+cellLayout: numeric, Default 5. This option determines the padding + border
+width of the cell. Usually this should not be changed, but if custom changes
+to td element are made in the grid css file this will need to be changed.
+
+subGridWidth: numeric, Default 20. Determines the width of the subgrid column
+if the subGrid option is set to true.
+
+multiselectWidth: numeric, Default 20. Determines the width of the multiselect
+column if multiselect is set to true.
+
+rownumbers: boolean, Default false. If this option is set to true, a new column
+at left of the grid is added. The purpose of this column is to count the number
+of available rows, beginning from 1. In this case colModel is extended
+automatically with new element with name - 'rn'. Also, be careful not to use
+the name 'rn' in colModel
+
+rownumWidth: numeric, Default 25. Determines the width of the row number column
+if rownumbers option is set to true.
+
+pagerpos: string, Default 'center'. Determines the position of the pager in the
+grid. By default the pager element when created is divided in 3 parts (one part
+for pager, one part for navigator buttons and one part for record information)
+
+recordpos: string, Default 'right'. Determines the position of the record
+information in the pager.
+
+toolbar now accepts another option: "both". When we set toolbar: [true,"both"]
+two toolbars are created -- one on the top of table data and one of the bottom
+of the table data. When we have two toolbars then we create two elements (div).
+The id of the top bar is constructed like "t_"+id of the grid and the bottom
+toolbar the id is "tb_"+id of the grid. In case when only one toolbar is
+created we have the id as "t_" + id of the grid, independent of where this
+toolbar is created (top or bottom)
+
+gridview: boolean, Default value false. In the previous versions of jqGrid,
+including 3.5 alfa, reading a relatively big data sets (Rows >=100 ) caused
+speed problems. The reason for this was that as every cell was inserted into
+the grid we applied about 5-6 jQuery calls to it. Now this problem is resolved;
+we now  insert the entry row at once with a jQuery append. The result is
+impressive - about 3-5 times faster. What will be the result if we insert all
+the data at once? Yes, this can be done with a help of gridview option when set
+to true. The result is a grid that is 5 to 10 times faster. Of course when this
+option is set to true we have some limitations. If set to true we can not use
+- treeGrid
+- subGrid, or 
+- afterInsertRow event.
+If you do not use these three options in the grid you can set this option to
+true and enjoy the speed.
+
+addRowData now is 1-2 times faster because we are using the concept to insert
+the row at once
+
+Added jQuery function parse (removed from json2.js module):
+jQuery.parse(jsonstring)
+To prevent JavaScript hijacking attacks, web application authors are encouraged
+to use this function. This returns a JSON representation of the variable. 
+
+Cyclic structures are detected and safely interrupted, but could not be further
+restored.
+1. The while(1); construct, located at the beginning of JSON text,
+2. Comments at the beginning and end of the text.
+JSON data providers are encouraged to use one or both of these methods to
+prevent data execution. Such JSON response may then look like this: 
+while(1);/*{[
+    {"name":"safe value 1"},
+    {"name":"safe value 2"},
+   ...
+]}*/
+jqGrid uses this function when obtaining a data with datatype:'json', also used
+in subGrid.
+
+Added jQuery function stringToDoc: jQuery.stringToDoc(xmlstring). This returns
+the xml document of xml string
+
+Added new method: jQuery("#mygrid").updateColumns(); this synchronizes the
+width of the headers with the data. Useful when used with table drag and drop.
+
+
+colModel changes and additions
+------------------------------
+searchhidden is removed from editrules object
+
+added searchoptions object to define properties, events and other settings when
+a search is performed
+searchoptions : {
+    dataUrl : value,
+    dataInit: function,
+    dataEvents : array,
+    defaultValue: value,
+    attr: object,
+    searchhidden: boolean,
+    sopt: array
+}
+To summarize - when we want to deal with search we should use the following
+options in colModel
+
+search : boolean , // true/false
+stype: value, // text/select
+searchoptions : object // see above
+
+Note: when the dataUrl is not used for the search type select, the definitions
+for the select are taken from editoptions value property - i.e
+editoptions:{value:"1:one;2:two",...}. See below for how to use these options in
+different search methods.
+
+
+Added new object formoptions to define various settings in form editing. Also
+valid only in this module.
+
+formoptions : {
+    elmprefix:value,
+    elmsuffix:value,
+    rowpos: number,
+    colpos:number,
+    label: value
+}
+See below for how to use
+
+The editoptions are extended with the following properties. Valid in all editing
+modules editoptions : {
+    dataUrl : value, dataInit: function, dataEvents : array, defaultValue:
+    value/function,
+} See below
+
+
+Changes in all editing modules
+==============================
+
+edittype property is extended with the support of the following input elements:
+button, image and file
+
+As described above in all editing modules we can add additional properties and
+events to the editing element:
+
+editoptions : {
+    dataUrl : value, dataInit: function, dataEvents : array, defaultValue:
+    value/function
+}
+-------------------------------------------------------------------------------
+dataUrl option is valid only for the elements of type select - i.e.,
+edittype:select
+
+When this option is set, the element will be filled with values from the ajax
+request. The data should be a valid html select element with the desired
+options. <select>
+    <option value="1">One</option> <option value="2">Two</option>
+</select>
+
+In form editing for add/edit this is called only once. In order to call it every
+time the form is launched you should set the option recreateForm:true or use
+other events like beforeShowForm (with another custom ajax call) to fill the
+desired element.
+
+In inline edit and cell edit this is fired every time you edit the row or cell
+element.
+--------------------------------------------------------------------------------
+dataInit : function (elem) {
+// do something
+}
+
+If set, this function is called only once ? when the element is created. The
+function is passed the specified element. This option is ideal for attaching
+date picker, time picker, etc. Example:
+
+dataInit : function (elem) {
+    $(elem).datepicker();
+}
+--------------------------------------------------------------------------------
+dataEvents: list of events to apply to the data element; uses
+$("#id").bind(type, [data], fn) to bind events to data element
+
+Should be described like this dataEvents: [
+    { type: 'click', data: { i: 7 }, fn: function(e) { console.log(e.data.i); }
+    }, { type: 'keypress', fn: function(e) { console.log('keypress'); } }
+]
+
+The event(s) are called only once when the element is created
+-------------------------------------------------------------------------------
+defaultValue: 'value' or function This option is valid only in Form Editing
+module when used with editGridRow method in add mode.If set this the input
+element is set with this value if only element is empty. If used in selects the
+text should be provided and not the key. Also when a function is used the
+function should return value.
+
+Now we can validate a url. The corresponding settings is in colModel
+editrules:{required:true, url:true}
+
+
+FormEditing
+===========
+In all methods that deal with the modals are added the following options (thanks
+to Esteban Escrig: www.faserline.com)
+
+jqModal: true. The default value is true. How it works. If set to true, first
+jqGrid checks if the jqModal plugin is available. If this plugin is available we
+create the modal according to the jqModal plugin. If this plugin is not
+available jqGrid create its own modal. The difference between the jqModal window
+and jqGrid modal window is that the overlay covers only the grid, but not the
+entry page as jqModal does. If this option is set to false, jqGrid will create
+its own modal as described above even if jqModal is available.
+
+The only exception here is searchGrid method created with the new searchFilter
+plugin, where this option is not available. In this method a jqGrid modal window
+is used.
+
+closeOnEscape : false. Default false. When set to true the modal window can be
+closed with ESC key.
+
+
+
+=======searchGrid==================
+From now on jqGrid use a new search engine
+thanks to wonderful plugin provided from Kasey Speakman (kasey@cornerspeed.com).
+This plugin can also be used separately. Detailed documentation is provided in
+the jquery.searchFilter.js which is provided with jqGrid package.
+
+These options are not used anymore in the searchGrid method
+----------------------------------------------------------
+top : 0,
+left: 0,
+width: 360,
+height: 80,
+modal: false,
+closeicon: 'ico-close.gif',
+dirty: false,
+processData: "",
+
+Added the following options
+---------------------------
+
+recreateFilter: false, This option construct the filter every time a search
+button is clicked.
+
+multipleSearch : false, When set to false the behaviour of the search is the
+same as those in versions before 3.5 When set to true: 1. We have a possibility
+to add/delete as many conditions as we want 2. The posted data to the server is
+string (actually a json array converted to string)
+
+sFilter: 'filters', This option has an effect only when the multipleSearch is
+set to true; it describes the name of the posted string. By default this, i.e.
+the posted data, can look like this
+
+filters ={
+ "groupOp":"AND","rules":[{"field":"id","op":"gt","data":"1"},
+{"field":"name","op":"bw","data":"Client"}]
+}
+
+groupOp determines the logical operator that can be used in the where statement
+of the select. The value can be AND or OR. This can be changed used a select box
+which is created at bottom of the search filter.
+
+The rules array describes actually which fields and how they are included in the
+where clause The field element describes the name of the field The op element
+describes the operator that should be used in the search The data element is the
+data that we want to search.
+
+The above example (if getted and constructed correctly) should generate the
+following where clause
+
+SELECT .... FROM table,... WHERE id > 1 AND name LIKE 'Client%'
+-------------------------------------------------------------------------------
+As described above the search is constructed according to the searchoptions in
+colModel
+
+search : boolean , // true/false stype: value, // text/select
+
+searchoptions : {
+    dataUrl : value,
+    dataInit: function,
+    dataEvents : array,
+    attr: object,
+    searchhidden: boolean,
+    sopt: array
+}
+Note that here is missing the defaultValue. The option is not implemented in
+this method.
+
+
+stype determines the search type - can be select or text. If not set a text is
+used
+
+searchoptions
+-------------------------------------------------------------------------------
+dataUrl option is valid only for the elements of type select, i.e.
+edittype:select
+
+When this option is set the element will be filled with values from the ajax
+request. The data should be a valid html select element with the desired
+options. <select>
+    <option value="1">One</option> <option value="2">Two</option>
+</select>
+
+This is called only once.
+
+-------------------------------------------------------------------------------
+dataInit : function (elem) {
+// do something
+}
+
+If set this function is called only once when the element is created. To the
+function is passed the element. Also this option is ideal for attaching date
+picker, time picker and etc. Example
+
+dataInit : function (elem) {
+    $(elem).datepicker();
+}
+--------------------------------------------------------------------------------
+dataEvents: list of events to apply to the data element; uses
+$("#id").bind(type, [data], fn) to bind events to data element
+
+Should be described like this
+dataEvents: [
+{ type: 'click', data: { i: 7 }, fn: function(e) { console.log(e.data.i); }},
+{ type: 'keypress', fn: function(e) { console.log('keypress'); } }
+]
+
+The event(s) are called only once when the element is created
+--------------------------------------------------------------------------------
+attr is object where we can set valid attributes to the created element
+
+attr : { title: "Some title" }
+------------------------------------------------------------------------------
+searchhidden : if set to true, the hidden element will appear in the search.
+-------------------------------------------------------------------------------
+array that correspond to the op element in the posted data and determines the
+operation. If not set all the available options will be used; if set only the
+set values will appear as selectboxes.
+
+All available option are sopt:
+['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc']
+
+The corresponding texts are in language file and mean the following ['equal',
+'not equal', 'less', 'less or equal','greater','greater or equal', 'begins
+with','does not begin with','is in','is not in','ends with','does not end
+with','contains','does not contain'],
+
+Note that the elements in sopt array can be mixed in any order.
+
+
+=========add/edit form==========
+In the editGridRow method the following options are no longer used
+
+closeicon: 'ico-close.gif',
+imgpath: ''
+
+Added new property formoptions (in colModel); thanks to Esteban Escrig
+(www.faserline.com)
+
+The purpose of these options is to reorder the elements in the form and to add
+some information before and after the editing element.
+
+formoptions : {
+    elmprefix:'',
+    elmsuffix:'',
+    rowpos:number,
+    colpos:number,
+    label: value
+}
+
+If you go to use this object in collModel it is recommended that all editing
+fields use this property and with at least the rowpos and colpos set.
+
+Elemprefix: if set, a text or html content appears before the input element
+
+Elemsuffix: if set, a text or html content appears after the input element
+
+Label: if set, this replace the name from colNames array that appears as label
+in the form.
+
+rowpos : number determines the row position of the element (again with the
+text-label) in the form; the count begins from 1
+
+colpos : number determines the column position of the element (again with the
+label) in the form beginning from 1
+
+Two elements can have equal row position, but different column position. This
+will place the two elements in one row on the form.
+
+=========== delete=================================
+In the delGridRow method the following options are no longer used
+
+closeicon: 'ico-close.gif',
+imgpath: '',
+
+
+
+============= view =============================
+Added viewGridRow method; thanks to Esteban Escrig (www.faserline.com)
+
+This method is similar to the editGridRow method except that the fields are not
+editable and we do not have any events attached to the form. Here are the
+options viewGridRow (options) where
+options = {
+    top : 0,
+    left: 0,
+    width: 0,
+    height: 0,
+    modal: false,
+    drag: true,
+    closeOnEscape : false,
+    labelswidth: '30%'
+}
+
+
+All the options have the same thing as these in editGridRow except the option
+labelswidth which default value is 30%. Since we construct the view with table
+element it is difficult to calculate, in this case, how much width is needed for
+the labels. Depending on the needs this value can be increased or decreased
+
+Custom method
+=============
+In the custom module is added new method filterToolbar.
+
+This method is the same as filterGrid, except that the search input elements are
+placed in the grid just below the header elements. When the header elements are
+resized the input search elements are also resized according to the new width.
+Another difference to the filterGrid is that the filter toolbar uses definitions
+from colModel just like the searchGrid
+
+Should be called like this
+
+jQuery("#mygrid").filterToolbar(options)
+
+where options are
+
+options = {
+    autosearch: true,
+    beforeSearch: null,
+    afterSearch: null,
+    beforeClear: null,
+    afterClear: null,
+    searchurl : ''
+}
+
+autosearch: true Search is performed according to the following rules For text
+element when a Enter key is pressed while inputting values a search is
+performed. For select element when the value changes.
+
+beforeSearch - event which fires before a search
+
+afterSearch - event which fires after a search
+
+beforeClear - event which fires before clearing entered values (i.e.,
+clearToolbar is activated)
+
+afterClear - event which fires after clearing entered values (i.e., clearToolbar
+is activated)
+
+The rules of creating toolbar search input elements are the same as searchGrid
+using the colModel
+searchoptions : {
+    dataUrl : value,
+    dataInit: function,
+    dataEvents : array,
+    defaultValue: value,
+    attr: object
+}
+
+Note the missing sopt element, but addition of defaultValue property
+
+This method has 3 new additional methods that can be used:
+
+triggerToolbar - when called perform a search dynamically
+
+clearToolbar - when called clear the search values and set the default one if
+available
+
+toggleToolbar - toggles the searchbar
+
+A typical call to these methods
+
+var sgrid = $("#mygrid")[0] sgrid.triggerToolbar();
+
+will trigger the search of mygrid.
+
+
+Import module
+=============
+added option importComplete event which fires after constructing the grid.
+
+
+Inline edit
+===========
+added afterrestorefunc as 9th parameter. The event fires after the row is
+restored
+
+treeGrid
+========
+the tree icons can be changed using the following grid parameter treeIcons. The
+default values are.
+treeIcons ={
+    plus:'ui-icon-triangle-1-e',
+    minus:'ui-icon-triangle-1-s',
+    leaf:'ui-icon-radio-off'
+};
+Note that icons from UI Theme should be used.
+
+formatter
+=========
+
+- the source format for date formatter (srcformat) now can accept month names
+- it is possible to enable checkboxes as editable when created with formatter In
+  the format options we should in this case checkbox : {disabled:false} The
+  default is false. To enable this option globally you can change this value in
+  the language file
+
+- the showLink now can accept custom name for the id The parameter is idName :
+  'id' The default is id. Can be changed in formatoptions or in the language
+  file.
+

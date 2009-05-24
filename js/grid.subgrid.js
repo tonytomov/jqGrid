@@ -8,15 +8,24 @@
  * http://www.gnu.org/licenses/gpl.html
 **/
 $.fn.extend({
-addSubGrid : function(t,row,pos,rowelem, iRow) {
+addSubGridCell :function (pos,iRow) {
+	var prp='',gv;
+	this.each(function(){
+		prp = this.formatCol(pos,iRow);
+		gv = this.p.gridview;
+	});
+	if( gv === false ){
+		return "<td role='grid' class='ui-sgcollapsed sgcollapsed' "+prp+"><a href='javascript:void(0);'><span class='ui-icon ui-icon-plus'></span></a></td>";
+	} else  {
+		return "<td role='grid' " +prp +"></td>";
+	}
+},
+addSubGrid : function(t,pos) {
 	return this.each(function(){
 		var ts = this;
 		if (!ts.grid ) { return; }
-		var td, res,_id, pID,atd, nhc, subdata, bfsc;
-		td = document.createElement("td"); 
-		$(td,t).html("<a href='javascript:void(0);'><span class='ui-icon ui-icon-plus'></span></a>").addClass("ui-sgcollapsed sgcollapsed")
-		.attr({"role":"gridcell"})
-		.click( function(e) {
+		var res,_id, pID,atd, nhc, subdata, bfsc;
+		$("td:eq("+pos+")",t).click( function(e) {
 			if($(this).hasClass("sgcollapsed")) {
 				pID = ts.p.id;
 				res = $(this).parent();
@@ -51,9 +60,7 @@ addSubGrid : function(t,row,pos,rowelem, iRow) {
 				$(this).html("<a href='javascript:void(0);'><span class='ui-icon ui-icon-plus'></span></a>").removeClass("sgexpanded").addClass("sgcollapsed");
 			}
 			return false;
-			});
-			row.appendChild(td);
-		ts.formatCol($(td),pos,iRow);
+		});
 		//-------------------------
 		var populatesubgrid = function( rd ) {
 			var res,sid,dp, i, j;
@@ -79,7 +86,7 @@ addSubGrid : function(t,row,pos,rowelem, iRow) {
 					$.ajax({type:ts.p.mtype, url: ts.p.subGridUrl, dataType:"xml",data: dp, complete: function(sxml) { subGridXml(sxml.responseXML, sid); sxml=null; } });
 					break;
 					case "json":
-					$.ajax({type:ts.p.mtype, url: ts.p.subGridUrl, dataType:"json",data: dp, complete: function(JSON) { subGridJson(eval("("+JSON.responseText+")"),sid); JSON = null;} });
+					$.ajax({type:ts.p.mtype, url: ts.p.subGridUrl, dataType:"text",data: dp, complete: function(JSON) { subGridJson($.parse(JSON.responseText),sid); JSON = null;} });
 					break;
 				}
 			}

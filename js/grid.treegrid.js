@@ -43,9 +43,7 @@ $.fn.extend({
 				row.parent_id = rd[$t.p.treeReader.parent_id_field];
 			}
 			
-			var curExpand = (rd[expanded] && rd[expanded] == "true") ? true : false;
-			var curLevel = parseInt(row.level,10);
-			var ident,lftpos;
+			var curLevel = parseInt(row.level,10), ident,lftpos;
 			if($t.p.tree_root_level === 0) {
 				ident = curLevel+1;
 				lftpos = curLevel;
@@ -200,7 +198,7 @@ $.fn.extend({
 					ret = parseInt(rc.level,10) - parseInt(this.p.tree_root_level,10);
 					break;
 				case 'adjacency' :
-					ret = $($t).getNodeAncestors(rc);
+					ret = $($t).getNodeAncestors(rc).length;
 					break;
 			}
 		});
@@ -241,7 +239,6 @@ $.fn.extend({
 			switch ($t.p.treeGridModel) {
 				case 'nested' :
 					var lft = parseInt(rc.lft,10), rgt = parseInt(rc.rgt,10), level = parseInt(rc.level,10);
-					var ind = rc.rowIndex;
 					$(this.rows).slice(1).each(function(i){
 						if(parseInt(this.level,10) === level+1 && parseInt(this.lft,10) > lft && parseInt(this.rgt,10) < rgt) {
 							result.push(this);
@@ -267,8 +264,7 @@ $.fn.extend({
 			switch ($t.p.treeGridModel) {
 				case 'nested' :
 					var lft = parseInt(rc.lft,10), rgt = parseInt(rc.rgt,10), level = parseInt(rc.level,10);
-					var ind = rc.rowIndex;
-					$(this.rows).slice(1).each(function(i){
+					$(this.rows).each(function(i){
 						if(parseInt(this.level,10) >= level && parseInt(this.lft,10) >= lft && parseInt(this.lft,10) <= rgt) {
 							result.push(this);
 						}
@@ -372,8 +368,8 @@ $.fn.extend({
 			if(roots[0]){
 				$("td",roots[0]).each( function( k ) {
 					$(this).css("width",$t.grid.headers[k].width+"px");
-					$t.grid.cols[k] = this;
 				});
+				$t.grid.cols = roots[0].cells;
 			}
 			// Sorting children
 			for (i = 0, len = roots.length; i < len; i++) {

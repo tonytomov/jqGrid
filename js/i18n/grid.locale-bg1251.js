@@ -10,7 +10,7 @@
 $.jgrid = {
 	defaults : {
 		recordtext: "{0} - {1} от {2}",
-		emptyrecords: "Няма записи",
+		emptyrecords: "Няма запис(и)",
 		loadtext: "Зареждам...",
 		pgtext : "Стр. {0} от {1}"
 	},

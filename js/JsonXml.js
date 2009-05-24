@@ -102,21 +102,6 @@ var xmlJsonClass = {
 		}
 		return tab ? xml.replace(/\t/g, tab) : xml.replace(/\t|\n/g, "");
 	},
-	// Added by Tony Tomov
-	// parses xml string and convert it to xml Document
-	parseXml : function (xmlString) {
-		var xmlDoc;
-		try	{
-			var parser = new DOMParser();
-			xmlDoc = parser.parseFromString(xmlString,"text/xml");
-		}
-		catch(e) {
-			xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-			xmlDoc.async=false;
-			xmlDoc["loadXM"+"L"](xmlString);
-		}
-		return (xmlDoc && xmlDoc.documentElement && xmlDoc.documentElement.tagName != 'parsererror') ? xmlDoc : null;
-	},
 	// Internal methods
 	toObj: function(xml) {
 		var o = {};
