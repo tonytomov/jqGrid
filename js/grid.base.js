@@ -917,7 +917,7 @@ $.fn.jqGrid = function( p ) {
 					ni=1;
 				}
 				if(ts.p.multiselect){
-					rowData[ari++] = addMulti(row,ni,i);
+					rowData[ari++] = addMulti(idr,ni,i);
 					gi = 1;
 				}
 				if (ts.p.subGrid) {
