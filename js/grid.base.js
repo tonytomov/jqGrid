@@ -974,7 +974,7 @@ $.fn.jqGrid = function( p ) {
 			updatepager(false);
 		},
 		updatepager = function(rn) {
-			var cp, last, base,bs;
+			var cp, last, base,bs, from,to,tot,fmt;
 			base = (parseInt(ts.p.page)-1)*parseInt(ts.p.rowNum);
 			if(ts.p.pager) {
 				if (ts.p.loadonce) {
@@ -992,9 +992,18 @@ $.fn.jqGrid = function( p ) {
 				}
 				if (ts.p.viewrecords){
 					bs = ts.p.scroll === true ? 0 : base;
-					ts.p.reccount == 0 ?
-						$(".ui-paging-info",ts.p.pager).html(ts.p.emptyrecords) :
-						$(".ui-paging-info",ts.p.pager).html($.jqgformat(ts.p.recordtext,bs+1,base+ts.p.reccount,ts.p.records));
+					if(ts.p.reccount === 0) 
+						$(".ui-paging-info",ts.p.pager).html(ts.p.emptyrecords);
+					else {
+						from = bs+1; to = base+ts.p.reccount; tot=ts.p.records;
+						if($.fmatter) {
+							fmt = $.jgrid.formatter.integer || {};
+							from = $.fmatter.util.NumberFormat(from,fmt);
+							to = $.fmatter.util.NumberFormat(to,fmt);
+							tot = $.fmatter.util.NumberFormat(tot,fmt);
+						}
+						$(".ui-paging-info",ts.p.pager).html($.jqgformat(ts.p.recordtext,from,to,tot));
+					}
 				}
 				if(ts.p.pgbuttons===true) {
 					if(cp<=0) {cp = last = 1;}
