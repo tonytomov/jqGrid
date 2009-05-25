@@ -1061,7 +1061,7 @@ $.fn.jqGrid = function( p ) {
 					ts.p.datastr = null;
 				break;
 				case "local":
-				case "clientSide":
+				case "clientside":
 					ts.p.datatype = "local";
 					sortArrayData();
 				break;
