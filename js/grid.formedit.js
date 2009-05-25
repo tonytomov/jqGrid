@@ -218,7 +218,7 @@ $.fn.extend({
 			onInitializeForm = $.isFunction(rp_ge.onInitializeForm) ? rp_ge.onInitializeForm : false,
 			frmgr = "FrmGrid_"+gID,frmtb = "TblGrid_"+gID,
 			copydata = null,
-			maxCols = 1;
+			maxCols = 1, maxRows=0;
 			if (rowid=="new") {
 				rowid = "_empty";
 				p.caption=p.addCaption;
@@ -245,7 +245,9 @@ $.fn.extend({
 				if(onAfterShow) { onAfterShow($("#"+frmgr)); }
 			} else {
 				$($t.p.colModel).each( function(i) {
-					maxCols = Math.max(maxCols, this.formoptions ? this.formoptions.rowpos || 0 : 0 );
+					var fmto = this.formoptions;
+					maxCols = Math.max(maxCols, fmto ? fmto.colpos || 0 : 0 );
+					maxRows = Math.max(maxRows, fmto ? fmto.rowpos || 0 : 0 );
 				});								
 				var flr, frm = $("<form name='FormPost' id='"+frmgr+"' class='FormGrid'></form>"),
 				tbl =$("<table id='"+frmtb+"' class='EditTable' cellspacing='0' cellpading='0' border='0' width='100%'><tbody></tbody></table>");
@@ -276,7 +278,7 @@ $.fn.extend({
 					flr[0].rp = 901;
 					$(tbl).append(flr);
 				}
-				if(maxCols >  1) {
+				if(maxRows >  0) {
 					var sd=[];
 					$.each($(tbl)[0].rows,function(i,r){
 						sd[i] = r;
@@ -403,7 +405,7 @@ $.fn.extend({
 										if(postdata.id=="_empty" ) {
 											//id processing
 											// user not set the id ret[2]
-											if(!ret[2]) { ret[2] = parseInt($($t).getGridParam('records'))+1; }
+											if(!ret[2]) { ret[2] = parseInt($t.p.records)+1; }
 											postdata.id = ret[2];
 											if(rp_ge.closeAfterAdd) {
 												if(rp_ge.reloadAfterSubmit) { $($t).trigger("reloadGrid"); }
@@ -681,7 +683,7 @@ $.fn.extend({
 			// I hate to rewrite code, but ...
 			var gID = $t.p.id,
 			IDs = {themodal:'viewmod'+gID,modalhead:'viewhd'+gID,modalcontent:'viewcnt'+gID},
-			maxCols = 1,
+			maxCols = 1, maxRows=0,
 			frmgr = "ViewGrid_"+gID , frmtb = "ViewTbl_"+gID;
 			if ( $("#"+IDs.themodal).html() != null ) {
 				$(".ui-jqdialog-title","#"+IDs.modalhead).html(p.caption);
@@ -691,7 +693,9 @@ $.fn.extend({
 				focusaref();
 			} else {
 				$($t.p.colModel).each( function(i) {
-					maxCols = Math.max(maxCols, this.formoptions ? this.formoptions.rowpos || 0 : 0 );
+					var fmto = this.formoptions;
+					maxCols = Math.max(maxCols, fmto ? fmto.colpos || 0 : 0 );
+					maxRows = Math.max(maxRows, fmto ? fmto.rowpos || 0 : 0 );
 				});				
 				var flr, frm = $("<form name='FormPost' id='"+frmgr+"' class='FormGrid'></form>"),
 				tbl =$("<table id='"+frmtb+"' class='EditTable' cellspacing='1' cellpading='2' border='0' style='table-layout:fixed'><tbody></tbody></table>");
@@ -705,7 +709,7 @@ $.fn.extend({
 				flr = $("<tr id='Act_Buttons'><td class='navButton ui-widget-content'>"+bP+bN+"</td><td colspan='"+(maxCols*2-1)+"'class='EditButton ui-widget-content'>"+bC+"</td></tr>");
 				$(tbl).append(flr);
 				flr[0].rp = valref.length + 100;
-				if(maxCols >  1) {
+				if(maxRows >  0) {
 					var sd=[];
 					$.each($(tbl)[0].rows,function(i,r){
 						sd[i] = r;
@@ -793,7 +797,7 @@ $.fn.extend({
 			}
 			function createData(rowid,obj,tb,maxcols){
 				var nm, hc,trdata, tdl, tde, cnt=0,tmp, dc,elc, retpos=[], ind=false,
-				tdtmpl = "<td class='CaptionTD ui-widget-content' width='"+p.labelswidth+"'>&nbsp;</td><td class='DataTD ui-widget-content'>&nbsp;</td>", tmpl="",
+				tdtmpl = "<td class='CaptionTD ui-widget-content' width='"+p.labelswidth+"'>&nbsp;</td><td class='DataTD ui-helper-reset ui-widget-content'>&nbsp;</td>", tmpl="",
 				tdtmpl2 = "<td class='CaptionTD ui-widget-content'>&nbsp;</td><td class='DataTD ui-widget-content'>&nbsp;</td>",
 				fmtnum = ['integer','number','currency'],max1 =0, max2=0 ,maxw,setme;
 				for (var i =1;i<=maxcols;i++) {
@@ -1068,7 +1072,7 @@ $.fn.extend({
 					vwidth=1024;
 					vheight=768;
 				}
-				createModal(alertIDs,"<div>"+o.alerttext+"</div><span tabindex='0'><span tabindex='-1' id='jqg_alrt'><span></span>",{jqModal:true,drag:true,resize:true,caption:o.alertcap,top:vheight/2-25,left:vwidth/2-100,width:200,height:'auto',closeOnEscape:o.closeOnEscape},$t.grid.hDiv,$t.grid.hDiv,true);
+				createModal(alertIDs,"<div>"+o.alerttext+"</div><span tabindex='0'><span tabindex='-1' id='jqg_alrt'></span></span>",{gbox:"#gbox_"+$t.p.id,jqModal:true,drag:true,resize:true,caption:o.alertcap,top:vheight/2-25,left:vwidth/2-100,width:200,height:'auto',closeOnEscape:o.closeOnEscape},$t.grid.hDiv,$t.grid.hDiv,true);
 			}
 			var tbd,
 			navtbl = $("<table cellspacing='0' cellpadding='0' border='0' class='ui-pg-table navtable' style='float:left;table-layout:auto;'><tbody><tr></tr></tbody></table>"),
@@ -1101,7 +1105,7 @@ $.fn.extend({
 				$(tbd,navtbl)
 				.attr({"title":o.edittitle || "",id: pEdit.id || "edit_"+$t.p.id})
 				.click(function(){
-					var sr = $($t).getGridParam('selrow');
+					var sr = $t.p.selrow;
 					if (sr) {
 						if(typeof o.editfunc == 'function') {
 							o.editfunc(sr);
@@ -1109,7 +1113,7 @@ $.fn.extend({
 							$($t).editGridRow(sr,pEdit);
 						}
 					} else {
-						viewModal("#"+alertIDs.themodal,{toTop:false});
+						viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$t.p.id,jqm:true});
 						$("#jqg_alrt").focus();
 					}
 					return false;
@@ -1126,11 +1130,11 @@ $.fn.extend({
 				$(tbd,navtbl)
 				.attr({"title":o.viewtitle || "",id: pView.id || "view_"+$t.p.id})
 				.click(function(){
-					var sr = $($t).getGridParam('selrow');
+					var sr = $t.p.selrow;
 					if (sr) {
 						$($t).viewGridRow(sr,pView);
 					} else {
-						viewModal("#"+alertIDs.themodal,{toTop:false});
+						viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$t.p.id,jqm:true});
 						$("#jqg_alrt").focus();
 					}
 					return false;
@@ -1149,13 +1153,13 @@ $.fn.extend({
 				.click(function(){
 					var dr;
 					if($t.p.multiselect) {
-						dr = $($t).getGridParam('selarrrow');
+						dr = $t.p.selarrrow;
 						if(dr.length==0) { dr = null; }
 					} else {
-						dr = $($t).getGridParam('selrow');
+						dr = $t.p.selrow;
 					}
 					if (dr) { $($t).delGridRow(dr,pDel); }
-					else  {viewModal("#"+alertIDs.themodal,{toTop:false}); $("#jqg_alrt").focus(); }
+					else  {viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$t.p.id,jqm:true}); $("#jqg_alrt").focus(); }
 					return false;
 				}).hover(function () {$(this).addClass("ui-state-hover");},
 					function () {$(this).removeClass("ui-state-hover");}
