@@ -78,9 +78,9 @@ $.jgrid = {
 	    model : "طول نام ستون ها محالف ستون هاي مدل مي باشد!"
 	},
 	formatter : {
-		integer : {thousandsSeparator: " ", defaulValue: 0},
-		number : {decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2, defaulValue: 0},
-		currency : {decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2, prefix: "", suffix:"", defaulValue: 0},
+		integer : {thousandsSeparator: " ", defaultValue: '0'},
+		number : {decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2, defaultValue: '0.00'},
+		currency : {decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2, prefix: "", suffix:"", defaultValue: '0.00'},
 		date : {
 			dayNames:   [
 				"يک", "دو", "سه", "چهار", "پنج", "جمع", "شنب",

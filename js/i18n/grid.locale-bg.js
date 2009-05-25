@@ -80,7 +80,7 @@ $.jgrid = {
 		model : "Модела не съответства на имената!"	
 	},
 	formatter : {
-		integer : {thousandsSeparator: " ", defaulValue: '0'},
+		integer : {thousandsSeparator: " ", defaultValue: '0'},
 		number : {decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2, defaultValue: '0.00'},
 		currency : {decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2, prefix: "", suffix:" лв.", defaultValue: '0.00'},
 		date : {
