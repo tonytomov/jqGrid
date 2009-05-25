@@ -372,7 +372,7 @@ editrules:{required:true, url:true}
 FormEditing
 ===========
 In all methods that deal with the modals are added the following options (thanks
-to Esteban Escrig: www.faserline.com)
+to Faserline Team: www.faserline.com)
 
 jqModal: true. The default value is true. How it works. If set to true, first
 jqGrid checks if the jqModal plugin is available. If this plugin is available we
@@ -526,7 +526,7 @@ In the editGridRow method the following options are no longer used
 closeicon: 'ico-close.gif',
 imgpath: ''
 
-Added new property formoptions (in colModel); thanks to Esteban Escrig
+Added new property formoptions (in colModel); thanks to Faserline Team
 (www.faserline.com)
 
 The purpose of these options is to reorder the elements in the form and to add
@@ -568,7 +568,7 @@ imgpath: '',
 
 
 ============= view =============================
-Added viewGridRow method; thanks to Esteban Escrig (www.faserline.com)
+Added viewGridRow method; thanks to Faserline Team (www.faserline.com)
 
 This method is similar to the editGridRow method except that the fields are not
 editable and we do not have any events attached to the form. Here are the

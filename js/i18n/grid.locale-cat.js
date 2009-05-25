@@ -1,7 +1,7 @@
 ;(function($){
 /**
  * jqGrid Catalan Translation
- * Traducció jqGrid en Catatà per Faserline, S.L. - Compatible amb jqGrid 3.4.4
+ * Traducció jqGrid en Catatà per Faserline, S.L.
  * http://www.faserline.com
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
@@ -9,8 +9,8 @@
 **/
 $.jgrid = {
 	defaults : {
-		recordtext: "View {0} - {1} of {2}",
-	    emptyrecords: "No records to view",
+		recordtext: "Mostrant {0} - {1} de {2}",
+	    emptyrecords: "Sense registres que mostrar",
 		loadtext: "Carregant...",
 		pgtext : "Page {0} of {1}"
 	},
@@ -19,14 +19,14 @@ $.jgrid = {
 		Find: "Cercar",
 		Reset: "Buidar",
 	    odata : ['equal', 'not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain'],
-	    groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	],
+	    groupOps: [	{ op: "AND", text: "tot" },	{ op: "OR",  text: "qualsevol" }	],
 		matchText: " match",
 		rulesText: " rules"
 	},
 	edit : {
 		addCaption: "Afegir registre",
 		editCaption: "Modificar registre",
-		bSubmit: "Enviar",
+		bSubmit: "Guardar",
 		bCancel: "Cancelar",
 		bClose: "Tancar",
 		processData: "Processant...",
@@ -38,7 +38,7 @@ $.jgrid = {
 		    email: "no és una direcció de correu vàlida",
 		    integer: "Introdueixi un valor enter",
 			date: "Introdueixi una data correcta ",
-			url: "is not a valid URL. Prefix required ('http://' or 'https://')"
+			url: "no és una URL vàlida. Prefix requerit ('http://' or 'https://')"
 		}
 	},
 	view : {
