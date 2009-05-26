@@ -251,12 +251,14 @@ function createEl(eltype,options,vl) {
 					var a = jQuery(data).html();
 					options = bindEv(elem,options);
 					jQuery(elem).html(a).attr(options);
-					jQuery("option",elem).each(function(i){
-						if($(this).text()==vl) {
-							this.selected = "selected";
-							return false;
-						}
-					});
+					setTimeout(function(){
+						jQuery("option",elem).each(function(i){
+							if($(this).html()==vl) {
+								this.selected= "selected";
+								return false;
+							}
+						});
+					},0);
 				},'html');
 			} else if(options.value) {
 				var ovm = [], i;
