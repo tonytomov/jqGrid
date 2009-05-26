@@ -715,7 +715,7 @@ $.fn.jqGrid = function( p ) {
 			ii = $('<iframe src="javascript:false;document.write(\'\');"></iframe>').css({opacity:0});
 		} else { ii="";}
 		$("<div class='ui-widget-overlay jqgrid-overlay' id='lui_"+this.id+"'></div>").append(ii).insertBefore(gv);
-		$("<div class='loading ui-state-default' id='load_"+this.id+"'>"+this.p.loadtext+"</div>").insertBefore(gv);
+		$("<div class='loading ui-state-default ui-state-active' id='load_"+this.id+"'>"+this.p.loadtext+"</div>").insertBefore(gv);
 		$(this).attr({cellSpacing:"0",cellPadding:"0",border:"0","role":"grid","aria-multiselectable":this.p.multiselect,"aria-labelledby":"gbox_"+this.id});
 		var ts = this,
 		bSR = $.isFunction(this.p.beforeSelectRow) ? this.p.beforeSelectRow :false,
