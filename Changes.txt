@@ -1,4 +1,111 @@
+Please read The Installation instructions bellow
+================================================
+
+3.5 beta (buld3)
+
+Base
+====
+- To the loading message is added ui-state-active class from Theme roller.
+This is more natural, indicating that the grid is active when data is loaded.
+
+Form Editing
+============
+- Added keyboard navigation, which allow us to navigate throught the records while
+in form editing pressing certain keys. This option is available in editGridRow
+and viewGridRow methods. The default state is disabled. To enable this you
+should set the options in the edit/add parameters:
+
+navkeys: [true,38,40]
+The first item enables the navigation.
+The second item corresponds to reccord up and by default is the  the key code
+for Up key
+The third item corresponds to reccord down and by default is the  key code for
+Down key
+Example
+$("#mygrid").navGrid("#pager",{options},{id:'myeditid',navkeys: [true,38,40]}..)
+Also this option does not work in add mode.
+
+Note: Instead that this does not have sense, if you plan to navigate with keys
+it is recommended to add this option in add mode. This should be done
+because the form for add and edit is the same and it is unknown which action
+will be lunched first.
+
+- Added posibility to save the form pressing certain key - add/edit mode only
+By default this option is disabled.
+To enable
+savekey: [true,13]
+The first item enables saving with pressing certain key.
+The second item corresponds to key code for saving. Default Enter (key code 13)
+
+Note that this binding should be used for both adding and editing a row.
+Since the binding is for the form, there is no possibility to have one
+key in add and another in edit mode.
+
+- Added icons for the buttons in the form. The corresponding class in the css
+is "fm-button"
+By default all icons are enabled.
+For add/edit method editGridRow
+The save button is defined with
+saveicon : [true,"left","ui-icon-disk"]
+The close button is defined with
+closeicon: [true,"left","ui-icon-close"]
+
+The first item enables the icon
+The second item tells where to pu icon left or right
+The third item corresponds to valid ui icon from theme roller
+
+For viewGrid Row
+closeicon : [true,"left","ui-icon-close"]
+
+For Deleting
+delicon: [true,"left","ui-icon-scissors"]
+cancelicon: [true,"left","ui-icon-cancel"]
+
+Fixes
+======
+-Fixed bug when getting the index of the row. Strict compare should be removed.
+-Fixed bug when datatype is function - we need to exit when call it and not to 
+continue.
+-Fixed bug in form editing - the buttons do not align properly.
+
+3.5 beta (build2)
+
+Navigator
+=========
+This was missed in the first build
+In the navGrid we can pass uniquie id's of the buttons in order to manipulate
+them easy. If no id is set we create one which is combination of:
+for add button "add_"+ the id of the grid
+for edit button "edit_"+ the id of the grid
+for view button "view_" + the id of the grid
+for delete button "del_" + the id of the grid
+for search button "search_" + the id of the grid
+for refresh button "refresh_" + the id of the grid
+Example:
+$("#mygrid").navGrid("#pager",{options}, {id:'myeditid'},{id:'myaddid'}...)
+
+Base Grid
+=========
+- Record number information now can format the values according to the 
+formatter setting (if available) getting information from language file.
+
+Fixes
+=====
+
+- Fixed bug when multi select with json. We pass wrong parameter to addMulti 
+function 
+- Spelling error in all language files, which cause not to set the default 
+value correct
+- Fixed bug when creating warning message. Fixed bug when determining the 
+number column element in the form
+- Fixed bug - clientSide datatype should be converted to lower case
+according to the new improvements 
+- Fixed bug in IE6/7 when try to select a option in the select generated via 
+ajax 
+
+===============================
 Upgrade from 3.4.x to 3.5 beta.
+===============================
 
 
 1. Installation
@@ -103,10 +210,6 @@ formatter : function ( cellvalue, options, rowObject )
 {
 return "<strong>"+cellvalue+"</strong>";
 }
-
-
-
- 
 
 
 Base Module
