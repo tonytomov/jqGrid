@@ -174,11 +174,15 @@ $.fn.jqGrid = function( p ) {
 		});
 	};
 	$.fn.getDataIDs = function () {
-		var ids=[];
+		var ids=[], i=0, len;
 		this.each(function(){
-			$(this.rows).each(function(i){
-				ids[i]=this.id;
-			});
+			len = this.rows.length;
+			if(len && len>0){
+				while(i<len) {
+					ids[i] = this.rows[i].id;
+					i++;
+				}
+			}
 		});
 		return ids;
 	};
@@ -629,7 +633,7 @@ $.fn.jqGrid = function( p ) {
 		var ret =false,i=0,ol=obj.length;
 		if(ol && ol>0) {
 			while (i<ol) {
-				if(obj[i].id === rowid){
+				if(obj[i].id == rowid){
 					ret = rc===true ? obj[i]: i;
 					break;
 				}
@@ -1026,7 +1030,7 @@ $.fn.jqGrid = function( p ) {
 				gdata = $.extend(ts.p.postData,prm);
 				gdata =$.extend(gdata,ts.p.searchdata || {});
 				var rcnt = ts.p.scroll===false ? 0 : ts.rows.length-1; 
-				if ($.isFunction(ts.p.datatype)) ts.p.datatype(gdata,"load_"+ts.p.id);
+				if ($.isFunction(ts.p.datatype)) { ts.p.datatype(gdata,"load_"+ts.p.id); return;}
 				else beginReq();
 				dt = ts.p.datatype.toLowerCase();
 				switch(dt)
@@ -1438,7 +1442,7 @@ $.fn.jqGrid = function( p ) {
 			this.p.colNames.unshift("");
 			this.p.colModel.unshift({name:'rn',width:ts.p.rownumWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center'});
 		}
-		var	xReader = {
+		ts.p.xmlReader = $.extend({
 			root: "rows",
 			row: "row",
 			page: "rows>page",
@@ -1449,8 +1453,8 @@ $.fn.jqGrid = function( p ) {
 			id: "[id]",
 			userdata: "userdata",
 			subgrid: {root:"rows", row: "row", repeatitems: true, cell:"cell"}
-		},
-		jReader = {
+		}, ts.p.xmlReader);
+		ts.p.jsonReader = $.extend({
 			root: "rows",
 			page: "page",
 			total: "total",
@@ -1460,13 +1464,10 @@ $.fn.jqGrid = function( p ) {
 			id: "id",
 			userdata: "userdata",
 			subgrid: {root:"rows", repeatitems: true, cell:"cell"}
-		};
+		},ts.p.jsonReader);
 		if(ts.p.scroll===true){
 			ts.p.pgbuttons = false; ts.p.pginput=false; ts.p.rowList=[];
 		}
-		ts.p.xmlReader = $.extend(xReader, ts.p.xmlReader);
-		ts.p.jsonReader = $.extend(jReader, ts.p.jsonReader);
-
 		var thead = "<thead><tr class='ui-jqgrid-labels' role='rowheader'>",
 		tdc, idn, w, res, sort,
 		td, ptr, tbody;
