@@ -83,13 +83,13 @@ var createModal = function(aIDs, content, p, insertSelector, posSelector, append
 			} catch (e) {}
 		}
 	}
-	if(p.closeOnEscape && p.closeOnEscape === true){
+	if(p.closeOnEscape === true){
 		jQuery(mw).keydown( function( e ) {
 			if( e.which == 27 ) {
 				hideModal(this,{gb:p.gbox,jqm:p.jqModal});
 			}
 		});
-	} 	
+	}
 };
 var viewModal = function (selector,o){
 	o = jQuery.extend({
