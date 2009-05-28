@@ -119,7 +119,7 @@ $.fn.extend({
 			});
 			if (cv[0] === false){
 				try {
-					info_dialog($.jgrid.errors.errcap,cv[1],$.jgrid.edit.bClose, $t.p.imgpath);
+					info_dialog($.jgrid.errors.errcap,cv[1],$.jgrid.edit.bClose);
 				} catch (e) {
 					alert(cv[1]);
 				}

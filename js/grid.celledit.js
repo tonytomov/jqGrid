@@ -187,7 +187,7 @@ $.fn.extend({
 													}
 													$t.p.savedRow = [];
 												} else {
-													info_dialog($.jgrid.errors.errcap,ret[1],$.jgrid.edit.bClose, $t.p.imgpath);
+													info_dialog($.jgrid.errors.errcap,ret[1],$.jgrid.edit.bClose);
 													$($t).restoreCell(iRow,iCol);
 												}
 											} else {
@@ -207,14 +207,14 @@ $.fn.extend({
 											$t.p.errorCell(res,stat);
 											$($t).restoreCell(iRow,iCol);
 										} else {
-											info_dialog($.jgrid.errors.errcap,res.status+" : "+res.statusText+"<br/>"+stat,$.jgrid.edit.bClose, $t.p.imgpath);
+											info_dialog($.jgrid.errors.errcap,res.status+" : "+res.statusText+"<br/>"+stat,$.jgrid.edit.bClose);
 											$($t).restoreCell(iRow,iCol);
 										}
 									}
 								});
 							} else {
 								try {
-									info_dialog($.jgrid.errors.errcap,$.jgrid.errors.nourl,$.jgrid.edit.bClose, $t.p.imgpath);
+									info_dialog($.jgrid.errors.errcap,$.jgrid.errors.nourl,$.jgrid.edit.bClose);
 									$($t).restoreCell(iRow,iCol);
 								} catch (e) {}
 							}
@@ -231,7 +231,7 @@ $.fn.extend({
 						}
 					} else {
 						try {
-							window.setTimeout(function(){info_dialog($.jgrid.errors.errcap,v+" "+cv[1],$.jgrid.edit.bClose, $t.p.imgpath)},100);
+							window.setTimeout(function(){info_dialog($.jgrid.errors.errcap,v+" "+cv[1],$.jgrid.edit.bClose)},100);
 							$($t).restoreCell(iRow,iCol);
 						} catch (e) {}
 					}
