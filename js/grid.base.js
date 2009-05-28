@@ -1591,28 +1591,28 @@ $.fn.jqGrid = function( p ) {
 		}
 		if( ts.p.cellEdit === false) {
 		$(ts).bind('mouseover',function(e) {
-			ptr = $(e.target || e.srcElement).parents("tr.jqgrow");
+			ptr = $(e.target).parents("tr.jqgrow");
 			if($(ptr).attr("class") !== "subgrid") {
 				$(ptr).addClass("ui-state-hover");
 			}
 			return false;
 		}).bind('mouseout',function(e) {
-			ptr = $(e.target || e.srcElement).parents("tr.jqgrow");
+			ptr = $(e.target).parents("tr.jqgrow");
 			$(ptr).removeClass("ui-state-hover");
 			return false;
 		});
 		}
 		var ri,ci;
 		$(ts).before(grid.hDiv).click(function(e) {
-			td = (e.target || e.srcElement);
-			if (td.href) { return true; }
+			td = e.target;
+			if (td.tagName == 'A') { return true; }
 			var scb = $(td).hasClass("cbox");
 			ptr = $(td,ts.rows).parents("tr.jqgrow");
 			if($(ptr).length === 0 ) {
 				return false;
 			}
 			var cSel = true;
-			if(bSR) { cSel = bSR(ptr.attr("id"));}
+			if(bSR) { cSel = bSR(ptr[0].id);}
 			if(cSel === true) {
 				if(ts.p.cellEdit === true) {
 					if(ts.p.multiselect && scb){
@@ -1659,7 +1659,7 @@ $.fn.jqGrid = function( p ) {
 		});
 		if( ondblClickRow ) {
 			$(this).dblclick(function(e) {
-				td = (e.target || e.srcElement);
+				td = (e.target);
 				ptr = $(td,ts.rows).parents("tr.jqgrow");
 				if($(ptr).length === 0 ){return false;}
 				ts.p.ondblClickRow($(ptr).attr("id"));
@@ -1668,7 +1668,7 @@ $.fn.jqGrid = function( p ) {
 		}
 		if (onRightClickRow) {
 			$(this).bind('contextmenu', function(e) {
-				td = (e.target || e.srcElement);
+				td = e.target;
 				ptr = $(td,ts.rows).parents("tr.jqgrow");
 				if($(ptr).length === 0 ){return false;}
 				if(!ts.p.multiselect) {	$(ts).setSelection(false,true,ptr);	}
