@@ -124,7 +124,7 @@ var hideModal = function (selector,o) {
 	}
 };
 
-function info_dialog(caption, content,c_b, pathimg) {
+function info_dialog(caption, content,c_b) {
 	var cnt = "<div id='info_id'>";
 	cnt += "<div align='center'><br />"+content+"<br /><br />";
 	cnt += "<input type='button' size='10' id='closedialog' class='jqmClose EditButton' value='"+c_b+"' />";
