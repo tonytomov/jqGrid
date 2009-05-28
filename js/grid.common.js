@@ -250,10 +250,11 @@ function createEl(eltype,options,vl) {
 					try {delete options['dataUrl'];delete options['value'];} catch (e){}
 					var a = jQuery(data).html();
 					options = bindEv(elem,options);
+					if(typeof options.size === 'undefined') { options.size =  msl ? 3 : 1;}
 					jQuery(elem).html(a).attr(options);
 					setTimeout(function(){
 						jQuery("option",elem).each(function(i){
-							if($(this).html()==vl) {
+							if(jQuery(this).html()==vl) {
 								this.selected= "selected";
 								return false;
 							}
