@@ -102,7 +102,7 @@ $.fn.extend({
 							
 						}
 						$("<div id='"+fid+"' role='dialog' tabindex='-1'></div>").insertBefore("#gview_"+$t.p.id);
-						jQuery("#"+fid).searchFilter(fields, { operators: oprtr, onClose:hideFilter, resetText: p.Reset, searchText: p.Find, windowTitle: p.caption,  rulesText:p.rulesText, matchText:p.matchText, onSearch: searchFilters, onReset: resetFilters,stringResult:p.multipleSearch });
+						jQuery("#"+fid).searchFilter(fields, { groupOps: p.groupOps, operators: oprtr, onClose:hideFilter, resetText: p.Reset, searchText: p.Find, windowTitle: p.caption,  rulesText:p.rulesText, matchText:p.matchText, onSearch: searchFilters, onReset: resetFilters,stringResult:p.multipleSearch });
 						$(".ui-widget-overlay","#"+fid).remove();
 						if (p.drag===true) {
 							$("#"+fid+" table thead tr:first td:first").css('cursor','move');
@@ -304,7 +304,7 @@ $.fn.extend({
 				}
 				createModal(IDs,frm,p,"#gview_"+$t.p.id,$("#gview_"+$t.p.id)[0]);
 				jQuery("#"+IDs.themodal).keydown( function( e ) {
-					if(rp_ge.savekey[0] === true && e.which === rp_ge.savekey[1]) { // save
+					if(rp_ge.savekey[0] === true && e.which == rp_ge.savekey[1]) { // save
 						$("#sData", "#"+frmtb).trigger("click");
 						return false;
 					}
@@ -314,11 +314,11 @@ $.fn.extend({
 					}
 					if(rp_ge.navkeys[0]===true) {
 						if($("#id_g","#"+frmtb).val() == "_empty") return true;
-						if(e.which === rp_ge.navkeys[1]){ //up
+						if(e.which == rp_ge.navkeys[1]){ //up
 							$("#pData", "#"+frmtb).trigger("click");
 							return false;
 						}
-						if(e.which === rp_ge.navkeys[2]){ //down
+						if(e.which == rp_ge.navkeys[2]){ //down
 							$("#nData", "#"+frmtb).trigger("click");
 							return false;
 						}
@@ -793,7 +793,6 @@ $.fn.extend({
 				focusaref();
 				$("#cData", "#"+frmtb).click(function(e){
 					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal});
-					e.stopPropagation();
 					return false;
 				});
 				$("#nData", "#"+frmtb).click(function(e){
