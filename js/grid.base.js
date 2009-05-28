@@ -1612,7 +1612,7 @@ $.fn.jqGrid = function( p ) {
 				return false;
 			}
 			var cSel = true;
-			if(bSR) { cSel = bSR(ptr[0].id);}
+			if(bSR) cSel = bSR(ptr[0].id);
 			if(cSel === true) {
 				if(ts.p.cellEdit === true) {
 					if(ts.p.multiselect && scb){
