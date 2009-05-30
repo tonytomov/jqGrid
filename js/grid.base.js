@@ -712,7 +712,7 @@ $.fn.jqGrid = function( p ) {
 		$(eg).insertBefore(gv).attr("id","gbox_"+this.id);
 		$(gv).appendTo(eg).attr("id","gview_"+this.id);
 		if (isMSIE && /6.0/.test(navigator.userAgent)) {
-			ii = $('<iframe src="javascript:false;document.write(\'\');"></iframe>').css({opacity:0});
+			ii = '<iframe style="opacity:0" src="javascript:false;document.write(\'\');"></iframe>';
 		} else { ii="";}
 		$("<div class='ui-widget-overlay jqgrid-overlay' id='lui_"+this.id+"'></div>").append(ii).insertBefore(gv);
 		$("<div class='loading ui-state-default ui-state-active' id='load_"+this.id+"'>"+this.p.loadtext+"</div>").insertBefore(gv);
@@ -1294,14 +1294,14 @@ $.fn.jqGrid = function( p ) {
 			var imgs, so, scg, ls, iId;
 			if(ts.p.savedRow.length > 0) {return;}
 			if(!reload) {
-				if( ts.p.lastsort === idxcol ) {
-					if( ts.p.sortorder === 'asc') {
+				if( ts.p.lastsort == idxcol ) {
+					if( ts.p.sortorder == 'asc') {
 						ts.p.sortorder = 'desc';
-					} else if(ts.p.sortorder === 'desc') { ts.p.sortorder='asc';}
-				} else { ts.p.sortorder='asc';}
+					} else if(ts.p.sortorder == 'desc') { ts.p.sortorder = 'asc';}
+				} else { ts.p.sortorder = 'asc';}
 				ts.p.page = 1;
 			}
-			imgs = (ts.p.sortorder==='asc') ? 'ui-icon-triangle-1-n' : 'ui-icon-triangle-1-s';
+			imgs = (ts.p.sortorder == 'asc') ? 'ui-icon-triangle-1-n' : 'ui-icon-triangle-1-s';
 			imgs = "<span class='ui-icon ui-grid-ico-sort "+imgs+ "'>&nbsp;&nbsp;&nbsp;&nbsp;</span>";
 			var thd= $("thead:first",grid.hDiv).get(0);
 			ls = ts.p.colModel[ts.p.lastsort].name.replace('.',"\\.");
@@ -1424,6 +1424,7 @@ $.fn.jqGrid = function( p ) {
 				break;
 			}
 		}
+		ts.p.sortorder = ts.p.sortorder.toLowerCase();
 		if(this.p.subGrid) {
 			this.p.colNames.unshift("");
 			this.p.colModel.unshift({name:'subgrid',width: isSafari ?  ts.p.subGridWidth+ts.p.cellLayout : ts.p.subGridWidth,sortable: false,resizable:false,hidedlg:true,search:false});
@@ -1482,10 +1483,10 @@ $.fn.jqGrid = function( p ) {
 		tdc = isMSIE ?  "class='ui-th-div-ie'" :"";
 		for(i=0;i<this.p.colNames.length;i++){
 			thead += "<th role='columnheader' class='ui-state-default ui-th-column'>";
-			idn = ts.p.colModel[i].name;
-			thead += "<div id='jqgh_"+idn+"' "+tdc+">"+ts.p.colNames[i]+"&nbsp;";
+			idn = ts.p.colModel[i].index || ts.p.colModel[i].name;
+			thead += "<div id='jqgh_"+ts.p.colModel[i].name+"' "+tdc+">"+ts.p.colNames[i]+"&nbsp;";
 			if (idn == ts.p.sortname) {
-				var imgs = (ts.p.sortorder==='asc') ? 'ui-icon-triangle-1-n' : ' ui-icon-triangle-1-s';
+				var imgs = (ts.p.sortorder == 'asc') ? 'ui-icon-triangle-1-n' : ' ui-icon-triangle-1-s';
 				imgs = "<span class='ui-icon ui-grid-ico-sort "+imgs+ "'>&nbsp;&nbsp;&nbsp;&nbsp;</span>";
 				thead += imgs;
 				ts.p.lastsort = i;
