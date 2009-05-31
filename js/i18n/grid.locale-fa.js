@@ -27,7 +27,9 @@ $.jgrid = {
 	    bSubmit: "ثبت",
 	    bCancel: "انصراف",
 		bClose: "بستن",
-	    processData: "پردازش...",
+		saveData: "Data has been changed! Save changes?",
+		bYes : "Yes",
+		bBack : "Cancel",
 	    msg: {
 	        required:"فيلدها بايد ختما پر شوند",
 	        number:"لطفا عدد وعتبر وارد کنيد",
@@ -47,8 +49,7 @@ $.jgrid = {
 	    caption: "حذف",
 	    msg: "از حذف گزينه هاي انتخاب شده مطمئن هستيد؟",
 	    bSubmit: "حذف",
-	    bCancel: "ابطال",
-	    processData: "پردازش..."
+	    bCancel: "ابطال"
 	},
 	nav : {
 		edittext: " ",

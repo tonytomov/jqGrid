@@ -28,7 +28,9 @@ $.jgrid = {
 	    bSubmit: "Vista",
 	    bCancel: "Hætta við",
 		bClose: "Loka",
-	    processData: "Vinnur...",
+		saveData: "Data has been changed! Save changes?",
+		bYes : "Yes",
+		bBack : "Cancel",
 	    msg: {
 	        required:"Reitur er nauðsynlegur",
 	        number:"Vinsamlega settu inn tölu",
@@ -48,8 +50,7 @@ $.jgrid = {
 	    caption: "Eyða",
 	    msg: "Eyða völdum færslum ?",
 	    bSubmit: "Eyða",
-	    bCancel: "Hætta við",
-	    processData: "Vinnur..."
+	    bCancel: "Hætta við"
 	},
 	nav : {
 		edittext: " ",

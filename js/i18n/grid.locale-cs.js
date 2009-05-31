@@ -29,7 +29,9 @@ $.jgrid = {
 		bSubmit: "Uložit",
 		bCancel: "Storno",
 		bClose: "Zavřít",
-		processData: "Zpracovávám...",
+		saveData: "Data has been changed! Save changes?",
+		bYes : "Yes",
+		bBack : "Cancel",
 		msg: {
 		    required:"Pole je vyžadováno",
 		    number:"Prosím, vložte validní číslo",
@@ -49,8 +51,7 @@ $.jgrid = {
 		caption: "Smazat",
 		msg: "Smazat vybraný(é) záznam(y)?",
 		bSubmit: "Smazat",
-		bCancel: "Storno",
-		processData: "Zpracovávám..."
+		bCancel: "Storno"
 	},
 	nav : {
 		edittext: " ",

@@ -29,7 +29,9 @@ $.jgrid = {
 		bSubmit: "Запиши",
 		bCancel: "Изход",
 		bClose: "Затвори",
-		processData: "Обработка...",
+		saveData: "Данните са променени! Да съхраня ли промените?",
+		bYes : "Да",
+		bBack : "Отказ",
 		msg: {
 		    required:"Полето е задължително",
 		    number:"Въведете валидно число!",
@@ -49,8 +51,7 @@ $.jgrid = {
 		caption: "Изтриване",
 		msg: "Да изтрия ли избраният запис?",
 		bSubmit: "Изтрий",
-		bCancel: "Отказ",
-		processData: "Обработка..."
+		bCancel: "Отказ"
 	},
 	nav : {
 		edittext: " ",

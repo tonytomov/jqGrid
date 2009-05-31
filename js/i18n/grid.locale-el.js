@@ -29,7 +29,9 @@ $.jgrid = {
 	    bSubmit: "Καταχώρηση",
 	    bCancel: "Άκυρο",
 		bClose: "Κλείσιμο",
-	    processData: "Υπό επεξεργασία...",
+		saveData: "Data has been changed! Save changes?",
+		bYes : "Yes",
+		bBack : "Cancel",
 	    msg: {
 	        required:"Το πεδίο είναι απαραίτητο",
 	        number:"Το πεδίο δέχεται μόνο αριθμούς",
@@ -48,8 +50,7 @@ $.jgrid = {
 	    caption: "Διαγραφή",
 	    msg: "Διαγραφή των επιλεγμένων εγγραφών;",
 	    bSubmit: "Ναι",
-	    bCancel: "Άκυρο",
-	    processData: "Υπό επεξεργασία..."
+	    bCancel: "Άκυρο"
 	},
 	nav : {
 		edittext: " ",

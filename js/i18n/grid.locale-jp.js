@@ -29,7 +29,9 @@ $.jgrid = {
 	    bSubmit: "\u9001\u4fe1",
 	    bCancel: "\u30ad\u30e3\u30f3\u30bb\u30eb",
 		bClose: "\u9589\u3058\u308b",
-	    processData: "\u51e6\u7406\u4e2d...",
+		saveData: "Data has been changed! Save changes?",
+		bYes : "Yes",
+		bBack : "Cancel",
 	    msg: {
 	        required:"\u3053\u306e\u9805\u76ee\u306f\u5fc5\u9808\u3067\u3059\u3002",
 	        number:"\u6b63\u3057\u3044\u6570\u5024\u3092\u5165\u529b\u3057\u3066\u4e0b\u3055\u3044\u3002",
@@ -49,8 +51,7 @@ $.jgrid = {
 	    caption: "\u524a\u9664",
 	    msg: "\u9078\u629e\u3057\u305f\u30ec\u30b3\u30fc\u30c9\u3092\u524a\u9664\u3057\u307e\u3059\u304b\uff1f",
 	    bSubmit: "\u524a\u9664",
-	    bCancel: "\u30ad\u30e3\u30f3\u30bb\u30eb",
-	    processData: "\u51e6\u7406\u4e2d..."
+	    bCancel: "\u30ad\u30e3\u30f3\u30bb\u30eb"
 	},
 	nav : {
 		edittext: " ",

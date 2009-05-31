@@ -29,7 +29,9 @@ $.jgrid = {
 	    bSubmit: "Gönder",
 	    bCancel: "İptal",
 		bClose: "Kapat",
-	    processData: "İşlem yapılıyor...",
+		saveData: "Data has been changed! Save changes?",
+		bYes : "Yes",
+		bBack : "Cancel",
 	    msg: {
 	        required:"Alan gerekli",
 	        number:"Lütfen bir numara giriniz",
@@ -48,8 +50,7 @@ $.jgrid = {
 	    caption: "Sil",
 	    msg: "Seçilen kayıtlar silinsin mi?",
 	    bSubmit: "Sil",
-	    bCancel: "İptal",
-	    processData: "İşlem yapılıyor..."
+	    bCancel: "İptal"
 	},
 	nav : {
 		edittext: " ",

@@ -30,7 +30,9 @@ $.jgrid = {
 		bSubmit: "Speichern",
 		bCancel: "Abbrechen",
 		bClose: "Schließen",
-		processData: "Verarbeitung läuft...",
+		saveData: "Data has been changed! Save changes?",
+		bYes : "Yes",
+		bBack : "Cancel",
 		msg: {
 		    required:"Feld ist erforderlich",
 		    number: "Bitte geben Sie eine Zahl ein",
@@ -50,8 +52,7 @@ $.jgrid = {
 		caption: "Löschen",
 		msg: "Ausgewählte Datensätze löschen?",
 		bSubmit: "Löschen",
-		bCancel: "Abbrechen",
-		processData: "Verarbeitung läuft..."
+		bCancel: "Abbrechen"
 	},
 	nav : {
 		edittext: " ",

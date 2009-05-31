@@ -29,7 +29,9 @@ $.jgrid = {
 	    bSubmit: "OK",
 	    bCancel: "Peru",
 		bClose: "Sulje",
-	    processData: "Suoritetaan...",
+		saveData: "Data has been changed! Save changes?",
+		bYes : "Yes",
+		bBack : "Cancel",
 	    msg: {
 	        required:"pakollinen",
 	        number:"Anna kelvollinen nro",
@@ -49,8 +51,7 @@ $.jgrid = {
 	    caption: "Poista",
 	    msg: "Poista valitut  rivi(t)?",
 	    bSubmit: "Poista",
-	    bCancel: "Peru",
-		processData: "Suoritetaan..."
+	    bCancel: "Peru"
 	},
 	nav : {
 		edittext: " ",

@@ -25,7 +25,9 @@ $.jgrid = {
 	    bSubmit: "Utför",
 	    bCancel: "Avbryt",
 		bClose: "Stäng",
-	    processData: "Processar...",
+		saveData: "Data has been changed! Save changes?",
+		bYes : "Yes",
+		bBack : "Cancel",
 	    msg: {
 	        required:"Fält är obligatoriskt",
 	        number:"Välj korrekt nummer",
@@ -33,15 +35,14 @@ $.jgrid = {
 	        maxValue:"värdet måste vara mindre än eller lika med",
 	        email: "är inte korrekt e-mail adress",
 	        integer: "Var god ange korrekt heltal",
-		date: "Var god att ange korrekt datum"
+			date: "Var god att ange korrekt datum"
 	    }
 	},
 	del : {
 	    caption: "Ta bort",
 	    msg: "Ta bort vald post(er)?",
 	    bSubmit: "Utför",
-	    bCancel: "Avbryt",
-	    processData: "Processing..."
+	    bCancel: "Avbryt"
 	},
 	nav : {
 		edittext: " ",

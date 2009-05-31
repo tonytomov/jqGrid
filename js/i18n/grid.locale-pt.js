@@ -28,7 +28,9 @@ $.jgrid = {
 	    bSubmit: "Submeter",
 	    bCancel: "Cancelar",
 		bClose: "Fechar",
-	    processData: "A processar...",
+		saveData: "Data has been changed! Save changes?",
+		bYes : "Yes",
+		bBack : "Cancel",
 	    msg: {
 	        required:"Campo obrigatório",
 	        number:"Por favor, introduza um numero",
@@ -47,8 +49,7 @@ $.jgrid = {
 	    caption: "Eliminar",
 	    msg: "Deseja eliminar o(s) registo(s) seleccionado(s)?",
 	    bSubmit: "Eliminar",
-	    bCancel: "Cancelar",
-	    processData: "A processar..."
+	    bCancel: "Cancelar"
 	},
 	nav : {
 		edittext: " ",

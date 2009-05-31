@@ -29,7 +29,9 @@ $.jgrid = {
 	    bSubmit: "Send",
 	    bCancel: "Annuller",
 		bClose: "Luk",
-	    processData: "Behandler...",
+		saveData: "Data has been changed! Save changes?",
+		bYes : "Yes",
+		bBack : "Cancel",
 	    msg: {
 	        required:"Felt er nødvendigt",
 	        number:"Indtast venligst et validt tal",
@@ -49,8 +51,7 @@ $.jgrid = {
 	    caption: "Slet",
 	    msg: "Slet valgte række(r)?",
 	    bSubmit: "Slet",
-	    bCancel: "Annuller",
-	    processData: "Behandler..."
+	    bCancel: "Annuller"
 	},
 	nav : {
 		edittext: " ",

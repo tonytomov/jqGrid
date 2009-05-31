@@ -29,7 +29,9 @@ $.jgrid = {
 	    bSubmit: "Valider",
 	    bCancel: "Annuler",
 		bClose: "Fermer",
-	    processData: "Traitement...",
+		saveData: "Data has been changed! Save changes?",
+		bYes : "Yes",
+		bBack : "Cancel",
 	    msg: {
 	        required:"Champ obligatoire",
 	        number:"Saisissez un nombre valide",
@@ -48,8 +50,7 @@ $.jgrid = {
 	    caption: "Supprimer",
 	    msg: "Supprimer les enregistrements sélectionnés ?",
 	    bSubmit: "Supprimer",
-	    bCancel: "Annuler",
-	    processData: "Traitement..."
+	    bCancel: "Annuler"
 	},
 	nav : {
 		edittext: " ",
