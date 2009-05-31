@@ -19,7 +19,9 @@ $.fn.extend({
 			closeicon: 'ico-close.gif',
 			beforeShowForm: null,
 			afterShowForm: null,
-			afterSubmitForm: null
+			afterSubmitForm: null,
+			jqModal : false,
+			closeOnEscape : true
 		}, $.jgrid.col, p ||{});
 		return this.each(function(){
 			var $t = this;
@@ -46,6 +48,7 @@ $.fn.extend({
 				var bS  ="<input id='dData' type='button' value='"+p.bSubmit+"'/>";
 				var bC  ="<input id='eData' type='button' value='"+p.bCancel+"'/>";
 				$(tbl).append("<tr><td class='ColButton'>"+bS+"&nbsp;"+bC+"</td></tr>");
+				p.gbox = "#gbox_"+gID;
 				createModal(IDs,tbl,p,$t.grid.hDiv,$t.grid.hDiv);
 				//if( p.drag) { DnRModal("#"+IDs.themodal,"#"+IDs.modalhead+" td.modaltext"); }
 				$("#dData","#"+dtbl).click(function(e){
