@@ -26,6 +26,11 @@
 .ui-jqgrid tr.jqgrow td {font-weight: normal; overflow: hidden; text-align:left; white-space:  nowrap; height: 22px;padding: 0 2px 0 2px;}
 .ui-jqgrid td.jqgrid-rownum { padding: 0 2px 0 2px; margin: 0px; border: 0px none;}
 .ui-jqgrid .ui-jqgrid-resize-mark{ width:2px; left:0; background-color:#777; cursor: e-resize; cursor: col-resize; position:absolute; top:0; height:100px; overflow:hidden; visibility:hidden;	border:0 none;}
+/* footer */
+.ui-jqgrid .ui-jqgrid-sdiv {position: relative; margin: 0em;padding: 0em; overflow: hidden; border-left: 0px none !important; border-top : 0px none !important; border-right : 0px none !important;}
+.ui-jqgrid .ui-jqgrid-ftable {table-layout:fixed;}
+.ui-jqgrid tr.footrow td {border-right-width: 1px; border-right-color: inherit; border-right-style: solid;border-top-width: 1px; border-top-color: inherit; border-top-style: solid;}
+.ui-jqgrid tr.footrow td {font-weight: bold; overflow: hidden; text-align:left; white-space:  nowrap; height: 21px;padding: 0 2px 0 2px;}
 /* Pager*/
 .ui-jqgrid .ui-jqgrid-pager { border-left: 0px none !important;border-right: 0px none !important; border-bottom: 0px none !important; margin: 0px !important; padding: 0px !important; position: relative; height: 25px;white-space: nowrap;overflow: hidden;}
 .ui-jqgrid .ui-pager-control {position: relative;}
@@ -62,11 +67,9 @@
 .ui-jqdialog .ui-jqdialog-titlebar-close { position: absolute; right: .3em; top: 50%; width: 19px; margin: -10px 0 0 0; padding: 1px; height: 18px; }
 .ui-jqdialog .ui-jqdialog-titlebar-close span { display: block; margin: 1px; }
 .ui-jqdialog .ui-jqdialog-titlebar-close:hover, .ui-jqdialog .ui-jqdialog-titlebar-close:focus { padding: 0; }
-.ui-jqdialog-content, .ui-jqdialog .ui-jqdialog-content { border: 0; padding: .3em .2em; background: none; overflow: auto; height:auto;}
+.ui-jqdialog-content, .ui-jqdialog .ui-jqdialog-content { border: 0; padding: .3em .2em; background: none; height:auto;}
+.ui-jqdialog .ui-jqconfirm {padding: .4em 1em; border-width:3px;position:absolute;bottom:10px;right:10px;overflow:visible;display:none;height:80px;width:220px;text-align:center;}
 /* end Modal window*/
-/* Search window */
-.search, .ui-jqdialog .search {margin: 2px;width: 70px; }
-/*End search */
 /* Form edit */
 .ui-jqdialog-content .FormGrid {margin: 0px;}
 .ui-jqdialog-content .EditTable { width: 100%;}
