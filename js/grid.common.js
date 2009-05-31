@@ -104,8 +104,8 @@ var viewModal = function (selector,o){
 	if (jQuery.fn.jqm && o.jqm == true) {
 		jQuery(selector).attr("aria-hidden","false").jqm(o).jqmShow();
 	} else {
-		if(o.gbox) {
-			jQuery(".jqgrid-overlay",o.gbox).show();
+		if(o.gbox != '') {
+			jQuery(".jqgrid-overlay:first",o.gbox).show();
 		}
 		jQuery(selector).show().attr("aria-hidden","false");
 		try{jQuery(':input:visible',selector)[0].focus();}catch(_){}
@@ -118,7 +118,7 @@ var hideModal = function (selector,o) {
 		jQuery(selector).attr("aria-hidden","true").jqmHide();
 	} else {
 		if(o.gb != '') {
-			try {jQuery(".jqgrid-overlay",o.gb).hide();} catch (e){}
+			try {jQuery(".jqgrid-overlay:first",o.gb).hide();} catch (e){}
 		}
 		jQuery(selector).hide().attr("aria-hidden","true");
 	}
@@ -243,15 +243,16 @@ function createEl(eltype,options,vl) {
 			jQuery(elem).attr(options);
 			break;
 		case "select" :
-			var msl = options.multiple===true ? true : false;
 			elem = document.createElement("select");
+			var msl = options.multiple===true ? true : false;
 			if(options.dataUrl != null) {
 				jQuery.get(options.dataUrl,{_nsd : (new Date().getTime())},function(data){
 					try {delete options['dataUrl'];delete options['value'];} catch (e){}
 					var a = jQuery(data).html();
+					jQuery(elem).append(a);
 					options = bindEv(elem,options);
 					if(typeof options.size === 'undefined') { options.size =  msl ? 3 : 1;}
-					jQuery(elem).html(a).attr(options);
+					jQuery(elem).attr(options);
 					setTimeout(function(){
 						jQuery("option",elem).each(function(i){
 							if(jQuery(this).html()==vl) {
