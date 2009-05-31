@@ -1,5 +1,92 @@
 Please read The Installation instructions bellow
 ================================================
+3.5 beta (buld4)
+Base
+====
+- added option footerrow - default false. If set to true this will place a
+footer table with one row below the gird records and above the pager.
+The number of columns equal of these from colModel
+
+-added option userDataOnFooter(default false) which directly place the user data
+array at footer. The rules are as follow: If the userData array contain name
+which is equal to those of colModel then the value is placed in that column.
+If there are no such values nothing is palced. Note that if this option
+is used we use the current formatter options (if available) for that column.
+
+-Added method getCol(colname). Colname can be either number which represents
+the index of the column or name from colModel. The method return array with
+the values of the coulmn.
+
+- Added method footerData ( action, data, format). This method get or set data
+on footer.
+
+action - can be 'get' or 'set'. If not set default is get.
+When set to 'get' - the result is object of type name:value, where the name is
+a name from colModel. This will return a data from the footer. The other two
+options  does not have effect in this case.
+
+When set to 'set' a data array (object) should be set. This will place
+the values in the footer.
+
+format - default is true. This instruct the method to use the formmater
+(if set in colModel) when a new values are set.
+Setting to false will disable the using of formatter.
+
+Related css items in the ui.jqgrid.css
+.ui-jqgrid-sdiv - is a div container for the footer
+.ui-jqgrid-ftable - is the class for the table
+tr.footrow - is the calss for the footer row
+tr.footrow td is the item for the cell formating
+
+In order to format every cell in a way that you want
+maybe you can use
+
+jQuery("tr.footrow td:eq(2)","#gbox_mygrid").css()
+where the td:eq(2)  pointh to the third column
+and mygrid is the id of the grid. The id of the global grid container
+is constructed via "gbox_"+the id of the grid.
+
+There are no methods to show and hide the footer row dynamically, but
+following the above example we can do
+
+jQuery(".ui-jqgrid-sdiv","#gbox_mygrid").hide() - this will hide the footer row.
+
+jQuery(".ui-jqgrid-sdiv","#gbox_mygrid").show() - this will show the footer row.
+
+
+Form Editing
+============
+aded option in editGridRow - checkOnSubmit (default false)
+This option only work in editing mode and not in add.
+When set to true - the method looks if any data is changed in the form and
+if this is a case a dilog message appear where the user is asked to confirm the
+changes or cancel it. Pressing cancel will return to the form, but does not
+set the values to its original state.
+
+Note that this causes a some changes in the language file.
+
+Fixes
+=====
+
+- Removed imgpath from cell edit and inline edit modules and common module.
+This parameter is no longer valid in 3.5
+- Replace $ with jQuery in grid.common.js which causes problems when used with
+other librariers like prototype.
+- removed a checking e.srcElement from base module. jQuery allready fix this.
+- fixing the size option in select when using ajax to load selects.
+- Fixed bug in IE browsers, when clicked on href tag with child nodes,
+IE incorrect report in all cases that this is a href element. This couses
+onSelectCell not to behave correct.
+- Fixed bug in searchGrid - group options are not passed to serchFilter in 
+order get them from Language file.
+- Fix in bulgarian trnslations.
+- Fix on sorting column. The initial sort check first for index and then for 
+column name. Before the checking for the index was missed.
+Sortorder converted to lower case in order to avoid some cofusions.
+- Fix in set columns module. The modal does not appear correctly due to 
+missed parameter 
+
+
 
 3.5 beta (buld3)
 
