@@ -35,14 +35,14 @@ Setting to false will disable the using of formatter.
 Related css items in the ui.jqgrid.css
 .ui-jqgrid-sdiv - is a div container for the footer
 .ui-jqgrid-ftable - is the class for the table
-tr.footrow - is the calss for the footer row
+tr.footrow - is the class for the footer row
 tr.footrow td is the item for the cell formating
 
 In order to format every cell in a way that you want
 maybe you can use
 
-jQuery("tr.footrow td:eq(2)","#gbox_mygrid").css()
-where the td:eq(2)  pointh to the third column
+jQuery("tr.footrow td:eq(2)","#gbox_mygrid").css(...)
+where the td:eq(2)  point to the third column
 and mygrid is the id of the grid. The id of the global grid container
 is constructed via "gbox_"+the id of the grid.
 
