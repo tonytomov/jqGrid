@@ -1233,13 +1233,21 @@ $.fn.jqGrid = function( p ) {
 			endReq();
 		},
 		parseDate = function(format, date) {
-			var tsp = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0}, i;
-			format = format.toLowerCase();
-			date = date.split(/[\\\/:_;.\s-]/);
-			format = format.split(/[\\\/:_;.\s-]/);
-			for(i=0;i<format.length;i++){
-				tsp[format[i]] = IntNum(date[i],tsp[format[i]]);
-			}
+			var tsp = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0},k,hl,dM;
+			date = date.split(/[\\\/:_;.\t\T\s-]/);
+			format = format.split(/[\\\/:_;.\t\T\s-]/);
+			var dfmt  = $.jgrid.formatter.date.monthNames;
+		    for(k=0,hl=format.length;k<hl;k++){
+				if(format[k] == 'M') {
+					dM = $.inArray(date[k],dfmt);
+					if(dM !== -1 && dM < 12){date[k] = dM+1;}
+				}
+				if(format[k] == 'F') {
+					dM = $.inArray(date[k],dfmt);
+					if(dM !== -1 && dM > 11){date[k] = dM+1-12;}
+				}
+		        tsp[format[k].toLowerCase()] = parseInt(date[k],10);
+		    }			
 			tsp.m = parseInt(tsp.m,10)-1;
 			var ty = tsp.y;
 			if (ty >= 70 && ty <= 99) {tsp.y = 1900+tsp.y;}
