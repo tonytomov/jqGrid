@@ -51,14 +51,13 @@ $.fn.extend({
 				        hidden = (v.hidden === true),
 						soptions = $.extend({},{text: colNames[i],value: v.index || v.name},this.searchoptions),
 						ignoreHiding = (soptions.searchhidden === true) || true;
-						if(soptions.sopt !=null) {
-							k=0;
-							soptions.ops =[];
-							for(j=0;j<soptions.sopt.length;j++) {
-								if( (pos= $.inArray(soptions.sopt[j],stempl)) != -1 ){
-									soptions.ops[k] = {op:soptions.sopt[j],text: p.odata[pos]};
-									k++;
-								}
+						if(typeof soptions.sopt == 'undefined') soptions.sopt = stempl;
+						k=0;
+						soptions.ops =[];
+						for(j=0;j<soptions.sopt.length;j++) {
+							if( (pos= $.inArray(soptions.sopt[j],stempl)) != -1 ){
+								soptions.ops[k] = {op:soptions.sopt[j],text: p.odata[pos]};
+								k++;
 							}
 						}
 						if(typeof(this.stype) === 'undefined') this.stype='text';
