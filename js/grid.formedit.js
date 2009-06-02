@@ -49,7 +49,7 @@ $.fn.extend({
 				    $.each(colModel, function(i, v) {
 				        var searchable = (typeof v.search === 'undefined') ?  true: v.search ,
 				        hidden = (v.hidden === true),
-						soptions = $.extend({},{text: colNames[i],value: v.name},this.searchoptions),
+						soptions = $.extend({},{text: colNames[i],value: v.index || v.name},this.searchoptions),
 						ignoreHiding = (soptions.searchhidden === true) || true;
 						if(soptions.sopt !=null) {
 							k=0;
