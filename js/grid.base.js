@@ -362,14 +362,14 @@ $.fn.jqGrid = function( p ) {
 		if(data) {
 			this.each(function() {
 				var t = this;
-				row = "<tr id='"+(rowid || t.p.records+1)+"' role='row' class='ui-widget-content jqgrow'>";
+				row = "<tr id=\""+(rowid || t.p.records+1)+"\" role=\"row\" class=\"ui-widget-content jqgrow\">";
 				if(t.p.rownumbers===true){
 					prp = t.formatCol(ni,1);
-					row += "<td role='gridcell' class='ui-state-default jqgrid-rownum' "+prp+">0</td>";
+					row += "<td role=\"gridcell\" class=\"ui-state-default jqgrid-rownum\" "+prp+">0</td>";
 					ni=1;
 				}
 				if(t.p.multiselect) {
-					v = "<input type='checkbox'"+" id='jqg_"+rowid+"' class='cbox'/>";
+					v = "<input type=\"checkbox\""+" id=\"jqg_"+rowid+"\" class=\"cbox\"/>";
 					prp = t.formatCol(ni,1);
 					row += "<td role='gridcell' "+prp+">"+v+"</td>";
 					gi = 1;
@@ -382,7 +382,7 @@ $.fn.jqGrid = function( p ) {
 					nm = this.p.colModel[i].name;
 					v = t.formatter( rowid, data[nm], i, data, 'add');
 					prp = t.formatCol(i,1);
-					row += "<td role='gridcell' "+prp+" title='"+$.stripHtml(v)+"'>"+v+"</td>";
+					row += "<td role=\"gridcell\" "+prp+" title=\""+$.stripHtml(v)+"\">"+v+"</td>";
 				}
 				row += "</tr>";
 				if(t.p.subGrid===true) {
@@ -792,19 +792,19 @@ $.fn.jqGrid = function( p ) {
 			else {return val;}
 		},
 		formatCol = function (pos, rowInd){
-			var ral = ts.p.colModel[pos].align, result="style='";
+			var ral = ts.p.colModel[pos].align, result="style=\"";
 			if(ral) result += "text-align:"+ral+";";
 			if(ts.p.colModel[pos].hidden===true) result += "display:none;";
 			if(rowInd===0) {
 				result += "width: "+grid.headers[pos].width+"px;"
 			}
-			return result+"'";
+			return result+"\"";
 		},
 		addCell = function(rowId,cell,pos,irow, srvr) {
 			var v,prp;
 			v = formatter(rowId,cell,pos,srvr,'add');
 			prp = formatCol( pos,irow);
-			return "<td role='gridcell' "+prp+" title='"+$.stripHtml(v)+"'>"+v+"</td>";
+			return "<td role=\"gridcell\" "+prp+" title=\""+$.stripHtml(v)+"\">"+v+"</td>";
 		},
 		formatter = function (rowId, cellval , colpos, rwdat, _act){
 			var cm = ts.p.colModel[colpos],v;
@@ -826,14 +826,14 @@ $.fn.jqGrid = function( p ) {
 			return val === undefined || val === null || val === "" ? "&#160;" : val+"";
 		},
 		addMulti = function(rowid,pos,irow){
-			var	v = "<input type='checkbox'"+" id='jqg_"+rowid+"' class='cbox' name='jqg_"+rowid+"'/>",
+			var	v = "<input type=\"checkbox\""+" id=\"jqg_"+rowid+"\" class=\"cbox\" name=\"jqg_"+rowid+"\"/>",
 			prp = formatCol(pos,irow);
 			return "<td role='gridcell' "+prp+">"+v+"</td>";
 		},
 		addRowNum = function (pos,irow,pG,rN) {
 			var v =  (parseInt(pG)-1)*parseInt(rN)+1+irow,
 			prp = formatCol(pos,irow);
-			return "<td role='gridcell' class='ui-state-default jqgrid-rownum' "+prp+">"+v+"</td>";
+			return "<td role=\"gridcell\" class=\"ui-state-default jqgrid-rownum\" "+prp+">"+v+"</td>";
 		},
 		reader = function (datatype) {
 			var field, f=[], j=0, i;
@@ -876,7 +876,7 @@ $.fn.jqGrid = function( p ) {
 			while (j<gl) {
 				xmlr = gxml[j];
 				rid = getId(xmlr,j+1);
-				rowData[ari++] = "<tr id='"+rid+"' role='row' class ='ui-widget-content jqgrow'>";
+				rowData[ari++] = "<tr id=\""+rid+"\" role=\"row\" class =\"ui-widget-content jqgrow\">";
 				if(ts.p.rownumbers===true) {
 					rowData[ari++] = addRowNum(0,j,ts.p.page,ts.p.rowNum);
 					ni=1;
@@ -972,7 +972,7 @@ $.fn.jqGrid = function( p ) {
 						idr=i+1;
 					}
 				}
-				rowData[ari++] = "<tr id='"+ idr +"' role='row' class= 'ui-widget-content jqgrow'>";
+				rowData[ari++] = "<tr id=\""+ idr +"\" role=\"row\" class= \"ui-widget-content jqgrow\">";
 				if(ts.p.rownumbers===true) {
 					rowData[ari++] = addRowNum(0,i,ts.p.page,ts.p.rowNum);
 					ni=1;
