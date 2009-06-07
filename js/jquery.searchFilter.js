@@ -1,4 +1,4 @@
-﻿/* Plugin:      searchFilter v1.2.8
+﻿/* Plugin:      searchFilter v1.2.9
  * Author:      Kasey Speakman (kasey@cornerspeed.com)
  * License:     Dual Licensed, MIT and GPL v2 (http://www.gnu.org/copyleft/gpl.html)
  *
@@ -366,7 +366,7 @@ jQuery.fn.searchFilter = function(fields, options) {
             jQ.find(".ui-del").click(function(e) {
                 var row = jQuery(e.target).parents(".sf");
                 if (row.siblings(".sf").length > 0) { // doesn't remove if there's only one filter left
-                    if (opts.datepickerFix)
+                    if (opts.datepickerFix === true && jQuery.fn.datepicker !== undefined)
                         row.find(".hasDatepicker").datepicker("destroy"); // clean up datepicker's $.data mess
                     row.remove(); // also unbinds
                 } else { // resets the filter if it's the last one
@@ -394,7 +394,7 @@ jQuery.fn.searchFilter = function(fields, options) {
                     newRow.find(".data input").val(""); // blank all input values
                     newRow.find("select[name='field']").focus();
                 }
-                if (opts.datepickerFix === true) { // using $.data to associate data with document elements is Not Good
+                if (opts.datepickerFix === true && jQuery.fn.datepicker !== undefined) { // using $.data to associate data with document elements is Not Good
                     row.find(".hasDatepicker").each(function() {
                         var settings = jQuery.data(this, "datepicker").settings;
                         newRow.find("#" + this.id).unbind().removeAttr("id").removeClass("hasDatepicker").datepicker(settings);
@@ -418,7 +418,7 @@ jQuery.fn.searchFilter = function(fields, options) {
                 ui.find(".sf").each(function(i) {
                     var tField = jQuery(this).find("select[name='field'] :selected").val();
                     var tOp = jQuery(this).find("select[name='op'] :selected").val();
-                    var tData = jQuery(this).find("input[name='data'],select[name='data'] :selected").val();
+                    var tData = jQuery(this).find(".data input, .data select :selected").val();
                     if (!opts.stringResult) {
                         ruleGroup.rules.push({
                             field: tField,
@@ -449,7 +449,7 @@ jQuery.fn.searchFilter = function(fields, options) {
                 newRow.find(".ui-state-default").removeClass("ui-state-hover ui-state-active");
                 newRow.find(".data input").val(""); // blank all input values
                 newRow.find("select[name='field']").focus();
-                if (opts.datepickerFix === true) { // using $.data to associate data with document elements is Not Good
+                if (opts.datepickerFix === true && jQuery.fn.datepicker !== undefined) { // using $.data to associate data with document elements is Not Good
                     row.find(".hasDatepicker").each(function() {
                         var settings = jQuery.data(this, "datepicker").settings;
                         newRow.find("#" + this.id).unbind().removeAttr("id").removeClass("hasDatepicker").datepicker(settings);
@@ -464,7 +464,7 @@ jQuery.fn.searchFilter = function(fields, options) {
     return new SearchFilter(this, fields, options);
 };
 
-jQuery.fn.searchFilter.version = '1.2.8';
+jQuery.fn.searchFilter.version = '1.2.9';
 
 /* This property contains the default options */
 jQuery.fn.searchFilter.defaults = {
