@@ -1339,7 +1339,6 @@ $.fn.jqGrid = function( p ) {
 					clearVals(this.id);
 					populate();
 				}
-				e.stopPropagation();
 				return false;
 			});
 			}
@@ -1612,7 +1611,6 @@ $.fn.jqGrid = function( p ) {
 				$(res).mousedown(function (e) {
 					if(ts.p.forceFit===true) {ts.p.nv= nextVisible(j);}
 					grid.dragStart(j, e, getOffset(j));
-					e.preventDefault();
 					return false;
 				}).addClass('ui-jqgrid-resize');
 			} else {
