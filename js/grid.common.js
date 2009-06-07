@@ -221,7 +221,7 @@ function createEl(eltype,options,vl) {
 		case "checkbox" : //what code for simple checkbox
 			elem = document.createElement("input");
 			elem.type = "checkbox";
-			if( !options.value) {
+			if( !options.value ) {
 				var vl1 = vl.toLowerCase();
 				if(vl1.search(/(false|0|no|off|undefined)/i)<0 && vl1!=="") {
 					elem.checked=true;
