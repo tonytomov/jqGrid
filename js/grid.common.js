@@ -99,10 +99,12 @@ var viewModal = function (selector,o){
 		onShow: showModal,
 		onHide: closeModal,
 		gbox: '',
-		jqm : true
+		jqm : true,
+		jqM : true
 	}, o || {});
 	if (jQuery.fn.jqm && o.jqm == true) {
-		jQuery(selector).attr("aria-hidden","false").jqm(o).jqmShow();
+		if(o.jqM) jQuery(selector).attr("aria-hidden","false").jqm(o).jqmShow();
+		else jQuery(selector).attr("aria-hidden","false").jqmShow();
 	} else {
 		if(o.gbox != '') {
 			jQuery(".jqgrid-overlay:first",o.gbox).show();
