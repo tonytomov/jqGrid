@@ -31,7 +31,8 @@ $.jgrid = {
 		bClose: "Kapat",
 		saveData: "Data has been changed! Save changes?",
 		bYes : "Yes",
-		bBack : "Cancel",
+		bNo : "No",
+		bExit : "Cancel",
 	    msg: {
 	        required:"Alan gerekli",
 	        number:"Lütfen bir numara giriniz",

@@ -29,7 +29,8 @@ $.jgrid = {
 		bClose: "بستن",
 		saveData: "Data has been changed! Save changes?",
 		bYes : "Yes",
-		bBack : "Cancel",
+		bNo : "No",
+		bExit : "Cancel",
 	    msg: {
 	        required:"فيلدها بايد ختما پر شوند",
 	        number:"لطفا عدد وعتبر وارد کنيد",

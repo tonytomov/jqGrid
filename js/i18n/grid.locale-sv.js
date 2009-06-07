@@ -27,7 +27,8 @@ $.jgrid = {
 		bClose: "Stäng",
 		saveData: "Data has been changed! Save changes?",
 		bYes : "Yes",
-		bBack : "Cancel",
+		bNo : "No",
+		bExit : "Cancel",
 	    msg: {
 	        required:"Fält är obligatoriskt",
 	        number:"Välj korrekt nummer",

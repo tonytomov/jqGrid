@@ -31,7 +31,8 @@ $.jgrid = {
 		bClose: "Sulje",
 		saveData: "Data has been changed! Save changes?",
 		bYes : "Yes",
-		bBack : "Cancel",
+		bNo : "No",
+		bExit : "Cancel",
 	    msg: {
 	        required:"pakollinen",
 	        number:"Anna kelvollinen nro",

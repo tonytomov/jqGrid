@@ -30,7 +30,8 @@ $.jgrid = {
 		bClose: "Loka",
 		saveData: "Data has been changed! Save changes?",
 		bYes : "Yes",
-		bBack : "Cancel",
+		bNo : "No",
+		bExit : "Cancel",
 	    msg: {
 	        required:"Reitur er nauðsynlegur",
 	        number:"Vinsamlega settu inn tölu",

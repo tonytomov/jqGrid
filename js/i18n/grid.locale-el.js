@@ -31,7 +31,8 @@ $.jgrid = {
 		bClose: "Κλείσιμο",
 		saveData: "Data has been changed! Save changes?",
 		bYes : "Yes",
-		bBack : "Cancel",
+		bNo : "No",
+		bExit : "Cancel",
 	    msg: {
 	        required:"Το πεδίο είναι απαραίτητο",
 	        number:"Το πεδίο δέχεται μόνο αριθμούς",

@@ -31,7 +31,8 @@ $.jgrid = {
 		bClose: "Закрыть",
 		saveData: "Data has been changed! Save changes?",
 		bYes : "Yes",
-		bBack : "Cancel",
+		bNo : "No",
+		bExit : "Cancel",
 	    msg: {
 	        required:"Поле является обязательным",
 	        number:"Пожалуйста, введите правильное число",

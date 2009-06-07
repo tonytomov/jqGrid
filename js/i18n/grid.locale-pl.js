@@ -31,7 +31,8 @@ $.jgrid = {
 		bClose: "Zamknij",
 		saveData: "Data has been changed! Save changes?",
 		bYes : "Yes",
-		bBack : "Cancel",
+		bNo : "No",
+		bExit : "Cancel",
 	    msg: {
 	        required:"Pole jest wymagane",
 	        number:"Proszę wpisać poprawną liczbę",

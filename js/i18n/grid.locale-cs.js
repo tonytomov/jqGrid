@@ -31,7 +31,8 @@ $.jgrid = {
 		bClose: "Zavřít",
 		saveData: "Data has been changed! Save changes?",
 		bYes : "Yes",
-		bBack : "Cancel",
+		bNo : "No",
+		bExit : "Cancel",
 		msg: {
 		    required:"Pole je vyžadováno",
 		    number:"Prosím, vložte validní číslo",

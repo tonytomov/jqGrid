@@ -31,7 +31,8 @@ $.jgrid = {
 		bClose: "Luk",
 		saveData: "Data has been changed! Save changes?",
 		bYes : "Yes",
-		bBack : "Cancel",
+		bNo : "No",
+		bExit : "Cancel",
 	    msg: {
 	        required:"Felt er nødvendigt",
 	        number:"Indtast venligst et validt tal",
