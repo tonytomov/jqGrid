@@ -215,7 +215,6 @@ $.fn.extend({
 		return this.each(function(){
 			var $t = this;
 			if (!$t.grid || !rowid) { return; }
-			// I hate to rewrite code, but ...
 			var gID = $t.p.id,
 			IDs = {themodal:'editmod'+gID,modalhead:'edithd'+gID,modalcontent:'editcnt'+gID},
 			onBeforeShow = $.isFunction(rp_ge.beforeShowForm) ? rp_ge.beforeShowForm : false,
