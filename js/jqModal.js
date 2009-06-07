@@ -13,6 +13,7 @@
 $.fn.jqm=function(o){
 var p={
 overlay: 50,
+closeoverlay : true,
 overlayClass: 'jqmOverlay',
 closeClass: 'jqmClose',
 trigger: '.jqModal',
@@ -39,7 +40,7 @@ $.jqm = {
 hash:{},
 open:function(s,t){var h=H[s],c=h.c,cc='.'+c.closeClass,z=(parseInt(h.w.css('z-index'))),z=(z>0)?z:3000,o=$('<div></div>').css({height:'100%',width:'100%',position:'fixed',left:0,top:0,'z-index':z-1,opacity:c.overlay/100});if(h.a)return F;h.t=t;h.a=true;h.w.css('z-index',z);
  if(c.modal) {if(!A[0])L('bind');A.push(s);}
- else if(c.overlay > 0)h.w.jqmAddClose(o);
+ else if(c.overlay > 0) {if(c.closeoverlay) h.w.jqmAddClose(o);}
  else o=F;
 
  h.o=(o)?o.addClass(c.overlayClass).prependTo('body'):F;
