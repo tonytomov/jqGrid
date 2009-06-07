@@ -15,7 +15,7 @@
 .ui-jqgrid .ui-jqgrid-htable th div {overflow: hidden;}
 .ui-th-column, .ui-jqgrid .ui-jqgrid-htable th.ui-th-column {overflow: hidden;white-space: nowrap;text-align:center;	border-top : 0px none;	border-left : 0px none; border-bottom : 0px none;}
 .ui-jqgrid .ui-th-div-ie {float:left;width:97%;white-space: nowrap;}
-.ui-jqgrid .ui-jqgrid-resize {position: relative; cursor :e-resize; height:15px;cursor :col-resize;width: 5px;float: right;display: block;	margin: -1px -1px -1px 0px;	overflow: hidden;}
+.ui-jqgrid .ui-jqgrid-resize {position: relative; cursor :e-resize; height:auto;cursor :col-resize;width: 5px;float: right;display: block;	margin: -2px -2px -2px 0px;	overflow: hidden;}
 .ui-jqgrid .ui-grid-ico-sort {display:inline;float:none; height:16px;width:16px;margin:0;overflow:hidden;}
 .ui-jqgrid .ui-jqgrid-sortable {cursor:pointer;}
 .ui-jqgrid tr.ui-search-toolbar th { border-top-width: 1px !important; border-top-color: inherit !important; border-top-style: ridge !important }
@@ -23,7 +23,7 @@
 .ui-jqgrid .ui-jqgrid-bdiv {position: relative;margin : 0em; padding:0; overflow: auto;}
 .ui-jqgrid .ui-jqgrid-btable {table-layout:fixed;}
 .ui-jqgrid tr.jqgrow td {border-right-width: 1px; border-right-color: inherit; border-right-style: solid;border-bottom-width: 1px; border-bottom-color: inherit; border-bottom-style: solid;}
-.ui-jqgrid tr.jqgrow td {font-weight: normal; overflow: hidden; text-align:left; white-space:  nowrap; height: 22px;padding: 0 2px 0 2px;}
+.ui-jqgrid tr.jqgrow td {font-weight: normal; overflow: hidden; text-align:left; white-space: pre; height: 22px;padding: 0 2px 0 2px;}
 .ui-jqgrid td.jqgrid-rownum { padding: 0 2px 0 2px; margin: 0px; border: 0px none;}
 .ui-jqgrid .ui-jqgrid-resize-mark{ width:2px; left:0; background-color:#777; cursor: e-resize; cursor: col-resize; position:absolute; top:0; height:100px; overflow:hidden; visibility:hidden;	border:0 none;}
 /* footer */
