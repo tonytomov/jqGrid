@@ -208,6 +208,7 @@ $.fn.extend({
 			savekey: [false,13],
 			navkeys: [false,38,40],
 			checkOnSubmit : false,
+			checkOnUpdate : false,
 			_savedData : {}
 		}, $.jgrid.edit, p || {});
 		rp_ge = p;
@@ -223,7 +224,7 @@ $.fn.extend({
 			onInitializeForm = $.isFunction(rp_ge.onInitializeForm) ? rp_ge.onInitializeForm : false,
 			frmgr = "FrmGrid_"+gID,frmtb = "TblGrid_"+gID,
 			copydata = null,
-			maxCols = 1, maxRows=0,	gurl, postdata, ret, extpost;
+			maxCols = 1, maxRows=0,	gurl, postdata, ret, extpost, newData, diff;
 			if (rowid=="new") {
 				rowid = "_empty";
 				p.caption=p.addCaption;
@@ -232,6 +233,10 @@ $.fn.extend({
 			};
 			if(p.recreateForm===true && $("#"+IDs.themodal).html() != null) {
 				$("#"+IDs.themodal).remove();
+			}
+			var closeovrl = true;
+			if(p.checkOnUpdate && p.jqModal && !p.modal) {
+				closeovrl = false;
 			}
 			if ( $("#"+IDs.themodal).html() != null ) {
 				$(".ui-jqdialog-title","#"+IDs.modalhead).html(p.caption);
@@ -250,7 +255,14 @@ $.fn.extend({
 					$("#"+frmgr).data("disabled",false);
 				}
 				if(onBeforeShow) { onBeforeShow($("#"+frmgr)); }
-				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal});
+				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal, jqM: false, closeoverlay: closeovrl});
+				if(!closeovrl) {
+					$(".jqmOverlay").click(function(){
+						if(!checkUpdates()) return false;
+						hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal});
+						return false;
+					});
+				}
 				if(onAfterShow) { onAfterShow($("#"+frmgr)); }
 			} else {
 				$($t.p.colModel).each( function(i) {
@@ -315,6 +327,7 @@ $.fn.extend({
 						return false;
 					}
 					if(e.which === 27) {
+						if(!checkUpdates()) return false;
 						if(cle)	hideModal(this,{gb:p.gbox,jqm:p.jqModal});
 						return false;
 					}
@@ -330,6 +343,15 @@ $.fn.extend({
 						}
 					}
 				});
+				if(p.checkOnUpdate) {
+					$("a.ui-jqdialog-titlebar-close span","#"+IDs.themodal).removeClass("jqmClose");
+					$("a.ui-jqdialog-titlebar-close","#"+IDs.themodal).unbind("click")
+					.click(function(){
+						if(!checkUpdates()) return false;
+						hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal});
+						return false;
+					});
+				}
 				p.saveicon = $.extend([true,"left","ui-icon-disk"],p.saveicon);
 				p.closeicon = $.extend([true,"left","ui-icon-close"],p.closeicon);
 				// beforeinitdata after creation of the form
@@ -341,23 +363,31 @@ $.fn.extend({
 					$("#cData","#"+frmtb).addClass(p.closeicon[1] == "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
 					.append("<span class='ui-icon "+p.closeicon[2]+"'></span>");
 				}
-				if(p.checkOnSubmit) {
+				if(rp_ge.checkOnSubmit || rp_ge.checkOnUpdate) {
 					bS  ="<a href='javascript:void(0)' id='sNew' class='fm-button ui-state-default ui-corner-all' style='z-index:1002'>"+p.bYes+"</a>";
-					bC  ="<a href='javascript:void(0)' id='cNew' class='fm-button ui-state-default ui-corner-all' style='z-index:1002'>"+p.bBack+"</a>";
+					bN  ="<a href='javascript:void(0)' id='nNew' class='fm-button ui-state-default ui-corner-all' style='z-index:1002'>"+p.bNo+"</a>";
+					bC  ="<a href='javascript:void(0)' id='cNew' class='fm-button ui-state-default ui-corner-all' style='z-index:1002'>"+p.bExit+"</a>";
 					var ii, zI = p.zIndex  || 999; zI ++;
 					if ($.browser.msie && /6.0/.test(navigator.userAgent)) {
 						ii = '<iframe style="opacity:0" src="javascript:false;document.write(\'\');"></iframe>';
 					} else { ii="";}
-					$("<div class='ui-widget-overlay jqgrid-overlay confirm' style='z-index:"+zI+";display:none;'>&nbsp;"+ii+"</div><div class='confirm ui-widget-content ui-jqconfirm' style='z-index:"+(zI+1)+"'>"+p.saveData+"<br/><br/>"+bS+bC+"</div>").insertAfter("#"+frmgr);
+					$("<div class='ui-widget-overlay jqgrid-overlay confirm' style='z-index:"+zI+";display:none;'>&nbsp;"+ii+"</div><div class='confirm ui-widget-content ui-jqconfirm' style='z-index:"+(zI+1)+"'>"+p.saveData+"<br/><br/>"+bS+bN+bC+"</div>").insertAfter("#"+frmgr);
 					$("#sNew","#"+IDs.themodal).click(function(){
-						postIt();
+						postIt([true,"",""]);
+						$("#"+frmgr).data("disabled",false);
 						$(".confirm","#"+IDs.themodal).hide();
+						return false;
+					});
+					$("#nNew","#"+IDs.themodal).click(function(){
+						$(".confirm","#"+IDs.themodal).hide();
+						$("#"+frmgr).data("disabled",false);
+						setTimeout(function(){$(":input","#"+frmgr)[0].focus();},0);
 						return false;
 					});
 					$("#cNew","#"+IDs.themodal).click(function(){
 						$(".confirm","#"+IDs.themodal).hide();
 						$("#"+frmgr).data("disabled",false);
-						setTimeout(function(){$(":input","#"+frmgr)[0].focus();},0);
+						hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal});
 						return false;
 					});
 				}
@@ -365,95 +395,49 @@ $.fn.extend({
 				if(onInitializeForm) { onInitializeForm($("#"+frmgr)); }
 				if(rowid=="_empty") { $("#pData,#nData","#"+frmtb).hide(); } else { $("#pData,#nData","#"+frmtb).show(); }
 				if(onBeforeShow) { onBeforeShow($("#"+frmgr)); }
-				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal});
+				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal,closeoverlay:closeovrl});
+				if(!closeovrl) {
+					$(".jqmOverlay").click(function(){
+						if(!checkUpdates()) return false;
+						hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal});
+						return false;
+					});
+				}
 				if(onAfterShow) { onAfterShow($("#"+frmgr)); }
 				$(".fm-button","#"+IDs.themodal).hover(
 				   function(){$(this).addClass('ui-state-hover');}, 
 				   function(){$(this).removeClass('ui-state-hover');}
 				);
 				$("#sData", "#"+frmtb).click(function(e){
-					postdata = {}; ret=[true,"",""]; extpost={};
+					postdata = {}; extpost={};
 					$("#FormError","#"+frmtb).hide();
 					// all depend on ret array
 					//ret[0] - succes
 					//ret[1] - msg if not succes
 					//ret[2] - the id  that will be set if reload after submit false
-					var j =0;
-					$(".FormElement", "#"+frmtb).each(function(i){
-						var suc =  true;
-						switch ($(this).get(0).type) {
-							case "checkbox":
-								if($(this).attr("checked")) {
-									postdata[this.name]= $(this).val();
-								}else {
-									var ofv = $(this).attr("offval");
-									postdata[this.name]= ofv;
-									extpost[this.name] = ofv;
-								}
-							break;
-							case "select-one":
-								postdata[this.name]= $("option:selected",this).val();
-								extpost[this.name]= $("option:selected",this).text();
-							break;
-							case "select-multiple":
-								postdata[this.name]= $(this).val();
-								if(postdata[this.name]) postdata[this.name] = postdata[this.name].join(",");
-								else postdata[this.name] ="";
-								var selectedText = [];
-								$("option:selected",this).each(
-									function(i,selected){
-										selectedText[i] = $(selected).text();
-									}
-								);
-								extpost[this.name]= selectedText.join(",");
-							break;								
-							case "password":
-							case "text":
-							case "textarea":
-							case "button":
-								postdata[this.name] = $(this).val();
-								postdata[this.name] = !$t.p.autoencode ? postdata[this.name] : htmlEncode(postdata[this.name]);
-							break;
-						}
-						ret = checkValues(postdata[this.name],this.name,$t);
-						if(ret[0] === false) {suc=false;}
-						j++;
-						if(!suc) { return false; }
-					});
-					if(j==0) { ret[0] = false; ret[1] = $.jgrid.errors.norecords; }
-					if( $.isFunction( rp_ge.onclickSubmit)) { rp_ge.editData = rp_ge.onclickSubmit(p) || {}; }
-					if(ret[0]) {
-						if( $.isFunction(rp_ge.beforeSubmit))  { ret = rp_ge.beforeSubmit(postdata,$("#"+frmgr)); }
-					}
-					gurl = rp_ge.url ? rp_ge.url : $t.p.editurl;
-					if(ret[0]) {
-						if(!gurl) { ret[0]=false; ret[1] += " "+$.jgrid.errors.nourl; }
-					}
-					if(ret[0] === false) {
-						$("#FormError>td","#"+frmtb).html(ret[1]);
-						$("#FormError","#"+frmtb).show();
-					} else {
-						if(postdata.id == "_empty")	postIt();
-						else if(p.checkOnSubmit===true ) {
-							var newData = $.extend({},postdata,extpost);
-							var diff = compareData(newData,rp_ge._savedData);
-							if(diff) {
-								$("#"+frmgr).data("disabled",true);
-								$(".confirm","#"+IDs.themodal).show();
-							} else {
-								postIt();
-							}
+					getFormData();
+					if(postdata.id == "_empty")	postIt();
+					else if(p.checkOnSubmit===true ) {
+						newData = $.extend({},postdata,extpost);
+						diff = compareData(newData,rp_ge._savedData);
+						if(diff) {
+							$("#"+frmgr).data("disabled",true);
+							$(".confirm","#"+IDs.themodal).show();
 						} else {
 							postIt();
 						}
+					} else {
+						postIt();
 					}
 					return false;
 				});
 				$("#cData", "#"+frmtb).click(function(e){
+					if(!checkUpdates()) return false;
 					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal});
 					return false;
 				});
 				$("#nData", "#"+frmtb).click(function(e){
+					if(!checkUpdates()) return false;
 					$("#FormError","#"+frmtb).hide();
 					var npos = getCurrPos();
 					npos[0] = parseInt(npos[0]);
@@ -471,6 +455,7 @@ $.fn.extend({
 					return false;
 				});
 				$("#pData", "#"+frmtb).click(function(e){
+					if(!checkUpdates()) return false;
 					$("#FormError","#"+frmtb).hide();
 					var ppos = getCurrPos();
 					if(ppos[0] != -1 && ppos[1][ppos[0]-1]) {
@@ -486,7 +471,7 @@ $.fn.extend({
 					};
 					return false;
 				});
-			};
+			}
 			var posInit =getCurrPos();
 			updateNav(posInit[0],posInit[1].length-1);
 			function updateNav(cr,totr,rid){
@@ -498,6 +483,61 @@ $.fn.extend({
 				selrow = $("#id_g","#"+frmtb).val(),
 				pos = $.inArray(selrow,rowsInGrid);
 				return [pos,rowsInGrid];
+			}
+			function checkUpdates () {
+				var stat = true;
+				$("#FormError","#"+frmtb).hide();
+				if(rp_ge.checkOnUpdate) {
+					postdata = {}; extpost={};
+					getFormData();
+					newData = $.extend({},postdata,extpost);
+					diff = compareData(newData,rp_ge._savedData);
+					if(diff) {
+						$("#"+frmgr).data("disabled",true);
+						$(".confirm","#"+IDs.themodal).show();
+						stat = false;
+					}
+				}
+				return stat;
+			}			
+			function getFormData(){
+				$(".FormElement", "#"+frmtb).each(function(i){
+					switch ($(this).get(0).type) {
+						case "checkbox":
+							if($(this).attr("checked")) {
+								postdata[this.name]= $(this).val();
+							}else {
+								var ofv = $(this).attr("offval");
+								postdata[this.name]= ofv;
+								extpost[this.name] = ofv;
+							}
+						break;
+						case "select-one":
+							postdata[this.name]= $("option:selected",this).val();
+							extpost[this.name]= $("option:selected",this).text();
+						break;
+						case "select-multiple":
+							postdata[this.name]= $(this).val();
+							if(postdata[this.name]) postdata[this.name] = postdata[this.name].join(",");
+							else postdata[this.name] ="";
+							var selectedText = [];
+							$("option:selected",this).each(
+								function(i,selected){
+									selectedText[i] = $(selected).text();
+								}
+							);
+							extpost[this.name]= selectedText.join(",");
+						break;								
+						case "password":
+						case "text":
+						case "textarea":
+						case "button":
+							postdata[this.name] = $(this).val();
+							postdata[this.name] = !$t.p.autoencode ? postdata[this.name] : htmlEncode(postdata[this.name]);
+						break;
+					}
+				});
+				return true;
 			}
 			function createData(rowid,obj,tb,maxcols){
 				var nm, hc,trdata, cnt=0,tmp, dc,elc, retpos=[], ind=false, rp,cp,
@@ -531,9 +571,8 @@ $.fn.extend({
 								}
 							}
 						}
-						if(rp_ge.checkOnSubmit===true) rp_ge._savedData[nm] = tmp;
 						var opt = $.extend({}, this.editoptions || {} ,{id:nm,name:nm});
-						frmopt = $.extend({}, {elmprefix:'',elmsuffix:''}, this.formoptions || {}),
+						frmopt = $.extend({}, {elmprefix:'',elmsuffix:'',rowabove:false,rowcontent:''}, this.formoptions || {}),
 						rp = parseInt(frmopt.rowpos) || cnt+1,
 						cp = parseInt((parseInt(frmopt.colpos) || 1)*2);
 						if(rowid == "_empty" && opt.defaultValue ) {
@@ -541,8 +580,15 @@ $.fn.extend({
 						}
 						if(!this.edittype) this.edittype = "text";
 						elc = createEl(this.edittype,opt,tmp);
+						if(tmp == "" && this.edittype == "checkbox") {tmp = $(elc).attr("offval");}
+						if(rp_ge.checkOnSubmit || rp_ge.checkOnUpdate) rp_ge._savedData[nm] = tmp;
 						$(elc).addClass("FormElement");
 						trdata = $(tb).find("tr[rowpos="+rp+"]");
+						if(frmopt.rowabove) {
+							var newdata = $("<tr><td class='contentinfo' colspan='"+(maxcols*2)+"'>"+frmopt.rowcontent+"</td></tr>");
+							$(tb).append(newdata);
+							newdata[0].rp = rp;
+						}
 						if ( trdata.length==0 ) {
 							trdata = $("<tr "+dc+" rowpos='"+rp+"'></tr>").addClass("FormData").attr("id","tr_"+nm);
 							$(trdata).append(tmpl);
@@ -559,23 +605,25 @@ $.fn.extend({
 					var idrow = $("<tr class='FormData' style='display:none'><td class='CaptionTD'></td><td colspan='"+ (maxcols*2-1)+"' class='DataTD'><input class='FormElement' id='id_g' type='text' name='id' value='"+rowid+"'/></td></tr>");
 					idrow[0].rp = cnt+999;
 					$(tb).append(idrow);
-					if(rp_ge.checkOnSubmit===true) rp_ge._savedData.id = rowid;
+					if(rp_ge.checkOnSubmit || rp_ge.checkOnUpdate) rp_ge._savedData.id = rowid;
 				}
 				return retpos;
 			}
 			function fillData(rowid,obj,fmid){
-				var nm, hc,cnt=0,tmp, fld,opt,vl;
+				var nm, hc,cnt=0,tmp, fld,opt,vl,vlc;
+				if(rp_ge.checkOnSubmit || rp_ge.checkOnUpdate) {rp_ge._savedData = {};rp_ge._savedData.id=rowid;}
 				if(rowid == '_empty') {
 					$(obj.p.colModel).each(function(i){
 						nm = this.name;
 						opt = $.extend({}, this.editoptions || {} );
 						fld = $("#"+nm,"#"+fmid);
 						if(fld[0] != null) {
+							vl = "";
 							if(opt.defaultValue ) {
 								vl = $.isFunction(opt.defaultValue) ? opt.defaultValue() : opt.defaultValue;
 								if(fld[0].type=='checkbox') {
-									vl = vl.toLowerCase();
-									if(vl.search(/(false|0|no|off|undefined)/i)<0 && vl!=="") {
+									vlc = vl.toLowerCase();
+									if(vlc.search(/(false|0|no|off|undefined)/i)<0 && vlc!=="") {
 										fld[0].checked = true;
 										fld[0].defaultChecked = true;
 										fld[0].value = vl;
@@ -584,15 +632,20 @@ $.fn.extend({
 									}
 								} else {fld.val(vl); }
 							} else {
-								fld.val("");
+								if( fld[0].type=='checkbox' ) {
+									fld[0].checked = false;
+									fld[0].defaultChecked = false;
+									vl = $(fld).attr("offval");
+								} else {
+									fld.val(vl);
+								}
 							}
-							
+							if(rp_ge.checkOnSubmit===true || rp_ge.checkOnUpdate) rp_ge._savedData[nm] = vl;
 						}
 					});
 					$("#id_g","#"+fmid).val("_empty");
 					return;
 				}
-				if(rp_ge.checkOnSubmit===true) {rp_ge._savedData = {};rp_ge._savedData.id=rowid;}
 				$('table:first tr#'+rowid+' td',obj.grid.bDiv).each( function(i) {
 					nm = obj.p.colModel[i].name;
 					// hidden fields are included in the form
@@ -612,7 +665,7 @@ $.fn.extend({
 							}
 						}
 						nm = nm.replace('.',"\\.");
-						if(rp_ge.checkOnSubmit===true) rp_ge._savedData[nm] = tmp;
+						if(rp_ge.checkOnSubmit===true || rp_ge.checkOnUpdate) rp_ge._savedData[nm] = tmp;
 						switch (obj.p.colModel[i].edittype) {
 							case "password":
 							case "text":
@@ -659,7 +712,24 @@ $.fn.extend({
 				return cnt;
 			}
 			function postIt() {
-				var ret = [true,"",""], copydata;
+				var copydata, ret=[true,"",""];
+				for( var key in postdata ){
+					ret = checkValues(postdata[key],key,$t);
+					if(ret[0] == false) break;
+				}
+				if(ret[0]) {
+					if( $.isFunction( rp_ge.onclickSubmit)) { rp_ge.editData = rp_ge.onclickSubmit(p) || {}; }
+					if( $.isFunction(rp_ge.beforeSubmit))  { ret = rp_ge.beforeSubmit(postdata,$("#"+frmgr)); }
+				}
+				gurl = rp_ge.url ? rp_ge.url : $t.p.editurl;
+				if(ret[0]) {
+					if(!gurl) { ret[0]=false; ret[1] += " "+$.jgrid.errors.nourl; }
+				}
+				if(ret[0] === false) {
+					$("#FormError>td","#"+frmtb).html(ret[1]);
+					$("#FormError","#"+frmtb).show();
+					return;
+				}
 				if(!p.processing) {
 					p.processing = true;
 					$("#sData", "#"+frmtb).addClass('ui-state-active');
@@ -727,9 +797,9 @@ $.fn.extend({
 								}
 							}
 							p.processing=false;
-							if(rp_ge.checkOnSubmit) {
+							if(rp_ge.checkOnSubmit || rp_ge.checkOnUpdate) {
 								$("#"+frmgr).data("disabled",false);
-								rp_ge._savedData = postdata;
+								if(rp_ge._savedData.id !="_empty") rp_ge._savedData = postdata;
 							}
 							$("#sData", "#"+frmtb).removeClass('ui-state-active');
 							try{$(':input:visible',"#"+frmgr)[0].focus();} catch (e){}
@@ -785,7 +855,7 @@ $.fn.extend({
 				$(".ui-jqdialog-title","#"+IDs.modalhead).html(p.caption);
 				$("#FormError","#"+frmtb).hide();
 				fillData(rowid,$t);
-				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal});
+				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal, jqM: false});
 				focusaref();
 			} else {
 				$($t.p.colModel).each( function(i) {
@@ -911,7 +981,7 @@ $.fn.extend({
 				return [pos,rowsInGrid];
 			}
 			function createData(rowid,obj,tb,maxcols){
-				var nm, hc,trdata, tdl, tde, cnt=0,tmp, dc,elc, retpos=[], ind=false,
+				var nm, hc,trdata, tdl, tde, cnt=0,tmp, dc, retpos=[], ind=false,
 				tdtmpl = "<td class='CaptionTD ui-widget-content' width='"+p.labelswidth+"'>&nbsp;</td><td class='DataTD ui-helper-reset ui-widget-content'>&nbsp;</td>", tmpl="",
 				tdtmpl2 = "<td class='CaptionTD ui-widget-content'>&nbsp;</td><td class='DataTD ui-widget-content'>&nbsp;</td>",
 				fmtnum = ['integer','number','currency'],max1 =0, max2=0 ,maxw,setme;
@@ -957,10 +1027,14 @@ $.fn.extend({
 						}
 						setme = this.align === 'right' && maxw !==0 ? true : false;
 						var opt = $.extend({}, this.editoptions || {} ,{id:nm,name:nm}),
-						frmopt = $.extend({}, this.formoptions || {}),
+						frmopt = $.extend({},{rowabove:false,rowcontent:''}, this.formoptions || {}),
 						rp = parseInt(frmopt.rowpos) || cnt+1,
 						cp = parseInt((parseInt(frmopt.colpos) || 1)*2);
-						if(!this.edittype) this.edittype = "text";
+						if(frmopt.rowabove) {
+							var newdata = $("<tr><td class='contentinfo' colspan='"+(maxcols*2)+"'>"+frmopt.rowcontent+"</td></tr>");
+							$(tb).append(newdata);
+							newdata[0].rp = rp;
+						}
 						trdata = $(tb).find("tr[rowpos="+rp+"]");
 						if ( trdata.length==0 ) {
 							trdata = $("<tr "+dc+" rowpos='"+rp+"'></tr>").addClass("FormData").attr("id","tr_"+nm);
@@ -969,7 +1043,7 @@ $.fn.extend({
 							trdata[0].rp = rp;
 						}
 						$("td:eq("+(cp-2)+")",trdata[0]).html('<b>'+ (typeof frmopt.label === 'undefined' ? obj.p.colNames[i]: frmopt.label)+'</b>');
-						$("td:eq("+(cp-1)+")",trdata[0]).append("<span style='position:absolute;float:left;'>"+tmp+"</span>").attr("id",nm);
+						$("td:eq("+(cp-1)+")",trdata[0]).append("<span>"+tmp+"</span>").attr("id",nm);
 						if(setme){
 							$("td:eq("+(cp-1)+") span",trdata[0]).css({'text-align':'right',width:maxw+"px"});
 						}
@@ -1055,14 +1129,14 @@ $.fn.extend({
 					$("#dData", "#"+dtbl).removeClass('ui-state-active');
 				}
 				if(onBeforeShow) { p.beforeShowForm($("#"+dtbl)); }
-				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal});
+				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal,jqM: false});
 				if(onAfterShow) { p.afterShowForm($("#"+dtbl)); }
 			} else {
 				var tbl =$("<table id='"+dtbl+"' class='DelTable' width='100%'><tbody></tbody></table>");
 				// error data 
 				$(tbl).append("<tr id='DelError' style='display:none'><td >"+"&nbsp;"+"</td></tr>");
 				$(tbl).append("<tr id='DelData' style='display:none'><td >"+rowids+"</td></tr>");
-				$(tbl).append("<tr><td >"+p.msg+"</td></tr><tr><td >&nbsp;</td></tr>");
+				$(tbl).append("<tr><td class=\"delmsg\">"+p.msg+"</td></tr><tr><td >&nbsp;</td></tr>");
 				// buttons at footer
 				var bS  = "<a href='javascript:void(0)' id='dData' class='fm-button ui-state-default ui-corner-all'>"+p.bSubmit+"</a>",
 				bC  = "<a href='javascript:void(0)' id='eData' class='fm-button ui-state-default ui-corner-all'>"+p.bCancel+"</a>";
