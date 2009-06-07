@@ -197,7 +197,7 @@
 	};
 	$.fn.fmatter.email = function(cellval, opts) {
 		if(!isEmpty(cellval)) {
-			return "<a href='mailto:" + cellval + "'>" + cellval + "</a>";
+			return "<a href=\"mailto:" + cellval + "\">" + cellval + "</a>";
         }else {
 			return $.fn.fmatter.defaultFormat(cellval,opts );
         }
@@ -210,7 +210,7 @@
 		if(op.disabled===true) {ds = "disabled";} else {ds="";}
 		cval=cval+""; cval=cval.toLowerCase();
 		var bchk = cval.search(/(false|0|no|off)/i)<0 ? " checked='checked' " : "";
-        return "<input type='checkbox' " + bchk  + " value='"+ cval+"' offval='no' "+ds+ "/>";
+        return "<input type=\"checkbox\" " + bchk  + " value=\""+ cval+"\" offval=\"no\" "+ds+ "/>";
     },
 	$.fn.fmatter.link = function(cellval, opts) {
 		var op = {target:opts.target };
@@ -220,7 +220,7 @@
         }
 		if(op.target) {target = 'target=' + op.target;}
         if(!isEmpty(cellval)) {
-			return "<a "+target+" href='" + cellval + "'>" + cellval + "</a>";
+			return "<a "+target+" href=\"" + cellval + "\">" + cellval + "</a>";
         }else {
             return $.fn.fmatter.defaultFormat(cellval,opts);
         }
@@ -234,7 +234,7 @@
 		if(op.target) {target = 'target=' + op.target;}
 		idUrl = op.baseLinkUrl+op.showAction + '?'+ op.idName+'='+opts.rowId+op.addParam;
         if(isString(cellval)) {	//add this one even if its blank string
-			return "<a "+target+" href='" + idUrl + "'>" + cellval + "</a>";
+			return "<a "+target+" href=\"" + idUrl + "\">" + cellval + "</a>";
         }else {
 			return $.fn.fmatter.defaultFormat(cellval,opts);
 	    }
