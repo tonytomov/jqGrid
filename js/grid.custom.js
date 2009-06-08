@@ -309,7 +309,7 @@ $.fn.extend({
 							// data returned should have already constructed html select
 							$(td).load(this.surl,function(){
 								if($t.defval) $("select",this).val($t.defval);
-								$("select",this).attr({name:$t.name, id: "sg_"+$t.name});
+								$("select",this).attr({name:$t.index || $t.name, id: "sg_"+$t.name});
 								if($t.sopt) $("select",this).attr($t.sopt);
 								if(self.p.gridToolbar===true && $t.width) {
 									$("select",this).width($t.width);
@@ -328,7 +328,7 @@ $.fn.extend({
 								if(typeof oSv === "string") {
 									var so = oSv.split(";"), sv, ov;
 									var elem = document.createElement("select");
-									$(elem).attr({name:$t.name, id: "sg_"+$t.name}).attr($t.sopt);
+									$(elem).attr({name:$t.index || $t.name, id: "sg_"+$t.name}).attr($t.sopt);
 									for(var k=0; k<so.length;k++){
 										sv = so[k].split(":");
 										ov = document.createElement("option");
@@ -360,7 +360,7 @@ $.fn.extend({
 						break;
 					case 'text':
 						var df = this.defval ? this.defval: "";
-						$(td).append("<input type='text' name='"+this.name+"' id='sg_"+this.name+"' value='"+df+"'/>");
+						$(td).append("<input type='text' name='"+(this.index || this.name)+"' id='sg_"+this.name+"' value='"+df+"'/>");
 						if($t.sopt) $("input",td).attr($t.sopt);
 						if(self.p.gridToolbar===true && $t.width) {
 							if($.browser.msie) {
