@@ -91,7 +91,8 @@ $.fn.jqGrid = function( p ) {
     pagerpos: 'center',
     recordpos: 'right',
 	footerrow : false,
-	userDataOnFooter : false
+	userDataOnFooter : false,
+	hoverrows : true
 	}, $.jgrid.defaults, p || {});
 	var grid={         
 		headers:[],
@@ -1654,7 +1655,7 @@ $.fn.jqGrid = function( p ) {
 			}
 			setPager();
 		}
-		if( ts.p.cellEdit === false) {
+		if( ts.p.cellEdit === false && ts.p.hoverrows === true) {
 		$(ts).bind('mouseover',function(e) {
 			ptr = $(e.target).parents("tr.jqgrow");
 			if($(ptr).attr("class") !== "subgrid") {
