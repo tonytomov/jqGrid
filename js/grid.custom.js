@@ -560,7 +560,7 @@ $.fn.extend({
 							// data returned should have already have constructed html select
 							$(thd).load(this.surl,{_nsd : (new Date().getTime())},function(){
 								if(soptions.defaultValue) $("select",this).val(soptions.defaultValue);
-								$("select",this).attr({name:cm.name, id: "gs_"+cm.name});
+								$("select",this).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
 								if(soptions.attr) {$("select",this).attr(soptions.attr);}
 								$("select",this).css({width: "100%"});
 								// preserve autoserch
@@ -578,7 +578,7 @@ $.fn.extend({
 								var oSv = cm.editoptions.value,
 								elem = document.createElement("select");
 								elem.style.width = "100%";
-								$(elem).attr({name:cm.name, id: "gs_"+cm.name});
+								$(elem).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
 								if(typeof oSv === "string") {
 									var so = oSv.split(";"), sv, ov;
 									for(var k=0; k<so.length;k++){
@@ -611,7 +611,7 @@ $.fn.extend({
 						break;
 					case 'text':
 						var df = soptions.defaultValue ? soptions.defaultValue: "";
-						$(thd).append("<input type='text' style='width:95%;padding:0px;' name='"+cm.name+"' id='gs_"+cm.name+"' value='"+df+"'/>");
+						$(thd).append("<input type='text' style='width:95%;padding:0px;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"' value='"+df+"'/>");
 						if(soptions.attr) {$("input",thd).attr(soptions.attr);}
 						if(soptions.dataInit != null) soptions.dataInit($("input",thd)[0]);
 						if(soptions.dataEvents != null) bindEvents($("input",thd)[0], soptions.dataEvents);
