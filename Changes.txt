@@ -1,5 +1,56 @@
 Please read The Installation instructions bellow
 ================================================
+3.5 beta (buld5)
+
+FormEditing
+===========
+- added options checkOnUpdate (default false) in editGridRow method.
+Also available in add and edit mode.
+When this option is set to true the behaviour as follow:
+When something is changed in the form and the user click on
+Cancel button, navigator buttons, close button (on upper right corner of the
+form), in overlay (if available) or press Esc key (if set) a message box apper
+asking the user to save the changes, not to save the changes and go back in the
+form or cancel all changes (this will close the modal form)
+Note that checkOnSubmit option will work only when a submit button is clicked.
+When nothing is changed we contionue with the action.
+
+- added option -  rowabove (default false) in colModel formoptions
+When set to true a new empty row is added above this row in form editing.
+- added option - rowcontent (default empty) in colModel formoptions.
+This option have sense only when rowabove option is set to true.
+With this option is possible to set a content to the new added empty row in
+the form. In order to style easy these rows a class 'contentinfo' is set.
+
+- added new items in the language files to support the checkOnUpdate option
+
+Fixes
+=====
+- fix in Bulgarian translations files.
+- fix in searchGrid method. Now we search by index (from colModel) and only if
+it is not available we search by name.
+- Fix for date parser in the base module. Now we can sort locally on
+dates that contain month names
+- Fixed bug in searchGrid. The translation messages for the operations does not 
+apper when not set in colModel
+- removed some not needed events  from base grid. Also return false do these
+by default;
+- Fix bug to check if datepicker is available in searchGrid.
+- Fix a bug in searchGrid in IE6, where the data value is not set for elements
+after the first 
+- Fixed bug when calling of jqModal multiple times on the same element. We 
+need the initialization only once and not every time. This cause a memory 
+leaks
+- Fixed bug in formatter where the data containing ' causes break in IE 
+- Fixed bug in base module when adding data where the data contain a ' char.
+This breaks in IE browsers.
+- Fixed bug in checkboxes. We add the value setted in the editoptions. Also 
+converting to lower case make the option checkOnUpdate to be true every time. 
+- We replace white-space nowrap with pre in td element in the CSS file. This fixes
+the bug in IE where the first row does not wrap when the text is longer than
+the column width. Also this requiere DOCTYPE declaration in the document.
+
+
 3.5 beta (buld4)
 Base
 ====
