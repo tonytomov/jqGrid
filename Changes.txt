@@ -24,6 +24,10 @@ the form. In order to style easy these rows a class 'contentinfo' is set.
 
 - added new items in the language files to support the checkOnUpdate option
 
+- added class 'delmsg' in the delGridRow method. This allow us to change the
+message dynamically using a beforeShow or afterSow eventrs. The class is added
+to a element td.
+
 Fixes
 =====
 - fix in Bulgarian translations files.
