@@ -53,6 +53,8 @@ converting to lower case make the option checkOnUpdate to be true every time.
 - We replace white-space nowrap with pre in td element in the CSS file. This fixes
 the bug in IE where the first row does not wrap when the text is longer than
 the column width. Also this requiere DOCTYPE declaration in the document.
+- Fixed bug in viewGridRow method where when resizing the modal causes the data
+to apper bad.
 
 
 3.5 beta (buld4)
