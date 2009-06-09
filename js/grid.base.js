@@ -372,7 +372,7 @@ $.fn.jqGrid = function( p ) {
 				if(t.p.multiselect) {
 					v = "<input type=\"checkbox\""+" id=\"jqg_"+rowid+"\" class=\"cbox\"/>";
 					prp = t.formatCol(ni,1);
-					row += "<td role='gridcell' "+prp+">"+v+"</td>";
+					row += "<td role=\"gridcell\" "+prp+">"+v+"</td>";
 					gi = 1;
 				}
 				if(t.p.subGrid===true) {
@@ -821,7 +821,7 @@ $.fn.jqGrid = function( p ) {
 			} else {
 				v = cellVal(cellval);
 			}
-			return v;
+			return isMSIE ? v.replace(/(\s*$)/g, '').replace(/'/g,'&#39') : v;
 		},
 		cellVal =  function (val) {
 			return val === undefined || val === null || val === "" ? "&#160;" : val+"";
@@ -1453,7 +1453,7 @@ $.fn.jqGrid = function( p ) {
 			return j-ret;
 		},
 		getOffset = function (iCol) {
-			var i, ret = {}, brd1 = isSafari ? 0 : 5;
+			var i, ret = {}, brd1 = isSafari ? 0 : ts.p.cellLayout;
 			ret[0] =  ret[1] = ret[2] = 0;
 			for(i=0;i<=iCol;i++){
 				if(ts.p.colModel[i].hidden === false ) {
@@ -1461,7 +1461,7 @@ $.fn.jqGrid = function( p ) {
 				}
 			}
 			ret[0] = ret[0] - ts.grid.bDiv.scrollLeft;
-			if($(ts.grid.cDiv+":visible")) {ret[1] += $(ts.grid.cDiv).height() +parseInt($(ts.grid.cDiv).css("padding-top"))+parseInt($(ts.grid.cDiv).css("padding-bottom"));}
+			if($(ts.grid.cDiv).is(":visible")) {ret[1] += $(ts.grid.cDiv).height() +parseInt($(ts.grid.cDiv).css("padding-top"))+parseInt($(ts.grid.cDiv).css("padding-bottom"));}
 			if(ts.p.toolbar[0]==true && (ts.p.toolbar[1]=='top' || ts.p.toolbar[1]=='both')) {ret[1] += $(ts.grid.uDiv).height()+parseInt($(ts.grid.uDiv).css("border-top-width"))+parseInt($(ts.grid.uDiv).css("border-bottom-width"));}
 			ret[2] += $(ts.grid.bDiv).height() + $(ts.grid.hDiv).height();
 			return ret;
@@ -1752,7 +1752,6 @@ $.fn.jqGrid = function( p ) {
 		if( isMSIE ) {
 			if( $("tbody",this).size() === 2 ) { $("tbody:first",this).remove();}
 			if( ts.p.multikey) {$(grid.bDiv).bind("selectstart",function(){return false;});}
-			if(ts.p.treeGrid) {$(grid.bDiv).css("position","relative");}
 		} else {
 			if( ts.p.multikey) {$(grid.bDiv).bind("mousedown",function(){return false;});}
 		}
