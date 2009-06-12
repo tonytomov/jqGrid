@@ -161,7 +161,7 @@ $.fn.extend({
 						},
 						error:function(res,stat){
 							if($.isFunction(errorfunc) ) {
-								errorfunc(res,stat);
+								errorfunc(rowid, res, stat);
 							} else {
 								alert("Error Row: "+rowid+" Result: " +res.status+":"+res.statusText+" Status: "+stat);
 							}
