@@ -288,6 +288,9 @@ function createEl(eltype,options,vl) {
 					}
 				} else if (typeof options.value === 'object') {
 					var oSv = options.value;
+					try {delete options['value'];} catch (e){}
+					options = bindEv(elem,options);
+					jQuery(elem).attr(options);
 					i=0;
 					for ( var key in oSv) {
 						i++;
@@ -297,9 +300,6 @@ function createEl(eltype,options,vl) {
 						if (msl && jQuery.inArray(jQuery.trim(oSv[key]),ovm)>-1) ov.selected ="selected";
 						elem.appendChild(ov);
 					}
-					try {delete options['value'];} catch (e){}
-					options = bindEv(elem,options);
-					jQuery(elem).attr(options);
 				}
 			}
 			break;
