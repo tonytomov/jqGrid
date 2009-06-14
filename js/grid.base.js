@@ -1097,9 +1097,9 @@ $.fn.jqGrid = function( p ) {
 				case "json":
 				case "xml":
 				case "script":
-					$.ajax({url:ts.p.url,type:ts.p.mtype,dataType: dt=='json'?'text':dt ,data: gdata,
+					$.ajax({url:ts.p.url,type:ts.p.mtype,dataType: dt ,data: gdata,
 						complete:function(req,st) {
-							if(st=="success") {
+							if(st=="success" || (req.statusText == "OK" && req.status == "200")) {
 								if(dt === "json" || dt === "script") addJSONData($.parse(req.responseText),ts.grid.bDiv,rcnt);
 								if(dt === "xml") addXmlData(req.responseXML,ts.grid.bDiv,rcnt);
 								if(loadComplete) loadComplete(req);
