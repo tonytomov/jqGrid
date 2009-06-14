@@ -57,11 +57,11 @@ $.fn.extend({
 			$(treeimg).css("left",lftpos*18).addClass("ui-icon");
 			twrap.appendChild(treeimg);
 
-			if(rd[isLeaf] == "true") {
+			if(rd[isLeaf] == "true" || rd[isLeaf] ==true) {
 				$(treeimg).addClass($t.p.treeIcons.leaf+" tree-leaf");
 				row.isLeaf = true;
 			} else {
-				if(rd[expanded] == "true") {
+				if(rd[expanded] == "true" || rd[expanded] == true) {
 					$(treeimg).addClass($t.p.treeIcons.minus+" tree-minus treeclick");
 					row.expanded = true;
 				} else {
@@ -221,7 +221,7 @@ $.fn.extend({
 					break;
 				case 'adjacency' :
 					$(this.rows).each(function(){
-						if(this.id === rc.parent_id ) {
+						if(this.id == rc.parent_id ) {
 							result = this;
 							return false;
 						}
