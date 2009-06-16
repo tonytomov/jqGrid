@@ -98,18 +98,21 @@ $.fn.extend({
 			if( data  && data.length >0 ) {
 				$(data).each(function(j){
 					srow = this;
+					ind = t.rows.namedItem(srow[rowidname]);
+					if(ind) {
 					$(t.p.colModel).each(function(i){
 						nm = this.name;
 						if( srow[nm] != undefined) {
 							vl = t.formatter( srow[rowidname], srow[nm], i, srow, 'edit');
 							if(t.p.treeGrid===true && nm == t.p.ExpandColumn) {
-								$("td:eq("+i+") > span:first",t.rows.namedItem(srow[rowidname])).html(vl).attr("title",$.stripHtml(vl));
+								$("td:eq("+i+") > span:first",ind).html(vl).attr("title",$.stripHtml(vl));
 							} else {
-								$("td:eq("+i+")",t.rows.namedItem(srow[rowidname])).html(vl).attr("title",$.stripHtml(vl)); 
+								$("td:eq("+i+")",ind).html(vl).attr("title",$.stripHtml(vl)); 
 							}
 							success = true;
 						}
 					});
+					}
 				});
 			}
 		});
