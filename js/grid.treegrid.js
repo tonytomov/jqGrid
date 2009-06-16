@@ -115,7 +115,7 @@ $.fn.extend({
 		return this.each(function (){
 			var $t = this;
 			if(!$t.p.treeGrid) { return; }
-			$.extend($t.p,{treedatatype: null});
+			if(!$t.p.treedatatype ) $.extend($t.p,{treedatatype: null});
 			$t.p.treeIcons = $.extend({plus:'ui-icon-triangle-1-e',minus:'ui-icon-triangle-1-s',leaf:'ui-icon-radio-off'},$t.p.treeIcons || {});
 			if($t.p.treeGridModel == 'nested') {
 				$t.p.treeReader = $.extend({

@@ -741,6 +741,7 @@ $.fn.jqGrid = function( p ) {
 		var js = jsonString;
 		if (js.substr(0,9) == "while(1);") { js = js.substr(9); }
 		if (js.substr(0,2) == "/*") { js = js.substr(2,js.length-4); }
+		if(!js) { js = "{}"; }
 		with(window) {
 			return  eval('('+js+')');
 		}
@@ -1474,7 +1475,7 @@ $.fn.jqGrid = function( p ) {
 			this.p.multiselect = false; this.p.rowList = [];
 			try {
 				$(this).setTreeGrid();
-				this.p.treedatatype = this.p.datatype;
+				if(!this.p.treedatatype) this.p.treedatatype = this.p.datatype;
 				$.each(this.p.treeReader,function(i,n){
 					if(n){
 						ts.p.colNames.push(n);
