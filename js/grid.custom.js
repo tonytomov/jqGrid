@@ -89,6 +89,32 @@ $.fn.extend({
 			$("#gbox_"+gid).remove();
 		});
 	},
+	updateGridRows : function (data, rowidname) {
+		var nm, success=false;
+		this.each(function(){
+			var t = this, vl, ind, srow;
+			if(!t.grid) {return false;}
+			if(!rowidname) rowidname = "id";
+			if( data  && data.length >0 ) {
+				$(data).each(function(j){
+					srow = this;
+					$(t.p.colModel).each(function(i){
+						nm = this.name;
+						if( srow[nm] != undefined) {
+							vl = t.formatter( srow[rowidname], srow[nm], i, srow, 'edit');
+							if(t.p.treeGrid===true && nm == t.p.ExpandColumn) {
+								$("td:eq("+i+") > span:first",t.rows.namedItem(srow[rowidname])).html(vl).attr("title",$.stripHtml(vl));
+							} else {
+								$("td:eq("+i+")",t.rows.namedItem(srow[rowidname])).html(vl).attr("title",$.stripHtml(vl)); 
+							}
+							success = true;
+						}
+					});
+				});
+			}
+		});
+		return success;
+	},
 	filterGrid : function(gridid,p){
 		p = $.extend({
 			gridModel : false,
