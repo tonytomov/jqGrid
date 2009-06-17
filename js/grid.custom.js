@@ -89,10 +89,10 @@ $.fn.extend({
 			$("#gbox_"+gid).remove();
 		});
 	},
-	updateGridRows : function (data, rowidname) {
+	updateGridRows : function (data, rowidname, jsonreader) {
 		var nm, success=false;
 		this.each(function(){
-			var t = this, vl, ind, srow;
+			var t = this, vl, ind, srow, sid;
 			if(!t.grid) {return false;}
 			if(!rowidname) rowidname = "id";
 			if( data  && data.length >0 ) {
@@ -100,18 +100,34 @@ $.fn.extend({
 					srow = this;
 					ind = t.rows.namedItem(srow[rowidname]);
 					if(ind) {
-					$(t.p.colModel).each(function(i){
-						nm = this.name;
-						if( srow[nm] != undefined) {
-							vl = t.formatter( srow[rowidname], srow[nm], i, srow, 'edit');
-							if(t.p.treeGrid===true && nm == t.p.ExpandColumn) {
-								$("td:eq("+i+") > span:first",ind).html(vl).attr("title",$.stripHtml(vl));
-							} else {
-								$("td:eq("+i+")",ind).html(vl).attr("title",$.stripHtml(vl)); 
+						sid = srow[rowidname];
+						if(jsonreader === true){
+							if(t.p.jsonReader.repeatitems === true) {
+								if(t.p.jsonReader.cell) {srow = srow[t.p.jsonReader.cell];}
+								for (var k=0;k<srow.length;k++) {
+									vl = t.formatter( sid, srow[k], k, srow, 'edit');
+									if(t.p.treeGrid===true && nm == t.p.ExpandColumn) {
+										$("td:eq("+k+") > span:first",ind).html(vl).attr("title",$.stripHtml(vl));
+									} else {
+										$("td:eq("+k+")",ind).html(vl).attr("title",$.stripHtml(vl)); 
+									}
+								}
+								success = true;
+								return true;
 							}
-							success = true;
-						}
-					});
+						} 
+						$(t.p.colModel).each(function(i){
+							nm = jsonreader===true ? this.jsonmap || this.name :this.name;
+							if( srow[nm] != undefined) {
+								vl = t.formatter( sid, srow[nm], i, srow, 'edit');
+								if(t.p.treeGrid===true && nm == t.p.ExpandColumn) {
+									$("td:eq("+i+") > span:first",ind).html(vl).attr("title",$.stripHtml(vl));
+								} else {
+									$("td:eq("+i+")",ind).html(vl).attr("title",$.stripHtml(vl)); 
+								}
+								success = true;
+							}
+						});
 					}
 				});
 			}
