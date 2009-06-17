@@ -214,10 +214,10 @@ $.fn.jqGrid = function( p ) {
 	};
 	$.fn.setSelection = function(selection,onsr,sd) {
 		return this.each(function(){
-			var $t = this, stat,pt, ind, olr, ner, ia, tpsr;
+			var $t = this, stat,pt, olr, ner, ia, tpsr;
 			onsr = onsr === false ? false : true;
 			if(selection===false) {pt = sd;}
-			else { ind = $($t).getInd($t.rows,selection); pt=$($t.rows[ind]);}
+			else {pt=$($t.rows.namedItem(selection));}
 			selection = $(pt).attr("id");
 			if (!pt.html()) {return;}
 			if($t.p.selrow && $t.p.scrollrows===true) {
@@ -281,9 +281,9 @@ $.fn.jqGrid = function( p ) {
 				}
 			} else {
 				$(t.p.selarrrow).each(function(i,n){
-					ind = $(t).getInd(t.rows,n);
-					$(t.rows[ind]).removeClass("ui-state-highlight");
-					$("#jqg_"+n.replace(".", "\\."),t.rows[ind]).attr("checked",false);
+					ind = t.rows.namedItem(n);
+					$(ind).removeClass("ui-state-highlight");
+					$("#jqg_"+n.replace(".", "\\."),ind).attr("checked",false);
 				});
 				$("#cb_jqg",t.grid.hDiv).attr("checked",false);
 				t.p.selarrrow = [];
@@ -295,9 +295,9 @@ $.fn.jqGrid = function( p ) {
 		var res = {};
 		this.each(function(){
 			var $t = this,nm,ind;
-			ind = $($t).getInd($t.rows,rowid);
-			if (ind===false) {return res;}
-			$('td',$t.rows[ind]).each( function(i) {
+			ind = $t.rows.namedItem(rowid);
+			if(!ind) return res;
+			$('td',ind).each( function(i) {
 				nm = $t.p.colModel[i].name; 
 				if ( nm !== 'cb' && nm !== 'subgrid') {
 					if($t.p.treeGrid===true && nm == $t.p.ExpandColumn) {
@@ -314,10 +314,10 @@ $.fn.jqGrid = function( p ) {
 		var success = false, rowInd, ia;
 		this.each(function() {
 			var $t = this;
-			rowInd = $($t).getInd($t.rows,rowid);
-			if(rowInd===false) {return false;}
+			rowInd = $t.rows.namedItem(rowid);
+			if(!rowInd) {return false;}
 			else {
-				$($t.rows[rowInd]).remove();
+				$(rowInd).remove();
 				$t.p.records--;
 				$t.p.reccount--;
 				$t.updatepager(true);
@@ -337,18 +337,17 @@ $.fn.jqGrid = function( p ) {
 		this.each(function(){
 			var t = this, vl, ind;
 			if(!t.grid) {return false;}
+			var ind = t.rows.namedItem(rowid);
+			if(!ind) return false;
 			if( data ) {
-				ind = $(t).getInd(t.rows,rowid);
-				if(ind===false) {return false;}
-				success=true;
 				$(this.p.colModel).each(function(i){
 					nm = this.name;
 					if( data[nm] != undefined) {
 						vl = t.formatter( rowid, data[nm], i, data, 'edit');
 						if(t.p.treeGrid===true && nm == t.p.ExpandColumn) {
-							$("td:eq("+i+") > span:first",t.rows[ind]).html(vl).attr("title",$.stripHtml(vl));
+							$("td:eq("+i+") > span:first",ind).html(vl).attr("title",$.stripHtml(vl));
 						} else {
-							$("td:eq("+i+")",t.rows[ind]).html(vl).attr("title",$.stripHtml(vl)); 
+							$("td:eq("+i+")",ind).html(vl).attr("title",$.stripHtml(vl)); 
 						}
 						success = true;
 					}
@@ -496,8 +495,8 @@ $.fn.jqGrid = function( p ) {
 				shrink=$t.p.shrinkToFit;
 			}
 			if(isNaN(nwidth)) {return;}
-			if(nwidth === grid.width) {return;}
-			else { grid.width = $t.p.width = nwidth;}
+			if(nwidth == $t.grid.width) {return;}
+			else { $t.grid.width = $t.p.width = nwidth;}
 			$("#gbox_"+$t.p.id).css("width",nwidth+"px");
 			$("#gview_"+$t.p.id).css("width",nwidth+"px");
 			$($t.grid.bDiv).css("width",nwidth+"px");
@@ -616,11 +615,11 @@ $.fn.jqGrid = function( p ) {
 				});
 			} else {pos = parseInt(colname,10);}
 			if(pos>=0) {
-				var ind = $($t).getInd($t.rows,rowid);
-				if (ind>=0){
-					var tcell = $("td:eq("+pos+")",$t.rows[ind]);
+				var ind = $t.rows.namedItem(rowid);
+				if (ind){
+					var tcell = $("td:eq("+pos+")",ind);
 					if(nData !== "") {
-						v = $t.formatter(rowid, nData, pos,$t.rows[ind],'edit');
+						v = $t.formatter(rowid, nData, pos,ind,'edit');
 						$(tcell).html(v).attr("title",$.stripHtml(v));
 					}
 					if (cssp){
@@ -644,9 +643,9 @@ $.fn.jqGrid = function( p ) {
 				});
 			} else {pos = parseInt(col,10);}
 			if(pos>=0) {
-				var ind = $($t).getInd($t.rows,rowid);
-				if(ind>=0) {
-					ret = $.htmlDecode($("td:eq("+pos+")",$t.rows[ind]).html());
+				var ind = $t.rows.namedItem(rowid);
+				if(ind) {
+					ret = $.htmlDecode($("td:eq("+pos+")",ind).html());
 				}
 			}
 		});
