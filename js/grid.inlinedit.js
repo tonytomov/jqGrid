@@ -52,7 +52,7 @@ $.fn.extend({
 							$($t.rows[ind]).bind("keydown",function(e) {
 								if (e.keyCode === 27) {$($t).restoreRow(rowid, afterrestorefunc);}
 								if (e.keyCode === 13) {
-									$($t).saveRow(rowid,succesfunc, url, extraparam, aftersavefunc,errorfunc);
+									$($t).saveRow(rowid,succesfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc );
 									return false;
 								}
 								e.stopPropagation();

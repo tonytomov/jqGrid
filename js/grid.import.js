@@ -133,6 +133,20 @@
                 var gprm = $(this).getGridParam();
                 // we need to check for:
                 // 1.multiselect, 2.subgrid  3. treegrid and remove the unneded columns from colNames
+                if(gprm.multiselect) {
+                    gprm.colNames.splice(0);
+                    gprm.colModel.splice(0);
+                }
+                if(gprm.subgrid) {
+                    gprm.colNames.splice(0);
+                    gprm.colModel.splice(0);
+                }
+                if(gprm.treeGrid) {
+                    for (var key in gprm.treeReader) {
+                        gprm.colNames.splice(gprm.colNames.length-1);
+                        gprm.colModel.splice(gprm.colModel.length-1);
+                    }
+                }
                 switch (o.exptype) {
                     case 'xmlstring' :
                         ret = xmlJsonClass.json2xml(gprm," ");
