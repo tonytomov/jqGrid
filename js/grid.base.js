@@ -221,8 +221,8 @@ $.fn.jqGrid = function( p ) {
 			selection = $(pt).attr("id");
 			if (!pt.html()) {return;}
 			if($t.p.selrow && $t.p.scrollrows===true) {
-				olr = $($t).getInd($t.rows,$t.p.selrow);
-				ner = $($t).getInd($t.rows,selection);
+				olr = $t.rows.namedItem($t.p.selrow).rowIndex;
+				ner = $t.rows.namedItem(selection).rowIndex;
 				if(ner >=0 ){
 					if(ner > olr ) {
 						scrGrid(ner,'d');
@@ -400,12 +400,12 @@ $.fn.jqGrid = function( p ) {
 						$(t.rows[0]).before(row);
 						break;
 					case 'after':
-						sind = $(t).getInd(t.rows,src);
-						sind >= 0 ?	$(t.rows[sind]).after(row): "";
+						sind = t.rows.namedItem(src);
+						sind != null ?	$(sind).after(row): "";
 						break;
 					case 'before':
-						sind = $(t).getInd(t.rows,src);
-						sind >= 0 ?	$(t.rows[sind]).before(row): "";
+						sind = t.rows.namedItem(src);
+						sind != null ?	$(t.rows[sind]).before(row): "";
 						break;
 				}
 				}
@@ -685,17 +685,14 @@ $.fn.jqGrid = function( p ) {
 			$t.updatepager(true);
 		});
 	};
-	$.fn.getInd = function(obj,rowid,rc){
-		var ret =false,i=0,ol=obj.length;
-		if(ol && ol>0) {
-			while (i<ol) {
-				if(obj[i].id == rowid){
-					ret = rc===true ? obj[i]: i;
-					break;
-				}
-				i++;
+	$.fn.getInd = function(rowid,rc){
+		var ret =false,rw;
+		this.each(function(){
+			rw = this.rows.namedItem(rowid);
+			if(rw) {
+				ret = rc===true ? rw: rw.rowIndex;
 			}
-		}
+		});
 		return ret;
 	};
 	$.htmlDecode = function(value){

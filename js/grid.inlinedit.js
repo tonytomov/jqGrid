@@ -15,12 +15,12 @@ $.fn.extend({
 			if (!$t.grid ) { return; }
 			var hc;
 			if( !$t.p.multiselect ) {
-				ind = $($t).getInd($t.rows,rowid);
-				if( ind === false ) {return;}
-				editable = $($t.rows[ind]).attr("editable") || "0";
+				ind = $($t).getInd(rowid,true);
+				if( ind == null ) {return;}
+				editable = $(ind).attr("editable") || "0";
 				if (editable == "0") {
 					cm = $t.p.colModel;
-					$('td',$t.rows[ind]).each( function(i) {
+					$('td',ind).each( function(i) {
 						nm = cm[i].name;
 						hc = cm[i].hidden===true ? true : false;
 						try {
@@ -46,10 +46,10 @@ $.fn.extend({
 					});
 					if(cnt > 0) {
 						svr['id'] = rowid; $t.p.savedRow.push(svr);
-						$($t.rows[ind]).attr("editable","1");
-						$("td:eq("+focus+") input",$t.rows[ind]).focus();
+						$(ind).attr("editable","1");
+						$("td:eq("+focus+") input",ind).focus();
 						if(keys===true) {
-							$($t.rows[ind]).bind("keydown",function(e) {
+							$(ind).bind("keydown",function(e) {
 								if (e.keyCode === 27) {$($t).restoreRow(rowid, afterrestorefunc);}
 								if (e.keyCode === 13) {
 									$($t).saveRow(rowid,succesfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc );
@@ -68,12 +68,12 @@ $.fn.extend({
 		return this.each(function(){
 		var $t = this, nm, tmp={}, tmp2={}, editable, fr, cv, ind;
 		if (!$t.grid ) { return; }
-		ind = $($t).getInd($t.rows,rowid);
-		if(ind === false) {return;}
-		editable = $($t.rows[ind]).attr("editable");
+		ind = $($t).getInd(rowid,true);
+		if(ind == null) {return;}
+		editable = $(ind).attr("editable");
 		url = url ? url : $t.p.editurl;
 		if (editable==="1" && url) {
-			$("td",$t.rows[ind]).each(function(i) {
+			$("td",ind).each(function(i) {
 				nm = $t.p.colModel[i].name;
 				if ( nm !== 'cb' && nm !== 'subgrid' && $t.p.colModel[i].editable===true) {
 					if( $t.p.colModel[i].hidden===true) { tmp[nm] = $(this).html(); }
@@ -132,7 +132,7 @@ $.fn.extend({
 				if (url == 'clientArray') {
 					tmp = $.extend({},tmp, tmp2);
 					var resp = $($t).setRowData(rowid,tmp);
-					$($t.rows[ind]).attr("editable","0");
+					$(ind).attr("editable","0");
 					for( var k=0;k<$t.p.savedRow.length;k++) {
 						if( $t.p.savedRow[k].id===rowid) {fr = k; break;}
 					}
@@ -150,7 +150,7 @@ $.fn.extend({
 								if (ret===true) {
 									tmp = $.extend({},tmp, tmp2);
 									$($t).setRowData(rowid,tmp);
-									$($t.rows[ind]).attr("editable","0");
+									$(ind).attr("editable","0");
 									for( var k=0;k<$t.p.savedRow.length;k++) {
 										if( $t.p.savedRow[k].id===rowid) {fr = k; break;}
 									};
@@ -170,7 +170,7 @@ $.fn.extend({
 				}
 				$t.grid.hDiv.loading = false;
 				$("div.loading",$t.grid.hDiv).fadeOut("fast");
-				$($t.rows[ind]).unbind("keydown");
+				$(ind).unbind("keydown");
 			}
 		}
 		});
@@ -179,14 +179,14 @@ $.fn.extend({
 		return this.each(function(){
 			var $t= this, fr, ind;
 			if (!$t.grid ) { return; }
-			ind = $($t).getInd($t.rows,rowid);
-			if(ind === false) {return;}
+			ind = $($t).getInd(rowid,true);
+			if(ind == null) {return;}
 			for( var k=0;k<$t.p.savedRow.length;k++) {
 				if( $t.p.savedRow[k].id===rowid) {fr = k; break;}
 			}
 			if(fr >= 0) {
 				$($t).setRowData(rowid,$t.p.savedRow[fr]);
-				$($t.rows[ind]).attr("editable","0");
+				$(ind).attr("editable","0");
 				$t.p.savedRow.splice(fr,1);
 			}
 			if ($.isFunction(afterrestorefunc))

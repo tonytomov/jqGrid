@@ -415,7 +415,7 @@ $.fn.extend({
 		return this.each(function () {
 			var $t = this;
 			if(!$t.grid || !$t.p.treeGrid) { return; }
-			var rc = $($t).getInd($t.rows,rowid,true);
+			var rc = $($t).getInd(rowid,true);
 			if (rc) {
 				var dr = $($t).getNodeChildren(rc);
 				if(dr.length>0){

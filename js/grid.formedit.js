@@ -545,7 +545,7 @@ $.fn.extend({
 					tmpl += tdtmpl;
 				}
 				if(rowid != '_empty') {
-					ind = $(obj).getInd(obj.rows,rowid);
+					ind = $(obj).getInd(rowid);
 				}
 				$(obj.p.colModel).each( function(i) {
 					nm = this.name;
@@ -1003,7 +1003,7 @@ $.fn.extend({
 					}
 				});
 				maxw  = max1 !==0 ? max1 : max2 !==0 ? max2 : 0;
-				ind = $(obj).getInd(obj.rows,rowid);
+				ind = $(obj).getInd(rowid);
 				$(obj.p.colModel).each( function(i) {
 					nm = this.name;
 					setme = false;

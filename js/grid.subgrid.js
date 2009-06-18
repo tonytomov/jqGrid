@@ -182,7 +182,7 @@ expandSubGridRow : function(rowid) {
 		var $t = this;
 		if(!$t.grid && !rowid) {return;}
 		if($t.p.subGrid===true) {
-			var rc = $(this).getInd($t.rows,rowid,true);
+			var rc = $(this).getInd(rowid,true);
 			if(rc) {
 				var sgc = $("td.sgcollapsed",rc)[0];
 				if(sgc) {
@@ -197,7 +197,7 @@ collapseSubGridRow : function(rowid) {
 		var $t = this;
 		if(!$t.grid && !rowid) {return;}
 		if($t.p.subGrid===true) {
-			var rc = $(this).getInd($t.rows,rowid,true);
+			var rc = $(this).getInd(rowid,true);
 			if(rc) {
 				var sgc = $("td.sgexpanded",rc)[0];
 				if(sgc) {
@@ -212,7 +212,7 @@ toggleSubGridRow : function(rowid) {
 		var $t = this;
 		if(!$t.grid && !rowid) {return;}
 		if($t.p.subGrid===true) {
-			var rc = $(this).getInd($t.rows,rowid,true);
+			var rc = $(this).getInd(rowid,true);
 			if(rc) {
 				var sgc = $("td.sgcollapsed",rc)[0];
 				if(sgc) {
