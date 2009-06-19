@@ -73,7 +73,7 @@
                                 if(stat == 'success') {
                                     XmlConvert(xml.responseXML,o);
                                     if($.isFunction(o.importComplete)) {
-                                        o.importComplete();                    
+                                        o.importComplete(xml);
                                     }
                                 }
                                 xml=null;
@@ -87,7 +87,7 @@
                             if(xmld) {
                                 XmlConvert(xmld,o);
                                 if($.isFunction(o.importComplete)) {
-                                    o.importComplete();                    
+                                    o.importComplete(xmld);
                                 }
                                 o.impstring = null;
                             }
@@ -99,12 +99,12 @@
                             url:o.impurl,
                             type:o.mtype,
                             data: o.impData,
-                            dataType:"text",
+                            dataType:"json",
                             complete: function(json,stat) {
                                 if(stat == 'success') {
                                     JsonConvert(json.responseText,o );
                                     if($.isFunction(o.importComplete)) {
-                                        o.importComplete();                    
+                                        o.importComplete(json);
                                     }
                                 }
                                 json=null;
@@ -115,7 +115,7 @@
                         if(o.impstring && typeof o.impstring == 'string') {
                             JsonConvert(o.impstring,o );
                             if($.isFunction(o.importComplete)) {
-                                o.importComplete();                    
+                                o.importComplete(o.impstring);
                             }
                             o.impstring = null;
                         }
