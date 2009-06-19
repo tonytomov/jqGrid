@@ -418,7 +418,7 @@ jQuery.fn.searchFilter = function(fields, options) {
                 ui.find(".sf").each(function(i) {
                     var tField = jQuery(this).find("select[name='field'] :selected").val();
                     var tOp = jQuery(this).find("select[name='op'] :selected").val();
-                    var tData = jQuery(this).find(".data input, .data select :selected").val();
+                    var tData = jQuery(this).find("input[name='data'],select[name='data'] :selected").val();
                     if (!opts.stringResult) {
                         ruleGroup.rules.push({
                             field: tField,
