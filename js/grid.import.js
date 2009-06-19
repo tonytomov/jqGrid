@@ -133,6 +133,10 @@
                 var gprm = $(this).getGridParam();
                 // we need to check for:
                 // 1.multiselect, 2.subgrid  3. treegrid and remove the unneded columns from colNames
+                if(gprm.rownumbers) {
+                    gprm.colNames.splice(0);
+                    gprm.colModel.splice(0);
+                }
                 if(gprm.multiselect) {
                     gprm.colNames.splice(0);
                     gprm.colModel.splice(0);
