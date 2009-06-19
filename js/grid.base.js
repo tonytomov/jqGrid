@@ -92,7 +92,8 @@ $.fn.jqGrid = function( p ) {
     recordpos: 'right',
 	footerrow : false,
 	userDataOnFooter : false,
-	hoverrows : true
+	hoverrows : true,
+	altclass : 'ui-priority-secondary'
 	}, $.jgrid.defaults, p || {});
 	var grid={         
 		headers:[],
@@ -329,6 +330,13 @@ $.fn.jqGrid = function( p ) {
 			if(rowInd == 0 && success ) {
 				this.updateColumns();
 			}
+			if( t.p.altRows === true ) {
+				var cn = t.p.altclass;
+				$(t.rows).each(function(i){
+					if(i % 2 ==1) $(this).addClass(cn);
+					else $(this).removeClass(cn);
+				});
+			}
 		});
 		return success;
 	};
@@ -362,6 +370,7 @@ $.fn.jqGrid = function( p ) {
 		if(data) {
 			this.each(function() {
 				var t = this;
+				rowid += "";
 				row = "<tr id=\""+(rowid || t.p.records+1)+"\" role=\"row\" class=\"ui-widget-content jqgrow\">";
 				if(t.p.rownumbers===true){
 					prp = t.formatCol(ni,1);
@@ -413,6 +422,17 @@ $.fn.jqGrid = function( p ) {
 				t.p.reccount++;
 				if(pos==='first' || (pos==='before' && sind===0) ||  t.rows.length === 1 ){
 					t.updateColumns();
+				}
+				if( t.p.altRows === true ) {
+					var cn = t.p.altclass;
+					if (pos == "last") {
+						if (t.rows.length % 2 == 1)  {$(t.rows[t.rows.length-1]).addClass(cn);}
+					} else {
+						$(t.rows).each(function(i){
+							if(i % 2 ==1) $(this).addClass(cn);
+							else $(this).removeClass(cn);
+						});
+					}
 				}
 				try {t.p.afterInsertRow(rowid,data); } catch(e){}
 				t.updatepager(true);
@@ -851,7 +871,7 @@ $.fn.jqGrid = function( p ) {
 					$("tbody", t).empty(); rcnt=0;
 				} else { rcnt = rcnt > 0 ? rcnt :0; }
 			} else { return; }
-			var i,fpos,ir=0,v,row,gi=0,si=0,ni=0,idn, getId,f=[],rd ={}, rl= ts.rows.length, xmlr,rid, rowData=[],ari=0;
+			var i,fpos,ir=0,v,row,gi=0,si=0,ni=0,idn, getId,f=[],rd ={}, rl= ts.rows.length, xmlr,rid, rowData=[],ari=0, cn=(ts.p.altRows === true) ? ts.p.altclass:'',cn1;
 			if(!ts.p.xmlReader.repeatitems) {f = reader("xml");}
 			if( ts.p.keyIndex===false) {
 				idn = ts.p.xmlReader.id;
@@ -874,7 +894,8 @@ $.fn.jqGrid = function( p ) {
 			while (j<gl) {
 				xmlr = gxml[j];
 				rid = getId(xmlr,j+1);
-				rowData[ari++] = "<tr id=\""+rid+"\" role=\"row\" class =\"ui-widget-content jqgrow\">";
+				cn1 = j%2 == 1 ? cn : '';
+				rowData[ari++] = "<tr id=\""+rid+"\" role=\"row\" class =\"ui-widget-content jqgrow "+cn1+"\">";
 				if(ts.p.rownumbers===true) {
 					rowData[ari++] = addRowNum(0,j,ts.p.page,ts.p.rowNum);
 					ni=1;
@@ -940,7 +961,7 @@ $.fn.jqGrid = function( p ) {
 					$("tbody", t).empty(); rcnt=0;
 				} else { rcnt = rcnt > 0 ? rcnt :0; }
 			} else { return; }
-			var ir=0,v,i,j,row,f=[],cur,gi=0,si=0,ni=0,len,drows,idn,rd={}, fpos,rl = ts.rows.length,idr,rowData=[],ari=0;
+			var ir=0,v,i,j,row,f=[],cur,gi=0,si=0,ni=0,len,drows,idn,rd={}, fpos,rl = ts.rows.length,idr,rowData=[],ari=0,cn=(ts.p.altRows === true) ? ts.p.altclass:'',cn1;
 			ts.p.page = data[ts.p.jsonReader.page] || 1;
 			ts.p.lastpage= data[ts.p.jsonReader.total] || 1;
 			ts.p.records= data[ts.p.jsonReader.records] || 0;
@@ -970,7 +991,8 @@ $.fn.jqGrid = function( p ) {
 						idr=i+1;
 					}
 				}
-				rowData[ari++] = "<tr id=\""+ idr +"\" role=\"row\" class= \"ui-widget-content jqgrow\">";
+				cn1 = i%2 == 1 ? cn : '';
+				rowData[ari++] = "<tr id=\""+ idr +"\" role=\"row\" class= \"ui-widget-content jqgrow "+ cn1+"\">";
 				if(ts.p.rownumbers===true) {
 					rowData[ari++] = addRowNum(0,i,ts.p.page,ts.p.rowNum);
 					ni=1;
