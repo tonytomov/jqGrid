@@ -14,52 +14,50 @@ $.fn.extend({
 			var $t = this, nm, tmp, editable, cnt=0, focus=null, svr=[], ind,cm;
 			if (!$t.grid ) { return; }
 			var hc;
-			if( !$t.p.multiselect ) {
-				ind = $($t).getInd(rowid,true);
-				if( ind == null ) {return;}
-				editable = $(ind).attr("editable") || "0";
-				if (editable == "0") {
-					cm = $t.p.colModel;
-					$('td',ind).each( function(i) {
-						nm = cm[i].name;
-						hc = cm[i].hidden===true ? true : false;
-						try {
-							tmp =  $.unformat(this,{colModel:cm[i]},i);
-						} catch (_) {
-							tmp = $(this).html();
-						}
-						svr[nm]=tmp;
-						if ( nm !== 'cb' && nm !== 'subgrid' && cm[i].editable===true && !hc && nm != 'rn') {
-							if(focus===null) { focus = i; }
-							$(this).html("");
-							var opt = $.extend({},cm[i].editoptions || {},{id:rowid+"_"+nm,name:nm});
-							if(!cm[i].edittype) { cm[i].edittype = "text"; }
-							var elc = createEl(cm[i].edittype,opt,tmp,$(this));
-							$(elc).addClass("editable");
-							$(this).append(elc);
-							//Again IE
-							if(cm[i].edittype == "select" && cm[i].editoptions.multiple===true && $.browser.msie) {
-								$(elc).width($(elc).width());
-							}
-							cnt++;
-						}
-					});
-					if(cnt > 0) {
-						svr['id'] = rowid; $t.p.savedRow.push(svr);
-						$(ind).attr("editable","1");
-						$("td:eq("+focus+") input",ind).focus();
-						if(keys===true) {
-							$(ind).bind("keydown",function(e) {
-								if (e.keyCode === 27) {$($t).restoreRow(rowid, afterrestorefunc);}
-								if (e.keyCode === 13) {
-									$($t).saveRow(rowid,succesfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc );
-									return false;
-								}
-								e.stopPropagation();
-							});
-						}
-						if( $.isFunction(oneditfunc)) { oneditfunc(rowid); }
+			ind = $($t).getInd(rowid,true);
+			if( ind == false ) {return;}
+			editable = $(ind).attr("editable") || "0";
+			if (editable == "0") {
+				cm = $t.p.colModel;
+				$('td',ind).each( function(i) {
+					nm = cm[i].name;
+					hc = cm[i].hidden===true ? true : false;
+					try {
+						tmp =  $.unformat(this,{colModel:cm[i]},i);
+					} catch (_) {
+						tmp = $(this).html();
 					}
+					svr[nm]=tmp;
+					if ( nm != 'cb' && nm != 'subgrid' && cm[i].editable===true && !hc && nm != 'rn') {
+						if(focus===null) { focus = i; }
+						$(this).html("");
+						var opt = $.extend({},cm[i].editoptions || {},{id:rowid+"_"+nm,name:nm});
+						if(!cm[i].edittype) { cm[i].edittype = "text"; }
+						var elc = createEl(cm[i].edittype,opt,tmp,$(this));
+						$(elc).addClass("editable");
+						$(this).append(elc);
+						//Again IE
+						if(cm[i].edittype == "select" && cm[i].editoptions.multiple===true && $.browser.msie) {
+							$(elc).width($(elc).width());
+						}
+						cnt++;
+					}
+				});
+				if(cnt > 0) {
+					svr['id'] = rowid; $t.p.savedRow.push(svr);
+					$(ind).attr("editable","1");
+					$("td:eq("+focus+") input",ind).focus();
+					if(keys===true) {
+						$(ind).bind("keydown",function(e) {
+							if (e.keyCode === 27) {$($t).restoreRow(rowid, afterrestorefunc);}
+							if (e.keyCode === 13) {
+								$($t).saveRow(rowid,succesfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc );
+								return false;
+							}
+							e.stopPropagation();
+						});
+					}
+					if( $.isFunction(oneditfunc)) { oneditfunc(rowid); }
 				}
 			}
 		});
@@ -69,13 +67,13 @@ $.fn.extend({
 		var $t = this, nm, tmp={}, tmp2={}, editable, fr, cv, ind;
 		if (!$t.grid ) { return; }
 		ind = $($t).getInd(rowid,true);
-		if(ind == null) {return;}
+		if(ind == false) {return;}
 		editable = $(ind).attr("editable");
 		url = url ? url : $t.p.editurl;
 		if (editable==="1" && url) {
 			$("td",ind).each(function(i) {
 				nm = $t.p.colModel[i].name;
-				if ( nm !== 'cb' && nm !== 'subgrid' && $t.p.colModel[i].editable===true) {
+				if ( nm != 'cb' && nm != 'subgrid' && $t.p.colModel[i].editable===true && nm != 'rn') {
 					if( $t.p.colModel[i].hidden===true) { tmp[nm] = $(this).html(); }
 					else {
 						switch ($t.p.colModel[i].edittype) {
@@ -180,7 +178,7 @@ $.fn.extend({
 			var $t= this, fr, ind;
 			if (!$t.grid ) { return; }
 			ind = $($t).getInd(rowid,true);
-			if(ind == null) {return;}
+			if(ind == false) {return;}
 			for( var k=0;k<$t.p.savedRow.length;k++) {
 				if( $t.p.savedRow[k].id===rowid) {fr = k; break;}
 			}
