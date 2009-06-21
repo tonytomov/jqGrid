@@ -215,8 +215,9 @@ function createEl(eltype,options,vl) {
 				elem = document.createElement("textarea");
 				if(!options.cols) {jQuery(elem).css("width","98%");}
 				if(vl=='&nbsp;' || vl=='&#160;' || (vl.length==1 && vl.charCodeAt(0)==160)) {vl="";}
+				elem.value = vl;
 				options = bindEv(elem,options);
-				jQuery(elem).val(vl).attr(options);
+				jQuery(elem).attr(options);
 				break;
 		case "checkbox" : //what code for simple checkbox
 			elem = document.createElement("input");
@@ -308,8 +309,8 @@ function createEl(eltype,options,vl) {
 		case "button" :
 			elem = document.createElement("input");
 			elem.type = eltype;
-			options = bindEv(elem,options);
 			elem.value = jQuery.htmlDecode(vl);
+			options = bindEv(elem,options);
 			if(!options.size) {
 				jQuery(elem).css({width:"98%"});
 			}
