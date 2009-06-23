@@ -22,7 +22,8 @@ $.fn.extend({
 			afterSubmitForm: null,
 			jqModal : false,
 			closeOnEscape : true,
-			ShrinkToFit : false
+			ShrinkToFit : false,
+			jqModal : false
 		}, $.jgrid.col, p ||{});
 		return this.each(function(){
 			var $t = this;
@@ -36,7 +37,7 @@ $.fn.extend({
 			var dtbl = "ColTbl_"+gID;
 			if ( $("#"+IDs.themodal).html() != null ) {
 				if(onBeforeShow) { p.beforeShowForm($("#"+dtbl)); }
-				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:false});
+				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal, jqM:false});
 				if(onAfterShow) { p.afterShowForm($("#"+dtbl)); }
 			} else {
 				var tbl =$("<table id='"+dtbl+"' class='ColTable'><tbody></tbody></table>");
@@ -50,7 +51,7 @@ $.fn.extend({
 				var bC  ="<input id='eData' type='button' value='"+p.bCancel+"'/>";
 				$(tbl).append("<tr><td class='ColButton'>"+bS+"&nbsp;"+bC+"</td></tr>");
 				p.gbox = "#gbox_"+gID;
-				createModal(IDs,tbl,p,$t.grid.hDiv,$t.grid.hDiv);
+				createModal(IDs,tbl,p,"#gview_"+$t.p.id,$("#gview_"+$t.p.id)[0]);
 				//if( p.drag) { DnRModal("#"+IDs.themodal,"#"+IDs.modalhead+" td.modaltext"); }
 				$("#dData","#"+dtbl).click(function(e){
 					for(i=0;i<$t.p.colModel.length;i++){
@@ -67,12 +68,12 @@ $.fn.extend({
 					if(p.ShrinkToFit===true) {
 						$($t).setGridWidth($t.grid.width-0.01,true);
 					}
-					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:false});
+					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal});
 					if (onAfterSubmit) { p.afterSubmitForm($("#"+dtbl)); }
 					return false;
 				});
 				$("#eData", "#"+dtbl).click(function(e){
-					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:false});
+					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal});
 					return false;
 				});
 				$("#dData, #eData","#"+dtbl).addClass('ui-state-default ui-corner-all')
@@ -82,7 +83,7 @@ $.fn.extend({
 				   function(){$(this).removeClass('ui-state-hover');}
 				);				
 				if(onBeforeShow) { p.beforeShowForm($("#"+dtbl)); }
-				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:false});
+				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal, jqM: true});
 				if(onAfterShow) { p.afterShowForm($("#"+dtbl)); }
 			}
 		});
