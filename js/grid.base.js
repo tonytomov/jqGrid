@@ -786,7 +786,7 @@ $.fn.jqGrid = function( p ) {
 		$(eg).insertBefore(gv).attr("id","gbox_"+this.id);
 		$(gv).appendTo(eg).attr("id","gview_"+this.id);
 		if (isMSIE && /6.0/.test(navigator.userAgent)) {
-			ii = '<iframe style="opacity:0" src="javascript:false;document.write(\'\');"></iframe>';
+			ii = "<iframe style=\"opacity:0\" src=\"javascript:false;\"></iframe>";
 		} else { ii="";}
 		$("<div class='ui-widget-overlay jqgrid-overlay' id='lui_"+this.id+"'></div>").append(ii).insertBefore(gv);
 		$("<div class='loading ui-state-default ui-state-active' id='load_"+this.id+"'>"+this.p.loadtext+"</div>").insertBefore(gv);
@@ -1387,7 +1387,7 @@ $.fn.jqGrid = function( p ) {
 				ts.p.page = 1;
 			}
 			imgs = (ts.p.sortorder == 'asc') ? 'ui-icon-triangle-1-n' : 'ui-icon-triangle-1-s';
-			imgs = "<span class='ui-icon ui-grid-ico-sort "+imgs+ "'>&nbsp;&nbsp;&nbsp;&nbsp;</span>";
+			imgs = "<span class='ui-grid-ico-sort ui-icon "+imgs+ "'>&nbsp;&nbsp;&nbsp;&nbsp;</span>";
 			var thd= $("thead:first",grid.hDiv).get(0);
 			ls = ts.p.colModel[ts.p.lastsort].name.replace('.',"\\.");
 			$("tr th div#jqgh_"+ls+" span.ui-grid-ico-sort",thd).remove();
