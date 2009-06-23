@@ -22,7 +22,7 @@ $.fn.extend({
 			afterSubmitForm: null,
 			jqModal : false,
 			closeOnEscape : true,
-			ShrinkToFit : true
+			ShrinkToFit : false
 		}, $.jgrid.col, p ||{});
 		return this.each(function(){
 			var $t = this;
