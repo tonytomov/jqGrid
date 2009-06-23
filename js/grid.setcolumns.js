@@ -21,7 +21,8 @@ $.fn.extend({
 			afterShowForm: null,
 			afterSubmitForm: null,
 			jqModal : false,
-			closeOnEscape : true
+			closeOnEscape : true,
+			ShrinkToFit : true
 		}, $.jgrid.col, p ||{});
 		return this.each(function(){
 			var $t = this;
@@ -62,6 +63,9 @@ $.fn.extend({
 								$("#col_" + $t.p.colModel[i].name).attr("defaultChecked",""); // Added from T. Tomov IE BUG
 							}
 						}
+					}
+					if(p.ShrinkToFit===true) {
+						$($t).setGridWidth($t.grid.width-0.01,true);
 					}
 					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:false});
 					if (onAfterSubmit) { p.afterSubmitForm($("#"+dtbl)); }
