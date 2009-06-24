@@ -330,9 +330,9 @@ $.fn.jqGrid = function( p ) {
 			if(rowInd == 0 && success ) {
 				this.updateColumns();
 			}
-			if( t.p.altRows === true ) {
-				var cn = t.p.altclass;
-				$(t.rows).each(function(i){
+			if( $t.p.altRows === true ) {
+				var cn = $t.p.altclass;
+				$($t.rows).each(function(i){
 					if(i % 2 ==1) $(this).addClass(cn);
 					else $(this).removeClass(cn);
 				});
