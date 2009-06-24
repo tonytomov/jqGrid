@@ -5,7 +5,7 @@
  radiobuttons then the jqGrid is made selectable.
 */
 // Addition - selector can be a class or id
-function tableToGrid(selector) {
+function tableToGrid(selector, options) {
 $(selector).each(function() {
 	if(this.grid) {return;} //Adedd from Tony Tomov
 	// This is a small "hack" to make the width of the jqGrid 100%
@@ -70,7 +70,7 @@ $(selector).each(function() {
 	// Mark it as jqGrid
 	$(this).addClass("scroll");
 
-	$(this).jqGrid({
+	$(this).jqGrid($.extend({
 		datatype: "local",
 		width: w,
 		colNames: colNames,
@@ -78,7 +78,7 @@ $(selector).each(function() {
 		multiselect: selectMultiple
 		//inputName: inputName,
 		//inputValueCol: imputName != null ? "__selection__" : null
-	});
+	}, options || {}));
 
 	// Add data
 	for (var a = 0; a < data.length; a++) {
