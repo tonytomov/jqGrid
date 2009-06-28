@@ -43,7 +43,7 @@
 .ui-jqgrid .ui-pg-input { height:13px;font-size:.8em;}
 .ui-jqgrid .ui-pg-selbox {font-size:.8em; line-height:18px; display:block; height:18px}
 .ui-jqgrid .ui-separator {height: 18px; border-left: 1px solid #ccc ; border-right: 1px solid #ccc ; margin: 1px; float: right;}
-.ui-jqgrid .ui-paging-info {font-weight: normal;height:19px; margin-top:3px;}
+.ui-jqgrid .ui-paging-info {font-weight: normal;height:19px; margin-top:3px;margin-right:4px;}
 .ui-jqgrid .ui-jqgrid-pager .ui-pg-div {padding:1px 0;cursor:pointer; float:left;list-style-image:none;list-style-position:outside;list-style-type:none;position:relative;}
 .ui-jqgrid .ui-jqgrid-pager .ui-pg-div  span.ui-icon {float:left;margin:0 2px;}
 /*subgrid*/
