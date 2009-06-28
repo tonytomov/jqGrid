@@ -727,6 +727,7 @@ $.fn.jqGrid = function( p ) {
     };
 	$.getAbsoluteIndex = function (t,rInd){ 
 		var cntnotv=0,cntv=0, cell, i;
+		if($.browser.version > 7 ) return rInd;
 		for (i=0;i<t.cells.length;i++) { 
 			cell=t.cells(i); 
 			if (cell.style.display=='none') cntnotv++; else cntv++; 
@@ -785,8 +786,8 @@ $.fn.jqGrid = function( p ) {
 		var eg = $("<div class='ui-jqgrid ui-widget ui-widget-content ui-corner-all'></div>");
 		$(eg).insertBefore(gv).attr("id","gbox_"+this.id);
 		$(gv).appendTo(eg).attr("id","gview_"+this.id);
-		if (isMSIE && /6.0/.test(navigator.userAgent)) {
-			ii = "<iframe style=\"opacity:0\" src=\"javascript:false;\"></iframe>";
+		if (isMSIE && $.browser.version <= 6) {
+			ii = '<iframe style="display:block;position:absolute;z-index:-1;filter:Alpha(Opacity=\'0\');" src="javascript:false;"></iframe>';
 		} else { ii="";}
 		$("<div class='ui-widget-overlay jqgrid-overlay' id='lui_"+this.id+"'></div>").append(ii).insertBefore(gv);
 		$("<div class='loading ui-state-default ui-state-active' id='load_"+this.id+"'>"+this.p.loadtext+"</div>").insertBefore(gv);
@@ -838,7 +839,7 @@ $.fn.jqGrid = function( p ) {
 			} else {
 				v = cellVal(cellval);
 			}
-			return isMSIE ? v.replace(/(\s*$)/g, '').replace(/'/g,'&#39') : v;
+			return v;
 		},
 		cellVal =  function (val) {
 			return val === undefined || val === null || val === "" ? "&#160;" : val+"";
