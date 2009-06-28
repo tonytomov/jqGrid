@@ -23,7 +23,9 @@ $.fn.extend({
 			jqModal : false,
 			closeOnEscape : true,
 			ShrinkToFit : false,
-			jqModal : false
+			jqModal : false,
+			saveicon: [true,"left","ui-icon-disk"],
+			closeicon: [true,"left","ui-icon-close"]
 		}, $.jgrid.col, p ||{});
 		return this.each(function(){
 			var $t = this;
@@ -40,16 +42,24 @@ $.fn.extend({
 				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal, jqM:false});
 				if(onAfterShow) { p.afterShowForm($("#"+dtbl)); }
 			} else {
-				var tbl =$("<table id='"+dtbl+"' class='ColTable'><tbody></tbody></table>");
+				var tbl =$("<table id='"+dtbl+"' class='ColTable EditTable' cellspacing='1' cellpading='2' border='0' style='table-layout:fixed'><tbody></tbody></table>");
 				for(i=0;i<this.p.colNames.length;i++){
 					if(!$t.p.colModel[i].hidedlg) { // added from T. Tomov
 						$(tbl).append("<tr><td ><input type='checkbox' id='col_" + this.p.colModel[i].name + "' class='cbox' value='T' " + 
 						((this.p.colModel[i].hidden===false)?"checked":"") + "/>" +  "<label for='col_" + this.p.colModel[i].name + "'>" + this.p.colNames[i] + "(" + this.p.colModel[i].name + ")</label></td></tr>");
 					}
 				}
-				var bS  ="<input id='dData' type='button' value='"+p.bSubmit+"'/>";
-				var bC  ="<input id='eData' type='button' value='"+p.bCancel+"'/>";
-				$(tbl).append("<tr><td class='ColButton'>"+bS+"&nbsp;"+bC+"</td></tr>");
+				var bS  ="<a href='javascript:void(0)' id='dData' class='fm-button ui-state-default ui-corner-all'>"+p.bSubmit+"</a>",
+				bC  ="<a href='javascript:void(0)' id='eData' class='fm-button ui-state-default ui-corner-all'>"+p.bCancel+"</a>";
+				$(tbl).append("<tr><td class='ColButton EditButton'>"+bS+"&nbsp;"+bC+"</td></tr>");
+				if(p.saveicon[0]==true) {
+					$("#dData",tbl).addClass(p.saveicon[1] == "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
+					.append("<span class='ui-icon "+p.saveicon[2]+"'></span>");
+				}
+				if(p.closeicon[0]==true) {
+					$("#eData",tbl).addClass(p.closeicon[1] == "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
+					.append("<span class='ui-icon "+p.closeicon[2]+"'></span>");
+				}
 				p.gbox = "#gbox_"+gID;
 				createModal(IDs,tbl,p,"#gview_"+$t.p.id,$("#gview_"+$t.p.id)[0]);
 				//if( p.drag) { DnRModal("#"+IDs.themodal,"#"+IDs.modalhead+" td.modaltext"); }
@@ -76,9 +86,7 @@ $.fn.extend({
 					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal});
 					return false;
 				});
-				$("#dData, #eData","#"+dtbl).addClass('ui-state-default ui-corner-all')
-				.css({padding:".2em .5em", cursor: 'pointer'})
-				.hover(
+				$("#dData, #eData","#"+dtbl).hover(
 				   function(){$(this).addClass('ui-state-hover');}, 
 				   function(){$(this).removeClass('ui-state-hover');}
 				);				
