@@ -313,12 +313,13 @@ $.fn.jqGrid = function( p ) {
 		return res;
 	};
 	$.fn.delRowData = function(rowid) {
-		var success = false, rowInd, ia;
+		var success = false, rowInd, ia, ri;
 		this.each(function() {
 			var $t = this;
 			rowInd = $t.rows.namedItem(rowid);
 			if(!rowInd) {return false;}
 			else {
+				ri = rowInd.rowIndex;
 				$(rowInd).remove();
 				$t.p.records--;
 				$t.p.reccount--;
@@ -328,10 +329,10 @@ $.fn.jqGrid = function( p ) {
 				ia = $.inArray(rowid,$t.p.selarrrow);
 				if(ia != -1) {$t.p.selarrrow.splice(ia,1);}
 			}
-			if(rowInd == 0 && success ) {
-				this.updateColumns();
+			if( ri == 0 && success ) {
+				$t.updateColumns();
 			}
-			if( $t.p.altRows === true ) {
+			if( $t.p.altRows === true && success ) {
 				var cn = $t.p.altclass;
 				$($t.rows).each(function(i){
 					if(i % 2 ==1) $(this).addClass(cn);
@@ -397,7 +398,7 @@ $.fn.jqGrid = function( p ) {
 				row += "</tr>";
 				if(t.p.subGrid===true) {
 					row = $(row)[0]; 
-					$(t).addSubGrid(row,gi);
+					$(t).addSubGrid(row,gi+ni);
 				}
 				if(t.rows.length === 0){
 					$("table:first",t.grid.bDiv).append(row);
@@ -934,7 +935,7 @@ $.fn.jqGrid = function( p ) {
 						$("tbody:first",t).append(rowData.join(''));
 					}
 					if (ts.p.subGrid===true) {
-						try {$(ts).addSubGrid(ts.rows[ts.rows.length-1],gi);} catch (e){}
+						try {$(ts).addSubGrid(ts.rows[ts.rows.length-1],gi+ni);} catch (e){}
 					}
 					if(afterInsRow) {ts.p.afterInsertRow(rid,rd,this);}
 					rowData=[];ari=0;
@@ -1035,7 +1036,7 @@ $.fn.jqGrid = function( p ) {
 						$("tbody:first",t).append(rowData.join(''));
 					}
 					if(ts.p.subGrid === true ) {
-						try { $(ts).addSubGrid(ts.rows[ts.rows.length-1],gi);} catch (e){}
+						try { $(ts).addSubGrid(ts.rows[ts.rows.length-1],gi+ni);} catch (e){}
 					}
 					if(afterInsRow) {ts.p.afterInsertRow(idr,rd,drows[i]);}
 					rowData=[];ari=0;
