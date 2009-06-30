@@ -1,5 +1,7 @@
-Please read The Installation instructions bellow
+Please read The Installation instructions first in install.txt
 ================================================
+3.5 beta (buld6)
+To be written. See GitHub for the most fixes.
 3.5 beta (buld5)
 
 FormEditing
