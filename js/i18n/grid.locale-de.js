@@ -10,17 +10,17 @@
 **/
 $.jgrid = {
 	defaults : {
-		recordtext: "View {0} - {1} of {2}",
-	    emptyrecords: "No records to view",
+		recordtext: "Seite {0} - {1} von {2}",
+	    emptyrecords: "Keine Datensätze vorhanden",
 		loadtext: "Lädt...",
-		pgtext : "Page {0} of {1}"
+		pgtext : "Seite {0} von {1}"
 	},
 	search : {
 		caption: "Suche...",
 		Find: "Finden",
 		Reset: "Zurücksetzen",
-	    odata : ['equal', 'not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain'],
-	    groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	],
+	    odata : ['gleich', 'ungleich', 'kleiner', 'kleiner gleich','größer','größer gleich', 'beginnt mit','beginnt nicht mit','ist enthalten in','ist nicht enthalten in','endet mit','endet nicht mit','enthält','enthält nicht'],
+	    groupOps: [	{ op: "AND", text: "alle" },	{ op: "OR",  text: "irgendein" }	],
 		matchText: " match",
 		rulesText: " rules"
 	},
@@ -30,10 +30,10 @@ $.jgrid = {
 		bSubmit: "Speichern",
 		bCancel: "Abbrechen",
 		bClose: "Schließen",
-		saveData: "Data has been changed! Save changes?",
-		bYes : "Yes",
-		bNo : "No",
-		bExit : "Cancel",
+		saveData: "Daten wurden geändert! Änderungen speichern?",
+		bYes : "Ja",
+		bNo : "Nein",
+		bExit : "Abbrechen",
 		msg: {
 		    required:"Feld ist erforderlich",
 		    number: "Bitte geben Sie eine Zahl ein",
@@ -41,13 +41,13 @@ $.jgrid = {
 		    maxValue:"Wert muss kleiner oder gleich sein, als ",
 		    email: "ist keine valide E-Mail Adresse",
 		    integer: "Bitte geben Sie eine Ganzzahl ein",
-			date: "Please, enter valid date value",
-			url: "is not a valid URL. Prefix required ('http://' or 'https://')"
+			date: "Bitte geben Sie ein gültiges Datum ein",
+			url: "ist keine gültige URL. Es fehlt ein Präfix ('http://' or 'https://')"
 		}
 	},
 	view : {
-	    caption: "View Record",
-	    bClose: "Close"
+	    caption: "Datensatz anzeigen",
+	    bClose: "Schließen"
 	},
 	del : {
 		caption: "Löschen",
@@ -57,9 +57,9 @@ $.jgrid = {
 	},
 	nav : {
 		edittext: " ",
-	    edittitle: "Ausgewählten Zeile editieren",
+	    edittitle: "Ausgewählte Zeile anzeigen",
 		addtext:" ",
-	    addtitle: "Neuen Zeile einfügen",
+	    addtitle: "Neue Zeile einfügen",
 	    deltext: " ",
 	    deltitle: "Ausgewählte Zeile löschen",
 	    searchtext: " ",
@@ -69,7 +69,7 @@ $.jgrid = {
 	    alertcap: "Warnung",
 	    alerttext: "Bitte Zeile auswählen",
 		viewtext: "",
-		viewtitle: "View selected row"
+		viewtitle: "Ausgewählte Zeile anzeigen"
 	},
 	col : {
 		caption: "Spalten anzeigen/verbergen",
@@ -79,8 +79,8 @@ $.jgrid = {
 	errors : {
 		errcap : "Fehler",
 		nourl : "Keine URL angegeben",
-		norecords: "Keine Datensätze zum verarbeiten",
-		model : "Length of colNames <> colModel!"
+		norecords: "Keine Datensätze zum Verarbeiten",
+		model : "Länge von colNames <> colModel!"
 	},
 	formatter : {
 		integer : {thousandsSeparator: " ", defaultValue: '0'},
@@ -88,12 +88,12 @@ $.jgrid = {
 		currency : {decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2, prefix: "", suffix:"", defaultValue: '0.00'},
 		date : {
 			dayNames:   [
-				"Sun", "Mon", "Tue", "Wed", "Thr", "Fri", "Sat",
-				"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+				"So", "Mo", "Di", "Mi", "Do", "Fr", "Sa",
+				"Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"
 			],
 			monthNames: [
-				"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-				"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+				"Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez",
+				"Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"
 			],
 			AmPm : ["am","pm","AM","PM"],
 			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th'},
@@ -122,4 +122,3 @@ $.jgrid = {
 	}
 };
 })(jQuery);
-
