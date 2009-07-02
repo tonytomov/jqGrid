@@ -613,7 +613,7 @@ $.fn.extend({
 				if(rp_ge.checkOnSubmit || rp_ge.checkOnUpdate) {rp_ge._savedData = {};rp_ge._savedData.id=rowid;}
 				if(rowid == '_empty') {
 					$(obj.p.colModel).each(function(i){
-						nm = this.name;
+						nm = this.name.replace('.',"\\.");;
 						opt = $.extend({}, this.editoptions || {} );
 						fld = $("#"+nm,"#"+fmid);
 						if(fld[0] != null) {
@@ -646,7 +646,7 @@ $.fn.extend({
 					return;
 				}
 				$('table:first tr#'+rowid+' td',obj.grid.bDiv).each( function(i) {
-					nm = obj.p.colModel[i].name;
+					nm = obj.p.colModel[i].name.replace('.',"\\.");;
 					// hidden fields are included in the form
 					if(obj.p.colModel[i].editrules && obj.p.colModel[i].editrules.edithidden === true) {
 						hc = false;
@@ -663,7 +663,6 @@ $.fn.extend({
 								tmp = $(this).html();
 							}
 						}
-						nm = nm.replace('.',"\\.");
 						if(rp_ge.checkOnSubmit===true || rp_ge.checkOnUpdate) rp_ge._savedData[nm] = tmp;
 						switch (obj.p.colModel[i].edittype) {
 							case "password":
@@ -1042,7 +1041,7 @@ $.fn.extend({
 							trdata[0].rp = rp;
 						}
 						$("td:eq("+(cp-2)+")",trdata[0]).html('<b>'+ (typeof frmopt.label === 'undefined' ? obj.p.colNames[i]: frmopt.label)+'</b>');
-						$("td:eq("+(cp-1)+")",trdata[0]).append("<span>"+tmp+"</span>").attr("id",nm);
+						$("td:eq("+(cp-1)+")",trdata[0]).append("<span>"+tmp+"</span>").attr("id","v_"+nm);
 						if(setme){
 							$("td:eq("+(cp-1)+") span",trdata[0]).css({'text-align':'right',width:maxw+"px"});
 						}
@@ -1060,7 +1059,7 @@ $.fn.extend({
 			function fillData(rowid,obj){
 				var nm, hc,cnt=0,tmp, opt;
 				$('#'+rowid+' td',obj.grid.bDiv).each( function(i) {
-					nm = obj.p.colModel[i].name;
+					nm = obj.p.colModel[i].name.replace('.',"\\.");
 					// hidden fields are included in the form
 					if(obj.p.colModel[i].editrules && obj.p.colModel[i].editrules.edithidden === true) {
 						hc = false;
@@ -1073,8 +1072,8 @@ $.fn.extend({
 						} else {
 							tmp = $(this).html();
 						}
-						nm= nm.replace('.',"\\.");
 						opt = $.extend({},obj.p.colModel[i].editoptions || {});
+						nm = "v_"+nm;
 						$("#"+nm+" span","#"+frmtb).html(tmp);
 						if (hc) { $("#"+nm,"#"+frmtb).parents("tr:first").hide(); }
 						cnt++;
