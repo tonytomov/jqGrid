@@ -1,74 +1,74 @@
 ;(function($){
 /**
- * jqGrid Russian Translation v1.1 21.01.2009
- * Alexey Kanaev softcore@rambler.ru
- * http://softcore.com.ru 
+ * jqGrid Russian Translation v1.0 02.07.2009 (based on translation by Alexey Kanaev v1.1 21.01.2009, http://softcore.com.ru)
+ * Sergey Dyagovchenko
+ * http://d.sumy.ua
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
 $.jgrid = {
 	defaults : {
-		recordtext: "View {0} - {1} of {2}",
-	    emptyrecords: "No records to view",
+		recordtext: "Просмотр {0} - {1} из {2}",
+	  emptyrecords: "Нет записей для просмотра",
 		loadtext: "Загрузка...",
-		pgtext : "Page {0} of {1}"
+		pgtext : "Стр. {0} из {1}"
 	},
 	search : {
-	    caption: "Поиск...",
-	    Find: "Найти",
-	    Reset: "Сброс",
-	    odata : ['equal', 'not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain'],
-	    groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	],
-		matchText: " match",
-		rulesText: " rules"
+    caption: "Поиск...",
+    Find: "Найти",
+    Reset: "Сброс",
+    odata : ['равно', 'не равно', 'меньше', 'меньше или равно','больше','больше или равно', 'начинается с','не начинается с','находится в','не находится в','заканчивается на','не заканчивается на','содержит','не содержит'],
+    groupOps: [	{ op: "AND", text: "все" },	{ op: "OR",  text: "любой" }	],
+    matchText: " совпадает",
+    rulesText: " правила"
 	},
 	edit : {
-	    addCaption: "Добавить запись",
-	    editCaption: "Редактировать запись",
-	    bSubmit: "Сохранить",
-	    bCancel: "Отмена",
+    addCaption: "Добавить запись",
+    editCaption: "Редактировать запись",
+    bSubmit: "Сохранить",
+    bCancel: "Отмена",
 		bClose: "Закрыть",
-		saveData: "Data has been changed! Save changes?",
-		bYes : "Yes",
-		bNo : "No",
-		bExit : "Cancel",
+		saveData: "Данные были измененны! Сохранить изменения?",
+		bYes : "Да",
+		bNo : "Нет",
+		bExit : "Отмена",
 	    msg: {
-	        required:"Поле является обязательным",
-	        number:"Пожалуйста, введите правильное число",
-	        minValue:"значение должно быть больше либо равно",
-	        maxValue:"значение должно быть больше либо равно",
-	        email: "некорректное значение e-mail",
-	        integer: "Пожалуйста введите целое число",
-			date: "Please, enter valid date value",
-			url: "is not a valid URL. Prefix required ('http://' or 'https://')"
+        required:"Поле является обязательным",
+        number:"Пожалуйста, введите правильное число",
+        minValue:"значение должно быть больше либо равно",
+        maxValue:"значение должно быть меньше либо равно",
+        email: "некорректное значение e-mail",
+        integer: "Пожалуйста, введите целое число",
+        date: "Пожалуйста, введите правильную дату",
+        url: "неверная ссылка. Необходимо ввести префикс ('http://' or 'https://')"
 		}
 	},
 	view : {
-	    caption: "View Record",
-	    bClose: "Close"
+	    caption: "Просмотр записи",
+	    bClose: "Закрыть"
 	},
 	del : {
 	    caption: "Удалить",
-	    msg: "Удалить выделенную запись(и)?",
-	    bSubmit: "Удвлить",
+	    msg: "Удалить выбранную запись(и)?",
+	    bSubmit: "Удалить",
 	    bCancel: "Отмена"
 	},
 	nav : {
-		edittext: " ",
-	    edittitle: "Редактировать выделенную запись",
-		addtext:" ",
+  		edittext: " ",
+	    edittitle: "Редактировать выбранную запись",
+  		addtext:" ",
 	    addtitle: "Добавить новую запись",
 	    deltext: " ",
-	    deltitle: "Удалить выделенную запись",
+	    deltitle: "Удалить выбранную запись",
 	    searchtext: " ",
 	    searchtitle: "Найти записи",
 	    refreshtext: "",
 	    refreshtitle: "Обновить таблицу",
 	    alertcap: "Внимание",
-	    alerttext: "Пожалуйста, выделите запись",
-		viewtext: "",
-		viewtitle: "View selected row"
+	    alerttext: "Пожалуйста, выберите запись",
+  		viewtext: "",
+  		viewtitle: "Просмотреть выбранную запись"
 	},
 	col : {
 	    caption: "Показать/скрыть столбцы",
@@ -79,7 +79,7 @@ $.jgrid = {
 		errcap : "Ошибка",
 		nourl : "URL не установлен",
 		norecords: "Нет записей для обработки",
-	    model : "Число полей не соответствует числу столбцов таблицы!"
+    model : "Число полей не соответствует числу столбцов таблицы!"
 	},
 	formatter : {
 		integer : {thousandsSeparator: " ", defaultValue: '0'},
@@ -115,8 +115,8 @@ $.jgrid = {
 		},
 		baseLinkUrl: '',
 		showAction: '',
-	    target: '',
-	    checkbox : {disabled:true},
+	  target: '',
+	  checkbox : {disabled:true},
 		idName : 'id'
 	}
 };
