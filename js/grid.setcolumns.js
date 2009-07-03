@@ -25,7 +25,8 @@ $.fn.extend({
 			ShrinkToFit : false,
 			jqModal : false,
 			saveicon: [true,"left","ui-icon-disk"],
-			closeicon: [true,"left","ui-icon-close"]
+			closeicon: [true,"left","ui-icon-close"],
+			onClose : null
 		}, $.jgrid.col, p ||{});
 		return this.each(function(){
 			var $t = this;
@@ -78,12 +79,12 @@ $.fn.extend({
 					if(p.ShrinkToFit===true) {
 						$($t).setGridWidth($t.grid.width-0.01,true);
 					}
-					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal});
+					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: p.onClose});
 					if (onAfterSubmit) { p.afterSubmitForm($("#"+dtbl)); }
 					return false;
 				});
 				$("#eData", "#"+dtbl).click(function(e){
-					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal});
+					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: p.onClose});
 					return false;
 				});
 				$("#dData, #eData","#"+dtbl).hover(

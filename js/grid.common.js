@@ -25,7 +25,7 @@ var createModal = function(aIDs, content, p, insertSelector, posSelector, append
 	var ahr= jQuery("<a href='javascript:void(0)' class='ui-jqdialog-titlebar-close ui-corner-all'></a>")
 	.hover(function(){ahr.addClass('ui-state-hover');},
 		   function(){ahr.removeClass('ui-state-hover');})
-	.append("<span class='ui-icon ui-icon-closethick jqmClose'></span>");
+	.append("<span class='ui-icon ui-icon-closethick'></span>");
 	jQuery(mh).append(ahr);
 	var mc = document.createElement('div');
 	jQuery(mc).addClass("ui-jqdialog-content ui-widget-content").attr("id",aIDs.modalcontent);
@@ -42,13 +42,12 @@ var createModal = function(aIDs, content, p, insertSelector, posSelector, append
 			p.left = pos[0] + 4;
 			p.top = pos[1] + 4;
 		}
-	} else {
-		// position relative to grid could be improved - center, right
-		jQuery("a.ui-jqdialog-titlebar-close",mh).click(function(e){
-			hideModal("#"+aIDs.themodal,{gb:p.gbox,jqm:p.jqModal});
-			return false;
-		});
 	}
+	jQuery("a.ui-jqdialog-titlebar-close",mh).click(function(e){
+		var oncm = jQuery("#"+aIDs.themodal).data("onClose") || p.onClose;
+		hideModal("#"+aIDs.themodal,{gb:p.gbox,jqm:p.jqModal,onClose:oncm});
+		return false;
+	});
 	if (p.width == 0 || !p.width) {p.width = 300;}
 	if(p.height==0 || !p.height) {p.height =200;}
 	if(!p.zIndex) {p.zIndex = 950;}
@@ -86,7 +85,8 @@ var createModal = function(aIDs, content, p, insertSelector, posSelector, append
 	if(p.closeOnEscape === true){
 		jQuery(mw).keydown( function( e ) {
 			if( e.which == 27 ) {
-				hideModal(this,{gb:p.gbox,jqm:p.jqModal});
+				var cone = jQuery("#"+aIDs.themodal).data("onClose") || p.onClose;
+				hideModal(this,{gb:p.gbox,jqm:p.jqModal,onClose: cone});
 			}
 		});
 	}
@@ -115,7 +115,11 @@ var viewModal = function (selector,o){
 	return false;
 };
 var hideModal = function (selector,o) {
-	o = jQuery.extend({jqm : true, gb :''}, o || {});	
+	o = jQuery.extend({jqm : true, gb :''}, o || {});
+    if(o.onClose) {
+		var oncret =  o.onClose(selector);
+		if (typeof oncret == 'boolean'  && !oncret ) return;
+    }	
 	if (jQuery.fn.jqm && o.jqm === true) {
 		jQuery(selector).attr("aria-hidden","true").jqmHide();
 	} else {

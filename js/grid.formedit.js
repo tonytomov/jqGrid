@@ -27,7 +27,8 @@ $.fn.extend({
 			// translation
 			// if you want to change or remove the order change it in sopt
 			// ['bw','eq','ne','lt','le','gt','ge','ew','cn'] 
-			sopt: null 
+			sopt: null,
+			onClose : null
 			// these are common options
 		}, $.jgrid.search, p || {});
 		return this.each(function() {
@@ -161,6 +162,10 @@ $.fn.extend({
 				grid.trigger("reloadGrid");
 			}
 			function hideFilter(selector) {
+				if(p.onClose){
+					var fclm = p.onClose(selector);
+					if(typeof fclm == 'boolean' && !fclm) return;
+				}
 				selector.hide();
 				$(".jqgrid-overlay","#gbox_"+$t.p.id).hide();
 			}
@@ -209,7 +214,8 @@ $.fn.extend({
 			navkeys: [false,38,40],
 			checkOnSubmit : false,
 			checkOnUpdate : false,
-			_savedData : {}
+			_savedData : {},
+			onClose : null
 		}, $.jgrid.edit, p || {});
 		rp_ge = p;
 		return this.each(function(){
@@ -254,11 +260,12 @@ $.fn.extend({
 					$("#"+frmgr).data("disabled",false);
 				}
 				if(onBeforeShow) { onBeforeShow($("#"+frmgr)); }
+				$("#"+IDs.themodal).data("onClose",rp_ge.onClose);
 				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal, jqM: false, closeoverlay: closeovrl});
 				if(!closeovrl) {
 					$(".jqmOverlay").click(function(){
 						if(!checkUpdates()) return false;
-						hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal});
+						hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: rp_ge.onClose});
 						return false;
 					});
 				}
@@ -327,7 +334,7 @@ $.fn.extend({
 					}
 					if(e.which === 27) {
 						if(!checkUpdates()) return false;
-						if(cle)	hideModal(this,{gb:p.gbox,jqm:p.jqModal});
+						if(cle)	hideModal(this,{gb:p.gbox,jqm:p.jqModal, onClose: rp_ge.onClose});
 						return false;
 					}
 					if(rp_ge.navkeys[0]===true) {
@@ -347,7 +354,7 @@ $.fn.extend({
 					$("a.ui-jqdialog-titlebar-close","#"+IDs.themodal).unbind("click")
 					.click(function(){
 						if(!checkUpdates()) return false;
-						hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal});
+						hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal,onClose: rp_ge.onClose});
 						return false;
 					});
 				}
@@ -386,7 +393,7 @@ $.fn.extend({
 					$("#cNew","#"+IDs.themodal).click(function(){
 						$(".confirm","#"+IDs.themodal).hide();
 						$("#"+frmgr).data("disabled",false);
-						hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal});
+						hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal,onClose: rp_ge.onClose});
 						return false;
 					});
 				}
@@ -394,11 +401,12 @@ $.fn.extend({
 				if(onInitializeForm) { onInitializeForm($("#"+frmgr)); }
 				if(rowid=="_empty") { $("#pData,#nData","#"+frmtb).hide(); } else { $("#pData,#nData","#"+frmtb).show(); }
 				if(onBeforeShow) { onBeforeShow($("#"+frmgr)); }
+				$("#"+IDs.themodal).data("onClose",rp_ge.onClose);
 				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal,closeoverlay:closeovrl});
 				if(!closeovrl) {
 					$(".jqmOverlay").click(function(){
 						if(!checkUpdates()) return false;
-						hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal});
+						hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: rp_ge.onClose});
 						return false;
 					});
 				}
@@ -432,7 +440,7 @@ $.fn.extend({
 				});
 				$("#cData", "#"+frmtb).click(function(e){
 					if(!checkUpdates()) return false;
-					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal});
+					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal,onClose: rp_ge.onClose});
 					return false;
 				});
 				$("#nData", "#"+frmtb).click(function(e){
@@ -766,7 +774,7 @@ $.fn.extend({
 											$($t).addRowData(ret[2],postdata,p.addedrow);
 											$($t).setSelection(ret[2]);
 										}
-										hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal});
+										hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal,onClose: rp_ge.onClose});
 									} else if (rp_ge.clearAfterAdd) {
 										if(rp_ge.reloadAfterSubmit) { $($t).trigger("reloadGrid"); }
 										else { $($t).addRowData(ret[2],postdata,p.addedrow); }
@@ -787,7 +795,7 @@ $.fn.extend({
 											$($t).setRowData(postdata.id,postdata);
 										}
 									}
-									if(rp_ge.closeAfterEdit) { hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal}); }
+									if(rp_ge.closeAfterEdit) { hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal,onClose: rp_ge.onClose}); }
 								}
 								if($.isFunction(rp_ge.afterComplete)) {
 									copydata = data;
@@ -838,7 +846,8 @@ $.fn.extend({
 			closeOnEscape : false,
 			labelswidth: '30%',
 			closeicon: [],
-			navkeys: [false,38,40]
+			navkeys: [false,38,40],
+			onClose: null
 		}, $.jgrid.view, p || {});
 		return this.each(function(){
 			var $t = this;
@@ -896,7 +905,7 @@ $.fn.extend({
 				createModal(IDs,frm,p,"#gview_"+$t.p.id,$("#gview_"+$t.p.id)[0]);
 				jQuery("#"+IDs.themodal).keydown( function( e ) {
 					if(e.which === 27) {
-						if(cle)	hideModal(this,{gb:p.gbox,jqm:p.jqModal});
+						if(cle)	hideModal(this,{gb:p.gbox,jqm:p.jqModal, onClose: p.onClose});
 						return false;
 					}
 					if(p.navkeys[0]===true) {
@@ -922,7 +931,7 @@ $.fn.extend({
 				);
 				focusaref();
 				$("#cData", "#"+frmtb).click(function(e){
-					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal});
+					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: p.onClose});
 					return false;
 				});
 				$("#nData", "#"+frmtb).click(function(e){
@@ -1106,7 +1115,8 @@ $.fn.extend({
 			closeOnEscape : false,
 			delData: {},
 			delicon : [],
-			cancelicon : []
+			cancelicon : [],
+			onClose : null
 		}, $.jgrid.del, p ||{});
 		rp_ge = p;
 		return this.each(function(){
@@ -1213,7 +1223,7 @@ $.fn.extend({
 									}
 									p.processing=false;
 									$("#dData", "#"+dtbl).removeClass('ui-state-active');
-									if(ret[0]) { hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal}); }
+									if(ret[0]) { hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: rp_ge.onClose}); }
 								},
 								error:function(xhr,st,err){
 									$("#DelError>td","#"+dtbl).html(st+ " : "+err);
@@ -1227,7 +1237,7 @@ $.fn.extend({
 					return false;
 				});
 				$("#eData", "#"+dtbl).click(function(e){
-					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal});
+					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: rp_ge.onClose});
 					return false;
 				});
 				if(onBeforeShow) { p.beforeShowForm($("#"+dtbl)); }
