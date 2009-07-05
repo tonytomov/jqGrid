@@ -110,12 +110,12 @@ $.fn.jqGrid = function( p ) {
 				var diff = x.clientX-this.resizing.startX,
 				h = this.headers[this.resizing.idx],
 				newWidth = h.width + diff, hn, nWn;
-				if(newWidth > 25) {
+				if(newWidth > 33) {
 					$(".ui-jqgrid-resize-mark","#gbox_"+p.id).css({left:this.resizing.sOL+diff});
 					if(p.forceFit===true ){
 						hn = this.headers[this.resizing.idx+p.nv];
 						nWn = hn.width - diff;
-						if(nWn >25) {
+						if(nWn >33) {
 							h.newWidth = newWidth;
 							hn.newWidth = nWn;
 							this.newWidth = p.tblwidth;
@@ -1380,7 +1380,7 @@ $.fn.jqGrid = function( p ) {
 		},
 		sortData = function (index, idxcol,reload){
 			if(!ts.p.colModel[idxcol].sortable) return;
-			var imgs, so, scg, ls, iId, simg, timgs;
+			var imgs, so, scg;
 			if(ts.p.savedRow.length > 0) {return;}
 			if(!reload) {
 				if( ts.p.lastsort == idxcol ) {
@@ -1390,17 +1390,17 @@ $.fn.jqGrid = function( p ) {
 				} else { ts.p.sortorder = 'asc';}
 				ts.p.page = 1;
 			}
-			imgs = simg = "ui-icon ";
-			imgs += ts.p.sortorder == 'asc' ? 'ui-icon-triangle-1-n' : 'ui-icon-triangle-1-s';
-			simg += ts.p.sortorder == 'asc' ? 'ui-icon-triangle-1-s' : 'ui-icon-triangle-1-n';
-			timgs = ts.p.viewsortcols ? 'ui-icon ui-icon-triangle-2-n-s' :'';
 			var thd= $("thead:first",grid.hDiv).get(0);
-			ls = ts.p.colModel[ts.p.lastsort].name.replace('.',"\\.");
-			$("tr th div#jqgh_"+ls+" span.ui-grid-ico-sort",thd).removeClass(simg).addClass(timgs);
+			$("tr th:eq("+ts.p.lastsort+") span.ui-grid-ico-sort",thd).addClass('ui-state-disabled');
 			$("tr th:eq("+ts.p.lastsort+")",thd).attr("aria-selected","false");
-			iId = index.replace('.',"\\.");
-			$("tr th div#"+iId+" span.ui-grid-ico-sort",thd).removeClass(timgs).addClass(imgs);
+			$("tr th:eq("+idxcol+") span.ui-icon-"+ts.p.sortorder,thd).removeClass('ui-state-disabled');
 			$("tr th:eq("+idxcol+")",thd).attr("aria-selected","true");
+			if(!ts.p.viewsortcols) {
+				if(ts.p.lastsort != idxcol) {
+					$("tr th:eq("+ts.p.lastsort+") span.s-ico",thd).hide();
+					$("tr th:eq("+idxcol+") span.s-ico",thd).show();
+				}
+			}
 			ts.p.lastsort = idxcol;
 			index = index.substring(5);
 			ts.p.sortname = ts.p.colModel[idxcol].index || index;
@@ -1562,7 +1562,7 @@ $.fn.jqGrid = function( p ) {
 		}
 		var thead = "<thead><tr class='ui-jqgrid-labels' role='rowheader'>",
 		tdc, idn, w, res, sort,
-		td, ptr, tbody;
+		td, ptr, tbody, imgs;
 		if(ts.p.shrinkToFit===true && ts.p.forceFit===true) {
 			for (i=ts.p.colModel.length-1;i>=0;i--){
 				if(!ts.p.colModel[i].hidden) {
@@ -1572,19 +1572,16 @@ $.fn.jqGrid = function( p ) {
 			}
 		}
 		tdc = isMSIE ?  "class='ui-th-div-ie'" :"";
+		imgs = "<span class='s-ico' style='display:none'><span class='ui-grid-ico-sort ui-icon-asc ui-state-disabled ui-icon ui-icon-triangle-1-s'></span>";
+		imgs += "<span class='ui-grid-ico-sort ui-icon-desc ui-state-disabled ui-icon ui-icon-triangle-1-n'></span></span>";
 		for(i=0;i<this.p.colNames.length;i++){
 			thead += "<th role='columnheader' class='ui-state-default ui-th-column'>";
 			idn = ts.p.colModel[i].index || ts.p.colModel[i].name;
-			thead += "<div id='jqgh_"+ts.p.colModel[i].name+"' "+tdc+">"+ts.p.colNames[i]+"&nbsp;";
+			thead += "<div id='jqgh_"+ts.p.colModel[i].name+"' "+tdc+">"+ts.p.colNames[i];
 			if (idn == ts.p.sortname) {
-				var imgs = (ts.p.sortorder == 'asc') ? 'ui-icon-triangle-1-n' : ' ui-icon-triangle-1-s';
-				imgs = "<span class='ui-icon ui-grid-ico-sort "+imgs+ "'>&nbsp;&nbsp;&nbsp;&nbsp;</span>";
-				thead += imgs;
 				ts.p.lastsort = i;
-			} else {
-				thead += "<span class='ui-grid-ico-sort'>&nbsp;&nbsp;&nbsp;&nbsp;</span>";
-			}
-			thead += "</div></th>";
+			} 
+			thead += imgs+"</div></th>";
 		}
 		thead += "</tr></thead>";
 		$(this).append(thead);
@@ -1650,7 +1647,10 @@ $.fn.jqGrid = function( p ) {
 			sort = ts.p.colModel[j].sortable;
 			if( typeof sort !== 'boolean') {ts.p.colModel[j].sortable =  true; sort=true;}
 			$("div",this).addClass('ui-jqgrid-sortable').click(function(){sortData(this.id,j);return false;});
-			if(ts.p.viewsortcols && j != ts.p.lastsort && sort) $("div span.ui-grid-ico-sort",this).addClass('ui-icon ui-icon-triangle-2-n-s');
+			if(sort) {
+				if(ts.p.viewsortcols) {$("div span.s-ico",this).show(); if(j==ts.p.lastsort){ $("div span.ui-icon-"+ts.p.sortorder,this).removeClass("ui-state-disabled");}}
+				else if( j == ts.p.lastsort) {$("div span.s-ico",this).show();$("div span.ui-icon-"+ts.p.sortorder,this).removeClass("ui-state-disabled");}
+			}
 			tfoot += "<td role='gridcell' "+formatCol(j,0)+">&nbsp;</td>";
 		});
 		tfoot += "</tr></tbody></table>";

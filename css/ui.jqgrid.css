@@ -12,11 +12,13 @@
 .ui-jqgrid .ui-jqgrid-hbox {float: left; padding-right: 20px;}
 .ui-jqgrid .ui-jqgrid-htable {table-layout:fixed;margin:0em;}
 .ui-jqgrid .ui-jqgrid-htable th {height:22px;padding: 0 2px 0 2px;}
-.ui-jqgrid .ui-jqgrid-htable th div {overflow: hidden;}
-.ui-th-column, .ui-jqgrid .ui-jqgrid-htable th.ui-th-column {overflow: hidden;white-space: nowrap;text-align:center;	border-top : 0px none;	border-left : 0px none; border-bottom : 0px none;}
+.ui-jqgrid .ui-jqgrid-htable th div {overflow: hidden; position:relative; height:16px;}
+.ui-th-column, .ui-jqgrid .ui-jqgrid-htable th.ui-th-column {overflow: hidden;white-space: nowrap;text-align:center; border-top : 0px none; border-left : 0px none; border-bottom : 0px none;}
 .ui-jqgrid .ui-th-div-ie {float:left;width:97%;white-space: nowrap;}
-.ui-jqgrid .ui-jqgrid-resize {position: relative; cursor :e-resize; height:auto;cursor :col-resize;width: 5px;float: right;display: block;	margin: -2px -2px -2px 0px;	overflow: hidden;}
-.ui-jqgrid .ui-grid-ico-sort {display:inline;float:none; height:16px;width:16px;margin:0;overflow:hidden;}
+.ui-jqgrid .ui-jqgrid-resize {height:20px !important;position: relative; cursor :e-resize;cursor :col-resize;float: right;display: inline;margin: -2px -2px -2px 0px;	overflow: hidden;}
+.ui-jqgrid .ui-grid-ico-sort {float:right;display:inline;overflow:hidden;position:absolute;}
+.ui-jqgrid .ui-icon-asc {margin-top:-5px;top:50%;}
+.ui-jqgrid .ui-icon-desc {margin-top:-10px;top:50%;}
 .ui-jqgrid .ui-jqgrid-sortable {cursor:pointer;}
 .ui-jqgrid tr.ui-search-toolbar th { border-top-width: 1px !important; border-top-color: inherit !important; border-top-style: ridge !important }
 /* body */ 
