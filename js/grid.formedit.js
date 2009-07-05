@@ -1491,6 +1491,21 @@ $.fn.extend({
 			}
 		});
 	},
+	navSeparatorAdd:function (elem,p) {
+		p = $.extend({
+			sepclass : "ui-separator",
+			sepcontent: ''
+		}, p ||{});		
+		return this.each(function() {
+			if( !this.grid)  { return; }
+			if( elem.indexOf("#") != 0) { elem = "#"+elem; }
+			var findnav = $(".navtable",elem)[0];
+			if(findnav) {
+				var sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='"+p.sepclass+"'></span>"+p.sepcontent+"</td>";
+				$("tr",findnav).append(sep);
+			}
+		});
+	},
 	GridToForm : function( rowid, formid ) {
 		return this.each(function(){
 			var $t = this;
