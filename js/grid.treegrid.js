@@ -13,20 +13,7 @@ $.fn.extend({
 		return this.each(function(){
 			var $t = this;
 			if( !$t.grid || !$t.p.treeGrid ) { return; }
-			var expCol=0,i=0;
-			if(!$t.p.expColInd) {
-				for (var key in $t.p.colModel){
-					if($t.p.colModel[key].name == $t.p.ExpandColumn) {
-						expCol = i;
-						$t.p.expColInd = expCol;
-						break;
-					}
-					i++;
-				}
-				if(!$t.p.expColInd ) {$t.p.expColInd = expCol;}
-			} else {
-				expCol = $t.p.expColInd;
-			}
+			var expCol = $t.p.expColInd;
 			var expanded = $t.p.treeReader.expanded_field;
 			var isLeaf = $t.p.treeReader.leaf_field;
 			var level = $t.p.treeReader.level_field;
@@ -42,7 +29,6 @@ $.fn.extend({
 			} else {
 				row.parent_id = rd[$t.p.treeReader.parent_id_field];
 			}
-			
 			var curLevel = parseInt(row.level,10), ident,lftpos;
 			if($t.p.tree_root_level === 0) {
 				ident = curLevel+1;
@@ -51,35 +37,32 @@ $.fn.extend({
 				ident = curLevel;
 				lftpos = curLevel -1;
 			}
-			var twrap = document.createElement("div");
-			$(twrap).addClass("tree-wrap").width(ident*18);
-			var treeimg = document.createElement("div");
-			$(treeimg).css("left",lftpos*18).addClass("ui-icon");
-			twrap.appendChild(treeimg);
+			var twrap = "<div class='tree-wrap' style='width:"+(ident*18)+"px;'>";
+			twrap += "<div style='left:"+(lftpos*18)+"px;' class='ui-icon ";
 
 			if(rd[isLeaf] == "true" || rd[isLeaf] ==true) {
-				$(treeimg).addClass($t.p.treeIcons.leaf+" tree-leaf");
+				twrap += $t.p.treeIcons.leaf+" tree-leaf'";
 				row.isLeaf = true;
 			} else {
 				if(rd[expanded] == "true" || rd[expanded] == true) {
-					$(treeimg).addClass($t.p.treeIcons.minus+" tree-minus treeclick");
+					twrap += $t.p.treeIcons.minus+" tree-minus treeclick'";
 					row.expanded = true;
 				} else {
-					$(treeimg).addClass($t.p.treeIcons.plus+" tree-plus treeclick");
+					twrap += $t.p.treeIcons.plus+" tree-plus treeclick'";
 					row.expanded = false;
 				}
 				row.isLeaf = false;
 			}
+			twrap += "</div></div>";
 			if(parseInt(rd[level],10) !== parseInt($t.p.tree_root_level,10)) {                
 				if(!$($t).isVisibleNode(row)){ 
 					$(row).css("display","none");
 				}
 			}
-			var mhtm = $("td:eq("+expCol+")",row).html();
-			var thecell = $("td:eq("+expCol+")",row).html("<span>"+mhtm+"</span>").prepend(twrap);
-			$(".treeclick",thecell).click(function(e){
+			$("td:eq("+expCol+")",row).wrapInner("<span></span>").prepend(twrap);
+			$(".treeclick",row).bind("click",function(e){
 				var target = e.target || e.srcElement;
-				var ind =$(target,$t.rows).parents("tr:first")[0].rowIndex;
+				var ind =$(target,$t.rows).parents("tr.jqgrow")[0].rowIndex;
 				if(!$t.rows[ind].isLeaf){
 					if($t.rows[ind].expanded){
 						$($t).collapseRow($t.rows[ind]);
@@ -89,13 +72,12 @@ $.fn.extend({
 						$($t).expandNode($t.rows[ind]);
 					}
 				}
-				//e.stopPropagation();
 				return false;
 			});
 			if($t.p.ExpandColClick === true) {
-			$("span", thecell).css("cursor","pointer").click(function(e){
+			$("span", row).css("cursor","pointer").bind("click",function(e){
 				var target = e.target || e.srcElement;
-				var ind =$(target,$t.rows).parents("tr:first")[0].rowIndex;
+				var ind =$(target,$t.rows).parents("tr.jqgrow")[0].rowIndex;
 				if(!$t.rows[ind].isLeaf){
 					if($t.rows[ind].expanded){
 						$($t).collapseRow($t.rows[ind]);
@@ -113,7 +95,7 @@ $.fn.extend({
 	},
 	setTreeGrid : function() {
 		return this.each(function (){
-			var $t = this;
+			var $t = this, i=0;
 			if(!$t.p.treeGrid) { return; }
 			if(!$t.p.treedatatype ) $.extend($t.p,{treedatatype: null});
 			$t.p.treeIcons = $.extend({plus:'ui-icon-triangle-1-e',minus:'ui-icon-triangle-1-s',leaf:'ui-icon-radio-off'},$t.p.treeIcons || {});
@@ -134,6 +116,14 @@ $.fn.extend({
 						expanded_field: "expanded"
 				},$t.p.treeReader );
 			}
+			for (var key in $t.p.colModel){
+				if($t.p.colModel[key].name == $t.p.ExpandColumn) {
+					$t.p.expColInd = i;
+					break;
+				}
+				i++;
+			}
+			if(!$t.p.expColInd) $t.p.expColInd =0;
 		});
 	},
 	expandRow: function (record){
