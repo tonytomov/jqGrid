@@ -182,6 +182,7 @@ $.fn.extend({
 			left: 0,
 			width: 300,
 			height: 'auto',
+			dataheight: 'auto',
 			modal: false,
 			drag: true,
 			resize: true,
@@ -222,12 +223,12 @@ $.fn.extend({
 			var $t = this;
 			if (!$t.grid || !rowid) { return; }
 			var gID = $t.p.id,
-			IDs = {themodal:'editmod'+gID,modalhead:'edithd'+gID,modalcontent:'editcnt'+gID},
+			frmgr = "FrmGrid_"+gID,frmtb = "TblGrid_"+gID,
+			IDs = {themodal:'editmod'+gID,modalhead:'edithd'+gID,modalcontent:'editcnt'+gID, scrollelm : frmgr},
 			onBeforeShow = $.isFunction(rp_ge.beforeShowForm) ? rp_ge.beforeShowForm : false,
 			onAfterShow = $.isFunction(rp_ge.afterShowForm) ? rp_ge.afterShowForm : false,
 			onBeforeInit = $.isFunction(rp_ge.beforeInitData) ? rp_ge.beforeInitData : false,
 			onInitializeForm = $.isFunction(rp_ge.onInitializeForm) ? rp_ge.onInitializeForm : false,
-			frmgr = "FrmGrid_"+gID,frmtb = "TblGrid_"+gID,
 			copydata = null,
 			maxCols = 1, maxRows=0,	gurl, postdata, ret, extpost, newData, diff;
 			if (rowid=="new") {
@@ -250,7 +251,7 @@ $.fn.extend({
 				// filldata
 				fillData(rowid,$t,frmgr);
 				///
-				if(rowid=="_empty") { $("#pData, #nData","#"+frmtb).hide(); } else { $("#pData, #nData","#"+frmtb).show(); }
+				if(rowid=="_empty") { $("#pData, #nData","#"+frmtb+"_2").hide(); } else { $("#pData, #nData","#"+frmtb+"_2").show(); }
 				if(p.processing===true) {
 					p.processing=false;
 					$("#sData", "#"+frmtb).removeClass('ui-state-active');
@@ -275,9 +276,10 @@ $.fn.extend({
 					var fmto = this.formoptions;
 					maxCols = Math.max(maxCols, fmto ? fmto.colpos || 0 : 0 );
 					maxRows = Math.max(maxRows, fmto ? fmto.rowpos || 0 : 0 );
-				});								
-				var flr, frm = $("<form name='FormPost' id='"+frmgr+"' class='FormGrid'></form>").data("disabled",false),
-				tbl =$("<table id='"+frmtb+"' class='EditTable' cellspacing='0' cellpading='0' border='0' width='100%'><tbody></tbody></table>");
+				});
+				var dh = isNaN(p.dataheight) ? p.dataheight : p.dataheight+"px";
+				var flr, frm = $("<form name='FormPost' id='"+frmgr+"' class='FormGrid' style='width:100%;overflow:auto;position:relative;height:"+dh+";'></form>").data("disabled",false),
+				tbl =$("<table id='"+frmtb+"' class='EditTable' cellspacing='0' cellpading='0' border='0'><tbody></tbody></table>");
 				$(frm).append(tbl);
 				flr = $("<tr id='FormError' style='display:none'><td class='ui-state-error' colspan='"+(maxCols*2)+"'></td></tr>");
 				flr[0].rp = 0;
@@ -297,14 +299,11 @@ $.fn.extend({
 				bN = "<a href='javascript:void(0)' id='nData' class='fm-button ui-state-default ui-corner-right'><span class='ui-icon ui-icon-triangle-1-e'></span></div>",
 				bS  ="<a href='javascript:void(0)' id='sData' class='fm-button ui-state-default ui-corner-all'>"+p.bSubmit+"</a>",
 				bC  ="<a href='javascript:void(0)' id='cData' class='fm-button ui-state-default ui-corner-all'>"+p.bCancel+"</a>";
-				flr = $("<tr id='Act_Buttons'><td class='navButton ui-widget-content'>"+bP+bN+"</td><td colspan='"+(maxCols*2-1)+"' class='EditButton ui-widget-content'>"+bS+"&nbsp;"+bC+"</td></tr>");
-				flr[0].rp = 900;
-				$(tbl).append(flr);
+				var bt = "<table border='0' class='EditTable' id='"+frmtb+"_2'><tbody><tr id='Act_Buttons'><td class='navButton ui-widget-content'>"+bP+bN+"</td><td class='EditButton ui-widget-content'>"+bS+"&nbsp;"+bC+"</td></tr>";
 				if(rp_ge.bottominfo) {
-					flr = $("<tr><td class='bottominfo' colspan='"+(maxCols*2)+"'>"+rp_ge.bottominfo+"</td></tr>");
-					flr[0].rp = 901;
-					$(tbl).append(flr);
+					bt += "<tr><td class='bottominfo' colspan='2'>"+rp_ge.bottominfo+"</td></tr>";
 				}
+				bt += "</tbody></table>";
 				if(maxRows >  0) {
 					var sd=[];
 					$.each($(tbl)[0].rows,function(i,r){
@@ -325,11 +324,13 @@ $.fn.extend({
 					p.closeOnEscape = false;
 					cle = true;
 				}
-				createModal(IDs,frm,p,"#gview_"+$t.p.id,$("#gview_"+$t.p.id)[0]);
+				var tms = $("<span></span>").append(frm).append(bt);
+				createModal(IDs,tms,p,"#gview_"+$t.p.id,$("#gview_"+$t.p.id)[0]);
+				tms = null; bt=null;
 				jQuery("#"+IDs.themodal).keydown( function( e ) {
 					if ($("#"+frmgr).data("disabled")===true ) return false; //??
 					if(rp_ge.savekey[0] === true && e.which == rp_ge.savekey[1]) { // save
-						$("#sData", "#"+frmtb).trigger("click");
+						$("#sData", "#"+frmtb+"_2").trigger("click");
 						return false;
 					}
 					if(e.which === 27) {
@@ -340,11 +341,11 @@ $.fn.extend({
 					if(rp_ge.navkeys[0]===true) {
 						if($("#id_g","#"+frmtb).val() == "_empty") return true;
 						if(e.which == rp_ge.navkeys[1]){ //up
-							$("#pData", "#"+frmtb).trigger("click");
+							$("#pData", "#"+frmtb+"_2").trigger("click");
 							return false;
 						}
 						if(e.which == rp_ge.navkeys[2]){ //down
-							$("#nData", "#"+frmtb).trigger("click");
+							$("#nData", "#"+frmtb+"_2").trigger("click");
 							return false;
 						}
 					}
@@ -362,11 +363,11 @@ $.fn.extend({
 				p.closeicon = $.extend([true,"left","ui-icon-close"],p.closeicon);
 				// beforeinitdata after creation of the form
 				if(p.saveicon[0]==true) {
-					$("#sData","#"+frmtb).addClass(p.saveicon[1] == "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
+					$("#sData","#"+frmtb+"_2").addClass(p.saveicon[1] == "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
 					.append("<span class='ui-icon "+p.saveicon[2]+"'></span>");
 				}
 				if(p.closeicon[0]==true) {
-					$("#cData","#"+frmtb).addClass(p.closeicon[1] == "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
+					$("#cData","#"+frmtb+"_2").addClass(p.closeicon[1] == "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
 					.append("<span class='ui-icon "+p.closeicon[2]+"'></span>");
 				}
 				if(rp_ge.checkOnSubmit || rp_ge.checkOnUpdate) {
@@ -399,7 +400,7 @@ $.fn.extend({
 				}
 				// here initform - only once
 				if(onInitializeForm) { onInitializeForm($("#"+frmgr)); }
-				if(rowid=="_empty") { $("#pData,#nData","#"+frmtb).hide(); } else { $("#pData,#nData","#"+frmtb).show(); }
+				if(rowid=="_empty") { $("#pData,#nData","#"+frmtb+"_2").hide(); } else { $("#pData,#nData","#"+frmtb+"_2").show(); }
 				if(onBeforeShow) { onBeforeShow($("#"+frmgr)); }
 				$("#"+IDs.themodal).data("onClose",rp_ge.onClose);
 				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal,closeoverlay:closeovrl});
@@ -415,7 +416,7 @@ $.fn.extend({
 				   function(){$(this).addClass('ui-state-hover');}, 
 				   function(){$(this).removeClass('ui-state-hover');}
 				);
-				$("#sData", "#"+frmtb).click(function(e){
+				$("#sData", "#"+frmtb+"_2").click(function(e){
 					postdata = {}; extpost={};
 					$("#FormError","#"+frmtb).hide();
 					// all depend on ret array
@@ -438,12 +439,12 @@ $.fn.extend({
 					}
 					return false;
 				});
-				$("#cData", "#"+frmtb).click(function(e){
+				$("#cData", "#"+frmtb+"_2").click(function(e){
 					if(!checkUpdates()) return false;
 					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal,onClose: rp_ge.onClose});
 					return false;
 				});
-				$("#nData", "#"+frmtb).click(function(e){
+				$("#nData", "#"+frmtb+"_2").click(function(e){
 					if(!checkUpdates()) return false;
 					$("#FormError","#"+frmtb).hide();
 					var npos = getCurrPos();
@@ -461,7 +462,7 @@ $.fn.extend({
 					};
 					return false;
 				});
-				$("#pData", "#"+frmtb).click(function(e){
+				$("#pData", "#"+frmtb+"_2").click(function(e){
 					if(!checkUpdates()) return false;
 					$("#FormError","#"+frmtb).hide();
 					var ppos = getCurrPos();
@@ -482,8 +483,8 @@ $.fn.extend({
 			var posInit =getCurrPos();
 			updateNav(posInit[0],posInit[1].length-1);
 			function updateNav(cr,totr,rid){
-				if (cr==0) { $("#pData","#"+frmtb).addClass('ui-state-disabled'); } else { $("#pData","#"+frmtb).removeClass('ui-state-disabled'); }
-				if (cr==totr) { $("#nData","#"+frmtb).addClass('ui-state-disabled'); } else { $("#nData","#"+frmtb).removeClass('ui-state-disabled'); }
+				if (cr==0) { $("#pData","#"+frmtb+"_2").addClass('ui-state-disabled'); } else { $("#pData","#"+frmtb+"_2").removeClass('ui-state-disabled'); }
+				if (cr==totr) { $("#nData","#"+frmtb+"_2").addClass('ui-state-disabled'); } else { $("#nData","#"+frmtb+"_2").removeClass('ui-state-disabled'); }
 			}
 			function getCurrPos() {
 				var rowsInGrid = $($t).getDataIDs(),
@@ -548,7 +549,7 @@ $.fn.extend({
 			}
 			function createData(rowid,obj,tb,maxcols){
 				var nm, hc,trdata, cnt=0,tmp, dc,elc, retpos=[], ind=false, rp,cp,
-				tdtmpl = "<td class='CaptionTD ui-widget-content'>&nbsp;</td><td class='DataTD ui-widget-content'>&nbsp;</td>", tmpl=""; //*2				
+				tdtmpl = "<td class='CaptionTD ui-widget-content'>&nbsp;</td><td class='DataTD ui-widget-content' style='white-space:pre'>&nbsp;</td>", tmpl=""; //*2
 				for (var i =1;i<=maxcols;i++) {
 					tmpl += tdtmpl;
 				}
@@ -738,7 +739,7 @@ $.fn.extend({
 				}
 				if(!p.processing) {
 					p.processing = true;
-					$("#sData", "#"+frmtb).addClass('ui-state-active');
+					$("#sData", "#"+frmtb+"_2").addClass('ui-state-active');
 					// we add to pos data array the action - the name is oper
 					postdata.oper = postdata.id == "_empty" ? "add" : "edit";
 					postdata = $.extend(postdata,rp_ge.editData);
@@ -807,7 +808,7 @@ $.fn.extend({
 								$("#"+frmgr).data("disabled",false);
 								if(rp_ge._savedData.id !="_empty") rp_ge._savedData = postdata;
 							}
-							$("#sData", "#"+frmtb).removeClass('ui-state-active');
+							$("#sData", "#"+frmtb+"_2").removeClass('ui-state-active');
 							try{$(':input:visible',"#"+frmgr)[0].focus();} catch (e){}
 						},
 						error:function(xhr,st,err){
@@ -815,7 +816,7 @@ $.fn.extend({
 							$("#FormError","#"+frmtb).show();
 							p.processing=false;
 							$("#"+frmgr).data("disabled",false);
-							$("#sData", "#"+frmtb).removeClass('ui-state-active');
+							$("#sData", "#"+frmtb+"_2").removeClass('ui-state-active');
 						}
 					});
 				}
@@ -838,7 +839,8 @@ $.fn.extend({
 			top : 0,
 			left: 0,
 			width: 0,
-			height: 0,
+			height: 'auto',
+			dataheight: 'auto',
 			modal: false,
 			drag: true,
 			resize: true,
@@ -855,9 +857,9 @@ $.fn.extend({
 			if(!p.imgpath) { p.imgpath= $t.p.imgpath; }
 			// I hate to rewrite code, but ...
 			var gID = $t.p.id,
-			IDs = {themodal:'viewmod'+gID,modalhead:'viewhd'+gID,modalcontent:'viewcnt'+gID},
-			maxCols = 1, maxRows=0,
-			frmgr = "ViewGrid_"+gID , frmtb = "ViewTbl_"+gID;
+			frmgr = "ViewGrid_"+gID , frmtb = "ViewTbl_"+gID,
+			IDs = {themodal:'viewmod'+gID,modalhead:'viewhd'+gID,modalcontent:'viewcnt'+gID, scrollelm : frmgr},
+			maxCols = 1, maxRows=0;
 			if ( $("#"+IDs.themodal).html() != null ) {
 				$(".ui-jqdialog-title","#"+IDs.modalhead).html(p.caption);
 				$("#FormError","#"+frmtb).hide();
@@ -869,8 +871,9 @@ $.fn.extend({
 					var fmto = this.formoptions;
 					maxCols = Math.max(maxCols, fmto ? fmto.colpos || 0 : 0 );
 					maxRows = Math.max(maxRows, fmto ? fmto.rowpos || 0 : 0 );
-				});				
-				var flr, frm = $("<form name='FormPost' id='"+frmgr+"' class='FormGrid'></form>"),
+				});
+				var dh = isNaN(p.dataheight) ? p.dataheight : p.dataheight+"px";
+				var flr, frm = $("<form name='FormPost' id='"+frmgr+"' class='FormGrid' style='width:100%;overflow:auto;position:relative;height:"+dh+";'></form>"),
 				tbl =$("<table id='"+frmtb+"' class='EditTable' cellspacing='1' cellpading='2' border='0' style='table-layout:fixed'><tbody></tbody></table>");
 				// set the id.
 				$(frm).append(tbl);
@@ -879,9 +882,6 @@ $.fn.extend({
 				bP = "<a href='javascript:void(0)' id='pData' class='fm-button ui-state-default ui-corner-left'><span class='ui-icon ui-icon-triangle-1-w'></span></div>",
 				bN = "<a href='javascript:void(0)' id='nData' class='fm-button ui-state-default ui-corner-right'><span class='ui-icon ui-icon-triangle-1-e'></span></div>",
 				bC  ="<a href='javascript:void(0)' id='cData' class='fm-button ui-state-default ui-corner-all'>"+p.bClose+"</a>";
-				flr = $("<tr id='Act_Buttons'><td class='navButton ui-widget-content'>"+bP+bN+"</td><td colspan='"+(maxCols*2-1)+"'class='EditButton ui-widget-content'>"+bC+"</td></tr>");
-				$(tbl).append(flr);
-				flr[0].rp = valref.length + 100;
 				if(maxRows >  0) {
 					var sd=[];
 					$.each($(tbl)[0].rows,function(i,r){
@@ -902,7 +902,9 @@ $.fn.extend({
 					p.closeOnEscape = false;
 					cle = true;
 				}				
-				createModal(IDs,frm,p,"#gview_"+$t.p.id,$("#gview_"+$t.p.id)[0]);
+				var bt = $("<span></span>").append(frm).append("<table border='0' class='EditTable' id='"+frmtb+"_2'><tbody><tr id='Act_Buttons'><td class='navButton ui-widget-content' width='"+p.labelswidth+"'>"+bP+bN+"</td><td class='EditButton ui-widget-content'>"+bC+"</td></tr></tbody></table>");
+				createModal(IDs,bt,p,"#gview_"+$t.p.id,$("#gview_"+$t.p.id)[0]);
+				bt = null;
 				jQuery("#"+IDs.themodal).keydown( function( e ) {
 					if(e.which === 27) {
 						if(cle)	hideModal(this,{gb:p.gbox,jqm:p.jqModal, onClose: p.onClose});
@@ -910,31 +912,31 @@ $.fn.extend({
 					}
 					if(p.navkeys[0]===true) {
 						if(e.which === p.navkeys[1]){ //up
-							$("#pData", "#"+frmtb).trigger("click");
+							$("#pData", "#"+frmtb+"_2").trigger("click");
 							return false;
 						}
 						if(e.which === p.navkeys[2]){ //down
-							$("#nData", "#"+frmtb).trigger("click");
+							$("#nData", "#"+frmtb+"_2").trigger("click");
 							return false;
 						}
 					}
 				});
 				p.closeicon = $.extend([true,"left","ui-icon-close"],p.closeicon);
 				if(p.closeicon[0]==true) {
-					$("#cData","#"+frmtb).addClass(p.closeicon[1] == "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
+					$("#cData","#"+frmtb+"_2").addClass(p.closeicon[1] == "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
 					.append("<span class='ui-icon "+p.closeicon[2]+"'></span>");
 				}
 				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal});
-				$(".fm-button:not(.ui-state-disabled)","#"+frmtb).hover(
+				$(".fm-button:not(.ui-state-disabled)","#"+frmtb+"_2").hover(
 				   function(){$(this).addClass('ui-state-hover');}, 
 				   function(){$(this).removeClass('ui-state-hover');}
 				);
 				focusaref();
-				$("#cData", "#"+frmtb).click(function(e){
+				$("#cData", "#"+frmtb+"_2").click(function(e){
 					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: p.onClose});
 					return false;
 				});
-				$("#nData", "#"+frmtb).click(function(e){
+				$("#nData", "#"+frmtb+"_2").click(function(e){
 					$("#FormError","#"+frmtb).hide();
 					var npos = getCurrPos();
 					npos[0] = parseInt(npos[0]);
@@ -952,7 +954,7 @@ $.fn.extend({
 					focusaref();
 					return false;
 				});
-				$("#pData", "#"+frmtb).click(function(e){
+				$("#pData", "#"+frmtb+"_2").click(function(e){
 					$("#FormError","#"+frmtb).hide();
 					var ppos = getCurrPos();
 					if(ppos[0] != -1 && ppos[1][ppos[0]-1]) {
@@ -978,8 +980,8 @@ $.fn.extend({
 			var posInit =getCurrPos();
 			updateNav(posInit[0],posInit[1].length-1);
 			function updateNav(cr,totr,rid){
-				if (cr==0) { $("#pData","#"+frmtb).addClass('ui-state-disabled'); } else { $("#pData","#"+frmtb).removeClass('ui-state-disabled'); }
-				if (cr==totr) { $("#nData","#"+frmtb).addClass('ui-state-disabled'); } else { $("#nData","#"+frmtb).removeClass('ui-state-disabled'); }
+				if (cr==0) { $("#pData","#"+frmtb+"_2").addClass('ui-state-disabled'); } else { $("#pData","#"+frmtb+"_2").removeClass('ui-state-disabled'); }
+				if (cr==totr) { $("#nData","#"+frmtb+"_2").addClass('ui-state-disabled'); } else { $("#nData","#"+frmtb+"_2").removeClass('ui-state-disabled'); }
 			}
 			function getCurrPos() {
 				var rowsInGrid = $($t).getDataIDs(),
@@ -989,8 +991,8 @@ $.fn.extend({
 			}
 			function createData(rowid,obj,tb,maxcols){
 				var nm, hc,trdata, tdl, tde, cnt=0,tmp, dc, retpos=[], ind=false,
-				tdtmpl = "<td class='CaptionTD ui-widget-content' width='"+p.labelswidth+"'>&nbsp;</td><td class='DataTD ui-helper-reset ui-widget-content'>&nbsp;</td>", tmpl="",
-				tdtmpl2 = "<td class='CaptionTD ui-widget-content'>&nbsp;</td><td class='DataTD ui-widget-content'>&nbsp;</td>",
+				tdtmpl = "<td class='CaptionTD ui-widget-content' width='"+p.labelswidth+"'>&nbsp;</td><td class='DataTD ui-helper-reset ui-widget-content' style='white-space:pre;'>&nbsp;</td>", tmpl="",
+				tdtmpl2 = "<td class='CaptionTD ui-widget-content'>&nbsp;</td><td class='DataTD ui-widget-content' style='white-space:pre;'>&nbsp;</td>",
 				fmtnum = ['integer','number','currency'],max1 =0, max2=0 ,maxw,setme;
 				for (var i =1;i<=maxcols;i++) {
 					tmpl += i == 1 ? tdtmpl : tdtmpl2;
@@ -1099,6 +1101,7 @@ $.fn.extend({
 			left: 0,
 			width: 240,
 			height: 'auto',
+			dataheight : 'auto',
 			modal: false,
 			drag: true,
 			resize: true,
@@ -1126,8 +1129,8 @@ $.fn.extend({
 			var onBeforeShow = typeof p.beforeShowForm === 'function' ? true: false,
 			onAfterShow = typeof p.afterShowForm === 'function' ? true: false,
 			gID = $t.p.id,
-			IDs = {themodal:'delmod'+gID,modalhead:'delhd'+gID,modalcontent:'delcnt'+gID},
-			dtbl = "DelTbl_"+gID;
+			dtbl = "DelTbl_"+gID,
+			IDs = {themodal:'delmod'+gID,modalhead:'delhd'+gID,modalcontent:'delcnt'+gID, scrollelm: dtbl};
 			if (isArray(rowids)) { rowids = rowids.join(); }
 			if ( $("#"+IDs.themodal).html() != null ) {
 				$("#DelData>td","#"+dtbl).text(rowids);
@@ -1140,32 +1143,35 @@ $.fn.extend({
 				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal,jqM: false});
 				if(onAfterShow) { p.afterShowForm($("#"+dtbl)); }
 			} else {
-				var tbl =$("<table id='"+dtbl+"' class='DelTable' width='100%'><tbody></tbody></table>");
+				var dh = isNaN(p.dataheight) ? p.dataheight : p.dataheight+"px";
+				var tbl = "<div id='"+dtbl+"' class='formdata' style='width:100%;overflow:auto;position:relative;height:"+dh+";'>";
+				tbl += "<table class='DelTable'><tbody>";
 				// error data 
-				$(tbl).append("<tr id='DelError' style='display:none'><td >"+"&nbsp;"+"</td></tr>");
-				$(tbl).append("<tr id='DelData' style='display:none'><td >"+rowids+"</td></tr>");
-				$(tbl).append("<tr><td class=\"delmsg\">"+p.msg+"</td></tr><tr><td >&nbsp;</td></tr>");
+				tbl += "<tr id='DelError' style='display:none'><td ></td></tr>";
+				tbl += "<tr id='DelData' style='display:none'><td >"+rowids+"</td></tr>";
+				tbl += "<tr><td class=\"delmsg\" style=\"white-space:pre;\">"+p.msg+"</td></tr><tr><td >&nbsp;</td></tr>";
 				// buttons at footer
+				tbl += "</tbody></table></div>"
 				var bS  = "<a href='javascript:void(0)' id='dData' class='fm-button ui-state-default ui-corner-all'>"+p.bSubmit+"</a>",
 				bC  = "<a href='javascript:void(0)' id='eData' class='fm-button ui-state-default ui-corner-all'>"+p.bCancel+"</a>";
-				$(tbl).append("<tr><td align='right' class='DelButton'>"+bS+"&nbsp;"+bC+"</td></tr>");
+				tbl += "<table cellspacing='0' cellpadding='0' border='0' class='EditTable' id='"+dtbl+"_2'><tbody><tr><td class='DataTD ui-widget-content'></td></tr><tr style='display:block;height:3px;'><td></td></tr><tr><td class='DelButton EditButton'>"+bS+"&nbsp;"+bC+"</td></tr></tbody></table>";
 				p.gbox = "#gbox_"+gID;
 				createModal(IDs,tbl,p,"#gview_"+$t.p.id,$("#gview_"+$t.p.id)[0]);
-				$(".fm-button","#"+dtbl).hover(
+				$(".fm-button","#"+dtbl+"_2").hover(
 				   function(){$(this).addClass('ui-state-hover');}, 
 				   function(){$(this).removeClass('ui-state-hover');}
 				);
 				p.delicon = $.extend([true,"left","ui-icon-scissors"],p.delicon);
 				p.cancelicon = $.extend([true,"left","ui-icon-cancel"],p.cancelicon);
 				if(p.delicon[0]==true) {
-					$("#dData","#"+dtbl).addClass(p.delicon[1] == "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
+					$("#dData","#"+dtbl+"_2").addClass(p.delicon[1] == "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
 					.append("<span class='ui-icon "+p.delicon[2]+"'></span>");
 				}
 				if(p.cancelicon[0]==true) {
-					$("#eData","#"+dtbl).addClass(p.cancelicon[1] == "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
+					$("#eData","#"+dtbl+"_2").addClass(p.cancelicon[1] == "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
 					.append("<span class='ui-icon "+p.cancelicon[2]+"'></span>");
 				}				
-				$("#dData","#"+dtbl).click(function(e){
+				$("#dData","#"+dtbl+"_2").click(function(e){
 					var ret=[true,""];
 					var postdata = $("#DelData>td","#"+dtbl).text(); //the pair is name=val1,val2,...
 					if( typeof p.onclickSubmit === 'function' ) { p.delData = p.onclickSubmit(p) || {}; }
@@ -1222,21 +1228,21 @@ $.fn.extend({
 										}
 									}
 									p.processing=false;
-									$("#dData", "#"+dtbl).removeClass('ui-state-active');
+									$("#dData", "#"+dtbl+"_2").removeClass('ui-state-active');
 									if(ret[0]) { hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: rp_ge.onClose}); }
 								},
 								error:function(xhr,st,err){
 									$("#DelError>td","#"+dtbl).html(st+ " : "+err);
 									$("#DelError","#"+dtbl).show();
 									p.processing=false;
-									$("#dData", "#"+dtbl).removeClass('ui-state-active');;
+									$("#dData", "#"+dtbl+"_2").removeClass('ui-state-active');;
 								}
 							});
 						}
 					}
 					return false;
 				});
-				$("#eData", "#"+dtbl).click(function(e){
+				$("#eData", "#"+dtbl+"_2").click(function(e){
 					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: rp_ge.onClose});
 					return false;
 				});

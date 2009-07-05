@@ -75,10 +75,10 @@ var createModal = function(aIDs, content, p, insertSelector, posSelector, append
 	if(p.resize) {
 		if(jQuery.fn.jqResize) {
 			jQuery(mw).append("<div class='jqResize ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se ui-icon-grip-diagonal-se'></div>");
-			jQuery(mw).jqResize(".jqResize");
+			jQuery("#"+aIDs.themodal).jqResize(".jqResize",aIDs.scrollelm ? "#"+aIDs.scrollelm : false);
 		} else {
 			try {
-				jQuery(mw).resizable({handles: 'se' });
+				jQuery(mw).resizable({handles: 'se',alsoResize: aIDs.scrollelm ? "#"+aIDs.scrollelm : false});
 			} catch (e) {}
 		}
 	}
