@@ -1646,7 +1646,9 @@ $.fn.jqGrid = function( p ) {
 			grid.headers[j] = { width: w, el: this };
 			sort = ts.p.colModel[j].sortable;
 			if( typeof sort !== 'boolean') {ts.p.colModel[j].sortable =  true; sort=true;}
-			$("div",this).addClass('ui-jqgrid-sortable').click(function(){sortData(this.id,j);return false;});
+			var nm = ts.p.colModel[j].name;
+			if( !(nm == 'cb' || nm=='subgrid' || nm=='rn') )
+				$("div",this).addClass('ui-jqgrid-sortable').click(function(){sortData(this.id,j);return false;});
 			if(sort) {
 				if(ts.p.viewsortcols) {$("div span.s-ico",this).show(); if(j==ts.p.lastsort){ $("div span.ui-icon-"+ts.p.sortorder,this).removeClass("ui-state-disabled");}}
 				else if( j == ts.p.lastsort) {$("div span.s-ico",this).show();$("div span.ui-icon-"+ts.p.sortorder,this).removeClass("ui-state-disabled");}
