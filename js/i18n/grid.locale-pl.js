@@ -1,27 +1,27 @@
 ;(function($){
 /**
  * jqGrid Polish Translation
- * Piotr Roznicki roznicki@o2.pl
- * http://www.roznicki.prv.pl
+ * Łukasz Schab
+ * http://FreeTree.pl
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
 $.jgrid = {
 	defaults : {
-		recordtext: "View {0} - {1} of {2}",
-	    emptyrecords: "No records to view",
-		loadtext: "Ładowanie...",
-		pgtext : "Page {0} of {1}"
+		recordtext: "Pokaż {0} - {1} z {2}",
+	    emptyrecords: "Brak rekordów do pokazania",
+		loadtext: "\u0142adowanie...",
+		pgtext : "Strona {0} z {1}"
 	},
 	search : {
 	    caption: "Wyszukiwanie...",
 	    Find: "Szukaj",
 	    Reset: "Czyść",
-	    odata : ['equal', 'not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain'],
-	    groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	],
-		matchText: " match",
-		rulesText: " rules"
+	    odata : ['dok\u0142adnie', 'różne od', 'mniejsze od', 'mniejsze lub równe','większe od','większe lub równe', 'zaczyna się od','nie zaczyna się od','zawiera','nie zawiera','kończy się na','nie kończy się na','zawiera','nie zawiera'],
+	    groupOps: [	{ op: "ORAZ", text: "wszystkie" },	{ op: "LUB",  text: "każdy" }	],
+		matchText: " pasuje",
+		rulesText: " regu\u0142y"
 	},
 	edit : {
 	    addCaption: "Dodaj rekord",
@@ -29,10 +29,10 @@ $.jgrid = {
 	    bSubmit: "Zapisz",
 	    bCancel: "Anuluj",
 		bClose: "Zamknij",
-		saveData: "Data has been changed! Save changes?",
-		bYes : "Yes",
-		bNo : "No",
-		bExit : "Cancel",
+		saveData: "Dane zosta\u0142y zmienione! Zapisać zmiany?",
+		bYes : "Tak",
+		bNo : "Nie",
+		bExit : "Anuluj",
 	    msg: {
 	        required:"Pole jest wymagane",
 	        number:"Proszę wpisać poprawną liczbę",
@@ -40,17 +40,17 @@ $.jgrid = {
 	        maxValue:"wartość musi być mniejsza od",
 	        email: "nie jest adresem e-mail",
 	        integer: "Proszę wpisać poprawną liczbę",
-			date: "Please, enter valid date value",
-			url: "is not a valid URL. Prefix required ('http://' or 'https://')"
+			date: "Proszę podaj poprawną datę",
+			url: "jest niew\u0142aściwym adresem URL. Pamiętaj o prefiksie ('http://' lub 'https://')"
 		}
 	},
 	view : {
-	    caption: "View Record",
-	    bClose: "Close"
+	    caption: "Pokaż rekord",
+	    bClose: "Zamknij"
 	},
 	del : {
 	    caption: "Usuwanie",
-	    msg: "Usuń wybrany rekord(y)?",
+	    msg: "Czy usunąć wybrany rekord(y)?",
 	    bSubmit: "Usuń",
 	    bCancel: "Anuluj"
 	},
@@ -64,7 +64,7 @@ $.jgrid = {
 	    searchtext: " ",
 	    searchtitle: "Wyszukaj rekord",
 	    refreshtext: "",
-	    refreshtitle: "Przeładuj",
+	    refreshtitle: "Prze\u0142aduj",
 	    alertcap: "Uwaga",
 	    alerttext: "Proszę wybrać wiersz",
 		viewtext: "",
@@ -76,10 +76,10 @@ $.jgrid = {
 	    bCancel: "Anuluj"	
 	},
 	errors : {
-		errcap : "Błąd",
+		errcap : "B\u0142ąd",
 		nourl : "Brak adresu url",
 		norecords: "Brak danych",
-	    model : "Length of colNames <> colModel!"
+	    model : "D\u0142ugość colNames <> colModel!"
 	},
 	formatter : {
 		integer : {thousandsSeparator: " ", defaultValue: '0'},
@@ -87,20 +87,20 @@ $.jgrid = {
 		currency : {decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2, prefix: "", suffix:"", defaultValue: '0.00'},
 		date : {
 			dayNames:   [
-				"Sun", "Mon", "Tue", "Wed", "Thr", "Fri", "Sat",
-				"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+				"Nie", "Pon", "Wt", "Śr", "Cz", "Pi", "So",
+				"Niedziela", "Poniedzia\u0142ek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota"
 			],
 			monthNames: [
-				"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-				"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+				"Sty", "Lu", "Mar", "Kwie", "Maj", "Cze", "Lip", "Sie", "Wrz", "Paź", "Lis", "Gru",
+				"Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"
 				],
 			AmPm : ["am","pm","AM","PM"],
-			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th'},
+			S: function (j) {return j < 11 || j > 13 ? ['', '', '', ''][Math.min((j - 1) % 10, 3)] : ''},
 			srcformat: 'Y-m-d',
 			newformat: 'd/m/Y',
 			masks : {
 			    ISO8601Long:"Y-m-d H:i:s",
-				    ISO8601Short:"Y-m-d",
+			    ISO8601Short:"Y-m-d",
 			    ShortDate: "n/j/Y",
 			    LongDate: "l, F d, Y",
 			    FullDateTime: "l, F d, Y g:i:s A",
