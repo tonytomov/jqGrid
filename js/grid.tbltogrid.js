@@ -34,8 +34,8 @@ $(selector).each(function() {
 			colNames.push('__selection__');
 		} else {
 			colModel.push({
-				name: $(this).html(),
-				index: $(this).html(),
+				name: $(this).attr("id") || $(this).html(),
+				index: $(this).attr("id") || $(this).html(),
 				width: $(this).width() || 150
 			});
 			colNames.push($(this).html());
