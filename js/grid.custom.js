@@ -219,14 +219,15 @@ $.fn.extend({
 			}
 			var triggerSearch = function() {
 				var sdata={}, j=0, v;
-				var gr = $(self.p.gridid)[0];
+				var gr = $(self.p.gridid)[0], nm;
 				if($.isFunction(self.p.beforeSearch)){self.p.beforeSearch();}
 				$.each(self.p.filterModel,function(i,n){
+                    nm = this.index;
 					switch (this.stype) {
 						case 'select' :
-							v = $("select[name="+this.name+"]",self).val();
+							v = $("select[name="+nm+"]",self).val();
 							if(v) {
-								sdata[this.index] = v;
+								sdata[nm] = v;
 								if(self.p.marksearched){
 									$("#jqgh_"+this.name,gr.grid.hDiv).addClass("dirty-cell");
 								}
@@ -242,9 +243,9 @@ $.fn.extend({
 							}
 							break;
 						default:
-							v = $("input[name="+this.name+"]",self).val();
+							v = $("input[name="+nm+"]",self).val();
 							if(v) {
-								sdata[this.index] = v;
+								sdata[nm] = v;
 								if(self.p.marksearched){
 									$("#jqgh_"+this.name,gr.grid.hDiv).addClass("dirty-cell");
 								}
@@ -273,16 +274,17 @@ $.fn.extend({
 			};
 			var clearSearch = function(){
 				var sdata={}, v, j=0;
-				var gr = $(self.p.gridid)[0];
+				var gr = $(self.p.gridid)[0], nm;
 				if($.isFunction(self.p.beforeClear)){self.p.beforeClear();}
 				$.each(self.p.filterModel,function(i,n){
+                    nm = this.index;
 					v = (this.defval) ? this.defval : "";
 					if(!this.stype){this.stype=='text';}
 					switch (this.stype) {
 						case 'select' :
 							if(v) {
 								var v1;
-								$("select[name="+this.name+"] option",self).each(function (){
+								$("select[name="+nm+"] option",self).each(function (){
 									if ($(this).text() == v) {
 										this.selected = true;
 										v1 = $(this).val();
@@ -290,7 +292,7 @@ $.fn.extend({
 									}
 								});
 								// post the key and not the text
-								sdata[this.index] = v1 || "";
+								sdata[nm] = v1 || "";
 								if(self.p.marksearched){
 									$("#jqgh_"+this.name,gr.grid.hDiv).addClass("dirty-cell");
 								}
@@ -306,9 +308,9 @@ $.fn.extend({
 							}
 							break;
 						case 'text':
-							$("input[name="+this.name+"]",self).val(v);
+							$("input[name="+nm+"]",self).val(v);
 							if(v) {
-								sdata[this.index] = v;
+								sdata[nm] = v;
 								if(self.p.marksearched){
 									$("#jqgh_"+this.name,gr.grid.hDiv).addClass("dirty-cell");
 								}
@@ -487,29 +489,30 @@ $.fn.extend({
 		return this.each(function(){
 			var $t = this;
 			var triggerToolbar = function() {
-				var sdata={}, j=0, v;
+				var sdata={}, j=0, v, nm;
 				if($.isFunction(p.beforeSearch)){p.beforeSearch();}
 				$.each($t.p.colModel,function(i,n){
+                    nm = this.index || this.name;
 					switch (this.stype) {
 						case 'select' :
-							v = $("select[name="+this.name+"]",$t.grid.hDiv).val();
+							v = $("select[name="+nm+"]",$t.grid.hDiv).val();
 							if(v) {
-								sdata[this.index] = v;
+								sdata[nm] = v;
 								j++;
 							} else {
 								try {
-									delete $t.p.postData[this.index];
+									delete $t.p.postData[nm];
 								} catch(e) {}
 							}
 							break;
 						case 'text':
-							v = $("input[name="+this.name+"]",$t.grid.hDiv).val();
+							v = $("input[name="+nm+"]",$t.grid.hDiv).val();
 							if(v) {
-								sdata[this.index] = v;
+								sdata[nm] = v;
 								j++;
 							} else {
 								try {
-									delete $t.p.postData[this.index];
+									delete $t.p.postData[nm];
 								} catch (e) {}
 							}
 					}
@@ -526,15 +529,16 @@ $.fn.extend({
 				if($.isFunction(p.afterSearch)){p.afterSearch();}
 			};
 			var clearToolbar = function(){
-				var sdata={}, v, j=0;
+				var sdata={}, v, j=0, nm;
 				if($.isFunction(p.beforeClear)){p.beforeClear();}
 				$.each($t.p.colModel,function(i,n){
 					v = (this.defval) ? this.defval : "";
+                    nm = this.index || this.name;
 					switch (this.stype) {
 						case 'select' :
 							if(v) {
 								var v1;
-								$("select[name="+this.name+"] option",$t.grid.hDiv).each(function (){
+								$("select[name="+nm+"] option",$t.grid.hDiv).each(function (){
 									if ($(this).text() == v) {
 										this.selected = true;
 										v1 = $(this).val();
@@ -542,22 +546,22 @@ $.fn.extend({
 									}
 								});
 								// post the key and not the text
-								sdata[this.index] = v1 || "";
+								sdata[nm] = v1 || "";
 								j++;
 							} else {
 								try {
-									delete $t.p.postData[this.index];
+									delete $t.p.postData[nm];
 								} catch(e) {}
 							}
 							break;
 						case 'text':
-							$("input[name="+this.name+"]",$t.grid.hDiv).val(v);
+							$("input[name="+nm+"]",$t.grid.hDiv).val(v);
 							if(v) {
-								sdata[this.index] = v;
+								sdata[nm] = v;
 								j++;
 							} else {
 								try {
-									delete $t.p.postData[this.index];
+									delete $t.p.postData[nm];
 								} catch(e) {}
 							}
 					}

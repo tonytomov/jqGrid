@@ -622,7 +622,7 @@ $.fn.extend({
 				if(rp_ge.checkOnSubmit || rp_ge.checkOnUpdate) {rp_ge._savedData = {};rp_ge._savedData.id=rowid;}
 				if(rowid == '_empty') {
 					$(obj.p.colModel).each(function(i){
-						nm = this.name.replace('.',"\\.");;
+						nm = this.name.replace('.',"\\.");
 						opt = $.extend({}, this.editoptions || {} );
 						fld = $("#"+nm,"#"+fmid);
 						if(fld[0] != null) {
