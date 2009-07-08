@@ -1686,7 +1686,6 @@ $.fn.jqGrid = function( p ) {
 		var ri,ci;
 		$(ts).before(grid.hDiv).click(function(e) {
 			td = e.target;
-			if (td.tagName == 'A') { return true; }
 			var scb = $(td).hasClass("cbox");
 			ptr = $(td,ts.rows).parents("tr.jqgrow");
 			if($(ptr).length === 0 ) {
@@ -1694,6 +1693,7 @@ $.fn.jqGrid = function( p ) {
 			}
 			var cSel = true;
 			if(bSR) cSel = bSR(ptr[0].id);
+			if (td.tagName == 'A') { return true; }
 			if(cSel === true) {
 				if(ts.p.cellEdit === true) {
 					if(ts.p.multiselect && scb){
