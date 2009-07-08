@@ -1380,7 +1380,7 @@ $.fn.jqGrid = function( p ) {
 		},
 		sortData = function (index, idxcol,reload){
 			if(!ts.p.colModel[idxcol].sortable) return;
-			var imgs, so, scg;
+			var imgs, so;
 			if(ts.p.savedRow.length > 0) {return;}
 			if(!reload) {
 				if( ts.p.lastsort == idxcol ) {
@@ -1414,7 +1414,7 @@ $.fn.jqGrid = function( p ) {
 				ts.p.selarrrow =[];
 				ts.p.savedRow =[];
 			}
-			scg = ts.p.scroll; if(ts.p.scroll===true) {ts.p.scroll=false;}
+			if(ts.p.scroll===true) {$("tbody tr",ts.grid.bDiv).remove();}
 			if(ts.p.subGrid && ts.p.datatype=='local') {
 				$("td.sgexpanded","#"+ts.p.id).each(function(){
 					$(this).trigger("click");
@@ -1422,7 +1422,6 @@ $.fn.jqGrid = function( p ) {
 			}
 			populate();
 			if(ts.p.sortname != index && idxcol) {ts.p.lastsort = idxcol;}
-			setTimeout(function() {ts.p.scroll=scg;},500);
 		},
 		setColWidth = function () {
 			var initwidth = 0, brd=ts.p.cellLayout, vc=0, lvc, scw=ts.p.scrollOffset,cw,hs=false,aw,tw=0,gw=0,
