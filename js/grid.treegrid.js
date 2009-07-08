@@ -97,7 +97,10 @@ $.fn.extend({
 		return this.each(function (){
 			var $t = this, i=0;
 			if(!$t.p.treeGrid) { return; }
-			if(!$t.p.treedatatype ) $.extend($t.p,{treedatatype: null});
+			if(!$t.p.treedatatype ) $.extend($t.p,{treedatatype: $t.p.datatype});
+			$t.p.subGrid = false; $t.p.altRows =false;
+			$t.p.pgbuttons = false; $t.p.pginput = false;
+			$t.p.multiselect = false; $t.p.rowList = [];
 			$t.p.treeIcons = $.extend({plus:'ui-icon-triangle-1-e',minus:'ui-icon-triangle-1-s',leaf:'ui-icon-radio-off'},$t.p.treeIcons || {});
 			if($t.p.treeGridModel == 'nested') {
 				$t.p.treeReader = $.extend({
@@ -124,6 +127,12 @@ $.fn.extend({
 				i++;
 			}
 			if(!$t.p.expColInd) $t.p.expColInd =0;
+			$.each($t.p.treeReader,function(i,n){
+				if(n){
+					$t.p.colNames.push(n);
+					$t.p.colModel.push({name:n,width:1,hidden:true,sortable:false,resizable:false,hidedlg:true,editable:true,search:false});
+				}
+			});			
 		});
 	},
 	expandRow: function (record){
