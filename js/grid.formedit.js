@@ -719,13 +719,13 @@ $.fn.extend({
 				return cnt;
 			}
 			function postIt() {
-				var copydata, ret=[true,"",""];
+				var copydata, ret=[true,"",""], onCS = {};
 				for( var key in postdata ){
 					ret = checkValues(postdata[key],key,$t);
 					if(ret[0] == false) break;
 				}
 				if(ret[0]) {
-					if( $.isFunction( rp_ge.onclickSubmit)) { rp_ge.editData = rp_ge.onclickSubmit(p) || {}; }
+					if( $.isFunction( rp_ge.onclickSubmit)) { onCS = rp_ge.onclickSubmit(p) || {}; }
 					if( $.isFunction(rp_ge.beforeSubmit))  { ret = rp_ge.beforeSubmit(postdata,$("#"+frmgr)); }
 				}
 				gurl = rp_ge.url ? rp_ge.url : $t.p.editurl;
@@ -742,7 +742,7 @@ $.fn.extend({
 					$("#sData", "#"+frmtb+"_2").addClass('ui-state-active');
 					// we add to pos data array the action - the name is oper
 					postdata.oper = postdata.id == "_empty" ? "add" : "edit";
-					postdata = $.extend(postdata,rp_ge.editData);
+					postdata = $.extend(postdata,rp_ge.editData,onCS);
 					$.ajax({
 						url:gurl,
 						type: rp_ge.mtype,
@@ -1128,7 +1128,7 @@ $.fn.extend({
 			if(!rowids) { return; }
 			var onBeforeShow = typeof p.beforeShowForm === 'function' ? true: false,
 			onAfterShow = typeof p.afterShowForm === 'function' ? true: false,
-			gID = $t.p.id,
+			gID = $t.p.id, onCS = {},
 			dtbl = "DelTbl_"+gID,
 			IDs = {themodal:'delmod'+gID,modalhead:'delhd'+gID,modalcontent:'delcnt'+gID, scrollelm: dtbl};
 			if (isArray(rowids)) { rowids = rowids.join(); }
@@ -1172,9 +1172,9 @@ $.fn.extend({
 					.append("<span class='ui-icon "+p.cancelicon[2]+"'></span>");
 				}				
 				$("#dData","#"+dtbl+"_2").click(function(e){
-					var ret=[true,""];
+					var ret=[true,""]; onCS = {};
 					var postdata = $("#DelData>td","#"+dtbl).text(); //the pair is name=val1,val2,...
-					if( typeof p.onclickSubmit === 'function' ) { p.delData = p.onclickSubmit(p) || {}; }
+					if( typeof p.onclickSubmit === 'function' ) { onCS = p.onclickSubmit(p) || {}; }
 					if( typeof p.beforeSubmit === 'function' ) { ret = p.beforeSubmit(postdata); }
 					var gurl = rp_ge.url ? rp_ge.url : $t.p.editurl;
 					if(!gurl) { ret[0]=false;ret[1] += " "+$.jgrid.errors.nourl;}
@@ -1185,7 +1185,7 @@ $.fn.extend({
 						if(!p.processing) {
 							p.processing = true;
 							$(this).addClass('ui-state-active');
-							var postd = $.extend({oper:"del", id:postdata},p.delData);
+							var postd = $.extend({oper:"del", id:postdata},p.delData, onCS);
 							$.ajax({
 								url:gurl,
 								type: p.mtype,
