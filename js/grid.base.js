@@ -1492,9 +1492,6 @@ $.fn.jqGrid = function( p ) {
 		};
 		this.p.id = this.id;
 		if ($.inArray(ts.p.multikey,sortkeys) == -1 ) {ts.p.multikey = false;}
-		if(this.p.treeGrid === true) {
-			try { $(this).setTreeGrid();} catch (_) {}
-		}
 		ts.p.keyIndex=false;
 		for (i=0; i<ts.p.colModel.length;i++) {
 			if (ts.p.colModel[i].key===true) {
@@ -1503,15 +1500,11 @@ $.fn.jqGrid = function( p ) {
 			}
 		}
 		ts.p.sortorder = ts.p.sortorder.toLowerCase();
+		if(this.p.treeGrid === true) {
+			try { $(this).setTreeGrid();} catch (_) {}
+		}
 		if(this.p.subGrid) {
-			this.p.colNames.unshift("");
-			this.p.colModel.unshift({name:'subgrid',width: isSafari ?  ts.p.subGridWidth+ts.p.cellLayout : ts.p.subGridWidth,sortable: false,resizable:false,hidedlg:true,search:false});
-			var cm = this.p.subGridModel;
-			if(cm[0]) {
-				cm[0].align = $.extend([],cm[0].align || []);
-				for(i=0;i<cm[0].name.length;i++) { cm[0].align[i] = cm[0].align[i] || 'left';}
-			}
-			cm = null;
+			try { $(ts).setSubGrid();} catch (_){}
 		}
 		if(this.p.multiselect) {
 			this.p.colNames.unshift("<input id='cb_jqg' class='cbox' type='checkbox'/>");
@@ -1706,6 +1699,16 @@ $.fn.jqGrid = function( p ) {
 				} else if ( !ts.p.multikey ) {
 					if(ts.p.multiselect && ts.p.multiboxonly) {
 						if(scb){$(ts).setSelection(false,true,ptr);}
+						else {
+							$(ts.p.selarrrow).each(function(i,n){
+								var ind = ts.rows.namedItem(n);
+								$(ind).removeClass("ui-state-highlight");
+								$("#jqg_"+n.replace(".", "\\."),ind).attr("checked",false);
+							});
+							ts.p.selarrrow = [];
+							$("#cb_jqg",ts.grid.hDiv).attr("checked",false);
+							$(ts).setSelection(false,true,ptr);
+						}
 					} else {
 						$(ts).setSelection(false,true,ptr);
 					}

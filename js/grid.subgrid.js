@@ -8,6 +8,18 @@
  * http://www.gnu.org/licenses/gpl.html
 **/
 $.fn.extend({
+setSubGrid : function () {
+	return this.each(function (){
+		var $t = this, cm;
+		$t.p.colNames.unshift("");
+		$t.p.colModel.unshift({name:'subgrid',width: $.browser.safari ?  $t.p.subGridWidth+$t.p.cellLayout : $t.p.subGridWidth,sortable: false,resizable:false,hidedlg:true,search:false});
+		cm = $t.p.subGridModel;
+		if(cm[0]) {
+			cm[0].align = $.extend([],cm[0].align || []);
+			for(i=0;i<cm[0].name.length;i++) { cm[0].align[i] = cm[0].align[i] || 'left';}
+		}
+	});
+},
 addSubGridCell :function (pos,iRow) {
 	var prp='',gv;
 	this.each(function(){
