@@ -71,7 +71,7 @@ $.fn.extend({
 				}
 				var opt = $.extend({}, $t.p.colModel[iCol].editoptions || {} ,{id:iRow+"_"+nm,name:nm});
 				if (!$t.p.colModel[iCol].edittype) {$t.p.colModel[iCol].edittype = "text";}
-				$t.p.savedRow[0] = {id:iRow,ic:iCol,name:nm,v:tmp};
+				$t.p.savedRow.push({id:iRow,ic:iCol,name:nm,v:tmp});
 				if($.isFunction($t.p.formatCell)) {
 					var tmp2 = $t.p.formatCell($t.rows[iRow].id,nm,tmp,iRow,iCol);
 					if(tmp2) {tmp = tmp2;}
@@ -113,7 +113,7 @@ $.fn.extend({
 		return this.each(function(){
 			var $t= this, fr;
 			if (!$t.grid || $t.p.cellEdit !== true) {return;}
-			if ( $t.p.savedRow.length == 1) {fr = 0;} else {fr=null;} 
+			if ( $t.p.savedRow.length >= 1) {fr = 0;} else {fr=null;} 
 			if(fr != null) {
 				var cc = $("td:eq("+iCol+")",$t.rows[iRow]),v,v2,
 				nm = $t.p.colModel[iCol].name.replace('.',"\\.");
@@ -185,7 +185,7 @@ $.fn.extend({
 													if ($.isFunction($t.p.afterSaveCell)) {
 														$t.p.afterSaveCell($t.rows[iRow].id,nm, v, iRow,iCol);
 													}
-													$t.p.savedRow = [];
+													$t.p.savedRow.splice(0,1);
 												} else {
 													info_dialog($.jgrid.errors.errcap,ret[1],$.jgrid.edit.bClose);
 													$($t).restoreCell(iRow,iCol);
@@ -198,7 +198,7 @@ $.fn.extend({
 												if ($.isFunction($t.p.afterSaveCell)) {
 													$t.p.afterSaveCell($t.rows[iRow].id,nm, v, iRow,iCol);
 												}
-												$t.p.savedRow = [];
+												$t.p.savedRow.splice(0,1);
 											}
 										}
 									},
@@ -227,7 +227,7 @@ $.fn.extend({
 							if ($.isFunction($t.p.afterSaveCell)) {
 								$t.p.afterSaveCell($t.rows[iRow].id,nm, v, iRow,iCol);
 							}
-							$t.p.savedRow = [];
+							$t.p.savedRow.splice(0,1);
 						}
 					} else {
 						try {
@@ -250,7 +250,7 @@ $.fn.extend({
 		return this.each(function(){
 			var $t= this, fr;
 			if (!$t.grid || $t.p.cellEdit !== true ) {return;}
-			if ( $t.p.savedRow.length == 1) {fr = 0;} else {fr=null;}
+			if ( $t.p.savedRow.length >= 1) {fr = 0;} else {fr=null;}
 			if(fr != null) {
 				var cc = $("td:eq("+iCol+")",$t.rows[iRow]);
 				if($.isFunction($.fn['datepicker'])) {
@@ -264,7 +264,7 @@ $.fn.extend({
 				}
 				$(cc).empty().attr("tabindex","-1");
 				$($t).setCell($t.rows[iRow].id, iCol, $t.p.savedRow[fr].v);
-				$t.p.savedRow = [];
+				$t.p.savedRow.splice(0,1);
 				
 			}
 			window.setTimeout(function () { $("#"+$t.p.knv).attr("tabindex","-1").focus();},0);
@@ -281,7 +281,6 @@ $.fn.extend({
 				}
 			}
 			if(nCol !== false) {
-				$($t).saveCell(iRow,iCol);
 				$($t).editCell(iRow,nCol,true);
 			} else {
 				if ($t.p.savedRow.length >0) {
@@ -301,7 +300,6 @@ $.fn.extend({
 				}
 			}
 			if(nCol !== false) {
-				$($t).saveCell(iRow,iCol);
 				$($t).editCell(iRow,nCol,true);
 			} else {
 				if ($t.p.savedRow.length >0) {
