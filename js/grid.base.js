@@ -94,7 +94,7 @@ $.fn.jqGrid = function( p ) {
 	userDataOnFooter : false,
 	hoverrows : true,
 	altclass : 'ui-priority-secondary',
-	viewsortcols : false
+	viewsortcols : [false,'vertical',true]
 	}, $.jgrid.defaults, p || {});
 	var grid={         
 		headers:[],
@@ -1378,7 +1378,7 @@ $.fn.jqGrid = function( p ) {
 			});
 			}
 		},
-		sortData = function (index, idxcol,reload){
+		sortData = function (index, idxcol,reload,sor){
 			if(!ts.p.colModel[idxcol].sortable) return;
 			var imgs, so;
 			if(ts.p.savedRow.length > 0) {return;}
@@ -1390,12 +1390,16 @@ $.fn.jqGrid = function( p ) {
 				} else { ts.p.sortorder = 'asc';}
 				ts.p.page = 1;
 			}
+			if(sor) {
+				if(ts.p.lastsort == idxcol && ts.p.sortorder == sor) return;
+				else ts.p.sortorder = sor;
+			}
 			var thd= $("thead:first",grid.hDiv).get(0);
 			$("tr th:eq("+ts.p.lastsort+") span.ui-grid-ico-sort",thd).addClass('ui-state-disabled');
 			$("tr th:eq("+ts.p.lastsort+")",thd).attr("aria-selected","false");
 			$("tr th:eq("+idxcol+") span.ui-icon-"+ts.p.sortorder,thd).removeClass('ui-state-disabled');
 			$("tr th:eq("+idxcol+")",thd).attr("aria-selected","true");
-			if(!ts.p.viewsortcols) {
+			if(!ts.p.viewsortcols[0]) {
 				if(ts.p.lastsort != idxcol) {
 					$("tr th:eq("+ts.p.lastsort+") span.s-ico",thd).hide();
 					$("tr th:eq("+idxcol+") span.s-ico",thd).show();
@@ -1542,7 +1546,7 @@ $.fn.jqGrid = function( p ) {
 		}
 		var thead = "<thead><tr class='ui-jqgrid-labels' role='rowheader'>",
 		tdc, idn, w, res, sort,
-		td, ptr, tbody, imgs;
+		td, ptr, tbody, imgs,iac="",idc="";
 		if(ts.p.shrinkToFit===true && ts.p.forceFit===true) {
 			for (i=ts.p.colModel.length-1;i>=0;i--){
 				if(!ts.p.colModel[i].hidden) {
@@ -1551,9 +1555,10 @@ $.fn.jqGrid = function( p ) {
 				}
 			}
 		}
+		if(ts.p.viewsortcols[1] == 'horizontal') {iac=" ui-i-asc";idc=" ui-i-desc";}
 		tdc = isMSIE ?  "class='ui-th-div-ie'" :"";
-		imgs = "<span class='s-ico' style='display:none'><span class='ui-grid-ico-sort ui-icon-asc ui-state-disabled ui-icon ui-icon-triangle-1-s'></span>";
-		imgs += "<span class='ui-grid-ico-sort ui-icon-desc ui-state-disabled ui-icon ui-icon-triangle-1-n'></span></span>";
+		imgs = "<span class='s-ico' style='display:none'><span sort='asc' class='ui-grid-ico-sort ui-icon-asc"+iac+" ui-state-disabled ui-icon ui-icon-triangle-1-s'></span>";
+		imgs += "<span sort='desc' class='ui-grid-ico-sort ui-icon-desc"+idc+" ui-state-disabled ui-icon ui-icon-triangle-1-n'></span></span>";
 		for(i=0;i<this.p.colNames.length;i++){
 			thead += "<th role='columnheader' class='ui-state-default ui-th-column'>";
 			idn = ts.p.colModel[i].index || ts.p.colModel[i].name;
@@ -1607,6 +1612,7 @@ $.fn.jqGrid = function( p ) {
 		thead = $("thead:first",ts).get(0);
 		var	tfoot = "<table role='grid' style='width:"+ts.p.tblwidth+"px' class='ui-jqgrid-ftable' cellspacing='0' cellpadding='0' border='0'><tbody><tr role='row' class='ui-widget-content footrow'>";
 		$("tr:first th",thead).each(function ( j ) {
+			var ht = this;
 			w = ts.p.colModel[j].width;
 			if(typeof ts.p.colModel[j].resizable === 'undefined') {ts.p.colModel[j].resizable = true;}
 			res = document.createElement("span");
@@ -1627,10 +1633,14 @@ $.fn.jqGrid = function( p ) {
 			sort = ts.p.colModel[j].sortable;
 			if( typeof sort !== 'boolean') {ts.p.colModel[j].sortable =  true; sort=true;}
 			var nm = ts.p.colModel[j].name;
-			if( !(nm == 'cb' || nm=='subgrid' || nm=='rn') )
-				$("div",this).addClass('ui-jqgrid-sortable').click(function(){sortData(this.id,j);return false;});
+			if( !(nm == 'cb' || nm=='subgrid' || nm=='rn') ) {
+				if(ts.p.viewsortcols[2] == false)
+					$(".ui-grid-ico-sort",this).click(function(){sortData(ht.id,j,true,$(this).attr("sort"));return false;});
+				else
+					$("div",this).addClass('ui-jqgrid-sortable').click(function(){sortData(ht.id,j);return false;});
+			}
 			if(sort) {
-				if(ts.p.viewsortcols) {$("div span.s-ico",this).show(); if(j==ts.p.lastsort){ $("div span.ui-icon-"+ts.p.sortorder,this).removeClass("ui-state-disabled");}}
+				if(ts.p.viewsortcols[0]) {$("div span.s-ico",this).show(); if(j==ts.p.lastsort){ $("div span.ui-icon-"+ts.p.sortorder,this).removeClass("ui-state-disabled");}}
 				else if( j == ts.p.lastsort) {$("div span.s-ico",this).show();$("div span.ui-icon-"+ts.p.sortorder,this).removeClass("ui-state-disabled");}
 			}
 			tfoot += "<td role='gridcell' "+formatCol(j,0)+">&nbsp;</td>";
