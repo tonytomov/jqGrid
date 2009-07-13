@@ -72,12 +72,13 @@ $.fn.extend({
 				$("#dData","#"+dtbl+"_2").click(function(e){
 					for(i=0;i<$t.p.colModel.length;i++){
 						if(!$t.p.colModel[i].hidedlg) { // added from T. Tomov
-							if($("#col_" + $t.p.colModel[i].name).attr("checked")) {
+							var nm = $t.p.colModel[i].name.replace(".", "\\.");
+							if($("#col_" + nm).attr("checked")) {
 								$($t).showCol($t.p.colModel[i].name);
-								$("#col_" + $t.p.colModel[i].name).attr("defaultChecked",true); // Added from T. Tomov IE BUG
+								$("#col_" + nm).attr("defaultChecked",true); // Added from T. Tomov IE BUG
 							} else {
 								$($t).hideCol($t.p.colModel[i].name);
-								$("#col_" + $t.p.colModel[i].name).attr("defaultChecked",""); // Added from T. Tomov IE BUG
+								$("#col_" + nm).attr("defaultChecked",""); // Added from T. Tomov IE BUG
 							}
 						}
 					}
