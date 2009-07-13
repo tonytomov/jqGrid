@@ -1,7 +1,164 @@
 Please read The Installation instructions first in install.txt
 ================================================
-3.5 beta (buld6)
-To be written. See GitHub for the most fixes.
+3.5 beta (buld6- build11)
+
+New Properties and methods
+==========================
+
+- Added new grid parameter hoverrows. When set to false the mouse hovering is
+disabled in the grid data rows.
+
+- Added rowid as parameter to error function in saveRow method - inline 
+editing module
+
+- treeGrid to be initially work with datatype local 
+
+- Added new method updateGridRows (grid.custom.js)
+This method update the existing data in the grid by given id rowname.
+
+Syntax: updateGridRows (data, rowidname, jsonreader)
+
+data is a array of data in format
+[{name:value,name1:value1...},{name:value,name2:value2...}]
+where the name is the name from colModel and value is the actuall value.
+It is not neccessary that all columns are present in the data item object
+(the same as setRowData method)
+
+rowidname (string) - is the name of the row which should acts as id.
+If not set the name "id" is used.
+
+jsonreader (boolean) default false. If set to true a jsonReader definition
+is used to set the data. Note that this work only of the item in jsonReader
+object 'repeatitems' is set to true.
+
+- Switch to namedItems JS function. This improve the speed. Previously we
+walk throught the entry rowset to find the rowIndex of the given rowid.
+Now we use the build in javaScript method namedItems which do the same.
+
+- multiselect is enabled in inline edit module.
+
+- To the  importComplete event in jqGridImport method we pass the response.
+
+- Added support for alternate rows. Also added new jqGrid option altclass.
+The default value is 'ui-priority-secondary' THis way we can develop our own
+alternate class.
+
+- Added ShrinkToFit option in setColumns method which fit columns to the grid 
+width. Default value is false.
+
+- Extend tableToGrid method to use custom options when building the grid.
+The call to this function is
+tableToGrid(selector, options)
+where options is the object with jqGrid options.
+
+- Adding 4px right to the view records text for better view 
+
+- Add a onClose event to all modals in form editing (except alert dialog)
+The default value is null. This event can be passed in editGridRow, delGridRow,
+viewGridRow, and setColumns methods. The event raised when a close icon is clicked,
+a cancel button is clicked or ESC key is pressed (if this is enabled).
+
+- Significant speed improvents in tree Grid when a relative large data is loaded.
+
+- Added dataheight parameter to all modal windows, where we can control the
+scrolling content. Intitially this parameter is auto.
+To summarize - we have two parameters for controlling the height of the modal.
+height and dataheight.
+The height parameter control the height of the entry modal, dataheight parameter
+control the height of the scrolling content.  The buttons of the modals are
+allways visible at the bottom of the modal.Also some improvments in jqDnR.
+
+- In setColumns method we add colnameview and closeAfterSubmit parameters. The
+colnameview (default true). If set to false the names from colModel are not
+visible. closeAfterSubmit if defined cleses the dialog after the submit
+button is clicked.
+
+- Added method navSeparatorAdd  in formediting module. This method add a
+separator after a button - typically it can be used in combination with
+navButtonAdd method.
+navSeparatorAdd(element, prams)
+element (string) - the element that act as pager can be by example
+'mypager' or '#mypager' - buth are valid.
+params - is a object with the following two default values
+
+params = {sepclass : "ui-separator",sepcontent: ''}
+
+sepclass determines the class for the separator,
+sepcontent  - determines the content of the separator.
+By default thw width if the separator is 4px. Can be controled in the css file
+
+
+- added parameter viewsortcols in jqGrid parameters. The purpose of this
+parameter is to define diffrent look and behaviour of sorting icons that
+appear near the header. This parameter is array with the following default
+options
+viewsortcols : [false,'vertical',true]
+
+The first parameter determines if all icons should be viewed at the same time
+when all columns  have sort property set to true.
+The default of false determines that only the icons of the current sorting column
+should be viewed.
+Setting this parameter to true couses all icons in all sortable columns to be viewed.
+
+The second parameter determines how icons should be placed - vertical means that
+the sorting icons are one under another. 'horizontal' means that the icnos should
+be one near other.
+
+The third parameter determinies the click functionality. If set to tru the colums are
+sorteed if the header is clicked. If set to false the coulmns are sorted only when
+the icons are clicked.
+
+Important note: When set a second parameter to false be a sure that the first parameter
+is set to true, otherwiese you will lost the sorting.
+
+Fixes
+=====
+- Fixed bug in filterToolbar. We search now by index and when not found by 
+name. 
+
+- Fix in searchGrid method. We search now by index and when not found by 
+name. 
+
+- Fixed bug in IE when resizing columns. The function getOffset is changed
+so that the resizing speed is the same as in Safari and FF.
+
+- Fix multiple select bug in createEl function. Now we set the options before
+checking for multiple:true
+
+- Fixed bug in treegrid. The strict comparation in getNodeParent method
+causes bad results.
+
+- Fix in setGridWidth method. We do not initialize correct the new width which
+causes after the first set of the width to not work in other grid in the same
+page.
+
+- Fixed bug in GridExport. We delete the columns that are generated 
+dynamically - multiselect, subgrid, treegrid or rownumbers. This way the
+import is without errors 
+
+- Fixed a bug in addRowData method to add data with id = 0 (number)
+
+- Fixed a forever loading bug in IE.
+
+- Fixed altRows bug in delRowData method
+
+- navGrid method fix for warning modal and IE6
+
+- Fix setColumns method to the common apprach of forms and modals
+
+- Fix for IE8 in getAbsoluteIndex method. IE8 seems to work as other browsers
+
+- Fixed bug in delRowData - the grid does not resize when first row is 
+deleted.
+
+- Fixed bug when rownumbers and subgrid are used together 
+
+- Fixed bug in row editing when the column name contain dot.
+
+- Fixing bug in viewGridRow - also the id manes of the form are changed in order
+to be not equal of those in editGridRow
+
+
 
 3.5 beta (buld5)
 
