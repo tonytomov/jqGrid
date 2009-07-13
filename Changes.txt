@@ -73,23 +73,8 @@ colnameview (default true). If set to false the names from colModel are not
 visible. closeAfterSubmit if defined cleses the dialog after the submit
 button is clicked.
 
-- Added method navSeparatorAdd  in formediting module. This method add a
-separator after a button - typically it can be used in combination with
-navButtonAdd method.
-navSeparatorAdd(element, prams)
-element (string) - the element that act as pager can be by example
-'mypager' or '#mypager' - buth are valid.
-params - is a object with the following two default values
-
-params = {sepclass : "ui-separator",sepcontent: ''}
-
-sepclass determines the class for the separator,
-sepcontent  - determines the content of the separator.
-By default thw width if the separator is 4px. Can be controled in the css file
-
-
-- added parameter viewsortcols in jqGrid parameters. The purpose of this
-parameter is to define diffrent look and behaviour of sorting icons that
+- Added parameter viewsortcols in jqGrid parameters. The purpose of this
+parameter is to define different look and behavior of sorting icons that
 appear near the header. This parameter is array with the following default
 options
 viewsortcols : [false,'vertical',true]
@@ -98,18 +83,19 @@ The first parameter determines if all icons should be viewed at the same time
 when all columns  have sort property set to true.
 The default of false determines that only the icons of the current sorting column
 should be viewed.
-Setting this parameter to true couses all icons in all sortable columns to be viewed.
+Setting this parameter to true causes all icons in all sortable columns to be viewed.
 
 The second parameter determines how icons should be placed - vertical means that
-the sorting icons are one under another. 'horizontal' means that the icnos should
+the sorting icons are one under another. 'horizontal' means that the icons should
 be one near other.
 
-The third parameter determinies the click functionality. If set to tru the colums are
-sorteed if the header is clicked. If set to false the coulmns are sorted only when
+The third parameter determines the click functionality. If set to true the columns are
+sorted if the header is clicked. If set to false the columns are sorted only when
 the icons are clicked.
 
 Important note: When set a second parameter to false be a sure that the first parameter
-is set to true, otherwiese you will lost the sorting.
+is set to true, otherwise you will lost the sorting.
+
 
 Fixes
 =====
