@@ -22,25 +22,30 @@ $.fn.extend({
 				$('td',ind).each( function(i) {
 					nm = cm[i].name;
 					hc = cm[i].hidden===true ? true : false;
-					try {
-						tmp =  $.unformat(this,{colModel:cm[i]},i);
-					} catch (_) {
-						tmp = $(this).html();
-					}
-					svr[nm]=tmp;
-					if ( nm != 'cb' && nm != 'subgrid' && cm[i].editable===true && !hc && nm != 'rn') {
-						if(focus===null) { focus = i; }
-						$(this).html("");
-						var opt = $.extend({},cm[i].editoptions || {},{id:rowid+"_"+nm,name:nm});
-						if(!cm[i].edittype) { cm[i].edittype = "text"; }
-						var elc = createEl(cm[i].edittype,opt,tmp,$(this));
-						$(elc).addClass("editable");
-						$(this).append(elc);
-						//Again IE
-						if(cm[i].edittype == "select" && cm[i].editoptions.multiple===true && $.browser.msie) {
-							$(elc).width($(elc).width());
+					if($t.p.treeGrid===true && nm == $t.p.ExpandColumn) tmp = $("span:first",this).html();
+					else {
+						try {
+							tmp =  $.unformat(this,{colModel:cm[i]},i);
+						} catch (_) {
+							tmp = $(this).html();
 						}
-						cnt++;
+					}
+					if ( nm != 'cb' && nm != 'subgrid' && nm != 'rn') {
+						svr[nm]=tmp;
+						if(cm[i].editable===true && !hc) {
+							if(focus===null) { focus = i; }
+							$(this).html("");
+							var opt = $.extend({},cm[i].editoptions || {},{id:rowid+"_"+nm,name:nm});
+							if(!cm[i].edittype) { cm[i].edittype = "text"; }
+							var elc = createEl(cm[i].edittype,opt,tmp,$(this));
+							$(elc).addClass("editable");
+							$(this).append(elc);
+							//Again IE
+							if(cm[i].edittype == "select" && cm[i].editoptions.multiple===true && $.browser.msie) {
+								$(elc).width($(elc).width());
+							}
+							cnt++;
+						}
 					}
 				});
 				if(cnt > 0) {

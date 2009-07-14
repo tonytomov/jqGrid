@@ -55,7 +55,7 @@ $.fn.extend({
 				window.setTimeout(function () { $("#"+$t.p.knv).attr("tabindex","-1").focus();},0);
 			}
 			nm = $t.p.colModel[iCol].name;
-			if (nm=='subgrid') {return;}
+			if (nm=='subgrid' || nm=='cb' || nm=='rn') {return;}
 			if ($t.p.colModel[iCol].editable===true && ed===true) {
 				cc = $("td:eq("+iCol+")",$t.rows[iRow]);
 				if(parseInt($t.p.iCol)>=0  && parseInt($t.p.iRow)>=0) {
