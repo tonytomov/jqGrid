@@ -22,7 +22,8 @@ $.fn.extend({
 				$('td',ind).each( function(i) {
 					nm = cm[i].name;
 					hc = cm[i].hidden===true ? true : false;
-					if($t.p.treeGrid===true && nm == $t.p.ExpandColumn) tmp = $("span:first",this).html();
+					var treeg = $t.p.treeGrid===true && nm == $t.p.ExpandColumn;
+					if(treeg) tmp = $("span:first",this).html();
 					else {
 						try {
 							tmp =  $.unformat(this,{colModel:cm[i]},i);
@@ -34,12 +35,14 @@ $.fn.extend({
 						svr[nm]=tmp;
 						if(cm[i].editable===true && !hc) {
 							if(focus===null) { focus = i; }
-							$(this).html("");
+							if (treeg) $("span:first",this).html("");
+							else $(this).html("");
 							var opt = $.extend({},cm[i].editoptions || {},{id:rowid+"_"+nm,name:nm});
 							if(!cm[i].edittype) { cm[i].edittype = "text"; }
 							var elc = createEl(cm[i].edittype,opt,tmp,$(this));
 							$(elc).addClass("editable");
-							$(this).append(elc);
+							if(treeg) $("span:first",this).append(elc);
+							else $(this).append(elc);
 							//Again IE
 							if(cm[i].edittype == "select" && cm[i].editoptions.multiple===true && $.browser.msie) {
 								$(elc).width($(elc).width());
