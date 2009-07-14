@@ -93,7 +93,7 @@ The third parameter determines the click functionality. If set to true the colum
 sorted if the header is clicked. If set to false the columns are sorted only when
 the icons are clicked.
 
-Important note: When set a second parameter to false be a sure that the first parameter
+Important note: When set a third parameter to false be a sure that the first parameter
 is set to true, otherwise you will lost the sorting.
 
 
