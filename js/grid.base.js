@@ -372,8 +372,8 @@ $.fn.jqGrid = function( p ) {
 		if(data) {
 			this.each(function() {
 				var t = this;
-				rowid += "";
-				row = "<tr id=\""+(rowid || t.p.records+1)+"\" role=\"row\" class=\"ui-widget-content jqgrow\">";
+				rowid = typeof(rowid) != 'undefined' ? rowid+"": t.p.records+1;
+				row = "<tr id=\""+rowid+"\" role=\"row\" class=\"ui-widget-content jqgrow\">";
 				if(t.p.rownumbers===true){
 					prp = t.formatCol(ni,1);
 					row += "<td role=\"gridcell\" class=\"ui-state-default jqgrid-rownum\" "+prp+">0</td>";
