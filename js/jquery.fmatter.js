@@ -328,8 +328,12 @@
 	};
 	$.unformat = function (cellval,options,pos,cnt) {
 		// specific for jqGrid only
-		var ret, formatType = options.colModel.formatter, op =options.colModel.formatoptions || {};
-		if(formatType !== 'undefined' && isString(formatType) ) {
+		var ret, formatType = options.colModel.formatter,
+		op =options.colModel.formatoptions || {},
+		unformatFunc = options.colModel.unformat;
+		if(unformatFunc !== 'undefined' && isFunction(unformatFunc) ) {
+			ret = unformatFunc(cellval, options);
+		} else if(formatType !== 'undefined' && isString(formatType) ) {
 			var opts = $.jgrid.formatter || {}, stripTag;
 			switch(formatType) {
 				case 'link' :
