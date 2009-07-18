@@ -372,10 +372,10 @@ $.fn.extend({
 							// sopt to construct the values
 							if($t.sopt.value) {
 								var oSv = $t.sopt.value;
+								var elem = document.createElement("select");
+								$(elem).attr({name:$t.index || $t.name, id: "sg_"+$t.name}).attr($t.sopt);
 								if(typeof oSv === "string") {
 									var so = oSv.split(";"), sv, ov;
-									var elem = document.createElement("select");
-									$(elem).attr({name:$t.index || $t.name, id: "sg_"+$t.name}).attr($t.sopt);
 									for(var k=0; k<so.length;k++){
 										sv = so[k].split(":");
 										ov = document.createElement("option");
