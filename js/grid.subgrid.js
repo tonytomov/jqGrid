@@ -41,7 +41,7 @@ addSubGrid : function(t,pos) {
 			if($(this).hasClass("sgcollapsed")) {
 				pID = ts.p.id;
 				res = $(this).parent();
-				atd= pos >=1 ? "<td colspan='"+pos+"'>&nbsp;</td>":"";
+				atd = pos >=1 ? "<td colspan='"+pos+"'>&nbsp;</td>":"";
 				_id = $(res).attr("id");
 				bfsc =true;
 				if($.isFunction(ts.p.subGridBeforeExpand)) {
