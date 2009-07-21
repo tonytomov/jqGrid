@@ -94,7 +94,8 @@ $.fn.jqGrid = function( p ) {
 	userDataOnFooter : false,
 	hoverrows : true,
 	altclass : 'ui-priority-secondary',
-	viewsortcols : [false,'vertical',true]
+	viewsortcols : [false,'vertical',true],
+	resizeclass : ""
 	}, $.jgrid.defaults, p || {});
 	var grid={         
 		headers:[],
@@ -103,7 +104,7 @@ $.fn.jqGrid = function( p ) {
 		dragStart: function(i,x,y) {
 			this.resizing = { idx: i, startX: x.clientX, sOL : y[0]};
 			this.hDiv.style.cursor = "col-resize";
-			$(".ui-jqgrid-resize-mark","#gbox_"+p.id).css({visibility:"visible",left:y[0],top:y[1],height:y[2]});
+			$("#rs_m"+p.id,"#gbox_"+p.id).css({display:"block",left:y[0],top:y[1],height:y[2]});
 		},
 		dragMove: function(x) {
 			if(this.resizing) {
@@ -111,7 +112,7 @@ $.fn.jqGrid = function( p ) {
 				h = this.headers[this.resizing.idx],
 				newWidth = h.width + diff, hn, nWn;
 				if(newWidth > 33) {
-					$(".ui-jqgrid-resize-mark","#gbox_"+p.id).css({left:this.resizing.sOL+diff});
+					$("#rs_m"+p.id,"#gbox_"+p.id).css({left:this.resizing.sOL+diff});
 					if(p.forceFit===true ){
 						hn = this.headers[this.resizing.idx+p.nv];
 						nWn = hn.width - diff;
@@ -133,7 +134,7 @@ $.fn.jqGrid = function( p ) {
 				var idx = this.resizing.idx,
 				nw = this.headers[idx].newWidth || this.headers[idx].width;
 				this.resizing = false;
-				$(".ui-jqgrid-resize-mark").css("visibility","hidden");
+				$("#rs_m"+p.id).css("display","none");
 				p.colModel[idx].width = nw;
 				this.headers[idx].width = nw;
 				this.headers[idx].el.style.width = nw + "px";
@@ -412,11 +413,11 @@ $.fn.jqGrid = function( p ) {
 						break;
 					case 'after':
 						sind = t.rows.namedItem(src);
-						sind != null ?	$(sind).after(row): "";
+						sind != null ? $(t.rows[sind.rowIndex+1]).hasClass("ui-subgrid") ? $(t.rows[sind.rowIndex+1]).after(row) : $(sind).after(row) : "";
 						break;
 					case 'before':
 						sind = t.rows.namedItem(src);
-						sind != null ?	$(t.rows[sind]).before(row): "";
+						sind != null ?	$(sind).before(row): "";
 						break;
 				}
 				}
@@ -1607,7 +1608,7 @@ $.fn.jqGrid = function( p ) {
 			ts.p.width = pw > 0?  pw: 'nw';
 		}
 		setColWidth();
-		$(eg).css("width",grid.width+"px").append("<div class='ui-jqgrid-resize-mark'>&nbsp;</div>");
+		$(eg).css("width",grid.width+"px").append("<div class='ui-jqgrid-resize-mark' id='rs_m"+ts.p.id+"'>&nbsp;</div>");
 		$(gv).css("width",grid.width+"px");
 		thead = $("thead:first",ts).get(0);
 		var	tfoot = "<table role='grid' style='width:"+ts.p.tblwidth+"px' class='ui-jqgrid-ftable' cellspacing='0' cellpadding='0' border='0'><tbody><tr role='row' class='ui-widget-content footrow'>";
