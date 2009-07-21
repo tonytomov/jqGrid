@@ -41,7 +41,7 @@ addSubGrid : function(t,pos) {
 			if($(this).hasClass("sgcollapsed")) {
 				pID = ts.p.id;
 				res = $(this).parent();
-				atd= pos ==1 ? '<td></td>':'';
+				atd= pos >=1 ? "<td colspan='"+pos+"'>&nbsp;</td>":"";
 				_id = $(res).attr("id");
 				bfsc =true;
 				if($.isFunction(ts.p.subGridBeforeExpand)) {
@@ -50,7 +50,7 @@ addSubGrid : function(t,pos) {
 				if(bfsc === false) {return false;}
 				nhc = 0;
 				$.each(ts.p.colModel,function(i,v){
-					if(this.hidden === true) {nhc++;}
+					if(this.hidden === true || this.name == 'rn' || this.name == 'cb') {nhc++;}
 				});
 				subdata = "<tr role='row' class='ui-subgrid'>"+atd+"<td><span class='ui-icon ui-icon-carat-1-sw'/></td><td colspan='"+parseInt(ts.p.colNames.length-1-nhc)+"' class='ui-widget-content subgrid-data'><div id="+pID+"_"+_id+" class='tablediv'>";
 				$(this).parent().after( subdata+ "</div></td></tr>" );
