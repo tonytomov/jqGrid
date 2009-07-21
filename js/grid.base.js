@@ -95,7 +95,7 @@ $.fn.jqGrid = function( p ) {
 	hoverrows : true,
 	altclass : 'ui-priority-secondary',
 	viewsortcols : [false,'vertical',true],
-	resizeclass : ""
+	resizeclass : ''
 	}, $.jgrid.defaults, p || {});
 	var grid={         
 		headers:[],
