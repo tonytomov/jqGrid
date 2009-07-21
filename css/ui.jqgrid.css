@@ -17,10 +17,10 @@
 .ui-jqgrid .ui-th-div-ie {float:left;width:97%;white-space: nowrap;}
 .ui-jqgrid .ui-jqgrid-resize {height:20px !important;position: relative; cursor :e-resize;cursor :col-resize;float: right;display: inline;margin: -2px -2px -2px 0px;	overflow: hidden;}
 .ui-jqgrid .ui-grid-ico-sort {float:right;overflow:hidden;position:absolute;display:inline; cursor: pointer !important;}
-.ui-jqgrid .ui-icon-asc {margin-top:3px;height:12px;}
-.ui-jqgrid .ui-icon-desc {margin-top:-3px; height:12px;}
+.ui-jqgrid .ui-icon-asc {margin-top:-3px; height:12px;}
+.ui-jqgrid .ui-icon-desc {margin-top:3px;height:12px;}
 .ui-jqgrid .ui-i-asc {margin-top:0px;height:16px;}
-.ui-jqgrid .ui-i-desc {margin-top:0px; margin-left:13px;height:16px;}
+.ui-jqgrid .ui-i-desc {margin-top:0px;margin-left:13px;height:16px;}
 .ui-jqgrid .ui-jqgrid-sortable {cursor:pointer;}
 .ui-jqgrid tr.ui-search-toolbar th { border-top-width: 1px !important; border-top-color: inherit !important; border-top-style: ridge !important }
 /* body */ 

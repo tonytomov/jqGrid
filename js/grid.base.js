@@ -1187,7 +1187,7 @@ $.fn.jqGrid = function( p ) {
 					$("#load_"+ts.p.id).hide();
 					break;
 				case "block":
-					$("#lui_"+ts.id).hide();
+					$("#lui_"+ts.p.id).hide();
 					$("#load_"+ts.p.id).hide();
 					break;
 			}
@@ -1557,8 +1557,8 @@ $.fn.jqGrid = function( p ) {
 		}
 		if(ts.p.viewsortcols[1] == 'horizontal') {iac=" ui-i-asc";idc=" ui-i-desc";}
 		tdc = isMSIE ?  "class='ui-th-div-ie'" :"";
-		imgs = "<span class='s-ico' style='display:none'><span sort='asc' class='ui-grid-ico-sort ui-icon-asc"+iac+" ui-state-disabled ui-icon ui-icon-triangle-1-s'></span>";
-		imgs += "<span sort='desc' class='ui-grid-ico-sort ui-icon-desc"+idc+" ui-state-disabled ui-icon ui-icon-triangle-1-n'></span></span>";
+		imgs = "<span class='s-ico' style='display:none'><span sort='asc' class='ui-grid-ico-sort ui-icon-asc"+iac+" ui-state-disabled ui-icon ui-icon-triangle-1-n'></span>";
+		imgs += "<span sort='desc' class='ui-grid-ico-sort ui-icon-desc"+idc+" ui-state-disabled ui-icon ui-icon-triangle-1-s'></span></span>";
 		for(i=0;i<this.p.colNames.length;i++){
 			thead += "<th role='columnheader' class='ui-state-default ui-th-column'>";
 			idn = ts.p.colModel[i].index || ts.p.colModel[i].name;
@@ -1612,7 +1612,7 @@ $.fn.jqGrid = function( p ) {
 		thead = $("thead:first",ts).get(0);
 		var	tfoot = "<table role='grid' style='width:"+ts.p.tblwidth+"px' class='ui-jqgrid-ftable' cellspacing='0' cellpadding='0' border='0'><tbody><tr role='row' class='ui-widget-content footrow'>";
 		$("tr:first th",thead).each(function ( j ) {
-			var ht = this;
+			var ht = $('div',this)[0];
 			w = ts.p.colModel[j].width;
 			if(typeof ts.p.colModel[j].resizable === 'undefined') {ts.p.colModel[j].resizable = true;}
 			res = document.createElement("span");
