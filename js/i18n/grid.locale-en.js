@@ -10,16 +10,16 @@
 $.jgrid = {
 	defaults : {
 		recordtext: "View {0} - {1} of {2}",
-	    emptyrecords: "No records to view",
+		emptyrecords: "No records to view",
 		loadtext: "Loading...",
 		pgtext : "Page {0} of {1}"
 	},
 	search : {
-	    caption: "Search...",
-	    Find: "Find",
-	    Reset: "Reset",
-	    odata : ['equal', 'not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain'],
-	    groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	],
+		caption: "Search...",
+		Find: "Find",
+		Reset: "Reset",
+		odata : ['equal', 'not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain'],
+		groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	],
 		matchText: " match",
 		rulesText: " rules"
 	},
@@ -34,19 +34,19 @@ $.jgrid = {
 		bNo : "No",
 		bExit : "Cancel",
 		msg: {
-		    required:"Field is required",
-		    number:"Please, enter valid number",
-		    minValue:"value must be greater than or equal to ",
-		    maxValue:"value must be less than or equal to",
-		    email: "is not a valid e-mail",
-		    integer: "Please, enter valid integer value",
+			required:"Field is required",
+			number:"Please, enter valid number",
+			minValue:"value must be greater than or equal to ",
+			maxValue:"value must be less than or equal to",
+			email: "is not a valid e-mail",
+			integer: "Please, enter valid integer value",
 			date: "Please, enter valid date value",
 			url: "is not a valid URL. Prefix required ('http://' or 'https://')"
 		}
 	},
 	view : {
-	    caption: "View Record",
-	    bClose: "Close"
+		caption: "View Record",
+		bClose: "Close"
 	},
 	del : {
 		caption: "Delete",
@@ -99,24 +99,24 @@ $.jgrid = {
 			srcformat: 'Y-m-d',
 			newformat: 'd/m/Y',
 			masks : {
-	            ISO8601Long:"Y-m-d H:i:s",
-	            ISO8601Short:"Y-m-d",
-	            ShortDate: "n/j/Y",
-	            LongDate: "l, F d, Y",
-	            FullDateTime: "l, F d, Y g:i:s A",
-	            MonthDay: "F d",
-	            ShortTime: "g:i A",
-	            LongTime: "g:i:s A",
-	            SortableDateTime: "Y-m-d\\TH:i:s",
-	            UniversalSortableDateTime: "Y-m-d H:i:sO",
-	            YearMonth: "F, Y"
-	        },
-	        reformatAfterEdit : false
+				ISO8601Long:"Y-m-d H:i:s",
+				ISO8601Short:"Y-m-d",
+				ShortDate: "n/j/Y",
+				LongDate: "l, F d, Y",
+				FullDateTime: "l, F d, Y g:i:s A",
+				MonthDay: "F d",
+				ShortTime: "g:i A",
+				LongTime: "g:i:s A",
+				SortableDateTime: "Y-m-d\\TH:i:s",
+				UniversalSortableDateTime: "Y-m-d H:i:sO",
+				YearMonth: "F, Y"
+			},
+			reformatAfterEdit : false
 		},
 		baseLinkUrl: '',
 		showAction: '',
-	    target: '',
-	    checkbox : {disabled:true},
+		target: '',
+		checkbox : {disabled:true},
 		idName : 'id'
 	}
 };
