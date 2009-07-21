@@ -34,19 +34,19 @@ $.jgrid = {
 		bNo : "Не",
 		bExit : "Отказ",
 		msg: {
-		    required:"Полето е задължително",
-		    number:"Въведете валидно число!",
-		    minValue:"стойността трябва да е по-голяма или равна от",
-		    maxValue:"стойността трябва да е по-малка или равна от",
-		    email: "не е валиден ел. адрес",
-		    integer: "Въведете валидно цяло число",
+			required:"Полето е задължително",
+			number:"Въведете валидно число!",
+			minValue:"стойността трябва да е по-голяма или равна от",
+			maxValue:"стойността трябва да е по-малка или равна от",
+			email: "не е валиден ел. адрес",
+			integer: "Въведете валидно цяло число",
 			date: "Въведете валидна дата",
 			url: "e невалиден URL. Изискава се префикс('http://' или 'https://')"
 		}
 	},
 	view : {
-	    caption: "Преглед запис",
-	    bClose: "Затвори"
+		caption: "Преглед запис",
+		bClose: "Затвори"
 	},
 	del : {
 		caption: "Изтриване",
@@ -104,19 +104,19 @@ $.jgrid = {
 			srcformat: 'Y-m-d',
 			newformat: 'd/m/Y',
 			masks : {
-		        ISO8601Long:"Y-m-d H:i:s",
-		        ISO8601Short:"Y-m-d",
-		        ShortDate: "n/j/Y",
-		        LongDate: "l, F d, Y",
-		        FullDateTime: "l, F d, Y g:i:s A",
-		        MonthDay: "F d",
-		        ShortTime: "g:i A",
-		        LongTime: "g:i:s A",
-		        SortableDateTime: "Y-m-d\\TH:i:s",
-		        UniversalSortableDateTime: "Y-m-d H:i:sO",
-		        YearMonth: "F, Y"
-		    },
-		    reformatAfterEdit : false
+				ISO8601Long:"Y-m-d H:i:s",
+				ISO8601Short:"Y-m-d",
+				ShortDate: "n/j/Y",
+				LongDate: "l, F d, Y",
+				FullDateTime: "l, F d, Y g:i:s A",
+				MonthDay: "F d",
+				ShortTime: "g:i A",
+				LongTime: "g:i:s A",
+				SortableDateTime: "Y-m-d\\TH:i:s",
+				UniversalSortableDateTime: "Y-m-d H:i:sO",
+				YearMonth: "F, Y"
+			},
+			reformatAfterEdit : false
 		},
 		baseLinkUrl: '',
 		showAction: '',
