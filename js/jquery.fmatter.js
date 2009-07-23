@@ -367,18 +367,12 @@
 	function fireFormatter(formatType,cellval, opts, rwd, act) {
 	    formatType = formatType.toLowerCase();
 		var v=cellval;
-	    switch (formatType) {
-	        case 'link': v= $.fn.fmatter.link(cellval, opts); break;
-			case 'showlink': v= $.fn.fmatter.showlink(cellval, opts); break;
-	        case 'email': v= $.fn.fmatter.email(cellval, opts); break;
-			case 'currency': v= $.fn.fmatter.currency( cellval, opts); break;
-	        case 'date': v = $.fn.fmatter.date(cellval, opts, act); break;
-	        case 'number': v= $.fn.fmatter.number(cellval, opts) ; break;
-	        case 'integer': v= $.fn.fmatter.integer(cellval, opts) ; break;
-	        case 'checkbox': v= $.fn.fmatter.checkbox(cellval, opts); break;
-	        case 'select': v=$.fn.fmatter.select(cellval, opts,act); break;
-	    }
-		return v;
+
+        if ($.fn.fmatter[formatType]){
+            v = $.fn.fmatter[formatType](cellval, opts);
+        }
+
+        return v;
 	};
 	//private methods and data
 	function debug($obj) {
