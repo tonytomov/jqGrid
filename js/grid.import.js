@@ -125,7 +125,9 @@
         },
         jqGridExport : function(o) {
             o = $.extend({
-                exptype : "xmlstring"
+                exptype : "xmlstring",
+                root: "grid",
+                ident: "\t"
             }, o || {});
             var ret = null;
             this.each(function () {
@@ -153,10 +155,10 @@
                 }
                 switch (o.exptype) {
                     case 'xmlstring' :
-                        ret = xmlJsonClass.json2xml(gprm," ");
+                        ret = "<"+o.root+">"+xmlJsonClass.json2xml(gprm,o.ident)+"</"+o.root+">";
                         break;
                     case 'jsonstring' :
-                        ret = JSON.stringify(gprm);
+                        ret = "{"+ xmlJsonClass.toJson(gprm,o.root,o.ident)+"}";
                         break;
                 }
             });
