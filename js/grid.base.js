@@ -1095,7 +1095,7 @@ $.fn.jqGrid = function( p ) {
 				prm[ts.p.prmNames.rows]= ts.p.rowNum; prm[ts.p.prmNames.page]= ts.p.page;
 				prm[ts.p.prmNames.sort]= ts.p.sortname; prm[ts.p.prmNames.order]= ts.p.sortorder;
 				gdata = $.extend(ts.p.postData,prm);
-				gdata =$.extend(gdata,ts.p.searchdata || {});
+				if(ts.p.search) gdata =$.extend(gdata,ts.p.searchdata || {});
 				var rcnt = ts.p.scroll===false ? 0 : ts.rows.length-1; 
 				if ($.isFunction(ts.p.datatype)) { ts.p.datatype(gdata,"load_"+ts.p.id); return;}
 				else if(beReq) {ts.p.beforeRequest();}
