@@ -1,4 +1,4 @@
-//This file should be used if you want to debug
+//This file should be used if you want to debug and develop
 function jqGridInclude()
 {
     var pathtojsfiles = "js/"; // need to be ajusted
