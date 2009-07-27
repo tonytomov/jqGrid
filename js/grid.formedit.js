@@ -17,7 +17,6 @@ $.fn.extend({
 			sValue:'searchString',
 			sOper: 'searchOper',
 			sFilter: 'filters',
-			checkInput :false,
 			beforeShowSearch: null,
 			afterShowSearch : null,
 			onInitializeSearch: null,
@@ -1287,7 +1286,7 @@ $.fn.extend({
 					vwidth=1024;
 					vheight=768;
 				}
-				createModal(alertIDs,"<div>"+o.alerttext+"</div><span tabindex='0'><span tabindex='-1' id='jqg_alrt'></span></span>",{gbox:"#gbox_"+$t.p.id,jqModal:true,drag:true,resize:true,caption:o.alertcap,top:vheight/2-25,left:vwidth/2-100,width:200,height:'auto',closeOnEscape:o.closeOnEscape},"#gview_"+$t.p.id,$("#gview_"+$t.p.id)[0],true);
+				createModal(alertIDs,"<div>"+o.alerttext+"</div><span tabindex='0'><span tabindex='-1' id='jqg_alrt'></span></span>",{gbox:"#gbox_"+$t.p.id,jqModal:true,drag:true,resize:true,caption:o.alertcap,top:vheight/2-25,left:vwidth/2-100,width:200,height:'auto',closeOnEscape:o.closeOnEscape},"","",true);
 			}
 			var tbd,
 			navtbl = $("<table cellspacing='0' cellpadding='0' border='0' class='ui-pg-table navtable' style='float:left;table-layout:auto;'><tbody><tr></tr></tbody></table>"),

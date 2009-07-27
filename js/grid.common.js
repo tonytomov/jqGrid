@@ -45,7 +45,8 @@ var createModal = function(aIDs, content, p, insertSelector, posSelector, append
 	}
 	jQuery("a.ui-jqdialog-titlebar-close",mh).click(function(e){
 		var oncm = jQuery("#"+aIDs.themodal).data("onClose") || p.onClose;
-		hideModal("#"+aIDs.themodal,{gb:p.gbox,jqm:p.jqModal,onClose:oncm});
+		var gboxclose = jQuery("#"+aIDs.themodal).data("gbox") || p.gbox;
+		hideModal("#"+aIDs.themodal,{gb:gboxclose,jqm:p.jqModal,onClose:oncm});
 		return false;
 	});
 	if (p.width == 0 || !p.width) {p.width = 300;}
@@ -108,6 +109,7 @@ var viewModal = function (selector,o){
 	} else {
 		if(o.gbox != '') {
 			jQuery(".jqgrid-overlay:first",o.gbox).show();
+			jQuery(selector).data("gbox",o.gbox);
 		}
 		jQuery(selector).show().attr("aria-hidden","false");
 		try{jQuery(':input:visible',selector)[0].focus();}catch(_){}
