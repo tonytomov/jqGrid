@@ -375,7 +375,7 @@
 		var v=cellval;
 
         if ($.fn.fmatter[formatType]){
-            v = $.fn.fmatter[formatType](cellval, opts);
+            v = $.fn.fmatter[formatType](cellval, opts, act);
         }
 
         return v;
