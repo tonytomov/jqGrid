@@ -330,17 +330,20 @@
 		// specific for jqGrid only
 		var ret, formatType = options.colModel.formatter,
 		op =options.colModel.formatoptions || {},
-		unformatFunc = options.colModel.unformat;
+		unformatFunc = options.colModel.unformat||($.fn.fmatter[formatType] && $.fn.fmatter[formatType].unformat);
+        
 		if(unformatFunc !== 'undefined' && isFunction(unformatFunc) ) {
 			ret = unformatFunc(cellval, options);
 		} else if(formatType !== 'undefined' && isString(formatType) ) {
 			var opts = $.jgrid.formatter || {}, stripTag;
 			switch(formatType) {
+                /*
 				case 'link' :
 				case 'showlink' :
 				case 'email' :
 					ret= $(cellval).text();
 					break;
+                */
 				case 'integer' :
 					op = $.extend({},opts.integer,op);
 					stripTag = eval("/"+op.thousandsSeparator+"/g");
@@ -360,6 +363,9 @@
 					var cbv = (options.colModel.editoptions) ? options.colModel.editoptions.value.split(":") : ["Yes","No"];
 					ret = $('input',cellval).attr("checked") ? cbv[0] : cbv[1];
 					break;
+                default:
+                    ret= $(cellval).text();
+                    break;
 			}
 		}
 		return ret ? ret : cnt===true ? $(cellval).text() : $.htmlDecode($(cellval).html());
@@ -367,18 +373,12 @@
 	function fireFormatter(formatType,cellval, opts, rwd, act) {
 	    formatType = formatType.toLowerCase();
 		var v=cellval;
-	    switch (formatType) {
-	        case 'link': v= $.fn.fmatter.link(cellval, opts); break;
-			case 'showlink': v= $.fn.fmatter.showlink(cellval, opts); break;
-	        case 'email': v= $.fn.fmatter.email(cellval, opts); break;
-			case 'currency': v= $.fn.fmatter.currency( cellval, opts); break;
-	        case 'date': v = $.fn.fmatter.date(cellval, opts, act); break;
-	        case 'number': v= $.fn.fmatter.number(cellval, opts) ; break;
-	        case 'integer': v= $.fn.fmatter.integer(cellval, opts) ; break;
-	        case 'checkbox': v= $.fn.fmatter.checkbox(cellval, opts); break;
-	        case 'select': v=$.fn.fmatter.select(cellval, opts,act); break;
-	    }
-		return v;
+
+        if ($.fn.fmatter[formatType]){
+            v = $.fn.fmatter[formatType](cellval, opts);
+        }
+
+        return v;
 	};
 	//private methods and data
 	function debug($obj) {

@@ -1,10 +1,10 @@
 // This file should be used if you want to debug
 function jqGridInclude()
 {
-    var pathtojsfiles = "js/"; // need to be ajusted
+    var pathtojsfiles = urlbase+"../../res/lib/jqgrid/git/jqGrid/js/"; // need to be ajusted
     // set include to false if you do not want some modules to be included
     var modules = [
-        { include: true, incfile:'i18n/grid.locale-en.js'}, // jqGrid translation
+        { include: true, incfile:'../../../grid.locale-it.js'}, // jqGrid translation
         { include: true, incfile:'grid.base.js'}, // jqGrid base
         { include: true, incfile:'grid.common.js'}, // jqGrid common for editing
         { include: true, incfile:'grid.formedit.js'}, // jqGrid Form editing
