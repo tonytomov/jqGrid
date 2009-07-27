@@ -218,7 +218,7 @@ $.fn.extend({
 				alert("Could not get grid colModel"); return;
 			}
 			var triggerSearch = function() {
-				var sdata={}, j=0, v;
+				var j=0, v;
 				var gr = $(self.p.gridid)[0], nm;
 				if($.isFunction(self.p.beforeSearch)){self.p.beforeSearch();}
 				$.each(self.p.filterModel,function(i,n){
@@ -227,7 +227,7 @@ $.fn.extend({
 						case 'select' :
 							v = $("select[name="+nm+"]",self).val();
 							if(v) {
-								sdata[nm] = v;
+								gr.p.searchdata[nm] = v;
 								if(self.p.marksearched){
 									$("#jqgh_"+this.name,gr.grid.hDiv).addClass("dirty-cell");
 								}
@@ -238,14 +238,14 @@ $.fn.extend({
 								}
 								// remove from postdata
 								try {
-									delete gr.p.postData[this.index];
+									delete gr.p.searchdata[this.index];
 								} catch(e) {}
 							}
 							break;
 						default:
 							v = $("input[name="+nm+"]",self).val();
 							if(v) {
-								sdata[nm] = v;
+								gr.p.searchdata[nm] = v;
 								if(self.p.marksearched){
 									$("#jqgh_"+this.name,gr.grid.hDiv).addClass("dirty-cell");
 								}
@@ -256,13 +256,12 @@ $.fn.extend({
 								}
 								// remove from postdata
 								try {
-									delete gr.p.postData[this.index];
+									delete gr.p.searchdata[this.index];
 								} catch (e) {}
 							}
 					}
 				});
 				var sd =  j>0 ? true : false;
-				gr.p.postData = $.extend(gr.p.postData,sdata);
 				var saveurl;
 				if(self.p.url) {
 					saveurl = $(gr).getGridParam('url');
@@ -273,7 +272,7 @@ $.fn.extend({
 				if($.isFunction(self.p.afterSearch)){self.p.afterSearch();}
 			};
 			var clearSearch = function(){
-				var sdata={}, v, j=0;
+				var v, j=0;
 				var gr = $(self.p.gridid)[0], nm;
 				if($.isFunction(self.p.beforeClear)){self.p.beforeClear();}
 				$.each(self.p.filterModel,function(i,n){
@@ -292,7 +291,7 @@ $.fn.extend({
 									}
 								});
 								// post the key and not the text
-								sdata[nm] = v1 || "";
+								gr.p.searchdata[nm] = v1 || "";
 								if(self.p.marksearched){
 									$("#jqgh_"+this.name,gr.grid.hDiv).addClass("dirty-cell");
 								}
@@ -303,14 +302,14 @@ $.fn.extend({
 								}
 								// remove from postdata
 								try {
-									delete gr.p.postData[this.index];
+									delete gr.p.searchdata[this.index];
 								} catch(e) {}
 							}
 							break;
 						case 'text':
 							$("input[name="+nm+"]",self).val(v);
 							if(v) {
-								sdata[nm] = v;
+								gr.p.searchdata[nm] = v;
 								if(self.p.marksearched){
 									$("#jqgh_"+this.name,gr.grid.hDiv).addClass("dirty-cell");
 								}
@@ -321,13 +320,12 @@ $.fn.extend({
 								}
 								// remove from postdata
 								try {
-									delete gr.p.postData[this.index];
+									delete gr.p.searchdata[this.index];
 								} catch(e) {}
 							}
 					}
 				});
 				var sd =  j>0 ? true : false;
-				gr.p.postData = $.extend(gr.p.postData,sdata);
 				var saveurl;
 				if(self.p.url) {
 					saveurl = $(gr).getGridParam('url');
@@ -489,7 +487,7 @@ $.fn.extend({
 		return this.each(function(){
 			var $t = this;
 			var triggerToolbar = function() {
-				var sdata={}, j=0, v, nm;
+				var j=0, v, nm;
 				if($.isFunction(p.beforeSearch)){p.beforeSearch();}
 				$.each($t.p.colModel,function(i,n){
                     nm = this.index || this.name;
@@ -497,28 +495,27 @@ $.fn.extend({
 						case 'select' :
 							v = $("select[name="+nm+"]",$t.grid.hDiv).val();
 							if(v) {
-								sdata[nm] = v;
+								$t.p.searchdata[nm] = v;
 								j++;
 							} else {
 								try {
-									delete $t.p.postData[nm];
+									delete $t.p.searchdata[nm];
 								} catch(e) {}
 							}
 							break;
 						case 'text':
 							v = $("input[name="+nm+"]",$t.grid.hDiv).val();
 							if(v) {
-								sdata[nm] = v;
+								$t.p.searchdata[nm] = v;
 								j++;
 							} else {
 								try {
-									delete $t.p.postData[nm];
+									delete $t.p.searchdata[nm];
 								} catch (e) {}
 							}
 					}
 				});
 				var sd =  j>0 ? true : false;
-				$t.p.postData = $.extend($t.p.postData,sdata);
 				var saveurl;
 				if($t.p.searchurl) {
 					saveurl = $t.p.url;
@@ -529,7 +526,7 @@ $.fn.extend({
 				if($.isFunction(p.afterSearch)){p.afterSearch();}
 			};
 			var clearToolbar = function(){
-				var sdata={}, v, j=0, nm;
+				var v, j=0, nm;
 				if($.isFunction(p.beforeClear)){p.beforeClear();}
 				$.each($t.p.colModel,function(i,n){
 					v = (this.defval) ? this.defval : "";
@@ -546,28 +543,27 @@ $.fn.extend({
 									}
 								});
 								// post the key and not the text
-								sdata[nm] = v1 || "";
+								$t.p.searchdata[nm] = v1 || "";
 								j++;
 							} else {
 								try {
-									delete $t.p.postData[nm];
+									delete $t.p.searchdata[nm];
 								} catch(e) {}
 							}
 							break;
 						case 'text':
 							$("input[name="+nm+"]",$t.grid.hDiv).val(v);
 							if(v) {
-								sdata[nm] = v;
+								$t.p.searchdata[nm] = v;
 								j++;
 							} else {
 								try {
-									delete $t.p.postData[nm];
+									delete $t.p.searchdata[nm];
 								} catch(e) {}
 							}
 					}
 				});
 				var sd =  j>0 ? true : false;
-				$t.p.postData = $.extend($t.p.postData,sdata);
 				var saveurl;
 				if($t.p.searchurl) {
 					saveurl = $t.p.url;

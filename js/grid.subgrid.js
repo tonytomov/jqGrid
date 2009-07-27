@@ -98,7 +98,7 @@ addSubGrid : function(t,pos) {
 					$.ajax({type:ts.p.mtype, url: ts.p.subGridUrl, dataType:"xml",data: dp, complete: function(sxml) { subGridXml(sxml.responseXML, sid); sxml=null; } });
 					break;
 					case "json":
-					$.ajax({type:ts.p.mtype, url: ts.p.subGridUrl, dataType:"text",data: dp, complete: function(JSON) { subGridJson($.parse(JSON.responseText),sid); JSON = null;} });
+					$.ajax({type:ts.p.mtype, url: ts.p.subGridUrl, dataType:"text",data: dp, complete: function(json) { subGridJson($.parse(json.responseText),sid); json = null;} });
 					break;
 				}
 			}
