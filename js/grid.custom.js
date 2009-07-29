@@ -574,7 +574,9 @@ $.fn.extend({
 				if($.isFunction(p.afterClear)){p.afterClear();}
 			};
 			var toggleToolbar = function(){
-				$("tr.ui-search-toolbar",$t.grid.hDiv).toggle();
+                var trow = $("tr.ui-search-toolbar",$t.grid.hDiv);
+                if(trow.css("display")=='none') trow.show();
+                else trow.hide();
 			};
 			// create the row
 			function bindEvents(selector, events) {
