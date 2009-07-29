@@ -104,7 +104,9 @@ $.fn.jqGrid = function( p ) {
 		dragStart: function(i,x,y) {
 			this.resizing = { idx: i, startX: x.clientX, sOL : y[0]};
 			this.hDiv.style.cursor = "col-resize";
-			$("#rs_m"+p.id,"#gbox_"+p.id).css({display:"block",left:y[0],top:y[1],height:y[2]});
+			this.curGbox = $("#rs_m"+p.id,"#gbox_"+p.id);
+			this.curGbox.css({display:"block",left:y[0],top:y[1],height:y[2]});
+			document.onselectstart=new Function ("return false");
 		},
 		dragMove: function(x) {
 			if(this.resizing) {
@@ -112,7 +114,7 @@ $.fn.jqGrid = function( p ) {
 				h = this.headers[this.resizing.idx],
 				newWidth = h.width + diff, hn, nWn;
 				if(newWidth > 33) {
-					$("#rs_m"+p.id,"#gbox_"+p.id).css({left:this.resizing.sOL+diff});
+					this.curGbox.css({left:this.resizing.sOL+diff});
 					if(p.forceFit===true ){
 						hn = this.headers[this.resizing.idx+p.nv];
 						nWn = hn.width - diff;
@@ -158,6 +160,8 @@ $.fn.jqGrid = function( p ) {
 					}
 				}
 			}
+			this.curGbox=null;
+			document.onselectstart=new Function ("return true");
 		},
 		scrollGrid: function() {
 			if(p.scroll === true) {
