@@ -10,7 +10,7 @@
 **/
 $.jgrid = {
 	defaults : {
-		recordtext: "Seite {0} - {1} von {2}",
+		recordtext: "Zeige {0} - {1} von {2}",
 	    emptyrecords: "Keine Datensätze vorhanden",
 		loadtext: "Lädt...",
 		pgtext : "Seite {0} von {1}"
@@ -19,8 +19,8 @@ $.jgrid = {
 		caption: "Suche...",
 		Find: "Finden",
 		Reset: "Zurücksetzen",
-	    odata : ['gleich', 'ungleich', 'kleiner', 'kleiner gleich','größer','größer gleich', 'beginnt mit','beginnt nicht mit','ist enthalten in','ist nicht enthalten in','endet mit','endet nicht mit','enthält','enthält nicht'],
-	    groupOps: [	{ op: "AND", text: "alle" },	{ op: "OR",  text: "irgendein" }	],
+	    odata : ['gleich', 'ungleich', 'kleiner', 'kleiner gleich','größer','größer gleich', 'beginnt mit','beginnt nicht mit','ist in','ist nicht in','endet mit','endet nicht mit','enthält','enthält nicht'],
+	    groupOps: [	{ op: "AND", text: "alle" },	{ op: "OR",  text: "mindestens eins" }	],
 		matchText: " match",
 		rulesText: " rules"
 	},
@@ -31,9 +31,9 @@ $.jgrid = {
 		bCancel: "Abbrechen",
 		bClose: "Schließen",
 		saveData: "Daten wurden geändert! Änderungen speichern?",
-		bYes : "Ja",
-		bNo : "Nein",
-		bExit : "Abbrechen",
+		bYes : "ja",
+		bNo : "nein",
+		bExit : "abbrechen",
 		msg: {
 		    required:"Feld ist erforderlich",
 		    number: "Bitte geben Sie eine Zahl ein",
@@ -42,11 +42,11 @@ $.jgrid = {
 		    email: "ist keine valide E-Mail Adresse",
 		    integer: "Bitte geben Sie eine Ganzzahl ein",
 			date: "Bitte geben Sie ein gültiges Datum ein",
-			url: "ist keine gültige URL. Es fehlt ein Präfix ('http://' or 'https://')"
+			url: "ist keine gültige URL. Prefix muss eingegeben werden ('http://' oder 'https://')"
 		}
 	},
 	view : {
-	    caption: "Datensatz anzeigen",
+	    caption: "Datensatz anschauen",
 	    bClose: "Schließen"
 	},
 	del : {
@@ -57,9 +57,9 @@ $.jgrid = {
 	},
 	nav : {
 		edittext: " ",
-	    edittitle: "Ausgewählte Zeile anzeigen",
+	    edittitle: "Ausgewählten Zeile editieren",
 		addtext:" ",
-	    addtitle: "Neue Zeile einfügen",
+	    addtitle: "Neuen Zeile einfügen",
 	    deltext: " ",
 	    deltitle: "Ausgewählte Zeile löschen",
 	    searchtext: " ",
@@ -69,7 +69,7 @@ $.jgrid = {
 	    alertcap: "Warnung",
 	    alerttext: "Bitte Zeile auswählen",
 		viewtext: "",
-		viewtitle: "Ausgewählte Zeile anzeigen"
+		viewtitle: "View selected row"
 	},
 	col : {
 		caption: "Spalten anzeigen/verbergen",
@@ -79,20 +79,20 @@ $.jgrid = {
 	errors : {
 		errcap : "Fehler",
 		nourl : "Keine URL angegeben",
-		norecords: "Keine Datensätze zum Verarbeiten",
-		model : "Länge von colNames <> colModel!"
+		norecords: "Keine Datensätze zum verarbeiten",
+		model : "colNames und colModel sind unterschiedlich lang!"
 	},
 	formatter : {
 		integer : {thousandsSeparator: " ", defaultValue: '0'},
-		number : {decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2, defaultValue: '0.00'},
-		currency : {decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2, prefix: "", suffix:"", defaultValue: '0.00'},
+		number : {decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, defaultValue: '0,00'},
+		currency : {decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "", suffix:" €", defaultValue: '0,00'},
 		date : {
 			dayNames:   [
 				"So", "Mo", "Di", "Mi", "Do", "Fr", "Sa",
 				"Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"
 			],
 			monthNames: [
-				"Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez",
+				"Jan", "Feb", "Mar", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez",
 				"Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"
 			],
 			AmPm : ["am","pm","AM","PM"],
@@ -100,17 +100,17 @@ $.jgrid = {
 			srcformat: 'Y-m-d',
 			newformat: 'd/m/Y',
 			masks : {
-		        ISO8601Long:"Y-m-d H:i:s",
-		        ISO8601Short:"Y-m-d",
-		        ShortDate: "n/j/Y",
-		        LongDate: "l, F d, Y",
-		        FullDateTime: "l, F d, Y g:i:s A",
-		        MonthDay: "F d",
-		        ShortTime: "g:i A",
-		        LongTime: "g:i:s A",
+		        ISO8601Long:"d.m.Y H:i:s",
+		        ISO8601Short:"d.m.Y",
+		        ShortDate: "j.n.Y",
+		        LongDate: "l, d. F Y",
+		        FullDateTime: "l, d. F Y G:i:s",
+		        MonthDay: "d. F",
+		        ShortTime: "G:i",
+		        LongTime: "G:i:s",
 		        SortableDateTime: "Y-m-d\\TH:i:s",
 		        UniversalSortableDateTime: "Y-m-d H:i:sO",
-		        YearMonth: "F, Y"
+		        YearMonth: "F Y"
 		    },
 		    reformatAfterEdit : false
 		},
