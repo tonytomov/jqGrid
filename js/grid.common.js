@@ -315,7 +315,7 @@ function createEl(eltype,options,vl) {
 		case "button" :
 			elem = document.createElement("input");
 			elem.type = eltype;
-			elem.value = jQuery.htmlDecode(vl);
+			elem.value = jQuery.jgrid.htmlDecode(vl);
 			options = bindEv(elem,options);
 			if(!options.size) {
 				jQuery(elem).css({width:"98%"});
@@ -476,7 +476,4 @@ function isEmpty(val)
 	} else {
 		return false;
 	} 
-}
-function htmlEncode (value){
-    return !value ? value : String(value).replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 }

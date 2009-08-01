@@ -67,7 +67,7 @@ $.fn.extend({
 				try {
 					tmp =  $.unformat(cc,{colModel:$t.p.colModel[iCol]},iCol);
 				} catch (_) {
-					tmp = $.htmlDecode($(cc).html());
+					tmp = $.jgrid.htmlDecode($(cc).html());
 				}
 				var opt = $.extend({}, $t.p.colModel[iCol].editoptions || {} ,{id:iRow+"_"+nm,name:nm});
 				if (!$t.p.colModel[iCol].edittype) {$t.p.colModel[iCol].edittype = "text";}
@@ -146,7 +146,7 @@ $.fn.extend({
 					case "text":
 					case "textarea":
 					case "button" :
-						v = !$t.p.autoencode ? $("#"+iRow+"_"+nm.replace('.',"\\."),$t.rows[iRow]).val() : htmlEncode($("#"+iRow+"_"+nm.replace('.',"\\."),$t.rows[iRow]).val());
+						v = !$t.p.autoencode ? $("#"+iRow+"_"+nm.replace('.',"\\."),$t.rows[iRow]).val() : $.jgrid.htmlEncode($("#"+iRow+"_"+nm.replace('.',"\\."),$t.rows[iRow]).val());
 						v2=v;
 						break;
 				}
@@ -421,10 +421,10 @@ $.fn.extend({
 						if ( nm !== 'cb' && nm !== 'subgrid') {
 							if (mthd=='dirty') {
 								if ($(this).hasClass('dirty-cell')) {
-									res[nm] = $.htmlDecode($(this).html());
+									res[nm] = $.jgrid.htmlDecode($(this).html());
 								}
 							} else {
-								res[nm] = $.htmlDecode($(this).html());
+								res[nm] = $.jgrid.htmlDecode($(this).html());
 							}
 						}
 					});

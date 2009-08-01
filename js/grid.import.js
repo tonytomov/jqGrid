@@ -31,7 +31,7 @@
                     var xmldata = $(o.xmlGrid.data,xml)[0];
                     if(xmlJsonClass.xml2json && $.parse) {
                         var jstr = xmlJsonClass.xml2json(cnfg," ");
-                        var jstr = $.parse(jstr);
+                        var jstr = $.jgrid.parse(jstr);
                         for(var key in jstr) { var jstr1=jstr[key];}
                         if(xmldata) {
                         // save the datatype
@@ -49,7 +49,7 @@
                 };
                 var JsonConvert = function (jsonstr,o){
                     if (jsonstr && typeof jsonstr == 'string') {
-                        var json = $.parse(jsonstr);
+                        var json = $.jgrid.parse(jsonstr);
                         var gprm = json[o.jsonGrid.config];
                         var jdata = json[o.jsonGrid.data];
                         if(jdata) {
@@ -83,7 +83,7 @@
                     case 'xmlstring' :
                         // we need to make just the conversion and use the same code as xml
                         if(o.impstring && typeof o.impstring == 'string') {
-                            var xmld = $.stringToDoc(o.impstring);
+                            var xmld = $.jgrid.stringToDoc(o.impstring);
                             if(xmld) {
                                 XmlConvert(xmld,o);
                                 if($.isFunction(o.importComplete)) {

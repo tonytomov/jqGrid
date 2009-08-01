@@ -96,7 +96,7 @@ $.fn.extend({
 							case 'password':
 							case 'textarea':
 							case "button" :
-								tmp[nm]= !$t.p.autoencode ? $("input, textarea",this).val() : htmlEncode($("input, textarea",this).val());
+								tmp[nm]= !$t.p.autoencode ? $("input, textarea",this).val() : $.jgrid.htmlEncode($("input, textarea",this).val());
 								break;
 							case 'select':
 								if(!$t.p.colModel[i].editoptions.multiple) {

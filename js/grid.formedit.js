@@ -539,7 +539,7 @@ $.fn.extend({
 						case "textarea":
 						case "button":
 							postdata[this.name] = $(this).val();
-							postdata[this.name] = !$t.p.autoencode ? postdata[this.name] : htmlEncode(postdata[this.name]);
+							postdata[this.name] = !$t.p.autoencode ? postdata[this.name] : $.jgrid.htmlEncode(postdata[this.name]);
 						break;
 					}
 				});
@@ -676,7 +676,7 @@ $.fn.extend({
 							case "text":
 							case "button" :
 							case "image":
-								tmp = $.htmlDecode(tmp);
+								tmp = $.jgrid.htmlDecode(tmp);
 								$("#"+nm,"#"+fmid).val(tmp);
 								break;
 							case "textarea":
@@ -684,7 +684,7 @@ $.fn.extend({
 								$("#"+nm,"#"+fmid).val(tmp);
 								break;
 							case "select":
-								tmp = $.htmlDecode(tmp);
+								tmp = $.jgrid.htmlDecode(tmp);
 								$("#"+nm+" option","#"+fmid).each(function(j){
 									if (!obj.p.colModel[i].editoptions.multiple && tmp == $(this).text() ){
 										this.selected= true;
@@ -723,7 +723,7 @@ $.fn.extend({
 					if(ret[0] == false) break;
 				}
 				if(ret[0]) {
-					if( $.isFunction( rp_ge.onclickSubmit)) { onCS = rp_ge.onclickSubmit(p) || {}; }
+					if( $.isFunction( rp_ge.onclickSubmit)) { onCS = rp_ge.onclickSubmit(rp_ge) || {}; }
 					if( $.isFunction(rp_ge.beforeSubmit))  { ret = rp_ge.beforeSubmit(postdata,$("#"+frmgr)); }
 				}
 				gurl = rp_ge.url ? rp_ge.url : $t.p.editurl;
@@ -1044,7 +1044,7 @@ $.fn.extend({
 						}
 						trdata = $(tb).find("tr[rowpos="+rp+"]");
 						if ( trdata.length==0 ) {
-							trdata = $("<tr "+dc+" rowpos='"+rp+"'></tr>").addClass("FormData").attr("id","tr_"+nm);
+							trdata = $("<tr "+dc+" rowpos='"+rp+"'></tr>").addClass("FormData").attr("id","trv_"+nm);
 							$(trdata).append(tmpl);
 							$(tb).append(trdata);
 							trdata[0].rp = rp;
@@ -1111,7 +1111,6 @@ $.fn.extend({
 			beforeSubmit: null,
 			onclickSubmit: null,
 			afterSubmit: null,
-			onclickSubmit: null,
 			jqModal : true,
 			closeOnEscape : false,
 			delData: {},
@@ -1172,7 +1171,7 @@ $.fn.extend({
 				$("#dData","#"+dtbl+"_2").click(function(e){
 					var ret=[true,""]; onCS = {};
 					var postdata = $("#DelData>td","#"+dtbl).text(); //the pair is name=val1,val2,...
-					if( typeof p.onclickSubmit === 'function' ) { onCS = p.onclickSubmit(p) || {}; }
+					if( typeof p.onclickSubmit === 'function' ) { onCS = p.onclickSubmit(rp_ge) || {}; }
 					if( typeof p.beforeSubmit === 'function' ) { ret = p.beforeSubmit(postdata); }
 					var gurl = rp_ge.url ? rp_ge.url : $t.p.editurl;
 					if(!gurl) { ret[0]=false;ret[1] += " "+$.jgrid.errors.nourl;}

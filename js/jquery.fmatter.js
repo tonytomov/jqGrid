@@ -368,7 +368,7 @@
                     break;
 			}
 		}
-		return ret ? ret : cnt===true ? $(cellval).text() : $.htmlDecode($(cellval).html());
+		return ret ? ret : cnt===true ? $(cellval).text() : $.jgrid.htmlDecode($(cellval).html());
 	};
 	function fireFormatter(formatType,cellval, opts, rwd, act) {
 	    formatType = formatType.toLowerCase();

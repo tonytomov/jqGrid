@@ -107,9 +107,9 @@ $.fn.extend({
 								for (var k=0;k<srow.length;k++) {
 									vl = t.formatter( sid, srow[k], k, srow, 'edit');
 									if(t.p.treeGrid===true && nm == t.p.ExpandColumn) {
-										$("td:eq("+k+") > span:first",ind).html(vl).attr("title",$.stripHtml(vl));
+										$("td:eq("+k+") > span:first",ind).html(vl).attr("title",$.jgrid.stripHtml(vl));
 									} else {
-										$("td:eq("+k+")",ind).html(vl).attr("title",$.stripHtml(vl)); 
+										$("td:eq("+k+")",ind).html(vl).attr("title",$.jgrid.stripHtml(vl)); 
 									}
 								}
 								success = true;
@@ -121,9 +121,9 @@ $.fn.extend({
 							if( srow[nm] != undefined) {
 								vl = t.formatter( sid, srow[nm], i, srow, 'edit');
 								if(t.p.treeGrid===true && nm == t.p.ExpandColumn) {
-									$("td:eq("+i+") > span:first",ind).html(vl).attr("title",$.stripHtml(vl));
+									$("td:eq("+i+") > span:first",ind).html(vl).attr("title",$.jgrid.stripHtml(vl));
 								} else {
-									$("td:eq("+i+")",ind).html(vl).attr("title",$.stripHtml(vl)); 
+									$("td:eq("+i+")",ind).html(vl).attr("title",$.jgrid.stripHtml(vl)); 
 								}
 								success = true;
 							}
