@@ -178,7 +178,7 @@ $.fn.extend({
 					break;
 				case 'adjacency' :
 					$($t.rows).each(function(i){
-						if(this.parent_id.toLowerCase() == "null") {
+						if(this.parent_id == null || this.parent_id.toLowerCase() == "null") {
 							result.push(this);
 						}
 					});
@@ -238,14 +238,14 @@ $.fn.extend({
 			switch ($t.p.treeGridModel) {
 				case 'nested' :
 					var lft = parseInt(rc.lft,10), rgt = parseInt(rc.rgt,10), level = parseInt(rc.level,10);
-					$(this.rows).slice(1).each(function(i){
+					$(this.rows).each(function(i){
 						if(parseInt(this.level,10) === level+1 && parseInt(this.lft,10) > lft && parseInt(this.rgt,10) < rgt) {
 							result.push(this);
 						}
 					});
 					break;
 				case 'adjacency' :
-					$(this.rows).slice(1).each(function(i){
+					$(this.rows).each(function(i){
 						if(this.parent_id == rc.id) {
 							result.push(this);
 						}
