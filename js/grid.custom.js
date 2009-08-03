@@ -218,8 +218,9 @@ $.fn.extend({
 				alert("Could not get grid colModel"); return;
 			}
 			var triggerSearch = function() {
-				var j=0, v;
+				var sdata={}, j=0, v;
 				var gr = $(self.p.gridid)[0], nm;
+                gr.p.searchdata = {};
 				if($.isFunction(self.p.beforeSearch)){self.p.beforeSearch();}
 				$.each(self.p.filterModel,function(i,n){
                     nm = this.index;
@@ -227,7 +228,7 @@ $.fn.extend({
 						case 'select' :
 							v = $("select[name="+nm+"]",self).val();
 							if(v) {
-								gr.p.searchdata[nm] = v;
+								sdata[nm] = v;
 								if(self.p.marksearched){
 									$("#jqgh_"+this.name,gr.grid.hDiv).addClass("dirty-cell");
 								}
@@ -236,16 +237,15 @@ $.fn.extend({
 								if(self.p.marksearched){
 									$("#jqgh_"+this.name,gr.grid.hDiv).removeClass("dirty-cell");
 								}
-								// remove from postdata
-								try {
-									delete gr.p.searchdata[this.index];
-								} catch(e) {}
+                                try {
+                                    delete gr.p.postData[this.index];
+                                } catch (e) {}
 							}
 							break;
 						default:
 							v = $("input[name="+nm+"]",self).val();
 							if(v) {
-								gr.p.searchdata[nm] = v;
+								sdata[nm] = v;
 								if(self.p.marksearched){
 									$("#jqgh_"+this.name,gr.grid.hDiv).addClass("dirty-cell");
 								}
@@ -254,14 +254,14 @@ $.fn.extend({
 								if(self.p.marksearched){
 									$("#jqgh_"+this.name,gr.grid.hDiv).removeClass("dirty-cell");
 								}
-								// remove from postdata
-								try {
-									delete gr.p.searchdata[this.index];
-								} catch (e) {}
+                                try {
+                                    delete gr.p.postData[this.index];
+                                } catch(e) {}
 							}
 					}
 				});
 				var sd =  j>0 ? true : false;
+                $.extend(gr.p.postData,sdata);
 				var saveurl;
 				if(self.p.url) {
 					saveurl = $(gr).getGridParam('url');
@@ -272,7 +272,7 @@ $.fn.extend({
 				if($.isFunction(self.p.afterSearch)){self.p.afterSearch();}
 			};
 			var clearSearch = function(){
-				var v, j=0;
+				var sdata={}, v, j=0;
 				var gr = $(self.p.gridid)[0], nm;
 				if($.isFunction(self.p.beforeClear)){self.p.beforeClear();}
 				$.each(self.p.filterModel,function(i,n){
@@ -281,17 +281,18 @@ $.fn.extend({
 					if(!this.stype){this.stype=='text';}
 					switch (this.stype) {
 						case 'select' :
-							if(v) {
-								var v1;
-								$("select[name="+nm+"] option",self).each(function (){
-									if ($(this).text() == v) {
-										this.selected = true;
-										v1 = $(this).val();
-										return false;
-									}
-								});
+							var v1;
+							$("select[name="+nm+"] option",self).each(function (i){
+                                if(i==0) this.selected = true;
+								if ($(this).text() == v) {
+									this.selected = true;
+									v1 = $(this).val();
+									return false;
+								}
+							});
+							if(v1) {
 								// post the key and not the text
-								gr.p.searchdata[nm] = v1 || "";
+								sdata[nm] = v1;
 								if(self.p.marksearched){
 									$("#jqgh_"+this.name,gr.grid.hDiv).addClass("dirty-cell");
 								}
@@ -300,16 +301,15 @@ $.fn.extend({
 								if(self.p.marksearched){
 									$("#jqgh_"+this.name,gr.grid.hDiv).removeClass("dirty-cell");
 								}
-								// remove from postdata
-								try {
-									delete gr.p.searchdata[this.index];
-								} catch(e) {}
+                                try {
+                                    delete gr.p.postData[this.index];
+                                } catch (e) {}
 							}
 							break;
 						case 'text':
 							$("input[name="+nm+"]",self).val(v);
 							if(v) {
-								gr.p.searchdata[nm] = v;
+								sdata[nm] = v;
 								if(self.p.marksearched){
 									$("#jqgh_"+this.name,gr.grid.hDiv).addClass("dirty-cell");
 								}
@@ -318,14 +318,15 @@ $.fn.extend({
 								if(self.p.marksearched){
 									$("#jqgh_"+this.name,gr.grid.hDiv).removeClass("dirty-cell");
 								}
-								// remove from postdata
-								try {
-									delete gr.p.searchdata[this.index];
-								} catch(e) {}
+                                try {
+                                    delete gr.p.postData[this.index];
+                                } catch (e) {}
 							}
+                            break;
 					}
 				});
 				var sd =  j>0 ? true : false;
+                $.extend(gr.p.postData,sdata);
 				var saveurl;
 				if(self.p.url) {
 					saveurl = $(gr).getGridParam('url');
@@ -487,7 +488,8 @@ $.fn.extend({
 		return this.each(function(){
 			var $t = this;
 			var triggerToolbar = function() {
-				var j=0, v, nm;
+				var sdata={}, j=0, v, nm;
+                $t.p.searchdata = {};
 				if($.isFunction(p.beforeSearch)){p.beforeSearch();}
 				$.each($t.p.colModel,function(i,n){
                     nm = this.index || this.name;
@@ -495,27 +497,29 @@ $.fn.extend({
 						case 'select' :
 							v = $("select[name="+nm+"]",$t.grid.hDiv).val();
 							if(v) {
-								$t.p.searchdata[nm] = v;
+								sdata[nm] = v;
 								j++;
 							} else {
-								try {
-									delete $t.p.searchdata[nm];
-								} catch(e) {}
-							}
+                                try {
+                                    delete $t.p.postData[nm];
+                                } catch (e) {}
+                            }
 							break;
 						case 'text':
 							v = $("input[name="+nm+"]",$t.grid.hDiv).val();
 							if(v) {
-								$t.p.searchdata[nm] = v;
+								sdata[nm] = v;
 								j++;
 							} else {
-								try {
-									delete $t.p.searchdata[nm];
-								} catch (e) {}
-							}
+                                try {
+                                    delete $t.p.postData[nm];
+                                } catch (e) {}
+                            }
+                            break;
 					}
 				});
 				var sd =  j>0 ? true : false;
+                $.extend($t.p.postData,sdata);
 				var saveurl;
 				if($t.p.searchurl) {
 					saveurl = $t.p.url;
@@ -526,44 +530,47 @@ $.fn.extend({
 				if($.isFunction(p.afterSearch)){p.afterSearch();}
 			};
 			var clearToolbar = function(){
-				var v, j=0, nm;
+				var sdata={}, v, j=0, nm;
 				if($.isFunction(p.beforeClear)){p.beforeClear();}
 				$.each($t.p.colModel,function(i,n){
-					v = (this.defval) ? this.defval : "";
+					v = (this.searchoptions && this.searchoptions.defaultValue) ? this.searchoptions.defaultValue : "";
                     nm = this.index || this.name;
 					switch (this.stype) {
 						case 'select' :
-							if(v) {
-								var v1;
-								$("select[name="+nm+"] option",$t.grid.hDiv).each(function (){
-									if ($(this).text() == v) {
-										this.selected = true;
-										v1 = $(this).val();
-										return false;
-									}
-								});
-								// post the key and not the text
-								$t.p.searchdata[nm] = v1 || "";
-								j++;
-							} else {
-								try {
-									delete $t.p.searchdata[nm];
-								} catch(e) {}
-							}
+							var v1;
+							$("select[name="+nm+"] option",$t.grid.hDiv).each(function (i){
+                                if(i==0) this.selected = true;
+								if ($(this).text() == v) {
+									this.selected = true;
+									v1 = $(this).val();
+									return false;
+								}
+							});
+                            if (v1) {
+                                // post the key and not the text
+                                sdata[nm] = v1;
+                                j++;
+                            } else {
+                                try {
+                                    delete $t.p.postData[nm];
+                                } catch(e) {}
+                            }
 							break;
 						case 'text':
 							$("input[name="+nm+"]",$t.grid.hDiv).val(v);
 							if(v) {
-								$t.p.searchdata[nm] = v;
+								sdata[nm] = v;
 								j++;
 							} else {
-								try {
-									delete $t.p.searchdata[nm];
-								} catch(e) {}
-							}
+                                try {
+                                    delete $t.p.postData[nm];
+                                } catch (e){}
+                            }
+                            break;
 					}
 				});
 				var sd =  j>0 ? true : false;
+                $.extend($t.p.postData,sdata);
 				var saveurl;
 				if($t.p.searchurl) {
 					saveurl = $t.p.url;
