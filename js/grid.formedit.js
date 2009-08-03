@@ -1437,9 +1437,9 @@ $.fn.extend({
 				tbd = null;
 			}
 			tdw = $(".ui-jqgrid").css("font-size") || "11px";
-			$('body').append("<div id='testpg' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+tdw+";visibility:hidden;' ></div>");
-			twd = $(navtbl).clone(false).appendTo("#testpg").width();
-			$("#testpg").remove();
+			$('body').append("<div id='testpg2' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+tdw+";visibility:hidden;' ></div>");
+			twd = $(navtbl).clone().appendTo("#testpg2").width();
+			setTimeout(function(){$("#testpg2").remove();},1000);
 			$("#"+pgid+"_"+o.position,"#"+pgid).append(navtbl);
 			if($t.p._nvtd) {
 				if(twd > $t.p._nvtd[0] ) {
