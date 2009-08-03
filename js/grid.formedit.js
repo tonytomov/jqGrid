@@ -114,7 +114,7 @@ $.fn.extend({
 							}
 						}
 						if(p.multipleSearch === false) {
-							$(".ui-del, .ui-add, .ui-del, .ui-add-last, .matchText, .rulesText", "#"+fid).remove();
+							$(".ui-del, .ui-add, .ui-del, .ui-add-last, .matchText, .rulesText", "#"+fid).hide();
 							$("select[name='groupOp']","#"+fid).hide();
 						}
 						if ( $.isFunction(p.onInitializeSearch) ) { p.onInitializeSearch( $("#"+fid) ); };
@@ -142,7 +142,7 @@ $.fn.extend({
 					sdata[p.sFilter] = filters;
 				}
 				grid[0].p.search = hasFilters;
-				grid[0].p.searchdata = sdata;
+				$.extend(grid[0].p.postData,sdata);
 				grid[0].p.page= 1;
 				grid.trigger("reloadGrid");
 				if(p.closeAfterSearch) hideFilter($("#"+fid));
@@ -156,7 +156,7 @@ $.fn.extend({
 				} else {
 					sdata[p.sFilter] = "";
 				}
-				grid[0].p.searchdata = sdata;
+				$.extend(grid[0].p.postData,sdata);
 				grid[0].p.page= 1;
 				grid.trigger("reloadGrid");
 			}
@@ -1403,6 +1403,10 @@ $.fn.extend({
 				.attr({"title":o.refreshtitle  || "",id: "refresh_"+$t.p.id})
 				.click(function(){
 					$t.p.search = false;
+					if(o.search) {
+						var gID = $t.p.id;
+						$("#fbox_"+gID).searchFilter().reset();
+					}
 					switch (o.refreshstate) {
 						case 'firstpage':
 							$t.p.page=1;
@@ -1425,10 +1429,6 @@ $.fn.extend({
 								}
 							},1000);
 							break;
-					}
-					if(o.search) {
-						var gID = $t.p.id;
-						$("#fbox_"+gID).searchFilter().reset();
 					}
 					return false;
 				}).hover(function () {$(this).addClass("ui-state-hover");},
