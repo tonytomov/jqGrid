@@ -109,7 +109,6 @@ $.fn.jqGrid = function( p ) {
 	multikey: false,
 	editurl: null,
 	search: false,
-	searchdata: {},
 	caption: "",
 	hidegrid: true,
 	hiddengrid: false,
@@ -572,11 +571,10 @@ $.fn.jqGrid = function( p ) {
 		},
 		populate = function () {
 			if(!grid.hDiv.loading) {
-				var gdata, prm = {nd: (new Date().getTime()), _search:ts.p.search}, dt, dstr;
+				var prm = {nd: (new Date().getTime()), _search:ts.p.search}, dt, dstr;
 				prm[ts.p.prmNames.rows]= ts.p.rowNum; prm[ts.p.prmNames.page]= ts.p.page;
 				prm[ts.p.prmNames.sort]= ts.p.sortname; prm[ts.p.prmNames.order]= ts.p.sortorder;
-				gdata = $.extend(ts.p.postData,prm);
-				if(ts.p.search) gdata =$.extend(gdata,ts.p.searchdata || {});
+				$.extend(ts.p.postData,prm);
 				var rcnt = ts.p.scroll===false ? 0 : ts.rows.length-1; 
 				if ($.isFunction(ts.p.datatype)) { ts.p.datatype(gdata,"load_"+ts.p.id); return;}
 				else if(beReq) {ts.p.beforeRequest();}
@@ -586,7 +584,7 @@ $.fn.jqGrid = function( p ) {
 				case "json":
 				case "xml":
 				case "script":
-					$.ajax({url:ts.p.url,type:ts.p.mtype,dataType: dt ,data: gdata,
+					$.ajax({url:ts.p.url,type:ts.p.mtype,dataType: dt ,data: ts.p.postData,
 						complete:function(req,st) {
 							if(st=="success" || (req.statusText == "OK" && req.status == "200")) {
 								if(dt === "json" || dt === "script") addJSONData($.jgrid.parse(req.responseText),ts.grid.bDiv,rcnt);
@@ -785,8 +783,8 @@ $.fn.jqGrid = function( p ) {
 			$("td#"+pgid+"_"+ts.p.pagerpos,"#"+pgcnt).append(pgl);
 			tdw = $(".ui-jqgrid").css("font-size") || "11px";
 			$('body').append("<div id='testpg' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+tdw+";visibility:hidden;' ></div>");
-			twd = $(pgl).clone(false).appendTo("#testpg").width();
-			$("#testpg").remove();
+			twd = $(pgl).clone().appendTo("#testpg").width();
+			setTimeout(function(){$("#testpg").remove();},1000);
 			if(twd > 0) {
 				twd += 25;
 				$("td#"+pgid+"_"+ts.p.pagerpos,"#"+pgcnt).width(twd);
