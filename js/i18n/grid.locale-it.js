@@ -26,26 +26,26 @@ $.jgrid = {
 	    addCaption: "Aggiungi Record",
 	    editCaption: "Modifica Record",
 	    bSubmit: "Invia",
-	    bCancel: "Annulla",
+	    bCancel: "Chiudi",
 		bClose: "Chiudi",
-		saveData: "Data has been changed! Save changes?",
-		bYes : "Yes",
+		saveData: "Alcuni dati modificati! Salvare i cambiamenti?",
+		bYes : "Si",
 		bNo : "No",
-		bExit : "Cancel",
+		bExit : "Esci",
 	    msg: {
 	        required:"Campo richiesto",
 	        number:"Per favore, inserisci un valore valido",
 	        minValue:"il valore deve essere maggiore o uguale a ",
 	        maxValue:"il valore deve essere minore o uguale a",
 	        email: "e-mail non corretta",
-			integer: "Please, enter valid integer value",
-			date: "Please, enter valid date value",
-			url: "is not a valid URL. Prefix required ('http://' or 'https://')"
+			integer: "Per favore, inserisci un numero intero valido",
+			date: "Per favore, inserisci una data valisa",
+			url: "URL non valido. Prefisso richiesto ('http://' or 'https://')"
 		}
 	},
 	view : {
-	    caption: "View Record",
-	    bClose: "Close"
+	    caption: "Visualizzazione Record",
+	    bClose: "Chiudi"
 	},
 	del : {
 	    caption: "Cancella",
@@ -67,7 +67,7 @@ $.jgrid = {
 	    alertcap: "Attenzione",
 	    alerttext: "Per favore, seleziona un record",
 		viewtext: "",
-		viewtitle: "View selected row"
+		viewtitle: "Vedi riga selezionata"
 	},
 	col : {
 	    caption: "Mostra/Nascondi Colonne",
@@ -78,7 +78,7 @@ $.jgrid = {
 		errcap : "Errore",
 		nourl : "Url non settata",
 		norecords: "Nessun record da elaborare",
-	    model : "Length of colNames <> colModel!"
+	    model : "Length of colNames &lt;&gt; colModel!"
 	},
 	formatter : {
 		integer : {thousandsSeparator: " ", defaultValue: '0'},
@@ -114,8 +114,8 @@ $.jgrid = {
 		},
 		baseLinkUrl: '',
 		showAction: '',
-	    target: '',
-	    checkbox : {disabled:true},
+		target: '',
+		checkbox : {disabled:true},
 		idName : 'id'
 	}
 };
