@@ -11,7 +11,7 @@ $.fn.extend({
 //Editing
 	editRow : function(rowid,keys,oneditfunc,succesfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
 		return this.each(function(){
-			var $t = this, nm, tmp, editable, cnt=0, focus=null, svr=[], ind,cm;
+			var $t = this, nm, tmp, editable, cnt=0, focus=null, svr={}, ind,cm;
 			if (!$t.grid ) { return; }
 			var hc;
 			ind = $($t).getInd(rowid,true);
@@ -140,7 +140,7 @@ $.fn.extend({
 					var resp = $($t).setRowData(rowid,tmp);
 					$(ind).attr("editable","0");
 					for( var k=0;k<$t.p.savedRow.length;k++) {
-						if( $t.p.savedRow[k].id===rowid) {fr = k; break;}
+						if( $t.p.savedRow[k].id == rowid) {fr = k; break;}
 					}
 					if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
 					if( $.isFunction(aftersavefunc) ) { aftersavefunc(rowid,resp); }
@@ -158,7 +158,7 @@ $.fn.extend({
 									$($t).setRowData(rowid,tmp);
 									$(ind).attr("editable","0");
 									for( var k=0;k<$t.p.savedRow.length;k++) {
-										if( $t.p.savedRow[k].id===rowid) {fr = k; break;}
+										if( $t.p.savedRow[k].id == rowid) {fr = k; break;}
 									};
 									if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
 									if( $.isFunction(aftersavefunc) ) { aftersavefunc(rowid,res.responseText); }
@@ -188,7 +188,7 @@ $.fn.extend({
 			ind = $($t).getInd(rowid,true);
 			if(ind == false) {return;}
 			for( var k=0;k<$t.p.savedRow.length;k++) {
-				if( $t.p.savedRow[k].id===rowid) {fr = k; break;}
+				if( $t.p.savedRow[k].id == rowid) {fr = k; break;}
 			}
 			if(fr >= 0) {
 				$($t).setRowData(rowid,$t.p.savedRow[fr]);
