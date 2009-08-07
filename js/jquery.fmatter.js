@@ -333,7 +333,7 @@
 		unformatFunc = options.colModel.unformat||($.fn.fmatter[formatType] && $.fn.fmatter[formatType].unformat);
         
 		if(unformatFunc !== 'undefined' && isFunction(unformatFunc) ) {
-			ret = unformatFunc(cellval, options);
+			ret = unformatFunc($(cellval).text(), options);
 		} else if(formatType !== 'undefined' && isString(formatType) ) {
 			var opts = $.jgrid.formatter || {}, stripTag;
 			switch(formatType) {
