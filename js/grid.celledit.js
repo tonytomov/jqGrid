@@ -67,7 +67,7 @@ $.fn.extend({
 				try {
 					tmp =  $.unformat(cc,{colModel:$t.p.colModel[iCol]},iCol);
 				} catch (_) {
-					tmp = $.jgrid.htmlDecode($(cc).html());
+					tmp = $(cc).html();
 				}
 				var opt = $.extend({}, $t.p.colModel[iCol].editoptions || {} ,{id:iRow+"_"+nm,name:nm});
 				if (!$t.p.colModel[iCol].edittype) {$t.p.colModel[iCol].edittype = "text";}
