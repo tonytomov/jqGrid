@@ -29,7 +29,7 @@
                 var XmlConvert = function (xml,o) {
                     var cnfg = $(o.xmlGrid.config,xml)[0];
                     var xmldata = $(o.xmlGrid.data,xml)[0];
-                    if(xmlJsonClass.xml2json && $.parse) {
+                    if(xmlJsonClass.xml2json && $.jgrid.parse) {
                         var jstr = xmlJsonClass.xml2json(cnfg," ");
                         var jstr = $.jgrid.parse(jstr);
                         for(var key in jstr) { var jstr1=jstr[key];}
