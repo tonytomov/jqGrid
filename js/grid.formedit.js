@@ -723,7 +723,7 @@ $.fn.extend({
 					if(ret[0] == false) break;
 				}
 				if(ret[0]) {
-					if( $.isFunction( rp_ge.onclickSubmit)) { onCS = rp_ge.onclickSubmit(rp_ge) || {}; }
+					if( $.isFunction( rp_ge.onclickSubmit)) { onCS = rp_ge.onclickSubmit(rp_ge,postdata) || {}; }
 					if( $.isFunction(rp_ge.beforeSubmit))  { ret = rp_ge.beforeSubmit(postdata,$("#"+frmgr)); }
 				}
 				gurl = rp_ge.url ? rp_ge.url : $t.p.editurl;
@@ -1403,10 +1403,10 @@ $.fn.extend({
 				.attr({"title":o.refreshtitle  || "",id: "refresh_"+$t.p.id})
 				.click(function(){
 					$t.p.search = false;
-					if(o.search) {
+					try {
 						var gID = $t.p.id;
 						$("#fbox_"+gID).searchFilter().reset();
-					}
+					} catch (e) {}
 					switch (o.refreshstate) {
 						case 'firstpage':
 							$t.p.page=1;
