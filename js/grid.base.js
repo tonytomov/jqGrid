@@ -1,11 +1,11 @@
 ;(function ($) {
 /*
- * jqGrid  3.5 - jQuery Grid
+ * jqGrid  3.5.1 - jQuery Grid
  * Copyright (c) 2008, Tony Tomov, tony@trirand.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
- * Date: 2009-08-01
+ * Date: 2009-08-10
  */
 $.extend($.jgrid,{  
 	htmlDecode : function(value){
