@@ -358,10 +358,10 @@ function checkValues(val, valref,g) {
 				if(isNaN(val)) return [false,nm+": "+jQuery.jgrid.edit.msg.number,""];
 			}
 		}
-		if(edtrul.minValue && !isNaN(edtrul.minValue)) {
+		if(typeof edtrul.minValue != 'undefined' && !isNaN(edtrul.minValue)) {
 			if (parseFloat(val) < parseFloat(edtrul.minValue) ) return [false,nm+": "+jQuery.jgrid.edit.msg.minValue+" "+edtrul.minValue,""];
 		}
-		if(edtrul.maxValue && !isNaN(edtrul.maxValue)) {
+		if(typeof edtrul.maxValue != 'undefined' && !isNaN(edtrul.maxValue)) {
 			if (parseFloat(val) > parseFloat(edtrul.maxValue) ) return [false,nm+": "+jQuery.jgrid.edit.msg.maxValue+" "+edtrul.maxValue,""];
 		}
 		var filter;
