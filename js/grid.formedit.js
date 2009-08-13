@@ -188,6 +188,7 @@ $.fn.extend({
 			url: null,
 			mtype : "POST",
 			closeAfterAdd : false,
+			clearAfterAdd :true,
 			closeAfterEdit : false,
 			reloadAfterSubmit : true,
 			onInitializeForm: null,
