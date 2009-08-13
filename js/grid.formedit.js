@@ -133,7 +133,7 @@ $.fn.extend({
 			}
 			function searchFilters(filters) {
 				var hasFilters = (filters !== undefined),
-				grid = jQuery("#"+$t.p.id), sdata=[];
+				grid = jQuery("#"+$t.p.id), sdata={};
 				if(p.multipleSearch===false) {
 					sdata[p.sField] = filters.rules[0].field;
 					sdata[p.sValue] = filters.rules[0].data;
