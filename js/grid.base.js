@@ -147,7 +147,8 @@ $.fn.jqGrid = function( p ) {
 	hoverrows : true,
 	altclass : 'ui-priority-secondary',
 	viewsortcols : [false,'vertical',true],
-	resizeclass : ''
+	resizeclass : '',
+	autoencode : false
 	}, $.jgrid.defaults, p || {});
 	var grid={         
 		headers:[],
@@ -309,7 +310,7 @@ $.fn.jqGrid = function( p ) {
 			} else {
 				v = cellVal(cellval);
 			}
-			return v;
+			return ts.p.autoencode ? $.jgrid.htmlEncode(v) : v;
 		},
 		cellVal =  function (val) {
 			return val === undefined || val === null || val === "" ? "&#160;" : val+"";
@@ -789,7 +790,7 @@ $.fn.jqGrid = function( p ) {
 			tdw = $(".ui-jqgrid").css("font-size") || "11px";
 			$('body').append("<div id='testpg' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+tdw+";visibility:hidden;' ></div>");
 			twd = $(pgl).clone().appendTo("#testpg").width();
-			setTimeout(function(){$("#testpg").remove();},1000);
+			setTimeout(function(){$("#testpg").remove();},0);
 			if(twd > 0) {
 				twd += 25;
 				$("td#"+pgid+"_"+ts.p.pagerpos,"#"+pgcnt).width(twd);
@@ -1395,6 +1396,7 @@ $.fn.extend({
 	setSelection : function(selection,onsr,sd) {
 		return this.each(function(){
 			var $t = this, stat,pt, olr, ner, ia, tpsr;
+			if(selection === undefined) return;
 			onsr = onsr === false ? false : true;
 			if(selection===false) {pt = sd;}
 			else {pt=$($t.rows.namedItem(selection));}
@@ -1434,7 +1436,7 @@ $.fn.extend({
 					$t.p.selarrrow.splice(ia,1);
 					if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow($t.p.selrow, stat); }
 					tpsr = $t.p.selarrrow[0];
-					$t.p.selrow = (tpsr=='undefined') ? null : tpsr;
+					$t.p.selrow = (tpsr === undefined) ? null : tpsr;
 				}
 			}
 			function scrGrid(iR,tp){
@@ -1795,6 +1797,7 @@ $.fn.extend({
 				var thecol = $("tr.ui-jqgrid-labels th:eq("+pos+")",$t.grid.hDiv);
 				if (nData){
 					$("div",thecol).html(nData);
+					$t.p.colNames[pos] = nData;
 				}
 				if (prop) {
 					if(typeof prop === 'string') {$(thecol).addClass(prop);} else {$(thecol).css(prop);}
