@@ -1457,7 +1457,8 @@ $.fn.extend({
 			title: '',
 			buttonicon : 'ui-icon-newwin',
 			onClickButton: null,
-			position : "last"
+			position : "last",
+			cursor : 'pointer'
 		}, p ||{});
 		return this.each(function() {
 			if( !this.grid)  { return; }
@@ -1485,7 +1486,8 @@ $.fn.extend({
 				.hover(
 					function () {$(this).addClass("ui-state-hover");},
 					function () {$(this).removeClass("ui-state-hover");}
-				);
+				)
+				.css("cursor",p.cursor ? p.cursor : "normal");
 			}
 		});
 	},
