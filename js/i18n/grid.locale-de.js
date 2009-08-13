@@ -69,7 +69,7 @@ $.jgrid = {
 	    alertcap: "Warnung",
 	    alerttext: "Bitte Zeile auswählen",
 		viewtext: "",
-		viewtitle: "View selected row"
+		viewtitle: "Ausgewählte Zeile anzeigen"
 	},
 	col : {
 		caption: "Spalten anzeigen/verbergen",
