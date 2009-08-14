@@ -248,7 +248,7 @@ $.fn.jqGrid = function( p ) {
 			alert($.jgrid.errors.model);
 			return;
 		}
-		var gv = $("<div class='ui-jqgrid-view'</div>"), ii,
+		var gv = $("<div class='ui-jqgrid-view'></div>"), ii,
 		isMSIE = $.browser.msie ? true:false,
 		isSafari = $.browser.safari ? true : false;
 		
