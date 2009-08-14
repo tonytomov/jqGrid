@@ -1,5 +1,5 @@
 (function($){
-    a.jgrid = {
+    $.jgrid = {
         defaults:{recordtext:"{0} - {1} van {2}",
             emptyrecords:"Geen records",
             loadtext:"Laden...",
