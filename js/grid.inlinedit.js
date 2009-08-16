@@ -13,7 +13,6 @@ $.fn.extend({
 		return this.each(function(){
 			var $t = this, nm, tmp, editable, cnt=0, focus=null, svr={}, ind,cm;
 			if (!$t.grid ) { return; }
-			var hc;
 			ind = $($t).getInd(rowid,true);
 			if( ind == false ) {return;}
 			editable = $(ind).attr("editable") || "0";
@@ -21,7 +20,6 @@ $.fn.extend({
 				cm = $t.p.colModel;
 				$('td',ind).each( function(i) {
 					nm = cm[i].name;
-					hc = cm[i].hidden===true ? true : false;
 					var treeg = $t.p.treeGrid===true && nm == $t.p.ExpandColumn;
 					if(treeg) tmp = $("span:first",this).html();
 					else {
@@ -33,7 +31,7 @@ $.fn.extend({
 					}
 					if ( nm != 'cb' && nm != 'subgrid' && nm != 'rn') {
 						svr[nm]=tmp;
-						if(cm[i].editable===true && !hc) {
+						if(cm[i].editable===true) {
 							if(focus===null) { focus = i; }
 							if (treeg) $("span:first",this).html("");
 							else $(this).html("");
@@ -82,44 +80,41 @@ $.fn.extend({
 			$("td",ind).each(function(i) {
 				nm = $t.p.colModel[i].name;
 				if ( nm != 'cb' && nm != 'subgrid' && $t.p.colModel[i].editable===true && nm != 'rn') {
-					if( $t.p.colModel[i].hidden===true) { tmp[nm] = $(this).html(); }
-					else {
-						switch ($t.p.colModel[i].edittype) {
-							case "checkbox":
-								var cbv = ["Yes","No"];
-								if($t.p.colModel[i].editoptions ) {
-									cbv = $t.p.colModel[i].editoptions.value.split(":");
-								}
-								tmp[nm]=  $("input",this).attr("checked") ? cbv[0] : cbv[1]; 
-								break;
-							case 'text':
-							case 'password':
-							case 'textarea':
-							case "button" :
-								tmp[nm]= !$t.p.autoencode ? $("input, textarea",this).val() : $.jgrid.htmlEncode($("input, textarea",this).val());
-								break;
-							case 'select':
-								if(!$t.p.colModel[i].editoptions.multiple) {
-									tmp[nm] = $("select>option:selected",this).val();
-									tmp2[nm] = $("select>option:selected", this).text();
-								} else {
-									var sel = $("select",this), selectedText = [];
-									tmp[nm] = $(sel).val();
-									if(tmp[nm]) tmp[nm]= tmp[nm].join(","); else tmp[nm] ="";
-									$("select > option:selected",this).each(
-										function(i,selected){
-											selectedText[i] = $(selected).text();
-										}
-									);
-									tmp2[nm] = selectedText.join(",");
-								}
-								break;
-						}
-						cv = checkValues(tmp[nm],i,$t);
-						if(cv[0] === false) {
-							cv[1] = tmp[nm] + " " + cv[1];
-							return false;
-						}
+					switch ($t.p.colModel[i].edittype) {
+						case "checkbox":
+							var cbv = ["Yes","No"];
+							if($t.p.colModel[i].editoptions ) {
+								cbv = $t.p.colModel[i].editoptions.value.split(":");
+							}
+							tmp[nm]=  $("input",this).attr("checked") ? cbv[0] : cbv[1]; 
+							break;
+						case 'text':
+						case 'password':
+						case 'textarea':
+						case "button" :
+							tmp[nm]= !$t.p.autoencode ? $("input, textarea",this).val() : $.jgrid.htmlEncode($("input, textarea",this).val());
+							break;
+						case 'select':
+							if(!$t.p.colModel[i].editoptions.multiple) {
+								tmp[nm] = $("select>option:selected",this).val();
+								tmp2[nm] = $("select>option:selected", this).text();
+							} else {
+								var sel = $("select",this), selectedText = [];
+								tmp[nm] = $(sel).val();
+								if(tmp[nm]) tmp[nm]= tmp[nm].join(","); else tmp[nm] ="";
+								$("select > option:selected",this).each(
+									function(i,selected){
+										selectedText[i] = $(selected).text();
+									}
+								);
+								tmp2[nm] = selectedText.join(",");
+							}
+							break;
+					}
+					cv = checkValues(tmp[nm],i,$t);
+					if(cv[0] === false) {
+						cv[1] = tmp[nm] + " " + cv[1];
+						return false;
 					}
 				}
 			});
