@@ -103,7 +103,7 @@
 				dayNames:   opts.dayNames,
 		    	monthNames: opts.monthNames
 			};
-			//format = format.toLowerCase();
+			if( format in opts.masks ) format = opts.masks[format];
 			date = date.split(/[\\\/:_;.\t\T\s-]/);
 			format = format.split(/[\\\/:_;.\t\T\s-]/);
 			// parsing for month names
@@ -123,8 +123,8 @@
 		    if (ty >= 70 && ty <= 99) ts.y = 1900+ts.y;
 		    else if (ty >=0 && ty <=69) ts.y= 2000+ts.y;
 		    timestamp = new Date(ts.y, ts.m, ts.d, ts.h, ts.i, ts.s,0);
-			if( opts.masks.newformat )  {
-				newformat = opts.masks.newformat;
+			if( newformat in opts.masks )  {
+				newformat = opts.masks[newformat];
 			} else if ( !newformat ) {
 				newformat = 'Y-m-d';
 			}
@@ -332,9 +332,9 @@
 		op =options.colModel.formatoptions || {},
 		unformatFunc = options.colModel.unformat||($.fn.fmatter[formatType] && $.fn.fmatter[formatType].unformat);
         
-		if(unformatFunc !== 'undefined' && isFunction(unformatFunc) ) {
+		if(typeof unformatFunc !== 'undefined' && isFunction(unformatFunc) ) {
 			ret = unformatFunc($(cellval).text(), options);
-		} else if(formatType !== 'undefined' && isString(formatType) ) {
+		} else if(typeof formatType !== 'undefined' && isString(formatType) ) {
 			var opts = $.jgrid.formatter || {}, stripTag;
 			switch(formatType) {
                 /*
