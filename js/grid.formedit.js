@@ -619,8 +619,9 @@ $.fn.extend({
 			function fillData(rowid,obj,fmid){
 				var nm, hc,cnt=0,tmp, fld,opt,vl,vlc;
 				if(rp_ge.checkOnSubmit || rp_ge.checkOnUpdate) {rp_ge._savedData = {};rp_ge._savedData.id=rowid;}
+				var cm = obj.p.colModel;
 				if(rowid == '_empty') {
-					$(obj.p.colModel).each(function(i){
+					$(cm).each(function(i){
 						nm = this.name.replace('.',"\\.");
 						opt = $.extend({}, this.editoptions || {} );
 						fld = $("#"+nm,"#"+fmid);
@@ -653,26 +654,28 @@ $.fn.extend({
 					$("#id_g","#"+fmid).val("_empty");
 					return;
 				}
-				$('table:first tr#'+rowid+' td',obj.grid.bDiv).each( function(i) {
-					nm = obj.p.colModel[i].name.replace('.',"\\.");;
+				var tre = $(obj).getInd(rowid,true);
+				if(!tre) return;
+				$('td',tre).each( function(i) {
+					nm = cm[i].name.replace('.',"\\.");
 					// hidden fields are included in the form
-					if(obj.p.colModel[i].editrules && obj.p.colModel[i].editrules.edithidden === true) {
+					if(cm[i].editrules && cm[i].editrules.edithidden === true) {
 						hc = false;
 					} else {
-						hc = obj.p.colModel[i].hidden === true ? true : false;
+						hc = cm[i].hidden === true ? true : false;
 					}
-					if ( nm !== 'cb' && nm !== 'subgrid' && obj.p.colModel[i].editable===true) {
+					if ( nm !== 'cb' && nm !== 'subgrid' && cm[i].editable===true) {
 						if(nm == obj.p.ExpandColumn && obj.p.treeGrid === true) {
 							tmp = $(this).text();
 						} else {
 							try {
-								tmp =  $.unformat(this,{colModel:obj.p.colModel[i]},i);
+								tmp =  $.unformat(this,{colModel:cm[i]},i);
 							} catch (_) {
 								tmp = $(this).html();
 							}
 						}
 						if(rp_ge.checkOnSubmit===true || rp_ge.checkOnUpdate) rp_ge._savedData[nm] = tmp;
-						switch (obj.p.colModel[i].edittype) {
+						switch (cm[i].edittype) {
 							case "password":
 							case "text":
 							case "button" :
@@ -687,9 +690,9 @@ $.fn.extend({
 							case "select":
 								tmp = $.jgrid.htmlDecode(tmp);
 								$("#"+nm+" option","#"+fmid).each(function(j){
-									if (!obj.p.colModel[i].editoptions.multiple && tmp == $(this).text() ){
+									if (!cm[i].editoptions.multiple && tmp == $(this).text() ){
 										this.selected= true;
-									} else if (obj.p.colModel[i].editoptions.multiple){
+									} else if (cm[i].editoptions.multiple){
 										if(  $.inArray($(this).text(), tmp.split(",") ) > -1  ){
 											this.selected = true;
 										}else{
@@ -715,7 +718,6 @@ $.fn.extend({
 					}
 				});
 				if(cnt>0) { $("#id_g","#"+frmtb).val(rowid); }
-				return cnt;
 			}
 			function postIt() {
 				var copydata, ret=[true,"",""], onCS = {};
@@ -1067,8 +1069,10 @@ $.fn.extend({
 				return retpos;
 			};
 			function fillData(rowid,obj){
-				var nm, hc,cnt=0,tmp, opt;
-				$('#'+rowid+' td',obj.grid.bDiv).each( function(i) {
+				var nm, hc,cnt=0,tmp, opt,trv;
+				trv = $(obj).getInd(rowid,true);
+				if(!trv) return;
+				$('td',trv).each( function(i) {
 					nm = obj.p.colModel[i].name.replace('.',"\\.");
 					// hidden fields are included in the form
 					if(obj.p.colModel[i].editrules && obj.p.colModel[i].editrules.edithidden === true) {
@@ -1090,7 +1094,6 @@ $.fn.extend({
 					}
 				});
 				if(cnt>0) { $("#id_g","#"+frmtb).val(rowid); }
-				return cnt;
 			};
 		});
 	},
