@@ -27,7 +27,8 @@ $.fn.extend({
 			closeicon: [true,"left","ui-icon-close"],
 			onClose : null,
 			colnameview : true,
-			closeAfterSubmit : true
+			closeAfterSubmit : true,
+			updateAfterCheck : false
 		}, $.jgrid.col, p ||{});
 		return this.each(function(){
 			var $t = this;
@@ -54,7 +55,7 @@ $.fn.extend({
 					}
 				}
 				formdata += "</tbody></table></div>"
-				var bS  ="<a href='javascript:void(0)' id='dData' class='fm-button ui-state-default ui-corner-all'>"+p.bSubmit+"</a>",
+				var bS  = !p.updateAfterCheck ? "<a href='javascript:void(0)' id='dData' class='fm-button ui-state-default ui-corner-all'>"+p.bSubmit+"</a>" : "",
 				bC  ="<a href='javascript:void(0)' id='eData' class='fm-button ui-state-default ui-corner-all'>"+p.bCancel+"</a>";
 				formdata += "<table border='0' class='EditTable' id='"+dtbl+"_2'><tbody><tr style='display:block;height:3px;'><td></td></tr><tr><td class='DataTD ui-widget-content'></td></tr><tr><td class='ColButton EditButton'>"+bS+"&nbsp;"+bC+"</td></tr></tbody></table>";
 				p.gbox = "#gbox_"+gID;
@@ -67,26 +68,43 @@ $.fn.extend({
 					$("#eData","#"+dtbl+"_2").addClass(p.closeicon[1] == "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
 					.append("<span class='ui-icon "+p.closeicon[2]+"'></span>");
 				}
-				$("#dData","#"+dtbl+"_2").click(function(e){
-					for(i=0;i<$t.p.colModel.length;i++){
-						if(!$t.p.colModel[i].hidedlg) { // added from T. Tomov
-							var nm = $t.p.colModel[i].name.replace(".", "\\.");
-							if($("#col_" + nm).attr("checked")) {
-								$($t).showCol($t.p.colModel[i].name);
-								$("#col_" + nm).attr("defaultChecked",true); // Added from T. Tomov IE BUG
-							} else {
-								$($t).hideCol($t.p.colModel[i].name);
-								$("#col_" + nm).attr("defaultChecked",""); // Added from T. Tomov IE BUG
+				if(!p.updateAfterCheck) {
+					$("#dData","#"+dtbl+"_2").click(function(e){
+						for(i=0;i<$t.p.colModel.length;i++){
+							if(!$t.p.colModel[i].hidedlg) { // added from T. Tomov
+								var nm = $t.p.colModel[i].name.replace(".", "\\.");
+								if($("#col_" + nm,"#"+dtbl).attr("checked")) {
+									$($t).showCol($t.p.colModel[i].name);
+									$("#col_" + nm,"#"+dtbl).attr("defaultChecked",true); // Added from T. Tomov IE BUG
+								} else {
+									$($t).hideCol($t.p.colModel[i].name);
+									$("#col_" + nm,"#"+dtbl).attr("defaultChecked",""); // Added from T. Tomov IE BUG
+								}
 							}
 						}
-					}
-					if(p.ShrinkToFit===true) {
-						$($t).setGridWidth($t.grid.width-0.01,true);
-					}
-					if(p.closeAfterSubmit) hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: p.onClose});
-					if (onAfterSubmit) { p.afterSubmitForm($("#"+dtbl)); }
-					return false;
-				});
+						if(p.ShrinkToFit===true) {
+							$($t).setGridWidth($t.grid.width-0.001,true);
+						}
+						if(p.closeAfterSubmit) hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: p.onClose});
+						if (onAfterSubmit) { p.afterSubmitForm($("#"+dtbl)); }
+						return false;
+					});
+				} else {
+					$(":input","#"+dtbl).click(function(e){
+						var cn = this.id.substr(4);
+						if(cn){
+							if(this.checked) {
+								$($t).showCol(cn);
+							} else {
+								$($t).hideCol(cn);
+							}
+							if(p.ShrinkToFit===true) {
+								$($t).setGridWidth($t.grid.width-0.001,true);
+							}
+						}
+						return this;
+					});
+				}
 				$("#eData", "#"+dtbl+"_2").click(function(e){
 					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: p.onClose});
 					return false;
