@@ -644,6 +644,8 @@ $.fn.extend({
 									fld[0].checked = false;
 									fld[0].defaultChecked = false;
 									vl = $(fld).attr("offval");
+								} else if (fld[0].type.substr(0,6)=='select') {
+									fld[0].selectedIndex = 0; 
 								} else {
 									fld.val(vl);
 								}
@@ -688,12 +690,11 @@ $.fn.extend({
 								$("#"+nm,"#"+fmid).val(tmp);
 								break;
 							case "select":
-								tmp = $.jgrid.htmlDecode(tmp);
 								$("#"+nm+" option","#"+fmid).each(function(j){
-									if (!cm[i].editoptions.multiple && tmp == $(this).text() ){
+									if (!cm[i].editoptions.multiple && (tmp == $(this).text() || tmp == $(this).val()) ){
 										this.selected= true;
 									} else if (cm[i].editoptions.multiple){
-										if(  $.inArray($(this).text(), tmp.split(",") ) > -1  ){
+										if(  $.inArray($(this).text(), tmp.split(",") ) > -1 || $.inArray($(this).val(), tmp.split(",") ) > -1  ){
 											this.selected = true;
 										}else{
 											this.selected = false;
@@ -750,8 +751,12 @@ $.fn.extend({
 						data:postdata,
 						complete:function(data,Status){
 							if(Status != "success") {
-								ret[0] = false;
-								ret[1] = Status+" Status: "+data.statusText +" Error code: "+data.status;
+							    ret[0] = false;
+							    if ($.isFunction(rp_ge.errorTextFormat)) {
+							        ret[1] = rp_ge.errorTextFormat(data);
+							    } else {
+							        ret[1] = Status + " Status: '" + data.statusText + "'. Error code: " + data.status;
+								}
 							} else {
 								// data is posted successful
 								// execute aftersubmit with the returned data from server
@@ -789,7 +794,7 @@ $.fn.extend({
 									// the action is update
 									if(rp_ge.reloadAfterSubmit) {
 										$($t).trigger("reloadGrid");
-										if( !rp_ge.closeAfterEdit ) { $($t).setSelection(postdata.id); }
+										if( !rp_ge.closeAfterEdit ) { setTimeout(function(){$($t).setSelection(postdata.id);},1000); }
 									} else {
 										if($t.p.treeGrid === true) {
 											$($t).setTreeRow(postdata.id,postdata);
@@ -1148,7 +1153,7 @@ $.fn.extend({
 				var tbl = "<div id='"+dtbl+"' class='formdata' style='width:100%;overflow:auto;position:relative;height:"+dh+";'>";
 				tbl += "<table class='DelTable'><tbody>";
 				// error data 
-				tbl += "<tr id='DelError' style='display:none'><td ></td></tr>";
+				tbl += "<tr id='DelError' style='display:none'><td class='ui-state-error'></td></tr>";
 				tbl += "<tr id='DelData' style='display:none'><td >"+rowids+"</td></tr>";
 				tbl += "<tr><td class=\"delmsg\" style=\"white-space:pre;\">"+p.msg+"</td></tr><tr><td >&nbsp;</td></tr>";
 				// buttons at footer
@@ -1194,7 +1199,11 @@ $.fn.extend({
 								complete:function(data,Status){
 									if(Status != "success") {
 										ret[0] = false;
-										ret[1] = Status+" Status: "+data.statusText +" Error code: "+data.status;
+									    if ($.isFunction(rp_ge.errorTextFormat)) {
+									        ret[1] = rp_ge.errorTextFormat(data);
+									    } else {
+									        ret[1] = Status + " Status: '" + data.statusText + "'. Error code: " + data.status;
+										}
 									} else {
 										// data is posted successful
 										// execute aftersubmit with the returned data from server
@@ -1272,7 +1281,8 @@ $.fn.extend({
 			view: false,
 			viewicon : "ui-icon-document",
 			position : "left",
-			closeOnEscape : true
+			closeOnEscape : true,
+			afterRefresh : null
 		}, $.jgrid.nav, o ||{});
 		return this.each(function() {       
 			var alertIDs = {themodal:'alertmod',modalhead:'alerthd',modalcontent:'alertcnt'},
@@ -1434,6 +1444,7 @@ $.fn.extend({
 							},1000);
 							break;
 					}
+					if($.isFunction(o.afterRefresh)) o.afterRefresh();
 					return false;
 				}).hover(function () {$(this).addClass("ui-state-hover");},
 					function () {$(this).removeClass("ui-state-hover");}
@@ -1443,7 +1454,7 @@ $.fn.extend({
 			tdw = $(".ui-jqgrid").css("font-size") || "11px";
 			$('body').append("<div id='testpg2' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+tdw+";visibility:hidden;' ></div>");
 			twd = $(navtbl).clone().appendTo("#testpg2").width();
-			setTimeout(function(){$("#testpg2").remove();},0);
+			$("#testpg2").remove();
 			$("#"+pgid+"_"+o.position,"#"+pgid).append(navtbl);
 			if($t.p._nvtd) {
 				if(twd > $t.p._nvtd[0] ) {
@@ -1532,16 +1543,19 @@ $.fn.extend({
 			}
 		});
 	},
-	FormToGrid : function(rowid, formid){
+	FormToGrid : function(rowid, formid, mode, position){
 		return this.each(function() {
 			var $t = this;
 			if(!$t.grid) { return; }
+			if(!mode) mode = 'set';
+			if(!position) position = 'first';
 			var fields = $(formid).serializeArray();
 			var griddata = {};
 			$.each(fields, function(i, field){
 				griddata[field.name] = field.value;
 			});
-			$($t).setRowData(rowid,griddata);
+			if(mode=='add') $($t).addRowData(rowid,griddata, position);
+			else if(mode=='set') $($t).setRowData(rowid,griddata);
 		});
 	}
 });
