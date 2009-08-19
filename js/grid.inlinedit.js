@@ -77,14 +77,16 @@ $.fn.extend({
 		editable = $(ind).attr("editable");
 		url = url ? url : $t.p.editurl;
 		if (editable==="1" && url) {
+			var cm;
 			$("td",ind).each(function(i) {
-				nm = $t.p.colModel[i].name;
-				if ( nm != 'cb' && nm != 'subgrid' && $t.p.colModel[i].editable===true && nm != 'rn') {
-					switch ($t.p.colModel[i].edittype) {
+				cm = $t.p.colModel[i];
+				nm = cm.name;
+				if ( nm != 'cb' && nm != 'subgrid' && cm.editable===true && nm != 'rn') {
+					switch (cm.edittype) {
 						case "checkbox":
 							var cbv = ["Yes","No"];
-							if($t.p.colModel[i].editoptions ) {
-								cbv = $t.p.colModel[i].editoptions.value.split(":");
+							if(cm.editoptions ) {
+								cbv = cm.editoptions.value.split(":");
 							}
 							tmp[nm]=  $("input",this).attr("checked") ? cbv[0] : cbv[1]; 
 							break;
@@ -95,7 +97,7 @@ $.fn.extend({
 							tmp[nm]= !$t.p.autoencode ? $("input, textarea",this).val() : $.jgrid.htmlEncode($("input, textarea",this).val());
 							break;
 						case 'select':
-							if(!$t.p.colModel[i].editoptions.multiple) {
+							if(!cm.editoptions.multiple) {
 								tmp[nm] = $("select>option:selected",this).val();
 								tmp2[nm] = $("select>option:selected", this).text();
 							} else {
@@ -109,6 +111,7 @@ $.fn.extend({
 								);
 								tmp2[nm] = selectedText.join(",");
 							}
+							if(cm.formatter && cm.formatter == 'select') tmp2={};
 							break;
 					}
 					cv = checkValues(tmp[nm],i,$t);
