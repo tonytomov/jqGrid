@@ -133,6 +133,7 @@ $.fn.extend({
 							);
 							v2 = selectedText.join(",");
 						}
+						if($t.p.colModel[iCol].formatter && $t.p.colModel[iCol] == 'select') v2 = v;
 						break;
 					case "checkbox":
 						var cbv  = ["Yes","No"];
