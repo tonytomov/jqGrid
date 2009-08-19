@@ -284,46 +284,41 @@
 	};
 	$.fn.fmatter.select = function (cellval,opts, act) {
 		// jqGrid specific
-		if(act=='edit') {
-			return $.fn.fmatter.defaultFormat(cellval, opts);
-		} else if (!isEmpty(cellval)) {
-			var oSelect = false;
-			if(!isUndefined(opts.colModel.editoptions)){
-				oSelect= opts.colModel.editoptions.value;
-			}
-			if (oSelect) {
-				var ret = [],
-				msl =  opts.colModel.editoptions.multiple === true ? true : false,
-				scell = [], sv;
-				if(msl) { scell = cellval.split(","); scell = $.map(scell,function(n){return $.trim(n);})}
-				if (isString(oSelect)) {
-					// mybe here we can use some caching with care ????
-					var so = oSelect.split(";"), j=0;
-					for(var i=0; i<so.length;i++){
-						sv = so[i].split(":");
-						if(msl) {
-							if(jQuery.inArray(sv[0],scell)>-1) {
-								ret[j] = sv[1];
-								j++;
-							}
-						} else if($.trim(sv[0])==$.trim(cellval)) {
-							ret[0] = sv[1];
-							break;
-						}
-					}
-				} else if(isObject(oSelect)) {
-					// this is quicker
+		if (!cellval)  cellval = "";
+		var oSelect = false;
+		if(!isUndefined(opts.colModel.editoptions)){
+			oSelect= opts.colModel.editoptions.value;
+		}
+		if (oSelect) {
+			var ret = [],
+			msl =  opts.colModel.editoptions.multiple === true ? true : false,
+			scell = [], sv;
+			if(msl) { scell = cellval.split(","); scell = $.map(scell,function(n){return $.trim(n);})}
+			if (isString(oSelect)) {
+				// mybe here we can use some caching with care ????
+				var so = oSelect.split(";"), j=0;
+				for(var i=0; i<so.length;i++){
+					sv = so[i].split(":");
 					if(msl) {
-						ret = jQuery.map(scel, function(n, i){
-							return oSelect[n];
-						});
+						if(jQuery.inArray(sv[0],scell)>-1) {
+							ret[j] = sv[1];
+							j++;
+						}
+					} else if($.trim(sv[0])==$.trim(cellval)) {
+						ret[0] = sv[1];
+						break;
 					}
-					ret[0] = oSelect[cellval] || "";
 				}
-				return ret.join(", ");
-			} else {
-				return $.fn.fmatter.defaultFormat(cellval, opts);
+			} else if(isObject(oSelect)) {
+				// this is quicker
+				if(msl) {
+					ret = jQuery.map(scel, function(n, i){
+						return oSelect[n];
+					});
+				}
+				ret[0] = oSelect[cellval] || "";
 			}
+			return ret.join(", ");
 		}
 	};
 	$.unformat = function (cellval,options,pos,cnt) {
@@ -363,12 +358,59 @@
 					var cbv = (options.colModel.editoptions) ? options.colModel.editoptions.value.split(":") : ["Yes","No"];
 					ret = $('input',cellval).attr("checked") ? cbv[0] : cbv[1];
 					break;
+				case 'select' :
+					ret = $.unformat.select(cellval,options,pos,cnt);
+					break;
                 default:
                     ret= $(cellval).text();
                     break;
 			}
 		}
 		return ret ? ret : cnt===true ? $(cellval).text() : $.jgrid.htmlDecode($(cellval).html());
+	};
+	$.unformat.select = function (cellval,options,pos,cnt) {
+		// Spacial case when we have local data and perform a sort
+		// cnt is set to true only in sortDataArray
+		var ret = [];
+		var cell = $(cellval).text();
+		if(cnt==true) return cell;
+		var op = $.extend({},options.colModel.editoptions);
+		if(op.value){
+			var oSelect = op.value,
+			msl =  op.multiple === true ? true : false,
+			scell = [], sv;
+			if(msl) { scell = cell.split(","); scell = $.map(scell,function(n){return $.trim(n);})}
+			if (isString(oSelect)) {
+				var so = oSelect.split(";"), j=0;
+				for(var i=0; i<so.length;i++){
+					sv = so[i].split(":");
+					if(msl) {
+						if(jQuery.inArray(sv[1],scell)>-1) {
+							ret[j] = sv[0];
+							j++;
+						}
+					} else if($.trim(sv[1])==$.trim(cell)) {
+						ret[0] = sv[0];
+						break;
+					}
+				}
+			} else if(isObject(oSelect)) {
+				if(!msl) scel[0] =  cell;
+				ret = jQuery.map(scel, function(n){
+					var rv;
+					$.each(oSelect, function(i,val){
+						if (val == n) {
+							rv = i;
+							return false;
+						}
+					});
+					if( rv) return rv;
+				});
+			}
+			return ret.join(", ");
+		} else {
+			return cell || "";
+		}
 	};
 	function fireFormatter(formatType,cellval, opts, rwd, act) {
 	    formatType = formatType.toLowerCase();
