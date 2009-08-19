@@ -264,7 +264,7 @@ function createEl(eltype,options,vl) {
 					jQuery(elem).attr(options);
 					setTimeout(function(){
 						jQuery("option",elem).each(function(i){
-							if(jQuery(this).html()==vl) {
+							if(jQuery(this).text()==vl || jQuery(this).html()==vl) {
 								this.selected= "selected";
 								return false;
 							}
@@ -289,8 +289,8 @@ function createEl(eltype,options,vl) {
 						sv = so[i].split(":");
 						ov = document.createElement("option");
 						ov.value = sv[0]; ov.innerHTML = sv[1];
-						if (!msl &&  sv[1]==vl) ov.selected ="selected";
-						if (msl && jQuery.inArray(jQuery.trim(sv[1]), ovm)>-1) {ov.selected ="selected";}
+						if (!msl &&  (sv[0] == vl || sv[1]==vl)) ov.selected ="selected";
+						if (msl && (jQuery.inArray(sv[1], ovm)>-1 || jQuery.inArray(sv[0], ovm)>-1)) {ov.selected ="selected";}
 						elem.appendChild(ov);
 					}
 				} else if (typeof options.value === 'object') {
@@ -303,8 +303,8 @@ function createEl(eltype,options,vl) {
 						i++;
 						ov = document.createElement("option");
 						ov.value = key; ov.innerHTML = oSv[key];
-						if (!msl &&  oSv[key]==vl) ov.selected ="selected";
-						if (msl && jQuery.inArray(jQuery.trim(oSv[key]),ovm)>-1) ov.selected ="selected";
+						if (!msl &&  (key == vl ||oSv[key]==vl) ) ov.selected ="selected";
+						if (msl && (jQuery.inArray(oSv[key],ovm)>-1 || jQuery.inArray(key,ovm)>-1)) ov.selected ="selected";
 						elem.appendChild(ov);
 					}
 				}
