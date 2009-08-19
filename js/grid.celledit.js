@@ -120,10 +120,10 @@ $.fn.extend({
 				switch ($t.p.colModel[iCol].edittype) {
 					case "select":
 						if(!$t.p.colModel[iCol].editoptions.multiple) {
-							v = $("#"+iRow+"_"+nm.replace('.',"\\.")+">option:selected",$t.rows[iRow]).val();
-							v2 = $("#"+iRow+"_"+nm.replace('.',"\\.")+">option:selected",$t.rows[iRow]).text();
+							v = $("#"+iRow+"_"+nm+">option:selected",$t.rows[iRow]).val();
+							v2 = $("#"+iRow+"_"+nm+">option:selected",$t.rows[iRow]).text();
 						} else {
-							var sel = $("#"+iRow+"_"+nm.replace('.',"\\."),$t.rows[iRow]), selectedText = [];
+							var sel = $("#"+iRow+"_"+nm,$t.rows[iRow]), selectedText = [];
 							v = $(sel).val();
 							if(v) v.join(","); else v="";
 							$("option:selected",sel).each(
@@ -133,7 +133,7 @@ $.fn.extend({
 							);
 							v2 = selectedText.join(",");
 						}
-						if($t.p.colModel[iCol].formatter && $t.p.colModel[iCol] == 'select') v2 = v;
+						if($t.p.colModel[iCol].formatter) v2 = v;
 						break;
 					case "checkbox":
 						var cbv  = ["Yes","No"];
