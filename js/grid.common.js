@@ -384,6 +384,11 @@ function checkValues(val, valref,g) {
 				if(!checkDate (dft, val)) return [false,nm+": "+jQuery.jgrid.edit.msg.date+" - "+dft,""];
 			}
 		}
+		if(edtrul.time === true) {
+			if( !(rqfield === false && isEmpty(val)) ) {
+				if(!checkTime (val)) return [false,nm+": "+jQuery.jgrid.edit.msg.date+" - hh:mm (am/pm)",""];
+			}
+		}
         if(edtrul.url === true) {
             if( !(rqfield === false && isEmpty(val)) ) {
                 filter = /^(((https?)|(ftp)):\/\/([\-\w]+\.)+\w{2,3}(\/[%\-\w]+(\.\w{2,})?)*(([\w\-\.\?\\/+@&#;`~=%!]*)(\.\w{2,})?)*\/?)/i;
@@ -476,4 +481,27 @@ function isEmpty(val)
 	} else {
 		return false;
 	} 
+}
+function checkTime(time){
+	// checks only hh:ss (and optional am/pm)
+	var re = /^(\d{1,2}):(\d{2})([ap]m)?$/,regs;
+	if(!isEmpty(time))
+	{
+		regs = time.match(re);
+		if(regs) {
+			if(regs[3]) {
+				if(regs[1] < 1 || regs[1] > 12) 
+					return false;
+			} else {
+				if(regs[1] > 23) 
+					return false;
+			}
+			if(regs[2] > 59) {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+	return true;
 }
