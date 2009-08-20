@@ -1175,7 +1175,7 @@ $.fn.jqGrid = function( p ) {
 			var scb = $(td).hasClass("cbox");
 			ptr = $(td,ts.rows).parents("tr.jqgrow");
 			if($(ptr).length === 0 ) {
-				return false;
+				return this;
 			}
 			var cSel = true;
 			if(bSR) cSel = bSR(ptr[0].id);
