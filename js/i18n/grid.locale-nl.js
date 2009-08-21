@@ -1,109 +1,145 @@
-(function($){
-    $.jgrid = {
-        defaults:{recordtext:"{0} - {1} van {2}",
-            emptyrecords:"Geen records",
-            loadtext:"Laden...",
-            pgtext:"Pagina {0} van {1}"
+(function(a) {
+    a.jgrid =
+    {
+        defaults:
+        {
+            recordtext: "regels {0} - {1} van {2}",
+            emptyrecords: "Geen data gevonden.",
+            loadtext: "laden...",
+            pgtext: "pagina  {0}  van {1}"
         },
-        search:{
-            caption:"Zoeken...",
-            Find:"Zoek",
-            Reset:"Herstellen",
-            odata:["gelijk aan","niet gelijk aan","minder dan","minder dan of gelijk aan","groter dan","groter dan of gelijk aan","begint met","begint niet met","is in","is niet in","eindigd met","eindigd niet met","bevat","bevat niet"],
-            groupOps:[{op:"AND",text:"alles"},{op:"OR",text:"een van de"}],
-            matchText:" match",
-            rulesText:" regels"
+        search:
+        {
+            caption: "Zoeken...",
+            Find: "Zoek",
+            Reset: "Herstellen",
+            odata: ["gelijk aan", "niet gelijk aan", "kleiner dan", "kleiner dan of gelijk aan", "groter dan", "groter dan of gelijk aan", "begint met", "begint niet met", "is in", "is niet in", "eindigd met", "eindigd niet met", "bevat", "bevat niet"],
+            groupOps: [{ op: "AND", text: "alle" }, { op: "OR", text: "een van de"}],
+            matchText: " match",
+            rulesText: " regels"
         },
-        edit:{
-            addCaption:"Add Record",
-            editCaption:"Edit Record",
-            bSubmit:"Submit",
-            bCancel:"Cancel",
-            bClose:"Close",
-            saveData:"Data has been changed! Save changes?",
-            bYes:"Yes",
-            bNo:"No",
-            bExit:"Cancel",
-            msg:{
-                required:"Field is required",
-                number:"Please, enter valid number",
-                minValue:"value must be greater than or equal to ",
-                maxValue:"value must be less than or equal to",
-                email:"is not a valid e-mail",
-                integer:"Please, enter valid integer value",
-                date:"Please, enter valid date value",
-                url:"is not a valid URL. Prefix required ('http://' or 'https://')"}
-            },
-            view:{
-                caption:"View Record",
-                bClose:"Close"
-            },
-            del:{
-                caption:"Delete",
-                msg:"Delete selected record(s)?",
-                bSubmit:"Delete",
-                bCancel:"Cancel"
-            },
-            nav:{
-                edittext:"",
-                edittitle:"Edit selected row",
-                addtext:"",
-                addtitle:"Add new row",
-                deltext:"",
-                deltitle:"Delete selected row",
-                searchtext:"",
-                searchtitle:"Find records",
-                refreshtext:"",
-                refreshtitle:"Reload Grid",
-                alertcap:"Warning",
-                alerttext:"Please, select row",
-                viewtext:"",
-                viewtitle:"View selected row"
-            },
-            col:{
-                caption:"Show/Hide Columns",
-                bSubmit:"Submit",
-                bCancel:"Cancel"
-            },
-            errors:{
-                errcap:"Error",
-                nourl:"No url is set",
-                norecords:"No records to process",
-                model:"Length of colNames <> colModel!"
-            },
-            formatter:{
-                integer:{thousandsSeparator:" ",defaultValue:"0"},
-                number:{decimalSeparator:".",thousandsSeparator:" ",decimalPlaces:2,defaultValue:"0.00"},
-                currency:{decimalSeparator:".",thousandsSeparator:" ",decimalPlaces:2,prefix:"",suffix:"",defaultValue:"0.00"},
-                date:{
-                    dayNames:["Sun","Mon","Tue","Wed","Thr","Fri","Sat","Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
-                    monthNames:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec","January","February","March","April","May","June","July","August","September","October","November","December"],
-                    AmPm:["am","pm","AM","PM"],
-                    S:function(b){
-                        return b<11||b>13?["st","nd","rd","th"][Math.min((b-1)%10,3)]:"th"
-                    },
-                    srcformat:"Y-m-d",
-                    newformat:"d/m/Y",
-                    masks:{
-                        ISO8601Long:"Y-m-d H:i:s",
-                        ISO8601Short:"Y-m-d",
-                        ShortDate:"n/j/Y",
-                        LongDate:"l, F d, Y",
-                        FullDateTime:"l, F d, Y g:i:s A",
-                        MonthDay:"F d",
-                        ShortTime:"g:i A",
-                        LongTime:"g:i:s A",
-                        SortableDateTime:"Y-m-d\\TH:i:s",
-                        UniversalSortableDateTime:"Y-m-d H:i:sO",
-                        YearMonth:"F, Y"
-                    },
-                    reformatAfterEdit:false
-                },
-                baseLinkUrl:"",
-                showAction:"",
-                target:"",
-                checkbox:{disabled:true},
-                idName:"id"
+        edit:
+        {
+            addCaption: "Nieuw",
+            editCaption: "Bewerken",
+            bSubmit: "Opslaan",
+            bCancel: "Annuleren",
+            bClose: "Sluiten",
+            saveData: "Er is data aangepast! Wijzigingen opslaan?",
+            bYes: "Ja",
+            bNo: "Nee",
+            bExit: "Sluiten",
+            msg:
+            {
+                required: "Veld is verplicht",
+                number: "Voer a.u.b. geldig nummer in",
+                minValue: "Waarde moet groter of gelijk zijn aan ",
+                maxValue: "Waarde moet kleiner of gelijks zijn aan",
+                email: "is geen geldig e-mailadres",
+                integer: "Voer a.u.b. een geldig getal in",
+                date: "Voer a.u.b. een geldige waarde in",
+                url: "is geen geldige URL. Prefix is verplicht ('http://' or 'https://')"
             }
+        },
+        view:
+        {
+            caption: "Tonen",
+            bClose: "Sluiten"
+        },
+        del:
+        {
+            caption: "Verwijderen",
+            msg: "Verwijder geselecteerde regel(s)?",
+            bSubmit: "Verwijderen",
+            bCancel: "Annuleren"
+        },
+        nav:
+        {
+            edittext: "",
+            edittitle: "Bewerken",
+            addtext: "",
+            addtitle: "Nieuw",
+            deltext: "",
+            deltitle: "Verwijderen",
+            searchtext: "",
+            searchtitle: "Zoeken",
+            refreshtext: "",
+            refreshtitle: "Vernieuwen",
+            alertcap: "Waarschuwing",
+            alerttext: "Selecteer a.u.b. een regel",
+            viewtext: "",
+            viewtitle: "Openen"
+        },
+        col:
+        {
+            caption: "Tonen/verbergen kolommen",
+            bSubmit: "OK",
+            bCancel: "Annuleren"
+        },
+        errors:
+        {
+            errcap: "Fout",
+            nourl: "Er is geen URL gedefinieerd",
+            norecords: "Geen data om te verwerken",
+            model: "Lengte van 'colNames' is niet gelijk aan 'colModel'!"
+        },
+        formatter:
+        {
+            integer:
+            {
+                thousandsSeparator: ".",
+                defaultValue: "0"
+            },
+            number:
+            {
+                decimalSeparator: ",",
+                thousandsSeparator: ".",
+                decimalPlaces: 2,
+                defaultValue: "0.00"
+            },
+            currency:
+            {
+                decimalSeparator: ",",
+                thousandsSeparator: ".",
+                decimalPlaces: 2,
+                prefix: "EUR ",
+                suffix: "",
+                defaultValue: "0.00"
+            },
+            date:
+            {
+                dayNames: ["Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za", "Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag"],
+                monthNames: ["Jan", "Feb", "Maa", "Apr", "Mei", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli", "Augustus", "September", "October", "November", "December"],
+                AmPm: ["am", "pm", "AM", "PM"],
+                S: function(b) {
+                    return b < 11 || b > 13 ? ["st", "nd", "rd", "th"][Math.min((b - 1) % 10, 3)] : "th"
+                },
+                srcformat: "Y-m-d",
+                newformat: "d/m/Y",
+                masks:
+                {
+                    ISO8601Long: "Y-m-d H:i:s",
+                    ISO8601Short: "Y-m-d",
+                    ShortDate: "n/j/Y",
+                    LongDate: "l, F d, Y",
+                    FullDateTime: "l d F Y G:i:s",
+                    MonthDay: "d F",
+                    ShortTime: "G:i",
+                    LongTime: "G:i:s",
+                    SortableDateTime: "Y-m-d\\TH:i:s",
+                    UniversalSortableDateTime: "Y-m-d H:i:sO",
+                    YearMonth: "F, Y"
+                },
+                reformatAfterEdit: false
+            },
+            baseLinkUrl: "",
+            showAction: "",
+            target: "",
+            checkbox:
+            {
+                disabled: true
+            },
+            idName: "id"
+        }
     }
 })(jQuery);
