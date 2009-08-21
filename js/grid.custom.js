@@ -633,7 +633,7 @@ $.fn.extend({
 			$.each($t.p.colModel,function(i,n){
 				var cm=this;
 				th = $("<th role='columnheader' class='ui-state-default ui-th-column'></th>");
-				thd = $("<div style='width:100%;position:relative;'></div>");
+				thd = $("<div style='width:100%;position:relative;height:100%;padding-right:0.3em;'></div>");
 				if(this.hidden===true) { $(th).css("display","none");}
 				this.search = this.search === false ? false : true;
 				if(typeof this.stype == 'undefined' ) {this.stype='text';}
