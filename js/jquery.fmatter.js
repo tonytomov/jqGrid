@@ -226,7 +226,7 @@
         }
     };
 	$.fn.fmatter.showlink = function(cellval, opts) {
-		var op = {baseLinkUrl: opts.baseLinkUrl,showAction:opts.showAction, addParam: opts.addParam, target: opts.target, idName: opts.idName },
+		var op = {baseLinkUrl: opts.baseLinkUrl,showAction:opts.showAction, addParam: opts.addParam || "", target: opts.target, idName: opts.idName },
 		target = "";
 		if(!isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
@@ -312,11 +312,12 @@
 			} else if(isObject(oSelect)) {
 				// this is quicker
 				if(msl) {
-					ret = jQuery.map(scel, function(n, i){
+					ret = jQuery.map(scell, function(n, i){
 						return oSelect[n];
 					});
+				} else {
+					ret[0] = oSelect[cellval] || "";
 				}
-				ret[0] = oSelect[cellval] || "";
 			}
 			return ret.join(", ");
 		}
@@ -395,8 +396,8 @@
 					}
 				}
 			} else if(isObject(oSelect)) {
-				if(!msl) scel[0] =  cell;
-				ret = jQuery.map(scel, function(n){
+				if(!msl) scell[0] =  cell;
+				ret = jQuery.map(scell, function(n){
 					var rv;
 					$.each(oSelect, function(i,val){
 						if (val == n) {
