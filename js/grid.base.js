@@ -1499,7 +1499,7 @@ $.fn.extend({
 						res[nm] = $.jgrid.htmlDecode($("span:first",this).html());
 					} else {
 						try {
-							res[nm] = $.unformat($(this).html(),{colModel:$t.p.colModel[i]},i)
+							res[nm] = $.unformat(this,{colModel:$t.p.colModel[i]},i)
 						} catch (e){
 							res[nm] = $.jgrid.htmlDecode($(this).html());
 						}
@@ -1866,7 +1866,7 @@ $.fn.extend({
 				var ind = $t.rows.namedItem(rowid);
 				if(ind) {
 					try {
-						ret = $.unformat($("td:eq("+pos+")",ind).html(),{colModel:$t.p.colModel[pos]},pos)
+						ret = $.unformat($("td:eq("+pos+")",ind),{colModel:$t.p.colModel[pos]},pos)
 					} catch (e){
 						ret = $.jgrid.htmlDecode($("td:eq("+pos+")",ind).html());
 					}
