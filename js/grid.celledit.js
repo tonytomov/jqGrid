@@ -69,13 +69,13 @@ $.fn.extend({
 				} catch (_) {
 					tmp = $(cc).html();
 				}
-				var opt = $.extend({}, $t.p.colModel[iCol].editoptions || {} ,{id:iRow+"_"+nm,name:nm});
 				if (!$t.p.colModel[iCol].edittype) {$t.p.colModel[iCol].edittype = "text";}
 				$t.p.savedRow.push({id:iRow,ic:iCol,name:nm,v:tmp});
 				if($.isFunction($t.p.formatCell)) {
 					var tmp2 = $t.p.formatCell($t.rows[iRow].id,nm,tmp,iRow,iCol);
 					if(tmp2) {tmp = tmp2;}
 				}
+				var opt = $.extend({}, $t.p.colModel[iCol].editoptions || {} ,{id:iRow+"_"+nm,name:nm});
 				var elc = createEl($t.p.colModel[iCol].edittype,opt,tmp,cc);
 				if ($.isFunction($t.p.beforeEditCell)) {
 					$t.p.beforeEditCell($t.rows[iRow].id,nm,tmp,iRow,iCol);
