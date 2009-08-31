@@ -1178,7 +1178,7 @@ $.fn.jqGrid = function( p ) {
 				return this;
 			}
 			var cSel = true;
-			if(bSR) cSel = bSR(ptr[0].id);
+			if(bSR) cSel = bSR(ptr[0].id, e);
 			if (td.tagName == 'A') { return true; }
 			if(cSel === true) {
 				if(ts.p.cellEdit === true) {
