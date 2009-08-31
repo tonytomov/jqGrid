@@ -132,45 +132,57 @@ var hideModal = function (selector,o) {
 	}
 };
 
-function info_dialog(caption, content,c_b) {
-	var cnt = "<div id='info_id'>";
-	cnt += "<div align='center'><br />"+content+"<br /><br />";
-	cnt += "<input type='button' size='10' id='closedialog' class='jqmClose EditButton' value='"+c_b+"' />";
-	cnt += "</div></div>";
-	createModal({
-		themodal:'info_dialog',
-		modalhead:'info_head',
-		modalcontent:'info_content'},
-		cnt,
-		{ width:290,
-		height:120,
-		drag: false,
+function info_dialog(caption, content,c_b, modalopt) {
+	var mopt = {
+		width:290,
+		height:'auto',
+		dataheight: 'auto',
+		drag: true,
 		resize: false,
 		caption:"<b>"+caption+"</b>",
 		left:250,
 		top:170,
-		closeOnEscape : true },
+		jqModal : true,
+		closeOnEscape : true,
+		align: 'center',
+		buttonalign : 'center'
+	};
+	jQuery.extend(mopt,modalopt || {});
+	var jm = mopt.jqModal;
+	if(jQuery.fn.jqm && !jm) jm = false;
+	// in case there is no jqModal
+	var dh = isNaN(mopt.dataheight) ? mopt.dataheight : mopt.dataheight+"px",
+	cn = "text-align:"+mopt.align+";";
+	var cnt = "<div id='info_id'>";
+	cnt += "<div id='infocnt' style='margin:0px;padding-bottom:1em;width:100%;overflow:auto;position:relative;height:"+dh+";"+cn+"'>"+content+"</div>";
+	cnt += c_b ? "<div class='ui-widget-content ui-helper-clearfix' style='text-align:"+mopt.buttonalign+";padding-bottom:0.8em;padding-top:0.5em;background-image: none;border-width: 1px 0 0 0;'><a href='javascript:void(0)' id='closedialog' class='fm-button ui-state-default ui-corner-all'>"+c_b+"</a></div>" : "";
+	cnt += "</div>";
+
+	try {jQuery("#info_dialog").remove();} catch (e){}
+	createModal({
+		themodal:'info_dialog',
+		modalhead:'info_head',
+		modalcontent:'info_content',
+		scrollelm: 'infocnt'},
+		cnt,
+		mopt,
 		'','',true
 	);
-	jQuery("#closedialog", "#info_id").addClass('ui-state-default ui-corner-all').height(21)
-		.css({padding:" .2em .5em", cursor: 'pointer'})
-		.hover(
-			function(){jQuery(this).addClass('ui-state-hover');}, 
-			function(){jQuery(this).removeClass('ui-state-hover');}
+	jQuery("#closedialog", "#info_id").click(function(e){
+		hideModal("#info_dialog",{jqm:jm});
+		return false;
+	});
+	jQuery(".fm-button","#info_dialog").hover(
+		function(){jQuery(this).addClass('ui-state-hover');}, 
+		function(){jQuery(this).removeClass('ui-state-hover');}
 	);
-	if(jQuery.fn.jqm) {;}
-	else {
-		jQuery("#closedialog", "#info_id").click(function(e){
-			hideModal("#info_dialog");
-			return false;
-		});
-	}
 	viewModal("#info_dialog",{
 		onHide: function(h) {
 			h.w.hide().remove();
 			if(h.o) { h.o.remove(); }
 		},
-		modal :true
+		modal :true,
+		jqm:jm
 	});
 }
 //Helper functions
