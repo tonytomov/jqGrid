@@ -47,7 +47,6 @@ $(selector).each(function() {
 	$('tbody > tr', $(this)).each(function() {
 		var row = {};
 		var rowPos = 0;
-		data.push(row);
 		$('td', $(this)).each(function() {
 			if (rowPos == 0 && selectable) {
 				var input = $('input', $(this));
@@ -62,6 +61,7 @@ $(selector).each(function() {
 			}
 			rowPos++;
 		});
+		if(rowPos >0) data.push(row);
 	});
 
 	// Clear the original HTML table
