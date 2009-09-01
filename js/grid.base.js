@@ -797,7 +797,7 @@ $.fn.jqGrid = function( p ) {
 				pgl += "<td>"+str+"</td>";
 			}
 			pgl += "</tr></tbody></table>";
-			if(ts.p.viewrecords===true) {$("td#"+pgid+"_"+ts.p.recordpos,"#"+pgcnt).append("<div class='ui-paging-info'></div>");}
+			if(ts.p.viewrecords===true) {$("td#"+pgid+"_"+ts.p.recordpos,"#"+pgcnt).append("<div style='text-align:"+ts.p.recordpos+"' class='ui-paging-info'></div>");}
 			$("td#"+pgid+"_"+ts.p.pagerpos,"#"+pgcnt).append(pgl);
 			tdw = $(".ui-jqgrid").css("font-size") || "11px";
 			$('body').append("<div id='testpg' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+tdw+";visibility:hidden;' ></div>");
@@ -812,7 +812,8 @@ $.fn.jqGrid = function( p ) {
 			ts.p._nvtd[1] = 0;
 			pgl=null;
 			$('.ui-pg-selbox',"#"+pgcnt).bind('change',function() { 
-				ts.p.rowNum = this.value; 
+				ts.p.rowNum = this.value;
+				ts.p.page = Math.round(ts.p.rowNum*(ts.p.page-1)/this.value-0.5)+1;
 				clearVals('records');
 				populate();
 				return false;
