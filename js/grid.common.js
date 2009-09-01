@@ -292,11 +292,9 @@ function createEl(eltype,options,vl) {
 				} else {
 					options.size = 1;
 				}
+				if(typeof options.value === 'function') options.value = options.value();
 				if(typeof options.value === 'string') {
 					var so = options.value.split(";"),sv, ov;
-					try {delete options['value'];} catch (e){}
-					options = bindEv(elem,options);
-					jQuery(elem).attr(options);
 					for(i=0; i<so.length;i++){
 						sv = so[i].split(":");
 						ov = document.createElement("option");
@@ -307,9 +305,6 @@ function createEl(eltype,options,vl) {
 					}
 				} else if (typeof options.value === 'object') {
 					var oSv = options.value;
-					try {delete options['value'];} catch (e){}
-					options = bindEv(elem,options);
-					jQuery(elem).attr(options);
 					i=0;
 					for ( var key in oSv) {
 						i++;
@@ -320,6 +315,9 @@ function createEl(eltype,options,vl) {
 						elem.appendChild(ov);
 					}
 				}
+				options = bindEv(elem,options);
+				try {delete options['value'];} catch (e){}
+				jQuery(elem).attr(options);
 			}
 			break;
 		case "text" :
