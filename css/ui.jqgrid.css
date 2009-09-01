@@ -23,33 +23,37 @@
 .ui-jqgrid .ui-i-desc {margin-top:0px;margin-left:13px;height:16px;}
 .ui-jqgrid .ui-jqgrid-sortable {cursor:pointer;}
 .ui-jqgrid tr.ui-search-toolbar th { border-top-width: 1px !important; border-top-color: inherit !important; border-top-style: ridge !important }
+tr.ui-search-toolbar input {margin: 1px 0px 0px 0px}
+tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 /* body */ 
-.ui-jqgrid .ui-jqgrid-bdiv {position: relative;margin : 0em; padding:0; overflow: auto;}
-.ui-jqgrid .ui-jqgrid-btable {table-layout:fixed; margin-left:0px}
+.ui-jqgrid .ui-jqgrid-bdiv {position: relative; margin: 0em; padding:0; overflow: auto;}
+.ui-jqgrid .ui-jqgrid-btable {table-layout:fixed; margin:0em}
 .ui-jqgrid tr.jqgrow td {border-right-width: 1px; border-right-color: inherit; border-right-style: solid;border-bottom-width: 1px; border-bottom-color: inherit; border-bottom-style: solid;}
 .ui-jqgrid tr.jqgrow td {font-weight: normal; overflow: hidden; text-align:left; white-space: pre; height: 22px;padding: 0 2px 0 2px;}
 .ui-jqgrid td.jqgrid-rownum { padding: 0 2px 0 2px; margin: 0px; border: 0px none;}
 .ui-jqgrid .ui-jqgrid-resize-mark { width:2px; left:0; background-color:#777; cursor: e-resize; cursor: col-resize; position:absolute; top:0; height:100px; overflow:hidden; display:none;	border:0 none;}
 /* footer */
 .ui-jqgrid .ui-jqgrid-sdiv {position: relative; margin: 0em;padding: 0em; overflow: hidden; border-left: 0px none !important; border-top : 0px none !important; border-right : 0px none !important;}
-.ui-jqgrid .ui-jqgrid-ftable {table-layout:fixed;}
+.ui-jqgrid .ui-jqgrid-ftable {table-layout:fixed; margin-bottom:0em;}
 .ui-jqgrid tr.footrow td {border-right-width: 1px; border-right-color: inherit; border-right-style: solid;border-top-width: 1px; border-top-color: inherit; border-top-style: solid;}
 .ui-jqgrid tr.footrow td {font-weight: bold; overflow: hidden; text-align:left; white-space:  nowrap; height: 21px;padding: 0 2px 0 2px;}
 /* Pager*/
 .ui-jqgrid .ui-jqgrid-pager { border-left: 0px none !important;border-right: 0px none !important; border-bottom: 0px none !important; margin: 0px !important; padding: 0px !important; position: relative; height: 25px;white-space: nowrap;overflow: hidden;}
 .ui-jqgrid .ui-pager-control {position: relative;}
-.ui-jqgrid .ui-pg-table {position: relative; padding-bottom:2px;}
+.ui-jqgrid .ui-pg-table {position: relative; padding-bottom:2px; width:auto; margin: 0em;}
 .ui-jqgrid .ui-pg-table td {font-weight:normal; vertical-align:middle; padding:1px; overflow:hidden;}
 .ui-jqgrid .ui-pg-button  { height:19px !important;}
 .ui-jqgrid .ui-pg-button span { display: block; margin: 1px; float:left;}
 .ui-jqgrid .ui-pg-button:hover { padding: 0px; }
 .ui-jqgrid .ui-state-disabled:hover {padding:1px;}
-.ui-jqgrid .ui-pg-input { height:13px;font-size:.8em;}
-.ui-jqgrid .ui-pg-selbox {font-size:.8em; line-height:18px; display:block; height:18px}
+.ui-jqgrid .ui-pg-input { height:13px;font-size:.8em; margin: 0em;}
+.ui-jqgrid .ui-pg-selbox {font-size:.8em; line-height:18px; display:block; height:18px; margin: 0em;}
 .ui-jqgrid .ui-separator {height: 18px; border-left: 1px solid #ccc ; border-right: 1px solid #ccc ; margin: 1px; float: right;}
 .ui-jqgrid .ui-paging-info {font-weight: normal;height:19px; margin-top:3px;margin-right:4px;}
 .ui-jqgrid .ui-jqgrid-pager .ui-pg-div {padding:1px 0;cursor:pointer; float:left;list-style-image:none;list-style-position:outside;list-style-type:none;position:relative;}
 .ui-jqgrid .ui-jqgrid-pager .ui-pg-div  span.ui-icon {float:left;margin:0 2px;}
+.ui-jqgrid td input, .ui-jqgrid td select .ui-jqgrid td textarea { margin: 0em;}
+.ui-jqgrid td textarea {width:auto;height:auto;}
 /*subgrid*/
 .ui-jqgrid .ui-jqgrid-btable .ui-sgcollapsed span {display: block;}
 .ui-jqgrid .ui-subgrid {margin:0em;padding:0em; width:100%;}
@@ -76,7 +80,10 @@
 /* end Modal window*/
 /* Form edit */
 .ui-jqdialog-content .FormGrid {margin: 0px;}
-.ui-jqdialog-content .EditTable { width: 100%;}
+.ui-jqdialog-content .EditTable { width: 100%; margin-bottom:0em;}
+.ui-jqdialog-content .DelTable { width: 100%; margin-bottom:0em;}
+.EditTable td input, .EditTable td select, .EditTable td textarea {margin: 0em;}
+.EditTable td textarea { width:auto; height:auto;}
 .ui-jqdialog-content td.EditButton {text-align: right;border-top: 0px none;border-left: 0px none;border-right: 0px none; padding-bottom:5px; padding-top:5px;}
 .ui-jqdialog-content td.navButton {text-align: center; border-left: 0px none;border-top: 0px none;border-right: 0px none; padding-bottom:5px; padding-top:5px;}
 .ui-jqdialog-content .CaptionTD {text-align: left; vertical-align: top;border-left: 0px none;border-right: 0px none; border-bottom: 0px none; padding: 1px;white-space: nowrap;}
