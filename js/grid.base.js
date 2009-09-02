@@ -1181,7 +1181,7 @@ $.fn.jqGrid = function( p ) {
 			}
 			var cSel = true;
 			if(bSR) cSel = bSR(ptr[0].id, e);
-			if (td.tagName == 'A' || ((td.tagName == 'INPUT' || td.tagName == 'TEXTAREA' || td.tagName == 'SELECT' ) && !scb) ) { return true; }
+			if (td.tagName == 'A' || ((td.tagName == 'INPUT' || td.tagName == 'TEXTAREA' || td.tagName == 'OPTION' || td.tagName == 'SELECT' ) && !scb) ) { return true; }
 			if(cSel === true) {
 				if(ts.p.cellEdit === true) {
 					if(ts.p.multiselect && scb){
