@@ -1545,7 +1545,7 @@ $.fn.extend({
 		this.each(function(){
 			var t = this, vl, ind;
 			if(!t.grid) {return false;}
-			var ind = t.rows.namedItem(rowid);
+			ind = t.rows.namedItem(rowid);
 			if(!ind) return false;
 			if( data ) {
 				$(this.p.colModel).each(function(i){
@@ -1749,7 +1749,7 @@ $.fn.extend({
 					}
 				}
 				initwidth =0;
-				var cl = $t.grid.cols.length >0;
+				var cle = $t.grid.cols.length >0;
 				$.each($t.p.colModel, function(i) {
 					var tn = this.name;
 					if(this.hidden === false && tn !== 'cb' && tn !== 'subgrid' && tn !== 'rn'){
@@ -1759,7 +1759,7 @@ $.fn.extend({
 						$t.grid.headers[i].width=cw;
 						$t.grid.headers[i].el.style.width=cw+"px";
 						if($t.p.footerrow) $t.grid.footers[i].style.width = cw+"px";
-						if(cl) $t.grid.cols[i].style.width = cw+"px";
+						if(cle) $t.grid.cols[i].style.width = cw+"px";
 						lvc = i;
 					}
 				});

@@ -354,7 +354,7 @@ function checkValues(val, valref,g) {
 			}
 		}
 	} else if(valref >=0) {
-		var edtrul = g.p.colModel[valref].editrules;
+		edtrul = g.p.colModel[valref].editrules;
 	}
 	if(edtrul) {
 		if(!nm) nm = g.p.colNames[valref];
@@ -401,7 +401,7 @@ function checkValues(val, valref,g) {
 		}
         if(edtrul.url === true) {
             if( !(rqfield === false && isEmpty(val)) ) {
-                filter = /^(((https?)|(ftp)):\/\/([\-\w]+\.)+\w{2,3}(\/[%\-\w]+(\.\w{2,})?)*(([\w\-\.\?\\/+@&#;`~=%!]*)(\.\w{2,})?)*\/?)/i;
+                filter = /^(((https?)|(ftp)):\/\/([\-\w]+\.)+\w{2,3}(\/[%\-\w]+(\.\w{2,})?)*(([\w\-\.\?\\\/+@&#;`~=%!]*)(\.\w{2,})?)*\/?)/i;
                 if(!filter.test(val)) {return [false,nm+": "+jQuery.jgrid.edit.msg.url,""];}
             }
         }
