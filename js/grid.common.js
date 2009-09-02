@@ -114,7 +114,6 @@ var viewModal = function (selector,o){
 		jQuery(selector).show().attr("aria-hidden","false");
 		try{jQuery(':input:visible',selector)[0].focus();}catch(_){}
 	}
-	return false;
 };
 var hideModal = function (selector,o) {
 	o = jQuery.extend({jqm : true, gb :''}, o || {});

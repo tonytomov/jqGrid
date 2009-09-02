@@ -7,6 +7,7 @@
  * http://www.gnu.org/licenses/gpl.html
  * Date: 2009-08-14
  */
+$.jgrid = $.jgrid || {};
 $.extend($.jgrid,{  
 	htmlDecode : function(value){
 		if(value=='&nbsp;' || value=='&#160;' || (value.length==1 && value.charCodeAt(0)==160)) { return "";}
@@ -1180,7 +1181,7 @@ $.fn.jqGrid = function( p ) {
 			}
 			var cSel = true;
 			if(bSR) cSel = bSR(ptr[0].id, e);
-			if (td.tagName == 'A') { return true; }
+			if (td.tagName == 'A' || ((td.tagName == 'INPUT' || td.tagName == 'TEXTAREA' || td.tagName == 'SELECT' ) && !scb) ) { return true; }
 			if(cSel === true) {
 				if(ts.p.cellEdit === true) {
 					if(ts.p.multiselect && scb){
@@ -1874,8 +1875,9 @@ $.fn.extend({
 		});
 		return ret;
 	},
-	getCol : function (col) {
-		var ret = [];
+	getCol : function (col, obj) {
+		var ret = [], val;
+		obj = obj==false ? false : true;
 		this.each(function(){
 			var $t=this, pos=-1;
 			if(!$t.grid) {return;}
@@ -1890,7 +1892,8 @@ $.fn.extend({
 				var ln = $t.rows.length, i =0;
 				if (ln && ln>0){
 					while(i<ln){
-						ret[i] = $t.rows[i].cells[pos].innerHTML;
+						val = $t.rows[i].cells[pos].innerHTML;
+						obj ? ret.push({id:$t.rows[i].id,value:val}) : ret[i]=val;
 						i++;
 					}
 				}
