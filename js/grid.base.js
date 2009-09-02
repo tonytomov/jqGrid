@@ -1184,7 +1184,7 @@ $.fn.jqGrid = function( p ) {
 			if(cSel === true) {
 				if(ts.p.cellEdit === true) {
 					if(ts.p.multiselect && scb){
-						$(ts).setSelection(false,true,ptr);
+						$(ts).setSelection(ptr[0].id,true);
 					} else {
 						ri = ptr[0].rowIndex;
 						ci = !$(td).is('td') ? $(td).parents("td:first")[0].cellIndex : td.cellIndex;
@@ -1193,7 +1193,7 @@ $.fn.jqGrid = function( p ) {
 					}
 				} else if ( !ts.p.multikey ) {
 					if(ts.p.multiselect && ts.p.multiboxonly) {
-						if(scb){$(ts).setSelection(false,true,ptr);}
+						if(scb){$(ts).setSelection(ptr[0].id,true);}
 						else {
 							$(ts.p.selarrrow).each(function(i,n){
 								var ind = ts.rows.namedItem(n);
@@ -1202,14 +1202,14 @@ $.fn.jqGrid = function( p ) {
 							});
 							ts.p.selarrrow = [];
 							$("#cb_jqg",ts.grid.hDiv).attr("checked",false);
-							$(ts).setSelection(false,true,ptr);
+							$(ts).setSelection(ptr[0].id,true);
 						}
 					} else {
-						$(ts).setSelection(false,true,ptr);
+						$(ts).setSelection(ptr[0].id,true);
 					}
 				} else {
 					if(e[ts.p.multikey]) {
-						$(ts).setSelection(false,true,ptr);
+						$(ts).setSelection(ptr[0].id,true);
 					} else if(ts.p.multiselect && scb) {
 						scb = $("[id^=jqg_]",ptr).attr("checked");
 						$("[id^=jqg_]",ptr).attr("checked",!scb);
@@ -1252,7 +1252,7 @@ $.fn.jqGrid = function( p ) {
 				td = e.target;
 				ptr = $(td,ts.rows).parents("tr.jqgrow");
 				if($(ptr).length === 0 ){return false;}
-				if(!ts.p.multiselect) {	$(ts).setSelection(false,true,ptr);	}
+				if(!ts.p.multiselect) {	$(ts).setSelection(ptr[0].id,true);	}
 				ri = ptr[0].rowIndex;
 				ci = !$(td).is('td') ? $(td).parents("td:first")[0].cellIndex : td.cellIndex;
 				if(isMSIE) {ci = $.jgrid.getAbsoluteIndex(ptr[0],ci);}				
@@ -1407,15 +1407,13 @@ $.fn.extend({
 		});
 		return ids;
 	},
-	setSelection : function(selection,onsr,sd) {
+	setSelection : function(selection,onsr) {
 		return this.each(function(){
 			var $t = this, stat,pt, olr, ner, ia, tpsr;
 			if(selection === undefined) return;
 			onsr = onsr === false ? false : true;
-			if(selection===false) {pt = sd;}
-			else {pt=$($t.rows.namedItem(selection));}
-			selection = $(pt).attr("id");
-			if (!pt.html()) {return;}
+			pt=$t.rows.namedItem(selection);
+			if(pt==null) return;
 			if($t.p.selrow && $t.p.scrollrows===true) {
 				olr = $t.rows.namedItem($t.p.selrow).rowIndex;
 				ner = $t.rows.namedItem(selection).rowIndex;
