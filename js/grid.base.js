@@ -1614,13 +1614,13 @@ $.fn.extend({
 						break;
 					case 'before':
 						sind = t.rows.namedItem(src);
-						sind != null ?	$(sind).before(row): "";
+						if(sind != null) {$(sind).before(row); sind=sind.rowIndex;};
 						break;
 				}
 				}
 				t.p.records++;
 				t.p.reccount++;
-				if(pos==='first' || (pos==='before' && sind===0) ||  t.rows.length === 1 ){
+				if(pos==='first' || (pos==='before' && sind == 0) ||  t.rows.length === 1 ){
 					t.updateColumns();
 				}
 				if( t.p.altRows === true ) {
