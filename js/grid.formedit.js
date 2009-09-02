@@ -1527,7 +1527,7 @@ $.fn.extend({
 			var rowdata = $($t).getRowData(rowid);
 			if (rowdata) {
 				for(var i in rowdata) {
-					if ( $("[name="+i+"]",formid).is("input:radio") )  {
+					if ( $("[name="+i+"]",formid).is("input:radio") || $("[name="+i+"]",formid).is("input:checkbox"))  {
 						$("[name="+i+"]",formid).each( function() {
 							if( $(this).val() == rowdata[i] ) {
 								$(this).attr("checked","checked");
