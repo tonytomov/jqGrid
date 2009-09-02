@@ -76,7 +76,7 @@ $.fn.extend({
 					if(tmp2) {tmp = tmp2;}
 				}
 				var opt = $.extend({}, $t.p.colModel[iCol].editoptions || {} ,{id:iRow+"_"+nm,name:nm});
-				var elc = createEl($t.p.colModel[iCol].edittype,opt,tmp,cc);
+				var elc = createEl($t.p.colModel[iCol].edittype,opt,tmp,true);
 				if ($.isFunction($t.p.beforeEditCell)) {
 					$t.p.beforeEditCell($t.rows[iRow].id,nm,tmp,iRow,iCol);
 				}

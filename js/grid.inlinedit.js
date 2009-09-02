@@ -37,7 +37,7 @@ $.fn.extend({
 							else $(this).html("");
 							var opt = $.extend({},cm[i].editoptions || {},{id:rowid+"_"+nm,name:nm});
 							if(!cm[i].edittype) { cm[i].edittype = "text"; }
-							var elc = createEl(cm[i].edittype,opt,tmp,$(this));
+							var elc = createEl(cm[i].edittype,opt,tmp,true);
 							$(elc).addClass("editable");
 							if(treeg) $("span:first",this).append(elc);
 							else $(this).append(elc);

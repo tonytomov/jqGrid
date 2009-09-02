@@ -204,7 +204,7 @@ function isArray(obj) {
 	}
 }
 // Form Functions
-function createEl(eltype,options,vl) {
+function createEl(eltype,options,vl,autowidth) {
 	var elem = "";
 	if(options.defaultValue) delete options['defaultValue'];
 	function bindEv (el, opt) {
@@ -230,7 +230,10 @@ function createEl(eltype,options,vl) {
 	{
 		case "textarea" :
 				elem = document.createElement("textarea");
-				if(!options.cols) {jQuery(elem).css("width","98%");}
+				if(autowidth) {
+					if(!options.cols) jQuery(elem).css({width:"98%"});
+				} else if (!options.cols) options.cols = 20;
+				if(!options.rows) options.rows = 2;
 				if(vl=='&nbsp;' || vl=='&#160;' || (vl.length==1 && vl.charCodeAt(0)==160)) {vl="";}
 				elem.value = vl;
 				options = bindEv(elem,options);
@@ -326,8 +329,10 @@ function createEl(eltype,options,vl) {
 			elem.type = eltype;
 			elem.value = jQuery.jgrid.htmlDecode(vl);
 			options = bindEv(elem,options);
-			if(!options.size) {
-				jQuery(elem).css({width:"98%"});
+			if(eltype != "button"){
+				if(autowidth) {
+					if(!options.size) jQuery(elem).css({width:"98%"});
+				} else if (!options.size) options.size = 20;
 			}
 			jQuery(elem).attr(options);
 			break;
