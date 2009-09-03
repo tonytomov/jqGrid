@@ -1116,19 +1116,15 @@ $.fn.jqGrid = function( p ) {
 		$(gv).css("width",grid.width+"px");
 		thead = $("thead:first",ts).get(0);
 		var	tfoot = "<table role='grid' style='width:"+ts.p.tblwidth+"px' class='ui-jqgrid-ftable' cellspacing='0' cellpadding='0' border='0'><tbody><tr role='row' class='ui-widget-content footrow'>";
-		$("tr:first th",thead).each(function ( j ) {
+        var thr = $("tr:first",thead);
+		$("th",thr).each(function ( j ) {
 			var ht = $('div',this)[0];
 			w = ts.p.colModel[j].width;
 			if(typeof ts.p.colModel[j].resizable === 'undefined') {ts.p.colModel[j].resizable = true;}
-			res = document.createElement("span");
-			$(res).html("&#160;");
 			if(ts.p.colModel[j].resizable){
+                res = document.createElement("span");
+                $(res).html("&#160;").addClass('ui-jqgrid-resize');
 				$(this).addClass(ts.p.resizeclass);
-				$(res).mousedown(function (e) {
-					if(ts.p.forceFit===true) {ts.p.nv= nextVisible(j);}
-					grid.dragStart(j, e, getOffset(j));
-					return false;
-				}).addClass('ui-jqgrid-resize');
 			} else {
 				res = "";
 			}
@@ -1139,17 +1135,72 @@ $.fn.jqGrid = function( p ) {
 			if( typeof sort !== 'boolean') {ts.p.colModel[j].sortable =  true; sort=true;}
 			var nm = ts.p.colModel[j].name;
 			if( !(nm == 'cb' || nm=='subgrid' || nm=='rn') ) {
-				if(ts.p.viewsortcols[2] == false)
-					$(".ui-grid-ico-sort",this).click(function(){sortData(ht.id,j,true,$(this).attr("sort"));return false;});
-				else
-					$("div",this).addClass('ui-jqgrid-sortable').click(function(){sortData(ht.id,j);return false;});
+				if(ts.p.viewsortcols[2])
+					$("div",this).addClass('ui-jqgrid-sortable');
 			}
 			if(sort) {
 				if(ts.p.viewsortcols[0]) {$("div span.s-ico",this).show(); if(j==ts.p.lastsort){ $("div span.ui-icon-"+ts.p.sortorder,this).removeClass("ui-state-disabled");}}
 				else if( j == ts.p.lastsort) {$("div span.s-ico",this).show();$("div span.ui-icon-"+ts.p.sortorder,this).removeClass("ui-state-disabled");}
 			}
 			tfoot += "<td role='gridcell' "+formatCol(j,0)+">&nbsp;</td>";
+        }).mousedown(function(e) {
+            if ($(e.target).closest("th>span.ui-jqgrid-resize").length != 1) return;
+            var ci = this.cellIndex;
+            if(isMSIE) {ci = $.jgrid.getAbsoluteIndex(thr,ci);}
+            if(ts.p.forceFit===true) {ts.p.nv= nextVisible(ci);}
+            grid.dragStart(ci, e, getOffset(ci));
+            return false;
+        }).click(function(e) {
+            var s = "th>div.ui-jqgrid-sortable",r,d;
+            if (!ts.p.viewsortcols[2]) { s = "th>div>span.ui-grid-ico-sort" }
+            if ($(e.target).closest(s).length != 1) return;
+            var ci = this.cellIndex;
+            if(isMSIE) {ci = $.jgrid.getAbsoluteIndex(thr,ci);}
+            if (!ts.p.viewsortcols[2]) { r=true,d=$(this).attr("sort") }
+            sortData($('div',this)[0].id,ci,r,d);
+            return false;
 		});
+        if (ts.p.sortable && $.fn.sortable) {
+            var sortable_opts = {
+                "helper":"original",
+                "axis" : "x",
+                "items": 'th:not(:has(.cbox,.jqgrid-rownum),:hidden)',
+                "placeholder": {
+                    element: function(item) {
+                        var el = $(document.createElement(item[0].nodeName))
+                        .addClass(item[0].className+" ui-sortable-placeholder ui-state-highlight")
+                        .removeClass("ui-sortable-helper")[0];
+
+                        return el;
+                    },
+                    update: function(self, p) {
+                        p.height(self.currentItem.innerHeight() - parseInt(self.currentItem.css('paddingTop')||0, 10) - parseInt(self.currentItem.css('paddingBottom')||0, 10));
+                        p.width(self.currentItem.innerWidth() - parseInt(self.currentItem.css('paddingLeft')||0, 10) - parseInt(self.currentItem.css('paddingRight')||0, 10));
+                    }
+                },
+                "forcePlaceholderSize":true,
+                "update": function(event, ui) {
+                    var p = $(ui.item).parent();
+                    var th = $(">th", p);
+                    var colModel = ts.p.colModel;
+                    var cmMap = {};
+                    $.each(colModel, function(i) { cmMap[this.name]=i });
+                    var permutation = [];
+                    th.each(function(i) {
+                            var id = $(">div", this).get(0).id.replace(/^jqgh_/, "");
+                            if (id in cmMap) {
+                                permutation.push(cmMap[id]);
+                            }
+                        });
+
+                    $(ts).remapColumns(permutation, true, true);
+                    if ($.isFunction(ts.p.sortable)) {
+                        ts.p.sortable(permutation);
+                    }
+                }
+            };
+            thr.sortable(sortable_opts).data("sortable").floating = true;
+        }
 		tfoot += "</tr></tbody></table>";
 		
 		tbody = document.createElement("tbody");
@@ -1364,8 +1415,7 @@ $.fn.jqGrid = function( p ) {
 		$(grid.hDiv).after(grid.bDiv);
 		$(".ui-jqgrid-labels",grid.hDiv).bind("selectstart", function () { return false; })
 		.mousemove(function (e) {
-			if(grid.resizing){grid.dragMove(e);}
-			return false;
+			if(grid.resizing){grid.dragMove(e);return false;}
 		});
 		ts.p._height += parseInt($(grid.hDiv).height(),10);
 		$(document).mouseup(function (e) {
@@ -1719,6 +1769,47 @@ $.jgrid.extend({
 	showCol : function(colname) {
 		return this.each(function(){$(this).jqGrid("ShowHideCol",colname,"");});
 	},
+    remapColumns : function(permutation, updateCells, keepHeader)
+    {
+        function resortArray(a) {
+            var ac;
+            if (a.length) {
+                ac = $.makeArray(a);
+            } else {
+                ac = $.extend({}, a);
+            }
+            $.each(permutation, function(i) {
+                a[i] = ac[this];
+            });
+        }
+
+        var ts = this.get(0);
+        function resortRows(parent) {
+            $("tr", parent).each(function() {
+                var row = this;
+                var elems = $.makeArray(row.cells);
+                $.each(permutation, function() {
+                    var e = elems[this];
+                    if (e) {
+                        row.appendChild(e);
+                    }
+                });
+            });
+        }
+
+        resortArray(ts.p.colModel);
+        resortArray(ts.p.colNames);
+        resortArray(ts.grid.headers);
+        if (!keepHeader) {
+            resortRows($("thead:first", ts.grid.hDiv));
+        }
+        if (updateCells) {
+            resortRows($("tbody:first", ts.grid.bDiv));
+            if (ts.rows.length) {
+                ts.grid.cols = ts.rows[0].cells;
+            }
+        }
+    },
 	setGridWidth : function(nwidth, shrink) {
 		return this.each(function(){
 			var $t = this, cw,
