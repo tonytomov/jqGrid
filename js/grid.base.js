@@ -1193,7 +1193,7 @@ $.fn.jqGrid = function( p ) {
                             }
                         });
 
-                    $(ts).remapColumns(permutation, true, true);
+                    $(ts).jqGrid("remapColumns",permutation, true, true);
                     if ($.isFunction(ts.p.sortable)) {
                         ts.p.sortable(permutation);
                     }
