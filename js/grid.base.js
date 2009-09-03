@@ -813,8 +813,8 @@ $.fn.jqGrid = function( p ) {
 			ts.p._nvtd[1] = 0;
 			pgl=null;
 			$('.ui-pg-selbox',"#"+pgcnt).bind('change',function() { 
-				ts.p.rowNum = this.value;
 				ts.p.page = Math.round(ts.p.rowNum*(ts.p.page-1)/this.value-0.5)+1;
+				ts.p.rowNum = this.value;
 				clearVals('records');
 				populate();
 				return false;
