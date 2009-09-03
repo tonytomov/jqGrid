@@ -25,7 +25,7 @@
  * cellsubmit (remote,clientArray) (added in grid options)
  * cellurl
 * */
-$.fn.extend({
+$.jgrid.extend({
 	editCell : function (iRow,iCol, ed){
 		return this.each(function (){
 			var $t = this, nm, tmp,cc;

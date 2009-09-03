@@ -7,7 +7,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
-$.fn.extend({
+$.jgrid.extend({
 setSubGrid : function () {
 	return this.each(function (){
 		var $t = this, cm;

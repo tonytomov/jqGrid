@@ -8,7 +8,7 @@
  * http://www.gnu.org/licenses/gpl.html
 **/ 
 var rp_ge = null;
-$.fn.extend({
+$.jgrid.extend({
 	searchGrid : function (p) {
 		p = $.extend({
 			recreateFilter: false,

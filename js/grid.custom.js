@@ -7,7 +7,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/ 
-$.fn.extend({
+$.jgrid.extend({
 	getColProp : function(colname){
 		var ret ={}, $t = this[0];
 		if ( !$t.grid ) { return; }

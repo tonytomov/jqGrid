@@ -14,7 +14,7 @@ $.extend($.jgrid,{
 		return !value ? value : String(value).replace(/&amp;/g, "&").replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"');
 	},
 	htmlEncode : function (value){
-		return !value ? value : String(value).replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+		return !value ? value : String(value).replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/\"/g, "&quot;");
 	},
 	format : function(format){ //jqgformat
 		var args = $.makeArray(arguments).slice(1);
@@ -62,9 +62,24 @@ $.extend($.jgrid,{
 	},
 	empty : function () {
 		while ( this.firstChild ) this.removeChild( this.firstChild );
+    },
+    extend : function(methods) {
+        $.extend($.fn.jqGrid,methods);
+        if (!this.no_legacy_api) {
+            $.fn.extend(methods);
+        }
 	}	
 });
 $.fn.jqGrid = function( p ) {
+    if (typeof p == 'string') {
+        var fn = $.fn.jqGrid[p];
+        if (!fn) {
+            throw ("jqGrid - No such method: " + p);
+        }
+        var args = $.makeArray(arguments).slice(1);
+        return fn.apply(this,args);
+    }
+
 	p = $.extend(true,{
 	url: "",
 	height: 150,
@@ -1383,7 +1398,7 @@ $.fn.jqGrid = function( p ) {
 		});
 	});
 };
-$.fn.extend({
+$.jgrid.extend({
 	getGridParam : function(pName) {
 		var $t = this[0];
 		if (!$t.grid) {return;}

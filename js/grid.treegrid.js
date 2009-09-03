@@ -8,7 +8,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/ 
-$.fn.extend({
+$.jgrid.extend({
 	setTreeNode : function(rd, row){
 		return this.each(function(){
 			var $t = this;
