@@ -38,7 +38,7 @@
                             var svdatatype = jstr.grid.datatype;
                             jstr.grid.datatype = 'xmlstring';
                             jstr.grid.datastr = xml;
-                            $($t).jqGrid( jstr1 ).setGridParam({datatype:svdatatype});
+                            $($t).jqGrid( jstr1 ).jqGrid("setGridParam",{datatype:svdatatype});
                         } else {
                             $($t).jqGrid( jstr1 );
                         }
@@ -56,7 +56,7 @@
                             var svdatatype = gprm.datatype;
                             gprm.datatype = 'jsonstring';
                             gprm.datastr = jdata;
-                            $($t).jqGrid( gprm ).setGridParam({datatype:svdatatype});
+                            $($t).jqGrid( gprm ).jqGrid("setGridParam",{datatype:svdatatype});
                         } else {
                             $($t).jqGrid( gprm );
                         }
@@ -132,7 +132,7 @@
             var ret = null;
             this.each(function () {
                 if(!this.grid) { return;}
-                var gprm = $(this).getGridParam();
+                var gprm = $(this).jqGrid("getGridParam");
                 // we need to check for:
                 // 1.multiselect, 2.subgrid  3. treegrid and remove the unneded columns from colNames
                 if(gprm.rownumbers) {

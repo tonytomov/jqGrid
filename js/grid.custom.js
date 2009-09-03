@@ -194,7 +194,7 @@ $.jgrid.extend({
 			if(this.p.filterModel.length == 0 && this.p.gridModel===false) { alert("No filter is set"); return;}
 			if( !gridid) {alert("No target grid is set!"); return;}
 			this.p.gridid = gridid.indexOf("#") != -1 ? gridid : "#"+gridid;
-			var gcolMod = $(this.p.gridid).getGridParam('colModel');
+			var gcolMod = $(this.p.gridid).jqGrid("getGridParam",'colModel');
 			if(gcolMod) {
 				if( this.p.gridModel === true) {
 					var thegrid = $(this.p.gridid)[0];
@@ -296,11 +296,11 @@ $.jgrid.extend({
                 $.extend(gr.p.postData,sdata);
 				var saveurl;
 				if(self.p.url) {
-					saveurl = $(gr).getGridParam('url');
-					$(gr).setGridParam({url:self.p.url});
+					saveurl = $(gr).jqGrid("getGridParam",'url');
+					$(gr).jqGrid("setGridParam",{url:self.p.url});
 				}
-				$(gr).setGridParam({search:sd,page:1}).trigger("reloadGrid");
-				if(saveurl) {$(gr).setGridParam({url:saveurl});}
+				$(gr).jqGrid("setGridParam",{search:sd,page:1}).trigger("reloadGrid");
+				if(saveurl) {$(gr).jqGrid("setGridParam",{url:saveurl});}
 				if($.isFunction(self.p.afterSearch)){self.p.afterSearch();}
 			};
 			var clearSearch = function(){
@@ -361,11 +361,11 @@ $.jgrid.extend({
                 $.extend(gr.p.postData,sdata);
 				var saveurl;
 				if(self.p.url) {
-					saveurl = $(gr).getGridParam('url');
-					$(gr).setGridParam({url:self.p.url});
+					saveurl = $(gr).jqGrid("getGridParam",'url');
+					$(gr).jqGrid("setGridParam",{url:self.p.url});
 				}
-				$(gr).setGridParam({search:sd,page:1}).trigger("reloadGrid");
-				if(saveurl) {$(gr).setGridParam({url:saveurl});}
+				$(gr).jqGrid("setGridParam",{search:sd,page:1}).trigger("reloadGrid");
+				if(saveurl) {$(gr).jqGrid("setGridParam",{url:saveurl});}
 				if($.isFunction(self.p.afterClear)){self.p.afterClear();}
 			};
 			var formFill = function(){
@@ -555,10 +555,10 @@ $.jgrid.extend({
 				var saveurl;
 				if($t.p.searchurl) {
 					saveurl = $t.p.url;
-					$($t).setGridParam({url:$t.p.searchurl});
+					$($t).jqGrid("setGridParam",{url:$t.p.searchurl});
 				}
-				$($t).setGridParam({search:sd,page:1}).trigger("reloadGrid");
-				if(saveurl) {$($t).setGridParam({url:saveurl});}
+				$($t).jqGrid("setGridParam",{search:sd,page:1}).trigger("reloadGrid");
+				if(saveurl) {$($t).jqGrid("setGridParam",{url:saveurl});}
 				if($.isFunction(p.afterSearch)){p.afterSearch();}
 			};
 			var clearToolbar = function(){
@@ -606,10 +606,10 @@ $.jgrid.extend({
 				var saveurl;
 				if($t.p.searchurl) {
 					saveurl = $t.p.url;
-					$($t).setGridParam({url:$t.p.searchurl});
+					$($t).jqGrid("setGridParam",{url:$t.p.searchurl});
 				}
-				$($t).setGridParam({search:sd,page:1}).trigger("reloadGrid");
-				if(saveurl) {$($t).setGridParam({url:saveurl});}
+				$($t).jqGrid("setGridParam",{search:sd,page:1}).trigger("reloadGrid");
+				if(saveurl) {$($t).jqGrid("setGridParam",{url:saveurl});}
 				if($.isFunction(p.afterClear)){p.afterClear();}
 			};
 			var toggleToolbar = function(){
