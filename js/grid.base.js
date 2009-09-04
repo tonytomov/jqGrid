@@ -1471,13 +1471,13 @@ $.fn.extend({
 			var t = this, ind;
 			if(!t.p.multiselect) {
 				if(t.p.selrow) {
-					$("tr#"+t.p.selrow.replace(".", "\\."),t.grid.bDiv).removeClass("ui-state-highlight");
+					$("tr#"+t.p.selrow.replace(".", "\\."),t.grid.bDiv).removeClass("ui-state-highlight").attr("aria-selected","false");
 					t.p.selrow = null;
 				}
 			} else {
 				$(t.p.selarrrow).each(function(i,n){
 					ind = t.rows.namedItem(n);
-					$(ind).removeClass("ui-state-highlight");
+					$(ind).removeClass("ui-state-highlight").attr("aria-selected","false");
 					$("#jqg_"+n.replace(".", "\\."),ind).attr("checked",false);
 				});
 				$("#cb_jqg",t.grid.hDiv).attr("checked",false);
