@@ -1162,7 +1162,7 @@ $.fn.jqGrid = function( p ) {
 		});
         if (ts.p.sortable && $.fn.sortable) {
             var sortable_opts = {
-                "helper":"original",
+                "tolerance" : "pointer",
                 "axis" : "x",
                 "items": 'th:not(:has(.cbox,.jqgrid-rownum),:hidden)',
                 "placeholder": {
@@ -1178,7 +1178,6 @@ $.fn.jqGrid = function( p ) {
                         p.width(self.currentItem.innerWidth() - parseInt(self.currentItem.css('paddingLeft')||0, 10) - parseInt(self.currentItem.css('paddingRight')||0, 10));
                     }
                 },
-                "forcePlaceholderSize":true,
                 "update": function(event, ui) {
                     var p = $(ui.item).parent();
                     var th = $(">th", p);
@@ -1194,11 +1193,16 @@ $.fn.jqGrid = function( p ) {
                         });
 
                     $(ts).remapColumns(permutation, true, true);
-                    if ($.isFunction(ts.p.sortable)) {
-                        ts.p.sortable(permutation);
+                    if ($.isFunction(ts.p.sortable.update)) {
+                        ts.p.sortable.update(permutation);
                     }
                 }
             };
+            if (ts.p.sortable.options) {
+                $.extend(sortable_opts, ts.p.sortable.options);
+            } else if ($.isFunction(ts.p.sortable)) {
+                ts.p.sortable = { "update" : ts.p.sortable };
+            }
             thr.sortable(sortable_opts).data("sortable").floating = true;
         }
 		tfoot += "</tr></tbody></table>";
@@ -1771,6 +1775,18 @@ $.jgrid.extend({
 	},
     remapColumns : function(permutation, updateCells, keepHeader)
     {
+        /*
+          After remapColumns, the column with index i, is the column
+          that used to have index permutation[i].
+
+          updateCells can be set to false as an optimization if you're going to refetch
+          the data anyway
+
+          keepHeader is really just to optimize "sortable". After sortable runs,
+          the headers have already been re-ordered. Rather than put the header back
+          where it started, and then move it again, we can simply leave it where
+          sortable left it.
+          */
         function resortArray(a) {
             var ac;
             if (a.length) {
