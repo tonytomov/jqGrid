@@ -1,11 +1,11 @@
 ;(function ($) {
 /*
- * jqGrid  3.5.2 - jQuery Grid
+ * jqGrid  3.5.3 - jQuery Grid
  * Copyright (c) 2008, Tony Tomov, tony@trirand.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
- * Date: 2009-08-14
+ * Date: 2009-09-06
  */
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{  
@@ -535,8 +535,7 @@ $.fn.jqGrid = function( p ) {
 			ts.p.totaltime = new Date() - startReq;
 			if(ir>0) {ts.grid.cols = ts.rows[0].cells;if(ts.p.records===0)ts.p.records=len;}
 			}
-			if(!ts.p.treeGrid && !ts.p.scroll) {ts.grid.bDiv.scrollTop = 0;}
-			ts.p.reccount=ir;
+			if(!ts.p.treeGrid && !ts.p.scroll) {ts.grid.bDiv.scrollTop = 0; ts.p.reccount=ir;}
 			ts.p.treeANode = -1;
 			if(ts.p.userDataOnFooter) $(ts).footerData("set",ts.p.userData,true);
 			updatepager(false);
