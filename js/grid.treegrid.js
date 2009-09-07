@@ -270,6 +270,16 @@ $.jgrid.extend({
 					});
 					break;
 				case 'adjacency' :
+					result.push(rc);
+					$(this.rows).each(function(i){
+						len = result.length;
+						for (i = 0; i < len; i++) {
+							if (result[i].id == this.parent_id) {
+								result.push(this);
+								break;
+							}
+						}
+					});
 					break;
 			}
 		});

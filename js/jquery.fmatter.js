@@ -325,34 +325,30 @@
 	$.unformat = function (cellval,options,pos,cnt) {
 		// specific for jqGrid only
 		var ret, formatType = options.colModel.formatter,
-		op =options.colModel.formatoptions || {},
+		op =options.colModel.formatoptions || {}, sep,
+		re = /([\.\*\_\'\(\)\{\}\+\?\\])/g;
 		unformatFunc = options.colModel.unformat||($.fn.fmatter[formatType] && $.fn.fmatter[formatType].unformat);
-        
 		if(typeof unformatFunc !== 'undefined' && isFunction(unformatFunc) ) {
 			ret = unformatFunc($(cellval).text(), options);
 		} else if(typeof formatType !== 'undefined' && isString(formatType) ) {
 			var opts = $.jgrid.formatter || {}, stripTag;
 			switch(formatType) {
-                /*
-				case 'link' :
-				case 'showlink' :
-				case 'email' :
-					ret= $(cellval).text();
-					break;
-                */
 				case 'integer' :
 					op = $.extend({},opts.integer,op);
-					stripTag = eval("/"+op.thousandsSeparator+"/g");
+					sep = op.thousandsSeparator.replace(re,"\\$1");
+					stripTag = new RegExp(sep, "g");
 					ret = $(cellval).text().replace(stripTag,'');
 					break;
 				case 'number' :
 					op = $.extend({},opts.number,op);
-					stripTag = eval("/"+op.thousandsSeparator+"/g");
+					sep = op.thousandsSeparator.replace(re,"\\$1");
+					stripTag = new RegExp(sep, "g");
 					ret = $(cellval).text().replace(op.decimalSeparator,'.').replace(stripTag,"");
 					break;
 				case 'currency':
 					op = $.extend({},opts.currency,op);
-					stripTag = eval("/"+op.thousandsSeparator+"/g");
+					sep = op.thousandsSeparator.replace(re,"\\$1");
+					stripTag = new RegExp(sep, "g");
 					ret = $(cellval).text().replace(op.decimalSeparator,'.').replace(op.prefix,'').replace(op.suffix,'').replace(stripTag,'');
 					break;
 				case 'checkbox' :
