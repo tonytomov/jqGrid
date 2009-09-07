@@ -1116,16 +1116,7 @@ $.fn.jqGrid = function( p ) {
 		thead = $("thead:first",ts).get(0);
 		var	tfoot = "<table role='grid' style='width:"+ts.p.tblwidth+"px' class='ui-jqgrid-ftable' cellspacing='0' cellpadding='0' border='0'><tbody><tr role='row' class='ui-widget-content footrow'>";
         var thr = $("tr:first",thead);
-        var clickSort = function(e) {
-            var s = "th>div.ui-jqgrid-sortable",r,d;
-            if (!ts.p.viewsortcols[2]) { s = "th>div>span.ui-grid-ico-sort" }
-            if ($(e.target).closest(s).length != 1) return;
-            var ci = this.cellIndex;
-            if(isMSIE) {ci = $.jgrid.getAbsoluteIndex(thr,ci);}
-            if (!ts.p.viewsortcols[2]) { r=true,d=$(this).attr("sort") }
-            sortData($('div',this)[0].id,ci,r,d);
-            return false;
-		};
+        var disableClick=false;
 		$("th",thr).each(function ( j ) {
 			var ht = $('div',this)[0];
 			w = ts.p.colModel[j].width;
@@ -1159,7 +1150,20 @@ $.fn.jqGrid = function( p ) {
             if(ts.p.forceFit===true) {ts.p.nv= nextVisible(ci);}
             grid.dragStart(ci, e, getOffset(ci));
             return false;
-        }).click(clickSort);
+        }).click(function(e) {
+            if (disableClick) {
+                disableClick = false;
+                return false;
+            }
+            var s = "th>div.ui-jqgrid-sortable",r,d;
+            if (!ts.p.viewsortcols[2]) { s = "th>div>span.ui-grid-ico-sort" }
+            if ($(e.target).closest(s).length != 1) return;
+            var ci = this.cellIndex;
+            if(isMSIE) {ci = $.jgrid.getAbsoluteIndex(thr,ci);}
+            if (!ts.p.viewsortcols[2]) { r=true,d=$(this).attr("sort") }
+            sortData($('div',this)[0].id,ci,r,d);
+            return false;
+		});
         if (ts.p.sortable && $.fn.sortable) {
             var sortable_opts = {
                 "tolerance" : "pointer",
@@ -1192,12 +1196,10 @@ $.fn.jqGrid = function( p ) {
                             }
                         });
 
-                    ui.item.unbind("click");
-                    ui.item.one("click", function() {
-                        $(this).click(clickSort);
-                        return false;
-                    });
+                    disableClick = true;
+
                     $(ts).jqGrid("remapColumns",permutation, true, true);
+
                     if ($.isFunction(ts.p.sortable.update)) {
                         ts.p.sortable.update(permutation);
                     }
