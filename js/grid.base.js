@@ -1168,7 +1168,7 @@ $.fn.jqGrid = function( p ) {
             var sortable_opts = {
                 "tolerance" : "pointer",
                 "axis" : "x",
-                "items": 'th:not(:has(.cbox,.jqgrid-rownum),:hidden)',
+                "items": 'th:not(:has(#jqgh_cb,#jqgh_rn,#jqgh_subgrid),:hidden)',
                 "placeholder": {
                     element: function(item) {
                         var el = $(document.createElement(item[0].nodeName))
@@ -1807,8 +1807,8 @@ $.jgrid.extend({
         }
 
         var ts = this.get(0);
-        function resortRows(parent) {
-            $("tr", parent).each(function() {
+        function resortRows(parent, clobj) {
+            $(">tr:not(.ui-subgrid)"+(clobj||""), parent).each(function() {
                 var row = this;
                 var elems = $.makeArray(row.cells);
                 $.each(permutation, function() {
@@ -1823,13 +1823,13 @@ $.jgrid.extend({
         resortArray(ts.p.colModel);
         resortArray(ts.p.colNames);
         resortArray(ts.grid.headers);
-        if (!keepHeader) {
-            resortRows($("thead:first", ts.grid.hDiv));
-        }
+
+        resortRows($("thead:first", ts.grid.hDiv), keepHeader && ":not(.ui-jqgrid-labels)");
+
         if (updateCells) {
             resortRows($("tbody:first", ts.grid.bDiv));
-            if (ts.rows.length) {
-                ts.grid.cols = ts.rows[0].cells;
+            if (ts.p.footerrow) {
+                resortRows($("tbody:first", ts.grid.sDiv));
             }
         }
     },
