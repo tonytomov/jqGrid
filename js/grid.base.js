@@ -1177,10 +1177,11 @@ $.fn.jqGrid = function( p ) {
             return false;
 		});
         if (ts.p.sortable && $.fn.sortable) {
+            function start() {disableClick = true;};
             var sortable_opts = {
                 "tolerance" : "pointer",
                 "axis" : "x",
-                "items": 'th:not(:has(#jqgh_cb,#jqgh_rn,#jqgh_subgrid),:hidden)',
+                "items": '>th:not(:has(#jqgh_cb,#jqgh_rn,#jqgh_subgrid),:hidden)',
                 "placeholder": {
                     element: function(item) {
                         var el = $(document.createElement(item[0].nodeName))
@@ -1194,7 +1195,6 @@ $.fn.jqGrid = function( p ) {
                         p.width(self.currentItem.innerWidth() - parseInt(self.currentItem.css('paddingLeft')||0, 10) - parseInt(self.currentItem.css('paddingRight')||0, 10));
                     }
                 },
-                "sort": function(event, ui) { disableClick = true; },
                 "update": function(event, ui) {
                     var p = $(ui.item).parent();
                     var th = $(">th", p);
@@ -1209,19 +1209,29 @@ $.fn.jqGrid = function( p ) {
                             }
                         });
 
-                    disableClick = true;
-
                     $(ts).jqGrid("remapColumns",permutation, true, true);
-
                     if ($.isFunction(ts.p.sortable.update)) {
                         ts.p.sortable.update(permutation);
                     }
+                    setTimeout(function(){disableClick=false}, 50);
                 }
             };
             if (ts.p.sortable.options) {
                 $.extend(sortable_opts, ts.p.sortable.options);
             } else if ($.isFunction(ts.p.sortable)) {
                 ts.p.sortable = { "update" : ts.p.sortable };
+            }
+            if (sortable_opts.start) {
+                var s = sortable_opts.start;
+                sortable_opts.start = function(e,ui) {
+                    start();
+                    s.call(this,e,ui);
+                }
+            } else {
+                sortable_opts.start = start;
+            }
+            if (ts.p.sortable.exclude) {
+                sortable_opts.items += ":not("+ts.p.sortable.exclude+")";
             }
             thr.sortable(sortable_opts).data("sortable").floating = true;
         }
