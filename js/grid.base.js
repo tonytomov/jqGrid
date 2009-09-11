@@ -66,6 +66,14 @@ $.extend($.jgrid,{
         }
 	}	
 });
+
+if ($.browser.msie && $.browser.version==8) {
+    $.expr[":"].hidden = function(elem) {
+        return elem.offsetWidth === 0 || elem.offsetHeight === 0 ||
+            elem.style.display == "none";
+    }
+}
+
 $.fn.jqGrid = function( p ) {
     if (typeof p == 'string') {
         var fn = $.fn.jqGrid[p];
