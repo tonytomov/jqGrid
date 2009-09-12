@@ -1931,7 +1931,7 @@ $.jgrid.extend({
 				cw= $t.p.colModel[lvc].width;
 				$t.grid.headers[lvc].width = cw;
 				$t.grid.headers[lvc].el.style.width=cw+"px";
-				if(cl) $t.grid.cols[lvc].style.width = cw+"px";
+				if(cle) $t.grid.cols[lvc].style.width = cw+"px";
 				$t.p.tblwidth = initwidth+tw+cr;
 				$('table:first',$t.grid.bDiv).css("width",initwidth+tw+cr+"px");
 				$('table:first',$t.grid.hDiv).css("width",initwidth+tw+cr+"px");

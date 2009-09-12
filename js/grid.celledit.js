@@ -423,10 +423,18 @@ $.jgrid.extend({
 						if ( nm !== 'cb' && nm !== 'subgrid') {
 							if (mthd=='dirty') {
 								if ($(this).hasClass('dirty-cell')) {
-									res[nm] = $.jgrid.htmlDecode($(this).html());
+									try {
+										res[nm] = $.unformat(this,{colModel:$t.p.colModel[i]},i);
+									} catch (e){
+										res[nm] = $.jgrid.htmlDecode($(this).html());
+									}
 								}
 							} else {
-								res[nm] = $.jgrid.htmlDecode($(this).html());
+								try {
+									res[nm] = $.unformat(this,{colModel:$t.p.colModel[i]},i);
+								} catch (e) {
+									res[nm] = $.jgrid.htmlDecode($(this).html());
+								}
 							}
 						}
 					});
