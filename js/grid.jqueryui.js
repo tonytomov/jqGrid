@@ -77,6 +77,97 @@ $.jgrid.extend({
 			}
 			tblrow.sortable(sortable_opts).data("sortable").floating = true;
 		});
-	}
+	},
+    columnChooser : function(opts) {
+        var self = this;
+        opts = $.extend({
+            "title" : "Select columns",
+            "width" : 420,
+            "height" : 240,
+            "classname" : null,
+            "done" : function(perm) { if (perm) self.jqGrid("remapColumns", perm) },
+            "ok" : "Ok",
+            "cancel" : "Cancel"
+        }, opts || {});
+
+        var selector = $('<div><select multiple="multiple"></select></div>');
+        var select = $('select', selector);
+        if (opts.title) {
+            selector.attr("title", opts.title);
+        }
+        if (opts.classname) {
+            selector.addClass(classname);
+            select.addClass(classname);
+        }
+        if (opts.width) {
+            selector.css("width", opts.width);
+            select.css("width", opts.width-20);
+        }
+        if (opts.height) {
+            selector.css("height", opts.height);
+            select.css("height", opts.height - 40);
+        }
+        var colModel = self.jqGrid("getGridParam", "colModel");
+        var colNames = self.jqGrid("getGridParam", "colNames");
+        var colMap = {}, fixedCols = [];
+
+        select.empty();
+        $.each(colModel, function(i) {
+            colMap[this.name] = i;
+            if (this.name == "cb" || this.name == "rn" || this.name == "subgrid") {
+                fixedCols.push(i);
+                return;
+            }
+            if (this.hidedlg) return;
+
+            var opt = "<option value='"+i+"'";
+            if (!this.hidden) {
+                opt += " selected";
+            }
+            opt += ">"+colNames[i]+"</option>";
+            select.append(opt);
+        });
+
+        var buttons = {};
+        buttons[opts.ok] = function() {
+            $('option',select).each(function(i) {
+                if (this.selected) {
+                    self.jqGrid("showCol", colModel[this.value].name);
+                } else {
+                    self.jqGrid("hideCol", colModel[this.value].name);
+                }
+            });
+            
+            var perm = fixedCols;
+            $('option[selected]',select).each(function() { perm.push(parseInt(this.value)) });
+            $.each(perm, function() { delete colMap[colModel[this].name] });
+            $.each(colMap, function() { perm.push(this) });
+
+            $(this).dialog("close");
+            if (opts.done) {
+                opts.done.call(self, perm);
+            }
+        };
+        buttons[opts.cancel] = function() {
+            $(this).dialog("close");
+        };
+        var dopts = {
+            "buttons": buttons,
+            "close": function() {
+                select.multiselect('destroy');
+                $(this).dialog("destroy");
+                if (opts.done) {
+                    opts.done.call(self, null);
+                }
+            },
+            "resizable": false,
+            "width": opts.width+20
+        };
+
+        $(selector).dialog(dopts);
+        if ($.fn.multiselect) {
+            select.multiselect();
+        }
+    }
 })
 })(jQuery);
