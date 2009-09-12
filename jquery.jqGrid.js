@@ -19,6 +19,7 @@ function jqGridInclude()
         { include: true, incfile:'grid.import.js'}, //jqGrid import
         { include: true, incfile:'jquery.fmatter.js'}, //jqGrid formater
         { include: true, incfile:'JsonXml.js'}, //xmljson utils
+        { include: true, incfile:'grid.jqueryui.js'}, //jQuery UI utils
         { include: true, incfile:'jquery.searchFilter.js'} // search Plugin
     ];
     var filename;

@@ -22,12 +22,12 @@ $.extend($.jgrid,{
 			return args[i];
 		});
 	},
-    getCellIndex : function (cell) {
-        cell = $(cell);
-        cell = (!cell.is('td') && !cell.is('th') ? cell.closest("td,th") : cell)[0];
-        if ($.browser.msie) return $.inArray(cell, cell.parentNode.cells);
-        return cell.cellIndex;
-    },
+	getCellIndex : function (cell) {
+		cell = $(cell);
+		cell = (!cell.is('td') && !cell.is('th') ? cell.closest("td,th") : cell)[0];
+		if ($.browser.msie) return $.inArray(cell, cell.parentNode.cells);
+		return cell.cellIndex;
+	},
 	stripHtml : function(v) {
 		var regexp = /<("[^"]*"|'[^']*'|[^'">])*>/gi;
 		if(v) {	return v.replace(regexp,"");}
@@ -58,31 +58,24 @@ $.extend($.jgrid,{
 	},
 	empty : function () {
 		while ( this.firstChild ) this.removeChild( this.firstChild );
-    },
-    extend : function(methods) {
-        $.extend($.fn.jqGrid,methods);
-        if (!this.no_legacy_api) {
-            $.fn.extend(methods);
-        }
+	},
+	extend : function(methods) {
+		$.extend($.fn.jqGrid,methods);
+		if (!this.no_legacy_api) {
+			$.fn.extend(methods);
+		}
 	}	
 });
 
-if ($.browser.msie && $.browser.version==8) {
-    $.expr[":"].hidden = function(elem) {
-        return elem.offsetWidth === 0 || elem.offsetHeight === 0 ||
-            elem.style.display == "none";
-    }
-}
-
 $.fn.jqGrid = function( p ) {
-    if (typeof p == 'string') {
-        var fn = $.fn.jqGrid[p];
-        if (!fn) {
-            throw ("jqGrid - No such method: " + p);
-        }
-        var args = $.makeArray(arguments).slice(1);
-        return fn.apply(this,args);
-    }
+	if (typeof p == 'string') {
+		var fn = $.fn.jqGrid[p];
+		if (!fn) {
+			throw ("jqGrid - No such method: " + p);
+		}
+		var args = $.makeArray(arguments).slice(1);
+		return fn.apply(this,args);
+	}
 
 	p = $.extend(true,{
 	url: "",
@@ -360,14 +353,14 @@ $.fn.jqGrid = function( p ) {
 			}
 			return f;
 		},
-        orderedCols = function (offset) {
-            var order = ts.p.remapColumns;
-            if (!order || !order.length)
-                order = $.map(ts.p.colModel, function(v,i) { return i; });
-            if (offset)
-                order = $.map(order, function(v) { return v<offset?null:v-offset });
-            return order;
-        },
+		orderedCols = function (offset) {
+			var order = ts.p.remapColumns;
+			if (!order || !order.length)
+				order = $.map(ts.p.colModel, function(v,i) { return i; });
+			if (offset)
+				order = $.map(order, function(v) { return v<offset?null:v-offset });
+			return order;
+		},
 		addXmlData = function (xml,t, rcnt) {
 			var startReq = new Date();
 			ts.p.reccount = 0;
@@ -461,7 +454,7 @@ $.fn.jqGrid = function( p ) {
 			ts.p.totaltime = new Date() - startReq;
 			if(ir>0) {ts.grid.cols = ts.rows[0].cells;if(ts.p.records===0)ts.p.records=gl;}
 			rowData =null;
-		  	if(!ts.p.treeGrid && !ts.p.scroll) {ts.grid.bDiv.scrollTop = 0; ts.p.reccount=ir;}
+			if(!ts.p.treeGrid && !ts.p.scroll) {ts.grid.bDiv.scrollTop = 0; ts.p.reccount=ir;}
 			ts.p.treeANode = -1;
 			if(ts.p.userDataOnFooter) $(ts).jqGrid("footerData","set",ts.p.userData,true);
 			updatepager(false);
@@ -484,8 +477,8 @@ $.fn.jqGrid = function( p ) {
 			ts.p.records= data[ts.p.jsonReader.records] || 0;
 			ts.p.userData = data[ts.p.jsonReader.userdata] || {};
 			if(!ts.p.jsonReader.repeatitems) {
-                F = f = reader("json");
-            }
+				F = f = reader("json");
+			}
 
 			if( ts.p.keyIndex===false ) {
 				idn = ts.p.jsonReader.id;
@@ -527,8 +520,8 @@ $.fn.jqGrid = function( p ) {
 				}
 				if (ts.p.jsonReader.repeatitems) {
 					if(ts.p.jsonReader.cell) {cur = cur[ts.p.jsonReader.cell];}
-                    if (!F) F=orderedCols(gi+si+ni);
-                }
+					if (!F) F=orderedCols(gi+si+ni);
+				}
 				for (j=0;j<F.length;j++) {
 					v=cur[F[j]];
 					if(v===undefined) {
@@ -779,7 +772,7 @@ $.fn.jqGrid = function( p ) {
 			date = date.split(/[\\\/:_;.\t\T\s-]/);
 			format = format.split(/[\\\/:_;.\t\T\s-]/);
 			var dfmt  = $.jgrid.formatter.date.monthNames;
-		    for(k=0,hl=format.length;k<hl;k++){
+			for(k=0,hl=format.length;k<hl;k++){
 				if(format[k] == 'M') {
 					dM = $.inArray(date[k],dfmt);
 					if(dM !== -1 && dM < 12){date[k] = dM+1;}
@@ -788,8 +781,8 @@ $.fn.jqGrid = function( p ) {
 					dM = $.inArray(date[k],dfmt);
 					if(dM !== -1 && dM > 11){date[k] = dM+1-12;}
 				}
-		        tsp[format[k].toLowerCase()] = parseInt(date[k],10);
-		    }			
+				tsp[format[k].toLowerCase()] = parseInt(date[k],10);
+			}
 			tsp.m = parseInt(tsp.m,10)-1;
 			var ty = tsp.y;
 			if (ty >= 70 && ty <= 99) {tsp.y = 1900+tsp.y;}
@@ -1132,14 +1125,14 @@ $.fn.jqGrid = function( p ) {
 		thead = $("thead:first",ts).get(0);
 		var	tfoot = "<table role='grid' style='width:"+ts.p.tblwidth+"px' class='ui-jqgrid-ftable' cellspacing='0' cellpadding='0' border='0'><tbody><tr role='row' class='ui-widget-content footrow'>";
         var thr = $("tr:first",thead);
-        var disableClick=false;
+        ts.p.disableClick=false;
 		$("th",thr).each(function ( j ) {
 			var ht = $('div',this)[0];
 			w = ts.p.colModel[j].width;
 			if(typeof ts.p.colModel[j].resizable === 'undefined') {ts.p.colModel[j].resizable = true;}
 			if(ts.p.colModel[j].resizable){
-                res = document.createElement("span");
-                $(res).html("&#160;").addClass('ui-jqgrid-resize');
+				res = document.createElement("span");
+				$(res).html("&#160;").addClass('ui-jqgrid-resize');
 				$(this).addClass(ts.p.resizeclass);
 			} else {
 				res = "";
@@ -1159,84 +1152,30 @@ $.fn.jqGrid = function( p ) {
 				else if( j == ts.p.lastsort) {$("div span.s-ico",this).show();$("div span.ui-icon-"+ts.p.sortorder,this).removeClass("ui-state-disabled");}
 			}
 			tfoot += "<td role='gridcell' "+formatCol(j,0)+">&nbsp;</td>";
-        }).mousedown(function(e) {
-            if ($(e.target).closest("th>span.ui-jqgrid-resize").length != 1) return;
-            var ci = $.jgrid.getCellIndex(this);
-            if(ts.p.forceFit===true) {ts.p.nv= nextVisible(ci);}
-            grid.dragStart(ci, e, getOffset(ci));
-            return false;
-        }).click(function(e) {
-            if (disableClick) {
-                disableClick = false;
-                return false;
-            }
-            var s = "th>div.ui-jqgrid-sortable",r,d;
-            if (!ts.p.viewsortcols[2]) { s = "th>div>span.ui-grid-ico-sort" }
-            if ($(e.target).closest(s).length != 1) return;
-            var ci = $.jgrid.getCellIndex(this);
-            if (!ts.p.viewsortcols[2]) { r=true,d=$(this).attr("sort") }
-            sortData($('div',this)[0].id,ci,r,d);
-            return false;
+		}).mousedown(function(e) {
+			if ($(e.target).closest("th>span.ui-jqgrid-resize").length != 1) return;
+			var ci = $.jgrid.getCellIndex(this);
+			if(ts.p.forceFit===true) {ts.p.nv= nextVisible(ci);}
+			grid.dragStart(ci, e, getOffset(ci));
+			return false;
+		}).click(function(e) {
+			if (ts.p.disableClick) {
+				ts.p.disableClick = false;
+				return false;
+			}
+			var s = "th>div.ui-jqgrid-sortable",r,d;
+			if (!ts.p.viewsortcols[2]) { s = "th>div>span.ui-grid-ico-sort" }
+			if ($(e.target).closest(s).length != 1) return;
+			var ci = $.jgrid.getCellIndex(this);
+			if (!ts.p.viewsortcols[2]) { r=true,d=$(this).attr("sort") }
+			sortData($('div',this)[0].id,ci,r,d);
+			return false;
 		});
         if (ts.p.sortable && $.fn.sortable) {
-            function start() {disableClick = true;};
-            var sortable_opts = {
-                "tolerance" : "pointer",
-                "axis" : "x",
-                "items": '>th:not(:has(#jqgh_cb,#jqgh_rn,#jqgh_subgrid),:hidden)',
-                "placeholder": {
-                    element: function(item) {
-                        var el = $(document.createElement(item[0].nodeName))
-                        .addClass(item[0].className+" ui-sortable-placeholder ui-state-highlight")
-                        .removeClass("ui-sortable-helper")[0];
-
-                        return el;
-                    },
-                    update: function(self, p) {
-                        p.height(self.currentItem.innerHeight() - parseInt(self.currentItem.css('paddingTop')||0, 10) - parseInt(self.currentItem.css('paddingBottom')||0, 10));
-                        p.width(self.currentItem.innerWidth() - parseInt(self.currentItem.css('paddingLeft')||0, 10) - parseInt(self.currentItem.css('paddingRight')||0, 10));
-                    }
-                },
-                "update": function(event, ui) {
-                    var p = $(ui.item).parent();
-                    var th = $(">th", p);
-                    var colModel = ts.p.colModel;
-                    var cmMap = {};
-                    $.each(colModel, function(i) { cmMap[this.name]=i });
-                    var permutation = [];
-                    th.each(function(i) {
-                            var id = $(">div", this).get(0).id.replace(/^jqgh_/, "");
-                            if (id in cmMap) {
-                                permutation.push(cmMap[id]);
-                            }
-                        });
-
-                    $(ts).jqGrid("remapColumns",permutation, true, true);
-                    if ($.isFunction(ts.p.sortable.update)) {
-                        ts.p.sortable.update(permutation);
-                    }
-                    setTimeout(function(){disableClick=false}, 50);
-                }
-            };
-            if (ts.p.sortable.options) {
-                $.extend(sortable_opts, ts.p.sortable.options);
-            } else if ($.isFunction(ts.p.sortable)) {
-                ts.p.sortable = { "update" : ts.p.sortable };
-            }
-            if (sortable_opts.start) {
-                var s = sortable_opts.start;
-                sortable_opts.start = function(e,ui) {
-                    start();
-                    s.call(this,e,ui);
-                }
-            } else {
-                sortable_opts.start = start;
-            }
-            if (ts.p.sortable.exclude) {
-                sortable_opts.items += ":not("+ts.p.sortable.exclude+")";
-            }
-            thr.sortable(sortable_opts).data("sortable").floating = true;
-        }
+			try {
+				$(ts).jqGrid("sortableColumns", thr);
+			} catch (e){}
+		}
 		tfoot += "</tr></tbody></table>";
 		
 		tbody = document.createElement("tbody");
@@ -1801,68 +1740,6 @@ $.jgrid.extend({
 	showCol : function(colname) {
 		return this.each(function(){$(this).jqGrid("ShowHideCol",colname,"");});
 	},
-    remapColumns : function(permutation, updateCells, keepHeader)
-    {
-        /*
-          After remapColumns, the column with index i, is the column
-          that used to have index permutation[i].
-
-          updateCells can be set to false as an optimization if you're going to refetch
-          the data anyway
-
-          keepHeader is really just to optimize "sortable". After sortable runs,
-          the headers have already been re-ordered. Rather than put the header back
-          where it started, and then move it again, we can simply leave it where
-          sortable left it.
-          */
-        function resortArray(a) {
-            var ac;
-            if (a.length) {
-                ac = $.makeArray(a);
-            } else {
-                ac = $.extend({}, a);
-            }
-            $.each(permutation, function(i) {
-                a[i] = ac[this];
-            });
-        }
-
-        var ts = this.get(0);
-        function resortRows(parent, clobj) {
-            $(">tr"+(clobj||""), parent).each(function() {
-                var row = this;
-                var elems = $.makeArray(row.cells);
-                $.each(permutation, function() {
-                    var e = elems[this];
-                    if (e) {
-                        row.appendChild(e);
-                    }
-                });
-            });
-        }
-
-        resortArray(ts.p.colModel);
-        resortArray(ts.p.colNames);
-        resortArray(ts.grid.headers);
-
-        resortRows($("thead:first", ts.grid.hDiv), keepHeader && ":not(.ui-jqgrid-labels)");
-
-        if (updateCells) {
-            resortRows($("tbody:first", ts.grid.bDiv), ".jqgrow");
-            if (ts.p.footerrow) {
-                resortRows($("tbody:first", ts.grid.sDiv));
-            }
-        }
-
-        if (ts.p.remapColumns) {
-            if (!ts.p.remapColumns.length)
-                ts.p.remapColumns = $.makeArray(permutation);
-            else
-                resortArray(ts.p.remapColumns);
-        }
-        ts.p.lastsort = $.inArray(ts.p.lastsort, permutation);
-        if(ts.p.treeGrid) ts.p.expColInd = $.inArray(ts.p.expColInd, permutation);
-    },
 	setGridWidth : function(nwidth, shrink) {
 		return this.each(function(){
 			var $t = this, cw,
