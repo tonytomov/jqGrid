@@ -278,7 +278,7 @@ function createEl(eltype,options,vl,autowidth) {
 					jQuery(elem).attr(options);
 					setTimeout(function(){
 						jQuery("option",elem).each(function(i){
-							if(jQuery(this).text()==vl || jQuery(this).html()==vl) {
+							if(jQuery(this).text()==vl || jQuery(this).val()==vl) {
 								this.selected= "selected";
 								return false;
 							}
