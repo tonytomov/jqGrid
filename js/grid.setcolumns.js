@@ -74,16 +74,16 @@ $.jgrid.extend({
 							if(!$t.p.colModel[i].hidedlg) { // added from T. Tomov
 								var nm = $t.p.colModel[i].name.replace(".", "\\.");
 								if($("#col_" + nm,"#"+dtbl).attr("checked")) {
-									$($t).showCol($t.p.colModel[i].name);
+									$($t).jqGrid("showCol",$t.p.colModel[i].name);
 									$("#col_" + nm,"#"+dtbl).attr("defaultChecked",true); // Added from T. Tomov IE BUG
 								} else {
-									$($t).hideCol($t.p.colModel[i].name);
+									$($t).jqGrid("hideCol",$t.p.colModel[i].name);
 									$("#col_" + nm,"#"+dtbl).attr("defaultChecked",""); // Added from T. Tomov IE BUG
 								}
 							}
 						}
 						if(p.ShrinkToFit===true) {
-							$($t).setGridWidth($t.grid.width-0.001,true);
+							$($t).jqGrid("setGridWidth",$t.grid.width-0.001,true);
 						}
 						if(p.closeAfterSubmit) hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: p.onClose});
 						if (onAfterSubmit) { p.afterSubmitForm($("#"+dtbl)); }
@@ -94,12 +94,12 @@ $.jgrid.extend({
 						var cn = this.id.substr(4);
 						if(cn){
 							if(this.checked) {
-								$($t).showCol(cn);
+								$($t).jqGrid("showCol",cn);
 							} else {
-								$($t).hideCol(cn);
+								$($t).jqGrid("hideCol",cn);
 							}
 							if(p.ShrinkToFit===true) {
-								$($t).setGridWidth($t.grid.width-0.001,true);
+								$($t).jqGrid("setGridWidth",$t.grid.width-0.001,true);
 							}
 						}
 						return this;

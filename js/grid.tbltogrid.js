@@ -94,12 +94,12 @@ $(selector).each(function() {
 		if (id == null) {
 			id = a + 1;
 		}
-		$(this).addRowData(id, data[a]);
+		$(this).jqGrid("addRowData",id, data[a]);
 	}
 
 	// Set the selection
 	for (var a = 0; a < rowChecked.length; a++) {
-		$(this).setSelection(rowChecked[a]);
+		$(this).jqGrid("setSelection",rowChecked[a]);
 	}
 });
 };
