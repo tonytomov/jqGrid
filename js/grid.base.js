@@ -1330,7 +1330,7 @@ $.fn.jqGrid = function( p ) {
 			else if(!ts.p.treeGrid) {
 				ts.p.selrow=null;
 				if(ts.p.multiselect) {ts.p.selarrrow =[];$('#cb_jqg',ts.grid.hDiv).attr("checked",false);}
-				if(ts.p.cellEdit) {ts.p.savedRow = []; }
+				ts.p.savedRow = [];
 			}
 			if(ts.p.scroll===true) {$("tbody tr", ts.grid.bDiv).remove();}
 			ts.grid.populate();
@@ -1338,7 +1338,7 @@ $.fn.jqGrid = function( p ) {
 		});
 		if( ondblClickRow ) {
 			$(this).dblclick(function(e) {
-				td = (e.target);
+				td = e.target;
 				ptr = $(td,ts.rows).parents("tr.jqgrow");
 				if($(ptr).length === 0 ){return false;}
 				ri = ptr[0].rowIndex;
@@ -1596,7 +1596,7 @@ $.jgrid.extend({
 						res[nm] = $.jgrid.htmlDecode($("span:first",this).html());
 					} else {
 						try {
-							res[nm] = $.unformat(this,{colModel:$t.p.colModel[i]},i)
+							res[nm] = $.unformat(this,{colModel:$t.p.colModel[i]},i);
 						} catch (e){
 							res[nm] = $.jgrid.htmlDecode($(this).html());
 						}
@@ -1931,7 +1931,7 @@ $.jgrid.extend({
 				cw= $t.p.colModel[lvc].width;
 				$t.grid.headers[lvc].width = cw;
 				$t.grid.headers[lvc].el.style.width=cw+"px";
-				if(cl>0) $t.grid.cols[lvc].style.width = cw+"px";
+				if(cl) $t.grid.cols[lvc].style.width = cw+"px";
 				$t.p.tblwidth = initwidth+tw+cr;
 				$('table:first',$t.grid.bDiv).css("width",initwidth+tw+cr+"px");
 				$('table:first',$t.grid.hDiv).css("width",initwidth+tw+cr+"px");
@@ -2025,7 +2025,7 @@ $.jgrid.extend({
 				var ind = $t.rows.namedItem(rowid);
 				if(ind) {
 					try {
-						ret = $.unformat($("td:eq("+pos+")",ind),{colModel:$t.p.colModel[pos]},pos)
+						ret = $.unformat($("td:eq("+pos+")",ind),{colModel:$t.p.colModel[pos]},pos);
 					} catch (e){
 						ret = $.jgrid.htmlDecode($("td:eq("+pos+")",ind).html());
 					}
@@ -2036,7 +2036,7 @@ $.jgrid.extend({
 	},
 	getCol : function (col, obj) {
 		var ret = [], val;
-		obj = obj==false ? false : true;
+		obj = typeof (obj) != 'boolean' ? false : obj;
 		this.each(function(){
 			var $t=this, pos=-1;
 			if(!$t.grid) {return;}
