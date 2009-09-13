@@ -1523,27 +1523,39 @@ $.jgrid.extend({
 		});
 	},
 	getRowData : function( rowid ) {
-		var res = {};
+		var res = {}, resall, getall=false, len, j=0;
 		this.each(function(){
 			var $t = this,nm,ind;
-			ind = $t.rows.namedItem(rowid);
-			if(!ind) return res;
-			$('td',ind).each( function(i) {
-				nm = $t.p.colModel[i].name; 
-				if ( nm !== 'cb' && nm !== 'subgrid') {
-					if($t.p.treeGrid===true && nm == $t.p.ExpandColumn) {
-						res[nm] = $.jgrid.htmlDecode($("span:first",this).html());
-					} else {
-						try {
-							res[nm] = $.unformat(this,{colModel:$t.p.colModel[i]},i);
-						} catch (e){
-							res[nm] = $.jgrid.htmlDecode($(this).html());
+			if(typeof(rowid) == 'undefined') {
+				getall = true;
+				resall = [];
+				len = $t.rows.length;
+			} else {
+				ind = $t.rows.namedItem(rowid);
+				if(!ind) return res;
+				len = 1;
+			}
+			while(j<len){
+				if(getall) ind = $t.rows[j];
+				$('td',ind).each( function(i) {
+					nm = $t.p.colModel[i].name; 
+					if ( nm !== 'cb' && nm !== 'subgrid') {
+						if($t.p.treeGrid===true && nm == $t.p.ExpandColumn) {
+							res[nm] = $.jgrid.htmlDecode($("span:first",this).html());
+						} else {
+							try {
+								res[nm] = $.unformat(this,{colModel:$t.p.colModel[i]},i);
+							} catch (e){
+								res[nm] = $.jgrid.htmlDecode($(this).html());
+							}
 						}
 					}
-				}
-			});
+				});
+				j++;
+				if(getall) resall.push(res);
+			}
 		});
-		return res;
+		return resall ? resall: res;
 	},
 	delRowData : function(rowid) {
 		var success = false, rowInd, ia, ri;
@@ -1742,18 +1754,6 @@ $.jgrid.extend({
 	},
 	remapColumns : function(permutation, updateCells, keepHeader)
     {
-        /*
-          After remapColumns, the column with index i, is the column
-          that used to have index permutation[i].
-
-          updateCells can be set to false as an optimization if you're going to refetch
-          the data anyway
-
-          keepHeader is really just to optimize "sortable". After sortable runs,
-          the headers have already been re-ordered. Rather than put the header back
-          where it started, and then move it again, we can simply leave it where
-          sortable left it.
-          */
         function resortArray(a) {
             var ac;
             if (a.length) {
@@ -1765,7 +1765,6 @@ $.jgrid.extend({
                 a[i] = ac[this];
             });
         }
-
         var ts = this.get(0);
         function resortRows(parent, clobj) {
             $(">tr"+(clobj||""), parent).each(function() {
@@ -1779,20 +1778,16 @@ $.jgrid.extend({
                 });
             });
         }
-
         resortArray(ts.p.colModel);
         resortArray(ts.p.colNames);
         resortArray(ts.grid.headers);
-
         resortRows($("thead:first", ts.grid.hDiv), keepHeader && ":not(.ui-jqgrid-labels)");
-
         if (updateCells) {
             resortRows($("tbody:first", ts.grid.bDiv), ".jqgrow");
             if (ts.p.footerrow) {
                 resortRows($("tbody:first", ts.grid.sDiv));
             }
         }
-
         if (ts.p.remapColumns) {
             if (!ts.p.remapColumns.length)
                 ts.p.remapColumns = $.makeArray(permutation);
