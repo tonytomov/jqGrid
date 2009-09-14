@@ -80,18 +80,88 @@ $.jgrid.extend({
 	},
     columnChooser : function(opts) {
         var self = this;
+        var selector = $('<div><div><select multiple="multiple"></select></div></div>');
+        var select = $('select', selector);
+
         opts = $.extend({
             "title" : "Select columns",
             "width" : 420,
             "height" : 240,
             "classname" : null,
-            "done" : function(perm) { if (perm) self.jqGrid("remapColumns", perm) },
+            "done" : function(perm) { if (perm) self.jqGrid("remapColumns", perm, true) },
             "ok" : "Ok",
-            "cancel" : "Cancel"
+            "cancel" : "Cancel",
+            /* msel is either the name of a ui widget class that
+               extends a multiselect, or a function that supports
+               creating a multiselect object (with no argument,
+               or when passed an object), and destroying it (when
+               passed the string "destroy"). */
+            "msel" : "multiselect",
+            /* "msel_opts" : {}, */
+
+            /* dlog is either the name of a ui widget class that 
+               behaves in a dialog-like way, or a function, that
+               supports creating a dialog (when passed dlog_opts)
+               or destroying a dialog (when passed the string
+               "destroy")
+               */
+            "dlog" : "dialog",
+
+            /* dlog_opts is either an option object to be passed 
+               to "dlog", or (more likely) a function that creates
+               the options object.
+               The default produces a suitable options object for
+               ui.dialog */
+            "dlog_opts" : function(opts) {
+                var buttons = {};
+                buttons[opts.ok] = function() {
+                    opts.apply_perm();
+                    opts.cleanup(false);
+                };
+                buttons[opts.cancel] = function() {
+                    opts.cleanup(true);
+                };
+                return {
+                    "buttons": buttons,
+                    "close": function() {
+                        opts.cleanup(true);
+                    },
+                    "resizable": false,
+                    "width": opts.width+20
+                };
+            },
+            /* Function to get the permutation array, and pass it to the
+               "done" function */
+            "apply_perm" : function() {
+                $('option',select).each(function(i) {
+                    if (this.selected) {
+                        self.jqGrid("showCol", colModel[this.value].name);
+                    } else {
+                        self.jqGrid("hideCol", colModel[this.value].name);
+                    }
+                });
+                
+                var perm = fixedCols.slice(0);
+                $('option[selected]',select).each(function() { perm.push(parseInt(this.value)) });
+                $.each(perm, function() { delete colMap[colModel[this].name] });
+                $.each(colMap, function() { perm.push(this) });
+                if (opts.done) {
+                    opts.done.call(self, perm);
+                }
+            },
+            /* Function to cleanup the dialog, and select. Also calls the
+               done function with no permutation (to indicate that the
+               columnChooser was aborted */
+            "cleanup" : function(calldone) {
+                call(opts.dlog, selector, 'destroy');
+                call(opts.msel, select, 'destroy');
+                selector.remove();
+                if (calldone && opts.done) {
+                    opts.done.call(self);
+                }
+            }
         }, opts || {});
 
-        var selector = $('<div><select multiple="multiple"></select></div>');
-        var select = $('select', selector);
         if (opts.title) {
             selector.attr("title", opts.title);
         }
@@ -100,12 +170,12 @@ $.jgrid.extend({
             select.addClass(classname);
         }
         if (opts.width) {
-            selector.css("width", opts.width);
-            select.css("width", opts.width-20);
+            $(">div",selector).css({"width": opts.width,"margin":"0 auto"});
+            select.css("width", opts.width);
         }
         if (opts.height) {
-            selector.css("height", opts.height);
-            select.css("height", opts.height - 40);
+            $(">div",selector).css("height", opts.height);
+            select.css("height", opts.height - 10);
         }
         var colModel = self.jqGrid("getGridParam", "colModel");
         var colNames = self.jqGrid("getGridParam", "colNames");
@@ -128,46 +198,21 @@ $.jgrid.extend({
             select.append(opt);
         });
 
-        var buttons = {};
-        buttons[opts.ok] = function() {
-            $('option',select).each(function(i) {
-                if (this.selected) {
-                    self.jqGrid("showCol", colModel[this.value].name);
-                } else {
-                    self.jqGrid("hideCol", colModel[this.value].name);
+        function call(fn, obj) {
+            if (!fn) return;
+            if (typeof fn == 'string') {
+                if ($.fn[fn]) {
+                    $.fn[fn].apply(obj, $.makeArray(arguments).slice(2));
                 }
-            });
-            
-            var perm = fixedCols;
-            $('option[selected]',select).each(function() { perm.push(parseInt(this.value)) });
-            $.each(perm, function() { delete colMap[colModel[this].name] });
-            $.each(colMap, function() { perm.push(this) });
-
-            $(this).dialog("close");
-            if (opts.done) {
-                opts.done.call(self, perm);
+            } else if ($.isFunction(fn)) {
+                fn.apply(obj, $.makeArray(arguments).slice(2));
             }
-        };
-        buttons[opts.cancel] = function() {
-            $(this).dialog("close");
-        };
-        var dopts = {
-            "buttons": buttons,
-            "close": function() {
-                select.multiselect('destroy');
-                $(this).dialog("destroy");
-                if (opts.done) {
-                    opts.done.call(self, null);
-                }
-            },
-            "resizable": false,
-            "width": opts.width+20
-        };
-
-        $(selector).dialog(dopts);
-        if ($.fn.multiselect) {
-            select.multiselect();
         }
+
+        var dopts = $.isFunction(opts.dlog_opts) ? opts.dlog_opts.call(self, opts) : opts.dlog_opts;
+        call(opts.dlog, selector, dopts);
+        var mopts = $.isFunction(opts.msel_opts) ? opts.msel_opts.call(self, opts) : opts.msel_opts;
+        call(opts.msel, select, opts.msel_opts);
     }
 })
 })(jQuery);
