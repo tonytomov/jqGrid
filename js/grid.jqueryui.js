@@ -80,7 +80,7 @@ $.jgrid.extend({
 	},
     columnChooser : function(opts) {
         var self = this;
-        var selector = $('<div><div><select multiple="multiple"></select></div></div>');
+        var selector = $('<div style="position:relative;overflow:hidden"><div><select multiple="multiple"></select></div></div>');
         var select = $('select', selector);
 
         opts = $.extend({
