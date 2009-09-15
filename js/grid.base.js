@@ -1165,10 +1165,11 @@ $.fn.jqGrid = function( p ) {
 				return false;
 			}
 			var s = "th>div.ui-jqgrid-sortable",r,d;
-			if (!ts.p.viewsortcols[2]) { s = "th>div>span.ui-grid-ico-sort" }
-			if ($(e.target).closest(s).length != 1) return;
+			if (!ts.p.viewsortcols[2]) { s = "th>div>span>span.ui-grid-ico-sort" }
+            var t = $(e.target).closest(s);
+			if (t.length != 1) return;
 			var ci = $.jgrid.getCellIndex(this);
-			if (!ts.p.viewsortcols[2]) { r=true,d=$(this).attr("sort") }
+			if (!ts.p.viewsortcols[2]) { r=true,d=t.attr("sort") }
 			sortData($('div',this)[0].id,ci,r,d);
 			return false;
 		});
