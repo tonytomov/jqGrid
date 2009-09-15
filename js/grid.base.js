@@ -930,8 +930,8 @@ $.fn.jqGrid = function( p ) {
 				if(ts.p.multiselect){$("#cb_jqg",ts.grid.hDiv).attr("checked",false);}
 				ts.p.selarrrow =[];
 				ts.p.savedRow =[];
+				if(ts.p.scroll===true) {$("tbody tr",ts.grid.bDiv).remove();}
 			}
-			if(ts.p.scroll===true) {$("tbody tr",ts.grid.bDiv).remove();}
 			if(ts.p.subGrid && ts.p.datatype=='local') {
 				$("td.sgexpanded","#"+ts.p.id).each(function(){
 					$(this).trigger("click");
@@ -1552,7 +1552,7 @@ $.jgrid.extend({
 					}
 				});
 				j++;
-				if(getall) resall.push(res);
+				if(getall) { resall.push(res); res={}; }
 			}
 		});
 		return resall ? resall: res;
@@ -1657,17 +1657,17 @@ $.jgrid.extend({
 						break;
 					case 'after':
 						sind = t.rows.namedItem(src);
-						sind != null ? $(t.rows[sind.rowIndex+1]).hasClass("ui-subgrid") ? $(t.rows[sind.rowIndex+1]).after(row) : $(sind).after(row) : "";
+						if (sind) {$(t.rows[sind.rowIndex+1]).hasClass("ui-subgrid") ? $(t.rows[sind.rowIndex+1]).after(row) : $(sind).after(row);}
 						break;
 					case 'before':
 						sind = t.rows.namedItem(src);
-						if(sind != null) {$(sind).before(row); sind=sind.rowIndex;};
+						if(sind) {$(sind).before(row);sind=sind.rowIndex;}
 						break;
 				}
 				}
 				t.p.records++;
 				t.p.reccount++;
-				if(pos==='first' || (pos==='before' && sind == 0) ||  t.rows.length === 1 ){
+				if(pos==='first' || (pos==='before' && sind <= 1) ||  t.rows.length === 1 ){
 					t.updateColumns();
 				}
 				if( t.p.altRows === true ) {
