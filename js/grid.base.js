@@ -361,16 +361,20 @@ $.fn.jqGrid = function( p ) {
 				order = $.map(order, function(v) { return v<offset?null:v-offset });
 			return order;
 		},
+		emptyRows = function (parent) {
+			var tBody = $("tbody:first", parent);
+			if(!ts.p.gridview) $("*",tBody).children().unbind();
+			if(isMSIE) $.jgrid.empty.apply(tBody[0]);
+			else tBody[0].innerHTML="";
+			tBody = null;			
+		},
 		addXmlData = function (xml,t, rcnt) {
 			var startReq = new Date();
 			ts.p.reccount = 0;
 			if($.isXMLDoc(xml)) {
 				if(ts.p.treeANode===-1 && ts.p.scroll===false) {
-					var tBody = $("tbody:first", t);
-					if(!ts.p.gridview) $("*",tBody).children().unbind();
-					if(isMSIE) $.jgrid.empty.apply(tBody[0]);
-					else tBody[0].innerHTML="";
-					tBody = null; rcnt=0;
+					emptyRows(t);
+					rcnt=0;
 				} else { rcnt = rcnt > 0 ? rcnt :0; }
 			} else { return; }
 			var i,fpos,ir=0,v,row,gi=0,si=0,ni=0,idn, getId,f=[],F,rd ={}, rl= ts.rows.length, xmlr,rid, rowData=[],ari=0, cn=(ts.p.altRows === true) ? ts.p.altclass:'',cn1;
@@ -464,11 +468,8 @@ $.fn.jqGrid = function( p ) {
 			ts.p.reccount = 0;
 			if(data) {
 				if(ts.p.treeANode === -1 && ts.p.scroll===false) {
-					var tBody = $("tbody:first", t);
-					if(!ts.p.gridview) $("*",tBody).children().unbind();
-					if(isMSIE) $.jgrid.empty.apply(tBody[0]);
-					else tBody[0].innerHTML="";
-					tBody = null; rcnt=0;
+					emptyRows(t);
+					rcnt=0;
 				} else { rcnt = rcnt > 0 ? rcnt :0; }
 			} else { return; }
 			var ir=0,v,i,j,row,f=[],F,cur,gi=0,si=0,ni=0,len,drows,idn,rd={}, fpos,rl = ts.rows.length,idr,rowData=[],ari=0,cn=(ts.p.altRows === true) ? ts.p.altclass:'',cn1;
@@ -930,7 +931,7 @@ $.fn.jqGrid = function( p ) {
 				if(ts.p.multiselect){$("#cb_jqg",ts.grid.hDiv).attr("checked",false);}
 				ts.p.selarrrow =[];
 				ts.p.savedRow =[];
-				if(ts.p.scroll===true) {$("tbody tr",ts.grid.bDiv).remove();}
+				if(ts.p.scroll===true) {emptyRows(ts.grid.bDiv);}
 			}
 			if(ts.p.subGrid && ts.p.datatype=='local') {
 				$("td.sgexpanded","#"+ts.p.id).each(function(){
@@ -1270,8 +1271,8 @@ $.fn.jqGrid = function( p ) {
 				ts.p.selrow=null;
 				if(ts.p.multiselect) {ts.p.selarrrow =[];$('#cb_jqg',ts.grid.hDiv).attr("checked",false);}
 				ts.p.savedRow = [];
+				if(ts.p.scroll===true) {emptyRows(ts.grid.bDiv);}
 			}
-			if(ts.p.scroll===true) {$("tbody tr", ts.grid.bDiv).remove();}
 			ts.grid.populate();
 			return false;
 		});
