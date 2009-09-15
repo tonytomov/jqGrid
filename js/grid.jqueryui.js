@@ -184,11 +184,12 @@ $.jgrid.extend({
         select.empty();
         $.each(colModel, function(i) {
             colMap[this.name] = i;
-            if (this.name == "cb" || this.name == "rn" || this.name == "subgrid") {
-                fixedCols.push(i);
+            if (this.hidedlg) {
+                if (!this.hidden) {
+                    fixedCols.push(i);
+                }
                 return;
             }
-            if (this.hidedlg) return;
 
             var opt = "<option value='"+i+"'";
             if (!this.hidden) {
