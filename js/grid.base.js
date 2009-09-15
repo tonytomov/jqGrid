@@ -1469,12 +1469,12 @@ $.jgrid.extend({
 			if(!$t.p.multiselect) {
 				if($(pt).attr("class") !== "subgrid") {
 				if( $t.p.selrow ) {$("tr#"+$t.p.selrow.replace(".", "\\."),$t.grid.bDiv).removeClass("ui-state-highlight").attr("aria-selected","false") ;}
-				$t.p.selrow = selection;
+				$t.p.selrow = pt.id;
 				$(pt).addClass("ui-state-highlight").attr("aria-selected","true");
 				if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow($t.p.selrow, true); }
 				}
 			} else {
-				$t.p.selrow = selection;
+				$t.p.selrow = pt.id;
 				ia = $.inArray($t.p.selrow,$t.p.selarrrow);
 				if (  ia === -1 ){ 
 					if($(pt).attr("class") !== "subgrid") { $(pt).addClass("ui-state-highlight").attr("aria-selected","true");}
