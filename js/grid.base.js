@@ -59,6 +59,10 @@ $.extend($.jgrid,{
 	empty : function () {
 		while ( this.firstChild ) this.removeChild( this.firstChild );
 	},
+	jqID : function(sid){
+		sid = sid + "";
+		return sid.replace(/:/g,"\\:").replace(/\./g,"\\.").replace(/\[/g,"\\[").replace(/\]/g,"\\]");
+	},
 	extend : function(methods) {
 		$.extend($.fn.jqGrid,methods);
 		if (!this.no_legacy_api) {
@@ -1243,7 +1247,7 @@ $.fn.jqGrid = function( p ) {
 							$(ts.p.selarrrow).each(function(i,n){
 								var ind = ts.rows.namedItem(n);
 								$(ind).removeClass("ui-state-highlight");
-								$("#jqg_"+n.replace(".", "\\."),ind).attr("checked",false);
+								$("#jqg_"+$.jgrid.jqID(n),ind).attr("checked",false);
 							});
 							ts.p.selarrrow = [];
 							$("#cb_jqg",ts.grid.hDiv).attr("checked",false);
@@ -1468,7 +1472,7 @@ $.jgrid.extend({
 			}
 			if(!$t.p.multiselect) {
 				if($(pt).attr("class") !== "subgrid") {
-				if( $t.p.selrow ) {$("tr#"+$t.p.selrow.replace(".", "\\."),$t.grid.bDiv).removeClass("ui-state-highlight").attr("aria-selected","false") ;}
+				if( $t.p.selrow ) {$("tr#"+$.jgrid.jqID($t.p.selrow),$t.grid.bDiv).removeClass("ui-state-highlight").attr("aria-selected","false") ;}
 				$t.p.selrow = pt.id;
 				$(pt).addClass("ui-state-highlight").attr("aria-selected","true");
 				if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow($t.p.selrow, true); }
@@ -1479,13 +1483,13 @@ $.jgrid.extend({
 				if (  ia === -1 ){ 
 					if($(pt).attr("class") !== "subgrid") { $(pt).addClass("ui-state-highlight").attr("aria-selected","true");}
 					stat = true;
-					$("#jqg_"+$t.p.selrow.replace(".", "\\."),$t.rows).attr("checked",stat);
+					$("#jqg_"+$.jgrid.jqID($t.p.selrow),$t.rows).attr("checked",stat);
 					$t.p.selarrrow.push($t.p.selrow);
 					if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow($t.p.selrow, stat); }
 				} else {
 					if($(pt).attr("class") !== "subgrid") { $(pt).removeClass("ui-state-highlight").attr("aria-selected","false");}
 					stat = false;
-					$("#jqg_"+$t.p.selrow.replace(".", "\\."),$t.rows).attr("checked",stat);
+					$("#jqg_"+$.jgrid.jqID($t.p.selrow),$t.rows).attr("checked",stat);
 					$t.p.selarrrow.splice(ia,1);
 					if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow($t.p.selrow, stat); }
 					tpsr = $t.p.selarrrow[0];
@@ -1511,14 +1515,14 @@ $.jgrid.extend({
 			var t = this, ind;
 			if(!t.p.multiselect) {
 				if(t.p.selrow) {
-					$("tr#"+t.p.selrow.replace(".", "\\."),t.grid.bDiv).removeClass("ui-state-highlight").attr("aria-selected","false");
+					$("tr#"+$.jgrid.jqID(t.p.selrow),t.grid.bDiv).removeClass("ui-state-highlight").attr("aria-selected","false");
 					t.p.selrow = null;
 				}
 			} else {
 				$(t.p.selarrrow).each(function(i,n){
 					ind = t.rows.namedItem(n);
 					$(ind).removeClass("ui-state-highlight").attr("aria-selected","false");
-					$("#jqg_"+n.replace(".", "\\."),ind).attr("checked",false);
+					$("#jqg_"+$.jgrid.jqID(n),ind).attr("checked",false);
 				});
 				$("#cb_jqg",t.grid.hDiv).attr("checked",false);
 				t.p.selarrrow = [];
@@ -1621,7 +1625,7 @@ $.jgrid.extend({
 		if(data) {
 			this.each(function() {
 				var t = this;
-				rowid = typeof(rowid) != 'undefined' ? rowid+"": t.p.records+1;
+				rowid = typeof(rowid) != 'undefined' ? rowid+"": (t.p.records+1)+"";
 				row = "<tr id=\""+rowid+"\" role=\"row\" class=\"ui-widget-content jqgrow\">";
 				if(t.p.rownumbers===true){
 					prp = t.formatCol(ni,1);
