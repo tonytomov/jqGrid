@@ -1993,7 +1993,11 @@ $.jgrid.extend({
 				var ln = $t.rows.length, i =0;
 				if (ln && ln>0){
 					while(i<ln){
-						val = $t.rows[i].cells[pos].innerHTML;
+						try {
+							val = $.unformat($t.rows[i].cells[pos].innerHTML,{colModel:$t.p.colModel[pos]},pos);
+						} catch (e) {
+							val = $.jgrid.htmlDecode($t.rows[i].cells[pos].innerHTML);
+						}
 						obj ? ret.push({id:$t.rows[i].id,value:val}) : ret[i]=val;
 						i++;
 					}
