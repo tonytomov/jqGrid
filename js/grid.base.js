@@ -1994,7 +1994,7 @@ $.jgrid.extend({
 				if (ln && ln>0){
 					while(i<ln){
 						try {
-							val = $.unformat($t.rows[i].cells[pos].innerHTML,{colModel:$t.p.colModel[pos]},pos);
+							val = $.unformat($($t.rows[i].cells[pos]),{colModel:$t.p.colModel[pos]},pos);
 						} catch (e) {
 							val = $.jgrid.htmlDecode($t.rows[i].cells[pos].innerHTML);
 						}
