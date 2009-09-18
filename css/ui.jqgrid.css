@@ -84,8 +84,8 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 .ui-jqdialog-content .DelTable { width: 100%; margin-bottom:0em;}
 .EditTable td input, .EditTable td select, .EditTable td textarea {margin: 0em;}
 .EditTable td textarea { width:auto; height:auto;}
-.ui-jqdialog-content td.EditButton {text-align: right;border-top: 0px none;border-left: 0px none;border-right: 0px none; padding-bottom:5px; padding-top:5px;}
-.ui-jqdialog-content td.navButton {text-align: center; border-left: 0px none;border-top: 0px none;border-right: 0px none; padding-bottom:5px; padding-top:5px;}
+.ui-jqdialog-content td.EditButton {text-align: right;border-width: 1px 0 0 0; background-image: none; padding-bottom:5px; padding-top:5px;}
+.ui-jqdialog-content td.navButton {text-align: center;border-width: 1px 0 0 0; background-image: none; padding-bottom:5px; padding-top:5px;}
 .ui-jqdialog-content .CaptionTD {text-align: left; vertical-align: top;border-left: 0px none;border-right: 0px none; border-bottom: 0px none; padding: 1px;white-space: nowrap;}
 .ui-jqdialog-content .DataTD {padding: 1px;border-left: 0px none;border-right: 0px none; border-bottom: 0px none; vertical-align: top;}
 .fm-button { margin:0 4px 0 0; padding: .4em .5em; text-decoration:none !important; cursor:pointer; position: relative; text-align: center; zoom: 1; }
