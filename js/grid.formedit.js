@@ -622,9 +622,9 @@ $.jgrid.extend({
 				var cm = obj.p.colModel;
 				if(rowid == '_empty') {
 					$(cm).each(function(i){
-						nm = this.name.replace('.',"\\.");
+						nm = this.name;
 						opt = $.extend({}, this.editoptions || {} );
-						fld = $("#"+nm,"#"+fmid);
+						fld = $("#"+$.jgrid.jqID(nm),"#"+fmid);
 						if(fld[0] != null) {
 							vl = "";
 							if(opt.defaultValue ) {
@@ -659,7 +659,7 @@ $.jgrid.extend({
 				var tre = $(obj).jqGrid("getInd",rowid,true);
 				if(!tre) return;
 				$('td',tre).each( function(i) {
-					nm = cm[i].name.replace('.',"\\.");
+					nm = cm[i].name;
 					// hidden fields are included in the form
 					if(cm[i].editrules && cm[i].editrules.edithidden === true) {
 						hc = false;
@@ -677,6 +677,7 @@ $.jgrid.extend({
 							}
 						}
 						if(rp_ge.checkOnSubmit===true || rp_ge.checkOnUpdate) rp_ge._savedData[nm] = tmp;
+						nm = $.jgrid.jqID(nm);
 						switch (cm[i].edittype) {
 							case "password":
 							case "text":
@@ -705,6 +706,7 @@ $.jgrid.extend({
 								});
 								break;
 							case "checkbox":
+								tmp = tmp+"";
 								tmp = tmp.toLowerCase();
 								if(tmp.search(/(false|0|no|off|undefined)/i)<0 && tmp!=="") {
 									$("#"+nm,"#"+fmid).attr("checked",true);
@@ -1078,7 +1080,7 @@ $.jgrid.extend({
 				trv = $(obj).jqGrid("getInd",rowid,true);
 				if(!trv) return;
 				$('td',trv).each( function(i) {
-					nm = obj.p.colModel[i].name.replace('.',"\\.");
+					nm = obj.p.colModel[i].name;
 					// hidden fields are included in the form
 					if(obj.p.colModel[i].editrules && obj.p.colModel[i].editrules.edithidden === true) {
 						hc = false;
@@ -1092,7 +1094,7 @@ $.jgrid.extend({
 							tmp = $(this).html();
 						}
 						opt = $.extend({},obj.p.colModel[i].editoptions || {});
-						nm = "v_"+nm;
+						nm = $.jgrid.jqID("v_"+nm);
 						$("#"+nm+" span","#"+frmtb).html(tmp);
 						if (hc) { $("#"+nm,"#"+frmtb).parents("tr:first").hide(); }
 						cnt++;
