@@ -61,7 +61,7 @@ $.extend($.jgrid,{
 	},
 	jqID : function(sid){
 		sid = sid + "";
-		return sid.replace(/:/g,"\\:").replace(/\./g,"\\.").replace(/\[/g,"\\[").replace(/\]/g,"\\]");
+		return sid.replace(/([\.\:\[\]])/g,"\\$1");
 	},
 	extend : function(methods) {
 		$.extend($.fn.jqGrid,methods);
@@ -457,7 +457,7 @@ $.fn.jqGrid = function( p ) {
 			}
 			}
 			if(ts.p.gridview === true) {
-				$("table:first",t).append(rowData.join(''));
+				$("tbody:first",t).append(rowData.join(''));
 			}
 			ts.p.totaltime = new Date() - startReq;
 			if(ir>0) {ts.grid.cols = ts.rows[0].cells;if(ts.p.records===0)ts.p.records=gl;}
@@ -560,7 +560,7 @@ $.fn.jqGrid = function( p ) {
 				if(rn !=-1 && ir>rn) break;
 			}
 			if(ts.p.gridview === true ) {
-				$("table:first",t).append(rowData.join(''));
+				$("tbody:first",t).append(rowData.join(''));
 			}
 			ts.p.totaltime = new Date() - startReq;
 			if(ir>0) {ts.grid.cols = ts.rows[0].cells;if(ts.p.records===0)ts.p.records=len;}
