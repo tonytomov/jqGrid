@@ -348,12 +348,12 @@ jQuery.fn.searchFilter = function(fields, options) {
             if (has_custom_data) jFSelect.change(function(e) {
                 var index = e.target.selectedIndex;
                 var td = jQuery(e.target).parents("tr.sf").find("td.data");
-                td.find("select,input").removeAttr("name").hide(); // disown and hide all elements
+                td.find("select,input").removeClass("vdata").hide(); // disown and hide all elements
                 var jElem = td.find(".field" + index);
                 if (jElem[0] == null) jElem = td.find(".default"); // if there's not an element for that field, use the default one
-                jElem.attr("name", "data").show();
+                jElem.show().addClass("vdata");
             });
-            else jData.find(".default").attr("name", "data").show();
+            else jData.find(".default").show().addClass("vdata");
             // go ahead and call the change event and setup the ops and data values
             if (has_custom_ops || has_custom_data) jFSelect.change();
 
@@ -387,9 +387,9 @@ jQuery.fn.searchFilter = function(fields, options) {
                     var stupid_browser = (newRow.find("select[name='op']")[0] == null); // true for IE6
                     if (!stupid_browser)
                         newRow.find("select[name='op']").focus()[0].selectedIndex = row.find("select[name='op']")[0].selectedIndex;
-                    var jElem = newRow.find("select[name='data']");
+                    var jElem = newRow.find("select.vdata");
                     if (jElem[0] != null) // select doesn't copy it's selected index when cloned
-                        jElem[0].selectedIndex = row.find("select[name='data']")[0].selectedIndex;
+                        jElem[0].selectedIndex = row.find("select.vdata")[0].selectedIndex;
                 } else {
                     newRow.find(".data input").val(""); // blank all input values
                     newRow.find("select[name='field']").focus();
@@ -418,7 +418,7 @@ jQuery.fn.searchFilter = function(fields, options) {
                 ui.find(".sf").each(function(i) {
                     var tField = jQuery(this).find("select[name='field'] :selected").val();
                     var tOp = jQuery(this).find("select[name='op'] :selected").val();
-                    var tData = jQuery(this).find("input[name='data'],select[name='data'] :selected").val();
+                    var tData = jQuery(this).find("input.vdata,select.vdata :selected").val();
                     if (!opts.stringResult) {
                         ruleGroup.rules.push({
                             field: tField,
