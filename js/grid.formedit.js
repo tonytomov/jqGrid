@@ -62,7 +62,7 @@ $.jgrid.extend({
 				        hidden = (v.hidden === true),
 						soptions = $.extend({},{text: colNames[i],value: v.index || v.name},this.searchoptions),
 						ignoreHiding = (soptions.searchhidden === true) || true;
-						if(typeof soptions.sopt == 'undefined') soptions.sopt = p.sopt || stempl;
+						if(typeof soptions.sopt == 'undefined') soptions.sopt = p.sopt ||  stempl;
 						k=0;
 						soptions.ops =[];
 						if(soptions.sopt.length>0) {
