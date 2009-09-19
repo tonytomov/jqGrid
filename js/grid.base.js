@@ -1976,9 +1976,10 @@ $.jgrid.extend({
 		});
 		return ret;
 	},
-	getCol : function (col, obj) {
-		var ret = [], val;
+	getCol : function (col, obj, mathopr) {
+		var ret = [], val, sum=0;
 		obj = typeof (obj) != 'boolean' ? false : obj;
+		if(typeof mathopr == 'undefined') mathopr = false;
 		this.each(function(){
 			var $t=this, pos=-1;
 			if(!$t.grid) {return;}
@@ -1998,8 +1999,16 @@ $.jgrid.extend({
 						} catch (e) {
 							val = $.jgrid.htmlDecode($t.rows[i].cells[pos].innerHTML);
 						}
-						obj ? ret.push({id:$t.rows[i].id,value:val}) : ret[i]=val;
+						mathopr ? sum += parseFloat(val,10) :
+							obj ? ret.push({id:$t.rows[i].id,value:val}) : ret[i]=val;
 						i++;
+					}
+					if(mathopr) {
+						switch(mathopr.toLowerCase()){
+							case 'sum': ret =sum; break;
+							case 'avg': ret = sum/ln; break;
+							case 'count': ret = ln; break;
+						}
 					}
 				}
 			}
