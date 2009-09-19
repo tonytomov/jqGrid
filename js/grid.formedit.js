@@ -45,19 +45,32 @@ $.jgrid.extend({
 					colNames = jQuery("#"+$t.p.id).jqGrid("getGridParam","colNames"),
 					colModel = jQuery("#"+$t.p.id).jqGrid("getGridParam","colModel"),
 					stempl = ['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc'],
-					j,pos,k;
+					j,pos,k,oprtr;
+					oprtr = jQuery.fn.searchFilter.defaults.operators;
+					if (p.sopt !=null) {
+						oprtr = [];
+						k=0;
+						for(j=0;j<p.sopt.length;j++) {
+							if( (pos= $.inArray(p.sopt[j],stempl)) != -1 ){
+								oprtr[k] = {op:p.sopt[j],text: p.odata[pos]};
+								k++;
+							}
+						}
+					}
 				    $.each(colModel, function(i, v) {
 				        var searchable = (typeof v.search === 'undefined') ?  true: v.search ,
 				        hidden = (v.hidden === true),
 						soptions = $.extend({},{text: colNames[i],value: v.index || v.name},this.searchoptions),
 						ignoreHiding = (soptions.searchhidden === true) || true;
-						if(typeof soptions.sopt == 'undefined') soptions.sopt = stempl;
+						if(typeof soptions.sopt == 'undefined') soptions.sopt = p.sopt || stempl;
 						k=0;
 						soptions.ops =[];
-						for(j=0;j<soptions.sopt.length;j++) {
-							if( (pos= $.inArray(soptions.sopt[j],stempl)) != -1 ){
-								soptions.ops[k] = {op:soptions.sopt[j],text: p.odata[pos]};
-								k++;
+						if(soptions.sopt.length>0) {
+							for(j=0;j<soptions.sopt.length;j++) {
+								if( (pos= $.inArray(soptions.sopt[j],stempl)) != -1 ){
+									soptions.ops[k] = {op:soptions.sopt[j],text: p.odata[pos]};
+									k++;
+								}
 							}
 						}
 						if(typeof(this.stype) === 'undefined') this.stype='text';
@@ -88,18 +101,6 @@ $.jgrid.extend({
 						}
 					});
 					if(fields.length>0){
-						var oprtr = jQuery.fn.searchFilter.defaults.operators;
-						if (p.sopt !=null) {
-							oprtr = [];
-							k=0;
-							for(j=0;p.sopt.length<0;j++) {
-								if( (pos= $.inArray(p.sopt[j],stempl)) != -1 ){
-									oprtr[k] = {op:p.sopt[j],text: p.odata[pos]};
-									k++;
-								}
-							}
-							
-						}
 						$("<div id='"+fid+"' role='dialog' tabindex='-1'></div>").insertBefore("#gview_"+$t.p.id);
 						jQuery("#"+fid).searchFilter(fields, { groupOps: p.groupOps, operators: oprtr, onClose:hideFilter, resetText: p.Reset, searchText: p.Find, windowTitle: p.caption,  rulesText:p.rulesText, matchText:p.matchText, onSearch: searchFilters, onReset: resetFilters,stringResult:p.multipleSearch });
 						$(".ui-widget-overlay","#"+fid).remove();
@@ -187,7 +188,6 @@ $.jgrid.extend({
 			resize: true,
 			url: null,
 			mtype : "POST",
-			closeAfterAdd : false,
 			clearAfterAdd :true,
 			closeAfterEdit : false,
 			reloadAfterSubmit : true,
