@@ -181,7 +181,7 @@ $.jgrid.extend({
         var colNames = self.jqGrid("getGridParam", "colNames");
         var colMap = {}, fixedCols = [];
 
-        select.empty();
+        select.empty(); var opt="";
         $.each(colModel, function(i) {
             colMap[this.name] = i;
             if (this.hidedlg) {
@@ -191,14 +191,13 @@ $.jgrid.extend({
                 return;
             }
 
-            var opt = "<option value='"+i+"'";
             if (!this.hidden) {
-                opt += " selected";
+                select.append("<option value='"+i+"' selected='selected'>"+colNames[i]+"</option>");
+            } else {
+                opt += "<option value='"+i+"'>"+colNames[i]+"</option>";
             }
-            opt += ">"+colNames[i]+"</option>";
-            select.append(opt);
         });
-
+        if(opt) select.append(opt);
         function call(fn, obj) {
             if (!fn) return;
             if (typeof fn == 'string') {
