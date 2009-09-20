@@ -1184,8 +1184,10 @@ $.jgrid.extend({
 					var postdata = $("#DelData>td","#"+dtbl).text(); //the pair is name=val1,val2,...
 					if( typeof p.onclickSubmit === 'function' ) { onCS = p.onclickSubmit(rp_ge) || {}; }
 					if( typeof p.beforeSubmit === 'function' ) { ret = p.beforeSubmit(postdata); }
-					var gurl = rp_ge.url ? rp_ge.url : $t.p.editurl;
-					if(!gurl) { ret[0]=false;ret[1] += " "+$.jgrid.errors.nourl;}
+					if(ret[0]){
+						var gurl = rp_ge.url ? rp_ge.url : $t.p.editurl;
+						if(!gurl) { ret[0]=false;ret[1] += " "+$.jgrid.errors.nourl;}
+					}
 					if(ret[0] === false) {
 						$("#DelError>td","#"+dtbl).html(ret[1]);
 						$("#DelError","#"+dtbl).show();
