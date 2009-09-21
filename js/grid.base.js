@@ -423,6 +423,7 @@ $.fn.jqGrid = function( p ) {
                     var cells = $(ts.p.xmlReader.cell,xmlr);
 					$.each(F, function (k) {
                         var cell = cells[this];
+                        if (!cell) return false;
 						v = cell.textContent || cell.text;
 						rd[ts.p.colModel[k+gi+si+ni].name] = v;
 						rowData[ari++] = addCell(rid,v,k+gi+si+ni,j+rcnt,xmlr);
