@@ -61,7 +61,7 @@ $.extend($.jgrid,{
 	},
 	jqID : function(sid){
 		sid = sid + "";
-		return sid.replace(/:/g,"\\:").replace(/\./g,"\\.").replace(/\[/g,"\\[").replace(/\]/g,"\\]");
+		return sid.replace(/([\.\:\[\]])/g,"\\$1");
 	},
 	extend : function(methods) {
 		$.extend($.fn.jqGrid,methods);
@@ -458,7 +458,7 @@ $.fn.jqGrid = function( p ) {
 			}
 			}
 			if(ts.p.gridview === true) {
-				$("table:first",t).append(rowData.join(''));
+				$("tbody:first",t).append(rowData.join(''));
 			}
 			ts.p.totaltime = new Date() - startReq;
 			if(ir>0) {ts.grid.cols = ts.rows[0].cells;if(ts.p.records===0)ts.p.records=gl;}
@@ -561,7 +561,7 @@ $.fn.jqGrid = function( p ) {
 				if(rn !=-1 && ir>rn) break;
 			}
 			if(ts.p.gridview === true ) {
-				$("table:first",t).append(rowData.join(''));
+				$("tbody:first",t).append(rowData.join(''));
 			}
 			ts.p.totaltime = new Date() - startReq;
 			if(ir>0) {ts.grid.cols = ts.rows[0].cells;if(ts.p.records===0)ts.p.records=len;}
@@ -1977,9 +1977,10 @@ $.jgrid.extend({
 		});
 		return ret;
 	},
-	getCol : function (col, obj) {
-		var ret = [], val;
+	getCol : function (col, obj, mathopr) {
+		var ret = [], val, sum=0;
 		obj = typeof (obj) != 'boolean' ? false : obj;
+		if(typeof mathopr == 'undefined') mathopr = false;
 		this.each(function(){
 			var $t=this, pos=-1;
 			if(!$t.grid) {return;}
@@ -1994,9 +1995,21 @@ $.jgrid.extend({
 				var ln = $t.rows.length, i =0;
 				if (ln && ln>0){
 					while(i<ln){
-						val = $t.rows[i].cells[pos].innerHTML;
-						obj ? ret.push({id:$t.rows[i].id,value:val}) : ret[i]=val;
+						try {
+							val = $.unformat($($t.rows[i].cells[pos]),{colModel:$t.p.colModel[pos]},pos);
+						} catch (e) {
+							val = $.jgrid.htmlDecode($t.rows[i].cells[pos].innerHTML);
+						}
+						mathopr ? sum += parseFloat(val,10) :
+							obj ? ret.push({id:$t.rows[i].id,value:val}) : ret[i]=val;
 						i++;
+					}
+					if(mathopr) {
+						switch(mathopr.toLowerCase()){
+							case 'sum': ret =sum; break;
+							case 'avg': ret = sum/ln; break;
+							case 'count': ret = ln; break;
+						}
 					}
 				}
 			}

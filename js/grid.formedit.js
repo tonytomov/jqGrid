@@ -45,19 +45,32 @@ $.jgrid.extend({
 					colNames = jQuery("#"+$t.p.id).jqGrid("getGridParam","colNames"),
 					colModel = jQuery("#"+$t.p.id).jqGrid("getGridParam","colModel"),
 					stempl = ['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc'],
-					j,pos,k;
+					j,pos,k,oprtr;
+					oprtr = jQuery.fn.searchFilter.defaults.operators;
+					if (p.sopt !=null) {
+						oprtr = [];
+						k=0;
+						for(j=0;j<p.sopt.length;j++) {
+							if( (pos= $.inArray(p.sopt[j],stempl)) != -1 ){
+								oprtr[k] = {op:p.sopt[j],text: p.odata[pos]};
+								k++;
+							}
+						}
+					}
 				    $.each(colModel, function(i, v) {
 				        var searchable = (typeof v.search === 'undefined') ?  true: v.search ,
 				        hidden = (v.hidden === true),
 						soptions = $.extend({},{text: colNames[i],value: v.index || v.name},this.searchoptions),
 						ignoreHiding = (soptions.searchhidden === true) || true;
-						if(typeof soptions.sopt == 'undefined') soptions.sopt = stempl;
+						if(typeof soptions.sopt == 'undefined') soptions.sopt = p.sopt ||  stempl;
 						k=0;
 						soptions.ops =[];
-						for(j=0;j<soptions.sopt.length;j++) {
-							if( (pos= $.inArray(soptions.sopt[j],stempl)) != -1 ){
-								soptions.ops[k] = {op:soptions.sopt[j],text: p.odata[pos]};
-								k++;
+						if(soptions.sopt.length>0) {
+							for(j=0;j<soptions.sopt.length;j++) {
+								if( (pos= $.inArray(soptions.sopt[j],stempl)) != -1 ){
+									soptions.ops[k] = {op:soptions.sopt[j],text: p.odata[pos]};
+									k++;
+								}
 							}
 						}
 						if(typeof(this.stype) === 'undefined') this.stype='text';
@@ -88,18 +101,6 @@ $.jgrid.extend({
 						}
 					});
 					if(fields.length>0){
-						var oprtr = jQuery.fn.searchFilter.defaults.operators;
-						if (p.sopt !=null) {
-							oprtr = [];
-							k=0;
-							for(j=0;p.sopt.length<0;j++) {
-								if( (pos= $.inArray(p.sopt[j],stempl)) != -1 ){
-									oprtr[k] = {op:p.sopt[j],text: p.odata[pos]};
-									k++;
-								}
-							}
-							
-						}
 						$("<div id='"+fid+"' role='dialog' tabindex='-1'></div>").insertBefore("#gview_"+$t.p.id);
 						jQuery("#"+fid).searchFilter(fields, { groupOps: p.groupOps, operators: oprtr, onClose:hideFilter, resetText: p.Reset, searchText: p.Find, windowTitle: p.caption,  rulesText:p.rulesText, matchText:p.matchText, onSearch: searchFilters, onReset: resetFilters,stringResult:p.multipleSearch });
 						$(".ui-widget-overlay","#"+fid).remove();
@@ -187,7 +188,6 @@ $.jgrid.extend({
 			resize: true,
 			url: null,
 			mtype : "POST",
-			closeAfterAdd : false,
 			clearAfterAdd :true,
 			closeAfterEdit : false,
 			reloadAfterSubmit : true,
@@ -622,9 +622,9 @@ $.jgrid.extend({
 				var cm = obj.p.colModel;
 				if(rowid == '_empty') {
 					$(cm).each(function(i){
-						nm = this.name.replace('.',"\\.");
+						nm = this.name;
 						opt = $.extend({}, this.editoptions || {} );
-						fld = $("#"+nm,"#"+fmid);
+						fld = $("#"+$.jgrid.jqID(nm),"#"+fmid);
 						if(fld[0] != null) {
 							vl = "";
 							if(opt.defaultValue ) {
@@ -659,7 +659,7 @@ $.jgrid.extend({
 				var tre = $(obj).jqGrid("getInd",rowid,true);
 				if(!tre) return;
 				$('td',tre).each( function(i) {
-					nm = cm[i].name.replace('.',"\\.");
+					nm = cm[i].name;
 					// hidden fields are included in the form
 					if(cm[i].editrules && cm[i].editrules.edithidden === true) {
 						hc = false;
@@ -677,6 +677,7 @@ $.jgrid.extend({
 							}
 						}
 						if(rp_ge.checkOnSubmit===true || rp_ge.checkOnUpdate) rp_ge._savedData[nm] = tmp;
+						nm = $.jgrid.jqID(nm);
 						switch (cm[i].edittype) {
 							case "password":
 							case "text":
@@ -705,6 +706,7 @@ $.jgrid.extend({
 								});
 								break;
 							case "checkbox":
+								tmp = tmp+"";
 								tmp = tmp.toLowerCase();
 								if(tmp.search(/(false|0|no|off|undefined)/i)<0 && tmp!=="") {
 									$("#"+nm,"#"+fmid).attr("checked",true);
@@ -1078,7 +1080,7 @@ $.jgrid.extend({
 				trv = $(obj).jqGrid("getInd",rowid,true);
 				if(!trv) return;
 				$('td',trv).each( function(i) {
-					nm = obj.p.colModel[i].name.replace('.',"\\.");
+					nm = obj.p.colModel[i].name;
 					// hidden fields are included in the form
 					if(obj.p.colModel[i].editrules && obj.p.colModel[i].editrules.edithidden === true) {
 						hc = false;
@@ -1092,7 +1094,7 @@ $.jgrid.extend({
 							tmp = $(this).html();
 						}
 						opt = $.extend({},obj.p.colModel[i].editoptions || {});
-						nm = "v_"+nm;
+						nm = $.jgrid.jqID("v_"+nm);
 						$("#"+nm+" span","#"+frmtb).html(tmp);
 						if (hc) { $("#"+nm,"#"+frmtb).parents("tr:first").hide(); }
 						cnt++;
@@ -1182,8 +1184,10 @@ $.jgrid.extend({
 					var postdata = $("#DelData>td","#"+dtbl).text(); //the pair is name=val1,val2,...
 					if( typeof p.onclickSubmit === 'function' ) { onCS = p.onclickSubmit(rp_ge) || {}; }
 					if( typeof p.beforeSubmit === 'function' ) { ret = p.beforeSubmit(postdata); }
-					var gurl = rp_ge.url ? rp_ge.url : $t.p.editurl;
-					if(!gurl) { ret[0]=false;ret[1] += " "+$.jgrid.errors.nourl;}
+					if(ret[0]){
+						var gurl = rp_ge.url ? rp_ge.url : $t.p.editurl;
+						if(!gurl) { ret[0]=false;ret[1] += " "+$.jgrid.errors.nourl;}
+					}
 					if(ret[0] === false) {
 						$("#DelError>td","#"+dtbl).html(ret[1]);
 						$("#DelError","#"+dtbl).show();

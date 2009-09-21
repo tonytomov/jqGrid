@@ -43,7 +43,7 @@ $.jgrid.extend({
 					}
 				}
 				// if so check to see if the content is changed
-				var vl = $("td:eq("+$t.p.savedRow[0].ic+")>#"+$t.p.savedRow[0].id+"_"+$t.p.savedRow[0].name.replace('.',"\\."),$t.rows[$t.p.savedRow[0].id]).val();
+				var vl = $("td:eq("+$t.p.savedRow[0].ic+")>#"+$t.p.savedRow[0].id+"_"+$.jgrid.jqID($t.p.savedRow[0].name),$t.rows[$t.p.savedRow[0].id]).val();
 				if ($t.p.savedRow[0].v !=  vl) {
 					// save it
 					$($t).jqGrid("saveCell",$t.p.savedRow[0].id,$t.p.savedRow[0].ic)
@@ -116,14 +116,14 @@ $.jgrid.extend({
 			if ( $t.p.savedRow.length >= 1) {fr = 0;} else {fr=null;} 
 			if(fr != null) {
 				var cc = $("td:eq("+iCol+")",$t.rows[iRow]),v,v2,
-				nm = $t.p.colModel[iCol].name.replace('.',"\\.");
+				nm = $t.p.colModel[iCol].name, nmjq = $.jgrid.jqID(nm);
 				switch ($t.p.colModel[iCol].edittype) {
 					case "select":
 						if(!$t.p.colModel[iCol].editoptions.multiple) {
-							v = $("#"+iRow+"_"+nm+">option:selected",$t.rows[iRow]).val();
-							v2 = $("#"+iRow+"_"+nm+">option:selected",$t.rows[iRow]).text();
+							v = $("#"+iRow+"_"+nmjq+">option:selected",$t.rows[iRow]).val();
+							v2 = $("#"+iRow+"_"+nmjq+">option:selected",$t.rows[iRow]).text();
 						} else {
-							var sel = $("#"+iRow+"_"+nm,$t.rows[iRow]), selectedText = [];
+							var sel = $("#"+iRow+"_"+nmjq,$t.rows[iRow]), selectedText = [];
 							v = $(sel).val();
 							if(v) v.join(","); else v="";
 							$("option:selected",sel).each(
@@ -140,14 +140,14 @@ $.jgrid.extend({
 						if($t.p.colModel[iCol].editoptions){
 							cbv = $t.p.colModel[iCol].editoptions.value.split(":");
 						}
-						v = $("#"+iRow+"_"+nm.replace('.',"\\."),$t.rows[iRow]).attr("checked") ? cbv[0] : cbv[1];
+						v = $("#"+iRow+"_"+nmjq,$t.rows[iRow]).attr("checked") ? cbv[0] : cbv[1];
 						v2=v;
 						break;
 					case "password":
 					case "text":
 					case "textarea":
 					case "button" :
-						v = !$t.p.autoencode ? $("#"+iRow+"_"+nm.replace('.',"\\."),$t.rows[iRow]).val() : $.jgrid.htmlEncode($("#"+iRow+"_"+nm.replace('.',"\\."),$t.rows[iRow]).val());
+						v = !$t.p.autoencode ? $("#"+iRow+"_"+nmjq,$t.rows[iRow]).val() : $.jgrid.htmlEncode($("#"+iRow+"_"+nmjq,$t.rows[iRow]).val());
 						v2=v;
 						break;
 				}
