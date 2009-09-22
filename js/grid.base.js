@@ -383,16 +383,17 @@ $.fn.jqGrid = function( p ) {
 			} else { return; }
 			var i,fpos,ir=0,v,row,gi=0,si=0,ni=0,idn, getId,f=[],F,rd ={}, rl= ts.rows.length, xmlr,rid, rowData=[],ari=0, cn=(ts.p.altRows === true) ? ts.p.altclass:'',cn1;
 			if(!ts.p.xmlReader.repeatitems) {f = reader("xml");}
-			if( ts.p.keyIndex===false) {
+			if( ts.p.keyIndex[0]===false) {
 				idn = ts.p.xmlReader.id;
 				if( idn.indexOf("[") === -1 ) {
+					if(f && ts.p.keyIndex[1]) idn = ts.p.keyIndex[1];
 					getId = function( trow, k) {return $(idn,trow).text() || k;};
 				}
 				else {
 					getId = function( trow, k) {return trow.getAttribute(idn.replace(/[\[\]]/g,"")) || k;};
 				}
 			} else {
-				getId = function(trow) { return (f.length - 1 >= ts.p.keyIndex) ? $(f[ts.p.keyIndex],trow).text() : $(ts.p.xmlReader.cell+":eq("+ts.p.keyIndex+")",trow).text(); };
+				getId = function(trow) { return (f.length - 1 >= ts.p.keyIndex[0]) ? $(ts.p.keyIndex[1],trow).text() : $(ts.p.xmlReader.cell+":eq("+ts.p.keyIndex[0]+")",trow).text(); };
 			}
 			$(ts.p.xmlReader.page,xml).each(function() {ts.p.page = this.textContent  || this.text || 1; });
 			$(ts.p.xmlReader.total,xml).each(function() {ts.p.lastpage = this.textContent  || this.text || 1; }  );
@@ -486,11 +487,11 @@ $.fn.jqGrid = function( p ) {
 				F = f = reader("json");
 			}
 
-			if( ts.p.keyIndex===false ) {
+			if( ts.p.keyIndex[0]===false ) {
 				idn = ts.p.jsonReader.id;
-				if(f.length>0 && !isNaN(idn)) {idn=f[idn];}
+				if(f.length>0 && !isNaN(idn)) {idn=ts.p.keyIndex[2];}
 			} else {
-				idn = f.length>0 ? f[ts.p.keyIndex] : ts.p.keyIndex;
+				idn = f.length>0 ? ts.p.keyIndex[2] : ts.p.keyIndex[0];
 			}
 			drows = data[ts.p.jsonReader.root];
 			if (drows) {
@@ -1016,28 +1017,6 @@ $.fn.jqGrid = function( p ) {
 		};
 		this.p.id = this.id;
 		if ($.inArray(ts.p.multikey,sortkeys) == -1 ) {ts.p.multikey = false;}
-		ts.p.keyIndex=false;
-		for (i=0; i<ts.p.colModel.length;i++) {
-			if (ts.p.colModel[i].key===true) {
-				ts.p.keyIndex = i;
-				break;
-			}
-		}
-		ts.p.sortorder = ts.p.sortorder.toLowerCase();
-		if(this.p.treeGrid === true) {
-			try { $(this).jqGrid("setTreeGrid");} catch (_) {}
-		}
-		if(this.p.subGrid) {
-			try { $(ts).jqGrid("setSubGrid");} catch (_){}
-		}
-		if(this.p.multiselect) {
-			this.p.colNames.unshift("<input id='cb_jqg' class='cbox' type='checkbox'/>");
-			this.p.colModel.unshift({name:'cb',width:isSafari ?  ts.p.multiselectWidth+ts.p.cellLayout : ts.p.multiselectWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center'});
-		}
-		if(this.p.rownumbers) {
-			this.p.colNames.unshift("");
-			this.p.colModel.unshift({name:'rn',width:ts.p.rownumWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center'});
-		}
 		ts.p.xmlReader = $.extend({
 			root: "rows",
 			row: "row",
@@ -1061,6 +1040,35 @@ $.fn.jqGrid = function( p ) {
 			userdata: "userdata",
 			subgrid: {root:"rows", repeatitems: true, cell:"cell"}
 		},ts.p.jsonReader);
+		ts.p.keyIndex = [];
+		ts.p.keyIndex[0]=false; var xr=jr="";
+		$.each(ts.p.colModel,function(i) {
+			var xn = this.xmlmap || this.name, jn = this.jsonmap || this.name;
+			if(this.key==true) {
+				ts.p.keyIndex[0] = i;
+				ts.p.keyIndex[1] = xn;
+				ts.p.keyIndex[2] = jn;
+				return;
+			}
+			if(!isNaN(ts.p.xmlReader.id) && parseInt(ts.p.xmlReader.id) == i) xr = xn;
+			if(!isNaN(ts.p.jsonReader.id) && parseInt(ts.p.jsonReader.id) == i) jr = jn;
+		});
+		if(ts.p.keyIndex[0] === false) {ts.p.keyIndex[1] = xr; ts.p.keyIndex[2] = jr;}
+		ts.p.sortorder = ts.p.sortorder.toLowerCase();
+		if(this.p.treeGrid === true) {
+			try { $(this).jqGrid("setTreeGrid");} catch (_) {}
+		}
+		if(this.p.subGrid) {
+			try { $(ts).jqGrid("setSubGrid");} catch (_){}
+		}
+		if(this.p.multiselect) {
+			this.p.colNames.unshift("<input id='cb_jqg' class='cbox' type='checkbox'/>");
+			this.p.colModel.unshift({name:'cb',width:isSafari ?  ts.p.multiselectWidth+ts.p.cellLayout : ts.p.multiselectWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center'});
+		}
+		if(this.p.rownumbers) {
+			this.p.colNames.unshift("");
+			this.p.colModel.unshift({name:'rn',width:ts.p.rownumWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center'});
+		}
 		if(ts.p.scroll===true){
 			ts.p.pgbuttons = false; ts.p.pginput=false; ts.p.rowList=[];
 		}
