@@ -385,6 +385,7 @@ $.fn.jqGrid = function( p ) {
 			if(!ts.p.xmlReader.repeatitems) {f = reader("xml");}
 			if( ts.p.keyIndex[0]===false) {
 				idn = ts.p.xmlReader.id;
+<<<<<<< HEAD:js/grid.base.js
 				if( idn.indexOf("[") === -1 ) {
 					if(f && ts.p.keyIndex[1]) idn = ts.p.keyIndex[1];
 					getId = function( trow, k) {return $(idn,trow).text() || k;};
@@ -394,6 +395,26 @@ $.fn.jqGrid = function( p ) {
 				}
 			} else {
 				getId = function(trow) { return (f.length - 1 >= ts.p.keyIndex[0]) ? $(ts.p.keyIndex[1],trow).text() : $(ts.p.xmlReader.cell+":eq("+ts.p.keyIndex[0]+")",trow).text(); };
+=======
+            } else {
+                idn = ts.p.keyIndex;
+            }
+			if(f.length>0 && !isNaN(idn)) {
+                if (ts.p.remapColumns && ts.p.remapColumns.length) {
+                    idn = $.inArray(idn, ts.p.remapColumns);
+                }
+                idn=f[idn];
+            }
+			if( (idn+"").indexOf("[") === -1 ) {
+                if (f.length) {
+					getId = function( trow, k) {return $(idn,trow).text() || k;};
+                } else {
+				    getId = function( trow, k) {return $(ts.p.xmlReader.cell,trow).eq(idn).text() || k;};
+                }
+			}
+			else {
+				getId = function( trow, k) {return trow.getAttribute(idn.replace(/[\[\]]/g,"")) || k;};
+>>>>>>> jqgrid36:js/grid.base.js
 			}
 			$(ts.p.xmlReader.page,xml).each(function() {ts.p.page = this.textContent  || this.text || 1; });
 			$(ts.p.xmlReader.total,xml).each(function() {ts.p.lastpage = this.textContent  || this.text || 1; }  );
@@ -424,6 +445,7 @@ $.fn.jqGrid = function( p ) {
                     var cells = $(ts.p.xmlReader.cell,xmlr);
 					$.each(F, function (k) {
                         var cell = cells[this];
+                        if (!cell) return false;
 						v = cell.textContent || cell.text;
 						rd[ts.p.colModel[k+gi+si+ni].name] = v;
 						rowData[ari++] = addCell(rid,v,k+gi+si+ni,j+rcnt,xmlr);
@@ -489,9 +511,20 @@ $.fn.jqGrid = function( p ) {
 
 			if( ts.p.keyIndex[0]===false ) {
 				idn = ts.p.jsonReader.id;
+<<<<<<< HEAD:js/grid.base.js
 				if(f.length>0 && !isNaN(idn)) {idn=ts.p.keyIndex[2];}
 			} else {
 				idn = f.length>0 ? ts.p.keyIndex[2] : ts.p.keyIndex[0];
+=======
+			} else {
+				idn = ts.p.keyIndex;
+			}
+			if(f.length>0 && !isNaN(idn)) {
+                if (ts.p.remapColumns && ts.p.remapColumns.length) {
+                    idn = $.inArray(idn, ts.p.remapColumns);
+                }
+                idn=f[idn];
+>>>>>>> jqgrid36:js/grid.base.js
 			}
 			drows = data[ts.p.jsonReader.root];
 			if (drows) {
