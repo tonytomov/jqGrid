@@ -385,14 +385,24 @@ $.fn.jqGrid = function( p ) {
 			if(!ts.p.xmlReader.repeatitems) {f = reader("xml");}
 			if( ts.p.keyIndex===false) {
 				idn = ts.p.xmlReader.id;
-				if( idn.indexOf("[") === -1 ) {
+            } else {
+                idn = ts.p.keyIndex;
+            }
+			if(f.length>0 && !isNaN(idn)) {
+                if (ts.p.remapColumns && ts.p.remapColumns.length) {
+                    idn = $.inArray(idn, ts.p.remapColumns);
+                }
+                idn=f[idn];
+            }
+			if( (idn+"").indexOf("[") === -1 ) {
+                if (f.length) {
 					getId = function( trow, k) {return $(idn,trow).text() || k;};
-				}
-				else {
-					getId = function( trow, k) {return trow.getAttribute(idn.replace(/[\[\]]/g,"")) || k;};
-				}
-			} else {
-				getId = function(trow) { return (f.length - 1 >= ts.p.keyIndex) ? $(f[ts.p.keyIndex],trow).text() : $(ts.p.xmlReader.cell+":eq("+ts.p.keyIndex+")",trow).text(); };
+                } else {
+				    getId = function( trow, k) {return $(ts.p.xmlReader.cell,trow).eq(idn).text() || k;};
+                }
+			}
+			else {
+				getId = function( trow, k) {return trow.getAttribute(idn.replace(/[\[\]]/g,"")) || k;};
 			}
 			$(ts.p.xmlReader.page,xml).each(function() {ts.p.page = this.textContent  || this.text || 1; });
 			$(ts.p.xmlReader.total,xml).each(function() {ts.p.lastpage = this.textContent  || this.text || 1; }  );
@@ -489,9 +499,14 @@ $.fn.jqGrid = function( p ) {
 
 			if( ts.p.keyIndex===false ) {
 				idn = ts.p.jsonReader.id;
-				if(f.length>0 && !isNaN(idn)) {idn=f[idn];}
 			} else {
-				idn = f.length>0 ? f[ts.p.keyIndex] : ts.p.keyIndex;
+				idn = ts.p.keyIndex;
+			}
+			if(f.length>0 && !isNaN(idn)) {
+                if (ts.p.remapColumns && ts.p.remapColumns.length) {
+                    idn = $.inArray(idn, ts.p.remapColumns);
+                }
+                idn=f[idn];
 			}
 			drows = data[ts.p.jsonReader.root];
 			if (drows) {
