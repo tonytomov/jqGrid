@@ -8,7 +8,7 @@
  * Date: 2009-09-06
  */
 $.jgrid = $.jgrid || {};
-$.extend($.jgrid,{  
+$.extend($.jgrid,{
 	htmlDecode : function(value){
 		if(value=='&nbsp;' || value=='&#160;' || (value.length==1 && value.charCodeAt(0)==160)) { return "";}
 		return !value ? value : String(value).replace(/&amp;/g, "&").replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"');
@@ -68,7 +68,7 @@ $.extend($.jgrid,{
 		if (!this.no_legacy_api) {
 			$.fn.extend(methods);
 		}
-	}	
+	}
 });
 
 $.fn.jqGrid = function( p ) {
@@ -1611,10 +1611,10 @@ $.jgrid.extend({
 		});
 		return success;
 	},
-	setRowData : function(rowid, data) {
+	setRowData : function(rowid, data, cssp) {
 		var nm, success=false;
 		this.each(function(){
-			var t = this, vl, ind;
+			var t = this, vl, ind, cp = typeof cssp;;
 			if(!t.grid) {return false;}
 			ind = t.rows.namedItem(rowid);
 			if(!ind) return false;
@@ -1632,6 +1632,7 @@ $.jgrid.extend({
 					}
 				});
 			}
+			if(cp === 'string') {$(ind).addClass(cssp);} else if(cp === 'object') {$(ind).css(cssp);}
 		});
 		return success;
 	},
