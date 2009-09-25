@@ -15,6 +15,21 @@ if ($.browser.msie && $.browser.version==8) {
 	}
 }
 
+if ($.ui.multiselect && $.ui.multiselect.prototype._setSelected) {
+    var setSelected = $.ui.multiselect.prototype._setSelected;
+    $.ui.multiselect.prototype._setSelected = function(item,selected) {
+        var ret = setSelected.call(this,item,selected);
+        if (selected && this.selectedList) {
+            var elt = this.element;
+		    this.selectedList.find('li').each(function() {
+			    if ($(this).data('optionLink'))
+				    $(this).data('optionLink').remove().appendTo(elt);
+		    });
+        }
+        return ret;
+    }
+}
+        
 $.jgrid.extend({
 	sortableColumns : function (tblrow)
 	{
@@ -181,7 +196,7 @@ $.jgrid.extend({
         var colNames = self.jqGrid("getGridParam", "colNames");
         var colMap = {}, fixedCols = [];
 
-        select.empty(); var opt="";
+        select.empty();
         $.each(colModel, function(i) {
             colMap[this.name] = i;
             if (this.hidedlg) {
@@ -191,13 +206,9 @@ $.jgrid.extend({
                 return;
             }
 
-            if (!this.hidden) {
-                select.append("<option value='"+i+"' selected='selected'>"+colNames[i]+"</option>");
-            } else {
-                opt += "<option value='"+i+"'>"+colNames[i]+"</option>";
-            }
+            select.append("<option value='"+i+"' "+
+                          (this.hidden?"":"selected='selected'")+">"+colNames[i]+"</option>");
         });
-        if(opt) select.append(opt);
         function call(fn, obj) {
             if (!fn) return;
             if (typeof fn == 'string') {
