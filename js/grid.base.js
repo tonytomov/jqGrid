@@ -1931,7 +1931,8 @@ $.jgrid.extend({
 			if(pos>=0) {
 				var thecol = $("tr.ui-jqgrid-labels th:eq("+pos+")",$t.grid.hDiv);
 				if (nData){
-					$("div",thecol).html(nData);
+					var ico = $(".s-ico",thecol);
+					$("[id^=jqgh_]",thecol).empty().html(nData).append(ico);
 					$t.p.colNames[pos] = nData;
 				}
 				if (prop) {
