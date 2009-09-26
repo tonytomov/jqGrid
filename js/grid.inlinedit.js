@@ -189,6 +189,11 @@ $.jgrid.extend({
 				if( $t.p.savedRow[k].id == rowid) {fr = k; break;}
 			}
 			if(fr >= 0) {
+				if($.isFunction($.fn['datepicker'])) {
+					try {
+						$("input.hasDatepicker","#"+ind.id).datepicker('hide');
+					} catch (e) {}
+				}
 				$($t).jqGrid("setRowData",rowid,$t.p.savedRow[fr]);
 				$(ind).attr("editable","0");
 				$t.p.savedRow.splice(fr,1);

@@ -255,14 +255,11 @@ $.jgrid.extend({
 			if ( $t.p.savedRow.length >= 1) {fr = 0;} else {fr=null;}
 			if(fr != null) {
 				var cc = $("td:eq("+iCol+")",$t.rows[iRow]);
+				// datepicker fix
 				if($.isFunction($.fn['datepicker'])) {
-				try {
-					$.datepicker('hide');
-				} catch (e) {
 					try {
-						$.datepicker.hideDatepicker();
+						$("input.hasDatepicker",cc).datepicker('hide');
 					} catch (e) {}
-				}
 				}
 				$(cc).empty().attr("tabindex","-1");
 				$($t).jqGrid("setCell",$t.rows[iRow].id, iCol, $t.p.savedRow[fr].v);
