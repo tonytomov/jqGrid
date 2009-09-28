@@ -516,7 +516,6 @@ $.jgrid.extend({
 							}else {
 								var ofv = $(this).attr("offval");
 								postdata[this.name]= ofv;
-								extpost[this.name] = ofv;
 							}
 						break;
 						case "select-one":
@@ -770,6 +769,12 @@ $.jgrid.extend({
 								$("#FormError>td","#"+frmtb).html(ret[1]);
 								$("#FormError","#"+frmtb).show();
 							} else {
+								// remove some values if formattaer select or checkbox
+								$.each($t.p.colModel, function(i,n){
+									if(extpost[this.name] && this.formatter && this.formatter=='select') {
+										try {delete extpost[this.name]} catch (e) {}
+									}
+								})
 								postdata = $.extend(postdata,extpost);
 								// the action is add
 								if(postdata.id=="_empty" ) {
