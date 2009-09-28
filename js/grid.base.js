@@ -1254,7 +1254,7 @@ $.fn.jqGrid = function( p ) {
 					} else {
 						ri = ptr[0].rowIndex;
 						ci = $.jgrid.getCellIndex(td);
-						try {$(ts).jqGrid("editCell",ri,ci,true);} catch (e) {}
+						try {$(ts).jqGrid("editCell",ri,ci,true);} catch (_) {}
 					}
 				} else if ( !ts.p.multikey ) {
 					if(ts.p.multiselect && ts.p.multiboxonly) {
@@ -1306,7 +1306,7 @@ $.fn.jqGrid = function( p ) {
 				if($(ptr).length === 0 ){return false;}
 				ri = ptr[0].rowIndex;
 				ci = $.jgrid.getCellIndex(td);
-				ts.p.ondblClickRow($(ptr).attr("id"),ri,ci);
+				ts.p.ondblClickRow($(ptr).attr("id"),ri,ci, e);
 				return false;
 			});
 		}
@@ -1318,7 +1318,7 @@ $.fn.jqGrid = function( p ) {
 				if(!ts.p.multiselect) {	$(ts).jqGrid("setSelection",ptr[0].id,true);	}
 				ri = ptr[0].rowIndex;
 				ci = $.jgrid.getCellIndex(td);
-				ts.p.onRightClickRow($(ptr).attr("id"),ri,ci);
+				ts.p.onRightClickRow($(ptr).attr("id"),ri,ci, e);
 				return false;
 			});
 		}
