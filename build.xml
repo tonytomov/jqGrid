@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<project name="jQgrid" default="build" basedir=".">
+
+    <!-- define the path of YUIcompressor in this file -->
+    <property file="build.properties" />
+
+    <property description="Source Folder" name="srcdir" value="js" />
+    <property description="Folder for jquery, min, lite and packed target" name="distdir" value="./dist" />
+
+    <!-- Files names for distribution -->
+    <property name="jqGrid" value="jquery.jqGrid.js" />
+    <property name="jqGrid.min" value="jquery.jqGrid.min.js" />
+
+    <target name="init">
+        <mkdir dir="${distdir}" />
+    </target>
+
+    <target name="jqgrid" depends="init">
+        <concat destfile="${distdir}/${jqGrid}">
+            <fileset dir="${srcdir}">
+                <include name="grid.base.js" />
+                <include name="grid.common.js" />
+                <include name="grid.formedit.js" />
+                <include name="grid.inlinedit.js" />
+                <include name="grid.celledit.js" />
+                <include name="grid.subgrid.js" />
+                <include name="grid.treegrid.js" />
+                <include name="grid.custom.js" />
+                <include name="grid.postext.js" />
+                <include name="grid.tbltogrid.js" />
+                <include name="grid.setcolumns.js" />
+                <include name="grid.import.js" />
+                <include name="jquery.fmatter.js" />
+                <include name="JsonXml.js" />
+                <include name="grid.jqueryui.js" />
+                <include name="jquery.searchFilter.js" />
+            </fileset>
+        </concat>
+    </target>
+
+    <target name="jqgrid.min" depends="jqgrid">
+        <apply executable="java" parallel="false" verbose="true" failonerror="true" dest="${distdir}">
+            <fileset dir="${distdir}">
+                <include name="${jqGrid}" />
+            </fileset>
+            <arg line="-jar" />
+            <arg path="${YUICompressor}" />
+            <arg value="--charset" />
+            <arg value="ANSI" />
+            <arg value="-o" />
+            <targetfile />
+            <mapper type="glob" from="${jqGrid}" to="${jqGrid.min}" />
+        </apply>
+    </target>
+
+    <target name="i18n">
+        <mkdir dir="${distdir}/i18n" />
+        <copy todir="${distdir}/i18n" overwrite="true">
+            <fileset dir="${srcdir}/i18n">
+                <include name="grid.locale-*.js" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="build" depends="jqgrid, jqgrid.min, i18n"/>
+
+    <target name="clean">
+        <delete dir="${distdir}" />
+    </target>
+
+    <target name="all" depends="clean,build"/>
+
+</project>
