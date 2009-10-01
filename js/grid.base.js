@@ -169,7 +169,8 @@ $.fn.jqGrid = function( p ) {
 	viewsortcols : [false,'vertical',true],
 	resizeclass : '',
 	autoencode : false,
-    remapColumns : []
+    remapColumns : [],
+	ajaxOptions :{}
 	}, $.jgrid.defaults, p || {});
 	var grid={         
 		headers:[],
@@ -649,7 +650,11 @@ $.fn.jqGrid = function( p ) {
 				case "jsonp":
 				case "xml":
 				case "script":
-					$.ajax({url:ts.p.url,type:ts.p.mtype,dataType: dt ,data: ts.p.postData,
+					$.ajax($.extend({
+						url:ts.p.url,
+						type:ts.p.mtype,
+						dataType: dt ,
+						data: $.isFunction(ts.p.serializeData)? ts.p.serializeData.call(self,ts.p.postData) : ts.p.postData,
 						complete:function(req,st) {
 							if(st=="success" || (req.statusText == "OK" && req.status == "200")) {
 								if(dt === "xml") addXmlData(req.responseXML,ts.grid.bDiv,rcnt);
@@ -668,7 +673,7 @@ $.fn.jqGrid = function( p ) {
 							beginReq();
 							if(loadBeforeSend) loadBeforeSend(xhr);
 						}
-					});
+					},ts.p.ajaxOptions));
 					if( ts.p.loadonce || ts.p.treeGrid) {ts.p.datatype = "local";}
 				break;
 				case "xmlstring":
