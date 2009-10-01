@@ -113,6 +113,18 @@ $.jgrid.extend({
 							}
 							if(cm.formatter && cm.formatter == 'select') tmp2={};
 							break;
+						case 'custom' :
+							try {
+								if(cm.editoptions && $.isFunction(cm.editoptions.custom_value)) {
+									tmp[nm] = cm.editoptions.custom_value.call(self,$(".customelement",this));
+									if (!tmp[nm]) throw "e2";
+								} else throw "e1";
+							} catch (e) {
+								if (e=="e1") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' is not defined!",jQuery.jgrid.edit.bClose);
+								if (e=="e2") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' not return a value!",jQuery.jgrid.edit.bClose);
+								else info_dialog(jQuery.jgrid.errors.errcap,e.message,jQuery.jgrid.edit.bClose);
+							}
+							break;
 					}
 					cv = checkValues(tmp[nm],i,$t);
 					if(cv[0] === false) {

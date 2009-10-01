@@ -508,7 +508,22 @@ $.jgrid.extend({
 				return stat;
 			}			
 			function getFormData(){
-				$(".FormElement", "#"+frmtb).each(function(i){
+				$(".FormElement", "#"+frmtb).each(function(i) {
+					if($(this).hasClass("customelement")) {
+						var nm = this.name, elem = this;
+						$.each($t.p.colModel, function(i,n){
+							if(this.name == nm && this.editoptions && $.isFunction(this.editoptions.custom_value)) {
+								try {
+									postdata[nm] = cm.editoptions.custom_value.call(self,$(elem),'get');
+									if (!postdata[nm]) throw "e1";
+								} catch (e) {
+									if (e=="e1") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' not return a value!",jQuery.jgrid.edit.bClose);
+									else info_dialog(jQuery.jgrid.errors.errcap,e.message,jQuery.jgrid.edit.bClose);
+								}
+								return true;
+							}
+						});
+					} else {
 					switch ($(this).get(0).type) {
 						case "checkbox":
 							if($(this).attr("checked")) {
@@ -541,6 +556,7 @@ $.jgrid.extend({
 							postdata[this.name] = $(this).val();
 							postdata[this.name] = !$t.p.autoencode ? postdata[this.name] : $.jgrid.htmlEncode(postdata[this.name]);
 						break;
+					}
 					}
 				});
 				return true;
@@ -714,7 +730,17 @@ $.jgrid.extend({
 									$("#"+nm,"#"+fmid).attr("checked",false);
 									$("#"+nm,"#"+fmid).attr("defaultChecked",""); //ie
 								}
-								break; 
+								break;
+							case 'custom' :
+								try {
+									if(cm[i].editoptions && $.isFunction(cm[i].editoptions.custom_value)) {
+										var dummy = cm[i].editoptions.custom_value.call(self,$(".customelement",this),'set');
+									} else throw "e1";
+								} catch (e) {
+									if (e=="e1") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' is not defined!",jQuery.jgrid.edit.bClose);
+									else info_dialog(jQuery.jgrid.errors.errcap,e.message,jQuery.jgrid.edit.bClose);
+								}
+								brak;
 						}
 						cnt++;
 					}
@@ -772,9 +798,9 @@ $.jgrid.extend({
 								// remove some values if formattaer select or checkbox
 								$.each($t.p.colModel, function(i,n){
 									if(extpost[this.name] && this.formatter && this.formatter=='select') {
-										try {delete extpost[this.name]} catch (e) {}
+										try {delete extpost[this.name];} catch (e) {}
 									}
-								})
+								});
 								postdata = $.extend(postdata,extpost);
 								// the action is add
 								if(postdata.id=="_empty" ) {

@@ -343,6 +343,19 @@ function createEl(eltype,options,vl,autowidth) {
 			options = bindEv(elem,options);
 			jQuery(elem).attr(options);
 			break;
+		case "custom" :
+			try {
+				if(jQuery.isFunction(options.custom_element)) {
+					elem = options.custom_element.call(self,vl,options);
+					if(elem) jQuery(elem).addClass("customelement").attr({id:options.id,name:options.name});
+					else throw "e2";
+				} else 	throw "e1";
+			} catch (e) {
+				if (e=="e1") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_element' is not defined!",jQuery.jgrid.edit.bClose);
+				if (e=="e2") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_element' not return a value!",jQuery.jgrid.edit.bClose);
+				else info_dialog(jQuery.jgrid.errors.errcap,e.message,jQuery.jgrid.edit.bClose);
+			}
+			break;
 	}
 	return elem;
 }
@@ -409,6 +422,22 @@ function checkValues(val, valref,g) {
                 if(!filter.test(val)) {return [false,nm+": "+jQuery.jgrid.edit.msg.url,""];}
             }
         }
+		if(edtrul.custom === true) {
+            if( !(rqfield === false && isEmpty(val)) ) {
+				if(jQuery.isFunction(edtrul.custom_func)) {
+					var ret = edtrul.custom_func.call(self,val);
+					if(jQuery.isArray(ret)) {
+						if(ret[0]===false) return ret;
+					} else {
+						// Here translation needed in lang file
+						return [false,"Custom function should return array!",""];
+					}
+				} else {
+					// Here translation needed in lang file
+					return [false,"Custom function should be present in case of custom checking!",""];
+				}
+			}
+		}
 	}
 	return [true,"",""];
 }

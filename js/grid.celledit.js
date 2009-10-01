@@ -116,10 +116,10 @@ $.jgrid.extend({
 			if ( $t.p.savedRow.length >= 1) {fr = 0;} else {fr=null;} 
 			if(fr != null) {
 				var cc = $("td:eq("+iCol+")",$t.rows[iRow]),v,v2,
-				nm = $t.p.colModel[iCol].name, nmjq = $.jgrid.jqID(nm);
-				switch ($t.p.colModel[iCol].edittype) {
+				cm = $t.p.colModel[iCol], nm = cm.name, nmjq = $.jgrid.jqID(nm) ;
+				switch (cm.edittype) {
 					case "select":
-						if(!$t.p.colModel[iCol].editoptions.multiple) {
+						if(!cm.editoptions.multiple) {
 							v = $("#"+iRow+"_"+nmjq+">option:selected",$t.rows[iRow]).val();
 							v2 = $("#"+iRow+"_"+nmjq+">option:selected",$t.rows[iRow]).text();
 						} else {
@@ -133,12 +133,12 @@ $.jgrid.extend({
 							);
 							v2 = selectedText.join(",");
 						}
-						if($t.p.colModel[iCol].formatter) v2 = v;
+						if(cm.formatter) v2 = v;
 						break;
 					case "checkbox":
 						var cbv  = ["Yes","No"];
-						if($t.p.colModel[iCol].editoptions){
-							cbv = $t.p.colModel[iCol].editoptions.value.split(":");
+						if(cm.editoptions){
+							cbv = cm.editoptions.value.split(":");
 						}
 						v = $("#"+iRow+"_"+nmjq,$t.rows[iRow]).attr("checked") ? cbv[0] : cbv[1];
 						v2=v;
@@ -149,6 +149,18 @@ $.jgrid.extend({
 					case "button" :
 						v = !$t.p.autoencode ? $("#"+iRow+"_"+nmjq,$t.rows[iRow]).val() : $.jgrid.htmlEncode($("#"+iRow+"_"+nmjq,$t.rows[iRow]).val());
 						v2=v;
+						break;
+					case 'custom' :
+						try {
+							if(cm.editoptions && $.isFunction(cm.editoptions.custom_value)) {
+								v = cm.editoptions.custom_value.call(self,$(".customelement",cc));
+								if (!v) throw "e2"; else v2=v;
+							} else throw "e1";
+						} catch (e) {
+							if (e=="e1") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' is not defined!",jQuery.jgrid.edit.bClose);
+							if (e=="e2") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' not return a value!",jQuery.jgrid.edit.bClose);
+							else info_dialog(jQuery.jgrid.errors.errcap,e.message,jQuery.jgrid.edit.bClose);
+						}
 						break;
 				}
 				// The common approach is if nothing changed do not do anything
