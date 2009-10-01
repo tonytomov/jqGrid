@@ -785,7 +785,7 @@ $.fn.jqGrid = function( p ) {
 			if(ts.p.multiselect) {
 				$("tbody tr", ts.grid.bDiv).removeClass("ui-state-highlight");
 				$("[id^=jqg_]",ts.rows).attr("checked",false);
-				$("#cb_jqg",ts.grid.hDiv).attr("checked",false);
+				$("#cb_"+$.jgrid.jqID(ts.p.id),ts.grid.hDiv).attr("checked",false);
 				ts.p.selarrrow = [];
 			}
 			ts.grid.bDiv.scrollTop = 0;
@@ -821,7 +821,7 @@ $.fn.jqGrid = function( p ) {
 			clearVals = function(onpaging){
 				if ($.isFunction(ts.p.onPaging) ) {ts.p.onPaging(onpaging);}
 				ts.p.selrow = null;
-				if(ts.p.multiselect) {ts.p.selarrrow =[];$('#cb_jqg',ts.grid.hDiv).attr("checked",false);}
+				if(ts.p.multiselect) {ts.p.selarrrow =[];$('#cb_'+$.jgrid.jqID(ts.p.id),ts.grid.hDiv).attr("checked",false);}
 				ts.p.savedRow = [];
 			};
 			pgcnt = "pg_"+pgid;
@@ -950,7 +950,7 @@ $.fn.jqGrid = function( p ) {
 				if(ts.p.deselectAfterSort) {$(ts).jqGrid("resetSelection");}
 			} else {
 				ts.p.selrow = null;
-				if(ts.p.multiselect){$("#cb_jqg",ts.grid.hDiv).attr("checked",false);}
+				if(ts.p.multiselect){$("#cb_"+$.jgrid.jqID(ts.p.id),ts.grid.hDiv).attr("checked",false);}
 				ts.p.selarrrow =[];
 				ts.p.savedRow =[];
 				if(ts.p.scroll===true) {emptyRows(ts.grid.bDiv);}
@@ -1047,7 +1047,7 @@ $.fn.jqGrid = function( p ) {
 			try { $(ts).jqGrid("setSubGrid");} catch (_){}
 		}
 		if(this.p.multiselect) {
-			this.p.colNames.unshift("<input id='cb_jqg' class='cbox' type='checkbox'/>");
+			this.p.colNames.unshift("<input id='cb_"+this.p.id+"' class='cbox' type='checkbox'/>");
 			this.p.colModel.unshift({name:'cb',width:isSafari ?  ts.p.multiselectWidth+ts.p.cellLayout : ts.p.multiselectWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center'});
 		}
 		if(this.p.rownumbers) {
@@ -1110,7 +1110,7 @@ $.fn.jqGrid = function( p ) {
 		if(this.p.multiselect) {
 			var onSA = true, emp=[], chk;
 			if(typeof ts.p.onSelectAll !== 'function') {onSA=false;}
-			$('#cb_jqg',this).bind('click',function(){
+			$('#cb_'+$.jgrid.jqID(ts.p.id),this).bind('click',function(){
 				if (this.checked) {
 					$("[id^=jqg_]",ts.rows).attr("checked",true);
 					$(ts.rows).each(function(i) {
@@ -1266,7 +1266,7 @@ $.fn.jqGrid = function( p ) {
 								$("#jqg_"+$.jgrid.jqID(n),ind).attr("checked",false);
 							});
 							ts.p.selarrrow = [];
-							$("#cb_jqg",ts.grid.hDiv).attr("checked",false);
+							$("#cb_"+$.jgrid.jqID(ts.p.id),ts.grid.hDiv).attr("checked",false);
 							$(ts).jqGrid("setSelection",ptr[0].id,true);
 						}
 					} else {
@@ -1292,7 +1292,7 @@ $.fn.jqGrid = function( p ) {
 			if(ts.p.datatype=="local"){ $(ts).jqGrid("resetSelection");}
 			else if(!ts.p.treeGrid) {
 				ts.p.selrow=null;
-				if(ts.p.multiselect) {ts.p.selarrrow =[];$('#cb_jqg',ts.grid.hDiv).attr("checked",false);}
+				if(ts.p.multiselect) {ts.p.selarrrow =[];$('#cb_'+$.jgrid.jqID(ts.p.id),ts.grid.hDiv).attr("checked",false);}
 				ts.p.savedRow = [];
 				if(ts.p.scroll===true) {emptyRows(ts.grid.bDiv);}
 			}
@@ -1540,7 +1540,7 @@ $.jgrid.extend({
 					$(ind).removeClass("ui-state-highlight").attr("aria-selected","false");
 					$("#jqg_"+$.jgrid.jqID(n),ind).attr("checked",false);
 				});
-				$("#cb_jqg",t.grid.hDiv).attr("checked",false);
+				$("#cb_"+$.jgrid.jqID(t.p.id),t.grid.hDiv).attr("checked",false);
 				t.p.selarrrow = [];
 			}
 			t.p.savedRow = [];
