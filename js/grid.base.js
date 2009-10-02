@@ -788,12 +788,6 @@ $.fn.jqGrid = function( p ) {
 					row.sortKey = null;
 				});
 			}
-			if(ts.p.multiselect) {
-				$("tbody tr", ts.grid.bDiv).removeClass("ui-state-highlight");
-				$("[id^=jqg_]",ts.rows).attr("checked",false);
-				$("#cb_"+$.jgrid.jqID(ts.p.id),ts.grid.hDiv).attr("checked",false);
-				ts.p.selarrrow = [];
-			}
 			ts.grid.bDiv.scrollTop = 0;
 		},
 		parseDate = function(format, date) {
