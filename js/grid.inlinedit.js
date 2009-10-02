@@ -16,7 +16,7 @@ $.jgrid.extend({
 			ind = $($t).jqGrid("getInd",rowid,true);
 			if( ind == false ) {return;}
 			editable = $(ind).attr("editable") || "0";
-			if (editable == "0") {
+			if (editable == "0" && !$(ind).hasClass("not-editable-row")) {
 				cm = $t.p.colModel;
 				$('td',ind).each( function(i) {
 					nm = cm[i].name;
@@ -155,8 +155,9 @@ $.jgrid.extend({
 					if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
 					if( $.isFunction(aftersavefunc) ) { aftersavefunc(rowid,resp); }
 				} else {
-					$.ajax({url:url,
-						data: tmp,
+					$.ajax($.extend({
+						url:url,
+						data: $.isFunction($t.p.serializeRowData)? $t.p.serializeRowData.call(self,tmp) : tmp,
 						type: "POST",
 						complete: function(res,stat){
 							if (stat === "success"){
@@ -182,7 +183,7 @@ $.jgrid.extend({
 								alert("Error Row: "+rowid+" Result: " +res.status+":"+res.statusText+" Status: "+stat);
 							}
 						}
-					});
+					}, $.jgrid.ajaxOptions, $t.p.ajaxRowOptions || {}));
 				}
 				$t.grid.hDiv.loading = false;
 				$("div.loading",$t.grid.hDiv).fadeOut("fast");

@@ -63,6 +63,7 @@ $.extend($.jgrid,{
 		sid = sid + "";
 		return sid.replace(/([\.\:\[\]])/g,"\\$1");
 	},
+	ajaxOptions: {},
 	extend : function(methods) {
 		$.extend($.fn.jqGrid,methods);
 		if (!this.no_legacy_api) {
@@ -170,7 +171,7 @@ $.fn.jqGrid = function( p ) {
 	resizeclass : '',
 	autoencode : false,
     remapColumns : [],
-	ajaxOptions :{}
+	ajaxGridOptions :{}
 	}, $.jgrid.defaults, p || {});
 	var grid={         
 		headers:[],
@@ -654,7 +655,7 @@ $.fn.jqGrid = function( p ) {
 						url:ts.p.url,
 						type:ts.p.mtype,
 						dataType: dt ,
-						data: $.isFunction(ts.p.serializeData)? ts.p.serializeData.call(self,ts.p.postData) : ts.p.postData,
+						data: $.isFunction(ts.p.serializeGridData)? ts.p.serializeGridData.call(self,ts.p.postData) : ts.p.postData,
 						complete:function(req,st) {
 							if(st=="success" || (req.statusText == "OK" && req.status == "200")) {
 								if(dt === "xml") addXmlData(req.responseXML,ts.grid.bDiv,rcnt);
@@ -673,7 +674,7 @@ $.fn.jqGrid = function( p ) {
 							beginReq();
 							if(loadBeforeSend) loadBeforeSend(xhr);
 						}
-					},ts.p.ajaxOptions));
+					},$.jgrid.ajaxOptions, ts.p.ajaxGridOptions));
 					if( ts.p.loadonce || ts.p.treeGrid) {ts.p.datatype = "local";}
 				break;
 				case "xmlstring":

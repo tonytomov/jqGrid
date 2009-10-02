@@ -21,9 +21,11 @@
  * afterSubmitCell(if cellsubmit remote (ajax)),
  * afterSaveCell,
  * errorCell,
+ * serializeCellData - new
  * Options
  * cellsubmit (remote,clientArray) (added in grid options)
  * cellurl
+ * ajaxCellOptions
 * */
 $.jgrid.extend({
 	editCell : function (iRow,iCol, ed){
@@ -56,8 +58,8 @@ $.jgrid.extend({
 			}
 			nm = $t.p.colModel[iCol].name;
 			if (nm=='subgrid' || nm=='cb' || nm=='rn') {return;}
-			if ($t.p.colModel[iCol].editable===true && ed===true) {
-				cc = $("td:eq("+iCol+")",$t.rows[iRow]);
+			cc = $("td:eq("+iCol+")",$t.rows[iRow]);
+			if ($t.p.colModel[iCol].editable===true && ed===true && !cc.hasClass("not-editable-cell")) {
 				if(parseInt($t.p.iCol)>=0  && parseInt($t.p.iRow)>=0) {
 					$("td:eq("+$t.p.iCol+")",$t.rows[$t.p.iRow]).removeClass("edit-cell ui-state-highlight");
 					$($t.rows[$t.p.iRow]).removeClass("selected-row ui-state-hover");
@@ -99,10 +101,10 @@ $.jgrid.extend({
 					$("td:eq("+$t.p.iCol+")",$t.rows[$t.p.iRow]).removeClass("edit-cell ui-state-highlight");
 					$($t.rows[$t.p.iRow]).removeClass("selected-row ui-state-hover");
 				}
-				$("td:eq("+iCol+")",$t.rows[iRow]).addClass("edit-cell ui-state-highlight");
+				cc.addClass("edit-cell ui-state-highlight");
 				$($t.rows[iRow]).addClass("selected-row ui-state-hover"); 
 				if ($.isFunction($t.p.onSelectCell)) {
-					tmp = $("td:eq("+iCol+")",$t.rows[iRow]).html().replace(/\&nbsp\;/ig,'');
+					tmp = cc.html().replace(/\&nbsp\;/ig,'');
 					$t.p.onSelectCell($t.rows[iRow].id,nm,tmp,iRow,iCol);
 				}
 			}
@@ -183,9 +185,9 @@ $.jgrid.extend({
 								postdata[nm] = v;
 								postdata["id"] = $t.rows[iRow].id;
 								postdata = $.extend(addpost,postdata);
-								$.ajax({
+								$.ajax( $.extend( {
 									url: $t.p.cellurl,
-									data :postdata,
+									data :$.isFunction($t.p.serializeCellData) ? $t.p.serializeCellData.call(self,postdata) : postdata,
 									type: "POST",
 									complete: function (result, stat) {
 										if (stat == 'success') {
@@ -225,7 +227,7 @@ $.jgrid.extend({
 											$($t).jqGrid("restoreCell",iRow,iCol);
 										}
 									}
-								});
+								}, $.jgrid.ajaxOptions, $t.p.ajaxCellOptions || {}));
 							} else {
 								try {
 									info_dialog($.jgrid.errors.errcap,$.jgrid.errors.nourl,$.jgrid.edit.bClose);
