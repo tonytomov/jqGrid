@@ -343,13 +343,13 @@
 					op = $.extend({},opts.number,op);
 					sep = op.thousandsSeparator.replace(re,"\\$1");
 					stripTag = new RegExp(sep, "g");
-					ret = $(cellval).text().replace(op.decimalSeparator,'.').replace(stripTag,"");
+					ret = $(cellval).text().replace(stripTag,"").replace(op.decimalSeparator,'.');
 					break;
 				case 'currency':
 					op = $.extend({},opts.currency,op);
 					sep = op.thousandsSeparator.replace(re,"\\$1");
 					stripTag = new RegExp(sep, "g");
-					ret = $(cellval).text().replace(op.decimalSeparator,'.').replace(op.prefix,'').replace(op.suffix,'').replace(stripTag,'');
+					ret = $(cellval).text().replace(stripTag,'').replace(op.decimalSeparator,'.').replace(op.prefix,'').replace(op.suffix,'');
 					break;
 				case 'checkbox' :
 					var cbv = (options.colModel.editoptions) ? options.colModel.editoptions.value.split(":") : ["Yes","No"];
