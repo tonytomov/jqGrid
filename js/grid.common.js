@@ -204,7 +204,7 @@ function isArray(obj) {
 	}
 }
 // Form Functions
-function createEl(eltype,options,vl,autowidth) {
+function createEl(eltype,options,vl,autowidth, ajaxso) {
 	var elem = "";
 	if(options.defaultValue) delete options['defaultValue'];
 	function bindEv (el, opt) {
@@ -267,26 +267,40 @@ function createEl(eltype,options,vl,autowidth) {
 			break;
 		case "select" :
 			elem = document.createElement("select");
-			var msl = options.multiple===true ? true : false;
+			var msl = options.multiple===true ? true : false, ovm = [];
 			if(options.dataUrl != null) {
-				jQuery.get(options.dataUrl,{_nsd : (new Date().getTime())},function(data){
-					try {delete options['dataUrl'];delete options['value'];} catch (e){}
-					var a = jQuery(data).html();
-					jQuery(elem).append(a);
-					options = bindEv(elem,options);
-					if(typeof options.size === 'undefined') { options.size =  msl ? 3 : 1;}
-					jQuery(elem).attr(options);
-					setTimeout(function(){
-						jQuery("option",elem).each(function(i){
-							if(jQuery(this).text()==vl || jQuery(this).val()==vl) {
-								this.selected= "selected";
-								return false;
+				jQuery.ajax(jQuery.extend({
+					url: options.dataUrl,
+					type : "GET",
+					data : {nd:new Date().getTime()},
+					complete: function(data,status){
+						try {delete options['dataUrl'];delete options['value'];} catch (e){}
+						var a = jQuery(data.responseText).html();
+						if(a) {
+							jQuery(elem).append(a);
+							options = bindEv(elem,options);
+							if(typeof options.size === 'undefined') { options.size =  msl ? 3 : 1;}
+							if(msl) {
+								ovm = vl.split(",");
+								ovm = jQuery.map(ovm,function(n){return jQuery.trim(n)});
+							} else {
+								ovm[0] = vl;
 							}
-						});
-					},0);
-				},'html');
+							jQuery(elem).attr(options);
+							setTimeout(function(){
+								jQuery("option",elem).each(function(i){
+									if(i==0) this.selected = "";
+									if(jQuery.inArray(jQuery(this).text(),ovm) > -1 || jQuery.inArray(jQuery(this).val(),ovm)>-1) {
+										this.selected= "selected";
+										if(!msl) return false;
+									}
+								});
+							},0);
+						}
+					}
+				},ajaxso || {}));
 			} else if(options.value) {
-				var ovm = [], i;
+				var i;
 				if(msl) {
 					ovm = vl.split(",");
 					ovm = jQuery.map(ovm,function(n){return jQuery.trim(n)});

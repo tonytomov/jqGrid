@@ -303,16 +303,19 @@ jQuery.fn.searchFilter = function(fields, options) {
                     has_custom_data = true;
                     var dEvents = this.dataEvents;
                     var iEvent = this.dataInit;
-                    jQuery.get(this.dataUrl, function(data) {
-                        var $d = jQuery("<div />").append(data);
-                        $d.find("select").addClass("field" + field_num).hide();
-                        jData.append($d.html());
-                        if (iEvent) initData(".field" + i, iEvent);
-                        if (dEvents) bindDataEvents(".field" + i, dEvents);
-                        if (i == highest_late_setup) { // change should get called no more than twice when this searchFilter is constructed
-                            jQ.find("tr.sf td.fields select[name='field']").change();
+                    jQuery.ajax(jQuery.extend({
+                        url : this.dataUrl,
+                        complete: function(data) {
+                            var $d = jQuery("<div />").append(data.responseText);
+                            $d.find("select").addClass("field" + field_num).hide();
+                            jData.append($d.html());
+                            if (iEvent) initData(".field" + i, iEvent);
+                            if (dEvents) bindDataEvents(".field" + i, dEvents);
+                            if (i == highest_late_setup) { // change should get called no more than twice when this searchFilter is constructed
+                                jQ.find("tr.sf td.fields select[name='field']").change();
+                            }
                         }
-                    });
+                    },opts.ajaxSelectOptions));
                 } else if (this.dataValues != null) {
                     has_custom_data = true;
                     var custom_data = "";
@@ -587,5 +590,11 @@ jQuery.fn.searchFilter.defaults = {
      * TYPE:        string
      * DESCRIPTION: the title of the searchFilter window
      */
-    windowTitle: "Search Rules"
+    windowTitle: "Search Rules",
+    /*
+     * PROPERTY
+     * TYPE:        object
+     * DESCRIPTION: options to extend the ajax request
+     */
+    ajaxSelectOptions : {}
 }; /* end of searchFilter */
