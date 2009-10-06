@@ -627,7 +627,7 @@ $.jgrid.extend({
 				        else
 				            jElem.bind(this.type, this.fn);
 				    });
-				}				
+				}
 			}
 			var tr = $("<tr class='ui-search-toolbar' role='rowheader'></tr>"), th,thd, soptions;
 			$.each($t.p.colModel,function(i,n){
@@ -642,23 +642,31 @@ $.jgrid.extend({
 					switch (this.stype)
 					{
 					case "select":
-						if(this.surl) {
-							// data returned should have already have constructed html select
-							$(thd).load(this.surl,{_nsd : (new Date().getTime())},function(){
-								if(soptions.defaultValue) $("select",this).val(soptions.defaultValue);
-								$("select",this).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
-								if(soptions.attr) {$("select",this).attr(soptions.attr);}
-								$("select",this).css({width: "100%"});
-								// preserve autoserch
-								if(soptions.dataInit != null) soptions.dataInit($("select",this)[0]);
-								if(soptions.dataEvents != null) bindEvents($("select",this)[0],soptions.dataEvents);
-								if(p.autosearch===true){
-									$("select",this).change(function(e){
-										triggerToolbar();
-										return false;
-									});
+						var surl = this.surl || soptions.dataUrl;
+						if(surl) {
+							// data returned should have already constructed html select
+							// primitive jQuery load
+							var self = thd;
+							$.ajax($.extend({
+								url: surl,
+								dataType: "html",
+								complete: function(res,status) {
+									$(self).append(res.responseText);
+									if(soptions.defaultValue) $("select",self).val(soptions.defaultValue);
+									$("select",self).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
+									if(soptions.attr) {$("select",self).attr(soptions.attr);}
+									$("select",self).css({width: "100%"});
+									// preserve autoserch
+									if(soptions.dataInit != null) soptions.dataInit($("select",self)[0]);
+									if(soptions.dataEvents != null) bindEvents($("select",self)[0],soptions.dataEvents);
+									if(p.autosearch===true){
+										$("select",self).change(function(e){
+											triggerToolbar();
+											return false;
+										});
+									}
 								}
-							});
+							}, $.jgrid.ajaxOptions, $t.p.ajaxSelectOptions || {} ));
 						} else {
 							if(cm.editoptions && cm.editoptions.value) {
 								var oSv = cm.editoptions.value,
