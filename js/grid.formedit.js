@@ -712,7 +712,9 @@ $.jgrid.extend({
 									if (!cm[i].editoptions.multiple && (tmp == $(this).text() || tmp == $(this).val()) ){
 										this.selected= true;
 									} else if (cm[i].editoptions.multiple){
-										if(  $.inArray($(this).text(), tmp.split(",") ) > -1 || $.inArray($(this).val(), tmp.split(",") ) > -1  ){
+										var opv = tmp.split(",");
+										opv = $.map(opv,function(n){return $.trim(n)});
+										if(  $.inArray($(this).text(), opv ) > -1 || $.inArray($(this).val(), opv ) > -1  ){
 											this.selected = true;
 										}else{
 											this.selected = false;
