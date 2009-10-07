@@ -708,12 +708,12 @@ $.jgrid.extend({
 								$("#"+nm,"#"+fmid).val(tmp);
 								break;
 							case "select":
+								var opv = tmp.split(",");
+								opv = $.map(opv,function(n){return $.trim(n)});
 								$("#"+nm+" option","#"+fmid).each(function(j){
-									if (!cm[i].editoptions.multiple && (tmp == $(this).text() || tmp == $(this).val()) ){
+									if (!cm[i].editoptions.multiple && (opv[0] == $(this).text() || opv[0] == $(this).val()) ){
 										this.selected= true;
 									} else if (cm[i].editoptions.multiple){
-										var opv = tmp.split(",");
-										opv = $.map(opv,function(n){return $.trim(n)});
 										if(  $.inArray($(this).text(), opv ) > -1 || $.inArray($(this).val(), opv ) > -1  ){
 											this.selected = true;
 										}else{
