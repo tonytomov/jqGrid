@@ -267,7 +267,11 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 			break;
 		case "select" :
 			elem = document.createElement("select");
-			var msl = options.multiple===true ? true : false, ovm = [];
+			var msl, ovm = [];
+			if(options.multiple===true) {
+				msl = true;
+				elem.multiple="multiple";
+			} else msl = false;
 			if(options.dataUrl != null) {
 				jQuery.ajax(jQuery.extend({
 					url: options.dataUrl,
