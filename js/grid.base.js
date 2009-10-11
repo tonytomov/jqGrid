@@ -466,7 +466,7 @@ $.fn.jqGrid = function( p ) {
 				rd={};
 				ir++;
 				j++;
-				if( rn !=-1 && ir>rn) {break;}
+				if(ir==rn) {break;}
 			}
 			}
 			if(ts.p.gridview === true) {
@@ -575,7 +575,7 @@ $.fn.jqGrid = function( p ) {
 				rd={};
 				ir++;
 				i++;
-				if(rn !=-1 && ir>rn) break;
+				if(ir==rn) break;
 			}
 			if(ts.p.gridview === true ) {
 				$("tbody:first",t).append(rowData.join(''));
