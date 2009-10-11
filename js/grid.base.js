@@ -1991,6 +1991,7 @@ $.jgrid.extend({
 			if(!$t.grid) {return;}
 			$($t.grid.bDiv).css({height: nh+(isNaN(nh)?"":"px")});
 			$t.p.height = nh;
+            if ($t.p.scroll) $t.grid.populateVisible();
 		});
 	},
 	setCaption : function (newcap){
