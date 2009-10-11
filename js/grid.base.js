@@ -261,9 +261,9 @@ $.fn.jqGrid = function( p ) {
             var tbot = ttop + table.height();
             var div = rh * rn;
             var page, npage;
-            if (tbot < dh && parseInt((tbot + scrollTop + div - 1) / div) < p.lastpage) {
+            if (ttop <= 0 && tbot < dh && parseInt((tbot + scrollTop + div - 1) / div) < p.lastpage) {
                 npage = parseInt((dh - tbot + div - 1) / div);
-                if (npage < 2 || p.scroll === true) {
+                if (tbot >= 0 || npage < 2 || p.scroll === true) {
                     page = parseInt((tbot + scrollTop) / div) + 1;
                     ttop = -1;
                 } else {
