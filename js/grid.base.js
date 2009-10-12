@@ -423,7 +423,7 @@ $.fn.jqGrid = function( p ) {
             }
 			tBody = null;			
 		},
-		addXmlData = function (xml,t, rcnt, more) {
+		addXmlData = function (xml,t, rcnt, more, adjust) {
 			var startReq = new Date();
 			ts.p.reccount = 0;
 			if($.isXMLDoc(xml)) {
