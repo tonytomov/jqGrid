@@ -239,62 +239,62 @@ $.fn.jqGrid = function( p ) {
 			this.curGbox=null;
 			document.onselectstart=new Function ("return true");
 		},
-        populateVisible: function() {
-            if (grid.timer) clearTimeout(grid.timer);
-            grid.timer = null;
+		populateVisible: function() {
+			if (grid.timer) clearTimeout(grid.timer);
+			grid.timer = null;
 
-            var dh = $(grid.bDiv).height();
-            if (!dh) return;
-            var table = $("table:first", grid.bDiv);
-            var rows = $("> tbody > tr:visible:first", table);
-            var rh = rows.height() || grid.prevRowHeight;
-            if (!rh) return;
-            grid.prevRowHeight = rh;
-            var rn = p.rowNum;
-            if (rn < 10) {
-                rn = parseInt(dh / rh) + 1 << 1;
-                if (rn < 10) rn = 10;
-                p.rowNum = rn;
-            }
-            var scrollTop = grid.scrollTop = grid.bDiv.scrollTop;
-            var ttop = table.position().top - scrollTop;
-            var tbot = ttop + table.height();
-            var div = rh * rn;
-            var page, npage;
-            if (ttop <= 0 && tbot < dh && parseInt((tbot + scrollTop + div - 1) / div) < p.lastpage) {
-                npage = parseInt((dh - tbot + div - 1) / div);
-                if (tbot >= 0 || npage < 2 || p.scroll === true) {
-                    page = parseInt((tbot + scrollTop) / div) + 1;
-                    ttop = -1;
-                } else {
-                    ttop = 1;
-                }
-            }
-            if (ttop > 0) {
-                page = parseInt(scrollTop / div) + 1;
-                npage = parseInt((scrollTop + dh) / div) + 2 - page;
-                grid.emptyRows(grid.bDiv);
-            }
+			var dh = $(grid.bDiv).height();
+			if (!dh) return;
+			var table = $("table:first", grid.bDiv);
+			var rows = $("> tbody > tr:visible:first", table);
+			var rh = rows.height() || grid.prevRowHeight;
+			if (!rh) return;
+			grid.prevRowHeight = rh;
+			var rn = p.rowNum;
+			if (rn < 10) {
+				rn = parseInt(dh / rh) + 1 << 1;
+				if (rn < 10) rn = 10;
+				p.rowNum = rn;
+			}
+			var scrollTop = grid.scrollTop = grid.bDiv.scrollTop;
+			var ttop = table.position().top - scrollTop;
+			var tbot = ttop + table.height();
+			var div = rh * rn;
+			var page, npage;
+			if (ttop <= 0 && tbot < dh && parseInt((tbot + scrollTop + div - 1) / div) < p.lastpage) {
+				npage = parseInt((dh - tbot + div - 1) / div);
+				if (tbot >= 0 || npage < 2 || p.scroll === true) {
+					page = parseInt((tbot + scrollTop) / div) + 1;
+					ttop = -1;
+				} else {
+					ttop = 1;
+				}
+			}
+			if (ttop > 0) {
+				page = parseInt(scrollTop / div) + 1;
+				npage = parseInt((scrollTop + dh) / div) + 2 - page;
+				grid.emptyRows(grid.bDiv);
+			}
 
-            if (npage) {
-                if (page > p.lastpage) {
-                    return;
-                }
-                if (grid.hDiv.loading) {
-                    grid.timer = setTimeout(grid.populateVisible, 200);
-                } else {
-                    p.page = page;
-                    grid.populate(npage);
-                }
-            }
-        },
+			if (npage) {
+				if (page > p.lastpage) {
+					return;
+				}
+				if (grid.hDiv.loading) {
+					grid.timer = setTimeout(grid.populateVisible, 200);
+				} else {
+					p.page = page;
+					grid.populate(npage);
+				}
+			}
+		},
 		scrollGrid: function() {
 			if(p.scroll) {
 				var scrollTop = grid.bDiv.scrollTop;
 				if (scrollTop != grid.scrollTop) {
 					grid.scrollTop = scrollTop;
-                    if (grid.timer) clearTimeout(grid.timer);
-                    grid.timer = setTimeout(grid.populateVisible, 200);
+					if (grid.timer) clearTimeout(grid.timer);
+					grid.timer = setTimeout(grid.populateVisible, 200);
 				}
 			}
 			grid.hDiv.scrollLeft = grid.bDiv.scrollLeft;
@@ -417,11 +417,11 @@ $.fn.jqGrid = function( p ) {
 			if(!ts.p.gridview) $("*",tBody).children().unbind();
 			if(isMSIE) $.jgrid.empty.apply(tBody[0]);
 			else tBody[0].innerHTML="";
-            if (scroll && ts.p.scroll) {
-                $(">div:first", parent).css({paddingTop:0,height:"auto"});
-                parent.scrollTop = 0;
-            }
-			tBody = null;			
+			if (scroll && ts.p.scroll) {
+				$(">div:first", parent).css({paddingTop:0,height:"auto"});
+				parent.scrollTop = 0;
+			}
+			tBody = null;
 		},
 		addXmlData = function (xml,t, rcnt, more, adjust) {
 			var startReq = new Date();
@@ -436,21 +436,21 @@ $.fn.jqGrid = function( p ) {
 			if(!ts.p.xmlReader.repeatitems) {f = reader("xml");}
 			if( ts.p.keyIndex===false) {
 				idn = ts.p.xmlReader.id;
-            } else {
-                idn = ts.p.keyIndex;
-            }
+			} else {
+				idn = ts.p.keyIndex;
+			}
 			if(f.length>0 && !isNaN(idn)) {
-                if (ts.p.remapColumns && ts.p.remapColumns.length) {
-                    idn = $.inArray(idn, ts.p.remapColumns);
-                }
-                idn=f[idn];
-            }
+				if (ts.p.remapColumns && ts.p.remapColumns.length) {
+					idn = $.inArray(idn, ts.p.remapColumns);
+				}
+				idn=f[idn];
+			}
 			if( (idn+"").indexOf("[") === -1 ) {
-                if (f.length) {
+				if (f.length) {
 					getId = function( trow, k) {return $(idn,trow).text() || k;};
-                } else {
-				    getId = function( trow, k) {return $(ts.p.xmlReader.cell,trow).eq(idn).text() || k;};
-                }
+				} else {
+					getId = function( trow, k) {return $(ts.p.xmlReader.cell,trow).eq(idn).text() || k;};
+				}
 			}
 			else {
 				getId = function( trow, k) {return trow.getAttribute(idn.replace(/[\[\]]/g,"")) || k;};
@@ -462,7 +462,7 @@ $.fn.jqGrid = function( p ) {
 			var gxml = $(ts.p.xmlReader.root+" "+ts.p.xmlReader.row,xml),gl = gxml.length, j=0;
 			if(gxml && gl){
 			var rn = ts.p.rowNum;
-            if (adjust) rn *= adjust+1;
+			if (adjust) rn *= adjust+1;
 			while (j<gl) {
 				xmlr = gxml[j];
 				rid = getId(xmlr,j+1);
@@ -481,11 +481,11 @@ $.fn.jqGrid = function( p ) {
 					si= 1;
 				}
 				if(ts.p.xmlReader.repeatitems){
-                    if (!F) F=orderedCols(gi+si+ni);
-                    var cells = $(ts.p.xmlReader.cell,xmlr);
+					if (!F) F=orderedCols(gi+si+ni);
+					var cells = $(ts.p.xmlReader.cell,xmlr);
 					$.each(F, function (k) {
-                        var cell = cells[this];
-                        if (!cell) return false;
+						var cell = cells[this];
+						if (!cell) return false;
 						v = cell.textContent || cell.text;
 						rd[ts.p.colModel[k+gi+si+ni].name] = v;
 						rowData[ari++] = addCell(rid,v,k+gi+si+ni,j+rcnt,xmlr);
@@ -555,16 +555,16 @@ $.fn.jqGrid = function( p ) {
 				idn = ts.p.keyIndex;
 			}
 			if(f.length>0 && !isNaN(idn)) {
-                if (ts.p.remapColumns && ts.p.remapColumns.length) {
-                    idn = $.inArray(idn, ts.p.remapColumns);
-                }
-                idn=f[idn];
+				if (ts.p.remapColumns && ts.p.remapColumns.length) {
+					idn = $.inArray(idn, ts.p.remapColumns);
+				}
+				idn=f[idn];
 			}
 			drows = data[ts.p.jsonReader.root];
 			if (drows) {
 			len = drows.length, i=0;
 			var rn = ts.p.rowNum;
-            if (adjust) rn *= adjust+1;
+			if (adjust) rn *= adjust+1;
 			while (i<len) {
 				cur = drows[i];
 				idr = cur[idn];
@@ -643,18 +643,17 @@ $.fn.jqGrid = function( p ) {
 		updatepager = function(rn) {
 			var cp, last, base,bs, from,to,tot,fmt;
 			base = (parseInt(ts.p.page)-1)*parseInt(ts.p.rowNum);
-            to = base + ts.p.reccount;
-            if (ts.p.scroll) {
-                var rows = $("tbody:first > tr", ts.grid.bDiv);
-                base = to - rows.length
-                var rh = $("tbody:first > tr", ts.grid.bDiv).height();
-                if (rh) {
-                    var top = base * rh;
-                    var height = parseInt(ts.p.records,10) * rh;
-                    $(">div:first",ts.grid.bDiv).css({paddingTop: top,
-                                                      height : height - top});
-                }
-            }
+			to = base + ts.p.reccount;
+			if (ts.p.scroll) {
+				var rows = $("tbody:first > tr", ts.grid.bDiv);
+				base = to - rows.length
+				var rh = $("tbody:first > tr", ts.grid.bDiv).height();
+				if (rh) {
+					var top = base * rh;
+					var height = parseInt(ts.p.records,10) * rh;
+					$(">div:first",ts.grid.bDiv).css({paddingTop: top, height : height - top});
+				}
+			}
 			if(ts.p.pager) {
 				if (ts.p.loadonce) {
 					cp = last = 1;
@@ -674,7 +673,7 @@ $.fn.jqGrid = function( p ) {
 						$(".ui-paging-info",ts.p.pager).html(ts.p.emptyrecords);
 					else {
 						from = base+1;
-                        tot=ts.p.records;
+						tot=ts.p.records;
 						if($.fmatter) {
 							fmt = $.jgrid.formatter.integer || {};
 							from = $.fmatter.util.NumberFormat(from,fmt);
@@ -704,24 +703,24 @@ $.fn.jqGrid = function( p ) {
 				if(pN.search !== null) prm[pN.search] = ts.p.search; if(pN.nd != null) prm[pN.nd] = new Date().getTime();
 				if(pN.rows !== null) prm[pN.rows]= ts.p.rowNum; if(pN.page !== null) prm[pN.page]= ts.p.page;
 				if(pN.sort !== null) prm[pN.sort]= ts.p.sortname; if(pN.order !== null) prm[pN.order]= ts.p.sortorder;
-                var lc = loadComplete;
-                var adjust = 0;
-                npage = npage || 1;
-                if (npage > 1) {
-                    if(pN.npage != null) {
-                        prm[pN.npage] = npage;
-                        adjust = npage - 1;
-                        npage = 1;
-                    } else {
-                        lc = function() {
-                            ts.grid.hDiv.loading = false;
-                            ts.p.page++;
-                            populate(npage-1);
-                        }
-                    }
-                } else if (pN.npage != null) {
-                    delete ts.p.postData[pN.npage];
-                }
+				var lc = loadComplete;
+				var adjust = 0;
+				npage = npage || 1;
+				if (npage > 1) {
+					if(pN.npage != null) {
+						prm[pN.npage] = npage;
+						adjust = npage - 1;
+						npage = 1;
+					} else {
+						lc = function() {
+							ts.grid.hDiv.loading = false;
+							ts.p.page++;
+							populate(npage-1);
+						}
+					}
+				} else if (pN.npage != null) {
+					delete ts.p.postData[pN.npage];
+				}
 				$.extend(ts.p.postData,prm);
 				var rcnt = !ts.p.scroll ? 0 : ts.rows.length-1; 
 				if ($.isFunction(ts.p.datatype)) { ts.p.datatype(ts.p.postData,"load_"+ts.p.id); return;}
@@ -743,7 +742,7 @@ $.fn.jqGrid = function( p ) {
 								if(dt === "xml") addXmlData(req.responseXML,ts.grid.bDiv,rcnt,npage>1,adjust);
 								else addJSONData($.jgrid.parse(req.responseText),ts.grid.bDiv,rcnt,npage>1,adjust);
 								if(lc) lc(req);
-                                if (pvis) ts.grid.populateVisible();
+								if (pvis) ts.grid.populateVisible();
 							}
 							req=null;
 							endReq();
@@ -1271,14 +1270,14 @@ $.fn.jqGrid = function( p ) {
 			}
 			var s = "th>div.ui-jqgrid-sortable",r,d;
 			if (!ts.p.viewsortcols[2]) { s = "th>div>span>span.ui-grid-ico-sort" }
-            var t = $(e.target).closest(s);
+			var t = $(e.target).closest(s);
 			if (t.length != 1) return;
 			var ci = $.jgrid.getCellIndex(this);
 			if (!ts.p.viewsortcols[2]) { r=true,d=t.attr("sort") }
 			sortData($('div',this)[0].id,ci,r,d);
 			return false;
 		});
-        if (ts.p.sortable && $.fn.sortable) {
+		if (ts.p.sortable && $.fn.sortable) {
 			try {
 				$(ts).jqGrid("sortableColumns", thr);
 			} catch (e){}
@@ -1861,50 +1860,50 @@ $.jgrid.extend({
 		return this.each(function(){$(this).jqGrid("ShowHideCol",colname,"");});
 	},
 	remapColumns : function(permutation, updateCells, keepHeader)
-    {
-        function resortArray(a) {
-            var ac;
-            if (a.length) {
-                ac = $.makeArray(a);
-            } else {
-                ac = $.extend({}, a);
-            }
-            $.each(permutation, function(i) {
-                a[i] = ac[this];
-            });
-        }
-        var ts = this.get(0);
-        function resortRows(parent, clobj) {
-            $(">tr"+(clobj||""), parent).each(function() {
-                var row = this;
-                var elems = $.makeArray(row.cells);
-                $.each(permutation, function() {
-                    var e = elems[this];
-                    if (e) {
-                        row.appendChild(e);
-                    }
-                });
-            });
-        }
-        resortArray(ts.p.colModel);
-        resortArray(ts.p.colNames);
-        resortArray(ts.grid.headers);
-        resortRows($("thead:first", ts.grid.hDiv), keepHeader && ":not(.ui-jqgrid-labels)");
-        if (updateCells) {
-            resortRows($("tbody:first", ts.grid.bDiv), ".jqgrow");
-            if (ts.p.footerrow) {
-                resortRows($("tbody:first", ts.grid.sDiv));
-            }
-        }
-        if (ts.p.remapColumns) {
-            if (!ts.p.remapColumns.length)
-                ts.p.remapColumns = $.makeArray(permutation);
-            else
-                resortArray(ts.p.remapColumns);
-        }
-        ts.p.lastsort = $.inArray(ts.p.lastsort, permutation);
-        if(ts.p.treeGrid) ts.p.expColInd = $.inArray(ts.p.expColInd, permutation);
-    },
+	{
+		function resortArray(a) {
+			var ac;
+			if (a.length) {
+				ac = $.makeArray(a);
+			} else {
+				ac = $.extend({}, a);
+			}
+			$.each(permutation, function(i) {
+				a[i] = ac[this];
+			});
+		}
+		var ts = this.get(0);
+		function resortRows(parent, clobj) {
+			$(">tr"+(clobj||""), parent).each(function() {
+				var row = this;
+				var elems = $.makeArray(row.cells);
+				$.each(permutation, function() {
+					var e = elems[this];
+					if (e) {
+						row.appendChild(e);
+					}
+				});
+			});
+		}
+		resortArray(ts.p.colModel);
+		resortArray(ts.p.colNames);
+		resortArray(ts.grid.headers);
+		resortRows($("thead:first", ts.grid.hDiv), keepHeader && ":not(.ui-jqgrid-labels)");
+		if (updateCells) {
+			resortRows($("tbody:first", ts.grid.bDiv), ".jqgrow");
+			if (ts.p.footerrow) {
+				resortRows($("tbody:first", ts.grid.sDiv));
+			}
+		}
+		if (ts.p.remapColumns) {
+			if (!ts.p.remapColumns.length)
+				ts.p.remapColumns = $.makeArray(permutation);
+			else
+				resortArray(ts.p.remapColumns);
+		}
+		ts.p.lastsort = $.inArray(ts.p.lastsort, permutation);
+		if(ts.p.treeGrid) ts.p.expColInd = $.inArray(ts.p.expColInd, permutation);
+	},
 	setGridWidth : function(nwidth, shrink) {
 		return this.each(function(){
 			var $t = this, cw,
