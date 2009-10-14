@@ -232,7 +232,7 @@ $.jgrid.extend({
 			if(!$t.grid) return;
 			// Currently we disable a treeGrid sortable
 			if($t.p.treeGrid) return;
-			if($.isFunction($.fn['sortable'])) {
+			if($.fn['sortable']) {
 				opts = $.extend({
 					cursor:"move",
 					axis : 'y'
@@ -270,6 +270,7 @@ $.jgrid.extend({
 		if(!$t.grid) return;
 		// Currently we disable a treeGrid drag and drop
 		if($t.p.treeGrid) return;
+		if(!$.fn['draggable'] || !$.fn['droppable']) return;
 		function updateDnD ()
 		{
 			var datadnd = $.data($t,"dnd");
