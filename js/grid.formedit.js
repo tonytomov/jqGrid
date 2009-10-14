@@ -516,7 +516,7 @@ $.jgrid.extend({
 						$.each($t.p.colModel, function(i,n){
 							if(this.name == nm && this.editoptions && $.isFunction(this.editoptions.custom_value)) {
 								try {
-									postdata[nm] = cm.editoptions.custom_value.call(self,$(elem),'get');
+									postdata[nm] = cm.editoptions.custom_value($(elem),'get');
 									if (!postdata[nm]) throw "e1";
 								} catch (e) {
 									if (e=="e1") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' not return a value!",jQuery.jgrid.edit.bClose);
@@ -738,7 +738,7 @@ $.jgrid.extend({
 							case 'custom' :
 								try {
 									if(cm[i].editoptions && $.isFunction(cm[i].editoptions.custom_value)) {
-										var dummy = cm[i].editoptions.custom_value.call(self,$(".customelement",this),'set');
+										var dummy = cm[i].editoptions.custom_value($(".customelement",this),'set');
 									} else throw "e1";
 								} catch (e) {
 									if (e=="e1") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' is not defined!",jQuery.jgrid.edit.bClose);
@@ -779,7 +779,7 @@ $.jgrid.extend({
 					$.ajax( $.extend({
 						url:gurl,
 						type: rp_ge.mtype,
-						data: $.isFunction(rp_ge.serializeEditdata) ? rp_ge.serializeEditdata.call(self,postdata) :  postdata,
+						data: $.isFunction(rp_ge.serializeEditdata) ? rp_ge.serializeEditdata(postdata) :  postdata,
 						complete:function(data,Status){
 							if(Status != "success") {
 							    ret[0] = false;
@@ -1236,7 +1236,7 @@ $.jgrid.extend({
 							$.ajax( $.extend({
 								url:gurl,
 								type: p.mtype,
-								data: $.isFunction(p.serializeDelData) ? p.serializeDelData.call(self,postd) : postd,
+								data: $.isFunction(p.serializeDelData) ? p.serializeDelData(postd) : postd,
 								complete:function(data,Status){
 									if(Status != "success") {
 										ret[0] = false;

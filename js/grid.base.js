@@ -737,7 +737,7 @@ $.fn.jqGrid = function( p ) {
 						url:ts.p.url,
 						type:ts.p.mtype,
 						dataType: dt ,
-						data: $.isFunction(ts.p.serializeGridData)? ts.p.serializeGridData.call(self,ts.p.postData) : ts.p.postData,
+						data: $.isFunction(ts.p.serializeGridData)? ts.p.serializeGridData(ts.p.postData) : ts.p.postData,
 						complete:function(req,st) {
 							if(st=="success" || (req.statusText == "OK" && req.status == "200")) {
 								if(dt === "xml") addXmlData(req.responseXML,ts.grid.bDiv,rcnt,npage>1,adjust);

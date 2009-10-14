@@ -155,7 +155,7 @@ $.jgrid.extend({
 					case 'custom' :
 						try {
 							if(cm.editoptions && $.isFunction(cm.editoptions.custom_value)) {
-								v = cm.editoptions.custom_value.call(self,$(".customelement",cc));
+								v = cm.editoptions.custom_value($(".customelement",cc));
 								if (!v) throw "e2"; else v2=v;
 							} else throw "e1";
 						} catch (e) {
@@ -187,7 +187,7 @@ $.jgrid.extend({
 								postdata = $.extend(addpost,postdata);
 								$.ajax( $.extend( {
 									url: $t.p.cellurl,
-									data :$.isFunction($t.p.serializeCellData) ? $t.p.serializeCellData.call(self,postdata) : postdata,
+									data :$.isFunction($t.p.serializeCellData) ? $t.p.serializeCellData(postdata) : postdata,
 									type: "POST",
 									complete: function (result, stat) {
 										if (stat == 'success') {

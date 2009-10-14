@@ -116,7 +116,7 @@ $.jgrid.extend({
 						case 'custom' :
 							try {
 								if(cm.editoptions && $.isFunction(cm.editoptions.custom_value)) {
-									tmp[nm] = cm.editoptions.custom_value.call(self,$(".customelement",this));
+									tmp[nm] = cm.editoptions.custom_value($(".customelement",this));
 									if (!tmp[nm]) throw "e2";
 								} else throw "e1";
 							} catch (e) {
@@ -157,7 +157,7 @@ $.jgrid.extend({
 				} else {
 					$.ajax($.extend({
 						url:url,
-						data: $.isFunction($t.p.serializeRowData)? $t.p.serializeRowData.call(self,tmp) : tmp,
+						data: $.isFunction($t.p.serializeRowData) ? $t.p.serializeRowData(tmp) : tmp,
 						type: "POST",
 						complete: function(res,stat){
 							if (stat === "success"){
