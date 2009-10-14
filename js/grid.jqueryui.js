@@ -224,6 +224,179 @@ $.jgrid.extend({
         call(opts.dlog, selector, dopts);
         var mopts = $.isFunction(opts.msel_opts) ? opts.msel_opts.call(self, opts) : opts.msel_opts;
         call(opts.msel, select, opts.msel_opts);
-    }
-})
+    },
+	sortableRows : function (opts) {
+		// Can accept all sortable options and events
+		return this.each(function(){
+			var $t = this;
+			if(!$t.grid) return;
+			// Currently we disable a treeGrid sortable
+			if($t.p.treeGrid) return;
+			if($.isFunction($.fn['sortable'])) {
+				opts = $.extend({
+					cursor:"move",
+					axis : 'y'
+					},
+				opts || {});
+				if(opts.start && $.isFunction(opts.start)) {
+					opts._start_ = opts.start;
+					delete opts.start;
+				} else {opts._start_=false;}
+				if(opts.update && $.isFunction(opts.update)) {
+					opts._update_ = opts.update;
+					delete opts.update;
+				} else {opts._update_ = false;}
+				$("tbody:first",$t).sortable(opts);
+
+				$("tbody:first",$t).bind('sortstart', function(ev,ui){
+					if(opts._start_) {
+						opts._start_.apply(this,[ev,ui]);
+					}
+					$("td",ui.item).each(function(i){
+						this.style.width = $t.grid.cols[i].style.width;
+					});
+				});
+				$("tbody:first",$t).bind('sortupdate', function(ev,ui){
+					if(opts._update_) {
+						opts._update_.apply(this,[ev,ui]);
+					}
+					$t.updateColumns();
+				});
+			}
+		});
+	},
+	gridDnD : function(opts) {
+		var $t = this[0];
+		if(!$t.grid) return;
+		// Currently we disable a treeGrid drag and drop
+		if($t.p.treeGrid) return;
+		function updateDnD ()
+		{
+			var datadnd = $.data($t,"dnd");
+		    $("tr.jqgrow:not(.ui-draggable)",$t).draggable($.isFunction(datadnd.drag) ? datadnd.drag.call($($t),datadnd) : datadnd.drag);
+		}
+		var appender = "<table id='jqgrid_dnd' class='ui-jqgrid-dnd'></table>";
+		if($("#jqgrid_dnd").html() == null) {
+			$('body').append(appender);
+		}
+
+		if(typeof opts == 'string' && opts == 'updateDnD' && $t.p.jqgdnd==true) {
+			updateDnD();
+			return;
+		}
+		opts = $.extend({
+			"drag" : function (opts) {
+				return $.extend({
+					start : function (ev, ui) {
+						// if we are in subgrid mode try to collapse the node
+						if($t.p.subGrid) {
+							var subgid = $(ui.helper).attr("id");
+							try {
+								$($t).jqGrid('collapseSubGridRow',subgid);
+							} catch (e) {}
+						}
+						// hack
+						// drag and drop does not insert tr in table, when the table has no rows
+						// we try to insert new empty row on the target(s)
+						for (var i=0;i<opts.connectWith.length;i++){
+							if($(opts.connectWith[i]).jqGrid('getGridParam','reccount') == "0" ){
+								$(opts.connectWith[i]).jqGrid('addRowData','jqg_empty_row',{});
+							}
+						}
+						ui.helper.addClass("ui-state-highlight");
+						$("td",ui.helper).each(function(i) {
+							this.style.width = $t.grid.cols[i].style.width;
+						});
+						if(opts.onstart && $.isFunction(opts.onstart) ) opts.onstart.call($($t),ev,ui);
+					},
+					stop :function(ev,ui) {
+						if(ui.helper.dropped) {
+							var ids = $(ui.helper).attr("id");
+							$($t).jqGrid('delRowData',ids );
+						}
+						// if we have a empty row inserted from start event try to delete it 
+						for (var i=0;i<opts.connectWith.length;i++){
+							$(opts.connectWith[i]).jqGrid('delRowData','jqg_empty_row');
+						}
+						if(opts.onstop && $.isFunction(opts.onstop) ) opts.onstop.call($($t),ev,ui);
+					}
+				},opts.drag_opts || {});
+			},
+			"drop" : function (opts) {
+				return $.extend({
+					accept: '#'+$t.id+' tr.jqgrow',
+					drop: function(ev, ui) {
+						var accept = $(ui.draggable).attr("id");
+						var getdata = $('#'+$t.id).jqGrid('getRowData',accept);
+						if(!opts.dropbyname) {
+							var j =0, tmpdata = {}, dropname;
+							var dropmodel = $("#"+this.id).jqGrid('getGridParam','colModel');
+							try {
+								for (key in getdata) {
+									if(dropmodel[j]) {
+										dropname = dropmodel[j].name;
+										tmpdata[dropname] = getdata[key];
+									}
+									j++;
+								}
+								getdata = tmpdata;
+							} catch (e) {}
+ 						}
+						if(opts.beforedrop && $.isFunction(opts.beforedrop) ) {
+							//parameters to this callback - event, element, data to be inserted, sender, reciever
+							// should return object which will be inserted into the reciever
+							var datatoinsert = opts.onbeforedrop.call(this,ev,ui,getdata,$('#'+$t.id),$(this));
+							if (typeof datatoinsert != "undefined" && datatoinsert !== null && typeof datatoinsert == "object") getdata = datatoinsert;
+						}
+						ui.helper.dropped = true;
+						var grid;
+						if(opts.autoid) {
+							if($.isFunction(opts.autoid)) {
+								grid = opts.autoid.call(this,getdata);
+							} else {
+								grid = Math.ceil(Math.random()*1000);
+								grid = opts.autoidprefix+grid;
+							}
+						}
+						// NULL is interpreted as undefined while null as object
+						$("#"+this.id).jqGrid('addRowData',grid,getdata,opts.droppos);
+						if(opts.ondrop && $.isFunction(opts.ondrop) ) opts.ondrop.call(this,ev,ui);
+					}}, opts.drop_opts || {});
+			},
+			"onstart" : null,
+			"onstop" : null,
+			"beforedrop": null,
+			"ondrop" : null,
+			"drop_opts" : {
+				"activeClass": "ui-state-active",
+				"hoverClass": "ui-state-hover"
+			},
+			"drag_opts" : {
+				"revert": "invalid",
+				"helper": "clone",
+				"cursor": "move",
+				"appendTo" : "#jqgrid_dnd",
+				"zIndex": 5000
+			},
+			"dropbyname" : false,
+			"droppos" : "first",
+			"autoid" : true,
+			"autoidprefix" : "dnd_"
+		}, opts || {});
+		
+		if(!opts.connectWith) return;
+		opts.connectWith = opts.connectWith.split(",");
+		opts.connectWith = $.map(opts.connectWith,function(n){return $.trim(n);});
+		$.data($t,"dnd",opts);
+		
+		if($t.p.reccount != "0" && !$t.p.jqgdnd) {
+			updateDnD();
+		}
+		$t.p.jqgdnd = true;
+		for (var i=0;i<opts.connectWith.length;i++){
+			var cn =opts.connectWith[i]
+			$(cn).droppable($.isFunction(opts.drop) ? opts.drop.call($($t),opts) : opts.drop);
+		};
+	}
+});
 })(jQuery);

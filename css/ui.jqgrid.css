@@ -106,3 +106,4 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 /* moda dialog */
 .jqmOverlay { background-color: #000; }
 * iframe.jqm {position:absolute;top:0;left:0;z-index:-1;width: expression(this.parentNode.offsetWidth+'px');height: expression(this.parentNode.offsetHeight+'px');}
+.ui-jqgrid-dnd tr td {border-right-width: 1px; border-right-color: inherit; border-right-style: solid; height:20px}

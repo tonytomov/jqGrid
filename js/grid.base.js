@@ -414,7 +414,7 @@ $.fn.jqGrid = function( p ) {
 		},
 		emptyRows = function (parent, scroll) {
 			var tBody = $("tbody:first", parent);
-			if(!ts.p.gridview) $("*",tBody).children().unbind();
+			if(!ts.p.gridview || ts.p.jqgdnd) $("*",tBody).children().unbind();
 			if(isMSIE) $.jgrid.empty.apply(tBody[0]);
 			else tBody[0].innerHTML="";
 			if (scroll && ts.p.scroll) {
@@ -529,7 +529,7 @@ $.fn.jqGrid = function( p ) {
 			ts.p.reccount=ir;
 			ts.p.treeANode = -1;
 			if(ts.p.userDataOnFooter) $(ts).jqGrid("footerData","set",ts.p.userData,true);
-			if (!more) updatepager(false);
+			if (!more) updatepager(false,true);
 		},
 		addJSONData = function(data,t, rcnt, more, adjust) {
 			var startReq = new Date();
@@ -638,9 +638,9 @@ $.fn.jqGrid = function( p ) {
 			ts.p.reccount=ir;
 			ts.p.treeANode = -1;
 			if(ts.p.userDataOnFooter) $(ts).jqGrid("footerData","set",ts.p.userData,true);
-			if (!more) updatepager(false);
+			if (!more) updatepager(false,true);
 		},
-		updatepager = function(rn) {
+		updatepager = function(rn, dnd) {
 			var cp, last, base,bs, from,to,tot,fmt;
 			base = (parseInt(ts.p.page)-1)*parseInt(ts.p.rowNum);
 			to = base + ts.p.reccount;
@@ -694,6 +694,7 @@ $.fn.jqGrid = function( p ) {
 					$(this).html(base+1+i);
 				});
 			}
+			if(dnd && ts.p.jqgdnd) { $(ts).jqGrid('gridDnD','updateDnD');}
 			if($.isFunction(ts.p.gridComplete)) {ts.p.gridComplete();}
 		},
 		populate = function (npage) {
@@ -1511,7 +1512,7 @@ $.fn.jqGrid = function( p ) {
 		}
 		ts.formatCol = function(a,b) {return formatCol(a,b);};
 		ts.sortData = function(a,b,c){sortData(a,b,c);};
-		ts.updatepager = function(a){updatepager(a);};
+		ts.updatepager = function(a,b){updatepager(a,b);};
 		ts.formatter = function ( rowId, cellval , colpos, rwdat, act){return formatter(rowId, cellval , colpos, rwdat, act);};
 		$.extend(grid,{populate : populate, emptyRows: emptyRows});
 		this.grid = grid;
@@ -1674,7 +1675,7 @@ $.jgrid.extend({
 				$(rowInd).remove();
 				$t.p.records--;
 				$t.p.reccount--;
-				$t.updatepager(true);
+				$t.updatepager(true,false);
 				success=true;
 				if(rowid == $t.p.selrow) {$t.p.selrow=null;}
 				ia = $.inArray(rowid,$t.p.selarrrow);
@@ -1789,7 +1790,7 @@ $.jgrid.extend({
 					}
 				}
 				try {t.p.afterInsertRow(rowid,data); } catch(e){}
-				t.updatepager(true);
+				t.updatepager(true,true);
 				success = true;
 			});
 		}
@@ -2125,7 +2126,7 @@ $.jgrid.extend({
 			if($t.p.footerrow && clearfooter) $(".ui-jqgrid-ftable td",$t.grid.sDiv).html("&nbsp;");
 			$t.p.selrow = null; $t.p.selarrrow= []; $t.p.savedRow = [];
 			$t.p.records = 0;$t.p.page='0';$t.p.lastpage='0';$t.p.reccount=0;
-			$t.updatepager(true);
+			$t.updatepager(true,false);
 		});
 	},
 	getInd : function(rowid,rc){
