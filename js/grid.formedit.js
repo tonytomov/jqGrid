@@ -753,6 +753,10 @@ $.jgrid.extend({
 			}
 			function postIt() {
 				var copydata, ret=[true,"",""], onCS = {};
+				if($.isFunction(rp_ge.beforeCheckValues)) {
+					var retvals = rp_ge.beforeCheckValues(postdata,$("#"+frmgr),postdata.id == "_empty" ? "add" : "edit");
+					if(retvals && typeof(retvals) === 'object') postdata = retvals;
+				}
 				for( var key in postdata ){
 					ret = checkValues(postdata[key],key,$t);
 					if(ret[0] == false) break;
