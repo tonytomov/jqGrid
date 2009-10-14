@@ -1530,7 +1530,7 @@ $.jgrid.extend({
 		var $t = this[0];
 		if (!$t.grid) {return;}
 		if (!pName) { return $t.p; }
-		else {return $t.p[pName] ? $t.p[pName] : null;}
+		else {return typeof($t.p[pName]) != "undefined" ? $t.p[pName] : null;}
 	},
 	setGridParam : function (newParams){
 		return this.each(function(){
