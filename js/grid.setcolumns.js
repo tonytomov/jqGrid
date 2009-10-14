@@ -36,7 +36,6 @@ $.jgrid.extend({
 			var onBeforeShow = typeof p.beforeShowForm === 'function' ? true: false;
 			var onAfterShow = typeof p.afterShowForm === 'function' ? true: false;
 			var onAfterSubmit = typeof p.afterSubmitForm === 'function' ? true: false;			
-			if(!p.imgpath) { p.imgpath= $t.p.imgpath; } // Added From Tony Tomov
 			var gID = $t.p.id,
 			dtbl = "ColTbl_"+gID,
 			IDs = {themodal:'colmod'+gID,modalhead:'colhd'+gID,modalcontent:'colcnt'+gID, scrollelm: dtbl};

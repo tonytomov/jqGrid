@@ -284,7 +284,7 @@
 	};
 	$.fn.fmatter.select = function (cellval,opts, act) {
 		// jqGrid specific
-		if (!cellval)  cellval = "";
+		cellval = cellval + "";
 		var oSelect = false;
 		if(!isUndefined(opts.colModel.editoptions)){
 			oSelect= opts.colModel.editoptions.value;

@@ -328,11 +328,16 @@ $.jgrid.extend({
 			// trick to process keydown on non input elements
 			$t.p.knv = $("table:first",$t.grid.bDiv).attr("id") + "_kn";
 			var selection = $("<span style='width:0px;height:0px;background-color:black;' tabindex='0'><span tabindex='-1' style='width:0px;height:0px;background-color:grey' id='"+$t.p.knv+"'></span></span>"),
-			i;
+			i, kdir;
 			$(selection).insertBefore($t.grid.cDiv);
 			$("#"+$t.p.knv).focus();
 			$("#"+$t.p.knv).keydown(function (e){
-				switch (e.keyCode) {
+				kdir = e.keyCode;
+				if($t.p.direction == "rtl") {
+					if(kdir==37) kdir = 39;
+					else if (kdir==39) kdir = 37;
+				}
+				switch (kdir) {
 					case 38:
 						if ($t.p.iRow-1 >=0 ) {
 							scrollGrid($t.p.iRow-1,$t.p.iCol,'vu');

@@ -15,9 +15,10 @@ var closeModal = function(h) {
 	if(h.o) { h.o.remove(); }
 };
 var createModal = function(aIDs, content, p, insertSelector, posSelector, appendsel) {
-	var mw  = document.createElement('div');
+	var mw  = document.createElement('div'), rtlsup;
+	rtlsup = jQuery(p.gbox).attr("dir") == "rtl" ? true : false;
 	mw.className= "ui-widget ui-widget-content ui-corner-all ui-jqdialog";
-	mw.id = aIDs.themodal;
+	mw.id = aIDs.themodal; 
 	var mh = document.createElement('div');
 	mh.className = "ui-jqdialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix";
 	mh.id = aIDs.modalhead;
@@ -27,6 +28,15 @@ var createModal = function(aIDs, content, p, insertSelector, posSelector, append
 		   function(){ahr.removeClass('ui-state-hover');})
 	.append("<span class='ui-icon ui-icon-closethick'></span>");
 	jQuery(mh).append(ahr);
+	if(rtlsup) {
+		mw.dir = "rtl";
+		jQuery(".ui-jqdialog-title",mh).css("float","right");
+		jQuery(".ui-jqdialog-titlebar-close",mh).css("left",0.3+"em");
+	} else {
+		mw.dir = "ltr";
+		jQuery(".ui-jqdialog-title",mh).css("float","left");
+		jQuery(".ui-jqdialog-titlebar-close",mh).css("right",0.3+"em");
+	}
 	var mc = document.createElement('div');
 	jQuery(mc).addClass("ui-jqdialog-content ui-widget-content").attr("id",aIDs.modalcontent);
 	jQuery(mc).append(content);
@@ -35,6 +45,7 @@ var createModal = function(aIDs, content, p, insertSelector, posSelector, append
 	if(appendsel===true) { jQuery('body').append(mw); } //append as first child in body -for alert dialog
 	else {jQuery(mw).insertBefore(insertSelector);}
 	if(typeof p.jqModal === 'undefined') {p.jqModal = true;} // internal use
+	var coord = {};
 	if ( jQuery.fn.jqm && p.jqModal === true) {
 		if(p.left ==0 && p.top==0) {
 			var pos = [];
@@ -42,6 +53,11 @@ var createModal = function(aIDs, content, p, insertSelector, posSelector, append
 			p.left = pos[0] + 4;
 			p.top = pos[1] + 4;
 		}
+		coord.top = p.top+"px";
+		coord.left = p.left;
+	} else if(p.left !=0 || p.top!=0) {
+		coord.left = p.left;
+		coord.top = p.top+"px";
 	}
 	jQuery("a.ui-jqdialog-titlebar-close",mh).click(function(e){
 		var oncm = jQuery("#"+aIDs.themodal).data("onClose") || p.onClose;
@@ -52,14 +68,19 @@ var createModal = function(aIDs, content, p, insertSelector, posSelector, append
 	if (p.width == 0 || !p.width) {p.width = 300;}
 	if(p.height==0 || !p.height) {p.height =200;}
 	if(!p.zIndex) {p.zIndex = 950;}
-	jQuery(mw).css({
-		top: p.top+"px",
-		left: p.left+"px",
+	var rtlt = 0;
+	if( rtlsup && coord.left && !appendsel) {
+		rtlt = jQuery(p.gbox).width()- (!isNaN(p.width) ? parseInt(p.width) :0) - 8; // to do
+		// just in case
+		coord.left = parseInt(coord.left) + parseInt(rtlt);
+	}
+	if(coord.left) coord.left += "px";
+	jQuery(mw).css(jQuery.extend({
 		width: isNaN(p.width) ? "auto": p.width+"px",
 		height:isNaN(p.height) ? "auto" : p.height + "px",
 		zIndex:p.zIndex,
 		overflow: 'hidden'
-	})
+	},coord))
 	.attr({tabIndex: "-1","role":"dialog","aria-labelledby":aIDs.modalhead,"aria-hidden":"true"});
 	if(typeof p.drag == 'undefined') { p.drag=true;}
 	if(typeof p.resize == 'undefined') {p.resize=true;}
@@ -79,7 +100,7 @@ var createModal = function(aIDs, content, p, insertSelector, posSelector, append
 			jQuery("#"+aIDs.themodal).jqResize(".jqResize",aIDs.scrollelm ? "#"+aIDs.scrollelm : false);
 		} else {
 			try {
-				jQuery(mw).resizable({handles: 'se',alsoResize: aIDs.scrollelm ? "#"+aIDs.scrollelm : false});
+				jQuery(mw).resizable({handles: 'se, sw',alsoResize: aIDs.scrollelm ? "#"+aIDs.scrollelm : false});
 			} catch (e) {}
 		}
 	}

@@ -37,8 +37,8 @@ $.jgrid.extend({
 				ident = curLevel;
 				lftpos = curLevel -1;
 			}
-			var twrap = "<div class='tree-wrap' style='width:"+(ident*18)+"px;'>";
-			twrap += "<div style='left:"+(lftpos*18)+"px;' class='ui-icon ";
+			var twrap = "<div class='tree-wrap tree-wrap-"+$t.p.direction+"' style='width:"+(ident*18)+"px;'>";
+			twrap += "<div style='"+($t.p.direction=="rtl" ? "right:" : "left:")+(lftpos*18)+"px;' class='ui-icon ";
 
 			if(rd[isLeaf] == "true" || rd[isLeaf] ==true) {
 				twrap += $t.p.treeIcons.leaf+" tree-leaf'";
@@ -95,13 +95,14 @@ $.jgrid.extend({
 	},
 	setTreeGrid : function() {
 		return this.each(function (){
-			var $t = this, i=0;
+			var $t = this, i=0, pico;
 			if(!$t.p.treeGrid) { return; }
 			if(!$t.p.treedatatype ) $.extend($t.p,{treedatatype: $t.p.datatype});
 			$t.p.subGrid = false; $t.p.altRows =false;
 			$t.p.pgbuttons = false; $t.p.pginput = false;
 			$t.p.multiselect = false; $t.p.rowList = [];
-			$t.p.treeIcons = $.extend({plus:'ui-icon-triangle-1-e',minus:'ui-icon-triangle-1-s',leaf:'ui-icon-radio-off'},$t.p.treeIcons || {});
+			pico = 'ui-icon-triangle-1-' + ($t.p.direction=="rtl" ? 'w' : 'e');
+			$t.p.treeIcons = $.extend({plus:pico,minus:'ui-icon-triangle-1-s',leaf:'ui-icon-radio-off'},$t.p.treeIcons || {});
 			if($t.p.treeGridModel == 'nested') {
 				$t.p.treeReader = $.extend({
 					level_field: "level",
