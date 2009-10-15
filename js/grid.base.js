@@ -1248,6 +1248,7 @@ $.fn.jqGrid = function( p ) {
 			if(ts.p.colModel[j].resizable){
 				res = document.createElement("span");
 				$(res).html("&#160;").addClass('ui-jqgrid-resize ui-jqgrid-resize-'+dir);
+				$.browser != "opera" ? $(res).css("cursor","col-resize") : "";
 				$(this).addClass(ts.p.resizeclass);
 			} else {
 				res = "";
