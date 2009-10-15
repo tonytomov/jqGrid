@@ -92,13 +92,25 @@ addSubGrid : function(t,pos) {
 				ts.grid.hDiv.loading = true;
 				$("#load_"+ts.p.id).show();
 				if(!ts.p.subgridtype) ts.p.subgridtype = ts.p.datatype;
+				ts.p.subgridtype = ts.p.subgridtype.toLowerCase();
 				if($.isFunction(ts.p.subgridtype)) {ts.p.subgridtype(dp);}
 				switch(ts.p.subgridtype) {
 					case "xml":
-					$.ajax({type:ts.p.mtype, url: ts.p.subGridUrl, dataType:"xml",data: dp, complete: function(sxml) { subGridXml(sxml.responseXML, sid); sxml=null; } });
-					break;
 					case "json":
-					$.ajax({type:ts.p.mtype, url: ts.p.subGridUrl, dataType:"text",data: dp, complete: function(json) { subGridJson($.jgrid.parse(json.responseText),sid); json = null;} });
+					$.ajax($.extend({
+						type:ts.p.mtype,
+						url: ts.p.subGridUrl,
+						dataType:ts.p.subgridtype,
+						data: dp,
+						complete: function(sxml) {
+							if(ts.p.subgridtype == "xml")
+								subGridXml(sxml.responseXML, sid);
+							else {
+								subGridJson($.jgrid.parse(sxml.responseText),sid);
+							}
+							sxml=null;
+						}
+					}, $.jgrid.ajaxOptions, $.jgrid.ajaxSubgridOptions || {}));
 					break;
 				}
 			}
