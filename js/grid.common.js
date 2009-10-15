@@ -385,7 +385,7 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 		case "custom" :
 			try {
 				if(jQuery.isFunction(options.custom_element)) {
-					elem = options.custom_element(vl,options);
+					elem = options.custom_element.call(this,vl,options);
 					if(elem) jQuery(elem).addClass("customelement").attr({id:options.id,name:options.name});
 					else throw "e2";
 				} else 	throw "e1";
@@ -464,9 +464,9 @@ function checkValues(val, valref,g) {
 		if(edtrul.custom === true) {
             if( !(rqfield === false && isEmpty(val)) ) {
 				if(jQuery.isFunction(edtrul.custom_func)) {
-					var ret = edtrul.custom_func(val);
+					var ret = edtrul.custom_func.call(g,val,nm);
 					if(jQuery.isArray(ret)) {
-						if(ret[0]===false) return ret;
+						return ret;
 					} else {
 						// Here translation needed in lang file
 						return [false,"Custom function should return array!",""];
