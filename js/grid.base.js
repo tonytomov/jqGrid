@@ -1519,9 +1519,9 @@ $.fn.jqGrid = function( p ) {
 			}
 			return this;
 		}
-		ts.formatCol = function(a,b) {return formatCol(a,b);};
-		ts.sortData = function(a,b,c){sortData(a,b,c);};
-		ts.updatepager = function(a,b){updatepager(a,b);};
+		ts.formatCol = formatCol;
+		ts.sortData = sortData;
+		ts.updatepager = updatepager;
 		ts.formatter = function ( rowId, cellval , colpos, rwdat, act){return formatter(rowId, cellval , colpos, rwdat, act);};
 		$.extend(grid,{populate : populate, emptyRows: emptyRows});
 		this.grid = grid;
