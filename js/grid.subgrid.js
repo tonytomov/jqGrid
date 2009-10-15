@@ -101,7 +101,7 @@ addSubGrid : function(t,pos) {
 						type:ts.p.mtype,
 						url: ts.p.subGridUrl,
 						dataType:ts.p.subgridtype,
-						data: dp,
+						data: $.isFunction(ts.p.serializeSubGridData)? ts.p.serializeSubGridData(dp) : dp,
 						complete: function(sxml) {
 							if(ts.p.subgridtype == "xml")
 								subGridXml(sxml.responseXML, sid);
