@@ -16,7 +16,7 @@
 .ui-th-ltr, .ui-jqgrid .ui-jqgrid-htable th.ui-th-ltr {border-left : 0px none;}
 .ui-th-rtl, .ui-jqgrid .ui-jqgrid-htable th.ui-th-rtl {border-right : 0px none;}
 .ui-jqgrid .ui-th-div-ie {white-space: nowrap; zoom :1; height:17px;}
-.ui-jqgrid .ui-jqgrid-resize {height:20px !important;position: relative; cursor :e-resize;cursor :col-resize;display: inline;margin: -2px -2px -2px 0px;overflow: hidden;}
+.ui-jqgrid .ui-jqgrid-resize {height:20px !important;position: relative; cursor :e-resize;display: inline;overflow: hidden;}
 .ui-jqgrid .ui-grid-ico-sort {overflow:hidden;position:absolute;display:inline; cursor: pointer !important;}
 .ui-jqgrid .ui-icon-asc {margin-top:-3px; height:12px;}
 .ui-jqgrid .ui-icon-desc {margin-top:3px;height:12px;}
@@ -115,8 +115,8 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 /* RTL Support */
 .ui-jqgrid .ui-jqgrid-title-rtl {float:right;margin: .1em 0 .2em; }
 .ui-jqgrid .ui-jqgrid-hbox-rtl {float: right; padding-left: 20px;}
-.ui-jqgrid .ui-jqgrid-resize-ltr {float: right;}
-.ui-jqgrid .ui-jqgrid-resize-rtl {float: left;}
+.ui-jqgrid .ui-jqgrid-resize-ltr {float: right;margin: -2px -2px -2px 0px;}
+.ui-jqgrid .ui-jqgrid-resize-rtl {float: left;margin: -2px 0px -1px -3px;}
 .ui-jqgrid .ui-sort-rtl {left:0px;}
 .ui-jqgrid .tree-wrap-ltr {float: left;}
 .ui-jqgrid .tree-wrap-rtl {float: right;}
