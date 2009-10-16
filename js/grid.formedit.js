@@ -337,10 +337,13 @@ $.jgrid.extend({
 				}
 				tms = null; bt=null;
 				$("#"+IDs.themodal).keydown( function( e ) {
+					var wkey = e.target;
 					if ($("#"+frmgr).data("disabled")===true ) return false; //??
 					if(rp_ge.savekey[0] === true && e.which == rp_ge.savekey[1]) { // save
-						$("#sData", "#"+frmtb+"_2").trigger("click");
-						return false;
+						if(wkey.tagName != "TEXTAREA") {
+							$("#sData", "#"+frmtb+"_2").trigger("click");
+							return false;
+						}
 					}
 					if(e.which === 27) {
 						if(!checkUpdates()) return false;
