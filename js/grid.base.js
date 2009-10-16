@@ -1731,12 +1731,10 @@ $.jgrid.extend({
 	},
 	addRowData : function(rowid,data,pos,src) {
 		if(!pos) {pos = "last";}
-		var success = false, nm, row, gi=0, si=0, ni=0,sind, i, v, prp="";
+		var success = false, nm, row="", gi=0, si=0, ni=0,sind, i, v, prp="";
 		if(data) {
 			this.each(function() {
 				var t = this;
-				rowid = typeof(rowid) != 'undefined' ? rowid+"": (t.p.records+1)+"";
-				row = "<tr id=\""+rowid+"\" role=\"row\" class=\"ui-widget-content jqgrow ui-row-"+t.p.direction+"\">";
 				if(t.p.rownumbers===true){
 					prp = t.formatCol(ni,1);
 					row += "<td role=\"gridcell\" class=\"ui-state-default jqgrid-rownum\" "+prp+">0</td>";
@@ -1752,13 +1750,21 @@ $.jgrid.extend({
 					row += $(t).jqGrid("addSubGridCell",gi+ni,1);
 					si=1;
 				}
+				if(typeof(rowid) != 'undefined') rowid = rowid+"";
+				else {
+					rowid = (t.p.records+1)+"";
+					if(t.p.keyIndex !== false) {
+						var cmn = t.p.colModel[t.p.keyIndex+gi+si+ni].name;
+						if(typeof data[cmn] != "undefined") rowid = data[cmn];
+					}
+				}
 				for(i = gi+si+ni; i < this.p.colModel.length;i++){
 					nm = this.p.colModel[i].name;
 					v = t.formatter( rowid, data[nm], i, data, 'add');
 					prp = t.formatCol(i,1);
 					row += "<td role=\"gridcell\" "+prp+" title=\""+$.jgrid.stripHtml(v)+"\">"+v+"</td>";
 				}
-				row += "</tr>";
+				row = "<tr id=\""+rowid+"\" role=\"row\" class=\"ui-widget-content jqgrow ui-row-"+t.p.direction+"\">" + row+"</tr>";
 				if(t.p.subGrid===true) {
 					row = $(row)[0]; 
 					$(t).jqGrid("addSubGrid",row,gi+ni);
