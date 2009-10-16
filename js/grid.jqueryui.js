@@ -343,24 +343,26 @@ $.jgrid.extend({
 								getdata = tmpdata;
 							} catch (e) {}
  						}
+						ui.helper.dropped = true;
 						if(opts.beforedrop && $.isFunction(opts.beforedrop) ) {
 							//parameters to this callback - event, element, data to be inserted, sender, reciever
 							// should return object which will be inserted into the reciever
-							var datatoinsert = opts.onbeforedrop.call(this,ev,ui,getdata,$('#'+$t.id),$(this));
+							var datatoinsert = opts.beforedrop.call(this,ev,ui,getdata,$('#'+$t.id),$(this));
 							if (typeof datatoinsert != "undefined" && datatoinsert !== null && typeof datatoinsert == "object") getdata = datatoinsert;
 						}
-						ui.helper.dropped = true;
-						var grid;
-						if(opts.autoid) {
-							if($.isFunction(opts.autoid)) {
-								grid = opts.autoid.call(this,getdata);
-							} else {
-								grid = Math.ceil(Math.random()*1000);
-								grid = opts.autoidprefix+grid;
+						if(ui.helper.dropped) {
+							var grid;
+							if(opts.autoid) {
+								if($.isFunction(opts.autoid)) {
+									grid = opts.autoid.call(this,getdata);
+								} else {
+									grid = Math.ceil(Math.random()*1000);
+									grid = opts.autoidprefix+grid;
+								}
 							}
+							// NULL is interpreted as undefined while null as object
+							$("#"+this.id).jqGrid('addRowData',grid,getdata,opts.droppos);
 						}
-						// NULL is interpreted as undefined while null as object
-						$("#"+this.id).jqGrid('addRowData',grid,getdata,opts.droppos);
 						if(opts.ondrop && $.isFunction(opts.ondrop) ) opts.ondrop.call(this,ev,ui);
 					}}, opts.drop_opts || {});
 			},
