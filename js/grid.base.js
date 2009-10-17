@@ -1454,7 +1454,7 @@ $.fn.jqGrid = function( p ) {
 			if(hg) {$(grid.uDiv).hide();}
 		}
 		if(ts.p.footerrow) {
-			grid.sDiv = $("<div class='ui-jqgrid-sdiv'></div>");
+			grid.sDiv = $("<div class='ui-jqgrid-sdiv'></div>")[0];
 			hb = $("<div class='ui-jqgrid-hbox"+(dir=="rtl"?"-rtl":"")+"'></div>");
 			$(grid.sDiv).append(hb).insertAfter(grid.hDiv).width(grid.width);
 			$(hb).append(tfoot);
