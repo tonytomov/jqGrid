@@ -286,13 +286,12 @@
 	$.fn.fmatter.select = function (cellval,opts, act) {
 		// jqGrid specific
 		cellval = cellval + "";
-		var oSelect = false;
+		var oSelect = false, ret=[];
 		if(!isUndefined(opts.colModel.editoptions)){
 			oSelect= opts.colModel.editoptions.value;
 		}
 		if (oSelect) {
-			var ret = [],
-			msl =  opts.colModel.editoptions.multiple === true ? true : false,
+			var	msl =  opts.colModel.editoptions.multiple === true ? true : false,
 			scell = [], sv;
 			if(msl) { scell = cellval.split(","); scell = $.map(scell,function(n){return $.trim(n);})}
 			if (isString(oSelect)) {
@@ -320,8 +319,9 @@
 					ret[0] = oSelect[cellval] || "";
 				}
 			}
-			return ret.join(", ");
 		}
+		cellval = ret.join(", ");
+		return  cellval == "" ? $.fn.fmatter.defaultFormat(cellval,opts) : cellval;
 	};
 	$.unformat = function (cellval,options,pos,cnt) {
 		// specific for jqGrid only
