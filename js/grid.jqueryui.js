@@ -363,7 +363,7 @@ $.jgrid.extend({
 							// NULL is interpreted as undefined while null as object
 							$("#"+this.id).jqGrid('addRowData',grid,getdata,opts.droppos);
 						}
-						if(opts.ondrop && $.isFunction(opts.ondrop) ) opts.ondrop.call(this,ev,ui);
+						if(opts.ondrop && $.isFunction(opts.ondrop) ) opts.ondrop.call(this,ev,ui, getdata);
 					}}, opts.drop_opts || {});
 			},
 			"onstart" : null,
