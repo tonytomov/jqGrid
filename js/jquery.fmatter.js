@@ -330,7 +330,7 @@
 		re = /([\.\*\_\'\(\)\{\}\+\?\\])/g;
 		unformatFunc = options.colModel.unformat||($.fn.fmatter[formatType] && $.fn.fmatter[formatType].unformat);
 		if(typeof unformatFunc !== 'undefined' && isFunction(unformatFunc) ) {
-			ret = unformatFunc($(cellval).text(), options);
+			ret = unformatFunc($(cellval).text(), options, cellval);
 		} else if(typeof formatType !== 'undefined' && isString(formatType) ) {
 			var opts = $.jgrid.formatter || {}, stripTag;
 			switch(formatType) {
