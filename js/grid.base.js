@@ -1318,13 +1318,13 @@ $.fn.jqGrid = function( p ) {
 		}
 		if( ts.p.cellEdit === false && ts.p.hoverrows === true) {
 		$(ts).bind('mouseover',function(e) {
-			ptr = $(e.target).parents("tr.jqgrow");
+			ptr = $(e.target).closest("tr.jqgrow");
 			if($(ptr).attr("class") !== "subgrid") {
 				$(ptr).addClass("ui-state-hover");
 			}
 			return false;
 		}).bind('mouseout',function(e) {
-			ptr = $(e.target).parents("tr.jqgrow");
+			ptr = $(e.target).closest("tr.jqgrow");
 			$(ptr).removeClass("ui-state-hover");
 			return false;
 		});
@@ -1333,7 +1333,7 @@ $.fn.jqGrid = function( p ) {
 		$(ts).before(grid.hDiv).click(function(e) {
 			td = e.target;
 			var scb = $(td).hasClass("cbox");
-			ptr = $(td,ts.rows).parents("tr.jqgrow");
+			ptr = $(td,ts.rows).closest("tr.jqgrow");
 			if($(ptr).length === 0 ) {
 				return this;
 			}
@@ -1395,7 +1395,7 @@ $.fn.jqGrid = function( p ) {
 		if( ondblClickRow ) {
 			$(this).dblclick(function(e) {
 				td = e.target;
-				ptr = $(td,ts.rows).parents("tr.jqgrow");
+				ptr = $(td,ts.rows).closest("tr.jqgrow");
 				if($(ptr).length === 0 ){return false;}
 				ri = ptr[0].rowIndex;
 				ci = $.jgrid.getCellIndex(td);
@@ -1406,7 +1406,7 @@ $.fn.jqGrid = function( p ) {
 		if (onRightClickRow) {
 			$(this).bind('contextmenu', function(e) {
 				td = e.target;
-				ptr = $(td,ts.rows).parents("tr.jqgrow");
+				ptr = $(td,ts.rows).closest("tr.jqgrow");
 				if($(ptr).length === 0 ){return false;}
 				if(!ts.p.multiselect) {	$(ts).jqGrid("setSelection",ptr[0].id,true);	}
 				ri = ptr[0].rowIndex;
