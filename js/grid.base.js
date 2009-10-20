@@ -1,6 +1,6 @@
 ;(function ($) {
 /*
- * jqGrid  3.6 beta - jQuery Grid
+ * jqGrid  3.6 beta2 - jQuery Grid
  * Copyright (c) 2008, Tony Tomov, tony@trirand.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
