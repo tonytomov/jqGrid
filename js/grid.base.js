@@ -870,7 +870,13 @@ $.fn.jqGrid = function( p ) {
 					});
 					grid.cols = rows[0].cells;
 				}
-				$.each(rows, function(index, row) {
+				var cn = "";
+				if(ts.p.altRows) cn = ts.p.altclass;
+				$.each(rows, function(i, row) {
+					if(cn) {
+						if(i%2 ==1) $(row).addClass(cn);
+						else $(row).removeClass(cn);
+					}
 					$('tbody',ts.grid.bDiv).append(row);
 					row.sortKey = null;
 				});
@@ -1797,7 +1803,7 @@ $.jgrid.extend({
 				if( t.p.altRows === true ) {
 					var cn = t.p.altclass;
 					if (pos == "last") {
-						if (t.rows.length % 2 == 1)  {$(t.rows[t.rows.length-1]).addClass(cn);}
+						if ((t.rows.length-1)%2 == 1)  {$(t.rows[t.rows.length-1]).addClass(cn);}
 					} else {
 						$(t.rows).each(function(i){
 							if(i % 2 ==1) $(this).addClass(cn);
