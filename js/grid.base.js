@@ -354,7 +354,7 @@ $.fn.jqGrid = function( p ) {
 			else {return val;}
 		},
 		formatCol = function (pos, rowInd){
-			var ral = ts.p.colModel[pos].align, result="style=\"", clas = ts.p.colModel[pos].classes || "";
+			var ral = ts.p.colModel[pos].align, result="style=\"", clas = ts.p.colModel[pos].classes;
 			if(ral) result += "text-align:"+ral+";";
 			if(ts.p.colModel[pos].hidden===true) result += "display:none;";
 			if(rowInd===0) {
