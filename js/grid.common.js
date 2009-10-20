@@ -165,17 +165,27 @@ function info_dialog(caption, content,c_b, modalopt) {
 		jqModal : true,
 		closeOnEscape : true,
 		align: 'center',
-		buttonalign : 'center'
+		buttonalign : 'center',
+		buttons : []
+		// {text:'textbutt', id:"buttid", onClick : function(){...}}
+		// if the id is not provided we set it like info_button_+ the index in the array - i.e info_button_0,info_button_1...
 	};
 	jQuery.extend(mopt,modalopt || {});
 	var jm = mopt.jqModal;
 	if(jQuery.fn.jqm && !jm) jm = false;
 	// in case there is no jqModal
+	var buttstr ="";
+	if(mopt.buttons.length > 0) {
+		for(var i=0;i<mopt.buttons.length;i++) {
+			if(typeof mopt.buttons[i].id == "undefined") mopt.buttons[i].id = "info_button_"+i;
+			buttstr += "<a href='javascript:void(0)' id='"+mopt.buttons[i].id+"' class='fm-button ui-state-default ui-corner-all'>"+mopt.buttons[i].text+"</a>";
+		}
+	}
 	var dh = isNaN(mopt.dataheight) ? mopt.dataheight : mopt.dataheight+"px",
 	cn = "text-align:"+mopt.align+";";
 	var cnt = "<div id='info_id'>";
 	cnt += "<div id='infocnt' style='margin:0px;padding-bottom:1em;width:100%;overflow:auto;position:relative;height:"+dh+";"+cn+"'>"+content+"</div>";
-	cnt += c_b ? "<div class='ui-widget-content ui-helper-clearfix' style='text-align:"+mopt.buttonalign+";padding-bottom:0.8em;padding-top:0.5em;background-image: none;border-width: 1px 0 0 0;'><a href='javascript:void(0)' id='closedialog' class='fm-button ui-state-default ui-corner-all'>"+c_b+"</a></div>" : "";
+	cnt += c_b ? "<div class='ui-widget-content ui-helper-clearfix' style='text-align:"+mopt.buttonalign+";padding-bottom:0.8em;padding-top:0.5em;background-image: none;border-width: 1px 0 0 0;'><a href='javascript:void(0)' id='closedialog' class='fm-button ui-state-default ui-corner-all'>"+c_b+"</a>"+buttstr+"</div>" : "";
 	cnt += "</div>";
 
 	try {jQuery("#info_dialog").remove();} catch (e){}
@@ -188,6 +198,12 @@ function info_dialog(caption, content,c_b, modalopt) {
 		mopt,
 		'','',true
 	);
+	// attach onclick after inserting into the dom
+	if(buttstr) {
+		jQuery.each(mopt.buttons,function(i){
+			jQuery("#"+this.id,"#info_id").bind('click',function(){mopt.buttons[i].onClick.call(jQuery("#info_dialog")); return false;});
+		});
+	}
 	jQuery("#closedialog", "#info_id").click(function(e){
 		hideModal("#info_dialog",{jqm:jm});
 		return false;
