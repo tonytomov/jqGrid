@@ -689,12 +689,7 @@ $.jgrid.extend({
 				$('td',tre).each( function(i) {
 					nm = cm[i].name;
 					// hidden fields are included in the form
-					if(cm[i].editrules && cm[i].editrules.edithidden === true) {
-						hc = false;
-					} else {
-						hc = cm[i].hidden === true ? true : false;
-					}
-					if ( nm !== 'cb' && nm !== 'subgrid' && cm[i].editable===true) {
+					if ( nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn' && cm[i].editable===true) {
 						if(nm == obj.p.ExpandColumn && obj.p.treeGrid === true) {
 							tmp = $(this).text();
 						} else {
