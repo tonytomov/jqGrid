@@ -158,7 +158,8 @@ $.jgrid.extend({
 			var childern = $($t).jqGrid("getNodeChildren",record);
 			$(childern).each(function(i){
 				$(this).css("display","none");
-				$($t).jqGrid("collapseRow",this);
+				if(this.expanded)
+					$($t).jqGrid("collapseRow",this);
 			});
 		});
 	},
