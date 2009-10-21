@@ -29,6 +29,7 @@ $.extend($.jgrid,{
 		return cell.cellIndex;
 	},
 	stripHtml : function(v) {
+		v = v+"";
 		var regexp = /<("[^"]*"|'[^']*'|[^'">])*>/gi;
 		if(v) {	return v.replace(regexp,"");}
 		else {return v;}
