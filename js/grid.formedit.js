@@ -1250,7 +1250,7 @@ $.jgrid.extend({
 						if(!p.processing) {
 							p.processing = true;
 							$(this).addClass('ui-state-active');
-							var postd = $.extend({oper:"del", id:postdata},p.delData, onCS);
+							var postd = $.extend({oper:"del", id:postdata},rp_ge.delData, onCS);
 							$.ajax( $.extend({
 								url:gurl,
 								type: p.mtype,
