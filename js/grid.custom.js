@@ -522,7 +522,6 @@ $.jgrid.extend({
 			var triggerToolbar = function() {
 				var sdata={}, j=0, v, nm;
                 $t.p.searchdata = {};
-				if($.isFunction(p.beforeSearch)){p.beforeSearch();}
 				$.each($t.p.colModel,function(i,n){
                     nm = this.index || this.name;
 					switch (this.stype) {
@@ -557,13 +556,13 @@ $.jgrid.extend({
 					saveurl = $t.p.url;
 					$($t).jqGrid("setGridParam",{url:$t.p.searchurl});
 				}
+				if($.isFunction(p.beforeSearch)){p.beforeSearch.call($t);}
 				$($t).jqGrid("setGridParam",{search:sd,page:1}).trigger("reloadGrid");
 				if(saveurl) {$($t).jqGrid("setGridParam",{url:saveurl});}
 				if($.isFunction(p.afterSearch)){p.afterSearch();}
 			};
 			var clearToolbar = function(){
 				var sdata={}, v, j=0, nm;
-				if($.isFunction(p.beforeClear)){p.beforeClear();}
 				$.each($t.p.colModel,function(i,n){
 					v = (this.searchoptions && this.searchoptions.defaultValue) ? this.searchoptions.defaultValue : "";
                     nm = this.index || this.name;
@@ -608,6 +607,7 @@ $.jgrid.extend({
 					saveurl = $t.p.url;
 					$($t).jqGrid("setGridParam",{url:$t.p.searchurl});
 				}
+				if($.isFunction(p.beforeClear)){p.beforeClear.call($t);}
 				$($t).jqGrid("setGridParam",{search:sd,page:1}).trigger("reloadGrid");
 				if(saveurl) {$($t).jqGrid("setGridParam",{url:saveurl});}
 				if($.isFunction(p.afterClear)){p.afterClear();}
