@@ -266,7 +266,8 @@ $.jgrid.extend({
 		});
 	},
 	gridDnD : function(opts) {
-		var $t = this[0];
+		return this.each(function(){
+		var $t = this;
 		if(!$t.grid) return;
 		// Currently we disable a treeGrid drag and drop
 		if($t.p.treeGrid) return;
@@ -400,6 +401,39 @@ $.jgrid.extend({
 			var cn =opts.connectWith[i]
 			$(cn).droppable($.isFunction(opts.drop) ? opts.drop.call($($t),opts) : opts.drop);
 		};
+		});
+	},
+	gridResize : function(opts) {
+		return this.each(function(){
+			var $t = this;
+			if(!$t.grid || !$.fn['resizable']) return;
+			opts = $.extend(opts || {});
+			if(opts.alsoResize ) {
+				opts._alsoResize_ = opts.alsoResize;
+				delete opts.alsoResize;
+			} else {
+				opts._alsoResize_ = false;
+			}
+			if(opts.stop && $.isFunction(opts.stop)) {
+				opts._stop_ = opts.stop;
+				delete opts.stop;
+			} else {
+				opts._stop_ = false;
+			}
+			opts.stop = function (ev, ui) {
+				$($t).jqGrid('setGridParam',{height:$("#gview_"+$t.p.id+" .ui-jqgrid-bdiv").height()});
+				$($t).jqGrid('setGridWidth',ui.size.width);
+				if(opts._stop_) opts._stop_.call($t,ev,ui);
+			};
+			if(opts._alsoResize_) {
+				var optstest = "{'\#gview_"+$t.p.id+" .ui-jqgrid-bdiv\':true,'" +opts._alsoResize_+"':true}";
+				opts.alsoResize = eval('('+optstest+')'); // the only way that I found to do this
+			} else {
+				opts.alsoResize = "#gview_"+$t.p.id+" .ui-jqgrid-bdiv";
+			}
+			delete opts._alsoResize_;
+			$("#gbox_"+$t.p.id).resizable(opts);
+		});
 	}
 });
 })(jQuery);
