@@ -423,7 +423,7 @@ $.fn.jqGrid = function( p ) {
 			if(isMSIE) $.jgrid.empty.apply(tBody[0]);
 			else tBody[0].innerHTML="";
 			if (scroll && ts.p.scroll) {
-				$(">div:first", parent).css({paddingTop:0,height:"auto"});
+				$(">div:first", parent).css({height:"auto"}).children("div:first").css({height:0,display:"none"});
 				parent.scrollTop = 0;
 			}
 			tBody = null;
@@ -652,11 +652,11 @@ $.fn.jqGrid = function( p ) {
 			if (ts.p.scroll) {
 				var rows = $("tbody:first > tr", ts.grid.bDiv);
 				base = to - rows.length
-				var rh = $("tbody:first > tr", ts.grid.bDiv).height();
+				var rh = rows.height();
 				if (rh) {
 					var top = base * rh;
 					var height = parseInt(ts.p.records,10) * rh;
-					$(">div:first",ts.grid.bDiv).css({paddingTop: top, height : height - top});
+				    $(">div:first",ts.grid.bDiv).css({height : height}).children("div:first").css({height:top,display:top?"":"none"});
 				}
 			}
 			if(ts.p.pager) {
@@ -1424,7 +1424,7 @@ $.fn.jqGrid = function( p ) {
 		}
 		grid.bDiv = document.createElement("div");
 		$(grid.bDiv)
-			.append($('<div style="position:relative"></div>').append(this))
+			.append($('<div style="position:relative"></div>').append('<div></div>').append(this))
 			.addClass("ui-jqgrid-bdiv")
 			.css({ height: ts.p.height+(isNaN(ts.p.height)?"":"px"), width: (grid.width)+"px"})
 			.scroll(grid.scrollGrid);
