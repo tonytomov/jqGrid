@@ -213,6 +213,7 @@ $.fn.jqGrid = function( p ) {
 			if(this.resizing) {
 				var idx = this.resizing.idx,
 				nw = this.headers[idx].newWidth || this.headers[idx].width;
+				nw = parseInt(nw);
 				this.resizing = false;
 				$("#rs_m"+p.id).css("display","none");
 				p.colModel[idx].width = nw;
@@ -1236,7 +1237,7 @@ $.fn.jqGrid = function( p ) {
 			});
 		}
 		
-		$.each(ts.p.colModel, function(i){if(!this.width) {this.width=150;}});
+		$.each(ts.p.colModel, function(i){if(!this.width) {this.width=150;} this.width = parseInt(this.width);});
 		if(ts.p.autowidth===true) {
 			var pw = $(eg).innerWidth();
 			ts.p.width = pw > 0?  pw: 'nw';
@@ -1383,7 +1384,7 @@ $.fn.jqGrid = function( p ) {
 				if(onSC) {
 					ri = ptr[0].id;
 					ci = $.jgrid.getCellIndex(td);
-					onSC(ri,ci,$(td).html(),td);
+					onSC(ri,ci,$(td).html(),e);
 				}
 			}
 			e.stopPropagation();
@@ -1939,7 +1940,7 @@ $.jgrid.extend({
 			}
 			if(isNaN(nwidth)) {return;}
 			if(nwidth == $t.grid.width) {return;}
-			else { $t.grid.width = $t.p.width = nwidth;}
+			else { nwidth = Math.ceil(nwidth); $t.grid.width = $t.p.width = nwidth;}
 			$("#gbox_"+$t.p.id).css("width",nwidth+"px");
 			$("#gview_"+$t.p.id).css("width",nwidth+"px");
 			$($t.grid.bDiv).css("width",nwidth+"px");
