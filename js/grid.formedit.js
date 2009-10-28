@@ -57,11 +57,12 @@ $.jgrid.extend({
 							}
 						}
 					}
+					var searchable;
 				    $.each(colModel, function(i, v) {
-				        var searchable = (typeof v.search === 'undefined') ?  true: v.search ,
+				        searchable = (typeof v.search === 'undefined') ?  true: v.search ,
 				        hidden = (v.hidden === true),
 						soptions = $.extend({},{text: colNames[i],value: v.index || v.name},this.searchoptions),
-						ignoreHiding = (soptions.searchhidden === true) || true;
+						ignoreHiding = (soptions.searchhidden === true);
 						if(typeof soptions.sopt == 'undefined') soptions.sopt = p.sopt ||  stempl;
 						k=0;
 						soptions.ops =[];
@@ -76,8 +77,12 @@ $.jgrid.extend({
 						if(typeof(this.stype) === 'undefined') this.stype='text';
 						if(this.stype == 'select') {
 							if ( soptions.dataUrl != null) {}
-							else if(this.editoptions) {
-								var eov = this.editoptions.value;
+							else {
+								var eov;
+								if(soptions.value)
+									eov = soptions.value;
+								else if(this.editoptions)
+									eov = this.editoptions.value;
 								if(eov) {
 									soptions.dataValues =[];
 									if(typeof(eov) === 'string') {
