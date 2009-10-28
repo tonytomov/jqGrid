@@ -1149,11 +1149,11 @@ $.fn.jqGrid = function( p ) {
 		}
 		if(this.p.multiselect) {
 			this.p.colNames.unshift("<input id='cb_"+this.p.id+"' class='cbox' type='checkbox'/>");
-			this.p.colModel.unshift({name:'cb',width:isSafari ? ts.p.multiselectWidth+ts.p.cellLayout : ts.p.multiselectWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center'});
+			this.p.colModel.unshift({name:'cb',width:isSafari ? ts.p.multiselectWidth+ts.p.cellLayout : ts.p.multiselectWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center',fixed:true});
 		}
 		if(this.p.rownumbers) {
 			this.p.colNames.unshift("");
-			this.p.colModel.unshift({name:'rn',width:ts.p.rownumWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center'});
+			this.p.colModel.unshift({name:'rn',width:ts.p.rownumWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center',fixed:true});
 		}
 		ts.p.xmlReader = $.extend({
 			root: "rows",
@@ -1934,7 +1934,7 @@ $.jgrid.extend({
 		return this.each(function(){
 			var $t = this, cw,
 			initwidth = 0, brd=$t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0, tw=0,
-			msw = $t.p.multiselectWidth, sgw=$t.p.subGridWidth, rnw=$t.p.rownumWidth, cl = $t.p.cellLayout,cr;
+			cl = 0,cr;
 			if (!$t.grid ) {return;}
 			if(typeof shrink != 'boolean') {
 				shrink=$t.p.shrinkToFit;
@@ -1953,16 +1953,18 @@ $.jgrid.extend({
 			if($t.p.footerrow) $($t.grid.sDiv).css("width",nwidth+"px");
 			if(shrink ===false && $t.p.forceFit == true) {$t.p.forceFit=false;}			
 			if(shrink===true) {
+				if ($.browser.safari) { brd=0; cl = $t.p.cellLayout;}
 				$.each($t.p.colModel, function(i) {
 					if(this.hidden===false){
 						initwidth += parseInt(this.width,10);
-						vc++;
+						if(this.fixed) {
+							tw += this.width +cl;
+							gw += this.width+brd+cl;
+						} else {
+							vc++;
+						}
 					}
 				});
-				if ($.browser.safari) { brd=0; msw +=cl; sgw += cl; rnw += cl;}
-				if($t.p.multiselect) {tw = msw; gw = msw+brd; vc--;}
-				if($t.p.subGrid) {tw += sgw;gw += sgw+brd; vc--;}
-				if($t.p.rownumbers) { tw += rnw; gw += rnw+brd; vc--;}
 				$t.p.tblwidth = initwidth;
 				aw = nwidth-brd*vc-gw;
 				if(!isNaN($t.p.height)) {
@@ -1975,7 +1977,7 @@ $.jgrid.extend({
 				var cle = $t.grid.cols.length >0;
 				$.each($t.p.colModel, function(i) {
 					var tn = this.name;
-					if(this.hidden === false && tn !== 'cb' && tn !== 'subgrid' && tn !== 'rn'){
+					if(this.hidden === false && !this.fixed){
 						cw = Math.floor((aw)/($t.p.tblwidth-tw)*this.width);
 						this.width =cw;
 						initwidth += cw;
