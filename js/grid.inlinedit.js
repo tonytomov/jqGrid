@@ -172,7 +172,7 @@ $.jgrid.extend({
 										if( $t.p.savedRow[k].id == rowid) {fr = k; break;}
 									};
 									if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
-									if( $.isFunction(aftersavefunc) ) { aftersavefunc(rowid,res.responseText); }
+									if( $.isFunction(aftersavefunc) ) { aftersavefunc(rowid,res); }
 								} else { $($t).jqGrid("restoreRow",rowid, afterrestorefunc); }
 							}
 						},
