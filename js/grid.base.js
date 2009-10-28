@@ -18,6 +18,7 @@ $.extend($.jgrid,{
 	},
 	format : function(format){ //jqgformat
 		var args = $.makeArray(arguments).slice(1);
+		if(format===undefined) format = "";
 		return format.replace(/\{(\d+)\}/g, function(m, i){
 			return args[i];
 		});
