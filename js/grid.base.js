@@ -1149,7 +1149,7 @@ $.fn.jqGrid = function( p ) {
 		}
 		if(this.p.multiselect) {
 			this.p.colNames.unshift("<input id='cb_"+this.p.id+"' class='cbox' type='checkbox'/>");
-			this.p.colModel.unshift({name:'cb',width:isSafari ?  ts.p.multiselectWidth+ts.p.cellLayout : ts.p.multiselectWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center'});
+			this.p.colModel.unshift({name:'cb',width:isSafari ? ts.p.multiselectWidth+ts.p.cellLayout : ts.p.multiselectWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center'});
 		}
 		if(this.p.rownumbers) {
 			this.p.colNames.unshift("");
@@ -1933,14 +1933,13 @@ $.jgrid.extend({
 	setGridWidth : function(nwidth, shrink) {
 		return this.each(function(){
 			var $t = this, cw,
-			initwidth = 0, brd=$t.p.cellLayout, lvc, vc=0, isSafari,hs=false, scw=$t.p.scrollOffset, aw, gw=0, tw=0,
+			initwidth = 0, brd=$t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0, tw=0,
 			msw = $t.p.multiselectWidth, sgw=$t.p.subGridWidth, rnw=$t.p.rownumWidth, cl = $t.p.cellLayout,cr;
 			if (!$t.grid ) {return;}
 			if(typeof shrink != 'boolean') {
 				shrink=$t.p.shrinkToFit;
 			}
 			if(isNaN(nwidth)) {return;}
-			if(nwidth == $t.grid.width) {return;}
 			else { nwidth = Math.ceil(nwidth); $t.grid.width = $t.p.width = nwidth;}
 			$("#gbox_"+$t.p.id).css("width",nwidth+"px");
 			$("#gview_"+$t.p.id).css("width",nwidth+"px");
@@ -1960,8 +1959,7 @@ $.jgrid.extend({
 						vc++;
 					}
 				});
-				isSafari = $.browser.safari ? true : false;
-				if (isSafari) { brd=0; msw +=cl; sgw += cl; rnw += cl;}
+				if ($.browser.safari) { brd=0; msw +=cl; sgw += cl; rnw += cl;}
 				if($t.p.multiselect) {tw = msw; gw = msw+brd; vc--;}
 				if($t.p.subGrid) {tw += sgw;gw += sgw+brd; vc--;}
 				if($t.p.rownumbers) { tw += rnw; gw += rnw+brd; vc--;}
@@ -1989,8 +1987,9 @@ $.jgrid.extend({
 					}
 				});
 				cr =0;
-				if (hs && nwidth-gw-(initwidth+brd*vc) !== scw) {
-					cr = nwidth-gw-(initwidth+brd*vc)-scw;
+				if (hs) {
+					if(nwidth-gw-(initwidth+brd*vc) !== scw)
+						cr = nwidth-gw-(initwidth+brd*vc)-scw;
 				} else if( Math.abs(nwidth-gw-(initwidth+brd*vc)) !== 1) {
 					cr = nwidth-gw-(initwidth+brd*vc);
 				}
