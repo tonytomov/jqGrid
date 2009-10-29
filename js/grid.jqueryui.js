@@ -234,8 +234,8 @@ $.jgrid.extend({
 			if($t.p.treeGrid) return;
 			if($.fn['sortable']) {
 				opts = $.extend({
-					cursor:"move",
-					axis : 'y'
+					"cursor":"move",
+					"axis" : "y"
 					},
 				opts || {});
 				if(opts.start && $.isFunction(opts.start)) {
@@ -246,22 +246,21 @@ $.jgrid.extend({
 					opts._update_ = opts.update;
 					delete opts.update;
 				} else {opts._update_ = false;}
-				$("tbody:first",$t).sortable(opts);
-
-				$("tbody:first",$t).bind('sortstart', function(ev,ui){
-					if(opts._start_) {
-						opts._start_.apply(this,[ev,ui]);
-					}
+				opts.start = function(ev,ui) {
 					$("td",ui.item).each(function(i){
 						this.style.width = $t.grid.cols[i].style.width;
 					});
-				});
-				$("tbody:first",$t).bind('sortupdate', function(ev,ui){
+					if(opts._start_) {
+						opts._start_.apply(this,[ev,ui]);
+					}
+				}
+				opts.update = function (ev,ui) {
+					$t.updateColumns();
 					if(opts._update_) {
 						opts._update_.apply(this,[ev,ui]);
 					}
-					$t.updateColumns();
-				});
+				}
+				$("tbody:first",$t).sortable(opts);
 			}
 		});
 	},
