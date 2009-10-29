@@ -1065,12 +1065,18 @@ $.fn.jqGrid = function( p ) {
 		},
 		setColWidth = function () {
 			var initwidth = 0, brd=ts.p.cellLayout, vc=0, lvc, scw=ts.p.scrollOffset,cw,hs=false,aw,tw=0,gw=0,
-			msw = ts.p.multiselectWidth, sgw=ts.p.subGridWidth, rnw=ts.p.rownumWidth, cl = ts.p.cellLayout, cr;
+			cl = 0, cr;
+			if (isSafari) { brd=0; cl = ts.p.cellLayout;}
 			$.each(ts.p.colModel, function(i) {
 				if(typeof this.hidden === 'undefined') {this.hidden=false;}
 				if(this.hidden===false){
 					initwidth += IntNum(this.width);
-					vc++;
+					if(this.fixed) {
+						tw += this.width +cl;
+						gw += this.width+brd+cl;
+					} else {
+						vc++;
+					}
 				}
 			});
 			if(isNaN(ts.p.width)) {ts.p.width = grid.width = initwidth;}
@@ -1078,10 +1084,6 @@ $.fn.jqGrid = function( p ) {
 			ts.p.tblwidth = initwidth;
 			if(ts.p.shrinkToFit ===false && ts.p.forceFit === true) {ts.p.forceFit=false;}
 			if(ts.p.shrinkToFit===true) {
-				if (isSafari) { brd=0; msw +=cl; sgw += cl; rnw += cl;}
-				if(ts.p.multiselect) {tw = msw; gw = msw+brd; vc--;}
-				if(ts.p.subGrid) {tw += sgw; gw += sgw+brd; vc--;}
-				if(ts.p.rownumbers) { tw += rnw; gw += rnw+brd; vc--;}
 				aw = grid.width-brd*vc-gw;
 				if(isNaN(ts.p.height)) {
 				} else {
@@ -1090,7 +1092,7 @@ $.fn.jqGrid = function( p ) {
 				}
 				initwidth =0;
 				$.each(ts.p.colModel, function(i) {
-					if(this.hidden === false && this.name !== 'cb' && this.name !== 'subgrid' && this.name !== 'rn'){
+					if(this.hidden === false && !this.fixed){
 						cw = Math.floor(aw/(ts.p.tblwidth-tw)*this.width);
 						this.width =cw;
 						initwidth += cw;
@@ -1098,8 +1100,9 @@ $.fn.jqGrid = function( p ) {
 					}
 				});
 				cr =0;
-				if (hs && grid.width-gw-(initwidth+brd*vc) !== scw) {
-					cr = grid.width-gw-(initwidth+brd*vc)-scw;
+				if (hs) {
+					if(grid.width-gw-(initwidth+brd*vc) !== scw)
+						cr = grid.width-gw-(initwidth+brd*vc)-scw;
 				} else if(!hs && Math.abs(grid.width-gw-(initwidth+brd*vc)) !== 1) {
 					cr = grid.width-gw-(initwidth+brd*vc);
 				}
