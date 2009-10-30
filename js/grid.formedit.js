@@ -254,6 +254,17 @@ $.jgrid.extend({
 			if ( $("#"+IDs.themodal).html() != null ) {
 				$(".ui-jqdialog-title","#"+IDs.modalhead).html(p.caption);
 				$("#FormError","#"+frmtb).hide();
+				if(rp_ge.topinfo) {
+					$(".topinfo","#"+frmtb).html(rp_ge.topinfo);
+					$(".tinfo","#"+frmtb).show();
+				}
+					else $(".tinfo","#"+frmtb).hide();
+				if(rp_ge.bottominfo) {
+					$(".bottominfo","#"+frmtb+"_2").html(rp_ge.bottominfo);
+					$(".binfo","#"+frmtb+"_2").show();
+				}
+				else $(".binfo","#"+frmtb+"_2").hide();
+
 				if(onBeforeInit) { onBeforeInit($("#"+frmgr)); }
 				// filldata
 				fillData(rowid,$t,frmgr);
@@ -261,7 +272,7 @@ $.jgrid.extend({
 				if(rowid=="_empty") { $("#pData, #nData","#"+frmtb+"_2").hide(); } else { $("#pData, #nData","#"+frmtb+"_2").show(); }
 				if(p.processing===true) {
 					p.processing=false;
-					$("#sData", "#"+frmtb).removeClass('ui-state-active');
+					$("#sData", "#"+frmtb+"_2").removeClass('ui-state-active');
 				}
 				if($("#"+frmgr).data("disabled")===true) {
 					$(".confirm","#"+IDs.themodal).hide();
@@ -291,11 +302,10 @@ $.jgrid.extend({
 				flr = $("<tr id='FormError' style='display:none'><td class='ui-state-error' colspan='"+(maxCols*2)+"'></td></tr>");
 				flr[0].rp = 0;
 				$(tbl).append(flr);
-				if(rp_ge.topinfo) {
-					flr = $("<tr><td class='topinfo' colspan='"+(maxCols*2)+"'>"+rp_ge.topinfo+"</td></tr>");
-					flr[0].rp = 0;
-					$(tbl).append(flr);
-				}
+				//topinfo
+				flr = $("<tr style='display:none' clas=='tinfo'><td class='topinfo' colspan='"+(maxCols*2)+"'>"+rp_ge.topinfo+"</td></tr>");
+				flr[0].rp = 0;
+				$(tbl).append(flr);
 				// set the id.
 				// use carefull only to change here colproperties.
 				if(onBeforeInit) { onBeforeInit($("#"+frmgr)); }
@@ -310,9 +320,7 @@ $.jgrid.extend({
 				bS  ="<a href='javascript:void(0)' id='sData' class='fm-button ui-state-default ui-corner-all'>"+p.bSubmit+"</a>",
 				bC  ="<a href='javascript:void(0)' id='cData' class='fm-button ui-state-default ui-corner-all'>"+p.bCancel+"</a>";
 				var bt = "<table border='0' class='EditTable' id='"+frmtb+"_2'><tbody><tr id='Act_Buttons'><td class='navButton ui-widget-content'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton ui-widget-content'>"+bS+bC+"</td></tr>";
-				if(rp_ge.bottominfo) {
-					bt += "<tr><td class='bottominfo' colspan='2'>"+rp_ge.bottominfo+"</td></tr>";
-				}
+				bt += "<tr style='display:none' class='binfo'><td class='bottominfo' colspan='2'>"+rp_ge.bottominfo+"</td></tr>";
 				bt += "</tbody></table>";
 				if(maxRows >  0) {
 					var sd=[];
@@ -340,6 +348,8 @@ $.jgrid.extend({
 					$("#pData, #nData","#"+frmtb+"_2").css("float","right");
 					$(".EditButton","#"+frmtb+"_2").css("text-align","left");
 				}
+				if(rp_ge.topinfo) $(".tinfo","#"+frmtb).show();
+				if(rp_ge.bottominfo) $(".binfo","#"+frmtb+"_2").show();
 				tms = null; bt=null;
 				$("#"+IDs.themodal).keydown( function( e ) {
 					var wkey = e.target;
