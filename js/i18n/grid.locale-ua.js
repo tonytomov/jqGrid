@@ -41,7 +41,11 @@ $.jgrid = {
         email: "некоректна адреса електронної пошти",
         integer: "Будь ласка, введення дійсне ціле значення",
         date: "Будь ласка, введення дійсне значення дати",
-        url: "не дійсний URL. Необхідна приставка ('http://' or 'https://')"
+        url: "не дійсний URL. Необхідна приставка ('http://' or 'https://')",
+		nodefined : " is not defined!",
+		novalue : " return value is required!",
+		customarray : "Custom function should return array!",
+		customfcheck : "Custom function should be present in case of custom checking!"
 		}
 	},
 	view : {

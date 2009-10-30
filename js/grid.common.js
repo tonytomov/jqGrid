@@ -406,8 +406,8 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 					else throw "e2";
 				} else 	throw "e1";
 			} catch (e) {
-				if (e=="e1") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_element' is not defined!",jQuery.jgrid.edit.bClose);
-				if (e=="e2") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_element' not return a value!",jQuery.jgrid.edit.bClose);
+				if (e=="e1") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_element' "+jQuery.jgrid.edit.msg.nodefined, jQuery.jgrid.edit.bClose);
+				if (e=="e2") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_element' "+jQuery.jgrid.edit.msg.novalue,jQuery.jgrid.edit.bClose);
 				else info_dialog(jQuery.jgrid.errors.errcap,e.message,jQuery.jgrid.edit.bClose);
 			}
 			break;
@@ -484,12 +484,10 @@ function checkValues(val, valref,g) {
 					if(jQuery.isArray(ret)) {
 						return ret;
 					} else {
-						// Here translation needed in lang file
-						return [false,"Custom function should return array!",""];
+						return [false,jQuery.jgrid.edit.msg.customarray,""];
 					}
 				} else {
-					// Here translation needed in lang file
-					return [false,"Custom function should be present in case of custom checking!",""];
+					return [false,jQuery.jgrid.edit.msg.customfcheck,""];
 				}
 			}
 		}

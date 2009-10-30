@@ -41,7 +41,11 @@ $.jgrid = {
         email: "некорректное значение e-mail",
         integer: "Пожалуйста, введите целое число",
         date: "Пожалуйста, введите правильную дату",
-        url: "неверная ссылка. Необходимо ввести префикс ('http://' or 'https://')"
+        url: "неверная ссылка. Необходимо ввести префикс ('http://' or 'https://')",
+		nodefined : " is not defined!",
+		novalue : " return value is required!",
+		customarray : "Custom function should return array!",
+		customfcheck : "Custom function should be present in case of custom checking!"
 		}
 	},
 	view : {

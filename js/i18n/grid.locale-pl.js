@@ -41,7 +41,11 @@ $.jgrid = {
 	        email: "nie jest adresem e-mail",
 	        integer: "Proszę wpisać poprawną liczbę",
 			date: "Proszę podaj poprawną datę",
-			url: "jest niew\u0142aściwym adresem URL. Pamiętaj o prefiksie ('http://' lub 'https://')"
+			url: "jest niew\u0142aściwym adresem URL. Pamiętaj o prefiksie ('http://' lub 'https://')",
+			nodefined : " is not defined!",
+			novalue : " return value is required!",
+			customarray : "Custom function should return array!",
+			customfcheck : "Custom function should be present in case of custom checking!"
 		}
 	},
 	view : {

@@ -39,7 +39,11 @@ $.jgrid = {
 	        email: "پست الکترونيک وارد شده معتبر نيست",
 	        integer: "لطفا يک عدد صحيح وارد کنيد",
 			date: "لطفا يک تاريخ معتبر وارد کنيد",
-			url: "is not a valid URL. Prefix required ('http://' or 'https://')"
+			url: "is not a valid URL. Prefix required ('http://' or 'https://')",
+			nodefined : " is not defined!",
+			novalue : " return value is required!",
+			customarray : "Custom function should return array!",
+			customfcheck : "Custom function should be present in case of custom checking!"
 		}
 	},
 	view : {

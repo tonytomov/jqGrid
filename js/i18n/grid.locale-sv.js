@@ -36,7 +36,12 @@ $.jgrid = {
 	        maxValue:"värdet måste vara mindre än eller lika med",
 	        email: "är inte korrekt e-mail adress",
 	        integer: "Var god ange korrekt heltal",
-			date: "Var god att ange korrekt datum"
+			date: "Var god att ange korrekt datum",
+			url: "is not a valid URL. Prefix required ('http://' or 'https://')",
+			nodefined : " is not defined!",
+			novalue : " return value is required!",
+			customarray : "Custom function should return array!",
+			customfcheck : "Custom function should be present in case of custom checking!"
 	    }
 	},
 	del : {

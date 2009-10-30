@@ -99,13 +99,10 @@ $.jgrid.extend({
         var select = $('select', selector);
 
         opts = $.extend({
-            "title" : "Select columns",
             "width" : 420,
             "height" : 240,
             "classname" : null,
             "done" : function(perm) { if (perm) self.jqGrid("remapColumns", perm, true) },
-            "ok" : "Ok",
-            "cancel" : "Cancel",
             /* msel is either the name of a ui widget class that
                extends a multiselect, or a function that supports
                creating a multiselect object (with no argument,
@@ -129,11 +126,11 @@ $.jgrid.extend({
                ui.dialog */
             "dlog_opts" : function(opts) {
                 var buttons = {};
-                buttons[opts.ok] = function() {
+                buttons[opts.bSubmit] = function() {
                     opts.apply_perm();
                     opts.cleanup(false);
                 };
-                buttons[opts.cancel] = function() {
+                buttons[opts.bCancel] = function() {
                     opts.cleanup(true);
                 };
                 return {
@@ -175,7 +172,7 @@ $.jgrid.extend({
                     opts.done.call(self);
                 }
             }
-        }, opts || {});
+        }, $.jgrid.col, opts || {});
 
         if (opts.title) {
             selector.attr("title", opts.title);

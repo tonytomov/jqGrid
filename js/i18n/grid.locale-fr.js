@@ -40,7 +40,11 @@ $.jgrid = {
 			maxValue: "La valeur doit être inférieure ou égal à 0",
 			email: "n'est pas un email correct",
 			integer: "Saisissez un entier correct",
-			url: "n'est pas une adresse correcte. Préfixe requis ('http://' or 'https://')"
+			url: "n'est pas une adresse correcte. Préfixe requis ('http://' or 'https://')",
+			nodefined : " is not defined!",
+			novalue : " return value is required!",
+			customarray : "Custom function should return array!",
+			customfcheck : "Custom function should be present in case of custom checking!"
 		}
 	},
 	view : {

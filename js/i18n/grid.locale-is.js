@@ -40,7 +40,11 @@ $.jgrid = {
 	        email: "er ekki löglegt email",
 	        integer: "Vinsamlega settu inn tölu",
 			date: "Please, enter valid date value",
-			url: "is not a valid URL. Prefix required ('http://' or 'https://')"
+			url: "is not a valid URL. Prefix required ('http://' or 'https://')",
+			nodefined : " is not defined!",
+			novalue : " return value is required!",
+			customarray : "Custom function should return array!",
+			customfcheck : "Custom function should be present in case of custom checking!"
 		}
 	},
 	view : {
