@@ -804,7 +804,7 @@ $.jgrid.extend({
 					$.ajax( $.extend({
 						url:gurl,
 						type: rp_ge.mtype,
-						data: $.isFunction(rp_ge.serializeEditdata) ? rp_ge.serializeEditdata(postdata) :  postdata,
+						data: $.isFunction(rp_ge.serializeEditData) ? rp_ge.serializeEditData(postdata) :  postdata,
 						complete:function(data,Status){
 							if(Status != "success") {
 							    ret[0] = false;
