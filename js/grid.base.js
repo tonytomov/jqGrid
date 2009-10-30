@@ -185,6 +185,7 @@ $.fn.jqGrid = function( p ) {
 			this.hDiv.style.cursor = "col-resize";
 			this.curGbox = $("#rs_m"+p.id,"#gbox_"+p.id);
 			this.curGbox.css({display:"block",left:y[0],top:y[1],height:y[2]});
+			if($.isFunction(p.resizestart)) p.resizestart.call(this,x,i);
 			document.onselectstart=new Function ("return false");
 		},
 		dragMove: function(x) {
@@ -239,6 +240,7 @@ $.fn.jqGrid = function( p ) {
 						this.sDiv.scrollLeft = this.bDiv.scrollLeft;
 					}
 				}
+				if($.isFunction(p.resizestop)) p.resizestop.call(this,nw,i);
 			}
 			this.curGbox=null;
 			document.onselectstart=new Function ("return true");
