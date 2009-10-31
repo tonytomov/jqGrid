@@ -632,7 +632,7 @@ $.jgrid.extend({
 			var tr = $("<tr class='ui-search-toolbar' role='rowheader'></tr>"), th,thd, soptions;
 			$.each($t.p.colModel,function(i,n){
 				var cm=this;
-				th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-"+ts.p.direction+"'></th>");
+				th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-"+$t.p.direction+"'></th>");
 				thd = $("<div style='width:100%;position:relative;height:100%;padding-right:0.3em;'></div>");
 				if(this.hidden===true) { $(th).css("display","none");}
 				this.search = this.search === false ? false : true;
