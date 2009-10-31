@@ -1552,7 +1552,7 @@ $.jgrid.extend({
 		return this.each(function() {
 			if( !this.grid)  { return; }
 			if( elem.indexOf("#") != 0) { elem = "#"+elem; }
-			var findnav = $(".navtable",elem)[0];
+			var findnav = $(".navtable",elem)[0], $t = this;
 			if (findnav) {
 				var tbd = $("<td></td>");
 				$(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'><span class='ui-icon "+p.buttonicon+"'></span>"+p.caption+"</div>");
@@ -1569,7 +1569,7 @@ $.jgrid.extend({
 				$(tbd,findnav)
 				.attr("title",p.title  || "")
 				.click(function(e){
-					if ($.isFunction(p.onClickButton) ) { p.onClickButton(); }
+					if ($.isFunction(p.onClickButton) ) { p.onClickButton.call($t,e); }
 					return false;
 				})
 				.hover(
