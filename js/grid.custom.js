@@ -668,9 +668,14 @@ $.jgrid.extend({
 								}
 							}, $.jgrid.ajaxOptions, $t.p.ajaxSelectOptions || {} ));
 						} else {
-							if(cm.editoptions && cm.editoptions.value) {
-								var oSv = cm.editoptions.value,
-								elem = document.createElement("select");
+							var oSv;
+							if(cm.searchoptions && cm.searchoptions.value)
+								oSv = cm.searchoptions.value;
+							else if(cm.editoptions && cm.editoptions.value) {
+								var oSv = cm.editoptions.value;
+							}
+							if (oSv) {	
+								var elem = document.createElement("select");
 								elem.style.width = "100%";
 								$(elem).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
 								if(typeof oSv === "string") {
