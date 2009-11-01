@@ -34,7 +34,7 @@ $.jgrid.extend({
 	sortableColumns : function (tblrow)
 	{
 		return this.each(function (){
-			ts = this;
+			var ts = this;
 			function start() {ts.p.disableClick = true;};
 			var sortable_opts = {
 				"tolerance" : "pointer",
