@@ -120,8 +120,8 @@ $.jgrid.extend({
 									if (!tmp[nm]) throw "e2";
 								} else throw "e1";
 							} catch (e) {
-								if (e=="e1") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' is not defined!",jQuery.jgrid.edit.bClose);
-								if (e=="e2") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' not return a value!",jQuery.jgrid.edit.bClose);
+								if (e=="e1") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.nodefined,jQuery.jgrid.edit.bClose);
+								if (e=="e2") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.novalue,jQuery.jgrid.edit.bClose);
 								else info_dialog(jQuery.jgrid.errors.errcap,e.message,jQuery.jgrid.edit.bClose);
 							}
 							break;
