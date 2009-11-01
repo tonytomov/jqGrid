@@ -110,7 +110,7 @@ addSubGrid : function(t,pos) {
 							}
 							sxml=null;
 						}
-					}, $.jgrid.ajaxOptions, $.jgrid.ajaxSubgridOptions || {}));
+					}, $.jgrid.ajaxOptions, ts.p.ajaxSubgridOptions || {}));
 					break;
 				}
 			}
