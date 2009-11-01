@@ -299,7 +299,7 @@ $.jgrid.extend({
 					saveurl = $(gr).jqGrid("getGridParam",'url');
 					$(gr).jqGrid("setGridParam",{url:self.p.url});
 				}
-				$(gr).jqGrid("setGridParam",{search:sd,page:1}).trigger("reloadGrid");
+			    $(gr).jqGrid("setGridParam",{search:sd}).trigger("reloadGrid",[{page:1}]);
 				if(saveurl) {$(gr).jqGrid("setGridParam",{url:saveurl});}
 				if($.isFunction(self.p.afterSearch)){self.p.afterSearch();}
 			};
@@ -364,7 +364,7 @@ $.jgrid.extend({
 					saveurl = $(gr).jqGrid("getGridParam",'url');
 					$(gr).jqGrid("setGridParam",{url:self.p.url});
 				}
-				$(gr).jqGrid("setGridParam",{search:sd,page:1}).trigger("reloadGrid");
+				$(gr).jqGrid("setGridParam",{search:sd}).trigger("reloadGrid",[{page:1}]);
 				if(saveurl) {$(gr).jqGrid("setGridParam",{url:saveurl});}
 				if($.isFunction(self.p.afterClear)){self.p.afterClear();}
 			};
@@ -557,7 +557,7 @@ $.jgrid.extend({
 					$($t).jqGrid("setGridParam",{url:$t.p.searchurl});
 				}
 				if($.isFunction(p.beforeSearch)){p.beforeSearch.call($t);}
-				$($t).jqGrid("setGridParam",{search:sd,page:1}).trigger("reloadGrid");
+				$($t).jqGrid("setGridParam",{search:sd}).trigger("reloadGrid",[{page:1}]);
 				if(saveurl) {$($t).jqGrid("setGridParam",{url:saveurl});}
 				if($.isFunction(p.afterSearch)){p.afterSearch();}
 			};
@@ -608,7 +608,7 @@ $.jgrid.extend({
 					$($t).jqGrid("setGridParam",{url:$t.p.searchurl});
 				}
 				if($.isFunction(p.beforeClear)){p.beforeClear.call($t);}
-				$($t).jqGrid("setGridParam",{search:sd,page:1}).trigger("reloadGrid");
+				$($t).jqGrid("setGridParam",{search:sd}).trigger("reloadGrid",[{page:1}]);
 				if(saveurl) {$($t).jqGrid("setGridParam",{url:saveurl});}
 				if($.isFunction(p.afterClear)){p.afterClear();}
 			};
