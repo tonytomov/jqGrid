@@ -1,3 +1,113 @@
+3.6 version
+===========
+Bug Fixes
+---------
+   * Fix problem with getAbsoluteIndex on IE8
+   * Fix in triggerReload grid to reset the savedRow array.
+   * Fix in setGridWidth  method when try to resize a grid a and there is no data.
+   * Fix header aligment in ie8
+   * Fix in createEl function to check for val and not for html when select
+   * making getChangedCells method compatible with unformat function if defined
+   * Fixed record count when scroll true
+   * Fix in setSelection method to accept numbers
+   * Fix IE header checkbox when multiselect is true
+   * Fix for searching DOM elements with id containing special characters
+   * Fix a checkbox checking in form editing module.
+   * Fix getCol to use unformat function
+   * Better looking buttons in form editing
+   * Fix searchFilter in IE7 and IE6 not to return undefined value when more 
+than one field is searched.
+   * Some fixes for datepicker UI in inline and cell edit (when present)
+   * Fix in setLabel method not to clear the sort icons when we set new label
+   * Fix in form edit when a formatter select is used
+   * Fix the id pollution when multiselect is enabled. Now the id of every 
+common multiselect is combination of cb_ + id of the grid 
+   * Fixed bug when deselectAfterSort false and we are in multiselect mode
+   * Fix in unformat number and currency
+   * Fixed bug when creating a select with dataUrl and select is set to multiple.
+   * Fix a bug when creating select with multiple option. Also the attribute 
+should be set immediatley after the element is created and not after.
+   * Fix a bug in form edit. The comapared values should be trimed since of 
+split(",") which cause the elements to begin with space.
+   * Fix a jqGrid loader (development version) for IE browsers
+   * Fix for form icons in Opera
+   * Fix getGridParam to return values 0 or false 
+   * Avoiding the overhead of local functions and maintenance issues when the 
+parameters change
+   * Opera fix for cursor col-resize
+   * Fix in editGridRow when a save key is defined and the key is Eneter we 
+should not do save when we are in teaxtarea element
+   * Fix in formatter checkbox when the value is undefined. We also add a 
+default format for the checkbox too
+   * Fix addRowData to use key:true (keyIndex) when rowid is not defined
+   * Fix formatter bug for the select to use the defaultFormat
+   * Adding a 3 parameter to the unformat function - the cellobject.
+   * Fix alternate rows when we sort data locally.
+   * Fix in addRowData for alternate rows when we add item as last
+   * Fix collapseRow in treegrid preventing infinite recursion
+   * Fix in stripHtml function to parse numeric values
+   * Fix in delGridRow to get "fresh" Data from delData object
+   * Fix problems with width option if set as string.
+   * Fixing $jgrid.format function in base module to accept undefined parameter.
+   * Fix for saveRow method in aftersave function. Also we pass the request and 
+not the responseText. Also both aftersave and  success functions have the 
+same type parameter - the response
+   * Fix for serchhidden in searchGrid method
+   * Fix for setGridWidth method
+   * Fix  setColWidth function
+   * Fix for topinfo and bottom info in formedit to appear separatley in edit and add dialogs
+   * Fix searchFilter css to work when called from subgrid 
+
+   
+Additions and changes
+---------------------
+   * New API
+   * RTL Support
+   * Column reordering
+   * Added life scrolling of data
+   * Added gridResize method which can resize the grid. Also use a jQuery UI 
+resizable and can use any options of this widget
+   * Added sortableRows method which allow us to sort rows with drag and drop
+   * Added gridDnD method. The method connect two or more grids so that drag and drop rows
+between these is possible
+   * Add columnChooser method which allows choosing/sorting columns at the same 
+time. This method requiere multiselect plugin
+   * Now getRowData can return all rows when rowid is not set.
+   * getCol now can return summary, average and count of the selected row. The 
+3 parameter determines this (valid are sum, avg, count). If this parameter 
+is set and is valid, the returned value is a scalar.If the param is not 
+valid the returned value is empty array. 
+   * To setRowData we add a 3 parameter. If the parameter is string we use 
+addClass to add classes. If the parameter is object we use css to add css 
+properties. Note that we can set properties and classes without data, in 
+this case we should set data to false 
+   * Adding a event object to ondblClickRow and onRightClickRow events as 4 parameter
+   * Add a ant based build system which allow us to minify the JS code
+   * Added custom validation property in editing modules
+   * Added possibility to create custom element in editing modules
+   * Adding support to configure the ajax request in a way that user want. This
+is done in all modules where ajax is used.
+   * Added class in cell edit and inline edit so that the cell or row can not
+be edited - the corresponding classes are 'not-editable-cell' and
+'not-editable-row'.
+   * Added Hebrew Translation
+   * Added a beforeCheckValues event in editGridRow method. The execution is 
+before checking the values. Should return object of the posted data.
+   * Added Romanian translation 
+   * Added a property classes in colModel where we can attach classes to column.
+   * info_dialog function can be used as separate modal dialog
+   * Added a class ui-ellipsis in grid css file. Also work in FireFox too.
+   * Changind the order of calling the events beforeSearch and beforeClear in 
+filterToolbar method. Also the events are called immediatley after triggering the grid
+   * To onCellSelect we replace the 4 parameter with the more natuaral event instead of e.target - 
+sorry if this will bring to some confusions.
+   * Added searchoptions value parameter in order to separate the editing module and search module.
+We first look for such option in searchoptions and if not found we use the
+editoptions value
+   * Added fixed property in colModel which allow us not to change the  
+column width if shrinkToFit is true and we set new width of the grid.
+
+   
 Please read The Installation instructions first in install.txt
 ================================================
 3.5 beta (buld6- build11)
