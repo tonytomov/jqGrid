@@ -763,7 +763,7 @@ $.jgrid.extend({
 									if (e=="e1") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.nodefined,jQuery.jgrid.edit.bClose);
 									else info_dialog(jQuery.jgrid.errors.errcap,e.message,jQuery.jgrid.edit.bClose);
 								}
-								brak;
+								break;
 						}
 						cnt++;
 					}
