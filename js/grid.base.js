@@ -486,12 +486,12 @@ $.fn.jqGrid = function( pin ) {
 			$(ts.p.xmlReader.userdata,xml).each(function() {ts.p.userData[this.getAttribute("name")]=this.textContent || this.text;});
 			var gxml = $(ts.p.xmlReader.root+" "+ts.p.xmlReader.row,xml),gl = gxml.length, j=0;
 			if(gxml && gl){
-			var rn = ts.p.rowNum;
+            var rn = parseInt(ts.p.rowNum),br=ts.p.scroll?(parseInt(ts.p.page)-1)*rn+1:1;
 			if (adjust) rn *= adjust+1;
 			var afterInsRow = $.isFunction(ts.p.afterInsertRow);
 			while (j<gl) {
 				xmlr = gxml[j];
-				rid = getId(xmlr,j+1);
+				rid = getId(xmlr,br+j);
 				cn1 = j%2 == 1 ? cn : '';
 				rowData[ari++] = "<tr id=\""+rid+"\" role=\"row\" class =\"ui-widget-content jqgrow ui-row-"+ts.p.direction+""+cn1+"\">";
 				if(ts.p.rownumbers===true) {
@@ -589,21 +589,20 @@ $.fn.jqGrid = function( pin ) {
 			drows = data[ts.p.jsonReader.root];
 			if (drows) {
 			len = drows.length, i=0;
-			var rn = ts.p.rowNum;
+            var rn = parseInt(ts.p.rowNum),br=ts.p.scroll?(parseInt(ts.p.page)-1)*rn+1:1;
 			if (adjust) rn *= adjust+1;
 			var afterInsRow = $.isFunction(ts.p.afterInsertRow);
 			while (i<len) {
 				cur = drows[i];
 				idr = cur[idn];
 				if(idr === undefined) {
+                    idr = br+i;
 					if(f.length===0){
 						if(ts.p.jsonReader.cell){
 							var ccur = cur[ts.p.jsonReader.cell];
-							idr = ccur[idn] || i+1;
+							idr = ccur[idn] || idr;
 							ccur=null;
-						} else {idr=i+1;}
-					} else {
-						idr=i+1;
+						}
 					}
 				}
 				cn1 = i%2 == 1 ? cn : '';
