@@ -504,8 +504,8 @@ $.jgrid.extend({
 			$(frm).append(tbl);
 			formFill();
 			$(this).append(frm);
-			this.triggerSearch = function () {triggerSearch();};
-			this.clearSearch = function () {clearSearch();};
+			this.triggerSearch = triggerSearch;
+			this.clearSearch = clearSearch;
 		});
 	},
 	filterToolbar : function(p){
@@ -731,9 +731,9 @@ $.jgrid.extend({
 				$(tr).append(th);
 			});
 			$("table thead",$t.grid.hDiv).append(tr);
-			this.triggerToolbar = function () {triggerToolbar();};
-			this.clearToolbar = function () {clearToolbar();};
-			this.toggleToolbar = function() {toggleToolbar();};
+			this.triggerToolbar = triggerToolbar;
+			this.clearToolbar = clearToolbar;
+			this.toggleToolbar = toggleToolbar;
 		});
 	}
 });
