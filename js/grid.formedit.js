@@ -150,8 +150,7 @@ $.jgrid.extend({
 				}
 				grid[0].p.search = hasFilters;
 				$.extend(grid[0].p.postData,sdata);
-				grid[0].p.page= 1;
-				grid.trigger("reloadGrid");
+				grid.trigger("reloadGrid",[{page:1}]);
 				if(p.closeAfterSearch) hideFilter($("#"+fid));
 			}
 			function resetFilters(filters) {
@@ -164,8 +163,7 @@ $.jgrid.extend({
 					sdata[p.sFilter] = "";
 				}
 				$.extend(grid[0].p.postData,sdata);
-				grid[0].p.page= 1;
-				grid.trigger("reloadGrid");
+				grid.trigger("reloadGrid",[{page:1}]);
 			}
 			function hideFilter(selector) {
 				if(p.onClose){
@@ -1498,25 +1496,10 @@ $.jgrid.extend({
 					} catch (e) {}
 					switch (o.refreshstate) {
 						case 'firstpage':
-							$t.p.page=1;
-							$($t).trigger("reloadGrid");
+						    $($t).trigger("reloadGrid", [{page:1}]);
 							break;
 						case 'current':
-							var sr = $t.p.multiselect===true ? $t.p.selarrrow : $t.p.selrow;
-							$($t).trigger("reloadGrid");
-							setTimeout(function(){
-								if($t.p.multiselect===true) {
-									if(sr.length>0) {
-										for(var i=0;i<sr.length;i++){
-											$($t).jqGrid("setSelection",sr[i],false);
-										}
-									}
-								} else {
-									if(sr) {
-										$($t).jqGrid("setSelection",sr,false);
-									}
-								}
-							},1000);
+						    $($t).trigger("reloadGrid", [{current:true}]);
 							break;
 					}
 					if($.isFunction(o.afterRefresh)) o.afterRefresh();
