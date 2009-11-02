@@ -162,6 +162,7 @@ function info_dialog(caption, content,c_b, modalopt) {
 		caption:"<b>"+caption+"</b>",
 		left:250,
 		top:170,
+		zIndex : 1000,
 		jqModal : true,
 		closeOnEscape : true,
 		align: 'center',
