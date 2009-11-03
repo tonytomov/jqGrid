@@ -367,9 +367,7 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 					}
 				} else if (typeof options.value === 'object') {
 					var oSv = options.value;
-					i=0;
 					for ( var key in oSv) {
-						i++;
 						ov = document.createElement("option");
 						ov.value = key; ov.innerHTML = oSv[key];
 						if (!msl &&  (key == vl ||oSv[key]==vl) ) ov.selected ="selected";
@@ -404,8 +402,8 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 			jQuery(elem).attr(options);
 			break;
 		case "custom" :
+			elem = document.createElement("span");
 			try {
-				elem = document.createElement("span");
 				if(jQuery.isFunction(options.custom_element)) {
 					var celm = options.custom_element.call(this,vl,options);
 					if(celm) {
