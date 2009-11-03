@@ -189,7 +189,11 @@ function info_dialog(caption, content,c_b, modalopt) {
 	cnt += c_b ? "<div class='ui-widget-content ui-helper-clearfix' style='text-align:"+mopt.buttonalign+";padding-bottom:0.8em;padding-top:0.5em;background-image: none;border-width: 1px 0 0 0;'><a href='javascript:void(0)' id='closedialog' class='fm-button ui-state-default ui-corner-all'>"+c_b+"</a>"+buttstr+"</div>" : "";
 	cnt += "</div>";
 
-	try {jQuery("#info_dialog").remove();} catch (e){}
+	try {
+		if(jQuery("#info_dialog").attr("aria-hidden") == "false")
+			hideModal("#info_dialog",{jqm:jm});
+		jQuery("#info_dialog").remove();
+	} catch (e){}
 	createModal({
 		themodal:'info_dialog',
 		modalhead:'info_head',
