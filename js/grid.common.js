@@ -413,7 +413,7 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 					var celm = options.custom_element.call(this,vl,options);
 					if(celm) {
 						jQuery(celm).addClass("customelement").attr({id:options.id,name:options.name});
-						jQuery.(elem).append(celm);
+						jQuery(elem).html(celm);
 					}
 					else throw "e2";
 				} else 	throw "e1";
