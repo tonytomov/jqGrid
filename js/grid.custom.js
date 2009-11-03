@@ -556,8 +556,9 @@ $.jgrid.extend({
 					saveurl = $t.p.url;
 					$($t).jqGrid("setGridParam",{url:$t.p.searchurl});
 				}
-				if($.isFunction(p.beforeSearch)){p.beforeSearch.call($t);}
-				$($t).jqGrid("setGridParam",{search:sd}).trigger("reloadGrid",[{page:1}]);
+				var bsr = false;
+				if($.isFunction(p.beforeSearch)){bsr = p.beforeSearch.call($t);}
+				if(!bsr) $($t).jqGrid("setGridParam",{search:sd}).trigger("reloadGrid",[{page:1}]);
 				if(saveurl) {$($t).jqGrid("setGridParam",{url:saveurl});}
 				if($.isFunction(p.afterSearch)){p.afterSearch();}
 			};
@@ -607,8 +608,9 @@ $.jgrid.extend({
 					saveurl = $t.p.url;
 					$($t).jqGrid("setGridParam",{url:$t.p.searchurl});
 				}
-				if($.isFunction(p.beforeClear)){p.beforeClear.call($t);}
-				$($t).jqGrid("setGridParam",{search:sd}).trigger("reloadGrid",[{page:1}]);
+				var bcv = false;
+				if($.isFunction(p.beforeClear)){bcv = p.beforeClear.call($t);}
+				if(!bcv) $($t).jqGrid("setGridParam",{search:sd}).trigger("reloadGrid",[{page:1}]);
 				if(saveurl) {$($t).jqGrid("setGridParam",{url:saveurl});}
 				if($.isFunction(p.afterClear)){p.afterClear();}
 			};
@@ -651,7 +653,12 @@ $.jgrid.extend({
 								url: surl,
 								dataType: "html",
 								complete: function(res,status) {
-									$(self).append(res.responseText);
+									if(soptions.buildSelect != null) {
+										var d = soptions.buildSelect(res);
+										if (d)
+											$(self).append(d);
+									} else 
+										$(self).append(res.responseText);
 									if(soptions.defaultValue) $("select",self).val(soptions.defaultValue);
 									$("select",self).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
 									if(soptions.attr) {$("select",self).attr(soptions.attr);}
@@ -672,7 +679,7 @@ $.jgrid.extend({
 							if(cm.searchoptions && cm.searchoptions.value)
 								oSv = cm.searchoptions.value;
 							else if(cm.editoptions && cm.editoptions.value) {
-								var oSv = cm.editoptions.value;
+								oSv = cm.editoptions.value;
 							}
 							if (oSv) {	
 								var elem = document.createElement("select");
@@ -688,7 +695,6 @@ $.jgrid.extend({
 									}
 								} else if(typeof oSv === "object" ) {
 									for ( var key in oSv) {
-										i++;
 										ov = document.createElement("option");
 										ov.value = key; ov.innerHTML = oSv[key];
 										elem.appendChild(ov);

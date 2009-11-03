@@ -303,10 +303,13 @@ jQuery.fn.searchFilter = function(fields, options) {
                     has_custom_data = true;
                     var dEvents = this.dataEvents;
                     var iEvent = this.dataInit;
+                    var bs = this.buildSelect;
                     jQuery.ajax(jQuery.extend({
                         url : this.dataUrl,
                         complete: function(data) {
-                            var $d = jQuery("<div />").append(data.responseText);
+                            var $d;
+                            if(bs != null) $d =jQuery("<div />").append(bs(data));
+                            else $d = jQuery("<div />").append(data.responseText);
                             $d.find("select").addClass("field" + field_num).hide();
                             jData.append($d.html());
                             if (iEvent) initData(".field" + i, iEvent);

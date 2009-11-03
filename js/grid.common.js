@@ -321,7 +321,12 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 					data : {nd:new Date().getTime()},
 					complete: function(data,status){
 						try {delete options['dataUrl'];delete options['value'];} catch (e){}
-						var a = jQuery(data.responseText).html();
+						var a;
+						if(options.buildSelect != null) {
+							var b = options.buildSelect(data);
+							a = jQuery(b).html();
+						} else 
+							a = jQuery(data.responseText).html();
 						if(a) {
 							jQuery(elem).append(a);
 							options = bindEv(elem,options);
