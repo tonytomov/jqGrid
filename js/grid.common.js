@@ -405,9 +405,13 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 			break;
 		case "custom" :
 			try {
+				elem = document.createElement("span");
 				if(jQuery.isFunction(options.custom_element)) {
-					elem = options.custom_element.call(this,vl,options);
-					if(elem) jQuery(elem).addClass("customelement").attr({id:options.id,name:options.name});
+					var celm = options.custom_element.call(this,vl,options);
+					if(celm) {
+						jQuery(celm).addClass("customelement").attr({id:options.id,name:options.name});
+						jQuery.(elem).append(celm);
+					}
 					else throw "e2";
 				} else 	throw "e1";
 			} catch (e) {
