@@ -1964,9 +1964,9 @@ $.jgrid.extend({
 		resortRows($("thead:first", ts.grid.hDiv), keepHeader && ":not(.ui-jqgrid-labels)");
 		if (updateCells) {
 			resortRows($("tbody:first", ts.grid.bDiv), ".jqgrow");
-			if (ts.p.footerrow) {
-				resortRows($("tbody:first", ts.grid.sDiv));
-			}
+		}
+		if (ts.p.footerrow) {
+			resortRows($("tbody:first", ts.grid.sDiv));
 		}
 		if (ts.p.remapColumns) {
 			if (!ts.p.remapColumns.length)
