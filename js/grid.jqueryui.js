@@ -138,6 +138,7 @@ $.jgrid.extend({
                     "close": function() {
                         opts.cleanup(true);
                     },
+					"modal" : false,
                     "resizable": false,
                     "width": opts.width+20
                 };
@@ -174,8 +175,8 @@ $.jgrid.extend({
             }
         }, $.jgrid.col, opts || {});
 
-        if (opts.title) {
-            selector.attr("title", opts.title);
+        if (opts.caption) {
+            selector.attr("title", opts.caption);
         }
         if (opts.classname) {
             selector.addClass(classname);
@@ -244,6 +245,7 @@ $.jgrid.extend({
 					delete opts.update;
 				} else {opts._update_ = false;}
 				opts.start = function(ev,ui) {
+					$(ui.item).css("border-width","0px");
 					$("td",ui.item).each(function(i){
 						this.style.width = $t.grid.cols[i].style.width;
 					});
