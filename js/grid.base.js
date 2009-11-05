@@ -86,258 +86,258 @@ $.fn.jqGrid = function( pin ) {
 	return this.each( function() {
 		if(this.grid) {return;}
 
-	    var p = $.extend(true,{
-	        url: "",
-	        height: 150,
-	        page: 1,
-	        rowNum: 20,
-	        records: 0,
-	        pager: "",
-	        pgbuttons: true,
-	        pginput: true,
-	        colModel: [],
-	        rowList: [],
-	        colNames: [],
-	        sortorder: "asc",
-	        sortname: "",
-	        datatype: "xml",
-	        mtype: "GET",
-	        altRows: false,
-	        selarrrow: [],
-	        savedRow: [],
-	        shrinkToFit: true,
-	        xmlReader: {},
-	        jsonReader: {},
-	        subGrid: false,
-	        subGridModel :[],
-	        reccount: 0,
-	        lastpage: 0,
-	        lastsort: 0,
-	        selrow: null,
-	        beforeSelectRow: null,
-	        onSelectRow: null,
-	        onSortCol: null,
-	        ondblClickRow: null,
-	        onRightClickRow: null,
-	        onPaging: null,
-	        onSelectAll: null,
-	        loadComplete: null,
-	        gridComplete: null,
-	        loadError: null,
-	        loadBeforeSend: null,
-	        afterInsertRow: null,
-	        beforeRequest: null,
-	        onHeaderClick: null,
-	        viewrecords: false,
-	        loadonce: false,
-	        multiselect: false,
-	        multikey: false,
-	        editurl: null,
-	        search: false,
-	        caption: "",
-	        hidegrid: true,
-	        hiddengrid: false,
-	        postData: {},
-	        userData: {},
-	        treeGrid : false,
-	        treeGridModel : 'nested',
-	        treeReader : {},
-	        treeANode : -1,
-	        ExpandColumn: null,
-	        tree_root_level : 0,
-	        prmNames: {page:"page",rows:"rows", sort: "sidx",order: "sord", search:"_search", nd:"nd"},
-	        forceFit : false,
-	        gridstate : "visible",
-	        cellEdit: false,
-	        cellsubmit: "remote",
-	        nv:0,
-	        loadui: "enable",
-	        toolbar: [false,""],
-	        scroll: false,
-	        multiboxonly : false,
-	        deselectAfterSort : true,
-	        scrollrows : false,
-	        autowidth: false,
-	        scrollOffset :18,
-	        cellLayout: 5,
-	        subGridWidth: 20,
-	        multiselectWidth: 20,
-	        gridview: false,
-	        rownumWidth: 25,
-	        rownumbers : false,
-	        pagerpos: 'center',
-	        recordpos: 'right',
-	        footerrow : false,
-	        userDataOnFooter : false,
-	        hoverrows : true,
-	        altclass : 'ui-priority-secondary',
-	        viewsortcols : [false,'vertical',true],
-	        resizeclass : '',
-	        autoencode : false,
-	        remapColumns : [],
-	        ajaxGridOptions :{},
-	        direction : "ltr"
-	    }, $.jgrid.defaults, pin || {});
-	    var grid={         
-		    headers:[],
-		    cols:[],
-		    footers: [],
-		    dragStart: function(i,x,y) {
-			    this.resizing = { idx: i, startX: x.clientX, sOL : y[0]};
-			    this.hDiv.style.cursor = "col-resize";
-			    this.curGbox = $("#rs_m"+p.id,"#gbox_"+p.id);
-			    this.curGbox.css({display:"block",left:y[0],top:y[1],height:y[2]});
-			    if($.isFunction(p.resizeStart)) p.resizeStart.call(this,x,i);
-			    document.onselectstart=new Function ("return false");
-		    },
-		    dragMove: function(x) {
-			    if(this.resizing) {
-				    var diff = x.clientX-this.resizing.startX,
-				    h = this.headers[this.resizing.idx],
-				    newWidth = p.direction === "ltr" ? h.width + diff : h.width - diff, hn, nWn;
-				    if(newWidth > 33) {
-					    this.curGbox.css({left:this.resizing.sOL+diff});
-					    if(p.forceFit===true ){
-						    hn = this.headers[this.resizing.idx+p.nv];
-						    nWn = p.direction === "ltr" ? hn.width - diff : hn.width + diff;
-						    if(nWn >33) {
-							    h.newWidth = newWidth;
-							    hn.newWidth = nWn;
-							    this.newWidth = p.tblwidth;
-						    }
-					    } else {
-						    this.newWidth = p.direction === "ltr" ? p.tblwidth+diff : p.tblwidth-diff;
-						    h.newWidth = newWidth;
-					    }
-				    }
-			    }
-		    },
-		    dragEnd: function() {
-			    this.hDiv.style.cursor = "default";
-			    if(this.resizing) {
-				    var idx = this.resizing.idx,
-				    nw = this.headers[idx].newWidth || this.headers[idx].width;
-				    nw = parseInt(nw);
-				    this.resizing = false;
-				    $("#rs_m"+p.id).css("display","none");
-				    p.colModel[idx].width = nw;
-				    this.headers[idx].width = nw;
-				    this.headers[idx].el.style.width = nw + "px";
-				    if(this.cols.length>0) {this.cols[idx].style.width = nw+"px";}
-				    if(this.footers.length>0) {this.footers[idx].style.width = nw+"px";}
-				    if(p.forceFit===true){
-					    nw = this.headers[idx+p.nv].newWidth || this.headers[idx+p.nv].width;
-					    this.headers[idx+p.nv].width = nw;
-					    this.headers[idx+p.nv].el.style.width = nw + "px";
-					    if(this.cols.length>0) this.cols[idx+p.nv].style.width = nw+"px";
-					    if(this.footers.length>0) {this.footers[idx+p.nv].style.width = nw+"px";}
-					    p.colModel[idx+p.nv].width = nw;
-				    } else  {
-					    p.tblwidth = this.newWidth;
-					    $('table:first',this.bDiv).css("width",p.tblwidth+"px");
-					    $('table:first',this.hDiv).css("width",p.tblwidth+"px");
-					    this.hDiv.scrollLeft = this.bDiv.scrollLeft;
-					    if(p.footerrow) {
-						    $('table:first',this.sDiv).css("width",p.tblwidth+"px");
-						    this.sDiv.scrollLeft = this.bDiv.scrollLeft;
-					    }
-				    }
-				    if($.isFunction(p.resizeStop)) p.resizeStop.call(this,nw,i);
-			    }
-			    this.curGbox=null;
-			    document.onselectstart=new Function ("return true");
-		    },
-		    populateVisible: function() {
-			    if (grid.timer) clearTimeout(grid.timer);
-			    grid.timer = null;
+		var p = $.extend(true,{
+			url: "",
+			height: 150,
+			page: 1,
+			rowNum: 20,
+			records: 0,
+			pager: "",
+			pgbuttons: true,
+			pginput: true,
+			colModel: [],
+			rowList: [],
+			colNames: [],
+			sortorder: "asc",
+			sortname: "",
+			datatype: "xml",
+			mtype: "GET",
+			altRows: false,
+			selarrrow: [],
+			savedRow: [],
+			shrinkToFit: true,
+			xmlReader: {},
+			jsonReader: {},
+			subGrid: false,
+			subGridModel :[],
+			reccount: 0,
+			lastpage: 0,
+			lastsort: 0,
+			selrow: null,
+			beforeSelectRow: null,
+			onSelectRow: null,
+			onSortCol: null,
+			ondblClickRow: null,
+			onRightClickRow: null,
+			onPaging: null,
+			onSelectAll: null,
+			loadComplete: null,
+			gridComplete: null,
+			loadError: null,
+			loadBeforeSend: null,
+			afterInsertRow: null,
+			beforeRequest: null,
+			onHeaderClick: null,
+			viewrecords: false,
+			loadonce: false,
+			multiselect: false,
+			multikey: false,
+			editurl: null,
+			search: false,
+			caption: "",
+			hidegrid: true,
+			hiddengrid: false,
+			postData: {},
+			userData: {},
+			treeGrid : false,
+			treeGridModel : 'nested',
+			treeReader : {},
+			treeANode : -1,
+			ExpandColumn: null,
+			tree_root_level : 0,
+			prmNames: {page:"page",rows:"rows", sort: "sidx",order: "sord", search:"_search", nd:"nd"},
+			forceFit : false,
+			gridstate : "visible",
+			cellEdit: false,
+			cellsubmit: "remote",
+			nv:0,
+			loadui: "enable",
+			toolbar: [false,""],
+			scroll: false,
+			multiboxonly : false,
+			deselectAfterSort : true,
+			scrollrows : false,
+			autowidth: false,
+			scrollOffset :18,
+			cellLayout: 5,
+			subGridWidth: 20,
+			multiselectWidth: 20,
+			gridview: false,
+			rownumWidth: 25,
+			rownumbers : false,
+			pagerpos: 'center',
+			recordpos: 'right',
+			footerrow : false,
+			userDataOnFooter : false,
+			hoverrows : true,
+			altclass : 'ui-priority-secondary',
+			viewsortcols : [false,'vertical',true],
+			resizeclass : '',
+			autoencode : false,
+			remapColumns : [],
+			ajaxGridOptions :{},
+			direction : "ltr"
+		}, $.jgrid.defaults, pin || {});
+		var grid={         
+			headers:[],
+			cols:[],
+			footers: [],
+			dragStart: function(i,x,y) {
+				this.resizing = { idx: i, startX: x.clientX, sOL : y[0]};
+				this.hDiv.style.cursor = "col-resize";
+				this.curGbox = $("#rs_m"+p.id,"#gbox_"+p.id);
+				this.curGbox.css({display:"block",left:y[0],top:y[1],height:y[2]});
+				if($.isFunction(p.resizeStart)) p.resizeStart.call(this,x,i);
+				document.onselectstart=new Function ("return false");
+			},
+			dragMove: function(x) {
+				if(this.resizing) {
+					var diff = x.clientX-this.resizing.startX,
+					h = this.headers[this.resizing.idx],
+					newWidth = p.direction === "ltr" ? h.width + diff : h.width - diff, hn, nWn;
+					if(newWidth > 33) {
+						this.curGbox.css({left:this.resizing.sOL+diff});
+						if(p.forceFit===true ){
+							hn = this.headers[this.resizing.idx+p.nv];
+							nWn = p.direction === "ltr" ? hn.width - diff : hn.width + diff;
+							if(nWn >33) {
+								h.newWidth = newWidth;
+								hn.newWidth = nWn;
+								this.newWidth = p.tblwidth;
+							}
+						} else {
+							this.newWidth = p.direction === "ltr" ? p.tblwidth+diff : p.tblwidth-diff;
+							h.newWidth = newWidth;
+						}
+					}
+				}
+			},
+			dragEnd: function() {
+				this.hDiv.style.cursor = "default";
+				if(this.resizing) {
+					var idx = this.resizing.idx,
+					nw = this.headers[idx].newWidth || this.headers[idx].width;
+					nw = parseInt(nw);
+					this.resizing = false;
+					$("#rs_m"+p.id).css("display","none");
+					p.colModel[idx].width = nw;
+					this.headers[idx].width = nw;
+					this.headers[idx].el.style.width = nw + "px";
+					if(this.cols.length>0) {this.cols[idx].style.width = nw+"px";}
+					if(this.footers.length>0) {this.footers[idx].style.width = nw+"px";}
+					if(p.forceFit===true){
+						nw = this.headers[idx+p.nv].newWidth || this.headers[idx+p.nv].width;
+						this.headers[idx+p.nv].width = nw;
+						this.headers[idx+p.nv].el.style.width = nw + "px";
+						if(this.cols.length>0) this.cols[idx+p.nv].style.width = nw+"px";
+						if(this.footers.length>0) {this.footers[idx+p.nv].style.width = nw+"px";}
+						p.colModel[idx+p.nv].width = nw;
+					} else {
+						p.tblwidth = this.newWidth;
+						$('table:first',this.bDiv).css("width",p.tblwidth+"px");
+						$('table:first',this.hDiv).css("width",p.tblwidth+"px");
+						this.hDiv.scrollLeft = this.bDiv.scrollLeft;
+						if(p.footerrow) {
+							$('table:first',this.sDiv).css("width",p.tblwidth+"px");
+							this.sDiv.scrollLeft = this.bDiv.scrollLeft;
+						}
+					}
+					if($.isFunction(p.resizeStop)) p.resizeStop.call(this,nw,i);
+				}
+				this.curGbox=null;
+				document.onselectstart=new Function ("return true");
+			},
+			populateVisible: function() {
+				if (grid.timer) clearTimeout(grid.timer);
+				grid.timer = null;
 
-			    var dh = $(grid.bDiv).height();
-			    if (!dh) return;
-			    var table = $("table:first", grid.bDiv);
-			    var rows = $("> tbody > tr:visible:first", table);
-			    var rh = rows.outerHeight() || grid.prevRowHeight;
-			    if (!rh) return;
-			    grid.prevRowHeight = rh;
-			    var rn = p.rowNum;
-			    if (rn < 10) {
-				    rn = parseInt(dh / rh) + 1 << 1;
-				    if (rn < 10) rn = 10;
-				    p.rowNum = rn;
-			    }
-			    var scrollTop = grid.scrollTop = grid.bDiv.scrollTop;
-			    var ttop = table.position().top - scrollTop;
-			    var tbot = ttop + table.height();
-			    var div = rh * rn;
-			    var page, npage, empty;
-			    if (ttop <= 0 && tbot < dh && parseInt((tbot + scrollTop + div - 1) / div) < p.lastpage) {
-				    npage = parseInt((dh - tbot + div - 1) / div);
-				    if (tbot >= 0 || npage < 2 || p.scroll === true) {
-					    page = parseInt((tbot + scrollTop) / div) + 1;
-					    ttop = -1;
-				    } else {
-					    ttop = 1;
-				    }
-			    }
-			    if (ttop > 0) {
-				    page = parseInt(scrollTop / div) + 1;
-				    npage = parseInt((scrollTop + dh) / div) + 2 - page;
-                    empty = true;
-			    }
+				var dh = $(grid.bDiv).height();
+				if (!dh) return;
+				var table = $("table:first", grid.bDiv);
+				var rows = $("> tbody > tr:visible:first", table);
+				var rh = rows.outerHeight() || grid.prevRowHeight;
+				if (!rh) return;
+				grid.prevRowHeight = rh;
+				var rn = p.rowNum;
+				if (rn < 10) {
+					rn = parseInt(dh / rh) + 1 << 1;
+					if (rn < 10) rn = 10;
+					p.rowNum = rn;
+				}
+				var scrollTop = grid.scrollTop = grid.bDiv.scrollTop;
+				var ttop = table.position().top - scrollTop;
+				var tbot = ttop + table.height();
+				var div = rh * rn;
+				var page, npage, empty;
+				if (ttop <= 0 && tbot < dh && parseInt((tbot + scrollTop + div - 1) / div) < p.lastpage) {
+					npage = parseInt((dh - tbot + div - 1) / div);
+					if (tbot >= 0 || npage < 2 || p.scroll === true) {
+						page = parseInt((tbot + scrollTop) / div) + 1;
+						ttop = -1;
+					} else {
+						ttop = 1;
+					}
+				}
+				if (ttop > 0) {
+					page = parseInt(scrollTop / div) + 1;
+					npage = parseInt((scrollTop + dh) / div) + 2 - page;
+					empty = true;
+				}
 
-			    if (npage) {
-				    if (page > p.lastpage) {
-					    return;
-				    }
-				    if (grid.hDiv.loading) {
-					    grid.timer = setTimeout(grid.populateVisible, 200);
-				    } else {
-					    p.page = page;
-                        if (empty) {
-                            grid.selectionPreserver(table[0]);
-                            grid.emptyRows(grid.bDiv);
-                        }
-					    grid.populate(npage);
-				    }
-			    }
-		    },
-		    scrollGrid: function() {
-			    if(p.scroll) {
-				    var scrollTop = grid.bDiv.scrollTop;
-				    if (scrollTop != grid.scrollTop) {
-					    grid.scrollTop = scrollTop;
-					    if (grid.timer) clearTimeout(grid.timer);
-					    grid.timer = setTimeout(grid.populateVisible, 200);
-				    }
-			    }
-			    grid.hDiv.scrollLeft = grid.bDiv.scrollLeft;
-			    if(p.footerrow) {
-				    grid.sDiv.scrollLeft = grid.bDiv.scrollLeft;
-			    }
-		    },
-            selectionPreserver : function(ts) {
-                var p = ts.p;
-                var sr = p.selrow, sra = p.selarrrow ? $.makeArray(p.selarrrow) : null;
-                var left = ts.grid.bDiv.scrollLeft;
-                var complete = p.gridComplete;
-                p.gridComplete = function() {
-                    p.selrow = null;
-                    p.selarrrow = [];
-                    if(p.multiselect && sra && sra.length>0) {
-					    for(var i=0;i<sra.length;i++){
-                            if (sra[i] != sr)
-							    $(ts).jqGrid("setSelection",sra[i],false);
-					    }
-				    }
-				    if (sr) {
-					    $(ts).jqGrid("setSelection",sr,false);
-				    }
-                    ts.grid.bDiv.scrollLeft = left;
-                    if (p.gridComplete = complete) {
-                        complete();
-                    }
-                }
-            }
-	    };
+				if (npage) {
+					if (page > p.lastpage) {
+						return;
+					}
+					if (grid.hDiv.loading) {
+						grid.timer = setTimeout(grid.populateVisible, 200);
+					} else {
+						p.page = page;
+						if (empty) {
+							grid.selectionPreserver(table[0]);
+							grid.emptyRows(grid.bDiv);
+						}
+						grid.populate(npage);
+					}
+				}
+			},
+			scrollGrid: function() {
+				if(p.scroll) {
+					var scrollTop = grid.bDiv.scrollTop;
+					if (scrollTop != grid.scrollTop) {
+						grid.scrollTop = scrollTop;
+						if (grid.timer) clearTimeout(grid.timer);
+						grid.timer = setTimeout(grid.populateVisible, 200);
+					}
+				}
+				grid.hDiv.scrollLeft = grid.bDiv.scrollLeft;
+				if(p.footerrow) {
+					grid.sDiv.scrollLeft = grid.bDiv.scrollLeft;
+				}
+			},
+			selectionPreserver : function(ts) {
+				var p = ts.p;
+				var sr = p.selrow, sra = p.selarrrow ? $.makeArray(p.selarrrow) : null;
+				var left = ts.grid.bDiv.scrollLeft;
+				var complete = p.gridComplete;
+				p.gridComplete = function() {
+					p.selrow = null;
+					p.selarrrow = [];
+					if(p.multiselect && sra && sra.length>0) {
+						for(var i=0;i<sra.length;i++){
+							if (sra[i] != sr)
+								$(ts).jqGrid("setSelection",sra[i],false);
+						}
+					}
+					if (sr) {
+						$(ts).jqGrid("setSelection",sr,false);
+					}
+					ts.grid.bDiv.scrollLeft = left;
+					if (p.gridComplete = complete) {
+						complete();
+					}
+				}
+			}
+		};
 		this.p = p ;
 		var i, dir,ts;
 		if(this.p.colNames.length === 0) {
@@ -486,7 +486,7 @@ $.fn.jqGrid = function( pin ) {
 			$(ts.p.xmlReader.userdata,xml).each(function() {ts.p.userData[this.getAttribute("name")]=this.textContent || this.text;});
 			var gxml = $(ts.p.xmlReader.root+" "+ts.p.xmlReader.row,xml),gl = gxml.length, j=0;
 			if(gxml && gl){
-            var rn = parseInt(ts.p.rowNum),br=ts.p.scroll?(parseInt(ts.p.page)-1)*rn+1:1;
+			var rn = parseInt(ts.p.rowNum),br=ts.p.scroll?(parseInt(ts.p.page)-1)*rn+1:1;
 			if (adjust) rn *= adjust+1;
 			var afterInsRow = $.isFunction(ts.p.afterInsertRow);
 			while (j<gl) {
@@ -589,14 +589,14 @@ $.fn.jqGrid = function( pin ) {
 			drows = data[ts.p.jsonReader.root];
 			if (drows) {
 			len = drows.length, i=0;
-            var rn = parseInt(ts.p.rowNum),br=ts.p.scroll?(parseInt(ts.p.page)-1)*rn+1:1;
+			var rn = parseInt(ts.p.rowNum),br=ts.p.scroll?(parseInt(ts.p.page)-1)*rn+1:1;
 			if (adjust) rn *= adjust+1;
 			var afterInsRow = $.isFunction(ts.p.afterInsertRow);
 			while (i<len) {
 				cur = drows[i];
 				idr = cur[idn];
 				if(idr === undefined) {
-                    idr = br+i;
+					idr = br+i;
 					if(f.length===0){
 						if(ts.p.jsonReader.cell){
 							var ccur = cur[ts.p.jsonReader.cell];
@@ -725,14 +725,14 @@ $.fn.jqGrid = function( pin ) {
 		},
 		populate = function (npage) {
 			if(!ts.grid.hDiv.loading) {
-                var pvis = ts.p.scroll && npage == false;
+				var pvis = ts.p.scroll && npage == false;
 				var prm = {}, dt, dstr, pN=ts.p.prmNames;;
 				if(pN.search !== null) prm[pN.search] = ts.p.search; if(pN.nd != null) prm[pN.nd] = new Date().getTime();
 				if(pN.rows !== null) prm[pN.rows]= ts.p.rowNum; if(pN.page !== null) prm[pN.page]= ts.p.page;
 				if(pN.sort !== null) prm[pN.sort]= ts.p.sortname; if(pN.order !== null) prm[pN.order]= ts.p.sortorder;
 				var lc = ts.p.loadComplete;
-                var lcf = $.isFunction(lc);
-                if (!lcf) lc = null;
+				var lcf = $.isFunction(lc);
+				if (!lcf) lc = null;
 				var adjust = 0;
 				npage = npage || 1;
 				if (npage > 1) {
@@ -742,9 +742,9 @@ $.fn.jqGrid = function( pin ) {
 						npage = 1;
 					} else {
 						lc = function(req) {
-                            if (lcf) {
-                                ts.p.loadComplete.call(ts,req);
-                            }
+							if (lcf) {
+								ts.p.loadComplete.call(ts,req);
+							}
 							ts.grid.hDiv.loading = false;
 							ts.p.page++;
 							populate(npage-1);
@@ -1275,8 +1275,8 @@ $.fn.jqGrid = function( pin ) {
 		$(gv).css("width",grid.width+"px");
 		thead = $("thead:first",ts).get(0);
 		var	tfoot = "<table role='grid' style='width:"+ts.p.tblwidth+"px' class='ui-jqgrid-ftable' cellspacing='0' cellpadding='0' border='0'><tbody><tr role='row' class='ui-widget-content footrow footrow-"+dir+"'>";
-        var thr = $("tr:first",thead);
-        ts.p.disableClick=false;
+		var thr = $("tr:first",thead);
+		ts.p.disableClick=false;
 		$("th",thr).each(function ( j ) {
 			var ht = $('div',this)[0];
 			w = ts.p.colModel[j].width;
@@ -1418,9 +1418,9 @@ $.fn.jqGrid = function( pin ) {
 			e.stopPropagation();
 		}).bind('reloadGrid', function(e,opts) {
 			if(ts.p.treeGrid ===true) {	ts.p.datatype = ts.p.treedatatype;}
-            if (opts && opts.current) {
-                ts.grid.selectionPreserver(ts);
-            }
+			if (opts && opts.current) {
+				ts.grid.selectionPreserver(ts);
+			}
 			if(ts.p.datatype=="local" && !sr){ $(ts).jqGrid("resetSelection");}
 			else if(!ts.p.treeGrid) {
 				ts.p.selrow=null;
@@ -1428,25 +1428,23 @@ $.fn.jqGrid = function( pin ) {
 				ts.p.savedRow = [];
 				if(ts.p.scroll) {emptyRows(ts.grid.bDiv);}
 			}
-            if (opts && opts.page) {
-                var page = opts.page;
-                if (page > ts.p.lastpage) page = ts.p.lastpage;
-                if (page < 1) page = 1;
-                ts.p.page = page;
-                if (ts.grid.prevRowHeight) {
-                    ts.grid.bDiv.scrollTop = (page - 1) * ts.grid.prevRowHeight * ts.p.rowNum;
-                } else {
-                    ts.grid.bDiv.scrollTop = 0;
-                }
-            }
-            if (ts.grid.prevRowHeight && ts.p.scroll)
-                ts.grid.populateVisible();
-            else
-			    ts.grid.populate();
+			if (opts && opts.page) {
+				var page = opts.page;
+				if (page > ts.p.lastpage) page = ts.p.lastpage;
+				if (page < 1) page = 1;
+				ts.p.page = page;
+				if (ts.grid.prevRowHeight) {
+					ts.grid.bDiv.scrollTop = (page - 1) * ts.grid.prevRowHeight * ts.p.rowNum;
+				} else {
+					ts.grid.bDiv.scrollTop = 0;
+				}
+			}
+			if (ts.grid.prevRowHeight && ts.p.scroll)
+				ts.grid.populateVisible();
+			else
+				ts.grid.populate();
 			return false;
 		});
-         
-            
 		if( $.isFunction(this.p.ondblClickRow) ) {
 			$(this).dblclick(function(e) {
 				td = e.target;
@@ -1964,9 +1962,9 @@ $.jgrid.extend({
 		resortRows($("thead:first", ts.grid.hDiv), keepHeader && ":not(.ui-jqgrid-labels)");
 		if (updateCells) {
 			resortRows($("tbody:first", ts.grid.bDiv), ".jqgrow");
-			if (ts.p.footerrow) {
-				resortRows($("tbody:first", ts.grid.sDiv));
-			}
+		}
+		if (ts.p.footerrow) {
+			resortRows($("tbody:first", ts.grid.sDiv));
 		}
 		if (ts.p.remapColumns) {
 			if (!ts.p.remapColumns.length)
@@ -2064,7 +2062,7 @@ $.jgrid.extend({
 			if(!$t.grid) {return;}
 			$($t.grid.bDiv).css({height: nh+(isNaN(nh)?"":"px")});
 			$t.p.height = nh;
-            if ($t.p.scroll) $t.grid.populateVisible();
+			if ($t.p.scroll) $t.grid.populateVisible();
 		});
 	},
 	setCaption : function (newcap){
