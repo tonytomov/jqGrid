@@ -1,11 +1,11 @@
 ;(function ($) {
 /*
- * jqGrid  3.6 beta2 - jQuery Grid
+ * jqGrid  3.6 RC1 - jQuery Grid
  * Copyright (c) 2008, Tony Tomov, tony@trirand.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
- * Date: 2009-10-15
+ * Date: 2009-11-05
  */
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
@@ -1107,7 +1107,7 @@ $.fn.jqGrid = function( pin ) {
 			else { grid.width = ts.p.width}
 			ts.p.tblwidth = initwidth;
 			if(ts.p.shrinkToFit ===false && ts.p.forceFit === true) {ts.p.forceFit=false;}
-			if(ts.p.shrinkToFit===true) {
+			if(ts.p.shrinkToFit===true && vc > 0) {
 				aw = grid.width-brd*vc-gw;
 				if(isNaN(ts.p.height)) {
 				} else {
@@ -1985,7 +1985,7 @@ $.jgrid.extend({
 				shrink=$t.p.shrinkToFit;
 			}
 			if(isNaN(nwidth)) {return;}
-			else { nwidth = Math.ceil(nwidth); $t.grid.width = $t.p.width = nwidth;}
+			else { nwidth = parseInt(nwidth); $t.grid.width = $t.p.width = nwidth;}
 			$("#gbox_"+$t.p.id).css("width",nwidth+"px");
 			$("#gview_"+$t.p.id).css("width",nwidth+"px");
 			$($t.grid.bDiv).css("width",nwidth+"px");
@@ -2010,6 +2010,7 @@ $.jgrid.extend({
 						}
 					}
 				});
+				if(vc  == 0) return; 
 				$t.p.tblwidth = initwidth;
 				aw = nwidth-brd*vc-gw;
 				if(!isNaN($t.p.height)) {
