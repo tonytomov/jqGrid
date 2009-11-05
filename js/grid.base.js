@@ -80,7 +80,6 @@ $.fn.jqGrid = function( p ) {
 		var args = $.makeArray(arguments).slice(1);
 		return fn.apply(this,args);
 	}
-
 	p = $.extend(true,{
 	url: "",
 	height: 150,
