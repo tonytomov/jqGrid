@@ -171,11 +171,16 @@ $.jgrid.extend({
 					if(typeof fclm == 'boolean' && !fclm) return;
 				}
 				selector.hide();
-				$(".jqgrid-overlay","#gbox_"+$t.p.id).hide();
+				$(".jqgrid-overlay:first","#gbox_"+$t.p.id).hide();
 			}
 			function showFilter(){
+				var fl = $(".ui-searchFilter").length;
+				if(fl > 1) {
+					var zI = $("#"+fid).css("zIndex");
+					$("#"+fid).css({zIndex:parseInt(zI)+fl});
+				}
 				$("#"+fid).show();
-				$(".jqgrid-overlay","#gbox_"+$t.p.id).show();
+				$(".jqgrid-overlay:first","#gbox_"+$t.p.id).show();
 				try{$(':input:visible',"#"+fid)[0].focus();}catch(_){}
 			}
 		});
@@ -784,7 +789,7 @@ $.jgrid.extend({
 					if( $.isFunction( rp_ge.onclickSubmit)) { onCS = rp_ge.onclickSubmit(rp_ge,postdata) || {}; }
 					if( $.isFunction(rp_ge.beforeSubmit))  { ret = rp_ge.beforeSubmit(postdata,$("#"+frmgr)); }
 				}
-				gurl = rp_ge.url ? rp_ge.url : $t.p.editurl;
+				gurl = rp_ge.url ? rp_ge.url : $($t).jqGrid('getGridParam','editurl');
 				if(ret[0]) {
 					if(!gurl) { ret[0]=false; ret[1] += " "+$.jgrid.errors.nourl; }
 				}
@@ -1098,7 +1103,7 @@ $.jgrid.extend({
 						hc = this.hidden === true ? true : false;
 					}
 					dc = hc ? "style='display:none'" : "";
-					if ( nm !== 'cb' && nm !== 'subgrid' && this.editable===true) {
+					if ( nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn') {
 						if(ind === false) {
 							tmp = "";
 						} else {
@@ -1153,7 +1158,7 @@ $.jgrid.extend({
 					} else {
 						hc = obj.p.colModel[i].hidden === true ? true : false;
 					}
-					if ( nm !== 'cb' && nm !== 'subgrid' && obj.p.colModel[i].editable===true) {
+					if ( nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn') {
 						if(nm == obj.p.ExpandColumn && obj.p.treeGrid === true) {
 							tmp = $(this).text();
 						} else {
@@ -1253,7 +1258,7 @@ $.jgrid.extend({
 					if( typeof p.onclickSubmit === 'function' ) { onCS = p.onclickSubmit(rp_ge) || {}; }
 					if( typeof p.beforeSubmit === 'function' ) { ret = p.beforeSubmit(postdata); }
 					if(ret[0]){
-						var gurl = rp_ge.url ? rp_ge.url : $t.p.editurl;
+						var gurl = rp_ge.url ? rp_ge.url : $($t).jqGrid('getGridParam','editurl');
 						if(!gurl) { ret[0]=false;ret[1] += " "+$.jgrid.errors.nourl;}
 					}
 					if(ret[0] === false) {
