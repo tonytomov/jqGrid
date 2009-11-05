@@ -85,7 +85,14 @@ $.jgrid.extend({
 				$(cc).html("").append(elc).attr("tabindex","0");
 				window.setTimeout(function () { $(elc).focus();},0);
 				$("input, select, textarea",cc).bind("keydown",function(e) { 
-					if (e.keyCode === 27) {$($t).jqGrid("restoreCell",iRow,iCol);} //ESC
+					if (e.keyCode === 27) {
+						if($("input.hasDatepicker",cc).length >0) {
+							if( $(".ui-datepicker").is(":hidden") )  $($t).jqGrid("restoreCell",iRow,iCol);
+							else $("input.hasDatepicker",cc).datepicker('hide');
+						}
+						else 
+							$($t).jqGrid("restoreCell",iRow,iCol);
+					} //ESC
 					if (e.keyCode === 13) {$($t).jqGrid("saveCell",iRow,iCol);}//Enter
 					if (e.keyCode == 9)  {
 						if (e.shiftKey) {$($t).jqGrid("prevCell",iRow,iCol);} //Shift TAb
@@ -179,6 +186,7 @@ $.jgrid.extend({
 							if (!addpost) {addpost={};}
 						}
 						if(v2=="") v2=" ";
+						if( $("input.hasDatepicker",cc).length >0) $("input.hasDatepicker",cc).datepicker('hide');
 						if ($t.p.cellsubmit == 'remote') {
 							if ($t.p.cellurl) {
 								var postdata = {};
@@ -326,12 +334,13 @@ $.jgrid.extend({
 			var  $t = this;
 			if (!$t.grid || $t.p.cellEdit !== true ) {return;}
 			// trick to process keydown on non input elements
-			$t.p.knv = $("table:first",$t.grid.bDiv).attr("id") + "_kn";
+			$t.p.knv = $t.p.id + "_kn";
 			var selection = $("<span style='width:0px;height:0px;background-color:black;' tabindex='0'><span tabindex='-1' style='width:0px;height:0px;background-color:grey' id='"+$t.p.knv+"'></span></span>"),
 			i, kdir;
 			$(selection).insertBefore($t.grid.cDiv);
-			$("#"+$t.p.knv).focus();
-			$("#"+$t.p.knv).keydown(function (e){
+			$("#"+$t.p.knv)
+			.focus()
+			.keydown(function (e){
 				kdir = e.keyCode;
 				if($t.p.direction == "rtl") {
 					if(kdir==37) kdir = 39;
