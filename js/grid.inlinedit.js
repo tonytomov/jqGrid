@@ -208,7 +208,7 @@ $.jgrid.extend({
 					} catch (e) {}
 				}
 				$($t).jqGrid("setRowData",rowid,$t.p.savedRow[fr]);
-				$(ind).attr("editable","0");
+				$(ind).attr("editable","0").unbind("keydown");
 				$t.p.savedRow.splice(fr,1);
 			}
 			if ($.isFunction(afterrestorefunc))
