@@ -318,13 +318,13 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 				jQuery.ajax(jQuery.extend({
 					url: options.dataUrl,
 					type : "GET",
-					data : {nd:new Date().getTime()},
 					complete: function(data,status){
 						try {delete options['dataUrl'];delete options['value'];} catch (e){}
 						var a;
 						if(options.buildSelect != null) {
 							var b = options.buildSelect(data);
 							a = jQuery(b).html();
+							delete options['buildSelect'];
 						} else 
 							a = jQuery(data.responseText).html();
 						if(a) {
@@ -412,8 +412,8 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 				if(jQuery.isFunction(options.custom_element)) {
 					var celm = options.custom_element.call(this,vl,options);
 					if(celm) {
-						jQuery(celm).addClass("customelement").attr({id:options.id,name:options.name});
-						jQuery(elem).html(celm);
+						celm = jQuery(celm).addClass("customelement").attr({id:options.id,name:options.name});
+						jQuery(elem).empty().append(celm);
 					}
 					else throw "e2";
 				} else 	throw "e1";
