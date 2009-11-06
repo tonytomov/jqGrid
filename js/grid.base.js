@@ -50,13 +50,14 @@ $.extend($.jgrid,{
 		return (xmlDoc && xmlDoc.documentElement && xmlDoc.documentElement.tagName != 'parsererror') ? xmlDoc : null;
 	},
 	parse : function(jsonString) {
-		var js = jsonString;
+		var js = jsonString, msg;
 		if (js.substr(0,9) == "while(1);") { js = js.substr(9); }
 		if (js.substr(0,2) == "/*") { js = js.substr(2,js.length-4); }
 		if(!js) { js = "{}"; }
-		with(window) {
-			return  eval('('+js+')');
-		}
+		($.jgrid.useJSON===true && typeof (JSON) === 'object' && typeof (JSON.parse) === 'function')
+		    ? msg = JSON.parse(js)
+		    : msg = eval('(' + js + ')');
+		return  msg.hasOwnProperty('d') ? msg.d : msg;
 	},
 	empty : function () {
 		while ( this.firstChild ) this.removeChild( this.firstChild );
