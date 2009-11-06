@@ -57,6 +57,8 @@ same type parameter - the response
    * Fix  setColWidth function
    * Fix for topinfo and bottom info in formedit to appear separatley in edit and add dialogs
    * Fix searchFilter css to work when called from subgrid 
+   * Fix celledit to work better when datepicker is attached
+   * Fix in viewGrid row to vizualize only the columns that only not hidden.
 
    
 Additions and changes
@@ -106,6 +108,8 @@ We first look for such option in searchoptions and if not found we use the
 editoptions value
    * Added fixed property in colModel which allow us not to change the  
 column width if shrinkToFit is true and we set new width of the grid.
+   * Added buildSelect function to deserialize data for the select. This is option
+can be added in editoptions or search options
 
    
 Please read The Installation instructions first in install.txt
