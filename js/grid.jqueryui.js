@@ -233,7 +233,8 @@ $.jgrid.extend({
 			if($.fn['sortable']) {
 				opts = $.extend({
 					"cursor":"move",
-					"axis" : "y"
+					"axis" : "y",
+					"items": ".jqgrow"
 					},
 				opts || {});
 				if(opts.start && $.isFunction(opts.start)) {
@@ -249,6 +250,12 @@ $.jgrid.extend({
 					$("td",ui.item).each(function(i){
 						this.style.width = $t.grid.cols[i].style.width;
 					});
+					if($t.p.subGrid) {
+						var subgid = $(ui.item).attr("id");
+						try {
+							$($t).jqGrid('collapseSubGridRow',subgid);
+						} catch (e) {}
+					}
 					if(opts._start_) {
 						opts._start_.apply(this,[ev,ui]);
 					}
@@ -305,7 +312,7 @@ $.jgrid.extend({
 						}
 						ui.helper.addClass("ui-state-highlight");
 						$("td",ui.helper).each(function(i) {
-							this.style.width = $t.grid.cols[i].style.width;
+							this.style.width = $t.grid.headers[i].width+"px";
 						});
 						if(opts.onstart && $.isFunction(opts.onstart) ) opts.onstart.call($($t),ev,ui);
 					},
