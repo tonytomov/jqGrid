@@ -215,7 +215,7 @@ $.fn.jqGrid = function( pin ) {
 			},
 			dragEnd: function() {
 				this.hDiv.style.cursor = "default";
-				if(this.resizing) {
+				if(this.resizing && this.newWidth) {
 					var idx = this.resizing.idx,
 					nw = this.headers[idx].newWidth || this.headers[idx].width;
 					nw = parseInt(nw);
