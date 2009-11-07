@@ -895,7 +895,7 @@ $.fn.jqGrid = function( pin ) {
 					$("td",rows[0]).each( function( k ) {
 						$(this).css("width",grid.headers[k].width+"px");
 					});
-					grid.cols = rows[0].cells;
+					ts.grid.cols = rows[0].cells;
 				}
 				var cn = "";
 				if(ts.p.altRows) cn = ts.p.altclass;
@@ -1845,6 +1845,7 @@ $.jgrid.extend({
 				}
 				t.p.records++;
 				t.p.reccount++;
+                if(!t.grid.cols || !t.grid.cols.length) t.grid.cols = t.rows[0].cells;
 				if(pos==='first' || (pos==='before' && sind <= 1) ||  t.rows.length === 1 ){
 					t.updateColumns();
 				}
