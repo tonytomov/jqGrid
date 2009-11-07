@@ -204,7 +204,6 @@ $.fn.jqGrid = function( pin ) {
 							if(nWn >33) {
 								h.newWidth = newWidth;
 								hn.newWidth = nWn;
-								this.newWidth = p.tblwidth;
 							}
 						} else {
 							this.newWidth = p.direction === "ltr" ? p.tblwidth+diff : p.tblwidth-diff;
@@ -244,8 +243,8 @@ $.fn.jqGrid = function( pin ) {
 						}
 					}
 					if($.isFunction(p.resizeStop)) p.resizeStop.call(this,nw,i);
+       				this.curGbox=null;
 				}
-				this.curGbox=null;
 				document.onselectstart=new Function ("return true");
 			},
 			populateVisible: function() {
