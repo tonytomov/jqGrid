@@ -214,7 +214,7 @@ $.fn.jqGrid = function( pin ) {
 			},
 			dragEnd: function() {
 				this.hDiv.style.cursor = "default";
-				if(this.resizing && this.newWidth) {
+				if(this.resizing) {
 					var idx = this.resizing.idx,
 					nw = this.headers[idx].newWidth || this.headers[idx].width;
 					nw = parseInt(nw);
@@ -233,7 +233,7 @@ $.fn.jqGrid = function( pin ) {
 						if(this.footers.length>0) {this.footers[idx+p.nv].style.width = nw+"px";}
 						p.colModel[idx+p.nv].width = nw;
 					} else {
-						p.tblwidth = this.newWidth;
+						p.tblwidth = this.newWidth || p.tblwidth;
 						$('table:first',this.bDiv).css("width",p.tblwidth+"px");
 						$('table:first',this.hDiv).css("width",p.tblwidth+"px");
 						this.hDiv.scrollLeft = this.bDiv.scrollLeft;
@@ -243,8 +243,8 @@ $.fn.jqGrid = function( pin ) {
 						}
 					}
 					if($.isFunction(p.resizeStop)) p.resizeStop.call(this,nw,i);
-       				this.curGbox=null;
 				}
+   				this.curGbox=null;
 				document.onselectstart=new Function ("return true");
 			},
 			populateVisible: function() {
