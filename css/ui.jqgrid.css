@@ -63,6 +63,7 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 .ui-jqgrid .ui-subgrid table {table-layout: fixed;}
 .ui-jqgrid .ui-subgrid tr.ui-subtblcell td {height:18px;border-right-width: 1px; border-right-color: inherit; border-right-style: solid;border-bottom-width: 1px; border-bottom-color: inherit; border-bottom-style: solid;}
 .ui-jqgrid .ui-subgrid td.subgrid-data {border-top:  0px none !important;}
+.ui-jqgrid .ui-subgrid td.subgrid-cell {border-width: 0px 0px 1px 0px;}
 /* loading */
 .ui-jqgrid .loading {position: absolute; top: 45%;left: 45%;width: auto;z-index:101;padding: 6px; margin: 5px;text-align: center;font-weight: bold;display: none;border-width: 2px !important;}
 .ui-jqgrid .jqgrid-overlay {display:none;z-index:100;}
@@ -101,7 +102,7 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 #nData, #pData { float: left; margin:3px;padding: 0; width: 15px; }
 /* End Eorm edit */
 /*.ui-jqgrid .edit-cell {}*/
-.ui-jqgrid .selected-row, div.ui-jqgrid .selected-row td {font-style : normal;}
+.ui-jqgrid .selected-row, div.ui-jqgrid .selected-row td {font-style : normal;border-left: 0px none;}
 /* Tree Grid */
 .ui-jqgrid .tree-wrap {float: left; position: relative;height: 18px;white-space: nowrap;overflow: hidden;}
 .ui-jqgrid .tree-minus {position: absolute; height: 18px; width: 18px; overflow: hidden;}
@@ -121,3 +122,4 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 .ui-jqgrid .tree-wrap-ltr {float: left;}
 .ui-jqgrid .tree-wrap-rtl {float: right;}
 .ui-jqgrid .ui-ellipsis {text-overflow:ellipsis; -moz-binding:url('ellipsis-xbl.xml#ellipsis');}
+

@@ -52,7 +52,7 @@ addSubGrid : function(t,pos) {
 				$.each(ts.p.colModel,function(i,v){
 					if(this.hidden === true || this.name == 'rn' || this.name == 'cb') {nhc++;}
 				});
-				subdata = "<tr role='row' class='ui-subgrid'>"+atd+"<td><span class='ui-icon ui-icon-carat-1-sw'/></td><td colspan='"+parseInt(ts.p.colNames.length-1-nhc)+"' class='ui-widget-content subgrid-data'><div id="+pID+"_"+_id+" class='tablediv'>";
+				subdata = "<tr role='row' class='ui-subgrid'>"+atd+"<td class='ui-widget-content subgrid-cell'><span class='ui-icon ui-icon-carat-1-sw'/></td><td colspan='"+parseInt(ts.p.colNames.length-1-nhc)+"' class='ui-widget-content subgrid-data'><div id="+pID+"_"+_id+" class='tablediv'>";
 				$(this).parent().after( subdata+ "</div></td></tr>" );
 				if( $.isFunction(ts.p.subGridRowExpanded)) {
 					ts.p.subGridRowExpanded(pID+"_"+ _id,_id);
