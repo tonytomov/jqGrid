@@ -261,6 +261,7 @@ $.jgrid.extend({
 					}
 				}
 				opts.update = function (ev,ui) {
+					$(ui.item).css("border-width","");
 					$t.updateColumns();
 					if(opts._update_) {
 						opts._update_.apply(this,[ev,ui]);
