@@ -15,7 +15,7 @@ if ($.browser.msie && $.browser.version==8) {
 	}
 }
 
-if ($.ui.multiselect && $.ui.multiselect.prototype._setSelected) {
+if ($.fn['multiselect'] && $.ui.multiselect && $.ui.multiselect.prototype._setSelected) {
     var setSelected = $.ui.multiselect.prototype._setSelected;
     $.ui.multiselect.prototype._setSelected = function(item,selected) {
         var ret = setSelected.call(this,item,selected);
