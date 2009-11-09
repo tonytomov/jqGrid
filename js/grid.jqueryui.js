@@ -157,7 +157,7 @@ $.jgrid.extend({
                 var perm = fixedCols.slice(0);
                 $('option[selected]',select).each(function() { perm.push(parseInt(this.value)) });
                 $.each(perm, function() { delete colMap[colModel[this].name] });
-                $.each(colMap, function() { perm.push(this) });
+                $.each(colMap, function() { perm.push(parseInt(this)) });
                 if (opts.done) {
                     opts.done.call(self, perm);
                 }
