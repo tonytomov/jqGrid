@@ -242,7 +242,7 @@ $.fn.jqGrid = function( pin ) {
 							this.sDiv.scrollLeft = this.bDiv.scrollLeft;
 						}
 					}
-					if($.isFunction(p.resizeStop)) p.resizeStop.call(this,nw,i);
+					if($.isFunction(p.resizeStop)) p.resizeStop.call(this,nw,idx);
 				}
    				this.curGbox=null;
 				document.onselectstart=new Function ("return true");
