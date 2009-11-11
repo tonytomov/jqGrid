@@ -46,7 +46,7 @@
             <arg line="-jar" />
             <arg path="${YUICompressor}" />
             <arg value="--charset" />
-            <arg value="ANSI" />
+            <arg value="utf-8" />
             <arg value="-o" />
             <targetfile />
             <mapper type="glob" from="${jqGrid}" to="${jqGrid.min}" />
