@@ -258,10 +258,10 @@ $.jgrid.extend({
 				$(".ui-jqdialog-title","#"+IDs.modalhead).html(p.caption);
 				$("#FormError","#"+frmtb).hide();
 				if(rp_ge.topinfo) {
-					$(".topinfo","#"+frmtb).html(rp_ge.topinfo);
-					$(".tinfo","#"+frmtb).show();
+					$(".topinfo","#"+frmtb+"_2").html(rp_ge.topinfo);
+					$(".tinfo","#"+frmtb+"_2").show();
 				}
-					else $(".tinfo","#"+frmtb).hide();
+					else $(".tinfo","#"+frmtb+"_2").hide();
 				if(rp_ge.bottominfo) {
 					$(".bottominfo","#"+frmtb+"_2").html(rp_ge.bottominfo);
 					$(".binfo","#"+frmtb+"_2").show();
@@ -351,7 +351,7 @@ $.jgrid.extend({
 					$("#pData, #nData","#"+frmtb+"_2").css("float","right");
 					$(".EditButton","#"+frmtb+"_2").css("text-align","left");
 				}
-				if(rp_ge.topinfo) $(".tinfo","#"+frmtb).show();
+				if(rp_ge.topinfo) $(".tinfo","#"+frmtb+"_2").show();
 				if(rp_ge.bottominfo) $(".binfo","#"+frmtb+"_2").show();
 				tms = null; bt=null;
 				$("#"+IDs.themodal).keydown( function( e ) {
