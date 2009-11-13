@@ -925,6 +925,11 @@ $.fn.jqGrid = function( pin ) {
 					dM = $.inArray(date[k],dfmt);
 					if(dM !== -1 && dM > 11){date[k] = dM+1-12;}
 				}
+				if(format[k] == 'a') {
+					date[k] = (date[k].toLowerCase() == 'am') ? 0 : 1;
+					if (date[k] === 0){ tsp.h = (tsp.h == 12) ? 0 : tsp.h; }
+					else { tsp.h = (tsp.h != 12) ? tsp.h += 12 : tsp.h; }
+				}
 				tsp[format[k].toLowerCase()] = parseInt(date[k],10);
 			}
 			tsp.m = parseInt(tsp.m,10)-1;
