@@ -230,7 +230,6 @@ $.jgrid.extend({
 		}, $.jgrid.edit, p || {});
 		rp_ge = p;
 		return this.each(function(){
-            var rowids;
 			var $t = this;
 			if (!$t.grid || !rowid) { return; }
 			var gID = $t.p.id,
@@ -375,7 +374,7 @@ $.jgrid.extend({
 					}
 					if(rp_ge.navkeys[0]===true) {
                         var rid = $("#id_g","#"+frmtb).val();
-                        if (rid == "_empty" || rid == "_multi") return true;
+                        if (rid == "_empty" || rid.indexOf(",")>=0) return true;
 						if(e.which == rp_ge.navkeys[1]){ //up
 							$("#pData", "#"+frmtb+"_2").trigger("click");
 							return false;
@@ -545,6 +544,7 @@ $.jgrid.extend({
 				return stat;
 			}			
 			function getFormData(){
+                var multi = $("#id_g","#"+frmtb).val().indexOf(",") >= 0;
 				$(".FormElement", "#"+frmtb).each(function(i) {
 					if($(this).hasClass("customelement")) {
 						var nm = this.name, elem = this;
@@ -595,14 +595,13 @@ $.jgrid.extend({
 						break;
 					}
 					}
-                    if (rowids && (postdata[this.name] == $.jgrid.edit.multiple ||
-                                   extpost[this.name] == $.jgrid.edit.multiple))
+                    if (multi && (postdata[this.name] == $.jgrid.edit.multiple ||
+                                  extpost[this.name] == $.jgrid.edit.multiple))
                     {
                         delete postdata[this.name];
                         delete extpost[this.name];
                     }
 				});
-                if (rowids) { postdata.id = rowids.join(",") }
 				return true;
 			}
 			function createData(rowid,obj,tb,maxcols){
@@ -611,7 +610,6 @@ $.jgrid.extend({
 				for (var i =1;i<=maxcols;i++) {
 					tmpl += tdtmpl;
 				}
-                rowids = null;
 				if(rowid != '_empty' && rowid != '_multi') {
 					ind = $(obj).jqGrid("getInd",rowid);
 				}
@@ -684,7 +682,6 @@ $.jgrid.extend({
 				var nm, hc,cnt=0,tmp, fld,opt,vl,vlc;
 				if(rp_ge.checkOnSubmit || rp_ge.checkOnUpdate) {rp_ge._savedData = {};rp_ge._savedData.id=rowid;}
 				var cm = obj.p.colModel;
-                rowids = null;
 				if(rowid == '_empty') {
 					$(cm).each(function(i){
 						nm = this.name;
@@ -721,18 +718,17 @@ $.jgrid.extend({
 					$("#id_g","#"+fmid).val("_empty");
 					return;
 				}
-				var tre, sel;
+				var sel;
                 if (rowid=="_multi") {
                     sel = obj.p.selarrrow;
-                    rowids = $.makeArray(sel);
-				    if(rp_ge.checkOnSubmit || rp_ge.checkOnUpdate) {rp_ge._savedData.id=rowids.join(",");}
+				    if(rp_ge.checkOnSubmit || rp_ge.checkOnUpdate) {rp_ge._savedData.id=sel.join();}
                 } else {
                     sel = [ rowid ];
                 }
                 var data = [];
                 if (sel && sel.length) {
                     $.each(sel, function() {
-                        tre = $(obj).jqGrid("getInd",this,true);
+                        var tre = $(obj).jqGrid("getInd",this,true);
 				        $('>td',tre).each(function(i) {
 					        nm = cm[i].name;
 					        // hidden fields are included in the form
@@ -847,7 +843,7 @@ $.jgrid.extend({
 						cnt++;
 					}
 				});
-				if(cnt>0) { $("#id_g","#"+frmtb).val(rowid); }
+				if(cnt>0) { $("#id_g","#"+frmtb).val(sel.join()); }
 			}
 			function postIt() {
 				var copydata, ret=[true,"",""], onCS = {};
