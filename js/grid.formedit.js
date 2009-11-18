@@ -61,7 +61,7 @@ $.jgrid.extend({
 				    $.each(colModel, function(i, v) {
 				        searchable = (typeof v.search === 'undefined') ?  true: v.search ,
 				        hidden = (v.hidden === true),
-						soptions = $.extend({},{text: colNames[i],value: v.index || v.name},this.searchoptions),
+						soptions = $.extend({},this.searchoptions, {text: colNames[i],value: v.index || v.name}),
 						ignoreHiding = (soptions.searchhidden === true);
 						if(typeof soptions.sopt == 'undefined') soptions.sopt = p.sopt ||  stempl;
 						k=0;
@@ -551,8 +551,8 @@ $.jgrid.extend({
 						$.each($t.p.colModel, function(i,n){
 							if(this.name == nm && this.editoptions && $.isFunction(this.editoptions.custom_value)) {
 								try {
-									postdata[nm] = cm.editoptions.custom_value($(elem),'get');
-									if (!postdata[nm]) throw "e1";
+									postdata[nm] = cm.editoptions.custom_value($("#"+nm,"#"+frmtb),'get');
+									if (postdata[nm] === undefined) throw "e1";
 								} catch (e) {
 									if (e=="e1") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.novalue,jQuery.jgrid.edit.bClose);
 									else info_dialog(jQuery.jgrid.errors.errcap,e.message,jQuery.jgrid.edit.bClose);
