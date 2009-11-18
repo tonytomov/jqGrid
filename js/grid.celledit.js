@@ -163,7 +163,7 @@ $.jgrid.extend({
 						try {
 							if(cm.editoptions && $.isFunction(cm.editoptions.custom_value)) {
 								v = cm.editoptions.custom_value($(".customelement",cc));
-								if (!v) throw "e2"; else v2=v;
+								if (v===undefined) throw "e2"; else v2=v;
 							} else throw "e1";
 						} catch (e) {
 							if (e=="e1") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.nodefined,jQuery.jgrid.edit.bClose);
