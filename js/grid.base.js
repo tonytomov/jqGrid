@@ -265,11 +265,13 @@ $.fn.jqGrid = function( pin ) {
 					p.rowNum = rn;
 				}
 				var scrollTop = grid.scrollTop = grid.bDiv.scrollTop;
-				var ttop = table.position().top - scrollTop;
+				var ttop = Math.round(table.position().top) - scrollTop;
 				var tbot = ttop + table.height();
 				var div = rh * rn;
 				var page, npage, empty;
-				if (ttop <= 0 && tbot < dh && parseInt((tbot + scrollTop + div - 1) / div) < p.lastpage) {
+			    if (ttop <= 0 && tbot < dh && 
+                    (p.lastpage==null||parseInt((tbot + scrollTop + div - 1) / div) < p.lastpage))
+                {
 					npage = parseInt((dh - tbot + div - 1) / div);
 					if (tbot >= 0 || npage < 2 || p.scroll === true) {
 						page = parseInt((tbot + scrollTop) / div) + 1;
@@ -285,7 +287,7 @@ $.fn.jqGrid = function( pin ) {
 				}
 
 				if (npage) {
-					if (page > p.lastpage) {
+					if (p.lastpage && page > p.lastpage) {
 						return;
 					}
 					if (grid.hDiv.loading) {
@@ -367,7 +369,7 @@ $.fn.jqGrid = function( pin ) {
 		} else { ii="";}
 		$("<div class='ui-widget-overlay jqgrid-overlay' id='lui_"+this.id+"'></div>").append(ii).insertBefore(gv);
 		$("<div class='loading ui-state-default ui-state-active' id='load_"+this.id+"'>"+this.p.loadtext+"</div>").insertBefore(gv);
-		$(this).attr({cellSpacing:"0",cellPadding:"0",border:"0","role":"grid","aria-multiselectable":this.p.multiselect,"aria-labelledby":"gbox_"+this.id});
+		$(this).attr({cellSpacing:"0",cellPadding:"0",border:"0","role":"grid","aria-multiselectable":!!this.p.multiselect,"aria-labelledby":"gbox_"+this.id});
 		var sortkeys = ["shiftKey","altKey","ctrlKey"],
 		IntNum = function(val,defval) {
 			val = parseInt(val,10);
@@ -1441,9 +1443,10 @@ $.fn.jqGrid = function( pin ) {
 					ts.grid.bDiv.scrollTop = 0;
 				}
 			}
-			if (ts.grid.prevRowHeight && ts.p.scroll)
+			if (ts.grid.prevRowHeight && ts.p.scroll) {
+                delete ts.p.lastpage;
 				ts.grid.populateVisible();
-			else
+			} else
 				ts.grid.populate();
 			return false;
 		});
