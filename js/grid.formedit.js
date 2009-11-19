@@ -542,7 +542,7 @@ $.jgrid.extend({
 				$(".FormElement", "#"+frmtb).each(function(i) {
 					var celm = $(".customelement", this);
 					if (celm.length) {
-						var nm = elem.name, elem = celm[0];
+						var  elem = celm[0], nm = elem.name;
 						$.each($t.p.colModel, function(i,n){
 							if(this.name == nm && this.editoptions && $.isFunction(this.editoptions.custom_value)) {
 								try {
