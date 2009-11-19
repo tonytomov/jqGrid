@@ -537,15 +537,16 @@ $.jgrid.extend({
 					}
 				}
 				return stat;
-			}			
+			}
 			function getFormData(){
 				$(".FormElement", "#"+frmtb).each(function(i) {
-					if($(this).hasClass("customelement")) {
-						var nm = this.name, elem = this;
+					var celm = $(".customelement", this);
+					if (celm.length) {
+						var nm = elem.name, elem = celm[0];
 						$.each($t.p.colModel, function(i,n){
 							if(this.name == nm && this.editoptions && $.isFunction(this.editoptions.custom_value)) {
 								try {
-									postdata[nm] = cm.editoptions.custom_value($("#"+nm,"#"+frmtb),'get');
+									postdata[nm] = this.editoptions.custom_value($("#"+nm,"#"+frmtb),'get');
 									if (postdata[nm] === undefined) throw "e1";
 								} catch (e) {
 									if (e=="e1") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.novalue,jQuery.jgrid.edit.bClose);
