@@ -408,7 +408,7 @@ $.jgrid.extend({
 					if ($.browser.msie && $.browser.version ==6) {
 						ii = '<iframe style="display:block;position:absolute;z-index:-1;filter:Alpha(Opacity=\'0\');" src="javascript:false;"></iframe>';
 					} else { ii="";}
-					$("<div class='ui-widget-overlay jqgrid-overlay confirm' style='z-index:"+zI+";display:none;'>&nbsp;"+ii+"</div><div class='confirm ui-widget-content ui-jqconfirm' style='z-index:"+(zI+1)+"'>"+p.saveData+"<br/><br/>"+bS+bN+bC+"</div>").insertAfter("#"+frmgr);
+					$("<div class='ui-widget-overlay jqgrid-overlay confirm' style='z-index:"+zI+";display:none;'>&#160;"+ii+"</div><div class='confirm ui-widget-content ui-jqconfirm' style='z-index:"+(zI+1)+"'>"+p.saveData+"<br/><br/>"+bS+bN+bC+"</div>").insertAfter("#"+frmgr);
 					$("#sNew","#"+IDs.themodal).click(function(){
 						postIt();
 						$("#"+frmgr).data("disabled",false);
@@ -595,7 +595,7 @@ $.jgrid.extend({
 			}
 			function createData(rowid,obj,tb,maxcols){
 				var nm, hc,trdata, cnt=0,tmp, dc,elc, retpos=[], ind=false, rp,cp,
-				tdtmpl = "<td class='CaptionTD ui-widget-content'>&nbsp;</td><td class='DataTD ui-widget-content' style='white-space:pre'>&nbsp;</td>", tmpl=""; //*2
+				tdtmpl = "<td class='CaptionTD ui-widget-content'>&#160;</td><td class='DataTD ui-widget-content' style='white-space:pre'>&#160;</td>", tmpl=""; //*2
 				for (var i =1;i<=maxcols;i++) {
 					tmpl += tdtmpl;
 				}
@@ -1071,8 +1071,8 @@ $.jgrid.extend({
 			}
 			function createData(rowid,obj,tb,maxcols){
 				var nm, hc,trdata, tdl, tde, cnt=0,tmp, dc, retpos=[], ind=false,
-				tdtmpl = "<td class='CaptionTD ui-widget-content' width='"+p.labelswidth+"'>&nbsp;</td><td class='DataTD ui-helper-reset ui-widget-content' style='white-space:pre;'>&nbsp;</td>", tmpl="",
-				tdtmpl2 = "<td class='CaptionTD ui-widget-content'>&nbsp;</td><td class='DataTD ui-widget-content' style='white-space:pre;'>&nbsp;</td>",
+				tdtmpl = "<td class='CaptionTD ui-widget-content' width='"+p.labelswidth+"'>&#160;</td><td class='DataTD ui-helper-reset ui-widget-content' style='white-space:pre;'>&#160;</td>", tmpl="",
+				tdtmpl2 = "<td class='CaptionTD ui-widget-content'>&#160;</td><td class='DataTD ui-widget-content' style='white-space:pre;'>&#160;</td>",
 				fmtnum = ['integer','number','currency'],max1 =0, max2=0 ,maxw,setme;
 				for (var i =1;i<=maxcols;i++) {
 					tmpl += i == 1 ? tdtmpl : tdtmpl2;
@@ -1231,12 +1231,12 @@ $.jgrid.extend({
 				// error data 
 				tbl += "<tr id='DelError' style='display:none'><td class='ui-state-error'></td></tr>";
 				tbl += "<tr id='DelData' style='display:none'><td >"+rowids+"</td></tr>";
-				tbl += "<tr><td class=\"delmsg\" style=\"white-space:pre;\">"+p.msg+"</td></tr><tr><td >&nbsp;</td></tr>";
+				tbl += "<tr><td class=\"delmsg\" style=\"white-space:pre;\">"+p.msg+"</td></tr><tr><td >&#160;</td></tr>";
 				// buttons at footer
 				tbl += "</tbody></table></div>"
 				var bS  = "<a href='javascript:void(0)' id='dData' class='fm-button ui-state-default ui-corner-all'>"+p.bSubmit+"</a>",
 				bC  = "<a href='javascript:void(0)' id='eData' class='fm-button ui-state-default ui-corner-all'>"+p.bCancel+"</a>";
-				tbl += "<table cellspacing='0' cellpadding='0' border='0' class='EditTable' id='"+dtbl+"_2'><tbody><tr><td class='DataTD ui-widget-content'></td></tr><tr style='display:block;height:3px;'><td></td></tr><tr><td class='DelButton EditButton'>"+bS+"&nbsp;"+bC+"</td></tr></tbody></table>";
+				tbl += "<table cellspacing='0' cellpadding='0' border='0' class='EditTable' id='"+dtbl+"_2'><tbody><tr><td class='DataTD ui-widget-content'></td></tr><tr style='display:block;height:3px;'><td></td></tr><tr><td class='DelButton EditButton'>"+bS+"&#160;"+bC+"</td></tr></tbody></table>";
 				p.gbox = "#gbox_"+gID;
 				createModal(IDs,tbl,p,"#gview_"+$t.p.id,$("#gview_"+$t.p.id)[0]);
 				$(".fm-button","#"+dtbl+"_2").hover(

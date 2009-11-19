@@ -41,7 +41,7 @@ addSubGrid : function(t,pos) {
 			if($(this).hasClass("sgcollapsed")) {
 				pID = ts.p.id;
 				res = $(this).parent();
-				atd = pos >=1 ? "<td colspan='"+pos+"'>&nbsp;</td>":"";
+				atd = pos >=1 ? "<td colspan='"+pos+"'>&#160;</td>":"";
 				_id = $(res).attr("id");
 				bfsc =true;
 				if($.isFunction(ts.p.subGridBeforeExpand)) {
@@ -83,7 +83,7 @@ addSubGrid : function(t,pos) {
 				for(j=0; j < ts.p.subGridModel[0].params.length; j++) {
 					for(i=0; i<ts.p.colModel.length; i++) {
 						if(ts.p.colModel[i].name == ts.p.subGridModel[0].params[j]) {
-							dp[ts.p.colModel[i].name]= $("td:eq("+i+")",rd).text().replace(/\&nbsp\;/ig,'');
+							dp[ts.p.colModel[i].name]= $("td:eq("+i+")",rd).text().replace(/\&#160\;/ig,'');
 						}
 					}
 				}
@@ -137,13 +137,13 @@ addSubGrid : function(t,pos) {
 					trdiv = $("<tr class='ui-widget-content ui-subtblcell'></tr>");
 					if(sgmap.repeatitems === true) {
 						$(sgmap.cell,this).each( function(i) {
-							subGridCell(trdiv, $(this).text() || '&nbsp;',i);
+							subGridCell(trdiv, $(this).text() || '&#160;',i);
 						});
 					} else {
 						var f = ts.p.subGridModel[0].mapping || ts.p.subGridModel[0].name;
 						if (f) {
 							for (i=0;i<f.length;i++) {
-								subGridCell(trdiv, $(f[i],this).text() || '&nbsp;',i);
+								subGridCell(trdiv, $(f[i],this).text() || '&#160;',i);
 							}
 						}
 					}
@@ -177,13 +177,13 @@ addSubGrid : function(t,pos) {
 						if(sgmap.repeatitems === true) {
 							if(sgmap.cell) { cur=cur[sgmap.cell]; }
 							for (var j=0;j<cur.length;j++) {
-								subGridCell(trdiv, cur[j] || '&nbsp;',j);
+								subGridCell(trdiv, cur[j] || '&#160;',j);
 							}
 						} else {
 							var f = ts.p.subGridModel[0].mapping || ts.p.subGridModel[0].name;
 							if(f.length) {
 								for (var j=0;j<f.length;j++) {
-									subGridCell(trdiv, cur[f[j]] || '&nbsp;',j);
+									subGridCell(trdiv, cur[f[j]] || '&#160;',j);
 								}
 							}
 						}

@@ -953,7 +953,7 @@ $.fn.jqGrid = function( pin ) {
 				str = "<td dir='"+dir+"'>"
 				str +="<select class='ui-pg-selbox' role='listbox'>";
 				for(i=0;i<ts.p.rowList.length;i++){
-					str +="<option role='option' value="+ts.p.rowList[i]+((ts.p.rowNum == ts.p.rowList[i])?' selected':'')+">"+ts.p.rowList[i];
+					str +="<option role='option' value='"+ts.p.rowList[i]+"'"+((ts.p.rowNum == ts.p.rowList[i])?' selected':'')+">"+ts.p.rowList[i]+"</option>";
 				}
 				str +="</select></td>";
 			}
@@ -1273,7 +1273,7 @@ $.fn.jqGrid = function( pin ) {
 			ts.p.width = pw > 0?  pw: 'nw';
 		}
 		setColWidth();
-		$(eg).css("width",grid.width+"px").append("<div class='ui-jqgrid-resize-mark' id='rs_m"+ts.p.id+"'>&nbsp;</div>");
+		$(eg).css("width",grid.width+"px").append("<div class='ui-jqgrid-resize-mark' id='rs_m"+ts.p.id+"'>&#160;</div>");
 		$(gv).css("width",grid.width+"px");
 		thead = $("thead:first",ts).get(0);
 		var	tfoot = "<table role='grid' style='width:"+ts.p.tblwidth+"px' class='ui-jqgrid-ftable' cellspacing='0' cellpadding='0' border='0'><tbody><tr role='row' class='ui-widget-content footrow footrow-"+dir+"'>";
@@ -1305,7 +1305,7 @@ $.fn.jqGrid = function( pin ) {
 				if(ts.p.viewsortcols[0]) {$("div span.s-ico",this).show(); if(j==ts.p.lastsort){ $("div span.ui-icon-"+ts.p.sortorder,this).removeClass("ui-state-disabled");}}
 				else if( j == ts.p.lastsort) {$("div span.s-ico",this).show();$("div span.ui-icon-"+ts.p.sortorder,this).removeClass("ui-state-disabled");}
 			}
-			tfoot += "<td role='gridcell' "+formatCol(j,0)+">&nbsp;</td>";
+			tfoot += "<td role='gridcell' "+formatCol(j,0)+">&#160;</td>";
 		}).mousedown(function(e) {
 			if ($(e.target).closest("th>span.ui-jqgrid-resize").length != 1) return;
 			var ci = $.jgrid.getCellIndex(this);
@@ -2199,7 +2199,7 @@ $.jgrid.extend({
 			if(!$t.grid) {return;}
 			if(typeof clearfooter != 'boolean') clearfooter = false;
 			$("tbody:first tr", $t.grid.bDiv).remove();
-			if($t.p.footerrow && clearfooter) $(".ui-jqgrid-ftable td",$t.grid.sDiv).html("&nbsp;");
+			if($t.p.footerrow && clearfooter) $(".ui-jqgrid-ftable td",$t.grid.sDiv).html("&#160;");
 			$t.p.selrow = null; $t.p.selarrrow= []; $t.p.savedRow = [];
 			$t.p.records = 0;$t.p.page='0';$t.p.lastpage='0';$t.p.reccount=0;
 			$t.updatepager(true,false);

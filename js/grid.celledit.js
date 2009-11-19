@@ -111,7 +111,7 @@ $.jgrid.extend({
 				cc.addClass("edit-cell ui-state-highlight");
 				$($t.rows[iRow]).addClass("selected-row ui-state-hover"); 
 				if ($.isFunction($t.p.onSelectCell)) {
-					tmp = cc.html().replace(/\&nbsp\;/ig,'');
+					tmp = cc.html().replace(/\&#160\;/ig,'');
 					$t.p.onSelectCell($t.rows[iRow].id,nm,tmp,iRow,iCol);
 				}
 			}

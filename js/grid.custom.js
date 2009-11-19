@@ -494,7 +494,7 @@ $.jgrid.extend({
 						$(tr).append(td);
 					} else {
 						tr1 = document.createElement("tr");
-						$(tr1).append("<td>&nbsp;</td>").append(td);
+						$(tr1).append("<td>&#160;</td>").append(td);
 						$(tbl).append(tr1);
 					}
 				}
