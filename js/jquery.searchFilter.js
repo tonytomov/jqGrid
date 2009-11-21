@@ -20,7 +20,7 @@
  * INPUT TYPE
  *     fields:  an array of field objects. each object has the following properties:
  *              text: a string containing the display name of the field (e.g. "Field 1")
- *              value: a string containing the actual field name (e.g. "field1")
+ *              itemval: a string containing the actual field name (e.g. "field1")
  *              optional properties:
  *                  ops: an array of operators in the same format as jQuery.fn.searchFilter.defaults.operators
  *                       that is: [ { op: 'gt', text: 'greater than'}, { op:'lt', text: 'less than'}, ... ]
@@ -37,7 +37,7 @@
  *               var fields = [
  *                 {
  *                   text: 'Field Display Name',
- *                   value: 'field_actual_name',
+ *                   itemval: 'field_actual_name',
  *                   // below this are optional values
  *                   ops: [ // this format is the same as jQuery.fn.searchFilter.defaults.operators
  *                     { op: 'gt', text: 'greater than' },
@@ -288,7 +288,7 @@ jQuery.fn.searchFilter = function(fields, options) {
             var has_custom_data = false;
             jQuery.each(fields, function(i) {
                 var field_num = i;
-                fields_html += buildOpt(this.value, this.text);
+                fields_html += buildOpt(this.itemval, this.text);
                 // add custom ops if they exist
                 if (this.ops != null) {
                     has_custom_ops = true;
