@@ -162,7 +162,7 @@ $.jgrid.extend({
 					case 'custom' :
 						try {
 							if(cm.editoptions && $.isFunction(cm.editoptions.custom_value)) {
-								v = cm.editoptions.custom_value($(".customelement",cc));
+								v = cm.editoptions.custom_value($(".customelement",cc),'get');
 								if (v===undefined) throw "e2"; else v2=v;
 							} else throw "e1";
 						} catch (e) {
