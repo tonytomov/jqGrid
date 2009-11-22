@@ -1560,8 +1560,8 @@ $.fn.jqGrid = function( pin ) {
 			}
 		} else {$(grid.cDiv).hide();}
 		$(grid.hDiv).after(grid.bDiv);
-		$(".ui-jqgrid-labels",grid.hDiv).bind("selectstart", function () { return false; })
-		.mousemove(function (e) {
+		$(".ui-jqgrid-labels",grid.hDiv).bind("selectstart", function () { return false; });
+		$(grid.hDiv).mousemove(function (e) {
 			if(grid.resizing){grid.dragMove(e);return false;}
 		});
 		ts.p._height += parseInt($(grid.hDiv).height(),10);
