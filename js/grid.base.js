@@ -1559,11 +1559,11 @@ $.fn.jqGrid = function( pin ) {
 				if(hg) {ts.p.datatype="local"; $(".ui-jqgrid-titlebar-close",grid.cDiv).trigger("click");}
 			}
 		} else {$(grid.cDiv).hide();}
-		$(grid.hDiv).after(grid.bDiv);
-		$(".ui-jqgrid-labels",grid.hDiv).bind("selectstart", function () { return false; });
-		$(grid.hDiv).mousemove(function (e) {
+		$(grid.hDiv).after(grid.bDiv)
+		.mousemove(function (e) {
 			if(grid.resizing){grid.dragMove(e);return false;}
 		});
+		$(".ui-jqgrid-labels",grid.hDiv).bind("selectstart", function () { return false; });
 		ts.p._height += parseInt($(grid.hDiv).height(),10);
 		$(document).mouseup(function (e) {
 			if(grid.resizing) {	grid.dragEnd(); return false;}
