@@ -332,7 +332,11 @@ $.jgrid.extend({
 			},
 			"drop" : function (opts) {
 				return $.extend({
-					accept: '#'+$t.id+' tr.jqgrow',
+					accept: function(d) {
+						var tid = $(d).closest("table.ui-jqgrid-btable");
+						var cn = $.data(tid[0],"dnd").connectWith;
+						return $.inArray('#'+this.id,cn) != -1 ? true : false;
+					},
 					drop: function(ev, ui) {
 						var accept = $(ui.draggable).attr("id");
 						var getdata = $('#'+$t.id).jqGrid('getRowData',accept);
