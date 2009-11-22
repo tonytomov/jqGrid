@@ -411,7 +411,6 @@
 		}
 	};
 	function fireFormatter(formatType,cellval, opts, rwd, act) {
-	    formatType = formatType.toLowerCase();
 		var v=cellval;
 
         if ($.fn.fmatter[formatType]){
