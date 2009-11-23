@@ -270,7 +270,7 @@
 		}
 		return $.fmatter.util.NumberFormat(cellval,op);
 	};
-	$.fn.fmatter.date = function (cellval, opts, act) {
+	$.fn.fmatter.date = function (cellval, opts, rwd, act) {
 		var op = $.extend({},opts.date);
 		if(!isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
@@ -283,7 +283,7 @@
 			return $.fn.fmatter.defaultFormat(cellval, opts);
 		}
 	};
-	$.fn.fmatter.select = function (cellval,opts, act) {
+	$.fn.fmatter.select = function (cellval,opts, rwd, act) {
 		// jqGrid specific
 		cellval = cellval + "";
 		var oSelect = false, ret=[];
@@ -414,7 +414,7 @@
 		var v=cellval;
 
         if ($.fn.fmatter[formatType]){
-            v = $.fn.fmatter[formatType](cellval, opts, act);
+            v = $.fn.fmatter[formatType](cellval, opts, rwd, act);
         }
 
         return v;
