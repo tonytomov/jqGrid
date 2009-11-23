@@ -1425,7 +1425,7 @@ $.fn.jqGrid = function( pin ) {
 			if (opts && opts.current) {
 				ts.grid.selectionPreserver(ts);
 			}
-			if(ts.p.datatype=="local" && !sr){ $(ts).jqGrid("resetSelection");}
+			if(ts.p.datatype=="local"){ $(ts).jqGrid("resetSelection");}
 			else if(!ts.p.treeGrid) {
 				ts.p.selrow=null;
 				if(ts.p.multiselect) {ts.p.selarrrow =[];$('#cb_'+$.jgrid.jqID(ts.p.id),ts.grid.hDiv).attr("checked",false);}
