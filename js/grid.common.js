@@ -364,6 +364,9 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 					var so = options.value.split(";"),sv, ov;
 					for(i=0; i<so.length;i++){
 						sv = so[i].split(":");
+						if(sv.length > 2 ) {
+							sv[1] = jQuery.map(sv,function(n,i){if(i>0)return n;}).join(":");
+						}
 						ov = document.createElement("option");
 						ov.value = sv[0]; ov.innerHTML = sv[1];
 						if (!msl &&  (sv[0] == vl || sv[1]==vl)) ov.selected ="selected";
