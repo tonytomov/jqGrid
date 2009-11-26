@@ -194,7 +194,7 @@ $.jgrid.extend({
 	},
 	restoreRow : function(rowid, afterrestorefunc) {
 		return this.each(function(){
-			var $t= this, fr, ind;
+			var $t= this, fr, ind, ares={};
 			if (!$t.grid ) { return; }
 			ind = $($t).jqGrid("getInd",rowid,true);
 			if(ind == false) {return;}
@@ -207,7 +207,12 @@ $.jgrid.extend({
 						$("input.hasDatepicker","#"+ind.id).datepicker('hide');
 					} catch (e) {}
 				}
-				$($t).jqGrid("setRowData",rowid,$t.p.savedRow[fr]);
+				$.each($t.p.colModel, function(i,n){
+					if(this.editable == true && this.name in $t.p.savedRow[fr]) {
+						ares[this.name] = $t.p.savedRow[fr][this.name];
+					}
+				});
+				$($t).jqGrid("setRowData",rowid,ares);
 				$(ind).attr("editable","0").unbind("keydown");
 				$t.p.savedRow.splice(fr,1);
 			}
