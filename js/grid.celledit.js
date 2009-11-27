@@ -44,15 +44,8 @@ $.jgrid.extend({
 						return;
 					}
 				}
-				// if so check to see if the content is changed
-				var vl = $("td:eq("+$t.p.savedRow[0].ic+")>#"+$t.p.savedRow[0].id+"_"+$.jgrid.jqID($t.p.savedRow[0].name),$t.rows[$t.p.savedRow[0].id]).val();
-				if ($t.p.savedRow[0].v !=  vl) {
-					// save it
-					$($t).jqGrid("saveCell",$t.p.savedRow[0].id,$t.p.savedRow[0].ic)
-				} else {
-					// restore it
-					$($t).jqGrid("restoreCell",$t.p.savedRow[0].id,$t.p.savedRow[0].ic);
-				}
+				// save the cell
+				$($t).jqGrid("saveCell",$t.p.savedRow[0].id,$t.p.savedRow[0].ic)
 			} else {
 				window.setTimeout(function () { $("#"+$t.p.knv).attr("tabindex","-1").focus();},0);
 			}
