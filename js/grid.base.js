@@ -1475,7 +1475,7 @@ $.fn.jqGrid = function( pin ) {
 		}
 		grid.bDiv = document.createElement("div");
 		$(grid.bDiv)
-			.append($('<div style="position:relative"></div>').append('<div></div>').append(this))
+			.append($('<div style="position:relative;">'+(isMSIE && $.browser.version < 8 ? "height:0.01%;" : "")+'</div>').append('<div></div>').append(this))
 			.addClass("ui-jqgrid-bdiv")
 			.css({ height: ts.p.height+(isNaN(ts.p.height)?"":"px"), width: (grid.width)+"px"})
 			.scroll(grid.scrollGrid);
@@ -2122,7 +2122,10 @@ $.jgrid.extend({
 					var tcell = $("td:eq("+pos+")",ind);
 					if(nData !== "") {
 						v = $t.formatter(rowid, nData, pos,ind,'edit');
-						$(tcell).html(v).attr("title",$.jgrid.stripHtml(v));
+						if($t.p.treeGrid && $(".tree-wrap",$(tcell)).length>0)
+							$("span",$(tcell)).html(v).attr("title",$.jgrid.stripHtml(v));
+						else 
+							$(tcell).html(v).attr("title",$.jgrid.stripHtml(v));
 					}
 					if (cssp){
 						if(typeof cssp === 'string') {$(tcell).addClass(cssp);} else {$(tcell).css(cssp);}
