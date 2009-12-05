@@ -1475,7 +1475,7 @@ $.fn.jqGrid = function( pin ) {
 		}
 		grid.bDiv = document.createElement("div");
 		$(grid.bDiv)
-			.append($('<div style="position:relative;">'+(isMSIE && $.browser.version < 8 ? "height:0.01%;" : "")+'</div>').append('<div></div>').append(this))
+			.append($('<div style="position:relative;>'+(isMSIE && $.browser.version < 8 ? "height:0.01%;" : "")+'"</div>').append('<div></div>').append(this))
 			.addClass("ui-jqgrid-bdiv")
 			.css({ height: ts.p.height+(isNaN(ts.p.height)?"":"px"), width: (grid.width)+"px"})
 			.scroll(grid.scrollGrid);
