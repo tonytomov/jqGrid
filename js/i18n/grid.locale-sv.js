@@ -1,88 +1,98 @@
-ï»¿;(function($){
+;(function($){
 /**
  * jqGrid Swedish Translation
- * Anders Nyberg anders.nyberg@alecta.com
- * http://wwww.alecta.com 
+ * Harald Normann harald.normann@wts.se, harald.normann@gmail.com
+ * http://www.worldteamsoftware.com 
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
 $.jgrid = {
 	defaults : {
-		recordtext: "post(er)",
+		recordtext: "Visar {0} - {1} av {2}",
+		emptyrecords: "Det finns inga poster att visa",
 		loadtext: "Laddar...",
-		pgtext : "/"
+		pgtext : "Sida {0} av {1}"
 	},
 	search : {
-	    caption: "SÃ¶k...",
-	    Find: "Hitta",
-	    Reset: "Ã…terstÃ¤ll",
-	    odata : ['lika', 'ej lika', 'mindre', 'mindre eller lika','stÃ¶rre','stÃ¶rre eller lika', 'bÃ¶rjar med','slutar med','innehÃ¥ller' ]
+		caption: "Sök Poster - Ange sökvillkor",
+		Find: "Sök",
+		Reset: "Nollställ Villkor",
+		odata : ['lika', 'ej lika', 'mindre', 'mindre eller lika','större','större eller lika', 'börjar med','börjar inte med','tillhör','tillhör inte','slutar med','slutar inte med','innehåller','innehåller inte'],
+		groupOps: [	{ op: "AND", text: "alla" },	{ op: "OR",  text: "eller" }	],
+		matchText: " träff",
+		rulesText: " regler"
 	},
 	edit : {
-	    addCaption: "Skapa post",
-	    editCaption: "Ã„ndra post",
-	    bSubmit: "UtfÃ¶r",
-	    bCancel: "Avbryt",
-		bClose: "StÃ¤ng",
-		saveData: "Data has been changed! Save changes?",
-		bYes : "Yes",
-		bNo : "No",
-		bExit : "Cancel",
-	    msg: {
-	        required:"FÃ¤lt Ã¤r obligatoriskt",
-	        number:"VÃ¤lj korrekt nummer",
-	        minValue:"vÃ¤rdet mÃ¥ste vara stÃ¶rre Ã¤n eller lika med",
-	        maxValue:"vÃ¤rdet mÃ¥ste vara mindre Ã¤n eller lika med",
-	        email: "Ã¤r inte korrekt e-mail adress",
+		addCaption: "Ny Post",
+		editCaption: "Redigera Post",
+		bSubmit: "Spara",
+		bCancel: "Avbryt",
+		bClose: "Stäng",
+		saveData: "Data har ändrats! Spara förändringar?",
+		bYes : "Ja",
+		bNo : "Nej",
+		bExit : "Avbryt",
+		msg: {
+	        required:"Fältet är obligatoriskt",
+	        number:"Välj korrekt nummer",
+	        minValue:"värdet måste vara större än eller lika med",
+	        maxValue:"värdet måste vara mindre än eller lika med",
+	        email: "är inte korrekt e-post adress",
 	        integer: "Var god ange korrekt heltal",
-			date: "Var god att ange korrekt datum",
-			url: "is not a valid URL. Prefix required ('http://' or 'https://')",
-			nodefined : " is not defined!",
-			novalue : " return value is required!",
-			customarray : "Custom function should return array!",
-			customfcheck : "Custom function should be present in case of custom checking!"
-	    }
+	        date: "Var god ange korrekt datum",
+	        url: "är inte en korrekt URL. Prefix måste anges ('http://' or 'https://')",
+	        nodefined : " är inte definierad!",
+	        novalue : " returvärde måste anges!",
+	        customarray : "Custom funktion måste returnera en vektor!",
+			customfcheck : "Custom funktion måste finnas om Custom kontroll sker!"
+		}
+	},
+	view : {
+		caption: "Visa Post",
+		bClose: "Stäng"
 	},
 	del : {
-	    caption: "Ta bort",
-	    msg: "Ta bort vald post(er)?",
-	    bSubmit: "UtfÃ¶r",
-	    bCancel: "Avbryt"
+		caption: "Radera",
+		msg: "Radera markerad(e) post(er)?",
+		bSubmit: "Radera",
+		bCancel: "Avbryt"
 	},
 	nav : {
-		edittext: " ",
-		edittitle: "Ã„ndra vald rad",  
-		addtext:" ",
-	    addtitle: "Skapa ny rad",
-	    deltext: " ",
-	    deltitle: "Ta bort vald rad",
-	    searchtext: " ",
-	    searchtitle: "Hitta poster",
-	    refreshtext: "",
-	    refreshtitle: "Ladda om Grid",
-	    alertcap: "Varning",
-    alerttext: "Var god vÃ¤lj rad"
+		edittext: "",
+		edittitle: "Redigera markerad rad",
+		addtext:"",
+		addtitle: "Skapa ny post",
+		deltext: "",
+		deltitle: "Radera markerad rad",
+		searchtext: "",
+		searchtitle: "Sök poster",
+		refreshtext: "",
+		refreshtitle: "Uppdatera data",
+		alertcap: "Varning",
+		alerttext: "Ingen rad är markerad",
+		viewtext: "",
+		viewtitle: "Visa markerad rad"
 	},
 	col : {
-	    caption: "Visa/GÃ¶m kolumner",
-	    bSubmit: "UtfÃ¶r",
-	    bCancel: "Avbryt"	
+		caption: "Välj Kolumner",
+		bSubmit: "OK",
+		bCancel: "Avbryt"
 	},
 	errors : {
 		errcap : "Fel",
-		nourl : "Ingen URL Ã¤r definierad",
-		norecords: "Inga poster att processa",
-	    model : "LÃ¤ngden av colNames <> colModel!"
+		nourl : "URL saknas",
+		norecords: "Det finns inga poster att bearbeta",
+		model : "Antal colNames <> colModel!"
 	},
 	formatter : {
 		integer : {thousandsSeparator: " ", defaultValue: '0'},
 		number : {decimalSeparator:",", thousandsSeparator: " ", decimalPlaces: 2, defaultValue: '0,00'},
-		currency : {decimalSeparator:",", thousandsSeparator: " ", decimalPlaces: 2, prefix: "", suffix:"", defaultValue: '0,00'},
+		currency : {decimalSeparator:",", thousandsSeparator: " ", decimalPlaces: 2, prefix: "", suffix:"Kr", defaultValue: '0,00'},
 		date : {
 			dayNames:   [
-				"SÃ¶n", "MÃ¥n", "Tis", "Ons", "Tor", "Fre", "LÃ¶r",
-				"SÃ¶ndag", "MÃ¥ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "LÃ¶rdag"
+				"Sön", "Mån", "Tis", "Ons", "Tor", "Fre", "Lör",
+				"Söndag", "Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag"
 			],
 			monthNames: [
 				"Jan", "Feb", "Mar", "Apr", "Maj", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec",
@@ -104,13 +114,13 @@ $.jgrid = {
 	            SortableDateTime: "Y-m-d\\TH:i:s",
 	            UniversalSortableDateTime: "Y-m-d H:i:sO",
 	            YearMonth: "F, Y"
-	        },
-	        reformatAfterEdit : false
+			},
+			reformatAfterEdit : false
 		},
 		baseLinkUrl: '',
 		showAction: '',
-	    target: '',
-	    checkbox : {disabled:true},
+		target: '',
+		checkbox : {disabled:true},
 		idName : 'id'
 	}
 };
