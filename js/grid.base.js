@@ -2127,8 +2127,11 @@ $.jgrid.extend({
 						else 
 							$(tcell).html(v).attr("title",$.jgrid.stripHtml(v));
 					}
-					if (cssp){
-						if(typeof cssp === 'string') {$(tcell).addClass(cssp);} else {$(tcell).css(cssp);}
+					if(typeof cssp === 'string'){
+						if(cssp) {$(tcell).addClass(cssp);}
+						else {$(tcell).removeClass();}
+					} else if(cssp) {
+						$(tcell).css(cssp);
 					}
 					if(typeof attrp === 'object') {$(tcell).attr(attrp);}
 				}
