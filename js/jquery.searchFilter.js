@@ -425,6 +425,8 @@ jQuery.fn.searchFilter = function(fields, options) {
                     var tField = jQuery(this).find("select[name='field'] :selected").val();
                     var tOp = jQuery(this).find("select[name='op'] :selected").val();
                     var tData = jQuery(this).find("input.vdata,select.vdata :selected").val();
+                    tData += "";
+                    tData = tData.replace(/\\/g,'\\\\').replace(/\"/g,'\\"');
                     if (!opts.stringResult) {
                         ruleGroup.rules.push({
                             field: tField,
