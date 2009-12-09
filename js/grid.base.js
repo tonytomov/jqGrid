@@ -916,6 +916,12 @@ $.fn.jqGrid = function( pin ) {
 			date = date.split(/[\\\/:_;.\t\T\s-]/);
 			format = format.split(/[\\\/:_;.\t\T\s-]/);
 			var dfmt  = $.jgrid.formatter.date.monthNames;
+			var afmt  = $.jgrid.formatter.date.AmPm;
+			var h12to24 = function(ampm, h){
+				if (ampm === 0){ h = (h == 12) ? 0       : h; }
+				          else { h = (h != 12) ? h += 12 : h; }                
+				return h;
+			}; 
 			for(k=0,hl=format.length;k<hl;k++){
 				if(format[k] == 'M') {
 					dM = $.inArray(date[k],dfmt);
@@ -926,9 +932,18 @@ $.fn.jqGrid = function( pin ) {
 					if(dM !== -1 && dM > 11){date[k] = dM+1-12;}
 				}
 				if(format[k] == 'a') {
-					date[k] = (date[k].toLowerCase() == 'am') ? 0 : 1;
-					if (date[k] === 0){ tsp.h = (tsp.h == 12) ? 0 : tsp.h; }
-					else { tsp.h = (tsp.h != 12) ? tsp.h += 12 : tsp.h; }
+					dM = $.inArray(date[k],afmt);
+					if(dM !== -1 && dM < 2 && date[k] == afmt[dM]){
+						date[k] = dM;
+						tsp.h = h12to24(date[k], tsp.h);
+					}
+				}
+				if(format[k] == 'A') {
+					dM = $.inArray(date[k],afmt);
+					if(dM !== -1 && dM > 1 && date[k] == afmt[dM]){
+						date[k] = dM-2;
+						tsp.h = h12to24(date[k], tsp.h);
+					}
 				}
 				tsp[format[k].toLowerCase()] = parseInt(date[k],10);
 			}
