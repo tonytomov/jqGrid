@@ -28,7 +28,8 @@ $.jgrid.extend({
 			onClose : null,
 			colnameview : true,
 			closeAfterSubmit : true,
-			updateAfterCheck : false
+			updateAfterCheck : false,
+			recreateForm : false
 		}, $.jgrid.col, p ||{});
 		return this.each(function(){
 			var $t = this;
@@ -39,6 +40,9 @@ $.jgrid.extend({
 			var gID = $t.p.id,
 			dtbl = "ColTbl_"+gID,
 			IDs = {themodal:'colmod'+gID,modalhead:'colhd'+gID,modalcontent:'colcnt'+gID, scrollelm: dtbl};
+			if(p.recreateForm===true && $("#"+IDs.themodal).html() != null) {
+				$("#"+IDs.themodal).remove();
+			}
 			if ( $("#"+IDs.themodal).html() != null ) {
 				if(onBeforeShow) { p.beforeShowForm($("#"+dtbl)); }
 				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal, jqM:false, modal:p.modal});
