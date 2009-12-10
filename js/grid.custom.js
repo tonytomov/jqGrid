@@ -17,7 +17,7 @@ $.jgrid.extend({
 				ret = cM[i];
 				break;
 			}
-		};
+		}
 		return ret;
 	},
 	setColProp : function(colname, obj){
@@ -510,25 +510,29 @@ $.jgrid.extend({
 	},
 	filterToolbar : function(p){
 		p = $.extend({
-			autosearch: true, 
+			autosearch: true,
+            searchOnEnter : false,
 			beforeSearch: null,
 			afterSearch: null,
 			beforeClear: null,
 			afterClear: null,
-			searchurl : ''
+			searchurl : '',
+            stringResult: false,
+            groupOp: 'AND'
 		},p  || {});
 		return this.each(function(){
 			var $t = this;
 			var triggerToolbar = function() {
-				var sdata={}, j=0, v, nm;
-                $t.p.searchdata = {};
+				var sdata={}, j=0, v, nm, sopt={};
 				$.each($t.p.colModel,function(i,n){
                     nm = this.index || this.name;
+                    var so = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : "eq";
 					switch (this.stype) {
 						case 'select' :
 							v = $("select[name="+nm+"]",$t.grid.hDiv).val();
 							if(v) {
 								sdata[nm] = v;
+                                sopt[nm] = so;
 								j++;
 							} else {
                                 try {
@@ -540,6 +544,7 @@ $.jgrid.extend({
 							v = $("input[name="+nm+"]",$t.grid.hDiv).val();
 							if(v) {
 								sdata[nm] = v;
+                                sopt[nm] = so;
 								j++;
 							} else {
                                 try {
@@ -550,7 +555,21 @@ $.jgrid.extend({
 					}
 				});
 				var sd =  j>0 ? true : false;
-                $.extend($t.p.postData,sdata);
+                if(!p.stringResult) {
+                    $.extend($t.p.postData,sdata);
+                } else {
+                    var ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[";
+                    var gi=0;
+                    $.each(sdata,function(i,n){
+                        if (gi > 0) ruleGroup += ",";
+                        ruleGroup += "{\"field\":\"" + i + "\",";
+                        ruleGroup += "\"op\":\"" + sopt[i] + "\",";
+                        ruleGroup += "\"data\":\"" + n + "\"}";
+                        gi++;
+                    });
+                    ruleGroup += "]}";
+                    $.extend($t.p.postData,{filters:ruleGroup});
+                }
 				var saveurl;
 				if($t.p.searchurl) {
 					saveurl = $t.p.url;
@@ -562,8 +581,9 @@ $.jgrid.extend({
 				if(saveurl) {$($t).jqGrid("setGridParam",{url:saveurl});}
 				if($.isFunction(p.afterSearch)){p.afterSearch();}
 			};
-			var clearToolbar = function(){
+			var clearToolbar = function(trigger){
 				var sdata={}, v, j=0, nm;
+                trigger = (typeof trigger != 'boolean') ? true : trigger;
 				$.each($t.p.colModel,function(i,n){
 					v = (this.searchoptions && this.searchoptions.defaultValue) ? this.searchoptions.defaultValue : "";
                     nm = this.index || this.name;
@@ -602,7 +622,21 @@ $.jgrid.extend({
 					}
 				});
 				var sd =  j>0 ? true : false;
-                $.extend($t.p.postData,sdata);
+                if(!p.stringResult) {
+                    $.extend($t.p.postData,sdata);
+                } else {
+                    var ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[";
+                    var gi=0;
+                    $.each(sdata,function(i,n){
+                        if (gi > 0) ruleGroup += ",";
+                        ruleGroup += "{\"field\":\"" + i + "\",";
+                        ruleGroup += "\"op\":\"" + "eq" + "\",";
+                        ruleGroup += "\"data\":\"" + n + "\"}";
+                        gi++;
+                    });
+                    ruleGroup += "]}";
+                    $.extend($t.p.postData,{filters:ruleGroup});
+                }
 				var saveurl;
 				if($t.p.searchurl) {
 					saveurl = $t.p.url;
@@ -610,7 +644,10 @@ $.jgrid.extend({
 				}
 				var bcv = false;
 				if($.isFunction(p.beforeClear)){bcv = p.beforeClear.call($t);}
-				if(!bcv) $($t).jqGrid("setGridParam",{search:sd}).trigger("reloadGrid",[{page:1}]);
+				if(!bcv) {
+                    if(trigger)
+                        $($t).jqGrid("setGridParam",{search:sd}).trigger("reloadGrid",[{page:1}]);
+                }
 				if(saveurl) {$($t).jqGrid("setGridParam",{url:saveurl});}
 				if($.isFunction(p.afterClear)){p.afterClear();}
 			};
@@ -632,6 +669,7 @@ $.jgrid.extend({
 				}
 			}
 			var tr = $("<tr class='ui-search-toolbar' role='rowheader'></tr>"), th,thd, soptions;
+            var timeoutHnd;
 			$.each($t.p.colModel,function(i,n){
 				var cm=this;
 				th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-"+$t.p.direction+"'></th>");
@@ -721,14 +759,24 @@ $.jgrid.extend({
 						if(soptions.dataInit != null) soptions.dataInit($("input",thd)[0]);
 						if(soptions.dataEvents != null) bindEvents($("input",thd)[0], soptions.dataEvents);
 						if(p.autosearch===true){
-							$("input",thd).keypress(function(e){
-								var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
-								if(key == 13){
-									triggerToolbar();
-									return false;
-								}
-								return this;
-							});
+                            if(p.searchOnEnter) {
+                                $("input",thd).keypress(function(e){
+                                    var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+                                    if(key == 13){
+                                        triggerToolbar();
+                                        return false;
+                                    }
+                                    return this;
+                                });
+                            } else {
+                                $("input",thd).keydown(function(e){
+                                    var key = e.which;
+                                    if(key != 9 && key != 16) {
+                                        if(timeoutHnd) clearTimeout(timeoutHnd);
+                                        timeoutHnd = setTimeout(function(){triggerToolbar();},500);
+                                    }
+                                });
+                            }
 						}
 						break;
 					}
