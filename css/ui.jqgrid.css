@@ -94,6 +94,7 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 
 .ui-jqdialog-content .CaptionTD {text-align: left; vertical-align: top;border-left: 0px none;border-right: 0px none; border-bottom: 0px none; padding: 1px;white-space: nowrap;}
 .ui-jqdialog-content .DataTD {padding: 1px;border-left: 0px none;border-right: 0px none; border-bottom: 0px none; vertical-align: top;}
+.ui-jqdialog-content .form-view-data {white-space:pre}
 .fm-button { display: inline-block; margin:0 4px 0 0; padding: .4em .5em; text-decoration:none !important; cursor:pointer; position: relative; text-align: center; zoom: 1; }
 .fm-button-icon-left { padding-left: 1.9em; }
 .fm-button-icon-right { padding-right: 1.9em; }
