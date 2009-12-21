@@ -224,6 +224,7 @@ $.jgrid.extend({
 			checkOnSubmit : false,
 			checkOnUpdate : false,
 			_savedData : {},
+			processing : false,
 			onClose : null,
 			ajaxEditOptions : {},
 			serializeEditData : null
@@ -273,8 +274,8 @@ $.jgrid.extend({
 				fillData(rowid,$t,frmgr);
 				///
 				if(rowid=="_empty") { $("#pData, #nData","#"+frmtb+"_2").hide(); } else { $("#pData, #nData","#"+frmtb+"_2").show(); }
-				if(p.processing===true) {
-					p.processing=false;
+				if(rp_ge.processing===true) {
+					rp_ge.processing=false;
 					$("#sData", "#"+frmtb+"_2").removeClass('ui-state-active');
 				}
 				if($("#"+frmgr).data("disabled")===true) {
@@ -799,8 +800,8 @@ $.jgrid.extend({
 					$("#FormError","#"+frmtb).show();
 					return;
 				}
-				if(!p.processing) {
-					p.processing = true;
+				if(!rp_ge.processing) {
+					rp_ge.processing = true;
 					$("#sData", "#"+frmtb+"_2").addClass('ui-state-active');
 					// we add to pos data array the action - the name is oper
 					postdata.oper = postdata.id == "_empty" ? "add" : "edit";
@@ -875,7 +876,7 @@ $.jgrid.extend({
 									setTimeout(function(){rp_ge.afterComplete(copydata,postdata,$("#"+frmgr));copydata=null;},500);
 								}
 							}
-							p.processing=false;
+							rp_ge.processing=false;
 							if(rp_ge.checkOnSubmit || rp_ge.checkOnUpdate) {
 								$("#"+frmgr).data("disabled",false);
 								if(rp_ge._savedData.id !="_empty") rp_ge._savedData = postdata;
@@ -886,7 +887,7 @@ $.jgrid.extend({
 						error:function(xhr,st,err){
 							$("#FormError>td","#"+frmtb).html(st+ " : "+err);
 							$("#FormError","#"+frmtb).show();
-							p.processing=false;
+							rp_ge.processing=false;
 							$("#"+frmgr).data("disabled",false);
 							$("#sData", "#"+frmtb+"_2").removeClass('ui-state-active');
 						}
@@ -1202,6 +1203,7 @@ $.jgrid.extend({
 			cancelicon : [],
 			onClose : null,
 			ajaxDelOptions : {},
+			processing : false,
 			serializeDelData : null
 		}, $.jgrid.del, p ||{});
 		rp_ge = p;
@@ -1218,8 +1220,8 @@ $.jgrid.extend({
 			if ( $("#"+IDs.themodal).html() != null ) {
 				$("#DelData>td","#"+dtbl).text(rowids);
 				$("#DelError","#"+dtbl).hide();
-				if( p.processing === true) {
-					p.processing=false;
+				if( rp_ge.processing === true) {
+					rp_ge.processing=false;
 					$("#dData", "#"+dtbl).removeClass('ui-state-active');
 				}
 				if(onBeforeShow) { p.beforeShowForm($("#"+dtbl)); }
@@ -1267,8 +1269,8 @@ $.jgrid.extend({
 						$("#DelError>td","#"+dtbl).html(ret[1]);
 						$("#DelError","#"+dtbl).show();
 					} else {
-						if(!p.processing) {
-							p.processing = true;
+						if(rp_ge.processing) {
+							rp_ge.processing = true;
 							$(this).addClass('ui-state-active');
 							var postd = $.extend({oper:"del", id:postdata},rp_ge.delData, onCS);
 							$.ajax( $.extend({
@@ -1316,14 +1318,14 @@ $.jgrid.extend({
 											setTimeout(function(){rp_ge.afterComplete(data,postdata);},500);
 										}
 									}
-									p.processing=false;
+									rp_ge.processing=false;
 									$("#dData", "#"+dtbl+"_2").removeClass('ui-state-active');
 									if(ret[0]) { hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: rp_ge.onClose}); }
 								},
 								error:function(xhr,st,err){
 									$("#DelError>td","#"+dtbl).html(st+ " : "+err);
 									$("#DelError","#"+dtbl).show();
-									p.processing=false;
+									rp_ge.processing=false;
 									$("#dData", "#"+dtbl+"_2").removeClass('ui-state-active');;
 								}
 							}, $.jgrid.ajaxOptions, p.ajaxDelOptions));
