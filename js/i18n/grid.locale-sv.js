@@ -15,12 +15,12 @@ $.jgrid = {
 		pgtext : "Sida {0} av {1}"
 	},
 	search : {
-		caption: "Sök Poster - Ange sökvillkor",
-		Find: "Sök",
-		Reset: "Nollställ Villkor",
-		odata : ['lika', 'ej lika', 'mindre', 'mindre eller lika','större','större eller lika', 'börjar med','börjar inte med','tillhör','tillhör inte','slutar med','slutar inte med','innehåller','innehåller inte'],
+		caption: "SÃ¶k Poster - Ange sÃ¶kvillkor",
+		Find: "SÃ¶k",
+		Reset: "NollstÃ¤ll Villkor",
+		odata : ['lika', 'ej lika', 'mindre', 'mindre eller lika','stÃ¶rre','stÃ¶rre eller lika', 'bÃ¶rjar med','bÃ¶rjar inte med','tillhÃ¶r','tillhÃ¶r inte','slutar med','slutar inte med','innehÃ¥ller','innehÃ¥ller inte'],
 		groupOps: [	{ op: "AND", text: "alla" },	{ op: "OR",  text: "eller" }	],
-		matchText: " träff",
+		matchText: " trÃ¤ff",
 		rulesText: " regler"
 	},
 	edit : {
@@ -28,29 +28,29 @@ $.jgrid = {
 		editCaption: "Redigera Post",
 		bSubmit: "Spara",
 		bCancel: "Avbryt",
-		bClose: "Stäng",
-		saveData: "Data har ändrats! Spara förändringar?",
+		bClose: "StÃ¤ng",
+		saveData: "Data har Ã¤ndrats! Spara fÃ¶rÃ¤ndringar?",
 		bYes : "Ja",
 		bNo : "Nej",
 		bExit : "Avbryt",
 		msg: {
-	        required:"Fältet är obligatoriskt",
-	        number:"Välj korrekt nummer",
-	        minValue:"värdet måste vara större än eller lika med",
-	        maxValue:"värdet måste vara mindre än eller lika med",
-	        email: "är inte korrekt e-post adress",
+	        required:"FÃ¤ltet Ã¤r obligatoriskt",
+	        number:"VÃ¤lj korrekt nummer",
+	        minValue:"vÃ¤rdet mÃ¥ste vara stÃ¶rre Ã¤n eller lika med",
+	        maxValue:"vÃ¤rdet mÃ¥ste vara mindre Ã¤n eller lika med",
+	        email: "Ã¤r inte korrekt e-post adress",
 	        integer: "Var god ange korrekt heltal",
 	        date: "Var god ange korrekt datum",
-	        url: "är inte en korrekt URL. Prefix måste anges ('http://' or 'https://')",
-	        nodefined : " är inte definierad!",
-	        novalue : " returvärde måste anges!",
-	        customarray : "Custom funktion måste returnera en vektor!",
-			customfcheck : "Custom funktion måste finnas om Custom kontroll sker!"
+	        url: "Ã¤r inte en korrekt URL. Prefix mÃ¥ste anges ('http://' or 'https://')",
+	        nodefined : " Ã¤r inte definierad!",
+	        novalue : " returvÃ¤rde mÃ¥ste anges!",
+	        customarray : "Custom funktion mÃ¥ste returnera en vektor!",
+			customfcheck : "Custom funktion mÃ¥ste finnas om Custom kontroll sker!"
 		}
 	},
 	view : {
 		caption: "Visa Post",
-		bClose: "Stäng"
+		bClose: "StÃ¤ng"
 	},
 	del : {
 		caption: "Radera",
@@ -66,16 +66,16 @@ $.jgrid = {
 		deltext: "",
 		deltitle: "Radera markerad rad",
 		searchtext: "",
-		searchtitle: "Sök poster",
+		searchtitle: "SÃ¶k poster",
 		refreshtext: "",
 		refreshtitle: "Uppdatera data",
 		alertcap: "Varning",
-		alerttext: "Ingen rad är markerad",
+		alerttext: "Ingen rad Ã¤r markerad",
 		viewtext: "",
 		viewtitle: "Visa markerad rad"
 	},
 	col : {
-		caption: "Välj Kolumner",
+		caption: "VÃ¤lj Kolumner",
 		bSubmit: "OK",
 		bCancel: "Avbryt"
 	},
@@ -91,8 +91,8 @@ $.jgrid = {
 		currency : {decimalSeparator:",", thousandsSeparator: " ", decimalPlaces: 2, prefix: "", suffix:"Kr", defaultValue: '0,00'},
 		date : {
 			dayNames:   [
-				"Sön", "Mån", "Tis", "Ons", "Tor", "Fre", "Lör",
-				"Söndag", "Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag"
+				"SÃ¶n", "MÃ¥n", "Tis", "Ons", "Tor", "Fre", "LÃ¶r",
+				"SÃ¶ndag", "MÃ¥ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "LÃ¶rdag"
 			],
 			monthNames: [
 				"Jan", "Feb", "Mar", "Apr", "Maj", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec",
