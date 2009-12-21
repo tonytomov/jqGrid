@@ -870,7 +870,7 @@ $.fn.jqGrid = function( pin ) {
 				findSortKey = function($cell) {
 					return IntNum($cell.replace(stripNum, ''));
 				};
-			} else if(st == 'date') {
+			} else if(st == 'date' || st == 'datetime') {
 				findSortKey = function($cell) {
 					var fd = ts.p.colModel[col].datefmt || "Y-m-d";
 					return parseDate(fd,$cell).getTime();
@@ -1072,7 +1072,7 @@ $.fn.jqGrid = function( pin ) {
 			index = index.substring(5);
 			ts.p.sortname = ts.p.colModel[idxcol].index || index;
 			so = ts.p.sortorder;
-			if($.isFunction(ts.p.onSortCol)) {ts.p.onSortCol.call(ts,index,idxcol,so);}
+			if($.isFunction(ts.p.onSortCol)) {if (ts.p.onSortCol.call(ts,index,idxcol,so)=='stop') {return;}}
 			if(ts.p.datatype == "local") {
 				if(ts.p.deselectAfterSort) {$(ts).jqGrid("resetSelection");}
 			} else {
@@ -1186,7 +1186,7 @@ $.fn.jqGrid = function( pin ) {
 			this.p.colNames.unshift("");
 			this.p.colModel.unshift({name:'rn',width:ts.p.rownumWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center',fixed:true});
 		}
-		ts.p.xmlReader = $.extend({
+		ts.p.xmlReader = $.extend(true,{
 			root: "rows",
 			row: "row",
 			page: "rows>page",
@@ -1198,7 +1198,7 @@ $.fn.jqGrid = function( pin ) {
 			userdata: "userdata",
 			subgrid: {root:"rows", row: "row", repeatitems: true, cell:"cell"}
 		}, ts.p.xmlReader);
-		ts.p.jsonReader = $.extend({
+		ts.p.jsonReader = $.extend(true,{
 			root: "rows",
 			page: "page",
 			total: "total",
@@ -1493,7 +1493,7 @@ $.fn.jqGrid = function( pin ) {
 			function() {arf.removeClass('ui-state-hover');})
 		.append("<span class='ui-icon ui-icon-circle-triangle-n'></span>").css((dir=="rtl"?"left":"right"),"0px") : "";
 		$(grid.cDiv).append(arf).append("<span class='ui-jqgrid-title"+(dir=="rtl" ? "-rtl" :"" )+"'>"+ts.p.caption+"</span>")
-		.addClass("ui-jqgrid-titlebar ui-widget-header ui-corner-tl ui-corner-tr ui-helper-clearfix");
+		.addClass("ui-jqgrid-titlebar ui-widget-header ui-corner-top ui-helper-clearfix");
 		$(grid.cDiv).insertBefore(grid.hDiv);
 		if( ts.p.toolbar[0] ) {
 			grid.uDiv = document.createElement("div");
@@ -1625,7 +1625,7 @@ $.jgrid.extend({
 			var $t = this, stat,pt, olr, ner, ia, tpsr;
 			if(selection === undefined) return;
 			onsr = onsr === false ? false : true;
-			pt=$t.rows.namedItem(selection);
+			pt=$t.rows.namedItem(selection+"");
 			if(pt==null) return;
 			if($t.p.selrow && $t.p.scrollrows===true) {
 				olr = $t.rows.namedItem($t.p.selrow).rowIndex;
@@ -1788,74 +1788,97 @@ $.jgrid.extend({
 		});
 		return success;
 	},
-	addRowData : function(rowid,data,pos,src) {
+	addRowData : function(rowid,rdata,pos,src) {
 		if(!pos) {pos = "last";}
-		var success = false, nm, row="", gi=0, si=0, ni=0,sind, i, v, prp="";
-		if(data) {
+		var success = false, nm, row, gi, si, ni,sind, i, v, prp="", aradd, cnm, cn;
+		if(rdata) {
+			if($.isArray(rdata)) {
+				aradd=true;
+				pos = "last";
+				cnm = rowid;
+			} else {
+				rdata = [rdata];
+				aradd = false;
+			}
 			this.each(function() {
-				var t = this;
-				if(t.p.rownumbers===true){
-					prp = t.formatCol(ni,1);
-					row += "<td role=\"gridcell\" class=\"ui-state-default jqgrid-rownum\" "+prp+">0</td>";
-					ni=1;
-				}
-				if(t.p.multiselect) {
-					v = "<input type=\"checkbox\""+" id=\"jqg_"+rowid+"\" class=\"cbox\"/>";
-					prp = t.formatCol(ni,1);
-					row += "<td role=\"gridcell\" "+prp+">"+v+"</td>";
-					gi = 1;
-				}
-				if(t.p.subGrid===true) {
-					row += $(t).jqGrid("addSubGridCell",gi+ni,1);
-					si=1;
-				}
-				if(typeof(rowid) != 'undefined') rowid = rowid+"";
-				else {
-					rowid = (t.p.records+1)+"";
-					if(t.p.keyIndex !== false) {
-						var cmn = t.p.colModel[t.p.keyIndex+gi+si+ni].name;
-						if(typeof data[cmn] != "undefined") rowid = data[cmn];
+				var t = this, rowslen = t.rows.length || 0, datalen = rdata.length;
+				ni = t.p.rownumbers===true ? 1 :0;
+				gi = t.p.multiselect ===true ? 1 :0;
+				si = t.p.subGrid===true ? 1 :0;
+				if(!aradd) {
+					if(typeof(rowid) != 'undefined') rowid = rowid+"";
+					else {
+						rowid = (t.p.records+1)+"";
+						if(t.p.keyIndex !== false) {
+							cmn = t.p.colModel[t.p.keyIndex+gi+si+ni].name;
+							if(typeof rdata[0][cmn] != "undefined") rowid = rdata[0][cmn];
+						}
 					}
 				}
-				for(i = gi+si+ni; i < this.p.colModel.length;i++){
-					nm = this.p.colModel[i].name;
-					v = t.formatter( rowid, data[nm], i, data, 'add');
-					prp = t.formatCol(i,1);
-					row += "<td role=\"gridcell\" "+prp+" title=\""+$.jgrid.stripHtml(v)+"\">"+v+"</td>";
+				cn = t.p.altclass;
+				var k = 0;
+				var air = $.isFunction(t.p.afterInsertRow) ? true : false;
+				while(k < datalen) {
+					data = rdata[k];
+					row="";
+					if(aradd) {
+						try {rowid = data[cnm];}
+						catch (e) {rowid = t.p.records+1;}
+						var cna = t.p.altRows === true ?  (t.rows.length-1)%2 == 0 ? cn : "" : "";
+					}
+					if(ni){
+						prp = t.formatCol(ni,1);
+						row += "<td role=\"gridcell\" class=\"ui-state-default jqgrid-rownum\" "+prp+">0</td>";
+					}
+					if(gi) {
+						v = "<input type=\"checkbox\""+" id=\"jqg_"+rowid+"\" class=\"cbox\"/>";
+						prp = t.formatCol(ni,1);
+						row += "<td role=\"gridcell\" "+prp+">"+v+"</td>";
+					}
+					if(si) {
+						row += $(t).jqGrid("addSubGridCell",gi+ni,1);
+					}
+					for(i = gi+si+ni; i < this.p.colModel.length;i++){
+						nm = this.p.colModel[i].name;
+						v = t.formatter( rowid, data[nm], i, data, 'add');
+						prp = t.formatCol(i,1);
+						row += "<td role=\"gridcell\" "+prp+" title=\""+$.jgrid.stripHtml(v)+"\">"+v+"</td>";
+					}
+					row = "<tr id=\""+rowid+"\" role=\"row\" class=\"ui-widget-content jqgrow ui-row-"+t.p.direction+" "+cna+"\">" + row+"</tr>";
+					if(t.p.subGrid===true) {
+						row = $(row)[0]; 
+						$(t).jqGrid("addSubGrid",row,gi+ni);
+					}
+					if(t.rows.length === 0){
+						$("table:first",t.grid.bDiv).append(row);
+					} else {
+					switch (pos) {
+						case 'last':
+							$(t.rows[t.rows.length-1]).after(row);
+							break;
+						case 'first':
+							$(t.rows[0]).before(row);
+							break;
+						case 'after':
+							sind = t.rows.namedItem(src);
+							if (sind) {$(t.rows[sind.rowIndex+1]).hasClass("ui-subgrid") ? $(t.rows[sind.rowIndex+1]).after(row) : $(sind).after(row);}
+							break;
+						case 'before':
+							sind = t.rows.namedItem(src);
+							if(sind) {$(sind).before(row);sind=sind.rowIndex;}
+							break;
+					}
+					}
+					t.p.records++;
+					t.p.reccount++;
+					if(!t.grid.cols || !t.grid.cols.length) t.grid.cols = t.rows[0].cells;
+					if(pos==='first' || (pos==='before' && sind <= 1) ||  t.rows.length === 1 ){
+						t.updateColumns();
+					}
+					if(air) t.p.afterInsertRow(rowid,data);
+					k++;
 				}
-				row = "<tr id=\""+rowid+"\" role=\"row\" class=\"ui-widget-content jqgrow ui-row-"+t.p.direction+"\">" + row+"</tr>";
-				if(t.p.subGrid===true) {
-					row = $(row)[0]; 
-					$(t).jqGrid("addSubGrid",row,gi+ni);
-				}
-				if(t.rows.length === 0){
-					$("table:first",t.grid.bDiv).append(row);
-				} else {
-				switch (pos) {
-					case 'last':
-						$(t.rows[t.rows.length-1]).after(row);
-						break;
-					case 'first':
-						$(t.rows[0]).before(row);
-						break;
-					case 'after':
-						sind = t.rows.namedItem(src);
-						if (sind) {$(t.rows[sind.rowIndex+1]).hasClass("ui-subgrid") ? $(t.rows[sind.rowIndex+1]).after(row) : $(sind).after(row);}
-						break;
-					case 'before':
-						sind = t.rows.namedItem(src);
-						if(sind) {$(sind).before(row);sind=sind.rowIndex;}
-						break;
-				}
-				}
-				t.p.records++;
-				t.p.reccount++;
-				if(!t.grid.cols || !t.grid.cols.length) t.grid.cols = t.rows[0].cells;
-				if(pos==='first' || (pos==='before' && sind <= 1) ||  t.rows.length === 1 ){
-					t.updateColumns();
-				}
-				if( t.p.altRows === true ) {
-					var cn = t.p.altclass;
+				if( t.p.altRows === true && !aradd) {
 					if (pos == "last") {
 						if ((t.rows.length-1)%2 == 1)  {$(t.rows[t.rows.length-1]).addClass(cn);}
 					} else {
@@ -1865,7 +1888,6 @@ $.jgrid.extend({
 						});
 					}
 				}
-				try {t.p.afterInsertRow(rowid,data); } catch(e){}
 				t.updatepager(true,true);
 				success = true;
 			});
