@@ -36,7 +36,7 @@ $.jgrid.extend({
 			}
 		});
 	},
-	sortGrid : function(colname,reload){
+	sortGrid : function(colname,reload, sor){
 		return this.each(function(){
 			var $t=this,idx=-1;
 			if ( !$t.grid ) { return;}
@@ -51,7 +51,7 @@ $.jgrid.extend({
 				var sort = $t.p.colModel[idx].sortable;
 				if ( typeof sort !== 'boolean' ) { sort =  true; }
 				if ( typeof reload !=='boolean' ) { reload = false; }
-				if ( sort ) { $t.sortData("jqgh_"+colname, idx, reload); }
+				if ( sort ) { $t.sortData("jqgh_"+colname, idx, reload, sor); }
 			}
 		});
 	},
@@ -511,14 +511,14 @@ $.jgrid.extend({
 	filterToolbar : function(p){
 		p = $.extend({
 			autosearch: true,
-            searchOnEnter : false,
+			searchOnEnter : true,
 			beforeSearch: null,
 			afterSearch: null,
 			beforeClear: null,
 			afterClear: null,
 			searchurl : '',
-            stringResult: false,
-            groupOp: 'AND'
+			stringResult: false,
+			groupOp: 'AND'
 		},p  || {});
 		return this.each(function(){
 			var $t = this;
@@ -526,7 +526,7 @@ $.jgrid.extend({
 				var sdata={}, j=0, v, nm, sopt={};
 				$.each($t.p.colModel,function(i,n){
                     nm = this.index || this.name;
-                    var so = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : "eq";
+                    var so = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : "bw";
 					switch (this.stype) {
 						case 'select' :
 							v = $("select[name="+nm+"]",$t.grid.hDiv).val();
