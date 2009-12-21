@@ -92,8 +92,11 @@ addSubGrid : function(t,pos) {
 				ts.grid.hDiv.loading = true;
 				$("#load_"+ts.p.id).show();
 				if(!ts.p.subgridtype) ts.p.subgridtype = ts.p.datatype;
-				ts.p.subgridtype = ts.p.subgridtype.toLowerCase();
-				if($.isFunction(ts.p.subgridtype)) {ts.p.subgridtype(dp);}
+				if($.isFunction(ts.p.subgridtype)) {
+					ts.p.subgridtype(dp);
+				} else {
+					ts.p.subgridtype = ts.p.subgridtype.toLowerCase();
+				}
 				switch(ts.p.subgridtype) {
 					case "xml":
 					case "json":
