@@ -60,7 +60,7 @@ $.jgrid.extend({
 				$(cc).addClass("edit-cell ui-state-highlight");
 				$($t.rows[iRow]).addClass("selected-row ui-state-hover");
 				try {
-					tmp =  $.unformat(cc,{colModel:$t.p.colModel[iCol]},iCol);
+					tmp =  $.unformat(cc,{rowId: $t.rows[iRow].id, colModel:$t.p.colModel[iCol]},iCol);
 				} catch (_) {
 					tmp = $(cc).html();
 				}
@@ -184,7 +184,10 @@ $.jgrid.extend({
 							if ($t.p.cellurl) {
 								var postdata = {};
 								postdata[nm] = v;
-								postdata["id"] = $t.rows[iRow].id;
+								var idname;
+								if($.isFunction($t.p.idName) ) idname = $t.p.idName();
+								else idname = $t.p.idName || "id";
+								postdata[idname] = $t.rows[iRow].id;
 								postdata = $.extend(addpost,postdata);
 								$.ajax( $.extend( {
 									url: $t.p.cellurl,
@@ -442,14 +445,14 @@ $.jgrid.extend({
 							if (mthd=='dirty') {
 								if ($(this).hasClass('dirty-cell')) {
 									try {
-										res[nm] = $.unformat(this,{colModel:$t.p.colModel[i]},i);
+										res[nm] = $.unformat(this,{rowId:$t.rows[j].id, colModel:$t.p.colModel[i]},i);
 									} catch (e){
 										res[nm] = $.jgrid.htmlDecode($(this).html());
 									}
 								}
 							} else {
 								try {
-									res[nm] = $.unformat(this,{colModel:$t.p.colModel[i]},i);
+									res[nm] = $.unformat(this,{rowId:$t.rows[j].id,colModel:$t.p.colModel[i]},i);
 								} catch (e) {
 									res[nm] = $.jgrid.htmlDecode($(this).html());
 								}
