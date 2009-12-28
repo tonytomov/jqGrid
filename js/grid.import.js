@@ -168,6 +168,8 @@
             o = $.extend({
                 exptype : "remote",
                 url : null,
+                oper: "oper",
+                tag: "excel",
                 exportOptions : {}
             }, o || {});
             return this.each(function(){
@@ -175,7 +177,7 @@
                 if(!this.grid) { return;}
                 if(o.exptype == "remote") {
                     var pdata = $.extend({},this.p.postData);
-                    pdata.oper = "excel";
+                    pdata[o.oper] = o.tag;
                     var params = jQuery.param(pdata);
                     window.location = o.url+"?"+params;
                 }
