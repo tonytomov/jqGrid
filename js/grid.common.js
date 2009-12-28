@@ -222,9 +222,10 @@ function info_dialog(caption, content,c_b, modalopt) {
 			h.w.hide().remove();
 			if(h.o) { h.o.remove(); }
 		},
-		modal :true,
+		modal :false,
 		jqm:jm
 	});
+	try{$("#info_dialog").focus();} catch (e){}
 }
 //Helper functions
 function findPos(obj) {
