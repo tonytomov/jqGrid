@@ -77,7 +77,8 @@ addSubGrid : function(t,pos) {
 		var populatesubgrid = function( rd ) {
 			var res,sid,dp, i, j;
 			sid = $(rd).attr("id");
-			dp = {id:sid, nd_: (new Date().getTime())};
+			dp = {nd_: (new Date().getTime())};
+			dp[ts.p.idName]=sid;
 			if(!ts.p.subGridModel[0]) { return false; }
 			if(ts.p.subGridModel[0].params) {
 				for(j=0; j < ts.p.subGridModel[0].params.length; j++) {
@@ -128,7 +129,7 @@ addSubGrid : function(t,pos) {
 			dummy = $("<table cellspacing='0' cellpadding='0' border='0'><tbody></tbody></table>"),
 			trdiv = $("<tr></tr>");
 			for (i = 0; i<ts.p.subGridModel[0].name.length; i++) {
-				tddiv = $("<th class='ui-state-default ui-th-column ui-th-"+ts.p.direction+"'></th>");
+				tddiv = $("<th class='ui-state-default ui-th-subgrid ui-th-column ui-th-"+ts.p.direction+"'></th>");
 				$(tddiv).html(ts.p.subGridModel[0].name[i]);
 				$(tddiv).width( ts.p.subGridModel[0].width[i]);
 				$(trdiv).append(tddiv);
@@ -164,7 +165,7 @@ addSubGrid : function(t,pos) {
 			dummy = $("<table cellspacing='0' cellpadding='0' border='0'><tbody></tbody></table>"),
 			trdiv = $("<tr></tr>");
 			for (i = 0; i<ts.p.subGridModel[0].name.length; i++) {
-				tddiv = $("<th class='ui-state-default ui-th-column ui-th-"+ts.p.direction+"'></th>");
+				tddiv = $("<th class='ui-state-default ui-th-subgrid ui-th-column ui-th-"+ts.p.direction+"'></th>");
 				$(tddiv).html(ts.p.subGridModel[0].name[i]);
 				$(tddiv).width( ts.p.subGridModel[0].width[i]);
 				$(trdiv).append(tddiv);
