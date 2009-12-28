@@ -24,7 +24,7 @@ $.jgrid.extend({
 					if(treeg) tmp = $("span:first",this).html();
 					else {
 						try {
-							tmp =  $.unformat(this,{colModel:cm[i]},i);
+							tmp =  $.unformat(this,{rowId:rowid, colModel:cm[i]},i);
 						} catch (_) {
 							tmp = $(this).html();
 						}
@@ -57,6 +57,8 @@ $.jgrid.extend({
 						$(ind).bind("keydown",function(e) {
 							if (e.keyCode === 27) {$($t).jqGrid("restoreRow",rowid, afterrestorefunc);}
 							if (e.keyCode === 13) {
+								var ta = e.target;
+								if(ta.tagName == 'TEXTAREA') return true;
 								$($t).jqGrid("saveRow",rowid,succesfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc );
 								return false;
 							}
@@ -135,13 +137,20 @@ $.jgrid.extend({
 			});
 			if (cv[0] === false){
 				try {
-					info_dialog($.jgrid.errors.errcap,cv[1],$.jgrid.edit.bClose);
+					var positions = findPos($("#"+rowid)[0]);
+					info_dialog($.jgrid.errors.errcap,cv[1],$.jgrid.edit.bClose,{left:positions[0],top:positions[1]});
 				} catch (e) {
 					alert(cv[1]);
 				}
 				return;
 			}
-			if(tmp) { tmp["id"] = rowid; if(extraparam) { tmp = $.extend({},tmp,extraparam);} }
+			if(tmp) {
+				var idname;
+				if($.isFunction($t.p.idName) ) idname = $t.p.idName();
+				else idname = $t.p.idName || "id";
+				tmp[idname] = rowid;
+				if(extraparam) { tmp = $.extend({},tmp,extraparam);}
+			}
 			if(!$t.grid.hDiv.loading) {
 				$t.grid.hDiv.loading = true;
 				$("div.loading",$t.grid.hDiv).fadeIn("fast");
