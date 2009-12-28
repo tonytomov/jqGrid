@@ -310,7 +310,7 @@ $.jgrid.extend({
 				$.each(self.p.filterModel,function(i,n){
                     nm = this.index;
 					v = (this.defval) ? this.defval : "";
-					if(!this.stype){this.stype=='text';}
+					if(!this.stype){this.stype='text';}
 					switch (this.stype) {
 						case 'select' :
 							var v1;
