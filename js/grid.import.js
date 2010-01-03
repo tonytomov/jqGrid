@@ -132,7 +132,7 @@
             var ret = null;
             this.each(function () {
                 if(!this.grid) { return;}
-                var gprm = $(this).jqGrid("getGridParam");
+                var gprm = $.extend({},$(this).jqGrid("getGridParam"));
                 // we need to check for:
                 // 1.multiselect, 2.subgrid  3. treegrid and remove the unneded columns from colNames
                 if(gprm.rownumbers) {
