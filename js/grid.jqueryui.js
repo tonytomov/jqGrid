@@ -95,7 +95,8 @@ $.jgrid.extend({
 	},
     columnChooser : function(opts) {
         var self = this;
-        var selector = $('<div style="position:relative;overflow:hidden"><div><select multiple="multiple"></select></div></div>');
+		if($("#colchooser_"+self[0].p.id).length ) return;
+        var selector = $('<div id="colchooser_'+self[0].p.id+'" style="position:relative;overflow:hidden"><div><select multiple="multiple"></select></div></div>');
         var select = $('select', selector);
 
         opts = $.extend({
