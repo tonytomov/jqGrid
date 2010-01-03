@@ -696,7 +696,7 @@ $.fn.jqGrid = function( pin ) {
 				}
 				if(ts.p.pginput===true) {
 					$('.ui-pg-input',ts.p.pager).val(ts.p.page);
-					$('#sp_1',ts.p.pager).html($.fmatter ? $.fmatter.util.NumberFormat(ts.p.lastpage,fmt):ts.p.lastpage).width();
+					$('#sp_1',ts.p.pager).html($.fmatter ? $.fmatter.util.NumberFormat(ts.p.lastpage,fmt):ts.p.lastpage);
 					
 				}
 				if (ts.p.viewrecords){
@@ -797,9 +797,10 @@ $.fn.jqGrid = function( pin ) {
 				break;
 				case "xmlstring":
 					beginReq();
-					addXmlData(dstr = $.jgrid.stringToDoc(ts.p.datastr),ts.grid.bDiv);
-					ts.p.datatype = "local";
+					dstr = $.jgrid.stringToDoc(ts.p.datastr)
 					if(lcf) {ts.p.loadComplete.call(ts,dstr);}
+					addXmlData(dstr,ts.grid.bDiv);
+					ts.p.datatype = "local";
 					ts.p.datastr = null;
 					endReq();
 				break;
@@ -807,9 +808,9 @@ $.fn.jqGrid = function( pin ) {
 					beginReq();
 					if(typeof ts.p.datastr == 'string') dstr = $.jgrid.parse(ts.p.datastr);
 					else dstr = ts.p.datastr;
+					if(lcf) {ts.p.loadComplete.call(ts,dstr);}
 					addJSONData(dstr,ts.grid.bDiv);
 					ts.p.datatype = "local";
-					if(lcf) {ts.p.loadComplete.call(ts,dstr);}
 					ts.p.datastr = null;
 					endReq();
 				break;
@@ -817,7 +818,9 @@ $.fn.jqGrid = function( pin ) {
 				case "clientside":
 					beginReq();
 					ts.p.datatype = "local";
+					if(lcf) {ts.p.loadComplete.call(ts,"");}
 					sortArrayData();
+					updatepager(true,true);
 					endReq();
 				break;
 				}
@@ -909,7 +912,6 @@ $.fn.jqGrid = function( pin ) {
 						else $(row).removeClass(cn);
 					}
 					$('tbody',ts.grid.bDiv).append(row);
-					if(ts.p.rownumbers) $("td.jqgrid-rownum",row).html(i+1);
 					row.sortKey = null;
 				});
 			}
@@ -1748,9 +1750,11 @@ $.jgrid.extend({
 				$t.p.reccount--;
 				$t.updatepager(true,false);
 				success=true;
+				if($t.p.multiselect) {
+					ia = $.inArray(rowid,$t.p.selarrrow);
+					if(ia != -1) { $t.p.selarrrow.splice(ia,1);}
+				}  
 				if(rowid == $t.p.selrow) {$t.p.selrow=null;}
-				ia = $.inArray(rowid,$t.p.selarrrow);
-				if(ia != -1) {$t.p.selarrrow.splice(ia,1);}
 			}
 			if( ri == 0 && success ) {
 				$t.updateColumns();
