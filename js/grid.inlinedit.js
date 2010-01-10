@@ -151,53 +151,50 @@ $.jgrid.extend({
 				tmp[idname] = rowid;
 				if(extraparam) { tmp = $.extend({},tmp,extraparam);}
 			}
-			if(!$t.grid.hDiv.loading) {
-				$t.grid.hDiv.loading = true;
-				$("div.loading",$t.grid.hDiv).fadeIn("fast");
-				if (url == 'clientArray') {
-					tmp = $.extend({},tmp, tmp2);
-					var resp = $($t).jqGrid("setRowData",rowid,tmp);
-					$(ind).attr("editable","0");
-					for( var k=0;k<$t.p.savedRow.length;k++) {
-						if( $t.p.savedRow[k].id == rowid) {fr = k; break;}
-					}
-					if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
-					if( $.isFunction(aftersavefunc) ) { aftersavefunc(rowid,resp); }
-				} else {
-					$.ajax($.extend({
-						url:url,
-						data: $.isFunction($t.p.serializeRowData) ? $t.p.serializeRowData(tmp) : tmp,
-						type: "POST",
-						complete: function(res,stat){
-							if (stat === "success"){
-								var ret;
-								if( $.isFunction(succesfunc)) { ret = succesfunc(res);}
-								else ret = true;
-								if (ret===true) {
-									tmp = $.extend({},tmp, tmp2);
-									$($t).jqGrid("setRowData",rowid,tmp);
-									$(ind).attr("editable","0");
-									for( var k=0;k<$t.p.savedRow.length;k++) {
-										if( $t.p.savedRow[k].id == rowid) {fr = k; break;}
-									};
-									if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
-									if( $.isFunction(aftersavefunc) ) { aftersavefunc(rowid,res); }
-								} else { $($t).jqGrid("restoreRow",rowid, afterrestorefunc); }
-							}
-						},
-						error:function(res,stat){
-							if($.isFunction(errorfunc) ) {
-								errorfunc(rowid, res, stat);
-							} else {
-								alert("Error Row: "+rowid+" Result: " +res.status+":"+res.statusText+" Status: "+stat);
-							}
-						}
-					}, $.jgrid.ajaxOptions, $t.p.ajaxRowOptions || {}));
+			if (url == 'clientArray') {
+				tmp = $.extend({},tmp, tmp2);
+				var resp = $($t).jqGrid("setRowData",rowid,tmp);
+				$(ind).attr("editable","0");
+				for( var k=0;k<$t.p.savedRow.length;k++) {
+					if( $t.p.savedRow[k].id == rowid) {fr = k; break;}
 				}
-				$t.grid.hDiv.loading = false;
-				$("div.loading",$t.grid.hDiv).fadeOut("fast");
-				$(ind).unbind("keydown");
+				if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
+				if( $.isFunction(aftersavefunc) ) { aftersavefunc(rowid,resp); }
+			} else {
+				$("#lui_"+$t.p.id).show();
+				$.ajax($.extend({
+					url:url,
+					data: $.isFunction($t.p.serializeRowData) ? $t.p.serializeRowData(tmp) : tmp,
+					type: "POST",
+					complete: function(res,stat){
+						$("#lui_"+$t.p.id).hide();
+						if (stat === "success"){
+							var ret;
+							if( $.isFunction(succesfunc)) { ret = succesfunc(res);}
+							else ret = true;
+							if (ret===true) {
+								tmp = $.extend({},tmp, tmp2);
+								$($t).jqGrid("setRowData",rowid,tmp);
+								$(ind).attr("editable","0");
+								for( var k=0;k<$t.p.savedRow.length;k++) {
+									if( $t.p.savedRow[k].id == rowid) {fr = k; break;}
+								};
+								if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
+								if( $.isFunction(aftersavefunc) ) { aftersavefunc(rowid,res); }
+							} else { $($t).jqGrid("restoreRow",rowid, afterrestorefunc); }
+						}
+					},
+					error:function(res,stat){
+						$("#lui_"+$t.p.id).hide();
+						if($.isFunction(errorfunc) ) {
+							errorfunc(rowid, res, stat);
+						} else {
+							alert("Error Row: "+rowid+" Result: " +res.status+":"+res.statusText+" Status: "+stat);
+						}
+					}
+				}, $.jgrid.ajaxOptions, $t.p.ajaxRowOptions || {}));
 			}
+			$(ind).unbind("keydown");
 		}
 		});
 	},
