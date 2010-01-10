@@ -88,8 +88,12 @@ $.jgrid.extend({
 					} //ESC
 					if (e.keyCode === 13) {$($t).jqGrid("saveCell",iRow,iCol);}//Enter
 					if (e.keyCode == 9)  {
-						if (e.shiftKey) {$($t).jqGrid("prevCell",iRow,iCol);} //Shift TAb
-						else {$($t).jqGrid("nextCell",iRow,iCol);} //Tab
+						if(!$t.grid.hDiv.loading ) {
+							if (e.shiftKey) {$($t).jqGrid("prevCell",iRow,iCol);} //Shift TAb
+							else {$($t).jqGrid("nextCell",iRow,iCol);} //Tab
+						} else {
+							return false;
+						}
 					}
 					e.stopPropagation();
 				});
@@ -189,11 +193,15 @@ $.jgrid.extend({
 								else idname = $t.p.idName || "id";
 								postdata[idname] = $t.rows[iRow].id;
 								postdata = $.extend(addpost,postdata);
+								$("#lui_"+$t.p.id).show();
+								$t.grid.hDiv.loading = true;
 								$.ajax( $.extend( {
 									url: $t.p.cellurl,
 									data :$.isFunction($t.p.serializeCellData) ? $t.p.serializeCellData(postdata) : postdata,
 									type: "POST",
 									complete: function (result, stat) {
+										$("#lui_"+$t.p.id).hide();
+										$t.grid.hDiv.loading = false;
 										if (stat == 'success') {
 											if ($.isFunction($t.p.afterSubmitCell)) {
 												var ret = $t.p.afterSubmitCell(result,postdata.id,nm,v,iRow,iCol);
@@ -222,7 +230,9 @@ $.jgrid.extend({
 											}
 										}
 									},
-									error:function(res,stat){
+									error:function(res,stat) {
+										$("#lui_"+$t.p.id).hide();
+										$t.grid.hDiv.loading = false;
 										if ($.isFunction($t.p.errorCell)) {
 											$t.p.errorCell(res,stat);
 											$($t).jqGrid("restoreCell",iRow,iCol);
