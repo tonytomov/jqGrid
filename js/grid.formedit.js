@@ -227,7 +227,8 @@ $.jgrid.extend({
 			processing : false,
 			onClose : null,
 			ajaxEditOptions : {},
-			serializeEditData : null
+			serializeEditData : null,
+			viewPagerButtons : true
 		}, $.jgrid.edit, p || {});
 		rp_ge = p;
 		return this.each(function(){
@@ -273,7 +274,11 @@ $.jgrid.extend({
 				// filldata
 				fillData(rowid,$t,frmgr);
 				///
-				if(rowid=="_empty") { $("#pData, #nData","#"+frmtb+"_2").hide(); } else { $("#pData, #nData","#"+frmtb+"_2").show(); }
+				if(rowid=="_empty" || !rp_ge.viewPagerButtons) {
+					$("#pData, #nData","#"+frmtb+"_2").hide();
+				} else { 
+					$("#pData, #nData","#"+frmtb+"_2").show();
+				}
 				if(rp_ge.processing===true) {
 					rp_ge.processing=false;
 					$("#sData", "#"+frmtb+"_2").removeClass('ui-state-active');
@@ -431,7 +436,7 @@ $.jgrid.extend({
 				}
 				// here initform - only once
 				if(onInitializeForm) { onInitializeForm($("#"+frmgr)); }
-				if(rowid=="_empty") { $("#pData,#nData","#"+frmtb+"_2").hide(); } else { $("#pData,#nData","#"+frmtb+"_2").show(); }
+				if(rowid=="_empty" || !rp_ge.viewPagerButtons) { $("#pData,#nData","#"+frmtb+"_2").hide(); } else { $("#pData,#nData","#"+frmtb+"_2").show(); }
 				if(onBeforeShow) { onBeforeShow($("#"+frmgr)); }
 				$("#"+IDs.themodal).data("onClose",rp_ge.onClose);
 				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal,closeoverlay:closeovrl,modal:p.modal});
@@ -928,7 +933,9 @@ $.jgrid.extend({
 			labelswidth: '30%',
 			closeicon: [],
 			navkeys: [false,38,40],
-			onClose: null
+			onClose: null,
+			beforeShowForm : null,
+			viewPagerButtons : true
 		}, $.jgrid.view, p || {});
 		return this.each(function(){
 			var $t = this;
@@ -943,6 +950,7 @@ $.jgrid.extend({
 				$(".ui-jqdialog-title","#"+IDs.modalhead).html(p.caption);
 				$("#FormError","#"+frmtb).hide();
 				fillData(rowid,$t);
+				if($.isFunction(p.beforeShowForm)) p.beforeShowForm($("#"+frmgr));
 				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal, jqM: false, modal:p.modal});
 				focusaref();
 			} else {
@@ -991,6 +999,7 @@ $.jgrid.extend({
 					$("#pData, #nData","#"+frmtb+"_2").css("float","right");
 					$(".EditButton","#"+frmtb+"_2").css("text-align","left");
 				}
+				if(!p.viewPagerButtons) $("#pData, #nData","#"+frmtb+"_2").hide();
 				bt = null;
 				$("#"+IDs.themodal).keydown( function( e ) {
 					if(e.which === 27) {
@@ -1013,6 +1022,7 @@ $.jgrid.extend({
 					$("#cData","#"+frmtb+"_2").addClass(p.closeicon[1] == "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
 					.append("<span class='ui-icon "+p.closeicon[2]+"'></span>");
 				}
+				if($.isFunction(p.beforeShowForm)) p.beforeShowForm($("#"+frmgr));
 				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal, modal:p.modal});
 				$(".fm-button:not(.ui-state-disabled)","#"+frmtb+"_2").hover(
 				   function(){$(this).addClass('ui-state-hover');}, 
