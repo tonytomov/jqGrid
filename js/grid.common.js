@@ -164,6 +164,7 @@ function info_dialog(caption, content,c_b, modalopt) {
 		top:170,
 		zIndex : 1000,
 		jqModal : true,
+		modal : false,
 		closeOnEscape : true,
 		align: 'center',
 		buttonalign : 'center',
@@ -222,7 +223,7 @@ function info_dialog(caption, content,c_b, modalopt) {
 			h.w.hide().remove();
 			if(h.o) { h.o.remove(); }
 		},
-		modal :false,
+		modal :mopt.modal,
 		jqm:jm
 	});
 	try{$("#info_dialog").focus();} catch (e){}
