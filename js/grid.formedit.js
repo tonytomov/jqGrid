@@ -1317,9 +1317,6 @@ $.jgrid.extend({
 										$("#DelError","#"+dtbl).show();
 									} else {
 										if(rp_ge.reloadAfterSubmit) {
-											if($t.p.treeGrid) {
-												$($t).jqGrid("setGridParam",{treeANode:0,datatype:$t.p.treedatatype});
-											}
 											$($t).trigger("reloadGrid");
 										} else {
 											var toarr = [];
@@ -1405,7 +1402,8 @@ $.jgrid.extend({
 			var tbd,
 			navtbl = $("<table cellspacing='0' cellpadding='0' border='0' class='ui-pg-table navtable' style='float:left;table-layout:auto;'><tbody><tr></tr></tbody></table>"),
 			sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='ui-separator'></span></td>",
-			pgid = $($t.p.pager).attr("id") || 'pager';
+			pgid = elem;
+			//$($t.p.pager).attr("id") || 'pager';
 			if($t.p.direction == "rtl") $(navtbl).attr("dir","rtl").css("float","right");
 			if (o.add) {
 				pAdd = pAdd || {};
@@ -1543,10 +1541,10 @@ $.jgrid.extend({
 			$('body').append("<div id='testpg2' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+tdw+";visibility:hidden;' ></div>");
 			twd = $(navtbl).clone().appendTo("#testpg2").width();
 			$("#testpg2").remove();
-			$("#"+pgid+"_"+o.position,"#"+pgid).append(navtbl);
+			$(pgid+"_"+o.position,pgid).append(navtbl);
 			if($t.p._nvtd) {
 				if(twd > $t.p._nvtd[0] ) {
-					$("#"+pgid+"_"+o.position,"#"+pgid).width(twd);
+					$(pgid+"_"+o.position,pgid).width(twd);
 					$t.p._nvtd[0] = twd;
 				}
 				$t.p._nvtd[1] = twd;
