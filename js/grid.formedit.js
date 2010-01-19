@@ -1380,12 +1380,13 @@ $.jgrid.extend({
 			viewicon : "ui-icon-document",
 			position : "left",
 			closeOnEscape : true,
-			afterRefresh : null
+			afterRefresh : null,
+			cloneToTop : false
 		}, $.jgrid.nav, o ||{});
 		return this.each(function() {       
 			var alertIDs = {themodal:'alertmod',modalhead:'alerthd',modalcontent:'alertcnt'},
 			$t = this, vwidth, vheight, twd, tdw;
-			if(!$t.grid) { return; }
+			if(!$t.grid || typeof elem != 'string') { return; }
 			if ($("#"+alertIDs.themodal).html() == null) {
 				if (typeof window.innerWidth != 'undefined') {
 					vwidth = window.innerWidth,
@@ -1399,155 +1400,170 @@ $.jgrid.extend({
 				}
 				createModal(alertIDs,"<div>"+o.alerttext+"</div><span tabindex='0'><span tabindex='-1' id='jqg_alrt'></span></span>",{gbox:"#gbox_"+$t.p.id,jqModal:true,drag:true,resize:true,caption:o.alertcap,top:vheight/2-25,left:vwidth/2-100,width:200,height:'auto',closeOnEscape:o.closeOnEscape},"","",true);
 			}
-			var tbd,
-			navtbl = $("<table cellspacing='0' cellpadding='0' border='0' class='ui-pg-table navtable' style='float:left;table-layout:auto;'><tbody><tr></tr></tbody></table>"),
-			sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='ui-separator'></span></td>",
-			pgid = elem;
-			//$($t.p.pager).attr("id") || 'pager';
-			if($t.p.direction == "rtl") $(navtbl).attr("dir","rtl").css("float","right");
-			if (o.add) {
-				pAdd = pAdd || {};
-				tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
-				$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.addicon+"'></span>"+o.addtext+"</div>");
-				$("tr",navtbl).append(tbd);
-				$(tbd,navtbl)
-				.attr({"title":o.addtitle || "",id : pAdd.id || "add_"+$t.p.id})
-				.click(function(){
-					if (typeof o.addfunc == 'function') {
-						o.addfunc();
-					} else {
-						$($t).jqGrid("editGridRow","new",pAdd);
+			var clone = 1;
+			if(o.cloneToTop && $t.p.toppager) clone = 2;
+			for(var i = 0; i<clone; i++) {
+				var tbd,
+				navtbl = $("<table cellspacing='0' cellpadding='0' border='0' class='ui-pg-table navtable' style='float:left;table-layout:auto;'><tbody><tr></tr></tbody></table>"),
+				sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='ui-separator'></span></td>",
+				pgid, elemids;
+				if(i==0) {
+					pgid = elem;
+					elemids = $t.p.id;
+					if(pgid == $t.p.toppager) {
+						elemids += "_top";
+						clone = 1;
 					}
-					return false;
-				}).hover(function () {$(this).addClass("ui-state-hover");},
-					function () {$(this).removeClass("ui-state-hover");}
-				);
-				tbd = null;
-			}
-			if (o.edit) {
-				tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
-				pEdit = pEdit || {};
-				$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.editicon+"'></span>"+o.edittext+"</div>");
-				$("tr",navtbl).append(tbd);
-				$(tbd,navtbl)
-				.attr({"title":o.edittitle || "",id: pEdit.id || "edit_"+$t.p.id})
-				.click(function(){
-					var sr = $t.p.selrow;
-					if (sr) {
-						if(typeof o.editfunc == 'function') {
-							o.editfunc(sr);
-						} else {
-							$($t).jqGrid("editGridRow",sr,pEdit);
-						}
-					} else {
-						viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$t.p.id,jqm:true});
-						$("#jqg_alrt").focus();
-					}
-					return false;
-				}).hover( function () {$(this).addClass("ui-state-hover");},
-					function () {$(this).removeClass("ui-state-hover");}
-				);
-				tbd = null;
-			}
-			if (o.view) {
-				tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
-				pView = pView || {};
-				$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.viewicon+"'></span>"+o.viewtext+"</div>");
-				$("tr",navtbl).append(tbd);
-				$(tbd,navtbl)
-				.attr({"title":o.viewtitle || "",id: pView.id || "view_"+$t.p.id})
-				.click(function(){
-					var sr = $t.p.selrow;
-					if (sr) {
-						$($t).jqGrid("viewGridRow",sr,pView);
-					} else {
-						viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$t.p.id,jqm:true});
-						$("#jqg_alrt").focus();
-					}
-					return false;
-				}).hover( function () {$(this).addClass("ui-state-hover");},
-					function () {$(this).removeClass("ui-state-hover");}
-				);
-				tbd = null;
-			}
-			if (o.del) {
-				tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
-				pDel = pDel || {};
-				$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.delicon+"'></span>"+o.deltext+"</div>");
-				$("tr",navtbl).append(tbd);
-				$(tbd,navtbl)
-				.attr({"title":o.deltitle || "",id: pDel.id || "del_"+$t.p.id})
-				.click(function(){
-					var dr;
-					if($t.p.multiselect) {
-						dr = $t.p.selarrrow;
-						if(dr.length==0) { dr = null; }
-					} else {
-						dr = $t.p.selrow;
-					}
-					if (dr) { $($t).jqGrid("delGridRow",dr,pDel); }
-					else  {viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$t.p.id,jqm:true}); $("#jqg_alrt").focus(); }
-					return false;
-				}).hover(function () {$(this).addClass("ui-state-hover");},
-					function () {$(this).removeClass("ui-state-hover");}
-				);
-				tbd = null;
-			}
-			if(o.add || o.edit || o.del || o.view) { $("tr",navtbl).append(sep); }
-			if (o.search) {
-				tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
-				pSearch = pSearch || {};
-				$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.searchicon+"'></span>"+o.searchtext+"</div>");
-				$("tr",navtbl).append(tbd);
-				$(tbd,navtbl)
-				.attr({"title":o.searchtitle  || "",id:pSearch.id || "search_"+$t.p.id})
-				.click(function(){
-					$($t).jqGrid("searchGrid",pSearch);
-					return false;
-				}).hover(function () {$(this).addClass("ui-state-hover");},
-					function () {$(this).removeClass("ui-state-hover");}
-				);
-				tbd = null;
-			}
-			if (o.refresh) {
-				tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
-				$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.refreshicon+"'></span>"+o.refreshtext+"</div>");
-				$("tr",navtbl).append(tbd);
-				$(tbd,navtbl)
-				.attr({"title":o.refreshtitle  || "",id: "refresh_"+$t.p.id})
-				.click(function(){
-					$t.p.search = false;
-					try {
-						var gID = $t.p.id;
-						$("#fbox_"+gID).searchFilter().reset();
-                        $t.clearToolbar(false);
-					} catch (e) {}
-					switch (o.refreshstate) {
-						case 'firstpage':
-						    $($t).trigger("reloadGrid", [{page:1}]);
-							break;
-						case 'current':
-						    $($t).trigger("reloadGrid", [{current:true}]);
-							break;
-					}
-					if($.isFunction(o.afterRefresh)) o.afterRefresh();
-					return false;
-				}).hover(function () {$(this).addClass("ui-state-hover");},
-					function () {$(this).removeClass("ui-state-hover");}
-				);
-				tbd = null;
-			}
-			tdw = $(".ui-jqgrid").css("font-size") || "11px";
-			$('body').append("<div id='testpg2' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+tdw+";visibility:hidden;' ></div>");
-			twd = $(navtbl).clone().appendTo("#testpg2").width();
-			$("#testpg2").remove();
-			$(pgid+"_"+o.position,pgid).append(navtbl);
-			if($t.p._nvtd) {
-				if(twd > $t.p._nvtd[0] ) {
-					$(pgid+"_"+o.position,pgid).width(twd);
-					$t.p._nvtd[0] = twd;
+				} else {
+					pgid = $t.p.toppager;
+					elemids = $t.p.id+"_top";
 				}
-				$t.p._nvtd[1] = twd;
+				if($t.p.direction == "rtl") $(navtbl).attr("dir","rtl").css("float","right");
+				if (o.add) {
+					pAdd = pAdd || {};
+					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
+					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.addicon+"'></span>"+o.addtext+"</div>");
+					$("tr",navtbl).append(tbd);
+					$(tbd,navtbl)
+					.attr({"title":o.addtitle || "",id : pAdd.id || "add_"+elemids})
+					.click(function(){
+						if (typeof o.addfunc == 'function') {
+							o.addfunc();
+						} else {
+							$($t).jqGrid("editGridRow","new",pAdd);
+						}
+						return false;
+					}).hover(function () {$(this).addClass("ui-state-hover");},
+						function () {$(this).removeClass("ui-state-hover");}
+					);
+					tbd = null;
+				}
+				if (o.edit) {
+					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
+					pEdit = pEdit || {};
+					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.editicon+"'></span>"+o.edittext+"</div>");
+					$("tr",navtbl).append(tbd);
+					$(tbd,navtbl)
+					.attr({"title":o.edittitle || "",id: pEdit.id || "edit_"+elemids})
+					.click(function(){
+						var sr = $t.p.selrow;
+						if (sr) {
+							if(typeof o.editfunc == 'function') {
+								o.editfunc(sr);
+							} else {
+								$($t).jqGrid("editGridRow",sr,pEdit);
+							}
+						} else {
+							viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$t.p.id,jqm:true});
+							$("#jqg_alrt").focus();
+						}
+						return false;
+					}).hover( function () {$(this).addClass("ui-state-hover");},
+						function () {$(this).removeClass("ui-state-hover");}
+					);
+					tbd = null;
+				}
+				if (o.view) {
+					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
+					pView = pView || {};
+					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.viewicon+"'></span>"+o.viewtext+"</div>");
+					$("tr",navtbl).append(tbd);
+					$(tbd,navtbl)
+					.attr({"title":o.viewtitle || "",id: pView.id || "view_"+elemids})
+					.click(function(){
+						var sr = $t.p.selrow;
+						if (sr) {
+							$($t).jqGrid("viewGridRow",sr,pView);
+						} else {
+							viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$t.p.id,jqm:true});
+							$("#jqg_alrt").focus();
+						}
+						return false;
+					}).hover( function () {$(this).addClass("ui-state-hover");},
+						function () {$(this).removeClass("ui-state-hover");}
+					);
+					tbd = null;
+				}
+				if (o.del) {
+					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
+					pDel = pDel || {};
+					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.delicon+"'></span>"+o.deltext+"</div>");
+					$("tr",navtbl).append(tbd);
+					$(tbd,navtbl)
+					.attr({"title":o.deltitle || "",id: pDel.id || "del_"+elemids})
+					.click(function(){
+						var dr;
+						if($t.p.multiselect) {
+							dr = $t.p.selarrrow;
+							if(dr.length==0) { dr = null; }
+						} else {
+							dr = $t.p.selrow;
+						}
+						if (dr) { $($t).jqGrid("delGridRow",dr,pDel); }
+						else  {viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$t.p.id,jqm:true}); $("#jqg_alrt").focus(); }
+						return false;
+					}).hover(function () {$(this).addClass("ui-state-hover");},
+						function () {$(this).removeClass("ui-state-hover");}
+					);
+					tbd = null;
+				}
+				if(o.add || o.edit || o.del || o.view) { $("tr",navtbl).append(sep); }
+				if (o.search) {
+					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
+					pSearch = pSearch || {};
+					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.searchicon+"'></span>"+o.searchtext+"</div>");
+					$("tr",navtbl).append(tbd);
+					$(tbd,navtbl)
+					.attr({"title":o.searchtitle  || "",id:pSearch.id || "search_"+elemids})
+					.click(function(){
+						$($t).jqGrid("searchGrid",pSearch);
+						return false;
+					}).hover(function () {$(this).addClass("ui-state-hover");},
+						function () {$(this).removeClass("ui-state-hover");}
+					);
+					tbd = null;
+				}
+				if (o.refresh) {
+					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
+					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.refreshicon+"'></span>"+o.refreshtext+"</div>");
+					$("tr",navtbl).append(tbd);
+					$(tbd,navtbl)
+					.attr({"title":o.refreshtitle  || "",id: "refresh_"+elemids})
+					.click(function(){
+						$t.p.search = false;
+						try {
+							var gID = $t.p.id;
+							$("#fbox_"+gID).searchFilter().reset();
+	                        $t.clearToolbar(false);
+						} catch (e) {}
+						switch (o.refreshstate) {
+							case 'firstpage':
+							    $($t).trigger("reloadGrid", [{page:1}]);
+								break;
+							case 'current':
+							    $($t).trigger("reloadGrid", [{current:true}]);
+								break;
+						}
+						if($.isFunction(o.afterRefresh)) o.afterRefresh();
+						return false;
+					}).hover(function () {$(this).addClass("ui-state-hover");},
+						function () {$(this).removeClass("ui-state-hover");}
+					);
+					tbd = null;
+				}
+				tdw = $(".ui-jqgrid").css("font-size") || "11px";
+				$('body').append("<div id='testpg2' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+tdw+";visibility:hidden;' ></div>");
+				twd = $(navtbl).clone().appendTo("#testpg2").width();
+				$("#testpg2").remove();
+				$(pgid+"_"+o.position,pgid).append(navtbl);
+				if($t.p._nvtd) {
+					if(twd > $t.p._nvtd[0] ) {
+						$(pgid+"_"+o.position,pgid).width(twd);
+						$t.p._nvtd[0] = twd;
+					}
+					$t.p._nvtd[1] = twd;
+				}
+				tdw =null; twd=null; navtbl =null;
 			}
 		});
 	},
