@@ -1,15 +1,15 @@
 ;(function($){
 /**
  * jqGrid Chinese Translation for v3.6
- * waiting 2009.11.19
- * http://waiting.javaeye.com/admin/blogs
+ * waiting 2010.01.18
+ * http://waiting.javaeye.com/
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
 $.jgrid = {
 	defaults : {
-		recordtext: "{0} - {1}　共 {2} 条",	// 共字前是全角空格
+		recordtext: "{0} - {1}\u3000共 {2} 条",	// 共字前是全角空格
 		emptyrecords: "无数据显示",
 		loadtext: "读取中...",
 		pgtext : " {0} 共 {1} 页"
@@ -18,8 +18,8 @@ $.jgrid = {
 		caption: "搜索...",
 		Find: "查找",
 		Reset: "重置",
-		odata : ['等于', '不等', '小于', '小于等于','大于','大于等于', '开始于','不开始于','在内','不在内','结束于','不结束于','包含','不包含'],
-		groupOps: [	{ op: "与", text: "所有" },	{ op: "或",  text: "任意" }	],
+		odata : ['等于', '不等', '小于', '小于等于','大于','大于等于', '开始于','不开始于','属于','不属于','结束于','不结束于','包含','不包含'],
+		groupOps: [	{ op: "AND", text: "所有" },	{ op: "OR",  text: "任意" }	],
 		matchText: " 匹配",
 		rulesText: " 规则"
 	},
@@ -61,19 +61,19 @@ $.jgrid = {
 	},
 	nav : {
 		edittext: "",
-		edittitle: "编辑所选行",
+		edittitle: "编辑所选记录",
 		addtext:"",
-		addtitle: "添加新行",
+		addtitle: "添加新记录",
 		deltext: "",
-		deltitle: "删除所选行",
+		deltitle: "删除所选记录",
 		searchtext: "",
 		searchtitle: "查找",
 		refreshtext: "",
 		refreshtitle: "刷新表格",
 		alertcap: "注意",
-		alerttext: "请选择行",
+		alerttext: "请选择记录",
 		viewtext: "",
-		viewtitle: "查看所选行"
+		viewtitle: "查看所选记录"
 	},
 	col : {
 		caption: "选择列",
@@ -102,11 +102,11 @@ $.jgrid = {
 			AmPm : ["am","pm","AM","PM"],
 			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th'},
 			srcformat: 'Y-m-d',
-			newformat: 'd/m/Y',
+			newformat: 'Y-m-d',
 			masks : {
 				ISO8601Long:"Y-m-d H:i:s",
 				ISO8601Short:"Y-m-d",
-				ShortDate: "n/j/Y",
+				ShortDate: "Y/j/n",
 				LongDate: "l, F d, Y",
 				FullDateTime: "l, F d, Y g:i:s A",
 				MonthDay: "F d",
