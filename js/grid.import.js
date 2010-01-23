@@ -22,7 +22,8 @@
                 jsonGrid :{
                     config : "grid",
                     data: "data"
-                }
+                },
+                ajaxOptions :{}
             }, o || {});
             return this.each(function(){
                 var $t = this;
@@ -64,7 +65,7 @@
                 };
                 switch (o.imptype){
                     case 'xml':
-                        $.ajax({
+                        $.ajax($.extend({
                             url:o.impurl,
                             type:o.mtype,
                             data: o.impData,
@@ -78,7 +79,7 @@
                                 }
                                 xml=null;
                             }
-                        });
+                        }, o.ajaxOptions));
                         break;
                     case 'xmlstring' :
                         // we need to make just the conversion and use the same code as xml
@@ -95,7 +96,7 @@
                         }
                         break;
                     case 'json':
-                        $.ajax({
+                        $.ajax($.extend({
                             url:o.impurl,
                             type:o.mtype,
                             data: o.impData,
@@ -109,7 +110,7 @@
                                 }
                                 json=null;
                             }
-                        });
+                        }, o.ajaxOptions ));
                         break;
                     case 'jsonstring' :
                         if(o.impstring && typeof o.impstring == 'string') {
