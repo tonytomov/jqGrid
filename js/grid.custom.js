@@ -771,10 +771,19 @@ $.jgrid.extend({
                             } else {
                                 $("input",thd).keydown(function(e){
                                     var key = e.which;
-                                    if(key != 9 && key != 16) {
-                                        if(timeoutHnd) clearTimeout(timeoutHnd);
-                                        timeoutHnd = setTimeout(function(){triggerToolbar();},500);
-                                    }
+									switch (key) {
+										case 9 :
+										case 16:
+										case 37:
+										case 38:
+										case 39:
+										case 40:
+										case 27:
+											break;
+										default :
+	                                        if(timeoutHnd) clearTimeout(timeoutHnd);
+	                                        timeoutHnd = setTimeout(function(){triggerToolbar();},500);
+									}
                                 });
                             }
 						}
