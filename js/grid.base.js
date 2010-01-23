@@ -271,7 +271,7 @@ $.fn.jqGrid = function( pin ) {
                 {
 					npage = parseInt((dh - tbot + div - 1) / div,10);
 					if (tbot >= 0 || npage < 2 || p.scroll === true) {
-						page = parseInt((tbot + scrollTop) / div,10) + 1;
+						page = Math.round((tbot + scrollTop) / div) + 1;
 						ttop = -1;
 					} else {
 						ttop = 1;
