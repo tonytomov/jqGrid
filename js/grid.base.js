@@ -491,7 +491,7 @@ $.fn.jqGrid = function( pin ) {
 			while (j<gl) {
 				xmlr = gxml[j];
 				rid = getId(xmlr,br+j);
-				cn1 = j%2 == 1 ? cn : '';
+				cn1 = (j+rcnt)%2 == 1 ? cn : '';
 				rowData[ari++] = "<tr id=\""+rid+"\" role=\"row\" class =\"ui-widget-content jqgrow ui-row-"+ts.p.direction+""+cn1+"\">";
 				if(ts.p.rownumbers===true) {
 					rowData[ari++] = addRowNum(0,j,ts.p.page,ts.p.rowNum);
@@ -604,7 +604,7 @@ $.fn.jqGrid = function( pin ) {
 						}
 					}
 				}
-				cn1 = i%2 == 1 ? cn : '';
+				cn1 = (rcnt+i)%2 == 1 ? cn : '';
 				rowData[ari++] = "<tr id=\""+ idr +"\" role=\"row\" class= \"ui-widget-content jqgrow ui-row-"+ts.p.direction+""+cn1+"\">";
 				if(ts.p.rownumbers===true) {
 					rowData[ari++] = addRowNum(0,i,ts.p.page,ts.p.rowNum);
