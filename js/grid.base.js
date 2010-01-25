@@ -146,7 +146,7 @@ $.fn.jqGrid = function( pin ) {
 			treeANode : -1,
 			ExpandColumn: null,
 			tree_root_level : 0,
-			prmNames: {page:"page",rows:"rows", sort: "sidx",order: "sord", search:"_search", nd:"nd"},
+			prmNames: {page:"page",rows:"rows", sort: "sidx",order: "sord", search:"_search", nd:"nd", id:"id",oper:"oper",editoper:"edit",addoper:"add",deloper:"del"},
 			forceFit : false,
 			gridstate : "visible",
 			cellEdit: false,
@@ -178,7 +178,6 @@ $.fn.jqGrid = function( pin ) {
 			remapColumns : [],
 			ajaxGridOptions :{},
 			direction : "ltr",
-			idName : "id",
 			toppager: false
 		}, $.jgrid.defaults, pin || {});
 		var grid={         
@@ -742,7 +741,7 @@ $.fn.jqGrid = function( pin ) {
 		populate = function (npage) {
 			if(!ts.grid.hDiv.loading) {
 				var pvis = ts.p.scroll && npage == false;
-				var prm = {}, dt, dstr, pN=ts.p.prmNames;;
+				var prm = {}, dt, dstr, pN=ts.p.prmNames;
 				if(pN.search !== null) prm[pN.search] = ts.p.search; if(pN.nd != null) prm[pN.nd] = new Date().getTime();
 				if(pN.rows !== null) prm[pN.rows]= ts.p.rowNum; if(pN.page !== null) prm[pN.page]= ts.p.page;
 				if(pN.sort !== null) prm[pN.sort]= ts.p.sortname; if(pN.order !== null) prm[pN.order]= ts.p.sortorder;
