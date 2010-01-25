@@ -188,10 +188,12 @@ $.jgrid.extend({
 							if ($t.p.cellurl) {
 								var postdata = {};
 								postdata[nm] = v;
-								var idname;
-								if($.isFunction($t.p.idName) ) idname = $t.p.idName();
-								else idname = $t.p.idName || "id";
+								var idname,oper, opers;
+								opers = $t.p.prmNames;
+								idname = opers.id;
+								oper = opers.oper;
 								postdata[idname] = $t.rows[iRow].id;
+								postdata[oper] = opers.editoper;
 								postdata = $.extend(addpost,postdata);
 								$("#lui_"+$t.p.id).show();
 								$t.grid.hDiv.loading = true;
