@@ -145,9 +145,11 @@ $.jgrid.extend({
 				return;
 			}
 			if(tmp) {
-				var idname;
-				if($.isFunction($t.p.idName) ) idname = $t.p.idName();
-				else idname = $t.p.idName || "id";
+				var idname, opers, oper;
+				opers = $t.p.prmNames;
+				oper = opers.oper;
+				idname = opers.id;
+				tmp[oper] = opers.editoper;
 				tmp[idname] = rowid;
 				if(extraparam) { tmp = $.extend({},tmp,extraparam);}
 			}
