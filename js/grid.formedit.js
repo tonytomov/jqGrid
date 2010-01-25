@@ -783,9 +783,9 @@ $.jgrid.extend({
 				if(cnt>0) { $("#id_g","#"+frmtb).val(rowid); }
 			}
 			function postIt() {
-				var copydata, ret=[true,"",""], onCS = {};
+				var copydata, ret=[true,"",""], onCS = {}, opers = $t.p.prmNames, idname, oper;
 				if($.isFunction(rp_ge.beforeCheckValues)) {
-					var retvals = rp_ge.beforeCheckValues(postdata,$("#"+frmgr),postdata[$t.p.id+"_id"] == "_empty" ? "add" : "edit");
+					var retvals = rp_ge.beforeCheckValues(postdata,$("#"+frmgr),postdata[$t.p.id+"_id"] == "_empty" ? opers.addoper : opers.editoper);
 					if(retvals && typeof(retvals) === 'object') postdata = retvals;
 				}
 				for( var key in postdata ){
@@ -808,13 +808,16 @@ $.jgrid.extend({
 				if(!rp_ge.processing) {
 					rp_ge.processing = true;
 					$("#sData", "#"+frmtb+"_2").addClass('ui-state-active');
+					oper = opers.oper;
+					idname = opers.id;
 					// we add to pos data array the action - the name is oper
-					postdata.oper = postdata[$t.p.id+"_id"] == "_empty" ? "add" : "edit";
-					var idname;
-					if($.isFunction($t.p.idName) ) idname = $t.p.idName();
-					else idname = $t.p.idName || "id";
-					if(postdata.oper != "add") 
+					postdata[oper] = ($.trim(postdata[$t.p.id+"_id"]) == "_empty") ? opers.addoper : opers.editoper;
+					if(postdata[oper] != opers.addoper) 
 						postdata[idname] = postdata[$t.p.id+"_id"];
+					else {
+						// check to see if we have allredy this field in the form and if yes lieve it
+						if( postdata[idname] === undefined ) postdata[idname] = postdata[$t.p.id+"_id"];
+					}
 					delete postdata[$t.p.id+"_id"];
 					postdata = $.extend(postdata,rp_ge.editData,onCS);
 					$.ajax( $.extend({
@@ -848,7 +851,7 @@ $.jgrid.extend({
 								});
 								postdata = $.extend(postdata,extpost);
 								// the action is add
-								if(postdata.oper == "add" ) {
+								if(postdata[oper] == opers.addoper ) {
 									//id processing
 									// user not set the id ret[2]
 									if(!ret[2]) { ret[2] = parseInt($t.p.records)+1; }
@@ -1230,7 +1233,7 @@ $.jgrid.extend({
 			var onBeforeShow = typeof p.beforeShowForm === 'function' ? true: false,
 			onAfterShow = typeof p.afterShowForm === 'function' ? true: false,
 			gID = $t.p.id, onCS = {},
-			dtbl = "DelTbl_"+gID,
+			dtbl = "DelTbl_"+gID,postd, idname, opers, oper,
 			IDs = {themodal:'delmod'+gID,modalhead:'delhd'+gID,modalcontent:'delcnt'+gID, scrollelm: dtbl};
 			if (isArray(rowids)) { rowids = rowids.join(); }
 			if ( $("#"+IDs.themodal).html() != null ) {
@@ -1288,10 +1291,11 @@ $.jgrid.extend({
 						if(!rp_ge.processing) {
 							rp_ge.processing = true;
 							$(this).addClass('ui-state-active');
-							var postd = $.extend({oper:"del"},rp_ge.delData, onCS);
-							var idname;
-							if($.isFunction($t.p.idName) ) idname = $t.p.idName();
-							else idname = $t.p.idName || "id";
+							opers = $t.p.prmNames;
+							postd = $.extend({},rp_ge.delData, onCS);
+							oper = opers.oper;
+							postd[oper] = opers.deloper;
+							idname = opers.id;
 							postd[idname] = postdata;
 							$.ajax( $.extend({
 								url:gurl,
