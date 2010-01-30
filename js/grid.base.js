@@ -446,6 +446,16 @@ $.fn.jqGrid = function( pin ) {
 			}
 			tBody = null;
 		},
+		getAccessor = function(obj, expr) {
+			var ret;
+			ret = obj[expr];
+			if(ret===undefined) {
+				try {
+					ret = eval("obj."+expr);
+				} catch (e) {}
+			}
+			return ret;
+		},
 		addXmlData = function (xml,t, rcnt, more, adjust) {
 			var startReq = new Date();
 			ts.p.reccount = 0;
@@ -565,15 +575,15 @@ $.fn.jqGrid = function( pin ) {
 					rcnt=0;
 				} else { rcnt = rcnt > 0 ? rcnt :0; }
 			} else { return; }
-			var ir=0,v,i,j,row,f=[],F,cur,gi=0,si=0,ni=0,len,drows,idn,rd={}, fpos,rl = ts.rows.length,idr,rowData=[],ari=0,cn=(ts.p.altRows === true) ? " "+ts.p.altclass:"",cn1;
-			ts.p.page = data[ts.p.jsonReader.page] || 1;
-			ts.p.lastpage= data[ts.p.jsonReader.total] === undefined ? 1 : data[ts.p.jsonReader.total];
-			ts.p.records= data[ts.p.jsonReader.records] || 0;
-			ts.p.userData = data[ts.p.jsonReader.userdata] || {};
+			var ir=0,v,i,j,row,f=[],F,cur,gi=0,si=0,ni=0,len,drows,idn,rd={}, fpos,rl = ts.rows.length,idr,rowData=[],ari=0,cn=(ts.p.altRows === true) ? " "+ts.p.altclass:"",cn1,lp;
+			ts.p.page = getAccessor(data,ts.p.jsonReader.page) || 1;
+			lp = getAccessor(data,ts.p.jsonReader.total);
+			ts.p.lastpage= lp === undefined ? 1 : lp;
+			ts.p.records= getAccessor(data,ts.p.jsonReader.records) || 0;
+			ts.p.userData = getAccessor(data,ts.p.jsonReader.userdata) || {};
 			if(!ts.p.jsonReader.repeatitems) {
 				F = f = reader("json");
 			}
-
 			if( ts.p.keyIndex===false ) {
 				idn = ts.p.jsonReader.id;
 			} else {
@@ -585,7 +595,7 @@ $.fn.jqGrid = function( pin ) {
 				}
 				idn=f[idn];
 			}
-			drows = data[ts.p.jsonReader.root];
+			drows = getAccessor(data,ts.p.jsonReader.root);
 			if (drows) {
 			len = drows.length, i=0;
 			var rn = parseInt(ts.p.rowNum,10),br=ts.p.scroll?(parseInt(ts.p.page,10)-1)*rn+1:1, altr;
@@ -620,19 +630,14 @@ $.fn.jqGrid = function( pin ) {
 					si= 1;
 				}
 				if (ts.p.jsonReader.repeatitems) {
-					if(ts.p.jsonReader.cell) {cur = cur[ts.p.jsonReader.cell];}
+					if(ts.p.jsonReader.cell) {cur = getAccessor(cur,ts.p.jsonReader.cell);}
 					if (!F) F=orderedCols(gi+si+ni);
 				}
 				for (j=0;j<F.length;j++) {
-					v=cur[F[j]];
-					if(v===undefined) {
-						try { v = eval("cur."+F[j]);}
-						catch (e) {}
-					}
+					v = getAccessor(cur,F[j]);
 					rowData[ari++] = addCell(idr,v,j+gi+si+ni,i+rcnt,cur);
 					rd[ts.p.colModel[j+gi+si+ni].name] = v;
 				}
-
 				rowData[ari++] = "</tr>";
 				if(ts.p.gridview === false ) {
 					if( ts.p.treeGrid === true) {
