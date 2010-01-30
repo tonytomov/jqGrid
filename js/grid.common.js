@@ -551,7 +551,7 @@ function checkDate (format, date) {
 	} else {
 		strDate = tsp[format[j]].toString();
 		if(yln == 2 && strDate.length == 1) {yln = 1;}
-		if (strDate.length != yln || tsp[format[j]]==0 ){
+		if (strDate.length != yln || (tsp[format[j]]==0 && date[j]!="00")){
 			return false;
 		}
 	}
