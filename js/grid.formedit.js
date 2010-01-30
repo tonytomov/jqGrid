@@ -1384,6 +1384,7 @@ $.jgrid.extend({
 			viewicon : "ui-icon-document",
 			position : "left",
 			closeOnEscape : true,
+			beforeRefresh : null,
 			afterRefresh : null,
 			cloneToTop : false
 		}, $.jgrid.nav, o ||{});
@@ -1534,6 +1535,7 @@ $.jgrid.extend({
 					$(tbd,navtbl)
 					.attr({"title":o.refreshtitle  || "",id: "refresh_"+elemids})
 					.click(function(){
+						if($.isFunction(o.beforeRefresh)) o.beforeRefresh();
 						$t.p.search = false;
 						try {
 							var gID = $t.p.id;
