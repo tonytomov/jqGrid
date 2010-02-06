@@ -404,7 +404,7 @@ $.fn.jqGrid = function( pin ) {
 			return v;
 		},
 		cellVal =  function (val) {
-			return val === undefined || val === null || val === "" ? "&#160;" : ts.p.autoencode ? $.jgrid.htmlEncode(val+"") : val+"";
+			return val === undefined || val === null || val === "" ? "&#160;" : (ts.p.autoencode ? $.jgrid.htmlEncode(val) : val+"");
 		},
 		addMulti = function(rowid,pos,irow){
 			var	v = "<input type=\"checkbox\""+" id=\"jqg_"+rowid+"\" class=\"cbox\" name=\"jqg_"+rowid+"\"/>",
@@ -447,12 +447,19 @@ $.fn.jqGrid = function( pin ) {
 			tBody = null;
 		},
 		getAccessor = function(obj, expr) {
-			var ret;
+			var ret,p,prm;
 			ret = obj[expr];
 			if(ret===undefined) {
-				try {
-					ret = eval("obj."+expr);
-				} catch (e) {}
+			    if ( typeof expr === 'string' ) {
+					prm = expr.split('.');
+				}
+				if(prm.length) {
+					ret = obj;
+				    while (ret && prm.length) {
+						p = prm.shift();
+						ret = ret[p];
+					}
+				}
 			}
 			return ret;
 		},
