@@ -32,8 +32,12 @@ $.extend($.jgrid,{
 	stripHtml : function(v) {
 		v = v+"";
 		var regexp = /<("[^"]*"|'[^']*'|[^'">])*>/gi;
-		if(v) {	return v.replace(regexp,"");}
-		else {return v;}
+		if (v) {
+			v = v.replace(regexp,"");
+			return (v && v !== '&nbsp;' && v !== '&#160;') ? v : "";
+		} else {
+			return v;
+		}
 	},
 	stringToDoc : function (xmlString) {
 		var xmlDoc;
