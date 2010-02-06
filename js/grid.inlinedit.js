@@ -30,6 +30,7 @@ $.jgrid.extend({
 						}
 					}
 					if ( nm != 'cb' && nm != 'subgrid' && nm != 'rn') {
+						if($t.p.autoencode) tmp = $.jgrid.htmlDecode(tmp);
 						svr[nm]=tmp;
 						if(cm[i].editable===true) {
 							if(focus===null) { focus = i; }
@@ -96,7 +97,7 @@ $.jgrid.extend({
 						case 'password':
 						case 'textarea':
 						case "button" :
-							tmp[nm]= !$t.p.autoencode ? $("input, textarea",this).val() : $.jgrid.htmlEncode($("input, textarea",this).val());
+							tmp[nm]=$("input, textarea",this).val();
 							break;
 						case 'select':
 							if(!cm.editoptions.multiple) {
@@ -133,6 +134,7 @@ $.jgrid.extend({
 						cv[1] = tmp[nm] + " " + cv[1];
 						return false;
 					}
+					if($t.p.autoencode) tmp[nm] = $.jgrid.htmlEncode(tmp[nm]);
 				}
 			});
 			if (cv[0] === false){
@@ -155,6 +157,11 @@ $.jgrid.extend({
 			}
 			if (url == 'clientArray') {
 				tmp = $.extend({},tmp, tmp2);
+				if($t.p.autoencode) {
+					$.each(tmp,function(n,v){
+						tmp[n] = $.jgrid.htmlDecode(v);
+					});
+				}
 				var resp = $($t).jqGrid("setRowData",rowid,tmp);
 				$(ind).attr("editable","0");
 				for( var k=0;k<$t.p.savedRow.length;k++) {
@@ -175,6 +182,11 @@ $.jgrid.extend({
 							if( $.isFunction(succesfunc)) { ret = succesfunc(res);}
 							else ret = true;
 							if (ret===true) {
+								if($t.p.autoencode) {
+									$.each(tmp,function(n,v){
+										tmp[n] = $.jgrid.htmlDecode(v);
+									});
+								}
 								tmp = $.extend({},tmp, tmp2);
 								$($t).jqGrid("setRowData",rowid,tmp);
 								$(ind).attr("editable","0");
