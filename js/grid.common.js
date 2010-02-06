@@ -395,7 +395,6 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 		case "button" :
 			elem = document.createElement("input");
 			elem.type = eltype;
-			elem.value = jQuery.jgrid.htmlDecode(vl);
 			options = bindEv(elem,options);
 			if(eltype != "button"){
 				if(autowidth) {
