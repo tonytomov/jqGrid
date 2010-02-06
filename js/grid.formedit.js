@@ -25,7 +25,7 @@ $.jgrid.extend({
 			multipleSearch : false,
 			// translation
 			// if you want to change or remove the order change it in sopt
-			// ['bw','eq','ne','lt','le','gt','ge','ew','cn'] 
+			// ['bw','eq','ne','lt','le','gt','ge','ew','cn']
 			sopt: null,
 			onClose : null
 			// these are common options
@@ -592,9 +592,9 @@ $.jgrid.extend({
 						case "textarea":
 						case "button":
 							postdata[this.name] = $(this).val();
-							postdata[this.name] = !$t.p.autoencode ? postdata[this.name] : $.jgrid.htmlEncode(postdata[this.name]);
 						break;
 					}
+					if($t.p.autoencode) postdata[this.name] = $.jgrid.htmlEncode(postdata[this.name]);
 					}
 				});
 				return true;
@@ -639,6 +639,7 @@ $.jgrid.extend({
 							tmp = $.isFunction(opt.defaultValue) ? opt.defaultValue() : opt.defaultValue; 
 						}
 						if(!this.edittype) this.edittype = "text";
+						if($t.p.autoencode) tmp = $.jgrid.htmlDecode(tmp);
 						elc = createEl(this.edittype,opt,tmp,false,$.extend({},$.jgrid.ajaxOptions,obj.p.ajaxSelectOptions || {}));
 						if(tmp == "" && this.edittype == "checkbox") {tmp = $(elc).attr("offval");}
 						if(rp_ge.checkOnSubmit || rp_ge.checkOnUpdate) rp_ge._savedData[nm] = tmp;
@@ -724,6 +725,7 @@ $.jgrid.extend({
 								tmp = $(this).html();
 							}
 						}
+						if($t.p.autoencode) tmp = $.jgrid.htmlDecode(tmp);
 						if(rp_ge.checkOnSubmit===true || rp_ge.checkOnUpdate) rp_ge._savedData[nm] = tmp;
 						nm = $.jgrid.jqID(nm);
 						switch (cm[i].edittype) {
@@ -731,7 +733,6 @@ $.jgrid.extend({
 							case "text":
 							case "button" :
 							case "image":
-								tmp = $.jgrid.htmlDecode(tmp);
 								$("#"+nm,"#"+fmid).val(tmp);
 								break;
 							case "textarea":
@@ -850,6 +851,11 @@ $.jgrid.extend({
 									}
 								});
 								postdata = $.extend(postdata,extpost);
+								if($t.p.autoencode) {
+									$.each(postdata,function(n,v){
+										postdata[n] = $.jgrid.htmlDecode(v);
+									});
+								}
 								// the action is add
 								if(postdata[oper] == opers.addoper ) {
 									//id processing
