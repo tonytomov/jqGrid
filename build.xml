@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<project name="jQgrid" default="build" basedir=".">
+<project name="jqGrid" default="build" basedir=".">
 
-    <!-- define the path of YUIcompressor in this file -->
+    <!-- define the path of compressor in this file -->
     <property file="build.properties" />
 
     <property description="Source Folder" name="srcdir" value="js" />
@@ -31,9 +31,11 @@
                 <include name="grid.setcolumns.js" />
                 <include name="grid.import.js" />
                 <include name="jquery.fmatter.js" />
-                <include name="JsonXml.js" />
                 <include name="grid.jqueryui.js" />
                 <include name="jquery.searchFilter.js" />
+                <include name="jqDnR.js" />
+                <include name="jqModal.js" />
+                <include name="JsonXml.js" />
             </fileset>
         </concat>
     </target>
@@ -44,13 +46,22 @@
                 <include name="${jqGrid}" />
             </fileset>
             <arg line="-jar" />
-            <arg path="${YUICompressor}" />
-            <arg value="--charset" />
-            <arg value="utf-8" />
-            <arg value="-o" />
+            <arg path="${GoogleCompiler}" />
+            <arg value="--warning_level" />
+            <arg value="QUIET" />
+            <arg value="--js_output_file" />
             <targetfile />
+            <arg value="--js" />
             <mapper type="glob" from="${jqGrid}" to="${jqGrid.min}" />
         </apply>
+	<concat destfile="${jqGrid.min}">
+		<filelist files="${jqGrid},  ${distdir}"/>
+	</concat>
+	<concat destfile="${jqGrid.min}" append="yes">
+		<filelist files="${distdir}"/>
+	</concat>
+	<delete file="${distdir}"/>
+	<echo message="${jqGrid.min} built." />
     </target>
 
     <target name="i18n">
