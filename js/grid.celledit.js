@@ -64,6 +64,7 @@ $.jgrid.extend({
 				} catch (_) {
 					tmp = $(cc).html();
 				}
+				if($t.p.autoencode) tmp = $.jgrid.htmlDecode(tmp);
 				if (!$t.p.colModel[iCol].edittype) {$t.p.colModel[iCol].edittype = "text";}
 				$t.p.savedRow.push({id:iRow,ic:iCol,name:nm,v:tmp});
 				if($.isFunction($t.p.formatCell)) {
@@ -153,7 +154,7 @@ $.jgrid.extend({
 					case "text":
 					case "textarea":
 					case "button" :
-						v = !$t.p.autoencode ? $("#"+iRow+"_"+nmjq,$t.rows[iRow]).val() : $.jgrid.htmlEncode($("#"+iRow+"_"+nmjq,$t.rows[iRow]).val());
+						v = $("#"+iRow+"_"+nmjq,$t.rows[iRow]).val();
 						v2=v;
 						break;
 					case 'custom' :
@@ -187,6 +188,7 @@ $.jgrid.extend({
 						if ($t.p.cellsubmit == 'remote') {
 							if ($t.p.cellurl) {
 								var postdata = {};
+								if($t.p.autoencode) v = $.jgrid.htmlEncode(v);
 								postdata[nm] = v;
 								var idname,oper, opers;
 								opers = $t.p.prmNames;
