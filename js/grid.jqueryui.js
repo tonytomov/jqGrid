@@ -155,10 +155,14 @@ $.jgrid.extend({
                     }
                 });
                 
-                var perm = fixedCols.slice(0);
+                var perm = [];
+				//fixedCols.slice(0);
                 $('option[selected]',select).each(function() { perm.push(parseInt(this.value)) });
-                $.each(perm, function() { delete colMap[colModel[this].name] });
-                $.each(colMap, function() { perm.push(parseInt(this)) });
+                $.each(perm, function() { delete colMap[colModel[parseInt(this)].name] });
+                $.each(colMap, function() {
+					var ti = parseInt(this);
+					perm = insert(perm,ti,ti);
+				});
                 if (opts.done) {
                     opts.done.call(self, perm);
                 }
@@ -173,7 +177,8 @@ $.jgrid.extend({
                 if (calldone && opts.done) {
                     opts.done.call(self);
                 }
-            }
+            },
+			"msel_opts" : {}
         }, $.jgrid.col, opts || {});
 
         if (opts.caption) {
@@ -208,6 +213,15 @@ $.jgrid.extend({
             select.append("<option value='"+i+"' "+
                           (this.hidden?"":"selected='selected'")+">"+colNames[i]+"</option>");
         });
+		function insert(perm,i,v) {
+			if(i>=0){
+				var a = perm.slice();
+				var b = a.splice(i);
+				if(i>perm.length) i = perm.length;
+				a[i] = v;
+				return a.concat(b);
+			}
+		}
         function call(fn, obj) {
             if (!fn) return;
             if (typeof fn == 'string') {
