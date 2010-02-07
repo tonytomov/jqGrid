@@ -592,6 +592,7 @@ $.jgrid.extend({
 						case "textarea":
 						case "button":
 							postdata[this.name] = $(this).val();
+							
 						break;
 					}
 					if($t.p.autoencode) postdata[this.name] = $.jgrid.htmlEncode(postdata[this.name]);
