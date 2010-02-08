@@ -236,7 +236,7 @@ $.jgrid.extend({
         var dopts = $.isFunction(opts.dlog_opts) ? opts.dlog_opts.call(self, opts) : opts.dlog_opts;
         call(opts.dlog, selector, dopts);
         var mopts = $.isFunction(opts.msel_opts) ? opts.msel_opts.call(self, opts) : opts.msel_opts;
-        call(opts.msel, select, opts.msel_opts);
+        call(opts.msel, select, mopts);
     },
 	sortableRows : function (opts) {
 		// Can accept all sortable options and events
