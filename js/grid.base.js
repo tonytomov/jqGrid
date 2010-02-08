@@ -1,11 +1,11 @@
 ;(function ($) {
 /*
- * jqGrid  3.6.2 - jQuery Grid
+ * jqGrid  3.6.3 - jQuery Grid
  * Copyright (c) 2008, Tony Tomov, tony@trirand.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
- * Date: 2009-12-10
+ * Date: 2010-02-07
  */
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
@@ -457,13 +457,15 @@ $.fn.jqGrid = function( pin ) {
 			    if ( typeof expr === 'string' ) {
 					prm = expr.split('.');
 				}
-				if(prm.length) {
-					ret = obj;
-				    while (ret && prm.length) {
-						p = prm.shift();
-						ret = ret[p];
+				try {
+					if(prm.length) {
+						ret = obj;
+					    while (ret && prm.length) {
+							p = prm.shift();
+							ret = ret[p];
+						}
 					}
-				}
+				} catch (e) {}
 			}
 			return ret;
 		},
