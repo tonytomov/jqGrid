@@ -668,10 +668,10 @@ $.jgrid.extend({
 				    });
 				}
 			}
-			var tr = $("<tr class='ui-search-toolbar' role='rowheader'></tr>"), th,thd, soptions;
+			var tr = $("<tr class='ui-search-toolbar' role='rowheader'></tr>");
             var timeoutHnd;
 			$.each($t.p.colModel,function(i,n){
-				var cm=this;
+				var cm=this, thd , th, soptions,surl,self;
 				th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-"+$t.p.direction+"'></th>");
 				thd = $("<div style='width:100%;position:relative;height:100%;padding-right:0.3em;'></div>");
 				if(this.hidden===true) { $(th).css("display","none");}
@@ -682,21 +682,21 @@ $.jgrid.extend({
 					switch (this.stype)
 					{
 					case "select":
-						var surl = this.surl || soptions.dataUrl;
+						surl = this.surl || soptions.dataUrl;
 						if(surl) {
 							// data returned should have already constructed html select
 							// primitive jQuery load
-							var self = thd;
+							self = thd;
 							$.ajax($.extend({
 								url: surl,
 								dataType: "html",
 								complete: function(res,status) {
 									if(soptions.buildSelect != null) {
 										var d = soptions.buildSelect(res);
-										if (d)
-											$(self).append(d);
-									} else 
+										if (d) $(self).append(d);
+									} else {
 										$(self).append(res.responseText);
+									}
 									if(soptions.defaultValue) $("select",self).val(soptions.defaultValue);
 									$("select",self).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
 									if(soptions.attr) {$("select",self).attr(soptions.attr);}
@@ -710,6 +710,7 @@ $.jgrid.extend({
 											return false;
 										});
 									}
+									res=null;
 								}
 							}, $.jgrid.ajaxOptions, $t.p.ajaxSelectOptions || {} ));
 						} else {
