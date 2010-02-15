@@ -1,11 +1,11 @@
 ;(function ($) {
 /*
- * jqGrid  3.6.3 - jQuery Grid
+ * jqGrid  3.6.4 - jQuery Grid
  * Copyright (c) 2008, Tony Tomov, tony@trirand.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
- * Date: 2010-02-07
+ * Date: 2010-02-14
  */
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
@@ -886,10 +886,11 @@ $.fn.jqGrid = function( pin ) {
 		},
 		sortArrayData = function() {
 			var stripNum = /[\$,%]/g;
-			var rows=[], col=0, st, sv, findSortKey,newDir = (ts.p.sortorder == "asc") ? 1 :-1;
+			var rows=[], col=0, st, sv, findSortKey,newDir = (ts.p.sortorder == "asc") ? 1 :-1, reverse=false;
 			$.each(ts.p.colModel,function(i,v){
 				if(this.index == ts.p.sortname || this.name == ts.p.sortname){
-					col = ts.p.lastsort= i;
+					if(ts.p.lastsort == i) reverse = true;
+					col = i;
 					st = this.sorttype;
 					return false;
 				}
@@ -922,11 +923,14 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.treeGrid) {
 				$(ts).jqGrid("SortTree",newDir);
 			} else {
-				rows.sort(function(a, b) {
-					if (a.sortKey < b.sortKey) {return -newDir;}
-					if (a.sortKey > b.sortKey) {return newDir;}
-					return 0;
-				});
+				if(reverse)
+					rows.reverse();
+				else 
+					rows.sort(function(a, b) {
+						if (a.sortKey < b.sortKey) {return -newDir;}
+						if (a.sortKey > b.sortKey) {return newDir;}
+						return 0;
+					});
 				if(rows[0]){
 					$("td",rows[0]).each( function( k ) {
 						$(this).css("width",grid.headers[k].width+"px");
@@ -1106,11 +1110,10 @@ $.fn.jqGrid = function( pin ) {
 					$("tr th:eq("+idxcol+") span.s-ico",thd).show();
 				}
 			}
-			ts.p.lastsort = idxcol;
 			index = index.substring(5);
 			ts.p.sortname = ts.p.colModel[idxcol].index || index;
 			so = ts.p.sortorder;
-			if($.isFunction(ts.p.onSortCol)) {if (ts.p.onSortCol.call(ts,index,idxcol,so)=='stop') {return;}}
+			if($.isFunction(ts.p.onSortCol)) {if (ts.p.onSortCol.call(ts,index,idxcol,so)=='stop') {ts.p.lastsort = idxcol; return;}}
 			if(ts.p.datatype == "local") {
 				if(ts.p.deselectAfterSort) {$(ts).jqGrid("resetSelection");}
 			} else {
@@ -1126,6 +1129,7 @@ $.fn.jqGrid = function( pin ) {
 				});
 			}
 			populate();
+			ts.p.lastsort = idxcol;
 			if(ts.p.sortname != index && idxcol) {ts.p.lastsort = idxcol;}
 		},
 		setColWidth = function () {
