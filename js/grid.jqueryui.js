@@ -216,7 +216,7 @@ $.jgrid.extend({
 		function insert(perm,i,v) {
 			if(i>=0){
 				var a = perm.slice();
-				var b = a.splice(i);
+				var b = a.splice(i,Math.max(perm.length-i,i));
 				if(i>perm.length) i = perm.length;
 				a[i] = v;
 				return a.concat(b);
