@@ -2103,6 +2103,7 @@ $.jgrid.extend({
 					var tn = this.name;
 					if(this.hidden === false && !this.fixed){
 						cw = Math.floor((aw)/($t.p.tblwidth-tw)*this.width);
+						if (cw < 0) return;
 						this.width =cw;
 						initwidth += cw;
 						$t.grid.headers[i].width=cw;
