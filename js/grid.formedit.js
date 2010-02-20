@@ -1547,7 +1547,7 @@ $.jgrid.extend({
 						try {
 							var gID = $t.p.id;
 							$("#fbox_"+gID).searchFilter().reset();
-	                        $t.clearToolbar(false);
+	                        if($.isFunction($t.clearToolbar)) $t.clearToolbar(false);
 						} catch (e) {}
 						switch (o.refreshstate) {
 							case 'firstpage':
