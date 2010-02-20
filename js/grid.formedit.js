@@ -21,6 +21,7 @@ $.jgrid.extend({
 			afterShowSearch : null,
 			onInitializeSearch: null,
 			closeAfterSearch : false,
+			closeAfterReset: false,
 			closeOnEscape : false,
 			multipleSearch : false,
 			// translation
@@ -164,6 +165,7 @@ $.jgrid.extend({
 				}
 				$.extend(grid[0].p.postData,sdata);
 				grid.trigger("reloadGrid",[{page:1}]);
+				if(p.closeAfterReset) hideFilter($("#"+fid));
 			}
 			function hideFilter(selector) {
 				if(p.onClose){
