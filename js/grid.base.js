@@ -452,6 +452,7 @@ $.fn.jqGrid = function( pin ) {
 		},
 		getAccessor = function(obj, expr) {
 			var ret,p,prm;
+			if( typeof expr === 'function') return expr(obj);
 			ret = obj[expr];
 			if(ret===undefined) {
 			    if ( typeof expr === 'string' ) {
