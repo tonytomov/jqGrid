@@ -144,10 +144,11 @@
                     gprm.colNames.splice(0,1);
                     gprm.colModel.splice(0,1);
                 }
-                if(gprm.subgrid) {
+                if(gprm.subGrid) {
                     gprm.colNames.splice(0,1);
                     gprm.colModel.splice(0,1);
                 }
+                gprm.knv = null;
                 if(gprm.treeGrid) {
                     for (var key in gprm.treeReader) {
                         gprm.colNames.splice(gprm.colNames.length-1);
