@@ -953,24 +953,27 @@ $.fn.jqGrid = function( pin ) {
 		},
 		parseDate = function(format, date) {
 			var tsp = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0},k,hl,dM;
-			date = date.split(/[\\\/:_;.\t\T\s-]/);
-			format = format.split(/[\\\/:_;.\t\T\s-]/);
-			var dfmt  = $.jgrid.formatter.date.monthNames;
-			for(k=0,hl=format.length;k<hl;k++){
-				if(format[k] == 'M') {
-					dM = $.inArray(date[k],dfmt);
-					if(dM !== -1 && dM < 12){date[k] = dM+1;}
+			date = $.trim(date);
+			if(date){
+				date = date.split(/[\\\/:_;.\t\T\s-]/);
+				format = format.split(/[\\\/:_;.\t\T\s-]/);
+				var dfmt  = $.jgrid.formatter.date.monthNames;
+				for(k=0,hl=format.length;k<hl;k++){
+					if(format[k] == 'M') {
+						dM = $.inArray(date[k],dfmt);
+						if(dM !== -1 && dM < 12){date[k] = dM+1;}
+					}
+					if(format[k] == 'F') {
+						dM = $.inArray(date[k],dfmt);
+						if(dM !== -1 && dM > 11){date[k] = dM+1-12;}
+					}
+					tsp[format[k].toLowerCase()] = parseInt(date[k],10);
 				}
-				if(format[k] == 'F') {
-					dM = $.inArray(date[k],dfmt);
-					if(dM !== -1 && dM > 11){date[k] = dM+1-12;}
-				}
-				tsp[format[k].toLowerCase()] = parseInt(date[k],10);
+				tsp.m = parseInt(tsp.m,10)-1;
+				var ty = tsp.y;
+				if (ty >= 70 && ty <= 99) {tsp.y = 1900+tsp.y;}
+				else if (ty >=0 && ty <=69) {tsp.y= 2000+tsp.y;}
 			}
-			tsp.m = parseInt(tsp.m,10)-1;
-			var ty = tsp.y;
-			if (ty >= 70 && ty <= 99) {tsp.y = 1900+tsp.y;}
-			else if (ty >=0 && ty <=69) {tsp.y= 2000+tsp.y;}
 			return new Date(tsp.y, tsp.m, tsp.d, tsp.h, tsp.i, tsp.s,0);
 		},
 		setPager = function (pgid, tp){
