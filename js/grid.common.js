@@ -337,13 +337,13 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 								ovm = vl.split(",");
 								ovm = jQuery.map(ovm,function(n){return jQuery.trim(n)});
 							} else {
-								ovm[0] = vl;
+								ovm[0] = jQuery.trim(vl);
 							}
 							jQuery(elem).attr(options);
 							setTimeout(function(){
 								jQuery("option",elem).each(function(i){
 									if(i==0) this.selected = "";
-									if(jQuery.inArray(jQuery(this).text(),ovm) > -1 || jQuery.inArray(jQuery(this).val(),ovm)>-1) {
+									if(jQuery.inArray(jQuery.trim(jQuery(this).text()),ovm) > -1 || jQuery.inArray(jQuery.trim(jQuery(this).val(),ovm)) > -1 ) {
 										this.selected= "selected";
 										if(!msl) return false;
 									}
@@ -371,8 +371,8 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 						}
 						ov = document.createElement("option");
 						ov.value = sv[0]; ov.innerHTML = sv[1];
-						if (!msl &&  (sv[0] == vl || sv[1]==vl)) ov.selected ="selected";
-						if (msl && (jQuery.inArray(sv[1], ovm)>-1 || jQuery.inArray(sv[0], ovm)>-1)) {ov.selected ="selected";}
+						if (!msl &&  (jQuery.trim(sv[0]) == jQuery.trim(vl) || jQuery.trim(sv[1]) == jQuery.trim(vl))) ov.selected ="selected";
+						if (msl && (jQuery.inArray(jQuery.trim(sv[1]), ovm)>-1 || jQuery.inArray(jQuery.trim(sv[0]), ovm)>-1)) {ov.selected ="selected";}
 						elem.appendChild(ov);
 					}
 				} else if (typeof options.value === 'object') {
@@ -380,8 +380,8 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 					for ( var key in oSv) {
 						ov = document.createElement("option");
 						ov.value = key; ov.innerHTML = oSv[key];
-						if (!msl &&  (key == vl ||oSv[key]==vl) ) ov.selected ="selected";
-						if (msl && (jQuery.inArray(oSv[key],ovm)>-1 || jQuery.inArray(key,ovm)>-1)) ov.selected ="selected";
+						if (!msl &&  ( jQuery.trim(key) == jQuery.trim(vl) || jQuery.trim(oSv[key]) == jQuery.trim(vl)) ) ov.selected ="selected";
+						if (msl && (jQuery.inArray(jQuery.trim(oSv[key]),ovm)>-1 || jQuery.inArray(jQuery.trim(key),ovm)>-1)) ov.selected ="selected";
 						elem.appendChild(ov);
 					}
 				}

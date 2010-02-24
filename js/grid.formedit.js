@@ -747,10 +747,10 @@ $.jgrid.extend({
 								var opv = tmp.split(",");
 								opv = $.map(opv,function(n){return $.trim(n)});
 								$("#"+nm+" option","#"+fmid).each(function(j){
-									if (!cm[i].editoptions.multiple && (opv[0] == $(this).text() || opv[0] == $(this).val()) ){
+									if (!cm[i].editoptions.multiple && (opv[0] == $.trim($(this).text()) || opv[0] == $.trim($(this).val())) ){
 										this.selected= true;
 									} else if (cm[i].editoptions.multiple){
-										if(  $.inArray($(this).text(), opv ) > -1 || $.inArray($(this).val(), opv ) > -1  ){
+										if(  $.inArray($.trim($(this).text()), opv ) > -1 || $.inArray($.trim($(this).val()), opv ) > -1  ){
 											this.selected = true;
 										}else{
 											this.selected = false;
