@@ -1928,7 +1928,7 @@ $.jgrid.extend({
 					if(pos==='first' || (pos==='before' && sind <= 1) ||  t.rows.length === 1 ){
 						t.updateColumns();
 					}
-					if(air) t.p.afterInsertRow(t,rowid,data);
+					if(air) t.p.afterInsertRow.call(t,rowid,data,data);
 					k++;
 				}
 				if( t.p.altRows === true && !aradd) {
