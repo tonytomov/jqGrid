@@ -1100,7 +1100,7 @@ $.fn.jqGrid = function( pin ) {
 				ts.p.page = 1;
 			}
 			if(sor) {
-				if(ts.p.lastsort == idxcol && ts.p.sortorder == sor) return;
+				if(ts.p.lastsort == idxcol && ts.p.sortorder == sor && !reload) return;
 				else ts.p.sortorder = sor;
 			}
 			var thd= $("thead:first",ts.grid.hDiv).get(0);
