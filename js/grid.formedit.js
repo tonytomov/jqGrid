@@ -762,13 +762,24 @@ $.jgrid.extend({
 								break;
 							case "checkbox":
 								tmp = tmp+"";
-								tmp = tmp.toLowerCase();
-								if(tmp.search(/(false|0|no|off|undefined)/i)<0 && tmp!=="") {
-									$("#"+nm,"#"+fmid).attr("checked",true);
-									$("#"+nm,"#"+fmid).attr("defaultChecked",true); //ie
+								if(cm[i].editoptions && cm[i].editoptions.value) {
+									var cb = cm[i].editoptions.value.split(":");
+									if(cb[0] == tmp) {
+										$("#"+nm,"#"+fmid).attr("checked",true);
+										$("#"+nm,"#"+fmid).attr("defaultChecked",true); //ie
+									} else {
+										$("#"+nm,"#"+fmid).attr("checked",false);
+										$("#"+nm,"#"+fmid).attr("defaultChecked",""); //ie
+									}
 								} else {
-									$("#"+nm,"#"+fmid).attr("checked",false);
-									$("#"+nm,"#"+fmid).attr("defaultChecked",""); //ie
+									tmp = tmp.toLowerCase();
+									if(tmp.search(/(false|0|no|off|undefined)/i)<0 && tmp!=="") {
+										$("#"+nm,"#"+fmid).attr("checked",true);
+										$("#"+nm,"#"+fmid).attr("defaultChecked",true); //ie
+									} else {
+										$("#"+nm,"#"+fmid).attr("checked",false);
+										$("#"+nm,"#"+fmid).attr("defaultChecked",""); //ie
+									}
 								}
 								break;
 							case 'custom' :
