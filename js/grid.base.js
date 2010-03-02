@@ -1681,7 +1681,7 @@ $.jgrid.extend({
 			if(selection === undefined) return;
 			onsr = onsr === false ? false : true;
 			pt=$t.rows.namedItem(selection+"");
-			if(pt===null) return;
+			if(!pt) return;
 			if($t.p.selrow && $t.p.scrollrows===true) {
 				olr = $t.rows.namedItem($t.p.selrow).rowIndex;
 				ner = $t.rows.namedItem(selection).rowIndex;
