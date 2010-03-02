@@ -1167,7 +1167,7 @@ $.fn.jqGrid = function( pin ) {
 				initwidth =0;
 				$.each(ts.p.colModel, function(i) {
 					if(this.hidden === false && !this.fixed){
-						cw = Math.floor(aw/(ts.p.tblwidth-tw)*this.width);
+						cw = Math.round(aw*this.width/ts.p.tblwidth);
 						this.width =cw;
 						initwidth += cw;
 						lvc = i;
@@ -2106,7 +2106,7 @@ $.jgrid.extend({
 				$.each($t.p.colModel, function(i) {
 					var tn = this.name;
 					if(this.hidden === false && !this.fixed){
-						cw = Math.floor((aw)/($t.p.tblwidth-tw)*this.width);
+						cw = Math.round(aw*this.width/$t.p.tblwidth);
 						if (cw < 0) return;
 						this.width =cw;
 						initwidth += cw;
