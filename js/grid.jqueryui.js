@@ -39,7 +39,7 @@ $.jgrid.extend({
 			var sortable_opts = {
 				"tolerance" : "pointer",
 				"axis" : "x",
-				"scrollSensitivity": "10",
+				"scrollSensitivity": "1",
 				"items": '>th:not(:has(#jqgh_cb,#jqgh_rn,#jqgh_subgrid),:hidden)',
 				"placeholder": {
 					element: function(item) {
