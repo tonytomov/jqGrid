@@ -122,7 +122,7 @@ $.jgrid.extend({
         });
     },
 	updateGridRows : function (data, rowidname, jsonreader) {
-		var nm, success=false;
+		var nm, success=false, title;
 		this.each(function(){
 			var t = this, vl, ind, srow, sid;
 			if(!t.grid) {return false;}
@@ -138,10 +138,11 @@ $.jgrid.extend({
 								if(t.p.jsonReader.cell) {srow = srow[t.p.jsonReader.cell];}
 								for (var k=0;k<srow.length;k++) {
 									vl = t.formatter( sid, srow[k], k, srow, 'edit');
+									title = t.p.colModel[k].title ? {"title":$.jgrid.stripHtml(vl)} : {};
 									if(t.p.treeGrid===true && nm == t.p.ExpandColumn) {
-										$("td:eq("+k+") > span:first",ind).html(vl).attr("title",$.jgrid.stripHtml(vl));
+										$("td:eq("+k+") > span:first",ind).html(vl).attr(title);
 									} else {
-										$("td:eq("+k+")",ind).html(vl).attr("title",$.jgrid.stripHtml(vl)); 
+										$("td:eq("+k+")",ind).html(vl).attr(title); 
 									}
 								}
 								success = true;
@@ -152,10 +153,11 @@ $.jgrid.extend({
 							nm = jsonreader===true ? this.jsonmap || this.name :this.name;
 							if( srow[nm] != undefined) {
 								vl = t.formatter( sid, srow[nm], i, srow, 'edit');
+								title = this.title ? {"title":$.jgrid.stripHtml(vl)} : {};
 								if(t.p.treeGrid===true && nm == t.p.ExpandColumn) {
-									$("td:eq("+i+") > span:first",ind).html(vl).attr("title",$.jgrid.stripHtml(vl));
+									$("td:eq("+i+") > span:first",ind).html(vl).attr(title);
 								} else {
-									$("td:eq("+i+")",ind).html(vl).attr("title",$.jgrid.stripHtml(vl)); 
+									$("td:eq("+i+")",ind).html(vl).attr(title); 
 								}
 								success = true;
 							}
