@@ -10,7 +10,7 @@
 $.jgrid = {
 	defaults : {
 		recordtext: "Enregistrements {0} - {1} sur {2}",
-		emptyrecords: "Aucun enregistrement a afficher",
+		emptyrecords: "Aucun enregistrement à afficher",
 		loadtext: "Chargement...",
 		pgtext : "Page {0} sur {1}"
 	},
@@ -18,10 +18,10 @@ $.jgrid = {
 		caption: "Recherche...",
 		Find: "Chercher",
 		Reset: "Annuler",
-		odata : ['egal', 'diffÃ©rent', 'infÃ©rieur', 'infÃ©rieur ou Ã©gal','supÃ©rieur','supÃ©rieur ou Ã©gal', 'commence par','ne commence pas par','est dans',"n'est pas dans",'fini par','ne fini pas par','contient','ne contient pas'],
-		groupOps: [	{ op: "AND", text: "tous" },	{ op: "OR",  text: "aucun" }	],
+		odata : ['égal', 'différent', 'inférieur', 'inférieur ou égal','supérieur','supérieur ou égal', 'commence par','ne commence pas par','est dans',"n'est pas dans",'fini par','ne fini pas par','contient','ne contient pas'],
+		groupOps: [	{ op: "ET", text: "tous" },	{ op: "OU",  text: "aucun" }	],
 		matchText: " correspondance",
-		rulesText: " rÃ¨gles"
+		rulesText: " règles"
 	},
 	edit : {
 		addCaption: "Ajouter",
@@ -29,49 +29,49 @@ $.jgrid = {
 		bSubmit: "Valider",
 		bCancel: "Annuler",
 		bClose: "Fermer",
-		saveData: "Les donnÃ©es ont changÃ© ! Enregistrer les modifications ?",
+		saveData: "Les données ont changé ! Enregistrer les modifications ?",
 		bYes: "Oui",
 		bNo: "Non",
 		bExit: "Annuler",
 		msg: {
 			required: "Champ obligatoire",
 			number: "Saisissez un nombre correct",
-			minValue: "La valeur doit Ãªtre supÃ©rieure ou Ã©gal Ã  0 ",
-			maxValue: "La valeur doit Ãªtre infÃ©rieure ou Ã©gal Ã  0",
+			minValue: "La valeur doit être supérieure ou égale à 0 ",
+			maxValue: "La valeur doit être inférieure ou égale à 0",
 			email: "n'est pas un email correct",
 			integer: "Saisissez un entier correct",
-			url: "n'est pas une adresse correcte. PrÃ©fixe requis ('http://' or 'https://')",
-			nodefined : " is not defined!",
-			novalue : " return value is required!",
-			customarray : "Custom function should return array!",
-			customfcheck : "Custom function should be present in case of custom checking!"
+			url: "n'est pas une adresse correcte. Préfixe requis ('http://' ou 'https://')",
+			nodefined : " n'est pas défini!",
+			novalue : " une valeur en retour est requise!",
+			customarray : "La fonction personnalisée devrait retourner un array!",
+			customfcheck : "La fonction personnalisée devrait être présente en cas de contrôle personnalisé!"
 		}
 	},
 	view : {
-		caption: "Voir les enregistrement",
+		caption: "Voir les enregistrements",
 		bClose: "Fermer"
 	},
 	del : {
 		caption: "Supprimer",
-		msg: "Supprimer les enregistrements sÃ©lectionnÃ©s ?",
+		msg: "Supprimer les enregistrements sélectionnés ?",
 		bSubmit: "Supprimer",
 		bCancel: "Annuler"
 	},
 	nav : {
 		edittext: " ",
-		edittitle: "Editer la ligne sÃ©lectionnÃ©e",
+		edittitle: "Editer la ligne sélectionnée",
 		addtext:" ",
 		addtitle: "Ajouter une ligne",
 		deltext: " ",
-		deltitle: "Supprimer la ligne sÃ©lectionnÃ©e",
+		deltitle: "Supprimer la ligne sélectionnée",
 		searchtext: " ",
 		searchtitle: "Chercher un enregistrement",
 		refreshtext: "",
 		refreshtitle: "Recharger le tableau",
 		alertcap: "Avertissement",
-		alerttext: "Veuillez sÃ©lectionner une ligne",
+		alerttext: "Veuillez sélectionner une ligne",
 		viewtext: "",
-		viewtitle: "Afficher la ligne sÃ©lectionnÃ©e"
+		viewtitle: "Afficher la ligne sélectionnée"
 	},
 	col : {
 		caption: "Afficher/Masquer les colonnes",
@@ -80,9 +80,9 @@ $.jgrid = {
 	},
 	errors : {
 		errcap : "Erreur",
-		nourl : "Aucune adresse paramÃ©trÃ©e",
-		norecords: "Aucun enregistrement Ã  traiter",
-		model : "Nombre de titres (colNames) <> Nombre de donnÃ©es (colModel)!"
+		nourl : "Aucune adresse paramétrée",
+		norecords: "Aucun enregistrement à traiter",
+		model : "Nombre de titres (colNames) <> Nombre de données (colModel)!"
 	},
 	formatter : {
 		integer : {thousandsSeparator: " ", defaultValue: '0'},
@@ -95,7 +95,7 @@ $.jgrid = {
 			],
 			monthNames: [
 				"Jan", "Fev", "Mar", "Avr", "Mai", "Jui", "Jul", "Aou", "Sep", "Oct", "Nov", "Dec",
-				"Janvier", "FÃ©vrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "AoÃ»t", "Saptembre", "Octobre", "Novembre", "DÃ©cembre"
+				"Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
 			],
 			AmPm : ["am","pm","AM","PM"],
 			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th'},
