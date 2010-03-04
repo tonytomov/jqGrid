@@ -343,7 +343,7 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 							setTimeout(function(){
 								jQuery("option",elem).each(function(i){
 									if(i==0) this.selected = "";
-									if(jQuery.inArray(jQuery.trim(jQuery(this).text()),ovm) > -1 || jQuery.inArray(jQuery.trim(jQuery(this).val(),ovm)) > -1 ) {
+									if(jQuery.inArray(jQuery.trim(jQuery(this).text()),ovm) > -1 || jQuery.inArray(jQuery.trim(jQuery(this).val()),ovm) > -1 ) {
 										this.selected= "selected";
 										if(!msl) return false;
 									}
