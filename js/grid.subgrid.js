@@ -78,7 +78,7 @@ addSubGrid : function(t,pos) {
 			var res,sid,dp, i, j;
 			sid = $(rd).attr("id");
 			dp = {nd_: (new Date().getTime())};
-			dp[ts.p.idName]=sid;
+			dp[ts.p.prmNames['subgridid']]=sid;
 			if(!ts.p.subGridModel[0]) { return false; }
 			if(ts.p.subGridModel[0].params) {
 				for(j=0; j < ts.p.subGridModel[0].params.length; j++) {
