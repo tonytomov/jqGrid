@@ -42,7 +42,7 @@ $.jgrid.extend({
 
                 function applyDefaultFilters(gridDOMobj, filterSettings) {
                     /*
-                     gridDOMobj = jQuery(id of grid element)[0] - in other words pointer to DOM object
+                     gridDOMobj = ointer to grid DOM object ( $(#list)[0] )
                       What we need from gridDOMobj:
                       gridDOMobj.SearchFilter is the pointer to the Search box, once it's created.
                       gridDOMobj.p.postData - dictionary of post settings. These can be overriden at grid creation to
@@ -52,98 +52,28 @@ $.jgrid.extend({
 
                     // Pulling default filter settings out of postData property of grid's properties.:
                     var defaultFilters = gridDOMobj.p.postData[filterSettings['sFilter']];
-                    // example of what we get: {"groupOp":"and","rules":[{"field":"amount","op":"eq","data":"100"}]}
+                    // example of what we might get: {"groupOp":"and","rules":[{"field":"amount","op":"eq","data":"100"}]}
 
                     if (defaultFilters) {
-                        var cleanFilters = [], indexmap = {}, selDOMobj;
-
                         if (defaultFilters['groupOp']) {
-                            indexmap = {};
-                            selDOMobj = gridDOMobj.SearchFilter.$.find("select[name='groupOp']")[0];
-                            for (var i = 0, len = selDOMobj.options.length; i<len; i++) {
-                                indexmap[selDOMobj.options[i].value] = i;
-                            }
-                            selDOMobj.selectedIndex = indexmap[defaultFilters['groupOp']];
+                            gridDOMobj.SearchFilter.setGroupOp(defaultFilters['groupOp']);
                         }
-
                         if (defaultFilters['rules']) {
-                            // we are not trying to counter all issues with filter declaration here. Just the basics to avoid lookup exceptions.
-                            var filter;
-                            for (var i = 0, len = defaultFilters['rules'].length; i < len; i++) {
-                                filter = defaultFilters['rules'][i]
-                                if (filter['field'] && filter['op'] && filter['data']) {
-                                    cleanFilters.push($.extend({},filter))
-                                }
-                            }
-                        }
-
-                        if (cleanFilters) {
-                            // get value-to-position_index maps of 'field' and 'op' columns.
-                            // We will reuse these for all filters with .selectedIndex
-                            var fields = [],
-                                valueindexmap = {};
-                                // example of valueindexmap:
-                                // {'field1':{'index':0,'ops':{'eq':0,'ne':1}},'fieldX':{'index':1,'ops':{'eq':0,'ne':1},'data':{'true':0,'false':1}}},
-                                // if data is undefined it's a INPUT field. If defined, it's SELECT
-                            gridDOMobj.SearchFilter.$.find(".sf:last").each(function(trashvar){
-                                selDOMobj = $(this).find("select[name='field']")[0];
-                                for (var i=0, len=selDOMobj.options.length; i<len; i++) {
-                                    valueindexmap[selDOMobj.options[i].value] = {'index':i,'ops':{}};
-                                    fields.push(selDOMobj.options[i].value);
-                                }
-                                for (var i=0, len=fields.length; i < len; i++) {
-                                    selDOMobj = $(this).find(".ops > select[class='field"+i+"']")[0];
-                                    if (selDOMobj) {
-                                        for (var j=0, len=selDOMobj.options.length; j<len; j++) {
-                                            valueindexmap[fields[i]]['ops'][selDOMobj.options[j].value] = j;
-                                        }                                        
-                                    }
-                                    selDOMobj = $(this).find(".data > select[class='field"+i+"']")[0];
-                                    if (selDOMobj) {
-                                        valueindexmap[fields[i]]['data'] = {};
-                                        for (var j=0, len=selDOMobj.options.length; j<len; j++) {
-                                            valueindexmap[fields[i]]['data'][selDOMobj.options[j].value] = j;
-                                        }                                        
-                                    }
-                                }
-                            });
-
-                            // now we add as many new blank filter lines as we need and populate each.
-                            var l = cleanFilters.length, filternum,
-                                fieldvalue, fieldindex, opindex, datavalue, dataindex, o;
-                            for (filternum=0; filternum < l; filternum++) {
-                                // a. Making sure our filter value is compatible with values in the form.
-                                fieldvalue = cleanFilters[filternum]['field'];
-                                fieldindex = valueindexmap[fieldvalue]['index'];
-                                if (fieldindex != undefined) {
-                                    opindex = valueindexmap[fieldvalue]['ops'][cleanFilters[filternum]['op']];
-                                    datavalue = cleanFilters[filternum]['data'];
-                                    if (valueindexmap[fieldvalue]['data'] == undefined) {
-                                        dataindex = -1; // 'data' is not SELECT, Making the var 'defined'
-                                    } else {
-                                        dataindex = valueindexmap[fieldvalue]['data'][datavalue]; // 'undefined' may come from here.
-                                    }
-                                }
-
-                                // only if values for 'field' and 'op' and 'data' are 'found' in mapping...
-                                if (fieldindex != undefined && opindex != undefined && dataindex != undefined) {
-                                    o = gridDOMobj.SearchFilter.$.find(".sf:last");
-                                    o.find("select[name='field']")[0].selectedIndex = fieldindex;
-                                    o.find("select[name='field']").change();
-                                    o.find("select[name='op']")[0].selectedIndex = opindex;
-                                    o.find("input.vdata").val(datavalue); // if jquery does not find any INPUT, it does not set any. This means we deal with SELECT
-                                    o = o.find("select.vdata")[0];
-                                    if (o) {
-                                        o.selectedIndex = dataindex;
-                                    }
-
-                                    // adding one blank filter line at the end.
+                            var f;
+                            for (var i = 0, li = defaultFilters['rules'].length; i < li; i++) {
+                                f = defaultFilters['rules'][i]
+                                // we are not trying to counter all issues with filter declaration here. Just the basics to avoid lookup exceptions.
+                                if (f['field'] != undefined && f['op'] != undefined && f['data'] != undefined) {
+                                    gridDOMobj.SearchFilter.setFilter({
+                                        'sfref':gridDOMobj.SearchFilter.$.find(".sf:last"),
+                                        'filter':$.extend({},f)
+                                    })
                                     gridDOMobj.SearchFilter.add();
                                 }
-                            } // end of for (cleanFilters) loop
-                        } // end of if(cleanFilters)
-                    } // end of if(defaultFilters)
-                }
+                            }
+                        }
+                    }
+                } // end of applyDefaultFilters
 
 				var fid = "fbox_"+$t.p.id;
 				if(p.recreateFilter===true) {$("#"+fid).remove();}
