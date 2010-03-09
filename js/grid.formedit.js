@@ -18,6 +18,7 @@ $.jgrid.extend({
 			sOper: 'searchOper',
 			sFilter: 'filters',
             loadDefaults: false, // this options activates loading of default filters from grid's postData for Multipe Search only.
+            loadDefaultsSource:'postData',
 			beforeShowSearch: null,
 			afterShowSearch : null,
 			onInitializeSearch: null,
@@ -30,6 +31,7 @@ $.jgrid.extend({
 			// if you want to change or remove the order change it in sopt
 			// ['bw','eq','ne','lt','le','gt','ge','ew','cn']
 			sopt: null,
+            stringResult: false,
 			onClose : null
 			// these are common options
 		}, $.jgrid.search, p || {});
@@ -65,7 +67,7 @@ $.jgrid.extend({
                         }
 
                         if (defaultFilters['rules']) {
-                            // we are not trying to counter all issues with filter declaration here. Just the basics to avoid exceptions.
+                            // we are not trying to counter all issues with filter declaration here. Just the basics to avoid lookup exceptions.
                             var filter;
                             for (var i = 0, len = defaultFilters['rules'].length; i < len; i++) {
                                 filter = defaultFilters['rules'][i]
@@ -78,41 +80,67 @@ $.jgrid.extend({
                         if (cleanFilters) {
                             // get value-to-position_index maps of 'field' and 'op' columns.
                             // We will reuse these for all filters with .selectedIndex
-                            var valueindexmap = {}; // example: {'field':{'invid':0,'amount':1,'note':2},'op':{'eq':0,'ne':1}}
-                            // sorry, but I don't know any other way to match desired selected value to an index in a select HTML element.
-                            gridDOMobj.SearchFilter.$.find(".sf:first").each(function(trashvar){
-                                var itemlist = ["field","op"], itemnum;
-                                for (itemnum in itemlist) { // absolutely hate how "for in" loop behaves in JS. Miss Python.
-                                    valueindexmap[itemlist[itemnum]] = {};
-                                    selDOMobj = $(this).find("select[name='"+itemlist[itemnum]+"']")[0];
-                                    for (var i=0, len=selDOMobj.options.length; i<len; i++) {
-                                        valueindexmap[itemlist[itemnum]][selDOMobj.options[i].value] = i;
+                            var fields = [],
+                                valueindexmap = {};
+                                // example of valueindexmap:
+                                // {'field1':{'index':0,'ops':{'eq':0,'ne':1}},'fieldX':{'index':1,'ops':{'eq':0,'ne':1},'data':{'true':0,'false':1}}},
+                                // if data is undefined it's a INPUT field. If defined, it's SELECT
+                            gridDOMobj.SearchFilter.$.find(".sf:last").each(function(trashvar){
+                                selDOMobj = $(this).find("select[name='field']")[0];
+                                for (var i=0, len=selDOMobj.options.length; i<len; i++) {
+                                    valueindexmap[selDOMobj.options[i].value] = {'index':i,'ops':{}};
+                                    fields.push(selDOMobj.options[i].value);
+                                }
+                                for (var i=0, len=fields.length; i < len; i++) {
+                                    selDOMobj = $(this).find(".ops > select[class='field"+i+"']")[0];
+                                    if (selDOMobj) {
+                                        for (var j=0, len=selDOMobj.options.length; j<len; j++) {
+                                            valueindexmap[fields[i]]['ops'][selDOMobj.options[j].value] = j;
+                                        }                                        
+                                    }
+                                    selDOMobj = $(this).find(".data > select[class='field"+i+"']")[0];
+                                    if (selDOMobj) {
+                                        valueindexmap[fields[i]]['data'] = {};
+                                        for (var j=0, len=selDOMobj.options.length; j<len; j++) {
+                                            valueindexmap[fields[i]]['data'][selDOMobj.options[j].value] = j;
+                                        }                                        
                                     }
                                 }
                             });
 
                             // now we add as many new blank filter lines as we need and populate each.
-                            var fieldnum, opnum, o, tmp1, tmp2, tmp3, tmp4;
-                            for (var filternum = 0, len = cleanFilters.length; filternum < len; filternum++) {
+                            var l = cleanFilters.length, filternum,
+                                fieldvalue, fieldindex, opindex, datavalue, dataindex, o;
+                            for (filternum=0; filternum < l; filternum++) {
                                 // a. Making sure our filter value is compatible with values in the form.
-                                fieldnum = valueindexmap['field'][cleanFilters[filternum]['field']];
-                                opnum = valueindexmap['op'][cleanFilters[filternum]['op']];
-
-                                // only if values for both 'field' and 'op' are found in mapping...
-                                if (fieldnum !== undefined && opnum !== undefined) {
-                                    // 'field'
-                                    o = gridDOMobj.SearchFilter.$.find(".sf:last");
-                                    o.find("select[name='field']")[0].selectedIndex = fieldnum;
-                                    o.find("select[name='op']")[0].selectedIndex = opnum;
-                                    o.find("input.vdata").val(cleanFilters[filternum]['data']);
-
-                                    // adding one blank filter at the end.
-                                    gridDOMobj.SearchFilter.add();
-
-                                    // ToDO: support textarea and select as well for data. i.e.:
-                                    // .find("select.vdata").val('zxcv');
+                                fieldvalue = cleanFilters[filternum]['field'];
+                                fieldindex = valueindexmap[fieldvalue]['index'];
+                                if (fieldindex != undefined) {
+                                    opindex = valueindexmap[fieldvalue]['ops'][cleanFilters[filternum]['op']];
+                                    datavalue = cleanFilters[filternum]['data'];
+                                    if (valueindexmap[fieldvalue]['data'] == undefined) {
+                                        dataindex = -1; // 'data' is not SELECT, Making the var 'defined'
+                                    } else {
+                                        dataindex = valueindexmap[fieldvalue]['data'][datavalue]; // 'undefined' may come from here.
+                                    }
                                 }
-                            }
+
+                                // only if values for 'field' and 'op' and 'data' are 'found' in mapping...
+                                if (fieldindex != undefined && opindex != undefined && dataindex != undefined) {
+                                    o = gridDOMobj.SearchFilter.$.find(".sf:last");
+                                    o.find("select[name='field']")[0].selectedIndex = fieldindex;
+                                    o.find("select[name='field']").change();
+                                    o.find("select[name='op']")[0].selectedIndex = opindex;
+                                    o.find("input.vdata").val(datavalue); // if jquery does not find any INPUT, it does not set any. This means we deal with SELECT
+                                    o = o.find("select.vdata")[0];
+                                    if (o) {
+                                        o.selectedIndex = dataindex;
+                                    }
+
+                                    // adding one blank filter line at the end.
+                                    gridDOMobj.SearchFilter.add();
+                                }
+                            } // end of for (cleanFilters) loop
                         } // end of if(cleanFilters)
                     } // end of if(defaultFilters)
                 }
@@ -191,7 +219,7 @@ $.jgrid.extend({
 					if(fields.length>0){
 						$("<div id='"+fid+"' role='dialog' tabindex='-1'></div>").insertBefore("#gview_"+$t.p.id);
                         // we really need to preserve the return value somewhere. Otherwise we loose easy access to .add() and other good methods.
-						$t.SearchFilter = $("#"+fid).searchFilter(fields, { groupOps: p.groupOps, operators: oprtr, onClose:hideFilter, resetText: p.Reset, searchText: p.Find, windowTitle: p.caption,  rulesText:p.rulesText, matchText:p.matchText, onSearch: searchFilters, onReset: resetFilters,stringResult:p.multipleSearch, ajaxSelectOptions: $.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions ||{}), clone: p.cloneSearchRowOnAdd });
+						$t.SearchFilter = $("#"+fid).searchFilter(fields, { groupOps: p.groupOps, operators: oprtr, onClose:hideFilter, resetText: p.Reset, searchText: p.Find, windowTitle: p.caption,  rulesText:p.rulesText, matchText:p.matchText, onSearch: searchFilters, onReset: resetFilters,stringResult:p.stringResult, ajaxSelectOptions: $.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions ||{}), clone: p.cloneSearchRowOnAdd });
 						$(".ui-widget-overlay","#"+fid).remove();
 						if($t.p.direction=="rtl") $(".ui-closer","#"+fid).css("float","left");
 						if (p.drag===true) {
@@ -208,7 +236,7 @@ $.jgrid.extend({
 							$(".ui-del, .ui-add, .ui-del, .ui-add-last, .matchText, .rulesText", "#"+fid).hide();
 							$("select[name='groupOp']","#"+fid).hide();
 						}
-                        if (p.multipleSearch === true && p.loadDefaults === true ) {
+                        if (p.multipleSearch === true && p.loadDefaults === true && p.loadDefaultsSource == 'postData') {
                             applyDefaultFilters($t, p);
                         }
 						if ( $.isFunction(p.onInitializeSearch) ) { p.onInitializeSearch( $("#"+fid) ); };
