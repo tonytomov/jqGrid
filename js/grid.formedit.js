@@ -29,6 +29,7 @@ $.jgrid.extend({
 			// if you want to change or remove the order change it in sopt
 			// ['bw','eq','ne','lt','le','gt','ge','ew','cn']
 			sopt: null,
+			stringResult:false,
 			onClose : null
 			// these are common options
 		}, $.jgrid.search, p || {});
@@ -109,7 +110,7 @@ $.jgrid.extend({
 					});
 					if(fields.length>0){
 						$("<div id='"+fid+"' role='dialog' tabindex='-1'></div>").insertBefore("#gview_"+$t.p.id);
-						$("#"+fid).searchFilter(fields, { groupOps: p.groupOps, operators: oprtr, onClose:hideFilter, resetText: p.Reset, searchText: p.Find, windowTitle: p.caption,  rulesText:p.rulesText, matchText:p.matchText, onSearch: searchFilters, onReset: resetFilters,stringResult:p.multipleSearch, ajaxSelectOptions: $.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions ||{}), clone: p.cloneSearchRowOnAdd });
+						$("#"+fid).searchFilter(fields, { groupOps: p.groupOps, operators: oprtr, onClose:hideFilter, resetText: p.Reset, searchText: p.Find, windowTitle: p.caption,  rulesText:p.rulesText, matchText:p.matchText, onSearch: searchFilters, onReset: resetFilters,stringResult:p.stringResult, ajaxSelectOptions: $.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions ||{}), clone: p.cloneSearchRowOnAdd });
 						$(".ui-widget-overlay","#"+fid).remove();
 						if($t.p.direction=="rtl") $(".ui-closer","#"+fid).css("float","left");
 						if (p.drag===true) {
