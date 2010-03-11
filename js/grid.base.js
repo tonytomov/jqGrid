@@ -1876,15 +1876,15 @@ $.jgrid.extend({
 					}
 				}
 				cn = t.p.altclass;
-				var k = 0;
-				var air = $.isFunction(t.p.afterInsertRow) ? true : false;
+				var k = 0, cna ="",
+				air = $.isFunction(t.p.afterInsertRow) ? true : false;
 				while(k < datalen) {
 					data = rdata[k];
 					row="";
 					if(aradd) {
 						try {rowid = data[cnm];}
 						catch (e) {rowid = t.p.records+1;}
-						var cna = t.p.altRows === true ?  (t.rows.length-1)%2 == 0 ? cn : "" : "";
+						cna = t.p.altRows === true ?  (t.rows.length-1)%2 == 0 ? cn : "" : "";
 					}
 					if(ni){
 						prp = t.formatCol(ni,1,'');
