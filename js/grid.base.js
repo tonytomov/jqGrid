@@ -185,7 +185,7 @@ $.fn.jqGrid = function( pin ) {
 			toppager: false,
 			headertitles: false
 		}, $.jgrid.defaults, pin || {});
-		var grid={         
+		var grid={
 			headers:[],
 			cols:[],
 			footers: [],
@@ -983,10 +983,12 @@ $.fn.jqGrid = function( pin ) {
 			pgl="<table cellspacing='0' cellpadding='0' border='0' style='table-layout:auto;' class='ui-pg-table'><tbody><tr>",
 			str="", pgcnt, lft, cent, rgt, twd, tdw, i,
 			clearVals = function(onpaging){
+				var ret;
+				if ($.isFunction(ts.p.onPaging) ) ret = ts.p.onPaging.call(ts,onpaging);
 				ts.p.selrow = null;
 				if(ts.p.multiselect) {ts.p.selarrrow =[];$('#cb_'+$.jgrid.jqID(ts.p.id),ts.grid.hDiv).attr("checked",false);}
 				ts.p.savedRow = [];
-				if ($.isFunction(ts.p.onPaging) ) {if(ts.p.onPaging.call(ts,onpaging)=='stop') return false;}
+				if(ret=='stop') {return false;}
 				return true;
 			};
 			//pgid= $(ts.p.pager).attr("id") || 'pager',
@@ -1723,12 +1725,12 @@ $.jgrid.extend({
 				var ch = $($t.grid.bDiv)[0].clientHeight,
 				st = $($t.grid.bDiv)[0].scrollTop,
 				nROT = $t.rows[iR].offsetTop+$t.rows[iR].clientHeight,
-				pROT = $t.rows[iR].offsetTop;
+				pROT = $t.rows[iR].offsetTop-$t.rows[iR].clientHeight;
 				if(tp == 'd') {
-					if(nROT >= ch) { $($t.grid.bDiv)[0].scrollTop = st + nROT-pROT; }
+					if(pROT+22 > ch) { $($t.grid.bDiv)[0].scrollTop = nROT-22; }
 				}
 				if(tp == 'u'){
-					if (pROT < st) { $($t.grid.bDiv)[0].scrollTop = st - nROT+pROT; }
+					if (pROT < st) { $($t.grid.bDiv)[0].scrollTop = nROT-22; }
 				}
 			}
 		});
