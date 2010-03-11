@@ -38,14 +38,14 @@ function jqGridInclude()
 			}
 		}
     }
-    function IncludeJavaScript(jsFile)
+	function IncludeJavaScript(jsFile)
     {
         var oHead = document.getElementsByTagName('head')[0];
         var oScript = document.createElement('script');
-        oScript.type = 'text/javascript';
-        oScript.charset = 'utf-8';
-        oScript.src = jsFile;
-        oHead.appendChild(oScript);        
-    };
-};
+        oScript.setAttribute('type', 'text/javascript');
+        oScript.setAttribute('language', 'javascript');
+        oScript.setAttribute('src', jsFile);
+        oHead.appendChild(oScript);
+    }
+}
 jqGridInclude();
