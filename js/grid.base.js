@@ -1700,20 +1700,15 @@ $.jgrid.extend({
 	},
 	setSelection : function(selection,onsr) {
 		return this.each(function(){
-			var $t = this, stat,pt, olr, ner, ia, tpsr;
+			var $t = this, stat,pt, ner, ia, tpsr;
 			if(selection === undefined) return;
 			onsr = onsr === false ? false : true;
 			pt=$t.rows.namedItem(selection+"");
 			if(!pt) return;
-			if($t.p.selrow && $t.p.scrollrows===true) {
-				olr = $t.rows.namedItem($t.p.selrow).rowIndex;
+			if($t.p.scrollrows===true) {
 				ner = $t.rows.namedItem(selection).rowIndex;
 				if(ner >=0 ){
-					if(ner > olr ) {
-						scrGrid(ner,'d');
-					} else {
-						scrGrid(ner,'u');
-					}
+					scrGrid(ner);
 				}
 			}
 			if(!$t.p.multiselect) {
@@ -1742,16 +1737,16 @@ $.jgrid.extend({
 					$t.p.selrow = (tpsr === undefined) ? null : tpsr;
 				}
 			}
-			function scrGrid(iR,tp){
+			function scrGrid(iR){
 				var ch = $($t.grid.bDiv)[0].clientHeight,
 				st = $($t.grid.bDiv)[0].scrollTop,
-				nROT = $t.rows[iR].offsetTop+$t.rows[iR].clientHeight,
-				pROT = $t.rows[iR].offsetTop-$t.rows[iR].clientHeight;
-				if(tp == 'd') {
-					if(pROT+22 > ch) { $($t.grid.bDiv)[0].scrollTop = nROT-22; }
-				}
-				if(tp == 'u'){
-					if (pROT < st) { $($t.grid.bDiv)[0].scrollTop = nROT-22; }
+				rpos = $t.rows[iR].offsetTop,
+				rh = $t.rows[iR].clientHeight;
+				if(rpos+rh >= ch+st) { $($t.grid.bDiv)[0].scrollTop = rpos-(ch+st)+rh+st; }
+				else if(rpos < ch+st) {
+					if(rpos < st) {
+						$($t.grid.bDiv)[0].scrollTop = rpos;
+					}
 				}
 			}
 		});
