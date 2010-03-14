@@ -6,7 +6,7 @@
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
-**/ 
+**/
 var rp_ge = null;
 $.jgrid.extend({
 	searchGrid : function (p) {
@@ -17,6 +17,8 @@ $.jgrid.extend({
 			sValue:'searchString',
 			sOper: 'searchOper',
 			sFilter: 'filters',
+            loadDefaults: false, // this options activates loading of default filters from grid's postData for Multipe Search only.
+            loadDefaultsSource:'postData',
 			beforeShowSearch: null,
 			afterShowSearch : null,
 			onInitializeSearch: null,
@@ -29,6 +31,7 @@ $.jgrid.extend({
 			// if you want to change or remove the order change it in sopt
 			// ['bw','eq','ne','lt','le','gt','ge','ew','cn']
 			sopt: null,
+			stringResult:true,
 			onClose : null
 			// these are common options
 		}, $.jgrid.search, p || {});
@@ -36,6 +39,42 @@ $.jgrid.extend({
 			var $t = this;
 			if(!$t.grid) {return;}
 			if($.fn.searchFilter) {
+
+                function applyDefaultFilters(gridDOMobj, filterSettings) {
+                    /*
+                     gridDOMobj = ointer to grid DOM object ( $(#list)[0] )
+                      What we need from gridDOMobj:
+                      gridDOMobj.SearchFilter is the pointer to the Search box, once it's created.
+                      gridDOMobj.p.postData - dictionary of post settings. These can be overriden at grid creation to
+                         contain default filter settings. We will parse these and will populate the search with defaults.
+                     filterSettings - same settings object you (would) pass to $().jqGrid('searchGrid', filterSettings);
+                    */
+
+                    // Pulling default filter settings out of postData property of grid's properties.:
+                    var defaultFilters = gridDOMobj.p.postData[filterSettings['sFilter']];
+                    // example of what we might get: {"groupOp":"and","rules":[{"field":"amount","op":"eq","data":"100"}]}
+
+                    if (defaultFilters) {
+                        if (defaultFilters['groupOp']) {
+                            gridDOMobj.SearchFilter.setGroupOp(defaultFilters['groupOp']);
+                        }
+                        if (defaultFilters['rules']) {
+                            var f;
+                            for (var i = 0, li = defaultFilters['rules'].length; i < li; i++) {
+                                f = defaultFilters['rules'][i]
+                                // we are not trying to counter all issues with filter declaration here. Just the basics to avoid lookup exceptions.
+                                if (f['field'] != undefined && f['op'] != undefined && f['data'] != undefined) {
+                                    gridDOMobj.SearchFilter.setFilter({
+                                        'sfref':gridDOMobj.SearchFilter.$.find(".sf:last"),
+                                        'filter':$.extend({},f)
+                                    })
+                                    gridDOMobj.SearchFilter.add();
+                                }
+                            }
+                        }
+                    }
+                } // end of applyDefaultFilters
+
 				var fid = "fbox_"+$t.p.id;
 				if(p.recreateFilter===true) {$("#"+fid).remove();}
 				if( $("#"+fid).html() != null ) {
@@ -109,7 +148,8 @@ $.jgrid.extend({
 					});
 					if(fields.length>0){
 						$("<div id='"+fid+"' role='dialog' tabindex='-1'></div>").insertBefore("#gview_"+$t.p.id);
-						$("#"+fid).searchFilter(fields, { groupOps: p.groupOps, operators: oprtr, onClose:hideFilter, resetText: p.Reset, searchText: p.Find, windowTitle: p.caption,  rulesText:p.rulesText, matchText:p.matchText, onSearch: searchFilters, onReset: resetFilters,stringResult:p.multipleSearch, ajaxSelectOptions: $.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions ||{}), clone: p.cloneSearchRowOnAdd });
+                        // we really need to preserve the return value somewhere. Otherwise we loose easy access to .add() and other good methods.
+						$t.SearchFilter = $("#"+fid).searchFilter(fields, { groupOps: p.groupOps, operators: oprtr, onClose:hideFilter, resetText: p.Reset, searchText: p.Find, windowTitle: p.caption,  rulesText:p.rulesText, matchText:p.matchText, onSearch: searchFilters, onReset: resetFilters,stringResult:p.stringResult, ajaxSelectOptions: $.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions ||{}), clone: p.cloneSearchRowOnAdd });
 						$(".ui-widget-overlay","#"+fid).remove();
 						if($t.p.direction=="rtl") $(".ui-closer","#"+fid).css("float","left");
 						if (p.drag===true) {
@@ -126,6 +166,9 @@ $.jgrid.extend({
 							$(".ui-del, .ui-add, .ui-del, .ui-add-last, .matchText, .rulesText", "#"+fid).hide();
 							$("select[name='groupOp']","#"+fid).hide();
 						}
+                        if (p.multipleSearch === true && p.loadDefaults === true && p.loadDefaultsSource == 'postData') {
+                            applyDefaultFilters($t, p);
+                        }
 						if ( $.isFunction(p.onInitializeSearch) ) { p.onInitializeSearch( $("#"+fid) ); };
 						if ( $.isFunction(p.beforeShowSearch) ) { p.beforeShowSearch($("#"+fid)); };
 						showFilter();
