@@ -18,7 +18,6 @@ $.jgrid.extend({
 			sOper: 'searchOper',
 			sFilter: 'filters',
             loadDefaults: false, // this options activates loading of default filters from grid's postData for Multipe Search only.
-            loadDefaultsSource:'postData',
 			beforeShowSearch: null,
 			afterShowSearch : null,
 			onInitializeSearch: null,
@@ -166,7 +165,7 @@ $.jgrid.extend({
 							$(".ui-del, .ui-add, .ui-del, .ui-add-last, .matchText, .rulesText", "#"+fid).hide();
 							$("select[name='groupOp']","#"+fid).hide();
 						}
-                        if (p.multipleSearch === true && p.loadDefaults === true && p.loadDefaultsSource == 'postData') {
+                        if (p.multipleSearch === true && p.loadDefaults === true) {
                             applyDefaultFilters($t, p);
                         }
 						if ( $.isFunction(p.onInitializeSearch) ) { p.onInitializeSearch( $("#"+fid) ); };
