@@ -183,7 +183,8 @@ $.fn.jqGrid = function( pin ) {
 			ajaxGridOptions :{},
 			direction : "ltr",
 			toppager: false,
-			headertitles: false
+			headertitles: false,
+			scrollTimeout: 200
 		}, $.jgrid.defaults, pin || {});
 		var grid={
 			headers:[],
@@ -292,7 +293,7 @@ $.fn.jqGrid = function( pin ) {
 						return;
 					}
 					if (grid.hDiv.loading) {
-						grid.timer = setTimeout(grid.populateVisible, 200);
+						grid.timer = setTimeout(grid.populateVisible, p.scrollTimeout);
 					} else {
 						p.page = page;
 						if (empty) {
