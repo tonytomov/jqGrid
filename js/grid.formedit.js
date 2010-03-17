@@ -30,7 +30,14 @@ $.jgrid.extend({
 			// if you want to change or remove the order change it in sopt
 			// ['bw','eq','ne','lt','le','gt','ge','ew','cn']
 			sopt: null,
-			stringResult:true,
+			// Note: stringResult is intentionally declared "undefined by default".
+			//  you are velcome to define stringResult expressly in the options you pass to searchGrid()
+			//  stringResult is a "safeguard" measure to insure we post sensible data when communicated as form-encoded
+			//  see http://github.com/tonytomov/jqGrid/issues/#issue/36
+			//
+			//  If this value is not expressly defined in the incoming options,
+			// lower in the code we will infer the value based on value of multipleSearch
+			stringResult: undefined,
 			onClose : null
 			// these are common options
 		}, $.jgrid.search, p || {});
@@ -148,9 +155,15 @@ $.jgrid.extend({
 						}
 					});
 					if(fields.length>0){
-						if(p.multipleSearch === false) { p.stringResult = false; }
 						$("<div id='"+fid+"' role='dialog' tabindex='-1'></div>").insertBefore("#gview_"+$t.p.id);
-                        // we really need to preserve the return value somewhere. Otherwise we loose easy access to .add() and other good methods.
+						// Before we create searchFilter we need to decide if we want to get back a string or a JS object.
+						//  see http://github.com/tonytomov/jqGrid/issues/#issue/36 for background on the issue.
+						// If p.stringResult is defined, it was explisitly passed to us by user. Honor the choice, whatever it is.
+						if (p['stringResult']===undefined) {
+							// to provide backward compatibility, inferring stringResult value from multipleSearch
+							p['stringResult'] = p['multipleSearch']
+						}
+						// we preserve the return value here to retain access to .add() and other good methods of search form.
 						$t.SearchFilter = $("#"+fid).searchFilter(fields, { groupOps: p.groupOps, operators: oprtr, onClose:hideFilter, resetText: p.Reset, searchText: p.Find, windowTitle: p.caption,  rulesText:p.rulesText, matchText:p.matchText, onSearch: searchFilters, onReset: resetFilters,stringResult:p.stringResult, ajaxSelectOptions: $.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions ||{}), clone: p.cloneSearchRowOnAdd });
 						$(".ui-widget-overlay","#"+fid).remove();
 						if($t.p.direction=="rtl") { $(".ui-closer","#"+fid).css("float","left"); }
