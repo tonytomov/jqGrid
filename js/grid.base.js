@@ -2205,7 +2205,7 @@ $.jgrid.extend({
 			}
 		});
 	},
-	setCell : function(rowid,colname,nData,cssp,attrp) {
+	setCell : function(rowid,colname,nData,cssp,attrp, forceupd) {
 		return this.each(function(){
 			var $t = this, pos =-1,v, title;
 			if(!$t.grid) {return;}
@@ -2220,7 +2220,7 @@ $.jgrid.extend({
 				var ind = $t.rows.namedItem(rowid);
 				if (ind){
 					var tcell = $("td:eq("+pos+")",ind);
-					if(nData !== "") {
+					if(nData !== "" || forceupd === true) {
 						v = $t.formatter(rowid, nData, pos,ind,'edit');
 						title = $t.p.colModel[pos].title ? {"title":$.jgrid.stripHtml(v)} : {};
 						if($t.p.treeGrid && $(".tree-wrap",$(tcell)).length>0)
@@ -2229,8 +2229,7 @@ $.jgrid.extend({
 							$(tcell).html(v).attr(title);
 					}
 					if(typeof cssp === 'string'){
-						if(cssp) {$(tcell).addClass(cssp);}
-						else {$(tcell).removeClass();}
+						$(tcell).addClass(cssp);
 					} else if(cssp) {
 						$(tcell).css(cssp);
 					}
