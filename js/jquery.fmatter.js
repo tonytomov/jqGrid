@@ -95,7 +95,7 @@
 				while (value.length < length) value = '0' + value;
 				return value;
 			},
-		    ts = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0},
+		    ts = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0, u:0},
 		    timestamp=0, dM, k,hl,
 		    dateFormat=["i18n"];
 			// Internationalization strings
@@ -122,7 +122,7 @@
 		    var ty = ts.y;
 		    if (ty >= 70 && ty <= 99) ts.y = 1900+ts.y;
 		    else if (ty >=0 && ty <=69) ts.y= 2000+ts.y;
-		    timestamp = new Date(ts.y, ts.m, ts.d, ts.h, ts.i, ts.s,0);
+		    timestamp = new Date(ts.y, ts.m, ts.d, ts.h, ts.i, ts.s, ts.u);
 			if( newformat in opts.masks )  {
 				newformat = opts.masks[newformat];
 			} else if ( !newformat ) {
