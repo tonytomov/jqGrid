@@ -619,7 +619,7 @@ $.fn.jqGrid = function( pin ) {
 			var afterInsRow = $.isFunction(ts.p.afterInsertRow);
 			while (i<len) {
 				cur = drows[i];
-				idr = cur[idn];
+				idr = getAccessor(cur,idn);
 				if(idr === undefined) {
 					idr = br+i;
 					if(f.length===0){
