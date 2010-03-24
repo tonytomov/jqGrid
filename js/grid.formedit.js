@@ -1363,67 +1363,67 @@ $.jgrid.extend({
 						$("#DelError","#"+dtbl).show();
 					}
 					if(ret[0] && !rp_ge.processing) {
-							rp_ge.processing = true;
-							$(this).addClass('ui-state-active');
-							opers = $t.p.prmNames;
-							postd = $.extend({},rp_ge.delData, onCS);
-							oper = opers.oper;
-							postd[oper] = opers.deloper;
-							idname = opers.id;
-							postd[idname] = postdata;
-							$.ajax( $.extend({
-								url:gurl,
-								type: p.mtype,
-								data: $.isFunction(p.serializeDelData) ? p.serializeDelData(postd) : postd,
-								complete:function(data,Status){
-									if(Status != "success") {
-										ret[0] = false;
-										if ($.isFunction(rp_ge.errorTextFormat)) {
-											ret[1] = rp_ge.errorTextFormat(data);
-										} else {
-											ret[1] = Status + " Status: '" + data.statusText + "'. Error code: " + data.status;
-										}
+						rp_ge.processing = true;
+						$(this).addClass('ui-state-active');
+						opers = $t.p.prmNames;
+						postd = $.extend({},rp_ge.delData, onCS);
+						oper = opers.oper;
+						postd[oper] = opers.deloper;
+						idname = opers.id;
+						postd[idname] = postdata;
+						$.ajax( $.extend({
+							url:gurl,
+							type: p.mtype,
+							data: $.isFunction(p.serializeDelData) ? p.serializeDelData(postd) : postd,
+							complete:function(data,Status){
+								if(Status != "success") {
+									ret[0] = false;
+									if ($.isFunction(rp_ge.errorTextFormat)) {
+										ret[1] = rp_ge.errorTextFormat(data);
 									} else {
-										// data is posted successful
-										// execute aftersubmit with the returned data from server
-										if( typeof rp_ge.afterSubmit === 'function' ) {
-											ret = rp_ge.afterSubmit(data,postd);
-										}
+										ret[1] = Status + " Status: '" + data.statusText + "'. Error code: " + data.status;
 									}
-									if(ret[0] === false) {
-										$("#DelError>td","#"+dtbl).html(ret[1]);
-										$("#DelError","#"+dtbl).show();
-									} else {
-										if(rp_ge.reloadAfterSubmit) {
-											$($t).trigger("reloadGrid");
-										} else {
-											var toarr = [];
-											toarr = postdata.split(",");
-											if($t.p.treeGrid===true){
-												try {$($t).jqGrid("delTreeNode",toarr[0]);} catch(e){}
-											} else {
-												for(var i=0;i<toarr.length;i++) {
-													$($t).jqGrid("delRowData",toarr[i]);
-												}
-											}
-											$t.p.selrow = null;
-											$t.p.selarrrow = [];
-										}
-										if($.isFunction(rp_ge.afterComplete)) {
-											setTimeout(function(){rp_ge.afterComplete(data,postdata);},500);
-										}
+								} else {
+									// data is posted successful
+									// execute aftersubmit with the returned data from server
+									if( typeof rp_ge.afterSubmit === 'function' ) {
+										ret = rp_ge.afterSubmit(data,postd);
 									}
-									rp_ge.processing=false;
-									$("#dData", "#"+dtbl+"_2").removeClass('ui-state-active');
-									if(ret[0]) { hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: rp_ge.onClose}); }
-								},
-								error:function(xhr,st,err){
-									$("#DelError>td","#"+dtbl).html(st+ " : "+err);
-									$("#DelError","#"+dtbl).show();
-									rp_ge.processing=false;
-									$("#dData", "#"+dtbl+"_2").removeClass('ui-state-active');
 								}
-							}, $.jgrid.ajaxOptions, p.ajaxDelOptions));
+								if(ret[0] === false) {
+									$("#DelError>td","#"+dtbl).html(ret[1]);
+									$("#DelError","#"+dtbl).show();
+								} else {
+									if(rp_ge.reloadAfterSubmit) {
+										$($t).trigger("reloadGrid");
+									} else {
+										var toarr = [];
+										toarr = postdata.split(",");
+										if($t.p.treeGrid===true){
+												try {$($t).jqGrid("delTreeNode",toarr[0]);} catch(e){}
+										} else {
+											for(var i=0;i<toarr.length;i++) {
+												$($t).jqGrid("delRowData",toarr[i]);
+											}
+										}
+										$t.p.selrow = null;
+										$t.p.selarrrow = [];
+									}
+									if($.isFunction(rp_ge.afterComplete)) {
+										setTimeout(function(){rp_ge.afterComplete(data,postdata);},500);
+									}
+								}
+								rp_ge.processing=false;
+								$("#dData", "#"+dtbl+"_2").removeClass('ui-state-active');
+								if(ret[0]) { hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: rp_ge.onClose}); }
+							},
+							error:function(xhr,st,err){
+								$("#DelError>td","#"+dtbl).html(st+ " : "+err);
+								$("#DelError","#"+dtbl).show();
+								rp_ge.processing=false;
+									$("#dData", "#"+dtbl+"_2").removeClass('ui-state-active');
+							}
+						}, $.jgrid.ajaxOptions, p.ajaxDelOptions));
 					}
 					return false;
 				});
