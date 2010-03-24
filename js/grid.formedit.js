@@ -861,12 +861,7 @@ $.jgrid.extend({
 					if( $.isFunction( rp_ge.onclickSubmit)) { onCS = rp_ge.onclickSubmit(rp_ge,postdata) || {}; }
 					if( $.isFunction(rp_ge.beforeSubmit))  { ret = rp_ge.beforeSubmit(postdata,$("#"+frmgr)); }
 				}
-				gurl = rp_ge.url ? rp_ge.url : $($t).jqGrid('getGridParam','editurl');
-				if(ret[0] === false) {
-					$("#FormError>td","#"+frmtb).html(ret[1]);
-					$("#FormError","#"+frmtb).show();
-					return;
-				}
+
 				if(ret[0] && !rp_ge.processing) {
 					rp_ge.processing = true;
 					$("#sData", "#"+frmtb+"_2").addClass('ui-state-active');
@@ -882,8 +877,9 @@ $.jgrid.extend({
 					}
 					delete postdata[$t.p.id+"_id"];
 					postdata = $.extend(postdata,rp_ge.editData,onCS);
-					$.ajax( $.extend({
-						url:gurl,
+
+					var ajaxOptions = $.extend({
+						url: rp_ge.url ? rp_ge.url : $($t).jqGrid('getGridParam','editurl'),
 						type: rp_ge.mtype,
 						data: $.isFunction(rp_ge.serializeEditData) ? rp_ge.serializeEditData(postdata) :  postdata,
 						complete:function(data,Status){
@@ -978,9 +974,16 @@ $.jgrid.extend({
 							$("#"+frmgr).data("disabled",false);
 							$("#sData", "#"+frmtb+"_2").removeClass('ui-state-active');
 						}
-					}, $.jgrid.ajaxOptions, rp_ge.ajaxEditOptions ));
+					}, $.jgrid.ajaxOptions, rp_ge.ajaxEditOptions )
+					
+					if (!ajaxOptions['url']) { ret[0]=false; ret[1] += " "+$.jgrid.errors.nourl; }
+					if (ret[0]) { $.ajax(ajaxOptions) }
 				}
-				
+				if(ret[0] === false) {
+					$("#FormError>td","#"+frmtb).html(ret[1]);
+					$("#FormError","#"+frmtb).show();
+					// return; // don't need this if it's the last item in the function. Uncomment if you add code after this IF.
+				}
 			}
 			function compareData(nObj, oObj ) {
 				var ret = false,key;
@@ -1353,15 +1356,6 @@ $.jgrid.extend({
 					var postdata = $("#DelData>td","#"+dtbl).text(); //the pair is name=val1,val2,...
 					if( typeof p.onclickSubmit === 'function' ) { onCS = p.onclickSubmit(rp_ge, postdata) || {}; }
 					if( typeof p.beforeSubmit === 'function' ) { ret = p.beforeSubmit(postdata); }
-					var gurl;
-					if(ret[0]){
-						gurl = rp_ge.url ? rp_ge.url : $($t).jqGrid('getGridParam','editurl');
-						if(!gurl) { ret[0]=false;ret[1] += " "+$.jgrid.errors.nourl;}
-					}
-					if(ret[0] === false) {
-						$("#DelError>td","#"+dtbl).html(ret[1]);
-						$("#DelError","#"+dtbl).show();
-					}
 					if(ret[0] && !rp_ge.processing) {
 						rp_ge.processing = true;
 						$(this).addClass('ui-state-active');
@@ -1371,8 +1365,9 @@ $.jgrid.extend({
 						postd[oper] = opers.deloper;
 						idname = opers.id;
 						postd[idname] = postdata;
-						$.ajax( $.extend({
-							url:gurl,
+
+						var ajaxOptions = $.extend({
+							url: rp_ge.url ? rp_ge.url : $($t).jqGrid('getGridParam','editurl'),
 							type: p.mtype,
 							data: $.isFunction(p.serializeDelData) ? p.serializeDelData(postd) : postd,
 							complete:function(data,Status){
@@ -1423,7 +1418,15 @@ $.jgrid.extend({
 								rp_ge.processing=false;
 									$("#dData", "#"+dtbl+"_2").removeClass('ui-state-active');
 							}
-						}, $.jgrid.ajaxOptions, p.ajaxDelOptions));
+						}, $.jgrid.ajaxOptions, p.ajaxDelOptions);
+						
+						if(!ajaxOptions['url']) { ret[0]=false;ret[1] += " "+$.jgrid.errors.nourl;}
+						if (ret[0]) { $.ajax(ajaxOptions); }
+					}
+
+					if(ret[0] === false) {
+						$("#DelError>td","#"+dtbl).html(ret[1]);
+						$("#DelError","#"+dtbl).show();
 					}
 					return false;
 				});
