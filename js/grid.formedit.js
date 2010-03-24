@@ -867,7 +867,7 @@ $.jgrid.extend({
 					$("#FormError","#"+frmtb).show();
 					return;
 				}
-				if(!rp_ge.processing) {
+				if(ret[0] && !rp_ge.processing) {
 					rp_ge.processing = true;
 					$("#sData", "#"+frmtb+"_2").addClass('ui-state-active');
 					oper = opers.oper;
@@ -1361,8 +1361,8 @@ $.jgrid.extend({
 					if(ret[0] === false) {
 						$("#DelError>td","#"+dtbl).html(ret[1]);
 						$("#DelError","#"+dtbl).show();
-					} else {
-						if(!rp_ge.processing) {
+					}
+					if(ret[0] && !rp_ge.processing) {
 							rp_ge.processing = true;
 							$(this).addClass('ui-state-active');
 							opers = $t.p.prmNames;
@@ -1378,10 +1378,10 @@ $.jgrid.extend({
 								complete:function(data,Status){
 									if(Status != "success") {
 										ret[0] = false;
-									    if ($.isFunction(rp_ge.errorTextFormat)) {
-									        ret[1] = rp_ge.errorTextFormat(data);
-									    } else {
-									        ret[1] = Status + " Status: '" + data.statusText + "'. Error code: " + data.status;
+										if ($.isFunction(rp_ge.errorTextFormat)) {
+											ret[1] = rp_ge.errorTextFormat(data);
+										} else {
+											ret[1] = Status + " Status: '" + data.statusText + "'. Error code: " + data.status;
 										}
 									} else {
 										// data is posted successful
@@ -1424,7 +1424,6 @@ $.jgrid.extend({
 									$("#dData", "#"+dtbl+"_2").removeClass('ui-state-active');
 								}
 							}, $.jgrid.ajaxOptions, p.ajaxDelOptions));
-						}
 					}
 					return false;
 				});
