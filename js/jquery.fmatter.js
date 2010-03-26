@@ -331,22 +331,22 @@
 		{
 			case 'edit':
 				var restorerow = function()	{
-					$(".ui-inline-edit, .ui-inline-del","#"+rid).show();
-					$(".ui-inline-save, .ui-inline-cancel","#"+rid).hide();
+					$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid).show();
+					$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid).hide();
 				}
 				$('#'+gid).jqGrid('editRow',rid,keys,null,null,null,{oper:'edit'},restorerow,null,restorerow);
-				$(".ui-inline-edit, .ui-inline-del","#"+rid).hide();
-				$(".ui-inline-save, .ui-inline-cancel","#"+rid).show();
+				$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid).hide();
+				$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid).show();
 			break;
 			case 'save':
-				$('#'+gid).jqGrid('saveRow',rid,null,null,{oper:'edit'});
-				$(".ui-inline-edit, .ui-inline-del","#"+rid).show();
-				$(".ui-inline-save, .ui-inline-cancel","#"+rid).hide();
+				$('#'+gid).jqGrid('saveRow',rid,null,null,{oper:'edit'} );
+				$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid).show();
+				$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid).hide();
 				break;
 			case 'cancel' :
 				$('#'+gid).jqGrid('restoreRow',rid);
-				$(".ui-inline-edit, .ui-inline-del","#"+rid).show();
-				$(".ui-inline-save, .ui-inline-cancel","#"+rid).hide();
+				$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid).show();
+				$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid).hide();
 				break;
 		}
 	};
