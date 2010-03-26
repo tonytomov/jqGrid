@@ -767,6 +767,7 @@ $.fn.jqGrid = function( pin ) {
 			if(!ts.grid.hDiv.loading) {
 				var pvis = ts.p.scroll && npage == false;
 				var prm = {}, dt, dstr, pN=ts.p.prmNames;
+				if(ts.p.page <=0) ts.p.page = 1;
 				if(pN.search !== null) prm[pN.search] = ts.p.search; if(pN.nd != null) prm[pN.nd] = new Date().getTime();
 				if(pN.rows !== null) prm[pN.rows]= ts.p.rowNum; if(pN.page !== null) prm[pN.page]= ts.p.page;
 				if(pN.sort !== null) prm[pN.sort]= ts.p.sortname; if(pN.order !== null) prm[pN.order]= ts.p.sortorder;
@@ -1195,7 +1196,7 @@ $.fn.jqGrid = function( pin ) {
 				initwidth =0;
 				$.each(ts.p.colModel, function(i) {
 					if(this.hidden === false && !this.fixed){
-						cw = Math.round(aw*this.width/ts.p.tblwidth);
+						cw = Math.round(aw*this.width/(ts.p.tblwidth-tw));
 						this.width =cw;
 						initwidth += cw;
 						lvc = i;
@@ -2135,7 +2136,7 @@ $.jgrid.extend({
 				$.each($t.p.colModel, function(i) {
 					var tn = this.name;
 					if(this.hidden === false && !this.fixed){
-						cw = Math.round(aw*this.width/$t.p.tblwidth);
+						cw = Math.round(aw*this.width/($t.p.tblwidth-tw));
 						if (cw < 0) return;
 						this.width =cw;
 						initwidth += cw;
