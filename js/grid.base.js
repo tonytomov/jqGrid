@@ -1204,6 +1204,10 @@ $.fn.jqGrid = function( pin ) {
 				}
 				ts.p.colModel[lvc].width += cr;
 				ts.p.tblwidth = initwidth+cr+tw+cl*brd;
+				if(ts.p.tblwidth > ts.p.width) {
+					ts.p.colModel[lvc].width -= (ts.p.tblwidth - parseInt(ts.p.width,10));
+					ts.p.tblwidth = ts.p.width;
+				}
 			}
 		},
 		nextVisible= function(iCol) {
@@ -2148,11 +2152,17 @@ $.jgrid.extend({
 					cr = nwidth-gw-(initwidth+brd*vc);
 				}
 				$t.p.colModel[lvc].width += cr;
-				cw= $t.p.colModel[lvc].width;
+				$t.p.tblwidth = initwidth+cr+tw+brd*cl;
+				if($t.p.tblwidth > nwidth) {
+					var delta = $t.p.tblwidth - parseInt(nwidth);
+					$t.p.tblwidth = nwidth;
+					cw = $t.p.colModel[lvc].width = $t.p.colModel[lvc].width-delta;
+				} else {
+					cw= $t.p.colModel[lvc].width;
+				}
 				$t.grid.headers[lvc].width = cw;
 				$t.grid.headers[lvc].el.style.width=cw+"px";
 				if(cle) $t.grid.cols[lvc].style.width = cw+"px";
-				$t.p.tblwidth = initwidth+cr+tw+brd*cl;
 				$('table:first',$t.grid.bDiv).css("width",$t.p.tblwidth+"px");
 				$('table:first',$t.grid.hDiv).css("width",$t.p.tblwidth+"px");
 				$t.grid.hDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
