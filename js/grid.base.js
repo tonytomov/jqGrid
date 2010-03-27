@@ -1454,7 +1454,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			var cSel = true;
 			if($.isFunction(ts.p.beforeSelectRow)) cSel = ts.p.beforeSelectRow.call(ts,ptr[0].id, e);
-			if (td.tagName == 'A' || ((td.tagName == 'INPUT' || td.tagName == 'TEXTAREA' || td.tagName == 'OPTION' || td.tagName == 'SELECT' ) && !scb) ) { return true; }
+			if (td.tagName == 'A' || ((td.tagName == 'INPUT' || td.tagName == 'TEXTAREA' || td.tagName == 'OPTION' || td.tagName == 'SELECT' ) && !scb) ) { return this; }
 			if(cSel === true) {
 				if(ts.p.cellEdit === true) {
 					if(ts.p.multiselect && scb){
@@ -1493,8 +1493,10 @@ $.fn.jqGrid = function( pin ) {
 					ci = $.jgrid.getCellIndex(td);
 					ts.p.onCellSelect.call(ts,ri,ci,$(td).html(),e);
 				}
+				e.stopPropagation();
+			} else {
+				return this;
 			}
-			e.stopPropagation();
 		}).bind('reloadGrid', function(e,opts) {
 			if(ts.p.treeGrid ===true) {	ts.p.datatype = ts.p.treedatatype;}
 			if (opts && opts.current) {
