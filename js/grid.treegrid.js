@@ -180,7 +180,7 @@ $.jgrid.extend({
 					break;
 				case 'adjacency' :
 					$($t.rows).each(function(i){
-						if(this.parent_id == null || this.parent_id.toLowerCase() == "null") {
+						if(this.parent_id == null || String(this.parent_id).toLowerCase() == "null") {
 							result.push(this);
 						}
 					});
