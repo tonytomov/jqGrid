@@ -689,6 +689,7 @@ $.jgrid.extend({
 						if($t.p.autoencode) tmp = $.jgrid.htmlDecode(tmp);
 						elc = createEl(this.edittype,opt,tmp,false,$.extend({},$.jgrid.ajaxOptions,obj.p.ajaxSelectOptions || {}));
 						if(tmp == "" && this.edittype == "checkbox") {tmp = $(elc).attr("offval");}
+						if(tmp == "" && this.edittype == "select") {tmp = $("option:eq(0)",elc).text();}
 						if(rp_ge.checkOnSubmit || rp_ge.checkOnUpdate) rp_ge._savedData[nm] = tmp;
 						$(elc).addClass("FormElement");
 						trdata = $(tb).find("tr[rowpos="+rp+"]");
@@ -713,13 +714,13 @@ $.jgrid.extend({
 					var idrow = $("<tr class='FormData' style='display:none'><td class='CaptionTD'></td><td colspan='"+ (maxcols*2-1)+"' class='DataTD'><input class='FormElement' id='id_g' type='text' name='"+obj.p.id+"_id' value='"+rowid+"'/></td></tr>");
 					idrow[0].rp = cnt+999;
 					$(tb).append(idrow);
-					if(rp_ge.checkOnSubmit || rp_ge.checkOnUpdate) rp_ge._savedData.id = rowid;
+					if(rp_ge.checkOnSubmit || rp_ge.checkOnUpdate) rp_ge._savedData[obj.p.id+"_id"] = rowid;
 				}
 				return retpos;
 			}
 			function fillData(rowid,obj,fmid){
 				var nm, hc,cnt=0,tmp, fld,opt,vl,vlc;
-				if(rp_ge.checkOnSubmit || rp_ge.checkOnUpdate) {rp_ge._savedData = {};rp_ge._savedData.id=rowid;}
+				if(rp_ge.checkOnSubmit || rp_ge.checkOnUpdate) {rp_ge._savedData = {};rp_ge._savedData[obj.p.id+"_id"]=rowid;}
 				var cm = obj.p.colModel;
 				if(rowid == '_empty') {
 					$(cm).each(function(i){
@@ -957,7 +958,12 @@ $.jgrid.extend({
 							rp_ge.processing=false;
 							if(rp_ge.checkOnSubmit || rp_ge.checkOnUpdate) {
 								$("#"+frmgr).data("disabled",false);
-								if(rp_ge._savedData.id !="_empty") rp_ge._savedData = postdata;
+								if(rp_ge._savedData[$t.p.id+"_id"] !="_empty"){
+									for(key in rp_ge._savedData) {
+										if(postdata[key])
+											rp_ge._savedData[key] = postdata[key];
+									}
+								}
 							}
 							$("#sData", "#"+frmtb+"_2").removeClass('ui-state-active');
 							try{$(':input:visible',"#"+frmgr)[0].focus();} catch (e){}
