@@ -1574,8 +1574,15 @@ $.jgrid.extend({
 						} else {
 							dr = $t.p.selrow;
 						}
-						if (dr) { $($t).jqGrid("delGridRow",dr,pDel); }
-						else  {viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$t.p.id,jqm:true}); $("#jqg_alrt").focus(); }
+						if(dr){
+							if("function" == typeof o.delfunc){
+								o.delfunc(dr);
+							}else{
+								$($t).jqGrid("delGridRow",dr,pDel);
+							}
+						} else  {
+							viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$t.p.id,jqm:true}); $("#jqg_alrt").focus();
+						}
 						return false;
 					}).hover(function () {$(this).addClass("ui-state-hover");},
 						function () {$(this).removeClass("ui-state-hover");}
