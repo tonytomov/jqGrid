@@ -21,15 +21,16 @@ setSubGrid : function () {
 	});
 },
 addSubGridCell :function (pos,iRow) {
-	var prp='',gv;
+	var prp='',gv,sid;
 	this.each(function(){
 		prp = this.formatCol(pos,iRow);
 		gv = this.p.gridview;
+		sid= this.p.id;
 	});
 	if( gv === false ){
-		return "<td role='grid' class='ui-sgcollapsed sgcollapsed' "+prp+"><a href='javascript:void(0);'><span class='ui-icon ui-icon-plus'></span></a></td>";
+		return "<td role=\"grid\" aria-describedby=\""+sid+"_subgrid\" class=\"ui-sgcollapsed sgcollapsed\" "+prp+"><a href='javascript:void(0);'><span class='ui-icon ui-icon-plus'></span></a></td>";
 	} else  {
-		return "<td role='grid' " +prp +"></td>";
+		return "<td role=\"grid\" aria-describedby=\""+sid+"_subgrid\" " +prp +"></td>";
 	}
 },
 addSubGrid : function(t,pos) {

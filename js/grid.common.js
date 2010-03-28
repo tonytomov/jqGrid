@@ -282,7 +282,7 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 				if(vl=='&nbsp;' || vl=='&#160;' || (vl.length==1 && vl.charCodeAt(0)==160)) {vl="";}
 				elem.value = vl;
 				options = bindEv(elem,options);
-				jQuery(elem).attr(options);
+				jQuery(elem).attr(options).attr({"role":"textbox","multiline":"true"});
 				break;
 		case "checkbox" : //what code for simple checkbox
 			elem = document.createElement("input");
@@ -308,14 +308,16 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 				try {delete options['value'];} catch (e){}
 			}
 			options = bindEv(elem,options);
-			jQuery(elem).attr(options);
+			jQuery(elem).attr(options).attr("role","checkbox");
 			break;
 		case "select" :
 			elem = document.createElement("select");
+			elem.role = "select";
 			var msl, ovm = [];
 			if(options.multiple===true) {
 				msl = true;
 				elem.multiple="multiple";
+				$(elem).attr("aria-multiselectable","true");
 			} else msl = false;
 			if(options.dataUrl != null) {
 				jQuery.ajax(jQuery.extend({
@@ -344,6 +346,7 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 							setTimeout(function(){
 								jQuery("option",elem).each(function(i){
 									if(i==0) this.selected = "";
+									this.role = "option";
 									if(jQuery.inArray(jQuery.trim(jQuery(this).text()),ovm) > -1 || jQuery.inArray(jQuery.trim(jQuery(this).val()),ovm) > -1 ) {
 										this.selected= "selected";
 										if(!msl) return false;
@@ -371,6 +374,7 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 							sv[1] = jQuery.map(sv,function(n,i){if(i>0)return n;}).join(":");
 						}
 						ov = document.createElement("option");
+						ov.role = "option";
 						ov.value = sv[0]; ov.innerHTML = sv[1];
 						if (!msl &&  (jQuery.trim(sv[0]) == jQuery.trim(vl) || jQuery.trim(sv[1]) == jQuery.trim(vl))) ov.selected ="selected";
 						if (msl && (jQuery.inArray(jQuery.trim(sv[1]), ovm)>-1 || jQuery.inArray(jQuery.trim(sv[0]), ovm)>-1)) {ov.selected ="selected";}
@@ -380,6 +384,7 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 					var oSv = options.value;
 					for ( var key in oSv) {
 						ov = document.createElement("option");
+						ov.role = "option";
 						ov.value = key; ov.innerHTML = oSv[key];
 						if (!msl &&  ( jQuery.trim(key) == jQuery.trim(vl) || jQuery.trim(oSv[key]) == jQuery.trim(vl)) ) ov.selected ="selected";
 						if (msl && (jQuery.inArray(jQuery.trim(oSv[key]),ovm)>-1 || jQuery.inArray(jQuery.trim(key),ovm)>-1)) ov.selected ="selected";
@@ -394,6 +399,9 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 		case "text" :
 		case "password" :
 		case "button" :
+			var role;
+			if(eltype=="button") role = "button";
+			else role = "textbox";
 			elem = document.createElement("input");
 			elem.type = eltype;
 			elem.value = vl;
@@ -403,7 +411,7 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 					if(!options.size) jQuery(elem).css({width:"98%"});
 				} else if (!options.size) options.size = 20;
 			}
-			jQuery(elem).attr(options);
+			jQuery(elem).attr(options).attr("role",role);
 			break;
 		case "image" :
 		case "file" :
