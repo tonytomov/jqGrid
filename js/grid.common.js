@@ -312,7 +312,7 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 			break;
 		case "select" :
 			elem = document.createElement("select");
-			elem.role = "select";
+			elem.setAttribute("role","select");
 			var msl, ovm = [];
 			if(options.multiple===true) {
 				msl = true;
@@ -346,7 +346,7 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 							setTimeout(function(){
 								jQuery("option",elem).each(function(i){
 									if(i==0) this.selected = "";
-									this.role = "option";
+									$(this).attr("role","option");
 									if(jQuery.inArray(jQuery.trim(jQuery(this).text()),ovm) > -1 || jQuery.inArray(jQuery.trim(jQuery(this).val()),ovm) > -1 ) {
 										this.selected= "selected";
 										if(!msl) return false;
@@ -374,7 +374,7 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 							sv[1] = jQuery.map(sv,function(n,i){if(i>0)return n;}).join(":");
 						}
 						ov = document.createElement("option");
-						ov.role = "option";
+						ov.setAttribute("role","option");
 						ov.value = sv[0]; ov.innerHTML = sv[1];
 						if (!msl &&  (jQuery.trim(sv[0]) == jQuery.trim(vl) || jQuery.trim(sv[1]) == jQuery.trim(vl))) ov.selected ="selected";
 						if (msl && (jQuery.inArray(jQuery.trim(sv[1]), ovm)>-1 || jQuery.inArray(jQuery.trim(sv[0]), ovm)>-1)) {ov.selected ="selected";}
@@ -384,7 +384,7 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 					var oSv = options.value;
 					for ( var key in oSv) {
 						ov = document.createElement("option");
-						ov.role = "option";
+						ov.setAttribute("role","option");
 						ov.value = key; ov.innerHTML = oSv[key];
 						if (!msl &&  ( jQuery.trim(key) == jQuery.trim(vl) || jQuery.trim(oSv[key]) == jQuery.trim(vl)) ) ov.selected ="selected";
 						if (msl && (jQuery.inArray(jQuery.trim(oSv[key]),ovm)>-1 || jQuery.inArray(jQuery.trim(key),ovm)>-1)) ov.selected ="selected";
