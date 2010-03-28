@@ -1623,6 +1623,7 @@ $.fn.jqGrid = function( pin ) {
 						if(ts.p.footerrow) $(".ui-jqgrid-sdiv","#gbox_"+ts.p.id).slideUp("fast");
 						$("span",this).removeClass("ui-icon-circle-triangle-n").addClass("ui-icon-circle-triangle-s");
 						ts.p.gridstate = 'hidden';
+						if($("#gbox_"+ts.p.id).hasClass("ui-resizable")) $(".ui-resizable-handle","#gbox_"+ts.p.id).hide();
 						if(onHdCl) {if(!hg) {ts.p.onHeaderClick.call(ts,ts.p.gridstate,e);}}
 					} else if(ts.p.gridstate == 'hidden'){
 						$(".ui-jqgrid-hdiv, .ui-jqgrid-bdiv","#gview_"+ts.p.id).slideDown("fast");
@@ -1638,6 +1639,7 @@ $.fn.jqGrid = function( pin ) {
 						$("span",this).removeClass("ui-icon-circle-triangle-s").addClass("ui-icon-circle-triangle-n");
 						if(hg) {ts.p.datatype = tdt;populate();hg=false;}
 						ts.p.gridstate = 'visible';
+						if($("#gbox_"+ts.p.id).hasClass("ui-resizable")) $(".ui-resizable-handle","#gbox_"+ts.p.id).show();
 						if(onHdCl) {ts.p.onHeaderClick.call(ts,ts.p.gridstate,e)}
 					}
 					return false;
@@ -1674,9 +1676,7 @@ $.fn.jqGrid = function( pin ) {
 		ts.addJSONData = function(d) {addJSONData(d,ts.grid.bDiv);};
 		populate();ts.p.hiddengrid=false;
 		$(window).unload(function () {
-			$(this).empty();
-			this.grid = null;
-			this.p = null;
+			ts = null;
 		});
 	});
 };
@@ -1720,7 +1720,7 @@ $.jgrid.extend({
 			}
 			if(!$t.p.multiselect) {
 				if(pt.className !== "ui-subgrid") {
-				if( $t.p.selrow ) {$("tr#"+$.jgrid.jqID($t.p.selrow),$t.grid.bDiv).removeClass("ui-state-highlight").attr("aria-selected","false") ;}
+				if( $t.p.selrow ) { $($t.rows.namedItem($t.p.selrow)).removeClass("ui-state-highlight").attr("aria-selected","false"); }
 				$t.p.selrow = pt.id;
 				$(pt).addClass("ui-state-highlight").attr("aria-selected","true");
 				if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow.call($t,$t.p.selrow, true); }
