@@ -38,8 +38,26 @@ $.jgrid.extend({
 			//  If this value is not expressly defined in the incoming options,
 			// lower in the code we will infer the value based on value of multipleSearch
 			stringResult: undefined,
-			onClose : null
-			// these are common options
+			onClose : null,
+			// useDataProxy allows ADD, EDIT and DEL code to bypass calling $.ajax
+			// directly when grid's 'dataProxy' property (grid.p.dataProxy) is a function.
+			// Used for "editGridRow" and "delGridRow" below and automatically flipped to TRUE
+			// when ajax setting's 'url' (grid's 'editurl') property is undefined.
+			// When 'useDataProxy' is true, instead of calling $.ajax.call(gridDOMobj, o, i) we call
+			// gridDOMobj.p.dataProxy.call(gridDOMobj, o, i)
+			//
+			// Behavior is extremely similar to when 'datatype' is a function, but arguments are slightly different.
+			// Normally the following is fed to datatype.call(a, b, c):
+			//   a = Pointer to grid's table DOM element, b = grid.p.postdata, c = "load_"+grid's ID
+			// In cases of "edit" and "del" the following is fed:
+			//   a = Pointer to grid's table DOM element (same),
+			//   b = extended Ajax Options including postdata in "data" property. (different object type)
+			//   c = "set_"+grid's ID in case of "edit" and "del_"+grid's ID in case of "del" (same type, different content)
+			// The major difference is that complete ajax options object, with attached "complete" and "error"
+			// callback functions is fed instead of only post data.
+			// This allows you to emulate a $.ajax call (including calling "complete"/"error"),
+			// while retrieving the data locally in the browser.
+			useDataProxy: false
 		}, $.jgrid.search, p || {});
 		return this.each(function() {
 			var $t = this;
@@ -989,13 +1007,22 @@ $.jgrid.extend({
 						}
 					}, $.jgrid.ajaxOptions, rp_ge.ajaxEditOptions )
 					
-					if (!ajaxOptions['url']) { ret[0]=false; ret[1] += " "+$.jgrid.errors.nourl; }
-					if (ret[0]) { $.ajax(ajaxOptions) }
+					if (!ajaxOptions['url'] && !rp_ge['useDataProxy']) {
+						if ($.isFunction($t.p.dataProxy)) {
+							rp_ge['useDataProxy'] = true;
+						} else {
+							ret[0]=false; ret[1] += " "+$.jgrid.errors.nourl;
+						}
+					}
+					if (ret[0]) { 
+						if (rp_ge['useDataProxy']) { $t.p.dataProxy.call($t, ajaxOptions, "set_"+$t.p.id) }
+						else { $.ajax(ajaxOptions) }
+					}
 				}
 				if(ret[0] === false) {
 					$("#FormError>td","#"+frmtb).html(ret[1]);
 					$("#FormError","#"+frmtb).show();
-					// return; // don't need this if it's the last item in the function. Uncomment if you add code after this IF.
+					// return; 
 				}
 			}
 			function compareData(nObj, oObj ) {
@@ -1312,7 +1339,8 @@ $.jgrid.extend({
 			onClose : null,
 			ajaxDelOptions : {},
 			processing : false,
-			serializeDelData : null
+			serializeDelData : null,
+			useDataProxy : false
 		}, $.jgrid.del, p ||{});
 		rp_ge = p;
 		return this.each(function(){
@@ -1432,9 +1460,19 @@ $.jgrid.extend({
 									$("#dData", "#"+dtbl+"_2").removeClass('ui-state-active');
 							}
 						}, $.jgrid.ajaxOptions, p.ajaxDelOptions);
-						
-						if(!ajaxOptions['url']) { ret[0]=false;ret[1] += " "+$.jgrid.errors.nourl;}
-						if (ret[0]) { $.ajax(ajaxOptions); }
+
+
+						if (!ajaxOptions['url'] && !rp_ge['useDataProxy']) {
+							if ($.isFunction($t.p.dataProxy)) {
+								rp_ge['useDataProxy'] = true;
+							} else {
+								ret[0]=false; ret[1] += " "+$.jgrid.errors.nourl;
+							}
+						}
+						if (ret[0]) {
+							if (rp_ge['useDataProxy']) { $t.p.dataProxy.call($t, ajaxOptions, "del_"+$t.p.id) }
+							else { $.ajax(ajaxOptions) }
+						}
 					}
 
 					if(ret[0] === false) {
