@@ -53,7 +53,7 @@ addSubGrid : function(t,pos) {
 				$.each(ts.p.colModel,function(i,v){
 					if(this.hidden === true || this.name == 'rn' || this.name == 'cb') {nhc++;}
 				});
-				subdata = "<tr role='row' class='ui-subgrid'>"+atd+"<td class='ui-widget-content subgrid-cell'><span class='ui-icon ui-icon-carat-1-sw'/></td><td colspan='"+parseInt(ts.p.colNames.length-1-nhc)+"' class='ui-widget-content subgrid-data'><div id="+pID+"_"+_id+" class='tablediv'>";
+				subdata = "<tr role='row' class='ui-subgrid'>"+atd+"<td class='ui-widget-content subgrid-cell'><span class='ui-icon ui-icon-carat-1-sw'/></td><td colspan='"+parseInt(ts.p.colNames.length-1-nhc,10)+"' class='ui-widget-content subgrid-data'><div id="+pID+"_"+_id+" class='tablediv'>";
 				$(this).parent().after( subdata+ "</div></td></tr>" );
 				if( $.isFunction(ts.p.subGridRowExpanded)) {
 					ts.p.subGridRowExpanded(pID+"_"+ _id,_id);
@@ -67,7 +67,7 @@ addSubGrid : function(t,pos) {
 					res = $(this).parent();
 					_id = $(res).attr("id");
 					bfsc = ts.p.subGridRowColapsed(pID+"_"+_id,_id );
-				};
+				}
 				if(bfsc===false) {return false;}
 				$(this).parent().next().remove(".ui-subgrid");
 				$(this).html("<a href='javascript:void(0);'><span class='ui-icon ui-icon-plus'></span></a>").removeClass("sgexpanded").addClass("sgcollapsed");
@@ -79,7 +79,7 @@ addSubGrid : function(t,pos) {
 			var res,sid,dp, i, j;
 			sid = $(rd).attr("id");
 			dp = {nd_: (new Date().getTime())};
-			dp[ts.p.prmNames['subgridid']]=sid;
+			dp[ts.p.prmNames.subgridid]=sid;
 			if(!ts.p.subGridModel[0]) { return false; }
 			if(ts.p.subGridModel[0].params) {
 				for(j=0; j < ts.p.subGridModel[0].params.length; j++) {
@@ -93,7 +93,7 @@ addSubGrid : function(t,pos) {
 			if(!ts.grid.hDiv.loading) {
 				ts.grid.hDiv.loading = true;
 				$("#load_"+ts.p.id).show();
-				if(!ts.p.subgridtype) ts.p.subgridtype = ts.p.datatype;
+				if(!ts.p.subgridtype) { ts.p.subgridtype = ts.p.datatype; }
 				if($.isFunction(ts.p.subgridtype)) {
 					ts.p.subgridtype(dp);
 				} else {
@@ -108,9 +108,9 @@ addSubGrid : function(t,pos) {
 						dataType:ts.p.subgridtype,
 						data: $.isFunction(ts.p.serializeSubGridData)? ts.p.serializeSubGridData(dp) : dp,
 						complete: function(sxml) {
-							if(ts.p.subgridtype == "xml")
+							if(ts.p.subgridtype == "xml") {
 								subGridXml(sxml.responseXML, sid);
-							else {
+							} else {
 								subGridJson($.jgrid.parse(sxml.responseText),sid);
 							}
 							sxml=null;
@@ -162,7 +162,7 @@ addSubGrid : function(t,pos) {
 			return false;
 		};
 		var subGridJson = function(sjxml, sbid){
-			var tddiv,result , i,cur, sgmap,
+			var tddiv,result , i,cur, sgmap,j,
 			dummy = $("<table cellspacing='0' cellpadding='0' border='0'><tbody></tbody></table>"),
 			trdiv = $("<tr></tr>");
 			for (i = 0; i<ts.p.subGridModel[0].name.length; i++) {
@@ -181,13 +181,13 @@ addSubGrid : function(t,pos) {
 						trdiv = $("<tr class='ui-widget-content ui-subtblcell'></tr>");
 						if(sgmap.repeatitems === true) {
 							if(sgmap.cell) { cur=cur[sgmap.cell]; }
-							for (var j=0;j<cur.length;j++) {
+							for (j=0;j<cur.length;j++) {
 								subGridCell(trdiv, cur[j] || '&#160;',j);
 							}
 						} else {
 							var f = ts.p.subGridModel[0].mapping || ts.p.subGridModel[0].name;
 							if(f.length) {
-								for (var j=0;j<f.length;j++) {
+								for (j=0;j<f.length;j++) {
 									subGridCell(trdiv, cur[f[j]] || '&#160;',j);
 								}
 							}
