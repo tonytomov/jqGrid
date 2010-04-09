@@ -75,7 +75,7 @@ $.jgrid.extend({
 			if($.fn.searchFilter) {
 				var fid = "fbox_"+$t.p.id;
 				if(p.recreateFilter===true) {$("#"+fid).remove();}
-				if( $("#"+fid).html() !== null ) {
+				if( $("#"+fid).html() != null ) {
 					if ( $.isFunction(p.beforeShowSearch) ) { p.beforeShowSearch($("#"+fid)); }
 					showFilter();
 					if( $.isFunction(p.afterShowSearch) ) { p.afterShowSearch($("#"+fid)); }
@@ -115,7 +115,7 @@ $.jgrid.extend({
 						}
 						if(typeof(this.stype) === 'undefined') { this.stype='text'; }
 						if(this.stype == 'select') {
-							if ( soptions.dataUrl !== null) {}
+							if ( soptions.dataUrl !== undefined) {}
 							else {
 								var eov;
 								if(soptions.value) {
@@ -297,14 +297,14 @@ $.jgrid.extend({
 			} else {
 				p.caption=p.editCaption;
 			}
-			if(p.recreateForm===true && $("#"+IDs.themodal).html() !== null) {
+			if(p.recreateForm===true && $("#"+IDs.themodal).html() != null) {
 				$("#"+IDs.themodal).remove();
 			}
 			var closeovrl = true;
 			if(p.checkOnUpdate && p.jqModal && !p.modal) {
 				closeovrl = false;
 			}
-			if ( $("#"+IDs.themodal).html() !== null ) {
+			if ( $("#"+IDs.themodal).html() != null ) {
 				$(".ui-jqdialog-title","#"+IDs.modalhead).html(p.caption);
 				$("#FormError","#"+frmtb).hide();
 				if(rp_ge.topinfo) {
@@ -730,7 +730,7 @@ $.jgrid.extend({
 						nm = this.name;
 						opt = $.extend({}, this.editoptions || {} );
 						fld = $("#"+$.jgrid.jqID(nm),"#"+fmid);
-						if(fld[0] !== null) {
+						if(fld[0] != null) {
 							vl = "";
 							if(opt.defaultValue ) {
 								vl = $.isFunction(opt.defaultValue) ? opt.defaultValue() : opt.defaultValue;
@@ -1025,7 +1025,7 @@ $.jgrid.extend({
 			frmgr = "ViewGrid_"+gID , frmtb = "ViewTbl_"+gID,
 			IDs = {themodal:'viewmod'+gID,modalhead:'viewhd'+gID,modalcontent:'viewcnt'+gID, scrollelm : frmgr},
 			maxCols = 1, maxRows=0;
-			if ( $("#"+IDs.themodal).html() !== null ) {
+			if ( $("#"+IDs.themodal).html() != null ) {
 				$(".ui-jqdialog-title","#"+IDs.modalhead).html(p.caption);
 				$("#FormError","#"+frmtb).hide();
 				fillData(rowid,$t);
@@ -1312,7 +1312,7 @@ $.jgrid.extend({
 			dtbl = "DelTbl_"+gID,postd, idname, opers, oper,
 			IDs = {themodal:'delmod'+gID,modalhead:'delhd'+gID,modalcontent:'delcnt'+gID, scrollelm: dtbl};
 			if (jQuery.isArray(rowids)) { rowids = rowids.join(); }
-			if ( $("#"+IDs.themodal).html() !== null ) {
+			if ( $("#"+IDs.themodal).html() != null ) {
 				$("#DelData>td","#"+dtbl).text(rowids);
 				$("#DelError","#"+dtbl).hide();
 				if( rp_ge.processing === true) {

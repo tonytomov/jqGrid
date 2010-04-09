@@ -256,7 +256,7 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 		}
 		if(opt.dataEvents) {
 		    jQuery.each(opt.dataEvents, function() {
-		        if (this.data !== null) {
+		        if (this.data !== undefined) {
 			        jQuery(el).bind(this.type, this.data, this.fn);
 		        } else {
 		            jQuery(el).bind(this.type, this.fn);
@@ -314,14 +314,14 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 				elem.multiple="multiple";
 				$(elem).attr("aria-multiselectable","true");
 			} else { msl = false; }
-			if(options.dataUrl !== null) {
+			if(typeof(options.dataUrl) != "undefined") {
 				jQuery.ajax(jQuery.extend({
 					url: options.dataUrl,
 					type : "GET",
 					complete: function(data,status){
 						try {delete options.dataUrl; delete options.value;} catch (e){}
 						var a;
-						if(options.buildSelect !== null) {
+						if(typeof(options.buildSelect) != "undefined") {
 							var b = options.buildSelect(data);
 							a = jQuery(b).html();
 							delete options.buildSelect;
