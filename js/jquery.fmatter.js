@@ -91,8 +91,8 @@
 			timezoneClip = /[^-+\dA-Z]/g,
 			pad = function (value, length) {
 				value = String(value);
-				length = parseInt(length) || 2;
-				while (value.length < length) value = '0' + value;
+				length = parseInt(length,10) || 2;
+				while (value.length < length)  { value = '0' + value; }
 				return value;
 			},
 		    ts = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0, u:0},
@@ -100,10 +100,10 @@
 		    dateFormat=["i18n"];
 			// Internationalization strings
 		    dateFormat["i18n"] = {
-				dayNames:   opts.dayNames,
-		    	monthNames: opts.monthNames
+				dayNames: opts.dayNames,
+				monthNames: opts.monthNames
 			};
-			if( format in opts.masks ) format = opts.masks[format];
+			if( format in opts.masks ) { format = opts.masks[format]; }
 			date = date.split(/[\\\/:_;.\t\T\s-]/);
 			format = format.split(/[\\\/:_;.\t\T\s-]/);
 			// parsing for month names
@@ -118,10 +118,10 @@
 				}
 		        ts[format[k].toLowerCase()] = parseInt(date[k],10);
 		    }
-		    ts.m = parseInt(ts.m)-1;
+		    ts.m = parseInt(ts.m,10)-1;
 		    var ty = ts.y;
-		    if (ty >= 70 && ty <= 99) ts.y = 1900+ts.y;
-		    else if (ty >=0 && ty <=69) ts.y= 2000+ts.y;
+		    if (ty >= 70 && ty <= 99) { ts.y = 1900+ts.y; }
+		    else if (ty >=0 && ty <=69) { ts.y= 2000+ts.y; }
 		    timestamp = new Date(ts.y, ts.m, ts.d, ts.h, ts.i, ts.s, ts.u);
 			if( newformat in opts.masks )  {
 				newformat = opts.masks[newformat];
@@ -208,11 +208,11 @@
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if(op.disabled===true) {ds = "disabled";} else {ds="";}
-		if(isEmpty(cval) || isUndefined(cval) ) cval = $.fn.fmatter.defaultFormat(cval,op);
+		if(isEmpty(cval) || isUndefined(cval) ) { cval = $.fn.fmatter.defaultFormat(cval,op); }
 		cval=cval+""; cval=cval.toLowerCase();
 		var bchk = cval.search(/(false|0|no|off)/i)<0 ? " checked='checked' " : "";
         return "<input type=\"checkbox\" " + bchk  + " value=\""+ cval+"\" offval=\"no\" "+ds+ "/>";
-    },
+    };
 	$.fn.fmatter.link = function(cellval, opts) {
 		var op = {target:opts.target };
 		var target = "";
@@ -294,14 +294,14 @@
 		if (oSelect) {
 			var	msl =  opts.colModel.editoptions.multiple === true ? true : false,
 			scell = [], sv;
-			if(msl) { scell = cellval.split(","); scell = $.map(scell,function(n){return $.trim(n);})}
+			if(msl) {scell = cellval.split(",");scell = $.map(scell,function(n){return $.trim(n);});}
 			if (isString(oSelect)) {
 				// mybe here we can use some caching with care ????
 				var so = oSelect.split(";"), j=0;
 				for(var i=0; i<so.length;i++){
 					sv = so[i].split(":");
 					if(sv.length > 2 ) {
-						sv[1] = jQuery.map(sv,function(n,i){if(i>0)return n;}).join(":");
+						sv[1] = jQuery.map(sv,function(n,i){if(i>0) { return n; } }).join(":");
 					}
 					if(msl) {
 						if(jQuery.inArray(sv[0],scell)>-1) {
@@ -334,7 +334,7 @@
 				var restorerow = function()	{
 					$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid).show();
 					$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid).hide();
-				}
+				};
 				$('#'+gid).jqGrid('editRow',rid,keys,null,null,null,{oper:'edit'},restorerow,null,restorerow);
 				$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid).hide();
 				$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid).show();
@@ -357,18 +357,18 @@
 			op = $.extend(op,opts.colModel.formatoptions);
 		}
 		var rowid = opts.rowId, str="",ocl;
-		if(typeof(rowid) =='undefined' || isEmpty(rowid)) return "";
+		if(typeof(rowid) =='undefined' || isEmpty(rowid)) { return ""; }
 		if(op.editbutton){
-			ocl = "onclick=$.fn.fmatter.rowactions('"+rowid+"','"+opts.gid+"','edit',"+op.keys+");"
+			ocl = "onclick=$.fn.fmatter.rowactions('"+rowid+"','"+opts.gid+"','edit',"+op.keys+");";
 			str =str+ "<div style='margin-left:8px;'><div title='"+$.jgrid.nav.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='ui-icon ui-icon-pencil'></span></div>";
 		}
 		if(op.delbutton) {
-			ocl = "onclick=jQuery('#"+opts.gid+"').jqGrid('delGridRow','"+rowid+"');"
+			ocl = "onclick=jQuery('#"+opts.gid+"').jqGrid('delGridRow','"+rowid+"');";
 			str = str+"<div title='"+$.jgrid.nav.deltitle+"' style='float:left;margin-left:5px;' class='ui-pg-div ui-inline-del' "+ocl+"><span class='ui-icon ui-icon-trash'></span></div>";
 		}
-		ocl = "onclick=$.fn.fmatter.rowactions('"+rowid+"','"+opts.gid+"','save',false);"
+		ocl = "onclick=$.fn.fmatter.rowactions('"+rowid+"','"+opts.gid+"','save',false);";
 		str = str+"<div title='"+$.jgrid.edit.bSubmit+"' style='float:left;display:none' class='ui-pg-div ui-inline-save'><span class='ui-icon ui-icon-disk' "+ocl+"></span></div>";
-		ocl = "onclick=$.fn.fmatter.rowactions('"+rowid+"','"+opts.gid+"','cancel',false);"
+		ocl = "onclick=$.fn.fmatter.rowactions('"+rowid+"','"+opts.gid+"','cancel',false);";
 		str = str+"<div title='"+$.jgrid.edit.bCancel+"' style='float:left;display:none;margin-left:5px;' class='ui-pg-div ui-inline-cancel'><span class='ui-icon ui-icon-cancel' "+ocl+"></span></div></div>";
 		return str;
 	};
@@ -421,13 +421,13 @@
 		// cnt is set to true only in sortDataArray
 		var ret = [];
 		var cell = $(cellval).text();
-		if(cnt==true) return cell;
+		if(cnt===true) { return cell; }
 		var op = $.extend({},options.colModel.editoptions);
 		if(op.value){
 			var oSelect = op.value,
 			msl =  op.multiple === true ? true : false,
 			scell = [], sv;
-			if(msl) { scell = cell.split(","); scell = $.map(scell,function(n){return $.trim(n);})}
+			if(msl) { scell = cell.split(","); scell = $.map(scell,function(n){return $.trim(n);}); }
 			if (isString(oSelect)) {
 				var so = oSelect.split(";"), j=0;
 				for(var i=0; i<so.length;i++){
@@ -443,7 +443,7 @@
 					}
 				}
 			} else if(isObject(oSelect)) {
-				if(!msl) scell[0] =  cell;
+				if(!msl) { scell[0] =  cell; }
 				ret = jQuery.map(scell, function(n){
 					var rv;
 					$.each(oSelect, function(i,val){
@@ -452,7 +452,7 @@
 							return false;
 						}
 					});
-					if( rv) return rv;
+					if( rv) { return rv; }
 				});
 			}
 			return ret.join(", ");
@@ -468,11 +468,11 @@
         }
 
         return v;
-	};
+	}
 	//private methods and data
 	function debug($obj) {
-		if (window.console && window.console.log) window.console.log($obj);
-	};
+		if (window.console && window.console.log) { window.console.log($obj); }
+	}
 	/**
      * A convenience method for detecting a legitimate non-null value.
      * Returns false for null/undefined/NaN, true for other values, 
@@ -499,7 +499,7 @@
 	* if its is not a string but has a value then it returns false, Returns true for null/undefined/NaN
 	essentailly this provdes a way to see if it has any value to format for things like links
 	*/
- 	isEmpty= function(o) {
+	isEmpty= function(o) {
 		if(!isString(o) && isValue(o)) {
 			return false;
 		}else if (!isValue(o)){
