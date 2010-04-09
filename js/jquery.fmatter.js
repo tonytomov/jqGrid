@@ -232,6 +232,7 @@
 		if(!isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
+		cellval = cellval+"";
 		if(op.target) {target = 'target=' + op.target;}
 		idUrl = op.baseLinkUrl+op.showAction + '?'+ op.idName+'='+opts.rowId+op.addParam;
         if(isString(cellval)) {	//add this one even if its blank string
@@ -339,7 +340,7 @@
 				$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid).show();
 			break;
 			case 'save':
-				$('#'+gid).jqGrid('saveRow',rid,null,null,{oper:'edit'} );
+				$('#'+gid).jqGrid('saveRow',rid,null,null );
 				$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid).show();
 				$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid).hide();
 				break;
