@@ -24,7 +24,7 @@ jQuery(selector).each(function() {
 	var colModel = [];
 	var colNames = [];
 	jQuery('th', jQuery(this)).each(function() {
-		if (colModel.length == 0 && selectable) {
+		if (colModel.length === 0 && selectable) {
 			colModel.push({
 				name: '__selection__',
 				index: '__selection__',
@@ -48,7 +48,7 @@ jQuery(selector).each(function() {
 		var row = {};
 		var rowPos = 0;
 		jQuery('td', jQuery(this)).each(function() {
-			if (rowPos == 0 && selectable) {
+			if (rowPos === 0 && selectable) {
 				var input = jQuery('input', jQuery(this));
 				var rowId = input.attr("value");
 				rowIds.push(rowId || data.length);
@@ -61,7 +61,7 @@ jQuery(selector).each(function() {
 			}
 			rowPos++;
 		});
-		if(rowPos >0) data.push(row);
+		if(rowPos >0) { data.push(row); }
 	});
 
 	// Clear the original HTML table
@@ -81,7 +81,8 @@ jQuery(selector).each(function() {
 	}, options || {}));
 
 	// Add data
-	for (var a = 0; a < data.length; a++) {
+	var a;
+	for (a = 0; a < data.length; a++) {
 		var id = null;
 		if (rowIds.length > 0) {
 			id = rowIds[a];
@@ -91,14 +92,14 @@ jQuery(selector).each(function() {
 				id = encodeURIComponent(id).replace(/[.\-%]/g, "_");
 			}
 		}
-		if (id == null) {
+		if (id === null) {
 			id = a + 1;
 		}
 		jQuery(this).jqGrid("addRowData",id, data[a]);
 	}
 
 	// Set the selection
-	for (var a = 0; a < rowChecked.length; a++) {
+	for (a = 0; a < rowChecked.length; a++) {
 		jQuery(this).jqGrid("setSelection",rowChecked[a]);
 	}
 });
