@@ -1348,7 +1348,7 @@ $.jgrid.extend({
 				$("#dData","#"+dtbl+"_2").click(function(e){
 					var ret=[true,""]; onCS = {};
 					var postdata = $("#DelData>td","#"+dtbl).text(); //the pair is name=val1,val2,...
-					if( typeof p.onclickSubmit === 'function' ) { onCS = p.onclickSubmit(rp_ge) || {}; }
+					if( typeof p.onclickSubmit === 'function' ) { onCS = p.onclickSubmit(rp_ge, postdata) || {}; }
 					if( typeof p.beforeSubmit === 'function' ) { ret = p.beforeSubmit(postdata); }
 					if(ret[0]){
 						var gurl = rp_ge.url ? rp_ge.url : $($t).jqGrid('getGridParam','editurl');
