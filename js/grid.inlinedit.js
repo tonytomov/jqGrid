@@ -154,7 +154,8 @@ $.jgrid.extend({
 				tmp[oper] = opers.editoper;
 				tmp[idname] = rowid;
 				if(typeof($t.p.inlineData) == 'undefined') $t.p.inlineData ={};
-				if(extraparam) { tmp = $.extend({},tmp,$t.p.inlineData,extraparam);}
+				if(typeof(extraparam) == 'undefined') extraparam ={};
+				tmp = $.extend({},tmp,$t.p.inlineData,extraparam);
 			}
 			if (url == 'clientArray') {
 				tmp = $.extend({},tmp, tmp2);
