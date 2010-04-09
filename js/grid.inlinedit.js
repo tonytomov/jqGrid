@@ -79,7 +79,7 @@ $.jgrid.extend({
 		if(ind === false) {return;}
 		editable = $(ind).attr("editable");
 		url = url ? url : $t.p.editurl;
-		if (editable==="1" && url) {
+		if (editable==="1") {
 			var cm;
 			$("td",ind).each(function(i) {
 				cm = $t.p.colModel[i];

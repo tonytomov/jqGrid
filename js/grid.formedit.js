@@ -862,9 +862,6 @@ $.jgrid.extend({
 					if( $.isFunction(rp_ge.beforeSubmit))  { ret = rp_ge.beforeSubmit(postdata,$("#"+frmgr)); }
 				}
 				gurl = rp_ge.url ? rp_ge.url : $($t).jqGrid('getGridParam','editurl');
-				if(ret[0]) {
-					if(!gurl) { ret[0]=false; ret[1] += " "+$.jgrid.errors.nourl; }
-				}
 				if(ret[0] === false) {
 					$("#FormError>td","#"+frmtb).html(ret[1]);
 					$("#FormError","#"+frmtb).show();
