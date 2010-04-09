@@ -92,7 +92,7 @@ $.jgrid.extend({
     setGridState : function(state) {
 		return this.each(function(){
 			if ( !this.grid ) {return;}
-            $t = this;
+            var $t = this;
             if(state == 'hidden'){
 				$(".ui-jqgrid-bdiv, .ui-jqgrid-hdiv","#gview_"+$t.p.id).slideUp("fast");
 				if($t.p.pager) {$($t.p.pager).slideUp("fast");}
