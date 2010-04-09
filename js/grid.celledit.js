@@ -77,7 +77,7 @@ $.jgrid.extend({
 					$t.p.beforeEditCell($t.rows[iRow].id,nm,tmp,iRow,iCol);
 				}
 				$(cc).html("").append(elc).attr("tabindex","0");
-				window.setTimeout(function () { $(elc).focus();},0);
+				window.setTimeout(function () { $(elc).focus().select();},0);
 				$("input, select, textarea",cc).bind("keydown",function(e) { 
 					if (e.keyCode === 27) {
 						if($("input.hasDatepicker",cc).length >0) {
