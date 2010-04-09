@@ -968,8 +968,8 @@ $.fn.jqGrid = function( pin ) {
 				var dfmt  = $.jgrid.formatter.date.monthNames;
 				var afmt  = $.jgrid.formatter.date.AmPm;
 				var h12to24 = function(ampm, h){
-					if (ampm === 0){ h = (h == 12) ? 0       : h; }
-					          else { h = (h != 12) ? h += 12 : h; }                
+					if (ampm === 0){ if (h == 12) { h = 0;} }
+					          else { if (h != 12) { h += 12; } }
 					return h;
 				}; 
 				for(k=0,hl=format.length;k<hl;k++){
