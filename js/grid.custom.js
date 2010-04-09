@@ -109,7 +109,7 @@ $.jgrid.extend({
             } else if(state=='visible') {
 				$(".ui-jqgrid-hdiv, .ui-jqgrid-bdiv","#gview_"+$t.p.id).slideDown("fast");
 				if($t.p.pager) {$($t.p.pager).slideDown("fast");}
-				if(ts.p.toppager) {$(ts.p.toppager).slideDown("fast");}
+				if($t.p.toppager) {$($t.p.toppager).slideDown("fast");}
 				if($t.p.toolbar[0]===true) {
 					if( $t.p.toolbar[1]=='both') {
 						$($t.grid.ubDiv).slideDown("fast");
