@@ -1305,7 +1305,7 @@ $.jgrid.extend({
 			gID = $t.p.id, onCS = {},
 			dtbl = "DelTbl_"+gID,postd, idname, opers, oper,
 			IDs = {themodal:'delmod'+gID,modalhead:'delhd'+gID,modalcontent:'delcnt'+gID, scrollelm: dtbl};
-			if (isArray(rowids)) { rowids = rowids.join(); }
+			if (jQuery.isArray(rowids)) { rowids = rowids.join(); }
 			if ( $("#"+IDs.themodal).html() != null ) {
 				$("#DelData>td","#"+dtbl).text(rowids);
 				$("#DelError","#"+dtbl).hide();
