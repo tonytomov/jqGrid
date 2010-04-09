@@ -40,11 +40,11 @@ $.jgrid.extend({
 			var twrap = "<div class='tree-wrap tree-wrap-"+$t.p.direction+"' style='width:"+(ident*18)+"px;'>";
 			twrap += "<div style='"+($t.p.direction=="rtl" ? "right:" : "left:")+(lftpos*18)+"px;' class='ui-icon ";
 
-			if(rd[isLeaf] == "true" || rd[isLeaf] ==true) {
+			if(rd[isLeaf] == "true" || rd[isLeaf] === true) {
 				twrap += $t.p.treeIcons.leaf+" tree-leaf'";
 				row.isLeaf = true;
 			} else {
-				if(rd[expanded] == "true" || rd[expanded] == true) {
+				if(rd[expanded] == "true" || rd[expanded] === true) {
 					twrap += $t.p.treeIcons.minus+" tree-minus treeclick'";
 					row.expanded = true;
 				} else {
@@ -97,7 +97,7 @@ $.jgrid.extend({
 		return this.each(function (){
 			var $t = this, i=0, pico;
 			if(!$t.p.treeGrid) { return; }
-			if(!$t.p.treedatatype ) $.extend($t.p,{treedatatype: $t.p.datatype});
+			if(!$t.p.treedatatype ) { $.extend($t.p,{treedatatype: $t.p.datatype}); }
 			$t.p.subGrid = false; $t.p.altRows =false;
 			$t.p.pgbuttons = false; $t.p.pginput = false;
 			$t.p.multiselect = false; $t.p.rowList = [];
@@ -121,13 +121,15 @@ $.jgrid.extend({
 				},$t.p.treeReader );
 			}
 			for (var key in $t.p.colModel){
-				if($t.p.colModel[key].name == $t.p.ExpandColumn) {
-					$t.p.expColInd = i;
-					break;
+				if($t.p.colModel.hasOwnProperty(key)) {
+					if($t.p.colModel[key].name == $t.p.ExpandColumn) {
+						$t.p.expColInd = i;
+						break;
+					}
+					i++;
 				}
-				i++;
 			}
-			if(!$t.p.expColInd) $t.p.expColInd =0;
+			if(!$t.p.expColInd) { $t.p.expColInd = 0; }
 			$.each($t.p.treeReader,function(i,n){
 				if(n){
 					$t.p.colNames.push(n);
@@ -158,8 +160,9 @@ $.jgrid.extend({
 			var childern = $($t).jqGrid("getNodeChildren",record);
 			$(childern).each(function(i){
 				$(this).css("display","none");
-				if(this.expanded)
+				if(this.expanded){
 					$($t).jqGrid("collapseRow",this);
+				}
 			});
 		});
 	},
@@ -180,7 +183,7 @@ $.jgrid.extend({
 					break;
 				case 'adjacency' :
 					$($t.rows).each(function(i){
-						if(this.parent_id == null || String(this.parent_id).toLowerCase() == "null") {
+						if(this.parent_id === null || String(this.parent_id).toLowerCase() == "null") {
 							result.push(this);
 						}
 					});
@@ -214,7 +217,7 @@ $.jgrid.extend({
 				case 'nested' :
 					var lft = parseInt(rc.lft,10), rgt = parseInt(rc.rgt,10), level = parseInt(rc.level,10);
 					$(this.rows).each(function(){
-						if(parseInt(this.level,10) === level-1 && parseInt(this.lft) < lft && parseInt(this.rgt) > rgt) {
+						if(parseInt(this.level,10) === level-1 && parseInt(this.lft,10) < lft && parseInt(this.rgt,10) > rgt) {
 							result = this;
 							return false;
 						}
