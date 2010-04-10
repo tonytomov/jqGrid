@@ -147,7 +147,7 @@ $.fn.jqGrid = function( pin ) {
 			treeANode : -1,
 			ExpandColumn: null,
 			tree_root_level : 0,
-			prmNames: {page:"page",rows:"rows", sort: "sidx",order: "sord", search:"_search", nd:"nd", id:"id",oper:"oper",editoper:"edit",addoper:"add",deloper:"del", subgridid:"id"},
+			prmNames: {page:"page",rows:"rows", sort: "sidx",order: "sord", search:"_search", nd:"nd", id:"id",oper:"oper",editoper:"edit",addoper:"add",deloper:"del", subgridid:"id", npage: null},
 			forceFit : false,
 			gridstate : "visible",
 			cellEdit: false,
@@ -181,7 +181,7 @@ $.fn.jqGrid = function( pin ) {
 			direction : "ltr",
 			toppager: false,
 			headertitles: false,
-			scrollTimeout: 200
+			scrollTimeout: 150
 		}, $.jgrid.defaults, pin || {});
 		var grid={
 			headers:[],
@@ -268,8 +268,9 @@ $.fn.jqGrid = function( pin ) {
 				var tbot = ttop + table.height();
 				var div = rh * rn;
 				var page, npage, empty;
-			    if (ttop <= 0 && tbot < dh && 
-                    (p.lastpage===null||parseInt((tbot + scrollTop + div - 1) / div,10) < p.lastpage))
+				// tbot < dh &&
+			    if (ttop <= 0 &&  
+                    (p.lastpage===undefined||parseInt((tbot + scrollTop + div - 1) / div,10) <= p.lastpage))
                 {
 					npage = parseInt((dh - tbot + div - 1) / div,10);
 					if (tbot >= 0 || npage < 2 || p.scroll === true) {
@@ -284,7 +285,6 @@ $.fn.jqGrid = function( pin ) {
 					npage = parseInt((scrollTop + dh) / div,10) + 2 - page;
 					empty = true;
 				}
-
 				if (npage) {
 					if (p.lastpage && page > p.lastpage) {
 						return;
@@ -295,7 +295,7 @@ $.fn.jqGrid = function( pin ) {
 						p.page = page;
 						if (empty) {
 							grid.selectionPreserver(table[0]);
-							grid.emptyRows(grid.bDiv);
+							grid.emptyRows(grid.bDiv,false);
 						}
 						grid.populate(npage);
 					}
@@ -894,7 +894,7 @@ $.fn.jqGrid = function( pin ) {
 		},
 		sortArrayData = function() {
 			var stripNum = /[\$,%]/g;
-			var rows=[], col=0, st, sv, findSortKey,newDir = (ts.p.sortorder == "asc") ? 1 :-1, reverse=false;
+			var rows=[], col=0, st, sv, findSortKey,newDir = (ts.p.sortorder == "asc") ? 1 :-1, reverse=false, cm;
 			$.each(ts.p.colModel,function(i,v){
 				if(this.index == ts.p.sortname || this.name == ts.p.sortname){
 					if(ts.p.lastsort == i) { reverse = true; }
@@ -922,10 +922,11 @@ $.fn.jqGrid = function( pin ) {
 					return $.trim($cell.toUpperCase());
 				};
 			}
+			cm = ts.p.colModel[col];
 			$.each(ts.rows, function(index, row) {
-				try { sv = $.unformat($(row).children('td').eq(col),{rowId:row.id, colModel:ts.p.colModel[col]},col,true);}
+				try { sv = $.unformat($(row).children('td').eq(col),{rowId:row.id, colModel:cm},col,true);}
 				catch (_) { sv = $(row).children('td').eq(col).text(); }
-				row.sortKey = findSortKey(sv);
+				row.sortKey = cm.custom_sort === undefined ?  findSortKey(sv) : cm.custom_sort.call(ts,sv);
 				rows[index] = this;
 			});
 			if(ts.p.treeGrid) {
