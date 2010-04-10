@@ -1722,7 +1722,11 @@ $.jgrid.extend({
 			var findnav = $(".navtable",elem)[0], $t = this;
 			if (findnav) {
 				var tbd = $("<td></td>");
-				$(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'><span class='ui-icon "+p.buttonicon+"'></span>"+p.caption+"</div>");
+				if(p.buttonicon.toString().toUpperCase() == "NONE") {
+                    $(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'>"+p.caption+"</div>");
+				} else	{
+					$(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'><span class='ui-icon "+p.buttonicon+"'></span>"+p.caption+"</div>");
+				}
 				if(p.id) {$(tbd).attr("id",p.id);}
 				if(p.position=='first'){
 					if(findnav.rows[0].cells.length ===0 ) {
