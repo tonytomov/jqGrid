@@ -177,9 +177,9 @@ $.jgrid.extend({
 						// Before we create searchFilter we need to decide if we want to get back a string or a JS object.
 						//  see http://github.com/tonytomov/jqGrid/issues/#issue/36 for background on the issue.
 						// If p.stringResult is defined, it was explisitly passed to us by user. Honor the choice, whatever it is.
-						if (p['stringResult']===undefined) {
+						if (p.stringResult===undefined) {
 							// to provide backward compatibility, inferring stringResult value from multipleSearch
-							p['stringResult'] = p['multipleSearch']
+							p.stringResult = p.multipleSearch;
 						}
 						// we preserve the return value here to retain access to .add() and other good methods of search form.
 						$t.SearchFilter = $("#"+fid).searchFilter(fields, { groupOps: p.groupOps, operators: oprtr, onClose:hideFilter, resetText: p.Reset, searchText: p.Find, windowTitle: p.caption,  rulesText:p.rulesText, matchText:p.matchText, onSearch: searchFilters, onReset: resetFilters,stringResult:p.stringResult, ajaxSelectOptions: $.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions ||{}), clone: p.cloneSearchRowOnAdd });
