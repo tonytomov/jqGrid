@@ -200,8 +200,8 @@ $.jgrid.extend({
             selector.attr("title", opts.caption);
         }
         if (opts.classname) {
-            selector.addClass(classname);
-            select.addClass(classname);
+            selector.addClass(opts.classname);
+            select.addClass(opts.classname);
         }
         if (opts.width) {
             $(">div",selector).css({"width": opts.width,"margin":"0 auto"});

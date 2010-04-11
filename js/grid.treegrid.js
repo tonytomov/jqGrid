@@ -263,7 +263,7 @@ $.jgrid.extend({
 	getFullTreeNode : function(rc) {
 		var result = [];
 		this.each(function(){
-			var $t = this;
+			var $t = this, len;
 			if(!$t.grid || !$t.p.treeGrid) { return; }
 			switch ($t.p.treeGridModel) {
 				case 'nested' :
