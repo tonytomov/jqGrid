@@ -57,7 +57,8 @@ $.jgrid.extend({
 			// callback functions is fed instead of only post data.
 			// This allows you to emulate a $.ajax call (including calling "complete"/"error"),
 			// while retrieving the data locally in the browser.
-			useDataProxy: false
+			useDataProxy: false,
+			overlay : true
 		}, $.jgrid.search, p || {});
 		return this.each(function() {
 			var $t = this;
@@ -250,7 +251,9 @@ $.jgrid.extend({
 					if(typeof fclm == 'boolean' && !fclm) { return; }
 				}
 				selector.hide();
-				$(".jqgrid-overlay:first","#gbox_"+$t.p.id).hide();
+				if(p.overlay === true) {
+					$(".jqgrid-overlay:first","#gbox_"+$t.p.id).hide();
+				}
 			}
 			function showFilter(){
 				var fl = $(".ui-searchFilter").length;
@@ -259,7 +262,9 @@ $.jgrid.extend({
 					$("#"+fid).css({zIndex:parseInt(zI,10)+fl});
 				}
 				$("#"+fid).show();
-				$(".jqgrid-overlay:first","#gbox_"+$t.p.id).show();
+				if(p.overlay === true) {
+					$(".jqgrid-overlay:first","#gbox_"+$t.p.id).show();
+				}
 				try{$(':input:visible',"#"+fid)[0].focus();}catch(_){}
 			}
 		});
