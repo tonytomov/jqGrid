@@ -454,7 +454,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 		},
 		getAccessor = function(obj, expr) {
-			var ret,p,prm;
+			var ret,p,prm, i;
 			if( typeof expr === 'function') { return expr(obj); }
 			ret = obj[expr];
 			if(ret===undefined) {
@@ -462,9 +462,10 @@ $.fn.jqGrid = function( pin ) {
 					prm = expr.split('.');
 				}
 				try {
-					if(prm.length) {
+					i = prm.length; 
+					if( i ) {
 						ret = obj;
-					    while (ret && prm.length) {
+					    while (ret && i--) {
 							p = prm.shift();
 							ret = ret[p];
 						}
