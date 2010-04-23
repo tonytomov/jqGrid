@@ -5,7 +5,7 @@
  * http://www.roznicki.prv.pl
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl.html
+ * http://www.gnu.org/licenses/gpl-2.0.html
 **/
 $.jgrid.extend({
 	setColumns : function(p) {

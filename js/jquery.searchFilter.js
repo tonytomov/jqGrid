@@ -1,6 +1,6 @@
 /* Plugin:      searchFilter v1.2.9
  * Author:      Kasey Speakman (kasey@cornerspeed.com)
- * License:     Dual Licensed, MIT and GPL v2 (http://www.gnu.org/copyleft/gpl.html)
+ * License:     Dual Licensed, MIT and GPL v2 (http://www.gnu.org/licenses/gpl-2.0.html)
  *
  * REQUIREMENTS:
  *    jQuery 1.3+           (http://jquery.com/)
