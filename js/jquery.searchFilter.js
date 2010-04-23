@@ -541,19 +541,20 @@ jQuery.fn.searchFilter = function(fields, options) {
                 // preparsing the index values for SELECT elements.
                 var fieldvalue, fieldindex, opindex, datavalue, dataindex;
                 fieldvalue = filter['field'];
-                fieldindex = valueindexmap[fieldvalue]['index'];
-                if (fieldindex != undefined) {
+				if (valueindexmap[fieldvalue]) {
+					fieldindex = valueindexmap[fieldvalue]['index'];
+				}
+                if (fieldindex != null) {
                     opindex = valueindexmap[fieldvalue]['ops'][filter['op']];
                     datavalue = filter['data'];
-                    if (valueindexmap[fieldvalue]['data'] == undefined) {
+                    if (valueindexmap[fieldvalue]['data'] == null) {
                         dataindex = -1; // 'data' is not SELECT, Making the var 'defined'
                     } else {
                         dataindex = valueindexmap[fieldvalue]['data'][datavalue]; // 'undefined' may come from here.
                     }
                 }
-
                 // only if values for 'field' and 'op' and 'data' are 'found' in mapping...
-                if (fieldindex != undefined && opindex != undefined && dataindex != undefined) {
+                if (fieldindex != null && opindex != null && dataindex != null) {
                     o.find("select[name='field']")[0].selectedIndex = fieldindex;
                     o.find("select[name='field']").change();
                     o.find("select[name='op']")[0].selectedIndex = opindex;
@@ -562,7 +563,10 @@ jQuery.fn.searchFilter = function(fields, options) {
                     if (o) {
                         o.selectedIndex = dataindex;
                     }
-                }
+					return true
+                } else {
+					return false
+				}
             } // end of this.setFilter fn
         } // end of if fields != null
     }

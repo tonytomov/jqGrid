@@ -82,16 +82,19 @@ $.jgrid.extend({
                         gridDOMobj.SearchFilter.setGroupOp(defaultFilters.groupOp);
                     }
                     if (defaultFilters.rules) {
-                        var f;
-                        for (var i = 0, li = defaultFilters.rules.length; i < li; i++) {
+                        var f
+							, i = 0
+							, li = defaultFilters.rules.length
+							, success = false;
+                        for (; i < li; i++) {
                             f = defaultFilters.rules[i];
                             // we are not trying to counter all issues with filter declaration here. Just the basics to avoid lookup exceptions.
                             if (f.field !== undefined && f.op !== undefined && f.data !== undefined) {
-                                gridDOMobj.SearchFilter.setFilter({
+                                success = gridDOMobj.SearchFilter.setFilter({
                                     'sfref':gridDOMobj.SearchFilter.$.find(".sf:last"),
                                     'filter':$.extend({},f)
                                 });
-                                gridDOMobj.SearchFilter.add();
+								if (success) { gridDOMobj.SearchFilter.add(); }
                             }
                         }
                     }
