@@ -413,7 +413,7 @@
 					ret= $(cellval).text();
 			}
 		}
-		return ret ? ret : cnt===true ? $(cellval).text() : $(cellval).html();
+		return ret ? ret : cnt===true ? $(cellval).text() : $.jgrid.htmlDecode($(cellval).html());
 	};
 	$.unformat.select = function (cellval,options,pos,cnt) {
 		// Spacial case when we have local data and perform a sort
