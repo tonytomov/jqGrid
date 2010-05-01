@@ -1328,8 +1328,7 @@ $.fn.jqGrid = function( pin ) {
 		$(this).append(thead);
 		$("thead tr:first th",this).hover(function(){$(this).addClass('ui-state-hover');},function(){$(this).removeClass('ui-state-hover');});
 		if(this.p.multiselect) {
-			var onSA = true, emp=[], chk;
-			if(typeof ts.p.onSelectAll !== 'function') {onSA=false;}
+			var emp=[], chk;
 			$('#cb_'+$.jgrid.jqID(ts.p.id),this).bind('click',function(){
 				if (this.checked) {
 					$("[id^=jqg_]",ts.rows).attr("checked",true);
@@ -1353,7 +1352,7 @@ $.fn.jqGrid = function( pin ) {
 					ts.p.selarrrow = []; ts.p.selrow = null;
 					chk=false;
 				}
-				if(onSA) {ts.p.onSelectAll.call(ts, chk ? ts.p.selarrrow : emp,chk);}
+				if($.isFunction(ts.p.onSelectAll)) {ts.p.onSelectAll.call(ts, chk ? ts.p.selarrrow : emp,chk);}
 			});
 		}
 		
