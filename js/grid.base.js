@@ -5,7 +5,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2010-02-14
+ * Date: 2010-02-14 
  */
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
@@ -34,7 +34,7 @@ $.extend($.jgrid,{
 		var regexp = /<("[^"]*"|'[^']*'|[^'">])*>/gi;
 		if (v) {
 			v = v.replace(regexp,"");
-			return (v && v !== '&nbsp;' && v !== '&#160;') ? v : "";
+			return (v && v !== '&nbsp;' && v !== '&#160;') ? v.replace(/\"/g,"'") : "";
 		} else {
 			return v;
 		}
