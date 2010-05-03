@@ -487,7 +487,7 @@ jQuery.fn.searchFilter = function(fields, options) {
                 }
                 selDOMobj.selectedIndex = indexmap[setting];
                 $(selDOMobj).change();
-            }
+            };
 
             this.setFilter = function(settings) {
                 /* a "setter" for an arbitrary SearchFilter's filter line.
@@ -512,27 +512,27 @@ jQuery.fn.searchFilter = function(fields, options) {
                 var o = settings['sfref'], filter = settings['filter'];
                 
                 // setting up valueindexmap that we will need to manipulate SELECT elements.
-                var fields = [],
+                var fields = [], i, j , l, lj, li,
                     valueindexmap = {};
                     // example of valueindexmap:
                     // {'field1':{'index':0,'ops':{'eq':0,'ne':1}},'fieldX':{'index':1,'ops':{'eq':0,'ne':1},'data':{'true':0,'false':1}}},
                     // if data is undefined it's a INPUT field. If defined, it's SELECT
                 selDOMobj = o.find("select[name='field']")[0];
-                for (var i=0, l=selDOMobj.options.length; i<l; i++) {
+                for (i=0, l=selDOMobj.options.length; i<l; i++) {
                     valueindexmap[selDOMobj.options[i].value] = {'index':i,'ops':{}};
                     fields.push(selDOMobj.options[i].value);
                 }
-                for (var i=0, li=fields.length; i < li; i++) {
+                for (i=0, li=fields.length; i < li; i++) {
                     selDOMobj = o.find(".ops > select[class='field"+i+"']")[0];
                     if (selDOMobj) {
-                        for (var j=0, lj=selDOMobj.options.length; j<lj; j++) {
+                        for (j=0, lj=selDOMobj.options.length; j<lj; j++) {
                             valueindexmap[fields[i]]['ops'][selDOMobj.options[j].value] = j;
                         }
                     }
                     selDOMobj = o.find(".data > select[class='field"+i+"']")[0];
                     if (selDOMobj) {
                         valueindexmap[fields[i]]['data'] = {}; // this setting is the flag that 'data' is contained in a SELECT
-                        for (var j=0, lj=selDOMobj.options.length; j<lj; j++) {
+                        for (j=0, lj=selDOMobj.options.length; j<lj; j++) {
                             valueindexmap[fields[i]]['data'][selDOMobj.options[j].value] = j;
                         }
                     }
@@ -567,7 +567,7 @@ jQuery.fn.searchFilter = function(fields, options) {
                 } else {
 					return false
 				}
-            } // end of this.setFilter fn
+            }; // end of this.setFilter fn
         } // end of if fields != null
     }
     return new SearchFilter(this, fields, options);
