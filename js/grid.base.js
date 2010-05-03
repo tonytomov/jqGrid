@@ -1140,7 +1140,7 @@ $.fn.jqGrid = function( pin ) {
 					if( ts.p.sortorder == 'asc') {
 						ts.p.sortorder = 'desc';
 					} else if(ts.p.sortorder == 'desc') { ts.p.sortorder = 'asc';}
-				} else { ts.p.sortorder = 'asc';}
+				} else { ts.p.sortorder = ts.p.colModel[idxcol].firstsortorder || 'asc'; }
 				ts.p.page = 1;
 			}
 			if(sor) {
