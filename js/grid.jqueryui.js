@@ -15,6 +15,7 @@ if ($.browser.msie && $.browser.version==8) {
 	};
 }
 // requiere load multiselect before grid
+$.jgrid._multiselect = false;
 if($.ui) {
 	if ($.ui.multiselect ) {
 		if($.ui.multiselect.prototype._setSelected) {
@@ -43,6 +44,7 @@ if($.ui) {
 	            }
 			};
 		}
+		$.jgrid._multiselect = true;
 	}
 }
         
@@ -111,6 +113,11 @@ $.jgrid.extend({
 		});
 	},
     columnChooser : function(opts) {
+		if(!$.jgrid._multiselect) {
+			// should be in language file
+			alert("Multiselect plugin not loaded or loaded after jqGrid. Please load the plugin before the jqGrid!");
+			return;
+		}
         var self = this;
 		if($("#colchooser_"+self[0].p.id).length ) { return; }
         var selector = $('<div id="colchooser_'+self[0].p.id+'" style="position:relative;overflow:hidden"><div><select multiple="multiple"></select></div></div>');
