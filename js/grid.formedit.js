@@ -1567,13 +1567,20 @@ $.jgrid.extend({
 					$(tbd,navtbl)
 					.attr({"title":o.addtitle || "",id : pAdd.id || "add_"+elemids})
 					.click(function(){
-						if (typeof o.addfunc == 'function') {
-							o.addfunc();
-						} else {
-							$($t).jqGrid("editGridRow","new",pAdd);
+						if (!$(this).hasClass('ui-state-disabled')) {
+							if (typeof o.addfunc == 'function') {
+								o.addfunc();
+							} else {
+								$($t).jqGrid("editGridRow","new",pAdd);
+							}
 						}
 						return false;
-					}).hover(function () {$(this).addClass("ui-state-hover");},
+					}).hover(
+						function () {
+							if (!$(this).hasClass('ui-state-disabled')) {
+								$(this).addClass("ui-state-hover");
+							}
+						},
 						function () {$(this).removeClass("ui-state-hover");}
 					);
 					tbd = null;
@@ -1586,19 +1593,26 @@ $.jgrid.extend({
 					$(tbd,navtbl)
 					.attr({"title":o.edittitle || "",id: pEdit.id || "edit_"+elemids})
 					.click(function(){
-						var sr = $t.p.selrow;
-						if (sr) {
-							if(typeof o.editfunc == 'function') {
-								o.editfunc(sr);
+						if (!$(this).hasClass('ui-state-disabled')) {
+							var sr = $t.p.selrow;
+							if (sr) {
+								if(typeof o.editfunc == 'function') {
+									o.editfunc(sr);
+								} else {
+									$($t).jqGrid("editGridRow",sr,pEdit);
+								}
 							} else {
-								$($t).jqGrid("editGridRow",sr,pEdit);
+								viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$t.p.id,jqm:true});
+								$("#jqg_alrt").focus();
 							}
-						} else {
-							viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$t.p.id,jqm:true});
-							$("#jqg_alrt").focus();
 						}
 						return false;
-					}).hover( function () {$(this).addClass("ui-state-hover");},
+					}).hover(
+						function () {
+							if (!$(this).hasClass('ui-state-disabled')) {
+								$(this).addClass("ui-state-hover");
+							}
+						},
 						function () {$(this).removeClass("ui-state-hover");}
 					);
 					tbd = null;
@@ -1611,15 +1625,22 @@ $.jgrid.extend({
 					$(tbd,navtbl)
 					.attr({"title":o.viewtitle || "",id: pView.id || "view_"+elemids})
 					.click(function(){
-						var sr = $t.p.selrow;
-						if (sr) {
-							$($t).jqGrid("viewGridRow",sr,pView);
-						} else {
-							viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$t.p.id,jqm:true});
-							$("#jqg_alrt").focus();
+						if (!$(this).hasClass('ui-state-disabled')) {
+							var sr = $t.p.selrow;
+							if (sr) {
+								$($t).jqGrid("viewGridRow",sr,pView);
+							} else {
+								viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$t.p.id,jqm:true});
+								$("#jqg_alrt").focus();
+							}
 						}
 						return false;
-					}).hover( function () {$(this).addClass("ui-state-hover");},
+					}).hover(
+						function () {
+							if (!$(this).hasClass('ui-state-disabled')) {
+								$(this).addClass("ui-state-hover");
+							}
+						},
 						function () {$(this).removeClass("ui-state-hover");}
 					);
 					tbd = null;
@@ -1632,24 +1653,31 @@ $.jgrid.extend({
 					$(tbd,navtbl)
 					.attr({"title":o.deltitle || "",id: pDel.id || "del_"+elemids})
 					.click(function(){
-						var dr;
-						if($t.p.multiselect) {
-							dr = $t.p.selarrrow;
-							if(dr.length===0) { dr = null; }
-						} else {
-							dr = $t.p.selrow;
-						}
-						if(dr){
-							if("function" == typeof o.delfunc){
-								o.delfunc(dr);
-							}else{
-								$($t).jqGrid("delGridRow",dr,pDel);
+						if (!$(this).hasClass('ui-state-disabled')) {
+							var dr;
+							if($t.p.multiselect) {
+								dr = $t.p.selarrrow;
+								if(dr.length===0) { dr = null; }
+							} else {
+								dr = $t.p.selrow;
 							}
-						} else  {
-							viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$t.p.id,jqm:true}); $("#jqg_alrt").focus();
+							if(dr){
+								if("function" == typeof o.delfunc){
+									o.delfunc(dr);
+								}else{
+									$($t).jqGrid("delGridRow",dr,pDel);
+								}
+							} else  {
+								viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$t.p.id,jqm:true}); $("#jqg_alrt").focus();
+							}
 						}
 						return false;
-					}).hover(function () {$(this).addClass("ui-state-hover");},
+					}).hover(
+						function () {
+							if (!$(this).hasClass('ui-state-disabled')) {
+								$(this).addClass("ui-state-hover");
+							}
+						},
 						function () {$(this).removeClass("ui-state-hover");}
 					);
 					tbd = null;
@@ -1663,9 +1691,16 @@ $.jgrid.extend({
 					$(tbd,navtbl)
 					.attr({"title":o.searchtitle  || "",id:pSearch.id || "search_"+elemids})
 					.click(function(){
-						$($t).jqGrid("searchGrid",pSearch);
+						if (!$(this).hasClass('ui-state-disabled')) {
+							$($t).jqGrid("searchGrid",pSearch);
+						}
 						return false;
-					}).hover(function () {$(this).addClass("ui-state-hover");},
+					}).hover(
+						function () {
+							if (!$(this).hasClass('ui-state-disabled')) {
+								$(this).addClass("ui-state-hover");
+							}
+						},
 						function () {$(this).removeClass("ui-state-hover");}
 					);
 					tbd = null;
@@ -1677,24 +1712,31 @@ $.jgrid.extend({
 					$(tbd,navtbl)
 					.attr({"title":o.refreshtitle  || "",id: "refresh_"+elemids})
 					.click(function(){
-						if($.isFunction(o.beforeRefresh)) { o.beforeRefresh(); }
-						$t.p.search = false;
-						try {
-							var gID = $t.p.id;
-							$("#fbox_"+gID).searchFilter().reset();
-	                        if($.isFunction($t.clearToolbar)) { $t.clearToolbar(false); }
-						} catch (e) {}
-						switch (o.refreshstate) {
-							case 'firstpage':
-							    $($t).trigger("reloadGrid", [{page:1}]);
-								break;
-							case 'current':
-							    $($t).trigger("reloadGrid", [{current:true}]);
-								break;
+						if (!$(this).hasClass('ui-state-disabled')) {
+							if($.isFunction(o.beforeRefresh)) { o.beforeRefresh(); }
+							$t.p.search = false;
+							try {
+								var gID = $t.p.id;
+								$("#fbox_"+gID).searchFilter().reset();
+							    if($.isFunction($t.clearToolbar)) { $t.clearToolbar(false); }
+							} catch (e) {}
+							switch (o.refreshstate) {
+								case 'firstpage':
+								    $($t).trigger("reloadGrid", [{page:1}]);
+									break;
+								case 'current':
+								    $($t).trigger("reloadGrid", [{current:true}]);
+									break;
+							}
+							if($.isFunction(o.afterRefresh)) { o.afterRefresh(); }
 						}
-						if($.isFunction(o.afterRefresh)) { o.afterRefresh(); }
 						return false;
-					}).hover(function () {$(this).addClass("ui-state-hover");},
+					}).hover(
+						function () {
+							if (!$(this).hasClass('ui-state-disabled')) {
+								$(this).addClass("ui-state-hover");
+							}
+						},
 						function () {$(this).removeClass("ui-state-hover");}
 					);
 					tbd = null;
@@ -1748,14 +1790,19 @@ $.jgrid.extend({
 				$(tbd,findnav)
 				.attr("title",p.title  || "")
 				.click(function(e){
-					if ($.isFunction(p.onClickButton) ) { p.onClickButton.call($t,e); }
+					if (!$(this).hasClass('ui-state-disabled')) {
+						if ($.isFunction(p.onClickButton) ) { p.onClickButton.call($t,e); }
+					}
 					return false;
 				})
 				.hover(
-					function () {$(this).addClass("ui-state-hover");},
+					function () {
+						if (!$(this).hasClass('ui-state-disabled')) {
+							$(this).addClass('ui-state-hover');
+						}
+					},
 					function () {$(this).removeClass("ui-state-hover");}
-				)
-				.css("cursor",p.cursor ? p.cursor : "normal");
+				);
 			}
 		});
 	},
