@@ -916,6 +916,8 @@ $.fn.jqGrid = function( pin ) {
 					var fd = ts.p.colModel[col].datefmt || "Y-m-d";
 					return parseDate(fd,$cell).getTime();
 				};
+			} else if($.isFunction(st)) {
+				findSortKey = st;
 			} else {
 				findSortKey = function($cell) {
 					return $.trim($cell.toUpperCase());
@@ -925,7 +927,7 @@ $.fn.jqGrid = function( pin ) {
 			$.each(ts.rows, function(index, row) {
 				try { sv = $.unformat($(row).children('td').eq(col),{rowId:row.id, colModel:cm},col,true);}
 				catch (_) { sv = $(row).children('td').eq(col).text(); }
-				row.sortKey = cm.custom_sort === undefined ?  findSortKey(sv) : cm.custom_sort.call(ts,sv);
+				row.sortKey = findSortKey(sv);
 				rows[index] = this;
 			});
 			if(ts.p.treeGrid) {
