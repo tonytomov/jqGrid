@@ -104,25 +104,30 @@
 				monthNames: opts.monthNames
 			};
 			if( format in opts.masks ) { format = opts.masks[format]; }
-			date = date.split(/[\\\/:_;.\t\T\s-]/);
-			format = format.split(/[\\\/:_;.\t\T\s-]/);
-			// parsing for month names
-		    for(k=0,hl=format.length;k<hl;k++){
-				if(format[k] == 'M') {
-					dM = $.inArray(date[k],dateFormat.i18n.monthNames);
-					if(dM !== -1 && dM < 12){date[k] = dM+1;}
+			if(date.constructor == Date) {
+				timestamp = date;
+			} else {
+				date = date.split(/[\\\/:_;.\t\T\s-]/);
+				format = format.split(/[\\\/:_;.\t\T\s-]/);
+				// parsing for month names
+				for(k=0,hl=format.length;k<hl;k++){
+					if(format[k] == 'M') {
+						dM = $.inArray(date[k],dateFormat.i18n.monthNames);
+						if(dM !== -1 && dM < 12){date[k] = dM+1;}
+					}
+					if(format[k] == 'F') {
+						dM = $.inArray(date[k],dateFormat.i18n.monthNames);
+						if(dM !== -1 && dM > 11){date[k] = dM+1-12;}
+					}
+				    ts[format[k].toLowerCase()] = parseInt(date[k],10);
 				}
-				if(format[k] == 'F') {
-					dM = $.inArray(date[k],dateFormat.i18n.monthNames);
-					if(dM !== -1 && dM > 11){date[k] = dM+1-12;}
-				}
-		        ts[format[k].toLowerCase()] = parseInt(date[k],10);
-		    }
-		    ts.m = parseInt(ts.m,10)-1;
-		    var ty = ts.y;
-		    if (ty >= 70 && ty <= 99) { ts.y = 1900+ts.y; }
-		    else if (ty >=0 && ty <=69) { ts.y= 2000+ts.y; }
-		    timestamp = new Date(ts.y, ts.m, ts.d, ts.h, ts.i, ts.s, ts.u);
+				ts.m = parseInt(ts.m,10)-1;
+				var ty = ts.y;
+				if (ty >= 70 && ty <= 99) { ts.y = 1900+ts.y; }
+				else if (ty >=0 && ty <=69) { ts.y= 2000+ts.y; }
+				timestamp = new Date(ts.y, ts.m, ts.d, ts.h, ts.i, ts.s, ts.u);
+			}
+			
 			if( newformat in opts.masks )  {
 				newformat = opts.masks[newformat];
 			} else if ( !newformat ) {
