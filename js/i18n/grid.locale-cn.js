@@ -6,6 +6,9 @@
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
+ * 
+ * update 2010.05.04
+ *		add double u3000 SPACE for search:odata to fix SEARCH box display err when narrow width from only use of eq/ne/cn/in/lt/gt operator under IE6/7
 **/
 $.jgrid = {
 	defaults : {
@@ -18,8 +21,9 @@ $.jgrid = {
 		caption: "搜索...",
 		Find: "查找",
 		Reset: "重置",
-		odata : ['等于', '不等', '小于', '小于等于','大于','大于等于', '开始于','不开始于','属于','不属于','结束于','不结束于','包含','不包含'],
-		groupOps: [	{ op: "AND", text: "所有" },	{ op: "OR",  text: "任意" }	],
+		odata : ['等于\u3000\u3000', '不等\u3000\u3000', '小于\u3000\u3000', '小于等于','大于\u3000\u3000','大于等于', 
+			'开始于','不开始于','属于\u3000\u3000','不属于','结束于','不结束于','包含\u3000\u3000','不包含'],
+		groupOps: [	{ op: "AND", text: "所有" },	{ op: "OR",  text: "任一" }	],
 		matchText: " 匹配",
 		rulesText: " 规则"
 	},
@@ -102,7 +106,7 @@ $.jgrid = {
 			AmPm : ["am","pm","AM","PM"],
 			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th'},
 			srcformat: 'Y-m-d',
-			newformat: 'Y-m-d',
+			newformat: 'm-d-Y',
 			masks : {
 				ISO8601Long:"Y-m-d H:i:s",
 				ISO8601Short:"Y-m-d",
