@@ -113,11 +113,6 @@ $.jgrid.extend({
 		});
 	},
     columnChooser : function(opts) {
-		if(!$.jgrid._multiselect) {
-			// should be in language file
-			alert("Multiselect plugin not loaded or loaded after jqGrid. Please load the plugin before the jqGrid!");
-			return;
-		}
         var self = this;
 		if($("#colchooser_"+self[0].p.id).length ) { return; }
         var selector = $('<div id="colchooser_'+self[0].p.id+'" style="position:relative;overflow:hidden"><div><select multiple="multiple"></select></div></div>');
@@ -204,6 +199,11 @@ $.jgrid.extend({
             },
 			"msel_opts" : {}
         }, $.jgrid.col, opts || {});
+		if(opts.msel == "multiselect" && !$.jgrid._multiselect) {
+			// should be in language file
+			alert("Multiselect plugin not loaded or loaded after jqGrid. Please load the plugin before the jqGrid!");
+			return;
+		}
 		if($.ui) {
 			if ($.ui.multiselect ) {
 				opts.msel_opts = $.extend($.ui.multiselect.defaults,opts.msel_opts);
