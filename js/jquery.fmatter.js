@@ -104,7 +104,7 @@
 				monthNames: opts.monthNames
 			};
 			if( format in opts.masks ) { format = opts.masks[format]; }
-			if(date.constructor == Date) {
+			if(date.constructor === Date) {
 				timestamp = date;
 			} else {
 				date = date.split(/[\\\/:_;.\t\T\s-]/);
