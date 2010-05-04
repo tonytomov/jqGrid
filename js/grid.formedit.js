@@ -113,16 +113,18 @@ $.jgrid.extend({
 					colNames = $("#"+$t.p.id).jqGrid("getGridParam","colNames"),
 					colModel = $("#"+$t.p.id).jqGrid("getGridParam","colModel"),
 					stempl = ['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc'],
-					j,pos,k,oprtr;
-					oprtr = jQuery.fn.searchFilter.defaults.operators;
+					j,pos,k,oprtr=[];
 					if (p.sopt !==null) {
-						oprtr = [];
 						k=0;
 						for(j=0;j<p.sopt.length;j++) {
 							if( (pos= $.inArray(p.sopt[j],stempl)) != -1 ){
 								oprtr[k] = {op:p.sopt[j],text: p.odata[pos]};
 								k++;
 							}
+						}
+					} else {
+						for(j=0;j<stempl.length;j++) {
+							oprtr[j] = {op:stempl[j],text: p.odata[j]};
 						}
 					}
 					var searchable;
@@ -131,14 +133,15 @@ $.jgrid.extend({
 				        hidden = (v.hidden === true),
 						soptions = $.extend({}, {text: colNames[i], itemval: v.index || v.name}, this.searchoptions),
 						ignoreHiding = (soptions.searchhidden === true);
-						if(typeof soptions.sopt == 'undefined') { soptions.sopt = p.sopt ||  stempl; }
-						k=0;
-						soptions.ops =[];
-						if(soptions.sopt.length>0) {
-							for(j=0;j<soptions.sopt.length;j++) {
-								if( (pos= $.inArray(soptions.sopt[j],stempl)) != -1 ){
-									soptions.ops[k] = {op:soptions.sopt[j],text: p.odata[pos]};
-									k++;
+						if(typeof soptions.sopt !== 'undefined') { 
+							k=0;
+							soptions.ops =[];
+							if(soptions.sopt.length>0) {
+								for(j=0;j<soptions.sopt.length;j++) {
+									if( (pos= $.inArray(soptions.sopt[j],stempl)) != -1 ){
+										soptions.ops[k] = {op:soptions.sopt[j],text: p.odata[pos]};
+										k++;
+									}
 								}
 							}
 						}
