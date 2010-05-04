@@ -546,6 +546,14 @@ jQuery.fn.searchFilter = function(fields, options) {
 				}
                 if (fieldindex != null) {
                     opindex = valueindexmap[fieldvalue]['ops'][filter['op']];
+                    if(opindex === undefined) {
+                        for(i=0,li=options.operators.length; i<li;i++) {
+                            if(options.operators[i].op == filter.op ){
+                                opindex = i;
+                                break;
+                            }
+                        }
+                    }
                     datavalue = filter['data'];
                     if (valueindexmap[fieldvalue]['data'] == null) {
                         dataindex = -1; // 'data' is not SELECT, Making the var 'defined'
