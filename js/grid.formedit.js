@@ -76,7 +76,10 @@ $.jgrid.extend({
                 // Pulling default filter settings out of postData property of grid's properties.:
                 var defaultFilters = gridDOMobj.p.postData[filterSettings.sFilter];
                 // example of what we might get: {"groupOp":"and","rules":[{"field":"amount","op":"eq","data":"100"}]}
-
+				// suppose we have imported this with grid import, the this is a string.
+				if(typeof(defaultFilters) == "string") {
+					defaultFilters = $.jgrid.parse(defaultFilters);
+				}
                 if (defaultFilters) {
                     if (defaultFilters.groupOp) {
                         gridDOMobj.SearchFilter.setGroupOp(defaultFilters.groupOp);
