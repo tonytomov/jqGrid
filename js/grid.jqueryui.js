@@ -199,14 +199,16 @@ $.jgrid.extend({
             },
 			"msel_opts" : {}
         }, $.jgrid.col, opts || {});
-		if(opts.msel == "multiselect" && !$.jgrid._multiselect) {
-			// should be in language file
-			alert("Multiselect plugin not loaded or loaded after jqGrid. Please load the plugin before the jqGrid!");
-			return;
-		}
 		if($.ui) {
 			if ($.ui.multiselect ) {
-				opts.msel_opts = $.extend($.ui.multiselect.defaults,opts.msel_opts);
+				if(opts.msel == "multiselect") {
+					if(!$.jgrid._multiselect) {
+						// should be in language file
+						alert("Multiselect plugin loaded after jqGrid. Please load the plugin before the jqGrid!");
+						return;
+					}
+					opts.msel_opts = $.extend($.ui.multiselect.defaults,opts.msel_opts);
+				}
 			}
 		}
         if (opts.caption) {
