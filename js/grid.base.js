@@ -24,9 +24,10 @@ $.extend($.jgrid,{
 		});
 	},
 	getCellIndex : function (cell) {
-		cell = $(cell);
-		cell = (!cell.is('td') && !cell.is('th') ? cell.closest("td,th") : cell)[0];
-		if ($.browser.msie) { return $.inArray(cell, cell.parentNode.cells); }
+		var c = $(cell);
+		if (c.is('tr')) { return -1; }
+		c = (!c.is('td') && !c.is('th') ? c.closest("td,th") : c)[0];
+		if ($.browser.msie) { return $.inArray(c, c.parentNode.cells); }
 		return cell.cellIndex;
 	},
 	stripHtml : function(v) {
@@ -306,7 +307,7 @@ $.fn.jqGrid = function( pin ) {
 					if (scrollTop != grid.scrollTop) {
 						grid.scrollTop = scrollTop;
 						if (grid.timer) { clearTimeout(grid.timer); }
-						grid.timer = setTimeout(grid.populateVisible, 200);
+						grid.timer = setTimeout(grid.populateVisible, p.scrollTimeout);
 					}
 				}
 				grid.hDiv.scrollLeft = grid.bDiv.scrollLeft;
@@ -1019,7 +1020,6 @@ $.fn.jqGrid = function( pin ) {
 				if(ret=='stop') {return false;}
 				return true;
 			};
-			//pgid= $(ts.p.pager).attr("id") || 'pager',
 			pgid = pgid.substr(1);
 			pgcnt = "pg_"+pgid;
 			lft = pgid+"_left"; cent = pgid+"_center"; rgt = pgid+"_right";
@@ -1049,7 +1049,7 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.viewrecords===true) {$("td#"+pgid+"_"+ts.p.recordpos,"#"+pgcnt).append("<div dir='"+dir+"' style='text-align:"+ts.p.recordpos+"' class='ui-paging-info'></div>");}
 			$("td#"+pgid+"_"+ts.p.pagerpos,"#"+pgcnt).append(pgl);
 			tdw = $(".ui-jqgrid").css("font-size") || "11px";
-			$('body').append("<div id='testpg' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+tdw+";visibility:hidden;' ></div>");
+			$(document.body).append("<div id='testpg' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+tdw+";visibility:hidden;' ></div>");
 			twd = $(pgl).clone().appendTo("#testpg").width();
 			$("#testpg").remove();
 			if(twd > 0) {
@@ -1363,7 +1363,8 @@ $.fn.jqGrid = function( pin ) {
 		$(eg).css("width",grid.width+"px").append("<div class='ui-jqgrid-resize-mark' id='rs_m"+ts.p.id+"'>&#160;</div>");
 		$(gv).css("width",grid.width+"px");
 		thead = $("thead:first",ts).get(0);
-		var	tfoot = "<table role='grid' style='width:"+ts.p.tblwidth+"px' class='ui-jqgrid-ftable' cellspacing='0' cellpadding='0' border='0'><tbody><tr role='row' class='ui-widget-content footrow footrow-"+dir+"'>";
+		var	tfoot = "";
+		if(ts.p.footerrow) { tfoot += "<table role='grid' style='width:"+ts.p.tblwidth+"px' class='ui-jqgrid-ftable' cellspacing='0' cellpadding='0' border='0'><tbody><tr role='row' class='ui-widget-content footrow footrow-"+dir+"'>"; }
 		var thr = $("tr:first",thead);
 		ts.p.disableClick=false;
 		$("th",thr).each(function ( j ) {
@@ -1392,7 +1393,7 @@ $.fn.jqGrid = function( pin ) {
 				if(ts.p.viewsortcols[0]) {$("div span.s-ico",this).show(); if(j==ts.p.lastsort){ $("div span.ui-icon-"+ts.p.sortorder,this).removeClass("ui-state-disabled");}}
 				else if( j == ts.p.lastsort) {$("div span.s-ico",this).show();$("div span.ui-icon-"+ts.p.sortorder,this).removeClass("ui-state-disabled");}
 			}
-			tfoot += "<td role='gridcell' "+formatCol(j,0,'')+">&#160;</td>";
+			if(ts.p.footerrow) { tfoot += "<td role='gridcell' "+formatCol(j,0,'')+">&#160;</td>"; }
 		}).mousedown(function(e) {
 			if ($(e.target).closest("th>span.ui-jqgrid-resize").length != 1) { return; }
 			var ci = $.jgrid.getCellIndex(this);
@@ -1418,7 +1419,7 @@ $.fn.jqGrid = function( pin ) {
 				$(ts).jqGrid("sortableColumns", thr);
 			} catch (e){}
 		}
-		tfoot += "</tr></tbody></table>";
+		if(ts.p.footerrow) { tfoot += "</tr></tbody></table>"; }
 		
 		tbody = document.createElement("tbody");
 		this.appendChild(tbody);
@@ -1690,7 +1691,7 @@ $.fn.jqGrid = function( pin ) {
 $.jgrid.extend({
 	getGridParam : function(pName) {
 		var $t = this[0];
-		if (!$t.grid) {return;}
+		if (!$t || !$t.grid) {return;}
 		if (!pName) { return $t.p; }
 		else {return typeof($t.p[pName]) != "undefined" ? $t.p[pName] : null;}
 	},
@@ -2105,10 +2106,10 @@ $.jgrid.extend({
 	},
 	setGridWidth : function(nwidth, shrink) {
 		return this.each(function(){
+			if (!this.grid ) {return;}
 			var $t = this, cw,
 			initwidth = 0, brd=$t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0, tw=0,
 			cl = 0,cr;
-			if (!$t.grid ) {return;}
 			if(typeof shrink != 'boolean') {
 				shrink=$t.p.shrinkToFit;
 			}
