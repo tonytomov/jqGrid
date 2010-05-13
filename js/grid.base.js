@@ -1358,6 +1358,17 @@ $.fn.jqGrid = function( pin ) {
 			userdata: "userdata",
 			subgrid: {root:"rows", repeatitems: true, cell:"cell"}
 		},ts.p.jsonReader);
+		ts.p.localReader = $.extend(true,{
+			root: "rows",
+			page: "page",
+			total: "total",
+			records: "records",
+			repeatitems: false,
+			cell: "cell",
+			id: "id",
+			userdata: "userdata",
+			subgrid: {root:"rows", repeatitems: true, cell:"cell"}
+		},ts.p.localReader);		
 		if(ts.p.scroll){
 			ts.p.pgbuttons = false; ts.p.pginput=false; ts.p.rowList=[];
 		}
