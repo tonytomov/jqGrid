@@ -965,10 +965,12 @@ $.fn.jqGrid = function( pin ) {
 				case "clientside":
 					beginReq();
 					ts.p.datatype = "local";
-					if(lcf) {ts.p.loadComplete.call(ts,"");}
-					sortArrayData();
-					updatepager(true,true);
+					var req = addLocalData();
+					addJSONData(req,ts.grid.bDiv,rcnt,npage>1,adjust);
+					if(lc) { lc.call(ts,req); }
+					if (pvis) { ts.grid.populateVisible(); }
 					endReq();
+					refreshIndex();
 				break;
 				}
 			}
