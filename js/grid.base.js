@@ -737,6 +737,70 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.userDataOnFooter) { $(ts).jqGrid("footerData","set",ts.p.userData,true); }
 			if (!more) { updatepager(false,true); }
 		},
+		addLocalData = function() {
+			var st;
+			if(!ts.p.data.length) {
+				return;
+			}
+			$.each(ts.p.colModel,function(i,v){
+				if(this.index == ts.p.sortname || this.name == ts.p.sortname){
+					st = this.sorttype || "text";
+					return false;
+				}
+			});
+			if(ts.p.treeGrid) {
+				$(ts).jqGrid("SortTree",ts.p.sortname,ts.p.sortorder, st);
+				return;
+			}
+			var compareFnMap = {
+				'eq':function(queryObj) {return queryObj.equals},
+				'ne':function(queryObj) {return queryObj.not().equals},
+				'lt':function(queryObj) {return queryObj.less},
+				'le':function(queryObj) {return queryObj.lessOrEquals},
+				'gt':function(queryObj) {return queryObj.greater},
+				'ge':function(queryObj) {return queryObj.greaterOrEquals},
+				'cn':function(queryObj) {return queryObj.contains},
+				'bw':function(queryObj) {return queryObj.startsWith},
+				'ew':function(queryObj) {return queryObj.endsWith}
+			},
+			query = $.jgrid.from(ts.p.data);
+			if (ts.p.search === true) {
+				// only multiple search for now
+				var srules = ts.p.postData.filters;
+				if(typeof srules == "string") srules = $.jgrid.parse(srules);
+				for (var i=0, l= srules.rules.length, rule; i<l; i++) {
+					var rule = srules.rules[i], opr = srules.groupOp;
+					if (compareFnMap[rule.op] && rule.field && rule.data && opr) {
+						if(opr.toUpperCase() == "OR") {
+							query = compareFnMap[rule.op](query)(rule.field, rule.data).or();
+						} else {
+							query = compareFnMap[rule.op](query)(rule.field, rule.data);
+						}
+					}
+				}
+			}
+
+			if (ts.p.sortname && ts.p.sortorder) {
+				if(ts.p.sortorder.toUpperCase() == "DESC") {
+					query.orderBy(ts.p.sortname,"d",st);
+				} else {
+					query.orderBy(ts.p.sortname,"a",st);
+				}
+			}
+			var queryResults = query.select(),
+			recordsperpage = parseInt(ts.p.rowNum,10),
+			total = queryResults.length,
+			page = parseInt(ts.p.page,10),
+			totalpages = Math.ceil(total / recordsperpage);
+			queryResults = queryResults.slice( (page-1)*recordsperpage , page*recordsperpage );
+			query = null;
+			return  {
+				'total' : totalpages,
+				'page': page,
+				'records': total,
+				'rows' : queryResults
+			};
+		},
 		updatepager = function(rn, dnd) {
 			var cp, last, base, from,to,tot,fmt, pgboxes = "";
 			base = parseInt(ts.p.page,10)-1;
