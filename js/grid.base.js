@@ -522,7 +522,14 @@ $.fn.jqGrid = function( pin ) {
 			}
 		},
 		addXmlData = function (xml,t, rcnt, more, adjust) {
-			var startReq = new Date();
+			var startReq = new Date(),
+			locdata = ts.p.datatype != "local" && ts.p.loadonce,
+			xmlid;
+			if(locdata) {
+				ts.p.data = [];
+				ts.p._index = {id:{}};
+				ts.p.localReader.id = xmlid = "_id_";
+			}			
 			ts.p.reccount = 0;
 			if($.isXMLDoc(xml)) {
 				if(ts.p.treeANode===-1 && !ts.p.scroll) {
@@ -599,6 +606,10 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 				rowData[ari++] = "</tr>";
+				if(locdata) {
+					rd[xmlid] = rid;
+					ts.p.data.push(rd);
+				}
 				if(ts.p.gridview === false ) {
 					if( ts.p.treeGrid === true) {
 						fpos = ts.p.treeANode >= -1 ? ts.p.treeANode: 0;
@@ -631,6 +642,32 @@ $.fn.jqGrid = function( pin ) {
 			ts.p.treeANode = -1;
 			if(ts.p.userDataOnFooter) { $(ts).jqGrid("footerData","set",ts.p.userData,true); }
 			if (!more) { updatepager(false,true); }
+			if(locdata) {
+				while (ir<gl) {
+					xmlr = gxml[ir];
+					rid = getId(xmlr,ir);
+					if(ts.p.xmlReader.repeatitems){
+						if (!F) { F=orderedCols(gi+si+ni); }
+						var cells = $(ts.p.xmlReader.cell,xmlr);
+						$.each(F, function (k) {
+							var cell = cells[this];
+							if (!cell) { return false; }
+							v = cell.textContent || cell.text;
+							rd[ts.p.colModel[k+gi+si+ni].name] = v;
+						});
+					} else {
+						for(i = 0; i < f.length;i++) {
+							v = $(f[i],xmlr).text();
+							rd[ts.p.colModel[i+gi+si+ni].name] = v;
+						}
+					}
+					rd[xmlid] = rid;
+					ts.p.data.push(rd);
+					rd = {};
+					ir++;
+				}
+				refreshIndex();
+			}
 		},
 		addJSONData = function(data,t, rcnt, more, adjust) {
 			var startReq = new Date();
