@@ -854,15 +854,15 @@ $.fn.jqGrid = function( pin ) {
 			recordsperpage = parseInt(ts.p.rowNum,10),
 			total = queryResults.length,
 			page = parseInt(ts.p.page,10),
-			totalpages = Math.ceil(total / recordsperpage);
+			totalpages = Math.ceil(total / recordsperpage),
+			retresult = {};
 			queryResults = queryResults.slice( (page-1)*recordsperpage , page*recordsperpage );
 			query = null;
-			return  {
-				'total' : totalpages,
-				'page': page,
-				'records': total,
-				'rows' : queryResults
-			};
+			retresult[ts.p.localReader.total] = totalpages;
+			retresult[ts.p.localReader.page] = page;
+			retresult[ts.p.localReader.records] = total;
+			retresult[ts.p.localReader.root] = queryResults;
+			return  retresult;
 		},
 		updatepager = function(rn, dnd) {
 			var cp, last, base, from,to,tot,fmt, pgboxes = "";
