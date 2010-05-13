@@ -884,15 +884,9 @@ $.fn.jqGrid = function( pin ) {
 			pgboxes += ts.p.toppager ?  (pgboxes ? "," + ts.p.toppager : ts.p.toppager) : "";
 			if(pgboxes) {
 				fmt = $.jgrid.formatter.integer || {};
-				if (ts.p.loadonce) {
-					cp = last = 1;
-					ts.p.lastpage = ts.page =1;
-					$(".selbox",pgboxes).attr("disabled",true);
-				} else {
-					cp = intNum(ts.p.page);
-					last = intNum(ts.p.lastpage);
-					$(".selbox",pgboxes).attr("disabled",false);
-				}
+				cp = intNum(ts.p.page);
+				last = intNum(ts.p.lastpage);
+				$(".selbox",pgboxes).attr("disabled",false);
 				if(ts.p.pginput===true) {
 					$('.ui-pg-input',pgboxes).val(ts.p.page);
 					$('#sp_1',pgboxes).html($.fmatter ? $.fmatter.util.NumberFormat(ts.p.lastpage,fmt):ts.p.lastpage);
