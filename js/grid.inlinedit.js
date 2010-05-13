@@ -139,7 +139,7 @@ $.jgrid.extend({
 			});
 			if (cv[0] === false){
 				try {
-					var positions = findPos($("#"+rowid)[0]);
+					var positions = findPos($("#"+$.jgrid.jqID(rowid), $t.grid.bDiv)[0]);
 					info_dialog($.jgrid.errors.errcap,cv[1],$.jgrid.edit.bClose,{left:positions[0],top:positions[1]});
 				} catch (e) {
 					alert(cv[1]);
@@ -226,7 +226,7 @@ $.jgrid.extend({
 			if(fr >= 0) {
 				if($.isFunction($.fn.datepicker)) {
 					try {
-						$("input.hasDatepicker","#"+ind.id).datepicker('hide');
+						$("input.hasDatepicker","#"+$.jgrid.jqID(ind.id)).datepicker('hide');
 					} catch (e) {}
 				}
 				$.each($t.p.colModel, function(i,n){
