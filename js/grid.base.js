@@ -1032,6 +1032,20 @@ $.fn.jqGrid = function( pin ) {
 				}
 			}
 		},
+		refreshIndex = function() {
+			var datalen = ts.p.data.length, idname, i, val, index={};
+			if(ts.p.keyIndex === false) {
+				idname = ts.p.localReader.id;
+			} else {
+				idname = ts.p.colModel[ts.p.keyIndex].name;
+			}
+			for(i =0;i < datalen; i++) {
+				val = $.jgrid.getAccessor(ts.p.data[i],idname);
+				index[val] = i;
+			}
+			ts.p._index['id'] = index;
+			index = null;
+		},		
 		beginReq = function() {
 			ts.grid.hDiv.loading = true;
 			if(ts.p.hiddengrid) { return;}
