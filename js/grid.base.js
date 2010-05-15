@@ -614,8 +614,8 @@ $.fn.jqGrid = function( pin ) {
 					if( ts.p.treeGrid === true) {
 						fpos = ts.p.treeANode >= -1 ? ts.p.treeANode: 0;
 						row = $(rowData.join(''))[0]; // speed overhead
-						try {$(ts).jqGrid("setTreeNode",rd,row);} catch (e) {}
 						if(rl ===  0) { $("tbody:first",t).append(row); } else { $(ts.rows[j+fpos+rcnt]).after(row); }
+						try {$(ts).jqGrid("setTreeNode",rd,row);} catch (e) {}
 					} else {
 						$("tbody:first",t).append(rowData.join(''));
 					}
@@ -752,8 +752,8 @@ $.fn.jqGrid = function( pin ) {
 					if( ts.p.treeGrid === true) {
 						fpos = ts.p.treeANode >= -1 ? ts.p.treeANode: 0;
 						row = $(rowData.join(''))[0];
-						try {$(ts).jqGrid("setTreeNode",rd,row);} catch (e) {}
 						if(rl ===  0) { $("tbody:first",t).append(row); } else { $(ts.rows[i+fpos+rcnt]).after(row); }
+						try {$(ts).jqGrid("setTreeNode",rd,row);} catch (e) {}
 					} else {
 						$("tbody:first",t).append(rowData.join(''));
 					}
