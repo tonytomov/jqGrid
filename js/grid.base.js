@@ -134,6 +134,441 @@ $.extend($.jgrid,{
 		return ret;
 	},
 	ajaxOptions: {},
+	from : function(source,initalQuery){
+		// Original Author Hugo Bonacci
+		// License MIT http://jlinq.codeplex.com/license
+		var queryObject=function(d,q){
+        if(typeof(d)=="string"){
+            d=$.data(d);
+        }
+        var self=this,
+        _data=d,
+        _usecase=true,
+        _trim=false,
+        _query=q,
+		_stripNum = /[\$,%]/g,
+        _lastCommand=null,
+        _lastField=null,
+        _negate=false,
+        _queuedOperator="",
+        _sorting=[],
+        _useProperties=true;
+        if(typeof(d)=="object"&&d.push) {
+            if(d.length>0){
+                if(typeof(d[0])!="object"){
+                    _useProperties=false;
+                }else{
+                    _useProperties=true;
+                }
+            }
+        }else{
+            throw "data provides is not an array";
+        }
+        this._hasData=function(){
+            return _data===null?false:_data.length===0?false:true;
+        };
+        this._getStr=function(s){
+            var phrase=[];
+            if(_trim){
+                phrase.push("$.trim(");
+            }
+            phrase.push(s+".toString()");
+            if(_trim){
+                phrase.push(")");
+            }
+            if(!_usecase){
+                phrase.push(".toLowerCase()");
+            }
+            return phrase.join("");
+        };
+        this._strComp=function(val){
+            if(typeof(val)=="string"){
+                return".toString()";
+            }else{
+                return"";
+            }
+        };
+        this._group=function(f,u){
+            return({field:f.toString(),unique:u,items:[]});
+        };
+        this._toStr=function(phrase){
+            if(_trim){
+                phrase=$.trim(phrase);
+            }
+            if(!_usecase){
+                phrase=phrase.toLowerCase();
+            }
+            phrase=phrase.toString().replace(new RegExp('\\"',"g"),'\\"');
+            return phrase;
+        };
+        this._funcLoop=function(func){
+            var results=[];
+            $.each(_data,function(i,v){
+                results.push(func(v));
+            });
+            return results;
+        };
+        this._append=function(s){
+            if(_query===null){
+                _query="";
+            } else {
+                _query+=_queuedOperator==""?" && ":_queuedOperator;
+            }
+            if(_negate){
+                _query+="!";
+            }
+            _query+="("+s+")";
+            _negate=false;
+            _queuedOperator="";
+        };
+        this._setCommand=function(f,c){
+            _lastCommand=f;
+            _lastField=c;
+        };
+        this._resetNegate=function(){
+            _negate=false;
+        };
+        this._repeatCommand=function(f,v){
+            if(_lastCommand===null){
+                return self;
+            }
+            if(f!=null&&v!=null){
+                return _lastCommand(f,v);
+            }
+            if(_lastField===null){
+                return _lastCommand(f);
+            }
+            if(!_useProperties){
+                return _lastCommand(f);
+            }
+            return _lastCommand(_lastField,f);
+        };
+        this._equals=function(a,b){
+            return(self._compare(a,b,1)===0);
+        };
+        this._compare=function(a,b,d){
+            if( d === undefined) d = 1;
+            if(a===null&&b===null){
+                return 0;
+            }
+            if(a===null&&b!=null){
+                return 1;
+            }
+            if(a!=null&&b===null){
+                return -1;
+            }
+            if(!_usecase) {
+                a=a.toLowerCase();
+                b=b.toLowerCase();
+            }
+            if(a<b){return -d;}
+            if(a>b){return d;}
+            return 0;
+        };
+        this._performSort=function(){
+            if(_sorting.length===0){return;}
+            _data=self._doSort(_data,0);
+        };
+        this._doSort=function(d,q){
+            var by=_sorting[q].by;
+            var dir=_sorting[q].dir;
+            var type = _sorting[q].type;
+            if(q==_sorting.length-1){
+                return self._getOrder(d,by,dir, type);
+            }
+            q++;
+            var values=self._getGroup(d,by,dir);
+            var results=[];
+            for(var i=0;i<values.length;i++){
+                var sorted=self._doSort(values[i].items,q);
+                for(var j=0;j<sorted.length;j++){
+                    results.push(sorted[j]);
+                }
+            }
+            return results;
+        };
+        this._getOrder=function(data,by,dir,type){
+            var sortData=[],_sortData=[], newDir = dir=="a" ? 1 : -1, i,ab,j,
+            findSortKey;
+            
+            if(type === undefined ) type = "text";
+			if (type == 'float' || type== 'number' || type== 'currency') {
+				findSortKey = function($cell) {
+					var key = parseFloat($cell.replace(_stripNum, ''));
+					return isNaN(key) ? 0.00 : key;
+				};
+			} else if (type=='int' || type=='integer') {
+				findSortKey = function($cell) {
+					return parseInt($cell.replace(_stripNum, ''),10);
+				};
+			} else if(type == 'date' || type == 'datetime') {
+				findSortKey = function($cell) {
+					//var fd = ts.p.colModel[col].datefmt || "Y-m-d";
+					return $.jgrid.parseDate('Y-m-d',$cell).getTime();
+				};
+			} else {
+				findSortKey = function($cell) {
+					return $.trim($cell.toUpperCase());
+				};
+			}
+            $.each(data,function(i,v){
+				ab = $.jgrid.getAccessor(v,by);
+				if(ab === undefined) ab = "";
+                ab = findSortKey(ab);
+                _sortData.push({ 'vSort': ab,'index':i});
+            });
+
+            _sortData.sort(function(a,b){
+                a = a.vSort;
+                b = b.vSort;
+                return self._compare(a,b,newDir);
+            });
+			j=0;
+			var nrec= data.length;
+			// overhead, but we do not change the original data.
+			while(j<nrec) {
+				i = _sortData[j].index;
+				sortData.push(data[i]);
+				j++;
+			}
+            return sortData;
+        };
+        this._getGroup=function(data,by,dir){
+            var results=[];
+            var group=null;
+            var last=null, val;
+            $.each(self._getOrder(data,by,dir),function(i,v){
+				val = $.jgrid.getAccessor(v, by);
+				if(val === undefined) val = "";
+                if(!self._equals(last,val)){
+                    last=val;
+                    if(group!=null){
+                        results.push(group);
+                    }
+                    group=self._group(by,val);
+                }
+                group.items.push(v);
+            });
+            if(group!=null){
+                results.push(group);
+            }
+            return results;
+        };
+        this.ignoreCase=function(){
+            _usecase=false;
+            return self;
+        };
+        this.useCase=function(){
+            _usecase=true;
+            return self;
+        };
+        this.trim=function(){
+            _trim=true;
+            return self;
+        };
+        this.noTrim=function(){
+            _trim=false;
+            return self;
+        };
+        this.combine=function(f){
+            var q=$.from(_data);
+            if(!_usecase){ q.ignoreCase(); }
+            if(_trim){ q.trim(); }
+            result=f(q).showQuery();
+            self._append(result);
+            return self;
+        };
+        this.execute=function(){
+            var match=_query;
+            if(match === null){
+                return self;
+            }
+            results=[];
+            $.each(_data,function(i,rec){
+                if(eval(match)){results.push(rec);}
+            });
+            _data=results;
+            return self;
+        };
+        this.data=function(){
+            return _data;
+        };
+        this.select=function(f){
+            self._performSort();
+            if(!self._hasData()){ return[]; }
+            self.execute();
+            if($.isFunction(f)){
+                var results=[];
+                $.each(_data,function(i,v){
+                    results.push(f(v));
+                });
+                return results;
+            }
+            return _data;
+        };
+        this.hasMatch=function(f){
+            if(!self._hasData()) { return false; }
+            self.execute();
+            return _data.length>0;
+        };
+        this.showQuery=function(cmd){
+            var queryString=_query;
+            if(queryString === null) { queryString="no query found"; }
+            if($.isFunction(cmd)){
+                cmd(queryString);return self;
+            }
+            return queryString;
+        };
+        this.andNot=function(f,v,x){
+            _negate=!_negate;
+            return self.and(f,v,x);
+        };
+        this.orNot=function(f,v,x){
+            _negate=!_negate;
+            return self.or(f,v,x);
+        };
+        this.not=function(f,v,x){
+            return self.andNot(f,v,x)
+        };
+        this.and=function(f,v,x){
+            _queuedOperator=" && ";
+            if(f==null){
+                return self;
+            }
+            return self._repeatCommand(f,v,x);
+        };
+        this.or=function(f,v,x){
+            _queuedOperator=" || ";
+            if(f==null) { return self; }
+            return self._repeatCommand(f,v,x);
+        };
+        this.isNot=function(f){
+            _negate=!_negate;
+            return self.is(f);
+        };
+        this.is=function(f){
+            self._append('rec.'+f);
+            self._resetNegate();
+            return self;
+        };
+        this._compareValues=function(func,f,v,how){
+            var fld;
+            if(_useProperties){
+                fld='rec.'+f;
+            }else{
+                fld='rec';
+            }
+            var val=v==null?f:v;
+			var fl = parseFloat(val.replace(_stripNum, ''));
+			if(!isNaN(fl)) {
+				val = fl;
+				fld = 'parseFloat('+fld+')';
+				val = 'parseFloat('+val+')';
+			}else if(typeof(val)=="string"){
+                fld=self._getStr(fld);
+                val=self._getStr('"'+self._toStr(val)+'"');
+            }else if(val.getDate){
+                fld=fld+'.toUTCString()';
+                val='(new Date("'+val.toUTCString()+'").toUTCString())';
+            }else{
+                val=val.toString();
+            }
+            self._append(fld+' '+how+' '+val);
+            self._setCommand(func,f);
+            self._resetNegate();
+            return self;
+        };
+        this.equals=function(f,v){
+            return self._compareValues(self.equals,f,v,"==");
+        };
+        this.greater=function(f,v){
+            return self._compareValues(self.greater,f,v,">");
+        };
+        this.less=function(f,v){
+            return self._compareValues(self.less,f,v,"<");
+        };
+        this.greaterOrEquals=function(f,v){
+            return self._compareValues(self.greaterOrEquals,f,v,">=");
+        };
+        this.lessOrEquals=function(f,v){
+            return self._compareValues(self.lessOrEquals,f,v,"<=");
+        };
+        this.startsWith=function(f,v){
+            var val=v==null?f:v;
+            var length=_trim?$.trim(val.toString()).length:val.toString().length;
+            if(_useProperties){
+                self._append(self._getStr('rec.'+f)+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(v)+'"'));
+            }else{
+                var length=_trim?$.trim(v.toString()).length:v.toString().length;
+                self._append(self._getStr('rec')+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(f)+'"'));
+            }
+            self._setCommand(self.startsWith,f);
+            self._resetNegate();
+            return self;
+        };
+        this.endsWith=function(f,v){
+            var val=v==null?f:v;
+            var length=_trim?$.trim(val.toString()).length:val.toString().length;
+            if(_useProperties){
+                self._append(self._getStr('rec.'+f)+'.substr('+self._getStr('rec.'+f)+'.length-'+length+','+length+') == "'+self._toStr(v)+'"');
+            } else {
+                self._append(self._getStr('rec')+'.substr('+self._getStr('rec')+'.length-"'+self._toStr(f)+'".length,"'+self._toStr(f)+'".length) == "'+self._toStr(f)+'"')
+			}
+            self._setCommand(self.endsWith,f);self._resetNegate();
+            return self;
+        };
+        this.contains=function(f,v){
+            if(_useProperties){
+                self._append(self._getStr('rec.'+f)+'.indexOf("'+self._toStr(v)+'",0) > -1');
+            }else{
+                self._append(self._getStr('rec')+'.indexOf("'+self._toStr(f)+'",0) > -1');
+            }
+            self._setCommand(self.contains,f);
+            self._resetNegate();
+            return self;
+        };
+        this.where=function(cmd){
+            if($.isFunction(cmd)){
+                self.execute();
+                var results=new Array();
+                $.each(_data,function(i,v){
+                    if(cmd(v)){
+                        results.push(v);
+                    }
+                });
+                return $.from(results,self.showQuery())
+            }
+            self._append(cmd);
+            self._setCommand(this.where,null);
+            self._resetNegate();
+            return self;
+        };
+        this.groupBy=function(by,dir){
+            if(!self._hasData()){
+                return null;
+            }
+            return self._getGroup(_data,by,dir);
+        };
+        this.distinct=function(by,dir){
+            var groups=self.groupBy(by,dir);
+            var results=new Array();
+            $.each(groups,function(i,v){
+                results.push(v.unique);
+            });
+            return results;
+        };
+        this.orderBy=function(by,dir,stype){
+            dir=dir==null?"a":$.trim(dir.toString().toLowerCase());
+            if(stype === undefined) stype = "text";
+            if(dir=="desc"||dir=="descending"){dir="d"};
+            if(dir=="asc"||dir=="ascending"){dir="a"};
+            _sorting.push({by:by,dir:dir,type:stype});
+            return self;
+        };
+        return self;
+		};
+    return new queryObject(source,null);
+	},
 	extend : function(methods) {
 		$.extend($.fn.jqGrid,methods);
 		if (!this.no_legacy_api) {
