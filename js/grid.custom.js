@@ -119,10 +119,10 @@ $.jgrid.extend({
 				if($t.p.footerrow) { $(".ui-jqgrid-sdiv","#gbox_"+$t.p.id).slideDown("fast"); }
 				$(".ui-jqgrid-titlebar-close span",$t.grid.cDiv).removeClass("ui-icon-circle-triangle-s").addClass("ui-icon-circle-triangle-n");
 				$t.p.gridstate = 'visible';
-            }
-            
-        });
-    },
+			}
+
+		});
+	},
 	updateGridRows : function (data, rowidname, jsonreader) {
 		var nm, success=false, title;
 		this.each(function(){
@@ -532,51 +532,51 @@ $.jgrid.extend({
 			var triggerToolbar = function() {
 				var sdata={}, j=0, v, nm, sopt={};
 				$.each($t.p.colModel,function(i,n){
-                    nm = this.index || this.name;
-                    var so = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : "bw";
+					nm = this.index || this.name;
+					var so = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : "bw";
 					switch (this.stype) {
 						case 'select' :
 							v = $("select[name="+nm+"]",$t.grid.hDiv).val();
 							if(v) {
 								sdata[nm] = v;
-                                sopt[nm] = so;
+								sopt[nm] = so;
 								j++;
 							} else {
-                                try {
-                                    delete $t.p.postData[nm];
-                                } catch (e) {}
-                            }
+								try {
+									delete $t.p.postData[nm];
+								} catch (e) {}
+							}
 							break;
 						case 'text':
 							v = $("input[name="+nm+"]",$t.grid.hDiv).val();
 							if(v) {
 								sdata[nm] = v;
-                                sopt[nm] = so;
+								sopt[nm] = so;
 								j++;
 							} else {
-                                try {
-                                    delete $t.p.postData[nm];
-                                } catch (e) {}
-                            }
-                            break;
+								try {
+									delete $t.p.postData[nm];
+								} catch (e) {}
+							}
+							break;
 					}
 				});
 				var sd =  j>0 ? true : false;
-                if(!p.stringResult) {
-                    $.extend($t.p.postData,sdata);
-                } else {
-                    var ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[";
-                    var gi=0;
-                    $.each(sdata,function(i,n){
-                        if (gi > 0) {ruleGroup += ",";}
-                        ruleGroup += "{\"field\":\"" + i + "\",";
-                        ruleGroup += "\"op\":\"" + sopt[i] + "\",";
-                        ruleGroup += "\"data\":\"" + n + "\"}";
-                        gi++;
-                    });
-                    ruleGroup += "]}";
-                    $.extend($t.p.postData,{filters:ruleGroup});
-                }
+				if(!p.stringResult) {
+					$.extend($t.p.postData,sdata);
+				} else {
+					var ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[";
+					var gi=0;
+					$.each(sdata,function(i,n){
+						if (gi > 0) {ruleGroup += ",";}
+						ruleGroup += "{\"field\":\"" + i + "\",";
+						ruleGroup += "\"op\":\"" + sopt[i] + "\",";
+						ruleGroup += "\"data\":\"" + n + "\"}";
+						gi++;
+					});
+					ruleGroup += "]}";
+					$.extend($t.p.postData,{filters:ruleGroup});
+				}
 				var saveurl;
 				if($t.p.searchurl) {
 					saveurl = $t.p.url;
@@ -590,30 +590,30 @@ $.jgrid.extend({
 			};
 			var clearToolbar = function(trigger){
 				var sdata={}, v, j=0, nm;
-                trigger = (typeof trigger != 'boolean') ? true : trigger;
+				trigger = (typeof trigger != 'boolean') ? true : trigger;
 				$.each($t.p.colModel,function(i,n){
 					v = (this.searchoptions && this.searchoptions.defaultValue) ? this.searchoptions.defaultValue : "";
-                    nm = this.index || this.name;
+					nm = this.index || this.name;
 					switch (this.stype) {
 						case 'select' :
 							var v1;
 							$("select[name="+nm+"] option",$t.grid.hDiv).each(function (i){
-                                if(i===0) { this.selected = true; }
+								if(i===0) { this.selected = true; }
 								if ($(this).text() == v) {
 									this.selected = true;
 									v1 = $(this).val();
 									return false;
 								}
 							});
-                            if (v1) {
-                                // post the key and not the text
-                                sdata[nm] = v1;
-                                j++;
-                            } else {
-                                try {
-                                    delete $t.p.postData[nm];
-                                } catch(e) {}
-                            }
+							if (v1) {
+								// post the key and not the text
+								sdata[nm] = v1;
+								j++;
+							} else {
+								try {
+									delete $t.p.postData[nm];
+								} catch(e) {}
+							}
 							break;
 						case 'text':
 							$("input[name="+nm+"]",$t.grid.hDiv).val(v);
@@ -621,29 +621,29 @@ $.jgrid.extend({
 								sdata[nm] = v;
 								j++;
 							} else {
-                                try {
-                                    delete $t.p.postData[nm];
-                                } catch (e){}
-                            }
-                            break;
+								try {
+									delete $t.p.postData[nm];
+								} catch (e){}
+							}
+							break;
 					}
 				});
 				var sd =  j>0 ? true : false;
-                if(!p.stringResult) {
-                    $.extend($t.p.postData,sdata);
-                } else {
-                    var ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[";
-                    var gi=0;
-                    $.each(sdata,function(i,n){
-                        if (gi > 0) {ruleGroup += ",";}
-                        ruleGroup += "{\"field\":\"" + i + "\",";
-                        ruleGroup += "\"op\":\"" + "eq" + "\",";
-                        ruleGroup += "\"data\":\"" + n + "\"}";
-                        gi++;
-                    });
-                    ruleGroup += "]}";
-                    $.extend($t.p.postData,{filters:ruleGroup});
-                }
+				if(!p.stringResult) {
+					$.extend($t.p.postData,sdata);
+				} else {
+					var ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[";
+					var gi=0;
+					$.each(sdata,function(i,n){
+						if (gi > 0) {ruleGroup += ",";}
+						ruleGroup += "{\"field\":\"" + i + "\",";
+						ruleGroup += "\"op\":\"" + "eq" + "\",";
+						ruleGroup += "\"data\":\"" + n + "\"}";
+						gi++;
+					});
+					ruleGroup += "]}";
+					$.extend($t.p.postData,{filters:ruleGroup});
+				}
 				var saveurl;
 				if($t.p.searchurl) {
 					saveurl = $t.p.url;
@@ -652,17 +652,17 @@ $.jgrid.extend({
 				var bcv = false;
 				if($.isFunction(p.beforeClear)){bcv = p.beforeClear.call($t);}
 				if(!bcv) {
-                    if(trigger) {
-                        $($t).jqGrid("setGridParam",{search:sd}).trigger("reloadGrid",[{page:1}]);
-                    }
-                }
+					if(trigger) {
+						$($t).jqGrid("setGridParam",{search:sd}).trigger("reloadGrid",[{page:1}]);
+					}
+				}
 				if(saveurl) {$($t).jqGrid("setGridParam",{url:saveurl});}
 				if($.isFunction(p.afterClear)){p.afterClear();}
 			};
 			var toggleToolbar = function(){
-                var trow = $("tr.ui-search-toolbar",$t.grid.hDiv);
-                if(trow.css("display")=='none') { trow.show(); }
-                else { trow.hide(); }
+				var trow = $("tr.ui-search-toolbar",$t.grid.hDiv);
+				if(trow.css("display")=='none') { trow.show(); }
+				else { trow.hide(); }
 			};
 			// create the row
 			function bindEvents(selector, events) {
@@ -678,7 +678,7 @@ $.jgrid.extend({
 				}
 			}
 			var tr = $("<tr class='ui-search-toolbar' role='rowheader'></tr>");
-            var timeoutHnd;
+			var timeoutHnd;
 			$.each($t.p.colModel,function(i,n){
 				var cm=this, thd , th, soptions,surl,self;
 				th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-"+$t.p.direction+"'></th>");
@@ -772,18 +772,18 @@ $.jgrid.extend({
 						if(soptions.dataInit !== undefined) { soptions.dataInit($("input",thd)[0]); }
 						if(soptions.dataEvents !== undefined) { bindEvents($("input",thd)[0], soptions.dataEvents); }
 						if(p.autosearch===true){
-                            if(p.searchOnEnter) {
-                                $("input",thd).keypress(function(e){
-                                    var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
-                                    if(key == 13){
-                                        triggerToolbar();
-                                        return false;
-                                    }
-                                    return this;
-                                });
-                            } else {
-                                $("input",thd).keydown(function(e){
-                                    var key = e.which;
+							if(p.searchOnEnter) {
+								$("input",thd).keypress(function(e){
+									var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+									if(key == 13){
+										triggerToolbar();
+										return false;
+									}
+									return this;
+								});
+							} else {
+								$("input",thd).keydown(function(e){
+									var key = e.which;
 									switch (key) {
 										case 9 :
 										case 16:
@@ -794,11 +794,11 @@ $.jgrid.extend({
 										case 27:
 											break;
 										default :
-	                                        if(timeoutHnd) { clearTimeout(timeoutHnd); }
-	                                        timeoutHnd = setTimeout(function(){triggerToolbar();},500);
+											if(timeoutHnd) { clearTimeout(timeoutHnd); }
+											timeoutHnd = setTimeout(function(){triggerToolbar();},500);
 									}
-                                });
-                            }
+								});
+							}
 						}
 						break;
 					}
