@@ -75,7 +75,7 @@ $.extend($.jgrid,{
 				if (ampm === 0){ if (h == 12) { h = 0;} }
 				          else { if (h != 12) { h += 12; } }
 				return h;
-			}; 
+			};
 			for(k=0,hl=format.length;k<hl;k++){
 				if(format[k] == 'M') {
 					dM = $.inArray(date[k],dfmt);
@@ -294,12 +294,12 @@ $.extend($.jgrid,{
 			if(type === undefined ) type = "text";
 			if (type == 'float' || type== 'number' || type== 'currency' || type== 'numeric') {
 				findSortKey = function($cell) {
-					var key = parseFloat($cell.replace(_stripNum, ''));
+					var key = parseFloat( String($cell).replace(_stripNum, ''));
 					return isNaN(key) ? 0.00 : key;
 				};
 			} else if (type=='int' || type=='integer') {
 				findSortKey = function($cell) {
-					return parseInt($cell.replace(_stripNum, ''),10);
+					return $cell ? parseFloat(String($cell).replace(_stripNum, '')) : 0;
 				};
 			} else if(type == 'date' || type == 'datetime') {
 				findSortKey = function($cell) {
@@ -685,7 +685,7 @@ $.fn.jqGrid = function( pin ) {
 			headertitles: false,
 			scrollTimeout: 200,
 			data : [],
-			_index : {id:{}}			
+			_index : {},
 		}, $.jgrid.defaults, pin || {});
 		var grid={
 			headers:[],
@@ -963,7 +963,7 @@ $.fn.jqGrid = function( pin ) {
 			xmlid;
 			if(locdata) {
 				ts.p.data = [];
-				ts.p._index = {id:{}};
+				ts.p._index = {};
 				ts.p.localReader.id = xmlid = "_id_";
 			}			
 			ts.p.reccount = 0;
@@ -1120,7 +1120,7 @@ $.fn.jqGrid = function( pin ) {
 			
 			var dReader = ts.p.datatype == "local" ? ts.p.localReader : ts.p.jsonReader,
 			locdata = ts.p.datatype != "local" && ts.p.loadonce;
-			if(locdata) { ts.p.data = []; ts.p._index = {id:{}};}
+			if(locdata) { ts.p.data = []; ts.p._index = {};}
 			ts.p.reccount = 0;
 			
 			var ir=0,v,i,j,row,f=[],F,cur,gi=0,si=0,ni=0,len,drows,idn,rd={}, fpos,rl = ts.rows.length,idr,rowData=[],ari=0,cn=(ts.p.altRows === true) ? " "+ts.p.altclass:"",cn1,lp;
@@ -1472,7 +1472,6 @@ $.fn.jqGrid = function( pin ) {
 					if(lc) { lc.call(ts,req); }
 					if (pvis) { ts.grid.populateVisible(); }
 					endReq();
-					refreshIndex();
 				break;
 				}
 			}
@@ -1488,7 +1487,7 @@ $.fn.jqGrid = function( pin ) {
 				val = $.jgrid.getAccessor(ts.p.data[i],idname);
 				index[val] = i;
 			}
-			ts.p._index['id'] = index;
+			ts.p._index = index;
 			index = null;
 		},		
 		beginReq = function() {
@@ -1519,76 +1518,6 @@ $.fn.jqGrid = function( pin ) {
 					$("#load_"+ts.p.id).hide();
 					break;
 			}
-		},
-		sortArrayData = function() {
-			var stripNum = /[\$,%]/g;
-			var rows=[], col=0, st, sv, findSortKey,newDir = (ts.p.sortorder == "asc") ? 1 :-1, reverse=false, cm;
-			$.each(ts.p.colModel,function(i,v){
-				if(this.index == ts.p.sortname || this.name == ts.p.sortname){
-					if(ts.p.lastsort == i) { reverse = true; }
-					col = i;
-					st = this.sorttype;
-					return false;
-				}
-			});
-			if (st == 'float' || st== 'number' || st== 'currency') {
-				findSortKey = function($cell) {
-					var key = parseFloat($cell.replace(stripNum, ''));
-					return isNaN(key) ? 0 : key;
-				};
-			} else if (st=='int' || st=='integer') {
-				findSortKey = function($cell) {
-					return intNum($cell.replace(stripNum, ''),0);
-				};
-			} else if(st == 'date' || st == 'datetime') {
-				findSortKey = function($cell) {
-					var fd = ts.p.colModel[col].datefmt || "Y-m-d";
-					return parseDate(fd,$cell).getTime();
-				};
-			} else if($.isFunction(st)) {
-				findSortKey = st;
-			} else {
-				findSortKey = function($cell) {
-					return $.trim($cell.toUpperCase());
-				};
-			}
-			cm = ts.p.colModel[col];
-			$.each(ts.rows, function(index, row) {
-				try { sv = $.unformat($(row).children('td').eq(col),{rowId:row.id, colModel:cm},col,true);}
-				catch (_) { sv = $(row).children('td').eq(col).text(); }
-				row.sortKey = findSortKey(sv);
-				rows[index] = this;
-			});
-			if(ts.p.treeGrid) {
-				$(ts).jqGrid("SortTree",newDir);
-			} else {
-				if(reverse) {
-					rows.reverse();
-				} else {
-					rows.sort(function(a, b) {
-						if (a.sortKey < b.sortKey) {return -newDir;}
-						if (a.sortKey > b.sortKey) {return newDir;}
-						return 0;
-					});
-				}
-				if(rows[0]){
-					$("td",rows[0]).each( function( k ) {
-						$(this).css("width",grid.headers[k].width+"px");
-					});
-					ts.grid.cols = rows[0].cells;
-				}
-				var cn = "";
-				if(ts.p.altRows) { cn = ts.p.altclass; }
-				$.each(rows, function(i, row) {
-					if(cn) {
-						if(i%2 ==1) {$(row).addClass(cn);}
-						else {$(row).removeClass(cn);}
-					}
-					$('tbody',ts.grid.bDiv).append(row);
-					row.sortKey = null;
-				});
-			}
-			ts.grid.bDiv.scrollTop = 0;
 		},
 		setPager = function (pgid, tp){
 			var sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='ui-separator'></span></td>",
@@ -2445,32 +2374,56 @@ $.jgrid.extend({
 					else { $(this).removeClass(cn); }
 				});
 			}
+			if($t.p.datatype == 'local') {
+				var pos  = null;
+				pos = $t.p._index[rowid];
+				if(pos !== null) {
+					$t.p.data.splice(pos,1);
+					delete $t.p._index[rowid];
+				}
+			}
+
 		});
 		return success;
 	},
 	setRowData : function(rowid, data, cssp) {
-		var nm, success=false, title;
+		var nm, success=true, title;
 		this.each(function(){
-			var t = this, vl, ind, cp = typeof cssp;
-			if(!t.grid) {return false;}
+			if(!this.grid) {return false;}
+			var t = this, vl, ind, cp = typeof cssp, lcdata={};
 			ind = t.rows.namedItem(rowid);
 			if(!ind) { return false; }
 			if( data ) {
-				$(this.p.colModel).each(function(i){
-					nm = this.name;
-					if( data[nm] !== undefined) {
-						vl = t.formatter( rowid, data[nm], i, data, 'edit');
-						title = this.title ? {"title":$.jgrid.stripHtml(vl)} : {};
-						if(t.p.treeGrid===true && nm == t.p.ExpandColumn) {
-							$("td:eq("+i+") > span:first",ind).html(vl).attr(title);
-						} else {
-							$("td:eq("+i+")",ind).html(vl).attr(title); 
+				try {
+					$(this.p.colModel).each(function(i){
+						nm = this.name;
+						if( data[nm] !== undefined) {
+							// @TODO  we must handle propertly the formatter date
+							lcdata[nm] = data[nm];
+							vl = t.formatter( rowid, data[nm], i, data, 'edit');
+							title = this.title ? {"title":$.jgrid.stripHtml(vl)} : {};
+							if(t.p.treeGrid===true && nm == t.p.ExpandColumn) {
+								$("td:eq("+i+") > span:first",ind).html(vl).attr(title);
+							} else {
+								$("td:eq("+i+")",ind).html(vl).attr(title); 
+							}
 						}
-						success = true;
+					});
+					if(t.p.datatype == 'local') {
+						var pos  = null;
+						pos = t.p._index[rowid];
+						if(pos !== null) {
+							t.p.data[pos] = $.extend(true, t.p.data[pos], lcdata)
+						}
+						lcdata = null;
 					}
-				});
+				} catch (e) {
+					success = false;
+				}
 			}
-			if(cp === 'string') {$(ind).addClass(cssp);} else if(cp === 'object') {$(ind).css(cssp);}
+			if(success) {
+				if(cp === 'string') {$(ind).addClass(cssp);} else if(cp === 'object') {$(ind).css(cssp);}
+			}
 		});
 		return success;
 	},
@@ -2502,7 +2455,7 @@ $.jgrid.extend({
 					}
 				}
 				cn = t.p.altclass;
-				var k = 0, cna ="",
+				var k = 0, cna ="", lcdata = {},
 				air = $.isFunction(t.p.afterInsertRow) ? true : false;
 				while(k < datalen) {
 					data = rdata[k];
@@ -2526,6 +2479,8 @@ $.jgrid.extend({
 					}
 					for(i = gi+si+ni; i < this.p.colModel.length;i++){
 						nm = this.p.colModel[i].name;
+						//@TODO handle properly formatter date
+						lcdata[nm] = data[nm] || "";
 						v = t.formatter( rowid, data[nm], i, data, 'add');
 						prp = t.formatCol(i,1,v);
 						row += "<td role=\"gridcell\" aria-describedby=\""+t.p.id+"_"+nm+"\" "+prp+">"+v+"</td>";
@@ -2566,6 +2521,11 @@ $.jgrid.extend({
 					}
 					if(air) { t.p.afterInsertRow.call(t,rowid,data,data); }
 					k++;
+					if(t.p.datatype == 'local') {
+						t.p._index[rowid] = t.p.data.length;
+						t.p.data.push(data);
+						lcdata = {};
+					}
 				}
 				if( t.p.altRows === true && !aradd) {
 					if (pos == "last") {
@@ -2939,6 +2899,7 @@ $.jgrid.extend({
 			if($t.p.footerrow && clearfooter) { $(".ui-jqgrid-ftable td",$t.grid.sDiv).html("&#160;"); }
 			$t.p.selrow = null; $t.p.selarrrow= []; $t.p.savedRow = [];
 			$t.p.records = 0;$t.p.page='0';$t.p.lastpage='0';$t.p.reccount=0;
+			$t.p.data = []; $t.p_index = {};
 			$t.updatepager(true,false);
 		});
 	},
