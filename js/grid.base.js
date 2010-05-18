@@ -685,7 +685,7 @@ $.fn.jqGrid = function( pin ) {
 			headertitles: false,
 			scrollTimeout: 200,
 			data : [],
-			_index : {},
+			_index : {}
 		}, $.jgrid.defaults, pin || {});
 		var grid={
 			headers:[],
@@ -1477,18 +1477,20 @@ $.fn.jqGrid = function( pin ) {
 			}
 		},
 		refreshIndex = function() {
-			var datalen = ts.p.data.length, idname, i, val, index={};
+			var datalen = ts.p.data.length, idname, i, val,
+			ni = ts.p.rownumbers===true ? 1 :0,
+			gi = ts.p.multiselect ===true ? 1 :0,
+			si = ts.p.subGrid===true ? 1 :0;
+
 			if(ts.p.keyIndex === false) {
 				idname = ts.p.localReader.id;
 			} else {
-				idname = ts.p.colModel[ts.p.keyIndex].name;
+				idname = ts.p.colModel[ts.p.keyIndex+gi+si+ni].name;
 			}
 			for(i =0;i < datalen; i++) {
 				val = $.jgrid.getAccessor(ts.p.data[i],idname);
-				index[val] = i;
+				ts.p._index[val] = i;
 			}
-			ts.p._index = index;
-			index = null;
 		},		
 		beginReq = function() {
 			ts.grid.hDiv.loading = true;
@@ -2201,6 +2203,7 @@ $.fn.jqGrid = function( pin ) {
 		ts.formatCol = formatCol;
 		ts.sortData = sortData;
 		ts.updatepager = updatepager;
+		ts.refreshIndex = refreshIndex;
 		ts.formatter = function ( rowId, cellval , colpos, rwdat, act){return formatter(rowId, cellval , colpos, rwdat, act);};
 		$.extend(grid,{populate : populate, emptyRows: emptyRows});
 		this.grid = grid;
@@ -2327,7 +2330,7 @@ $.jgrid.extend({
 				if(getall) { ind = $t.rows[j]; }
 				$('td',ind).each( function(i) {
 					nm = $t.p.colModel[i].name; 
-					if ( nm !== 'cb' && nm !== 'subgrid') {
+					if ( nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn') {
 						if($t.p.treeGrid===true && nm == $t.p.ExpandColumn) {
 							res[nm] = $.jgrid.htmlDecode($("span:first",this).html());
 						} else {
@@ -2364,6 +2367,14 @@ $.jgrid.extend({
 				}  
 				if(rowid == $t.p.selrow) {$t.p.selrow=null;}
 			}
+			if($t.p.datatype == 'local') {
+				var pos  = null;
+				pos = $t.p._index[rowid];
+				if(pos !== null) {
+					$t.p.data.splice(pos,1);
+					$t.refreshIndex();
+				}
+			}
 			if( ri === 0 && success ) {
 				$t.updateColumns();
 			}
@@ -2374,15 +2385,6 @@ $.jgrid.extend({
 					else { $(this).removeClass(cn); }
 				});
 			}
-			if($t.p.datatype == 'local') {
-				var pos  = null;
-				pos = $t.p._index[rowid];
-				if(pos !== null) {
-					$t.p.data.splice(pos,1);
-					delete $t.p._index[rowid];
-				}
-			}
-
 		});
 		return success;
 	},
