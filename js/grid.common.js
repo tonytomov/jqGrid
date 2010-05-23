@@ -548,7 +548,7 @@ function checkTime(time){
 	return true;
 }
 function checkValues(val, valref,g) {
-	var edtrul,i, nm;
+	var edtrul,i, nm, dft;
 	if(typeof(valref)=='string'){
 		for( i =0, len=g.p.colModel.length;i<len; i++){
 			if(g.p.colModel[i].name==valref) {
@@ -595,7 +595,11 @@ function checkValues(val, valref,g) {
 		}
 		if(edtrul.date === true) {
 			if( !(rqfield === false && isEmpty(val)) ) {
-				var dft = g.p.colModel[valref].datefmt || "Y-m-d";
+				if(g.p.colModel[valref].formatoptions && g.p.colModel[valref].formatoptions.newformat) {
+					dft = g.p.colModel[valref].formatoptions.newformat;
+				} else {
+					dft = g.p.colModel[valref].datefmt || "Y-m-d";
+				}
 				if(!checkDate (dft, val)) { return [false,nm+": "+jQuery.jgrid.edit.msg.date+" - "+dft,""]; }
 			}
 		}
