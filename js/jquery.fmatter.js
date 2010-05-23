@@ -119,7 +119,9 @@
 						dM = $.inArray(date[k],dateFormat.i18n.monthNames);
 						if(dM !== -1 && dM > 11){date[k] = dM+1-12;}
 					}
-				    ts[format[k].toLowerCase()] = parseInt(date[k],10);
+					if(date[k]) {
+						ts[format[k].toLowerCase()] = parseInt(date[k],10);
+					}
 				}
 				ts.m = parseInt(ts.m,10)-1;
 				var ty = ts.y;
@@ -462,6 +464,17 @@
 			return ret.join(", ");
 		} else {
 			return cell || "";
+		}
+	};
+	$.unformat.date = function (cellval, opts) {
+		var op = $.jgrid.formatter.date || {};
+		if(!isUndefined(opts.formatoptions)) {
+			op = $.extend({},op,opts.formatoptions);
+		}		
+		if(!isEmpty(cellval)) {
+			return  $.fmatter.util.DateFormat(op.newformat,cellval,op.srcformat,op);
+		} else {
+			return $.fn.fmatter.defaultFormat(cellval, opts);
 		}
 	};
 	function fireFormatter(formatType,cellval, opts, rwd, act) {
