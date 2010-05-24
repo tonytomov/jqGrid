@@ -1,11 +1,11 @@
 ;(function ($) {
 /*
- * jqGrid  3.6.5 - jQuery Grid
+ * jqGrid  3.7 beta- jQuery Grid
  * Copyright (c) 2008, Tony Tomov, tony@trirand.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2010-05-05 
+ * Date: 2010-05-24 
  */
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
@@ -468,12 +468,14 @@ $.extend($.jgrid,{
 			switch(swst) {
 				case 'int':
 				case 'integer':
+					val = isNaN(Number(val)) ? '0' : Number(val); // To be fixed with more inteligent code
 					fld = 'parseInt('+fld+',10)';
 					val = 'parseInt('+val+',10)';
 					break;
 				case 'float':
 				case 'number':
 				case 'numeric':
+					val = isNaN(Number(val)) ? '0' : Number(val); // To be fixed with more inteligent code
 					val = val.replace(_stripNum, '');
 					fld = 'parseFloat('+fld+')';
 					val = 'parseFloat('+val+')';
@@ -823,6 +825,7 @@ $.fn.jqGrid = function( pin ) {
 			scrollGrid: function() {
 				if(p.scroll) {
 					var scrollTop = grid.bDiv.scrollTop;
+					if(grid.scrollTop === undefined) { grid.scrollTop = 0; }
 					if (scrollTop != grid.scrollTop) {
 						grid.scrollTop = scrollTop;
 						if (grid.timer) { clearTimeout(grid.timer); }
@@ -1313,7 +1316,6 @@ $.fn.jqGrid = function( pin ) {
 			},
 			query = $.jgrid.from(ts.p.data);
 			if (ts.p.search === true) {
-				// only multiple search for now
 				var srules = ts.p.postData.filters;
 				if(srules) {
 					if(typeof srules == "string") srules = $.jgrid.parse(srules);
@@ -1329,7 +1331,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 				} else {
 					try {
-						query = compareFnMap[ts.p.postData.searchOper](query)(ts.p.postData.searchField, ts.p.postData.searchString);
+						query = compareFnMap[ts.p.postData.searchOper](query)(ts.p.postData.searchField, ts.p.postData.searchString,cmtypes[ts.p.postData.searchField]);
 					} catch (se){}
 				}
 			}
@@ -2093,8 +2095,8 @@ $.fn.jqGrid = function( pin ) {
 				ts.p.selrow=null;
 				if(ts.p.multiselect) {ts.p.selarrrow =[];$('#cb_'+$.jgrid.jqID(ts.p.id),ts.grid.hDiv).attr("checked",false);}
 				ts.p.savedRow = [];
-				if(ts.p.scroll) {emptyRows(ts.grid.bDiv,true);}
 			}
+			if(ts.p.scroll) {emptyRows(ts.grid.bDiv,true);}
 			if (opts && opts.page) {
 				var page = opts.page;
 				if (page > ts.p.lastpage) { page = ts.p.lastpage; }
