@@ -468,15 +468,15 @@ $.extend($.jgrid,{
 			switch(swst) {
 				case 'int':
 				case 'integer':
-					val = isNaN(Number(val)) ? '0' : Number(val); // To be fixed with more inteligent code
+					val = isNaN(Number(val)) ? '0' : val; // To be fixed with more inteligent code
 					fld = 'parseInt('+fld+',10)';
 					val = 'parseInt('+val+',10)';
 					break;
 				case 'float':
 				case 'number':
 				case 'numeric':
-					val = isNaN(Number(val)) ? '0' : Number(val); // To be fixed with more inteligent code
-					val = val.replace(_stripNum, '');
+					val = String(val).replace(_stripNum, '');
+					val = isNaN(Number(val)) ? '0' : val; // To be fixed with more inteligent code
 					fld = 'parseFloat('+fld+')';
 					val = 'parseFloat('+val+')';
 					break;
@@ -666,7 +666,7 @@ $.fn.jqGrid = function( pin ) {
 			treeANode : -1,
 			ExpandColumn: null,
 			tree_root_level : 0,
-			prmNames: {page:"page",rows:"rows", sort: "sidx",order: "sord", search:"_search", nd:"nd", id:"id",oper:"oper",editoper:"edit",addoper:"add",deloper:"del", subgridid:"id", npage: 'npage', totalrows:"totalrows"},
+			prmNames: {page:"page",rows:"rows", sort: "sidx",order: "sord", search:"_search", nd:"nd", id:"id",oper:"oper",editoper:"edit",addoper:"add",deloper:"del", subgridid:"id", npage: null, totalrows:"totalrows"},
 			forceFit : false,
 			gridstate : "visible",
 			cellEdit: false,
@@ -1368,6 +1368,7 @@ $.fn.jqGrid = function( pin ) {
 			if (ts.p.scroll) {
 				var rows = $("tbody:first > tr", ts.grid.bDiv);
 				base = to - rows.length;
+				ts.p.reccount = rows.length;
 				var rh = rows.outerHeight();
 				if (rh) {
 					var top = base * rh;
@@ -1449,11 +1450,10 @@ $.fn.jqGrid = function( pin ) {
 					} else {
 						lc = function(req) {
 							ts.p.page++;
-							if(ts.p.page > ts.p.lastpage) { return; }
+							ts.grid.hDiv.loading = false;
 							if (lcf) {
 								ts.p.loadComplete.call(ts,req);
 							}
-							ts.grid.hDiv.loading = false;
 							populate(npage-1);
 						};
 					}
