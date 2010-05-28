@@ -43,6 +43,7 @@ $.jgrid.extend({
 			if(rd[isLeaf] == "true" || rd[isLeaf] === true) {
 				twrap += $t.p.treeIcons.leaf+" tree-leaf'";
 				rd[isLeaf] = true;
+				rd[expanded] = false;
 			} else {
 				if(rd[expanded] == "true" || rd[expanded] === true) {
 					twrap += $t.p.treeIcons.minus+" tree-minus treeclick'";
@@ -55,10 +56,10 @@ $.jgrid.extend({
 			}
 			twrap += "</div></div>";
 			if(!$t.p.loadonce) {
+				rd[$t.p.localReader.id] = row.id;
 				$t.p.data.push(rd);
 				$t.p._index[row.id]=$t.p.data.length-1;
 			}
-			
 			if(parseInt(rd[level],10) !== parseInt($t.p.tree_root_level,10)) {                
 				if(!$($t).jqGrid("isVisibleNode",rd)){ 
 					$(row).css("display","none");
