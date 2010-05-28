@@ -1136,9 +1136,9 @@ $.fn.jqGrid = function( pin ) {
 				} else { rcnt = rcnt > 0 ? rcnt :0; }
 			} else { return; }
 			
-			var dReader = ts.p.datatype == "local" ? ts.p.localReader : ts.p.jsonReader,
+			var dReader = ts.p.datatype == "local" ? ts.p.localReader : ts.p.jsonReader, locid,
 			locdata = ts.p.datatype != "local" && ts.p.loadonce;
-			if(locdata) { ts.p.data = []; ts.p._index = {};}
+			if(locdata) { ts.p.data = []; ts.p._index = {}; locid = ts.p.localReader.id = "_id_";}
 			ts.p.reccount = 0;
 			
 			var ir=0,v,i,j,row,f=[],F,cur,gi=0,si=0,ni=0,len,drows,idn,rd={}, fpos,rl = ts.rows.length,idr,rowData=[],ari=0,cn=(ts.p.altRows === true) ? " "+ts.p.altclass:"",cn1,lp;
@@ -1205,7 +1205,7 @@ $.fn.jqGrid = function( pin ) {
 					rd[ts.p.colModel[j+gi+si+ni].name] = v;
 				}
 				rowData[ari++] = "</tr>";
-				if(locdata) { ts.p.data.push(rd); }
+				if(locdata) { rd[locid] = idr; ts.p.data.push(rd); }
 				if(ts.p.gridview === false ) {
 					if( ts.p.treeGrid === true) {
 						fpos = ts.p.treeANode >= -1 ? ts.p.treeANode: 0;
@@ -1534,7 +1534,7 @@ $.fn.jqGrid = function( pin ) {
 			gi = ts.p.multiselect ===true ? 1 :0,
 			si = ts.p.subGrid===true ? 1 :0;
 
-			if(ts.p.keyIndex === false) {
+			if(ts.p.keyIndex === false || ts.p.loadonce === true) {
 				idname = ts.p.localReader.id;
 			} else {
 				idname = ts.p.colModel[ts.p.keyIndex+gi+si+ni].name;
@@ -1824,6 +1824,7 @@ $.fn.jqGrid = function( pin ) {
 		ts.p.sortorder = ts.p.sortorder.toLowerCase();
 		if(this.p.treeGrid === true) {
 			try { $(this).jqGrid("setTreeGrid");} catch (_) {}
+			if(ts.p.datatype != "local") { ts.p.localReader = {id: "_id_"};	}
 		}
 		if(this.p.subGrid) {
 			try { $(ts).jqGrid("setSubGrid");} catch (_){}
@@ -1873,6 +1874,7 @@ $.fn.jqGrid = function( pin ) {
 		if(ts.p.scroll){
 			ts.p.pgbuttons = false; ts.p.pginput=false; ts.p.rowList=[];
 		}
+		if(ts.p.data.length) { refreshIndex(); }
 		var thead = "<thead><tr class='ui-jqgrid-labels' role='rowheader'>",
 		tdc, idn, w, res, sort,
 		td, ptr, tbody, imgs,iac="",idc="";
@@ -2520,7 +2522,7 @@ $.jgrid.extend({
 						cna = t.p.altRows === true ?  (t.rows.length-1)%2 === 0 ? cn : "" : "";
 					}
 					if(ni){
-						prp = t.formatCol(ni,1,'');
+						prp = t.formatCol(0,1,'');
 						row += "<td role=\"gridcell\" aria-describedby=\""+t.p.id+"_rn\" class=\"ui-state-default jqgrid-rownum\" "+prp+">0</td>";
 					}
 					if(gi) {
