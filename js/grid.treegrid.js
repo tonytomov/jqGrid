@@ -381,9 +381,9 @@ $.jgrid.extend({
 					this.p.treeANode = rc1.rowIndex;
 					this.p.datatype = this.p.treedatatype;
 					if(this.p.treeGridModel == 'nested') {
-						$(this).jqGrid("setGridParam",{postData:{nodeid:rc.id,n_left:rc.lft,n_right:rc.rgt,n_level:rc.level}});
+						$(this).jqGrid("setGridParam",{postData:{nodeid:id,n_left:rc.lft,n_right:rc.rgt,n_level:rc.level}});
 					} else {
-						$(this).jqGrid("setGridParam",{postData:{nodeid:rc.id,parentid:rc.parent_id,n_level:rc.level}});
+						$(this).jqGrid("setGridParam",{postData:{nodeid:id,parentid:rc.parent_id,n_level:rc.level}});
 					}
 					$(this).trigger("reloadGrid");
 					if(this.p.treeGridModel == 'nested') {
