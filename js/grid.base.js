@@ -119,10 +119,10 @@ $.extend($.jgrid,{
 		if( typeof expr === 'function') { return expr(obj); }
 		ret = obj[expr];
 		if(ret===undefined) {
-		    if ( typeof expr === 'string' ) {
-				prm = expr.split('.');
-			}
 			try {
+				if ( typeof expr === 'string' ) {
+					prm = expr.split('.');
+				}
 				i = prm.length; 
 				if( i ) {
 					ret = obj;
@@ -791,7 +791,7 @@ $.fn.jqGrid = function( pin ) {
 				var page, npage, empty;
 				// tbot < dh &&
 			    if (tbot < dh && ttop <= 0 &&  
-					(p.lastpage===undefined||parseInt((tbot + scrollTop + div - 1) / div,10) < p.lastpage))
+					(p.lastpage===undefined||parseInt((tbot + scrollTop + div - 1) / div,10) <= p.lastpage))
 				{
 					npage = parseInt((dh - tbot + div - 1) / div,10);
 					if (tbot >= 0 || npage < 2 || p.scroll === true) {
