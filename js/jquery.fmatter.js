@@ -438,6 +438,9 @@
 				var so = oSelect.split(";"), j=0;
 				for(var i=0; i<so.length;i++){
 					sv = so[i].split(":");
+					if(sv.length > 2 ) {
+						sv[1] = jQuery.map(sv,function(n,i){if(i>0) { return n; } }).join(":");
+					}					
 					if(msl) {
 						if(jQuery.inArray(sv[1],scell)>-1) {
 							ret[j] = sv[0];
