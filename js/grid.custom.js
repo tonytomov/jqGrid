@@ -562,9 +562,7 @@ $.jgrid.extend({
 					}
 				});
 				var sd =  j>0 ? true : false;
-				if(!p.stringResult) {
-					$.extend($t.p.postData,sdata);
-				} else {
+				if(p.stringResult === true || $t.p.datatype == "local") {
 					var ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[";
 					var gi=0;
 					$.each(sdata,function(i,n){
@@ -576,6 +574,8 @@ $.jgrid.extend({
 					});
 					ruleGroup += "]}";
 					$.extend($t.p.postData,{filters:ruleGroup});
+				} else {
+					$.extend($t.p.postData,sdata);
 				}
 				var saveurl;
 				if($t.p.searchurl) {
@@ -629,9 +629,7 @@ $.jgrid.extend({
 					}
 				});
 				var sd =  j>0 ? true : false;
-				if(!p.stringResult) {
-					$.extend($t.p.postData,sdata);
-				} else {
+				if(p.stringResult === true || $t.p.datatype == "local") {
 					var ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[";
 					var gi=0;
 					$.each(sdata,function(i,n){
@@ -643,6 +641,8 @@ $.jgrid.extend({
 					});
 					ruleGroup += "]}";
 					$.extend($t.p.postData,{filters:ruleGroup});
+				} else {
+					$.extend($t.p.postData,sdata);
 				}
 				var saveurl;
 				if($t.p.searchurl) {
