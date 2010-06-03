@@ -1,7 +1,7 @@
 ;(function($){
 /**
  * jqGrid (fi) Finnish Translation
- * Jukka Inkeri  awot.fi
+ * Jukka Inkeri  awot.fi  2010-05-19 Version
  * http://awot.fi
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
@@ -9,17 +9,19 @@
 **/
 $.jgrid = {
 	defaults : {
-		recordtext: "View {0} - {1} of {2}",
-	    emptyrecords: "No records to view",
+		//recordtext: "N&auml;yt&auml; {0} - {1} / {2}",
+		recordtext: " {0}-{1}/{2}",
+	        emptyrecords: "Ei n&auml;ytett&auml;vi&auml;",
 		loadtext: "Haetaan...",
-		pgtext : "Page {0} of {1}"
+		//pgtext : "Sivu {0} / {1}"
+		pgtext : "{0}/{1}"
 	},
 	search : {
 	    caption: "Etsi...",
 	    Find: "Etsi",
 	    Reset: "Tyhj&auml;&auml;",
-	    odata : ['equal', 'not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain'],
-	    groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	],
+	    odata : ['=', '<>', '<', '<=','>','>=', 'alkaa','ei ala','joukossa','ei joukossa ','loppuu','ei lopu','sis&auml;lt&auml;&auml;','ei sis&auml;ll&auml;'],
+	    groupOps: [	{ op: "JA", text: "kaikki" },	{ op: "TAI",  text: "mik&auml; tahansa" }	],
 		matchText: " match",
 		rulesText: " rules"
 	},
@@ -29,10 +31,10 @@ $.jgrid = {
 	    bSubmit: "OK",
 	    bCancel: "Peru",
 		bClose: "Sulje",
-		saveData: "Data has been changed! Save changes?",
-		bYes : "Yes",
-		bNo : "No",
-		bExit : "Cancel",
+		saveData: "Tietoja muutettu! Tallenetaanko?",
+		bYes : "K",
+		bNo : "E",
+		bExit : "Peru",
 	    msg: {
 	        required:"pakollinen",
 	        number:"Anna kelvollinen nro",
@@ -41,16 +43,16 @@ $.jgrid = {
 	        email: "virheellinen sposti ",
 	        integer: "Anna kelvollinen kokonaisluku",
 			date: "Anna kelvollinen pvm",
-			url: "is not a valid URL. Prefix required ('http://' or 'https://')",
-			nodefined : " is not defined!",
-			novalue : " return value is required!",
+			url: "Ei ole sopiva linkki(URL). Alku oltava ('http://' tai 'https://')",
+			nodefined : " ei ole m&auml;&auml;ritelty!",
+			novalue : " paluuarvo vaaditaan!",
 			customarray : "Custom function should return array!",
 			customfcheck : "Custom function should be present in case of custom checking!"
 		}
 	},
 	view : {
-	    caption: "View Record",
-	    bClose: "Close"
+	    caption: "N&auml;  rivi",
+	    bClose: "Sulje"
 	},
 	del : {
 	    caption: "Poista",
@@ -72,7 +74,7 @@ $.jgrid = {
 	    alertcap: "Varoitus",
 	    alerttext: "Valitse rivi",
 		viewtext: "",
-		viewtitle: "View selected row"
+		viewtitle: "Nayta valitut rivit"
 	},
 	col : {
 	    caption: "Nayta/Piilota sarakkeet",
