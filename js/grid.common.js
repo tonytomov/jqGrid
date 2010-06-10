@@ -232,6 +232,7 @@ function info_dialog(caption, content,c_b, modalopt) {
 		function(){jQuery(this).addClass('ui-state-hover');}, 
 		function(){jQuery(this).removeClass('ui-state-hover');}
 	);
+	if(jQuery.isFunction(mopt.beforeOpen) ) mopt.beforeOpen();
 	viewModal("#info_dialog",{
 		onHide: function(h) {
 			h.w.hide().remove();
@@ -240,6 +241,7 @@ function info_dialog(caption, content,c_b, modalopt) {
 		modal :mopt.modal,
 		jqm:jm
 	});
+	if(jQuery.isFunction(mopt.afterOpen) ) mopt.afterOpen();
 	try{$("#info_dialog").focus();} catch (e){}
 }
 // Form Functions
