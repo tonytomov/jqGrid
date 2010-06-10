@@ -1244,6 +1244,17 @@ $.fn.jqGrid = function( pin ) {
 			if(locdata) {
 				while (ir<len) {
 					cur = drows[ir];
+					idr = $.jgrid.getAccessor(cur,idn);
+					if(idr === undefined) {
+						idr = br+ir;
+						if(f.length===0){
+							if(dReader.cell){
+								var ccur = cur[dReader.cell];
+								idr = ccur[idn] || idr;
+								ccur=null;
+							}
+						}
+					}
 					if(cur) {
 						if (dReader.repeatitems) {
 							if(dReader.cell) {cur = $.jgrid.getAccessor(cur,dReader.cell);}
@@ -1254,6 +1265,7 @@ $.fn.jqGrid = function( pin ) {
 							v = $.jgrid.getAccessor(cur,F[j]);
 							rd[ts.p.colModel[j+gi+si+ni].name] = v;
 						}
+						rd[locid] = idr;
 						ts.p.data.push(rd);
 						rd = {};
 					}
@@ -1936,7 +1948,7 @@ $.fn.jqGrid = function( pin ) {
 		}
 		
 		if(ts.p.autowidth===true) {
-			var pw = $(eg).innerWidth();
+			var pw = eg[0].clientWidth;
 			ts.p.width = pw > 0?  pw: 'nw';
 		}
 		setColWidth();
