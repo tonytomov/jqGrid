@@ -785,6 +785,8 @@ $.jgrid.extend({
 								$("input",thd).keydown(function(e){
 									var key = e.which;
 									switch (key) {
+										case 13:
+											return false;
 										case 9 :
 										case 16:
 										case 37:
