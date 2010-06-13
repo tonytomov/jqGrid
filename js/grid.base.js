@@ -1387,6 +1387,7 @@ $.fn.jqGrid = function( pin ) {
 					var height = parseInt(ts.p.records,10) * rh;
 				    $(">div:first",ts.grid.bDiv).css({height : height}).children("div:first").css({height:top,display:top?"":"none"});
 				}
+				ts.grid.bDiv.scrollLeft = ts.grid.hDiv.scrollLeft;
 			}
 			pgboxes = ts.p.pager ? ts.p.pager : "";
 			pgboxes += ts.p.toppager ?  (pgboxes ? "," + ts.p.toppager : ts.p.toppager) : "";
@@ -1736,7 +1737,11 @@ $.fn.jqGrid = function( pin ) {
 				ts.p.selarrrow =[];
 				ts.p.savedRow =[];
 			}
-			if(ts.p.scroll) {emptyRows(ts.grid.bDiv,true);}
+			if(ts.p.scroll) {
+				var sscroll = ts.grid.bDiv.scrollLeft;
+				emptyRows(ts.grid.bDiv,true);
+				ts.grid.hDiv.scrollLeft = sscroll;
+			}
 			if(ts.p.subGrid && ts.p.datatype=='local') {
 				$("td.sgexpanded","#"+ts.p.id).each(function(){
 					$(this).trigger("click");
@@ -1948,7 +1953,7 @@ $.fn.jqGrid = function( pin ) {
 		}
 		
 		if(ts.p.autowidth===true) {
-			var pw = eg[0].clientWidth;
+			var pw = $(eg).innerWidth();
 			ts.p.width = pw > 0?  pw: 'nw';
 		}
 		setColWidth();
