@@ -207,6 +207,7 @@ $.jgrid.extend({
 						} else {
 							alert("Error Row: "+rowid+" Result: " +res.status+":"+res.statusText+" Status: "+stat);
 						}
+						$($t).jqGrid("restoreRow",rowid, afterrestorefunc);
 					}
 				}, $.jgrid.ajaxOptions, $t.p.ajaxRowOptions || {}));
 			}

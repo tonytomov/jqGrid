@@ -140,8 +140,9 @@ jQuery.fn.searchFilter = function(fields, options) {
             return this;
         };
 
-        this.reset = function(e) {
-            jQ.find(".ui-reset").click();
+        this.reset = function(o) {
+            if(o===undefined) o = false;
+            jQ.find(".ui-reset").trigger('click',[o]);
             return this;
         };
 
@@ -445,11 +446,11 @@ jQuery.fn.searchFilter = function(fields, options) {
                 opts.onSearch(ruleGroup);
                 return false;
             });
-            jQ.find(".ui-reset").click(function(e) {
+            jQ.find(".ui-reset").click(function(e,op) {
                 var ui = jQuery(jQ.selector);
                 ui.find(".ui-del").click(); // removes all filters, resets the last one
                 ui.find("select[name='groupOp']")[0].selectedIndex = 0; // changes the op back to the default one
-                opts.onReset();
+                opts.onReset(op);
                 return false;
             });
             jQ.find(".ui-add-last").click(function() {

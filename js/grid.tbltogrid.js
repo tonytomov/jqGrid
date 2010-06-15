@@ -70,7 +70,7 @@ jQuery(selector).each(function() {
 	// Mark it as jqGrid
 	jQuery(this).addClass("scroll");
 
-	jQuery(this).jqGrid($.extend({
+	jQuery(this).jqGrid(jQuery.extend({
 		datatype: "local",
 		width: w,
 		colNames: colNames,

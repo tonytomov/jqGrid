@@ -119,7 +119,9 @@
 						dM = $.inArray(date[k],dateFormat.i18n.monthNames);
 						if(dM !== -1 && dM > 11){date[k] = dM+1-12;}
 					}
-				    ts[format[k].toLowerCase()] = parseInt(date[k],10);
+					if(date[k]) {
+						ts[format[k].toLowerCase()] = parseInt(date[k],10);
+					}
 				}
 				ts.m = parseInt(ts.m,10)-1;
 				var ty = ts.y;
@@ -436,6 +438,9 @@
 				var so = oSelect.split(";"), j=0;
 				for(var i=0; i<so.length;i++){
 					sv = so[i].split(":");
+					if(sv.length > 2 ) {
+						sv[1] = jQuery.map(sv,function(n,i){if(i>0) { return n; } }).join(":");
+					}					
 					if(msl) {
 						if(jQuery.inArray(sv[1],scell)>-1) {
 							ret[j] = sv[0];
@@ -462,6 +467,17 @@
 			return ret.join(", ");
 		} else {
 			return cell || "";
+		}
+	};
+	$.unformat.date = function (cellval, opts) {
+		var op = $.jgrid.formatter.date || {};
+		if(!isUndefined(opts.formatoptions)) {
+			op = $.extend({},op,opts.formatoptions);
+		}		
+		if(!isEmpty(cellval)) {
+			return  $.fmatter.util.DateFormat(op.newformat,cellval,op.srcformat,op);
+		} else {
+			return $.fn.fmatter.defaultFormat(cellval, opts);
 		}
 	};
 	function fireFormatter(formatType,cellval, opts, rwd, act) {

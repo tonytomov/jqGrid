@@ -241,17 +241,19 @@ $.jgrid.extend({
 				grid.trigger("reloadGrid",[{page:1}]);
 				if(p.closeAfterSearch) { hideFilter($("#"+fid)); }
 			}
-			function resetFilters(filters) {
-				var hasFilters = (filters !== undefined),
+			function resetFilters(op) {
+				var reload = op && op.hasOwnProperty("reload") ? op.reload : true;
 				grid = $("#"+$t.p.id), sdata=[];
-				grid[0].p.search = hasFilters;
+				grid[0].p.search = false;
 				if(p.multipleSearch===false) {
 					sdata[p.sField] = sdata[p.sValue] = sdata[p.sOper] = "";
 				} else {
 					sdata[p.sFilter] = "";
 				}
 				$.extend(grid[0].p.postData,sdata);
-				grid.trigger("reloadGrid",[{page:1}]);
+				if(reload) {
+					grid.trigger("reloadGrid",[{page:1}]);
+				}
 				if(p.closeAfterReset) { hideFilter($("#"+fid)); }
 			}
 			function hideFilter(selector) {
@@ -446,7 +448,7 @@ $.jgrid.extend({
 					cle = true;
 				}
 				var tms = $("<span></span>").append(frm).append(bt);
-				createModal(IDs,tms,p,"#gview_"+$t.p.id,$("#gview_"+$t.p.id)[0]);
+				createModal(IDs,tms,p,"#gview_"+$t.p.id,$("#gbox_"+$t.p.id)[0]);
 				if(rtlb) {
 					$("#pData, #nData","#"+frmtb+"_2").css("float","right");
 					$(".EditButton","#"+frmtb+"_2").css("text-align","left");
@@ -642,7 +644,7 @@ $.jgrid.extend({
 				$(".FormElement", "#"+frmtb).each(function(i) {
 					var celm = $(".customelement", this);
 					if (celm.length) {
-						var  elem = celm[0], nm = elem.name;
+						var  elem = celm[0], nm = $(elem).attr('name');
 						$.each($t.p.colModel, function(i,n){
 							if(this.name == nm && this.editoptions && $.isFunction(this.editoptions.custom_value)) {
 								try {
@@ -958,11 +960,12 @@ $.jgrid.extend({
 										postdata[n] = $.jgrid.htmlDecode(v);
 									});
 								}
+								rp_ge.reloadAfterSubmit = rp_ge.reloadAfterSubmit && $t.p.datatype != "local";
 								// the action is add
 								if(postdata[oper] == opers.addoper ) {
 									//id processing
 									// user not set the id ret[2]
-									if(!ret[2]) { ret[2] = parseInt($t.p.records,10)+1; }
+									if(!ret[2]) { ret[2] = (parseInt($t.p.records,10)+1)+""; }
 									postdata[idname] = ret[2];
 									if(rp_ge.closeAfterAdd) {
 										if(rp_ge.reloadAfterSubmit) { $($t).trigger("reloadGrid"); }
@@ -1444,7 +1447,7 @@ $.jgrid.extend({
 									$("#DelError>td","#"+dtbl).html(ret[1]);
 									$("#DelError","#"+dtbl).show();
 								} else {
-									if(rp_ge.reloadAfterSubmit) {
+									if(rp_ge.reloadAfterSubmit && $t.p.datatype != "local") {
 										$($t).trigger("reloadGrid");
 									} else {
 										var toarr = [];
@@ -1723,7 +1726,7 @@ $.jgrid.extend({
 							$t.p.search = false;
 							try {
 								var gID = $t.p.id;
-								$("#fbox_"+gID).searchFilter().reset();
+								$("#fbox_"+gID).searchFilter().reset({"reload":false});
 							    if($.isFunction($t.clearToolbar)) { $t.clearToolbar(false); }
 							} catch (e) {}
 							switch (o.refreshstate) {
