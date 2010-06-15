@@ -1,6 +1,6 @@
 ;(function ($) {
 /*
- * jqGrid  3.7 - jQuery Grid
+ * jqGrid  3.7.1 - jQuery Grid
  * Copyright (c) 2008, Tony Tomov, tony@trirand.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
@@ -249,9 +249,9 @@ $.extend($.jgrid,{
 			return(self._compare(a,b,1)===0);
 		};
 		this._compare=function(a,b,d){
-			if( d === undefined) d = 1;
-			if(a===undefined) a = null;
-			if(b===undefined) b = null;
+			if( d === undefined) { d = 1; }
+			if(a===undefined) { a = null; }
+			if(b===undefined) { b = null; }
 			if(a===null && b===null){
 				return 0;
 			}
@@ -296,7 +296,7 @@ $.extend($.jgrid,{
 			var sortData=[],_sortData=[], newDir = dir=="a" ? 1 : -1, i,ab,j,
 			findSortKey;
 
-			if(type === undefined ) type = "text";
+			if(type === undefined ) { type = "text"; }
 			if (type == 'float' || type== 'number' || type== 'currency' || type== 'numeric') {
 				findSortKey = function($cell) {
 					var key = parseFloat( String($cell).replace(_stripNum, ''));
@@ -318,7 +318,7 @@ $.extend($.jgrid,{
 			}
 			$.each(data,function(i,v){
 				ab = $.jgrid.getAccessor(v,by);
-				if(ab === undefined) ab = "";
+				if(ab === undefined) { ab = ""; }
 				ab = findSortKey(ab);
 				_sortData.push({ 'vSort': ab,'index':i});
 			});
@@ -344,7 +344,7 @@ $.extend($.jgrid,{
 			last=null, val;
 			$.each(self._getOrder(data,by,dir,type, dfmt),function(i,v){
 				val = $.jgrid.getAccessor(v, by);
-				if(val === undefined) val = "";
+				if(val === undefined) { val = ""; }
 				if(!self._equals(last,val)){
 					last=val;
 					if(group!=null){
@@ -432,7 +432,7 @@ $.extend($.jgrid,{
 			return self.or(f,v,x);
 		};
 		this.not=function(f,v,x){
-			return self.andNot(f,v,x)
+			return self.andNot(f,v,x);
 		};
 		this.and=function(f,v,x){
 			_queuedOperator=" && ";
@@ -462,7 +462,7 @@ $.extend($.jgrid,{
 			}else{
 				fld='rec';
 			}
-			if(v===undefined) v = null;
+			if(v===undefined) { v = null; }
 			var val=v===null?f:v,
 			swst = t.stype === undefined ? "text" : t.stype;
 			switch(swst) {
@@ -515,7 +515,7 @@ $.extend($.jgrid,{
 			if(_useProperties){
 				self._append(self._getStr('rec.'+f)+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(v)+'"'));
 			}else{
-				var length=_trim?$.trim(v.toString()).length:v.toString().length;
+				length=_trim?$.trim(v.toString()).length:v.toString().length;
 				self._append(self._getStr('rec')+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(f)+'"'));
 			}
 			self._setCommand(self.startsWith,f);
@@ -575,10 +575,10 @@ $.extend($.jgrid,{
 		};
 		this.orderBy=function(by,dir,stype, dfmt){
 			dir =  dir === undefined || dir === null ? "a" :$.trim(dir.toString().toLowerCase());
-			if(stype === null || stype === undefined) stype = "text";
-			if(dfmt === null || dfmt === undefined) dfmt = "Y-m-d";
-			if(dir=="desc"||dir=="descending"){dir="d"};
-			if(dir=="asc"||dir=="ascending"){dir="a"};
+			if(stype === null || stype === undefined) { stype = "text"; }
+			if(dfmt === null || dfmt === undefined) { dfmt = "Y-m-d"; }
+			if(dir=="desc"||dir=="descending"){dir="d";}
+			if(dir=="asc"||dir=="ascending"){dir="a";}
 			_sorting.push({by:by,dir:dir,type:stype, datefmt: dfmt});
 			return self;
 		};
@@ -1310,27 +1310,27 @@ $.fn.jqGrid = function( pin ) {
 				return;
 			}
 			var compareFnMap = {
-				'eq':function(queryObj) {return queryObj.equals},
-				'ne':function(queryObj) {return queryObj.not().equals},
-				'lt':function(queryObj) {return queryObj.less},
-				'le':function(queryObj) {return queryObj.lessOrEquals},
-				'gt':function(queryObj) {return queryObj.greater},
-				'ge':function(queryObj) {return queryObj.greaterOrEquals},
-				'cn':function(queryObj) {return queryObj.contains},
-				'nc':function(queryObj) {return queryObj.not().contains},
-				'bw':function(queryObj) {return queryObj.startsWith},
-				'bn':function(queryObj) {return queryObj.not().startsWith},
-				'en':function(queryObj) {return queryObj.not().endsWith},
-				'ew':function(queryObj) {return queryObj.endsWith},
-				'ni':function(queryObj) {return queryObj.not().equals},
-				'in':function(queryObj) {return queryObj.equals}
+				'eq':function(queryObj) {return queryObj.equals;},
+				'ne':function(queryObj) {return queryObj.not().equals;},
+				'lt':function(queryObj) {return queryObj.less;},
+				'le':function(queryObj) {return queryObj.lessOrEquals;},
+				'gt':function(queryObj) {return queryObj.greater;},
+				'ge':function(queryObj) {return queryObj.greaterOrEquals;},
+				'cn':function(queryObj) {return queryObj.contains;},
+				'nc':function(queryObj) {return queryObj.not().contains;},
+				'bw':function(queryObj) {return queryObj.startsWith;},
+				'bn':function(queryObj) {return queryObj.not().startsWith;},
+				'en':function(queryObj) {return queryObj.not().endsWith;},
+				'ew':function(queryObj) {return queryObj.endsWith;},
+				'ni':function(queryObj) {return queryObj.not().equals;},
+				'in':function(queryObj) {return queryObj.equals;}
 				
 			},
 			query = $.jgrid.from(ts.p.data);
 			if (ts.p.search === true) {
 				var srules = ts.p.postData.filters;
 				if(srules) {
-					if(typeof srules == "string") srules = $.jgrid.parse(srules);
+					if(typeof srules == "string") { srules =  $.jgrid.parse(srules);}
 					for (var i=0, l= srules.rules.length, rule; i<l; i++) {
 						var rule = srules.rules[i], opr = srules.groupOp;
 						if (compareFnMap[rule.op] && rule.field && rule.data && opr) {
@@ -2486,7 +2486,7 @@ $.jgrid.extend({
 						var pos  = null;
 						pos = t.p._index[rowid];
 						if(pos !== null) {
-							t.p.data[pos] = $.extend(true, t.p.data[pos], lcdata)
+							t.p.data[pos] = $.extend(true, t.p.data[pos], lcdata);
 						}
 						lcdata = null;
 					}
