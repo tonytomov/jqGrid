@@ -487,7 +487,7 @@ jQuery.fn.searchFilter = function(fields, options) {
                     indexmap[selDOMobj.options[i].value] = i;
                 }
                 selDOMobj.selectedIndex = indexmap[setting];
-                $(selDOMobj).change();
+                jQuery(selDOMobj).change();
             };
 
             this.setFilter = function(settings) {
