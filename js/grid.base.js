@@ -388,8 +388,8 @@ $.extend($.jgrid,{
 			if(match === null){
 				return self;
 			}
-			$.each(_data,function(i,rec){
-				if(eval(match)){results.push(rec);}
+			$.each(_data,function(i){
+				if(eval(match)){results.push(this);}
 			});
 			_data=results;
 			return self;
@@ -451,16 +451,16 @@ $.extend($.jgrid,{
 			return self.is(f);
 		};
 		this.is=function(f){
-			self._append('rec.'+f);
+			self._append('this.'+f);
 			self._resetNegate();
 			return self;
 		};
 		this._compareValues=function(func,f,v,how,t){
 			var fld;
 			if(_useProperties){
-				fld='rec.'+f;
+				fld='this.'+f;
 			}else{
-				fld='rec';
+				fld='this';
 			}
 			if(v===undefined) { v = null; }
 			var val=v===null?f:v,
@@ -513,10 +513,10 @@ $.extend($.jgrid,{
 			var val = (v===undefined || v===null) ? f: v,
 			length=_trim ? $.trim(val.toString()).length : val.toString().length;
 			if(_useProperties){
-				self._append(self._getStr('rec.'+f)+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(v)+'"'));
+				self._append(self._getStr('this.'+f)+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(v)+'"'));
 			}else{
 				length=_trim?$.trim(v.toString()).length:v.toString().length;
-				self._append(self._getStr('rec')+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(f)+'"'));
+				self._append(self._getStr('this')+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(f)+'"'));
 			}
 			self._setCommand(self.startsWith,f);
 			self._resetNegate();
@@ -526,18 +526,18 @@ $.extend($.jgrid,{
 			var val = (v===undefined || v===null) ? f: v,
 			length=_trim ? $.trim(val.toString()).length:val.toString().length;
 			if(_useProperties){
-				self._append(self._getStr('rec.'+f)+'.substr('+self._getStr('rec.'+f)+'.length-'+length+','+length+') == "'+self._toStr(v)+'"');
+				self._append(self._getStr('this.'+f)+'.substr('+self._getStr('this.'+f)+'.length-'+length+','+length+') == "'+self._toStr(v)+'"');
 			} else {
-				self._append(self._getStr('rec')+'.substr('+self._getStr('rec')+'.length-"'+self._toStr(f)+'".length,"'+self._toStr(f)+'".length) == "'+self._toStr(f)+'"');
+				self._append(self._getStr('this')+'.substr('+self._getStr('this')+'.length-"'+self._toStr(f)+'".length,"'+self._toStr(f)+'".length) == "'+self._toStr(f)+'"');
 			}
 			self._setCommand(self.endsWith,f);self._resetNegate();
 			return self;
 		};
 		this.contains=function(f,v){
 			if(_useProperties){
-				self._append(self._getStr('rec.'+f)+'.indexOf("'+self._toStr(v)+'",0) > -1');
+				self._append(self._getStr('this.'+f)+'.indexOf("'+self._toStr(v)+'",0) > -1');
 			}else{
-				self._append(self._getStr('rec')+'.indexOf("'+self._toStr(f)+'",0) > -1');
+				self._append(self._getStr('this')+'.indexOf("'+self._toStr(f)+'",0) > -1');
 			}
 			self._setCommand(self.contains,f);
 			self._resetNegate();
