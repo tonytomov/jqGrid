@@ -350,7 +350,7 @@ jQuery.fn.searchFilter = function(fields, options) {
                 var jElem = td.find(".field" + index);
                 if (jElem[0] == null) jElem = td.find(".default"); // if there's not an element for that field, use the default one
                 jElem.attr("name", "op").show();
-
+                return false;
             });
             else jOps.find(".default").attr("name", "op").show();
             if (has_custom_data) jFSelect.change(function(e) {
@@ -360,6 +360,7 @@ jQuery.fn.searchFilter = function(fields, options) {
                 var jElem = td.find(".field" + index);
                 if (jElem[0] == null) jElem = td.find(".default"); // if there's not an element for that field, use the default one
                 jElem.show().addClass("vdata");
+                return false;
             });
             else jData.find(".default").show().addClass("vdata");
             // go ahead and call the change event and setup the ops and data values
@@ -382,7 +383,7 @@ jQuery.fn.searchFilter = function(fields, options) {
                     row.find("select[name='op']")[0].selectedIndex = 0;
                     row.find(".data input").val(""); // blank all input values
                     row.find(".data select").each(function() { this.selectedIndex = 0; }); // select first option on all selects
-                    row.find("select[name='field']").change(); // trigger any change events
+                    row.find("select[name='field']").change(function(event){event.stopPropagation();}); // trigger any change events
                 }
                 return false;
             });
@@ -408,7 +409,7 @@ jQuery.fn.searchFilter = function(fields, options) {
                         newRow.find("#" + this.id).unbind().removeAttr("id").removeClass("hasDatepicker").datepicker(settings);
                     });
                 }
-                newRow.find("select[name='field']").change();
+                newRow.find("select[name='field']").change(function(event){event.stopPropagation();} );
                 return false;
             });
             jQ.find(".ui-search").click(function(e) {
@@ -465,7 +466,7 @@ jQuery.fn.searchFilter = function(fields, options) {
                         newRow.find("#" + this.id).unbind().removeAttr("id").removeClass("hasDatepicker").datepicker(settings);
                     });
                 }
-                newRow.find("select[name='field']").change();
+                newRow.find("select[name='field']").change(function(event){event.stopPropagation();});
                 return false;
             });
 
@@ -481,13 +482,13 @@ jQuery.fn.searchFilter = function(fields, options) {
                  *
                  *  author: Daniel Dotsenko (dotsa@hotmail.com)
                  */
-                selDOMobj = this.$.find("select[name='groupOp']")[0];
+                selDOMobj = jQ.find("select[name='groupOp']")[0];
                 var indexmap = {}, l = selDOMobj.options.length, i;
                 for (i=0; i<l; i++) {
                     indexmap[selDOMobj.options[i].value] = i;
                 }
                 selDOMobj.selectedIndex = indexmap[setting];
-                jQuery(selDOMobj).change();
+                jQuery(selDOMobj).change(function(event){event.stopPropagation();});
             };
 
             this.setFilter = function(settings) {
