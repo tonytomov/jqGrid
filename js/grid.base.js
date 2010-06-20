@@ -807,7 +807,7 @@ $.fn.jqGrid = function( pin ) {
 					empty = true;
 				}
 				if (npage) {
-					if (p.lastpage && page > p.lastpage) {
+					if (p.lastpage && page > p.lastpage || p.lastpage==1) {
 						return;
 					}
 					if (grid.hDiv.loading) {
@@ -977,7 +977,7 @@ $.fn.jqGrid = function( pin ) {
 		},
 		addXmlData = function (xml,t, rcnt, more, adjust) {
 			var startReq = new Date(),
-			locdata = ts.p.datatype != "local" && ts.p.loadonce,
+			locdata = (ts.p.datatype != "local" && ts.p.loadonce) || ts.p.datatype == "xmlstring",
 			xmlid;
 			if(locdata) {
 				ts.p.data = [];
@@ -1137,7 +1137,7 @@ $.fn.jqGrid = function( pin ) {
 			} else { return; }
 			
 			var dReader = ts.p.datatype == "local" ? ts.p.localReader : ts.p.jsonReader, locid,
-			locdata = ts.p.datatype != "local" && ts.p.loadonce;
+			locdata = (ts.p.datatype != "local" && ts.p.loadonce) || ts.p.datatype == "jsonstring";
 			if(locdata) { ts.p.data = []; ts.p._index = {}; locid = ts.p.localReader.id = "_id_";}
 			ts.p.reccount = 0;
 			
