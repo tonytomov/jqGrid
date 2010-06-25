@@ -1348,11 +1348,11 @@ $.fn.jqGrid = function( pin ) {
 				}
 			}
 
-			if (ts.p.sortname && ts.p.sortorder) {
+			if (st && ts.p.sortorder) {
 				if(ts.p.sortorder.toUpperCase() == "DESC") {
-					query.orderBy(ts.p.sortname,"d",cmtypes[st].stype, cmtypes[st].srcformat);
+					query.orderBy(st,"d",cmtypes[st].stype, cmtypes[st].srcformat);
 				} else {
-					query.orderBy(ts.p.sortname,"a",cmtypes[st].stype, cmtypes[st].srcformat);
+					query.orderBy(st,"a",cmtypes[st].stype, cmtypes[st].srcformat);
 				}
 			}
 			var queryResults = query.select(),
@@ -2105,7 +2105,12 @@ $.fn.jqGrid = function( pin ) {
 				return this;
 			}
 		}).bind('reloadGrid', function(e,opts) {
-			if(ts.p.treeGrid ===true) {	ts.p.datatype = ts.p.treedatatype;}
+			if(ts.p.treeGrid ===true) {
+				ts.p.datatype = ts.p.treedatatype;
+				if( ts.p.postData.hasOwnProperty('nodeid') && ts.p.postData.nodeid == '') {
+					ts.p.data = []; _index={};
+				}
+			}
 			if (opts && opts.current) {
 				ts.grid.selectionPreserver(ts);
 			}
@@ -2891,7 +2896,7 @@ $.jgrid.extend({
 							var cm = $t.p.colModel[pos], index;
 							nData = cm.formatter && typeof(cm.formatter) === 'string' && cm.formatter == 'date' ? $.unformat.date(nData,cm) : nData;
 							index = $t.p._index[rowid];
-							if(index) {
+							if(parseInt(index,10) >= 0 ) {
 								$t.p.data[index][cm.name] = nData;
 							}
 						}
