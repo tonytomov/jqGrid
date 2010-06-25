@@ -320,7 +320,8 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 				jQuery.ajax(jQuery.extend({
 					url: options.dataUrl,
 					type : "GET",
-					complete: function(data,status){
+					dataType: "html",
+					success: function(data,status){
 						try {delete options.dataUrl; delete options.value;} catch (e){}
 						var a;
 						if(typeof(options.buildSelect) != "undefined") {
@@ -328,7 +329,7 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 							a = jQuery(b).html();
 							delete options.buildSelect;
 						} else {
-							a = jQuery(data.responseText).html();
+							a = jQuery(data).html();
 						}
 						if(a) {
 							jQuery(elem).append(a);
@@ -522,7 +523,7 @@ function checkDate (format, date) {
 
 function isEmpty(val)
 {
-	if (val.match(/^s+$/) || val == "")	{
+	if (val.match(/^\s+$/) || val == "")	{
 		return true;
 	} else {
 		return false;
@@ -566,7 +567,7 @@ function checkValues(val, valref,g) {
 	if(edtrul) {
 		if(!nm) { nm = g.p.colNames[valref]; }
 		if(edtrul.required === true) {
-			if( val.match(/^s+$/) || val == "" )  { return [false,nm+": "+jQuery.jgrid.edit.msg.required,""]; }
+			if( isEmpty(val) )  { return [false,nm+": "+jQuery.jgrid.edit.msg.required,""]; }
 		}
 		// force required
 		var rqfield = edtrul.required === false ? false : true;
