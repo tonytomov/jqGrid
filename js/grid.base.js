@@ -28,7 +28,7 @@ $.extend($.jgrid,{
 		if (c.is('tr')) { return -1; }
 		c = (!c.is('td') && !c.is('th') ? c.closest("td,th") : c)[0];
 		if ($.browser.msie) { return $.inArray(c, c.parentNode.cells); }
-		return cell.cellIndex;
+		return c.cellIndex;
 	},
 	stripHtml : function(v) {
 		v = v+"";
