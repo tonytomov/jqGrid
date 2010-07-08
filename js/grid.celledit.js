@@ -294,6 +294,9 @@ $.jgrid.extend({
 				}
 				$(cc).empty().attr("tabindex","-1");
 				$($t).jqGrid("setCell",$t.rows[iRow].id, iCol, $t.p.savedRow[fr].v, false, false, true);
+				if ($.isFunction($t.p.afterRestoreCell)) {
+					$t.p.afterRestoreCell($t.rows[iRow].id, $t.p.savedRow[fr].v, iRow, iCol);
+				}				
 				$t.p.savedRow.splice(0,1);
 			}
 			window.setTimeout(function () { $("#"+$t.p.knv).attr("tabindex","-1").focus();},0);
