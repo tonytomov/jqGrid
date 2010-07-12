@@ -439,7 +439,7 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 			} catch (e) {
 				if (e=="e1") { info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_element' "+jQuery.jgrid.edit.msg.nodefined, jQuery.jgrid.edit.bClose);}
 				if (e=="e2") { info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_element' "+jQuery.jgrid.edit.msg.novalue,jQuery.jgrid.edit.bClose);}
-				else { info_dialog(jQuery.jgrid.errors.errcap,e.message,jQuery.jgrid.edit.bClose); }
+				else { info_dialog(jQuery.jgrid.errors.errcap,typeof(e)==="string"?e:e.message,jQuery.jgrid.edit.bClose); }				
 			}
 			break;
 	}
