@@ -2488,9 +2488,9 @@ $.jgrid.extend({
 						}
 					});
 					if(t.p.datatype == 'local') {
-						var pos  = null;
+						var pos;
 						pos = t.p._index[rowid];
-						if(pos !== null) {
+						if(typeof(pos) != 'undefined') {
 							t.p.data[pos] = $.extend(true, t.p.data[pos], lcdata);
 						}
 						lcdata = null;
