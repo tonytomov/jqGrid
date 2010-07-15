@@ -474,7 +474,7 @@ $.jgrid.extend({
 						}
 						$(tr).append(td);
 					} else {
-						tr1 = document.createElement("tr");
+						tr1 =  this.inline && tr1 ? tr1 : document.createElement("tr");
 						$(tr1).append(tl).append(td);
 						$(tbl).append(tr1);
 					}
