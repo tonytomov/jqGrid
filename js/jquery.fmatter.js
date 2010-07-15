@@ -241,7 +241,7 @@
 		}
 		if(op.target) {target = 'target=' + op.target;}
 		idUrl = op.baseLinkUrl+op.showAction + '?'+ op.idName+'='+opts.rowId+op.addParam;
-        if(isString(cellval)) {	//add this one even if its blank string
+        if(isString(cellval) || isNumber(cellval)) {	//add this one even if its blank string or isInteger
 			return "<a "+target+" href=\"" + idUrl + "\">" + cellval + "</a>";
         }else {
 			return $.fn.fmatter.defaultFormat(cellval,opts);
