@@ -481,15 +481,19 @@ $.jgrid.extend({
 				});
 				td = document.createElement("td");
 				if(self.p.enableSearch === true){
-					sb = "<input type='button' id='sButton' class='"+self.p.buttonclass+"' value='"+self.p.searchButton+"'/>";
+					sb = "<input type='submit' id='sButton' class='"+self.p.buttonclass+"' value='"+self.p.searchButton+"'/>";
 					$(td).append(sb);
 					$("input#sButton",td).click(function(){
 						triggerSearch();
 						return false;
 					});
+                    frm.submit(function(){ // quick submit by enter
+                        triggerSearch();
+                        return false;
+                    });
 				}
 				if(self.p.enableClear === true) {
-					cb = "<input type='button' id='cButton' class='"+self.p.buttonclass+"' value='"+self.p.clearButton+"'/>";
+					cb = "<input type='reset' id='cButton' class='"+self.p.buttonclass+"' value='"+self.p.clearButton+"'/>";
 					$(td).append(cb);
 					$("input#cButton",td).click(function(){
 						clearSearch();
@@ -500,6 +504,7 @@ $.jgrid.extend({
 					if(self.p.formtype=='horizontal') {
 						$(tr).append(td);
 					} else {
+                        td.colSpan = 3; // buttons maybe too large
 						tr1 = document.createElement("tr");
 						$(tr1).append("<td>&#160;</td>").append(td);
 						$(tbl).append(tr1);
