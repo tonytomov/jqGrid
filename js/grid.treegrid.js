@@ -246,9 +246,10 @@ $.jgrid.extend({
 					});
 					break;
 				case 'adjacency' :
-					var parent_id = $t.p.treeReader.parent_id_field;
+					var parent_id = $t.p.treeReader.parent_id_field,
+					dtid = $t.p.localReader.id;
 					$(this.p.data).each(function(i,val){
-						if(this.id == rc[parent_id] ) {
+						if(this[dtid] == rc[parent_id] ) {
 							result = this;
 							return false;
 						}
@@ -276,9 +277,10 @@ $.jgrid.extend({
 					});
 					break;
 				case 'adjacency' :
-					var parent_id = $t.p.treeReader.parent_id_field;
+					var parent_id = $t.p.treeReader.parent_id_field,
+					dtid = $t.p.localReader.id;
 					$(this.p.data).each(function(i,val){
-						if(this[parent_id] == rc.id) {
+						if(this[parent_id] == rc[dtid]) {
 							result.push(this);
 						}
 					});
@@ -306,11 +308,12 @@ $.jgrid.extend({
 					break;
 				case 'adjacency' :
 					result.push(rc);
-					var parent_id = $t.p.treeReader.parent_id_field;
+					var parent_id = $t.p.treeReader.parent_id_field,
+					dtid = $t.p.localReader.id;
 					$(this.p.data).each(function(i){
 						len = result.length;
 						for (i = 0; i < len; i++) {
-							if (result[i].id == this[parent_id]) {
+							if (result[i][dtid] == this[parent_id]) {
 								result.push(this);
 								break;
 							}
