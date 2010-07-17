@@ -104,7 +104,9 @@
 				monthNames: opts.monthNames
 			};
 			if( format in opts.masks ) { format = opts.masks[format]; }
-			if(date.constructor === Date) {
+			if(date.constructor === Number) {
+			    timestamp = new Date(date);
+			} else if(date.constructor === Date) {
 				timestamp = date;
 			} else {
 				date = date.split(/[\\\/:_;.\t\T\s-]/);
@@ -241,7 +243,7 @@
 		}
 		if(op.target) {target = 'target=' + op.target;}
 		idUrl = op.baseLinkUrl+op.showAction + '?'+ op.idName+'='+opts.rowId+op.addParam;
-        if(isString(cellval)) {	//add this one even if its blank string
+        if(isString(cellval) || isNumber(cellval)) {	//add this one even if its blank string
 			return "<a "+target+" href=\"" + idUrl + "\">" + cellval + "</a>";
         }else {
 			return $.fn.fmatter.defaultFormat(cellval,opts);
@@ -451,7 +453,7 @@
 						break;
 					}
 				}
-			} else if(isObject(oSelect)) {
+			} else if(isObject(oSelect) || $.isArray(oSelect) ){
 				if(!msl) { scell[0] =  cell; }
 				ret = jQuery.map(scell, function(n){
 					var rv;
@@ -461,7 +463,7 @@
 							return false;
 						}
 					});
-					if( rv) { return rv; }
+					if( typeof(rv) != 'undefined' ) { return rv; }
 				});
 			}
 			return ret.join(", ");
