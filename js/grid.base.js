@@ -1306,7 +1306,7 @@ $.fn.jqGrid = function( pin ) {
 				}
 			});
 			if(ts.p.treeGrid) {
-				$(ts).jqGrid("SortTree",ts.p.sortname,ts.p.sortorder, cmtypes[st].stype, cmtypes[st].srcfmt);
+				$(ts).jqGrid("SortTree", st, ts.p.sortorder, cmtypes[st].stype, cmtypes[st].srcfmt);
 				return;
 			}
 			var compareFnMap = {
