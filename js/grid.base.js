@@ -310,10 +310,12 @@ $.extend($.jgrid,{
 				findSortKey = function($cell) {
 					return $.jgrid.parseDate(dfmt,$cell).getTime();
 				};
+			} else if($.isFunction(type)) {
+				findSortKey = type;
 			} else {
 				findSortKey = function($cell) {
 					if(!$cell) {$cell ="";}
-					return $.trim($cell.toUpperCase());
+					return $.trim(String($cell).toUpperCase());
 				};
 			}
 			$.each(data,function(i,v){
