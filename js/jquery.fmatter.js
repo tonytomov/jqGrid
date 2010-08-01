@@ -299,7 +299,9 @@
 		// jqGrid specific
 		cellval = cellval + "";
 		var oSelect = false, ret=[];
-		if(!isUndefined(opts.colModel.editoptions)){
+		if(!isUndefined(opts.colModel.formatoptions)){
+			oSelect= opts.colModel.formatoptions.value;
+		} else if(!isUndefined(opts.colModel.editoptions)){
 			oSelect= opts.colModel.editoptions.value;
 		}
 		if (oSelect) {
