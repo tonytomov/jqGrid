@@ -179,6 +179,7 @@ $.jgrid.extend({
 					$($t).jqGrid('showCol',grp.groupField[i]);
 				}
 			}
+			$t.p.groupingView = $.extend($t.p.groupingView, options || {});
 			grp.groupField = name;
 			$($t).trigger("reloadGrid");
 		});
