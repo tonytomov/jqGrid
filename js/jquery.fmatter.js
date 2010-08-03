@@ -109,8 +109,8 @@
 			} else if(date.constructor === Date) {
 				timestamp = date;
 			} else {
-				date = date.split(/[\\\/:_;.\t\T\s-]/);
-				format = format.split(/[\\\/:_;.\t\T\s-]/);
+				date = date.split(/[\\\/:_;.,\t\T\s-]/);
+				format = format.split(/[\\\/:_;.,\t\T\s-]/);
 				// parsing for month names
 				for(k=0,hl=format.length;k<hl;k++){
 					if(format[k] == 'M') {
@@ -125,6 +125,7 @@
 						ts[format[k].toLowerCase()] = parseInt(date[k],10);
 					}
 				}
+				if(ts.f) { ts.m = ts.f; }
 				if( ts.m == 0 && ts.y==0 && ts.d == 0) {
 					return "&#160;" ;
 				}
