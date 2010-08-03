@@ -1654,7 +1654,7 @@ $.fn.jqGrid = function( pin ) {
 				str = "<td dir='"+dir+"'>";
 				str +="<select class='ui-pg-selbox' role='listbox'>";
 				for(i=0;i<ts.p.rowList.length;i++){
-					str +="<option role='option' value='"+ts.p.rowList[i]+"'"+((ts.p.rowNum == ts.p.rowList[i])?' selected':'')+">"+ts.p.rowList[i]+"</option>";
+					str +="<option role=\"option\" value=\""+ts.p.rowList[i]+"\""+((ts.p.rowNum == ts.p.rowList[i])?" selected=\"selected\"":"")+">"+ts.p.rowList[i]+"</option>";
 				}
 				str +="</select></td>";
 			}
@@ -2227,7 +2227,7 @@ $.fn.jqGrid = function( pin ) {
 			.scroll(grid.scrollGrid);
 		$("table:first",grid.bDiv).css({width:ts.p.tblwidth+"px"});
 		if( isMSIE ) {
-			if( $("tbody",this).size() == 2 ) { $("tbody:first",this).remove();}
+			if( $("tbody",this).size() == 2 ) { $("tbody:gt(0)",this).remove();}
 			if( ts.p.multikey) {$(grid.bDiv).bind("selectstart",function(){return false;});}
 		} else {
 			if( ts.p.multikey) {$(grid.bDiv).bind("mousedown",function(){return false;});}
