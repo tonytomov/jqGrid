@@ -525,7 +525,8 @@ $.jgrid.extend({
 			afterClear: null,
 			searchurl : '',
 			stringResult: false,
-			groupOp: 'AND'
+			groupOp: 'AND',
+			defaultSearch : "bw"
 		},p  || {});
 		return this.each(function(){
 			var $t = this;
@@ -533,7 +534,7 @@ $.jgrid.extend({
 				var sdata={}, j=0, v, nm, sopt={};
 				$.each($t.p.colModel,function(i,n){
 					nm = this.index || this.name;
-					var so = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : "bw";
+					var so = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : p.defaultSearch;
 					switch (this.stype) {
 						case 'select' :
 							v = $("select[name="+nm+"]",$t.grid.hDiv).val();
