@@ -1,27 +1,27 @@
 ;(function($){
 /**
  * jqGrid Danish Translation
- * Kaare Rasmussen kjs@jasonic.dk
- * http://jasonic.dk/blog 
+ * Aesiras A/S
+ * http://www.aesiras.dk
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
 $.jgrid = {
 	defaults : {
-		recordtext: "View {0} - {1} of {2}",
-	    emptyrecords: "No records to view",
-		loadtext: "Loading...",
-		pgtext : "Page {0} of {1}"
+		recordtext: "Vis {0} - {1} of {2}",
+	    emptyrecords: "Ingen linjer fundet",
+		loadtext: "Henter...",
+		pgtext : "Side {0} af {1}"
 	},
 	search : {
 	    caption: "Søg...",
 	    Find: "Find",
 	    Reset: "Nulstil",
-	    odata : ['equal', 'not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain'],
+	    odata : ['lig', 'forskellige fra', 'mindre', 'mindre eller lig','større','større eller lig', 'begynder med','begynder ikke med','findes i','findes ikke i','ender med','ender ikke med','indeholder','indeholder ikke'],
 	    groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	],
-		matchText: " match",
-		rulesText: " rules"
+		matchText: " lig",
+		rulesText: " regler"
 	},
 	edit : {
 	    addCaption: "Tilføj",
@@ -29,60 +29,60 @@ $.jgrid = {
 	    bSubmit: "Send",
 	    bCancel: "Annuller",
 		bClose: "Luk",
-		saveData: "Data has been changed! Save changes?",
-		bYes : "Yes",
-		bNo : "No",
-		bExit : "Cancel",
+		saveData: "Data er ændret. Gem data?",
+		bYes : "Ja",
+		bNo : "Nej",
+		bExit : "Fortryd",
 	    msg: {
 	        required:"Felt er nødvendigt",
 	        number:"Indtast venligst et validt tal",
 	        minValue:"værdi skal være større end eller lig med",
 	        maxValue:"værdi skal være mindre end eller lig med",
-	        email: "er ikke en valid email",
-	        integer: "Indtast venligst et validt heltalt",
-			date: "Indtast venligst en valid datoværdi",
-			url: "is not a valid URL. Prefix required ('http://' or 'https://')",
-			nodefined : " is not defined!",
-			novalue : " return value is required!",
+	        email: "er ikke en gyldig email",
+	        integer: "Indtast venligst et gyldigt heltal",
+			date: "Indtast venligst en gyldig datoværdi",
+			url: "er ugyldig URL. Prefix mangler ('http://' or 'https://')",
+			nodefined : " er ikke defineret!",
+			novalue : " returværdi kræves!",
 			customarray : "Custom function should return array!",
 			customfcheck : "Custom function should be present in case of custom checking!"
 		}
 	},
 	view : {
-	    caption: "View Record",
-	    bClose: "Close"
+	    caption: "Vis linje",
+	    bClose: "Luk"
 	},
 	del : {
 	    caption: "Slet",
-	    msg: "Slet valgte række(r)?",
+	    msg: "Slet valgte linje(r)?",
 	    bSubmit: "Slet",
-	    bCancel: "Annuller"
+	    bCancel: "Fortryd"
 	},
 	nav : {
 		edittext: " ",
-	    edittitle: "Rediger valgte række",
+	    edittitle: "Rediger valgte linje",
 		addtext:" ",
-	    addtitle: "Tilføj ny række",
+	    addtitle: "Tilføj ny linje",
 	    deltext: " ",
-	    deltitle: "Slet valgte række",
+	    deltitle: "Slet valgte linje",
 	    searchtext: " ",
-	    searchtitle: "Find poster",
+	    searchtitle: "Find linjer",
 	    refreshtext: "",
 	    refreshtitle: "Indlæs igen",
 	    alertcap: "Advarsel",
-	    alerttext: "Vælg venligst række",
+	    alerttext: "Vælg venligst linje",
 		viewtext: "",
-		viewtitle: "View selected row"
+		viewtitle: "Vis valgte linje"
 	},
 	col : {
 	    caption: "Vis/skjul kolonner",
-	    bSubmit: "Send",
-	    bCancel: "Annuller"
+	    bSubmit: "Opdatere",
+	    bCancel: "Fortryd"
 	},
 	errors : {
 		errcap : "Fejl",
-		nourl : "Ingel url valgt",
-		norecords: "Ingen poster at behandle",
+		nourl : "Ingen url valgt",
+		norecords: "Ingen linjer at behandle",
 	    model : "colNames og colModel har ikke samme længde!"
 	},
 	formatter : {
@@ -91,7 +91,7 @@ $.jgrid = {
 		currency : {decimalSeparator:",", thousandsSeparator: " ", decimalPlaces: 2, prefix: "", suffix:"", defaultValue: '0,00'},
 		date : {
 			dayNames:   [
-				"Søn", "Man", "Tirs", "Ons", "Tors", "Fre", "Lør",
+				"Søn", "Man", "Tir", "Ons", "Tor", "Fre", "Lør",
 				"Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"
 			],
 			monthNames: [
@@ -124,5 +124,5 @@ $.jgrid = {
 		idName : 'id'
 	}
 };
-// DK
+// DA
 })(jQuery);
