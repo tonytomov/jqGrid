@@ -1336,7 +1336,7 @@ $.fn.jqGrid = function( pin ) {
 					grtypes[0] = cmtypes[this.name];
 				}
 				if(!fndsort && (this.index == ts.p.sortname || this.name == ts.p.sortname)){
-					st = ts.p.sortname; // ???
+					st = this.name; // ???
 					fndsort = true;
 				}
 			});
@@ -1388,9 +1388,9 @@ $.fn.jqGrid = function( pin ) {
 			}
 			if (st && ts.p.sortorder && fndsort) {
 				if(ts.p.sortorder.toUpperCase() == "DESC") {
-					query.orderBy(st, "d", cmtypes[st].stype, cmtypes[st].srcfmt);
+					query.orderBy(ts.p.sortname, "d", cmtypes[st].stype, cmtypes[st].srcfmt);
 				} else {
-					query.orderBy(st, "a", cmtypes[st].stype, cmtypes[st].srcfmt);
+					query.orderBy(ts.p.sortname, "a", cmtypes[st].stype, cmtypes[st].srcfmt);
 				}
 			}
 			var queryResults = query.select(),
