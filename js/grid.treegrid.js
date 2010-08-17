@@ -447,7 +447,7 @@ $.jgrid.extend({
 			child, ch, query, children;
 			ch = $(this).jqGrid("getNodeChildren",rec);
 			query = $.jgrid.from(ch);
-			query.orderBy(sortname,newDir,newDir,st, datefmt);
+			query.orderBy(sortname, newDir, st, datefmt);
 			children = query.select();
 			for (i = 0, len = children.length; i < len; i++) {
 				child = children[i];
