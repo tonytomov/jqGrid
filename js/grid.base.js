@@ -1981,9 +1981,11 @@ $.fn.jqGrid = function( pin ) {
 				if (this.checked) {
 					$("[id^=jqg_"+ts.p.id+"_"+"]").attr("checked",true);
 					$(ts.rows).each(function(i) {
-						if(!$(this).hasClass("subgrid") && !$(this).hasClass("jqgroup")){
-							$(this).addClass("ui-state-highlight").attr("aria-selected","true");
-							ts.p.selarrrow[i]= ts.p.selrow = this.id; 
+						if ( i>0 ) {
+							if(!$(this).hasClass("subgrid") && !$(this).hasClass("jqgroup")){
+								$(this).addClass("ui-state-highlight").attr("aria-selected","true");
+								ts.p.selarrrow[i]= ts.p.selrow = this.id; 
+							}
 						}
 					});
 					chk=true;
