@@ -243,7 +243,7 @@ $.jgrid.extend({
 			}
 			function resetFilters(op) {
 				var reload = op && op.hasOwnProperty("reload") ? op.reload : true;
-				grid = $("#"+$t.p.id), sdata=[];
+				grid = $("#"+$t.p.id), sdata={};
 				grid[0].p.search = false;
 				if(p.multipleSearch===false) {
 					sdata[p.sField] = sdata[p.sValue] = sdata[p.sOper] = "";
