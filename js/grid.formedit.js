@@ -818,7 +818,7 @@ $.jgrid.extend({
 							tmp = $(this).text();
 						} else {
 							try {
-								tmp =  $.unformat(this,{rowId:rowid, colModel:cm[i]},i);
+								tmp =  $.unformat($(this),{rowId:rowid, colModel:cm[i]},i);
 							} catch (_) {
 								tmp = $(this).html();
 							}
