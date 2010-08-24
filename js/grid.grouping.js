@@ -81,13 +81,19 @@ $.jgrid.extend({
     },
     groupingToggle : function(hid){
         this.each(function(){
-            var strpos = hid.lastIndexOf('_'),
+            var $t = this,
+            grp = $t.p.groupingView,
+            strpos = hid.lastIndexOf('_'),
             uid = hid.substring(0,strpos+1),
             num = parseInt(hid.substring(strpos+1))+1,
-			minus = this.p.groupingView.minusicon,
-			plus = this.p.groupingView.plusicon;
+			minus = grp.minusicon,
+			plus = grp.plusicon;
             if( $("#"+hid+" span").hasClass(minus) ) {
-                $("#"+hid).nextUntil("#"+uid+String(num)).hide();
+				if(grp.showSummaryOnHide && grp.groupSummary[0]) {
+					$("#"+hid).nextUntil(".jqfoot").hide();
+				} else  {
+					$("#"+hid).nextUntil("#"+uid+String(num)).hide();
+				}
                 $("#"+hid+" span").removeClass(minus).addClass(plus);
             } else {
                 $("#"+hid).nextUntil("#"+uid+String(num)).show();
@@ -123,7 +129,7 @@ $.jgrid.extend({
 				}
 				if(grp.groupSummary[0]) {
 					var hhdr = "";
-					if(grp.groupCollapse) {
+					if(grp.groupCollapse && !grp.showSummaryOnHide) {
 						hhdr = " style=\"display:none;\"";
 					}
 					str += "<tr"+hhdr+" role=\"row\" class=\"ui-widget-content jqfoot ui-row-"+$t.p.direction+"\">";
