@@ -197,7 +197,12 @@ $.jgrid.extend({
 								}
 								if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
 								if( $.isFunction(aftersavefunc) ) { aftersavefunc.call($t, rowid,res); }
-							} else { $($t).jqGrid("restoreRow",rowid, afterrestorefunc); }
+							} else {
+								if($.isFunction(errorfunc) ) {
+									errorfunc.call($t, rowid, res, stat);
+								}
+								$($t).jqGrid("restoreRow",rowid, afterrestorefunc);
+							}
 						}
 					},
 					error:function(res,stat){
