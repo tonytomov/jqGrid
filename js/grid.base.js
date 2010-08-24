@@ -683,7 +683,7 @@ $.fn.jqGrid = function( pin ) {
 			data : [],
 			_index : {},
 			grouping : false,
-			groupingView : {groupField:[],groupOrder:[], groupText:[],groupColumnShow:[],groupSummary:[], sortitems:[], sortnames:[], groupDataSorted : false, summary:[],summaryval:[], plusicon: 'ui-icon-circlesmall-plus', minusicon: 'ui-icon-circlesmall-minus'}
+			groupingView : {groupField:[],groupOrder:[], groupText:[],groupColumnShow:[],groupSummary:[], showSummaryOnHide: false ,sortitems:[], sortnames:[], groupDataSorted : false, summary:[],summaryval:[], plusicon: 'ui-icon-circlesmall-plus', minusicon: 'ui-icon-circlesmall-minus'}
 		}, $.jgrid.defaults, pin || {});
 		var grid={
 			headers:[],
@@ -1307,7 +1307,7 @@ $.fn.jqGrid = function( pin ) {
 		},
 		addLocalData = function() {
 			var st, fndsort=false, cmtypes=grtypes=[], srcformat, sortype, newformat;
-			if(!ts.p.data.length) {
+			if(!ts.p.data) {
 				return;
 			}
 			var grpview = ts.p.grouping ? ts.p.groupingView : false;
