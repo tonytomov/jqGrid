@@ -46,7 +46,7 @@ addSubGrid : function(t,pos) {
 				_id = $(res).attr("id");
 				bfsc =true;
 				if($.isFunction(ts.p.subGridBeforeExpand)) {
-					bfsc = ts.p.subGridBeforeExpand(pID+"_"+_id,_id);
+					bfsc = ts.p.subGridBeforeExpand.call(ts, pID+"_"+_id,_id);
 				}
 				if(bfsc === false) {return false;}
 				nhc = 0;
@@ -56,7 +56,7 @@ addSubGrid : function(t,pos) {
 				subdata = "<tr role='row' class='ui-subgrid'>"+atd+"<td class='ui-widget-content subgrid-cell'><span class='ui-icon ui-icon-carat-1-sw'/></td><td colspan='"+parseInt(ts.p.colNames.length-1-nhc,10)+"' class='ui-widget-content subgrid-data'><div id="+pID+"_"+_id+" class='tablediv'>";
 				$(this).parent().after( subdata+ "</div></td></tr>" );
 				if( $.isFunction(ts.p.subGridRowExpanded)) {
-					ts.p.subGridRowExpanded(pID+"_"+ _id,_id);
+					ts.p.subGridRowExpanded.call(ts, pID+"_"+ _id,_id);
 				} else {
 					populatesubgrid(res);
 				}
@@ -66,7 +66,7 @@ addSubGrid : function(t,pos) {
 				if( $.isFunction(ts.p.subGridRowColapsed)) {
 					res = $(this).parent();
 					_id = $(res).attr("id");
-					bfsc = ts.p.subGridRowColapsed(pID+"_"+_id,_id );
+					bfsc = ts.p.subGridRowColapsed.call(ts, pID+"_"+_id,_id );
 				}
 				if(bfsc===false) {return false;}
 				$(this).parent().next().remove(".ui-subgrid");
@@ -95,7 +95,7 @@ addSubGrid : function(t,pos) {
 				$("#load_"+ts.p.id).show();
 				if(!ts.p.subgridtype) { ts.p.subgridtype = ts.p.datatype; }
 				if($.isFunction(ts.p.subgridtype)) {
-					ts.p.subgridtype(dp);
+					ts.p.subgridtype.call(ts, dp);
 				} else {
 					ts.p.subgridtype = ts.p.subgridtype.toLowerCase();
 				}
@@ -106,7 +106,7 @@ addSubGrid : function(t,pos) {
 						type:ts.p.mtype,
 						url: ts.p.subGridUrl,
 						dataType:ts.p.subgridtype,
-						data: $.isFunction(ts.p.serializeSubGridData)? ts.p.serializeSubGridData(dp) : dp,
+						data: $.isFunction(ts.p.serializeSubGridData)? ts.p.serializeSubGridData(ts, dp) : dp,
 						complete: function(sxml) {
 							if(ts.p.subgridtype == "xml") {
 								subGridXml(sxml.responseXML, sid);
