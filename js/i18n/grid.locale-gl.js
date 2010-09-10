@@ -1,9 +1,7 @@
 ;(function($){
 /**
- * jqGrid Spanish Translation
- * Traduccion jqGrid en Español por Yamil Bracho
- * Traduccion corregida y ampliada por Faserline, S.L. 
- * http://www.faserline.com
+ * jqGrid Galician Translation
+ * Translated by Jorge Barreiro <yortx.barry@gmail.com>
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
