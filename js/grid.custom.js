@@ -372,6 +372,7 @@ $.jgrid.extend({
 				if(saveurl) {$(gr).jqGrid("setGridParam",{url:saveurl});}
 				if($.isFunction(self.p.afterClear)){self.p.afterClear();}
 			};
+			var tbl;
 			var formFill = function(){
 				var tr = document.createElement("tr");
 				var tr1, sb, cb,tl,td;
@@ -507,7 +508,7 @@ $.jgrid.extend({
 				}
 			};
 			var frm = $("<form name='SearchForm' style=display:inline;' class='"+this.p.formclass+"'></form>");
-			var tbl =$("<table class='"+this.p.tableclass+"' cellspacing='0' cellpading='0' border='0'><tbody></tbody></table>");
+			tbl =$("<table class='"+this.p.tableclass+"' cellspacing='0' cellpading='0' border='0'><tbody></tbody></table>");
 			$(frm).append(tbl);
 			formFill();
 			$(this).append(frm);

@@ -5,7 +5,7 @@ $.jgrid.extend({
 		return this.each(function (){
 			var $t = this,
 			grp = $t.p.groupingView;
-			if(grp !== null && isObject(grp)) {
+			if(grp !== null && ( (typeof grp === 'object') || $.isFunction(grp) ) ) {
 				if(!grp.groupField.length) {
 					$t.p.grouping = false;
                 } else {
@@ -14,7 +14,7 @@ $.jgrid.extend({
 							grp.groupOrder[i] = 'asc';
 						}
 						if(!grp.groupText[i]) {
-							grp.groupText[i] = '{0}'
+							grp.groupText[i] = '{0}';
 						}
 						if( typeof(grp.groupColumnShow[i]) != 'boolean') {
 							grp.groupColumnShow[i] = true;
@@ -35,7 +35,7 @@ $.jgrid.extend({
 							var cm = $t.p.colModel;
 							for(var j=0, cml = cm.length; j < cml; j++) {
 								if(cm[j].summaryType) {
-									grp.summary[i].push({nm:cm[j].name,st:cm[j].summaryType, v:''})
+									grp.summary[i].push({nm:cm[j].name,st:cm[j].summaryType, v:''});
 								}
 							}
 						}
@@ -51,22 +51,22 @@ $.jgrid.extend({
 			}
 		});
 	},
-    groupingPrepare : function (rData, items, gdata, record) {
-        this.each(function(){
-            // currently only one level
-            // Is this a good idea to do it so!!!!?????
-            var itm = items[0] ? items[0].split(' ').join('') : "";
+	groupingPrepare : function (rData, items, gdata, record) {
+		this.each(function(){
+			// currently only one level
+			// Is this a good idea to do it so!!!!?????
+			var itm = items[0] ? items[0].split(' ').join('') : "";
 			
-            var grp = this.p.groupingView, $t= this;
-            if(gdata.hasOwnProperty(itm)) {
-               	gdata[itm].push(rData);
-    		} else {
-    			gdata[itm] = [];
-    			gdata[itm].push(rData);
-   				grp.sortitems[0].push(itm);
-                grp.sortnames[0].push($.trim(items[0]));
+			var grp = this.p.groupingView, $t= this;
+			if(gdata.hasOwnProperty(itm)) {
+				gdata[itm].push(rData);
+			} else {
+				gdata[itm] = [];
+				gdata[itm].push(rData);
+				grp.sortitems[0].push(itm);
+				grp.sortnames[0].push($.trim(items[0]));
 				grp.summaryval[0][itm] = $.extend(true,{},grp.summary[0]);
-            }
+			}
 			if(grp.groupSummary[0]) {
 				$.each(grp.summaryval[0][itm],function(i,n) {
 					if ($.isFunction(this.st)) {
@@ -76,53 +76,53 @@ $.jgrid.extend({
 					}
 				});
 			}
-        });
-        return gdata;
-    },
-    groupingToggle : function(hid){
-        this.each(function(){
-            var $t = this,
-            grp = $t.p.groupingView,
-            strpos = hid.lastIndexOf('_'),
-            uid = hid.substring(0,strpos+1),
-            num = parseInt(hid.substring(strpos+1))+1,
+		});
+		return gdata;
+	},
+	groupingToggle : function(hid){
+		this.each(function(){
+			var $t = this,
+			grp = $t.p.groupingView,
+			strpos = hid.lastIndexOf('_'),
+			uid = hid.substring(0,strpos+1),
+			num = parseInt(hid.substring(strpos+1),10)+1,
 			minus = grp.minusicon,
 			plus = grp.plusicon;
-            if( $("#"+hid+" span").hasClass(minus) ) {
+			if( $("#"+hid+" span").hasClass(minus) ) {
 				if(grp.showSummaryOnHide && grp.groupSummary[0]) {
 					$("#"+hid).nextUntil(".jqfoot").hide();
 				} else  {
 					$("#"+hid).nextUntil("#"+uid+String(num)).hide();
 				}
-                $("#"+hid+" span").removeClass(minus).addClass(plus);
-            } else {
-                $("#"+hid).nextUntil("#"+uid+String(num)).show();
-                $("#"+hid+" span").removeClass(plus).addClass(minus);
-            }
-        });
-        return false;
-    },
-    groupingRender : function (grdata, colspans ) {
-        return this.each(function(){
-            var $t = this,
-            grp = $t.p.groupingView,
+				$("#"+hid+" span").removeClass(minus).addClass(plus);
+			} else {
+				$("#"+hid).nextUntil("#"+uid+String(num)).show();
+				$("#"+hid+" span").removeClass(plus).addClass(minus);
+			}
+		});
+		return false;
+	},
+	groupingRender : function (grdata, colspans ) {
+		return this.each(function(){
+			var $t = this,
+			grp = $t.p.groupingView,
 			str = "", icon = "", hid, pmrtl ="";
-            //only one level for now
-            if(!grp.groupDataSorted) {
+			//only one level for now
+			if(!grp.groupDataSorted) {
 				// ???? TO BE IMPROVED
-                grp.sortitems[0].sort();
+				grp.sortitems[0].sort();
 				grp.sortnames[0].sort();
-                if(grp.groupOrder[0].toLowerCase() == 'desc')
-                {
-                    grp.sortitems[0].reverse();
-                }
-            }   
-            if(grp.groupCollapse) { pmrtl = grp.plusicon; }
-            else {pmrtl = grp.minusicon;}
-            pmrtl += " tree-wrap-"+$t.p.direction; 
+				if(grp.groupOrder[0].toLowerCase() == 'desc')
+				{
+					grp.sortitems[0].reverse();
+				}
+			}   
+			if(grp.groupCollapse) { pmrtl = grp.plusicon; }
+			else {pmrtl = grp.minusicon;}
+			pmrtl += " tree-wrap-"+$t.p.direction; 
 			$.each(grp.sortitems[0],function(i,n){
-                hid = $t.p.id+"ghead_"+i;
-                icon = "<span style='cursor:pointer;' class='ui-icon "+pmrtl+"' onclick=\"jQuery('#"+$t.p.id+"').jqGrid('groupingToggle','"+hid+"');return false;\"></span>"
+				hid = $t.p.id+"ghead_"+i;
+				icon = "<span style='cursor:pointer;' class='ui-icon "+pmrtl+"' onclick=\"jQuery('#"+$t.p.id+"').jqGrid('groupingToggle','"+hid+"');return false;\"></span>";
 				str += "<tr id=\""+hid+"\" role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+"\"><td colspan=\""+colspans+"\">"+icon+$.jgrid.format(grp.groupText[0],grp.sortnames[0][i], grdata[n].length)+"</td></tr>";
 				for(var kk=0;kk<grdata[n].length;kk++) {
 					str += grdata[n][kk].join('');
@@ -135,7 +135,7 @@ $.jgrid.extend({
 					str += "<tr"+hhdr+" role=\"row\" class=\"ui-widget-content jqfoot ui-row-"+$t.p.direction+"\">";
 					var fdata = grp.summaryval[0][n],
 					cm = $t.p.colModel,
-					hs,vv, grlen = grdata[n].length;
+					vv, grlen = grdata[n].length;
 					for(var k=0; k<colspans;k++) {
 						var tmpdata = "<td "+$t.formatCol(k,1,'')+">&#160;</td>",
 						tplfld = "{0}";
@@ -150,7 +150,7 @@ $.jgrid.extend({
 									}
 								}
 								try {
-									vv = $t.formatter('', this.v, k, this)
+									vv = $t.formatter('', this.v, k, this);
 								} catch (ef) {
 									vv = this.v;
 								}
@@ -163,14 +163,14 @@ $.jgrid.extend({
 					str += "</tr>";
 				}
 			});
-            $("#"+$t.p.id+" tbody:first").append(str);
+			$("#"+$t.p.id+" tbody:first").append(str);
 			// free up memory
-            str = null;
+			str = null;
 			grp.sortitems[0] = [];
 			grp.sortnames[0] = [];
 			grp.summaryval[0] = [];
-        });
-    },
+		});
+	},
 	groupingGroupBy : function (name, options, current) {
 		return this.each(function(){
 			var $t = this;
@@ -223,7 +223,7 @@ $.jgrid.extend({
 		"count" : function(v, field, rc) {
 			if(v==="") {v=0;}
 			if(rc.hasOwnProperty(field)) {
-				return v=v+1;
+				return v+1;
 			} else {
 				return 0;
 			}

@@ -117,7 +117,16 @@ $.jgrid.extend({
 		if($("#colchooser_"+self[0].p.id).length ) { return; }
         var selector = $('<div id="colchooser_'+self[0].p.id+'" style="position:relative;overflow:hidden"><div><select multiple="multiple"></select></div></div>');
         var select = $('select', selector);
-
+		
+		function insert(perm,i,v) {
+			if(i>=0){
+				var a = perm.slice();
+				var b = a.splice(i,Math.max(perm.length-i,i));
+				if(i>perm.length) { i = perm.length; }
+				a[i] = v;
+				return a.concat(b);
+			}
+		}
         opts = $.extend({
             "width" : 420,
             "height" : 240,
@@ -243,15 +252,6 @@ $.jgrid.extend({
             select.append("<option value='"+i+"' "+
                           (this.hidden?"":"selected='selected'")+">"+colNames[i]+"</option>");
         });
-		function insert(perm,i,v) {
-			if(i>=0){
-				var a = perm.slice();
-				var b = a.splice(i,Math.max(perm.length-i,i));
-				if(i>perm.length) { i = perm.length; }
-				a[i] = v;
-				return a.concat(b);
-			}
-		}
         function call(fn, obj) {
             if (!fn) { return; }
             if (typeof fn == 'string') {
