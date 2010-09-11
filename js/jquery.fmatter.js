@@ -17,32 +17,67 @@
 	$.fmatter = {};
 	//opts can be id:row id for the row, rowdata:the data for the row, colmodel:the column model for this column
 	//example {id:1234,}
+	$.extend($.fmatter,{
+		isBoolean : function(o) {
+			return typeof o === 'boolean';
+		},
+		isObject : function(o) {
+			return (o && (typeof o === 'object' || $.isFunction(o))) || false;
+		},
+		isString : function(o) {
+			return typeof o === 'string';
+		},
+		isNumber : function(o) {
+			return typeof o === 'number' && isFinite(o);
+		},
+		isNull : function(o) {
+			return o === null;
+		},
+		isUndefined : function(o) {
+			return typeof o === 'undefined';
+		},
+		isValue : function (o) {
+			return (this.isObject(o) || this.isString(o) || this.isNumber(o) || this.isBoolean(o));
+		},
+		isEmpty : function(o) {
+			if(!this.isString(o) && this.isValue(o)) {
+				return false;
+			}else if (!this.isValue(o)){
+				return true;
+			}
+			o = $.trim(o).replace(/\&nbsp\;/ig,'').replace(/\&#160\;/ig,'');
+			return o==="";	
+		}
+	});
 	$.fn.fmatter = function(formatType, cellval, opts, rwd, act) {
-		//debug(this);
-		//debug(cellval);
 		// build main options before element iteration
+		var v=cellval;
 		opts = $.extend({}, $.jgrid.formatter, opts);
-		return fireFormatter(formatType,cellval, opts, rwd, act); 
+
+		if ($.fn.fmatter[formatType]){
+			v = $.fn.fmatter[formatType](cellval, opts, rwd, act);
+		}
+		return v;
 	};
 	$.fmatter.util = {
 		// Taken from YAHOO utils
 		NumberFormat : function(nData,opts) {
-			if(!isNumber(nData)) {
+			if(!$.fmatter.isNumber(nData)) {
 				nData *= 1;
 			}
-			if(isNumber(nData)) {
-		        var bNegative = (nData < 0);
+			if($.fmatter.isNumber(nData)) {
+				var bNegative = (nData < 0);
 				var sOutput = nData + "";
 				var sDecimalSeparator = (opts.decimalSeparator) ? opts.decimalSeparator : ".";
 				var nDotIndex;
-				if(isNumber(opts.decimalPlaces)) {
+				if($.fmatter.isNumber(opts.decimalPlaces)) {
 					// Round to the correct decimal place
 					var nDecimalPlaces = opts.decimalPlaces;
 					var nDecimal = Math.pow(10, nDecimalPlaces);
 					sOutput = Math.round(nData*nDecimal)/nDecimal + "";
 					nDotIndex = sOutput.lastIndexOf(".");
 					if(nDecimalPlaces > 0) {
-                    // Add the decimal separator
+					// Add the decimal separator
 						if(nDotIndex < 0) {
 							sOutput += sDecimalSeparator;
 							nDotIndex = sOutput.length-1;
@@ -51,32 +86,32 @@
 						else if(sDecimalSeparator !== "."){
 							sOutput = sOutput.replace(".",sDecimalSeparator);
 						}
-                    // Add missing zeros
+					// Add missing zeros
 						while((sOutput.length - 1 - nDotIndex) < nDecimalPlaces) {
-						    sOutput += "0";
+							sOutput += "0";
 						}
-	                }
-	            }
-	            if(opts.thousandsSeparator) {
-	                var sThousandsSeparator = opts.thousandsSeparator;
-	                nDotIndex = sOutput.lastIndexOf(sDecimalSeparator);
-	                nDotIndex = (nDotIndex > -1) ? nDotIndex : sOutput.length;
-	                var sNewOutput = sOutput.substring(nDotIndex);
-	                var nCount = -1;
-	                for (var i=nDotIndex; i>0; i--) {
-	                    nCount++;
-	                    if ((nCount%3 === 0) && (i !== nDotIndex) && (!bNegative || (i > 1))) {
-	                        sNewOutput = sThousandsSeparator + sNewOutput;
-	                    }
-	                    sNewOutput = sOutput.charAt(i-1) + sNewOutput;
-	                }
-	                sOutput = sNewOutput;
-	            }
-	            // Prepend prefix
-	            sOutput = (opts.prefix) ? opts.prefix + sOutput : sOutput;
-	            // Append suffix
-	            sOutput = (opts.suffix) ? sOutput + opts.suffix : sOutput;
-	            return sOutput;
+					}
+				}
+				if(opts.thousandsSeparator) {
+					var sThousandsSeparator = opts.thousandsSeparator;
+					nDotIndex = sOutput.lastIndexOf(sDecimalSeparator);
+					nDotIndex = (nDotIndex > -1) ? nDotIndex : sOutput.length;
+					var sNewOutput = sOutput.substring(nDotIndex);
+					var nCount = -1;
+					for (var i=nDotIndex; i>0; i--) {
+						nCount++;
+						if ((nCount%3 === 0) && (i !== nDotIndex) && (!bNegative || (i > 1))) {
+							sNewOutput = sThousandsSeparator + sNewOutput;
+						}
+						sNewOutput = sOutput.charAt(i-1) + sNewOutput;
+					}
+					sOutput = sNewOutput;
+				}
+				// Prepend prefix
+				sOutput = (opts.prefix) ? opts.prefix + sOutput : sOutput;
+				// Append suffix
+				sOutput = (opts.suffix) ? sOutput + opts.suffix : sOutput;
+				return sOutput;
 				
 			} else {
 				return nData;
@@ -95,11 +130,11 @@
 				while (value.length < length)  { value = '0' + value; }
 				return value;
 			},
-		    ts = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0, u:0},
-		    timestamp=0, dM, k,hl,
-		    dateFormat=["i18n"];
+			ts = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0, u:0},
+			timestamp=0, dM, k,hl,
+			dateFormat=["i18n"];
 			// Internationalization strings
-		    dateFormat["i18n"] = {
+			dateFormat.i18n = {
 				dayNames: opts.dayNames,
 				monthNames: opts.monthNames
 			};
@@ -126,7 +161,7 @@
 					}
 				}
 				if(ts.f) { ts.m = ts.f; }
-				if( ts.m == 0 && ts.y==0 && ts.d == 0) {
+				if( ts.m === 0 && ts.y === 0 && ts.d === 0) {
 					return "&#160;" ;
 				}
 				ts.m = parseInt(ts.m,10)-1;
@@ -141,10 +176,10 @@
 			} else if ( !newformat ) {
 				newformat = 'Y-m-d';
 			}
-		    var 
-		        G = timestamp.getHours(),
-		        i = timestamp.getMinutes(),
-		        j = timestamp.getDate(),
+			var 
+				G = timestamp.getHours(),
+				i = timestamp.getMinutes(),
+				j = timestamp.getDate(),
 				n = timestamp.getMonth() + 1,
 				o = timestamp.getTimezoneOffset(),
 				s = timestamp.getSeconds(),
@@ -206,91 +241,91 @@
 		}
 	};
 	$.fn.fmatter.defaultFormat = function(cellval, opts) {
-		return (isValue(cellval) && cellval!=="" ) ?  cellval : opts.defaultValue ? opts.defaultValue : "&#160;";
+		return ($.fmatter.isValue(cellval) && cellval!=="" ) ?  cellval : opts.defaultValue ? opts.defaultValue : "&#160;";
 	};
 	$.fn.fmatter.email = function(cellval, opts) {
-		if(!isEmpty(cellval)) {
+		if(!$.fmatter.isEmpty(cellval)) {
 			return "<a href=\"mailto:" + cellval + "\">" + cellval + "</a>";
-        }else {
+		}else {
 			return $.fn.fmatter.defaultFormat(cellval,opts );
-        }
+		}
 	};
 	$.fn.fmatter.checkbox =function(cval, opts) {
 		var op = $.extend({},opts.checkbox), ds;
-		if(!isUndefined(opts.colModel.formatoptions)) {
+		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if(op.disabled===true) {ds = "disabled";} else {ds="";}
-		if(isEmpty(cval) || isUndefined(cval) ) { cval = $.fn.fmatter.defaultFormat(cval,op); }
+		if($.fmatter.isEmpty(cval) || $.fmatter.isUndefined(cval) ) { cval = $.fn.fmatter.defaultFormat(cval,op); }
 		cval=cval+""; cval=cval.toLowerCase();
 		var bchk = cval.search(/(false|0|no|off)/i)<0 ? " checked='checked' " : "";
-        return "<input type=\"checkbox\" " + bchk  + " value=\""+ cval+"\" offval=\"no\" "+ds+ "/>";
-    };
+		return "<input type=\"checkbox\" " + bchk  + " value=\""+ cval+"\" offval=\"no\" "+ds+ "/>";
+	};
 	$.fn.fmatter.link = function(cellval, opts) {
 		var op = {target:opts.target };
 		var target = "";
-		if(!isUndefined(opts.colModel.formatoptions)) {
-            op = $.extend({},op,opts.colModel.formatoptions);
-        }
+		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
+			op = $.extend({},op,opts.colModel.formatoptions);
+		}
 		if(op.target) {target = 'target=' + op.target;}
-        if(!isEmpty(cellval)) {
+		if(!$.fmatter.isEmpty(cellval)) {
 			return "<a "+target+" href=\"" + cellval + "\">" + cellval + "</a>";
-        }else {
-            return $.fn.fmatter.defaultFormat(cellval,opts);
-        }
-    };
+		}else {
+			return $.fn.fmatter.defaultFormat(cellval,opts);
+		}
+	};
 	$.fn.fmatter.showlink = function(cellval, opts) {
 		var op = {baseLinkUrl: opts.baseLinkUrl,showAction:opts.showAction, addParam: opts.addParam || "", target: opts.target, idName: opts.idName },
 		target = "", idUrl;
-		if(!isUndefined(opts.colModel.formatoptions)) {
+		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if(op.target) {target = 'target=' + op.target;}
 		idUrl = op.baseLinkUrl+op.showAction + '?'+ op.idName+'='+opts.rowId+op.addParam;
-        if(isString(cellval) || isNumber(cellval)) {	//add this one even if its blank string
+		if($.fmatter.isString(cellval) || $.fmatter.isNumber(cellval)) {	//add this one even if its blank string
 			return "<a "+target+" href=\"" + idUrl + "\">" + cellval + "</a>";
-        }else {
+		}else {
 			return $.fn.fmatter.defaultFormat(cellval,opts);
-	    }
-    };
+		}
+	};
 	$.fn.fmatter.integer = function(cellval, opts) {
 		var op = $.extend({},opts.integer);
-		if(!isUndefined(opts.colModel.formatoptions)) {
+		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
-		if(isEmpty(cellval)) {
+		if($.fmatter.isEmpty(cellval)) {
 			return op.defaultValue;
 		}
 		return $.fmatter.util.NumberFormat(cellval,op);
 	};
 	$.fn.fmatter.number = function (cellval, opts) {
 		var op = $.extend({},opts.number);
-		if(!isUndefined(opts.colModel.formatoptions)) {
+		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
-		if(isEmpty(cellval)) {
+		if($.fmatter.isEmpty(cellval)) {
 			return op.defaultValue;
 		}
 		return $.fmatter.util.NumberFormat(cellval,op);
 	};
 	$.fn.fmatter.currency = function (cellval, opts) {
 		var op = $.extend({},opts.currency);
-		if(!isUndefined(opts.colModel.formatoptions)) {
+		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
-		if(isEmpty(cellval)) {
+		if($.fmatter.isEmpty(cellval)) {
 			return op.defaultValue;
 		}
 		return $.fmatter.util.NumberFormat(cellval,op);
 	};
 	$.fn.fmatter.date = function (cellval, opts, rwd, act) {
 		var op = $.extend({},opts.date);
-		if(!isUndefined(opts.colModel.formatoptions)) {
+		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if(!op.reformatAfterEdit && act=='edit'){
 			return $.fn.fmatter.defaultFormat(cellval, opts);
-		} else if(!isEmpty(cellval)) {
+		} else if(!$.fmatter.isEmpty(cellval)) {
 			return  $.fmatter.util.DateFormat(op.srcformat,cellval,op.newformat,op);
 		} else {
 			return $.fn.fmatter.defaultFormat(cellval, opts);
@@ -300,16 +335,16 @@
 		// jqGrid specific
 		cellval = cellval + "";
 		var oSelect = false, ret=[];
-		if(!isUndefined(opts.colModel.formatoptions)){
+		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)){
 			oSelect= opts.colModel.formatoptions.value;
-		} else if(!isUndefined(opts.colModel.editoptions)){
+		} else if(!$.fmatter.isUndefined(opts.colModel.editoptions)){
 			oSelect= opts.colModel.editoptions.value;
 		}
 		if (oSelect) {
 			var	msl =  opts.colModel.editoptions.multiple === true ? true : false,
 			scell = [], sv;
 			if(msl) {scell = cellval.split(",");scell = $.map(scell,function(n){return $.trim(n);});}
-			if (isString(oSelect)) {
+			if ($.fmatter.isString(oSelect)) {
 				// mybe here we can use some caching with care ????
 				var so = oSelect.split(";"), j=0;
 				for(var i=0; i<so.length;i++){
@@ -327,7 +362,7 @@
 						break;
 					}
 				}
-			} else if(isObject(oSelect)) {
+			} else if($.fmatter.isObject(oSelect)) {
 				// this is quicker
 				if(msl) {
 					ret = jQuery.map(scell, function(n, i){
@@ -339,7 +374,7 @@
 			}
 		}
 		cellval = ret.join(", ");
-		return  cellval == "" ? $.fn.fmatter.defaultFormat(cellval,opts) : cellval;
+		return  cellval === "" ? $.fn.fmatter.defaultFormat(cellval,opts) : cellval;
 	};
 	$.fn.fmatter.rowactions = function(rid,gid,act,keys) {
 		switch(act)
@@ -367,11 +402,11 @@
 	};
 	$.fn.fmatter.actions = function(cellval,opts, rwd) {
 		var op ={keys:false, editbutton:true, delbutton:true};
-		if(!isUndefined(opts.colModel.formatoptions)) {
+		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend(op,opts.colModel.formatoptions);
 		}
 		var rowid = opts.rowId, str="",ocl;
-		if(typeof(rowid) =='undefined' || isEmpty(rowid)) { return ""; }
+		if(typeof(rowid) =='undefined' || $.fmatter.isEmpty(rowid)) { return ""; }
 		if(op.editbutton){
 			ocl = "onclick=$.fn.fmatter.rowactions('"+rowid+"','"+opts.gid+"','edit',"+op.keys+");";
 			str =str+ "<div style='margin-left:8px;'><div title='"+$.jgrid.nav.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='ui-icon ui-icon-pencil'></span></div>";
@@ -390,11 +425,11 @@
 		// specific for jqGrid only
 		var ret, formatType = options.colModel.formatter,
 		op =options.colModel.formatoptions || {}, sep,
-		re = /([\.\*\_\'\(\)\{\}\+\?\\])/g;
+		re = /([\.\*\_\'\(\)\{\}\+\?\\])/g,
 		unformatFunc = options.colModel.unformat||($.fn.fmatter[formatType] && $.fn.fmatter[formatType].unformat);
-		if(typeof unformatFunc !== 'undefined' && isFunction(unformatFunc) ) {
+		if(typeof unformatFunc !== 'undefined' && $.isFunction(unformatFunc) ) {
 			ret = unformatFunc($(cellval).text(), options, cellval);
-		} else if(typeof formatType !== 'undefined' && isString(formatType) ) {
+		} else if(!$.fmatter.isUndefined(formatType) && $.fmatter.isString(formatType) ) {
 			var opts = $.jgrid.formatter || {}, stripTag;
 			switch(formatType) {
 				case 'integer' :
@@ -442,7 +477,7 @@
 			msl =  op.multiple === true ? true : false,
 			scell = [], sv;
 			if(msl) { scell = cell.split(","); scell = $.map(scell,function(n){return $.trim(n);}); }
-			if (isString(oSelect)) {
+			if ($.fmatter.isString(oSelect)) {
 				var so = oSelect.split(";"), j=0;
 				for(var i=0; i<so.length;i++){
 					sv = so[i].split(":");
@@ -459,7 +494,7 @@
 						break;
 					}
 				}
-			} else if(isObject(oSelect) || $.isArray(oSelect) ){
+			} else if($.fmatter.isObject(oSelect) || $.isArray(oSelect) ){
 				if(!msl) { scell[0] =  cell; }
 				ret = jQuery.map(scell, function(n){
 					var rv;
@@ -479,72 +514,13 @@
 	};
 	$.unformat.date = function (cellval, opts) {
 		var op = $.jgrid.formatter.date || {};
-		if(!isUndefined(opts.formatoptions)) {
+		if(!$.fmatter.isUndefined(opts.formatoptions)) {
 			op = $.extend({},op,opts.formatoptions);
 		}		
-		if(!isEmpty(cellval)) {
+		if(!$.fmatter.isEmpty(cellval)) {
 			return  $.fmatter.util.DateFormat(op.newformat,cellval,op.srcformat,op);
 		} else {
 			return $.fn.fmatter.defaultFormat(cellval, opts);
 		}
 	};
-	function fireFormatter(formatType,cellval, opts, rwd, act) {
-		var v=cellval;
-
-        if ($.fn.fmatter[formatType]){
-            v = $.fn.fmatter[formatType](cellval, opts, rwd, act);
-        }
-
-        return v;
-	}
-	//private methods and data
-	function debug($obj) {
-		if (window.console && window.console.log) { window.console.log($obj); }
-	}
-	/**
-     * A convenience method for detecting a legitimate non-null value.
-     * Returns false for null/undefined/NaN, true for other values, 
-     * including 0/false/''
-	 *  --taken from the yui.lang
-     */
-    isValue= function(o) {
-		return (isObject(o) || isString(o) || isNumber(o) || isBoolean(o));
-    };
-	isBoolean= function(o) {
-        return typeof o === 'boolean';
-    };
-    isNull= function(o) {
-        return o === null;
-    };
-    isNumber= function(o) {
-        return typeof o === 'number' && isFinite(o);
-    };
-    isString= function(o) {
-        return typeof o === 'string';
-    };
-	/**
-	* check if its empty trim it and replace \&nbsp and \&#160 with '' and check if its empty ===""
-	* if its is not a string but has a value then it returns false, Returns true for null/undefined/NaN
-	essentailly this provdes a way to see if it has any value to format for things like links
-	*/
-	isEmpty= function(o) {
-		if(!isString(o) && isValue(o)) {
-			return false;
-		}else if (!isValue(o)){
-			return true;
-		}
-		o = $.trim(o).replace(/\&nbsp\;/ig,'').replace(/\&#160\;/ig,'');
-        return o==="";
-		
-    };
-    isUndefined= function(o) {
-        return typeof o === 'undefined';
-    };
-	isObject= function(o) {
-		return (o && (typeof o === 'object' || isFunction(o))) || false;
-    };
-	isFunction= function(o) {
-        return typeof o === 'function';
-    };
-
 })(jQuery);
