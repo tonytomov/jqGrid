@@ -75,7 +75,7 @@ $.jgrid.extend({
 					$("#dData","#"+dtbl+"_2").click(function(e){
 						for(i=0;i<$t.p.colModel.length;i++){
 							if(!$t.p.colModel[i].hidedlg) { // added from T. Tomov
-								var nm = $t.p.colModel[i].name.replace(".", "\\.");
+								var nm = $t.p.colModel[i].name.replace(/\./g, "\\.");
 								if($("#col_" + nm,"#"+dtbl).attr("checked")) {
 									$($t).jqGrid("showCol",$t.p.colModel[i].name);
 									$("#col_" + nm,"#"+dtbl).attr("defaultChecked",true); // Added from T. Tomov IE BUG
