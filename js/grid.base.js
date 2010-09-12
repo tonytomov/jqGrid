@@ -1106,8 +1106,8 @@ $.fn.jqGrid = function( pin ) {
 			}
 			}
 			if(ts.p.gridview === true) {
-				if(ts.p.grouping && F) {
-					$(ts).jqGrid('groupingRender',grpdata,F.length+gi+si+ni);
+				if(ts.p.grouping) {
+					$(ts).jqGrid('groupingRender',grpdata,ts.p.colModel.length);
 					grpdata = null;
 				} else {				
 					$("tbody:first",t).append(rowData.join(''));
@@ -1269,8 +1269,8 @@ $.fn.jqGrid = function( pin ) {
 				if(ir==rn) { break; }
 			}
 			if(ts.p.gridview === true ) {
-				if(ts.p.grouping && F) {
-					$(ts).jqGrid('groupingRender',grpdata,F.length+gi+si+ni);
+				if(ts.p.grouping) {
+					$(ts).jqGrid('groupingRender',grpdata,ts.p.colModel.length);
 					grpdata = null;
 				} else {
 					$("#"+ts.p.id+" tbody:first").append(rowData.join(''));
