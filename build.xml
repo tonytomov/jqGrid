@@ -11,7 +11,7 @@
     <target name="jqgrid" depends="init">
         <concat destfile="${distdir}/${target}">
             <fileset dir="${srcdir}">
-                <exclude name="i18n" />
+                <exclude name="i18n/*.*" />
             </fileset>
         </concat>
     </target>
