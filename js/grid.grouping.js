@@ -166,9 +166,6 @@ $.jgrid.extend({
 			$("#"+$t.p.id+" tbody:first").append(str);
 			// free up memory
 			str = null;
-			grp.sortitems[0] = [];
-			grp.sortnames[0] = [];
-			grp.summaryval[0] = [];
 		});
 	},
 	groupingGroupBy : function (name, options, current) {
