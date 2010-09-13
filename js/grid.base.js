@@ -1605,8 +1605,8 @@ $.fn.jqGrid = function( pin ) {
 				case "xmlstring":
 					beginReq();
 					dstr = $.jgrid.stringToDoc(ts.p.datastr);
-					if(lcf) {ts.p.loadComplete.call(ts,dstr);}
 					addXmlData(dstr,ts.grid.bDiv);
+					if(lcf) {ts.p.loadComplete.call(ts,dstr);}
 					ts.p.datatype = "local";
 					ts.p.datastr = null;
 					endReq();
@@ -1615,8 +1615,8 @@ $.fn.jqGrid = function( pin ) {
 					beginReq();
 					if(typeof ts.p.datastr == 'string') { dstr = $.jgrid.parse(ts.p.datastr); }
 					else { dstr = ts.p.datastr; }
-					if(lcf) {ts.p.loadComplete.call(ts,dstr);}
 					addJSONData(dstr,ts.grid.bDiv);
+					if(lcf) {ts.p.loadComplete.call(ts,dstr);}
 					ts.p.datatype = "local";
 					ts.p.datastr = null;
 					endReq();
