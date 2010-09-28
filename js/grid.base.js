@@ -1106,7 +1106,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			}
 			if(ts.p.gridview === true) {
-				if(ts.p.grouping && F) {
+				if(ts.p.grouping) {
 					$(ts).jqGrid('groupingRender',grpdata,ts.p.colModel.length);
 					grpdata = null;
 				} else {				
@@ -1269,7 +1269,7 @@ $.fn.jqGrid = function( pin ) {
 				if(ir==rn) { break; }
 			}
 			if(ts.p.gridview === true ) {
-				if(ts.p.grouping && F) {
+				if(ts.p.grouping) {
 					$(ts).jqGrid('groupingRender',grpdata,ts.p.colModel.length);
 					grpdata = null;
 				} else {
