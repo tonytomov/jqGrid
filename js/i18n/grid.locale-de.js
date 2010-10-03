@@ -102,10 +102,10 @@ $.jgrid = {
 			AmPm : ["am","pm","AM","PM"],
 			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th'},
 			srcformat: 'Y-m-d',
-			newformat: 'd/m/Y',
+			newformat: 'd.m.Y',
 			masks : {
-		        ISO8601Long:"d.m.Y H:i:s",
-		        ISO8601Short:"d.m.Y",
+		        ISO8601Long:"Y-m-d H:i:s",
+		        ISO8601Short:"Y-m-d",
 		        ShortDate: "j.n.Y",
 		        LongDate: "l, d. F Y",
 		        FullDateTime: "l, d. F Y G:i:s",
