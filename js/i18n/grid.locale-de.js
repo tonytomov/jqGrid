@@ -39,10 +39,10 @@ $.jgrid = {
 		    number: "Bitte geben Sie eine Zahl ein",
 		    minValue:"Wert muss größer oder gleich sein, als ",
 		    maxValue:"Wert muss kleiner oder gleich sein, als ",
-		    email: "ist keine valide E-Mail Adresse",
+		    email: "ist keine gültige E-Mail Adresse",
 		    integer: "Bitte geben Sie eine Ganzzahl ein",
 			date: "Bitte geben Sie ein gültiges Datum ein",
-			url: "ist keine gültige URL. Prefix muss eingegeben werden ('http://' oder 'https://')",
+			url: "ist keine gültige URL. Präfix muss eingegeben werden ('http://' oder 'https://')",
 			nodefined : " ist nicht definiert!",
 			novalue : " Rückgabewert ist erforderlich!",
 			customarray : "Benutzerdefinierte Funktion sollte ein Array zurückgeben!",
@@ -61,13 +61,13 @@ $.jgrid = {
 	},
 	nav : {
 		edittext: " ",
-	    edittitle: "Ausgewählten Zeile editieren",
+	    edittitle: "Ausgewählte Zeile editieren",
 		addtext:" ",
-	    addtitle: "Neuen Zeile einfügen",
+	    addtitle: "Neue Zeile einfügen",
 	    deltext: " ",
 	    deltitle: "Ausgewählte Zeile löschen",
 	    searchtext: " ",
-	    searchtitle: "Datensatz finden",
+	    searchtitle: "Datensatz suchen",
 	    refreshtext: "",
 	    refreshtitle: "Tabelle neu laden",
 	    alertcap: "Warnung",
@@ -76,7 +76,7 @@ $.jgrid = {
 		viewtitle: "Ausgewählte Zeile anzeigen"
 	},
 	col : {
-		caption: "Spalten anzeigen/verbergen",
+		caption: "Spalten auswählen",
 		bSubmit: "Speichern",
 		bCancel: "Abbrechen"	
 	},
@@ -87,7 +87,7 @@ $.jgrid = {
 		model : "colNames und colModel sind unterschiedlich lang!"
 	},
 	formatter : {
-		integer : {thousandsSeparator: " ", defaultValue: '0'},
+		integer : {thousandsSeparator: ".", defaultValue: '0'},
 		number : {decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, defaultValue: '0,00'},
 		currency : {decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "", suffix:" €", defaultValue: '0,00'},
 		date : {
