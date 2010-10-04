@@ -1,7 +1,7 @@
 //This file should be used if you want to debug and develop
 function jqGridInclude()
 {
-    var pathtojsfiles = "js/"; // need to be ajusted
+    var pathtojsfiles = "/jqgrid/js/"; // need to be ajusted
     // set include to false if you do not want some modules to be included
     var modules = [
         { include: true, incfile:'i18n/grid.locale-en.js'}, // jqGrid translation
@@ -12,7 +12,7 @@ function jqGridInclude()
         { include: true, incfile:'grid.celledit.js'}, // jqGrid cell editing
         { include: true, incfile:'grid.subgrid.js'}, //jqGrid subgrid
         { include: true, incfile:'grid.treegrid.js'}, //jqGrid treegrid
-        { include: true, incfile:'grid.grouping.js'}, //jqGrid table to grid 
+        { include: true, incfile:'grid.grouping.js'}, //jqGrid grouping 
         { include: true, incfile:'grid.custom.js'}, //jqGrid custom 
         { include: true, incfile:'grid.postext.js'}, //jqGrid postext
         { include: true, incfile:'grid.tbltogrid.js'}, //jqGrid table to grid
