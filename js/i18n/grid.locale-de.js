@@ -4,6 +4,11 @@
  * Version 1.0.0 (developed for jQuery Grid 3.3.1)
  * Olaf Klöppel opensource@blue-hit.de
  * http://blue-hit.de/ 
+ *
+ * Updated for jqGrid 3.8
+ * Andreas Flack
+ * http://www.contentcontrol-berlin.de
+ *
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
@@ -17,12 +22,12 @@ $.jgrid = {
 	},
 	search : {
 		caption: "Suche...",
-		Find: "Finden",
+		Find: "Suchen",
 		Reset: "Zurücksetzen",
 	    odata : ['gleich', 'ungleich', 'kleiner', 'kleiner gleich','größer','größer gleich', 'beginnt mit','beginnt nicht mit','ist in','ist nicht in','endet mit','endet nicht mit','enthält','enthält nicht'],
-	    groupOps: [	{ op: "AND", text: "alle" },	{ op: "OR",  text: "mindestens eins" }	],
-		matchText: " match",
-		rulesText: " rules"
+	    groupOps: [	{ op: "AND", text: "alle" },	{ op: "OR",  text: "mindestens eine" }	],
+		matchText: " erfülle",
+		rulesText: " Bedingung(en)"
 	},
 	edit : {
 		addCaption: "Datensatz hinzufügen",
@@ -39,7 +44,7 @@ $.jgrid = {
 		    number: "Bitte geben Sie eine Zahl ein",
 		    minValue:"Wert muss größer oder gleich sein, als ",
 		    maxValue:"Wert muss kleiner oder gleich sein, als ",
-		    email: "ist keine gültige E-Mail Adresse",
+		    email: "ist keine gültige E-Mail-Adresse",
 		    integer: "Bitte geben Sie eine Ganzzahl ein",
 			date: "Bitte geben Sie ein gültiges Datum ein",
 			url: "ist keine gültige URL. Präfix muss eingegeben werden ('http://' oder 'https://')",
@@ -50,7 +55,7 @@ $.jgrid = {
 		}
 	},
 	view : {
-	    caption: "Datensatz anschauen",
+	    caption: "Datensatz anzeigen",
 	    bClose: "Schließen"
 	},
 	del : {
@@ -83,7 +88,7 @@ $.jgrid = {
 	errors : {
 		errcap : "Fehler",
 		nourl : "Keine URL angegeben",
-		norecords: "Keine Datensätze zum verarbeiten",
+		norecords: "Keine Datensätze zu bearbeiten",
 		model : "colNames und colModel sind unterschiedlich lang!"
 	},
 	formatter : {
@@ -100,14 +105,14 @@ $.jgrid = {
 				"Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"
 			],
 			AmPm : ["am","pm","AM","PM"],
-			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th'},
+			S: function (j) {return 'ter'},
 			srcformat: 'Y-m-d',
 			newformat: 'd.m.Y',
 			masks : {
-		        ISO8601Long:"Y-m-d H:i:s",
-		        ISO8601Short:"Y-m-d",
+		        ISO8601Long: "Y-m-d H:i:s",
+		        ISO8601Short: "Y-m-d",
 		        ShortDate: "j.n.Y",
-		        LongDate: "l, d. F Y",
+		        LongDate: "l, j. F Y",
 		        FullDateTime: "l, d. F Y G:i:s",
 		        MonthDay: "d. F",
 		        ShortTime: "G:i",
