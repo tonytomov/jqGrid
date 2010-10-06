@@ -261,9 +261,9 @@ $.extend($.jgrid,{
 			if(a!==null&&b===null){
 				return -1;
 			}
-			if(!_usecase) {
-				a=a.toLowerCase();
-				b=b.toLowerCase();
+			if(!_usecase && typeof(a) !== "number" && typeof(b) !== "number" ) {
+				a=String(a).toLowerCase();
+				b=String(b).toLowerCase();
 			}
 			if(a<b){return -d;}
 			if(a>b){return d;}
@@ -319,7 +319,7 @@ $.extend($.jgrid,{
 				};
 			}
 			$.each(data,function(i,v){
-				ab = $.jgrid.getAccessor(v,by);
+				ab = by!=="" ? $.jgrid.getAccessor(v,by) : v;
 				if(ab === undefined) { ab = ""; }
 				ab = findSortKey(ab, v);
 				_sortData.push({ 'vSort': ab,'index':i});
@@ -1654,7 +1654,7 @@ $.fn.jqGrid = function( pin ) {
 			pgcnt = "pg_"+pgid;
 			lft = pgid+"_left"; cent = pgid+"_center"; rgt = pgid+"_right";
 			$("#"+pgid)
-			.append("<div id='"+pgcnt+"' class='ui-pager-control' role='group'><table cellspacing='0' cellpadding='0' border='0' class='ui-pg-table' style='width:100%;table-layout:fixed;' role='row'><tbody><tr><td id='"+lft+"' align='left'></td><td id='"+cent+"' align='center' style='white-space:pre;'></td><td id='"+rgt+"' align='right'></td></tr></tbody></table></div>")
+			.append("<div id='"+pgcnt+"' class='ui-pager-control' role='group'><table cellspacing='0' cellpadding='0' border='0' class='ui-pg-table' style='width:100%;table-layout:fixed;height:100%;' role='row'><tbody><tr><td id='"+lft+"' align='left'></td><td id='"+cent+"' align='center' style='white-space:pre;'></td><td id='"+rgt+"' align='right'></td></tr></tbody></table></div>")
 			.attr("dir","ltr"); //explicit setting
 			if(ts.p.rowList.length >0){
 				str = "<td dir='"+dir+"'>";
@@ -2953,7 +2953,7 @@ $.jgrid.extend({
 							var cm = $t.p.colModel[pos], index;
 							nData = cm.formatter && typeof(cm.formatter) === 'string' && cm.formatter == 'date' ? $.unformat.date(nData,cm) : nData;
 							index = $t.p._index[rowid];
-							if(index) {
+							if(typeof index  != "undefined") {
 								$t.p.data[index][cm.name] = nData;
 							}
 						}
