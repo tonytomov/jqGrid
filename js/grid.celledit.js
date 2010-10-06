@@ -174,7 +174,7 @@ $.jgrid.extend({
 				if (v2 != $t.p.savedRow[fr].v){
 					if ($.isFunction($t.p.beforeSaveCell)) {
 						var vv = $t.p.beforeSaveCell.call($t, $t.rows[iRow].id,nm, v, iRow,iCol);
-						if (vv) {v = vv;}
+						if (vv) {v = vv; v2=vv;}
 					}
 					var cv = checkValues(v,iCol,$t);
 					if(cv[0] === true) {
