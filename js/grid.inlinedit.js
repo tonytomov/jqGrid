@@ -66,7 +66,7 @@ $.jgrid.extend({
 							e.stopPropagation();
 						});
 					}
-					if( $.isFunction(oneditfunc)) { oneditfunc(rowid); }
+					if( $.isFunction(oneditfunc)) { oneditfunc.call($t, rowid); }
 				}
 			}
 		});
@@ -119,7 +119,7 @@ $.jgrid.extend({
 						case 'custom' :
 							try {
 								if(cm.editoptions && $.isFunction(cm.editoptions.custom_value)) {
-									tmp[nm] = cm.editoptions.custom_value($(".customelement",this),'get');
+									tmp[nm] = cm.editoptions.custom_value.call($t, $(".customelement",this),'get');
 									if (tmp[nm] === undefined) { throw "e2"; }
 								} else { throw "e1"; }
 							} catch (e) {
@@ -170,18 +170,18 @@ $.jgrid.extend({
 					if( $t.p.savedRow[k].id == rowid) {fr = k; break;}
 				}
 				if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
-				if( $.isFunction(aftersavefunc) ) { aftersavefunc(rowid,resp); }
+				if( $.isFunction(aftersavefunc) ) { aftersavefunc.call($t, rowid,resp); }
 			} else {
 				$("#lui_"+$t.p.id).show();
 				$.ajax($.extend({
 					url:url,
-					data: $.isFunction($t.p.serializeRowData) ? $t.p.serializeRowData(tmp) : tmp,
+					data: $.isFunction($t.p.serializeRowData) ? $t.p.serializeRowData.call($t, tmp) : tmp,
 					type: "POST",
 					complete: function(res,stat){
 						$("#lui_"+$t.p.id).hide();
 						if (stat === "success"){
 							var ret;
-							if( $.isFunction(succesfunc)) { ret = succesfunc(res);}
+							if( $.isFunction(succesfunc)) { ret = succesfunc.call($t, res);}
 							else { ret = true; }
 							if (ret===true) {
 								if($t.p.autoencode) {
@@ -196,14 +196,19 @@ $.jgrid.extend({
 									if( $t.p.savedRow[k].id == rowid) {fr = k; break;}
 								}
 								if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
-								if( $.isFunction(aftersavefunc) ) { aftersavefunc(rowid,res); }
-							} else { $($t).jqGrid("restoreRow",rowid, afterrestorefunc); }
+								if( $.isFunction(aftersavefunc) ) { aftersavefunc.call($t, rowid,res); }
+							} else {
+								if($.isFunction(errorfunc) ) {
+									errorfunc.call($t, rowid, res, stat);
+								}
+								$($t).jqGrid("restoreRow",rowid, afterrestorefunc);
+							}
 						}
 					},
 					error:function(res,stat){
 						$("#lui_"+$t.p.id).hide();
 						if($.isFunction(errorfunc) ) {
-							errorfunc(rowid, res, stat);
+							errorfunc.call($t, rowid, res, stat);
 						} else {
 							alert("Error Row: "+rowid+" Result: " +res.status+":"+res.statusText+" Status: "+stat);
 						}
@@ -241,7 +246,7 @@ $.jgrid.extend({
 			}
 			if ($.isFunction(afterrestorefunc))
 			{
-				afterrestorefunc(rowid);
+				afterrestorefunc.call($t, rowid);
 			}
 		});
 	}

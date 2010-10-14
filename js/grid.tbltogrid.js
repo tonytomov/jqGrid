@@ -18,7 +18,7 @@ jQuery(selector).each(function() {
 	var selectMultiple = inputCheckbox.length > 0;
 	var selectSingle = !selectMultiple && inputRadio.length > 0;
 	var selectable = selectMultiple || selectSingle;
-	var inputName = inputCheckbox.attr("name") || inputRadio.attr("name");
+	//var inputName = inputCheckbox.attr("name") || inputRadio.attr("name");
 
 	// Build up the columnModel and the data
 	var colModel = [];
