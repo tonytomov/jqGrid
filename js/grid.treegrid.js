@@ -175,7 +175,7 @@ $.jgrid.extend({
 			var childern = $($t).jqGrid("getNodeChildren",record),
 			expanded = $t.p.treeReader.expanded_field;
 			$(childern).each(function(i){
-				var id  = $.jgrid.getAccessor(this,$t.p.localReader.id)				
+				var id  = $.jgrid.getAccessor(this,$t.p.localReader.id);
 				$("#"+id,$t.grid.bDiv).css("display","none");
 				if(this[expanded]){
 					$($t).jqGrid("collapseRow",this);
@@ -246,9 +246,10 @@ $.jgrid.extend({
 					});
 					break;
 				case 'adjacency' :
-					var parent_id = $t.p.treeReader.parent_id_field;
+					var parent_id = $t.p.treeReader.parent_id_field,
+					dtid = $t.p.localReader.id;
 					$(this.p.data).each(function(i,val){
-						if(this.id == rc[parent_id] ) {
+						if(this[dtid] == rc[parent_id] ) {
 							result = this;
 							return false;
 						}
@@ -276,9 +277,10 @@ $.jgrid.extend({
 					});
 					break;
 				case 'adjacency' :
-					var parent_id = $t.p.treeReader.parent_id_field;
+					var parent_id = $t.p.treeReader.parent_id_field,
+					dtid = $t.p.localReader.id;
 					$(this.p.data).each(function(i,val){
-						if(this[parent_id] == rc.id) {
+						if(this[parent_id] == rc[dtid]) {
 							result.push(this);
 						}
 					});
@@ -306,11 +308,12 @@ $.jgrid.extend({
 					break;
 				case 'adjacency' :
 					result.push(rc);
-					var parent_id = $t.p.treeReader.parent_id_field;
+					var parent_id = $t.p.treeReader.parent_id_field,
+					dtid = $t.p.localReader.id;
 					$(this.p.data).each(function(i){
 						len = result.length;
 						for (i = 0; i < len; i++) {
-							if (result[i].id == this[parent_id]) {
+							if (result[i][dtid] == this[parent_id]) {
 								result.push(this);
 								break;
 							}
@@ -369,7 +372,7 @@ $.jgrid.extend({
 			if(!this.grid || !this.p.treeGrid) { return; }
 			var expanded = this.p.treeReader.expanded_field;
 			if(!rc[expanded]) {
-				var id = $.jgrid.getAccessor(rc,this.p.localReader.id)
+				var id = $.jgrid.getAccessor(rc,this.p.localReader.id);
 				var rc1 = $("#"+id,this.grid.bDiv)[0];
 				var position = this.p._index[id];
 				if( $(this).jqGrid("isNodeLoaded",this.p.data[position]) ) {
@@ -400,7 +403,7 @@ $.jgrid.extend({
 			if(!this.grid || !this.p.treeGrid) { return; }
 			if(rc.expanded) {
 				rc.expanded = false;
-				var id = $.jgrid.getAccessor(rc,this.p.localReader.id)
+				var id = $.jgrid.getAccessor(rc,this.p.localReader.id);
 				var rc1 = $("#"+id,this.grid.bDiv)[0];
 				$("div.treeclick",rc1).removeClass(this.p.treeIcons.minus+" tree-minus").addClass(this.p.treeIcons.plus+" tree-plus");
 			}
@@ -444,7 +447,7 @@ $.jgrid.extend({
 			child, ch, query, children;
 			ch = $(this).jqGrid("getNodeChildren",rec);
 			query = $.jgrid.from(ch);
-			query.orderBy(sortname,newDir,newDir,st, datefmt);
+			query.orderBy(sortname, newDir, st, datefmt);
 			children = query.select();
 			for (i = 0, len = children.length; i < len; i++) {
 				child = children[i];
@@ -455,7 +458,7 @@ $.jgrid.extend({
 	},
 	// experimental 
 	setTreeRow : function(rowid, data) {
-		var nm, success=false;
+		var success=false;
 		this.each(function(){
 			var t = this;
 			if(!t.grid || !t.p.treeGrid) { return; }

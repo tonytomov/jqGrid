@@ -23,7 +23,7 @@ var hideModal = function (selector,o) {
 	if (jQuery.fn.jqm && o.jqm === true) {
 		jQuery(selector).attr("aria-hidden","true").jqmHide();
 	} else {
-		if(o.gb != '') {
+		if(o.gb !== '') {
 			try {jQuery(".jqgrid-overlay:first",o.gb).hide();} catch (e){}
 		}
 		jQuery(selector).hide().attr("aria-hidden","true");
@@ -155,7 +155,7 @@ var viewModal = function (selector,o){
 		if(o.jqM) { jQuery(selector).attr("aria-hidden","false").jqm(o).jqmShow(); }
 		else {jQuery(selector).attr("aria-hidden","false").jqmShow();}
 	} else {
-		if(o.gbox != '') {
+		if(o.gbox !== '') {
 			jQuery(".jqgrid-overlay:first",o.gbox).show();
 			jQuery(selector).data("gbox",o.gbox);
 		}
@@ -200,7 +200,7 @@ function info_dialog(caption, content,c_b, modalopt) {
 	var cnt = "<div id='info_id'>";
 	cnt += "<div id='infocnt' style='margin:0px;padding-bottom:1em;width:100%;overflow:auto;position:relative;height:"+dh+";"+cn+"'>"+content+"</div>";
 	cnt += c_b ? "<div class='ui-widget-content ui-helper-clearfix' style='text-align:"+mopt.buttonalign+";padding-bottom:0.8em;padding-top:0.5em;background-image: none;border-width: 1px 0 0 0;'><a href='javascript:void(0)' id='closedialog' class='fm-button ui-state-default ui-corner-all'>"+c_b+"</a>"+buttstr+"</div>" :
-		buttstr != ""  ? "<div class='ui-widget-content ui-helper-clearfix' style='text-align:"+mopt.buttonalign+";padding-bottom:0.8em;padding-top:0.5em;background-image: none;border-width: 1px 0 0 0;'>"+buttstr+"</div>" : "";
+		buttstr !== ""  ? "<div class='ui-widget-content ui-helper-clearfix' style='text-align:"+mopt.buttonalign+";padding-bottom:0.8em;padding-top:0.5em;background-image: none;border-width: 1px 0 0 0;'>"+buttstr+"</div>" : "";
 	cnt += "</div>";
 
 	try {
@@ -232,7 +232,7 @@ function info_dialog(caption, content,c_b, modalopt) {
 		function(){jQuery(this).addClass('ui-state-hover');}, 
 		function(){jQuery(this).removeClass('ui-state-hover');}
 	);
-	if(jQuery.isFunction(mopt.beforeOpen) ) mopt.beforeOpen();
+	if(jQuery.isFunction(mopt.beforeOpen) ) { mopt.beforeOpen(); }
 	viewModal("#info_dialog",{
 		onHide: function(h) {
 			h.w.hide().remove();
@@ -241,8 +241,8 @@ function info_dialog(caption, content,c_b, modalopt) {
 		modal :mopt.modal,
 		jqm:jm
 	});
-	if(jQuery.isFunction(mopt.afterOpen) ) mopt.afterOpen();
-	try{$("#info_dialog").focus();} catch (e){}
+	if(jQuery.isFunction(mopt.afterOpen) ) { mopt.afterOpen(); }
+	try{ jQuery("#info_dialog").focus();} catch (e){}
 }
 // Form Functions
 function createEl(eltype,options,vl,autowidth, ajaxso) {
@@ -314,7 +314,7 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 			if(options.multiple===true) {
 				msl = true;
 				elem.multiple="multiple";
-				$(elem).attr("aria-multiselectable","true");
+				jQuery(elem).attr("aria-multiselectable","true");
 			} else { msl = false; }
 			if(typeof(options.dataUrl) != "undefined") {
 				jQuery.ajax(jQuery.extend({
@@ -345,7 +345,7 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 							setTimeout(function(){
 								jQuery("option",elem).each(function(i){
 									if(i===0) { this.selected = ""; }
-									$(this).attr("role","option");
+									jQuery(this).attr("role","option");
 									if(jQuery.inArray(jQuery.trim(jQuery(this).text()),ovm) > -1 || jQuery.inArray(jQuery.trim(jQuery(this).val()),ovm) > -1 ) {
 										this.selected= "selected";
 										if(!msl) { return false; }
@@ -523,7 +523,7 @@ function checkDate (format, date) {
 
 function isEmpty(val)
 {
-	if (val.match(/^\s+$/) || val == "")	{
+	if (val.match(/^\s+$/) || val === "")	{
 		return true;
 	} else {
 		return false;
@@ -551,7 +551,7 @@ function checkTime(time){
 	return true;
 }
 function checkValues(val, valref,g) {
-	var edtrul,i, nm, dft;
+	var edtrul,i, nm, dft, len;
 	if(typeof(valref)=='string'){
 		for( i =0, len=g.p.colModel.length;i<len; i++){
 			if(g.p.colModel[i].name==valref) {

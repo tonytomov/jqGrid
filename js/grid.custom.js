@@ -372,6 +372,7 @@ $.jgrid.extend({
 				if(saveurl) {$(gr).jqGrid("setGridParam",{url:saveurl});}
 				if($.isFunction(self.p.afterClear)){self.p.afterClear();}
 			};
+			var tbl;
 			var formFill = function(){
 				var tr = document.createElement("tr");
 				var tr1, sb, cb,tl,td;
@@ -512,7 +513,7 @@ $.jgrid.extend({
 				}
 			};
 			var frm = $("<form name='SearchForm' style=display:inline;' class='"+this.p.formclass+"'></form>");
-			var tbl =$("<table class='"+this.p.tableclass+"' cellspacing='0' cellpading='0' border='0'><tbody></tbody></table>");
+			tbl =$("<table class='"+this.p.tableclass+"' cellspacing='0' cellpading='0' border='0'><tbody></tbody></table>");
 			$(frm).append(tbl);
 			formFill();
 			$(this).append(frm);
@@ -530,17 +531,18 @@ $.jgrid.extend({
 			afterClear: null,
 			searchurl : '',
 			stringResult: false,
-			groupOp: 'AND'
+			groupOp: 'AND',
+			defaultSearch : "bw"
 		},p  || {});
 		return this.each(function(){
 			var $t = this;
 			var triggerToolbar = function() {
-				var sdata={}, j=0, v, nm, sopt={};
+				var sdata={}, j=0, v, nm, sopt={},so;
 				$.each($t.p.colModel,function(i,n){
 					nm = this.index || this.name;
-					var so = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : "bw";
 					switch (this.stype) {
 						case 'select' :
+							so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : 'eq';
 							v = $("select[name="+nm+"]",$t.grid.hDiv).val();
 							if(v) {
 								sdata[nm] = v;
@@ -553,6 +555,7 @@ $.jgrid.extend({
 							}
 							break;
 						case 'text':
+							so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : p.defaultSearch;
 							v = $("input[name="+nm+"]",$t.grid.hDiv).val();
 							if(v) {
 								sdata[nm] = v;
