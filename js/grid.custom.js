@@ -417,6 +417,7 @@ $.jgrid.extend({
 										sv = so[k].split(":");
 										ov = document.createElement("option");
 										ov.value = sv[0]; ov.innerHTML = sv[1];
+										ov.className = "f_" + $t.name + "_" + ov.value;
 										if (sv[1]==$t.defval) { ov.selected ="selected"; }
 										elem.appendChild(ov);
 									}
@@ -426,6 +427,7 @@ $.jgrid.extend({
 											i++;
 											ov = document.createElement("option");
 											ov.value = key; ov.innerHTML = oSv[key];
+											ov.className = "f_" + $t.name + "_" + ov.value;
 											if (oSv[key]==$t.defval) { ov.selected ="selected"; }
 											elem.appendChild(ov);
 										}
