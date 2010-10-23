@@ -392,7 +392,7 @@ $.jgrid.extend({
 					},
 					drop: function(ev, ui) {
 						var accept = $(ui.draggable).attr("id");
-						var getdata = $('#'+$t.id).jqGrid('getRowData',accept);
+						var getdata = ui.draggable.parent().parent().jqGrid('getRowData',accept);
 						if(!opts.dropbyname) {
 							var j =0, tmpdata = {}, dropname;
 							var dropmodel = $("#"+this.id).jqGrid('getGridParam','colModel');
