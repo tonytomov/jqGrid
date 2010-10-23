@@ -94,7 +94,14 @@ var createModal = function(aIDs, content, p, insertSelector, posSelector, append
 	});
 	if (p.width === 0 || !p.width) {p.width = 300;}
 	if(p.height === 0 || !p.height) {p.height =200;}
-	if(!p.zIndex) {p.zIndex = 950;}
+	if(!p.zIndex) {
+		var parentZ = $(insertSelector).parents("*[role=dialog]").first().css("z-index")
+		if(parentZ)
+			p.zIndex = parseInt(parentZ)+1
+		else
+			p.zIndex = 950;
+
+	}
 	var rtlt = 0;
 	if( rtlsup && coord.left && !appendsel) {
 		rtlt = jQuery(p.gbox).width()- (!isNaN(p.width) ? parseInt(p.width,10) :0) - 8; // to do
