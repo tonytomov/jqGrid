@@ -55,7 +55,7 @@ $.jgrid.extend({
 		this.each(function(){
 			// currently only one level
 			// Is this a good idea to do it so!!!!?????
-			var itm = items[0] ? items[0].split(' ').join('') : "";
+			var itm = items[0] ? items[0].toString().split(' ').join('') : "";
 			
 			var grp = this.p.groupingView, $t= this;
 			if(gdata.hasOwnProperty(itm)) {
@@ -64,7 +64,7 @@ $.jgrid.extend({
 				gdata[itm] = [];
 				gdata[itm].push(rData);
 				grp.sortitems[0].push(itm);
-				grp.sortnames[0].push($.trim(items[0]));
+				grp.sortnames[0].push($.trim(items[0].toString()));
 				grp.summaryval[0][itm] = $.extend(true,{},grp.summary[0]);
 			}
 			if(grp.groupSummary[0]) {
@@ -115,6 +115,7 @@ $.jgrid.extend({
 				if(grp.groupOrder[0].toLowerCase() == 'desc')
 				{
 					grp.sortitems[0].reverse();
+					grp.sortnames[0].reverse();
 				}
 			}   
 			if(grp.groupCollapse) { pmrtl = grp.plusicon; }
