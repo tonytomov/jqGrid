@@ -1088,9 +1088,9 @@ $.fn.jqGrid = function( pin ) {
 				}
 				if(ts.p.gridview === false ) {
 					if( ts.p.treeGrid === true) {
-						fpos = ts.p.treeANode >= -1 ? ts.p.treeANode: 0;
+						fpos = ts.p.treeANode > -1 ? ts.p.treeANode: 0;
 						row = $(rowData.join(''))[0]; // speed overhead
-						$(ts.rows[j+fpos+rcnt]).after(row);
+						$(ts.rows[j+fpos]).after(row);
 						try {$(ts).jqGrid("setTreeNode",rd,row);} catch (e) {}
 					} else {
 						$("tbody:first",t).append(rowData.join(''));
@@ -1252,9 +1252,9 @@ $.fn.jqGrid = function( pin ) {
 				if(locdata) { rd[locid] = idr; ts.p.data.push(rd); }
 				if(ts.p.gridview === false ) {
 					if( ts.p.treeGrid === true) {
-						fpos = ts.p.treeANode >= -1 ? ts.p.treeANode: 0;
+						fpos = ts.p.treeANode > -1 ? ts.p.treeANode: 0;
 						row = $(rowData.join(''))[0];
-						$(ts.rows[i+fpos+rcnt]).after(row);
+						$(ts.rows[i+fpos]).after(row);
 						try {$(ts).jqGrid("setTreeNode",rd,row);} catch (e) {}
 					} else {
 						$("#"+ts.p.id+" tbody:first").append(rowData.join(''));
