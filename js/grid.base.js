@@ -2287,38 +2287,40 @@ $.fn.jqGrid = function( pin ) {
 			var tdt = ts.p.datatype;
 			if(ts.p.hidegrid===true) {
 				$(".ui-jqgrid-titlebar-close",grid.cDiv).click( function(e){
-					var onHdCl = $.isFunction(ts.p.onHeaderClick);
+					var onHdCl = $.isFunction(ts.p.onHeaderClick),
+                                            elems = ".ui-jqgrid-bdiv, .ui-jqgrid-hdiv, .ui-jqgrid-pager, .ui-jqgrid-sdiv",
+                                            counter, self = this;
+
+                                        if(ts.p.toolbar[0]===true) {
+                                            if( ts.p.toolbar[1]=='both') {
+                                                elems += ', #' + $(grid.ubDiv).attr('id');
+                                            }
+                                            elems += ', #' + $(grid.uDiv).attr('id');
+                                        }
+
+                                        counter = $(elems,"#gview_"+ts.p.id).length;
+
 					if(ts.p.gridstate == 'visible') {
-						$(".ui-jqgrid-bdiv, .ui-jqgrid-hdiv","#gview_"+ts.p.id).slideUp("fast");
-						if(ts.p.pager) {$(ts.p.pager).slideUp("fast");}
-						if(ts.p.toppager) {$(ts.p.toppager).slideUp("fast");}
-						if(ts.p.toolbar[0]===true) {
-							if( ts.p.toolbar[1]=='both') {
-								$(grid.ubDiv).slideUp("fast");
-							}
-							$(grid.uDiv).slideUp("fast");
-						}
-						if(ts.p.footerrow) { $(".ui-jqgrid-sdiv","#gbox_"+ts.p.id).slideUp("fast"); }
-						$("span",this).removeClass("ui-icon-circle-triangle-n").addClass("ui-icon-circle-triangle-s");
-						ts.p.gridstate = 'hidden';
-						if($("#gbox_"+ts.p.id).hasClass("ui-resizable")) { $(".ui-resizable-handle","#gbox_"+ts.p.id).hide(); }
-						if(onHdCl) {if(!hg) {ts.p.onHeaderClick.call(ts,ts.p.gridstate,e);}}
+                                            $(elems,"#gbox_"+ts.p.id).slideUp("fast", function() {
+                                                counter--;
+                                                if (counter == 0) {
+                                                    $("span",self).removeClass("ui-icon-circle-triangle-n").addClass("ui-icon-circle-triangle-s");
+                                                    ts.p.gridstate = 'hidden';
+                                                    if($("#gbox_"+ts.p.id).hasClass("ui-resizable")) { $(".ui-resizable-handle","#gbox_"+ts.p.id).hide(); }
+                                                    if(onHdCl) {if(!hg) {ts.p.onHeaderClick.call(ts,ts.p.gridstate,e);}}
+                                                }
+                                            });
 					} else if(ts.p.gridstate == 'hidden'){
-						$(".ui-jqgrid-hdiv, .ui-jqgrid-bdiv","#gview_"+ts.p.id).slideDown("fast");
-						if(ts.p.pager) {$(ts.p.pager).slideDown("fast");}
-						if(ts.p.toppager) {$(ts.p.toppager).slideDown("fast");}
-						if(ts.p.toolbar[0]===true) {
-							if( ts.p.toolbar[1]=='both') {
-								$(grid.ubDiv).slideDown("fast");
-							}
-							$(grid.uDiv).slideDown("fast");
-						}
-						if(ts.p.footerrow) { $(".ui-jqgrid-sdiv","#gbox_"+ts.p.id).slideDown("fast"); }
-						$("span",this).removeClass("ui-icon-circle-triangle-s").addClass("ui-icon-circle-triangle-n");
-						if(hg) {ts.p.datatype = tdt;populate();hg=false;}
-						ts.p.gridstate = 'visible';
-						if($("#gbox_"+ts.p.id).hasClass("ui-resizable")) { $(".ui-resizable-handle","#gbox_"+ts.p.id).show(); }
-						if(onHdCl) {ts.p.onHeaderClick.call(ts,ts.p.gridstate,e);}
+                                            $(elems,"#gbox_"+ts.p.id).slideDown("fast", function() {
+                                                counter--;
+                                                if (counter == 0) {
+                                                    $("span",self).removeClass("ui-icon-circle-triangle-s").addClass("ui-icon-circle-triangle-n");
+                                                    if(hg) {ts.p.datatype = tdt;populate();hg=false;}
+                                                    ts.p.gridstate = 'visible';
+                                                    if($("#gbox_"+ts.p.id).hasClass("ui-resizable")) { $(".ui-resizable-handle","#gbox_"+ts.p.id).show(); }
+                                                    if(onHdCl) {if(!hg) {ts.p.onHeaderClick.call(ts,ts.p.gridstate,e);}}
+                                                }
+                                            });
 					}
 					return false;
 				});
