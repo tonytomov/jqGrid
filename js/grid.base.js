@@ -2408,12 +2408,14 @@ $.jgrid.extend({
 			}
 			if(!$t.p.multiselect) {
 				if(pt.className !== "ui-subgrid") {
-					if( $t.p.selrow ) {
-						$($t.rows.namedItem($t.p.selrow)).removeClass("ui-state-highlight").attr("aria-selected","false");
+                                    if( $t.p.selrow ) {
+                                            $($t.rows.namedItem($t.p.selrow)).removeClass("ui-state-highlight").attr("aria-selected","false");
 					}
-					$t.p.selrow = pt.id;
-					$(pt).addClass("ui-state-highlight").attr("aria-selected","true");
-					if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow.call($t,$t.p.selrow, true); }
+                                    if( $t.p.selrow != pt.id) {
+					    $t.p.selrow = pt.id;
+                                            $(pt).addClass("ui-state-highlight").attr("aria-selected","true");
+                                            if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow.call($t,$t.p.selrow, true); }
+                                    } else {$t.p.selrow = false;}
 				}
 			} else {
 				$t.p.selrow = pt.id;
