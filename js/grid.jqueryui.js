@@ -383,14 +383,16 @@ $.jgrid.extend({
 			"drop" : function (opts) {
 				return $.extend({
 					accept: function(d) {
+						if (!$(d).hasClass('jqgrow')) { return d;}
 						var tid = $(d).closest("table.ui-jqgrid-btable");
-						if($.data(tid[0],"dnd") !== undefined) {
+						if(tid.length > 0 && $.data(tid[0],"dnd") !== undefined) {
 						    var cn = $.data(tid[0],"dnd").connectWith;
 						    return $.inArray('#'+this.id,cn) != -1 ? true : false;
 						}
 						return d;
 					},
 					drop: function(ev, ui) {
+						if (!$(ui.draggable).hasClass('jqgrow')) { return; }
 						var accept = $(ui.draggable).attr("id");
 						var getdata = ui.draggable.parent().parent().jqGrid('getRowData',accept);
 						if(!opts.dropbyname) {
