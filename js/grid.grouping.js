@@ -65,7 +65,7 @@ $.jgrid.extend({
 				gdata[itm].push(rData);
 				grp.sortitems[0].push(itm);
 				grp.sortnames[0].push($.trim(items[0].toString()));
-				grp.summaryval[0][itm] = $.extend(true,{},grp.summary[0]);
+				grp.summaryval[0][itm] = $.extend(true,[],grp.summary[0]);
 			}
 			if(grp.groupSummary[0]) {
 				$.each(grp.summaryval[0][itm],function(i,n) {
