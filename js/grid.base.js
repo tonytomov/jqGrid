@@ -1326,7 +1326,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 		},
 		addLocalData = function() {
-			var st, fndsort=false, cmtypes=[], grtypes=[], srcformat, sorttype, newformat;
+			var st, fndsort=false, cmtypes=[], grtypes=[], grindexes=[], srcformat, sorttype, newformat;
 			if(!$.isArray(ts.p.data)) {
 				return;
 			}
@@ -1353,7 +1353,12 @@ $.fn.jqGrid = function( pin ) {
 					cmtypes[this.name] = {"stype": sorttype, "srcfmt":'',"newfmt":''};
 				}
 				if(ts.p.grouping && this.name == grpview.groupField[0]) {
-					grtypes[0] = cmtypes[this.name];
+                                    var grindex = this.name
+                                    if (typeof this.index != 'undefined') {
+                                        grindex = this.index;
+                                    }
+                                    grtypes[0] = cmtypes[grindex];
+                                    grindexes.push(grindex);
 				}
 				if(!fndsort && (this.index == ts.p.sortname || this.name == ts.p.sortname)){
 					st = this.name; // ???
@@ -1405,7 +1410,7 @@ $.fn.jqGrid = function( pin ) {
 				}
 			}
 			if(ts.p.grouping) {
-				query.orderBy(grpview.groupField[0],grpview.groupOrder[0],grtypes[0].stype, grtypes[0].srcfmt);
+				query.orderBy(grindexes,grpview.groupOrder[0],grtypes[0].stype, grtypes[0].srcfmt);
 				grpview.groupDataSorted = true;
 			}
 			if (st && ts.p.sortorder && fndsort) {
