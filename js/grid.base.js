@@ -630,6 +630,7 @@ $.fn.jqGrid = function( pin ) {
 			onHeaderClick: null,
 			viewrecords: false,
 			loadonce: false,
+			autoPopulate: true,
 			multiselect: false,
 			multikey: false,
 			editurl: null,
@@ -2342,7 +2343,9 @@ $.fn.jqGrid = function( pin ) {
 		ts.addJSONData = function(d) {addJSONData(d,ts.grid.bDiv);};
 		this.grid.cols = this.rows[0].cells;
 
-		populate();ts.p.hiddengrid=false;
+		if (ts.p.autoPopulate) {
+			populate();ts.p.hiddengrid=false;
+		}
 		$(window).unload(function () {
 			ts = null;
 		});
