@@ -12,7 +12,7 @@ $.jgrid = {
 		recordtext: "Mostrant {0} - {1} de {2}",
 	    emptyrecords: "Sense registres que mostrar",
 		loadtext: "Carregant...",
-		pgtext : "Page {0} of {1}"
+		pgtext : "Pàgina {0} de {1}"
 	},
 	search : {
 		caption: "Cerca...",
