@@ -428,14 +428,7 @@ $.jgrid.extend({
 			}
 			$.each(records, function(index, row) {
 				var id  = $.jgrid.getAccessor(this,$t.p.localReader.id);
-				if(index===0) {
-					var row1 = $("#"+id,$t.grid.bDiv);
-					$("td",row1).each( function( k ) {
-						$(this).css("width",$t.grid.headers[k].width+"px");
-					});
-					$t.grid.cols = row1[0].cells;
-				}
-				$('tbody',$t.grid.bDiv).append($("#"+id,$t.grid.bDiv));
+				$('#'+$t.p.id+ ' tbody tr:eq('+index+')').after($('tr#'+id,$t.grid.bDiv));
 			});
 			query = null; roots=null;records=null;
 		});

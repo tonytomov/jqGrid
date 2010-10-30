@@ -36,8 +36,8 @@ $.jgrid = {
 		msg: {
 			required: "Champ obligatoire",
 			number: "Saisissez un nombre correct",
-			minValue: "La valeur doit être supérieure ou égale à 0",
-			maxValue: "La valeur doit être inférieure ou égale à 0",
+			minValue: "La valeur doit être supérieure ou égale à",
+			maxValue: "La valeur doit être inférieure ou égale à",
 			email: "n'est pas un email correct",
 			integer: "Saisissez un entier correct",
 			url: "n'est pas une adresse correcte. Préfixe requis ('http://' or 'https://')",
