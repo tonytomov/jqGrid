@@ -197,6 +197,7 @@ $.jgrid.extend({
 			$t.p.grouping = false;
 			if(current===true) {
 				$("tr.jqgroup, tr.jqfoot","#"+$t.p.id+" tbody:first").remove();
+				$("tr.jqgrow:hidden","#"+$t.p.id+" tbody:first").show();
 			} else {
 				$($t).trigger("reloadGrid");
 			}
