@@ -6,25 +6,25 @@
 */
 // Addition - selector can be a class or id
 function tableToGrid(selector, options) {
-$(selector).each(function() {
+jQuery(selector).each(function() {
 	if(this.grid) {return;} //Adedd from Tony Tomov
 	// This is a small "hack" to make the width of the jqGrid 100%
-	$(this).width("99%");
-	var w = $(this).width();
+	jQuery(this).width("99%");
+	var w = jQuery(this).width();
 
 	// Text whether we have single or multi select
-	var inputCheckbox = $('input[type=checkbox]:first', $(this));
-	var inputRadio = $('input[type=radio]:first', $(this));
+	var inputCheckbox = jQuery('input[type=checkbox]:first', jQuery(this));
+	var inputRadio = jQuery('input[type=radio]:first', jQuery(this));
 	var selectMultiple = inputCheckbox.length > 0;
 	var selectSingle = !selectMultiple && inputRadio.length > 0;
 	var selectable = selectMultiple || selectSingle;
-	var inputName = inputCheckbox.attr("name") || inputRadio.attr("name");
+	//var inputName = inputCheckbox.attr("name") || inputRadio.attr("name");
 
 	// Build up the columnModel and the data
 	var colModel = [];
 	var colNames = [];
-	$('th', $(this)).each(function() {
-		if (colModel.length == 0 && selectable) {
+	jQuery('th', jQuery(this)).each(function() {
+		if (colModel.length === 0 && selectable) {
 			colModel.push({
 				name: '__selection__',
 				index: '__selection__',
@@ -34,22 +34,22 @@ $(selector).each(function() {
 			colNames.push('__selection__');
 		} else {
 			colModel.push({
-				name: $(this).attr("id") || $(this).html(),
-				index: $(this).attr("id") || $(this).html(),
-				width: $(this).width() || 150
+				name: jQuery(this).attr("id") || jQuery.trim(jQuery.jgrid.stripHtml(jQuery(this).html())).split(' ').join('_'),
+				index: jQuery(this).attr("id") || jQuery.trim(jQuery.jgrid.stripHtml(jQuery(this).html())).split(' ').join('_'),
+				width: jQuery(this).width() || 150
 			});
-			colNames.push($(this).html());
+			colNames.push(jQuery(this).html());
 		}
 	});
 	var data = [];
 	var rowIds = [];
 	var rowChecked = [];
-	$('tbody > tr', $(this)).each(function() {
+	jQuery('tbody > tr', jQuery(this)).each(function() {
 		var row = {};
 		var rowPos = 0;
-		$('td', $(this)).each(function() {
-			if (rowPos == 0 && selectable) {
-				var input = $('input', $(this));
+		jQuery('td', jQuery(this)).each(function() {
+			if (rowPos === 0 && selectable) {
+				var input = jQuery('input', jQuery(this));
 				var rowId = input.attr("value");
 				rowIds.push(rowId || data.length);
 				if (input.attr("checked")) {
@@ -57,20 +57,20 @@ $(selector).each(function() {
 				}
 				row[colModel[rowPos].name] = input.attr("value");
 			} else {
-				row[colModel[rowPos].name] = $(this).html();
+				row[colModel[rowPos].name] = jQuery(this).html();
 			}
 			rowPos++;
 		});
-		if(rowPos >0) data.push(row);
+		if(rowPos >0) { data.push(row); }
 	});
 
 	// Clear the original HTML table
-	$(this).empty();
+	jQuery(this).empty();
 
 	// Mark it as jqGrid
-	$(this).addClass("scroll");
+	jQuery(this).addClass("scroll");
 
-	$(this).jqGrid($.extend({
+	jQuery(this).jqGrid(jQuery.extend({
 		datatype: "local",
 		width: w,
 		colNames: colNames,
@@ -81,7 +81,8 @@ $(selector).each(function() {
 	}, options || {}));
 
 	// Add data
-	for (var a = 0; a < data.length; a++) {
+	var a;
+	for (a = 0; a < data.length; a++) {
 		var id = null;
 		if (rowIds.length > 0) {
 			id = rowIds[a];
@@ -91,15 +92,15 @@ $(selector).each(function() {
 				id = encodeURIComponent(id).replace(/[.\-%]/g, "_");
 			}
 		}
-		if (id == null) {
+		if (id === null) {
 			id = a + 1;
 		}
-		$(this).jqGrid("addRowData",id, data[a]);
+		jQuery(this).jqGrid("addRowData",id, data[a]);
 	}
 
 	// Set the selection
-	for (var a = 0; a < rowChecked.length; a++) {
-		$(this).jqGrid("setSelection",rowChecked[a]);
+	for (a = 0; a < rowChecked.length; a++) {
+		jQuery(this).jqGrid("setSelection",rowChecked[a]);
 	}
 });
 };

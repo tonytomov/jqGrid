@@ -2,6 +2,7 @@
 /**
  * jqGrid Czech Translation
  * Pavel Jirak pavel.jirak@jipas.cz
+ * doplnil Thomas Wagner xwagne01@stud.fit.vutbr.cz
  * http://trirand.com/blog/ 
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
@@ -9,19 +10,19 @@
 **/
 $.jgrid = {
 	defaults : {
-		recordtext: "View {0} - {1} of {2}",
-	    emptyrecords: "No records to view",
+		recordtext: "Zobrazeno {0} - {1} z {2} záznamů",
+	    emptyrecords: "Nenalezeny žádné záznamy",
 		loadtext: "Načítám...",
-		pgtext : "Page {0} of {1}"
+		pgtext : "Strana {0} z {1}"
 	},
 	search : {
 		caption: "Vyhledávám...",
 		Find: "Hledat",
 		Reset: "Reset",
-	    odata : ['equal', 'not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain'],
-	    groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	],
-		matchText: " match",
-		rulesText: " rules"
+	    odata : ['rovno', 'nerovono', 'menší', 'menší nebo rovno','větší', 'větší nebo rovno', 'začíná s', 'nezačíná s', 'je v', 'není v', 'končí s', 'nekončí s', 'obahuje', 'neobsahuje'],
+	    groupOps: [	{ op: "AND", text: "všech" },	{ op: "OR",  text: "některého z" }	],
+		matchText: " hledat podle",
+		rulesText: " pravidel"
 	},
 	edit : {
 		addCaption: "Přidat záznam",
@@ -29,10 +30,10 @@ $.jgrid = {
 		bSubmit: "Uložit",
 		bCancel: "Storno",
 		bClose: "Zavřít",
-		saveData: "Data has been changed! Save changes?",
-		bYes : "Yes",
-		bNo : "No",
-		bExit : "Cancel",
+		saveData: "Data byla změněna! Uložit změny?",
+		bYes : "Ano",
+		bNo : "Ne",
+		bExit : "Zrušit",
 		msg: {
 		    required:"Pole je vyžadováno",
 		    number:"Prosím, vložte validní číslo",
@@ -41,16 +42,16 @@ $.jgrid = {
 		    email: "není validní e-mail",
 		    integer: "Prosím, vložte celé číslo",
 			date: "Prosím, vložte validní datum",
-			url: "is not a valid URL. Prefix required ('http://' or 'https://')",
-			nodefined : " is not defined!",
-			novalue : " return value is required!",
-			customarray : "Custom function should return array!",
-			customfcheck : "Custom function should be present in case of custom checking!"
+			url: "není platnou URL. Vyžadován prefix ('http://' or 'https://')",
+			nodefined : " není definován!",
+			novalue : " je vyžadována návratová hodnota!",
+			customarray : "Custom function mělá vrátit pole!",
+			customfcheck : "Custom function by měla být přítomna v případě custom checking!"
 		}
 	},
 	view : {
-	    caption: "View Record",
-	    bClose: "Close"
+	    caption: "Zobrazit záznam",
+	    bClose: "Zavřít"
 	},
 	del : {
 		caption: "Smazat",
@@ -72,7 +73,7 @@ $.jgrid = {
 		alertcap: "Varování",
 		alerttext: "Prosím, vyberte řádek",
 		viewtext: "",
-		viewtitle: "View selected row"
+		viewtitle: "Zobrazit vybraný řádek"
 	},
 	col : {
 		caption: "Zobrazit/Skrýt sloupce",
@@ -83,7 +84,7 @@ $.jgrid = {
 		errcap : "Chyba",
 		nourl : "Není nastavena url",
 		norecords: "Žádné záznamy ke zpracování",
-		model : "Length colNames <> colModel!"
+		model : "Délka colNames <> colModel!"
 	},
 	formatter : {
 		integer : {thousandsSeparator: " ", defaultValue: '0'},

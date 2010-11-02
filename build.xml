@@ -1,39 +1,17 @@
 <?xml version="1.0"?>
-<project name="jQgrid" default="build" basedir=".">
+<project name="jqGrid" default="build" basedir=".">
 
-    <!-- define the path of YUIcompressor in this file -->
+    <!-- define the path of compressor in this file -->
     <property file="build.properties" />
-
-    <property description="Source Folder" name="srcdir" value="js" />
-    <property description="Folder for jquery, min, lite and packed target" name="distdir" value="./dist" />
-
-    <!-- Files names for distribution -->
-    <property name="jqGrid" value="jquery.jqGrid.js" />
-    <property name="jqGrid.min" value="jquery.jqGrid.min.js" />
 
     <target name="init">
         <mkdir dir="${distdir}" />
     </target>
 
     <target name="jqgrid" depends="init">
-        <concat destfile="${distdir}/${jqGrid}">
+        <concat destfile="${distdir}/${target}">
             <fileset dir="${srcdir}">
-                <include name="grid.base.js" />
-                <include name="grid.common.js" />
-                <include name="grid.formedit.js" />
-                <include name="grid.inlinedit.js" />
-                <include name="grid.celledit.js" />
-                <include name="grid.subgrid.js" />
-                <include name="grid.treegrid.js" />
-                <include name="grid.custom.js" />
-                <include name="grid.postext.js" />
-                <include name="grid.tbltogrid.js" />
-                <include name="grid.setcolumns.js" />
-                <include name="grid.import.js" />
-                <include name="jquery.fmatter.js" />
-                <include name="JsonXml.js" />
-                <include name="grid.jqueryui.js" />
-                <include name="jquery.searchFilter.js" />
+                <exclude name="i18n/*.*" />
             </fileset>
         </concat>
     </target>
@@ -41,16 +19,18 @@
     <target name="jqgrid.min" depends="jqgrid">
         <apply executable="java" parallel="false" verbose="true" failonerror="true" dest="${distdir}">
             <fileset dir="${distdir}">
-                <include name="${jqGrid}" />
+                <include name="${target}" />
             </fileset>
             <arg line="-jar" />
-            <arg path="${YUICompressor}" />
-            <arg value="--charset" />
-            <arg value="utf-8" />
-            <arg value="-o" />
+            <arg path="${GoogleCompiler}" />
+            <arg value="--warning_level" />
+            <arg value="QUIET" />
+            <arg value="--js_output_file" />
             <targetfile />
-            <mapper type="glob" from="${jqGrid}" to="${jqGrid.min}" />
+            <arg value="--js" />
+            <mapper type="glob" from="${target}" to="${target.min}" />
         </apply>
+      	<echo message="${target.min} built." />
     </target>
 
     <target name="i18n">

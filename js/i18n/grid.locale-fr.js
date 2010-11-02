@@ -10,7 +10,7 @@
 $.jgrid = {
 	defaults : {
 		recordtext: "Enregistrements {0} - {1} sur {2}",
-		emptyrecords: "Aucun enregistrement a afficher",
+		emptyrecords: "Aucun enregistrement à afficher",
 		loadtext: "Chargement...",
 		pgtext : "Page {0} sur {1}"
 	},
@@ -18,7 +18,7 @@ $.jgrid = {
 		caption: "Recherche...",
 		Find: "Chercher",
 		Reset: "Annuler",
-		odata : ['egal', 'différent', 'inférieur', 'inférieur ou égal','supérieur','supérieur ou égal', 'commence par','ne commence pas par','est dans',"n'est pas dans",'fini par','ne fini pas par','contient','ne contient pas'],
+		odata : ['égal', 'différent', 'inférieur', 'inférieur ou égal','supérieur','supérieur ou égal', 'commence par','ne commence pas par','est dans',"n'est pas dans",'finit par','ne finit pas par','contient','ne contient pas'],
 		groupOps: [	{ op: "AND", text: "tous" },	{ op: "OR",  text: "aucun" }	],
 		matchText: " correspondance",
 		rulesText: " règles"
@@ -36,15 +36,15 @@ $.jgrid = {
 		msg: {
 			required: "Champ obligatoire",
 			number: "Saisissez un nombre correct",
-			minValue: "La valeur doit être supérieure ou égal à 0 ",
-			maxValue: "La valeur doit être inférieure ou égal à 0",
+			minValue: "La valeur doit être supérieure ou égale à",
+			maxValue: "La valeur doit être inférieure ou égale à",
 			email: "n'est pas un email correct",
 			integer: "Saisissez un entier correct",
 			url: "n'est pas une adresse correcte. Préfixe requis ('http://' or 'https://')",
-			nodefined : " is not defined!",
-			novalue : " return value is required!",
-			customarray : "Custom function should return array!",
-			customfcheck : "Custom function should be present in case of custom checking!"
+			nodefined : " n'est pas défini!",
+			novalue : " la valeur de retour est requise!",
+			customarray : "Une fonction personnalisée devrait retourner un tableau (array)!",
+			customfcheck : "Une fonction personnalisée devrait être présente dans le cas d'une vérification personnalisée!"
 		}
 	},
 	view : {
@@ -80,7 +80,7 @@ $.jgrid = {
 	},
 	errors : {
 		errcap : "Erreur",
-		nourl : "Aucune adresse paramétrée",
+		nourl : "Aucune adresse n'est paramétrée",
 		norecords: "Aucun enregistrement à traiter",
 		model : "Nombre de titres (colNames) <> Nombre de données (colModel)!"
 	},
@@ -94,11 +94,11 @@ $.jgrid = {
 				"Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"
 			],
 			monthNames: [
-				"Jan", "Fev", "Mar", "Avr", "Mai", "Jui", "Jul", "Aou", "Sep", "Oct", "Nov", "Dec",
-				"Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Saptembre", "Octobre", "Novembre", "Décembre"
+				"Jan", "Fév", "Mar", "Avr", "Mai", "Jui", "Jul", "Aou", "Sep", "Oct", "Nov", "Déc",
+				"Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Décembre"
 			],
 			AmPm : ["am","pm","AM","PM"],
-			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th'},
+			S: function (j) {return j == 1 ? 'er' : 'e';},
 			srcformat: 'Y-m-d',
 			newformat: 'd/m/Y',
 			masks : {

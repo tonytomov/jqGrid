@@ -1,6 +1,6 @@
-﻿/* Plugin:      searchFilter v1.2.9
+/* Plugin:      searchFilter v1.2.9
  * Author:      Kasey Speakman (kasey@cornerspeed.com)
- * License:     Dual Licensed, MIT and GPL v2 (http://www.gnu.org/copyleft/gpl.html)
+ * License:     Dual Licensed, MIT and GPL v2 (http://www.gnu.org/licenses/gpl-2.0.html)
  *
  * REQUIREMENTS:
  *    jQuery 1.3+           (http://jquery.com/)
@@ -20,7 +20,7 @@
  * INPUT TYPE
  *     fields:  an array of field objects. each object has the following properties:
  *              text: a string containing the display name of the field (e.g. "Field 1")
- *              value: a string containing the actual field name (e.g. "field1")
+ *              itemval: a string containing the actual field name (e.g. "field1")
  *              optional properties:
  *                  ops: an array of operators in the same format as jQuery.fn.searchFilter.defaults.operators
  *                       that is: [ { op: 'gt', text: 'greater than'}, { op:'lt', text: 'less than'}, ... ]
@@ -37,7 +37,7 @@
  *               var fields = [
  *                 {
  *                   text: 'Field Display Name',
- *                   value: 'field_actual_name',
+ *                   itemval: 'field_actual_name',
  *                   // below this are optional values
  *                   ops: [ // this format is the same as jQuery.fn.searchFilter.defaults.operators
  *                     { op: 'gt', text: 'greater than' },
@@ -140,8 +140,9 @@ jQuery.fn.searchFilter = function(fields, options) {
             return this;
         };
 
-        this.reset = function(e) {
-            jQ.find(".ui-reset").click();
+        this.reset = function(o) {
+            if(o===undefined) o = false;
+            jQ.find(".ui-reset").trigger('click',[o]);
             return this;
         };
 
@@ -149,6 +150,7 @@ jQuery.fn.searchFilter = function(fields, options) {
             jQ.find(".ui-closer").click();
             return this;
         };
+
 
 
         //---------------------------------------------------------------
@@ -266,7 +268,7 @@ jQuery.fn.searchFilter = function(fields, options) {
             ");
             /* end hard-to-minify code */
             /* begin easier to minify code */
-            jQ.html("").addClass("ui-searchFilter").append("<div class='ui-widget-overlay' style='z-index: -1'>&nbsp;</div><table class='ui-widget-content ui-corner-all'><thead><tr><td colspan='5' class='ui-widget-header ui-corner-all' style='line-height: 18px;'><div class='ui-closer ui-state-default ui-corner-all ui-helper-clearfix' style='float: right;'><span class='ui-icon ui-icon-close'></span></div>" + opts.windowTitle + "</td></tr></thead><tbody><tr class='sf'><td class='fields'></td><td class='ops'></td><td class='data'></td><td><div class='ui-del ui-state-default ui-corner-all'><span class='ui-icon ui-icon-minus'></span></div></td><td><div class='ui-add ui-state-default ui-corner-all'><span class='ui-icon ui-icon-plus'></span></div></td></tr><tr><td colspan='5' class='divider'><div>&nbsp;</div></td></tr></tbody><tfoot><tr><td colspan='3'><span class='ui-reset ui-state-default ui-corner-all' style='display: inline-block; float: left;'><span class='ui-icon ui-icon-arrowreturnthick-1-w' style='float: left;'></span><span style='line-height: 18px; padding: 0 7px 0 3px;'>" + opts.resetText + "</span></span><span class='ui-search ui-state-default ui-corner-all' style='display: inline-block; float: right;'><span class='ui-icon ui-icon-search' style='float: left;'></span><span style='line-height: 18px; padding: 0 7px 0 3px;'>" + opts.searchText + "</span></span><span class='matchText'>" + opts.matchText + "</span> " + gOps_html + " <span class='rulesText'>" + opts.rulesText + "</span></td><td>&nbsp;</td><td><div class='ui-add-last ui-state-default ui-corner-all'><span class='ui-icon ui-icon-plusthick'></span></div></td></tr></tfoot></table>");
+            jQ.html("").addClass("ui-searchFilter").append("<div class='ui-widget-overlay' style='z-index: -1'>&#160;</div><table class='ui-widget-content ui-corner-all'><thead><tr><td colspan='5' class='ui-widget-header ui-corner-all' style='line-height: 18px;'><div class='ui-closer ui-state-default ui-corner-all ui-helper-clearfix' style='float: right;'><span class='ui-icon ui-icon-close'></span></div>" + opts.windowTitle + "</td></tr></thead><tbody><tr class='sf'><td class='fields'></td><td class='ops'></td><td class='data'></td><td><div class='ui-del ui-state-default ui-corner-all'><span class='ui-icon ui-icon-minus'></span></div></td><td><div class='ui-add ui-state-default ui-corner-all'><span class='ui-icon ui-icon-plus'></span></div></td></tr><tr><td colspan='5' class='divider'><div>&#160;</div></td></tr></tbody><tfoot><tr><td colspan='3'><span class='ui-reset ui-state-default ui-corner-all' style='display: inline-block; float: left;'><span class='ui-icon ui-icon-arrowreturnthick-1-w' style='float: left;'></span><span style='line-height: 18px; padding: 0 7px 0 3px;'>" + opts.resetText + "</span></span><span class='ui-search ui-state-default ui-corner-all' style='display: inline-block; float: right;'><span class='ui-icon ui-icon-search' style='float: left;'></span><span style='line-height: 18px; padding: 0 7px 0 3px;'>" + opts.searchText + "</span></span><span class='matchText'>" + opts.matchText + "</span> " + gOps_html + " <span class='rulesText'>" + opts.rulesText + "</span></td><td>&#160;</td><td><div class='ui-add-last ui-state-default ui-corner-all'><span class='ui-icon ui-icon-plusthick'></span></div></td></tr></tfoot></table>");
             /* end easier-to-minify code */
 
             var jRow = jQ.find("tr.sf");
@@ -288,7 +290,7 @@ jQuery.fn.searchFilter = function(fields, options) {
             var has_custom_data = false;
             jQuery.each(fields, function(i) {
                 var field_num = i;
-                fields_html += buildOpt(this.value, this.text);
+                fields_html += buildOpt(this.itemval, this.text);
                 // add custom ops if they exist
                 if (this.ops != null) {
                     has_custom_ops = true;
@@ -348,7 +350,7 @@ jQuery.fn.searchFilter = function(fields, options) {
                 var jElem = td.find(".field" + index);
                 if (jElem[0] == null) jElem = td.find(".default"); // if there's not an element for that field, use the default one
                 jElem.attr("name", "op").show();
-
+                return false;
             });
             else jOps.find(".default").attr("name", "op").show();
             if (has_custom_data) jFSelect.change(function(e) {
@@ -358,6 +360,7 @@ jQuery.fn.searchFilter = function(fields, options) {
                 var jElem = td.find(".field" + index);
                 if (jElem[0] == null) jElem = td.find(".default"); // if there's not an element for that field, use the default one
                 jElem.show().addClass("vdata");
+                return false;
             });
             else jData.find(".default").show().addClass("vdata");
             // go ahead and call the change event and setup the ops and data values
@@ -380,7 +383,7 @@ jQuery.fn.searchFilter = function(fields, options) {
                     row.find("select[name='op']")[0].selectedIndex = 0;
                     row.find(".data input").val(""); // blank all input values
                     row.find(".data select").each(function() { this.selectedIndex = 0; }); // select first option on all selects
-                    row.find("select[name='field']").change(); // trigger any change events
+                    row.find("select[name='field']").change(function(event){event.stopPropagation();}); // trigger any change events
                 }
                 return false;
             });
@@ -406,13 +409,13 @@ jQuery.fn.searchFilter = function(fields, options) {
                         newRow.find("#" + this.id).unbind().removeAttr("id").removeClass("hasDatepicker").datepicker(settings);
                     });
                 }
-                newRow.find("select[name='field']").change();
+                newRow.find("select[name='field']").change(function(event){event.stopPropagation();} );
                 return false;
             });
             jQ.find(".ui-search").click(function(e) {
-                var ui = jQuery(jQ.selector);
+                var ui = jQuery(jQ.selector); // pointer to search box wrapper element
                 var ruleGroup;
-                var group_op = ui.find("select[name='groupOp'] :selected").val();
+                var group_op = ui.find("select[name='groupOp'] :selected").val(); // puls "AND" or "OR"
                 if (!opts.stringResult) {
                     ruleGroup = {
                         groupOp: group_op,
@@ -425,6 +428,8 @@ jQuery.fn.searchFilter = function(fields, options) {
                     var tField = jQuery(this).find("select[name='field'] :selected").val();
                     var tOp = jQuery(this).find("select[name='op'] :selected").val();
                     var tData = jQuery(this).find("input.vdata,select.vdata :selected").val();
+                    tData += "";
+                    tData = tData.replace(/\\/g,'\\\\').replace(/\"/g,'\\"');
                     if (!opts.stringResult) {
                         ruleGroup.rules.push({
                             field: tField,
@@ -442,11 +447,11 @@ jQuery.fn.searchFilter = function(fields, options) {
                 opts.onSearch(ruleGroup);
                 return false;
             });
-            jQ.find(".ui-reset").click(function(e) {
+            jQ.find(".ui-reset").click(function(e,op) {
                 var ui = jQuery(jQ.selector);
                 ui.find(".ui-del").click(); // removes all filters, resets the last one
                 ui.find("select[name='groupOp']")[0].selectedIndex = 0; // changes the op back to the default one
-                opts.onReset();
+                opts.onReset(op);
                 return false;
             });
             jQ.find(".ui-add-last").click(function() {
@@ -461,12 +466,120 @@ jQuery.fn.searchFilter = function(fields, options) {
                         newRow.find("#" + this.id).unbind().removeAttr("id").removeClass("hasDatepicker").datepicker(settings);
                     });
                 }
-                newRow.find("select[name='field']").change();
+                newRow.find("select[name='field']").change(function(event){event.stopPropagation();});
                 return false;
             });
-        }
-    }
 
+            this.setGroupOp = function(setting) {
+                /* a "setter" for groupping argument.
+                 *  ("AND" or "OR")
+                 *
+                 * Inputs:
+                 *  setting - a string
+                 *
+                 * Returns:
+                 *  Does not return anything. May add success / failure reporting in future versions.
+                 *
+                 *  author: Daniel Dotsenko (dotsa@hotmail.com)
+                 */
+                selDOMobj = jQ.find("select[name='groupOp']")[0];
+                var indexmap = {}, l = selDOMobj.options.length, i;
+                for (i=0; i<l; i++) {
+                    indexmap[selDOMobj.options[i].value] = i;
+                }
+                selDOMobj.selectedIndex = indexmap[setting];
+                jQuery(selDOMobj).change(function(event){event.stopPropagation();});
+            };
+
+            this.setFilter = function(settings) {
+                /* a "setter" for an arbitrary SearchFilter's filter line.
+                 * designed to abstract the DOM manipulations required to infer
+                 * a particular filter is a fit to the search box.
+                 *
+                 * Inputs:
+                 *  settings - an "object" (dictionary)
+                 *   index (optional*) (to be implemented in the future) : signed integer index (from top to bottom per DOM) of the filter line to fill.
+                 *           Negative integers (rooted in -1 and lower) denote position of the line from the bottom.
+                 *   sfref (optional*) : DOM object referencing individual '.sf' (normally a TR element) to be populated. (optional)
+                 *   filter (mandatory) : object (dictionary) of form {'field':'field_value','op':'op_value','data':'data value'}
+                 *
+                 * * It is mandatory to have either index or sfref defined.
+                 *
+                 * Returns:
+                 *  Does not return anything. May add success / failure reporting in future versions.
+                 *
+                 *  author: Daniel Dotsenko (dotsa@hotmail.com)
+                 */
+
+                var o = settings['sfref'], filter = settings['filter'];
+                
+                // setting up valueindexmap that we will need to manipulate SELECT elements.
+                var fields = [], i, j , l, lj, li,
+                    valueindexmap = {};
+                    // example of valueindexmap:
+                    // {'field1':{'index':0,'ops':{'eq':0,'ne':1}},'fieldX':{'index':1,'ops':{'eq':0,'ne':1},'data':{'true':0,'false':1}}},
+                    // if data is undefined it's a INPUT field. If defined, it's SELECT
+                selDOMobj = o.find("select[name='field']")[0];
+                for (i=0, l=selDOMobj.options.length; i<l; i++) {
+                    valueindexmap[selDOMobj.options[i].value] = {'index':i,'ops':{}};
+                    fields.push(selDOMobj.options[i].value);
+                }
+                for (i=0, li=fields.length; i < li; i++) {
+                    selDOMobj = o.find(".ops > select[class='field"+i+"']")[0];
+                    if (selDOMobj) {
+                        for (j=0, lj=selDOMobj.options.length; j<lj; j++) {
+                            valueindexmap[fields[i]]['ops'][selDOMobj.options[j].value] = j;
+                        }
+                    }
+                    selDOMobj = o.find(".data > select[class='field"+i+"']")[0];
+                    if (selDOMobj) {
+                        valueindexmap[fields[i]]['data'] = {}; // this setting is the flag that 'data' is contained in a SELECT
+                        for (j=0, lj=selDOMobj.options.length; j<lj; j++) {
+                            valueindexmap[fields[i]]['data'][selDOMobj.options[j].value] = j;
+                        }
+                    }
+                } // done populating valueindexmap
+
+                // preparsing the index values for SELECT elements.
+                var fieldvalue, fieldindex, opindex, datavalue, dataindex;
+                fieldvalue = filter['field'];
+				if (valueindexmap[fieldvalue]) {
+					fieldindex = valueindexmap[fieldvalue]['index'];
+				}
+                if (fieldindex != null) {
+                    opindex = valueindexmap[fieldvalue]['ops'][filter['op']];
+                    if(opindex === undefined) {
+                        for(i=0,li=options.operators.length; i<li;i++) {
+                            if(options.operators[i].op == filter.op ){
+                                opindex = i;
+                                break;
+                            }
+                        }
+                    }
+                    datavalue = filter['data'];
+                    if (valueindexmap[fieldvalue]['data'] == null) {
+                        dataindex = -1; // 'data' is not SELECT, Making the var 'defined'
+                    } else {
+                        dataindex = valueindexmap[fieldvalue]['data'][datavalue]; // 'undefined' may come from here.
+                    }
+                }
+                // only if values for 'field' and 'op' and 'data' are 'found' in mapping...
+                if (fieldindex != null && opindex != null && dataindex != null) {
+                    o.find("select[name='field']")[0].selectedIndex = fieldindex;
+                    o.find("select[name='field']").change();
+                    o.find("select[name='op']")[0].selectedIndex = opindex;
+                    o.find("input.vdata").val(datavalue); // if jquery does not find any INPUT, it does not set any. This means we deal with SELECT
+                    o = o.find("select.vdata")[0];
+                    if (o) {
+                        o.selectedIndex = dataindex;
+                    }
+					return true
+                } else {
+					return false
+				}
+            }; // end of this.setFilter fn
+        } // end of if fields != null
+    }
     return new SearchFilter(this, fields, options);
 };
 

@@ -4,7 +4,7 @@
  * http://trirand.com/blog/ 
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl.html
+ * http://www.gnu.org/licenses/gpl-2.0.html
 */ 
 // Modal functions
 var showModal = function(h) {
@@ -14,6 +14,33 @@ var closeModal = function(h) {
 	h.w.hide().attr("aria-hidden","true");
 	if(h.o) { h.o.remove(); }
 };
+var hideModal = function (selector,o) {
+	o = jQuery.extend({jqm : true, gb :''}, o || {});
+    if(o.onClose) {
+		var oncret =  o.onClose(selector);
+		if (typeof oncret == 'boolean'  && !oncret ) { return; }
+    }	
+	if (jQuery.fn.jqm && o.jqm === true) {
+		jQuery(selector).attr("aria-hidden","true").jqmHide();
+	} else {
+		if(o.gb !== '') {
+			try {jQuery(".jqgrid-overlay:first",o.gb).hide();} catch (e){}
+		}
+		jQuery(selector).hide().attr("aria-hidden","true");
+	}
+};
+//Helper functions
+function findPos(obj) {
+	var curleft = 0, curtop = 0;
+	if (obj.offsetParent) {
+		do {
+			curleft += obj.offsetLeft;
+			curtop += obj.offsetTop; 
+		} while (obj = obj.offsetParent);
+		//do not change obj == obj.offsetParent 
+	}
+	return [curleft,curtop];
+}
 var createModal = function(aIDs, content, p, insertSelector, posSelector, appendsel) {
 	var mw  = document.createElement('div'), rtlsup;
 	rtlsup = jQuery(p.gbox).attr("dir") == "rtl" ? true : false;
@@ -47,7 +74,7 @@ var createModal = function(aIDs, content, p, insertSelector, posSelector, append
 	if(typeof p.jqModal === 'undefined') {p.jqModal = true;} // internal use
 	var coord = {};
 	if ( jQuery.fn.jqm && p.jqModal === true) {
-		if(p.left ==0 && p.top==0) {
+		if(p.left ===0 && p.top===0) {
 			var pos = [];
 			pos = findPos(posSelector);
 			p.left = pos[0] + 4;
@@ -55,7 +82,7 @@ var createModal = function(aIDs, content, p, insertSelector, posSelector, append
 		}
 		coord.top = p.top+"px";
 		coord.left = p.left;
-	} else if(p.left !=0 || p.top!=0) {
+	} else if(p.left !==0 || p.top!==0) {
 		coord.left = p.left;
 		coord.top = p.top+"px";
 	}
@@ -65,16 +92,23 @@ var createModal = function(aIDs, content, p, insertSelector, posSelector, append
 		hideModal("#"+aIDs.themodal,{gb:gboxclose,jqm:p.jqModal,onClose:oncm});
 		return false;
 	});
-	if (p.width == 0 || !p.width) {p.width = 300;}
-	if(p.height==0 || !p.height) {p.height =200;}
-	if(!p.zIndex) {p.zIndex = 950;}
+	if (p.width === 0 || !p.width) {p.width = 300;}
+	if(p.height === 0 || !p.height) {p.height =200;}
+	if(!p.zIndex) {
+		var parentZ = $(insertSelector).parents("*[role=dialog]").first().css("z-index")
+		if(parentZ)
+			p.zIndex = parseInt(parentZ)+1
+		else
+			p.zIndex = 950;
+
+	}
 	var rtlt = 0;
 	if( rtlsup && coord.left && !appendsel) {
-		rtlt = jQuery(p.gbox).width()- (!isNaN(p.width) ? parseInt(p.width) :0) - 8; // to do
+		rtlt = jQuery(p.gbox).width()- (!isNaN(p.width) ? parseInt(p.width,10) :0) - 8; // to do
 		// just in case
-		coord.left = parseInt(coord.left) + parseInt(rtlt);
+		coord.left = parseInt(coord.left,10) + parseInt(rtlt,10);
 	}
-	if(coord.left) coord.left += "px";
+	if(coord.left) { coord.left += "px"; }
 	jQuery(mw).css(jQuery.extend({
 		width: isNaN(p.width) ? "auto": p.width+"px",
 		height:isNaN(p.height) ? "auto" : p.height + "px",
@@ -124,31 +158,16 @@ var viewModal = function (selector,o){
 		jqm : true,
 		jqM : true
 	}, o || {});
-	if (jQuery.fn.jqm && o.jqm == true) {
-		if(o.jqM) jQuery(selector).attr("aria-hidden","false").jqm(o).jqmShow();
-		else jQuery(selector).attr("aria-hidden","false").jqmShow();
+	if (jQuery.fn.jqm && o.jqm === true) {
+		if(o.jqM) { jQuery(selector).attr("aria-hidden","false").jqm(o).jqmShow(); }
+		else {jQuery(selector).attr("aria-hidden","false").jqmShow();}
 	} else {
-		if(o.gbox != '') {
+		if(o.gbox !== '') {
 			jQuery(".jqgrid-overlay:first",o.gbox).show();
 			jQuery(selector).data("gbox",o.gbox);
 		}
 		jQuery(selector).show().attr("aria-hidden","false");
 		try{jQuery(':input:visible',selector)[0].focus();}catch(_){}
-	}
-};
-var hideModal = function (selector,o) {
-	o = jQuery.extend({jqm : true, gb :''}, o || {});
-    if(o.onClose) {
-		var oncret =  o.onClose(selector);
-		if (typeof oncret == 'boolean'  && !oncret ) return;
-    }	
-	if (jQuery.fn.jqm && o.jqm === true) {
-		jQuery(selector).attr("aria-hidden","true").jqmHide();
-	} else {
-		if(o.gb != '') {
-			try {jQuery(".jqgrid-overlay:first",o.gb).hide();} catch (e){}
-		}
-		jQuery(selector).hide().attr("aria-hidden","true");
 	}
 };
 
@@ -164,6 +183,7 @@ function info_dialog(caption, content,c_b, modalopt) {
 		top:170,
 		zIndex : 1000,
 		jqModal : true,
+		modal : false,
 		closeOnEscape : true,
 		align: 'center',
 		buttonalign : 'center',
@@ -173,12 +193,12 @@ function info_dialog(caption, content,c_b, modalopt) {
 	};
 	jQuery.extend(mopt,modalopt || {});
 	var jm = mopt.jqModal;
-	if(jQuery.fn.jqm && !jm) jm = false;
+	if(jQuery.fn.jqm && !jm) { jm = false; }
 	// in case there is no jqModal
 	var buttstr ="";
 	if(mopt.buttons.length > 0) {
 		for(var i=0;i<mopt.buttons.length;i++) {
-			if(typeof mopt.buttons[i].id == "undefined") mopt.buttons[i].id = "info_button_"+i;
+			if(typeof mopt.buttons[i].id == "undefined") { mopt.buttons[i].id = "info_button_"+i; }
 			buttstr += "<a href='javascript:void(0)' id='"+mopt.buttons[i].id+"' class='fm-button ui-state-default ui-corner-all'>"+mopt.buttons[i].text+"</a>";
 		}
 	}
@@ -186,12 +206,14 @@ function info_dialog(caption, content,c_b, modalopt) {
 	cn = "text-align:"+mopt.align+";";
 	var cnt = "<div id='info_id'>";
 	cnt += "<div id='infocnt' style='margin:0px;padding-bottom:1em;width:100%;overflow:auto;position:relative;height:"+dh+";"+cn+"'>"+content+"</div>";
-	cnt += c_b ? "<div class='ui-widget-content ui-helper-clearfix' style='text-align:"+mopt.buttonalign+";padding-bottom:0.8em;padding-top:0.5em;background-image: none;border-width: 1px 0 0 0;'><a href='javascript:void(0)' id='closedialog' class='fm-button ui-state-default ui-corner-all'>"+c_b+"</a>"+buttstr+"</div>" : "";
+	cnt += c_b ? "<div class='ui-widget-content ui-helper-clearfix' style='text-align:"+mopt.buttonalign+";padding-bottom:0.8em;padding-top:0.5em;background-image: none;border-width: 1px 0 0 0;'><a href='javascript:void(0)' id='closedialog' class='fm-button ui-state-default ui-corner-all'>"+c_b+"</a>"+buttstr+"</div>" :
+		buttstr !== ""  ? "<div class='ui-widget-content ui-helper-clearfix' style='text-align:"+mopt.buttonalign+";padding-bottom:0.8em;padding-top:0.5em;background-image: none;border-width: 1px 0 0 0;'>"+buttstr+"</div>" : "";
 	cnt += "</div>";
 
 	try {
-		if(jQuery("#info_dialog").attr("aria-hidden") == "false")
+		if(jQuery("#info_dialog").attr("aria-hidden") == "false") {
 			hideModal("#info_dialog",{jqm:jm});
+		}
 		jQuery("#info_dialog").remove();
 	} catch (e){}
 	createModal({
@@ -217,54 +239,39 @@ function info_dialog(caption, content,c_b, modalopt) {
 		function(){jQuery(this).addClass('ui-state-hover');}, 
 		function(){jQuery(this).removeClass('ui-state-hover');}
 	);
+	if(jQuery.isFunction(mopt.beforeOpen) ) { mopt.beforeOpen(); }
 	viewModal("#info_dialog",{
 		onHide: function(h) {
 			h.w.hide().remove();
 			if(h.o) { h.o.remove(); }
 		},
-		modal :true,
+		modal :mopt.modal,
 		jqm:jm
 	});
-}
-//Helper functions
-function findPos(obj) {
-	var curleft = curtop = 0;
-	if (obj.offsetParent) {
-		do {
-			curleft += obj.offsetLeft;
-			curtop += obj.offsetTop; 
-		} while (obj = obj.offsetParent);
-		//do not change obj == obj.offsetParent 
-	}
-	return [curleft,curtop];
-}
-function isArray(obj) {
-	if (obj.constructor.toString().indexOf("Array") == -1) {
-		return false;
-	} else {
-		return true;
-	}
+	if(jQuery.isFunction(mopt.afterOpen) ) { mopt.afterOpen(); }
+	try{ jQuery("#info_dialog").focus();} catch (e){}
 }
 // Form Functions
 function createEl(eltype,options,vl,autowidth, ajaxso) {
 	var elem = "";
-	if(options.defaultValue) delete options['defaultValue'];
+	if(options.defaultValue) { delete options.defaultValue; }
 	function bindEv (el, opt) {
 		if(jQuery.isFunction(opt.dataInit)) {
 			// datepicker fix 
 			el.id = opt.id;
 			opt.dataInit(el);
-			delete opt['id'];
-			delete opt['dataInit'];
+			delete opt.id;
+			delete opt.dataInit;
 		}
 		if(opt.dataEvents) {
 		    jQuery.each(opt.dataEvents, function() {
-		        if (this.data != null)
+		        if (this.data !== undefined) {
 			        jQuery(el).bind(this.type, this.data, this.fn);
-		        else
+		        } else {
 		            jQuery(el).bind(this.type, this.fn);
+		        }
 		    });
-			delete opt['dataEvents'];
+			delete opt.dataEvents;
 		}
 		return opt;
 	}
@@ -273,13 +280,13 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 		case "textarea" :
 				elem = document.createElement("textarea");
 				if(autowidth) {
-					if(!options.cols) jQuery(elem).css({width:"98%"});
-				} else if (!options.cols) options.cols = 20;
-				if(!options.rows) options.rows = 2;
+					if(!options.cols) { jQuery(elem).css({width:"98%"});}
+				} else if (!options.cols) { options.cols = 20; }
+				if(!options.rows) { options.rows = 2; }
 				if(vl=='&nbsp;' || vl=='&#160;' || (vl.length==1 && vl.charCodeAt(0)==160)) {vl="";}
 				elem.value = vl;
 				options = bindEv(elem,options);
-				jQuery(elem).attr(options);
+				jQuery(elem).attr(options).attr({"role":"textbox","multiline":"true"});
 				break;
 		case "checkbox" : //what code for simple checkbox
 			elem = document.createElement("input");
@@ -302,48 +309,53 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 				}
 				elem.value = cbval[0];
 				jQuery(elem).attr("offval",cbval[1]);
-				try {delete options['value'];} catch (e){}
+				try {delete options.value;} catch (e){}
 			}
 			options = bindEv(elem,options);
-			jQuery(elem).attr(options);
+			jQuery(elem).attr(options).attr("role","checkbox");
 			break;
 		case "select" :
 			elem = document.createElement("select");
+			elem.setAttribute("role","select");
 			var msl, ovm = [];
 			if(options.multiple===true) {
 				msl = true;
 				elem.multiple="multiple";
-			} else msl = false;
-			if(options.dataUrl != null) {
+				jQuery(elem).attr("aria-multiselectable","true");
+			} else { msl = false; }
+			if(typeof(options.dataUrl) != "undefined") {
 				jQuery.ajax(jQuery.extend({
 					url: options.dataUrl,
 					type : "GET",
-					complete: function(data,status){
-						try {delete options['dataUrl'];delete options['value'];} catch (e){}
+					dataType: "html",
+					success: function(data,status){
+						try {delete options.dataUrl; delete options.value;} catch (e){}
 						var a;
-						if(options.buildSelect != null) {
+						if(typeof(options.buildSelect) != "undefined") {
 							var b = options.buildSelect(data);
 							a = jQuery(b).html();
-							delete options['buildSelect'];
-						} else 
-							a = jQuery(data.responseText).html();
+							delete options.buildSelect;
+						} else {
+							a = jQuery(data).html();
+						}
 						if(a) {
 							jQuery(elem).append(a);
 							options = bindEv(elem,options);
 							if(typeof options.size === 'undefined') { options.size =  msl ? 3 : 1;}
 							if(msl) {
 								ovm = vl.split(",");
-								ovm = jQuery.map(ovm,function(n){return jQuery.trim(n)});
+								ovm = jQuery.map(ovm,function(n){return jQuery.trim(n);});
 							} else {
-								ovm[0] = vl;
+								ovm[0] = jQuery.trim(vl);
 							}
 							jQuery(elem).attr(options);
 							setTimeout(function(){
 								jQuery("option",elem).each(function(i){
-									if(i==0) this.selected = "";
-									if(jQuery.inArray(jQuery(this).text(),ovm) > -1 || jQuery.inArray(jQuery(this).val(),ovm)>-1) {
+									if(i===0) { this.selected = ""; }
+									jQuery(this).attr("role","option");
+									if(jQuery.inArray(jQuery.trim(jQuery(this).text()),ovm) > -1 || jQuery.inArray(jQuery.trim(jQuery(this).val()),ovm) > -1 ) {
 										this.selected= "selected";
-										if(!msl) return false;
+										if(!msl) { return false; }
 									}
 								});
 							},0);
@@ -354,50 +366,61 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 				var i;
 				if(msl) {
 					ovm = vl.split(",");
-					ovm = jQuery.map(ovm,function(n){return jQuery.trim(n)});
+					ovm = jQuery.map(ovm,function(n){return jQuery.trim(n);});
 					if(typeof options.size === 'undefined') {options.size = 3;}
 				} else {
 					options.size = 1;
 				}
-				if(typeof options.value === 'function') options.value = options.value();
+				if(typeof options.value === 'function') { options.value = options.value(); }
+				var so,sv, ov;
 				if(typeof options.value === 'string') {
-					var so = options.value.split(";"),sv, ov;
+					so = options.value.split(";");
 					for(i=0; i<so.length;i++){
 						sv = so[i].split(":");
+						if(sv.length > 2 ) {
+							sv[1] = jQuery.map(sv,function(n,i){if(i>0) { return n;} }).join(":");
+						}
 						ov = document.createElement("option");
+						ov.setAttribute("role","option");
 						ov.value = sv[0]; ov.innerHTML = sv[1];
-						if (!msl &&  (sv[0] == vl || sv[1]==vl)) ov.selected ="selected";
-						if (msl && (jQuery.inArray(sv[1], ovm)>-1 || jQuery.inArray(sv[0], ovm)>-1)) {ov.selected ="selected";}
+						if (!msl &&  (jQuery.trim(sv[0]) == jQuery.trim(vl) || jQuery.trim(sv[1]) == jQuery.trim(vl))) { ov.selected ="selected"; }
+						if (msl && (jQuery.inArray(jQuery.trim(sv[1]), ovm)>-1 || jQuery.inArray(jQuery.trim(sv[0]), ovm)>-1)) {ov.selected ="selected";}
 						elem.appendChild(ov);
 					}
 				} else if (typeof options.value === 'object') {
 					var oSv = options.value;
 					for ( var key in oSv) {
-						ov = document.createElement("option");
-						ov.value = key; ov.innerHTML = oSv[key];
-						if (!msl &&  (key == vl ||oSv[key]==vl) ) ov.selected ="selected";
-						if (msl && (jQuery.inArray(oSv[key],ovm)>-1 || jQuery.inArray(key,ovm)>-1)) ov.selected ="selected";
-						elem.appendChild(ov);
+						if (oSv.hasOwnProperty(key ) ){
+							ov = document.createElement("option");
+							ov.setAttribute("role","option");
+							ov.value = key; ov.innerHTML = oSv[key];
+							if (!msl &&  ( jQuery.trim(key) == jQuery.trim(vl) || jQuery.trim(oSv[key]) == jQuery.trim(vl)) ) { ov.selected ="selected"; }
+							if (msl && (jQuery.inArray(jQuery.trim(oSv[key]),ovm)>-1 || jQuery.inArray(jQuery.trim(key),ovm)>-1)) { ov.selected ="selected"; }
+							elem.appendChild(ov);
+						}
 					}
 				}
 				options = bindEv(elem,options);
-				try {delete options['value'];} catch (e){}
+				try {delete options.value;} catch (e){}
 				jQuery(elem).attr(options);
 			}
 			break;
 		case "text" :
 		case "password" :
 		case "button" :
+			var role;
+			if(eltype=="button") { role = "button"; }
+			else { role = "textbox"; }
 			elem = document.createElement("input");
 			elem.type = eltype;
-			elem.value = jQuery.jgrid.htmlDecode(vl);
+			elem.value = vl;
 			options = bindEv(elem,options);
 			if(eltype != "button"){
 				if(autowidth) {
-					if(!options.size) jQuery(elem).css({width:"98%"});
-				} else if (!options.size) options.size = 20;
+					if(!options.size) { jQuery(elem).css({width:"98%"}); }
+				} else if (!options.size) { options.size = 20; }
 			}
-			jQuery(elem).attr(options);
+			jQuery(elem).attr(options).attr("role",role);
 			break;
 		case "image" :
 		case "file" :
@@ -414,20 +437,128 @@ function createEl(eltype,options,vl,autowidth, ajaxso) {
 					if(celm) {
 						celm = jQuery(celm).addClass("customelement").attr({id:options.id,name:options.name});
 						jQuery(elem).empty().append(celm);
+					} else {
+						throw "e2";
 					}
-					else throw "e2";
-				} else 	throw "e1";
+				} else {
+					throw "e1";
+				}
 			} catch (e) {
-				if (e=="e1") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_element' "+jQuery.jgrid.edit.msg.nodefined, jQuery.jgrid.edit.bClose);
-				if (e=="e2") info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_element' "+jQuery.jgrid.edit.msg.novalue,jQuery.jgrid.edit.bClose);
-				else info_dialog(jQuery.jgrid.errors.errcap,e.message,jQuery.jgrid.edit.bClose);
+				if (e=="e1") { info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_element' "+jQuery.jgrid.edit.msg.nodefined, jQuery.jgrid.edit.bClose);}
+				if (e=="e2") { info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_element' "+jQuery.jgrid.edit.msg.novalue,jQuery.jgrid.edit.bClose);}
+				else { info_dialog(jQuery.jgrid.errors.errcap,typeof(e)==="string"?e:e.message,jQuery.jgrid.edit.bClose); }				
 			}
 			break;
 	}
 	return elem;
 }
+// Date Validation Javascript
+function daysInFebruary (year){
+	// February has 29 days in any year evenly divisible by four,
+    // EXCEPT for centurial years which are not also divisible by 400.
+    return (((year % 4 === 0) && ( year % 100 !== 0 || (year % 400 === 0))) ? 29 : 28 );
+}
+function DaysArray(n) {
+	for (var i = 1; i <= n; i++) {
+		this[i] = 31;
+		if (i==4 || i==6 || i==9 || i==11) {this[i] = 30;}
+		if (i==2) {this[i] = 29;}
+	} 
+	return this;
+}
+function checkDate (format, date) {
+	var tsp = {}, sep;
+	format = format.toLowerCase();
+	//we search for /,-,. for the date separator
+	if(format.indexOf("/") != -1) {
+		sep = "/";
+	} else if(format.indexOf("-") != -1) {
+		sep = "-";
+	} else if(format.indexOf(".") != -1) {
+		sep = ".";
+	} else {
+		sep = "/";
+	}
+	format = format.split(sep);
+	date = date.split(sep);
+	if (date.length != 3) { return false; }
+	var j=-1,yln, dln=-1, mln=-1;
+	for(var i=0;i<format.length;i++){
+		var dv =  isNaN(date[i]) ? 0 : parseInt(date[i],10); 
+		tsp[format[i]] = dv;
+		yln = format[i];
+		if(yln.indexOf("y") != -1) { j=i; }
+		if(yln.indexOf("m") != -1) { mln=i; }
+		if(yln.indexOf("d") != -1) { dln=i; }
+	}
+	if (format[j] == "y" || format[j] == "yyyy") {
+		yln=4;
+	} else if(format[j] =="yy"){
+		yln = 2;
+	} else {
+		yln = -1;
+	}
+	var daysInMonth = DaysArray(12);
+	var strDate;
+	if (j === -1) {
+		return false;
+	} else {
+		strDate = tsp[format[j]].toString();
+		if(yln == 2 && strDate.length == 1) {yln = 1;}
+		if (strDate.length != yln || (tsp[format[j]]===0 && date[j]!="00")){
+			return false;
+		}
+	}
+	if(mln === -1) {
+		return false;
+	} else {
+		strDate = tsp[format[mln]].toString();
+		if (strDate.length<1 || tsp[format[mln]]<1 || tsp[format[mln]]>12){
+			return false;
+		}
+	}
+	if(dln === -1) {
+		return false;
+	} else {
+		strDate = tsp[format[dln]].toString();
+		if (strDate.length<1 || tsp[format[dln]]<1 || tsp[format[dln]]>31 || (tsp[format[mln]]==2 && tsp[format[dln]]>daysInFebruary(tsp[format[j]])) || tsp[format[dln]] > daysInMonth[tsp[format[mln]]]){
+			return false;
+		}
+	}
+	return true;
+}
+
+function isEmpty(val)
+{
+	if (val.match(/^\s+$/) || val === "")	{
+		return true;
+	} else {
+		return false;
+	} 
+}
+function checkTime(time){
+	// checks only hh:ss (and optional am/pm)
+	var re = /^(\d{1,2}):(\d{2})([ap]m)?$/,regs;
+	if(!isEmpty(time))
+	{
+		regs = time.match(re);
+		if(regs) {
+			if(regs[3]) {
+				if(regs[1] < 1 || regs[1] > 12) { return false; }
+			} else {
+				if(regs[1] > 23) { return false; }
+			}
+			if(regs[2] > 59) {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+	return true;
+}
 function checkValues(val, valref,g) {
-	var edtrul,i, nm;
+	var edtrul,i, nm, dft, len;
 	if(typeof(valref)=='string'){
 		for( i =0, len=g.p.colModel.length;i<len; i++){
 			if(g.p.colModel[i].name==valref) {
@@ -441,22 +572,22 @@ function checkValues(val, valref,g) {
 		edtrul = g.p.colModel[valref].editrules;
 	}
 	if(edtrul) {
-		if(!nm) nm = g.p.colNames[valref];
+		if(!nm) { nm = g.p.colNames[valref]; }
 		if(edtrul.required === true) {
-			if( val.match(/^s+$/) || val == "" )  return [false,nm+": "+jQuery.jgrid.edit.msg.required,""];
+			if( isEmpty(val) )  { return [false,nm+": "+jQuery.jgrid.edit.msg.required,""]; }
 		}
 		// force required
 		var rqfield = edtrul.required === false ? false : true;
 		if(edtrul.number === true) {
 			if( !(rqfield === false && isEmpty(val)) ) {
-				if(isNaN(val)) return [false,nm+": "+jQuery.jgrid.edit.msg.number,""];
+				if(isNaN(val)) { return [false,nm+": "+jQuery.jgrid.edit.msg.number,""]; }
 			}
 		}
 		if(typeof edtrul.minValue != 'undefined' && !isNaN(edtrul.minValue)) {
-			if (parseFloat(val) < parseFloat(edtrul.minValue) ) return [false,nm+": "+jQuery.jgrid.edit.msg.minValue+" "+edtrul.minValue,""];
+			if (parseFloat(val) < parseFloat(edtrul.minValue) ) { return [false,nm+": "+jQuery.jgrid.edit.msg.minValue+" "+edtrul.minValue,""];}
 		}
 		if(typeof edtrul.maxValue != 'undefined' && !isNaN(edtrul.maxValue)) {
-			if (parseFloat(val) > parseFloat(edtrul.maxValue) ) return [false,nm+": "+jQuery.jgrid.edit.msg.maxValue+" "+edtrul.maxValue,""];
+			if (parseFloat(val) > parseFloat(edtrul.maxValue) ) { return [false,nm+": "+jQuery.jgrid.edit.msg.maxValue+" "+edtrul.maxValue,""];}
 		}
 		var filter;
 		if(edtrul.email === true) {
@@ -468,19 +599,23 @@ function checkValues(val, valref,g) {
 		}
 		if(edtrul.integer === true) {
 			if( !(rqfield === false && isEmpty(val)) ) {
-				if(isNaN(val)) return [false,nm+": "+jQuery.jgrid.edit.msg.integer,""];
-				if ((val % 1 != 0) || (val.indexOf('.') != -1)) return [false,nm+": "+jQuery.jgrid.edit.msg.integer,""];
+				if(isNaN(val)) { return [false,nm+": "+jQuery.jgrid.edit.msg.integer,""]; }
+				if ((val % 1 !== 0) || (val.indexOf('.') != -1)) { return [false,nm+": "+jQuery.jgrid.edit.msg.integer,""];}
 			}
 		}
 		if(edtrul.date === true) {
 			if( !(rqfield === false && isEmpty(val)) ) {
-				var dft = g.p.colModel[valref].datefmt || "Y-m-d";
-				if(!checkDate (dft, val)) return [false,nm+": "+jQuery.jgrid.edit.msg.date+" - "+dft,""];
+				if(g.p.colModel[valref].formatoptions && g.p.colModel[valref].formatoptions.newformat) {
+					dft = g.p.colModel[valref].formatoptions.newformat;
+				} else {
+					dft = g.p.colModel[valref].datefmt || "Y-m-d";
+				}
+				if(!checkDate (dft, val)) { return [false,nm+": "+jQuery.jgrid.edit.msg.date+" - "+dft,""]; }
 			}
 		}
 		if(edtrul.time === true) {
 			if( !(rqfield === false && isEmpty(val)) ) {
-				if(!checkTime (val)) return [false,nm+": "+jQuery.jgrid.edit.msg.date+" - hh:mm (am/pm)",""];
+				if(!checkTime (val)) { return [false,nm+": "+jQuery.jgrid.edit.msg.date+" - hh:mm (am/pm)",""]; }
 			}
 		}
         if(edtrul.url === true) {
@@ -505,111 +640,4 @@ function checkValues(val, valref,g) {
 		}
 	}
 	return [true,"",""];
-}
-// Date Validation Javascript
-function checkDate (format, date) {
-	var tsp = {}, sep;
-	format = format.toLowerCase();
-	//we search for /,-,. for the date separator
-	if(format.indexOf("/") != -1) {
-		sep = "/";
-	} else if(format.indexOf("-") != -1) {
-		sep = "-";
-	} else if(format.indexOf(".") != -1) {
-		sep = ".";
-	} else {
-		sep = "/";
-	}
-	format = format.split(sep);
-	date = date.split(sep);
-	if (date.length != 3) return false;
-	var j=-1,yln, dln=-1, mln=-1;
-	for(var i=0;i<format.length;i++){
-		var dv =  isNaN(date[i]) ? 0 : parseInt(date[i],10); 
-		tsp[format[i]] = dv;
-		yln = format[i];
-		if(yln.indexOf("y") != -1) { j=i; }
-		if(yln.indexOf("m") != -1) {mln=i}
-		if(yln.indexOf("d") != -1) {dln=i}
-	}
-	if (format[j] == "y" || format[j] == "yyyy") {
-		yln=4;
-	} else if(format[j] =="yy"){
-		yln = 2;
-	} else {
-		yln = -1;
-	}
-	var daysInMonth = DaysArray(12);
-	var strDate;
-	if (j === -1) {
-		return false;
-	} else {
-		strDate = tsp[format[j]].toString();
-		if(yln == 2 && strDate.length == 1) {yln = 1;}
-		if (strDate.length != yln || tsp[format[j]]==0 ){
-			return false;
-		}
-	}
-	if(mln === -1) {
-		return false;
-	} else {
-		strDate = tsp[format[mln]].toString();
-		if (strDate.length<1 || tsp[format[mln]]<1 || tsp[format[mln]]>12){
-			return false;
-		}
-	}
-	if(dln === -1) {
-		return false;
-	} else {
-		strDate = tsp[format[dln]].toString();
-		if (strDate.length<1 || tsp[format[dln]]<1 || tsp[format[dln]]>31 || (tsp[format[mln]]==2 && tsp[format[dln]]>daysInFebruary(tsp[format[j]])) || tsp[format[dln]] > daysInMonth[tsp[format[mln]]]){
-			return false;
-		}
-	}
-	return true;
-}
-function daysInFebruary (year){
-	// February has 29 days in any year evenly divisible by four,
-    // EXCEPT for centurial years which are not also divisible by 400.
-    return (((year % 4 == 0) && ( (!(year % 100 == 0)) || (year % 400 == 0))) ? 29 : 28 );
-}
-function DaysArray(n) {
-	for (var i = 1; i <= n; i++) {
-		this[i] = 31;
-		if (i==4 || i==6 || i==9 || i==11) {this[i] = 30;}
-		if (i==2) {this[i] = 29;}
-	} 
-	return this;
-}
-
-function isEmpty(val)
-{
-	if (val.match(/^s+$/) || val == "")	{
-		return true;
-	} else {
-		return false;
-	} 
-}
-function checkTime(time){
-	// checks only hh:ss (and optional am/pm)
-	var re = /^(\d{1,2}):(\d{2})([ap]m)?$/,regs;
-	if(!isEmpty(time))
-	{
-		regs = time.match(re);
-		if(regs) {
-			if(regs[3]) {
-				if(regs[1] < 1 || regs[1] > 12) 
-					return false;
-			} else {
-				if(regs[1] > 23) 
-					return false;
-			}
-			if(regs[2] > 59) {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
-	return true;
 }

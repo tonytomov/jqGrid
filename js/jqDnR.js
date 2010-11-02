@@ -24,7 +24,7 @@ $.jqDnR={
   	},
 	stop:function(){
 		//E.css('opacity',M.o);
-		$().unbind('mousemove',J.drag).unbind('mouseup',J.stop);
+		$(document).unbind('mousemove',J.drag).unbind('mouseup',J.stop);
 	}
 };
 var J=$.jqDnR,M=J.dnr,E=J.e,E1,
@@ -58,7 +58,8 @@ i=function(e,h,k,aR){
 				};
 			} else {M1 = false;}			
  			//E.css({opacity:0.8});
- 			$().mousemove($.jqDnR.drag).mouseup($.jqDnR.stop);
+			try {$("input.hasDatepicker",E[0]).datepicker('hide');}catch (dpe){}
+ 			$(document).mousemove($.jqDnR.drag).mouseup($.jqDnR.stop);
  			return false;
  		});
 	});
