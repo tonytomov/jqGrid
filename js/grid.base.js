@@ -67,8 +67,8 @@ $.extend($.jgrid,{
 		var tsp = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0},k,hl,dM;
 		if(date && date !== null && date !== undefined){
 			date = $.trim(date);
-			date = date.split(/[\\\/:_;.\t\T\s-]/);
-			format = format.split(/[\\\/:_;.\t\T\s-]/);
+			date = date.split(/[\\\/:_;.,\t\T\s-]/);
+			format = format.split(/[\\\/:_;.,\t\T\s-]/);
 			var dfmt  = $.jgrid.formatter.date.monthNames;
 			var afmt  = $.jgrid.formatter.date.AmPm;
 			var h12to24 = function(ampm, h){
