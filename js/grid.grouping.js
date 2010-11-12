@@ -55,7 +55,8 @@ $.jgrid.extend({
 		this.each(function(){
 			// currently only one level
 			// Is this a good idea to do it so!!!!?????
-			var itm = items[0] ? items[0].toString().split(' ').join('') : "";
+			items[0]  += "";
+			var itm = items[0].toString().split(' ').join('');
 			
 			var grp = this.p.groupingView, $t= this;
 			if(gdata.hasOwnProperty(itm)) {
