@@ -1990,7 +1990,8 @@ $.fn.jqGrid = function( pin ) {
 						if ( i>0 ) {
 							if(!$(this).hasClass("subgrid") && !$(this).hasClass("jqgroup")){
 								$(this).addClass("ui-state-highlight").attr("aria-selected","true");
-								ts.p.selarrrow[i]= ts.p.selrow = this.id; 
+								ts.p.selarrrow.push(this.id);
+								ts.p.selrow = this.id;
 							}
 						}
 					});
@@ -2000,9 +2001,11 @@ $.fn.jqGrid = function( pin ) {
 				else {
 					$("[id^=jqg_"+ts.p.id+"_"+"]").removeAttr("checked");
 					$(ts.rows).each(function(i) {
-						if(!$(this).hasClass("subgrid")){
-							$(this).removeClass("ui-state-highlight").attr("aria-selected","false");
-							emp[i] = this.id;
+						if(i>0) {
+							if(!$(this).hasClass("subgrid")){
+								$(this).removeClass("ui-state-highlight").attr("aria-selected","false");
+								emp.push(this.id);
+							}
 						}
 					});
 					ts.p.selarrrow = []; ts.p.selrow = null;
