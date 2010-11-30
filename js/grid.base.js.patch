@@ -1,0 +1,56 @@
+Index: grid.base.js
+===================================================================
+--- grid.base.js	(revision 1298)
++++ grid.base.js	(working copy)
+@@ -598,6 +598,7 @@
+ 			colModel: [],
+ 			rowList: [],
+ 			colNames: [],
++			percentWidth: false,
+ 			sortorder: "asc",
+ 			sortname: "",
+ 			datatype: "xml",
+@@ -2076,11 +2077,19 @@
+ 		}
+ 		if(ts.p.footerrow) { tfoot += "</tr></tbody></table>"; }
+ 		firstr += "</tr>";
++		
++		var colgroupHtml = '<colgroup>';
++		for (var j = 0, cln = this.p.colNames.length; j < cln; j++) {
++			colgroupHtml += '<col ' + 'class="jqgrid-col' + (j + 1) + '"'  + '>';
++		}
++		colgroupHtml += '</colgroup>';
++		$(this).append(colgroupHtml);
++
+ 		tbody = document.createElement("tbody");
+ 		this.appendChild(tbody);
+ 		$(this).addClass('ui-jqgrid-btable').append(firstr);
+ 		firstr = null;
+-		var hTable = $("<table class='ui-jqgrid-htable' style='width:"+ts.p.tblwidth+"px' role='grid' aria-labelledby='gbox_"+this.id+"' cellspacing='0' cellpadding='0' border='0'></table>").append(thead),
++		var hTable = $("<table class='ui-jqgrid-htable' style='width:"+ts.p.tblwidth+"px' role='grid' aria-labelledby='gbox_"+this.id+"' cellspacing='0' cellpadding='0' border='0'>" + colgroupHtml + "</table>").append(thead),
+ 		hg = (ts.p.caption && ts.p.hiddengrid===true) ? true : false,
+ 		hb = $("<div class='ui-jqgrid-hbox" + (dir=="rtl" ? "-rtl" : "" )+"'></div>");
+ 		thead = null;
+@@ -2338,6 +2347,22 @@
+ 		$(window).unload(function () {
+ 			ts = null;
+ 		});
++		function cleanStyleForPercent (gridID) {
++			var theaders = $('.ui-jqgrid-labels').find('th[id*='  + gridID + ']'),
++					cols = $('#'  + gridID).find('tbody .jqgfirstrow').find('td');
++
++			$('.ui-jqgrid-bdiv,.ui-jqgrid-hdiv,.ui-jqgrid-view,.ui-jqgrid,.ui-jqgrid-hbox,.ui-jqgrid-htable').
++				removeAttr('style').addClass('cwidth');
++			$('#'  + gridID).css('width', '100%');
++			$('.cwidth').css('width', '100%');
++			theaders.removeAttr('style');
++			cols.removeAttr('style');
++		}
++
++		if (ts.p.percentWidth) {
++			cleanStyleForPercent(ts.p.id);
++		}
++
+ 	});
+ };
+ $.jgrid.extend({
