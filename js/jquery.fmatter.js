@@ -387,7 +387,8 @@
 			onError: null,
 			afterRestore: null,
 			extraparam: {oper:'edit'},
-			url: null
+			url: null,
+			delOptions: {}
 		},
 		cm = $('#'+gid)[0].p.colModel[pos];
 		if(!$.fmatter.isUndefined(cm.formatoptions)) {
@@ -422,7 +423,7 @@
 				$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid).hide();
 				break;
 			case 'del':
-				$('#'+gid).jqGrid('delGridRow',rid);
+				$('#'+gid).jqGrid('delGridRow',rid, op.delOptions);
 				break;
 		}
 	};
