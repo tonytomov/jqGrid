@@ -1,8 +1,8 @@
-;(function($){
+﻿;(function($){
 /**
  * jqGrid Serbian Translation
- * Aleksandar Milovac
- * http://trirand.com/blog/ 
+ * Александар Миловац(Aleksandar Milovac) aleksandar.milovac@gmail.com
+ * http://trirand.com/blog/
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
@@ -26,7 +26,7 @@ $.jgrid = {
 	edit : {
 		addCaption: "Додај запис",
 		editCaption: "Измени запис",
-		bSubmit: "Сними",
+		bSubmit: "Пошаљи",
 		bCancel: "Одустани",
 		bClose: "Затвори",
 		saveData: "Податак је измењен! Сачувај измене?",
@@ -56,7 +56,7 @@ $.jgrid = {
 	del : {
 		caption: "Избриши",
 		msg: "Избриши изабран(е) запис(е)?",
-		bSubmit: "Избриши",
+		bSubmit: "Ибриши",
 		bCancel: "Одбаци"
 	},
 	nav : {
@@ -82,9 +82,9 @@ $.jgrid = {
 	},
 	errors : {
 		errcap : "Грешка",
-		nourl : "No url is set",
-		norecords: "No records to process",
-		model : "Length of colNames <> colModel!"
+		nourl : "Није постављен URL",
+		norecords: "Нема записа за обраду",
+		model : "Дужина модела colNames <> colModel!"
 	},
 	formatter : {
 		integer : {thousandsSeparator: " ", defaultValue: '0'},
