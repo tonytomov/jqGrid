@@ -2293,39 +2293,37 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.hidegrid===true) {
 				$(".ui-jqgrid-titlebar-close",grid.cDiv).click( function(e){
 					var onHdCl = $.isFunction(ts.p.onHeaderClick),
-                                            elems = ".ui-jqgrid-bdiv, .ui-jqgrid-hdiv, .ui-jqgrid-pager, .ui-jqgrid-sdiv",
-                                            counter, self = this;
-
-                                        if(ts.p.toolbar[0]===true) {
-                                            if( ts.p.toolbar[1]=='both') {
-                                                elems += ', #' + $(grid.ubDiv).attr('id');
-                                            }
-                                            elems += ', #' + $(grid.uDiv).attr('id');
-                                        }
-
-                                        counter = $(elems,"#gview_"+ts.p.id).length;
+					elems = ".ui-jqgrid-bdiv, .ui-jqgrid-hdiv, .ui-jqgrid-pager, .ui-jqgrid-sdiv",
+					counter, self = this;
+					if(ts.p.toolbar[0]===true) {
+						if( ts.p.toolbar[1]=='both') {
+							elems += ', #' + $(grid.ubDiv).attr('id');
+						}
+						elems += ', #' + $(grid.uDiv).attr('id');
+					}
+					counter = $(elems,"#gview_"+ts.p.id).length;
 
 					if(ts.p.gridstate == 'visible') {
-                                            $(elems,"#gbox_"+ts.p.id).slideUp("fast", function() {
-                                                counter--;
-                                                if (counter == 0) {
-                                                    $("span",self).removeClass("ui-icon-circle-triangle-n").addClass("ui-icon-circle-triangle-s");
-                                                    ts.p.gridstate = 'hidden';
-                                                    if($("#gbox_"+ts.p.id).hasClass("ui-resizable")) { $(".ui-resizable-handle","#gbox_"+ts.p.id).hide(); }
-                                                    if(onHdCl) {if(!hg) {ts.p.onHeaderClick.call(ts,ts.p.gridstate,e);}}
-                                                }
-                                            });
+						$(elems,"#gbox_"+ts.p.id).slideUp("fast", function() {
+							counter--;
+							if (counter == 0) {
+								$("span",self).removeClass("ui-icon-circle-triangle-n").addClass("ui-icon-circle-triangle-s");
+								ts.p.gridstate = 'hidden';
+								if($("#gbox_"+ts.p.id).hasClass("ui-resizable")) { $(".ui-resizable-handle","#gbox_"+ts.p.id).hide(); }
+								if(onHdCl) {if(!hg) {ts.p.onHeaderClick.call(ts,ts.p.gridstate,e);}}
+							}
+						});
 					} else if(ts.p.gridstate == 'hidden'){
-                                            $(elems,"#gbox_"+ts.p.id).slideDown("fast", function() {
-                                                counter--;
-                                                if (counter == 0) {
-                                                    $("span",self).removeClass("ui-icon-circle-triangle-s").addClass("ui-icon-circle-triangle-n");
-                                                    if(hg) {ts.p.datatype = tdt;populate();hg=false;}
-                                                    ts.p.gridstate = 'visible';
-                                                    if($("#gbox_"+ts.p.id).hasClass("ui-resizable")) { $(".ui-resizable-handle","#gbox_"+ts.p.id).show(); }
-                                                    if(onHdCl) {if(!hg) {ts.p.onHeaderClick.call(ts,ts.p.gridstate,e);}}
-                                                }
-                                            });
+						$(elems,"#gbox_"+ts.p.id).slideDown("fast", function() {
+							counter--;
+							if (counter == 0) {
+								$("span",self).removeClass("ui-icon-circle-triangle-s").addClass("ui-icon-circle-triangle-n");
+								if(hg) {ts.p.datatype = tdt;populate();hg=false;}
+								ts.p.gridstate = 'visible';
+								if($("#gbox_"+ts.p.id).hasClass("ui-resizable")) { $(".ui-resizable-handle","#gbox_"+ts.p.id).show(); }
+								if(onHdCl) {if(!hg) {ts.p.onHeaderClick.call(ts,ts.p.gridstate,e);}}
+							}
+						});
 					}
 					return false;
 				});
@@ -2413,14 +2411,14 @@ $.jgrid.extend({
 			}
 			if(!$t.p.multiselect) {
 				if(pt.className !== "ui-subgrid") {
-                                    if( $t.p.selrow ) {
-                                            $($t.rows.namedItem($t.p.selrow)).removeClass("ui-state-highlight").attr("aria-selected","false");
+					if( $t.p.selrow ) {
+						$($t.rows.namedItem($t.p.selrow)).removeClass("ui-state-highlight").attr("aria-selected","false");
 					}
-                                    if( $t.p.selrow != pt.id) {
-					    $t.p.selrow = pt.id;
-                                            $(pt).addClass("ui-state-highlight").attr("aria-selected","true");
-                                            if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow.call($t,$t.p.selrow, true); }
-                                    } else {$t.p.selrow = false;}
+					if( $t.p.selrow != pt.id) {
+						$t.p.selrow = pt.id;
+						$(pt).addClass("ui-state-highlight").attr("aria-selected","true");
+						if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow.call($t,$t.p.selrow, true); }
+					} else {$t.p.selrow = null;}
 				}
 			} else {
 				$t.p.selrow = pt.id;
