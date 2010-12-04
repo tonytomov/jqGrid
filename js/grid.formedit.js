@@ -818,8 +818,6 @@ $.jgrid.extend({
 				} else {
 					$(".binfo","#"+frmtb+"_2").hide();
 				}
-				restoreInline();
-				if(onBeforeInit) { onBeforeInit($("#"+frmgr)); }
 				// filldata
 				fillData(rowid,$t,frmgr);
 				///
