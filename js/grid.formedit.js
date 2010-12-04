@@ -783,7 +783,17 @@ $.jgrid.extend({
 				}
 				return stat;
 			}
-			
+			function restoreInline()
+			{
+				if (rowid !== "_empty" && typeof($t.p.savedRow) !== "undefined" && $t.p.savedRow.length > 0 && $.isFunction($.fn.jqGrid['restoreRow'])) {
+					for (var i=0;i<$t.p.savedRow.length;i++) {
+						if ($t.p.savedRow[i].id == rowid) {
+							$($t).jqGrid('restoreRow',rowid);
+							break;
+						}
+					}
+				}
+			}
 			if ( $("#"+IDs.themodal).html() != null ) {
 				$(".ui-jqdialog-title","#"+IDs.modalhead).html(p.caption);
 				$("#FormError","#"+frmtb).hide();
@@ -799,6 +809,7 @@ $.jgrid.extend({
 				} else {
 					$(".binfo","#"+frmtb+"_2").hide();
 				}
+				restoreInline();
 				if(onBeforeInit) { onBeforeInit($("#"+frmgr)); }
 				// filldata
 				fillData(rowid,$t,frmgr);
@@ -846,6 +857,7 @@ $.jgrid.extend({
 				$(tbl).append(flr);
 				// set the id.
 				// use carefull only to change here colproperties.
+				restoreInline();
 				if(onBeforeInit) { onBeforeInit($("#"+frmgr)); }
 				// create data
 				var rtlb = $t.p.direction == "rtl" ? true :false,
