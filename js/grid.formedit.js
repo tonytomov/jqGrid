@@ -338,6 +338,7 @@ $.jgrid.extend({
 			onBeforeInit = $.isFunction(rp_ge.beforeInitData) ? rp_ge.beforeInitData : false,
 			onInitializeForm = $.isFunction(rp_ge.onInitializeForm) ? rp_ge.onInitializeForm : false,
 			copydata = null,
+			showFrm = true,
 			maxCols = 1, maxRows=0,	postdata, extpost, newData, diff;
 			if (rowid=="new") {
 				rowid = "_empty";
@@ -795,6 +796,14 @@ $.jgrid.extend({
 				}
 			}
 			if ( $("#"+IDs.themodal).html() != null ) {
+				if(onBeforeInit) {
+					showFrm = onBeforeInit($("#"+frmgr));
+					if(typeof(showFrm) == "undefined") {
+						showFrm = true;
+					}
+				}
+				if(showFrm === false) { return; }
+				restoreInline();
 				$(".ui-jqdialog-title","#"+IDs.modalhead).html(p.caption);
 				$("#FormError","#"+frmtb).hide();
 				if(rp_ge.topinfo) {
@@ -839,6 +848,14 @@ $.jgrid.extend({
 				}
 				if(onAfterShow) { onAfterShow($("#"+frmgr)); }
 			} else {
+				if(onBeforeInit) {
+					showFrm = onBeforeInit($("#"+frmgr));
+					if(typeof(showFrm) == "undefined") {
+						showFrm = true;
+					}
+				}
+				if(showFrm === false) { return; }
+				restoreInline();
 				$($t.p.colModel).each( function(i) {
 					var fmto = this.formoptions;
 					maxCols = Math.max(maxCols, fmto ? fmto.colpos || 0 : 0 );
@@ -857,8 +874,6 @@ $.jgrid.extend({
 				$(tbl).append(flr);
 				// set the id.
 				// use carefull only to change here colproperties.
-				restoreInline();
-				if(onBeforeInit) { onBeforeInit($("#"+frmgr)); }
 				// create data
 				var rtlb = $t.p.direction == "rtl" ? true :false,
 				bp = rtlb ? "nData" : "pData",
