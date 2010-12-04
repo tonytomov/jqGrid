@@ -63,7 +63,8 @@ $.jgrid.extend({
 		return this.each(function() {
 			var $t = this;
 			if(!$t.grid) {return;}
-			var fid = "fbox_"+$t.p.id;
+			var fid = "fbox_"+$t.p.id,
+			showFrm = true;
             function applyDefaultFilters(gridDOMobj, filterSettings) {
 				/*
                 gridDOMobj = ointer to grid DOM object ( $(#list)[0] )
@@ -158,7 +159,13 @@ $.jgrid.extend({
 			if($.fn.searchFilter) {
 				if(p.recreateFilter===true) {$("#"+fid).remove();}
 				if( $("#"+fid).html() != null ) {
-					if ( $.isFunction(p.beforeShowSearch) ) { p.beforeShowSearch($("#"+fid)); }
+					if ( $.isFunction(p.beforeShowSearch) ) { 
+						showFrm = p.beforeShowSearch($("#"+fid));
+						if(typeof(showFrm) == "undefined") {
+							showFrm = true;
+						}
+					}
+					if(showFrm === false) { return; }
 					showFilter();
 					if( $.isFunction(p.afterShowSearch) ) { p.afterShowSearch($("#"+fid)); }
 				} else {
@@ -262,7 +269,13 @@ $.jgrid.extend({
                             applyDefaultFilters($t, p);
                         }
 						if ( $.isFunction(p.onInitializeSearch) ) { p.onInitializeSearch( $("#"+fid) ); }
-						if ( $.isFunction(p.beforeShowSearch) ) { p.beforeShowSearch($("#"+fid)); }
+						if ( $.isFunction(p.beforeShowSearch) ) {
+							showFrm = p.beforeShowSearch($("#"+fid));
+							if(typeof(showFrm) == "undefined") {
+								showFrm = true;
+							}
+						}
+						if(showFrm === false) { return; }
 						showFilter();
 						if( $.isFunction(p.afterShowSearch) ) { p.afterShowSearch($("#"+fid)); }
 						if(p.closeOnEscape===true){
