@@ -9,6 +9,7 @@
  */
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
+	defaults : { cmTemplate : {} },
 	htmlDecode : function(value){
 		if(value=='&nbsp;' || value=='&#160;' || (value.length==1 && value.charCodeAt(0)==160)) { return "";}
 		return !value ? value : String(value).replace(/&amp;/g, "&").replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"');
@@ -1889,9 +1890,7 @@ $.fn.jqGrid = function( pin ) {
 		ts.p.keyIndex=false;
 		for (i=0; i<ts.p.colModel.length;i++) {
 			clm = ts.p.colModel[i];
-			if(clm.hasOwnProperty('template')) {
-				clm = $.extend(clm,clm.template);
-			}
+			clm = $.extend(clm, $.jgrid.defaults.cmTemplate, clm.template || {});
 			if (ts.p.keyIndex === false && ts.p.colModel[i].key===true) {
 				ts.p.keyIndex = i;
 			}
