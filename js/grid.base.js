@@ -849,7 +849,7 @@ $.fn.jqGrid = function( pin ) {
 		}
 		$(this).empty();
 		this.p = p ;
-		var i, dir,ts;
+		var i, dir,ts, clm;
 		if(this.p.colNames.length === 0) {
 			for (i=0;i<this.p.colModel.length;i++){
 				this.p.colNames[i] = this.p.colModel[i].label || this.p.colModel[i].name;
@@ -1888,9 +1888,12 @@ $.fn.jqGrid = function( pin ) {
 		if ($.inArray(ts.p.multikey,sortkeys) == -1 ) {ts.p.multikey = false;}
 		ts.p.keyIndex=false;
 		for (i=0; i<ts.p.colModel.length;i++) {
-			if (ts.p.colModel[i].key===true) {
+			clm = ts.p.colModel[i];
+			if(clm.hasOwnProperty('template')) {
+				clm = $.extend(clm,clm.template);
+			}
+			if (ts.p.keyIndex !== false && ts.p.colModel[i].key===true) {
 				ts.p.keyIndex = i;
-				break;
 			}
 		}
 		ts.p.sortorder = ts.p.sortorder.toLowerCase();
