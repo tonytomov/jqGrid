@@ -1892,7 +1892,7 @@ $.fn.jqGrid = function( pin ) {
 			if(clm.hasOwnProperty('template')) {
 				clm = $.extend(clm,clm.template);
 			}
-			if (ts.p.keyIndex !== false && ts.p.colModel[i].key===true) {
+			if (ts.p.keyIndex === false && ts.p.colModel[i].key===true) {
 				ts.p.keyIndex = i;
 			}
 		}
