@@ -9,7 +9,6 @@
  */
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
-	defaults : { cmTemplate : {} },
 	htmlDecode : function(value){
 		if(value=='&nbsp;' || value=='&#160;' || (value.length==1 && value.charCodeAt(0)==160)) { return "";}
 		return !value ? value : String(value).replace(/&amp;/g, "&").replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"');
@@ -685,7 +684,8 @@ $.fn.jqGrid = function( pin ) {
 			_index : {},
 			grouping : false,
 			groupingView : {groupField:[],groupOrder:[], groupText:[],groupColumnShow:[],groupSummary:[], showSummaryOnHide: false, sortitems:[], sortnames:[], groupDataSorted : false, summary:[],summaryval:[], plusicon: 'ui-icon-circlesmall-plus', minusicon: 'ui-icon-circlesmall-minus'},
-			ignoreCase : false
+			ignoreCase : false,
+			cmTemplate : {}
 		}, $.jgrid.defaults, pin || {});
 		var grid={
 			headers:[],
@@ -1890,7 +1890,7 @@ $.fn.jqGrid = function( pin ) {
 		ts.p.keyIndex=false;
 		for (i=0; i<ts.p.colModel.length;i++) {
 			clm = ts.p.colModel[i];
-			clm = $.extend(clm, $.jgrid.defaults.cmTemplate, clm.template || {});
+			clm = $.extend(clm, ts.p.cmTemplate, clm.template || {});
 			if (ts.p.keyIndex === false && ts.p.colModel[i].key===true) {
 				ts.p.keyIndex = i;
 			}
