@@ -124,6 +124,8 @@
 			var	token = /\\.|[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]/g,
 			timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
 			timezoneClip = /[^-+\dA-Z]/g,
+			msDateRegExp = new RegExp("^/Date\((([-+])?[0-9]+)(([-+])([0-9]{2})([0-9]{2}))?\)/$"),
+			msMatch = date.match(msDateRegExp),
 			pad = function (value, length) {
 				value = String(value);
 				length = parseInt(length,10) || 2;
@@ -143,6 +145,15 @@
 			    timestamp = new Date(date);
 			} else if(date.constructor === Date) {
 				timestamp = date;
+				// Microsoft date format support
+			} else if( msMatch !== null ) {
+				timestamp = new Date(parseInt(msMatch[1], 10));
+				if (msMatch[3]) {
+					var offset = Number(msMatch[5]) * 60 + Number(msMatch[6]);
+					offset *= ((msMatch[4] == '-') ? 1 : -1);
+					offset -= timestamp.getTimezoneOffset();
+					timestamp.setTime(Number(Number(timestamp) + (offset * 60 * 1000)));
+				}
 			} else {
 				date = date.split(/[\\\/:_;.,\t\T\s-]/);
 				format = format.split(/[\\\/:_;.,\t\T\s-]/);
