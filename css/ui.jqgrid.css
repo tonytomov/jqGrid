@@ -131,4 +131,9 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 .ui-jqgrid .tree-wrap-ltr {float: left;}
 .ui-jqgrid .tree-wrap-rtl {float: right;}
 .ui-jqgrid .ui-ellipsis {text-overflow:ellipsis; -moz-binding:url('ellipsis-xbl.xml#ellipsis');}
-
+.ui-searchFilter { display: none; position: absolute; z-index: 770; overflow: visible;}
+.ui-searchFilter table {position:relative; margin:0em; width:auto}
+.ui-searchFilter table td {margin: 0em; padding: 1px;}
+.ui-searchFilter table td input, .ui-searchFilter table td select {margin: 0.1em;}
+.ui-searchFilter .ui-state-default { cursor: pointer; }
+.ui-searchFilter .divider hr {margin: 1px; }
