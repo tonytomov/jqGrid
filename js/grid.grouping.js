@@ -35,7 +35,7 @@ $.jgrid.extend({
 							var cm = $t.p.colModel;
 							for(var j=0, cml = cm.length; j < cml; j++) {
 								if(cm[j].summaryType) {
-									grp.summary[i].push({nm:cm[j].name,st:cm[j].summaryType, v:''});
+									grp.summary[i].push({nm:cm[j].name,st:cm[j].summaryType, v:'', f:cm[j].summaryFunction});
 								}
 							}
 						}
@@ -57,8 +57,7 @@ $.jgrid.extend({
 			// Is this a good idea to do it so!!!!?????
 			items[0]  += "";
 			var itm = items[0].toString().split(' ').join('');
-			
-			var grp = this.p.groupingView, $t= this;
+			var grp = this.p.groupingView, $t= this;                              
 			if(gdata.hasOwnProperty(itm)) {
 				gdata[itm].push(rData);
 			} else {
@@ -68,7 +67,10 @@ $.jgrid.extend({
 				grp.sortnames[0].push($.trim(items[0].toString()));
 				grp.summaryval[0][itm] = $.extend(true,[],grp.summary[0]);
 			}
-			if(grp.groupSummary[0]) {
+                              
+                              //This is only used now if customSummaryFunction is not being used (this uses the built in groupingCalculations
+                              //or calls a customFunction as passed in the summarytype parameter).
+			if (grp.customSummaryFunction == false && grp.groupSummary[0]) {
 				$.each(grp.summaryval[0][itm],function(i,n) {
 					if ($.isFunction(this.st)) {
 						this.v = this.st.call($t, this.v, this.nm, record);
@@ -109,6 +111,7 @@ $.jgrid.extend({
 			grp = $t.p.groupingView,
 			str = "", icon = "", hid, pmrtl ="", gv, cp, ii;
 			//only one level for now
+                                                           
 			if(!grp.groupDataSorted) {
 				// ???? TO BE IMPROVED
 				grp.sortitems[0].sort();
@@ -142,7 +145,9 @@ $.jgrid.extend({
 				for(var kk=0;kk<grdata[n].length;kk++) {
 					str += grdata[n][kk].join('');
 				}
+   
 				if(grp.groupSummary[0]) {
+           
 					var hhdr = "";
 					if(grp.groupCollapse && !grp.showSummaryOnHide) {
 						hhdr = " style=\"display:none;\"";
@@ -151,9 +156,21 @@ $.jgrid.extend({
 					var fdata = grp.summaryval[0][n],
 					cm = $t.p.colModel,
 					vv, grlen = grdata[n].length;
+                                                  
+                                                  //If customSummaryFunction is enabled, we use the .f (function) passing the summarytype, name and grouping header.
+                                                  //This is intended to only call the summaryFunction once for each summary field (we're not iterating through each field to do calculations).
+                                                  if (grp.customSummaryFunction) {
+                                                            $.each(fdata,function(i,n) {
+                                                                      if ($.isFunction(this.f)) {
+                                                                                this.v = this.f.call($t, this.st, this.nm, grp.sortitems[0][i]);
+                                                                      }
+                                                            });
+                                                  }
+                                                 
 					for(var k=0; k<colspans;k++) {
 						var tmpdata = "<td "+$t.formatCol(k,1,'')+">&#160;</td>",
 						tplfld = "{0}";
+                                                            
 						$.each(fdata,function(){
 							if(this.nm == cm[k].name) {
 								if(cm[k].summaryTpl)  {
