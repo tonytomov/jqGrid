@@ -2729,12 +2729,12 @@ $.jgrid.extend({
 			$(this.p.colModel).each(function(i) {
 				if ($.inArray(this.name,colname) !== -1 && this.hidden === sw) {
 					$("tr",$t.grid.hDiv).each(function(){
-						$("th:eq("+i+")",this).css("display",show);
+						$(this).children("th:eq("+i+")").css("display",show);
 					});
 					$($t.rows).each(function(j){
-						$("td:eq("+i+")",$t.rows[j]).css("display",show);
+						$(this).children("td:eq("+i+")").css("display",show);
 					});
-					if($t.p.footerrow) { $("td:eq("+i+")",$t.grid.sDiv).css("display", show); }
+					if($t.p.footerrow) { $($t.grid.sDiv).children("td:eq("+i+")").css("display", show); }
 					if(show == "none") { $t.p.tblwidth -= this.width+$t.p.cellLayout;} else {$t.p.tblwidth += this.width;}
 					this.hidden = !sw;
 					fndh=true;
