@@ -115,7 +115,7 @@ $.extend($.jgrid,{
 		return sid.replace(/([\.\:\[\]])/g,"\\$1");
 	},
 	getAccessor : function(obj, expr) {
-		var ret,p,prm, i;
+		var ret,p,prm = [], i;
 		if( typeof expr === 'function') { return expr(obj); }
 		ret = obj[expr];
 		if(ret===undefined) {
