@@ -1991,6 +1991,7 @@ $.fn.jqGrid = function( pin ) {
 		if(this.p.multiselect) {
 			var emp=[], chk;
 			$('#cb_'+$.jgrid.jqID(ts.p.id),this).bind('click',function(){
+				ts.p.selarrrow = [];
 				if (this.checked) {
 					$("[id^=jqg_"+ts.p.id+"_"+"]").attr("checked","checked");
 					$(ts.rows).each(function(i) {
@@ -2015,7 +2016,7 @@ $.fn.jqGrid = function( pin ) {
 							}
 						}
 					});
-					ts.p.selarrrow = []; ts.p.selrow = null;
+					ts.p.selrow = null;
 					chk=false;
 				}
 				if($.isFunction(ts.p.onSelectAll)) {ts.p.onSelectAll.call(ts, chk ? ts.p.selarrrow : emp,chk);}
@@ -2429,7 +2430,7 @@ $.jgrid.extend({
 			} else {
 				$t.p.selrow = pt.id;
 				ia = $.inArray($t.p.selrow,$t.p.selarrrow);
-				if (  ia === -1 ){ 
+				if (  ia === -1 ){
 					if(pt.className !== "ui-subgrid") { $(pt).addClass("ui-state-highlight").attr("aria-selected","true");}
 					stat = true;
 					$("#jqg_"+$t.p.id+"_"+$.jgrid.jqID($t.p.selrow)).attr("checked",stat);
