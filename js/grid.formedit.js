@@ -355,9 +355,9 @@ $.jgrid.extend({
 			maxCols = 1, maxRows=0,	postdata, extpost, newData, diff;
 			if (rowid=="new") {
 				rowid = "_empty";
-				p.caption=p.addCaption;
+				p.caption=rp_ge.addCaption;
 			} else {
-				p.caption=p.editCaption;
+				p.caption=rp_ge.editCaption;
 			}
 			if(p.recreateForm===true && $("#"+IDs.themodal).html() != null) {
 				$("#"+IDs.themodal).remove();
@@ -1440,7 +1440,7 @@ $.jgrid.extend({
 			if (jQuery.isArray(rowids)) { rowids = rowids.join(); }
 			if ( $("#"+IDs.themodal).html() != null ) {
 				if(onBeforeInit) {
-					showFrm = onBeforeInit();
+					showFrm = onBeforeInit( $("#"+dtbl));
 					if(typeof(showFrm) == "undefined") {
 						showFrm = true;
 					}
@@ -1456,13 +1456,6 @@ $.jgrid.extend({
 				$.jgrid.viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal,jqM: false, overlay: p.overlay, modal:p.modal});
 				if(onAfterShow) { p.afterShowForm($("#"+dtbl)); }
 			} else {
-				if(onBeforeInit) {
-					showFrm = onBeforeInit();
-					if(typeof(showFrm) == "undefined") {
-						showFrm = true;
-					}
-				}
-				if(showFrm === false) { return; }
 				var dh = isNaN(p.dataheight) ? p.dataheight : p.dataheight+"px";
 				var tbl = "<div id='"+dtbl+"' class='formdata' style='width:100%;overflow:auto;position:relative;height:"+dh+";'>";
 				tbl += "<table class='DelTable'><tbody>";
@@ -1477,6 +1470,15 @@ $.jgrid.extend({
 				tbl += "<table cellspacing='0' cellpadding='0' border='0' class='EditTable' id='"+dtbl+"_2'><tbody><tr><td><hr class='ui-widget-content' style='margin:1px'/></td></tr></tr><tr><td class='DelButton EditButton'>"+bS+"&#160;"+bC+"</td></tr></tbody></table>";
 				p.gbox = "#gbox_"+gID;
 				$.jgrid.createModal(IDs,tbl,p,"#gview_"+$t.p.id,$("#gview_"+$t.p.id)[0]);
+				
+				if(onBeforeInit) {
+					showFrm = onBeforeInit( $("#"+dtbl) );
+					if(typeof(showFrm) == "undefined") {
+						showFrm = true;
+					}
+				}
+				if(showFrm === false) { return; }
+
 				$(".fm-button","#"+dtbl+"_2").hover(
 				   function(){$(this).addClass('ui-state-hover');}, 
 				   function(){$(this).removeClass('ui-state-hover');}
