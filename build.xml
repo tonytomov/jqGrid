@@ -12,6 +12,7 @@
         <concat destfile="${distdir}/${target}">
             <fileset dir="${srcdir}">
                 <exclude name="i18n/*.*" />
+                <exclude name="*.swp" />
             </fileset>
         </concat>
     </target>
