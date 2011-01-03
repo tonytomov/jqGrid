@@ -142,6 +142,10 @@
 			};
 			if( format in opts.masks ) { format = opts.masks[format]; }
 			if(date.constructor === Number) {
+				//Unix timestamp
+				if(String(format).toLowerCase() == "u") {
+					date = date*1000;
+				}
 			    timestamp = new Date(date);
 			} else if(date.constructor === Date) {
 				timestamp = date;
@@ -155,7 +159,7 @@
 					timestamp.setTime(Number(Number(timestamp) + (offset * 60 * 1000)));
 				}
 			} else {
-				date = date.split(/[\\\/:_;.,\t\T\s-]/);
+				date = String(date).split(/[\\\/:_;.,\t\T\s-]/);
 				format = format.split(/[\\\/:_;.,\t\T\s-]/);
 				// parsing for month names
 				for(k=0,hl=format.length;k<hl;k++){
@@ -171,14 +175,14 @@
 						ts[format[k].toLowerCase()] = parseInt(date[k],10);
 					}
 				}
-				if(ts.f) { ts.m = ts.f; }
+				if(ts.f) {ts.m = ts.f;}
 				if( ts.m === 0 && ts.y === 0 && ts.d === 0) {
 					return "&#160;" ;
 				}
 				ts.m = parseInt(ts.m,10)-1;
 				var ty = ts.y;
-				if (ty >= 70 && ty <= 99) { ts.y = 1900+ts.y; }
-				else if (ty >=0 && ty <=69) { ts.y= 2000+ts.y; }
+				if (ty >= 70 && ty <= 99) {ts.y = 1900+ts.y;}
+				else if (ty >=0 && ty <=69) {ts.y= 2000+ts.y;}
 				timestamp = new Date(ts.y, ts.m, ts.d, ts.h, ts.i, ts.s, ts.u);
 			}
 			
@@ -267,13 +271,13 @@
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if(op.disabled===true) {ds = "disabled=\"disabled\"";} else {ds="";}
-		if($.fmatter.isEmpty(cval) || $.fmatter.isUndefined(cval) ) { cval = $.fn.fmatter.defaultFormat(cval,op); }
-		cval=cval+""; cval=cval.toLowerCase();
+		if($.fmatter.isEmpty(cval) || $.fmatter.isUndefined(cval) ) {cval = $.fn.fmatter.defaultFormat(cval,op);}
+		cval=cval+"";cval=cval.toLowerCase();
 		var bchk = cval.search(/(false|0|no|off)/i)<0 ? " checked='checked' " : "";
 		return "<input type=\"checkbox\" " + bchk  + " value=\""+ cval+"\" offval=\"no\" "+ds+ "/>";
 	};
 	$.fn.fmatter.link = function(cellval, opts) {
-		var op = {target:opts.target };
+		var op = {target:opts.target};
 		var target = "";
 		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
@@ -286,7 +290,7 @@
 		}
 	};
 	$.fn.fmatter.showlink = function(cellval, opts) {
-		var op = {baseLinkUrl: opts.baseLinkUrl,showAction:opts.showAction, addParam: opts.addParam || "", target: opts.target, idName: opts.idName },
+		var op = {baseLinkUrl: opts.baseLinkUrl,showAction:opts.showAction, addParam: opts.addParam || "", target: opts.target, idName: opts.idName},
 		target = "", idUrl;
 		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
@@ -361,7 +365,7 @@
 				for(var i=0; i<so.length;i++){
 					sv = so[i].split(":");
 					if(sv.length > 2 ) {
-						sv[1] = jQuery.map(sv,function(n,i){if(i>0) { return n; } }).join(":");
+						sv[1] = jQuery.map(sv,function(n,i){if(i>0) {return n;}}).join(":");
 					}
 					if(msl) {
 						if(jQuery.inArray(sv[0],scell)>-1) {
@@ -444,7 +448,7 @@
 			op = $.extend(op,opts.colModel.formatoptions);
 		}
 		var rowid = opts.rowId, str="",ocl;
-		if(typeof(rowid) =='undefined' || $.fmatter.isEmpty(rowid)) { return ""; }
+		if(typeof(rowid) =='undefined' || $.fmatter.isEmpty(rowid)) {return "";}
 		if(op.editbutton){
 			ocl = "onclick=$.fn.fmatter.rowactions('"+rowid+"','"+opts.gid+"','edit',"+opts.pos+");";
 			str =str+ "<div style='margin-left:8px;'><div title='"+$.jgrid.nav.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='ui-icon ui-icon-pencil'></span></div>";
@@ -508,19 +512,19 @@
 		// cnt is set to true only in sortDataArray
 		var ret = [];
 		var cell = $(cellval).text();
-		if(cnt===true) { return cell; }
+		if(cnt===true) {return cell;}
 		var op = $.extend({},options.colModel.editoptions);
 		if(op.value){
 			var oSelect = op.value,
 			msl =  op.multiple === true ? true : false,
 			scell = [], sv;
-			if(msl) { scell = cell.split(","); scell = $.map(scell,function(n){return $.trim(n);}); }
+			if(msl) {scell = cell.split(",");scell = $.map(scell,function(n){return $.trim(n);});}
 			if ($.fmatter.isString(oSelect)) {
 				var so = oSelect.split(";"), j=0;
 				for(var i=0; i<so.length;i++){
 					sv = so[i].split(":");
 					if(sv.length > 2 ) {
-						sv[1] = jQuery.map(sv,function(n,i){if(i>0) { return n; } }).join(":");
+						sv[1] = jQuery.map(sv,function(n,i){if(i>0) {return n;}}).join(":");
 					}					
 					if(msl) {
 						if(jQuery.inArray(sv[1],scell)>-1) {
@@ -533,7 +537,7 @@
 					}
 				}
 			} else if($.fmatter.isObject(oSelect) || $.isArray(oSelect) ){
-				if(!msl) { scell[0] =  cell; }
+				if(!msl) {scell[0] =  cell;}
 				ret = jQuery.map(scell, function(n){
 					var rv;
 					$.each(oSelect, function(i,val){
@@ -542,7 +546,7 @@
 							return false;
 						}
 					});
-					if( typeof(rv) != 'undefined' ) { return rv; }
+					if( typeof(rv) != 'undefined' ) {return rv;}
 				});
 			}
 			return ret.join(", ");
