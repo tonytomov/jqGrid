@@ -124,7 +124,7 @@
 			var	token = /\\.|[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]/g,
 			timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
 			timezoneClip = /[^-+\dA-Z]/g,
-			msDateRegExp = new RegExp("^/Date\((([-+])?[0-9]+)(([-+])([0-9]{2})([0-9]{2}))?\)/$"),
+			msDateRegExp = new RegExp("\/Date\\((([-+])?[0-9]+)(([-+])([0-9]{2})([0-9]{2}))?\\)\/$"),
 			msMatch = ((typeof date === 'string') ? date.match(msDateRegExp): null),
 			pad = function (value, length) {
 				value = String(value);
