@@ -1825,6 +1825,7 @@ $.fn.jqGrid = function( pin ) {
 					cl++;
 				}
 			});
+			if (ts.p.shrinkToFit === false) {initwidth += brd*cl;}
 			if(isNaN(ts.p.width)) {ts.p.width = grid.width = initwidth;}
 			else { grid.width = ts.p.width;}
 			ts.p.tblwidth = initwidth;
