@@ -531,6 +531,7 @@ $.jgrid.extend({
 		},p  || {});
 		return this.each(function(){
 			var $t = this;
+			if(this.ftoolbar) { return; }
 			var triggerToolbar = function() {
 				var sdata={}, j=0, v, nm, sopt={},so;
 				$.each($t.p.colModel,function(i,n){
@@ -812,6 +813,7 @@ $.jgrid.extend({
 				$(tr).append(th);
 			});
 			$("table thead",$t.grid.hDiv).append(tr);
+			this.ftoolbar = true;
 			this.triggerToolbar = triggerToolbar;
 			this.clearToolbar = clearToolbar;
 			this.toggleToolbar = toggleToolbar;
