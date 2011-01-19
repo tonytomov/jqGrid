@@ -1616,7 +1616,8 @@ $.jgrid.extend({
 			afterRefresh : null,
 			cloneToTop : false
 		}, $.jgrid.nav, o ||{});
-		return this.each(function() {       
+		return this.each(function() {
+			if(this.nav) { return; }
 			var alertIDs = {themodal:'alertmod',modalhead:'alerthd',modalcontent:'alertcnt'},
 			$t = this, vwidth, vheight, twd, tdw;
 			if(!$t.grid || typeof elem != 'string') { return; }
@@ -1847,6 +1848,7 @@ $.jgrid.extend({
 					$t.p._nvtd[1] = twd;
 				}
 				tdw =null; twd=null; navtbl =null;
+				this.nav = true;
 			}
 		});
 	},
