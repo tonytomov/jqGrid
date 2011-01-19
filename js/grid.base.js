@@ -3037,8 +3037,8 @@ $.jgrid.extend({
 								val = $.jgrid.htmlDecode($t.rows[i].cells[pos].innerHTML);
 							}
 							if(mathopr) { sum += parseFloat(val); }
-							else if(obj) { ret.push({id:$t.rows[i].id,value:val}); }
-							else { ret[i]=val; }
+							else if(obj) { ret.push( {id:$t.rows[i].id,value:val} ); }
+							else { ret.push( val ); }
 						}
 						i++;
 					}
