@@ -1035,7 +1035,7 @@ $.fn.jqGrid = function( pin ) {
 			if(gxml && gl){
 			var rn = parseInt(ts.p.rowNum,10),br=ts.p.scroll?(parseInt(ts.p.page,10)-1)*rn+1:1,altr;
 			if (adjust) { rn *= adjust+1; }
-			var afterInsRow = $.isFunction(ts.p.afterInsertRow), grpdata={}, hiderow="";
+			var afterInsRow = $.isFunction(ts.p.afterInsertRow), grpdata={}, grprows=[], hiderow="";
 			if(ts.p.grouping && ts.p.groupingView.groupCollapse === true) {
 				hiderow = " style=\"display:none;\"";
 			}
@@ -1081,6 +1081,7 @@ $.fn.jqGrid = function( pin ) {
 						grpitem.push(rd[ts.p.groupingView.groupField[z]]);
 					}
 					grpdata = $(ts).jqGrid('groupingPrepare',rowData, grpitem, grpdata, rd);
+                                        grprows.push({'idr' : idr, 'rd' : rd, 'cur' : cur});
 					rowData = [];
 				}
 				if(locdata) {
@@ -1110,8 +1111,9 @@ $.fn.jqGrid = function( pin ) {
 			}
 			if(ts.p.gridview === true) {
 				if(ts.p.grouping) {
-					$(ts).jqGrid('groupingRender',grpdata,ts.p.colModel.length);
+					$(ts).jqGrid('groupingRender',grpdata,ts.p.colModel.length, grprows);
 					grpdata = null;
+                                        grprows = null;
 				} else {				
 					$("tbody:first",t).append(rowData.join(''));
 				}
@@ -1200,7 +1202,7 @@ $.fn.jqGrid = function( pin ) {
 			len = drows.length; i=0;
 			var rn = parseInt(ts.p.rowNum,10),br=ts.p.scroll?(parseInt(ts.p.page,10)-1)*rn+1:1, altr;
 			if (adjust) { rn *= adjust+1; }
-			var afterInsRow = $.isFunction(ts.p.afterInsertRow), grpdata={}, hiderow="";
+			var afterInsRow = $.isFunction(ts.p.afterInsertRow), grpdata={}, grprows=[], hiderow="";
 			if(ts.p.grouping && ts.p.groupingView.groupCollapse === true) {
 				hiderow = " style=\"display:none;\"";
 			}
@@ -1248,6 +1250,7 @@ $.fn.jqGrid = function( pin ) {
 						grpitem.push(rd[ts.p.groupingView.groupField[z]]);
 					}
 					grpdata = $(ts).jqGrid('groupingPrepare',rowData, grpitem, grpdata, rd);
+                                        grprows.push({'idr' : idr, 'rd' : rd, 'cur' : cur});
 					rowData = [];
 				}
 				if(locdata) { rd[locid] = idr; ts.p.data.push(rd); }
@@ -1273,8 +1276,9 @@ $.fn.jqGrid = function( pin ) {
 			}
 			if(ts.p.gridview === true ) {
 				if(ts.p.grouping) {
-					$(ts).jqGrid('groupingRender',grpdata,ts.p.colModel.length);
+					$(ts).jqGrid('groupingRender',grpdata,ts.p.colModel.length, grprows);
 					grpdata = null;
+					grprows = null;
 				} else {
 					$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
 				}

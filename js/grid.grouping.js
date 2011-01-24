@@ -103,11 +103,12 @@ $.jgrid.extend({
 		});
 		return false;
 	},
-	groupingRender : function (grdata, colspans ) {
+	groupingRender : function (grdata, colspans, grprows ) {
 		return this.each(function(){
 			var $t = this,
 			grp = $t.p.groupingView,
 			str = "", icon = "", hid, pmrtl ="", gv, cp, ii;
+                        var afterInsRow = $.isFunction($t.p.afterInsertRow);
 			//only one level for now
 			if(!grp.groupDataSorted) {
 				// ???? TO BE IMPROVED
@@ -179,8 +180,14 @@ $.jgrid.extend({
 				}
 			});
 			$("#"+$t.p.id+" tbody:first").append(str);
+                        if(afterInsRow) {
+                            $.each(grprows, function(grpindex, grpitem) {
+                                $t.p.afterInsertRow.call($t,grpitem.idr,grpitem.rd,grpitem.cur);
+                            });
+                        }
 			// free up memory
 			str = null;
+                        grprows = null;
 		});
 	},
 	groupingGroupBy : function (name, options, current) {
