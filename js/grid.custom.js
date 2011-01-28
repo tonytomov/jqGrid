@@ -573,7 +573,8 @@ $.jgrid.extend({
 						if (gi > 0) {ruleGroup += ",";}
 						ruleGroup += "{\"field\":\"" + i + "\",";
 						ruleGroup += "\"op\":\"" + sopt[i] + "\",";
-						ruleGroup += "\"data\":\"" + n + "\"}";
+						n+="";
+						ruleGroup += "\"data\":\"" + n.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"}";
 						gi++;
 					});
 					ruleGroup += "]}";
@@ -640,7 +641,8 @@ $.jgrid.extend({
 						if (gi > 0) {ruleGroup += ",";}
 						ruleGroup += "{\"field\":\"" + i + "\",";
 						ruleGroup += "\"op\":\"" + "eq" + "\",";
-						ruleGroup += "\"data\":\"" + n + "\"}";
+						n+="";
+						ruleGroup += "\"data\":\"" + n.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"}";
 						gi++;
 					});
 					ruleGroup += "]}";
