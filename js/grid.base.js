@@ -200,7 +200,7 @@ $.extend($.jgrid,{
 			if(!_usecase){
 				phrase=phrase.toLowerCase();
 			}
-			phrase=phrase.toString().replace(new RegExp('\\"',"g"),'\\"');
+			phrase=phrase.toString().replace(/\\/g,'\\\\').replace(/\"/g,'\\"')
 			return phrase;
 		};
 		this._funcLoop=function(func){
@@ -1664,7 +1664,7 @@ $.fn.jqGrid = function( pin ) {
 			pgid = pgid.substr(1);
 			pgcnt = "pg_"+pgid;
 			lft = pgid+"_left"; cent = pgid+"_center"; rgt = pgid+"_right";
-			$("#"+pgid)
+			$("#"+$.jgrid.jqID(pgid) )
 			.append("<div id='"+pgcnt+"' class='ui-pager-control' role='group'><table cellspacing='0' cellpadding='0' border='0' class='ui-pg-table' style='width:100%;table-layout:fixed;height:100%;' role='row'><tbody><tr><td id='"+lft+"' align='left'></td><td id='"+cent+"' align='center' style='white-space:pre;'></td><td id='"+rgt+"' align='right'></td></tr></tbody></table></div>")
 			.attr("dir","ltr"); //explicit setting
 			if(ts.p.rowList.length >0){
@@ -2091,7 +2091,7 @@ $.fn.jqGrid = function( pin ) {
 			if (t.length != 1) { return; }
 			var ci = $.jgrid.getCellIndex(this);
 			if (!ts.p.viewsortcols[2]) { r=true;d=t.attr("sort"); }
-			sortData($('div',this)[0].id,ci,r,d);
+			sortData( $('div',this)[0].id, ci, r, d);
 			return false;
 		});
 		if (ts.p.sortable && $.fn.sortable) {
