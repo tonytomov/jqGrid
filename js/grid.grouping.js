@@ -96,10 +96,13 @@ $.jgrid.extend({
 					$("#"+hid).nextUntil("#"+uid+String(num)).hide();
 				}
 				$("#"+hid+" span").removeClass(minus).addClass(plus);
+				collapsed = true;
 			} else {
 				$("#"+hid).nextUntil("#"+uid+String(num)).show();
 				$("#"+hid+" span").removeClass(plus).addClass(minus);
+				collapsed = false;
 			}
+			if( $t.p.onClickGroup) { $t.p.onClickGroup.call($t, hid , collapsed); }
 		});
 		return false;
 	},
