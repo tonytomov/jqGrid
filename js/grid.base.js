@@ -850,7 +850,7 @@ $.fn.jqGrid = function( pin ) {
 		}
 		$(this).empty();
 		this.p = p ;
-		var i, dir,ts, clm;
+		var i, dir,ts;
 		if(this.p.colNames.length === 0) {
 			for (i=0;i<this.p.colModel.length;i++){
 				this.p.colNames[i] = this.p.colModel[i].label || this.p.colModel[i].name;
@@ -1891,8 +1891,7 @@ $.fn.jqGrid = function( pin ) {
 		if ($.inArray(ts.p.multikey,sortkeys) == -1 ) {ts.p.multikey = false;}
 		ts.p.keyIndex=false;
 		for (i=0; i<ts.p.colModel.length;i++) {
-			clm = ts.p.colModel[i];
-			clm = $.extend(clm, ts.p.cmTemplate, clm.template || {});
+			ts.p.colModel[i] = $.extend({}, ts.p.cmTemplate, ts.p.colModel[i].template || {}, ts.p.colModel[i]);
 			if (ts.p.keyIndex === false && ts.p.colModel[i].key===true) {
 				ts.p.keyIndex = i;
 			}
