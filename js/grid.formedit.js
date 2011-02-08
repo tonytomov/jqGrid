@@ -132,8 +132,14 @@ $.jgrid.extend({
 					sdata[p.sField] = filters.rules[0].field;
 					sdata[p.sValue] = filters.rules[0].data;
 					sdata[p.sOper] = filters.rules[0].op;
+					if(sdata.hasOwnProperty(p.sFilter) ) {
+						delete sdata[p.sFilter];
+					}
 				} else {
 					sdata[p.sFilter] = filters;
+					$.each([p.sField, p.sValue, p.sOper], function(i, n){
+						if(sdata.hasOwnProperty(n)) { delete sdata[n];}
+					});
 				}
 				grid[0].p.search = hasFilters;
 				$.extend(grid[0].p.postData,sdata);
