@@ -579,6 +579,9 @@ $.jgrid.extend({
 					});
 					ruleGroup += "]}";
 					$.extend($t.p.postData,{filters:ruleGroup});
+					$.each(['searchField', 'searchString', 'searchOper'], function(i, n){
+						if($t.p.postData.hasOwnProperty(n)) { delete $t.p.postData[n];}
+					});
 				} else {
 					$.extend($t.p.postData,sdata);
 				}
@@ -647,6 +650,9 @@ $.jgrid.extend({
 					});
 					ruleGroup += "]}";
 					$.extend($t.p.postData,{filters:ruleGroup});
+					$.each(['searchField', 'searchString', 'searchOper'], function(i, n){
+						if($t.p.postData.hasOwnProperty(n)) { delete $t.p.postData[n];}
+					});
 				} else {
 					$.extend($t.p.postData,sdata);
 				}
