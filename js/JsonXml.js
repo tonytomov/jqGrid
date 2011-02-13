@@ -250,7 +250,7 @@ var xmlJsonClass = {
 				json += (name && ":") + os;
 			} 
 			else {
-				json += (name && ":") + "\"" + o + "\"";
+				json += (name && ":") + "\"" + o.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"";
 			}
 		}
 		else {
