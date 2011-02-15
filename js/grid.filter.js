@@ -306,7 +306,7 @@ $.fn.jqFilter = function( arg ) {
 
 				trpar = $(this).parents("tr:first");
 				for (i=0;i<that.p.columns.length;i++) {
-					if(thath.p.columns[i].name ==  rule.field) {
+					if(that.p.columns[i].name ==  rule.field) {
 						cm = that.p.columns[i];
 						break;
 					}
