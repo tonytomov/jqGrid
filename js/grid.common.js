@@ -262,7 +262,7 @@ $.extend($.jgrid,{
 				el.id = opt.id;
 				opt.dataInit(el);
 				delete opt.id;
-				delete opt.dataInit;
+				//delete opt.dataInit;
 			}
 			if(opt.dataEvents) {
 				$.each(opt.dataEvents, function() {
@@ -272,7 +272,7 @@ $.extend($.jgrid,{
 						$(el).bind(this.type, this.fn);
 					}
 				});
-				delete opt.dataEvents;
+				//delete opt.dataEvents;
 			}
 			return opt;
 		}
@@ -558,19 +558,24 @@ $.extend($.jgrid,{
 		}
 		return true;
 	},
-	checkValues : function(val, valref,g) {
+	checkValues : function(val, valref,g, customobject, nam) {
 		var edtrul,i, nm, dft, len;
-		if(typeof(valref)=='string'){
-			for( i =0, len=g.p.colModel.length;i<len; i++){
-				if(g.p.colModel[i].name==valref) {
-					edtrul = g.p.colModel[i].editrules;
-					valref = i;
-					try { nm = g.p.colModel[i].formoptions.label; } catch (e) {}
-					break;
+		if(typeof(customobject) === "undefined") {
+			if(typeof(valref)=='string'){
+				for( i =0, len=g.p.colModel.length;i<len; i++){
+					if(g.p.colModel[i].name==valref) {
+						edtrul = g.p.colModel[i].editrules;
+						valref = i;
+						try { nm = g.p.colModel[i].formoptions.label; } catch (e) {}
+						break;
+					}
 				}
+			} else if(valref >=0) {
+				edtrul = g.p.colModel[valref].editrules;
 			}
-		} else if(valref >=0) {
-			edtrul = g.p.colModel[valref].editrules;
+		} else {
+			edtrul = customobject;
+			nm = nam===undefined ? "_" : nam;
 		}
 		if(edtrul) {
 			if(!nm) { nm = g.p.colNames[valref]; }
