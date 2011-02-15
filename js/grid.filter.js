@@ -88,7 +88,7 @@ $.fn.jqFilter = function( arg ) {
 		var i, len = p.columns.length, self = this;
 		if( !len ) { return; }
 		for(i=0; i < len; i++) {
-			if( p.columns[i].inputtype ) {
+			if( p.columns[i].stype ) {
 				// grid compatibility
 				p.columns[i].inputtype = p.columns[i].stype;
 			} else if(!p.columns[i].inputtype) {
