@@ -96,15 +96,15 @@ $.fn.jqFilter = function( arg ) {
 			} else if (!p.columns[i].searchtype) {
 				p.columns[i].searchtype = 'string';
 			}
-			if(!p.columns[i].hidden) {
+			if(p.columns[i].hidden === undefined) {
 				// jqGrid compatibility
 				p.columns[i].hidden = false;
 			}
 			if(!p.columns[i].label) {
 				p.columns[i].label = p.columns[i].name;
 			}
-			if(!p.columns[i].hasOwnProperty('options')) {
-				p.columns[i].options = {};
+			if(!p.columns[i].hasOwnProperty('searchoptions')) {
+				p.columns[i].searchoptions = {};
 			}
 			if(!p.columns[i].hasOwnProperty('searchrules')) {
 				p.columns[i].searchrules = {};
@@ -312,7 +312,7 @@ $.fn.jqFilter = function( arg ) {
 					}
 				}
 				if(!cm) {return false;}
-				var elm = $.jgrid.createEl(cm.inputtype,cm.options, "", true, p.ajaxSelectOptions);
+				var elm = $.jgrid.createEl(cm.inputtype,cm.searchoptions, "", true, p.ajaxSelectOptions);
 				$(elm).addClass("input-elm");
 				//that.createElement(rule, "");
 
@@ -342,12 +342,18 @@ $.fn.jqFilter = function( arg ) {
 			// populate drop down with user provided column definitions
 			var j=0;
 			for (i = 0; i < p.columns.length; i++) {
-				selected = "";
-				if(rule.field == p.columns[i].name) {
-					selected = "selected='selected'";
-					j=i;
+				// but show only serchable and serchhidden = true fields
+		        var searchable = (typeof p.columns[i].search === 'undefined') ?  true: p.columns[i].search ,
+		        hidden = (p.columns[i].hidden === true),
+				ignoreHiding = (p.columns[i].searchoptions.searchhidden === true);
+				if ((ignoreHiding && searchable) || (searchable && !hidden)) {
+					selected = "";
+					if(rule.field == p.columns[i].name) {
+						selected = "selected='selected'";
+						j=i;
+					}
+					str += "<option value='"+p.columns[i].name+"'" +selected+">"+p.columns[i].label+"</option>";
 				}
-				str += "<option value='"+p.columns[i].name+"'" +selected+">"+p.columns[i].name+"</option>";
 			}
 			ruleFieldSelect.append( str )
 
@@ -358,7 +364,7 @@ $.fn.jqFilter = function( arg ) {
 			cm = p.columns[j];
 			// create it here so it can be referentiated in the onchange event
 			//var RD = that.createElement(rule, rule.data);
-			var ruleDataInput = $.jgrid.createEl(cm.inputtype,cm.options, rule.data, true, p.ajaxSelectOptions);
+			var ruleDataInput = $.jgrid.createEl(cm.inputtype,cm.searchoptions, rule.data, true, p.ajaxSelectOptions);
 
 			// dropdown for: choosing operator
 			var ruleOperatorSelect = $("<select class='selectopts'></select>");
