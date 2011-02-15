@@ -46,13 +46,7 @@ $.fn.jqFilter = function( arg ) {
 		checkValues : null,
 		error: false,
 		errmsg : "",
-		errorno : {
-			"e1" : " is requiered field!",
-			"e2" : " is not a number field!",
-			"e3" : " is not a integer field!",
-			"e4" : " should be greater or equal than",
-			"e5" : " should be less than or equal to"
-		},
+		errorcheck : true,
 		showQuery : true,
 		ops : [
 			{"name": "eq", "description": "equal", "operator":"="},
@@ -491,7 +485,7 @@ $.fn.jqFilter = function( arg ) {
 			if(opC == 'bw' || opC == 'bn') val = val+"%";
 			if(opC == 'ew' || opC == 'en') val = "%"+val;
 			if(opC == 'cn' || opC == 'nc') val = "%"+val+"%";
-			checkData(rule.data, cm);
+			if(p.errorcheck) { checkData(rule.data, cm); }
 			if($.inArray(cm.searchtype, numtypes) !== -1 || opC=='nn' || opC=='nu') ret = rule.field + " " + opUF + " " + val + "";
 			else ret = rule.field + " " + opUF + " \"" + val + "\"";
 			return ret;
@@ -545,6 +539,16 @@ $.fn.jqFilter = function( arg ) {
 					return s;
 			}
 			function getStringForRule(rule) {
+				if(p.errorcheck) {
+					var i, cm;
+					for (i=0; i<p.columns.length; i++) {
+						if(p.columns[i].name == rule.field) {
+							cm = p.columns[i];
+							break;
+						}
+					}
+					if(cm) { checkData(rule.data, cm); }
+				}
 				return rule.op + "(item." + rule.field + ",'" + rule.data + "')";
 			}
 
