@@ -43,6 +43,7 @@ $.fn.jqFilter = function( arg ) {
 		filter: null,
 		columns: [],
 		onChange : null,
+		checkValues : null,
 		error: false,
 		errmsg : "",
 		errorno : {
@@ -122,11 +123,30 @@ $.fn.jqFilter = function( arg ) {
 
 		var onchange = function (  ){
 			// clear any error 
-			this.error = false;
-			this.errmsg="";
+			p.error = false;
+			p.errmsg="";
 			return $.isFunction(p.onChange) ? p.onChange.call( self, p ) : false;
 		},
-		/* Redrow the filter every time when new field is added/deleted
+		/*
+		 *Perform checking.
+		 *
+		*/
+		checkData = function(val, colModelItem) {
+			var ret = [true,""];
+			if($.isFunction(colModelItem.searchrules)) {
+				ret = colModelItem.searchrules(val, colModelItem);
+			} else if($.jgrid && $.jgrid.checkValues) {
+				try {
+					ret = $.jgrid.checkValues(val, -1, null, colModelItem.searchrules, colModelItem.label);
+				} catch (e) {}
+			}
+			if(ret && ret.length && ret[0] === false) {
+				p.error = !ret[0];
+				p.errmsg = ret[1];
+			}
+		}
+		/*
+		 * Redrow the filter every time when new field is added/deleted
 		 * and field is  changed
 		 */
 		reDraw = function() {
@@ -471,8 +491,7 @@ $.fn.jqFilter = function( arg ) {
 			if(opC == 'bw' || opC == 'bn') val = val+"%";
 			if(opC == 'ew' || opC == 'en') val = "%"+val;
 			if(opC == 'cn' || opC == 'nc') val = "%"+val+"%";
-			//this.checkValue(cm, rule.data);
-			//if($.inArray(cm.searchtype, numtypes))
+			checkData(rule.data, cm);
 			if($.inArray(cm.searchtype, numtypes) !== -1 || opC=='nn' || opC=='nu') ret = rule.field + " " + opUF + " " + val + "";
 			else ret = rule.field + " " + opUF + " \"" + val + "\"";
 			return ret;
@@ -482,7 +501,7 @@ $.fn.jqFilter = function( arg ) {
 			$("tr.error", this).hide();
 		};
 		this.showError = function() {
-			$("th.ui-state-error", this).html(this.errmsg);
+			$("th.ui-state-error", this).html(this.p.errmsg);
 			$("tr.error", this).show();
 		};
 		this.toUserFriendlyString = function() {
