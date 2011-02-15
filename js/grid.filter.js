@@ -54,30 +54,30 @@ $.fn.jqFilter = function( arg ) {
 		},
 		showQuery : true,
 		ops : [
-			{ "name": "eq", "description": "equal", "operator":"=" },
-			{ "name": "ne", "description": "not equal", "operator":"<>" },
-			{ "name": "bw", "description": "begins with", "operator":"LIKE" },
-			{ "name": "bn", "description": "does not begin with", "operator":"NOT LIKE" },
-			{ "name": "lt", "description": "less", "operator":"<" },
-			{ "name": "le", "description": "less or equal","operator":"<=" },
-			{ "name": "gt", "description": "greater", "operator":">" },
-			{ "name": "ge", "description": "greater or equal", "operator":">=" },
-			{ "name": "ew", "description": "ends with", "operator":"LIKE" },
-			{ "name": "en", "description": "does not end with", "operator":"NOT LIKE" },
-			{ "name": "cn", "description": "contains", "operator":"LIKE" },
-			{ "name": "nc", "description": "does not contain", "operator":"NOT LIKE" },
-			{ "name": "nu", "description": "is null", "operator":"IS NULL" },
-			{ "name": "nn", "description": "is not null", "operator":"IS NOT NULL" }
+			{"name": "eq", "description": "equal", "operator":"="},
+			{"name": "ne", "description": "not equal", "operator":"<>"},
+			{"name": "bw", "description": "begins with", "operator":"LIKE"},
+			{"name": "bn", "description": "does not begin with", "operator":"NOT LIKE"},
+			{"name": "lt", "description": "less", "operator":"<"},
+			{"name": "le", "description": "less or equal","operator":"<="},
+			{"name": "gt", "description": "greater", "operator":">"},
+			{"name": "ge", "description": "greater or equal", "operator":">="},
+			{"name": "ew", "description": "ends with", "operator":"LIKE"},
+			{"name": "en", "description": "does not end with", "operator":"NOT LIKE"},
+			{"name": "cn", "description": "contains", "operator":"LIKE"},
+			{"name": "nc", "description": "does not contain", "operator":"NOT LIKE"},
+			{"name": "nu", "description": "is null", "operator":"IS NULL"},
+			{"name": "nn", "description": "is not null", "operator":"IS NOT NULL"}
 		],
 		numopts : ['eq','ne', 'lt', 'le', 'gt', 'ge', 'nu', 'nn'],
 		stropts : ['eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn'],
 		groupOps : ["AND", "OR"]
 	}, arg || {});
 	return this.each( function() {
-		if (this.filter) { return; }
+		if (this.filter) {return;}
 		this.p = p;
 		// setup filter in case if they is not defined
-		if (p.filter == null || p.filter == undefined) {
+		if (p.filter === null || p.filter === undefined) {
 			p.filter = {
 				groupOp: p.groupOps[0],
 				rules: [],
@@ -86,16 +86,24 @@ $.fn.jqFilter = function( arg ) {
 		}
 		// set default values for the columns if they are not set
 		var i, len = p.columns.length, self = this;
-		if( !len ) { return; }
+		if( !len ) {return;}
 		for(i=0; i < len; i++) {
+
 			if( p.columns[i].stype ) {
 				// grid compatibility
 				p.columns[i].inputtype = p.columns[i].stype;
 			} else if(!p.columns[i].inputtype) {
 				p.columns[i].inputtype = 'text';
 			}
-			if (!p.columns[i].searchtype) {
+			if( p.columns[i].sorttype ) {
+				// grid compatibility
+				p.columns[i].searchtype = p.columns[i].sorttype;
+			} else if (!p.columns[i].searchtype) {
 				p.columns[i].searchtype = 'string';
+			}
+			if(!p.columns[i].hidden) {
+				// jqGrid compatibility
+				p.columns[i].hidden = false;
 			}
 			if(!p.columns[i].label) {
 				p.columns[i].label = p.columns[i].name;
@@ -103,13 +111,19 @@ $.fn.jqFilter = function( arg ) {
 			if(!p.columns[i].hasOwnProperty('options')) {
 				p.columns[i].options = {};
 			}
+			if(!p.columns[i].hasOwnProperty('searchrules')) {
+				p.columns[i].searchrules = {};
+			}
+
 		}
 		if(p.showQuery) {
 			$(this).append("<table class='queryresult ui-widget ui-widget-content' style='display:block;max-width:440px;border:0px none;'><tbody><tr><td class='query'></td></tr></tbody></table>")
 		}
 
-		// generates the html elements
 		var onchange = function (  ){
+			// clear any error 
+			this.error = false;
+			this.errmsg="";
 			return $.isFunction(p.onChange) ? p.onChange.call( self, p ) : false;
 		},
 		/* Redrow the filter every time when new field is added/deleted
@@ -288,9 +302,9 @@ $.fn.jqFilter = function( arg ) {
 				$(elm).addClass("input-elm");
 				//that.createElement(rule, "");
 
-				if( cm.opts ) { op = cm.opts; }
-				else if  (cm.searchtype=='string') { op = p.stropts;}
-				else { op = p.numopts; }
+				if( cm.opts ) {op = cm.opts;}
+				else if  (cm.searchtype=='string') {op = p.stropts;}
+				else {op = p.numopts;}
 				// operators
 				var s ="",so="";
 				for ( i = 0; i < p.ops.length; i++) {
@@ -353,9 +367,9 @@ $.fn.jqFilter = function( arg ) {
 			});
 
 			// populate drop down with all available operators
-			if( cm.opts ) { op = cm.opts; }
-			else if  (cm.searchtype=='string') { op = p.stropts;}
-			else { op = p.numopts; }
+			if( cm.opts ) {op = cm.opts;}
+			else if  (cm.searchtype=='string') {op = p.stropts;}
+			else {op = p.numopts;}
 			str="";
 			for ( i = 0; i < p.ops.length; i++) {
 				if($.inArray(p.ops[i].name, op) !== -1) {
@@ -407,15 +421,6 @@ $.fn.jqFilter = function( arg ) {
 			return tr;
 		},
 
-		hideError = function() {
-			$("th.ui-state-error", this).html("");
-			$("tr.error", this).hide();
-		},
-
-		showError = function() {
-			$("th.ui-state-error", this).html(this.errmsg);
-			$("tr.error", this).show();
-		},
 		getStringForGroup = function(group) {
 			var s = "(", index;
 			if (group.groups != undefined) {
@@ -425,7 +430,7 @@ $.fn.jqFilter = function( arg ) {
 
 					try {
 						s += getStringForGroup(group.groups[index]);
-					} catch (e) { alert(e); }
+					} catch (e) {alert(e);}
 				}
 			}
 
@@ -436,7 +441,7 @@ $.fn.jqFilter = function( arg ) {
 							s += " " + group.groupOp + " ";
 						s += getStringForRule(group.rules[index]);
 					}
-				} catch (e) { alert(e); }
+				} catch (e) {alert(e);}
 			}
 
 			s += ")";
@@ -447,7 +452,8 @@ $.fn.jqFilter = function( arg ) {
 				return s;
 		},
 		getStringForRule = function(rule) {
-			var opUF = "",opC="", i, cm, ret, val;
+			var opUF = "",opC="", i, cm, ret, val,
+			numtypes = ['int', 'integer', 'float', 'number', 'currency']; // jqGrid
 			for (i = 0; i < p.ops.length; i++) {
 				if (p.ops[i].name == rule.op) {
 					opUF = p.ops[i].operator;
@@ -466,14 +472,22 @@ $.fn.jqFilter = function( arg ) {
 			if(opC == 'ew' || opC == 'en') val = "%"+val;
 			if(opC == 'cn' || opC == 'nc') val = "%"+val+"%";
 			//this.checkValue(cm, rule.data);
-			if(cm.searchtype == "number" || cm.searchtype == "integer" || opC=='nn' || opC=='nu') ret = rule.field + " " + opUF + " " + val + "";
+			//if($.inArray(cm.searchtype, numtypes))
+			if($.inArray(cm.searchtype, numtypes) !== -1 || opC=='nn' || opC=='nu') ret = rule.field + " " + opUF + " " + val + "";
 			else ret = rule.field + " " + opUF + " \"" + val + "\"";
 			return ret;
 		};
-
+		this.hideError = function() {
+			$("th.ui-state-error", this).html("");
+			$("tr.error", this).hide();
+		};
+		this.showError = function() {
+			$("th.ui-state-error", this).html(this.errmsg);
+			$("tr.error", this).show();
+		};
 		this.toUserFriendlyString = function() {
 			return getStringForGroup(p.filter);
-		}
+		};
 		this.toString = function() {
 			// this will obtain a string that can be used to match an item.
 
@@ -518,18 +532,21 @@ $.fn.jqFilter = function( arg ) {
 			return getStringForGroup(self.p.filter);
 		}
 
-//=============================================
+		// Here we init the filter
 		reDraw();
 
 		if(p.showQuery) {
 			onchange();
 		}
+		// mark is as created so that it will not be created twice on this element
 		this.filter = true;
-//==============================================
 	});
 };
 $.extend($.fn.jqFilter,{
-	toUserString : function()
+	/*
+	 * Return SQL like string. Can be used directly
+	 */
+	toSQLString : function()
 	{
 		var s ="";
 		this.each(function(){
@@ -537,6 +554,9 @@ $.extend($.fn.jqFilter,{
 		});
 		return s;
 	},
+	/*
+	 * Return filter data as object.
+	 */
 	filterData : function()
 	{
 		var s;
@@ -545,6 +565,14 @@ $.extend($.fn.jqFilter,{
 		});
 		return s;
 
+	},
+	getParameter : function (param) {
+		if(param !== undefined) {
+			if (this.p.hasOwnProperty(param) )
+				return this.p[param];
+		}
+		return this.p;
 	}
+
 });
 })(jQuery);
