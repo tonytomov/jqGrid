@@ -377,6 +377,7 @@ $.extend($.jgrid,{
 			_trim=false;
 			return self;
 		};
+		/*
 		this.combine=function(f){
 			var q=$.jgrid.from(_data);
 			if(!_usecase){ q.ignoreCase(); }
@@ -385,6 +386,7 @@ $.extend($.jgrid,{
 			self._append(result);
 			return self;
 		};
+		*/
 		this.execute=function(){
 			var match=_query, results=[];
 			if(match === null){
@@ -417,6 +419,7 @@ $.extend($.jgrid,{
 			self.execute();
 			return _data.length>0;
 		};
+		/*
 		this.showQuery=function(cmd){
 			var queryString=_query;
 			if(queryString === null) { queryString="no query found"; }
@@ -425,6 +428,7 @@ $.extend($.jgrid,{
 			}
 			return queryString;
 		};
+		*/
 		this.andNot=function(f,v,x){
 			_negate=!_negate;
 			return self.and(f,v,x);
