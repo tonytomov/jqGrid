@@ -255,7 +255,7 @@ $.extend($.jgrid,{
 // Form Functions
 	createEl : function(eltype,options,vl,autowidth, ajaxso) {
 		var elem = "";
-		if(options.defaultValue) { delete options.defaultValue; }
+		//if(options.defaultValue) { delete options.defaultValue; }
 		function bindEv (el, opt) {
 			if($.isFunction(opt.dataInit)) {
 			// datepicker fix 
@@ -310,7 +310,7 @@ $.extend($.jgrid,{
 					}
 					elem.value = cbval[0];
 					$(elem).attr("offval",cbval[1]);
-					try {delete options.value;} catch (e){}
+					//try {delete options.value;} catch (e){}
 				}
 				options = bindEv(elem,options);
 				$(elem).attr(options).attr("role","checkbox");
@@ -330,12 +330,12 @@ $.extend($.jgrid,{
 						type : "GET",
 						dataType: "html",
 						success: function(data,status){
-							try {delete options.dataUrl; delete options.value;} catch (e){}
+							//try {delete options.dataUrl; delete options.value;} catch (e){}
 							var a;
 							if(typeof(options.buildSelect) != "undefined") {
 								var b = options.buildSelect(data);
 								a = $(b).html();
-								delete options.buildSelect;
+								//delete options.buildSelect;
 							} else {
 								a = $(data).html();
 							}
@@ -402,7 +402,7 @@ $.extend($.jgrid,{
 						}
 					}
 					options = bindEv(elem,options);
-					try {delete options.value;} catch (e){}
+					//try {delete options.value;} catch (e){}
 					$(elem).attr(options);
 				}
 			break;
