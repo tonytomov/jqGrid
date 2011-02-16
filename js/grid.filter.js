@@ -212,15 +212,29 @@ $.fn.jqFilter = function( arg ) {
 			th.append(inputAddSubgroup);
 
 			// button for adding a new rule
-			var inputAddRule = $("<input type='button' value='+' title='Add rule' class='add-rule'/>");
+			var inputAddRule = $("<input type='button' value='+' title='Add rule' class='add-rule'/>"), cm;
 			inputAddRule.bind('click',function() {
 				//if(!group) { group = {};}
 				if (group.rules == undefined)
 					group.rules = [];
+				for (i = 0; i < that.p.columns.length; i++) {
+				// but show only serchable and serchhidden = true fields
+					var searchable = (typeof that.p.columns[i].search === 'undefined') ?  true: that.p.columns[i].search ,
+					hidden = (that.p.columns[i].hidden === true),
+					ignoreHiding = (that.p.columns[i].searchoptions.searchhidden === true);
+					if ((ignoreHiding && searchable) || (searchable && !hidden)) {
+						cm = that.p.columns[i];
+						break;
+					}
+				}
+				var opr;
+				if( cm.opts ) {opr = cm.opts;}
+				else if  (cm.searchtype=='string') {opr = that.p.stropts;}
+				else {opr = that.p.numopts;}
 
 				group.rules.push({
-					field: that.p.columns[0].name,
-					op: that.p.ops[0].name,
+					field: cm.name,
+					op: opr[0],
 					data: ""
 				}); // adding a new rule
 
@@ -321,7 +335,7 @@ $.fn.jqFilter = function( arg ) {
 				//that.createElement(rule, "");
 
 				if( cm.opts ) {op = cm.opts;}
-				else if  (cm.searchtype=='string') {op = p.stropts;}
+				else if  (cm.searchtype=='string') {op = that.p.stropts;}
 				else {op = that.p.numopts;}
 				// operators
 				var s ="",so="";
@@ -498,7 +512,7 @@ $.fn.jqFilter = function( arg ) {
 			if(opC == 'ew' || opC == 'en') val = "%"+val;
 			if(opC == 'cn' || opC == 'nc') val = "%"+val+"%";
 			if(opC == 'in' || opC == 'ni') val = " ("+val+")";
-			if(p.errorcheck) { checkData(rule.data, cm); }
+			if(p.errorcheck) {checkData(rule.data, cm);}
 			if($.inArray(cm.searchtype, numtypes) !== -1 || opC=='nn' || opC=='nu') ret = rule.field + " " + opUF + " " + val + "";
 			else ret = rule.field + " " + opUF + " \"" + val + "\"";
 			return ret;
@@ -506,7 +520,7 @@ $.fn.jqFilter = function( arg ) {
 		this.resetFilter = function () {
 			this.p.filter = $.extend(true,{},this.p.initFilter);
 			this.reDraw();
-		}
+		},
 		this.hideError = function() {
 			$("th.ui-state-error", this).html("");
 			$("tr.error", this).hide();
@@ -564,7 +578,7 @@ $.fn.jqFilter = function( arg ) {
 							break;
 						}
 					}
-					if(cm) { checkData(rule.data, cm); }
+					if(cm) {checkData(rule.data, cm);}
 				}
 				return rule.op + "(item." + rule.field + ",'" + rule.data + "')";
 			}
@@ -612,6 +626,11 @@ $.extend($.fn.jqFilter,{
 				return this.p[param];
 		}
 		return this.p;
+	},
+	resetFilter: function() {
+		return this.each(function(){
+			this.resetFilter();
+		});
 	}
 
 });
