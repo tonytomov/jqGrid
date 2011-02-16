@@ -276,6 +276,14 @@ $.extend($.jgrid,{
 			}
 			return opt;
 		}
+		function setAttributes(elm, atr) {
+			var exclude = ['dataInit','dataEvents', 'value','dataUrl', 'buildSelect'];
+			$.each(atr, function(key, value){
+				if($.inArray(key, exclude) === -1) {
+					$(elem).attr(key,value);
+				}
+			});
+		}
 		switch (eltype)
 		{
 			case "textarea" :
@@ -287,7 +295,8 @@ $.extend($.jgrid,{
 				if(vl=='&nbsp;' || vl=='&#160;' || (vl.length==1 && vl.charCodeAt(0)==160)) {vl="";}
 				elem.value = vl;
 				options = bindEv(elem,options);
-				$(elem).attr(options).attr({"role":"textbox","multiline":"true"});
+				setAttributes(elem, options);
+				$(elem).attr({"role":"textbox","multiline":"true"});
 			break;
 			case "checkbox" : //what code for simple checkbox
 				elem = document.createElement("input");
@@ -313,7 +322,8 @@ $.extend($.jgrid,{
 					//try {delete options.value;} catch (e){}
 				}
 				options = bindEv(elem,options);
-				$(elem).attr(options).attr("role","checkbox");
+				setAttributes(elem, options);
+				$(elem).attr("role","checkbox");
 			break;
 			case "select" :
 				elem = document.createElement("select");
@@ -349,7 +359,8 @@ $.extend($.jgrid,{
 								} else {
 									ovm[0] = $.trim(vl);
 								}
-								$(elem).attr(options);
+								//$(elem).attr(options);
+								setAttributes(elem, options);
 								setTimeout(function(){
 									$("option",elem).each(function(i){
 										if(i===0) { this.selected = ""; }
@@ -403,7 +414,8 @@ $.extend($.jgrid,{
 					}
 					options = bindEv(elem,options);
 					//try {delete options.value;} catch (e){}
-					$(elem).attr(options);
+					//$(elem).attr(options);
+					setAttributes(elem, options);
 				}
 			break;
 			case "text" :
@@ -421,14 +433,15 @@ $.extend($.jgrid,{
 						if(!options.size) { $(elem).css({width:"98%"}); }
 					} else if (!options.size) { options.size = 20; }
 				}
-				$(elem).attr(options).attr("role",role);
+				setAttributes(elem, options);
+				$(elem).attr("role",role);
 			break;
 			case "image" :
 			case "file" :
 				elem = document.createElement("input");
 				elem.type = eltype;
 				options = bindEv(elem,options);
-				$(elem).attr(options);
+				setAttributes(elem, options);
 				break;
 			case "custom" :
 				elem = document.createElement("span");
