@@ -247,14 +247,14 @@ var xmlJsonClass = {
 			var os = o.toString();
 			if (objRegExp.test(os) || FuncTest.test(os) || os==="false" || os==="true") {
 				// int or float
-				json += (name && ":") + os;
+				json += (name && ":")  + "\"" +os + "\"";
 			} 
 			else {
 				json += (name && ":") + "\"" + o.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"";
 			}
 		}
 		else {
-			json += (name && ":") + o.toString();
+			json += (name && ":") +  "\"" + o.toString()+ "\"";
 		}
 		return json;
 	},
