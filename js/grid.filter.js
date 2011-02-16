@@ -62,10 +62,12 @@ $.fn.jqFilter = function( arg ) {
 			{"name": "cn", "description": "contains", "operator":"LIKE"},
 			{"name": "nc", "description": "does not contain", "operator":"NOT LIKE"},
 			{"name": "nu", "description": "is null", "operator":"IS NULL"},
-			{"name": "nn", "description": "is not null", "operator":"IS NOT NULL"}
+			{"name": "nn", "description": "is not null", "operator":"IS NOT NULL"},
+			{"name": "in", "description": "in", "operator":"IN"},
+			{"name": "ni", "description": "not in", "operator":"NOT IN"},
 		],
-		numopts : ['eq','ne', 'lt', 'le', 'gt', 'ge', 'nu', 'nn'],
-		stropts : ['eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn'],
+		numopts : ['eq','ne', 'lt', 'le', 'gt', 'ge', 'nu', 'nn', 'in', 'ni'],
+		stropts : ['eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn', 'in', 'ni'],
 		groupOps : ["AND", "OR"]
 	}, arg || {});
 	return this.each( function() {
@@ -79,6 +81,8 @@ $.fn.jqFilter = function( arg ) {
 				groups: []
 			}
 		}
+		this.p.initFilter = $.extend(true,{},this.p.filter);
+
 		// set default values for the columns if they are not set
 		var i, len = this.p.columns.length, cl;
 		if( !len ) {return;}
@@ -157,10 +161,10 @@ $.fn.jqFilter = function( arg ) {
 			var that = this,  i;
 
 			// this table will hold all the group (tables) and rules (rows)
-			var table = $("<table class='group ui-widget ui-widget-content' style='border:0px none'><tbody>")
+			var table = $("<table class='group ui-widget ui-widget-content' style='border:0px none;'><tbody>")
 			// create error message row
 			if(parentgroup == null) {
-				$(table).append("<tr class='error' style='display:none;'><th colspan='5' class='ui-state-error'></th><tr>");
+				$(table).append("<tr class='error' style='display:none;'><th colspan='5' class='ui-state-error' align='left'></th></tr>");
 			}
 
 			var tr = $("<tr></tr>");
@@ -188,7 +192,7 @@ $.fn.jqFilter = function( arg ) {
 			});
 
 			// button for adding a new subgroup
-			var inputAddSubgroup = $("<input type='button' value='+ {}' title='Add subgroup' class='add-group/>");
+			var inputAddSubgroup = $("<input type='button' value='+ {}' title='Add subgroup' class='add-group'/>");
 			inputAddSubgroup.bind('click',function() {
 				if (group.groups == undefined ) {
 					group.groups = [];
@@ -208,7 +212,7 @@ $.fn.jqFilter = function( arg ) {
 			th.append(inputAddSubgroup);
 
 			// button for adding a new rule
-			var inputAddRule = $("<input type='button' value='+' title='Add rule' class='add-rule/>");
+			var inputAddRule = $("<input type='button' value='+' title='Add rule' class='add-rule'/>");
 			inputAddRule.bind('click',function() {
 				//if(!group) { group = {};}
 				if (group.rules == undefined)
@@ -229,7 +233,7 @@ $.fn.jqFilter = function( arg ) {
 
 			// button for delete the group
 			if (parentgroup != null) { // ignore the first group
-				var inputDeleteGroup = $("<input type='button' value='-' title='Delete group' class='delete-group/>");
+				var inputDeleteGroup = $("<input type='button' value='-' title='Delete group' class='delete-group'/>");
 				th.append(inputDeleteGroup);
 				inputDeleteGroup.bind('click',function() {
 				// remove group from parent
@@ -332,7 +336,8 @@ $.fn.jqFilter = function( arg ) {
 				// data
 				$(".data",trpar).empty().append( elm );
 				$(".input-elm",trpar).bind('change',function() {
-					rule.data = this.value;
+					rule.data = $(this).val();
+					if($.isArray(rule.data)) rule.data = rule.data.join(",")
 					that.onchange(); // signals that the filter has changed
 				});
 				rule.data = $(elm).val();
@@ -411,6 +416,7 @@ $.fn.jqFilter = function( arg ) {
 			.addClass("input-elm")
 			.bind('change', function() {
 				rule.data = $(this).val();
+				if($.isArray(rule.data)) rule.data = rule.data.join(",");
 
 				that.onchange(); // signals that the filter has changed
 			});
@@ -491,11 +497,16 @@ $.fn.jqFilter = function( arg ) {
 			if(opC == 'bw' || opC == 'bn') val = val+"%";
 			if(opC == 'ew' || opC == 'en') val = "%"+val;
 			if(opC == 'cn' || opC == 'nc') val = "%"+val+"%";
+			if(opC == 'in' || opC == 'ni') val = " ("+val+")";
 			if(p.errorcheck) { checkData(rule.data, cm); }
 			if($.inArray(cm.searchtype, numtypes) !== -1 || opC=='nn' || opC=='nu') ret = rule.field + " " + opUF + " " + val + "";
 			else ret = rule.field + " " + opUF + " \"" + val + "\"";
 			return ret;
 		},
+		this.resetFilter = function () {
+			this.p.filter = $.extend(true,{},this.p.initFilter);
+			this.reDraw();
+		}
 		this.hideError = function() {
 			$("th.ui-state-error", this).html("");
 			$("tr.error", this).hide();
