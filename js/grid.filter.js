@@ -135,6 +135,9 @@ $.fn.jqFilter = function( arg ) {
 				p.error = !ret[0];
 				p.errmsg = ret[1];
 			}
+		},
+		randId = function() {
+			return Math.floor(Math.random()*10000)+"";
 		};
 
 		this.onchange = function (  ){
@@ -331,7 +334,8 @@ $.fn.jqFilter = function( arg ) {
 					}
 				}
 				if(!cm) {return false;}
-				var elm = $.jgrid.createEl(cm.inputtype,cm.searchoptions, "", true, that.p.ajaxSelectOptions);
+				cm.searchoptions.id = randId();
+				var elm = $.jgrid.createEl(cm.inputtype,cm.searchoptions, "", true, that.p.ajaxSelectOptions, true);
 				$(elm).addClass("input-elm");
 				//that.createElement(rule, "");
 
@@ -384,7 +388,8 @@ $.fn.jqFilter = function( arg ) {
 			cm = p.columns[j];
 			// create it here so it can be referentiated in the onchange event
 			//var RD = that.createElement(rule, rule.data);
-			var ruleDataInput = $.jgrid.createEl(cm.inputtype,cm.searchoptions, rule.data, true, that.p.ajaxSelectOptions);
+			cm.searchoptions.id = randId();
+			var ruleDataInput = $.jgrid.createEl(cm.inputtype,cm.searchoptions, rule.data, true, that.p.ajaxSelectOptions, true);
 
 			// dropdown for: choosing operator
 			var ruleOperatorSelect = $("<select class='selectopts'></select>");
