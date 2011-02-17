@@ -52,7 +52,7 @@ $.jgrid.extend({
 			IDs = {themodal:'editmod'+fid,modalhead:'edithd'+fid,modalcontent:'editcnt'+fid, scrollelm : fid},
 			defaultFilters  = $t.p.postData[p.sFilter],
 			fil = $("<div><div id='"+fid+"' class='searchFilter' style='overflow:auto'></div></div>").insertBefore("#gview_"+$t.p.id);
-				if(typeof(defaultFilters) == "string") {
+			if(typeof(defaultFilters) === "string") {
 				defaultFilters = $.jgrid.parse( defaultFilters );
 				}
 			if(p.recreateFilter === true) {
@@ -61,7 +61,7 @@ $.jgrid.extend({
 			function showFilter() {
 				if($.isFunction(p.beforeShowSearch)) {
 						showFrm = p.beforeShowSearch($("#"+fid));
-						if(typeof(showFrm) == "undefined") {
+					if(typeof(showFrm) === "undefined") {
 							showFrm = true;
 						}
 					}
@@ -72,7 +72,7 @@ $.jgrid.extend({
 							}
 						}
 			}
-			if ( $("#"+IDs.themodal).html() != null ) {
+			if ( $("#"+IDs.themodal).html() !== null ) {
 				showFilter();
 					} else {
 				var columns = $.extend([],$t.p.colModel),
@@ -137,7 +137,7 @@ $.jgrid.extend({
 				$("#"+fid+"_search").bind('click', function(){
 					var fl = $("#"+fid),
 					sdata={}, res ,
-					filters = 	fl.jqFilter('filterData');
+					filters = fl.jqFilter('filterData');
 					if(p.errorcheck) {
 						fl[0].hideError();
 						if(!p.showQuery) { fl.jqFilter('toSQLString'); }
@@ -152,10 +152,10 @@ $.jgrid.extend({
 							res = xmlJsonClass.toJson(filters, '', '');
 						} catch (e) {
 							try {
-								res = JSON.stringify(filters)
+								res = JSON.stringify(filters);
 							} catch (e2) { }
 						}
-						if(typeof(res)=="string") {
+						if(typeof(res)==="string") {
 							sdata[p.sFilter] = res;
                         }
 					} else {
@@ -257,13 +257,13 @@ $.jgrid.extend({
 			copydata = null,
 			showFrm = true,
 			maxCols = 1, maxRows=0,	postdata, extpost, newData, diff;
-			if (rowid=="new") {
+			if (rowid === "new") {
 				rowid = "_empty";
 				p.caption=rp_ge.addCaption;
 			} else {
 				p.caption=rp_ge.editCaption;
 			}
-			if(p.recreateForm===true && $("#"+IDs.themodal).html() != null) {
+			if(p.recreateForm===true && $("#"+IDs.themodal).html() !== null) {
 				$("#"+IDs.themodal).remove();
 			}
 			var closeovrl = true;
@@ -276,12 +276,12 @@ $.jgrid.extend({
 					if (celm.length) {
 						var  elem = celm[0], nm = $(elem).attr('name');
 						$.each($t.p.colModel, function(i,n){
-							if(this.name == nm && this.editoptions && $.isFunction(this.editoptions.custom_value)) {
+							if(this.name === nm && this.editoptions && $.isFunction(this.editoptions.custom_value)) {
 								try {
 									postdata[nm] = this.editoptions.custom_value($("#"+$.jgrid.jqID(nm),"#"+frmtb),'get');
 									if (postdata[nm] === undefined) { throw "e1"; }
 								} catch (e) {
-									if (e=="e1") { $.jgrid.info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.novalue,jQuery.jgrid.edit.bClose);}
+									if (e==="e1") { $.jgrid.info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.novalue,jQuery.jgrid.edit.bClose);}
 									else { $.jgrid.info_dialog(jQuery.jgrid.errors.errcap,e.message,jQuery.jgrid.edit.bClose); }
 								}
 								return true;
@@ -328,8 +328,8 @@ $.jgrid.extend({
 			}
 			function createData(rowid,obj,tb,maxcols){
 				var nm, hc,trdata, cnt=0,tmp, dc,elc, retpos=[], ind=false,
-				tdtmpl = "<td class='CaptionTD'>&#160;</td><td class='DataTD'>&#160;</td>", tmpl=""; //*2
-				for (var i =1;i<=maxcols;i++) {
+				tdtmpl = "<td class='CaptionTD'>&#160;</td><td class='DataTD'>&#160;</td>", tmpl="", i; //*2
+				for (i =1; i<=maxcols;i++) {
 					tmpl += tdtmpl;
 				}
 				if(rowid != '_empty') {
@@ -526,12 +526,12 @@ $.jgrid.extend({
 				if(cnt>0) { $("#id_g","#"+frmtb).val(rowid); }
 			}
 			function postIt() {
-				var copydata, ret=[true,"",""], onCS = {}, opers = $t.p.prmNames, idname, oper;
+				var copydata, ret=[true,"",""], onCS = {}, opers = $t.p.prmNames, idname, oper, key;
 				if($.isFunction(rp_ge.beforeCheckValues)) {
 					var retvals = rp_ge.beforeCheckValues(postdata,$("#"+frmgr),postdata[$t.p.id+"_id"] == "_empty" ? opers.addoper : opers.editoper);
 					if(retvals && typeof(retvals) === 'object') { postdata = retvals; }
 				}
-				for( var key in postdata ){
+				for( key in postdata ){
 					if(postdata.hasOwnProperty(key)) {
 						ret = $.jgrid.checkValues(postdata[key],key,$t);
 						if(ret[0] === false) { break; }
@@ -1715,7 +1715,7 @@ $.jgrid.extend({
 							$t.p.search = false;
 							try {
 								var gID = $t.p.id;
-								$("#fbox_"+gID).searchFilter().reset({"reload":false});
+								$("#fbox_"+gID).jqFilter('resetFilter');
 							    if($.isFunction($t.clearToolbar)) { $t.clearToolbar(false); }
 							} catch (e) {}
 							switch (o.refreshstate) {
