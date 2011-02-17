@@ -38,8 +38,8 @@ $.jgrid.extend({
 			errorcheck : true,
 			// translation
 			// if you want to change or remove the order change it in sopt
-			// ['bw','eq','ne','lt','le','gt','ge','ew','cn']
-			sopt: [],
+			// ['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc'],
+			sopt: null,
 			stringResult: undefined,
 			onClose : null,
 			overlay : 10
@@ -75,6 +75,9 @@ $.jgrid.extend({
 			if ( $("#"+IDs.themodal).html() !== null ) {
 				showFilter();
 					} else {
+				if($.isFunction(p.onInitializeSearch) ) {
+					p.onInitializeSearch($("#"+fid));
+				}
 				var columns = $.extend([],$t.p.colModel),
 				bS  ="<a href='javascript:void(0)' id='"+fid+"_search' class='fm-button ui-state-default ui-corner-all fm-button-icon-left'><span class='ui-icon ui-icon-search'></span>"+p.Find+"</a>",
 				bC  ="<a href='javascript:void(0)' id='"+fid+"_reset' class='fm-button ui-state-default ui-corner-all fm-button-icon-left'><span class='ui-icon ui-icon-arrowreturnthick-1-w'></span>"+p.Reset+"</a>",
@@ -84,9 +87,6 @@ $.jgrid.extend({
 						}
 				var bt = "<table border='0' cellspacing='0' cellpadding='0' class='EditTable ui-widget content' style='border:0px none;margin-top:5px' id='"+fid+"_2'><tbody><tr><td colspan='2'><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='EditButton' style='text-align:left'>"+bC+"</td><td class='EditButton'>"+bQ+bS+"</td></tr></tbody></table>",
 				colnm, found=false;
-				if($.isFunction(p.onInitializeSearch) ) {
-					p.onInitializeSearch($("#"+fid));
-					}
 
 				$.each(columns, function(i,n){
 					if(!n.label) {
@@ -112,7 +112,8 @@ $.jgrid.extend({
 					filter: p.loadDefaults ? defaultFilters : null,
 					showQuery: p.showQuery,
 					errorcheck : p.errorcheck,
-					ops: p.sopt,
+					sopt: p.sopt,
+					_gridsopt : $.jgrid.search.odata,
 					onChange : function( sp ) {
 						if(this.p.showQuery) {
 							$('.query',this).html(this.toUserFriendlyString());

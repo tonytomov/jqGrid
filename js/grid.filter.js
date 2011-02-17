@@ -48,26 +48,28 @@ $.fn.jqFilter = function( arg ) {
 		errmsg : "",
 		errorcheck : true,
 		showQuery : true,
+		sopt : null,
 		ops : [
 			{"name": "eq", "description": "equal", "operator":"="},
 			{"name": "ne", "description": "not equal", "operator":"<>"},
-			{"name": "bw", "description": "begins with", "operator":"LIKE"},
-			{"name": "bn", "description": "does not begin with", "operator":"NOT LIKE"},
 			{"name": "lt", "description": "less", "operator":"<"},
 			{"name": "le", "description": "less or equal","operator":"<="},
 			{"name": "gt", "description": "greater", "operator":">"},
 			{"name": "ge", "description": "greater or equal", "operator":">="},
+			{"name": "bw", "description": "begins with", "operator":"LIKE"},
+			{"name": "bn", "description": "does not begin with", "operator":"NOT LIKE"},
+			{"name": "in", "description": "in", "operator":"IN"},
+			{"name": "ni", "description": "not in", "operator":"NOT IN"},
 			{"name": "ew", "description": "ends with", "operator":"LIKE"},
 			{"name": "en", "description": "does not end with", "operator":"NOT LIKE"},
 			{"name": "cn", "description": "contains", "operator":"LIKE"},
 			{"name": "nc", "description": "does not contain", "operator":"NOT LIKE"},
 			{"name": "nu", "description": "is null", "operator":"IS NULL"},
-			{"name": "nn", "description": "is not null", "operator":"IS NOT NULL"},
-			{"name": "in", "description": "in", "operator":"IN"},
-			{"name": "ni", "description": "not in", "operator":"NOT IN"}
+			{"name": "nn", "description": "is not null", "operator":"IS NOT NULL"}
 		],
 		numopts : ['eq','ne', 'lt', 'le', 'gt', 'ge', 'nu', 'nn', 'in', 'ni'],
 		stropts : ['eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn', 'in', 'ni'],
+		_gridsopt : [], // grid translated strings, do not tuch
 		groupOps : ["AND", "OR"]
 	}, arg || {});
 	return this.each( function() {
@@ -81,10 +83,18 @@ $.fn.jqFilter = function( arg ) {
 				groups: []
 			};
 		}
+		var i, len = this.p.columns.length, cl;
+
+		// translating the options
+		if(this.p._gridsopt.length) {
+			// ['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc']
+			for(i=0;i<this.p._gridsopt.length;i++) {
+				this.p.ops[i].description = this.p._gridsopt[i];
+			}
+		}
 		this.p.initFilter = $.extend(true,{},this.p.filter);
 
 		// set default values for the columns if they are not set
-		var i, len = this.p.columns.length, cl;
 		if( !len ) {return;}
 		for(i=0; i < len; i++) {
 			cl = this.p.columns[i];
@@ -233,6 +243,7 @@ $.fn.jqFilter = function( arg ) {
 				}
 				var opr;
 				if( cm.opts ) {opr = cm.opts;}
+				else if(that.p.sopt) { opr= that.p.sopt; }
 				else if  (cm.searchtype === 'string') {opr = that.p.stropts;}
 				else {opr = that.p.numopts;}
 
@@ -340,6 +351,7 @@ $.fn.jqFilter = function( arg ) {
 				//that.createElement(rule, "");
 
 				if( cm.opts ) {op = cm.opts;}
+				else if(that.p.sopt) { op= that.p.sopt; }
 				else if  (cm.searchtype === 'string') {op = that.p.stropts;}
 				else {op = that.p.numopts;}
 				// operators
@@ -413,6 +425,7 @@ $.fn.jqFilter = function( arg ) {
 
 			// populate drop down with all available operators
 			if( cm.opts ) {op = cm.opts;}
+			else if(that.p.sopt) { op= that.p.sopt; }
 			else if  (cm.searchtype === 'string') {op = p.stropts;}
 			else {op = that.p.numopts;}
 			str="";
