@@ -29,7 +29,7 @@
 ;(function ($) {
 
 $.fn.jqFilter = function( arg ) {
-	if (typeof arg == 'string') {
+	if (typeof arg === 'string') {
 		
 		var fn = $.fn.jqFilter[arg];
 		if (!fn) {
@@ -137,7 +137,7 @@ $.fn.jqFilter = function( arg ) {
 			}
 		},
 		randId = function() {
-			return Math.floor(Math.random()*10000)+"";
+			return Math.floor(Math.random()*10000).toString();
 		};
 
 		this.onchange = function (  ){
@@ -166,7 +166,7 @@ $.fn.jqFilter = function( arg ) {
 			// this table will hold all the group (tables) and rules (rows)
 			var table = $("<table class='group ui-widget ui-widget-content' style='border:0px none;'><tbody>");
 			// create error message row
-			if(parentgroup == null) {
+			if(parentgroup === null) {
 				$(table).append("<tr class='error' style='display:none;'><th colspan='5' class='ui-state-error' align='left'></th></tr>");
 			}
 
@@ -183,7 +183,7 @@ $.fn.jqFilter = function( arg ) {
 			// populate dropdown with all posible group operators: or, and
 			var str= "", selected;
 			for (i = 0; i < p.groupOps.length; i++) {
-				selected =  group.groupOp == p.groupOps[i] ? "selected='selected'" :"";
+				selected =  group.groupOp === p.groupOps[i] ? "selected='selected'" :"";
 				str += "<option value='"+p.groupOps[i]+"'" + selected+">"+p.groupOps[i]+"</option>";
 			}
 
@@ -197,7 +197,7 @@ $.fn.jqFilter = function( arg ) {
 			// button for adding a new subgroup
 			var inputAddSubgroup = $("<input type='button' value='+ {}' title='Add subgroup' class='add-group'/>");
 			inputAddSubgroup.bind('click',function() {
-				if (group.groups == undefined ) {
+				if (group.groups === undefined ) {
 					group.groups = [];
 				}
 
@@ -218,7 +218,7 @@ $.fn.jqFilter = function( arg ) {
 			var inputAddRule = $("<input type='button' value='+' title='Add rule' class='add-rule'/>"), cm;
 			inputAddRule.bind('click',function() {
 				//if(!group) { group = {};}
-				if (group.rules == undefined) {
+				if (group.rules === undefined) {
 					group.rules = [];
 				}
 				for (i = 0; i < that.p.columns.length; i++) {
@@ -233,7 +233,7 @@ $.fn.jqFilter = function( arg ) {
 				}
 				var opr;
 				if( cm.opts ) {opr = cm.opts;}
-				else if  (cm.searchtype=='string') {opr = that.p.stropts;}
+				else if  (cm.searchtype === 'string') {opr = that.p.stropts;}
 				else {opr = that.p.numopts;}
 
 				group.rules.push({
@@ -250,13 +250,13 @@ $.fn.jqFilter = function( arg ) {
 			th.append(inputAddRule);
 
 			// button for delete the group
-			if (parentgroup != null) { // ignore the first group
+			if (parentgroup !== null) { // ignore the first group
 				var inputDeleteGroup = $("<input type='button' value='-' title='Delete group' class='delete-group'/>");
 				th.append(inputDeleteGroup);
 				inputDeleteGroup.bind('click',function() {
 				// remove group from parent
 					for (i = 0; i < parentgroup.groups.length; i++) {
-						if (parentgroup.groups[i] == group) {
+						if (parentgroup.groups[i] === group) {
 							parentgroup.groups.splice(i, 1);
 							break;
 						}
@@ -270,7 +270,7 @@ $.fn.jqFilter = function( arg ) {
 			}
 
 			// append subgroup rows
-			if (group.groups != undefined) {
+			if (group.groups !== undefined) {
 				for (i = 0; i < group.groups.length; i++) {
 					var trHolderForSubgroup = $("<tr></tr>");
 					table.append(trHolderForSubgroup);
@@ -283,12 +283,12 @@ $.fn.jqFilter = function( arg ) {
 					trHolderForSubgroup.append(tdMainHolderForSubgroup);
 				}
 			}
-			if(group.groupOp == undefined) {
+			if(group.groupOp === undefined) {
 				group.groupOp = that.p.groupOps[0];
 			}
 
 			// append rules rows
-			if (group.rules != undefined) {
+			if (group.rules !== undefined) {
 				for (i = 0; i < group.rules.length; i++) {
 					table.append(
                        this.createTableRowForRule(group.rules[i], group)
@@ -328,7 +328,7 @@ $.fn.jqFilter = function( arg ) {
 
 				trpar = $(this).parents("tr:first");
 				for (i=0;i<that.p.columns.length;i++) {
-					if(that.p.columns[i].name ==  rule.field) {
+					if(that.p.columns[i].name ===  rule.field) {
 						cm = that.p.columns[i];
 						break;
 					}
@@ -340,13 +340,13 @@ $.fn.jqFilter = function( arg ) {
 				//that.createElement(rule, "");
 
 				if( cm.opts ) {op = cm.opts;}
-				else if  (cm.searchtype=='string') {op = that.p.stropts;}
+				else if  (cm.searchtype === 'string') {op = that.p.stropts;}
 				else {op = that.p.numopts;}
 				// operators
 				var s ="",so="";
 				for ( i = 0; i < that.p.ops.length; i++) {
 					if($.inArray(that.p.ops[i].name, op) !== -1) {
-						so = rule.op == that.p.ops[i].name ? "selected=selected" : "";
+						so = rule.op === that.p.ops[i].name ? "selected=selected" : "";
 						s += "<option value='"+that.p.ops[i].name+"' "+ so+">"+that.p.ops[i].description+"</option>";
 					}
 				}
@@ -372,7 +372,7 @@ $.fn.jqFilter = function( arg ) {
 				ignoreHiding = (that.p.columns[i].searchoptions.searchhidden === true);
 				if ((ignoreHiding && searchable) || (searchable && !hidden)) {
 					selected = "";
-					if(rule.field == that.p.columns[i].name) {
+					if(rule.field === that.p.columns[i].name) {
 						selected = "selected='selected'";
 						j=i;
 					}
@@ -398,7 +398,7 @@ $.fn.jqFilter = function( arg ) {
 				rule.op = $(ruleOperatorSelect).val();
 				trpar = $(this).parents("tr:first");
 				var rd = $(".input-elm",trpar)[0];
-				if (rule.op == "nu" || rule.op == "nn") { // disable for operator "is null" and "is not null"
+				if (rule.op === "nu" || rule.op === "nn") { // disable for operator "is null" and "is not null"
 					rule.data = "";
 					rd.value = "";
 					rd.setAttribute("readonly", "true");
@@ -413,12 +413,12 @@ $.fn.jqFilter = function( arg ) {
 
 			// populate drop down with all available operators
 			if( cm.opts ) {op = cm.opts;}
-			else if  (cm.searchtype=='string') {op = p.stropts;}
+			else if  (cm.searchtype === 'string') {op = p.stropts;}
 			else {op = that.p.numopts;}
 			str="";
 			for ( i = 0; i < that.p.ops.length; i++) {
 				if($.inArray(that.p.ops[i].name, op) !== -1) {
-					selected = rule.op == that.p.ops[i].name ? "selected='selected'" : "";
+					selected = rule.op === that.p.ops[i].name ? "selected='selected'" : "";
 					str += "<option value='"+that.p.ops[i].name+"'>"+that.p.ops[i].description+"</option>";
 				}
 			}
@@ -452,7 +452,7 @@ $.fn.jqFilter = function( arg ) {
 			ruleDeleteInput.bind('click',function() {
 				// remove rule from group
 				for (i = 0; i < group.rules.length; i++) {
-					if (group.rules[i] == rule) {
+					if (group.rules[i] === rule) {
 						group.rules.splice(i, 1);
 						break;
 					}
@@ -469,18 +469,18 @@ $.fn.jqFilter = function( arg ) {
 
 		this.getStringForGroup = function(group) {
 			var s = "(", index;
-			if (group.groups != undefined) {
+			if (group.groups !== undefined) {
 				for (index = 0; index < group.groups.length; index++) {
 					if (s.length > 1) {
 						s += " " + group.groupOp + " ";
 					}
 					try {
 						s += this.getStringForGroup(group.groups[index]);
-					} catch (e) {alert(e);}
+					} catch (eg) {alert(eg);}
 				}
 			}
 
-			if (group.rules != undefined) {
+			if (group.rules !== undefined) {
 				try{
 					for (index = 0; index < group.rules.length; index++) {
 						if (s.length > 1) {
@@ -493,7 +493,7 @@ $.fn.jqFilter = function( arg ) {
 
 			s += ")";
 
-			if (s == "()") {
+			if (s === "()") {
 				return ""; // ignore groups that don't have rules
 			} else {
 				return s;
@@ -503,25 +503,25 @@ $.fn.jqFilter = function( arg ) {
 			var opUF = "",opC="", i, cm, ret, val,
 			numtypes = ['int', 'integer', 'float', 'number', 'currency']; // jqGrid
 			for (i = 0; i < this.p.ops.length; i++) {
-				if (this.p.ops[i].name == rule.op) {
+				if (this.p.ops[i].name === rule.op) {
 					opUF = this.p.ops[i].operator;
 					opC = this.p.ops[i].name;
 					break;
 				}
 			}
 			for (i=0; i<this.p.columns.length; i++) {
-				if(this.p.columns[i].name == rule.field) {
+				if(this.p.columns[i].name === rule.field) {
 					cm = this.p.columns[i];
 					break;
 				}
 			}
 			val = rule.data;
-			if(opC == 'bw' || opC == 'bn') { val = val+"%"; }
-			if(opC == 'ew' || opC == 'en') { val = "%"+val; }
-			if(opC == 'cn' || opC == 'nc') { val = "%"+val+"%"; }
-			if(opC == 'in' || opC == 'ni') { val = " ("+val+")"; }
+			if(opC === 'bw' || opC === 'bn') { val = val+"%"; }
+			if(opC === 'ew' || opC === 'en') { val = "%"+val; }
+			if(opC === 'cn' || opC === 'nc') { val = "%"+val+"%"; }
+			if(opC === 'in' || opC === 'ni') { val = " ("+val+")"; }
 			if(p.errorcheck) { checkData(rule.data, cm); }
-			if($.inArray(cm.searchtype, numtypes) !== -1 || opC=='nn' || opC=='nu') { ret = rule.field + " " + opUF + " " + val; }
+			if($.inArray(cm.searchtype, numtypes) !== -1 || opC === 'nn' || opC === 'nu') { ret = rule.field + " " + opUF + " " + val; }
 			else { ret = rule.field + " " + opUF + " \"" + val + "\""; }
 			return ret;
 		};
@@ -542,14 +542,28 @@ $.fn.jqFilter = function( arg ) {
 		};
 		this.toString = function() {
 			// this will obtain a string that can be used to match an item.
+			var that = this;
+			function getStringRule(rule) {
+				if(that.p.errorcheck) {
+					var i, cm;
+					for (i=0; i<that.p.columns.length; i++) {
+						if(that.p.columns[i].name === rule.field) {
+							cm = that.p.columns[i];
+							break;
+						}
+					}
+					if(cm) {checkData(rule.data, cm);}
+				}
+				return rule.op + "(item." + rule.field + ",'" + rule.data + "')";
+			}
 
 			function getStringForGroup(group) {
 				var s = "(", index;
 
-				if (group.groups != undefined) {
+				if (group.groups !== undefined) {
 					for (index = 0; index < group.groups.length; index++) {
 						if (s.length > 1) {
-							if (group.groupOp == "OR") {
+							if (group.groupOp === "OR") {
 								s += " || ";
 							}
 							else {
@@ -560,40 +574,27 @@ $.fn.jqFilter = function( arg ) {
 					}
 				}
 
-				if (group.rules != undefined) {
+				if (group.rules !== undefined) {
 					for (index = 0; index < group.rules.length; index++) {
 						if (s.length > 1) {
-							if (group.groupOp == "OR") {
+							if (group.groupOp === "OR") {
 								s += " || ";
 							}
 							else  {
 								s += " && ";
 							}
 						}
-						s += getStringForRule(group.rules[index]);
+						s += getStringRule(group.rules[index]);
 					}
 				}
 
 				s += ")";
 
-				if (s == "()") {
+				if (s === "()") {
 					return ""; // ignore groups that don't have rules
 				} else {
 					return s;
 				}
-			}
-			function getStringForRule(rule) {
-				if(p.errorcheck) {
-					var i, cm;
-					for (i=0; i<p.columns.length; i++) {
-						if(p.columns[i].name == rule.field) {
-							cm = p.columns[i];
-							break;
-						}
-					}
-					if(cm) {checkData(rule.data, cm);}
-				}
-				return rule.op + "(item." + rule.field + ",'" + rule.data + "')";
 			}
 
 			return getStringForGroup(this.p.filter);
