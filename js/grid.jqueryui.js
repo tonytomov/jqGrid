@@ -167,8 +167,8 @@ $.jgrid.extend({
                     "close": function() {
                         opts.cleanup(true);
                     },
-					"modal" : false,
-                    "resizable": false,
+					"modal" : opts.modal ? opts.modal : false,
+					"resizable": opts.resizable ? opts.resizable : true,
                     "width": opts.width+20
                 };
             },
