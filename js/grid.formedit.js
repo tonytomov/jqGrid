@@ -105,7 +105,7 @@ $.jgrid.extend({
 				});
 				// old behaviour
 				if(!defaultFilters && colnm) {
-					defaultFilters = {"groupOp": "and",rules:[{"field":colnm,"op":"eq","data":""}]};
+					defaultFilters = {"groupOp": "AND",rules:[{"field":colnm,"op":"eq","data":""}]};
 						}
 				$("#"+fid).jqFilter({
 					columns : columns,

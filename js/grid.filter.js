@@ -193,8 +193,8 @@ $.fn.jqFilter = function( arg ) {
 			// populate dropdown with all posible group operators: or, and
 			var str= "", selected;
 			for (i = 0; i < p.groupOps.length; i++) {
-				selected =  group.groupOp === p.groupOps[i] ? "selected='selected'" :"";
-				str += "<option value='"+p.groupOps[i]+"'" + selected+">"+p.groupOps[i]+"</option>";
+				selected =  group.groupOp === that.p.groupOps[i] ? " selected='selected'" :"";
+				str += "<option value='"+that.p.groupOps[i]+"'" + selected+">"+that.p.groupOps[i]+"</option>";
 			}
 
 			groupOpSelect
@@ -358,8 +358,8 @@ $.fn.jqFilter = function( arg ) {
 				var s ="",so="";
 				for ( i = 0; i < that.p.ops.length; i++) {
 					if($.inArray(that.p.ops[i].name, op) !== -1) {
-						so = rule.op === that.p.ops[i].name ? "selected=selected" : "";
-						s += "<option value='"+that.p.ops[i].name+"' "+ so+">"+that.p.ops[i].description+"</option>";
+						so = rule.op === that.p.ops[i].name ? " selected=selected" : "";
+						s += "<option value='"+that.p.ops[i].name+"'"+ so+">"+that.p.ops[i].description+"</option>";
 					}
 				}
 				$(".selectopts",trpar).empty().append( s );
@@ -385,7 +385,7 @@ $.fn.jqFilter = function( arg ) {
 				if ((ignoreHiding && searchable) || (searchable && !hidden)) {
 					selected = "";
 					if(rule.field === that.p.columns[i].name) {
-						selected = "selected='selected'";
+						selected = " selected='selected'";
 						j=i;
 					}
 					str += "<option value='"+that.p.columns[i].name+"'" +selected+">"+that.p.columns[i].label+"</option>";
@@ -431,8 +431,8 @@ $.fn.jqFilter = function( arg ) {
 			str="";
 			for ( i = 0; i < that.p.ops.length; i++) {
 				if($.inArray(that.p.ops[i].name, op) !== -1) {
-					selected = rule.op === that.p.ops[i].name ? "selected='selected'" : "";
-					str += "<option value='"+that.p.ops[i].name+"'>"+that.p.ops[i].description+"</option>";
+					selected = rule.op === that.p.ops[i].name ? " selected='selected'" : "";
+					str += "<option value='"+that.p.ops[i].name+"'"+selected+">"+that.p.ops[i].description+"</option>";
 				}
 			}
 			ruleOperatorSelect.append( str );
