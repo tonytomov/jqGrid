@@ -147,10 +147,11 @@ $.jgrid.extend({
 							return false;
 							}
 						}
-					if(p.stringResult) {
+
+					if(p.stringResult && $t.p.datatype !== "local") {
 						try {
 							// xmlJsonClass or JSON.stringify
-							res = xmlJsonClass.toJson(filters, '', '');
+							res = xmlJsonClass.toJson(filters, '', '', false);
 						} catch (e) {
 							try {
 								res = JSON.stringify(filters);
@@ -158,14 +159,17 @@ $.jgrid.extend({
 						}
 						if(typeof(res)==="string") {
 							sdata[p.sFilter] = res;
+							$.each([p.sField,p.sValue, p.sOper], function() { sdata[this] = "";});
                         }
 					} else {
 						if(p.multipleSearch) {
 							sdata[p.sFilter] = filters;
+							$.each([p.sField,p.sValue, p.sOper], function() { sdata[this] = "";});
 						} else {
 							sdata[p.sField] = filters.rules[0].field;
 							sdata[p.sValue] = filters.rules[0].data;
 							sdata[p.sOper] = filters.rules[0].op;
+							sdata[p.sFilter] = "";
 							}
 						}
 					$t.p.search = true;
