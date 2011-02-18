@@ -344,7 +344,7 @@ $.fn.jqFilter = function( arg ) {
 						break;
 					}
 				}
-				if(!cm) {return false;}
+				if(!cm) { return;}
 				cm.searchoptions.id = randId();
 				var elm = $.jgrid.createEl(cm.inputtype,cm.searchoptions, "", true, that.p.ajaxSelectOptions, true);
 				$(elm).addClass("input-elm");
