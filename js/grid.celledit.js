@@ -72,7 +72,7 @@ $.jgrid.extend({
 					if(tmp2 !== undefined ) {tmp = tmp2;}
 				}
 				var opt = $.extend({}, $t.p.colModel[iCol].editoptions || {} ,{id:iRow+"_"+nm,name:nm});
-				var elc = createEl($t.p.colModel[iCol].edittype,opt,tmp,true,$.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions || {}));
+				var elc = $.jgrid.createEl($t.p.colModel[iCol].edittype,opt,tmp,true,$.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions || {}));
 				if ($.isFunction($t.p.beforeEditCell)) {
 					$t.p.beforeEditCell.call($t, $t.rows[iRow].id,nm,tmp,iRow,iCol);
 				}
@@ -164,9 +164,9 @@ $.jgrid.extend({
 								if (v===undefined) { throw "e2";} else { v2=v; }
 							} else { throw "e1"; }
 						} catch (e) {
-							if (e=="e1") { info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.nodefined,jQuery.jgrid.edit.bClose); }
-							if (e=="e2") { info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.novalue,jQuery.jgrid.edit.bClose); }
-							else {info_dialog(jQuery.jgrid.errors.errcap,e.message,jQuery.jgrid.edit.bClose); }
+							if (e=="e1") { $.jgrid.info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.nodefined,jQuery.jgrid.edit.bClose); }
+							if (e=="e2") { $.jgrid.info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.novalue,jQuery.jgrid.edit.bClose); }
+							else {$.jgrid.info_dialog(jQuery.jgrid.errors.errcap,e.message,jQuery.jgrid.edit.bClose); }
 						}
 						break;
 				}
@@ -176,7 +176,7 @@ $.jgrid.extend({
 						var vv = $t.p.beforeSaveCell.call($t, $t.rows[iRow].id,nm, v, iRow,iCol);
 						if (vv) {v = vv; v2=vv;}
 					}
-					var cv = checkValues(v,iCol,$t);
+					var cv = $.jgrid.checkValues(v,iCol,$t);
 					if(cv[0] === true) {
 						var addpost = {};
 						if ($.isFunction($t.p.beforeSubmitCell)) {
@@ -218,7 +218,7 @@ $.jgrid.extend({
 													}
 													$t.p.savedRow.splice(0,1);
 												} else {
-													info_dialog($.jgrid.errors.errcap,ret[1],$.jgrid.edit.bClose);
+													$.jgrid.info_dialog($.jgrid.errors.errcap,ret[1],$.jgrid.edit.bClose);
 													$($t).jqGrid("restoreCell",iRow,iCol);
 												}
 											} else {
@@ -240,14 +240,14 @@ $.jgrid.extend({
 											$t.p.errorCell.call($t, res,stat);
 											$($t).jqGrid("restoreCell",iRow,iCol);
 										} else {
-											info_dialog($.jgrid.errors.errcap,res.status+" : "+res.statusText+"<br/>"+stat,$.jgrid.edit.bClose);
+											$.jgrid.info_dialog($.jgrid.errors.errcap,res.status+" : "+res.statusText+"<br/>"+stat,$.jgrid.edit.bClose);
 											$($t).jqGrid("restoreCell",iRow,iCol);
 										}
 									}
 								}, $.jgrid.ajaxOptions, $t.p.ajaxCellOptions || {}));
 							} else {
 								try {
-									info_dialog($.jgrid.errors.errcap,$.jgrid.errors.nourl,$.jgrid.edit.bClose);
+									$.jgrid.info_dialog($.jgrid.errors.errcap,$.jgrid.errors.nourl,$.jgrid.edit.bClose);
 									$($t).jqGrid("restoreCell",iRow,iCol);
 								} catch (e) {}
 							}
@@ -264,7 +264,7 @@ $.jgrid.extend({
 						}
 					} else {
 						try {
-							window.setTimeout(function(){info_dialog($.jgrid.errors.errcap,v+" "+cv[1],$.jgrid.edit.bClose);},100);
+							window.setTimeout(function(){$.jgrid.info_dialog($.jgrid.errors.errcap,v+" "+cv[1],$.jgrid.edit.bClose);},100);
 							$($t).jqGrid("restoreCell",iRow,iCol);
 						} catch (e) {}
 					}

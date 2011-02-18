@@ -45,7 +45,7 @@ $.jgrid.extend({
 			}
 			if ( $("#"+IDs.themodal).html() != null ) {
 				if(onBeforeShow) { p.beforeShowForm($("#"+dtbl)); }
-				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal, jqM:false, modal:p.modal});
+				$.jgrid.viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal, jqM:false, modal:p.modal});
 				if(onAfterShow) { p.afterShowForm($("#"+dtbl)); }
 			} else {
 				var dh = isNaN(p.dataheight) ? p.dataheight : p.dataheight+"px";
@@ -62,7 +62,7 @@ $.jgrid.extend({
 				bC  ="<a href='javascript:void(0)' id='eData' class='fm-button ui-state-default ui-corner-all'>"+p.bCancel+"</a>";
 				formdata += "<table border='0' class='EditTable' id='"+dtbl+"_2'><tbody><tr style='display:block;height:3px;'><td></td></tr><tr><td class='DataTD ui-widget-content'></td></tr><tr><td class='ColButton EditButton'>"+bS+"&#160;"+bC+"</td></tr></tbody></table>";
 				p.gbox = "#gbox_"+gID;
-				createModal(IDs,formdata,p,"#gview_"+$t.p.id,$("#gview_"+$t.p.id)[0]);
+				$.jgrid.createModal(IDs,formdata,p,"#gview_"+$t.p.id,$("#gview_"+$t.p.id)[0]);
 				if(p.saveicon[0]==true) {
 					$("#dData","#"+dtbl+"_2").addClass(p.saveicon[1] == "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
 					.append("<span class='ui-icon "+p.saveicon[2]+"'></span>");
@@ -88,7 +88,7 @@ $.jgrid.extend({
 						if(p.ShrinkToFit===true) {
 							$($t).jqGrid("setGridWidth",$t.grid.width-0.001,true);
 						}
-						if(p.closeAfterSubmit) hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: p.onClose});
+						if(p.closeAfterSubmit) $.jgrid.hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: p.onClose});
 						if (onAfterSubmit) { p.afterSubmitForm($("#"+dtbl)); }
 						return false;
 					});
@@ -109,7 +109,7 @@ $.jgrid.extend({
 					});
 				}
 				$("#eData", "#"+dtbl+"_2").click(function(e){
-					hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: p.onClose});
+					$.jgrid.hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: p.onClose});
 					return false;
 				});
 				$("#dData, #eData","#"+dtbl+"_2").hover(
@@ -117,7 +117,7 @@ $.jgrid.extend({
 				   function(){$(this).removeClass('ui-state-hover');}
 				);				
 				if(onBeforeShow) { p.beforeShowForm($("#"+dtbl)); }
-				viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal, jqM: true, modal:p.modal});
+				$.jgrid.viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal, jqM: true, modal:p.modal});
 				if(onAfterShow) { p.afterShowForm($("#"+dtbl)); }
 			}
 		});

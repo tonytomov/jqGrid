@@ -10,7 +10,7 @@
 $.jgrid.extend({
 	getColProp : function(colname){
 		var ret ={}, $t = this[0];
-		if ( !$t.grid ) { return; }
+		if ( !$t.grid ) { return false; }
 		var cM = $t.p.colModel;
 		for ( var i =0;i<cM.length;i++ ) {
 			if ( cM[i].name == colname ) {
@@ -538,6 +538,7 @@ $.jgrid.extend({
 		},p  || {});
 		return this.each(function(){
 			var $t = this;
+			if(this.ftoolbar) { return; }
 			var triggerToolbar = function() {
 				var sdata={}, j=0, v, nm, sopt={},so;
 				$.each($t.p.colModel,function(i,n){
@@ -579,11 +580,15 @@ $.jgrid.extend({
 						if (gi > 0) {ruleGroup += ",";}
 						ruleGroup += "{\"field\":\"" + i + "\",";
 						ruleGroup += "\"op\":\"" + sopt[i] + "\",";
-						ruleGroup += "\"data\":\"" + n + "\"}";
+						n+="";
+						ruleGroup += "\"data\":\"" + n.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"}";
 						gi++;
 					});
 					ruleGroup += "]}";
 					$.extend($t.p.postData,{filters:ruleGroup});
+					$.each(['searchField', 'searchString', 'searchOper'], function(i, n){
+						if($t.p.postData.hasOwnProperty(n)) { delete $t.p.postData[n];}
+					});
 				} else {
 					$.extend($t.p.postData,sdata);
 				}
@@ -646,11 +651,15 @@ $.jgrid.extend({
 						if (gi > 0) {ruleGroup += ",";}
 						ruleGroup += "{\"field\":\"" + i + "\",";
 						ruleGroup += "\"op\":\"" + "eq" + "\",";
-						ruleGroup += "\"data\":\"" + n + "\"}";
+						n+="";
+						ruleGroup += "\"data\":\"" + n.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"}";
 						gi++;
 					});
 					ruleGroup += "]}";
 					$.extend($t.p.postData,{filters:ruleGroup});
+					$.each(['searchField', 'searchString', 'searchOper'], function(i, n){
+						if($t.p.postData.hasOwnProperty(n)) { delete $t.p.postData[n];}
+					});
 				} else {
 					$.extend($t.p.postData,sdata);
 				}
@@ -819,6 +828,7 @@ $.jgrid.extend({
 				$(tr).append(th);
 			});
 			$("table thead",$t.grid.hDiv).append(tr);
+			this.ftoolbar = true;
 			this.triggerToolbar = triggerToolbar;
 			this.clearToolbar = clearToolbar;
 			this.toggleToolbar = toggleToolbar;
