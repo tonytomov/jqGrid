@@ -218,17 +218,22 @@ var xmlJsonClass = {
 		}
 		return o;
 	},
-	toJson: function(o, name, ind) {
-		var json = name ? ("\"" + name + "\"") : "";
+	toJson: function(o, name, ind, wellform) {
+		if(wellform === undefined) wellform = true;
+		var json = name ? ("\"" + name + "\"") : "", T = "\t", N = "\n";
+		if(!wellform) {
+			T= ""; N= "";
+		}
+
 		if (o === "[]") {
 			json += (name ? ":[]" : "[]");
 		}
 		else if (o instanceof Array) {
 			var n, i, ar=[];
 			for (i = 0, n = o.length; i < n; i += 1) {
-				ar[i] = this.toJson(o[i], "", ind + "\t");
+				ar[i] = this.toJson(o[i], "", ind + T, wellform);
 			}
-			json += (name ? ":[" : "[") + (ar.length > 1 ? ("\n" + ind + "\t" + ar.join(",\n" + ind + "\t") + "\n" + ind) : ar.join("")) + "]";
+			json += (name ? ":[" : "[") + (ar.length > 1 ? (N + ind + T + ar.join(","+N + ind + T) + N + ind) : ar.join("")) + "]";
 		}
 		else if (o === null) {
 			json += (name && ":") + "null";
@@ -237,9 +242,9 @@ var xmlJsonClass = {
 			var arr = [];
 			var m;
 			for (m in o) if (o.hasOwnProperty(m)) {
-				arr[arr.length] = this.toJson(o[m], m, ind + "\t");
+				arr[arr.length] = this.toJson(o[m], m, ind + T, wellform);
 			}
-			json += (name ? ":{" : "{") + (arr.length > 1 ? ("\n" + ind + "\t" + arr.join(",\n" + ind + "\t") + "\n" + ind) : arr.join("")) + "}";
+			json += (name ? ":{" : "{") + (arr.length > 1 ? (N + ind + T + arr.join(","+N + ind + T) + N + ind) : arr.join("")) + "}";
 		}
 		else if (typeof(o) === "string") {
 			var objRegExp  = /(^-?\d+\.?\d*$)/;
