@@ -1369,22 +1369,22 @@ $.fn.jqGrid = function( pin ) {
 				return;
 			}
 			var compareFnMap = {
-				'eq':function(queryObj) {return queryObj.equals;},
-				'ne':function(queryObj) {return queryObj.notEquals;},
-				'lt':function(queryObj) {return queryObj.less;},
-				'le':function(queryObj) {return queryObj.lessOrEquals;},
-				'gt':function(queryObj) {return queryObj.greater;},
-				'ge':function(queryObj) {return queryObj.greaterOrEquals;},
-				'cn':function(queryObj) {return queryObj.contains;},
-				'nc':function(queryObj) {return queryObj.not().contains;},
-				'bw':function(queryObj) {return queryObj.startsWith;},
-				'bn':function(queryObj) {return queryObj.not().startsWith;},
-				'en':function(queryObj) {return queryObj.not().endsWith;},
-				'ew':function(queryObj) {return queryObj.endsWith;},
-				'ni':function(queryObj) {return queryObj.not().equals;},
-				'in':function(queryObj) {return queryObj.equals;},
-				'nu':function(queryObj) {return queryObj.isNull;},
-				'nn':function(queryObj) {return queryObj.not().isNull;}
+				'eq':function(queryObj, op) {return queryObj.equals;},
+				'ne':function(queryObj,op) {return queryObj.notEquals;},
+				'lt':function(queryObj,op) {return queryObj.less;},
+				'le':function(queryObj,op) {return queryObj.lessOrEquals;},
+				'gt':function(queryObj,op) {return queryObj.greater;},
+				'ge':function(queryObj,op) {return queryObj.greaterOrEquals;},
+				'cn':function(queryObj,op) {return queryObj.contains;},
+				'nc':function(queryObj,op) {return op === "OR" ? queryObj.orNot().contains : queryObj.andNot().contains;},
+				'bw':function(queryObj,op) {return queryObj.startsWith;},
+				'bn':function(queryObj,op) {return op === "OR" ? queryObj.orNot().startsWith : queryObj.andNot().startsWith;;},
+				'en':function(queryObj,op) {return op === "OR" ? queryObj.orNot().endsWith : queryObj.andNot().endsWith;},
+				'ew':function(queryObj,op) {return queryObj.endsWith;},
+				'ni':function(queryObj,op) {return op === "OR" ? queryObj.orNot().equals : queryObj.andNot().equals;},
+				'in':function(queryObj,op) {return queryObj.equals;},
+				'nu':function(queryObj,op) {return queryObj.isNull;},
+				'nn':function(queryObj,op) {return op === "OR" ? queryObj.orNot().isNull : queryObj.andNot().isNull;}
 				
 			},
 			query = $.jgrid.from(ts.p.data);
@@ -1407,12 +1407,12 @@ $.fn.jqGrid = function( pin ) {
 					try{
 						for (index = 0; index < group.rules.length; index++) {
 							rule = group.rules[index];
-							opr = group.groupOp;
+							opr = group.groupOp.toString().toUpperCase();
 							if (compareFnMap[rule.op] && rule.field ) {
-								if(s > 0 && opr && opr.toUpperCase() == "OR") {
+								if(s > 0 && opr && opr === "OR") {
 									query = query.or();
 								}
-								query = compareFnMap[rule.op](query)(rule.field, rule.data, cmtypes[rule.field]);
+								query = compareFnMap[rule.op](query, opr)(rule.field, rule.data, cmtypes[rule.field]);
 							}
 							s++;
 						}
