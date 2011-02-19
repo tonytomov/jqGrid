@@ -354,7 +354,7 @@ $.extend($.jgrid,{
 								//$(elem).attr(options);
 								setTimeout(function(){
 									$("option",elem).each(function(i){
-										if(i===0) { this.selected = ""; }
+										//if(i===0) { this.selected = ""; }
 										$(this).attr("role","option");
 										if($.inArray($.trim($(this).text()),ovm) > -1 || $.inArray($.trim($(this).val()),ovm) > -1 ) {
 											this.selected= "selected";
