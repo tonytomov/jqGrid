@@ -449,12 +449,14 @@ $.extend($.jgrid,{
 				fld='this';
 			}
 			if(v===undefined) { v = null; }
-			var val=v===null?f:v,
+			//var val=v===null?f:v,
+			var val =v,
 			swst = t.stype === undefined ? "text" : t.stype;
+			if(v !== null) {
 			switch(swst) {
 				case 'int':
 				case 'integer':
-					val = isNaN(Number(val)) ? '0' : val; // To be fixed with more inteligent code
+					val = (isNaN(Number(val)) || val==="") ? '0' : val; // To be fixed with more inteligent code
 					fld = 'parseInt('+fld+',10)';
 					val = 'parseInt('+val+',10)';
 					break;
@@ -462,7 +464,7 @@ $.extend($.jgrid,{
 				case 'number':
 				case 'numeric':
 					val = String(val).replace(_stripNum, '');
-					val = isNaN(Number(val)) ? '0' : val; // To be fixed with more inteligent code
+					val = (isNaN(Number(val)) || val==="") ? '0' : val; // To be fixed with more inteligent code
 					fld = 'parseFloat('+fld+')';
 					val = 'parseFloat('+val+')';
 					break;
@@ -475,6 +477,7 @@ $.extend($.jgrid,{
 					fld=self._getStr(fld);
 					val=self._getStr('"'+self._toStr(val)+'"');
 			}
+			}
 			self._append(fld+' '+how+' '+val);
 			self._setCommand(func,f);
 			self._resetNegate();
@@ -482,6 +485,12 @@ $.extend($.jgrid,{
 		};
 		this.equals=function(f,v,t){
 			return self._compareValues(self.equals,f,v,"==",t);
+		};
+		this.notEquals=function(f,v,t){
+			return self._compareValues(self.equals,f,v,"!==",t);
+		};
+		this.isNull = function(f,v,t){
+			return self._compareValues(self.equals,f,null,"===",t);
 		};
 		this.greater=function(f,v,t){
 			return self._compareValues(self.greater,f,v,">",t);
@@ -1356,7 +1365,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			var compareFnMap = {
 				'eq':function(queryObj) {return queryObj.equals;},
-				'ne':function(queryObj) {return queryObj.not().equals;},
+				'ne':function(queryObj) {return queryObj.notEquals;},
 				'lt':function(queryObj) {return queryObj.less;},
 				'le':function(queryObj) {return queryObj.lessOrEquals;},
 				'gt':function(queryObj) {return queryObj.greater;},
@@ -1368,7 +1377,9 @@ $.fn.jqGrid = function( pin ) {
 				'en':function(queryObj) {return queryObj.not().endsWith;},
 				'ew':function(queryObj) {return queryObj.endsWith;},
 				'ni':function(queryObj) {return queryObj.not().equals;},
-				'in':function(queryObj) {return queryObj.equals;}
+				'in':function(queryObj) {return queryObj.equals;},
+				'nu':function(queryObj) {return queryObj.isNull;},
+				'nn':function(queryObj) {return queryObj.not().isNull;}
 				
 			},
 			query = $.jgrid.from(ts.p.data);
@@ -1395,7 +1406,7 @@ $.fn.jqGrid = function( pin ) {
 							for (index = 0; index < group.rules.length; index++) {
 								rule = group.rules[index];
 								opr = group.groupOp;
-								if (compareFnMap[rule.op] && rule.field && rule.data) {
+								if (compareFnMap[rule.op] && rule.field ) {
 									if(s > 0 && opr && opr.toUpperCase() == "OR") {
 										query = query.or();
 									}
