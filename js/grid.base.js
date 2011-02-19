@@ -68,11 +68,11 @@ $.extend($.jgrid,{
 		    eval('(' + js + ')');
 	},
 	parseDate : function(format, date) {
-		var tsp = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0},k,hl,dM;
+		var tsp = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0},k,hl,dM, regdate = /[\\\/:_;.,\t\T\s-]/;
 		if(date && date !== null && date !== undefined){
 			date = $.trim(date);
-			date = date.split(/[\\\/:_;.,\t\T\s\-]/);
-			format = format.split(/[\\\/:_;.,\t\T\s\-]/);
+			date = date.split(regdate);
+			format = format.split(regdate);
 			var dfmt  = $.jgrid.formatter.date.monthNames;
 			var afmt  = $.jgrid.formatter.date.AmPm;
 			var h12to24 = function(ampm, h){
@@ -882,17 +882,35 @@ $.fn.jqGrid = function( pin ) {
 			if (isNaN(val)) { return defval ? defval : 0;}
 			else {return val;}
 		},
-		formatCol = function (pos, rowInd, tv){
+		formatCol = function (pos, rowInd, tv, rawObject){
 			var cm = ts.p.colModel[pos],
-			ral = cm.align, result="style=\"", clas = cm.classes, nm = cm.name;
+			ral = cm.align, result="style=\"", clas = cm.classes, nm = cm.name, celp, acp=[];
 			if(ral) { result += "text-align:"+ral+";"; }
 			if(cm.hidden===true) { result += "display:none;"; }
 			if(rowInd===0) {
 				result += "width: "+grid.headers[pos].width+"px;";
+			} else if (cm.cellattr && $.isFunction(cm.cellattr) )
+			{
+				celp = cm.cellattr.call(ts, tv, rawObject, cm);
+				if(celp && typeof(celp) === "string") {
+					celp = celp.replace(/style/i,'style');
+					acp = celp.split("style");
+					if(acp.length === 2 ) {
+						acp[1] =  $.trim(acp[1].replace(new RegExp(/=/i),""));
+						if(acp[1].indexOf("'") === 0 || acp[1].indexOf('"') === 0) {
+							acp[1] = acp[1].substring(1);
+							// todo we must correct handle ' or " at the beginning of the style
 			}
-			result += "\"" + (clas !== undefined ? (" class=\""+clas+"\"") :"") + ((cm.title && tv) ? (" title=\""+$.jgrid.stripHtml(tv)+"\"") :"");
+ 						result += acp[1];
+					} else {
+						result += "\"";
+					}
+				}
+			}
+			if(!acp.length) { acp[0] = ""; result += "\"";}
+			result += (clas !== undefined ? (" class=\""+clas+"\"") :"") + ((cm.title && tv) ? (" title=\""+$.jgrid.stripHtml(tv)+"\"") :"");
 			result += " aria-describedby=\""+ts.p.id+"_"+nm+"\"";
-			return result;
+			return result + acp[0];
 		},
 		cellVal =  function (val) {
 			return val === undefined || val === null || val === "" ? "&#160;" : (ts.p.autoencode ? $.jgrid.htmlEncode(val) : val+"");
@@ -916,17 +934,17 @@ $.fn.jqGrid = function( pin ) {
 		addCell = function(rowId,cell,pos,irow, srvr) {
 			var v,prp;
 			v = formatter(rowId,cell,pos,srvr,'add');
-			prp = formatCol( pos,irow, v);
+			prp = formatCol( pos,irow, v, srvr);
 			return "<td role=\"gridcell\" "+prp+">"+v+"</td>";
 		},
 		addMulti = function(rowid,pos,irow){
 			var	v = "<input role=\"checkbox\" type=\"checkbox\""+" id=\"jqg_"+ts.p.id+"_"+rowid+"\" class=\"cbox\" name=\"jqg_"+ts.p.id+"_"+rowid+"\"/>",
-			prp = formatCol(pos,irow,'');
+			prp = formatCol(pos,irow,'',null);
 			return "<td role=\"gridcell\" "+prp+">"+v+"</td>";
 		},
 		addRowNum = function (pos,irow,pG,rN) {
 			var v =  (parseInt(pG,10)-1)*parseInt(rN,10)+1+irow,
-			prp = formatCol(pos,irow,'');
+			prp = formatCol(pos,irow,'', null);
 			return "<td role=\"gridcell\" class=\"ui-state-default jqgrid-rownum\" "+prp+">"+v+"</td>";
 		},
 		reader = function (datatype) {
@@ -1378,7 +1396,7 @@ $.fn.jqGrid = function( pin ) {
 				'cn':function(queryObj,op) {return queryObj.contains;},
 				'nc':function(queryObj,op) {return op === "OR" ? queryObj.orNot().contains : queryObj.andNot().contains;},
 				'bw':function(queryObj,op) {return queryObj.startsWith;},
-				'bn':function(queryObj,op) {return op === "OR" ? queryObj.orNot().startsWith : queryObj.andNot().startsWith;;},
+				'bn':function(queryObj,op) {return op === "OR" ? queryObj.orNot().startsWith : queryObj.andNot().startsWith;},
 				'en':function(queryObj,op) {return op === "OR" ? queryObj.orNot().endsWith : queryObj.andNot().endsWith;},
 				'ew':function(queryObj,op) {return queryObj.endsWith;},
 				'ni':function(queryObj,op) {return op === "OR" ? queryObj.orNot().equals : queryObj.andNot().equals;},
@@ -2089,7 +2107,7 @@ $.fn.jqGrid = function( pin ) {
 				if(ts.p.viewsortcols[0]) {$("div span.s-ico",this).show(); if(j==ts.p.lastsort){ $("div span.ui-icon-"+ts.p.sortorder,this).removeClass("ui-state-disabled");}}
 				else if( j == ts.p.lastsort) {$("div span.s-ico",this).show();$("div span.ui-icon-"+ts.p.sortorder,this).removeClass("ui-state-disabled");}
 			}
-			if(ts.p.footerrow) { tfoot += "<td role='gridcell' "+formatCol(j,0,'')+">&#160;</td>"; }
+			if(ts.p.footerrow) { tfoot += "<td role='gridcell' "+formatCol(j,0,'', null)+">&#160;</td>"; }
 		}).mousedown(function(e) {
 			if ($(e.target).closest("th>span.ui-jqgrid-resize").length != 1) { return; }
 			var ci = $.jgrid.getCellIndex(this);
