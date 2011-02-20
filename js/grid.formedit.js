@@ -44,6 +44,8 @@ $.jgrid.extend({
 			sopt: null,
 			stringResult: undefined,
 			onClose : null,
+			onSearch : null,
+			onReset : null,
 			overlay : 10,
 			columns : []
 		}, $.jgrid.search, p || {});
@@ -186,6 +188,9 @@ $.jgrid.extend({
 					$t.p.search = true;
 					$.extend($t.p.postData,sdata);
 					$($t).trigger("reloadGrid",[{page:1}]);
+					if($.isFunction(p.onSearch) ) {
+						p.onSearch();
+					}
 					if(p.closeAfterSearch) {
 						$.jgrid.hideModal("#"+IDs.themodal,{gb:"#gbox_"+$t.p.id,jqm:p.jqModal,onClose: p.onClose});
 					}
@@ -203,6 +208,9 @@ $.jgrid.extend({
 					fl[0].resetFilter();
 					$.extend($t.p.postData,sdata);
 					$($t).trigger("reloadGrid",[{page:1}]);
+					if($.isFunction(p.onReset) ) {
+						p.onSearch();
+					}
 					return false;
 				});
 				showFilter();
