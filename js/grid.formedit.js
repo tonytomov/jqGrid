@@ -44,7 +44,8 @@ $.jgrid.extend({
 			sopt: null,
 			stringResult: undefined,
 			onClose : null,
-			overlay : 10
+			overlay : 10,
+			columns : []
 		}, $.jgrid.search, p || {});
 		return this.each(function() {
 			var $t = this;
@@ -89,22 +90,25 @@ $.jgrid.extend({
 				}
 				var bt = "<table border='0' cellspacing='0' cellpadding='0' class='EditTable ui-widget content' style='border:0px none;margin-top:5px' id='"+fid+"_2'><tbody><tr><td colspan='2'><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='EditButton' style='text-align:left'>"+bC+"</td><td class='EditButton'>"+bQ+bS+"</td></tr></tbody></table>",
 				colnm, found=false;
-
-				$.each(columns, function(i,n){
-					if(!n.label) {
-						n.label = $t.p.colNames[i];
-					}
-					// find first searchable column and set it if no default filter
-					if(!found) {
-				        var searchable = (typeof n.search === 'undefined') ?  true: n.search ,
-						hidden = (n.hidden === true),
-						ignoreHiding = (n.searchoptions && n.searchoptions.searchhidden === true);
-						if ((ignoreHiding && searchable) || (searchable && !hidden)) {
-							found = true;
-							colnm = n.name;
+				if(!p.columns.length) {
+					$.each(columns, function(i,n){
+						if(!n.label) {
+							n.label = $t.p.colNames[i];
 						}
-					}
-				});
+						// find first searchable column and set it if no default filter
+						if(!found) {
+							var searchable = (typeof n.search === 'undefined') ?  true: n.search ,
+							hidden = (n.hidden === true),
+							ignoreHiding = (n.searchoptions && n.searchoptions.searchhidden === true);
+							if ((ignoreHiding && searchable) || (searchable && !hidden)) {
+								found = true;
+								colnm = n.name;
+							}
+						}
+					});
+				} else {
+					columns = p.columns;
+				}
 				// old behaviour
 				if( (!defaultFilters && colnm) || p.multipleSearch === false  ) {
 					defaultFilters = {"groupOp": "AND",rules:[{"field":colnm,"op":"eq","data":""}]};
