@@ -10,10 +10,23 @@
 
     <target name="jqgrid" depends="init">
         <concat destfile="${distdir}/${target}">
-            <fileset dir="${srcdir}">
-                <exclude name="i18n/*.*" />
-                <exclude name="*.swp" />
-            </fileset>
+		<fileset file="js/grid.base.js"/>
+		<fileset file="js/grid.custom.js"/>
+		<fileset file="js/jqModal.js"/>
+		<fileset file="js/jqDnR.js"/>
+		<fileset file="js/JsonXml.js"/>
+		<fileset file="js/jquery.fmatter.js"/>
+		<fileset file="js/grid.common.js"/>
+		<fileset file="js/grid.filter.js"/>
+		<fileset file="js/grid.formedit.js"/>
+		<fileset file="js/grid.inlinedit.js"/>
+		<fileset file="js/grid.celledit.js"/>
+		<fileset file="js/grid.subgrid.js"/>
+		<fileset file="js/grid.treegrid.js"/>
+		<fileset file="js/grid.grouping.js"/>
+		<fileset file="js/grid.import.js"/>
+		<fileset file="js/grid.jqueryui.js"/>
+		<fileset file="js/grid.tbltogrid.js"/>
         </concat>
     </target>
 
