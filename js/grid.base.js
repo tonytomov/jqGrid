@@ -893,7 +893,9 @@ $.fn.jqGrid = function( pin ) {
 			{
 				celp = cm.cellattr.call(ts, rowId, tv, rawObject, cm, rdata);
 				if(celp && typeof(celp) === "string") {
-					celp = celp.replace(/style/i,'style');
+					celp = celp.replace(/style/i,'style').replace(/title/i,'title');
+					if(celp.indexOf('title') > -1) { cm.title=false;}
+					if(celp.indexOf('class') > -1) { clas = undefined;}
 					acp = celp.split("style");
 					if(acp.length === 2 ) {
 						acp[1] =  $.trim(acp[1].replace("=",""));
