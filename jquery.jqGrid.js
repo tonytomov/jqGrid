@@ -12,7 +12,7 @@ function jqGridInclude()
         { include: true, incfile:'grid.celledit.js'}, // jqGrid cell editing
         { include: true, incfile:'grid.subgrid.js'}, //jqGrid subgrid
         { include: true, incfile:'grid.treegrid.js'}, //jqGrid treegrid
-		{ include: true, incfile:'grid.grouping.js'}, //jqGrid grouping
+	{ include: true, incfile:'grid.grouping.js'}, //jqGrid grouping
         { include: true, incfile:'grid.custom.js'}, //jqGrid custom 
         { include: true, incfile:'grid.tbltogrid.js'}, //jqGrid table to grid 
         { include: true, incfile:'grid.import.js'}, //jqGrid import
