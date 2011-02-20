@@ -25,8 +25,9 @@
       ]
 }
 */
+/*global jQuery, $ */
 
-;(function ($) {
+(function ($) {
 
 $.fn.jqFilter = function( arg ) {
 	if (typeof arg === 'string') {
@@ -350,7 +351,7 @@ $.fn.jqFilter = function( arg ) {
 				$(elm).addClass("input-elm");
 				//that.createElement(rule, "");
 
-				if( cm.searchoptions.sopt ) {opr = cm.searchoptions.sopt;}
+				if( cm.searchoptions.sopt ) {op = cm.searchoptions.sopt;}
 				else if(that.p.sopt) { op= that.p.sopt; }
 				else if  (cm.searchtype === 'string') {op = that.p.stropts;}
 				else {op = that.p.numopts;}
@@ -543,6 +544,7 @@ $.fn.jqFilter = function( arg ) {
 		this.resetFilter = function () {
 			this.p.filter = $.extend(true,{},this.p.initFilter);
 			this.reDraw();
+			this.onchange();
 		};
 		this.hideError = function() {
 			$("th.ui-state-error", this).html("");
