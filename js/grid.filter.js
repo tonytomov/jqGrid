@@ -371,7 +371,7 @@ $.fn.jqFilter = function( arg ) {
 					if($.isArray(rule.data)) { rule.data = rule.data.join(","); }
 					that.onchange(); // signals that the filter has changed
 				});
-				setTimeout(function(){
+				setTimeout(function(){ //IE, Opera, Chrome
 				rule.data = $(elm).val();
 				that.onchange();  // signals that the filter has changed
 				}, 0);
