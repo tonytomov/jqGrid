@@ -7,7 +7,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/
-/*global xmlJsonClass, jQuery, $,  */
+/*global xmlJsonClass, jQuery, $  */
 var rp_ge = null;
 $.jgrid.extend({
 	searchGrid : function (p) {
@@ -68,7 +68,7 @@ $.jgrid.extend({
 					}
 				}
 				if(showFrm) {
-					$.jgrid.viewModal("#"+IDs.themodal,{gbox:"#gbox_"+fid,jqm:p.jqModal, modal:p.modal});
+					$.jgrid.viewModal("#"+IDs.themodal,{gbox:"#gbox_"+fid,jqm:p.jqModal, modal:p.modal, overlay: p.overlay});
 					if($.isFunction(p.afterShowSearch)) {
 						p.afterShowSearch($("#"+fid));
 					}
