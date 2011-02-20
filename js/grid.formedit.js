@@ -1,4 +1,4 @@
-;(function($){
+(function($){
 /**
  * jqGrid extension for form editing Grid Data
  * Tony Tomov tony@trirand.com
@@ -26,6 +26,7 @@ $.jgrid.extend({
 			closeAfterReset: false,
 			closeOnEscape : false,
 			multipleSearch : false,
+			multipleGroup : false,
 			//cloneSearchRowOnAdd: true,
 			top : 0,
 			left: 0,
@@ -55,27 +56,27 @@ $.jgrid.extend({
 			fil = $("<div><div id='"+fid+"' class='searchFilter' style='overflow:auto'></div></div>").insertBefore("#gview_"+$t.p.id);
 			if(typeof(defaultFilters) === "string") {
 				defaultFilters = $.jgrid.parse( defaultFilters );
-				}
+			}
 			if(p.recreateFilter === true) {
 				$("#"+IDs.themodal).remove();
-                    }
+			}
 			function showFilter() {
 				if($.isFunction(p.beforeShowSearch)) {
-						showFrm = p.beforeShowSearch($("#"+fid));
+					showFrm = p.beforeShowSearch($("#"+fid));
 					if(typeof(showFrm) === "undefined") {
-							showFrm = true;
-						}
+						showFrm = true;
 					}
+				}
 				if(showFrm) {
 					$.jgrid.viewModal("#"+IDs.themodal,{gbox:"#gbox_"+fid,jqm:p.jqModal, modal:p.modal});
 					if($.isFunction(p.afterShowSearch)) {
 						p.afterShowSearch($("#"+fid));
-							}
-						}
+					}
+				}
 			}
 			if ( $("#"+IDs.themodal).html() !== null ) {
 				showFilter();
-					} else {
+			} else {
 				if($.isFunction(p.onInitializeSearch) ) {
 					p.onInitializeSearch($("#"+fid));
 				}
@@ -85,14 +86,14 @@ $.jgrid.extend({
 				bQ = "";
 				if(p.showQuery) {
 					bQ ="<a href='javascript:void(0)' id='"+fid+"_query' class='fm-button ui-state-default ui-corner-all fm-button-icon-left'><span class='ui-icon ui-icon-comment'></span>Query</a>";
-						}
+				}
 				var bt = "<table border='0' cellspacing='0' cellpadding='0' class='EditTable ui-widget content' style='border:0px none;margin-top:5px' id='"+fid+"_2'><tbody><tr><td colspan='2'><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='EditButton' style='text-align:left'>"+bC+"</td><td class='EditButton'>"+bQ+bS+"</td></tr></tbody></table>",
 				colnm, found=false;
 
 				$.each(columns, function(i,n){
 					if(!n.label) {
 						n.label = $t.p.colNames[i];
-									}
+					}
 					// find first searchable column and set it if no default filter
 					if(!found) {
 				        var searchable = (typeof n.search === 'undefined') ?  true: n.search ,
@@ -101,41 +102,46 @@ $.jgrid.extend({
 						if ((ignoreHiding && searchable) || (searchable && !hidden)) {
 							found = true;
 							colnm = n.name;
-								}
-							}
+						}
+					}
 				});
 				// old behaviour
-				if(!defaultFilters && colnm) {
+				if( (!defaultFilters && colnm) || p.multipleSearch === false  ) {
 					defaultFilters = {"groupOp": "AND",rules:[{"field":colnm,"op":"eq","data":""}]};
-						}
+				}
 				$("#"+fid).jqFilter({
 					columns : columns,
 					filter: p.loadDefaults ? defaultFilters : null,
 					showQuery: p.showQuery,
 					errorcheck : p.errorcheck,
 					sopt: p.sopt,
+					groupButton : p.multipleGroup,
 					_gridsopt : $.jgrid.search.odata,
 					onChange : function( sp ) {
 						if(this.p.showQuery) {
 							$('.query',this).html(this.toUserFriendlyString());
-								}
-										}
+						}
+					}
 				});
 				fil.append( bt );
+				if(p.multipleSearch === false) {
+					$(".add-rule","#"+fid).hide();
+					$(".delete-rule","#"+fid).hide();
+				}
 				if($.isFunction(p.onInitializeSearch) ) {
 					p.onInitializeSearch($("#"+fid));
-											}
+				}
 				$.jgrid.createModal(IDs ,fil,p,"#gview_"+$t.p.id,$("#gbox_"+$t.p.id)[0]);
 				if(bQ) {
 					$("#"+fid+"_query").bind('click', function(e){
 						$(".queryresult", fil).toggle();
 						return false;
 					});
-										}
-						if (p.stringResult===undefined) {
-							// to provide backward compatibility, inferring stringResult value from multipleSearch
-							p.stringResult = p.multipleSearch;
-						}
+				}
+				if (p.stringResult===undefined) {
+					// to provide backward compatibility, inferring stringResult value from multipleSearch
+					p.stringResult = p.multipleSearch;
+				}
 				$("#"+fid+"_search").bind('click', function(){
 					var fl = $("#"+fid),
 					sdata={}, res ,
@@ -146,8 +152,8 @@ $.jgrid.extend({
 						if(fl[0].p.error) {
 							fl[0].showError();
 							return false;
-							}
 						}
+					}
 
 					if(p.stringResult && $t.p.datatype !== "local") {
 						try {
@@ -161,7 +167,7 @@ $.jgrid.extend({
 						if(typeof(res)==="string") {
 							sdata[p.sFilter] = res;
 							$.each([p.sField,p.sValue, p.sOper], function() { sdata[this] = "";});
-                        }
+						}
 					} else {
 						if(p.multipleSearch) {
 							sdata[p.sFilter] = filters;
@@ -171,14 +177,14 @@ $.jgrid.extend({
 							sdata[p.sValue] = filters.rules[0].data;
 							sdata[p.sOper] = filters.rules[0].op;
 							sdata[p.sFilter] = "";
-							}
 						}
+					}
 					$t.p.search = true;
 					$.extend($t.p.postData,sdata);
 					$($t).trigger("reloadGrid",[{page:1}]);
 					if(p.closeAfterSearch) {
 						$.jgrid.hideModal("#"+IDs.themodal,{gb:"#gbox_"+$t.p.id,jqm:p.jqModal,onClose: p.onClose});
-								}
+					}
 					return false;
 				});
 				$("#"+fid+"_reset").bind('click', function(){
@@ -189,18 +195,18 @@ $.jgrid.extend({
 						sdata[p.sField] = sdata[p.sValue] = sdata[p.sOper] = "";
 					} else {
 						sdata[p.sFilter] = "";
-								}
+					}
 					fl[0].resetFilter();
 					$.extend($t.p.postData,sdata);
 					$($t).trigger("reloadGrid",[{page:1}]);
 					return false;
-							});
+				});
 				showFilter();
 				$(".fm-button:not(.ui-state-disabled)",fil).hover(
 				   function(){$(this).addClass('ui-state-hover');},
 				   function(){$(this).removeClass('ui-state-hover');}
 				);
-						}
+			}
 		});
 	},
 	editGridRow : function(rowid, p){
@@ -1151,7 +1157,7 @@ $.jgrid.extend({
 					}
 				});
 				if(cnt>0) { $("#id_g","#"+frmtb).val(rowid); }
-			}			
+			}
 			function updateNav(cr,totr){
 				if (cr===0) { $("#pData","#"+frmtb+"_2").addClass('ui-state-disabled'); } else { $("#pData","#"+frmtb+"_2").removeClass('ui-state-disabled'); }
 				if (cr==totr) { $("#nData","#"+frmtb+"_2").addClass('ui-state-disabled'); } else { $("#nData","#"+frmtb+"_2").removeClass('ui-state-disabled'); }
