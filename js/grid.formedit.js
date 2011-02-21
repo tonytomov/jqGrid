@@ -209,7 +209,7 @@ $.jgrid.extend({
 					$.extend($t.p.postData,sdata);
 					$($t).trigger("reloadGrid",[{page:1}]);
 					if($.isFunction(p.onReset) ) {
-						p.onSearch();
+						p.onReset();
 					}
 					return false;
 				});
