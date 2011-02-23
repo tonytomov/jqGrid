@@ -433,7 +433,7 @@ $.fn.jqFilter = function( arg ) {
 			});
 
 			// populate drop down with all available operators
-			if( cm.opts ) {op = cm.opts;}
+			if( cm.searchoptions.sopt ) {op = cm.searchoptions.sopt;}
 			else if(that.p.sopt) { op= that.p.sopt; }
 			else if  (cm.searchtype === 'string') {op = p.stropts;}
 			else {op = that.p.numopts;}
