@@ -55,8 +55,7 @@ $.jgrid.extend({
 			var fid = "fbox_"+$t.p.id,
 			showFrm = true,
 			IDs = {themodal:'editmod'+fid,modalhead:'edithd'+fid,modalcontent:'editcnt'+fid, scrollelm : fid},
-			defaultFilters  = $t.p.postData[p.sFilter],
-			fil = $("<div><div id='"+fid+"' class='searchFilter' style='overflow:auto'></div></div>").insertBefore("#gview_"+$t.p.id);
+			defaultFilters  = $t.p.postData[p.sFilter];
 			if(typeof(defaultFilters) === "string") {
 				defaultFilters = $.jgrid.parse( defaultFilters );
 			}
@@ -80,6 +79,7 @@ $.jgrid.extend({
 			if ( $("#"+IDs.themodal).html() !== null ) {
 				showFilter();
 			} else {
+				var fil = $("<span><div id='"+fid+"' class='searchFilter' style='overflow:auto'></div></span>").insertBefore("#gview_"+$t.p.id);
 				if($.isFunction(p.onInitializeSearch) ) {
 					p.onInitializeSearch($("#"+fid));
 				}
