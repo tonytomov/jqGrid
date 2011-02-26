@@ -848,7 +848,7 @@ $.fn.jqGrid = function( pin ) {
 			alert("Element is not a table");
 			return;
 		}
-		$(this).empty();
+		$(this).empty().attr("tabindex","1");
 		this.p = p ;
 		var i, dir,ts;
 		if(this.p.colNames.length === 0) {
@@ -904,8 +904,8 @@ $.fn.jqGrid = function( pin ) {
 						acp[1] =  $.trim(acp[1].replace("=",""));
 						if(acp[1].indexOf("'") === 0 || acp[1].indexOf('"') === 0) {
 							acp[1] = acp[1].substring(1);
-			}
- 						result += acp[1].replace(/'/gi,'"');
+						}
+						result += acp[1].replace(/'/gi,'"');
 					} else {
 						result += "\"";
 					}
@@ -1109,7 +1109,7 @@ $.fn.jqGrid = function( pin ) {
 					ts.p._index[rid] = ts.p.data.length-1;
 				}
 				if(ts.p.gridview === false ) {
-						$("tbody:first",t).append(rowData.join(''));
+					$("tbody:first",t).append(rowData.join(''));
 					if (ts.p.subGrid===true) {
 						try {$(ts).jqGrid("addSubGrid",ts.rows[ts.rows.length-1],gi+ni);} catch (_){}
 					}
@@ -1239,7 +1239,7 @@ $.fn.jqGrid = function( pin ) {
 				}
 				altr = rcnt === 1 ? 0 : rcnt;
 				cn1 = (altr+i)%2 == 1 ? cn : '';
-				rowData.push("<tr"+hiderow+" id=\""+ idr +"\" role=\"row\" class= \"ui-widget-content jqgrow ui-row-"+ts.p.direction+""+cn1+"\">");
+				rowData.push("<tr"+hiderow+" id=\""+ idr +"\" tabindex=\"-1\" role=\"row\" class= \"ui-widget-content jqgrow ui-row-"+ts.p.direction+""+cn1+"\">");
 				if(ts.p.rownumbers===true) {
 					rowData.push( addRowNum(0,i,ts.p.page,ts.p.rowNum) );
 					ni=1;
@@ -1276,7 +1276,7 @@ $.fn.jqGrid = function( pin ) {
 					ts.p._index[idr] = ts.p.data.length-1;
 				}
 				if(ts.p.gridview === false ) {
-						$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
+					$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
 					if(ts.p.subGrid === true ) {
 						try { $(ts).jqGrid("addSubGrid",ts.rows[ts.rows.length-1],gi+ni);} catch (_){}
 					}
@@ -2462,17 +2462,14 @@ $.jgrid.extend({
 			}
 			if(!$t.p.multiselect) {
 				if(pt.className !== "ui-subgrid") {
-					if( $t.p.selrow ) {
-						$($t.rows.namedItem($t.p.selrow)).removeClass("ui-state-highlight").attr("aria-selected","false");
-					}
 					if( $t.p.selrow != pt.id) {
-						$t.p.selrow = pt.id;
-						$(pt).addClass("ui-state-highlight").attr("aria-selected","true");
+						$($t.rows.namedItem($t.p.selrow)).removeClass("ui-state-highlight").attr({"aria-selected":"false", "tabindex" : "-1"});
+						$(pt).addClass("ui-state-highlight").attr({"aria-selected":true, "tabindex" : "0"});//.focus();
 						stat = true;
 					} else {
 						stat = false;
-						$t.p.selrow = null;
 					}
+					$t.p.selrow = pt.id;
 					if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow.call($t, pt.id, stat); }
 				}
 			} else {
@@ -2685,7 +2682,7 @@ $.jgrid.extend({
 						prp = t.formatCol(i,1,v, rowid, data, true);
 						row += "<td role=\"gridcell\" aria-describedby=\""+t.p.id+"_"+nm+"\" "+prp+">"+v+"</td>";
 					}
-					row = "<tr id=\""+rowid+"\" role=\"row\" class=\"ui-widget-content jqgrow ui-row-"+t.p.direction+" "+cna+"\">" + row+"</tr>";
+					row = "<tr id=\""+rowid+"\" role=\"row\" tabindex=\"-1\" class=\"ui-widget-content jqgrow ui-row-"+t.p.direction+" "+cna+"\">" + row+"</tr>";
 					if(t.p.subGrid===true) {
 						row = $(row)[0];
 						$(t).jqGrid("addSubGrid",row,gi+ni);
@@ -2718,6 +2715,7 @@ $.jgrid.extend({
 					if(air) { t.p.afterInsertRow.call(t,rowid,data,data); }
 					k++;
 					if(t.p.datatype == 'local') {
+						lcdata[t.p.localReader.id] = rowid;
 						t.p._index[rowid] = t.p.data.length;
 						t.p.data.push(lcdata);
 						lcdata = {};
@@ -3125,6 +3123,82 @@ $.jgrid.extend({
 			}
 		});
 		return ret;
+	},
+	bindKeys : function( settings ){
+		var o = $.extend({
+			onEnter: null,
+			onSpace: null
+		},settings || {});
+		return this.each(function(){
+			var $t = this;
+			if( !$('body').is('[role]') ){$('body').attr('role','application');}
+			$($t).keydown(function(event){
+				var target = $($t).find('tr[tabindex=0]')[0], id, r, mind,
+				expanded = $t.p.treeReader.expanded_field;
+				//check for arrow keys
+				if(target) {
+					mind = $t.p._index[target.id];
+					if(event.keyCode === 37 || event.keyCode === 38 || event.keyCode === 39 || event.keyCode === 40){
+						// up key
+						if(event.keyCode == 38 ){
+							r = target.previousSibling;
+							id = "";
+							if(r) {
+								if($(r).is(":hidden")) {
+									while(r) {
+										r = r.previousSibling;							//id = $(target).next().attr("id");
+
+										if(!$(r).is(":hidden") && $(r).hasClass('jqgrow')) {id = r.id;break;}
+									}
+								} else {
+									id = r.id;
+								}
+							}
+							$($t).jqGrid('setSelection', id);
+						}
+						//if key is down arrow
+						if(event.keyCode == 40){
+							r = target.nextSibling;
+							id ="";
+							if(r) {
+								if($(r).is(":hidden")) {
+									while(r) {
+										r = r.nextSibling;
+										if(!$(r).is(":hidden") && $(r).hasClass('jqgrow') ) {id = r.id;break;}
+									}
+								} else {
+									id = r.id;
+								}
+							}
+							$($t).jqGrid('setSelection', id);
+						}
+						// left
+						if(event.keyCode == 37 ){
+							if($t.p.treeGrid && $t.p.data[mind][expanded]) {
+								$(target).find("div.treeclick").trigger('click');
+							}
+						}
+						// right
+						if(event.keyCode == 39 ){
+							if($t.p.treeGrid && !$t.p.data[mind][expanded]) {
+								$(target).find("div.treeclick").trigger('click');
+							}
+						}
+						return false;
+					}
+					//check if enter or space was pressed on a tree node
+					else if((event.keyCode == 13 || event.keyCode == 32) ){
+						return false;
+					}
+				}
+			});
+		});
+	},
+	unbindKeys : function(){
+		return this.each(function(){
+			var $t = this;
+			$($t).unbind('keydown');
+		});
 	}
 });
 })(jQuery);
