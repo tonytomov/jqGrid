@@ -2609,6 +2609,13 @@ $.jgrid.extend({
 					});
 					if(t.p.datatype == 'local') {
 						var pos = t.p._index[rowid];
+						if(t.p.treeGrid) {
+							for(var key in t.p.treeReader ){
+								if(lcdata.hasOwnProperty(t.p.treeReader[key])) {
+									delete lcdata[t.p.treeReader[key]];
+								}
+							};
+						}
 						if(typeof(pos) != 'undefined') {
 							t.p.data[pos] = $.extend(true, t.p.data[pos], lcdata);
 						}
