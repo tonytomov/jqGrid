@@ -477,7 +477,7 @@ $.jgrid.extend({
 							try {
 								tmp =  $.unformat($(this),{rowId:rowid, colModel:cm[i]},i);
 							} catch (_) {
-								tmp = $(this).html();
+								tmp = $(this).text();
 							}
 						}
 						if($t.p.autoencode) { tmp = $.jgrid.htmlDecode(tmp); }
