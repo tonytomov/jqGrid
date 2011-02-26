@@ -378,7 +378,7 @@ $.jgrid.extend({
 								try {
 									tmp =  $.unformat($("td:eq("+i+")",obj.rows[ind]),{rowId:rowid, colModel:this},i);
 								} catch (_) {
-									tmp = $("td:eq("+i+")",obj.rows[ind]).html();
+									tmp = $("td:eq("+i+")",obj.rows[ind]).text();
 								}
 							}
 						}
