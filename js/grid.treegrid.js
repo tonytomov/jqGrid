@@ -1,128 +1,134 @@
-;(function($) {
-/*
-**
+/**
  * jqGrid extension - Tree Grid
  * Tony Tomov tony@trirand.com
- * http://trirand.com/blog/ 
+ * http://trirand.com/blog/
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
-**/ 
+**/
+
+/*global document, jQuery, $ */
+(function($) {
 $.jgrid.extend({
-	setTreeNode : function(rd, row){
+	setTreeNode : function(i, len){
 		return this.each(function(){
 			var $t = this;
-			if( !$t.grid || !$t.p.treeGrid ) { return; }
+			if( !$t.grid || !$t.p.treeGrid ) {return;}
 			var expCol = $t.p.expColInd,
 			expanded = $t.p.treeReader.expanded_field,
 			isLeaf = $t.p.treeReader.leaf_field,
 			level = $t.p.treeReader.level_field,
-			loaded = $t.p.treeReader.loaded;
-
-			row.level = rd[level];
-			
-			if($t.p.treeGridModel == 'nested') {
-				var lft = rd[$t.p.treeReader.left_field],
-				rgt = rd[$t.p.treeReader.right_field];
-				if(!rd[isLeaf]) {
-				// NS Model
-					rd[isLeaf] = (parseInt(rgt,10) === parseInt(lft,10)+1) ? 'true' : 'false';
-				}
-			} else {
-				//row.parent_id = rd[$t.p.treeReader.parent_id_field];
-			}
-			var curLevel = parseInt(rd[level],10), ident,lftpos;
-			if($t.p.tree_root_level === 0) {
-				ident = curLevel+1;
-				lftpos = curLevel;
-			} else {
-				ident = curLevel;
-				lftpos = curLevel -1;
-			}
-			var twrap = "<div class='tree-wrap tree-wrap-"+$t.p.direction+"' style='width:"+(ident*18)+"px;'>";
-			twrap += "<div style='"+($t.p.direction=="rtl" ? "right:" : "left:")+(lftpos*18)+"px;' class='ui-icon ";
-
-			if(rd[loaded] != undefined) {
-				if(rd[loaded]=="true" || rd[loaded]===true) {
-					rd[loaded] = true;
+			icon = $t.p.treeReader.icon_field,
+			loaded = $t.p.treeReader.loaded,  lft, rgt, curLevel, ident,lftpos, twrap,
+			ldat, lf;
+			while(i<len) {
+				var ind = $t.rows[i].id, dind = $t.p._index[ind], expan;
+				ldat = $t.p.data[dind];
+				//$t.rows[i].level = ldat[level];
+				if($t.p.treeGridModel == 'nested') {
+					lft = parseInt(ldat[$t.p.treeReader.left_field],10);
+					rgt = parseInt(ldat[$t.p.treeReader.right_field],10);
+					if(!ldat[isLeaf]) {
+					// NS Model
+						ldat[isLeaf] = (rgt === lft+1) ? 'true' : 'false';
+					}
 				} else {
-					rd[loaded] = false;
+					//row.parent_id = rd[$t.p.treeReader.parent_id_field];
 				}
-			}
-			if(rd[isLeaf] == "true" || rd[isLeaf] === true) {
-				twrap += $t.p.treeIcons.leaf+" tree-leaf'";
-				rd[isLeaf] = true;
-				rd[expanded] = false;
-			} else {
-				if(rd[expanded] == "true" || rd[expanded] === true) {
+				curLevel = parseInt(ldat[level],10);
+				if($t.p.tree_root_level === 0) {
+					ident = curLevel+1;
+					lftpos = curLevel;
+				} else {
+					ident = curLevel;
+					lftpos = curLevel -1;
+				}
+				twrap = "<div class='tree-wrap tree-wrap-"+$t.p.direction+"' style='width:"+(ident*18)+"px;'>";
+				twrap += "<div style='"+($t.p.direction=="rtl" ? "right:" : "left:")+(lftpos*18)+"px;' class='ui-icon ";
+
+
+				if(ldat[loaded] !== undefined) {
+					if(ldat[loaded]=="true" || ldat[loaded]===true) {
+						ldat[loaded] = true;
+					} else {
+						ldat[loaded] = false;
+					}
+				}
+				if(ldat[isLeaf] == "true" || ldat[isLeaf] === true) {
+					twrap += ((ldat[icon] !== undefined && ldat[icon] !== "") ? ldat[icon] : $t.p.treeIcons.leaf)+" tree-leaf treeclick'";
+					ldat[isLeaf] = true;
+					lf="leaf";
+				} else {
+					ldat[isLeaf] = false;
+					lf="";
+				}
+				ldat[expanded] = ((ldat[expanded] == "true" || ldat[expanded] === true) ? true : false) && ldat[loaded];
+				if(ldat[expanded] === true) {
 					twrap += $t.p.treeIcons.minus+" tree-minus treeclick'";
-					rd[expanded] = true;
 				} else {
 					twrap += $t.p.treeIcons.plus+" tree-plus treeclick'";
-					rd[expanded] = false;
 				}
-				rd[isLeaf] = false;
-			}
-			twrap += "</div></div>";
-			if(!$t.p.loadonce) {
-				rd[$t.p.localReader.id] = row.id;
-				$t.p.data.push(rd);
-				$t.p._index[row.id]=$t.p.data.length-1;
-			}
-			if(parseInt(rd[level],10) !== parseInt($t.p.tree_root_level,10)) {                
-				if(!$($t).jqGrid("isVisibleNode",rd)){ 
-					$(row).css("display","none");
-				}
-			}
-			
-			$("td:eq("+expCol+")",row).wrapInner("<span></span>").prepend(twrap);
-			$(".treeclick",row).bind("click",function(e){
-				var target = e.target || e.srcElement,
-				ind2 =$(target,$t.rows).closest("tr.jqgrow")[0].id,
-				pos = $t.p._index[ind2],
-				isLeaf = $t.p.treeReader.leaf_field,
-				expanded = $t.p.treeReader.expanded_field;
-				if(!$t.p.data[pos][isLeaf]){
-					if($t.p.data[pos][expanded]){
-						$($t).jqGrid("collapseRow",$t.p.data[pos]);
-						$($t).jqGrid("collapseNode",$t.p.data[pos]);
-					} else {
-						$($t).jqGrid("expandRow",$t.p.data[pos]);
-						$($t).jqGrid("expandNode",$t.p.data[pos]);
+				
+				twrap += "</div></div>";
+				$($t.rows[i].cells[expCol]).wrapInner("<span class='cell-wrapper"+lf+"'></span>").prepend(twrap);
+				if(curLevel !== parseInt($t.p.tree_root_level,10)) {
+					var pn = $($t).jqGrid('getNodeParent',ldat);
+					expan = pn && pn.hasOwnProperty(expanded) ? pn[expanded] : true;
+					if( !expan ){
+						$($t.rows[i]).css("display","none");
 					}
 				}
-				return false;
-			});
-			if($t.p.ExpandColClick === true) {
-			$("span", row).css("cursor","pointer").bind("click",function(e){
-				var target = e.target || e.srcElement,
-				ind2 =$(target,$t.rows).closest("tr.jqgrow")[0].id,
-				pos = $t.p._index[ind2],
-				isLeaf = $t.p.treeReader.leaf_field,
-				expanded = $t.p.treeReader.expanded_field;
-				if(!$t.p.data[pos][isLeaf]){
-					if($t.p.data[pos][expanded]){
-						$($t).jqGrid("collapseRow",$t.p.data[pos]);
-						$($t).jqGrid("collapseNode",$t.p.data[pos]);
-					} else {
-						$($t).jqGrid("expandRow",$t.p.data[pos]);
-						$($t).jqGrid("expandNode",$t.p.data[pos]);
-					}
+				$($t.rows[i].cells[expCol])
+					.find("div.treeclick")
+					.bind("click",function(e){
+						var target = e.target || e.srcElement,
+						ind2 =$(target,$t.rows).closest("tr.jqgrow")[0].id,
+						pos = $t.p._index[ind2];
+						if(!$t.p.data[pos][isLeaf]){
+							if($t.p.data[pos][expanded]){
+								$($t).jqGrid("collapseRow",$t.p.data[pos]);
+								$($t).jqGrid("collapseNode",$t.p.data[pos]);
+							} else {
+								$($t).jqGrid("expandRow",$t.p.data[pos]);
+								$($t).jqGrid("expandNode",$t.p.data[pos]);
+							}
+						}
+						return false;
+					});
+				if($t.p.ExpandColClick === true) {
+					$($t.rows[i].cells[expCol])
+						.find("span.cell-wrapper")
+						.css("cursor","pointer")
+						.bind("click",function(e) {
+							var target = e.target || e.srcElement,
+							ind2 =$(target,$t.rows).closest("tr.jqgrow")[0].id,
+							pos = $t.p._index[ind2];
+							if(!$t.p.data[pos][isLeaf]){
+								if($t.p.data[pos][expanded]){
+									$($t).jqGrid("collapseRow",$t.p.data[pos]);
+									$($t).jqGrid("collapseNode",$t.p.data[pos]);
+								} else {
+									$($t).jqGrid("expandRow",$t.p.data[pos]);
+									$($t).jqGrid("expandNode",$t.p.data[pos]);
+								}
+							}
+							$($t).jqGrid("setSelection",ind2);
+							return false;
+						});
 				}
-				$($t).jqGrid("setSelection",ind2);
-				return false;
-			});
+				i++;
 			}
+
 		});
 	},
 	setTreeGrid : function() {
 		return this.each(function (){
 			var $t = this, i=0, pico;
-			if(!$t.p.treeGrid) { return; }
-			if(!$t.p.treedatatype ) { $.extend($t.p,{treedatatype: $t.p.datatype}); }
-			$t.p.subGrid = false; $t.p.altRows =false;
-			$t.p.pgbuttons = false; $t.p.pginput = false;
-			$t.p.multiselect = false; $t.p.rowList = [];
+			if(!$t.p.treeGrid) {return;}
+			if(!$t.p.treedatatype ) {$.extend($t.p,{treedatatype: $t.p.datatype});}
+			$t.p.subGrid = false;$t.p.altRows =false;
+			$t.p.pgbuttons = false;$t.p.pginput = false;
+			$t.p.multiselect = false;$t.p.rowList = [];
 			pico = 'ui-icon-triangle-1-' + ($t.p.direction=="rtl" ? 'w' : 'e');
 			$t.p.treeIcons = $.extend({plus:pico,minus:'ui-icon-triangle-1-s',leaf:'ui-icon-radio-off'},$t.p.treeIcons || {});
 			if($t.p.treeGridModel == 'nested') {
@@ -132,7 +138,8 @@ $.jgrid.extend({
 					right_field: "rgt",
 					leaf_field: "isLeaf",
 					expanded_field: "expanded",
-					loaded: "loaded"
+					loaded: "loaded",
+					icon_field: "icon"
 				},$t.p.treeReader);
 			} else
 				if($t.p.treeGridModel == 'adjacency') {
@@ -141,7 +148,8 @@ $.jgrid.extend({
 						parent_id_field: "parent",
 						leaf_field: "isLeaf",
 						expanded_field: "expanded",
-						loaded: "loaded"
+						loaded: "loaded",
+						icon_field: "icon"
 				},$t.p.treeReader );
 			}
 			for (var key in $t.p.colModel){
@@ -153,7 +161,7 @@ $.jgrid.extend({
 					i++;
 				}
 			}
-			if(!$t.p.expColInd) { $t.p.expColInd = 0; }
+			if(!$t.p.expColInd) {$t.p.expColInd = 0;}
 			$.each($t.p.treeReader,function(i,n){
 				if(n){
 					$t.p.colNames.push(n);
@@ -165,7 +173,7 @@ $.jgrid.extend({
 	expandRow: function (record){
 		this.each(function(){
 			var $t = this;
-			if(!$t.grid || !$t.p.treeGrid) { return; }
+			if(!$t.grid || !$t.p.treeGrid) {return;}
 			var childern = $($t).jqGrid("getNodeChildren",record),
 			//if ($($t).jqGrid("isVisibleNode",record)) {
 			expanded = $t.p.treeReader.expanded_field;
@@ -182,7 +190,7 @@ $.jgrid.extend({
 	collapseRow : function (record) {
 		this.each(function(){
 			var $t = this;
-			if(!$t.grid || !$t.p.treeGrid) { return; }
+			if(!$t.grid || !$t.p.treeGrid) {return;}
 			var childern = $($t).jqGrid("getNodeChildren",record),
 			expanded = $t.p.treeReader.expanded_field;
 			$(childern).each(function(i){
@@ -199,7 +207,7 @@ $.jgrid.extend({
 		var result = [];
 		this.each(function(){
 			var $t = this;
-			if(!$t.grid || !$t.p.treeGrid) { return; }
+			if(!$t.grid || !$t.p.treeGrid) {return;}
 			switch ($t.p.treeGridModel) {
 				case 'nested' :
 					var level = $t.p.treeReader.level_field;
@@ -224,7 +232,7 @@ $.jgrid.extend({
 	getNodeDepth : function(rc) {
 		var ret = null;
 		this.each(function(){
-			if(!this.grid || !this.p.treeGrid) { return; }
+			if(!this.grid || !this.p.treeGrid) {return;}
 			var $t = this;
 			switch ($t.p.treeGridModel) {
 				case 'nested' :
@@ -242,7 +250,7 @@ $.jgrid.extend({
 		var result = null;
 		this.each(function(){
 			var $t = this;
-			if(!$t.grid || !$t.p.treeGrid) { return; }
+			if(!$t.grid || !$t.p.treeGrid) {return;}
 			switch ($t.p.treeGridModel) {
 				case 'nested' :
 					var lftc = $t.p.treeReader.left_field,
@@ -274,7 +282,7 @@ $.jgrid.extend({
 		var result = [];
 		this.each(function(){
 			var $t = this;
-			if(!$t.grid || !$t.p.treeGrid) { return; }
+			if(!$t.grid || !$t.p.treeGrid) {return;}
 			switch ($t.p.treeGridModel) {
 				case 'nested' :
 					var lftc = $t.p.treeReader.left_field,
@@ -304,7 +312,7 @@ $.jgrid.extend({
 		var result = [];
 		this.each(function(){
 			var $t = this, len;
-			if(!$t.grid || !$t.p.treeGrid) { return; }
+			if(!$t.grid || !$t.p.treeGrid) {return;}
 			switch ($t.p.treeGridModel) {
 				case 'nested' :
 					var lftc = $t.p.treeReader.left_field,
@@ -318,6 +326,7 @@ $.jgrid.extend({
 					});
 					break;
 				case 'adjacency' :
+					if(rc) {
 					result.push(rc);
 					var parent_id = $t.p.treeReader.parent_id_field,
 					dtid = $t.p.localReader.id;
@@ -330,6 +339,7 @@ $.jgrid.extend({
 							}
 						}
 					});
+					}
 					break;
 			}
 		});
@@ -339,7 +349,7 @@ $.jgrid.extend({
 	getNodeAncestors : function(rc) {
 		var ancestors = [];
 		this.each(function(){
-			if(!this.grid || !this.p.treeGrid) { return; }
+			if(!this.grid || !this.p.treeGrid) {return;}
 			var parent = $(this).jqGrid("getNodeParent",rc);
 			while (parent) {
 				ancestors.push(parent);
@@ -352,7 +362,7 @@ $.jgrid.extend({
 		var result = true;
 		this.each(function(){
 			var $t = this;
-			if(!$t.grid || !$t.p.treeGrid) { return; }
+			if(!$t.grid || !$t.p.treeGrid) {return;}
 			var ancestors = $($t).jqGrid("getNodeAncestors",rc),
 			expanded = $t.p.treeReader.expanded_field;
 			$(ancestors).each(function(){
@@ -366,12 +376,16 @@ $.jgrid.extend({
 		var result;
 		this.each(function(){
 			var $t = this;
-			if(!$t.grid || !$t.p.treeGrid) { return; }
+			if(!$t.grid || !$t.p.treeGrid) {return;}
 			var isLeaf = $t.p.treeReader.leaf_field;
-			if(rc.loaded !== undefined) {
-				result = rc.loaded;
-			} else if( rc[isLeaf] || $($t).jqGrid("getNodeChildren",rc).length > 0){
-				result = true;
+			if(rc !== undefined ) {
+				if(rc.loaded !== undefined) {
+					result = rc.loaded;
+				} else if( rc[isLeaf] || $($t).jqGrid("getNodeChildren",rc).length > 0){
+					result = true;
+				} else {
+					result = false;
+				}
 			} else {
 				result = false;
 			}
@@ -380,8 +394,14 @@ $.jgrid.extend({
 	},
 	expandNode : function(rc) {
 		return this.each(function(){
-			if(!this.grid || !this.p.treeGrid) { return; }
-			var expanded = this.p.treeReader.expanded_field;
+			if(!this.grid || !this.p.treeGrid) {return;}
+			var expanded = this.p.treeReader.expanded_field,
+			parent = this.p.treeReader.parent_id_field,
+			loaded = this.p.treeReader.loaded,
+			level = this.p.treeReader.level_field,
+			lft = this.p.treeReader.left_field,
+			rgt = this.p.treeReader.right_field;
+
 			if(!rc[expanded]) {
 				var id = $.jgrid.getAccessor(rc,this.p.localReader.id);
 				var rc1 = $("#"+id,this.grid.bDiv)[0];
@@ -395,11 +415,12 @@ $.jgrid.extend({
 					this.p.treeANode = rc1.rowIndex;
 					this.p.datatype = this.p.treedatatype;
 					if(this.p.treeGridModel == 'nested') {
-						$(this).jqGrid("setGridParam",{postData:{nodeid:id,n_left:rc.lft,n_right:rc.rgt,n_level:rc.level}});
+						$(this).jqGrid("setGridParam",{postData:{nodeid:id,n_left:rc[lft],n_right:rc[rgt],n_level:rc[level]}});
 					} else {
-						$(this).jqGrid("setGridParam",{postData:{nodeid:id,parentid:rc.parent_id,n_level:rc.level}});
+						$(this).jqGrid("setGridParam",{postData:{nodeid:id,parentid:rc[parent],n_level:rc[level]}} );
 					}
 					$(this).trigger("reloadGrid");
+					rc[loaded] = true;
 					if(this.p.treeGridModel == 'nested') {
 						$(this).jqGrid("setGridParam",{postData:{nodeid:'',n_left:'',n_right:'',n_level:''}});
 					} else {
@@ -411,7 +432,7 @@ $.jgrid.extend({
 	},
 	collapseNode : function(rc) {
 		return this.each(function(){
-			if(!this.grid || !this.p.treeGrid) { return; }
+			if(!this.grid || !this.p.treeGrid) {return;}
 			if(rc.expanded) {
 				rc.expanded = false;
 				var id = $.jgrid.getAccessor(rc,this.p.localReader.id);
@@ -422,7 +443,7 @@ $.jgrid.extend({
 	},
 	SortTree : function( sortname, newDir, st, datefmt) {
 		return this.each(function(){
-			if(!this.grid || !this.p.treeGrid) { return; }
+			if(!this.grid || !this.p.treeGrid) {return;}
 			var i, len,
 			rec, records = [], $t = this, query, roots,
 			rt = $(this).jqGrid("getRootNodes");
@@ -441,12 +462,12 @@ $.jgrid.extend({
 				var id  = $.jgrid.getAccessor(this,$t.p.localReader.id);
 				$('#'+$t.p.id+ ' tbody tr:eq('+index+')').after($('tr#'+id,$t.grid.bDiv));
 			});
-			query = null; roots=null;records=null;
+			query = null;roots=null;records=null;
 		});
 	},
 	collectChildrenSortTree : function(records, rec, sortname, newDir,st, datefmt) {
 		return this.each(function(){
-			if(!this.grid || !this.p.treeGrid) { return; }
+			if(!this.grid || !this.p.treeGrid) {return;}
 			var i, len,
 			child, ch, query, children;
 			ch = $(this).jqGrid("getNodeChildren",rec);
@@ -465,26 +486,103 @@ $.jgrid.extend({
 		var success=false;
 		this.each(function(){
 			var t = this;
-			if(!t.grid || !t.p.treeGrid) { return; }
+			if(!t.grid || !t.p.treeGrid) {return;}
 			success = $(t).jqGrid("setRowData",rowid,data);
 		});
 		return success;
 	},
 	delTreeNode : function (rowid) {
 		return this.each(function () {
-			var $t = this;
-			if(!$t.grid || !$t.p.treeGrid) { return; }
-			var rc = $($t).jqGrid("getInd",rowid,true);
-			if (rc) {
-				var dr = $($t).jqGrid("getNodeChildren",rc);
+			var $t = this, rid = $t.p.localReader.id;
+			if(!$t.grid || !$t.p.treeGrid) {return;}
+			var rc = $t.p._index[rowid];
+			if (rc !== undefined) {
+				var dr = $($t).jqGrid("getFullTreeNode",$t.p.data[rc]);
 				if(dr.length>0){
 					for (var i=0;i<dr.length;i++){
-						$($t).jqGrid("delRowData",dr[i].id);
+						$($t).jqGrid("delRowData",dr[i][rid]);
 					}
 				}
-				$($t).jqGrid("delRowData",rc.id);
 			}
 		});
+	},
+	addChildNode : function( nodeid, parentid, data, leaf ) {
+		//return this.each(function(){
+		var $t = this[0];
+		if(data) {
+			if(typeof(leaf) !== "boolean") {leaf = true;}
+			// we suppose tha the id is autoincremet and
+			var expanded = $t.p.treeReader.expanded_field,
+			isLeaf = $t.p.treeReader.leaf_field,
+			level = $t.p.treeReader.level_field,
+			icon = $t.p.treeReader.icon_field,
+			parent = $t.p.treeReader.parent_id_field,
+			loaded = $t.p.treeReader.loaded,
+			method, parentindex, parentdata, parentlevel, i, len, max=0, rowind = parentid;
+
+			if ( !nodeid ) {
+				i = $t.p.data.length-1;
+				if(	i>= 0 ) {
+					while(i>=0){max = Math.max(max, parseInt($t.p.data[i][$t.p.localReader.id],10)); i--;}
+				}
+				nodeid = max+1;
+			}
+			var prow = $($t).jqGrid('getInd', parentid);
+			if( $t.p.treeGridModel === "adjacency") {
+				// if not a parent we assume root
+				if ( parentid === undefined  || parentid === null || parentid==="") {
+					parentid = null;
+					rowind = null;
+					method = 'last';
+					parentlevel = $t.p.tree_root_level;
+					i = $t.p.data.length+1;
+				} else {
+					method = 'after';
+					parentindex = $t.p._index[parentid];
+					parentdata = $t.p.data[parentindex];
+					parentid = parentdata[$t.p.localReader.id];
+					parentlevel = parentdata[level]+1;
+					if(!parentdata[expanded]) {
+						// expand the node and get the last item on it
+					}
+					var childs = $($t).jqGrid('getNodeChildren', parentdata);
+					// if there are child nodes get the last index of it
+					if(childs.length) {
+						i = childs[childs.length-1][$t.p.localReader.id];
+						rowind = i;
+						i = $($t).jqGrid('getInd',rowind)+1;
+					} else {
+						i = $($t).jqGrid('getInd', parentid)+1;
+					}
+					// if the node is leaf
+					if(parentdata[isLeaf]) {
+						parentdata[expanded] = true;
+						//var prow = $($t).jqGrid('getInd', parentid);
+						$($t.rows[prow])
+							.find("span.cell-wrapperleaf").removeClass("cell-wrapperleaf").addClass("cell-wrapper")
+							.end()
+							.find("div.tree-leaf").removeClass($t.p.treeIcons.leaf+" tree-leaf").addClass($t.p.treeIcons.minus+" tree-minus");
+						$t.p.data[parentindex][isLeaf] = false;
+					}
+				}
+				len = i+1;
+			}
+			data[expanded] = false;
+			data[loaded] = true;
+			data[level] = parentlevel;
+			data[isLeaf] = leaf;
+			data[parent] = parentid;
+			if( parentid === null || $($t).jqGrid("isNodeLoaded",parentdata) ) {
+					$($t).jqGrid('addRowData', nodeid, data, method, rowind);
+					$($t).jqGrid('setTreeNode', i, len);
+			}
+			if(parentdata && !parentdata[expanded]) {
+				$($t.rows[prow])
+					.find("div.treeclick")
+					.trigger("click");
+			}
+		}
+		//});
 	}
 });
 })(jQuery);
