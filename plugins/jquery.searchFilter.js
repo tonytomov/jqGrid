@@ -429,7 +429,6 @@ jQuery.fn.searchFilter = function(fields, options) {
                     var tOp = jQuery(this).find("select[name='op'] :selected").val();
                     var tData = jQuery(this).find("input.vdata,select.vdata :selected").val();
                     tData += "";
-                    tData = tData.replace(/\\/g,'\\\\').replace(/\"/g,'\\"');
                     if (!opts.stringResult) {
                         ruleGroup.rules.push({
                             field: tField,
@@ -437,6 +436,7 @@ jQuery.fn.searchFilter = function(fields, options) {
                             data: tData
                         });
                     } else {
+						tData = tData.replace(/\\/g,'\\\\').replace(/\"/g,'\\"');
                         if (i > 0) ruleGroup += ",";
                         ruleGroup += "{\"field\":\"" + tField + "\",";
                         ruleGroup += "\"op\":\"" + tOp + "\",";

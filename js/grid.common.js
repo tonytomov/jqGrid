@@ -7,6 +7,8 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
 */
+/*global jQuery, $ */
+
 $.extend($.jgrid,{
 // Modal functions
 	showModal : function(h) {
@@ -97,11 +99,12 @@ $.extend($.jgrid,{
 		if (p.width === 0 || !p.width) {p.width = 300;}
 		if(p.height === 0 || !p.height) {p.height =200;}
 		if(!p.zIndex) {
-			var parentZ = $(insertSelector).parents("*[role=dialog]").first().css("z-index")
-			if(parentZ)
-				p.zIndex = parseInt(parentZ)+1
-			else
+			var parentZ = $(insertSelector).parents("*[role=dialog]").first().css("z-index");
+			if(parentZ) {
+				p.zIndex = parseInt(parentZ,10)+1;
+			} else {
 				p.zIndex = 950;
+		}
 		}
 		var rtlt = 0;
 		if( rtlsup && coord.left && !appendsel) {
@@ -136,7 +139,7 @@ $.extend($.jgrid,{
 			} else {
 				try {
 					$(mw).resizable({handles: 'se, sw',alsoResize: aIDs.scrollelm ? "#"+aIDs.scrollelm : false});
-				} catch (e) {}
+				} catch (r) {}
 			}
 		}
 		if(p.closeOnEscape === true){
@@ -250,19 +253,14 @@ $.extend($.jgrid,{
 			jqm:jm
 		});
 		if($.isFunction(mopt.afterOpen) ) { mopt.afterOpen(); }
-		try{ $("#info_dialog").focus();} catch (e){}
+		try{ $("#info_dialog").focus();} catch (m){}
 	},
 // Form Functions
 	createEl : function(eltype,options,vl,autowidth, ajaxso) {
 		var elem = "";
-		if(options.defaultValue) { delete options.defaultValue; }
 		function bindEv (el, opt) {
 			if($.isFunction(opt.dataInit)) {
-			// datepicker fix 
-				el.id = opt.id;
 				opt.dataInit(el);
-				delete opt.id;
-				delete opt.dataInit;
 			}
 			if(opt.dataEvents) {
 				$.each(opt.dataEvents, function() {
@@ -272,9 +270,16 @@ $.extend($.jgrid,{
 						$(el).bind(this.type, this.fn);
 					}
 				});
-				delete opt.dataEvents;
 			}
 			return opt;
+		}
+		function setAttributes(elm, atr) {
+			var exclude = ['dataInit','dataEvents', 'value','dataUrl', 'buildSelect'];
+			$.each(atr, function(key, value){
+				if($.inArray(key, exclude) === -1) {
+					$(elem).attr(key,value);
+				}
+			});
 		}
 		switch (eltype)
 		{
@@ -286,8 +291,9 @@ $.extend($.jgrid,{
 				if(!options.rows) { options.rows = 2; }
 				if(vl=='&nbsp;' || vl=='&#160;' || (vl.length==1 && vl.charCodeAt(0)==160)) {vl="";}
 				elem.value = vl;
+				setAttributes(elem, options);
 				options = bindEv(elem,options);
-				$(elem).attr(options).attr({"role":"textbox","multiline":"true"});
+				$(elem).attr({"role":"textbox","multiline":"true"});
 			break;
 			case "checkbox" : //what code for simple checkbox
 				elem = document.createElement("input");
@@ -310,10 +316,10 @@ $.extend($.jgrid,{
 					}
 					elem.value = cbval[0];
 					$(elem).attr("offval",cbval[1]);
-					try {delete options.value;} catch (e){}
 				}
+				setAttributes(elem, options);
 				options = bindEv(elem,options);
-				$(elem).attr(options).attr("role","checkbox");
+				$(elem).attr("role","checkbox");
 			break;
 			case "select" :
 				elem = document.createElement("select");
@@ -330,17 +336,16 @@ $.extend($.jgrid,{
 						type : "GET",
 						dataType: "html",
 						success: function(data,status){
-							try {delete options.dataUrl; delete options.value;} catch (e){}
 							var a;
 							if(typeof(options.buildSelect) != "undefined") {
 								var b = options.buildSelect(data);
 								a = $(b).html();
-								delete options.buildSelect;
 							} else {
 								a = $(data).html();
 							}
 							if(a) {
 								$(elem).append(a);
+								setAttributes(elem, options);
 								options = bindEv(elem,options);
 								if(typeof options.size === 'undefined') { options.size =  msl ? 3 : 1;}
 								if(msl) {
@@ -349,10 +354,10 @@ $.extend($.jgrid,{
 								} else {
 									ovm[0] = $.trim(vl);
 								}
-								$(elem).attr(options);
+								//$(elem).attr(options);
 								setTimeout(function(){
 									$("option",elem).each(function(i){
-										if(i===0) { this.selected = ""; }
+										//if(i===0) { this.selected = ""; }
 										$(this).attr("role","option");
 										if($.inArray($.trim($(this).text()),ovm) > -1 || $.inArray($.trim($(this).val()),ovm) > -1 ) {
 											this.selected= "selected";
@@ -401,9 +406,8 @@ $.extend($.jgrid,{
 							}
 						}
 					}
+					setAttributes(elem, options);
 					options = bindEv(elem,options);
-					try {delete options.value;} catch (e){}
-					$(elem).attr(options);
 				}
 			break;
 			case "text" :
@@ -415,20 +419,21 @@ $.extend($.jgrid,{
 				elem = document.createElement("input");
 				elem.type = eltype;
 				elem.value = vl;
+				setAttributes(elem, options);
 				options = bindEv(elem,options);
 				if(eltype != "button"){
 					if(autowidth) {
 						if(!options.size) { $(elem).css({width:"98%"}); }
 					} else if (!options.size) { options.size = 20; }
 				}
-				$(elem).attr(options).attr("role",role);
+				$(elem).attr("role",role);
 			break;
 			case "image" :
 			case "file" :
 				elem = document.createElement("input");
 				elem.type = eltype;
+				setAttributes(elem, options);
 				options = bindEv(elem,options);
-				$(elem).attr(options);
 				break;
 			case "custom" :
 				elem = document.createElement("span");
@@ -558,19 +563,24 @@ $.extend($.jgrid,{
 		}
 		return true;
 	},
-	checkValues : function(val, valref,g) {
+	checkValues : function(val, valref,g, customobject, nam) {
 		var edtrul,i, nm, dft, len;
-		if(typeof(valref)=='string'){
-			for( i =0, len=g.p.colModel.length;i<len; i++){
-				if(g.p.colModel[i].name==valref) {
-					edtrul = g.p.colModel[i].editrules;
-					valref = i;
-					try { nm = g.p.colModel[i].formoptions.label; } catch (e) {}
-					break;
+		if(typeof(customobject) === "undefined") {
+			if(typeof(valref)=='string'){
+				for( i =0, len=g.p.colModel.length;i<len; i++){
+					if(g.p.colModel[i].name==valref) {
+						edtrul = g.p.colModel[i].editrules;
+						valref = i;
+						try { nm = g.p.colModel[i].formoptions.label; } catch (e) {}
+						break;
+					}
 				}
+			} else if(valref >=0) {
+				edtrul = g.p.colModel[valref].editrules;
 			}
-		} else if(valref >=0) {
-			edtrul = g.p.colModel[valref].editrules;
+		} else {
+			edtrul = customobject;
+			nm = nam===undefined ? "_" : nam;
 		}
 		if(edtrul) {
 			if(!nm) { nm = g.p.colNames[valref]; }

@@ -88,7 +88,8 @@ $.jgrid.extend({
 			uid = hid.substring(0,strpos+1),
 			num = parseInt(hid.substring(strpos+1),10)+1,
 			minus = grp.minusicon,
-			plus = grp.plusicon;
+			plus = grp.plusicon,
+			collapsed = false;
 			if( $("#"+hid+" span").hasClass(minus) ) {
 				if(grp.showSummaryOnHide && grp.groupSummary[0]) {
 					$("#"+hid).nextUntil(".jqfoot").hide();
@@ -102,7 +103,8 @@ $.jgrid.extend({
 				$("#"+hid+" span").removeClass(plus).addClass(minus);
 				collapsed = false;
 			}
-			if( $t.p.onClickGroup) { $t.p.onClickGroup.call($t, hid , collapsed); }
+			if( $.isFunction($t.p.onClickGroup)) { $t.p.onClickGroup.call($t, hid , collapsed); }
+
 		});
 		return false;
 	},
