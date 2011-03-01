@@ -3134,11 +3134,13 @@ $.jgrid.extend({
 	bindKeys : function( settings ){
 		var o = $.extend({
 			onEnter: null,
-			onSpace: null
+			onSpace: null,
+			scrollingRows : true
 		},settings || {});
 		return this.each(function(){
 			var $t = this;
 			if( !$('body').is('[role]') ){$('body').attr('role','application');}
+			$t.p.scrollrows = o.scrollingRows;
 			$($t).keydown(function(event){
 				var target = $($t).find('tr[tabindex=0]')[0], id, r, mind,
 				expanded = $t.p.treeReader.expanded_field;
@@ -3147,14 +3149,13 @@ $.jgrid.extend({
 					mind = $t.p._index[target.id];
 					if(event.keyCode === 37 || event.keyCode === 38 || event.keyCode === 39 || event.keyCode === 40){
 						// up key
-						if(event.keyCode == 38 ){
+						if(event.keyCode === 38 ){
 							r = target.previousSibling;
 							id = "";
 							if(r) {
 								if($(r).is(":hidden")) {
 									while(r) {
 										r = r.previousSibling;							//id = $(target).next().attr("id");
-
 										if(!$(r).is(":hidden") && $(r).hasClass('jqgrow')) {id = r.id;break;}
 									}
 								} else {
@@ -3164,7 +3165,7 @@ $.jgrid.extend({
 							$($t).jqGrid('setSelection', id);
 						}
 						//if key is down arrow
-						if(event.keyCode == 40){
+						if(event.keyCode === 40){
 							r = target.nextSibling;
 							id ="";
 							if(r) {
@@ -3180,23 +3181,31 @@ $.jgrid.extend({
 							$($t).jqGrid('setSelection', id);
 						}
 						// left
-						if(event.keyCode == 37 ){
+						if(event.keyCode === 37 ){
 							if($t.p.treeGrid && $t.p.data[mind][expanded]) {
 								$(target).find("div.treeclick").trigger('click');
 							}
 						}
 						// right
-						if(event.keyCode == 39 ){
+						if(event.keyCode === 39 ){
 							if($t.p.treeGrid && !$t.p.data[mind][expanded]) {
 								$(target).find("div.treeclick").trigger('click');
 							}
 						}
 						return false;
 					}
-					//check if enter or space was pressed on a tree node
-					else if((event.keyCode == 13 || event.keyCode == 32) ){
+					//check if enter was pressed on a grid or treegrid node
+					else if( event.keyCode === 13 ){
+						if($.isFunction(o.onEnter)) {
+							o.onEnter.call($t, $t.p.selrow);
+						}
 						return false;
-					}
+					} else if(event.keyCode === 32) {
+						if($.isFunction(o.onSpace)) {
+							o.onSpace.call($t, $t.p.selrow);
+					    }
+						return false;
+				    }
 				}
 			});
 		});
