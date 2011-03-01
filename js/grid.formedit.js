@@ -1489,12 +1489,6 @@ $.jgrid.extend({
 								rp_ge.processing=false;
 								$("#dData", "#"+dtbl+"_2").removeClass('ui-state-active');
 								if(ret[0]) { $.jgrid.hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: rp_ge.onClose}); }
-							},
-							error:function(xhr,st,err){
-								$("#DelError>td","#"+dtbl).html(st+ " : "+err);
-								$("#DelError","#"+dtbl).show();
-								rp_ge.processing=false;
-									$("#dData", "#"+dtbl+"_2").removeClass('ui-state-active');
 							}
 						}, $.jgrid.ajaxOptions, p.ajaxDelOptions);
 
