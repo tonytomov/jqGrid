@@ -506,11 +506,10 @@ $.jgrid.extend({
 			}
 		});
 	},
-	addChildNode : function( nodeid, parentid, data, leaf ) {
+	addChildNode : function( nodeid, parentid, data ) {
 		//return this.each(function(){
 		var $t = this[0];
 		if(data) {
-			if(typeof(leaf) !== "boolean") {leaf = true;}
 			// we suppose tha the id is autoincremet and
 			var expanded = $t.p.treeReader.expanded_field,
 			isLeaf = $t.p.treeReader.leaf_field,
@@ -570,7 +569,7 @@ $.jgrid.extend({
 			data[expanded] = false;
 			data[loaded] = true;
 			data[level] = parentlevel;
-			data[isLeaf] = leaf;
+			data[isLeaf] = true;
 			data[parent] = parentid;
 			if( parentid === null || $($t).jqGrid("isNodeLoaded",parentdata) ) {
 					$($t).jqGrid('addRowData', nodeid, data, method, rowind);
