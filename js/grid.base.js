@@ -3157,7 +3157,7 @@ $.jgrid.extend({
 							if(r) {
 								if($(r).is(":hidden")) {
 									while(r) {
-										r = r.previousSibling;							//id = $(target).next().attr("id");
+										r = r.previousSibling;
 										if(!$(r).is(":hidden") && $(r).hasClass('jqgrow')) {id = r.id;break;}
 									}
 								} else {
