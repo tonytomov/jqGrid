@@ -2044,9 +2044,12 @@ $.fn.jqGrid = function( pin ) {
 					$(ts.rows).each(function(i) {
 						if ( i>0 ) {
 							if(!$(this).hasClass("subgrid") && !$(this).hasClass("jqgroup")){
+                                                           //only add if not already in the selected rows
+                                                           if (!$(this).hasClass("ui-state-highlight") && $(this).attr("aria-selected") != "true") {
 								$(this).addClass("ui-state-highlight").attr("aria-selected","true");
 								ts.p.selarrrow.push(this.id);
 								ts.p.selrow = this.id;
+                                                            }
 							}
 						}
 					});
@@ -2461,6 +2464,9 @@ $.jgrid.extend({
 				}
 			}
 			if(!$t.p.multiselect) {
+                             //unselect selectall checkbox when selecting/deselecting a specific row
+                            $('#cb_' + $t.id).removeAttr('checked');
+
 				if(pt.className !== "ui-subgrid") {
 					if( $t.p.selrow != pt.id) {
 						$($t.rows.namedItem($t.p.selrow)).removeClass("ui-state-highlight").attr({"aria-selected":"false", "tabindex" : "-1"});
