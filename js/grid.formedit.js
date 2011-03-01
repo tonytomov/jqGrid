@@ -550,7 +550,7 @@ $.jgrid.extend({
 				if(cnt>0) { $("#id_g","#"+frmtb).val(rowid); }
 			}
 			function postIt() {
-				var copydata, ret=[true,"",""], onCS = {}, opers = $t.p.prmNames, idname, oper, key;
+				var copydata, ret=[true,"",""], onCS = {}, opers = $t.p.prmNames, idname, oper, key, selr;
 				if($.isFunction(rp_ge.beforeCheckValues)) {
 					var retvals = rp_ge.beforeCheckValues(postdata,$("#"+frmgr),postdata[$t.p.id+"_id"] == "_empty" ? opers.addoper : opers.editoper);
 					if(retvals && typeof(retvals) === 'object') { postdata = retvals; }
@@ -581,6 +581,15 @@ $.jgrid.extend({
 					}
 					delete postdata[$t.p.id+"_id"];
 					postdata = $.extend(postdata,rp_ge.editData,onCS);
+					if($t.p.treeGrid === true && postdata[oper] == opers.addoper) {
+						selr = $($t).jqGrid("getGridParam", 'selrow');
+						postdata[$t.p.treeReader.parent_id_field] = selr;
+					} else {
+						//
+						if(postdata.hasOwnProperty($t.p.treeReader.parent_id_field)) {
+							delete postdata[$t.p.treeReader.parent_id_field];
+						}
+					}
 
 					var ajaxOptions = $.extend({
 						url: rp_ge.url ? rp_ge.url : $($t).jqGrid('getGridParam','editurl'),
@@ -633,7 +642,13 @@ $.jgrid.extend({
 										$.jgrid.hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal,onClose: rp_ge.onClose});
 									} else if (rp_ge.clearAfterAdd) {
 										if(rp_ge.reloadAfterSubmit) { $($t).trigger("reloadGrid"); }
-										else { $($t).jqGrid("addRowData",ret[2],postdata,p.addedrow); }
+										else {
+											if($t.p.treeGrid === true){
+												$($t).jqGrid("addChildNode",ret[2],selr,postdata );
+											} else {
+												$($t).jqGrid("addRowData",ret[2],postdata,p.addedrow);
+											}
+										}
 										fillData("_empty",$t,frmgr);
 									} else {
 										if(rp_ge.reloadAfterSubmit) { $($t).trigger("reloadGrid"); }
