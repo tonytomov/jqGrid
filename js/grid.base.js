@@ -2614,7 +2614,7 @@ $.jgrid.extend({
 								if(lcdata.hasOwnProperty(t.p.treeReader[key])) {
 									delete lcdata[t.p.treeReader[key]];
 								}
-							};
+						}
 						}
 						if(typeof(pos) != 'undefined') {
 							t.p.data[pos] = $.extend(true, t.p.data[pos], lcdata);
@@ -3135,6 +3135,8 @@ $.jgrid.extend({
 		var o = $.extend({
 			onEnter: null,
 			onSpace: null,
+			onLeftKey: null,
+			onRightKey: null,
 			scrollingRows : true
 		},settings || {});
 		return this.each(function(){
@@ -3185,12 +3187,18 @@ $.jgrid.extend({
 							if($t.p.treeGrid && $t.p.data[mind][expanded]) {
 								$(target).find("div.treeclick").trigger('click');
 							}
+							if($.isFunction(o.onLeftKey)) {
+								o.onLeftKey.call($t, $t.p.selrow);
+						}
 						}
 						// right
 						if(event.keyCode === 39 ){
 							if($t.p.treeGrid && !$t.p.data[mind][expanded]) {
 								$(target).find("div.treeclick").trigger('click');
 							}
+							if($.isFunction(o.onRightKey)) {
+								o.onRightKey.call($t, $t.p.selrow);
+						}
 						}
 						return false;
 					}
