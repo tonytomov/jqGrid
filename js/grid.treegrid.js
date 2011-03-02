@@ -517,7 +517,7 @@ $.jgrid.extend({
 			icon = $t.p.treeReader.icon_field,
 			parent = $t.p.treeReader.parent_id_field,
 			loaded = $t.p.treeReader.loaded,
-			method, parentindex, parentdata, parentlevel, i, len, max=0, rowind = parentid;
+			method, parentindex, parentdata, parentlevel, i, len, max=0, rowind = parentid, leaf;
 
 			if ( !nodeid ) {
 				i = $t.p.data.length-1;
@@ -528,6 +528,7 @@ $.jgrid.extend({
 			}
 			var prow = $($t).jqGrid('getInd', parentid);
 			if( $t.p.treeGridModel === "adjacency") {
+				leaf = false;
 				// if not a parent we assume root
 				if ( parentid === undefined  || parentid === null || parentid==="") {
 					parentid = null;
@@ -555,6 +556,7 @@ $.jgrid.extend({
 					}
 					// if the node is leaf
 					if(parentdata[isLeaf]) {
+						leaf = true;
 						parentdata[expanded] = true;
 						//var prow = $($t).jqGrid('getInd', parentid);
 						$($t.rows[prow])
@@ -562,6 +564,7 @@ $.jgrid.extend({
 							.end()
 							.find("div.tree-leaf").removeClass($t.p.treeIcons.leaf+" tree-leaf").addClass($t.p.treeIcons.minus+" tree-minus");
 						$t.p.data[parentindex][isLeaf] = false;
+						parentdata[loaded] = true;
 					}
 				}
 				len = i+1;
@@ -571,7 +574,7 @@ $.jgrid.extend({
 			data[level] = parentlevel;
 			data[isLeaf] = true;
 			data[parent] = parentid;
-			if( parentid === null || $($t).jqGrid("isNodeLoaded",parentdata) ) {
+			if( parentid === null || $($t).jqGrid("isNodeLoaded",parentdata) || leaf ) {
 					$($t).jqGrid('addRowData', nodeid, data, method, rowind);
 					$($t).jqGrid('setTreeNode', i, len);
 			}
