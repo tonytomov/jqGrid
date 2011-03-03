@@ -451,7 +451,7 @@ $.extend($.jgrid,{
 		this._compareValues=function(func,f,v,how,t){
 			var fld;
 			if(_useProperties){
-				fld='this.'+f;
+				fld='jQuery.jgrid.getAccessor(this,\''+f+'\')';
 			}else{
 				fld='this';
 			}
@@ -515,7 +515,7 @@ $.extend($.jgrid,{
 			var val = (v===undefined || v===null) ? f: v,
 			length=_trim ? $.trim(val.toString()).length : val.toString().length;
 			if(_useProperties){
-				self._append(self._getStr('this.'+f)+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(v)+'"'));
+				self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(v)+'"'));
 			}else{
 				length=_trim?$.trim(v.toString()).length:v.toString().length;
 				self._append(self._getStr('this')+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(f)+'"'));
@@ -528,7 +528,7 @@ $.extend($.jgrid,{
 			var val = (v===undefined || v===null) ? f: v,
 			length=_trim ? $.trim(val.toString()).length:val.toString().length;
 			if(_useProperties){
-				self._append(self._getStr('this.'+f)+'.substr('+self._getStr('this.'+f)+'.length-'+length+','+length+') == "'+self._toStr(v)+'"');
+				self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.substr('+self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.length-'+length+','+length+') == "'+self._toStr(v)+'"');
 			} else {
 				self._append(self._getStr('this')+'.substr('+self._getStr('this')+'.length-"'+self._toStr(f)+'".length,"'+self._toStr(f)+'".length) == "'+self._toStr(f)+'"');
 			}
@@ -537,7 +537,7 @@ $.extend($.jgrid,{
 		};
 		this.contains=function(f,v){
 			if(_useProperties){
-				self._append(self._getStr('this.'+f)+'.indexOf("'+self._toStr(v)+'",0) > -1');
+				self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.indexOf("'+self._toStr(v)+'",0) > -1');
 			}else{
 				self._append(self._getStr('this')+'.indexOf("'+self._toStr(f)+'",0) > -1');
 			}
