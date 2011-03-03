@@ -89,18 +89,39 @@ $.jgrid.extend({
 			num = parseInt(hid.substring(strpos+1),10)+1,
 			minus = grp.minusicon,
 			plus = grp.plusicon,
+			tar = $("#"+hid),
+			r = tar[0].nextSibling,
+			tarspan = $("#"+hid+" span"),
 			collapsed = false;
-			if( $("#"+hid+" span").hasClass(minus) ) {
+			if( tarspan.hasClass(minus) ) {
 				if(grp.showSummaryOnHide && grp.groupSummary[0]) {
-					$("#"+hid).nextUntil(".jqfoot").hide();
+					if(r){
+						while(r) {
+							if($(r).hasClass('jqfoot') ) { break; }
+							$(r).hide();
+							r = r.nextSibling;
+						}
+					}
 				} else  {
-					$("#"+hid).nextUntil("#"+uid+String(num)).hide();
+					if(r){
+						while(r) {
+							if($(r).attr('id') ==uid+String(num) ) { break; }
+							$(r).hide();
+							r = r.nextSibling;
 				}
-				$("#"+hid+" span").removeClass(minus).addClass(plus);
+					}
+				}
+				tarspan.removeClass(minus).addClass(plus);
 				collapsed = true;
 			} else {
-				$("#"+hid).nextUntil("#"+uid+String(num)).show();
-				$("#"+hid+" span").removeClass(plus).addClass(minus);
+				if(r){
+					while(r) {
+						if($(r).attr('id') ==uid+String(num) ) { break; }
+						$(r).show();
+						r = r.nextSibling;
+					}
+				}
+				tarspan.removeClass(plus).addClass(minus);
 				collapsed = false;
 			}
 			if( $.isFunction($t.p.onClickGroup)) { $t.p.onClickGroup.call($t, hid , collapsed); }
