@@ -10,6 +10,25 @@
 $.jgrid.extend({
 //Editing
 	editRow : function(rowid,keys,oneditfunc,succesfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
+		// Compatible mode old versions
+		var settings = {
+			"keys" : keys || false,
+			"oneditfunc" : oneditfunc || null,
+			"successfunc" : succesfunc || null,
+			"url" : url || null,
+			"extraparam" : extraparam || {},
+			"aftersavefunc" : aftersavefunc || null,
+			"errorfunc": errorfunc || null,
+			"afterrestorefunc" : afterrestorefunc|| null
+		},
+		args = $.makeArray(arguments).slice(1), o;
+
+		if(args[0] && typeof(args[0]) == "object" && !$.isFunction(args[0])) {
+			o = $.extend(settings,args[0]);
+		} else {
+			o = settings;
+		}
+		// End compatible
 		return this.each(function(){
 			var $t = this, nm, tmp, editable, cnt=0, focus=null, svr={}, ind,cm;
 			if (!$t.grid ) { return; }
@@ -54,19 +73,19 @@ $.jgrid.extend({
 					svr.id = rowid; $t.p.savedRow.push(svr);
 					$(ind).attr("editable","1");
 					$("td:eq("+focus+") input",ind).focus();
-					if(keys===true) {
+					if(o.keys===true) {
 						$(ind).bind("keydown",function(e) {
 							if (e.keyCode === 27) {$($t).jqGrid("restoreRow",rowid, afterrestorefunc);}
 							if (e.keyCode === 13) {
 								var ta = e.target;
 								if(ta.tagName == 'TEXTAREA') { return true; }
-								$($t).jqGrid("saveRow",rowid,succesfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc );
+								$($t).jqGrid("saveRow", o );
 								return false;
 							}
 							e.stopPropagation();
 						});
 					}
-					if( $.isFunction(oneditfunc)) { oneditfunc.call($t, rowid); }
+					if( $.isFunction(o.oneditfunc)) { o.oneditfunc.call($t, rowid); }
 				}
 			}
 		});
@@ -102,7 +121,7 @@ $.jgrid.extend({
 			$("td",ind).each(function(i) {
 				cm = $t.p.colModel[i];
 				nm = cm.name;
-				if ( nm != 'cb' && nm != 'subgrid' && cm.editable===true && nm != 'rn') {
+				if ( nm != 'cb' && nm != 'subgrid' && cm.editable===true && nm != 'rn' && !$(this).hasClass('not-editable-cell')) {
 					switch (cm.edittype) {
 						case "checkbox":
 							var cbv = ["Yes","No"];
@@ -265,7 +284,7 @@ $.jgrid.extend({
 					} catch (e) {}
 				}
 				$.each($t.p.colModel, function(i,n){
-					if(this.editable === true && this.name in $t.p.savedRow[fr]) {
+					if(this.editable === true && this.name in $t.p.savedRow[fr] && !$(this).hasClass('not-editable-cell')) {
 						ares[this.name] = $t.p.savedRow[fr][this.name];
 					}
 				});
