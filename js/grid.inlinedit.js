@@ -19,7 +19,8 @@ $.jgrid.extend({
 			"extraparam" : extraparam || {},
 			"aftersavefunc" : aftersavefunc || null,
 			"errorfunc": errorfunc || null,
-			"afterrestorefunc" : afterrestorefunc|| null
+			"afterrestorefunc" : afterrestorefunc|| null,
+			"restoreAfterErorr" : true
 		},
 		args = $.makeArray(arguments).slice(1), o;
 
