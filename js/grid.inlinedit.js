@@ -79,7 +79,7 @@ $.jgrid.extend({
 							if (e.keyCode === 13) {
 								var ta = e.target;
 								if(ta.tagName == 'TEXTAREA') { return true; }
-								$($t).jqGrid("saveRow", o );
+								$($t).jqGrid("saveRow", rowid, o );
 								return false;
 							}
 							e.stopPropagation();
