@@ -1855,8 +1855,8 @@ $.jgrid.extend({
 			var rowdata = $($t).jqGrid("getRowData",rowid);
 			if (rowdata) {
 				for(var i in rowdata) {
-					if ( $("[name="+i+"]",formid).is("input:radio") || $("[name="+i+"]",formid).is("input:checkbox"))  {
-						$("[name="+i+"]",formid).each( function() {
+					if ( $("[name="+$.jgrid.jqID(i)+"]",formid).is("input:radio") || $("[name="+$.jgrid.jqID(i)+"]",formid).is("input:checkbox"))  {
+						$("[name="+$.jgrid.jqID(i)+"]",formid).each( function() {
 							if( $(this).val() == rowdata[i] ) {
 								$(this).attr("checked","checked");
 							} else {
@@ -1865,7 +1865,7 @@ $.jgrid.extend({
 						});
 					} else {
 					// this is very slow on big table and form.
-						$("[name="+i+"]",formid).val(rowdata[i]);
+						$("[name="+$.jgrid.jqID(i)+"]",formid).val(rowdata[i]);
 					}
 				}
 			}
