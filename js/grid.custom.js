@@ -148,7 +148,7 @@ $.jgrid.extend({
 					switch (this.stype) {
 						case 'select' :
 							so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : 'eq';
-							v = $("select[name="+$.jgrid.jqID(nm)+"]",$t.grid.hDiv).val();
+							v = $("#gs_"+$.jgrid.jqID(nm),$t.grid.hDiv).val();
 							if(v) {
 								sdata[nm] = v;
 								sopt[nm] = so;
@@ -161,7 +161,7 @@ $.jgrid.extend({
 							break;
 						case 'text':
 							so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : p.defaultSearch;
-							v = $("input[name="+$.jgrid.jqID(nm)+"]",$t.grid.hDiv).val();
+							v = $("#gs_"+$.jgrid.jqID(nm), $t.grid.hDiv).val();
 							if(v) {
 								sdata[nm] = v;
 								sopt[nm] = so;
@@ -214,7 +214,7 @@ $.jgrid.extend({
 					switch (this.stype) {
 						case 'select' :
 							var v1;
-							$("select[name="+$.jgrid.jqID(nm)+"] option",$t.grid.hDiv).each(function (i){
+							$("#gs_"+$.jgrid.jqID(nm)+" option",$t.grid.hDiv).each(function (i){
 								if(i===0) { this.selected = true; }
 								if ($(this).text() == v) {
 									this.selected = true;
@@ -233,7 +233,7 @@ $.jgrid.extend({
 							}
 							break;
 						case 'text':
-							$("input[name="+$.jgrid.jqID(nm)+"]",$t.grid.hDiv).val(v);
+							$("#gs_"+$.jgrid.jqID(nm),$t.grid.hDiv).val(v);
 							if(v) {
 								sdata[nm] = v;
 								j++;
