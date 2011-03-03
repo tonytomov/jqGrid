@@ -119,6 +119,9 @@ $.fn.jqFilter = function( arg ) {
 			if(!cl.label) {
 				cl.label = cl.name;
 			}
+			if(cl.index) {
+				cl.name = cl.index;
+			}
 			if(!cl.hasOwnProperty('searchoptions')) {
 				cl.searchoptions = {};
 			}
@@ -207,7 +210,7 @@ $.fn.jqFilter = function( arg ) {
 			});
 
 			// button for adding a new subgroup
-			var inputAddSubgroup;
+			var inputAddSubgroup ="<span></span>";
 			if(this.p.groupButton) {
 				inputAddSubgroup = $("<input type='button' value='+ {}' title='Add subgroup' class='add-group'/>");
 				inputAddSubgroup.bind('click',function() {
@@ -226,8 +229,6 @@ $.fn.jqFilter = function( arg ) {
 					that.onchange(); // signals that the filter has changed
 					return false;
 				});
-			} else {
-				inputAddSubgroup = "<span></span>";
 			}
 			th.append(inputAddSubgroup);
 

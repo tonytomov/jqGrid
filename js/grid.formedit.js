@@ -104,7 +104,7 @@ $.jgrid.extend({
 							ignoreHiding = (n.searchoptions && n.searchoptions.searchhidden === true);
 							if ((ignoreHiding && searchable) || (searchable && !hidden)) {
 								found = true;
-								colnm = n.name;
+								colnm = n.index || n.name;
 							}
 						}
 					});
