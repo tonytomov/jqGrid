@@ -161,7 +161,7 @@ $.jgrid.extend({
 						}
 					}
 
-					if(p.stringResult && $t.p.datatype !== "local") {
+					if(p.stringResult) {
 						try {
 							// xmlJsonClass or JSON.stringify
 							res = xmlJsonClass.toJson(filters, '', '', false);
