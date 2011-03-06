@@ -544,21 +544,12 @@ $.jgrid.extend({
 					method = 'last';
 					parentlevel = $t.p.tree_root_level;
 					i = $t.p.data.length+1;
-				if( $t.p.treeGridModel === "nested") {
-					maxright = $($t).jqGrid('getCol', right, false, 'max');
-				}
 				} else {
 					method = 'after';
 					parentindex = $t.p._index[parentid];
 					parentdata = $t.p.data[parentindex];
 					parentid = parentdata[$t.p.localReader.id];
 				parentlevel = parseInt(parentdata[level],10)+1;
-				if( $t.p.treeGridModel === "nested") {
-					maxright = parentdata[right];
-				}
-					if(!parentdata[expanded]) {
-						// expand the node and get the last item on it
-					}
 					var childs = $($t).jqGrid('getNodeChildren', parentdata);
 					// if there are child nodes get the last index of it
 					if(childs.length) {
@@ -593,8 +584,9 @@ $.jgrid.extend({
 			if( $t.p.treeGridModel === "nested") {
 				// this method requiere more attention
 				var query, res, key;
-				maxright = parseInt(maxright,10);
+				//maxright = parseInt(maxright,10);
 				if(parentid !== null) {
+					maxright = parseInt(parentdata[right],10);
 					query = $.jgrid.from($t.p.data);
 					query = query.greaterOrEquals(right,maxright,{stype:'integer'});
 					res = query.select();
@@ -607,6 +599,7 @@ $.jgrid.extend({
 					data[left] = maxright;
 					data[right]= maxright+1;
 				} else {
+					maxright = parseInt( $($t).jqGrid('getCol', right, false, 'max'), 10);
 					res = $.jgrid.from($t.p.data)
 						.greater(left,maxright,{stype:'integer'})
 						.select();
