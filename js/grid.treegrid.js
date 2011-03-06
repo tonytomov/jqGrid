@@ -500,14 +500,38 @@ $.jgrid.extend({
 	},
 	delTreeNode : function (rowid) {
 		return this.each(function () {
-			var $t = this, rid = $t.p.localReader.id;
+			var $t = this, rid = $t.p.localReader.id,
+			left = $t.p.treeReader.left_field,
+			right = $t.p.treeReader.right_field, myright, width, res, key;
 			if(!$t.grid || !$t.p.treeGrid) {return;}
 			var rc = $t.p._index[rowid];
 			if (rc !== undefined) {
+				// nested
+				myright = parseInt($t.p.data[rc][right],10);
+				width = myright -  parseInt($t.p.data[rc][left],10) + 1;
 				var dr = $($t).jqGrid("getFullTreeNode",$t.p.data[rc]);
 				if(dr.length>0){
 					for (var i=0;i<dr.length;i++){
 						$($t).jqGrid("delRowData",dr[i][rid]);
+					}
+				}
+				if( $t.p.treeGridModel === "nested") {
+					// ToDo - update grid data
+					res = $.jgrid.from($t.p.data)
+						.greater(left,myright,{stype:'integer'})
+						.select();
+					if(res.length) {
+						for( key in res) {
+							res[key][left] = parseInt(res[key][left],10) - width ;
+			}
+					}
+					res = $.jgrid.from($t.p.data)
+						.greater(right,myright,{stype:'integer'})
+						.select();
+					if(res.length) {
+						for( key in res) {
+							res[key][right] = parseInt(res[key][right],10) - width ;
+						}
 					}
 				}
 			}
@@ -585,6 +609,7 @@ $.jgrid.extend({
 				// this method requiere more attention
 				var query, res, key;
 				//maxright = parseInt(maxright,10);
+				// ToDo - update grid data
 				if(parentid !== null) {
 					maxright = parseInt(parentdata[right],10);
 					query = $.jgrid.from($t.p.data);
