@@ -36,7 +36,7 @@ $.jgrid.extend({
 			width: 450,
 			height: 'auto',
 			dataheight: 'auto',
-			showQuery: true,
+			showQuery: false,
 			errorcheck : true,
 			// translation
 			// if you want to change or remove the order change it in sopt
