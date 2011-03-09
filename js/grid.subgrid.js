@@ -17,7 +17,8 @@ setSubGrid : function () {
 			openicon: "ui-icon-carat-1-sw",
 			expandOnLoad:  false,
 			delayOnLoad : 50,
-			selectOnExpand : false
+			selectOnExpand : false,
+			reloadOnExpand : true
 		};
 		$t.p.subGridOptions = $.extend(suboptions, $t.p.subGridOptions || {});
 		$t.p.colNames.unshift("");
@@ -172,7 +173,7 @@ addSubGrid : function( pos ) {
 			}
 			return false;
 		};
-		var _id, pID,atd, nhc=0, bfsc;
+		var _id, pID,atd, nhc=0, bfsc, r;
 		$.each(ts.p.colModel,function(i,v){
 			if(this.hidden === true || this.name == 'rn' || this.name == 'cb') {
 				nhc++;
@@ -182,11 +183,12 @@ addSubGrid : function( pos ) {
 			var tr = this;
 			if($(tr).hasClass('jqgrow')) {
 			$(this.cells[pos]).bind('click', function(e) {
+				r = tr.nextSibling;
 			if($(this).hasClass("sgcollapsed")) {
 				pID = ts.p.id;
-					//res = $(this).parent();
-				atd = pos >=1 ? "<td colspan='"+pos+"'>&#160;</td>":"";
 					_id = tr.id;
+					if(ts.p.subGridOptions.reloadOnExpand === true || ( ts.p.subGridOptions.reloadOnExpand === false && !$(r).hasClass('ui-subgrid') ) ) {
+				atd = pos >=1 ? "<td colspan='"+pos+"'>&#160;</td>":"";
 				bfsc =true;
 				if($.isFunction(ts.p.subGridBeforeExpand)) {
 					bfsc = ts.p.subGridBeforeExpand.call(ts, pID+"_"+_id,_id);
@@ -198,6 +200,9 @@ addSubGrid : function( pos ) {
 				} else {
 						populatesubgrid(tr);
 				}
+					} else {
+						$(r).show();
+					}
 					$(this).html("<a href='javascript:void(0);'><span class='ui-icon "+ts.p.subGridOptions.minusicon+"'></span></a>").removeClass("sgcollapsed").addClass("sgexpanded");
 					if(ts.p.subGridOptions.selectOnExpand) {
 						$(ts).jqGrid('setSelection',_id);
@@ -205,13 +210,15 @@ addSubGrid : function( pos ) {
 			} else if($(this).hasClass("sgexpanded")) {
 				bfsc = true;
 				if( $.isFunction(ts.p.subGridRowColapsed)) {
-						//res = $(this).parent();
 						_id = tr.id;
-						//$(res).attr("id");
 					bfsc = ts.p.subGridRowColapsed.call(ts, pID+"_"+_id,_id );
 				}
 				if(bfsc===false) {return false;}
-				$(this).parent().next().remove(".ui-subgrid");
+					if(ts.p.subGridOptions.reloadOnExpand === true) {
+						$(r).remove(".ui-subgrid");
+					} else if($(r).hasClass('ui-subgrid')) { // incase of dynamic deleting
+						$(r).hide();
+					}
 					$(this).html("<a href='javascript:void(0);'><span class='ui-icon "+ts.p.subGridOptions.plusicon+"'></span></a>").removeClass("sgexpanded").addClass("sgcollapsed");
 			}
 			return false;
