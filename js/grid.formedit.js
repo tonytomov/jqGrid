@@ -587,11 +587,13 @@ $.jgrid.extend({
 							var tr_par_id = $t.p.treeGridModel == 'adjacency' ? $t.p.treeReader.parent_id_field : 'parent_id';
 							postdata[tr_par_id] = selr;
 						}
-						$.each($t.p.treeReader, function (i){
-							if(postdata.hasOwnProperty(this)) {
-								delete postdata[this];
+						for(i in $t.p.treeReader){
+							var itm = $t.p.treeReader[i];
+							if(postdata.hasOwnProperty(itm)) {
+								if(postdata[oper] == opers.addoper && i === 'parent_id_field') { continue; }
+								delete postdata[itm];
 					}
-						});
+					}
 					}
 
 					var ajaxOptions = $.extend({
@@ -639,8 +641,12 @@ $.jgrid.extend({
 									if(rp_ge.closeAfterAdd) {
 										if(rp_ge.reloadAfterSubmit) { $($t).trigger("reloadGrid"); }
 										else {
+											if($t.p.treeGrid === true){
+												$($t).jqGrid("addChildNode",ret[2],selr,postdata );
+											} else {
 											$($t).jqGrid("addRowData",ret[2],postdata,p.addedrow);
 											$($t).jqGrid("setSelection",ret[2]);
+										}
 										}
 										$.jgrid.hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal,onClose: rp_ge.onClose});
 									} else if (rp_ge.clearAfterAdd) {
@@ -655,7 +661,13 @@ $.jgrid.extend({
 										fillData("_empty",$t,frmgr);
 									} else {
 										if(rp_ge.reloadAfterSubmit) { $($t).trigger("reloadGrid"); }
-										else { $($t).jqGrid("addRowData",ret[2],postdata,p.addedrow); }
+										else {
+											if($t.p.treeGrid === true){
+												$($t).jqGrid("addChildNode",ret[2],selr,postdata );
+											} else {
+												$($t).jqGrid("addRowData",ret[2],postdata,p.addedrow);
+									}
+										}
 									}
 								} else {
 									// the action is update
