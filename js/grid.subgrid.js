@@ -10,14 +10,14 @@
 $.jgrid.extend({
 setSubGrid : function () {
 	return this.each(function (){
-		var $t = this, cm;
-
-		var suboptions = {
-			plusicon : "ui-icon-triangle-1-e",
-			minusicon : "ui-icon-triangle-1-s",
-			openicon: "ui-icon-folder-open",
-			expandOnLoad:  true,
-			delayOnLoad : 50
+		var $t = this, cm,
+		suboptions = {
+			plusicon : "ui-icon-plus",
+			minusicon : "ui-icon-minus",
+			openicon: "ui-icon-carat-1-sw",
+			expandOnLoad:  false,
+			delayOnLoad : 50,
+			selectOnExpand : false
 		};
 		$t.p.subGridOptions = $.extend(suboptions, $t.p.subGridOptions || {});
 		$t.p.colNames.unshift("");
@@ -199,6 +199,9 @@ addSubGrid : function( pos ) {
 						populatesubgrid(tr);
 				}
 					$(this).html("<a href='javascript:void(0);'><span class='ui-icon "+ts.p.subGridOptions.minusicon+"'></span></a>").removeClass("sgcollapsed").addClass("sgexpanded");
+					if(ts.p.subGridOptions.selectOnExpand) {
+						$(ts).jqGrid('setSelection',_id);
+					}
 			} else if($(this).hasClass("sgexpanded")) {
 				bfsc = true;
 				if( $.isFunction(ts.p.subGridRowColapsed)) {
