@@ -46,6 +46,7 @@ $.jgrid.extend({
 			onClose : null,
 			onSearch : null,
 			onReset : null,
+			toTop : true,
 			overlay : 10,
 			columns : []
 		}, $.jgrid.search, p || {});
@@ -70,7 +71,7 @@ $.jgrid.extend({
 					}
 				}
 				if(showFrm) {
-					$.jgrid.viewModal("#"+IDs.themodal,{gbox:"#gbox_"+fid,jqm:p.jqModal, modal:p.modal, overlay: p.overlay});
+					$.jgrid.viewModal("#"+IDs.themodal,{gbox:"#gbox_"+fid,jqm:p.jqModal, modal:p.modal, overlay: p.overlay, toTop: p.toTop});
 					if($.isFunction(p.afterShowSearch)) {
 						p.afterShowSearch($("#"+fid));
 					}
