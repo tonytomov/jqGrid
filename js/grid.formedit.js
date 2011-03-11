@@ -85,14 +85,12 @@ $.jgrid.extend({
 					p.onInitializeSearch($("#"+fid));
 				}
 				var columns = $.extend([],$t.p.colModel),
-				bS  ="<a href='javascript:void(0)' id='"+fid+"_search' class='fm-button ui-state-default ui-corner-all fm-button-icon-left ui-reset'><span class='ui-icon ui-icon-search'></span>"+p.Find+"</a>",
+				bS  ="<a href='javascript:void(0)' id='"+fid+"_search' class='fm-button ui-state-default ui-corner-all fm-button-icon-right ui-reset'><span class='ui-icon ui-icon-search'></span>"+p.Find+"</a>",
 				bC  ="<a href='javascript:void(0)' id='"+fid+"_reset' class='fm-button ui-state-default ui-corner-all fm-button-icon-left ui-search'><span class='ui-icon ui-icon-arrowreturnthick-1-w'></span>"+p.Reset+"</a>",
-				bQ = "";
+				bQ = "", tmpl="", tmplop="", colnm, found = false, bt;
 				if(p.showQuery) {
 					bQ ="<a href='javascript:void(0)' id='"+fid+"_query' class='fm-button ui-state-default ui-corner-all fm-button-icon-left'><span class='ui-icon ui-icon-comment'></span>Query</a>";
 				}
-				var bt = "<table class='EditTable' style='border:0px none;margin-top:5px' id='"+fid+"_2'><tbody><tr><td colspan='2'><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='EditButton' style='text-align:left'>"+bC+"</td><td class='EditButton'>"+bQ+bS+"</td></tr></tbody></table>",
-				colnm, found=false;
 				if(!p.columns.length) {
 					$.each(columns, function(i,n){
 						if(!n.label) {
@@ -116,6 +114,19 @@ $.jgrid.extend({
 				if( (!defaultFilters && colnm) || p.multipleSearch === false  ) {
 					defaultFilters = {"groupOp": "AND",rules:[{"field":colnm,"op":"eq","data":""}]};
 				}
+				found = false;
+				if(p.tmplNames && p.tmplNames.length) {
+					found = true;
+					tmpl = "<select class='ui-template'>";
+					tmpl += "<option value='default'>Default</option>";
+					$.each(p.tmplNames, function(i,n){
+						tmpl += "<option value='"+i+"'>"+n+"</option>";
+					});
+					tmpl += "</select>";
+				}
+
+				bt = "<table class='EditTable' style='border:0px none;margin-top:5px' id='"+fid+"_2'><tbody><tr><td colspan='2'><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='EditButton' style='text-align:left'>"+bC+" Templates:"+tmpl+"</td><td class='EditButton'>"+bQ+bS+"</td></tr></tbody></table>";
+
 				$("#"+fid).jqFilter({
 					columns : columns,
 					filter: p.loadDefaults ? defaultFilters : null,
@@ -131,6 +142,17 @@ $.jgrid.extend({
 					}
 				});
 				fil.append( bt );
+				if(found && p.tmplFilters && p.tmplFilters.length) {
+					$(".ui-template", fil).bind('change', function(e){
+						var curtempl = $(this).val();
+						if(curtempl=="default") {
+							$("#"+fid).jqFilter('addFilter', defaultFilters);
+						} else {
+							$("#"+fid).jqFilter('addFilter', p.tmplFilters[parseInt(curtempl,10)]);
+						}
+						return false;
+					});
+				}
 				if(p.multipleSearch === false) {
 					$(".add-rule","#"+fid).hide();
 					$(".delete-rule","#"+fid).hide();
@@ -207,6 +229,9 @@ $.jgrid.extend({
 						sdata[p.sFilter] = "";
 					}
 					fl[0].resetFilter();
+					if(found) {
+						$(".ui-template", fil).val("default");
+					}
 					$.extend($t.p.postData,sdata);
 					if($.isFunction(p.onReset) ) {
 						p.onReset();
