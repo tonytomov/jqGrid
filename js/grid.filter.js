@@ -670,6 +670,16 @@ $.extend($.fn.jqFilter,{
 		return this.each(function(){
 			this.resetFilter();
 		});
+	},
+	addFilter: function (pfilter) {
+		if (typeof pfilter === "string") {
+			pfilter = jQuery.jgrid.parse( pfilter );
+	}
+		this.each(function(){
+			this.p.filter = pfilter;
+			this.reDraw();
+			this.onchange();
+		});
 	}
 
 });
