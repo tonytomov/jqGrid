@@ -31,7 +31,7 @@ $.jgrid.extend({
 			top : 0,
 			left: 0,
 			jqModal : true,
-			modal: true,
+			modal: false,
 			resize : false,
 			width: 450,
 			height: 'auto',
