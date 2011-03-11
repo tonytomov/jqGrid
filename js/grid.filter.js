@@ -85,7 +85,8 @@ $.fn.jqFilter = function( arg ) {
 				groups: []
 			};
 		}
-		var i, len = this.p.columns.length, cl;
+		var i, len = this.p.columns.length, cl,
+		isIE = /msie/i.test(navigator.userAgent) && !win.opera;
 
 		// translating the options
 		if(this.p._gridsopt.length) {
@@ -354,6 +355,11 @@ $.fn.jqFilter = function( arg ) {
 				}
 				if(!cm) { return;}
 				cm.searchoptions.id = randId();
+				if(isIE) {
+					if(!cm.searchoptions.size) {
+						cm.searchoptions.size = 10;
+					}
+				}
 				var elm = $.jgrid.createEl(cm.inputtype,cm.searchoptions, "", true, that.p.ajaxSelectOptions, true);
 				$(elm).addClass("input-elm");
 				//that.createElement(rule, "");
@@ -411,6 +417,11 @@ $.fn.jqFilter = function( arg ) {
 			// create it here so it can be referentiated in the onchange event
 			//var RD = that.createElement(rule, rule.data);
 			cm.searchoptions.id = randId();
+			if(isIE) {
+				if(!cm.searchoptions.size) {
+					cm.searchoptions.size = 10;
+				}
+			}
 			var ruleDataInput = $.jgrid.createEl(cm.inputtype,cm.searchoptions, rule.data, true, that.p.ajaxSelectOptions, true);
 
 			// dropdown for: choosing operator
