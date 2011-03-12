@@ -117,7 +117,8 @@ $.jgrid.extend({
 				found = false;
 				if(p.tmplNames && p.tmplNames.length) {
 					found = true;
-					tmpl = "<select class='ui-template'>";
+					tmpl = " Templates: ";
+					tmpl += "<select class='ui-template'>";
 					tmpl += "<option value='default'>Default</option>";
 					$.each(p.tmplNames, function(i,n){
 						tmpl += "<option value='"+i+"'>"+n+"</option>";
@@ -125,7 +126,7 @@ $.jgrid.extend({
 					tmpl += "</select>";
 				}
 
-				bt = "<table class='EditTable' style='border:0px none;margin-top:5px' id='"+fid+"_2'><tbody><tr><td colspan='2'><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='EditButton' style='text-align:left'>"+bC+" Templates:"+tmpl+"</td><td class='EditButton'>"+bQ+bS+"</td></tr></tbody></table>";
+				bt = "<table class='EditTable' style='border:0px none;margin-top:5px' id='"+fid+"_2'><tbody><tr><td colspan='2'><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='EditButton' style='text-align:left'>"+bC+tmpl+"</td><td class='EditButton'>"+bQ+bS+"</td></tr></tbody></table>";
 
 				$("#"+fid).jqFilter({
 					columns : columns,
