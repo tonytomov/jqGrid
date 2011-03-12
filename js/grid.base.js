@@ -122,7 +122,7 @@ $.extend($.jgrid,{
 		return sid.replace(/([\.\:\[\]])/g,"\\$1");
 	},
 	randId : function()	{
-		return String(new Date().getTime());
+		return new String(new Date().getTime());
 	},
 	getAccessor : function(obj, expr) {
 		var ret,p,prm = [], i;
