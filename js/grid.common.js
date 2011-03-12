@@ -651,11 +651,6 @@ $.extend($.jgrid,{
 			}
 		}
 		return [true,"",""];
-	},
-	randId : function( n )
-	{
-		if(n === undefined) {n= 5;}
-		return Math.floor(Math.random()*Math.pow(10, n)).toString();
 	}
 });
 })(jQuery);
