@@ -151,10 +151,12 @@ $.fn.jqFilter = function( arg ) {
 				p.error = !ret[0];
 				p.errmsg = ret[1];
 			}
-		},
+		};
+		/* moving to common
 		randId = function() {
 			return Math.floor(Math.random()*10000).toString();
 		};
+		*/
 
 		this.onchange = function (  ){
 			// clear any error 
