@@ -45,8 +45,9 @@ $.extend($.jgrid,{
 		}
 		return [curleft,curtop];
 	},
-	createModal : function(aIDs, content, p, insertSelector, posSelector, appendsel) {
+	createModal : function(aIDs, content, p, insertSelector, posSelector, appendsel, css) {		
 		var mw  = document.createElement('div'), rtlsup, self = this;
+		css = $.extend({}, css || {});
 		rtlsup = $(p.gbox).attr("dir") == "rtl" ? true : false;
 		mw.className= "ui-widget ui-widget-content ui-corner-all ui-jqdialog";
 		mw.id = aIDs.themodal;
@@ -74,7 +75,10 @@ $.extend($.jgrid,{
 		mw.appendChild(mc);
 		$(mw).prepend(mh);
 		if(appendsel===true) { $('body').append(mw); } //append as first child in body -for alert dialog
+		else if (typeof appendsel == "string")
+			$(appendsel).append(mw);
 		else {$(mw).insertBefore(insertSelector);}
+		$(mw).css(css);
 		if(typeof p.jqModal === 'undefined') {p.jqModal = true;} // internal use
 		var coord = {};
 		if ( $.fn.jqm && p.jqModal === true) {
