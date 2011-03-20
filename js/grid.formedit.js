@@ -52,7 +52,9 @@ $.jgrid.extend({
 			tmplNames : null,
 			tmplFilters : null,
 			// translations - later in lang file
-			tmplLabel : ' Template: '
+			tmplLabel : ' Template: ',
+            showOnLoad: false,
+            layer: null
 		}, $.jgrid.search, p || {});
 		return this.each(function() {
 			var $t = this;
@@ -165,7 +167,10 @@ $.jgrid.extend({
 				if($.isFunction(p.onInitializeSearch) ) {
 					p.onInitializeSearch($("#"+fid));
 				}
-				$.jgrid.createModal(IDs ,fil,p,"#gview_"+$t.p.id,$("#gbox_"+$t.p.id)[0]);
+				if (p.layer)
+					$.jgrid.createModal(IDs ,fil,p,"#gview_"+$t.p.id,$("#gbox_"+$t.p.id)[0], "#"+p.layer, {position: "relative"});
+				else	
+					$.jgrid.createModal(IDs ,fil,p,"#gview_"+$t.p.id,$("#gbox_"+$t.p.id)[0]);
 				if(bQ) {
 					$("#"+fid+"_query").bind('click', function(e){
 						$(".queryresult", fil).toggle();
@@ -1773,6 +1778,8 @@ $.jgrid.extend({
 						},
 						function () {$(this).removeClass("ui-state-hover");}
 					);
+					if (pSearch.showOnLoad && pSearch.showOnLoad === true)
+						$(tbd,navtbl).click();
 					tbd = null;
 				}
 				if (o.refresh) {
