@@ -99,7 +99,7 @@ $.extend($.jgrid,{
 		if (p.width === 0 || !p.width) {p.width = 300;}
 		if(p.height === 0 || !p.height) {p.height =200;}
 		if(!p.zIndex) {
-			var parentZ = $(insertSelector).parents("*[role=dialog]").first().css("z-index");
+			var parentZ = $(insertSelector).parents("*[role=dialog]").filter(':first').css("z-index");
 			if(parentZ) {
 				p.zIndex = parseInt(parentZ,10)+1;
 			} else {
