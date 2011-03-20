@@ -361,7 +361,6 @@ $.extend($.jgrid,{
 										$(this).attr("role","option");
 										if($.inArray($.trim($(this).text()),ovm) > -1 || $.inArray($.trim($(this).val()),ovm) > -1 ) {
 											this.selected= "selected";
-											if(!msl) { return false; }
 										}
 									});
 								},0);
