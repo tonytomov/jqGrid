@@ -182,7 +182,7 @@ $.fn.jqFilter = function( arg ) {
 			var that = this,  i;
 
 			// this table will hold all the group (tables) and rules (rows)
-			var table = $("<table class='group ui-widget ui-widget-content' style='border:0px none;'><tbody>");
+			var table = $("<table class='group ui-widget ui-widget-content' style='border:0px none;'><tbody></tbody></table>");
 			// create error message row
 			if(parentgroup === null) {
 				$(table).append("<tr class='error' style='display:none;'><th colspan='5' class='ui-state-error' align='left'></th></tr>");
