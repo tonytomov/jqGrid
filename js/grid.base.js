@@ -2672,7 +2672,7 @@ $.jgrid.extend({
 					row="";
 					if(aradd) {
 						try {rowid = data[cnm];}
-						catch (e) {rowid = $.jgrid.randId();}
+						catch (e) {rowid = $.jgrid.randId() + k;}
 						cna = t.p.altRows === true ?  (t.rows.length-1)%2 === 0 ? cn : "" : "";
 					}
 					if(ni){
