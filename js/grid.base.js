@@ -990,7 +990,9 @@ $.fn.jqGrid = function( pin ) {
 				parent.scrollTop = 0;
 			}
 			if(locdata === true) {
+				if(ts.p.treeGrid === true ) {
 				ts.p.data = []; ts.p._index = {};
+			}
 			}
 		},
 		refreshIndex = function() {
