@@ -8,10 +8,10 @@ $.jgrid.extend({
 			if(grp !== null && ( (typeof grp === 'object') || $.isFunction(grp) ) ) {
 				if(!grp.groupField.length) {
 					$t.p.grouping = false;
-        } else {
-          if ( typeof(grp.visibiltyOnNextGrouping) == 'undefined') {
-            grp.visibiltyOnNextGrouping = [];
-          }
+				} else {
+					if ( typeof(grp.visibiltyOnNextGrouping) == 'undefined') {
+						grp.visibiltyOnNextGrouping = [];
+					}
 					for(var i=0;i<grp.groupField.length;i++) {
 						if(!grp.groupOrder[i]) {
 							grp.groupOrder[i] = 'asc';
@@ -26,10 +26,10 @@ $.jgrid.extend({
 							grp.groupSummary[i] = false;
 						}
 						if(grp.groupColumnShow[i] === true) {
-              grp.visibiltyOnNextGrouping[i] = true;
+							grp.visibiltyOnNextGrouping[i] = true;
 							$($t).jqGrid('showCol',grp.groupField[i]);
 						} else {
-              grp.visibiltyOnNextGrouping[i] = $("#"+$t.p.id+"_"+grp.groupField[i]).is(":visible");
+							grp.visibiltyOnNextGrouping[i] = $("#"+$t.p.id+"_"+grp.groupField[i]).is(":visible");
 							$($t).jqGrid('hideCol',grp.groupField[i]);
 						}
 						grp.sortitems[i] = [];
