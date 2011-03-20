@@ -313,7 +313,7 @@ $.fn.jqFilter = function( arg ) {
 			if (group.rules !== undefined) {
 				for (i = 0; i < group.rules.length; i++) {
 					table.append(
-                       this.createTableRowForRule(group.rules[i], group)
+                       this.createTableRowForRule(group.rules[i], group, i)
 					);
 				}
 			}
@@ -323,7 +323,7 @@ $.fn.jqFilter = function( arg ) {
 		/*
 		 * Create the rule data for the filter
 		 */
-		this.createTableRowForRule = function(rule, group) {
+		this.createTableRowForRule = function(rule, group, cnt) {
 			// save current entity in a variable so that it could
 			// be referenced in anonimous method calls
 
@@ -418,7 +418,7 @@ $.fn.jqFilter = function( arg ) {
 			cm = p.columns[j];
 			// create it here so it can be referentiated in the onchange event
 			//var RD = that.createElement(rule, rule.data);
-			cm.searchoptions.id = $.jgrid.randId();
+			cm.searchoptions.id = $.jgrid.randId() + cnt;
 			if(isIE) {
 				if(!cm.searchoptions.size) {
 					cm.searchoptions.size = 10;
