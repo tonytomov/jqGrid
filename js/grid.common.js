@@ -277,7 +277,7 @@ $.extend($.jgrid,{
 			var exclude = ['dataInit','dataEvents', 'value','dataUrl', 'buildSelect','sopt', 'searchhidden', 'defaultValue', 'attr'];
 			$.each(atr, function(key, value){
 				if($.inArray(key, exclude) === -1) {
-					$(elem).attr(key,value);
+					$(elm).attr(key,value);
 				}
 			});
 		}
