@@ -53,9 +53,7 @@ $.jgrid.extend({
 			tmplFilters : null,
 			// translations - later in lang file
 			tmplLabel : ' Template: ',
-            showOnLoad: false, 
-            showcloseicon: true,   
-            style: 'ui-searchFilter',
+            showOnLoad: false,
             layer: null
 		}, $.jgrid.search, p || {});
 		return this.each(function() {
