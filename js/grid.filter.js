@@ -357,7 +357,7 @@ $.fn.jqFilter = function( arg ) {
 				}
 				if(!cm) {return;}
 				cm.searchoptions.id = $.jgrid.randId();
-				if(isIE) {
+				if(isIE && cm.inputtype === "text") {
 					if(!cm.searchoptions.size) {
 						cm.searchoptions.size = 10;
 					}
@@ -419,7 +419,7 @@ $.fn.jqFilter = function( arg ) {
 			// create it here so it can be referentiated in the onchange event
 			//var RD = that.createElement(rule, rule.data);
 			cm.searchoptions.id = $.jgrid.randId() + cnt;
-			if(isIE) {
+			if(isIE && cm.inputtype === "text") {
 				if(!cm.searchoptions.size) {
 					cm.searchoptions.size = 10;
 				}
