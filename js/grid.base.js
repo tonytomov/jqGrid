@@ -619,6 +619,7 @@ $.fn.jqGrid = function( pin ) {
 			selrow: null,
 			beforeSelectRow: null,
 			onSelectRow: null,
+			onClickGroup: null,
 			onSortCol: null,
 			ondblClickRow: null,
 			onRightClickRow: null,

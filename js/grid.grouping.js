@@ -8,7 +8,10 @@ $.jgrid.extend({
 			if(grp !== null && ( (typeof grp === 'object') || $.isFunction(grp) ) ) {
 				if(!grp.groupField.length) {
 					$t.p.grouping = false;
-                } else {
+        } else {
+          if ( typeof(grp.visibiltyOnNextGrouping) == 'undefined') {
+            grp.visibiltyOnNextGrouping = [];
+          }
 					for(var i=0;i<grp.groupField.length;i++) {
 						if(!grp.groupOrder[i]) {
 							grp.groupOrder[i] = 'asc';
@@ -23,8 +26,10 @@ $.jgrid.extend({
 							grp.groupSummary[i] = false;
 						}
 						if(grp.groupColumnShow[i] === true) {
+              grp.visibiltyOnNextGrouping[i] = true;
 							$($t).jqGrid('showCol',grp.groupField[i]);
 						} else {
+              grp.visibiltyOnNextGrouping[i] = $("#"+$t.p.id+"_"+grp.groupField[i]).is(":visible");
 							$($t).jqGrid('hideCol',grp.groupField[i]);
 						}
 						grp.sortitems[i] = [];
@@ -217,12 +222,16 @@ $.jgrid.extend({
 			}
 			var grp = $t.p.groupingView;
 			$t.p.grouping = true;
-			// show previoous hidden  groups if they are hidden
-			for(var i=0;i<grp.groupField.length;i++) {
-				if(!grp.groupColumnShow[i]) {
-					$($t).jqGrid('showCol',grp.groupField[i]);
-				}
-			}
+      // show previous hidden groups if they are hidden and weren't removed yet
+      for(var i=0;i<grp.groupField.length;i++) {
+        if(!grp.groupColumnShow[i] && grp.visibiltyOnNextGrouping[i]) {
+          $($t).jqGrid('showCol',grp.groupField[i]);
+        }
+      }
+      // set visibility status of current group columns on next grouping
+      for(var i=0;i<name.length;i++) {
+        grp.visibiltyOnNextGrouping[i] = $("#"+$t.p.id+"_"+name[i]).is(":visible");
+      }
 			$t.p.groupingView = $.extend($t.p.groupingView, options || {});
 			grp.groupField = name;
 			$($t).trigger("reloadGrid");
@@ -236,6 +245,13 @@ $.jgrid.extend({
 			}
 			$t.p.grouping = false;
 			if(current===true) {
+        var grp = $t.p.groupingView;
+        // show previous hidden groups if they are hidden and weren't removed yet
+        for(var i=0;i<grp.groupField.length;i++) {
+          if (!grp.groupColumnShow[i] && grp.visibiltyOnNextGrouping[i]) {
+            $($t).jqGrid('showCol', grp.groupField);
+          }
+        }
 				$("tr.jqgroup, tr.jqfoot","#"+$t.p.id+" tbody:first").remove();
 				$("tr.jqgrow:hidden","#"+$t.p.id+" tbody:first").show();
 			} else {
