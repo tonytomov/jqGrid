@@ -59,7 +59,7 @@ $.jgrid.extend({
 			if(!$t.grid) {return;}
 			var fid = "fbox_"+$t.p.id,
 			showFrm = true,
-			IDs = {themodal:'editmod'+fid,modalhead:'edithd'+fid,modalcontent:'editcnt'+fid, scrollelm : fid},
+			IDs = {themodal:'searchmod'+fid,modalhead:'searchhd'+fid,modalcontent:'searchcnt'+fid, scrollelm : fid},
 			defaultFilters  = $t.p.postData[p.sFilter];
 			if(typeof(defaultFilters) === "string") {
 				defaultFilters = $.jgrid.parse( defaultFilters );
