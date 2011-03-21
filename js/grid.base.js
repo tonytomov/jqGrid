@@ -3240,6 +3240,18 @@ $.jgrid.extend({
 			var $t = this;
 			$($t).unbind('keydown');
 		});
+	},
+	getLocalRow : function (rowid) {
+		var ret = false, ind;
+		this.each(function(){
+			if(typeof(rowid) !== "undefined") {
+				ind = this.p._index[rowid];
+				if(ind >= 0 ) {
+					ret = this.p.data[ind];
+	}
+			}
+});
+		return ret;
 	}
 });
 })(jQuery);
