@@ -418,7 +418,7 @@ $.fn.jqFilter = function( arg ) {
 			cm = p.columns[j];
 			// create it here so it can be referentiated in the onchange event
 			//var RD = that.createElement(rule, rule.data);
-			cm.searchoptions.id = $.jgrid.randId() + cnt;
+			cm.searchoptions.id = $.jgrid.randId();
 			if(isIE && cm.inputtype === "text") {
 				if(!cm.searchoptions.size) {
 					cm.searchoptions.size = 10;

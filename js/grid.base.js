@@ -121,8 +121,10 @@ $.extend($.jgrid,{
 		sid = sid + "";
 		return sid.replace(/([\.\:\[\]])/g,"\\$1");
 	},
-	randId : function()	{
-		return new String(new Date().getTime());
+	guid : 1,
+	uidPref: 'jqg',
+	randId : function( prefix )	{
+		return (prefix? prefix: $.jgrid.idPrefix) + ($.jgrid.guid++);
 	},
 	getAccessor : function(obj, expr) {
 		var ret,p,prm = [], i;
@@ -2674,7 +2676,7 @@ $.jgrid.extend({
 					row="";
 					if(aradd) {
 						try {rowid = data[cnm];}
-						catch (e) {rowid = $.jgrid.randId() + k;}
+						catch (e) {rowid = $.jgrid.randId();}
 						cna = t.p.altRows === true ?  (t.rows.length-1)%2 === 0 ? cn : "" : "";
 					}
 					if(ni){
