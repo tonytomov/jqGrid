@@ -124,7 +124,7 @@ $.extend($.jgrid,{
 	guid : 1,
 	uidPref: 'jqg',
 	randId : function( prefix )	{
-		return (prefix? prefix: $.jgrid.idPrefix) + ($.jgrid.guid++);
+		return (prefix? prefix: $.jgrid.uidPref) + ($.jgrid.guid++);
 	},
 	getAccessor : function(obj, expr) {
 		var ret,p,prm = [], i;
