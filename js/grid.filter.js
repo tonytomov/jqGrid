@@ -313,7 +313,7 @@ $.fn.jqFilter = function( arg ) {
 			if (group.rules !== undefined) {
 				for (i = 0; i < group.rules.length; i++) {
 					table.append(
-                       this.createTableRowForRule(group.rules[i], group, i)
+                       this.createTableRowForRule(group.rules[i], group)
 					);
 				}
 			}
@@ -323,7 +323,7 @@ $.fn.jqFilter = function( arg ) {
 		/*
 		 * Create the rule data for the filter
 		 */
-		this.createTableRowForRule = function(rule, group, cnt) {
+		this.createTableRowForRule = function(rule, group ) {
 			// save current entity in a variable so that it could
 			// be referenced in anonimous method calls
 
