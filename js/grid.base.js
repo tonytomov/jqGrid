@@ -1,13 +1,13 @@
 // ==ClosureCompiler==
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
-/*
- * jqGrid  4.0 beta  - jQuery Grid
+/**
+ * @license jqGrid  4.0 beta  - jQuery Grid
  * Copyright (c) 2008, Tony Tomov, tony@trirand.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2011-03-21
+ * Date: 2011-03-22
  */
 //jsHint options
 /*global document, window, jQuery, DOMParser, ActiveXObject $ */
@@ -2297,6 +2297,7 @@ $.fn.jqGrid = function( pin ) {
 			});
 		}
 		grid.bDiv = document.createElement("div");
+		if(String(ts.p.height).toLowerCase() === "auto") { ts.p.height = "100%"; }
 		$(grid.bDiv)
 			.append($('<div style="position:relative;'+(isMSIE && $.browser.version < 8 ? "height:0.01%;" : "")+'"></div>').append('<div></div>').append(this))
 			.addClass("ui-jqgrid-bdiv")
