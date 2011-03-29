@@ -793,7 +793,7 @@ $.fn.jqGrid = function( pin ) {
 					empty = true;
 				}
 				if (npage) {
-					if (p.lastpage && page > p.lastpage || p.lastpage==1) {
+					if (p.lastpage && page > p.lastpage || p.lastpage==1 || (page === p.page && page===p.lastpage) ) {
 						return;
 					}
 					if (grid.hDiv.loading) {
