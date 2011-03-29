@@ -766,8 +766,15 @@ $.fn.jqGrid = function( pin ) {
 				var dh = $(grid.bDiv).height();
 				if (!dh) { return; }
 				var table = $("table:first", grid.bDiv);
-				var rows = $("> tbody > tr:gt(0):visible:first", table);
-				var rh = rows.outerHeight() || grid.prevRowHeight;
+				var rows, rh;
+				if(table[0].rows.length) {
+					try {
+						rows = table[0].rows[1];
+						rh = rows ? $(rows).outerHeight() || grid.prevRowHeight : grid.prevRowHeight;
+					} catch (pv) {
+						rh = grid.prevRowHeight;
+					}
+				}
 				if (!rh) { return; }
 				grid.prevRowHeight = rh;
 				var rn = p.rowNum;
