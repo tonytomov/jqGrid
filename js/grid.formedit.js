@@ -768,6 +768,15 @@ $.jgrid.extend({
 				}
 				return ret;
 			}
+			function setNulls() {
+				$.each($t.p.colModel, function(i,n){
+					if(n.editoptions && n.editoptions.NullIfEmpty === true) {
+						if(postdata.hasOwnProperty(n.name) && postdata[n.name] == "") {
+							postdata[n.name] = 'null';
+						}
+					}
+				});
+			}
 			function checkUpdates () {
 				var stat = true;
 				$("#FormError","#"+frmtb).hide();
@@ -780,6 +789,8 @@ $.jgrid.extend({
 						$("#"+frmgr).data("disabled",true);
 						$(".confirm","#"+IDs.themodal).show();
 						stat = false;
+					} else {
+						setNulls();
 					}
 				}
 				return stat;
@@ -1025,6 +1036,7 @@ $.jgrid.extend({
 					//ret[1] - msg if not succes
 					//ret[2] - the id  that will be set if reload after submit false
 					getFormData();
+					setNulls();
 					if(postdata[$t.p.id+"_id"] == "_empty")	{ postIt(); }
 					else if(p.checkOnSubmit===true ) {
 						newData = $.extend({},postdata,extpost);
