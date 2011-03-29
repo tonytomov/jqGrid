@@ -808,7 +808,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 			},
-			scrollGrid: function() {
+			scrollGrid: function( e ) {
 				if(p.scroll) {
 					var scrollTop = grid.bDiv.scrollTop;
 					if(grid.scrollTop === undefined) { grid.scrollTop = 0; }
@@ -822,6 +822,7 @@ $.fn.jqGrid = function( pin ) {
 				if(p.footerrow) {
 					grid.sDiv.scrollLeft = grid.bDiv.scrollLeft;
 				}
+				e.stopPropagation();
 			},
 			selectionPreserver : function(ts) {
 				var p = ts.p;
@@ -2297,7 +2298,6 @@ $.fn.jqGrid = function( pin ) {
 			});
 		}
 		grid.bDiv = document.createElement("div");
-		if(String(ts.p.height).toLowerCase() === "auto") { ts.p.height = "100%"; }
 		$(grid.bDiv)
 			.append($('<div style="position:relative;'+(isMSIE && $.browser.version < 8 ? "height:0.01%;" : "")+'"></div>').append('<div></div>').append(this))
 			.addClass("ui-jqgrid-bdiv")
