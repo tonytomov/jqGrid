@@ -173,6 +173,11 @@ $.jgrid.extend({
 						return false;
 					}
 					if($t.p.autoencode) { tmp[nm] = $.jgrid.htmlEncode(tmp[nm]); }
+					if(o.url !== 'clientArray' && cm.editoptions && cm.editoptions.NullIfEmpty === true) {
+						if(tmp[nm] == "") {
+							tmp[nm] = 'null';
+				}
+					}
 				}
 			});
 			if (cv[0] === false){
