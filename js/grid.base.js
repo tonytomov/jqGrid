@@ -2200,12 +2200,12 @@ $.fn.jqGrid = function( pin ) {
 		var ri,ci;
 		$(ts).before(grid.hDiv).click(function(e) {
 			td = e.target;
-			var scb = $(td).hasClass("cbox");
 			ptr = $(td,ts.rows).closest("tr.jqgrow");
-			if($(ptr).length === 0 ) {
+			if($(ptr).length === 0 || ptr.className.indexOf( 'ui-state-disabled' ) > -1 ) {
 				return this;
 			}
-			var cSel = true;
+			var scb = $(td).hasClass("cbox"),
+			cSel = true;
 			if($.isFunction(ts.p.beforeSelectRow)) { cSel = ts.p.beforeSelectRow.call(ts,ptr[0].id, e); }
 			if (td.tagName == 'A' || ((td.tagName == 'INPUT' || td.tagName == 'TEXTAREA' || td.tagName == 'OPTION' || td.tagName == 'SELECT' ) && !scb) ) { return this; }
 			if(cSel === true) {
@@ -2459,7 +2459,7 @@ $.jgrid.extend({
 			if(selection === undefined) { return; }
 			onsr = onsr === false ? false : true;
 			pt=$t.rows.namedItem(selection+"");
-			if(!pt) { return; }
+			if(!pt || pt.className.indexOf( 'ui-state-disabled' ) > -1 ) { return; }
 			function scrGrid(iR){
 				var ch = $($t.grid.bDiv)[0].clientHeight,
 				st = $($t.grid.bDiv)[0].scrollTop,
