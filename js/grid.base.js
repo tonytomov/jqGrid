@@ -2058,10 +2058,10 @@ $.fn.jqGrid = function( pin ) {
 			$('#cb_'+$.jgrid.jqID(ts.p.id),this).bind('click',function(){
 				ts.p.selarrrow = [];
 				if (this.checked) {
-					$("[id^=jqg_"+ts.p.id+"_"+"]").attr("checked","checked");
 					$(ts.rows).each(function(i) {
 						if ( i>0 ) {
-							if(!$(this).hasClass("subgrid") && !$(this).hasClass("jqgroup")){
+							if(!$(this).hasClass("subgrid") && !$(this).hasClass("jqgroup") && !$(this).hasClass('ui-state-disabled')){
+								$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(this.id) ).attr("checked","checked");
 								$(this).addClass("ui-state-highlight").attr("aria-selected","true");
 								ts.p.selarrrow.push(this.id);
 								ts.p.selrow = this.id;
@@ -2072,10 +2072,10 @@ $.fn.jqGrid = function( pin ) {
 					emp=[];
 				}
 				else {
-					$("[id^=jqg_"+ts.p.id+"_"+"]").removeAttr("checked");
 					$(ts.rows).each(function(i) {
 						if(i>0) {
-							if(!$(this).hasClass("subgrid")){
+							if(!$(this).hasClass("subgrid") && !$(this).hasClass('ui-state-disabled')){
+								$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(this.id) ).removeAttr("checked");
 								$(this).removeClass("ui-state-highlight").attr("aria-selected","false");
 								emp.push(this.id);
 							}
