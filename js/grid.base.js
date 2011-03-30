@@ -2237,8 +2237,8 @@ $.fn.jqGrid = function( pin ) {
 					if(e[ts.p.multikey]) {
 						$(ts).jqGrid("setSelection",ptr[0].id,true);
 					} else if(ts.p.multiselect && scb) {
-						scb = $("[id^=jqg_"+ts.p.id+"_"+"]").attr("checked");
-						$("[id^=jqg_"+ts.p.id+"_"+"]").attr("checked",!scb);
+						scb = $("[id^=jqg_"+$.jgrid.jqID(ts.p.id)+"_"+"]").attr("checked");
+						$("[id^=jqg_"+$.jgrid.jqID(ts.p.id)+"_"+"]").attr("checked",!scb);
 					}
 				}
 				if($.isFunction(ts.p.onCellSelect)) {
