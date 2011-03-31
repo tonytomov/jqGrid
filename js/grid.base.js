@@ -1873,23 +1873,22 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.sortname != index && idxcol) {ts.p.lastsort = idxcol;}
 		},
 		setColWidth = function () {
-			var initwidth = 0, brd=ts.p.cellLayout, vc=0, lvc, scw=ts.p.scrollOffset,cw,hs=false,aw,tw=0,gw=0,
+			var initwidth = 0, brd=ts.p.cellLayout, vc=0, lvc, scw=ts.p.scrollOffset,cw,hs=false,aw,gw=0,
 			cl = 0, cr;
 			if (isSafari) { brd=0; }
 			$.each(ts.p.colModel, function(i) {
 				if(typeof this.hidden === 'undefined') {this.hidden=false;}
+				this.widthOrg = cw = intNum(this.width,0);
 				if(this.hidden===false){
-					initwidth += intNum(this.width,0);
+					initwidth += cw+brd;
 					if(this.fixed) {
-						tw += this.width;
-						gw += this.width+brd;
+						gw += cw+brd;
 					} else {
 						vc++;
 					}
 					cl++;
 				}
 			});
-			if (ts.p.shrinkToFit === false) {initwidth += brd*cl;}
 			if(isNaN(ts.p.width)) {ts.p.width = grid.width = initwidth;}
 			else { grid.width = ts.p.width;}
 			ts.p.tblwidth = initwidth;
@@ -1904,7 +1903,7 @@ $.fn.jqGrid = function( pin ) {
 				initwidth =0;
 				$.each(ts.p.colModel, function(i) {
 					if(this.hidden === false && !this.fixed){
-						cw = Math.round(aw*this.width/(ts.p.tblwidth-tw));
+						cw = Math.round(aw*this.width/(ts.p.tblwidth-brd*vc-gw));
 						this.width =cw;
 						initwidth += cw;
 						lvc = i;
@@ -1919,7 +1918,7 @@ $.fn.jqGrid = function( pin ) {
 					cr = grid.width-gw-(initwidth+brd*vc);
 				}
 				ts.p.colModel[lvc].width += cr;
-				ts.p.tblwidth = initwidth+cr+tw+cl*brd;
+				ts.p.tblwidth = initwidth+cr+brd*vc+gw;
 				if(ts.p.tblwidth > ts.p.width) {
 					ts.p.colModel[lvc].width -= (ts.p.tblwidth - parseInt(ts.p.width,10));
 					ts.p.tblwidth = ts.p.width;
