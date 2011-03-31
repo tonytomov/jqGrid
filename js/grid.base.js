@@ -2793,9 +2793,9 @@ $.jgrid.extend({
 		});
 		return action == "get" ? res : success;
 	},
-	ShowHideCol : function(colname,show) {
+	showHideCol : function(colname,show) {
 		return this.each(function() {
-			var $t = this, fndh=false;
+			var $t = this, fndh=false, brd=$.browser.safari? 0: $t.p.cellLayout, cw;
 			if (!$t.grid ) {return;}
 			if( typeof colname === 'string') {colname=[colname];}
 			show = show != "none" ? "" : "none";
@@ -2809,30 +2809,32 @@ $.jgrid.extend({
 						$(this).children("td:eq("+i+")").css("display",show);
 					});
 					if($t.p.footerrow) { $($t.grid.sDiv).children("td:eq("+i+")").css("display", show); }
-					if(show == "none") { $t.p.tblwidth -= this.width+$t.p.cellLayout;} else {$t.p.tblwidth += this.width;}
+					cw = this.widthOrg? this.widthOrg: parseInt(this.width,10);
+					if(show === "none") {$t.p.tblwidth -= cw+brd;} else {$t.p.tblwidth += cw+brd;}
 					this.hidden = !sw;
 					fndh=true;
 				}
 			});
 			if(fndh===true) {
-				$("table:first",$t.grid.hDiv).width($t.p.tblwidth);
-				$("table:first",$t.grid.bDiv).width($t.p.tblwidth);
-				$t.grid.hDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
-				if($t.p.footerrow) {
-					$("table:first",$t.grid.sDiv).width($t.p.tblwidth);
-					$t.grid.sDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
-				}
-				if($t.p.shrinkToFit===true) {
-					$($t).jqGrid("setGridWidth",$t.grid.width-0.001,true);
+				if($t.p.shrinkToFit===true && !isNaN($t.p.width) && $t.grid.width!==$t.p.tblwidth) {
+					$($t).jqGrid("setGridWidth",$t.p.tblwidth,true);
+				} else {
+					$("table:first",$t.grid.hDiv).width($t.p.tblwidth);
+					$("table:first",$t.grid.bDiv).width($t.p.tblwidth);
+					$t.grid.hDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
+					if($t.p.footerrow) {
+						$("table:first",$t.grid.sDiv).width($t.p.tblwidth);
+						$t.grid.sDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
+					}
 				}
 			}
 		});
 	},
 	hideCol : function (colname) {
-		return this.each(function(){$(this).jqGrid("ShowHideCol",colname,"none");});
+		return this.each(function(){$(this).jqGrid("showHideCol",colname,"none");});
 	},
 	showCol : function(colname) {
-		return this.each(function(){$(this).jqGrid("ShowHideCol",colname,"");});
+		return this.each(function(){$(this).jqGrid("showHideCol",colname,"");});
 	},
 	remapColumns : function(permutation, updateCells, keepHeader)
 	{
