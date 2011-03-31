@@ -875,7 +875,7 @@ $.fn.jqGrid = function( pin ) {
 		}
 		var gv = $("<div class='ui-jqgrid-view'></div>"), ii,
 		isMSIE = $.browser.msie ? true:false,
-		isSafari = $.browser.safari ? true : false;
+		isSafari = $.browser.webkit || $.browser.safari ? true : false;
 		ts = this;
 		ts.p.direction = $.trim(ts.p.direction.toLowerCase());
 		if($.inArray(ts.p.direction,["ltr","rtl"]) == -1) { ts.p.direction = "ltr"; }
@@ -1873,23 +1873,21 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.sortname != index && idxcol) {ts.p.lastsort = idxcol;}
 		},
 		setColWidth = function () {
-			var initwidth = 0, brd=ts.p.cellLayout, vc=0, lvc, scw=ts.p.scrollOffset,cw,hs=false,aw,tw=0,gw=0,
+			var initwidth = 0, brd=isSafari? 0: ts.p.cellLayout, vc=0, lvc, scw=ts.p.scrollOffset,cw,hs=false,aw,gw=0,
 			cl = 0, cr;
-			if (isSafari) { brd=0; }
 			$.each(ts.p.colModel, function(i) {
 				if(typeof this.hidden === 'undefined') {this.hidden=false;}
+				this.widthOrg = cw = intNum(this.width,0);
 				if(this.hidden===false){
-					initwidth += intNum(this.width,0);
+					initwidth += cw+brd;
 					if(this.fixed) {
-						tw += this.width;
-						gw += this.width+brd;
+						gw += cw+brd;
 					} else {
 						vc++;
 					}
 					cl++;
 				}
 			});
-			if (ts.p.shrinkToFit === false) {initwidth += brd*cl;}
 			if(isNaN(ts.p.width)) {ts.p.width = grid.width = initwidth;}
 			else { grid.width = ts.p.width;}
 			ts.p.tblwidth = initwidth;
@@ -1904,7 +1902,7 @@ $.fn.jqGrid = function( pin ) {
 				initwidth =0;
 				$.each(ts.p.colModel, function(i) {
 					if(this.hidden === false && !this.fixed){
-						cw = Math.round(aw*this.width/(ts.p.tblwidth-tw));
+						cw = Math.round(aw*this.width/(ts.p.tblwidth-brd*vc-gw));
 						this.width =cw;
 						initwidth += cw;
 						lvc = i;
@@ -1919,7 +1917,7 @@ $.fn.jqGrid = function( pin ) {
 					cr = grid.width-gw-(initwidth+brd*vc);
 				}
 				ts.p.colModel[lvc].width += cr;
-				ts.p.tblwidth = initwidth+cr+tw+cl*brd;
+				ts.p.tblwidth = initwidth+cr+brd*vc+gw;
 				if(ts.p.tblwidth > ts.p.width) {
 					ts.p.colModel[lvc].width -= (ts.p.tblwidth - parseInt(ts.p.width,10));
 					ts.p.tblwidth = ts.p.width;
@@ -2794,9 +2792,9 @@ $.jgrid.extend({
 		});
 		return action == "get" ? res : success;
 	},
-	ShowHideCol : function(colname,show) {
+	showHideCol : function(colname,show) {
 		return this.each(function() {
-			var $t = this, fndh=false;
+			var $t = this, fndh=false, brd=$.browser.webkit||$.browser.safari? 0: $t.p.cellLayout, cw;
 			if (!$t.grid ) {return;}
 			if( typeof colname === 'string') {colname=[colname];}
 			show = show != "none" ? "" : "none";
@@ -2810,30 +2808,32 @@ $.jgrid.extend({
 						$(this).children("td:eq("+i+")").css("display",show);
 					});
 					if($t.p.footerrow) { $($t.grid.sDiv).children("td:eq("+i+")").css("display", show); }
-					if(show == "none") { $t.p.tblwidth -= this.width+$t.p.cellLayout;} else {$t.p.tblwidth += this.width;}
+					cw = this.widthOrg? this.widthOrg: parseInt(this.width,10);
+					if(show === "none") {$t.p.tblwidth -= cw+brd;} else {$t.p.tblwidth += cw+brd;}
 					this.hidden = !sw;
 					fndh=true;
 				}
 			});
 			if(fndh===true) {
-				$("table:first",$t.grid.hDiv).width($t.p.tblwidth);
-				$("table:first",$t.grid.bDiv).width($t.p.tblwidth);
-				$t.grid.hDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
-				if($t.p.footerrow) {
-					$("table:first",$t.grid.sDiv).width($t.p.tblwidth);
-					$t.grid.sDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
-				}
-				if($t.p.shrinkToFit===true) {
-					$($t).jqGrid("setGridWidth",$t.grid.width-0.001,true);
+				if($t.p.shrinkToFit===true && !isNaN($t.p.width) && $t.grid.width!==$t.p.tblwidth) {
+					$($t).jqGrid("setGridWidth",$t.p.tblwidth,true);
+				} else {
+					$("table:first",$t.grid.hDiv).width($t.p.tblwidth);
+					$("table:first",$t.grid.bDiv).width($t.p.tblwidth);
+					$t.grid.hDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
+					if($t.p.footerrow) {
+						$("table:first",$t.grid.sDiv).width($t.p.tblwidth);
+						$t.grid.sDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
+					}
 				}
 			}
 		});
 	},
 	hideCol : function (colname) {
-		return this.each(function(){$(this).jqGrid("ShowHideCol",colname,"none");});
+		return this.each(function(){$(this).jqGrid("showHideCol",colname,"none");});
 	},
 	showCol : function(colname) {
-		return this.each(function(){$(this).jqGrid("ShowHideCol",colname,"");});
+		return this.each(function(){$(this).jqGrid("showHideCol",colname,"");});
 	},
 	remapColumns : function(permutation, updateCells, keepHeader)
 	{
@@ -2885,7 +2885,7 @@ $.jgrid.extend({
 		return this.each(function(){
 			if (!this.grid ) {return;}
 			var $t = this, cw,
-			initwidth = 0, brd=$t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0, tw=0,
+			initwidth = 0, brd=$.browser.webkit||$.browser.safari? 0: $t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0,
 			cl = 0,cr;
 			if(typeof shrink != 'boolean') {
 				shrink=$t.p.shrinkToFit;
@@ -2905,13 +2905,12 @@ $.jgrid.extend({
 			if($t.p.footerrow) { $($t.grid.sDiv).css("width",nwidth+"px"); }
 			if(shrink ===false && $t.p.forceFit === true) {$t.p.forceFit=false;}
 			if(shrink===true) {
-				if ($.browser.safari) { brd=0;}
 				$.each($t.p.colModel, function(i) {
 					if(this.hidden===false){
-						initwidth += parseInt(this.width,10);
+						cw = this.widthOrg? this.widthOrg: parseInt(this.width,10);
+						initwidth += cw+brd;
 						if(this.fixed) {
-							tw += this.width;
-							gw += this.width+brd;
+							gw += cw+brd;
 						} else {
 							vc++;
 						}
@@ -2931,7 +2930,8 @@ $.jgrid.extend({
 				var cle = $t.grid.cols.length >0;
 				$.each($t.p.colModel, function(i) {
 					if(this.hidden === false && !this.fixed){
-						cw = Math.round(aw*this.width/($t.p.tblwidth-tw));
+						cw = this.widthOrg? this.widthOrg: parseInt(this.width,10);
+						cw = Math.round(aw*cw/($t.p.tblwidth-brd*vc-gw));
 						if (cw < 0) { return; }
 						this.width =cw;
 						initwidth += cw;
@@ -2951,7 +2951,7 @@ $.jgrid.extend({
 					cr = nwidth-gw-(initwidth+brd*vc);
 				}
 				$t.p.colModel[lvc].width += cr;
-				$t.p.tblwidth = initwidth+cr+tw+brd*cl;
+				$t.p.tblwidth = initwidth+cr+brd*vc+gw;
 				if($t.p.tblwidth > nwidth) {
 					var delta = $t.p.tblwidth - parseInt(nwidth,10);
 					$t.p.tblwidth = nwidth;
