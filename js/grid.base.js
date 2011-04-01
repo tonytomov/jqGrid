@@ -2508,10 +2508,18 @@ $.jgrid.extend({
 			}
 		});
 	},
-	resetSelection : function(){
+	resetSelection : function( rowid ){
 		return this.each(function(){
-			var t = this, ind;
-			if(!t.p.multiselect) {
+			var t = this, ind, sr;
+			if(typeof(rowid) !== "undefined" ) {
+				sr = rowid === t.p.selrow ? t.p.selrow : rowid;
+				$("#"+$.jgrid.jqID(t.p.id)+" tbody:first tr#"+$.jgrid.jqID(sr)).removeClass("ui-state-highlight").attr("aria-selected","false");
+				sr = null;
+				if(t.p.multiselect) {
+					$("#jqg_"+$.jgrid.jqID(t.p.id)+"_"+$.jgrid.jqID(sr)).attr("checked",false);
+					$("#cb_"+$.jgrid.jqID(t.p.id)).attr("checked",false);
+				}
+			} else if(!t.p.multiselect) {
 				if(t.p.selrow) {
 					$("#"+$.jgrid.jqID(t.p.id)+" tbody:first tr#"+$.jgrid.jqID(t.p.selrow)).removeClass("ui-state-highlight").attr("aria-selected","false");
 					t.p.selrow = null;
