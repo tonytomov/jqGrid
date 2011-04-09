@@ -2303,6 +2303,7 @@ $.fn.jqGrid = function( pin ) {
 			});
 		}
 		grid.bDiv = document.createElement("div");
+		if(isMSIE) { if(String(ts.p.height).toLowerCase() === "auto") { ts.p.height = "100%"; } }
 		$(grid.bDiv)
 			.append($('<div style="position:relative;'+(isMSIE && $.browser.version < 8 ? "height:0.01%;" : "")+'"></div>').append('<div></div>').append(this))
 			.addClass("ui-jqgrid-bdiv")
