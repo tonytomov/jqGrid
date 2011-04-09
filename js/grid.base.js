@@ -2824,18 +2824,10 @@ $.jgrid.extend({
 				}
 			});
 			if(fndh===true) {
-				if($t.p.shrinkToFit===true && !isNaN($t.p.width) && $t.grid.width!==$t.p.tblwidth) {
-					$($t).jqGrid("setGridWidth",$t.p.tblwidth,true);
-				} else {
-					$("table:first",$t.grid.hDiv).width($t.p.tblwidth);
-					$("table:first",$t.grid.bDiv).width($t.p.tblwidth);
-					$t.grid.hDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
-					if($t.p.footerrow) {
-						$("table:first",$t.grid.sDiv).width($t.p.tblwidth);
-						$t.grid.sDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
+				if($t.grid.width!==$t.p.tblwidth) {
+					$($t).jqGrid("setGridWidth",$t.p.shrinkToFit===true?$t.grid.width:$t.p.tblwidth,true);
 					}
 				}
-			}
 		});
 	},
 	hideCol : function (colname) {
