@@ -374,7 +374,7 @@ $.fn.jqFilter = function( arg ) {
 				var s ="",so="";
 				for ( i = 0; i < that.p.ops.length; i++) {
 					if($.inArray(that.p.ops[i].name, op) !== -1) {
-						so = rule.op === that.p.ops[i].name ? " selected=selected" : "";
+						so = rule.op === that.p.ops[i].name ? " selected='selected'" : "";
 						s += "<option value='"+that.p.ops[i].name+"'"+ so+">"+that.p.ops[i].description+"</option>";
 					}
 				}
