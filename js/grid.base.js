@@ -857,7 +857,7 @@ $.fn.jqGrid = function( pin ) {
 				};
 			}
 		};
-		if(this.tagName != 'TABLE') {
+		if(this.tagName.toUpperCase()!='TABLE') {
 			alert("Element is not a table");
 			return;
 		}
