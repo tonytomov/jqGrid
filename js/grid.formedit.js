@@ -170,6 +170,7 @@ $.jgrid.extend({
 				if(p.multipleSearch === false) {
 					$(".add-rule","#"+fid).hide();
 					$(".delete-rule","#"+fid).hide();
+					$(".opsel","#"+fid).hide();
 				}
 				if($.isFunction(p.onInitializeSearch) ) {
 					p.onInitializeSearch($("#"+fid));
