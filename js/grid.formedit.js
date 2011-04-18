@@ -93,7 +93,7 @@ $.jgrid.extend({
 				var columns = $.extend([],$t.p.colModel),
 				bS  ="<a href='javascript:void(0)' id='"+fid+"_search' class='fm-button ui-state-default ui-corner-all fm-button-icon-right ui-reset'><span class='ui-icon ui-icon-search'></span>"+p.Find+"</a>",
 				bC  ="<a href='javascript:void(0)' id='"+fid+"_reset' class='fm-button ui-state-default ui-corner-all fm-button-icon-left ui-search'><span class='ui-icon ui-icon-arrowreturnthick-1-w'></span>"+p.Reset+"</a>",
-				bQ = "", tmpl="", colnm, found = false, bt;
+				bQ = "", tmpl="", colnm, found = false, bt, cmi=-1;
 				if(p.showQuery) {
 					bQ ="<a href='javascript:void(0)' id='"+fid+"_query' class='fm-button ui-state-default ui-corner-all fm-button-icon-left'><span class='ui-icon ui-icon-comment'></span>Query</a>";
 				}
@@ -110,6 +110,7 @@ $.jgrid.extend({
 							if ((ignoreHiding && searchable) || (searchable && !hidden)) {
 								found = true;
 								colnm = n.index || n.name;
+								cmi =i;
 							}
 						}
 					});
@@ -118,7 +119,13 @@ $.jgrid.extend({
 				}
 				// old behaviour
 				if( (!defaultFilters && colnm) || p.multipleSearch === false  ) {
-					defaultFilters = {"groupOp": "AND",rules:[{"field":colnm,"op":"eq","data":""}]};
+					var cmop = "eq";
+					if(cmi >=0 && columns[cmi].searchoptions && columns[cmi].searchoptions.sopt) {
+						cmop = columns[cmi].searchoptions.sopt[0];
+					} else if(p.sopt.length) {
+						cmop = p.sopt[0];
+				}
+					defaultFilters = {"groupOp": "AND",rules:[{"field":colnm,"op":cmop,"data":""}]};
 				}
 				found = false;
 				if(p.tmplNames && p.tmplNames.length) {
