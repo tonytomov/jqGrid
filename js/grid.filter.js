@@ -343,7 +343,7 @@ $.fn.jqFilter = function( arg ) {
 
 
 			// dropdown for: choosing field
-			var ruleFieldSelect = $("<select></select>");
+			var ruleFieldSelect = $("<select></select>"), ina, aoprs = [];
 			ruleFieldTd.append(ruleFieldSelect);
 			ruleFieldSelect.bind('change',function() {
 				rule.field = $(ruleFieldSelect).val();
@@ -372,10 +372,14 @@ $.fn.jqFilter = function( arg ) {
 				else {op = that.p.numopts;}
 				// operators
 				var s ="",so="";
-				for ( i = 0; i < that.p.ops.length; i++) {
-					if($.inArray(that.p.ops[i].name, op) !== -1) {
-						so = rule.op === that.p.ops[i].name ? " selected='selected'" : "";
-						s += "<option value='"+that.p.ops[i].name+"'"+ so+">"+that.p.ops[i].description+"</option>";
+				aoprs = [];
+				$.each(that.p.ops, function() { aoprs.push(this.name) });
+				for ( i = op.length-1; i >=0; i--) {
+					ina = $.inArray(op[i],aoprs);
+					if(ina !== -1) {
+						rule.op = that.p.ops[ina].name
+						so = i==0 ? " selected='selected'" : "";
+						s += "<option value='"+that.p.ops[ina].name+"'"+ so+">"+that.p.ops[ina].description+"</option>";
 					}
 				}
 				$(".selectopts",trpar).empty().append( s );
@@ -452,10 +456,12 @@ $.fn.jqFilter = function( arg ) {
 			else if  (cm.searchtype === 'string') {op = p.stropts;}
 			else {op = that.p.numopts;}
 			str="";
-			for ( i = 0; i < that.p.ops.length; i++) {
-				if($.inArray(that.p.ops[i].name, op) !== -1) {
-					selected = rule.op === that.p.ops[i].name ? " selected='selected'" : "";
-					str += "<option value='"+that.p.ops[i].name+"'"+selected+">"+that.p.ops[i].description+"</option>";
+			$.each(that.p.ops, function() { aoprs.push(this.name) });
+			for ( i = 0; i < op.length; i++) {
+				ina = $.inArray(op[i],aoprs);
+				if(ina !== -1) {
+					selected = rule.op === that.p.ops[ina].name ? " selected='selected'" : "";
+					str += "<option value='"+that.p.ops[ina].name+"'"+selected+">"+that.p.ops[ina].description+"</option>";
 				}
 			}
 			ruleOperatorSelect.append( str );
