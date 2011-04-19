@@ -83,6 +83,12 @@ $.jgrid.extend({
 					}
 				}
 			}
+			function hideButtons()
+			{
+				$(".add-rule","#"+fid).hide();
+				$(".delete-rule","#"+fid).hide();
+				$(".opsel","#"+fid).hide();
+			}
 			if ( $("#"+IDs.themodal).html() !== null ) {
 				showFilter();
 			} else {
@@ -168,9 +174,7 @@ $.jgrid.extend({
 					});
 				}
 				if(p.multipleSearch === false) {
-					$(".add-rule","#"+fid).hide();
-					$(".delete-rule","#"+fid).hide();
-					$(".opsel","#"+fid).hide();
+					hideButtons();
 				}
 				if($.isFunction(p.onInitializeSearch) ) {
 					p.onInitializeSearch($("#"+fid));
@@ -253,6 +257,9 @@ $.jgrid.extend({
 					$.extend($t.p.postData,sdata);
 					if($.isFunction(p.onReset) ) {
 						p.onReset();
+					}
+					if(p.multipleSearch === false) {
+						hideButtons();
 					}
 					$($t).trigger("reloadGrid",[{page:1}]);
 					return false;
