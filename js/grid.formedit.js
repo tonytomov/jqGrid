@@ -1730,7 +1730,11 @@ $.jgrid.extend({
 						if (!$(this).hasClass('ui-state-disabled')) {
 							var sr = $t.p.selrow;
 							if (sr) {
+								if(typeof o.viewfunc == 'function') {
+									o.viewfunc(sr);
+								} else {
 								$($t).jqGrid("viewGridRow",sr,pView);
+								}
 							} else {
 								$.jgrid.viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$t.p.id,jqm:true});
 								$("#jqg_alrt").focus();
