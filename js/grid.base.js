@@ -829,7 +829,7 @@ $.fn.jqGrid = function( pin ) {
 				if(p.footerrow) {
 					grid.sDiv.scrollLeft = grid.bDiv.scrollLeft;
 				}
-				e.stopPropagation();
+				if( e ) { e.stopPropagation(); }
 			},
 			selectionPreserver : function(ts) {
 				var p = ts.p;
