@@ -128,7 +128,7 @@ $.jgrid.extend({
 					var cmop = "eq";
 					if(cmi >=0 && columns[cmi].searchoptions && columns[cmi].searchoptions.sopt) {
 						cmop = columns[cmi].searchoptions.sopt[0];
-					} else if(p.sopt.length) {
+					} else if(p.sopt && p.sopt.length) {
 						cmop = p.sopt[0];
 				}
 					defaultFilters = {"groupOp": "AND",rules:[{"field":colnm,"op":cmop,"data":""}]};
