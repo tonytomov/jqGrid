@@ -1722,6 +1722,7 @@ $.fn.jqGrid = function( pin ) {
 				return true;
 			};
 			pgid = pgid.substr(1);
+			tp += "_" + pgid;
 			pgcnt = "pg_"+pgid;
 			lft = pgid+"_left"; cent = pgid+"_center"; rgt = pgid+"_right";
 			$("#"+$.jgrid.jqID(pgid) )
