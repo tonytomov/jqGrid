@@ -2464,10 +2464,7 @@ $.jgrid.extend({
 				}
 			}
 			if(!$t.p.multiselect) {
-                             //unselect selectall checkbox when selecting/deselecting a specific row
-                            $('#cb_' + $t.id).removeAttr('checked');
-
-				if(pt.className !== "ui-subgrid") {
+                           	if(pt.className !== "ui-subgrid") {
 					if( $t.p.selrow != pt.id) {
 						$($t.rows.namedItem($t.p.selrow)).removeClass("ui-state-highlight").attr({"aria-selected":"false", "tabindex" : "-1"});
 						$(pt).addClass("ui-state-highlight").attr({"aria-selected":true, "tabindex" : "0"});//.focus();
@@ -2479,6 +2476,9 @@ $.jgrid.extend({
 					if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow.call($t, pt.id, stat); }
 				}
 			} else {
+                            //unselect selectall checkbox when selecting/deselecting a specific row
+                            $('#cb_' + $t.id).removeAttr('checked');
+
 				$t.p.selrow = pt.id;
 				ia = $.inArray($t.p.selrow,$t.p.selarrrow);
 				if (  ia === -1 ){
