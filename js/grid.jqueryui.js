@@ -52,13 +52,13 @@ $.jgrid.extend({
 	sortableColumns : function (tblrow)
 	{
 		return this.each(function (){
-			var ts = this, tid= $t.p.id;
+			var ts = this, tid= ts.p.id;
 			function start() {ts.p.disableClick = true;}
 			var sortable_opts = {
 				"tolerance" : "pointer",
 				"axis" : "x",
 				"scrollSensitivity": "1",
-				"items": ">th:not(:has(#jqgh_"+tid+"_cb"+",#jqgh_"+tid+"_rn"+",#jqgh_"+tid+"_subgrid),:hidden)",
+				"items": '>th:not(:has(#jqgh_'+tid+'_cb'+',#jqgh_'+tid+'_rn'+',#jqgh_'+tid+'_subgrid),:hidden)',
 				"placeholder": {
 					element: function(item) {
 						var el = $(document.createElement(item[0].nodeName))
@@ -75,7 +75,7 @@ $.jgrid.extend({
 					var p = $(ui.item).parent(),
 					th = $(">th", p),
 					colModel = ts.p.colModel,
-					cmMap = {}, tid= this.p.id+"_";
+					cmMap = {}, tid= ts.p.id+"_";
 					$.each(colModel, function(i) { cmMap[this.name]=i; });
 					var permutation = [];
 					th.each(function(i) {
