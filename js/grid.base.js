@@ -1503,7 +1503,7 @@ $.fn.jqGrid = function( pin ) {
 		},
 		updatepager = function(rn, dnd) {
 			var cp, last, base, from,to,tot,fmt, pgboxes = "",
-			tspg = "_"+$.jgrid.jqID(ts.p.pager.substr(1));
+			tspg = ts.p.pager ? "_"+$.jgrid.jqID(ts.p.pager.substr(1)) : "";
 			base = parseInt(ts.p.page,10)-1;
 			if(base < 0) { base = 0; }
 			base = base*parseInt(ts.p.rowNum,10);
@@ -2237,8 +2237,8 @@ $.fn.jqGrid = function( pin ) {
 					if(e[ts.p.multikey]) {
 						$(ts).jqGrid("setSelection",ptr[0].id,true);
 					} else if(ts.p.multiselect && scb) {
-						scb = $("[id^=jqg_"+$.jgrid.jqID(ts.p.id)+"_"+"]").attr("checked");
-						$("[id^=jqg_"+$.jgrid.jqID(ts.p.id)+"_"+"]").attr("checked",!scb);
+						scb = $("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+ptr[0].id).attr("checked");
+						$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+ptr[0].id).attr("checked",!scb);
 					}
 				}
 				if($.isFunction(ts.p.onCellSelect)) {
