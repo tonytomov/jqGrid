@@ -1502,7 +1502,7 @@ $.fn.jqGrid = function( pin ) {
 			return  retresult;
 		},
 		updatepager = function(rn, dnd) {
-			var cp, last, base, from,to,tot,fmt, pgboxes = "",
+			var cp, last, base, from,to,tot,fmt, pgboxes = "", sppg,
 			tspg = ts.p.pager ? "_"+$.jgrid.jqID(ts.p.pager.substr(1)) : "";
 			base = parseInt(ts.p.page,10)-1;
 			if(base < 0) { base = 0; }
@@ -1529,7 +1529,8 @@ $.fn.jqGrid = function( pin ) {
 				$(".selbox",pgboxes).attr("disabled",false);
 				if(ts.p.pginput===true) {
 					$('.ui-pg-input',pgboxes).val(ts.p.page);
-					$('#sp_1'+tspg,pgboxes).html($.fmatter ? $.fmatter.util.NumberFormat(ts.p.lastpage,fmt):ts.p.lastpage);
+					sppg = ts.p.toppager ? '#sp_1'+tspg+",#sp_1"+tspg+"_toppager" : '#sp_1'+tspg;
+					$(sppg).html($.fmatter ? $.fmatter.util.NumberFormat(ts.p.lastpage,fmt):ts.p.lastpage);
 
 				}
 				if (ts.p.viewrecords){
