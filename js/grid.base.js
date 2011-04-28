@@ -1503,7 +1503,8 @@ $.fn.jqGrid = function( pin ) {
 		},
 		updatepager = function(rn, dnd) {
 			var cp, last, base, from,to,tot,fmt, pgboxes = "", sppg,
-			tspg = ts.p.pager ? "_"+$.jgrid.jqID(ts.p.pager.substr(1)) : "";
+			tspg = ts.p.pager ? "_"+$.jgrid.jqID(ts.p.pager.substr(1)) : "",
+			tspg_t = ts.p.toppager ? "_"+ts.p.toppager.substr(1) : "";
 			base = parseInt(ts.p.page,10)-1;
 			if(base < 0) { base = 0; }
 			base = base*parseInt(ts.p.rowNum,10);
@@ -1529,7 +1530,7 @@ $.fn.jqGrid = function( pin ) {
 				$(".selbox",pgboxes).attr("disabled",false);
 				if(ts.p.pginput===true) {
 					$('.ui-pg-input',pgboxes).val(ts.p.page);
-					sppg = ts.p.toppager ? '#sp_1'+tspg+",#sp_1"+tspg+"_toppager" : '#sp_1'+tspg;
+					sppg = ts.p.toppager ? '#sp_1'+tspg+",#sp_1"+tspg_t : '#sp_1'+tspg;
 					$(sppg).html($.fmatter ? $.fmatter.util.NumberFormat(ts.p.lastpage,fmt):ts.p.lastpage);
 
 				}
@@ -1551,17 +1552,17 @@ $.fn.jqGrid = function( pin ) {
 					if(cp<=0) {cp = last = 0;}
 					if(cp==1 || cp === 0) {
 						$("#first"+tspg+", #prev"+tspg).addClass('ui-state-disabled').removeClass('ui-state-hover');
-						if(ts.p.toppager) { $("#first_t"+tspg+", #prev_t"+tspg).addClass('ui-state-disabled').removeClass('ui-state-hover'); }
+						if(ts.p.toppager) { $("#first_t"+tspg_t+", #prev_t"+tspg_t).addClass('ui-state-disabled').removeClass('ui-state-hover'); }
 					} else {
 						$("#first"+tspg+", #prev"+tspg).removeClass('ui-state-disabled');
-						if(ts.p.toppager) { $("#first_t"+tspg+", #prev_t"+tspg).removeClass('ui-state-disabled'); }
+						if(ts.p.toppager) { $("#first_t"+tspg_t+", #prev_t"+tspg_t).removeClass('ui-state-disabled'); }
 					}
 					if(cp==last || cp === 0) {
 						$("#next"+tspg+", #last"+tspg).addClass('ui-state-disabled').removeClass('ui-state-hover');
-						if(ts.p.toppager) { $("#next_t"+tspg+", #last_t"+tspg).addClass('ui-state-disabled').removeClass('ui-state-hover'); }
+						if(ts.p.toppager) { $("#next_t"+tspg_t+", #last_t"+tspg_t).addClass('ui-state-disabled').removeClass('ui-state-hover'); }
 					} else {
 						$("#next"+tspg+", #last"+tspg).removeClass('ui-state-disabled');
-						if(ts.p.toppager) { $("#next_t"+tspg+", #last_t"+tspg).removeClass('ui-state-disabled'); }
+						if(ts.p.toppager) { $("#next_t"+tspg_t+", #last_t"+tspg_t).removeClass('ui-state-disabled'); }
 					}
 				}
 			}
