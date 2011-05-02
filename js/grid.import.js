@@ -166,7 +166,7 @@
                         ret = "<"+o.root+">"+xmlJsonClass.json2xml(gprm,o.ident)+"</"+o.root+">";
                         break;
                     case 'jsonstring' :
-                        ret = "{"+ xmlJsonClass.toJson(gprm,o.root,o.ident)+"}";
+                        ret = "{"+ xmlJsonClass.toJson(gprm,o.root,o.ident,false)+"}";
                         if(gprm.postData.filters !== undefined) {
                             ret=ret.replace(/filters":"/,'filters":');
                             ret=ret.replace(/}]}"/,'}]}');
