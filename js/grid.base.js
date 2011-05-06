@@ -2043,7 +2043,7 @@ $.fn.jqGrid = function( pin ) {
 					$("[id^=jqg_"+ts.p.id+"_"+"]").attr("checked","checked");
 					$(ts.rows).each(function(i) {
 						if ( i>0 ) {
-							if(!$(this).hasClass("subgrid") && !$(this).hasClass("jqgroup")){
+							if(!$(this).hasClass("ui-subgrid") && !$(this).hasClass("jqgroup")){
                                                            //only add if not already in the selected rows
                                                            if (!$(this).hasClass("ui-state-highlight") && $(this).attr("aria-selected") != "true") {
 								$(this).addClass("ui-state-highlight").attr("aria-selected","true");
@@ -2060,7 +2060,7 @@ $.fn.jqGrid = function( pin ) {
 					$("[id^=jqg_"+ts.p.id+"_"+"]").removeAttr("checked");
 					$(ts.rows).each(function(i) {
 						if(i>0) {
-							if(!$(this).hasClass("subgrid")){
+							if(!$(this).hasClass("ui-subgrid")){
 								$(this).removeClass("ui-state-highlight").attr("aria-selected","false");
 								emp.push(this.id);
 							}
