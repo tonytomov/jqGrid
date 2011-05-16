@@ -172,6 +172,13 @@ $.fn.jqFilter = function( arg ) {
 			$("table.group:first",this).remove();
 			var t = this.createTableForGroup(p.filter, null);
 			$(this).append(t);
+			if ($.browser.msie) {
+				$("option", t).each(function(i, item) {
+					if ($(item).data('selected')) {
+						item.selected = "Selected";
+					}
+				});
+			}
 		};
 		/*
 		 * Creates a grouping data for the filter
@@ -383,7 +390,7 @@ $.fn.jqFilter = function( arg ) {
 					}
 				}
 				$(".selectopts",trpar).empty().append( s );
-
+				$(".selectopts",trpar).width($(".selectopts",trpar).width());
 				// data
 				$(".data",trpar).empty().append( elm );
 				$(".input-elm",trpar).bind('change',function() {
