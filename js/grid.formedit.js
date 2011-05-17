@@ -538,8 +538,6 @@ $.jgrid.extend({
 							case "text":
 							case "button" :
 							case "image":
-								$("#"+nm,"#"+fmid).val(tmp);
-								break;
 							case "textarea":
 								if(tmp == "&nbsp;" || tmp == "&#160;" || (tmp.length==1 && tmp.charCodeAt(0)==160) ) {tmp='';}
 								$("#"+nm,"#"+fmid).val(tmp);
