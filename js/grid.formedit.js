@@ -8,7 +8,6 @@
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/
 /*global xmlJsonClass, jQuery, $  */
-var rp_ge = null;
 $.jgrid.extend({
 	searchGrid : function (p) {
 		p = $.extend({
@@ -318,7 +317,7 @@ $.jgrid.extend({
 			serializeEditData : null,
 			viewPagerButtons : true
 		}, $.jgrid.edit, p || {});
-		rp_ge = p;
+		var rp_ge = p;
 		return this.each(function(){
 			var $t = this;
 			if (!$t.grid || !rowid) { return; }
@@ -1437,7 +1436,7 @@ $.jgrid.extend({
 			serializeDelData : null,
 			useDataProxy : false
 		}, $.jgrid.del, p ||{});
-		rp_ge = p;
+		var rp_ge = p;
 		return this.each(function(){
 			var $t = this;
 			if (!$t.grid ) { return; }
