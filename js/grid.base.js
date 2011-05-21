@@ -2829,7 +2829,7 @@ $.jgrid.extend({
 			});
 			if(fndh===true) {
 				if($t.grid.width!==$t.p.tblwidth) {
-					$($t).jqGrid("setGridWidth",$t.p.shrinkToFit===true?$t.grid.width:$t.p.tblwidth,true);
+					$($t).jqGrid("setGridWidth",$t.p.shrinkToFit===true?$t.grid.width:$t.p.tblwidth );
 					}
 				}
 		});
