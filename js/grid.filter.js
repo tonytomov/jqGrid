@@ -381,7 +381,7 @@ $.fn.jqFilter = function( arg ) {
 				var s ="",so="";
 				aoprs = [];
 				$.each(that.p.ops, function() { aoprs.push(this.name) });
-				for ( i = op.length-1; i >=0; i--) {
+				for ( i = 0 ; i < op.length; i++) {
 					ina = $.inArray(op[i],aoprs);
 					if(ina !== -1) {
 						rule.op = that.p.ops[ina].name
