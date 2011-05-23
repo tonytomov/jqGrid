@@ -528,7 +528,7 @@ $.jgrid.extend({
 							try {
 								tmp =  $.unformat($(this),{rowId:rowid, colModel:cm[i]},i);
 							} catch (_) {
-								tmp = $(this).text();
+								tmp = cm[i].edittype=="textarea" ? $(this).text() : $(this).html();
 							}
 						}
 						if($t.p.autoencode) { tmp = $.jgrid.htmlDecode(tmp); }

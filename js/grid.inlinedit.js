@@ -46,7 +46,7 @@ $.jgrid.extend({
 						try {
 							tmp =  $.unformat(this,{rowId:rowid, colModel:cm[i]},i);
 						} catch (_) {
-							tmp = $(this).html();
+							tmp =  ( cm[i].edittype && cm[i].edittype == 'textarea' ) ? $(this).text() : $(this).html();
 						}
 					}
 					if ( nm != 'cb' && nm != 'subgrid' && nm != 'rn') {
@@ -58,6 +58,7 @@ $.jgrid.extend({
 							else { $(this).html(""); }
 							var opt = $.extend({},cm[i].editoptions || {},{id:rowid+"_"+nm,name:nm});
 							if(!cm[i].edittype) { cm[i].edittype = "text"; }
+							if(tmp == "&nbsp;" || tmp == "&#160;" || (tmp.length==1 && tmp.charCodeAt(0)==160) ) {tmp='';}
 							var elc = $.jgrid.createEl(cm[i].edittype,opt,tmp,true,$.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions || {}));
 							$(elc).addClass("editable");
 							if(treeg) { $("span:first",this).append(elc); }
