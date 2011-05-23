@@ -429,8 +429,9 @@ $.jgrid.extend({
 								try {
 									tmp =  $.unformat($("td:eq("+i+")",obj.rows[ind]),{rowId:rowid, colModel:this},i);
 								} catch (_) {
-									tmp = $("td:eq("+i+")",obj.rows[ind]).text();
+									tmp =  (this.edittype && this.edittype == "textarea") ? $("td:eq("+i+")",obj.rows[ind]).text() : $("td:eq("+i+")",obj.rows[ind]).html();
 								}
+								if(tmp == "&nbsp;" || tmp == "&#160;" || (tmp.length==1 && tmp.charCodeAt(0)==160) ) {tmp='';}
 							}
 						}
 						var opt = $.extend({}, this.editoptions || {} ,{id:nm,name:nm}),
