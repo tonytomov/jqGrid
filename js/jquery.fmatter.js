@@ -411,6 +411,9 @@
 		if( !$.fmatter.isUndefined($('#'+gid)[0].p.editOptions) ) {
 			op.editOptions = $('#'+gid)[0].p.editOptions;
 		}
+		if( !$.fmatter.isUndefined($('#'+gid)[0].p.delOptions) ) {
+			op.delOptions = $('#'+gid)[0].p.delOptions;
+		}
 		var saverow = function( rowid)	{
 			if(op.afterSave) op.afterSave(rowid);
 			$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid).show();
