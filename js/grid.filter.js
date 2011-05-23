@@ -391,7 +391,6 @@ $.fn.jqFilter = function( arg ) {
 				$(".data",trpar).empty().append( elm );
 				$(".input-elm",trpar).bind('change',function() {
 					rule.data = $(this).val();
-					if($.isArray(rule.data)) { rule.data = rule.data.join(","); }
 					that.onchange(); // signals that the filter has changed
 				});
 				setTimeout(function(){ //IE, Opera, Chrome
@@ -481,8 +480,6 @@ $.fn.jqFilter = function( arg ) {
 			.addClass("input-elm")
 			.bind('change', function() {
 				rule.data = $(this).val();
-				if($.isArray(rule.data)) { rule.data = rule.data.join(","); }
-
 				that.onchange(); // signals that the filter has changed
 			});
 
