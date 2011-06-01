@@ -2830,14 +2830,8 @@ $.jgrid.extend({
 			});
 			if(fndh===true) {
 				if($t.p.shrinkToFit === false) {
-					$('table:first',$t.grid.bDiv).css("width",$t.p.tblwidth+"px");
-					$('table:first',$t.grid.hDiv).css("width",$t.p.tblwidth+"px");
-					$t.grid.hDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
-					if($t.p.footerrow) {
-						$('table:first',$t.grid.sDiv).css("width",$t.p.tblwidth+"px");
-				}
-			}
-				else if($t.grid.width!==$t.p.tblwidth) {
+					$($t).jqGrid("setGridWidth",$t.grid.width );
+				} else if($t.grid.width!==$t.p.tblwidth) {
 					$($t).jqGrid("setGridWidth",$t.p.tblwidth );
 				}
 			}
@@ -2976,11 +2970,15 @@ $.jgrid.extend({
 				$t.grid.headers[lvc].width = cw;
 				$t.grid.headers[lvc].el.style.width=cw+"px";
 				if(cle) { $t.grid.cols[lvc].style.width = cw+"px"; }
+				if($t.p.footerrow) {
+					$t.grid.footers[lvc].style.width = cw+"px";
+				}
+			}
+			if($t.p.tblwidth) {
 				$('table:first',$t.grid.bDiv).css("width",$t.p.tblwidth+"px");
 				$('table:first',$t.grid.hDiv).css("width",$t.p.tblwidth+"px");
 				$t.grid.hDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
 				if($t.p.footerrow) {
-					$t.grid.footers[lvc].style.width = cw+"px";
 					$('table:first',$t.grid.sDiv).css("width",$t.p.tblwidth+"px");
 				}
 			}
