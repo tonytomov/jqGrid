@@ -2720,19 +2720,17 @@ $.jgrid.extend({
 						row += "<td role=\"gridcell\" aria-describedby=\""+t.p.id+"_"+nm+"\" "+prp+">"+v+"</td>";
 					}
 					row = "<tr id=\""+rowid+"\" role=\"row\" tabindex=\"-1\" class=\"ui-widget-content jqgrow ui-row-"+t.p.direction+" "+cna+"\">" + row+"</tr>";
-					if(t.p.subGrid===true) {
-						row = $(row)[0];
-						$(t).jqGrid("addSubGrid",row,gi+ni);
-					}
 					if(t.rows.length === 0){
 						$("table:first",t.grid.bDiv).append(row);
 					} else {
 					switch (pos) {
 						case 'last':
 							$(t.rows[t.rows.length-1]).after(row);
+							sind = t.rows.length-1;
 							break;
 						case 'first':
 							$(t.rows[0]).after(row);
+							sind = 1;
 							break;
 						case 'after':
 							sind = t.rows.namedItem(src);
@@ -2740,12 +2738,17 @@ $.jgrid.extend({
 								if($(t.rows[sind.rowIndex+1]).hasClass("ui-subgrid")) { $(t.rows[sind.rowIndex+1]).after(row); }
 								else { $(sind).after(row); }
 							}
+							sind++;
 							break;
 						case 'before':
 							sind = t.rows.namedItem(src);
 							if(sind) {$(sind).before(row);sind=sind.rowIndex;}
+							sind--;
 							break;
 					}
+					}
+					if(t.p.subGrid===true) {
+						$(t).jqGrid("addSubGrid",gi+ni, sind);
 					}
 					t.p.records++;
 					t.p.reccount++;
