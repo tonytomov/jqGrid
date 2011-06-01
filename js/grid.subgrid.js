@@ -185,7 +185,6 @@ addSubGrid : function( pos, sind ) {
 			len = sind+1;
 		}
 		while(i < len) {
-			var tr = this;
 			if($(ts.rows[i]).hasClass('jqgrow')) {
 				$(ts.rows[i].cells[pos]).bind('click', function(e) {
 					var tr = $(this).parent("tr")[0];
