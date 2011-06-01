@@ -2248,10 +2248,11 @@ $.fn.jqGrid = function( pin ) {
 					ci = $.jgrid.getCellIndex(td);
 					ts.p.onCellSelect.call(ts,ri,ci,$(td).html(),e);
 				}
-				e.stopPropagation();
-			} else {
-				return this;
+				//e.stopPropagation();
 			}
+			//else {
+				return this;
+			//}
 		}).bind('reloadGrid', function(e,opts) {
 			if(ts.p.treeGrid ===true) {	ts.p.datatype = ts.p.treedatatype;}
 			if (opts && opts.current) {
