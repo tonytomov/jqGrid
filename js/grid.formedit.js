@@ -1889,15 +1889,29 @@ $.jgrid.extend({
 					$(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'><span class='ui-icon "+p.buttonicon+"'></span>"+p.caption+"</div>");
 				}
 				if(p.id) {$(tbd).attr("id",p.id);}
-				if(p.position=='first'){
-					if(findnav.rows[0].cells.length ===0 ) {
-						$("tr",findnav).append(tbd);
+				if (p.position == 'first') {
+					if (findnav.rows[0].cells.length === 0) {
+						$("tr", findnav).append(tbd);
 					} else {
-						$("tr td:eq(0)",findnav).before(tbd);
+						$("tr td:eq(0)", findnav).before(tbd);
 					}
 				} else {
-					$("tr",findnav).append(tbd);
+					var position = parseInt(p.position);
+					if (!isNaN(position)) {
+						var length = $("tr td", findnav).length
+						//If negative come back from end
+						position = position < 0 ? length + position : position;
+						//Clamp to first and last
+						if (position < length) {
+							$("tr td:eq(" + (Math.max(position, 0)).toString() + ")", findnav).before(tbd);
+						} else {
+							$("tr", findnav).append(tbd);
+						}
+					} else {
+						$("tr", findnav).append(tbd);
+					}
 				}
+
 				$(tbd,findnav)
 				.attr("title",p.title  || "")
 				.click(function(e){
