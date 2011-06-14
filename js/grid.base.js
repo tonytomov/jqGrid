@@ -118,8 +118,7 @@ $.extend($.jgrid,{
 		return new Date(tsp.y, tsp.m, tsp.d, tsp.h, tsp.i, tsp.s,0);
 	},
 	jqID : function(sid){
-		sid = sid + "";
-		return sid.replace(/([\.\:\[\]])/g,"\\$1");
+		return String(sid).replace(/[!"#$%&'()*+,.\/:;<=>?@\[\\\]\^`{|}~]/g,"\\$&");
 	},
 	guid : 1,
 	uidPref: 'jqg',
