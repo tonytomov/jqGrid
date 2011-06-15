@@ -173,7 +173,7 @@ $.jgrid.extend({
 						break;
 				}
 				// The common approach is if nothing changed do not do anything
-				if (v2 != $t.p.savedRow[fr].v){
+				if (v2 !== $t.p.savedRow[fr].v){
 					if ($.isFunction($t.p.beforeSaveCell)) {
 						var vv = $t.p.beforeSaveCell.call($t, $t.rows[iRow].id,nm, v, iRow,iCol);
 						if (vv) {v = vv; v2=vv;}
