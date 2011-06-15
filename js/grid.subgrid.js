@@ -228,10 +228,10 @@ addSubGrid : function( pos, sind ) {
 					}
 					return false;
 				});
-				if(ts.p.subGridOptions.expandOnLoad === true) {
-					setTimeout(function(){ $(tr.cells[pos]).trigger('click'); },i*ts.p.subGridOptions.delayOnLoad);
-				}
 			}
+			if(ts.p.subGridOptions.expandOnLoad === true) {
+				$(ts.rows[i].cells[pos]).trigger('click');
+				}
 			i++;
 		}
 		ts.subGridXml = function(xml,sid) {subGridXml(xml,sid);};
