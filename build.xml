@@ -46,7 +46,24 @@
         </apply>
       	<echo message="${target.min} built." />
     </target>
-
+    
+    <target name="minfiles">
+      <mkdir dir="${distdir}/min" />
+	<apply executable="java" parallel="false" verbose="true" failonerror="true" dest="${distdir}/min">
+	    <fileset dir="${srcdir}">
+                <include name="*.js" />
+            </fileset>
+            <arg line="-jar" />
+            <arg path="${GoogleCompiler}" />
+            <arg value="--warning_level" />
+            <arg value="QUIET" />
+            <arg value="--js_output_file" />
+            <targetfile />
+            <arg value="--js" />
+	    <mapper type="glob" from="*.js" to="*.js" />
+        </apply>      
+    </target>
+    
     <target name="i18n">
         <mkdir dir="${distdir}/i18n" />
         <copy todir="${distdir}/i18n" overwrite="true">
@@ -56,7 +73,7 @@
         </copy>
     </target>
 
-    <target name="build" depends="jqgrid, jqgrid.min, i18n"/>
+    <target name="build" depends="jqgrid, jqgrid.min, i18n, minfiles"/>
 
     <target name="clean">
         <delete dir="${distdir}" />
