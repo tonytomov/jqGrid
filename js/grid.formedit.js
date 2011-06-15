@@ -346,7 +346,7 @@ $.jgrid.extend({
 				closeovrl = false;
 			}
 			function getFormData(){
-				$(".FormElement", "#"+frmtb).each(function(i) {
+				$("#"+frmtb+" > tbody > tr > td > .FormElement").each(function(i) {
 					var celm = $(".customelement", this);
 					if (celm.length) {
 						var  elem = celm[0], nm = $(elem).attr('name');
