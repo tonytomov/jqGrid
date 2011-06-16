@@ -403,8 +403,10 @@
 			url: null,
 			delOptions: {},
 			editOptions : {}
-		},
-		cm = $('#'+gid)[0].p.colModel[pos];
+		};
+		rid = $.jgrid.jqID( rid );
+		gid = $.jgrid.jqID( gid );
+		var cm = $('#'+gid)[0].p.colModel[pos];
 		if(!$.fmatter.isUndefined(cm.formatoptions)) {
 			op = $.extend(op,cm.formatoptions);
 		}
