@@ -82,12 +82,6 @@ $.jgrid.extend({
 					}
 				}
 			}
-			function hideButtons()
-			{
-				$(".add-rule","#"+fid).hide();
-				$(".delete-rule","#"+fid).hide();
-				$(".opsel","#"+fid).hide();
-			}
 			if ( $("#"+IDs.themodal).html() !== null ) {
 				showFilter();
 			} else {
@@ -153,6 +147,7 @@ $.jgrid.extend({
 					errorcheck : p.errorcheck,
 					sopt: p.sopt,
 					groupButton : p.multipleGroup,
+					ruleButtons : p.multipleSearch,
 					_gridsopt : $.jgrid.search.odata,
 					onChange : function( sp ) {
 						if(this.p.showQuery) {
@@ -172,9 +167,7 @@ $.jgrid.extend({
 						return false;
 					});
 				}
-				if(p.multipleSearch === false) {
-					hideButtons();
-				}
+				if(p.multipleGroup === true) p.multipleSearch = true;
 				if($.isFunction(p.onInitializeSearch) ) {
 					p.onInitializeSearch($("#"+fid));
 				}
@@ -256,9 +249,6 @@ $.jgrid.extend({
 					$.extend($t.p.postData,sdata);
 					if($.isFunction(p.onReset) ) {
 						p.onReset();
-					}
-					if(p.multipleSearch === false) {
-						hideButtons();
 					}
 					$($t).trigger("reloadGrid",[{page:1}]);
 					return false;
