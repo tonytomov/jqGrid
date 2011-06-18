@@ -203,7 +203,7 @@ $.fn.jqFilter = function( arg ) {
 			var th = $("<th colspan='5' align='left'></th>");
 			tr.append(th);
 
-			if(this.p.ruleButtons) {
+			if(this.p.ruleButtons === true) {
 			// dropdown for: choosing group operator type
 			var groupOpSelect = $("<select class='opsel'></select>");
 			th.append(groupOpSelect);
@@ -243,7 +243,7 @@ $.fn.jqFilter = function( arg ) {
 				});
 			}
 			th.append(inputAddSubgroup);
-			if(this.p.groupButtons) {
+			if(this.p.ruleButtons === true) {
 			// button for adding a new rule
 			var inputAddRule = $("<input type='button' value='+' title='Add rule' class='add-rule ui-add'/>"), cm;
 			inputAddRule.bind('click',function() {
