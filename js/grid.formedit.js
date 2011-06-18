@@ -21,6 +21,7 @@ $.jgrid.extend({
 			beforeShowSearch: null,
 			afterShowSearch : null,
 			onInitializeSearch: null,
+			afterRedraw : null,
 			closeAfterSearch : false,
 			closeAfterReset: false,
 			closeOnEscape : false,
@@ -148,6 +149,7 @@ $.jgrid.extend({
 					sopt: p.sopt,
 					groupButton : p.multipleGroup,
 					ruleButtons : p.multipleSearch,
+					afterRedraw : p.afterRedraw,
 					_gridsopt : $.jgrid.search.odata,
 					onChange : function( sp ) {
 						if(this.p.showQuery) {
