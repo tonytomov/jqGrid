@@ -162,6 +162,7 @@ $.extend($.jgrid,{
 		_stripNum = /[\$,%]/g,
 		_lastCommand=null,
 		_lastField=null,
+		_orDepth=0,
 		_negate=false,
 		_queuedOperator="",
 		_sorting=[],
@@ -222,10 +223,14 @@ $.extend($.jgrid,{
 			return results;
 		};
 		this._append=function(s){
+			var i;
 			if(_query===null){
 				_query="";
 			} else {
 				_query+=_queuedOperator === "" ? " && " :_queuedOperator;
+			}
+			for (i=0;i<_orDepth;i++){
+				_query+="(";
 			}
 			if(_negate){
 				_query+="!";
@@ -233,6 +238,7 @@ $.extend($.jgrid,{
 			_query+="("+s+")";
 			_negate=false;
 			_queuedOperator="";
+			_orDepth=0;
 		};
 		this._setCommand=function(f,c){
 			_lastCommand=f;
@@ -442,6 +448,16 @@ $.extend($.jgrid,{
 			_queuedOperator=" || ";
 			if(f===undefined) { return self; }
 			return self._repeatCommand(f,v,x);
+		};
+		this.orBegin=function(){
+			_orDepth++;
+			return self;
+		};
+		this.orEnd=function(){
+			if (_query !== null){
+				_query+=")";
+			}
+			return self;
 		};
 		this.isNot=function(f){
 			_negate=!_negate;
@@ -1432,14 +1448,24 @@ $.fn.jqGrid = function( pin ) {
 			query = $.jgrid.from(ts.p.data);
 			if (ts.p.ignoreCase) { query = query.ignoreCase(); }
 			function tojLinq ( group ) {
-				var s = 0, index, opr, rule;
+				var s = 0, index, gor, ror, opr, rule;
 				if (group.groups !== undefined) {
+					gor = group.groups.length && group.groupOp.toString().toUpperCase() === "OR";
+					if (gor) {
+						query.orBegin();
+					}
 					for (index = 0; index < group.groups.length; index++) {
+						if (s > 0 && gor) {
+							query.or();
+						}
 						try {
 							tojLinq(group.groups[index]);
 						} catch (e) {alert(e);}
 						s++;
 					}
+					if (gor) {
+						query.orEnd();
+				}
 				}
 				if (group.rules !== undefined) {
 					if(s>0) {
@@ -1447,6 +1473,10 @@ $.fn.jqGrid = function( pin ) {
 						query = $.jgrid.from( result);
 					}
 					try{
+						ror = group.rules.length && group.groupOp.toString().toUpperCase() === "OR";
+						if (ror) {
+							query.orBegin();
+						}
 						for (index = 0; index < group.rules.length; index++) {
 							rule = group.rules[index];
 							opr = group.groupOp.toString().toUpperCase();
@@ -1457,6 +1487,9 @@ $.fn.jqGrid = function( pin ) {
 								query = compareFnMap[rule.op](query, opr)(rule.field, rule.data, cmtypes[rule.field]);
 							}
 							s++;
+						}
+						if (ror) {
+							query.orEnd();
 						}
 					} catch (g) {alert(g);}
 				}
