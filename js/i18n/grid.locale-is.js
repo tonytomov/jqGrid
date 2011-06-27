@@ -9,7 +9,7 @@
 $.jgrid = {
 	defaults : {
 		recordtext: "Skoða {0} - {1} af {2}",
-	    emptyrecords: "No records to view",
+	    emptyrecords: "Engar færslur",
 		loadtext: "Hleður...",
 		pgtext : "Síða {0} af {1}"
 	},
@@ -82,7 +82,7 @@ $.jgrid = {
 		errcap : "Villa",
 		nourl : "Vantar slóð",
 		norecords: "Engar færslur valdar",
-	    model : "Length of colNames <> colModel!"
+	    model : "Lengd colNames <> colModel!"
 	},
 	formatter : {
 		integer : {thousandsSeparator: " ", defaultValue: '0'},
