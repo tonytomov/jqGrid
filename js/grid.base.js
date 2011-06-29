@@ -3272,19 +3272,19 @@ $.jgrid.extend({
 								o.onRightKey.call($t, $t.p.selrow);
 						}
 						}
-						return false;
+						//return false;
 					}
 					//check if enter was pressed on a grid or treegrid node
 					else if( event.keyCode === 13 ){
 						if($.isFunction(o.onEnter)) {
 							o.onEnter.call($t, $t.p.selrow);
 						}
-						return false;
+						//return false;
 					} else if(event.keyCode === 32) {
 						if($.isFunction(o.onSpace)) {
 							o.onSpace.call($t, $t.p.selrow);
 					    }
-						return false;
+						//return false;
 				    }
 				}
 			});
