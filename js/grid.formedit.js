@@ -32,7 +32,7 @@ $.jgrid.extend({
 			left: 0,
 			jqModal : true,
 			modal: false,
-			resize : false,
+			resize : true,
 			width: 450,
 			height: 'auto',
 			dataheight: 'auto',
@@ -602,6 +602,7 @@ $.jgrid.extend({
 						if(ret[0] === false) { break; }
 					}
 				}
+				setNulls();
 				if(ret[0]) {
 					if( $.isFunction( rp_ge.onclickSubmit)) { onCS = rp_ge.onclickSubmit(rp_ge,postdata) || {}; }
 					if( $.isFunction(rp_ge.beforeSubmit))  { ret = rp_ge.beforeSubmit(postdata,$("#"+frmgr)); }
@@ -794,8 +795,6 @@ $.jgrid.extend({
 						$("#"+frmgr).data("disabled",true);
 						$(".confirm","#"+IDs.themodal).show();
 						stat = false;
-					} else {
-						setNulls();
 					}
 				}
 				return stat;
@@ -1041,7 +1040,6 @@ $.jgrid.extend({
 					//ret[1] - msg if not succes
 					//ret[2] - the id  that will be set if reload after submit false
 					getFormData();
-					setNulls();
 					if(postdata[$t.p.id+"_id"] == "_empty")	{ postIt(); }
 					else if(p.checkOnSubmit===true ) {
 						newData = $.extend({},postdata,extpost);
