@@ -2224,11 +2224,9 @@ $.fn.jqGrid = function( pin ) {
 			if($(ptr).attr("class") !== "subgrid") {
 				$(ptr).addClass("ui-state-hover");
 			}
-			return false;
 		}).bind('mouseout',function(e) {
 			ptr = $(e.target).closest("tr.jqgrow");
 			$(ptr).removeClass("ui-state-hover");
-			return false;
 		});
 		}
 		var ri,ci;
