@@ -65,10 +65,10 @@ $.jgrid.extend({
 					lf="";
 				}
 				ldat[expanded] = ((ldat[expanded] == "true" || ldat[expanded] === true) ? true : false) && ldat[loaded];
-				if(ldat[expanded] === true) {
-					twrap += $t.p.treeIcons.minus+" tree-minus treeclick'";
-				} else {
+				if(ldat[expanded] === false) {
 					twrap += $t.p.treeIcons.plus+" tree-plus treeclick'";
+				} else {
+					twrap += $t.p.treeIcons.minus+" tree-minus treeclick'";
 				}
 				
 				twrap += "</div></div>";
