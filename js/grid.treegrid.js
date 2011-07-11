@@ -71,7 +71,7 @@ $.jgrid.extend({
 					twrap += $t.p.treeIcons.minus+" tree-minus treeclick'";
 				}
 				
-				twrap += "</div></div>";
+				twrap += "></div></div>";
 				$($t.rows[i].cells[expCol]).wrapInner("<span class='cell-wrapper"+lf+"'></span>").prepend(twrap);
 
 				if(curLevel !== parseInt($t.p.tree_root_level,10)) {
