@@ -160,6 +160,7 @@ $.extend($.jgrid,{
 			toTop: true,
 			overlay: 10,
 			modal: false,
+			overlayClass : 'ui-widget-overlay',
 			onShow: this.showModal,
 			onHide: this.closeModal,
 			gbox: '',
