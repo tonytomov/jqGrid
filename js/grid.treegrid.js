@@ -66,12 +66,12 @@ $.jgrid.extend({
 				}
 				ldat[expanded] = ((ldat[expanded] == "true" || ldat[expanded] === true) ? true : false) && ldat[loaded];
 				if(ldat[expanded] === false) {
-					twrap += $t.p.treeIcons.plus+" tree-plus treeclick'";
+					twrap += ((ldat[isLeaf] === true) ? "'" : $t.p.treeIcons.plus+" tree-plus treeclick'");
 				} else {
-					twrap += $t.p.treeIcons.minus+" tree-minus treeclick'";
+					twrap += ((ldat[isLeaf] === true) ? "'" : $t.p.treeIcons.minus+" tree-minus treeclick'");
 				}
 				
-				twrap += "</div></div>";
+				twrap += "></div></div>";
 				$($t.rows[i].cells[expCol]).wrapInner("<span class='cell-wrapper"+lf+"'></span>").prepend(twrap);
 
 				if(curLevel !== parseInt($t.p.tree_root_level,10)) {
