@@ -672,7 +672,7 @@ $.jgrid.extend({
 										postdata[n] = $.jgrid.htmlDecode(v);
 									});
 								}
-								rp_ge[$t.p.id].reloadAfterSubmit = rp_ge[$t.p.id].reloadAfterSubmit && $t.p.datatype != "local";
+								//rp_ge[$t.p.id].reloadAfterSubmit = rp_ge[$t.p.id].reloadAfterSubmit && $t.p.datatype != "local";
 								// the action is add
 								if(postdata[oper] == opers.addoper ) {
 									//id processing
