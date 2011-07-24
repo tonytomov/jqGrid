@@ -579,8 +579,8 @@ $.jgrid.extend({
 					parentindex = $t.p._index[parentid];
 					parentdata = $t.p.data[parentindex];
 					parentid = parentdata[$t.p.localReader.id];
-				parentlevel = parseInt(parentdata[level],10)+1;
-				var childs = $($t).jqGrid('getFullTreeNode', parentdata);
+					parentlevel = parseInt(parentdata[level],10)+1;
+					var childs = $($t).jqGrid('getFullTreeNode', parentdata);
 					// if there are child nodes get the last index of it
 					if(childs.length) {
 						i = childs[childs.length-1][$t.p.localReader.id];
@@ -609,7 +609,7 @@ $.jgrid.extend({
 			data[level] = parentlevel;
 			data[isLeaf] = true;
 			if( $t.p.treeGridModel === "adjacency") {
-			data[parent] = parentid;
+				data[parent] = parentid;
 			}
 			if( $t.p.treeGridModel === "nested") {
 				// this method requiere more attention
