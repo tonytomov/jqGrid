@@ -623,7 +623,7 @@ $.jgrid.extend({
 						if( postdata[idname] === undefined ) { postdata[idname] = postdata[$t.p.id+"_id"]; }
 					}
 					delete postdata[$t.p.id+"_id"];
-					postdata = $.extend(postdata,rp_ge.editData,onCS);
+					postdata = $.extend(postdata,rp_ge[$t.p.id].editData,onCS);
 					if($t.p.treeGrid === true)  {
 						if(postdata[oper] == opers.addoper) {
 						selr = $($t).jqGrid("getGridParam", 'selrow');
