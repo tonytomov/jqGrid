@@ -222,6 +222,12 @@ $.jgrid.extend({
 			}
 			var grp = $t.p.groupingView;
 			$t.p.grouping = true;
+
+         //Set default, in case visibilityOnNextGrouping is undefined 
+         if (typeof grp.visibiltyOnNextGrouping == "undefined") {
+            grp.visibiltyOnNextGrouping = [];
+         }
+
       // show previous hidden groups if they are hidden and weren't removed yet
       for(var i=0;i<grp.groupField.length;i++) {
         if(!grp.groupColumnShow[i] && grp.visibiltyOnNextGrouping[i]) {
