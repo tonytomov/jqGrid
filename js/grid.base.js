@@ -2265,12 +2265,10 @@ $.fn.jqGrid = function( pin ) {
 					} else {
 						$(ts).jqGrid("setSelection",ptr[0].id,true);
 					}
-				} else {
-					if(e[ts.p.multikey]) {
+				} else { if (e[ts.p.multikey]) {
 						$(ts).jqGrid("setSelection",ptr[0].id,true);
 					} else if(ts.p.multiselect && scb) {
-						scb = $("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+ptr[0].id).attr("checked");
-						$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+ptr[0].id).attr("checked",!scb);
+            $(ts).jqGrid("setSelection",ptr[0].id,true);
 					}
 				}
 				if($.isFunction(ts.p.onCellSelect)) {
