@@ -368,7 +368,7 @@ $.jgrid.extend({
 						if(opts.onstart && $.isFunction(opts.onstart) ) { opts.onstart.call($($t),ev,ui); }
 					},
 					stop :function(ev,ui) {
-						if(ui.helper.dropped) {
+						if(ui.helper.dropped && !opts.dragcopy) {
 							var ids = $(ui.helper).attr("id");
 							$($t).jqGrid('delRowData',ids );
 						}
@@ -447,6 +447,7 @@ $.jgrid.extend({
 				"appendTo" : "#jqgrid_dnd",
 				"zIndex": 5000
 			},
+			"dragcopy": false,
 			"dropbyname" : false,
 			"droppos" : "first",
 			"autoid" : true,
