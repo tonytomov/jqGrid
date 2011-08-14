@@ -2863,11 +2863,7 @@ $.jgrid.extend({
 				}
 			});
 			if(fndh===true) {
-				if($t.p.shrinkToFit === false) {
-					$($t).jqGrid("setGridWidth",$t.grid.width );
-				} else if($t.grid.width!==$t.p.tblwidth) {
-					$($t).jqGrid("setGridWidth",$t.p.tblwidth );
-				}
+				$($t).jqGrid("setGridWidth",$t.p.tblwidth );
 			}
 		});
 	},
