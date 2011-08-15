@@ -2850,10 +2850,10 @@ $.jgrid.extend({
 			$(this.p.colModel).each(function(i) {
 				if ($.inArray(this.name,colname) !== -1 && this.hidden === sw) {
 					$("tr",$t.grid.hDiv).each(function(){
-						$(this).children("th:eq("+i+")").css("display",show);
+						$(this.cells[i]).css("display", show);
 					});
 					$($t.rows).each(function(j){
-						$(this).children("td:eq("+i+")").css("display",show);
+						$(this.cells[i]).css("display", show);
 					});
 					if($t.p.footerrow) { $("tr.footrow td:eq("+i+")", $t.grid.sDiv).css("display", show); }
 					cw = this.widthOrg? this.widthOrg: parseInt(this.width,10);
