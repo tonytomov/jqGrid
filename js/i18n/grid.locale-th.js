@@ -1,7 +1,7 @@
 ;(function($){
 /**
  * jqGrid Thai Translation
- * Kittituch Manakul m.kittituch@Gmail.com
+ * Kittituch Manakul m.kittituch@gmail.com
  * http://trirand.com/blog/ 
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
@@ -31,8 +31,8 @@ $.jgrid = {
 		bClose: "ปิด",
 		saveData: "คุณต้องการบันทึการแก้ไข ใช่หรือไม่?",
 		bYes : "บันทึก",
-		bNo : "ละทิ้งการแก้ไข",
-		bExit : "ยกเลิก",
+		bNo : "กลับไปแก้ไข",
+		bExit : "ละทิ้งไม่บันทึก",
 		msg: {
 			required:"ข้อมูลนี้จำเป็น",
 			number:"กรุณากรอกหมายเลขให้ถูกต้อง",
