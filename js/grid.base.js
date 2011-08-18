@@ -1080,7 +1080,7 @@ $.fn.jqGrid = function( pin ) {
 			$(ts.p.xmlReader.page,xml).each(function() {ts.p.page = this.textContent  || this.text || 0; });
 			$(ts.p.xmlReader.total,xml).each(function() {ts.p.lastpage = this.textContent  || this.text; if(ts.p.lastpage===undefined) { ts.p.lastpage=1; } }  );
 			$(ts.p.xmlReader.records,xml).each(function() {ts.p.records = this.textContent  || this.text  || 0; }  );
-			$(ts.p.xmlReader.userdata,xml).each(function() {ts.p.userData[this.getAttribute("name")]=this.textContent || this.text;});
+			$(ts.p.xmlReader.userdata,xml).each(function() {ts.p.userData[this.getAttribute("name")]= $(this).text();});
 			var gxml = $(ts.p.xmlReader.root+" "+ts.p.xmlReader.row,xml);
 			if (!gxml) { gxml = []; }
 			var gl = gxml.length, j=0, grpdata={}, rn;
