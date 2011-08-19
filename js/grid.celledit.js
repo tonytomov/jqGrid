@@ -178,6 +178,9 @@ $.jgrid.extend({
 						var vv = $t.p.beforeSaveCell.call($t, $t.rows[iRow].id,nm, v, iRow,iCol);
 						if (vv) {v = vv; v2=vv;}
 					}
+				}
+				// Compare again in case the beforSaveCell handler returned the initial value
+				if (v2 !== $t.p.savedRow[fr].v){
 					var cv = $.jgrid.checkValues(v,iCol,$t);
 					if(cv[0] === true) {
 						var addpost = {};
