@@ -141,7 +141,7 @@
 				monthNames: opts.monthNames
 			};
 			if( format in opts.masks ) { format = opts.masks[format]; }
-			if(date.constructor === Number) {
+			if( !isNaN( date - 0 ) ) {
 				//Unix timestamp
 				if(String(format).toLowerCase() == "u") {
 					date = date*1000;
