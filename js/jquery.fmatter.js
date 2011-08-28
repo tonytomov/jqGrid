@@ -141,12 +141,9 @@
 				monthNames: opts.monthNames
 			};
 			if( format in opts.masks ) { format = opts.masks[format]; }
-			if( !isNaN( date - 0 ) ) {
+			if( !isNaN( date - 0 ) && String(format).toLowerCase() == "u") {
 				//Unix timestamp
-				if(String(format).toLowerCase() == "u") {
-					date = date*1000;
-				}
-			    timestamp = new Date(date);
+			    timestamp = new Date( parseFloat(date)*1000 );
 			} else if(date.constructor === Date) {
 				timestamp = date;
 				// Microsoft date format support
