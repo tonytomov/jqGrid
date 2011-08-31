@@ -20,7 +20,7 @@ $.jgrid.extend({
 			"aftersavefunc" : aftersavefunc || null,
 			"errorfunc": errorfunc || null,
 			"afterrestorefunc" : afterrestorefunc|| null,
-			"restoreAfterErorr" : true
+			"restoreAfterError" : true
 		},
 		args = $.makeArray(arguments).slice(1), o;
 
@@ -101,7 +101,7 @@ $.jgrid.extend({
 			"aftersavefunc" : aftersavefunc || null,
 			"errorfunc": errorfunc || null,
 			"afterrestorefunc" : afterrestorefunc|| null,
-			"restoreAfterErorr" : true
+			"restoreAfterError" : true
 		},
 		args = $.makeArray(arguments).slice(1), o;
 
