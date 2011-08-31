@@ -1685,17 +1685,22 @@ $.fn.jqGrid = function( pin ) {
 				case "jsonp":
 				case "xml":
 				case "script":
+					var pageNo = ts.p.postData.page;
 					$.ajax($.extend({
 						url:ts.p.url,
 						type:ts.p.mtype,
 						dataType: dt ,
 						data: $.isFunction(ts.p.serializeGridData)? ts.p.serializeGridData.call(ts,ts.p.postData) : ts.p.postData,
 						success:function(data,st) {
-							if(dt === "xml") { addXmlData(data,ts.grid.bDiv,rcnt,npage>1,adjust); }
-							else { addJSONData(data,ts.grid.bDiv,rcnt,npage>1,adjust); }
-							if(lc) { lc.call(ts,data); }
-							if (pvis) { ts.grid.populateVisible(); }
-							if( ts.p.loadonce || ts.p.treeGrid) {ts.p.datatype = "local";}
+							// check that the page number of this request (pageNo) is matching the page number
+							// requested last (ts.p.postData.page)
+							if (ts.p.postData.page == pageNo) {
+								if(dt === "xml") { addXmlData(data,ts.grid.bDiv,rcnt,npage>1,adjust); }
+								else { addJSONData(data,ts.grid.bDiv,rcnt,npage>1,adjust); }
+								if(lc) { lc.call(ts,data); }
+								if (pvis) { ts.grid.populateVisible(); }
+								if( ts.p.loadonce || ts.p.treeGrid) {ts.p.datatype = "local";}
+							}
 							data=null;
 							endReq();
 						},
