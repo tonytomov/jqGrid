@@ -1218,7 +1218,7 @@ $.fn.jqGrid = function( pin ) {
 			} else { return; }
 
 			var dReader, locid = "_id_", frd,
-			locdata = (ts.p.datatype != "local" && ts.p.loadonce) || ts.p.datatype == "jsonstring";
+			locdata = (ts.p.datatype != "local" && ts.p.loadonce) || ts.p.datatype == "jsonstring" || ts.p.datatype == "json";
 			if(locdata) { ts.p.data = []; ts.p._index = {}; ts.p.localReader.id = locid;}
 			ts.p.reccount = 0;
 			if(ts.p.datatype == "local") {
