@@ -2986,6 +2986,9 @@ $.jgrid.extend({
 						lvc = i;
 					}
 				});
+
+				if (!lvc) { return; }
+			    
 				cr =0;
 				if (hs) {
 					if(nwidth-gw-(initwidth+brd*vc) !== scw){
