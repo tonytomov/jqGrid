@@ -233,7 +233,7 @@ $.jgrid.extend({
 				case 'adjacency' :
 					var parent_id = $t.p.treeReader.parent_id_field;
 					$($t.p.data).each(function(i){
-						if(this[parent_id] === null || String(this[parent_id]).toLowerCase() == "null") {
+						if(!(this[parent_id] === null || String(this[parent_id]).toLowerCase() == "null")) {
 							result.push(this);
 						}
 					});
