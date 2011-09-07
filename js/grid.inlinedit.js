@@ -20,7 +20,8 @@ $.jgrid.extend({
 			"aftersavefunc" : aftersavefunc || null,
 			"errorfunc": errorfunc || null,
 			"afterrestorefunc" : afterrestorefunc|| null,
-			"restoreAfterErorr" : true
+			"restoreAfterError" : true,
+			"mtype" : "POST"
 		},
 		args = $.makeArray(arguments).slice(1), o;
 
@@ -101,7 +102,8 @@ $.jgrid.extend({
 			"aftersavefunc" : aftersavefunc || null,
 			"errorfunc": errorfunc || null,
 			"afterrestorefunc" : afterrestorefunc|| null,
-			"restoreAfterErorr" : true
+			"restoreAfterError" : true,
+			"mtype" : "POST"
 		},
 		args = $.makeArray(arguments).slice(1), o;
 
@@ -222,7 +224,7 @@ $.jgrid.extend({
 				$.ajax($.extend({
 					url:o.url,
 					data: $.isFunction($t.p.serializeRowData) ? $t.p.serializeRowData.call($t, tmp3) : tmp3,
-					type: "POST",
+					type: o.mtype,
 					async : false, //?!?
 					complete: function(res,stat){
 						$("#lui_"+$t.p.id).hide();
