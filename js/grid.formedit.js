@@ -1612,25 +1612,31 @@ $.jgrid.extend({
 			closeOnEscape : true,
 			beforeRefresh : null,
 			afterRefresh : null,
-			cloneToTop : false
+			cloneToTop : false,
+			alertwidth : 200,
+			alertheight : 'auto',
+			alerttop: null,
+			alertleft: null
 		}, $.jgrid.nav, o ||{});
 		return this.each(function() {
 			if(this.nav) { return; }
 			var alertIDs = {themodal:'alertmod',modalhead:'alerthd',modalcontent:'alertcnt'},
-			$t = this, vwidth, vheight, twd, tdw;
+			$t = this, twd, tdw;
 			if(!$t.grid || typeof elem != 'string') { return; }
 			if ($("#"+alertIDs.themodal).html() === null) {
-				if (typeof window.innerWidth != 'undefined') {
-					vwidth = window.innerWidth;
-					vheight = window.innerHeight;
-				} else if (typeof document.documentElement != 'undefined' && typeof document.documentElement.clientWidth != 'undefined' && document.documentElement.clientWidth !== 0) {
-					vwidth = document.documentElement.clientWidth;
-					vheight = document.documentElement.clientHeight;
-				} else {
-					vwidth=1024;
-					vheight=768;
+				if(!o.alerttop && !o.alertleft) {
+					if (typeof window.innerWidth != 'undefined') {
+						o.alertleft = window.innerWidth;
+						o.alerttop = window.innerHeight;
+					} else if (typeof document.documentElement != 'undefined' && typeof document.documentElement.clientWidth != 'undefined' && document.documentElement.clientWidth !== 0) {
+						o.alertleft = document.documentElement.clientWidth;
+						o.alerttop = document.documentElement.clientHeight;
+					} else {
+						o.alertleft=1024;
+						o.alerttop=768;
+					}
 				}
-				$.jgrid.createModal(alertIDs,"<div>"+o.alerttext+"</div><span tabindex='0'><span tabindex='-1' id='jqg_alrt'></span></span>",{gbox:"#gbox_"+$t.p.id,jqModal:true,drag:true,resize:true,caption:o.alertcap,top:vheight/2-25,left:vwidth/2-100,width:200,height:'auto',closeOnEscape:o.closeOnEscape},"","",true);
+				$.jgrid.createModal(alertIDs,"<div>"+o.alerttext+"</div><span tabindex='0'><span tabindex='-1' id='jqg_alrt'></span></span>",{gbox:"#gbox_"+$t.p.id,jqModal:true,drag:true,resize:true,caption:o.alertcap,top:o.alerttop/2-25,left:o.alertleft/2-100,width:o.alertwidth,height: o.alertheight,closeOnEscape:o.closeOnEscape},"","",true);
 			}
 			var clone = 1;
 			if(o.cloneToTop && $t.p.toppager) { clone = 2; }
