@@ -378,22 +378,26 @@ $.fn.jqFilter = function( arg ) {
 				else if  (cm.searchtype === 'string') {op = that.p.stropts;}
 				else {op = that.p.numopts;}
 				// operators
-				var s ="",so="";
+				var s ="", so = 0;
 				aoprs = [];
 				$.each(that.p.ops, function() { aoprs.push(this.name) });
 				for ( i = 0 ; i < op.length; i++) {
 					ina = $.inArray(op[i],aoprs);
 					if(ina !== -1) {
-						so ="";
-						if(i===0) {
+						if(so===0) {
 							rule.op = that.p.ops[ina].name;
-							so = " selected='selected'";
 						}
-						s += "<option value='"+that.p.ops[ina].name+"'"+ so+">"+that.p.ops[ina].description+"</option>";
+						s += "<option value='"+that.p.ops[ina].name+"'>"+that.p.ops[ina].description+"</option>";
+						so++;
 					}
 				}
 				$(".selectopts",trpar).empty().append( s );
-
+				$(".selectopts",trpar)[0].selectedIndex = 0;
+				if( $.browser.msie && $.browser.version < 9) {
+					var sw = parseInt($("select.selectopts",trpar)[0].offsetWidth) + 1;
+					$(".selectopts",trpar).width( sw );
+					$(".selectopts",trpar).css("width","auto");
+				}
 				// data
 				$(".data",trpar).empty().append( elm );
 				$(".input-elm",trpar).bind('change',function() {
