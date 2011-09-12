@@ -1697,11 +1697,11 @@ $.fn.jqGrid = function( pin ) {
 							if (pvis) { ts.grid.populateVisible(); }
 							if( ts.p.loadonce || ts.p.treeGrid) {ts.p.datatype = "local";}
 							data=null;
-							endReq();
+							if (npage === 1) { endReq(); }
 						},
 						error:function(xhr,st,err){
 							if($.isFunction(ts.p.loadError)) { ts.p.loadError.call(ts,xhr,st,err); }
-							endReq();
+							if (npage === 1) { endReq(); }
 							xhr=null;
 						},
 						beforeSend: function(xhr){
