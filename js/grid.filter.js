@@ -73,7 +73,8 @@ $.fn.jqFilter = function( arg ) {
 		_gridsopt : [], // grid translated strings, do not tuch
 		groupOps : ["AND", "OR"],
 		groupButton : true,
-		ruleButtons : true
+		ruleButtons : true,
+		direction : "ltr"
 	}, arg || {});
 	return this.each( function() {
 		if (this.filter) {return;}
@@ -133,7 +134,7 @@ $.fn.jqFilter = function( arg ) {
 
 		}
 		if(this.p.showQuery) {
-			$(this).append("<table class='queryresult ui-widget ui-widget-content' style='display:block;max-width:440px;border:0px none;'><tbody><tr><td class='query'></td></tr></tbody></table>");
+			$(this).append("<table class='queryresult ui-widget ui-widget-content' style='display:block;max-width:440px;border:0px none;' dir='"+this.p.direction+"'><tbody><tr><td class='query'></td></tr></tbody></table>");
 		}
 		/*
 		 *Perform checking.
@@ -190,17 +191,22 @@ $.fn.jqFilter = function( arg ) {
 			var that = this,  i;
 
 			// this table will hold all the group (tables) and rules (rows)
-			var table = $("<table class='group ui-widget ui-widget-content' style='border:0px none;'><tbody></tbody></table>");
+			var table = $("<table class='group ui-widget ui-widget-content' style='border:0px none;'><tbody></tbody></table>"),
 			// create error message row
+			align = "left";
+			if(this.p.direction == "rtl") {
+				align = "right";
+				table.attr("dir","rtl");
+			}
 			if(parentgroup === null) {
-				$(table).append("<tr class='error' style='display:none;'><th colspan='5' class='ui-state-error' align='left'></th></tr>");
+				table.append("<tr class='error' style='display:none;'><th colspan='5' class='ui-state-error' align='"+align+"'></th></tr>");
 			}
 
 			var tr = $("<tr></tr>");
-			$(table).append(tr);
+			table.append(tr);
 			// this header will hold the group operator type and group action buttons for
 			// creating subgroup "+ {}", creating rule "+" or deleting the group "-"
-			var th = $("<th colspan='5' align='left'></th>");
+			var th = $("<th colspan='5' align='"+align+"'></th>");
 			tr.append(th);
 
 			if(this.p.ruleButtons === true) {
