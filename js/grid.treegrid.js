@@ -405,6 +405,42 @@ $.jgrid.extend({
 		});
 		return result;
 	},
+	reloadNode: function(rc) {
+			return this.each(function(){
+				if(!this.grid || !this.p.treeGrid) {return;}
+
+				var rid = this.p.localReader.id;
+
+				$(this).jqGrid("delChildren", rc[rid]);
+
+				var expanded = this.p.treeReader.expanded_field,
+				parent = this.p.treeReader.parent_id_field,
+				loaded = this.p.treeReader.loaded,
+				level = this.p.treeReader.level_field,
+				lft = this.p.treeReader.left_field,
+				rgt = this.p.treeReader.right_field;
+
+				var id = $.jgrid.getAccessor(rc,this.p.localReader.id);
+				var rc1 = $("#"+id,this.grid.bDiv)[0];
+
+				rc[expanded] = true;
+				$("div.treeclick",rc1).removeClass(this.p.treeIcons.plus+" tree-plus").addClass(this.p.treeIcons.minus+" tree-minus");
+				this.p.treeANode = rc1.rowIndex;
+				this.p.datatype = this.p.treedatatype;
+				if(this.p.treeGridModel == 'nested') {
+					$(this).jqGrid("setGridParam",{postData:{nodeid:id,n_left:rc[lft],n_right:rc[rgt],n_level:rc[level]}});
+				} else {
+					$(this).jqGrid("setGridParam",{postData:{nodeid:id,parentid:rc[parent],n_level:rc[level]}} );
+				}
+				$(this).trigger("reloadGrid");
+				rc[loaded] = true;
+				if(this.p.treeGridModel == 'nested') {
+					$(this).jqGrid("setGridParam",{postData:{nodeid:'',n_left:'',n_right:'',n_level:''}});
+				} else {
+					$(this).jqGrid("setGridParam",{postData:{nodeid:'',parentid:'',n_level:''}});
+				}
+			});
+		},
 	expandNode : function(rc) {
 		return this.each(function(){
 			if(!this.grid || !this.p.treeGrid) {return;}
@@ -519,6 +555,46 @@ $.jgrid.extend({
 				if(dr.length>0){
 					for (var i=0;i<dr.length;i++){
 						$($t).jqGrid("delRowData",dr[i][rid]);
+					}
+				}
+				if( $t.p.treeGridModel === "nested") {
+					// ToDo - update grid data
+					res = $.jgrid.from($t.p.data)
+						.greater(left,myright,{stype:'integer'})
+						.select();
+					if(res.length) {
+						for( key in res) {
+							res[key][left] = parseInt(res[key][left],10) - width ;
+			}
+					}
+					res = $.jgrid.from($t.p.data)
+						.greater(right,myright,{stype:'integer'})
+						.select();
+					if(res.length) {
+						for( key in res) {
+							res[key][right] = parseInt(res[key][right],10) - width ;
+						}
+					}
+				}
+			}
+		});
+	},
+	delChildren : function (rowid) {
+		return this.each(function () {
+			var $t = this, rid = $t.p.localReader.id,
+			left = $t.p.treeReader.left_field,
+			right = $t.p.treeReader.right_field, myright, width, res, key;
+			if(!$t.grid || !$t.p.treeGrid) {return;}
+			var rc = $t.p._index[rowid];
+			if (rc !== undefined) {
+				// nested
+				myright = parseInt($t.p.data[rc][right],10);
+				width = myright -  parseInt($t.p.data[rc][left],10) + 1;
+				var dr = $($t).jqGrid("getFullTreeNode",$t.p.data[rc]);
+				if(dr.length>0){
+					for (var i=0;i<dr.length;i++){
+						if(dr[i][rid] != rowid)
+							$($t).jqGrid("delRowData",dr[i][rid]);
 					}
 				}
 				if( $t.p.treeGridModel === "nested") {
