@@ -365,7 +365,7 @@ $.jgrid.extend({
 					} else {
 					switch ($(this).get(0).type) {
 						case "checkbox":
-							if($(this).attr("checked")) {
+							if($(this).is(':checked')) {
 								postdata[this.name]= $(this).val();
 							}else {
 								var ofv = $(this).attr("offval");
