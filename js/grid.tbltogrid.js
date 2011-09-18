@@ -52,7 +52,7 @@ jQuery(selector).each(function() {
 				var input = jQuery('input', jQuery(this));
 				var rowId = input.attr("value");
 				rowIds.push(rowId || data.length);
-				if (input.attr("checked")) {
+				if (input.is(":checked")) {
 					rowChecked.push(rowId);
 				}
 				row[colModel[rowPos].name] = input.attr("value");
