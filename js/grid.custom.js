@@ -493,7 +493,7 @@ $.jgrid.extend({
 				$th.clone().attr('colspan', free).appendTo($group_row);
 			}
 
-			$first_row.find('th').height(0).text('').removeAttr('role').removeAttr('id');
+			$first_row.find('th').height(0).html('').removeAttr('role').removeAttr('id');
 			$labels.before($first_row).before($group_row);
 
 			//preserve orig event
@@ -526,7 +526,7 @@ $.jgrid.extend({
 				.removeAttr('role')
 				.addClass('ui-jqgrid-labels-firstrow');
 
-			$first_row.find('th').height(0).text('').removeAttr('role').removeAttr('id');
+			$first_row.find('th').height(0).html('').removeAttr('role').removeAttr('id');
 
 			var $group_row = $('<tr>').addClass('ui-jqgrid-labels-grouprow');
 
@@ -552,7 +552,7 @@ $.jgrid.extend({
 				else
 				{
 					$th = $(th).attr('colspan', colspan);
-					if($t.p.groupHeader[prev_hgroup]) $th.text($t.p.groupHeader[prev_hgroup].label);
+					if($t.p.groupHeader[prev_hgroup]) $th.html($t.p.groupHeader[prev_hgroup].label);
 					$th.appendTo($group_row);
 
 					prev_hgroup = hgroup;
@@ -564,7 +564,7 @@ $.jgrid.extend({
 			if(colspan)
 			{
 				$th = $(th).attr('colspan', colspan);
-				if($t.p.groupHeader[prev_hgroup]) $th.text($t.p.groupHeader[prev_hgroup].label);
+				if($t.p.groupHeader[prev_hgroup]) $th.html($t.p.groupHeader[prev_hgroup].label);
 				$th.appendTo($group_row);
 			}
 
