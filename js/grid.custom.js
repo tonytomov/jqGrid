@@ -478,7 +478,7 @@ $.jgrid.extend({
 						free = 0;
 					}
 
-					$th.clone().attr('colspan', opts[idx][0]).text(opts[idx][1]).appendTo($group_row);
+					$th.clone().attr('colspan', opts[idx][0]).html(opts[idx][1]).appendTo($group_row);
 					skip = opts[idx][0] - 1;
 				}
 				else
