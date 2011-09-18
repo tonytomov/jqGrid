@@ -1873,15 +1873,16 @@ $.fn.jqGrid = function( pin ) {
 				if(ts.p.lastsort == idxcol && ts.p.sortorder == sor && !reload) { return; }
 				else { ts.p.sortorder = sor; }
 			}
-			var thd= $("thead:first",ts.grid.hDiv).get(0);
-			$("tr th:eq("+ts.p.lastsort+") span.ui-grid-ico-sort",thd).addClass('ui-state-disabled');
-			$("tr th:eq("+ts.p.lastsort+")",thd).attr("aria-selected","false");
-			$("tr th:eq("+idxcol+") span.ui-icon-"+ts.p.sortorder,thd).removeClass('ui-state-disabled');
-			$("tr th:eq("+idxcol+")",thd).attr("aria-selected","true");
+			var previousSelectedTh = ts.grid.headers[ts.p.lastsort].el, newSelectedTh = ts.grid.headers[idxcol].el;
+
+			$("span.ui-grid-ico-sort",previousSelectedTh).addClass('ui-state-disabled');
+			$(previousSelectedTh).attr("aria-selected","false");
+			$("span.ui-icon-"+ts.p.sortorder,newSelectedTh).removeClass('ui-state-disabled');
+			$(newSelectedTh).attr("aria-selected","true");
 			if(!ts.p.viewsortcols[0]) {
 				if(ts.p.lastsort != idxcol) {
-					$("tr th:eq("+ts.p.lastsort+") span.s-ico",thd).hide();
-					$("tr th:eq("+idxcol+") span.s-ico",thd).show();
+					$("span.s-ico",previousSelectedTh).hide();
+					$("span.s-ico",newSelectedTh).show();
 				}
 			}
 			index = index.substring(5 + ts.p.id.length + 1); // bad to be changed!?!
@@ -1986,6 +1987,16 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.toppager) {ret[1] += $(ts.grid.topDiv).height()+parseInt($(ts.grid.topDiv).css("border-bottom-width"),10);}
 			ret[2] += $(ts.grid.bDiv).height() + $(ts.grid.hDiv).height();
 			return ret;
+		},
+		getColumnHeaderIndex = function (th) {
+			var i, headers = ts.grid.headers, ci = $.jgrid.getCellIndex(th);
+			for (i = 0; i < headers.length; i++) {
+				if (th === headers[i].el) {
+					ci = i;
+					break;
+				}
+			}
+			return ci;
 		};
 		this.p.id = this.id;
 		if ($.inArray(ts.p.multikey,sortkeys) == -1 ) {ts.p.multikey = false;}
@@ -2171,7 +2182,7 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.footerrow) { tfoot += "<td role='gridcell' "+formatCol(j,0,'', null, '', false)+">&#160;</td>"; }
 		}).mousedown(function(e) {
 			if ($(e.target).closest("th>span.ui-jqgrid-resize").length != 1) { return; }
-			var ci = $.jgrid.getCellIndex(this);
+			var ci = getColumnHeaderIndex(this);
 			if(ts.p.forceFit===true) {ts.p.nv= nextVisible(ci);}
 			grid.dragStart(ci, e, getOffset(ci));
 			return false;
@@ -2184,7 +2195,7 @@ $.fn.jqGrid = function( pin ) {
 			if (!ts.p.viewsortcols[2]) { s = "th>div>span>span.ui-grid-ico-sort"; }
 			var t = $(e.target).closest(s);
 			if (t.length != 1) { return; }
-			var ci = $.jgrid.getCellIndex(this);
+			var ci = getColumnHeaderIndex(this);
 			if (!ts.p.viewsortcols[2]) { r=true;d=t.attr("sort"); }
 			sortData( $('div',this)[0].id, ci, r, d);
 			return false;
