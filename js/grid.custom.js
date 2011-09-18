@@ -441,70 +441,73 @@ $.jgrid.extend({
 	//Wildraid group methods
 	'setGroupHeader': function(opts)
 	{
-		var $t = this[0];
+		return this.each(function(){
+			var $t = this;
 
-		var $labels = $(this).closest('.ui-jqgrid-view').find('.ui-jqgrid-htable .ui-jqgrid-labels');
-		var $first_row = $labels.clone().removeClass('ui-jqgrid-labels').removeAttr('role');
-		var $group_row = $('<tr>');
+			var $labels = $(this).closest('.ui-jqgrid-view').find('.ui-jqgrid-htable .ui-jqgrid-labels'),
+			$first_row = $labels.clone().removeClass('ui-jqgrid-labels').removeAttr('role'),
+			$group_row = $('<tr></tr>'),
 
-		var $th = $('<th>').addClass('ui-state-default ui-th-ltr');
+			$th = $('<th class="ui-state-default ui-th-ltr"></th>'),
+			cm = $t.p.colModel,
+			skip = 0,
+			free = 0, 
+			i, idx, resizeStop;
 
-		var skip = 0;
-		var free = 0;
-
-		for(var i in $t.p.colModel)
-		{
-			if($t.p.colModel[i].hidden)
+			for( i in cm)
 			{
-				$th.clone().hide().appendTo($group_row);
-				continue;
-			}
-
-			if(skip)
-			{
-				skip--;
-				continue;
-			}
-
-			var idx = $t.p.colModel[i].name;
-
-			if(opts[idx])
-			{
-				if(free)
+				if(cm[i].hidden)
 				{
-					$th.clone().attr('colspan', free).appendTo($group_row);
-					free = 0;
+					$th.clone().hide().appendTo($group_row);
+					continue;
 				}
 
-				$th.clone().attr('colspan', opts[idx][0]).text(opts[idx][1]).appendTo($group_row);
-				skip = opts[idx][0] - 1;
+				if(skip)
+				{
+					skip--;
+					continue;
+				}
+
+				idx = cm[i].name;
+
+				if(opts[idx])
+				{
+					if(free)
+					{
+						$th.clone().attr('colspan', free).appendTo($group_row);
+						free = 0;
+					}
+
+					$th.clone().attr('colspan', opts[idx][0]).text(opts[idx][1]).appendTo($group_row);
+					skip = opts[idx][0] - 1;
+				}
+				else
+				{
+					free++;
+				}
 			}
-			else
+
+			//last free th
+			if(free)
 			{
-				free++;
+				$th.clone().attr('colspan', free).appendTo($group_row);
 			}
-		}
 
-		//last free th
-		if(free)
-		{
-			$th.clone().attr('colspan', free).appendTo($group_row);
-		}
+			$first_row.find('th').height(0).text('').removeAttr('role').removeAttr('id');
+			$labels.before($first_row).before($group_row);
 
-		$first_row.find('TH').height(0).text('').removeAttr('role').removeAttr('id');
-		$labels.before($first_row).before($group_row);
+			//preserve orig event
+			if($.isFunction($t.p.resizeStop))
+			{
+				resizeStop = $t.p.resizeStop;
+			}
 
-		//preserve orig event
-		if($.isFunction($t.p.resizeStop))
-		{
-			var resizeStop = $t.p.resizeStop;
-		}
-
-		$t.p.resizeStop = function(nw,idx)
-		{
-			$first_row.find('TH').eq(idx).width(nw);
-			if($.isFunction(resizeStop)) resizeStop.call(this, nw, idx);
-		};
+			$t.p.resizeStop = function(nw,idx)
+			{
+				$first_row.find('th').eq(idx).width(nw);
+				if($.isFunction(resizeStop)) resizeStop.call(this, nw, idx);
+			};
+		});
 	},
 
 	'updateGroupHeader' : function()
@@ -523,7 +526,7 @@ $.jgrid.extend({
 				.removeAttr('role')
 				.addClass('ui-jqgrid-labels-firstrow');
 
-			$first_row.find('TH').height(0).text('').removeAttr('role').removeAttr('id');
+			$first_row.find('th').height(0).text('').removeAttr('role').removeAttr('id');
 
 			var $group_row = $('<tr>').addClass('ui-jqgrid-labels-grouprow');
 
@@ -578,7 +581,7 @@ $.jgrid.extend({
 
 			$t.p.resizeStop = function(nw,idx)
 			{
-				$first_row.find('TH').eq(idx).width(nw);
+				$first_row.find('th').eq(idx).width(nw);
 				if($.isFunction(resizeStop)) resizeStop.call(this, nw, idx);
 			};
 		});
