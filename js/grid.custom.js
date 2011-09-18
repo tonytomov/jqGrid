@@ -530,8 +530,9 @@ $.jgrid.extend({
 			var th = '<th class="ui-state-default ui-th-' + $t.p.direction + '"></th>';
 
 			//Iterate columns
-			var colspan = 0;
-			var prev_hgroup = null;
+			var colspan = 0,
+			prev_hgroup = null,
+			$th;
 
 			for(var i in $t.p.colModel)
 			{
@@ -547,7 +548,7 @@ $.jgrid.extend({
 				}
 				else
 				{
-					var $th = $(th).attr('colspan', colspan);
+					$th = $(th).attr('colspan', colspan);
 					if($t.p.groupHeader[prev_hgroup]) $th.text($t.p.groupHeader[prev_hgroup].label);
 					$th.appendTo($group_row);
 
@@ -559,7 +560,7 @@ $.jgrid.extend({
 			//Last th
 			if(colspan)
 			{
-				var $th = $(th).attr('colspan', colspan);
+				$th = $(th).attr('colspan', colspan);
 				if($t.p.groupHeader[prev_hgroup]) $th.text($t.p.groupHeader[prev_hgroup].label);
 				$th.appendTo($group_row);
 			}
