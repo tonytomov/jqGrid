@@ -3,6 +3,8 @@
  * jqGrid extension for custom methods
  * Tony Tomov tony@trirand.com
  * http://trirand.com/blog/ 
+ * 
+ * Wildraid wildraid@mail.ru
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
@@ -434,6 +436,161 @@ $.jgrid.extend({
 			this.triggerToolbar = triggerToolbar;
 			this.clearToolbar = clearToolbar;
 			this.toggleToolbar = toggleToolbar;
+		});
+	},
+	//Wildraid group methods
+	'setGroupHeader': function(opts)
+	{
+		var $t = this[0];
+
+		var $labels = $(this).closest('.ui-jqgrid-view').find('.ui-jqgrid-htable .ui-jqgrid-labels');
+		var $first_row = $labels.clone().removeClass('ui-jqgrid-labels').removeAttr('role');
+		var $group_row = $('<tr>');
+
+		var $th = $('<th>').addClass('ui-state-default ui-th-ltr');
+
+		var skip = 0;
+		var free = 0;
+
+		for(var i in $t.p.colModel)
+		{
+			if($t.p.colModel[i].hidden)
+			{
+				$th.clone().hide().appendTo($group_row);
+				continue;
+			}
+
+			if(skip)
+			{
+				skip--;
+				continue;
+			}
+
+			var idx = $t.p.colModel[i].name;
+
+			if(opts[idx])
+			{
+				if(free)
+				{
+					$th.clone().attr('colspan', free).appendTo($group_row);
+					free = 0;
+				}
+
+				$th.clone().attr('colspan', opts[idx][0]).text(opts[idx][1]).appendTo($group_row);
+				skip = opts[idx][0] - 1;
+			}
+			else
+			{
+				free++;
+			}
+		}
+
+		//last free th
+		if(free)
+		{
+			$th.clone().attr('colspan', free).appendTo($group_row);
+		}
+
+		$first_row.find('TH').height(0).text('').removeAttr('role').removeAttr('id');
+		$labels.before($first_row).before($group_row);
+
+		//preserve orig event
+		if($.isFunction($t.p.resizeStop))
+		{
+			var resizeStop = $t.p.resizeStop;
+		}
+
+		$t.p.resizeStop = function(nw,idx)
+		{
+			$first_row.find('TH').eq(idx).width(nw);
+			if($.isFunction(resizeStop)) resizeStop.call(this, nw, idx);
+		};
+	},
+
+	'updateGroupHeader' : function()
+	{
+		return this.each(function()
+		{
+			var $t = this;
+			if(!$t.grid || !$t.p.groupHeader) return;
+
+			var $hDiv   = $($t.grid.hDiv);
+			var $labels = $hDiv.find('.ui-jqgrid-labels');
+
+			var $first_row = $labels
+				.clone()
+				.removeClass('ui-jqgrid-labels')
+				.removeAttr('role')
+				.addClass('ui-jqgrid-labels-firstrow');
+
+			$first_row.find('TH').height(0).text('').removeAttr('role').removeAttr('id');
+
+			var $group_row = $('<tr>').addClass('ui-jqgrid-labels-grouprow');
+
+			var th = '<th class="ui-state-default ui-th-' + $t.p.direction + '"></th>';
+
+			//Iterate columns
+			var colspan = 0;
+			var prev_hgroup = null;
+
+			for(var i in $t.p.colModel)
+			{
+				var col = $t.p.colModel[i];
+				var hgroup = col.hgroup ? col.hgroup : '';
+
+				if(col.hidden) continue;
+				if(prev_hgroup === null)  prev_hgroup = hgroup; //first non-hidden column becomes initial group
+
+				if(prev_hgroup == hgroup)
+				{
+					colspan++;
+				}
+				else
+				{
+					var $th = $(th).attr('colspan', colspan);
+					if($t.p.groupHeader[prev_hgroup]) $th.text($t.p.groupHeader[prev_hgroup].label);
+					$th.appendTo($group_row);
+
+					prev_hgroup = hgroup;
+					colspan = 1;
+				}
+			}
+
+			//Last th
+			if(colspan)
+			{
+				var $th = $(th).attr('colspan', colspan);
+				if($t.p.groupHeader[prev_hgroup]) $th.text($t.p.groupHeader[prev_hgroup].label);
+				$th.appendTo($group_row);
+			}
+
+			//Update DOM
+			$hDiv.find('.ui-jqgrid-labels-firstrow, .ui-jqgrid-labels-grouprow').remove();
+			$labels.before($first_row).before($group_row);
+
+			//Preserve orig event
+			//we have to move it to the core of resizing
+			if($.isFunction($t.p.resizeStop))
+			{
+				var resizeStop = $t.p.resizeStop;
+			}
+
+			$t.p.resizeStop = function(nw,idx)
+			{
+				$first_row.find('TH').eq(idx).width(nw);
+				if($.isFunction(resizeStop)) resizeStop.call(this, nw, idx);
+			};
+		});
+	},
+
+	'destroyGroupHeader' : function()
+	{
+		return this.each(function()
+		{
+			var $t = this;
+			if(!$t.grid) return;
+
+			$($t.grid.hDiv).find('.ui-jqgrid-labels-firstrow, .ui-jqgrid-labels-grouprow').remove();
 		});
 	}
 });
