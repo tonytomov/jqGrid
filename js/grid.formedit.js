@@ -363,7 +363,7 @@ $.jgrid.extend({
 					} else {
 					switch ($(this).get(0).type) {
 						case "checkbox":
-							if($(this).attr("checked")) {
+							if($(this).is(":checked")) {
 								postdata[this.name]= $(this).val();
 							}else {
 								var ofv = $(this).attr("offval");
@@ -495,7 +495,8 @@ $.jgrid.extend({
 										fld[0].defaultChecked = true;
 										fld[0].value = vl;
 									} else {
-										fld.attr({checked:"",defaultChecked:""});
+										fld[0].checked = false;
+										fld[0].defaultChecked = false;
 									}
 								} else {fld.val(vl); }
 							} else {
@@ -564,20 +565,20 @@ $.jgrid.extend({
 								if(cm[i].editoptions && cm[i].editoptions.value) {
 									var cb = cm[i].editoptions.value.split(":");
 									if(cb[0] == tmp) {
-										$("#"+nm,"#"+fmid).attr("checked",true);
-										$("#"+nm,"#"+fmid).attr("defaultChecked",true); //ie
+										$("#"+nm,"#"+fmid)[$t.p.useProp ? 'prop': 'attr']("checked",true);
+										$("#"+nm,"#"+fmid)[$t.p.useProp ? 'prop': 'attr']("defaultChecked",true); //ie
 									} else {
-										$("#"+nm,"#"+fmid).attr("checked",false);
-										$("#"+nm,"#"+fmid).attr("defaultChecked",""); //ie
+										$("#"+nm,"#"+fmid)[$t.p.useProp ? 'prop': 'attr']("checked", false);
+										$("#"+nm,"#"+fmid)[$t.p.useProp ? 'prop': 'attr']("defaultChecked", false); //ie
 									}
 								} else {
 									tmp = tmp.toLowerCase();
 									if(tmp.search(/(false|0|no|off|undefined)/i)<0 && tmp!=="") {
-										$("#"+nm,"#"+fmid).attr("checked",true);
-										$("#"+nm,"#"+fmid).attr("defaultChecked",true); //ie
+										$("#"+nm,"#"+fmid)[$t.p.useProp ? 'prop': 'attr']("checked",true);
+										$("#"+nm,"#"+fmid)[$t.p.useProp ? 'prop': 'attr']("defaultChecked",true); //ie
 									} else {
-										$("#"+nm,"#"+fmid).attr("checked",false);
-										$("#"+nm,"#"+fmid).attr("defaultChecked",""); //ie
+										$("#"+nm,"#"+fmid)[$t.p.useProp ? 'prop': 'attr']("checked", false);
+										$("#"+nm,"#"+fmid)[$t.p.useProp ? 'prop': 'attr']("defaultChecked", false); //ie
 									}
 								}
 								break;
@@ -1960,9 +1961,9 @@ $.jgrid.extend({
 					if ( $("[name="+$.jgrid.jqID(i)+"]",formid).is("input:radio") || $("[name="+$.jgrid.jqID(i)+"]",formid).is("input:checkbox"))  {
 						$("[name="+$.jgrid.jqID(i)+"]",formid).each( function() {
 							if( $(this).val() == rowdata[i] ) {
-								$(this).attr("checked","checked");
+								$(this)[$t.p.useProp ? 'prop': 'attr']("checked",true);
 							} else {
-								$(this).attr("checked","");
+								$(this)[$t.p.useProp ? 'prop': 'attr']("checked", false);
 							}
 						});
 					} else {
