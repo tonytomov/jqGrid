@@ -507,6 +507,7 @@ $.jgrid.extend({
 				$first_row.find('th').eq(idx).width(nw);
 				if($.isFunction(resizeStop)) resizeStop.call(this, nw, idx);
 			};
+			$t.p.groupHeader = true;
 		});
 	},
 
@@ -595,6 +596,7 @@ $.jgrid.extend({
 			if(!$t.grid) return;
 
 			$($t.grid.hDiv).find('.ui-jqgrid-labels-firstrow, .ui-jqgrid-labels-grouprow').remove();
+			$t.p.groupHeader = false;
 		});
 	}
 });
