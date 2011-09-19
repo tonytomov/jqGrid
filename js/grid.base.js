@@ -2881,7 +2881,7 @@ $.jgrid.extend({
 				}
 			});
 			if(fndh===true) {
-				$($t).jqGrid("setGridWidth",$t.p.tblwidth );
+				$($t).jqGrid("setGridWidth",$t.p.shrinkToFit === true ? $t.p.tblwidth : $t.p.width );
 			}
 			if($t.p.groupHeader && (typeof $t.p.groupHeader === 'object' || $.isFunction($t.p.groupHeader) ) )  {
 				$($t).jqGrid('updateGroupHeader'); 
