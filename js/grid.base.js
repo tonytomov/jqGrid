@@ -2883,6 +2883,9 @@ $.jgrid.extend({
 			if(fndh===true) {
 				$($t).jqGrid("setGridWidth",$t.p.tblwidth );
 			}
+			if($t.p.groupHeader !== undefined)  {
+				if($t.p.groupHeader === true) { $($t).jqGrid('updateGroupHeader'); }
+			}
 		});
 	},
 	hideCol : function (colname) {
