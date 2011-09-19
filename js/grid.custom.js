@@ -445,35 +445,39 @@ $.jgrid.extend({
 		return this.each(function()
 		{
 			var $t = this;
-			if(!$t.grid || !$t.p.groupHeader) return;
+			if(!$t.grid || !$t.p.groupHeader) { return; }
 
-			var $hDiv   = $($t.grid.hDiv);
-			var $labels = $hDiv.find('.ui-jqgrid-labels');
+			var $hDiv   = $($t.grid.hDiv),
+			$labels = $hDiv.find('.ui-jqgrid-labels'),
 
-			var $first_row = $labels
+			$first_row = $labels
 				.clone()
 				.removeClass('ui-jqgrid-labels')
 				.removeAttr('role')
-				.addClass('ui-jqgrid-labels-firstrow');
+				.addClass('ui-jqgrid-labels-firstrow'),
+
+
+			$group_row = $('<tr></tr>').addClass('ui-jqgrid-labels-grouprow'),
+
+			th = '<th class="ui-state-default ui-th-' + $t.p.direction + '"></th>',
+
+			//Iterate columns
+			colspan = 0,
+			prev_hgroup = null,
+			$th,
+			cm = $t.p.colModel,
+			col,
+			hgroup;
 
 			$first_row.find('th').height(0).html('').removeAttr('role').removeAttr('id');
 
-			var $group_row = $('<tr>').addClass('ui-jqgrid-labels-grouprow');
-
-			var th = '<th class="ui-state-default ui-th-' + $t.p.direction + '"></th>';
-
-			//Iterate columns
-			var colspan = 0,
-			prev_hgroup = null,
-			$th;
-
-			for(var i in $t.p.colModel)
+			for(var i in cm)
 			{
-				var col = $t.p.colModel[i];
-				var hgroup = col.hgroup ? col.hgroup : '';
+				col = cm[i];
+				hgroup = col.hgroup ? col.hgroup : '';
 
 				if(col.hidden) continue;
-				if(prev_hgroup === null)  prev_hgroup = hgroup; //first non-hidden column becomes initial group
+				if(prev_hgroup === null) { prev_hgroup = hgroup; }//first non-hidden column becomes initial group
 
 				if(prev_hgroup == hgroup)
 				{
