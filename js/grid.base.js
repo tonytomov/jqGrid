@@ -1705,9 +1705,17 @@ $.fn.jqGrid = function( pin ) {
 							if (npage === 1) { endReq(); }
 							xhr=null;
 						},
-						beforeSend: function(xhr){
-							beginReq();
-							if($.isFunction(ts.p.loadBeforeSend)) { ts.p.loadBeforeSend.call(ts,xhr); }
+						beforeSend: function(xhr, settings ){
+							var gotoreq = true;
+							if($.isFunction(ts.p.loadBeforeSend)) {
+								gotoreq = ts.p.loadBeforeSend.call(ts,xhr, settings); 
+							}
+							if(gotoreq === undefined) { gotoreq = true; }
+							if(gotoreq === false) {
+								return false;
+							} else {
+								beginReq();
+							}
 						}
 					},$.jgrid.ajaxOptions, ts.p.ajaxGridOptions));
 				break;
