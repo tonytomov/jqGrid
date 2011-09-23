@@ -1718,9 +1718,17 @@ $.fn.jqGrid = function( pin ) {
 							if (npage === 1) { endReq(); }
 							xhr=null;
 						},
-						beforeSend: function(xhr){
-							beginReq();
-							if($.isFunction(ts.p.loadBeforeSend)) { ts.p.loadBeforeSend.call(ts,xhr); }
+						beforeSend: function(xhr, settings ){
+							var gotoreq = true;
+							if($.isFunction(ts.p.loadBeforeSend)) {
+								gotoreq = ts.p.loadBeforeSend.call(ts,xhr, settings); 
+							}
+							if(gotoreq === undefined) { gotoreq = true; }
+							if(gotoreq === false) {
+								return false;
+							} else {
+								beginReq();
+							}
 						}
 					},$.jgrid.ajaxOptions, ts.p.ajaxGridOptions));
 				break;
@@ -2568,8 +2576,7 @@ $.jgrid.extend({
 				}
 			} else {
 				//unselect selectall checkbox when deselecting a specific row
-                $("#cb_" + $.jgrid.jqID($t.p.id), $t.grid.hDiv)[$t.p.useProp ? 'prop' : 'attr']("checked", false);
-			   
+				$("#cb_" + $.jgrid.jqID($t.p.id), $t.grid.hDiv)[$t.p.useProp ? 'prop' : 'attr']("checked", false);
 				$t.p.selrow = pt.id;
 				ia = $.inArray($t.p.selrow,$t.p.selarrrow);
 				if (  ia === -1 ){
