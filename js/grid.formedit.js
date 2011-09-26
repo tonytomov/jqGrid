@@ -762,7 +762,23 @@ $.jgrid.extend({
 						}
 					}
 					if (ret[0]) {
-						if (rp_ge[$t.p.id].useDataProxy) { $t.p.dataProxy.call($t, ajaxOptions, "set_"+$t.p.id); }
+						if (rp_ge[$t.p.id].useDataProxy) {
+							var dpret = $t.p.dataProxy.call($t, ajaxOptions, "set_"+$t.p.id); 
+							if(typeof(dpret) == "undefined") {
+								dpret = [true, ""];
+							}
+							if(dpret[0] === false ) {
+								ret[0] = false;
+								ret[1] = dpret[1] || "Error deleting the selected row!" 
+							} else {
+								if(ajaxOptions.data.oper == opers.addoper && rp_ge[$t.p.id].closeAfterAdd ) {
+									$.jgrid.hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: rp_ge[$t.p.id].onClose});
+								}
+								if(ajaxOptions.data.oper == opers.editoper && rp_ge[$t.p.id].closeAfterEdit ) {
+									$.jgrid.hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: rp_ge[$t.p.id].onClose});
+								}
+							}
+						}
 						else { $.ajax(ajaxOptions); }
 					}
 				}
@@ -1575,7 +1591,18 @@ $.jgrid.extend({
 							}
 						}
 						if (ret[0]) {
-							if (rp_ge[$t.p.id].useDataProxy) { $t.p.dataProxy.call($t, ajaxOptions, "del_"+$t.p.id); }
+							if (rp_ge[$t.p.id].useDataProxy) {
+								var dpret = $t.p.dataProxy.call($t, ajaxOptions, "del_"+$t.p.id); 
+								if(typeof(dpret) == "undefined") {
+									dpret = [true, ""];
+								}
+								if(dpret[0] === false ) {
+									ret[0] = false;
+									ret[1] = dpret[1] || "Error deleting the selected row!" 
+								} else {
+									$.jgrid.hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: rp_ge[$t.p.id].onClose});
+								}
+							}
 							else { $.ajax(ajaxOptions); }
 						}
 					}
