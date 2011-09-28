@@ -705,7 +705,8 @@ $.fn.jqGrid = function( pin ) {
 			grouping : false,
 			groupingView : {groupField:[],groupOrder:[], groupText:[],groupColumnShow:[],groupSummary:[], showSummaryOnHide: false, sortitems:[], sortnames:[], groupDataSorted : false, summary:[],summaryval:[], plusicon: 'ui-icon-circlesmall-plus', minusicon: 'ui-icon-circlesmall-minus'},
 			ignoreCase : false,
-			cmTemplate : {}
+			cmTemplate : {},
+			idPrefix : ""
 		}, $.jgrid.defaults, pin || {});
 		var grid={
 			headers:[],
@@ -1096,6 +1097,7 @@ $.fn.jqGrid = function( pin ) {
 			while (j<gl) {
 				xmlr = gxml[j];
 				rid = getId(xmlr,br+j);
+				rid  = ts.p.idPrefix + rid;
 				altr = rcnt === 0 ? 0 : rcnt+1;
 				cn1 = (altr+j)%2 == 1 ? cn : '';
 				rowData.push( "<tr"+hiderow+" id=\""+rid+"\" tabindex=\"-1\" role=\"row\" class =\"ui-widget-content jqgrow ui-row-"+ts.p.direction+""+cn1+"\">" );
@@ -1186,6 +1188,7 @@ $.fn.jqGrid = function( pin ) {
 				while (ir<gl) {
 					xmlr = gxml[ir];
 					rid = getId(xmlr,ir);
+					rid  = ts.p.idPrefix + rid;
 					if(ts.p.xmlReader.repeatitems){
 						if (!F) { F=orderedCols(gi+si+ni); }
 						var cells2 = $(ts.p.xmlReader.cell,xmlr);
@@ -1271,6 +1274,7 @@ $.fn.jqGrid = function( pin ) {
 						}
 					}
 				}
+				idr  = ts.p.idPrefix + idr;
 				altr = rcnt === 1 ? 0 : rcnt;
 				cn1 = (altr+i)%2 == 1 ? cn : '';
 				rowData.push("<tr"+hiderow+" id=\""+ idr +"\" tabindex=\"-1\" role=\"row\" class= \"ui-widget-content jqgrow ui-row-"+ts.p.direction+""+cn1+"\">");
@@ -1365,6 +1369,7 @@ $.fn.jqGrid = function( pin ) {
 						}
 					}
 					if(cur) {
+						idr  = ts.p.idPrefix + idr;
 						if (dReader.repeatitems) {
 							if(dReader.cell) {cur = $.jgrid.getAccessor(cur,dReader.cell);}
 							if (!F) { F=orderedCols(gi+si+ni); }
@@ -2758,6 +2763,7 @@ $.jgrid.extend({
 						catch (e) {rowid = $.jgrid.randId();}
 						cna = t.p.altRows === true ?  (t.rows.length-1)%2 === 0 ? cn : "" : "";
 					}
+					rowid  = t.p.idPrefix + rowid;
 					if(ni){
 						prp = t.formatCol(0,1,'',null,rowid, true);
 						row += "<td role=\"gridcell\" aria-describedby=\""+t.p.id+"_rn\" class=\"ui-state-default jqgrid-rownum\" "+prp+">0</td>";
