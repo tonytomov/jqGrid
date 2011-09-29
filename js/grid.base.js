@@ -777,7 +777,7 @@ $.fn.jqGrid = function( pin ) {
 				document.onselectstart=function(){return true;};
 			},
 			populateVisible: function() {
-				if (grid.timer) { clearTimeout(grid.timer); }
+			    if (grid.timer) { clearTimeout(grid.timer); }
 				grid.timer = null;
 				var dh = $(grid.bDiv).height();
 				if (!dh) { return; }
@@ -1718,9 +1718,17 @@ $.fn.jqGrid = function( pin ) {
 							if (npage === 1) { endReq(); }
 							xhr=null;
 						},
-						beforeSend: function(xhr){
-							beginReq();
-							if($.isFunction(ts.p.loadBeforeSend)) { ts.p.loadBeforeSend.call(ts,xhr); }
+						beforeSend: function(xhr, settings ){
+							var gotoreq = true;
+							if($.isFunction(ts.p.loadBeforeSend)) {
+								gotoreq = ts.p.loadBeforeSend.call(ts,xhr, settings); 
+							}
+							if(gotoreq === undefined) { gotoreq = true; }
+							if(gotoreq === false) {
+								return false;
+							} else {
+								beginReq();
+							}
 						}
 					},$.jgrid.ajaxOptions, ts.p.ajaxGridOptions));
 				break;
@@ -2568,8 +2576,7 @@ $.jgrid.extend({
 				}
 			} else {
 				//unselect selectall checkbox when deselecting a specific row
-                $("#cb_" + $.jgrid.jqID($t.p.id), $t.grid.hDiv)[$t.p.useProp ? 'prop' : 'attr']("checked", false);
-			   
+				$("#cb_" + $.jgrid.jqID($t.p.id), $t.grid.hDiv)[$t.p.useProp ? 'prop' : 'attr']("checked", false);
 				$t.p.selrow = pt.id;
 				ia = $.inArray($t.p.selrow,$t.p.selarrrow);
 				if (  ia === -1 ){
@@ -2794,7 +2801,7 @@ $.jgrid.extend({
 						prp = t.formatCol(ni,1,'', null, rowid, true);
 						row += "<td role=\"gridcell\" aria-describedby=\""+t.p.id+"_cb\" "+prp+">"+v+"</td>";
 					} else if(ri) {
-						v = "<input role=\"radio\" type=\"radio\""+" id=\"jqg_"+t.p.id+"_"+rowid+"\" class=\"rbox\" name=\"jqg_"+ts.p.id+"\"/>";
+						v = "<input role=\"radio\" type=\"radio\""+" id=\"jqg_"+t.p.id+"_"+rowid+"\" class=\"rbox\" name=\"jqg_"+t.p.id+"\"/>";
 						prp = t.formatCol(ni,1,'', null, rowid, true);
 						row += "<td role=\"gridcell\" aria-describedby=\""+t.p.id+"_rb\" "+prp+">"+v+"</td>";
 					}
