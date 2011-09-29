@@ -47,6 +47,13 @@ $.extend($.jgrid,{
 			return v;
 		}
 	},
+	stripPref : function (pref, id) {
+		pref = String(pref);
+		if(pref != "") {
+			id = String(id).replace(pref, "");
+		}
+		return id;
+	},
 	stringToDoc : function (xmlString) {
 		var xmlDoc;
 		if(typeof xmlString !== 'string') { return xmlString; }
