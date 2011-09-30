@@ -1691,7 +1691,11 @@ $.fn.jqGrid = function( pin ) {
 				$.extend(ts.p.postData,prm);
 				var rcnt = !ts.p.scroll ? 1 : ts.rows.length-1;
 				if ($.isFunction(ts.p.datatype)) { ts.p.datatype.call(ts,ts.p.postData,"load_"+ts.p.id); return;}
-				else if($.isFunction(ts.p.beforeRequest)) {ts.p.beforeRequest.call(ts);}
+				else if($.isFunction(ts.p.beforeRequest)) {
+					var bfr = ts.p.beforeRequest.call(ts);
+					if(bfr === undefined) { bfr = true; }
+					if ( bfr === false ) { return; }
+				}
 				dt = ts.p.datatype.toLowerCase();
 				switch(dt)
 				{
