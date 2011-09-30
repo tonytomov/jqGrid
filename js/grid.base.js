@@ -655,6 +655,7 @@ $.fn.jqGrid = function( pin ) {
 			loadBeforeSend: null,
 			afterInsertRow: null,
 			beforeRequest: null,
+			beforeProcessing : null,
 			onHeaderClick: null,
 			viewrecords: false,
 			loadonce: false,
@@ -1708,7 +1709,10 @@ $.fn.jqGrid = function( pin ) {
 						type:ts.p.mtype,
 						dataType: dt ,
 						data: $.isFunction(ts.p.serializeGridData)? ts.p.serializeGridData.call(ts,ts.p.postData) : ts.p.postData,
-						success:function(data,st) {
+						success:function(data,st, xhr) {
+							if ($.isFunction(ts.p.beforeProcessing)) {
+									ts.p.beforeProcessing.call(ts, data, st, xhr);
+							}
 							if(dt === "xml") { addXmlData(data,ts.grid.bDiv,rcnt,npage>1,adjust); }
 							else { addJSONData(data,ts.grid.bDiv,rcnt,npage>1,adjust); }
 							if(lc) { lc.call(ts,data); }
