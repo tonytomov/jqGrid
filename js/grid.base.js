@@ -49,6 +49,10 @@ $.extend($.jgrid,{
 	},
 	stripPref : function (pref, id) {
 		var obj = Object.prototype.toString.call(pref).slice(8, -1);
+		if( obj == "Function" ) { 
+			pref = pref.call( id );
+			obj = Object.prototype.toString.call(pref).slice(8, -1);
+		}
 		if( obj == "String" || obj =="Number") {
 			pref =  String(pref);
 			id = pref != "" ? String(id).replace(String(pref), "") : id;
