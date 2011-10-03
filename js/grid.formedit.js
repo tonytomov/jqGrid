@@ -816,7 +816,7 @@ $.jgrid.extend({
 				var stat = true;
 				$("#FormError","#"+frmtb).hide();
 				if(rp_ge[$t.p.id].checkOnUpdate) {
-					postdata = {};xtpost={};
+					postdata = {};extpost={};
 					getFormData();
 					newData = $.extend({},postdata,extpost);
 					diff = compareData(newData,rp_ge[$t.p.id]._savedData);
@@ -1063,7 +1063,7 @@ $.jgrid.extend({
 				   function(){$(this).removeClass('ui-state-hover');}
 				);
 				$("#sData", "#"+frmtb+"_2").click(function(e){
-					postdata = {};xtpost={};
+					postdata = {};extpost={};
 					$("#FormError","#"+frmtb).hide();
 					// all depend on ret array
 					//ret[0] - succes
