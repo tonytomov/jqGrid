@@ -190,11 +190,11 @@ $.jgrid.extend({
 				}
 				return success;
 			}
+			var idname, opers, oper;
+			opers = $t.p.prmNames;
+			oper = opers.oper;
+			idname = opers.id;
 			if(tmp) {
-				var idname, opers, oper;
-				opers = $t.p.prmNames;
-				oper = opers.oper;
-				idname = opers.id;
 				tmp[oper] = opers.editoper;
 				tmp[idname] = rowid;
 				if(typeof($t.p.inlineData) == 'undefined') { $t.p.inlineData ={}; }
@@ -219,6 +219,7 @@ $.jgrid.extend({
 			} else {
 				$("#lui_"+$t.p.id).show();
 				tmp3 = $.extend({},tmp,tmp3);
+				tmp3[idname] = $.jgrid.stripPref($t.p.idPrefix, tmp3[idname]);
 				$.ajax($.extend({
 					url:o.url,
 					data: $.isFunction($t.p.serializeRowData) ? $t.p.serializeRowData.call($t, tmp3) : tmp3,
