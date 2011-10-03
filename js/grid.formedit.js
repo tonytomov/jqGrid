@@ -614,7 +614,7 @@ $.jgrid.extend({
 				}
 				setNulls();
 				if(ret[0]) {
-					if( $.isFunction( rp_ge[$t.p.id].onclickSubmit)) {onCS = rp_ge[$t.p.id].onclickSubmit(rp_ge[$t.p.id],postdata) || {};
+					if( $.isFunction( rp_ge[$t.p.id].onclickSubmit)) { onCS = rp_ge[$t.p.id].onclickSubmit(rp_ge[$t.p.id],postdata) }
 					if( $.isFunction(rp_ge[$t.p.id].beforeSubmit))  {ret = rp_ge[$t.p.id].beforeSubmit(postdata,$("#"+frmgr));}
 				}
 
@@ -654,6 +654,7 @@ $.jgrid.extend({
 						type: rp_ge[$t.p.id].mtype,
 						data: $.isFunction(rp_ge[$t.p.id].serializeEditData) ? rp_ge[$t.p.id].serializeEditData(postdata) :  postdata,
 						complete:function(data,Status){
+							postdata[idname] = $t.p.idPrefix + postdata[idname];
 							if(Status != "success") {
 							    ret[0] = false;
 							    if ($.isFunction(rp_ge[$t.p.id].errorTextFormat)) {
@@ -729,9 +730,9 @@ $.jgrid.extend({
 										if( !rp_ge[$t.p.id].closeAfterEdit ) {setTimeout(function(){$($t).jqGrid("setSelection",postdata[idname]);},1000);}
 									} else {
 										if($t.p.treeGrid === true) {
-											$($t).jqGrid("setTreeRow",$t.p.idPrefix + postdata[idname],postdata);
+											$($t).jqGrid("setTreeRow", postdata[idname],postdata);
 										} else {
-											$($t).jqGrid("setRowData",$t.p.idPrefix + postdata[idname],postdata);
+											$($t).jqGrid("setRowData", postdata[idname],postdata);
 										}
 									}
 									if(rp_ge[$t.p.id].closeAfterEdit) {$.jgrid.hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal,onClose: rp_ge[$t.p.id].onClose});}
@@ -1154,8 +1155,6 @@ $.jgrid.extend({
 		return this.each(function(){
 			var $t = this;
 			if (!$t.grid || !rowid) {return;}
-			if(!p.imgpath) {p.imgpath= $t.p.imgpath;}
-			// I hate to rewrite code, but ...
 			var gID = $t.p.id,
 			frmgr = "ViewGrid_"+gID , frmtb = "ViewTbl_"+gID,
 			IDs = {themodal:'viewmod'+gID,modalhead:'viewhd'+gID,modalcontent:'viewcnt'+gID, scrollelm : frmgr},
@@ -1527,7 +1526,7 @@ $.jgrid.extend({
 				$("#dData","#"+dtbl+"_2").click(function(e){
 					var ret=[true,""];onCS = {};
 					var postdata = $("#DelData>td","#"+dtbl).text(); //the pair is name=val1,val2,...
-					if( $.isFunction( rp_ge[$t.p.id].onclickSubmit ) ) {onCS = rp_ge[$t.p.id].onclickSubmit(rp_ge[$t.p.id], postdata) || {};
+					if( $.isFunction( rp_ge[$t.p.id].onclickSubmit ) ) {onCS = rp_ge[$t.p.id].onclickSubmit(rp_ge[$t.p.id], postdata) || {} }
 					if( $.isFunction( rp_ge[$t.p.id].beforeSubmit ) ) {ret = rp_ge[$t.p.id].beforeSubmit(postdata);}
 					if(ret[0] && !rp_ge[$t.p.id].processing) {
 						rp_ge[$t.p.id].processing = true;
