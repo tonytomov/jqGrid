@@ -614,7 +614,7 @@ $.jgrid.extend({
 				}
 				setNulls();
 				if(ret[0]) {
-					if( $.isFunction( rp_ge[$t.p.id].onclickSubmit)) { onCS = rp_ge[$t.p.id].onclickSubmit(rp_ge[$t.p.id],postdata) }
+					if( $.isFunction( rp_ge[$t.p.id].onclickSubmit)) { onCS = rp_ge[$t.p.id].onclickSubmit(rp_ge[$t.p.id],postdata) || {} }
 					if( $.isFunction(rp_ge[$t.p.id].beforeSubmit))  {ret = rp_ge[$t.p.id].beforeSubmit(postdata,$("#"+frmgr));}
 				}
 
