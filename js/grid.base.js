@@ -2132,7 +2132,7 @@ $.fn.jqGrid = function( pin ) {
 		$(gv).css("width",grid.width+"px");
 		thead = $("thead:first",ts).get(0);
 		var	tfoot = "";
-		if(ts.p.footerrow) { tfoot += "<table role='grid' style='width:"+ts.p.tblwidth+"px' class='ui-jqgrid-ftable' cellspacing='0' cellpadding='0' border='0'><tbody><tr role='row' class='ui-widget-content footrow footrow-"+dir+"'>";
+		if(ts.p.footerrow) { tfoot += "<table role='grid' style='width:"+ts.p.tblwidth+"px' class='ui-jqgrid-ftable' cellspacing='0' cellpadding='0' border='0'><tbody>";
 		for (trloop=1; trloop<=ts.p.footerrow; trloop++)
 			trfooter.push(Array("<tr id='t" + trloop + "' role='row' class='ui-widget-content footrow footrow-"+dir+"'>"));
 		}
@@ -2824,20 +2824,26 @@ $.jgrid.extend({
 	},
 	footerData : function(action,data, format) {
 		if (typeof(action)=='number'){
-			var nm, success=false, res={}, title;
-			
+			var nm, success=false, res={};
+			function isEmpty(obj) {
+				for(var i in obj) {
+					if (obj.hasOwnProperty(i)) { return false; }
+				}
+				return true;
+			}
 			if(typeof(format) != "boolean") { format  = true; }
 			this.each(function(){
 				var t = this, vl;
 				if(!t.grid || !t.p.footerrow) {return false;}
+				if(action == "set") { if(isEmpty(data)) { return false; } }
 				success=true;
 				$(this.p.colModel).each(function(i){
 					nm = this.name;
 					if (typeof(data) == 'object') {
 						if( data[nm] !== undefined) {
 							vl = format ? t.formatter( "", data[nm], i, data, 'edit') : data[nm];
-							title = this.title ? {"title":$.jgrid.stripHtml(vl)} : {};
-							$("tr.footrow td:eq("+i+")",t.grid.sDiv).html(vl).attr(title);
+							$("tr.footrow#t" + action + " td:eq("+i+")",t.grid.sDiv).html(vl);
+							success = true;
 						}
 					} else {
 						res[nm] = $("tr.footrow#t" + action + " td:eq("+i+")",t.grid.sDiv).html();
