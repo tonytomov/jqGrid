@@ -1546,6 +1546,7 @@ $.fn.jqGrid = function( pin ) {
 			retresult[ts.p.localReader.page] = page;
 			retresult[ts.p.localReader.records] = total;
 			retresult[ts.p.localReader.root] = queryResults;
+			retresult[ts.p.localReader.userdata] = ts.p.userData;
 			queryResults = null;
 			return  retresult;
 		},
