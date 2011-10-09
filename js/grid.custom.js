@@ -521,14 +521,21 @@ $.jgrid.extend({
 		});
 	},
 
-	'destroyGroupHeader' : function()
+	destroyGroupHeader : function()
 	{
 		return this.each(function()
 		{
 			var $t = this;
 			if(!$t.grid) return;
-
-			$($t.grid.hDiv).find('.ui-jqgrid-labels-firstrow, .ui-jqgrid-labels-grouprow').remove();
+			var gh = $t.p.groupHeader;
+			if(gh) {
+				if (gh.groupHeaders.length) {
+					if(gh.useColSpanStyle === false) {
+						$("tr.jqg-second-row-header", $t.grid.hDiv).remove();
+					}
+					// else find better way when colSpanStyle is true
+				}
+			}
 		});
 	},
 	
