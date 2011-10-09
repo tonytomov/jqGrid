@@ -588,7 +588,7 @@ $.jgrid.extend({
 				cmi = colModel[i];
 				// build the next cell for the first header row
 				thStyle = { height: '0px', width: ths[i].width + 'px', display: (cmi.hidden ? 'none' : '')};
-				$("<th>", {role: 'gridcell'}).css(thStyle).addClass("ui-first-th-ltr").appendTo($firstHeaderRow);
+				$("<th>", {role: 'gridcell'}).css(thStyle).addClass("ui-first-th-"+ts.p.direction).appendTo($firstHeaderRow);
 
 				th.style.width = ""; // remove unneeded style
 				iCol = inColumnHeader(cmi.name, o.groupHeaders);
@@ -608,8 +608,8 @@ $.jgrid.extend({
 					// in the current row will be placed the new column header with the titleText.
 					// The text will be over the cVisibleColumns columns
 					$colHeader = $('<th>', {colspan: String(cVisibleColumns), role: "columnheader"})
-						.addClass("ui-state-default ui-th-column-header ui-th-ltr")
-						.height(22)
+						.addClass("ui-state-default ui-th-column-header ui-th-"+ts.p.direction)
+						.css({'height':'22px', 'border-top': '0px none'})
 						.html(titleText);
 					if (ts.p.headertitles) {
 						$colHeader.attr("title", $colHeader.text());
@@ -631,8 +631,8 @@ $.jgrid.extend({
 							$th.attr("rowspan", "2");
 						} else {
 							$('<th>', {role: "columnheader"})
-								.addClass("ui-state-default ui-th-column-header ui-th-ltr")
-								.css({"display": cmi.hidden ? 'none' : ''})
+								.addClass("ui-state-default ui-th-column-header ui-th-"+ts.p.direction)
+								.css({"display": cmi.hidden ? 'none' : '', 'border-top': '0px none'})
 								.insertBefore($th);
 							$tr.append(th);
 						}
