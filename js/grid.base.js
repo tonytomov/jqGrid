@@ -2908,7 +2908,7 @@ $.jgrid.extend({
 			}
 			if($t.p.groupHeader && (typeof $t.p.groupHeader === 'object' || $.isFunction($t.p.groupHeader) ) )  {
 				$($t).jqGrid('destroyGroupHeader');
-				$($t).jqGrid('setGroupHeader',$t.p.groupHeader);
+				$($t).jqGrid('setGroupHeaders',$t.p.groupHeader);
 			}
 		});
 	},
