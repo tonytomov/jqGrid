@@ -541,7 +541,7 @@ $.jgrid.extend({
 	
 	setGroupHeaders : function ( o ) {
 		o = $.extend({
-			useColSpanStyle :  true, 
+			useColSpanStyle :  false,
 			groupHeaders: []
 		},o  || {});
 		return this.each(function(){
