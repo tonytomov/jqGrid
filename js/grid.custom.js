@@ -534,7 +534,7 @@ $.jgrid.extend({
 						$("tr.jqg-second-row-header", $t.grid.hDiv).remove();
 					}
 					// else find better way when colSpanStyle is true
-					gh = null;
+					$($t).jqGrid('setGridParam',{ 'groupHeader': null});
 				}
 			}
 		});
