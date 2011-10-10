@@ -529,15 +529,17 @@ $.jgrid.extend({
 		return this.each(function()
 		{
 			var $t = this, $tr, i, l, headers, $th, $resizing, grid = $t.grid,
-			thead = $("table.ui-jqgrid-htable thead", grid.hDiv)
+			thead = $("table.ui-jqgrid-htable thead", grid.hDiv), cm = $t.p.colModel, hc;
 			if(!grid) return;
 
 			$tr = $("<tr>", {role: "rowheader"}).addClass("ui-jqgrid-labels");
 			headers = grid.headers;
 			for (i = 0, l = headers.length; i < l; i++) {
+				hc = cm[i].hidden ? "none" : "";
 				$th = $(headers[i].el)
 					.width(headers[i].width)
-					.removeAttr("rowSpan");
+					.removeAttr("rowSpan")
+					.css('display',hc);
 				$tr.append($th);
 				$resizing = $th.children("span.ui-jqgrid-resize");
 				if ($resizing.length>0) {// resizable column
