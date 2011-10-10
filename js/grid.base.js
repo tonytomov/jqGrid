@@ -2897,7 +2897,9 @@ $.jgrid.extend({
 			if (!$t.grid ) {return;}
 			if( typeof colname === 'string') {colname=[colname];}
 			show = show != "none" ? "" : "none";
-			var sw = show === "" ? true :false;
+			var sw = show === "" ? true :false,
+			gh = $t.p.groupHeader && (typeof $t.p.groupHeader === 'object' || $.isFunction($t.p.groupHeader) );
+			if(gh) { $($t).jqGrid('destroyGroupHeader', false); }
 			$(this.p.colModel).each(function(i) {
 				if ($.inArray(this.name,colname) !== -1 && this.hidden === sw) {
 					$("tr",$t.grid.hDiv).each(function(){
@@ -2916,8 +2918,7 @@ $.jgrid.extend({
 			if(fndh===true) {
 				$($t).jqGrid("setGridWidth",$t.p.shrinkToFit === true ? $t.p.tblwidth : $t.p.width );
 			}
-			if($t.p.groupHeader && (typeof $t.p.groupHeader === 'object' || $.isFunction($t.p.groupHeader) ) )  {
-				$($t).jqGrid('destroyGroupHeader', false);
+			if( gh )  {
 				$($t).jqGrid('setGroupHeaders',$t.p.groupHeader);
 			}
 		});
