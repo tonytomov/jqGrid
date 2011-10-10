@@ -521,21 +521,35 @@ $.jgrid.extend({
 		});
 	},
 
-	destroyGroupHeader : function()
+	destroyGroupHeader : function(nullHeader)
 	{
+		if(typeof(nullHeader) == 'undefined') {
+			nullHeader = true;
+		}
 		return this.each(function()
 		{
-			var $t = this;
-			if(!$t.grid) return;
-			var gh = $t.p.groupHeader;
-			if(gh) {
-				if (gh.groupHeaders.length) {
-					if(gh.useColSpanStyle === false) {
-						$("tr.jqg-second-row-header", $t.grid.hDiv).remove();
-					}
-					// else find better way when colSpanStyle is true
-					$($t).jqGrid('setGridParam',{ 'groupHeader': null});
+			var $t = this, $tr, i, l, headers, $th, $resizing, grid = $t.grid,
+			thead = $("table.ui-jqgrid-htable thead", grid.hDiv)
+			if(!grid) return;
+
+			$tr = $("<tr>", {role: "rowheader"}).addClass("ui-jqgrid-labels");
+			headers = grid.headers;
+			for (i = 0, l = headers.length; i < l; i++) {
+				$th = $(headers[i].el)
+					.width(headers[i].width)
+					.removeAttr("rowSpan");
+				$tr.append($th);
+				$resizing = $th.children("span.ui-jqgrid-resize");
+				if ($resizing.length>0) {// resizable column
+					$resizing[0].style.height = "";
 				}
+				$th.children("div")[0].style.top = "";
+			}
+			$(thead).children('tr.ui-jqgrid-labels').remove();
+			$(thead).prepend($tr);
+
+			if(nullHeader === true) {
+				$($t).jqGrid('setGridParam',{ 'groupHeader': null});
 			}
 		});
 	},
