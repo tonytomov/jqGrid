@@ -941,7 +941,7 @@ $.jgrid.extend({
 				bt += "<tr style='display:none' class='binfo'><td class='bottominfo' colspan='2'>"+rp_ge[$t.p.id].bottominfo+"</td></tr>";
 				bt += "</tbody></table>";
 				if(maxRows >  0) {
-					var sd=[], div={};
+					var sd=[];
 					$.each($(tbl)[0].rows,function(i,r){
 						sd[i] = r;
 					});
@@ -951,9 +951,8 @@ $.jgrid.extend({
 						return 0;
 					});
 					$.each(sd, function(index, row) {
-						div.html += row;
+						$('tbody',tbl).append(row)
 					});
-					$('tbody',tbl).append(div.html);
 				}
 				p.gbox = "#gbox_"+gID;
 				var cle = false;
