@@ -346,11 +346,13 @@
 	$.fn.fmatter.select = function (cellval,opts, rwd, act) {
 		// jqGrid specific
 		cellval = cellval + "";
-		var oSelect = false, ret=[];
+		var oSelect = false, ret=[], sep;
 		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)){
 			oSelect= opts.colModel.formatoptions.value;
+			sep = opts.colModel.formatoptions.separator === undefined ? ":" : opts.colModel.formatoptions.separator;
 		} else if(!$.fmatter.isUndefined(opts.colModel.editoptions)){
 			oSelect= opts.colModel.editoptions.value;
+			sep = opts.colModel.editoptions.separator === undefined ? ":" : opts.colModel.editoptions.separator;
 		}
 		if (oSelect) {
 			var	msl =  opts.colModel.editoptions.multiple === true ? true : false,
@@ -360,7 +362,7 @@
 				// mybe here we can use some caching with care ????
 				var so = oSelect.split(";"), j=0;
 				for(var i=0; i<so.length;i++){
-					sv = so[i].split(":");
+					sv = so[i].split(sep);
 					if(sv.length > 2 ) {
 						sv[1] = jQuery.map(sv,function(n,i){if(i>0) {return n;}}).join(":");
 					}

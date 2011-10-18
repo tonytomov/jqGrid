@@ -391,11 +391,12 @@ $.extend($.jgrid,{
 						ovm = $.map(ovm,function(n){return $.trim(n);});
 					}
 					if(typeof options.value === 'function') { options.value = options.value(); }
-					var so,sv, ov;
+					var so,sv, ov, 
+					sep = options.separator === undefined ? ":" : options.separator;
 					if(typeof options.value === 'string') {
 						so = options.value.split(";");
 						for(i=0; i<so.length;i++){
-							sv = so[i].split(":");
+							sv = so[i].split(sep);
 							if(sv.length > 2 ) {
 								sv[1] = $.map(sv,function(n,ii){if(ii>0) { return n;} }).join(":");
 							}
