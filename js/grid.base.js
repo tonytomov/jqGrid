@@ -3182,7 +3182,7 @@ $.jgrid.extend({
 		return ret;
 	},
 	getCol : function (col, obj, mathopr) {
-		var ret = [], val, sum=0, min=0, max=0, v;
+		var ret = [], val, sum=0, min, max, v;
 		obj = typeof (obj) != 'boolean' ? false : obj;
 		if(typeof mathopr == 'undefined') { mathopr = false; }
 		this.each(function(){
@@ -3208,8 +3208,13 @@ $.jgrid.extend({
 							if(mathopr) {
 								v = parseFloat(val);
 								sum += v;
-								min = Math.min(min, v);
-								max = Math.max(max, v);
+								if(i===0) {
+									min = v;
+									max = v;
+								} else {
+									min = Math.min(min, v);
+									max = Math.max(max, v);
+								}
 							}
 							else if(obj) { ret.push( {id:$t.rows[i].id,value:val} ); }
 							else { ret.push( val ); }
