@@ -158,6 +158,7 @@ $.jgrid.extend({
 					ruleButtons : p.multipleSearch,
 					afterRedraw : p.afterRedraw,
 					_gridsopt : $.jgrid.search.odata,
+					ajaxSelectOptions: $t.p.ajaxSelectOptions,
 					onChange : function( sp ) {
 						if(this.p.showQuery) {
 							$('.query',this).html(this.toUserFriendlyString());
