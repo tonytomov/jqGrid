@@ -1051,7 +1051,7 @@ $.fn.jqGrid = function( pin ) {
 				if(ts.p.treeANode===-1 && !ts.p.scroll) {
 					emptyRows(t,false, true);
 					rcnt=1;
-				} else { rcnt = rcnt > 1 ? rcnt :1; }
+				} else { rcnt = rcnt % 2; }
 			} else { return; }
 			var i,fpos,ir=0,v,row,gi=0,si=0,ni=0,idn, getId,f=[],F,rd ={}, xmlr,rid, rowData=[], cn=(ts.p.altRows === true) ? " "+ts.p.altclass:"",cn1;
 			if(!ts.p.xmlReader.repeatitems) {f = reader(frd);}
@@ -1214,7 +1214,7 @@ $.fn.jqGrid = function( pin ) {
 				if(ts.p.treeANode === -1 && !ts.p.scroll) {
 					emptyRows(t,false, true);
 					rcnt=1;
-				} else { rcnt = rcnt > 1 ? rcnt :1; }
+				} else { rcnt = rcnt % 2; }
 			} else { return; }
 
 			var dReader, locid = "_id_", frd,
