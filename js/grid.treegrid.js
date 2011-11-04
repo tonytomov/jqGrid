@@ -57,7 +57,7 @@ $.jgrid.extend({
 					}
 				}
 				if(ldat[isLeaf] == "true" || ldat[isLeaf] === true) {
-					twrap += ((ldat[icon] !== undefined && ldat[icon] !== "") ? ldat[icon] : $t.p.treeIcons.leaf)+" tree-leaf treeclick'";
+					twrap += ((ldat[icon] !== undefined && ldat[icon] !== "") ? ldat[icon] : $t.p.treeIcons.leaf)+" tree-leaf treeclick";
 					ldat[isLeaf] = true;
 					lf="leaf";
 				} else {
@@ -65,10 +65,10 @@ $.jgrid.extend({
 					lf="";
 				}
 				ldat[expanded] = ((ldat[expanded] == "true" || ldat[expanded] === true) ? true : false) && ldat[loaded];
-				if(ldat[expanded] === true) {
-					twrap += $t.p.treeIcons.minus+" tree-minus treeclick'";
-				} else {
+				if(ldat[expanded] === false) {
 					twrap += $t.p.treeIcons.plus+" tree-plus treeclick'";
+				} else {
+					twrap += $t.p.treeIcons.minus+" tree-minus treeclick'";
 				}
 				
 				twrap += "</div></div>";
@@ -132,6 +132,7 @@ $.jgrid.extend({
 			$t.p.subGrid = false;$t.p.altRows =false;
 			$t.p.pgbuttons = false;$t.p.pginput = false;
 			$t.p.gridview =  true;
+			if($t.p.rowTotal === null ) { $t.p.rowNum = 10000; }
 			$t.p.multiselect = false;$t.p.rowList = [];
 			$t.p.expColInd = 0;
 			pico = 'ui-icon-triangle-1-' + ($t.p.direction=="rtl" ? 'w' : 'e');
@@ -578,8 +579,8 @@ $.jgrid.extend({
 					parentindex = $t.p._index[parentid];
 					parentdata = $t.p.data[parentindex];
 					parentid = parentdata[$t.p.localReader.id];
-				parentlevel = parseInt(parentdata[level],10)+1;
-				var childs = $($t).jqGrid('getFullTreeNode', parentdata);
+					parentlevel = parseInt(parentdata[level],10)+1;
+					var childs = $($t).jqGrid('getFullTreeNode', parentdata);
 					// if there are child nodes get the last index of it
 					if(childs.length) {
 						i = childs[childs.length-1][$t.p.localReader.id];
@@ -608,7 +609,7 @@ $.jgrid.extend({
 			data[level] = parentlevel;
 			data[isLeaf] = true;
 			if( $t.p.treeGridModel === "adjacency") {
-			data[parent] = parentid;
+				data[parent] = parentid;
 			}
 			if( $t.p.treeGridModel === "nested") {
 				// this method requiere more attention

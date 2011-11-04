@@ -86,6 +86,7 @@ var xmlJsonClass = {
 				xml += ind + "<" + name + ">" + "<![CDATA[" + v + "]]>" + "</" + name + ">";
 			}
 			else {
+				if (v === undefined ) { v = ""; }
 				if (v.toString() === "\"\"" || v.toString().length === 0) {
 					xml += ind + "<" + name + ">__EMPTY_STRING_</" + name + ">";
 				} 

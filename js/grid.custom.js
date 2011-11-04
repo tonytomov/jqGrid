@@ -3,6 +3,9 @@
  * jqGrid extension for custom methods
  * Tony Tomov tony@trirand.com
  * http://trirand.com/blog/ 
+ * 
+ * Wildraid wildraid@mail.ru
+ * Oleg Kiriljuk oleg.kiriljuk@ok-soft-gmbh.com
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
@@ -53,7 +56,7 @@ $.jgrid.extend({
 				var sort = $t.p.colModel[idx].sortable;
 				if ( typeof sort !== 'boolean' ) { sort =  true; }
 				if ( typeof reload !=='boolean' ) { reload = false; }
-				if ( sort ) { $t.sortData("jqgh_"+$t.p.id+"_"+colname, idx, reload, sor); }
+				if ( sort ) { $t.sortData("jqgh_"+$t.p.id+"_" + colname, idx, reload, sor); }
 			}
 		});
 	},
@@ -320,12 +323,12 @@ $.jgrid.extend({
 							$.ajax($.extend({
 								url: surl,
 								dataType: "html",
-								complete: function(res,status) {
+								success: function(res,status) {
 									if(soptions.buildSelect !== undefined) {
 										var d = soptions.buildSelect(res);
 										if (d) { $(self).append(d); }
 									} else {
-										$(self).append(res.responseText);
+										$(self).append(res);
 									}
 									if(soptions.defaultValue) { $("select",self).val(soptions.defaultValue); }
 									$("select",self).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
@@ -435,6 +438,185 @@ $.jgrid.extend({
 			this.clearToolbar = clearToolbar;
 			this.toggleToolbar = toggleToolbar;
 		});
+	},
+
+	destroyGroupHeader : function(nullHeader)
+	{
+		if(typeof(nullHeader) == 'undefined') {
+			nullHeader = true;
+		}
+		return this.each(function()
+		{
+			var $t = this, $tr, i, l, headers, $th, $resizing, grid = $t.grid,
+			thead = $("table.ui-jqgrid-htable thead", grid.hDiv), cm = $t.p.colModel, hc;
+			if(!grid) return;
+
+			$tr = $("<tr>", {role: "rowheader"}).addClass("ui-jqgrid-labels");
+			headers = grid.headers;
+			for (i = 0, l = headers.length; i < l; i++) {
+				hc = cm[i].hidden ? "none" : "";
+				$th = $(headers[i].el)
+					.width(headers[i].width)
+					.removeAttr("rowSpan")
+					.css('display',hc);
+				$tr.append($th);
+				$resizing = $th.children("span.ui-jqgrid-resize");
+				if ($resizing.length>0) {// resizable column
+					$resizing[0].style.height = "";
+				}
+				$th.children("div")[0].style.top = "";
+			}
+			$(thead).children('tr.ui-jqgrid-labels').remove();
+			$(thead).prepend($tr);
+
+			if(nullHeader === true) {
+				$($t).jqGrid('setGridParam',{ 'groupHeader': null});
+			}
+		});
+	},
+	
+	setGroupHeaders : function ( o ) {
+		o = $.extend({
+			useColSpanStyle :  false,
+			groupHeaders: []
+		},o  || {});
+		return this.each(function(){
+			this.p.groupHeader = o;
+			var ts = this,
+			i, cmi, skip = 0, $tr, $colHeader, th, $th, thStyle,
+			iCol,
+			cghi,
+			//startColumnName,
+			numberOfColumns,
+			titleText,
+			cVisibleColumns,
+			colModel = ts.p.colModel,
+			cml = colModel.length,
+			ths = ts.grid.headers,
+			$htable = $("table.ui-jqgrid-htable", ts.grid.hDiv),
+			$trLabels = $htable.children("thead").children("tr.ui-jqgrid-labels:last").addClass("jqg-second-row-header"),
+			$thead = $htable.children("thead"),
+			$theadInTable,
+			originalResizeStop,
+			$firstHeaderRow = $htable.find(".jqg-first-row-header");
+			if($firstHeaderRow.html() === null) {
+				$firstHeaderRow = $('<tr>', {role: "row", "aria-hidden": "true"}).addClass("jqg-first-row-header").css("height", "auto");
+			} else {
+				$firstHeaderRow.empty();
+			}
+			var $firstRow,
+			inColumnHeader = function (text, columnHeaders) {
+                    var i = 0, length = columnHeaders.length;
+                    for (; i < length; i++) {
+                        if (columnHeaders[i].startColumnName === text) {
+                            return i;
+                        }
+                    }
+        
+                    return -1;
+			};
+
+			$(ts).prepend($thead);
+			$tr = $('<tr>', {role: "rowheader"}).addClass("ui-jqgrid-labels jqg-third-row-header");
+			for (i = 0; i < cml; i++) {
+				th = ths[i].el;
+				$th = $(th);
+				cmi = colModel[i];
+				// build the next cell for the first header row
+				thStyle = { height: '0px', width: ths[i].width + 'px', display: (cmi.hidden ? 'none' : '')};
+				$("<th>", {role: 'gridcell'}).css(thStyle).addClass("ui-first-th-"+ts.p.direction).appendTo($firstHeaderRow);
+
+				th.style.width = ""; // remove unneeded style
+				iCol = inColumnHeader(cmi.name, o.groupHeaders);
+				if (iCol >= 0) {
+					cghi = o.groupHeaders[iCol];
+					numberOfColumns = cghi.numberOfColumns;
+					titleText = cghi.titleText;
+
+					// caclulate the number of visible columns from the next numberOfColumns columns
+					for (cVisibleColumns = 0, iCol = 0; iCol < numberOfColumns && (i + iCol < cml); iCol++) {
+						if (!colModel[i + iCol].hidden) {
+							cVisibleColumns++;
+						}
+					}
+
+					// The next numberOfColumns headers will be moved in the next row
+					// in the current row will be placed the new column header with the titleText.
+					// The text will be over the cVisibleColumns columns
+					$colHeader = $('<th>', {colspan: String(cVisibleColumns), role: "columnheader"})
+						.addClass("ui-state-default ui-th-column-header ui-th-"+ts.p.direction)
+						.css({'height':'22px', 'border-top': '0px none'})
+						.html(titleText);
+					if (ts.p.headertitles) {
+						$colHeader.attr("title", $colHeader.text());
+					}
+					// hide if not a visible cols
+					if( cVisibleColumns === 0) {
+						$colHeader.hide();
+					}
+
+					$th.before($colHeader); // insert new column header before the current
+					$tr.append(th);         // move the current header in the next row
+
+					// set the coumter of headers which will be moved in the next row
+					skip = numberOfColumns - 1;
+				} else {
+					if (skip === 0) {
+						if (o.useColSpanStyle) {
+							// expand the header height to two rows
+							$th.attr("rowspan", "2");
+						} else {
+							$('<th>', {role: "columnheader"})
+								.addClass("ui-state-default ui-th-column-header ui-th-"+ts.p.direction)
+								.css({"display": cmi.hidden ? 'none' : '', 'border-top': '0px none'})
+								.insertBefore($th);
+							$tr.append(th);
+						}
+					} else {
+						// move the header to the next row
+						//$th.css({"padding-top": "2px", height: "19px"});
+						$tr.append(th);
+						skip--;
+					}
+				}
+			}
+			$theadInTable = $(ts).children("thead");
+			$theadInTable.prepend($firstHeaderRow);
+			$tr.insertAfter($trLabels);
+			$htable.append($theadInTable);
+
+			if (o.useColSpanStyle) {
+				// Increase the height of resizing span of visible headers
+				$htable.find("span.ui-jqgrid-resize").each(function () {
+					var $parent = $(this).parent();
+					if ($parent.is(":visible")) {
+						this.style.cssText = 'height: ' + $parent.height() + 'px !important; cursor: col-resize;';
+					}
+				});
+
+				// Set position of the sortable div (the main lable)
+				// with the column header text to the middle of the cell.
+				// One should not do this for hidden headers.
+				$htable.find("div.ui-jqgrid-sortable").each(function () {
+					var $ts = $(this), $parent = $ts.parent();
+					if ($parent.is(":visible") && $parent.is(":has(span.ui-jqgrid-resize)")) {
+						$ts.css('top', ($parent.height() - $ts.outerHeight()) / 2 + 'px');
+					}
+				});
+			}
+
+			// Preserve original resizeStop event if any defined
+			if ($.isFunction(ts.p.resizeStop)) {
+				originalResizeStop = ts.p.resizeStop;
+			}
+			$firstRow = $theadInTable.find("tr.jqg-first-row-header");
+			ts.p.resizeStop = function (nw, idx) {
+				$firstRow.find('th').eq(idx).width(nw);
+				if ($.isFunction(originalResizeStop)) {
+					originalResizeStop.call(ts, nw, idx);
+				}
+			};
+		});				
 	}
 });
 })(jQuery);

@@ -149,7 +149,7 @@ $.jgrid.extend({
 						if(cm.editoptions){
 							cbv = cm.editoptions.value.split(":");
 						}
-						v = $("#"+iRow+"_"+nmjq,$t.rows[iRow]).attr("checked") ? cbv[0] : cbv[1];
+						v = $("#"+iRow+"_"+nmjq,$t.rows[iRow]).is(":checked") ? cbv[0] : cbv[1];
 						v2=v;
 						break;
 					case "password":
@@ -173,7 +173,7 @@ $.jgrid.extend({
 						break;
 				}
 				// The common approach is if nothing changed do not do anything
-				if (v2 != $t.p.savedRow[fr].v){
+				if (v2 !== $t.p.savedRow[fr].v){
 					if ($.isFunction($t.p.beforeSaveCell)) {
 						var vv = $t.p.beforeSaveCell.call($t, $t.rows[iRow].id,nm, v, iRow,iCol);
 						if (vv) {v = vv; v2=vv;}
@@ -195,7 +195,7 @@ $.jgrid.extend({
 								opers = $t.p.prmNames;
 								idname = opers.id;
 								oper = opers.oper;
-								postdata[idname] = $t.rows[iRow].id;
+								postdata[idname] = $.jgrid.stripPref($t.p.idPrefix, $t.rows[iRow].id);
 								postdata[oper] = opers.editoper;
 								postdata = $.extend(addpost,postdata);
 								$("#lui_"+$t.p.id).show();
