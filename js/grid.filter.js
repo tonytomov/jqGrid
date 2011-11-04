@@ -44,6 +44,7 @@ $.fn.jqFilter = function( arg ) {
 		filter: null,
 		columns: [],
 		onChange : null,
+		afterRedraw : null,
 		checkValues : null,
 		error: false,
 		errmsg : "",
@@ -165,13 +166,16 @@ $.fn.jqFilter = function( arg ) {
 			return $.isFunction(this.p.onChange) ? this.p.onChange.call( this, this.p ) : false;
 		};
 		/*
-		 * Redrow the filter every time when new field is added/deleted
+		 * Redraw the filter every time when new field is added/deleted
 		 * and field is  changed
 		 */
 		this.reDraw = function() {
 			$("table.group:first",this).remove();
 			var t = this.createTableForGroup(p.filter, null);
 			$(this).append(t);
+			if($.isFunction(this.p.afterRedraw) ) {
+				this.p.afterRedraw.call(this, this.p);
+			}
 			if ($.browser.msie) {
 				$("option", t).each(function(i, item) {
 					if ($(item).data('selected')) {
