@@ -178,13 +178,6 @@ $.fn.jqFilter = function( arg ) {
 			if($.isFunction(this.p.afterRedraw) ) {
 				this.p.afterRedraw.call(this, this.p);
 			}
-			if ($.browser.msie) {
-				$("option", t).each(function(i, item) {
-					if ($(item).data('selected')) {
-						item.selected = "Selected";
-					}
-				});
-			}
 		};
 		/*
 		 * Creates a grouping data for the filter
