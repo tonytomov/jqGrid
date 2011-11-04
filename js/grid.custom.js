@@ -599,7 +599,7 @@ $.jgrid.extend({
 				// One should not do this for hidden headers.
 				$htable.find("div.ui-jqgrid-sortable").each(function () {
 					var $ts = $(this), $parent = $ts.parent();
-					if ($parent.is(":visible")) {
+					if ($parent.is(":visible") && $parent.is(":has(span.ui-jqgrid-resize)")) {
 						$ts.css('top', ($parent.height() - $ts.outerHeight()) / 2 + 'px');
 					}
 				});
