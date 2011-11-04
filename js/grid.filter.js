@@ -412,7 +412,7 @@ $.fn.jqFilter = function( arg ) {
 				// but show only serchable and serchhidden = true fields
 		        var searchable = (typeof that.p.columns[i].search === 'undefined') ?  true: that.p.columns[i].search ,
 		        hidden = (that.p.columns[i].hidden === true),
-				ignoreHiding = (that.p.columns[i].searchoptions.searchhidden === true);
+				ignoreHiding = (that.p.columns[i].searchoptions.searchhidden === true) || (rule.field === that.p.columns[i].name) ;
 				if ((ignoreHiding && searchable) || (searchable && !hidden)) {
 					selected = "";
 					if(rule.field === that.p.columns[i].name) {
