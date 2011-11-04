@@ -406,19 +406,9 @@ $.extend($.jgrid,{
 							ov = document.createElement("option");
 							ov.setAttribute("role","option");
 							ov.value = sv[0]; ov.innerHTML = sv[1];
-							if (!msl &&  ($.trim(sv[0]) == $.trim(vl) || $.trim(sv[1]) == $.trim(vl))) { 
-								ov.selected ="selected";
-								if ($.browser.msie) {
-									$.data(ov,"selected", true);
-								}
-							}
-							if (msl && ($.inArray($.trim(sv[1]), ovm)>-1 || $.inArray($.trim(sv[0]), ovm)>-1)) {
-								ov.selected ="selected";
-								if ($.browser.msie) {
-									$.data(ov,"selected", true);
-								}
-							}
 							elem.appendChild(ov);
+							if (!msl &&  ($.trim(sv[0]) == $.trim(vl) || $.trim(sv[1]) == $.trim(vl))) { ov.selected ="selected"; }
+							if (msl && ($.inArray($.trim(sv[1]), ovm)>-1 || $.inArray($.trim(sv[0]), ovm)>-1)) {ov.selected ="selected";}
 						}
 					} else if (typeof options.value === 'object') {
 						var oSv = options.value;
@@ -427,19 +417,9 @@ $.extend($.jgrid,{
 								ov = document.createElement("option");
 								ov.setAttribute("role","option");
 								ov.value = key; ov.innerHTML = oSv[key];
-								if (!msl &&  ( $.trim(key) == $.trim(vl) || $.trim(oSv[key]) == $.trim(vl)) ) { 
-									ov.selected ="selected"; 
-									if ($.browser.msie) {
-										$.data(ov,"selected", true);
-									}
-								}
-								if (msl && ($.inArray($.trim(oSv[key]),ovm)>-1 || $.inArray($.trim(key),ovm)>-1)) { 
-									ov.selected ="selected"; 
-									if ($.browser.msie) {
-										$.data(ov,"selected", true);
-									}
-								}
 								elem.appendChild(ov);
+								if (!msl &&  ( $.trim(key) == $.trim(vl) || $.trim(oSv[key]) == $.trim(vl)) ) { ov.selected ="selected"; }
+								if (msl && ($.inArray($.trim(oSv[key]),ovm)>-1 || $.inArray($.trim(key),ovm)>-1)) { ov.selected ="selected"; }
 							}
 						}
 					}
