@@ -74,7 +74,7 @@ $.jgrid.extend({
 				grp.summaryval[0][itm] = $.extend(true,[],grp.summary[0]);
 			}
 			if(grp.groupSummary[0]) {
-				$.each(grp.summaryval[0][itm],function(i,n) {
+				$.each(grp.summaryval[0][itm],function() {
 					if ($.isFunction(this.st)) {
 						this.v = this.st.call($t, this.v, this.nm, record);
 					} else {
@@ -127,7 +127,6 @@ $.jgrid.extend({
 					}
 				}
 				tarspan.removeClass(plus).addClass(minus);
-				collapsed = false;
 			}
 			if( $.isFunction($t.p.onClickGroup)) { $t.p.onClickGroup.call($t, hid , collapsed); }
 
@@ -138,7 +137,7 @@ $.jgrid.extend({
 		return this.each(function(){
 			var $t = this,
 			grp = $t.p.groupingView,
-			str = "", icon = "", hid, pmrtl ="", gv, cp, ii;
+			str = "", icon = "", hid, pmrtl = grp.groupCollapse ? grp.plusicon : grp.minusicon, gv, cp, ii;
 			//only one level for now
 			if(!grp.groupDataSorted) {
 				// ???? TO BE IMPROVED
@@ -150,8 +149,6 @@ $.jgrid.extend({
 					grp.sortnames[0].reverse();
 				}
 			}   
-			if(grp.groupCollapse) { pmrtl = grp.plusicon; }
-			else {pmrtl = grp.minusicon;}
 			pmrtl += " tree-wrap-"+$t.p.direction; 
 			ii = 0;
 			while(ii < colspans) {
@@ -214,7 +211,7 @@ $.jgrid.extend({
 			str = null;
 		});
 	},
-	groupingGroupBy : function (name, options, current) {
+	groupingGroupBy : function (name, options ) {
 		return this.each(function(){
 			var $t = this;
 			if(typeof(name) == "string") {
@@ -222,16 +219,21 @@ $.jgrid.extend({
 			}
 			var grp = $t.p.groupingView;
 			$t.p.grouping = true;
-      // show previous hidden groups if they are hidden and weren't removed yet
-      for(var i=0;i<grp.groupField.length;i++) {
-        if(!grp.groupColumnShow[i] && grp.visibiltyOnNextGrouping[i]) {
-          $($t).jqGrid('showCol',grp.groupField[i]);
-        }
-      }
-      // set visibility status of current group columns on next grouping
-      for(var i=0;i<name.length;i++) {
-        grp.visibiltyOnNextGrouping[i] = $("#"+$t.p.id+"_"+name[i]).is(":visible");
-      }
+			//Set default, in case visibilityOnNextGrouping is undefined 
+			if (typeof grp.visibiltyOnNextGrouping == "undefined") {
+				grp.visibiltyOnNextGrouping = [];
+			}
+			var i;
+			// show previous hidden groups if they are hidden and weren't removed yet
+			for(i=0;i<grp.groupField.length;i++) {
+				if(!grp.groupColumnShow[i] && grp.visibiltyOnNextGrouping[i]) {
+					$($t).jqGrid('showCol',grp.groupField[i]);
+				}
+			}
+			// set visibility status of current group columns on next grouping
+			for(i=0;i<name.length;i++) {
+				grp.visibiltyOnNextGrouping[i] = $("#"+$t.p.id+"_"+name[i]).is(":visible");
+			} 
 			$t.p.groupingView = $.extend($t.p.groupingView, options || {});
 			grp.groupField = name;
 			$($t).trigger("reloadGrid");

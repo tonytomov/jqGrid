@@ -289,7 +289,7 @@ $.extend($.jgrid,{
 			});
 			if(!atr.hasOwnProperty('id')) {
 				$(elm).attr('id', $.jgrid.randId());
-		}
+			}
 		}
 		switch (eltype)
 		{
