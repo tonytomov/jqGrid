@@ -518,7 +518,7 @@ $.jgrid.extend({
 				}
 				var tre = $(obj).jqGrid("getInd",rowid,true);
 				if(!tre) { return; }
-				$('td',tre).each( function(i) {
+				$('td[role="gridcell"]',tre).each( function(i) {
 					nm = cm[i].name;
 					// hidden fields are included in the form
 					if ( nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn' && cm[i].editable===true) {
