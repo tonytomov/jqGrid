@@ -389,7 +389,7 @@ $.jgrid.extend({
 						    var cn = $.data(tid[0],"dnd").connectWith;
 						    return $.inArray('#'+this.id,cn) != -1 ? true : false;
 						}
-						return d;
+						return false;
 					},
 					drop: function(ev, ui) {
 						if (!$(ui.draggable).hasClass('jqgrow')) { return; }
