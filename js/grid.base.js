@@ -1010,11 +1010,9 @@ $.fn.jqGrid = function( pin ) {
 			for(i =0; i<ts.p.colModel.length; i++){
 				field = ts.p.colModel[i];
 				if (field.name !== 'cb' && field.name !=='subgrid' && field.name !=='rn') {
-					if(datatype == "local") {
-						f[j] = field.name;
-					} else {
-						f[j] = (datatype=="xml") ? field.xmlmap || field.name : field.jsonmap || field.name;
-					}
+					f[j]= datatype == "local" ?
+					field.name :
+					( (datatype=="xml" || datatype === "xmlstring") ? field.xmlmap || field.name : field.jsonmap || field.name );
 					j++;
 				}
 			}
