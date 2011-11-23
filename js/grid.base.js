@@ -3100,7 +3100,7 @@ $.jgrid.extend({
 	setCaption : function (newcap){
 		return this.each(function(){
 			this.p.caption=newcap;
-			$("span.ui-jqgrid-title",this.grid.cDiv).html(newcap);
+			$("span.ui-jqgrid-title, span.ui-jqgrid-title-rtl",this.grid.cDiv).html(newcap);
 			$(this.grid.cDiv).show();
 		});
 	},
