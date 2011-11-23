@@ -2216,7 +2216,7 @@ $.fn.jqGrid = function( pin ) {
 			var nm = ts.p.colModel[j].name;
 			if( !(nm == 'cb' || nm=='subgrid' || nm=='rn') ) {
 				if(ts.p.viewsortcols[2]){
-					$("div",this).addClass('ui-jqgrid-sortable');
+					$(">div",this).addClass('ui-jqgrid-sortable');
 				}
 			}
 			if(sort) {
