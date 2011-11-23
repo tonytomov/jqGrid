@@ -2551,7 +2551,7 @@ $.jgrid.extend({
 			if(selection === undefined) { return; }
 			onsr = onsr === false ? false : true;
 			pt=$t.rows.namedItem(selection+"");
-			if(!pt || pt.className.indexOf( 'ui-state-disabled' ) > -1 ) { return; }
+			if(!pt || !pt.className || pt.className.indexOf( 'ui-state-disabled' ) > -1 ) { return; }
 			function scrGrid(iR){
 				var ch = $($t.grid.bDiv)[0].clientHeight,
 				st = $($t.grid.bDiv)[0].scrollTop,
