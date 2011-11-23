@@ -105,10 +105,10 @@ $.extend($.jgrid,{
 		if(!p.zIndex) {
 			var parentZ = $(insertSelector).parents("*[role=dialog]").filter(':first').css("z-index");
 			if(parentZ) {
-				p.zIndex = parseInt(parentZ,10)+1;
+				p.zIndex = parseInt(parentZ,10)+2;
 			} else {
 				p.zIndex = 950;
-		}
+			}
 		}
 		var rtlt = 0;
 		if( rtlsup && coord.left && !appendsel) {
