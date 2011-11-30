@@ -72,11 +72,11 @@ $.fn.jqFilter = function( arg ) {
 		numopts : ['eq','ne', 'lt', 'le', 'gt', 'ge', 'nu', 'nn', 'in', 'ni'],
 		stropts : ['eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn', 'in', 'ni'],
 		_gridsopt : [], // grid translated strings, do not tuch
-		groupOps : ["AND", "OR"],
+		groupOps : [{ op: "AND", text: "and" },	{ op: "OR",  text: "any" }],
 		groupButton : true,
 		ruleButtons : true,
 		direction : "ltr"
-	}, arg || {});
+	}, $.extend(true, arg, $.jgrid.search) || {});
 	return this.each( function() {
 		if (this.filter) {return;}
 		this.p = p;
@@ -186,7 +186,6 @@ $.fn.jqFilter = function( arg ) {
 		 */
 		this.createTableForGroup = function(group, parentgroup) {
 			var that = this,  i;
-
 			// this table will hold all the group (tables) and rules (rows)
 			var table = $("<table class='group ui-widget ui-widget-content' style='border:0px none;'><tbody></tbody></table>"),
 			// create error message row
@@ -214,7 +213,7 @@ $.fn.jqFilter = function( arg ) {
 			var str= "", selected;
 			for (i = 0; i < p.groupOps.length; i++) {
 				selected =  group.groupOp === that.p.groupOps[i] ? " selected='selected'" :"";
-				str += "<option value='"+that.p.groupOps[i]+"'" + selected+">"+that.p.groupOps[i]+"</option>";
+				str += "<option value='"+that.p.groupOps[i].op+"'" + selected+">"+that.p.groupOps[i].text+"</option>";
 			}
 
 			groupOpSelect
@@ -264,6 +263,7 @@ $.fn.jqFilter = function( arg ) {
 						break;
 					}
 				}
+				
 				var opr;
 				if( cm.searchoptions.sopt ) {opr = cm.searchoptions.sopt;}
 				else if(that.p.sopt) { opr= that.p.sopt; }
@@ -721,3 +721,4 @@ $.extend($.fn.jqFilter,{
 
 });
 })(jQuery);
+
