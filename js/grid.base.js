@@ -1800,8 +1800,8 @@ $.fn.jqGrid = function( pin ) {
 				$('#cb_'+$.jgrid.jqID(ts.p.id),ts.grid.fhDiv)[ts.p.useProp ? 'prop': 'attr']("checked", checked);
 			}
 		},
-        setPager = function (pgid, tp){
-            // TBD - consider escaping pgid with pgid = $.jgrid.jqID(pgid);
+		setPager = function (pgid, tp){
+			// TBD - consider escaping pgid with pgid = $.jgrid.jqID(pgid);
 			var sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='ui-separator'></span></td>",
 			pginp = "",
 			pgl="<table cellspacing='0' cellpadding='0' border='0' style='table-layout:auto;' class='ui-pg-table'><tbody><tr>",
