@@ -2317,10 +2317,15 @@ $.fn.jqGrid = function( pin ) {
 					if(ts.p.multiselect && ts.p.multiboxonly) {
 						if(scb){$(ts).jqGrid("setSelection",ptr[0].id,true);}
 						else {
+							var frz = ts.p.frozenColumns ? ts.p.id+"_frozen" : "";
 							$(ts.p.selarrrow).each(function(i,n){
 								var ind = ts.rows.namedItem(n);
 								$(ind).removeClass("ui-state-highlight");
 								$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(n))[ts.p.useProp ? 'prop': 'attr']("checked", false);
+								if(frz) {
+									$("#"+$.jgrid.jqID(n), "#"+$.jgrid.jqID(frz)).removeClass("ui-state-highlight");
+									$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(n), "#"+$.jgrid.jqID(frz))[ts.p.useProp ? 'prop': 'attr']("checked", false);
+								}
 							});
 							ts.p.selarrrow = [];
 							$(ts).jqGrid("setSelection",ptr[0].id,true);
