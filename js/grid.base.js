@@ -2297,7 +2297,7 @@ $.fn.jqGrid = function( pin ) {
 			td = e.target;
 			ptr = $(td,ts.rows).closest("tr.jqgrow");
 			if($(ptr).length === 0 || ptr[0].className.indexOf( 'ui-state-disabled' ) > -1 	|| 
-				$(td,ts).closest("table.ui-jqgrid-btable")[0].id !== ts.id ) {
+				$(td,ts).closest("table.ui-jqgrid-btable")[0].id.replace("_frozen","") !== ts.id ) {
 				return this;
 			}
 			var scb = $(td).hasClass("cbox"),
@@ -2612,6 +2612,15 @@ $.jgrid.extend({
 					$t.p.selrow = (tpsr === undefined) ? null : tpsr;
 				}
 				$("#jqg_"+$.jgrid.jqID($t.p.id)+"_"+$.jgrid.jqID($t.p.selrow))[$t.p.useProp ? 'prop': 'attr']("checked",stat);
+				if(fid) {
+					if(ia === -1) {
+						$("#"+$.jgrid.jqID(selection), "#"+$.jgrid.jqID(fid)).addClass("ui-state-highlight")
+					} else {
+						$("#"+$.jgrid.jqID(selection), "#"+$.jgrid.jqID(fid)).removeClass("ui-state-highlight")
+					}
+					$("#cb_" + $.jgrid.jqID($t.p.id), $t.grid.fhDiv)[$t.p.useProp ? 'prop' : 'attr']("checked", false);
+					$("#jqg_"+$.jgrid.jqID($t.p.id)+"_"+$.jgrid.jqID(selection), "#"+$.jgrid.jqID(fid))[$t.p.useProp ? 'prop': 'attr']("checked",stat);
+				}
 				if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow.call($t, pt.id , stat); }
 			}
 		});
