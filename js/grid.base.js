@@ -2161,6 +2161,7 @@ $.fn.jqGrid = function( pin ) {
 			var emp=[], chk;
 			$('#cb_'+$.jgrid.jqID(ts.p.id),this).bind('click',function(){
 				ts.p.selarrrow = [];
+				var froz = ts.p.frozenColumns === true ? ts.p.id + "_frozen" : "";
 				if (this.checked) {
 					$(ts.rows).each(function(i) {
 						if (i>0) {
@@ -2169,6 +2170,10 @@ $.fn.jqGrid = function( pin ) {
 							    $(this).addClass("ui-state-highlight").attr("aria-selected","true");  
 							    ts.p.selarrrow.push(this.id);
  								ts.p.selrow = this.id;
+								if(froz) {
+									$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(this.id), ts.grid.fbDiv )[ts.p.useProp ? 'prop': 'attr']("checked",true);
+									$("#"+$.jgrid.jqID(this.id), ts.grid.fbDiv).addClass("ui-state-highlight")
+								}
                             }
 						}
 					});
@@ -2182,6 +2187,10 @@ $.fn.jqGrid = function( pin ) {
 								$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(this.id) )[ts.p.useProp ? 'prop': 'attr']("checked", false);
 								$(this).removeClass("ui-state-highlight").attr("aria-selected","false");
 								emp.push(this.id);
+								if(froz) {
+									$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(this.id), ts.grid.fbDiv )[ts.p.useProp ? 'prop': 'attr']("checked",false);
+									$("#"+$.jgrid.jqID(this.id), ts.grid.fbDiv).removeClass("ui-state-highlight")
+								}
 							}
 						}
 					});
