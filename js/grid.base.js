@@ -2595,16 +2595,15 @@ $.jgrid.extend({
 				if (  ia === -1 ){
 					if(pt.className !== "ui-subgrid") { $(pt).addClass("ui-state-highlight").attr("aria-selected","true");}
 					stat = true;
-					$("#jqg_"+$.jgrid.jqID($t.p.id)+"_"+$.jgrid.jqID($t.p.selrow))[$t.p.useProp ? 'prop': 'attr']("checked",stat);
 					$t.p.selarrrow.push($t.p.selrow);
 				} else {
 					if(pt.className !== "ui-subgrid") { $(pt).removeClass("ui-state-highlight").attr("aria-selected","false");}
 					stat = false;
-					$("#jqg_"+$.jgrid.jqID($t.p.id)+"_"+$.jgrid.jqID($t.p.selrow))[$t.p.useProp ? 'prop': 'attr']("checked",stat);
 					$t.p.selarrrow.splice(ia,1);
 					tpsr = $t.p.selarrrow[0];
 					$t.p.selrow = (tpsr === undefined) ? null : tpsr;
 				}
+				$("#jqg_"+$.jgrid.jqID($t.p.id)+"_"+$.jgrid.jqID($t.p.selrow))[$t.p.useProp ? 'prop': 'attr']("checked",stat);
 				if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow.call($t, pt.id , stat); }
 			}
 		});
