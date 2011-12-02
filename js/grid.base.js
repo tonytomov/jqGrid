@@ -1641,6 +1641,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			if(dnd && ts.p.jqgdnd) { $(ts).jqGrid('gridDnD','updateDnD');}
 			if($.isFunction(ts.p.gridComplete)) {ts.p.gridComplete.call(ts);}
+			if($.isFunction(ts.p._complete)) {ts.p._complete.call(ts);}
 		},
 		beginReq = function() {
 			ts.grid.hDiv.loading = true;
