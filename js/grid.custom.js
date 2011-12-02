@@ -148,33 +148,16 @@ $.jgrid.extend({
 				var sdata={}, j=0, v, nm, sopt={},so;
 				$.each($t.p.colModel,function(i,n){
 					nm = this.index || this.name;
-					switch (this.stype) {
-						case 'select' :
-							so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : 'eq';
-							v = $("#gs_"+$.jgrid.jqID(this.name),$t.grid.hDiv).val();
-							if(v) {
-								sdata[nm] = v;
-								sopt[nm] = so;
-								j++;
-							} else {
-								try {
-									delete $t.p.postData[nm];
-								} catch (e) {}
-							}
-							break;
-						case 'text':
-							so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : p.defaultSearch;
-							v = $("#gs_"+$.jgrid.jqID(this.name), $t.grid.hDiv).val();
-							if(v) {
-								sdata[nm] = v;
-								sopt[nm] = so;
-								j++;
-							} else {
-								try {
-									delete $t.p.postData[nm];
-								} catch (z) {}
-							}
-							break;
+					so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : this.stype=='select'?  'eq' : p.defaultSearch;
+					v = $("#gs_"+$.jgrid.jqID(this.name), $t.grid.hDiv).val();
+					if(v) {
+						sdata[nm] = v;
+						sopt[nm] = so;
+						j++;
+					} else {
+						try {
+							delete $t.p.postData[nm];
+						} catch (z) {}
 					}
 				});
 				var sd =  j>0 ? true : false;
