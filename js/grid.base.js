@@ -2323,7 +2323,6 @@ $.fn.jqGrid = function( pin ) {
 								$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(n))[ts.p.useProp ? 'prop': 'attr']("checked", false);
 							});
 							ts.p.selarrrow = [];
-							$("#cb_"+$.jgrid.jqID(ts.p.id),ts.grid.hDiv)[ts.p.useProp ? 'prop': 'attr']("checked", false);
 							$(ts).jqGrid("setSelection",ptr[0].id,true);
 						}
 					} else {
