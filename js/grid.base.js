@@ -1793,6 +1793,13 @@ $.fn.jqGrid = function( pin ) {
 				}
 			}
 		},
+		setHeadCheckBox = function ( checked ) {
+			$('#cb_'+$.jgrid.jqID(ts.p.id),ts.grid.hDiv)[ts.p.useProp ? 'prop': 'attr']("checked", checked);
+			var fid = ts.p.frozenColumns ? ts.p.id+"_frozen" : "";
+			if(fid) {
+				$('#cb_'+$.jgrid.jqID(ts.p.id),ts.grid.fhDiv)[ts.p.useProp ? 'prop': 'attr']("checked", checked);
+			}
+		},
         setPager = function (pgid, tp){
             // TBD - consider escaping pgid with pgid = $.jgrid.jqID(pgid);
 			var sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='ui-separator'></span></td>",
@@ -1803,7 +1810,7 @@ $.fn.jqGrid = function( pin ) {
 				var ret;
 				if ($.isFunction(ts.p.onPaging) ) { ret = ts.p.onPaging.call(ts,onpaging); }
 				ts.p.selrow = null;
-				if(ts.p.multiselect) {ts.p.selarrrow =[];$('#cb_'+$.jgrid.jqID(ts.p.id),ts.grid.hDiv)[ts.p.useProp ? 'prop': 'attr']("checked", false);}
+				if(ts.p.multiselect) {ts.p.selarrrow =[]; setHeadCheckBox( false );}
 				ts.p.savedRow = [];
 				if(ret=='stop') {return false;}
 				return true;
@@ -1943,7 +1950,7 @@ $.fn.jqGrid = function( pin ) {
 				if(ts.p.deselectAfterSort) {$(ts).jqGrid("resetSelection");}
 			} else {
 				ts.p.selrow = null;
-				if(ts.p.multiselect){$("#cb_"+$.jgrid.jqID(ts.p.id),ts.grid.hDiv)[ts.p.useProp ? 'prop': 'attr']("checked", false);}
+				if(ts.p.multiselect){setHeadCheckBox( false );}
 				ts.p.selarrrow =[];
 				ts.p.savedRow =[];
 			}
@@ -2359,7 +2366,7 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.datatype=="local"){ $(ts).jqGrid("resetSelection");  if(ts.p.data.length) { refreshIndex();} }
 			else if(!ts.p.treeGrid) {
 				ts.p.selrow=null;
-				if(ts.p.multiselect) {ts.p.selarrrow =[];$('#cb_'+$.jgrid.jqID(ts.p.id),ts.grid.hDiv)[ts.p.useProp ? 'prop': 'attr']("checked", false);}
+				if(ts.p.multiselect) {ts.p.selarrrow =[];setHeadCheckBox(false);}
 				ts.p.savedRow = [];
 			}
 			if(ts.p.scroll) {emptyRows(ts.grid.bDiv,true, false);}
@@ -2514,6 +2521,7 @@ $.fn.jqGrid = function( pin ) {
 		ts.sortData = sortData;
 		ts.updatepager = updatepager;
 		ts.refreshIndex = refreshIndex;
+		ts.setHeadCheckBox = setHeadCheckBox;
 		ts.formatter = function ( rowId, cellval , colpos, rwdat, act){return formatter(rowId, cellval , colpos, rwdat, act);};
 		$.extend(grid,{populate : populate, emptyRows: emptyRows});
 		this.grid = grid;
@@ -2601,7 +2609,7 @@ $.jgrid.extend({
 				}
 			} else {
 				//unselect selectall checkbox when deselecting a specific row
-				$("#cb_" + $.jgrid.jqID($t.p.id), $t.grid.hDiv)[$t.p.useProp ? 'prop' : 'attr']("checked", false);
+				$t.setHeadCheckBox( false )
 				$t.p.selrow = pt.id;
 				ia = $.inArray($t.p.selrow,$t.p.selarrrow);
 				if (  ia === -1 ){
@@ -2622,7 +2630,6 @@ $.jgrid.extend({
 					} else {
 						$("#"+$.jgrid.jqID(selection), "#"+$.jgrid.jqID(fid)).removeClass("ui-state-highlight")
 					}
-					$("#cb_" + $.jgrid.jqID($t.p.id), $t.grid.fhDiv)[$t.p.useProp ? 'prop' : 'attr']("checked", false);
 					$("#jqg_"+$.jgrid.jqID($t.p.id)+"_"+$.jgrid.jqID(selection), "#"+$.jgrid.jqID(fid))[$t.p.useProp ? 'prop': 'attr']("checked",stat);
 				}
 				if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow.call($t, pt.id , stat); }
@@ -2637,7 +2644,7 @@ $.jgrid.extend({
 				$("#"+$.jgrid.jqID(t.p.id)+" tbody:first tr#"+$.jgrid.jqID(sr)).removeClass("ui-state-highlight").attr("aria-selected","false");
 				if(t.p.multiselect) {
 					$("#jqg_"+$.jgrid.jqID(t.p.id)+"_"+$.jgrid.jqID(sr))[t.p.useProp ? 'prop': 'attr']("checked",false);
-					$("#cb_"+$.jgrid.jqID(t.p.id))[t.p.useProp ? 'prop': 'attr']("checked",false );
+					t.setHeadCheckBox( false);
 				}
 				sr = null;
 			} else if(!t.p.multiselect) {
@@ -2651,7 +2658,7 @@ $.jgrid.extend({
 					$(ind).removeClass("ui-state-highlight").attr("aria-selected","false");
 					$("#jqg_"+$.jgrid.jqID(t.p.id)+"_"+$.jgrid.jqID(n))[t.p.useProp ? 'prop': 'attr']("checked",false);
 				});
-				$("#cb_"+$.jgrid.jqID(t.p.id))[t.p.useProp ? 'prop': 'attr']("checked",false);
+				t.setHeadCheckBox( false );
 				t.p.selarrrow = [];
 			}
 			if(t.p.cellEdit === true) {
