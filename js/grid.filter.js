@@ -72,18 +72,18 @@ $.fn.jqFilter = function( arg ) {
 		numopts : ['eq','ne', 'lt', 'le', 'gt', 'ge', 'nu', 'nn', 'in', 'ni'],
 		stropts : ['eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn', 'in', 'ni'],
 		_gridsopt : [], // grid translated strings, do not tuch
-		groupOps : [{ op: "AND", text: "and" },	{ op: "OR",  text: "any" }],
+		groupOps : [{ op: "AND", text: "AND" },	{ op: "OR",  text: "OR" }],
 		groupButton : true,
 		ruleButtons : true,
 		direction : "ltr"
-	}, $.extend(true, arg, $.jgrid.search) || {});
+	}, arg || {});
 	return this.each( function() {
 		if (this.filter) {return;}
 		this.p = p;
 		// setup filter in case if they is not defined
 		if (this.p.filter === null || this.p.filter === undefined) {
 			this.p.filter = {
-				groupOp: this.p.groupOps[0],
+				groupOp: this.p.groupOps[0].op,
 				rules: [],
 				groups: []
 			};
@@ -212,7 +212,7 @@ $.fn.jqFilter = function( arg ) {
 			// populate dropdown with all posible group operators: or, and
 			var str= "", selected;
 			for (i = 0; i < p.groupOps.length; i++) {
-				selected =  group.groupOp === that.p.groupOps[i] ? " selected='selected'" :"";
+				selected =  group.groupOp === that.p.groupOps[i].op ? " selected='selected'" :"";
 				str += "<option value='"+that.p.groupOps[i].op+"'" + selected+">"+that.p.groupOps[i].text+"</option>";
 			}
 
@@ -233,7 +233,7 @@ $.fn.jqFilter = function( arg ) {
 					}
 
 					group.groups.push({
-						groupOp: p.groupOps[0],
+						groupOp: p.groupOps[0].op,
 						rules: [],
 						groups: []
 					}); // adding a new group
@@ -319,7 +319,7 @@ $.fn.jqFilter = function( arg ) {
 				}
 			}
 			if(group.groupOp === undefined) {
-				group.groupOp = that.p.groupOps[0];
+				group.groupOp = that.p.groupOps[0].op;
 			}
 
 			// append rules rows
