@@ -149,7 +149,7 @@ $.jgrid.extend({
 				$.each($t.p.colModel,function(i,n){
 					nm = this.index || this.name;
 					so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : this.stype=='select'?  'eq' : p.defaultSearch;
-					v = $("#gs_"+$.jgrid.jqID(this.name), $t.grid.hDiv).val();
+					v = $("#gs_"+$.jgrid.jqID(this.name), (this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv).val();
 					if(v) {
 						sdata[nm] = v;
 						sopt[nm] = so;
@@ -200,7 +200,7 @@ $.jgrid.extend({
 					switch (this.stype) {
 						case 'select' :
 							var v1;
-							$("#gs_"+$.jgrid.jqID(this.name)+" option",$t.grid.hDiv).each(function (i){
+							$("#gs_"+$.jgrid.jqID(this.name)+" option",(this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv).each(function (i){
 								if(i===0) { this.selected = true; }
 								if ($(this).text() == v) {
 									this.selected = true;
@@ -219,7 +219,7 @@ $.jgrid.extend({
 							}
 							break;
 						case 'text':
-							$("#gs_"+$.jgrid.jqID(this.name),$t.grid.hDiv).val(v);
+							$("#gs_"+$.jgrid.jqID(this.name),(this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv).val(v);
 							if(v) {
 								sdata[nm] = v;
 								j++;
@@ -267,9 +267,19 @@ $.jgrid.extend({
 				if($.isFunction(p.afterClear)){p.afterClear();}
 			};
 			var toggleToolbar = function(){
-				var trow = $("tr.ui-search-toolbar",$t.grid.hDiv);
-				if(trow.css("display")=='none') { trow.show(); }
-				else { trow.hide(); }
+				var trow = $("tr.ui-search-toolbar",$t.grid.hDiv),
+				trow2 = $t.p.frozenColumns === true ?  $("tr.ui-search-toolbar",$t.grid.hDiv) : false;
+				if(trow.css("display")=='none') { 
+					trow.show(); 
+					if(trow2) {
+						trow2.show();
+					}
+				} else { 
+					trow.hide(); 
+					if(trow2) {
+						trow2.hide();
+					}
+				}
 			};
 			// create the row
 			function bindEvents(selector, events) {
