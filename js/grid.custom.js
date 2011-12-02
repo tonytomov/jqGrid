@@ -759,6 +759,18 @@ $.jgrid.extend({
 				$t.p.resizeStop = $t.p.orgEvents.resizeStop;
 				$t.p.onSortCol = $t.p.orgEvents.onSortCol;
 				$t.p.orgEvents = null;
+				if($t.p.hoverrows == true) {
+					var ptr;
+					$("#"+$.jgrid.jqID($t.p.id)).bind('mouseover',function(e) {
+						ptr = $(e.target).closest("tr.jqgrow");
+						if($(ptr).attr("class") !== "ui-subgrid") {
+						$(ptr).addClass("ui-state-hover");
+					}
+					}).bind('mouseout',function(e) {
+						ptr = $(e.target).closest("tr.jqgrow");
+						$(ptr).removeClass("ui-state-hover");
+					});
+				}
 				this.p.frozenColumns = false;
 			}
 		});
