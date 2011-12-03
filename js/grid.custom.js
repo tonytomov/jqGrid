@@ -653,10 +653,33 @@ $.jgrid.extend({
 				$t.grid.fbDiv = $('<div style="position:absolute;left:0px;top:'+(parseInt(top,10)+parseInt(hth,10) + 1)+'px;overflow-y:hidden" class="frozen-bdiv ui-jqgrid-bdiv"></div>');
 				$("#gview_"+$.jgrid.jqID($t.p.id)).append($t.grid.fhDiv);
 				var htbl = $(".ui-jqgrid-htable","#gview_"+$.jgrid.jqID($t.p.id)).clone(true);
-				$("tr",htbl).each(function(){
-					// TODO groupheader support
-					$("th:gt("+maxfrozen+")",this).remove();
-				})
+				// groupheader support - only if useColSpanstyle is false
+				if($t.p.groupHeader) {
+					$("tr.jqg-first-row-header, tr.jqg-third-row-header", htbl).each(function(){
+						$("th:gt("+maxfrozen+")",this).remove();
+					});
+					var swapfroz = -1, fdel = -1;
+					$("tr.jqg-second-row-header th", htbl).each(function( i ){
+						var cs= parseInt($(this).attr("colspan"),10);
+						if(cs) {
+							swapfroz = swapfroz+cs;
+							fdel++;
+						}
+						if(swapfroz === maxfrozen) {
+							return false;
+						}
+					});
+					if(swapfroz !== maxfrozen) {
+						fdel = maxfrozen;
+					}
+					$("tr.jqg-second-row-header", htbl).each(function( i ){
+						$("th:gt("+fdel+")",this).remove();
+					});
+				} else {
+					$("tr",htbl).each(function(){
+						$("th:gt("+maxfrozen+")",this).remove();
+					});
+				}
 				$(htbl).width(1);
 				// resizing stuff
 				$($t.grid.fhDiv).append(htbl)
@@ -671,7 +694,7 @@ $.jgrid.extend({
 					var rhth = $(".ui-jqgrid-htable",$t.grid.fhDiv);
 					$("th:eq("+index+")",rhth).width( w ); 
 					var btd = $(".ui-jqgrid-btable",$t.grid.fbDiv);
-					$("td:eq("+index+")",btd).width( w ); 
+					$("tr:first td:eq("+index+")",btd).width( w ); 
 					
 					if ($.isFunction($t.p.orgEvents.resizeStop)) {
 						$t.p.orgEvents.resizeStop.call($t, w, index);
@@ -687,7 +710,7 @@ $.jgrid.extend({
 				}
 				$t.p.onSortCol = function( index,idxcol,so ){
 
-					var previousSelectedTh = $("th:eq("+$t.p.lastsort+")",$t.grid.fhDiv), newSelectedTh = $("th:eq("+idxcol+")",$t.grid.fhDiv);
+					var previousSelectedTh = $("tr.ui-jqgrid-labels:last th:eq("+$t.p.lastsort+")",$t.grid.fhDiv), newSelectedTh = $("tr.ui-jqgrid-labels:last th:eq("+idxcol+")",$t.grid.fhDiv);
 
 					$("span.ui-grid-ico-sort",previousSelectedTh).addClass('ui-state-disabled');
 					$(previousSelectedTh).attr("aria-selected","false");
