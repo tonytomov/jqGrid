@@ -398,7 +398,7 @@
 			afterSave:null,
 			onError: null,
 			afterRestore: null,
-			extraparam: {oper:'edit'},
+			extraparam: {oper:'edit', editmode:'inline'},
 			url: null,
 			delOptions: {},
 			editOptions : {}
@@ -425,24 +425,30 @@
 			$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid+ ".ui-jqgrid-btable:first").show();
 			$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid+ ".ui-jqgrid-btable:first").hide();
 		};
-
+		if( $("#"+rid,"#"+gid).attr("jqgrid-row") == "new" ){
+			op.extraparam.oper = "add";
+		}
+		var $t = $("#"+gid)[0];
 		switch(act)
 		{
 			case 'edit':
 				$('#'+gid).jqGrid('editRow',rid, op.keys, op.onEdit, op.onSuccess, op.url, op.extraparam, saverow, op.onError,restorerow);
 				$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid+ ".ui-jqgrid-btable:first").hide();
 				$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid+ ".ui-jqgrid-btable:first").show();
+				if($.isFunction($t.p._complete)) {$t.p._complete.call($t);}
 				break;
 			case 'save':
 				if ( $('#'+gid).jqGrid('saveRow',rid,  op.onSuccess,op.url, op.extraparam, saverow, op.onError,restorerow) ) {
 				$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid+ ".ui-jqgrid-btable:first").show();
 				$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid+ ".ui-jqgrid-btable:first").hide();
+				if($.isFunction($t.p._complete)) {$t.p._complete.call($t);}
 				}
 				break;
 			case 'cancel' :
 				$('#'+gid).jqGrid('restoreRow',rid, restorerow);
 				$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid+ ".ui-jqgrid-btable:first").show();
 				$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid+ ".ui-jqgrid-btable:first").hide();
+				if($.isFunction($t.p._complete)) {$t.p._complete.call($t);}
 				break;
 			case 'del':
 				$('#'+gid).jqGrid('delGridRow',rid, op.delOptions);
