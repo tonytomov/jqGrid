@@ -2958,6 +2958,9 @@ $.jgrid.extend({
 			if(gh) { $($t).jqGrid('destroyGroupHeader', false); }
 			$(this.p.colModel).each(function(i) {
 				if ($.inArray(this.name,colname) !== -1 && this.hidden === sw) {
+					if($t.p.frozenColumns === true && this.frozen === true) {
+						return true;
+					}
 					$("tr",$t.grid.hDiv).each(function(){
 						$(this.cells[i]).css("display", show);
 					});
