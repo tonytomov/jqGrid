@@ -179,7 +179,7 @@ $.jgrid.extend({
 					if(o.url !== 'clientArray' && cm.editoptions && cm.editoptions.NullIfEmpty === true) {
 						if(tmp[nm] == "") {
 							tmp3[nm] = 'null';
-				}
+						}
 					}
 				}
 			});
@@ -255,8 +255,8 @@ $.jgrid.extend({
 								}
 								if(o.restoreAfterError === true) {
 									$($t).jqGrid("restoreRow",rowid, o.afterrestorefunc);
+								}
 							}
-						}
 						}
 					},
 					error:function(res,stat){
@@ -303,10 +303,43 @@ $.jgrid.extend({
 				$($t).jqGrid("setRowData",rowid,ares);
 				$(ind).attr("editable","0").unbind("keydown");
 				$t.p.savedRow.splice(fr,1);
+				if($("#"+$.jgrid.jqID(rowid), "#"+$.jgrid.jqID($t.p.id)).attr("jqgrid-row") == "new"){
+					setTimeout(function(){$($t).jqGrid("delRowData",rowid);},0);
+				}
 			}
 			if ($.isFunction(afterrestorefunc))
 			{
 				afterrestorefunc.call($t, rowid);
+			}
+		});
+	},
+	addRow : function ( p ) {
+		p = $.extend({
+			rowID : "new_row",
+			initdata : {},
+			position :"first",
+			useDefValues : false,
+			useFormatter : false,
+			editRowParams : {extraparam:{oper:"add"}, keys:true}
+		},p  || {});
+		return this.each(function(){
+			if (!this.grid ) { return; }
+			var $t = this;
+			if(p.useDefValues === true) {
+				$($t.p.colModel).each(function(i){
+					if( this.edioptions && this.editoptions.defaultValue ) {
+						var opt = this.editoptions.defaultValue,
+						tmp = $.isFunction(opt) ? opt.call($t) : opt;
+						p.initdata[this.name] = tmp;
+					}
+				});
+			}
+			$($t).jqGrid('addRowData', p.rowID, p.initdata, p.position);
+			$("#"+$.jgrid.jqID(p.rowID), "#"+$.jgrid.jqID($t.p.id)).attr("jqgrid-row","new");
+			if(p.useFormatter) {
+				$("#"+$.jgrid.jqID(p.rowID)+" .ui-inline-edit", "#"+$.jgrid.jqID($t.p.id)).click();
+			} else {
+				$($t).jqGrid('editRow', p.rowID, p.editRowParams);
 			}
 		});
 	}
