@@ -2781,7 +2781,7 @@ $.jgrid.extend({
 								if(lcdata.hasOwnProperty(t.p.treeReader[key])) {
 									delete lcdata[t.p.treeReader[key]];
 								}
-						}
+							}
 						}
 						if(typeof(pos) != 'undefined') {
 							t.p.data[pos] = $.extend(true, t.p.data[pos], lcdata);
@@ -2794,6 +2794,7 @@ $.jgrid.extend({
 			}
 			if(success) {
 				if(cp === 'string') {$(ind).addClass(cssp);} else if(cp === 'object') {$(ind).css(cssp);}
+				if($.isFunction(t.p._complete)) {t.p._complete.call(t);}
 			}
 		});
 		return success;
