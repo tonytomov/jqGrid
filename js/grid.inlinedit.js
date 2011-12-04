@@ -275,10 +275,9 @@ $.jgrid.extend({
 						} else {
 							try {
 								jQuery.jgrid.info_dialog(jQuery.jgrid.errors.errcap,'<div class="ui-state-error">'+ res.responseText +'</div>', jQuery.jgrid.edit.bClose,{buttonalign:'right'});
-						}
-							catch(e) {
+							} catch(e) {
 								alert(res.responseText);
-					}
+							}
 						}
 						if(o.restoreAfterError === true) {
 							$($t).jqGrid("restoreRow",rowid, o.afterrestorefunc);
@@ -329,7 +328,7 @@ $.jgrid.extend({
 			position :"first",
 			useDefValues : false,
 			useFormatter : false,
-			editRowParams : {extraparam:{oper:"add"}, keys:true}
+			addRowParams : {extraparam:{oper:"add"}, keys:true}
 		},p  || {});
 		return this.each(function(){
 			if (!this.grid ) { return; }
@@ -348,7 +347,7 @@ $.jgrid.extend({
 			if(p.useFormatter) {
 				$("#"+$.jgrid.jqID(p.rowID)+" .ui-inline-edit", "#"+$.jgrid.jqID($t.p.id)).click();
 			} else {
-				$($t).jqGrid('editRow', p.rowID, p.editRowParams);
+				$($t).jqGrid('editRow', p.rowID, p.addRowParams);
 			}
 		});
 	}
