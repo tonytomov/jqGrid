@@ -295,6 +295,19 @@ $.jgrid.extend({
 		return success;
 	},
 	restoreRow : function(rowid, afterrestorefunc) {
+		// Compatible mode old versions
+		var settings = {
+			"afterrestorefunc" : afterrestorefunc|| null
+		},
+		args = $.makeArray(arguments).slice(1), o;
+
+		if(args[0] && typeof(args[0]) == "object" && !$.isFunction(args[0])) {
+			o = $.extend($.jgrid.inlineEdit, settings, args[0]);
+		} else {
+			o = settings;
+		}
+		// End compatible
+
 		return this.each(function(){
 			var $t= this, fr, ind, ares={};
 			if (!$t.grid ) { return; }
@@ -321,9 +334,9 @@ $.jgrid.extend({
 					setTimeout(function(){$($t).jqGrid("delRowData",rowid);},0);
 				}
 			}
-			if ($.isFunction(afterrestorefunc))
+			if ($.isFunction(o.afterrestorefunc))
 			{
-				afterrestorefunc.call($t, rowid);
+				o.afterrestorefunc.call($t, rowid);
 			}
 		});
 	},
@@ -368,7 +381,8 @@ $.jgrid.extend({
 			saveicon:"ui-icon-disk",
 			cancel: true,
 			cancelicon:"ui-icon-cancel",
-			addParams : {useFormatter : false}
+			addParams : {useFormatter : false},
+			editParams : {}
 		}, $.jgrid.nav, o ||{});
 		return this.each(function(){
 			if (!this.grid ) { return; }
@@ -397,7 +411,7 @@ $.jgrid.extend({
 					buttonicon : o.editicon,
 					id : $t.p.id+"_iledit",
 					onClickButton : function ( e ) {
-						var sr = $($t).jqGrid('getGridParam','selrow');
+						var sr = $($t).jqGrid('getGridParam','selrow', o.editParams);
 						if(sr) {
 							$($t).jqGrid('editRow', sr);
 							$("#"+$t.p.id+"_ilsave").removeClass('ui-state-disabled');
@@ -417,7 +431,7 @@ $.jgrid.extend({
 					buttonicon : o.saveicon,
 					id : $t.p.id+"_ilsave",
 					onClickButton : function ( e ) {
-						var sr = $($t).jqGrid('getGridParam','selrow');
+						var sr = $($t).jqGrid('getGridParam','selrow', o.editParams);
 						if(sr) {
 							$($t).jqGrid('saveRow', sr);
 							$("#"+$t.p.id+"_ilsave").addClass('ui-state-disabled');
@@ -440,7 +454,7 @@ $.jgrid.extend({
 					onClickButton : function ( e ) {
 						var sr = $($t).jqGrid('getGridParam','selrow');
 						if(sr) {
-							$($t).jqGrid('restoreRow', sr);
+							$($t).jqGrid('restoreRow', sr, o.editParams);
 							$("#"+$t.p.id+"_ilsave").addClass('ui-state-disabled');
 							$("#"+$t.p.id+"_ilcancel").addClass('ui-state-disabled');
 							$("#"+$t.p.id+"_iladd").removeClass('ui-state-disabled');
