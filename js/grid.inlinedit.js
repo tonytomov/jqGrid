@@ -230,9 +230,18 @@ $.jgrid.extend({
 					complete: function(res,stat){
 						$("#lui_"+$t.p.id).hide();
 						if (stat === "success"){
-							var ret;
-							if( $.isFunction(o.successfunc)) { ret = o.successfunc.call($t, res);}
-							else { ret = true; }
+							var ret = true, sucret;
+							if( $.isFunction(o.successfunc)) { 
+								sucret = o.successfunc.call($t, res);
+								if($.isArray(sucret)) {
+									// expect array - status, data, rowid
+									ret = sucret[0];
+									tmp = sucret[1] ? sucret[1] : tmp;
+									rowid = sucret[2] ? sucret[2] : rowid;
+								} else {
+									ret = sucret;
+								}
+							}
 							if (ret===true) {
 								if($t.p.autoencode) {
 									$.each(tmp,function(n,v){
