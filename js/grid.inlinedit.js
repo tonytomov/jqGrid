@@ -7,6 +7,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/ 
+$.jgrid.inlineEdit = $.jgrid.inlineEdit || {};
 $.jgrid.extend({
 //Editing
 	editRow : function(rowid,keys,oneditfunc,successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
@@ -26,7 +27,7 @@ $.jgrid.extend({
 		args = $.makeArray(arguments).slice(1), o;
 
 		if(args[0] && typeof(args[0]) == "object" && !$.isFunction(args[0])) {
-			o = $.extend(settings,args[0]);
+			o = $.extend($.jgrid.inlineEdit, settings, args[0]);
 		} else {
 			o = settings;
 		}
@@ -108,7 +109,7 @@ $.jgrid.extend({
 		args = $.makeArray(arguments).slice(1), o;
 
 		if(args[0] && typeof(args[0]) == "object" && !$.isFunction(args[0])) {
-			o = $.extend(settings,args[0]);
+			o = $.extend($.jgrid.inlineEdit, settings, args[0]);
 		} else {
 			o = settings;
 		}
@@ -361,7 +362,8 @@ $.jgrid.extend({
 			save: true,
 			saveicon:"ui-icon-disk",
 			cancel: true,
-			cancelicon:"ui-icon-cancel"
+			cancelicon:"ui-icon-cancel",
+			addParams : {useFormatter : false}
 		}, $.jgrid.nav, o ||{});
 		return this.each(function(){
 			if (!this.grid ) { return; }
@@ -373,11 +375,13 @@ $.jgrid.extend({
 					buttonicon : o.addicon,
 					id : $t.p.id+"_iladd",
 					onClickButton : function ( e ) {
-						$($t).jqGrid('addRow');
-						$("#"+$t.p.id+"_ilsave").removeClass('ui-state-disabled');
-						$("#"+$t.p.id+"_ilcancel").removeClass('ui-state-disabled');
-						$("#"+$t.p.id+"_iladd").addClass('ui-state-disabled');
-						$("#"+$t.p.id+"_iledit").addClass('ui-state-disabled');
+						$($t).jqGrid('addRow', o.addParams);
+						if(!o.addParams.useFormatter) {
+							$("#"+$t.p.id+"_ilsave").removeClass('ui-state-disabled');
+							$("#"+$t.p.id+"_ilcancel").removeClass('ui-state-disabled');
+							$("#"+$t.p.id+"_iladd").addClass('ui-state-disabled');
+							$("#"+$t.p.id+"_iledit").addClass('ui-state-disabled');
+						}
 					}
 				});
 			}
