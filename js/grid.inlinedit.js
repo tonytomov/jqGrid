@@ -7,6 +7,9 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/ 
+//jsHint options
+/*global alert */
+"use strict";
 $.jgrid.inlineEdit = $.jgrid.inlineEdit || {};
 $.jgrid.extend({
 //Editing
@@ -180,7 +183,7 @@ $.jgrid.extend({
 					}
 					if($t.p.autoencode) { tmp[nm] = $.jgrid.htmlEncode(tmp[nm]); }
 					if(o.url !== 'clientArray' && cm.editoptions && cm.editoptions.NullIfEmpty === true) {
-						if(tmp[nm] == "") {
+						if(tmp[nm] === "") {
 							tmp3[nm] = 'null';
 						}
 					}
@@ -331,7 +334,7 @@ $.jgrid.extend({
 			position :"first",
 			useDefValues : false,
 			useFormatter : false,
-			addRowParams : {extraparam:{oper:"add"}, keys:true}
+			addRowParams : {extraparam:{oper:"add"}}
 		},p  || {});
 		return this.each(function(){
 			if (!this.grid ) { return; }
