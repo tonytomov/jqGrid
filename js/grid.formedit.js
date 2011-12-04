@@ -7,6 +7,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/
+"use strict";
 /*global xmlJsonClass, jQuery, $  */
 var rp_ge = {};
 $.jgrid.extend({
@@ -175,15 +176,16 @@ $.jgrid.extend({
 						return false;
 					});
 				}
-				if(p.multipleGroup === true) p.multipleSearch = true;
+				if(p.multipleGroup === true) {p.multipleSearch = true;}
 				if($.isFunction(p.onInitializeSearch) ) {
 					p.onInitializeSearch($("#"+fid));
 				}
 				p.gbox = "#gbox_"+fid;
-				if (p.layer)
+				if (p.layer) {
 					$.jgrid.createModal(IDs ,fil,p,"#gview_"+$t.p.id,$("#gbox_"+$t.p.id)[0], "#"+p.layer, {position: "relative"});
-				else
+				} else {
 					$.jgrid.createModal(IDs ,fil,p,"#gview_"+$t.p.id,$("#gbox_"+$t.p.id)[0]);
+				}
 				if(bQ) {
 					$("#"+fid+"_query").bind('click', function(e){
 						$(".queryresult", fil).toggle();
@@ -598,8 +600,17 @@ $.jgrid.extend({
 				});
 				if(cnt>0) {$("#id_g","#"+frmtb).val(rowid);}
 			}
+			function setNulls() {
+				$.each($t.p.colModel, function(i,n){
+					if(n.editoptions && n.editoptions.NullIfEmpty === true) {
+						if(postdata.hasOwnProperty(n.name) && postdata[n.name] === "") {
+							postdata[n.name] = 'null';
+						}
+					}
+				});
+			}
 			function postIt() {
-				var copydata, ret=[true,"",""], onCS = {}, opers = $t.p.prmNames, idname, oper, key, selr;
+				var copydata, ret=[true,"",""], onCS = {}, opers = $t.p.prmNames, idname, oper, key, selr, i;
 				if($.isFunction(rp_ge[$t.p.id].beforeCheckValues)) {
 					var retvals = rp_ge[$t.p.id].beforeCheckValues(postdata,$("#"+frmgr),postdata[$t.p.id+"_id"] == "_empty" ? opers.addoper : opers.editoper);
 					if(retvals && typeof(retvals) === 'object') {postdata = retvals;}
@@ -612,7 +623,9 @@ $.jgrid.extend({
 				}
 				setNulls();
 				if(ret[0]) {
-					if( $.isFunction( rp_ge[$t.p.id].onclickSubmit)) { onCS = rp_ge[$t.p.id].onclickSubmit(rp_ge[$t.p.id],postdata) || {} }
+					if( $.isFunction( rp_ge[$t.p.id].onclickSubmit)) { 
+							onCS = rp_ge[$t.p.id].onclickSubmit(rp_ge[$t.p.id],postdata) || {}; 
+						}
 					if( $.isFunction(rp_ge[$t.p.id].beforeSubmit))  {ret = rp_ge[$t.p.id].beforeSubmit(postdata,$("#"+frmgr));}
 				}
 
@@ -638,10 +651,12 @@ $.jgrid.extend({
 							postdata[tr_par_id] = selr;
 						}
 						for(i in $t.p.treeReader){
+							if($t.p.treeReader.hasOwnProperty(i)) {
 							var itm = $t.p.treeReader[i];
 							if(postdata.hasOwnProperty(itm)) {
 								if(postdata[oper] == opers.addoper && i === 'parent_id_field') {continue;}
 								delete postdata[itm];
+							}
 							}
 						}
 					}
@@ -771,7 +786,7 @@ $.jgrid.extend({
 							}
 							if(dpret[0] === false ) {
 								ret[0] = false;
-								ret[1] = dpret[1] || "Error deleting the selected row!" 
+								ret[1] = dpret[1] || "Error deleting the selected row!" ;
 							} else {
 								if(ajaxOptions.data.oper == opers.addoper && rp_ge[$t.p.id].closeAfterAdd ) {
 									$.jgrid.hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: rp_ge[$t.p.id].onClose});
@@ -800,15 +815,6 @@ $.jgrid.extend({
 					}
 				}
 				return ret;
-			}
-			function setNulls() {
-				$.each($t.p.colModel, function(i,n){
-					if(n.editoptions && n.editoptions.NullIfEmpty === true) {
-						if(postdata.hasOwnProperty(n.name) && postdata[n.name] == "") {
-							postdata[n.name] = 'null';
-						}
-					}
-				});
 			}
 			function checkUpdates () {
 				var stat = true;
@@ -949,7 +955,7 @@ $.jgrid.extend({
 						return 0;
 					});
 					$.each(sd, function(index, row) {
-						$('tbody',tbl).append(row)
+						$('tbody',tbl).append(row);
 					});
 				}
 				p.gbox = "#gbox_"+gID;
@@ -1523,7 +1529,7 @@ $.jgrid.extend({
 				$("#dData","#"+dtbl+"_2").click(function(e){
 					var ret=[true,""];onCS = {};
 					var postdata = $("#DelData>td","#"+dtbl).text(); //the pair is name=val1,val2,...
-					if( $.isFunction( rp_ge[$t.p.id].onclickSubmit ) ) {onCS = rp_ge[$t.p.id].onclickSubmit(rp_ge[$t.p.id], postdata) || {} }
+					if( $.isFunction( rp_ge[$t.p.id].onclickSubmit ) ) {onCS = rp_ge[$t.p.id].onclickSubmit(rp_ge[$t.p.id], postdata) || {};}
 					if( $.isFunction( rp_ge[$t.p.id].beforeSubmit ) ) {ret = rp_ge[$t.p.id].beforeSubmit(postdata);}
 					if(ret[0] && !rp_ge[$t.p.id].processing) {
 						rp_ge[$t.p.id].processing = true;
@@ -1605,7 +1611,7 @@ $.jgrid.extend({
 								}
 								if(dpret[0] === false ) {
 									ret[0] = false;
-									ret[1] = dpret[1] || "Error deleting the selected row!" 
+									ret[1] = dpret[1] || "Error deleting the selected row!" ;
 								} else {
 									$.jgrid.hideModal("#"+IDs.themodal,{gb:"#gbox_"+gID,jqm:p.jqModal, onClose: rp_ge[$t.p.id].onClose});
 								}
@@ -1848,8 +1854,9 @@ $.jgrid.extend({
 						},
 						function () {$(this).removeClass("ui-state-hover");}
 					);
-					if (pSearch.showOnLoad && pSearch.showOnLoad === true)
+					if (pSearch.showOnLoad && pSearch.showOnLoad === true) {
 						$(tbd,navtbl).click();
+					}
 					tbd = null;
 				}
 				if (o.refresh) {
