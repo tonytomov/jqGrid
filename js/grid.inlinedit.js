@@ -39,7 +39,7 @@ $.jgrid.extend({
 			editable = $(ind).attr("editable") || "0";
 			if (editable == "0" && !$(ind).hasClass("not-editable-row")) {
 				cm = $t.p.colModel;
-				$('td',ind).each( function(i) {
+				$('td[role="gridcell"]',ind).each( function(i) {
 					nm = cm[i].name;
 					var treeg = $t.p.treeGrid===true && nm == $t.p.ExpandColumn;
 					if(treeg) { tmp = $("span:first",this).html();}
@@ -122,7 +122,7 @@ $.jgrid.extend({
 		o.url = o.url ? o.url : $t.p.editurl;
 		if (editable==="1") {
 			var cm;
-			$("td",ind).each(function(i) {
+			$('td[role="gridcell"]',ind).each(function(i) {
 				cm = $t.p.colModel[i];
 				nm = cm.name;
 				if ( nm != 'cb' && nm != 'subgrid' && cm.editable===true && nm != 'rn' && !$(this).hasClass('not-editable-cell')) {
