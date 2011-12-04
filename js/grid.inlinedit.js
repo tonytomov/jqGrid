@@ -79,14 +79,16 @@ $.jgrid.extend({
 					$("td:eq("+focus+") input",ind).focus();
 					if(o.keys===true) {
 						$(ind).bind("keydown",function(e) {
-							if (e.keyCode === 27) {$($t).jqGrid("restoreRow",rowid, afterrestorefunc);}
+							if (e.keyCode === 27) {
+								$($t).jqGrid("restoreRow",rowid, afterrestorefunc);
+								return false;
+							}
 							if (e.keyCode === 13) {
 								var ta = e.target;
 								if(ta.tagName == 'TEXTAREA') { return true; }
 								$($t).jqGrid("saveRow", rowid, o );
 								return false;
 							}
-							e.stopPropagation();
 						});
 					}
 					if( $.isFunction(o.oneditfunc)) { o.oneditfunc.call($t, rowid); }

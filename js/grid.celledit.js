@@ -391,6 +391,8 @@ $.jgrid.extend({
 							$($t).jqGrid("editCell",$t.p.iRow,$t.p.iCol,true);
 						}
 					break;
+					default :
+						return true;
 				}
 				return false;
 			});
