@@ -348,6 +348,100 @@ $.jgrid.extend({
 				$("#"+$.jgrid.jqID(p.rowID)+" .ui-inline-edit", "#"+$.jgrid.jqID($t.p.id)).click();
 			} else {
 				$($t).jqGrid('editRow', p.rowID, p.addRowParams);
+				$($t).jqGrid('setSelection', p.rowID);
+			}
+		});
+	},
+	ilineNav : function (elem, o) {
+		o = $.extend({
+			edit: true,
+			editicon: "ui-icon-pencil",
+			add: true,
+			addicon:"ui-icon-plus",
+			save: true,
+			saveicon:"ui-icon-disk",
+			cancel: true,
+			cancelicon:"ui-icon-cancel"
+		}, $.jgrid.nav, o ||{});
+		return this.each(function(){
+			if (!this.grid ) { return; }
+			var $t = this;
+			if(o.add) {
+				$($t).jqGrid('navButtonAdd', elem,{
+					caption : o.addtext,
+					title : o.addtitle,
+					buttonicon : o.addicon,
+					id : $t.p.id+"_iladd",
+					onClickButton : function ( e ) {
+						$($t).jqGrid('addRow');
+						$("#"+$t.p.id+"_ilsave").removeClass('ui-state-disabled');
+						$("#"+$t.p.id+"_ilcancel").removeClass('ui-state-disabled');
+						$("#"+$t.p.id+"_iladd").addClass('ui-state-disabled');
+						$("#"+$t.p.id+"_iledit").addClass('ui-state-disabled');
+					}
+				});
+			}
+			if(o.edit) {
+				$($t).jqGrid('navButtonAdd', elem,{
+					caption : o.edittext,
+					title : o.edittitle,
+					buttonicon : o.editicon,
+					id : $t.p.id+"_iledit",
+					onClickButton : function ( e ) {
+						var sr = $($t).jqGrid('getGridParam','selrow');
+						if(sr) {
+							$($t).jqGrid('editRow', sr);
+							$("#"+$t.p.id+"_ilsave").removeClass('ui-state-disabled');
+							$("#"+$t.p.id+"_ilcancel").removeClass('ui-state-disabled');
+							$("#"+$t.p.id+"_iladd").addClass('ui-state-disabled');
+							$("#"+$t.p.id+"_iledit").addClass('ui-state-disabled');
+						} else {
+							$.jgrid.viewModal("#alertmod",{gbox:"#gbox_"+$t.p.id,jqm:true});$("#jqg_alrt").focus();							
+						}
+					}
+				});
+			}
+			if(o.save) {
+				$($t).jqGrid('navButtonAdd', elem,{
+					caption : o.savetext || '',
+					title : o.savetitle || 'Save row',
+					buttonicon : o.saveicon,
+					id : $t.p.id+"_ilsave",
+					onClickButton : function ( e ) {
+						var sr = $($t).jqGrid('getGridParam','selrow');
+						if(sr) {
+							$($t).jqGrid('saveRow', sr);
+							$("#"+$t.p.id+"_ilsave").addClass('ui-state-disabled');
+							$("#"+$t.p.id+"_ilcancel").addClass('ui-state-disabled');
+							$("#"+$t.p.id+"_iladd").removeClass('ui-state-disabled');
+							$("#"+$t.p.id+"_iledit").removeClass('ui-state-disabled');
+						} else {
+							$.jgrid.viewModal("#alertmod",{gbox:"#gbox_"+$t.p.id,jqm:true});$("#jqg_alrt").focus();							
+						}
+					}
+				});
+				$("#"+$t.p.id+"_ilsave").addClass('ui-state-disabled');
+			}
+			if(o.cancel) {
+				$($t).jqGrid('navButtonAdd', elem,{
+					caption : o.canceltext || '',
+					title : o.canceltitle || 'Cancel save row',
+					buttonicon : o.cancelicon,
+					id : $t.p.id+"_ilcancel",
+					onClickButton : function ( e ) {
+						var sr = $($t).jqGrid('getGridParam','selrow');
+						if(sr) {
+							$($t).jqGrid('restoreRow', sr);
+							$("#"+$t.p.id+"_ilsave").addClass('ui-state-disabled');
+							$("#"+$t.p.id+"_ilcancel").addClass('ui-state-disabled');
+							$("#"+$t.p.id+"_iladd").removeClass('ui-state-disabled');
+							$("#"+$t.p.id+"_iledit").removeClass('ui-state-disabled');
+						} else {
+							$.jgrid.viewModal("#alertmod",{gbox:"#gbox_"+$t.p.id,jqm:true});$("#jqg_alrt").focus();							
+						}
+					}
+				});
+				$("#"+$t.p.id+"_ilcancel").addClass('ui-state-disabled');
 			}
 		});
 	}
