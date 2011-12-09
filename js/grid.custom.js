@@ -450,8 +450,13 @@ $.jgrid.extend({
 				hc = cm[i].hidden ? "none" : "";
 				$th = $(headers[i].el)
 					.width(headers[i].width)
-					.removeAttr("rowSpan")
 					.css('display',hc);
+				try {
+					$th.removeAttr("rowSpan");
+				} catch (rs) {
+					//IE 6/7
+					$th.attr("rowSpan",1);
+				}
 				$tr.append($th);
 				$resizing = $th.children("span.ui-jqgrid-resize");
 				if ($resizing.length>0) {// resizable column
@@ -499,14 +504,13 @@ $.jgrid.extend({
 			}
 			var $firstRow,
 			inColumnHeader = function (text, columnHeaders) {
-                    var i = 0, length = columnHeaders.length;
-                    for (; i < length; i++) {
-                        if (columnHeaders[i].startColumnName === text) {
-                            return i;
-                        }
-                    }
-        
-                    return -1;
+				var i = 0, length = columnHeaders.length;
+				for (; i < length; i++) {
+					if (columnHeaders[i].startColumnName === text) {
+						return i;
+					}
+				}
+				return -1;
 			};
 
 			$(ts).prepend($thead);
@@ -536,10 +540,13 @@ $.jgrid.extend({
 					// The next numberOfColumns headers will be moved in the next row
 					// in the current row will be placed the new column header with the titleText.
 					// The text will be over the cVisibleColumns columns
-					$colHeader = $('<th>', {colspan: String(cVisibleColumns), role: "columnheader"})
+					$colHeader = $('<th>').attr({role: "columnheader"})
 						.addClass("ui-state-default ui-th-column-header ui-th-"+ts.p.direction)
 						.css({'height':'22px', 'border-top': '0px none'})
 						.html(titleText);
+					if(cVisibleColumns > 0) {
+						$colHeader.attr("colspan", String(cVisibleColumns));
+					}
 					if (ts.p.headertitles) {
 						$colHeader.attr("title", $colHeader.text());
 					}
