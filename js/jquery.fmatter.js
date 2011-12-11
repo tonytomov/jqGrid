@@ -425,12 +425,12 @@
 			$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid+ ".ui-jqgrid-btable:first").show();
 			$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid+ ".ui-jqgrid-btable:first").hide();
 		};
+		var $t = $("#"+gid)[0];
 		if( $("#"+rid,"#"+gid).attr("jqgrid-row") == "new" ){
 			var opers = $t.p.prmNames,
 			oper = opers.oper;
 			op.extraparam[oper] = opers.addoper;
 		}
-		var $t = $("#"+gid)[0];
 		switch(act)
 		{
 			case 'edit':
