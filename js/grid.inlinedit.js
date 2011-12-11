@@ -361,7 +361,7 @@ $.jgrid.extend({
 				});
 			}
 			$($t).jqGrid('addRowData', p.rowID, p.initdata, p.position);
-			$("#"+$.jgrid.jqID(p.rowID), "#"+$.jgrid.jqID($t.p.id)).attr("jqgrid-row","new");
+			$("#"+$.jgrid.jqID(p.rowID), "#"+$.jgrid.jqID($t.p.id)).addClass("jqgrid-new-row");
 			if(p.useFormatter) {
 				$("#"+$.jgrid.jqID(p.rowID)+" .ui-inline-edit", "#"+$.jgrid.jqID($t.p.id)).click();
 			} else {
@@ -467,6 +467,14 @@ $.jgrid.extend({
 					onClickButton : function ( e ) {
 						var sr = $($t).jqGrid('getGridParam','selrow');
 						if(sr) {
+							if($("#"+$.jgrid.jqID(sr), "#"+$.jgrid.jqID($t.p.id) ).hasClass("jqgrid-new-row")) {
+								var opers = $t.p.prmNames,
+								oper = opers.oper;
+								if(!o.editParams.extraparam) {
+									o.editParams.extraparam = {};
+								}
+								o.editParams.extraparam[oper] = opers.addoper;
+							}
 							$($t).jqGrid('saveRow', sr, o.editParams);
 							$("#"+$t.p.id+"_ilsave").addClass('ui-state-disabled');
 							$("#"+$t.p.id+"_ilcancel").addClass('ui-state-disabled');

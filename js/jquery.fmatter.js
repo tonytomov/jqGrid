@@ -426,7 +426,7 @@
 			$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid+ ".ui-jqgrid-btable:first").hide();
 		};
 		var $t = $("#"+gid)[0];
-		if( $("#"+rid,"#"+gid).attr("jqgrid-row") == "new" ){
+		if( $("#"+rid,"#"+gid).hasClass("jqgrid-new-row") ){
 			var opers = $t.p.prmNames,
 			oper = opers.oper;
 			op.extraparam[oper] = opers.addoper;
