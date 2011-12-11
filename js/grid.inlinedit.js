@@ -373,7 +373,7 @@ $.jgrid.extend({
 			}
 		});
 	},
-	ilineNav : function (elem, o) {
+	inlineNav : function (elem, o) {
 		o = $.extend({
 			edit: true,
 			editicon: "ui-icon-pencil",
@@ -402,7 +402,7 @@ $.jgrid.extend({
 								afterSave:null,
 								onError: null,
 								afterRestore: null,
-								extraparam: {editmode:'inline'},
+								extraparam: {},
 								url: null
 							},
 							ap = $.extend( defaults, cm[i].formatoptions );
@@ -445,9 +445,9 @@ $.jgrid.extend({
 					buttonicon : o.editicon,
 					id : $t.p.id+"_iledit",
 					onClickButton : function ( e ) {
-						var sr = $($t).jqGrid('getGridParam','selrow', o.editParams);
+						var sr = $($t).jqGrid('getGridParam','selrow');
 						if(sr) {
-							$($t).jqGrid('editRow', sr);
+							$($t).jqGrid('editRow', sr, o.editParams);
 							$("#"+$t.p.id+"_ilsave").removeClass('ui-state-disabled');
 							$("#"+$t.p.id+"_ilcancel").removeClass('ui-state-disabled');
 							$("#"+$t.p.id+"_iladd").addClass('ui-state-disabled');
@@ -465,9 +465,9 @@ $.jgrid.extend({
 					buttonicon : o.saveicon,
 					id : $t.p.id+"_ilsave",
 					onClickButton : function ( e ) {
-						var sr = $($t).jqGrid('getGridParam','selrow', o.editParams);
+						var sr = $($t).jqGrid('getGridParam','selrow');
 						if(sr) {
-							$($t).jqGrid('saveRow', sr);
+							$($t).jqGrid('saveRow', sr, o.editParams);
 							$("#"+$t.p.id+"_ilsave").addClass('ui-state-disabled');
 							$("#"+$t.p.id+"_ilcancel").addClass('ui-state-disabled');
 							$("#"+$t.p.id+"_iladd").removeClass('ui-state-disabled');

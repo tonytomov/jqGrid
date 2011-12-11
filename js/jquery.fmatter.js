@@ -398,7 +398,7 @@
 			afterSave:null,
 			onError: null,
 			afterRestore: null,
-			extraparam: { editmode:'inline'},
+			extraparam: {},
 			url: null,
 			delOptions: {},
 			editOptions : {}
