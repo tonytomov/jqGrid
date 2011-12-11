@@ -243,7 +243,6 @@ $.jgrid.extend({
 									// expect array - status, data, rowid
 									ret = sucret[0];
 									tmp = sucret[1] ? sucret[1] : tmp;
-									rowid = sucret[2] ? sucret[2] : rowid;
 								} else {
 									ret = sucret;
 								}

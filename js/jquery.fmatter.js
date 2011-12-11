@@ -398,7 +398,7 @@
 			afterSave:null,
 			onError: null,
 			afterRestore: null,
-			extraparam: {oper:'edit', editmode:'inline'},
+			extraparam: { editmode:'inline'},
 			url: null,
 			delOptions: {},
 			editOptions : {}
@@ -426,7 +426,9 @@
 			$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid+ ".ui-jqgrid-btable:first").hide();
 		};
 		if( $("#"+rid,"#"+gid).attr("jqgrid-row") == "new" ){
-			op.extraparam.oper = "add";
+			var opers = $t.p.prmNames,
+			oper = opers.oper;
+			op.extraparam[oper] = opers.addoper;
 		}
 		var $t = $("#"+gid)[0];
 		switch(act)
