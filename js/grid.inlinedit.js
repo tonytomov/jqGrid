@@ -346,7 +346,7 @@ $.jgrid.extend({
 			position :"first",
 			useDefValues : false,
 			useFormatter : false,
-			addRowParams : {extraparam:{oper:"add"}}
+			addRowParams : {extraparam:{}}
 		},p  || {});
 		return this.each(function(){
 			if (!this.grid ) { return; }
@@ -365,6 +365,9 @@ $.jgrid.extend({
 			if(p.useFormatter) {
 				$("#"+$.jgrid.jqID(p.rowID)+" .ui-inline-edit", "#"+$.jgrid.jqID($t.p.id)).click();
 			} else {
+				var opers = $t.p.prmNames,
+				oper = opers.oper;
+				p.addRowParams.extraparam[oper] = opers.addoper;
 				$($t).jqGrid('editRow', p.rowID, p.addRowParams);
 				$($t).jqGrid('setSelection', p.rowID);
 			}
