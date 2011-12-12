@@ -618,7 +618,7 @@ $.jgrid.extend({
 			};
 		});				
 	},
-	setFrozenColumns : function ( o ) {
+	setFrozenColumns : function () {
 		return this.each(function() {
 			if ( !this.grid ) {return;}
 			var $t = this, cm = $t.p.colModel,i=0, len = cm.length, maxfrozen = -1, frozen= false;
