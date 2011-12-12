@@ -415,7 +415,7 @@ $.jgrid.extend({
 								"aftersavefunc" : ap.afterSavef,
 								"errorfunc": ap.onError,
 								"afterrestorefunc" : ap.afterRestore
-							}
+							};
 						}
 						break;
 					}
