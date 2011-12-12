@@ -490,7 +490,7 @@ $.jgrid.extend({
 			if(o.cancel) {
 				$($t).jqGrid('navButtonAdd', elem,{
 					caption : o.canceltext || '',
-					title : o.canceltitle || 'Cancel save row',
+					title : o.canceltitle || 'Cancel row editing',
 					buttonicon : o.cancelicon,
 					id : $t.p.id+"_ilcancel",
 					onClickButton : function ( e ) {
