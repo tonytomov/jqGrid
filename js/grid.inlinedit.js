@@ -465,7 +465,7 @@ $.jgrid.extend({
 					buttonicon : o.saveicon,
 					id : $t.p.id+"_ilsave",
 					onClickButton : function ( e ) {
-						var sr = $($t).jqGrid('getGridParam','selrow');
+						var sr = $t.p.savedRow[0].id;
 						if(sr) {
 							if($("#"+$.jgrid.jqID(sr), "#"+$.jgrid.jqID($t.p.id) ).hasClass("jqgrid-new-row")) {
 								var opers = $t.p.prmNames,
@@ -494,7 +494,7 @@ $.jgrid.extend({
 					buttonicon : o.cancelicon,
 					id : $t.p.id+"_ilcancel",
 					onClickButton : function ( e ) {
-						var sr = $($t).jqGrid('getGridParam','selrow');
+						var sr = $t.p.savedRow[0].id;
 						if(sr) {
 							$($t).jqGrid('restoreRow', sr, o.editParams);
 							$("#"+$t.p.id+"_ilsave").addClass('ui-state-disabled');
