@@ -353,7 +353,7 @@ $.jgrid.extend({
 			var $t = this;
 			if(p.useDefValues === true) {
 				$($t.p.colModel).each(function(i){
-					if( this.edioptions && this.editoptions.defaultValue ) {
+					if( this.editoptions && this.editoptions.defaultValue ) {
 						var opt = this.editoptions.defaultValue,
 						tmp = $.isFunction(opt) ? opt.call($t) : opt;
 						p.initdata[this.name] = tmp;
