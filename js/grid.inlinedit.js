@@ -344,7 +344,7 @@ $.jgrid.extend({
 			rowID : "new_row",
 			initdata : {},
 			position :"first",
-			useDefValues : false,
+			useDefValues : true,
 			useFormatter : false,
 			addRowParams : {extraparam:{}}
 		},p  || {});
