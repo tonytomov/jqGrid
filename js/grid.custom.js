@@ -5,6 +5,7 @@
  * http://trirand.com/blog/ 
  * 
  * Wildraid wildraid@mail.ru
+ * Oleg Kiriljuk oleg.kiriljuk@ok-soft-gmbh.com
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
@@ -147,33 +148,16 @@ $.jgrid.extend({
 				var sdata={}, j=0, v, nm, sopt={},so;
 				$.each($t.p.colModel,function(i,n){
 					nm = this.index || this.name;
-					switch (this.stype) {
-						case 'select' :
-							so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : 'eq';
-							v = $("#gs_"+$.jgrid.jqID(this.name),$t.grid.hDiv).val();
-							if(v) {
-								sdata[nm] = v;
-								sopt[nm] = so;
-								j++;
-							} else {
-								try {
-									delete $t.p.postData[nm];
-								} catch (e) {}
-							}
-							break;
-						case 'text':
-							so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : p.defaultSearch;
-							v = $("#gs_"+$.jgrid.jqID(this.name), $t.grid.hDiv).val();
-							if(v) {
-								sdata[nm] = v;
-								sopt[nm] = so;
-								j++;
-							} else {
-								try {
-									delete $t.p.postData[nm];
-								} catch (z) {}
-							}
-							break;
+					so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : this.stype=='select'?  'eq' : p.defaultSearch;
+					v = $("#gs_"+$.jgrid.jqID(this.name), (this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv).val();
+					if(v) {
+						sdata[nm] = v;
+						sopt[nm] = so;
+						j++;
+					} else {
+						try {
+							delete $t.p.postData[nm];
+						} catch (z) {}
 					}
 				});
 				var sd =  j>0 ? true : false;
@@ -216,7 +200,7 @@ $.jgrid.extend({
 					switch (this.stype) {
 						case 'select' :
 							var v1;
-							$("#gs_"+$.jgrid.jqID(nm)+" option",$t.grid.hDiv).each(function (i){
+							$("#gs_"+$.jgrid.jqID(this.name)+" option",(this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv).each(function (i){
 								if(i===0) { this.selected = true; }
 								if ($(this).text() == v) {
 									this.selected = true;
@@ -235,7 +219,7 @@ $.jgrid.extend({
 							}
 							break;
 						case 'text':
-							$("#gs_"+$.jgrid.jqID(nm),$t.grid.hDiv).val(v);
+							$("#gs_"+$.jgrid.jqID(this.name),(this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv).val(v);
 							if(v) {
 								sdata[nm] = v;
 								j++;
@@ -283,9 +267,19 @@ $.jgrid.extend({
 				if($.isFunction(p.afterClear)){p.afterClear();}
 			};
 			var toggleToolbar = function(){
-				var trow = $("tr.ui-search-toolbar",$t.grid.hDiv);
-				if(trow.css("display")=='none') { trow.show(); }
-				else { trow.hide(); }
+				var trow = $("tr.ui-search-toolbar",$t.grid.hDiv),
+				trow2 = $t.p.frozenColumns === true ?  $("tr.ui-search-toolbar",$t.grid.hDiv) : false;
+				if(trow.css("display")=='none') { 
+					trow.show(); 
+					if(trow2) {
+						trow2.show();
+					}
+				} else { 
+					trow.hide(); 
+					if(trow2) {
+						trow2.hide();
+					}
+				}
 			};
 			// create the row
 			function bindEvents(selector, events) {
@@ -438,97 +432,377 @@ $.jgrid.extend({
 			this.toggleToolbar = toggleToolbar;
 		});
 	},
-	//Wildraid group methods
 
-	'updateGroupHeader' : function()
+	destroyGroupHeader : function(nullHeader)
 	{
+		if(typeof(nullHeader) == 'undefined') {
+			nullHeader = true;
+		}
 		return this.each(function()
 		{
-			var $t = this;
-			if(!$t.grid || !$t.p.groupHeader) { return; }
+			var $t = this, $tr, i, l, headers, $th, $resizing, grid = $t.grid,
+			thead = $("table.ui-jqgrid-htable thead", grid.hDiv), cm = $t.p.colModel, hc;
+			if(!grid) return;
 
-			var $hDiv   = $($t.grid.hDiv),
-			$labels = $hDiv.find('.ui-jqgrid-labels'),
-
-			$first_row = $labels
-				.clone()
-				.removeClass('ui-jqgrid-labels')
-				.removeAttr('role')
-				.addClass('ui-jqgrid-labels-firstrow'),
-
-
-			$group_row = $('<tr></tr>').addClass('ui-jqgrid-labels-grouprow'),
-
-			th = '<th class="ui-state-default ui-th-' + $t.p.direction + '"></th>',
-
-			//Iterate columns
-			colspan = 0,
-			prev_hgroup = null,
-			$th,
-			cm = $t.p.colModel,
-			col,
-			hgroup;
-
-			$first_row.find('th').height(0).html('').removeAttr('role').removeAttr('id');
-
-			for(var i in cm)
-			{
-				col = cm[i];
-				hgroup = col.hgroup ? col.hgroup : '';
-
-				if(col.hidden) continue;
-				if(prev_hgroup === null) { prev_hgroup = hgroup; }//first non-hidden column becomes initial group
-
-				if(prev_hgroup == hgroup)
-				{
-					colspan++;
+			$tr = $("<tr>", {role: "rowheader"}).addClass("ui-jqgrid-labels");
+			headers = grid.headers;
+			for (i = 0, l = headers.length; i < l; i++) {
+				hc = cm[i].hidden ? "none" : "";
+				$th = $(headers[i].el)
+					.width(headers[i].width)
+					.css('display',hc);
+				try {
+					$th.removeAttr("rowSpan");
+				} catch (rs) {
+					//IE 6/7
+					$th.attr("rowSpan",1);
 				}
-				else
-				{
-					$th = $(th).attr('colspan', colspan);
-					if($t.p.groupHeader[prev_hgroup]) $th.html($t.p.groupHeader[prev_hgroup].label);
-					$th.appendTo($group_row);
-
-					prev_hgroup = hgroup;
-					colspan = 1;
+				$tr.append($th);
+				$resizing = $th.children("span.ui-jqgrid-resize");
+				if ($resizing.length>0) {// resizable column
+					$resizing[0].style.height = "";
 				}
+				$th.children("div")[0].style.top = "";
 			}
+			$(thead).children('tr.ui-jqgrid-labels').remove();
+			$(thead).prepend($tr);
 
-			//Last th
-			if(colspan)
-			{
-				$th = $(th).attr('colspan', colspan);
-				if($t.p.groupHeader[prev_hgroup]) $th.html($t.p.groupHeader[prev_hgroup].label);
-				$th.appendTo($group_row);
+			if(nullHeader === true) {
+				$($t).jqGrid('setGridParam',{ 'groupHeader': null});
 			}
-
-			//Update DOM
-			$hDiv.find('.ui-jqgrid-labels-firstrow, .ui-jqgrid-labels-grouprow').remove();
-			$labels.before($first_row).before($group_row);
-
-			//Preserve orig event
-			//we have to move it to the core of resizing
-			if($.isFunction($t.p.resizeStop))
-			{
-				var resizeStop = $t.p.resizeStop;
-			}
-
-			$t.p.resizeStop = function(nw,idx)
-			{
-				$first_row.find('th').eq(idx).width(nw);
-				if($.isFunction(resizeStop)) resizeStop.call(this, nw, idx);
-			};
 		});
 	},
+	
+	setGroupHeaders : function ( o ) {
+		o = $.extend({
+			useColSpanStyle :  false,
+			groupHeaders: []
+		},o  || {});
+		return this.each(function(){
+			this.p.groupHeader = o;
+			var ts = this,
+			i, cmi, skip = 0, $tr, $colHeader, th, $th, thStyle,
+			iCol,
+			cghi,
+			//startColumnName,
+			numberOfColumns,
+			titleText,
+			cVisibleColumns,
+			colModel = ts.p.colModel,
+			cml = colModel.length,
+			ths = ts.grid.headers,
+			$htable = $("table.ui-jqgrid-htable", ts.grid.hDiv),
+			$trLabels = $htable.children("thead").children("tr.ui-jqgrid-labels:last").addClass("jqg-second-row-header"),
+			$thead = $htable.children("thead"),
+			$theadInTable,
+			originalResizeStop,
+			$firstHeaderRow = $htable.find(".jqg-first-row-header");
+			if($firstHeaderRow.html() === null) {
+				$firstHeaderRow = $('<tr>', {role: "row", "aria-hidden": "true"}).addClass("jqg-first-row-header").css("height", "auto");
+			} else {
+				$firstHeaderRow.empty();
+			}
+			var $firstRow,
+			inColumnHeader = function (text, columnHeaders) {
+				var i = 0, length = columnHeaders.length;
+				for (; i < length; i++) {
+					if (columnHeaders[i].startColumnName === text) {
+						return i;
+					}
+				}
+				return -1;
+			};
 
-	'destroyGroupHeader' : function()
-	{
-		return this.each(function()
-		{
-			var $t = this;
-			if(!$t.grid) return;
+			$(ts).prepend($thead);
+			$tr = $('<tr>', {role: "rowheader"}).addClass("ui-jqgrid-labels jqg-third-row-header");
+			for (i = 0; i < cml; i++) {
+				th = ths[i].el;
+				$th = $(th);
+				cmi = colModel[i];
+				// build the next cell for the first header row
+				thStyle = { height: '0px', width: ths[i].width + 'px', display: (cmi.hidden ? 'none' : '')};
+				$("<th>", {role: 'gridcell'}).css(thStyle).addClass("ui-first-th-"+ts.p.direction).appendTo($firstHeaderRow);
 
-			$($t.grid.hDiv).find('.ui-jqgrid-labels-firstrow, .ui-jqgrid-labels-grouprow').remove();
+				th.style.width = ""; // remove unneeded style
+				iCol = inColumnHeader(cmi.name, o.groupHeaders);
+				if (iCol >= 0) {
+					cghi = o.groupHeaders[iCol];
+					numberOfColumns = cghi.numberOfColumns;
+					titleText = cghi.titleText;
+
+					// caclulate the number of visible columns from the next numberOfColumns columns
+					for (cVisibleColumns = 0, iCol = 0; iCol < numberOfColumns && (i + iCol < cml); iCol++) {
+						if (!colModel[i + iCol].hidden) {
+							cVisibleColumns++;
+						}
+					}
+
+					// The next numberOfColumns headers will be moved in the next row
+					// in the current row will be placed the new column header with the titleText.
+					// The text will be over the cVisibleColumns columns
+					$colHeader = $('<th>').attr({role: "columnheader"})
+						.addClass("ui-state-default ui-th-column-header ui-th-"+ts.p.direction)
+						.css({'height':'22px', 'border-top': '0px none'})
+						.html(titleText);
+					if(cVisibleColumns > 0) {
+						$colHeader.attr("colspan", String(cVisibleColumns));
+					}
+					if (ts.p.headertitles) {
+						$colHeader.attr("title", $colHeader.text());
+					}
+					// hide if not a visible cols
+					if( cVisibleColumns === 0) {
+						$colHeader.hide();
+					}
+
+					$th.before($colHeader); // insert new column header before the current
+					$tr.append(th);         // move the current header in the next row
+
+					// set the coumter of headers which will be moved in the next row
+					skip = numberOfColumns - 1;
+				} else {
+					if (skip === 0) {
+						if (o.useColSpanStyle) {
+							// expand the header height to two rows
+							$th.attr("rowspan", "2");
+						} else {
+							$('<th>', {role: "columnheader"})
+								.addClass("ui-state-default ui-th-column-header ui-th-"+ts.p.direction)
+								.css({"display": cmi.hidden ? 'none' : '', 'border-top': '0px none'})
+								.insertBefore($th);
+							$tr.append(th);
+						}
+					} else {
+						// move the header to the next row
+						//$th.css({"padding-top": "2px", height: "19px"});
+						$tr.append(th);
+						skip--;
+					}
+				}
+			}
+			$theadInTable = $(ts).children("thead");
+			$theadInTable.prepend($firstHeaderRow);
+			$tr.insertAfter($trLabels);
+			$htable.append($theadInTable);
+
+			if (o.useColSpanStyle) {
+				// Increase the height of resizing span of visible headers
+				$htable.find("span.ui-jqgrid-resize").each(function () {
+					var $parent = $(this).parent();
+					if ($parent.is(":visible")) {
+						this.style.cssText = 'height: ' + $parent.height() + 'px !important; cursor: col-resize;';
+					}
+				});
+
+				// Set position of the sortable div (the main lable)
+				// with the column header text to the middle of the cell.
+				// One should not do this for hidden headers.
+				$htable.find("div.ui-jqgrid-sortable").each(function () {
+					var $ts = $(this), $parent = $ts.parent();
+					if ($parent.is(":visible") && $parent.is(":has(span.ui-jqgrid-resize)")) {
+						$ts.css('top', ($parent.height() - $ts.outerHeight()) / 2 + 'px');
+					}
+				});
+			}
+
+			// Preserve original resizeStop event if any defined
+			if ($.isFunction(ts.p.resizeStop)) {
+				originalResizeStop = ts.p.resizeStop;
+			}
+			$firstRow = $theadInTable.find("tr.jqg-first-row-header");
+			ts.p.resizeStop = function (nw, idx) {
+				$firstRow.find('th').eq(idx).width(nw);
+				if ($.isFunction(originalResizeStop)) {
+					originalResizeStop.call(ts, nw, idx);
+				}
+			};
+		});				
+	},
+	setFrozenColumns : function () {
+		return this.each(function() {
+			if ( !this.grid ) {return;}
+			var $t = this, cm = $t.p.colModel,i=0, len = cm.length, maxfrozen = -1, frozen= false;
+			// TODO treeGrid and grouping  Support
+			if($t.p.subGrid == true || $t.p.treeGrid === true || $t.p.cellEdit == true || $t.p.sortable || $t.p.scroll || $t.p.grouping )
+			{
+				return;
+			}
+			if($t.p.rownumbers) { i++; }
+			if($t.p.multiselect) { i++; }
+			
+			// get the max index of frozen col
+			while(i<len)
+			{
+				// from left, no breaking frozen
+				if(cm[i].frozen === true)
+				{
+					frozen = true;
+					maxfrozen = i;
+				} else {
+					break;
+				}
+				i++;
+			}
+			if( maxfrozen>=0 && frozen) {
+				var top = $t.p.caption ? $($t.grid.cDiv).outerHeight() : 0,
+				hth = $(".ui-jqgrid-htable","#gview_"+$.jgrid.jqID($t.p.id)).height();
+				$t.p.orgEvents = {};
+				//headers
+				if($t.p.toppager) {
+					top = top + $($t.grid.topDiv).outerHeight();
+				}
+				if($t.p.toolbar[0] == true) {
+					if($t.p.toolbar[1] != "bottom") {
+						top = top + $($t.grid.uDiv).outerHeight();
+					}
+				}
+				$t.grid.fhDiv = $('<div style="position:absolute;left:0px;top:'+top+'px;height:'+hth+'px;" class="frozen-div ui-state-default ui-jqgrid-hdiv"></div>');
+				$t.grid.fbDiv = $('<div style="position:absolute;left:0px;top:'+(parseInt(top,10)+parseInt(hth,10) + 1)+'px;overflow-y:hidden" class="frozen-bdiv ui-jqgrid-bdiv"></div>');
+				$("#gview_"+$.jgrid.jqID($t.p.id)).append($t.grid.fhDiv);
+				var htbl = $(".ui-jqgrid-htable","#gview_"+$.jgrid.jqID($t.p.id)).clone(true);
+				// groupheader support - only if useColSpanstyle is false
+				if($t.p.groupHeader) {
+					$("tr.jqg-first-row-header, tr.jqg-third-row-header", htbl).each(function(){
+						$("th:gt("+maxfrozen+")",this).remove();
+					});
+					var swapfroz = -1, fdel = -1;
+					$("tr.jqg-second-row-header th", htbl).each(function( i ){
+						var cs= parseInt($(this).attr("colspan"),10);
+						if(cs) {
+							swapfroz = swapfroz+cs;
+							fdel++;
+						}
+						if(swapfroz === maxfrozen) {
+							return false;
+						}
+					});
+					if(swapfroz !== maxfrozen) {
+						fdel = maxfrozen;
+					}
+					$("tr.jqg-second-row-header", htbl).each(function( i ){
+						$("th:gt("+fdel+")",this).remove();
+					});
+				} else {
+					$("tr",htbl).each(function(){
+						$("th:gt("+maxfrozen+")",this).remove();
+					});
+				}
+				$(htbl).width(1);
+				// resizing stuff
+				$($t.grid.fhDiv).append(htbl)
+				.mousemove(function (e) {
+					if($t.grid.resizing){ $t.grid.dragMove(e);return false; }
+				});
+				if ($.isFunction($t.p.resizeStop)) {
+					$t.p.orgEvents.resizeStop = $t.p.resizeStop;
+				}
+				$t.p.resizeStop =  function(w, index)
+				{
+					var rhth = $(".ui-jqgrid-htable",$t.grid.fhDiv);
+					$("th:eq("+index+")",rhth).width( w ); 
+					var btd = $(".ui-jqgrid-btable",$t.grid.fbDiv);
+					$("tr:first td:eq("+index+")",btd).width( w ); 
+					
+					if ($.isFunction($t.p.orgEvents.resizeStop)) {
+						$t.p.orgEvents.resizeStop.call($t, w, index);
+					} else {
+						$t.p.orgEvents.resizeStop = null;
+					}
+				};
+				// sorting stuff
+				if($.isFunction( $t.p.onSortCol)) {
+					$t.p.orgEvents.onSortCol = $t.p.onSortCol;
+				} else {
+					$t.p.orgEvents.onSortCol = null;
+				}
+				$t.p.onSortCol = function( index,idxcol,so ){
+
+					var previousSelectedTh = $("tr.ui-jqgrid-labels:last th:eq("+$t.p.lastsort+")",$t.grid.fhDiv), newSelectedTh = $("tr.ui-jqgrid-labels:last th:eq("+idxcol+")",$t.grid.fhDiv);
+
+					$("span.ui-grid-ico-sort",previousSelectedTh).addClass('ui-state-disabled');
+					$(previousSelectedTh).attr("aria-selected","false");
+					$("span.ui-icon-"+$t.p.sortorder,newSelectedTh).removeClass('ui-state-disabled');
+					$(newSelectedTh).attr("aria-selected","true");
+					if(!$t.p.viewsortcols[0]) {
+						if($t.p.lastsort != idxcol) {
+							$("span.s-ico",previousSelectedTh).hide();
+							$("span.s-ico",newSelectedTh).show();
+						}
+					}
+					if(	$.isFunction($t.p.orgEvents.onSortCol) ) {
+						$t.p.orgEvents.onSortCol.call($t,index,idxcol,so);
+					}
+				};
+				
+				// data stuff
+				//TODO support for setRowData
+				$("#gview_"+$.jgrid.jqID($t.p.id)).append($t.grid.fbDiv);
+				jQuery($t.grid.bDiv).scroll(function () {
+					jQuery($t.grid.fbDiv).scrollTop(jQuery(this).scrollTop());
+				});
+				if ($.isFunction($t.p._complete)) {
+					$t.p.orgEvents.complete = $t.p._complete;
+				} else {
+					$t.p.orgEvents.complete = null;
+				}
+				if($t.p.hoverrows === true) {
+					$("#"+$.jgrid.jqID($t.p.id)).unbind('mouseover').unbind('mouseout');
+				}
+				$t.p._complete = function() {
+					$("#"+$.jgrid.jqID($t.p.id)+"_frozen").remove();
+					jQuery($t.grid.fbDiv).height( jQuery($t.grid.bDiv).height()-16);
+					var btbl = $("#"+$.jgrid.jqID($t.p.id)).clone(true);
+					$("tr",btbl).each(function(){
+						$("td:gt("+maxfrozen+")",this).remove();
+					});
+
+					$(btbl).width(1).attr("id",$.jgrid.jqID($t.p.id)+"_frozen");
+					$($t.grid.fbDiv).append(btbl);
+					if($t.p.hoverrows === true) {
+						$("tr.jqgrow", btbl).hover(
+							function(){ $(this).addClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)).addClass("ui-state-hover") },
+							function(){ $(this).removeClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)).removeClass("ui-state-hover") }
+						);
+						$("tr.jqgrow", "#"+$.jgrid.jqID($t.p.id)).hover(
+							function(){ $(this).addClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)+"_frozen").addClass("ui-state-hover");},
+							function(){ $(this).removeClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)+"_frozen").removeClass("ui-state-hover"); }
+						);
+					}
+					btbl=null;
+					if($.isFunction($t.p.orgEvents.complete)) {
+						$t.p.orgEvents.complete.call($t);
+					}
+				};
+				$t.p.frozenColumns = true;
+			}
+		});
+	},
+	destroyFrozenColumns :  function() {
+		return this.each(function() {
+			if ( !this.grid ) {return;}
+			if(this.p.frozenColumns === true) {
+				var $t = this;
+				$($t.grid.fhDiv).remove();
+				$($t.grid.fbDiv).remove();
+				$t.grid.fhDiv = null; $t.grid.fbDiv=null;
+				$t.p._complete = $t.p.orgEvents.complete;
+				$t.p.resizeStop = $t.p.orgEvents.resizeStop;
+				$t.p.onSortCol = $t.p.orgEvents.onSortCol;
+				$t.p.orgEvents = null;
+				if($t.p.hoverrows == true) {
+					var ptr;
+					$("#"+$.jgrid.jqID($t.p.id)).bind('mouseover',function(e) {
+						ptr = $(e.target).closest("tr.jqgrow");
+						if($(ptr).attr("class") !== "ui-subgrid") {
+						$(ptr).addClass("ui-state-hover");
+					}
+					}).bind('mouseout',function(e) {
+						ptr = $(e.target).closest("tr.jqgrow");
+						$(ptr).removeClass("ui-state-hover");
+					});
+				}
+				this.p.frozenColumns = false;
+			}
 		});
 	}
 });
