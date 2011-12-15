@@ -3135,7 +3135,12 @@ $.jgrid.extend({
 		return this.each(function (){
 			var $t = this;
 			if(!$t.grid) {return;}
-			$($t.grid.bDiv).css({height: nh+(isNaN(nh)?"":"px")});
+			var bDiv = $($t.grid.bDiv);
+			bDiv.css({height: nh+(isNaN(nh)?"":"px")});
+			if($t.p.frozenColumns === true){
+				//follow the original set height to use 16, better scrollbar width detection
+				$('#'+$t.p.id+"_frozen").parent().height(bDiv.height() - 16); 
+			}
 			$t.p.height = nh;
 			if ($t.p.scroll) { $t.grid.populateVisible(); }
 		});
