@@ -30,7 +30,7 @@ $.jgrid.extend({
 		args = $.makeArray(arguments).slice(1), o;
 
 		if(args[0] && typeof(args[0]) == "object" && !$.isFunction(args[0])) {
-			o = $.extend($.jgrid.inlineEdit, settings, args[0]);
+			o = $.extend(true, $.jgrid.inlineEdit, settings, args[0]);
 		} else {
 			o = settings;
 		}
@@ -114,7 +114,7 @@ $.jgrid.extend({
 		args = $.makeArray(arguments).slice(1), o;
 
 		if(args[0] && typeof(args[0]) == "object" && !$.isFunction(args[0])) {
-			o = $.extend($.jgrid.inlineEdit, settings, args[0]);
+			o = $.extend(true, $.jgrid.inlineEdit, settings, args[0]);
 		} else {
 			o = settings;
 		}
@@ -301,7 +301,7 @@ $.jgrid.extend({
 		args = $.makeArray(arguments).slice(1), o;
 
 		if(args[0] && typeof(args[0]) == "object" && !$.isFunction(args[0])) {
-			o = $.extend($.jgrid.inlineEdit, settings, args[0]);
+			o = $.extend(true, $.jgrid.inlineEdit, settings, args[0]);
 		} else {
 			o = settings;
 		}
@@ -340,7 +340,7 @@ $.jgrid.extend({
 		});
 	},
 	addRow : function ( p ) {
-		p = $.extend({
+		p = $.extend(true, {
 			rowID : "new_row",
 			initdata : {},
 			position :"first",
