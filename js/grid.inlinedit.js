@@ -312,16 +312,15 @@ $.jgrid.extend({
 	},
 	restoreRow : function(rowid, afterrestorefunc) {
 		// Compatible mode old versions
-		var settings = {
-			"afterrestorefunc" : afterrestorefunc|| null
-		},
-		args = $.makeArray(arguments).slice(1), o;
+		var args = $.makeArray(arguments).slice(1), o={};
 
-		if(args[0] && typeof(args[0]) == "object" && !$.isFunction(args[0])) {
-			o = $.extend(true, $.jgrid.inlineEdit, settings, args[0]);
+		if( $.jgrid.realType(args[0]) === "Object" ) {
+			o = args[0];
 		} else {
-			o = settings;
+			if ($.isFunction(afterrestorefunc)) { o.afterrestorefunc = afterrestorefunc; }
 		}
+		o = $.extend(true, $.jgrid.inlineEdit, o );
+
 		// End compatible
 
 		return this.each(function(){
