@@ -47,8 +47,11 @@ $.extend($.jgrid,{
 			return v;
 		}
 	},
+	realType : function (arg) {
+		return Object.prototype.toString.call(arg).slice(8, -1);
+	},
 	stripPref : function (pref, id) {
-		var obj = Object.prototype.toString.call(pref).slice(8, -1);
+		var obj = this.realType( pref );
 		if( obj == "String" || obj =="Number") {
 			pref =  String(pref);
 			id = pref !== "" ? String(id).replace(String(pref), "") : id;
