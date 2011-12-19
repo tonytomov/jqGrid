@@ -34,6 +34,7 @@ $.jgrid.extend({
 		}
 		o = $.extend(true, {
 			keys : false,
+			oneditfunc: null,
 			successfunc: null,
 			url: null,
 			extraparam: {},
@@ -111,24 +112,30 @@ $.jgrid.extend({
 	},
 	saveRow : function(rowid, successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
 		// Compatible mode old versions
-		var settings = {
-			"successfunc" : successfunc || null,
-			"url" : url || null,
-			"extraparam" : extraparam || {},
-			"aftersavefunc" : aftersavefunc || null,
-			"errorfunc": errorfunc || null,
-			"afterrestorefunc" : afterrestorefunc|| null,
-			"restoreAfterError" : true,
-			"mtype" : "POST"
-		},
-		args = $.makeArray(arguments).slice(1), o;
+		var args = $.makeArray(arguments).slice(1), o = {};
 
-		if(args[0] && typeof(args[0]) == "object" && !$.isFunction(args[0])) {
-			o = $.extend(true, $.jgrid.inlineEdit, settings, args[0]);
+		if( $.jgrid.realType(args[0]) === "Object" ) {
+			o = args[0];
 		} else {
-			o = settings;
+			if ($.isFunction(successfunc)) { o.successfunc = successfunc; }
+			if (typeof url !== "undefined") { o.url = url; }
+			if (typeof extraparam !== "undefined") { o.extraparam = extraparam; }
+			if ($.isFunction(aftersavefunc)) { o.aftersavefunc = aftersavefunc; }
+			if ($.isFunction(errorfunc)) { o.errorfunc = errorfunc; }
+			if ($.isFunction(afterrestorefunc)) { o.afterrestorefunc = afterrestorefunc; }
 		}
+		o = $.extend(true, {
+			successfunc: null,
+			url: null,
+			extraparam: {},
+			aftersavefunc: null,
+			errorfunc: null,
+			afterrestorefunc: null,
+			restoreAfterError: true,
+			mtype: "POST"
+		}, $.jgrid.inlineEdit, o );
 		// End compatible
+
 		var success = false;
 		var $t = this[0], nm, tmp={}, tmp2={}, tmp3= {}, editable, fr, cv, ind;
 		if (!$t.grid ) { return success; }
