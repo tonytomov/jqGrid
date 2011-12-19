@@ -1212,7 +1212,7 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.userDataOnFooter) { $(ts).jqGrid("footerData","set",ts.p.userData,true); }
 			if(locdata) {
 				ts.p.records = gl;
-				ts.p.lastpage = Math.min( ts.p.page, Math.ceil(gl/ rn) );
+				ts.p.lastpage = Math.ceil(gl/ rn);
 			}
 			if (!more) { ts.updatepager(false,true); }
 			if(locdata) {
@@ -1383,7 +1383,7 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.userDataOnFooter) { $(ts).jqGrid("footerData","set",ts.p.userData,true); }
 			if(locdata) {
 				ts.p.records = len;
-				ts.p.lastpage = Math.min( ts.p.page, Math.ceil(len/ rn) );
+				ts.p.lastpage = Math.ceil(len/ rn);
 			}
 			if (!more) { ts.updatepager(false,true); }
 			if(locdata) {
