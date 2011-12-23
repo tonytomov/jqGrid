@@ -54,6 +54,7 @@ $.jgrid.extend({
 			tmplNames : null,
 			tmplFilters : null,
 			// translations - later in lang file
+			tmplDefault : 'Default',
 			tmplLabel : ' Template: ',
             showOnLoad: false,
             layer: null
@@ -137,7 +138,7 @@ $.jgrid.extend({
 					found = true;
 					tmpl = p.tmplLabel;
 					tmpl += "<select class='ui-template'>";
-					tmpl += "<option value='default'>Default</option>";
+					tmpl += "<option value='default'>" + p.tmplDefault + "</option>";
 					$.each(p.tmplNames, function(i,n){
 						tmpl += "<option value='"+i+"'>"+n+"</option>";
 					});
