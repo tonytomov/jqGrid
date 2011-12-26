@@ -399,8 +399,9 @@ $.jgrid.extend({
 			saveicon:"ui-icon-disk",
 			cancel: true,
 			cancelicon:"ui-icon-cancel",
-			addParams : {useFormatter : false},
-			editParams : {}
+			addParams : {useFormatter : false,rowID : "new_row"},
+			editParams : {},
+			restoreAfterSelect : true
 		}, $.jgrid.nav, o ||{});
 		return this.each(function(){
 			if (!this.grid ) { return; }
