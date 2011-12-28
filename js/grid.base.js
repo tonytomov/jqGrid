@@ -885,12 +885,12 @@ $.fn.jqGrid = function( pin ) {
 					if(p.multiselect && sra && sra.length>0) {
 						for(var i=0;i<sra.length;i++){
 							if (sra[i] != sr) {
-								$(ts).jqGrid("setSelection",sra[i],false);
+								$(ts).jqGrid("setSelection",sra[i],false, null);
 							}
 						}
 					}
 					if (sr) {
-						$(ts).jqGrid("setSelection",sr,false);
+						$(ts).jqGrid("setSelection",sr,false,null);
 					}
 					ts.grid.bDiv.scrollLeft = left;
 					p.gridComplete = complete;
@@ -2324,7 +2324,7 @@ $.fn.jqGrid = function( pin ) {
 			if(cSel === true) {
 				if(ts.p.cellEdit === true) {
 					if(ts.p.multiselect && scb){
-						$(ts).jqGrid("setSelection",ptr[0].id,true);
+						$(ts).jqGrid("setSelection",ptr[0].id,true,e);
 					} else {
 						ri = ptr[0].rowIndex;
 						ci = $.jgrid.getCellIndex(td);
@@ -2332,7 +2332,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 				} else if ( !ts.p.multikey ) {
 					if(ts.p.multiselect && ts.p.multiboxonly) {
-						if(scb){$(ts).jqGrid("setSelection",ptr[0].id,true);}
+						if(scb){$(ts).jqGrid("setSelection",ptr[0].id,true,e);}
 						else {
 							var frz = ts.p.frozenColumns ? ts.p.id+"_frozen" : "";
 							$(ts.p.selarrrow).each(function(i,n){
@@ -2345,14 +2345,14 @@ $.fn.jqGrid = function( pin ) {
 								}
 							});
 							ts.p.selarrrow = [];
-							$(ts).jqGrid("setSelection",ptr[0].id,true);
+							$(ts).jqGrid("setSelection",ptr[0].id,true,e);
 						}
 					} else {
-						$(ts).jqGrid("setSelection",ptr[0].id,true);
+						$(ts).jqGrid("setSelection",ptr[0].id,true,e);
 					}
 				} else {
 					if(e[ts.p.multikey]) {
-						$(ts).jqGrid("setSelection",ptr[0].id,true);
+						$(ts).jqGrid("setSelection",ptr[0].id,true,e);
 					} else if(ts.p.multiselect && scb) {
 						scb = $("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+ptr[0].id).is(":checked");
 						$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+ptr[0].id)[ts.p.useProp ? 'prop' : 'attr']("checked", scb);
@@ -2415,7 +2415,7 @@ $.fn.jqGrid = function( pin ) {
 				td = e.target;
 				ptr = $(td,ts.rows).closest("tr.jqgrow");
 				if($(ptr).length === 0 ){return false;}
-				if(!ts.p.multiselect) {	$(ts).jqGrid("setSelection",ptr[0].id,true);	}
+				if(!ts.p.multiselect) {	$(ts).jqGrid("setSelection",ptr[0].id,true,e);	}
 				ri = ptr[0].rowIndex;
 				ci = $.jgrid.getCellIndex(td);
 				ts.p.onRightClickRow.call(ts,$(ptr).attr("id"),ri,ci, e);
@@ -2573,7 +2573,7 @@ $.jgrid.extend({
 		});
 		return ids;
 	},
-	setSelection : function(selection,onsr) {
+	setSelection : function(selection,onsr, e) {
 		return this.each(function(){
 			var $t = this, stat,pt, ner, ia, tpsr, fid;
 			if(selection === undefined) { return; }
@@ -2615,7 +2615,7 @@ $.jgrid.extend({
 						stat = false;
 					}
 					$t.p.selrow = pt.id;
-					if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow.call($t, pt.id, stat); }
+					if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow.call($t, pt.id, stat, e); }
 				}
 			} else {
 				//unselect selectall checkbox when deselecting a specific row
@@ -2643,7 +2643,7 @@ $.jgrid.extend({
 					}
 					$("#jqg_"+$.jgrid.jqID($t.p.id)+"_"+$.jgrid.jqID(selection), "#"+$.jgrid.jqID(fid))[$t.p.useProp ? 'prop': 'attr']("checked",stat);
 				}
-				if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow.call($t, pt.id , stat); }
+				if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow.call($t, pt.id , stat, e); }
 			}
 		});
 	},
@@ -3362,7 +3362,7 @@ $.jgrid.extend({
 									id = r.id;
 								}
 							}
-							$($t).jqGrid('setSelection', id);
+							$($t).jqGrid('setSelection', id, true, event);
 						}
 						//if key is down arrow
 						if(event.keyCode === 40){
@@ -3378,7 +3378,7 @@ $.jgrid.extend({
 									id = r.id;
 								}
 							}
-							$($t).jqGrid('setSelection', id);
+							$($t).jqGrid('setSelection', id, true, event);
 						}
 						// left
 						if(event.keyCode === 37 ){
