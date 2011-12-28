@@ -95,12 +95,23 @@ $.jgrid.extend({
 						$(ind).bind("keydown",function(e) {
 							if (e.keyCode === 27) {
 								$($t).jqGrid("restoreRow",rowid, afterrestorefunc);
+								if($t.p._inlinenav) {
+									try {
+										$($t).jqGrid('showAddEditButtons');
+									} catch (eer1) {}
+								}
 								return false;
 							}
 							if (e.keyCode === 13) {
 								var ta = e.target;
 								if(ta.tagName == 'TEXTAREA') { return true; }
-								$($t).jqGrid("saveRow", rowid, o );
+								if( $($t).jqGrid("saveRow", rowid, o ) ) {
+									if($t.p._inlinenav) {
+										try {
+											$($t).jqGrid('showAddEditButtons');
+										} catch (eer2) {}
+									}
+								}
 								return false;
 							}
 						});
@@ -405,7 +416,8 @@ $.jgrid.extend({
 		}, $.jgrid.nav, o ||{});
 		return this.each(function(){
 			if (!this.grid ) { return; }
-			var $t = this;
+			var $t = this, onSelect;
+			$t.p._inlinenav = true;
 			// detect the formatactions column
 			if(o.addParams.useFormatter === true) {
 				var cm = $t.p.colModel,i;
@@ -493,10 +505,7 @@ $.jgrid.extend({
 								o.editParams.extraparam[oper] = opers.addoper;
 							}
 							if( $($t).jqGrid('saveRow', sr, o.editParams) ) {
-								$("#"+$t.p.id+"_ilsave").addClass('ui-state-disabled');
-								$("#"+$t.p.id+"_ilcancel").addClass('ui-state-disabled');
-								$("#"+$t.p.id+"_iladd").removeClass('ui-state-disabled');
-								$("#"+$t.p.id+"_iledit").removeClass('ui-state-disabled');
+								$($t).jqGrid('showAddEditButtons');
 							}
 						} else {
 							$.jgrid.viewModal("#alertmod",{gbox:"#gbox_"+$t.p.id,jqm:true});$("#jqg_alrt").focus();							
@@ -515,10 +524,7 @@ $.jgrid.extend({
 						var sr = $t.p.savedRow[0].id;
 						if(sr) {
 							$($t).jqGrid('restoreRow', sr, o.editParams);
-							$("#"+$t.p.id+"_ilsave").addClass('ui-state-disabled');
-							$("#"+$t.p.id+"_ilcancel").addClass('ui-state-disabled');
-							$("#"+$t.p.id+"_iladd").removeClass('ui-state-disabled');
-							$("#"+$t.p.id+"_iledit").removeClass('ui-state-disabled');
+							$($t).jqGrid('showAddEditButtons');
 						} else {
 							$.jgrid.viewModal("#alertmod",{gbox:"#gbox_"+$t.p.id,jqm:true});$("#jqg_alrt").focus();							
 						}
@@ -526,6 +532,39 @@ $.jgrid.extend({
 				});
 				$("#"+$t.p.id+"_ilcancel").addClass('ui-state-disabled');
 			}
+			if(o.restoreAfterSelect === true) {
+				if($.isFunction($t.p.beforeSelectRow)) {
+					onSelect = $t.p.beforeSelectRow;
+				} else {
+					onSelect =  false;
+				}
+				$t.p.beforeSelectRow = function(id, stat) {
+					var ret = true;
+					if($t.p.savedRow.length > 0 && $t.p._inlinenav===true && ( id !== $t.p.selrow && $t.p.selrow !==null) ) {
+						if($t.p.selrow == o.addParams.rowID ) {
+							$($t).jqGrid('delRowData', $t.p.selrow);
+						} else {
+							$($t).jqGrid('restoreRow', $t.p.selrow, o.editParams);
+						}
+						$($t).jqGrid('showAddEditButtons');
+					}
+					if(onSelect) {
+						ret = onSelect.call($t, id, stat);
+					}
+					return ret;
+				}
+			}
+
+		});
+	},
+	showAddEditButtons : function()  {
+		return this.each(function(){
+			if (!this.grid ) { return; }
+			var $t = this;
+			$("#"+$t.p.id+"_ilsave").addClass('ui-state-disabled');
+			$("#"+$t.p.id+"_ilcancel").addClass('ui-state-disabled');
+			$("#"+$t.p.id+"_iladd").removeClass('ui-state-disabled');
+			$("#"+$t.p.id+"_iledit").removeClass('ui-state-disabled');
 		});
 	}
 //end inline edit
