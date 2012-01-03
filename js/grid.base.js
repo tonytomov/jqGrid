@@ -1260,12 +1260,19 @@ $.fn.jqGrid = function( pin ) {
 			} else { return; }
 
 			var dReader, locid = "_id_", frd,
-			locdata = (ts.p.datatype != "local" && ts.p.loadonce) || ts.p.datatype == "jsonstring" || ts.p.datatype == "local";
+			locdata = (ts.p.datatype != "local" && ts.p.loadonce) || ts.p.datatype == "jsonstring";
 			if(locdata) { ts.p.data = []; ts.p._index = {}; ts.p.localReader.id = locid;}
 			ts.p.reccount = 0;
 			if(ts.p.datatype == "local") {
 				dReader =  ts.p.localReader;
 				frd= 'local';
+				//init id indexes for initial local data
+				ts.p._index = {};
+				for(var i=0, dl = ts.p.data.length; i < dl; i++){
+					var cur = ts.p.data[i], idr = (ts.p.scroll ? $.jgrid.randId() : 1)+i;
+					cur[locid] = idr;
+					ts.p._index[idr] = i;
+				}
 			} else {
 				dReader =  ts.p.jsonReader;
 				frd='json';
