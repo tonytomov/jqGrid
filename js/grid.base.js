@@ -2621,7 +2621,7 @@ $.jgrid.extend({
 				}
 			}
 			if($t.p.scrollrows===true) {
-				ner = $t.rows.namedItem(selection).rowIndex;
+				ner = $t.rows.namedItem($t.p.datatype=='local' ? selection % $t.p.rowNum : selection).rowIndex;
 				if(ner >=0 ){
 					scrGrid(ner);
 				}
@@ -2632,7 +2632,7 @@ $.jgrid.extend({
 			if(!$t.p.multiselect) {	
 				if(pt.className !== "ui-subgrid") {
 					if( $t.p.selrow != pt.id) {
-										$($t.rows.namedItem($t.p.selrow)).removeClass("ui-state-highlight").attr({"aria-selected":"false", "tabindex" : "-1"});
+										$($t.rows.namedItem($t.p.datatype=='local' ? $t.p.selrow % $t.p.rowNum : $t.p.selrow)).removeClass("ui-state-highlight").attr({"aria-selected":"false", "tabindex" : "-1"});
 						$(pt).addClass("ui-state-highlight").attr({"aria-selected":"true", "tabindex" : "0"});//.focus();
 						if(fid) {
 							$("#"+$.jgrid.jqID($t.p.selrow), "#"+$.jgrid.jqID(fid)).removeClass("ui-state-highlight");
@@ -2702,7 +2702,7 @@ $.jgrid.extend({
 				}
 			} else {
 				$(t.p.selarrrow).each(function(i,n){
-					ind = t.rows.namedItem(n);
+					ind = t.rows.namedItem(t.p.datatype=='local' ? n % t.p.rowNum : n);
 					$(ind).removeClass("ui-state-highlight").attr("aria-selected","false");
 					$("#jqg_"+$.jgrid.jqID(t.p.id)+"_"+$.jgrid.jqID(n))[t.p.useProp ? 'prop': 'attr']("checked",false);
 				});
@@ -2727,6 +2727,8 @@ $.jgrid.extend({
 				resall = [];
 				len = $t.rows.length;
 			} else {
+			    if($t.p.datatype=='local')
+			    	res = $t.p.data[$t.p._index[rowid]];
 				ind = $t.rows.namedItem(rowid);
 				if(!ind) { return res; }
 				len = 2;
@@ -2797,22 +2799,23 @@ $.jgrid.extend({
 			if(!this.grid) {return false;}
 			var t = this, vl, ind, cp = typeof cssp, lcdata={};
 			ind = t.rows.namedItem(rowid);
-			if(!ind) { return false; }
 			if( data ) {
 				try {
-					$(this.p.colModel).each(function(i){
-						nm = this.name;
-						if( data[nm] !== undefined) {
-							lcdata[nm] = this.formatter && typeof(this.formatter) === 'string' && this.formatter == 'date' ? $.unformat.date(data[nm],this) : data[nm];
-							vl = t.formatter( rowid, data[nm], i, data, 'edit');
-							title = this.title ? {"title":$.jgrid.stripHtml(vl)} : {};
-							if(t.p.treeGrid===true && nm == t.p.ExpandColumn) {
-								$("td:eq("+i+") > span:first",ind).html(vl).attr(title);
-							} else {
-								$("td:eq("+i+")",ind).html(vl).attr(title);
+					if(ind){
+						$(this.p.colModel).each(function(i){
+							nm = this.name;
+							if( data[nm] !== undefined) {
+								lcdata[nm] = this.formatter && typeof(this.formatter) === 'string' && this.formatter == 'date' ? $.unformat.date(data[nm],this) : data[nm];
+								vl = t.formatter( rowid, data[nm], i, data, 'edit');
+								title = this.title ? {"title":$.jgrid.stripHtml(vl)} : {};
+								if(t.p.treeGrid===true && nm == t.p.ExpandColumn) {
+									$("td:eq("+i+") > span:first",ind).html(vl).attr(title);
+								} else {
+									$("td:eq("+i+")",ind).html(vl).attr(title);
+								}
 							}
-						}
-					});
+						});
+					}
 					if(t.p.datatype == 'local') {
 						var pos = t.p._index[rowid];
 						if(t.p.treeGrid) {
@@ -2823,7 +2826,7 @@ $.jgrid.extend({
 							}
 						}
 						if(typeof(pos) != 'undefined') {
-							t.p.data[pos] = $.extend(true, t.p.data[pos], lcdata);
+							t.p.data[pos] = $.extend(true, t.p.data[pos], data);
 						}
 						lcdata = null;
 					}
