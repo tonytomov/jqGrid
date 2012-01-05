@@ -2334,7 +2334,7 @@ $.fn.jqGrid = function( pin ) {
 		$(ts).before(grid.hDiv).click(function(e) {
 			td = e.target;
 			ptr = $(td,ts.rows).closest("tr.jqgrow");
-			if($(ptr).length === 0 || ptr[0].className.indexOf( 'ui-state-disabled' ) > -1 || $(td,ts).closest("table.ui-jqgrid-btable")[0].id.replace("_frozen","") !== ts.id ) {
+			if($(ptr).length === 0 || ptr[0].className.indexOf( 'ui-state-disabled' ) > -1 || ($(td,ts).closest("table.ui-jqgrid-btable")[0] && $(td,ts).closest("table.ui-jqgrid-btable")[0].id.replace("_frozen","") !== ts.id )) {
 				return this;
 			}
 			var scb = $(td).hasClass("cbox"), srb = $(td).hasClass("rbox"),
@@ -2627,7 +2627,7 @@ $.jgrid.extend({
 				}
 			}
 			if($t.p.scrollrows===true) {
-				ner = $t.rows.namedItem($t.p.datatype=='local' ? selection % $t.p.rowNum : selection).rowIndex;
+				ner = $t.rows.namedItem($t.p.datatype=='local' && $.isNumeric(selection) ? selection % $t.p.rowNum : selection).rowIndex;
 				if(ner >=0 ){
 					scrGrid(ner);
 				}
@@ -2638,7 +2638,7 @@ $.jgrid.extend({
 			if(!$t.p.multiselect) {	
 				if(pt.className !== "ui-subgrid") {
 					if( $t.p.selrow != pt.id) {
-										$($t.rows.namedItem($t.p.datatype=='local' ? $t.p.selrow % $t.p.rowNum : $t.p.selrow)).removeClass("ui-state-highlight").attr({"aria-selected":"false", "tabindex" : "-1"});
+										$($t.rows.namedItem($t.p.datatype=='local' && $.isNumeric($t.p.rowNum) ? $t.p.selrow % $t.p.rowNum : $t.p.selrow)).removeClass("ui-state-highlight").attr({"aria-selected":"false", "tabindex" : "-1"});
 						$(pt).addClass("ui-state-highlight").attr({"aria-selected":"true", "tabindex" : "0"});//.focus();
 						if(fid) {
 							$("#"+$.jgrid.jqID($t.p.selrow), "#"+$.jgrid.jqID(fid)).removeClass("ui-state-highlight");
@@ -2708,7 +2708,7 @@ $.jgrid.extend({
 				}
 			} else {
 				$(t.p.selarrrow).each(function(i,n){
-					ind = t.rows.namedItem(t.p.datatype=='local' ? n % t.p.rowNum : n);
+					ind = t.rows.namedItem(t.p.datatype=='local' && $.isNumeric(n) ? n % t.p.rowNum : n);
 					$(ind).removeClass("ui-state-highlight").attr("aria-selected","false");
 					$("#jqg_"+$.jgrid.jqID(t.p.id)+"_"+$.jgrid.jqID(n))[t.p.useProp ? 'prop': 'attr']("checked",false);
 				});
@@ -2767,7 +2767,7 @@ $.jgrid.extend({
 		var success = false, rowInd, ia, ri;
 		this.each(function() {
 			var $t = this;
-			rowInd = $t.rows.namedItem(rowid);
+			rowInd = $t.rows.namedItem($t.p.datatype=='local' && $.isNumeric(rowid) ? rowid % $t.p.rowNum : rowid);
 			if(!rowInd) {return false;}
 			else {
 				ri = rowInd.rowIndex;
@@ -2804,7 +2804,7 @@ $.jgrid.extend({
 		this.each(function(){
 			if(!this.grid) {return false;}
 			var t = this, vl, ind, cp = typeof cssp, lcdata={};
-			ind = t.rows.namedItem(rowid);
+			ind = t.rows.namedItem(t.p.datatype=='local' && $.isNumeric(rowid) ? rowid % t.p.rowNum : rowid);
 			if( data ) {
 				try {
 					if(ind){
