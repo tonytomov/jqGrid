@@ -2586,17 +2586,23 @@ $.jgrid.extend({
 		});
 	},
 	getDataIDs : function () {
-		var ids=[], i=0, len, j=0;
+		var ids=[], i=0, len, j=0, $t = this[0];
 		this.each(function(){
-			len = this.rows.length;
-			if(len && len>0){
-				while(i<len) {
-					if($(this.rows[i]).hasClass('jqgrow')) {
-						ids[j] = this.rows[i].id;
-						j++;
+			if($t.p.datatype != 'local'){		
+				len = this.rows.length;
+					if(len && len>0){
+						while(i<len) {
+							if($(this.rows[i]).hasClass('jqgrow')) {
+								ids[j] = this.rows[i].id;
+								j++;
+							}
+							i++;
+						}
 					}
-					i++;
-				}
+			} else { 
+				$.each($t.p._index, function(index, value){
+					ids.push(index); //p._index maps id to the index of p.data so we need to return the index value as rowids
+				});
 			}
 		});
 		return ids;
