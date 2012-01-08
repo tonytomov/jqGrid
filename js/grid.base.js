@@ -877,15 +877,15 @@ $.fn.jqGrid = function( pin ) {
 				if( e ) { e.stopPropagation(); }
 			},
 			selectionPreserver : function(ts) {
-				var p = ts.p;
-				var sr = p.selrow, sra = p.selarrrow ? $.makeArray(p.selarrrow) : null;
-				var left = ts.grid.bDiv.scrollLeft;
-				var complete = p.gridComplete;
-				p.gridComplete = function() {
+				var p = ts.p,
+				sr = p.selrow, sra = p.selarrrow ? $.makeArray(p.selarrrow) : null,
+				left = ts.grid.bDiv.scrollLeft,
+				restoreSelection = function() {
+					var i;
 					p.selrow = null;
 					p.selarrrow = [];
 					if(p.multiselect && sra && sra.length>0) {
-						for(var i=0;i<sra.length;i++){
+						for(i=0;i<sra.length;i++){
 							if (sra[i] != sr) {
 								$(ts).jqGrid("setSelection",sra[i],false, null);
 							}
@@ -895,11 +895,9 @@ $.fn.jqGrid = function( pin ) {
 						$(ts).jqGrid("setSelection",sr,false,null);
 					}
 					ts.grid.bDiv.scrollLeft = left;
-					p.gridComplete = complete;
-					if (p.gridComplete) {
-						complete();
-					}
+					$(ts).unbind('.selectionPreserver', restoreSelection);
 				};
+				$(ts).bind('jqGridGridComplete.selectionPreserver', restoreSelection);				
 			}
 		};
 		if(this.tagName.toUpperCase()!='TABLE') {
@@ -1648,8 +1646,9 @@ $.fn.jqGrid = function( pin ) {
 				});
 			}
 			if(dnd && ts.p.jqgdnd) { $(ts).jqGrid('gridDnD','updateDnD');}
+			$(ts).triggerHandler("jqGridGridComplete");
 			if($.isFunction(ts.p.gridComplete)) {ts.p.gridComplete.call(ts);}
-			if($.isFunction(ts.p._complete)) {ts.p._complete.call(ts);}
+			$(ts).triggerHandler("jqGridAfterGridComplete");
 		},
 		beginReq = function() {
 			ts.grid.hDiv.loading = true;
