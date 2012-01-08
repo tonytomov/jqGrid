@@ -735,7 +735,7 @@ $.fn.jqGrid = function( pin ) {
 			cmTemplate : {},
 			idPrefix : ""
 		}, $.jgrid.defaults, pin || {});
-		var grid={
+		var ts= this, grid={
 			headers:[],
 			cols:[],
 			footers: [],
@@ -744,7 +744,7 @@ $.fn.jqGrid = function( pin ) {
 				this.hDiv.style.cursor = "col-resize";
 				this.curGbox = $("#rs_m"+$.jgrid.jqID(p.id),"#gbox_"+$.jgrid.jqID(p.id));
 				this.curGbox.css({display:"block",left:y[0],top:y[1],height:y[2]});
-				$("#"+$.jgrid.jqID(p.id)).triggerHandler("jqGridResizeStart", [x, i]);
+				$(ts).triggerHandler("jqGridResizeStart", [x, i]);
 				if($.isFunction(p.resizeStart)) { p.resizeStart.call(this,x,i); }
 				document.onselectstart=function(){return false;};
 			},
@@ -799,7 +799,7 @@ $.fn.jqGrid = function( pin ) {
 							this.sDiv.scrollLeft = this.bDiv.scrollLeft;
 						}
 					}
-					$("#"+$.jgrid.jqID(p.id)).triggerHandler("jqGridResizeStop", [nw, idx]);
+					$(ts).triggerHandler("jqGridResizeStop", [nw, idx]);
 					if($.isFunction(p.resizeStop)) { p.resizeStop.call(this,nw,idx); }
 				}
 				this.curGbox = null;
@@ -907,7 +907,7 @@ $.fn.jqGrid = function( pin ) {
 		$(this).empty().attr("tabindex","1");
 		this.p = p ;
 		this.p.useProp = !!$.fn.prop;
-		var i, dir,ts;
+		var i, dir;
 		if(this.p.colNames.length === 0) {
 			for (i=0;i<this.p.colModel.length;i++){
 				this.p.colNames[i] = this.p.colModel[i].label || this.p.colModel[i].name;
@@ -920,7 +920,6 @@ $.fn.jqGrid = function( pin ) {
 		var gv = $("<div class='ui-jqgrid-view'></div>"), ii,
 		isMSIE = $.browser.msie ? true:false,
 		isSafari = $.browser.webkit || $.browser.safari ? true : false;
-		ts = this;
 		ts.p.direction = $.trim(ts.p.direction.toLowerCase());
 		if($.inArray(ts.p.direction,["ltr","rtl"]) == -1) { ts.p.direction = "ltr"; }
 		dir = ts.p.direction;
