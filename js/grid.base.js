@@ -78,8 +78,8 @@ $.extend($.jgrid,{
 		if (js.substr(0,2) == "/*") { js = js.substr(2,js.length-4); }
 		if(!js) { js = "{}"; }
 		return ($.jgrid.useJSON===true && typeof (JSON) === 'object' && typeof (JSON.parse) === 'function') ?
-		    JSON.parse(js) :
-		    eval('(' + js + ')');
+			JSON.parse(js) :
+			eval('(' + js + ')');
 	},
 	parseDate : function(format, date) {
 		var tsp = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0, u:0},k,hl,dM, regdate = /[\\\/:_;.,\t\T\s-]/;
@@ -91,7 +91,7 @@ $.extend($.jgrid,{
 			var afmt  = $.jgrid.formatter.date.AmPm;
 			var h12to24 = function(ampm, h){
 				if (ampm === 0){ if (h === 12) { h = 0;} }
-				          else { if (h !== 12) { h += 12; } }
+				else { if (h !== 12) { h += 12; } }
 				return h;
 			};
 			for(k=0,hl=format.length;k<hl;k++){
@@ -148,7 +148,7 @@ $.extend($.jgrid,{
 				i = prm.length;
 				if( i ) {
 					ret = obj;
-				    while (ret && i--) {
+					while (ret && i--) {
 						p = prm.shift();
 						ret = ret[p];
 					}
@@ -176,7 +176,7 @@ $.extend($.jgrid,{
 	from : function(source,initalQuery){
 		// Original Author Hugo Bonacci
 		// License MIT http://jlinq.codeplex.com/license
-		var queryObject=function(d,q){
+		var QueryObject=function(d,q){
 		if(typeof(d)=="string"){
 			d=$.data(d);
 		}
@@ -608,7 +608,7 @@ $.extend($.jgrid,{
 		};
 		return self;
 		};
-	return new queryObject(source,null);
+	return new QueryObject(source,null);
 	},
 	extend : function(methods) {
 		$.extend($.fn.jqGrid,methods);
@@ -744,7 +744,7 @@ $.fn.jqGrid = function( pin ) {
 				this.hDiv.style.cursor = "col-resize";
 				this.curGbox = $("#rs_m"+$.jgrid.jqID(p.id),"#gbox_"+$.jgrid.jqID(p.id));
 				this.curGbox.css({display:"block",left:y[0],top:y[1],height:y[2]});
-				$(ts).triggerHandler("jqGridResizeStart", [x, i]);
+				$("#"+$.jgrid.jqID(p.id)).triggerHandler("jqGridResizeStart", [x, i]);
 				if($.isFunction(p.resizeStart)) { p.resizeStart.call(this,x,i); }
 				document.onselectstart=function(){return false;};
 			},
@@ -799,7 +799,7 @@ $.fn.jqGrid = function( pin ) {
 							this.sDiv.scrollLeft = this.bDiv.scrollLeft;
 						}
 					}
-					$(ts).triggerHandler("jqGridResizeStop", [nw, idx]);
+					$("#"+$.jgrid.jqID(p.id)).triggerHandler("jqGridResizeStop", [nw, idx]);
 					if($.isFunction(p.resizeStop)) { p.resizeStop.call(this,nw,idx); }
 				}
 				this.curGbox = null;
@@ -828,7 +828,7 @@ $.fn.jqGrid = function( pin ) {
 				var tbot = ttop + table.height();
 				var div = rh * rn;
 				var page, npage, empty;
-			    if ( tbot < dh && ttop <= 0 &&
+				if ( tbot < dh && ttop <= 0 &&
 					(p.lastpage===undefined||parseInt((tbot + scrollTop + div - 1) / div,10) <= p.lastpage))
 				{
 					npage = parseInt((dh - tbot + div - 1) / div,10);
@@ -1591,7 +1591,7 @@ $.fn.jqGrid = function( pin ) {
 				if (rh) {
 					var top = base * rh;
 					var height = parseInt(ts.p.records,10) * rh;
-				    $(">div:first",ts.grid.bDiv).css({height : height}).children("div:first").css({height:top,display:top?"":"none"});
+					$(">div:first",ts.grid.bDiv).css({height : height}).children("div:first").css({height:top,display:top?"":"none"});
 				}
 				ts.grid.bDiv.scrollLeft = ts.grid.hDiv.scrollLeft;
 			}
@@ -2177,8 +2177,8 @@ $.fn.jqGrid = function( pin ) {
 					$(ts.rows).each(function(i) {
 						if (i>0) {
 							if(!$(this).hasClass("ui-subgrid") && !$(this).hasClass("jqgroup") && !$(this).hasClass('ui-state-disabled')){
-							    $("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(this.id) )[ts.p.useProp ? 'prop': 'attr']("checked",true);
-							    $(this).addClass("ui-state-highlight").attr("aria-selected","true");  
+								$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(this.id) )[ts.p.useProp ? 'prop': 'attr']("checked",true);
+								$(this).addClass("ui-state-highlight").attr("aria-selected","true");  
 							    ts.p.selarrrow.push(this.id);
 								ts.p.selrow = this.id;
 								if(froz) {
@@ -3126,7 +3126,7 @@ $.jgrid.extend({
 				});
 
 				if (!lvc) { return; }
-			    
+
 				cr =0;
 				if (hs) {
 					if(nwidth-gw-(initwidth+brd*vc) !== scw){
@@ -3437,8 +3437,8 @@ $.jgrid.extend({
 						$($t).triggerHandler("jqGridKeySpace", [$t.p.selrow]);
 						if($.isFunction(o.onSpace)) {
 							o.onSpace.call($t, $t.p.selrow);
-					    }
-				    }
+						}
+					}
 				}
 			});
 		});
