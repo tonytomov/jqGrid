@@ -3445,8 +3445,7 @@ $.jgrid.extend({
 	},
 	unbindKeys : function(){
 		return this.each(function(){
-			var $t = this;
-			$($t).unbind('keydown');
+			$(this).unbind('keydown');
 		});
 	},
 	getLocalRow : function (rowid) {
