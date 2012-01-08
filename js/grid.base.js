@@ -2507,6 +2507,7 @@ $.fn.jqGrid = function( pin ) {
 								$("span",self).removeClass("ui-icon-circle-triangle-n").addClass("ui-icon-circle-triangle-s");
 								ts.p.gridstate = 'hidden';
 								if($("#gbox_"+$.jgrid.jqID(ts.p.id)).hasClass("ui-resizable")) { $(".ui-resizable-handle","#gbox_"+$.jgrid.jqID(ts.p.id)).hide(); }
+								$(ts).triggerHandler("jqGridHeaderClick", [ts.p.gridstate,e]);
 								if(onHdCl) {if(!hg) {ts.p.onHeaderClick.call(ts,ts.p.gridstate,e);}}
 							}
 						});
@@ -2518,6 +2519,7 @@ $.fn.jqGrid = function( pin ) {
 								if(hg) {ts.p.datatype = tdt;populate();hg=false;}
 								ts.p.gridstate = 'visible';
 								if($("#gbox_"+$.jgrid.jqID(ts.p.id)).hasClass("ui-resizable")) { $(".ui-resizable-handle","#gbox_"+$.jgrid.jqID(ts.p.id)).show(); }
+								$(ts).triggerHandler("jqGridHeaderClick", [ts.p.gridstate,e]);
 								if(onHdCl) {if(!hg) {ts.p.onHeaderClick.call(ts,ts.p.gridstate,e);}}
 							}
 						});
@@ -2624,6 +2626,7 @@ $.jgrid.extend({
 						stat = false;
 					}
 					$t.p.selrow = pt.id;
+					$($t).triggerHandler("jqGridSelectRow", [pt.id, stat, e]);
 					if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow.call($t, pt.id, stat, e); }
 				}
 			} else {
@@ -2652,6 +2655,7 @@ $.jgrid.extend({
 					}
 					$("#jqg_"+$.jgrid.jqID($t.p.id)+"_"+$.jgrid.jqID(selection), "#"+$.jgrid.jqID(fid))[$t.p.useProp ? 'prop': 'attr']("checked",stat);
 				}
+				$($t).triggerHandler("jqGridSelectRow", [pt.id, stat, e]);
 				if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow.call($t, pt.id , stat, e); }
 			}
 		});
@@ -2815,7 +2819,7 @@ $.jgrid.extend({
 			}
 			if(success) {
 				if(cp === 'string') {$(ind).addClass(cssp);} else if(cp === 'object') {$(ind).css(cssp);}
-				if($.isFunction(t.p._complete)) {t.p._complete.call(t);}
+				$(t).triggerHandler("jqGridAfterGridComplete");
 			}
 		});
 		return success;
@@ -2995,6 +2999,7 @@ $.jgrid.extend({
 					if(show === "none") {$t.p.tblwidth -= cw+brd;} else {$t.p.tblwidth += cw+brd;}
 					this.hidden = !sw;
 					fndh=true;
+					$($t).triggerHandler("jqGridShowHideCol", [sw,this.name,i]);
 				}
 			});
 			if(fndh===true) {
@@ -3056,6 +3061,7 @@ $.jgrid.extend({
 		}
 		ts.p.lastsort = $.inArray(ts.p.lastsort, permutation);
 		if(ts.p.treeGrid) { ts.p.expColInd = $.inArray(ts.p.expColInd, permutation); }
+		$(ts).triggerHandler("jqGridRemapColumns", [permutation, updateCells, keepHeader]);
 	},
 	setGridWidth : function(nwidth, shrink) {
 		return this.each(function(){
@@ -3405,28 +3411,32 @@ $.jgrid.extend({
 							if($t.p.treeGrid && $t.p.data[mind][expanded]) {
 								$(target).find("div.treeclick").trigger('click');
 							}
+							$($t).triggerHandler("jqGridKeyLeft", [$t.p.selrow]);
 							if($.isFunction(o.onLeftKey)) {
 								o.onLeftKey.call($t, $t.p.selrow);
-						}
+							}
 						}
 						// right
 						if(event.keyCode === 39 ){
 							if($t.p.treeGrid && !$t.p.data[mind][expanded]) {
 								$(target).find("div.treeclick").trigger('click');
 							}
+							$($t).triggerHandler("jqGridKeyRight", [$t.p.selrow]);
 							if($.isFunction(o.onRightKey)) {
 								o.onRightKey.call($t, $t.p.selrow);
-						}
+							}
 						}
 						//return false;
 					}
 					//check if enter was pressed on a grid or treegrid node
 					else if( event.keyCode === 13 ){
+						$($t).triggerHandler("jqGridKeyEnter", [$t.p.selrow]);
 						if($.isFunction(o.onEnter)) {
 							o.onEnter.call($t, $t.p.selrow);
 						}
 						//return false;
 					} else if(event.keyCode === 32) {
+						$($t).triggerHandler("jqGridKeySpace", [$t.p.selrow]);
 						if($.isFunction(o.onSpace)) {
 							o.onSpace.call($t, $t.p.selrow);
 					    }
