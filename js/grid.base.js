@@ -1681,16 +1681,14 @@ $.fn.jqGrid = function( pin ) {
 		},
 		populate = function (npage) {
 			if(!ts.grid.hDiv.loading) {
-				var pvis = ts.p.scroll && npage === false;
-				var prm = {}, dt, dstr, pN=ts.p.prmNames;
+				var pvis = ts.p.scroll && npage === false,
+				prm = {}, dt, dstr, pN=ts.p.prmNames;
 				if(ts.p.page <=0) { ts.p.page = 1; }
 				if(pN.search !== null) {prm[pN.search] = ts.p.search;} if(pN.nd !== null) {prm[pN.nd] = new Date().getTime();}
 				if(pN.rows !== null) {prm[pN.rows]= ts.p.rowNum;} if(pN.page !== null) {prm[pN.page]= ts.p.page;}
 				if(pN.sort !== null) {prm[pN.sort]= ts.p.sortname;} if(pN.order !== null) {prm[pN.order]= ts.p.sortorder;}
 				if(ts.p.rowTotal !== null && pN.totalrows !== null) { prm[pN.totalrows]= ts.p.rowTotal; }
-				var lc = ts.p.loadComplete;
-				var lcf = $.isFunction(lc);
-				if (!lcf) { lc = null; }
+				var lcf = $.isFunction(ts.p.loadComplete), lc = lcf ? ts.p.loadComplete : null;
 				var adjust = 0;
 				npage = npage || 1;
 				if (npage > 1) {
@@ -1703,7 +1701,9 @@ $.fn.jqGrid = function( pin ) {
 							ts.p.page++;
 							ts.grid.hDiv.loading = false;
 							if (lcf) {
+								$(ts).triggerHandler("jqGridLoadComplete", [req]);
 								ts.p.loadComplete.call(ts,req);
+								$(ts).triggerHandler("jqGridAfterLoadComplete", [req]);
 							}
 							populate(npage-1);
 						};
@@ -1719,9 +1719,11 @@ $.fn.jqGrid = function( pin ) {
 				}
 				$.extend(ts.p.postData,prm);
 				var rcnt = !ts.p.scroll ? 1 : ts.rows.length-1;
+				var bfr = $(ts).triggerHandler("jqGridBeforeRequest");
+				if (bfr === false || bfr === 'stop') { return; }
 				if ($.isFunction(ts.p.datatype)) { ts.p.datatype.call(ts,ts.p.postData,"load_"+ts.p.id); return;}
 				else if($.isFunction(ts.p.beforeRequest)) {
-					var bfr = ts.p.beforeRequest.call(ts);
+					bfr = ts.p.beforeRequest.call(ts);
 					if(bfr === undefined) { bfr = true; }
 					if ( bfr === false ) { return; }
 				}
