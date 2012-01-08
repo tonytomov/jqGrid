@@ -11,7 +11,7 @@
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/
 /*global jQuery, $ */
-
+"use strict";
 $.jgrid.extend({
 	getColProp : function(colname){
 		var ret ={}, $t = this[0];
@@ -97,8 +97,8 @@ $.jgrid.extend({
     setGridState : function(state) {
 		return this.each(function(){
 			if ( !this.grid ) {return;}
-            var $t = this;
-            if(state == 'hidden'){
+			var $t = this;
+			if(state == 'hidden'){
 				$(".ui-jqgrid-bdiv, .ui-jqgrid-hdiv","#gview_"+$t.p.id).slideUp("fast");
 				if($t.p.pager) {$($t.p.pager).slideUp("fast");}
 				if($t.p.toppager) {$($t.p.toppager).slideUp("fast");}
@@ -111,7 +111,7 @@ $.jgrid.extend({
 				if($t.p.footerrow) { $(".ui-jqgrid-sdiv","#gbox_"+$t.p.id).slideUp("fast"); }
 				$(".ui-jqgrid-titlebar-close span",$t.grid.cDiv).removeClass("ui-icon-circle-triangle-n").addClass("ui-icon-circle-triangle-s");
 				$t.p.gridstate = 'hidden';
-            } else if(state=='visible') {
+			} else if(state=='visible') {
 				$(".ui-jqgrid-hdiv, .ui-jqgrid-bdiv","#gview_"+$t.p.id).slideDown("fast");
 				if($t.p.pager) {$($t.p.pager).slideDown("fast");}
 				if($t.p.toppager) {$($t.p.toppager).slideDown("fast");}
@@ -287,13 +287,13 @@ $.jgrid.extend({
 			function bindEvents(selector, events) {
 				var jElem = $(selector);
 				if (jElem[0]) {
-				    jQuery.each(events, function() {
-				        if (this.data !== undefined) {
-				            jElem.bind(this.type, this.data, this.fn);
-				        } else {
-				            jElem.bind(this.type, this.fn);
-				        }
-				    });
+					jQuery.each(events, function() {
+						if (this.data !== undefined) {
+							jElem.bind(this.type, this.data, this.fn);
+						} else {
+							jElem.bind(this.type, this.fn);
+						}
+					});
 				}
 			}
 			var tr = $("<tr class='ui-search-toolbar' role='rowheader'></tr>");
@@ -444,7 +444,7 @@ $.jgrid.extend({
 		{
 			var $t = this, $tr, i, l, headers, $th, $resizing, grid = $t.grid,
 			thead = $("table.ui-jqgrid-htable thead", grid.hDiv), cm = $t.p.colModel, hc;
-			if(!grid) return;
+			if(!grid) { return; }
 
 			$(this).unbind('.setGroupHeaders');
 			$tr = $("<tr>", {role: "rowheader"}).addClass("ui-jqgrid-labels");
@@ -618,7 +618,7 @@ $.jgrid.extend({
 			if ( !this.grid ) {return;}
 			var $t = this, cm = $t.p.colModel,i=0, len = cm.length, maxfrozen = -1, frozen= false;
 			// TODO treeGrid and grouping  Support
-			if($t.p.subGrid == true || $t.p.treeGrid === true || $t.p.cellEdit == true || $t.p.sortable || $t.p.scroll || $t.p.grouping )
+			if($t.p.subGrid === true || $t.p.treeGrid === true || $t.p.cellEdit === true || $t.p.sortable || $t.p.scroll || $t.p.grouping )
 			{
 				return;
 			}
@@ -645,7 +645,7 @@ $.jgrid.extend({
 				if($t.p.toppager) {
 					top = top + $($t.grid.topDiv).outerHeight();
 				}
-				if($t.p.toolbar[0] == true) {
+				if($t.p.toolbar[0] === true) {
 					if($t.p.toolbar[1] != "bottom") {
 						top = top + $($t.grid.uDiv).outerHeight();
 					}
@@ -731,8 +731,8 @@ $.jgrid.extend({
 					$($t.grid.fbDiv).append(btbl);
 					if($t.p.hoverrows === true) {
 						$("tr.jqgrow", btbl).hover(
-							function(){ $(this).addClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)).addClass("ui-state-hover") },
-							function(){ $(this).removeClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)).removeClass("ui-state-hover") }
+							function(){ $(this).addClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)).addClass("ui-state-hover"); },
+							function(){ $(this).removeClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)).removeClass("ui-state-hover"); }
 						);
 						$("tr.jqgrow", "#"+$.jgrid.jqID($t.p.id)).hover(
 							function(){ $(this).addClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)+"_frozen").addClass("ui-state-hover");},
@@ -754,7 +754,7 @@ $.jgrid.extend({
 				$($t.grid.fbDiv).remove();
 				$t.grid.fhDiv = null; $t.grid.fbDiv=null;
 				$(this).unbind('.setFrozenColumns');
-				if($t.p.hoverrows == true) {
+				if($t.p.hoverrows === true) {
 					var ptr;
 					$("#"+$.jgrid.jqID($t.p.id)).bind('mouseover',function(e) {
 						ptr = $(e.target).closest("tr.jqgrow");
