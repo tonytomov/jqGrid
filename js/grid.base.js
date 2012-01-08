@@ -1953,6 +1953,10 @@ $.fn.jqGrid = function( pin ) {
 			index = index.substring(5 + ts.p.id.length + 1); // bad to be changed!?!
 			ts.p.sortname = ts.p.colModel[idxcol].index || index;
 			so = ts.p.sortorder;
+			if ($(ts).triggerHandler("jqGridSortCol", [index, idxcol, so]) === 'stop') {
+				ts.p.lastsort = idxcol;
+				return;
+			}
 			if($.isFunction(ts.p.onSortCol)) {if (ts.p.onSortCol.call(ts,index,idxcol,so)=='stop') {ts.p.lastsort = idxcol; return;}}
 			if(ts.p.datatype == "local") {
 				if(ts.p.deselectAfterSort) {$(ts).jqGrid("resetSelection");}
@@ -2204,6 +2208,7 @@ $.fn.jqGrid = function( pin ) {
 					ts.p.selrow = null;
 					chk=false;
 				}
+				$(ts).triggerHandler("jqGridSelectAll", [chk ? ts.p.selarrrow : emp, chk]);
 				if($.isFunction(ts.p.onSelectAll)) {ts.p.onSelectAll.call(ts, chk ? ts.p.selarrrow : emp,chk);}
 			});
 		}
@@ -2315,7 +2320,7 @@ $.fn.jqGrid = function( pin ) {
 			$(ptr).removeClass("ui-state-hover");
 		});
 		}
-		var ri,ci;
+		var ri,ci, tdHtml;
 		$(ts).before(grid.hDiv).click(function(e) {
 			td = e.target;
 			ptr = $(td,ts.rows).closest("tr.jqgrow");
@@ -2323,8 +2328,9 @@ $.fn.jqGrid = function( pin ) {
 				return this;
 			}
 			var scb = $(td).hasClass("cbox"),
-			cSel = true;
-			if($.isFunction(ts.p.beforeSelectRow)) { cSel = ts.p.beforeSelectRow.call(ts,ptr[0].id, e); }
+			cSel = $(ts).triggerHandler("jqGridBeforeSelectRow", [ptr[0].id, e]);
+			cSel = (cSel === false || cSel === 'stop') ? false : true;
+			if(cSel && $.isFunction(ts.p.beforeSelectRow)) { cSel = ts.p.beforeSelectRow.call(ts,ptr[0].id, e); }
 			if (td.tagName == 'A' || ((td.tagName == 'INPUT' || td.tagName == 'TEXTAREA' || td.tagName == 'OPTION' || td.tagName == 'SELECT' ) && !scb) ) { return this; }
 			if(cSel === true) {
 				if(ts.p.cellEdit === true) {
@@ -2363,10 +2369,12 @@ $.fn.jqGrid = function( pin ) {
 						$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+ptr[0].id)[ts.p.useProp ? 'prop' : 'attr']("checked", scb);
 					}
 				}
+				ri = ptr[0].id;
+				ci = $.jgrid.getCellIndex(td);
+				tdHtml = $(td).html();
+				$(ts).triggerHandler("jqGridCellSelect", [ri,ci,tdHtml,e]);
 				if($.isFunction(ts.p.onCellSelect)) {
-					ri = ptr[0].id;
-					ci = $.jgrid.getCellIndex(td);
-					ts.p.onCellSelect.call(ts,ri,ci,$(td).html(),e);
+					ts.p.onCellSelect.call(ts,ri,ci,tdHtml,e);
 				}
 				//e.stopPropagation();
 			}
@@ -2403,30 +2411,26 @@ $.fn.jqGrid = function( pin ) {
 				ts.grid.populate();
 			}
 			return false;
+		})
+		.dblclick(function(e) {
+			td = e.target;
+			ptr = $(td,ts.rows).closest("tr.jqgrow");
+			if($(ptr).length === 0 ){return;}
+			ri = ptr[0].rowIndex;
+			ci = $.jgrid.getCellIndex(td);
+			$(ts).triggerHandler("jqGridDblClickRow", [$(ptr).attr("id"),ri,ci,e]);
+			if ($.isFunction(this.p.ondblClickRow)) { ts.p.ondblClickRow.call(ts,$(ptr).attr("id"),ri,ci, e); }
+		})
+		.bind('contextmenu', function(e) {
+			td = e.target;
+			ptr = $(td,ts.rows).closest("tr.jqgrow");
+			if($(ptr).length === 0 ){return;}
+			if(!ts.p.multiselect) {	$(ts).jqGrid("setSelection",ptr[0].id,true,e);	}
+			ri = ptr[0].rowIndex;
+			ci = $.jgrid.getCellIndex(td);
+			$(ts).triggerHandler("jqGridRightClickRow", [$(ptr).attr("id"),ri,ci,e]);
+			if ($.isFunction(this.p.onRightClickRow)) { ts.p.onRightClickRow.call(ts,$(ptr).attr("id"),ri,ci, e); }
 		});
-		if( $.isFunction(this.p.ondblClickRow) ) {
-			$(this).dblclick(function(e) {
-				td = e.target;
-				ptr = $(td,ts.rows).closest("tr.jqgrow");
-				if($(ptr).length === 0 ){return false;}
-				ri = ptr[0].rowIndex;
-				ci = $.jgrid.getCellIndex(td);
-				ts.p.ondblClickRow.call(ts,$(ptr).attr("id"),ri,ci, e);
-				return false;
-			});
-		}
-		if ($.isFunction(this.p.onRightClickRow)) {
-			$(this).bind('contextmenu', function(e) {
-				td = e.target;
-				ptr = $(td,ts.rows).closest("tr.jqgrow");
-				if($(ptr).length === 0 ){return false;}
-				if(!ts.p.multiselect) {	$(ts).jqGrid("setSelection",ptr[0].id,true,e);	}
-				ri = ptr[0].rowIndex;
-				ci = $.jgrid.getCellIndex(td);
-				ts.p.onRightClickRow.call(ts,$(ptr).attr("id"),ri,ci, e);
-				return false;
-			});
-		}
 		grid.bDiv = document.createElement("div");
 		if(isMSIE) { if(String(ts.p.height).toLowerCase() === "auto") { ts.p.height = "100%"; } }
 		$(grid.bDiv)
