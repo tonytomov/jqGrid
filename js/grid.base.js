@@ -3426,7 +3426,6 @@ $.jgrid.extend({
 								o.onRightKey.call($t, $t.p.selrow);
 							}
 						}
-						//return false;
 					}
 					//check if enter was pressed on a grid or treegrid node
 					else if( event.keyCode === 13 ){
@@ -3434,13 +3433,11 @@ $.jgrid.extend({
 						if($.isFunction(o.onEnter)) {
 							o.onEnter.call($t, $t.p.selrow);
 						}
-						//return false;
 					} else if(event.keyCode === 32) {
 						$($t).triggerHandler("jqGridKeySpace", [$t.p.selrow]);
 						if($.isFunction(o.onSpace)) {
 							o.onSpace.call($t, $t.p.selrow);
 					    }
-						//return false;
 				    }
 				}
 			});
