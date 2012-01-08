@@ -1179,6 +1179,7 @@ $.fn.jqGrid = function( pin ) {
 				}
 				if(ts.p.gridview === false ) {
 					$("tbody:first",t).append(rowData.join(''));
+					$(ts).triggerHandler("jqGridAfterInsertRow", [rid, rd, xmlr]);
 					if(afterInsRow) {ts.p.afterInsertRow.call(ts,rid,rd,xmlr);}
 					rowData=[];
 				}
@@ -1349,6 +1350,7 @@ $.fn.jqGrid = function( pin ) {
 				}
 				if(ts.p.gridview === false ) {
 					$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
+					$(ts).triggerHandler("jqGridAfterInsertRow", [idr, rd, cur]);
 					if(afterInsRow) {ts.p.afterInsertRow.call(ts,idr,rd,cur);}
 					rowData=[];//ari=0;
 				}
@@ -2905,6 +2907,7 @@ $.jgrid.extend({
 					}
 					t.p.records++;
 					t.p.reccount++;
+					$(t).triggerHandler("jqGridAfterInsertRow", [rowid,data,data]);
 					if(air) { t.p.afterInsertRow.call(t,rowid,data,data); }
 					k++;
 					if(t.p.datatype == 'local') {
