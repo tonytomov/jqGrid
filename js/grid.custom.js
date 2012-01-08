@@ -727,7 +727,7 @@ $.jgrid.extend({
 						$("td:gt("+maxfrozen+")",this).remove();
 					});
 
-					$(btbl).width(1).attr("id",$.jgrid.jqID($t.p.id)+"_frozen");
+					$(btbl).width(1).attr("id",$t.p.id+"_frozen");
 					$($t.grid.fbDiv).append(btbl);
 					if($t.p.hoverrows === true) {
 						$("tr.jqgrow", btbl).hover(
