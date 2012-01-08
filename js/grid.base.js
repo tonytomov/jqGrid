@@ -1699,11 +1699,9 @@ $.fn.jqGrid = function( pin ) {
 						lc = function(req) {
 							ts.p.page++;
 							ts.grid.hDiv.loading = false;
-							$(ts).triggerHandler("jqGridLoadComplete", [req]);
 							if (lcf) {
 								ts.p.loadComplete.call(ts,req);
 							}
-							$(ts).triggerHandler("jqGridAfterLoadComplete", [req]);
 							populate(npage-1);
 						};
 					}
@@ -1744,7 +1742,9 @@ $.fn.jqGrid = function( pin ) {
 							}
 							if(dt === "xml") { addXmlData(data,ts.grid.bDiv,rcnt,npage>1,adjust); }
 							else { addJSONData(data,ts.grid.bDiv,rcnt,npage>1,adjust); }
+							$(ts).triggerHandler("jqGridLoadComplete", [data]);
 							if(lc) { lc.call(ts,data); }
+							$(ts).triggerHandler("jqGridAfterLoadComplete", [data]);
 							if (pvis) { ts.grid.populateVisible(); }
 							if( ts.p.loadonce || ts.p.treeGrid) {ts.p.datatype = "local";}
 							data=null;
@@ -1798,7 +1798,9 @@ $.fn.jqGrid = function( pin ) {
 					ts.p.datatype = "local";
 					var req = addLocalData();
 					addJSONData(req,ts.grid.bDiv,rcnt,npage>1,adjust);
+					$(ts).triggerHandler("jqGridLoadComplete", [req]);
 					if(lc) { lc.call(ts,req); }
+					$(ts).triggerHandler("jqGridAfterLoadComplete", [req]);
 					if (pvis) { ts.grid.populateVisible(); }
 					endReq();
 				break;
