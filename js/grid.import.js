@@ -7,6 +7,10 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/ 
+//jsHint options
+/*global jQuery, $, alert, xmlJsonClass */
+
+"use strict";
     $.jgrid.extend({
         jqGridImport : function(o) {
             o = $.extend({
@@ -76,7 +80,8 @@
                             dataType:"xml",
                             complete: function(xml,stat) {
                                 if(stat == 'success') {
-                                    XmlConvert(xml.responseXML,o);
+                                    new XmlConvert(xml.responseXML,o);
+                                    $($t).triggerHandler("jqGridImportComplete", [xml, o]);
                                     if($.isFunction(o.importComplete)) {
                                         o.importComplete(xml);
                                     }
@@ -90,7 +95,8 @@
                         if(o.impstring && typeof o.impstring == 'string') {
                             var xmld = $.jgrid.stringToDoc(o.impstring);
                             if(xmld) {
-                                XmlConvert(xmld,o);
+                                new XmlConvert(xmld,o);
+                                $($t).triggerHandler("jqGridImportComplete", [xmld, o]);
                                 if($.isFunction(o.importComplete)) {
                                     o.importComplete(xmld);
                                 }
@@ -107,7 +113,8 @@
                             dataType:"json",
                             complete: function(json,stat) {
                                 if(stat == 'success') {
-                                    JsonConvert(json.responseText,o );
+                                    new JsonConvert(json.responseText,o );
+                                    $($t).triggerHandler("jqGridImportComplete", [json, o]);
                                     if($.isFunction(o.importComplete)) {
                                         o.importComplete(json);
                                     }
@@ -118,7 +125,8 @@
                         break;
                     case 'jsonstring' :
                         if(o.impstring && typeof o.impstring == 'string') {
-                            JsonConvert(o.impstring,o );
+                            new JsonConvert(o.impstring,o );
+                            $($t).triggerHandler("jqGridImportComplete", [o.impstring, o]);
                             if($.isFunction(o.importComplete)) {
                                 o.importComplete(o.impstring);
                             }
