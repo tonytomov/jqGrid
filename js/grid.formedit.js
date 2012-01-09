@@ -1716,7 +1716,7 @@ $.jgrid.extend({
 					.click(function(){
 						if (!$(this).hasClass('ui-state-disabled')) {
 							if ($.isFunction( o.addfunc )) {
-								o.addfunc();
+								o.addfunc.call($t);
 							} else {
 								$($t).jqGrid("editGridRow","new",pAdd);
 							}
@@ -1744,7 +1744,7 @@ $.jgrid.extend({
 							var sr = $t.p.selrow;
 							if (sr) {
 								if($.isFunction( o.editfunc ) ) {
-									o.editfunc(sr);
+									o.editfunc.call($t, sr);
 								} else {
 									$($t).jqGrid("editGridRow",sr,pEdit);
 								}
@@ -1776,7 +1776,7 @@ $.jgrid.extend({
 							var sr = $t.p.selrow;
 							if (sr) {
 								if($.isFunction( o.viewfunc ) ) {
-									o.viewfunc(sr);
+									o.viewfunc.call($t, sr);
 								} else {
 									$($t).jqGrid("viewGridRow",sr,pView);
 								}
@@ -1813,8 +1813,8 @@ $.jgrid.extend({
 								dr = $t.p.selrow;
 							}
 							if(dr){
-								if("function" == typeof o.delfunc){
-									o.delfunc(dr);
+								if($.isFunction( o.delfunc )){
+									o.delfunc.call($t, dr);
 								}else{
 									$($t).jqGrid("delGridRow",dr,pDel);
 								}
@@ -1843,7 +1843,11 @@ $.jgrid.extend({
 					.attr({"title":o.searchtitle  || "",id:pSearch.id || "search_"+elemids})
 					.click(function(){
 						if (!$(this).hasClass('ui-state-disabled')) {
-							$($t).jqGrid("searchGrid",pSearch);
+							if($.isFunction( o.searchfunc )) {
+								o.searchfunc.call($t, pSearch)
+							} else {
+								$($t).jqGrid("searchGrid",pSearch);
+							}
 						}
 						return false;
 					}).hover(
