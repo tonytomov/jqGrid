@@ -344,7 +344,7 @@ $.jgrid.extend({
 			rowID : "new_row",
 			initdata : {},
 			position :"first",
-			useDefValues : false,
+			useDefValues : true,
 			useFormatter : false,
 			addRowParams : {extraparam:{}}
 		},p  || {});
@@ -353,7 +353,7 @@ $.jgrid.extend({
 			var $t = this;
 			if(p.useDefValues === true) {
 				$($t.p.colModel).each(function(i){
-					if( this.edioptions && this.editoptions.defaultValue ) {
+					if( this.editoptions && this.editoptions.defaultValue ) {
 						var opt = this.editoptions.defaultValue,
 						tmp = $.isFunction(opt) ? opt.call($t) : opt;
 						p.initdata[this.name] = tmp;
@@ -475,11 +475,12 @@ $.jgrid.extend({
 								}
 								o.editParams.extraparam[oper] = opers.addoper;
 							}
-							$($t).jqGrid('saveRow', sr, o.editParams);
-							$("#"+$t.p.id+"_ilsave").addClass('ui-state-disabled');
-							$("#"+$t.p.id+"_ilcancel").addClass('ui-state-disabled');
-							$("#"+$t.p.id+"_iladd").removeClass('ui-state-disabled');
-							$("#"+$t.p.id+"_iledit").removeClass('ui-state-disabled');
+							if( $($t).jqGrid('saveRow', sr, o.editParams) ) {
+								$("#"+$t.p.id+"_ilsave").addClass('ui-state-disabled');
+								$("#"+$t.p.id+"_ilcancel").addClass('ui-state-disabled');
+								$("#"+$t.p.id+"_iladd").removeClass('ui-state-disabled');
+								$("#"+$t.p.id+"_iledit").removeClass('ui-state-disabled');
+							}
 						} else {
 							$.jgrid.viewModal("#alertmod",{gbox:"#gbox_"+$t.p.id,jqm:true});$("#jqg_alrt").focus();							
 						}

@@ -415,17 +415,17 @@
 		if( !$.fmatter.isUndefined($('#'+gid)[0].p.delOptions) ) {
 			op.delOptions = $('#'+gid)[0].p.delOptions;
 		}
-		var saverow = function( rowid)	{
-			if(op.afterSave) op.afterSave(rowid);
+		var $t = $("#"+gid)[0];
+		var saverow = function( rowid, res)	{
+			if(op.afterSave) op.afterSave.call($t, rowid, res);
 			$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid + ".ui-jqgrid-btable:first").show();
 			$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid+ ".ui-jqgrid-btable:first").hide();
 		},
 		restorerow = function( rowid)	{
-			if(op.afterRestore) op.afterRestore(rowid);
+			if(op.afterRestore) op.afterRestore.call($t, rowid);
 			$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid+ ".ui-jqgrid-btable:first").show();
 			$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid+ ".ui-jqgrid-btable:first").hide();
 		};
-		var $t = $("#"+gid)[0];
 		if( $("#"+rid,"#"+gid).hasClass("jqgrid-new-row") ){
 			var opers = $t.p.prmNames,
 			oper = opers.oper;
