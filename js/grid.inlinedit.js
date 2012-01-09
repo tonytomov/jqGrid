@@ -270,7 +270,6 @@ $.jgrid.extend({
 							sucret = $($t).triggerHandler("jqGridInlineSuccessSaveRow", [res, rowid, o]);
 							if (!$.isArray(sucret)) {sucret = [true, tmp];}
 							if (sucret[0] && $.isFunction(o.successfunc)) {sucret = o.successfunc.call($t, res);}							
-							sucret = o.successfunc.call($t, res);
 							if($.isArray(sucret)) {
 								// expect array - status, data, rowid
 								ret = sucret[0];
