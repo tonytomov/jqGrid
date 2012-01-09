@@ -116,6 +116,7 @@ $.jgrid.extend({
 							}
 						});
 					}
+					$($t).triggerHandler("jqGridInlineEditRow", [rowid, o]);
 					if( $.isFunction(o.oneditfunc)) { o.oneditfunc.call($t, rowid); }
 				}
 			}
@@ -249,6 +250,7 @@ $.jgrid.extend({
 					if( $t.p.savedRow[k].id == rowid) {fr = k; break;}
 				}
 				if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
+				$($t).triggerHandler("jqGridInlineAfterSaveRow", [rowid, resp, tmp, o]);
 				if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid,resp); }
 				success = true;
 				$(ind).unbind("keydown");
@@ -265,15 +267,16 @@ $.jgrid.extend({
 						$("#lui_"+$t.p.id).hide();
 						if (stat === "success"){
 							var ret = true, sucret;
-							if( $.isFunction(o.successfunc)) { 
-								sucret = o.successfunc.call($t, res);
-								if($.isArray(sucret)) {
-									// expect array - status, data, rowid
-									ret = sucret[0];
-									tmp = sucret[1] ? sucret[1] : tmp;
-								} else {
-									ret = sucret;
-								}
+							sucret = $($t).triggerHandler("jqGridInlineSuccessSaveRow", [res, rowid, o]);
+							if (!$.isArray(sucret)) {sucret = [true, tmp];}
+							if (sucret[0] && $.isFunction(o.successfunc)) {sucret = o.successfunc.call($t, res);}							
+							sucret = o.successfunc.call($t, res);
+							if($.isArray(sucret)) {
+								// expect array - status, data, rowid
+								ret = sucret[0];
+								tmp = sucret[1] ? sucret[1] : tmp;
+							} else {
+								ret = sucret;
 							}
 							if (ret===true) {
 								if($t.p.autoencode) {
@@ -288,12 +291,14 @@ $.jgrid.extend({
 									if( $t.p.savedRow[k].id == rowid) {fr = k; break;}
 								}
 								if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
+								$($t).triggerHandler("jqGridInlineAfterSaveRow", [rowid, res, tmp, o]);
 								if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid,res); }
 								success = true;
 								$(ind).unbind("keydown");
 							} else {
+								$($t).triggerHandler("jqGridInlineErrorSaveRow", [rowid, res, stat, null, o]);
 								if($.isFunction(o.errorfunc) ) {
-									o.errorfunc.call($t, rowid, res, stat);
+									o.errorfunc.call($t, rowid, res, stat, null);
 								}
 								if(o.restoreAfterError === true) {
 									$($t).jqGrid("restoreRow",rowid, o.afterrestorefunc);
@@ -301,10 +306,11 @@ $.jgrid.extend({
 							}
 						}
 					},
-					error:function(res,stat){
+					error:function(res,stat,err){
 						$("#lui_"+$t.p.id).hide();
+						$($t).triggerHandler("jqGridInlineErrorSaveRow", [rowid, res, stat, err, o]);
 						if($.isFunction(o.errorfunc) ) {
-							o.errorfunc.call($t, rowid, res, stat);
+							o.errorfunc.call($t, rowid, res, stat, err);
 						} else {
 							try {
 								$.jgrid.info_dialog($.jgrid.errors.errcap,'<div class="ui-state-error">'+ res.responseText +'</div>', $.jgrid.edit.bClose,{buttonalign:'right'});
@@ -360,6 +366,7 @@ $.jgrid.extend({
 					setTimeout(function(){$($t).jqGrid("delRowData",rowid);},0);
 				}
 			}
+			$($t).triggerHandler("jqGridInlineAfterRestoreRow", [rowid]);
 			if ($.isFunction(o.afterrestorefunc))
 			{
 				o.afterrestorefunc.call($t, rowid);
@@ -552,7 +559,7 @@ $.jgrid.extend({
 						ret = onSelect.call($t, id, stat);
 					}
 					return ret;
-				}
+				};
 			}
 
 		});
