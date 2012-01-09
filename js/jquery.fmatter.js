@@ -14,6 +14,7 @@
 **/
 
 ;(function($) {
+"use strict";	
 	$.fmatter = {};
 	//opts can be id:row id for the row, rowdata:the data for the row, colmodel:the column model for this column
 	//example {id:1234,}
@@ -143,7 +144,7 @@
 			if( format in opts.masks ) { format = opts.masks[format]; }
 			if( !isNaN( date - 0 ) && String(format).toLowerCase() == "u") {
 				//Unix timestamp
-			    timestamp = new Date( parseFloat(date)*1000 );
+				timestamp = new Date( parseFloat(date)*1000 );
 			} else if(date.constructor === Date) {
 				timestamp = date;
 				// Microsoft date format support
@@ -469,9 +470,9 @@
 		var rowid = opts.rowId, str="",ocl;
 		if(typeof(rowid) =='undefined' || $.fmatter.isEmpty(rowid)) {return "";}
 		if(op.editformbutton){
-			ocl = "onclick=jQuery.fn.fmatter.rowactions('"+rowid+"','"+opts.gid+"','formedit',"+opts.pos+"); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); "
+			ocl = "onclick=jQuery.fn.fmatter.rowactions('"+rowid+"','"+opts.gid+"','formedit',"+opts.pos+"); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
 			str =str+ "<div title='"+$.jgrid.nav.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='ui-icon ui-icon-pencil'></span></div>";
-		} else 	if(op.editbutton){
+		} else if(op.editbutton){
 			ocl = "onclick=jQuery.fn.fmatter.rowactions('"+rowid+"','"+opts.gid+"','edit',"+opts.pos+"); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover') ";
 			str =str+ "<div title='"+$.jgrid.nav.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='ui-icon ui-icon-pencil'></span></div>";
 		}
