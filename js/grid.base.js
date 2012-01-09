@@ -2801,15 +2801,14 @@ $.jgrid.extend({
 	delRowData : function(rowid) {
 		var success = false, rowInd, ia, ri;
 		this.each(function() {
-			var $t = this;
+			var $t = this, updatePager = false;
 			rowInd = $t.rows.namedItem(rowid);
-			if(!rowInd) {return false;}
-			else {
+			if(!rowInd) {
 				ri = rowInd.rowIndex;
 				$(rowInd).remove();
 				$t.p.records--;
 				$t.p.reccount--;
-				$t.updatepager(true,false);
+				updatepager = true;
 				success=true;
 				if($t.p.multiselect) {
 					ia = $.inArray(rowid,$t.p.selarrrow);
@@ -2822,6 +2821,7 @@ $.jgrid.extend({
 				if(typeof(pos) != 'undefined') {
 					$t.p.data.splice(pos,1);
 					$t.refreshIndex();
+    				updatepager = true;
 				}
 			}
 			if( $t.p.altRows === true && success ) {
@@ -2831,6 +2831,8 @@ $.jgrid.extend({
 					else { $(this).removeClass(cn); }
 				});
 			}
+			if(updatePager) 
+                $t.updatepager(true,false);
 		});
 		return success;
 	},
