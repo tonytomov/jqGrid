@@ -31,7 +31,7 @@
             }, o || {});
             return this.each(function(){
                 var $t = this;
-                var XmlConvert = function (xml,o) {
+                var xmlConvert = function (xml,o) {
                     var cnfg = $(o.xmlGrid.config,xml)[0];
                     var xmldata = $(o.xmlGrid.data,xml)[0], jstr, jstr1;
                     if(xmlJsonClass.xml2json && $.jgrid.parse) {
@@ -56,7 +56,7 @@
                         alert("xml2json or parse are not present");
                     }
                 };
-                var JsonConvert = function (jsonstr,o){
+                var jsonConvert = function (jsonstr,o){
                     if (jsonstr && typeof jsonstr == 'string') {
                         var json = $.jgrid.parse(jsonstr);
                         var gprm = json[o.jsonGrid.config];
@@ -80,7 +80,7 @@
                             dataType:"xml",
                             complete: function(xml,stat) {
                                 if(stat == 'success') {
-                                    new XmlConvert(xml.responseXML,o);
+                                    xmlConvert(xml.responseXML,o);
                                     $($t).triggerHandler("jqGridImportComplete", [xml, o]);
                                     if($.isFunction(o.importComplete)) {
                                         o.importComplete(xml);
@@ -95,7 +95,7 @@
                         if(o.impstring && typeof o.impstring == 'string') {
                             var xmld = $.jgrid.stringToDoc(o.impstring);
                             if(xmld) {
-                                new XmlConvert(xmld,o);
+                                xmlConvert(xmld,o);
                                 $($t).triggerHandler("jqGridImportComplete", [xmld, o]);
                                 if($.isFunction(o.importComplete)) {
                                     o.importComplete(xmld);
@@ -113,7 +113,7 @@
                             dataType:"json",
                             complete: function(json,stat) {
                                 if(stat == 'success') {
-                                    new JsonConvert(json.responseText,o );
+                                    jsonConvert(json.responseText,o );
                                     $($t).triggerHandler("jqGridImportComplete", [json, o]);
                                     if($.isFunction(o.importComplete)) {
                                         o.importComplete(json);
@@ -125,7 +125,7 @@
                         break;
                     case 'jsonstring' :
                         if(o.impstring && typeof o.impstring == 'string') {
-                            new JsonConvert(o.impstring,o );
+                            jsonConvert(o.impstring,o );
                             $($t).triggerHandler("jqGridImportComplete", [o.impstring, o]);
                             if($.isFunction(o.importComplete)) {
                                 o.importComplete(o.impstring);
