@@ -417,12 +417,12 @@
 		}
 		var $t = $("#"+gid)[0];
 		var saverow = function( rowid, res)	{
-			if(op.afterSave) op.afterSave.call($t, rowid, res);
+			if($.isFunction(op.afterSave)) { op.afterSave.call($t, rowid, res); }
 			$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid + ".ui-jqgrid-btable:first").show();
 			$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid+ ".ui-jqgrid-btable:first").hide();
 		},
 		restorerow = function( rowid)	{
-			if(op.afterRestore) op.afterRestore.call($t, rowid);
+			if($.isFunction(op.afterRestore) ) { op.afterRestore.call($t, rowid); }
 			$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid+ ".ui-jqgrid-btable:first").show();
 			$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid+ ".ui-jqgrid-btable:first").hide();
 		};
@@ -437,20 +437,20 @@
 				$('#'+gid).jqGrid('editRow',rid, op.keys, op.onEdit, op.onSuccess, op.url, op.extraparam, saverow, op.onError,restorerow);
 				$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid+ ".ui-jqgrid-btable:first").hide();
 				$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid+ ".ui-jqgrid-btable:first").show();
-				if($.isFunction($t.p._complete)) {$t.p._complete.call($t);}
+				$($t).triggerHandler("jqGridAfterGridComplete");
 				break;
 			case 'save':
 				if ( $('#'+gid).jqGrid('saveRow',rid,  op.onSuccess,op.url, op.extraparam, saverow, op.onError,restorerow) ) {
 				$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid+ ".ui-jqgrid-btable:first").show();
 				$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid+ ".ui-jqgrid-btable:first").hide();
-				if($.isFunction($t.p._complete)) {$t.p._complete.call($t);}
+				$($t).triggerHandler("jqGridAfterGridComplete");
 				}
 				break;
 			case 'cancel' :
 				$('#'+gid).jqGrid('restoreRow',rid, restorerow);
 				$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid+ ".ui-jqgrid-btable:first").show();
 				$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid+ ".ui-jqgrid-btable:first").hide();
-				if($.isFunction($t.p._complete)) {$t.p._complete.call($t);}
+				$($t).triggerHandler("jqGridAfterGridComplete");
 				break;
 			case 'del':
 				$('#'+gid).jqGrid('delGridRow',rid, op.delOptions);
