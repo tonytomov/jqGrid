@@ -9,6 +9,7 @@
 
 /*global document, jQuery, $ */
 (function($) {
+"use strict";
 $.jgrid.extend({
 	setTreeNode : function(i, len){
 		return this.each(function(){
@@ -167,11 +168,11 @@ $.jgrid.extend({
 					i++;
 					//
 					for(var tkey in $t.p.treeReader) {
-						if($t.p.treeReader[tkey] == nm)
+						if($t.p.treeReader[tkey] == nm) {
 							dupcols.push(nm);
+						}
+					}
 				}
-
-			}
 			}
 			$.each($t.p.treeReader,function(j,n){
 				if(n && $.inArray(n, dupcols) === -1){
@@ -529,15 +530,19 @@ $.jgrid.extend({
 						.select();
 					if(res.length) {
 						for( key in res) {
-							res[key][left] = parseInt(res[key][left],10) - width ;
-			}
+							if(res.hasOwnProperty(key)) {
+								res[key][left] = parseInt(res[key][left],10) - width ;
+							}
+						}
 					}
 					res = $.jgrid.from($t.p.data)
 						.greater(right,myright,{stype:'integer'})
 						.select();
 					if(res.length) {
 						for( key in res) {
-							res[key][right] = parseInt(res[key][right],10) - width ;
+							if(res.hasOwnProperty(key)) {
+								res[key][right] = parseInt(res[key][right],10) - width ;
+							}
 						}
 					}
 				}
@@ -624,8 +629,10 @@ $.jgrid.extend({
 					res = query.select();
 					if(res.length) {
 						for( key in res) {
-							res[key][left] = res[key][left] > maxright ? parseInt(res[key][left],10) +2 : res[key][left];
-							res[key][right] = res[key][right] >= maxright ? parseInt(res[key][right],10) +2 : res[key][right];
+							if(res.hasOwnProperty(key)) {
+								res[key][left] = res[key][left] > maxright ? parseInt(res[key][left],10) +2 : res[key][left];
+								res[key][right] = res[key][right] >= maxright ? parseInt(res[key][right],10) +2 : res[key][right];
+							}
 						}
 					}
 					data[left] = maxright;
@@ -637,7 +644,9 @@ $.jgrid.extend({
 						.select();
 					if(res.length) {
 						for( key in res) {
-							res[key][left] = parseInt(res[key][left],10) +2 ;
+							if(res.hasOwnProperty(key)) {
+								res[key][left] = parseInt(res[key][left],10) +2 ;
+							}
 						}
 					}
 					res = $.jgrid.from($t.p.data)
@@ -645,7 +654,9 @@ $.jgrid.extend({
 						.select();
 					if(res.length) {
 						for( key in res) {
-							res[key][right] = parseInt(res[key][right],10) +2 ;
+							if(res.hasOwnProperty(key)) {
+								res[key][right] = parseInt(res[key][right],10) +2 ;
+							}
 						}
 					}
 					data[left] = maxright+1;
