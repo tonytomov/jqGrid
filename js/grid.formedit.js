@@ -64,7 +64,8 @@ $.jgrid.extend({
 			var fid = "fbox_"+$t.p.id,
 			showFrm = true,
 			IDs = {themodal:'searchmod'+fid,modalhead:'searchhd'+fid,modalcontent:'searchcnt'+fid, scrollelm : fid},
-			defaultFilters  = $t.p.postData[p.sFilter];
+			defaultFilters  = $t.p.postData[p.sFilter],
+			_filter = $("#"+fid);
 			if(typeof(defaultFilters) === "string") {
 				defaultFilters = $.jgrid.parse( defaultFilters );
 			}
@@ -72,16 +73,18 @@ $.jgrid.extend({
 				$("#"+IDs.themodal).remove();
 			}
 			function showFilter() {
-				if($.isFunction(p.beforeShowSearch)) {
-					showFrm = p.beforeShowSearch($("#"+fid));
-					if(typeof(showFrm) === "undefined") {
-						showFrm = true;
-					}
+				showFrm = $($t).triggerHandler("jqGridFilterBeforeShow", [_filter]);
+				if(typeof(showFrm) === "undefined") {
+					showFrm = true;
+				}
+				if(showFrm && $.isFunction(p.beforeShowSearch)) {
+					showFrm = p.beforeShowSearch.call($t,_filter);
 				}
 				if(showFrm) {
 					$.jgrid.viewModal("#"+IDs.themodal,{gbox:"#gbox_"+fid,jqm:p.jqModal, modal:p.modal, overlay: p.overlay, toTop: p.toTop});
+					$($t).triggerHandler("jqGridFilterAfterShow", [_filter]);
 					if($.isFunction(p.afterShowSearch)) {
-						p.afterShowSearch($("#"+fid));
+						p.afterShowSearch.call($t, _filter);
 					}
 				}
 			}
@@ -177,8 +180,9 @@ $.jgrid.extend({
 					});
 				}
 				if(p.multipleGroup === true) {p.multipleSearch = true;}
+				$($t).triggerHandler("jqGridFilterInitialize", [_filter]);
 				if($.isFunction(p.onInitializeSearch) ) {
-					p.onInitializeSearch($("#"+fid));
+					p.onInitializeSearch.call($t, _filter);
 				}
 				p.gbox = "#gbox_"+fid;
 				if (p.layer) {
@@ -235,8 +239,9 @@ $.jgrid.extend({
 					}
 					$t.p.search = true;
 					$.extend($t.p.postData,sdata);
+					$($t).triggerHandler("jqGridFilterSearch");
 					if($.isFunction(p.onSearch) ) {
-						p.onSearch();
+						p.onSearch.call($t);
 					}
 					$($t).trigger("reloadGrid",[{page:1}]);
 					if(p.closeAfterSearch) {
@@ -258,8 +263,9 @@ $.jgrid.extend({
 						$(".ui-template", fil).val("default");
 					}
 					$.extend($t.p.postData,sdata);
+					$($t).triggerHandler("jqGridFilterReset");
 					if($.isFunction(p.onReset) ) {
-						p.onReset();
+						p.onReset.call($t);
 					}
 					$($t).trigger("reloadGrid",[{page:1}]);
 					return false;
