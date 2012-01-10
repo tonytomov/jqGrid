@@ -1,5 +1,6 @@
 // Grouping module
 ;(function($){
+"use strict";
 $.jgrid.extend({
 	groupingSetup : function () {
 		return this.each(function (){
@@ -128,6 +129,7 @@ $.jgrid.extend({
 				}
 				tarspan.removeClass(plus).addClass(minus);
 			}
+			$($t).triggerHandler("jqGridGroupingClickGroup", [hid , collapsed]);
 			if( $.isFunction($t.p.onClickGroup)) { $t.p.onClickGroup.call($t, hid , collapsed); }
 
 		});
