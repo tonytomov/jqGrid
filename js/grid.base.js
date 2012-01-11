@@ -2996,8 +2996,10 @@ $.jgrid.extend({
 					$("tr",$t.grid.hDiv).each(function(){
 						$(this.cells[i]).css("display", show);
 					});
-					$($t.rows).each(function(j){
-						$(this.cells[i]).css("display", show);
+					$($t.rows).each(function(){
+						if (!$(this).hasClass("jqgroup")) {
+							$(this.cells[i]).css("display", show);
+						}
 					});
 					if($t.p.footerrow) { $("tr.footrow td:eq("+i+")", $t.grid.sDiv).css("display", show); }
 					cw = this.widthOrg? this.widthOrg: parseInt(this.width,10);
