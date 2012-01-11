@@ -272,8 +272,8 @@ $.jgrid.extend({
 				});
 				showFilter();
 				$(".fm-button:not(.ui-state-disabled)",fil).hover(
-				   function(){$(this).addClass('ui-state-hover');},
-				   function(){$(this).removeClass('ui-state-hover');}
+					function(){$(this).addClass('ui-state-hover');},
+					function(){$(this).removeClass('ui-state-hover');}
 				);
 			}
 		});
@@ -675,11 +675,11 @@ $.jgrid.extend({
 						complete:function(data,Status){
 							postdata[idname] = $t.p.idPrefix + postdata[idname];
 							if(Status != "success") {
-							    ret[0] = false;
-							    if ($.isFunction(rp_ge[$t.p.id].errorTextFormat)) {
-							        ret[1] = rp_ge[$t.p.id].errorTextFormat(data);
-							    } else {
-							        ret[1] = Status + " Status: '" + data.statusText + "'. Error code: " + data.status;
+								ret[0] = false;
+								if ($.isFunction(rp_ge[$t.p.id].errorTextFormat)) {
+									ret[1] = rp_ge[$t.p.id].errorTextFormat(data);
+								} else {
+									ret[1] = Status + " Status: '" + data.statusText + "'. Error code: " + data.status;
 								}
 							} else {
 								// data is posted successful
@@ -1068,8 +1068,8 @@ $.jgrid.extend({
 				}
 				if(onAfterShow) {onAfterShow($("#"+frmgr));}
 				$(".fm-button","#"+IDs.themodal).hover(
-				   function(){$(this).addClass('ui-state-hover');},
-				   function(){$(this).removeClass('ui-state-hover');}
+					function(){$(this).addClass('ui-state-hover');},
+					function(){$(this).removeClass('ui-state-hover');}
 				);
 				$("#sData", "#"+frmtb+"_2").click(function(e){
 					postdata = {};extpost={};
@@ -1385,8 +1385,8 @@ $.jgrid.extend({
 				if($.isFunction(p.beforeShowForm)) {p.beforeShowForm($("#"+frmgr));}
 				$.jgrid.viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal, modal:p.modal});
 				$(".fm-button:not(.ui-state-disabled)","#"+frmtb+"_2").hover(
-				   function(){$(this).addClass('ui-state-hover');},
-				   function(){$(this).removeClass('ui-state-hover');}
+					function(){$(this).addClass('ui-state-hover');},
+					function(){$(this).removeClass('ui-state-hover');}
 				);
 				focusaref();
 				$("#cData", "#"+frmtb+"_2").click(function(e){
@@ -1519,8 +1519,8 @@ $.jgrid.extend({
 				if(showFrm === false) {return;}
 
 				$(".fm-button","#"+dtbl+"_2").hover(
-				   function(){$(this).addClass('ui-state-hover');},
-				   function(){$(this).removeClass('ui-state-hover');}
+					function(){$(this).addClass('ui-state-hover');},
+					function(){$(this).removeClass('ui-state-hover');}
 				);
 				p.delicon = $.extend([true,"left","ui-icon-scissors"],rp_ge[$t.p.id].delicon);
 				p.cancelicon = $.extend([true,"left","ui-icon-cancel"],rp_ge[$t.p.id].cancelicon);
@@ -1850,7 +1850,7 @@ $.jgrid.extend({
 					.click(function(){
 						if (!$(this).hasClass('ui-state-disabled')) {
 							if($.isFunction( o.searchfunc )) {
-								o.searchfunc.call($t, pSearch)
+								o.searchfunc.call($t, pSearch);
 							} else {
 								$($t).jqGrid("searchGrid",pSearch);
 							}
@@ -1883,14 +1883,14 @@ $.jgrid.extend({
 								var gID = $t.p.id;
 								$t.p.postData.filters ="";
 								$("#fbox_"+gID).jqFilter('resetFilter');
-							    if($.isFunction($t.clearToolbar)) {$t.clearToolbar(false);}
+								if($.isFunction($t.clearToolbar)) {$t.clearToolbar(false);}
 							} catch (e) {}
 							switch (o.refreshstate) {
 								case 'firstpage':
-								    $($t).trigger("reloadGrid", [{page:1}]);
+									$($t).trigger("reloadGrid", [{page:1}]);
 									break;
 								case 'current':
-								    $($t).trigger("reloadGrid", [{current:true}]);
+									$($t).trigger("reloadGrid", [{current:true}]);
 									break;
 							}
 							if($.isFunction(o.afterRefresh)) {o.afterRefresh();}
