@@ -1873,8 +1873,8 @@ $.fn.jqGrid = function( pin ) {
 			$('.ui-pg-selbox',"#"+pgcnt).bind('change',function() {
 				ts.p.page = Math.round(ts.p.rowNum*(ts.p.page-1)/this.value-0.5)+1;
 				ts.p.rowNum = this.value;
-				if(tp) { $('.ui-pg-selbox',ts.p.pager).val(this.value); }
-				else if(ts.p.toppager) { $('.ui-pg-selbox',ts.p.toppager).val(this.value); }
+				if(ts.p.pager) { $('.ui-pg-selbox',ts.p.pager).val(this.value); }
+				if(ts.p.toppager) { $('.ui-pg-selbox',ts.p.toppager).val(this.value); }
 				if(!clearVals('records')) { return false; }
 				populate();
 				return false;
