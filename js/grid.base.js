@@ -1446,7 +1446,7 @@ $.fn.jqGrid = function( pin ) {
 			ts.p._index = {};
 			for(var i=0, dl = ts.p.data.length; i < dl; i++){
 			     var cur = ts.p.data[i], idr = i+1;
-					cur[locid] = cur[locid] || idr;
+					cur[locid] = idr;
 					ts.p._index[idr] = i;
 			}
 			
@@ -1602,6 +1602,10 @@ $.fn.jqGrid = function( pin ) {
 			var cp, last, base, from,to,tot,fmt, pgboxes = "", sppg,
 			tspg = ts.p.pager ? "_"+$.jgrid.jqID(ts.p.pager.substr(1)) : "",
 			tspg_t = ts.p.toppager ? "_"+ts.p.toppager.substr(1) : "";
+			
+			if(ts.p.datatype == 'local') //calculate the lastpage for localdata
+				ts.p.lastpage = Math.ceil(ts.p.records / ts.p.rowNum);
+			
 			base = parseInt(ts.p.page,10)-1;
 			if(base < 0) { base = 0; }
 			base = base*parseInt(ts.p.rowNum,10);
@@ -2801,14 +2805,25 @@ $.jgrid.extend({
 	delRowData : function(rowid) {
 		var success = false, rowInd, ia, ri;
 		this.each(function() {
-			var $t = this, updatePager = false;
+			var $t = this;
 			rowInd = $t.rows.namedItem(rowid);
-			if(rowInd) {
+			if($t.p.datatype == 'local') {
+				var pos = $t.p._index[rowid];
+				if(typeof(pos) != 'undefined') {
+					$t.p.data.splice(pos,1);
+					$t.p.records--;
+					var maxPages = Math.ceil($t.p.records / $t.p.rowNum);
+					$t.p.page = (maxPages < $t.p.page ? maxPages : $t.p.page); 
+					
+    		        $('#' + $t.p.id).trigger('reloadGrid');
+                    success = true;  
+				}
+			} else if(rowInd) {
 				ri = rowInd.rowIndex;
 				$(rowInd).remove();
 				$t.p.records--;
 				$t.p.reccount--;
-				updatePager = true;
+                $t.updatepager(true,false);
 				success=true;
 				if($t.p.multiselect) {
 					ia = $.inArray(rowid,$t.p.selarrrow);
@@ -2816,14 +2831,7 @@ $.jgrid.extend({
 				}
 				if(rowid == $t.p.selrow) {$t.p.selrow=null;}
 			}
-			if($t.p.datatype == 'local') {
-				var pos = $t.p._index[rowid];
-				if(typeof(pos) != 'undefined') {
-					$t.p.data.splice(pos,1);
-					$t.refreshIndex();
-    				updatePager = true;
-				}
-			}
+			
 			if( $t.p.altRows === true && success ) {
 				var cn = $t.p.altclass;
 				$($t.rows).each(function(i){
@@ -2831,8 +2839,6 @@ $.jgrid.extend({
 					else { $(this).removeClass(cn); }
 				});
 			}
-			if(updatePager) 
-                $t.updatepager(true,false);
 		});
 		return success;
 	},
@@ -2948,48 +2954,50 @@ $.jgrid.extend({
 						prp = t.formatCol(i,1,v, data, rowid, true);
 						row += "<td role=\"gridcell\" aria-describedby=\""+t.p.id+"_"+nm+"\" "+prp+">"+v+"</td>";
 					}
-					row = "<tr id=\""+rowid+"\" role=\"row\" tabindex=\"-1\" class=\"ui-widget-content jqgrow ui-row-"+t.p.direction+" "+cna+"\">" + row+"</tr>";
-					if(t.rows.length === 0){
-						$("table:first",t.grid.bDiv).append(row);
-					} else {
-					switch (pos) {
-						case 'last':
-							$(t.rows[t.rows.length-1]).after(row);
-							sind = t.rows.length-1;
-							break;
-						case 'first':
-							$(t.rows[0]).after(row);
-							sind = 1;
-							break;
-						case 'after':
-							sind = t.rows.namedItem(src);
-							if (sind) {
-								if($(t.rows[sind.rowIndex+1]).hasClass("ui-subgrid")) { $(t.rows[sind.rowIndex+1]).after(row); }
-								else { $(sind).after(row); }
-							}
-							sind++;
-							break;
-						case 'before':
-							sind = t.rows.namedItem(src);
-							if(sind) {$(sind).before(row);sind=sind.rowIndex;}
-							sind--;
-							break;
-					}
-					}
-					if(t.p.subGrid===true) {
-						$(t).jqGrid("addSubGrid",gi+ni+ri, sind);
-					}
-					t.p.records++;
-					t.p.reccount++;
-					$(t).triggerHandler("jqGridAfterInsertRow", [rowid,data,data]);
-					if(air) { t.p.afterInsertRow.call(t,rowid,data,data); }
-					k++;
 					if(t.p.datatype == 'local') {
 						lcdata[t.p.localReader.id] = rowid;
 						t.p._index[rowid] = t.p.data.length;
 						t.p.data.push(lcdata);
 						lcdata = {};
 					}
+					if(t.p.reccount < t.p.rowNum || t.p.pager == "") {
+					   row = "<tr id=\""+rowid+"\" role=\"row\" tabindex=\"-1\" class=\"ui-widget-content jqgrow ui-row-"+t.p.direction+" "+cna+"\">" + row+"</tr>";
+					   if(t.rows.length === 0){
+					   	   $("table:first",t.grid.bDiv).append(row);
+					   } else {
+					       switch (pos) {
+    						case 'last':
+	   						    $(t.rows[t.rows.length-1]).after(row);
+							    sind = t.rows.length-1;
+							    break;
+    						case 'first':
+	           					$(t.rows[0]).after(row);
+    							sind = 1;
+	       						break;
+		      				case 'after':
+			     				sind = t.rows.namedItem(src);
+				        		if (sind) {
+						      		if($(t.rows[sind.rowIndex+1]).hasClass("ui-subgrid")) { $(t.rows[sind.rowIndex+1]).after(row); }
+								    else { $(sind).after(row); }
+							    }
+    							sind++;
+	       						break;
+		      				case 'before':
+			     				sind = t.rows.namedItem(src);
+				        		if(sind) {$(sind).before(row);sind=sind.rowIndex;}
+						       	sind--;
+						        break;
+    					   }
+	 	   			    }
+    					if(t.p.subGrid===true) {
+					   	   $(t).jqGrid("addSubGrid",gi+ni+ri, sind);
+					   }
+				    	t.p.reccount++;
+					}
+						t.p.records++;
+					$(t).triggerHandler("jqGridAfterInsertRow", [rowid,data,data]);
+					if(air) { t.p.afterInsertRow.call(t,rowid,data,data); }
+					k++;
 				}
 				if( t.p.altRows === true && !aradd) {
 					if (pos == "last") {
