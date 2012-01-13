@@ -354,7 +354,7 @@ $.jgrid.extend({
 					} catch (e) {}
 				}
 				$.each($t.p.colModel, function(i,n){
-					if(this.editable === true && this.name in $t.p.savedRow[fr] && !$(this).hasClass('not-editable-cell')) {
+					if(this.editable === true && this.name in $t.p.savedRow[fr] ) {
 						ares[this.name] = $t.p.savedRow[fr][this.name];
 					}
 				});
