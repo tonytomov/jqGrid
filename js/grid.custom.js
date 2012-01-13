@@ -193,9 +193,10 @@ $.jgrid.extend({
 				if($.isFunction(p.afterSearch)){p.afterSearch();}
 			};
 			var clearToolbar = function(trigger){
-				var sdata={}, v, j=0, nm;
+				var sdata={}, j=0, nm;
 				trigger = (typeof trigger != 'boolean') ? true : trigger;
 				$.each($t.p.colModel,function(i,n){
+					var v;
 					if(this.searchoptions && this.searchoptions.defaultValue !== undefined) { v = this.searchoptions.defaultValue; }
 					nm = this.index || this.name;
 					switch (this.stype) {
