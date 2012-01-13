@@ -196,22 +196,20 @@ $.jgrid.extend({
 				var sdata={}, v, j=0, nm;
 				trigger = (typeof trigger != 'boolean') ? true : trigger;
 				$.each($t.p.colModel,function(i,n){
-					v = (this.searchoptions && this.searchoptions.defaultValue) ? this.searchoptions.defaultValue : "";
+					if(this.searchoptions && this.searchoptions.defaultValue !== undefined) { v = this.searchoptions.defaultValue; }
 					nm = this.index || this.name;
 					switch (this.stype) {
 						case 'select' :
-							var v1;
 							$("#gs_"+$.jgrid.jqID(this.name)+" option",(this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv).each(function (i){
 								if(i===0) { this.selected = true; }
-								if ($(this).text() == v) {
+								if ($(this).val() == v) {
 									this.selected = true;
-									v1 = $(this).val();
 									return false;
 								}
 							});
-							if (v1) {
+							if ( v !== undefined ) {
 								// post the key and not the text
-								sdata[nm] = v1;
+								sdata[nm] = v;
 								j++;
 							} else {
 								try {
@@ -221,7 +219,7 @@ $.jgrid.extend({
 							break;
 						case 'text':
 							$("#gs_"+$.jgrid.jqID(this.name),(this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv).val(v);
-							if(v) {
+							if(v !== undefined) {
 								sdata[nm] = v;
 								j++;
 							} else {
@@ -325,7 +323,7 @@ $.jgrid.extend({
 									} else {
 										$(self).append(res);
 									}
-									if(soptions.defaultValue) { $("select",self).val(soptions.defaultValue); }
+									if(soptions.defaultValue !== undefined) { $("select",self).val(soptions.defaultValue); }
 									$("select",self).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
 									if(soptions.attr) {$("select",self).attr(soptions.attr);}
 									$("select",self).css({width: "100%"});
@@ -370,7 +368,7 @@ $.jgrid.extend({
 										}
 									}
 								}
-								if(soptions.defaultValue) { $(elem).val(soptions.defaultValue); }
+								if(soptions.defaultValue !== undefined) { $(elem).val(soptions.defaultValue); }
 								if(soptions.attr) {$(elem).attr(soptions.attr);}
 								if(soptions.dataInit !== undefined) { soptions.dataInit(elem); }
 								if(soptions.dataEvents !== undefined) { bindEvents(elem, soptions.dataEvents); }
@@ -385,7 +383,7 @@ $.jgrid.extend({
 						}
 						break;
 					case 'text':
-						var df = soptions.defaultValue ? soptions.defaultValue: "";
+						var df = soptions.defaultValue !== undefined ? soptions.defaultValue: "";
 						$(thd).append("<input type='text' style='width:95%;padding:0px;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"' value='"+df+"'/>");
 						if(soptions.attr) {$("input",thd).attr(soptions.attr);}
 						if(soptions.dataInit !== undefined) { soptions.dataInit($("input",thd)[0]); }
