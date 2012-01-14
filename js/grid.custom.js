@@ -498,6 +498,7 @@ $.jgrid.extend({
 			this.clearToolbar = clearToolbar;
 			this.toggleToolbar = toggleToolbar;
 			if (p.synchronizeToolbar) {
+				refreshSearchingToolbar.call($t);
 				$($t).bind('jqGridLoadComplete.filterToolbar', refreshSearchingToolbar);
 			}
 		});
