@@ -132,6 +132,7 @@ $.jgrid.extend({
 		p = $.extend({
 			autosearch: true,
 			searchOnEnter : true,
+			synchronizeToolbar: true,
 			beforeSearch: null,
 			afterSearch: null,
 			beforeClear: null,
@@ -279,6 +280,71 @@ $.jgrid.extend({
 					trow.hide(); 
 					if(trow2) {
 						trow2.hide();
+					}
+				}
+			};
+			var refreshSearchingToolbar = function () {
+				var $this = $(this), postData, filters, i, l, rules, rule, iCol, cm, cmi, control, tagName,
+					getColumnIndex = function (grid, columnIndex) {
+						var cm = grid.jqGrid('getGridParam', 'colModel'), i, l = cm.length;
+						for (i = 0; i < l; i++) {
+							if ((cm[i].index || cm[i].name) === columnIndex) {
+								return i; // return the colModel index
+							}
+						}
+						return -1;
+					};
+
+				if (!this.grid) { return; }
+
+				postData = $this.jqGrid('getGridParam', 'postData');
+				cm = $this.jqGrid('getGridParam', 'colModel');
+
+				if (typeof (postData.filters) === "string" &&
+						typeof (this.ftoolbar) === "boolean" && this.ftoolbar) {
+					// first clear the searching toolbar
+					for (i = 0, l = cm.length; i < l; i++) {
+						control = $("#gs_" + $.jgrid.jqID(cm[i].name));
+						if (control.length > 0) {
+							tagName = control[0].tagName.toUpperCase();
+							if (tagName === "SELECT") { // && cmi.stype === "select"
+								control.find("option[value='']")
+									.attr('selected', 'selected');
+							} else if (tagName === "INPUT") {
+								control.val('');
+							}
+						}
+					}
+
+					filters = $.parseJSON(postData.filters);
+					if (filters && filters.groupOp === "AND" && typeof (filters.groups) === "undefined") {
+						// only in case of advance searching without grouping we import filters in the
+						// searching toolbar
+						rules = filters.rules;
+						for (i = 0, l = rules.length; i < l; i++) {
+							rule = rules[i];
+							iCol = getColumnIndex($this, rule.field);
+							if (iCol >= 0) {
+								cmi = cm[iCol];
+								control = $("#gs_" + $.jgrid.jqID(cmi.name));
+								if (control.length > 0 &&
+										(((typeof (cmi.searchoptions) === "undefined" ||
+										typeof (cmi.searchoptions.sopt) === "undefined")
+										&& rule.op === p.defaultSearch) ||
+										  (typeof (cmi.searchoptions) === "object" &&
+											  $.isArray(cmi.searchoptions.sopt) &&
+											  cmi.searchoptions.sopt.length > 0 &&
+											  cmi.searchoptions.sopt[0] === rule.op))) {
+									tagName = control[0].tagName.toUpperCase();
+									if (tagName === "SELECT") { // && cmi.stype === "select"
+										control.find("option[value='" + $.jgrid.jqID(rule.data) + "']")
+											.attr('selected', 'selected');
+									} else if (tagName === "INPUT") {
+										control.val(rule.data);
+									}
+								}
+							}
+						}
 					}
 				}
 			};
@@ -431,6 +497,9 @@ $.jgrid.extend({
 			this.triggerToolbar = triggerToolbar;
 			this.clearToolbar = clearToolbar;
 			this.toggleToolbar = toggleToolbar;
+			if (p.synchronizeToolbar) {
+				$($t).bind('jqGridLoadComplete.filterToolbar', refreshSearchingToolbar);
+			}
 		});
 	},
 
