@@ -978,7 +978,9 @@ $.fn.jqGrid = function( pin ) {
 		formatter = function (rowId, cellval , colpos, rwdat, _act){
 			var cm = ts.p.colModel[colpos],v;
 			if(typeof cm.formatter !== 'undefined') {
-				var opts= {rowId: rowId, colModel:cm, gid:ts.p.id, pos:colpos };
+				var opts= {rowId: rowId, colModel:cm, gid:ts.p.id, pos:colpos,
+					colName: (typeof ts.p.colNames !== 'undefined' && typeof ts.p.colNames[colpos] !== 'undefined') ?
+							ts.p.colNames[colpos] : (typeof cm.label !== 'undefined' ? cm.label : cm.name)};
 				if($.isFunction( cm.formatter ) ) {
 					v = cm.formatter.call(ts,cellval,opts,rwdat,_act);
 				} else if($.fmatter){
