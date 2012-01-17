@@ -2363,7 +2363,7 @@ $.fn.jqGrid = function( pin ) {
 			if($(ptr).length === 0 || ptr[0].className.indexOf( 'ui-state-disabled' ) > -1 || ($(td,ts).closest("table.ui-jqgrid-btable").attr('id') || '').replace("_frozen","") !== ts.id ) {
 				return this;
 			}
-			var scb = $(td).hasClass("cbox"), srb = $(td).hasClass("rbox")
+			var scb = $(td).hasClass("cbox"), srb = $(td).hasClass("rbox"),
 			cSel = $(ts).triggerHandler("jqGridBeforeSelectRow", [ptr[0].id, e]);
 			cSel = (cSel === false || cSel === 'stop') ? false : true;
 			if(cSel && $.isFunction(ts.p.beforeSelectRow)) { cSel = ts.p.beforeSelectRow.call(ts,ptr[0].id, e); }
