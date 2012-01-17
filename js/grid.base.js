@@ -48,7 +48,9 @@ $.extend($.jgrid,{
 		}
 	},
 	realType : function (arg) {
-		return Object.prototype.toString.call(arg).slice(8, -1);
+		 return arg === null ? "Null"
+			: arg == null ? "Undefined"
+			: Object.prototype.toString.call(arg).slice(8, -1);
 	},
 	stripPref : function (pref, id) {
 		var obj = this.realType( pref );
