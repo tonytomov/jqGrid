@@ -145,10 +145,13 @@ $.jgrid.extend({
 			var $t = this;
 			if(this.ftoolbar) { return; }
 			var triggerToolbar = function() {
-				var sdata={}, j=0, v, nm, sopt={},so;
+				var sdata={}, j=0, v, nm, sopt={},so,mfn={};
 				$.each($t.p.colModel,function(i,n){
 					nm = this.index || this.name;
 					so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : this.stype=='select'?  'eq' : p.defaultSearch;
+					if (this.searchoptions && this.searchoptions.mfn) {
+						mfn[nm] = this.searchoptions.mfn;
+					}
 					v = $("#gs_"+$.jgrid.jqID(this.name), (this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv).val();
 					if(v) {
 						sdata[nm] = v;
@@ -167,6 +170,7 @@ $.jgrid.extend({
 					$.each(sdata,function(i,n){
 						if (gi > 0) {ruleGroup += ",";}
 						ruleGroup += "{\"field\":\"" + i + "\",";
+						ruleGroup += "\"mfn\":\"" + mfn[i] + "\",";
 						ruleGroup += "\"op\":\"" + sopt[i] + "\",";
 						n+="";
 						ruleGroup += "\"data\":\"" + n.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"}";
