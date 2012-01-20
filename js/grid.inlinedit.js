@@ -60,7 +60,7 @@ $.jgrid.extend({
 					if(treeg) { tmp = $("span:first",this).html();}
 					else {
 						try {
-							tmp =  $.unformat(this,{rowId:rowid, colModel:cm[i]},i);
+							tmp = $.unformat.call($t,this,{rowId:rowid, colModel:cm[i]},i);
 						} catch (_) {
 							tmp =  ( cm[i].edittype && cm[i].edittype == 'textarea' ) ? $(this).text() : $(this).html();
 						}

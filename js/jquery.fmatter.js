@@ -55,8 +55,8 @@
 		var v=cellval;
 		opts = $.extend({}, $.jgrid.formatter, opts);
 
-		if ($.fn.fmatter[formatType]){
-			v = $.fn.fmatter[formatType](cellval, opts, rwd, act);
+		if ($.isFunction($.fn.fmatter[formatType])){
+			v = $.fn.fmatter[formatType].call(this, cellval, opts, rwd, act);
 		}
 		return v;
 	};
@@ -493,7 +493,7 @@
 		re = /([\.\*\_\'\(\)\{\}\+\?\\])/g,
 		unformatFunc = options.colModel.unformat||($.fn.fmatter[formatType] && $.fn.fmatter[formatType].unformat);
 		if(typeof unformatFunc !== 'undefined' && $.isFunction(unformatFunc) ) {
-			ret = unformatFunc($(cellval).text(), options, cellval);
+			ret = unformatFunc.call(this, $(cellval).text(), options, cellval);
 		} else if(!$.fmatter.isUndefined(formatType) && $.fmatter.isString(formatType) ) {
 			var opts = $.jgrid.formatter || {}, stripTag;
 			switch(formatType) {
