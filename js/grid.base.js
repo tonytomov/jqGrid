@@ -2333,19 +2333,25 @@ $.fn.jqGrid = function( pin ) {
 			cSel = $(ts).triggerHandler("jqGridBeforeSelectRow", [ptr[0].id, e]);
 			cSel = (cSel === false || cSel === 'stop') ? false : true;
 			if(cSel && $.isFunction(ts.p.beforeSelectRow)) { cSel = ts.p.beforeSelectRow.call(ts,ptr[0].id, e); }
-			if (td.tagName == 'A' || ((td.tagName == 'INPUT' || td.tagName == 'TEXTAREA' || td.tagName == 'OPTION' || td.tagName == 'SELECT' ) && !scb) ) { return this; }
+			if (td.tagName == 'A' || ((td.tagName == 'INPUT' || td.tagName == 'TEXTAREA' || td.tagName == 'OPTION' || td.tagName == 'SELECT' ) && !scb) ) { return; }
 			if(cSel === true) {
+				ri = ptr[0].id;
+				ci = $.jgrid.getCellIndex(td);
+				tdHtml = $(td).html();
+				$(ts).triggerHandler("jqGridCellSelect", [ri,ci,tdHtml,e]);
+				if($.isFunction(ts.p.onCellSelect)) {
+					ts.p.onCellSelect.call(ts,ri,ci,tdHtml,e);
+				}
 				if(ts.p.cellEdit === true) {
 					if(ts.p.multiselect && scb){
-						$(ts).jqGrid("setSelection",ptr[0].id,true,e);
+						$(ts).jqGrid("setSelection", ri ,true,e);
 					} else {
 						ri = ptr[0].rowIndex;
-						ci = $.jgrid.getCellIndex(td);
 						try {$(ts).jqGrid("editCell",ri,ci,true);} catch (_) {}
 					}
 				} else if ( !ts.p.multikey ) {
 					if(ts.p.multiselect && ts.p.multiboxonly) {
-						if(scb){$(ts).jqGrid("setSelection",ptr[0].id,true,e);}
+						if(scb){$(ts).jqGrid("setSelection",ri,true,e);}
 						else {
 							var frz = ts.p.frozenColumns ? ts.p.id+"_frozen" : "";
 							$(ts.p.selarrrow).each(function(i,n){
@@ -2358,31 +2364,20 @@ $.fn.jqGrid = function( pin ) {
 								}
 							});
 							ts.p.selarrrow = [];
-							$(ts).jqGrid("setSelection",ptr[0].id,true,e);
+							$(ts).jqGrid("setSelection",ri,true,e);
 						}
 					} else {
-						$(ts).jqGrid("setSelection",ptr[0].id,true,e);
+						$(ts).jqGrid("setSelection",ri,true,e);
 					}
 				} else {
 					if(e[ts.p.multikey]) {
-						$(ts).jqGrid("setSelection",ptr[0].id,true,e);
+						$(ts).jqGrid("setSelection",ri,true,e);
 					} else if(ts.p.multiselect && scb) {
-						scb = $("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+ptr[0].id).is(":checked");
-						$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+ptr[0].id)[ts.p.useProp ? 'prop' : 'attr']("checked", scb);
+						scb = $("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+ri).is(":checked");
+						$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+ri)[ts.p.useProp ? 'prop' : 'attr']("checked", scb);
 					}
 				}
-				ri = ptr[0].id;
-				ci = $.jgrid.getCellIndex(td);
-				tdHtml = $(td).html();
-				$(ts).triggerHandler("jqGridCellSelect", [ri,ci,tdHtml,e]);
-				if($.isFunction(ts.p.onCellSelect)) {
-					ts.p.onCellSelect.call(ts,ri,ci,tdHtml,e);
-				}
-				//e.stopPropagation();
 			}
-			//else {
-				return this;
-			//}
 		}).bind('reloadGrid', function(e,opts) {
 			if(ts.p.treeGrid ===true) {	ts.p.datatype = ts.p.treedatatype;}
 			if (opts && opts.current) {
