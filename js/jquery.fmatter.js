@@ -536,7 +536,7 @@
 		var ret = [];
 		var cell = $(cellval).text();
 		if(cnt===true) {return cell;}
-		var op = $.extend({},options.colModel.editoptions);
+		var op = $.extend({}, !$.fmatter.isUndefined(options.colModel.formatoptions) ? options.colModel.formatoptions: options.colModel.editoptions);
 		if(op.value){
 			var oSelect = op.value,
 			msl =  op.multiple === true ? true : false,
