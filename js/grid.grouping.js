@@ -46,11 +46,6 @@ $.jgrid.extend({
 							}
 						}
 					}
-					$t.p.scroll = false;
-					$t.p.rownumbers = false;
-					$t.p.subGrid = false;
-					$t.p.treeGrid = false;
-					$t.p.gridview = true;
 				}
 			} else {
 				$t.p.grouping = false;
