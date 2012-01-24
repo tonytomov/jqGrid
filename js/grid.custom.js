@@ -269,7 +269,7 @@ $.jgrid.extend({
 			};
 			var toggleToolbar = function(){
 				var trow = $("tr.ui-search-toolbar",$t.grid.hDiv),
-				trow2 = $t.p.frozenColumns === true ?  $("tr.ui-search-toolbar",$t.grid.hDiv) : false;
+				trow2 = $t.p.frozenColumns === true ?  $("tr.ui-search-toolbar",$t.grid.fhDiv) : false;
 				if(trow.css("display")=='none') { 
 					trow.show(); 
 					if(trow2) {
