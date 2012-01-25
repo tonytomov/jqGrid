@@ -341,11 +341,15 @@ $.jgrid.extend({
 								}
 							}, $.jgrid.ajaxOptions, $t.p.ajaxSelectOptions || {} ));
 						} else {
-							var oSv;
-							if(cm.searchoptions && cm.searchoptions.value) {
-								oSv = cm.searchoptions.value;
-							} else if(cm.editoptions && cm.editoptions.value) {
-								oSv = cm.editoptions.value;
+							var oSv, sep, delim;
+							if(cm.searchoptions) {
+								oSv = cm.searchoptions.value === undefined ? "" : cm.searchoptions.value;
+								sep = cm.searchoptions.separator === undefined ? ":" : cm.searchoptions.separator;
+								delim = cm.searchoptions.delimiter === undefined ? ";" : cm.searchoptions.delimiter;
+							} else if(cm.editoptions) {
+								oSv = cm.editoptions.value === undefined ? "" : cm.editoptions.value;
+								sep = cm.editoptions.separator === undefined ? ":" : cm.editoptions.separator;
+								delim = cm.editoptions.delimiter === undefined ? ";" : cm.editoptions.delimiter;
 							}
 							if (oSv) {	
 								var elem = document.createElement("select");
@@ -353,9 +357,9 @@ $.jgrid.extend({
 								$(elem).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
 								var so, sv, ov;
 								if(typeof oSv === "string") {
-									so = oSv.split(";");
+									so = oSv.split(delim);
 									for(var k=0; k<so.length;k++){
-										sv = so[k].split(":");
+										sv = so[k].split(sep);
 										ov = document.createElement("option");
 										ov.value = sv[0]; ov.innerHTML = sv[1];
 										elem.appendChild(ov);

@@ -399,7 +399,7 @@ $.extend($.jgrid,{
 						for(i=0; i<so.length;i++){
 							sv = so[i].split(sep);
 							if(sv.length > 2 ) {
-								sv[1] = $.map(sv,function(n,ii){if(ii>0) { return n;} }).join(":");
+								sv[1] = $.map(sv,function(n,ii){if(ii>0) { return n;} }).join(sep);
 							}
 							ov = document.createElement("option");
 							ov.setAttribute("role","option");
