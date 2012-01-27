@@ -396,13 +396,15 @@ $.jgrid.extend({
 						var accept = $(ui.draggable).attr("id");
 						var getdata = ui.draggable.parent().parent().jqGrid('getRowData',accept);
 						if(!opts.dropbyname) {
-							var j =0, tmpdata = {}, dropname;
+							var j =0, tmpdata = {}, nm;
 							var dropmodel = $("#"+this.id).jqGrid('getGridParam','colModel');
 							try {
 								for (var key in getdata) {
-									if(getdata.hasOwnProperty(key) && dropmodel[j]) {
-										dropname = dropmodel[j].name;
-										tmpdata[dropname] = getdata[key];
+									nm = dropmodel[j].name;
+									if( !(nm == 'cb' || nm =='rn' || nm == 'subgrid' )) {
+										if(getdata.hasOwnProperty(key) && dropmodel[j]) {
+											tmpdata[nm] = getdata[key];
+										}
 									}
 									j++;
 								}
