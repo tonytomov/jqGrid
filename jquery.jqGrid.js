@@ -26,7 +26,7 @@ function jqGridInclude()
     {
         if(modules[i].include === true) {
         	filename = pathtojsfiles+modules[i].incfile;
-			if(jQuery.browser.safari) {
+			if(jQuery.browser.safari || (jQuery.browser.mozilla && parseFloat(jQuery.browser.version) >= 6)) {
 				jQuery.ajax({url:filename,dataType:'script', async:false, cache: true});
 			} else {
 				if (jQuery.browser.msie) {
