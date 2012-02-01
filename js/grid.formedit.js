@@ -1572,20 +1572,20 @@ $.jgrid.extend({
 					if( $.isFunction( rp_ge[$t.p.id].beforeSubmit ) ) {ret = rp_ge[$t.p.id].beforeSubmit(postdata);}
 					if(ret[0] && !rp_ge[$t.p.id].processing) {
 						rp_ge[$t.p.id].processing = true;
-						$(this).addClass('ui-state-active');
 						opers = $t.p.prmNames;
 						postd = $.extend({},rp_ge[$t.p.id].delData, onCS);
 						oper = opers.oper;
 						postd[oper] = opers.deloper;
 						idname = opers.id;
 						postdata = postdata.split(",");
+						if(!postdata.length) { return false; }
 						for( var pk in postdata) {
 							if(postdata.hasOwnProperty(pk)) {
 								postdata[pk] = $.jgrid.stripPref($t.p.idPrefix, postdata[pk]);
 							}
 						}
 						postd[idname] = postdata.join();
-						
+						$(this).addClass('ui-state-active');
 						var ajaxOptions = $.extend({
 							url: rp_ge[$t.p.id].url ? rp_ge[$t.p.id].url : $($t).jqGrid('getGridParam','editurl'),
 							type: rp_ge[$t.p.id].mtype,
@@ -1612,13 +1612,11 @@ $.jgrid.extend({
 									if(rp_ge[$t.p.id].reloadAfterSubmit && $t.p.datatype != "local") {
 										$($t).trigger("reloadGrid");
 									} else {
-										var toarr = [];
-										toarr = postdata.split(",");
 										if($t.p.treeGrid===true){
-												try {$($t).jqGrid("delTreeNode",$t.p.idPrefix+toarr[0]);} catch(e){}
+												try {$($t).jqGrid("delTreeNode",$t.p.idPrefix+postdata[0]);} catch(e){}
 										} else {
-											for(var i=0;i<toarr.length;i++) {
-												$($t).jqGrid("delRowData",$t.p.idPrefix+ toarr[i]);
+											for(var i=0;i<postdata.length;i++) {
+												$($t).jqGrid("delRowData",$t.p.idPrefix+ postdata[i]);
 											}
 										}
 										$t.p.selrow = null;
