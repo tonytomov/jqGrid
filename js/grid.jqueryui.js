@@ -114,7 +114,7 @@ $.jgrid.extend({
 	},
     columnChooser : function(opts) {
         var self = this;
-		if($("#colchooser_"+self[0].p.id).length ) { return; }
+		if($("#colchooser_"+$.jgrid.jqID(self[0].p.id)).length ) { return; }
         var selector = $('<div id="colchooser_'+self[0].p.id+'" style="position:relative;overflow:hidden"><div><select multiple="multiple"></select></div></div>');
         var select = $('select', selector);
 		
@@ -147,7 +147,11 @@ $.jgrid.extend({
                "destroy")
                */
             "dlog" : "dialog",
-
+			"dialog_opts" : {
+				"minWidth": 470,
+				"show": 'blind',
+				"hide": 'explode'
+			},
             /* dlog_opts is either an option object to be passed 
                to "dlog", or (more likely) a function that creates
                the options object.
@@ -162,7 +166,7 @@ $.jgrid.extend({
                 buttons[opts.bCancel] = function() {
                     opts.cleanup(true);
                 };
-                return {
+                return $.extend(true, {
                     "buttons": buttons,
                     "close": function() {
                         opts.cleanup(true);
@@ -170,7 +174,7 @@ $.jgrid.extend({
 					"modal" : opts.modal ? opts.modal : false,
 					"resizable": opts.resizable ? opts.resizable : true,
                     "width": opts.width+20
-                };
+                }, opts.dialog_opts || {});
             },
             /* Function to get the permutation array, and pass it to the
                "done" function */
