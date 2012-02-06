@@ -94,7 +94,7 @@ $.jgrid.extend({
 					if(o.keys===true) {
 						$(ind).bind("keydown",function(e) {
 							if (e.keyCode === 27) {
-								$($t).jqGrid("restoreRow",rowid, afterrestorefunc);
+								$($t).jqGrid("restoreRow",rowid, o.afterrestorefunc);
 								if($t.p._inlinenav) {
 									try {
 										$($t).jqGrid('showAddEditButtons');
