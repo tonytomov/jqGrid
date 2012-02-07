@@ -2615,7 +2615,7 @@ $.jgrid.extend({
 	getDataIDs : function () {
 		var ids=[], i=0, len, j=0, $t = this[0];
 		this.each(function(){
-			if($t.p.datatype != 'local'){		
+			if($t.p.datatype && $t.p.datatype != 'local'){		
 				len = this.rows.length;
 					if(len && len>0){
 						while(i<len) {
