@@ -83,6 +83,9 @@ $.extend($.jgrid,{
 		if(date && date !== null && date !== undefined){
 			date = $.trim(date);
 			date = date.split(regdate);
+			if ($.jgrid.formatter.date.masks[format] !== undefined) {
+				format = $.jgrid.formatter.date.masks[format];
+			}
 			format = format.split(regdate);
 			var dfmt  = $.jgrid.formatter.date.monthNames;
 			var afmt  = $.jgrid.formatter.date.AmPm;
@@ -94,11 +97,17 @@ $.extend($.jgrid,{
 			for(k=0,hl=format.length;k<hl;k++){
 				if(format[k] == 'M') {
 					dM = $.inArray(date[k],dfmt);
-					if(dM !== -1 && dM < 12){date[k] = dM+1;}
+					if(dM !== -1 && dM < 12){
+						date[k] = dM+1;
+						tsp.m = date[k];
+					}
 				}
 				if(format[k] == 'F') {
 					dM = $.inArray(date[k],dfmt);
-					if(dM !== -1 && dM > 11){date[k] = dM+1-12;}
+					if(dM !== -1 && dM > 11){
+						date[k] = dM+1-12;
+						tsp.m = date[k];
+					}
 				}
 				if(format[k] == 'a') {
 					dM = $.inArray(date[k],afmt);
@@ -122,6 +131,8 @@ $.extend($.jgrid,{
 			var ty = tsp.y;
 			if (ty >= 70 && ty <= 99) {tsp.y = 1900+tsp.y;}
 			else if (ty >=0 && ty <=69) {tsp.y= 2000+tsp.y;}
+			if(tsp.j !== undefined) { tsp.d = tsp.j; }
+			if(tsp.n !== undefined) { tsp.m = parseInt(tsp.n,10)-1; }
 		}
 		return new Date(tsp.y, tsp.m, tsp.d, tsp.h, tsp.i, tsp.s, tsp.u);
 	},
