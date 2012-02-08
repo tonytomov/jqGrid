@@ -337,12 +337,14 @@ $.jgrid.extend({
 			onInitializeForm = $.isFunction(rp_ge[$t.p.id].onInitializeForm) ? rp_ge[$t.p.id].onInitializeForm : false,
 			copydata = null,
 			showFrm = true,
-			maxCols = 1, maxRows=0,	postdata, extpost, newData, diff;
+			maxCols = 1, maxRows=0,	postdata, extpost, newData, diff, frmoper;
 			if (rowid === "new") {
 				rowid = "_empty";
+				frmoper = "add";
 				p.caption=rp_ge[$t.p.id].addCaption;
 			} else {
 				p.caption=rp_ge[$t.p.id].editCaption;
+				frmoper = "edit";
 			}
 			if(p.recreateForm===true && $("#"+IDs.themodal).html() !== null) {
 				$("#"+IDs.themodal).remove();
@@ -617,8 +619,12 @@ $.jgrid.extend({
 			}
 			function postIt() {
 				var copydata, ret=[true,"",""], onCS = {}, opers = $t.p.prmNames, idname, oper, key, selr, i;
+				
+				var retvals = $($t).triggerHandler("jqGridAddEditBeforeCheckValues", [$("#"+frmgr), frmoper]);
+				if(retvals && typeof(retvals) === 'object') {postdata = retvals;}
+				
 				if($.isFunction(rp_ge[$t.p.id].beforeCheckValues)) {
-					var retvals = rp_ge[$t.p.id].beforeCheckValues(postdata,$("#"+frmgr),postdata[$t.p.id+"_id"] == "_empty" ? opers.addoper : opers.editoper);
+					retvals = rp_ge[$t.p.id].beforeCheckValues.call($t, postdata,$("#"+frmgr),postdata[$t.p.id+"_id"] == "_empty" ? opers.addoper : opers.editoper);
 					if(retvals && typeof(retvals) === 'object') {postdata = retvals;}
 				}
 				for( key in postdata ){
@@ -629,10 +635,17 @@ $.jgrid.extend({
 				}
 				setNulls();
 				if(ret[0]) {
-					if( $.isFunction( rp_ge[$t.p.id].onclickSubmit)) { 
-							onCS = rp_ge[$t.p.id].onclickSubmit(rp_ge[$t.p.id],postdata) || {}; 
-						}
-					if( $.isFunction(rp_ge[$t.p.id].beforeSubmit))  {ret = rp_ge[$t.p.id].beforeSubmit(postdata,$("#"+frmgr));}
+					onCS = $($t).triggerHandler("jqGridAddEditClickSubmit", [rp_ge[$t.p.id], postdata, frmoper]);
+					if( onCS === undefined && $.isFunction( rp_ge[$t.p.id].onclickSubmit)) { 
+						onCS = rp_ge[$t.p.id].onclickSubmit.call($t, rp_ge[$t.p.id], postdata) || {}; 
+					}
+					ret = $($t).triggerHandler("jqGridAddEditBeforeSubmit", [postdata, $("#"+frmgr), frmoper]);
+					if(ret === undefined) {
+						ret = [true,"",""];
+					}
+					if( ret[0] && $.isFunction(rp_ge[$t.p.id].beforeSubmit))  {
+						ret = rp_ge[$t.p.id].beforeSubmit(postdata,$("#"+frmgr));
+					}
 				}
 
 				if(ret[0] && !rp_ge[$t.p.id].processing) {
@@ -658,11 +671,11 @@ $.jgrid.extend({
 						}
 						for(i in $t.p.treeReader){
 							if($t.p.treeReader.hasOwnProperty(i)) {
-							var itm = $t.p.treeReader[i];
-							if(postdata.hasOwnProperty(itm)) {
-								if(postdata[oper] == opers.addoper && i === 'parent_id_field') {continue;}
-								delete postdata[itm];
-							}
+								var itm = $t.p.treeReader[i];
+								if(postdata.hasOwnProperty(itm)) {
+									if(postdata[oper] == opers.addoper && i === 'parent_id_field') {continue;}
+									delete postdata[itm];
+								}
 							}
 						}
 					}
@@ -676,16 +689,21 @@ $.jgrid.extend({
 							postdata[idname] = $t.p.idPrefix + postdata[idname];
 							if(Status != "success") {
 								ret[0] = false;
+								ret[1] = $($t).triggerHandler("jqGridAddEditErrorTextFormat", [data, frmoper]);
 								if ($.isFunction(rp_ge[$t.p.id].errorTextFormat)) {
-									ret[1] = rp_ge[$t.p.id].errorTextFormat(data);
+									ret[1] = rp_ge[$t.p.id].errorTextFormat.call($t, data);
 								} else {
 									ret[1] = Status + " Status: '" + data.statusText + "'. Error code: " + data.status;
 								}
 							} else {
 								// data is posted successful
 								// execute aftersubmit with the returned data from server
-								if( $.isFunction(rp_ge[$t.p.id].afterSubmit) ) {
-									ret = rp_ge[$t.p.id].afterSubmit(data,postdata);
+								ret = $($t).triggerHandler("jqGridAddEditAfterSubmit", [data, postdata, frmoper]);
+								if(ret === undefined) {
+									ret = [true,"",""];
+								}
+								if( ret[0] && $.isFunction(rp_ge[$t.p.id].afterSubmit) ) {
+									ret = rp_ge[$t.p.id].afterSubmit.call($t, data,postdata);
 								}
 							}
 							if(ret[0] === false) {
@@ -758,7 +776,11 @@ $.jgrid.extend({
 								}
 								if($.isFunction(rp_ge[$t.p.id].afterComplete)) {
 									copydata = data;
-									setTimeout(function(){rp_ge[$t.p.id].afterComplete(copydata,postdata,$("#"+frmgr));copydata=null;},500);
+									setTimeout(function(){
+										$($t).triggerHandler("jqGridAddEditAfterComplete", [copydata, postdata, $("#"+frmgr), frmoper]);
+										rp_ge[$t.p.id].afterComplete.call($t, copydata, postdata, $("#"+frmgr));
+										copydata=null;
+									},500);
 								}
 							if(rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate) {
 								$("#"+frmgr).data("disabled",false);
@@ -861,11 +883,12 @@ $.jgrid.extend({
 			}
 
 			if ( $("#"+IDs.themodal).html() !== null ) {
-				if(onBeforeInit) {
-					showFrm = onBeforeInit($("#"+frmgr));
-					if(typeof(showFrm) == "undefined") {
-						showFrm = true;
-					}
+				showFrm = $($t).triggerHandler("jqGridAddEditBeforeInitData", [$("#"+frmgr)]);
+				if(typeof(showFrm) == "undefined") {
+					showFrm = true;
+				}
+				if(showFrm && onBeforeInit) {
+					showFrm = onBeforeInit.call($t, $("#"+frmgr));
 				}
 				if(showFrm === false) {return;}
 				restoreInline();
@@ -899,7 +922,8 @@ $.jgrid.extend({
 					$(".confirm","#"+IDs.themodal).hide();
 					$("#"+frmgr).data("disabled",false);
 				}
-				if(onBeforeShow) {onBeforeShow($("#"+frmgr));}
+				$($t).triggerHandler("jqGridAddEditBeforeShowForm", [$("#"+frmgr), frmoper]);
+				if(onBeforeShow) { onBeforeShow.call($t, $("#"+frmgr)); }
 				$("#"+IDs.themodal).data("onClose",rp_ge[$t.p.id].onClose);
 				$.jgrid.viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal, jqM: false, overlay: p.overlay, modal:p.modal});
 				if(!closeovrl) {
@@ -909,16 +933,18 @@ $.jgrid.extend({
 						return false;
 					});
 				}
-				if(onAfterShow) {onAfterShow($("#"+frmgr));}
+				$($t).triggerHandler("jqGridAddEditAfterShowForm", [$("#"+frmgr), frmoper]);
+				if(onAfterShow) { onAfterShow.call($t, $("#"+frmgr)); }
 			} else {
 				var dh = isNaN(p.dataheight) ? p.dataheight : p.dataheight+"px",
 				frm = $("<form name='FormPost' id='"+frmgr+"' class='FormGrid' onSubmit='return false;' style='width:100%;overflow:auto;position:relative;height:"+dh+";'></form>").data("disabled",false),
 				tbl = $("<table id='"+frmtb+"' class='EditTable' cellspacing='0' cellpadding='0' border='0'><tbody></tbody></table>");
-				if(onBeforeInit) {
-					showFrm = onBeforeInit($("#"+frmgr));
-					if(typeof(showFrm) == "undefined") {
-						showFrm = true;
-					}
+				showFrm = $($t).triggerHandler("jqGridAddEditBeforeInitData", [$("#"+frmgr), frmoper]);
+				if(typeof(showFrm) == "undefined") {
+					showFrm = true;
+				}
+				if(showFrm && onBeforeInit) {
+					showFrm = onBeforeInit.call($t, $("#"+frmgr));
 				}
 				if(showFrm === false) {return;}
 				restoreInline();
@@ -1054,9 +1080,11 @@ $.jgrid.extend({
 					});
 				}
 				// here initform - only once
+				$($t).triggerHandler("jqGridAddEditInitializeForm", [$("#"+frmgr), frmoper]);
 				if(onInitializeForm) {onInitializeForm($("#"+frmgr));}
 				if(rowid=="_empty" || !rp_ge[$t.p.id].viewPagerButtons) {$("#pData,#nData","#"+frmtb+"_2").hide();} else {$("#pData,#nData","#"+frmtb+"_2").show();}
-				if(onBeforeShow) {onBeforeShow($("#"+frmgr));}
+				$($t).triggerHandler("jqGridAddEditBeforeShowForm", [$("#"+frmgr), frmoper]);
+				if(onBeforeShow) { onBeforeShow.call($t, $("#"+frmgr));}
 				$("#"+IDs.themodal).data("onClose",rp_ge[$t.p.id].onClose);
 				$.jgrid.viewModal("#"+IDs.themodal,{gbox:"#gbox_"+gID,jqm:p.jqModal, overlay: p.overlay,modal:p.modal});
 				if(!closeovrl) {
@@ -1066,7 +1094,8 @@ $.jgrid.extend({
 						return false;
 					});
 				}
-				if(onAfterShow) {onAfterShow($("#"+frmgr));}
+				$($t).triggerHandler("jqGridAddEditAfterShowForm", [$("#"+frmgr), frmoper]);
+				if(onAfterShow) { onAfterShow.call($t, $("#"+frmgr)); }
 				$(".fm-button","#"+IDs.themodal).hover(
 					function(){$(this).addClass('ui-state-hover');},
 					function(){$(this).removeClass('ui-state-hover');}
@@ -1105,13 +1134,15 @@ $.jgrid.extend({
 					var npos = getCurrPos();
 					npos[0] = parseInt(npos[0],10);
 					if(npos[0] != -1 && npos[1][npos[0]+1]) {
+						$($t).triggerHandler("jqGridAddEditClickPgButtons", ['next',$("#"+frmgr),npos[1][npos[0]]]);
 						if($.isFunction(p.onclickPgButtons)) {
-							p.onclickPgButtons('next',$("#"+frmgr),npos[1][npos[0]]);
+							p.onclickPgButtons.call($t, 'next',$("#"+frmgr),npos[1][npos[0]]);
 						}
 						fillData(npos[1][npos[0]+1],$t,frmgr);
 						$($t).jqGrid("setSelection",npos[1][npos[0]+1]);
+						$($t).triggerHandler("jqGridAddEditAfterClickPgButtons", ['next',$("#"+frmgr),npos[1][npos[0]]]);
 						if($.isFunction(p.afterclickPgButtons)) {
-							p.afterclickPgButtons('next',$("#"+frmgr),npos[1][npos[0]+1]);
+							p.afterclickPgButtons.call($t, 'next',$("#"+frmgr),npos[1][npos[0]+1]);
 						}
 						updateNav(npos[0]+1,npos[1].length-1);
 					}
@@ -1122,13 +1153,15 @@ $.jgrid.extend({
 					$("#FormError","#"+frmtb).hide();
 					var ppos = getCurrPos();
 					if(ppos[0] != -1 && ppos[1][ppos[0]-1]) {
+						$($t).triggerHandler("jqGridAddEditClickPgButtons", ['prev',$("#"+frmgr),npos[1][npos[0]]]);
 						if($.isFunction(p.onclickPgButtons)) {
-							p.onclickPgButtons('prev',$("#"+frmgr),ppos[1][ppos[0]]);
+							p.onclickPgButtons.call($t, 'prev',$("#"+frmgr),ppos[1][ppos[0]]);
 						}
 						fillData(ppos[1][ppos[0]-1],$t,frmgr);
 						$($t).jqGrid("setSelection",ppos[1][ppos[0]-1]);
+						$($t).triggerHandler("jqGridAddEditAfterClickPgButtons", ['prev',$("#"+frmgr),npos[1][npos[0]]]);
 						if($.isFunction(p.afterclickPgButtons)) {
-							p.afterclickPgButtons('prev',$("#"+frmgr),ppos[1][ppos[0]-1]);
+							p.afterclickPgButtons.call($t, 'prev',$("#"+frmgr),ppos[1][ppos[0]-1]);
 						}
 						updateNav(ppos[0]-1,ppos[1].length-1);
 					}
@@ -1539,20 +1572,20 @@ $.jgrid.extend({
 					if( $.isFunction( rp_ge[$t.p.id].beforeSubmit ) ) {ret = rp_ge[$t.p.id].beforeSubmit(postdata);}
 					if(ret[0] && !rp_ge[$t.p.id].processing) {
 						rp_ge[$t.p.id].processing = true;
-						$(this).addClass('ui-state-active');
 						opers = $t.p.prmNames;
 						postd = $.extend({},rp_ge[$t.p.id].delData, onCS);
 						oper = opers.oper;
 						postd[oper] = opers.deloper;
 						idname = opers.id;
 						postdata = postdata.split(",");
+						if(!postdata.length) { return false; }
 						for( var pk in postdata) {
 							if(postdata.hasOwnProperty(pk)) {
 								postdata[pk] = $.jgrid.stripPref($t.p.idPrefix, postdata[pk]);
 							}
 						}
 						postd[idname] = postdata.join();
-						
+						$(this).addClass('ui-state-active');
 						var ajaxOptions = $.extend({
 							url: rp_ge[$t.p.id].url ? rp_ge[$t.p.id].url : $($t).jqGrid('getGridParam','editurl'),
 							type: rp_ge[$t.p.id].mtype,
@@ -1579,13 +1612,11 @@ $.jgrid.extend({
 									if(rp_ge[$t.p.id].reloadAfterSubmit && $t.p.datatype != "local") {
 										$($t).trigger("reloadGrid");
 									} else {
-										var toarr = [];
-										toarr = postdata.split(",");
 										if($t.p.treeGrid===true){
-												try {$($t).jqGrid("delTreeNode",$t.p.idPrefix+toarr[0]);} catch(e){}
+												try {$($t).jqGrid("delTreeNode",$t.p.idPrefix+postdata[0]);} catch(e){}
 										} else {
-											for(var i=0;i<toarr.length;i++) {
-												$($t).jqGrid("delRowData",$t.p.idPrefix+ toarr[i]);
+											for(var i=0;i<postdata.length;i++) {
+												$($t).jqGrid("delRowData",$t.p.idPrefix+ postdata[i]);
 											}
 										}
 										$t.p.selrow = null;

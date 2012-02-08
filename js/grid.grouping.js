@@ -46,11 +46,6 @@ $.jgrid.extend({
 							}
 						}
 					}
-					$t.p.scroll = false;
-					$t.p.rownumbers = false;
-					$t.p.subGrid = false;
-					$t.p.treeGrid = false;
-					$t.p.gridview = true;
 				}
 			} else {
 				$t.p.grouping = false;
@@ -114,7 +109,7 @@ $.jgrid.extend({
 							if($(r).attr('id') ==uid+String(num) ) { break; }
 							$(r).hide();
 							r = r.nextSibling;
-				}
+						}
 					}
 				}
 				tarspan.removeClass(minus).addClass(plus);
@@ -250,13 +245,13 @@ $.jgrid.extend({
 			}
 			$t.p.grouping = false;
 			if(current===true) {
-        var grp = $t.p.groupingView;
-        // show previous hidden groups if they are hidden and weren't removed yet
-        for(var i=0;i<grp.groupField.length;i++) {
-          if (!grp.groupColumnShow[i] && grp.visibiltyOnNextGrouping[i]) {
-            $($t).jqGrid('showCol', grp.groupField);
-          }
-        }
+				var grp = $t.p.groupingView;
+				// show previous hidden groups if they are hidden and weren't removed yet
+				for(var i=0;i<grp.groupField.length;i++) {
+				if (!grp.groupColumnShow[i] && grp.visibiltyOnNextGrouping[i]) {
+						$($t).jqGrid('showCol', grp.groupField);
+					}
+				}
 				$("tr.jqgroup, tr.jqfoot","#"+$t.p.id+" tbody:first").remove();
 				$("tr.jqgrow:hidden","#"+$t.p.id+" tbody:first").show();
 			} else {

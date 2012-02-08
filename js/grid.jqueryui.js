@@ -114,7 +114,7 @@ $.jgrid.extend({
 	},
     columnChooser : function(opts) {
         var self = this;
-		if($("#colchooser_"+self[0].p.id).length ) { return; }
+		if($("#colchooser_"+$.jgrid.jqID(self[0].p.id)).length ) { return; }
         var selector = $('<div id="colchooser_'+self[0].p.id+'" style="position:relative;overflow:hidden"><div><select multiple="multiple"></select></div></div>');
         var select = $('select', selector);
 		
@@ -147,7 +147,11 @@ $.jgrid.extend({
                "destroy")
                */
             "dlog" : "dialog",
-
+			"dialog_opts" : {
+				"minWidth": 470,
+				"show": 'blind',
+				"hide": 'explode'
+			},
             /* dlog_opts is either an option object to be passed 
                to "dlog", or (more likely) a function that creates
                the options object.
@@ -162,7 +166,7 @@ $.jgrid.extend({
                 buttons[opts.bCancel] = function() {
                     opts.cleanup(true);
                 };
-                return {
+                return $.extend(true, {
                     "buttons": buttons,
                     "close": function() {
                         opts.cleanup(true);
@@ -170,7 +174,7 @@ $.jgrid.extend({
 					"modal" : opts.modal ? opts.modal : false,
 					"resizable": opts.resizable ? opts.resizable : true,
                     "width": opts.width+20
-                };
+                }, opts.dialog_opts || {});
             },
             /* Function to get the permutation array, and pass it to the
                "done" function */
@@ -370,6 +374,7 @@ $.jgrid.extend({
 					stop :function(ev,ui) {
 						if(ui.helper.dropped && !opts.dragcopy) {
 							var ids = $(ui.helper).attr("id");
+							if(ids === undefined) { ids = $(this).attr("id"); }
 							$($t).jqGrid('delRowData',ids );
 						}
 						// if we have a empty row inserted from start event try to delete it
@@ -396,13 +401,15 @@ $.jgrid.extend({
 						var accept = $(ui.draggable).attr("id");
 						var getdata = ui.draggable.parent().parent().jqGrid('getRowData',accept);
 						if(!opts.dropbyname) {
-							var j =0, tmpdata = {}, dropname;
+							var j =0, tmpdata = {}, nm;
 							var dropmodel = $("#"+this.id).jqGrid('getGridParam','colModel');
 							try {
 								for (var key in getdata) {
-									if(getdata.hasOwnProperty(key) && dropmodel[j]) {
-										dropname = dropmodel[j].name;
-										tmpdata[dropname] = getdata[key];
+									nm = dropmodel[j].name;
+									if( !(nm == 'cb' || nm =='rn' || nm == 'subgrid' )) {
+										if(getdata.hasOwnProperty(key) && dropmodel[j]) {
+											tmpdata[nm] = getdata[key];
+										}
 									}
 									j++;
 								}

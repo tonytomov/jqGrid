@@ -392,13 +392,14 @@ $.extend($.jgrid,{
 					}
 					if(typeof options.value === 'function') { options.value = options.value(); }
 					var so,sv, ov, 
-					sep = options.separator === undefined ? ":" : options.separator;
+					sep = options.separator === undefined ? ":" : options.separator,
+					delim = options.delimiter === undefined ? ";" : options.delimiter;
 					if(typeof options.value === 'string') {
-						so = options.value.split(";");
+						so = options.value.split(delim);
 						for(i=0; i<so.length;i++){
 							sv = so[i].split(sep);
 							if(sv.length > 2 ) {
-								sv[1] = $.map(sv,function(n,ii){if(ii>0) { return n;} }).join(":");
+								sv[1] = $.map(sv,function(n,ii){if(ii>0) { return n;} }).join(sep);
 							}
 							ov = document.createElement("option");
 							ov.setAttribute("role","option");

@@ -347,13 +347,15 @@
 	$.fn.fmatter.select = function (cellval,opts, rwd, act) {
 		// jqGrid specific
 		cellval = cellval + "";
-		var oSelect = false, ret=[], sep;
+		var oSelect = false, ret=[], sep, delim;
 		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)){
 			oSelect= opts.colModel.formatoptions.value;
 			sep = opts.colModel.formatoptions.separator === undefined ? ":" : opts.colModel.formatoptions.separator;
+			delim = opts.colModel.formatoptions.delimiter === undefined ? ";" : opts.colModel.formatoptions.delimiter;
 		} else if(!$.fmatter.isUndefined(opts.colModel.editoptions)){
 			oSelect= opts.colModel.editoptions.value;
 			sep = opts.colModel.editoptions.separator === undefined ? ":" : opts.colModel.editoptions.separator;
+			delim = opts.colModel.editoptions.delimiter === undefined ? ";" : opts.colModel.editoptions.delimiter;
 		}
 		if (oSelect) {
 			var	msl =  opts.colModel.editoptions.multiple === true ? true : false,
@@ -361,11 +363,11 @@
 			if(msl) {scell = cellval.split(",");scell = $.map(scell,function(n){return $.trim(n);});}
 			if ($.fmatter.isString(oSelect)) {
 				// mybe here we can use some caching with care ????
-				var so = oSelect.split(";"), j=0;
+				var so = oSelect.split(delim), j=0;
 				for(var i=0; i<so.length;i++){
 					sv = so[i].split(sep);
 					if(sv.length > 2 ) {
-						sv[1] = jQuery.map(sv,function(n,i){if(i>0) {return n;}}).join(":");
+						sv[1] = jQuery.map(sv,function(n,i){if(i>0) {return n;}}).join(sep);
 					}
 					if(msl) {
 						if(jQuery.inArray(sv[0],scell)>-1) {
@@ -536,18 +538,21 @@
 		var ret = [];
 		var cell = $(cellval).text();
 		if(cnt===true) {return cell;}
-		var op = $.extend({},options.colModel.editoptions);
+		var op = $.extend({}, !$.fmatter.isUndefined(options.colModel.formatoptions) ? options.colModel.formatoptions: options.colModel.editoptions),
+		sep = op.colModel.editoptions.separator === undefined ? ":" : op.colModel.editoptions.separator,
+		delim = op.colModel.editoptions.delimiter === undefined ? ";" : op.colModel.editoptions.delimiter;
+		
 		if(op.value){
 			var oSelect = op.value,
 			msl =  op.multiple === true ? true : false,
 			scell = [], sv;
 			if(msl) {scell = cell.split(",");scell = $.map(scell,function(n){return $.trim(n);});}
 			if ($.fmatter.isString(oSelect)) {
-				var so = oSelect.split(";"), j=0;
+				var so = oSelect.split(delim), j=0;
 				for(var i=0; i<so.length;i++){
-					sv = so[i].split(":");
+					sv = so[i].split(sep);
 					if(sv.length > 2 ) {
-						sv[1] = jQuery.map(sv,function(n,i){if(i>0) {return n;}}).join(":");
+						sv[1] = jQuery.map(sv,function(n,i){if(i>0) {return n;}}).join(sep);
 					}					
 					if(msl) {
 						if(jQuery.inArray(sv[1],scell)>-1) {
