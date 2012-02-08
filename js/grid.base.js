@@ -2342,7 +2342,7 @@ $.fn.jqGrid = function( pin ) {
 			if(cSel === true) {
 				ri = ptr[0].id;
 				ci = $.jgrid.getCellIndex(td);
-				tdHtml = $(td).closest("td,th").html();
+				tdHtml = $(td).html();
 				$(ts).triggerHandler("jqGridCellSelect", [ri,ci,tdHtml,e]);
 				if($.isFunction(ts.p.onCellSelect)) {
 					ts.p.onCellSelect.call(ts,ri,ci,tdHtml,e);
