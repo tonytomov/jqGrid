@@ -133,8 +133,8 @@ $.jgrid.extend({
 				switch (cm.edittype) {
 					case "select":
 						if(!cm.editoptions.multiple) {
-							v = $("#"+iRow+"_"+nmjq+">option:selected",$t.rows[iRow]).val();
-							v2 = $("#"+iRow+"_"+nmjq+">option:selected",$t.rows[iRow]).text();
+							v = $("#"+iRow+"_"+nmjq+" option:selected",$t.rows[iRow]).val();
+							v2 = $("#"+iRow+"_"+nmjq+" option:selected",$t.rows[iRow]).text();
 						} else {
 							var sel = $("#"+iRow+"_"+nmjq,$t.rows[iRow]), selectedText = [];
 							v = $(sel).val();
