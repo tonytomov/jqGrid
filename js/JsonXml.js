@@ -263,7 +263,7 @@ var xmlJsonClass = {
 			//}
 			}
 		else {
-			json += (name && ":") +  "\"" + o.toString()+ "\"";
+			json += (name && ":") +  o.toString();
 		}
 		return json;
 	},
