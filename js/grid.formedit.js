@@ -180,9 +180,9 @@ $.jgrid.extend({
 					});
 				}
 				if(p.multipleGroup === true) {p.multipleSearch = true;}
-				$($t).triggerHandler("jqGridFilterInitialize", [_filter]);
+				$($t).triggerHandler("jqGridFilterInitialize", [$("#"+fid)]);
 				if($.isFunction(p.onInitializeSearch) ) {
-					p.onInitializeSearch.call($t, _filter);
+					p.onInitializeSearch.call($t, $("#"+fid));
 				}
 				p.gbox = "#gbox_"+fid;
 				if (p.layer) {
