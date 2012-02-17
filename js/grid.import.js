@@ -58,7 +58,13 @@
                 };
                 var jsonConvert = function (jsonstr,o){
                     if (jsonstr && typeof jsonstr == 'string') {
+						var _jsonparse = false;
+						if($.jgrid.useJSON) {
+							$.jgrid.useJSON = false;
+							_jsonparse = true;
+						}
                         var json = $.jgrid.parse(jsonstr);
+						if(_jsonparse) { $.jgrid.useJSON = true; }
                         var gprm = json[o.jsonGrid.config];
                         var jdata = json[o.jsonGrid.data];
                         if(jdata) {
@@ -112,13 +118,13 @@
                             data: o.impData,
                             dataType:"json",
                             complete: function(json,stat) {
-                                if(stat == 'success') {
+                                try {
                                     jsonConvert(json.responseText,o );
                                     $($t).triggerHandler("jqGridImportComplete", [json, o]);
                                     if($.isFunction(o.importComplete)) {
                                         o.importComplete(json);
                                     }
-                                }
+                                } catch (ee){}
                                 json=null;
                             }
                         }, o.ajaxOptions ));
@@ -145,7 +151,7 @@
             var ret = null;
             this.each(function () {
                 if(!this.grid) { return;}
-                var gprm = $.extend({},$(this).jqGrid("getGridParam"));
+                var gprm = $.extend(true, {},$(this).jqGrid("getGridParam"));
                 // we need to check for:
                 // 1.multiselect, 2.subgrid  3. treegrid and remove the unneded columns from colNames
                 if(gprm.rownumbers) {

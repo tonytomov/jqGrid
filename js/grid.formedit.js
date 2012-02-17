@@ -180,9 +180,9 @@ $.jgrid.extend({
 					});
 				}
 				if(p.multipleGroup === true) {p.multipleSearch = true;}
-				$($t).triggerHandler("jqGridFilterInitialize", [_filter]);
+				$($t).triggerHandler("jqGridFilterInitialize", [$("#"+fid)]);
 				if($.isFunction(p.onInitializeSearch) ) {
-					p.onInitializeSearch.call($t, _filter);
+					p.onInitializeSearch.call($t, $("#"+fid));
 				}
 				p.gbox = "#gbox_"+fid;
 				if (p.layer) {
@@ -1153,13 +1153,13 @@ $.jgrid.extend({
 					$("#FormError","#"+frmtb).hide();
 					var ppos = getCurrPos();
 					if(ppos[0] != -1 && ppos[1][ppos[0]-1]) {
-						$($t).triggerHandler("jqGridAddEditClickPgButtons", ['prev',$("#"+frmgr),npos[1][npos[0]]]);
+						$($t).triggerHandler("jqGridAddEditClickPgButtons", ['prev',$("#"+frmgr),ppos[1][ppos[0]]]);
 						if($.isFunction(p.onclickPgButtons)) {
 							p.onclickPgButtons.call($t, 'prev',$("#"+frmgr),ppos[1][ppos[0]]);
 						}
 						fillData(ppos[1][ppos[0]-1],$t,frmgr);
 						$($t).jqGrid("setSelection",ppos[1][ppos[0]-1]);
-						$($t).triggerHandler("jqGridAddEditAfterClickPgButtons", ['prev',$("#"+frmgr),npos[1][npos[0]]]);
+						$($t).triggerHandler("jqGridAddEditAfterClickPgButtons", ['prev',$("#"+frmgr),ppos[1][ppos[0]]]);
 						if($.isFunction(p.afterclickPgButtons)) {
 							p.afterclickPgButtons.call($t, 'prev',$("#"+frmgr),ppos[1][ppos[0]-1]);
 						}
