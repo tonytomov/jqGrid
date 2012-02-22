@@ -58,7 +58,7 @@ $.jgrid.extend({
 				"tolerance" : "pointer",
 				"axis" : "x",
 				"scrollSensitivity": "1",
-				"items": '>th:not(:has(#jqgh_'+tid+'_cb'+',#jqgh_'+tid+'_rn'+',#jqgh_'+tid+'_subgrid),:hidden)',
+				"items": '>th:not(:has(#jqgh_'+$.jgrid.jqID(tid)+'_cb'+',#jqgh_'+$.jgrid.jqID(tid)+'_rn'+',#jqgh_'+$.jgrid.jqID(tid)+'_subgrid),:hidden)',
 				"placeholder": {
 					element: function(item) {
 						var el = $(document.createElement(item[0].nodeName))
@@ -392,7 +392,7 @@ $.jgrid.extend({
 						var tid = $(d).closest("table.ui-jqgrid-btable");
 						if(tid.length > 0 && $.data(tid[0],"dnd") !== undefined) {
 						    var cn = $.data(tid[0],"dnd").connectWith;
-						    return $.inArray('#'+this.id,cn) != -1 ? true : false;
+						    return $.inArray('#'+$.jgrid.jqID(this.id),cn) != -1 ? true : false;
 						}
 						return false;
 					},
@@ -402,7 +402,7 @@ $.jgrid.extend({
 						var getdata = ui.draggable.parent().parent().jqGrid('getRowData',accept);
 						if(!opts.dropbyname) {
 							var j =0, tmpdata = {}, nm;
-							var dropmodel = $("#"+this.id).jqGrid('getGridParam','colModel');
+							var dropmodel = $("#"+$.jgrid.jqID(this.id)).jqGrid('getGridParam','colModel');
 							try {
 								for (var key in getdata) {
 									nm = dropmodel[j].name;
@@ -420,7 +420,7 @@ $.jgrid.extend({
 						if(opts.beforedrop && $.isFunction(opts.beforedrop) ) {
 							//parameters to this callback - event, element, data to be inserted, sender, reciever
 							// should return object which will be inserted into the reciever
-							var datatoinsert = opts.beforedrop.call(this,ev,ui,getdata,$('#'+$t.id),$(this));
+							var datatoinsert = opts.beforedrop.call(this,ev,ui,getdata,$('#'+$.jgrid.jqID($t.id)),$(this));
 							if (typeof datatoinsert != "undefined" && datatoinsert !== null && typeof datatoinsert == "object") { getdata = datatoinsert; }
 						}
 						if(ui.helper.dropped) {
@@ -434,7 +434,7 @@ $.jgrid.extend({
 								}
 							}
 							// NULL is interpreted as undefined while null as object
-							$("#"+this.id).jqGrid('addRowData',grid,getdata,opts.droppos);
+							$("#"+$.jgrid.jqID(this.id)).jqGrid('addRowData',grid,getdata,opts.droppos);
 						}
 						if(opts.ondrop && $.isFunction(opts.ondrop) ) { opts.ondrop.call(this,ev,ui, getdata); }
 					}}, opts.drop_opts || {});
@@ -494,18 +494,18 @@ $.jgrid.extend({
 				opts._stop_ = false;
 			}
 			opts.stop = function (ev, ui) {
-				$($t).jqGrid('setGridParam',{height:$("#gview_"+$t.p.id+" .ui-jqgrid-bdiv").height()});
+				$($t).jqGrid('setGridParam',{height:$("#gview_"+$.jgrid.jqID($t.p.id)+" .ui-jqgrid-bdiv").height()});
 				$($t).jqGrid('setGridWidth',ui.size.width,opts.shrinkToFit);
 				if(opts._stop_) { opts._stop_.call($t,ev,ui); }
 			};
 			if(opts._alsoResize_) {
-				var optstest = "{\'#gview_"+$t.p.id+" .ui-jqgrid-bdiv\':true,'" +opts._alsoResize_+"':true}";
+				var optstest = "{\'#gview_"+$.jgrid.jqID($t.p.id)+" .ui-jqgrid-bdiv\':true,'" +opts._alsoResize_+"':true}";
 				opts.alsoResize = eval('('+optstest+')'); // the only way that I found to do this
 			} else {
-				opts.alsoResize = $(".ui-jqgrid-bdiv","#gview_"+$t.p.id);
+				opts.alsoResize = $(".ui-jqgrid-bdiv","#gview_"+$.jgrid.jqID($t.p.id));
 			}
 			delete opts._alsoResize_;
-			$("#gbox_"+$t.p.id).resizable(opts);
+			$("#gbox_"+$.jgrid.jqID($t.p.id)).resizable(opts);
 		});
 	}
 });
