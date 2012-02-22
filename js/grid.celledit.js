@@ -48,7 +48,7 @@ $.jgrid.extend({
 				// save the cell
 				$($t).jqGrid("saveCell",$t.p.savedRow[0].id,$t.p.savedRow[0].ic);
 			} else {
-				window.setTimeout(function () { $("#"+$t.p.knv).attr("tabindex","-1").focus();},0);
+				window.setTimeout(function () { $("#"+$.jgrid.jqID($t.p.knv)).attr("tabindex","-1").focus();},0);
 			}
 			cm = $t.p.colModel[iCol];
 			nm = cm.name;
@@ -204,14 +204,14 @@ $.jgrid.extend({
 								postdata[idname] = $.jgrid.stripPref($t.p.idPrefix, $t.rows[iRow].id);
 								postdata[oper] = opers.editoper;
 								postdata = $.extend(addpost,postdata);
-								$("#lui_"+$t.p.id).show();
+								$("#lui_"+$.jgrid.jqID($t.p.id)).show();
 								$t.grid.hDiv.loading = true;
 								$.ajax( $.extend( {
 									url: $t.p.cellurl,
 									data :$.isFunction($t.p.serializeCellData) ? $t.p.serializeCellData.call($t, postdata) : postdata,
 									type: "POST",
 									complete: function (result, stat) {
-										$("#lui_"+$t.p.id).hide();
+										$("#lui_"+$.jgrid.jqID($t.p.id)).hide();
 										$t.grid.hDiv.loading = false;
 										if (stat == 'success') {
 											var ret = $($t).triggerHandler("jqGridAfterSubmitCell", [$t, result, postdata.id, nm, v, iRow, iCol]) || [true, ''];
@@ -235,7 +235,7 @@ $.jgrid.extend({
 										}
 									},
 									error:function(res,stat,err) {
-										$("#lui_"+$t.p.id).hide();
+										$("#lui_"+$.jgrid.jqID($t.p.id)).hide();
 										$t.grid.hDiv.loading = false;
 										$($t).triggerHandler("jqGridErrorCell", [res, stat, err]);
 										if ($.isFunction($t.p.errorCell)) {
@@ -276,9 +276,9 @@ $.jgrid.extend({
 				}
 			}
 			if ($.browser.opera) {
-				$("#"+$t.p.knv).attr("tabindex","-1").focus();
+				$("#"+$.jgrid.jqID($t.p.knv)).attr("tabindex","-1").focus();
 			} else {
-				window.setTimeout(function () { $("#"+$t.p.knv).attr("tabindex","-1").focus();},0);
+				window.setTimeout(function () { $("#"+$.jgrid.jqID($t.p.knv)).attr("tabindex","-1").focus();},0);
 			}
 		});
 	},
@@ -303,7 +303,7 @@ $.jgrid.extend({
 				}				
 				$t.p.savedRow.splice(0,1);
 			}
-			window.setTimeout(function () { $("#"+$t.p.knv).attr("tabindex","-1").focus();},0);
+			window.setTimeout(function () { $("#"+$.jgrid.jqID($t.p.knv)).attr("tabindex","-1").focus();},0);
 		});
 	},
 	nextCell : function (iRow,iCol) {
@@ -405,7 +405,7 @@ $.jgrid.extend({
 			}
 
 			$(selection).insertBefore($t.grid.cDiv);
-			$("#"+$t.p.knv)
+			$("#"+$.jgrid.jqID($t.p.knv))
 			.focus()
 			.keydown(function (e){
 				kdir = e.keyCode;
