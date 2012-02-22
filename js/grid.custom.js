@@ -66,9 +66,8 @@ $.jgrid.extend({
 				if ( this.p.pager ) { // if not part of grid
 					$(this.p.pager).remove();
 				}
-				var gid = this.id;
 				try {
-					$("#gbox_"+gid).remove();
+					$("#gbox_"+$.jgrid.jqID(this.id)).remove();
 				} catch (_) {}
 			}
 		});
@@ -83,7 +82,7 @@ $.jgrid.extend({
 			var newtable = document.createElement('table');
 			$(newtable).attr({id:defgrid.id});
 			newtable.className = defgrid.cl;
-			var gid = this.id;
+			var gid = $.jgrid.jqID(this.id);
 			$(newtable).removeClass("ui-jqgrid-btable");
 			if( $(this.p.pager).parents("#gbox_"+gid).length === 1 ) {
 				$(newtable).insertBefore("#gbox_"+gid).show();
@@ -99,7 +98,7 @@ $.jgrid.extend({
 			if ( !this.grid ) {return;}
 			var $t = this;
 			if(state == 'hidden'){
-				$(".ui-jqgrid-bdiv, .ui-jqgrid-hdiv","#gview_"+$t.p.id).slideUp("fast");
+				$(".ui-jqgrid-bdiv, .ui-jqgrid-hdiv","#gview_"+$.jgrid.jqID($t.p.id)).slideUp("fast");
 				if($t.p.pager) {$($t.p.pager).slideUp("fast");}
 				if($t.p.toppager) {$($t.p.toppager).slideUp("fast");}
 				if($t.p.toolbar[0]===true) {
@@ -108,11 +107,11 @@ $.jgrid.extend({
 					}
 					$($t.grid.uDiv).slideUp("fast");
 				}
-				if($t.p.footerrow) { $(".ui-jqgrid-sdiv","#gbox_"+$t.p.id).slideUp("fast"); }
+				if($t.p.footerrow) { $(".ui-jqgrid-sdiv","#gbox_"+$.jgrid.jqID($t.p.id)).slideUp("fast"); }
 				$(".ui-jqgrid-titlebar-close span",$t.grid.cDiv).removeClass("ui-icon-circle-triangle-n").addClass("ui-icon-circle-triangle-s");
 				$t.p.gridstate = 'hidden';
 			} else if(state=='visible') {
-				$(".ui-jqgrid-hdiv, .ui-jqgrid-bdiv","#gview_"+$t.p.id).slideDown("fast");
+				$(".ui-jqgrid-hdiv, .ui-jqgrid-bdiv","#gview_"+$.jgrid.jqID($t.p.id)).slideDown("fast");
 				if($t.p.pager) {$($t.p.pager).slideDown("fast");}
 				if($t.p.toppager) {$($t.p.toppager).slideDown("fast");}
 				if($t.p.toolbar[0]===true) {
@@ -121,7 +120,7 @@ $.jgrid.extend({
 					}
 					$($t.grid.uDiv).slideDown("fast");
 				}
-				if($t.p.footerrow) { $(".ui-jqgrid-sdiv","#gbox_"+$t.p.id).slideDown("fast"); }
+				if($t.p.footerrow) { $(".ui-jqgrid-sdiv","#gbox_"+$.jgrid.jqID($t.p.id)).slideDown("fast"); }
 				$(".ui-jqgrid-titlebar-close span",$t.grid.cDiv).removeClass("ui-icon-circle-triangle-s").addClass("ui-icon-circle-triangle-n");
 				$t.p.gridstate = 'visible';
 			}
