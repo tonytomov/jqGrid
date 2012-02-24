@@ -1,5 +1,3 @@
 compiler.jar
 dist
-jquery.jqGrid.min.js
-.project
-.settings
+nbproject
