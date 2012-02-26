@@ -406,9 +406,11 @@ $.fn.jqFilter = function( arg ) {
 				}
 				// data
 				$(".data",trpar).empty().append( elm );
-				$(".input-elm",trpar).bind('change',function() {
-					rule.data = $(this).val();
-					that.onchange(); // signals that the filter has changed
+				$(".input-elm",trpar).bind('change',function( e ) {
+					setTimeout(function(){
+						rule.data = e.target.value;
+						that.onchange(); // signals that the filter has changed
+					}, 200);
 				});
 				setTimeout(function(){ //IE, Opera, Chrome
 				rule.data = $(elm).val();
