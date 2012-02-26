@@ -361,7 +361,7 @@ $.jgrid.extend({
 						$.each($t.p.colModel, function(i,n){
 							if(this.name === nm && this.editoptions && $.isFunction(this.editoptions.custom_value)) {
 								try {
-									postdata[nm] = this.editoptions.custom_value($("#"+$.jgrid.jqID(nm),"#"+frmtb),'get');
+									postdata[nm] = this.editoptions.custom_value.call($t, $("#"+$.jgrid.jqID(nm),"#"+frmtb),'get');
 									if (postdata[nm] === undefined) {throw "e1";}
 								} catch (e) {
 									if (e==="e1") {$.jgrid.info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.novalue,jQuery.jgrid.edit.bClose);}
@@ -595,7 +595,7 @@ $.jgrid.extend({
 							case 'custom' :
 								try {
 									if(cm[i].editoptions && $.isFunction(cm[i].editoptions.custom_value)) {
-										cm[i].editoptions.custom_value($("#"+nm,"#"+fmid),'set',tmp);
+										cm[i].editoptions.custom_value.call($t, $("#"+nm,"#"+fmid),'set',tmp);
 									} else {throw "e1";}
 								} catch (e) {
 									if (e=="e1") {$.jgrid.info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.nodefined,jQuery.jgrid.edit.bClose);}
