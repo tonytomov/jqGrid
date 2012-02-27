@@ -148,9 +148,7 @@ $.jgrid.extend({
                */
             "dlog" : "dialog",
 			"dialog_opts" : {
-				"minWidth": 470,
-				"show": 'blind',
-				"hide": 'explode'
+				"minWidth": 470
 			},
             /* dlog_opts is either an option object to be passed 
                to "dlog", or (more likely) a function that creates
