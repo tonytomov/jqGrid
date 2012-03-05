@@ -502,13 +502,15 @@ $.jgrid.extend({
 					onClickButton : function ( e ) {
 						var sr = $t.p.savedRow[0].id;
 						if(sr) {
+							var opers = $t.p.prmNames,
+							oper = opers.oper;
+							if(!o.editParams.extraparam) {
+								o.editParams.extraparam = {};
+							}
 							if($("#"+$.jgrid.jqID(sr), "#"+$.jgrid.jqID($t.p.id) ).hasClass("jqgrid-new-row")) {
-								var opers = $t.p.prmNames,
-								oper = opers.oper;
-								if(!o.editParams.extraparam) {
-									o.editParams.extraparam = {};
-								}
 								o.editParams.extraparam[oper] = opers.addoper;
+							} else {
+								o.editParams.extraparam[oper] = opers.editoper;
 							}
 							if( $($t).jqGrid('saveRow', sr, o.editParams) ) {
 								$($t).jqGrid('showAddEditButtons');
