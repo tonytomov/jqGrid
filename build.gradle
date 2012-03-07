@@ -1,0 +1,72 @@
+def googleCompilerVersion = 'r1810'
+def googleCompiler = "com.google.javascript:closure-compiler:jar:$googleCompilerVersion"
+
+def srcdir = new File('js')
+def distdir = new File('dist')
+
+def jqGridFile = new File(distdir, 'jquery.jqGrid.js')
+def jqGridMinFile = new File(distdir, 'jquery.jqGrid.min.js')
+
+task init() {
+	description = "Create distribution directory: $distdir.absolutePath"
+	
+	outputs.dir distdir
+	
+ 	doLast {
+		if (!distdir.exists()) {
+			distdir.mkdirs()
+		}
+	}
+}
+
+task jqgrid(dependsOn: 'init') {
+	description = "Concatinate all javascript files into one javascript file: $jqGridFile.absolutePath"
+	doLast {
+		ant.concat(destfile: jqGridFile) {		
+			fileset(dir:srcdir, includes:'*.js')
+		}
+	}
+}
+
+task 'jqgrid-min'(dependsOn: 'jqgrid') {
+	description = "Minimize $jqGridFile.absolutePath to $jqGridMinFile.absolutePath"
+}
+
+task 'min-files'(dependsOn: 'init') {
+	def minDir = new File(distdir, 'min')
+	description = "Minimize all javascript files to $minDir.absolutePath"
+
+	doLast {
+		if (!minDir.exists()) {
+			minDir.mkdirs()
+		}
+	}
+}
+
+task i18n(type: Copy, dependsOn: 'init') {
+	def i18nDir = new File(distdir, 'i18n')
+	description = "Copy all i18n files to $i18nDir.absolutePath"
+	
+	from new File(srcdir, 'i18n')
+  into i18nDir
+  include('grid.locale-*.js')
+}
+
+task clean() {
+	description = "Delete distribution directory: $distdir.absolutePath"
+
+	doLast {
+		if (distdir.exists()) {
+			distdir.deleteDir() 
+		}
+	}
+}
+
+task build(dependsOn: ['jqgrid-min', 'min-files', 'i18n']) {
+	description = "Build the entire distribution"
+}
+
+
+task wrap( type: Wrapper ) {
+	gradleVersion = '1.0-milestone-8a'
+}
