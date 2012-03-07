@@ -21,9 +21,12 @@ task init() {
 
 task jqgrid(dependsOn: 'init') {
 	description = "Concatinate all javascript files into one javascript file: $jqGridFile.absolutePath"
+	def files = fileTree(dir: srcdir, include: '*.js')
+	inputs.file files
+	outputs.file jqGridFile
 	doLast {
 		ant.concat(destfile: jqGridFile) {		
-			fileset(dir:srcdir, includes:'*.js')
+			files.each { fileset(file: it) }
 		}
 	}
 }
