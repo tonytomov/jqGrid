@@ -95,9 +95,9 @@ $.extend($.jgrid,{
 			coord.top = p.top+"px";
 		}
 		$("a.ui-jqdialog-titlebar-close",mh).click(function(e){
-			var oncm = $("#"+aIDs.themodal).data("onClose") || p.onClose;
-			var gboxclose = $("#"+aIDs.themodal).data("gbox") || p.gbox;
-			self.hideModal("#"+aIDs.themodal,{gb:gboxclose,jqm:p.jqModal,onClose:oncm});
+			var oncm = $("#"+$.jgrid.jqID(aIDs.themodal)).data("onClose") || p.onClose;
+			var gboxclose = $("#"+$.jgrid.jqID(aIDs.themodal)).data("gbox") || p.gbox;
+			self.hideModal("#"+$.jgrid.jqID(aIDs.themodal),{gb:gboxclose,jqm:p.jqModal,onClose:oncm});
 			return false;
 		});
 		if (p.width === 0 || !p.width) {p.width = 300;}
@@ -132,24 +132,24 @@ $.extend($.jgrid,{
 				$(mw).jqDrag(mh);
 			} else {
 				try {
-					$(mw).draggable({handle: $("#"+mh.id)});
+					$(mw).draggable({handle: $("#"+$.jgrid.jqID(mh.id))});
 				} catch (e) {}
 			}
 		}
 		if(p.resize) {
 			if($.fn.jqResize) {
 				$(mw).append("<div class='jqResize ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se ui-icon-grip-diagonal-se'></div>");
-				$("#"+aIDs.themodal).jqResize(".jqResize",aIDs.scrollelm ? "#"+aIDs.scrollelm : false);
+				$("#"+$.jgrid.jqID(aIDs.themodal)).jqResize(".jqResize",aIDs.scrollelm ? "#"+$.jgrid.jqID(aIDs.scrollelm) : false);
 			} else {
 				try {
-					$(mw).resizable({handles: 'se, sw',alsoResize: aIDs.scrollelm ? "#"+aIDs.scrollelm : false});
+					$(mw).resizable({handles: 'se, sw',alsoResize: aIDs.scrollelm ? "#"+$.jgrid.jqID(aIDs.scrollelm) : false});
 				} catch (r) {}
 			}
 		}
 		if(p.closeOnEscape === true){
 			$(mw).keydown( function( e ) {
 				if( e.which == 27 ) {
-					var cone = $("#"+aIDs.themodal).data("onClose") || p.onClose;
+					var cone = $("#"+$.jgrid.jqID(aIDs.themodal)).data("onClose") || p.onClose;
 					self.hideModal(this,{gb:p.gbox,jqm:p.jqModal,onClose: cone});
 				}
 			});
@@ -237,7 +237,7 @@ $.extend($.jgrid,{
 		// attach onclick after inserting into the dom
 		if(buttstr) {
 			$.each(mopt.buttons,function(i){
-				$("#"+this.id,"#info_id").bind('click',function(){mopt.buttons[i].onClick.call($("#info_dialog")); return false;});
+				$("#"+$.jgrid.jqID(this.id),"#info_id").bind('click',function(){mopt.buttons[i].onClick.call($("#info_dialog")); return false;});
 			});
 		}
 		$("#closedialog", "#info_id").click(function(e){
