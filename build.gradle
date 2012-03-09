@@ -1,5 +1,14 @@
-def googleCompilerVersion = 'r1810'
-def googleCompiler = "com.google.javascript:closure-compiler:jar:$googleCompilerVersion"
+configurations {
+    jscompiler
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    jscompiler 'com.google.javascript:closure-compiler:r1810'
+}
 
 def srcdir = new File('js')
 def distdir = new File('dist')
@@ -24,6 +33,7 @@ task jqgrid(dependsOn: 'init') {
 	def files = fileTree(dir: srcdir, include: '*.js')
 	inputs.file files
 	outputs.file jqGridFile
+	
 	doLast {
 		ant.concat(destfile: jqGridFile) {		
 			files.each { fileset(file: it) }
@@ -33,6 +43,17 @@ task jqgrid(dependsOn: 'init') {
 
 task 'jqgrid-min'(dependsOn: 'jqgrid') {
 	description = "Minimize $jqGridFile.absolutePath to $jqGridMinFile.absolutePath"
+	inputs.file jqGridFile
+	outputs.file jqGridMinFile
+	
+	doLast {
+    ant.taskdef(name:'jscompile', classname: 'com.google.javascript.jscomp.ant.CompileTask', classpath: configurations.jscompiler.asPath)
+    ant.jscompile(output: jqGridMinFile, warning: 'QUIET') {
+    	ant.sources(dir: jqGridFile.parent){
+    		ant.file(name: jqGridFile.name)
+    	}
+    }
+	}
 }
 
 task 'min-files'(dependsOn: 'init') {
@@ -42,6 +63,12 @@ task 'min-files'(dependsOn: 'init') {
 	doLast {
 		if (!minDir.exists()) {
 			minDir.mkdirs()
+	    ant.taskdef(name:'jscompile', classname: 'com.google.javascript.jscomp.ant.CompileTask', classpath: configurations.jscompiler.asPath)
+	    ant.jscompile(output: jqGridMinFile, warning: 'QUIET') {
+	    	ant.sources(dir: jqGridFile.parent){
+	    		ant.file(name: jqGridFile.name)
+	    	}
+	    }
 		}
 	}
 }
