@@ -522,7 +522,7 @@
 					if (op.suffix && op.suffix.length) {
 						ret = ret.substr(0, ret.length - op.suffix.length);
 					}
-					ret = replace(stripTag,'').replace(op.decimalSeparator,'.');
+					ret = ret.replace(stripTag,'').replace(op.decimalSeparator,'.');
 					break;
 				case 'checkbox':
 					var cbv = (options.colModel.editoptions) ? options.colModel.editoptions.value.split(":") : ["Yes","No"];
