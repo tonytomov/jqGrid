@@ -546,8 +546,8 @@
 		var cell = $(cellval).text();
 		if(cnt===true) {return cell;}
 		var op = $.extend({}, !$.fmatter.isUndefined(options.colModel.formatoptions) ? options.colModel.formatoptions: options.colModel.editoptions),
-		sep = op.colModel.editoptions.separator === undefined ? ":" : op.colModel.editoptions.separator,
-		delim = op.colModel.editoptions.delimiter === undefined ? ";" : op.colModel.editoptions.delimiter;
+		sep = op.separator === undefined ? ":" : op.separator,
+		delim = op.delimiter === undefined ? ";" : op.delimiter;
 		
 		if(op.value){
 			var oSelect = op.value,
