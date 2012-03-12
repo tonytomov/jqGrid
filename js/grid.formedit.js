@@ -77,14 +77,14 @@ $.jgrid.extend({
 				if(typeof(showFrm) === "undefined") {
 					showFrm = true;
 				}
-				if(showFrm && $.isFunction(p.beforeShowSearch)) {
-					showFrm = p.beforeShowSearch.call($t,_filter);
+				if(showFrm && $.isFunction($t.p.beforeShowSearch)) {
+					showFrm = $t.p.beforeShowSearch.call($t,_filter);
 				}
 				if(showFrm) {
-					$.jgrid.viewModal("#"+IDs.themodal,{gbox:"#gbox_"+fid,jqm:p.jqModal, modal:p.modal, overlay: p.overlay, toTop: p.toTop});
+					$.jgrid.viewModal("#"+IDs.themodal,{gbox:"#gbox_"+fid,jqm:$t.p.jqModal, modal:$t.p.modal, overlay: $t.p.overlay, toTop: $t.p.toTop});
 					$($t).triggerHandler("jqGridFilterAfterShow", [_filter]);
-					if($.isFunction(p.afterShowSearch)) {
-						p.afterShowSearch.call($t, _filter);
+					if($.isFunction($t.p.afterShowSearch)) {
+						$t.p.afterShowSearch.call($t, _filter);
 					}
 				}
 			}
