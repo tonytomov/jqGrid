@@ -119,6 +119,11 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 /* End Eorm edit */
 /*.ui-jqgrid .edit-cell {}*/
 .ui-jqgrid .selected-row, div.ui-jqgrid .selected-row td {font-style : normal;border-left: 0px none;}
+/* inline edit actions button*/
+.ui-inline-del.ui-state-hover span, .ui-inline-edit.ui-state-hover span,
+.ui-inline-save.ui-state-hover span, .ui-inline-cancel.ui-state-hover span {
+    margin: -1px;
+}
 /* Tree Grid */
 .ui-jqgrid .tree-wrap {float: left; position: relative;height: 18px;white-space: nowrap;overflow: hidden;}
 .ui-jqgrid .tree-minus {position: absolute; height: 18px; width: 18px; overflow: hidden;}
@@ -136,4 +141,4 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 .ui-jqgrid .ui-sort-rtl {left:0px;}
 .ui-jqgrid .tree-wrap-ltr {float: left;}
 .ui-jqgrid .tree-wrap-rtl {float: right;}
-.ui-jqgrid .ui-ellipsis {text-overflow:ellipsis; -moz-binding:url('ellipsis-xbl.xml#ellipsis');}
+.ui-jqgrid .ui-ellipsis {text-overflow:ellipsis;}
