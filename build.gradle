@@ -48,7 +48,7 @@ task 'jqgrid-min'(dependsOn: 'jqgrid') {
 
     doLast {
         ant.taskdef(name: 'jscompile', classname: 'com.google.javascript.jscomp.ant.CompileTask', classpath: configurations.jscompiler.asPath)
-        ant.jscompile(output: jqGridMinFile, warning: 'QUIET') {
+        ant.jscompile(output: jqGridMinFile, warning: 'QUIET', debug: logger.debugEnabled) {
             ant.sources(dir: jqGridFile.parent) {
                 ant.file(name: jqGridFile.name)
             }
@@ -66,12 +66,12 @@ task 'min-files'(dependsOn: 'init') {
     doLast {
         if (!minDir.exists()) {
             minDir.mkdirs()
-            ant.taskdef(name: 'jscompile', classname: 'com.google.javascript.jscomp.ant.CompileTask', classpath: configurations.jscompiler.asPath)
-            files.each { File f ->
-                ant.jscompile(output: new File(minDir, f.name), warning: 'QUIET') {
-                    ant.sources(dir: f.parent) {
-                        ant.file(name: f.name)
-                    }
+        }
+        ant.taskdef(name: 'jscompile', classname: 'com.google.javascript.jscomp.ant.CompileTask', classpath: configurations.jscompiler.asPath)
+        files.each { File f ->
+            ant.jscompile(output: new File(minDir, f.name), warning: 'QUIET', debug: logger.debugEnabled) {
+                ant.sources(dir: f.parent) {
+                    ant.file(name: f.name)
                 }
             }
         }
