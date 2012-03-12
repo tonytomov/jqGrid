@@ -990,7 +990,7 @@ $.fn.jqGrid = function( pin ) {
 				if($.isFunction( cm.formatter ) ) {
 					v = cm.formatter.call(ts,cellval,opts,rwdat,_act);
 				} else if($.fmatter){
-					v = $.fn.fmatter(cm.formatter, cellval,opts, rwdat, _act);
+					v = $.fn.fmatter.call(ts,cm.formatter,cellval,opts,rwdat,_act);
 				} else {
 					v = cellVal(cellval);
 				}
@@ -2734,7 +2734,7 @@ $.jgrid.extend({
 								res[nm] = $.jgrid.htmlDecode($("span:first",this).html());
 							} else {
 								try {
-									res[nm] = $.unformat(this,{rowId:ind.id, colModel:$t.p.colModel[i]},i);
+									res[nm] = $.unformat.call($t,this,{rowId:ind.id, colModel:$t.p.colModel[i]},i);
 								} catch (e){
 									res[nm] = $.jgrid.htmlDecode($(this).html());
 								}
@@ -2796,7 +2796,7 @@ $.jgrid.extend({
 					$(this.p.colModel).each(function(i){
 						nm = this.name;
 						if( data[nm] !== undefined) {
-							lcdata[nm] = this.formatter && typeof(this.formatter) === 'string' && this.formatter == 'date' ? $.unformat.date(data[nm],this) : data[nm];
+							lcdata[nm] = this.formatter && typeof(this.formatter) === 'string' && this.formatter == 'date' ? $.unformat.date.call(t,data[nm],this) : data[nm];
 							vl = t.formatter( rowid, data[nm], i, data, 'edit');
 							title = this.title ? {"title":$.jgrid.stripHtml(vl)} : {};
 							if(t.p.treeGrid===true && nm == t.p.ExpandColumn) {
@@ -2885,7 +2885,7 @@ $.jgrid.extend({
 					for(i = gi+si+ni; i < t.p.colModel.length;i++){
 						cm = t.p.colModel[i];
 						nm = cm.name;
-						lcdata[nm] = cm.formatter && typeof(cm.formatter) === 'string' && cm.formatter == 'date' ? $.unformat.date(data[nm],cm) : data[nm];
+						lcdata[nm] = cm.formatter && typeof(cm.formatter) === 'string' && cm.formatter == 'date' ? $.unformat.date.call(t,data[nm],cm) : data[nm];
 						v = t.formatter( rowid, $.jgrid.getAccessor(data,nm), i, data, 'edit');
 						prp = t.formatCol(i,1,v, data, rowid, true);
 						row += "<td role=\"gridcell\" aria-describedby=\""+t.p.id+"_"+nm+"\" "+prp+">"+v+"</td>";
@@ -3241,7 +3241,7 @@ $.jgrid.extend({
 						}
 						if($t.p.datatype == "local") {
 							var cm = $t.p.colModel[pos], index;
-							nData = cm.formatter && typeof(cm.formatter) === 'string' && cm.formatter == 'date' ? $.unformat.date(nData,cm) : nData;
+							nData = cm.formatter && typeof(cm.formatter) === 'string' && cm.formatter == 'date' ? $.unformat.date.call($t,nData,cm) : nData;
 							index = $t.p._index[rowid];
 							if(typeof index  != "undefined") {
 								$t.p.data[index][cm.name] = nData;
@@ -3274,7 +3274,7 @@ $.jgrid.extend({
 				var ind = $t.rows.namedItem(rowid);
 				if(ind) {
 					try {
-						ret = $.unformat($("td:eq("+pos+")",ind),{rowId:ind.id, colModel:$t.p.colModel[pos]},pos);
+						ret = $.unformat.call($t,$("td:eq("+pos+")",ind),{rowId:ind.id, colModel:$t.p.colModel[pos]},pos);
 					} catch (e){
 						ret = $.jgrid.htmlDecode($("td:eq("+pos+")",ind).html());
 					}
@@ -3303,7 +3303,7 @@ $.jgrid.extend({
 					while(i<ln){
 						if($($t.rows[i]).hasClass('jqgrow')) {
 							try {
-								val = $.unformat($($t.rows[i].cells[pos]),{rowId:$t.rows[i].id, colModel:$t.p.colModel[pos]},pos);
+								val = $.unformat.call($t,$($t.rows[i].cells[pos]),{rowId:$t.rows[i].id, colModel:$t.p.colModel[pos]},pos);
 							} catch (e) {
 								val = $.jgrid.htmlDecode($t.rows[i].cells[pos].innerHTML);
 							}
