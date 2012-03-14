@@ -81,9 +81,9 @@ addSubGrid : function( pos, sind ) {
 				});
 			}
 			var pID = $("table:first",ts.grid.bDiv).attr("id")+"_";
-			$("#"+pID+sbid).append(dummy);
+			$("#"+$.jgrid.jqID(pID+sbid)).append(dummy);
 			ts.grid.hDiv.loading = false;
-			$("#load_"+ts.p.id).hide();
+			$("#load_"+$.jgrid.jqID(ts.p.id)).hide();
 			return false;
 		};
 		var subGridJson = function(sjxml, sbid){
@@ -122,9 +122,9 @@ addSubGrid : function( pos, sind ) {
 				}
 			}
 			var pID = $("table:first",ts.grid.bDiv).attr("id")+"_";
-			$("#"+pID+sbid).append(dummy);
+			$("#"+$.jgrid.jqID(pID+sbid)).append(dummy);
 			ts.grid.hDiv.loading = false;
-			$("#load_"+ts.p.id).hide();
+			$("#load_"+$.jgrid.jqID(ts.p.id)).hide();
 			return false;
 		};
 		var populatesubgrid = function( rd )
@@ -145,7 +145,7 @@ addSubGrid : function( pos, sind ) {
 			}
 			if(!ts.grid.hDiv.loading) {
 				ts.grid.hDiv.loading = true;
-				$("#load_"+ts.p.id).show();
+				$("#load_"+$.jgrid.jqID(ts.p.id)).show();
 				if(!ts.p.subgridtype) { ts.p.subgridtype = ts.p.datatype; }
 				if($.isFunction(ts.p.subgridtype)) {
 					ts.p.subgridtype.call(ts, dp);
