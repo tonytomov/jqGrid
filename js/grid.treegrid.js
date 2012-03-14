@@ -193,7 +193,7 @@ $.jgrid.extend({
 			expanded = $t.p.treeReader.expanded_field;
 			$(childern).each(function(i){
 				var id  = $.jgrid.getAccessor(this,$t.p.localReader.id);
-				$("#"+id,$t.grid.bDiv).css("display","");
+				$("#"+$.jgrid.jqID(id),$t.grid.bDiv).css("display","");
 				if(this[expanded]) {
 					$($t).jqGrid("expandRow",this);
 				}
@@ -209,7 +209,7 @@ $.jgrid.extend({
 			expanded = $t.p.treeReader.expanded_field;
 			$(childern).each(function(i){
 				var id  = $.jgrid.getAccessor(this,$t.p.localReader.id);
-				$("#"+id,$t.grid.bDiv).css("display","none");
+				$("#"+$.jgrid.jqID(id),$t.grid.bDiv).css("display","none");
 				if(this[expanded]){
 					$($t).jqGrid("collapseRow",this);
 				}
@@ -418,7 +418,7 @@ $.jgrid.extend({
 
 			if(!rc[expanded]) {
 				var id = $.jgrid.getAccessor(rc,this.p.localReader.id);
-				var rc1 = $("#"+id,this.grid.bDiv)[0];
+				var rc1 = $("#"+$.jgrid.jqID(id),this.grid.bDiv)[0];
 				var position = this.p._index[id];
 				if( $(this).jqGrid("isNodeLoaded",this.p.data[position]) ) {
 					rc[expanded] = true;
@@ -451,7 +451,7 @@ $.jgrid.extend({
 			if(rc[expanded]) {
 				rc[expanded] = false;
 				var id = $.jgrid.getAccessor(rc,this.p.localReader.id);
-				var rc1 = $("#"+id,this.grid.bDiv)[0];
+				var rc1 = $("#"+$.jgrid.jqID(id),this.grid.bDiv)[0];
 				$("div.treeclick",rc1).removeClass(this.p.treeIcons.minus+" tree-minus").addClass(this.p.treeIcons.plus+" tree-plus");
 			}
 		});
@@ -475,7 +475,7 @@ $.jgrid.extend({
 			}
 			$.each(records, function(index, row) {
 				var id  = $.jgrid.getAccessor(this,$t.p.localReader.id);
-				$('#'+$t.p.id+ ' tbody tr:eq('+index+')').after($('tr#'+id,$t.grid.bDiv));
+				$('#'+$.jgrid.jqID($t.p.id)+ ' tbody tr:eq('+index+')').after($('tr#'+$.jgrid.jqID(id),$t.grid.bDiv));
 			});
 			query = null;roots=null;records=null;
 		});
