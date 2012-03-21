@@ -55,9 +55,9 @@
 		var v=cellval;
 		opts = $.extend({}, $.jgrid.formatter, opts);
 
-		if ($.isFunction($.fn.fmatter[formatType])){
+		try {
 			v = $.fn.fmatter[formatType].call(this, cellval, opts, rwd, act);
-		}
+		} catch(fe){}
 		return v;
 	};
 	$.fmatter.util = {
@@ -522,7 +522,7 @@
 					if (op.suffix && op.suffix.length) {
 						ret = ret.substr(0, ret.length - op.suffix.length);
 					}
-					ret = replace(stripTag,'').replace(op.decimalSeparator,'.');
+					ret = ret.replace(stripTag,'').replace(op.decimalSeparator,'.');
 					break;
 				case 'checkbox':
 					var cbv = (options.colModel.editoptions) ? options.colModel.editoptions.value.split(":") : ["Yes","No"];
@@ -546,8 +546,8 @@
 		var cell = $(cellval).text();
 		if(cnt===true) {return cell;}
 		var op = $.extend({}, !$.fmatter.isUndefined(options.colModel.formatoptions) ? options.colModel.formatoptions: options.colModel.editoptions),
-		sep = op.colModel.editoptions.separator === undefined ? ":" : op.colModel.editoptions.separator,
-		delim = op.colModel.editoptions.delimiter === undefined ? ";" : op.colModel.editoptions.delimiter;
+		sep = op.separator === undefined ? ":" : op.separator,
+		delim = op.delimiter === undefined ? ";" : op.delimiter;
 		
 		if(op.value){
 			var oSelect = op.value,

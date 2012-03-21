@@ -52,13 +52,13 @@ $.jgrid.extend({
 	sortableColumns : function (tblrow)
 	{
 		return this.each(function (){
-			var ts = this, tid= ts.p.id;
+			var ts = this, tid= $.jgrid.jqID( ts.p.id );
 			function start() {ts.p.disableClick = true;}
 			var sortable_opts = {
 				"tolerance" : "pointer",
 				"axis" : "x",
 				"scrollSensitivity": "1",
-				"items": '>th:not(:has(#jqgh_'+$.jgrid.jqID(tid)+'_cb'+',#jqgh_'+$.jgrid.jqID(tid)+'_rn'+',#jqgh_'+$.jgrid.jqID(tid)+'_subgrid),:hidden)',
+				"items": '>th:not(:has(#jqgh_'+tid+'_cb'+',#jqgh_'+tid+'_rn'+',#jqgh_'+tid+'_subgrid),:hidden)',
 				"placeholder": {
 					element: function(item) {
 						var el = $(document.createElement(item[0].nodeName))
@@ -148,9 +148,7 @@ $.jgrid.extend({
                */
             "dlog" : "dialog",
 			"dialog_opts" : {
-				"minWidth": 470,
-				"show": 'blind',
-				"hide": 'explode'
+				"minWidth": 470
 			},
             /* dlog_opts is either an option object to be passed 
                to "dlog", or (more likely) a function that creates
@@ -420,7 +418,7 @@ $.jgrid.extend({
 						if(opts.beforedrop && $.isFunction(opts.beforedrop) ) {
 							//parameters to this callback - event, element, data to be inserted, sender, reciever
 							// should return object which will be inserted into the reciever
-							var datatoinsert = opts.beforedrop.call(this,ev,ui,getdata,$('#'+$.jgrid.jqID($t.id)),$(this));
+							var datatoinsert = opts.beforedrop.call(this,ev,ui,getdata,$('#'+$.jgrid.jqID($t.p.id)),$(this));
 							if (typeof datatoinsert != "undefined" && datatoinsert !== null && typeof datatoinsert == "object") { getdata = datatoinsert; }
 						}
 						if(ui.helper.dropped) {
@@ -478,7 +476,7 @@ $.jgrid.extend({
 	},
 	gridResize : function(opts) {
 		return this.each(function(){
-			var $t = this;
+			var $t = this, gID = $.jgrid.jqID($t.p.id);
 			if(!$t.grid || !$.fn.resizable) { return; }
 			opts = $.extend({}, opts || {});
 			if(opts.alsoResize ) {
@@ -494,18 +492,18 @@ $.jgrid.extend({
 				opts._stop_ = false;
 			}
 			opts.stop = function (ev, ui) {
-				$($t).jqGrid('setGridParam',{height:$("#gview_"+$.jgrid.jqID($t.p.id)+" .ui-jqgrid-bdiv").height()});
+				$($t).jqGrid('setGridParam',{height:$("#gview_"+gID+" .ui-jqgrid-bdiv").height()});
 				$($t).jqGrid('setGridWidth',ui.size.width,opts.shrinkToFit);
 				if(opts._stop_) { opts._stop_.call($t,ev,ui); }
 			};
 			if(opts._alsoResize_) {
-				var optstest = "{\'#gview_"+$.jgrid.jqID($t.p.id)+" .ui-jqgrid-bdiv\':true,'" +opts._alsoResize_+"':true}";
+				var optstest = "{\'#gview_"+gID+" .ui-jqgrid-bdiv\':true,'" +opts._alsoResize_+"':true}";
 				opts.alsoResize = eval('('+optstest+')'); // the only way that I found to do this
 			} else {
-				opts.alsoResize = $(".ui-jqgrid-bdiv","#gview_"+$.jgrid.jqID($t.p.id));
+				opts.alsoResize = $(".ui-jqgrid-bdiv","#gview_"+gID);
 			}
 			delete opts._alsoResize_;
-			$("#gbox_"+$.jgrid.jqID($t.p.id)).resizable(opts);
+			$("#gbox_"+gID).resizable(opts);
 		});
 	}
 });
