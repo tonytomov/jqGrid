@@ -137,7 +137,7 @@ $.extend($.jgrid,{
 		return new Date(tsp.y, tsp.m, tsp.d, tsp.h, tsp.i, tsp.s, tsp.u);
 	},
 	jqID : function(sid){
-		return String(sid).replace(/[!"#$%&'()*+,.\/:;<=>?@\[\\\]\^`{|}~]/g,"\\$&");
+		return String(sid).replace(/[!"#$%&'()*+,.\/: ;<=>?@\[\\\]\^`{|}~]/g,"\\$&");
 	},
 	guid : 1,
 	uidPref: 'jqg',
