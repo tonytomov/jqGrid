@@ -1581,7 +1581,7 @@ $.jgrid.extend({
 						oper = opers.oper;
 						postd[oper] = opers.deloper;
 						idname = opers.id;
-						postdata = postdata.split(",");
+						postdata = String(postdata).split(",");
 						if(!postdata.length) { return false; }
 						for( var pk in postdata) {
 							if(postdata.hasOwnProperty(pk)) {
