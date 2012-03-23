@@ -211,7 +211,7 @@ $.jgrid.extend({
 									data :$.isFunction($t.p.serializeCellData) ? $t.p.serializeCellData.call($t, postdata) : postdata,
 									type: "POST",
 									complete: function (result, stat) {
-										$("#lui_"+$t.p.id).hide();
+										$("#lui_"+$.jgrid.jqID($t.p.id)).hide();
 										$t.grid.hDiv.loading = false;
 										if (stat == 'success') {
 											var ret = $($t).triggerHandler("jqGridAfterSubmitCell", [$t, result, postdata.id, nm, v, iRow, iCol]) || [true, ''];
@@ -303,7 +303,7 @@ $.jgrid.extend({
 				}				
 				$t.p.savedRow.splice(0,1);
 			}
-			window.setTimeout(function () { $("#"+$t.p.knv).attr("tabindex","-1").focus();},0);
+			window.setTimeout(function () { $("#"+$.jgrid.jqID($t.p.knv)).attr("tabindex","-1").focus();},0);
 		});
 	},
 	nextCell : function (iRow,iCol) {
@@ -405,7 +405,7 @@ $.jgrid.extend({
 			}
 
 			$(selection).insertBefore($t.grid.cDiv);
-			$("#"+$t.p.knv)
+			$("#"+$.jgrid.jqID($t.p.knv))
 			.focus()
 			.keydown(function (e){
 				kdir = e.keyCode;
