@@ -407,10 +407,11 @@ $.fn.jqFilter = function( arg ) {
 				// data
 				$(".data",trpar).empty().append( elm );
 				$(".input-elm",trpar).bind('change',function( e ) {
+					var tmo = $(this).hasClass("ui-autocomplete-input") ? 200 :0;
 					setTimeout(function(){
 						rule.data = e.target.value;
 						that.onchange(); // signals that the filter has changed
-					}, 200);
+					}, tmo);
 				});
 				setTimeout(function(){ //IE, Opera, Chrome
 				rule.data = $(elm).val();
