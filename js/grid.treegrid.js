@@ -10,6 +10,19 @@
 /*global document, jQuery, $ */
 (function($) {
 "use strict";
+var getNodeIcons = function (ldat) {
+	var $t = this, p = $t.p, icons, icon = p.treeReader.icon_field,
+		plusIcon = p.treeIcons.plus,
+		minusIcon = p.treeIcons.minus;
+	if (typeof ldat[icon] === "string") {
+		icons = ldat[icon].split(',');
+		if (icons.length >= 2) {
+			minusIcon = icons[0];
+			plusIcon = icons[1];
+		}
+	}
+	return [minusIcon, plusIcon];
+};
 $.jgrid.extend({
 	setTreeNode : function(i, len){
 		return this.each(function(){
@@ -66,13 +79,13 @@ $.jgrid.extend({
 					lf="";
 				}
 				ldat[expanded] = ((ldat[expanded] == "true" || ldat[expanded] === true) ? true : false) && ldat[loaded];
-				if(ldat[expanded] === false) {
-					twrap += ((ldat[isLeaf] === true) ? "'" : $t.p.treeIcons.plus+" tree-plus treeclick'");
-				} else {
-					twrap += ((ldat[isLeaf] === true) ? "'" : $t.p.treeIcons.minus+" tree-minus treeclick'");
+				if (ldat[isLeaf] === false) {
+					var icons = getNodeIcons.call($t, ldat);
+					twrap += (ldat[expanded] === false) ? icons[1] + " tree-plus" : icons[0] + " tree-minus";
+					twrap += " treeclick";
 				}
 				
-				twrap += "></div></div>";
+				twrap += "'></div></div>";
 				$($t.rows[i].cells[expCol]).wrapInner("<span class='cell-wrapper"+lf+"'></span>").prepend(twrap);
 
 				if(curLevel !== parseInt($t.p.tree_root_level,10)) {
@@ -420,12 +433,13 @@ $.jgrid.extend({
 				var id = $.jgrid.getAccessor(rc,this.p.localReader.id);
 				var rc1 = $("#"+$.jgrid.jqID(id),this.grid.bDiv)[0];
 				var position = this.p._index[id];
+				var icons = getNodeIcons.call(this, rc), minusIcon = icons[0], plusIcon = icons[1];
 				if( $(this).jqGrid("isNodeLoaded",this.p.data[position]) ) {
 					rc[expanded] = true;
-					$("div.treeclick",rc1).removeClass(this.p.treeIcons.plus+" tree-plus").addClass(this.p.treeIcons.minus+" tree-minus");
+					$("div.treeclick",rc1).removeClass(plusIcon+" tree-plus").addClass(minusIcon+" tree-minus");
 				} else if (!this.grid.hDiv.loading) {
 					rc[expanded] = true;
-					$("div.treeclick",rc1).removeClass(this.p.treeIcons.plus+" tree-plus").addClass(this.p.treeIcons.minus+" tree-minus");
+					$("div.treeclick",rc1).removeClass(plusIcon+" tree-plus").addClass(minusIcon+" tree-minus");
 					this.p.treeANode = rc1.rowIndex;
 					this.p.datatype = this.p.treedatatype;
 					if(this.p.treeGridModel == 'nested') {
@@ -452,7 +466,8 @@ $.jgrid.extend({
 				rc[expanded] = false;
 				var id = $.jgrid.getAccessor(rc,this.p.localReader.id);
 				var rc1 = $("#"+$.jgrid.jqID(id),this.grid.bDiv)[0];
-				$("div.treeclick",rc1).removeClass(this.p.treeIcons.minus+" tree-minus").addClass(this.p.treeIcons.plus+" tree-plus");
+				var icons = getNodeIcons.call(this, rc), minusIcon = icons[0], plusIcon = icons[1];
+				$("div.treeclick",rc1).removeClass(minusIcon+" tree-minus").addClass(plusIcon+" tree-plus");
 			}
 		});
 	},
