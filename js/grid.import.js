@@ -117,7 +117,7 @@
                             type:o.mtype,
                             data: o.impData,
                             dataType:"json",
-                            complete: function(json,stat) {
+                            complete: function(json) {
                                 try {
                                     jsonConvert(json.responseText,o );
                                     $($t).triggerHandler("jqGridImportComplete", [json, o]);

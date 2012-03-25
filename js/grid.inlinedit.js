@@ -353,7 +353,7 @@ $.jgrid.extend({
 						$("input.hasDatepicker","#"+$.jgrid.jqID(ind.id)).datepicker('hide');
 					} catch (e) {}
 				}
-				$.each($t.p.colModel, function(i,n){
+				$.each($t.p.colModel, function(){
 					if(this.editable === true && this.name in $t.p.savedRow[fr] ) {
 						ares[this.name] = $t.p.savedRow[fr][this.name];
 					}
@@ -385,7 +385,7 @@ $.jgrid.extend({
 			if (!this.grid ) { return; }
 			var $t = this;
 			if(p.useDefValues === true) {
-				$($t.p.colModel).each(function(i){
+				$($t.p.colModel).each(function(){
 					if( this.editoptions && this.editoptions.defaultValue ) {
 						var opt = this.editoptions.defaultValue,
 						tmp = $.isFunction(opt) ? opt.call($t) : opt;
@@ -462,7 +462,7 @@ $.jgrid.extend({
 					title : o.addtitle,
 					buttonicon : o.addicon,
 					id : $t.p.id+"_iladd",
-					onClickButton : function ( e ) {
+					onClickButton : function () {
 						$($t).jqGrid('addRow', o.addParams);
 						if(!o.addParams.useFormatter) {
 							$("#"+gID+"_ilsave").removeClass('ui-state-disabled');
@@ -479,7 +479,7 @@ $.jgrid.extend({
 					title : o.edittitle,
 					buttonicon : o.editicon,
 					id : $t.p.id+"_iledit",
-					onClickButton : function ( e ) {
+					onClickButton : function () {
 						var sr = $($t).jqGrid('getGridParam','selrow');
 						if(sr) {
 							$($t).jqGrid('editRow', sr, o.editParams);
@@ -499,7 +499,7 @@ $.jgrid.extend({
 					title : o.savetitle || 'Save row',
 					buttonicon : o.saveicon,
 					id : $t.p.id+"_ilsave",
-					onClickButton : function ( e ) {
+					onClickButton : function () {
 						var sr = $t.p.savedRow[0].id;
 						if(sr) {
 							var opers = $t.p.prmNames,
@@ -528,7 +528,7 @@ $.jgrid.extend({
 					title : o.canceltitle || 'Cancel row editing',
 					buttonicon : o.cancelicon,
 					id : $t.p.id+"_ilcancel",
-					onClickButton : function ( e ) {
+					onClickButton : function () {
 						var sr = $t.p.savedRow[0].id;
 						if(sr) {
 							$($t).jqGrid('restoreRow', sr, o.editParams);

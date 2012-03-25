@@ -344,7 +344,7 @@
 			return $.fn.fmatter.defaultFormat(cellval, opts);
 		}
 	};
-	$.fn.fmatter.select = function (cellval,opts, rwd, act) {
+	$.fn.fmatter.select = function (cellval,opts) {
 		// jqGrid specific
 		cellval = cellval + "";
 		var oSelect = false, ret=[], sep, delim;
@@ -367,10 +367,10 @@
 				for(var i=0; i<so.length;i++){
 					sv = so[i].split(sep);
 					if(sv.length > 2 ) {
-						sv[1] = jQuery.map(sv,function(n,i){if(i>0) {return n;}}).join(sep);
+						sv[1] = $.map(sv,function(n,i){if(i>0) {return n;}}).join(sep);
 					}
 					if(msl) {
-						if(jQuery.inArray(sv[0],scell)>-1) {
+						if($.inArray(sv[0],scell)>-1) {
 							ret[j] = sv[1];
 							j++;
 						}
@@ -382,7 +382,7 @@
 			} else if($.fmatter.isObject(oSelect)) {
 				// this is quicker
 				if(msl) {
-					ret = jQuery.map(scell, function(n, i){
+					ret = $.map(scell, function(n){
 						return oSelect[n];
 					});
 				} else {
@@ -464,7 +464,7 @@
 				break;
 		}
 	};
-	$.fn.fmatter.actions = function(cellval,opts, rwd) {
+	$.fn.fmatter.actions = function(cellval,opts) {
 		var op ={keys:false, editbutton:true, delbutton:true, editformbutton: false};
 		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend(op,opts.colModel.formatoptions);
@@ -559,10 +559,10 @@
 				for(var i=0; i<so.length;i++){
 					sv = so[i].split(sep);
 					if(sv.length > 2 ) {
-						sv[1] = jQuery.map(sv,function(n,i){if(i>0) {return n;}}).join(sep);
+						sv[1] = $.map(sv,function(n,i){if(i>0) {return n;}}).join(sep);
 					}					
 					if(msl) {
-						if(jQuery.inArray(sv[1],scell)>-1) {
+						if($.inArray(sv[1],scell)>-1) {
 							ret[j] = sv[0];
 							j++;
 						}
@@ -573,7 +573,7 @@
 				}
 			} else if($.fmatter.isObject(oSelect) || $.isArray(oSelect) ){
 				if(!msl) {scell[0] =  cell;}
-				ret = jQuery.map(scell, function(n){
+				ret = $.map(scell, function(n){
 					var rv;
 					$.each(oSelect, function(i,val){
 						if (val == n) {

@@ -94,7 +94,7 @@ $.extend($.jgrid,{
 			coord.left = p.left;
 			coord.top = p.top+"px";
 		}
-		$("a.ui-jqdialog-titlebar-close",mh).click(function(e){
+		$("a.ui-jqdialog-titlebar-close",mh).click(function(){
 			var oncm = $("#"+$.jgrid.jqID(aIDs.themodal)).data("onClose") || p.onClose;
 			var gboxclose = $("#"+$.jgrid.jqID(aIDs.themodal)).data("gbox") || p.gbox;
 			self.hideModal("#"+$.jgrid.jqID(aIDs.themodal),{gb:gboxclose,jqm:p.jqModal,onClose:oncm});
@@ -240,7 +240,7 @@ $.extend($.jgrid,{
 				$("#"+$.jgrid.jqID(this.id),"#info_id").bind('click',function(){mopt.buttons[i].onClick.call($("#info_dialog")); return false;});
 			});
 		}
-		$("#closedialog", "#info_id").click(function(e){
+		$("#closedialog", "#info_id").click(function(){
 			self.hideModal("#info_dialog",{jqm:jm});
 			return false;
 		});
@@ -347,7 +347,7 @@ $.extend($.jgrid,{
 						type : "GET",
 						dataType: "html",
 						context: {elem:elem, options:options, vl:vl},
-						success: function(data,status){
+						success: function(data){
 							var a,	ovm = [], elem = this.elem, vl = this.vl,
 							options = $.extend({},this.options),
 							msl = options.multiple===true;
