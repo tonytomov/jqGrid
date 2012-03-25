@@ -300,6 +300,7 @@ $.extend($.jgrid,{
 			return(self._compare(a,b,1)===0);
 		};
 		this._compare=function(a,b,d){
+			var toString = Object.prototype.toString;
 			if( d === undefined) { d = 1; }
 			if(a===undefined) { a = null; }
 			if(b===undefined) { b = null; }
@@ -311,6 +312,11 @@ $.extend($.jgrid,{
 			}
 			if(a!==null&&b===null){
 				return -1;
+			}
+			if (toString.call(a) === '[object Date]' && toString.call(b) === '[object Date]') {
+				if (a < b) { return -d; }
+				if (a > b) { return d; }
+				return 0;
 			}
 			if(!_usecase && typeof(a) !== "number" && typeof(b) !== "number" ) {
 				a=String(a).toLowerCase();
