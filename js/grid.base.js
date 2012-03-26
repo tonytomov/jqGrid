@@ -137,7 +137,7 @@ $.extend($.jgrid,{
 		return new Date(tsp.y, tsp.m, tsp.d, tsp.h, tsp.i, tsp.s, tsp.u);
 	},
 	jqID : function(sid){
-		return String(sid).replace(/[!"#$%&'()*+,.\/:;<=>?@\[\\\]\^`{|}~]/g,"\\$&");
+		return String(sid).replace(/[!"#$%&'()*+,.\/: ;<=>?@\[\\\]\^`{|}~]/g,"\\$&");
 	},
 	guid : 1,
 	uidPref: 'jqg',
@@ -1584,7 +1584,7 @@ $.fn.jqGrid = function( pin ) {
 		},
 		updatepager = function(rn, dnd) {
 			var cp, last, base, from,to,tot,fmt, pgboxes = "", sppg,
-			tspg = ts.p.pager ? "_"+$.jgrid.jqID(ts.p.pager.substr(1)) : "",
+			tspg = ts.p.pager ? "_"+ts.p.pager.substr(1) : "",
 			tspg_t = ts.p.toppager ? "_"+ts.p.toppager.substr(1) : "";
 			base = parseInt(ts.p.page,10)-1;
 			if(base < 0) { base = 0; }
@@ -1823,7 +1823,6 @@ $.fn.jqGrid = function( pin ) {
 			}
 		},
 		setPager = function (pgid, tp){
-			// TBD - consider escaping pgid with pgid = $.jgrid.jqID(pgid);
 			var sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='ui-separator'></span></td>",
 			pginp = "",
 			pgl="<table cellspacing='0' cellpadding='0' border='0' style='table-layout:auto;' class='ui-pg-table'><tbody><tr>",
@@ -1837,7 +1836,6 @@ $.fn.jqGrid = function( pin ) {
 				if(ret=='stop') {return false;}
 				return true;
 			};
-			pgid = pgid.substr(1);
 			tp += "_" + pgid;
 			pgcnt = "pg_"+pgid;
 			lft = pgid+"_left"; cent = pgid+"_center"; rgt = pgid+"_right";
@@ -1864,21 +1862,22 @@ $.fn.jqGrid = function( pin ) {
 			} else if (pginp !== "") { pgl += pginp; }
 			if(dir=="ltr") { pgl += str; }
 			pgl += "</tr></tbody></table>";
-			if(ts.p.viewrecords===true) {$("td#"+pgid+"_"+ts.p.recordpos,"#"+pgcnt).append("<div dir='"+dir+"' style='text-align:"+ts.p.recordpos+"' class='ui-paging-info'></div>");}
-			$("td#"+pgid+"_"+ts.p.pagerpos,"#"+pgcnt).append(pgl);
+			var pgID = $.jgrid.jqID(pgid), pgcntID = $.jgrid.jqID(pgcnt);
+			if(ts.p.viewrecords===true) {$("td#"+pgID+"_"+ts.p.recordpos,"#"+pgcntID).append("<div dir='"+dir+"' style='text-align:"+ts.p.recordpos+"' class='ui-paging-info'></div>");}
+			$("td#"+pgID+"_"+ts.p.pagerpos,"#"+pgcntID).append(pgl);
 			tdw = $(".ui-jqgrid").css("font-size") || "11px";
 			$(document.body).append("<div id='testpg' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+tdw+";visibility:hidden;' ></div>");
 			twd = $(pgl).clone().appendTo("#testpg").width();
 			$("#testpg").remove();
 			if(twd > 0) {
 				if(pginp !== "") { twd += 50; } //should be param
-				$("td#"+pgid+"_"+ts.p.pagerpos,"#"+pgcnt).width(twd);
+				$("td#"+pgID+"_"+ts.p.pagerpos,"#"+pgcntID).width(twd);
 			}
 			ts.p._nvtd = [];
 			ts.p._nvtd[0] = twd ? Math.floor((ts.p.width - twd)/2) : Math.floor(ts.p.width/3);
 			ts.p._nvtd[1] = 0;
 			pgl=null;
-			$('.ui-pg-selbox',"#"+pgcnt).bind('change',function() {
+			$('.ui-pg-selbox',"#"+pgcntID).bind('change',function() {
 				ts.p.page = Math.round(ts.p.rowNum*(ts.p.page-1)/this.value-0.5)+1;
 				ts.p.rowNum = this.value;
 				if(ts.p.pager) { $('.ui-pg-selbox',ts.p.pager).val(this.value); }
@@ -1888,7 +1887,7 @@ $.fn.jqGrid = function( pin ) {
 				return false;
 			});
 			if(ts.p.pgbuttons===true) {
-			$(".ui-pg-button","#"+pgcnt).hover(function(e){
+			$(".ui-pg-button","#"+pgcntID).hover(function(e){
 				if($(this).hasClass('ui-state-disabled')) {
 					this.style.cursor='default';
 				} else {
@@ -1923,7 +1922,7 @@ $.fn.jqGrid = function( pin ) {
 			});
 			}
 			if(ts.p.pginput===true) {
-			$('input.ui-pg-input',"#"+pgcnt).keypress( function(e) {
+			$('input.ui-pg-input',"#"+pgcntID).keypress( function(e) {
 				var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
 				if(key == 13) {
 					ts.p.page = ($(this).val()>0) ? $(this).val():ts.p.page;
@@ -2315,12 +2314,23 @@ $.fn.jqGrid = function( pin ) {
 		hTable = null;
 		if(hg) { $(grid.hDiv).hide(); }
 		if(ts.p.pager){
-			// TBD -- escape ts.p.pager here?
-			if(typeof ts.p.pager == "string") {if(ts.p.pager.substr(0,1) !="#") { ts.p.pager = "#"+ts.p.pager;} }
-			else { ts.p.pager = "#"+ $(ts.p.pager).attr("id");}
-			$(ts.p.pager).css({width: grid.width+"px"}).appendTo(eg).addClass('ui-state-default ui-jqgrid-pager ui-corner-bottom');
-			if(hg) {$(ts.p.pager).hide();}
-			setPager(ts.p.pager,'');
+			if(typeof ts.p.pager === "string" && ts.p.pager.substr(0,1) !== "#") {
+				// escaping ts.p.pager if it is defined as the pager id
+				ts.p.pager = "#" + $.jgrid.jqID(ts.p.pager);
+			} else {
+				// ts.p.pager is DOM or jQuery or other selector as id selector
+				if ($(ts.p.pager).length > 0) {
+					// set pager to id selector of the first element in $(ts.p.pager) set: $(ts.p.pager)[0].id
+					ts.p.pager = "#" + $.jgrid.jqID($(ts.p.pager).attr("id"));
+				else {
+					ts.p.pager = "";
+				}
+			}
+			if(ts.p.pager){
+				$(ts.p.pager).css({width: grid.width+"px"}).appendTo(eg).addClass('ui-state-default ui-jqgrid-pager ui-corner-bottom');
+				if(hg) {$(ts.p.pager).hide();}
+				setPager($(ts.p.pager).attr("id"),'');
+			}
 		}
 		if( ts.p.cellEdit === false && ts.p.hoverrows === true) {
 		$(ts).bind('mouseover',function(e) {
@@ -2477,11 +2487,11 @@ $.fn.jqGrid = function( pin ) {
 			if(hg) {$(grid.uDiv).hide();}
 		}
 		if(ts.p.toppager) {
-			ts.p.toppager = $.jgrid.jqID(ts.p.id)+"_toppager";
+			ts.p.toppager = ts.p.id+"_toppager";
 			grid.topDiv = $("<div id='"+ts.p.toppager+"'></div>")[0];
-			ts.p.toppager = "#"+ts.p.toppager;
+			ts.p.toppager = "#"+$.jgrid.jqID(ts.p.toppager);
 			$(grid.topDiv).insertBefore(grid.hDiv).addClass('ui-state-default ui-jqgrid-toppager').width(grid.width);
-			setPager(ts.p.toppager,'_t');
+			setPager($(ts.p.toppager).attr("id"),'_t');
 		}
 		if(ts.p.footerrow) {
 			grid.sDiv = $("<div class='ui-jqgrid-sdiv'></div>")[0];
@@ -2502,9 +2512,9 @@ $.fn.jqGrid = function( pin ) {
 					counter, self = this;
 					if(ts.p.toolbar[0]===true) {
 						if( ts.p.toolbar[1]=='both') {
-							elems += ', #' + $(grid.ubDiv).attr('id');
+							elems += ', #' + $.jgrid.jqID($(grid.ubDiv).attr('id'));
 						}
-						elems += ', #' + $(grid.uDiv).attr('id');
+						elems += ', #' + $.jgrid.jqID($(grid.uDiv).attr('id'));
 					}
 					counter = $(elems,"#gview_"+$.jgrid.jqID(ts.p.id)).length;
 
