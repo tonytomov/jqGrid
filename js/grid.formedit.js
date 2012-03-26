@@ -161,7 +161,7 @@ $.jgrid.extend({
 					_gridsopt : $.jgrid.search.odata,
 					ajaxSelectOptions: $t.p.ajaxSelectOptions,
 					groupOps: p.groupOps,
-					onChange : function( sp ) {
+					onChange : function() {
 						if(this.p.showQuery) {
 							$('.query',this).html(this.toUserFriendlyString());
 						}
@@ -170,7 +170,7 @@ $.jgrid.extend({
 				});
 				fil.append( bt );
 				if(found && p.tmplFilters && p.tmplFilters.length) {
-					$(".ui-template", fil).bind('change', function(e){
+					$(".ui-template", fil).bind('change', function(){
 						var curtempl = $(this).val();
 						if(curtempl=="default") {
 							$("#"+fid).jqFilter('addFilter', defaultFilters);
@@ -192,7 +192,7 @@ $.jgrid.extend({
 					$.jgrid.createModal(IDs ,fil,p,"#gview_"+$.jgrid.jqID($t.p.id),$("#gbox_"+$.jgrid.jqID($t.p.id))[0]);
 				}
 				if(bQ) {
-					$("#"+fid+"_query").bind('click', function(e){
+					$("#"+fid+"_query").bind('click', function(){
 						$(".queryresult", fil).toggle();
 						return false;
 					});
@@ -336,7 +336,6 @@ $.jgrid.extend({
 			onAfterShow = $.isFunction(rp_ge[$t.p.id].afterShowForm) ? rp_ge[$t.p.id].afterShowForm : false,
 			onBeforeInit = $.isFunction(rp_ge[$t.p.id].beforeInitData) ? rp_ge[$t.p.id].beforeInitData : false,
 			onInitializeForm = $.isFunction(rp_ge[$t.p.id].onInitializeForm) ? rp_ge[$t.p.id].onInitializeForm : false,
-			copydata = null,
 			showFrm = true,
 			maxCols = 1, maxRows=0,	postdata, extpost, newData, diff, frmoper;
 			frmgr = $.jgrid.jqID(frmgr);
@@ -356,11 +355,11 @@ $.jgrid.extend({
 				closeovrl = false;
 			}
 			function getFormData(){
-				$(frmtb+" > tbody > tr > td > .FormElement").each(function(i) {
+				$(frmtb+" > tbody > tr > td > .FormElement").each(function() {
 					var celm = $(".customelement", this);
 					if (celm.length) {
 						var  elem = celm[0], nm = $(elem).attr('name');
-						$.each($t.p.colModel, function(i,n){
+						$.each($t.p.colModel, function(){
 							if(this.name === nm && this.editoptions && $.isFunction(this.editoptions.custom_value)) {
 								try {
 									postdata[nm] = this.editoptions.custom_value.call($t, $("#"+$.jgrid.jqID(nm),frmtb),'get');
@@ -492,7 +491,7 @@ $.jgrid.extend({
 				if(rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate) {rp_ge[$t.p.id]._savedData = {};rp_ge[$t.p.id]._savedData[obj.p.id+"_id"]=rowid;}
 				var cm = obj.p.colModel;
 				if(rowid == '_empty') {
-					$(cm).each(function(i){
+					$(cm).each(function(){
 						nm = this.name;
 						opt = $.extend({}, this.editoptions || {} );
 						fld = $("#"+$.jgrid.jqID(nm),"#"+fmid);
@@ -558,7 +557,7 @@ $.jgrid.extend({
 							case "select":
 								var opv = tmp.split(",");
 								opv = $.map(opv,function(n){return $.trim(n);});
-								$("#"+nm+" option","#"+fmid).each(function(j){
+								$("#"+nm+" option","#"+fmid).each(function(){
 									if (!cm[i].editoptions.multiple && ($.trim(tmp) == $.trim($(this).text()) || opv[0] == $.trim($(this).text()) || opv[0] == $.trim($(this).val())) ){
 										this.selected= true;
 									} else if (cm[i].editoptions.multiple){
@@ -713,7 +712,7 @@ $.jgrid.extend({
 								$("#FormError",frmtb).show();
 							} else {
 								// remove some values if formattaer select or checkbox
-								$.each($t.p.colModel, function(i,n){
+								$.each($t.p.colModel, function(){
 									if(extpost[this.name] && this.formatter && this.formatter=='select') {
 										try {delete extpost[this.name];} catch (e) {}
 									}
@@ -950,7 +949,7 @@ $.jgrid.extend({
 				}
 				if(showFrm === false) {return;}
 				restoreInline();
-				$($t.p.colModel).each( function(i) {
+				$($t.p.colModel).each( function() {
 					var fmto = this.formoptions;
 					maxCols = Math.max(maxCols, fmto ? fmto.colpos || 0 : 0 );
 					maxRows = Math.max(maxRows, fmto ? fmto.rowpos || 0 : 0 );
@@ -1102,7 +1101,7 @@ $.jgrid.extend({
 					function(){$(this).addClass('ui-state-hover');},
 					function(){$(this).removeClass('ui-state-hover');}
 				);
-				$("#sData", frmtb+"_2").click(function(e){
+				$("#sData", frmtb+"_2").click(function(){
 					postdata = {};extpost={};
 					$("#FormError",frmtb).hide();
 					// all depend on ret array
@@ -1125,12 +1124,12 @@ $.jgrid.extend({
 					}
 					return false;
 				});
-				$("#cData", frmtb+"_2").click(function(e){
+				$("#cData", frmtb+"_2").click(function(){
 					if(!checkUpdates()) {return false;}
 					$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal,onClose: rp_ge[$t.p.id].onClose});
 					return false;
 				});
-				$("#nData", frmtb+"_2").click(function(e){
+				$("#nData", frmtb+"_2").click(function(){
 					if(!checkUpdates()) {return false;}
 					$("#FormError",frmtb).hide();
 					var npos = getCurrPos();
@@ -1150,7 +1149,7 @@ $.jgrid.extend({
 					}
 					return false;
 				});
-				$("#pData", frmtb+"_2").click(function(e){
+				$("#pData", frmtb+"_2").click(function(){
 					if(!checkUpdates()) {return false;}
 					$("#FormError",frmtb).hide();
 					var ppos = getCurrPos();
@@ -1220,7 +1219,7 @@ $.jgrid.extend({
 					tmpl += i == 1 ? tdtmpl : tdtmpl2;
 				}
 				// find max number align rigth with property formatter
-				$(obj.p.colModel).each( function(i) {
+				$(obj.p.colModel).each( function() {
 					if(this.editrules && this.editrules.edithidden === true) {
 						hc = false;
 					} else {
@@ -1353,7 +1352,7 @@ $.jgrid.extend({
 					}
 				}
 				if(showFrm === false) {return;}
-				$($t.p.colModel).each( function(i) {
+				$($t.p.colModel).each( function() {
 					var fmto = this.formoptions;
 					maxCols = Math.max(maxCols, fmto ? fmto.colpos || 0 : 0 );
 					maxRows = Math.max(maxRows, fmto ? fmto.rowpos || 0 : 0 );
@@ -1425,11 +1424,11 @@ $.jgrid.extend({
 					function(){$(this).removeClass('ui-state-hover');}
 				);
 				focusaref();
-				$("#cData", "#"+frmtb+"_2").click(function(e){
+				$("#cData", "#"+frmtb+"_2").click(function(){
 					$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, onClose: p.onClose});
 					return false;
 				});
-				$("#nData", "#"+frmtb+"_2").click(function(e){
+				$("#nData", "#"+frmtb+"_2").click(function(){
 					$("#FormError","#"+frmtb).hide();
 					var npos = getCurrPos();
 					npos[0] = parseInt(npos[0],10);
@@ -1447,7 +1446,7 @@ $.jgrid.extend({
 					focusaref();
 					return false;
 				});
-				$("#pData", "#"+frmtb+"_2").click(function(e){
+				$("#pData", "#"+frmtb+"_2").click(function(){
 					$("#FormError","#"+frmtb).hide();
 					var ppos = getCurrPos();
 					if(ppos[0] != -1 && ppos[1][ppos[0]-1]) {
@@ -1569,7 +1568,7 @@ $.jgrid.extend({
 					$("#eData","#"+dtbl+"_2").addClass(p.cancelicon[1] == "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
 					.append("<span class='ui-icon "+p.cancelicon[2]+"'></span>");
 				}
-				$("#dData","#"+dtbl+"_2").click(function(e){
+				$("#dData","#"+dtbl+"_2").click(function(){
 					var ret=[true,""];onCS = {};
 					var postdata = $("#DelData>td","#"+dtbl).text(); //the pair is name=val1,val2,...
 					if( $.isFunction( rp_ge[$t.p.id].onclickSubmit ) ) {onCS = rp_ge[$t.p.id].onclickSubmit(rp_ge[$t.p.id], postdata) || {};}
@@ -1667,7 +1666,7 @@ $.jgrid.extend({
 					}
 					return false;
 				});
-				$("#eData", "#"+dtbl+"_2").click(function(e){
+				$("#eData", "#"+dtbl+"_2").click(function(){
 					$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:rp_ge[$t.p.id].jqModal, onClose: rp_ge[$t.p.id].onClose});
 					return false;
 				});
