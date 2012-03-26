@@ -190,10 +190,11 @@ $.jgrid.extend({
 			if(!$t.grid || !$t.p.treeGrid) {return;}
 			var childern = $($t).jqGrid("getNodeChildren",record),
 			//if ($($t).jqGrid("isVisibleNode",record)) {
-			expanded = $t.p.treeReader.expanded_field;
+			expanded = $t.p.treeReader.expanded_field,
+			rows = $t.rows;
 			$(childern).each(function(){
 				var id  = $.jgrid.getAccessor(this,$t.p.localReader.id);
-				$("#"+$.jgrid.jqID(id),$t.grid.bDiv).css("display","");
+				$(rows.namedItem(id)).css("display","");
 				if(this[expanded]) {
 					$($t).jqGrid("expandRow",this);
 				}
@@ -206,10 +207,11 @@ $.jgrid.extend({
 			var $t = this;
 			if(!$t.grid || !$t.p.treeGrid) {return;}
 			var childern = $($t).jqGrid("getNodeChildren",record),
-			expanded = $t.p.treeReader.expanded_field;
+			expanded = $t.p.treeReader.expanded_field,
+			rows = $t.rows;
 			$(childern).each(function(){
 				var id  = $.jgrid.getAccessor(this,$t.p.localReader.id);
-				$("#"+$.jgrid.jqID(id),$t.grid.bDiv).css("display","none");
+				$(rows.namedItem(id)).css("display","none");
 				if(this[expanded]){
 					$($t).jqGrid("collapseRow",this);
 				}
