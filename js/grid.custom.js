@@ -145,7 +145,7 @@ $.jgrid.extend({
 			if(this.ftoolbar) { return; }
 			var triggerToolbar = function() {
 				var sdata={}, j=0, v, nm, sopt={},so;
-				$.each($t.p.colModel,function(i,n){
+				$.each($t.p.colModel,function(){
 					nm = this.index || this.name;
 					so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : this.stype=='select'?  'eq' : p.defaultSearch;
 					v = $("#gs_"+$.jgrid.jqID(this.name), (this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv).val();
@@ -194,7 +194,7 @@ $.jgrid.extend({
 			var clearToolbar = function(trigger){
 				var sdata={}, j=0, nm;
 				trigger = (typeof trigger != 'boolean') ? true : trigger;
-				$.each($t.p.colModel,function(i,n){
+				$.each($t.p.colModel,function(){
 					var v;
 					if(this.searchoptions && this.searchoptions.defaultValue !== undefined) { v = this.searchoptions.defaultValue; }
 					nm = this.index || this.name;
@@ -296,7 +296,7 @@ $.jgrid.extend({
 			}
 			var tr = $("<tr class='ui-search-toolbar' role='rowheader'></tr>");
 			var timeoutHnd;
-			$.each($t.p.colModel,function(i,n){
+			$.each($t.p.colModel,function(){
 				var cm=this, thd , th, soptions,surl,self;
 				th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-"+$t.p.direction+"'></th>");
 				thd = $("<div style='width:100%;position:relative;height:100%;padding-right:0.3em;'></div>");
@@ -316,7 +316,7 @@ $.jgrid.extend({
 							$.ajax($.extend({
 								url: surl,
 								dataType: "html",
-								success: function(res,status) {
+								success: function(res) {
 									if(soptions.buildSelect !== undefined) {
 										var d = soptions.buildSelect(res);
 										if (d) { $(self).append(d); }
@@ -331,7 +331,7 @@ $.jgrid.extend({
 									if(soptions.dataInit !== undefined) { soptions.dataInit($("select",self)[0]); }
 									if(soptions.dataEvents !== undefined) { bindEvents($("select",self)[0],soptions.dataEvents); }
 									if(p.autosearch===true){
-										$("select",self).change(function(e){
+										$("select",self).change(function(){
 											triggerToolbar();
 											return false;
 										});
@@ -378,7 +378,7 @@ $.jgrid.extend({
 								if(soptions.dataEvents !== undefined) { bindEvents(elem, soptions.dataEvents); }
 								$(thd).append(elem);
 								if(p.autosearch===true){
-									$(elem).change(function(e){
+									$(elem).change(function(){
 										triggerToolbar();
 										return false;
 									});
@@ -662,7 +662,7 @@ $.jgrid.extend({
 						$("th:gt("+maxfrozen+")",this).remove();
 					});
 					var swapfroz = -1, fdel = -1;
-					$("tr.jqg-second-row-header th", htbl).each(function( i ){
+					$("tr.jqg-second-row-header th", htbl).each(function(){
 						var cs= parseInt($(this).attr("colspan"),10);
 						if(cs) {
 							swapfroz = swapfroz+cs;
@@ -675,7 +675,7 @@ $.jgrid.extend({
 					if(swapfroz !== maxfrozen) {
 						fdel = maxfrozen;
 					}
-					$("tr.jqg-second-row-header", htbl).each(function( i ){
+					$("tr.jqg-second-row-header", htbl).each(function(){
 						$("th:gt("+fdel+")",this).remove();
 					});
 				} else {
@@ -696,7 +696,7 @@ $.jgrid.extend({
 					$("tr:first td:eq("+index+")",btd).width( w ); 
 				});
 				// sorting stuff
-				$($t).bind('jqGridOnSortCol.setFrozenColumns', function (index, idxcol, so) {
+				$($t).bind('jqGridOnSortCol.setFrozenColumns', function (index, idxcol) {
 
 					var previousSelectedTh = $("tr.ui-jqgrid-labels:last th:eq("+$t.p.lastsort+")",$t.grid.fhDiv), newSelectedTh = $("tr.ui-jqgrid-labels:last th:eq("+idxcol+")",$t.grid.fhDiv);
 

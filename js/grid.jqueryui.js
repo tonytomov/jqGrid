@@ -78,7 +78,7 @@ $.jgrid.extend({
 					cmMap = {}, tid= ts.p.id+"_";
 					$.each(colModel, function(i) { cmMap[this.name]=i; });
 					var permutation = [];
-					th.each(function(i) {
+					th.each(function() {
 						var id = $(">div", this).get(0).id.replace(/^jqgh_/, "").replace(tid,"");
 							if (id in cmMap) {
 								permutation.push(cmMap[id]);
@@ -177,7 +177,7 @@ $.jgrid.extend({
             /* Function to get the permutation array, and pass it to the
                "done" function */
             "apply_perm" : function() {
-                $('option',select).each(function(i) {
+                $('option',select).each(function() {
                     if (this.selected) {
                         self.jqGrid("showCol", colModel[this.value].name);
                     } else {
