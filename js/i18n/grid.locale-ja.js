@@ -127,7 +127,7 @@ $.jgrid = {
 				"1\u6708", "2\u6708", "3\u6708", "4\u6708", "5\u6708", "6\u6708", "7\u6708", "8\u6708", "9\u6708", "10\u6708", "11\u6708", "12\u6708"
 			],
 			AmPm : ["am","pm","AM","PM"],
-			S: "\u756a\u76ee",
+			S: function (j) { return "\u756a\u76ee"; },
 			srcformat: 'Y-m-d',
 			newformat: 'd/m/Y',
 			masks : {
