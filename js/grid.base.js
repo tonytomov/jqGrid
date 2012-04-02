@@ -1080,27 +1080,29 @@ $.fn.jqGrid = function( pin ) {
 			var tabindex = '-1', restAttr = '', attrName, style = hide ? 'display:none;' : '',
 				classes = 'ui-widget-content jqgrow ui-row-' + ts.p.direction + altClass,
 				rowAttrObj = $.isFunction(ts.p.rowattr) ? ts.p.rowattr.call(ts, rd, cur) : {};
-			if (rowAttrObj.hasOwnProperty("id")) {
-				id = rowAttrObj.id;
-				delete rowAttrObj.id;
-			}
-			if (rowAttrObj.hasOwnProperty("tabindex")) {
-				tabindex = rowAttrObj.tabindex;
-				delete rowAttrObj.tabindex;
-			}
-			if (rowAttrObj.hasOwnProperty("style")) {
-				style += rowAttrObj.style;
-				delete rowAttrObj.style;
-			}
-			if (rowAttrObj.hasOwnProperty("class")) {
-				classes += ' ' + rowAttrObj.class;
-				delete rowAttrObj.class;
-			}
-			// dot't allow to change role attribute
-			delete rowAttrObj.role;
-			for (attrName in rowAttrObj) {
-				if (rowAttrObj.hasOwnProperty(attrName)) {
-					restAttr += ' ' + attrName + '=' + rowAttrObj[attrName];
+			if(!$.isEmptyObject( rowAttrObj )) {
+				if (rowAttrObj.hasOwnProperty("id")) {
+					id = rowAttrObj.id;
+					delete rowAttrObj.id;
+				}
+				if (rowAttrObj.hasOwnProperty("tabindex")) {
+					tabindex = rowAttrObj.tabindex;
+					delete rowAttrObj.tabindex;
+				}
+				if (rowAttrObj.hasOwnProperty("style")) {
+					style += rowAttrObj.style;
+					delete rowAttrObj.style;
+				}
+				if (rowAttrObj.hasOwnProperty("class")) {
+					classes += ' ' + rowAttrObj.class;
+					delete rowAttrObj.class;
+				}
+				// dot't allow to change role attribute
+				try { delete rowAttrObj.role; } catch(ra){}
+				for (attrName in rowAttrObj) {
+					if (rowAttrObj.hasOwnProperty(attrName)) {
+						restAttr += ' ' + attrName + '=' + rowAttrObj[attrName];
+					}
 				}
 			}
 			return '<tr role="row" id="' + id + '" tabindex="' + tabindex + '" class="' + classes + '"' +
