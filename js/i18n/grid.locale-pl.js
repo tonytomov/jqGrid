@@ -1,7 +1,7 @@
 ;(function($){
 /**
  * jqGrid Polish Translation
- * Łukasz Schab
+ * Łukasz Schab lukasz@freetree.pl
  * http://FreeTree.pl
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
@@ -18,8 +18,8 @@ $.jgrid = {
 	    caption: "Wyszukiwanie...",
 	    Find: "Szukaj",
 	    Reset: "Czyść",
-	    odata : ['dok\u0142adnie', 'różne od', 'mniejsze od', 'mniejsze lub równe','większe od','większe lub równe', 'zaczyna się od','nie zaczyna się od','zawiera','nie zawiera','kończy się na','nie kończy się na','zawiera','nie zawiera'],
-	    groupOps: [	{ op: "ORAZ", text: "wszystkie" },	{ op: "LUB",  text: "każdy" }	],
+	    odata : ['dok\u0142adnie', 'różne od', 'mniejsze od', 'mniejsze lub równe','większe od','większe lub równe', 'zaczyna się od','nie zaczyna się od','jest w','nie jest w','kończy się na','nie kończy się na','zawiera','nie zawiera'],
+	    groupOps: [	{ op: "AND", text: "oraz" },	{ op: "OR",  text: "lub" }	],
 		matchText: " pasuje",
 		rulesText: " regu\u0142y"
 	},
@@ -36,16 +36,17 @@ $.jgrid = {
 	    msg: {
 	        required:"Pole jest wymagane",
 	        number:"Proszę wpisać poprawną liczbę",
-	        minValue:"wartość musi być większa lub równa",
-	        maxValue:"wartość musi być mniejsza od",
-	        email: "nie jest adresem e-mail",
+	        minValue:"wartość musi być większa lub równa od",
+	        maxValue:"wartość musi być mniejsza lub równa od",
+	        email: "nie jest poprawnym adresem e-mail",
 	        integer: "Proszę wpisać poprawną liczbę",
 			date: "Proszę podaj poprawną datę",
 			url: "jest niew\u0142aściwym adresem URL. Pamiętaj o prefiksie ('http://' lub 'https://')",
-			nodefined : " is not defined!",
-			novalue : " return value is required!",
-			customarray : "Custom function should return array!",
-			customfcheck : "Custom function should be present in case of custom checking!"
+			nodefined : " nie zdefiniowane!",
+			novalue : " wymagana jest wartość zwracana !",
+			customarray : "Funkcja niestandardowa powinna zwracać tablicę!",
+			customfcheck : "Funkcja niestandardowa powinna być obecna w przypadku niestandardowego sprawdzania !"
+			
 		}
 	},
 	view : {
@@ -53,7 +54,7 @@ $.jgrid = {
 	    bClose: "Zamknij"
 	},
 	del : {
-	    caption: "Usuwanie",
+	    caption: "Usuń",
 	    msg: "Czy usunąć wybrany rekord(y)?",
 	    bSubmit: "Usuń",
 	    bCancel: "Anuluj"
@@ -72,7 +73,7 @@ $.jgrid = {
 	    alertcap: "Uwaga",
 	    alerttext: "Proszę wybrać wiersz",
 		viewtext: "",
-		viewtitle: "View selected row"
+		viewtitle: "Pokaż wybrany wiersz"
 	},
 	col : {
 	    caption: "Pokaż/Ukryj kolumny",
@@ -87,8 +88,8 @@ $.jgrid = {
 	},
 	formatter : {
 		integer : {thousandsSeparator: " ", defaultValue: '0'},
-		number : {decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2, defaultValue: '0.00'},
-		currency : {decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2, prefix: "", suffix:"", defaultValue: '0.00'},
+		number : {decimalSeparator:",", thousandsSeparator: " ", decimalPlaces: 2, defaultValue: '0,00'},
+		currency : {decimalSeparator:",", thousandsSeparator: " ", decimalPlaces: 2, prefix: "", suffix:"", defaultValue: '0,00'},
 		date : {
 			dayNames:   [
 				"Nie", "Pon", "Wt", "Śr", "Cz", "Pi", "So",
