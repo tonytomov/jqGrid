@@ -1094,8 +1094,8 @@ $.fn.jqGrid = function( pin ) {
 					delete rowAttrObj.style;
 				}
 				if (rowAttrObj.hasOwnProperty("class")) {
-					classes += ' ' + rowAttrObj.class;
-					delete rowAttrObj.class;
+					classes += ' ' + rowAttrObj['class'];
+					delete rowAttrObj['class'];
 				}
 				// dot't allow to change role attribute
 				try { delete rowAttrObj.role; } catch(ra){}
