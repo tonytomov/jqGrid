@@ -1174,13 +1174,13 @@ $.fn.jqGrid = function( pin ) {
 				altr = rcnt === 0 ? 0 : rcnt+1;
 				cn1 = (altr+j)%2 == 1 ? cn : '';
 				rowData.push(constructTr(rid, hiderow, cn1, xmlr));
-				if(ts.p.rownumbers===true) {
+				if( ni ) {
 					rowData.push( addRowNum(0,j,ts.p.page,ts.p.rowNum) );
 				}
-				if(ts.p.multiselect===true) {
+				if( gi ) {
 					rowData.push( addMulti(rid,ni,j) );
 				}
-				if (ts.p.subGrid===true) {
+				if( si ) {
 					rowData.push( $(ts).jqGrid("addSubGridCell",gi+ni,j+rcnt) );
 				}
 				if(xmlRd.repeatitems){
@@ -1347,13 +1347,13 @@ $.fn.jqGrid = function( pin ) {
 				altr = rcnt === 1 ? 0 : rcnt;
 				cn1 = (altr+i)%2 == 1 ? cn : '';
 				rowData.push(constructTr(idr, hiderow, cn1, cur));
-				if(ts.p.rownumbers===true) {
+				if( ni ) {
 					rowData.push( addRowNum(0,i,ts.p.page,ts.p.rowNum) );
 				}
-				if(ts.p.multiselect){
+				if( gi ){
 					rowData.push( addMulti(idr,ni,i) );
 				}
-				if (ts.p.subGrid) {
+				if( si ) {
 					rowData.push( $(ts).jqGrid("addSubGridCell",gi+ni,i+rcnt) );
 				}
 				if (dReader.repeatitems) {
