@@ -91,7 +91,11 @@ $.jgrid.extend({
 							$($t).jqGrid("restoreCell",iRow,iCol);
 						}
 					} //ESC
-					if (e.keyCode === 13) {$($t).jqGrid("saveCell",iRow,iCol);}//Enter
+					if (e.keyCode === 13) {
+						$($t).jqGrid("saveCell",iRow,iCol);}
+						// Prevent default action
+						return false;
+					} //Enter
 					if (e.keyCode === 9)  {
 						if(!$t.grid.hDiv.loading ) {
 							if (e.shiftKey) {$($t).jqGrid("prevCell",iRow,iCol);} //Shift TAb
