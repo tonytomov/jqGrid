@@ -107,7 +107,7 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 .ui-jqdialog-content input.FormElement {padding:.3em}
 .ui-jqdialog-content .data-line {padding-top:.1em;border: 0px none;}
 
-.ui-jqdialog-content .CaptionTD {text-align: left; vertical-align: middle;border: 0px none; padding: 2px;white-space: nowrap;}
+.ui-jqdialog-content .CaptionTD {vertical-align: middle;border: 0px none; padding: 2px;white-space: nowrap;}
 .ui-jqdialog-content .DataTD {padding: 2px; border: 0px none; vertical-align: top;}
 .ui-jqdialog-content .form-view-data {white-space:pre}
 .fm-button { display: inline-block; margin:0 4px 0 0; padding: .4em .5em; text-decoration:none !important; cursor:pointer; position: relative; text-align: center; zoom: 1; }
