@@ -372,6 +372,8 @@ $.extend($.jgrid,{
 								setTimeout(function(){
 									$("option",elem).each(function(i){
 										//if(i===0) { this.selected = ""; }
+										// fix IE8/IE7 problem with selecting of the first item on multiple=true
+										if (i === 0 && elem.multiple) { this.selected = false; }
 										$(this).attr("role","option");
 										if($.inArray($.trim($(this).text()),ovm) > -1 || $.inArray($.trim($(this).val()),ovm) > -1 ) {
 											this.selected= "selected";
