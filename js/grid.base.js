@@ -2794,7 +2794,8 @@ $.jgrid.extend({
 				if(rowid == $t.p.selrow) {$t.p.selrow=null;}
 			}
 			if($t.p.datatype == 'local') {
-				var pos = $t.p._index[rowid];
+				var id = $.jgrid.stripPref($t.p.idPrefix, rowid),
+				pos = $t.p._index[id];
 				if(typeof(pos) != 'undefined') {
 					$t.p.data.splice(pos,1);
 					$t.refreshIndex();
@@ -2833,7 +2834,8 @@ $.jgrid.extend({
 						}
 					});
 					if(t.p.datatype == 'local') {
-						var pos = t.p._index[rowid];
+						var id = $.jgrid.stripPref(t.p.idPrefix, rowid),
+						pos = t.p._index[id];
 						if(t.p.treeGrid) {
 							for(var key in t.p.treeReader ){
 								if(lcdata.hasOwnProperty(t.p.treeReader[key])) {
@@ -2859,7 +2861,7 @@ $.jgrid.extend({
 	},
 	addRowData : function(rowid,rdata,pos,src) {
 		if(!pos) {pos = "last";}
-		var success = false, nm, row, gi, si, ni,sind, i, v, prp="", aradd, cnm, cn, data, cm;
+		var success = false, nm, row, gi, si, ni,sind, i, v, prp="", aradd, cnm, cn, data, cm, id;
 		if(rdata) {
 			if($.isArray(rdata)) {
 				aradd=true;
@@ -2895,6 +2897,7 @@ $.jgrid.extend({
 						catch (e) {rowid = $.jgrid.randId();}
 						cna = t.p.altRows === true ?  (t.rows.length-1)%2 === 0 ? cn : "" : "";
 					}
+					id = rowid;
 					rowid  = t.p.idPrefix + rowid;
 					if(ni){
 						prp = t.formatCol(0,1,'',null,rowid, true);
@@ -2953,8 +2956,8 @@ $.jgrid.extend({
 					if(air) { t.p.afterInsertRow.call(t,rowid,data,data); }
 					k++;
 					if(t.p.datatype == 'local') {
-						lcdata[t.p.localReader.id] = rowid;
-						t.p._index[rowid] = t.p.data.length;
+						lcdata[t.p.localReader.id] = id;
+						t.p._index[id] = t.p.data.length;
 						t.p.data.push(lcdata);
 						lcdata = {};
 					}
