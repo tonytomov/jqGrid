@@ -281,7 +281,7 @@ $.extend($.jgrid,{
 		function setAttributes(elm, atr, exl ) {
 			var exclude = ['dataInit','dataEvents','dataUrl', 'buildSelect','sopt', 'searchhidden', 'defaultValue', 'attr'];
 			if(typeof(exl) != "undefined" && $.isArray(exl)) {
-				exclude = $.extend(exclude, exl);
+				$.merge(exclude, exl);
 			}
 			$.each(atr, function(key, value){
 				if($.inArray(key, exclude) === -1) {
