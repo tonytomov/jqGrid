@@ -505,9 +505,6 @@ $.jgrid.extend({
 							var saveParams;
 							var opers = $t.p.prmNames,
 							oper = opers.oper;
-							// if(!o.editParams.extraparam) {
-							//	o.editParams.extraparam = {};
-							//}
 							if($("#"+$.jgrid.jqID(sr), "#"+gID ).hasClass("jqgrid-new-row")) {
 								if(!o.addParams.addRowParams.extraparam) {
 									o.addParams.addRowParams.extraparam = {};
@@ -521,7 +518,6 @@ $.jgrid.extend({
 								o.editParams.extraparam[oper] = opers.editoper;
 								saveParams = o.editParams;
 							}
-//							if( $($t).jqGrid('saveRow', sr, o.editParams) ) {
 							if( $($t).jqGrid('saveRow', sr, saveParams) ) {
 								$($t).jqGrid('showAddEditButtons');
 							}
