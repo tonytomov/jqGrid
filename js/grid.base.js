@@ -1077,10 +1077,10 @@ $.fn.jqGrid = function( pin ) {
 				ts.p._index[val] = i;
 			}
 		},
-		constructTr = function(id, hide, altClass,  cur) {
+		constructTr = function(id, hide, altClass, rd, cur) {
 			var tabindex = '-1', restAttr = '', attrName, style = hide ? 'display:none;' : '',
 				classes = 'ui-widget-content jqgrow ui-row-' + ts.p.direction + altClass,
-				rowAttrObj = $.isFunction(ts.p.rowattr) ? ts.p.rowattr.call(ts, cur) : {};
+				rowAttrObj = $.isFunction(ts.p.rowattr) ? ts.p.rowattr.call(ts, rd, cur) : {};
 			if(!$.isEmptyObject( rowAttrObj )) {
 				if (rowAttrObj.hasOwnProperty("id")) {
 					id = rowAttrObj.id;
@@ -1347,15 +1347,15 @@ $.fn.jqGrid = function( pin ) {
 				idr  = ts.p.idPrefix + idr;
 				altr = rcnt === 1 ? 0 : rcnt;
 				cn1 = (altr+i)%2 == 1 ? cn : '';
-				rowData.push(constructTr(idr, hiderow, cn1, cur));
+				var cs = [];
 				if( ni ) {
-					rowData.push( addRowNum(0,i,ts.p.page,ts.p.rowNum) );
+					cs[cs.length] = addRowNum(0,i,ts.p.page,ts.p.rowNum);
 				}
 				if( gi ){
-					rowData.push( addMulti(idr,ni,i) );
+					cs[cs.length] = addMulti(idr,ni,i);
 				}
 				if( si ) {
-					rowData.push( $(ts).jqGrid("addSubGridCell",gi+ni,i+rcnt) );
+					cs[cs.length] += $(ts).jqGrid("addSubGridCell",gi+ni,i+rcnt);
 				}
 				if (dReader.repeatitems) {
 					if(dReader.cell) {cur = $.jgrid.getAccessor(cur,dReader.cell);}
@@ -1363,9 +1363,11 @@ $.fn.jqGrid = function( pin ) {
 				}
 				for (j=0;j<F.length;j++) {
 					v = $.jgrid.getAccessor(cur,F[j]);
-					rowData.push( addCell(idr,v,j+gi+si+ni,i+rcnt,cur) );
+					cs[cs.length] = addCell(idr,v,j+gi+si+ni,i+rcnt,cur);
 					rd[ts.p.colModel[j+gi+si+ni].name] = v;
 				}
+				rowData.push(constructTr(idr, hiderow, cn1, rd, cur));
+				rowData.push( cs.join('') );
 				rowData.push( "</tr>" );
 				if(ts.p.grouping) {
 					var grlen = ts.p.groupingView.groupField.length, grpitem = [];
