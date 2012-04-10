@@ -1174,15 +1174,15 @@ $.fn.jqGrid = function( pin ) {
 				rid  = ts.p.idPrefix + rid;
 				altr = rcnt === 0 ? 0 : rcnt+1;
 				cn1 = (altr+j)%2 == 1 ? cn : '';
-				rowData.push(constructTr(rid, hiderow, cn1, xmlr));
+				var cs = [];
 				if( ni ) {
-					rowData.push( addRowNum(0,j,ts.p.page,ts.p.rowNum) );
+					cs[cs.length] = addRowNum(0,j,ts.p.page,ts.p.rowNum);
 				}
 				if( gi ) {
-					rowData.push( addMulti(rid,ni,j) );
+					cs[cs.length] = addMulti(rid,ni,j);
 				}
 				if( si ) {
-					rowData.push( $(ts).jqGrid("addSubGridCell",gi+ni,j+rcnt) );
+					cs[cs.length] = $(ts).jqGrid("addSubGridCell",gi+ni,j+rcnt);
 				}
 				if(xmlRd.repeatitems){
 					if (!F) { F=orderedCols(gi+si+ni); }
@@ -1192,15 +1192,17 @@ $.fn.jqGrid = function( pin ) {
 						if (!cell) { return false; }
 						v = cell.textContent || cell.text;
 						rd[ts.p.colModel[k+gi+si+ni].name] = v;
-						rowData.push( addCell(rid,v,k+gi+si+ni,j+rcnt,xmlr) );
+						cs[cs.length] = addCell(rid,v,k+gi+si+ni,j+rcnt,xmlr);
 					});
 				} else {
 					for(i = 0; i < f.length;i++) {
 						v = $.jgrid.getXmlData( xmlr, f[i]);
 						rd[ts.p.colModel[i+gi+si+ni].name] = v;
-						rowData.push( addCell(rid, v, i+gi+si+ni, j+rcnt, xmlr) );
+						cs[cs.length] = addCell(rid, v, i+gi+si+ni, j+rcnt, xmlr);
 					}
 				}
+				rowData.push(constructTr(rid, hiderow, cn1, rd, xmlr));
+				rowData.push( cs.join(''));
 				rowData.push("</tr>");
 				if(ts.p.grouping) {
 					var grlen = ts.p.groupingView.groupField.length, grpitem = [];
