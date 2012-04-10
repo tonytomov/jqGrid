@@ -244,11 +244,8 @@ $.extend($.jgrid,{
 			if(_trim){
 				phrase=$.trim(phrase);
 			}
-			if(!_usecase){
-				phrase=phrase.toLowerCase();
-			}
 			phrase=phrase.toString().replace(/\\/g,'\\\\').replace(/\"/g,'\\"');
-			return phrase;
+			return _usecase ? phrase : phrase.toLowerCase();
 		};
 		this._funcLoop=function(func){
 			var results=[];
