@@ -410,7 +410,7 @@ $.fn.jqFilter = function( arg ) {
 					var tmo = $(this).hasClass("ui-autocomplete-input") ? 200 :0;
 					setTimeout(function(){
 						var elem = e.target;
-						rule.data = rule.data = elem.nodeName.toUpperCase() === "SPAN" && cm.searchoptions && $.isFunction(cm.searchoptions.custom_value) ?
+						rule.data = elem.nodeName.toUpperCase() === "SPAN" && cm.searchoptions && $.isFunction(cm.searchoptions.custom_value) ?
 							cm.searchoptions.custom_value($(elem).children(".customelement:first"), 'get') : elem.value;
 						that.onchange(); // signals that the filter has changed
 					}, tmo);
