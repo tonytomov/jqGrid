@@ -76,7 +76,7 @@ $.fn.jqFilter = function( arg ) {
 		groupButton : true,
 		ruleButtons : true,
 		direction : "ltr"
-	}, arg || {});
+	}, $.jgrid.filter, arg || {});
 	return this.each( function() {
 		if (this.filter) {return;}
 		this.p = p;
@@ -409,7 +409,9 @@ $.fn.jqFilter = function( arg ) {
 				$(".input-elm",trpar).bind('change',function( e ) {
 					var tmo = $(this).hasClass("ui-autocomplete-input") ? 200 :0;
 					setTimeout(function(){
-						rule.data = e.target.value;
+						var elem = e.target;
+						rule.data = rule.data = elem.nodeName.toUpperCase() === "SPAN" && cm.searchoptions && $.isFunction(cm.searchoptions.custom_value) ?
+							cm.searchoptions.custom_value($(elem).children(".customelement:first"), 'get') : elem.value;
 						that.onchange(); // signals that the filter has changed
 					}, tmo);
 				});
@@ -499,7 +501,7 @@ $.fn.jqFilter = function( arg ) {
 			$(ruleDataInput)
 			.addClass("input-elm")
 			.bind('change', function() {
-				rule.data = $(this).val();
+				rule.data = cm.inputtype === 'custom' ? cm.searchoptions.custom_value($(this).children(".customelement:first"),'get') : $(this).val();
 				that.onchange(); // signals that the filter has changed
 			});
 
