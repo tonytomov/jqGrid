@@ -24,6 +24,7 @@ $.jgrid.extend({
 			afterShowSearch : null,
 			onInitializeSearch: null,
 			afterRedraw : null,
+			afterChange: null,
 			closeAfterSearch : false,
 			closeAfterReset: false,
 			closeOnEscape : false,
@@ -164,6 +165,9 @@ $.jgrid.extend({
 					onChange : function() {
 						if(this.p.showQuery) {
 							$('.query',this).html(this.toUserFriendlyString());
+						}
+						if ($.isFunction(p.afterChange)) {
+							p.afterChange.call($t, $("#"+fid), p);
 						}
 					},
 					direction : $t.p.direction
