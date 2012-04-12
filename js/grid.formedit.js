@@ -197,12 +197,16 @@ $.jgrid.extend({
 				}
 				if (p.searchOnEnter || p.closeOnEscape) {
 					$("#"+$.jgrid.jqID(IDs.themodal)).keydown(function (e) {
-						if (p.searchOnEnter && e.which === 13) { // 13 === $.ui.keyCode.ENTER
-							$("#"+fid+"_search").click();
+						var $target = $(e.target);
+						if (p.searchOnEnter && e.which === 13 && // 13 === $.ui.keyCode.ENTER
+								!$target.hasClass('add-group') && !$target.hasClass('add-rule') &&
+								!$target.hasClass('delete-group') && !$target.hasClass('delete-rule') &&
+								(!$target.hasClass("fm-button") || !$target.is("[id$=_query]"))) {
+							$("#"+fid+"_search").focus().click();
 							return false;
 						}
 						if (p.closeOnEscape && e.which === 27) { // 27 === $.ui.keyCode.ESCAPE
-							$("#"+$.jgrid.jqID(IDs.modalhead)).find(".ui-jqdialog-titlebar-close").click();
+							$("#"+$.jgrid.jqID(IDs.modalhead)).find(".ui-jqdialog-titlebar-close").focus().click();
 							return false;
 						}
 					});
