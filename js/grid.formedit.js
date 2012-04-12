@@ -28,6 +28,7 @@ $.jgrid.extend({
 			closeAfterSearch : false,
 			closeAfterReset: false,
 			closeOnEscape : false,
+			searchOnEnter : false,
 			multipleSearch : false,
 			multipleGroup : false,
 			//cloneSearchRowOnAdd: true,
@@ -193,6 +194,18 @@ $.jgrid.extend({
 					$.jgrid.createModal(IDs ,fil,p,"#gview_"+$.jgrid.jqID($t.p.id),$("#gbox_"+$.jgrid.jqID($t.p.id))[0], "#"+$.jgrid.jqID(p.layer), {position: "relative"});
 				} else {
 					$.jgrid.createModal(IDs ,fil,p,"#gview_"+$.jgrid.jqID($t.p.id),$("#gbox_"+$.jgrid.jqID($t.p.id))[0]);
+				}
+				if (p.searchOnEnter || p.closeOnEscape) {
+					$("#"+$.jgrid.jqID(IDs.themodal)).keydown(function (e) {
+						if (p.searchOnEnter && e.which === 13) { // 13 === $.ui.keyCode.ENTER
+							$("#"+fid+"_search").click();
+							return false;
+						}
+						if (p.closeOnEscape && e.which === 27) { // 27 === $.ui.keyCode.ESCAPE
+							$("#"+$.jgrid.jqID(IDs.modalhead)).find(".ui-jqdialog-titlebar-close").click();
+							return false;
+						}
+					});
 				}
 				if(bQ) {
 					$("#"+fid+"_query").bind('click', function(){
