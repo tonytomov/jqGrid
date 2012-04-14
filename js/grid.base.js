@@ -837,7 +837,7 @@ $.fn.jqGrid = function( pin ) {
 				var rn = p.rowNum;
 				var scrollTop = grid.scrollTop = grid.bDiv.scrollTop;
 				var ttop = Math.round(table.position().top) - scrollTop;
-				var tbot = ttop + table.height();
+				var tbot = ttop + table.height() - 1;
 				var div = rh * rn;
 				var page, npage, empty;
 				if ( tbot < dh && ttop <= 0 &&
