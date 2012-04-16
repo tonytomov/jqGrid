@@ -3045,7 +3045,8 @@ $.jgrid.extend({
 				}
 			});
 			if(fndh===true) {
-				$($t).jqGrid("setGridWidth",$t.p.shrinkToFit === true ? $t.p.tblwidth : $t.p.width );
+				var newWidth = $t.p.shrinkToFit === true ? $t.p.tblwidth : $t.p.width;
+				$($t).jqGrid("setGridWidth", newWidth + $t.p.scrollOffset);
 			}
 			if( gh )  {
 				$($t).jqGrid('setGroupHeaders',$t.p.groupHeader);
