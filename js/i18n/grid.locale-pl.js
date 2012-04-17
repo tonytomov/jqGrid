@@ -43,7 +43,7 @@ $.extend($.jgrid,{
 	        integer: "Proszę wpisać poprawną liczbę",
 			date: "Proszę podaj poprawną datę",
 			url: "jest niew\u0142aściwym adresem URL. Pamiętaj o prefiksie ('http://' lub 'https://')",
-			nodefined : " nie zdefiniowane!",
+			nodefined : " niezdefiniowane!",
 			novalue : " wymagana jest wartość zwracana !",
 			customarray : "Funkcja niestandardowa powinna zwracać tablicę!",
 			customfcheck : "Funkcja niestandardowa powinna być obecna w przypadku niestandardowego sprawdzania !"
