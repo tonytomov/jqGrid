@@ -1258,7 +1258,7 @@ $.fn.jqGrid = function( pin ) {
 			if(locdata) {
 				while (ir<gl) {
 					xmlr = gxml[ir];
-					rid = getId(xmlr,ir);
+					rid = getId(xmlr,ir+br);
 					rid  = ts.p.idPrefix + rid;
 					if(xmlRd.repeatitems){
 						if (!F) { F=orderedCols(gi+si+ni); }
