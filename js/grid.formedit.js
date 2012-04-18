@@ -24,9 +24,11 @@ $.jgrid.extend({
 			afterShowSearch : null,
 			onInitializeSearch: null,
 			afterRedraw : null,
+			afterChange: null,
 			closeAfterSearch : false,
 			closeAfterReset: false,
 			closeOnEscape : false,
+			searchOnEnter : false,
 			multipleSearch : false,
 			multipleGroup : false,
 			//cloneSearchRowOnAdd: true,
@@ -64,15 +66,14 @@ $.jgrid.extend({
 			var fid = "fbox_"+$t.p.id,
 			showFrm = true,
 			IDs = {themodal:'searchmod'+fid,modalhead:'searchhd'+fid,modalcontent:'searchcnt'+fid, scrollelm : fid},
-			defaultFilters  = $t.p.postData[p.sFilter],
-			_filter = $("#"+$.jgrid.jqID(fid));
+			defaultFilters  = $t.p.postData[p.sFilter];
 			if(typeof(defaultFilters) === "string") {
 				defaultFilters = $.jgrid.parse( defaultFilters );
 			}
 			if(p.recreateFilter === true) {
 				$("#"+$.jgrid.jqID(IDs.themodal)).remove();
 			}
-			function showFilter() {
+			function showFilter(_filter) {
 				showFrm = $($t).triggerHandler("jqGridFilterBeforeShow", [_filter]);
 				if(typeof(showFrm) === "undefined") {
 					showFrm = true;
@@ -89,7 +90,7 @@ $.jgrid.extend({
 				}
 			}
 			if ( $("#"+$.jgrid.jqID(IDs.themodal)).html() !== null ) {
-				showFilter();
+				showFilter($("#fbox_"+$.jgrid.jqID(+$t.p.id)));
 			} else {
 				var fil = $("<div><div id='"+fid+"' class='searchFilter' style='overflow:auto'></div></div>").insertBefore("#gview_"+$.jgrid.jqID($t.p.id)),
 				align = "left", butleft =""; 
@@ -165,6 +166,9 @@ $.jgrid.extend({
 						if(this.p.showQuery) {
 							$('.query',this).html(this.toUserFriendlyString());
 						}
+						if ($.isFunction(p.afterChange)) {
+							p.afterChange.call($t, $("#"+fid), p);
+						}
 					},
 					direction : $t.p.direction
 				});
@@ -190,6 +194,22 @@ $.jgrid.extend({
 					$.jgrid.createModal(IDs ,fil,p,"#gview_"+$.jgrid.jqID($t.p.id),$("#gbox_"+$.jgrid.jqID($t.p.id))[0], "#"+$.jgrid.jqID(p.layer), {position: "relative"});
 				} else {
 					$.jgrid.createModal(IDs ,fil,p,"#gview_"+$.jgrid.jqID($t.p.id),$("#gbox_"+$.jgrid.jqID($t.p.id))[0]);
+				}
+				if (p.searchOnEnter || p.closeOnEscape) {
+					$("#"+$.jgrid.jqID(IDs.themodal)).keydown(function (e) {
+						var $target = $(e.target);
+						if (p.searchOnEnter && e.which === 13 && // 13 === $.ui.keyCode.ENTER
+								!$target.hasClass('add-group') && !$target.hasClass('add-rule') &&
+								!$target.hasClass('delete-group') && !$target.hasClass('delete-rule') &&
+								(!$target.hasClass("fm-button") || !$target.is("[id$=_query]"))) {
+							$("#"+fid+"_search").focus().click();
+							return false;
+						}
+						if (p.closeOnEscape && e.which === 27) { // 27 === $.ui.keyCode.ESCAPE
+							$("#"+$.jgrid.jqID(IDs.modalhead)).find(".ui-jqdialog-titlebar-close").focus().click();
+							return false;
+						}
+					});
 				}
 				if(bQ) {
 					$("#"+fid+"_query").bind('click', function(){
@@ -271,7 +291,7 @@ $.jgrid.extend({
 					$($t).trigger("reloadGrid",[{page:1}]);
 					return false;
 				});
-				showFilter();
+				showFilter($("#"+fid));
 				$(".fm-button:not(.ui-state-disabled)",fil).hover(
 					function(){$(this).addClass('ui-state-hover');},
 					function(){$(this).removeClass('ui-state-hover');}
