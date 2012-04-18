@@ -29,8 +29,6 @@
 
 (function ($) {
 
-$.jgrid.filter = $.jgrid.filter || {};
-
 $.fn.jqFilter = function( arg ) {
 	if (typeof arg === 'string') {
 		
@@ -41,7 +39,7 @@ $.fn.jqFilter = function( arg ) {
 		var args = $.makeArray(arguments).slice(1);
 		return fn.apply(this,args);
 	}
-	
+
 	var p = $.extend(true,{
 		filter: null,
 		columns: [],
@@ -77,26 +75,6 @@ $.fn.jqFilter = function( arg ) {
 		groupOps : [{ op: "AND", text: "AND" },	{ op: "OR",  text: "OR" }],
 		groupButton : true,
 		ruleButtons : true,
-		uiButtons : true,
-		uiButtonOptions : {},
-		texts: {
-			addRule: {
-				buttonText: '+',
-				tooltip: 'Add rule'
-			},
-			deleteRule: {
-				buttonText: '-',
-				tooltip: 'Delete rule'
-			},
-			addGroup: {
-				buttonText: '+ {}',
-				tooltip: 'Add subgroup'
-			},
-			deleteGroup: {
-				buttonText: '-',
-				tooltip: 'Delete group'
-			}
-		},
 		direction : "ltr"
 	}, $.jgrid.filter, arg || {});
 	return this.each( function() {
@@ -194,49 +172,11 @@ $.fn.jqFilter = function( arg ) {
 		 * and field is  changed
 		 */
 		this.reDraw = function() {
-			var activeElement = document.activeElement, selector, $dialog, activeIndex = -1, $newElem,
-				buttonClass,
-				getButtonClass = function (classNames) {
-					var arClasses = ['add-group', 'add-rule', 'delete-group', 'delete-rule'], i, n, className;
-					for (i = 0, n = classNames.length; i < n; i++) {
-						className = classNames[i];
-						if ($.inArray(className, arClasses) >= 0) {
-							return className;
-						}
-					}
-					return null;
-				};
-			if (activeElement) {
-				selector = activeElement.nodeName.toLowerCase();
-				buttonClass = getButtonClass(activeElement.className.split(' '));
-				if (buttonClass !== null) {
-					selector += '.' + buttonClass;
-					$dialog = $(activeElement).closest(".ui-jqdialog");
-					if (selector === "input.delete-rule" || selector === "input.delete-group") {
-						// one can include additional logic to choose the best button in case of pressing
-						// selector === "input.delete-rule" or selector === "input.delete-group"
-						$newElem = $dialog.find("input.add-rule");
-						if ($newElem.length > 0) {
-							activeElement = $newElem[$newElem.length-1];
-							selector = activeElement.nodeName.toLowerCase() + "." +
-								getButtonClass(activeElement.className.split(' '));
-						}
-					}
-					activeIndex = $dialog.find(selector).index(activeElement);
-				}
-			}
-			$("table.group:first", this).remove();
-			$(this).append(this.createTableForGroup(this.p.filter, null));
-			if ($.isFunction(this.p.afterRedraw)) {
+			$("table.group:first",this).remove();
+			var t = this.createTableForGroup(p.filter, null);
+			$(this).append(t);
+			if($.isFunction(this.p.afterRedraw) ) {
 				this.p.afterRedraw.call(this, this.p);
-			}
-			if (activeElement && activeIndex >= 0) {
-				$newElem = $dialog.find(selector + ":eq(" + activeIndex + ")");
-				if ($newElem.length > 0) {
-					$newElem.focus();
-				} else {
-					$dialog.find("input.add-rule:first").focus();
-				}
 			}
 		};
 		/*
@@ -284,10 +224,9 @@ $.fn.jqFilter = function( arg ) {
 			});
 			}
 			// button for adding a new subgroup
-			var inputAddSubgroup ="<span></span>", texts = p.texts.addGroup;
+			var inputAddSubgroup ="<span></span>";
 			if(this.p.groupButton) {
-				inputAddSubgroup = $("<input type='button' value='" + texts.buttonText +
-					"' title='" + texts.tooltip + "' class='add-group'/>");
+				inputAddSubgroup = $("<input type='button' value='+ {}' title='Add subgroup' class='add-group'/>");
 				inputAddSubgroup.bind('click',function() {
 					if (group.groups === undefined ) {
 						group.groups = [];
@@ -304,14 +243,11 @@ $.fn.jqFilter = function( arg ) {
 					that.onchange(); // signals that the filter has changed
 					return false;
 				});
-				if (p.uiButtons && $.ui && $.ui.button) { inputAddSubgroup.button(p.uiButtonOptions);}
 			}
 			th.append(inputAddSubgroup);
 			if(this.p.ruleButtons === true) {
 			// button for adding a new rule
-			var texts = p.texts.addRule, cm,
-				inputAddRule = $("<input type='button' value='" + texts.buttonText +
-					"' title='" + texts.tooltip + "' class='add-rule ui-add'/>");
+			var inputAddRule = $("<input type='button' value='+' title='Add rule' class='add-rule ui-add'/>"), cm;
 			inputAddRule.bind('click',function() {
 				//if(!group) { group = {};}
 				if (group.rules === undefined) {
@@ -346,14 +282,11 @@ $.fn.jqFilter = function( arg ) {
 				return false;
 			});
 			th.append(inputAddRule);
-			if (p.uiButtons && $.ui && $.ui.button) { inputAddRule.button(p.uiButtonOptions);}
 			}
 
 			// button for delete the group
 			if (parentgroup !== null) { // ignore the first group
-				var texts = p.texts.deleteGroup,
-					inputDeleteGroup = $("<input type='button' value='" + texts.buttonText +
-						"' title='" + texts.tooltip + "' class='delete-group'/>");
+				var inputDeleteGroup = $("<input type='button' value='-' title='Delete group' class='delete-group'/>");
 				th.append(inputDeleteGroup);
 				inputDeleteGroup.bind('click',function() {
 				// remove group from parent
@@ -369,7 +302,6 @@ $.fn.jqFilter = function( arg ) {
 					that.onchange(); // signals that the filter has changed
 					return false;
 				});
-				if (p.uiButtons && $.ui && $.ui.button) { inputDeleteGroup.button(p.uiButtonOptions);}
 			}
 
 			// append subgroup rows
@@ -474,11 +406,19 @@ $.fn.jqFilter = function( arg ) {
 				}
 				// data
 				$(".data",trpar).empty().append( elm );
-				$(".input-elm",trpar).bind('change',function() {
-					rule.data = rule.data = this.nodeName.toUpperCase() === "SPAN" && cm.searchoptions && $.isFunction(cm.searchoptions.custom_value) ?
-						cm.searchoptions.custom_value($(this).children(".customelement:first"), 'get') : this.value;
-					that.onchange(); // signals that the filter has changed
+				$(".input-elm",trpar).bind('change',function( e ) {
+					var tmo = $(this).hasClass("ui-autocomplete-input") ? 200 :0;
+					setTimeout(function(){
+						var elem = e.target;
+						rule.data = elem.nodeName.toUpperCase() === "SPAN" && cm.searchoptions && $.isFunction(cm.searchoptions.custom_value) ?
+							cm.searchoptions.custom_value($(elem).children(".customelement:first"), 'get') : elem.value;
+						that.onchange(); // signals that the filter has changed
+					}, tmo);
 				});
+				setTimeout(function(){ //IE, Opera, Chrome
+				rule.data = $(elm).val();
+				that.onchange();  // signals that the filter has changed
+				}, 0);
 			});
 
 			// populate drop down with user provided column definitions
@@ -571,9 +511,7 @@ $.fn.jqFilter = function( arg ) {
 
 			// create button for: delete rule
 			if(this.p.ruleButtons === true) {
-			var texts = p.texts.deleteRule,
-				ruleDeleteInput = $("<input type='button' value='" + texts.buttonText +
-					"' title='" + texts.tooltip + "' class='delete-rule ui-del'/>");
+			var ruleDeleteInput = $("<input type='button' value='-' title='Delete rule' class='delete-rule ui-del'/>");
 			ruleDeleteTd.append(ruleDeleteInput);
 			//$(ruleDeleteInput).html("").height(20).width(30).button({icons: {  primary: "ui-icon-minus", text:false}});
 			ruleDeleteInput.bind('click',function() {
@@ -590,7 +528,6 @@ $.fn.jqFilter = function( arg ) {
 				that.onchange(); // signals that the filter has changed
 				return false;
 			});
-			if (p.uiButtons && $.ui && $.ui.button) { ruleDeleteInput.button(p.uiButtonOptions);}
 			}
 			return tr;
 		};
@@ -758,9 +695,6 @@ $.extend($.fn.jqFilter,{
 	{
 		var s;
 		this.each(function(){
-			$(this).find(".input-elm").each(function() {
-			    $(this).triggerHandler("change");
-			});
 			s = this.p.filter;
 		});
 		return s;
