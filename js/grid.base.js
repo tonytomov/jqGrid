@@ -2756,7 +2756,7 @@ $.jgrid.extend({
 			while(j<len){
 				if(getall) { ind = $t.rows[j]; }
 				if( $(ind).hasClass('jqgrow') ) {
-					$('td',ind).each( function(i) {
+					$('td[role="gridcell"]',ind).each( function(i) {
 						nm = $t.p.colModel[i].name;
 						if ( nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn') {
 							if($t.p.treeGrid===true && nm == $t.p.ExpandColumn) {
