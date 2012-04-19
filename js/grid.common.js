@@ -262,10 +262,10 @@ $.extend($.jgrid,{
 	},
 // Form Functions
 	createEl : function(eltype,options,vl,autowidth, ajaxso) {
-		var elem = "";
+		var elem = "", $t = this;
 		function bindEv (el, opt) {
 			if($.isFunction(opt.dataInit)) {
-				opt.dataInit(el);
+				opt.dataInit.call($t,el);
 			}
 			if(opt.dataEvents) {
 				$.each(opt.dataEvents, function() {
@@ -351,8 +351,8 @@ $.extend($.jgrid,{
 							var a,	ovm = [], elem = this.elem, vl = this.vl,
 							options = $.extend({},this.options),
 							msl = options.multiple===true;
-							if(typeof(options.buildSelect) != "undefined") {
-								var b = options.buildSelect(data);
+							if($.isFunction(options.buildSelect)) {
+								var b = options.buildSelect.call($t,data);
 								a = $(b).html();
 							} else {
 								a = $(data).html();
@@ -456,7 +456,7 @@ $.extend($.jgrid,{
 				elem = document.createElement("span");
 				try {
 					if($.isFunction(options.custom_element)) {
-						var celm = options.custom_element.call(this,vl,options);
+						var celm = options.custom_element.call($t,vl,options);
 						if(celm) {
 							celm = $(celm).addClass("customelement").attr({id:options.id,name:options.name});
 							$(elem).empty().append(celm);
