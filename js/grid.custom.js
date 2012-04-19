@@ -189,7 +189,7 @@ $.jgrid.extend({
 				if(!bsr) { $($t).jqGrid("setGridParam",{search:sd}).trigger("reloadGrid",[{page:1}]); }
 				if(saveurl) {$($t).jqGrid("setGridParam",{url:saveurl});}
 				$($t).triggerHandler("jqGridToolbarAfterSearch");
-				if($.isFunction(p.afterSearch)){p.afterSearch();}
+				if($.isFunction(p.afterSearch)){p.afterSearch.call($t);}
 			};
 			var clearToolbar = function(trigger){
 				var sdata={}, j=0, nm;
