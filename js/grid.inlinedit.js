@@ -394,6 +394,7 @@ $.jgrid.extend({
 				});
 			}
 			$($t).jqGrid('addRowData', p.rowID, p.initdata, p.position);
+			p.rowID = $t.p.idPrefix + p.rowID;
 			$("#"+$.jgrid.jqID(p.rowID), "#"+$.jgrid.jqID($t.p.id)).addClass("jqgrid-new-row");
 			if(p.useFormatter) {
 				$("#"+$.jgrid.jqID(p.rowID)+" .ui-inline-edit", "#"+$.jgrid.jqID($t.p.id)).click();
