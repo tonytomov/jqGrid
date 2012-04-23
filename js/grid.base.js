@@ -2890,7 +2890,7 @@ $.jgrid.extend({
 					}
 				}
 				cn = t.p.altclass;
-				var k = 0, cna ="", lcdata = {},
+				var k = 0, cna ="", lcdata = {}, lcdatai,
 				air = $.isFunction(t.p.afterInsertRow) ? true : false;
 				while(k < datalen) {
 					data = rdata[k];
@@ -2917,8 +2917,9 @@ $.jgrid.extend({
 					for(i = gi+si+ni; i < t.p.colModel.length;i++){
 						cm = t.p.colModel[i];
 						nm = cm.name;
-						lcdata[nm] = cm.formatter && typeof(cm.formatter) === 'string' && cm.formatter == 'date' ? $.unformat.date.call(t,data[nm],cm) : data[nm];
-						v = t.formatter( rowid, $.jgrid.getAccessor(data,nm), i, data, 'edit');
+                        lcdatai = $.jgrid.getAccessor(data,nm);
+						lcdata[nm] = cm.formatter && typeof(cm.formatter) === 'string' && cm.formatter == 'date' ? $.unformat.date.call(t,lcdatai,cm) : lcdatai;
+						v = t.formatter( rowid, lcdatai, i, data, 'edit');
 						prp = t.formatCol(i,1,v, data, rowid, true);
 						row[row.length] = "<td role=\"gridcell\" aria-describedby=\""+t.p.id+"_"+nm+"\" "+prp+">"+v+"</td>";
 					}
