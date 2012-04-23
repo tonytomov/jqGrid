@@ -2917,7 +2917,7 @@ $.jgrid.extend({
 					for(i = gi+si+ni; i < t.p.colModel.length;i++){
 						cm = t.p.colModel[i];
 						nm = cm.name;
-                        lcdatai = $.jgrid.getAccessor(data,nm);
+						lcdatai = $.jgrid.getAccessor(data,nm);
 						lcdata[nm] = cm.formatter && typeof(cm.formatter) === 'string' && cm.formatter == 'date' ? $.unformat.date.call(t,lcdatai,cm) : lcdatai;
 						v = t.formatter( rowid, lcdatai, i, data, 'edit');
 						prp = t.formatCol(i,1,v, data, rowid, true);
