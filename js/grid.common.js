@@ -84,7 +84,7 @@ $.extend($.jgrid,{
 		if ( $.fn.jqm && p.jqModal === true) {
 			if(p.left ===0 && p.top===0 && p.overlay) {
 				var pos = [];
-				pos = this.findPos(posSelector);
+				pos = $.jgrid.findPos(posSelector);
 				p.left = pos[0] + 4;
 				p.top = pos[1] + 4;
 			}
@@ -161,8 +161,8 @@ $.extend($.jgrid,{
 			overlay: 10,
 			modal: false,
 			overlayClass : 'ui-widget-overlay',
-			onShow: this.showModal,
-			onHide: this.closeModal,
+			onShow: $.jgrid.showModal,
+			onHide: $.jgrid.closeModal,
 			gbox: '',
 			jqm : true,
 			jqM : true
@@ -221,11 +221,11 @@ $.extend($.jgrid,{
 
 		try {
 			if($("#info_dialog").attr("aria-hidden") == "false") {
-				this.hideModal("#info_dialog",{jqm:jm});
+				$.jgrid.hideModal("#info_dialog",{jqm:jm});
 			}
 			$("#info_dialog").remove();
 		} catch (e){}
-		this.createModal({
+		$.jgrid.createModal({
 			themodal:'info_dialog',
 			modalhead:'info_head',
 			modalcontent:'info_content',
@@ -249,7 +249,7 @@ $.extend($.jgrid,{
 			function(){$(this).removeClass('ui-state-hover');}
 		);
 		if($.isFunction(mopt.beforeOpen) ) { mopt.beforeOpen(); }
-		this.viewModal("#info_dialog",{
+		$.jgrid.viewModal("#info_dialog",{
 			onHide: function(h) {
 				h.w.hide().remove();
 				if(h.o) { h.o.remove(); }
@@ -467,9 +467,9 @@ $.extend($.jgrid,{
 						throw "e1";
 					}
 				} catch (e) {
-					if (e=="e1") { this.info_dialog($.jgrid.errors.errcap,"function 'custom_element' "+$.jgrid.edit.msg.nodefined, $.jgrid.edit.bClose);}
-					if (e=="e2") { this.info_dialog($.jgrid.errors.errcap,"function 'custom_element' "+$.jgrid.edit.msg.novalue,$.jgrid.edit.bClose);}
-					else { this.info_dialog($.jgrid.errors.errcap,typeof(e)==="string"?e:e.message,$.jgrid.edit.bClose); }
+					if (e=="e1") { $.jgrid.info_dialog($.jgrid.errors.errcap,"function 'custom_element' "+$.jgrid.edit.msg.nodefined, $.jgrid.edit.bClose);}
+					if (e=="e2") { $.jgrid.info_dialog($.jgrid.errors.errcap,"function 'custom_element' "+$.jgrid.edit.msg.novalue,$.jgrid.edit.bClose);}
+					else { $.jgrid.info_dialog($.jgrid.errors.errcap,typeof(e)==="string"?e:e.message,$.jgrid.edit.bClose); }
 				}
 			break;
 		}
@@ -562,7 +562,7 @@ $.extend($.jgrid,{
 	checkTime : function(time){
 	// checks only hh:ss (and optional am/pm)
 		var re = /^(\d{1,2}):(\d{2})([ap]m)?$/,regs;
-		if(!this.isEmpty(time))
+		if(!$.jgrid.isEmpty(time))
 		{
 			regs = time.match(re);
 			if(regs) {
@@ -602,12 +602,12 @@ $.extend($.jgrid,{
 		if(edtrul) {
 			if(!nm) { nm = g.p.colNames[valref]; }
 			if(edtrul.required === true) {
-				if( this.isEmpty(val) )  { return [false,nm+": "+$.jgrid.edit.msg.required,""]; }
+				if( $.jgrid.isEmpty(val) )  { return [false,nm+": "+$.jgrid.edit.msg.required,""]; }
 			}
 			// force required
 			var rqfield = edtrul.required === false ? false : true;
 			if(edtrul.number === true) {
-				if( !(rqfield === false && this.isEmpty(val)) ) {
+				if( !(rqfield === false && $.jgrid.isEmpty(val)) ) {
 					if(isNaN(val)) { return [false,nm+": "+$.jgrid.edit.msg.number,""]; }
 				}
 			}
@@ -619,41 +619,41 @@ $.extend($.jgrid,{
 			}
 			var filter;
 			if(edtrul.email === true) {
-				if( !(rqfield === false && this.isEmpty(val)) ) {
+				if( !(rqfield === false && $.jgrid.isEmpty(val)) ) {
 				// taken from $ Validate plugin
 					filter = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i;
 					if(!filter.test(val)) {return [false,nm+": "+$.jgrid.edit.msg.email,""];}
 				}
 			}
 			if(edtrul.integer === true) {
-				if( !(rqfield === false && this.isEmpty(val)) ) {
+				if( !(rqfield === false && $.jgrid.isEmpty(val)) ) {
 					if(isNaN(val)) { return [false,nm+": "+$.jgrid.edit.msg.integer,""]; }
 					if ((val % 1 !== 0) || (val.indexOf('.') != -1)) { return [false,nm+": "+$.jgrid.edit.msg.integer,""];}
 				}
 			}
 			if(edtrul.date === true) {
-				if( !(rqfield === false && this.isEmpty(val)) ) {
+				if( !(rqfield === false && $.jgrid.isEmpty(val)) ) {
 					if(g.p.colModel[valref].formatoptions && g.p.colModel[valref].formatoptions.newformat) {
 						dft = g.p.colModel[valref].formatoptions.newformat;
 					} else {
 						dft = g.p.colModel[valref].datefmt || "Y-m-d";
 					}
-					if(!this.checkDate (dft, val)) { return [false,nm+": "+$.jgrid.edit.msg.date+" - "+dft,""]; }
+					if(!$jgrid.checkDate (dft, val)) { return [false,nm+": "+$.jgrid.edit.msg.date+" - "+dft,""]; }
 				}
 			}
 			if(edtrul.time === true) {
-				if( !(rqfield === false && this.isEmpty(val)) ) {
-					if(!this.checkTime (val)) { return [false,nm+": "+$.jgrid.edit.msg.date+" - hh:mm (am/pm)",""]; }
+				if( !(rqfield === false && $.jgrid.isEmpty(val)) ) {
+					if(!$.jgrid.checkTime (val)) { return [false,nm+": "+$.jgrid.edit.msg.date+" - hh:mm (am/pm)",""]; }
 				}
 			}
 			if(edtrul.url === true) {
-				if( !(rqfield === false && this.isEmpty(val)) ) {
+				if( !(rqfield === false && $.jgrid.isEmpty(val)) ) {
 					filter = /^(((https?)|(ftp)):\/\/([\-\w]+\.)+\w{2,3}(\/[%\-\w]+(\.\w{2,})?)*(([\w\-\.\?\\\/+@&#;`~=%!]*)(\.\w{2,})?)*\/?)/i;
 					if(!filter.test(val)) {return [false,nm+": "+$.jgrid.edit.msg.url,""];}
 				}
 			}
 			if(edtrul.custom === true) {
-				if( !(rqfield === false && this.isEmpty(val)) ) {
+				if( !(rqfield === false && $.jgrid.isEmpty(val)) ) {
 					if($.isFunction(edtrul.custom_func)) {
 						var ret = edtrul.custom_func.call(g,val,nm);
 						if($.isArray(ret)) {
