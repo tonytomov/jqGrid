@@ -20,7 +20,7 @@ $.extend($.jgrid,{
 		Find: "Chercher",
 		Reset: "Annuler",
 		odata : ['égal', 'différent', 'inférieur', 'inférieur ou égal','supérieur','supérieur ou égal', 'commence par','ne commence pas par','est dans',"n'est pas dans",'finit par','ne finit pas par','contient','ne contient pas'],
-		groupOps: [	{ op: "AND", text: "tous" },	{ op: "OR",  text: "aucun" }	],
+		groupOps: [	{ op: "AND", text: "toutes" },	{ op: "OR",  text: "au moins une" }	],
 		matchText: " correspondance",
 		rulesText: " règles"
 	},
