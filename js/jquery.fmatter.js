@@ -157,6 +157,8 @@
 					timestamp.setTime(Number(Number(timestamp) + (offset * 60 * 1000)));
 				}
 			} else {
+				var ampm = '';
+
 				date = String(date).split(/[\\\/:_;.,\t\T\s-]/);
 				format = format.split(/[\\\/:_;.,\t\T\s-]/);
 				// parsing for month names
@@ -169,6 +171,13 @@
 						dM = $.inArray(date[k],dateFormat.i18n.monthNames);
 						if(dM !== -1 && dM > 11){date[k] = dM+1-12;}
 					}
+
+					// Capture the am/pm value for later
+					// conversion to 24h.
+					if (format[k].toLowerCase() == 'a') {
+						ampm = date[k].toLowerCase();
+					}
+
 					if(date[k]) {
 						ts[format[k].toLowerCase()] = parseInt(date[k],10);
 					}
@@ -181,6 +190,14 @@
 				var ty = ts.y;
 				if (ty >= 70 && ty <= 99) {ts.y = 1900+ts.y;}
 				else if (ty >=0 && ty <=69) {ts.y= 2000+ts.y;}
+				// 12 am => 0 am
+				if (ampm == 'am' && ts.h == 12) {
+					ts.h = 0;
+				}
+				// > 12 pm => h + 12 pm
+				else if (ampm == 'pm' && ts.h < 12) {
+					ts.h += 12;
+				}
 				timestamp = new Date(ts.y, ts.m, ts.d, ts.h, ts.i, ts.s, ts.u);
 			}
 			

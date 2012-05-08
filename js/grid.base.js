@@ -119,9 +119,15 @@ $.extend($.jgrid,{
 				}
 				if(format[k] == 'A') {
 					dM = $.inArray(date[k],afmt);
-					if(dM !== -1 && dM > 1 && date[k] == afmt[dM]){
-						date[k] = dM-2;
-						tsp.h = h12to24(date[k], tsp.h);
+					if(dM !== -1 && date[k] == afmt[dM]){
+						if (afmt[dM].toLowerCase() == 'pm') {
+							date[k] = dM-2;
+							tsp.h = h12to24(date[k], tsp.h);
+						}
+						// Convert 12 am to 0 am.
+						else if (afmt[dM].toLowerCase() == 'am' && tsp.h == 12) {
+							tsp.h = h12to24(0, tsp.h);
+						}
 					}
 				}
 				if(date[k] !== undefined) {
