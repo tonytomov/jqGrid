@@ -715,6 +715,14 @@ $.jgrid.extend({
 									ret[1] = rp_ge[$t.p.id].errorTextFormat.call($t, data);
 								} else {
 									ret[1] = Status + " Status: '" + data.statusText + "'. Error code: " + data.status;
+									try{
+										var resp_err = JSON.parse(data.responseText);
+										if(resp_err.message){
+											ret[1]+= ". Message: " + resp_err.message
+										}else if(resp_err.error&&resp_err.error.message){
+											ret[1]+= ". Message: " + resp_err.error.message
+										}
+									}catch(e){}
 								}
 							} else {
 								// data is posted successful
