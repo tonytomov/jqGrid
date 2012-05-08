@@ -403,6 +403,8 @@
 			afterRestore: null,
 			extraparam: {},
 			url: null,
+			restoreAfterError: true,
+			mtype: "POST",
 			delOptions: {},
 			editOptions : {}
 		};
@@ -434,16 +436,28 @@
 			oper = opers.oper;
 			op.extraparam[oper] = opers.addoper;
 		}
+		var actop = {
+			keys : op.keys,
+			oneditfunc: op.onEdit,
+			successfunc: op.onSuccess,
+			url: op.url,
+			extraparam: op.extraparam,
+			aftersavefunc: saverow,
+			errorfunc: op.onError,
+			afterrestorefunc: restorerow,
+			restoreAfterError: op.restoreAfterError,
+			mtype: op.mtype
+		};
 		switch(act)
 		{
 			case 'edit':
-				$('#'+gid).jqGrid('editRow',rid, op.keys, op.onEdit, op.onSuccess, op.url, op.extraparam, saverow, op.onError,restorerow);
+				$('#'+gid).jqGrid('editRow', rid, actop);
 				$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid+ ".ui-jqgrid-btable:first").hide();
 				$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid+ ".ui-jqgrid-btable:first").show();
 				$($t).triggerHandler("jqGridAfterGridComplete");
 				break;
 			case 'save':
-				if ( $('#'+gid).jqGrid('saveRow',rid,  op.onSuccess,op.url, op.extraparam, saverow, op.onError,restorerow) ) {
+				if ( $('#'+gid).jqGrid('saveRow', rid, actop) ) {
 				$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid+ ".ui-jqgrid-btable:first").show();
 				$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid+ ".ui-jqgrid-btable:first").hide();
 				$($t).triggerHandler("jqGridAfterGridComplete");
