@@ -7,8 +7,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
-$.jgrid = $.jgrid || {};
-$.extend($.jgrid,{
+$.jgrid = {
 	defaults : {
 		recordtext: "Ver {0} - {1} de {2}",
 	    emptyrecords: "Nenhum registro para visualizar",
@@ -21,7 +20,7 @@ $.extend($.jgrid,{
 	    Reset: "Resetar",
 	    odata : ['equal', 'not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain'],
 	    groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	],
-		matchText: " igual a",
+		matchText: " iguala",
 		rulesText: " regras"
 	},
 	edit : {
@@ -124,5 +123,5 @@ $.extend($.jgrid,{
 	    checkbox : {disabled:true},
 		idName : 'id'
 	}
-});
+};
 })(jQuery);
