@@ -503,17 +503,23 @@ $.jgrid.extend({
 					onClickButton : function () {
 						var sr = $t.p.savedRow[0].id;
 						if(sr) {
+							var saveParams;
 							var opers = $t.p.prmNames,
 							oper = opers.oper;
-							if(!o.editParams.extraparam) {
-								o.editParams.extraparam = {};
-							}
 							if($("#"+$.jgrid.jqID(sr), "#"+gID ).hasClass("jqgrid-new-row")) {
-								o.editParams.extraparam[oper] = opers.addoper;
-							} else {
+								if(!o.addParams.addRowParams.extraparam) {
+									o.addParams.addRowParams.extraparam = {};
+								}
+								o.addParams.addRowParams.extraparam[oper] = opers.addoper;
+								saveParams = o.addParams.addRowParams;
+								} else {
+								if(!o.editParams.extraparam) {
+									o.editParams.extraparam = {};
+								}
 								o.editParams.extraparam[oper] = opers.editoper;
+								saveParams = o.editParams;
 							}
-							if( $($t).jqGrid('saveRow', sr, o.editParams) ) {
+							if( $($t).jqGrid('saveRow', sr, saveParams) ) {
 								$($t).jqGrid('showAddEditButtons');
 							}
 						} else {
