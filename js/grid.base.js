@@ -2762,6 +2762,14 @@ $.jgrid.extend({
 							if($t.p.treeGrid===true && nm == $t.p.ExpandColumn) {
 								res[nm] = $.jgrid.htmlDecode($("span:first",this).html());
 							} else {
+								if($t.p.colModel[i].key != undefined && $t.p.colModel[i].key == true)
+								{
+									try {
+										res["_" + nm + "_"] = $.unformat(this,{rowId:ind.id, colModel:$t.p.colModel[i]},i);
+									} catch (e){
+										res["_" + nm + "_"] = $.jgrid.htmlDecode($(this).html());
+									}
+								}
 								try {
 									res[nm] = $.unformat.call($t,this,{rowId:ind.id, colModel:$t.p.colModel[i]},i);
 								} catch (e){
