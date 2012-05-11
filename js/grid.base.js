@@ -2904,12 +2904,12 @@ $.jgrid.extend({
 					rowid  = t.p.idPrefix + rowid;
 					if(ni){
 						prp = t.formatCol(0,1,'',null,rowid, true);
-						row[row.length] = "<td role=\"gridcell\" aria-describedby=\""+t.p.id+"_rn\" class=\"ui-state-default jqgrid-rownum\" "+prp+">0</td>";
+						row[row.length] = "<td role=\"gridcell\" class=\"ui-state-default jqgrid-rownum\" "+prp+">0</td>";
 					}
 					if(gi) {
 						v = "<input role=\"checkbox\" type=\"checkbox\""+" id=\"jqg_"+t.p.id+"_"+rowid+"\" class=\"cbox\"/>";
 						prp = t.formatCol(ni,1,'', null, rowid, true);
-						row[row.length] = "<td role=\"gridcell\" aria-describedby=\""+t.p.id+"_cb\" "+prp+">"+v+"</td>";
+						row[row.length] = "<td role=\"gridcell\" "+prp+">"+v+"</td>";
 					}
 					if(si) {
 						row[row.length] = $(t).jqGrid("addSubGridCell",gi+ni,1);
@@ -2920,7 +2920,7 @@ $.jgrid.extend({
 						lcdata[nm] = cm.formatter && typeof(cm.formatter) === 'string' && cm.formatter == 'date' ? $.unformat.date.call(t,data[nm],cm) : data[nm];
 						v = t.formatter( rowid, $.jgrid.getAccessor(data,nm), i, data, 'edit');
 						prp = t.formatCol(i,1,v, data, rowid, true);
-						row[row.length] = "<td role=\"gridcell\" aria-describedby=\""+t.p.id+"_"+nm+"\" "+prp+">"+v+"</td>";
+						row[row.length] = "<td role=\"gridcell\" "+prp+">"+v+"</td>";
 					}
 					row.unshift( t.constructTr(rowid, false, cna, lcdata, lcdata ) );
 					row[row.length] = "</tr>";
