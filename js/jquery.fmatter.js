@@ -265,7 +265,7 @@
 	};
 	$.fn.fmatter.checkbox =function(cval, opts) {
 		var op = $.extend({},opts.checkbox), ds;
-		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
+		if(opts.colModel !== undefined && !$.fmatter.isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if(op.disabled===true) {ds = "disabled=\"disabled\"";} else {ds="";}
@@ -277,7 +277,7 @@
 	$.fn.fmatter.link = function(cellval, opts) {
 		var op = {target:opts.target};
 		var target = "";
-		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
+		if(opts.colModel !== undefined && !$.fmatter.isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if(op.target) {target = 'target=' + op.target;}
@@ -290,7 +290,7 @@
 	$.fn.fmatter.showlink = function(cellval, opts) {
 		var op = {baseLinkUrl: opts.baseLinkUrl,showAction:opts.showAction, addParam: opts.addParam || "", target: opts.target, idName: opts.idName},
 		target = "", idUrl;
-		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
+		if(opts.colModel !== undefined && !$.fmatter.isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if(op.target) {target = 'target=' + op.target;}
@@ -303,7 +303,7 @@
 	};
 	$.fn.fmatter.integer = function(cellval, opts) {
 		var op = $.extend({},opts.integer);
-		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
+		if(opts.colModel !== undefined && !$.fmatter.isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if($.fmatter.isEmpty(cellval)) {
@@ -313,7 +313,7 @@
 	};
 	$.fn.fmatter.number = function (cellval, opts) {
 		var op = $.extend({},opts.number);
-		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
+		if(opts.colModel !== undefined && !$.fmatter.isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if($.fmatter.isEmpty(cellval)) {
@@ -323,7 +323,7 @@
 	};
 	$.fn.fmatter.currency = function (cellval, opts) {
 		var op = $.extend({},opts.currency);
-		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
+		if(opts.colModel !== undefined && !$.fmatter.isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if($.fmatter.isEmpty(cellval)) {
@@ -333,7 +333,7 @@
 	};
 	$.fn.fmatter.date = function (cellval, opts, rwd, act) {
 		var op = $.extend({},opts.date);
-		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
+		if(opts.colModel !== undefined && !$.fmatter.isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if(!op.reformatAfterEdit && act=='edit'){
