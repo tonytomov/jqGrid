@@ -1774,7 +1774,10 @@ $.fn.jqGrid = function( pin ) {
 						data: $.isFunction(ts.p.serializeGridData)? ts.p.serializeGridData.call(ts,ts.p.postData) : ts.p.postData,
 						success:function(data,st, xhr) {
 							if ($.isFunction(ts.p.beforeProcessing)) {
-									ts.p.beforeProcessing.call(ts, data, st, xhr);
+								if (ts.p.beforeProcessing.call(ts, data, st, xhr) === false) {
+									endReq();
+									return;
+								}
 							}
 							if(dt === "xml") { addXmlData(data,ts.grid.bDiv,rcnt,npage>1,adjust); }
 							else { addJSONData(data,ts.grid.bDiv,rcnt,npage>1,adjust); }
