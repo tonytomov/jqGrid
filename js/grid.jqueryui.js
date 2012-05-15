@@ -252,7 +252,7 @@ $.jgrid.extend({
             }
 
             select.append("<option value='"+i+"' "+
-                          (this.hidden?"":"selected='selected'")+">"+colNames[i]+"</option>");
+                          (this.hidden?"":"selected='selected'")+">"+jQuery.jgrid.stripHtml(colNames[i])+"</option>");
         });
         function call(fn, obj) {
             if (!fn) { return; }
