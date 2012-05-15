@@ -52,14 +52,18 @@ $.jgrid.extend({
 			}
 		});
 	},
-	groupingPrepare : function (rData, items, gdata, record) {
+	groupingPrepare : function (rData, gdata, record) {
 		this.each(function(){
 			// currently only one level
 			// Is this a good idea to do it so!!!!?????
+			var grp = this.p.groupingView, $t= this;
+			var grlen = grp.groupField.length, items = [];
+			for(var z=0;z<grlen;z++) {
+				items.push(record[grp.groupField[z]]);
+			}
 			items[0]  += "";
 			var itm = items[0].toString().split(' ').join('');
 			
-			var grp = this.p.groupingView, $t= this;
 			if(gdata.hasOwnProperty(itm)) {
 				gdata[itm].push(rData);
 			} else {
