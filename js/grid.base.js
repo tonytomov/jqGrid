@@ -1365,11 +1365,7 @@ $.fn.jqGrid = function( pin ) {
 				rowData[iStartTrTag] = constructTr(idr, hiderow, cn1, rd, cur);
 				rowData.push( "</tr>" );
 				if(ts.p.grouping) {
-					var grlen = ts.p.groupingView.groupField.length, grpitem = [];
-					for(var z=0;z<grlen;z++) {
-						grpitem.push(rd[ts.p.groupingView.groupField[z]]);
-					}
-					grpdata = $(ts).jqGrid('groupingPrepare',rowData, grpitem, grpdata, rd);
+					grpdata = $(ts).jqGrid('groupingPrepare',rowData, grpdata, rd);
 					rowData = [];
 				}
 				if(locdata || ts.p.treeGrid===true) {
