@@ -1202,7 +1202,7 @@ $.fn.jqGrid = function( pin ) {
 				rowData[iStartTrTag] = constructTr(rid, hiderow, cn1, rd, xmlr);
 				rowData.push("</tr>");
 				if(ts.p.grouping) {
-					grpdata = $(ts).jqGrid('groupingPrepare',rowData, grpdata, rd);
+					grpdata = $(ts).jqGrid('groupingPrepare',rowData, grpdata, rd, j);
 					rowData = [];
 				}
 				if(locdata || ts.p.treeGrid === true) {
@@ -1365,7 +1365,7 @@ $.fn.jqGrid = function( pin ) {
 				rowData[iStartTrTag] = constructTr(idr, hiderow, cn1, rd, cur);
 				rowData.push( "</tr>" );
 				if(ts.p.grouping) {
-					grpdata = $(ts).jqGrid('groupingPrepare',rowData, grpdata, rd);
+					grpdata = $(ts).jqGrid('groupingPrepare',rowData, grpdata, rd, i);
 					rowData = [];
 				}
 				if(locdata || ts.p.treeGrid===true) {
@@ -1454,7 +1454,7 @@ $.fn.jqGrid = function( pin ) {
 			if(!$.isArray(ts.p.data)) {
 				return;
 			}
-			var grpview = ts.p.grouping ? ts.p.groupingView : false;
+			var grpview = ts.p.grouping ? ts.p.groupingView : false, lengrp, gin;
 			$.each(ts.p.colModel,function(){
 				sorttype = this.sorttype || "text";
 				if(sorttype == "date" || sorttype == "datetime") {
@@ -1476,13 +1476,17 @@ $.fn.jqGrid = function( pin ) {
 				} else {
 					cmtypes[this.name] = {"stype": sorttype, "srcfmt":'',"newfmt":''};
 				}
-				if(ts.p.grouping && this.name == grpview.groupField[0]) {
+				if(ts.p.grouping ) {
+					for(gin =0, lengrp = grpview.groupField.length; gin< lengrp; gin++) {
+						if( this.name == grpview.groupField[gin]) {
 					var grindex = this.name;
 					if (typeof this.index != 'undefined') {
 						grindex = this.index;
 					}
-					grtypes[0] = cmtypes[grindex];
+					grtypes[gin] = cmtypes[grindex];
 					grindexes.push(grindex);
+				    }
+					}
 				}
 				if(!fndsort && (this.index == ts.p.sortname || this.name == ts.p.sortname)){
 					st = this.name; // ???
@@ -1575,7 +1579,9 @@ $.fn.jqGrid = function( pin ) {
 				}
 			}
 			if(ts.p.grouping) {
-				query.orderBy(grindexes,grpview.groupOrder[0],grtypes[0].stype, grtypes[0].srcfmt);
+				for(gin=0; gin<lengrp;gin++) {
+					query.orderBy(grindexes[gin],grpview.groupOrder[gin],grtypes[gin].stype, grtypes[gin].srcfmt);
+				}
 				grpview.groupDataSorted = true;
 			}
 			if (st && ts.p.sortorder && fndsort) {
