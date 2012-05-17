@@ -181,6 +181,13 @@ $.extend($.jgrid,{
 			return ret.length > 0 ? $(ret).text() : undefined;
 		}
 	},
+	cellWidth : function () {
+		var cellLayout = 5,
+		testcell = $("<div class='ui-jqgrid'><table class='ui-jqgrid-btable' style='width:"+cellLayout+"px;'><tr class='jqgrow'><td style='width:"+cellLayout+"px;'></td></tr></table></div>").find("td").width(),
+		ret = ( cellLayout != testcell );
+		testcell = null;
+		return ret;
+	},
 	ajaxOptions: {},
 	from : function(source){
 		// Original Author Hugo Bonacci
@@ -930,11 +937,7 @@ $.fn.jqGrid = function( pin ) {
 			return;
 		}
 		var gv = $("<div class='ui-jqgrid-view'></div>"), ii,
-		isMSIE = $.browser.msie ? true:false,
-		//support of getting the cell width with padding (true if Safari&Chrome <19)
-		testcell = $("<div class='ui-jqgrid'><table class='ui-jqgrid-btable' style='width:"+ts.p.cellLayout+"px;'><tr class='jqgrow'><td style='width:"+ts.p.cellLayout+"px;'></td></tr></table></div>").find("td").width(),
-		isSafari = ( ts.p.cellLayout != testcell);
-		testcell = null;
+		isMSIE = $.browser.msie ? true:false;
 		ts.p.direction = $.trim(ts.p.direction.toLowerCase());
 		if($.inArray(ts.p.direction,["ltr","rtl"]) == -1) { ts.p.direction = "ltr"; }
 		dir = ts.p.direction;
@@ -2026,7 +2029,7 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.sortname != index && idxcol) {ts.p.lastsort = idxcol;}
 		},
 		setColWidth = function () {
-			var initwidth = 0, brd=isSafari? 0: intNum(ts.p.cellLayout,0), vc=0, lvc, scw=intNum(ts.p.scrollOffset,0),cw,hs=false,aw,gw=0,
+			var initwidth = 0, brd=$.jgrid.cellWidth()? 0: intNum(ts.p.cellLayout,0), vc=0, lvc, scw=intNum(ts.p.scrollOffset,0),cw,hs=false,aw,gw=0,
 			cl = 0, cr;
 			$.each(ts.p.colModel, function() {
 				if(typeof this.hidden === 'undefined') {this.hidden=false;}
@@ -2086,7 +2089,7 @@ $.fn.jqGrid = function( pin ) {
 			return j-ret;
 		},
 		getOffset = function (iCol) {
-			var i, ret = {}, brd1 = isSafari ? 0 : ts.p.cellLayout;
+			var i, ret = {}, brd1 = $.jgrid.cellWidth() ? 0 : ts.p.cellLayout;
 			ret[0] =  ret[1] = ret[2] = 0;
 			for(i=0;i<=iCol;i++){
 				if(ts.p.colModel[i].hidden === false ) {
@@ -2137,7 +2140,7 @@ $.fn.jqGrid = function( pin ) {
 		}
 		if(this.p.multiselect) {
 			this.p.colNames.unshift("<input role='checkbox' id='cb_"+this.p.id+"' class='cbox' type='checkbox'/>");
-			this.p.colModel.unshift({name:'cb',width:isSafari ? ts.p.multiselectWidth+ts.p.cellLayout : ts.p.multiselectWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center',fixed:true});
+			this.p.colModel.unshift({name:'cb',width:$.jgrid.cellWidth() ? ts.p.multiselectWidth+ts.p.cellLayout : ts.p.multiselectWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center',fixed:true});
 		}
 		if(this.p.rownumbers) {
 			this.p.colNames.unshift("");
@@ -3113,7 +3116,7 @@ $.jgrid.extend({
 		return this.each(function(){
 			if (!this.grid ) {return;}
 			var $t = this, cw,
-			initwidth = 0, brd=$.browser.webkit||$.browser.safari? 0: $t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0,
+			initwidth = 0, brd=$.jgrid.cellWidth() ? 0: $t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0,
 			cl = 0,cr;
 			if(typeof shrink != 'boolean') {
 				shrink=$t.p.shrinkToFit;
