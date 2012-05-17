@@ -3022,7 +3022,7 @@ $.jgrid.extend({
 	},
 	showHideCol : function(colname,show) {
 		return this.each(function() {
-			var $t = this, fndh=false, brd=$.browser.webkit||$.browser.safari? 0: $t.p.cellLayout, cw;
+			var $t = this, fndh=false, brd=$.jgrid.cellWidth()? 0: $t.p.cellLayout, cw;
 			if (!$t.grid ) {return;}
 			if( typeof colname === 'string') {colname=[colname];}
 			show = show != "none" ? "" : "none";
