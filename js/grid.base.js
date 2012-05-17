@@ -931,7 +931,10 @@ $.fn.jqGrid = function( pin ) {
 		}
 		var gv = $("<div class='ui-jqgrid-view'></div>"), ii,
 		isMSIE = $.browser.msie ? true:false,
-		isSafari = $.browser.webkit || $.browser.safari ? true : false;
+		//support of getting the cell width with padding (true if Safari&Chrome <19)
+		testcell = $("<div class='ui-jqgrid'><table class='ui-jqgrid-btable' style='width:"+ts.p.cellLayout+"px;'><tr class='jqgrow'><td style='width:"+ts.p.cellLayout+"px;'></td></tr></table></div>").find("td").width(),
+		isSafari = ( ts.p.cellLayout != testcell);
+		testcell = null;
 		ts.p.direction = $.trim(ts.p.direction.toLowerCase());
 		if($.inArray(ts.p.direction,["ltr","rtl"]) == -1) { ts.p.direction = "ltr"; }
 		dir = ts.p.direction;
