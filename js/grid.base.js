@@ -182,8 +182,7 @@ $.extend($.jgrid,{
 		}
 	},
 	cellWidth : function () {
-		var cellLayout = 5,
-		testcell = $("<div class='ui-jqgrid'><table class='ui-jqgrid-btable' style='width:"+cellLayout+"px;'><tr class='jqgrow'><td style='width:"+cellLayout+"px;'></td></tr></table></div>").find("td").width(),
+		var testcell = $("<div class='ui-jqgrid'><table class='ui-jqgrid-btable' style='width:5px;'><tr class='jqgrow'><td style='width:5px;'></td></tr></table></div>").find("td").width(),
 		ret = ( cellLayout != testcell );
 		testcell = null;
 		return ret;
