@@ -203,6 +203,7 @@ addSubGrid : function( pos, sind ) {
 							if(bfsc === false) {return false;}
 							$(tr).after( "<tr role='row' class='ui-subgrid'>"+atd+"<td class='ui-widget-content subgrid-cell'><span class='ui-icon "+ts.p.subGridOptions.openicon+"'></span></td><td colspan='"+parseInt(ts.p.colNames.length-1-nhc,10)+"' class='ui-widget-content subgrid-data'><div id="+pID+"_"+_id+" class='tablediv'></div></td></tr>" );
 							$(ts).triggerHandler("jqGridSubGridRowExpanded", [pID + "_" + _id, _id]);
+							if(i<len-1) {len++;}
 							if( $.isFunction(ts.p.subGridRowExpanded)) {
 								ts.p.subGridRowExpanded.call(ts, pID+"_"+ _id,_id);
 							} else {
