@@ -182,10 +182,12 @@ $.extend($.jgrid,{
 		}
 	},
 	cellWidth : function () {
-		var testcell = $('body').append("<div class='ui-jqgrid' id='jq_testcell' style='left:10000px'><table class='ui-jqgrid-btable' style='width:5px;'><tr class='jqgrow'><td style='width:5px;'></td></tr></table></div>").find("td").width(),
-		ret = ( testcell != 5 );
-		$("#jq_testcell").remove();
-		return ret;
+		var $testDiv = $("<div class='ui-jqgrid' style='left:10000px'><table class='ui-jqgrid-btable' style='width:5px;'><tr class='jqgrow'><td style='width:5px;'></td></tr></table></div>"),
+		testCell = $testDiv.appendTo("body")
+			.find("td")
+			.width();
+		$testDiv.remove();
+		return testCell !== 5;
 	},
 	ajaxOptions: {},
 	from : function(source){
