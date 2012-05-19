@@ -1486,13 +1486,13 @@ $.fn.jqGrid = function( pin ) {
 				if(ts.p.grouping ) {
 					for(gin =0, lengrp = grpview.groupField.length; gin< lengrp; gin++) {
 						if( this.name == grpview.groupField[gin]) {
-					var grindex = this.name;
-					if (typeof this.index != 'undefined') {
-						grindex = this.index;
-					}
-					grtypes[gin] = cmtypes[grindex];
-					grindexes.push(grindex);
-				    }
+							var grindex = this.name;
+							if (typeof this.index != 'undefined') {
+								grindex = this.index;
+							}
+							grtypes[gin] = cmtypes[grindex];
+							grindexes[gin] = grindex;
+						}
 					}
 				}
 				if(!fndsort && (this.index == ts.p.sortname || this.name == ts.p.sortname)){
