@@ -41,7 +41,7 @@ $.jgrid.extend({
 							var cm = $t.p.colModel;
 							for(var j=0, cml = cm.length; j < cml; j++) {
 								if(cm[j].summaryType) {
-									grp.summary[i].push({nm:cm[j].name,st:cm[j].summaryType, v:''});
+									grp.summary[i].push({nm:cm[j].name,st:cm[j].summaryType, v:'', sr: cm[j].summaryRound, srt: cm[j].summaryRoundType || 'round'});
 								}
 							}
 						}
@@ -78,7 +78,7 @@ $.jgrid.extend({
 					if ($.isFunction(this.st)) {
 						this.v = this.st.call($t, this.v, this.nm, record);
 					} else {
-						this.v = $($t).jqGrid('groupingCalculations.'+this.st, this.v, this.nm, record);
+						this.v = $($t).jqGrid('groupingCalculations.handler', this.st, this.v, this.nm, this.sr, this.srt, record);
 					}
 				});
 			}
@@ -264,32 +264,55 @@ $.jgrid.extend({
 		});
 	},
 	groupingCalculations : {
-		"sum" : function(v, field, rc) {
-			return parseFloat(v||0) + parseFloat((rc[field]||0));
-		},
-		"min" : function(v, field, rc) {
-			if(v==="") {
-				return parseFloat(rc[field]||0);
+		handler: function(fn, v, field, round, roundType, rc) {
+			var funcs = {
+				sum: function() {
+					return parseFloat(v||0) + parseFloat((rc[field]||0));
+				},
+
+				min: function() {
+					if(v==="") {
+						return parseFloat(rc[field]||0);
+					}
+					return Math.min(parseFloat(v),parseFloat(rc[field]||0));
+				},
+
+				max: function() {
+					if(v==="") {
+						return parseFloat(rc[field]||0);
+					}
+					return Math.max(parseFloat(v),parseFloat(rc[field]||0));
+				},
+
+				count: function() {
+					if(v==="") {v=0;}
+					if(rc.hasOwnProperty(field)) {
+						return v+1;
+					} else {
+						return 0;
+					}
+				},
+
+				avg: function() {
+					// the same as sum, but at end we divide it
+					// so use sum instead of duplicating the code (?)
+					return funcs.sum();
+				}
 			}
-			return Math.min(parseFloat(v),parseFloat(rc[field]||0));
-		},
-		"max" : function(v, field, rc) {
-			if(v==="") {
-				return parseFloat(rc[field]||0);
+
+			var res = funcs[fn]();
+
+			if (round != null) {
+				if (roundType == 'fixed')
+					res = res.toFixed(round);
+				else {
+					var mul = Math.pow(10, round);
+
+					res = Math.round(res * mul) / mul;
+				}
 			}
-			return Math.max(parseFloat(v),parseFloat(rc[field]||0));
-		},
-		"count" : function(v, field, rc) {
-			if(v==="") {v=0;}
-			if(rc.hasOwnProperty(field)) {
-				return v+1;
-			} else {
-				return 0;
-			}
-		},
-		"avg" : function(v, field, rc) {
-			// the same as sum, but at end we divide it
-			return parseFloat(v||0) + parseFloat((rc[field]||0));
+
+			return res;
 		}
 	}
 });
