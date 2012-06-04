@@ -1,6 +1,28 @@
 // Grouping module
 ;(function($){
 "use strict";
+$.extend($.jgrid,{
+	template : function(format){ //jqgformat
+		var args = $.makeArray(arguments).slice(1), j = 0;
+		if(format===undefined) { format = ""; }
+		return format.replace(/\{([\w\-]+)(?:\:([\w\.]*)(?:\((.*?)?\))?)?\}/g, function(m,i){
+			if(!isNaN(parseInt(i,10))) {
+				j++;
+				return args[parseInt(i,10)];
+			} else {
+				var nmarr = args[ j ],
+				k = nmarr.length;
+				while(k--) {
+					if(i===nmarr[k].nm) {
+						return nmarr[k].v;
+						break;
+					}
+				}
+				j++;
+			}
+		});
+	}
+});
 $.jgrid.extend({
 	groupingSetup : function () {
 		return this.each(function (){
