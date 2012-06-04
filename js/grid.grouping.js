@@ -154,9 +154,11 @@ $.jgrid.extend({
 		this.each(function(){
 			var $t = this,
 			grp = $t.p.groupingView,
-			strpos = hid.lastIndexOf('_'),
-			uid = hid.substring(0,strpos+1),
-			num = parseInt(hid.substring(strpos+1),10)+1,
+			strpos = hid.split('_'),
+			//uid = hid.substring(0,strpos+1),
+			num = parseInt(strpos[strpos.length-2], 10);
+			strpos.splice(strpos.length-2,2);
+			var uid = strpos.join("_"),
 			minus = grp.minusicon,
 			plus = grp.plusicon,
 			tar = $("#"+$.jgrid.jqID(hid)),
@@ -175,7 +177,7 @@ $.jgrid.extend({
 				} else  {
 					if(r){
 						while(r) {
-							if($(r).attr('id') ==uid+String(num) ) { break; }
+							if( $(r).hasClass(uid+"_"+String(num) ) || $(r).hasClass(uid+"_"+String(num-1))) { break; }
 							$(r).hide();
 							r = r.nextSibling;
 						}
@@ -186,7 +188,7 @@ $.jgrid.extend({
 			} else {
 				if(r){
 					while(r) {
-						if($(r).attr('id') ==uid+String(num) ) { break; }
+						if($(r).hasClass(uid+"_"+String(num)) || $(r).hasClass(uid+"_"+String(num-1)) ) { break; }
 						$(r).show();
 						r = r.nextSibling;
 					}
