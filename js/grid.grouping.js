@@ -303,14 +303,14 @@ $.jgrid.extend({
 	groupingGroupBy : function (name, options ) {
 		return this.each(function(){
 			var $t = this;
-			if(typeof(name) == "string") {
+			if(typeof(name) === "string") {
 				name = [name];
 			}
 			var grp = $t.p.groupingView;
 			$t.p.grouping = true;
 
 			//Set default, in case visibilityOnNextGrouping is undefined 
-			if (typeof grp.visibiltyOnNextGrouping == "undefined") {
+			if (typeof grp.visibiltyOnNextGrouping === "undefined") {
 				grp.visibiltyOnNextGrouping = [];
 			}
 			var i;
@@ -332,7 +332,7 @@ $.jgrid.extend({
 	groupingRemove : function (current) {
 		return this.each(function(){
 			var $t = this;
-			if(typeof(current) == 'undefined') {
+			if(typeof(current) === 'undefined') {
 				current = true;
 			}
 			$t.p.grouping = false;
