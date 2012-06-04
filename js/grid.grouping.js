@@ -205,73 +205,94 @@ $.jgrid.extend({
 		return this.each(function(){
 			var $t = this,
 			grp = $t.p.groupingView,
-			str = "", icon = "", hid, pmrtl = grp.groupCollapse ? grp.plusicon : grp.minusicon, gv, cp, ii;
-			//only one level for now
-			if(!grp.groupDataSorted) {
-				// ???? TO BE IMPROVED
-				grp.sortitems[0].sort();
-				grp.sortnames[0].sort();
-				if(grp.groupOrder[0].toLowerCase() == 'desc')
-				{
-					grp.sortitems[0].reverse();
-					grp.sortnames[0].reverse();
-				}
-			}   
+			str = "", icon = "", hid, clid, pmrtl = grp.groupCollapse ? grp.plusicon : grp.minusicon, gv, cp=[], ii, len =grp.groupField.length;
 			pmrtl += " tree-wrap-"+$t.p.direction; 
 			ii = 0;
-			while(ii < colspans) {
-				if($t.p.colModel[ii].name == grp.groupField[0]) {
-					cp = ii;
-					break;
+			$.each($t.p.colModel, function (i,n){
+				for(var ii=0;ii<len;ii++) {
+					if(grp.groupField[ii] === n.name ) {
+						cp[ii] = i;
+						break;
+					}
 				}
-				ii++;
+			});
+			var toEnd = 0;
+			function findGroupIdx( ind , offset, grp) {
+				if(offset===0) {
+					return grp[ind];
+				} else {
+					var id = grp[ind].idx;
+					if(id===0) { return grp[ind]; }
+					for(var i=ind;i >= 0; i--) {
+						if(grp[i].idx === id-offset) {
+							return grp[i];
+						}
+					}
+				}
 			}
-			$.each(grp.sortitems[0],function(i,n){
-				hid = $t.p.id+"ghead_"+i;
+			$.each(grp.groups,function(i,n){
+				toEnd++;
+				clid = $t.p.id+"ghead_"+n.idx;
+				hid = clid+"_"+i;
 				icon = "<span style='cursor:pointer;' class='ui-icon "+pmrtl+"' onclick=\"jQuery('#"+$.jgrid.jqID($t.p.id)+"').jqGrid('groupingToggle','"+hid+"');return false;\"></span>";
 				try {
-					gv = $t.formatter(hid, grp.sortnames[0][i], cp, grp.sortitems[0] );
+					gv = $t.formatter(hid, n.value, cp[n.idx], n.value );
 				} catch (egv) {
-					gv = grp.sortnames[0][i];
+					gv = n.value;
 				}
-				str += "<tr id=\""+hid+"\" role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+"\"><td colspan=\""+colspans+"\">"+icon+$.jgrid.format(grp.groupText[0], gv, grdata[n].length)+"</td></tr>";
-				for(var kk=0;kk<grdata[n].length;kk++) {
-					str += grdata[n][kk].join('');
-				}
-				if(grp.groupSummary[0]) {
-					var hhdr = "";
-					if(grp.groupCollapse && !grp.showSummaryOnHide) {
-						hhdr = " style=\"display:none;\"";
+				str += "<tr id=\""+hid+"\" role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\" colspan=\""+colspans+"\">"+icon+$.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary)+"</td></tr>";
+				var leaf = len-1 === n.idx; 
+				if( leaf ) {
+					var gg = grp.groups[i+1];
+					var end = gg !== undefined ?  grp.groups[i+1].startRow : grdata.length;
+					for(var kk=n.startRow;kk<end;kk++) {
+						str += grdata[kk].join('');
 					}
-					str += "<tr"+hhdr+" role=\"row\" class=\"ui-widget-content jqfoot ui-row-"+$t.p.direction+"\">";
-					var fdata = grp.summaryval[0][n],
-					cm = $t.p.colModel,
-					vv, grlen = grdata[n].length;
-					for(var k=0; k<colspans;k++) {
-						var tmpdata = "<td "+$t.formatCol(k,1,'')+">&#160;</td>",
-						tplfld = "{0}";
-						$.each(fdata,function(){
-							if(this.nm == cm[k].name) {
-								if(cm[k].summaryTpl)  {
-									tplfld = cm[k].summaryTpl;
-								}
-								if(this.st == 'avg') {
-									if(this.v && grlen > 0) {
-										this.v = (this.v/grlen);
-									}
-								}
-								try {
-									vv = $t.formatter('', this.v, k, this);
-								} catch (ef) {
-									vv = this.v;
-								}
-								tmpdata= "<td "+$t.formatCol(k,1,'')+">"+$.jgrid.format(tplfld,vv)+ "</td>";
-								return false;
+					var jj;
+					if (gg !== undefined) {
+						for (jj = 0; jj < grp.groupField.length; jj++) {
+							if (gg.dataIndex === grp.groupField[jj]) {
+								break;
 							}
-						});
-						str += tmpdata;
+						}
+						toEnd = grp.groupField.length - jj;
 					}
-					str += "</tr>";
+					for (var ik = 0; ik < toEnd; ik++) {
+						var hhdr = "";
+						if(grp.groupCollapse && !grp.showSummaryOnHide) {
+							hhdr = " style=\"display:none;\"";
+						}
+						str += "<tr"+hhdr+" role=\"row\" class=\"ui-widget-content jqfoot ui-row-"+$t.p.direction+"\">";
+						var fdata = findGroupIdx(i, ik, grp.groups),
+						cm = $t.p.colModel,
+						vv, grlen = fdata.cnt;
+						for(var k=0; k<colspans;k++) {
+							var tmpdata = "<td "+$t.formatCol(k,1,'')+">&#160;</td>",
+							tplfld = "{0}";
+							$.each(fdata.summary,function(){
+								if(this.nm === cm[k].name) {
+									if(cm[k].summaryTpl)  {
+										tplfld = cm[k].summaryTpl;
+									}
+									if(this.st.toLowerCase() === 'avg') {
+										if(this.v && grlen > 0) {
+											this.v = (this.v/grlen);
+										}
+									}
+									try {
+										vv = $t.formatter('', this.v, k, this);
+									} catch (ef) {
+										vv = this.v;
+									}
+									tmpdata= "<td "+$t.formatCol(k,1,'')+">"+$.jgrid.format(tplfld,vv)+ "</td>";
+									return false;
+								}
+							});
+							str += tmpdata;
+						}
+						str += "</tr>";
+					}
+					toEnd = jj;
 				}
 			});
 			$("#"+$.jgrid.jqID($t.p.id)+" tbody:first").append(str);
