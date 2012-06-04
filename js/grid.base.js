@@ -1490,8 +1490,8 @@ $.fn.jqGrid = function( pin ) {
 							if (typeof this.index != 'undefined') {
 								grindex = this.index;
 							}
-							grtypes[gin] = cmtypes[this.name];
-							grindexes[gin] = grindex;
+							grtypes[gin] = cmtypes[grindex];
+							grindexes[gin]= grindex;
 						}
 					}
 				}
