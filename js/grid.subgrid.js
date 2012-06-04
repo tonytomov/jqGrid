@@ -233,10 +233,12 @@ addSubGrid : function( pos, sind ) {
 					return false;
 				});
 			}
-			if(ts.p.subGridOptions.expandOnLoad === true) {
-				$(ts.rows[i].cells[pos]).trigger('click');
-				}
 			i++;
+		}
+		if(ts.p.subGridOptions.expandOnLoad === true) {
+			$(ts.rows).filter('.jqgrow').each(function(index,row){
+				$(row.cells[0]).click();
+			});
 		}
 		ts.subGridXml = function(xml,sid) {subGridXml(xml,sid);};
 		ts.subGridJson = function(json,sid) {subGridJson(json,sid);};
