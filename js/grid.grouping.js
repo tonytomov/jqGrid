@@ -75,36 +75,78 @@ $.jgrid.extend({
 			}
 		});
 	},
-	groupingPrepare : function (rData, gdata, record) {
+	groupingPrepare : function (rData, gdata, record, irow) {
 		this.each(function(){
-			// currently only one level
-			// Is this a good idea to do it so!!!!?????
 			var grp = this.p.groupingView, $t= this;
-			var grlen = grp.groupField.length, items = [];
-			for(var z=0;z<grlen;z++) {
-				items.push(record[grp.groupField[z]]);
-			}
-			items[0]  += "";
-			var itm = items[0].toString().split(' ').join('');
-			
-			if(gdata.hasOwnProperty(itm)) {
-				gdata[itm].push(rData);
-			} else {
-				gdata[itm] = [];
-				gdata[itm].push(rData);
-				grp.sortitems[0].push(itm);
-				grp.sortnames[0].push($.trim(items[0].toString()));
-				grp.summaryval[0][itm] = $.extend(true,[],grp.summary[0]);
-			}
-			if(grp.groupSummary[0]) {
-				$.each(grp.summaryval[0][itm],function() {
-					if ($.isFunction(this.st)) {
-						this.v = this.st.call($t, this.v, this.nm, record);
+			var grlen = grp.groupField.length, 
+			fieldName,
+			v,
+			changed = 0;
+			for(var i=0;i<grlen;i++) {
+				fieldName = grp.groupField[i];
+				v = record[fieldName];
+				if( v ) {
+					if(irow === 0 ) {
+						// First record always starts a new group
+						grp.groups.push({idx:i,dataIndex:fieldName,value:v, startRow: irow, cnt:1, summary : [] } );
+						grp.lastvalues[i] = v;
+						grp.counters[i] = {cnt:1, pos:grp.groups.length-1, summary: $.extend(true,[],grp.summary)};
+						$.each(grp.counters[i].summary,function() {
+							if ($.isFunction(this.st)) {
+								this.v = this.st.call($t, this.v, this.nm, record);
+							} else {
+								this.v = $($t).jqGrid('groupingCalculations.'+this.st, this.v, this.nm, record);
+							}
+						});
+						grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
 					} else {
-						this.v = $($t).jqGrid('groupingCalculations.'+this.st, this.v, this.nm, record);
+						if( (typeof(v) !== "object" && (grp.lastvalues[i] !== v) ) ) {
+							// This record is not in same group as previous one
+							grp.groups.push({idx:i,dataIndex:fieldName,value:v, startRow: irow, cnt:1, summary : [] } );
+							grp.lastvalues[i] = v;
+							changed = 1;
+							grp.counters[i] = {cnt:1, pos:grp.groups.length-1, summary: $.extend(true,[],grp.summary)};
+							$.each(grp.counters[i].summary,function() {
+								if ($.isFunction(this.st)) {
+									this.v = this.st.call($t, this.v, this.nm, record);
+								} else {
+									this.v = $($t).jqGrid('groupingCalculations.'+this.st, this.v, this.nm, record);
+								}
+							});
+							grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
+						} else {
+							if (changed === 1) {
+								// This group has changed because an earlier group changed.
+								grp.groups.push({idx:i,dataIndex:fieldName,value:v, startRow: irow, cnt:1, summary : [] } );
+								grp.lastvalues[i] = v;
+								grp.counters[i] = {cnt:1, pos:grp.groups.length-1, summary: $.extend(true,[],grp.summary)};
+								$.each(grp.counters[i].summary,function() {
+									if ($.isFunction(this.st)) {
+										this.v = this.st.call($t, this.v, this.nm, record);
+									} else {
+										this.v = $($t).jqGrid('groupingCalculations.'+this.st, this.v, this.nm, record);
+									}
+								});
+								grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
+							} else {
+								grp.counters[i].cnt += 1;
+								grp.groups[grp.counters[i].pos].cnt = grp.counters[i].cnt;
+								if(grp.groupSummary[i]) {
+									$.each(grp.counters[i].summary,function() {
+										if ($.isFunction(this.st)) {
+											this.v = this.st.call($t, this.v, this.nm, record);
+										} else {
+											this.v = $($t).jqGrid('groupingCalculations.'+this.st, this.v, this.nm, record);
+										}
+									});
+									grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
+								}
+							}
+						}
 					}
-				});
+				}
 			}
+			gdata.push( rData );
 		});
 		return gdata;
 	},
