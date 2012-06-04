@@ -32,20 +32,24 @@ $.jgrid.extend({
 				if(!grp.groupField.length) {
 					$t.p.grouping = false;
 				} else {
-					if ( typeof(grp.visibiltyOnNextGrouping) == 'undefined') {
+					if ( typeof(grp.visibiltyOnNextGrouping) === 'undefined') {
 						grp.visibiltyOnNextGrouping = [];
 					}
+
+					grp.lastvalues=[];
+					grp.groups =[];
+					grp.counters =[];
 					for(var i=0;i<grp.groupField.length;i++) {
 						if(!grp.groupOrder[i]) {
 							grp.groupOrder[i] = 'asc';
 						}
 						if(!grp.groupText[i]) {
-							grp.groupText[i] = '{0}';
+							grp.groupText[i] = '{0} and {test}';
 						}
-						if( typeof(grp.groupColumnShow[i]) != 'boolean') {
+						if( typeof(grp.groupColumnShow[i]) !== 'boolean') {
 							grp.groupColumnShow[i] = true;
 						}
-						if( typeof(grp.groupSummary[i]) != 'boolean') {
+						if( typeof(grp.groupSummary[i]) !== 'boolean') {
 							grp.groupSummary[i] = false;
 						}
 						if(grp.groupColumnShow[i] === true) {
@@ -55,15 +59,12 @@ $.jgrid.extend({
 							grp.visibiltyOnNextGrouping[i] = $("#"+$.jgrid.jqID($t.p.id+"_"+grp.groupField[i])).is(":visible");
 							$($t).jqGrid('hideCol',grp.groupField[i]);
 						}
-						grp.sortitems[i] = [];
-						grp.sortnames[i] = [];
-						grp.summaryval[i] = [];
+						grp.summary =[];
 						if(grp.groupSummary[i]) {
-							grp.summary[i] =[];
 							var cm = $t.p.colModel;
 							for(var j=0, cml = cm.length; j < cml; j++) {
 								if(cm[j].summaryType) {
-									grp.summary[i].push({nm:cm[j].name,st:cm[j].summaryType, v:''});
+									grp.summary.push({nm:cm[j].name,st:cm[j].summaryType, v: '' });
 								}
 							}
 						}
