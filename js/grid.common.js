@@ -638,7 +638,7 @@ $.extend($.jgrid,{
 					} else {
 						dft = g.p.colModel[valref].datefmt || "Y-m-d";
 					}
-					if(!$jgrid.checkDate (dft, val)) { return [false,nm+": "+$.jgrid.edit.msg.date+" - "+dft,""]; }
+					if(!$.jgrid.checkDate (dft, val)) { return [false,nm+": "+$.jgrid.edit.msg.date+" - "+dft,""]; }
 				}
 			}
 			if(edtrul.time === true) {
