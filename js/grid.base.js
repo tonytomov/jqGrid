@@ -2589,7 +2589,7 @@ $.fn.jqGrid = function( pin ) {
 		ts.setHeadCheckBox = setHeadCheckBox;
 		ts.constructTr = constructTr;
 		ts.formatter = function ( rowId, cellval , colpos, rwdat, act){return formatter(rowId, cellval , colpos, rwdat, act);};
-		$.extend(grid,{populate : populate, emptyRows: emptyRows});
+		$.extend(grid,{populate : populate, emptyRows: emptyRows, beginReq: beginReq, endReq: endReq});
 		this.grid = grid;
 		ts.addXmlData = function(d) {addXmlData(d,ts.grid.bDiv);};
 		ts.addJSONData = function(d) {addJSONData(d,ts.grid.bDiv);};
