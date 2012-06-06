@@ -85,7 +85,7 @@ $.jgrid.extend({
 			for(var i=0;i<grlen;i++) {
 				fieldName = grp.groupField[i];
 				v = record[fieldName];
-				if( v ) {
+				if( v !== undefined ) {
 					if(irow === 0 ) {
 						// First record always starts a new group
 						grp.groups.push({idx:i,dataIndex:fieldName,value:v, startRow: irow, cnt:1, summary : [] } );
