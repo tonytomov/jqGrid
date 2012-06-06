@@ -258,6 +258,7 @@ $.jgrid.extend({
 						toEnd = grp.groupField.length - jj;
 					}
 					for (var ik = 0; ik < toEnd; ik++) {
+						if(!grp.groupSummary[ik]) { continue; }
 						var hhdr = "";
 						if(grp.groupCollapse && !grp.showSummaryOnHide) {
 							hhdr = " style=\"display:none;\"";
@@ -388,10 +389,10 @@ $.jgrid.extend({
 				}
 			}
 
-			var res = funcs[fn]();
-			if(!res) {
+			if(!funcs[fn]) {
 				throw ("jqGrid Grouping No such method: " + fn);
 			}
+			var res = funcs[fn]();
 
 			if (round != null) {
 				if (roundType == 'fixed')
