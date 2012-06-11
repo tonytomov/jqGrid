@@ -924,6 +924,12 @@ $.fn.jqGrid = function( pin ) {
 			alert("Element is not a table");
 			return;
 		}
+		if(document.documentMode !== undefined ) { // IE only
+			if(document.documentMode <= 5) {
+				alert("Grid can not be used in this ('quirks') mode!");
+				return;
+			}
+		}
 		$(this).empty().attr("tabindex","1");
 		this.p = p ;
 		this.p.useProp = !!$.fn.prop;
