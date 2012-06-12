@@ -609,7 +609,7 @@
 			op = $.extend({},op,opts.formatoptions);
 		}		
 		if(!$.fmatter.isEmpty(cellval)) {
-			return  $.fmatter.util.DateFormat(op.newformat,cellval,op.srcformat,op);
+			return $.fmatter.util.DateFormat(op.newformat,cellval,op.srcformat,op);
 		} else {
 			return $.fn.fmatter.defaultFormat(cellval, opts);
 		}

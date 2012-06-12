@@ -2931,8 +2931,8 @@ $.jgrid.extend({
 					for(i = gi+si+ni; i < t.p.colModel.length;i++){
 						cm = t.p.colModel[i];
 						nm = cm.name;
-						lcdata[nm] = cm.formatter && typeof(cm.formatter) === 'string' && cm.formatter == 'date' ? $.unformat.date.call(t,data[nm],cm) : data[nm];
-						v = t.formatter( rowid, $.jgrid.getAccessor(data,nm), i, data, 'edit');
+						lcdata[nm] = data[nm];
+						v = t.formatter( rowid, $.jgrid.getAccessor(data,nm), i, data );
 						prp = t.formatCol(i,1,v, data, rowid, true);
 						row[row.length] = "<td role=\"gridcell\" "+prp+">"+v+"</td>";
 					}
