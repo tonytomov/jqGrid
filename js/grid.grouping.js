@@ -44,7 +44,7 @@ $.jgrid.extend({
 							grp.groupOrder[i] = 'asc';
 						}
 						if(!grp.groupText[i]) {
-							grp.groupText[i] = '{0} and {test}';
+							grp.groupText[i] = '{0}';
 						}
 						if( typeof(grp.groupColumnShow[i]) !== 'boolean') {
 							grp.groupColumnShow[i] = true;
