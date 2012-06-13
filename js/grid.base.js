@@ -3058,12 +3058,12 @@ $.jgrid.extend({
 					if(show === "none") {
 						ngw -= cw+brd;
 						if(!$t.p.shrinkToFit) {
-							$t.p.tblwidth -= parseInt(this.width,10);+brd;
+							$t.p.tblwidth -= parseInt(this.width,10)+brd;
 						}
 					} else {
 						ngw += cw+brd;
 						if(!$t.p.shrinkToFit) {
-							$t.p.tblwidth += parseInt(this.width,10);+brd;
+							$t.p.tblwidth += parseInt(this.width,10)+brd;
 						}
 					}
 					this.hidden = !sw;
