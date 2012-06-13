@@ -3030,7 +3030,7 @@ $.jgrid.extend({
 	},
 	showHideCol : function(colname,show) {
 		return this.each(function() {
-			var $t = this, fndh=false, brd=$.jgrid.cellWidth()? 0: $t.p.cellLayout, cw;
+			var $t = this, fndh=false, brd=$.jgrid.cellWidth()? 0: $t.p.cellLayout, cw, ngw = $t.p.width;
 			if (!$t.grid ) {return;}
 			if( typeof colname === 'string') {colname=[colname];}
 			show = show != "none" ? "" : "none";
@@ -3051,15 +3051,25 @@ $.jgrid.extend({
 						}
 					});
 					if($t.p.footerrow) { $("tr.footrow td:eq("+i+")", $t.grid.sDiv).css("display", show); }
-					cw = this.widthOrg? this.widthOrg: parseInt(this.width,10);
-					if(show === "none") {$t.p.tblwidth -= cw+brd;} else {$t.p.tblwidth += cw+brd;}
+					cw =  this.widthOrg;
+					if(show === "none") {
+						ngw -= cw+brd;
+						if(!$t.p.shrinkToFit) {
+							$t.p.tblwidth -= parseInt(this.width,10);+brd;
+						}
+					} else {
+						ngw += cw+brd;
+						if(!$t.p.shrinkToFit) {
+							$t.p.tblwidth += parseInt(this.width,10);+brd;
+						}
+					}
 					this.hidden = !sw;
 					fndh=true;
 					$($t).triggerHandler("jqGridShowHideCol", [sw,this.name,i]);
 				}
 			});
 			if(fndh===true) {
-				$($t).jqGrid("setGridWidth",$t.p.shrinkToFit === true ? $t.p.tblwidth : $t.p.width );
+				$($t).jqGrid("setGridWidth",$t.p.shrinkToFit === true ? ngw : $t.p.width );
 			}
 			if( gh )  {
 				$($t).jqGrid('setGroupHeaders',$t.p.groupHeader);
@@ -3145,7 +3155,7 @@ $.jgrid.extend({
 			if(shrink===true) {
 				$.each($t.p.colModel, function() {
 					if(this.hidden===false){
-						cw = this.widthOrg? this.widthOrg: parseInt(this.width,10);
+						cw = this.widthOrg;
 						initwidth += cw+brd;
 						if(this.fixed) {
 							gw += cw+brd;
@@ -3168,7 +3178,7 @@ $.jgrid.extend({
 				var cle = $t.grid.cols.length >0;
 				$.each($t.p.colModel, function(i) {
 					if(this.hidden === false && !this.fixed){
-						cw = this.widthOrg? this.widthOrg: parseInt(this.width,10);
+						cw = this.widthOrg;
 						cw = Math.round(aw*cw/($t.p.tblwidth-brd*vc-gw));
 						if (cw < 0) { return; }
 						this.width =cw;
