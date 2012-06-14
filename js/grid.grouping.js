@@ -3,7 +3,7 @@
 "use strict";
 $.extend($.jgrid,{
 	template : function(format){ //jqgformat
-		var args = $.makeArray(arguments).slice(1), j = 0;
+		var args = $.makeArray(arguments).slice(1), j = 1;
 		if(format===undefined) { format = ""; }
 		return format.replace(/\{([\w\-]+)(?:\:([\w\.]*)(?:\((.*?)?\))?)?\}/g, function(m,i){
 			if(!isNaN(parseInt(i,10))) {
@@ -89,15 +89,13 @@ $.jgrid.extend({
 						grp.groups.push({idx:i,dataIndex:fieldName,value:v, startRow: irow, cnt:1, summary : [] } );
 						grp.lastvalues[i] = v;
 						grp.counters[i] = {cnt:1, pos:grp.groups.length-1, summary: $.extend(true,[],grp.summary)};
-						if(grp.groupSummary[i]) {
-							$.each(grp.counters[i].summary,function() {
-								if ($.isFunction(this.st)) {
-									this.v = this.st.call($t, this.v, this.nm, record);
-								} else {
-									this.v = $($t).jqGrid('groupingCalculations.handler',this.st, this.v, this.nm, this.sr, this.srt, record);
-								}
-							});
-						}
+						$.each(grp.counters[i].summary,function() {
+							if ($.isFunction(this.st)) {
+								this.v = this.st.call($t, this.v, this.nm, record);
+							} else {
+								this.v = $($t).jqGrid('groupingCalculations.handler',this.st, this.v, this.nm, this.sr, this.srt, record);
+							}
+						});
 						grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
 					} else {
 						if( (typeof(v) !== "object" && (grp.lastvalues[i] !== v) ) ) {
@@ -106,15 +104,13 @@ $.jgrid.extend({
 							grp.lastvalues[i] = v;
 							changed = 1;
 							grp.counters[i] = {cnt:1, pos:grp.groups.length-1, summary: $.extend(true,[],grp.summary)};
-							if(grp.groupSummary[i]) {
-								$.each(grp.counters[i].summary,function() {
-									if ($.isFunction(this.st)) {
-										this.v = this.st.call($t, this.v, this.nm, record);
-									} else {
-										this.v = $($t).jqGrid('groupingCalculations.handler',this.st, this.v, this.nm, this.sr, this.srt, record);
-									}
-								});
-							}
+							$.each(grp.counters[i].summary,function() {
+								if ($.isFunction(this.st)) {
+									this.v = this.st.call($t, this.v, this.nm, record);
+								} else {
+									this.v = $($t).jqGrid('groupingCalculations.handler',this.st, this.v, this.nm, this.sr, this.srt, record);
+								}
+							});
 							grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
 						} else {
 							if (changed === 1) {
@@ -122,29 +118,25 @@ $.jgrid.extend({
 								grp.groups.push({idx:i,dataIndex:fieldName,value:v, startRow: irow, cnt:1, summary : [] } );
 								grp.lastvalues[i] = v;
 								grp.counters[i] = {cnt:1, pos:grp.groups.length-1, summary: $.extend(true,[],grp.summary)};
-								if(grp.groupSummary[i]) {
-									$.each(grp.counters[i].summary,function() {
-										if ($.isFunction(this.st)) {
-											this.v = this.st.call($t, this.v, this.nm, record);
-										} else {
-											this.v = $($t).jqGrid('groupingCalculations.handler',this.st, this.v, this.nm, this.sr, this.srt, record);
-										}
-									});
-								}
+								$.each(grp.counters[i].summary,function() {
+									if ($.isFunction(this.st)) {
+										this.v = this.st.call($t, this.v, this.nm, record);
+									} else {
+										this.v = $($t).jqGrid('groupingCalculations.handler',this.st, this.v, this.nm, this.sr, this.srt, record);
+									}
+								});
 								grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
 							} else {
 								grp.counters[i].cnt += 1;
 								grp.groups[grp.counters[i].pos].cnt = grp.counters[i].cnt;
-								if(grp.groupSummary[i]) {
-									$.each(grp.counters[i].summary,function() {
-										if ($.isFunction(this.st)) {
-											this.v = this.st.call($t, this.v, this.nm, record);
-										} else {
-											this.v = $($t).jqGrid('groupingCalculations.handler',this.st, this.v, this.nm, this.sr, this.srt, record);
-										}
-									});
-									grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
-								}
+								$.each(grp.counters[i].summary,function() {
+									if ($.isFunction(this.st)) {
+										this.v = this.st.call($t, this.v, this.nm, record);
+									} else {
+										this.v = $($t).jqGrid('groupingCalculations.handler',this.st, this.v, this.nm, this.sr, this.srt, record);
+									}
+								});
+								grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
 							}
 						}
 					}
