@@ -2055,8 +2055,10 @@ $.fn.jqGrid = function( pin ) {
 					cl++;
 				}
 			});
-			if(isNaN(ts.p.width)) {ts.p.width = grid.width = initwidth;}
-			else { grid.width = ts.p.width;}
+			if(isNaN(ts.p.width)) {
+				ts.p.width  = initwidth + ((ts.p.shrinkToFit ===false && !isNaN(ts.p.height)) ? scw : 0);
+			}
+			grid.width = ts.p.width;
 			ts.p.tblwidth = initwidth;
 			if(ts.p.shrinkToFit ===false && ts.p.forceFit === true) {ts.p.forceFit=false;}
 			if(ts.p.shrinkToFit===true && vc > 0) {
