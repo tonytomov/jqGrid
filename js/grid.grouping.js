@@ -166,7 +166,7 @@ $.jgrid.extend({
 			tarspan = $("#"+$.jgrid.jqID(hid)+" span."+"tree-wrap-"+$t.p.direction),
 			collapsed = false;
 			if( tarspan.hasClass(minus) ) {
-				if(grp.showSummaryOnHide && grp.groupSummary[0]) {
+				if(grp.showSummaryOnHide) {
 					if(r){
 						while(r) {
 							if($(r).hasClass('jqfoot') ) { break; }
