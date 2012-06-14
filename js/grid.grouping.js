@@ -59,14 +59,12 @@ $.jgrid.extend({
 							grp.visibiltyOnNextGrouping[i] = $("#"+$.jgrid.jqID($t.p.id+"_"+grp.groupField[i])).is(":visible");
 							$($t).jqGrid('hideCol',grp.groupField[i]);
 						}
-						grp.summary =[];
-						if(grp.groupSummary[i]) {
-							var cm = $t.p.colModel;
-							for(var j=0, cml = cm.length; j < cml; j++) {
-								if(cm[j].summaryType) {
-									grp.summary.push({nm:cm[j].name,st:cm[j].summaryType, v: '', sr: cm[j].summaryRound, srt: cm[j].summaryRoundType || 'round'});
-								}
-							}
+					}
+					grp.summary =[];
+					var cm = $t.p.colModel;
+					for(var j=0, cml = cm.length; j < cml; j++) {
+						if(cm[j].summaryType) {
+							grp.summary.push({nm:cm[j].name,st:cm[j].summaryType, v: '', sr: cm[j].summaryRound, srt: cm[j].summaryRoundType || 'round'});
 						}
 					}
 				}
