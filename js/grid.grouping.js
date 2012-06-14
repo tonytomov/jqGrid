@@ -234,6 +234,8 @@ $.jgrid.extend({
 					}
 				}
 			}
+			var sumreverse = grp.groupSummary;
+			sumreverse.reverse();
 			$.each(grp.groups,function(i,n){
 				toEnd++;
 				clid = $t.p.id+"ghead_"+n.idx;
@@ -262,7 +264,7 @@ $.jgrid.extend({
 						toEnd = grp.groupField.length - jj;
 					}
 					for (var ik = 0; ik < toEnd; ik++) {
-						if(!grp.groupSummary[ik]) { continue; }
+						if(!sumreverse[ik]) { continue; }
 						var hhdr = "";
 						if(grp.groupCollapse && !grp.showSummaryOnHide) {
 							hhdr = " style=\"display:none;\"";
