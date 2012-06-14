@@ -22,7 +22,7 @@ $.extend($.jgrid,{
 	    caption: "Procurar...",
 	    Find: "Procurar",
 	    Reset: "Resetar",
-	    odata : ['igual', 'diferente', 'menor', 'menor ou igual','maior','maior ou igual', 'inicia com','não inicia com','está em','não está em','termina com','não termina com','contém','não contém'],
+	    odata : ['igual', 'diferente', 'menor', 'menor ou igual','maior','maior ou igual', 'inicia com','não inicia com','está em','não está em','termina com','não termina com','contém','não contém','nulo','não nulo'],
 	    groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	],
 		matchText: " igual a",
 		rulesText: " regras"
