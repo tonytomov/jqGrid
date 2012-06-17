@@ -1,4 +1,5 @@
 compiler.jar
+yuicompressor.jar
 dist
 nbproject
 .gradle
