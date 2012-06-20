@@ -226,7 +226,7 @@ $.jgrid.extend({
 					}
 				}
 			}
-			var sumreverse = grp.groupSummary;
+			var sumreverse = $.makeArray(grp.groupSummary);
 			sumreverse.reverse();
 			$.each(grp.groups,function(i,n){
 				toEnd++;
