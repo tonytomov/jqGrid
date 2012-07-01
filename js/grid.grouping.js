@@ -273,7 +273,7 @@ $.jgrid.extend({
 									if(cm[k].summaryTpl)  {
 										tplfld = cm[k].summaryTpl;
 									}
-									if(this.st.toLowerCase() === 'avg') {
+									if(typeof(this.st) === 'string' && this.st.toLowerCase() === 'avg') {
 										if(this.v && grlen > 0) {
 											this.v = (this.v/grlen);
 										}
