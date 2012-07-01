@@ -3458,6 +3458,7 @@ $.jgrid.extend({
 								}
 							}
 							$($t).jqGrid('setSelection', id, true, event);
+							event.preventDefault();
 						}
 						//if key is down arrow
 						if(event.keyCode === 40){
@@ -3474,6 +3475,7 @@ $.jgrid.extend({
 								}
 							}
 							$($t).jqGrid('setSelection', id, true, event);
+							event.preventDefault();
 						}
 						// left
 						if(event.keyCode === 37 ){
