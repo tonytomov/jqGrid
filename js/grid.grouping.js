@@ -160,7 +160,7 @@ $.jgrid.extend({
 			tar = $("#"+$.jgrid.jqID(hid)),
 			r = tar.length ? tar[0].nextSibling : null,
 			tarspan = $("#"+$.jgrid.jqID(hid)+" span."+"tree-wrap-"+$t.p.direction),
-			collapsed = false;
+			collapsed = false, tspan;
 			if( tarspan.hasClass(minus) ) {
 				if(grp.showSummaryOnHide) {
 					if(r){
@@ -186,6 +186,10 @@ $.jgrid.extend({
 					while(r) {
 						if($(r).hasClass(uid+"_"+String(num)) || $(r).hasClass(uid+"_"+String(num-1)) ) { break; }
 						$(r).show();
+						tspan = $(r).find("span."+"tree-wrap-"+$t.p.direction);
+						if( tspan && $(tspan).hasClass(plus) ) {
+							$(tspan).removeClass(plus).addClass(minus);
+						}
 						r = r.nextSibling;
 					}
 				}
