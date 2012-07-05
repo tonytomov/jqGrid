@@ -165,7 +165,12 @@ $.jgrid.extend({
 				if(grp.showSummaryOnHide) {
 					if(r){
 						while(r) {
-							if($(r).hasClass('jqfoot') ) { break; }
+							if($(r).hasClass('jqfoot') ) {
+								var lv = parseInt($(r).attr("jqfootlevel"),10);
+								if(  lv <= num) {
+									break;
+								}
+							}
 							$(r).hide();
 							r = r.nextSibling;
 						}
@@ -265,7 +270,7 @@ $.jgrid.extend({
 						if(grp.groupCollapse && !grp.showSummaryOnHide) {
 							hhdr = " style=\"display:none;\"";
 						}
-						str += "<tr"+hhdr+" role=\"row\" class=\"ui-widget-content jqfoot ui-row-"+$t.p.direction+"\">";
+						str += "<tr"+hhdr+" jqfootlevel=\""+(n.idx-ik)+"\" role=\"row\" class=\"ui-widget-content jqfoot ui-row-"+$t.p.direction+"\">";
 						var fdata = findGroupIdx(i, ik, grp.groups),
 						cm = $t.p.colModel,
 						vv, grlen = fdata.cnt;
