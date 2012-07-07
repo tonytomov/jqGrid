@@ -2943,7 +2943,7 @@ $.jgrid.extend({
 						prp = t.formatCol(i,1,v, data, rowid, true);
 						row[row.length] = "<td role=\"gridcell\" "+prp+">"+v+"</td>";
 					}
-					row.unshift( t.constructTr(rowid, false, cna, lcdata, lcdata ) );
+					row.unshift( t.constructTr(rowid, false, cna, lcdata, data ) );
 					row[row.length] = "</tr>";
 					if(t.rows.length === 0){
 						$("table:first",t.grid.bDiv).append(row.join(''));
