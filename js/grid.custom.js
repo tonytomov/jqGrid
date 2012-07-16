@@ -12,6 +12,43 @@
 **/
 /*global jQuery, $ */
 "use strict";
+var	clearBeforeUnload = function () {
+		var grid = this.grid;
+		grid.emptyRows(grid.bDiv, true, true); // this work quick enough and reduce the size of memory leaks if we have someone
+
+		$(document).unbind("mouseup"); // TODO add namespace
+		$(window).unbind("unload");    // TODO add namespace
+		$(grid.hDiv).unbind("mousemove"); // TODO add namespace
+		$(this).unbind();
+
+		grid.dragEnd = null;
+		grid.dragMove = null;
+		grid.dragStart = null;
+		grid.emptyRows = null;
+		grid.populate = null;
+		grid.populateVisible = null;
+		grid.scrollGrid = null;
+		grid.selectionPreserver = null;
+
+		grid.bDiv = null;
+		grid.cDiv = null;
+		grid.hDiv = null;
+		grid.cols = null;
+		var i, l = grid.headers.length;
+		for (i = 0; i < l; i++) {
+			grid.headers[i].el = null;
+		}
+
+		this.formatCol = null;
+		this.sortData = null;
+		this.updatepager = null;
+		this.refreshIndex = null;
+		this.setHeadCheckBox = null;
+		this.constructTr = null;
+		this.formatter = null;
+		this.addXmlData = null;
+		this.addJSONData = null;
+	};
 $.jgrid.extend({
 	getColProp : function(colname){
 		var ret ={}, $t = this[0];
@@ -67,6 +104,7 @@ $.jgrid.extend({
 					$(this.p.pager).remove();
 				}
 				try {
+					clearBeforeUnload.call(this);
 					$("#gbox_"+$.jgrid.jqID(this.id)).remove();
 				} catch (_) {}
 			}
@@ -90,6 +128,7 @@ $.jgrid.extend({
 			} else {
 				$(newtable).insertBefore("#gbox_"+gid).show();
 			}
+			clearBeforeUnload.call(this);
 			$("#gbox_"+gid).remove();
 		});
 	},
