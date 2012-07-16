@@ -1761,7 +1761,13 @@ $.fn.jqGrid = function( pin ) {
 					$(ts).jqGrid('groupingSetup');
 					var grp = ts.p.groupingView, gi, gs="";
 					for(gi=0;gi<grp.groupField.length;gi++) {
-						gs += grp.groupField[gi]+" "+grp.groupOrder[gi]+", ";
+						var index = grp.groupField[gi];
+						$.each(ts.p.colModel, function(cmIndex, cmValue) {
+							if (cmValue.name == index && cmValue.index){
+								index = cmValue.index;
+							}
+						} );
+						gs += index +" "+grp.groupOrder[gi]+", ";
 					}
 					prm[pN.sort] = gs + prm[pN.sort];
 				}
