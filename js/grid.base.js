@@ -1163,7 +1163,7 @@ $.fn.jqGrid = function( pin ) {
 				getId = function( trow, k) {return trow.getAttribute(idn.replace(/[\[\]]/g,"")) || k;};
 			}
 			ts.p.userData = {};
-			ts.p.page = $.jgrid.getXmlData( xml,xmlRd.page ) || 0;
+			ts.p.page = $.jgrid.getXmlData( xml,xmlRd.page ) || ts.p.page || 0;
 			ts.p.lastpage = $.jgrid.getXmlData( xml,xmlRd.total );
 			if(ts.p.lastpage===undefined) { ts.p.lastpage=1; }
 			ts.p.records = $.jgrid.getXmlData( xml,xmlRd.records ) || 0;
@@ -1316,9 +1316,6 @@ $.fn.jqGrid = function( pin ) {
 				frd='json';
 			}
 			var ir=0,v,i,j,f=[],F,cur,gi=ts.p.multiselect?1:0,si=ts.p.subGrid?1:0,ni=ts.p.rownumbers===true?1:0,len,drows,idn,rd={}, fpos, idr,rowData=[],cn=(ts.p.altRows === true) ? " "+ts.p.altclass:"",cn1,lp;
-			//if response provides page number, use it
-			//elseif page number is set, last it unchanged
-			//elseif initialize it with zero
 			ts.p.page = $.jgrid.getAccessor(data,dReader.page) || ts.p.page || 0;
 			lp = $.jgrid.getAccessor(data,dReader.total);
 			ts.p.lastpage = lp === undefined ? 1 : lp;
