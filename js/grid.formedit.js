@@ -904,7 +904,7 @@ $.jgrid.extend({
 			}
 
 			if ( $("#"+$.jgrid.jqID(IDs.themodal)).html() !== null ) {
-				showFrm = $($t).triggerHandler("jqGridAddEditBeforeInitData", [$("#"+$.jgrid.jqID(frmgr))]);
+				showFrm = $($t).triggerHandler("jqGridAddEditBeforeInitData", [$("#"+$.jgrid.jqID(frmgr)), frmoper]);
 				if(typeof(showFrm) == "undefined") {
 					showFrm = true;
 				}
