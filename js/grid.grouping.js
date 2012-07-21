@@ -241,13 +241,15 @@ $.jgrid.extend({
 				toEnd++;
 				clid = $t.p.id+"ghead_"+n.idx;
 				hid = clid+"_"+i;
-				icon = "<span style='cursor:pointer;' class='ui-icon "+pmrtl+"' onclick=\"jQuery('#"+$.jgrid.jqID($t.p.id)+"').jqGrid('groupingToggle','"+hid+"');return false;\"></span>";
+				var clickFunction = "jQuery('#"+$.jgrid.jqID($t.p.id)+"').jqGrid('groupingToggle','"+hid+"');return false;";
+				icon = "<span style='cursor:pointer;' class='ui-icon "+pmrtl+"' onclick=\""+clickFunction+"\"></span>";
 				try {
 					gv = $t.formatter(hid, n.value, cp[n.idx], n.value );
 				} catch (egv) {
 					gv = n.value;
 				}
-				str += "<tr id=\""+hid+"\" role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\" colspan=\""+colspans+"\">"+icon+$.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary)+"</td></tr>";
+				var title = "<span style='cursor:pointer;' onclick=\""+clickFunction+"\">"+$.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary)+"</span>";
+				str += "<tr id=\""+hid+"\" role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\" colspan=\""+colspans+"\">"+icon+title+"</td></tr>";
 				var leaf = len-1 === n.idx; 
 				if( leaf ) {
 					var gg = grp.groups[i+1];
