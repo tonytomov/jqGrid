@@ -149,7 +149,7 @@ $.jgrid.extend({
 		// End compatible
 
 		var success = false;
-		var $t = this[0], nm, tmp={}, tmp2={}, tmp3= {}, editable, fr, cv, ind;
+		var $t = this[0], nm, tmp={}, tmp2={}, tmp3={}, rowdata={}, editable, fr, cv, ind; // BDK MOD (rowdata is repeated many times across next page)
 		if (!$t.grid ) { return success; }
 		ind = $($t).jqGrid("getInd",rowid,true);
 		if(ind === false) {return success;}
@@ -167,22 +167,22 @@ $.jgrid.extend({
 							if(cm.editoptions ) {
 								cbv = cm.editoptions.value.split(":");
 							}
-							tmp[nm]=  $("input",this).is(":checked") ? cbv[0] : cbv[1]; 
+							rowdata[nm]=  $("input",this).is(":checked") ? cbv[0] : cbv[1]; 
 							break;
 						case 'text':
 						case 'password':
 						case 'textarea':
 						case "button" :
-							tmp[nm]=$("input, textarea",this).val();
+							rowdata[nm]=$("input, textarea",this).val();
 							break;
 						case 'select':
 							if(!cm.editoptions.multiple) {
-								tmp[nm] = $("select option:selected",this).val();
+								rowdata[nm] = $("select option:selected",this).val();
 								tmp2[nm] = $("select option:selected", this).text();
 							} else {
 								var sel = $("select",this), selectedText = [];
-								tmp[nm] = $(sel).val();
-								if(tmp[nm]) { tmp[nm]= tmp[nm].join(","); } else { tmp[nm] =""; }
+								rowdata[nm] = $(sel).val();
+								if(rowdata[nm]) { rowdata[nm]= rowdata[nm].join(","); } else { rowdata[nm] =""; }
 								$("select option:selected",this).each(
 									function(i,selected){
 										selectedText[i] = $(selected).text();
@@ -195,8 +195,8 @@ $.jgrid.extend({
 						case 'custom' :
 							try {
 								if(cm.editoptions && $.isFunction(cm.editoptions.custom_value)) {
-									tmp[nm] = cm.editoptions.custom_value.call($t, $(".customelement",this),'get');
-									if (tmp[nm] === undefined) { throw "e2"; }
+									rowdata[nm] = cm.editoptions.custom_value.call($t, $(".customelement",this),'get');
+									if (rowdata[nm] === undefined) { throw "e2"; }
 								} else { throw "e1"; }
 							} catch (e) {
 								if (e=="e1") { $.jgrid.info_dialog($.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.nodefined,$.jgrid.edit.bClose); }
@@ -205,19 +205,20 @@ $.jgrid.extend({
 							}
 							break;
 					}
-					cv = $.jgrid.checkValues(tmp[nm],i,$t);
+					cv = $.jgrid.checkValues(rowdata[nm],i,$t);
 					if(cv[0] === false) {
-						cv[1] = tmp[nm] + " " + cv[1];
+						cv[1] = rowdata[nm] + " " + cv[1];
 						return false;
 					}
-					if($t.p.autoencode) { tmp[nm] = $.jgrid.htmlEncode(tmp[nm]); }
+					if($t.p.autoencode) { rowdata[nm] = $.jgrid.htmlEncode(rowdata[nm]); }
 					if(o.url !== 'clientArray' && cm.editoptions && cm.editoptions.NullIfEmpty === true) {
-						if(tmp[nm] === "") {
+						if(rowdata[nm] === "") {
 							tmp3[nm] = 'null';
 						}
 					}
 				}
 			});
+			$.extend(tmp, rowdata); // push rowdata back into tmp, attempting to maintain backwards comaptibility
 			if (cv[0] === false){
 				try {
 					var positions = $.jgrid.findPos($("#"+$.jgrid.jqID(rowid), $t.grid.bDiv)[0]);
@@ -234,6 +235,7 @@ $.jgrid.extend({
 			if(tmp) {
 				tmp[oper] = opers.editoper;
 				tmp[idname] = rowid;
+				tmp['rowdata'] = rowdata;
 				if(typeof($t.p.inlineData) == 'undefined') { $t.p.inlineData ={}; }
 				tmp = $.extend({},tmp,$t.p.inlineData,o.extraparam);
 			}
@@ -284,7 +286,7 @@ $.jgrid.extend({
 									});
 								}
 								tmp = $.extend({},tmp, tmp2);
-								$($t).jqGrid("setRowData",rowid,tmp);
+								$($t).jqGrid("setRowData",rowid,tmp.rowdata); //BDK MOD, pass in tmp.rowdata to avoid collissions on "id" and "oper" that are properties of tmp
 								$(ind).attr("editable","0");
 								for( var k=0;k<$t.p.savedRow.length;k++) {
 									if( $t.p.savedRow[k].id == rowid) {fr = k; break;}
@@ -395,7 +397,6 @@ $.jgrid.extend({
 				});
 			}
 			$($t).jqGrid('addRowData', p.rowID, p.initdata, p.position);
-			p.rowID = $t.p.idPrefix + p.rowID;
 			$("#"+$.jgrid.jqID(p.rowID), "#"+$.jgrid.jqID($t.p.id)).addClass("jqgrid-new-row");
 			if(p.useFormatter) {
 				$("#"+$.jgrid.jqID(p.rowID)+" .ui-inline-edit", "#"+$.jgrid.jqID($t.p.id)).click();
