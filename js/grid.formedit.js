@@ -1156,9 +1156,12 @@ $.jgrid.extend({
 					npos[0] = parseInt(npos[0],10);
 					if(npos[0] != -1 && npos[1][npos[0]+1]) {
 						$($t).triggerHandler("jqGridAddEditClickPgButtons", ['next',$("#"+frmgr),npos[1][npos[0]]]);
+						var nposret = true;
 						if($.isFunction(p.onclickPgButtons)) {
-							p.onclickPgButtons.call($t, 'next',$("#"+frmgr),npos[1][npos[0]]);
+							nposret = p.onclickPgButtons.call($t, 'next',$("#"+frmgr),npos[1][npos[0]]);
+							if( nposret !== undefined && nposret === false ) {return false;}
 						}
+						if( $("#"+$.jgrid.jqID(npos[1][npos[0]])).hasClass('ui-state-disabled')) {return false;}
 						fillData(npos[1][npos[0]+1],$t,frmgr);
 						$($t).jqGrid("setSelection",npos[1][npos[0]+1]);
 						$($t).triggerHandler("jqGridAddEditAfterClickPgButtons", ['next',$("#"+frmgr),npos[1][npos[0]]]);
@@ -1175,9 +1178,12 @@ $.jgrid.extend({
 					var ppos = getCurrPos();
 					if(ppos[0] != -1 && ppos[1][ppos[0]-1]) {
 						$($t).triggerHandler("jqGridAddEditClickPgButtons", ['prev',$("#"+frmgr),ppos[1][ppos[0]]]);
+						var pposret = true;
 						if($.isFunction(p.onclickPgButtons)) {
-							p.onclickPgButtons.call($t, 'prev',$("#"+frmgr),ppos[1][ppos[0]]);
+							pposret = p.onclickPgButtons.call($t, 'prev',$("#"+frmgr),ppos[1][ppos[0]]);
+							if( pposret !== undefined && pposret === false ) {return false;}
 						}
+						if( $("#"+$.jgrid.jqID(ppos[1][ppos[0]])).hasClass('ui-state-disabled')) {return false;}
 						fillData(ppos[1][ppos[0]-1],$t,frmgr);
 						$($t).jqGrid("setSelection",ppos[1][ppos[0]-1]);
 						$($t).triggerHandler("jqGridAddEditAfterClickPgButtons", ['prev',$("#"+frmgr),ppos[1][ppos[0]]]);
