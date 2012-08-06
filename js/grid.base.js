@@ -124,6 +124,9 @@ $.extend($.jgrid,{
 						tsp.h = h12to24(date[k], tsp.h);
 					}
 				}
+				if (format[k] === 'g') {
+					tsp.h = parseInt(date[k], 10);
+				}
 				if(date[k] !== undefined) {
 					tsp[format[k].toLowerCase()] = parseInt(date[k],10);
 				}
