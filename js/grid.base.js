@@ -124,6 +124,9 @@ $.extend($.jgrid,{
 						tsp.h = h12to24(date[k], tsp.h);
 					}
 				}
+				if (format[k] === 'g') {
+					tsp.h = parseInt(date[k], 10);
+				}
 				if(date[k] !== undefined) {
 					tsp[format[k].toLowerCase()] = parseInt(date[k],10);
 				}
@@ -1761,7 +1764,13 @@ $.fn.jqGrid = function( pin ) {
 					$(ts).jqGrid('groupingSetup');
 					var grp = ts.p.groupingView, gi, gs="";
 					for(gi=0;gi<grp.groupField.length;gi++) {
-						gs += grp.groupField[gi]+" "+grp.groupOrder[gi]+", ";
+						var index = grp.groupField[gi];
+						$.each(ts.p.colModel, function(cmIndex, cmValue) {
+							if (cmValue.name == index && cmValue.index){
+								index = cmValue.index;
+							}
+						} );
+						gs += index +" "+grp.groupOrder[gi]+", ";
 					}
 					prm[pN.sort] = gs + prm[pN.sort];
 				}
