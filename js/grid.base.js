@@ -2661,7 +2661,7 @@ $.jgrid.extend({
 			function scrGrid(iR){
 				var ch = $($t.grid.bDiv)[0].clientHeight,
 				st = $($t.grid.bDiv)[0].scrollTop,
-				rpos = $t.rows[iR].offsetTop,
+				rpos = $($t.rows[iR]).position().top,
 				rh = $t.rows[iR].clientHeight;
 				if(rpos+rh >= ch+st) { $($t.grid.bDiv)[0].scrollTop = rpos-(ch+st)+rh+st; }
 				else if(rpos < ch+st) {
