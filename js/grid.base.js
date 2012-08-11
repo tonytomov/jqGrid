@@ -3379,13 +3379,9 @@ $.jgrid.extend({
 							if(mathopr) {
 								v = parseFloat(val);
 								sum += v;
-								if(i===0) {
-									min = v;
-									max = v;
-								} else {
-									min = Math.min(min, v);
-									max = Math.max(max, v);
-								}
+								if (max === undefined) {max = min = v}
+								min = Math.min(min, v);
+								max = Math.max(max, v);
 							}
 							else if(obj) { ret.push( {id:$t.rows[i].id,value:val} ); }
 							else { ret.push( val ); }
