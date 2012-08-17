@@ -251,7 +251,7 @@ $.jgrid.extend({
 				}
 				if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
 				$($t).triggerHandler("jqGridInlineAfterSaveRow", [rowid, resp, tmp, o]);
-				if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid,resp); }
+				if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid,resp,o.extraparam); }
 				success = true;
 				$(ind).unbind("keydown");
 			} else {
