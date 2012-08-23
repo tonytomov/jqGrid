@@ -66,7 +66,6 @@ $.jgrid.extend({
 			grid.emptyRows.call(this, true, true); // this work quick enough and reduce the size of memory leaks if we have someone
 
 			//$(document).unbind("mouseup"); // TODO add namespace
-			$(window).unbind("unload");    // TODO add namespace
 			$(grid.hDiv).unbind("mousemove"); // TODO add namespace
 			$(this).unbind();
 

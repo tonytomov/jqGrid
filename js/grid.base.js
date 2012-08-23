@@ -2618,9 +2618,6 @@ $.fn.jqGrid = function( pin ) {
 		this.grid.cols = this.rows[0].cells;
 
 		populate();ts.p.hiddengrid=false;
-		$(window).unload(function () {
-			ts = null;
-		});
 	});
 };
 $.jgrid.extend({
