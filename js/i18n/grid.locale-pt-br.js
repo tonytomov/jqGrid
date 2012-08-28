@@ -3,6 +3,9 @@
  * jqGrid Brazilian-Portuguese Translation
  * Sergio Righi sergio.righi@gmail.com
  * http://curve.com.br
+ * 
+ * Updated by Jonnas Fonini
+ * http://fonini.net
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
@@ -10,7 +13,7 @@
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
 	defaults : {
-		recordtext: "Ver {0} - {1} of {2}",
+		recordtext: "Ver {0} - {1} de {2}",
 	    emptyrecords: "Nenhum registro para visualizar",
 		loadtext: "Carregando...",
 		pgtext : "Página {0} de {1}"
@@ -19,9 +22,9 @@ $.extend($.jgrid,{
 	    caption: "Procurar...",
 	    Find: "Procurar",
 	    Reset: "Resetar",
-	    odata : ['equal', 'not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain'],
+	    odata : ['igual', 'diferente', 'menor', 'menor ou igual','maior','maior ou igual', 'inicia com','não inicia com','está em','não está em','termina com','não termina com','contém','não contém','nulo','não nulo'],
 	    groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	],
-		matchText: " iguala",
+		matchText: " igual a",
 		rulesText: " regras"
 	},
 	edit : {
@@ -55,7 +58,7 @@ $.extend($.jgrid,{
 	},
 	del : {
     caption: "Apagar",
-	    msg: "Apagar registros selecionado(s)?",
+	    msg: "Apagar registro(s) selecionado(s)?",
 	    bSubmit: "Apagar",
 	    bCancel: "Cancelar"
 	},
@@ -69,7 +72,7 @@ $.extend($.jgrid,{
 	    searchtext: " ",
 	    searchtitle: "Procurar registros",
 	    refreshtext: "",
-	    refreshtitle: "Recarrgando Tabela",
+	    refreshtitle: "Recarregando tabela",
 	    alertcap: "Aviso",
 	    alerttext: "Por favor, selecione um registro",
 		viewtext: "",
@@ -82,7 +85,7 @@ $.extend($.jgrid,{
 	},
 	errors : {
 		errcap : "Erro",
-		nourl : "Nenhuma URL defenida",
+		nourl : "Nenhuma URL definida",
 		norecords: "Sem registros para exibir",
 	    model : "Comprimento de colNames <> colModel!"
 	},

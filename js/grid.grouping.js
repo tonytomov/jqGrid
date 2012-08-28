@@ -160,12 +160,17 @@ $.jgrid.extend({
 			tar = $("#"+$.jgrid.jqID(hid)),
 			r = tar.length ? tar[0].nextSibling : null,
 			tarspan = $("#"+$.jgrid.jqID(hid)+" span."+"tree-wrap-"+$t.p.direction),
-			collapsed = false;
+			collapsed = false, tspan;
 			if( tarspan.hasClass(minus) ) {
 				if(grp.showSummaryOnHide) {
 					if(r){
 						while(r) {
-							if($(r).hasClass('jqfoot') ) { break; }
+							if($(r).hasClass('jqfoot') ) {
+								var lv = parseInt($(r).attr("jqfootlevel"),10);
+								if(  lv <= num) {
+									break;
+								}
+							}
 							$(r).hide();
 							r = r.nextSibling;
 						}
@@ -186,6 +191,10 @@ $.jgrid.extend({
 					while(r) {
 						if($(r).hasClass(uid+"_"+String(num)) || $(r).hasClass(uid+"_"+String(num-1)) ) { break; }
 						$(r).show();
+						tspan = $(r).find("span."+"tree-wrap-"+$t.p.direction);
+						if( tspan && $(tspan).hasClass(plus) ) {
+							$(tspan).removeClass(plus).addClass(minus);
+						}
 						r = r.nextSibling;
 					}
 				}
@@ -226,7 +235,7 @@ $.jgrid.extend({
 					}
 				}
 			}
-			var sumreverse = grp.groupSummary;
+			var sumreverse = $.makeArray(grp.groupSummary);
 			sumreverse.reverse();
 			$.each(grp.groups,function(i,n){
 				toEnd++;
@@ -261,7 +270,7 @@ $.jgrid.extend({
 						if(grp.groupCollapse && !grp.showSummaryOnHide) {
 							hhdr = " style=\"display:none;\"";
 						}
-						str += "<tr"+hhdr+" role=\"row\" class=\"ui-widget-content jqfoot ui-row-"+$t.p.direction+"\">";
+						str += "<tr"+hhdr+" jqfootlevel=\""+(n.idx-ik)+"\" role=\"row\" class=\"ui-widget-content jqfoot ui-row-"+$t.p.direction+"\">";
 						var fdata = findGroupIdx(i, ik, grp.groups),
 						cm = $t.p.colModel,
 						vv, grlen = fdata.cnt;
@@ -273,7 +282,7 @@ $.jgrid.extend({
 									if(cm[k].summaryTpl)  {
 										tplfld = cm[k].summaryTpl;
 									}
-									if(this.st.toLowerCase() === 'avg') {
+									if(typeof(this.st) === 'string' && this.st.toLowerCase() === 'avg') {
 										if(this.v && grlen > 0) {
 											this.v = (this.v/grlen);
 										}

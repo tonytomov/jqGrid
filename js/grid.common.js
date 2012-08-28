@@ -45,7 +45,8 @@ $.extend($.jgrid,{
 		}
 		return [curleft,curtop];
 	},
-	createModal : function(aIDs, content, p, insertSelector, posSelector, appendsel, css) {		
+	createModal : function(aIDs, content, p, insertSelector, posSelector, appendsel, css) {
+		p = $.extend(true, $.jgrid.jqModal || {}, p);
 		var mw  = document.createElement('div'), rtlsup, self = this;
 		css = $.extend({}, css || {});
 		rtlsup = $(p.gbox).attr("dir") == "rtl" ? true : false;
