@@ -87,7 +87,7 @@ addSubGrid : function( pos, sind ) {
 			return false;
 		};
 		var subGridJson = function(sjxml, sbid){
-			var tddiv,result , i,cur, sgmap,j,
+			var tddiv,result,i,cur, sgmap,j,
 			dummy = $("<table cellspacing='0' cellpadding='0' border='0'><tbody></tbody></table>"),
 			trdiv = $("<tr></tr>");
 			for (i = 0; i<ts.p.subGridModel[0].name.length; i++) {
@@ -99,7 +99,7 @@ addSubGrid : function( pos, sind ) {
 			$(dummy).append(trdiv);
 			if (sjxml){
 				sgmap = ts.p.jsonReader.subgrid;
-				result = sjxml[sgmap.root];
+				result = $.jgrid.getAccessor(sjxml, sgmap.root);
 				if ( typeof result !== 'undefined' ) {
 					for (i=0;i<result.length;i++) {
 						cur = result[i];
