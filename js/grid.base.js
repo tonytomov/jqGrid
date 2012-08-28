@@ -3143,14 +3143,16 @@ $.jgrid.extend({
 	setGridWidth : function(nwidth, shrink) {
 		return this.each(function(){
 			if (!this.grid ) {return;}
+			if (isNaN(nwidth)) { return; }
+			nwidth = parseInt(nwidth, 10);
+			// if the width matches the current grid and pager width we shouldn't make any changes to the grid width as this can cause an infinite window.resize loop in IE.
+			if(this.grid.width == nwidth && this.p.width == nwidth){return;}
 			var $t = this, cw,
 			initwidth = 0, brd=$.jgrid.cellWidth() ? 0: $t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0,
 			cl = 0,cr;
 			if(typeof shrink != 'boolean') {
 				shrink=$t.p.shrinkToFit;
 			}
-			if(isNaN(nwidth)) {return;}
-			nwidth = parseInt(nwidth,10); 
 			$t.grid.width = $t.p.width = nwidth;
 			$("#gbox_"+$.jgrid.jqID($t.p.id)).css("width",nwidth+"px");
 			$("#gview_"+$.jgrid.jqID($t.p.id)).css("width",nwidth+"px");
