@@ -46,7 +46,7 @@ $.extend($.jgrid,{
 		return [curleft,curtop];
 	},
 	createModal : function(aIDs, content, p, insertSelector, posSelector, appendsel, css) {
-		p = $.extend(true, $.jgrid.jqModal || {}, p);
+		p = $.extend(true, {}, $.jgrid.jqModal || {}, p);
 		var mw  = document.createElement('div'), rtlsup, self = this;
 		css = $.extend({}, css || {});
 		rtlsup = $(p.gbox).attr("dir") == "rtl" ? true : false;
@@ -188,7 +188,6 @@ $.extend($.jgrid,{
 			dataheight: 'auto',
 			drag: true,
 			resize: false,
-			caption:"<b>"+caption+"</b>",
 			left:250,
 			top:170,
 			zIndex : 1000,
@@ -201,7 +200,7 @@ $.extend($.jgrid,{
 		// {text:'textbutt', id:"buttid", onClick : function(){...}}
 		// if the id is not provided we set it like info_button_+ the index in the array - i.e info_button_0,info_button_1...
 		};
-		$.extend(mopt,modalopt || {});
+		$.extend(true, mopt, $.jgrid.jqModal || {}, {caption:"<b>"+caption+"</b>"}, modalopt || {});
 		var jm = mopt.jqModal, self = this;
 		if($.fn.jqm && !jm) { jm = false; }
 		// in case there is no jqModal
