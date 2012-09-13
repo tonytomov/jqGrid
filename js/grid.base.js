@@ -933,7 +933,7 @@ $.fn.jqGrid = function( pin ) {
 				return;
 			}
 		}
-		$(this).empty().attr("tabindex","1");
+		$(this).empty().attr("tabindex","0");
 		this.p = p ;
 		this.p.useProp = !!$.fn.prop;
 		var i, dir;
