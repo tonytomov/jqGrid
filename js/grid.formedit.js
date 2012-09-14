@@ -1728,7 +1728,7 @@ $.jgrid.extend({
 		}, $.jgrid.nav, o ||{});
 		return this.each(function() {
 			if(this.nav) {return;}
-			var alertIDs = {themodal:'alertmod',modalhead:'alerthd',modalcontent:'alertcnt'},
+			var alertIDs = {themodal: 'alertmod_' + this.p.id, modalhead: 'alerthd_' + this.p.id,modalcontent: 'alertcnt_' + this.p.id},
 			$t = this, twd, tdw;
 			if(!$t.grid || typeof elem != 'string') {return;}
 			if ($("#"+alertIDs.themodal)[0] === undefined) {
@@ -1746,7 +1746,25 @@ $.jgrid.extend({
 					o.alertleft = o.alertleft/2 - parseInt(o.alertwidth,10)/2;
 					o.alerttop = o.alerttop/2-25;
 				}
-				$.jgrid.createModal(alertIDs,"<div>"+o.alerttext+"</div><span tabindex='0'><span tabindex='-1' id='jqg_alrt'></span></span>",{gbox:"#gbox_"+$.jgrid.jqID($t.p.id),jqModal:true,drag:true,resize:true,caption:o.alertcap,top:o.alerttop,left:o.alertleft,width:o.alertwidth,height: o.alertheight,closeOnEscape:o.closeOnEscape, zIndex: o.alertzIndex},"","",true);
+				$.jgrid.createModal(alertIDs,
+					"<div>"+o.alerttext+"</div><span tabindex='0'><span tabindex='-1' id='jqg_alrt'></span></span>",
+					{ 
+						gbox:"#gbox_"+$.jgrid.jqID($t.p.id),
+						jqModal:true,
+						drag:true,
+						resize:true,
+						caption:o.alertcap,
+						top:o.alerttop,
+						left:o.alertleft,
+						width:o.alertwidth,
+						height: o.alertheight,
+						closeOnEscape:o.closeOnEscape, 
+						zIndex: o.alertzIndex
+					},
+					"#gview_"+$.jgrid.jqID($t.p.id),
+					$("#gbox_"+$.jgrid.jqID($t.p.id))[0],
+					true
+				);
 			}
 			var clone = 1;
 			if(o.cloneToTop && $t.p.toppager) {clone = 2;}
