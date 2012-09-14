@@ -2063,6 +2063,12 @@ $.fn.jqGrid = function( pin ) {
 			cl = 0, cr;
 			$.each(ts.p.colModel, function() {
 				if(typeof this.hidden === 'undefined') {this.hidden=false;}
+				if(ts.p.grouping && ts.p.autowidth) {
+					var ind = $.inArray(this.name, ts.p.groupingView.groupField);
+					if(ind !== -1) {
+						this.hidden = !ts.p.groupingView.groupColumnShow[ind];
+					}
+				}
 				this.widthOrg = cw = intNum(this.width,0);
 				if(this.hidden===false){
 					initwidth += cw+brd;
