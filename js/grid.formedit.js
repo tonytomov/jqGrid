@@ -2049,7 +2049,8 @@ $.jgrid.extend({
 	navSeparatorAdd:function (elem,p) {
 		p = $.extend({
 			sepclass : "ui-separator",
-			sepcontent: ''
+			sepcontent: '',
+                           position : "last"
 		}, p ||{});
 		return this.each(function() {
 			if( !this.grid)  {return;}
@@ -2057,7 +2058,15 @@ $.jgrid.extend({
 			var findnav = $(".navtable",elem)[0];
 			if(findnav) {
 				var sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='"+p.sepclass+"'></span>"+p.sepcontent+"</td>";
-				$("tr",findnav).append(sep);
+                                    if (p.position === 'first') {
+			             if (findnav.rows[0].cells.length === 0) {
+			                 $("tr", findnav).append(sep);
+			             } else {
+			                 $("tr td:eq(0)", findnav).before(sep);
+			             }
+			         } else {
+			             $("tr", findnav).append(sep);
+			         }
 			}
 		});
 	},
