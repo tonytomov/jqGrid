@@ -2873,9 +2873,9 @@ $.jgrid.extend({
 							vl = t.formatter( rowid, data[nm], i, data, 'edit');
 							title = this.title ? {"title":$.jgrid.stripHtml(vl)} : {};
 							if(t.p.treeGrid===true && nm == t.p.ExpandColumn) {
-								$("td:eq("+i+") > span:first",ind).html(vl).attr(title);
+								$("td[role='gridcell']:eq("+i+") > span:first",ind).html(vl).attr(title);
 							} else {
-								$("td:eq("+i+")",ind).html(vl).attr(title);
+								$("td[role='gridcell']:eq("+i+")",ind).html(vl).attr(title);
 							}
 						}
 					});
