@@ -1944,11 +1944,11 @@ $.fn.jqGrid = function( pin ) {
 			ts.p._nvtd[1] = 0;
 			pgl=null;
 			$('.ui-pg-selbox',"#"+pgcnt).bind('change',function() {
+				if(!clearVals('records')) { return false; }
 				ts.p.page = Math.round(ts.p.rowNum*(ts.p.page-1)/this.value-0.5)+1;
 				ts.p.rowNum = this.value;
 				if(ts.p.pager) { $('.ui-pg-selbox',ts.p.pager).val(this.value); }
 				if(ts.p.toppager) { $('.ui-pg-selbox',ts.p.toppager).val(this.value); }
-				if(!clearVals('records')) { return false; }
 				populate();
 				return false;
 			});
@@ -1976,12 +1976,12 @@ $.fn.jqGrid = function( pin ) {
 					//else if( cp>1 && cp <last){ }
 					else if( cp===last){ np=false;lp=false; }
 				} else if( last>1 && cp===0 ) { np=false;lp=false; cp=last-1;}
+				if(!clearVals(this.id)) { return false; }
 				if( this.id === 'first'+tp && fp ) { ts.p.page=1; selclick=true;}
 				if( this.id === 'prev'+tp && pp) { ts.p.page=(cp-1); selclick=true;}
 				if( this.id === 'next'+tp && np) { ts.p.page=(cp+1); selclick=true;}
 				if( this.id === 'last'+tp && lp) { ts.p.page=last; selclick=true;}
 				if(selclick) {
-					if(!clearVals(this.id)) { return false; }
 					populate();
 				}
 				return false;
@@ -1991,8 +1991,8 @@ $.fn.jqGrid = function( pin ) {
 			$('input.ui-pg-input',"#"+pgcnt).keypress( function(e) {
 				var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
 				if(key == 13) {
-					ts.p.page = ($(this).val()>0) ? $(this).val():ts.p.page;
 					if(!clearVals('user')) { return false; }
+					ts.p.page = ($(this).val()>0) ? $(this).val():ts.p.page;
 					populate();
 					return false;
 				}
