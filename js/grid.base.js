@@ -1625,7 +1625,7 @@ $.fn.jqGrid = function( pin ) {
 			page = parseInt(ts.p.page,10),
 			totalpages = Math.ceil(total / recordsperpage),
 			retresult = {};
-			queryResults = queryResults.slice( (page-1)*recordsperpage , page*recordsperpage );
+			if(page*recordsperpage != -1) { queryResults = queryResults.slice( (page-1)*recordsperpage , page*recordsperpage ); }
 			query = null;
 			cmtypes = null;
 			retresult[ts.p.localReader.total] = totalpages;
