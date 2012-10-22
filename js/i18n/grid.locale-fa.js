@@ -5,7 +5,8 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
-	$.jgrid = {
+	$.jgrid = $.jgrid || {};
+	$.extend($.jgrid,{
         defaults: {
             recordtext: "نمابش {0} - {1} از {2}",
             emptyrecords: "رکوردی یافت نشد",
@@ -69,7 +70,7 @@
             addtext: " ",
             addtitle: "افزودن رديف جديد",
             deltext: " ",
-            deltitle: "حذف ردبف هاي انتخاب شده",
+            deltitle: "حذف ردبف هاي انتیاب شده",
             searchtext: " ",
             searchtitle: "جستجوي رديف",
             refreshtext: "",
@@ -141,5 +142,5 @@
             },
             idName: "id"
         }
-    }
+    });
 })(jQuery);

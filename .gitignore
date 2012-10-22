@@ -1,5 +1,5 @@
 compiler.jar
+yuicompressor.jar
 dist
-jquery.jqGrid.min.js
-.project
-.settings
+nbproject
+.gradle
