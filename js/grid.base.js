@@ -1019,10 +1019,10 @@ $.fn.jqGrid = function( pin ) {
 			}
 			return v;
 		},
-		addCell = function(rowId,cell,pos,irow, srvr) {
+		addCell = function(rowId,cell,pos,irow, srvr, rdata) {
 			var v,prp;
 			v = formatter(rowId,cell,pos,srvr,'add');
-			prp = formatCol( pos,irow, v, srvr, rowId, true);
+			prp = formatCol( pos,irow, v, srvr, rowId, rdata);
 			return "<td role=\"gridcell\" "+prp+">"+v+"</td>";
 		},
 		addMulti = function(rowid,pos,irow,checked){
@@ -1209,13 +1209,13 @@ $.fn.jqGrid = function( pin ) {
 						if (!cell) { return false; }
 						v = cell.textContent || cell.text;
 						rd[ts.p.colModel[k+gi+si+ni].name] = v;
-						rowData.push( addCell(rid,v,k+gi+si+ni,j+rcnt,xmlr) );
+						rowData.push( addCell(rid,v,k+gi+si+ni,j+rcnt,xmlr, rd) );
 					});
 				} else {
 					for(i = 0; i < f.length;i++) {
 						v = $.jgrid.getXmlData( xmlr, f[i]);
 						rd[ts.p.colModel[i+gi+si+ni].name] = v;
-						rowData.push( addCell(rid, v, i+gi+si+ni, j+rcnt, xmlr) );
+						rowData.push( addCell(rid, v, i+gi+si+ni, j+rcnt, xmlr, rd) );
 					}
 				}
 				rowData[iStartTrTag] = constructTr(rid, hiderow, cn1, rd, xmlr, false);
@@ -1388,8 +1388,8 @@ $.fn.jqGrid = function( pin ) {
 				}
 				for (j=0;j<F.length;j++) {
 					v = $.jgrid.getAccessor(cur,F[j]);
-					rowData.push( addCell(idr,v,j+gi+si+ni,i+rcnt,cur) );
 					rd[ts.p.colModel[j+gi+si+ni].name] = v;
+					rowData.push( addCell(idr,v,j+gi+si+ni,i+rcnt,cur, rd) );
 				}
 				rowData[iStartTrTag] = constructTr(idr, hiderow, cn1, rd, cur, selr);
 				rowData.push( "</tr>" );
