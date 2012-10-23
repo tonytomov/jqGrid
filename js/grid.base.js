@@ -2962,7 +2962,7 @@ $.jgrid.extend({
 						nm = cm.name;
 						lcdata[nm] = data[nm];
 						v = t.formatter( rowid, $.jgrid.getAccessor(data,nm), i, data );
-						prp = t.formatCol(i,1,v, data, rowid, true);
+						prp = t.formatCol(i,1,v, data, rowid, lcdata);
 						row[row.length] = "<td role=\"gridcell\" "+prp+">"+v+"</td>";
 					}
 					row.unshift( t.constructTr(rowid, false, cna, lcdata, data, false ) );
