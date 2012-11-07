@@ -453,7 +453,10 @@ $.fn.jqFilter = function( arg ) {
 				}
 			}
 			var ruleDataInput = $.jgrid.createEl(cm.inputtype,cm.searchoptions, rule.data, true, that.p.ajaxSelectOptions, true);
-
+			if(rule.op == 'nu' || rule.op == 'nn') {
+                		$(ruleDataInput).attr('readonly','true');
+                		$(ruleDataInput).attr('disabled','true');
+            		} //retain the state of disabled text fields in case of null ops
 			// dropdown for: choosing operator
 			var ruleOperatorSelect = $("<select class='selectopts'></select>");
 			ruleOperatorTd.append(ruleOperatorSelect);
