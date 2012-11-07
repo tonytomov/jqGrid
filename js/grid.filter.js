@@ -406,6 +406,7 @@ $.fn.jqFilter = function( arg ) {
 				}
 				// data
 				$(".data",trpar).empty().append( elm );
+				$.jgrid.bindEv( elm, cm.searchoptions, that);
 				$(".input-elm",trpar).bind('change',function( e ) {
 					var tmo = $(this).hasClass("ui-autocomplete-input") ? 200 :0;
 					setTimeout(function(){
@@ -500,7 +501,7 @@ $.fn.jqFilter = function( arg ) {
 			// is created previously
 			//ruleDataInput.setAttribute("type", "text");
 			ruleDataTd.append(ruleDataInput);
-
+			$.jgrid.bindEv( ruleDataInput, cm.searchoptions, that);
 			$(ruleDataInput)
 			.addClass("input-elm")
 			.bind('change', function() {
