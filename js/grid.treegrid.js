@@ -65,7 +65,7 @@ $.jgrid.extend({
 					ldat[isLeaf] = false;
 					lf="";
 				}
-				ldat[expanded] = ((ldat[expanded] == "true" || ldat[expanded] === true) ? true : false) && ldat[loaded];
+				ldat[expanded] = ((ldat[expanded] == "true" || ldat[expanded] === true) ? true : false) && (ldat[loaded] || ldat[loaded] === undefined);
 				if(ldat[expanded] === false) {
 					twrap += ((ldat[isLeaf] === true) ? "'" : $t.p.treeIcons.plus+" tree-plus treeclick'");
 				} else {
