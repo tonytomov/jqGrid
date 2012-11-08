@@ -2837,7 +2837,11 @@ $.jgrid.extend({
 					ia = $.inArray(rowid,$t.p.selarrrow);
 					if(ia != -1) { $t.p.selarrrow.splice(ia,1);}
 				}
-				if(rowid == $t.p.selrow) {$t.p.selrow=null;}
+				if ($t.p.multiselect && $t.p.selarrrow.length > 0) {
+					$t.p.selrow = $t.p.selarrrow[$t.p.selarrrow.length-1];
+				} else {
+					$t.p.selrow = null;
+				}
 			}
 			if($t.p.datatype == 'local') {
 				var id = $.jgrid.stripPref($t.p.idPrefix, rowid),
