@@ -386,7 +386,7 @@ $.jgrid.extend({
 		return this.each(function(){
 			if (!this.grid ) { return; }
 			var $t = this;
-			p.rowID = $.isFunction(p.rowID) ? p.rowID.call($t, p) : ( (p.rowID !== null) ? p.rowID : $.jgrid.randId());
+			p.rowID = $.isFunction(p.rowID) ? p.rowID.call($t, p) : ( (p.rowID != null) ? p.rowID : $.jgrid.randId());
 			if(p.useDefValues === true) {
 				$($t.p.colModel).each(function(){
 					if( this.editoptions && this.editoptions.defaultValue ) {
