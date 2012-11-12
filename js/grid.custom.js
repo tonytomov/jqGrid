@@ -368,7 +368,7 @@ $.jgrid.extend({
 									if(soptions.attr) {$("select",self).attr(soptions.attr);}
 									$("select",self).css({width: "100%"});
 									// preserve autoserch
-									if(soptions.dataInit !== undefined) { soptions.dataInit($("select",self)[0]); }
+									if(soptions.dataInit !== undefined) { soptions.dataInit.call($t, $("select",self)[0]); }
 									if(soptions.dataEvents !== undefined) { bindEvents($("select",self)[0],soptions.dataEvents); }
 									if(p.autosearch===true){
 										$("select",self).change(function(){
@@ -414,7 +414,7 @@ $.jgrid.extend({
 								}
 								if(soptions.defaultValue !== undefined) { $(elem).val(soptions.defaultValue); }
 								if(soptions.attr) {$(elem).attr(soptions.attr);}
-								if(soptions.dataInit !== undefined) { soptions.dataInit(elem); }
+								if(soptions.dataInit !== undefined) { soptions.dataInit.call($t, elem); }
 								if(soptions.dataEvents !== undefined) { bindEvents(elem, soptions.dataEvents); }
 								$(thd).append(elem);
 								if(p.autosearch===true){
@@ -430,7 +430,7 @@ $.jgrid.extend({
 						var df = soptions.defaultValue !== undefined ? soptions.defaultValue: "";
 						$(thd).append("<input type='text' style='width:95%;padding:0px;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"' value='"+df+"'/>");
 						if(soptions.attr) {$("input",thd).attr(soptions.attr);}
-						if(soptions.dataInit !== undefined) { soptions.dataInit($("input",thd)[0]); }
+						if(soptions.dataInit !== undefined) { soptions.dataInit($t, $("input",thd)[0]); }
 						if(soptions.dataEvents !== undefined) { bindEvents($("input",thd)[0], soptions.dataEvents); }
 						if(p.autosearch===true){
 							if(p.searchOnEnter) {
