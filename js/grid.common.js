@@ -21,7 +21,7 @@ $.extend($.jgrid,{
 	hideModal : function (selector,o) {
 		o = $.extend({jqm : true, gb :''}, o || {});
 		if(o.onClose) {
-			var oncret =  o.onClose(selector);
+			var oncret = o.gb && typeof o.gb === "string" && o.gb.substr(0,6) === "#gbox_" ? o.onClose.call($("#" + o.gb.substr(6))[0], selector) : o.onClose(selector);
 			if (typeof oncret == 'boolean'  && !oncret ) { return; }
 		}
 		if ($.fn.jqm && o.jqm === true) {
@@ -151,7 +151,7 @@ $.extend($.jgrid,{
 			$(mw).keydown( function( e ) {
 				if( e.which == 27 ) {
 					var cone = $("#"+$.jgrid.jqID(aIDs.themodal)).data("onClose") || p.onClose;
-					self.hideModal(this,{gb:p.gbox,jqm:p.jqModal,onClose: cone});
+					self.hideModal("#"+$.jgrid.jqID(aIDs.themodal),{gb:p.gbox,jqm:p.jqModal,onClose: cone});
 				}
 			});
 		}
