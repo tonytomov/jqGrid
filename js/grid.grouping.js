@@ -223,17 +223,23 @@ $.jgrid.extend({
 			});
 			var toEnd = 0;
 			function findGroupIdx( ind , offset, grp) {
+				var ret = false;
 				if(offset===0) {
-					return grp[ind];
+					ret = grp[ind];
 				} else {
 					var id = grp[ind].idx;
-					if(id===0) { return grp[ind]; }
-					for(var i=ind;i >= 0; i--) {
-						if(grp[i].idx === id-offset) {
-							return grp[i];
+					if(id===0) { 
+						ret = grp[ind]; 
+					}  else {
+						for(var i=ind;i >= 0; i--) {
+							if(grp[i].idx === id-offset) {
+								ret = grp[i];
+								break;
+							}
 						}
 					}
 				}
+				return ret;
 			}
 			var sumreverse = $.makeArray(grp.groupSummary);
 			sumreverse.reverse();
