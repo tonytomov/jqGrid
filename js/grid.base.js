@@ -691,6 +691,7 @@ $.fn.jqGrid = function( pin ) {
 			onPaging: null,
 			onSelectAll: null,
 			loadComplete: null,
+			windowSizeGrid: null,
 			gridComplete: null,
 			loadError: null,
 			loadBeforeSend: null,
@@ -951,6 +952,40 @@ $.fn.jqGrid = function( pin ) {
 		ts.p.direction = $.trim(ts.p.direction.toLowerCase());
 		if($.inArray(ts.p.direction,["ltr","rtl"]) == -1) { ts.p.direction = "ltr"; }
 		dir = ts.p.direction;
+
+		var maxColumns = this.p.colNames.length;
+		var windowWidth = 0;
+		if (ts.p.windowSizeGrid){
+			maxColumns = 0;
+			windowWidth = window.innerWidth; 
+			var initwidth = 0, brd=$.jgrid.cellWidth()? 0: parseInt(ts.p.cellLayout,10);
+			var vc=0, lvc, scw=parseInt(ts.p.cellLayout,10);
+			var cw = 0 , hs = false ,aw,gw = 0, cl = 0, cr;
+			$.each(ts.p.colModel, function(index) {				
+				if ( initwidth + (parseInt(this.width,10)+brd) >= windowWidth  ) //make sure not exeeding window width
+				{
+					return;
+				}
+				maxColumns++;//calculate maxColums
+				if(typeof this.hidden === 'undefined') {this.hidden=false;}
+				if(ts.p.grouping && ts.p.autowidth) {
+					var ind = $.inArray(this.name, ts.p.groupingView.groupField);
+					if(ind !== -1) {
+						this.hidden = !ts.p.groupingView.groupColumnShow[ind];
+					}
+				}
+				this.widthOrg = cw = parseInt(this.width,10);
+				if(this.hidden===false){
+					initwidth += cw+brd;
+					if(this.fixed) {
+						gw += cw+brd;
+					} else {
+						vc++;
+					}
+					cl++;
+				}
+			});
+		}
 
 		$(gv).insertBefore(this);
 		$(this).appendTo(gv).removeClass("scroll");
@@ -1784,6 +1819,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 					prm[pN.sort] = gs + prm[pN.sort];
 				}
+				prm.maxColumns = maxColumns; 
 				$.extend(ts.p.postData,prm);
 				var rcnt = !ts.p.scroll ? 1 : ts.rows.length-1;
 				var bfr = $(ts).triggerHandler("jqGridBeforeRequest");
@@ -2061,7 +2097,11 @@ $.fn.jqGrid = function( pin ) {
 		setColWidth = function () {
 			var initwidth = 0, brd=$.jgrid.cellWidth()? 0: intNum(ts.p.cellLayout,0), vc=0, lvc, scw=intNum(ts.p.scrollOffset,0),cw,hs=false,aw,gw=0,
 			cl = 0, cr;
-			$.each(ts.p.colModel, function() {
+			$.each(ts.p.colModel, function(index) {
+				if (index >= maxColumns)
+				{
+					return;
+				}
 				if(typeof this.hidden === 'undefined') {this.hidden=false;}
 				if(ts.p.grouping && ts.p.autowidth) {
 					var ind = $.inArray(this.name, ts.p.groupingView.groupField);
@@ -2237,7 +2277,7 @@ $.fn.jqGrid = function( pin ) {
 		tdc = isMSIE ?  "class='ui-th-div-ie'" :"";
 		imgs = "<span class='s-ico' style='display:none'><span sort='asc' class='ui-grid-ico-sort ui-icon-asc"+iac+" ui-state-disabled ui-icon ui-icon-triangle-1-n ui-sort-"+dir+"'></span>";
 		imgs += "<span sort='desc' class='ui-grid-ico-sort ui-icon-desc"+idc+" ui-state-disabled ui-icon ui-icon-triangle-1-s ui-sort-"+dir+"'></span></span>";
-		for(i=0;i<this.p.colNames.length;i++){
+		for(i=0;i<maxColumns;i++){
 			var tooltip = ts.p.headertitles ? (" title=\""+$.jgrid.stripHtml(ts.p.colNames[i])+"\"") :"";
 			thead += "<th id='"+ts.p.id+"_"+ts.p.colModel[i].name+"' role='columnheader' class='ui-state-default ui-th-column ui-th-"+dir+"'"+ tooltip+">";
 			idn = ts.p.colModel[i].index || ts.p.colModel[i].name;
