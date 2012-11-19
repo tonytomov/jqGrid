@@ -3,22 +3,24 @@
 "use strict";
 $.extend($.jgrid,{
 	template : function(format){ //jqgformat
-		var args = $.makeArray(arguments).slice(1), j = 1;
+		var args = $.makeArray(arguments).slice(1), j, al = args.length;
 		if(format===undefined) { format = ""; }
 		return format.replace(/\{([\w\-]+)(?:\:([\w\.]*)(?:\((.*?)?\))?)?\}/g, function(m,i){
 			if(!isNaN(parseInt(i,10))) {
-				j++;
 				return args[parseInt(i,10)];
 			} else {
-				var nmarr = args[ j ],
-				k = nmarr.length;
-				while(k--) {
-					if(i===nmarr[k].nm) {
-						return nmarr[k].v;
-						break;
+				for(j=0; j < al;j++) {
+					if($.isArray(args[j])) {
+						var nmarr = args[ j ],
+						k = nmarr.length;
+						while(k--) {
+							if(i===nmarr[k].nm) {
+								return nmarr[k].v;
+								break;
+							}
+						}
 					}
 				}
-				j++;
 			}
 		});
 	}
