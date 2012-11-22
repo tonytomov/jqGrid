@@ -12,7 +12,7 @@
 var rp_ge = {};
 $.jgrid.extend({
 	searchGrid : function (p) {
-		p = $.extend({
+		p = $.extend(true, {
 			recreateFilter: false,
 			drag: true,
 			sField:'searchField',
@@ -300,7 +300,7 @@ $.jgrid.extend({
 		});
 	},
 	editGridRow : function(rowid, p){
-		p = $.extend({
+		p = $.extend(true, {
 			top : 0,
 			left: 0,
 			width: 300,
@@ -1202,7 +1202,7 @@ $.jgrid.extend({
 		});
 	},
 	viewGridRow : function(rowid, p){
-		p = $.extend({
+		p = $.extend(true, {
 			top : 0,
 			left: 0,
 			width: 0,
@@ -1491,7 +1491,7 @@ $.jgrid.extend({
 		});
 	},
 	delGridRow : function(rowids,p) {
-		p = $.extend({
+		p = $.extend(true, {
 			top : 0,
 			left: 0,
 			width: 240,
