@@ -893,9 +893,23 @@ $.jgrid.extend({
 					}
 				}
 			}
-			function updateNav(cr,totr){
-				if (cr===0) {$("#pData",frmtb+"_2").addClass('ui-state-disabled');} else {$("#pData",frmtb+"_2").removeClass('ui-state-disabled');}
-				if (cr==totr) {$("#nData",frmtb+"_2").addClass('ui-state-disabled');} else {$("#nData",frmtb+"_2").removeClass('ui-state-disabled');}
+			function updateNav(cr, posarr){
+				var totr = posarr[1].length-1;
+				if (cr===0) {
+					$("#pData",frmtb+"_2").addClass('ui-state-disabled');
+				} else if( posarr[1][cr-1] !== undefined && $("#"+$.jgrid.jqID(posarr[1][cr-1])).hasClass('ui-state-disabled')) {
+						$("#pData",frmtb+"_2").addClass('ui-state-disabled');
+				} else {
+					$("#pData",frmtb+"_2").removeClass('ui-state-disabled');
+				}
+				
+				if (cr==totr) {
+					$("#nData",frmtb+"_2").addClass('ui-state-disabled');
+				} else if( posarr[1][cr+1] !== undefined && $("#"+$.jgrid.jqID(posarr[1][cr+1])).hasClass('ui-state-disabled')) {
+					$("#nData",frmtb+"_2").addClass('ui-state-disabled');
+				} else {
+					$("#nData",frmtb+"_2").removeClass('ui-state-disabled');
+				}
 			}
 			function getCurrPos() {
 				var rowsInGrid = $($t).jqGrid("getDataIDs"),
@@ -1169,7 +1183,7 @@ $.jgrid.extend({
 						if($.isFunction(p.afterclickPgButtons)) {
 							p.afterclickPgButtons.call($t, 'next',$("#"+frmgr),npos[1][npos[0]+1]);
 						}
-						updateNav(npos[0]+1,npos[1].length-1);
+						updateNav(npos[0]+1,npos);
 					}
 					return false;
 				});
@@ -1191,13 +1205,13 @@ $.jgrid.extend({
 						if($.isFunction(p.afterclickPgButtons)) {
 							p.afterclickPgButtons.call($t, 'prev',$("#"+frmgr),ppos[1][ppos[0]-1]);
 						}
-						updateNav(ppos[0]-1,ppos[1].length-1);
+						updateNav(ppos[0]-1,ppos);
 					}
 					return false;
 				});
 			}
 			var posInit =getCurrPos();
-			updateNav(posInit[0],posInit[1].length-1);
+			updateNav(posInit[0],posInit);
 
 		});
 	},
@@ -1343,9 +1357,22 @@ $.jgrid.extend({
 				});
 				if(cnt>0) {$("#id_g","#"+frmtb).val(rowid);}
 			}
-			function updateNav(cr,totr){
-				if (cr===0) {$("#pData","#"+frmtb+"_2").addClass('ui-state-disabled');} else {$("#pData","#"+frmtb+"_2").removeClass('ui-state-disabled');}
-				if (cr==totr) {$("#nData","#"+frmtb+"_2").addClass('ui-state-disabled');} else {$("#nData","#"+frmtb+"_2").removeClass('ui-state-disabled');}
+			function updateNav(cr,posarr){
+				var totr = posarr[1].length-1;
+				if (cr===0) {
+					$("#pData","#"+frmtb+"_2").addClass('ui-state-disabled');
+				} else if( posarr[1][cr-1] !== undefined && $("#"+$.jgrid.jqID(posarr[1][cr-1])).hasClass('ui-state-disabled')) {
+					$("#pData",frmtb+"_2").addClass('ui-state-disabled');
+				} else {
+					$("#pData","#"+frmtb+"_2").removeClass('ui-state-disabled');
+				}
+				if (cr==totr) {
+					$("#nData","#"+frmtb+"_2").addClass('ui-state-disabled');
+				} else if( posarr[1][cr+1] !== undefined && $("#"+$.jgrid.jqID(posarr[1][cr+1])).hasClass('ui-state-disabled')) {
+					$("#nData",frmtb+"_2").addClass('ui-state-disabled');
+				} else {
+					$("#nData","#"+frmtb+"_2").removeClass('ui-state-disabled');
+				}
 			}
 			function getCurrPos() {
 				var rowsInGrid = $($t).jqGrid("getDataIDs"),
@@ -1463,7 +1490,7 @@ $.jgrid.extend({
 						if($.isFunction(p.afterclickPgButtons)) {
 							p.afterclickPgButtons.call($t,'next',$("#"+frmgr),npos[1][npos[0]+1]);
 						}
-						updateNav(npos[0]+1,npos[1].length-1);
+						updateNav(npos[0]+1,npos);
 					}
 					focusaref();
 					return false;
@@ -1480,14 +1507,14 @@ $.jgrid.extend({
 						if($.isFunction(p.afterclickPgButtons)) {
 							p.afterclickPgButtons.call($t,'prev',$("#"+frmgr),ppos[1][ppos[0]-1]);
 						}
-						updateNav(ppos[0]-1,ppos[1].length-1);
+						updateNav(ppos[0]-1,ppos);
 					}
 					focusaref();
 					return false;
 				});
 			}
 			var posInit =getCurrPos();
-			updateNav(posInit[0],posInit[1].length-1);
+			updateNav(posInit[0],posInit);
 		});
 	},
 	delGridRow : function(rowids,p) {
