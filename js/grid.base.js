@@ -412,7 +412,7 @@ $.extend($.jgrid,{
 			last=null, val;
 			$.each(self._getOrder(data,by,dir,type, dfmt),function(i,v){
 				val = $.jgrid.getAccessor(v, by);
-				if(val === undefined) { val = ""; }
+				if(val === undefined || val === null) { val = ""; }
 				if(!self._equals(last,val)){
 					last=val;
 					if(group !== null){
