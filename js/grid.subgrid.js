@@ -23,7 +23,7 @@ setSubGrid : function () {
 		};
 		$t.p.subGridOptions = $.extend(suboptions, $t.p.subGridOptions || {});
 		$t.p.colNames.unshift("");
-		$t.p.colModel.unshift({name:'subgrid',width: $.browser.safari ?  $t.p.subGridWidth+$t.p.cellLayout : $t.p.subGridWidth,sortable: false,resizable:false,hidedlg:true,search:false,fixed:true});
+		$t.p.colModel.unshift({name:'subgrid',width: ($.browser.safari || $.browser.webkit) ?  $t.p.subGridWidth+$t.p.cellLayout : $t.p.subGridWidth,sortable: false,resizable:false,hidedlg:true,search:false,fixed:true});
 		cm = $t.p.subGridModel;
 		if(cm[0]) {
 			cm[0].align = $.extend([],cm[0].align || []);
@@ -87,7 +87,7 @@ addSubGrid : function( pos, sind ) {
 			return false;
 		};
 		var subGridJson = function(sjxml, sbid){
-			var tddiv,result , i,cur, sgmap,j,
+			var tddiv,result,i,cur, sgmap,j,
 			dummy = $("<table cellspacing='0' cellpadding='0' border='0'><tbody></tbody></table>"),
 			trdiv = $("<tr></tr>");
 			for (i = 0; i<ts.p.subGridModel[0].name.length; i++) {
@@ -99,7 +99,7 @@ addSubGrid : function( pos, sind ) {
 			$(dummy).append(trdiv);
 			if (sjxml){
 				sgmap = ts.p.jsonReader.subgrid;
-				result = sjxml[sgmap.root];
+				result = $.jgrid.getAccessor(sjxml, sgmap.root);
 				if ( typeof result !== 'undefined' ) {
 					for (i=0;i<result.length;i++) {
 						cur = result[i];

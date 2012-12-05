@@ -271,7 +271,7 @@
 		if(op.disabled===true) {ds = "disabled=\"disabled\"";} else {ds="";}
 		if($.fmatter.isEmpty(cval) || $.fmatter.isUndefined(cval) ) {cval = $.fn.fmatter.defaultFormat(cval,op);}
 		cval=cval+"";cval=cval.toLowerCase();
-		var bchk = cval.search(/(false|0|no|off)/i)<0 ? " checked='checked' " : "";
+		var bchk = cval.search(/(false|0|no|n|off)/i)<0 ? " checked='checked' " : "";
 		return "<input type=\"checkbox\" " + bchk  + " value=\""+ cval+"\" offval=\"no\" "+ds+ "/>";
 	};
 	$.fn.fmatter.link = function(cellval, opts) {
@@ -393,51 +393,53 @@
 		cellval = ret.join(", ");
 		return  cellval === "" ? $.fn.fmatter.defaultFormat(cellval,opts) : cellval;
 	};
-	$.fn.fmatter.rowactions = function(rid,gid,act,pos) {
-		var op ={
-			keys:false,
-			onEdit : null, 
-			onSuccess: null, 
-			afterSave:null,
-			onError: null,
-			afterRestore: null,
-			extraparam: {},
-			url: null,
-			restoreAfterError: true,
-			mtype: "POST",
-			delOptions: {},
-			editOptions : {}
-		};
-		rid = $.jgrid.jqID( rid );
-		gid = $.jgrid.jqID( gid );
-		var cm = $('#'+gid)[0].p.colModel[pos];
-		if(!$.fmatter.isUndefined(cm.formatoptions)) {
+	$.fn.fmatter.rowactions = function(act) {
+		var $tr = $(this).closest("tr.jqgrow"),
+			$actionsDiv = $(this).parent(),
+			rid = $tr.attr("id"),
+			$grid = $(this).closest("table.ui-jqgrid-btable"),
+			$t = $grid[0],
+			p = $t.p,
+			cm = p.colModel[$.jgrid.getCellIndex(this)],
+			op = {
+				keys: false,
+				onEdit: null, 
+				onSuccess: null, 
+				afterSave: null,
+				onError: null,
+				afterRestore: null,
+				extraparam: {},
+				url: null,
+				restoreAfterError: true,
+				mtype: "POST",
+				delOptions: {},
+				editOptions: {}
+			},
+			saverow = function(rowid, res) {
+				if($.isFunction(op.afterSave)) { op.afterSave.call($t, rowid, res); }
+				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").show();
+				$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").hide();
+			},
+			restorerow = function(rowid) {
+				if($.isFunction(op.afterRestore)) { op.afterRestore.call($t, rowid); }
+				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").show();
+				$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").hide();
+			};
+
+		if (!$.fmatter.isUndefined(cm.formatoptions)) {
 			op = $.extend(op,cm.formatoptions);
 		}
-		if( !$.fmatter.isUndefined($('#'+gid)[0].p.editOptions) ) {
-			op.editOptions = $('#'+gid)[0].p.editOptions;
+		if (!$.fmatter.isUndefined(p.editOptions)) {
+			op.editOptions = p.editOptions;
 		}
-		if( !$.fmatter.isUndefined($('#'+gid)[0].p.delOptions) ) {
-			op.delOptions = $('#'+gid)[0].p.delOptions;
+		if (!$.fmatter.isUndefined(p.delOptions)) {
+			op.delOptions = p.delOptions;
 		}
-		var $t = $("#"+gid)[0];
-		var saverow = function( rowid, res)	{
-			if($.isFunction(op.afterSave)) { op.afterSave.call($t, rowid, res); }
-			$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid + ".ui-jqgrid-btable:first").show();
-			$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid+ ".ui-jqgrid-btable:first").hide();
-		},
-		restorerow = function( rowid)	{
-			if($.isFunction(op.afterRestore) ) { op.afterRestore.call($t, rowid); }
-			$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid+ ".ui-jqgrid-btable:first").show();
-			$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid+ ".ui-jqgrid-btable:first").hide();
-		};
-		if( $("#"+rid,"#"+gid).hasClass("jqgrid-new-row") ){
-			var opers = $t.p.prmNames,
-			oper = opers.oper;
-			op.extraparam[oper] = opers.addoper;
+		if ($tr.hasClass("jqgrid-new-row")){
+			op.extraparam[p.prmNames.oper] = p.prmNames.addoper;
 		}
 		var actop = {
-			keys : op.keys,
+			keys: op.keys,
 			oneditfunc: op.onEdit,
 			successfunc: op.onSuccess,
 			url: op.url,
@@ -451,55 +453,55 @@
 		switch(act)
 		{
 			case 'edit':
-				$('#'+gid).jqGrid('editRow', rid, actop);
-				$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid+ ".ui-jqgrid-btable:first").hide();
-				$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid+ ".ui-jqgrid-btable:first").show();
-				$($t).triggerHandler("jqGridAfterGridComplete");
+				$grid.jqGrid('editRow', rid, actop);
+				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").hide();
+				$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").show();
+				$grid.triggerHandler("jqGridAfterGridComplete");
 				break;
 			case 'save':
-				if ( $('#'+gid).jqGrid('saveRow', rid, actop) ) {
-				$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid+ ".ui-jqgrid-btable:first").show();
-				$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid+ ".ui-jqgrid-btable:first").hide();
-				$($t).triggerHandler("jqGridAfterGridComplete");
+				if ($grid.jqGrid('saveRow', rid, actop)) {
+					$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").show();
+					$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").hide();
+					$grid.triggerHandler("jqGridAfterGridComplete");
 				}
 				break;
 			case 'cancel' :
-				$('#'+gid).jqGrid('restoreRow',rid, restorerow);
-				$("tr#"+rid+" div.ui-inline-edit, "+"tr#"+rid+" div.ui-inline-del","#"+gid+ ".ui-jqgrid-btable:first").show();
-				$("tr#"+rid+" div.ui-inline-save, "+"tr#"+rid+" div.ui-inline-cancel","#"+gid+ ".ui-jqgrid-btable:first").hide();
-				$($t).triggerHandler("jqGridAfterGridComplete");
+				$grid.jqGrid('restoreRow', rid, restorerow);
+				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").show();
+				$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").hide();
+				$grid.triggerHandler("jqGridAfterGridComplete");
 				break;
 			case 'del':
-				$('#'+gid).jqGrid('delGridRow',rid, op.delOptions);
+				$grid.jqGrid('delGridRow', rid, op.delOptions);
 				break;
 			case 'formedit':
-				$('#'+gid).jqGrid('setSelection',rid);
-				$('#'+gid).jqGrid('editGridRow',rid, op.editOptions);
+				$grid.jqGrid('setSelection', rid);
+				$grid.jqGrid('editGridRow', rid, op.editOptions);
 				break;
 		}
 	};
 	$.fn.fmatter.actions = function(cellval,opts) {
-		var op ={keys:false, editbutton:true, delbutton:true, editformbutton: false};
+		var op={keys:false, editbutton:true, delbutton:true, editformbutton: false},
+			rowid=opts.rowId, str="",ocl;
 		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend(op,opts.colModel.formatoptions);
 		}
-		var rowid = opts.rowId, str="",ocl;
 		if(typeof(rowid) =='undefined' || $.fmatter.isEmpty(rowid)) {return "";}
 		if(op.editformbutton){
-			ocl = "onclick=jQuery.fn.fmatter.rowactions('"+rowid+"','"+opts.gid+"','formedit',"+opts.pos+"); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-			str =str+ "<div title='"+$.jgrid.nav.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='ui-icon ui-icon-pencil'></span></div>";
+			ocl = "onclick=jQuery.fn.fmatter.rowactions.call(this,'formedit'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
+			str += "<div title='"+$.jgrid.nav.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='ui-icon ui-icon-pencil'></span></div>";
 		} else if(op.editbutton){
-			ocl = "onclick=jQuery.fn.fmatter.rowactions('"+rowid+"','"+opts.gid+"','edit',"+opts.pos+"); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover') ";
-			str =str+ "<div title='"+$.jgrid.nav.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='ui-icon ui-icon-pencil'></span></div>";
+			ocl = "onclick=jQuery.fn.fmatter.rowactions.call(this,'edit'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover') ";
+			str += "<div title='"+$.jgrid.nav.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='ui-icon ui-icon-pencil'></span></div>";
 		}
 		if(op.delbutton) {
-			ocl = "onclick=jQuery.fn.fmatter.rowactions('"+rowid+"','"+opts.gid+"','del',"+opts.pos+"); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-			str = str+"<div title='"+$.jgrid.nav.deltitle+"' style='float:left;margin-left:5px;' class='ui-pg-div ui-inline-del' "+ocl+"><span class='ui-icon ui-icon-trash'></span></div>";
+			ocl = "onclick=jQuery.fn.fmatter.rowactions.call(this,'del'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
+			str += "<div title='"+$.jgrid.nav.deltitle+"' style='float:left;margin-left:5px;' class='ui-pg-div ui-inline-del' "+ocl+"><span class='ui-icon ui-icon-trash'></span></div>";
 		}
-		ocl = "onclick=jQuery.fn.fmatter.rowactions('"+rowid+"','"+opts.gid+"','save',"+opts.pos+"); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-		str = str+"<div title='"+$.jgrid.edit.bSubmit+"' style='float:left;display:none' class='ui-pg-div ui-inline-save' "+ocl+"><span class='ui-icon ui-icon-disk'></span></div>";
-		ocl = "onclick=jQuery.fn.fmatter.rowactions('"+rowid+"','"+opts.gid+"','cancel',"+opts.pos+"); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-		str = str+"<div title='"+$.jgrid.edit.bCancel+"' style='float:left;display:none;margin-left:5px;' class='ui-pg-div ui-inline-cancel' "+ocl+"><span class='ui-icon ui-icon-cancel'></span></div>";
+		ocl = "onclick=jQuery.fn.fmatter.rowactions.call(this,'save'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
+		str += "<div title='"+$.jgrid.edit.bSubmit+"' style='float:left;display:none' class='ui-pg-div ui-inline-save' "+ocl+"><span class='ui-icon ui-icon-disk'></span></div>";
+		ocl = "onclick=jQuery.fn.fmatter.rowactions.call(this,'cancel'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
+		str += "<div title='"+$.jgrid.edit.bCancel+"' style='float:left;display:none;margin-left:5px;' class='ui-pg-div ui-inline-cancel' "+ocl+"><span class='ui-icon ui-icon-cancel'></span></div>";
 		return "<div style='margin-left:8px;'>" + str + "</div>";
 	};
 	$.unformat = function (cellval,options,pos,cnt) {
