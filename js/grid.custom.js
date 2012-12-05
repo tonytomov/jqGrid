@@ -60,6 +60,44 @@ $.jgrid.extend({
 			}
 		});
 	},
+	clearBeforeUnload : function () {
+		return this.each(function(){
+			var grid = this.grid;
+			grid.emptyRows.call(this, true, true); // this work quick enough and reduce the size of memory leaks if we have someone
+
+			//$(document).unbind("mouseup"); // TODO add namespace
+			$(grid.hDiv).unbind("mousemove"); // TODO add namespace
+			$(this).unbind();
+
+			grid.dragEnd = null;
+			grid.dragMove = null;
+			grid.dragStart = null;
+			grid.emptyRows = null;
+			grid.populate = null;
+			grid.populateVisible = null;
+			grid.scrollGrid = null;
+			grid.selectionPreserver = null;
+
+			grid.bDiv = null;
+			grid.cDiv = null;
+			grid.hDiv = null;
+			grid.cols = null;
+			var i, l = grid.headers.length;
+			for (i = 0; i < l; i++) {
+				grid.headers[i].el = null;
+			}
+
+			this.formatCol = null;
+			this.sortData = null;
+			this.updatepager = null;
+			this.refreshIndex = null;
+			this.setHeadCheckBox = null;
+			this.constructTr = null;
+			this.formatter = null;
+			this.addXmlData = null;
+			this.addJSONData = null;
+		});
+	},
 	GridDestroy : function () {
 		return this.each(function(){
 			if ( this.grid ) { 
@@ -67,6 +105,7 @@ $.jgrid.extend({
 					$(this.p.pager).remove();
 				}
 				try {
+					$(this).jqGrid('clearBeforeUnload');
 					$("#gbox_"+$.jgrid.jqID(this.id)).remove();
 				} catch (_) {}
 			}
@@ -90,6 +129,7 @@ $.jgrid.extend({
 			} else {
 				$(newtable).insertBefore("#gbox_"+gid).show();
 			}
+			$(this).jqGrid('clearBeforeUnload');
 			$("#gbox_"+gid).remove();
 		});
 	},
@@ -328,7 +368,7 @@ $.jgrid.extend({
 									if(soptions.attr) {$("select",self).attr(soptions.attr);}
 									$("select",self).css({width: "100%"});
 									// preserve autoserch
-									if(soptions.dataInit !== undefined) { soptions.dataInit($("select",self)[0]); }
+									if(soptions.dataInit !== undefined) { soptions.dataInit.call($t, $("select",self)[0]); }
 									if(soptions.dataEvents !== undefined) { bindEvents($("select",self)[0],soptions.dataEvents); }
 									if(p.autosearch===true){
 										$("select",self).change(function(){
@@ -374,7 +414,7 @@ $.jgrid.extend({
 								}
 								if(soptions.defaultValue !== undefined) { $(elem).val(soptions.defaultValue); }
 								if(soptions.attr) {$(elem).attr(soptions.attr);}
-								if(soptions.dataInit !== undefined) { soptions.dataInit(elem); }
+								if(soptions.dataInit !== undefined) { soptions.dataInit.call($t, elem); }
 								if(soptions.dataEvents !== undefined) { bindEvents(elem, soptions.dataEvents); }
 								$(thd).append(elem);
 								if(p.autosearch===true){
@@ -390,7 +430,7 @@ $.jgrid.extend({
 						var df = soptions.defaultValue !== undefined ? soptions.defaultValue: "";
 						$(thd).append("<input type='text' style='width:95%;padding:0px;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"' value='"+df+"'/>");
 						if(soptions.attr) {$("input",thd).attr(soptions.attr);}
-						if(soptions.dataInit !== undefined) { soptions.dataInit($("input",thd)[0]); }
+						if(soptions.dataInit !== undefined) { soptions.dataInit($t, $("input",thd)[0]); }
 						if(soptions.dataEvents !== undefined) { bindEvents($("input",thd)[0], soptions.dataEvents); }
 						if(p.autosearch===true){
 							if(p.searchOnEnter) {
@@ -501,7 +541,7 @@ $.jgrid.extend({
 			$thead = $htable.children("thead"),
 			$theadInTable,
 			$firstHeaderRow = $htable.find(".jqg-first-row-header");
-			if($firstHeaderRow.html() === null) {
+			if($firstHeaderRow[0] === undefined) {
 				$firstHeaderRow = $('<tr>', {role: "row", "aria-hidden": "true"}).addClass("jqg-first-row-header").css("height", "auto");
 			} else {
 				$firstHeaderRow.empty();
