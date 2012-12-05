@@ -70,7 +70,7 @@
             addtext: " ",
             addtitle: "افزودن رديف جديد",
             deltext: " ",
-            deltitle: "حذف ردبف هاي انتخاب شده",
+            deltitle: "حذف ردبف هاي انتیاب شده",
             searchtext: " ",
             searchtitle: "جستجوي رديف",
             refreshtext: "",

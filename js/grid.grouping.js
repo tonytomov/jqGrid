@@ -3,22 +3,24 @@
 "use strict";
 $.extend($.jgrid,{
 	template : function(format){ //jqgformat
-		var args = $.makeArray(arguments).slice(1), j = 1;
+		var args = $.makeArray(arguments).slice(1), j, al = args.length;
 		if(format===undefined) { format = ""; }
 		return format.replace(/\{([\w\-]+)(?:\:([\w\.]*)(?:\((.*?)?\))?)?\}/g, function(m,i){
 			if(!isNaN(parseInt(i,10))) {
-				j++;
 				return args[parseInt(i,10)];
 			} else {
-				var nmarr = args[ j ],
-				k = nmarr.length;
-				while(k--) {
-					if(i===nmarr[k].nm) {
-						return nmarr[k].v;
-						break;
+				for(j=0; j < al;j++) {
+					if($.isArray(args[j])) {
+						var nmarr = args[ j ],
+						k = nmarr.length;
+						while(k--) {
+							if(i===nmarr[k].nm) {
+								return nmarr[k].v;
+								break;
+							}
+						}
 					}
 				}
-				j++;
 			}
 		});
 	}
@@ -223,17 +225,23 @@ $.jgrid.extend({
 			});
 			var toEnd = 0;
 			function findGroupIdx( ind , offset, grp) {
+				var ret = false;
 				if(offset===0) {
-					return grp[ind];
+					ret = grp[ind];
 				} else {
 					var id = grp[ind].idx;
-					if(id===0) { return grp[ind]; }
-					for(var i=ind;i >= 0; i--) {
-						if(grp[i].idx === id-offset) {
-							return grp[i];
+					if(id===0) { 
+						ret = grp[ind]; 
+					}  else {
+						for(var i=ind;i >= 0; i--) {
+							if(grp[i].idx === id-offset) {
+								ret = grp[i];
+								break;
+							}
 						}
 					}
 				}
+				return ret;
 			}
 			var sumreverse = $.makeArray(grp.groupSummary);
 			sumreverse.reverse();
