@@ -21,7 +21,7 @@ $.extend($.jgrid,{
 	hideModal : function (selector,o) {
 		o = $.extend({jqm : true, gb :''}, o || {});
 		if(o.onClose) {
-			var oncret =  o.onClose(selector);
+			var oncret = o.gb && typeof o.gb === "string" && o.gb.substr(0,6) === "#gbox_" ? o.onClose.call($("#" + o.gb.substr(6))[0], selector) : o.onClose(selector);
 			if (typeof oncret == 'boolean'  && !oncret ) { return; }
 		}
 		if ($.fn.jqm && o.jqm === true) {
@@ -46,7 +46,7 @@ $.extend($.jgrid,{
 		return [curleft,curtop];
 	},
 	createModal : function(aIDs, content, p, insertSelector, posSelector, appendsel, css) {
-		p = $.extend(true, $.jgrid.jqModal || {}, p);
+		p = $.extend(true, {}, $.jgrid.jqModal || {}, p);
 		var mw  = document.createElement('div'), rtlsup, self = this;
 		css = $.extend({}, css || {});
 		rtlsup = $(p.gbox).attr("dir") == "rtl" ? true : false;
@@ -151,7 +151,7 @@ $.extend($.jgrid,{
 			$(mw).keydown( function( e ) {
 				if( e.which == 27 ) {
 					var cone = $("#"+$.jgrid.jqID(aIDs.themodal)).data("onClose") || p.onClose;
-					self.hideModal(this,{gb:p.gbox,jqm:p.jqModal,onClose: cone});
+					self.hideModal("#"+$.jgrid.jqID(aIDs.themodal),{gb:p.gbox,jqm:p.jqModal,onClose: cone});
 				}
 			});
 		}
@@ -188,7 +188,6 @@ $.extend($.jgrid,{
 			dataheight: 'auto',
 			drag: true,
 			resize: false,
-			caption:"<b>"+caption+"</b>",
 			left:250,
 			top:170,
 			zIndex : 1000,
@@ -201,7 +200,7 @@ $.extend($.jgrid,{
 		// {text:'textbutt', id:"buttid", onClick : function(){...}}
 		// if the id is not provided we set it like info_button_+ the index in the array - i.e info_button_0,info_button_1...
 		};
-		$.extend(mopt,modalopt || {});
+		$.extend(true, mopt, $.jgrid.jqModal || {}, {caption:"<b>"+caption+"</b>"}, modalopt || {});
 		var jm = mopt.jqModal, self = this;
 		if($.fn.jqm && !jm) { jm = false; }
 		// in case there is no jqModal
@@ -261,24 +260,23 @@ $.extend($.jgrid,{
 		if($.isFunction(mopt.afterOpen) ) { mopt.afterOpen(); }
 		try{ $("#info_dialog").focus();} catch (m){}
 	},
+	bindEv: function  (el, opt, $t) {
+		if($.isFunction(opt.dataInit)) {
+			opt.dataInit.call($t,el);
+		}
+		if(opt.dataEvents) {
+			$.each(opt.dataEvents, function() {
+				if (this.data !== undefined) {
+					$(el).bind(this.type, this.data, this.fn);
+				} else {
+					$(el).bind(this.type, this.fn);
+				}
+			});
+		}
+	},
 // Form Functions
 	createEl : function(eltype,options,vl,autowidth, ajaxso) {
 		var elem = "", $t = this;
-		function bindEv (el, opt) {
-			if($.isFunction(opt.dataInit)) {
-				opt.dataInit.call($t,el);
-			}
-			if(opt.dataEvents) {
-				$.each(opt.dataEvents, function() {
-					if (this.data !== undefined) {
-						$(el).bind(this.type, this.data, this.fn);
-					} else {
-						$(el).bind(this.type, this.fn);
-					}
-				});
-			}
-			return opt;
-		}
 		function setAttributes(elm, atr, exl ) {
 			var exclude = ['dataInit','dataEvents','dataUrl', 'buildSelect','sopt', 'searchhidden', 'defaultValue', 'attr'];
 			if(typeof(exl) != "undefined" && $.isArray(exl)) {
@@ -304,7 +302,6 @@ $.extend($.jgrid,{
 				if(vl=='&nbsp;' || vl=='&#160;' || (vl.length==1 && vl.charCodeAt(0)==160)) {vl="";}
 				elem.value = vl;
 				setAttributes(elem, options);
-				options = bindEv(elem,options);
 				$(elem).attr({"role":"textbox","multiline":"true"});
 			break;
 			case "checkbox" : //what code for simple checkbox
@@ -330,7 +327,6 @@ $.extend($.jgrid,{
 					$(elem).attr("offval",cbval[1]);
 				}
 				setAttributes(elem, options, ['value']);
-				options = bindEv(elem,options);
 				$(elem).attr("role","checkbox");
 			break;
 			case "select" :
@@ -361,7 +357,6 @@ $.extend($.jgrid,{
 							if(a) {
 								$(elem).append(a);
 								setAttributes(elem, options);
-								options = bindEv(elem,options);
 								if(typeof options.size === 'undefined') { options.size =  msl ? 3 : 1;}
 								if(msl) {
 									ovm = vl.split(",");
@@ -425,7 +420,6 @@ $.extend($.jgrid,{
 						}
 					}
 					setAttributes(elem, options, ['value']);
-					options = bindEv(elem,options);
 				}
 			break;
 			case "text" :
@@ -438,7 +432,6 @@ $.extend($.jgrid,{
 				elem.type = eltype;
 				elem.value = vl;
 				setAttributes(elem, options);
-				options = bindEv(elem,options);
 				if(eltype != "button"){
 					if(autowidth) {
 						if(!options.size) { $(elem).css({width:"98%"}); }
@@ -451,7 +444,6 @@ $.extend($.jgrid,{
 				elem = document.createElement("input");
 				elem.type = eltype;
 				setAttributes(elem, options);
-				options = bindEv(elem,options);
 				break;
 			case "custom" :
 				elem = document.createElement("span");
