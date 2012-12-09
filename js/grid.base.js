@@ -1091,6 +1091,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			for(i =0;i < datalen; i++) {
 				val = $.jgrid.getAccessor(ts.p.data[i],idname);
+				if (val === undefined) { val=String(i+1); }
 				ts.p._index[val] = i;
 			}
 		},
