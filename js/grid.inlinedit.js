@@ -228,13 +228,45 @@ $.jgrid.extend({
 				}
 				return success;
 			}
-			var idname, opers, oper;
-			opers = $t.p.prmNames;
-			oper = opers.oper;
-			idname = opers.id;
+			var idname, opers = $t.p.prmNames, oldRowId = rowid;
+			if ($t.p.keyIndex === false) {
+				idname = opers.id;
+			} else {
+				idname = $t.p.colModel[$t.p.keyIndex +
+					($t.p.rownumbers === true ? 1 : 0) +
+					($t.p.multiselect === true ? 1 : 0) +
+					($t.p.subGrid === true ? 1 : 0)].name;
+			}
 			if(tmp) {
-				tmp[oper] = opers.editoper;
-				tmp[idname] = rowid;
+				tmp[opers.oper] = opers.editoper;
+				if (tmp[idname] === undefined) {
+					tmp[idname] = rowid;
+				} else if (ind.id !== $t.p.idPrefix + tmp[idname]) {
+					// rename rowid
+					var oldid = $.jgrid.stripPref($t.p.idPrefix, rowid);
+					if ($t.p._index[oldid] !== undefined) {
+						$t.p._index[tmp[idname]] = $t.p._index[oldid];
+						delete $t.p._index[oldid];
+					}
+					rowid = $t.p.idPrefix + tmp[idname];
+					$(ind).attr("id", rowid);
+					if ($t.p.selrow === oldRowId) {
+						$t.p.selrow = rowid;
+					}
+					if ($.isArray($t.p.selarrrow)) {
+						var i = $.inArray(oldRowId, $t.p.selarrrow);
+						if (i>=0) {
+							$t.p.selarrrow[i] = rowid;
+						}
+					}
+					if ($t.p.multiselect) {
+						var newCboxId = "jqg_" + $t.p.id + "_" + rowid;
+						$("input.cbox",ind)
+							.attr("id", newCboxId)
+							.attr("name", newCboxId);
+					}
+					// TODO: to test the case of frozen columns
+				}
 				if(typeof($t.p.inlineData) == 'undefined') { $t.p.inlineData ={}; }
 				tmp = $.extend({},tmp,$t.p.inlineData,o.extraparam);
 			}
@@ -248,7 +280,7 @@ $.jgrid.extend({
 				var resp = $($t).jqGrid("setRowData",rowid,tmp);
 				$(ind).attr("editable","0");
 				for( var k=0;k<$t.p.savedRow.length;k++) {
-					if( $t.p.savedRow[k].id == rowid) {fr = k; break;}
+					if( $t.p.savedRow[k].id == oldRowId) {fr = k; break;}
 				}
 				if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
 				$($t).triggerHandler("jqGridInlineAfterSaveRow", [rowid, resp, tmp, o]);
