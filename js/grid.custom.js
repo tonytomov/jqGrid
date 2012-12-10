@@ -133,7 +133,7 @@ $.jgrid.extend({
 			$("#gbox_"+gid).remove();
 		});
 	},
-    setGridState : function(state) {
+	setGridState : function(state) {
 		return this.each(function(){
 			if ( !this.grid ) {return;}
 			var $t = this;
@@ -476,7 +476,18 @@ $.jgrid.extend({
 			this.toggleToolbar = toggleToolbar;
 		});
 	},
-
+	destroyFilterToolbar: function () {
+		return this.each(function () {
+			if (!this.ftoolbar) {
+				return;
+			}
+			this.triggerToolbar = null;
+			this.clearToolbar = null;
+			this.toggleToolbar = null;
+			this.ftoolbar = false;
+			$(this.grid.hDiv).find("table thead tr.ui-search-toolbar").remove();
+		});
+	},
 	destroyGroupHeader : function(nullHeader)
 	{
 		if(typeof(nullHeader) == 'undefined') {
@@ -517,7 +528,6 @@ $.jgrid.extend({
 			}
 		});
 	},
-	
 	setGroupHeaders : function ( o ) {
 		o = $.extend({
 			useColSpanStyle :  false,
