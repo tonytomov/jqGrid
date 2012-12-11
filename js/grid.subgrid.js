@@ -100,7 +100,7 @@ addSubGrid : function( pos, sind ) {
 			if (sjxml){
 				sgmap = ts.p.jsonReader.subgrid;
 				result = $.jgrid.getAccessor(sjxml, sgmap.root);
-				if ( typeof result !== 'undefined' ) {
+				if ( result !== undefined ) {
 					for (i=0;i<result.length;i++) {
 						cur = result[i];
 						trdiv = $("<tr class='ui-widget-content ui-subtblcell'></tr>");
