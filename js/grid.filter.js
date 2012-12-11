@@ -386,7 +386,7 @@ $.fn.jqFilter = function( arg ) {
 				// operators
 				var s ="", so = 0;
 				aoprs = [];
-				$.each(that.p.ops, function() { aoprs.push(this.name) });
+				$.each(that.p.ops, function() { aoprs.push(this.name); });
 				for ( i = 0 ; i < op.length; i++) {
 					ina = $.inArray(op[i],aoprs);
 					if(ina !== -1) {
@@ -484,7 +484,7 @@ $.fn.jqFilter = function( arg ) {
 			else if  (cm.searchtype === 'string') {op = p.stropts;}
 			else {op = that.p.numopts;}
 			str="";
-			$.each(that.p.ops, function() { aoprs.push(this.name) });
+			$.each(that.p.ops, function() { aoprs.push(this.name); });
 			for ( i = 0; i < op.length; i++) {
 				ina = $.inArray(op[i],aoprs);
 				if(ina !== -1) {
@@ -584,6 +584,7 @@ $.fn.jqFilter = function( arg ) {
 					break;
 				}
 			}
+			if (cm == null) { return ""; }
 			val = rule.data;
 			if(opC === 'bw' || opC === 'bn') { val = val+"%"; }
 			if(opC === 'ew' || opC === 'en') { val = "%"+val; }
