@@ -4,7 +4,7 @@
 $.extend($.jgrid,{
 	template : function(format){ //jqgformat
 		var args = $.makeArray(arguments).slice(1), j, al = args.length;
-		if(format===undefined) { format = ""; }
+		if(format==null) { format = ""; }
 		return format.replace(/\{([\w\-]+)(?:\:([\w\.]*)(?:\((.*?)?\))?)?\}/g, function(m,i){
 			if(!isNaN(parseInt(i,10))) {
 				return args[parseInt(i,10)];
@@ -16,7 +16,6 @@ $.extend($.jgrid,{
 						while(k--) {
 							if(i===nmarr[k].nm) {
 								return nmarr[k].v;
-								break;
 							}
 						}
 					}
@@ -212,9 +211,8 @@ $.jgrid.extend({
 		return this.each(function(){
 			var $t = this,
 			grp = $t.p.groupingView,
-			str = "", icon = "", hid, clid, pmrtl = grp.groupCollapse ? grp.plusicon : grp.minusicon, gv, cp=[], ii, len =grp.groupField.length;
+			str = "", icon = "", hid, clid, pmrtl = grp.groupCollapse ? grp.plusicon : grp.minusicon, gv, cp=[], len =grp.groupField.length;
 			pmrtl += " tree-wrap-"+$t.p.direction; 
-			ii = 0;
 			$.each($t.p.colModel, function (i,n){
 				for(var ii=0;ii<len;ii++) {
 					if(grp.groupField[ii] === n.name ) {
@@ -402,7 +400,7 @@ $.jgrid.extend({
 					// so use sum instead of duplicating the code (?)
 					return funcs.sum();
 				}
-			}
+			};
 
 			if(!funcs[fn]) {
 				throw ("jqGrid Grouping No such method: " + fn);
