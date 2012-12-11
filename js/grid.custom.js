@@ -199,7 +199,7 @@ $.jgrid.extend({
 						} catch (z) {}
 					}
 				});
-				var sd =  j>0 ? true : false;
+				var sd = false;
 				if(p.stringResult === true || $t.p.datatype == "local") {
 					var ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[";
 					var gi=0;
@@ -233,7 +233,7 @@ $.jgrid.extend({
 			};
 			var clearToolbar = function(trigger){
 				var sdata={}, j=0, nm;
-				trigger = (typeof trigger != 'boolean') ? true : trigger;
+				trigger = (typeof trigger !== 'boolean') ? true : trigger;
 				$.each($t.p.colModel,function(){
 					var v;
 					if(this.searchoptions && this.searchoptions.defaultValue !== undefined) { v = this.searchoptions.defaultValue; }
@@ -270,7 +270,7 @@ $.jgrid.extend({
 							break;
 					}
 				});
-				var sd =  j>0 ? true : false;
+				var sd = false;
 				if(p.stringResult === true || $t.p.datatype == "local") {
 					var ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[";
 					var gi=0;
@@ -342,7 +342,7 @@ $.jgrid.extend({
 				thd = $("<div style='width:100%;position:relative;height:100%;padding-right:0.3em;'></div>");
 				if(this.hidden===true) { $(th).css("display","none");}
 				this.search = this.search === false ? false : true;
-				if(typeof this.stype == 'undefined' ) {this.stype='text';}
+				if(this.stype === undefined) {this.stype='text';}
 				soptions = $.extend({},this.searchoptions || {});
 				if(this.search){
 					switch (this.stype)
@@ -435,7 +435,7 @@ $.jgrid.extend({
 						if(p.autosearch===true){
 							if(p.searchOnEnter) {
 								$("input",thd).keypress(function(e){
-									var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+									var key = e.charCode || e.keyCode || 0;
 									if(key == 13){
 										triggerToolbar();
 										return false;
@@ -490,7 +490,7 @@ $.jgrid.extend({
 	},
 	destroyGroupHeader : function(nullHeader)
 	{
-		if(typeof(nullHeader) == 'undefined') {
+		if(nullHeader === undefined) {
 			nullHeader = true;
 		}
 		return this.each(function()
