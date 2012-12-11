@@ -8,15 +8,14 @@ $.extend($.jgrid,{
 		return format.replace(/\{([\w\-]+)(?:\:([\w\.]*)(?:\((.*?)?\))?)?\}/g, function(m,i){
 			if(!isNaN(parseInt(i,10))) {
 				return args[parseInt(i,10)];
-			} else {
-				for(j=0; j < al;j++) {
-					if($.isArray(args[j])) {
-						var nmarr = args[ j ],
-						k = nmarr.length;
-						while(k--) {
-							if(i===nmarr[k].nm) {
-								return nmarr[k].v;
-							}
+			}
+			for(j=0; j < al;j++) {
+				if($.isArray(args[j])) {
+					var nmarr = args[ j ],
+					k = nmarr.length;
+					while(k--) {
+						if(i===nmarr[k].nm) {
+							return nmarr[k].v;
 						}
 					}
 				}
@@ -99,7 +98,7 @@ $.jgrid.extend({
 						});
 						grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
 					} else {
-						if( (typeof(v) !== "object" && (grp.lastvalues[i] !== v) ) ) {
+						if( typeof(v) !== "object" && grp.lastvalues[i] !== v ) {
 							// This record is not in same group as previous one
 							grp.groups.push({idx:i,dataIndex:fieldName,value:v, startRow: irow, cnt:1, summary : [] } );
 							grp.lastvalues[i] = v;
@@ -390,9 +389,8 @@ $.jgrid.extend({
 					if(v==="") {v=0;}
 					if(rc.hasOwnProperty(field)) {
 						return v+1;
-					} else {
-						return 0;
 					}
+					return 0;
 				},
 
 				avg: function() {
