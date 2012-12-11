@@ -32,7 +32,7 @@ $.jgrid.extend({
 				if(!grp.groupField.length) {
 					$t.p.grouping = false;
 				} else {
-					if ( typeof(grp.visibiltyOnNextGrouping) === 'undefined') {
+					if (grp.visibiltyOnNextGrouping === undefined) {
 						grp.visibiltyOnNextGrouping = [];
 					}
 
@@ -46,10 +46,10 @@ $.jgrid.extend({
 						if(!grp.groupText[i]) {
 							grp.groupText[i] = '{0}';
 						}
-						if( typeof(grp.groupColumnShow[i]) !== 'boolean') {
+						if( typeof grp.groupColumnShow[i] !== 'boolean') {
 							grp.groupColumnShow[i] = true;
 						}
-						if( typeof(grp.groupSummary[i]) !== 'boolean') {
+						if( typeof grp.groupSummary[i] !== 'boolean') {
 							grp.groupSummary[i] = false;
 						}
 						if(grp.groupColumnShow[i] === true) {
@@ -98,7 +98,7 @@ $.jgrid.extend({
 						});
 						grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
 					} else {
-						if( typeof(v) !== "object" && grp.lastvalues[i] !== v ) {
+						if( typeof v !== "object" && grp.lastvalues[i] !== v ) {
 							// This record is not in same group as previous one
 							grp.groups.push({idx:i,dataIndex:fieldName,value:v, startRow: irow, cnt:1, summary : [] } );
 							grp.lastvalues[i] = v;
@@ -287,7 +287,7 @@ $.jgrid.extend({
 									if(cm[k].summaryTpl)  {
 										tplfld = cm[k].summaryTpl;
 									}
-									if(typeof(this.st) === 'string' && this.st.toLowerCase() === 'avg') {
+									if(typeof this.st === 'string' && this.st.toLowerCase() === 'avg') {
 										if(this.v && grlen > 0) {
 											this.v = (this.v/grlen);
 										}
@@ -316,14 +316,14 @@ $.jgrid.extend({
 	groupingGroupBy : function (name, options ) {
 		return this.each(function(){
 			var $t = this;
-			if(typeof(name) === "string") {
+			if(typeof name === "string") {
 				name = [name];
 			}
 			var grp = $t.p.groupingView;
 			$t.p.grouping = true;
 
 			//Set default, in case visibilityOnNextGrouping is undefined 
-			if (typeof grp.visibiltyOnNextGrouping === "undefined") {
+			if (grp.visibiltyOnNextGrouping === undefined) {
 				grp.visibiltyOnNextGrouping = [];
 			}
 			var i;
@@ -345,7 +345,7 @@ $.jgrid.extend({
 	groupingRemove : function (current) {
 		return this.each(function(){
 			var $t = this;
-			if(typeof(current) === 'undefined') {
+			if(current === undefined) {
 				current = true;
 			}
 			$t.p.grouping = false;
@@ -406,9 +406,9 @@ $.jgrid.extend({
 			var res = funcs[fn]();
 
 			if (round != null) {
-				if (roundType == 'fixed')
+				if (roundType == 'fixed') {
 					res = res.toFixed(round);
-				else {
+				} else {
 					var mul = Math.pow(10, round);
 
 					res = Math.round(res * mul) / mul;
