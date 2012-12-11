@@ -35,7 +35,7 @@
 			return o === null;
 		},
 		isUndefined : function(o) {
-			return typeof o === 'undefined';
+			return o === undefined;
 		},
 		isValue : function (o) {
 			return (this.isObject(o) || this.isString(o) || this.isNumber(o) || this.isBoolean(o));
@@ -43,7 +43,8 @@
 		isEmpty : function(o) {
 			if(!this.isString(o) && this.isValue(o)) {
 				return false;
-			}else if (!this.isValue(o)){
+			}
+			if (!this.isValue(o)){
 				return true;
 			}
 			o = $.trim(o).replace(/\&nbsp\;/ig,'').replace(/\&#160\;/ig,'');
@@ -68,14 +69,14 @@
 			}
 			if($.fmatter.isNumber(nData)) {
 				var bNegative = (nData < 0);
-				var sOutput = nData + "";
-				var sDecimalSeparator = (opts.decimalSeparator) ? opts.decimalSeparator : ".";
+				var sOutput = String(nData);
+				var sDecimalSeparator = opts.decimalSeparator || ".";
 				var nDotIndex;
 				if($.fmatter.isNumber(opts.decimalPlaces)) {
 					// Round to the correct decimal place
 					var nDecimalPlaces = opts.decimalPlaces;
 					var nDecimal = Math.pow(10, nDecimalPlaces);
-					sOutput = Math.round(nData*nDecimal)/nDecimal + "";
+					sOutput = String(Math.round(nData*nDecimal)/nDecimal);
 					nDotIndex = sOutput.lastIndexOf(".");
 					if(nDecimalPlaces > 0) {
 					// Add the decimal separator
@@ -114,9 +115,8 @@
 				sOutput = (opts.suffix) ? sOutput + opts.suffix : sOutput;
 				return sOutput;
 				
-			} else {
-				return nData;
 			}
+			return nData;
 		},
 		// Tony Tomov
 		// PHP implementation. Sorry not all options are supported.
@@ -141,7 +141,7 @@
 				dayNames: opts.dayNames,
 				monthNames: opts.monthNames
 			};
-			if( format in opts.masks ) { format = opts.masks[format]; }
+			if( opts.masks.hasOwnProperty(format) ) { format = opts.masks[format]; }
 			if( !isNaN( date - 0 ) && String(format).toLowerCase() == "u") {
 				//Unix timestamp
 				timestamp = new Date( parseFloat(date)*1000 );
@@ -184,7 +184,7 @@
 				timestamp = new Date(ts.y, ts.m, ts.d, ts.h, ts.i, ts.s, ts.u);
 			}
 			
-			if( newformat in opts.masks )  {
+			if( opts.masks.hasOwnProperty(newformat) )  {
 				newformat = opts.masks[newformat];
 			} else if ( !newformat ) {
 				newformat = 'Y-m-d';
@@ -249,19 +249,18 @@
 					U: Math.floor(timestamp / 1000)
 				};	
 			return newformat.replace(token, function ($0) {
-				return $0 in flags ? flags[$0] : $0.substring(1);
+				return flags.hasOwnProperty($0) ? flags[$0] : $0.substring(1);
 			});			
 		}
 	};
 	$.fn.fmatter.defaultFormat = function(cellval, opts) {
-		return ($.fmatter.isValue(cellval) && cellval!=="" ) ?  cellval : opts.defaultValue ? opts.defaultValue : "&#160;";
+		return ($.fmatter.isValue(cellval) && cellval!=="" ) ?  cellval : opts.defaultValue || "&#160;";
 	};
 	$.fn.fmatter.email = function(cellval, opts) {
 		if(!$.fmatter.isEmpty(cellval)) {
 			return "<a href=\"mailto:" + cellval + "\">" + cellval + "</a>";
-		}else {
-			return $.fn.fmatter.defaultFormat(cellval,opts );
 		}
+		return $.fn.fmatter.defaultFormat(cellval,opts );
 	};
 	$.fn.fmatter.checkbox =function(cval, opts) {
 		var op = $.extend({},opts.checkbox), ds;
@@ -270,7 +269,8 @@
 		}
 		if(op.disabled===true) {ds = "disabled=\"disabled\"";} else {ds="";}
 		if($.fmatter.isEmpty(cval) || $.fmatter.isUndefined(cval) ) {cval = $.fn.fmatter.defaultFormat(cval,op);}
-		cval=cval+"";cval=cval.toLowerCase();
+		cval=String(cval);
+		cval=cval.toLowerCase();
 		var bchk = cval.search(/(false|0|no|n|off)/i)<0 ? " checked='checked' " : "";
 		return "<input type=\"checkbox\" " + bchk  + " value=\""+ cval+"\" offval=\"no\" "+ds+ "/>";
 	};
@@ -283,9 +283,8 @@
 		if(op.target) {target = 'target=' + op.target;}
 		if(!$.fmatter.isEmpty(cellval)) {
 			return "<a "+target+" href=\"" + cellval + "\">" + cellval + "</a>";
-		}else {
-			return $.fn.fmatter.defaultFormat(cellval,opts);
 		}
+		return $.fn.fmatter.defaultFormat(cellval,opts);
 	};
 	$.fn.fmatter.showlink = function(cellval, opts) {
 		var op = {baseLinkUrl: opts.baseLinkUrl,showAction:opts.showAction, addParam: opts.addParam || "", target: opts.target, idName: opts.idName},
@@ -297,9 +296,8 @@
 		idUrl = op.baseLinkUrl+op.showAction + '?'+ op.idName+'='+opts.rowId+op.addParam;
 		if($.fmatter.isString(cellval) || $.fmatter.isNumber(cellval)) {	//add this one even if its blank string
 			return "<a "+target+" href=\"" + idUrl + "\">" + cellval + "</a>";
-		}else {
-			return $.fn.fmatter.defaultFormat(cellval,opts);
 		}
+		return $.fn.fmatter.defaultFormat(cellval,opts);
 	};
 	$.fn.fmatter.integer = function(cellval, opts) {
 		var op = $.extend({},opts.integer);
@@ -338,15 +336,15 @@
 		}
 		if(!op.reformatAfterEdit && act=='edit'){
 			return $.fn.fmatter.defaultFormat(cellval, opts);
-		} else if(!$.fmatter.isEmpty(cellval)) {
-			return  $.fmatter.util.DateFormat(op.srcformat,cellval,op.newformat,op);
-		} else {
-			return $.fn.fmatter.defaultFormat(cellval, opts);
 		}
+		if(!$.fmatter.isEmpty(cellval)) {
+			return $.fmatter.util.DateFormat(op.srcformat,cellval,op.newformat,op);
+		}
+		return $.fn.fmatter.defaultFormat(cellval, opts);
 	};
 	$.fn.fmatter.select = function (cellval,opts) {
 		// jqGrid specific
-		cellval = cellval + "";
+		cellval = String(cellval);
 		var oSelect = false, ret=[], sep, delim;
 		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)){
 			oSelect= opts.colModel.formatoptions.value;
@@ -486,7 +484,7 @@
 		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend(op,opts.colModel.formatoptions);
 		}
-		if(typeof(rowid) =='undefined' || $.fmatter.isEmpty(rowid)) {return "";}
+		if(rowid === undefined || $.fmatter.isEmpty(rowid)) {return "";}
 		if(op.editformbutton){
 			ocl = "onclick=jQuery.fn.fmatter.rowactions.call(this,'formedit'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
 			str += "<div title='"+$.jgrid.nav.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='ui-icon ui-icon-pencil'></span></div>";
@@ -510,7 +508,7 @@
 		op =options.colModel.formatoptions || {}, sep,
 		re = /([\.\*\_\'\(\)\{\}\+\?\\])/g,
 		unformatFunc = options.colModel.unformat||($.fn.fmatter[formatType] && $.fn.fmatter[formatType].unformat);
-		if(typeof unformatFunc !== 'undefined' && $.isFunction(unformatFunc) ) {
+		if(unformatFunc !== undefined && $.isFunction(unformatFunc) ) {
 			ret = unformatFunc.call(this, $(cellval).text(), options, cellval);
 		} else if(!$.fmatter.isUndefined(formatType) && $.fmatter.isString(formatType) ) {
 			var opts = $.jgrid.formatter || {}, stripTag;
@@ -597,13 +595,12 @@
 							return false;
 						}
 					});
-					if( typeof(rv) != 'undefined' ) {return rv;}
+					if( rv !== undefined ) {return rv;}
 				});
 			}
 			return ret.join(", ");
-		} else {
-			return cell || "";
 		}
+		return cell || "";
 	};
 	$.unformat.date = function (cellval, opts) {
 		var op = $.jgrid.formatter.date || {};
@@ -612,8 +609,7 @@
 		}		
 		if(!$.fmatter.isEmpty(cellval)) {
 			return $.fmatter.util.DateFormat(op.newformat,cellval,op.srcformat,op);
-		} else {
-			return $.fn.fmatter.defaultFormat(cellval, opts);
 		}
+		return $.fn.fmatter.defaultFormat(cellval, opts);
 	};
 })(jQuery);
