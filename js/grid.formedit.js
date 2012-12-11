@@ -67,7 +67,7 @@ $.jgrid.extend({
 			showFrm = true,
 			IDs = {themodal:'searchmod'+fid,modalhead:'searchhd'+fid,modalcontent:'searchcnt'+fid, scrollelm : fid},
 			defaultFilters  = $t.p.postData[p.sFilter];
-			if(typeof(defaultFilters) === "string") {
+			if(typeof defaultFilters === "string") {
 				defaultFilters = $.jgrid.parse( defaultFilters );
 			}
 			if(p.recreateFilter === true) {
@@ -75,7 +75,7 @@ $.jgrid.extend({
 			}
 			function showFilter(_filter) {
 				showFrm = $($t).triggerHandler("jqGridFilterBeforeShow", [_filter]);
-				if(typeof(showFrm) === "undefined") {
+				if(showFrm === undefined) {
 					showFrm = true;
 				}
 				if(showFrm && $.isFunction(p.beforeShowSearch)) {
@@ -113,7 +113,7 @@ $.jgrid.extend({
 						}
 						// find first searchable column and set it if no default filter
 						if(!found) {
-							var searchable = (typeof n.search === 'undefined') ?  true: n.search ,
+							var searchable = (n.search === undefined) ?  true: n.search ,
 							hidden = (n.hidden === true),
 							ignoreHiding = (n.searchoptions && n.searchoptions.searchhidden === true);
 							if ((ignoreHiding && searchable) || (searchable && !hidden)) {
@@ -243,7 +243,7 @@ $.jgrid.extend({
 								res = JSON.stringify(filters);
 							} catch (e2) { }
 						}
-						if(typeof(res)==="string") {
+						if(typeof res==="string") {
 							sdata[p.sFilter] = res;
 							$.each([p.sField,p.sValue, p.sOper], function() {sdata[this] = "";});
 						}
@@ -492,19 +492,13 @@ $.jgrid.extend({
 							$(tb).append(trdata);
 							trdata[0].rp = rp;
 						}
-						$("td:eq("+(cp-2)+")",trdata[0]).html( typeof frmopt.label === 'undefined' ? obj.p.colNames[i]: frmopt.label);
+						$("td:eq("+(cp-2)+")",trdata[0]).html(frmopt.label === undefined ? obj.p.colNames[i]: frmopt.label);
 						$("td:eq("+(cp-1)+")",trdata[0]).append(frmopt.elmprefix).append(elc).append(frmopt.elmsuffix);
 						$.jgrid.bindEv( elc, opt, $t);
 						retpos[cnt] = i;
 						cnt++;
 					}
 				});
-				if( cnt > 0) {
-					var idrow = $("<tr class='FormData' style='display:none'><td class='CaptionTD'></td><td colspan='"+ (maxcols*2-1)+"' class='DataTD'><input class='FormElement' id='id_g' type='text' name='"+obj.p.id+"_id' value='"+rowid+"'/></td></tr>");
-					idrow[0].rp = cnt+999;
-					$(tb).append(idrow);
-					if(rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate) {rp_ge[$t.p.id]._savedData[obj.p.id+"_id"] = rowid;}
-				}
 				return retpos;
 			}
 			function fillData(rowid,obj,fmid){
@@ -593,7 +587,7 @@ $.jgrid.extend({
 								});
 								break;
 							case "checkbox":
-								tmp = tmp+"";
+								tmp = String(tmp);
 								if(cm[i].editoptions && cm[i].editoptions.value) {
 									var cb = cm[i].editoptions.value.split(":");
 									if(cb[0] == tmp) {
@@ -628,7 +622,6 @@ $.jgrid.extend({
 						cnt++;
 					}
 				});
-				if(cnt>0) {$("#id_g",frmtb).val(rowid);}
 			}
 			function setNulls() {
 				$.each($t.p.colModel, function(i,n){
@@ -643,11 +636,11 @@ $.jgrid.extend({
 				var copydata, ret=[true,"",""], onCS = {}, opers = $t.p.prmNames, idname, oper, key, selr, i;
 				
 				var retvals = $($t).triggerHandler("jqGridAddEditBeforeCheckValues", [$("#"+frmgr), frmoper]);
-				if(retvals && typeof(retvals) === 'object') {postdata = retvals;}
+				if(retvals && typeof retvals === 'object') {postdata = retvals;}
 				
 				if($.isFunction(rp_ge[$t.p.id].beforeCheckValues)) {
 					retvals = rp_ge[$t.p.id].beforeCheckValues.call($t, postdata,$("#"+frmgr),postdata[$t.p.id+"_id"] == "_empty" ? opers.addoper : opers.editoper);
-					if(retvals && typeof(retvals) === 'object') {postdata = retvals;}
+					if(retvals && typeof retvals === 'object') {postdata = retvals;}
 				}
 				for( key in postdata ){
 					if(postdata.hasOwnProperty(key)) {
@@ -704,18 +697,18 @@ $.jgrid.extend({
 					
 					postdata[idname] = $.jgrid.stripPref($t.p.idPrefix, postdata[idname]);
 					var ajaxOptions = $.extend({
-						url: rp_ge[$t.p.id].url ? rp_ge[$t.p.id].url : $($t).jqGrid('getGridParam','editurl'),
+						url: rp_ge[$t.p.id].url || $($t).jqGrid('getGridParam','editurl'),
 						type: rp_ge[$t.p.id].mtype,
 						data: $.isFunction(rp_ge[$t.p.id].serializeEditData) ? rp_ge[$t.p.id].serializeEditData.call($t,postdata) :  postdata,
-						complete:function(data,Status){
+						complete:function(data,status){
 							postdata[idname] = $t.p.idPrefix + postdata[idname];
-							if(Status != "success") {
+							if(status != "success") {
 								ret[0] = false;
 								ret[1] = $($t).triggerHandler("jqGridAddEditErrorTextFormat", [data, frmoper]);
 								if ($.isFunction(rp_ge[$t.p.id].errorTextFormat)) {
 									ret[1] = rp_ge[$t.p.id].errorTextFormat.call($t, data);
 								} else {
-									ret[1] = Status + " Status: '" + data.statusText + "'. Error code: " + data.status;
+									ret[1] = status + " Status: '" + data.statusText + "'. Error code: " + data.status;
 								}
 							} else {
 								// data is posted successful
@@ -808,7 +801,7 @@ $.jgrid.extend({
 								$("#"+frmgr).data("disabled",false);
 								if(rp_ge[$t.p.id]._savedData[$t.p.id+"_id"] !="_empty"){
 									for(var key in rp_ge[$t.p.id]._savedData) {
-										if(postdata[key]) {
+										if(rp_ge[$t.p.id]._savedData.hasOwnProperty(key) && postdata[key]) {
 											rp_ge[$t.p.id]._savedData[key] = postdata[key];
 										}
 									}
@@ -831,7 +824,7 @@ $.jgrid.extend({
 					if (ret[0]) {
 						if (rp_ge[$t.p.id].useDataProxy) {
 							var dpret = $t.p.dataProxy.call($t, ajaxOptions, "set_"+$t.p.id); 
-							if(typeof(dpret) == "undefined") {
+							if(dpret === undefined) {
 								dpret = [true, ""];
 							}
 							if(dpret[0] === false ) {
@@ -859,7 +852,7 @@ $.jgrid.extend({
 			function compareData(nObj, oObj ) {
 				var ret = false,key;
 				for (key in nObj) {
-					if(nObj[key] != oObj[key]) {
+					if(nObj.hasOwnProperty(key) && nObj[key] != oObj[key]) {
 						ret = true;
 						break;
 					}
@@ -884,7 +877,7 @@ $.jgrid.extend({
 			}
 			function restoreInline()
 			{
-				if (rowid !== "_empty" && typeof($t.p.savedRow) !== "undefined" && $t.p.savedRow.length > 0 && $.isFunction($.fn.jqGrid.restoreRow)) {
+				if (rowid !== "_empty" && $t.p.savedRow !== undefined && $t.p.savedRow.length > 0 && $.isFunction($.fn.jqGrid.restoreRow)) {
 					for (var i=0;i<$t.p.savedRow.length;i++) {
 						if ($t.p.savedRow[i].id == rowid) {
 							$($t).jqGrid('restoreRow',rowid);
@@ -920,7 +913,7 @@ $.jgrid.extend({
 
 			if ( $("#"+$.jgrid.jqID(IDs.themodal))[0] !== undefined ) {
 				showFrm = $($t).triggerHandler("jqGridAddEditBeforeInitData", [$("#"+$.jgrid.jqID(frmgr)), frmoper]);
-				if(typeof(showFrm) == "undefined") {
+				if(showFrm === undefined) {
 					showFrm = true;
 				}
 				if(showFrm && onBeforeInit) {
@@ -976,7 +969,7 @@ $.jgrid.extend({
 				frm = $("<form name='FormPost' id='"+frmgr+"' class='FormGrid' onSubmit='return false;' style='width:100%;overflow:auto;position:relative;height:"+dh+";'></form>").data("disabled",false),
 				tbl = $("<table id='"+frmtborg+"' class='EditTable' cellspacing='0' cellpadding='0' border='0'><tbody></tbody></table>");
 				showFrm = $($t).triggerHandler("jqGridAddEditBeforeInitData", [$("#"+frmgr), frmoper]);
-				if(typeof(showFrm) == "undefined") {
+				if(showFrm === undefined) {
 					showFrm = true;
 				}
 				if(showFrm && onBeforeInit) {
@@ -1171,7 +1164,7 @@ $.jgrid.extend({
 					npos[0] = parseInt(npos[0],10);
 					if(npos[0] != -1 && npos[1][npos[0]+1]) {
 						$($t).triggerHandler("jqGridAddEditClickPgButtons", ['next',$("#"+frmgr),npos[1][npos[0]]]);
-						var nposret = true;
+						var nposret;
 						if($.isFunction(p.onclickPgButtons)) {
 							nposret = p.onclickPgButtons.call($t, 'next',$("#"+frmgr),npos[1][npos[0]]);
 							if( nposret !== undefined && nposret === false ) {return false;}
@@ -1193,7 +1186,7 @@ $.jgrid.extend({
 					var ppos = getCurrPos();
 					if(ppos[0] != -1 && ppos[1][ppos[0]-1]) {
 						$($t).triggerHandler("jqGridAddEditClickPgButtons", ['prev',$("#"+frmgr),ppos[1][ppos[0]]]);
-						var pposret = true;
+						var pposret;
 						if($.isFunction(p.onclickPgButtons)) {
 							pposret = p.onclickPgButtons.call($t, 'prev',$("#"+frmgr),ppos[1][ppos[0]]);
 							if( pposret !== undefined && pposret === false ) {return false;}
@@ -1287,7 +1280,7 @@ $.jgrid.extend({
 						hc = this.hidden === true ? true : false;
 					}
 					dc = hc ? "style='display:none'" : "";
-					viewfld = (typeof this.viewable != 'boolean') ? true : this.viewable;
+					viewfld = (typeof this.viewable !== 'boolean') ? true : this.viewable;
 					if ( nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn' && viewfld) {
 						if(ind === false) {
 							tmp = "";
@@ -1314,7 +1307,7 @@ $.jgrid.extend({
 							$(tb).append(trdata);
 							trdata[0].rp = rp;
 						}
-						$("td:eq("+(cp-2)+")",trdata[0]).html('<b>'+ (typeof frmopt.label === 'undefined' ? obj.p.colNames[i]: frmopt.label)+'</b>');
+						$("td:eq("+(cp-2)+")",trdata[0]).html('<b>'+ (frmopt.label === undefined ? obj.p.colNames[i]: frmopt.label)+'</b>');
 						$("td:eq("+(cp-1)+")",trdata[0]).append("<span>"+tmp+"</span>").attr("id","v_"+nm);
 						if(setme){
 							$("td:eq("+(cp-1)+") span",trdata[0]).css({'text-align':'right',width:maxw+"px"});
@@ -1323,11 +1316,6 @@ $.jgrid.extend({
 						cnt++;
 					}
 				});
-				if( cnt > 0) {
-					var idrow = $("<tr class='FormData' style='display:none'><td class='CaptionTD'></td><td colspan='"+ (maxcols*2-1)+"' class='DataTD'><input class='FormElement' id='id_g' type='text' name='id' value='"+rowid+"'/></td></tr>");
-					idrow[0].rp = cnt+99;
-					$(tb).append(idrow);
-				}
 				return retpos;
 			}
 			function fillData(rowid,obj){
@@ -1355,7 +1343,6 @@ $.jgrid.extend({
 						cnt++;
 					}
 				});
-				if(cnt>0) {$("#id_g","#"+frmtb).val(rowid);}
 			}
 			function updateNav(cr,posarr){
 				var totr = posarr[1].length-1;
@@ -1384,7 +1371,7 @@ $.jgrid.extend({
 			if ( $("#"+$.jgrid.jqID(IDs.themodal))[0] !== undefined ) {
 				if(onBeforeInit) {
 					showFrm = onBeforeInit.call($t,$("#"+frmgr));
-					if(typeof(showFrm) == "undefined") {
+					if(showFrm === undefined) {
 						showFrm = true;
 					}
 				}
@@ -1401,7 +1388,7 @@ $.jgrid.extend({
 				tbl =$("<table id='"+frmtb_id+"' class='EditTable' cellspacing='1' cellpadding='2' border='0' style='table-layout:fixed'><tbody></tbody></table>");
 				if(onBeforeInit) {
 					showFrm = onBeforeInit.call($t,$("#"+frmgr));
-					if(typeof(showFrm) == "undefined") {
+					if(showFrm === undefined) {
 						showFrm = true;
 					}
 				}
@@ -1565,7 +1552,7 @@ $.jgrid.extend({
 			if ( $("#"+$.jgrid.jqID(IDs.themodal))[0] !== undefined ) {
 				if(onBeforeInit) {
 					showFrm = onBeforeInit.call($t,$("#"+dtbl));
-					if(typeof(showFrm) == "undefined") {
+					if(showFrm === undefined) {
 						showFrm = true;
 					}
 				}
@@ -1597,7 +1584,7 @@ $.jgrid.extend({
 
 				if(onBeforeInit) {
 					showFrm = onBeforeInit.call($t,$("#"+dtbl));
-					if(typeof(showFrm) == "undefined") {
+					if(showFrm === undefined) {
 						showFrm = true;
 					}
 				}
@@ -1639,16 +1626,16 @@ $.jgrid.extend({
 						postd[idname] = postdata.join();
 						$(this).addClass('ui-state-active');
 						var ajaxOptions = $.extend({
-							url: rp_ge[$t.p.id].url ? rp_ge[$t.p.id].url : $($t).jqGrid('getGridParam','editurl'),
+							url: rp_ge[$t.p.id].url || $($t).jqGrid('getGridParam','editurl'),
 							type: rp_ge[$t.p.id].mtype,
 							data: $.isFunction(rp_ge[$t.p.id].serializeDelData) ? rp_ge[$t.p.id].serializeDelData.call($t,postd) : postd,
-							complete:function(data,Status){
-								if(Status != "success") {
+							complete:function(data,status){
+								if(status != "success") {
 									ret[0] = false;
 									if ($.isFunction(rp_ge[$t.p.id].errorTextFormat)) {
 										ret[1] = rp_ge[$t.p.id].errorTextFormat.call($t,data);
 									} else {
-										ret[1] = Status + " Status: '" + data.statusText + "'. Error code: " + data.status;
+										ret[1] = status + " Status: '" + data.statusText + "'. Error code: " + data.status;
 									}
 								} else {
 									// data is posted successful
@@ -1695,7 +1682,7 @@ $.jgrid.extend({
 						if (ret[0]) {
 							if (rp_ge[$t.p.id].useDataProxy) {
 								var dpret = $t.p.dataProxy.call($t, ajaxOptions, "del_"+$t.p.id); 
-								if(typeof(dpret) == "undefined") {
+								if(dpret === undefined) {
 									dpret = [true, ""];
 								}
 								if(dpret[0] === false ) {
@@ -1758,13 +1745,13 @@ $.jgrid.extend({
 			if(this.nav) {return;}
 			var alertIDs = {themodal: 'alertmod_' + this.p.id, modalhead: 'alerthd_' + this.p.id,modalcontent: 'alertcnt_' + this.p.id},
 			$t = this, twd, tdw;
-			if(!$t.grid || typeof elem != 'string') {return;}
+			if(!$t.grid || typeof elem !== 'string') {return;}
 			if ($("#"+alertIDs.themodal)[0] === undefined) {
 				if(!o.alerttop && !o.alertleft) {
-					if (typeof window.innerWidth != 'undefined') {
+					if (window.innerWidth !== undefined) {
 						o.alertleft = window.innerWidth;
 						o.alerttop = window.innerHeight;
-					} else if (typeof document.documentElement != 'undefined' && typeof document.documentElement.clientWidth != 'undefined' && document.documentElement.clientWidth !== 0) {
+					} else if (document.documentElement !== undefined && document.documentElement.clientWidth !== undefined && document.documentElement.clientWidth !== 0) {
 						o.alertleft = document.documentElement.clientWidth;
 						o.alerttop = document.documentElement.clientHeight;
 					} else {
@@ -2105,17 +2092,19 @@ $.jgrid.extend({
 			var rowdata = $($t).jqGrid("getRowData",rowid);
 			if (rowdata) {
 				for(var i in rowdata) {
-					if ( $("[name="+$.jgrid.jqID(i)+"]",formid).is("input:radio") || $("[name="+$.jgrid.jqID(i)+"]",formid).is("input:checkbox"))  {
-						$("[name="+$.jgrid.jqID(i)+"]",formid).each( function() {
-							if( $(this).val() == rowdata[i] ) {
-								$(this)[$t.p.useProp ? 'prop': 'attr']("checked",true);
-							} else {
-								$(this)[$t.p.useProp ? 'prop': 'attr']("checked", false);
-							}
-						});
-					} else {
-					// this is very slow on big table and form.
-						$("[name="+$.jgrid.jqID(i)+"]",formid).val(rowdata[i]);
+					if(rowdata.hasOwnProperty(i)) {
+						if ( $("[name="+$.jgrid.jqID(i)+"]",formid).is("input:radio") || $("[name="+$.jgrid.jqID(i)+"]",formid).is("input:checkbox"))  {
+							$("[name="+$.jgrid.jqID(i)+"]",formid).each( function() {
+								if( $(this).val() == rowdata[i] ) {
+									$(this)[$t.p.useProp ? 'prop': 'attr']("checked",true);
+								} else {
+									$(this)[$t.p.useProp ? 'prop': 'attr']("checked", false);
+								}
+							});
+						} else {
+						// this is very slow on big table and form.
+							$("[name="+$.jgrid.jqID(i)+"]",formid).val(rowdata[i]);
+						}
 					}
 				}
 			}
