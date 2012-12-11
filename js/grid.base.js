@@ -2883,7 +2883,7 @@ $.jgrid.extend({
 						pos = t.p._index[id];
 						if(t.p.treeGrid) {
 							for(var key in t.p.treeReader ){
-								if(lcdata.hasOwnProperty(t.p.treeReader[key])) {
+								if(t.p.treeReader.hasOwnProperty(key)) {
 									delete lcdata[t.p.treeReader[key]];
 								}
 							}
