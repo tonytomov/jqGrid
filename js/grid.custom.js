@@ -33,7 +33,7 @@ $.jgrid.extend({
 					var cM = this.p.colModel;
 					for ( var i =0;i<cM.length;i++ ) {
 						if ( cM[i].name == colname ) {
-							$.extend(this.p.colModel[i],obj);
+							$.extend(true, this.p.colModel[i],obj);
 							break;
 						}
 					}
