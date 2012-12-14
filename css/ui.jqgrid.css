@@ -11,7 +11,7 @@
 .ui-jqgrid .ui-jqgrid-hbox {float: left; padding-right: 20px;}
 .ui-jqgrid .ui-jqgrid-htable {table-layout:fixed;margin:0em;}
 .ui-jqgrid .ui-jqgrid-htable th {height:22px;padding: 0 2px 0 2px;}
-.ui-jqgrid .ui-jqgrid-htable th div {overflow: hidden; position:relative; height:17px;}
+.ui-jqgrid .ui-jqgrid-htable th > div {overflow: hidden; position:relative; height:17px;}
 .ui-th-column, .ui-jqgrid .ui-jqgrid-htable th.ui-th-column {overflow: hidden;white-space: nowrap;text-align:center;border-top : 0px none;border-bottom : 0px none;}
 .ui-th-ltr, .ui-jqgrid .ui-jqgrid-htable th.ui-th-ltr {border-left : 0px none;}
 .ui-th-rtl, .ui-jqgrid .ui-jqgrid-htable th.ui-th-rtl {border-right : 0px none;}
