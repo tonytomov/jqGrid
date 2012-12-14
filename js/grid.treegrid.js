@@ -168,7 +168,7 @@ $.jgrid.extend({
 					i++;
 					//
 					for(var tkey in $t.p.treeReader) {
-						if($t.p.treeReader[tkey] == nm) {
+						if($t.p.treeReader.hasOwnProperty(tkey) && $t.p.treeReader[tkey] == nm) {
 							dupcols.push(nm);
 						}
 					}
@@ -566,7 +566,7 @@ $.jgrid.extend({
 			loaded = $t.p.treeReader.loaded,
 			method, parentindex, parentdata, parentlevel, i, len, max=0, rowind = parentid, leaf, maxright;
 			if(expandData===undefined) {expandData = false;}
-			if ( typeof nodeid === 'undefined' || nodeid === null ) {
+			if ( nodeid === undefined || nodeid === null ) {
 				i = $t.p.data.length-1;
 				if(	i>= 0 ) {
 					while(i>=0){max = Math.max(max, parseInt($t.p.data[i][$t.p.localReader.id],10)); i--;}
@@ -615,7 +615,7 @@ $.jgrid.extend({
 			if( data[expanded]===undefined)  {data[expanded]= false;}
 			if( data[loaded]===undefined )  { data[loaded] = false;}
 			data[level] = parentlevel;
-			if( data[isLeaf]===undefined) {data[isLeaf]= true};
+			if( data[isLeaf]===undefined) {data[isLeaf]= true;}
 			if( $t.p.treeGridModel === "adjacency") {
 				data[parent] = parentid;
 			}

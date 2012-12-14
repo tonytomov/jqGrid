@@ -80,7 +80,7 @@ $.jgrid.extend({
 					var permutation = [];
 					th.each(function() {
 						var id = $(">div", this).get(0).id.replace(/^jqgh_/, "").replace(tid,"");
-							if (id in cmMap) {
+							if (cmMap.hasOwnProperty(id)) {
 								permutation.push(cmMap[id]);
 							}
 					});
@@ -169,8 +169,8 @@ $.jgrid.extend({
                     "close": function() {
                         opts.cleanup(true);
                     },
-					"modal" : opts.modal ? opts.modal : false,
-					"resizable": opts.resizable ? opts.resizable : true,
+					"modal" : opts.modal || false,
+					"resizable": opts.resizable || true,
                     "width": opts.width+20
                 }, opts.dialog_opts || {});
             },
@@ -403,13 +403,15 @@ $.jgrid.extend({
 							var dropmodel = $("#"+$.jgrid.jqID(this.id)).jqGrid('getGridParam','colModel');
 							try {
 								for (var key in getdata) {
-									nm = dropmodel[j].name;
-									if( !(nm == 'cb' || nm =='rn' || nm == 'subgrid' )) {
-										if(getdata.hasOwnProperty(key) && dropmodel[j]) {
-											tmpdata[nm] = getdata[key];
+									if (getdata.hasOwnProperty(key)) {
+										nm = dropmodel[j].name;
+										if( !(nm == 'cb' || nm =='rn' || nm == 'subgrid' )) {
+											if(getdata.hasOwnProperty(key) && dropmodel[j]) {
+												tmpdata[nm] = getdata[key];
+											}
 										}
+										j++;
 									}
-									j++;
 								}
 								getdata = tmpdata;
 							} catch (e) {}
@@ -419,7 +421,7 @@ $.jgrid.extend({
 							//parameters to this callback - event, element, data to be inserted, sender, reciever
 							// should return object which will be inserted into the reciever
 							var datatoinsert = opts.beforedrop.call(this,ev,ui,getdata,$('#'+$.jgrid.jqID($t.p.id)),$(this));
-							if (typeof datatoinsert != "undefined" && datatoinsert !== null && typeof datatoinsert == "object") { getdata = datatoinsert; }
+							if (datatoinsert !== undefined && datatoinsert !== null && typeof datatoinsert == "object") { getdata = datatoinsert; }
 						}
 						if(ui.helper.dropped) {
 							var grid;
