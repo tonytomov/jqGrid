@@ -3034,8 +3034,8 @@ $.jgrid.extend({
 			}
 			return true;
 		}
-		if(typeof(action) == "undefined") { action = "get"; }
-		if(typeof(format) != "boolean") { format  = true; }
+		if(typeof action === "undefined") { action = "get"; }
+		if(typeof format !== "boolean") { format  = true; }
 		action = action.toLowerCase();
 		this.each(function(){
 			var t = this, vl;
