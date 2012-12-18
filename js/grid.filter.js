@@ -255,7 +255,7 @@ $.fn.jqFilter = function( arg ) {
 				}
 				for (i = 0; i < that.p.columns.length; i++) {
 				// but show only serchable and serchhidden = true fields
-					var searchable = (typeof that.p.columns[i].search === 'undefined') ?  true: that.p.columns[i].search ,
+					var searchable = (that.p.columns[i].search === undefined) ?  true: that.p.columns[i].search ,
 					hidden = (that.p.columns[i].hidden === true),
 					ignoreHiding = (that.p.columns[i].searchoptions.searchhidden === true);
 					if ((ignoreHiding && searchable) || (searchable && !hidden)) {
@@ -386,7 +386,7 @@ $.fn.jqFilter = function( arg ) {
 				// operators
 				var s ="", so = 0;
 				aoprs = [];
-				$.each(that.p.ops, function() { aoprs.push(this.name) });
+				$.each(that.p.ops, function() { aoprs.push(this.name); });
 				for ( i = 0 ; i < op.length; i++) {
 					ina = $.inArray(op[i],aoprs);
 					if(ina !== -1) {
@@ -400,7 +400,7 @@ $.fn.jqFilter = function( arg ) {
 				$(".selectopts",trpar).empty().append( s );
 				$(".selectopts",trpar)[0].selectedIndex = 0;
 				if( $.browser.msie && $.browser.version < 9) {
-					var sw = parseInt($("select.selectopts",trpar)[0].offsetWidth) + 1;
+					var sw = parseInt($("select.selectopts",trpar)[0].offsetWidth, 10) + 1;
 					$(".selectopts",trpar).width( sw );
 					$(".selectopts",trpar).css("width","auto");
 				}
@@ -426,7 +426,7 @@ $.fn.jqFilter = function( arg ) {
 			var j=0;
 			for (i = 0; i < that.p.columns.length; i++) {
 				// but show only serchable and serchhidden = true fields
-		        var searchable = (typeof that.p.columns[i].search === 'undefined') ?  true: that.p.columns[i].search ,
+		        var searchable = (that.p.columns[i].search === undefined) ?  true: that.p.columns[i].search ,
 		        hidden = (that.p.columns[i].hidden === true),
 				ignoreHiding = (that.p.columns[i].searchoptions.searchhidden === true);
 				if ((ignoreHiding && searchable) || (searchable && !hidden)) {
@@ -484,7 +484,7 @@ $.fn.jqFilter = function( arg ) {
 			else if  (cm.searchtype === 'string') {op = p.stropts;}
 			else {op = that.p.numopts;}
 			str="";
-			$.each(that.p.ops, function() { aoprs.push(this.name) });
+			$.each(that.p.ops, function() { aoprs.push(this.name); });
 			for ( i = 0; i < op.length; i++) {
 				ina = $.inArray(op[i],aoprs);
 				if(ina !== -1) {
@@ -564,9 +564,8 @@ $.fn.jqFilter = function( arg ) {
 
 			if (s === "()") {
 				return ""; // ignore groups that don't have rules
-			} else {
-				return s;
 			}
+			return s;
 		};
 		this.getStringForRule = function(rule) {
 			var opUF = "",opC="", i, cm, ret, val,
@@ -584,6 +583,7 @@ $.fn.jqFilter = function( arg ) {
 					break;
 				}
 			}
+			if (cm == null) { return ""; }
 			val = rule.data;
 			if(opC === 'bw' || opC === 'bn') { val = val+"%"; }
 			if(opC === 'ew' || opC === 'en') { val = "%"+val; }
@@ -662,9 +662,8 @@ $.fn.jqFilter = function( arg ) {
 
 				if (s === "()") {
 					return ""; // ignore groups that don't have rules
-				} else {
-					return s;
 				}
+				return s;
 			}
 
 			return getStringForGroup(this.p.filter);
