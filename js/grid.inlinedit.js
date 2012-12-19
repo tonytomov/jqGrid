@@ -1,4 +1,6 @@
-;(function($){
+/*jshint eqeqeq:false, eqnull:true, devel:true */
+/*global jQuery */
+(function($){
 /**
  * jqGrid extension for manipulating Grid Data
  * Tony Tomov tony@trirand.com
@@ -7,8 +9,6 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/ 
-//jsHint options
-/*global alert, $, jQuery */
 "use strict";
 $.jgrid.inlineEdit = $.jgrid.inlineEdit || {};
 $.jgrid.extend({
@@ -277,9 +277,9 @@ $.jgrid.extend({
 						tmp[n] = $.jgrid.htmlDecode(v);
 					});
 				}
-				var resp = $($t).jqGrid("setRowData",rowid,tmp);
+				var k, resp = $($t).jqGrid("setRowData",rowid,tmp);
 				$(ind).attr("editable","0");
-				for( var k=0;k<$t.p.savedRow.length;k++) {
+				for(k=0;k<$t.p.savedRow.length;k++) {
 					if( $t.p.savedRow[k].id == oldRowId) {fr = k; break;}
 				}
 				if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
@@ -299,7 +299,7 @@ $.jgrid.extend({
 					complete: function(res,stat){
 						$("#lui_"+$.jgrid.jqID($t.p.id)).hide();
 						if (stat === "success"){
-							var ret = true, sucret;
+							var ret = true, sucret, k;
 							sucret = $($t).triggerHandler("jqGridInlineSuccessSaveRow", [res, rowid, o]);
 							if (!$.isArray(sucret)) {sucret = [true, tmp];}
 							if (sucret[0] && $.isFunction(o.successfunc)) {sucret = o.successfunc.call($t, res);}							
@@ -319,7 +319,7 @@ $.jgrid.extend({
 								tmp = $.extend({},tmp, tmp2);
 								$($t).jqGrid("setRowData",rowid,tmp);
 								$(ind).attr("editable","0");
-								for( var k=0;k<$t.p.savedRow.length;k++) {
+								for(k=0;k<$t.p.savedRow.length;k++) {
 									if( $t.p.savedRow[k].id == rowid) {fr = k; break;}
 								}
 								if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
@@ -374,11 +374,11 @@ $.jgrid.extend({
 		// End compatible
 
 		return this.each(function(){
-			var $t= this, fr, ind, ares={};
+			var $t= this, fr, ind, ares={}, k;
 			if (!$t.grid ) { return; }
 			ind = $($t).jqGrid("getInd",rowid,true);
 			if(ind === false) {return;}
-			for( var k=0;k<$t.p.savedRow.length;k++) {
+			for(k=0;k<$t.p.savedRow.length;k++) {
 				if( $t.p.savedRow[k].id == rowid) {fr = k; break;}
 			}
 			if(fr >= 0) {
@@ -388,7 +388,7 @@ $.jgrid.extend({
 					} catch (e) {}
 				}
 				$.each($t.p.colModel, function(){
-					if(this.editable === true && this.name in $t.p.savedRow[fr] ) {
+					if(this.editable === true && $t.p.savedRow[fr].hasOwnProperty(this.name)) {
 						ares[this.name] = $t.p.savedRow[fr][this.name];
 					}
 				});
