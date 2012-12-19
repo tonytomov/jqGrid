@@ -7,7 +7,8 @@
  * http://www.gnu.org/licenses/gpl.html
 **/
 
-/*global document, jQuery, $ */
+/*jshint eqeqeq:false */
+/*global jQuery */
 (function($) {
 "use strict";
 $.jgrid.extend({
@@ -127,7 +128,7 @@ $.jgrid.extend({
 	},
 	setTreeGrid : function() {
 		return this.each(function (){
-			var $t = this, i=0, pico, ecol = false, nm, key, dupcols=[];
+			var $t = this, i=0, pico, ecol = false, nm, key, tkey, dupcols=[];
 			if(!$t.p.treeGrid) {return;}
 			if(!$t.p.treedatatype ) {$.extend($t.p,{treedatatype: $t.p.datatype});}
 			$t.p.subGrid = false;$t.p.altRows =false;
@@ -167,7 +168,7 @@ $.jgrid.extend({
 					}
 					i++;
 					//
-					for(var tkey in $t.p.treeReader) {
+					for(tkey in $t.p.treeReader) {
 						if($t.p.treeReader.hasOwnProperty(tkey) && $t.p.treeReader[tkey] == nm) {
 							dupcols.push(nm);
 						}
@@ -510,7 +511,7 @@ $.jgrid.extend({
 	},
 	delTreeNode : function (rowid) {
 		return this.each(function () {
-			var $t = this, rid = $t.p.localReader.id,
+			var $t = this, rid = $t.p.localReader.id, i,
 			left = $t.p.treeReader.left_field,
 			right = $t.p.treeReader.right_field, myright, width, res, key;
 			if(!$t.grid || !$t.p.treeGrid) {return;}
@@ -521,7 +522,7 @@ $.jgrid.extend({
 				width = myright -  parseInt($t.p.data[rc][left],10) + 1;
 				var dr = $($t).jqGrid("getFullTreeNode",$t.p.data[rc]);
 				if(dr.length>0){
-					for (var i=0;i<dr.length;i++){
+					for (i=0;i<dr.length;i++){
 						$($t).jqGrid("delRowData",dr[i][rid]);
 					}
 				}
