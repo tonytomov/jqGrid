@@ -16,7 +16,7 @@ $.extend($.jgrid,{
 		pgtext : "Halaman {0} dari {1}"
 	},
 	search : {
-		caption: "Mencari...",
+		caption: "Pencarian",
 		Find: "Cari !",
 		Reset: "Segarkan",
 		odata : ['sama dengan', 'tidak sama dengan', 'kurang dari', 
@@ -91,9 +91,9 @@ $.extend($.jgrid,{
 		model : "Lebar dari colNames <> colModel!"
 	},
 	formatter : {
-		integer : {thousandsSeparator: ",", defaultValue: '0'},
-		number : {decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2, defaultValue: '0.00'},
-		currency : {decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2, prefix: "", suffix:"", defaultValue: '0.00'},
+		integer : {thousandsSeparator: ".", defaultValue: '0'},
+		number : {decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, defaultValue: '0'},
+		currency : {decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "Rp. ", suffix:"", defaultValue: '0'},
 		date : {
 			dayNames:   [
 				"Ming", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab",
