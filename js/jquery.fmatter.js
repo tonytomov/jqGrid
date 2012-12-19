@@ -12,8 +12,10 @@
  * http://www.gnu.org/licenses/gpl-2.0.html
  * 
 **/
+/*jshint eqeqeq:false */
+/*global jQuery */
 
-;(function($) {
+(function($) {
 "use strict";	
 	$.fmatter = {};
 	//opts can be id:row id for the row, rowdata:the data for the row, colmodel:the column model for this column
@@ -99,8 +101,8 @@
 					nDotIndex = sOutput.lastIndexOf(sDecimalSeparator);
 					nDotIndex = (nDotIndex > -1) ? nDotIndex : sOutput.length;
 					var sNewOutput = sOutput.substring(nDotIndex);
-					var nCount = -1;
-					for (var i=nDotIndex; i>0; i--) {
+					var nCount = -1, i;
+					for (i=nDotIndex; i>0; i--) {
 						nCount++;
 						if ((nCount%3 === 0) && (i !== nDotIndex) && (!bNegative || (i > 1))) {
 							sNewOutput = sThousandsSeparator + sNewOutput;
@@ -361,8 +363,8 @@
 			if(msl) {scell = cellval.split(",");scell = $.map(scell,function(n){return $.trim(n);});}
 			if ($.fmatter.isString(oSelect)) {
 				// mybe here we can use some caching with care ????
-				var so = oSelect.split(delim), j=0;
-				for(var i=0; i<so.length;i++){
+				var so = oSelect.split(delim), j=0, i;
+				for(i=0; i<so.length;i++){
 					sv = so[i].split(sep);
 					if(sv.length > 2 ) {
 						sv[1] = $.map(sv,function(n,i){if(i>0) {return n;}}).join(sep);
@@ -569,8 +571,8 @@
 			scell = [], sv;
 			if(msl) {scell = cell.split(",");scell = $.map(scell,function(n){return $.trim(n);});}
 			if ($.fmatter.isString(oSelect)) {
-				var so = oSelect.split(delim), j=0;
-				for(var i=0; i<so.length;i++){
+				var so = oSelect.split(delim), j=0, i;
+				for(i=0; i<so.length;i++){
 					sv = so[i].split(sep);
 					if(sv.length > 2 ) {
 						sv[1] = $.map(sv,function(n,i){if(i>0) {return n;}}).join(sep);
