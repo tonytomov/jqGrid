@@ -1,4 +1,6 @@
-;(function($){
+/*jshint eqeqeq:false */
+/*global jQuery */
+(function($){
 /*
  * jqGrid common function
  * Tony Tomov tony@trirand.com
@@ -7,8 +9,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
 */
-/*global jQuery, $ */
-
+"use strict";
 $.extend($.jgrid,{
 // Modal functions
 	showModal : function(h) {
@@ -58,7 +59,7 @@ $.extend($.jgrid,{
 		$(mh).append("<span class='ui-jqdialog-title'>"+p.caption+"</span>");
 		var ahr= $("<a href='javascript:void(0)' class='ui-jqdialog-titlebar-close ui-corner-all'></a>")
 		.hover(function(){ahr.addClass('ui-state-hover');},
-			   function(){ahr.removeClass('ui-state-hover');})
+			function(){ahr.removeClass('ui-state-hover');})
 		.append("<span class='ui-icon ui-icon-closethick'></span>");
 		$(mh).append(ahr);
 		if(rtlsup) {
@@ -204,9 +205,9 @@ $.extend($.jgrid,{
 		var jm = mopt.jqModal, self = this;
 		if($.fn.jqm && !jm) { jm = false; }
 		// in case there is no jqModal
-		var buttstr ="";
+		var buttstr ="", i;
 		if(mopt.buttons.length > 0) {
-			for(var i=0;i<mopt.buttons.length;i++) {
+			for(i=0;i<mopt.buttons.length;i++) {
 				if(mopt.buttons[i].id === undefined) { mopt.buttons[i].id = "info_button_"+i; }
 				buttstr += "<a href='javascript:void(0)' id='"+mopt.buttons[i].id+"' class='fm-button ui-state-default ui-corner-all'>"+mopt.buttons[i].text+"</a>";
 			}
@@ -407,8 +408,8 @@ $.extend($.jgrid,{
 							if (msl && ($.inArray($.trim(sv[1]), ovm)>-1 || $.inArray($.trim(sv[0]), ovm)>-1)) {ov.selected ="selected";}
 						}
 					} else if (typeof options.value === 'object') {
-						var oSv = options.value;
-						for ( var key in oSv) {
+						var oSv = options.value, key;
+						for (key in oSv) {
 							if (oSv.hasOwnProperty(key ) ){
 								ov = document.createElement("option");
 								ov.setAttribute("role","option");
@@ -476,7 +477,8 @@ $.extend($.jgrid,{
 			return (((year % 4 === 0) && ( year % 100 !== 0 || (year % 400 === 0))) ? 29 : 28 );
 		},
 		daysArray = function(n) {
-			for (var i = 1; i <= n; i++) {
+			var i;
+			for (i = 1; i <= n; i++) {
 				this[i] = 31;
 				if (i==4 || i==6 || i==9 || i==11) {this[i] = 30;}
 				if (i==2) {this[i] = 29;}
@@ -499,8 +501,8 @@ $.extend($.jgrid,{
 		format = format.split(sep);
 		date = date.split(sep);
 		if (date.length != 3) { return false; }
-		var j=-1,yln, dln=-1, mln=-1;
-		for(var i=0;i<format.length;i++){
+		var j=-1,yln, dln=-1, mln=-1, i;
+		for(i=0;i<format.length;i++){
 			var dv =  isNaN(date[i]) ? 0 : parseInt(date[i],10);
 			tsp[format[i]] = dv;
 			yln = format[i];
@@ -645,14 +647,9 @@ $.extend($.jgrid,{
 				if( !(rqfield === false && $.jgrid.isEmpty(val)) ) {
 					if($.isFunction(edtrul.custom_func)) {
 						var ret = edtrul.custom_func.call(g,val,nm);
-						if($.isArray(ret)) {
-							return ret;
-						} else {
-							return [false,$.jgrid.edit.msg.customarray,""];
-						}
-					} else {
-						return [false,$.jgrid.edit.msg.customfcheck,""];
+						return $.isArray(ret) ? ret : [false,$.jgrid.edit.msg.customarray,""];
 					}
+					return [false,$.jgrid.edit.msg.customfcheck,""];
 				}
 			}
 		}
