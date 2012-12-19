@@ -1,4 +1,6 @@
-;(function($){
+/*jshint eqeqeq:false */
+/*global jQuery */
+(function($){
 /*
 **
  * jqGrid extension for cellediting Grid Data
@@ -175,9 +177,9 @@ $.jgrid.extend({
 								if (v===undefined) { throw "e2";} else { v2=v; }
 							} else { throw "e1"; }
 						} catch (e) {
-							if (e=="e1") { $.jgrid.info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.nodefined,jQuery.jgrid.edit.bClose); }
-							if (e=="e2") { $.jgrid.info_dialog(jQuery.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.novalue,jQuery.jgrid.edit.bClose); }
-							else {$.jgrid.info_dialog(jQuery.jgrid.errors.errcap,e.message,jQuery.jgrid.edit.bClose); }
+							if (e=="e1") { $.jgrid.info_dialog($.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.nodefined,$.jgrid.edit.bClose); }
+							if (e=="e2") { $.jgrid.info_dialog($.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.novalue,$.jgrid.edit.bClose); }
+							else {$.jgrid.info_dialog($.jgrid.errors.errcap,e.message,$.jgrid.edit.bClose); }
 						}
 						break;
 				}
@@ -313,10 +315,10 @@ $.jgrid.extend({
 	},
 	nextCell : function (iRow,iCol) {
 		return this.each(function (){
-			var $t = this, nCol=false;
+			var $t = this, nCol=false, i;
 			if (!$t.grid || $t.p.cellEdit !== true) {return;}
 			// try to find next editable cell
-			for (var i=iCol+1; i<$t.p.colModel.length; i++) {
+			for (i=iCol+1; i<$t.p.colModel.length; i++) {
 				if ( $t.p.colModel[i].editable ===true) {
 					nCol = i; break;
 				}
@@ -332,10 +334,10 @@ $.jgrid.extend({
 	},
 	prevCell : function (iRow,iCol) {
 		return this.each(function (){
-			var $t = this, nCol=false;
+			var $t = this, nCol=false, i;
 			if (!$t.grid || $t.p.cellEdit !== true) {return;}
 			// try to find next editable cell
-			for (var i=iCol-1; i>=0; i--) {
+			for (i=iCol-1; i>=0; i--) {
 				if ( $t.p.colModel[i].editable ===true) {
 					nCol = i; break;
 				}
