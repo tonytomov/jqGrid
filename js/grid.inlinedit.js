@@ -20,17 +20,17 @@ $.jgrid.extend({
 		if( $.type(args[0]) === "object" ) {
 			o = args[0];
 		} else {
-			if (typeof keys !== "undefined") { o.keys = keys; }
+			if (keys !== undefined) { o.keys = keys; }
 			if ($.isFunction(oneditfunc)) { o.oneditfunc = oneditfunc; }
 			if ($.isFunction(successfunc)) { o.successfunc = successfunc; }
-			if (typeof url !== "undefined") { o.url = url; }
-			if (typeof extraparam !== "undefined") { o.extraparam = extraparam; }
+			if (url !== undefined) { o.url = url; }
+			if (extraparam !== undefined) { o.extraparam = extraparam; }
 			if ($.isFunction(aftersavefunc)) { o.aftersavefunc = aftersavefunc; }
 			if ($.isFunction(errorfunc)) { o.errorfunc = errorfunc; }
 			if ($.isFunction(afterrestorefunc)) { o.afterrestorefunc = afterrestorefunc; }
 			// last two not as param, but as object (sorry)
-			//if (typeof restoreAfterError !== "undefined") { o.restoreAfterError = restoreAfterError; }
-			//if (typeof mtype !== "undefined") { o.mtype = mtype || "POST"; }			
+			//if (restoreAfterError !== undefined) { o.restoreAfterError = restoreAfterError; }
+			//if (mtype !== undefined) { o.mtype = mtype || "POST"; }			
 		}
 		o = $.extend(true, {
 			keys : false,
@@ -81,7 +81,7 @@ $.jgrid.extend({
 							else { $(this).append(elc); }
 							$.jgrid.bindEv( elc, opt, $t);
 							//Again IE
-							if(cm[i].edittype == "select" && typeof(cm[i].editoptions)!=="undefined" && cm[i].editoptions.multiple===true  && typeof(cm[i].editoptions.dataUrl)==="undefined" && $.browser.msie) {
+							if(cm[i].edittype == "select" && cm[i].editoptions!==undefined && cm[i].editoptions.multiple===true  && cm[i].editoptions.dataUrl===undefined && $.browser.msie) {
 								$(elc).width($(elc).width());
 							}
 							cnt++;
@@ -131,8 +131,8 @@ $.jgrid.extend({
 			o = args[0];
 		} else {
 			if ($.isFunction(successfunc)) { o.successfunc = successfunc; }
-			if (typeof url !== "undefined") { o.url = url; }
-			if (typeof extraparam !== "undefined") { o.extraparam = extraparam; }
+			if (url !== undefined) { o.url = url; }
+			if (extraparam !== undefined) { o.extraparam = extraparam; }
 			if ($.isFunction(aftersavefunc)) { o.aftersavefunc = aftersavefunc; }
 			if ($.isFunction(errorfunc)) { o.errorfunc = errorfunc; }
 			if ($.isFunction(afterrestorefunc)) { o.afterrestorefunc = afterrestorefunc; }
@@ -155,7 +155,7 @@ $.jgrid.extend({
 		ind = $($t).jqGrid("getInd",rowid,true);
 		if(ind === false) {return success;}
 		editable = $(ind).attr("editable");
-		o.url = o.url ? o.url : $t.p.editurl;
+		o.url = o.url || $t.p.editurl;
 		if (editable==="1") {
 			var cm;
 			$('td[role="gridcell"]',ind).each(function(i) {
@@ -267,7 +267,7 @@ $.jgrid.extend({
 					}
 					// TODO: to test the case of frozen columns
 				}
-				if(typeof($t.p.inlineData) == 'undefined') { $t.p.inlineData ={}; }
+				if($t.p.inlineData === undefined) { $t.p.inlineData ={}; }
 				tmp = $.extend({},tmp,$t.p.inlineData,o.extraparam);
 			}
 			if (o.url == 'clientArray') {
@@ -306,7 +306,7 @@ $.jgrid.extend({
 							if($.isArray(sucret)) {
 								// expect array - status, data, rowid
 								ret = sucret[0];
-								tmp = sucret[1] ? sucret[1] : tmp;
+								tmp = sucret[1] || tmp;
 							} else {
 								ret = sucret;
 							}
