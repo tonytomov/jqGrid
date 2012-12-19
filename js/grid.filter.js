@@ -25,9 +25,11 @@
       ]
 }
 */
-/*global jQuery, $, window, navigator */
+/*jshint eqeqeq:false, eqnull:true, devel:true */
+/*global jQuery */
 
 (function ($) {
+"use strict";
 
 $.fn.jqFilter = function( arg ) {
 	if (typeof arg === 'string') {
@@ -426,8 +428,8 @@ $.fn.jqFilter = function( arg ) {
 			var j=0;
 			for (i = 0; i < that.p.columns.length; i++) {
 				// but show only serchable and serchhidden = true fields
-		        var searchable = (that.p.columns[i].search === undefined) ?  true: that.p.columns[i].search ,
-		        hidden = (that.p.columns[i].hidden === true),
+				var searchable = (that.p.columns[i].search === undefined) ? true: that.p.columns[i].search,
+				hidden = (that.p.columns[i].hidden === true),
 				ignoreHiding = (that.p.columns[i].searchoptions.searchhidden === true);
 				if ((ignoreHiding && searchable) || (searchable && !hidden)) {
 					selected = "";
@@ -455,9 +457,9 @@ $.fn.jqFilter = function( arg ) {
 			}
 			var ruleDataInput = $.jgrid.createEl(cm.inputtype,cm.searchoptions, rule.data, true, that.p.ajaxSelectOptions, true);
 			if(rule.op == 'nu' || rule.op == 'nn') {
-                		$(ruleDataInput).attr('readonly','true');
-                		$(ruleDataInput).attr('disabled','true');
-            		} //retain the state of disabled text fields in case of null ops
+				$(ruleDataInput).attr('readonly','true');
+				$(ruleDataInput).attr('disabled','true');
+			} //retain the state of disabled text fields in case of null ops
 			// dropdown for: choosing operator
 			var ruleOperatorSelect = $("<select class='selectopts'></select>");
 			ruleOperatorTd.append(ruleOperatorSelect);
@@ -718,7 +720,7 @@ $.extend($.fn.jqFilter,{
 	},
 	addFilter: function (pfilter) {
 		if (typeof pfilter === "string") {
-			pfilter = jQuery.jgrid.parse( pfilter );
+			pfilter = $.jgrid.parse( pfilter );
 	}
 		this.each(function(){
 			this.p.filter = pfilter;
@@ -729,4 +731,3 @@ $.extend($.fn.jqFilter,{
 
 });
 })(jQuery);
-
