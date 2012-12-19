@@ -10,7 +10,8 @@
  * Date: 2012-08-28
  */
 //jsHint options
-/*global document, window, jQuery, DOMParser, ActiveXObject, $, alert */
+/*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
+/*global jQuery, DOMParser, ActiveXObject */
 
 (function ($) {
 "use strict";
@@ -346,11 +347,10 @@ $.extend($.jgrid,{
 				return self._getOrder(d, by, dir, type, dfmt);
 			}
 			q++;
-			var values=self._getGroup(d,by,dir,type,dfmt);
-			var results=[];
-			for(var i=0;i<values.length;i++){
-				var sorted=self._doSort(values[i].items,q);
-				for(var j=0;j<sorted.length;j++){
+			var values=self._getGroup(d,by,dir,type,dfmt), results=[], i, j, sorted;
+			for(i=0;i<values.length;i++){
+				sorted=self._doSort(values[i].items,q);
+				for(j=0;j<sorted.length;j++){
 					results.push(sorted[j]);
 				}
 			}
@@ -2882,9 +2882,9 @@ $.jgrid.extend({
 					});
 					if(t.p.datatype == 'local') {
 						var id = $.jgrid.stripPref(t.p.idPrefix, rowid),
-						pos = t.p._index[id];
+						pos = t.p._index[id], key;
 						if(t.p.treeGrid) {
-							for(var key in t.p.treeReader ){
+							for(key in t.p.treeReader){
 								if(t.p.treeReader.hasOwnProperty(key)) {
 									delete lcdata[t.p.treeReader[key]];
 								}
@@ -3029,12 +3029,13 @@ $.jgrid.extend({
 	footerData : function(action,data, format) {
 		var nm, success=false, res={}, title;
 		function isEmpty(obj) {
-			for(var i in obj) {
+			var i;
+			for(i in obj) {
 				if (obj.hasOwnProperty(i)) { return false; }
 			}
 			return true;
 		}
-		if(typeof action === "undefined") { action = "get"; }
+		if(action === undefined) { action = "get"; }
 		if(typeof format !== "boolean") { format  = true; }
 		action = action.toLowerCase();
 		this.each(function(){
