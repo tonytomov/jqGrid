@@ -4,20 +4,18 @@
 $.extend($.jgrid,{
 	template : function(format){ //jqgformat
 		var args = $.makeArray(arguments).slice(1), j, al = args.length;
-		if(format===undefined) { format = ""; }
+		if(format==null) { format = ""; }
 		return format.replace(/\{([\w\-]+)(?:\:([\w\.]*)(?:\((.*?)?\))?)?\}/g, function(m,i){
 			if(!isNaN(parseInt(i,10))) {
 				return args[parseInt(i,10)];
-			} else {
-				for(j=0; j < al;j++) {
-					if($.isArray(args[j])) {
-						var nmarr = args[ j ],
-						k = nmarr.length;
-						while(k--) {
-							if(i===nmarr[k].nm) {
-								return nmarr[k].v;
-								break;
-							}
+			}
+			for(j=0; j < al;j++) {
+				if($.isArray(args[j])) {
+					var nmarr = args[ j ],
+					k = nmarr.length;
+					while(k--) {
+						if(i===nmarr[k].nm) {
+							return nmarr[k].v;
 						}
 					}
 				}
@@ -34,7 +32,7 @@ $.jgrid.extend({
 				if(!grp.groupField.length) {
 					$t.p.grouping = false;
 				} else {
-					if ( typeof(grp.visibiltyOnNextGrouping) === 'undefined') {
+					if (grp.visibiltyOnNextGrouping === undefined) {
 						grp.visibiltyOnNextGrouping = [];
 					}
 
@@ -48,10 +46,10 @@ $.jgrid.extend({
 						if(!grp.groupText[i]) {
 							grp.groupText[i] = '{0}';
 						}
-						if( typeof(grp.groupColumnShow[i]) !== 'boolean') {
+						if( typeof grp.groupColumnShow[i] !== 'boolean') {
 							grp.groupColumnShow[i] = true;
 						}
-						if( typeof(grp.groupSummary[i]) !== 'boolean') {
+						if( typeof grp.groupSummary[i] !== 'boolean') {
 							grp.groupSummary[i] = false;
 						}
 						if(grp.groupColumnShow[i] === true) {
@@ -100,7 +98,7 @@ $.jgrid.extend({
 						});
 						grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
 					} else {
-						if( (typeof(v) !== "object" && (grp.lastvalues[i] !== v) ) ) {
+						if( typeof v !== "object" && grp.lastvalues[i] !== v ) {
 							// This record is not in same group as previous one
 							grp.groups.push({idx:i,dataIndex:fieldName,value:v, startRow: irow, cnt:1, summary : [] } );
 							grp.lastvalues[i] = v;
@@ -212,9 +210,8 @@ $.jgrid.extend({
 		return this.each(function(){
 			var $t = this,
 			grp = $t.p.groupingView,
-			str = "", icon = "", hid, clid, pmrtl = grp.groupCollapse ? grp.plusicon : grp.minusicon, gv, cp=[], ii, len =grp.groupField.length;
+			str = "", icon = "", hid, clid, pmrtl = grp.groupCollapse ? grp.plusicon : grp.minusicon, gv, cp=[], len =grp.groupField.length;
 			pmrtl += " tree-wrap-"+$t.p.direction; 
-			ii = 0;
 			$.each($t.p.colModel, function (i,n){
 				for(var ii=0;ii<len;ii++) {
 					if(grp.groupField[ii] === n.name ) {
@@ -290,7 +287,7 @@ $.jgrid.extend({
 									if(cm[k].summaryTpl)  {
 										tplfld = cm[k].summaryTpl;
 									}
-									if(typeof(this.st) === 'string' && this.st.toLowerCase() === 'avg') {
+									if(typeof this.st === 'string' && this.st.toLowerCase() === 'avg') {
 										if(this.v && grlen > 0) {
 											this.v = (this.v/grlen);
 										}
@@ -319,14 +316,14 @@ $.jgrid.extend({
 	groupingGroupBy : function (name, options ) {
 		return this.each(function(){
 			var $t = this;
-			if(typeof(name) === "string") {
+			if(typeof name === "string") {
 				name = [name];
 			}
 			var grp = $t.p.groupingView;
 			$t.p.grouping = true;
 
 			//Set default, in case visibilityOnNextGrouping is undefined 
-			if (typeof grp.visibiltyOnNextGrouping === "undefined") {
+			if (grp.visibiltyOnNextGrouping === undefined) {
 				grp.visibiltyOnNextGrouping = [];
 			}
 			var i;
@@ -348,7 +345,7 @@ $.jgrid.extend({
 	groupingRemove : function (current) {
 		return this.each(function(){
 			var $t = this;
-			if(typeof(current) === 'undefined') {
+			if(current === undefined) {
 				current = true;
 			}
 			$t.p.grouping = false;
@@ -392,9 +389,8 @@ $.jgrid.extend({
 					if(v==="") {v=0;}
 					if(rc.hasOwnProperty(field)) {
 						return v+1;
-					} else {
-						return 0;
 					}
+					return 0;
 				},
 
 				avg: function() {
@@ -402,7 +398,7 @@ $.jgrid.extend({
 					// so use sum instead of duplicating the code (?)
 					return funcs.sum();
 				}
-			}
+			};
 
 			if(!funcs[fn]) {
 				throw ("jqGrid Grouping No such method: " + fn);
@@ -410,11 +406,10 @@ $.jgrid.extend({
 			var res = funcs[fn]();
 
 			if (round != null) {
-				if (roundType == 'fixed')
+				if (roundType == 'fixed') {
 					res = res.toFixed(round);
-				else {
+				} else {
 					var mul = Math.pow(10, round);
-
 					res = Math.round(res * mul) / mul;
 				}
 			}
