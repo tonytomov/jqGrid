@@ -1,5 +1,7 @@
+/*jshint eqeqeq:false, eqnull:true */
+/*global jQuery */
 // Grouping module
-;(function($){
+(function($){
 "use strict";
 $.extend($.jgrid,{
 	template : function(format){ //jqgformat
@@ -26,8 +28,7 @@ $.extend($.jgrid,{
 $.jgrid.extend({
 	groupingSetup : function () {
 		return this.each(function (){
-			var $t = this,
-			grp = $t.p.groupingView;
+			var $t = this, i, j, cml, cm = $t.p.colModel, grp = $t.p.groupingView;
 			if(grp !== null && ( (typeof grp === 'object') || $.isFunction(grp) ) ) {
 				if(!grp.groupField.length) {
 					$t.p.grouping = false;
@@ -39,7 +40,7 @@ $.jgrid.extend({
 					grp.lastvalues=[];
 					grp.groups =[];
 					grp.counters =[];
-					for(var i=0;i<grp.groupField.length;i++) {
+					for(i=0;i<grp.groupField.length;i++) {
 						if(!grp.groupOrder[i]) {
 							grp.groupOrder[i] = 'asc';
 						}
@@ -61,8 +62,7 @@ $.jgrid.extend({
 						}
 					}
 					grp.summary =[];
-					var cm = $t.p.colModel;
-					for(var j=0, cml = cm.length; j < cml; j++) {
+					for(j=0, cml = cm.length; j < cml; j++) {
 						if(cm[j].summaryType) {
 							grp.summary.push({nm:cm[j].name,st:cm[j].summaryType, v: '', sr: cm[j].summaryRound, srt: cm[j].summaryRoundType || 'round'});
 						}
@@ -75,12 +75,12 @@ $.jgrid.extend({
 	},
 	groupingPrepare : function (rData, gdata, record, irow) {
 		this.each(function(){
-			var grp = this.p.groupingView, $t= this;
-			var grlen = grp.groupField.length, 
+			var grp = this.p.groupingView, $t= this, i,
+			grlen = grp.groupField.length, 
 			fieldName,
 			v,
 			changed = 0;
-			for(var i=0;i<grlen;i++) {
+			for(i=0;i<grlen;i++) {
 				fieldName = grp.groupField[i];
 				v = record[fieldName];
 				if( v !== undefined ) {
@@ -213,7 +213,8 @@ $.jgrid.extend({
 			str = "", icon = "", hid, clid, pmrtl = grp.groupCollapse ? grp.plusicon : grp.minusicon, gv, cp=[], len =grp.groupField.length;
 			pmrtl += " tree-wrap-"+$t.p.direction; 
 			$.each($t.p.colModel, function (i,n){
-				for(var ii=0;ii<len;ii++) {
+				var ii;
+				for(ii=0;ii<len;ii++) {
 					if(grp.groupField[ii] === n.name ) {
 						cp[ii] = i;
 						break;
@@ -222,7 +223,7 @@ $.jgrid.extend({
 			});
 			var toEnd = 0;
 			function findGroupIdx( ind , offset, grp) {
-				var ret = false;
+				var ret = false, i;
 				if(offset===0) {
 					ret = grp[ind];
 				} else {
@@ -230,7 +231,7 @@ $.jgrid.extend({
 					if(id===0) { 
 						ret = grp[ind]; 
 					}  else {
-						for(var i=ind;i >= 0; i--) {
+						for(i=ind;i >= 0; i--) {
 							if(grp[i].idx === id-offset) {
 								ret = grp[i];
 								break;
@@ -255,9 +256,9 @@ $.jgrid.extend({
 				str += "<tr id=\""+hid+"\" role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\" colspan=\""+colspans+"\">"+icon+$.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary)+"</td></tr>";
 				var leaf = len-1 === n.idx; 
 				if( leaf ) {
-					var gg = grp.groups[i+1];
+					var gg = grp.groups[i+1], k, kk, ik;
 					var end = gg !== undefined ?  grp.groups[i+1].startRow : grdata.length;
-					for(var kk=n.startRow;kk<end;kk++) {
+					for(kk=n.startRow;kk<end;kk++) {
 						str += grdata[kk].join('');
 					}
 					var jj;
@@ -269,7 +270,7 @@ $.jgrid.extend({
 						}
 						toEnd = grp.groupField.length - jj;
 					}
-					for (var ik = 0; ik < toEnd; ik++) {
+					for (ik = 0; ik < toEnd; ik++) {
 						if(!sumreverse[ik]) { continue; }
 						var hhdr = "";
 						if(grp.groupCollapse && !grp.showSummaryOnHide) {
@@ -279,7 +280,7 @@ $.jgrid.extend({
 						var fdata = findGroupIdx(i, ik, grp.groups),
 						cm = $t.p.colModel,
 						vv, grlen = fdata.cnt;
-						for(var k=0; k<colspans;k++) {
+						for(k=0; k<colspans;k++) {
 							var tmpdata = "<td "+$t.formatCol(k,1,'')+">&#160;</td>",
 							tplfld = "{0}";
 							$.each(fdata.summary,function(){
@@ -350,9 +351,9 @@ $.jgrid.extend({
 			}
 			$t.p.grouping = false;
 			if(current===true) {
-				var grp = $t.p.groupingView;
+				var grp = $t.p.groupingView, i;
 				// show previous hidden groups if they are hidden and weren't removed yet
-				for(var i=0;i<grp.groupField.length;i++) {
+				for(i=0;i<grp.groupField.length;i++) {
 				if (!grp.groupColumnShow[i] && grp.visibiltyOnNextGrouping[i]) {
 						$($t).jqGrid('showCol', grp.groupField);
 					}
