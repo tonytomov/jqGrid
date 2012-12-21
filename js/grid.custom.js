@@ -340,7 +340,7 @@ $.jgrid.extend({
 			$.each($t.p.colModel,function(){
 				var cm=this, thd , th, soptions,surl,self;
 				th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-"+$t.p.direction+"'></th>");
-				thd = $("<div style='width:100%;position:relative;height:100%;padding-right:0.3em;'></div>");
+				thd = $("<div style='position:relative;height:100%;padding-right:0.3em;'></div>");
 				if(this.hidden===true) { $(th).css("display","none");}
 				this.search = this.search === false ? false : true;
 				if(this.stype === undefined) {this.stype='text';}
