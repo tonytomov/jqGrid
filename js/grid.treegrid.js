@@ -7,7 +7,8 @@
  * http://www.gnu.org/licenses/gpl.html
 **/
 
-/*global document, jQuery, $ */
+/*jshint eqeqeq:false */
+/*global jQuery */
 (function($) {
 "use strict";
 $.jgrid.extend({
@@ -65,7 +66,7 @@ $.jgrid.extend({
 					ldat[isLeaf] = false;
 					lf="";
 				}
-				ldat[expanded] = ((ldat[expanded] == "true" || ldat[expanded] === true) ? true : false) && ldat[loaded];
+				ldat[expanded] = ((ldat[expanded] == "true" || ldat[expanded] === true) ? true : false) && (ldat[loaded] || ldat[loaded] === undefined);
 				if(ldat[expanded] === false) {
 					twrap += ((ldat[isLeaf] === true) ? "'" : $t.p.treeIcons.plus+" tree-plus treeclick'");
 				} else {
@@ -127,7 +128,7 @@ $.jgrid.extend({
 	},
 	setTreeGrid : function() {
 		return this.each(function (){
-			var $t = this, i=0, pico, ecol = false, nm, key, dupcols=[];
+			var $t = this, i=0, pico, ecol = false, nm, key, tkey, dupcols=[];
 			if(!$t.p.treeGrid) {return;}
 			if(!$t.p.treedatatype ) {$.extend($t.p,{treedatatype: $t.p.datatype});}
 			$t.p.subGrid = false;$t.p.altRows =false;
@@ -167,8 +168,8 @@ $.jgrid.extend({
 					}
 					i++;
 					//
-					for(var tkey in $t.p.treeReader) {
-						if($t.p.treeReader[tkey] == nm) {
+					for(tkey in $t.p.treeReader) {
+						if($t.p.treeReader.hasOwnProperty(tkey) && $t.p.treeReader[tkey] == nm) {
 							dupcols.push(nm);
 						}
 					}
@@ -510,7 +511,7 @@ $.jgrid.extend({
 	},
 	delTreeNode : function (rowid) {
 		return this.each(function () {
-			var $t = this, rid = $t.p.localReader.id,
+			var $t = this, rid = $t.p.localReader.id, i,
 			left = $t.p.treeReader.left_field,
 			right = $t.p.treeReader.right_field, myright, width, res, key;
 			if(!$t.grid || !$t.p.treeGrid) {return;}
@@ -521,7 +522,7 @@ $.jgrid.extend({
 				width = myright -  parseInt($t.p.data[rc][left],10) + 1;
 				var dr = $($t).jqGrid("getFullTreeNode",$t.p.data[rc]);
 				if(dr.length>0){
-					for (var i=0;i<dr.length;i++){
+					for (i=0;i<dr.length;i++){
 						$($t).jqGrid("delRowData",dr[i][rid]);
 					}
 				}
@@ -551,7 +552,7 @@ $.jgrid.extend({
 			}
 		});
 	},
-	addChildNode : function( nodeid, parentid, data ) {
+	addChildNode : function( nodeid, parentid, data, expandData ) {
 		//return this.each(function(){
 		var $t = this[0];
 		if(data) {
@@ -565,8 +566,8 @@ $.jgrid.extend({
 			right = $t.p.treeReader.right_field,
 			loaded = $t.p.treeReader.loaded,
 			method, parentindex, parentdata, parentlevel, i, len, max=0, rowind = parentid, leaf, maxright;
-
-			if ( typeof nodeid === 'undefined' || nodeid === null ) {
+			if(expandData===undefined) {expandData = false;}
+			if ( nodeid === undefined || nodeid === null ) {
 				i = $t.p.data.length-1;
 				if(	i>= 0 ) {
 					while(i>=0){max = Math.max(max, parseInt($t.p.data[i][$t.p.localReader.id],10)); i--;}
@@ -574,48 +575,48 @@ $.jgrid.extend({
 				nodeid = max+1;
 			}
 			var prow = $($t).jqGrid('getInd', parentid);
-				leaf = false;
-				// if not a parent we assume root
-				if ( parentid === undefined  || parentid === null || parentid==="") {
-					parentid = null;
-					rowind = null;
-					method = 'last';
-					parentlevel = $t.p.tree_root_level;
-					i = $t.p.data.length+1;
+			leaf = false;
+			// if not a parent we assume root
+			if ( parentid === undefined  || parentid === null || parentid==="") {
+				parentid = null;
+				rowind = null;
+				method = 'last';
+				parentlevel = $t.p.tree_root_level;
+				i = $t.p.data.length+1;
+			} else {
+				method = 'after';
+				parentindex = $t.p._index[parentid];
+				parentdata = $t.p.data[parentindex];
+				parentid = parentdata[$t.p.localReader.id];
+				parentlevel = parseInt(parentdata[level],10)+1;
+				var childs = $($t).jqGrid('getFullTreeNode', parentdata);
+				// if there are child nodes get the last index of it
+				if(childs.length) {
+					i = childs[childs.length-1][$t.p.localReader.id];
+					rowind = i;
+					i = $($t).jqGrid('getInd',rowind)+1;
 				} else {
-					method = 'after';
-					parentindex = $t.p._index[parentid];
-					parentdata = $t.p.data[parentindex];
-					parentid = parentdata[$t.p.localReader.id];
-					parentlevel = parseInt(parentdata[level],10)+1;
-					var childs = $($t).jqGrid('getFullTreeNode', parentdata);
-					// if there are child nodes get the last index of it
-					if(childs.length) {
-						i = childs[childs.length-1][$t.p.localReader.id];
-						rowind = i;
-						i = $($t).jqGrid('getInd',rowind)+1;
-					} else {
-						i = $($t).jqGrid('getInd', parentid)+1;
-					}
-					// if the node is leaf
-					if(parentdata[isLeaf]) {
-						leaf = true;
-						parentdata[expanded] = true;
-						//var prow = $($t).jqGrid('getInd', parentid);
-						$($t.rows[prow])
-							.find("span.cell-wrapperleaf").removeClass("cell-wrapperleaf").addClass("cell-wrapper")
-							.end()
-							.find("div.tree-leaf").removeClass($t.p.treeIcons.leaf+" tree-leaf").addClass($t.p.treeIcons.minus+" tree-minus");
-						$t.p.data[parentindex][isLeaf] = false;
-						parentdata[loaded] = true;
-					}
+					i = $($t).jqGrid('getInd', parentid)+1;
 				}
-				len = i+1;
+				// if the node is leaf
+				if(parentdata[isLeaf]) {
+					leaf = true;
+					parentdata[expanded] = true;
+					//var prow = $($t).jqGrid('getInd', parentid);
+					$($t.rows[prow])
+						.find("span.cell-wrapperleaf").removeClass("cell-wrapperleaf").addClass("cell-wrapper")
+						.end()
+						.find("div.tree-leaf").removeClass($t.p.treeIcons.leaf+" tree-leaf").addClass($t.p.treeIcons.minus+" tree-minus");
+					$t.p.data[parentindex][isLeaf] = false;
+					parentdata[loaded] = true;
+				}
+			}
+			len = i+1;
 
-			data[expanded] = false;
-			data[loaded] = true;
+			if( data[expanded]===undefined)  {data[expanded]= false;}
+			if( data[loaded]===undefined )  { data[loaded] = false;}
 			data[level] = parentlevel;
-			data[isLeaf] = true;
+			if( data[isLeaf]===undefined) {data[isLeaf]= true;}
 			if( $t.p.treeGridModel === "adjacency") {
 				data[parent] = parentid;
 			}
@@ -669,7 +670,7 @@ $.jgrid.extend({
 					$($t).jqGrid('addRowData', nodeid, data, method, rowind);
 					$($t).jqGrid('setTreeNode', i, len);
 			}
-			if(parentdata && !parentdata[expanded]) {
+			if(parentdata && !parentdata[expanded] && expandData) {
 				$($t.rows[prow])
 					.find("div.treeclick")
 					.click();

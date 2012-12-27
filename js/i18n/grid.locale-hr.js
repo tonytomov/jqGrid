@@ -1,8 +1,9 @@
-﻿;(function($){
+;(function($){
 /**
- * jqGrid Translation
- * Tony Tomov tony@trirand.com
- * http://trirand.com/blog/ 
+ * jqGrid Croatian Translation
+ * Version 1.0.1 (developed for jQuery Grid 4.4)
+ * msajko@gmail.com
+ * 
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
@@ -16,11 +17,11 @@ $.extend($.jgrid,{
 		pgtext : "Stranica {0} od {1}"
 	},
 	search : {
-		caption: "pretraživanje...",
-		Find: "Traži",
+		caption: "Traži...",
+		Find: "Pretraživanje",
 		Reset: "Poništi",
 		odata : ['jednak', 'nije identičan', 'manje', 'manje ili identično','veće','veše ili identično', 'počinje sa','ne počinje sa ','je u','nije u','završava sa','ne završava sa','sadrži','ne sadrži'],
-		groupOps: [	{ op: "U", text: "sve" },	{ op: "ILI",  text: "bilo koji" }	],
+		groupOps: [	{ op: "I", text: "sve" },	{ op: "ILI",  text: "bilo koji" }	],
 		matchText: " podudata se",
 		rulesText: " pravila"
 	},
@@ -37,8 +38,8 @@ $.extend($.jgrid,{
 		msg: {
 			required:"Polje je obavezno",
 			number:"Molim, unesite ispravan broj",
-			minValue:"vrijednost mora biti veća ili identična ",
-			maxValue:"vrijednost mora biti manja ili identična",
+			minValue:"Vrijednost mora biti veća ili identična ",
+			maxValue:"Vrijednost mora biti manja ili identična",
 			email: "neispravan e-mail",
 			integer: "Molim, unjeti ispravan cijeli broj (integer)",
 			date: "Molim, unjeti ispravan datum ",
@@ -61,13 +62,13 @@ $.extend($.jgrid,{
 		bCancel: "Odustani"
 	},
 	nav : {
-		edittext: "",
+		edittext: " ",
 		edittitle: "Promijeni obilježeni red",
-		addtext:"",
+		addtext:" ",
 		addtitle: "Dodaj novi red",
-		deltext: "",
+		deltext: " ",
 		deltitle: "Obriši obilježeni red",
-		searchtext: "",
+		searchtext: " ",
 		searchtitle: "Potraži zapise",
 		refreshtext: "",
 		refreshtitle: "Ponovo preuzmi podatke",
@@ -85,12 +86,12 @@ $.extend($.jgrid,{
 		errcap : "Greška",
 		nourl : "Nedostaje URL",
 		norecords: "Bez zapisa za obradu",
-		model : "Duljina colNames <> colModel!"
+		model : "colNames i colModel imaju različitu duljinu!"
 	},
 	formatter : {
-		integer : {thousandsSeparator: " ", defaultValue: '0'},
-		number : {decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2, defaultValue: '0.00'},
-		currency : {decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2, prefix: "", suffix:"", defaultValue: '0.00'},
+		integer : {thousandsSeparator: ".", defaultValue: '0'},
+		number : {decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, defaultValue: '0,00'},
+		currency : {decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "", suffix:" Kn", defaultValue: '0,00'},
 		date : {
 			dayNames:   [
 				"Ned", "Pon", "Uto", "Sri", "Čet", "Pet", "Sub",
@@ -105,17 +106,50 @@ $.extend($.jgrid,{
 			srcformat: 'Y-m-d',
 			newformat: 'd.m.Y.',
 			masks : {
-				ISO8601Long:"Y-m-d H:i:s",
-				ISO8601Short:"Y-m-d",
-				ShortDate: "j.n.Y.",
-				LongDate: "l, j. F Y",
-				FullDateTime: "l, d. F Y G:i:s",
-				MonthDay: "d. F",
-				ShortTime: "G:i",
-				LongTime: "G:i:s",
+				// see http://php.net/manual/en/function.date.php for PHP format used in jqGrid
+				// and see http://docs.jquery.com/UI/Datepicker/formatDate
+				// and https://github.com/jquery/globalize#dates for alternative formats used frequently
+				ISO8601Long: "Y-m-d H:i:s",
+				ISO8601Short: "Y-m-d",
+				// short date:
+				//    d - Day of the month, 2 digits with leading zeros
+				//    m - Numeric representation of a month, with leading zeros
+				//    Y - A full numeric representation of a year, 4 digits
+				ShortDate: "d.m.Y.",	// in jQuery UI Datepicker: "dd.mm.yy."
+				// long date:
+				//    l - A full textual representation of the day of the week
+				//    j - Day of the month without leading zeros
+				//    F - A full textual representation of a month
+				//    Y - A full numeric representation of a year, 4 digits
+				LongDate: "l, j. F Y", // in jQuery UI Datepicker: "dddd, d. MMMM yyyy"
+				// long date with long time:
+				//    l - A full textual representation of the day of the week
+				//    j - Day of the month without leading zeros
+				//    F - A full textual representation of a month
+				//    Y - A full numeric representation of a year, 4 digits
+				//    H - 24-hour format of an hour with leading zeros
+				//    i - Minutes with leading zeros
+				//    s - Seconds, with leading zeros
+				FullDateTime: "l, j. F Y H:i:s", // in jQuery UI Datepicker: "dddd, d. MMMM yyyy HH:mm:ss"
+				// month day:
+				//    d - Day of the month, 2 digits with leading zeros
+				//    F - A full textual representation of a month
+				MonthDay: "d F", // in jQuery UI Datepicker: "dd MMMM"
+				// short time (without seconds)
+				//    H - 24-hour format of an hour with leading zeros
+				//    i - Minutes with leading zeros
+				ShortTime: "H:i", // in jQuery UI Datepicker: "HH:mm"
+				// long time (with seconds)
+				//    H - 24-hour format of an hour with leading zeros
+				//    i - Minutes with leading zeros
+				//    s - Seconds, with leading zeros
+				LongTime: "H:i:s", // in jQuery UI Datepicker: "HH:mm:ss"
 				SortableDateTime: "Y-m-d\\TH:i:s",
 				UniversalSortableDateTime: "Y-m-d H:i:sO",
-				YearMonth: "F, Y"
+				// month with year
+				//    F - A full textual representation of a month
+				//    Y - A full numeric representation of a year, 4 digits
+				YearMonth: "F Y" // in jQuery UI Datepicker: "MMMM yyyy"
 			},
 			reformatAfterEdit : false
 		},

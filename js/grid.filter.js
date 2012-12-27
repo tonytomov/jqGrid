@@ -25,9 +25,11 @@
       ]
 }
 */
-/*global jQuery, $, window, navigator */
+/*jshint eqeqeq:false, eqnull:true, devel:true */
+/*global jQuery */
 
 (function ($) {
+"use strict";
 
 $.fn.jqFilter = function( arg ) {
 	if (typeof arg === 'string') {
@@ -255,7 +257,7 @@ $.fn.jqFilter = function( arg ) {
 				}
 				for (i = 0; i < that.p.columns.length; i++) {
 				// but show only serchable and serchhidden = true fields
-					var searchable = (typeof that.p.columns[i].search === 'undefined') ?  true: that.p.columns[i].search ,
+					var searchable = (that.p.columns[i].search === undefined) ?  true: that.p.columns[i].search ,
 					hidden = (that.p.columns[i].hidden === true),
 					ignoreHiding = (that.p.columns[i].searchoptions.searchhidden === true);
 					if ((ignoreHiding && searchable) || (searchable && !hidden)) {
@@ -386,7 +388,7 @@ $.fn.jqFilter = function( arg ) {
 				// operators
 				var s ="", so = 0;
 				aoprs = [];
-				$.each(that.p.ops, function() { aoprs.push(this.name) });
+				$.each(that.p.ops, function() { aoprs.push(this.name); });
 				for ( i = 0 ; i < op.length; i++) {
 					ina = $.inArray(op[i],aoprs);
 					if(ina !== -1) {
@@ -400,12 +402,13 @@ $.fn.jqFilter = function( arg ) {
 				$(".selectopts",trpar).empty().append( s );
 				$(".selectopts",trpar)[0].selectedIndex = 0;
 				if( $.browser.msie && $.browser.version < 9) {
-					var sw = parseInt($("select.selectopts",trpar)[0].offsetWidth) + 1;
+					var sw = parseInt($("select.selectopts",trpar)[0].offsetWidth, 10) + 1;
 					$(".selectopts",trpar).width( sw );
 					$(".selectopts",trpar).css("width","auto");
 				}
 				// data
 				$(".data",trpar).empty().append( elm );
+				$.jgrid.bindEv( elm, cm.searchoptions, that);
 				$(".input-elm",trpar).bind('change',function( e ) {
 					var tmo = $(this).hasClass("ui-autocomplete-input") ? 200 :0;
 					setTimeout(function(){
@@ -425,8 +428,8 @@ $.fn.jqFilter = function( arg ) {
 			var j=0;
 			for (i = 0; i < that.p.columns.length; i++) {
 				// but show only serchable and serchhidden = true fields
-		        var searchable = (typeof that.p.columns[i].search === 'undefined') ?  true: that.p.columns[i].search ,
-		        hidden = (that.p.columns[i].hidden === true),
+				var searchable = (that.p.columns[i].search === undefined) ? true: that.p.columns[i].search,
+				hidden = (that.p.columns[i].hidden === true),
 				ignoreHiding = (that.p.columns[i].searchoptions.searchhidden === true);
 				if ((ignoreHiding && searchable) || (searchable && !hidden)) {
 					selected = "";
@@ -453,7 +456,10 @@ $.fn.jqFilter = function( arg ) {
 				}
 			}
 			var ruleDataInput = $.jgrid.createEl(cm.inputtype,cm.searchoptions, rule.data, true, that.p.ajaxSelectOptions, true);
-
+			if(rule.op == 'nu' || rule.op == 'nn') {
+				$(ruleDataInput).attr('readonly','true');
+				$(ruleDataInput).attr('disabled','true');
+			} //retain the state of disabled text fields in case of null ops
 			// dropdown for: choosing operator
 			var ruleOperatorSelect = $("<select class='selectopts'></select>");
 			ruleOperatorTd.append(ruleOperatorSelect);
@@ -480,7 +486,7 @@ $.fn.jqFilter = function( arg ) {
 			else if  (cm.searchtype === 'string') {op = p.stropts;}
 			else {op = that.p.numopts;}
 			str="";
-			$.each(that.p.ops, function() { aoprs.push(this.name) });
+			$.each(that.p.ops, function() { aoprs.push(this.name); });
 			for ( i = 0; i < op.length; i++) {
 				ina = $.inArray(op[i],aoprs);
 				if(ina !== -1) {
@@ -497,7 +503,7 @@ $.fn.jqFilter = function( arg ) {
 			// is created previously
 			//ruleDataInput.setAttribute("type", "text");
 			ruleDataTd.append(ruleDataInput);
-
+			$.jgrid.bindEv( ruleDataInput, cm.searchoptions, that);
 			$(ruleDataInput)
 			.addClass("input-elm")
 			.bind('change', function() {
@@ -560,9 +566,8 @@ $.fn.jqFilter = function( arg ) {
 
 			if (s === "()") {
 				return ""; // ignore groups that don't have rules
-			} else {
-				return s;
 			}
+			return s;
 		};
 		this.getStringForRule = function(rule) {
 			var opUF = "",opC="", i, cm, ret, val,
@@ -580,6 +585,7 @@ $.fn.jqFilter = function( arg ) {
 					break;
 				}
 			}
+			if (cm == null) { return ""; }
 			val = rule.data;
 			if(opC === 'bw' || opC === 'bn') { val = val+"%"; }
 			if(opC === 'ew' || opC === 'en') { val = "%"+val; }
@@ -658,9 +664,8 @@ $.fn.jqFilter = function( arg ) {
 
 				if (s === "()") {
 					return ""; // ignore groups that don't have rules
-				} else {
-					return s;
 				}
+				return s;
 			}
 
 			return getStringForGroup(this.p.filter);
@@ -715,7 +720,7 @@ $.extend($.fn.jqFilter,{
 	},
 	addFilter: function (pfilter) {
 		if (typeof pfilter === "string") {
-			pfilter = jQuery.jgrid.parse( pfilter );
+			pfilter = $.jgrid.parse( pfilter );
 	}
 		this.each(function(){
 			this.p.filter = pfilter;
@@ -726,4 +731,3 @@ $.extend($.fn.jqFilter,{
 
 });
 })(jQuery);
-

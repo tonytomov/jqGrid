@@ -1,3 +1,5 @@
+/*jshint eqeqeq:false */
+/*global jQuery */
 (function($){
 /**
  * jqGrid extension for custom methods
@@ -10,14 +12,13 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/
-/*global jQuery, $ */
 "use strict";
 $.jgrid.extend({
 	getColProp : function(colname){
 		var ret ={}, $t = this[0];
 		if ( !$t.grid ) { return false; }
-		var cM = $t.p.colModel;
-		for ( var i =0;i<cM.length;i++ ) {
+		var cM = $t.p.colModel, i;
+		for ( i=0;i<cM.length;i++ ) {
 			if ( cM[i].name == colname ) {
 				ret = cM[i];
 				break;
@@ -30,10 +31,10 @@ $.jgrid.extend({
 		return this.each(function(){
 			if ( this.grid ) {
 				if ( obj ) {
-					var cM = this.p.colModel;
-					for ( var i =0;i<cM.length;i++ ) {
+					var cM = this.p.colModel, i;
+					for ( i=0;i<cM.length;i++ ) {
 						if ( cM[i].name == colname ) {
-							$.extend(this.p.colModel[i],obj);
+							$.extend(true, this.p.colModel[i],obj);
 							break;
 						}
 					}
@@ -43,10 +44,10 @@ $.jgrid.extend({
 	},
 	sortGrid : function(colname,reload, sor){
 		return this.each(function(){
-			var $t=this,idx=-1;
+			var $t=this,idx=-1,i;
 			if ( !$t.grid ) { return;}
 			if ( !colname ) { colname = $t.p.sortname; }
-			for ( var i=0;i<$t.p.colModel.length;i++ ) {
+			for ( i=0;i<$t.p.colModel.length;i++ ) {
 				if ( $t.p.colModel[i].index == colname || $t.p.colModel[i].name==colname ) {
 					idx = i;
 					break;
@@ -60,6 +61,44 @@ $.jgrid.extend({
 			}
 		});
 	},
+	clearBeforeUnload : function () {
+		return this.each(function(){
+			var grid = this.grid;
+			grid.emptyRows.call(this, true, true); // this work quick enough and reduce the size of memory leaks if we have someone
+
+			//$(document).unbind("mouseup"); // TODO add namespace
+			$(grid.hDiv).unbind("mousemove"); // TODO add namespace
+			$(this).unbind();
+
+			grid.dragEnd = null;
+			grid.dragMove = null;
+			grid.dragStart = null;
+			grid.emptyRows = null;
+			grid.populate = null;
+			grid.populateVisible = null;
+			grid.scrollGrid = null;
+			grid.selectionPreserver = null;
+
+			grid.bDiv = null;
+			grid.cDiv = null;
+			grid.hDiv = null;
+			grid.cols = null;
+			var i, l = grid.headers.length;
+			for (i = 0; i < l; i++) {
+				grid.headers[i].el = null;
+			}
+
+			this.formatCol = null;
+			this.sortData = null;
+			this.updatepager = null;
+			this.refreshIndex = null;
+			this.setHeadCheckBox = null;
+			this.constructTr = null;
+			this.formatter = null;
+			this.addXmlData = null;
+			this.addJSONData = null;
+		});
+	},
 	GridDestroy : function () {
 		return this.each(function(){
 			if ( this.grid ) { 
@@ -67,6 +106,7 @@ $.jgrid.extend({
 					$(this.p.pager).remove();
 				}
 				try {
+					$(this).jqGrid('clearBeforeUnload');
 					$("#gbox_"+$.jgrid.jqID(this.id)).remove();
 				} catch (_) {}
 			}
@@ -90,10 +130,11 @@ $.jgrid.extend({
 			} else {
 				$(newtable).insertBefore("#gbox_"+gid).show();
 			}
+			$(this).jqGrid('clearBeforeUnload');
 			$("#gbox_"+gid).remove();
 		});
 	},
-    setGridState : function(state) {
+	setGridState : function(state) {
 		return this.each(function(){
 			if ( !this.grid ) {return;}
 			var $t = this;
@@ -193,7 +234,7 @@ $.jgrid.extend({
 			};
 			var clearToolbar = function(trigger){
 				var sdata={}, j=0, nm;
-				trigger = (typeof trigger != 'boolean') ? true : trigger;
+				trigger = (typeof trigger !== 'boolean') ? true : trigger;
 				$.each($t.p.colModel,function(){
 					var v;
 					if(this.searchoptions && this.searchoptions.defaultValue !== undefined) { v = this.searchoptions.defaultValue; }
@@ -285,7 +326,7 @@ $.jgrid.extend({
 			function bindEvents(selector, events) {
 				var jElem = $(selector);
 				if (jElem[0]) {
-					jQuery.each(events, function() {
+					$.each(events, function() {
 						if (this.data !== undefined) {
 							jElem.bind(this.type, this.data, this.fn);
 						} else {
@@ -299,10 +340,10 @@ $.jgrid.extend({
 			$.each($t.p.colModel,function(){
 				var cm=this, thd , th, soptions,surl,self;
 				th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-"+$t.p.direction+"'></th>");
-				thd = $("<div style='width:100%;position:relative;height:100%;padding-right:0.3em;'></div>");
+				thd = $("<div style='position:relative;height:100%;padding-right:0.3em;'></div>");
 				if(this.hidden===true) { $(th).css("display","none");}
 				this.search = this.search === false ? false : true;
-				if(typeof this.stype == 'undefined' ) {this.stype='text';}
+				if(this.stype === undefined) {this.stype='text';}
 				soptions = $.extend({},this.searchoptions || {});
 				if(this.search){
 					switch (this.stype)
@@ -328,7 +369,7 @@ $.jgrid.extend({
 									if(soptions.attr) {$("select",self).attr(soptions.attr);}
 									$("select",self).css({width: "100%"});
 									// preserve autoserch
-									if(soptions.dataInit !== undefined) { soptions.dataInit($("select",self)[0]); }
+									if(soptions.dataInit !== undefined) { soptions.dataInit.call($t, $("select",self)[0]); }
 									if(soptions.dataEvents !== undefined) { bindEvents($("select",self)[0],soptions.dataEvents); }
 									if(p.autosearch===true){
 										$("select",self).change(function(){
@@ -354,17 +395,17 @@ $.jgrid.extend({
 								var elem = document.createElement("select");
 								elem.style.width = "100%";
 								$(elem).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
-								var so, sv, ov;
+								var so, sv, ov, key, k;
 								if(typeof oSv === "string") {
 									so = oSv.split(delim);
-									for(var k=0; k<so.length;k++){
+									for(k=0; k<so.length;k++){
 										sv = so[k].split(sep);
 										ov = document.createElement("option");
 										ov.value = sv[0]; ov.innerHTML = sv[1];
 										elem.appendChild(ov);
 									}
 								} else if(typeof oSv === "object" ) {
-									for ( var key in oSv) {
+									for (key in oSv) {
 										if(oSv.hasOwnProperty(key)) {
 											ov = document.createElement("option");
 											ov.value = key; ov.innerHTML = oSv[key];
@@ -374,7 +415,7 @@ $.jgrid.extend({
 								}
 								if(soptions.defaultValue !== undefined) { $(elem).val(soptions.defaultValue); }
 								if(soptions.attr) {$(elem).attr(soptions.attr);}
-								if(soptions.dataInit !== undefined) { soptions.dataInit(elem); }
+								if(soptions.dataInit !== undefined) { soptions.dataInit.call($t, elem); }
 								if(soptions.dataEvents !== undefined) { bindEvents(elem, soptions.dataEvents); }
 								$(thd).append(elem);
 								if(p.autosearch===true){
@@ -390,12 +431,12 @@ $.jgrid.extend({
 						var df = soptions.defaultValue !== undefined ? soptions.defaultValue: "";
 						$(thd).append("<input type='text' style='width:95%;padding:0px;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"' value='"+df+"'/>");
 						if(soptions.attr) {$("input",thd).attr(soptions.attr);}
-						if(soptions.dataInit !== undefined) { soptions.dataInit($("input",thd)[0]); }
+						if(soptions.dataInit !== undefined) { soptions.dataInit($t, $("input",thd)[0]); }
 						if(soptions.dataEvents !== undefined) { bindEvents($("input",thd)[0], soptions.dataEvents); }
 						if(p.autosearch===true){
 							if(p.searchOnEnter) {
 								$("input",thd).keypress(function(e){
-									var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+									var key = e.charCode || e.keyCode || 0;
 									if(key == 13){
 										triggerToolbar();
 										return false;
@@ -436,10 +477,21 @@ $.jgrid.extend({
 			this.toggleToolbar = toggleToolbar;
 		});
 	},
-
+	destroyFilterToolbar: function () {
+		return this.each(function () {
+			if (!this.ftoolbar) {
+				return;
+			}
+			this.triggerToolbar = null;
+			this.clearToolbar = null;
+			this.toggleToolbar = null;
+			this.ftoolbar = false;
+			$(this.grid.hDiv).find("table thead tr.ui-search-toolbar").remove();
+		});
+	},
 	destroyGroupHeader : function(nullHeader)
 	{
-		if(typeof(nullHeader) == 'undefined') {
+		if(nullHeader === undefined) {
 			nullHeader = true;
 		}
 		return this.each(function()
@@ -477,7 +529,6 @@ $.jgrid.extend({
 			}
 		});
 	},
-	
 	setGroupHeaders : function ( o ) {
 		o = $.extend({
 			useColSpanStyle :  false,
@@ -501,15 +552,15 @@ $.jgrid.extend({
 			$thead = $htable.children("thead"),
 			$theadInTable,
 			$firstHeaderRow = $htable.find(".jqg-first-row-header");
-			if($firstHeaderRow.html() === null) {
+			if($firstHeaderRow[0] === undefined) {
 				$firstHeaderRow = $('<tr>', {role: "row", "aria-hidden": "true"}).addClass("jqg-first-row-header").css("height", "auto");
 			} else {
 				$firstHeaderRow.empty();
 			}
 			var $firstRow,
 			inColumnHeader = function (text, columnHeaders) {
-				var i = 0, length = columnHeaders.length;
-				for (; i < length; i++) {
+				var length = columnHeaders.length, i;
+				for (i = 0; i < length; i++) {
 					if (columnHeaders[i].startColumnName === text) {
 						return i;
 					}
@@ -715,15 +766,15 @@ $.jgrid.extend({
 				// data stuff
 				//TODO support for setRowData
 				$("#gview_"+$.jgrid.jqID($t.p.id)).append($t.grid.fbDiv);
-				jQuery($t.grid.bDiv).scroll(function () {
-					jQuery($t.grid.fbDiv).scrollTop(jQuery(this).scrollTop());
+				$($t.grid.bDiv).scroll(function () {
+					$($t.grid.fbDiv).scrollTop($(this).scrollTop());
 				});
 				if($t.p.hoverrows === true) {
 					$("#"+$.jgrid.jqID($t.p.id)).unbind('mouseover').unbind('mouseout');
 				}
 				$($t).bind('jqGridAfterGridComplete.setFrozenColumns', function () {
 					$("#"+$.jgrid.jqID($t.p.id)+"_frozen").remove();
-					jQuery($t.grid.fbDiv).height( jQuery($t.grid.bDiv).height()-16);
+					$($t.grid.fbDiv).height($($t.grid.bDiv).height()-16);
 					var btbl = $("#"+$.jgrid.jqID($t.p.id)).clone(true);
 					$("tr",btbl).each(function(){
 						$("td:gt("+maxfrozen+")",this).remove();
