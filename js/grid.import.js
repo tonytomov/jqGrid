@@ -1,4 +1,6 @@
-;(function($){
+/*jshint eqeqeq:false, eqnull:true, devel:true */
+/*global jQuery, xmlJsonClass */
+(function($){
 /*
  * jqGrid extension for constructing Grid Data from external file
  * Tony Tomov tony@trirand.com
@@ -7,8 +9,6 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/ 
-//jsHint options
-/*global jQuery, $, alert, xmlJsonClass */
 
 "use strict";
     $.jgrid.extend({
@@ -33,11 +33,11 @@
                 var $t = this;
                 var xmlConvert = function (xml,o) {
                     var cnfg = $(o.xmlGrid.config,xml)[0];
-                    var xmldata = $(o.xmlGrid.data,xml)[0], jstr, jstr1;
+                    var xmldata = $(o.xmlGrid.data,xml)[0], jstr, jstr1, key;
                     if(xmlJsonClass.xml2json && $.jgrid.parse) {
                         jstr = xmlJsonClass.xml2json(cnfg," ");
                         jstr = $.jgrid.parse(jstr);
-                        for(var key in jstr) {
+                        for(key in jstr) {
                             if(jstr.hasOwnProperty(key)) {
                                 jstr1=jstr[key];
                             }
@@ -151,7 +151,7 @@
             var ret = null;
             this.each(function () {
                 if(!this.grid) { return;}
-                var gprm = $.extend(true, {},$(this).jqGrid("getGridParam"));
+                var key, gprm = $.extend(true, {},$(this).jqGrid("getGridParam"));
                 // we need to check for:
                 // 1.multiselect, 2.subgrid  3. treegrid and remove the unneded columns from colNames
                 if(gprm.rownumbers) {
@@ -168,7 +168,7 @@
                 }
                 gprm.knv = null;
                 if(gprm.treeGrid) {
-                    for (var key in gprm.treeReader) {
+                    for (key in gprm.treeReader) {
                         if(gprm.treeReader.hasOwnProperty(key)) {
                             gprm.colNames.splice(gprm.colNames.length-1);
                             gprm.colModel.splice(gprm.colModel.length-1);

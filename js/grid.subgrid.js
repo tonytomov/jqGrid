@@ -1,4 +1,6 @@
-;(function($){
+/*jshint eqeqeq:false */
+/*global jQuery */
+(function($){
 /**
  * jqGrid extension for SubGrid Data
  * Tony Tomov tony@trirand.com
@@ -11,7 +13,7 @@
 $.jgrid.extend({
 setSubGrid : function () {
 	return this.each(function (){
-		var $t = this, cm,
+		var $t = this, cm, i,
 		suboptions = {
 			plusicon : "ui-icon-plus",
 			minusicon : "ui-icon-minus",
@@ -27,7 +29,7 @@ setSubGrid : function () {
 		cm = $t.p.subGridModel;
 		if(cm[0]) {
 			cm[0].align = $.extend([],cm[0].align || []);
-			for(var i=0;i<cm[0].name.length;i++) { cm[0].align[i] = cm[0].align[i] || 'left';}
+			for(i=0;i<cm[0].name.length;i++) { cm[0].align[i] = cm[0].align[i] || 'left';}
 		}
 	});
 },
@@ -100,7 +102,7 @@ addSubGrid : function( pos, sind ) {
 			if (sjxml){
 				sgmap = ts.p.jsonReader.subgrid;
 				result = $.jgrid.getAccessor(sjxml, sgmap.root);
-				if ( typeof result !== 'undefined' ) {
+				if ( result !== undefined ) {
 					for (i=0;i<result.length;i++) {
 						cur = result[i];
 						trdiv = $("<tr class='ui-widget-content ui-subtblcell'></tr>");

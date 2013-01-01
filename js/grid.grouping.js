@@ -1,24 +1,26 @@
+/*jshint eqeqeq:false, eqnull:true */
+/*global jQuery */
 // Grouping module
-;(function($){
+(function($){
 "use strict";
 $.extend($.jgrid,{
 	template : function(format){ //jqgformat
-		var args = $.makeArray(arguments).slice(1), j = 1;
-		if(format===undefined) { format = ""; }
+		var args = $.makeArray(arguments).slice(1), j, al = args.length;
+		if(format==null) { format = ""; }
 		return format.replace(/\{([\w\-]+)(?:\:([\w\.]*)(?:\((.*?)?\))?)?\}/g, function(m,i){
 			if(!isNaN(parseInt(i,10))) {
-				j++;
 				return args[parseInt(i,10)];
-			} else {
-				var nmarr = args[ j ],
-				k = nmarr.length;
-				while(k--) {
-					if(i===nmarr[k].nm) {
-						return nmarr[k].v;
-						break;
+			}
+			for(j=0; j < al;j++) {
+				if($.isArray(args[j])) {
+					var nmarr = args[ j ],
+					k = nmarr.length;
+					while(k--) {
+						if(i===nmarr[k].nm) {
+							return nmarr[k].v;
+						}
 					}
 				}
-				j++;
 			}
 		});
 	}
@@ -26,30 +28,29 @@ $.extend($.jgrid,{
 $.jgrid.extend({
 	groupingSetup : function () {
 		return this.each(function (){
-			var $t = this,
-			grp = $t.p.groupingView;
+			var $t = this, i, j, cml, cm = $t.p.colModel, grp = $t.p.groupingView;
 			if(grp !== null && ( (typeof grp === 'object') || $.isFunction(grp) ) ) {
 				if(!grp.groupField.length) {
 					$t.p.grouping = false;
 				} else {
-					if ( typeof(grp.visibiltyOnNextGrouping) === 'undefined') {
+					if (grp.visibiltyOnNextGrouping === undefined) {
 						grp.visibiltyOnNextGrouping = [];
 					}
 
 					grp.lastvalues=[];
 					grp.groups =[];
 					grp.counters =[];
-					for(var i=0;i<grp.groupField.length;i++) {
+					for(i=0;i<grp.groupField.length;i++) {
 						if(!grp.groupOrder[i]) {
 							grp.groupOrder[i] = 'asc';
 						}
 						if(!grp.groupText[i]) {
 							grp.groupText[i] = '{0}';
 						}
-						if( typeof(grp.groupColumnShow[i]) !== 'boolean') {
+						if( typeof grp.groupColumnShow[i] !== 'boolean') {
 							grp.groupColumnShow[i] = true;
 						}
-						if( typeof(grp.groupSummary[i]) !== 'boolean') {
+						if( typeof grp.groupSummary[i] !== 'boolean') {
 							grp.groupSummary[i] = false;
 						}
 						if(grp.groupColumnShow[i] === true) {
@@ -61,8 +62,7 @@ $.jgrid.extend({
 						}
 					}
 					grp.summary =[];
-					var cm = $t.p.colModel;
-					for(var j=0, cml = cm.length; j < cml; j++) {
+					for(j=0, cml = cm.length; j < cml; j++) {
 						if(cm[j].summaryType) {
 							grp.summary.push({nm:cm[j].name,st:cm[j].summaryType, v: '', sr: cm[j].summaryRound, srt: cm[j].summaryRoundType || 'round'});
 						}
@@ -75,12 +75,12 @@ $.jgrid.extend({
 	},
 	groupingPrepare : function (rData, gdata, record, irow) {
 		this.each(function(){
-			var grp = this.p.groupingView, $t= this;
-			var grlen = grp.groupField.length, 
+			var grp = this.p.groupingView, $t= this, i,
+			grlen = grp.groupField.length, 
 			fieldName,
 			v,
 			changed = 0;
-			for(var i=0;i<grlen;i++) {
+			for(i=0;i<grlen;i++) {
 				fieldName = grp.groupField[i];
 				v = record[fieldName];
 				if( v !== undefined ) {
@@ -98,7 +98,7 @@ $.jgrid.extend({
 						});
 						grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
 					} else {
-						if( (typeof(v) !== "object" && (grp.lastvalues[i] !== v) ) ) {
+						if( typeof v !== "object" && grp.lastvalues[i] !== v ) {
 							// This record is not in same group as previous one
 							grp.groups.push({idx:i,dataIndex:fieldName,value:v, startRow: irow, cnt:1, summary : [] } );
 							grp.lastvalues[i] = v;
@@ -210,11 +210,11 @@ $.jgrid.extend({
 		return this.each(function(){
 			var $t = this,
 			grp = $t.p.groupingView,
-			str = "", icon = "", hid, clid, pmrtl = grp.groupCollapse ? grp.plusicon : grp.minusicon, gv, cp=[], ii, len =grp.groupField.length;
+			str = "", icon = "", hid, clid, pmrtl = grp.groupCollapse ? grp.plusicon : grp.minusicon, gv, cp=[], len =grp.groupField.length;
 			pmrtl += " tree-wrap-"+$t.p.direction; 
-			ii = 0;
 			$.each($t.p.colModel, function (i,n){
-				for(var ii=0;ii<len;ii++) {
+				var ii;
+				for(ii=0;ii<len;ii++) {
 					if(grp.groupField[ii] === n.name ) {
 						cp[ii] = i;
 						break;
@@ -223,17 +223,23 @@ $.jgrid.extend({
 			});
 			var toEnd = 0;
 			function findGroupIdx( ind , offset, grp) {
+				var ret = false, i;
 				if(offset===0) {
-					return grp[ind];
+					ret = grp[ind];
 				} else {
 					var id = grp[ind].idx;
-					if(id===0) { return grp[ind]; }
-					for(var i=ind;i >= 0; i--) {
-						if(grp[i].idx === id-offset) {
-							return grp[i];
+					if(id===0) { 
+						ret = grp[ind]; 
+					}  else {
+						for(i=ind;i >= 0; i--) {
+							if(grp[i].idx === id-offset) {
+								ret = grp[i];
+								break;
+							}
 						}
 					}
 				}
+				return ret;
 			}
 			var sumreverse = $.makeArray(grp.groupSummary);
 			sumreverse.reverse();
@@ -250,9 +256,9 @@ $.jgrid.extend({
 				str += "<tr id=\""+hid+"\" role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\" colspan=\""+colspans+"\">"+icon+$.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary)+"</td></tr>";
 				var leaf = len-1 === n.idx; 
 				if( leaf ) {
-					var gg = grp.groups[i+1];
+					var gg = grp.groups[i+1], k, kk, ik;
 					var end = gg !== undefined ?  grp.groups[i+1].startRow : grdata.length;
-					for(var kk=n.startRow;kk<end;kk++) {
+					for(kk=n.startRow;kk<end;kk++) {
 						str += grdata[kk].join('');
 					}
 					var jj;
@@ -264,7 +270,7 @@ $.jgrid.extend({
 						}
 						toEnd = grp.groupField.length - jj;
 					}
-					for (var ik = 0; ik < toEnd; ik++) {
+					for (ik = 0; ik < toEnd; ik++) {
 						if(!sumreverse[ik]) { continue; }
 						var hhdr = "";
 						if(grp.groupCollapse && !grp.showSummaryOnHide) {
@@ -274,7 +280,7 @@ $.jgrid.extend({
 						var fdata = findGroupIdx(i, ik, grp.groups),
 						cm = $t.p.colModel,
 						vv, grlen = fdata.cnt;
-						for(var k=0; k<colspans;k++) {
+						for(k=0; k<colspans;k++) {
 							var tmpdata = "<td "+$t.formatCol(k,1,'')+">&#160;</td>",
 							tplfld = "{0}";
 							$.each(fdata.summary,function(){
@@ -282,7 +288,7 @@ $.jgrid.extend({
 									if(cm[k].summaryTpl)  {
 										tplfld = cm[k].summaryTpl;
 									}
-									if(typeof(this.st) === 'string' && this.st.toLowerCase() === 'avg') {
+									if(typeof this.st === 'string' && this.st.toLowerCase() === 'avg') {
 										if(this.v && grlen > 0) {
 											this.v = (this.v/grlen);
 										}
@@ -311,14 +317,14 @@ $.jgrid.extend({
 	groupingGroupBy : function (name, options ) {
 		return this.each(function(){
 			var $t = this;
-			if(typeof(name) === "string") {
+			if(typeof name === "string") {
 				name = [name];
 			}
 			var grp = $t.p.groupingView;
 			$t.p.grouping = true;
 
 			//Set default, in case visibilityOnNextGrouping is undefined 
-			if (typeof grp.visibiltyOnNextGrouping === "undefined") {
+			if (grp.visibiltyOnNextGrouping === undefined) {
 				grp.visibiltyOnNextGrouping = [];
 			}
 			var i;
@@ -340,14 +346,14 @@ $.jgrid.extend({
 	groupingRemove : function (current) {
 		return this.each(function(){
 			var $t = this;
-			if(typeof(current) === 'undefined') {
+			if(current === undefined) {
 				current = true;
 			}
 			$t.p.grouping = false;
 			if(current===true) {
-				var grp = $t.p.groupingView;
+				var grp = $t.p.groupingView, i;
 				// show previous hidden groups if they are hidden and weren't removed yet
-				for(var i=0;i<grp.groupField.length;i++) {
+				for(i=0;i<grp.groupField.length;i++) {
 				if (!grp.groupColumnShow[i] && grp.visibiltyOnNextGrouping[i]) {
 						$($t).jqGrid('showCol', grp.groupField);
 					}
@@ -384,9 +390,8 @@ $.jgrid.extend({
 					if(v==="") {v=0;}
 					if(rc.hasOwnProperty(field)) {
 						return v+1;
-					} else {
-						return 0;
 					}
+					return 0;
 				},
 
 				avg: function() {
@@ -394,7 +399,7 @@ $.jgrid.extend({
 					// so use sum instead of duplicating the code (?)
 					return funcs.sum();
 				}
-			}
+			};
 
 			if(!funcs[fn]) {
 				throw ("jqGrid Grouping No such method: " + fn);
@@ -402,11 +407,10 @@ $.jgrid.extend({
 			var res = funcs[fn]();
 
 			if (round != null) {
-				if (roundType == 'fixed')
+				if (roundType == 'fixed') {
 					res = res.toFixed(round);
-				else {
+				} else {
 					var mul = Math.pow(10, round);
-
 					res = Math.round(res * mul) / mul;
 				}
 			}
