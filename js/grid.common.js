@@ -181,7 +181,6 @@ $.extend($.jgrid,{
 			try{$(':input:visible',selector)[0].focus();}catch(_){}
 		}
 	},
-
 	info_dialog : function(caption, content,c_b, modalopt) {
 		var mopt = {
 			width:290,
@@ -340,10 +339,19 @@ $.extend($.jgrid,{
 					$(elem).attr("aria-multiselectable","true");
 				} else { msl = false; }
 				if(options.dataUrl !== undefined) {
+					var rowid = options.name ? String(options.id).substring(0, String(options.id).length - String(options.name).length - 1) : String(options.id),
+						postData = options.postData || ajaxso.postData;
+
+					if ($t.p && $t.p.idPrefix) {
+						rowid = $.jgrid.stripPref($t.p.idPrefix, rowid);
+					} else {
+						postData = undefined; // don't use postData for searching from jqFilter. One can implement the feature in the future if required.
+					}
 					$.ajax($.extend({
 						url: options.dataUrl,
 						type : "GET",
 						dataType: "html",
+						data: $.isFunction(postData) ? postData.call($t, rowid, vl, String(options.name)) : postData,
 						context: {elem:elem, options:options, vl:vl},
 						success: function(data){
 							var a,	ovm = [], elem = this.elem, vl = this.vl,
