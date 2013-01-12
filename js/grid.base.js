@@ -2958,7 +2958,12 @@ $.jgrid.extend({
 					data = rdata[k];
 					row=[];
 					if(aradd) {
-						try {rowid = data[cnm];}
+						try {
+							rowid = data[cnm];
+							if(rowid===undefined) {
+								rowid = $.jgrid.randId();
+							}
+						}
 						catch (e) {rowid = $.jgrid.randId();}
 						cna = t.p.altRows === true ?  (t.rows.length-1)%2 === 0 ? cn : "" : "";
 					}
