@@ -327,8 +327,8 @@ $.extend($.jgrid,{
 				return 0;
 			}
 			if(!_usecase && typeof a !== "number" && typeof b !== "number" ) {
-				a=String(a).toLowerCase();
-				b=String(b).toLowerCase();
+				a=String(a);
+				b=String(b);
 			}
 			if(a<b){return -d;}
 			if(a>b){return d;}
@@ -378,8 +378,8 @@ $.extend($.jgrid,{
 				findSortKey = type;
 			} else {
 				findSortKey = function($cell) {
-					if(!$cell) {$cell ="";}
-					return $.trim(String($cell).toUpperCase());
+					$cell = $cell ? $.trim(String($cell)) : "";
+					return _usecase ? $cell : $cell.toLowerCase();
 				};
 			}
 			$.each(data,function(i,v){
