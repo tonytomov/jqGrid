@@ -78,23 +78,23 @@ $.jgrid.extend({
 			var grp = this.p.groupingView, $t= this, i,
 			grlen = grp.groupField.length, 
 			fieldName,
-            titleField,
+			titleField,
 			v,
 			displayName,
 			displayValue,
-            titleValue,
+			titleValue,
 			changed = 0;
 			for(i=0;i<grlen;i++) {
 				fieldName = grp.groupField[i];
 				displayName = grp.displayField[i];
-                titleField = grp.titleField == null ? null : grp.titleField[i];
+				titleField = grp.titleField == null ? null : grp.titleField[i];
 				v = record[fieldName];
 				displayValue = displayName == null ? null : record[displayName];
 
 				if( displayValue == null ) {
 					displayValue = v;
 				}
-                titleValue = titleField == null ? null : record[titleField];
+				titleValue = titleField == null ? null : record[titleField];
 				if( v !== undefined ) {
 					if(irow === 0 ) {
 						// First record always starts a new group
