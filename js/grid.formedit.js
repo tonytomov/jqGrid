@@ -495,6 +495,9 @@ $.jgrid.extend({
 						}
 						$("td:eq("+(cp-2)+")",trdata[0]).html(frmopt.label === undefined ? obj.p.colNames[i]: frmopt.label);
 						$("td:eq("+(cp-1)+")",trdata[0]).append(frmopt.elmprefix).append(elc).append(frmopt.elmsuffix);
+						if($.isFunction(opt.custom_value) && rowid !== "_empty" ) {
+							opt.custom_value.call($t, $("#"+nm,"#"+frmgr),'set',tmp);
+						}
 						$.jgrid.bindEv( elc, opt, $t);
 						retpos[cnt] = i;
 						cnt++;
