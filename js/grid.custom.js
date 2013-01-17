@@ -323,18 +323,6 @@ $.jgrid.extend({
 				}
 			};
 			// create the row
-			function bindEvents(selector, events) {
-				var jElem = $(selector);
-				if (jElem[0]) {
-					$.each(events, function() {
-						if (this.data !== undefined) {
-							jElem.bind(this.type, this.data, this.fn);
-						} else {
-							jElem.bind(this.type, this.fn);
-						}
-					});
-				}
-			}
 			var tr = $("<tr class='ui-search-toolbar' role='rowheader'></tr>");
 			var timeoutHnd;
 			$.each($t.p.colModel,function(){
@@ -369,8 +357,7 @@ $.jgrid.extend({
 									if(soptions.attr) {$("select",self).attr(soptions.attr);}
 									$("select",self).css({width: "100%"});
 									// preserve autoserch
-									if(soptions.dataInit !== undefined) { soptions.dataInit.call($t, $("select",self)[0]); }
-									if(soptions.dataEvents !== undefined) { bindEvents($("select",self)[0],soptions.dataEvents); }
+									$.jgrid.bindEv( $("select",self)[0], soptions, $t);
 									if(p.autosearch===true){
 										$("select",self).change(function(){
 											triggerToolbar();
@@ -415,8 +402,7 @@ $.jgrid.extend({
 								}
 								if(soptions.defaultValue !== undefined) { $(elem).val(soptions.defaultValue); }
 								if(soptions.attr) {$(elem).attr(soptions.attr);}
-								if(soptions.dataInit !== undefined) { soptions.dataInit.call($t, elem); }
-								if(soptions.dataEvents !== undefined) { bindEvents(elem, soptions.dataEvents); }
+								$.jgrid.bindEv( elem , soptions, $t);
 								$(thd).append(elem);
 								if(p.autosearch===true){
 									$(elem).change(function(){
@@ -431,8 +417,7 @@ $.jgrid.extend({
 						var df = soptions.defaultValue !== undefined ? soptions.defaultValue: "";
 						$(thd).append("<input type='text' style='width:95%;padding:0px;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"' value='"+df+"'/>");
 						if(soptions.attr) {$("input",thd).attr(soptions.attr);}
-						if(soptions.dataInit !== undefined) { soptions.dataInit.call($t, $("input",thd)[0]); }
-						if(soptions.dataEvents !== undefined) { bindEvents($("input",thd)[0], soptions.dataEvents); }
+						$.jgrid.bindEv( $("input",thd)[0], soptions, $t);
 						if(p.autosearch===true){
 							if(p.searchOnEnter) {
 								$("input",thd).keypress(function(e){
