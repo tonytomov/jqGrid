@@ -431,7 +431,7 @@ $.jgrid.extend({
 						var df = soptions.defaultValue !== undefined ? soptions.defaultValue: "";
 						$(thd).append("<input type='text' style='width:95%;padding:0px;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"' value='"+df+"'/>");
 						if(soptions.attr) {$("input",thd).attr(soptions.attr);}
-						if(soptions.dataInit !== undefined) { soptions.dataInit($t, $("input",thd)[0]); }
+						if(soptions.dataInit !== undefined) { soptions.dataInit.call($t, $("input",thd)[0]); }
 						if(soptions.dataEvents !== undefined) { bindEvents($("input",thd)[0], soptions.dataEvents); }
 						if(p.autosearch===true){
 							if(p.searchOnEnter) {
