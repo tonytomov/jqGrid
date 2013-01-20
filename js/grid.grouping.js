@@ -78,23 +78,27 @@ $.jgrid.extend({
 			var grp = this.p.groupingView, $t= this, i,
 			grlen = grp.groupField.length, 
 			fieldName,
+			titleField,
 			v,
 			displayName,
 			displayValue,
+			titleValue,
 			changed = 0;
 			for(i=0;i<grlen;i++) {
 				fieldName = grp.groupField[i];
 				displayName = grp.displayField[i];
+				titleField = grp.titleField == null ? null : grp.titleField[i];
 				v = record[fieldName];
 				displayValue = displayName == null ? null : record[displayName];
 
 				if( displayValue == null ) {
 					displayValue = v;
 				}
+				titleValue = titleField == null ? null : record[titleField];
 				if( v !== undefined ) {
 					if(irow === 0 ) {
 						// First record always starts a new group
-						grp.groups.push({idx:i,dataIndex:fieldName,value:v, displayValue: displayValue, startRow: irow, cnt:1, summary : [] } );
+						grp.groups.push({idx:i,dataIndex:fieldName,value:v, displayValue: displayValue, titleValue: titleValue, startRow: irow, cnt:1, summary : [] } );
 						grp.lastvalues[i] = v;
 						grp.counters[i] = {cnt:1, pos:grp.groups.length-1, summary: $.extend(true,[],grp.summary)};
 						$.each(grp.counters[i].summary,function() {
@@ -108,7 +112,7 @@ $.jgrid.extend({
 					} else {
 						if( typeof v !== "object" && grp.lastvalues[i] !== v ) {
 							// This record is not in same group as previous one
-							grp.groups.push({idx:i,dataIndex:fieldName,value:v, displayValue: displayValue, startRow: irow, cnt:1, summary : [] } );
+							grp.groups.push({idx:i,dataIndex:fieldName,value:v, displayValue: displayValue, titleValue: titleValue, startRow: irow, cnt:1, summary : [] } );
 							grp.lastvalues[i] = v;
 							changed = 1;
 							grp.counters[i] = {cnt:1, pos:grp.groups.length-1, summary: $.extend(true,[],grp.summary)};
@@ -123,7 +127,7 @@ $.jgrid.extend({
 						} else {
 							if (changed === 1) {
 								// This group has changed because an earlier group changed.
-								grp.groups.push({idx:i,dataIndex:fieldName,value:v, displayValue: displayValue, startRow: irow, cnt:1, summary : [] } );
+								grp.groups.push({idx:i,dataIndex:fieldName,value:v, displayValue: displayValue, titleValue: titleValue, startRow: irow, cnt:1, summary : [] } );
 								grp.lastvalues[i] = v;
 								grp.counters[i] = {cnt:1, pos:grp.groups.length-1, summary: $.extend(true,[],grp.summary)};
 								$.each(grp.counters[i].summary,function() {
@@ -261,7 +265,8 @@ $.jgrid.extend({
 				} catch (egv) {
 					gv = n.displayValue;
 				}
-				str += "<tr id=\""+hid+"\" role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\" colspan=\""+colspans+"\">"+icon+$.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary)+"</td></tr>";
+				var title = n.titleValue == null ? '' : n.titleValue;
+				str += "<tr id=\""+hid+"\" role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+" "+clid+"\" title=\"" + title + "\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\" colspan=\""+colspans+"\">"+icon+$.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary)+"</td></tr>";
 				var leaf = len-1 === n.idx; 
 				if( leaf ) {
 					var gg = grp.groups[i+1], k, kk, ik;
