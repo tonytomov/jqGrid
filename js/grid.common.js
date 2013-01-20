@@ -278,7 +278,7 @@ $.extend($.jgrid,{
 	createEl : function(eltype,options,vl,autowidth, ajaxso) {
 		var elem = "", $t = this;
 		function setAttributes(elm, atr, exl ) {
-			var exclude = ['dataInit','dataEvents','dataUrl', 'buildSelect','sopt', 'searchhidden', 'defaultValue', 'attr'];
+			var exclude = ['dataInit','dataEvents','dataUrl', 'buildSelect','sopt', 'searchhidden', 'defaultValue', 'attr', 'custom_element', 'custom_value'];
 			if(exl !== undefined && $.isArray(exl)) {
 				$.merge(exclude, exl);
 			}
