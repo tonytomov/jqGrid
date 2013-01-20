@@ -408,8 +408,15 @@ $.jgrid.extend({
 						break;
 						case "select-multiple":
 							postdata[this.name]= $(this).val();
-							if(postdata[this.name]) {postdata[this.name] = postdata[this.name].join(",");}
-							else {postdata[this.name] ="";}
+							var nm = $(this).attr('name'), encToString = true;
+							$.each($t.p.colModel, function(){
+								if(this.name === nm && this.editoptions && this.editoptions.arrayValue === true)
+									encToString = false; 
+							});
+							if (encToString){
+								if(postdata[this.name]) {postdata[this.name] = postdata[this.name].join(",");}
+								else {postdata[this.name] ="";}
+							}
 							var selectedText = [];
 							$("option:selected",this).each(
 								function(i,selected){
