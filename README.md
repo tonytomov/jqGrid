@@ -12,6 +12,6 @@ JSP, ColdFusion, and Perl.
 jqGrid uses a jQuery Java Script Library and is written as plugin for that 
 package. For more information on jQuery, please refer to the jQuery web site.
 
-jqGrid's Home page can be found here.
+jqGrid's Home page can be found <a href="http://www.trirand.com/blog">here</a>.
 
 Working examples of jqGrid, with explanations, can be found here
