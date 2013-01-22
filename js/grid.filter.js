@@ -73,6 +73,7 @@ $.fn.jqFilter = function( arg ) {
 		],
 		numopts : ['eq','ne', 'lt', 'le', 'gt', 'ge', 'nu', 'nn', 'in', 'ni'],
 		stropts : ['eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn', 'in', 'ni'],
+		strarr : ['text', 'string', 'blob'],
 		_gridsopt : [], // grid translated strings, do not tuch
 		groupOps : [{ op: "AND", text: "AND" },	{ op: "OR",  text: "OR" }],
 		groupButton : true,
@@ -269,7 +270,7 @@ $.fn.jqFilter = function( arg ) {
 				var opr;
 				if( cm.searchoptions.sopt ) {opr = cm.searchoptions.sopt;}
 				else if(that.p.sopt) { opr= that.p.sopt; }
-				else if  (cm.searchtype === 'string' || cm.searchtype === 'text' ) {opr = that.p.stropts;}
+				else if  ( $.inArray(cm.searchtype, that.p.strarr) !== -1 ) {opr = that.p.stropts;}
 				else {opr = that.p.numopts;}
 
 				group.rules.push({
@@ -383,7 +384,7 @@ $.fn.jqFilter = function( arg ) {
 
 				if( cm.searchoptions.sopt ) {op = cm.searchoptions.sopt;}
 				else if(that.p.sopt) { op= that.p.sopt; }
-				else if  (cm.searchtype === 'string'|| cm.searchtype === 'text') {op = that.p.stropts;}
+				else if  ($.inArray(cm.searchtype, that.p.strarr) !== -1) {op = that.p.stropts;}
 				else {op = that.p.numopts;}
 				// operators
 				var s ="", so = 0;
@@ -483,7 +484,7 @@ $.fn.jqFilter = function( arg ) {
 			// populate drop down with all available operators
 			if( cm.searchoptions.sopt ) {op = cm.searchoptions.sopt;}
 			else if(that.p.sopt) { op= that.p.sopt; }
-			else if  (cm.searchtype === 'string' || cm.searchtype === 'text') {op = p.stropts;}
+			else if  ($.inArray(cm.searchtype, that.p.strarr) !== -1) {op = that.p.stropts;}
 			else {op = that.p.numopts;}
 			str="";
 			$.each(that.p.ops, function() { aoprs.push(this.name); });
