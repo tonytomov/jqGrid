@@ -2547,9 +2547,13 @@ $.fn.jqGrid = function( pin ) {
 		$("table:first",grid.bDiv).css({width:ts.p.tblwidth+"px"});
 		if( !$.support.tbody ) { //IE
 			if( $("tbody",this).length == 2 ) { $("tbody:gt(0)",this).remove();}
-			if( ts.p.multikey) {$(grid.bDiv).bind("selectstart",function(){return false;});}
-		} else {
-			if( ts.p.multikey) {$(grid.bDiv).bind("mousedown",function(){return false;});}
+		}
+		if(ts.p.multikey){
+			if( $.jgrid.msie) {
+				$(grid.bDiv).bind("selectstart",function(){return false;});
+			} else {
+				$(grid.bDiv).bind("mousedown",function(){return false;});
+			}
 		}
 		if(hg) {$(grid.bDiv).hide();}
 		grid.cDiv = document.createElement("div");
