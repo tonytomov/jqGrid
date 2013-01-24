@@ -402,7 +402,7 @@ $.fn.jqFilter = function( arg ) {
 				}
 				$(".selectopts",trpar).empty().append( s );
 				$(".selectopts",trpar)[0].selectedIndex = 0;
-				if( $.browser.msie && $.browser.version < 9) {
+				if( $.jgrid.msie && $.jgrid.msiever < 9) {
 					var sw = parseInt($("select.selectopts",trpar)[0].offsetWidth, 10) + 1;
 					$(".selectopts",trpar).width( sw );
 					$(".selectopts",trpar).css("width","auto");
