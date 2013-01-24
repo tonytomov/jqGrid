@@ -81,7 +81,7 @@ $.jgrid.extend({
 							else { $(this).append(elc); }
 							$.jgrid.bindEv( elc, opt, $t);
 							//Again IE
-							if(cm[i].edittype == "select" && cm[i].editoptions!==undefined && cm[i].editoptions.multiple===true  && cm[i].editoptions.dataUrl===undefined && $.browser.msie) {
+							if(cm[i].edittype == "select" && cm[i].editoptions!==undefined && cm[i].editoptions.multiple===true  && cm[i].editoptions.dataUrl===undefined && $.jgrid.msie) {
 								$(elc).width($(elc).width());
 							}
 							cnt++;
