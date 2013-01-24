@@ -2150,19 +2150,16 @@ $.fn.jqGrid = function( pin ) {
 			return j-ret;
 		},
 		getOffset = function (iCol) {
-			var i, ret = {}, brd1 = $.jgrid.cell_width ? 0 : ts.p.cellLayout;
-			ret[0] =  ret[1] = ret[2] = 0;
+			var i, ret = [0], brd1 = $.jgrid.cell_width ? 0 : ts.p.cellLayout;
 			for(i=0;i<=iCol;i++){
 				if(ts.p.colModel[i].hidden === false ) {
 					ret[0] += ts.p.colModel[i].width+brd1;
 				}
 			}
 			if(ts.p.direction=="rtl") { ret[0] = ts.p.width - ret[0]; }
-			ret[0] = ret[0] - ts.grid.bDiv.scrollLeft;
-			if($(ts.grid.cDiv).is(":visible")) {ret[1] += $(ts.grid.cDiv).height() +parseInt($(ts.grid.cDiv).css("padding-top"),10)+parseInt($(ts.grid.cDiv).css("padding-bottom"),10);}
-			if(ts.p.toolbar[0]===true && (ts.p.toolbar[1]=='top' || ts.p.toolbar[1]=='both')) {ret[1] += $(ts.grid.uDiv).height()+parseInt($(ts.grid.uDiv).css("border-top-width"),10)+parseInt($(ts.grid.uDiv).css("border-bottom-width"),10);}
-			if(ts.p.toppager) {ret[1] += $(ts.grid.topDiv).height()+parseInt($(ts.grid.topDiv).css("border-bottom-width"),10);}
-			ret[2] += $(ts.grid.bDiv).height() + $(ts.grid.hDiv).height();
+			ret[0] -= ts.grid.bDiv.scrollLeft;
+			ret.push($(ts.grid.hDiv).position().top);
+			ret.push($(ts.grid.bDiv).offset().top - $(ts.grid.hDiv).offset().top + $(ts.grid.bDiv).height());
 			return ret;
 		},
 		getColumnHeaderIndex = function (th) {
