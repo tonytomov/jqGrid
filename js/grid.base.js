@@ -958,7 +958,7 @@ $.fn.jqGrid = function( pin ) {
 			return;
 		}
 		var gv = $("<div class='ui-jqgrid-view'></div>"),
-		isMSIE = $.jqgrid.msie;
+		isMSIE = $.jgrid.msie;
 		ts.p.direction = $.trim(ts.p.direction.toLowerCase());
 		if($.inArray(ts.p.direction,["ltr","rtl"]) == -1) { ts.p.direction = "ltr"; }
 		dir = ts.p.direction;
@@ -968,7 +968,7 @@ $.fn.jqGrid = function( pin ) {
 		var eg = $("<div class='ui-jqgrid ui-widget ui-widget-content ui-corner-all'></div>");
 		$(eg).insertBefore(gv).attr({"id" : "gbox_"+this.id,"dir":dir});
 		$(gv).appendTo(eg).attr("id","gview_"+this.id);
-		$("<div class='ui-widget-overlay jqgrid-overlay' id='lui_"+this.id+"'></div>").append(ii).insertBefore(gv);
+		$("<div class='ui-widget-overlay jqgrid-overlay' id='lui_"+this.id+"'></div>").insertBefore(gv);
 		$("<div class='loading ui-state-default ui-state-active' id='load_"+this.id+"'>"+this.p.loadtext+"</div>").insertBefore(gv);
 		$(this).attr({cellspacing:"0",cellpadding:"0",border:"0","role":"grid","aria-multiselectable":!!this.p.multiselect,"aria-labelledby":"gbox_"+this.id});
 		var sortkeys = ["shiftKey","altKey","ctrlKey"],
