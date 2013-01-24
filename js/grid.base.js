@@ -34,7 +34,6 @@ $.extend($.jgrid,{
 	},
 	msie : navigator.appName == 'Microsoft Internet Explorer',
 	msiever : function () {
-		// http://msdn.microsoft.com/en-us/library/ms537509%28v=vs.85%29.aspx
 		var rv = -1;
 		var ua = navigator.userAgent;
 		var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
@@ -2541,7 +2540,7 @@ $.fn.jqGrid = function( pin ) {
 		grid.bDiv = document.createElement("div");
 		if(isMSIE) { if(String(ts.p.height).toLowerCase() === "auto") { ts.p.height = "100%"; } }
 		$(grid.bDiv)
-			.append($('<div style="position:relative;'+(isMSIE && $.jgrid.msiever < 8 ? "height:0.01%;" : "")+'"></div>').append('<div></div>').append(this))
+			.append($('<div style="position:relative;'+(isMSIE && $.jgrid.msiever() < 8 ? "height:0.01%;" : "")+'"></div>').append('<div></div>').append(this))
 			.addClass("ui-jqgrid-bdiv")
 			.css({ height: ts.p.height+(isNaN(ts.p.height)?"":"px"), width: (grid.width)+"px"})
 			.scroll(grid.scrollGrid);
