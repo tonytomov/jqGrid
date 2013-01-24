@@ -282,11 +282,7 @@ $.jgrid.extend({
 					$($t).jqGrid("restoreCell",iRow,iCol);
 				}
 			}
-			if ($.browser.opera) {
-				$("#"+$.jgrid.jqID($t.p.knv)).attr("tabindex","-1").focus();
-			} else {
-				window.setTimeout(function () { $("#"+$.jgrid.jqID($t.p.knv)).attr("tabindex","-1").focus();},0);
-			}
+			window.setTimeout(function () { $("#"+$.jgrid.jqID($t.p.knv)).attr("tabindex","-1").focus();},0);
 		});
 	},
 	restoreCell : function(iRow, iCol) {
