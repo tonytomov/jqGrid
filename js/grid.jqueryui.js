@@ -11,7 +11,7 @@
  * depends on jQuery UI 
 **/
 "use strict";
-if ($.browser.msie && $.browser.version==8) {
+if ($.jgrid.msie && $.jgrid.msiever==8) {
 	$.expr[":"].hidden = function(elem) {
 		return elem.offsetWidth === 0 || elem.offsetHeight === 0 ||
 			elem.style.display == "none";
