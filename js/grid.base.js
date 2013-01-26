@@ -1575,7 +1575,8 @@ $.fn.jqGrid = function( pin ) {
 				var s = 0, index, gor, ror, opr, rule;
 				if (group.groups != null && group.groups.length > 0) {
 					if (group.rules != null && group.rules.length > 0) {
-						// move rule inside if group as additional subgroup
+						// move the rules inside of the group so that the group
+						// has as additional subgroup with the rules 
 						group.groups.push({
 							groupOp: group.groupOp,
 							rules: group.rules,
