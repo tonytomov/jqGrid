@@ -1573,8 +1573,17 @@ $.fn.jqGrid = function( pin ) {
 			if (ts.p.ignoreCase) { query = query.ignoreCase(); }
 			function tojLinq ( group ) {
 				var s = 0, index, gor, ror, opr, rule;
-				if (group.groups != null) {
-					gor = group.groups.length && group.groupOp.toString().toUpperCase() === "OR";
+				if (group.groups != null && group.groups.length > 0) {
+					if (group.rules != null && group.rules.length > 0) {
+						// move rule inside if group as additional subgroup
+						group.groups.push({
+							groupOp: group.groupOp,
+							rules: group.rules,
+							groups: null
+						});
+						group.rules = null;
+					}
+					gor = group.groupOp.toString().toUpperCase() === "OR";
 					if (gor) {
 						query.orBegin();
 					}
@@ -1591,14 +1600,9 @@ $.fn.jqGrid = function( pin ) {
 						query.orEnd();
 					}
 				}
-				if (group.rules != null) {
-					//if(s>0) {
-					//	var result = query.select();
-					//	query = $.jgrid.from( result);
-					//	if (ts.p.ignoreCase) { query = query.ignoreCase(); } 
-					//}
+				if (group.rules != null && group.rules.length > 0) {
 					try{
-						ror = group.rules.length && group.groupOp.toString().toUpperCase() === "OR";
+						ror = group.groupOp.toString().toUpperCase() === "OR";
 						if (ror) {
 							query.orBegin();
 						}
