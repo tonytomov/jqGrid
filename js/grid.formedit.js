@@ -479,7 +479,7 @@ $.jgrid.extend({
 						if(tmp === "" && this.edittype == "select") {tmp = $("option:eq(0)",elc).text();}
 						if(rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate) {rp_ge[$t.p.id]._savedData[nm] = tmp;}
 						$(elc).addClass("FormElement");
-						if(this.edittype == 'text' || this.edittype == 'textarea') {
+						if( $.inArray(this.edittype, ['text','textarea','password','select']) > -1) {
 							$(elc).addClass("ui-widget-content ui-corner-all");
 						}
 						trdata = $(tb).find("tr[rowpos="+rp+"]");

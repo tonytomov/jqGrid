@@ -106,6 +106,7 @@ tr.ui-search-toolbar select {margin: 1px 0 0 0}
 .ui-jqdialog-content td.EditButton {text-align: right;border-top: 0 none;border-left: 0 none;border-right: 0 none; padding-bottom:5px; padding-top:5px;}
 .ui-jqdialog-content td.navButton {text-align: center; border-left: 0 none;border-top: 0 none;border-right: 0 none; padding-bottom:5px; padding-top:5px;}
 .ui-jqdialog-content input.FormElement {padding:.3em}
+.ui-jqdialog-content select.FormElement {padding:.3em}
 .ui-jqdialog-content .data-line {padding-top:.1em;border: 0 none;}
 
 .ui-jqdialog-content .CaptionTD {vertical-align: middle;border: 0 none; padding: 2px;white-space: nowrap;}
