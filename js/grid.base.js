@@ -700,6 +700,7 @@ $.fn.jqGrid = function( pin ) {
 			onRightClickRow: null,
 			onPaging: null,
 			onSelectAll: null,
+			onInitGrid : null,
 			loadComplete: null,
 			gridComplete: null,
 			loadError: null,
@@ -2657,6 +2658,8 @@ $.fn.jqGrid = function( pin ) {
 		ts.addXmlData = function(d) {addXmlData(d,ts.grid.bDiv);};
 		ts.addJSONData = function(d) {addJSONData(d,ts.grid.bDiv);};
 		this.grid.cols = this.rows[0].cells;
+		$(ts).triggerHandler("jqGridInitGrid");
+		if ($.isFunction( ts.p.onInitGrid )) { ts.p.onInitGrid.call(ts); }
 
 		populate();ts.p.hiddengrid=false;
 	});
