@@ -40,6 +40,6 @@
 	"docs": "http://www.trirand.com/jqgridwiki/doku.php",
 	"download": "http://www.trirand.com/blog/?page_id=6",
 	"dependencies": {
-		"jquery": "1.4 - 1.8"
+		"jquery": ">=1.4"
 	}
 }
