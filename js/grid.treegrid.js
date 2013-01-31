@@ -195,7 +195,7 @@ $.jgrid.extend({
 			rows = $t.rows;
 			$(childern).each(function(){
 				var id  = $.jgrid.getAccessor(this,$t.p.localReader.id);
-				$(rows.namedItem(id)).css("display","");
+				$('#'+id,'#'+$t.id+'_frozen, #'+$t.id).css("display","");
 				if(this[expanded]) {
 					$($t).jqGrid("expandRow",this);
 				}
@@ -212,7 +212,7 @@ $.jgrid.extend({
 			rows = $t.rows;
 			$(childern).each(function(){
 				var id  = $.jgrid.getAccessor(this,$t.p.localReader.id);
-				$(rows.namedItem(id)).css("display","none");
+				$('#'+id,'#'+$t.id+'_frozen, #'+$t.id).css("display","none");
 				if(this[expanded]){
 					$($t).jqGrid("collapseRow",this);
 				}
