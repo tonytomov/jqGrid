@@ -357,6 +357,7 @@ $.extend($.jgrid,{
 							var a,	ovm = [], elem = this.elem, vl = this.vl,
 							options = $.extend({},this.options),
 							msl = options.multiple===true;
+							data = $.trim( data )
 							if($.isFunction(options.buildSelect)) {
 								var b = options.buildSelect.call($t,data);
 								a = $(b).html();
