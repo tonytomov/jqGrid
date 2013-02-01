@@ -357,11 +357,7 @@ $.extend($.jgrid,{
 							var a,	ovm = [], elem = this.elem, vl = this.vl,
 							options = $.extend({},this.options),
 							msl = options.multiple===true;
-							if($.isFunction(options.buildSelect)) {
-								a = options.buildSelect.call($t,data);
-							} else {
-								a = data;
-							}
+							a = $.isFunction(options.buildSelect) ? options.buildSelect.call($t,data) : data;
 							if(typeof a === 'string') {
 								a = $( $.trim( a ) ).html();
 							}
