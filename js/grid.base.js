@@ -2151,12 +2151,7 @@ $.fn.jqGrid = function( pin ) {
 			return j-ret;
 		},
 		getOffset = function (iCol) {
-			var i, ret = [0], brd1 = $.jgrid.cell_width ? 0 : ts.p.cellLayout;
-			for(i=0;i<=iCol;i++){
-				if(ts.p.colModel[i].hidden === false ) {
-					ret[0] += ts.p.colModel[i].width+brd1;
-				}
-			}
+			var $th = $(ts.grid.headers[iCol].el), ret = [$th.position().left + $th.outerWidth()];
 			if(ts.p.direction=="rtl") { ret[0] = ts.p.width - ret[0]; }
 			ret[0] -= ts.grid.bDiv.scrollLeft;
 			ret.push($(ts.grid.hDiv).position().top);
