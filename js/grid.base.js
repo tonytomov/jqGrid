@@ -2016,6 +2016,7 @@ $.fn.jqGrid = function( pin ) {
 				var key = e.charCode || e.keyCode || 0;
 				if(key == 13) {
 					if(!clearVals('user')) { return false; }
+					$(this).val( intNum( $(this).val(), 1));
 					ts.p.page = ($(this).val()>0) ? $(this).val():ts.p.page;
 					populate();
 					return false;
