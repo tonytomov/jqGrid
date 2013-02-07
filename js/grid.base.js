@@ -2090,7 +2090,7 @@ $.fn.jqGrid = function( pin ) {
 				if(this.hidden === undefined) {this.hidden=false;}
 				if(ts.p.grouping && ts.p.autowidth) {
 					var ind = $.inArray(this.name, ts.p.groupingView.groupField);
-					if(ind !== -1) {
+					if(ind >= 0 && ts.p.groupingView.groupColumnShow.length > ind) {
 						this.hidden = !ts.p.groupingView.groupColumnShow[ind];
 					}
 				}
