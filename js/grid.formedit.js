@@ -1098,7 +1098,7 @@ $.jgrid.extend({
 					$("#nNew","#"+$.jgrid.jqID(IDs.themodal)).click(function(){
 						$(".confirm","#"+$.jgrid.jqID(IDs.themodal)).hide();
 						$("#"+frmgr).data("disabled",false);
-						setTimeout(function(){$(":input","#"+frmgr)[0].focus();},0);
+						setTimeout(function(){$(":input:visible","#"+frmgr)[0].focus();},0);
 						return false;
 					});
 					$("#cNew","#"+$.jgrid.jqID(IDs.themodal)).click(function(){
