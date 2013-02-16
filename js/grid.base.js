@@ -746,6 +746,7 @@ $.fn.jqGrid = function( pin ) {
 			gridview: false,
 			rownumWidth: 25,
 			rownumbers : false,
+			rownumbersBase : 1, // when rownumbers=True, use this as the number of the first row.
 			pagerpos: 'center',
 			recordpos: 'right',
 			footerrow : false,
@@ -1040,7 +1041,7 @@ $.fn.jqGrid = function( pin ) {
 			return "<td role=\"gridcell\" "+prp+">"+v+"</td>";
 		},
 		addRowNum = function (pos,irow,pG,rN) {
-			var v =  (parseInt(pG,10)-1)*parseInt(rN,10)+1+irow,
+			var v =  (parseInt(pG,10)-1)*parseInt(rN,10)+ts.p.rownumbersBase+irow,
 			prp = formatCol( pos,irow,v, null, irow, true);
 			return "<td role=\"gridcell\" class=\"ui-state-default jqgrid-rownum\" "+prp+">"+v+"</td>";
 		},
@@ -1728,7 +1729,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			if(rn===true && ts.p.rownumbers === true) {
 				$("td.jqgrid-rownum",ts.rows).each(function(i){
-					$(this).html(base+1+i);
+					$(this).html(base+rownumbersBase+i);
 				});
 			}
 			if(dnd && ts.p.jqgdnd) { $(ts).jqGrid('gridDnD','updateDnD');}
