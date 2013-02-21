@@ -1105,7 +1105,7 @@ $.fn.jqGrid = function( pin ) {
 		},
 		constructTr = function(id, hide, altClass, rd, cur, selected) {
 			var tabindex = '-1', restAttr = '', attrName, style = hide ? 'display:none;' : '',
-				classes = 'ui-widget-content jqgrow ui-row-' + ts.p.direction + altClass + (selected ? ' ui-state-highlight' : ''),
+				classes = 'ui-widget-content jqgrow ui-row-' + ts.p.direction + ' ' + altClass + (selected ? ' ui-state-highlight' : ''),
 				rowAttrObj = $.isFunction(ts.p.rowattr) ? ts.p.rowattr.call(ts, rd, cur) : {};
 			if(!$.isEmptyObject( rowAttrObj )) {
 				if (rowAttrObj.hasOwnProperty("id")) {
