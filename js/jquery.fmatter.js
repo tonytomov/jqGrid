@@ -144,7 +144,7 @@
 				monthNames: opts.monthNames
 			};
 			if( opts.masks.hasOwnProperty(format) ) { format = opts.masks[format]; }
-			if( !isNaN( date - 0 ) && String(format).toLowerCase() == "u") {
+			if( !isNaN( date - 0 ) && String(format).toLowerCase() === "u") {
 				//Unix timestamp
 				timestamp = new Date( parseFloat(date)*1000 );
 			} else if(date.constructor === Date) {
@@ -154,20 +154,20 @@
 				timestamp = new Date(parseInt(msMatch[1], 10));
 				if (msMatch[3]) {
 					var offset = Number(msMatch[5]) * 60 + Number(msMatch[6]);
-					offset *= ((msMatch[4] == '-') ? 1 : -1);
+					offset *= ((msMatch[4] === '-') ? 1 : -1);
 					offset -= timestamp.getTimezoneOffset();
 					timestamp.setTime(Number(Number(timestamp) + (offset * 60 * 1000)));
 				}
 			} else {
-				date = String(date).split(/[\\\/:_;.,\t\T\s-]/);
-				format = format.split(/[\\\/:_;.,\t\T\s-]/);
+				date = String(date).split(/[\\\/:_;.,\t\s-]/);
+				format = format.split(/[\\\/:_;.,\t\s-]/);
 				// parsing for month names
 				for(k=0,hl=format.length;k<hl;k++){
-					if(format[k] == 'M') {
+					if(format[k] === 'M') {
 						dM = $.inArray(date[k],dateFormat.i18n.monthNames);
 						if(dM !== -1 && dM < 12){date[k] = dM+1;}
 					}
-					if(format[k] == 'F') {
+					if(format[k] === 'F') {
 						dM = $.inArray(date[k],dateFormat.i18n.monthNames);
 						if(dM !== -1 && dM > 11){date[k] = dM+1-12;}
 					}
@@ -336,7 +336,7 @@
 		if(opts.colModel !== undefined && !$.fmatter.isUndefined(opts.colModel.formatoptions)) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
-		if(!op.reformatAfterEdit && act=='edit'){
+		if(!op.reformatAfterEdit && act === 'edit'){
 			return $.fn.fmatter.defaultFormat(cellval, opts);
 		}
 		if(!$.fmatter.isEmpty(cellval)) {
@@ -374,7 +374,7 @@
 							ret[j] = sv[1];
 							j++;
 						}
-					} else if($.trim(sv[0])==$.trim(cellval)) {
+					} else if($.trim(sv[0]) === $.trim(cellval)) {
 						ret[0] = sv[1];
 						break;
 					}
@@ -582,7 +582,7 @@
 							ret[j] = sv[0];
 							j++;
 						}
-					} else if($.trim(sv[1])==$.trim(cell)) {
+					} else if($.trim(sv[1]) === $.trim(cell)) {
 						ret[0] = sv[0];
 						break;
 					}
@@ -592,7 +592,7 @@
 				ret = $.map(scell, function(n){
 					var rv;
 					$.each(oSelect, function(i,val){
-						if (val == n) {
+						if (val === n) {
 							rv = i;
 							return false;
 						}
