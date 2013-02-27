@@ -309,7 +309,7 @@ $.extend($.jgrid,{
 				elem.type = "checkbox";
 				if( !options.value ) {
 					var vl1 = vl.toLowerCase();
-					if(vl1.search(/(false|0|no|off|undefined)/i)<0 && vl1!=="") {
+					if(vl1.search(/(false|f|0|no|n|off|undefined)/i)<0 && vl1!=="") {
 						elem.checked=true;
 						elem.defaultChecked=true;
 						elem.value = vl;

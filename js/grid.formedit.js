@@ -525,7 +525,7 @@ $.jgrid.extend({
 								vl = $.isFunction(opt.defaultValue) ? opt.defaultValue.call($t) : opt.defaultValue;
 								if(fld[0].type=='checkbox') {
 									vlc = vl.toLowerCase();
-									if(vlc.search(/(false|0|no|off|undefined)/i)<0 && vlc!=="") {
+									if(vlc.search(/(false|f|0|no|n|off|undefined)/i)<0 && vlc!=="") {
 										fld[0].checked = true;
 										fld[0].defaultChecked = true;
 										fld[0].value = vl;
@@ -606,7 +606,7 @@ $.jgrid.extend({
 									}
 								} else {
 									tmp = tmp.toLowerCase();
-									if(tmp.search(/(false|0|no|off|undefined)/i)<0 && tmp!=="") {
+									if(tmp.search(/(false|f|0|no|n|off|undefined)/i)<0 && tmp!=="") {
 										$("#"+nm,"#"+fmid)[$t.p.useProp ? 'prop': 'attr']("checked",true);
 										$("#"+nm,"#"+fmid)[$t.p.useProp ? 'prop': 'attr']("defaultChecked",true); //ie
 									} else {
