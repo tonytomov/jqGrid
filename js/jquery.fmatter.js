@@ -273,7 +273,7 @@
 		if($.fmatter.isEmpty(cval) || $.fmatter.isUndefined(cval) ) {cval = $.fn.fmatter.defaultFormat(cval,op);}
 		cval=String(cval);
 		cval=cval.toLowerCase();
-		var bchk = cval.search(/(false|0|no|n|off)/i)<0 ? " checked='checked' " : "";
+		var bchk = cval.search(/(false|f|0|no|n|off)/i)<0 ? " checked='checked' " : "";
 		return "<input type=\"checkbox\" " + bchk  + " value=\""+ cval+"\" offval=\"no\" "+ds+ "/>";
 	};
 	$.fn.fmatter.link = function(cellval, opts) {
