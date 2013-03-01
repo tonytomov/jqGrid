@@ -33,9 +33,6 @@
 		isNumber : function(o) {
 			return typeof o === 'number' && isFinite(o);
 		},
-		isNull : function(o) {
-			return o === null;
-		},
 		isUndefined : function(o) {
 			return o === undefined;
 		},
