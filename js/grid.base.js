@@ -11,7 +11,7 @@
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery, DOMParser, ActiveXObject */
+/*global jQuery */
 
 (function ($) {
 "use strict";
