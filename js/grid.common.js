@@ -558,7 +558,7 @@ $.extend($.jgrid,{
 	},
 	checkTime : function(time){
 	// checks only hh:ss (and optional am/pm)
-		var re = /^(\d{1,2}):(\d{2})([ap]m)?$/,regs;
+		var re = /^(\d{1,2}):(\d{2})([apAP][Mm])?$/,regs;
 		if(!$.jgrid.isEmpty(time))
 		{
 			regs = time.match(re);
