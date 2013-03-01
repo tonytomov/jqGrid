@@ -66,20 +66,6 @@ $.extend($.jgrid,{
 		}
 		return id;
 	},
-	stringToDoc : function (xmlString) {
-		var xmlDoc;
-		if(typeof xmlString !== 'string') { return xmlString; }
-		try	{
-			var parser = new DOMParser();
-			xmlDoc = parser.parseFromString(xmlString,"text/xml");
-		}
-		catch(e) {
-			xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-			xmlDoc.async=false;
-			xmlDoc.loadXML(xmlString);
-		}
-		return (xmlDoc && xmlDoc.documentElement && xmlDoc.documentElement.tagName != 'parsererror') ? xmlDoc : null;
-	},
 	parse : function(jsonString) {
 		var js = jsonString;
 		if (js.substr(0,9) == "while(1);") { js = js.substr(9); }
@@ -1868,7 +1854,7 @@ $.fn.jqGrid = function( pin ) {
 				break;
 				case "xmlstring":
 					beginReq();
-					dstr = $.jgrid.stringToDoc(ts.p.datastr);
+					dstr = $.parseXML(ts.p.datastr);
 					addXmlData(dstr,ts.grid.bDiv);
 					$(ts).triggerHandler("jqGridLoadComplete", [dstr]);
 					if(lcf) {ts.p.loadComplete.call(ts,dstr);}

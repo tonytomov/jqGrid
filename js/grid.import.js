@@ -57,7 +57,7 @@
                     }
                 };
                 var jsonConvert = function (jsonstr,o){
-                    if (jsonstr && typeof jsonstr == 'string') {
+                    if (jsonstr && typeof jsonstr === 'string') {
 						var _jsonparse = false;
 						if($.jgrid.useJSON) {
 							$.jgrid.useJSON = false;
@@ -85,7 +85,7 @@
                             data: o.impData,
                             dataType:"xml",
                             complete: function(xml,stat) {
-                                if(stat == 'success') {
+                                if(stat === 'success') {
                                     xmlConvert(xml.responseXML,o);
                                     $($t).triggerHandler("jqGridImportComplete", [xml, o]);
                                     if($.isFunction(o.importComplete)) {
@@ -98,8 +98,8 @@
                         break;
                     case 'xmlstring' :
                         // we need to make just the conversion and use the same code as xml
-                        if(o.impstring && typeof o.impstring == 'string') {
-                            var xmld = $.jgrid.stringToDoc(o.impstring);
+                        if(o.impstring && typeof o.impstring === 'string') {
+                            var xmld = $.parseXML(o.impstring);
                             if(xmld) {
                                 xmlConvert(xmld,o);
                                 $($t).triggerHandler("jqGridImportComplete", [xmld, o]);
@@ -130,7 +130,7 @@
                         }, o.ajaxOptions ));
                         break;
                     case 'jsonstring' :
-                        if(o.impstring && typeof o.impstring == 'string') {
+                        if(o.impstring && typeof o.impstring === 'string') {
                             jsonConvert(o.impstring,o );
                             $($t).triggerHandler("jqGridImportComplete", [o.impstring, o]);
                             if($.isFunction(o.importComplete)) {
@@ -201,11 +201,11 @@
             return this.each(function(){
                 if(!this.grid) { return;}
                 var url;
-                if(o.exptype == "remote") {
+                if(o.exptype === "remote") {
                     var pdata = $.extend({},this.p.postData);
                     pdata[o.oper] = o.tag;
                     var params = jQuery.param(pdata);
-                    if(o.url.indexOf("?") != -1) { url = o.url+"&"+params; }
+                    if(o.url.indexOf("?") !== -1) { url = o.url+"&"+params; }
                     else { url = o.url+"?"+params; }
                     window.location = url;
                 }
