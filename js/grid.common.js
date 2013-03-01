@@ -582,7 +582,7 @@ $.extend($.jgrid,{
 		if(customobject === undefined) {
 			if(typeof valref==='string'){
 				for( i =0, len=g.p.colModel.length;i<len; i++){
-					if(g.p.colModel[i].name==valref) {
+					if(g.p.colModel[i].name===valref) {
 						edtrul = g.p.colModel[i].editrules;
 						valref = i;
 						try { nm = g.p.colModel[i].formoptions.label; } catch (e) {}
@@ -652,7 +652,7 @@ $.extend($.jgrid,{
 			if(edtrul.custom === true) {
 				if( !(rqfield === false && $.jgrid.isEmpty(val)) ) {
 					if($.isFunction(edtrul.custom_func)) {
-						var ret = edtrul.custom_func.call(g,val,nm);
+						var ret = edtrul.custom_func.call(g,val,nm,valref);
 						return $.isArray(ret) ? ret : [false,$.jgrid.edit.msg.customarray,""];
 					}
 					return [false,$.jgrid.edit.msg.customfcheck,""];
