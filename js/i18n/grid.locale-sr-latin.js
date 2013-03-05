@@ -12,7 +12,7 @@ $.extend($.jgrid,{
 	defaults : {
 		recordtext: "Pregled {0} - {1} od {2}",
 		emptyrecords: "Ne postoji nijedan zapis",
-		loadtext: "Učitivanje...",
+		loadtext: "Učitavanje…",
 		pgtext : "Strana {0} od {1}"
 	},
 	search : {
