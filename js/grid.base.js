@@ -760,10 +760,12 @@ $.fn.jqGrid = function( pin ) {
 			cols:[],
 			footers: [],
 			dragStart: function(i,x,y) {
-				this.resizing = { idx: i, startX: x.clientX, sOL : y[0]};
+				// clientX+1 to keep mouse cursor off mark, otherwise
+				// we get flicker from onhover handlers
+				this.resizing = { idx: i, startX: x.clientX, sOL : x.clientX+1};
 				this.hDiv.style.cursor = "col-resize";
 				this.curGbox = $("#rs_m"+$.jgrid.jqID(p.id),"#gbox_"+$.jgrid.jqID(p.id));
-				this.curGbox.css({display:"block",left:y[0],top:y[1],height:y[2]});
+				this.curGbox.css({display:"block",left:x.clientX,top:y[1],height:y[2]});
 				$(ts).triggerHandler("jqGridResizeStart", [x, i]);
 				if($.isFunction(p.resizeStart)) { p.resizeStart.call(this,x,i); }
 				document.onselectstart=function(){return false;};
