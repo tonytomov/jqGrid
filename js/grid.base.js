@@ -1314,41 +1314,41 @@ $.fn.jqGrid = function( pin ) {
 			} else { return; }
 
 			var dReader, locid = "_id_", frd,
-			locdata = (ts.p.datatype != "local" && ts.p.loadonce) || ts.p.datatype == "jsonstring";
+			locdata = (ts.p.datatype !== "local" && ts.p.loadonce) || ts.p.datatype === "jsonstring";
 			if(locdata) { ts.p.data = []; ts.p._index = {}; ts.p.localReader.id = locid;}
 			ts.p.reccount = 0;
-			if(ts.p.datatype == "local") {
+			if(ts.p.datatype === "local") {
 				dReader =  ts.p.localReader;
 				frd= 'local';
 			} else {
 				dReader =  ts.p.jsonReader;
 				frd='json';
 			}
-			var self = $(ts), ir=0,v,i,j,f=[],F,cur,gi=ts.p.multiselect?1:0,si=0,addSubGridCell,ni=ts.p.rownumbers===true?1:0,len,drows,idn,rd={}, fpos, idr,rowData=[],cn=(ts.p.altRows === true) ? ts.p.altclass:"",cn1,lp;
+			var self = $(ts), ir=0,v,i,j,f=[],cur,gi=ts.p.multiselect?1:0,si=ts.p.subGrid===true?1:0,addSubGridCell,ni=ts.p.rownumbers===true?1:0,arrayReader=orderedCols(gi+si+ni),objectReader=reader(frd),rowReader,len,drows,idn,rd={}, fpos, idr,rowData=[],cn=(ts.p.altRows === true) ? ts.p.altclass:"",cn1,lp;
 			ts.p.page = $.jgrid.getAccessor(data,dReader.page) || ts.p.page || 0;
 			lp = $.jgrid.getAccessor(data,dReader.total);
-			if(ts.p.subGrid===true) {
-				si = 1;
+			if(si) {
 				addSubGridCell = $.jgrid.getMethod("addSubGridCell");
 			}
 			ts.p.lastpage = lp === undefined ? 1 : lp;
 			ts.p.records = $.jgrid.getAccessor(data,dReader.records) || 0;
 			ts.p.userData = $.jgrid.getAccessor(data,dReader.userdata) || {};
-			if(!dReader.repeatitems) {
-				F = f = reader(frd);
-			}
 			if( ts.p.keyIndex===false ) {
 				idn = $.isFunction(dReader.id) ? dReader.id.call(ts, data) : dReader.id; 
 			} else {
 				idn = ts.p.keyIndex;
 			}
-			if(f.length>0 && !isNaN(idn)) {
-				if (ts.p.remapColumns && ts.p.remapColumns.length) {
-					idn = $.inArray(idn, ts.p.remapColumns);
+			if(!dReader.repeatitems) {
+				f = objectReader;
+				if(f.length>0 && !isNaN(idn)) {
+					if (ts.p.remapColumns && ts.p.remapColumns.length) {
+						idn = $.inArray(idn, ts.p.remapColumns);
+					}
+					idn=f[idn];
 				}
-				idn=f[idn];
 			}
 			drows = $.jgrid.getAccessor(data,dReader.root);
+			if (drows == null && $.isArray(data)) { drows = data; }
 			if (!drows) { drows = []; }
 			len = drows.length; i=0;
 			if (len > 0 && ts.p.page <= 0) { ts.p.page = 1; }
@@ -1366,18 +1366,24 @@ $.fn.jqGrid = function( pin ) {
 				cur = drows[i];
 				idr = $.jgrid.getAccessor(cur,idn);
 				if(idr === undefined) {
-					idr = br+i;
-					if(f.length===0){
-						if(dReader.cell){
-							var ccur = $.jgrid.getAccessor(cur,dReader.cell);
-							idr = ccur !== undefined ? ccur[idn] || idr : idr;
-							ccur=null;
+					if (typeof idn === "number" && ts.p.colModel[idn+gi+si+ni] != null) {
+						// reread id by name
+						idr = $.jgrid.getAccessor(cur,ts.p.colModel[idn+gi+si+ni].name);
+					}
+					if(idr === undefined) {
+						idr = br+i;
+						if(f.length===0){
+							if(dReader.cell){
+								var ccur = $.jgrid.getAccessor(cur,dReader.cell);
+								idr = ccur !== undefined ? ccur[idn] || idr : idr;
+								ccur=null;
+							}
 						}
 					}
 				}
 				idr  = ts.p.idPrefix + idr;
 				altr = rcnt === 1 ? 0 : rcnt;
-				cn1 = (altr+i)%2 == 1 ? cn : '';
+				cn1 = (altr+i)%2 === 1 ? cn : '';
 				if( selected) {
 					if( ts.p.multiselect) {
 						selr = ($.inArray(idr, ts.p.selarrrow) !== -1);
@@ -1396,12 +1402,13 @@ $.fn.jqGrid = function( pin ) {
 				if( si ) {
 					rowData.push( addSubGridCell.call(self,gi+ni,i+rcnt) );
 				}
+				rowReader=objectReader;
 				if (dReader.repeatitems) {
-					if(dReader.cell) {cur = $.jgrid.getAccessor(cur,dReader.cell);}
-					if (!F) { F=orderedCols(gi+si+ni); }
+					if(dReader.cell) {cur = $.jgrid.getAccessor(cur,dReader.cell) || cur;}
+					if ($.isArray(cur)) { rowReader=arrayReader; }
 				}
-				for (j=0;j<F.length;j++) {
-					v = $.jgrid.getAccessor(cur,F[j]);
+				for (j=0;j<rowReader.length;j++) {
+					v = $.jgrid.getAccessor(cur,rowReader[j]);
 					rd[ts.p.colModel[j+gi+si+ni].name] = v;
 					rowData.push( addCell(idr,v,j+gi+si+ni,i+rcnt,cur, rd) );
 				}
@@ -1425,7 +1432,7 @@ $.fn.jqGrid = function( pin ) {
 				rd={};
 				ir++;
 				i++;
-				if(ir==rn) { break; }
+				if(ir===rn) { break; }
 			}
 			if(ts.p.gridview === true ) {
 				fpos = ts.p.treeANode > -1 ? ts.p.treeANode: 0;
@@ -1463,25 +1470,31 @@ $.fn.jqGrid = function( pin ) {
 					cur = drows[ir];
 					idr = $.jgrid.getAccessor(cur,idn);
 					if(idr === undefined) {
-						idr = br+ir;
-						if(f.length===0){
-							if(dReader.cell){
-								var ccur2 = $.jgrid.getAccessor(cur,dReader.cell);
-								idr = ccur2[idn] || idr;
-								ccur2=null;
+						if (typeof idn === "number" && ts.p.colModel[idn+gi+si+ni] != null) {
+							// reread id by name
+							idr = $.jgrid.getAccessor(cur,ts.p.colModel[idn+gi+si+ni].name);
+						}
+						if(idr === undefined) {
+							idr = br+ir;
+							if(f.length===0){
+								if(dReader.cell){
+									var ccur2 = $.jgrid.getAccessor(cur,dReader.cell);
+									idr = ccur2[idn] || idr;
+									ccur2=null;
+								}
 							}
 						}
 					}
 					if(cur) {
 						idr  = ts.p.idPrefix + idr;
+						rowReader=objectReader;
 						if (dReader.repeatitems) {
 							if(dReader.cell) {cur = $.jgrid.getAccessor(cur,dReader.cell);}
-							if (!F) { F=orderedCols(gi+si+ni); }
+							if ($.isArray(cur)) { rowReader=arrayReader; }
 						}
 
-						for (j=0;j<F.length;j++) {
-							v = $.jgrid.getAccessor(cur,F[j]);
-							rd[ts.p.colModel[j+gi+si+ni].name] = v;
+						for (j=0;j<rowReader.length;j++) {
+							rd[ts.p.colModel[j+gi+si+ni].name] = $.jgrid.getAccessor(cur,rowReader[j]);
 						}
 						rd[locid] = idr;
 						ts.p.data.push(rd);
