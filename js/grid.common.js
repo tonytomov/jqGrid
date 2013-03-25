@@ -482,55 +482,49 @@ $.extend($.jgrid,{
 		// EXCEPT for centurial years which are not also divisible by 400.
 			return (((year % 4 === 0) && ( year % 100 !== 0 || (year % 400 === 0))) ? 29 : 28 );
 		},
-		daysArray = function(n) {
-			var i;
-			for (i = 1; i <= n; i++) {
-				this[i] = 31;
-				if (i==4 || i==6 || i==9 || i==11) {this[i] = 30;}
-				if (i==2) {this[i] = 29;}
-			}
-			return this;
+		daysArray = function() {
+			{return new Array(0,31,29,31,30,31,30,31,31,30,31,30,31);}
 		};
 
 		var tsp = {}, sep;
 		format = format.toLowerCase();
 		//we search for /,-,. for the date separator
-		if(format.indexOf("/") != -1) {
+		if(format.indexOf("/") !== -1) {
 			sep = "/";
-		} else if(format.indexOf("-") != -1) {
+		} else if(format.indexOf("-") !== -1) {
 			sep = "-";
-		} else if(format.indexOf(".") != -1) {
+		} else if(format.indexOf(".") !== -1) {
 			sep = ".";
 		} else {
 			sep = "/";
 		}
 		format = format.split(sep);
 		date = date.split(sep);
-		if (date.length != 3) { return false; }
+		if (date.length !== 3) { return false; }
 		var j=-1,yln, dln=-1, mln=-1, i;
 		for(i=0;i<format.length;i++){
 			var dv =  isNaN(date[i]) ? 0 : parseInt(date[i],10);
 			tsp[format[i]] = dv;
 			yln = format[i];
-			if(yln.indexOf("y") != -1) { j=i; }
-			if(yln.indexOf("m") != -1) { mln=i; }
-			if(yln.indexOf("d") != -1) { dln=i; }
+			if(yln.indexOf("y") !== -1) { j=i; }
+			if(yln.indexOf("m") !== -1) { mln=i; }
+			if(yln.indexOf("d") !== -1) { dln=i; }
 		}
-		if (format[j] == "y" || format[j] == "yyyy") {
+		if (format[j] === "y" || format[j] === "yyyy") {
 			yln=4;
-		} else if(format[j] =="yy"){
+		} else if(format[j] ==="yy"){
 			yln = 2;
 		} else {
 			yln = -1;
 		}
-		var daysInMonth = daysArray(12),
+		var daysInMonth = daysArray(),
 		strDate;
 		if (j === -1) {
 			return false;
 		}
 			strDate = tsp[format[j]].toString();
-			if(yln == 2 && strDate.length == 1) {yln = 1;}
-			if (strDate.length != yln || (tsp[format[j]]===0 && date[j]!="00")){
+			if(yln == 2 && strDate.length === 1) {yln = 1;}
+			if (strDate.length !== yln || (tsp[format[j]]===0 && date[j]!=="00")){
 				return false;
 			}
 		if(mln === -1) {
