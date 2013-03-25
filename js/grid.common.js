@@ -482,11 +482,7 @@ $.extend($.jgrid,{
 		// EXCEPT for centurial years which are not also divisible by 400.
 			return (((year % 4 === 0) && ( year % 100 !== 0 || (year % 400 === 0))) ? 29 : 28 );
 		},
-		daysArray = function() {
-			{return new Array(0,31,29,31,30,31,30,31,31,30,31,30,31);}
-		};
-
-		var tsp = {}, sep;
+		tsp = {}, sep;
 		format = format.toLowerCase();
 		//we search for /,-,. for the date separator
 		if(format.indexOf("/") !== -1) {
@@ -517,13 +513,13 @@ $.extend($.jgrid,{
 		} else {
 			yln = -1;
 		}
-		var daysInMonth = daysArray(),
+		var daysInMonth = [0,31,29,31,30,31,30,31,31,30,31,30,31],
 		strDate;
 		if (j === -1) {
 			return false;
 		}
 			strDate = tsp[format[j]].toString();
-			if(yln == 2 && strDate.length === 1) {yln = 1;}
+			if(yln === 2 && strDate.length === 1) {yln = 1;}
 			if (strDate.length !== yln || (tsp[format[j]]===0 && date[j]!=="00")){
 				return false;
 			}
