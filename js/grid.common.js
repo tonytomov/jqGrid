@@ -568,19 +568,19 @@ $.extend($.jgrid,{
 		return true;
 	},
 	checkValues : function(val, valref,g, customobject, nam) {
-		var edtrul,i, nm, dft, len;
+		var edtrul,i, nm, dft, len, cm = g.p.colModel;
 		if(customobject === undefined) {
 			if(typeof valref==='string'){
-				for( i =0, len=g.p.colModel.length;i<len; i++){
-					if(g.p.colModel[i].name===valref) {
-						edtrul = g.p.colModel[i].editrules;
+				for( i =0, len=cm.length;i<len; i++){
+					if(cm[i].name===valref) {
+						edtrul = cm[i].editrules;
 						valref = i;
-						try { nm = g.p.colModel[i].formoptions.label; } catch (e) {}
+						if(cm.formoptions != null) { nm = cm.formoptions.label; }
 						break;
 					}
 				}
 			} else if(valref >=0) {
-				edtrul = g.p.colModel[valref].editrules;
+				edtrul = cm[valref].editrules;
 			}
 		} else {
 			edtrul = customobject;
@@ -620,10 +620,10 @@ $.extend($.jgrid,{
 			}
 			if(edtrul.date === true) {
 				if( !(rqfield === false && $.jgrid.isEmpty(val)) ) {
-					if(g.p.colModel[valref].formatoptions && g.p.colModel[valref].formatoptions.newformat) {
-						dft = g.p.colModel[valref].formatoptions.newformat;
+					if(cm[valref].formatoptions && cm[valref].formatoptions.newformat) {
+						dft = cm[valref].formatoptions.newformat;
 					} else {
-						dft = g.p.colModel[valref].datefmt || "Y-m-d";
+						dft = cm[valref].datefmt || "Y-m-d";
 					}
 					if(!$.jgrid.checkDate (dft, val)) { return [false,nm+": "+$.jgrid.edit.msg.date+" - "+dft,""]; }
 				}
