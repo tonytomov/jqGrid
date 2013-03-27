@@ -1375,7 +1375,7 @@ $.fn.jqGrid = function( pin ) {
 						if(f.length===0){
 							if(dReader.cell){
 								var ccur = $.jgrid.getAccessor(cur,dReader.cell);
-								idr = ccur !== undefined ? ccur[idn] || idr : idr;
+								idr = ccur != null ? ccur[idn] : idr;
 								ccur=null;
 							}
 						}
@@ -1479,7 +1479,7 @@ $.fn.jqGrid = function( pin ) {
 							if(f.length===0){
 								if(dReader.cell){
 									var ccur2 = $.jgrid.getAccessor(cur,dReader.cell);
-									idr = ccur2[idn] || idr;
+									idr = ccur2[idn];
 									ccur2=null;
 								}
 							}
