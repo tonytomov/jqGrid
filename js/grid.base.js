@@ -1374,8 +1374,8 @@ $.fn.jqGrid = function( pin ) {
 						idr = br+i;
 						if(f.length===0){
 							if(dReader.cell){
-								var ccur = $.jgrid.getAccessor(cur,dReader.cell);
-								idr = ccur != null ? ccur[idn] : idr;
+								var ccur = $.jgrid.getAccessor(cur,dReader.cell) || cur;
+								idr = ccur != null && ccur[idn] !== undefined ? ccur[idn] : idr;
 								ccur=null;
 							}
 						}
@@ -1478,8 +1478,8 @@ $.fn.jqGrid = function( pin ) {
 							idr = br+ir;
 							if(f.length===0){
 								if(dReader.cell){
-									var ccur2 = $.jgrid.getAccessor(cur,dReader.cell);
-									idr = ccur2[idn];
+									var ccur2 = $.jgrid.getAccessor(cur,dReader.cell) || cur;
+									idr = ccur2 != null && ccur2[idn] !== undefined ? ccur2[idn] : idr;
 									ccur2=null;
 								}
 							}
