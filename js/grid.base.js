@@ -1054,12 +1054,10 @@ $.fn.jqGrid = function( pin ) {
 			return order;
 		},
 		emptyRows = function (scroll, locdata) {
-			var firstrow;
 			if (this.p.deepempty) {
 				$(this.rows).slice(1).remove();
 			} else {
-				firstrow = this.rows.length > 0 ? this.rows[0] : null;
-				$(this.firstChild).empty().append(firstrow);
+                $(this.firstChild).find('tr:not(:first)').remove();
 			}
 			if (scroll && this.p.scroll) {
 				$(this.grid.bDiv.firstChild).css({height: "auto"});
