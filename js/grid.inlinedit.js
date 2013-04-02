@@ -369,7 +369,7 @@ $.jgrid.extend({
 		} else {
 			if ($.isFunction(afterrestorefunc)) { o.afterrestorefunc = afterrestorefunc; }
 		}
-		o = $.extend(true, $.jgrid.inlineEdit, o );
+		o = $.extend(true, {}, $.jgrid.inlineEdit, o );
 
 		// End compatible
 
