@@ -396,7 +396,10 @@ $.jgrid.extend({
 				$(ind).attr("editable","0").unbind("keydown");
 				$t.p.savedRow.splice(fr,1);
 				if($("#"+$.jgrid.jqID(rowid), "#"+$.jgrid.jqID($t.p.id)).hasClass("jqgrid-new-row")){
-					setTimeout(function(){$($t).jqGrid("delRowData",rowid);},0);
+					setTimeout(function(){
+						$($t).jqGrid("delRowData",rowid);
+						$($t).jqGrid('showAddEditButtons');
+					},0);
 				}
 			}
 			$($t).triggerHandler("jqGridInlineAfterRestoreRow", [rowid]);
