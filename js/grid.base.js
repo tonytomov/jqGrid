@@ -2732,8 +2732,10 @@ $.jgrid.extend({
 						stat = false;
 					}
 					$t.p.selrow = pt.id;
-					$($t).triggerHandler("jqGridSelectRow", [pt.id, stat, e]);
-					if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow.call($t, pt.id, stat, e); }
+					if( onsr ) { 
+						$($t).triggerHandler("jqGridSelectRow", [pt.id, stat, e]);
+						if( $t.p.onSelectRow) { $t.p.onSelectRow.call($t, pt.id, stat, e); }
+					}
 				}
 			} else {
 				//unselect selectall checkbox when deselecting a specific row
@@ -2760,8 +2762,10 @@ $.jgrid.extend({
 					}
 					$("#jqg_"+$.jgrid.jqID($t.p.id)+"_"+$.jgrid.jqID(selection), "#"+$.jgrid.jqID(fid))[$t.p.useProp ? 'prop': 'attr']("checked",stat);
 				}
-				$($t).triggerHandler("jqGridSelectRow", [pt.id, stat, e]);
-				if( $t.p.onSelectRow && onsr) { $t.p.onSelectRow.call($t, pt.id , stat, e); }
+				if( onsr ) {
+					$($t).triggerHandler("jqGridSelectRow", [pt.id, stat, e]);
+					if( $t.p.onSelectRow) { $t.p.onSelectRow.call($t, pt.id , stat, e); }
+				}
 			}
 		});
 	},
