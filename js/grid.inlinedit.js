@@ -280,7 +280,7 @@ $.jgrid.extend({
 				var k, resp = $($t).jqGrid("setRowData",rowid,tmp);
 				$(ind).attr("editable","0");
 				for(k=0;k<$t.p.savedRow.length;k++) {
-					if( $t.p.savedRow[k].id === oldRowId) {fr = k; break;}
+					if( String($t.p.savedRow[k].id) === String(oldRowId)) {fr = k; break;}
 				}
 				if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
 				$($t).triggerHandler("jqGridInlineAfterSaveRow", [rowid, resp, tmp, o]);
@@ -320,7 +320,7 @@ $.jgrid.extend({
 								$($t).jqGrid("setRowData",rowid,tmp);
 								$(ind).attr("editable","0");
 								for(k=0;k<$t.p.savedRow.length;k++) {
-									if( $t.p.savedRow[k].id === rowid) {fr = k; break;}
+									if( String($t.p.savedRow[k].id) === String(rowid)) {fr = k; break;}
 								}
 								if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
 								$($t).triggerHandler("jqGridInlineAfterSaveRow", [rowid, res, tmp, o]);
@@ -379,7 +379,7 @@ $.jgrid.extend({
 			ind = $($t).jqGrid("getInd",rowid,true);
 			if(ind === false) {return;}
 			for(k=0;k<$t.p.savedRow.length;k++) {
-				if( $t.p.savedRow[k].id === rowid) {fr = k; break;}
+				if( String($t.p.savedRow[k].id) === String(rowid)) {fr = k; break;}
 			}
 			if(fr >= 0) {
 				if($.isFunction($.fn.datepicker)) {
