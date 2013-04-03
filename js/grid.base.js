@@ -1233,7 +1233,7 @@ $.fn.jqGrid = function( pin ) {
 				if(locdata || ts.p.treeGrid === true) {
 					rd[xmlid] = rid;
 					ts.p.data.push(rd);
-					ts.p._index[rid] = ts.p.data.length-1;
+					ts.p._index[$.jgrid.stripPref(ts.p.idPrefix, rid)] = ts.p.data.length-1;
 				}
 				if(ts.p.gridview === false ) {
 					$("tbody:first",t).append(rowData.join(''));
@@ -1298,7 +1298,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 					rd[xmlid] = rid;
 					ts.p.data.push(rd);
-					ts.p._index[rid] = ts.p.data.length-1;
+					ts.p._index[$.jgrid.stripPref(ts.p.idPrefix, rid)] = ts.p.data.length-1;
 					rd = {};
 					ir++;
 				}
@@ -1421,7 +1421,7 @@ $.fn.jqGrid = function( pin ) {
 				if(locdata || ts.p.treeGrid===true) {
 					rd[locid] = idr;
 					ts.p.data.push(rd);
-					ts.p._index[idr] = ts.p.data.length-1;
+					ts.p._index[$.jgrid.stripPref(ts.p.idPrefix, idr)] = ts.p.data.length-1;
 				}
 				if(ts.p.gridview === false ) {
 					$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
@@ -1498,7 +1498,7 @@ $.fn.jqGrid = function( pin ) {
 						}
 						rd[locid] = idr;
 						ts.p.data.push(rd);
-						ts.p._index[idr] = ts.p.data.length-1;
+						ts.p._index[$.jgrid.stripPref(ts.p.idPrefix, idr)] = ts.p.data.length-1;
 						rd = {};
 					}
 					ir++;
@@ -2864,14 +2864,14 @@ $.jgrid.extend({
 				success=true;
 				if($t.p.multiselect) {
 					ia = $.inArray(rowid,$t.p.selarrrow);
-					if(ia != -1) { $t.p.selarrrow.splice(ia,1);}
+					if(ia !== -1) { $t.p.selarrrow.splice(ia,1);}
 				}
 				if ($t.p.multiselect && $t.p.selarrrow.length > 0) {
 					$t.p.selrow = $t.p.selarrrow[$t.p.selarrrow.length-1];
 				} else {
 					$t.p.selrow = null;
 				}
-			if($t.p.datatype == 'local') {
+			if($t.p.datatype === 'local') {
 				var id = $.jgrid.stripPref($t.p.idPrefix, rowid),
 				pos = $t.p._index[id];
 				if(pos !== undefined) {
@@ -2911,7 +2911,7 @@ $.jgrid.extend({
 							}
 						}
 					});
-					if(t.p.datatype == 'local') {
+					if(t.p.datatype === 'local') {
 						var id = $.jgrid.stripPref(t.p.idPrefix, rowid),
 						pos = t.p._index[id], key;
 						if(t.p.treeGrid) {
@@ -3039,7 +3039,7 @@ $.jgrid.extend({
 					$(t).triggerHandler("jqGridAfterInsertRow", [rowid,data,data]);
 					if(air) { t.p.afterInsertRow.call(t,rowid,data,data); }
 					k++;
-					if(t.p.datatype == 'local') {
+					if(t.p.datatype === 'local') {
 						lcdata[t.p.localReader.id] = id;
 						t.p._index[id] = t.p.data.length;
 						t.p.data.push(lcdata);
@@ -3047,11 +3047,11 @@ $.jgrid.extend({
 					}
 				}
 				if( t.p.altRows === true && !aradd) {
-					if (pos == "last") {
-						if ((t.rows.length-1)%2 == 1)  {$(t.rows[t.rows.length-1]).addClass(cn);}
+					if (pos === "last") {
+						if ((t.rows.length-1)%2 === 1)  {$(t.rows[t.rows.length-1]).addClass(cn);}
 					} else {
 						$(t.rows).each(function(i){
-							if(i % 2 ==1) { $(this).addClass(cn); }
+							if(i % 2 ===1) { $(this).addClass(cn); }
 							else { $(this).removeClass(cn); }
 						});
 					}
@@ -3342,7 +3342,7 @@ $.jgrid.extend({
 			if(!$t.grid) {return;}
 			if(isNaN(colname)) {
 				$($t.p.colModel).each(function(i){
-					if (this.name == colname) {
+					if (this.name === colname) {
 						pos = i;return false;
 					}
 				});
@@ -3359,10 +3359,10 @@ $.jgrid.extend({
 						} else {
 							$(tcell).html(v).attr(title);
 						}
-						if($t.p.datatype == "local") {
+						if($t.p.datatype === "local") {
 							var cm = $t.p.colModel[pos], index;
-							nData = cm.formatter && typeof cm.formatter === 'string' && cm.formatter == 'date' ? $.unformat.date.call($t,nData,cm) : nData;
-							index = $t.p._index[rowid];
+							nData = cm.formatter && typeof cm.formatter === 'string' && cm.formatter === 'date' ? $.unformat.date.call($t,nData,cm) : nData;
+							index = $t.p._index[$.jgrid.stripPref($t.p.idPrefix, rowid)];
 							if(index !== undefined) {
 								$t.p.data[index][cm.name] = nData;
 							}
@@ -3497,7 +3497,7 @@ $.jgrid.extend({
 				expanded = $t.p.treeReader.expanded_field;
 				//check for arrow keys
 				if(target) {
-					mind = $t.p._index[target.id];
+					mind = $t.p._index[$.jgrid.stripPref($t.p.idPrefix, target.id)];
 					if(event.keyCode === 37 || event.keyCode === 38 || event.keyCode === 39 || event.keyCode === 40){
 						// up key
 						if(event.keyCode === 38 ){
