@@ -3579,7 +3579,7 @@ $.jgrid.extend({
 		var ret = false, ind;
 		this.each(function(){
 			if(rowid !== undefined) {
-				ind = this.p._index[rowid];
+				ind = this.p._index[$.jgrid.stripPref(this.p.idPrefix, rowid)];
 				if(ind >= 0 ) {
 					ret = this.p.data[ind];
 				}
