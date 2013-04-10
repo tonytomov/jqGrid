@@ -12,7 +12,7 @@
 		"grouping",
 		"searching"
 	],
-	"version": "4.4.4",
+	"version": "4.4.5",
 	"author": {
 		"name": "Tony Tomov",
 		"email": "tony@trirand.com",
@@ -38,7 +38,6 @@
 	"bugs": "https://github.com/tonytomov/jqGrid/issues",
 	"homepage": "http://www.trirand.com",
 	"docs": "http://www.trirand.com/jqgridwiki/doku.php",
-	"download": "http://www.trirand.com/blog/?page_id=6",
 	"dependencies": {
 		"jquery": ">=1.4"
 	}
