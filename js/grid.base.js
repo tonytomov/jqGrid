@@ -1489,7 +1489,7 @@ $.fn.jqGrid = function( pin ) {
 						idr  = ts.p.idPrefix + idr;
 						rowReader=objectReader;
 						if (dReader.repeatitems) {
-							if(dReader.cell) {cur = $.jgrid.getAccessor(cur,dReader.cell);}
+							if(dReader.cell) {cur = $.jgrid.getAccessor(cur,dReader.cell) || cur;}
 							if ($.isArray(cur)) { rowReader=arrayReader; }
 						}
 
