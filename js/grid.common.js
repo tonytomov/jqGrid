@@ -622,6 +622,9 @@ $.extend($.jgrid,{
 				if( !(rqfield === false && $.jgrid.isEmpty(val)) ) {
 					if(cm[valref].formatoptions && cm[valref].formatoptions.newformat) {
 						dft = cm[valref].formatoptions.newformat;
+						if( $.jgrid.formatter.date.masks.hasOwnProperty(dft) ) {
+							dft = $.jgrid.formatter.date.masks[dft];
+						}
 					} else {
 						dft = cm[valref].datefmt || "Y-m-d";
 					}
