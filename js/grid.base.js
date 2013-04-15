@@ -1231,9 +1231,9 @@ $.fn.jqGrid = function( pin ) {
 					rowData = [];
 				}
 				if(locdata || ts.p.treeGrid === true) {
-					rd[xmlid] = rid;
+					rd[xmlid] = $.jgrid.stripPref(ts.p.idPrefix, rid);
 					ts.p.data.push(rd);
-					ts.p._index[$.jgrid.stripPref(ts.p.idPrefix, rid)] = ts.p.data.length-1;
+					ts.p._index[rd[xmlid]] = ts.p.data.length-1;
 				}
 				if(ts.p.gridview === false ) {
 					$("tbody:first",t).append(rowData.join(''));
@@ -1296,9 +1296,9 @@ $.fn.jqGrid = function( pin ) {
 							rd[ts.p.colModel[i+gi+si+ni].name] = v;
 						}
 					}
-					rd[xmlid] = rid;
+					rd[xmlid] = $.jgrid.stripPref(ts.p.idPrefix, rid);
 					ts.p.data.push(rd);
-					ts.p._index[$.jgrid.stripPref(ts.p.idPrefix, rid)] = ts.p.data.length-1;
+					ts.p._index[rd[xmlid]] = ts.p.data.length-1;
 					rd = {};
 					ir++;
 				}
@@ -1419,9 +1419,9 @@ $.fn.jqGrid = function( pin ) {
 					rowData = [];
 				}
 				if(locdata || ts.p.treeGrid===true) {
-					rd[locid] = idr;
+					rd[locid] = $.jgrid.stripPref(ts.p.idPrefix, idr);
 					ts.p.data.push(rd);
-					ts.p._index[$.jgrid.stripPref(ts.p.idPrefix, idr)] = ts.p.data.length-1;
+					ts.p._index[rd[locid]] = ts.p.data.length-1;
 				}
 				if(ts.p.gridview === false ) {
 					$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
@@ -1496,9 +1496,9 @@ $.fn.jqGrid = function( pin ) {
 						for (j=0;j<rowReader.length;j++) {
 							rd[ts.p.colModel[j+gi+si+ni].name] = $.jgrid.getAccessor(cur,rowReader[j]);
 						}
-						rd[locid] = idr;
+						rd[locid] = $.jgrid.stripPref(ts.p.idPrefix, idr);
 						ts.p.data.push(rd);
-						ts.p._index[$.jgrid.stripPref(ts.p.idPrefix, idr)] = ts.p.data.length-1;
+						ts.p._index[rd[locid]] = ts.p.data.length-1;
 						rd = {};
 					}
 					ir++;
