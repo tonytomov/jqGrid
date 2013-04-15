@@ -741,40 +741,26 @@ $.jgrid.extend({
 								}
 								//rp_ge[$t.p.id].reloadAfterSubmit = rp_ge[$t.p.id].reloadAfterSubmit && $t.p.datatype != "local";
 								// the action is add
-								if(postdata[oper] == opers.addoper ) {
+								if(postdata[oper] === opers.addoper ) {
 									//id processing
 									// user not set the id ret[2]
 									if(!ret[2]) {ret[2] = $.jgrid.randId();}
 									postdata[idname] = ret[2];
-									if(rp_ge[$t.p.id].closeAfterAdd) {
-										if(rp_ge[$t.p.id].reloadAfterSubmit) {$($t).trigger("reloadGrid");}
-										else {
-											if($t.p.treeGrid === true){
-												$($t).jqGrid("addChildNode",ret[2],selr,postdata );
-											} else {
-												$($t).jqGrid("addRowData",ret[2],postdata,p.addedrow);
+									if(rp_ge[$t.p.id].reloadAfterSubmit) {
+										$($t).trigger("reloadGrid");
+									} else {
+										if($t.p.treeGrid === true){
+											$($t).jqGrid("addChildNode",ret[2],selr,postdata );
+										} else {
+											$($t).jqGrid("addRowData",ret[2],postdata,p.addedrow);
+										}
+										if(rp_ge[$t.p.id].closeAfterAdd) {
+											if($t.p.treeGrid !== true){
 												$($t).jqGrid("setSelection",ret[2]);
 											}
-										}
-										$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal,onClose: rp_ge[$t.p.id].onClose});
-									} else if (rp_ge[$t.p.id].clearAfterAdd) {
-										if(rp_ge[$t.p.id].reloadAfterSubmit) {$($t).trigger("reloadGrid");}
-										else {
-											if($t.p.treeGrid === true){
-												$($t).jqGrid("addChildNode",ret[2],selr,postdata );
-											} else {
-												$($t).jqGrid("addRowData",ret[2],postdata,p.addedrow);
-											}
-										}
-										fillData("_empty",$t,frmgr);
-									} else {
-										if(rp_ge[$t.p.id].reloadAfterSubmit) {$($t).trigger("reloadGrid");}
-										else {
-											if($t.p.treeGrid === true){
-												$($t).jqGrid("addChildNode",ret[2],selr,postdata );
-											} else {
-												$($t).jqGrid("addRowData",ret[2],postdata,p.addedrow);
-											}
+											$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal,onClose: rp_ge[$t.p.id].onClose});
+										} else if (rp_ge[$t.p.id].clearAfterAdd) {
+											fillData("_empty",$t,frmgr);
 										}
 									}
 								} else {
