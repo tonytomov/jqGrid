@@ -711,7 +711,7 @@ $.jgrid.extend({
 						complete:function(data,status){
 							var key;
 							postdata[idname] = $t.p.idPrefix + postdata[idname];
-							if(status != "success") {
+							if(data.status >= 300 && data.status !== 304) {
 								ret[0] = false;
 								ret[1] = $($t).triggerHandler("jqGridAddEditErrorTextFormat", [data, frmoper]);
 								if ($.isFunction(rp_ge[$t.p.id].errorTextFormat)) {
@@ -1640,7 +1640,7 @@ $.jgrid.extend({
 							data: $.isFunction(rp_ge[$t.p.id].serializeDelData) ? rp_ge[$t.p.id].serializeDelData.call($t,postd) : postd,
 							complete:function(data,status){
 								var i;
-								if(status != "success") {
+								if(data.status >= 300 && data.status !== 304) {
 									ret[0] = false;
 									if ($.isFunction(rp_ge[$t.p.id].errorTextFormat)) {
 										ret[1] = rp_ge[$t.p.id].errorTextFormat.call($t,data);
