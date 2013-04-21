@@ -140,17 +140,20 @@ $.fn.jqFilter = function( arg ) {
 		if(this.p.showQuery) {
 			$(this).append("<table class='queryresult ui-widget ui-widget-content' style='display:block;max-width:440px;border:0px none;' dir='"+this.p.direction+"'><tbody><tr><td class='query'></td></tr></tbody></table>");
 		}
+		var getGrid = function () {
+			return $("#" + $.jgrid.jqID(p.id))[0] || null;
+		};
 		/*
 		 *Perform checking.
 		 *
 		*/
 		var checkData = function(val, colModelItem) {
-			var ret = [true,""];
+			var ret = [true,""], $t = getGrid() ;
 			if($.isFunction(colModelItem.searchrules)) {
-				ret = colModelItem.searchrules(val, colModelItem);
+				ret = colModelItem.searchrules.call($t, val, colModelItem);
 			} else if($.jgrid && $.jgrid.checkValues) {
 				try {
-					ret = $.jgrid.checkValues(val, -1, null, colModelItem.searchrules, colModelItem.label);
+					ret = $.jgrid.checkValues.call($t, val, -1, $t, colModelItem.searchrules, colModelItem.label);
 				} catch (e) {}
 			}
 			if(ret && ret.length && ret[0] === false) {
@@ -343,7 +346,7 @@ $.fn.jqFilter = function( arg ) {
 			// save current entity in a variable so that it could
 			// be referenced in anonimous method calls
 
-			var that=this, tr = $("<tr></tr>"),
+			var that=this, $t = getGrid(), tr = $("<tr></tr>"),
 			//document.createElement("tr"),
 
 			// first column used for padding
@@ -378,7 +381,7 @@ $.fn.jqFilter = function( arg ) {
 						cm.searchoptions.size = 10;
 					}
 				}
-				var elm = $.jgrid.createEl(cm.inputtype,cm.searchoptions, "", true, that.p.ajaxSelectOptions, true);
+				var elm = $.jgrid.createEl.call($t, cm.inputtype,cm.searchoptions, "", true, that.p.ajaxSelectOptions, true);
 				$(elm).addClass("input-elm");
 				//that.createElement(rule, "");
 
@@ -409,13 +412,13 @@ $.fn.jqFilter = function( arg ) {
 				}
 				// data
 				$(".data",trpar).empty().append( elm );
-				$.jgrid.bindEv( elm, cm.searchoptions, that);
+				$.jgrid.bindEv.call($t, elm, cm.searchoptions, $t);
 				$(".input-elm",trpar).bind('change',function( e ) {
 					var tmo = $(this).hasClass("ui-autocomplete-input") ? 200 :0;
 					setTimeout(function(){
 						var elem = e.target;
 						rule.data = elem.nodeName.toUpperCase() === "SPAN" && cm.searchoptions && $.isFunction(cm.searchoptions.custom_value) ?
-							cm.searchoptions.custom_value($(elem).children(".customelement:first"), 'get') : elem.value;
+							cm.searchoptions.custom_value.call($t, $(elem).children(".customelement:first"), 'get') : elem.value;
 						that.onchange(); // signals that the filter has changed
 					}, tmo);
 				});
@@ -456,7 +459,7 @@ $.fn.jqFilter = function( arg ) {
 					cm.searchoptions.size = 10;
 				}
 			}
-			var ruleDataInput = $.jgrid.createEl(cm.inputtype,cm.searchoptions, rule.data, true, that.p.ajaxSelectOptions, true);
+			var ruleDataInput = $.jgrid.createEl.call($t, cm.inputtype,cm.searchoptions, rule.data, true, that.p.ajaxSelectOptions, true);
 			if(rule.op == 'nu' || rule.op == 'nn') {
 				$(ruleDataInput).attr('readonly','true');
 				$(ruleDataInput).attr('disabled','true');
@@ -504,11 +507,11 @@ $.fn.jqFilter = function( arg ) {
 			// is created previously
 			//ruleDataInput.setAttribute("type", "text");
 			ruleDataTd.append(ruleDataInput);
-			$.jgrid.bindEv( ruleDataInput, cm.searchoptions, that);
+			$.jgrid.bindEv.call($t, ruleDataInput, cm.searchoptions, $t);
 			$(ruleDataInput)
 			.addClass("input-elm")
 			.bind('change', function() {
-				rule.data = cm.inputtype === 'custom' ? cm.searchoptions.custom_value($(this).children(".customelement:first"),'get') : $(this).val();
+				rule.data = cm.inputtype === 'custom' ? cm.searchoptions.custom_value.call($t, $(this).children(".customelement:first"),'get') : $(this).val();
 				that.onchange(); // signals that the filter has changed
 			});
 
