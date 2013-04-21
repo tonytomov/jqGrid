@@ -455,7 +455,7 @@ $.jgrid.extend({
 			saveicon:"ui-icon-disk",
 			cancel: true,
 			cancelicon:"ui-icon-cancel",
-			addParams : {},
+			addParams : {addRowParams: {extraparam: {}}},
 			editParams : {},
 			restoreAfterSelect : true
 		}, $.jgrid.nav, o ||{});
@@ -544,9 +544,6 @@ $.jgrid.extend({
 							var opers = $t.p.prmNames,
 							oper = opers.oper, tmpParams = {};
 							if($("#"+$.jgrid.jqID(sr), "#"+gID ).hasClass("jqgrid-new-row")) {
-								if(!o.addParams.addRowParams.extraparam) {
-									o.addParams.addRowParams.extraparam = {};
-								}
 								o.addParams.addRowParams.extraparam[oper] = opers.addoper;
 								tmpParams = o.addParams.addRowParams;
 							} else {
