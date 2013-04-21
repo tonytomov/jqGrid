@@ -575,7 +575,7 @@ $.extend($.jgrid,{
 					if(cm[i].name===valref) {
 						edtrul = cm[i].editrules;
 						valref = i;
-						if(cm.formoptions != null) { nm = cm.formoptions.label; }
+						if(cm[i].formoptions != null) { nm = cm[i].formoptions.label; }
 						break;
 					}
 				}
