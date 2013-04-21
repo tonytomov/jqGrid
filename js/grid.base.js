@@ -2900,9 +2900,10 @@ $.jgrid.extend({
 				try {
 					$(this.p.colModel).each(function(i){
 						nm = this.name;
-						if( data[nm] !== undefined) {
-							lcdata[nm] = this.formatter && typeof this.formatter === 'string' && this.formatter == 'date' ? $.unformat.date.call(t,data[nm],this) : data[nm];
-							vl = t.formatter( rowid, data[nm], i, data, 'edit');
+						var dval =$.jgrid.getAccessor(data,nm);
+						if( dval !== undefined) {
+							lcdata[nm] = this.formatter && typeof this.formatter === 'string' && this.formatter == 'date' ? $.unformat.date.call(t,dval,this) : dval;
+							vl = t.formatter( rowid, dval, i, data, 'edit');
 							title = this.title ? {"title":$.jgrid.stripHtml(vl)} : {};
 							if(t.p.treeGrid===true && nm == t.p.ExpandColumn) {
 								$("td[role='gridcell']:eq("+i+") > span:first",ind).html(vl).attr(title);
