@@ -2902,10 +2902,10 @@ $.jgrid.extend({
 						nm = this.name;
 						var dval =$.jgrid.getAccessor(data,nm);
 						if( dval !== undefined) {
-							lcdata[nm] = this.formatter && typeof this.formatter === 'string' && this.formatter == 'date' ? $.unformat.date.call(t,dval,this) : dval;
+							lcdata[nm] = this.formatter && typeof this.formatter === 'string' && this.formatter === 'date' ? $.unformat.date.call(t,dval,this) : dval;
 							vl = t.formatter( rowid, dval, i, data, 'edit');
 							title = this.title ? {"title":$.jgrid.stripHtml(vl)} : {};
-							if(t.p.treeGrid===true && nm == t.p.ExpandColumn) {
+							if(t.p.treeGrid===true && nm === t.p.ExpandColumn) {
 								$("td[role='gridcell']:eq("+i+") > span:first",ind).html(vl).attr(title);
 							} else {
 								$("td[role='gridcell']:eq("+i+")",ind).html(vl).attr(title);
