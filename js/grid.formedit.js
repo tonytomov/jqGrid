@@ -345,7 +345,8 @@ $.jgrid.extend({
 			onClose : null,
 			ajaxEditOptions : {},
 			serializeEditData : null,
-			viewPagerButtons : true
+			viewPagerButtons : true,
+			overlayClass : 'ui-widget-overlay'
 		}, $.jgrid.edit, p || {});
 		rp_ge[$(this)[0].p.id] = p;
 		return this.each(function(){
@@ -942,9 +943,9 @@ $.jgrid.extend({
 				$($t).triggerHandler("jqGridAddEditBeforeShowForm", [$("#"+frmgr), frmoper]);
 				if(onBeforeShow) { onBeforeShow.call($t, $("#"+frmgr)); }
 				$("#"+$.jgrid.jqID(IDs.themodal)).data("onClose",rp_ge[$t.p.id].onClose);
-				$.jgrid.viewModal("#"+$.jgrid.jqID(IDs.themodal),{gbox:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, jqM: false, overlay: p.overlay, modal:p.modal});
+				$.jgrid.viewModal("#"+$.jgrid.jqID(IDs.themodal),{gbox:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, jqM: false, overlay: p.overlay, modal:p.modal, overlayClass : p.overlayClass});
 				if(!closeovrl) {
-					$(".jqmOverlay").click(function(){
+					$("." + $.jgrid.jqID(p.overlayClass)).click(function(){
 						if(!checkUpdates()) {return false;}
 						$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, onClose: rp_ge[$t.p.id].onClose});
 						return false;
@@ -1101,9 +1102,9 @@ $.jgrid.extend({
 				$($t).triggerHandler("jqGridAddEditBeforeShowForm", [$("#"+frmgr), frmoper]);
 				if(onBeforeShow) { onBeforeShow.call($t, $("#"+frmgr));}
 				$("#"+$.jgrid.jqID(IDs.themodal)).data("onClose",rp_ge[$t.p.id].onClose);
-				$.jgrid.viewModal("#"+$.jgrid.jqID(IDs.themodal),{gbox:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, overlay: p.overlay,modal:p.modal});
+				$.jgrid.viewModal("#"+$.jgrid.jqID(IDs.themodal),{gbox:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, overlay: p.overlay,modal:p.modal, overlayClass: p.overlayClass});
 				if(!closeovrl) {
-					$(".jqmOverlay").click(function(){
+					$("." + $.jgrid.jqID(p.overlayClass)).click(function(){
 						if(!checkUpdates()) {return false;}
 						$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, onClose: rp_ge[$t.p.id].onClose});
 						return false;
@@ -1147,7 +1148,7 @@ $.jgrid.extend({
 					$("#FormError",frmtb).hide();
 					var npos = getCurrPos();
 					npos[0] = parseInt(npos[0],10);
-					if(npos[0] != -1 && npos[1][npos[0]+1]) {
+					if(npos[0] !== -1 && npos[1][npos[0]+1]) {
 						$($t).triggerHandler("jqGridAddEditClickPgButtons", ['next',$("#"+frmgr),npos[1][npos[0]]]);
 						var nposret;
 						if($.isFunction(p.onclickPgButtons)) {
@@ -1169,7 +1170,7 @@ $.jgrid.extend({
 					if(!checkUpdates()) {return false;}
 					$("#FormError",frmtb).hide();
 					var ppos = getCurrPos();
-					if(ppos[0] != -1 && ppos[1][ppos[0]-1]) {
+					if(ppos[0] !== -1 && ppos[1][ppos[0]-1]) {
 						$($t).triggerHandler("jqGridAddEditClickPgButtons", ['prev',$("#"+frmgr),ppos[1][ppos[0]]]);
 						var pposret;
 						if($.isFunction(p.onclickPgButtons)) {
