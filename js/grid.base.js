@@ -977,7 +977,7 @@ $.fn.jqGrid = function( pin ) {
 					celp = celp.replace(/style/i,'style').replace(/title/i,'title');
 					if(celp.indexOf('title') > -1) { cm.title=false;}
 					if(celp.indexOf('class') > -1) { clas = undefined;}
-					acp = celp.split("style");
+					acp = celp.split(/[^-]style/);
 					if(acp.length === 2 ) {
 						acp[1] =  $.trim(acp[1].replace("=",""));
 						if(acp[1].indexOf("'") === 0 || acp[1].indexOf('"') === 0) {
