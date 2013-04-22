@@ -76,14 +76,14 @@ $.extend($.jgrid,{
 			eval('(' + js + ')');
 	},
 	parseDate : function(format, date) {
-		var tsp = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0, u:0},k,hl,dM, regdate = /[\\\/:_;.,\t\s-]/;
+		var tsp = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0, u:0},k,hl,dM, regdate = /[Tt\\\/:_;.,\t\s-]/;
 		if(date && date != null){
 			date = $.trim(date);
-			date = date.split(regdate);
+			date = date.replace(/\\T/g,"T").replace(/\\t/,"t").split(regdate);
 			if ($.jgrid.formatter.date.masks[format] !== undefined) {
 				format = $.jgrid.formatter.date.masks[format];
 			}
-			format = format.split(regdate);
+			format = format.replace(/\\T/g,"T").replace(/\\t/,"t").split(regdate);
 			var dfmt  = $.jgrid.formatter.date.monthNames;
 			var afmt  = $.jgrid.formatter.date.AmPm;
 			var h12to24 = function(ampm, h){
