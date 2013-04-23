@@ -330,6 +330,14 @@ $.extend($.jgrid,{
 			if(a>b){return d;}
 			return 0;
 		};
+		this._simpleNumberCompare = function (a, b, d) {
+			return d > 0 ? a - b : b - a;
+		};
+		this._simpleCompare = function (a, b, d) {
+			if(a<b){return -d;}
+			if(a>b){return d;}
+			return 0;
+		};
 		this._performSort=function(){
 			if(_sorting.length===0){return;}
 			_data=self._doSort(_data,0);
@@ -353,42 +361,42 @@ $.extend($.jgrid,{
 			return results;
 		};
 		this._getOrder=function(data,by,dir,type, dfmt){
-			var sortData=[],_sortData=[], newDir = dir=="a" ? 1 : -1, i,ab,j,
-			findSortKey;
+			var sortData=[],_sortData=[], newDir = dir=="a" ? 1 : -1, i, j,
+			normalizedSortKey,getAccessor=$.jgrid.getAccessor,compare=self._simpleCompare;
 
 			if(type === undefined ) { type = "text"; }
 			if (type == 'float' || type== 'number' || type== 'currency' || type== 'numeric') {
-				findSortKey = function($cell) {
+				normalizedSortKey = function($cell) {
 					var key = parseFloat( String($cell).replace(_stripNum, ''));
 					return isNaN(key) ? 0.00 : key;
 				};
+				compare=self._simpleNumberCompare;
 			} else if (type=='int' || type=='integer') {
-				findSortKey = function($cell) {
+				normalizedSortKey = function($cell) {
 					return $cell ? parseFloat(String($cell).replace(_stripNum, '')) : 0;
 				};
+				compare=self._simpleNumberCompare;
 			} else if(type == 'date' || type == 'datetime') {
-				findSortKey = function($cell) {
+				normalizedSortKey = function($cell) {
 					return $.jgrid.parseDate(dfmt,$cell).getTime();
 				};
 			} else if($.isFunction(type)) {
-				findSortKey = type;
+				normalizedSortKey = type;
+				compare=self._compare;
 			} else {
-				findSortKey = function($cell) {
+				normalizedSortKey = function($cell) {
 					$cell = $cell ? $.trim(String($cell)) : "";
 					return _usecase ? $cell : $cell.toLowerCase();
 				};
 			}
 			$.each(data,function(i,v){
-				ab = by!=="" ? $.jgrid.getAccessor(v,by) : v;
+				var ab = by!=="" ? $.jgrid.getAccessor(v,by) : v;
 				if(ab === undefined) { ab = ""; }
-				ab = findSortKey(ab, v);
-				_sortData.push({ 'vSort': ab,'index':i});
+				_sortData.push({ vSort: normalizedSortKey(ab, v), index: i});
 			});
 
 			_sortData.sort(function(a,b){
-				a = a.vSort;
-				b = b.vSort;
-				return self._compare(a,b,newDir);
+				return compare(a.vSort,b.vSort,newDir);
 			});
 			j=0;
 			var nrec= data.length;
