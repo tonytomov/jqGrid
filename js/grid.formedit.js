@@ -171,7 +171,8 @@ $.jgrid.extend({
 							p.afterChange.call($t, $("#"+fid), p);
 						}
 					},
-					direction : $t.p.direction
+					direction : $t.p.direction,
+					id: $t.p.id
 				});
 				fil.append( bt );
 				if(found && p.tmplFilters && p.tmplFilters.length) {
