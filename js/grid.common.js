@@ -260,7 +260,8 @@ $.extend($.jgrid,{
 		if($.isFunction(mopt.afterOpen) ) { mopt.afterOpen(); }
 		try{ $("#info_dialog").focus();} catch (m){}
 	},
-	bindEv: function  (el, opt, $t) {
+	bindEv: function  (el, opt) {
+		var $t = this;
 		if($.isFunction(opt.dataInit)) {
 			opt.dataInit.call($t,el);
 		}
