@@ -499,7 +499,7 @@ $.jgrid.extend({
 						if($.isFunction(opt.custom_value) && rowid !== "_empty" ) {
 							opt.custom_value.call($t, $("#"+nm,"#"+frmgr),'set',tmp);
 						}
-						$.jgrid.bindEv( elc, opt, $t);
+						$.jgrid.bindEv.call($t, elc, opt);
 						retpos[cnt] = i;
 						cnt++;
 					}
