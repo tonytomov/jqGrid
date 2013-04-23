@@ -206,7 +206,7 @@ $.jgrid.extend({
 							}
 							break;
 					}
-					cv = $.jgrid.checkValues(tmp[nm],i,$t);
+					cv = $.jgrid.checkValues.call($t,tmp[nm],i);
 					if(cv[0] === false) {
 						cv[1] = tmp[nm] + " " + cv[1];
 						return false;

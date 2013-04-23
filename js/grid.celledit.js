@@ -191,7 +191,7 @@ $.jgrid.extend({
 						var vv = $t.p.beforeSaveCell.call($t, $t.rows[iRow].id,nm, v, iRow,iCol);
 						if (vv) {v = vv; v2=vv;}
 					}
-					var cv = $.jgrid.checkValues(v,iCol,$t);
+					var cv = $.jgrid.checkValues.call($t,v,iCol);
 					if(cv[0] === true) {
 						var addpost = $($t).triggerHandler("jqGridBeforeSubmitCell", [$t.rows[iRow].id, nm, v, iRow, iCol]) || {};
 						if ($.isFunction($t.p.beforeSubmitCell)) {

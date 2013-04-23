@@ -654,7 +654,7 @@ $.jgrid.extend({
 				}
 				for( key in postdata ){
 					if(postdata.hasOwnProperty(key)) {
-						ret = $.jgrid.checkValues.call($t,postdata[key],key,$t);
+						ret = $.jgrid.checkValues.call($t,postdata[key],key);
 						if(ret[0] === false) {break;}
 					}
 				}
