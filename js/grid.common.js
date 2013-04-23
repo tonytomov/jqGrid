@@ -567,8 +567,8 @@ $.extend($.jgrid,{
 		}
 		return true;
 	},
-	checkValues : function(val, valref,g, customobject, nam) {
-		var edtrul,i, nm, dft, len, cm = g.p.colModel;
+	checkValues : function(val, valref, customobject, nam) {
+		var edtrul,i, nm, dft, len, g = this, cm = g.p.colModel;
 		if(customobject === undefined) {
 			if(typeof valref==='string'){
 				for( i =0, len=cm.length;i<len; i++){
