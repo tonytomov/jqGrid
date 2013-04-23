@@ -241,7 +241,11 @@ $.extend($.jgrid,{
 			});
 		}
 		$("#closedialog", "#info_id").click(function(){
-			self.hideModal("#info_dialog",{jqm:jm});
+			self.hideModal("#info_dialog",{
+				jqm:jm,
+				onClose: $("#info_dialog").data("onClose") || mopt.onClose,
+				gb: $("#info_dialog").data("gbox") || mopt.gbox
+			});
 			return false;
 		});
 		$(".fm-button","#info_dialog").hover(
