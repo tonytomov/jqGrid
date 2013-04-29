@@ -486,7 +486,7 @@ $.jgrid.extend({
 								"successfunc" : ap.onSuccess,
 								"url" : ap.url,
 								"extraparam" : ap.extraparam,
-								"aftersavefunc" : ap.afterSavef,
+								"aftersavefunc" : ap.afterSave,
 								"errorfunc": ap.onError,
 								"afterrestorefunc" : ap.afterRestore
 							};
