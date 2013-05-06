@@ -179,7 +179,10 @@ $.jgrid.extend({
 			searchurl : '',
 			stringResult: false,
 			groupOp: 'AND',
-			defaultSearch : "bw"
+			defaultSearch : "bw",
+			searchOperators : false,
+			operandTitle : "Click to select search operation.",
+			operands : { "eq" :"==", "ne":"!","lt":"<","le":"<=","gt":">","ge":">=","bw":"^","bn":"!^","in":"=","ni":"!=","ew":"|","en":"!@","cn":"~","nc":"!~","nu":"#","nn":"!#"}
 		},p  || {});
 		return this.each(function(){
 			var $t = this;
