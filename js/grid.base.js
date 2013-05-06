@@ -88,7 +88,12 @@ $.extend($.jgrid,{
 			return value;
 		},
 		ts = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0, u:0},
-		timestamp=0, dM, k,hl;
+		timestamp=0, dM, k,hl,
+		h12to24 = function(ampm, h){
+			if (ampm === 0){ if (h === 12) { h = 0;} }
+			else { if (h !== 12) { h += 12; } }
+			return h;
+		};
 		if(opts === undefined) {
 			opts = $.jgrid.formatter.date;
 		}
@@ -113,14 +118,31 @@ $.extend($.jgrid,{
 			// parsing for month names
 			for(k=0,hl=format.length;k<hl;k++){
 				if(format[k] === 'M') {
-				dM = $.inArray(date[k],opts.monthNames);
-					if(dM !== -1 && dM < 12){date[k] = dM+1;}
+					dM = $.inArray(date[k],opts.monthNames);
+					if(dM !== -1 && dM < 12){date[k] = dM+1; ts.m = date[k];}
 				}
 				if(format[k] === 'F') {
 					dM = $.inArray(date[k],opts.monthNames);
-					if(dM !== -1 && dM > 11){date[k] = dM+1-12;}
+					if(dM !== -1 && dM > 11){date[k] = dM+1-12; ts.m = date[k];}
 				}
-				if(date[k]) {
+				if(format[k] === 'a') {
+					dM = $.inArray(date[k],opts.AmPm);
+					if(dM !== -1 && dM < 2 && date[k] === opts.AmPm[dM]){
+						date[k] = dM;
+						ts.h = h12to24(date[k], ts.h);
+					}
+				}
+				if(format[k] === 'A') {
+					dM = $.inArray(date[k],opts.AmPm);
+					if(dM !== -1 && dM > 1 && date[k] === opts.AmPm[dM]){
+						date[k] = dM-2;
+						ts.h = h12to24(date[k], ts.h);
+					}
+				}
+				if (format[k] === 'g') {
+					ts.h = parseInt(date[k], 10);
+				}
+				if(date[k] !== undefined) {
 					ts[format[k].toLowerCase()] = parseInt(date[k],10);
 				}
 			}
