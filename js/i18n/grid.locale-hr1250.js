@@ -13,14 +13,14 @@ $.extend($.jgrid,{
 	defaults : {
 		recordtext: "Pregled {0} - {1} od {2}",
 		emptyrecords: "Nema zapisa",
-		loadtext: "Uèitavam...",
+		loadtext: "Uï¿½itavam...",
 		pgtext : "Stranica {0} od {1}"
 	},
 	search : {
-		caption: "Traži...",
-		Find: "Pretraživanje",
-		Reset: "Poništi",
-		odata : ['jednak', 'nije identièan', 'manje', 'manje ili identièno','veæe','veše ili identièno', 'poèinje sa','ne poèinje sa ','je u','nije u','završava sa','ne završava sa','sadrži','ne sadrži'],
+		caption: "Traï¿½i...",
+		Find: "Pretraï¿½ivanje",
+		Reset: "Poniï¿½ti",
+		odata : ['jednak', 'nije identiï¿½an', 'manje', 'manje ili identiï¿½no','veï¿½e','veï¿½e ili identiï¿½no', 'poï¿½inje sa','ne poï¿½inje sa ','je u','nije u','zavrï¿½ava sa','ne zavrï¿½ava sa','sadrï¿½i','ne sadrï¿½i'],
 		groupOps: [	{ op: "I", text: "sve" },	{ op: "ILI",  text: "bilo koji" }	],
 		matchText: " podudata se",
 		rulesText: " pravila"
@@ -38,8 +38,8 @@ $.extend($.jgrid,{
 		msg: {
 			required:"Polje je obavezno",
 			number:"Molim, unesite ispravan broj",
-			minValue:"Vrijednost mora biti veæa ili identièna ",
-			maxValue:"Vrijednost mora biti manja ili identièna",
+			minValue:"Vrijednost mora biti veï¿½a ili identiï¿½na ",
+			maxValue:"Vrijednost mora biti manja ili identiï¿½na",
 			email: "neispravan e-mail",
 			integer: "Molim, unjeti ispravan cijeli broj (integer)",
 			date: "Molim, unjeti ispravan datum ",
@@ -56,37 +56,37 @@ $.extend($.jgrid,{
 		bClose: "Zatvori"
 	},
 	del : {
-		caption: "Obriši",
-		msg: "Obriši oznaèen zapis ili više njih?",
-		bSubmit: "Obriši",
+		caption: "Obriï¿½i",
+		msg: "Obriï¿½i oznaï¿½en zapis ili viï¿½e njih?",
+		bSubmit: "Obriï¿½i",
 		bCancel: "Odustani"
 	},
 	nav : {
 		edittext: " ",
-		edittitle: "Promijeni obilježeni red",
+		edittitle: "Promijeni obiljeï¿½eni red",
 		addtext:" ",
 		addtitle: "Dodaj novi red",
 		deltext: " ",
-		deltitle: "Obriši obilježeni red",
+		deltitle: "Obriï¿½i obiljeï¿½eni red",
 		searchtext: " ",
-		searchtitle: "Potraži zapise",
+		searchtitle: "Potraï¿½i zapise",
 		refreshtext: "",
 		refreshtitle: "Ponovo preuzmi podatke",
 		alertcap: "Upozorenje",
 		alerttext: "Molim, odaberi red",
 		viewtext: "",
-		viewtitle: "Pregled obilježenog reda"
+		viewtitle: "Pregled obiljeï¿½enog reda"
 	},
 	col : {
-		caption: "Obilježi kolonu",
+		caption: "Obiljeï¿½i kolonu",
 		bSubmit: "Uredu",
 		bCancel: "Odustani"
 	},
 	errors : {
-		errcap : "Greška",
+		errcap : "Greï¿½ka",
 		nourl : "Nedostaje URL",
 		norecords: "Bez zapisa za obradu",
-		model : "colNames i colModel imaju razlièitu duljinu!"
+		model : "colNames i colModel imaju razliï¿½itu duljinu!"
 	},
 	formatter : {
 		integer : {thousandsSeparator: ".", defaultValue: '0'},
@@ -94,17 +94,18 @@ $.extend($.jgrid,{
 		currency : {decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "", suffix:" Kn", defaultValue: '0,00'},
 		date : {
 			dayNames:   [
-				"Ned", "Pon", "Uto", "Sri", "Èet", "Pet", "Sub",
-				"Nedjelja", "Ponedjeljak", "Utorak", "Srijeda", "Èetvrtak", "Petak", "Subota"
+				"Ned", "Pon", "Uto", "Sri", "ï¿½et", "Pet", "Sub",
+				"Nedjelja", "Ponedjeljak", "Utorak", "Srijeda", "ï¿½etvrtak", "Petak", "Subota"
 			],
 			monthNames: [
-				"Sij", "Vel", "Ožu", "Tra", "Svi", "Lip", "Srp", "Kol", "Ruj", "Lis", "Stu", "Pro",
-				"Sijeèanj", "Veljaèa", "Ožujak", "Travanj", "Svibanj", "Lipanj", "Srpanj", "Kolovoz", "Rujan", "Listopad", "Studeni", "Prosinac"
+				"Sij", "Vel", "Oï¿½u", "Tra", "Svi", "Lip", "Srp", "Kol", "Ruj", "Lis", "Stu", "Pro",
+				"Sijeï¿½anj", "Veljaï¿½a", "Oï¿½ujak", "Travanj", "Svibanj", "Lipanj", "Srpanj", "Kolovoz", "Rujan", "Listopad", "Studeni", "Prosinac"
 			],
 			AmPm : ["am","pm","AM","PM"],
 			S: function (j) {return ''},
 			srcformat: 'Y-m-d',
 			newformat: 'd.m.Y.',
+			parseRe : /[Tt\\\/:_;.,\t\s-]/,
 			masks : {
 				// see http://php.net/manual/en/function.date.php for PHP format used in jqGrid
 				// and see http://docs.jquery.com/UI/Datepicker/formatDate

@@ -97,6 +97,10 @@ $.extend($.jgrid,{
 		if(opts === undefined) {
 			opts = $.jgrid.formatter.date;
 		}
+		// old lang files
+		if(opts.parseRe === undefined ) {
+			opts.parseRe = /[Tt\\\/:_;.,\t\s-]/;
+		}
 		if( opts.masks.hasOwnProperty(format) ) { format = opts.masks[format]; }
 		if( !isNaN( date - 0 ) && String(format).toLowerCase() === "u") {
 			//Unix timestamp
@@ -113,8 +117,8 @@ $.extend($.jgrid,{
 				timestamp.setTime(Number(Number(timestamp) + (offset * 60 * 1000)));
 			}
 		} else {
-			date = String(date).replace(/\\T/g,"T").replace(/\\t/,"t").split(/[Tt\\\/:_;.,\t\s-]/);
-			format = format.replace(/\\T/g,"T").replace(/\\t/,"t").split(/[Tt\\\/:_;.,\t\s-]/);
+			date = String(date).replace(/\\T/g,"T").replace(/\\t/,"t").split(opts.parseRe);
+			format = format.replace(/\\T/g,"T").replace(/\\t/,"t").split(opts.parseRe);
 			// parsing for month names
 			for(k=0,hl=format.length;k<hl;k++){
 				if(format[k] === 'M') {

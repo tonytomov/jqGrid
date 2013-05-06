@@ -105,6 +105,7 @@ $.extend($.jgrid,{
 			S: function (j) {return '.-ik';},
 			srcformat: 'Y-m-d',
 			newformat: 'Y/m/d',
+			parseRe : /[Tt\\\/:_;.,\t\s-]/,
 			masks : {
 				ISO8601Long:"Y-m-d H:i:s",
 				ISO8601Short:"Y-m-d",

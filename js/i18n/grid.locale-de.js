@@ -114,6 +114,7 @@ $.extend($.jgrid,{
 			S: function (j) {return '.';}, // one can also use 'er' instead of '.' but one have to use additional word like 'der' or 'den' before
 			srcformat: 'Y-m-d',
 			newformat: 'd.m.Y',
+			parseRe : /[Tt\\\/:_;.,\t\s-]/,
 			masks : {
 				// see http://php.net/manual/en/function.date.php for PHP format used in jqGrid
 				// and see http://docs.jquery.com/UI/Datepicker/formatDate
