@@ -55,7 +55,8 @@ $.jgrid.extend({
 			tmplFilters : null,
 			tmplLabel : ' Template: ',
 			showOnLoad: false,
-			layer: null
+			layer: null,
+			operands : { "eq" :"=", "ne":"<>","lt":"<","le":"<=","gt":">","ge":">=","bw":"LIKE","bn":"NOT LIKE","in":"IN","ni":"NOT IN","ew":"LIKE","en":"NOT LIKE","cn":"LIKE","nc":"NOT LIKE","nu":"IS NULL","nn":"ISNOT NULL"}
 		}, $.jgrid.search, p || {});
 		return this.each(function() {
 			var $t = this;
@@ -157,6 +158,7 @@ $.jgrid.extend({
 					ruleButtons : p.multipleSearch,
 					afterRedraw : p.afterRedraw,
 					ops : p.odata,
+					operands : p.operands,
 					ajaxSelectOptions: $t.p.ajaxSelectOptions,
 					groupOps: p.groupOps,
 					onChange : function() {

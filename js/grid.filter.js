@@ -54,6 +54,7 @@ $.fn.jqFilter = function( arg ) {
 		showQuery : true,
 		sopt : null,
 		ops : [],
+		operands : null,
 		numopts : ['eq','ne', 'lt', 'le', 'gt', 'ge', 'nu', 'nn', 'in', 'ni'],
 		stropts : ['eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn', 'in', 'ni'],
 		strarr : ['text', 'string', 'blob'],
@@ -124,7 +125,7 @@ $.fn.jqFilter = function( arg ) {
 		 *
 		*/
 		var checkData = function(val, colModelItem) {
-			var ret = [true,""], $t = getGrid() ;
+			var ret = [true,""], $t = getGrid();
 			if($.isFunction(colModelItem.searchrules)) {
 				ret = colModelItem.searchrules.call($t, val, colModelItem);
 			} else if($.jgrid && $.jgrid.checkValues) {
@@ -172,7 +173,7 @@ $.fn.jqFilter = function( arg ) {
 			var table = $("<table class='group ui-widget ui-widget-content' style='border:0px none;'><tbody></tbody></table>"),
 			// create error message row
 			align = "left";
-			if(this.p.direction == "rtl") {
+			if(this.p.direction === "rtl") {
 				align = "right";
 				table.attr("dir","rtl");
 			}
@@ -237,7 +238,7 @@ $.fn.jqFilter = function( arg ) {
 				}
 				for (i = 0; i < that.p.columns.length; i++) {
 				// but show only serchable and serchhidden = true fields
-					var searchable = (that.p.columns[i].search === undefined) ?  true: that.p.columns[i].search ,
+					var searchable = (that.p.columns[i].search === undefined) ?  true: that.p.columns[i].search,
 					hidden = (that.p.columns[i].hidden === true),
 					ignoreHiding = (that.p.columns[i].searchoptions.searchhidden === true);
 					if ((ignoreHiding && searchable) || (searchable && !hidden)) {
@@ -373,9 +374,9 @@ $.fn.jqFilter = function( arg ) {
 					ina = $.inArray(op[i],aoprs);
 					if(ina !== -1) {
 						if(so===0) {
-							rule.op = that.p.ops[ina].name;
+							rule.op = that.p.ops[ina].oper;
 						}
-						s += "<option value='"+that.p.ops[ina].name+"'>"+that.p.ops[ina].description+"</option>";
+						s += "<option value='"+that.p.ops[ina].oper+"'>"+that.p.ops[ina].text+"</option>";
 						so++;
 					}
 				}
@@ -436,7 +437,7 @@ $.fn.jqFilter = function( arg ) {
 				}
 			}
 			var ruleDataInput = $.jgrid.createEl.call($t, cm.inputtype,cm.searchoptions, rule.data, true, that.p.ajaxSelectOptions, true);
-			if(rule.op == 'nu' || rule.op == 'nn') {
+			if(rule.op === 'nu' || rule.op === 'nn') {
 				$(ruleDataInput).attr('readonly','true');
 				$(ruleDataInput).attr('disabled','true');
 			} //retain the state of disabled text fields in case of null ops
@@ -470,8 +471,8 @@ $.fn.jqFilter = function( arg ) {
 			for ( i = 0; i < op.length; i++) {
 				ina = $.inArray(op[i],aoprs);
 				if(ina !== -1) {
-					selected = rule.op === that.p.ops[ina].name ? " selected='selected'" : "";
-					str += "<option value='"+that.p.ops[ina].name+"'"+selected+">"+that.p.ops[ina].description+"</option>";
+					selected = rule.op === that.p.ops[ina].oper ? " selected='selected'" : "";
+					str += "<option value='"+that.p.ops[ina].oper+"'"+selected+">"+that.p.ops[ina].text+"</option>";
 				}
 			}
 			ruleOperatorSelect.append( str );
@@ -553,9 +554,9 @@ $.fn.jqFilter = function( arg ) {
 			var opUF = "",opC="", i, cm, ret, val,
 			numtypes = ['int', 'integer', 'float', 'number', 'currency']; // jqGrid
 			for (i = 0; i < this.p.ops.length; i++) {
-				if (this.p.ops[i].name === rule.op) {
-					opUF = this.p.ops[i].operator;
-					opC = this.p.ops[i].name;
+				if (this.p.ops[i].oper === rule.op) {
+					opUF = this.p.operands.hasOwnProperty(rule.op) ? this.p.operands[rule.op] : "";
+					opC = this.p.ops[i].oper;
 					break;
 				}
 			}
@@ -565,7 +566,7 @@ $.fn.jqFilter = function( arg ) {
 					break;
 				}
 			}
-			if (cm == null) { return ""; }
+			if (cm === undefined) { return ""; }
 			val = rule.data;
 			if(opC === 'bw' || opC === 'bn') { val = val+"%"; }
 			if(opC === 'ew' || opC === 'en') { val = "%"+val; }
