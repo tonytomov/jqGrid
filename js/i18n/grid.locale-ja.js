@@ -19,13 +19,13 @@ $.extend($.jgrid,{
 	    caption: "\u691c\u7d22...",
 	    Find: "\u691c\u7d22",
 	    Reset: "\u30ea\u30bb\u30c3\u30c8",
-	    odata: ["\u6B21\u306B\u7B49\u3057\u3044", "\u6B21\u306B\u7B49\u3057\u304F\u306A\u3044",
-            "\u6B21\u3088\u308A\u5C0F\u3055\u3044", "\u6B21\u306B\u7B49\u3057\u3044\u304B\u5C0F\u3055\u3044",
-            "\u6B21\u3088\u308A\u5927\u304D\u3044", "\u6B21\u306B\u7B49\u3057\u3044\u304B\u5927\u304D\u3044",
-            "\u6B21\u3067\u59CB\u307E\u308B", "\u6B21\u3067\u59CB\u307E\u3089\u306A\u3044",
-            "\u6B21\u306B\u542B\u307E\u308C\u308B", "\u6B21\u306B\u542B\u307E\u308C\u306A\u3044",
-            "\u6B21\u3067\u7D42\u308F\u308B", "\u6B21\u3067\u7D42\u308F\u3089\u306A\u3044",
-            "\u6B21\u3092\u542B\u3080", "\u6B21\u3092\u542B\u307E\u306A\u3044"],
+	    odata: [{ oper:'eq', text:"\u6B21\u306B\u7B49\u3057\u3044"}, { oper:'ne', text:"\u6B21\u306B\u7B49\u3057\u304F\u306A\u3044"},
+            { oper:'lt', text:"\u6B21\u3088\u308A\u5C0F\u3055\u3044"}, { oper:'le', text:"\u6B21\u306B\u7B49\u3057\u3044\u304B\u5C0F\u3055\u3044"},
+            { oper:'gt', text:"\u6B21\u3088\u308A\u5927\u304D\u3044"}, { oper:'ge', text:"\u6B21\u306B\u7B49\u3057\u3044\u304B\u5927\u304D\u3044"},
+            { oper:'bw', text:"\u6B21\u3067\u59CB\u307E\u308B"}, { oper:'bn', text:"\u6B21\u3067\u59CB\u307E\u3089\u306A\u3044"},
+            { oper:'in', text:"\u6B21\u306B\u542B\u307E\u308C\u308B"}, { oper:'ni', text:"\u6B21\u306B\u542B\u307E\u308C\u306A\u3044"},
+            { oper:'ew', text:"\u6B21\u3067\u7D42\u308F\u308B"}, { oper:'en', text:"\u6B21\u3067\u7D42\u308F\u3089\u306A\u3044"},
+            { oper:'cn', text:"\u6B21\u3092\u542B\u3080"}, { oper:'nc', text:"\u6B21\u3092\u542B\u307E\u306A\u3044"}],
 	    groupOps: [{
                 op: "AND",
                 text: "\u3059\u3079\u3066\u306E"
@@ -33,9 +33,7 @@ $.extend($.jgrid,{
             {
                 op: "OR",
                 text: "\u3044\u305A\u308C\u304B\u306E"
-            }],
-      matchText: " \u6B21\u306E",
-      rulesText: " \u6761\u4EF6\u3092\u6E80\u305F\u3059"
+            }]
 	},
 	edit : {
 	    addCaption: "\u30ec\u30b3\u30fc\u30c9\u8ffd\u52a0",

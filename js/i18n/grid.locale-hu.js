@@ -20,10 +20,8 @@ $.extend($.jgrid,{
 		caption: "Keresés...",
 		Find: "Keres",
 		Reset: "Alapértelmezett",
-		odata : ['egyenlő', 'nem egyenlő', 'kevesebb', 'kevesebb vagy egyenlő','nagyobb','nagyobb vagy egyenlő', 'ezzel kezdődik','nem ezzel kezdődik','tartalmaz','nem tartalmaz','végződik','nem végződik','tartalmaz','nem tartalmaz'],
-		groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	],
-		matchText: " match",
-		rulesText: " rules"
+		odata: [{ oper:'eq', text:"egyenlő"},{ oper:'ne', text:"nem egyenlő"},{ oper:'lt', text:"kevesebb"},{ oper:'le', text:"kevesebb vagy egyenlő"},{ oper:'gt', text:"nagyobb"},{ oper:'ge', text:"nagyobb vagy egyenlő"},{ oper:'bw', text:"ezzel kezdődik"},{ oper:'bn', text:"nem ezzel kezdődik"},{ oper:'in', text:"tartalmaz"},{ oper:'ni', text:"nem tartalmaz"},{ oper:'ew', text:"végződik"},{ oper:'en', text:"nem végződik"},{ oper:'cn', text:"tartalmaz"},{ oper:'nc', text:"nem tartalmaz"}],
+		groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	]
 	},
 	edit : {
 		addCaption: "Új tétel",

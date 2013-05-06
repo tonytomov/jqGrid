@@ -19,10 +19,8 @@ $.extend($.jgrid,{
 		caption: "�������...",
 		Find: "������",
 		Reset: "�������",
-		odata : ['�����', '��������', '��-�����', '��-����� ���=','��-������','��-������ ��� =', '������� �','�� ������� �','�� ������ �','�� �� ������ �','�������� �','�� ��������� �','�������', '�� �������' ],
-	    groupOps: [	{ op: "AND", text: " � " },	{ op: "OR",  text: "���" }	],
-		matchText: " ������",
-		rulesText: " ������"
+		odata : [{ oper:'eq', text:'�����'}, { oper:'ne', text:'��������'}, { oper:'lt', text:'��-�����'}, { oper:'le', text:'��-����� ���='},{ oper:'gt', text:'��-������'},{ oper:'ge', text:'��-������ ��� ='}, { oper:'bw', text:'������� �'},{ oper:'bn', text:'�� ������� �'},{ oper:'in', text:'�� ������ �'},{ oper:'ni', text:'�� �� ������ �'},{ oper:'ew', text:'�������� �'},{ oper:'en', text:'�� ��������� �'},,{ oper:'cn', text:'�������'}, ,{ oper:'nc', text:'�� �������'} ],
+	    groupOps: [	{ op: "AND", text: " � " },	{ op: "OR",  text: "���" }	]
 	},
 	edit : {
 		addCaption: "��� �����",

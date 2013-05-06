@@ -19,10 +19,8 @@ $.extend($.jgrid,{
 		caption: "מחפש...",
 		Find: "חפש",
 		Reset: "התחל",
-		odata : ['שווה', 'לא שווה', 'קטן', 'קטן או שווה','גדול','גדול או שווה', 'מתחיל ב','לא מתחיל ב','נמצא ב','לא נמצא ב','מסתיים ב','לא מסתיים ב','מכיל','לא מכיל'],
-		groupOps: [	{ op: "AND", text: "הכל" },	{ op: "OR",  text: "אחד מ" }	],
-		matchText: " תואם",
-		rulesText: " חוקים"
+		odata: [{ oper:'eq', text:"שווה"},{ oper:'ne', text:"לא שווה"},{ oper:'lt', text:"קטן"},{ oper:'le', text:"קטן או שווה"},{ oper:'gt', text:"גדול"},{ oper:'ge', text:"גדול או שווה"},{ oper:'bw', text:"מתחיל ב"},{ oper:'bn', text:"לא מתחיל ב"},{ oper:'in', text:"נמצא ב"},{ oper:'ni', text:"לא נמצא ב"},{ oper:'ew', text:"מסתיים ב"},{ oper:'en', text:"לא מסתיים ב"},{ oper:'cn', text:"מכיל"},{ oper:'nc', text:"לא מכיל"}],
+		groupOps: [	{ op: "AND", text: "הכל" },	{ op: "OR",  text: "אחד מ" }	]
 	},
 	edit : {
 		addCaption: "הוסף רשומה",

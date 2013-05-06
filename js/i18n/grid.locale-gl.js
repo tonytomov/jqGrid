@@ -18,10 +18,8 @@ $.extend($.jgrid,{
 	    caption: "Búsqueda...",
 	    Find: "Buscar",
 	    Reset: "Limpar",
-	    odata : ['igual ', 'diferente a', 'menor que', 'menor ou igual que','maior que','maior ou igual a', 'empece por','non empece por','está en','non está en','termina por','non termina por','contén','non contén'],
-	    groupOps: [	{ op: "AND", text: "todo" },	{ op: "OR",  text: "calquera" }	],
-		matchText: " match",
-		rulesText: " regras"
+	    odata: [{ oper:'eq', text:"igual "},{ oper:'ne', text:"diferente a"},{ oper:'lt', text:"menor que"},{ oper:'le', text:"menor ou igual que"},{ oper:'gt', text:"maior que"},{ oper:'ge', text:"maior ou igual a"},{ oper:'bw', text:"empece por"},{ oper:'bn', text:"non empece por"},{ oper:'in', text:"está en"},{ oper:'ni', text:"non está en"},{ oper:'ew', text:"termina por"},{ oper:'en', text:"non termina por"},{ oper:'cn', text:"contén"},{ oper:'nc', text:"non contén"}],
+	    groupOps: [	{ op: "AND", text: "todo" },	{ op: "OR",  text: "calquera" }	]
 	},
 	edit : {
 	    addCaption: "Engadir rexistro",

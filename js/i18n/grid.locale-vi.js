@@ -19,10 +19,8 @@ $.extend($.jgrid,{
 		caption: "Tìm kiếm...",
 		Find: "Tìm",
 		Reset: "Khởi tạo lại",
-		odata : ['bằng', 'không bằng', 'bé hơn', 'bé hơn hoặc bằng','lớn hơn','lớn hơn hoặc bằng', 'bắt đầu với','không bắt đầu với','trong','không nằm trong','kết thúc với','không kết thúc với','chứa','không chứa'],
-		groupOps: [	{ op: "VÀ", text: "tất cả" },	{ op: "HOẶC",  text: "bất kỳ" }	],
-		matchText: " đúng",
-		rulesText: " quy tắc"
+		odata: [{ oper:'eq', text:"bằng"},{ oper:'ne', text:"không bằng"},{ oper:'lt', text:"bé hơn"},{ oper:'le', text:"bé hơn hoặc bằng"},{ oper:'gt', text:"lớn hơn"},{ oper:'ge', text:"lớn hơn hoặc bằng"},{ oper:'bw', text:"bắt đầu với"},{ oper:'bn', text:"không bắt đầu với"},{ oper:'in', text:"trong"},{ oper:'ni', text:"không nằm trong"},{ oper:'ew', text:"kết thúc với"},{ oper:'en', text:"không kết thúc với"},{ oper:'cn', text:"chứa"},{ oper:'nc', text:"không chứa"}],
+		groupOps: [	{ op: "VÀ", text: "tất cả" },	{ op: "HOẶC",  text: "bất kỳ" }	]
 	},
 	edit : {
 		addCaption: "Thêm bản ghi",

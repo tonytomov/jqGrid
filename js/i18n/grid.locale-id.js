@@ -19,13 +19,8 @@ $.extend($.jgrid,{
 		caption: "Pencarian",
 		Find: "Cari !",
 		Reset: "Segarkan",
-		odata : ['sama dengan', 'tidak sama dengan', 'kurang dari', 
-          'kurang dari atau sama dengan','lebih besar','lebih besar atau sama dengan', 
-          'dimulai dengan','tidak dimulai dengan','di dalam','tidak di dalam','diakhiri dengan',
-          'tidak diakhiri dengan','mengandung','tidak mengandung'],
-		groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	],
-		matchText: " match",
-		rulesText: " rules"
+		odata: [{ oper:'eq', text:"sama dengan"},{ oper:'ne', text:"tidak sama dengan"},{ oper:'lt', text:"kurang dari"},{ oper:'le', text:"kurang dari atau sama dengan"},{ oper:'gt', text:"lebih besar"},{ oper:'ge', text:"lebih besar atau sama dengan"},{ oper:'bw', text:"dimulai dengan"},{ oper:'bn', text:"tidak dimulai dengan"},{ oper:'in', text:"di dalam"},{ oper:'ni', text:"tidak di dalam"},{ oper:'ew', text:"diakhiri dengan"},{ oper:'en', text:"tidak diakhiri dengan"},{ oper:'cn', text:"mengandung"},{ oper:'nc', text:"tidak mengandung"}],
+		groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	]
 	},
 	edit : {
 		addCaption: "Tambah Data",

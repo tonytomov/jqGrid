@@ -22,10 +22,8 @@ $.extend($.jgrid,{
 	    caption: "Procurar...",
 	    Find: "Procurar",
 	    Reset: "Resetar",
-	    odata : ['igual', 'diferente', 'menor', 'menor ou igual','maior','maior ou igual', 'inicia com','não inicia com','está em','não está em','termina com','não termina com','contém','não contém','nulo','não nulo'],
-	    groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	],
-		matchText: " igual a",
-		rulesText: " regras"
+	    odata: [{ oper:'eq', text:"igual"},{ oper:'ne', text:"diferente"},{ oper:'lt', text:"menor"},{ oper:'le', text:"menor ou igual"},{ oper:'gt', text:"maior"},{ oper:'ge', text:"maior ou igual"},{ oper:'bw', text:"inicia com"},{ oper:'bn', text:"não inicia com"},{ oper:'in', text:"está em"},{ oper:'ni', text:"não está em"},{ oper:'ew', text:"termina com"},{ oper:'en', text:"não termina com"},{ oper:'cn', text:"contém"},{ oper:'nc', text:"não contém"},{ oper:'nu', text:"nulo"},{ oper:'nn', text:"não nulo"}],
+	    groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	]
 	},
 	edit : {
 	    addCaption: "Incluir",

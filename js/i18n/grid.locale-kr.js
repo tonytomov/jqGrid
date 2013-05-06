@@ -19,10 +19,8 @@ $.extend($.jgrid,{
 		caption: "검색...",
 		Find: "찾기",
 		Reset: "초기화",
-		odata : ['같다', '같지 않다', '작다', '작거나 같다','크다','크거나 같다', '로 시작한다','로 시작하지 않는다','내에 있다','내에 있지 않다','로 끝난다','로 끝나지 않는다','내에 존재한다','내에 존재하지 않는다'],
-		groupOps: [	{ op: "AND", text: "전부" },	{ op: "OR",  text: "임의" }	],
-		matchText: " 일치하다",
-		rulesText: " 적용하다"
+		odata: [{ oper:'eq', text:"같다"},{ oper:'ne', text:"같지 않다"},{ oper:'lt', text:"작다"},{ oper:'le', text:"작거나 같다"},{ oper:'gt', text:"크다"},{ oper:'ge', text:"크거나 같다"},{ oper:'bw', text:"로 시작한다"},{ oper:'bn', text:"로 시작하지 않는다"},{ oper:'in', text:"내에 있다"},{ oper:'ni', text:"내에 있지 않다"},{ oper:'ew', text:"로 끝난다"},{ oper:'en', text:"로 끝나지 않는다"},{ oper:'cn', text:"내에 존재한다"},{ oper:'nc', text:"내에 존재하지 않는다"}],
+		groupOps: [	{ op: "AND", text: "전부" },	{ op: "OR",  text: "임의" }	]
 	},
 	edit : {
 		addCaption: "행 추가",

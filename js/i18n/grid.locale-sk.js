@@ -19,10 +19,8 @@ $.extend($.jgrid,{
 		caption: "Vyhľadávam...",
 		Find: "Hľadať",
 		Reset: "Reset",
-	    odata : ['rovná sa', 'nerovná sa', 'menšie', 'menšie alebo rovnajúce sa','väčšie', 'väčšie alebo rovnajúce sa', 'začína s', 'nezačína s', 'je v', 'nie je v', 'končí s', 'nekončí s', 'obahuje', 'neobsahuje'],
-	    groupOps: [	{ op: "AND", text: "všetkých" },	{ op: "OR",  text: "niektorého z" }	],
-		matchText: " hľadať podla",
-		rulesText: " pravidiel"
+	    odata: [{ oper:'eq', text:"rovná sa"},{ oper:'ne', text:"nerovná sa"},{ oper:'lt', text:"menšie"},{ oper:'le', text:"menšie alebo rovnajúce sa"},{ oper:'gt', text:"väčšie"},{ oper:'ge', text:"väčšie alebo rovnajúce sa"},{ oper:'bw', text:"začína s"},{ oper:'bn', text:"nezačína s"},{ oper:'in', text:"je v"},{ oper:'ni', text:"nie je v"},{ oper:'ew', text:"končí s"},{ oper:'en', text:"nekončí s"},{ oper:'cn', text:"obahuje"},{ oper:'nc', text:"neobsahuje"}],
+	    groupOps: [	{ op: "AND", text: "všetkých" },	{ op: "OR",  text: "niektorého z" }	]
 	},
 	edit : {
 		addCaption: "Pridať záznam",

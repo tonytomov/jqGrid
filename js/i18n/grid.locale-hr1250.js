@@ -20,10 +20,8 @@ $.extend($.jgrid,{
 		caption: "Tra�i...",
 		Find: "Pretra�ivanje",
 		Reset: "Poni�ti",
-		odata : ['jednak', 'nije identi�an', 'manje', 'manje ili identi�no','ve�e','ve�e ili identi�no', 'po�inje sa','ne po�inje sa ','je u','nije u','zavr�ava sa','ne zavr�ava sa','sadr�i','ne sadr�i'],
-		groupOps: [	{ op: "I", text: "sve" },	{ op: "ILI",  text: "bilo koji" }	],
-		matchText: " podudata se",
-		rulesText: " pravila"
+		odata : [{ oper:'eq', text:'jednak'}, { oper:'ne', text:'nije identi�an'}, { oper:'lt', text:'manje'}, { oper:'le', text:'manje ili identi�no'},{ oper:'gt', text:'ve�e'},{ oper:'ge', text:'ve�e ili identi�no'}, { oper:'bw', text:'po�inje sa'},{ oper:'bn', text:'ne po�inje sa '},{ oper:'in', text:'je u'},{ oper:'ni', text:'nije u'},{ oper:'ew', text:'zavr�ava sa'},{ oper:'en', text:'ne zavr�ava sa'},{ oper:'cn', text:'sadr�i'},{ oper:'nc', text:'ne sadr�i'}],
+		groupOps: [	{ op: "I", text: "sve" },	{ op: "ILI",  text: "bilo koji" }	]
 	},
 	edit : {
 		addCaption: "Dodaj zapis",

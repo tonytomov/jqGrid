@@ -19,10 +19,8 @@ $.extend($.jgrid,{
 		caption: "Sök Poster - Ange sökvillkor",
 		Find: "Sök",
 		Reset: "Nollställ Villkor",
-		odata : ['lika', 'ej lika', 'mindre', 'mindre eller lika','större','större eller lika', 'börjar med','börjar inte med','tillhör','tillhör inte','slutar med','slutar inte med','innehåller','innehåller inte'],
-		groupOps: [	{ op: "AND", text: "alla" },	{ op: "OR",  text: "eller" }	],
-		matchText: " träff",
-		rulesText: " regler"
+		odata: [{ oper:'eq', text:"lika"},{ oper:'ne', text:"ej lika"},{ oper:'lt', text:"mindre"},{ oper:'le', text:"mindre eller lika"},{ oper:'gt', text:"större"},{ oper:'ge', text:"större eller lika"},{ oper:'bw', text:"börjar med"},{ oper:'bn', text:"börjar inte med"},{ oper:'in', text:"tillhör"},{ oper:'ni', text:"tillhör inte"},{ oper:'ew', text:"slutar med"},{ oper:'en', text:"slutar inte med"},{ oper:'cn', text:"innehåller"},{ oper:'nc', text:"innehåller inte"}],
+		groupOps: [	{ op: "AND", text: "alla" },	{ op: "OR",  text: "eller" }	]
 	},
 	edit : {
 		addCaption: "Ny Post",
