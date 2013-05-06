@@ -53,28 +53,10 @@ $.fn.jqFilter = function( arg ) {
 		errorcheck : true,
 		showQuery : true,
 		sopt : null,
-		ops : [
-			{"name": "eq", "description": "equal", "operator":"="},
-			{"name": "ne", "description": "not equal", "operator":"<>"},
-			{"name": "lt", "description": "less", "operator":"<"},
-			{"name": "le", "description": "less or equal","operator":"<="},
-			{"name": "gt", "description": "greater", "operator":">"},
-			{"name": "ge", "description": "greater or equal", "operator":">="},
-			{"name": "bw", "description": "begins with", "operator":"LIKE"},
-			{"name": "bn", "description": "does not begin with", "operator":"NOT LIKE"},
-			{"name": "in", "description": "in", "operator":"IN"},
-			{"name": "ni", "description": "not in", "operator":"NOT IN"},
-			{"name": "ew", "description": "ends with", "operator":"LIKE"},
-			{"name": "en", "description": "does not end with", "operator":"NOT LIKE"},
-			{"name": "cn", "description": "contains", "operator":"LIKE"},
-			{"name": "nc", "description": "does not contain", "operator":"NOT LIKE"},
-			{"name": "nu", "description": "is null", "operator":"IS NULL"},
-			{"name": "nn", "description": "is not null", "operator":"IS NOT NULL"}
-		],
+		ops : [],
 		numopts : ['eq','ne', 'lt', 'le', 'gt', 'ge', 'nu', 'nn', 'in', 'ni'],
 		stropts : ['eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn', 'in', 'ni'],
 		strarr : ['text', 'string', 'blob'],
-		_gridsopt : [], // grid translated strings, do not tuch
 		groupOps : [{ op: "AND", text: "AND" },	{ op: "OR",  text: "OR" }],
 		groupButton : true,
 		ruleButtons : true,
@@ -95,12 +77,6 @@ $.fn.jqFilter = function( arg ) {
 		isIE = /msie/i.test(navigator.userAgent) && !window.opera;
 
 		// translating the options
-		if(this.p._gridsopt.length) {
-			// ['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc']
-			for(i=0;i<this.p._gridsopt.length;i++) {
-				this.p.ops[i].description = this.p._gridsopt[i];
-			}
-		}
 		this.p.initFilter = $.extend(true,{},this.p.filter);
 
 		// set default values for the columns if they are not set
