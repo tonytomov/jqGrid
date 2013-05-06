@@ -88,16 +88,10 @@ $.extend($.jgrid,{
 			return value;
 		},
 		ts = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0, u:0},
-		timestamp=0, dM, k,hl,
-		dateFormat=["i18n"];
+		timestamp=0, dM, k,hl;
 		if(opts === undefined) {
 			opts = $.jgrid.formatter.date;
 		}
-		// Internationalization strings
-		dateFormat.i18n = {
-			dayNames: opts.dayNames,
-			monthNames: opts.monthNames
-		};
 		if( opts.masks.hasOwnProperty(format) ) { format = opts.masks[format]; }
 		if( !isNaN( date - 0 ) && String(format).toLowerCase() === "u") {
 			//Unix timestamp
@@ -119,11 +113,11 @@ $.extend($.jgrid,{
 			// parsing for month names
 			for(k=0,hl=format.length;k<hl;k++){
 				if(format[k] === 'M') {
-				dM = $.inArray(date[k],dateFormat.i18n.monthNames);
+				dM = $.inArray(date[k],opts.monthNames);
 					if(dM !== -1 && dM < 12){date[k] = dM+1;}
 				}
 				if(format[k] === 'F') {
-					dM = $.inArray(date[k],dateFormat.i18n.monthNames);
+					dM = $.inArray(date[k],opts.monthNames);
 					if(dM !== -1 && dM > 11){date[k] = dM+1-12;}
 				}
 				if(date[k]) {
@@ -163,9 +157,9 @@ $.extend($.jgrid,{
 			flags = {
 				// Day
 				d: pad(j),
-				D: dateFormat.i18n.dayNames[w],
+				D: opts.dayNames[w],
 				j: j,
-				l: dateFormat.i18n.dayNames[w + 7],
+				l: opts.dayNames[w + 7],
 				N: N,
 				S: opts.S(j),
 				//j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th',
@@ -174,9 +168,9 @@ $.extend($.jgrid,{
 				// Week
 				W: N < 5 ? Math.floor((z + N - 1) / 7) + 1 : Math.floor((z + N - 1) / 7) || ((new Date(Y - 1, 0, 1).getDay() + 6) % 7 < 4 ? 53 : 52),
 				// Month
-				F: dateFormat.i18n.monthNames[n - 1 + 12],
+				F: opts.monthNames[n - 1 + 12],
 				m: pad(n),
-				M: dateFormat.i18n.monthNames[n - 1],
+				M: opts.monthNames[n - 1],
 				n: n,
 				t: '?',
 				// Year
