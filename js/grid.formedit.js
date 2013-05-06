@@ -43,9 +43,6 @@ $.jgrid.extend({
 			dataheight: 'auto',
 			showQuery: false,
 			errorcheck : true,
-			// translation
-			// if you want to change or remove the order change it in sopt
-			// ['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc'],
 			sopt: null,
 			stringResult: undefined,
 			onClose : null,
@@ -56,7 +53,6 @@ $.jgrid.extend({
 			columns : [],
 			tmplNames : null,
 			tmplFilters : null,
-			// translations - later in lang file
 			tmplLabel : ' Template: ',
 			showOnLoad: false,
 			layer: null
@@ -95,7 +91,7 @@ $.jgrid.extend({
 			} else {
 				var fil = $("<div><div id='"+fid+"' class='searchFilter' style='overflow:auto'></div></div>").insertBefore("#gview_"+$.jgrid.jqID($t.p.id)),
 				align = "left", butleft =""; 
-				if($t.p.direction == "rtl") {
+				if($t.p.direction === "rtl") {
 					align = "right";
 					butleft = " style='text-align:left'";
 					fil.attr("dir","rtl");
@@ -160,7 +156,7 @@ $.jgrid.extend({
 					groupButton : p.multipleGroup,
 					ruleButtons : p.multipleSearch,
 					afterRedraw : p.afterRedraw,
-					_gridsopt : $.jgrid.search.odata,
+					_gridsopt : p.odata,
 					ajaxSelectOptions: $t.p.ajaxSelectOptions,
 					groupOps: p.groupOps,
 					onChange : function() {
@@ -178,7 +174,7 @@ $.jgrid.extend({
 				if(found && p.tmplFilters && p.tmplFilters.length) {
 					$(".ui-template", fil).bind('change', function(){
 						var curtempl = $(this).val();
-						if(curtempl=="default") {
+						if(curtempl==="default") {
 							$("#"+fid).jqFilter('addFilter', defaultFilters);
 						} else {
 							$("#"+fid).jqFilter('addFilter', p.tmplFilters[parseInt(curtempl,10)]);
@@ -225,7 +221,7 @@ $.jgrid.extend({
 				}
 				$("#"+fid+"_search").bind('click', function(){
 					var fl = $("#"+fid),
-					sdata={}, res ,
+					sdata={}, res,
 					filters = fl.jqFilter('filterData');
 					if(p.errorcheck) {
 						fl[0].hideError();
