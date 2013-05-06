@@ -60,7 +60,7 @@ $.extend($.jgrid,{
 	},
 	stripPref : function (pref, id) {
 		var obj = $.type( pref );
-		if( obj == "string" || obj =="number") {
+		if( obj === "string" || obj === "number") {
 			pref =  String(pref);
 			id = pref !== "" ? String(id).replace(String(pref), "") : id;
 		}
@@ -68,8 +68,8 @@ $.extend($.jgrid,{
 	},
 	parse : function(jsonString) {
 		var js = jsonString;
-		if (js.substr(0,9) == "while(1);") { js = js.substr(9); }
-		if (js.substr(0,2) == "/*") { js = js.substr(2,js.length-4); }
+		if (js.substr(0,9) === "while(1);") { js = js.substr(9); }
+		if (js.substr(0,2) === "/*") { js = js.substr(2,js.length-4); }
 		if(!js) { js = "{}"; }
 		return ($.jgrid.useJSON===true && typeof JSON === 'object' && typeof JSON.parse === 'function') ?
 			JSON.parse(js) :
@@ -430,7 +430,7 @@ $.extend($.jgrid,{
 			dir=_sorting[q].dir,
 			type = _sorting[q].type,
 			dfmt = _sorting[q].datefmt;
-			if(q==_sorting.length-1){
+			if(q===_sorting.length-1){
 				return self._getOrder(d, by, dir, type, dfmt);
 			}
 			q++;
@@ -444,20 +444,20 @@ $.extend($.jgrid,{
 			return results;
 		};
 		this._getOrder=function(data,by,dir,type, dfmt){
-			var sortData=[],_sortData=[], newDir = dir=="a" ? 1 : -1, i,ab,j,
+			var sortData=[],_sortData=[], newDir = dir==="a" ? 1 : -1, i,ab,j,
 			findSortKey;
 
 			if(type === undefined ) { type = "text"; }
-			if (type == 'float' || type== 'number' || type== 'currency' || type== 'numeric') {
+			if (type === 'float' || type=== 'number' || type=== 'currency' || type=== 'numeric') {
 				findSortKey = function($cell) {
 					var key = parseFloat( String($cell).replace(_stripNum, ''));
 					return isNaN(key) ? 0.00 : key;
 				};
-			} else if (type=='int' || type=='integer') {
+			} else if (type==='int' || type==='integer') {
 				findSortKey = function($cell) {
 					return $cell ? parseFloat(String($cell).replace(_stripNum, '')) : 0;
 				};
-			} else if(type == 'date' || type == 'datetime') {
+			} else if(type === 'date' || type === 'datetime') {
 				findSortKey = function($cell) {
 					return $.jgrid.parseDate(dfmt,$cell).getTime();
 				};
