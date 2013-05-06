@@ -75,66 +75,141 @@ $.extend($.jgrid,{
 			JSON.parse(js) :
 			eval('(' + js + ')');
 	},
-	parseDate : function(format, date) {
-		var tsp = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0, u:0},k,hl,dM, regdate = /[Tt\\\/:_;.,\t\s-]/;
-		if(date && date != null){
-			date = $.trim(date);
-			date = date.replace(/\\T/g,"T").replace(/\\t/,"t").split(regdate);
-			if ($.jgrid.formatter.date.masks[format] !== undefined) {
-				format = $.jgrid.formatter.date.masks[format];
-			}
-			format = format.replace(/\\T/g,"T").replace(/\\t/,"t").split(regdate);
-			var dfmt  = $.jgrid.formatter.date.monthNames;
-			var afmt  = $.jgrid.formatter.date.AmPm;
-			var h12to24 = function(ampm, h){
-				if (ampm === 0){ if (h === 12) { h = 0;} }
-				else { if (h !== 12) { h += 12; } }
-				return h;
-			};
-			for(k=0,hl=format.length;k<hl;k++){
-				if(format[k] == 'M') {
-					dM = $.inArray(date[k],dfmt);
-					if(dM !== -1 && dM < 12){
-						date[k] = dM+1;
-						tsp.m = date[k];
-					}
-				}
-				if(format[k] == 'F') {
-					dM = $.inArray(date[k],dfmt);
-					if(dM !== -1 && dM > 11){
-						date[k] = dM+1-12;
-						tsp.m = date[k];
-					}
-				}
-				if(format[k] == 'a') {
-					dM = $.inArray(date[k],afmt);
-					if(dM !== -1 && dM < 2 && date[k] == afmt[dM]){
-						date[k] = dM;
-						tsp.h = h12to24(date[k], tsp.h);
-					}
-				}
-				if(format[k] == 'A') {
-					dM = $.inArray(date[k],afmt);
-					if(dM !== -1 && dM > 1 && date[k] == afmt[dM]){
-						date[k] = dM-2;
-						tsp.h = h12to24(date[k], tsp.h);
-					}
-				}
-				if (format[k] === 'g') {
-					tsp.h = parseInt(date[k], 10);
-				}
-				if(date[k] !== undefined) {
-					tsp[format[k].toLowerCase()] = parseInt(date[k],10);
-				}
-			}
-			tsp.m = parseInt(tsp.m,10)-1;
-			var ty = tsp.y;
-			if (ty >= 70 && ty <= 99) {tsp.y = 1900+tsp.y;}
-			else if (ty >=0 && ty <=69) {tsp.y= 2000+tsp.y;}
-			if(tsp.j !== undefined) { tsp.d = tsp.j; }
-			if(tsp.n !== undefined) { tsp.m = parseInt(tsp.n,10)-1; }
+	parseDate : function(format, date, newformat, opts) {
+		var	token = /\\.|[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]/g,
+		timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
+		timezoneClip = /[^-+\dA-Z]/g,
+		msDateRegExp = new RegExp("^\/Date\\((([-+])?[0-9]+)(([-+])([0-9]{2})([0-9]{2}))?\\)\/$"),
+		msMatch = ((typeof date === 'string') ? date.match(msDateRegExp): null),
+		pad = function (value, length) {
+			value = String(value);
+			length = parseInt(length,10) || 2;
+			while (value.length < length)  { value = '0' + value; }
+			return value;
+		},
+		ts = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0, u:0},
+		timestamp=0, dM, k,hl,
+		dateFormat=["i18n"];
+		if(opts === undefined) {
+			opts = $.jgrid.formatter.date;
 		}
-		return new Date(tsp.y, tsp.m, tsp.d, tsp.h, tsp.i, tsp.s, tsp.u);
+		// Internationalization strings
+		dateFormat.i18n = {
+			dayNames: opts.dayNames,
+			monthNames: opts.monthNames
+		};
+		if( opts.masks.hasOwnProperty(format) ) { format = opts.masks[format]; }
+		if( !isNaN( date - 0 ) && String(format).toLowerCase() === "u") {
+			//Unix timestamp
+			timestamp = new Date( parseFloat(date)*1000 );
+		} else if(date.constructor === Date) {
+			timestamp = date;
+			// Microsoft date format support
+		} else if( msMatch !== null ) {
+			timestamp = new Date(parseInt(msMatch[1], 10));
+			if (msMatch[3]) {
+				var offset = Number(msMatch[5]) * 60 + Number(msMatch[6]);
+				offset *= ((msMatch[4] === '-') ? 1 : -1);
+				offset -= timestamp.getTimezoneOffset();
+				timestamp.setTime(Number(Number(timestamp) + (offset * 60 * 1000)));
+			}
+		} else {
+			date = String(date).replace(/\\T/g,"T").replace(/\\t/,"t").split(/[Tt\\\/:_;.,\t\s-]/);
+			format = format.replace(/\\T/g,"T").replace(/\\t/,"t").split(/[Tt\\\/:_;.,\t\s-]/);
+			// parsing for month names
+			for(k=0,hl=format.length;k<hl;k++){
+				if(format[k] === 'M') {
+				dM = $.inArray(date[k],dateFormat.i18n.monthNames);
+					if(dM !== -1 && dM < 12){date[k] = dM+1;}
+				}
+				if(format[k] === 'F') {
+					dM = $.inArray(date[k],dateFormat.i18n.monthNames);
+					if(dM !== -1 && dM > 11){date[k] = dM+1-12;}
+				}
+				if(date[k]) {
+					ts[format[k].toLowerCase()] = parseInt(date[k],10);
+				}
+			}
+			if(ts.f) {ts.m = ts.f;}
+			if( ts.m === 0 && ts.y === 0 && ts.d === 0) {
+				return "&#160;" ;
+			}
+			ts.m = parseInt(ts.m,10)-1;
+			var ty = ts.y;
+			if (ty >= 70 && ty <= 99) {ts.y = 1900+ts.y;}
+			else if (ty >=0 && ty <=69) {ts.y= 2000+ts.y;}
+			timestamp = new Date(ts.y, ts.m, ts.d, ts.h, ts.i, ts.s, ts.u);
+		}
+		if( newformat === undefined ) {
+			return timestamp;
+		}
+		if( opts.masks.hasOwnProperty(newformat) )  {
+			newformat = opts.masks[newformat];
+		} else if ( !newformat ) {
+			newformat = 'Y-m-d';
+		}
+		var 
+			G = timestamp.getHours(),
+			i = timestamp.getMinutes(),
+			j = timestamp.getDate(),
+			n = timestamp.getMonth() + 1,
+			o = timestamp.getTimezoneOffset(),
+			s = timestamp.getSeconds(),
+			u = timestamp.getMilliseconds(),
+			w = timestamp.getDay(),
+			Y = timestamp.getFullYear(),
+			N = (w + 6) % 7 + 1,
+			z = (new Date(Y, n - 1, j) - new Date(Y, 0, 1)) / 86400000,
+			flags = {
+				// Day
+				d: pad(j),
+				D: dateFormat.i18n.dayNames[w],
+				j: j,
+				l: dateFormat.i18n.dayNames[w + 7],
+				N: N,
+				S: opts.S(j),
+				//j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th',
+				w: w,
+				z: z,
+				// Week
+				W: N < 5 ? Math.floor((z + N - 1) / 7) + 1 : Math.floor((z + N - 1) / 7) || ((new Date(Y - 1, 0, 1).getDay() + 6) % 7 < 4 ? 53 : 52),
+				// Month
+				F: dateFormat.i18n.monthNames[n - 1 + 12],
+				m: pad(n),
+				M: dateFormat.i18n.monthNames[n - 1],
+				n: n,
+				t: '?',
+				// Year
+				L: '?',
+				o: '?',
+				Y: Y,
+				y: String(Y).substring(2),
+				// Time
+				a: G < 12 ? opts.AmPm[0] : opts.AmPm[1],
+				A: G < 12 ? opts.AmPm[2] : opts.AmPm[3],
+				B: '?',
+				g: G % 12 || 12,
+				G: G,
+				h: pad(G % 12 || 12),
+				H: pad(G),
+				i: pad(i),
+				s: pad(s),
+				u: u,
+				// Timezone
+				e: '?',
+				I: '?',
+				O: (o > 0 ? "-" : "+") + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4),
+				P: '?',
+				T: (String(timestamp).match(timezone) || [""]).pop().replace(timezoneClip, ""),
+				Z: '?',
+				// Full Date/Time
+				c: '?',
+				r: '?',
+				U: Math.floor(timestamp / 1000)
+			};
+		return newformat.replace(token, function ($0) {
+			return flags.hasOwnProperty($0) ? flags[$0] : $0.substring(1);
+		});
 	},
 	jqID : function(sid){
 		return String(sid).replace(/[!"#$%&'()*+,.\/:; <=>?@\[\\\]\^`{|}~]/g,"\\$&");
