@@ -156,7 +156,7 @@ $.jgrid.extend({
 					groupButton : p.multipleGroup,
 					ruleButtons : p.multipleSearch,
 					afterRedraw : p.afterRedraw,
-					_gridsopt : p.odata,
+					ops : p.odata,
 					ajaxSelectOptions: $t.p.ajaxSelectOptions,
 					groupOps: p.groupOps,
 					onChange : function() {
