@@ -365,7 +365,8 @@ $.jgrid.extend({
 				).click(function(){
 					var v = $(this).attr("value"),
 					oper = $(this).attr("oper");
-					$("#sopt_menu").remove();
+					$($t).triggerHandler("jqGridToolbarSelectOper", [v, oper]);
+					$("#sopt_menu").hide();
 					$(elem).text(oper).attr("soper",v);
 				});
 			};
