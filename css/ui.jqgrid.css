@@ -144,3 +144,6 @@ tr.ui-search-toolbar select {margin: 1px 0 0 0}
 .ui-jqgrid .tree-wrap-ltr {float: left;}
 .ui-jqgrid .tree-wrap-rtl {float: right;}
 .ui-jqgrid .ui-ellipsis {text-overflow:ellipsis;}
+
+/* Toolbar Search Menu */
+.ui-jqgrid-smenu { position: absolute; padding: 2px 5px;}
