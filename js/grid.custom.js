@@ -183,7 +183,7 @@ $.jgrid.extend({
 			searchOperators : false,
 			operandTitle : "Click to select search operation.",
 			operands : { "eq" :"==", "ne":"!","lt":"<","le":"<=","gt":">","ge":">=","bw":"^","bn":"!^","in":"=","ni":"!=","ew":"|","en":"!@","cn":"~","nc":"!~","nu":"#","nn":"!#"}
-		},p  || {});
+		}, $.jgrid.search , p  || {});
 		return this.each(function(){
 			var $t = this;
 			if(this.ftoolbar) { return; }
