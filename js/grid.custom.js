@@ -372,6 +372,9 @@ $.jgrid.extend({
 					$($t).triggerHandler("jqGridToolbarSelectOper", [v, oper]);
 					$("#sopt_menu").hide();
 					$(elem).text(oper).attr("soper",v);
+					if(p.autosearch===true){
+						triggerToolbar();
+					}
 				});
 			};
 			// create the row
