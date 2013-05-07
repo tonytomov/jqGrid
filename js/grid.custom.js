@@ -192,7 +192,11 @@ $.jgrid.extend({
 				$.each($t.p.colModel,function(){
 					var $elem = $("#gs_"+$.jgrid.jqID(this.name), (this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
 					nm = this.index || this.name;
-					so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : this.stype === 'select'?  'eq' : p.defaultSearch;
+					if(p.searchOperators ) {
+						so = $elem.prev().attr("soper");
+					} else {
+						so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : this.stype==='select'?  'eq' : p.defaultSearch;
+					}
 					v = this.stype === "custom" && $.isFunction(this.searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN" ?
 						this.searchoptions.custom_value.call($t, $elem.children(".customelement:first"), "get") :
 						$elem.val();
@@ -390,7 +394,8 @@ $.jgrid.extend({
 								break;
 							}
 						}
-						select = "<a href='#' style='padding-right: 0.5em;' soper='"+so+"' class='soptclass' colindex='"+colindex+"'>"+sot+"</a>";
+						var st = soptions.searchtitle != null ? soptions.searchtitle : p.operandTitle;
+						select = "<a href='#' title='"+st+"' style='padding-right: 0.5em;' soper='"+so+"' class='soptclass' colindex='"+colindex+"'>"+sot+"</a>";
 					}
 					switch (this.stype)
 					{
