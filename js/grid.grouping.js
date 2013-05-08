@@ -159,6 +159,7 @@ $.jgrid.extend({
 			var $t = this,
 			grp = $t.p.groupingView,
 			strpos = hid.split('_'),
+			uidpos,
 			//uid = hid.substring(0,strpos+1),
 			num = parseInt(strpos[strpos.length-2], 10);
 			strpos.splice(strpos.length-2,2);
@@ -186,7 +187,12 @@ $.jgrid.extend({
 				} else  {
 					if(r){
 						while(r) {
-							if( $(r).hasClass(uid+"_"+String(num) ) || $(r).hasClass(uid+"_"+String(num-1))) { break; }
+							uidpos = r.className.indexOf(uid);
+							if(uidpos !== -1) {
+								if( parseInt(r.className.substring(uidpos+uid.length + 1),10) <=  num) {
+									break;
+								}
+							}
 							$(r).hide();
 							r = r.nextSibling;
 						}
@@ -197,7 +203,12 @@ $.jgrid.extend({
 			} else {
 				if(r){
 					while(r) {
-						if($(r).hasClass(uid+"_"+String(num)) || $(r).hasClass(uid+"_"+String(num-1)) ) { break; }
+						uidpos = r.className.indexOf(uid);
+						if(uidpos !== -1) {
+							if( parseInt(r.className.substring(uidpos+uid.length + 1),10) <=  num) {
+								break;
+							}
+						}
 						$(r).show();
 						tspan = $(r).find("span."+"tree-wrap-"+$t.p.direction);
 						if( tspan && $(tspan).hasClass(plus) ) {
