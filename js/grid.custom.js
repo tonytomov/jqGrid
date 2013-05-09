@@ -193,7 +193,7 @@ $.jgrid.extend({
 					var $elem = $("#gs_"+$.jgrid.jqID(this.name), (this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
 					nm = this.index || this.name;
 					if(p.searchOperators ) {
-						so = $elem.prev().attr("soper");
+						so = $elem.parent().prev().children("a").attr("soper") || p.defaultSearch;
 					} else {
 						so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : this.stype==='select'?  'eq' : p.defaultSearch;
 					}
@@ -344,7 +344,7 @@ $.jgrid.extend({
 				top=parseInt(top,10) + 18;
 
 				var fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
-				var str = '<ul id="sopt_menu" class="ui-jqgrid-smenu" role="menu" tabindex="0" style="font-size:'+fs+';left:'+left+'px;top:'+top+'px;">',				
+				var str = '<ul id="sopt_menu" class="ui-search-menu" role="menu" tabindex="0" style="font-size:'+fs+';left:'+left+'px;top:'+top+'px;">',				
 				cm = $t.p.colModel[parseInt( $(elem).attr("colindex") )],
 				selected = $(elem).attr("soper"), selclass,
 				aoprs = [], i, ina, options = $.extend({}, cm.searchoptions);
@@ -381,9 +381,10 @@ $.jgrid.extend({
 			var tr = $("<tr class='ui-search-toolbar' role='rowheader'></tr>");
 			var timeoutHnd;
 			$.each($t.p.colModel,function(colindex){
-				var cm=this, thd, th, soptions, surl, self, select = "", sot="=", so;
-				th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-"+$t.p.direction+"'></th>");
-				thd = $("<div style='position:relative;height:100%;padding-right:0.3em;padding-left:0.3em;'></div>");
+				var cm=this, soptions, surl, self, select = "", sot="=", so,
+				th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-"+$t.p.direction+"'></th>"),
+				thd = $("<div style='position:relative;height:100%;padding-right:0.3em;padding-left:0.3em;'></div>"),
+				stbl = $("<table class='ui-search-table' cellspacing='0'><tr><td class='ui-search-oper'></td><td class='ui-search-input'></td></tr></table>");
 				if(this.hidden===true) { $(th).css("display","none");}
 				this.search = this.search === false ? false : true;
 				if(this.stype === undefined) {this.stype='text';}
@@ -400,6 +401,7 @@ $.jgrid.extend({
 						var st = soptions.searchtitle != null ? soptions.searchtitle : p.operandTitle;
 						select = "<a href='#' title='"+st+"' style='padding-right: 0.5em;' soper='"+so+"' class='soptclass' colindex='"+colindex+"'>"+sot+"</a>";
 					}
+					$("td:eq(0)",stbl).append(select);
 					switch (this.stype)
 					{
 					case "select":
@@ -414,9 +416,13 @@ $.jgrid.extend({
 								success: function(res) {
 									if(soptions.buildSelect !== undefined) {
 										var d = soptions.buildSelect(res);
-										if (d) { $(self).append(select).append(d); }
+										if (d) {
+											$("td:eq(1)",stbl).append(d);
+											$(self).append(stbl);
+										}
 									} else {
-										$(self).append(select).append(res);
+										$("td:eq(1)",stbl).append(res);
+										$(self).append(stbl);
 									}
 									if(soptions.defaultValue !== undefined) { $("select",self).val(soptions.defaultValue); }
 									$("select",self).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
@@ -469,7 +475,8 @@ $.jgrid.extend({
 								if(soptions.defaultValue !== undefined) { $(elem).val(soptions.defaultValue); }
 								if(soptions.attr) {$(elem).attr(soptions.attr);}
 								$.jgrid.bindEv.call($t, elem , soptions);
-								$(thd).append(select).append(elem);
+								$("td:eq(1)",stbl).append( elem );
+								$(thd).append(stbl);
 								if(p.autosearch===true){
 									$(elem).change(function(){
 										triggerToolbar();
@@ -481,7 +488,10 @@ $.jgrid.extend({
 						break;
 					case "text":
 						var df = soptions.defaultValue !== undefined ? soptions.defaultValue: "";
-						$(thd).append(select).append("<input type='text' style='width:95%;padding:0px;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"' value='"+df+"'/>");
+
+						$("td:eq(1)",stbl).append("<input type='text' style='width:100%;padding:0px;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"' value='"+df+"'/>");
+						$(thd).append(stbl);
+
 						if(soptions.attr) {$("input",thd).attr(soptions.attr);}
 						$.jgrid.bindEv.call($t, $("input",thd)[0], soptions);
 						if(p.autosearch===true){
@@ -540,6 +550,9 @@ $.jgrid.extend({
 				}
 				$(th).append(thd);
 				$(tr).append(th);
+				if(!p.searchOperators) {
+					$("td:eq(0)",stbl).hide();
+				}
 			});
 			$("table thead",$t.grid.hDiv).append(tr);
 			if(p.searchOperators) {
