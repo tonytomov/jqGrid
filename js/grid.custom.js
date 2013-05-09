@@ -366,14 +366,17 @@ $.jgrid.extend({
 				$("#sopt_menu > li > a").hover(
 					function(){ $(this).addClass("ui-state-hover"); },
 					function(){ $(this).removeClass("ui-state-hover"); }
-				).click(function(){
+				).click(function( e ){
 					var v = $(this).attr("value"),
 					oper = $(this).attr("oper");
 					$($t).triggerHandler("jqGridToolbarSelectOper", [v, oper]);
 					$("#sopt_menu").hide();
 					$(elem).text(oper).attr("soper",v);
 					if(p.autosearch===true){
-						triggerToolbar();
+						var inpelm = $(elem).parent().next().children()[0];
+						if( $(inpelm).val() || v==="nu" || v ==="nn") {
+							triggerToolbar();
+						}
 					}
 				});
 			};
