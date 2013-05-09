@@ -527,7 +527,8 @@ $.jgrid.extend({
 						}
 						break;
 					case "custom":
-						$(thd).append(select).append("<span style='width:95%;padding:0px;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"'/>");
+						$("td:eq(1)",stbl).append("<span style='width:95%;padding:0px;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"'/>");
+						$(thd).append(stbl);
 						try {
 							if($.isFunction(soptions.custom_element)) {
 								var celm = soptions.custom_element.call($t,soptions.defaultValue !== undefined ? soptions.defaultValue: "",soptions);
