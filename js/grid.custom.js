@@ -369,7 +369,7 @@ $.jgrid.extend({
 				).click(function( e ){
 					var v = $(this).attr("value"),
 					oper = $(this).attr("oper");
-					$($t).triggerHandler("jqGridToolbarSelectOper", [v, oper]);
+					$($t).triggerHandler("jqGridToolbarSelectOper", [v, oper, elem]);
 					$("#sopt_menu").hide();
 					$(elem).text(oper).attr("soper",v);
 					if(p.autosearch===true){
