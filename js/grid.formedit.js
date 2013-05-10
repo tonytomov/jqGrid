@@ -134,7 +134,7 @@ $.jgrid.extend({
 					} else if(p.sopt && p.sopt.length) {
 						cmop = p.sopt[0];
 					}
-					defaultFilters = {"groupOp": "AND",rules:[{"field":colnm,"op":cmop,"data":""}]};
+					defaultFilters = {groupOp: "AND", rules: [{field: colnm, op: cmop, data: ""}]};
 				}
 				found = false;
 				if(p.tmplNames && p.tmplNames.length) {
