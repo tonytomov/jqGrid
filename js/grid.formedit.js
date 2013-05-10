@@ -123,6 +123,8 @@ $.jgrid.extend({
 					});
 				} else {
 					columns = p.columns;
+					cmi = 0;
+					colnm = columns[0].index || columns[0].name;
 				}
 				// old behaviour
 				if( (!defaultFilters && colnm) || p.multipleSearch === false  ) {
