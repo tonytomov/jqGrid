@@ -123,6 +123,8 @@ $.jgrid.extend({
 					});
 				} else {
 					columns = p.columns;
+					cmi = 0;
+					colnm = columns[0].index || columns[0].name;
 				}
 				// old behaviour
 				if( (!defaultFilters && colnm) || p.multipleSearch === false  ) {
@@ -132,7 +134,7 @@ $.jgrid.extend({
 					} else if(p.sopt && p.sopt.length) {
 						cmop = p.sopt[0];
 					}
-					defaultFilters = {"groupOp": "AND",rules:[{"field":colnm,"op":cmop,"data":""}]};
+					defaultFilters = {groupOp: "AND", rules: [{field: colnm, op: cmop, data: ""}]};
 				}
 				found = false;
 				if(p.tmplNames && p.tmplNames.length) {
