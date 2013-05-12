@@ -102,62 +102,66 @@ $.extend($.jgrid,{
 			opts.parseRe = /[Tt\\\/:_;.,\t\s-]/;
 		}
 		if( opts.masks.hasOwnProperty(format) ) { format = opts.masks[format]; }
-		if( !isNaN( date - 0 ) && String(format).toLowerCase() === "u") {
-			//Unix timestamp
-			timestamp = new Date( parseFloat(date)*1000 );
-		} else if(date.constructor === Date) {
-			timestamp = date;
-			// Microsoft date format support
-		} else if( msMatch !== null ) {
-			timestamp = new Date(parseInt(msMatch[1], 10));
-			if (msMatch[3]) {
-				var offset = Number(msMatch[5]) * 60 + Number(msMatch[6]);
-				offset *= ((msMatch[4] === '-') ? 1 : -1);
-				offset -= timestamp.getTimezoneOffset();
-				timestamp.setTime(Number(Number(timestamp) + (offset * 60 * 1000)));
+		if(date && date != null) {
+			if( !isNaN( date - 0 ) && String(format).toLowerCase() === "u") {
+				//Unix timestamp
+				timestamp = new Date( parseFloat(date)*1000 );
+			} else if(date.constructor === Date) {
+				timestamp = date;
+				// Microsoft date format support
+			} else if( msMatch !== null ) {
+				timestamp = new Date(parseInt(msMatch[1], 10));
+				if (msMatch[3]) {
+					var offset = Number(msMatch[5]) * 60 + Number(msMatch[6]);
+					offset *= ((msMatch[4] === '-') ? 1 : -1);
+					offset -= timestamp.getTimezoneOffset();
+					timestamp.setTime(Number(Number(timestamp) + (offset * 60 * 1000)));
+				}
+			} else {
+				date = String(date).replace(/\\T/g,"T").replace(/\\t/,"t").split(opts.parseRe);
+				format = format.replace(/\\T/g,"T").replace(/\\t/,"t").split(opts.parseRe);
+				// parsing for month names
+				for(k=0,hl=format.length;k<hl;k++){
+					if(format[k] === 'M') {
+						dM = $.inArray(date[k],opts.monthNames);
+						if(dM !== -1 && dM < 12){date[k] = dM+1; ts.m = date[k];}
+					}
+					if(format[k] === 'F') {
+						dM = $.inArray(date[k],opts.monthNames);
+						if(dM !== -1 && dM > 11){date[k] = dM+1-12; ts.m = date[k];}
+					}
+					if(format[k] === 'a') {
+						dM = $.inArray(date[k],opts.AmPm);
+						if(dM !== -1 && dM < 2 && date[k] === opts.AmPm[dM]){
+							date[k] = dM;
+							ts.h = h12to24(date[k], ts.h);
+						}
+					}
+					if(format[k] === 'A') {
+						dM = $.inArray(date[k],opts.AmPm);
+						if(dM !== -1 && dM > 1 && date[k] === opts.AmPm[dM]){
+							date[k] = dM-2;
+							ts.h = h12to24(date[k], ts.h);
+						}
+					}
+					if (format[k] === 'g') {
+						ts.h = parseInt(date[k], 10);
+					}
+					if(date[k] !== undefined) {
+						ts[format[k].toLowerCase()] = parseInt(date[k],10);
+					}
+				}
+				if(ts.f) {ts.m = ts.f;}
+				if( ts.m === 0 && ts.y === 0 && ts.d === 0) {
+					return "&#160;" ;
+				}
+				ts.m = parseInt(ts.m,10)-1;
+				var ty = ts.y;
+				if (ty >= 70 && ty <= 99) {ts.y = 1900+ts.y;}
+				else if (ty >=0 && ty <=69) {ts.y= 2000+ts.y;}
+				timestamp = new Date(ts.y, ts.m, ts.d, ts.h, ts.i, ts.s, ts.u);
 			}
 		} else {
-			date = String(date).replace(/\\T/g,"T").replace(/\\t/,"t").split(opts.parseRe);
-			format = format.replace(/\\T/g,"T").replace(/\\t/,"t").split(opts.parseRe);
-			// parsing for month names
-			for(k=0,hl=format.length;k<hl;k++){
-				if(format[k] === 'M') {
-					dM = $.inArray(date[k],opts.monthNames);
-					if(dM !== -1 && dM < 12){date[k] = dM+1; ts.m = date[k];}
-				}
-				if(format[k] === 'F') {
-					dM = $.inArray(date[k],opts.monthNames);
-					if(dM !== -1 && dM > 11){date[k] = dM+1-12; ts.m = date[k];}
-				}
-				if(format[k] === 'a') {
-					dM = $.inArray(date[k],opts.AmPm);
-					if(dM !== -1 && dM < 2 && date[k] === opts.AmPm[dM]){
-						date[k] = dM;
-						ts.h = h12to24(date[k], ts.h);
-					}
-				}
-				if(format[k] === 'A') {
-					dM = $.inArray(date[k],opts.AmPm);
-					if(dM !== -1 && dM > 1 && date[k] === opts.AmPm[dM]){
-						date[k] = dM-2;
-						ts.h = h12to24(date[k], ts.h);
-					}
-				}
-				if (format[k] === 'g') {
-					ts.h = parseInt(date[k], 10);
-				}
-				if(date[k] !== undefined) {
-					ts[format[k].toLowerCase()] = parseInt(date[k],10);
-				}
-			}
-			if(ts.f) {ts.m = ts.f;}
-			if( ts.m === 0 && ts.y === 0 && ts.d === 0) {
-				return "&#160;" ;
-			}
-			ts.m = parseInt(ts.m,10)-1;
-			var ty = ts.y;
-			if (ty >= 70 && ty <= 99) {ts.y = 1900+ts.y;}
-			else if (ty >=0 && ty <=69) {ts.y= 2000+ts.y;}
 			timestamp = new Date(ts.y, ts.m, ts.d, ts.h, ts.i, ts.s, ts.u);
 		}
 		if( newformat === undefined ) {
@@ -849,7 +853,7 @@ $.fn.jqGrid = function( pin ) {
 			ignoreCase : false,
 			cmTemplate : {},
 			idPrefix : "",
-			multiSort :  true
+			multiSort :  false
 		}, $.jgrid.defaults, pin || {});
 		var ts= this, grid={
 			headers:[],
@@ -1602,7 +1606,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 		},
 		addLocalData = function() {
-			var st, fndsort=false, cmtypes={}, grtypes=[], grindexes=[], srcformat, sorttype, newformat;
+			var st = ts.p.multiSort ? [] : "", sto=[], fndsort=false, cmtypes={}, grtypes=[], grindexes=[], srcformat, sorttype, newformat;
 			if(!$.isArray(ts.p.data)) {
 				return;
 			}
@@ -1640,9 +1644,17 @@ $.fn.jqGrid = function( pin ) {
 						}
 					}
 				}
-				if(!fndsort && (this.index === ts.p.sortname || this.name === ts.p.sortname)){
-					st = this.name; // ???
-					fndsort = true;
+				if(ts.p.multiSort) {
+					if(this.lso) {
+						st.push(this.name);
+						var tmplso= this.lso.split("-");
+						sto.push( tmplso[tmplso.length-1] );
+					}
+				} else {
+					if(!fndsort && (this.index === ts.p.sortname || this.name === ts.p.sortname)){
+						st = this.name; // ???
+						fndsort = true;
+					}
 				}
 			});
 			if(ts.p.treeGrid) {
@@ -1735,11 +1747,17 @@ $.fn.jqGrid = function( pin ) {
 					query.orderBy(grindexes[gin],grpview.groupOrder[gin],grtypes[gin].stype, grtypes[gin].srcfmt);
 				}
 			}
-			if (st && ts.p.sortorder && fndsort) {
-				if(ts.p.sortorder.toUpperCase() === "DESC") {
-					query.orderBy(ts.p.sortname, "d", cmtypes[st].stype, cmtypes[st].srcfmt);
-				} else {
-					query.orderBy(ts.p.sortname, "a", cmtypes[st].stype, cmtypes[st].srcfmt);
+			if(ts.p.multiSort) {
+				$.each(st,function(i){
+					query.orderBy(this, sto[i], cmtypes[this].stype, cmtypes[this].srcfmt);
+				});
+			} else {
+				if (st && ts.p.sortorder && fndsort) {
+					if(ts.p.sortorder.toUpperCase() === "DESC") {
+						query.orderBy(ts.p.sortname, "d", cmtypes[st].stype, cmtypes[st].srcfmt);
+					} else {
+						query.orderBy(ts.p.sortname, "a", cmtypes[st].stype, cmtypes[st].srcfmt);
+					}
 				}
 			}
 			var queryResults = query.select(),
