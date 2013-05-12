@@ -1941,7 +1941,9 @@ $.jgrid.extend({
 							try {
 								var gID = $t.p.id;
 								$t.p.postData.filters ="";
+								try {
 								$("#fbox_"+$.jgrid.jqID(gID)).jqFilter('resetFilter');
+								} catch(ef) {}
 								if($.isFunction($t.clearToolbar)) {$t.clearToolbar.call($t,false);}
 							} catch (e) {}
 							switch (o.refreshstate) {
