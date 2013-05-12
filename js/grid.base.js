@@ -848,7 +848,8 @@ $.fn.jqGrid = function( pin ) {
 			groupingView : {groupField:[],groupOrder:[], groupText:[],groupColumnShow:[],groupSummary:[], showSummaryOnHide: false, sortitems:[], sortnames:[], summary:[],summaryval:[], plusicon: 'ui-icon-circlesmall-plus', minusicon: 'ui-icon-circlesmall-minus', displayField: []},
 			ignoreCase : false,
 			cmTemplate : {},
-			idPrefix : ""
+			idPrefix : "",
+			multiSort :  true
 		}, $.jgrid.defaults, pin || {});
 		var ts= this, grid={
 			headers:[],
@@ -2122,6 +2123,50 @@ $.fn.jqGrid = function( pin ) {
 			});
 			}
 		},
+		multiSort = function(iCol, reload, sorder) {
+			var splas, sort="", cm = ts.p.colModel, fs=false, ls, selTh = ts.grid.headers[iCol].el, so="";
+			$("span.ui-grid-ico-sort",selTh).addClass('ui-state-disabled');
+			$(selTh).attr("aria-selected","false");
+
+			if(cm[iCol].lso) {
+				if(cm[iCol].lso==="asc") {
+					cm[iCol].lso += "-desc";
+					so = "desc";
+				} else if(cm[iCol].lso==="desc") {
+					cm[iCol].lso += "-asc";
+					so = "asc";
+				} else if(cm[iCol].lso==="asc-desc" || cm[iCol].lso==="desc-asc") {
+					cm[iCol].lso="";
+				}
+			} else {
+				cm[iCol].lso = so = cm.firstsortorder || 'asc';
+			}
+			if( so ) {
+				$("span.s-ico",selTh).show();
+				$("span.ui-icon-"+so,selTh).removeClass('ui-state-disabled');
+				$(selTh).attr("aria-selected","true");
+			} else {
+				if(!ts.p.viewsortcols[0]) {
+					$("span.s-ico",selTh).hide();
+				}
+			}
+			ts.p.sortorder = "";
+			$.each(cm, function(i){
+				if(this.lso) {
+					if(i>0 && fs) {
+						sort += ", ";
+					}
+					splas = this.lso.split("-");
+					sort += cm[i].index || cm[i].name;
+					sort += " "+splas[splas.length-1];
+					fs = true;
+					ts.p.sortorder = splas[splas.length-1];
+				}
+			});
+			ls = sort.lastIndexOf(ts.p.sortorder);
+			sort = sort.substring(0, ls);
+			ts.p.sortname = sort;
+		},
 		sortData = function (index, idxcol,reload,sor){
 			if(!ts.p.colModel[idxcol].sortable) { return; }
 			var so;
@@ -2134,25 +2179,29 @@ $.fn.jqGrid = function( pin ) {
 				} else { ts.p.sortorder = ts.p.colModel[idxcol].firstsortorder || 'asc'; }
 				ts.p.page = 1;
 			}
-			if(sor) {
-				if(ts.p.lastsort === idxcol && ts.p.sortorder === sor && !reload) { return; }
-				ts.p.sortorder = sor;
-			}
-			var previousSelectedTh = ts.grid.headers[ts.p.lastsort].el, newSelectedTh = ts.grid.headers[idxcol].el;
-
-			$("span.ui-grid-ico-sort",previousSelectedTh).addClass('ui-state-disabled');
-			$(previousSelectedTh).attr("aria-selected","false");
-			$("span.ui-icon-"+ts.p.sortorder,newSelectedTh).removeClass('ui-state-disabled');
-			$(newSelectedTh).attr("aria-selected","true");
-			if(!ts.p.viewsortcols[0]) {
-				if(ts.p.lastsort !== idxcol) {
-					$("span.s-ico",previousSelectedTh).hide();
-					$("span.s-ico",newSelectedTh).show();
+			if(ts.p.multiSort) {
+				multiSort( idxcol, reload, so);
+			} else {
+				if(sor) {
+					if(ts.p.lastsort === idxcol && ts.p.sortorder === sor && !reload) { return; }
+					ts.p.sortorder = sor;
 				}
+				var previousSelectedTh = ts.grid.headers[ts.p.lastsort].el, newSelectedTh = ts.grid.headers[idxcol].el;
+
+				$("span.ui-grid-ico-sort",previousSelectedTh).addClass('ui-state-disabled');
+				$(previousSelectedTh).attr("aria-selected","false");
+				$("span.ui-icon-"+ts.p.sortorder,newSelectedTh).removeClass('ui-state-disabled');
+				$(newSelectedTh).attr("aria-selected","true");
+				if(!ts.p.viewsortcols[0]) {
+					if(ts.p.lastsort !== idxcol) {
+						$("span.s-ico",previousSelectedTh).hide();
+						$("span.s-ico",newSelectedTh).show();
+					}
+				}
+				index = index.substring(5 + ts.p.id.length + 1); // bad to be changed!?!
+				ts.p.sortname = ts.p.colModel[idxcol].index || index;
+				so = ts.p.sortorder;
 			}
-			index = index.substring(5 + ts.p.id.length + 1); // bad to be changed!?!
-			ts.p.sortname = ts.p.colModel[idxcol].index || index;
-			so = ts.p.sortorder;
 			if ($(ts).triggerHandler("jqGridSortCol", [index, idxcol, so]) === 'stop') {
 				ts.p.lastsort = idxcol;
 				return;
@@ -2363,6 +2412,7 @@ $.fn.jqGrid = function( pin ) {
 			if (idn === ts.p.sortname) {
 				ts.p.lastsort = i;
 			}
+			ts.p.colModel[i].lso = "";
 			thead += imgs+"</div></th>";
 		}
 		thead += "</tr></thead>";
