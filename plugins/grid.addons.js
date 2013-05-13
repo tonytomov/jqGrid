@@ -171,7 +171,7 @@ $.jgrid.extend({
 			}
 			if($.fn.searchFilter) {
 				if(p.recreateFilter===true) {$("#"+fid).remove();}
-				if( $("#"+fid).html() !== null ) {
+				if( $("#"+fid).html() != null ) {
 					if ( $.isFunction(p.beforeShowSearch) ) {
 						showFrm = p.beforeShowSearch($("#"+fid));
 						if(typeof(showFrm) == "undefined") {
