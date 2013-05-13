@@ -255,13 +255,13 @@
 	};
 	$.fn.fmatter.rowactions = function(act) {
 		var $tr = $(this).closest("tr.jqgrow"),
-			$actionsDiv = $(this).parent(),
 			rid = $tr.attr("id"),
 			$id = $(this).closest("table.ui-jqgrid-btable").attr('id').replace(/_frozen([^_]*)$/,'$1'),
 			$grid = $("#"+$id),
 			$t = $grid[0],
 			p = $t.p,
 			cm = p.colModel[$.jgrid.getCellIndex(this)],
+			$actionsDiv = cm.frozen ? $("tr#"+rid+" td:eq("+$.jgrid.getCellIndex(this)+") > div",$grid) :$(this).parent(),
 			op = {
 				keys: false,
 				onEdit: null, 
