@@ -1846,7 +1846,7 @@ $.fn.jqGrid = function( pin ) {
 				}
 			}
 			if(rn===true && ts.p.rownumbers === true) {
-				$("td.jqgrid-rownum",ts.rows).each(function(i){
+				$(">td.jqgrid-rownum",ts.rows).each(function(i){
 					$(this).html(base+1+i);
 				});
 			}
