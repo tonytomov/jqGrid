@@ -11,10 +11,10 @@
  * depends on jQuery UI 
 **/
 "use strict";
-if ($.jgrid.msie && $.jgrid.msiever()==8) {
+if ($.jgrid.msie && $.jgrid.msiever()===8) {
 	$.expr[":"].hidden = function(elem) {
 		return elem.offsetWidth === 0 || elem.offsetHeight === 0 ||
-			elem.style.display == "none";
+			elem.style.display === "none";
 	};
 }
 // requiere load multiselect before grid
@@ -215,7 +215,7 @@ $.jgrid.extend({
         }, $.jgrid.col, opts || {});
 		if($.ui) {
 			if ($.ui.multiselect ) {
-				if(opts.msel == "multiselect") {
+				if(opts.msel === "multiselect") {
 					if(!$.jgrid._multiselect) {
 						// should be in language file
 						alert("Multiselect plugin loaded after jqGrid. Please load the plugin before the jqGrid!");
@@ -259,7 +259,7 @@ $.jgrid.extend({
         });
         function call(fn, obj) {
             if (!fn) { return; }
-            if (typeof fn == 'string') {
+            if (typeof fn === 'string') {
                 if ($.fn[fn]) {
                     $.fn[fn].apply(obj, $.makeArray(arguments).slice(2));
                 }
@@ -343,7 +343,7 @@ $.jgrid.extend({
 			$('body').append(appender);
 		}
 
-		if(typeof opts == 'string' && opts == 'updateDnD' && $t.p.jqgdnd===true) {
+		if(typeof opts === 'string' && opts === 'updateDnD' && $t.p.jqgdnd===true) {
 			updateDnD();
 			return;
 		}
@@ -395,7 +395,7 @@ $.jgrid.extend({
 						var tid = $(d).closest("table.ui-jqgrid-btable");
 						if(tid.length > 0 && $.data(tid[0],"dnd") !== undefined) {
 							var cn = $.data(tid[0],"dnd").connectWith;
-							return $.inArray('#'+$.jgrid.jqID(this.id),cn) != -1 ? true : false;
+							return $.inArray('#'+$.jgrid.jqID(this.id),cn) !== -1 ? true : false;
 						}
 						return false;
 					},
@@ -410,7 +410,7 @@ $.jgrid.extend({
 								for (key in getdata) {
 									if (getdata.hasOwnProperty(key)) {
 									nm = dropmodel[j].name;
-									if( !(nm == 'cb' || nm =='rn' || nm == 'subgrid' )) {
+									if( !(nm === 'cb' || nm === 'rn' || nm === 'subgrid' )) {
 										if(getdata.hasOwnProperty(key) && dropmodel[j]) {
 											tmpdata[nm] = getdata[key];
 										}
@@ -426,7 +426,7 @@ $.jgrid.extend({
 							//parameters to this callback - event, element, data to be inserted, sender, reciever
 							// should return object which will be inserted into the reciever
 							var datatoinsert = opts.beforedrop.call(this,ev,ui,getdata,$('#'+$.jgrid.jqID($t.p.id)),$(this));
-							if (datatoinsert !== undefined && datatoinsert !== null && typeof datatoinsert == "object") { getdata = datatoinsert; }
+							if (datatoinsert !== undefined && datatoinsert !== null && typeof datatoinsert === "object") { getdata = datatoinsert; }
 						}
 						if(ui.helper.dropped) {
 							var grid;
