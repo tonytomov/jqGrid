@@ -756,14 +756,14 @@ $.jgrid.extend({
 										} else {
 											$($t).jqGrid("addRowData",ret[2],postdata,p.addedrow);
 										}
-										if(rp_ge[$t.p.id].closeAfterAdd) {
-											if($t.p.treeGrid !== true){
-												$($t).jqGrid("setSelection",ret[2]);
-											}
-											$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal,onClose: rp_ge[$t.p.id].onClose});
-										} else if (rp_ge[$t.p.id].clearAfterAdd) {
-											fillData("_empty",$t,frmgr);
+									}
+									if(rp_ge[$t.p.id].closeAfterAdd) {
+										if($t.p.treeGrid !== true){
+											$($t).jqGrid("setSelection",ret[2]);
 										}
+										$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal,onClose: rp_ge[$t.p.id].onClose});
+									} else if (rp_ge[$t.p.id].clearAfterAdd) {
+										fillData("_empty",$t,frmgr);
 									}
 								} else {
 									// the action is update
@@ -789,7 +789,7 @@ $.jgrid.extend({
 								}
 								if(rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate) {
 									$("#"+frmgr).data("disabled",false);
-									if(rp_ge[$t.p.id]._savedData[$t.p.id+"_id"] !="_empty"){
+									if(rp_ge[$t.p.id]._savedData[$t.p.id+"_id"] !== "_empty"){
 										for(key in rp_ge[$t.p.id]._savedData) {
 											if(rp_ge[$t.p.id]._savedData.hasOwnProperty(key) && postdata[key]) {
 												rp_ge[$t.p.id]._savedData[key] = postdata[key];
@@ -821,10 +821,10 @@ $.jgrid.extend({
 								ret[0] = false;
 								ret[1] = dpret[1] || "Error deleting the selected row!" ;
 							} else {
-								if(ajaxOptions.data.oper == opers.addoper && rp_ge[$t.p.id].closeAfterAdd ) {
+								if(ajaxOptions.data.oper === opers.addoper && rp_ge[$t.p.id].closeAfterAdd ) {
 									$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, onClose: rp_ge[$t.p.id].onClose});
 								}
-								if(ajaxOptions.data.oper == opers.editoper && rp_ge[$t.p.id].closeAfterEdit ) {
+								if(ajaxOptions.data.oper === opers.editoper && rp_ge[$t.p.id].closeAfterEdit ) {
 									$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, onClose: rp_ge[$t.p.id].onClose});
 								}
 							}
