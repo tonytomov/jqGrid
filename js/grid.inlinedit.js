@@ -239,7 +239,7 @@ $.jgrid.extend({
 			}
 			if(tmp) {
 				tmp[opers.oper] = opers.editoper;
-				if (tmp[idname] === undefined) {
+				if (tmp[idname] === undefined || tmp[idname]==="") {
 					tmp[idname] = rowid;
 				} else if (ind.id !== $t.p.idPrefix + tmp[idname]) {
 					// rename rowid
