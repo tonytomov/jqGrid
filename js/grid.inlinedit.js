@@ -446,7 +446,7 @@ $.jgrid.extend({
 		});
 	},
 	inlineNav : function (elem, o) {
-		o = $.extend({
+		o = $.extend(true,{
 			edit: true,
 			editicon: "ui-icon-pencil",
 			add: true,
