@@ -572,6 +572,12 @@ $.jgrid.extend({
 					left = ( offset.left ),
 					top = ( offset.top);
 					buildRuleMenu(this, left, top );
+					e.stopPropagation();
+				});
+				$("body").on('click', function(e){
+					if(e.target.className !== "soptclass") {
+						$("#sopt_menu").hide();
+					}
 				});
 			}
 			this.ftoolbar = true;
