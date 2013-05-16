@@ -2571,9 +2571,21 @@ $.fn.jqGrid = function( pin ) {
 			if (!ts.p.viewsortcols[2]) { s = "th>div>span>span.ui-grid-ico-sort"; }
 			var t = $(e.target).closest(s);
 			if (t.length !== 1) { return; }
-			var ci = getColumnHeaderIndex(this);
+			var ci;
+			if(ts.p.frozenColumns) {
+				var tid =  $(this)[0].id.substring(5);
+				$(ts.p.colModel).each(function(i){
+					if (this.name === tid) {
+						ci = i;return false;
+					}
+				});
+			} else {
+				ci = getColumnHeaderIndex(this);
+			}
 			if (!ts.p.viewsortcols[2]) { r=true;d=t.attr("sort"); }
-			sortData( $('div',this)[0].id, ci, r, d);
+			if(ci != null){
+				sortData( $('div',this)[0].id, ci, r, d);
+			}
 			return false;
 		});
 		if (ts.p.sortable && $.fn.sortable) {
