@@ -127,7 +127,7 @@ $.extend($.jgrid,{
 						if(dM !== -1 && dM < 12){date[k] = dM+1; ts.m = date[k];}
 					}
 					if(format[k] === 'F') {
-						dM = $.inArray(date[k],opts.monthNames);
+						dM = $.inArray(date[k],opts.monthNames,12);
 						if(dM !== -1 && dM > 11){date[k] = dM+1-12; ts.m = date[k];}
 					}
 					if(format[k] === 'a') {
