@@ -3,3 +3,4 @@ yuicompressor.jar
 dist
 nbproject
 .gradle
+.DS_Store
