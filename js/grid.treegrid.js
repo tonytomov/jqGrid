@@ -24,7 +24,7 @@ $.jgrid.extend({
 			loaded = $t.p.treeReader.loaded,  lft, rgt, curLevel, ident,lftpos, twrap,
 			ldat, lf;
 			while(i<len) {
-				var ind = $t.rows[i].id, dind = $t.p._index[ind], expan;
+				var ind = $.jgrid.stripPref($t.p.idPrefix, $t.rows[i].id), dind = $t.p._index[ind], expan;
 				ldat = $t.p.data[dind];
 				//$t.rows[i].level = ldat[level];
 				if($t.p.treeGridModel == 'nested') {
@@ -87,7 +87,7 @@ $.jgrid.extend({
 					.find("div.treeclick")
 					.bind("click",function(e){
 						var target = e.target || e.srcElement,
-						ind2 =$(target,$t.rows).closest("tr.jqgrow")[0].id,
+						ind2 =$.jgrid.stripPref($t.p.idPrefix,$(target,$t.rows).closest("tr.jqgrow")[0].id),
 						pos = $t.p._index[ind2];
 						if(!$t.p.data[pos][isLeaf]){
 							if($t.p.data[pos][expanded]){
@@ -106,7 +106,7 @@ $.jgrid.extend({
 						.css("cursor","pointer")
 						.bind("click",function(e) {
 							var target = e.target || e.srcElement,
-							ind2 =$(target,$t.rows).closest("tr.jqgrow")[0].id,
+							ind2 =$.jgrid.stripPref($t.p.idPrefix,$(target,$t.rows).closest("tr.jqgrow")[0].id),
 							pos = $t.p._index[ind2];
 							if(!$t.p.data[pos][isLeaf]){
 								if($t.p.data[pos][expanded]){
@@ -194,7 +194,7 @@ $.jgrid.extend({
 			expanded = $t.p.treeReader.expanded_field,
 			rows = $t.rows;
 			$(childern).each(function(){
-				var id  = $.jgrid.getAccessor(this,$t.p.localReader.id);
+				var id  = $t.p.idPrefix + $.jgrid.getAccessor(this,$t.p.localReader.id);
 				$(rows.namedItem(id)).css("display","");
 				if(this[expanded]) {
 					$($t).jqGrid("expandRow",this);
@@ -211,7 +211,7 @@ $.jgrid.extend({
 			expanded = $t.p.treeReader.expanded_field,
 			rows = $t.rows;
 			$(childern).each(function(){
-				var id  = $.jgrid.getAccessor(this,$t.p.localReader.id);
+				var id  = $t.p.idPrefix + $.jgrid.getAccessor(this,$t.p.localReader.id);
 				$(rows.namedItem(id)).css("display","none");
 				if(this[expanded]){
 					$($t).jqGrid("collapseRow",this);
@@ -316,7 +316,7 @@ $.jgrid.extend({
 					var parent_id = $t.p.treeReader.parent_id_field,
 					dtid = $t.p.localReader.id;
 					$(this.p.data).each(function(){
-						if(this[parent_id] === $.jgrid.stripPref($t.p.idPrefix, rc[dtid])) {
+						if(this[parent_id] == $.jgrid.stripPref($t.p.idPrefix, rc[dtid])) {
 							result.push(this);
 						}
 					});
@@ -421,7 +421,7 @@ $.jgrid.extend({
 
 			if(!rc[expanded]) {
 				var id = $.jgrid.getAccessor(rc,this.p.localReader.id);
-				var rc1 = $("#"+$.jgrid.jqID(id),this.grid.bDiv)[0];
+				var rc1 = $("#" + this.p.idPrefix + $.jgrid.jqID(id),this.grid.bDiv)[0];
 				var position = this.p._index[id];
 				if( $(this).jqGrid("isNodeLoaded",this.p.data[position]) ) {
 					rc[expanded] = true;
@@ -454,7 +454,7 @@ $.jgrid.extend({
 			if(rc[expanded]) {
 				rc[expanded] = false;
 				var id = $.jgrid.getAccessor(rc,this.p.localReader.id);
-				var rc1 = $("#"+$.jgrid.jqID(id),this.grid.bDiv)[0];
+				var rc1 = $("#" + this.p.idPrefix + $.jgrid.jqID(id),this.grid.bDiv)[0];
 				$("div.treeclick",rc1).removeClass(this.p.treeIcons.minus+" tree-minus").addClass(this.p.treeIcons.plus+" tree-plus");
 			}
 		});
