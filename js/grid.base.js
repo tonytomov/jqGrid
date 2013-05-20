@@ -2144,7 +2144,7 @@ $.fn.jqGrid = function( pin ) {
 			});
 			}
 		},
-		multiSort = function(iCol, reload, sorder, obj ) {
+		multiSort = function(iCol, obj ) {
 			var splas, sort="", cm = ts.p.colModel, fs=false, ls, 
 					selTh = ts.p.frozenColumns ?  obj : ts.grid.headers[iCol].el, so="";
 			$("span.ui-grid-ico-sort",selTh).addClass('ui-state-disabled');
@@ -2202,7 +2202,7 @@ $.fn.jqGrid = function( pin ) {
 				ts.p.page = 1;
 			}
 			if(ts.p.multiSort) {
-				multiSort( idxcol, reload, so, obj);
+				multiSort( idxcol, obj);
 			} else {
 				if(sor) {
 					if(ts.p.lastsort === idxcol && ts.p.sortorder === sor && !reload) { return; }
