@@ -363,7 +363,7 @@ $.jgrid.extend({
 						// drag and drop does not insert tr in table, when the table has no rows
 						// we try to insert new empty row on the target(s)
 						for (i=0;i<$.data($t,"dnd").connectWith.length;i++){
-							if($($.data($t,"dnd").connectWith[i]).jqGrid('getGridParam','reccount') == "0" ){
+							if($($.data($t,"dnd").connectWith[i]).jqGrid('getGridParam','reccount') === 0 ){
 								$($.data($t,"dnd").connectWith[i]).jqGrid('addRowData','jqg_empty_row',{});
 							}
 						}
@@ -471,7 +471,7 @@ $.jgrid.extend({
 		opts.connectWith = $.map(opts.connectWith,function(n){return $.trim(n);});
 		$.data($t,"dnd",opts);
 		
-		if($t.p.reccount != "0" && !$t.p.jqgdnd) {
+		if($t.p.reccount !== 0 && !$t.p.jqgdnd) {
 			updateDnD();
 		}
 		$t.p.jqgdnd = true;
