@@ -52,7 +52,7 @@ $.jgrid.extend({
 			ind = $($t).jqGrid("getInd",rowid,true);
 			if( ind === false ) {return;}
 			editable = $(ind).attr("editable") || "0";
-			if (editable == "0" && !$(ind).hasClass("not-editable-row")) {
+			if (editable === "0" && !$(ind).hasClass("not-editable-row")) {
 				cm = $t.p.colModel;
 				$('td[role="gridcell"]',ind).each( function(i) {
 					nm = cm[i].name;

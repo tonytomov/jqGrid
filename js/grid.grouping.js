@@ -429,7 +429,7 @@ $.jgrid.extend({
 			var res = funcs[fn]();
 
 			if (round != null) {
-				if (roundType == 'fixed') {
+				if (roundType === 'fixed') {
 					res = res.toFixed(round);
 				} else {
 					var mul = Math.pow(10, round);
