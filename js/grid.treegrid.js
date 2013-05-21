@@ -27,7 +27,7 @@ $.jgrid.extend({
 				var ind = $.jgrid.stripPref($t.p.idPrefix, $t.rows[i].id), dind = $t.p._index[ind], expan;
 				ldat = $t.p.data[dind];
 				//$t.rows[i].level = ldat[level];
-				if($t.p.treeGridModel == 'nested') {
+				if($t.p.treeGridModel === 'nested') {
 					if(!ldat[isLeaf]) {
 					lft = parseInt(ldat[$t.p.treeReader.left_field],10);
 					rgt = parseInt(ldat[$t.p.treeReader.right_field],10);
@@ -48,17 +48,17 @@ $.jgrid.extend({
 					lftpos = curLevel -1;
 				}
 				twrap = "<div class='tree-wrap tree-wrap-"+$t.p.direction+"' style='width:"+(ident*18)+"px;'>";
-				twrap += "<div style='"+($t.p.direction=="rtl" ? "right:" : "left:")+(lftpos*18)+"px;' class='ui-icon ";
+				twrap += "<div style='"+($t.p.direction==="rtl" ? "right:" : "left:")+(lftpos*18)+"px;' class='ui-icon ";
 
 
 				if(ldat[loaded] !== undefined) {
-					if(ldat[loaded]=="true" || ldat[loaded]===true) {
+					if(ldat[loaded]==="true" || ldat[loaded]===true) {
 						ldat[loaded] = true;
 					} else {
 						ldat[loaded] = false;
 					}
 				}
-				if(ldat[isLeaf] == "true" || ldat[isLeaf] === true) {
+				if(ldat[isLeaf] === "true" || ldat[isLeaf] === true) {
 					twrap += ((ldat[icon] !== undefined && ldat[icon] !== "") ? ldat[icon] : $t.p.treeIcons.leaf)+" tree-leaf treeclick";
 					ldat[isLeaf] = true;
 					lf="leaf";
@@ -66,7 +66,7 @@ $.jgrid.extend({
 					ldat[isLeaf] = false;
 					lf="";
 				}
-				ldat[expanded] = ((ldat[expanded] == "true" || ldat[expanded] === true) ? true : false) && (ldat[loaded] || ldat[loaded] === undefined);
+				ldat[expanded] = ((ldat[expanded] === "true" || ldat[expanded] === true) ? true : false) && (ldat[loaded] || ldat[loaded] === undefined);
 				if(ldat[expanded] === false) {
 					twrap += ((ldat[isLeaf] === true) ? "'" : $t.p.treeIcons.plus+" tree-plus treeclick'");
 				} else {
@@ -137,9 +137,9 @@ $.jgrid.extend({
 			if($t.p.rowTotal === null ) { $t.p.rowNum = 10000; }
 			$t.p.multiselect = false;$t.p.rowList = [];
 			$t.p.expColInd = 0;
-			pico = 'ui-icon-triangle-1-' + ($t.p.direction=="rtl" ? 'w' : 'e');
+			pico = 'ui-icon-triangle-1-' + ($t.p.direction==="rtl" ? 'w' : 'e');
 			$t.p.treeIcons = $.extend({plus:pico,minus:'ui-icon-triangle-1-s',leaf:'ui-icon-radio-off'},$t.p.treeIcons || {});
-			if($t.p.treeGridModel == 'nested') {
+			if($t.p.treeGridModel === 'nested') {
 				$t.p.treeReader = $.extend({
 					level_field: "level",
 					left_field:"lft",
@@ -149,7 +149,7 @@ $.jgrid.extend({
 					loaded: "loaded",
 					icon_field: "icon"
 				},$t.p.treeReader);
-			} else if($t.p.treeGridModel == 'adjacency') {
+			} else if($t.p.treeGridModel === 'adjacency') {
 				$t.p.treeReader = $.extend({
 						level_field: "level",
 						parent_id_field: "parent",
@@ -162,14 +162,14 @@ $.jgrid.extend({
 			for ( key in $t.p.colModel){
 				if($t.p.colModel.hasOwnProperty(key)) {
 					nm = $t.p.colModel[key].name;
-					if( nm == $t.p.ExpandColumn && !ecol ) {
+					if( nm === $t.p.ExpandColumn && !ecol ) {
 						ecol = true;
 						$t.p.expColInd = i;
 					}
 					i++;
 					//
 					for(tkey in $t.p.treeReader) {
-						if($t.p.treeReader.hasOwnProperty(tkey) && $t.p.treeReader[tkey] == nm) {
+						if($t.p.treeReader.hasOwnProperty(tkey) && $t.p.treeReader[tkey] === nm) {
 							dupcols.push(nm);
 						}
 					}
@@ -237,7 +237,7 @@ $.jgrid.extend({
 				case 'adjacency' :
 					var parent_id = $t.p.treeReader.parent_id_field;
 					$($t.p.data).each(function(){
-						if(this[parent_id] === null || String(this[parent_id]).toLowerCase() == "null") {
+						if(this[parent_id] === null || String(this[parent_id]).toLowerCase() === "null") {
 							result.push(this);
 						}
 					});
@@ -431,14 +431,14 @@ $.jgrid.extend({
 					$("div.treeclick",rc1).removeClass(this.p.treeIcons.plus+" tree-plus").addClass(this.p.treeIcons.minus+" tree-minus");
 					this.p.treeANode = rc1.rowIndex;
 					this.p.datatype = this.p.treedatatype;
-					if(this.p.treeGridModel == 'nested') {
+					if(this.p.treeGridModel === 'nested') {
 						$(this).jqGrid("setGridParam",{postData:{nodeid:id,n_left:rc[lft],n_right:rc[rgt],n_level:rc[level]}});
 					} else {
 						$(this).jqGrid("setGridParam",{postData:{nodeid:id,parentid:rc[parent],n_level:rc[level]}} );
 					}
 					$(this).trigger("reloadGrid");
 					rc[loaded] = true;
-					if(this.p.treeGridModel == 'nested') {
+					if(this.p.treeGridModel === 'nested') {
 						$(this).jqGrid("setGridParam",{postData:{nodeid:'',n_left:'',n_right:'',n_level:''}});
 					} else {
 						$(this).jqGrid("setGridParam",{postData:{nodeid:'',parentid:'',n_level:''}}); 

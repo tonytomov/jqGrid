@@ -346,7 +346,7 @@ $.jgrid.extend({
 				var fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
 				var str = '<ul id="sopt_menu" class="ui-search-menu" role="menu" tabindex="0" style="font-size:'+fs+';left:'+left+'px;top:'+top+'px;">',
 				selected = $(elem).attr("soper"), selclass,
-				aoprs = [], i, ina;
+				aoprs = [], ina;
 				var i=0, nm =$(elem).attr("colname"),len = $t.p.colModel.length;
 				while(i<len) {
 					if($t.p.colModel[i].name === nm) {
@@ -391,7 +391,7 @@ $.jgrid.extend({
 			var tr = $("<tr class='ui-search-toolbar' role='rowheader'></tr>");
 			var timeoutHnd;
 			$.each($t.p.colModel,function(){
-				var cm=this, soptions, surl, self, select = "", sot="=", so,
+				var cm=this, soptions, surl, self, select = "", sot="=", so, i,
 				th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-"+$t.p.direction+"'></th>"),
 				thd = $("<div style='position:relative;height:100%;padding-right:0.3em;padding-left:0.3em;'></div>"),
 				stbl = $("<table class='ui-search-table' cellspacing='0'><tr><td class='ui-search-oper'></td><td class='ui-search-input'></td></tr></table>");
@@ -402,7 +402,7 @@ $.jgrid.extend({
 				if(this.search){
 					if(p.searchOperators) {
 						so  = (soptions.sopt) ? soptions.sopt[0] : cm.stype==='select' ?  'eq' : p.defaultSearch;
-						for(var i = 0;i<p.odata.length;i++) {
+						for(i = 0;i<p.odata.length;i++) {
 							if(p.odata[i].oper === so) {
 								sot = p.operands[so] || "";
 								break;
@@ -464,7 +464,7 @@ $.jgrid.extend({
 								var elem = document.createElement("select");
 								elem.style.width = "100%";
 								$(elem).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
-								var so, sv, ov, key, k;
+								var sv, ov, key, k;
 								if(typeof oSv === "string") {
 									so = oSv.split(delim);
 									for(k=0; k<so.length;k++){
