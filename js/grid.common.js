@@ -351,7 +351,7 @@ $.extend($.jgrid,{
 						rowid = $.jgrid.stripPref($t.p.idPrefix, rowid);
 					}
 					$.ajax($.extend({
-						url: options.dataUrl,
+						url: $.isFunction(options.dataUrl) ? options.dataUrl.call($t, rowid, vl, String(options.name)) : options.dataUrl,
 						type : "GET",
 						dataType: "html",
 						data: $.isFunction(postData) ? postData.call($t, rowid, vl, String(options.name)) : postData,
