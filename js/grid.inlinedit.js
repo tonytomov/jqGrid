@@ -502,6 +502,11 @@ $.jgrid.extend({
 					buttonicon : o.addicon,
 					id : $t.p.id+"_iladd",
 					onClickButton : function () {
+						var bfar = $.isFunction( o.beforeAddRow ) ?	o.beforeAddRow.call($t,o.addParams) :  undefined;
+						if( bfar === undefined ) {
+							bfar = true;
+						}
+						if(!bfar) { return; }
 						$($t).jqGrid('addRow', o.addParams);
 						if(!o.addParams.useFormatter) {
 							$("#"+gID+"_ilsave").removeClass('ui-state-disabled');
@@ -519,7 +524,12 @@ $.jgrid.extend({
 					buttonicon : o.editicon,
 					id : $t.p.id+"_iledit",
 					onClickButton : function () {
-						var sr = $($t).jqGrid('getGridParam','selrow');
+						var sr = $($t).jqGrid('getGridParam','selrow'),
+						bfer = $.isFunction( o.beforeEditRow ) ?	o.beforeEditRow.call($t,o.editParams, sr) :  undefined;
+						if( bfer === undefined ) {
+							bfer = true;
+						}
+						if(!bfer) { return; }
 						if(sr) {
 							$($t).jqGrid('editRow', sr, o.editParams);
 							$("#"+gID+"_ilsave").removeClass('ui-state-disabled');
@@ -553,6 +563,11 @@ $.jgrid.extend({
 								o.editParams.extraparam[oper] = opers.editoper;
 								tmpParams = o.editParams;
 							}
+							var bfsr = $.isFunction( o.beforeSaveRow ) ?	o.beforeSaveRow.call($t,tmpParams, sr) :  undefined;
+							if( bfsr === undefined ) {
+								bfsr = true;
+							}
+							if(!bfsr) { return; }
 							if( $($t).jqGrid('saveRow', sr, tmpParams) ) {
 								$($t).jqGrid('showAddEditButtons');
 							}
@@ -577,6 +592,11 @@ $.jgrid.extend({
 							} else {
 								cancelPrm = o.editParams;
 							}
+							var bfcr = $.isFunction( o.beforeCancelRow ) ?	o.beforeCancelRow.call($t,cancelPrm, sr) :  undefined;
+							if( bfcr === undefined ) {
+								bfcr = true;
+							}
+							if(!bfcr) { return; }
 							$($t).jqGrid('restoreRow', sr, cancelPrm);
 							$($t).jqGrid('showAddEditButtons');
 						} else {
