@@ -47,10 +47,15 @@ $.jgrid.extend({
 
 		// End compatible
 		return this.each(function(){
-			var $t = this, nm, tmp, editable, cnt=0, focus=null, svr={}, ind,cm;
+			var $t = this, nm, tmp, editable, cnt=0, focus=null, svr={}, ind,cm, bfer;
 			if (!$t.grid ) { return; }
 			ind = $($t).jqGrid("getInd",rowid,true);
 			if( ind === false ) {return;}
+			bfer = $.isFunction( o.beforeEditRow ) ? o.beforeEditRow.call($t,o, rowid) :  undefined;
+			if( bfer === undefined ) {
+				bfer = true;
+			}
+			if(!bfer) { return; }
 			editable = $(ind).attr("editable") || "0";
 			if (editable === "0" && !$(ind).hasClass("not-editable-row")) {
 				cm = $t.p.colModel;
@@ -154,6 +159,11 @@ $.jgrid.extend({
 		if (!$t.grid ) { return success; }
 		ind = $($t).jqGrid("getInd",rowid,true);
 		if(ind === false) {return success;}
+		var bfsr = $.isFunction( o.beforeSaveRow ) ?	o.beforeSaveRow.call($t,o, rowid) :  undefined;
+		if( bfsr === undefined ) {
+			bfsr = true;
+		}
+		if(!bfsr) { return; }
 		editable = $(ind).attr("editable");
 		o.url = o.url || $t.p.editurl;
 		if (editable==="1") {
@@ -378,6 +388,11 @@ $.jgrid.extend({
 			if (!$t.grid ) { return; }
 			ind = $($t).jqGrid("getInd",rowid,true);
 			if(ind === false) {return;}
+			var bfcr = $.isFunction( o.beforeCancelRow ) ?	o.beforeCancelRow.call($t,cancelPrm, sr) :  undefined;
+			if( bfcr === undefined ) {
+				bfcr = true;
+			}
+			if(!bfcr) { return; }
 			for(k=0;k<$t.p.savedRow.length;k++) {
 				if( String($t.p.savedRow[k].id) === String(rowid)) {fr = k; break;}
 			}
@@ -421,6 +436,11 @@ $.jgrid.extend({
 		return this.each(function(){
 			if (!this.grid ) { return; }
 			var $t = this;
+			var bfar = $.isFunction( p.beforeAddRow ) ?	p.beforeAddRow.call($t,p.addRowParams) :  undefined;
+			if( bfar === undefined ) {
+				bfar = true;
+			}
+			if(!bfar) { return; }
 			p.rowID = $.isFunction(p.rowID) ? p.rowID.call($t, p) : ( (p.rowID != null) ? p.rowID : $.jgrid.randId());
 			if(p.useDefValues === true) {
 				$($t.p.colModel).each(function(){
@@ -502,11 +522,6 @@ $.jgrid.extend({
 					buttonicon : o.addicon,
 					id : $t.p.id+"_iladd",
 					onClickButton : function () {
-						var bfar = $.isFunction( o.beforeAddRow ) ?	o.beforeAddRow.call($t,o.addParams) :  undefined;
-						if( bfar === undefined ) {
-							bfar = true;
-						}
-						if(!bfar) { return; }
 						$($t).jqGrid('addRow', o.addParams);
 						if(!o.addParams.useFormatter) {
 							$("#"+gID+"_ilsave").removeClass('ui-state-disabled');
@@ -524,12 +539,7 @@ $.jgrid.extend({
 					buttonicon : o.editicon,
 					id : $t.p.id+"_iledit",
 					onClickButton : function () {
-						var sr = $($t).jqGrid('getGridParam','selrow'),
-						bfer = $.isFunction( o.beforeEditRow ) ?	o.beforeEditRow.call($t,o.editParams, sr) :  undefined;
-						if( bfer === undefined ) {
-							bfer = true;
-						}
-						if(!bfer) { return; }
+						var sr = $($t).jqGrid('getGridParam','selrow');
 						if(sr) {
 							$($t).jqGrid('editRow', sr, o.editParams);
 							$("#"+gID+"_ilsave").removeClass('ui-state-disabled');
@@ -563,11 +573,6 @@ $.jgrid.extend({
 								o.editParams.extraparam[oper] = opers.editoper;
 								tmpParams = o.editParams;
 							}
-							var bfsr = $.isFunction( o.beforeSaveRow ) ?	o.beforeSaveRow.call($t,tmpParams, sr) :  undefined;
-							if( bfsr === undefined ) {
-								bfsr = true;
-							}
-							if(!bfsr) { return; }
 							if( $($t).jqGrid('saveRow', sr, tmpParams) ) {
 								$($t).jqGrid('showAddEditButtons');
 							}
@@ -592,11 +597,6 @@ $.jgrid.extend({
 							} else {
 								cancelPrm = o.editParams;
 							}
-							var bfcr = $.isFunction( o.beforeCancelRow ) ?	o.beforeCancelRow.call($t,cancelPrm, sr) :  undefined;
-							if( bfcr === undefined ) {
-								bfcr = true;
-							}
-							if(!bfcr) { return; }
 							$($t).jqGrid('restoreRow', sr, cancelPrm);
 							$($t).jqGrid('showAddEditButtons');
 						} else {
