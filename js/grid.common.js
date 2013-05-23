@@ -349,8 +349,6 @@ $.extend($.jgrid,{
 
 					if ($t.p && $t.p.idPrefix) {
 						rowid = $.jgrid.stripPref($t.p.idPrefix, rowid);
-					} else {
-						postData = undefined; // don't use postData for searching from jqFilter. One can implement the feature in the future if required.
 					}
 					$.ajax($.extend({
 						url: options.dataUrl,
@@ -368,7 +366,7 @@ $.extend($.jgrid,{
 							}
 							if(a) {
 								$(elem).append(a);
-								setAttributes(elem, options);
+								setAttributes(elem, options, postData ? ['postData'] : undefined );
 								if(options.size === undefined) { options.size =  msl ? 3 : 1;}
 								if(msl) {
 									ovm = vl.split(",");
