@@ -1269,10 +1269,9 @@ $.fn.jqGrid = function( pin ) {
 				getId = function( trow, k) {return trow.getAttribute(idn.replace(/[\[\]]/g,"")) || k;};
 			}
 			ts.p.userData = {};
-			ts.p.page = $.jgrid.getXmlData( xml,xmlRd.page ) || ts.p.page || 0;
-			ts.p.lastpage = $.jgrid.getXmlData( xml,xmlRd.total );
-			if(ts.p.lastpage===undefined) { ts.p.lastpage=1; }
-			ts.p.records = $.jgrid.getXmlData( xml,xmlRd.records ) || 0;
+			ts.p.page = intNum($.jgrid.getXmlData(xml, xmlRd.page), ts.p.page);
+			ts.p.lastpage = intNum($.jgrid.getXmlData(xml, xmlRd.total), 1);
+			ts.p.records = intNum($.jgrid.getXmlData(xml, xmlRd.records));
 			if($.isFunction(xmlRd.userdata)) {
 				ts.p.userData = xmlRd.userdata.call(ts, xml) || {};
 			} else {
@@ -1424,15 +1423,14 @@ $.fn.jqGrid = function( pin ) {
 				dReader =  ts.p.jsonReader;
 				frd='json';
 			}
-			var self = $(ts), ir=0,v,i,j,f=[],cur,gi=ts.p.multiselect?1:0,si=ts.p.subGrid===true?1:0,addSubGridCell,ni=ts.p.rownumbers===true?1:0,arrayReader=orderedCols(gi+si+ni),objectReader=reader(frd),rowReader,len,drows,idn,rd={}, fpos, idr,rowData=[],cn=(ts.p.altRows === true) ? ts.p.altclass:"",cn1,lp;
-			ts.p.page = $.jgrid.getAccessor(data,dReader.page) || ts.p.page || 0;
-			lp = $.jgrid.getAccessor(data,dReader.total);
+			var self = $(ts), ir=0,v,i,j,f=[],cur,gi=ts.p.multiselect?1:0,si=ts.p.subGrid===true?1:0,addSubGridCell,ni=ts.p.rownumbers===true?1:0,arrayReader=orderedCols(gi+si+ni),objectReader=reader(frd),rowReader,len,drows,idn,rd={}, fpos, idr,rowData=[],cn=(ts.p.altRows === true) ? ts.p.altclass:"",cn1;
+			ts.p.page = intNum($.jgrid.getAccessor(data,dReader.page), ts.p.page);
+			ts.p.lastpage = intNum($.jgrid.getAccessor(data,dReader.total), 1);
+			ts.p.records = intNum($.jgrid.getAccessor(data,dReader.records));
+			ts.p.userData = $.jgrid.getAccessor(data,dReader.userdata) || {};
 			if(si) {
 				addSubGridCell = $.jgrid.getMethod("addSubGridCell");
 			}
-			ts.p.lastpage = lp === undefined ? 1 : lp;
-			ts.p.records = $.jgrid.getAccessor(data,dReader.records) || 0;
-			ts.p.userData = $.jgrid.getAccessor(data,dReader.userdata) || {};
 			if( ts.p.keyIndex===false ) {
 				idn = $.isFunction(dReader.id) ? dReader.id.call(ts, data) : dReader.id; 
 			} else {
@@ -1888,7 +1886,7 @@ $.fn.jqGrid = function( pin ) {
 			if(!ts.grid.hDiv.loading) {
 				var pvis = ts.p.scroll && npage === false,
 				prm = {}, dt, dstr, pN=ts.p.prmNames;
-				if(ts.p.page <=0) { ts.p.page = 1; }
+				if(ts.p.page <=0) { ts.p.page = Math.min(1,ts.p.lastpage); }
 				if(pN.search !== null) {prm[pN.search] = ts.p.search;} if(pN.nd !== null) {prm[pN.nd] = new Date().getTime();}
 				if(pN.rows !== null) {prm[pN.rows]= ts.p.rowNum;} if(pN.page !== null) {prm[pN.page]= ts.p.page;}
 				if(pN.sort !== null) {prm[pN.sort]= ts.p.sortname;} if(pN.order !== null) {prm[pN.order]= ts.p.sortorder;}
