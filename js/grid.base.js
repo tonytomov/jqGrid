@@ -1145,7 +1145,7 @@ $.fn.jqGrid = function( pin ) {
 					rcnt=1;
 				} else { rcnt = rcnt > 1 ? rcnt :1; }
 			} else { return; }
-			var self= $(ts), i,fpos,ir=0,v,gi=ts.p.multiselect===true?1:0,si=0,addSubGridCell,ni=ts.p.rownumbers===true?1:0,idn, getId,f=[],F,rd ={}, xmlr,rid, rowData=[], cn=(ts.p.altRows === true) ? " "+ts.p.altclass:"",cn1;
+			var self= $(ts), i,fpos,ir=0,v,gi=ts.p.multiselect===true?1:0,msi=ts.p.multiselectSide==="left"?0:-1,si=0,addSubGridCell,ni=ts.p.rownumbers===true?1:0,idn, getId,f=[],F,rd ={}, xmlr,rid, rowData=[], cn=(ts.p.altRows === true) ? " "+ts.p.altclass:"",cn1;
 			if(ts.p.subGrid===true) {
 				si = 1;
 				addSubGridCell = $.jgrid.getMethod("addSubGridCell");
@@ -1245,13 +1245,13 @@ $.fn.jqGrid = function( pin ) {
 							var cell = cells[this];
 							if (!cell) { return false; }
 							v = cell.textContent || cell.text;
-							rd[ts.p.colModel[k+gi+si+ni].name] = v;
+							rd[ts.p.colModel[k+gi+msi+si+ni].name] = v;
 							rowData.push( addCell(rid,v,k+gi+si+ni,j+rcnt,xmlr, rd) );
 						});
 					} else {
 						for(i = 0; i < f.length;i++) {
 							v = $.jgrid.getXmlData( xmlr, f[i]);
-							rd[ts.p.colModel[i+gi+si+ni].name] = v;
+							rd[ts.p.colModel[i+gi+msi+ni].name] = v;
 							rowData.push( addCell(rid, v, i+gi+si+ni, j+rcnt, xmlr, rd) );
 						}
 					}
@@ -1359,7 +1359,7 @@ $.fn.jqGrid = function( pin ) {
 				dReader =  ts.p.jsonReader;
 				frd='json';
 			}
-			var self = $(ts), ir=0,v,i,j,f=[],F,cur,gi=ts.p.multiselect?1:0,si=0,addSubGridCell,ni=ts.p.rownumbers===true?1:0,len,drows,idn,rd={}, fpos, idr,rowData=[],cn=(ts.p.altRows === true) ? " "+ts.p.altclass:"",cn1,lp;
+			var self = $(ts), ir=0,v,i,j,f=[],F,cur,gi=ts.p.multiselect?1:0,msi=ts.p.multiselectSide=="left"?0:-1,si=0,addSubGridCell,ni=ts.p.rownumbers===true?1:0,len,drows,idn,rd={}, fpos, idr,rowData=[],cn=(ts.p.altRows === true) ? " "+ts.p.altclass:"",cn1,lp;
 			ts.p.page = $.jgrid.getAccessor(data,dReader.page) || ts.p.page || 0;
 			lp = $.jgrid.getAccessor(data,dReader.total);
 			if(ts.p.subGrid===true) {
@@ -1456,11 +1456,11 @@ $.fn.jqGrid = function( pin ) {
 					}
 					for (j=0;j<F.length;j++) {
 						v = $.jgrid.getAccessor(cur,F[j]);
-						rd[ts.p.colModel[j+gi+si+ni].name] = v;
-						rowData.push( addCell(idr,v,j+gi+si+ni,i+rcnt,cur, rd) );
+						rd[ts.p.colModel[j+gi+msi+si+ni].name] = v;
+						rowData.push( addCell(idr,v,j+gi+msi+si+ni,i+rcnt,cur, rd) );
 					}
 					if( gi ){
-						rowData.push( addMulti(idr,ni,i,selr) );
+						rowData.push( addMulti(idr,ni+F.length,i,selr) );
 					}
 				}
 				rowData[iStartTrTag] = constructTr(idr, hiderow, cn1, rd, cur, selr);
