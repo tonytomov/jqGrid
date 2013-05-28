@@ -2577,7 +2577,7 @@ $.fn.jqGrid = function( pin ) {
 			if (t.length !== 1) { return; }
 			var ci;
 			if(ts.p.frozenColumns) {
-				var tid =  $(this)[0].id.substring(5);
+				var tid =  $(this)[0].id.substring( ts.p.id.length + 1 );
 				$(ts.p.colModel).each(function(i){
 					if (this.name === tid) {
 						ci = i;return false;
