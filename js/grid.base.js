@@ -2189,7 +2189,6 @@ $.fn.jqGrid = function( pin ) {
 		},
 		sortData = function (index, idxcol,reload,sor, obj){
 			if(!ts.p.colModel[idxcol].sortable) { return; }
-			var so;
 			if(ts.p.savedRow.length > 0) {return;}
 			if(!reload) {
 				if( ts.p.lastsort === idxcol ) {
@@ -2227,13 +2226,12 @@ $.fn.jqGrid = function( pin ) {
 				}
 				index = index.substring(5 + ts.p.id.length + 1); // bad to be changed!?!
 				ts.p.sortname = ts.p.colModel[idxcol].index || index;
-				so = ts.p.sortorder;
 			}
-			if ($(ts).triggerHandler("jqGridSortCol", [index, idxcol, so]) === 'stop') {
+			if ($(ts).triggerHandler("jqGridSortCol", [ts.p.sortname, idxcol, ts.p.sortorder]) === 'stop') {
 				ts.p.lastsort = idxcol;
 				return;
 			}
-			if($.isFunction(ts.p.onSortCol)) {if (ts.p.onSortCol.call(ts,index,idxcol,so)==='stop') {ts.p.lastsort = idxcol; return;}}
+			if($.isFunction(ts.p.onSortCol)) {if (ts.p.onSortCol.call(ts, ts.p.sortname, idxcol, ts.p.sortorder)==='stop') {ts.p.lastsort = idxcol; return;}}
 			if(ts.p.datatype === "local") {
 				if(ts.p.deselectAfterSort) {$(ts).jqGrid("resetSelection");}
 			} else {
