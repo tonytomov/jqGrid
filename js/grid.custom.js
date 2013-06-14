@@ -934,6 +934,9 @@ $.jgrid.extend({
 					}
 					btbl=null;
 				});
+				if(!$t.grid.hDiv.loading) {
+					$($t).triggerHandler("jqGridAfterGridComplete");
+				}
 				$t.p.frozenColumns = true;
 			}
 		});
