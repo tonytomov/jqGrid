@@ -2134,7 +2134,8 @@ $.fn.jqGrid = function( pin ) {
 				if(key === 13) {
 					if(!clearVals('user')) { return false; }
 					$(this).val( intNum( $(this).val(), 1));
-					ts.p.page = ($(this).val()>0) ? $(this).val():ts.p.page;
+					if ($(this).val()>0) { ts.p.page = $(this).val() };
+					if ($(this).val()>ts.p.lastpage) { ts.p.page = ts.p.lastpage };
 					populate();
 					return false;
 				}
