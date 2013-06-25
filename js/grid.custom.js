@@ -916,7 +916,7 @@ $.jgrid.extend({
 					$("#"+$.jgrid.jqID($t.p.id)+"_frozen").remove();
 					$($t.grid.fbDiv).height($($t.grid.bDiv).height()-16);
 					var btbl = $("#"+$.jgrid.jqID($t.p.id)).clone(true);
-					$("tr.jqgrow",btbl).each(function(){
+					$("tr[role=row]",btbl).each(function(){
 						$("td[role=gridcell]:gt("+maxfrozen+")",this).remove();
 					});
 
