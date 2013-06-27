@@ -964,7 +964,7 @@ $.jgrid.extend({
 					showFrm = true;
 				}
 				if(showFrm && onBeforeInit) {
-					showFrm = onBeforeInit.call($t,$("#"+frmgr,frmoper));
+					showFrm = onBeforeInit.call($t,$("#"+frmgr),frmoper);
 				}
 				if(showFrm === false) {return;}
 				restoreInline();
