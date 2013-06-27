@@ -6,6 +6,11 @@
  * 
  * Updated by Jonnas Fonini
  * http://fonini.net
+ *
+ *
+ * Updated by Fabio Ferreira da Silva fabio_ferreiradasilva@yahoo.com.br
+ * 
+ *
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
@@ -23,7 +28,7 @@ $.extend($.jgrid,{
 	    Find: "Procurar",
 	    Reset: "Resetar",
 	    odata: [{ oper:'eq', text:"igual"},{ oper:'ne', text:"diferente"},{ oper:'lt', text:"menor"},{ oper:'le', text:"menor ou igual"},{ oper:'gt', text:"maior"},{ oper:'ge', text:"maior ou igual"},{ oper:'bw', text:"inicia com"},{ oper:'bn', text:"não inicia com"},{ oper:'in', text:"está em"},{ oper:'ni', text:"não está em"},{ oper:'ew', text:"termina com"},{ oper:'en', text:"não termina com"},{ oper:'cn', text:"contém"},{ oper:'nc', text:"não contém"},{ oper:'nu', text:"nulo"},{ oper:'nn', text:"não nulo"}],
-	    groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	]
+	    groupOps: [	{ op: "AND", text: "todos" },	{ op: "OR",  text: "qualquer um" }	]
 	},
 	edit : {
 	    addCaption: "Incluir",
