@@ -13,7 +13,7 @@
 $.jgrid.inlineEdit = $.jgrid.inlineEdit || {};
 $.jgrid.extend({
 //Editing
-	editRow : function(rowid,keys,oneditfunc,successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
+	editRow : function(rowid,keys,oneditfunc,successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc, restoreAfterError, mtype) {
 		// Compatible mode old versions
 		var o={}, args = $.makeArray(arguments).slice(1);
 
@@ -29,8 +29,8 @@ $.jgrid.extend({
 			if ($.isFunction(errorfunc)) { o.errorfunc = errorfunc; }
 			if ($.isFunction(afterrestorefunc)) { o.afterrestorefunc = afterrestorefunc; }
 			// last two not as param, but as object (sorry)
-			//if (restoreAfterError !== undefined) { o.restoreAfterError = restoreAfterError; }
-			//if (mtype !== undefined) { o.mtype = mtype || "POST"; }			
+			if (restoreAfterError !== undefined) { o.restoreAfterError = restoreAfterError; }
+			if (mtype !== undefined) { o.mtype = mtype || "POST"; }			
 		}
 		o = $.extend(true, {
 			keys : false,
