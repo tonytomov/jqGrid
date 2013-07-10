@@ -3315,7 +3315,7 @@ $.jgrid.extend({
 					if($t.p.frozenColumns === true && this.frozen === true) {
 						return true;
 					}
-					$("tr",$t.grid.hDiv).each(function(){
+					$("tr[role=rowheader]",$t.grid.hDiv).each(function(){
 						$(this.cells[i]).css("display", show);
 					});
 					$($t.rows).each(function(){
