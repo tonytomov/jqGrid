@@ -496,7 +496,7 @@ $.jgrid.extend({
 						}
 						$("td:eq("+(cp-2)+")",trdata[0]).html(frmopt.label === undefined ? obj.p.colNames[i]: frmopt.label);
 						$("td:eq("+(cp-1)+")",trdata[0]).append(frmopt.elmprefix).append(elc).append(frmopt.elmsuffix);
-						if($.isFunction(opt.custom_value) && rowid !== "_empty" ) {
+						if(this.edittype==='custom' && $.isFunction(opt.custom_value) ) {
 							opt.custom_value.call($t, $("#"+nm,"#"+frmgr),'set',tmp);
 						}
 						$.jgrid.bindEv.call($t, elc, opt);
@@ -523,7 +523,9 @@ $.jgrid.extend({
 						fld = $("#"+$.jgrid.jqID(nm),"#"+fmid);
 						if(fld && fld.length && fld[0] !== null) {
 							vl = "";
-							if(opt.defaultValue ) {
+							if(this.edittype === 'custom' && $.isFunction(opt.custom_value)) {
+								opt.custom_value.call($t, $("#"+nm,"#"+fmid),'set',vl);
+							} else if(opt.defaultValue ) {
 								vl = $.isFunction(opt.defaultValue) ? opt.defaultValue.call($t) : opt.defaultValue;
 								if(fld[0].type==='checkbox') {
 									vlc = vl.toLowerCase();
