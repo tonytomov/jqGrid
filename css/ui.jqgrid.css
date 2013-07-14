@@ -1,6 +1,11 @@
+/*init*/
+.ui-jqgrid * {padding: 0;}
+.uijqgrid th, .ui-jqgrid td{
+    vertical-align: middle;
+}
 /*Grid*/
 .ui-jqgrid {position: relative;}
-.ui-jqgrid .ui-jqgrid-view {position: relative;left:0; top: 0; padding: 0; font-size:11px;}
+.ui-jqgrid > .ui-jqgrid-view {left:0; top: 0; padding: 0; font-size:11px;}
 /* caption*/
 .ui-jqgrid .ui-jqgrid-titlebar {padding: .3em .2em .2em .3em; position: relative; border-left: 0 none;border-right: 0 none; border-top: 0 none;}
 .ui-jqgrid .ui-jqgrid-title { float: left; margin: .1em 0 .2em; }
@@ -84,7 +89,7 @@ tr.ui-search-toolbar select {margin: 1px 0 0 0}
 * .jqgrid-overlay iframe {position:absolute;top:0;left:0;z-index:-1;width: expression(this.parentNode.offsetWidth+'px');height: expression(this.parentNode.offsetHeight+'px');}
 /* end loading div */
 /* toolbar */
-.ui-jqgrid .ui-userdata {border-left: 0 none;    border-right: 0 none;	height : 21px;overflow: hidden;	}
+.ui-jqgrid .ui-userdata {border-left: 0 none;    border-right: 0 none;    height : 21px;overflow: hidden;	}
 /*Modal Window */
 .ui-jqdialog { display: none; width: 300px; position: absolute; padding: .2em; font-size:11px; overflow:visible;}
 .ui-jqdialog .ui-jqdialog-titlebar { padding: .3em .2em; position: relative;  }
@@ -147,14 +152,16 @@ tr.ui-search-toolbar select {margin: 1px 0 0 0}
 
 /* Toolbar Search Menu */
 .ui-search-menu { position: absolute; padding: 2px 5px;}
-.ui-jqgrid .ui-search-table { padding: 0px 0px; border: 0px none; height:20px; width:100%;}
-.ui-jqgrid .ui-search-table .ui-search-oper { width:20px; }
-a.g-menu-item, a.soptclass, a.clearsearchclass { cursor: pointer; }
-.ui-jqgrid .ui-search-table .ui-search-input>input,
-.ui-jqgrid .ui-search-table .ui-search-input>select
-{
+.ui-jqgrid tr.ui-search-toolbar .ui-search-oper { width:20px; padding-right: 0.5em;}
+.ui-jqgrid tr.ui-search-toolbar li{
+    display:  table-cell;
+    vertical-align: bottom;
+}
+.ui-jqgrid tr.ui-search-toolbar input, .ui-jqgrid tr.ui-search-toolbar select{
+    width:100%;
     display: block;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
-} 
+}
+a.g-menu-item, a.soptclass, a.clearsearchclass { cursor: pointer; padding-right: 0.3em;padding-left: 0.3em;}
