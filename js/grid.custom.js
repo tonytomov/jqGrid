@@ -392,14 +392,13 @@ $.jgrid.extend({
 			var timeoutHnd;
 			$.each($t.p.colModel,function(ci){
 				var cm=this, soptions, surl, self, select = "", sot="=", so, i,
-				th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-"+$t.p.direction+"'></th>"),
-				thd = $("<div style='position:relative;height:100%;padding-right:0.3em;padding-left:0.3em;'></div>"),
-				stbl = $("<table class='ui-search-table' cellspacing='0'><tr><td class='ui-search-input'></td><td class='ui-search-clear'></td></tr></table>");
+				th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-"+$t.p.direction+"'></th>");
 				if(this.hidden===true) { $(th).css("display","none");}
 				this.search = this.search === false ? false : true;
-				if(this.stype === undefined) {this.stype='text';}
 				soptions = $.extend({},this.searchoptions || {});
 				if(this.search){
+					var stbl = $("<ul class='ui-search-box'><li class='ui-search-input'></li><li class='ui-search-clear'></li></ul>");
+					if(this.stype === undefined) {this.stype='text';}
 					if(p.searchOperators && cm.edittype !== 'checkbox') {
 						so  = (soptions.sopt) ? soptions.sopt[0] : cm.stype==='select' ?  'eq' : p.defaultSearch;
 						for(i = 0;i<p.odata.length;i++) {
@@ -408,16 +407,16 @@ $.jgrid.extend({
 								break;
 							}
 						}
-						var st = soptions.searchtitle != null ? soptions.searchtitle : p.operandTitle;
-						select = "<td class='ui-search-oper' colindex='"+ci+"'><a title='"+st+"' style='padding-right: 0.5em;' soper='"+so+"' class='soptclass' colname='"+this.name+"'>"+sot+"</a></td>";
-						$("tr:eq(0)",stbl).prepend(select);
+						var st = soptions.searchtitle !== null ? soptions.searchtitle : p.operandTitle;
+						select = "<li class='ui-search-oper' colindex='"+ci+"'><a title='"+st+"' soper='"+so+"' class='soptclass' colname='"+this.name+"'>"+sot+"</a></li>";
+						$(stbl).prepend(select);
 					}
-					
+			
 					if(soptions.clearSearch === undefined) {
 						soptions.clearSearch = true;
 					}
 					if(soptions.clearSearch && cm.stype !== 'select') {
-						$("td:eq(2)",stbl).append("<a title='Clear Search Value' style='padding-right: 0.3em;padding-left: 0.3em;' class='clearsearchclass'>x</a>");
+						$("li:eq(2)",stbl).append("<a title='Clear Search Value' class='clearsearchclass'>x</a>");
 					}
 					switch (this.stype)
 					{
@@ -426,7 +425,7 @@ $.jgrid.extend({
 						if(surl) {
 							// data returned should have already constructed html select
 							// primitive jQuery load
-							self = thd;
+							self = th;
 							$.ajax($.extend({
 								url: surl,
 								dataType: "html",
@@ -434,18 +433,18 @@ $.jgrid.extend({
 									if(soptions.buildSelect !== undefined) {
 										var d = soptions.buildSelect(res);
 										if (d) {
-											$("td:eq(1)",stbl).append(d);
+											$("li:eq(1)",stbl).append(d);
 											$(self).append(stbl);
 										}
 									} else {
-										$("td:eq(1)",stbl).append(res);
+										$("li:eq(1)",stbl).append(res);
 										$(self).append(stbl);
 									}
 									if(soptions.defaultValue !== undefined) { $("select",self).val(soptions.defaultValue); }
 									$("select",self).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
 									if(soptions.attr) {$("select",self).attr(soptions.attr);}
 									$("select",self).css({width: "100%"});
-									// preserve autoserch
+									// preserve autosearch
 									$.jgrid.bindEv.call($t, $("select",self)[0], soptions);
 									if(p.autosearch===true){
 										$("select",self).change(function(){
@@ -459,15 +458,15 @@ $.jgrid.extend({
 						} else {
 							var oSv, sep, delim;
 							if(cm.searchoptions) {
-								oSv = cm.searchoptions.value === undefined ? "" : cm.searchoptions.value;
+								oSv = cm.searchoptions.value === undefined ? false : cm.searchoptions.value;
 								sep = cm.searchoptions.separator === undefined ? ":" : cm.searchoptions.separator;
 								delim = cm.searchoptions.delimiter === undefined ? ";" : cm.searchoptions.delimiter;
 							} else if(cm.editoptions) {
-								oSv = cm.editoptions.value === undefined ? "" : cm.editoptions.value;
+								oSv = cm.editoptions.value === undefined ? false : cm.editoptions.value;
 								sep = cm.editoptions.separator === undefined ? ":" : cm.editoptions.separator;
 								delim = cm.editoptions.delimiter === undefined ? ";" : cm.editoptions.delimiter;
 							}
-							if (oSv) {	
+							if (oSv !== false) {	
 								var elem = document.createElement("select");
 								elem.style.width = "100%";
 								$(elem).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
@@ -492,8 +491,8 @@ $.jgrid.extend({
 								if(soptions.defaultValue !== undefined) { $(elem).val(soptions.defaultValue); }
 								if(soptions.attr) {$(elem).attr(soptions.attr);}
 								$.jgrid.bindEv.call($t, elem , soptions);
-								$("td:eq(1)",stbl).append( elem );
-								$(thd).append(stbl);
+								$("li:eq(1)",stbl).append( elem );
+								$(th).append(stbl);
 								if(p.autosearch===true){
 									$(elem).change(function(){
 										triggerToolbar();
@@ -506,14 +505,14 @@ $.jgrid.extend({
 					case "text":
 						var df = soptions.defaultValue !== undefined ? soptions.defaultValue: "";
 
-						$("td:eq(1)",stbl).append("<input type='text' style='width:100%;padding:0px;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"' value='"+df+"'/>");
-						$(thd).append(stbl);
+						$("li:eq(1)",stbl).append("<input type='text' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"' value='"+df+"'/>");
+						$(th).append(stbl);
 
-						if(soptions.attr) {$("input",thd).attr(soptions.attr);}
-						$.jgrid.bindEv.call($t, $("input",thd)[0], soptions);
+						if(soptions.attr) {$("input",th).attr(soptions.attr);}
+						$.jgrid.bindEv.call($t, $("input",th)[0], soptions);
 						if(p.autosearch===true){
 							if(p.searchOnEnter) {
-								$("input",thd).keypress(function(e){
+								$("input",th).keypress(function(e){
 									var key = e.charCode || e.keyCode || 0;
 									if(key === 13){
 										triggerToolbar();
@@ -522,7 +521,7 @@ $.jgrid.extend({
 									return this;
 								});
 							} else {
-								$("input",thd).keydown(function(e){
+								$("input",th).keydown(function(e){
 									var key = e.which;
 									switch (key) {
 										case 13:
@@ -544,14 +543,14 @@ $.jgrid.extend({
 						}
 						break;
 					case "custom":
-						$("td:eq(1)",stbl).append("<span style='width:95%;padding:0px;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"'/>");
-						$(thd).append(stbl);
+						$("li:eq(1)",stbl).append("<span style='width:95%;padding:0px;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"'/>");
+						$(th).append(stbl);
 						try {
 							if($.isFunction(soptions.custom_element)) {
 								var celm = soptions.custom_element.call($t,soptions.defaultValue !== undefined ? soptions.defaultValue: "",soptions);
 								if(celm) {
 									celm = $(celm).addClass("customelement");
-									$(thd).find(">span").append(celm);
+									$(th).find(">span").append(celm);
 								} else {
 									throw "e2";
 								}
@@ -566,10 +565,10 @@ $.jgrid.extend({
 						break;
 					}
 				}
-				$(th).append(thd);
+				$(th).append(th);
 				$(tr).append(th);
 				if(!p.searchOperators) {
-					$("td:eq(0)",stbl).hide();
+					$("li:eq(0)",stbl).hide();
 				}
 			});
 			$("table thead",$t.grid.hDiv).append(tr);
