@@ -472,7 +472,7 @@ $.jgrid.extend({
 								$(elem).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
 								var sv, ov, key, k;
 								if(typeof oSv === "string") {
-									if(oSv.charAt( oSv.length-1 ) == ";"){
+									if(oSv.charAt( oSv.length-1 ) == delim){
 									    oSv = oSv.substr(0, oSv.length-1);
 									}
 									so = oSv.split(delim);
