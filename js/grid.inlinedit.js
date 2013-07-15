@@ -384,6 +384,11 @@ $.jgrid.extend({
 		// End compatible
 
 		return this.each(function(){
+			if ($(this).jqGrid('getGridParam', 'inlineEditOnlyOne') === true) {
+				$(this).find("div.ui-inline-edit,div.ui-inline-del").show();
+				$(this).find("div.ui-inline-save,div.ui-inline-cancel").hide();
+			}
+			
 			var $t= this, fr, ind, ares={}, k;
 			if (!$t.grid ) { return; }
 			ind = $($t).jqGrid("getInd",rowid,true);
