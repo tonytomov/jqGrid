@@ -472,6 +472,9 @@ $.jgrid.extend({
 								$(elem).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
 								var sv, ov, key, k;
 								if(typeof oSv === "string") {
+									if(oSv.charAt( oSv.length-1 ) == ";"){
+									    oSv = oSv.substr(0, oSv.length-1);
+									}
 									so = oSv.split(delim);
 									for(k=0; k<so.length;k++){
 										sv = so[k].split(sep);
