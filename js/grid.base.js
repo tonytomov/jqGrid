@@ -2526,6 +2526,7 @@ $.fn.jqGrid = function( pin ) {
 				res = "";
 			}
 			$(this).css("width",w+"px").prepend(res);
+			res = null;
 			var hdcol = "";
 			if( ts.p.colModel[j].hidden ) {
 				$(this).css("display","none");
