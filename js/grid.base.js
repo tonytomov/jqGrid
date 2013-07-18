@@ -2037,10 +2037,10 @@ $.fn.jqGrid = function( pin ) {
 			clearVals = function(onpaging){
 				var ret;
 				if ($.isFunction(ts.p.onPaging) ) { ret = ts.p.onPaging.call(ts,onpaging); }
+				if(ret==='stop') {return false;}
 				ts.p.selrow = null;
 				if(ts.p.multiselect) {ts.p.selarrrow =[]; setHeadCheckBox( false );}
 				ts.p.savedRow = [];
-				if(ret==='stop') {return false;}
 				return true;
 			};
 			pgid = pgid.substr(1);
