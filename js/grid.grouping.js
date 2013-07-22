@@ -63,8 +63,12 @@ $.jgrid.extend({
 					}
 					grp.summary =[];
 					for(j=0, cml = cm.length; j < cml; j++) {
-						if(cm[j].summaryType) {
-							grp.summary.push({nm:cm[j].name,st:cm[j].summaryType, v: '', sr: cm[j].summaryRound, srt: cm[j].summaryRoundType || 'round'});
+						if(cm[j].summaryType ) {
+							if(cm[j].summaryDivider) {
+								grp.summary.push({nm:cm[j].name,st:cm[j].summaryType, v: '', sd:cm[j].summaryDivider, vd:'', sr: cm[j].summaryRound, srt: cm[j].summaryRoundType || 'round'});
+							} else {
+								grp.summary.push({nm:cm[j].name,st:cm[j].summaryType, v: '', sr: cm[j].summaryRound, srt: cm[j].summaryRoundType || 'round'});
+							}
 						}
 					}
 				}
@@ -102,6 +106,9 @@ $.jgrid.extend({
 								this.v = this.st.call($t, this.v, this.nm, record);
 							} else {
 								this.v = $($t).jqGrid('groupingCalculations.handler',this.st, this.v, this.nm, this.sr, this.srt, record);
+								if(this.st.toLowerCase() === 'avg' && this.sd) {
+									this.vd = $($t).jqGrid('groupingCalculations.handler',this.st, this.vd, this.sd, this.sr, this.srt, record);
+								}
 							}
 						});
 						grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
@@ -117,6 +124,9 @@ $.jgrid.extend({
 									this.v = this.st.call($t, this.v, this.nm, record);
 								} else {
 									this.v = $($t).jqGrid('groupingCalculations.handler',this.st, this.v, this.nm, this.sr, this.srt, record);
+									if(this.st.toLowerCase() === 'avg' && this.sd) {
+										this.vd = $($t).jqGrid('groupingCalculations.handler',this.st, this.vd, this.sd, this.sr, this.srt, record);
+									}
 								}
 							});
 							grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
@@ -131,6 +141,9 @@ $.jgrid.extend({
 										this.v = this.st.call($t, this.v, this.nm, record);
 									} else {
 										this.v = $($t).jqGrid('groupingCalculations.handler',this.st, this.v, this.nm, this.sr, this.srt, record);
+										if(this.st.toLowerCase() === 'avg' && this.sd) {
+											this.vd = $($t).jqGrid('groupingCalculations.handler',this.st, this.vd, this.sd, this.sr, this.srt, record);
+										}
 									}
 								});
 								grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
@@ -142,6 +155,9 @@ $.jgrid.extend({
 										this.v = this.st.call($t, this.v, this.nm, record);
 									} else {
 										this.v = $($t).jqGrid('groupingCalculations.handler',this.st, this.v, this.nm, this.sr, this.srt, record);
+										if(this.st.toLowerCase() === 'avg' && this.sd) {
+											this.vd = $($t).jqGrid('groupingCalculations.handler',this.st, this.vd, this.sd, this.sr, this.srt, record);
+										}
 									}
 								});
 								grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
@@ -311,7 +327,9 @@ $.jgrid.extend({
 										tplfld = cm[k].summaryTpl;
 									}
 									if(typeof this.st === 'string' && this.st.toLowerCase() === 'avg') {
-										if(this.v && grlen > 0) {
+										if(this.sd && this.vd) { 
+											this.v = (this.v/this.vd);
+										} else if(this.v && grlen > 0) {
 											this.v = (this.v/grlen);
 										}
 									}
