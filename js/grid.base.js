@@ -2159,7 +2159,7 @@ $.fn.jqGrid = function( pin ) {
 					cm[iCol].lso="";
 				}
 			} else {
-				cm[iCol].lso = so = cm.firstsortorder || 'asc';
+				cm[iCol].lso = so = cm[iCol].firstsortorder || 'asc';
 			}
 			if( so ) {
 				$("span.s-ico",selTh).show();
