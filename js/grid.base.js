@@ -2526,6 +2526,7 @@ $.fn.jqGrid = function( pin ) {
 				res = "";
 			}
 			$(this).css("width",w+"px").prepend(res);
+			res = null;
 			var hdcol = "";
 			if( ts.p.colModel[j].hidden ) {
 				$(this).css("display","none");
@@ -2849,7 +2850,7 @@ $.fn.jqGrid = function( pin ) {
 			if(grid.resizing){grid.dragMove(e);return false;}
 		});
 		$(".ui-jqgrid-labels",grid.hDiv).bind("selectstart", function () { return false; });
-		$(document).mouseup(function () {
+		$(document).bind( "mouseup.jqGrid" + ts.p.id, (function () {
 			if(grid.resizing) {	grid.dragEnd(); return false;}
 			return true;
 		});
