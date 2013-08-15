@@ -3100,7 +3100,12 @@ $.jgrid.extend({
 		this.each(function(){
 			if(!this.grid) {return false;}
 			var t = this, vl, ind, cp = typeof cssp, lcdata={};
+			try{
 			ind = t.rows.namedItem(rowid);
+			}
+			catch(err){
+				return false;
+			}
 			if(!ind) { return false; }
 			if( data ) {
 				try {
