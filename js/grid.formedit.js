@@ -1994,9 +1994,9 @@ $.jgrid.extend({
 		return this.each(function() {
 			if( !this.grid)  {return;}
 			if( typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+$.jgrid.jqID(elem);}
-			var findnav = $(".navtable",elem)[0], $t = this;
-			if (findnav) {
-				if( p.id && $("#"+$.jgrid.jqID(p.id), findnav)[0] !== undefined )  {return;}
+				var $t = this;
+			$(".navtable").each(function() {
+				if( p.id && $("#"+$.jgrid.jqID(p.id), this)[0] !== undefined )  {return;}
 				var tbd = $("<td></td>");
 				if(p.buttonicon.toString().toUpperCase() === "NONE") {
                     $(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'>"+p.caption+"</div>");
@@ -2005,15 +2005,15 @@ $.jgrid.extend({
 				}
 				if(p.id) {$(tbd).attr("id",p.id);}
 				if(p.position==='first'){
-					if(findnav.rows[0].cells.length ===0 ) {
-						$("tr",findnav).append(tbd);
+					if(this.rows[0].cells.length ===0 ) {
+						$("tr",this).append(tbd);
 					} else {
-						$("tr td:eq(0)",findnav).before(tbd);
+						$("tr td:eq(0)",this).before(tbd);
 					}
 				} else {
-					$("tr",findnav).append(tbd);
+					$("tr",this).append(tbd);
 				}
-				$(tbd,findnav)
+				$(tbd,this)
 				.attr("title",p.title  || "")
 				.click(function(e){
 					if (!$(this).hasClass('ui-state-disabled')) {
@@ -2029,7 +2029,7 @@ $.jgrid.extend({
 					},
 					function () {$(this).removeClass("ui-state-hover");}
 				);
-			}
+			});
 		});
 	},
 	navSeparatorAdd:function (elem,p) {
@@ -2041,19 +2041,18 @@ $.jgrid.extend({
 		return this.each(function() {
 			if( !this.grid)  {return;}
 			if( typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+$.jgrid.jqID(elem);}
-			var findnav = $(".navtable",elem)[0];
-			if(findnav) {
+			$(".navtable").each(function() {
 				var sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='"+p.sepclass+"'></span>"+p.sepcontent+"</td>";
 				if (p.position === 'first') {
-					if (findnav.rows[0].cells.length === 0) {
-						$("tr", findnav).append(sep);
+					if (this.rows[0].cells.length === 0) {
+						$("tr", this).append(sep);
 					} else {
-						$("tr td:eq(0)", findnav).before(sep);
+						$("tr td:eq(0)", this).before(sep);
 					}
 				} else {
-					$("tr", findnav).append(sep);
+					$("tr", this).append(sep);
 				}
-			}
+			});
 		});
 	},
 	GridToForm : function( rowid, formid ) {
