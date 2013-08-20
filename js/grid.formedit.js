@@ -1994,7 +1994,7 @@ $.jgrid.extend({
 		return this.each(function() {
 			if( !this.grid)  {return;}
 			if( typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+$.jgrid.jqID(elem);}
-				var $t = this;
+			var $t = this;
 			$(".navtable").each(function() {
 				if( p.id && $("#"+$.jgrid.jqID(p.id), this)[0] !== undefined )  {return;}
 				var tbd = $("<td></td>");
