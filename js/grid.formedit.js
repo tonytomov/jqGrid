@@ -1993,9 +1993,9 @@ $.jgrid.extend({
 		}, p ||{});
 		return this.each(function() {
 			if( !this.grid)  {return;}
-			if( typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+$.jgrid.jqID(elem);}
+			if( typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#gbox_"+$.jgrid.jqID(elem);}
 			var $t = this;
-			$(".navtable").each(function() {
+			$(".navtable", elem).each(function() {
 				if( p.id && $("#"+$.jgrid.jqID(p.id), this)[0] !== undefined )  {return;}
 				var tbd = $("<td></td>");
 				if(p.buttonicon.toString().toUpperCase() === "NONE") {
@@ -2040,8 +2040,8 @@ $.jgrid.extend({
 		}, p ||{});
 		return this.each(function() {
 			if( !this.grid)  {return;}
-			if( typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+$.jgrid.jqID(elem);}
-			$(".navtable").each(function() {
+			if( typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#gbox_"+$.jgrid.jqID(elem);}
+			$(".navtable", elem).each(function() {
 				var sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='"+p.sepclass+"'></span>"+p.sepcontent+"</td>";
 				if (p.position === 'first') {
 					if (this.rows[0].cells.length === 0) {
