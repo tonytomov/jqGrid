@@ -9011,7 +9011,7 @@ $.jgrid.extend({
 					.click(function(){
 						if (!$(this).hasClass('ui-state-disabled')) {
 							if($.isFunction(o.beforeRefresh)) {o.beforeRefresh.call($t);}
-							if(o.keepFiltersOnRefresh) {
+							if(!$t.p.keepFiltersOnRefresh) {
 								$t.p.search = false;
 								try {
 									var gID = $t.p.id;
