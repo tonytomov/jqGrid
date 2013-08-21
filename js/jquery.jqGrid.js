@@ -1885,7 +1885,13 @@ $.fn.jqGrid = function( pin ) {
 			}
 		},
 		populate = function (npage) {
-			if(!ts.grid.hDiv.loading) {
+			if(ts.grid.hDiv.loading) {
+				clearTimeout(ts.grid.hDiv.populateTimeout);
+				setTimeout(
+					function() { populate(npage); },
+					200
+				);
+			} else {
 				var pvis = ts.p.scroll && npage === false,
 				prm = {}, dt, dstr, pN=ts.p.prmNames;
 				if(ts.p.page <=0) { ts.p.page = 1; }
