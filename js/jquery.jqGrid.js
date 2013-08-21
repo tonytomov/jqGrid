@@ -7113,6 +7113,7 @@ $.jgrid.extend({
 			dataheight: 'auto',
 			showQuery: false,
 			errorcheck : true,
+			keepFiltersOnRefresh : false,
 			sopt: null,
 			stringResult: undefined,
 			onClose : null,
@@ -9010,15 +9011,17 @@ $.jgrid.extend({
 					.click(function(){
 						if (!$(this).hasClass('ui-state-disabled')) {
 							if($.isFunction(o.beforeRefresh)) {o.beforeRefresh.call($t);}
-							$t.p.search = false;
-							try {
-								var gID = $t.p.id;
-								$t.p.postData.filters ="";
+							if(o.keepFiltersOnRefresh) {
+								$t.p.search = false;
 								try {
-								$("#fbox_"+$.jgrid.jqID(gID)).jqFilter('resetFilter');
-								} catch(ef) {}
-								if($.isFunction($t.clearToolbar)) {$t.clearToolbar.call($t,false);}
-							} catch (e) {}
+									var gID = $t.p.id;
+									$t.p.postData.filters ="";
+									try {
+									$("#fbox_"+$.jgrid.jqID(gID)).jqFilter('resetFilter');
+									} catch(ef) {}
+									if($.isFunction($t.clearToolbar)) {$t.clearToolbar.call($t,false);}
+								} catch (e) {}
+							}
 							switch (o.refreshstate) {
 								case 'firstpage':
 									$($t).trigger("reloadGrid", [{page:1}]);
