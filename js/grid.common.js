@@ -267,7 +267,7 @@ $.extend($.jgrid,{
 	bindEv: function  (el, opt) {
 		var $t = this;
 		if($.isFunction(opt.dataInit)) {
-			opt.dataInit.call($t,el);
+			opt.dataInit.call($t,el,opt);
 		}
 		if(opt.dataEvents) {
 			$.each(opt.dataEvents, function() {
