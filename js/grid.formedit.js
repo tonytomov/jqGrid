@@ -291,6 +291,9 @@ $.jgrid.extend({
 						p.onReset.call($t);
 					}
 					$($t).trigger("reloadGrid",[{page:1}]);
+					if (p.closeAfterReset) {
+						$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID($t.p.id),jqm:p.jqModal,onClose: p.onClose});
+					}
 					return false;
 				});
 				showFilter($("#"+fid));
