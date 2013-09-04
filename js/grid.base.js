@@ -1656,7 +1656,7 @@ $.fn.jqGrid = function( pin ) {
 				}
 			});
 			if(ts.p.treeGrid) {
-				$(ts).jqGrid("SortTree", st, ts.p.sortorder, cmtypes[st].stype, cmtypes[st].srcfmt);
+				$(ts).jqGrid("SortTree", st, ts.p.sortorder, cmtypes[st].stype || 'text', cmtypes[st].srcfmt || '');
 				return;
 			}
 			var compareFnMap = {
@@ -1930,7 +1930,7 @@ $.fn.jqGrid = function( pin ) {
 				var rcnt = !ts.p.scroll ? 1 : ts.rows.length-1;
 				var bfr = $(ts).triggerHandler("jqGridBeforeRequest");
 				if (bfr === false || bfr === 'stop') { return; }
-				if ($.isFunction(ts.p.datatype)) { ts.p.datatype.call(ts,ts.p.postData,"load_"+ts.p.id); return;}
+				if ($.isFunction(ts.p.datatype)) { ts.p.datatype.call(ts,ts.p.postData,"load_"+ts.p.id, rcnt, npage, adjust); return;}
 				if ($.isFunction(ts.p.beforeRequest)) {
 					bfr = ts.p.beforeRequest.call(ts);
 					if(bfr === undefined) { bfr = true; }
@@ -2760,7 +2760,7 @@ $.fn.jqGrid = function( pin ) {
 		}
 		if(hg) {$(grid.bDiv).hide();}
 		grid.cDiv = document.createElement("div");
-		var arf = ts.p.hidegrid===true ? $("<a role='link' href='javascript:void(0)'/>").addClass('ui-jqgrid-titlebar-close HeaderButton').hover(
+		var arf = ts.p.hidegrid===true ? $("<a role='link' class='ui-jqgrid-titlebar-close HeaderButton' />").hover(
 			function(){ arf.addClass('ui-state-hover');},
 			function() {arf.removeClass('ui-state-hover');})
 		.append("<span class='ui-icon ui-icon-circle-triangle-n'></span>").css((dir==="rtl"?"left":"right"),"0px") : "";

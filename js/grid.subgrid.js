@@ -40,7 +40,7 @@ addSubGridCell :function (pos,iRow) {
 		sid= this.p.id;
 		ic = this.p.subGridOptions.plusicon;
 	});
-	return "<td role=\"gridcell\" aria-describedby=\""+sid+"_subgrid\" class=\"ui-sgcollapsed sgcollapsed\" "+prp+"><a href='javascript:void(0);'><span class='ui-icon "+ic+"'></span></a></td>";
+	return "<td role=\"gridcell\" aria-describedby=\""+sid+"_subgrid\" class=\"ui-sgcollapsed sgcollapsed\" "+prp+"><a style='cursor:pointer;'><span class='ui-icon "+ic+"'></span></a></td>";
 },
 addSubGrid : function( pos, sind ) {
 	return this.each(function(){
@@ -213,7 +213,7 @@ addSubGrid : function( pos, sind ) {
 						} else {
 							$(r).show();
 						}
-						$(this).html("<a href='javascript:void(0);'><span class='ui-icon "+ts.p.subGridOptions.minusicon+"'></span></a>").removeClass("sgcollapsed").addClass("sgexpanded");
+						$(this).html("<a style='cursor:pointer;'><span class='ui-icon "+ts.p.subGridOptions.minusicon+"'></span></a>").removeClass("sgcollapsed").addClass("sgexpanded");
 						if(ts.p.subGridOptions.selectOnExpand) {
 							$(ts).jqGrid('setSelection',_id);
 						}
@@ -230,7 +230,7 @@ addSubGrid : function( pos, sind ) {
 						} else if($(r).hasClass('ui-subgrid')) { // incase of dynamic deleting
 							$(r).hide();
 						}
-						$(this).html("<a href='javascript:void(0);'><span class='ui-icon "+ts.p.subGridOptions.plusicon+"'></span></a>").removeClass("sgexpanded").addClass("sgcollapsed");
+						$(this).html("<a style='cursor:pointer;'><span class='ui-icon "+ts.p.subGridOptions.plusicon+"'></span></a>").removeClass("sgexpanded").addClass("sgcollapsed");
 					}
 					return false;
 				});

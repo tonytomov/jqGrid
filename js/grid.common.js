@@ -57,7 +57,7 @@ $.extend($.jgrid,{
 		mh.className = "ui-jqdialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix";
 		mh.id = aIDs.modalhead;
 		$(mh).append("<span class='ui-jqdialog-title'>"+p.caption+"</span>");
-		var ahr= $("<a href='javascript:void(0)' class='ui-jqdialog-titlebar-close ui-corner-all'></a>")
+		var ahr= $("<a class='ui-jqdialog-titlebar-close ui-corner-all'></a>")
 		.hover(function(){ahr.addClass('ui-state-hover');},
 			function(){ahr.removeClass('ui-state-hover');})
 		.append("<span class='ui-icon ui-icon-closethick'></span>");
@@ -208,14 +208,14 @@ $.extend($.jgrid,{
 		if(mopt.buttons.length > 0) {
 			for(i=0;i<mopt.buttons.length;i++) {
 				if(mopt.buttons[i].id === undefined) { mopt.buttons[i].id = "info_button_"+i; }
-				buttstr += "<a href='javascript:void(0)' id='"+mopt.buttons[i].id+"' class='fm-button ui-state-default ui-corner-all'>"+mopt.buttons[i].text+"</a>";
+				buttstr += "<a id='"+mopt.buttons[i].id+"' class='fm-button ui-state-default ui-corner-all'>"+mopt.buttons[i].text+"</a>";
 			}
 		}
 		var dh = isNaN(mopt.dataheight) ? mopt.dataheight : mopt.dataheight+"px",
 		cn = "text-align:"+mopt.align+";";
 		var cnt = "<div id='info_id'>";
 		cnt += "<div id='infocnt' style='margin:0px;padding-bottom:1em;width:100%;overflow:auto;position:relative;height:"+dh+";"+cn+"'>"+content+"</div>";
-		cnt += c_b ? "<div class='ui-widget-content ui-helper-clearfix' style='text-align:"+mopt.buttonalign+";padding-bottom:0.8em;padding-top:0.5em;background-image: none;border-width: 1px 0 0 0;'><a href='javascript:void(0)' id='closedialog' class='fm-button ui-state-default ui-corner-all'>"+c_b+"</a>"+buttstr+"</div>" :
+		cnt += c_b ? "<div class='ui-widget-content ui-helper-clearfix' style='text-align:"+mopt.buttonalign+";padding-bottom:0.8em;padding-top:0.5em;background-image: none;border-width: 1px 0 0 0;'><a id='closedialog' class='fm-button ui-state-default ui-corner-all'>"+c_b+"</a>"+buttstr+"</div>" :
 			buttstr !== ""  ? "<div class='ui-widget-content ui-helper-clearfix' style='text-align:"+mopt.buttonalign+";padding-bottom:0.8em;padding-top:0.5em;background-image: none;border-width: 1px 0 0 0;'>"+buttstr+"</div>" : "";
 		cnt += "</div>";
 

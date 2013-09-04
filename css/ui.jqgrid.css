@@ -4,7 +4,8 @@
 /* caption*/
 .ui-jqgrid .ui-jqgrid-titlebar {padding: .3em .2em .2em .3em; position: relative; border-left: 0 none;border-right: 0 none; border-top: 0 none;}
 .ui-jqgrid .ui-jqgrid-title { float: left; margin: .1em 0 .2em; }
-.ui-jqgrid .ui-jqgrid-titlebar-close { position: absolute;top: 50%; width: 19px; margin: -10px 0 0 0; padding: 1px; height:18px;}.ui-jqgrid .ui-jqgrid-titlebar-close span { display: block; margin: 1px; }
+.ui-jqgrid .ui-jqgrid-titlebar-close { position: absolute;top: 50%; width: 19px; margin: -10px 0 0 0; padding: 1px; height:18px; cursor:pointer;}
+.ui-jqgrid .ui-jqgrid-titlebar-close span { display: block; margin: 1px; }
 .ui-jqgrid .ui-jqgrid-titlebar-close:hover { padding: 0; }
 /* header*/
 .ui-jqgrid .ui-jqgrid-hdiv {position: relative; margin: 0;padding: 0; overflow-x: hidden; border-left: 0 none !important; border-top : 0 none !important; border-right : 0 none !important;}
@@ -89,7 +90,7 @@ tr.ui-search-toolbar select {margin: 1px 0 0 0}
 .ui-jqdialog { display: none; width: 300px; position: absolute; padding: .2em; font-size:11px; overflow:visible;}
 .ui-jqdialog .ui-jqdialog-titlebar { padding: .3em .2em; position: relative;  }
 .ui-jqdialog .ui-jqdialog-title { margin: .1em 0 .2em; } 
-.ui-jqdialog .ui-jqdialog-titlebar-close { position: absolute;  top: 50%; width: 19px; margin: -10px 0 0 0; padding: 1px; height: 18px; }
+.ui-jqdialog .ui-jqdialog-titlebar-close { position: absolute;  top: 50%; width: 19px; margin: -10px 0 0 0; padding: 1px; height: 18px; cursor:pointer;}
 
 .ui-jqdialog .ui-jqdialog-titlebar-close span { display: block; margin: 1px; }
 .ui-jqdialog .ui-jqdialog-titlebar-close:hover, .ui-jqdialog .ui-jqdialog-titlebar-close:focus { padding: 0; }
