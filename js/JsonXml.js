@@ -249,19 +249,12 @@ var xmlJsonClass = {
 			json += (name ? ":{" : "{") + (arr.length > 1 ? (newline + ind + tab + arr.join(","+newline + ind + tab) + newline + ind) : arr.join("")) + "}";
 		}
 		else if (typeof(o) === "string") {
-			/*
-			var objRegExp  = /(^-?\d+\.?\d*$)/;
-			var FuncTest = /function/i;
-			var os = o.toString();
-			if (objRegExp.test(os) || FuncTest.test(os) || os==="false" || os==="true") {
-				// int or float
-				json += (name && ":")  + "\"" +os + "\"";
-			} 
-			else {
-			*/
+			if ( o === 'true' || o === 'false' ) {
+				json += (name && ":") + o.replace(/\\/g,'\\\\').replace(/\"/g,'\\"');
+			} else {
 				json += (name && ":") + "\"" + o.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"";
-			//}
-			}
+ 			}
+		}
 		else {
 			json += (name && ":") +  o.toString();
 		}
