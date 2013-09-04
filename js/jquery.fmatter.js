@@ -132,7 +132,7 @@
 		if(op.disabled===true) {ds = "disabled=\"disabled\"";} else {ds="";}
 		if($.fmatter.isEmpty(cval) || cval === undefined ) {cval = $.fn.fmatter.defaultFormat(cval,op);}
 		cval=String(cval);
-		cval=cval.toLowerCase();
+		cval=(cval+"").toLowerCase();
 		var bchk = cval.search(/(false|f|0|no|n|off|undefined)/i)<0 ? " checked='checked' " : "";
 		return "<input type=\"checkbox\" " + bchk  + " value=\""+ cval+"\" offval=\"no\" "+ds+ "/>";
 	};
