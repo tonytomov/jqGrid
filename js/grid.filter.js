@@ -345,6 +345,7 @@ $.fn.jqFilter = function( arg ) {
 				rule.field = $(ruleFieldSelect).val();
 
 				trpar = $(this).parents("tr:first");
+				$(".data", trpar).empty();
 				for (i=0;i<that.p.columns.length;i++) {
 					if(that.p.columns[i].name ===  rule.field) {
 						cm = that.p.columns[i];
