@@ -1854,18 +1854,33 @@ $.fn.jqGrid = function( pin ) {
 			$(ts).triggerHandler("jqGridAfterGridComplete");
 		},
 		beginReq = function() {
+			var loadDiv = $("#load_"+$.jgrid.jqID(ts.p.id)),
+				offsetParent,
+				top,
+				scrollTop = $(window).scrollTop();
 			ts.grid.hDiv.loading = true;
 			if(ts.p.hiddengrid) { return;}
 			switch(ts.p.loadui) {
 				case "disable":
 					break;
 				case "enable":
-					$("#load_"+$.jgrid.jqID(ts.p.id)).show();
+					loadDiv.show();
 					break;
 				case "block":
 					$("#lui_"+$.jgrid.jqID(ts.p.id)).show();
-					$("#load_"+$.jgrid.jqID(ts.p.id)).show();
+					loadDiv.show();
 					break;
+			}
+			if (loadDiv.is(':visible')) {
+				offsetParent = loadDiv.offsetParent();
+				loadDiv.css('top', '');
+				if (loadDiv.offset().top < scrollTop) {
+					top = Math.min(
+						10 + scrollTop - offsetParent.offset().top,
+						offsetParent.height() - loadDiv.height()
+					);
+					loadDiv.css('top', top + 'px');
+				}
 			}
 		},
 		endReq = function() {
