@@ -426,6 +426,7 @@ $.jgrid.extend({
 							// data returned should have already constructed html select
 							// primitive jQuery load
 							self = thd;
+							$(self).append(stbl);
 							$.ajax($.extend({
 								url: surl,
 								dataType: "html",
@@ -434,11 +435,9 @@ $.jgrid.extend({
 										var d = soptions.buildSelect(res);
 										if (d) {
 											$("td:eq(1)",stbl).append(d);
-											$(self).append(stbl);
 										}
 									} else {
 										$("td:eq(1)",stbl).append(res);
-										$(self).append(stbl);
 									}
 									if(soptions.defaultValue !== undefined) { $("select",self).val(soptions.defaultValue); }
 									$("select",self).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
@@ -490,9 +489,9 @@ $.jgrid.extend({
 								}
 								if(soptions.defaultValue !== undefined) { $(elem).val(soptions.defaultValue); }
 								if(soptions.attr) {$(elem).attr(soptions.attr);}
+								$(thd).append(stbl);
 								$.jgrid.bindEv.call($t, elem , soptions);
 								$("td:eq(1)",stbl).append( elem );
-								$(thd).append(stbl);
 								if(p.autosearch===true){
 									$(elem).change(function(){
 										triggerToolbar();
