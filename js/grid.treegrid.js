@@ -394,10 +394,11 @@ $.jgrid.extend({
 		this.each(function(){
 			var $t = this;
 			if(!$t.grid || !$t.p.treeGrid) {return;}
-			var isLeaf = $t.p.treeReader.leaf_field;
+			var isLeaf = $t.p.treeReader.leaf_field,
+			loaded = $t.p.treeReader.loaded;
 			if(rc !== undefined ) {
-				if(rc.loaded !== undefined) {
-					result = rc.loaded;
+				if(rc[loaded] !== undefined) {
+					result = rc[loaded];
 				} else if( rc[isLeaf] || $($t).jqGrid("getNodeChildren",rc).length > 0){
 					result = true;
 				} else {
