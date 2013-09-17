@@ -18,6 +18,7 @@
  * beforeEditCell,
  * onSelectCell (used only for noneditable cels)
  * afterEditCell,
+ * beforeConfirmCell, (called before hiding input,select,check elements)
  * beforeSaveCell, (called before validation of values if any)
  * beforeSubmitCell (if cellsubmit remote (ajax))
  * afterSubmitCell(if cellsubmit remote (ajax)),
@@ -132,6 +133,11 @@ $.jgrid.extend({
 	saveCell : function (iRow, iCol){
 		return this.each(function(){
 			var $t= this, fr;
+			var bcc = $($t).triggerHandler("jqGridBeforeConfirmCell", [$t.rows[iRow].id, nm, v, iRow, iCol]) || {};
+			if ($.isFunction($t.p.beforeConfirmCell)) {
+				bcc = $t.p.beforeConfirmCell.call($t, $t.rows[iRow].id,nm, v, iRow,iCol);
+				if (!bcc) {bcc={};}
+			}
 			if (!$t.grid || $t.p.cellEdit !== true) {return;}
 			if ( $t.p.savedRow.length >= 1) {fr = 0;} else {fr=null;} 
 			if(fr !== null) {
