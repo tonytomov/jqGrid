@@ -42,6 +42,16 @@ $.jgrid.extend({
 			}
 		});
 	},
+	/* added for compatibility with IOS 7 due to namedItem function error */
+	getNamedItem : function(rows, rowid) {
+		try {
+			return rows.item(rowid);
+			
+		}
+		catch(e) {
+			return rows.namedItem(rowid);
+		}
+	},
 	sortGrid : function(colname,reload, sor){
 		return this.each(function(){
 			var $t=this,idx=-1,i;
