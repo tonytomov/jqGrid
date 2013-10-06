@@ -21,6 +21,7 @@ setSubGrid : function () {
 			expandOnLoad:  false,
 			delayOnLoad : 50,
 			selectOnExpand : false,
+			selectOnCollapse : false,
 			reloadOnExpand : true
 		};
 		$t.p.subGridOptions = $.extend(suboptions, $t.p.subGridOptions || {});
@@ -220,8 +221,8 @@ addSubGrid : function( pos, sind ) {
 					} else if($(this).hasClass("sgexpanded")) {
 						bfsc = $(ts).triggerHandler("jqGridSubGridRowColapsed", [pID + "_" + _id, _id]);
 						bfsc = (bfsc === false || bfsc === 'stop') ? false : true;
+						_id = tr.id;
 						if( bfsc &&  $.isFunction(ts.p.subGridRowColapsed)) {
-							_id = tr.id;
 							bfsc = ts.p.subGridRowColapsed.call(ts, pID+"_"+_id,_id );
 						}
 						if(bfsc===false) {return false;}
@@ -231,6 +232,9 @@ addSubGrid : function( pos, sind ) {
 							$(r).hide();
 						}
 						$(this).html("<a style='cursor:pointer;'><span class='ui-icon "+ts.p.subGridOptions.plusicon+"'></span></a>").removeClass("sgexpanded").addClass("sgcollapsed");
+						if(ts.p.subGridOptions.selectOnCollapse) {
+							$(ts).jqGrid('setSelection',_id);
+						}
 					}
 					return false;
 				});
