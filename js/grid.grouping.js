@@ -286,8 +286,10 @@ $.jgrid.extend({
 				try {
 					if ($.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
 						n.displayValue = grp.formatDisplayField[n.idx].call($t, n.displayValue, n.value, $t.p.colModel[cp[n.idx]], n.idx, grp);
+						gv = n.displayValue;
+					} else {
+						gv = $t.formatter(hid, n.displayValue, cp[n.idx], n.value );
 					}
-					gv = $t.formatter(hid, n.displayValue, cp[n.idx], n.value );
 				} catch (egv) {
 					gv = n.displayValue;
 				}
