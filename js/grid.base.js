@@ -2664,7 +2664,7 @@ $.fn.jqGrid = function( pin ) {
 						else {
 							var frz = ts.p.frozenColumns ? ts.p.id+"_frozen" : "";
 							$(ts.p.selarrrow).each(function(i,n){
-								var ind = ts.rows.namedItem(n);
+								var ind = $(this).getNamedItem(ts.rows, n);
 								$(ind).removeClass("ui-state-highlight");
 								$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(n))[ts.p.useProp ? 'prop': 'attr']("checked", false);
 								if(frz) {
@@ -2900,7 +2900,7 @@ $.jgrid.extend({
 			var $t = this, stat,pt, ner, ia, tpsr, fid;
 			if(selection === undefined) { return; }
 			onsr = onsr === false ? false : true;
-			pt=$t.rows.namedItem(String(selection));
+			pt= $(this).getNamedItem($t.rows, String(selection));
 			if(!pt || !pt.className || pt.className.indexOf( 'ui-state-disabled' ) > -1 ) { return; }
 			function scrGrid(iR){
 				var ch = $($t.grid.bDiv)[0].clientHeight,
@@ -2915,7 +2915,7 @@ $.jgrid.extend({
 				}
 			}
 			if($t.p.scrollrows===true) {
-				ner = $t.rows.namedItem(selection).rowIndex;
+				ner = $(this).getNamedItem($t.rows, selection).rowIndex;
 				if(ner >=0 ){
 					scrGrid(ner);
 				}
@@ -2926,7 +2926,7 @@ $.jgrid.extend({
 			if(!$t.p.multiselect) {	
 				if(pt.className !== "ui-subgrid") {
 					if( $t.p.selrow !== pt.id) {
-						$($t.rows.namedItem($t.p.selrow)).removeClass("ui-state-highlight").attr({"aria-selected":"false", "tabindex" : "-1"});
+						$($(this).getNamedItem($t.rows, $t.p.selrow)).removeClass("ui-state-highlight").attr({"aria-selected":"false", "tabindex" : "-1"});
 						$(pt).addClass("ui-state-highlight").attr({"aria-selected":"true", "tabindex" : "0"});//.focus();
 						if(fid) {
 							$("#"+$.jgrid.jqID($t.p.selrow), "#"+$.jgrid.jqID(fid)).removeClass("ui-state-highlight");
@@ -2998,7 +2998,7 @@ $.jgrid.extend({
 				}
 			} else {
 				$(t.p.selarrrow).each(function(i,n){
-					ind = t.rows.namedItem(n);
+					ind = $(this).getNamedItem($t.rows, n);
 					$(ind).removeClass("ui-state-highlight").attr("aria-selected","false");
 					$("#jqg_"+$.jgrid.jqID(t.p.id)+"_"+$.jgrid.jqID(n))[t.p.useProp ? 'prop': 'attr']("checked",false);
 					if(fid) { 
@@ -3027,7 +3027,7 @@ $.jgrid.extend({
 				resall = [];
 				len = $t.rows.length;
 			} else {
-				ind = $t.rows.namedItem(rowid);
+				ind = $(this).getNamedItem($t.rows, rowid);
 				if(!ind) { return res; }
 				len = 2;
 			}
@@ -3059,7 +3059,7 @@ $.jgrid.extend({
 		var success = false, rowInd, ia;
 		this.each(function() {
 			var $t = this;
-			rowInd = $t.rows.namedItem(rowid);
+			rowInd = $(this).getNamedItem($t.rows, rowid);
 			if(!rowInd) {return false;}
 				$(rowInd).remove();
 				$t.p.records--;
@@ -3098,7 +3098,7 @@ $.jgrid.extend({
 		this.each(function(){
 			if(!this.grid) {return false;}
 			var t = this, vl, ind, cp = typeof cssp, lcdata={};
-			ind = t.rows.namedItem(rowid);
+			ind = $(this).getNamedItem(t.rows, rowid);
 			if(!ind) { return false; }
 			if( data ) {
 				try {
@@ -3222,7 +3222,7 @@ $.jgrid.extend({
 								sind = 1;
 								break;
 							case 'after':
-								sind = t.rows.namedItem(src);
+								sind = $(this).getNamedItem(t.rows, src);
 								if (sind) {
 									if($(t.rows[sind.rowIndex+1]).hasClass("ui-subgrid")) { $(t.rows[sind.rowIndex+1]).after(row); }
 									else { $(sind).after(row.join('')); }
@@ -3230,7 +3230,7 @@ $.jgrid.extend({
 								sind++;
 								break;
 							case 'before':
-								sind = t.rows.namedItem(src);
+								sind = $(this).getNamedItem(t.rows, src);
 								if(sind) {$(sind).before(row.join(''));sind=sind.rowIndex;}
 								sind--;
 								break;
@@ -3551,7 +3551,7 @@ $.jgrid.extend({
 				});
 			} else {pos = parseInt(colname,10);}
 			if(pos>=0) {
-				var ind = $t.rows.namedItem(rowid);
+				var ind = $(this).getNamedItem($t.rows, rowid);
 				if (ind){
 					var tcell = $("td:eq("+pos+")",ind);
 					if(nData !== "" || forceupd === true) {
@@ -3594,7 +3594,7 @@ $.jgrid.extend({
 				});
 			} else {pos = parseInt(col,10);}
 			if(pos>=0) {
-				var ind = $t.rows.namedItem(rowid);
+				var ind = $(this).getNamedItem($t.rows, rowid);
 				if(ind) {
 					try {
 						ret = $.unformat.call($t,$("td:eq("+pos+")",ind),{rowId:ind.id, colModel:$t.p.colModel[pos]},pos);
@@ -3676,7 +3676,7 @@ $.jgrid.extend({
 	getInd : function(rowid,rc){
 		var ret =false,rw;
 		this.each(function(){
-			rw = this.rows.namedItem(rowid);
+			rw = $(this).getNamedItem(this.rows, rowid);
 			if(rw) {
 				ret = rc===true ? rw: rw.rowIndex;
 			}
