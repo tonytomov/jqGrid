@@ -2976,7 +2976,7 @@ $.jgrid.extend({
 	},
 	resetSelection : function( rowid ){
 		return this.each(function(){
-			var t = this, ind, sr, fid;
+			var t = this, sr, fid;
 			if( t.p.frozenColumns === true ) {
 				fid = t.p.id+"_frozen";
 			}
@@ -2998,8 +2998,7 @@ $.jgrid.extend({
 				}
 			} else {
 				$(t.p.selarrrow).each(function(i,n){
-					ind = $(t.grid.bDiv).find("#"+n);
-					$(ind).removeClass("ui-state-highlight").attr("aria-selected","false");
+					$(t.grid.bDiv).find("#"+n).removeClass("ui-state-highlight").attr("aria-selected","false");
 					$("#jqg_"+$.jgrid.jqID(t.p.id)+"_"+$.jgrid.jqID(n))[t.p.useProp ? 'prop': 'attr']("checked",false);
 					if(fid) { 
 						$("#"+$.jgrid.jqID(n), "#"+$.jgrid.jqID(fid)).removeClass("ui-state-highlight"); 
