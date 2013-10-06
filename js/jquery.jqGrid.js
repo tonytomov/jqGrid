@@ -2110,6 +2110,7 @@ $.fn.jqGrid = function( pin ) {
 				}
 			});
 			$("#first"+$.jgrid.jqID(tp)+", #prev"+$.jgrid.jqID(tp)+", #next"+$.jgrid.jqID(tp)+", #last"+$.jgrid.jqID(tp)).click( function() {
+				if (!$(this).hasClass("ui-state-disabled")) {
 				var cp = intNum(ts.p.page,1),
 				last = intNum(ts.p.lastpage,1), selclick = false,
 				fp=true, pp=true, np=true,lp=true;
@@ -2126,6 +2127,8 @@ $.fn.jqGrid = function( pin ) {
 				if( this.id === 'last'+tp && lp) { ts.p.page=last; selclick=true;}
 				if(selclick) {
 					populate();
+				}
+				
 				}
 				return false;
 			});
