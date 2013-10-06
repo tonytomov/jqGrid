@@ -3621,7 +3621,7 @@ $.jgrid.extend({
 				});
 			} else {pos = parseInt(col,10);}
 			if(pos>=0) {
-				var ln = $t.rows.length, i =0;
+				var ln = $t.rows.length, i =0, dlen=0;
 				if (ln && ln>0){
 					while(i<ln){
 						if($($t.rows[i]).hasClass('jqgrow')) {
@@ -3632,10 +3632,13 @@ $.jgrid.extend({
 							}
 							if(mathopr) {
 								v = parseFloat(val);
-								sum += v;
-								if (max === undefined) {max = min = v;}
-								min = Math.min(min, v);
-								max = Math.max(max, v);
+								if(!isNaN(v)) {
+									sum += v;
+									if (max === undefined) {max = min = v;}
+									min = Math.min(min, v);
+									max = Math.max(max, v);
+									dlen++;
+								}
 							}
 							else if(obj) { ret.push( {id:$t.rows[i].id,value:val} ); }
 							else { ret.push( val ); }
@@ -3645,8 +3648,8 @@ $.jgrid.extend({
 					if(mathopr) {
 						switch(mathopr.toLowerCase()){
 							case 'sum': ret =sum; break;
-							case 'avg': ret = sum/ln; break;
-							case 'count': ret = ln; break;
+							case 'avg': ret = sum/dlen; break;
+							case 'count': ret = (ln-1); break;
 							case 'min': ret = min; break;
 							case 'max': ret = max; break;
 						}
