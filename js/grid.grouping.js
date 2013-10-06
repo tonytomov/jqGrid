@@ -185,6 +185,16 @@ $.jgrid.extend({
 			tar = $("#"+$.jgrid.jqID(hid)),
 			r = tar.length ? tar[0].nextSibling : null,
 			tarspan = $("#"+$.jgrid.jqID(hid)+" span."+"tree-wrap-"+$t.p.direction),
+			getGroupingLevelFromClass = function (className) {
+				var nums = $.map(className.split(" "), function (item) {
+					if (item.substring(0, uid.length + 1) === uid + "_") {
+						return parseInt(item.substring(uid.length + 1), 10);
+					}
+				});
+				return nums.length > 0 ? nums[0] : undefined;
+			},
+			itemGroupingLevel,
+			showData,
 			collapsed = false, tspan;
 			if( tarspan.hasClass(minus) ) {
 				if(grp.showSummaryOnHide) {
@@ -203,11 +213,9 @@ $.jgrid.extend({
 				} else  {
 					if(r){
 						while(r) {
-							uidpos = r.className.indexOf(uid);
-							if(uidpos !== -1) {
-								if( parseInt(r.className.substring(uidpos+uid.length + 1),10) <=  num) {
-									break;
-								}
+							itemGroupingLevel = getGroupingLevelFromClass(r.className);
+							if (itemGroupingLevel !== undefined && itemGroupingLevel <= num) {
+								break;
 							}
 							$(r).hide();
 							r = r.nextSibling;
@@ -218,17 +226,20 @@ $.jgrid.extend({
 				collapsed = true;
 			} else {
 				if(r){
+					showData = undefined;
 					while(r) {
-						uidpos = r.className.indexOf(uid);
-						if(uidpos !== -1) {
-							if( parseInt(r.className.substring(uidpos+uid.length + 1),10) <=  num) {
-								break;
-							}
+						itemGroupingLevel = getGroupingLevelFromClass(r.className);
+						if (showData === undefined) {
+							showData = itemGroupingLevel === undefined; // if the first row after the opening group is data row then show the data rows
 						}
-						$(r).show();
-						tspan = $(r).find("span."+"tree-wrap-"+$t.p.direction);
-						if( tspan && $(tspan).hasClass(plus) ) {
-							$(tspan).removeClass(plus).addClass(minus);
+						if (itemGroupingLevel !== undefined) {
+							if (itemGroupingLevel <= num) {
+								break;// next item of the same lever are found
+							} else if (itemGroupingLevel === num + 1) {
+								$(r).show().find(">td>span."+"tree-wrap-"+$t.p.direction).removeClass(minus).addClass(plus);
+							}
+						} else if (showData) {
+							$(r).show();
 						}
 						r = r.nextSibling;
 					}
