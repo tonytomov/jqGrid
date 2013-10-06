@@ -97,6 +97,7 @@ tr.ui-search-toolbar select {margin: 1px 0 0 0}
 .ui-jqdialog-content, .ui-jqdialog .ui-jqdialog-content { border: 0; padding: .3em .2em; background: none; height:auto;}
 .ui-jqdialog .ui-jqconfirm {padding: .4em 1em; border-width:3px;position:absolute;bottom:10px;right:10px;overflow:visible;display:none;height:80px;width:220px;text-align:center;}
 .ui-jqdialog>.ui-resizable-se { bottom: -3px; right: -3px}
+.ui-jqgrid>.ui-resizable-se { bottom: -3px; right: -3px }
 /* end Modal window*/
 /* Form edit */
 .ui-jqdialog-content .FormGrid {margin: 0;}
