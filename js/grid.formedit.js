@@ -2050,7 +2050,7 @@ $.jgrid.extend({
 		p = $.extend({
 			sepclass : "ui-separator",
 			sepcontent: '',
-                           position : "last"
+			position : "last"
 		}, p ||{});
 		return this.each(function() {
 			if( !this.grid)  {return;}
