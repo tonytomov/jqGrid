@@ -2878,6 +2878,17 @@ $.jgrid.extend({
 			if (this.grid && typeof newParams === 'object') {$.extend(true,this.p,newParams);}
 		});
 	},
+	getGridRowById: function ( rowid ) {
+		var row;
+		this.each( function(){
+			try {
+				row =  this.rows.namedItem1( rowid );
+			} catch ( e ) {
+				row = $(this.grid.bDiv).find( "#" + $.jgrid.jqID( rowid ));
+			}
+		});
+		return row;
+	},
 	getDataIDs : function () {
 		var ids=[], i=0, len, j=0;
 		this.each(function(){
