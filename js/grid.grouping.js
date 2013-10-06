@@ -175,8 +175,6 @@ $.jgrid.extend({
 			var $t = this,
 			grp = $t.p.groupingView,
 			strpos = hid.split('_'),
-			uidpos,
-			//uid = hid.substring(0,strpos+1),
 			num = parseInt(strpos[strpos.length-2], 10);
 			strpos.splice(strpos.length-2,2);
 			var uid = strpos.join("_"),
@@ -195,7 +193,7 @@ $.jgrid.extend({
 			},
 			itemGroupingLevel,
 			showData,
-			collapsed = false, tspan;
+			collapsed = false;
 			if( tarspan.hasClass(minus) ) {
 				if(grp.showSummaryOnHide) {
 					if(r){
@@ -235,7 +233,8 @@ $.jgrid.extend({
 						if (itemGroupingLevel !== undefined) {
 							if (itemGroupingLevel <= num) {
 								break;// next item of the same lever are found
-							} else if (itemGroupingLevel === num + 1) {
+							}
+							if (itemGroupingLevel === num + 1) {
 								$(r).show().find(">td>span."+"tree-wrap-"+$t.p.direction).removeClass(minus).addClass(plus);
 							}
 						} else if (showData) {
