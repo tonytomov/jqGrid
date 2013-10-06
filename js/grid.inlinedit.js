@@ -230,7 +230,7 @@ $.jgrid.extend({
 			});
 			if (cv[0] === false){
 				try {
-					var tr = $t.rows.namedItem(rowid), positions = $.jgrid.findPos(tr);
+					var tr = $($t.grid.bDiv).find("#"+rowid)[0], positions = $.jgrid.findPos(tr);
 					$.jgrid.info_dialog($.jgrid.errors.errcap,cv[1],$.jgrid.edit.bClose,{left:positions[0],top:positions[1]+$(tr).outerHeight()});
 				} catch (e) {
 					alert(cv[1]);

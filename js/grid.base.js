@@ -2664,8 +2664,7 @@ $.fn.jqGrid = function( pin ) {
 						else {
 							var frz = ts.p.frozenColumns ? ts.p.id+"_frozen" : "";
 							$(ts.p.selarrrow).each(function(i,n){
-								var ind = $(ts.grid.bDiv).find("#"+n);
-								ind.removeClass("ui-state-highlight");
+								$(ts.grid.bDiv).find("#"+n).removeClass("ui-state-highlight");
 								$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(n))[ts.p.useProp ? 'prop': 'attr']("checked", false);
 								if(frz) {
 									$("#"+$.jgrid.jqID(n), "#"+$.jgrid.jqID(frz)).removeClass("ui-state-highlight");
@@ -3026,7 +3025,7 @@ $.jgrid.extend({
 				resall = [];
 				len = $t.rows.length;
 			} else {
-				ind = $t.rows.namedItem(rowid);
+				ind = $($t.grid.bDiv).find("#"+rowid)[0];
 				if(!ind) { return res; }
 				len = 2;
 			}
@@ -3058,7 +3057,7 @@ $.jgrid.extend({
 		var success = false, rowInd, ia;
 		this.each(function() {
 			var $t = this;
-			rowInd = $t.rows.namedItem(rowid);
+			rowInd = $($t.grid.bDiv).find("#"+rowid)[0];
 			if(!rowInd) {return false;}
 				$(rowInd).remove();
 				$t.p.records--;
@@ -3097,7 +3096,7 @@ $.jgrid.extend({
 		this.each(function(){
 			if(!this.grid) {return false;}
 			var t = this, vl, ind, cp = typeof cssp, lcdata={};
-			ind = t.rows.namedItem(rowid);
+			ind = $(t.grid.bDiv).find("#n"+rowid)[0];
 			if(!ind) { return false; }
 			if( data ) {
 				try {
@@ -3221,7 +3220,7 @@ $.jgrid.extend({
 								sind = 1;
 								break;
 							case 'after':
-								sind = t.rows.namedItem(src);
+								sind = $(t.grid.bDiv).find("#"+src)[0];
 								if (sind) {
 									if($(t.rows[sind.rowIndex+1]).hasClass("ui-subgrid")) { $(t.rows[sind.rowIndex+1]).after(row); }
 									else { $(sind).after(row.join('')); }
@@ -3229,7 +3228,7 @@ $.jgrid.extend({
 								sind++;
 								break;
 							case 'before':
-								sind = t.rows.namedItem(src);
+								sind = $(t.grid.bDiv).find("#"+src)[0];
 								if(sind) {$(sind).before(row.join(''));sind=sind.rowIndex;}
 								sind--;
 								break;
@@ -3550,7 +3549,7 @@ $.jgrid.extend({
 				});
 			} else {pos = parseInt(colname,10);}
 			if(pos>=0) {
-				var ind = $t.rows.namedItem(rowid);
+				var ind = $($t.grid.bDiv).find("#"+rowid)[0];
 				if (ind){
 					var tcell = $("td:eq("+pos+")",ind);
 					if(nData !== "" || forceupd === true) {
@@ -3593,7 +3592,7 @@ $.jgrid.extend({
 				});
 			} else {pos = parseInt(col,10);}
 			if(pos>=0) {
-				var ind = $t.rows.namedItem(rowid);
+				var ind = $($t.grid.bDiv).find("#"+rowid)[0];
 				if(ind) {
 					try {
 						ret = $.unformat.call($t,$("td:eq("+pos+")",ind),{rowId:ind.id, colModel:$t.p.colModel[pos]},pos);
@@ -3678,7 +3677,7 @@ $.jgrid.extend({
 	getInd : function(rowid,rc){
 		var ret =false,rw;
 		this.each(function(){
-			rw = this.rows.namedItem(rowid);
+			rw = $(this.grid.bDiv).find("#"+rowid)[0];
 			if(rw) {
 				ret = rc===true ? rw: rw.rowIndex;
 			}
