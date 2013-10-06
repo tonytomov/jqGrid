@@ -358,7 +358,7 @@ $.fn.jqFilter = function( arg ) {
 						cm.searchoptions.size = 10;
 					}
 				}
-				var elm = $.jgrid.createEl.call($t, cm.inputtype,cm.searchoptions, "", true, that.p.ajaxSelectOptions, true);
+				var elm = $.jgrid.createEl.call($t, cm.inputtype,cm.searchoptions, "", true, that.p.ajaxSelectOptions || {}, true);
 				$(elm).addClass("input-elm");
 				//that.createElement(rule, "");
 
@@ -436,7 +436,7 @@ $.fn.jqFilter = function( arg ) {
 					cm.searchoptions.size = 10;
 				}
 			}
-			var ruleDataInput = $.jgrid.createEl.call($t, cm.inputtype,cm.searchoptions, rule.data, true, that.p.ajaxSelectOptions, true);
+			var ruleDataInput = $.jgrid.createEl.call($t, cm.inputtype,cm.searchoptions, rule.data, true, that.p.ajaxSelectOptions || {}, true);
 			if(rule.op === 'nu' || rule.op === 'nn') {
 				$(ruleDataInput).attr('readonly','true');
 				$(ruleDataInput).attr('disabled','true');
