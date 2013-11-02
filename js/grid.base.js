@@ -2884,7 +2884,14 @@ $.jgrid.extend({
 		var row;
 		this.each( function(){
 			try {
-				row =  this.rows.namedItem( rowid );
+				//row = this.rows.namedItem( rowid );
+				var i = this.rows.length;
+				while(i--) {
+					if( rowid.toString() === this.rows[i].id) {
+						row = this.rows[i];
+						break;
+					}
+				}
 			} catch ( e ) {
 				row = $(this.grid.bDiv).find( "#" + $.jgrid.jqID( rowid ));
 			}
