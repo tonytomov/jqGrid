@@ -420,6 +420,8 @@ $.jgrid.extend({
 					}
 					if(soptions.clearSearch) {
 						$("td:eq(2)",stbl).append("<a title='Clear Search Value' style='padding-right: 0.3em;padding-left: 0.3em;' class='clearsearchclass'>x</a>");
+					} else {
+						$("td:eq(2)", stbl).hide();
 					}
 					switch (this.stype)
 					{
