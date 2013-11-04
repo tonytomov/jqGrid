@@ -263,18 +263,7 @@
 			cm = p.colModel[$.jgrid.getCellIndex(this)],
 			$actionsDiv = cm.frozen ? $("tr#"+rid+" td:eq("+$.jgrid.getCellIndex(this)+") > div",$grid) :$(this).parent(),
 			op = {
-				keys: false,
-				onEdit: null, 
-				onSuccess: null, 
-				afterSave: null,
-				onError: null,
-				afterRestore: null,
-				extraparam: {},
-				url: null,
-				restoreAfterError: true,
-				mtype: "POST",
-				delOptions: {},
-				editOptions: {}
+				extraparam: {}
 			},
 			saverow = function(rowid, res) {
 				if($.isFunction(op.afterSave)) { op.afterSave.call($t, rowid, res); }
