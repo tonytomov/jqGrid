@@ -561,7 +561,7 @@ $.jgrid.extend({
 						var sr = $t.p.savedRow[0].id;
 						if(sr) {
 							var opers = $t.p.prmNames,
-							oper = opers.oper, tmpParams = {};
+							oper = opers.oper, tmpParams = o.editParams;
 							if($("#"+$.jgrid.jqID(sr), "#"+gID ).hasClass("jqgrid-new-row")) {
 								o.addParams.addRowParams.extraparam[oper] = opers.addoper;
 								tmpParams = o.addParams.addRowParams;
@@ -570,7 +570,6 @@ $.jgrid.extend({
 									o.editParams.extraparam = {};
 								}
 								o.editParams.extraparam[oper] = opers.editoper;
-								tmpParams = o.editParams;
 							}
 							if( $($t).jqGrid('saveRow', sr, tmpParams) ) {
 								$($t).jqGrid('showAddEditButtons');
@@ -589,12 +588,10 @@ $.jgrid.extend({
 					buttonicon : o.cancelicon,
 					id : $t.p.id+"_ilcancel",
 					onClickButton : function () {
-						var sr = $t.p.savedRow[0].id, cancelPrm = {};
+						var sr = $t.p.savedRow[0].id, cancelPrm = o.editParams;
 						if(sr) {
 							if($("#"+$.jgrid.jqID(sr), "#"+gID ).hasClass("jqgrid-new-row")) {
 								cancelPrm = o.addParams.addRowParams;
-							} else {
-								cancelPrm = o.editParams;
 							}
 							$($t).jqGrid('restoreRow', sr, cancelPrm);
 							$($t).jqGrid('showAddEditButtons');
