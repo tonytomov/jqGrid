@@ -387,7 +387,7 @@ $.jgrid.extend({
 			if (!$t.grid ) { return; }
 			ind = $($t).jqGrid("getInd",rowid,true);
 			if(ind === false) {return;}
-			var bfcr = $.isFunction( o.beforeCancelRow ) ?	o.beforeCancelRow.call($t,cancelPrm, sr) :  undefined;
+			var bfcr = $.isFunction( o.beforeCancelRow ) ?	o.beforeCancelRow.call($t, o, sr) :  undefined;
 			if( bfcr === undefined ) {
 				bfcr = true;
 			}
