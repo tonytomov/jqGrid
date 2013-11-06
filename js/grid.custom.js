@@ -762,7 +762,7 @@ $.jgrid.extend({
 						} else {
 							$('<th>', {role: "columnheader"})
 								.addClass("ui-state-default ui-th-column-header ui-th-"+ts.p.direction)
-								.css({"display": cmi.hidden ? 'none' : '', 'border-top': '0px none'})
+								.css({"display": cmi.hidden ? 'none' : '', 'border-top': '0 none'})
 								.insertBefore($th);
 							$tr.append(th);
 						}
