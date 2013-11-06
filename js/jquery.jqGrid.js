@@ -4938,7 +4938,7 @@ f1=function(k){return parseInt(E1.css(k),10)||false;};
 	Version:     0.9-p5
 	Description: Restructured code, JSLint validated (no strict whitespaces),
 	             added handling of empty arrays, empty strings, and int/floats values.
-	Author:      Michael SchÃ¸ler/2008-01-29
+	Author:      Michael Schøler/2008-01-29
 	Web:         http://michael.hinnerup.net/blog/2008/01/26/converting-json-to-xml-and-xml-to-json/
 	
 	Description: json2xml added support to convert functions as CDATA
