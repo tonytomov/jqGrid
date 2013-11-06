@@ -383,7 +383,7 @@ $.jgrid.extend({
 		// End compatible
 
 		return this.each(function(){
-			var $t= this, fr, ind, ares={}, k;
+			var $t= this, fr=-1, ind, ares={}, k;
 			if (!$t.grid ) { return; }
 			ind = $($t).jqGrid("getInd",rowid,true);
 			if(ind === false) {return;}
