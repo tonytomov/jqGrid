@@ -272,7 +272,7 @@ $.jgrid.extend({
 							}
 							break;
 						case 'text':
-							$elem.val(v);
+							$elem.val(v || "");
 							if(v !== undefined) {
 								sdata[nm] = v;
 								j++;
