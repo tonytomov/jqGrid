@@ -150,7 +150,7 @@ tr.ui-search-toolbar select {margin: 1px 0 0 0}
 
 /* Toolbar Search Menu */
 .ui-search-menu { position: absolute; padding: 2px 5px;}
-.ui-jqgrid .ui-search-table { padding: 0px 0px; border: 0px none; height:20px; width:100%;}
+.ui-jqgrid .ui-search-table { padding: 0; border: 0 none; height:20px; width:100%;}
 .ui-jqgrid .ui-search-table .ui-search-oper { width:20px; }
 a.g-menu-item, a.soptclass, a.clearsearchclass { cursor: pointer; }
 .ui-jqgrid .ui-search-table .ui-search-input>input,
