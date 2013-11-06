@@ -161,3 +161,9 @@ a.g-menu-item, a.soptclass, a.clearsearchclass { cursor: pointer; }
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
 } 
+.ui-jqgrid .ui-jqgrid-view input,
+.ui-jqgrid .ui-jqgrid-view select,
+.ui-jqgrid .ui-jqgrid-view textarea,
+.ui-jqgrid .ui-jqgrid-view button {
+    font-size: 11px
+}
