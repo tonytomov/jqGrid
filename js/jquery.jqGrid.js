@@ -764,6 +764,7 @@ $.fn.jqGrid = function( pin ) {
 			colNames: [],
 			sortorder: "asc",
 			sortname: "",
+			sortmode: 2,
 			datatype: "xml",
 			mtype: "GET",
 			altRows: false,
@@ -2191,7 +2192,14 @@ $.fn.jqGrid = function( pin ) {
 				if( ts.p.lastsort === idxcol ) {
 					if( ts.p.sortorder === 'asc') {
 						ts.p.sortorder = 'desc';
-					} else if(ts.p.sortorder === 'desc') { ts.p.sortorder = 'asc';}
+					} else {
+						if (ts.p.sortmode === 3) {
+							if (ts.p.sortorder === 'desc') { ts.p.sortorder = ''; }
+							else ts.p.sortorder = 'asc';
+						} else {
+							if (ts.p.sortorder === 'desc') { ts.p.sortorder = 'asc'; }
+						}
+					}
 				} else { ts.p.sortorder = ts.p.colModel[idxcol].firstsortorder || 'asc'; }
 				ts.p.page = 1;
 			}
@@ -4930,7 +4938,7 @@ f1=function(k){return parseInt(E1.css(k),10)||false;};
 	Version:     0.9-p5
 	Description: Restructured code, JSLint validated (no strict whitespaces),
 	             added handling of empty arrays, empty strings, and int/floats values.
-	Author:      Michael Schøler/2008-01-29
+	Author:      Michael SchÃ¸ler/2008-01-29
 	Web:         http://michael.hinnerup.net/blog/2008/01/26/converting-json-to-xml-and-xml-to-json/
 	
 	Description: json2xml added support to convert functions as CDATA
