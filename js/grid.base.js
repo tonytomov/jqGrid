@@ -119,7 +119,7 @@ $.extend($.jgrid,{
 				}
 			} else {
 				date = String(date).replace(/\T/g,"#").replace(/\t/,"%").split(opts.parseRe);
-				format = format.replace(/\T/g,"#").replace(/\\t/,"%").split(opts.parseRe);
+				format = format.replace(/\T/g,"#").replace(/\t/,"%").split(opts.parseRe);
 				// parsing for month names
 				for(k=0,hl=format.length;k<hl;k++){
 					if(format[k] === 'M') {
