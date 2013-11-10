@@ -567,7 +567,7 @@ $.fn.jqFilter = function( arg ) {
 					break;
 				}
 			}
-			if (cm === undefined) { return ""; }
+			if (cm == undefined) { return ""; }
 			val = rule.data;
 			if(opC === 'bw' || opC === 'bn') { val = val+"%"; }
 			if(opC === 'ew' || opC === 'en') { val = "%"+val; }

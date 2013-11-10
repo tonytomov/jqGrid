@@ -679,7 +679,7 @@ $.extend($.jgrid,{
 			if(_useProperties){
 				self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(v)+'"'));
 			}else{
-				length=_trim?$.trim(v.toString()).length:v.toString().length;
+				if (v!=null) { length=_trim?$.trim(v.toString()).length:v.toString().length; }
 				self._append(self._getStr('this')+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(f)+'"'));
 			}
 			self._setCommand(self.startsWith,f);
@@ -3296,7 +3296,7 @@ $.jgrid.extend({
 			}
 			return true;
 		}
-		if(action === undefined) { action = "get"; }
+		if(action == undefined) { action = "get"; }
 		if(typeof format !== "boolean") { format  = true; }
 		action = action.toLowerCase();
 		this.each(function(){

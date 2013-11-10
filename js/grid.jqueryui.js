@@ -296,7 +296,7 @@ $.jgrid.extend({
 					delete opts.update;
 				} else {opts._update_ = false;}
 				opts.start = function(ev,ui) {
-					$(ui.item).css("border-width","0px");
+					$(ui.item).css("border-width","0");
 					$("td",ui.item).each(function(i){
 						this.style.width = $t.grid.cols[i].style.width;
 					});
