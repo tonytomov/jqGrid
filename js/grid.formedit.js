@@ -1127,8 +1127,6 @@ $.jgrid.extend({
 						return false;
 					});
 				}
-				$($t).triggerHandler("jqGridAddEditAfterShowForm", [$("#"+frmgr), frmoper]);
-				if(onAfterShow) { onAfterShow.call($t, $("#"+frmgr), frmoper); }
 				$(".fm-button","#"+$.jgrid.jqID(IDs.themodal)).hover(
 					function(){$(this).addClass('ui-state-hover');},
 					function(){$(this).removeClass('ui-state-hover');}
@@ -1205,6 +1203,8 @@ $.jgrid.extend({
 					}
 					return false;
 				});
+				$($t).triggerHandler("jqGridAddEditAfterShowForm", [$("#"+frmgr), frmoper]);
+				if(onAfterShow) { onAfterShow.call($t, $("#"+frmgr), frmoper); }
 			}
 			var posInit =getCurrPos();
 			updateNav(posInit[0],posInit);
