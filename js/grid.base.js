@@ -99,7 +99,7 @@ $.extend($.jgrid,{
 		}
 		// old lang files
 		if(opts.parseRe === undefined ) {
-			opts.parseRe = /[Tt\\\/:_;.,\t\s-]/;
+			opts.parseRe = /[#%\\\/:_;.,\t\s-]/;
 		}
 		if( opts.masks.hasOwnProperty(format) ) { format = opts.masks[format]; }
 		if(date && date != null) {
@@ -118,8 +118,8 @@ $.extend($.jgrid,{
 					timestamp.setTime(Number(Number(timestamp) + (offset * 60 * 1000)));
 				}
 			} else {
-				date = String(date).replace(/\\T/g,"T").replace(/\\t/,"t").split(opts.parseRe);
-				format = format.replace(/\\T/g,"T").replace(/\\t/,"t").split(opts.parseRe);
+				date = String(date).replace(/\T/g,"#").replace(/\t/,"%").split(opts.parseRe);
+				format = format.replace(/\T/g,"#").replace(/\\t/,"%").split(opts.parseRe);
 				// parsing for month names
 				for(k=0,hl=format.length;k<hl;k++){
 					if(format[k] === 'M') {
