@@ -60,13 +60,13 @@ $.extend($.jgrid,{
 		bCancel: "Odustani"
 	},
 	nav : {
-		edittext: " ",
+		edittext: "",
 		edittitle: "Promijeni obilje�eni red",
-		addtext:" ",
+		addtext: "",
 		addtitle: "Dodaj novi red",
-		deltext: " ",
+		deltext: "",
 		deltitle: "Obri�i obilje�eni red",
-		searchtext: " ",
+		searchtext: "",
 		searchtitle: "Potra�i zapise",
 		refreshtext: "",
 		refreshtitle: "Ponovo preuzmi podatke",
@@ -89,14 +89,14 @@ $.extend($.jgrid,{
 	formatter : {
 		integer : {thousandsSeparator: ".", defaultValue: '0'},
 		number : {decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, defaultValue: '0,00'},
-		currency : {decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "", suffix:" Kn", defaultValue: '0,00'},
+		currency : {decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "", suffix:"", defaultValue: '0,00'},
 		date : {
 			dayNames:   [
 				"Ned", "Pon", "Uto", "Sri", "�et", "Pet", "Sub",
 				"Nedjelja", "Ponedjeljak", "Utorak", "Srijeda", "�etvrtak", "Petak", "Subota"
 			],
 			monthNames: [
-				"Sij", "Vel", "O�u", "Tra", "Svi", "Lip", "Srp", "Kol", "Ruj", "Lis", "Stu", "Pro",
+				"Sij", "Velj", "O�u", "Tra", "Svi", "Lip", "Srp", "Kol", "Ruj", "Lis", "Stu", "Pro",
 				"Sije�anj", "Velja�a", "O�ujak", "Travanj", "Svibanj", "Lipanj", "Srpanj", "Kolovoz", "Rujan", "Listopad", "Studeni", "Prosinac"
 			],
 			AmPm : ["am","pm","AM","PM"],
