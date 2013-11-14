@@ -20,7 +20,7 @@ $.extend($.jgrid,{
 	    caption: "Etsi...",
 	    Find: "Etsi",
 	    Reset: "Tyhjenn&auml;",
-	    odata: [{ oper:'eq', text:"on"},{ oper:'ne', text:"ei ole"},{ oper:'lt', text:"pienempi"},{ oper:'le', text:"pienempi tai yht&auml;suuri"},{ oper:'gt', text:"suurempi"},{ oper:'ge', text:"suurempi tai yht&auml;suuri"},{ oper:'bw', text:"alkaa"},{ oper:'bn', text:"ei ala"},{ oper:'in', text:"joukossa"},{ oper:'ni', text:"ei joukossa"},{ oper:'ew', text:"loppuu"},{ oper:'en', text:"ei lopu"},{ oper:'cn', text:"sis&auml;lt&auml;&auml;"},{ oper:'nc', text:"ei sis&auml;ll&auml;"},{ oper:'nu', text:"on tyhj&auml;"},{ oper:'nn', text:"ei ole tyhj&auml;"}],
+	    odata: [{ oper:'eq', text:"on"},{ oper:'ne', text:"ei ole"},{ oper:'lt', text:"pienempi"},{ oper:'le', text:"pienempi tai yht&auml;suuri"},{ oper:'gt', text:"suurempi"},{ oper:'ge', text:"suurempi tai yht&auml;suuri"},{ oper:'bw', text:"alkaa"},{ oper:'bn', text:"ei ala"},{ oper:'in', text:"joukossa"},{ oper:'ni', text:"ei joukossa"},{ oper:'ew', text:"loppuu"},{ oper:'en', text:"ei lopu"},{ oper:'cn', text:"sis&auml;lt&auml;&auml;"},{ oper:'nc', text:"ei sis&auml;ll&auml;"},{ oper:'nu', text:"on tyhj&auml;"},{ oper:'nn', text:"ei ole tyhj&auml;"},{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}],
 	    groupOps: [	{ op: "AND", text: "kaikki" }, { op: "OR", text: "mik&auml; tahansa" }	]
 	},
 	edit: {

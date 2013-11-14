@@ -25,7 +25,8 @@ $.extend($.jgrid,{
             { oper:'bw', text:"\u6B21\u3067\u59CB\u307E\u308B"}, { oper:'bn', text:"\u6B21\u3067\u59CB\u307E\u3089\u306A\u3044"},
             { oper:'in', text:"\u6B21\u306B\u542B\u307E\u308C\u308B"}, { oper:'ni', text:"\u6B21\u306B\u542B\u307E\u308C\u306A\u3044"},
             { oper:'ew', text:"\u6B21\u3067\u7D42\u308F\u308B"}, { oper:'en', text:"\u6B21\u3067\u7D42\u308F\u3089\u306A\u3044"},
-            { oper:'cn', text:"\u6B21\u3092\u542B\u3080"}, { oper:'nc', text:"\u6B21\u3092\u542B\u307E\u306A\u3044"}],
+            { oper:'cn', text:"\u6B21\u3092\u542B\u3080"}, { oper:'nc', text:"\u6B21\u3092\u542B\u307E\u306A\u3044"},
+			{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}],
 	    groupOps: [{
                 op: "AND",
                 text: "\u3059\u3079\u3066\u306E"
