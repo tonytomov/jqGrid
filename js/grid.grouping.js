@@ -53,6 +53,9 @@ $.jgrid.extend({
 						if( typeof grp.groupSummary[i] !== 'boolean') {
 							grp.groupSummary[i] = false;
 						}
+						if( !grp.groupSummaryPos[i]) {
+							grp.groupSummaryPos[i] = 'footer';
+						}
 						if(grp.groupColumnShow[i] === true) {
 							grp.visibiltyOnNextGrouping[i] = true;
 							$($t).jqGrid('showCol',grp.groupField[i]);
@@ -286,6 +289,38 @@ $.jgrid.extend({
 				}
 				return ret;
 			}
+			function buildSummaryTd(i, ik, grp, foffset) {
+				var fdata = findGroupIdx(i, ik, grp.groups),
+				cm = $t.p.colModel,
+				vv, grlen = fdata.cnt, str="", k;
+				for(k=foffset; k<colspans;k++) {
+					var tmpdata = "<td "+$t.formatCol(k,1,'')+">&#160;</td>",
+					tplfld = "{0}";
+					$.each(fdata.summary,function(){
+						if(this.nm === cm[k].name) {
+							if(cm[k].summaryTpl)  {
+								tplfld = cm[k].summaryTpl;
+							}
+							if(typeof this.st === 'string' && this.st.toLowerCase() === 'avg') {
+								if(this.sd && this.vd) { 
+									this.v = (this.v/this.vd);
+								} else if(this.v && grlen > 0) {
+									this.v = (this.v/grlen);
+								}
+							}
+							try {
+								vv = $t.formatter('', this.v, k, this);
+							} catch (ef) {
+								vv = this.v;
+							}
+							tmpdata= "<td "+$t.formatCol(k,1,'')+">"+$.jgrid.format(tplfld,vv)+ "</td>";
+							return false;
+						}
+					});
+					str += tmpdata;
+				}
+				return str;
+			}
 			var sumreverse = $.makeArray(grp.groupSummary);
 			sumreverse.reverse();
 			$.each(grp.groups,function(i,n){
@@ -303,62 +338,42 @@ $.jgrid.extend({
 				} catch (egv) {
 					gv = n.displayValue;
 				}
-				str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\" colspan=\""+colspans+"\">"+icon+$.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary)+"</td></tr>";
+				if(grp.groupSummaryPos[i] === 'header')  {
+					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\">"+icon+$.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary)+"</td>";
+					str += buildSummaryTd(i, i+1, grp, 1);
+					str += "</tr>";
+				} else {
+					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\" colspan=\""+colspans+"\">"+icon+$.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary)+"</td></tr>";
+				}
 				var leaf = len-1 === n.idx; 
 				if( leaf ) {
-					var gg = grp.groups[i+1], k, kk, ik;
+					var gg = grp.groups[i+1], kk, ik;
 					var end = gg !== undefined ?  grp.groups[i+1].startRow : grdata.length;
 					for(kk=n.startRow;kk<end;kk++) {
 						str += grdata[kk].join('');
 					}
-					var jj;
-					if (gg !== undefined) {
-						for (jj = 0; jj < grp.groupField.length; jj++) {
-							if (gg.dataIndex === grp.groupField[jj]) {
-								break;
-							}
-						}
-						toEnd = grp.groupField.length - jj;
-					}
-					for (ik = 0; ik < toEnd; ik++) {
-						if(!sumreverse[ik]) { continue; }
-						var hhdr = "";
-						if(grp.groupCollapse && !grp.showSummaryOnHide) {
-							hhdr = " style=\"display:none;\"";
-						}
-						str += "<tr"+hhdr+" jqfootlevel=\""+(n.idx-ik)+"\" role=\"row\" class=\"ui-widget-content jqfoot ui-row-"+$t.p.direction+"\">";
-						var fdata = findGroupIdx(i, ik, grp.groups),
-						cm = $t.p.colModel,
-						vv, grlen = fdata.cnt;
-						for(k=0; k<colspans;k++) {
-							var tmpdata = "<td "+$t.formatCol(k,1,'')+">&#160;</td>",
-							tplfld = "{0}";
-							$.each(fdata.summary,function(){
-								if(this.nm === cm[k].name) {
-									if(cm[k].summaryTpl)  {
-										tplfld = cm[k].summaryTpl;
-									}
-									if(typeof this.st === 'string' && this.st.toLowerCase() === 'avg') {
-										if(this.sd && this.vd) { 
-											this.v = (this.v/this.vd);
-										} else if(this.v && grlen > 0) {
-											this.v = (this.v/grlen);
-										}
-									}
-									try {
-										vv = $t.formatter('', this.v, k, this);
-									} catch (ef) {
-										vv = this.v;
-									}
-									tmpdata= "<td "+$t.formatCol(k,1,'')+">"+$.jgrid.format(tplfld,vv)+ "</td>";
-									return false;
+					if(grp.groupSummaryPos[i] !== 'header') {
+						var jj;
+						if (gg !== undefined) {
+							for (jj = 0; jj < grp.groupField.length; jj++) {
+								if (gg.dataIndex === grp.groupField[jj]) {
+									break;
 								}
-							});
-							str += tmpdata;
+							}
+							toEnd = grp.groupField.length - jj;
 						}
-						str += "</tr>";
-					}
+						for (ik = 0; ik < toEnd; ik++) {
+							if(!sumreverse[ik]) { continue; }
+							var hhdr = "";
+							if(grp.groupCollapse && !grp.showSummaryOnHide) {
+								hhdr = " style=\"display:none;\"";
+							}
+							str += "<tr"+hhdr+" jqfootlevel=\""+(n.idx-ik)+"\" role=\"row\" class=\"ui-widget-content jqfoot ui-row-"+$t.p.direction+"\">";
+							str += buildSummaryTd(i, ik, grp, 0);
+							str += "</tr>";
+						}
 					toEnd = jj;
+					}
 				}
 			});
 			$("#"+$.jgrid.jqID($t.p.id)+" tbody:first").append(str);
