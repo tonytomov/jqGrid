@@ -203,6 +203,7 @@ $.jgrid.extend({
 				// no grouping is needed
 				groupOptions.grouping = false;
 			}
+			groupOptions['sortname'] = groups[groupfields].name;
 
 		});
 		return { "colModel" : groups, "rows": pivotrows, "groupOptions" : groupOptions };
