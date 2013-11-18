@@ -159,6 +159,7 @@ $.jgrid.extend({
 				} else {
 					if( rowindex >= 0) {
 						if(newObj.hasOwnProperty(pivotValue)) {
+							// to set a function how to operate the repeated values
 							newObj[pivotValue] += result;
 							pivotrows[rowindex] = newObj;
 						} else {
@@ -166,6 +167,7 @@ $.jgrid.extend({
 							pivotrows[rowindex] = newObj;
 						}
 						if(o.rowTotals) {
+							// to set a function how to operate the rowtotal values
 							pivotrows[rowindex].p_Total += result;
 						}
 					}
@@ -180,9 +182,14 @@ $.jgrid.extend({
 			if(o.rowTotals) {
 				groups.push({name:'p_Total', label:'Total', summaryType:'sum', summaryRound: 2});
 			}
-			for(i=0;i<groupfields;i++) {
-				groupOptions.groupingView.groupField[i] = groups[i].name;
-				groupOptions.groupingView.groupSummary[i] = o.colTotals;
+			if( groupfields > 0) {
+				for(i=0;i<groupfields;i++) {
+					groupOptions.groupingView.groupField[i] = groups[i].name;
+					groupOptions.groupingView.groupSummary[i] = o.colTotals;
+				}
+			} else {
+				// no grouping is needed
+				groupOptions.grouping = false;
 			}
 
 		});
