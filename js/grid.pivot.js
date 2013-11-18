@@ -56,7 +56,19 @@ $.jgrid.extend({
 		},
 		o = $.extend ( {
 			rowTotals : false,
-			colTotals : true
+			colTotals : true,
+			// default values for all summary columns
+			summaryType : 'sum',
+			summaryRound: 2,
+			summaryRoundType : 'round',
+			agregateFunc : function( result, column, row) {
+				// default is sum
+				if( row[column] !== undefined ) {
+					return row[column] += result;
+				} else {
+					return result;
+				}
+			}
 		}, options || {});
 		this.each(function(){
 
@@ -151,36 +163,36 @@ $.jgrid.extend({
 				rowindex = -1;
 				newObj = find(pivotrows, findGroup, groupValue);
 				if(!newObj) {
-					tmp[pivotValue] = result;
+					tmp[pivotValue] = o.agregateFunc.call(this, result, pivotValue, tmp);
 					if(o.rowTotals) {
-						tmp['p_Total'] = result;
+						tmp['p_Total'] = o.agregateFunc.call(this, result, 'p_Total', tmp);
 					}
 					pivotrows.push( tmp );
 				} else {
 					if( rowindex >= 0) {
 						if(newObj.hasOwnProperty(pivotValue)) {
 							// to set a function how to operate the repeated values
-							newObj[pivotValue] += result;
+							newObj[pivotValue] = o.agregateFunc.call(this, result, pivotValue, newObj);
 							pivotrows[rowindex] = newObj;
 						} else {
-							newObj[pivotValue] = result;
+							newObj[pivotValue] = o.agregateFunc.call(this, result, pivotValue, newObj);
 							pivotrows[rowindex] = newObj;
 						}
 						if(o.rowTotals) {
 							// to set a function how to operate the rowtotal values
-							pivotrows[rowindex].p_Total += result;
+							pivotrows[rowindex].p_Total = o.agregateFunc.call(this, result, 'p_Total', newObj);
 						}
 					}
 				}
 				if(!exists(groups, findPivot, pivotValue)) {
 					// colmodel
-					var colm = {name: $.trim(pivotValue), label: $.trim(pivotValue), summaryType:'sum', summaryRound: 2 };
+					var colm = {name: $.trim(pivotValue), label: $.trim(pivotValue), summaryType:o.summaryType, summaryRound: o.summaryRound, summaryRoundType: o.summaryRoundType };
 					groups.push(colm);
 				}
 				r++;
 			}
 			if(o.rowTotals) {
-				groups.push({name:'p_Total', label:'Total', summaryType:'sum', summaryRound: 2});
+				groups.push({name:'p_Total', label:'Total', summaryType:o.summaryType, summaryRound: o.summaryRound, summaryRoundType: o.summaryRoundType});
 			}
 			if( groupfields > 0) {
 				for(i=0;i<groupfields;i++) {
