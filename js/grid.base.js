@@ -3156,7 +3156,7 @@ $.jgrid.extend({
 				}
 			}
 			if(success) {
-				if(cp === 'string') {$(ind).addClass(cssp);} else if(cp === 'object') {$(ind).css(cssp);}
+				if(cp === 'string') {$(ind).addClass(cssp);} else if(cssp !== null && cp === 'object') {$(ind).css(cssp);}
 				$(t).triggerHandler("jqGridAfterGridComplete");
 			}
 		});
