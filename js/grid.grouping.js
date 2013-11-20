@@ -80,7 +80,7 @@ $.jgrid.extend({
 			}
 		});
 	},
-	groupingPrepare : function (rData, gdata, record, irow) {
+	groupingPrepare : function ( record, irow, rn) {
 		this.each(function(){
 			var grp = this.p.groupingView, $t= this, i,
 			grlen = grp.groupField.length, 
@@ -169,9 +169,9 @@ $.jgrid.extend({
 					}
 				}
 			}
-			gdata.push( rData );
+			//gdata.push( rData );
 		});
-		return gdata;
+		return rn;
 	},
 	groupingToggle : function(hid){
 		this.each(function(){

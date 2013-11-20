@@ -849,7 +849,7 @@ $.fn.jqGrid = function( pin ) {
 			data : [],
 			_index : {},
 			grouping : false,
-			groupingView : {groupField:[],groupOrder:[], groupText:[],groupColumnShow:[],groupSummary:[], showSummaryOnHide: false, sortitems:[], sortnames:[], summary:[],summaryval:[], plusicon: 'ui-icon-circlesmall-plus', minusicon: 'ui-icon-circlesmall-minus', displayField: []},
+			groupingView : {groupField:[],groupOrder:[], groupText:[],groupColumnShow:[],groupSummary:[], showSummaryOnHide: false, sortitems:[], sortnames:[], summary:[],summaryval:[], plusicon: 'ui-icon-circlesmall-plus', minusicon: 'ui-icon-circlesmall-minus', displayField: [], groupSummaryPos:[]},
 			ignoreCase : false,
 			cmTemplate : {},
 			idPrefix : "",
@@ -1327,7 +1327,8 @@ $.fn.jqGrid = function( pin ) {
 				rowData[iStartTrTag] = constructTr(rid, hiderow, cn1, rd, xmlr, false);
 				rowData.push("</tr>");
 				if(ts.p.grouping) {
-					grpdata = groupingPrepare.call(self,rowData, grpdata, rd, j);
+					grpdata.push( rowData );
+					rn = groupingPrepare.call(self, rd, j, rn);
 					rowData = [];
 				}
 				if(locdata || ts.p.treeGrid === true) {
@@ -1511,7 +1512,8 @@ $.fn.jqGrid = function( pin ) {
 				rowData[iStartTrTag] = constructTr(idr, hiderow, cn1, rd, cur, selr);
 				rowData.push( "</tr>" );
 				if(ts.p.grouping) {
-					grpdata = groupingPrepare.call(self,rowData, grpdata, rd, i);
+					grpdata.push( rowData );
+					rn = groupingPrepare.call(self, rd, i, rn);
 					rowData = [];
 				}
 				if(locdata || ts.p.treeGrid===true) {
