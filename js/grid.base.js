@@ -2108,6 +2108,9 @@ $.fn.jqGrid = function( pin ) {
 				}
 			});
 			$("#first"+$.jgrid.jqID(tp)+", #prev"+$.jgrid.jqID(tp)+", #next"+$.jgrid.jqID(tp)+", #last"+$.jgrid.jqID(tp)).click( function() {
+				if ($(this).hasClass("ui-state-disabled")) {
+					return false;
+				}
 				var cp = intNum(ts.p.page,1),
 				last = intNum(ts.p.lastpage,1), selclick = false,
 				fp=true, pp=true, np=true,lp=true;
