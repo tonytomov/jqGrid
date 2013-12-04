@@ -1085,7 +1085,7 @@ $.jgrid.extend({
 					h.w.remove();
 					if(h.o) {h.o.remove();}
 				}
-				});
+			});
 			if(!closeovrl) {
 				$("." + $.jgrid.jqID(p.overlayClass)).click(function(){
 					if(!checkUpdates()) {return false;}
@@ -1209,8 +1209,10 @@ $.jgrid.extend({
 			onBeforeInit = $.isFunction(rp_ge[$t.p.id].beforeInitData) ? rp_ge[$t.p.id].beforeInitData : false,
 			showFrm = true,
 			maxCols = 1, maxRows=0;
-			if(p.recreateForm===true && $("#"+$.jgrid.jqID(IDs.themodal))[0] !== undefined) {
-				$("#"+$.jgrid.jqID(IDs.themodal)).remove();
+			if(!p.recreateForm) {
+				if( $($t).data("viewProp") ) {
+					$.extend(rp_ge[$(this)[0].p.id], $($t).data("viewProp"));
+				}
 			}
 			function focusaref(){ //Sfari 3 issues
 				if(rp_ge[$t.p.id].closeOnEscape===true || rp_ge[$t.p.id].navkeys[0]===true) {
@@ -1345,23 +1347,8 @@ $.jgrid.extend({
 				return [pos,rowsInGrid];
 			}
 
-			if ( $("#"+$.jgrid.jqID(IDs.themodal))[0] !== undefined ) {
-				if(onBeforeInit) {
-					showFrm = onBeforeInit.call($t,$("#"+frmgr));
-					if(showFrm === undefined) {
-						showFrm = true;
-					}
-				}
-				if(showFrm === false) {return;}
-				$(".ui-jqdialog-title","#"+$.jgrid.jqID(IDs.modalhead)).html(p.caption);
-				$("#FormError","#"+frmtb).hide();
-				fillData(rowid,$t);
-				if($.isFunction(rp_ge[$t.p.id].beforeShowForm)) {rp_ge[$t.p.id].beforeShowForm.call($t,$("#"+frmgr));}
-				$.jgrid.viewModal("#"+$.jgrid.jqID(IDs.themodal),{gbox:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, jqM: false, overlay: p.overlay, modal:p.modal});
-				focusaref();
-			} else {
-				var dh = isNaN(p.dataheight) ? p.dataheight : p.dataheight+"px",
-				dw = isNaN(p.datawidth) ? p.datawidth : p.datawidth+"px",
+				var dh = isNaN(rp_ge[$(this)[0].p.id].dataheight) ? rp_ge[$(this)[0].p.id].dataheight : rp_ge[$(this)[0].p.id].dataheight+"px",
+				dw = isNaN(rp_ge[$(this)[0].p.id].datawidth) ? rp_ge[$(this)[0].p.id].datawidth : rp_ge[$(this)[0].p.id].datawidth+"px",
 				frm = $("<form name='FormPost' id='"+frmgr_id+"' class='FormGrid' style='width:"+dw+";overflow:auto;position:relative;height:"+dh+";'></form>"),
 				tbl =$("<table id='"+frmtb_id+"' class='EditTable' cellspacing='1' cellpadding='2' border='0' style='table-layout:fixed'><tbody></tbody></table>");
 				if(onBeforeInit) {
@@ -1432,7 +1419,24 @@ $.jgrid.extend({
 					.append("<span class='ui-icon "+p.closeicon[2]+"'></span>");
 				}
 				if($.isFunction(p.beforeShowForm)) {p.beforeShowForm.call($t,$("#"+frmgr));}
-				$.jgrid.viewModal("#"+$.jgrid.jqID(IDs.themodal),{gbox:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal,overlay: p.overlay, modal:p.modal});
+				$.jgrid.viewModal("#"+$.jgrid.jqID(IDs.themodal),{
+					gbox:"#gbox_"+$.jgrid.jqID(gID),
+					jqm:p.jqModal,
+					overlay: p.overlay, 
+					modal:p.modal,
+					onHide :  function(h) {
+						$($t).data("viewProp", {
+							top:parseFloat($(h.w).css("top")),
+							left : parseFloat($(h.w).css("left")),
+							width : $(h.w).width(),
+							height : $(h.w).height(),
+							dataheight : $("#"+frmgr).height(),
+							datawidth: $("#"+frmgr).width()
+						});
+						h.w.remove();
+						if(h.o) {h.o.remove();}
+					}
+				});
 				$(".fm-button:not(.ui-state-disabled)","#"+frmtb+"_2").hover(
 					function(){$(this).addClass('ui-state-hover');},
 					function(){$(this).removeClass('ui-state-hover');}
@@ -1477,7 +1481,7 @@ $.jgrid.extend({
 					focusaref();
 					return false;
 				});
-			}
+			//}
 			var posInit =getCurrPos();
 			updateNav(posInit[0],posInit);
 		});
