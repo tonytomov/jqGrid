@@ -1347,141 +1347,139 @@ $.jgrid.extend({
 				return [pos,rowsInGrid];
 			}
 
-				var dh = isNaN(rp_ge[$(this)[0].p.id].dataheight) ? rp_ge[$(this)[0].p.id].dataheight : rp_ge[$(this)[0].p.id].dataheight+"px",
-				dw = isNaN(rp_ge[$(this)[0].p.id].datawidth) ? rp_ge[$(this)[0].p.id].datawidth : rp_ge[$(this)[0].p.id].datawidth+"px",
-				frm = $("<form name='FormPost' id='"+frmgr_id+"' class='FormGrid' style='width:"+dw+";overflow:auto;position:relative;height:"+dh+";'></form>"),
-				tbl =$("<table id='"+frmtb_id+"' class='EditTable' cellspacing='1' cellpadding='2' border='0' style='table-layout:fixed'><tbody></tbody></table>");
-				if(onBeforeInit) {
-					showFrm = onBeforeInit.call($t,$("#"+frmgr));
-					if(showFrm === undefined) {
-						showFrm = true;
-					}
+			var dh = isNaN(rp_ge[$(this)[0].p.id].dataheight) ? rp_ge[$(this)[0].p.id].dataheight : rp_ge[$(this)[0].p.id].dataheight+"px",
+			dw = isNaN(rp_ge[$(this)[0].p.id].datawidth) ? rp_ge[$(this)[0].p.id].datawidth : rp_ge[$(this)[0].p.id].datawidth+"px",
+			frm = $("<form name='FormPost' id='"+frmgr_id+"' class='FormGrid' style='width:"+dw+";overflow:auto;position:relative;height:"+dh+";'></form>"),
+			tbl =$("<table id='"+frmtb_id+"' class='EditTable' cellspacing='1' cellpadding='2' border='0' style='table-layout:fixed'><tbody></tbody></table>");
+			if(onBeforeInit) {
+				showFrm = onBeforeInit.call($t,$("#"+frmgr));
+				if(showFrm === undefined) {
+					showFrm = true;
 				}
-				if(showFrm === false) {return;}
-				$($t.p.colModel).each( function() {
-					var fmto = this.formoptions;
-					maxCols = Math.max(maxCols, fmto ? fmto.colpos || 0 : 0 );
-					maxRows = Math.max(maxRows, fmto ? fmto.rowpos || 0 : 0 );
-				});
-				// set the id.
-				$(frm).append(tbl);
-				createData(rowid, $t, tbl, maxCols);
-				var rtlb = $t.p.direction === "rtl" ? true :false,
-				bp = rtlb ? "nData" : "pData",
-				bn = rtlb ? "pData" : "nData",
-
+			}
+			if(showFrm === false) {return;}
+			$($t.p.colModel).each( function() {
+				var fmto = this.formoptions;
+				maxCols = Math.max(maxCols, fmto ? fmto.colpos || 0 : 0 );
+				maxRows = Math.max(maxRows, fmto ? fmto.rowpos || 0 : 0 );
+			});
+			// set the id.
+			$(frm).append(tbl);
+			createData(rowid, $t, tbl, maxCols);
+			var rtlb = $t.p.direction === "rtl" ? true :false,
+			bp = rtlb ? "nData" : "pData",
+			bn = rtlb ? "pData" : "nData",
 				// buttons at footer
-				bP = "<a id='"+bp+"' class='fm-button ui-state-default ui-corner-left'><span class='ui-icon ui-icon-triangle-1-w'></span></a>",
-				bN = "<a id='"+bn+"' class='fm-button ui-state-default ui-corner-right'><span class='ui-icon ui-icon-triangle-1-e'></span></a>",
-				bC  ="<a id='cData' class='fm-button ui-state-default ui-corner-all'>"+p.bClose+"</a>";
-				if(maxRows >  0) {
-					var sd=[];
-					$.each($(tbl)[0].rows,function(i,r){
-						sd[i] = r;
-					});
-					sd.sort(function(a,b){
-						if(a.rp > b.rp) {return 1;}
-						if(a.rp < b.rp) {return -1;}
-						return 0;
-					});
-					$.each(sd, function(index, row) {
-						$('tbody',tbl).append(row);
-					});
+			bP = "<a id='"+bp+"' class='fm-button ui-state-default ui-corner-left'><span class='ui-icon ui-icon-triangle-1-w'></span></a>",
+			bN = "<a id='"+bn+"' class='fm-button ui-state-default ui-corner-right'><span class='ui-icon ui-icon-triangle-1-e'></span></a>",
+			bC  ="<a id='cData' class='fm-button ui-state-default ui-corner-all'>"+p.bClose+"</a>";
+			if(maxRows >  0) {
+				var sd=[];
+				$.each($(tbl)[0].rows,function(i,r){
+					sd[i] = r;
+				});
+				sd.sort(function(a,b){
+					if(a.rp > b.rp) {return 1;}
+					if(a.rp < b.rp) {return -1;}
+					return 0;
+				});
+				$.each(sd, function(index, row) {
+					$('tbody',tbl).append(row);
+				});
+			}
+			p.gbox = "#gbox_"+$.jgrid.jqID(gID);
+			var bt = $("<div></div>").append(frm).append("<table border='0' class='EditTable' id='"+frmtb+"_2'><tbody><tr id='Act_Buttons'><td class='navButton' width='"+p.labelswidth+"'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton'>"+bC+"</td></tr></tbody></table>");
+			$.jgrid.createModal(IDs,bt,p,"#gview_"+$.jgrid.jqID($t.p.id),$("#gview_"+$.jgrid.jqID($t.p.id))[0]);
+			if(rtlb) {
+				$("#pData, #nData","#"+frmtb+"_2").css("float","right");
+				$(".EditButton","#"+frmtb+"_2").css("text-align","left");
+			}
+			if(!p.viewPagerButtons) {$("#pData, #nData","#"+frmtb+"_2").hide();}
+			bt = null;
+			$("#"+IDs.themodal).keydown( function( e ) {
+				if(e.which === 27) {
+					if(rp_ge[$t.p.id].closeOnEscape) {$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:p.gbox,jqm:p.jqModal, onClose: p.onClose});}
+					return false;
 				}
-				p.gbox = "#gbox_"+$.jgrid.jqID(gID);
-				var bt = $("<div></div>").append(frm).append("<table border='0' class='EditTable' id='"+frmtb+"_2'><tbody><tr id='Act_Buttons'><td class='navButton' width='"+p.labelswidth+"'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton'>"+bC+"</td></tr></tbody></table>");
-				$.jgrid.createModal(IDs,bt,p,"#gview_"+$.jgrid.jqID($t.p.id),$("#gview_"+$.jgrid.jqID($t.p.id))[0]);
-				if(rtlb) {
-					$("#pData, #nData","#"+frmtb+"_2").css("float","right");
-					$(".EditButton","#"+frmtb+"_2").css("text-align","left");
-				}
-				if(!p.viewPagerButtons) {$("#pData, #nData","#"+frmtb+"_2").hide();}
-				bt = null;
-				$("#"+IDs.themodal).keydown( function( e ) {
-					if(e.which === 27) {
-						if(rp_ge[$t.p.id].closeOnEscape) {$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:p.gbox,jqm:p.jqModal, onClose: p.onClose});}
+				if(p.navkeys[0]===true) {
+					if(e.which === p.navkeys[1]){ //up
+						$("#pData", "#"+frmtb+"_2").trigger("click");
 						return false;
 					}
-					if(p.navkeys[0]===true) {
-						if(e.which === p.navkeys[1]){ //up
-							$("#pData", "#"+frmtb+"_2").trigger("click");
-							return false;
-						}
-						if(e.which === p.navkeys[2]){ //down
-							$("#nData", "#"+frmtb+"_2").trigger("click");
-							return false;
-						}
+					if(e.which === p.navkeys[2]){ //down
+						$("#nData", "#"+frmtb+"_2").trigger("click");
+						return false;
 					}
-				});
-				p.closeicon = $.extend([true,"left","ui-icon-close"],p.closeicon);
-				if(p.closeicon[0]===true) {
-					$("#cData","#"+frmtb+"_2").addClass(p.closeicon[1] === "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
-					.append("<span class='ui-icon "+p.closeicon[2]+"'></span>");
 				}
-				if($.isFunction(p.beforeShowForm)) {p.beforeShowForm.call($t,$("#"+frmgr));}
-				$.jgrid.viewModal("#"+$.jgrid.jqID(IDs.themodal),{
-					gbox:"#gbox_"+$.jgrid.jqID(gID),
-					jqm:p.jqModal,
-					overlay: p.overlay, 
-					modal:p.modal,
-					onHide :  function(h) {
-						$($t).data("viewProp", {
-							top:parseFloat($(h.w).css("top")),
-							left : parseFloat($(h.w).css("left")),
-							width : $(h.w).width(),
-							height : $(h.w).height(),
-							dataheight : $("#"+frmgr).height(),
-							datawidth: $("#"+frmgr).width()
-						});
-						h.w.remove();
-						if(h.o) {h.o.remove();}
+			});
+			p.closeicon = $.extend([true,"left","ui-icon-close"],p.closeicon);
+			if(p.closeicon[0]===true) {
+				$("#cData","#"+frmtb+"_2").addClass(p.closeicon[1] === "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
+				.append("<span class='ui-icon "+p.closeicon[2]+"'></span>");
+			}
+			if($.isFunction(p.beforeShowForm)) {p.beforeShowForm.call($t,$("#"+frmgr));}
+			$.jgrid.viewModal("#"+$.jgrid.jqID(IDs.themodal),{
+				gbox:"#gbox_"+$.jgrid.jqID(gID),
+				jqm:p.jqModal,
+				overlay: p.overlay, 
+				modal:p.modal,
+				onHide :  function(h) {
+					$($t).data("viewProp", {
+						top:parseFloat($(h.w).css("top")),
+						left : parseFloat($(h.w).css("left")),
+						width : $(h.w).width(),
+						height : $(h.w).height(),
+						dataheight : $("#"+frmgr).height(),
+						datawidth: $("#"+frmgr).width()
+					});
+					h.w.remove();
+					if(h.o) {h.o.remove();}
+				}
+			});
+			$(".fm-button:not(.ui-state-disabled)","#"+frmtb+"_2").hover(
+				function(){$(this).addClass('ui-state-hover');},
+				function(){$(this).removeClass('ui-state-hover');}
+			);
+			focusaref();
+			$("#cData", "#"+frmtb+"_2").click(function(){
+				$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, onClose: p.onClose});
+				return false;
+			});
+			$("#nData", "#"+frmtb+"_2").click(function(){
+				$("#FormError","#"+frmtb).hide();
+				var npos = getCurrPos();
+				npos[0] = parseInt(npos[0],10);
+				if(npos[0] !== -1 && npos[1][npos[0]+1]) {
+					if($.isFunction(p.onclickPgButtons)) {
+						p.onclickPgButtons.call($t,'next',$("#"+frmgr),npos[1][npos[0]]);
 					}
-				});
-				$(".fm-button:not(.ui-state-disabled)","#"+frmtb+"_2").hover(
-					function(){$(this).addClass('ui-state-hover');},
-					function(){$(this).removeClass('ui-state-hover');}
-				);
+					fillData(npos[1][npos[0]+1],$t);
+					$($t).jqGrid("setSelection",npos[1][npos[0]+1]);
+					if($.isFunction(p.afterclickPgButtons)) {
+						p.afterclickPgButtons.call($t,'next',$("#"+frmgr),npos[1][npos[0]+1]);
+					}
+					updateNav(npos[0]+1,npos);
+				}
 				focusaref();
-				$("#cData", "#"+frmtb+"_2").click(function(){
-					$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, onClose: p.onClose});
-					return false;
-				});
-				$("#nData", "#"+frmtb+"_2").click(function(){
-					$("#FormError","#"+frmtb).hide();
-					var npos = getCurrPos();
-					npos[0] = parseInt(npos[0],10);
-					if(npos[0] !== -1 && npos[1][npos[0]+1]) {
-						if($.isFunction(p.onclickPgButtons)) {
-							p.onclickPgButtons.call($t,'next',$("#"+frmgr),npos[1][npos[0]]);
-						}
-						fillData(npos[1][npos[0]+1],$t);
-						$($t).jqGrid("setSelection",npos[1][npos[0]+1]);
-						if($.isFunction(p.afterclickPgButtons)) {
-							p.afterclickPgButtons.call($t,'next',$("#"+frmgr),npos[1][npos[0]+1]);
-						}
-						updateNav(npos[0]+1,npos);
+				return false;
+			});
+			$("#pData", "#"+frmtb+"_2").click(function(){
+				$("#FormError","#"+frmtb).hide();
+				var ppos = getCurrPos();
+				if(ppos[0] !== -1 && ppos[1][ppos[0]-1]) {
+					if($.isFunction(p.onclickPgButtons)) {
+						p.onclickPgButtons.call($t,'prev',$("#"+frmgr),ppos[1][ppos[0]]);
 					}
-					focusaref();
-					return false;
-				});
-				$("#pData", "#"+frmtb+"_2").click(function(){
-					$("#FormError","#"+frmtb).hide();
-					var ppos = getCurrPos();
-					if(ppos[0] !== -1 && ppos[1][ppos[0]-1]) {
-						if($.isFunction(p.onclickPgButtons)) {
-							p.onclickPgButtons.call($t,'prev',$("#"+frmgr),ppos[1][ppos[0]]);
-						}
-						fillData(ppos[1][ppos[0]-1],$t);
-						$($t).jqGrid("setSelection",ppos[1][ppos[0]-1]);
-						if($.isFunction(p.afterclickPgButtons)) {
-							p.afterclickPgButtons.call($t,'prev',$("#"+frmgr),ppos[1][ppos[0]-1]);
-						}
-						updateNav(ppos[0]-1,ppos);
+					fillData(ppos[1][ppos[0]-1],$t);
+					$($t).jqGrid("setSelection",ppos[1][ppos[0]-1]);
+					if($.isFunction(p.afterclickPgButtons)) {
+						p.afterclickPgButtons.call($t,'prev',$("#"+frmgr),ppos[1][ppos[0]-1]);
 					}
-					focusaref();
-					return false;
-				});
-			//}
+					updateNav(ppos[0]-1,ppos);
+				}
+				focusaref();
+				return false;
+			});
 			var posInit =getCurrPos();
 			updateNav(posInit[0],posInit);
 		});
