@@ -205,11 +205,11 @@ $.jgrid.extend({
 								!$target.hasClass('add-group') && !$target.hasClass('add-rule') &&
 								!$target.hasClass('delete-group') && !$target.hasClass('delete-rule') &&
 								(!$target.hasClass("fm-button") || !$target.is("[id$=_query]"))) {
-							$("#"+fid+"_search").focus().click();
+							$("#"+fid+"_search").click();
 							return false;
 						}
 						if (p.closeOnEscape && e.which === 27) { // 27 === $.ui.keyCode.ESCAPE
-							$("#"+$.jgrid.jqID(IDs.modalhead)).find(".ui-jqdialog-titlebar-close").focus().click();
+							$("#"+$.jgrid.jqID(IDs.modalhead)).find(".ui-jqdialog-titlebar-close").click();
 							return false;
 						}
 					});
@@ -225,8 +225,8 @@ $.jgrid.extend({
 					p.stringResult = p.multipleSearch;
 				}
 				$("#"+fid+"_search").bind('click', function(){
-					var fl = $("#"+fid),
-					sdata={}, res,
+					var fl = $("#"+fid), sdata={}, res, filters;
+					fl.find(".input-elm:focus").change();
 					filters = fl.jqFilter('filterData');
 					if(p.errorcheck) {
 						fl[0].hideError();

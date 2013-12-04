@@ -2108,6 +2108,9 @@ $.fn.jqGrid = function( pin ) {
 				}
 			});
 			$("#first"+$.jgrid.jqID(tp)+", #prev"+$.jgrid.jqID(tp)+", #next"+$.jgrid.jqID(tp)+", #last"+$.jgrid.jqID(tp)).click( function() {
+				if ($(this).hasClass("ui-state-disabled")) {
+					return false;
+				}
 				var cp = intNum(ts.p.page,1),
 				last = intNum(ts.p.lastpage,1), selclick = false,
 				fp=true, pp=true, np=true,lp=true;
@@ -2761,7 +2764,7 @@ $.fn.jqGrid = function( pin ) {
 		}
 		if(hg) {$(grid.bDiv).hide();}
 		grid.cDiv = document.createElement("div");
-		var arf = ts.p.hidegrid===true ? $("<a role='link' class='ui-jqgrid-titlebar-close HeaderButton' />").hover(
+		var arf = ts.p.hidegrid===true ? $("<a role='link' class='ui-jqgrid-titlebar-close ui-corner-all HeaderButton' />").hover(
 			function(){ arf.addClass('ui-state-hover');},
 			function() {arf.removeClass('ui-state-hover');})
 		.append("<span class='ui-icon ui-icon-circle-triangle-n'></span>").css((dir==="rtl"?"left":"right"),"0px") : "";
