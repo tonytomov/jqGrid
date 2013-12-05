@@ -20,7 +20,9 @@ $.extend($.jgrid,{
 	    Find: "Find",
 	    Reset: "Nulstil",
 	    odata: [{ oper:'eq', text:"lig"},{ oper:'ne', text:"forskellige fra"},{ oper:'lt', text:"mindre"},{ oper:'le', text:"mindre eller lig"},{ oper:'gt', text:"større"},{ oper:'ge', text:"større eller lig"},{ oper:'bw', text:"begynder med"},{ oper:'bn', text:"begynder ikke med"},{ oper:'in', text:"findes i"},{ oper:'ni', text:"findes ikke i"},{ oper:'ew', text:"ender med"},{ oper:'en', text:"ender ikke med"},{ oper:'cn', text:"indeholder"},{ oper:'nc', text:"indeholder ikke"},{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}],
-	    groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	]
+	    groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	],
+		operandTitle : "Click to select search operation.",
+		resetTitle : "Reset Search Value"
 	},
 	edit : {
 	    addCaption: "Tilføj",

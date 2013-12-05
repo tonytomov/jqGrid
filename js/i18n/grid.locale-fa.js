@@ -25,7 +25,9 @@
             {
                 op: "OR",
                 text: "مجموع"
-            }]
+            }],
+			operandTitle : "Click to select search operation.",
+			resetTitle : "Reset Search Value"
         },
         edit: {
             addCaption: "اضافه کردن رکورد",

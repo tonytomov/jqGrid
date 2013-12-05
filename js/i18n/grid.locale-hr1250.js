@@ -21,7 +21,9 @@ $.extend($.jgrid,{
 		Find: "Pretra�ivanje",
 		Reset: "Poni�ti",
 		odata : [{ oper:'eq', text:'jednak'}, { oper:'ne', text:'nije identi�an'}, { oper:'lt', text:'manje'}, { oper:'le', text:'manje ili identi�no'},{ oper:'gt', text:'ve�e'},{ oper:'ge', text:'ve�e ili identi�no'}, { oper:'bw', text:'po�inje sa'},{ oper:'bn', text:'ne po�inje sa '},{ oper:'in', text:'je u'},{ oper:'ni', text:'nije u'},{ oper:'ew', text:'zavr�ava sa'},{ oper:'en', text:'ne zavr�ava sa'},{ oper:'cn', text:'sadr�i'},{ oper:'nc', text:'ne sadr�i'},{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}],
-		groupOps: [	{ op: "I", text: "sve" },	{ op: "ILI",  text: "bilo koji" }	]
+		groupOps: [	{ op: "I", text: "sve" },	{ op: "ILI",  text: "bilo koji" }	],
+		operandTitle : "Click to select search operation.",
+		resetTitle : "Reset Search Value"
 	},
 	edit : {
 		addCaption: "Dodaj zapis",

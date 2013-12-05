@@ -20,7 +20,9 @@ $.extend($.jgrid,{
 		Find: "찾기",
 		Reset: "초기화",
 		odata: [{ oper:'eq', text:"같다"},{ oper:'ne', text:"같지 않다"},{ oper:'lt', text:"작다"},{ oper:'le', text:"작거나 같다"},{ oper:'gt', text:"크다"},{ oper:'ge', text:"크거나 같다"},{ oper:'bw', text:"로 시작한다"},{ oper:'bn', text:"로 시작하지 않는다"},{ oper:'in', text:"내에 있다"},{ oper:'ni', text:"내에 있지 않다"},{ oper:'ew', text:"로 끝난다"},{ oper:'en', text:"로 끝나지 않는다"},{ oper:'cn', text:"내에 존재한다"},{ oper:'nc', text:"내에 존재하지 않는다"},{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}],
-		groupOps: [	{ op: "AND", text: "전부" },	{ op: "OR",  text: "임의" }	]
+		groupOps: [	{ op: "AND", text: "전부" },	{ op: "OR",  text: "임의" }	],
+		operandTitle : "Click to select search operation.",
+		resetTitle : "Reset Search Value"
 	},
 	edit : {
 		addCaption: "행 추가",

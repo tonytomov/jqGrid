@@ -34,7 +34,9 @@ $.extend($.jgrid,{
             {
                 op: "OR",
                 text: "\u3044\u305A\u308C\u304B\u306E"
-            }]
+            }],
+		operandTitle : "Click to select search operation.",
+		resetTitle : "Reset Search Value"
 	},
 	edit : {
 	    addCaption: "\u30ec\u30b3\u30fc\u30c9\u8ffd\u52a0",
