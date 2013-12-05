@@ -68,6 +68,19 @@ $.jgrid.extend({
 				} else {
 					return result;
 				}
+			},
+			parseResultValue : function( row, resultColName, pivotColName) {
+				var res = row[resultColName];
+				if(res !== undefined) {
+					if(!isNaN(res)) {
+						res = parseFloat( res );
+					} else {
+						res = 0;
+					}
+				} else {
+					res = 0;
+				}
+				return res;
 			}
 		}, options || {});
 		this.each(function(){
@@ -152,7 +165,7 @@ $.jgrid.extend({
 				row = rows[r];
 				groupValue = [];
 				pivotValue = $.trim(row[pivotCol.name]);
-				result = parseFloat($.trim(row[resultCol.name]));
+				result = o.parseResultValue.call(this, row, resultCol.name, pivotCol.name);
 				tmp = {};
 				i = 0;
 				while( i < grouplen ) {
