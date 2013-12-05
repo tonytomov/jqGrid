@@ -205,7 +205,7 @@ $.jgrid.extend({
 				r++;
 			}
 			if(o.rowTotals) {
-				groups.push({name:'p_Total', label:'Total', summaryType:o.summaryType, summaryRound: o.summaryRound, summaryRoundType: o.summaryRoundType});
+				groups.push({name:'p_Total', label:'Total', summaryType:o.summaryType, summaryRound: o.summaryRound, summaryRoundType: o.summaryRoundType, formatter:'number'});
 			}
 			if( groupfields > 0) {
 				for(i=0;i<groupfields;i++) {
