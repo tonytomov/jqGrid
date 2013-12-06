@@ -65,6 +65,10 @@
 		NumberFormat : function(nData,opts) {
 			if(!$.fmatter.isNumber(nData)) {
 				nData *= 1;
+				if (isNaN(nData)){
+					// E.g:  1.039,75 -> prepare string to parseFloat function
+					nData = parseFloat(num.replace("/./g", "").replace(",","."));
+				}
 			}
 			if($.fmatter.isNumber(nData)) {
 				var bNegative = (nData < 0);
