@@ -31,6 +31,9 @@
 		isNumber : function(o) {
 			return typeof o === 'number' && isFinite(o);
 		},
+		isNumberCheck: function (o) {
+			return /^[-0-9.,]+$/.test(o);
+		},
 		isNull : function(o) {
 			return o === null;
 		},
@@ -61,17 +64,21 @@
 		return v;
 	};
 	$.fmatter.util = {
+		StringToFloat: function(strNum,decimalSep,thousandsSep){
+			decimalSep = typeof decimalSep !== 'undefined' ? decimalSep : '.';
+			thousandsSep = typeof thousandsSep !== 'undefined' ? thousandsSep : ',';
+			var parts = strNum.split(decimalSep);
+			var re = new RegExp("[" + thousandsSep + "]");
+			parts[0] = parts[0].replace(re, '');
+			decimalSep = (decimalSep == ",") ? "." : decimalSep;
+			return parseFloat(parts.join(decimalSep));		
+		},	
 		// Taken from YAHOO utils
-		NumberFormat : function(nData,opts) {
-			if(!$.fmatter.isNumber(nData)) {
-				nData *= 1;
-				if (isNaN(nData)){
-					// E.g:  1.039,75 -> prepare string to parseFloat function
-					nData = parseFloat(num.replace("/./g", "").replace(",","."));
-				}
-			}
-			if($.fmatter.isNumber(nData)) {
-				var bNegative = (nData < 0);
+		NumberFormat : function(nData,opts) {		
+			if($.fmatter.isNumberCheck(nData)) {
+				var testNum = (nData * 1);
+				var numOutput =  (isNaN(testNum)) ? $.fmatter.util.StringToFloat(nData,opts.decimalSeparator,opts.thousandsSeparator) : testNum;
+				var bNegative = (numOutput < 0);
 				var sOutput = nData + "";
 				var sDecimalSeparator = (opts.decimalSeparator) ? opts.decimalSeparator : ".";
 				var nDotIndex;
@@ -79,7 +86,7 @@
 					// Round to the correct decimal place
 					var nDecimalPlaces = opts.decimalPlaces;
 					var nDecimal = Math.pow(10, nDecimalPlaces);
-					sOutput = Math.round(nData*nDecimal)/nDecimal + "";
+					sOutput = Math.round(numOutput*nDecimal)/nDecimal + "";
 					nDotIndex = sOutput.lastIndexOf(".");
 					if(nDecimalPlaces > 0) {
 					// Add the decimal separator
