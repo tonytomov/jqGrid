@@ -1077,7 +1077,7 @@ $.fn.jqGrid = function( pin ) {
 		constructTr = function(id, hide, altClass, rd, cur) {
 			var tabindex = '-1', restAttr = '', attrName, style = hide ? 'display:none;' : '',
 				classes = 'ui-widget-content jqgrow ui-row-' + ts.p.direction + altClass,
-				rowAttrObj = $.isFunction(ts.p.rowattr) ? ts.p.rowattr.call(ts, rd, cur) : {};
+				rowAttrObj = $.isFunction(ts.p.rowattr) ? ts.p.rowattr.call(ts, rd, cur) : ((ts.p.rowattr) ? ts.p.rowattr : {});
 			if(!$.isEmptyObject( rowAttrObj )) {
 				if (rowAttrObj.hasOwnProperty("id")) {
 					id = rowAttrObj.id;
