@@ -58,6 +58,9 @@ $.jgrid.extend({
 			}
 			if ( idx !== -1 ){
 				var sort = $t.p.colModel[idx].sortable;
+				if(!sobj) {
+					sobj = $t.grid.headers[idx].el;
+				}
 				if ( typeof sort !== 'boolean' ) { sort =  true; }
 				if ( typeof reload !=='boolean' ) { reload = false; }
 				if ( sort ) { $t.sortData("jqgh_"+$t.p.id+"_" + colname, idx, reload, sor, sobj); }
