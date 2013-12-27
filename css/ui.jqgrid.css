@@ -82,8 +82,9 @@ tr.ui-search-toolbar select {margin: 1px 0 0 0}
 /* loading */
 .ui-jqgrid .loading {position: absolute; top: 45%;left: 45%;width: auto;z-index:101;padding: 6px; margin: 5px;text-align: center;font-weight: bold;display: none;border-width: 2px !important; font-size:11px;}
 .ui-jqgrid .jqgrid-overlay {display:none;z-index:100;}
-* html .jqgrid-overlay {width: expression(this.parentNode.offsetWidth+'px');height: expression(this.parentNode.offsetHeight+'px');}
-* .jqgrid-overlay iframe {position:absolute;top:0;left:0;z-index:-1;width: expression(this.parentNode.offsetWidth+'px');height: expression(this.parentNode.offsetHeight+'px');}
+/* IE * html .jqgrid-overlay {width: expression(this.parentNode.offsetWidth+'px');height: expression(this.parentNode.offsetHeight+'px');} */
+* .jqgrid-overlay iframe {position:absolute;top:0;left:0;z-index:-1;}
+/* IE width: expression(this.parentNode.offsetWidth+'px');height: expression(this.parentNode.offsetHeight+'px');}*/
 /* end loading div */
 /* toolbar */
 .ui-jqgrid .ui-userdata {border-left: 0 none;    border-right: 0 none;	height : 21px;overflow: hidden;	}
@@ -136,7 +137,8 @@ tr.ui-search-toolbar select {margin: 1px 0 0 0}
 .ui-jqgrid .tree-leaf {position: absolute;	height: 18px; width: 18px;overflow: hidden;}
 .ui-jqgrid .treeclick {cursor: pointer;}
 /* moda dialog */
-* iframe.jqm {position:absolute;top:0;left:0;z-index:-1;width: expression(this.parentNode.offsetWidth+'px');height: expression(this.parentNode.offsetHeight+'px');}
+* iframe.jqm {position:absolute;top:0;left:0;z-index:-1;}
+/*	 width: expression(this.parentNode.offsetWidth+'px');height: expression(this.parentNode.offsetHeight+'px');}*/
 .ui-jqgrid-dnd tr td {border-right-width: 1px; border-right-color: inherit; border-right-style: solid; height:20px}
 /* RTL Support */
 .ui-jqgrid .ui-jqgrid-caption-rtl {text-align: right;}
