@@ -352,7 +352,7 @@ $.jgrid.extend({
 					for(kk=n.startRow;kk<end;kk++) {
 						str += grdata[kk].join('');
 					}
-					if(grp.groupSummaryPos[i] !== 'header') {
+					if(grp.groupSummaryPos[n.idx] !== 'header') {
 						var jj;
 						if (gg !== undefined) {
 							for (jj = 0; jj < grp.groupField.length; jj++) {
