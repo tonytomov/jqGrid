@@ -372,7 +372,7 @@ $.jgrid.extend({
 							str += buildSummaryTd(i, ik, grp, 0);
 							str += "</tr>";
 						}
-					toEnd = jj;
+						toEnd = jj;
 					}
 				}
 			});
