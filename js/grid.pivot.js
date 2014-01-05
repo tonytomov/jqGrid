@@ -164,13 +164,6 @@ $.jgrid.extend({
 							} catch(e) {}
 						}
 						curr[label] =  tmpmember[label] = calculation( aggr[i].aggregator, curr[label], aggr[i].member, row);
-						if(o.colTotals) {
-							if(!summaries[label] ) {
-								summaries[label] = parseFloat(row[aggr[i].member]);
-							} else {
-								summaries[label] += parseFloat(row[aggr[i].member]||0);
-							}
-						}
 					}
 					member[vl] = tmpmember;
 				}
@@ -190,7 +183,7 @@ $.jgrid.extend({
 				columns.push( colc );
 			}
 			var aggrlen  = o.aggregates.length;
-			var groupfields = xlen - 1,fi=[], tree={};
+			var groupfields = xlen - 1, tree={};
 			//tree = { text: 'root', leaf: false, children: [] };
 			while( r < rowlen ) {
 				row = data[r];
@@ -227,19 +220,19 @@ $.jgrid.extend({
 				} else {
 					if( rowindex >= 0) {
 						k = 0;
-					if(ylen>=1) {
-						for(k=0;k<ylen;k++) {
-							yValue[k] = $.trim(row[o.yDimension[k].dataName]);
-							if(o.yDimension[k].converter && $.isFunction(o.yDimension[k].converter)) {
-								yValue[k] = o.yDimension[k].converter.call(this, yValue[k], xValue, yValue);
+						if(ylen>=1) {
+							for(k=0;k<ylen;k++) {
+								yValue[k] = $.trim(row[o.yDimension[k].dataName]);
+								if(o.yDimension[k].converter && $.isFunction(o.yDimension[k].converter)) {
+									yValue[k] = o.yDimension[k].converter.call(this, yValue[k], xValue, yValue);
+								}
 							}
+							newObj = agregateFunc( row, o.aggregates, yValue, newObj );
+							//make the sums to other levels if they are enabled 
+							// and create the grid heading
+						} else  if( ylen === 0 ) {
+							newObj = agregateFunc( row, o.aggregates, null, newObj );
 						}
-						newObj = agregateFunc( row, o.aggregates, yValue, newObj );
-						//make the sums to other levels if they are enabled 
-						// and create the grid heading
-					} else  if( ylen === 0 ) {
-						newObj = agregateFunc( row, o.aggregates, null, newObj );
-					}
 						pivotrows[rowindex] = newObj;
 					}
 				}
@@ -343,6 +336,20 @@ $.jgrid.extend({
 			}
 
 			list(tree, 0);
+			var nm;
+			if(o.colTotals) {
+				var plen = pivotrows.length;
+				while(plen--) {
+					for(i=xlen;i<columns.length;i++) {
+						nm = columns[i].name;
+						if(!summaries[nm]) {
+							summaries[nm] = pivotrows[plen][nm];
+						} else {
+							summaries[nm] += pivotrows[plen][nm];
+						}
+					}
+				}
+			}
 			if( groupfields > 0) {
 				for(i=0;i<groupfields;i++) {
 					groupOptions.groupingView.groupField[i] = columns[i].name;
