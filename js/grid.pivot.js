@@ -374,9 +374,9 @@ $.jgrid.extend({
 					for(i=xlen;i<columns.length;i++) {
 						nm = columns[i].name;
 						if(!summaries[nm]) {
-							summaries[nm] = pivotrows[plen][nm];
+							summaries[nm] = parseFloat(pivotrows[plen][nm] || 0);
 						} else {
-							summaries[nm] += pivotrows[plen][nm];
+							summaries[nm] += parseFloat(pivotrows[plen][nm] || 0);
 						}
 					}
 				}
