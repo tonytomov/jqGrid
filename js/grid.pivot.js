@@ -397,6 +397,47 @@ $.jgrid.extend({
 		});
 		// return the final result.
 		return { "colModel" : columns, "rows": pivotrows, "groupOptions" : groupOptions, "groupHeaders" :  headers, summary : summaries };
+	},
+	jqPivot : function( data, pivotOpt, gridOpt, ajaxOpt) {
+		return this.each(function(){
+			var $t = this;
+
+			function pivot( data) {
+				var pivotGrid = jQuery($t).jqGrid('pivotSetup',data, pivotOpt);
+				var footerrow = pivotGrid.summary ? true : false;
+				jQuery($t).jqGrid($.extend({
+					data: pivotGrid.rows,
+					datatype: "local",
+					footerrow : footerrow,
+					colModel: pivotGrid.colModel,
+					viewrecords: true,
+					sortname: pivotOpt.xDimension[0].dataName // ?????
+				}, gridOpt || {}, pivotGrid.groupOptions));
+				var gHead = pivotGrid.groupHeaders;
+				if(gHead.length) {
+					for(var i = 0;i < gHead.length ; i++) {
+						if(gHead[i] && gHead[i].groupHeaders.length) {
+							jQuery($t).jqGrid('setGroupHeaders',gHead[i]);
+						}
+					}
+				}
+				if(pivotGrid.summary) { 
+					jQuery($t).jqGrid("footerData","set",pivotGrid.summary,true);
+				}
+			}
+
+			if(typeof(data) === "string" ) {
+				$.ajax($.extend({
+					url : data,
+					dataType: 'json',
+					success : function( response, textStatus, jqXHR) {
+						pivot($.jgrid.getAccessor(response, ajaxOpt && ajaxOpt.reader ? ajaxOpt.reader: 'rows') );
+					}
+				}, ajaxOpt || {}) );
+			} else {
+				pivot( data );
+			}
+		});
 	}
 });
 })(jQuery);
