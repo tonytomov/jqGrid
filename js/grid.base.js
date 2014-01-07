@@ -3031,6 +3031,7 @@ $.jgrid.extend({
 				});
 				t.setHeadCheckBox( false );
 				t.p.selarrrow = [];
+				t.p.selrow = null;
 			}
 			if(t.p.cellEdit === true) {
 				if(parseInt(t.p.iCol,10)>=0  && parseInt(t.p.iRow,10)>=0) {
