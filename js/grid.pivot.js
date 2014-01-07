@@ -172,7 +172,7 @@ $.jgrid.extend({
 						} else {
 							vl = $.trim(value[j]);
 							try {
-								label = (arrln === 1 ? vl : vl+"_"+aggr[i].aggregator);
+								label = (arrln === 1 ? vl : vl+"_"+aggr[i].aggregator+"_"+i);
 							} catch(e) {}
 						}
 						curr[label] =  tmpmember[label] = calculation( aggr[i].aggregator, curr[label], aggr[i].member, row);
