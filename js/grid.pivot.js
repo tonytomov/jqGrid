@@ -170,7 +170,7 @@ $.jgrid.extend({
 							label = $.trim(aggr[i].member)+"_"+aggr[i].aggregator;
 							vl = label;
 						} else {
-							vl = $.trim(value[j]);
+							vl = value[j].replace(/\s+/g, '');
 							try {
 								label = (arrln === 1 ? vl : vl+"_"+aggr[i].aggregator+"_"+i);
 							} catch(e) {}
