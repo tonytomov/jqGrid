@@ -39,6 +39,14 @@ function _pivotfilter (fn, context) {
 	}
 	return result;
 };
+$.assocArraySize = function(obj) {
+    // http://stackoverflow.com/a/6700/11236
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+};
 
 $.jgrid.extend({
 	pivotSetup : function( data, options ){
@@ -61,7 +69,7 @@ $.jgrid.extend({
 		o = $.extend ( {
 			rowTotals : false,
 			rowTotalsText : 'Total',
-			colTotals : true,
+			colTotals : false,
 			// default values for all summary columns
 			formatter : 'number',
 			align : 'right',
@@ -404,7 +412,7 @@ $.jgrid.extend({
 
 			function pivot( data) {
 				var pivotGrid = jQuery($t).jqGrid('pivotSetup',data, pivotOpt);
-				var footerrow = pivotGrid.summary ? true : false;
+				var footerrow = $.assocArraySize(pivotGrid.summary) > 0 ? true : false;
 				jQuery($t).jqGrid($.extend({
 					data: pivotGrid.rows,
 					datatype: "local",
@@ -421,7 +429,7 @@ $.jgrid.extend({
 						}
 					}
 				}
-				if(pivotGrid.summary) { 
+				if( footerrow ) { 
 					jQuery($t).jqGrid("footerData","set",pivotGrid.summary,true);
 				}
 			}
