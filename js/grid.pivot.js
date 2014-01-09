@@ -76,7 +76,9 @@ $.jgrid.extend({
 			summaryType : 'sum',
 			summaryRound: 2,
 			summaryRoundType : 'round',
-			summaryGroups : true
+			summaryGroups : true,
+			groupSummaryPos :  'header',
+			frozenStaticCols : false
 		}, options || {});
 		this.each(function(){
 
@@ -199,7 +201,7 @@ $.jgrid.extend({
 			xlen = o.xDimension.length;
 			ylen = o.yDimension.length;
 			for(i = 0; i< xlen; i++) {
-				var colc = {name:o.xDimension[i].dataName};
+				var colc = {name:o.xDimension[i].dataName, frozen: o.frozenStaticCols};
 				columns.push( colc );
 			}
 			var aggrlen  = o.aggregates.length;
@@ -394,7 +396,7 @@ $.jgrid.extend({
 				for(i=0;i<groupfields;i++) {
 					groupOptions.groupingView.groupField[i] = columns[i].name;
 					groupOptions.groupingView.groupSummary[i] = o.summaryGroups;
-					groupOptions.groupingView.groupSummaryPos[i] = 'header';
+					groupOptions.groupingView.groupSummaryPos[i] = o.groupSummaryPos;
 				}
 			} else {
 				// no grouping is needed
@@ -431,6 +433,9 @@ $.jgrid.extend({
 				}
 				if( footerrow ) { 
 					jQuery($t).jqGrid("footerData","set",pivotGrid.summary,true);
+				}
+				if(pivotOpt.frozenStaticCols) {
+					jQuery($t).jqGrid("setFrozenColumns");
 				}
 			}
 
