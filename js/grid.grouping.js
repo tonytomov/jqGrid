@@ -196,7 +196,10 @@ $.jgrid.extend({
 			},
 			itemGroupingLevel,
 			showData,
-			collapsed = false;
+			collapsed = false,
+			frz = $t.p.frozenColumns ? $t.p.id+"_frozen" : false,
+			tar2 = frz ? $("#"+$.jgrid.jqID(hid), "#"+$.jgrid.jqID(frz) ) : false,
+			r2 = (tar2 && tar2.length) ? tar2[0].nextSibling : null;
 			if( tarspan.hasClass(minus) ) {
 				if(grp.showSummaryOnHide) {
 					if(r){
@@ -209,6 +212,10 @@ $.jgrid.extend({
 							}
 							$(r).hide();
 							r = r.nextSibling;
+							if(frz) {
+								$(r2).hide();
+								r2 = r2.nextSibling;
+							}
 						}
 					}
 				} else  {
@@ -220,6 +227,10 @@ $.jgrid.extend({
 							}
 							$(r).hide();
 							r = r.nextSibling;
+							if(frz) {
+								$(r2).hide();
+								r2 = r2.nextSibling;
+							}
 						}
 					}
 				}
@@ -239,11 +250,20 @@ $.jgrid.extend({
 							}
 							if (itemGroupingLevel === num + 1) {
 								$(r).show().find(">td>span."+"tree-wrap-"+$t.p.direction).removeClass(minus).addClass(plus);
+								if(frz) {
+									$(r2).show().find(">td>span."+"tree-wrap-"+$t.p.direction).removeClass(minus).addClass(plus);
+								}
 							}
 						} else if (showData) {
 							$(r).show();
+							if(frz) {
+								$(r2).show();
+							}
 						}
 						r = r.nextSibling;
+						if(frz) {
+							r2 = r2.nextSibling;
+						}
 					}
 				}
 				tarspan.removeClass(plus).addClass(minus);
