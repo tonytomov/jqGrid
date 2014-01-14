@@ -65,7 +65,15 @@ $.jgrid.extend({
 						}
 					}
 					grp.summary =[];
+					if(grp.hideFirstGroupCol) {
+						grp.formatDisplayField[0] = function (v) { return v;};
+					}
 					for(j=0, cml = cm.length; j < cml; j++) {
+						if(grp.hideFirstGroupCol) {
+							if(!cm[j].hidden && grp.groupField[0] === cm[j].name) {
+								cm[j].formatter = function(){return '';};
+							}
+						}
 						if(cm[j].summaryType ) {
 							if(cm[j].summaryDivider) {
 								grp.summary.push({nm:cm[j].name,st:cm[j].summaryType, v: '', sd:cm[j].summaryDivider, vd:'', sr: cm[j].summaryRound, srt: cm[j].summaryRoundType || 'round'});
