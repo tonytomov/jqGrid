@@ -403,6 +403,7 @@ $.jgrid.extend({
 				groupOptions.grouping = false;
 			}
 			groupOptions['sortname'] = columns[groupfields].name;
+			groupOptions.groupingView['hideFirstGroupCol'] = true;
 
 		});
 		// return the final result.
@@ -413,11 +414,15 @@ $.jgrid.extend({
 			var $t = this;
 
 			function pivot( data) {
-				var pivotGrid = jQuery($t).jqGrid('pivotSetup',data, pivotOpt);
-				var footerrow = $.assocArraySize(pivotGrid.summary) > 0 ? true : false;
+				var pivotGrid = jQuery($t).jqGrid('pivotSetup',data, pivotOpt),
+				footerrow = $.assocArraySize(pivotGrid.summary) > 0 ? true : false,
+				query= $.jgrid.from(pivotGrid.rows), i;
+				for(i=0; i< pivotGrid.groupOptions.groupingView.groupField.length; i++) {
+					query.orderBy(pivotGrid.groupOptions.groupingView.groupField[i], "a", 'text', '');
+				}
 				jQuery($t).jqGrid($.extend({
-					data: pivotGrid.rows,
-					datatype: "local",
+					datastr: query.select(),
+					datatype: "jsonstring",
 					footerrow : footerrow,
 					colModel: pivotGrid.colModel,
 					viewrecords: true,
