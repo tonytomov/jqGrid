@@ -849,7 +849,7 @@ $.fn.jqGrid = function( pin ) {
 			data : [],
 			_index : {},
 			grouping : false,
-			groupingView : {groupField:[],groupOrder:[], groupText:[],groupColumnShow:[],groupSummary:[], showSummaryOnHide: false, sortitems:[], sortnames:[], summary:[],summaryval:[], plusicon: 'ui-icon-circlesmall-plus', minusicon: 'ui-icon-circlesmall-minus', displayField: [], groupSummaryPos:[]},
+			groupingView : {groupField:[],groupOrder:[], groupText:[],groupColumnShow:[],groupSummary:[], showSummaryOnHide: false, sortitems:[], sortnames:[], summary:[],summaryval:[], plusicon: 'ui-icon-circlesmall-plus', minusicon: 'ui-icon-circlesmall-minus', displayField: [], groupSummaryPos:[], formatDisplayField : [], _locgr : false},
 			ignoreCase : false,
 			cmTemplate : {},
 			idPrefix : "",
@@ -1513,7 +1513,9 @@ $.fn.jqGrid = function( pin ) {
 				rowData.push( "</tr>" );
 				if(ts.p.grouping) {
 					grpdata.push( rowData );
-					rn = groupingPrepare.call(self, rd, i, rn);
+					if(!ts.p.groupingView._locgr) {
+						groupingPrepare.call(self, rd, i);
+					}
 					rowData = [];
 				}
 				if(locdata || ts.p.treeGrid===true) {
@@ -1535,8 +1537,10 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.gridview === true ) {
 				fpos = ts.p.treeANode > -1 ? ts.p.treeANode: 0;
 				if(ts.p.grouping) {
-					self.jqGrid('groupingRender',grpdata,ts.p.colModel.length);
-					grpdata = null;
+					if(!locdata) {
+						self.jqGrid('groupingRender', grpdata, ts.p.colModel.length, ts.p.page, rn);
+						grpdata = null;
+					}
 				} else if(ts.p.treeGrid === true && fpos > 0) {
 					$(ts.rows[fpos]).after(rowData.join(''));
 				} else {
@@ -1595,11 +1599,19 @@ $.fn.jqGrid = function( pin ) {
 							rd[ts.p.colModel[j+gi+si+ni].name] = $.jgrid.getAccessor(cur,rowReader[j]);
 						}
 						rd[locid] = $.jgrid.stripPref(ts.p.idPrefix, idr);
+						if(ts.p.grouping) {
+							groupingPrepare.call(self, rd, ir );
+						}
 						ts.p.data.push(rd);
 						ts.p._index[rd[locid]] = ts.p.data.length-1;
 						rd = {};
 					}
 					ir++;
+				}
+				if(ts.p.grouping) {
+					ts.p.groupingView._locgr = true;
+					self.jqGrid('groupingRender', grpdata, ts.p.colModel.length, ts.p.page, rn);
+					grpdata = null;
 				}
 			}
 		},

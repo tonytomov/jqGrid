@@ -38,7 +38,9 @@ $.jgrid.extend({
 					}
 
 					grp.lastvalues=[];
-					grp.groups =[];
+					if(!grp._locgr) {
+						grp.groups =[];
+					}
 					grp.counters =[];
 					for(i=0;i<grp.groupField.length;i++) {
 						if(!grp.groupOrder[i]) {
@@ -88,7 +90,7 @@ $.jgrid.extend({
 			}
 		});
 	},
-	groupingPrepare : function ( record, irow, rn) {
+	groupingPrepare : function ( record, irow ) {
 		this.each(function(){
 			var grp = this.p.groupingView, $t= this, i,
 			grlen = grp.groupField.length, 
@@ -179,7 +181,7 @@ $.jgrid.extend({
 			}
 			//gdata.push( rData );
 		});
-		return rn;
+		return this;
 	},
 	groupingToggle : function(hid){
 		this.each(function(){
@@ -282,7 +284,7 @@ $.jgrid.extend({
 		});
 		return false;
 	},
-	groupingRender : function (grdata, colspans ) {
+	groupingRender : function (grdata, colspans, page, rn ) {
 		return this.each(function(){
 			var $t = this,
 			grp = $t.p.groupingView,
@@ -318,7 +320,7 @@ $.jgrid.extend({
 				return ret;
 			}
 			function buildSummaryTd(i, ik, grp, foffset) {
-				var fdata = findGroupIdx(i, ik, grp.groups),
+				var fdata = findGroupIdx(i, ik, grp),
 				cm = $t.p.colModel,
 				vv, grlen = fdata.cnt, str="", k;
 				for(k=foffset; k<colspans;k++) {
@@ -352,6 +354,11 @@ $.jgrid.extend({
 			var sumreverse = $.makeArray(grp.groupSummary);
 			sumreverse.reverse();
 			$.each(grp.groups,function(i,n){
+				if(grp._locgr) {
+					if( !(n.startRow +n.cnt > (page-1)*rn && n.startRow < page*rn)) {
+						return true;
+					}
+				}
 				toEnd++;
 				clid = $t.p.id+"ghead_"+n.idx;
 				hid = clid+"_"+i;
@@ -368,17 +375,24 @@ $.jgrid.extend({
 				}
 				if(grp.groupSummaryPos[n.idx] === 'header')  {
 					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\">"+icon+$.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary)+"</td>";
-					str += buildSummaryTd(i, n.idx-1, grp, 1);
+					str += buildSummaryTd(i, n.idx-1, grp.groups, 1);
 					str += "</tr>";
 				} else {
 					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\" colspan=\""+colspans+"\">"+icon+$.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary)+"</td></tr>";
 				}
 				var leaf = len-1 === n.idx; 
 				if( leaf ) {
-					var gg = grp.groups[i+1], kk, ik;
-					var end = gg !== undefined ?  grp.groups[i+1].startRow : grdata.length;
-					for(kk=n.startRow;kk<end;kk++) {
-						str += grdata[kk].join('');
+					var gg = grp.groups[i+1], kk, ik, offset = 0, sgr = n.startRow,
+					end = gg !== undefined ?  grp.groups[i+1].startRow : grdata.length;
+					if(grp._locgr) {
+						offset = (page-1)*rn;
+						if(offset > n.startRow) {
+							sgr = offset;
+						}
+					}
+					for(kk=sgr;kk<end;kk++) {
+						if(!grdata[kk - offset]) { break; }
+						str += grdata[kk - offset].join('');
 					}
 					if(grp.groupSummaryPos[n.idx] !== 'header') {
 						var jj;
@@ -397,7 +411,7 @@ $.jgrid.extend({
 								hhdr = " style=\"display:none;\"";
 							}
 							str += "<tr"+hhdr+" jqfootlevel=\""+(n.idx-ik)+"\" role=\"row\" class=\"ui-widget-content jqfoot ui-row-"+$t.p.direction+"\">";
-							str += buildSummaryTd(i, ik, grp, 0);
+							str += buildSummaryTd(i, ik, grp.groups, 0);
 							str += "</tr>";
 						}
 						toEnd = jj;
