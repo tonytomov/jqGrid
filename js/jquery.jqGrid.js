@@ -3573,7 +3573,10 @@ $.jgrid.extend({
 						if($t.p.treeGrid && $(".tree-wrap",$(tcell)).length>0) {
 							$("span",$(tcell)).html(v).attr(title);
 						} else {
-							$(tcell).html(v).attr(title);
+							if(nData.getAttribute)
+								$(tcell).html(nData).attr(title);	
+							else
+								$(tcell).html(v).attr(title);
 						}
 						if($t.p.datatype === "local") {
 							var cm = $t.p.colModel[pos], index;
