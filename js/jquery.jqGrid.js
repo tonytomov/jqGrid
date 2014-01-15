@@ -2656,6 +2656,7 @@ $.fn.jqGrid = function( pin ) {
 						$(ts).jqGrid("setSelection", ri ,true,e);
 					} else {
 						ri = ptr[0].rowIndex;
+						$(ts).jqGrid("setSelection", ri ,true,e);
 						try {$(ts).jqGrid("editCell",ri,ci,true);} catch (_) {}
 					}
 				} else if ( !ts.p.multikey ) {
