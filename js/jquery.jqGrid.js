@@ -17,7 +17,7 @@
 "use strict";
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
-	version : "4.5.4",
+	version : "4.5.5",
 	htmlDecode : function(value){
 		if(value && (value==='&nbsp;' || value==='&#160;' || (value.length===1 && value.charCodeAt(0)===160))) { return "";}
 		return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");		
@@ -2655,8 +2655,8 @@ $.fn.jqGrid = function( pin ) {
 					if(ts.p.multiselect && scb){
 						$(ts).jqGrid("setSelection", ri ,true,e);
 					} else {
-						ri = ptr[0].rowIndex;
 						$(ts).jqGrid("setSelection", ri ,true,e);
+						ri = ptr[0].rowIndex;
 						try {$(ts).jqGrid("editCell",ri,ci,true);} catch (_) {}
 					}
 				} else if ( !ts.p.multikey ) {
@@ -2908,11 +2908,15 @@ $.jgrid.extend({
 		return ids;
 	},
 	setSelection : function(selection,onsr, e) {
+
 		return this.each(function(){
+
 			var $t = this, stat,pt, ner, ia, tpsr, fid;
 			if(selection === undefined) { return; }
 			onsr = onsr === false ? false : true;
+			
 			pt=$($t).jqGrid('getGridRowById', selection);
+
 			if(!pt || !pt.className || pt.className.indexOf( 'ui-state-disabled' ) > -1 ) { return; }
 			function scrGrid(iR){
 				var ch = $($t.grid.bDiv)[0].clientHeight,
@@ -2935,6 +2939,7 @@ $.jgrid.extend({
 			if($t.p.frozenColumns === true ) {
 				fid = $t.p.id+"_frozen";
 			}
+
 			if(!$t.p.multiselect) {	
 				if(pt.className !== "ui-subgrid") {
 					if( $t.p.selrow !== pt.id) {
