@@ -1,5 +1,5 @@
 {
-	"name": "jqGrid",
+	"name": "jqGrid_norman",
 	"version": "4.5.6",
 	"main": [
 		"js/i18n/grid.locale-en.js",
