@@ -3489,6 +3489,8 @@ $.jgrid.extend({
 					cw= $t.p.colModel[lvc].width;
 				}
 				$t.grid.headers[lvc].width = cw;
+								//  It happend when there are many columns to get a negative or equal zero value, andthe following lines give error without something like that
+								if (cw<=0){cw=5;}
 				$t.grid.headers[lvc].el.style.width=cw+"px";
 				if(cle) { $t.grid.cols[lvc].style.width = cw+"px"; }
 				if($t.p.footerrow) {
@@ -12006,8 +12008,9 @@ $.jgrid.extend({
                     case 'jsonstring' :
                         ret = "{"+ xmlJsonClass.toJson(gprm,o.root,o.ident,false)+"}";
                         if(gprm.postData.filters !== undefined) {
-                            ret=ret.replace(/filters":"/,'filters":');
-                            ret=ret.replace(/}]}"/,'}]}');
+                        	// These two lines need to be removed to get it works correctly
+                            //ret=ret.replace(/filters":"/,'filters":');
+                            //ret=ret.replace(/}]}"/,'}]}');
                         }
                         break;
                 }
