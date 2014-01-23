@@ -88,7 +88,7 @@ addSubGrid : function( pos, sind ) {
 			ts.grid.hDiv.loading = false;
 			$("#load_"+$.jgrid.jqID(ts.p.id)).hide();
 			return false;
-		};
+		}; // here i made a change
 		var subGridJson = function(sjxml, sbid){
 			var tddiv,result,i,cur, sgmap,j,
 			dummy = $("<table cellspacing='0' cellpadding='0' border='0'><tbody></tbody></table>"),
