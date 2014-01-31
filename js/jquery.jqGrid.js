@@ -6103,7 +6103,8 @@ $.extend($.jgrid,{
 								setAttributes(elem, options, postData ? ['postData'] : undefined );
 								if(options.size === undefined) { options.size =  msl ? 3 : 1;}
 								if(msl) {
-									ovm = vl.split(",");
+									var multiseparator = options.multiseparator === undefined ? ",": options.multiseparator;
+									ovm = vl.split(multiseparator);
 									ovm = $.map(ovm,function(n){return $.trim(n);});
 								} else {
 									ovm[0] = $.trim(vl);
