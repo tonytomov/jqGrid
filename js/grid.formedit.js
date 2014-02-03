@@ -282,6 +282,7 @@ $.jgrid.extend({
 					var sdata={},
 					fl = $("#"+fid);
 					$t.p.search = false;
+					$t.p.resetsearch =  true;
 					if(p.multipleSearch===false) {
 						sdata[p.sField] = sdata[p.sValue] = sdata[p.sOper] = "";
 					} else {
@@ -1923,6 +1924,7 @@ $.jgrid.extend({
 						if (!$(this).hasClass('ui-state-disabled')) {
 							if($.isFunction(o.beforeRefresh)) {o.beforeRefresh.call($t);}
 							$t.p.search = false;
+							$t.p.resetsearch =  true;
 							try {
 								var gID = $t.p.id;
 								$t.p.postData.filters ="";

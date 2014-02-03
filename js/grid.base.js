@@ -1788,6 +1788,13 @@ $.fn.jqGrid = function( pin ) {
 			page = parseInt(ts.p.page,10),
 			totalpages = Math.ceil(total / recordsperpage),
 			retresult = {};
+			if((ts.p.search || ts.p.resetsearch) && ts.p.grouping && ts.p.groupingView._locgr) {
+				ts.p.groupingView.groups =[];
+				var j, grPrepare = $.jgrid.getMethod("groupingPrepare");
+				for(j=0; j<total; j++) {
+					grPrepare.call($(ts),queryResults[j],j, recordsperpage );
+				}
+			}
 			queryResults = queryResults.slice( (page-1)*recordsperpage , page*recordsperpage );
 			query = null;
 			cmtypes = null;
