@@ -430,7 +430,7 @@ $.jgrid.extend({
 				}, gridOpt || {}, pivotGrid.groupOptions));
 				var gHead = pivotGrid.groupHeaders;
 				if(gHead.length) {
-					for(var i = 0;i < gHead.length ; i++) {
+					for( i = 0;i < gHead.length ; i++) {
 						if(gHead[i] && gHead[i].groupHeaders.length) {
 							jQuery($t).jqGrid('setGroupHeaders',gHead[i]);
 						}
