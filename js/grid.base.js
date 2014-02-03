@@ -1792,7 +1792,7 @@ $.fn.jqGrid = function( pin ) {
 				ts.p.groupingView.groups =[];
 				var j, grPrepare = $.jgrid.getMethod("groupingPrepare");
 				for(j=0; j<total; j++) {
-					grPrepare.call($(ts),queryResults[j],j, recordsperpage );
+					grPrepare.call($(ts),queryResults[j],j );
 				}
 			}
 			queryResults = queryResults.slice( (page-1)*recordsperpage , page*recordsperpage );
