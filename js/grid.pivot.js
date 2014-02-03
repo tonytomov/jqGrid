@@ -306,7 +306,7 @@ $.jgrid.extend({
 			 * columns from the pivot values and set the group Headers
 			 */
 			function list(items) {
-				var l, j;
+				var l, j, w;
 				for (var key in items) { // iterate
 					if (items.hasOwnProperty(key)) {
 					// write amount of spaces according to level
@@ -363,11 +363,13 @@ $.jgrid.extend({
 								if(aggrlen > 1) {
 									j=0;
 									for(l in items.fields) {
-										columns.push({name: l, label: o.aggregates[j].label || l, width: 80, formatter: o.formatter, summaryType: o.summaryType, summaryRound: o.summaryRound, summaryRoundType : o.summaryRoundType, align: o.align  });
+										w = o.aggregates[j].width ? o.aggregates[j].width : 80;
+										columns.push({name: l, label: o.aggregates[j].label || l, width: w, formatter: o.formatter, summaryType: o.summaryType, summaryRound: o.summaryRound, summaryRoundType : o.summaryRoundType, align: o.align  });
 										j++;
 									}
 								} else {
-									columns.push({name:items.text, label: items.text==='_r_Totals' ? o.rowTotalsText : items.text, width:80, formatter: o.formatter, summaryType: o.summaryType, summaryRound: o.summaryRound, summaryRoundType : o.summaryRoundType, align: o.align});
+									w = o.aggregates[0].width ? o.aggregates[0].width : 80;
+									columns.push({name:items.text, label: items.text==='_r_Totals' ? o.rowTotalsText : items.text, width: w, formatter: o.formatter, summaryType: o.summaryType, summaryRound: o.summaryRound, summaryRoundType : o.summaryRoundType, align: o.align});
 								}
 							}
 						}
@@ -404,7 +406,6 @@ $.jgrid.extend({
 			}
 			groupOptions['sortname'] = columns[groupfields].name;
 			groupOptions.groupingView['hideFirstGroupCol'] = true;
-
 		});
 		// return the final result.
 		return { "colModel" : columns, "rows": pivotrows, "groupOptions" : groupOptions, "groupHeaders" :  headers, summary : summaries };
