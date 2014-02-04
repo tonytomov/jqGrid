@@ -1790,9 +1790,22 @@ $.fn.jqGrid = function( pin ) {
 			retresult = {};
 			if((ts.p.search || ts.p.resetsearch) && ts.p.grouping && ts.p.groupingView._locgr) {
 				ts.p.groupingView.groups =[];
-				var j, grPrepare = $.jgrid.getMethod("groupingPrepare");
+				var j, grPrepare = $.jgrid.getMethod("groupingPrepare"), key, udc;
+				if(ts.p.footerrow && ts.p.userDataOnFooter) {
+					for (key in ts.p.userData) {
+						if(ts.p.userData.hasOwnProperty(key)) {
+							ts.p.userData[key] = 0;
+						}
+					}
+					udc = true;
+				}
 				for(j=0; j<total; j++) {
-					grPrepare.call($(ts),queryResults[j],j );
+					if(udc) {
+						for(key in ts.p.userData){
+							ts.p.userData[key] += parseFloat(queryResults[j][key] || 0);
+						}
+					}
+					grPrepare.call($(ts),queryResults[j],j, recordsperpage );
 				}
 			}
 			queryResults = queryResults.slice( (page-1)*recordsperpage , page*recordsperpage );

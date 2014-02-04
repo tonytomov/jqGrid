@@ -143,7 +143,7 @@ $.jgrid.extend({
 						}
 						break;
 					case "min" : 
-						if(v==="") {
+						if(v==="" ) {
 							ret = parseFloat(rc[field]||0);
 						} else {
 							ret =Math.min(parseFloat(v),parseFloat(rc[field]||0));
@@ -422,9 +422,10 @@ $.jgrid.extend({
 					query.orderBy(pivotGrid.groupOptions.groupingView.groupField[i], "a", 'text', '');
 				}
 				jQuery($t).jqGrid($.extend({
-					datastr: query.select(),
+					datastr: $.extend(query.select(),footerrow ? {userdata:pivotGrid.summary} : {}),
 					datatype: "jsonstring",
 					footerrow : footerrow,
+					userDataOnFooter: footerrow,
 					colModel: pivotGrid.colModel,
 					viewrecords: true,
 					sortname: pivotOpt.xDimension[0].dataName // ?????
@@ -436,9 +437,6 @@ $.jgrid.extend({
 							jQuery($t).jqGrid('setGroupHeaders',gHead[i]);
 						}
 					}
-				}
-				if( footerrow ) { 
-					jQuery($t).jqGrid("footerData","set",pivotGrid.summary,true);
 				}
 				if(pivotOpt.frozenStaticCols) {
 					jQuery($t).jqGrid("setFrozenColumns");
