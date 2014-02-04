@@ -143,14 +143,14 @@ $.jgrid.extend({
 						}
 						break;
 					case "min" : 
-						if(v==="" ) {
+						if(v==="" || v == null) {
 							ret = parseFloat(rc[field]||0);
 						} else {
 							ret =Math.min(parseFloat(v),parseFloat(rc[field]||0));
 						}
 						break;
 					case "max" : 
-						if(v==="") {
+						if(v==="" || v == null) {
 							ret = parseFloat(rc[field]||0);
 						} else {
 							ret = Math.max(parseFloat(v),parseFloat(rc[field]||0));
