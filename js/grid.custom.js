@@ -293,6 +293,7 @@ $.jgrid.extend({
 					}
 				});
 				var sd =  j>0 ? true : false;
+				$t.p.resetsearch =  true;
 				if(p.stringResult === true || $t.p.datatype === "local") {
 					var ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[";
 					var gi=0;

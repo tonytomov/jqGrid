@@ -143,14 +143,14 @@ $.jgrid.extend({
 						}
 						break;
 					case "min" : 
-						if(v==="") {
+						if(v==="" || v == null) {
 							ret = parseFloat(rc[field]||0);
 						} else {
 							ret =Math.min(parseFloat(v),parseFloat(rc[field]||0));
 						}
 						break;
 					case "max" : 
-						if(v==="") {
+						if(v==="" || v == null) {
 							ret = parseFloat(rc[field]||0);
 						} else {
 							ret = Math.max(parseFloat(v),parseFloat(rc[field]||0));
@@ -306,7 +306,7 @@ $.jgrid.extend({
 			 * columns from the pivot values and set the group Headers
 			 */
 			function list(items) {
-				var l, j;
+				var l, j, w;
 				for (var key in items) { // iterate
 					if (items.hasOwnProperty(key)) {
 					// write amount of spaces according to level
@@ -363,11 +363,13 @@ $.jgrid.extend({
 								if(aggrlen > 1) {
 									j=0;
 									for(l in items.fields) {
-										columns.push({name: l, label: o.aggregates[j].label || l, width: 80, formatter: o.formatter, summaryType: o.summaryType, summaryRound: o.summaryRound, summaryRoundType : o.summaryRoundType, align: o.align  });
+										w = o.aggregates[j].width ? o.aggregates[j].width : 80;
+										columns.push({name: l, label: o.aggregates[j].label || l, width: w, formatter: o.formatter, summaryType: o.summaryType, summaryRound: o.summaryRound, summaryRoundType : o.summaryRoundType, align: o.align  });
 										j++;
 									}
 								} else {
-									columns.push({name:items.text, label: items.text==='_r_Totals' ? o.rowTotalsText : items.text, width:80, formatter: o.formatter, summaryType: o.summaryType, summaryRound: o.summaryRound, summaryRoundType : o.summaryRoundType, align: o.align});
+									w = o.aggregates[0].width ? o.aggregates[0].width : 80;
+									columns.push({name:items.text, label: items.text==='_r_Totals' ? o.rowTotalsText : items.text, width: w, formatter: o.formatter, summaryType: o.summaryType, summaryRound: o.summaryRound, summaryRoundType : o.summaryRoundType, align: o.align});
 								}
 							}
 						}
@@ -404,7 +406,6 @@ $.jgrid.extend({
 			}
 			groupOptions['sortname'] = columns[groupfields].name;
 			groupOptions.groupingView['hideFirstGroupCol'] = true;
-
 		});
 		// return the final result.
 		return { "colModel" : columns, "rows": pivotrows, "groupOptions" : groupOptions, "groupHeaders" :  headers, summary : summaries };
@@ -421,23 +422,21 @@ $.jgrid.extend({
 					query.orderBy(pivotGrid.groupOptions.groupingView.groupField[i], "a", 'text', '');
 				}
 				jQuery($t).jqGrid($.extend({
-					datastr: query.select(),
+					datastr: $.extend(query.select(),footerrow ? {userdata:pivotGrid.summary} : {}),
 					datatype: "jsonstring",
 					footerrow : footerrow,
+					userDataOnFooter: footerrow,
 					colModel: pivotGrid.colModel,
 					viewrecords: true,
 					sortname: pivotOpt.xDimension[0].dataName // ?????
 				}, gridOpt || {}, pivotGrid.groupOptions));
 				var gHead = pivotGrid.groupHeaders;
 				if(gHead.length) {
-					for(var i = 0;i < gHead.length ; i++) {
+					for( i = 0;i < gHead.length ; i++) {
 						if(gHead[i] && gHead[i].groupHeaders.length) {
 							jQuery($t).jqGrid('setGroupHeaders',gHead[i]);
 						}
 					}
-				}
-				if( footerrow ) { 
-					jQuery($t).jqGrid("footerData","set",pivotGrid.summary,true);
 				}
 				if(pivotOpt.frozenStaticCols) {
 					jQuery($t).jqGrid("setFrozenColumns");

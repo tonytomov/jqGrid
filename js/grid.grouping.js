@@ -339,6 +339,9 @@ $.jgrid.extend({
 								}
 							}
 							try {
+								this.groupCount = fdata.cnt;
+								this.groupIndex = fdata.dataIndex;
+								this.groupValue = fdata.value;
 								vv = $t.formatter('', this.v, k, this);
 							} catch (ef) {
 								vv = this.v;

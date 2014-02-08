@@ -105,7 +105,7 @@ $.extend($.jgrid,{
 			S: function (j) {return ''},
 			srcformat: 'Y-m-d',
 			newformat: 'd.m.Y.',
-			parseRe : /[Tt\\\/:_;.,\t\s-]/,
+			parseRe : /[#%\\\/:_;.,\t\s-]/,
 			masks : {
 				// see http://php.net/manual/en/function.date.php for PHP format used in jqGrid
 				// and see http://docs.jquery.com/UI/Datepicker/formatDate
