@@ -118,6 +118,11 @@ $.extend($.jgrid,{
 					timestamp.setTime(Number(Number(timestamp) + (offset * 60 * 1000)));
 				}
 			} else {
+				var offset = 0;
+				//Support ISO8601Long that have Z at the end to indicate UTC timezone
+				if(opts.srcformat === 'ISO8601Long' && date.charAt(date.length - 1) === 'Z') {
+					offset -= (new Date()).getTimezoneOffset();
+				}
 				date = String(date).replace(/\T/g,"#").replace(/\t/,"%").split(opts.parseRe);
 				format = format.replace(/\T/g,"#").replace(/\t/,"%").split(opts.parseRe);
 				// parsing for month names
@@ -160,6 +165,10 @@ $.extend($.jgrid,{
 				if (ty >= 70 && ty <= 99) {ts.y = 1900+ts.y;}
 				else if (ty >=0 && ty <=69) {ts.y= 2000+ts.y;}
 				timestamp = new Date(ts.y, ts.m, ts.d, ts.h, ts.i, ts.s, ts.u);
+				//Apply offset to show date as local time.
+				if(offset > 0) {
+					timestamp.setTime(Number(Number(timestamp) + (offset * 60 * 1000)));
+				}
 			}
 		} else {
 			timestamp = new Date(ts.y, ts.m, ts.d, ts.h, ts.i, ts.s, ts.u);
