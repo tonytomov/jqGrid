@@ -20,10 +20,15 @@ $.extend($.jgrid,{
 		caption: "搜尋...",
 		Find: "搜尋",
 		Reset: "重設",
+<<<<<<< HEAD
 		odata: [{ oper:'eq', text:"等於 "},{ oper:'ne', text:"不等於 "},{ oper:'lt', text:"小於 "},{ oper:'le', text:"小於等於 "},{ oper:'gt', text:"大於 "},{ oper:'ge', text:"大於等於 "},{ oper:'bw', text:"開始於 "},{ oper:'bn', text:"不開始於 "},{ oper:'in', text:"在其中 "},{ oper:'ni', text:"不在其中 "},{ oper:'ew', text:"結束於 "},{ oper:'en', text:"不結束於 "},{ oper:'cn', text:"包含 "},{ oper:'nc', text:"不包含 "},{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}],
 		groupOps: [	{ op: "AND", text: "所有" },	{ op: "OR",  text: "任一" }	],
 		operandTitle : "Click to select search operation.",
 		resetTitle : "Reset Search Value"
+=======
+		odata: [{ oper:'eq', text:"等於 "},{ oper:'ne', text:"不等於 "},{ oper:'lt', text:"小於 "},{ oper:'le', text:"小於等於 "},{ oper:'gt', text:"大於 "},{ oper:'ge', text:"大於等於 "},{ oper:'bw', text:"開始於 "},{ oper:'bn', text:"不開始於 "},{ oper:'in', text:"在其中 "},{ oper:'ni', text:"不在其中 "},{ oper:'ew', text:"結束於 "},{ oper:'en', text:"不結束於 "},{ oper:'cn', text:"包含 "},{ oper:'nc', text:"不包含 "},{ oper:'nu', text:'不存在'},{ oper:'nn', text:'存在'}],
+		groupOps: [	{ op: "AND", text: "所有" },	{ op: "OR",  text: "任一" }	]
+>>>>>>> d88820b9f14e57fe17b9d64b4e96c828f80e5563
 	},
 	edit : {
 		addCaption: "新增記錄",
