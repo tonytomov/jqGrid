@@ -437,9 +437,10 @@ $.extend($.jgrid,{
 			var by=_sorting[q].by,
 			dir=_sorting[q].dir,
 			type = _sorting[q].type,
-			dfmt = _sorting[q].datefmt;
+			dfmt = _sorting[q].datefmt,
+			sfunc = _sorting[q].sfunc;
 			if(q===_sorting.length-1){
-				return self._getOrder(d, by, dir, type, dfmt);
+				return self._getOrder(d, by, dir, type, dfmt, sfunc);
 			}
 			q++;
 			var values=self._getGroup(d,by,dir,type,dfmt), results=[], i, j, sorted;
@@ -451,7 +452,7 @@ $.extend($.jgrid,{
 			}
 			return results;
 		};
-		this._getOrder=function(data,by,dir,type, dfmt){
+		this._getOrder=function(data,by,dir,type, dfmt, sfunc){
 			var sortData=[],_sortData=[], newDir = dir==="a" ? 1 : -1, i,ab,j,
 			findSortKey;
 
@@ -483,12 +484,19 @@ $.extend($.jgrid,{
 				ab = findSortKey(ab, v);
 				_sortData.push({ 'vSort': ab,'index':i});
 			});
-
-			_sortData.sort(function(a,b){
-				a = a.vSort;
-				b = b.vSort;
-				return self._compare(a,b,newDir);
-			});
+			if($.isFunction(sfunc)) {
+				_sortData.sort(function(a,b){
+					a = a.vSort;
+					b = b.vSort;
+					return sfunc.call(this,a,b,newDir);
+				});
+			} else {
+				_sortData.sort(function(a,b){
+					a = a.vSort;
+					b = b.vSort;
+					return self._compare(a,b,newDir);
+				});
+			}
 			j=0;
 			var nrec= data.length;
 			// overhead, but we do not change the original data.
@@ -713,13 +721,14 @@ $.extend($.jgrid,{
 			}
 			return self._getGroup(_data,by,dir,type, datefmt);
 		};
-		this.orderBy=function(by,dir,stype, dfmt){
+		this.orderBy=function(by,dir,stype, dfmt, sfunc){
 			dir = dir == null ? "a" :$.trim(dir.toString().toLowerCase());
 			if(stype == null) { stype = "text"; }
 			if(dfmt == null) { dfmt = "Y-m-d"; }
+			if(sfunc == null) { sfunc = false; }
 			if(dir==="desc"||dir==="descending"){dir="d";}
 			if(dir==="asc"||dir==="ascending"){dir="a";}
-			_sorting.push({by:by,dir:dir,type:stype, datefmt: dfmt});
+			_sorting.push({by:by,dir:dir,type:stype, datefmt: dfmt, sfunc: sfunc});
 			return self;
 		};
 		return self;
@@ -1650,9 +1659,9 @@ $.fn.jqGrid = function( pin ) {
 					} else {
 						srcformat = newformat = this.datefmt || "Y-m-d";
 					}
-					cmtypes[this.name] = {"stype": sorttype, "srcfmt": srcformat,"newfmt":newformat};
+					cmtypes[this.name] = {"stype": sorttype, "srcfmt": srcformat,"newfmt":newformat, "sfunc": this.sortfunc || null};
 				} else {
-					cmtypes[this.name] = {"stype": sorttype, "srcfmt":'',"newfmt":''};
+					cmtypes[this.name] = {"stype": sorttype, "srcfmt":'',"newfmt":'', "sfunc": this.sortfunc || null};
 				}
 				if(ts.p.grouping ) {
 					for(gin =0, lengrp = grpview.groupField.length; gin< lengrp; gin++) {
@@ -1771,14 +1780,14 @@ $.fn.jqGrid = function( pin ) {
 			}
 			if(ts.p.multiSort) {
 				$.each(st,function(i){
-					query.orderBy(this, sto[i], cmtypes[this].stype, cmtypes[this].srcfmt);
+					query.orderBy(this, sto[i], cmtypes[this].stype, cmtypes[this].srcfmt, cmtypes[this].sfunc);
 				});
 			} else {
 				if (st && ts.p.sortorder && fndsort) {
 					if(ts.p.sortorder.toUpperCase() === "DESC") {
-						query.orderBy(ts.p.sortname, "d", cmtypes[st].stype, cmtypes[st].srcfmt);
+						query.orderBy(ts.p.sortname, "d", cmtypes[st].stype, cmtypes[st].srcfmt, cmtypes[st].sfunc);
 					} else {
-						query.orderBy(ts.p.sortname, "a", cmtypes[st].stype, cmtypes[st].srcfmt);
+						query.orderBy(ts.p.sortname, "a", cmtypes[st].stype, cmtypes[st].srcfmt, cmtypes[st].sfunc);
 					}
 				}
 			}
