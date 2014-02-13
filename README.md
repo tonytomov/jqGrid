@@ -10,7 +10,7 @@ integrated with any server-side technology, including PHP, ASP, Java Servlets,
 JSP, ColdFusion, and Perl.
 
 jqGrid uses a jQuery JavaScript Library and is written as plugin for that 
-package. For more information on jQuery, please see <a href="http://jquery.com/">(jQuery.com)</a>.
+package. For more information on jQuery, please see [jQuery.com](http://jquery.com/).
 
 jqGrid's Home page can be found at <a href="http://www.trirand.com/blog">trirand.com</a>.
 
