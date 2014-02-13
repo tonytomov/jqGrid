@@ -38,12 +38,14 @@ function _pivotfilter (fn, context) {
 		}
 	}
 	return result;
-};
+}
 $.assocArraySize = function(obj) {
     // http://stackoverflow.com/a/6700/11236
     var size = 0, key;
     for (key in obj) {
-        if (obj.hasOwnProperty(key)) size++;
+        if (obj.hasOwnProperty(key)) {
+        	size++;
+        }
     }
     return size;
 };
@@ -107,8 +109,8 @@ $.jgrid.extend({
 			 * otherviese the column
 			 */
 			function findGroup(item, index) {
-				var j = 0, ret = true;
-				for(var i in item ) {
+				var j = 0, ret = true, i;
+				for(i in item) {
 					if(item[i] != this[j]) {
 						ret =  false;
 						break;
@@ -165,14 +167,14 @@ $.jgrid.extend({
 			 */
 			function agregateFunc ( row, aggr, value, curr) {
 				// default is sum
-				var arrln = aggr.length, i, label, j, jv, jj;
+				var arrln = aggr.length, i, label, j, jv;
 				if($.isArray(value)) {
 					jv = value.length;
 				} else {
 					jv = 1;
 				}
 				member = [];
-				member['root'] = 0;
+				member.root = 0;
 				for(j=0;j<jv;j++) {
 					var  tmpmember = [], vl;
 					for(i=0; i < arrln; i++) {
@@ -267,13 +269,13 @@ $.jgrid.extend({
 						pivotrows[rowindex] = newObj;
 					}
 				}
-				var kj=0, current = null,existing = null;
+				var kj=0, current = null,existing = null, kk;
 				// Build a JSON tree from the member (see aggregateFunc) 
 				// to make later the columns 
 				// 
-				for (var kk in member) {
+				for (kk in member) {
 					if(kj === 0) {
-						if (!tree.children||typeof tree.children === 'undefined'){
+						if (!tree.children||tree.children === undefined){
 							tree = { text: kk, level : 0, children: [] };
 						}
 						current = tree.children;
@@ -306,8 +308,8 @@ $.jgrid.extend({
 			 * columns from the pivot values and set the group Headers
 			 */
 			function list(items) {
-				var l, j, w, f;
-				for (var key in items) { // iterate
+				var l, j, w, key, f;
+				for (key in items) { // iterate
 					if (items.hasOwnProperty(key)) {
 					// write amount of spaces according to level
 					// and write name and newline
@@ -343,7 +345,7 @@ $.jgrid.extend({
 									var ll=1;
 									for( l in items.fields) {
 										if(ll===1) {
-											headers[ylen-1].groupHeaders.push({startColumnName: l, numberOfColumns: 1, titleText: items['text']});
+											headers[ylen-1].groupHeaders.push({startColumnName: l, numberOfColumns: 1, titleText: items.text});
 										}
 										ll++;
 									}
@@ -406,8 +408,8 @@ $.jgrid.extend({
 				// no grouping is needed
 				groupOptions.grouping = false;
 			}
-			groupOptions['sortname'] = columns[groupfields].name;
-			groupOptions.groupingView['hideFirstGroupCol'] = true;
+			groupOptions.sortname = columns[groupfields].name;
+			groupOptions.groupingView.hideFirstGroupCol = true;
 		});
 		// return the final result.
 		return { "colModel" : columns, "rows": pivotrows, "groupOptions" : groupOptions, "groupHeaders" :  headers, summary : summaries };
@@ -445,11 +447,11 @@ $.jgrid.extend({
 				}
 			}
 
-			if(typeof(data) === "string" ) {
+			if(typeof data === "string") {
 				$.ajax($.extend({
 					url : data,
 					dataType: 'json',
-					success : function( response, textStatus, jqXHR) {
+					success : function(response) {
 						pivot($.jgrid.getAccessor(response, ajaxOpt && ajaxOpt.reader ? ajaxOpt.reader: 'rows') );
 					}
 				}, ajaxOpt || {}) );
