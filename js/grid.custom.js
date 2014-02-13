@@ -70,7 +70,9 @@ $.jgrid.extend({
 	clearBeforeUnload : function () {
 		return this.each(function(){
 			var grid = this.grid;
-			grid.emptyRows.call(this, true, true); // this work quick enough and reduce the size of memory leaks if we have someone
+			if ($.isFunction(grid.emptyRows)) {
+				grid.emptyRows.call(this, true, true); // this work quick enough and reduce the size of memory leaks if we have someone
+			}
 
 			$(document).unbind("mouseup.jqGrid" + this.p.id ); 
 			$(grid.hDiv).unbind("mousemove"); // TODO add namespace
@@ -103,6 +105,7 @@ $.jgrid.extend({
 			this.formatter = null;
 			this.addXmlData = null;
 			this.addJSONData = null;
+			this.grid = null;
 		});
 	},
 	GridDestroy : function () {
