@@ -85,7 +85,7 @@ $.jgrid.extend({
 				i,
 				
 				rowlen = data.length,
-				xlen, ylen,
+				xlen, ylen, aggrlen,
 				tmp,
 				newObj,
 				r=0;
@@ -195,13 +195,16 @@ $.jgrid.extend({
 				o.yDimension[0].converter =  function(){ return '_r_Totals'; };
 			}
 			// build initial columns (colModel) from xDimension
-			xlen = o.xDimension.length;
+			xlen = $.isArray(o.xDimension) ? o.xDimension.length : 0;
 			ylen = o.yDimension.length;
+			aggrlen  = $.isArray(o.aggregates) ? o.aggregates.length : 0;
+			if(xlen === 0 || aggrlen === 0) {
+				throw("xDimension or aggregates optiona are not set!");
+			}
 			for(i = 0; i< xlen; i++) {
 				var colc = {name:o.xDimension[i].dataName, frozen: o.frozenStaticCols};
 				columns.push( colc );
 			}
-			var aggrlen  = o.aggregates.length;
 			var groupfields = xlen - 1, tree={};
 			//tree = { text: 'root', leaf: false, children: [] };
 			//loop over alll the source data
