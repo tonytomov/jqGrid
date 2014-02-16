@@ -201,8 +201,10 @@ $.jgrid.extend({
 			if(xlen === 0 || aggrlen === 0) {
 				throw("xDimension or aggregates optiona are not set!");
 			}
+			var colc;
 			for(i = 0; i< xlen; i++) {
-				var colc = {name:o.xDimension[i].dataName, frozen: o.frozenStaticCols};
+				colc = {name:o.xDimension[i].dataName, frozen: o.frozenStaticCols};
+				colc = $.extend(true, colc, o.xDimension[i]);
 				columns.push( colc );
 			}
 			var groupfields = xlen - 1, tree={};
