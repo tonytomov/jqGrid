@@ -71,13 +71,8 @@ $.jgrid.extend({
 		o = $.extend ( {
 			rowTotals : false,
 			rowTotalsText : 'Total',
+			// summary columns
 			colTotals : false,
-			// default values for all summary columns
-			formatter : 'number',
-			align : 'right',
-			summaryType : 'sum',
-			summaryRound: 2,
-			summaryRoundType : 'round',
 			summaryGroups : true,
 			groupSummaryPos :  'header',
 			frozenStaticCols : false
@@ -308,7 +303,7 @@ $.jgrid.extend({
 			 * columns from the pivot values and set the group Headers
 			 */
 			function list(items) {
-				var l, j, w, key, f;
+				var l, j, key, k, col;
 				for (key in items) { // iterate
 					if (items.hasOwnProperty(key)) {
 					// write amount of spaces according to level
@@ -362,18 +357,30 @@ $.jgrid.extend({
 						// Finally build the coulumns
 						if( key === 'level') {
 							if(items.level >0){
-								if(aggrlen > 1) {
-									j=0;
-									for(l in items.fields) {
-										w = o.aggregates[j].width ? o.aggregates[j].width : 80;
-										f = o.aggregates[j].formatter ? o.aggregates[j].formatter :o.formatter;
-										columns.push({name: l, label: o.aggregates[j].label || l, width: w, formatter: f, summaryType: o.summaryType, summaryRound: o.summaryRound, summaryRoundType : o.summaryRoundType, align: o.align  });
-										j++;
+								j=0;
+								for(l in items.fields) {
+									col = {};
+									for(k in o.aggregates[j]) {
+										if(o.aggregates[j].hasOwnProperty(k)) {
+											switch( k ) {
+												case 'member':
+												case 'label':
+												case 'aggregator':
+													break;
+												default:
+													col[k] = o.aggregates[j][k];
+											}
+										}
 									}
-								} else {
-									w = o.aggregates[0].width ? o.aggregates[0].width : 80;
-									f = o.aggregates[0].formatter ? o.aggregates[0].formatter :o.formatter;
-									columns.push({name:items.text, label: items.text==='_r_Totals' ? o.rowTotalsText : items.text, width: w, formatter: f, summaryType: o.summaryType, summaryRound: o.summaryRound, summaryRoundType : o.summaryRoundType, align: o.align});
+									if(aggrlen>1) {
+										col.name = l;
+										col.label = o.aggregates[j].label || l;
+									} else {
+										col.name = items.text;
+										col.label = items.text==='_r_Totals' ? o.rowTotalsText : items.text;
+									}
+									columns.push (col);
+									j++;
 								}
 							}
 						}
