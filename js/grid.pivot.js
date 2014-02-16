@@ -73,7 +73,7 @@ $.jgrid.extend({
 			rowTotalsText : 'Total',
 			// summary columns
 			colTotals : false,
-			summaryGroups : true,
+			groupSummary : true,
 			groupSummaryPos :  'header',
 			frozenStaticCols : false
 		}, options || {});
@@ -408,7 +408,7 @@ $.jgrid.extend({
 			if( groupfields > 0) {
 				for(i=0;i<groupfields;i++) {
 					groupOptions.groupingView.groupField[i] = columns[i].name;
-					groupOptions.groupingView.groupSummary[i] = o.summaryGroups;
+					groupOptions.groupingView.groupSummary[i] = o.groupSummary;
 					groupOptions.groupingView.groupSummaryPos[i] = o.groupSummaryPos;
 				}
 			} else {
