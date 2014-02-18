@@ -394,12 +394,11 @@ $.fn.jqFilter = function( arg ) {
 					var elem = e.target;
 					rule.data = elem.nodeName.toUpperCase() === "SPAN" && cm.searchoptions && $.isFunction(cm.searchoptions.custom_value) ?
 						cm.searchoptions.custom_value.call($t, $(elem).children(".customelement:first"), 'get') : elem.value;
-					that.onchange(); // signals that the filter has changed
-					
 					// for multi-selectbox, set comma sep values
 					if(cm.edittype === "select" && cm.editoptions!==undefined && cm.editoptions.multiple===true) {
 						rule.data =  $(elem).val().join(",");
-					}					
+					}
+					that.onchange(); // signals that the filter has changed					
 				});
 				setTimeout(function(){ //IE, Opera, Chrome
 				rule.data = $(elm).val();
