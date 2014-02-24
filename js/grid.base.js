@@ -3011,7 +3011,7 @@ $.jgrid.extend({
 			}
 			if(!$t.p.multiselect) {	
 				if(pt.className !== "ui-subgrid") {
-					if( $t.p.selrow !== pt.id) {
+					if( $t.p.selrow !== pt.id && $t.p.selrow != null ) {
 						$( $($t).jqGrid('getGridRowById', $t.p.selrow) ).removeClass("ui-state-highlight").attr({"aria-selected":"false", "tabindex" : "-1"});
 						$(pt).addClass("ui-state-highlight").attr({"aria-selected":"true", "tabindex" : "0"});//.focus();
 						if(fid) {
