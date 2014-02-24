@@ -39,6 +39,6 @@
 	"homepage": "http://www.trirand.com",
 	"docs": "http://www.trirand.com/jqgridwiki/doku.php",
 	"dependencies": {
-		"jquery": ">=1.4"
+		"jquery": ">=1.7"
 	}
 }
