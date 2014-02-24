@@ -469,11 +469,11 @@ $.extend($.jgrid,{
 			if (type === 'float' || type=== 'number' || type=== 'currency' || type=== 'numeric') {
 				findSortKey = function($cell) {
 					var key = parseFloat( String($cell).replace(_stripNum, ''));
-					return isNaN(key) ? 0.00 : key;
+					return isNaN(key) ? Number.NEGATIVE_INFINITY : key;
 				};
 			} else if (type==='int' || type==='integer') {
 				findSortKey = function($cell) {
-					return $cell ? parseFloat(String($cell).replace(_stripNum, '')) : 0;
+					return $cell ? parseFloat(String($cell).replace(_stripNum, '')) : Number.NEGATIVE_INFINITY;
 				};
 			} else if(type === 'date' || type === 'datetime') {
 				findSortKey = function($cell) {
