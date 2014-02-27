@@ -2733,7 +2733,7 @@ $.fn.jqGrid = function( pin ) {
 							var frz = ts.p.frozenColumns ? ts.p.id+"_frozen" : "";
 							$(ts.p.selarrrow).each(function(i,n){
 								var trid = $(ts).jqGrid('getGridRowById',n);
-								$( trid ).removeClass("ui-state-highlight");
+								if(trid) { $( trid ).removeClass("ui-state-highlight"); }
 								$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(n))[ts.p.useProp ? 'prop': 'attr']("checked", false);
 								if(frz) {
 									$("#"+$.jgrid.jqID(n), "#"+$.jgrid.jqID(frz)).removeClass("ui-state-highlight");
@@ -2983,7 +2983,7 @@ $.jgrid.extend({
 	},
 	setSelection : function(selection,onsr, e) {
 		return this.each(function(){
-			var $t = this, stat,pt, ner, ia, tpsr, fid;
+			var $t = this, stat,pt, ner, ia, tpsr, fid, csr;
 			if(selection === undefined) { return; }
 			onsr = onsr === false ? false : true;
 			pt=$($t).jqGrid('getGridRowById', selection);
@@ -3011,8 +3011,11 @@ $.jgrid.extend({
 			}
 			if(!$t.p.multiselect) {	
 				if(pt.className !== "ui-subgrid") {
-					if( $t.p.selrow !== pt.id && $t.p.selrow != null ) {
-						$( $($t).jqGrid('getGridRowById', $t.p.selrow) ).removeClass("ui-state-highlight").attr({"aria-selected":"false", "tabindex" : "-1"});
+					if( $t.p.selrow !== pt.id ) {
+						csr = $($t).jqGrid('getGridRowById', $t.p.selrow);
+						if( csr ) {
+							$(  csr ).removeClass("ui-state-highlight").attr({"aria-selected":"false", "tabindex" : "-1"});
+						}
 						$(pt).addClass("ui-state-highlight").attr({"aria-selected":"true", "tabindex" : "0"});//.focus();
 						if(fid) {
 							$("#"+$.jgrid.jqID($t.p.selrow), "#"+$.jgrid.jqID(fid)).removeClass("ui-state-highlight");
