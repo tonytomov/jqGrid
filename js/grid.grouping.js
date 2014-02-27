@@ -386,7 +386,7 @@ $.jgrid.extend({
 				var leaf = len-1 === n.idx; 
 				if( leaf ) {
 					var gg = grp.groups[i+1], kk, ik, offset = 0, sgr = n.startRow,
-					end = gg !== undefined ?  grp.groups[i+1].startRow : grdata.length;
+					end = gg !== undefined ?  grp.groups[i+1].startRow : grp.groups[i].startRow + grp.groups[i].cnt;
 					if(grp._locgr) {
 						offset = (page-1)*rn;
 						if(offset > n.startRow) {
