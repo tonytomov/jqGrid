@@ -1926,18 +1926,21 @@ $.jgrid.extend({
 							$t.p.search = false;
 							$t.p.resetsearch =  true;
 							try {
-								var gID = $t.p.id;
-								$t.p.postData.filters ="";
-								try {
-								$("#fbox_"+$.jgrid.jqID(gID)).jqFilter('resetFilter');
-								} catch(ef) {}
-								if($.isFunction($t.clearToolbar)) {$t.clearToolbar.call($t,false);}
+								if( o.refreshstate !== 'currentfilter') {
+									var gID = $t.p.id;
+									$t.p.postData.filters ="";
+									try {
+										$("#fbox_"+$.jgrid.jqID(gID)).jqFilter('resetFilter');
+									} catch(ef) {}
+									if($.isFunction($t.clearToolbar)) {$t.clearToolbar.call($t,false);}
+								}
 							} catch (e) {}
 							switch (o.refreshstate) {
 								case 'firstpage':
 									$($t).trigger("reloadGrid", [{page:1}]);
 									break;
 								case 'current':
+								case 'currentfilter':
 									$($t).trigger("reloadGrid", [{current:true}]);
 									break;
 							}
