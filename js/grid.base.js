@@ -1373,8 +1373,8 @@ $.fn.jqGrid = function( pin ) {
 				if(ts.p.grouping) {
 					if(!locdata) {
 						self.jqGrid('groupingRender',grpdata,ts.p.colModel.length, ts.p.page, rn);
+						grpdata = null;
 					}
-					grpdata = null;
 				} else if(ts.p.treeGrid === true && fpos > 0) {
 					$(ts.rows[fpos]).after(rowData.join(''));
 				} else {
