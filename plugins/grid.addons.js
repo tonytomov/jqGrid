@@ -191,7 +191,7 @@ $.jgrid.extend({
 						k=0;
 						for(j=0;j<p.sopt.length;j++) {
 							if( (pos= $.inArray(p.sopt[j],stempl)) != -1 ){
-								oprtr[k] = {op:p.sopt[j],text: p.odata[pos]};
+								oprtr[k] = {op:p.sopt[j],text: p.odata[pos].text};
 								k++;
 							}
 						}
