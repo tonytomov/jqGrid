@@ -1075,11 +1075,15 @@ $.jgrid.extend({
 				modal:p.modal, 
 				overlayClass: p.overlayClass,
 				onHide :  function(h) {
+					var fh = $('#editmod'+gID)[0].style.height;
+					if(fh.indexOf("px") > -1 ) {
+						fh = parseFloat(fh);
+					}
 					$($t).data("formProp", {
 						top:parseFloat($(h.w).css("top")),
 						left : parseFloat($(h.w).css("left")),
 						width : $(h.w).width(),
-						height : $(h.w).height(),
+						height : fh,
 						dataheight : $("#"+frmgr).height(),
 						datawidth: $("#"+frmgr).width()
 					});
