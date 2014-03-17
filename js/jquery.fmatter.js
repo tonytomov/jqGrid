@@ -256,7 +256,7 @@
 	$.fn.fmatter.rowactions = function(act) {
 		var $tr = $(this).closest("tr.jqgrow"),
 			rid = $tr.attr("id"),
-			$id = $(this).closest("table.ui-jqgrid-btable").attr('id').replace(/_frozen([^_]*)$/,'$1'),
+			$id = $(this).closest("table.it-jqgrid-btable").attr('id').replace(/_frozen([^_]*)$/,'$1'),
 			$grid = $("#"+$id),
 			$t = $grid[0],
 			p = $t.p,

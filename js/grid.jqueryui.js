@@ -338,7 +338,7 @@ $.jgrid.extend({
 			var datadnd = $.data($t,"dnd");
 			$("tr.jqgrow:not(.ui-draggable)",$t).draggable($.isFunction(datadnd.drag) ? datadnd.drag.call($($t),datadnd) : datadnd.drag);
 		}
-		var appender = "<table id='jqgrid_dnd' class='ui-jqgrid-dnd'></table>";
+		var appender = "<table id='jqgrid_dnd' class='it-jqgrid-dnd'></table>";
 		if($("#jqgrid_dnd")[0] === undefined) {
 			$('body').append(appender);
 		}
@@ -392,7 +392,7 @@ $.jgrid.extend({
 				return $.extend({
 					accept: function(d) {
 						if (!$(d).hasClass('jqgrow')) { return d;}
-						var tid = $(d).closest("table.ui-jqgrid-btable");
+						var tid = $(d).closest("table.it-jqgrid-btable");
 						if(tid.length > 0 && $.data(tid[0],"dnd") !== undefined) {
 							var cn = $.data(tid[0],"dnd").connectWith;
 							return $.inArray('#'+$.jgrid.jqID(this.id),cn) !== -1 ? true : false;
@@ -499,15 +499,15 @@ $.jgrid.extend({
 				opts._stop_ = false;
 			}
 			opts.stop = function (ev, ui) {
-				$($t).jqGrid('setGridParam',{height:$("#gview_"+gID+" .ui-jqgrid-bdiv").height()});
+				$($t).jqGrid('setGridParam',{height:$("#gview_"+gID+" .it-jqgrid-bdiv").height()});
 				$($t).jqGrid('setGridWidth',ui.size.width,opts.shrinkToFit);
 				if(opts._stop_) { opts._stop_.call($t,ev,ui); }
 			};
 			if(opts._alsoResize_) {
-				var optstest = "{\'#gview_"+gID+" .ui-jqgrid-bdiv\':true,'" +opts._alsoResize_+"':true}";
+				var optstest = "{\'#gview_"+gID+" .it-jqgrid-bdiv\':true,'" +opts._alsoResize_+"':true}";
 				opts.alsoResize = eval('('+optstest+')'); // the only way that I found to do this
 			} else {
-				opts.alsoResize = $(".ui-jqgrid-bdiv","#gview_"+gID);
+				opts.alsoResize = $(".it-jqgrid-bdiv","#gview_"+gID);
 			}
 			delete opts._alsoResize_;
 			$("#gbox_"+gID).resizable(opts);

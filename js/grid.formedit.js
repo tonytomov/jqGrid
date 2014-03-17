@@ -1954,8 +1954,8 @@ $.jgrid.extend({
 					}).hover(onHoverIn, onHoverOut);
 					tbd = null;
 				}
-				tdw = $(".ui-jqgrid").css("font-size") || "11px";
-				$('body').append("<div id='testpg2' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+tdw+";visibility:hidden;' ></div>");
+				tdw = $(".it-jqgrid").css("font-size") || "11px";
+				$('body').append("<div id='testpg2' class='it-jqgrid ui-widget ui-widget-content' style='font-size:"+tdw+";visibility:hidden;' ></div>");
 				twd = $(navtbl).clone().appendTo("#testpg2").width();
 				$("#testpg2").remove();
 				$(pgid+"_"+o.position,pgid).append(navtbl);
