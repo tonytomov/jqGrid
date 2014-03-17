@@ -8,7 +8,8 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
-$.jgrid = {
+$.jgrid = $.jgrid || {};
+$.extend($.jgrid,{
 	defaults : {
 		recordtext: "Zobrazeno {0} - {1} z {2} záznamů",
 	    emptyrecords: "Nenalezeny žádné záznamy",
@@ -19,10 +20,10 @@ $.jgrid = {
 		caption: "Vyhledávám...",
 		Find: "Hledat",
 		Reset: "Reset",
-	    odata : ['rovno', 'nerovono', 'menší', 'menší nebo rovno','větší', 'větší nebo rovno', 'začíná s', 'nezačíná s', 'je v', 'není v', 'končí s', 'nekončí s', 'obahuje', 'neobsahuje'],
+	    odata: [{ oper:'eq', text:"rovno"},{ oper:'ne', text:"nerovno"},{ oper:'lt', text:"menší"},{ oper:'le', text:"menší nebo rovno"},{ oper:'gt', text:"větší"},{ oper:'ge', text:"větší nebo rovno"},{ oper:'bw', text:"začíná s"},{ oper:'bn', text:"nezačíná s"},{ oper:'in', text:"je v"},{ oper:'ni', text:"není v"},{ oper:'ew', text:"končí s"},{ oper:'en', text:"nekončí s"},{ oper:'cn', text:"obsahuje"},{ oper:'nc', text:"neobsahuje"},{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}],
 	    groupOps: [	{ op: "AND", text: "všech" },	{ op: "OR",  text: "některého z" }	],
-		matchText: " hledat podle",
-		rulesText: " pravidel"
+		operandTitle : "Click to select search operation.",
+		resetTitle : "Reset Search Value"
 	},
 	edit : {
 		addCaption: "Přidat záznam",
@@ -103,6 +104,7 @@ $.jgrid = {
 			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th'},
 			srcformat: 'Y-m-d',
 			newformat: 'd/m/Y',
+			parseRe : /[#%\\\/:_;.,\t\s-]/,
 			masks : {
 		        ISO8601Long:"Y-m-d H:i:s",
 		        ISO8601Short:"Y-m-d",
@@ -124,5 +126,5 @@ $.jgrid = {
 	    checkbox : {disabled:true},
 		idName : 'id'
 	}
-};
+});
 })(jQuery);

@@ -25,9 +25,11 @@
       ]
 }
 */
-/*global jQuery, $, window, navigator */
+/*jshint eqeqeq:false, eqnull:true, devel:true */
+/*global jQuery */
 
 (function ($) {
+"use strict";
 
 $.fn.jqFilter = function( arg ) {
 	if (typeof arg === 'string') {
@@ -44,43 +46,30 @@ $.fn.jqFilter = function( arg ) {
 		filter: null,
 		columns: [],
 		onChange : null,
+		afterRedraw : null,
 		checkValues : null,
 		error: false,
 		errmsg : "",
 		errorcheck : true,
 		showQuery : true,
 		sopt : null,
-		ops : [
-			{"name": "eq", "description": "equal", "operator":"="},
-			{"name": "ne", "description": "not equal", "operator":"<>"},
-			{"name": "lt", "description": "less", "operator":"<"},
-			{"name": "le", "description": "less or equal","operator":"<="},
-			{"name": "gt", "description": "greater", "operator":">"},
-			{"name": "ge", "description": "greater or equal", "operator":">="},
-			{"name": "bw", "description": "begins with", "operator":"LIKE"},
-			{"name": "bn", "description": "does not begin with", "operator":"NOT LIKE"},
-			{"name": "in", "description": "in", "operator":"IN"},
-			{"name": "ni", "description": "not in", "operator":"NOT IN"},
-			{"name": "ew", "description": "ends with", "operator":"LIKE"},
-			{"name": "en", "description": "does not end with", "operator":"NOT LIKE"},
-			{"name": "cn", "description": "contains", "operator":"LIKE"},
-			{"name": "nc", "description": "does not contain", "operator":"NOT LIKE"},
-			{"name": "nu", "description": "is null", "operator":"IS NULL"},
-			{"name": "nn", "description": "is not null", "operator":"IS NOT NULL"}
-		],
+		ops : [],
+		operands : null,
 		numopts : ['eq','ne', 'lt', 'le', 'gt', 'ge', 'nu', 'nn', 'in', 'ni'],
 		stropts : ['eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn', 'in', 'ni'],
-		_gridsopt : [], // grid translated strings, do not tuch
-		groupOps : ["AND", "OR"],
-		groupButton : true
-	}, arg || {});
+		strarr : ['text', 'string', 'blob'],
+		groupOps : [{ op: "AND", text: "AND" },	{ op: "OR",  text: "OR" }],
+		groupButton : true,
+		ruleButtons : true,
+		direction : "ltr"
+	}, $.jgrid.filter, arg || {});
 	return this.each( function() {
 		if (this.filter) {return;}
 		this.p = p;
 		// setup filter in case if they is not defined
 		if (this.p.filter === null || this.p.filter === undefined) {
 			this.p.filter = {
-				groupOp: this.p.groupOps[0],
+				groupOp: this.p.groupOps[0].op,
 				rules: [],
 				groups: []
 			};
@@ -89,12 +78,6 @@ $.fn.jqFilter = function( arg ) {
 		isIE = /msie/i.test(navigator.userAgent) && !window.opera;
 
 		// translating the options
-		if(this.p._gridsopt.length) {
-			// ['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc']
-			for(i=0;i<this.p._gridsopt.length;i++) {
-				this.p.ops[i].description = this.p._gridsopt[i];
-			}
-		}
 		this.p.initFilter = $.extend(true,{},this.p.filter);
 
 		// set default values for the columns if they are not set
@@ -132,19 +115,22 @@ $.fn.jqFilter = function( arg ) {
 
 		}
 		if(this.p.showQuery) {
-			$(this).append("<table class='queryresult ui-widget ui-widget-content' style='display:block;max-width:440px;border:0px none;'><tbody><tr><td class='query'></td></tr></tbody></table>");
+			$(this).append("<table class='queryresult ui-widget ui-widget-content' style='display:block;max-width:440px;border:0px none;' dir='"+this.p.direction+"'><tbody><tr><td class='query'></td></tr></tbody></table>");
 		}
+		var getGrid = function () {
+			return $("#" + $.jgrid.jqID(p.id))[0] || null;
+		};
 		/*
 		 *Perform checking.
 		 *
 		*/
 		var checkData = function(val, colModelItem) {
-			var ret = [true,""];
+			var ret = [true,""], $t = getGrid();
 			if($.isFunction(colModelItem.searchrules)) {
-				ret = colModelItem.searchrules(val, colModelItem);
+				ret = colModelItem.searchrules.call($t, val, colModelItem);
 			} else if($.jgrid && $.jgrid.checkValues) {
 				try {
-					ret = $.jgrid.checkValues(val, -1, null, colModelItem.searchrules, colModelItem.label);
+					ret = $.jgrid.checkValues.call($t, val, -1, colModelItem.searchrules, colModelItem.label);
 				} catch (e) {}
 			}
 			if(ret && ret.length && ret[0] === false) {
@@ -165,13 +151,16 @@ $.fn.jqFilter = function( arg ) {
 			return $.isFunction(this.p.onChange) ? this.p.onChange.call( this, this.p ) : false;
 		};
 		/*
-		 * Redrow the filter every time when new field is added/deleted
+		 * Redraw the filter every time when new field is added/deleted
 		 * and field is  changed
 		 */
 		this.reDraw = function() {
 			$("table.group:first",this).remove();
 			var t = this.createTableForGroup(p.filter, null);
 			$(this).append(t);
+			if($.isFunction(this.p.afterRedraw) ) {
+				this.p.afterRedraw.call(this, this.p);
+			}
 		};
 		/*
 		 * Creates a grouping data for the filter
@@ -180,29 +169,34 @@ $.fn.jqFilter = function( arg ) {
 		 */
 		this.createTableForGroup = function(group, parentgroup) {
 			var that = this,  i;
-
 			// this table will hold all the group (tables) and rules (rows)
-			var table = $("<table class='group ui-widget ui-widget-content' style='border:0px none;'><tbody>");
+			var table = $("<table class='group ui-widget ui-widget-content' style='border:0px none;'><tbody></tbody></table>"),
 			// create error message row
+			align = "left";
+			if(this.p.direction === "rtl") {
+				align = "right";
+				table.attr("dir","rtl");
+			}
 			if(parentgroup === null) {
-				$(table).append("<tr class='error' style='display:none;'><th colspan='5' class='ui-state-error' align='left'></th></tr>");
+				table.append("<tr class='error' style='display:none;'><th colspan='5' class='ui-state-error' align='"+align+"'></th></tr>");
 			}
 
 			var tr = $("<tr></tr>");
-			$(table).append(tr);
+			table.append(tr);
 			// this header will hold the group operator type and group action buttons for
 			// creating subgroup "+ {}", creating rule "+" or deleting the group "-"
-			var th = $("<th colspan='5' align='left'></th>");
+			var th = $("<th colspan='5' align='"+align+"'></th>");
 			tr.append(th);
 
+			if(this.p.ruleButtons === true) {
 			// dropdown for: choosing group operator type
 			var groupOpSelect = $("<select class='opsel'></select>");
 			th.append(groupOpSelect);
 			// populate dropdown with all posible group operators: or, and
 			var str= "", selected;
 			for (i = 0; i < p.groupOps.length; i++) {
-				selected =  group.groupOp === that.p.groupOps[i] ? " selected='selected'" :"";
-				str += "<option value='"+that.p.groupOps[i]+"'" + selected+">"+that.p.groupOps[i]+"</option>";
+				selected =  group.groupOp === that.p.groupOps[i].op ? " selected='selected'" :"";
+				str += "<option value='"+that.p.groupOps[i].op+"'" + selected+">"+that.p.groupOps[i].text+"</option>";
 			}
 
 			groupOpSelect
@@ -211,7 +205,7 @@ $.fn.jqFilter = function( arg ) {
 				group.groupOp = $(groupOpSelect).val();
 				that.onchange(); // signals that the filter has changed
 			});
-
+			}
 			// button for adding a new subgroup
 			var inputAddSubgroup ="<span></span>";
 			if(this.p.groupButton) {
@@ -222,7 +216,7 @@ $.fn.jqFilter = function( arg ) {
 					}
 
 					group.groups.push({
-						groupOp: p.groupOps[0],
+						groupOp: p.groupOps[0].op,
 						rules: [],
 						groups: []
 					}); // adding a new group
@@ -234,7 +228,7 @@ $.fn.jqFilter = function( arg ) {
 				});
 			}
 			th.append(inputAddSubgroup);
-
+			if(this.p.ruleButtons === true) {
 			// button for adding a new rule
 			var inputAddRule = $("<input type='button' value='+' title='Add rule' class='add-rule ui-add'/>"), cm;
 			inputAddRule.bind('click',function() {
@@ -244,7 +238,7 @@ $.fn.jqFilter = function( arg ) {
 				}
 				for (i = 0; i < that.p.columns.length; i++) {
 				// but show only serchable and serchhidden = true fields
-					var searchable = (typeof that.p.columns[i].search === 'undefined') ?  true: that.p.columns[i].search ,
+					var searchable = (that.p.columns[i].search === undefined) ?  true: that.p.columns[i].search,
 					hidden = (that.p.columns[i].hidden === true),
 					ignoreHiding = (that.p.columns[i].searchoptions.searchhidden === true);
 					if ((ignoreHiding && searchable) || (searchable && !hidden)) {
@@ -252,10 +246,11 @@ $.fn.jqFilter = function( arg ) {
 						break;
 					}
 				}
+				
 				var opr;
 				if( cm.searchoptions.sopt ) {opr = cm.searchoptions.sopt;}
 				else if(that.p.sopt) { opr= that.p.sopt; }
-				else if  (cm.searchtype === 'string') {opr = that.p.stropts;}
+				else if  ( $.inArray(cm.searchtype, that.p.strarr) !== -1 ) {opr = that.p.stropts;}
 				else {opr = that.p.numopts;}
 
 				group.rules.push({
@@ -270,6 +265,7 @@ $.fn.jqFilter = function( arg ) {
 				return false;
 			});
 			th.append(inputAddRule);
+			}
 
 			// button for delete the group
 			if (parentgroup !== null) { // ignore the first group
@@ -306,7 +302,7 @@ $.fn.jqFilter = function( arg ) {
 				}
 			}
 			if(group.groupOp === undefined) {
-				group.groupOp = that.p.groupOps[0];
+				group.groupOp = that.p.groupOps[0].op;
 			}
 
 			// append rules rows
@@ -323,11 +319,11 @@ $.fn.jqFilter = function( arg ) {
 		/*
 		 * Create the rule data for the filter
 		 */
-		this.createTableRowForRule = function(rule, group) {
+		this.createTableRowForRule = function(rule, group ) {
 			// save current entity in a variable so that it could
 			// be referenced in anonimous method calls
 
-			var that=this, tr = $("<tr></tr>"),
+			var that=this, $t = getGrid(), tr = $("<tr></tr>"),
 			//document.createElement("tr"),
 
 			// first column used for padding
@@ -343,7 +339,7 @@ $.fn.jqFilter = function( arg ) {
 
 
 			// dropdown for: choosing field
-			var ruleFieldSelect = $("<select></select>");
+			var ruleFieldSelect = $("<select></select>"), ina, aoprs = [];
 			ruleFieldTd.append(ruleFieldSelect);
 			ruleFieldSelect.bind('change',function() {
 				rule.field = $(ruleFieldSelect).val();
@@ -357,34 +353,47 @@ $.fn.jqFilter = function( arg ) {
 				}
 				if(!cm) {return;}
 				cm.searchoptions.id = $.jgrid.randId();
-				if(isIE) {
+				if(isIE && cm.inputtype === "text") {
 					if(!cm.searchoptions.size) {
 						cm.searchoptions.size = 10;
 					}
 				}
-				var elm = $.jgrid.createEl(cm.inputtype,cm.searchoptions, "", true, that.p.ajaxSelectOptions, true);
+				var elm = $.jgrid.createEl.call($t, cm.inputtype,cm.searchoptions, "", true, that.p.ajaxSelectOptions || {}, true);
 				$(elm).addClass("input-elm");
 				//that.createElement(rule, "");
 
 				if( cm.searchoptions.sopt ) {op = cm.searchoptions.sopt;}
 				else if(that.p.sopt) { op= that.p.sopt; }
-				else if  (cm.searchtype === 'string') {op = that.p.stropts;}
+				else if  ($.inArray(cm.searchtype, that.p.strarr) !== -1) {op = that.p.stropts;}
 				else {op = that.p.numopts;}
 				// operators
-				var s ="",so="";
-				for ( i = 0; i < that.p.ops.length; i++) {
-					if($.inArray(that.p.ops[i].name, op) !== -1) {
-						so = rule.op === that.p.ops[i].name ? " selected=selected" : "";
-						s += "<option value='"+that.p.ops[i].name+"'"+ so+">"+that.p.ops[i].description+"</option>";
+				var s ="", so = 0;
+				aoprs = [];
+				$.each(that.p.ops, function() { aoprs.push(this.oper); });
+				for ( i = 0 ; i < op.length; i++) {
+					ina = $.inArray(op[i],aoprs);
+					if(ina !== -1) {
+						if(so===0) {
+							rule.op = that.p.ops[ina].oper;
+						}
+						s += "<option value='"+that.p.ops[ina].oper+"'>"+that.p.ops[ina].text+"</option>";
+						so++;
 					}
 				}
 				$(".selectopts",trpar).empty().append( s );
-
+				$(".selectopts",trpar)[0].selectedIndex = 0;
+				if( $.jgrid.msie && $.jgrid.msiever() < 9) {
+					var sw = parseInt($("select.selectopts",trpar)[0].offsetWidth, 10) + 1;
+					$(".selectopts",trpar).width( sw );
+					$(".selectopts",trpar).css("width","auto");
+				}
 				// data
 				$(".data",trpar).empty().append( elm );
-				$(".input-elm",trpar).bind('change',function() {
-					rule.data = $(this).val();
-					if($.isArray(rule.data)) { rule.data = rule.data.join(","); }
+				$.jgrid.bindEv.call($t, elm, cm.searchoptions);
+				$(".input-elm",trpar).bind('change',function( e ) {
+					var elem = e.target;
+					rule.data = elem.nodeName.toUpperCase() === "SPAN" && cm.searchoptions && $.isFunction(cm.searchoptions.custom_value) ?
+						cm.searchoptions.custom_value.call($t, $(elem).children(".customelement:first"), 'get') : elem.value;
 					that.onchange(); // signals that the filter has changed
 				});
 				setTimeout(function(){ //IE, Opera, Chrome
@@ -397,8 +406,8 @@ $.fn.jqFilter = function( arg ) {
 			var j=0;
 			for (i = 0; i < that.p.columns.length; i++) {
 				// but show only serchable and serchhidden = true fields
-		        var searchable = (typeof that.p.columns[i].search === 'undefined') ?  true: that.p.columns[i].search ,
-		        hidden = (that.p.columns[i].hidden === true),
+				var searchable = (that.p.columns[i].search === undefined) ? true: that.p.columns[i].search,
+				hidden = (that.p.columns[i].hidden === true),
 				ignoreHiding = (that.p.columns[i].searchoptions.searchhidden === true);
 				if ((ignoreHiding && searchable) || (searchable && !hidden)) {
 					selected = "";
@@ -419,13 +428,16 @@ $.fn.jqFilter = function( arg ) {
 			// create it here so it can be referentiated in the onchange event
 			//var RD = that.createElement(rule, rule.data);
 			cm.searchoptions.id = $.jgrid.randId();
-			if(isIE) {
+			if(isIE && cm.inputtype === "text") {
 				if(!cm.searchoptions.size) {
 					cm.searchoptions.size = 10;
 				}
 			}
-			var ruleDataInput = $.jgrid.createEl(cm.inputtype,cm.searchoptions, rule.data, true, that.p.ajaxSelectOptions, true);
-
+			var ruleDataInput = $.jgrid.createEl.call($t, cm.inputtype,cm.searchoptions, rule.data, true, that.p.ajaxSelectOptions || {}, true);
+			if(rule.op === 'nu' || rule.op === 'nn') {
+				$(ruleDataInput).attr('readonly','true');
+				$(ruleDataInput).attr('disabled','true');
+			} //retain the state of disabled text fields in case of null ops
 			// dropdown for: choosing operator
 			var ruleOperatorSelect = $("<select class='selectopts'></select>");
 			ruleOperatorTd.append(ruleOperatorSelect);
@@ -435,10 +447,11 @@ $.fn.jqFilter = function( arg ) {
 				var rd = $(".input-elm",trpar)[0];
 				if (rule.op === "nu" || rule.op === "nn") { // disable for operator "is null" and "is not null"
 					rule.data = "";
-					rd.value = "";
+					if(rd.tagName.toUpperCase() !== 'SELECT') rd.value = "";
 					rd.setAttribute("readonly", "true");
 					rd.setAttribute("disabled", "true");
 				} else {
+					if(rd.tagName.toUpperCase() === 'SELECT') rule.data = rd.value;
 					rd.removeAttribute("readonly");
 					rd.removeAttribute("disabled");
 				}
@@ -449,13 +462,15 @@ $.fn.jqFilter = function( arg ) {
 			// populate drop down with all available operators
 			if( cm.searchoptions.sopt ) {op = cm.searchoptions.sopt;}
 			else if(that.p.sopt) { op= that.p.sopt; }
-			else if  (cm.searchtype === 'string') {op = p.stropts;}
+			else if  ($.inArray(cm.searchtype, that.p.strarr) !== -1) {op = that.p.stropts;}
 			else {op = that.p.numopts;}
 			str="";
-			for ( i = 0; i < that.p.ops.length; i++) {
-				if($.inArray(that.p.ops[i].name, op) !== -1) {
-					selected = rule.op === that.p.ops[i].name ? " selected='selected'" : "";
-					str += "<option value='"+that.p.ops[i].name+"'"+selected+">"+that.p.ops[i].description+"</option>";
+			$.each(that.p.ops, function() { aoprs.push(this.oper); });
+			for ( i = 0; i < op.length; i++) {
+				ina = $.inArray(op[i],aoprs);
+				if(ina !== -1) {
+					selected = rule.op === that.p.ops[ina].oper ? " selected='selected'" : "";
+					str += "<option value='"+that.p.ops[ina].oper+"'"+selected+">"+that.p.ops[ina].text+"</option>";
 				}
 			}
 			ruleOperatorSelect.append( str );
@@ -467,13 +482,11 @@ $.fn.jqFilter = function( arg ) {
 			// is created previously
 			//ruleDataInput.setAttribute("type", "text");
 			ruleDataTd.append(ruleDataInput);
-
+			$.jgrid.bindEv.call($t, ruleDataInput, cm.searchoptions);
 			$(ruleDataInput)
 			.addClass("input-elm")
 			.bind('change', function() {
-				rule.data = $(this).val();
-				if($.isArray(rule.data)) { rule.data = rule.data.join(","); }
-
+				rule.data = cm.inputtype === 'custom' ? cm.searchoptions.custom_value.call($t, $(this).children(".customelement:first"),'get') : $(this).val();
 				that.onchange(); // signals that the filter has changed
 			});
 
@@ -482,6 +495,7 @@ $.fn.jqFilter = function( arg ) {
 			tr.append(ruleDeleteTd);
 
 			// create button for: delete rule
+			if(this.p.ruleButtons === true) {
 			var ruleDeleteInput = $("<input type='button' value='-' title='Delete rule' class='delete-rule ui-del'/>");
 			ruleDeleteTd.append(ruleDeleteInput);
 			//$(ruleDeleteInput).html("").height(20).width(30).button({icons: {  primary: "ui-icon-minus", text:false}});
@@ -499,7 +513,7 @@ $.fn.jqFilter = function( arg ) {
 				that.onchange(); // signals that the filter has changed
 				return false;
 			});
-
+			}
 			return tr;
 		};
 
@@ -531,17 +545,16 @@ $.fn.jqFilter = function( arg ) {
 
 			if (s === "()") {
 				return ""; // ignore groups that don't have rules
-			} else {
-				return s;
 			}
+			return s;
 		};
 		this.getStringForRule = function(rule) {
 			var opUF = "",opC="", i, cm, ret, val,
 			numtypes = ['int', 'integer', 'float', 'number', 'currency']; // jqGrid
 			for (i = 0; i < this.p.ops.length; i++) {
-				if (this.p.ops[i].name === rule.op) {
-					opUF = this.p.ops[i].operator;
-					opC = this.p.ops[i].name;
+				if (this.p.ops[i].oper === rule.op) {
+					opUF = this.p.operands.hasOwnProperty(rule.op) ? this.p.operands[rule.op] : "";
+					opC = this.p.ops[i].oper;
 					break;
 				}
 			}
@@ -551,6 +564,7 @@ $.fn.jqFilter = function( arg ) {
 					break;
 				}
 			}
+			if (cm == undefined) { return ""; }
 			val = rule.data;
 			if(opC === 'bw' || opC === 'bn') { val = val+"%"; }
 			if(opC === 'ew' || opC === 'en') { val = "%"+val; }
@@ -629,9 +643,8 @@ $.fn.jqFilter = function( arg ) {
 
 				if (s === "()") {
 					return ""; // ignore groups that don't have rules
-				} else {
-					return s;
 				}
+				return s;
 			}
 
 			return getStringForGroup(this.p.filter);
@@ -686,7 +699,7 @@ $.extend($.fn.jqFilter,{
 	},
 	addFilter: function (pfilter) {
 		if (typeof pfilter === "string") {
-			pfilter = jQuery.jgrid.parse( pfilter );
+			pfilter = $.jgrid.parse( pfilter );
 	}
 		this.each(function(){
 			this.p.filter = pfilter;

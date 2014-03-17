@@ -1,13 +1,15 @@
 ;(function($){
 /**
  * jqGrid (fi) Finnish Translation
- * Jukka Inkeri  awot.fi  2010-05-19 Version
+ * Jukka Inkeri  awot.fi  2010-05-19
+ * Alex Grönholm  alex.gronholm@nextday.fi  2011-05-18
  * http://awot.fi
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
-$.jgrid = {
+$.jgrid = $.jgrid || {};
+$.extend($.jgrid,{
 	defaults: {
 		recordtext: "Rivit {0} - {1} / {2}",
 	    emptyrecords: "Ei n&auml;ytett&auml;vi&auml;",
@@ -17,11 +19,11 @@ $.jgrid = {
 	search: {
 	    caption: "Etsi...",
 	    Find: "Etsi",
-	    Reset: "Tyhj&auml;&auml;",
-	    odata: ['=', '<>', '<', '<=','>','>=', 'alkaa','ei ala','joukossa','ei joukossa','loppuu','ei lopu','sis&auml;lt&auml;&auml;','ei sis&auml;ll&auml;'],
+	    Reset: "Tyhjenn&auml;",
+	    odata: [{ oper:'eq', text:"on"},{ oper:'ne', text:"ei ole"},{ oper:'lt', text:"pienempi"},{ oper:'le', text:"pienempi tai yht&auml;suuri"},{ oper:'gt', text:"suurempi"},{ oper:'ge', text:"suurempi tai yht&auml;suuri"},{ oper:'bw', text:"alkaa"},{ oper:'bn', text:"ei ala"},{ oper:'in', text:"joukossa"},{ oper:'ni', text:"ei joukossa"},{ oper:'ew', text:"loppuu"},{ oper:'en', text:"ei lopu"},{ oper:'cn', text:"sis&auml;lt&auml;&auml;"},{ oper:'nc', text:"ei sis&auml;ll&auml;"},{ oper:'nu', text:"on tyhj&auml;"},{ oper:'nn', text:"ei ole tyhj&auml;"},{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}],
 	    groupOps: [	{ op: "AND", text: "kaikki" }, { op: "OR", text: "mik&auml; tahansa" }	],
-		matchText: "&nbsp;&nbsp;t&auml;yt&auml; ehdot:",
-		rulesText: ""
+		operandTitle : "Click to select search operation.",
+		resetTitle : "Reset Search Value"		
 	},
 	edit: {
 	    addCaption: "Uusi rivi",
@@ -30,22 +32,22 @@ $.jgrid = {
 	    bCancel: "Peru",
 		bClose: "Sulje",
 		saveData: "Tietoja muutettu! Tallennetaanko?",
-		bYes: "K",
-		bNo: "E",
+		bYes: "Kyll&auml;",
+		bNo: "Ei",
 		bExit: "Peru",
 	    msg: {
 	        required: "pakollinen",
 	        number: "Anna kelvollinen nro",
-	        minValue: "arvo oltava >= ",
-	        maxValue: "arvo oltava <= ",
-	        email: "virheellinen sposti ",
+	        minValue: "arvon oltava suurempi tai yht&auml;suuri kuin ",
+	        maxValue: "arvon oltava pienempi tai yht&auml;suuri kuin ",
+	        email: "ei ole kelvollinen s&auml;postiosoite",
 	        integer: "Anna kelvollinen kokonaisluku",
 			date: "Anna kelvollinen pvm",
-			url: "Ei ole sopiva linkki(URL). Alku oltava ('http://' tai 'https://')",
+			url: "Ei ole kelvollinen linkki(URL). Alku oltava ('http://' tai 'https://')",
 			nodefined: " ei ole m&auml;&auml;ritelty!",
 			novalue: " paluuarvo vaaditaan!",
-			customarray: "Custom function should return array!",
-			customfcheck: "Custom function should be present in case of custom checking!"
+			customarray: "Oman funktion tulee palauttaa jono!",
+			customfcheck: "Oma funktio on m&auml;&auml;ritelt&auml;v&auml; r&auml;&auml;t&auml;l&ouml;ity&auml; tarkastusta varten!"
 		}
 	},
 	view: {
@@ -59,13 +61,13 @@ $.jgrid = {
 	    bCancel: "Peru"
 	},
 	nav: {
-		edittext: " ",
-	    edittitle: "Muokkaa valittu rivi",
-		addtext: " ",
+		edittext: "",
+	    edittitle: "Muokkaa valittua rivi&auml;",
+		addtext: "",
 	    addtitle: "Uusi rivi",
-	    deltext: " ",
+	    deltext: "",
 	    deltitle: "Poista valittu rivi",
-	    searchtext: " ",
+	    searchtext: "",
 	    searchtitle: "Etsi tietoja",
 	    refreshtext: "",
 	    refreshtitle: "Lataa uudelleen",
@@ -75,13 +77,13 @@ $.jgrid = {
 		viewtitle: "N&auml;yta valitut rivit"
 	},
 	col: {
-	    caption: "N&auml;yta/Piilota sarakkeet",
+	    caption: "Valitse sarakkeet",
 	    bSubmit: "OK",
 	    bCancel: "Peru"	
 	},
 	errors : {
 		errcap: "Virhe",
-		nourl: "url asettamatta",
+		nourl: "URL on asettamatta",
 		norecords: "Ei muokattavia tietoja",
 	    model: "Pituus colNames <> colModel!"
 	},
@@ -101,7 +103,8 @@ $.jgrid = {
 			AmPm: ["am","pm","AM","PM"],
 			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th'},
 			srcformat: 'Y-m-d',
-			newformat: 'd/m/Y',
+			newformat: 'd.m.Y',
+			parseRe : /[#%\\\/:_;.,\t\s-]/,
 			masks: {
 	            ISO8601Long:"Y-m-d H:i:s",
 	            ISO8601Short:"Y-m-d",
@@ -123,6 +126,6 @@ $.jgrid = {
 	    checkbox: {disabled:true},
 		idName: 'id'
 	}
-};
+});
 // FI
 })(jQuery);

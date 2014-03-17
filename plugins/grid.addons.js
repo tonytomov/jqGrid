@@ -171,7 +171,7 @@ $.jgrid.extend({
 			}
 			if($.fn.searchFilter) {
 				if(p.recreateFilter===true) {$("#"+fid).remove();}
-				if( $("#"+fid).html() !== null ) {
+				if( $("#"+fid).html() != null ) {
 					if ( $.isFunction(p.beforeShowSearch) ) {
 						showFrm = p.beforeShowSearch($("#"+fid));
 						if(typeof(showFrm) == "undefined") {
@@ -691,7 +691,7 @@ $.jgrid.extend({
 				}
 			};
 			var frm = $("<form name='SearchForm' style=display:inline;' class='"+this.p.formclass+"'></form>");
-			tbl =$("<table class='"+this.p.tableclass+"' cellspacing='0' cellpading='0' border='0'><tbody></tbody></table>");
+			tbl =$("<table class='"+this.p.tableclass+"' cellspacing='0' cellpadding='0' border='0'><tbody></tbody></table>");
 			$(frm).append(tbl);
 			formFill();
 			$(this).append(frm);

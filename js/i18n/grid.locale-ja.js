@@ -7,7 +7,8 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
-$.jgrid = {
+$.jgrid = $.jgrid || {};
+$.extend($.jgrid,{
 	defaults : {
 		recordtext: "{2} \u4EF6\u4E2D {0} - {1} \u3092\u8868\u793A ",
 	    emptyrecords: "\u8868\u793A\u3059\u308B\u30EC\u30B3\u30FC\u30C9\u304C\u3042\u308A\u307E\u305B\u3093",
@@ -18,13 +19,14 @@ $.jgrid = {
 	    caption: "\u691c\u7d22...",
 	    Find: "\u691c\u7d22",
 	    Reset: "\u30ea\u30bb\u30c3\u30c8",
-	    odata: ["\u6B21\u306B\u7B49\u3057\u3044", "\u6B21\u306B\u7B49\u3057\u304F\u306A\u3044",
-            "\u6B21\u3088\u308A\u5C0F\u3055\u3044", "\u6B21\u306B\u7B49\u3057\u3044\u304B\u5C0F\u3055\u3044",
-            "\u6B21\u3088\u308A\u5927\u304D\u3044", "\u6B21\u306B\u7B49\u3057\u3044\u304B\u5927\u304D\u3044",
-            "\u6B21\u3067\u59CB\u307E\u308B", "\u6B21\u3067\u59CB\u307E\u3089\u306A\u3044",
-            "\u6B21\u306B\u542B\u307E\u308C\u308B", "\u6B21\u306B\u542B\u307E\u308C\u306A\u3044",
-            "\u6B21\u3067\u7D42\u308F\u308B", "\u6B21\u3067\u7D42\u308F\u3089\u306A\u3044",
-            "\u6B21\u3092\u542B\u3080", "\u6B21\u3092\u542B\u307E\u306A\u3044"],
+	    odata: [{ oper:'eq', text:"\u6B21\u306B\u7B49\u3057\u3044"}, { oper:'ne', text:"\u6B21\u306B\u7B49\u3057\u304F\u306A\u3044"},
+            { oper:'lt', text:"\u6B21\u3088\u308A\u5C0F\u3055\u3044"}, { oper:'le', text:"\u6B21\u306B\u7B49\u3057\u3044\u304B\u5C0F\u3055\u3044"},
+            { oper:'gt', text:"\u6B21\u3088\u308A\u5927\u304D\u3044"}, { oper:'ge', text:"\u6B21\u306B\u7B49\u3057\u3044\u304B\u5927\u304D\u3044"},
+            { oper:'bw', text:"\u6B21\u3067\u59CB\u307E\u308B"}, { oper:'bn', text:"\u6B21\u3067\u59CB\u307E\u3089\u306A\u3044"},
+            { oper:'in', text:"\u6B21\u306B\u542B\u307E\u308C\u308B"}, { oper:'ni', text:"\u6B21\u306B\u542B\u307E\u308C\u306A\u3044"},
+            { oper:'ew', text:"\u6B21\u3067\u7D42\u308F\u308B"}, { oper:'en', text:"\u6B21\u3067\u7D42\u308F\u3089\u306A\u3044"},
+            { oper:'cn', text:"\u6B21\u3092\u542B\u3080"}, { oper:'nc', text:"\u6B21\u3092\u542B\u307E\u306A\u3044"},
+			{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}],
 	    groupOps: [{
                 op: "AND",
                 text: "\u3059\u3079\u3066\u306E"
@@ -33,8 +35,8 @@ $.jgrid = {
                 op: "OR",
                 text: "\u3044\u305A\u308C\u304B\u306E"
             }],
-      matchText: " \u6B21\u306E",
-      rulesText: " \u6761\u4EF6\u3092\u6E80\u305F\u3059"
+		operandTitle : "Click to select search operation.",
+		resetTitle : "Reset Search Value"
 	},
 	edit : {
 	    addCaption: "\u30ec\u30b3\u30fc\u30c9\u8ffd\u52a0",
@@ -127,9 +129,10 @@ $.jgrid = {
 				"1\u6708", "2\u6708", "3\u6708", "4\u6708", "5\u6708", "6\u6708", "7\u6708", "8\u6708", "9\u6708", "10\u6708", "11\u6708", "12\u6708"
 			],
 			AmPm : ["am","pm","AM","PM"],
-			S: "\u756a\u76ee",
+			S: function (j) { return "\u756a\u76ee"; },
 			srcformat: 'Y-m-d',
 			newformat: 'd/m/Y',
+			parseRe : /[#%\\\/:_;.,\t\s-]/,
 			masks : {
 	            ISO8601Long:"Y-m-d H:i:s",
 	            ISO8601Short:"Y-m-d",
@@ -151,5 +154,5 @@ $.jgrid = {
 	    checkbox : {disabled:true},
 		idName : 'id'
 	}
-};
+});
 })(jQuery);
