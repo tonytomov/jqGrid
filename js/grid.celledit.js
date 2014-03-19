@@ -50,7 +50,7 @@ $.jgrid.extend({
 				// save the cell
 				$($t).jqGrid("saveCell",$t.p.savedRow[0].id,$t.p.savedRow[0].ic);
 			} else {
-				window.setTimeout(function () { $("#"+$.jgrid.jqID($t.p.knv)).attr("tabindex","-1").focus();},0);
+				window.setTimeout(function () { $("#"+$.jgrid.jqID($t.p.knv)).attr("tabindex","-1").focus();},1);
 			}
 			cm = $t.p.colModel[iCol];
 			nm = cm.name;
@@ -84,7 +84,7 @@ $.jgrid.extend({
 				var elc = $.jgrid.createEl.call($t,cm.edittype,opt,tmp,true,$.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions || {}));
 				$(cc).html("").append(elc).attr("tabindex","0");
 				$.jgrid.bindEv.call($t, elc, opt);
-				window.setTimeout(function () { $(elc).focus();},0);
+				window.setTimeout(function () { $(elc).focus();},1);
 				$("input, select, textarea",cc).bind("keydown",function(e) {
 					if (e.keyCode === 27) {
 						if($("input.hasDatepicker",cc).length >0) {
