@@ -815,8 +815,6 @@ $.fn.jqGrid = function( pin ) {
 			viewrecords: false,
 			loadonce: false,
 			multiselect: false,
-			multiselectField: false, // DFS - added to jqGrid to allow row-level multiselect control. set to the name of the row field to activate.
-			showSelectAll: true, // DFS - added to jqGrid to allow toggle of select all checkbox in multiselect mode.
 			multikey: false,
 			editurl: null,
 			search: false,
@@ -1141,10 +1139,9 @@ $.fn.jqGrid = function( pin ) {
 			prp = formatCol( pos,irow, v, srvr, rowId, rdata);
 			return "<td role=\"gridcell\" "+prp+">"+v+"</td>";
 		},
-		addMulti = function (rowid, pos, irow, checked) {
-			var suppress = (p.multiselectField && !p.data[irow][p.multiselectField]);
-			var v = (suppress) ? "" : "<input role=\"checkbox\" type=\"checkbox\"" + " id=\"jqg_" + ts.p.id + "_" + rowid + "\" class=\"cbox\" name=\"jqg_" + ts.p.id + "_" + rowid + "\"" + (checked ? "checked=\"checked\"" : "") + "/>",
-			prp = (suppress) ? "" : formatCol( pos,irow,'',null, rowid, true);
+		addMulti = function(rowid,pos,irow,checked){
+			var	v = "<input role=\"checkbox\" type=\"checkbox\""+" id=\"jqg_"+ts.p.id+"_"+rowid+"\" class=\"cbox\" name=\"jqg_"+ts.p.id+"_"+rowid+"\"" + (checked ? "checked=\"checked\"" : "")+"/>",
+			prp = formatCol( pos,irow,'',null, rowid, true);
 			return "<td role=\"gridcell\" "+prp+">"+v+"</td>";
 		},
 		addRowNum = function (pos,irow,pG,rN) {
@@ -2433,10 +2430,7 @@ $.fn.jqGrid = function( pin ) {
 			try { $(ts).jqGrid("setSubGrid");} catch (s){}
 		}
 		if(this.p.multiselect) {
-			this.p.colNames.unshift(
-				(this.p.showSelectAll) ? 
-					"<input role='checkbox' id='cb_" + this.p.id + "' class='cbox' type='checkbox'/>"
-					:"");
+			this.p.colNames.unshift("<input role='checkbox' id='cb_"+this.p.id+"' class='cbox' type='checkbox'/>");
 			this.p.colModel.unshift({name:'cb',width:$.jgrid.cell_width ? ts.p.multiselectWidth+ts.p.cellLayout : ts.p.multiselectWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center',fixed:true});
 		}
 		if(this.p.rownumbers) {
@@ -2530,26 +2524,20 @@ $.fn.jqGrid = function( pin ) {
 		$("thead tr:first th",this).hover(function(){$(this).addClass('ui-state-hover');},function(){$(this).removeClass('ui-state-hover');});
 		if(this.p.multiselect) {
 			var emp=[], chk;
-			$('#cb_'+$.jgrid.jqID(ts.p.id),this).bind('click',function(e){
+			$('#cb_'+$.jgrid.jqID(ts.p.id),this).bind('click',function(){
 				ts.p.selarrrow = [];
 				var froz = ts.p.frozenColumns === true ? ts.p.id + "_frozen" : "";
 				if (this.checked) {
-					$(ts.rows).each(function(i,row) {
+					$(ts.rows).each(function(i) {
 						if (i>0) {
 							if(!$(this).hasClass("ui-subgrid") && !$(this).hasClass("jqgroup") && !$(this).hasClass('ui-state-disabled')){
-								var cSel = $(ts).triggerHandler("jqGridBeforeSelectRow", [row.id, e]);
-								cSel = (cSel === false || cSel === 'stop') ? false : true;
-								if (cSel && $.isFunction(ts.p.beforeSelectRow)) { cSel = ts.p.beforeSelectRow.call(ts, row.id, e); }
-
-								if (cSel === true) {
-									$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(this.id) )[ts.p.useProp ? 'prop': 'attr']("checked",true);
-										$(this).addClass("ui-state-highlight").attr("aria-selected","true");  
+								$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(this.id) )[ts.p.useProp ? 'prop': 'attr']("checked",true);
+								$(this).addClass("ui-state-highlight").attr("aria-selected","true");  
 								ts.p.selarrrow.push(this.id);
-									ts.p.selrow = this.id;
-									if(froz) {
-										$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(this.id), ts.grid.fbDiv )[ts.p.useProp ? 'prop': 'attr']("checked",true);
-										$("#"+$.jgrid.jqID(this.id), ts.grid.fbDiv).addClass("ui-state-highlight");
-									}
+								ts.p.selrow = this.id;
+								if(froz) {
+									$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(this.id), ts.grid.fbDiv )[ts.p.useProp ? 'prop': 'attr']("checked",true);
+									$("#"+$.jgrid.jqID(this.id), ts.grid.fbDiv).addClass("ui-state-highlight");
 								}
 							}
 						}
