@@ -1699,7 +1699,7 @@ $.jgrid.extend({
 				if(onAfterShow) {rp_ge[$t.p.id].afterShowForm.call($t,$("#"+dtbl));}
 			}
 			if(rp_ge[$t.p.id].closeOnEscape===true) {
-				setTimeout(function(){$(".ui-jqdialog-titlebar-close","#"+$.jgrid.jqID(IDs.modalhead)).focus();},0);
+				setTimeout(function(){$(".ui-jqdialog-titlebar-close","#"+$.jgrid.jqID(IDs.modalhead)).attr("tabindex","-1").focus();},0);
 			}
 		});
 	},
