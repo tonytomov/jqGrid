@@ -1039,8 +1039,8 @@ $.fn.jqGrid = function( pin ) {
 				$(ts).bind('jqGridGridComplete.selectionPreserver', restoreSelection);				
 			}
 		};
-		if(this.tagName.toUpperCase() !== 'TABLE') {
-			alert("Element is not a table");
+		if(this.tagName.toUpperCase() !== 'TABLE' || this.id == null) {
+			alert("Element is not a table or has no id!");
 			return;
 		}
 		if(document.documentMode !== undefined ) { // IE only
