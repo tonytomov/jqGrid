@@ -924,15 +924,6 @@ $.jgrid.extend({
 			dw = isNaN(rp_ge[$(this)[0].p.id].datawidth) ? rp_ge[$(this)[0].p.id].datawidth : rp_ge[$(this)[0].p.id].datawidth+"px",
 			frm = $("<form name='FormPost' id='"+frmgr+"' class='FormGrid' onSubmit='return false;' style='width:"+dw+";overflow:auto;position:relative;height:"+dh+";'></form>").data("disabled",false),
 			tbl = $("<table id='"+frmtborg+"' class='EditTable' cellspacing='0' cellpadding='0' border='0'><tbody></tbody></table>");
-			showFrm = $($t).triggerHandler("jqGridAddEditBeforeInitData", [$("#"+frmgr), frmoper]);
-			if(showFrm === undefined) {
-				showFrm = true;
-			}
-			if(showFrm && onBeforeInit) {
-				showFrm = onBeforeInit.call($t,$("#"+frmgr),frmoper);
-			}
-			if(showFrm === false) {return;}
-			restoreInline();
 			$($t.p.colModel).each( function() {
 				var fmto = this.formoptions;
 				maxCols = Math.max(maxCols, fmto ? fmto.colpos || 0 : 0 );
@@ -946,6 +937,15 @@ $.jgrid.extend({
 			flr = $("<tr style='display:none' class='tinfo'><td class='topinfo' colspan='"+(maxCols*2)+"'>"+rp_ge[$t.p.id].topinfo+"</td></tr>");
 			flr[0].rp = 0;
 			$(tbl).append(flr);
+			showFrm = $($t).triggerHandler("jqGridAddEditBeforeInitData", [frm, frmoper]);
+			if(showFrm === undefined) {
+				showFrm = true;
+			}
+			if(showFrm && onBeforeInit) {
+				showFrm = onBeforeInit.call($t,frm, frmoper);
+			}
+			if(showFrm === false) {return;}
+			restoreInline();
 			// set the id.
 			// use carefull only to change here colproperties.
 			// create data
@@ -1356,13 +1356,6 @@ $.jgrid.extend({
 			dw = isNaN(rp_ge[$(this)[0].p.id].datawidth) ? rp_ge[$(this)[0].p.id].datawidth : rp_ge[$(this)[0].p.id].datawidth+"px",
 			frm = $("<form name='FormPost' id='"+frmgr_id+"' class='FormGrid' style='width:"+dw+";overflow:auto;position:relative;height:"+dh+";'></form>"),
 			tbl =$("<table id='"+frmtb_id+"' class='EditTable' cellspacing='1' cellpadding='2' border='0' style='table-layout:fixed'><tbody></tbody></table>");
-			if(onBeforeInit) {
-				showFrm = onBeforeInit.call($t,$("#"+frmgr));
-				if(showFrm === undefined) {
-					showFrm = true;
-				}
-			}
-			if(showFrm === false) {return;}
 			$($t.p.colModel).each( function() {
 				var fmto = this.formoptions;
 				maxCols = Math.max(maxCols, fmto ? fmto.colpos || 0 : 0 );
@@ -1370,6 +1363,13 @@ $.jgrid.extend({
 			});
 			// set the id.
 			$(frm).append(tbl);
+			if(onBeforeInit) {
+				showFrm = onBeforeInit.call($t, frm );
+				if(showFrm === undefined) {
+					showFrm = true;
+				}
+			}
+			if(showFrm === false) {return;}
 			createData(rowid, $t, tbl, maxCols);
 			var rtlb = $t.p.direction === "rtl" ? true :false,
 			bp = rtlb ? "nData" : "pData",
@@ -1569,7 +1569,7 @@ $.jgrid.extend({
 				$.jgrid.createModal(IDs,tbl,p,"#gview_"+$.jgrid.jqID($t.p.id),$("#gview_"+$.jgrid.jqID($t.p.id))[0]);
 
 				if(onBeforeInit) {
-					showFrm = onBeforeInit.call($t,$("#"+dtbl));
+					showFrm = onBeforeInit.call($t,$(tbl));
 					if(showFrm === undefined) {
 						showFrm = true;
 					}
