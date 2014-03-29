@@ -871,7 +871,8 @@ $.fn.jqGrid = function( pin ) {
 			ignoreCase : false,
 			cmTemplate : {},
 			idPrefix : "",
-			multiSort :  false
+			multiSort :  false,
+			minColWidth : 33
 		}, $.jgrid.defaults, pin || {});
 		var ts= this, grid={
 			headers:[],
@@ -897,7 +898,7 @@ $.fn.jqGrid = function( pin ) {
 						if(p.forceFit===true ){
 							hn = this.headers[this.resizing.idx+p.nv];
 							nWn = p.direction === "ltr" ? hn.width - diff : hn.width + diff;
-							if(nWn >33) {
+							if(nWn > p.minColWidth ) {
 								h.newWidth = newWidth;
 								hn.newWidth = nWn;
 							}
