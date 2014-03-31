@@ -12130,7 +12130,9 @@ $.jgrid.extend({
             o = $.extend({
                 exptype : "xmlstring",
                 root: "grid",
-                ident: "\t"
+                ident: "\t",
+                separator: ";",
+                hideColumns: []
             }, o || {});
             var ret = null;
             this.each(function () {
@@ -12167,7 +12169,7 @@ $.jgrid.extend({
                         ret = "{"+ xmlJsonClass.toJson(gprm,o.root,o.ident,false)+"}";
                         if(gprm.postData.filters !== undefined) {
                             ret=ret.replace(/filters":"/,'filters":');
-                            ret=ret.replace("/}]}"/,'}]}');
+                            ret=ret.replace(/}]}"/,'}]}');
                         }
                         break;
                     case 'csvstring':
