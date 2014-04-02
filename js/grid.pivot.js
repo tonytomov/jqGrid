@@ -204,6 +204,9 @@ $.jgrid.extend({
 			var colc;
 			for(i = 0; i< xlen; i++) {
 				colc = {name:o.xDimension[i].dataName, frozen: o.frozenStaticCols};
+				if(o.xDimension[i].isGroupField == null) {
+					o.xDimension[i].isGroupField =  true;
+				}
 				colc = $.extend(true, colc, o.xDimension[i]);
 				columns.push( colc );
 			}
@@ -412,9 +415,11 @@ $.jgrid.extend({
 			// based on xDimension  levels build grouping 
 			if( groupfields > 0) {
 				for(i=0;i<groupfields;i++) {
-					groupOptions.groupingView.groupField[i] = columns[i].name;
-					groupOptions.groupingView.groupSummary[i] = o.groupSummary;
-					groupOptions.groupingView.groupSummaryPos[i] = o.groupSummaryPos;
+					if(columns[i].isGroupField) {
+						groupOptions.groupingView.groupField.push(columns[i].name);
+						groupOptions.groupingView.groupSummary.push(o.groupSummary);
+						groupOptions.groupingView.groupSummaryPos.push(o.groupSummaryPos);
+					}
 				}
 			} else {
 				// no grouping is needed
