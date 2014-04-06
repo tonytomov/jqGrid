@@ -243,13 +243,10 @@ $.jgrid.extend({
 				return success;
 			}
 			var idname, opers = $t.p.prmNames, oldRowId = rowid;
-			if ($t.p.keyIndex === false) {
+			if ($t.p.keyName === false) {
 				idname = opers.id;
 			} else {
-				idname = $t.p.colModel[$t.p.keyIndex +
-					($t.p.rownumbers === true ? 1 : 0) +
-					($t.p.multiselect === true ? 1 : 0) +
-					($t.p.subGrid === true ? 1 : 0)].name;
+				idname = $t.p.keyName;
 			}
 			if(tmp) {
 				tmp[opers.oper] = opers.editoper;
