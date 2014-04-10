@@ -1158,7 +1158,7 @@ $.fn.jqGrid = function( pin ) {
 					f[j]= datatype === "local" ?
 					field.name :
 					( (datatype==="xml" || datatype === "xmlstring") ? field.xmlmap || field.name : field.jsonmap || field.name );
-					if(ts.p.keyIndex !== false && field.key===true ) {
+					if(ts.p.keyName !== false && field.key===true ) {
 						ts.p.keyName = f[j];
 					}
 					j++;
@@ -1196,15 +1196,12 @@ $.fn.jqGrid = function( pin ) {
 			}
 		},
 		refreshIndex = function() {
-			var datalen = ts.p.data.length, idname, i, val,
-			ni = ts.p.rownumbers===true ? 1 :0,
-			gi = ts.p.multiselect ===true ? 1 :0,
-			si = ts.p.subGrid===true ? 1 :0;
+			var datalen = ts.p.data.length, idname, i, val;
 
-			if(ts.p.keyIndex === false || ts.p.loadonce === true) {
+			if(ts.p.keyName === false || ts.p.loadonce === true) {
 				idname = ts.p.localReader.id;
 			} else {
-				idname = ts.p.colModel[ts.p.keyIndex+gi+si+ni].name;
+				idname = ts.p.keyName;
 			}
 			for(i =0;i < datalen; i++) {
 				val = $.jgrid.getAccessor(ts.p.data[i],idname);
@@ -1270,13 +1267,10 @@ $.fn.jqGrid = function( pin ) {
 				addSubGridCell = $.jgrid.getMethod("addSubGridCell");
 			}
 			if(!xmlRd.repeatitems) {f = reader(frd);}
-			if( ts.p.keyIndex===false) {
+			if( ts.p.keyName===false) {
 				idn = $.isFunction( xmlRd.id ) ?  xmlRd.id.call(ts, xml) : xmlRd.id;
 			} else {
-				idn = ts.p.keyIndex;
-			}
-			if(f.length>0 && !isNaN(idn)) {
-				idn=ts.p.keyName;
+				idn = ts.p.keyName;
 			}
 			if( String(idn).indexOf("[") === -1 ) {
 				if (f.length) {
@@ -1464,16 +1458,10 @@ $.fn.jqGrid = function( pin ) {
 			if(si) {
 				addSubGridCell = $.jgrid.getMethod("addSubGridCell");
 			}
-			if( ts.p.keyIndex===false ) {
+			if( ts.p.keyName===false ) {
 				idn = $.isFunction(dReader.id) ? dReader.id.call(ts, data) : dReader.id; 
 			} else {
-				idn = ts.p.keyIndex;
-			}
-			if(!dReader.repeatitems) {
-				f = objectReader;
-				if(f.length>0 && !isNaN(idn)) {
-					idn=ts.p.keyName;
-				}
+				idn = ts.p.keyName;
 			}
 			drows = $.jgrid.getAccessor(data,dReader.root);
 			if (drows == null && $.isArray(data)) { drows = data; }
@@ -2406,12 +2394,11 @@ $.fn.jqGrid = function( pin ) {
 		};
 		this.p.id = this.id;
 		if ($.inArray(ts.p.multikey,sortkeys) === -1 ) {ts.p.multikey = false;}
-		ts.p.keyIndex=false;
 		ts.p.keyName=false;
 		for (i=0; i<ts.p.colModel.length;i++) {
 			ts.p.colModel[i] = $.extend(true, {}, ts.p.cmTemplate, ts.p.colModel[i].template || {}, ts.p.colModel[i]);
-			if (ts.p.keyIndex === false && ts.p.colModel[i].key===true) {
-				ts.p.keyIndex = i;
+			if (ts.p.keyName === false && ts.p.colModel[i].key===true) {
+				ts.p.keyName = ts.p.colModel[i].name;
 			}
 		}
 		ts.p.sortorder = ts.p.sortorder.toLowerCase();
@@ -3253,8 +3240,8 @@ $.jgrid.extend({
 					if(rowid !== undefined) { rowid = String(rowid);}
 					else {
 						rowid = $.jgrid.randId();
-						if(t.p.keyIndex !== false) {
-							cnm = t.p.colModel[t.p.keyIndex+gi+si+ni].name;
+						if(t.p.keyName !== false) {
+							cnm = t.p.keyName;
 							if(rdata[0][cnm] !== undefined) { rowid = rdata[0][cnm]; }
 						}
 					}
