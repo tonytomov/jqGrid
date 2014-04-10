@@ -281,13 +281,14 @@ $.jgrid.extend({
 					break;
 				case 'adjacency' :
 					var parent_id = $t.p.treeReader.parent_id_field,
-					dtid = $t.p.localReader.id;
-					$(this.p.data).each(function(){
-						if(this[dtid] === $.jgrid.stripPref($t.p.idPrefix, rc[parent_id]) ) {
-							result = this;
-							return false;
+					dtid = $t.p.localReader.id,
+					ind = rc[dtid], pos = $t.p._index[ind];
+					while(pos--) {
+						if($t.p.data[pos][dtid] === $.jgrid.stripPref($t.p.idPrefix, rc[parent_id])) {
+							result = $t.p.data[pos];
+							break;
 						}
-					});
+					}
 					break;
 			}
 		});
