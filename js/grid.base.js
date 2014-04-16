@@ -969,19 +969,19 @@ $.fn.jqGrid = function( pin ) {
 				var div = rh * rn;
 				var page, npage, empty;
 				if ( tbot < dh && ttop <= 0 &&
-					(p.lastpage===undefined||parseInt((tbot + scrollTop + div - 1) / div,10) <= p.lastpage))
+					(p.lastpage===undefined||(parseInt((tbot + scrollTop + div - 1) / div,10) || 0) <= p.lastpage))
 				{
-					npage = parseInt((dh - tbot + div - 1) / div,10);
+					npage = parseInt((dh - tbot + div - 1) / div,10) || 1;
 					if (tbot >= 0 || npage < 2 || p.scroll === true) {
-						page = Math.round((tbot + scrollTop) / div) + 1;
+						page = ( Math.round((tbot + scrollTop) / div) || 0) + 1;
 						ttop = -1;
 					} else {
 						ttop = 1;
 					}
 				}
 				if (ttop > 0) {
-					page = parseInt(scrollTop / div,10) + 1;
-					npage = parseInt((scrollTop + dh) / div,10) + 2 - page;
+					page = ( parseInt(scrollTop / div,10) || 0 ) + 1;
+					npage = (parseInt((scrollTop + dh) / div,10) || 0) + 2 - page;
 					empty = true;
 				}
 				if (npage) {
