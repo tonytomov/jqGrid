@@ -2104,8 +2104,13 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.rowList.length >0){
 				str = "<td dir='"+dir+"'>";
 				str +="<select class='ui-pg-selbox' role='listbox'>";
+				var strnm;
 				for(i=0;i<ts.p.rowList.length;i++){
-					str +="<option role=\"option\" value=\""+ts.p.rowList[i]+"\""+((ts.p.rowNum === ts.p.rowList[i])?" selected=\"selected\"":"")+">"+ts.p.rowList[i]+"</option>";
+					strnm = ts.p.rowList[i].toString().split(":");
+					if(strnm.length === 1) {
+						strnm[1] = strnm[0];
+					}
+					str +="<option role=\"option\" value=\""+strnm[0]+"\""+(( intNum(ts.p.rowNum,0) === intNum(strnm[0],0))?" selected=\"selected\"":"")+">"+strnm[1]+"</option>";
 				}
 				str +="</select></td>";
 			}
