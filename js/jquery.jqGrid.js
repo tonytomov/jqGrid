@@ -4490,12 +4490,13 @@ $.jgrid.extend({
 				dval = sval.defaultValue ? sval.defaultValue : "";
 				if($t.p.colModel[coli].stype === "select") {
 					if(dval) {
-						$("td.ui-search-input select", ptr).val( dval );
+					$("td.ui-search-input select", ptr)	$("td.ui-search-input select", ptr).val( dval );
 					} else {
 						$("td.ui-search-input select", ptr)[0].selectedIndex = 0;
 					}
+					$("td.ui-search-input select", ptr).trigger('select');
 				} else {
-					$("td.ui-search-input input", ptr).val( dval );
+					$("td.ui-search-input input", ptr).val( dval ).trigger('change');
 				}
 				// ToDo custom search type
 				if(p.autosearch===true){
