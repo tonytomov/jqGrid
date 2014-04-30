@@ -4122,7 +4122,12 @@ $.jgrid.extend({
 						if($t.p.postData.hasOwnProperty(n)) { delete $t.p.postData[n];}
 					});
 				} else {
-					$.extend($t.p.postData,sdata);
+					var filters = '{"fields":[';
+	                    		$.each(sdata,function(i,n){
+		                        	filters += '{"field":"' + i + '", "op": "' + sopt[i] + '", "value":"' + n.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + '"},';
+		                    	});
+		                    	filters = filters.slice(0,-1) + ']}';
+					$.extend($t.p.postData, sdata, { filters: filters } );
 				}
 				var saveurl;
 				if($t.p.searchurl) {
