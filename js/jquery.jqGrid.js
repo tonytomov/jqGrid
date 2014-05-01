@@ -4143,12 +4143,13 @@ $.jgrid.extend({
 				if($.isFunction(p.afterSearch)){p.afterSearch.call($t);}
 			},
 			clearToolbar = function(trigger){
-				var sdata={}, j=0, nm;
+				var sdata={}, sopt={}, j=0, nm, so;
 				trigger = (typeof trigger !== 'boolean') ? true : trigger;
 				$.each($t.p.colModel,function(){
 					var v, $elem = $("#gs_"+$.jgrid.jqID(this.name),(this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
 					if(this.searchoptions && this.searchoptions.defaultValue !== undefined) { v = this.searchoptions.defaultValue; }
 					nm = this.index || this.name;
+                    so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : this.stype==='select'?  'eq' : p.defaultSearch;
 					switch (this.stype) {
 						case 'select' :
 							$elem.find("option").each(function (i){
@@ -4161,26 +4162,35 @@ $.jgrid.extend({
 							if ( v !== undefined ) {
 								// post the key and not the text
 								sdata[nm] = v;
+                                sopt[nm] = so;
 								j++;
 							} else {
 								try {
 									delete $t.p.postData[nm];
 								} catch(e) {}
 							}
+                            $elem.trigger('select');
 							break;
 						case 'text':
 							$elem.val(v || "");
 							if(v !== undefined) {
 								sdata[nm] = v;
+                                sopt[nm] = so;
 								j++;
 							} else {
 								try {
 									delete $t.p.postData[nm];
 								} catch (y){}
 							}
+                            $elem.trigger('change');
 							break;
 						case 'custom':
 							if ($.isFunction(this.searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN") {
+                                if (v !== undefined) {
+                                    sdata[nm] = v;
+                                    sopt[nm] = so;
+                                    j++;
+                                }
 								this.searchoptions.custom_value.call($t, $elem.children(".customelement:first"), "set", v || "");
 							}
 							break;
@@ -4194,7 +4204,7 @@ $.jgrid.extend({
 					$.each(sdata,function(i,n){
 						if (gi > 0) {ruleGroup += ",";}
 						ruleGroup += "{\"field\":\"" + i + "\",";
-						ruleGroup += "\"op\":\"" + "eq" + "\",";
+						ruleGroup += "\"op\":\"" + sopt[i] + "\",";
 						n+="";
 						ruleGroup += "\"data\":\"" + n.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"}";
 						gi++;
@@ -4205,7 +4215,13 @@ $.jgrid.extend({
 						if($t.p.postData.hasOwnProperty(n)) { delete $t.p.postData[n];}
 					});
 				} else {
-					$.extend($t.p.postData,sdata);
+					var filters = '{"fields":[';
+                    $.each(sdata,function(i,n){
+                        var val = $.isArray(n) ? n.join(',') : n;
+                        filters += '{"field":"' + i + '", "op": "' + sopt[i] + '", "value":"' + val.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + '"},';
+                    });
+                    filters = filters.slice(0,-1) + ']}';
+					$.extend($t.p.postData, sdata, { filters: filters } );
 				}
 				var saveurl;
 				if($t.p.searchurl) {
