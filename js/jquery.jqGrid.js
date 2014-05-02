@@ -4409,9 +4409,8 @@ $.jgrid.extend({
 								}
 								if(soptions.defaultValue !== undefined) { $(elem).val(soptions.defaultValue); }
 								if(soptions.attr) {$(elem).attr(soptions.attr);}
-								$(thd).append(stbl);
+								$(thd).append(stbl);								$("td:eq(1)",stbl).append( elem );
 								$.jgrid.bindEv.call($t, elem , soptions);
-								$("td:eq(1)",stbl).append( elem );
 								if(p.autosearch===true){
 									$(elem).change(function(){
 										triggerToolbar();
