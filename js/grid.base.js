@@ -3138,11 +3138,17 @@ $.jgrid.extend({
 		return resall || res;
 	},
 	delRowData : function(rowid) {
-		var success = false, rowInd, ia;
+		var success = false, rowInd, ia, nextRow;
 		this.each(function() {
 			var $t = this;
 			rowInd = $($t).jqGrid('getGridRowById', rowid);
 			if(!rowInd) {return false;}
+				if($t.p.subGrid) {
+					nextRow = $(rowInd).next();
+					if(nextRow.hasClass('ui-subgrid')) {
+						nextRow.remove();
+					}
+				}
 				$(rowInd).remove();
 				$t.p.records--;
 				$t.p.reccount--;
