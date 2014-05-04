@@ -442,7 +442,7 @@ $.jgrid.extend({
 				for(i=0; i< pivotGrid.groupOptions.groupingView.groupField.length; i++) {
 					query.orderBy(pivotGrid.groupOptions.groupingView.groupField[i], "a", 'text', '');
 				}
-				jQuery($t).jqGrid($.extend({
+				jQuery($t).jqGrid($.extend(true, {
 					datastr: $.extend(query.select(),footerrow ? {userdata:pivotGrid.summary} : {}),
 					datatype: "jsonstring",
 					footerrow : footerrow,
@@ -450,7 +450,7 @@ $.jgrid.extend({
 					colModel: pivotGrid.colModel,
 					viewrecords: true,
 					sortname: pivotOpt.xDimension[0].dataName // ?????
-				}, gridOpt || {}, pivotGrid.groupOptions));
+				}, pivotGrid.groupOptions, gridOpt || {}));
 				var gHead = pivotGrid.groupHeaders;
 				if(gHead.length) {
 					for( i = 0;i < gHead.length ; i++) {
