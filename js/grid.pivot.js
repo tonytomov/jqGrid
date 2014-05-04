@@ -182,8 +182,10 @@ $.jgrid.extend({
 								label = (arrln === 1 ? vl : vl+"_"+aggr[i].aggregator+"_"+i);
 							} catch(e) {}
 						}
+						label = !isNaN(parseInt(label,10)) ? label + " " : label;
 						curr[label] =  tmpmember[label] = calculation( aggr[i].aggregator, curr[label], aggr[i].member, row);
 					}
+					vl = !isNaN(parseInt(vl,10)) ? vl + " " : vl;
 					member[vl] = tmpmember;
 				}
 				return curr;

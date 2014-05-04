@@ -969,19 +969,19 @@ $.fn.jqGrid = function( pin ) {
 				var div = rh * rn;
 				var page, npage, empty;
 				if ( tbot < dh && ttop <= 0 &&
-					(p.lastpage===undefined||parseInt((tbot + scrollTop + div - 1) / div,10) <= p.lastpage))
+					(p.lastpage===undefined||(parseInt((tbot + scrollTop + div - 1) / div,10) || 0) <= p.lastpage))
 				{
-					npage = parseInt((dh - tbot + div - 1) / div,10);
+					npage = parseInt((dh - tbot + div - 1) / div,10) || 1;
 					if (tbot >= 0 || npage < 2 || p.scroll === true) {
-						page = Math.round((tbot + scrollTop) / div) + 1;
+						page = ( Math.round((tbot + scrollTop) / div) || 0) + 1;
 						ttop = -1;
 					} else {
 						ttop = 1;
 					}
 				}
 				if (ttop > 0) {
-					page = parseInt(scrollTop / div,10) + 1;
-					npage = parseInt((scrollTop + dh) / div,10) + 2 - page;
+					page = ( parseInt(scrollTop / div,10) || 0 ) + 1;
+					npage = (parseInt((scrollTop + dh) / div,10) || 0) + 2 - page;
 					empty = true;
 				}
 				if (npage) {
@@ -2104,8 +2104,13 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.rowList.length >0){
 				str = "<td dir='"+dir+"'>";
 				str +="<select class='ui-pg-selbox' role='listbox'>";
+				var strnm;
 				for(i=0;i<ts.p.rowList.length;i++){
-					str +="<option role=\"option\" value=\""+ts.p.rowList[i]+"\""+((ts.p.rowNum === ts.p.rowList[i])?" selected=\"selected\"":"")+">"+ts.p.rowList[i]+"</option>";
+					strnm = ts.p.rowList[i].toString().split(":");
+					if(strnm.length === 1) {
+						strnm[1] = strnm[0];
+					}
+					str +="<option role=\"option\" value=\""+strnm[0]+"\""+(( intNum(ts.p.rowNum,0) === intNum(strnm[0],0))?" selected=\"selected\"":"")+">"+strnm[1]+"</option>";
 				}
 				str +="</select></td>";
 			}
