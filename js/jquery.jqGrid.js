@@ -5097,21 +5097,19 @@ var xmlJsonClass = {
 					for (m in v) if (v.hasOwnProperty(m)) {
 						if (m === "#text") {
 							xml += v[m];
-						}
-						else if (m === "#cdata") {
+						} else if (m === "#cdata") {
 							xml += "<![CDATA[" + v[m] + "]]>";
-						}
-						else if (m.charAt(0) !== "@") {
-							xml += toXml(v[m], m, ind+"\t");
-						}
+						} else if (m.charAt(0) !== "@" && isNaN(m.charAt(0)) && m.charAt(0) !== '') {
+			                            xml += toXml(v[m], m, ind + "\t");
+			                        } else if (v[m].charAt(0) !== "@" && isNaN(v[m].charAt(0)) && v[m].charAt(0) !== '') {
+			                            xml += toXml(m, v[m], ind + "\t");
+			                        }
 					}
 					xml += (xml.charAt(xml.length - 1) === "\n" ? ind : "") + "</" + name + ">";
 				}
-			}
-			else if (typeof(v) === "function") {
+			} else if (typeof(v) === "function") {
 				xml += ind + "<" + name + ">" + "<![CDATA[" + v + "]]>" + "</" + name + ">";
-			}
-			else {
+			} else {
 				if (v === undefined ) { v = ""; }
 				if (v.toString() === "\"\"" || v.toString().length === 0) {
 					xml += ind + "<" + name + ">__EMPTY_STRING_</" + name + ">";
