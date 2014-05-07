@@ -5115,10 +5115,11 @@ var xmlJsonClass = {
 				if (v === undefined ) { v = ""; }
 				if (v.toString() === "\"\"" || v.toString().length === 0) {
 					xml += ind + "<" + name + ">__EMPTY_STRING_</" + name + ">";
-				} 
-				else {
-					xml += ind + "<" + name + ">" + v.toString() + "</" + name + ">";
-				}
+				} else if (v.indexOf('<') > -1 || v.indexOf('&') > -1) {
+		                    xml += ind + "<" + name + "><![CDATA[" + v.toString() + "]]></" + name + ">";
+		                } else {
+		                    xml += ind + "<" + name + ">" + v.toString() + "</" + name + ">";
+		                }
 			}
 			return xml;
 		};
