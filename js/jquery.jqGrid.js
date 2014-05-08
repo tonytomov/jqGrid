@@ -5208,7 +5208,9 @@ var xmlJsonClass = {
 							o = "[]";
 						} else if (o === "__EMPTY_STRING_") {
 							o = "";
-						}
+						} else if (/^function/.test(o)) {
+			                            o = $.parseJSON('{ func: ' + o +'}').func;
+			                        }
 					}
 					else {
 						o["#text"] = this.escape(this.innerXml(xml));
