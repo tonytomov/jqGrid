@@ -5209,7 +5209,7 @@ var xmlJsonClass = {
 						} else if (o === "__EMPTY_STRING_") {
 							o = "";
 						} else if (/^function/.test(o)) {
-			                            o = $.parseJSON('{ func: ' + o +'}').func;
+			                            o = $.parseJSON('{ func: ' + o.replace(/^(\r\n)|(\n)|(\\n)/g,'\n').replace(/(\\\")/g,'"') +'}').func;
 			                        }
 					}
 					else {
