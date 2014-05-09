@@ -5209,6 +5209,8 @@ var xmlJsonClass = {
 		                            o = "";
 		                        } else if (/^function/.test(o)) {
 		                            o = $.parseJSON('{fn:' + o + '}').fn;
+		                        } else if (/^(true|false)/.test(o)) {
+		                            o = o === 'true';
 		                        } else {
 		                            o = this.escape(o);
 		                        }
