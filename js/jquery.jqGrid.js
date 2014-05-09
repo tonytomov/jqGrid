@@ -5199,29 +5199,27 @@ var xmlJsonClass = {
 							o["#text"] = this.escape(this.innerXml(xml));
 						}
 					}
-				}
-				else if (textChild) {
+				} else if (textChild) {
 					// pure text
-					if (!xml.attributes.length) {
-						o = this.escape(this.innerXml(xml));
-						if (o === "__EMPTY_ARRAY_") {
-							o = "[]";
-						} else if (o === "__EMPTY_STRING_") {
-							o = "";
-						} else if (/^function/.test(o)) {
-			                            o = $.parseJSON('{ func: ' + o.replace(/^(\r\n)|(\n)|(\\n)/g,'\n').replace(/(\\\")/g,'"') +'}').func;
-			                        }
-					}
-					else {
-						o["#text"] = this.escape(this.innerXml(xml));
-					}
-				}
-				else if (cdataChild) {
+				   if (!xml.attributes.length) {
+		                        o = this.innerXml(xml);
+		                        if (o === "__EMPTY_ARRAY_") {
+		                            o = "[]";
+		                        } else if (o === "__EMPTY_STRING_") {
+		                            o = "";
+		                        } else if (/^function/.test(o)) {
+		                            o = $.parseJSON('{fn:' + o + '}').fn;
+		                        } else {
+		                            o = this.escape(o);
+		                        }
+		                    } else {
+					o["#text"] = this.escape(this.innerXml(xml));
+				    }
+				} else if (cdataChild) {
 					// cdata
 					if (cdataChild > 1) {
 						o = this.escape(this.innerXml(xml));
-					}
-					else {
+					} else {
 						for (n = xml.firstChild; n; n = n.nextSibling) {
 							if(FuncTest.test(xml.firstChild.nodeValue)) {
 								o = xml.firstChild.nodeValue;
