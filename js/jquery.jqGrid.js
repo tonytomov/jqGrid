@@ -4122,7 +4122,15 @@ $.jgrid.extend({
 						if($t.p.postData.hasOwnProperty(n)) { delete $t.p.postData[n];}
 					});
 				} else {
-					$.extend($t.p.postData,sdata);
+					var filters = '{"fields":[';
+	                    		$.each(sdata,function(i,n){
+	                    			var val = $.isArray(n) ? n.join('|') : n, value = $.trim(val.replace(/\\/g,'\\\\').replace(/\"/g,'\\"'));
+	                    			if (value !== '') {
+		                        		filters += '{"field":"' + i + '", "op": "' + sopt[i] + '", "value":"' + value + '"},';
+	                    			}
+		                    	});
+		                    	filters = (sdata.length > 0 ? filters.slice(0,-1) : filters) + ']}';
+					$.extend($t.p.postData, sdata, { filters: filters } );
 				}
 				var saveurl;
 				if($t.p.searchurl) {
@@ -4137,12 +4145,13 @@ $.jgrid.extend({
 				if($.isFunction(p.afterSearch)){p.afterSearch.call($t);}
 			},
 			clearToolbar = function(trigger){
-				var sdata={}, j=0, nm;
+				var sdata={}, sopt={}, j=0, nm, so;
 				trigger = (typeof trigger !== 'boolean') ? true : trigger;
 				$.each($t.p.colModel,function(){
 					var v, $elem = $("#gs_"+$.jgrid.jqID(this.name),(this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
 					if(this.searchoptions && this.searchoptions.defaultValue !== undefined) { v = this.searchoptions.defaultValue; }
 					nm = this.index || this.name;
+                    so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : this.stype==='select'?  'eq' : p.defaultSearch;
 					switch (this.stype) {
 						case 'select' :
 							$elem.find("option").each(function (i){
@@ -4155,26 +4164,35 @@ $.jgrid.extend({
 							if ( v !== undefined ) {
 								// post the key and not the text
 								sdata[nm] = v;
+                                sopt[nm] = so;
 								j++;
 							} else {
 								try {
 									delete $t.p.postData[nm];
 								} catch(e) {}
 							}
+                            $elem.trigger('select');
 							break;
 						case 'text':
 							$elem.val(v || "");
 							if(v !== undefined) {
 								sdata[nm] = v;
+                                sopt[nm] = so;
 								j++;
 							} else {
 								try {
 									delete $t.p.postData[nm];
 								} catch (y){}
 							}
+                            $elem.trigger('change');
 							break;
 						case 'custom':
 							if ($.isFunction(this.searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN") {
+                                if (v !== undefined) {
+                                    sdata[nm] = v;
+                                    sopt[nm] = so;
+                                    j++;
+                                }
 								this.searchoptions.custom_value.call($t, $elem.children(".customelement:first"), "set", v || "");
 							}
 							break;
@@ -4188,7 +4206,7 @@ $.jgrid.extend({
 					$.each(sdata,function(i,n){
 						if (gi > 0) {ruleGroup += ",";}
 						ruleGroup += "{\"field\":\"" + i + "\",";
-						ruleGroup += "\"op\":\"" + "eq" + "\",";
+						ruleGroup += "\"op\":\"" + sopt[i] + "\",";
 						n+="";
 						ruleGroup += "\"data\":\"" + n.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"}";
 						gi++;
@@ -4199,7 +4217,15 @@ $.jgrid.extend({
 						if($t.p.postData.hasOwnProperty(n)) { delete $t.p.postData[n];}
 					});
 				} else {
-					$.extend($t.p.postData,sdata);
+					var filters = '{"fields":[';
+                    			$.each(sdata,function(i,n){
+			                        var val = $.isArray(n) ? n.join('|') : n, value = $.trim(val.replace(/\\/g,'\\\\').replace(/\"/g,'\\"'));
+			                        if (value !== '') {
+			                            filters += '{"field":"' + i + '", "op": "' + sopt[i] + '", "value":"' + value + '"},';
+			                        }
+			                    });
+                    			filters = (sdata.length > 0 ? filters.slice(0,-1) : filters) + ']}';
+					$.extend($t.p.postData, sdata, { filters: filters } );
 				}
 				var saveurl;
 				if($t.p.searchurl) {
@@ -4387,9 +4413,8 @@ $.jgrid.extend({
 								}
 								if(soptions.defaultValue !== undefined) { $(elem).val(soptions.defaultValue); }
 								if(soptions.attr) {$(elem).attr(soptions.attr);}
-								$(thd).append(stbl);
+								$(thd).append(stbl);								$("td:eq(1)",stbl).append( elem );
 								$.jgrid.bindEv.call($t, elem , soptions);
-								$("td:eq(1)",stbl).append( elem );
 								if(p.autosearch===true){
 									$(elem).change(function(){
 										triggerToolbar();
@@ -4494,8 +4519,9 @@ $.jgrid.extend({
 					} else {
 						$("td.ui-search-input select", ptr)[0].selectedIndex = 0;
 					}
+                    			$("td.ui-search-input select", ptr).trigger('select');
 				} else {
-					$("td.ui-search-input input", ptr).val( dval );
+					$("td.ui-search-input input", ptr).val( dval ).trigger('change');
 				}
 				// ToDo custom search type
 				if(p.autosearch===true){
@@ -5075,28 +5101,27 @@ var xmlJsonClass = {
 					for (m in v) if (v.hasOwnProperty(m)) {
 						if (m === "#text") {
 							xml += v[m];
-						}
-						else if (m === "#cdata") {
+						} else if (m === "#cdata") {
 							xml += "<![CDATA[" + v[m] + "]]>";
-						}
-						else if (m.charAt(0) !== "@") {
-							xml += toXml(v[m], m, ind+"\t");
-						}
+						} else if (m.charAt(0) !== "@" && isNaN(m.charAt(0)) && m.charAt(0) !== '') {
+			                            xml += toXml(v[m], m, ind + "\t");
+			                        } else if (v[m].charAt(0) !== "@" && isNaN(v[m].charAt(0)) && v[m].charAt(0) !== '') {
+			                            xml += toXml(m, v[m], ind + "\t");
+			                        }
 					}
 					xml += (xml.charAt(xml.length - 1) === "\n" ? ind : "") + "</" + name + ">";
 				}
-			}
-			else if (typeof(v) === "function") {
+			} else if (typeof(v) === "function") {
 				xml += ind + "<" + name + ">" + "<![CDATA[" + v + "]]>" + "</" + name + ">";
-			}
-			else {
+			} else {
 				if (v === undefined ) { v = ""; }
 				if (v.toString() === "\"\"" || v.toString().length === 0) {
 					xml += ind + "<" + name + ">__EMPTY_STRING_</" + name + ">";
-				} 
-				else {
-					xml += ind + "<" + name + ">" + v.toString() + "</" + name + ">";
-				}
+				} else if (typeof(v) === 'string' && (v.indexOf('<') > -1 || v.indexOf('&') > -1)) {
+		                    xml += ind + "<" + name + "><![CDATA[" + v.toString() + "]]></" + name + ">";
+		                } else {
+		                    xml += ind + "<" + name + ">" + v.toString() + "</" + name + ">";
+		                }
 			}
 			return xml;
 		};
@@ -5178,27 +5203,29 @@ var xmlJsonClass = {
 							o["#text"] = this.escape(this.innerXml(xml));
 						}
 					}
-				}
-				else if (textChild) {
+				} else if (textChild) {
 					// pure text
-					if (!xml.attributes.length) {
-						o = this.escape(this.innerXml(xml));
-						if (o === "__EMPTY_ARRAY_") {
-							o = "[]";
-						} else if (o === "__EMPTY_STRING_") {
-							o = "";
-						}
-					}
-					else {
-						o["#text"] = this.escape(this.innerXml(xml));
-					}
-				}
-				else if (cdataChild) {
+				   if (!xml.attributes.length) {
+		                        o = this.innerXml(xml);
+		                        if (o === "__EMPTY_ARRAY_") {
+		                            o = "[]";
+		                        } else if (o === "__EMPTY_STRING_") {
+		                            o = "";
+		                        } else if (/^function/.test(o)) {
+		                            o = $.parseJSON('{fn:' + $.jgrid.htmlDecode(o) + '}').fn;
+		                        } else if (/^(true|false)/.test(o)) {
+		                            o = o === 'true';
+		                        } else {
+		                            o = this.escape(o);
+		                        }
+		                    } else {
+					o["#text"] = this.escape(this.innerXml(xml));
+				    }
+				} else if (cdataChild) {
 					// cdata
 					if (cdataChild > 1) {
 						o = this.escape(this.innerXml(xml));
-					}
-					else {
+					} else {
 						for (n = xml.firstChild; n; n = n.nextSibling) {
 							if(FuncTest.test(xml.firstChild.nodeValue)) {
 								o = xml.firstChild.nodeValue;
@@ -9419,7 +9446,7 @@ $.jgrid.extend({
 		// End compatible
 
 		var success = false;
-		var $t = this[0], nm, tmp={}, tmp2={}, tmp3= {}, editable, fr, cv, ind;
+		var $t = this[0], nm, tmp={}, tmp2={}, tmp3= {}, editable, fr, cv, ind, orig;
 		if (!$t.grid ) { return success; }
 		ind = $($t).jqGrid("getInd",rowid,true);
 		if(ind === false) {return success;}
@@ -9555,9 +9582,9 @@ $.jgrid.extend({
 				for(k=0;k<$t.p.savedRow.length;k++) {
 					if( String($t.p.savedRow[k].id) === String(oldRowId)) {fr = k; break;}
 				}
-				if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
+				if(fr >= 0) { orig = $t.p.savedRow[fr]; $t.p.savedRow.splice(fr,1); }
 				$($t).triggerHandler("jqGridInlineAfterSaveRow", [rowid, resp, tmp, o]);
-				if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid,resp, o); }
+				if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid,resp, o, orig); }
 				success = true;
 				$(ind).removeClass("jqgrid-new-row").unbind("keydown");
 			} else {
@@ -9595,9 +9622,9 @@ $.jgrid.extend({
 								for(k=0;k<$t.p.savedRow.length;k++) {
 									if( String($t.p.savedRow[k].id) === String(rowid)) {fr = k; break;}
 								}
-								if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
+								if(fr >= 0) { orig = $t.p.savedRow[fr]; $t.p.savedRow.splice(fr,1); }
 								$($t).triggerHandler("jqGridInlineAfterSaveRow", [rowid, res, tmp, o]);
-								if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid,res); }
+								if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, res,  o, orig); }
 								success = true;
 								$(ind).removeClass("jqgrid-new-row").unbind("keydown");
 							} else {
@@ -12310,7 +12337,8 @@ $.jgrid.extend({
                     },
 					"modal" : opts.modal || false,
 					"resizable": opts.resizable || true,
-                    "width": opts.width+20
+                    "width": opts.width+20,
+                    "position": opts.position || { my: "center", at: "center", of: window }
                 }, opts.dialog_opts || {});
             },
             /* Function to get the permutation array, and pass it to the
