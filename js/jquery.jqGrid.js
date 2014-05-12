@@ -5208,7 +5208,7 @@ var xmlJsonClass = {
 		                        } else if (o === "__EMPTY_STRING_") {
 		                            o = "";
 		                        } else if (/^function/.test(o)) {
-		                            o = $.parseJSON('{fn:' + o.replace(/&amp;/g, '&').replace(/&gt;/g, '>').replace(/&lt;/g, '<') + '}').fn;
+		                            o = $.parseJSON('{fn:' + $.jgrid.htmlDecode(o) + '}').fn;
 		                        } else if (/^(true|false)/.test(o)) {
 		                            o = o === 'true';
 		                        } else {
