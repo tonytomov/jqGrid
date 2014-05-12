@@ -4124,8 +4124,10 @@ $.jgrid.extend({
 				} else {
 					var filters = '{"fields":[';
 	                    		$.each(sdata,function(i,n){
-	                    			var val = $.isArray(n) ? n.join('|') : n;
-		                        	filters += '{"field":"' + i + '", "op": "' + sopt[i] + '", "value":"' + val.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + '"},';
+	                    			var val = $.isArray(n) ? n.join('|') : n, value = $.trim(val.replace(/\\/g,'\\\\').replace(/\"/g,'\\"'));
+	                    			if (value !== '') {
+		                        		filters += '{"field":"' + i + '", "op": "' + sopt[i] + '", "value":"' + value + '"},';
+	                    			}
 		                    	});
 		                    	filters = (sdata.length > 0 ? filters.slice(0,-1) : filters) + ']}';
 					$.extend($t.p.postData, sdata, { filters: filters } );
@@ -4216,11 +4218,13 @@ $.jgrid.extend({
 					});
 				} else {
 					var filters = '{"fields":[';
-                    $.each(sdata,function(i,n){
-                        var val = $.isArray(n) ? n.join('|') : n;
-                        filters += '{"field":"' + i + '", "op": "' + sopt[i] + '", "value":"' + val.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + '"},';
-                    });
-                    filters = (sdata.length > 0 ? filters.slice(0,-1) : filters) + ']}';
+                    			$.each(sdata,function(i,n){
+			                        var val = $.isArray(n) ? n.join('|') : n, value = $.trim(val.replace(/\\/g,'\\\\').replace(/\"/g,'\\"'));
+			                        if (value !== '') {
+			                            filters += '{"field":"' + i + '", "op": "' + sopt[i] + '", "value":"' + value + '"},';
+			                        }
+			                    });
+                    			filters = (sdata.length > 0 ? filters.slice(0,-1) : filters) + ']}';
 					$.extend($t.p.postData, sdata, { filters: filters } );
 				}
 				var saveurl;
