@@ -311,7 +311,7 @@ $.jgrid.extend({
 					$.each(sdata,function(i,n){
 						if (gi > 0) {ruleGroup += ",";}
 						ruleGroup += "{\"field\":\"" + i + "\",";
-						ruleGroup += "\"op\":\"" + "eq" + "\",";
+						ruleGroup += "\"op\":\"" + sopt[0] + "\",";
 						n+="";
 						ruleGroup += "\"data\":\"" + n.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"}";
 						gi++;
