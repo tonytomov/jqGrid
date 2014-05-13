@@ -160,7 +160,7 @@ $.jgrid.extend({
 		// End compatible
 
 		var success = false;
-		var $t = this[0], nm, tmp={}, tmp2={}, tmp3= {}, editable, fr, cv, ind;
+		var $t = this[0], nm, tmp={}, tmp2={}, tmp3= {}, editable, fr, cv, ind, orig;
 		if (!$t.grid ) { return success; }
 		ind = $($t).jqGrid("getInd",rowid,true);
 		if(ind === false) {return success;}
@@ -333,9 +333,12 @@ $.jgrid.extend({
 								for(k=0;k<$t.p.savedRow.length;k++) {
 									if( String($t.p.savedRow[k].id) === String(rowid)) {fr = k; break;}
 								}
-								if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
-								$($t).triggerHandler("jqGridInlineAfterSaveRow", [rowid, res, tmp, o]);
-								if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, res, tmp, o); }
+								if (fr >= 0) { 
+									orig = $t.p.savedRow[fr]; 
+									$t.p.savedRow.splice(fr,1); 
+								}
+								$($t).triggerHandler("jqGridInlineAfterSaveRow", [rowid, res, tmp, o, orig]);
+								if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, res, tmp, o, orig); }
 								success = true;
 								$(ind).removeClass("jqgrid-new-row").unbind("keydown");
 							} else {
