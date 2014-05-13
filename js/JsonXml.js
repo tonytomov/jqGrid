@@ -174,18 +174,22 @@ var xmlJsonClass = {
 							o["#text"] = this.escape(this.innerXml(xml));
 						}
 					}
-				}
-				else if (textChild) {
+				} else if (textChild) {
 					// pure text
 					if (!xml.attributes.length) {
-						o = this.escape(this.innerXml(xml));
-						if (o === "__EMPTY_ARRAY_") {
-							o = "[]";
-						} else if (o === "__EMPTY_STRING_") {
-							o = "";
-						}
-					}
-					else {
+			                        o = this.innerXml(xml);
+			                        if (o === "__EMPTY_ARRAY_") {
+			                            o = "[]";
+			                        } else if (o === "__EMPTY_STRING_") {
+			                            o = "";
+			                        } else if (/^function/.test(o)) {
+			                            o = $.parseJSON('{fn:' + $.jgrid.htmlDecode(o) + '}').fn;
+			                        } else if (/^(true|false)/.test(o)) {
+			                            o = o === 'true';
+			                        } else {
+			                            o = this.escape(o);
+			                        }
+			                    } else {
 						o["#text"] = this.escape(this.innerXml(xml));
 					}
 				}
