@@ -220,7 +220,7 @@ $.jgrid.extend({
 					}
 				});
 				var sd =  j>0 ? true : false;
-				if(p.stringResult === true || $t.p.datatype === "local") {
+				if(p.stringResult === true || $t.p.datatype === "local" || p.searchOperators === true) {
 					var ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[";
 					var gi=0;
 					$.each(sdata,function(i,n){
