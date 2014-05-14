@@ -444,6 +444,7 @@ $.jgrid.extend({
 			}
 			if (fid) {
 	                	$('#' + $.jgrid.jqID(rowid), $('#' + $.jgrid.jqID(fid))).height($(ind).outerHeight());
+	                	$($t).trigger('jqGridAfterGridComplete.setFrozenColumns');
 	        	}
 		});
 	},
