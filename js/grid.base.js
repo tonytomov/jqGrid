@@ -157,10 +157,13 @@ $.extend($.jgrid,{
 					}
 				}
 				if(ts.f) {ts.m = ts.f;}
+				if(ts.n) {ts.m = ts.n;}				
 				if( ts.m === 0 && ts.y === 0 && ts.d === 0) {
 					return "&#160;" ;
 				}
 				ts.m = parseInt(ts.m,10)-1;
+				if(ts.j) {ts.d = ts.j;}
+				ts.d = parseInt(ts.d,10);
 				var ty = ts.y;
 				if (ty >= 70 && ty <= 99) {ts.y = 1900+ts.y;}
 				else if (ty >=0 && ty <=69) {ts.y= 2000+ts.y;}
