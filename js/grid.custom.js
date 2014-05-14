@@ -869,7 +869,7 @@ $.jgrid.extend({
 					}
 				}
 				$t.grid.fhDiv = $('<div style="position:absolute;left:0px;top:'+top+'px;height:'+hth+'px;" class="frozen-div ui-state-default ui-jqgrid-hdiv"></div>');
-				$t.grid.fbDiv = $('<div style="position:absolute;left:0px;top:'+(parseInt(top,10)+parseInt(hth,10) + 1)+'px;overflow-y:hidden" class="frozen-bdiv ui-jqgrid-bdiv"></div>');
+				$t.grid.fbDiv = $('<div style="position:absolute;left:0px;overflow-y:hidden" class="frozen-bdiv ui-jqgrid-bdiv"></div>');
 				$("#gview_"+$.jgrid.jqID($t.p.id)).append($t.grid.fhDiv);
 				var htbl = $(".ui-jqgrid-htable","#gview_"+$.jgrid.jqID($t.p.id)).clone(true);
 				// groupheader support - only if useColSpanstyle is false
@@ -952,11 +952,17 @@ $.jgrid.extend({
 
 					$(btbl).width(1).attr("id",$t.p.id+"_frozen");
 					$($t.grid.fbDiv).append(btbl);
-					$($t.grid.fbDiv).height($t.grid.bDiv.offsetHeight - ($t.grid.bDiv.offsetHeight - $t.grid.bDiv.clientHeight));
+					$($t.grid.fbDiv)
+			                        .position({ my: 'left top', at: 'left top', of: $t.grid.bDiv })
+			                        .css('top', (parseFloat(($t.grid.fbDiv).css('top').replace('px','')) - 1) + 'px')
+			                        .height($t.grid.bDiv.offsetHeight - ($t.grid.bDiv.offsetHeight - $t.grid.bDiv.clientHeight));
 			                // scrolling
 			                $($t.grid.bDiv).scroll(function (e) {
-			                        var $b = this, $f = $t.grid.fbDiv[0];
-			                        $($f).height($b.offsetHeight - ($b.offsetHeight - $b.clientHeight));
+			                	var $b = this, $f = $t.grid.fbDiv[0];
+			                        $($f)
+			                            .height($b.offsetHeight - ($b.offsetHeight - $b.clientHeight))
+			                            .position({ my: 'left top', at: 'left top', of: $b })
+			                            .css('top', (parseFloat($($f).css('top').replace('px','')) - 1) + 'px');
 			                        $f.scrollTop = $b.scrollTop;
 			                });
 					if($t.p.hoverrows === true) {
