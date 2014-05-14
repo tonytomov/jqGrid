@@ -954,12 +954,12 @@ $.jgrid.extend({
 					$($t.grid.fbDiv)
 			                        .position({ my: 'left top', at: 'left top', of: $t.grid.bDiv })
 			                        .css('top', (parseFloat(($t.grid.fbDiv).css('top').replace('px','')) - 1) + 'px')
-			                        .height($t.grid.bDiv.offsetHeight - ($t.grid.bDiv.offsetHeight - $t.grid.bDiv.clientHeight));
+			                        .height($t.grid.bDiv.offsetHeight - ($t.grid.bDiv.offsetHeight - $t.grid.bDiv.clientHeight) + 1);
 			                // scrolling
 			                $($t.grid.bDiv).scroll(function (e) {
 			                	var $b = this, $f = $t.grid.fbDiv[0];
 			                        $($f)
-			                            .height($b.offsetHeight - ($b.offsetHeight - $b.clientHeight))
+			                            .height($b.offsetHeight - ($b.offsetHeight - $b.clientHeight) + 1)
 			                            .position({ my: 'left top', at: 'left top', of: $b })
 			                            .css('top', (parseFloat($($f).css('top').replace('px','')) - 1) + 'px');
 			                        $f.scrollTop = $b.scrollTop;
