@@ -47,8 +47,11 @@ $.jgrid.extend({
 
 		// End compatible
 		return this.each(function(){
-			var $t = this, nm, tmp, editable, cnt=0, focus=null, svr={}, ind,cm, bfer;
+			var $t = this, nm, tmp, editable, cnt=0, focus=null, svr={}, ind,cm,bfer,fid;
 			if (!$t.grid ) { return; }
+			if($t.p.frozenColumns === true ) {
+				fid = $t.p.id+"_frozen";
+			}
 			ind = $($t).jqGrid("getInd",rowid,true);
 			if( ind === false ) {return;}
 			bfer = $.isFunction( o.beforeEditRow ) ? o.beforeEditRow.call($t,o, rowid) :  undefined;
@@ -130,6 +133,10 @@ $.jgrid.extend({
 					$($t).triggerHandler("jqGridInlineEditRow", [rowid, o]);
 					if( $.isFunction(o.oneditfunc)) { o.oneditfunc.call($t, rowid); }
 				}
+				// if a frozen div is present we need to match the height
+		                if (fid) {
+		                    $('#' + $.jgrid.jqID(rowid), $('#' + $.jgrid.jqID(fid))).height($(ind).outerHeight());
+		                }
 			}
 		});
 	},
@@ -160,8 +167,11 @@ $.jgrid.extend({
 		// End compatible
 
 		var success = false;
-		var $t = this[0], nm, tmp={}, tmp2={}, tmp3= {}, editable, fr, cv, ind, orig;
+		var $t = this[0], nm, tmp={}, tmp2={}, tmp3= {}, editable, fr, cv, ind, orig, fid;
 		if (!$t.grid ) { return success; }
+		if($t.p.frozenColumns === true ) {
+			fid = $t.p.id+"_frozen";
+		}
 		ind = $($t).jqGrid("getInd",rowid,true);
 		if(ind === false) {return success;}
 		var bfsr = $.isFunction( o.beforeSaveRow ) ?	o.beforeSaveRow.call($t,o, rowid) :  undefined;
@@ -371,6 +381,9 @@ $.jgrid.extend({
 					}
 				}, $.jgrid.ajaxOptions, $t.p.ajaxRowOptions || {}));
 			}
+			if (fid) {
+	                	$('#' + $.jgrid.jqID(rowid), $('#' + $.jgrid.jqID(fid))).height($(ind).outerHeight());
+	        	}
 		}
 		return success;
 	},
@@ -388,8 +401,11 @@ $.jgrid.extend({
 		// End compatible
 
 		return this.each(function(){
-			var $t= this, fr=-1, ind, ares={}, k;
+			var $t= this, fr=-1, ind, ares={}, k, fid;
 			if (!$t.grid ) { return; }
+			if($t.p.frozenColumns === true ) {
+				fid = $t.p.id+"_frozen";
+			}
 			ind = $($t).jqGrid("getInd",rowid,true);
 			if(ind === false) {return;}
 			var bfcr = $.isFunction( o.beforeCancelRow ) ?	o.beforeCancelRow.call($t, o, sr) :  undefined;
@@ -426,6 +442,9 @@ $.jgrid.extend({
 			{
 				o.afterrestorefunc.call($t, rowid);
 			}
+			if (fid) {
+	                	$('#' + $.jgrid.jqID(rowid), $('#' + $.jgrid.jqID(fid))).height($(ind).outerHeight());
+	        	}
 		});
 	},
 	addRow : function ( p ) {
