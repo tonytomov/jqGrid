@@ -129,10 +129,18 @@ $.jgrid.extend({
 					$($t).triggerHandler("jqGridInlineEditRow", [rowid, o]);
 					if( $.isFunction(o.oneditfunc)) { o.oneditfunc.call($t, rowid); }
 				}
-                // if a frozen div is present we need to match the height
-                if (fid) {
-                    $('#' + $.jgrid.jqID(rowid), $('#' + $.jgrid.jqID(fid))).height($(ind).outerHeight());
-                }
+		                // if a frozen div is present we need to match the height
+		                if (fid) {
+			                var frow = $('#' + $.jgrid.jqID(rowid), $('#' + $.jgrid.jqID(fid))), brow = $(ind);
+			                if(frow.outerHeight() > brow.outerHeight()) {
+			                    brow.height(frow.outerHeight());
+			                } else if (frow.outerHeight() < brow.outerHeight()) {
+			                    frow.height(brow.outerHeight());
+			                } else {
+			                    frow.height("");
+			                    brow.height("");
+		                	}
+	        		}
 			}
 		});
 	},
@@ -378,9 +386,17 @@ $.jgrid.extend({
 					}
 				}, $.jgrid.ajaxOptions, $t.p.ajaxRowOptions || {}));
 			}
-            if (fid) {
-                $('#' + $.jgrid.jqID(rowid), $('#' + $.jgrid.jqID(fid))).height($(ind).outerHeight());
-            }
+	            	if (fid) {
+		                var frow = $('#' + $.jgrid.jqID(rowid), $('#' + $.jgrid.jqID(fid))), brow = $(ind);
+		                if(frow.outerHeight() > brow.outerHeight()) {
+		                    brow.height(frow.outerHeight());
+		                } else if (frow.outerHeight() < brow.outerHeight()) {
+		                    frow.height(brow.outerHeight());
+		                } else {
+		                    frow.height("");
+		                    brow.height("");
+	                	}
+	        	}
 		}
 		return success;
 	},
@@ -439,9 +455,17 @@ $.jgrid.extend({
 			{
 				o.afterrestorefunc.call($t, rowid);
 			}
-            if (fid) {
-                $('#' + $.jgrid.jqID(rowid), $('#' + $.jgrid.jqID(fid))).height($(ind).outerHeight());
-            }
+		        if (fid) {
+		                var frow = $('#' + $.jgrid.jqID(rowid), $('#' + $.jgrid.jqID(fid))), brow = $(ind);
+		                if(frow.outerHeight() > brow.outerHeight()) {
+		                    brow.height(frow.outerHeight());
+		                } else if (frow.outerHeight() < brow.outerHeight()) {
+		                    frow.height(brow.outerHeight());
+		                } else {
+		                    frow.height("");
+		                    brow.height("");
+	                	}
+		        }
 		});
 	},
 	addRow : function ( p ) {
