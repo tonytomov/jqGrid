@@ -839,8 +839,9 @@ $.jgrid.extend({
 			{
 				return;
 			}
-			if($t.p.rownumbers) { i++; }
-			if($t.p.multiselect) { i++; }
+			//the following two lines are not needed when the frozen attribute is set to true - less character used as well.
+			//if($t.p.rownumbers) { i++; }
+			//if($t.p.multiselect) { i++; }
 			
 			// get the max index of frozen col
 			while(i<len)
@@ -951,6 +952,13 @@ $.jgrid.extend({
 
 					$(btbl).width(1).attr("id",$t.p.id+"_frozen");
 					$($t.grid.fbDiv).append(btbl);
+					$($t.grid.fbDiv).height($t.grid.bDiv.offsetHeight - ($t.grid.bDiv.offsetHeight - $t.grid.bDiv.clientHeight));
+			                // scrolling
+			                $($t.grid.bDiv).scroll(function (e) {
+			                        var $b = this, $f = $t.grid.fbDiv[0];
+			                        $($f).height($b.offsetHeight - ($b.offsetHeight - $b.clientHeight));
+			                        $f.scrollTop = $b.scrollTop;
+			                });
 					if($t.p.hoverrows === true) {
 						$("tr.jqgrow", btbl).hover(
 							function(){ $(this).addClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)).addClass("ui-state-hover"); },
