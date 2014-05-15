@@ -131,16 +131,21 @@ $.jgrid.extend({
 				}
 		                // if a frozen div is present we need to match the height
 		                if (fid) {
-			                var frow = $('#' + $.jgrid.jqID(rowid), $('#' + $.jgrid.jqID(fid))), brow = $(ind);
-			                if(frow.outerHeight() > brow.outerHeight()) {
-			                    brow.height(frow.outerHeight());
-			                } else if (frow.outerHeight() < brow.outerHeight()) {
-			                    frow.height(brow.outerHeight());
-			                } else {
-			                    frow.height("");
-			                    brow.height("");
-		                	}
-	        		}
+		                    var frow = $('#' + $.jgrid.jqID(rowid), $('#' + $.jgrid.jqID(fid))), brow = $(ind),
+		                        fh = frow.outerHeight(), bh = brow.outerHeight(), h = '';
+		                    if (fh > bh) {
+		                        h = fh;
+		                    } else if (bh > fh) {
+		                        h = bh;
+		                    }
+		                    frow
+		                        .add(brow)
+		                        .height(h);
+		                    // set the line-height for the multi checkbox td element
+		                    $('.ui-col-multi', frow).css('line-height', (h === '' ? h : h + 'px'));
+		                } else {
+		                    //$('.ui-col-multi', ind).css('line-height', $(ind).outerHeight() + 'px');
+		                }
 			}
 		});
 	},
@@ -387,16 +392,21 @@ $.jgrid.extend({
 				}, $.jgrid.ajaxOptions, $t.p.ajaxRowOptions || {}));
 			}
 	            	if (fid) {
-		                var frow = $('#' + $.jgrid.jqID(rowid), $('#' + $.jgrid.jqID(fid))), brow = $(ind);
-		                if(frow.outerHeight() > brow.outerHeight()) {
-		                    brow.height(frow.outerHeight());
-		                } else if (frow.outerHeight() < brow.outerHeight()) {
-		                    frow.height(brow.outerHeight());
-		                } else {
-		                    frow.height("");
-		                    brow.height("");
-	                	}
-	        	}
+	                    var frow = $('#' + $.jgrid.jqID(rowid), $('#' + $.jgrid.jqID(fid))), brow = $(ind),
+	                        fh = frow.outerHeight(), bh = brow.outerHeight(), h = '';
+	                    if (fh > bh) {
+	                        h = fh;
+	                    } else if (bh > fh) {
+	                        h = bh;
+	                    }
+	                    frow
+	                        .add(brow)
+	                        .height(h);
+	                    // set the line-height for the multi checkbox td element
+	                    $('.ui-col-multi', frow).css('line-height', (h === '' ? h : h + 'px'));
+	                } else {
+	                    //$('.ui-col-multi', ind).css('line-height', $(ind).outerHeight() + 'px');
+	                }
 		}
 		return success;
 	},
@@ -456,16 +466,21 @@ $.jgrid.extend({
 				o.afterrestorefunc.call($t, rowid);
 			}
 		        if (fid) {
-		                var frow = $('#' + $.jgrid.jqID(rowid), $('#' + $.jgrid.jqID(fid))), brow = $(ind);
-		                if(frow.outerHeight() > brow.outerHeight()) {
-		                    brow.height(frow.outerHeight());
-		                } else if (frow.outerHeight() < brow.outerHeight()) {
-		                    frow.height(brow.outerHeight());
-		                } else {
-		                    frow.height("");
-		                    brow.height("");
-	                	}
-		        }
+	                    var frow = $('#' + $.jgrid.jqID(rowid), $('#' + $.jgrid.jqID(fid))), brow = $(ind),
+	                        fh = frow.outerHeight(), bh = brow.outerHeight(), h = '';
+	                    if (fh > bh) {
+	                        h = fh;
+	                    } else if (bh > fh) {
+	                        h = bh;
+	                    }
+	                    frow
+	                        .add(brow)
+	                        .height(h);
+	                    // set the line-height for the multi checkbox td element
+	                    $('.ui-col-multi', frow).css('line-height', (h === '' ? h : h + 'px'));
+	                } else {
+	                    //$('.ui-col-multi', ind).css('line-height', $(ind).outerHeight() + 'px');
+	                }
 		});
 	},
 	addRow : function ( p ) {
