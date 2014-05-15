@@ -1141,9 +1141,10 @@ $.fn.jqGrid = function( pin ) {
 			return "<td role=\"gridcell\" "+prp+">"+v+"</td>";
 		},
 		addMulti = function(rowid,pos,irow,checked){
-			var	v = "<input role=\"checkbox\" type=\"checkbox\""+" id=\"jqg_"+ts.p.id+"_"+rowid+"\" class=\"cbox\" name=\"jqg_"+ts.p.id+"_"+rowid+"\"" + (checked ? "checked=\"checked\"" : "")+"/>",
-			prp = formatCol( pos,irow,'',null, rowid, true);
-			return "<td role=\"gridcell\" "+prp+">"+v+"</td>";
+			var id = 'jqg_' + ts.p.id + '_' + rowid,
+                	    v = "<input role=\"checkbox\" type=\"checkbox\"" + " id=\"" + id + "\" class=\"cbox\" name=\"" + id + "\"" + (checked ? "checked=\"checked\"" : "") + "/>",
+			    prp = formatCol(pos, irow, '', null, rowid, true);
+		    return "<td role=\"gridcell\" class=\"ui-col-multi\" " + prp + "><label for=\"" + id + "\">" + v + "</label></td>";
 		},
 		addRowNum = function (pos,irow,pG,rN) {
 			var v =  (parseInt(pG,10)-1)*parseInt(rN,10)+1+irow,
