@@ -63,9 +63,11 @@ $.jgrid.extend({
 			if (editable === "0" && !$(ind).hasClass("not-editable-row")) {
 				cm = $t.p.colModel;
 				$('td[role="gridcell"]',ind).each( function(i) {
-                    var cell = $('tr[id=' + $.jgrid.jqID(rowid) + '] td', $('#' + fid))[i] || this; // grab the cell in the frozen div or the body div
-					nm = cm[i].name;
-					var treeg = $t.p.treeGrid===true && nm === $t.p.ExpandColumn;
+                    			var cell = null, treeg = null;
+                    			if(!cm[i].editable) { return true; } //if not editable return true to continue looping
+                    			nm = cm[i].name;
+            				cell = $('tr[id=' + $.jgrid.jqID(rowid) + '] td', $('#' + fid))[i] || this; // grab the cell in the frozen div or the body div
+					treeg = $t.p.treeGrid===true && nm === $t.p.ExpandColumn;
 					if(treeg) { tmp = $("span:first",cell).html();}
 					else {
 						try {
