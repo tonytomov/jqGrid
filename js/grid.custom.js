@@ -196,19 +196,26 @@ $.jgrid.extend({
 		return this.each(function(){
 			var $t = this;
 			if(this.ftoolbar) { return; }
-			var triggerToolbar = function() {
-				var sdata={}, j=0, v, nm, sopt={},so;
+			var triggerToolbar = function(initial) {
+				var sdata={}, j=0, v, nm, sopt={}, so, $so;
 				$.each($t.p.colModel,function(){
 					var $elem = $("#gs_"+$.jgrid.jqID(this.name), (this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
 					nm = this.index || this.name;
 					if(p.searchOperators ) {
-						so = $elem.parent().prev().children("a").attr("soper") || p.defaultSearch;
+			                        $so = $elem.parent().prev().children("a");
+			                        if ($so.length && $so.attr("soper")) {
+						    so = $so.attr("soper");
+			                        } else if(this.searchoptions && this.searchoptions.sopt) {
+			                            so = this.searchoptions.sopt[0]
+			                        } else {
+			                            so = p.defaultSearch
+			                        }
 					} else {
 						so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : this.stype==='select'?  'eq' : p.defaultSearch;
 					}
-					v = this.stype === "custom" && $.isFunction(this.searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN" ?
-						this.searchoptions.custom_value.call($t, $elem.children(".customelement:first"), "get") :
-						$elem.val();
+					v = (this.stype === "custom" && $.isFunction(this.searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN" ?
+					     this.searchoptions.custom_value.call($t, $elem.children(".customelement:first"), "get") : $elem.val()) || 
+			                    ((initial && this.searchoptions) ? this.searchoptions.defaultValue : '');
 					if(v || so==="nu" || so==="nn") {
 						sdata[nm] = v;
 						sopt[nm] = so;
