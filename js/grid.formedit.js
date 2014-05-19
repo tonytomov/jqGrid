@@ -65,7 +65,8 @@ $.jgrid.extend({
 			showFrm = true,
 			mustReload = true,
 			IDs = {themodal:'searchmod'+fid,modalhead:'searchhd'+fid,modalcontent:'searchcnt'+fid, scrollelm : fid},
-			defaultFilters  = $t.p.postData[p.sFilter];
+			defaultFilters  = $t.p.postData[p.sFilter],
+			fl;
 			if(typeof defaultFilters === "string") {
 				defaultFilters = $.jgrid.parse( defaultFilters );
 			}
@@ -225,7 +226,8 @@ $.jgrid.extend({
 					p.stringResult = p.multipleSearch;
 				}
 				$("#"+fid+"_search").bind('click', function(){
-					var fl = $("#"+fid), sdata={}, res, filters;
+					var sdata={}, res, filters;
+					fl = $("#"+fid);
 					fl.find(".input-elm:focus").change();
 					filters = fl.jqFilter('filterData');
 					if(p.errorcheck) {
