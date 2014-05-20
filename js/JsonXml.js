@@ -83,7 +83,7 @@ var xmlJsonClass = {
 				}
 			}
 			else if (typeof(v) === "function") {
-				xml += ind + "<" + name + ">" + "<![CDATA[" + v + "]]>" + "</" + name + ">";
+				xml += ind + "<" + name + ">" + "<![CDATA[" + $.jgrid.htmlEncode(v) + "]]>" + "</" + name + ">";
 			}
 			else {
 				if (v === undefined ) { v = ""; }
