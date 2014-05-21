@@ -18,10 +18,13 @@
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
 	version : "4.6.0",
-	htmlDecode : function(value){
-		if(value && (value==='&nbsp;' || value==='&#160;' || (value.length===1 && value.charCodeAt(0)===160))) { return "";}
-		return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&").replace(/%2B/g, "+");		
-	},
+	htmlDecode : function (value) {
+            if (value && (value === '&nbsp;' || value === '&#160;' || (value.length === 1 && value.charCodeAt(0) === 160))) { return ""; }
+            while ((/&gt;|&lt;|&amp;|&quot;|%2B/g).test(value)) {
+                value = String(value).replace(/&amp;/g, "&").replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/%2B/g, "+");
+            }
+            return value;
+        },
 	htmlEncode : function (value){
 		return !value ? value : String(value).replace(/&/g, "&amp;").replace(/\"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\+/g, "%2B");
 	},
