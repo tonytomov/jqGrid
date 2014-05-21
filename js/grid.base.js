@@ -3180,27 +3180,30 @@ $.jgrid.extend({
 		return success;
 	},
 	setRowData : function(rowid, data, cssp) {
-		var nm, success=true, title;
+		var nm, success=true, title, copy = $.extend({}, data);
+            	delete copy['oper']; // remove this element from the copy
 		this.each(function(){
 			if(!this.grid) {return false;}
 			var t = this, vl, ind, cp = typeof cssp, lcdata={};
 			ind = $(this).jqGrid('getGridRowById', rowid);
 			if(!ind) { return false; }
-			if( data ) {
+			if( copy ) {
 				try {
 					$(this.p.colModel).each(function(i){
 						nm = this.name;
-						var dval =$.jgrid.getAccessor(data,nm);
+						var dval =$.jgrid.getAccessor(copy,nm);
 						if( dval !== undefined) {
 							lcdata[nm] = this.formatter && typeof this.formatter === 'string' && this.formatter === 'date' ? $.unformat.date.call(t,dval,this) : dval;
-							vl = t.formatter( rowid, dval, i, data, 'edit');
+							vl = t.formatter( rowid, dval, i, copy, 'edit');
 							title = this.title ? {"title":$.jgrid.stripHtml(vl)} : {};
 							if(t.p.treeGrid===true && nm === t.p.ExpandColumn) {
 								$("td[role='gridcell']:eq("+i+") > span:first",ind).html(vl).attr(title);
 							} else {
 								$("td[role='gridcell']:eq("+i+")",ind).html(vl).attr(title);
 							}
+							delete copy[nm];
 						}
+						return !$.isEmptyObject(copy); // false will break the loop
 					});
 					if(t.p.datatype === 'local') {
 						var id = $.jgrid.stripPref(t.p.idPrefix, rowid),
