@@ -1906,7 +1906,7 @@ $.fn.jqGrid = function( pin ) {
 			if(dnd && ts.p.jqgdnd) { $(ts).jqGrid('gridDnD','updateDnD');}
 			$(ts).triggerHandler("jqGridGridComplete");
 			if($.isFunction(ts.p.gridComplete)) {ts.p.gridComplete.call(ts);}
-			$(ts).triggerHandler("jqGridAfterGridComplete");
+			$(ts).triggerHandler("jqGridAfterGridComplete", { refresh: true });
 		},
 		beginReq = function() {
 			ts.grid.hDiv.loading = true;
