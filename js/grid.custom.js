@@ -251,7 +251,7 @@ $.jgrid.extend({
 		                        		filters += '{"field":"' + i + '", "op": "' + sopt[i] + '", "value":"' + value + '"},';
 	                    			}
 		                    	});
-		                    	filters = (sdata.length > 0 ? filters.slice(0,-1) : filters) + ']}';
+		                    	filters = (!$.isEmptyObject(sdata) ? filters.slice(0,-1) : filters) + ']}';
 					$.extend($t.p.postData, sdata, { filters: filters } );
 				}
 				var saveurl;
@@ -336,7 +336,7 @@ $.jgrid.extend({
 			                            filters += '{"field":"' + i + '", "op": "' + sopt[i] + '", "value":"' + value + '"},';
 			                        }
 			                    });
-                    			filters = (sdata.length > 0 ? filters.slice(0,-1) : filters) + ']}';
+                    			filters = (!$.isEmptyObject(sdata) ? filters.slice(0,-1) : filters) + ']}';
 					$.extend($t.p.postData, sdata, { filters: filters } );
 				}
 				var saveurl;
