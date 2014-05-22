@@ -3115,8 +3115,10 @@ $.jgrid.extend({
 			t.p.savedRow = [];
 		});
 	},
-	getRowData : function (rowid) {
+	getRowData: function (rowid, editable) {
             var res = {}, resall, getall = false, len, j = 0;
+
+            editable = editable === undefined ? false : editable;
 
             this.each(function () {
                 var $t = this, ind, frz;
@@ -3136,8 +3138,8 @@ $.jgrid.extend({
                         frz = $('tr[id=' + ind.id + '] > td', $('#' + $t.p.id + "_frozen"));
                         // the frz row if not found should not break the following
                         $('td[role="gridcell"]', ind).each(function (i) {
-                            var nm = $t.p.colModel[i].name, $col = frz[i] || this;
-                            if (nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn') {
+                            var $c = $t.p.colModel[i], nm = $c.name, $col = frz[i] || this;
+                            if (nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn' && (!editable || (editable && $c.editable))) {
                                 if ($t.p.treeGrid === true && nm === $t.p.ExpandColumn) {
                                     res[nm] = $.jgrid.htmlDecode($("span:first", $col).html());
                                 } else {
