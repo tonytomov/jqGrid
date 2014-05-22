@@ -850,7 +850,12 @@ $.jgrid.extend({
 								}
 							}
 						} else {
-							$.ajax(ajaxOptions); 
+							if(ajaxOptions.url === "clientArray") {
+								postdata = ajaxOptions.data;
+								ajaxOptions.complete({status:200, statusText:''},'');
+							} else {
+								$.ajax(ajaxOptions); 
+							}
 						}
 					}
 				}
@@ -1682,7 +1687,14 @@ $.jgrid.extend({
 									$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, onClose: rp_ge[$t.p.id].onClose});
 								}
 							}
-							else {$.ajax(ajaxOptions);}
+							else {
+								if(ajaxOptions.url === "clientArray") {
+									postd = ajaxOptions.data;
+									ajaxOptions.complete({status:200, statusText:''},'');
+								} else {
+									$.ajax(ajaxOptions); 
+								}
+							}
 						}
 					}
 
