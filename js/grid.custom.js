@@ -995,11 +995,13 @@ $.jgrid.extend({
 				    	} else if (args && args.id) {
 			                        // we are going to sync the row id that was passed instead of
 			                        // rebuilding the entire frozen layer
-			                        row = $("tr[id="+args.id+"]", body).clone(true);
-			                        // trim the row down to the number of columns in the frozen div
-			                        $("td[role=gridcell]:gt("+maxfrozen+")",row).remove();
-			                        // replace the row in the frozen div with the row from the body
-			                        $("tr[id="+args.id+"]", frzn).replaceWith(row);
+			                        $("tr[id="+args.id+"] > td", frzn).compare($("tr[id="+args.id+"] > td", body), function (r, idx) {
+			                            var l = this, cm = $t.p.colModel[idx], diff;
+			                            if (cm.name !== 'rn' && cm.name !== 'cb' && cm.name !== 'subgrid') {
+			                                 $(l).attr('class', r.attr('class'));
+			                            }
+			                            return true; // overridding basic functionality because false will break the loop.
+			                        });
 		                    	}
 		                });
 				if(!$t.grid.hDiv.loading) { // trigger this and move on
