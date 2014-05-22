@@ -2839,7 +2839,10 @@ $.fn.jqGrid = function( pin ) {
 				});
 				if(hg) {ts.p.datatype="local"; $(".ui-jqgrid-titlebar-close",grid.cDiv).trigger("click");}
 			}
-		} else {$(grid.cDiv).hide();}
+		} else {
+			$(grid.cDiv).hide();
+			$(grid.hDiv).addClass('ui-corner-top');
+		}
 		$(grid.hDiv).after(grid.bDiv)
 		.mousemove(function (e) {
 			if(grid.resizing){grid.dragMove(e);return false;}
@@ -3524,6 +3527,7 @@ $.jgrid.extend({
 			this.p.caption=newcap;
 			$("span.ui-jqgrid-title, span.ui-jqgrid-title-rtl",this.grid.cDiv).html(newcap);
 			$(this.grid.cDiv).show();
+			$(this.grid.hDiv).removeClass('ui-corner-top');
 		});
 	},
 	setLabel : function(colname, nData, prop, attrp ){
