@@ -306,20 +306,20 @@
 				$grid.jqGrid('editRow', rid, actop);
 				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").hide();
 				$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").show();
-				$grid.triggerHandler("jqGridAfterGridComplete");
+				$grid.triggerHandler("jqGridAfterGridComplete", { id: rid });
 				break;
 			case 'save':
 				if ($grid.jqGrid('saveRow', rid, actop)) {
 					$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").show();
 					$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").hide();
-					$grid.triggerHandler("jqGridAfterGridComplete");
+					$grid.triggerHandler("jqGridAfterGridComplete", { id: rid });
 				}
 				break;
 			case 'cancel' :
 				$grid.jqGrid('restoreRow', rid, restorerow);
 				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").show();
 				$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").hide();
-				$grid.triggerHandler("jqGridAfterGridComplete");
+				$grid.triggerHandler("jqGridAfterGridComplete", { id: rid });
 				break;
 			case 'del':
 				$grid.jqGrid('delGridRow', rid, op.delOptions);

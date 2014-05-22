@@ -83,16 +83,17 @@ var xmlJsonClass = {
 				}
 			}
 			else if (typeof(v) === "function") {
-				xml += ind + "<" + name + ">" + "<![CDATA[" + v + "]]>" + "</" + name + ">";
+				xml += ind + "<" + name + ">" + "<![CDATA[" + $.jgrid.htmlEncode(v) + "]]>" + "</" + name + ">";
 			}
 			else {
 				if (v === undefined ) { v = ""; }
 				if (v.toString() === "\"\"" || v.toString().length === 0) {
 					xml += ind + "<" + name + ">__EMPTY_STRING_</" + name + ">";
-				} 
-				else {
-					xml += ind + "<" + name + ">" + v.toString() + "</" + name + ">";
-				}
+				} else if (typeof(v) === 'string' && (v.indexOf('<') > -1 || v.indexOf('&') > -1)) {
+		                    xml += ind + "<" + name + "><![CDATA[" + v.toString() + "]]></" + name + ">";
+		                } else {
+		                    xml += ind + "<" + name + ">" + v.toString() + "</" + name + ">";
+		                }
 			}
 			return xml;
 		};
@@ -174,18 +175,22 @@ var xmlJsonClass = {
 							o["#text"] = this.escape(this.innerXml(xml));
 						}
 					}
-				}
-				else if (textChild) {
+				} else if (textChild) {
 					// pure text
 					if (!xml.attributes.length) {
-						o = this.escape(this.innerXml(xml));
-						if (o === "__EMPTY_ARRAY_") {
-							o = "[]";
-						} else if (o === "__EMPTY_STRING_") {
-							o = "";
-						}
-					}
-					else {
+			                        o = this.innerXml(xml);
+			                        if (o === "__EMPTY_ARRAY_") {
+			                            o = "[]";
+			                        } else if (o === "__EMPTY_STRING_") {
+			                            o = "";
+			                        } else if (/^function/.test(o)) {
+			                            o = $.parseJSON('{fn:' + $.jgrid.htmlDecode(o) + '}').fn;
+			                        } else if (/^(true|false)/.test(o)) {
+			                            o = o === 'true';
+			                        } else {
+			                            o = this.escape(o);
+			                        }
+			                    } else {
 						o["#text"] = this.escape(this.innerXml(xml));
 					}
 				}

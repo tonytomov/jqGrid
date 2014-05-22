@@ -174,7 +174,8 @@ $.jgrid.extend({
                     },
 					"modal" : opts.modal || false,
 					"resizable": opts.resizable || true,
-                    "width": opts.width+20
+                    "width": opts.width+20,
+                    "position": opts.position || { my: "center", at: "center", of: window }
                 }, opts.dialog_opts || {});
             },
             /* Function to get the permutation array, and pass it to the

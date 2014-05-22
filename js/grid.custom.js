@@ -196,19 +196,26 @@ $.jgrid.extend({
 		return this.each(function(){
 			var $t = this;
 			if(this.ftoolbar) { return; }
-			var triggerToolbar = function() {
-				var sdata={}, j=0, v, nm, sopt={},so;
+			var triggerToolbar = function(initial) {
+				var sdata={}, j=0, v, nm, sopt={}, so, $so;
 				$.each($t.p.colModel,function(){
 					var $elem = $("#gs_"+$.jgrid.jqID(this.name), (this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
 					nm = this.index || this.name;
 					if(p.searchOperators ) {
-						so = $elem.parent().prev().children("a").attr("soper") || p.defaultSearch;
+			                        $so = $elem.parent().prev().children("a");
+			                        if ($so.length && $so.attr("soper")) {
+						    so = $so.attr("soper");
+			                        } else if(this.searchoptions && this.searchoptions.sopt) {
+			                            so = this.searchoptions.sopt[0]
+			                        } else {
+			                            so = p.defaultSearch
+			                        }
 					} else {
 						so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : this.stype==='select'?  'eq' : p.defaultSearch;
 					}
-					v = this.stype === "custom" && $.isFunction(this.searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN" ?
-						this.searchoptions.custom_value.call($t, $elem.children(".customelement:first"), "get") :
-						$elem.val();
+					v = (this.stype === "custom" && $.isFunction(this.searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN" ?
+					     this.searchoptions.custom_value.call($t, $elem.children(".customelement:first"), "get") : $elem.val()) || 
+			                    ((initial && this.searchoptions) ? this.searchoptions.defaultValue : '');
 					if(v || so==="nu" || so==="nn") {
 						sdata[nm] = v;
 						sopt[nm] = so;
@@ -237,7 +244,15 @@ $.jgrid.extend({
 						if($t.p.postData.hasOwnProperty(n)) { delete $t.p.postData[n];}
 					});
 				} else {
-					$.extend($t.p.postData,sdata);
+					var filters = '{"fields":[';
+	                    		$.each(sdata,function(i,n){
+	                    			var val = $.isArray(n) ? n.join('|') : n, value = $.trim(val.replace(/\\/g,'\\\\').replace(/\"/g,'\\"'));
+	                    			if (value !== '') {
+		                        		filters += '{"field":"' + i + '", "op": "' + sopt[i] + '", "value":"' + value + '"},';
+	                    			}
+		                    	});
+		                    	filters = (!$.isEmptyObject(sdata) ? filters.slice(0,-1) : filters) + ']}';
+					$.extend($t.p.postData, sdata, { filters: filters } );
 				}
 				var saveurl;
 				if($t.p.searchurl) {
@@ -303,7 +318,7 @@ $.jgrid.extend({
 					$.each(sdata,function(i,n){
 						if (gi > 0) {ruleGroup += ",";}
 						ruleGroup += "{\"field\":\"" + i + "\",";
-						ruleGroup += "\"op\":\"" + "eq" + "\",";
+						ruleGroup += "\"op\":\"" + sopt[0] + "\",";
 						n+="";
 						ruleGroup += "\"data\":\"" + n.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"}";
 						gi++;
@@ -314,7 +329,15 @@ $.jgrid.extend({
 						if($t.p.postData.hasOwnProperty(n)) { delete $t.p.postData[n];}
 					});
 				} else {
-					$.extend($t.p.postData,sdata);
+					var filters = '{"fields":[';
+                    			$.each(sdata,function(i,n){
+			                        var val = $.isArray(n) ? n.join('|') : n, value = $.trim(val.replace(/\\/g,'\\\\').replace(/\"/g,'\\"'));
+			                        if (value !== '') {
+			                            filters += '{"field":"' + i + '", "op": "' + sopt[i] + '", "value":"' + value + '"},';
+			                        }
+			                    });
+                    			filters = (!$.isEmptyObject(sdata) ? filters.slice(0,-1) : filters) + ']}';
+					$.extend($t.p.postData, sdata, { filters: filters } );
 				}
 				var saveurl;
 				if($t.p.searchurl) {
@@ -503,8 +526,8 @@ $.jgrid.extend({
 								if(soptions.defaultValue !== undefined) { $(elem).val(soptions.defaultValue); }
 								if(soptions.attr) {$(elem).attr(soptions.attr);}
 								$(thd).append(stbl);
-								$.jgrid.bindEv.call($t, elem , soptions);
 								$("td:eq(1)",stbl).append( elem );
+								$.jgrid.bindEv.call($t, elem , soptions);
 								if(p.autosearch===true){
 									$(elem).change(function(){
 										triggerToolbar();
@@ -609,8 +632,9 @@ $.jgrid.extend({
 					} else {
 						$("td.ui-search-input select", ptr)[0].selectedIndex = 0;
 					}
+					$("td.ui-search-input select", ptr).trigger('select');
 				} else {
-					$("td.ui-search-input input", ptr).val( dval );
+					$("td.ui-search-input input", ptr).val( dval ).trigger('change');
 				}
 				// ToDo custom search type
 				if(p.autosearch===true){
@@ -822,8 +846,9 @@ $.jgrid.extend({
 			{
 				return;
 			}
-			if($t.p.rownumbers) { i++; }
-			if($t.p.multiselect) { i++; }
+			//the following two lines are not needed when the frozen attribute is set to true - less character used as well.
+			//if($t.p.rownumbers) { i++; }
+			//if($t.p.multiselect) { i++; }
 			
 			// get the max index of frozen col
 			while(i<len)
@@ -851,7 +876,7 @@ $.jgrid.extend({
 					}
 				}
 				$t.grid.fhDiv = $('<div style="position:absolute;left:0px;top:'+top+'px;height:'+hth+'px;" class="frozen-div ui-state-default ui-jqgrid-hdiv"></div>');
-				$t.grid.fbDiv = $('<div style="position:absolute;left:0px;top:'+(parseInt(top,10)+parseInt(hth,10) + 1)+'px;overflow-y:hidden" class="frozen-bdiv ui-jqgrid-bdiv"></div>');
+				$t.grid.fbDiv = $('<div style="position:absolute;left:0px;overflow-y:hidden" class="frozen-bdiv ui-jqgrid-bdiv"></div>');
 				$("#gview_"+$.jgrid.jqID($t.p.id)).append($t.grid.fhDiv);
 				var htbl = $(".ui-jqgrid-htable","#gview_"+$.jgrid.jqID($t.p.id)).clone(true);
 				// groupheader support - only if useColSpanstyle is false
@@ -924,30 +949,65 @@ $.jgrid.extend({
 				if($t.p.hoverrows === true) {
 					$("#"+$.jgrid.jqID($t.p.id)).unbind('mouseover').unbind('mouseout');
 				}
-				$($t).bind('jqGridAfterGridComplete.setFrozenColumns', function () {
-					$("#"+$.jgrid.jqID($t.p.id)+"_frozen").remove();
-					$($t.grid.fbDiv).height($($t.grid.bDiv).height()-16);
-					var btbl = $("#"+$.jgrid.jqID($t.p.id)).clone(true);
-					$("tr[role=row]",btbl).each(function(){
-						$("td[role=gridcell]:gt("+maxfrozen+")",this).remove();
-					});
-
-					$(btbl).width(1).attr("id",$t.p.id+"_frozen");
-					$($t.grid.fbDiv).append(btbl);
-					if($t.p.hoverrows === true) {
-						$("tr.jqgrow", btbl).hover(
-							function(){ $(this).addClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)).addClass("ui-state-hover"); },
-							function(){ $(this).removeClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)).removeClass("ui-state-hover"); }
-						);
-						$("tr.jqgrow", "#"+$.jgrid.jqID($t.p.id)).hover(
-							function(){ $(this).addClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)+"_frozen").addClass("ui-state-hover");},
-							function(){ $(this).removeClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)+"_frozen").removeClass("ui-state-hover"); }
-						);
-					}
-					btbl=null;
-				});
-				if(!$t.grid.hDiv.loading) {
-					$($t).triggerHandler("jqGridAfterGridComplete");
+				$($t).bind('jqGridAfterGridComplete.setFrozenColumns', function (e, args) {
+					var frzn = null, body = null, id = 0, row = null;
+	                    		if(args && args.refresh) {
+			                        // rebuilding the frozen div for every change is time consuming and 
+			                        // introduces unacceptable ui lag.
+			                        $("#"+$.jgrid.jqID($t.p.id)+"_frozen").remove();
+					    	btbl = $("#" + $.jgrid.jqID($t.p.id)).clone(true);
+					    	$("tr[role=row]",btbl).each(function(){
+						    $("td[role=gridcell]:gt("+maxfrozen+")",this).remove();
+					    	});
+	
+					    	$(btbl).width(1).attr("id",$t.p.id+"_frozen");
+	
+					    	$($t.grid.fbDiv)
+		                            		.append(btbl);
+		
+		                        	$($t.grid.fbDiv)
+		                            		.position({ my: 'left top', at: 'left top', of: $t.grid.bDiv })
+		                            		.css('top', (parseFloat(($t.grid.fbDiv).css('top').replace('px',''))) + 'px')
+		                            		.height($t.grid.bDiv.offsetHeight - ($t.grid.bDiv.offsetHeight - $t.grid.bDiv.clientHeight) + 1);
+		
+			                        // scrolling
+			                        $($t.grid.bDiv).scroll(function (e) {
+			                            var $b = this, $f = $t.grid.fbDiv[0];
+			                            $($f)
+			                                .height($b.offsetHeight - ($b.offsetHeight - $b.clientHeight) + 1)
+			                                .position({ my: 'left top', at: 'left top', of: $b })
+			                                .css('top', (parseFloat($($f).css('top').replace('px',''))) + 'px');
+			                            $f.scrollTop = $b.scrollTop;
+			                        });
+		
+					    	if($t.p.hoverrows === true) {
+					    		$("tr.jqgrow", btbl).hover(
+							    function(){ $(this).addClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)).addClass("ui-state-hover"); },
+							    function(){ $(this).removeClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)).removeClass("ui-state-hover"); }
+					    		);
+						    	$("tr.jqgrow", "#"+$.jgrid.jqID($t.p.id)).hover(
+							    function(){ $(this).addClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)+"_frozen").addClass("ui-state-hover");},
+							    function(){ $(this).removeClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)+"_frozen").removeClass("ui-state-hover"); }
+						    	);
+					    	}
+					    	btbl=null;
+				    	} else if (args && args.id) {
+			                        // we are going to sync the row id that was passed instead of
+			                        // rebuilding the entire frozen layer
+			                        id = args.id;
+			                        frzn = $("tr[id=" + id + "] > td", $("#" + $.jgrid.jqID($t.p.id) + "_frozen"));
+			                        body = $("tr[id=" + id + "] > td", $("#" + $.jgrid.jqID($t.p.id)));
+			                        $(frzn).compare(body, function (r, idx) {
+			                            var l = this, cm = $t.p.colModel[idx], diff;
+			                            if (cm.name !== 'rn' && cm.name !== 'cb' && cm.name !== 'subgrid') {
+			                                 $(l).attr('class', r.attr('class'));
+			                            }
+			                           return true; // overridding basic functionality because false will break the loop.
+			                        });
+		                    	}
+		                });
+				if(!$t.grid.hDiv.loading) { // trigger this and move on
+					setTimeout(function () { $($t).triggerHandler("jqGridAfterGridComplete", { refresh: true }); }, 0);
 				}
 				$t.p.frozenColumns = true;
 			}
