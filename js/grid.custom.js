@@ -950,13 +950,12 @@ $.jgrid.extend({
 					$("#"+$.jgrid.jqID($t.p.id)).unbind('mouseover').unbind('mouseout');
 				}
 				$($t).bind('jqGridAfterGridComplete.setFrozenColumns', function (e, args) {
-					var frzn = $("#"+$.jgrid.jqID($t.p.id)+"_frozen"),
-		                            body = $("#"+$.jgrid.jqID($t.p.id)), row = null, btbl = null;
+					var frzn = null, body = null, id = 0, row = null;
 	                    		if(args && args.refresh) {
 			                        // rebuilding the frozen div for every change is time consuming and 
 			                        // introduces unacceptable ui lag.
-			                        frzn.remove();
-					    	btbl = body.clone(true);
+			                        $("#"+$.jgrid.jqID($t.p.id)+"_frozen").remove();
+					    	btbl = $("#" + $.jgrid.jqID($t.p.id)).clone(true);
 					    	$("tr[role=row]",btbl).each(function(){
 						    $("td[role=gridcell]:gt("+maxfrozen+")",this).remove();
 					    	});
@@ -995,12 +994,15 @@ $.jgrid.extend({
 				    	} else if (args && args.id) {
 			                        // we are going to sync the row id that was passed instead of
 			                        // rebuilding the entire frozen layer
-			                        $("tr[id="+args.id+"] > td", frzn).compare($("tr[id="+args.id+"] > td", body), function (r, idx) {
+			                        id = args.id;
+			                        frzn = $("tr[id=" + id + "] > td", $("#" + $.jgrid.jqID($t.p.id) + "_frozen"));
+			                        body = $("tr[id=" + id + "] > td", $("#" + $.jgrid.jqID($t.p.id)));
+			                        $(frzn).compare(body, function (r, idx) {
 			                            var l = this, cm = $t.p.colModel[idx], diff;
 			                            if (cm.name !== 'rn' && cm.name !== 'cb' && cm.name !== 'subgrid') {
 			                                 $(l).attr('class', r.attr('class'));
 			                            }
-			                            return true; // overridding basic functionality because false will break the loop.
+			                           return true; // overridding basic functionality because false will break the loop.
 			                        });
 		                    	}
 		                });
