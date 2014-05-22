@@ -18,6 +18,15 @@
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
 	version : "4.6.0",
+	compare: function(el, callback) {
+            var result = true;
+
+            $.each(this, function(i) {
+                return (result = callback.call(this, $(el).eq(i), i));
+            });
+
+            return result;
+        },
 	htmlDecode : function (value) {
             if (value && (value === '&nbsp;' || value === '&#160;' || (value.length === 1 && value.charCodeAt(0) === 160))) { return ""; }
             while ((/&gt;|&lt;|&amp;|&quot;|%2B/g).test(value)) {
@@ -757,6 +766,8 @@ $.extend($.jgrid,{
 		}
 	}
 });
+
+$.fn.compare = $.jgrid.compare;
 
 $.fn.jqGrid = function( pin ) {
 	if (typeof pin === 'string') {
@@ -3104,43 +3115,47 @@ $.jgrid.extend({
 			t.p.savedRow = [];
 		});
 	},
-	getRowData : function( rowid ) {
-		var res = {}, resall, getall=false, len, j=0;
-		this.each(function(){
-			var $t = this,nm,ind;
-			if(rowid === undefined) {
-				getall = true;
-				resall = [];
-				len = $t.rows.length;
-			} else {
-				ind = $($t).jqGrid('getGridRowById', rowid);
-				if(!ind) { return res; }
-				len = 2;
-			}
-			while(j<len){
-				if(getall) { ind = $t.rows[j]; }
-				if( $(ind).hasClass('jqgrow') ) {
-					$('td[role="gridcell"]',ind).each( function(i) {
-						nm = $t.p.colModel[i].name;
-						if ( nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn') {
-							if($t.p.treeGrid===true && nm === $t.p.ExpandColumn) {
-								res[nm] = $.jgrid.htmlDecode($("span:first",this).html());
-							} else {
-								try {
-									res[nm] = $.unformat.call($t,this,{rowId:ind.id, colModel:$t.p.colModel[i]},i);
-								} catch (e){
-									res[nm] = $.jgrid.htmlDecode($(this).html());
-								}
-							}
-						}
-					});
-					if(getall) { resall.push(res); res={}; }
-				}
-				j++;
-			}
-		});
-		return resall || res;
-	},
+	getRowData : function (rowid) {
+            var res = {}, resall, getall = false, len, j = 0;
+
+            this.each(function () {
+                var $t = this, ind, frz;
+                if (rowid === undefined) {
+                    getall = true;
+                    resall = [];
+                    len = $t.rows.length;
+                } else {
+                    ind = $($t).jqGrid('getGridRowById', rowid);
+                    if (!ind) { return res; }
+                    len = 2;
+                }
+                while (j < len) {
+                    if (getall) { ind = $t.rows[j]; }
+                    if ($(ind).hasClass('jqgrow')) {
+                        // check for a matched frozen column
+                        frz = $('tr[id=' + ind.id + '] > td', $('#' + $t.p.id + "_frozen"));
+                        // the frz row if not found should not break the following
+                        $('td[role="gridcell"]', ind).each(function (i) {
+                            var nm = $t.p.colModel[i].name, $col = frz[i] || this;
+                            if (nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn') {
+                                if ($t.p.treeGrid === true && nm === $t.p.ExpandColumn) {
+                                    res[nm] = $.jgrid.htmlDecode($("span:first", $col).html());
+                                } else {
+                                    try {
+                                        res[nm] = $.unformat.call($t, $col, { rowId: ind.id, colModel: $t.p.colModel[i] }, i);
+                                    } catch (e) {
+                                        res[nm] = $.jgrid.htmlDecode($($col).html());
+                                    }
+                                }
+                            }
+                        });
+                        if (getall) { resall.push(res); res = {}; }
+                    }
+                    j++;
+                }
+            });
+            return resall || res;
+        },
 	delRowData : function(rowid) {
 		var success = false, rowInd, ia;
 		this.each(function() {
@@ -3179,58 +3194,66 @@ $.jgrid.extend({
 		});
 		return success;
 	},
-	setRowData : function(rowid, data, cssp) {
-		var nm, success=true, title, copy = $.extend({}, data);
-            	delete copy['oper']; // remove this element from the copy
-		this.each(function(){
-			if(!this.grid) {return false;}
-			var t = this, vl, ind, cp = typeof cssp, lcdata={};
-			ind = $(this).jqGrid('getGridRowById', rowid);
-			if(!ind) { return false; }
-			if( copy ) {
-				try {
-					$(this.p.colModel).each(function(i){
-						nm = this.name;
-						var dval =$.jgrid.getAccessor(copy,nm);
-						if( dval !== undefined) {
-							lcdata[nm] = this.formatter && typeof this.formatter === 'string' && this.formatter === 'date' ? $.unformat.date.call(t,dval,this) : dval;
-							vl = t.formatter( rowid, dval, i, copy, 'edit');
-							title = this.title ? {"title":$.jgrid.stripHtml(vl)} : {};
-							if(t.p.treeGrid===true && nm === t.p.ExpandColumn) {
-								$("td[role='gridcell']:eq("+i+") > span:first",ind).html(vl).attr(title);
-							} else {
-								$("td[role='gridcell']:eq("+i+")",ind).html(vl).attr(title);
-							}
-							delete copy[nm];
-						}
-						return !$.isEmptyObject(copy); // false will break the loop
-					});
-					if(t.p.datatype === 'local') {
-						var id = $.jgrid.stripPref(t.p.idPrefix, rowid),
-						pos = t.p._index[id], key;
-						if(t.p.treeGrid) {
-							for(key in t.p.treeReader){
-								if(t.p.treeReader.hasOwnProperty(key)) {
-									delete lcdata[t.p.treeReader[key]];
-								}
-							}
-						}
-						if(pos !== undefined) {
-							t.p.data[pos] = $.extend(true, t.p.data[pos], lcdata);
-						}
-						lcdata = null;
-					}
-				} catch (e) {
-					success = false;
-				}
-			}
-			if(success) {
-				if(cp === 'string') {$(ind).addClass(cssp);} else if(cssp !== null && cp === 'object') {$(ind).css(cssp);}
-				$(t).triggerHandler("jqGridAfterGridComplete", { id: rowid });
-			}
-		});
-		return success;
-	},
+	setRowData : function (rowid, data, cssp) {
+            var success = true, title, copy = $.extend({}, data);
+            delete copy['oper']; // remove this element from the copy
+            this.each(function () {
+                var t = this, vl, ind, frz, row, cp = typeof cssp, lcdata = {};
+                if (!t.grid) { return false; }
+                frz = $('tr[id=' + rowid + ']', $('#' + t.p.id + "_frozen"));
+                ind = $(this).jqGrid('getGridRowById', rowid);
+                if (!ind) { return false; }
+                if (copy) {
+                    try {
+                        $(t.p.colModel).each(function (i) {
+                            var $c = this, nm = $c.name, dval = $.jgrid.getAccessor(copy, nm),
+                                column;
+                            if (dval !== undefined) {
+                                lcdata[nm] = this.formatter && typeof this.formatter === 'string' && this.formatter === 'date' ? $.unformat.date.call(t, dval, $c) : dval;
+                                vl = t.formatter(rowid, dval, i, copy, 'edit');
+                                title = this.title ? { "title": $.jgrid.stripHtml(vl)} : {};
+                                if (t.p.treeGrid === true && nm === t.p.ExpandColumn) { 
+                                    // frozen columns are not available on tree grids
+                                    column =  $("td[role='gridcell']:eq(" + i + ") > span:first", ind);    
+                                } else {
+                                    column = $($("td[role='gridcell']", frz)[i] || $("td[role='gridcell']", ind)[i]);
+                                }
+                                // set the column data
+                                column.html(vl).attr(title);
+                                // delete the value from the obj since we have no more need for it.
+                                delete copy[nm];
+                            }
+                            return !$.isEmptyObject(copy);
+                        });
+                        copy = null;
+
+                        if (t.p.datatype === 'local') {
+                            var id = $.jgrid.stripPref(t.p.idPrefix, rowid),
+						        pos = t.p._index[id], key;
+                            if (t.p.treeGrid) {
+                                for (key in t.p.treeReader) {
+                                    if (t.p.treeReader.hasOwnProperty(key)) {
+                                        delete lcdata[t.p.treeReader[key]];
+                                    }
+                                }
+                            }
+                            if (pos !== undefined) {
+                                t.p.data[pos] = $.extend(true, t.p.data[pos], lcdata);
+                            }
+                            lcdata = null;
+                        }
+                    } catch (e) {
+                        success = false;
+                    }
+                }
+                if (success) {
+                    row = $(ind).add(frz);
+                    if (cp === 'string') { row.addClass(cssp); } else if (cssp !== null && cp === 'object') { row.css(cssp); }
+                    $(t).triggerHandler("jqGridAfterGridComplete", { id: rowid });
+                }
+            });
+            return success;
+        },
 	addRowData : function(rowid,rdata,pos,src) {
 		if(!pos) {pos = "last";}
 		var success = false, nm, row, gi, si, ni,sind, i, v, prp="", aradd, cnm, cn, data, cm, id;
