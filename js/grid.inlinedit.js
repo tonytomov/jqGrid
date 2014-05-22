@@ -193,7 +193,7 @@ $.jgrid.extend({
 		editable = $(ind).attr("editable");
 		o.url = o.url || $t.p.editurl;
 		if (editable==="1") {
-			var cm;
+			var cm, $tmp = this.jqGrid('getRowData', rowid, true); // call this to get a control list of all editable columns
 			$('td[role="gridcell"]',ind).each(function(i) {
                 var cell = $('tr[id=' + $.jgrid.jqID(rowid) + '] td', $('#' + fid))[i] || this; // grab the cell in the frozen div or the body div
 				cm = $t.p.colModel[i];
@@ -253,7 +253,9 @@ $.jgrid.extend({
 							tmp3[nm] = 'null';
 						}
 					}
+					delete $tmp[nm]; // remove this column name from the control list
 				}
+				return !$.isEmptyObject($tmp); // if the control list is empty break the loop
 			});
 			if (cv[0] === false){
 				try {
