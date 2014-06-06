@@ -3520,8 +3520,11 @@ $.jgrid.extend({
 			if(typeof shrink !== 'boolean') {
 				shrink=$t.p.shrinkToFit;
 			}
-			if(isNaN(nwidth)) {return;}
-			nwidth = parseInt(nwidth,10); 
+			if (isNaN(nwidth)) {
+	                    nwidth = $($t).parents('.ui-jqgrid').parent().width();
+	                } else {
+	                    nwidth = parseInt(nwidth, 10);
+	                }
 			$t.grid.width = $t.p.width = nwidth;
 			$("#gbox_"+$.jgrid.jqID($t.p.id)).css("width",nwidth+"px");
 			$("#gview_"+$.jgrid.jqID($t.p.id)).css("width",nwidth+"px");
