@@ -3513,6 +3513,17 @@ $.jgrid.extend({
 		$(ts).triggerHandler("jqGridRemapColumns", [permutation, updateCells, keepHeader]);
 	},
 	setGridWidth : function(nwidth, shrink) {
+		var tmp = nwidth;
+	    	this.each(function () {
+	        	if (!this.grid && !isNaN(nwidth)) { tmp = parseInt(nwidth, 10); return false; }
+		        var width = $(this).parents('.ui-jqgrid').parent().width();
+		        if (isNaN(tmp) || tmp < width) {
+		            tmp = width;
+		        }
+	    	});
+		
+	    	nwidth = tmp;
+            	
 		return this.each(function(){
 			if (!this.grid ) {return;}
 			var $t = this, cw,
@@ -3520,11 +3531,6 @@ $.jgrid.extend({
 			if(typeof shrink !== 'boolean') {
 				shrink=$t.p.shrinkToFit;
 			}
-			if (isNaN(nwidth)) {
-	                    nwidth = $($t).parents('.ui-jqgrid').parent().width();
-	                } else {
-	                    nwidth = parseInt(nwidth, 10);
-	                }
 			$t.grid.width = $t.p.width = nwidth;
 			$("#gbox_"+$.jgrid.jqID($t.p.id)).css("width",nwidth+"px");
 			$("#gview_"+$.jgrid.jqID($t.p.id)).css("width",nwidth+"px");
