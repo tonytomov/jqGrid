@@ -275,6 +275,13 @@ $.jgrid.extend({
 					nm = this.index || this.name;
 					switch (this.stype) {
 						case 'select' :
+							if ($elem.prop('multiple')) {
+				                                $elem.find("option:selected").each(function (i) {
+				                                    if ($.inArray($(this).val(), v.split('|')) === -1) {
+				                                        this.selected = false;
+				                                    }
+			                                	});
+			                            	}
 							$elem.find("option").each(function (i){
 								if(i===0) { this.selected = true; }
 								if ($(this).val() === v) {
