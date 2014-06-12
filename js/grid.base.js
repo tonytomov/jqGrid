@@ -3618,20 +3618,28 @@ $.jgrid.extend({
 			}
 		});
 	},
-	setGridHeight : function (nh) {
-		return this.each(function (){
-			var $t = this;
-			if(!$t.grid) {return;}
-			var bDiv = $($t.grid.bDiv);
-			bDiv.css({height: nh+(isNaN(nh)?"":"px")});
-			if($t.p.frozenColumns === true){
-				//follow the original set height to use 16, better scrollbar width detection
-				$('#'+$.jgrid.jqID($t.p.id)+"_frozen").parent().height(bDiv.height() - 16);
-			}
-			$t.p.height = nh;
-			if ($t.p.scroll) { $t.grid.populateVisible(); }
-		});
-	},
+	setGridHeight: function (nh) {
+            return this.each(function () {
+                var $t = this;
+                if (!$t.grid) { return; }
+                var bDiv = $($t.grid.bDiv);
+                bDiv.siblings().each(function (i) {
+                    if (!$(this).is('.frozen-div') && !$(this).is('.frozen-bdiv')) {
+                        nh -= $(this).outerHeight();
+                    }
+                });
+
+                nh -= $($t.p.pager).outerHeight();
+
+                bDiv.css({ height: nh + (isNaN(nh) ? "" : "px") });
+                if ($t.p.frozenColumns === true) {
+                    //follow the original set height to use 16, better scrollbar width detection
+                    $('#' + $.jgrid.jqID($t.p.id) + "_frozen").parent().height(bDiv.height() - 16);
+                }
+                $t.p.height = nh;
+                if ($t.p.scroll) { $t.grid.populateVisible(); }
+            });
+        },
 	setCaption : function (newcap){
 		return this.each(function(){
 			this.p.caption=newcap;
