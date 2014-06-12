@@ -886,7 +886,8 @@ $.fn.jqGrid = function( pin ) {
 			cmTemplate : {},
 			idPrefix : "",
 			multiSort :  false,
-			minColWidth : 33
+			minColWidth : 33,
+			fullscreen: false
 		}, $.jgrid.defaults, pin || {});
 		var ts= this, grid={
 			headers:[],
