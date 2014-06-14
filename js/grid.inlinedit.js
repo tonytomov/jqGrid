@@ -42,7 +42,8 @@ $.jgrid.extend({
 			errorfunc: null,
 			afterrestorefunc: null,
 			restoreAfterError: true,
-			mtype: "POST"
+			mtype: "POST",
+			focusField : true
 		}, $.jgrid.inlineEdit, o );
 
 		// End compatible
@@ -96,12 +97,17 @@ $.jgrid.extend({
 				if(cnt > 0) {
 					svr.id = rowid; $t.p.savedRow.push(svr);
 					$(ind).attr("editable","1");
-					setTimeout(function(){ 
-						var fe = $("td:eq("+focus+") input",ind).not(":disabled"); 
-						if(fe.length > 0) {
-							fe.focus();
+					if(o.focusField ) {
+						if(typeof o.focusField === 'number' && parseInt(o.focusField,10) <= cm.length) {
+							focus = o.focusField;
 						}
-					},0);
+						setTimeout(function(){ 
+							var fe = $("td:eq("+focus+") input",ind).not(":disabled"); 
+							if(fe.length > 0) {
+								fe.focus();
+							}
+						},0);
+					}
 					if(o.keys===true) {
 						$(ind).bind("keydown",function(e) {
 							if (e.keyCode === 27) {
