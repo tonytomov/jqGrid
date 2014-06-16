@@ -973,7 +973,7 @@ $.jgrid.extend({
 		                            		.append(btbl);
 		
 		                        	$($t.grid.fbDiv)
-		                            		.position({ my: 'left top', at: 'left top', of: $t.grid.bDiv })
+		                            		.position({ my: 'left top', at: 'left top', of: $t.grid.bDiv, collision: 'none' })
 		                            		.css('top', (parseFloat(($t.grid.fbDiv).css('top').replace('px',''))) + 'px')
 		                            		.height($t.grid.bDiv.offsetHeight - ($t.grid.bDiv.offsetHeight - $t.grid.bDiv.clientHeight) + 1);
 		
