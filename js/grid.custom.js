@@ -982,7 +982,7 @@ $.jgrid.extend({
 			                            var $b = this, $f = $t.grid.fbDiv[0];
 			                            $($f)
 			                                .height($b.offsetHeight - ($b.offsetHeight - $b.clientHeight) + 1)
-			                                .position({ my: 'left top', at: 'left top', of: $b })
+			                                .position({ my: 'left top', at: 'left top', of: $b, collision: 'none' })
 			                                .css('top', (parseFloat($($f).css('top').replace('px',''))) + 'px');
 			                            $f.scrollTop = $b.scrollTop;
 			                        });
