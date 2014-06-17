@@ -115,7 +115,7 @@ $.jgrid.extend({
 			tblrow.sortable(sortable_opts).data("sortable").floating = true;
 		});
 	},
-    columnChooser : function(opts) {
+    columnChooser: function(opts) {
         var self = this;
 		if($("#colchooser_"+$.jgrid.jqID(self[0].p.id)).length ) { return; }
         var selector = $('<div id="colchooser_'+self[0].p.id+'" style="position:relative;overflow:hidden"><div><select multiple="multiple"></select></div></div>');
@@ -182,11 +182,7 @@ $.jgrid.extend({
                "done" function */
             "apply_perm" : function() {
                 $('option',select).each(function() {
-                    if (this.selected) {
-                        self.jqGrid("showCol", colModel[this.value].name);
-                    } else {
-                        self.jqGrid("hideCol", colModel[this.value].name);
-                    }
+                    self.jqGrid("showHideCol", colModel[this.value].name, this.selected ? '' : 'none');
                 });
                 
                 var perm = [];
