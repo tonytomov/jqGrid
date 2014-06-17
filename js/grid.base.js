@@ -3417,49 +3417,50 @@ $.jgrid.extend({
 		});
 		return action === "get" ? res : success;
 	},
-	showHideCol : function(colname,show) {
-		return this.each(function() {
-			var $t = this, fndh=false, brd=$.jgrid.cell_width ? 0: $t.p.cellLayout, cw;
-			if (!$t.grid ) {return;}
-			if( typeof colname === 'string') {colname=[colname];}
-			show = show !== "none" ? "" : "none";
-			var sw = show === "" ? true :false,
-			gh = $t.p.groupHeader && (typeof $t.p.groupHeader === 'object' || $.isFunction($t.p.groupHeader) );
-			if(gh) { $($t).jqGrid('destroyGroupHeader', false); }
-			$(this.p.colModel).each(function(i) {
-				if ($.inArray(this.name,colname) !== -1 && this.hidden === sw) {
-					if($t.p.frozenColumns === true && this.frozen === true) {
-						return true;
-					}
-					$("tr[role=rowheader]",$t.grid.hDiv).each(function(){
-						$(this.cells[i]).css("display", show);
-					});
-					$($t.rows).each(function(){
-						if (!$(this).hasClass("jqgroup")) {
-							$(this.cells[i]).css("display", show);
-						}
-					});
-					if($t.p.footerrow) { $("tr.footrow td:eq("+i+")", $t.grid.sDiv).css("display", show); }
-					cw =  parseInt(this.width,10);
-					if(show === "none") {
-						$t.p.tblwidth -= cw+brd;
-					} else {
-						$t.p.tblwidth += cw+brd;
-					}
-					this.hidden = !sw;
-					fndh=true;
-					$($t).triggerHandler("jqGridShowHideCol", [sw,this.name,i]);
-				}
-			});
-			if(fndh===true) {
-				if($t.p.shrinkToFit === true && !isNaN($t.p.height)) { $t.p.tblwidth += parseInt($t.p.scrollOffset,10);}
-				$($t).jqGrid("setGridWidth",$t.p.shrinkToFit === true ? $t.p.tblwidth : $t.p.width );
-			}
-			if( gh )  {
-				$($t).jqGrid('setGroupHeaders',$t.p.groupHeader);
-			}
-		});
-	},
+	showHideCol: function (colname, show) {
+            return this.each(function () {
+                var $t = this, fndh = false, brd = $.jgrid.cell_width ? 0 : parseInt($t.p.cellLayout, 10), cw;
+                if (!$t.grid) { return; }
+                if (typeof colname === 'string') { colname = [colname]; }
+                show = show !== "none" ? "" : "none";
+                var sw = show === "" ? true : false,
+			gh = $t.p.groupHeader && (typeof $t.p.groupHeader === 'object' || $.isFunction($t.p.groupHeader));
+                if (gh) { $($t).jqGrid('destroyGroupHeader', false); }
+                $(this.p.colModel).each(function (i) {
+                    if ($.inArray(this.name, colname) !== -1) {
+                        if (this.hidden === sw && !($t.p.frozenColumns === true && this.frozen === true)) {
+                            $("tr[role=rowheader]", $t.grid.hDiv).each(function () {
+                                $(this.cells[i]).css("display", show);
+                            });
+                            $($t.rows).each(function () {
+                                if (!$(this).hasClass("jqgroup")) {
+                                    $(this.cells[i]).css("display", show);
+                                }
+                            });
+                            if ($t.p.footerrow) { $("tr.footrow td:eq(" + i + ")", $t.grid.sDiv).css("display", show); }
+                            cw = parseInt(this.width, 10);
+                            if (show === "none") {
+                                $t.p.tblwidth -= cw + brd;
+                            } else {
+                                $t.p.tblwidth += cw + brd;
+                            }
+                            this.hidden = !sw;
+                            fndh = true;
+                            $($t).triggerHandler("jqGridShowHideCol", [sw, this.name, i]);
+                        }
+                       colname.splice(colname.indexOf(this.name), 1);
+                    }
+                    return colname.length > 0;
+                });
+                if (fndh === true) {
+                    if ($t.p.shrinkToFit === true && !isNaN($t.p.height)) { $t.p.tblwidth += parseInt($t.p.scrollOffset, 10); }
+                    $($t).jqGrid("setGridWidth", undefined, $t.p.shrinkToFit);
+                }
+                if (gh) {
+                    $($t).jqGrid('setGroupHeaders', $t.p.groupHeader);
+                }
+            });
+        },
 	hideCol : function (colname) {
 		return this.each(function(){$(this).jqGrid("showHideCol",colname,"none");});
 	},
