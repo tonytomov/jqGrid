@@ -562,7 +562,7 @@ $.jgrid.extend({
 								var celm = soptions.custom_element.call($t,soptions.defaultValue !== undefined ? soptions.defaultValue: "",soptions);
 								if(celm) {
 									celm = $(celm).addClass("customelement");
-									$(thd).find(">span").append(celm);
+									$(thd).find("span[name='" + (cm.index || cm.name) + "']").append(celm);
 								} else {
 									throw "e2";
 								}
