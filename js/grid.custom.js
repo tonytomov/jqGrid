@@ -844,7 +844,7 @@ $.jgrid.extend({
 			});
 		});				
 	},
-	setFrozenColumns : function () {
+	setFrozenColumns: function () {
 		return this.each(function() {
 			if ( !this.grid ) {return;}
 			var $t = this, cm = $t.p.colModel,i=0, len = cm.length, maxfrozen = -1, frozen= false;
@@ -852,11 +852,7 @@ $.jgrid.extend({
 			if($t.p.subGrid === true || $t.p.treeGrid === true || $t.p.cellEdit === true || $t.p.sortable || $t.p.scroll )
 			{
 				return;
-			}
-			//the following two lines are not needed when the frozen attribute is set to true - less character used as well.
-			//if($t.p.rownumbers) { i++; }
-			//if($t.p.multiselect) { i++; }
-			
+			}			
 			// get the max index of frozen col
 			while(i<len)
 			{
@@ -920,99 +916,100 @@ $.jgrid.extend({
 				}
 				$(htbl).width(1);
 				// resizing stuff
-				$($t.grid.fhDiv).append(htbl)
-				.mousemove(function (e) {
+				$($t.grid.fhDiv)
+                    .append(htbl)
+				    .mousemove(function (e) {
 					if($t.grid.resizing){ $t.grid.dragMove(e);return false; }
-				});
+				})
+                    .height($($t.grid.hDiv).outerHeight());
+
 				$($t).bind('jqGridResizeStop.setFrozenColumns', function (e, w, index) {
-					var rhth = $(".ui-jqgrid-htable",$t.grid.fhDiv);
+					var $g = this, rhth = $(".ui-jqgrid-htable",$g.grid.fhDiv), btd = $(".ui-jqgrid-btable",$g.grid.fbDiv);
 					$("th:eq("+index+")",rhth).width( w ); 
-					var btd = $(".ui-jqgrid-btable",$t.grid.fbDiv);
 					$("tr:first td:eq("+index+")",btd).width( w ); 
 				});
 				// sorting stuff
 				$($t).bind('jqGridSortCol.setFrozenColumns', function (e, index, idxcol) {
-
-					var previousSelectedTh = $("tr.ui-jqgrid-labels:last th:eq("+$t.p.lastsort+")",$t.grid.fhDiv), newSelectedTh = $("tr.ui-jqgrid-labels:last th:eq("+idxcol+")",$t.grid.fhDiv);
+					var $g = this, previousSelectedTh = $("tr.ui-jqgrid-labels:last th:eq("+$g.p.lastsort+")",$g.grid.fhDiv), newSelectedTh = $("tr.ui-jqgrid-labels:last th:eq("+idxcol+")",$g.grid.fhDiv);
 
 					$("span.ui-grid-ico-sort",previousSelectedTh).addClass('ui-state-disabled');
 					$(previousSelectedTh).attr("aria-selected","false");
-					$("span.ui-icon-"+$t.p.sortorder,newSelectedTh).removeClass('ui-state-disabled');
+					$("span.ui-icon-"+$g.p.sortorder,newSelectedTh).removeClass('ui-state-disabled');
 					$(newSelectedTh).attr("aria-selected","true");
-					if(!$t.p.viewsortcols[0]) {
-						if($t.p.lastsort !== idxcol) {
+					if(!$g.p.viewsortcols[0]) {
+						if($g.p.lastsort !== idxcol) {
 							$("span.s-ico",previousSelectedTh).hide();
 							$("span.s-ico",newSelectedTh).show();
 						}
 					}
 				});
-				
 				// data stuff
 				//TODO support for setRowData
 				$("#gview_"+$.jgrid.jqID($t.p.id)).append($t.grid.fbDiv);
-				$($t.grid.bDiv).scroll(function () {
+				/*$($t.grid.bDiv).scroll(function () {
 					$($t.grid.fbDiv).scrollTop($(this).scrollTop());
-				});
+				});*/
 				if($t.p.hoverrows === true) {
 					$("#"+$.jgrid.jqID($t.p.id)).unbind('mouseover').unbind('mouseout');
 				}
 				$($t).bind('jqGridAfterGridComplete.setFrozenColumns', function (e, args) {
-					var frzn = null, body = null, id = 0, row = null;
-	                    		if(args && args.refresh) {
-			                        // rebuilding the frozen div for every change is time consuming and 
-			                        // introduces unacceptable ui lag.
-			                        $("#"+$.jgrid.jqID($t.p.id)+"_frozen").remove();
-					    	btbl = $("#" + $.jgrid.jqID($t.p.id)).clone(true);
-					    	$("tr[role=row]",btbl).each(function(){
+					var frzn = null, body = null, id = 0, row = null, $g = this;
+                    if(args && args.refresh) {
+                        // rebuilding the frozen div for every change is time consuming and 
+                        // introduces unacceptable ui lag.
+                        $("#"+$.jgrid.jqID($g.p.id)+"_frozen").remove();
+					    var btbl = $("#" + $.jgrid.jqID($g.p.id)).clone(true);
+					    $("tr[role=row]",btbl).each(function(){
 						    $("td[role=gridcell]:gt("+maxfrozen+")",this).remove();
-					    	});
-	
-					    	$(btbl).width(1).attr("id",$t.p.id+"_frozen");
-	
-					    	$($t.grid.fbDiv)
-		                            		.append(btbl);
-		
-		                        	$($t.grid.fbDiv)
-		                            		.position({ my: 'left top', at: 'left top', of: $t.grid.bDiv, collision: 'none' })
-		                            		.css('top', (parseFloat(($t.grid.fbDiv).css('top').replace('px',''))) + 'px')
-		                            		.height($t.grid.bDiv.offsetHeight - ($t.grid.bDiv.offsetHeight - $t.grid.bDiv.clientHeight) + 1);
-		
-			                        // scrolling
-			                        $($t.grid.bDiv).scroll(function (e) {
-			                            var $b = this, $f = $t.grid.fbDiv[0];
-			                            $($f)
-			                                .height($b.offsetHeight - ($b.offsetHeight - $b.clientHeight) + 1)
-			                                .position({ my: 'left top', at: 'left top', of: $b, collision: 'none' })
-			                                .css('top', (parseFloat($($f).css('top').replace('px',''))) + 'px');
-			                            $f.scrollTop = $b.scrollTop;
-			                        });
-		
-					    	if($t.p.hoverrows === true) {
-					    		$("tr.jqgrow", btbl).hover(
-							    function(){ $(this).addClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)).addClass("ui-state-hover"); },
-							    function(){ $(this).removeClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)).removeClass("ui-state-hover"); }
-					    		);
-						    	$("tr.jqgrow", "#"+$.jgrid.jqID($t.p.id)).hover(
-							    function(){ $(this).addClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)+"_frozen").addClass("ui-state-hover");},
-							    function(){ $(this).removeClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)+"_frozen").removeClass("ui-state-hover"); }
-						    	);
-					    	}
-					    	btbl=null;
-				    	} else if (args && args.id) {
-			                        // we are going to sync the row id that was passed instead of
-			                        // rebuilding the entire frozen layer
-			                        id = args.id;
-			                        frzn = $("tr[id=" + id + "] > td", $("#" + $.jgrid.jqID($t.p.id) + "_frozen"));
-			                        body = $("tr[id=" + id + "] > td", $("#" + $.jgrid.jqID($t.p.id)));
-			                        $(frzn).compare(body, function (r, idx) {
-			                            var l = this, cm = $t.p.colModel[idx], diff;
-			                            if (cm.name !== 'rn' && cm.name !== 'cb' && cm.name !== 'subgrid') {
-			                                 $(l).attr('class', r.attr('class'));
-			                            }
-			                           return true; // overridding basic functionality because false will break the loop.
-			                        });
-		                    	}
-		                });
+					    });
+
+					    $(btbl).width(1).attr("id",$g.p.id+"_frozen");
+
+					    $($g.grid.fbDiv)
+                            .append(btbl);
+
+                        $($g.grid.fbDiv)
+                            .position({ my: 'left top', at: 'left top', of: $g.grid.bDiv, collision: 'none' })
+                            .css('top', (parseFloat(($g.grid.fbDiv).css('top').replace('px',''))) + 'px')
+                            .height($g.grid.bDiv.offsetHeight - ($g.grid.bDiv.offsetHeight - $g.grid.bDiv.clientHeight) + 1);
+
+                        // scrolling
+                        $($g.grid.bDiv).scroll(function (e) {
+                            var $b = this, $f = $($b).next().next()[0];
+                            $($f)
+                                .height($b.offsetHeight - ($b.offsetHeight - $b.clientHeight) + 1)
+                                .position({ my: 'left top', at: 'left top', of: $b, collision: 'none' })
+                                .css('top', (parseFloat($($f).css('top').replace('px',''))) + 'px');
+                            $f.scrollTop = $b.scrollTop;
+                        });
+
+					    if($g.p.hoverrows === true) {
+						    $("tr.jqgrow", btbl).hover(
+							    function(){ $(this).addClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($g.p.id)).addClass("ui-state-hover"); },
+							    function(){ $(this).removeClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($g.p.id)).removeClass("ui-state-hover"); }
+						    );
+						    $("tr.jqgrow", "#"+$.jgrid.jqID($g.p.id)).hover(
+							    function(){ $(this).addClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($g.p.id)+"_frozen").addClass("ui-state-hover");},
+							    function(){ $(this).removeClass("ui-state-hover"); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($g.p.id)+"_frozen").removeClass("ui-state-hover"); }
+						    );
+					    }
+					    btbl=null;
+				    } else if (args && args.id) {
+                        // we are going to sync the row id that was passed instead of
+                        // rebuilding the entire frozen layer
+                        id = args.id;
+                        frzn = $("tr[id=" + id + "] > td", $("#" + $.jgrid.jqID($g.p.id) + "_frozen"));
+                        body = $("tr[id=" + id + "] > td", $("#" + $.jgrid.jqID($g.p.id)));
+                        $(frzn).compare(body, function (r, idx) {
+                            var l = this, cm = $g.p.colModel[idx], diff;
+                            if (cm.name !== 'rn' && cm.name !== 'cb' && cm.name !== 'subgrid') {
+                                 $(l).attr('class', r.attr('class'));
+                            }
+                           return true; // overridding basic functionality because false will break the loop.
+                        });
+                    }
+                });
+
 				if(!$t.grid.hDiv.loading) { // trigger this and move on
 					setTimeout(function () { $($t).triggerHandler("jqGridAfterGridComplete", { refresh: true }); }, 0);
 				}
