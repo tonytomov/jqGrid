@@ -39,10 +39,11 @@ $.extend($.jgrid,{
 	},
 	format : function(format){ //jqgformat
 		var args = $.makeArray(arguments).slice(1);
-		if(format==null) { format = ""; }
-		return format.replace(/\{(\d+)\}/g, function(m, i){
-			return args[i];
-		});
+            if (format == null) { format = ""; }
+            function _replace(i, c) {
+                return this[c];
+            };
+            return format.replace(/\{(\d+)\}/g, $.proxy(_replace, args));
 	},
 	msie : navigator.appName === 'Microsoft Internet Explorer',
 	msiever : function () {
