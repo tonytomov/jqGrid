@@ -267,16 +267,30 @@ $.jgrid.extend({
 				if($.isFunction(p.afterSearch)){p.afterSearch.call($t);}
 			},
 			clearToolbar = function(trigger){
-				var sdata={}, sopt={}, j=0, so;
+				var sdata={}, sopt={}, j=0, filters = '{"fields":[';
 				trigger = (typeof trigger !== 'boolean') ? true : trigger;
 				$.each($t.p.colModel,function(){
 					var v = this.searchoptions && this.searchoptions.defaultValue !== undefined ? this.searchoptions.defaultValue : undefined, 
                         $elem = $("#gs_"+$.jgrid.jqID(this.name),(this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv),
-                        nm = this.index || this.name;
+                        nm = this.index || this.name,
+                        so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : this.stype==='select'?  'eq' : $t.p.defaultSearch;
+
+                    function setFilter (v, nm, so) {
+                        var val = $.isArray(v) ? v.join('|') : v, value = $.trim(val.replace(/\\/g,'\\\\').replace(/\"/g,'\\"'));
+                        if (value !== '') {
+                            filters += '{"field":"' + nm + '", "op": "' + so + '", "value":"' + value + '"},';
+                            sdata[nm] = value;
+                            sopt[nm] = so;
+                            j++;
+                        }
+                    }
+
                     if(this.hidden || $t.p.postData[nm] === v || ($t.p.postData[nm] === undefined && v === '')) {
+                        if (v && v !== '') {
+                            setFilter(v, nm, so);
+                        }
                         return; /*if the column is hidden, otherwise unchanged skip it.*/
                     }
-                    so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : this.stype==='select'?  'eq' : p.defaultSearch;
 					switch (this.stype) {
 						case 'select' :
                             if ($elem.prop('multiple')) {
@@ -295,9 +309,7 @@ $.jgrid.extend({
 							});
 							if ( v !== undefined ) {
 								// post the key and not the text
-								sdata[nm] = v;
-                                sopt[nm] = so;
-								j++;
+								setFilter(v, nm, so);
 							} else {
 								try {
 									delete $t.p.postData[nm];
@@ -308,9 +320,7 @@ $.jgrid.extend({
 						case 'text':
 							$elem.val(v || "");
 							if(v !== undefined) {
-								sdata[nm] = v;
-                                sopt[nm] = so;
-								j++;
+								setFilter(v, nm, so);
 							} else {
 								try {
 									delete $t.p.postData[nm];
@@ -321,9 +331,7 @@ $.jgrid.extend({
 						case 'custom':
 							if ($.isFunction(this.searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN") {
                                 if (v !== undefined) {
-                                    sdata[nm] = v;
-                                    sopt[nm] = so;
-                                    j++;
+                                    setFilter(v, nm, so);
                                 }
 								this.searchoptions.custom_value.call($t, $elem.children(".customelement:first"), "set", v || "");
 							}
@@ -332,7 +340,7 @@ $.jgrid.extend({
 				});
 				var sd =  j>0 ? true : false;
 				$t.p.resetsearch =  true;
-				if(p.stringResult === true || $t.p.datatype === "local") {
+				if($t.p.stringResult === true || $t.p.datatype === "local") {
 					var ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[";
 					var gi=0;
 					$.each(sdata,function(i,n){
@@ -349,13 +357,6 @@ $.jgrid.extend({
 						if($t.p.postData.hasOwnProperty(n)) { delete $t.p.postData[n];}
 					});
 				} else {
-					var filters = '{"fields":[';
-                    $.each(sdata,function(i,n){
-                        var val = $.isArray(n) ? n.join('|') : n, value = $.trim(val.replace(/\\/g,'\\\\').replace(/\"/g,'\\"'));
-                        if (value !== '') {
-                            filters += '{"field":"' + i + '", "op": "' + sopt[i] + '", "value":"' + value + '"},';
-                        }
-                    });
                     filters = (!$.isEmptyObject(sdata) ? filters.slice(0,-1) : filters) + ']}';
 					$.extend($t.p.postData, sdata, { filters: filters } );
 				}
@@ -374,6 +375,8 @@ $.jgrid.extend({
 				if(saveurl) {$($t).jqGrid("setGridParam",{url:saveurl});}
 				$($t).triggerHandler("jqGridToolbarAfterClear");
 				if($.isFunction(p.afterClear)){p.afterClear();}
+                sdata = null;
+                sopt = null;
 			},
 			toggleToolbar = function(){
 				var trow = $("tr.ui-search-toolbar",$t.grid.hDiv),
