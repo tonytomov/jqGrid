@@ -3643,9 +3643,14 @@ $.jgrid.extend({
 			if(pos>=0) {
 				var ind = $($t).jqGrid('getGridRowById', rowid); 
 				if (ind){
-					var tcell = $("td:eq("+pos+")",ind);
+					var tcell = $("td:eq("+pos+")",ind), cl=0, rawdat=[];
 					if(nData !== "" || forceupd === true) {
-						v = $t.formatter(rowid, nData, pos,ind,'edit');
+						while(cl<ind.cells.length) {
+							// slow down speed
+							rawdat.push(ind.cells[cl].innerHTML);
+							cl++;
+						}
+						v = $t.formatter(rowid, nData, pos, rawdat, 'edit');
 						title = $t.p.colModel[pos].title ? {"title":$.jgrid.stripHtml(v)} : {};
 						if($t.p.treeGrid && $(".tree-wrap",$(tcell)).length>0) {
 							$("span",$(tcell)).html(v).attr(title);
