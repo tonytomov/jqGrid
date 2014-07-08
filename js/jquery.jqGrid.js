@@ -4354,6 +4354,7 @@ $.jgrid.extend({
 							$.ajax($.extend({
 								url: surl,
 								dataType: "html",
+								data: $.isFunction(soptions.postData) ? soptions.postData.call(cm, soptions, true) : soptions.postData,
 								success: function(res) {
 									if(soptions.buildSelect !== undefined) {
 										var d = soptions.buildSelect(res);
