@@ -191,13 +191,13 @@ $.jgrid.extend({
 						k=0;
 						for(j=0;j<p.sopt.length;j++) {
 							if( (pos= $.inArray(p.sopt[j],stempl)) != -1 ){
-								oprtr[k] = {op:p.sopt[j],text: p.odata[pos]};
+								oprtr[k] = {op:p.sopt[j],text: p.odata[pos].text};
 								k++;
 							}
 						}
 					} else {
 						for(j=0;j<stempl.length;j++) {
-							oprtr[j] = {op:stempl[j],text: p.odata[j]};
+							oprtr[j] = {op:stempl[j],text: p.odata[j].text};
 						}
 					}
 				    $.each(colModel, function(i, v) {
@@ -211,7 +211,7 @@ $.jgrid.extend({
 							if(soptions.sopt.length>0) {
 								for(j=0;j<soptions.sopt.length;j++) {
 									if( (pos= $.inArray(soptions.sopt[j],stempl)) != -1 ){
-										soptions.ops[k] = {op:soptions.sopt[j],text: p.odata[pos]};
+										soptions.ops[k] = {op:soptions.sopt[j],text: p.odata[pos].text};
 										k++;
 									}
 								}
