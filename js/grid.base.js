@@ -173,6 +173,10 @@ $.extend($.jgrid,{
 		} else {
 			timestamp = new Date(ts.y, ts.m, ts.d, ts.h, ts.i, ts.s, ts.u);
 		}
+		
+		//handle daylightsaving
+        timestamp.setMinutes(timestamp.getMinutes() - timestamp.getTimezoneOffset());
+		
 		if( newformat === undefined ) {
 			return timestamp;
 		}
