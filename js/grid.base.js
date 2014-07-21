@@ -2940,7 +2940,11 @@ $.jgrid.extend({
 	},
 	setGridParam : function (newParams){
 		return this.each(function(){
-			if (this.grid && typeof newParams === 'object') {$.extend(true,this.p,newParams);}
+			if (this.grid && typeof newParams === 'object') {
+				var params = $.extend({}, this.p, newParams);
+				
+				this.p = params;
+			}
 		});
 	},
 	getGridRowById: function ( rowid ) {
