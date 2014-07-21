@@ -2938,9 +2938,19 @@ $.jgrid.extend({
 		if (!pName) { return $t.p; }
 		return $t.p[pName] !== undefined ? $t.p[pName] : null;
 	},
-	setGridParam : function (newParams){
+	setGridParam : function (newParams, overwrite){
 		return this.each(function(){
-			if (this.grid && typeof newParams === 'object') {$.extend(true,this.p,newParams);}
+			if(overwrite == null) {
+				overwrite = false;
+			}
+			if (this.grid && typeof newParams === 'object') {
+				if(overwrite === true) {
+					var params = $.extend({}, this.p, newParams);
+					this.p = params;
+				} else {
+					$.extend(true,this.p,newParams);
+				}
+			}
 		});
 	},
 	getGridRowById: function ( rowid ) {
