@@ -880,17 +880,17 @@ $.fn.jqGrid = function( pin ) {
 			footers: [],
 			dragStart: function(i,x,y) {
 				var gridLeftPos = $(this.bDiv).offset().left;
-				this.resizing = { idx: i, startX: x.clientX, sOL : x.clientX - gridLeftPos };
+				this.resizing = { idx: i, startX: x.pageX, sOL : x.pageX - gridLeftPos };
 				this.hDiv.style.cursor = "col-resize";
 				this.curGbox = $("#rs_m"+$.jgrid.jqID(p.id),"#gbox_"+$.jgrid.jqID(p.id));
-				this.curGbox.css({display:"block",left:x.clientX-gridLeftPos,top:y[1],height:y[2]});
+				this.curGbox.css({display:"block",left:x.pageX-gridLeftPos,top:y[1],height:y[2]});
 				$(ts).triggerHandler("jqGridResizeStart", [x, i]);
 				if($.isFunction(p.resizeStart)) { p.resizeStart.call(ts,x,i); }
 				document.onselectstart=function(){return false;};
 			},
 			dragMove: function(x) {
 				if(this.resizing) {
-					var diff = x.clientX-this.resizing.startX,
+					var diff = x.pageX-this.resizing.startX,
 					h = this.headers[this.resizing.idx],
 					newWidth = p.direction === "ltr" ? h.width + diff : h.width - diff, hn, nWn;
 					if(newWidth > 33) {
