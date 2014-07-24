@@ -1541,6 +1541,11 @@ $.fn.jqGrid = function( pin ) {
 					rd[locid] = $.jgrid.stripPref(ts.p.idPrefix, idr);
 					ts.p.data.push(rd);
 					ts.p._index[rd[locid]] = ts.p.data.length-1;
+				}else if (ts.p.datatype === "local" && dReader.repeatitems) {
+					var idStripted = $.jgrid.stripPref(ts.p.idPrefix, idr), iData = ts.p._index[idStripted];
+					if (iData !== undefined && ts.p.data != null && ts.p.data[iData] != null) {
+						$.extend(true, ts.p.data[iData], rd);
+					}
 				}
 				if(ts.p.gridview === false ) {
 					$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
