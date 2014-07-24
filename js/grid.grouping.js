@@ -214,11 +214,9 @@ $.jgrid.extend({
 				if(grp.showSummaryOnHide) {
 					if(r){
 						while(r) {
-							if($(r).hasClass('jqfoot') ) {
-								var lv = parseInt($(r).attr("jqfootlevel"),10);
-								if(  lv <= num) {
-									break;
-								}
+							itemGroupingLevel = getGroupingLevelFromClass(r.className);
+							if (itemGroupingLevel !== undefined && itemGroupingLevel <= num) {
+								break;
 							}
 							$(r).hide();
 							r = r.nextSibling;
