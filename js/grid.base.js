@@ -1195,6 +1195,60 @@ $.fn.jqGrid = function( pin ) {
 				this.p.data = []; this.p._index = {};
 			}
 		},
+		normalizeData = function() {
+			var p = ts.p, data = p.data, dataLength = data.length, i, j, cur, idn, idr, ccur, v, rd,
+			localReader = p.localReader,
+			colModel = p.colModel,
+			cellName = localReader.cell,
+			iOffset = (p.multiselect === true ? 1 : 0) + (p.subGrid === true ? 1 : 0) + (p.rownumbers === true ? 1 : 0),
+			br = p.scroll ? $.jgrid.randId() : 1,
+			arrayReader, objectReader, rowReader;
+
+			if (p.datatype !== "local" || localReader.repeatitems !== true) {
+				return; // nothing to do
+			}
+
+			arrayReader = orderedCols(iOffset);
+			objectReader = reader("local");
+			// read ALL input items and convert items to be read by
+			// $.jgrid.getAccessor with column name as the second parameter
+			idn = p.keyIndex === false ?
+				($.isFunction(localReader.id) ? localReader.id.call(ts, data) : localReader.id) :
+				p.keyIndex; 
+			for (i = 0; i < dataLength; i++) {
+				cur = data[i];
+				// read id in the same way like addJSONData do
+				// probably it would be better to start with "if (cellName) {...}"
+				// but the goal of the current implementation was just have THE SAME
+				// id values like in addJSONData ...
+				idr = $.jgrid.getAccessor(cur, idn);
+				if (idr === undefined) {
+					if (typeof idn === "number" && colModel[idn + iOffset] != null) {
+						// reread id by name
+						idr = $.jgrid.getAccessor(cur, colModel[idn + iOffset].name);
+					}
+					if (idr === undefined) {
+						idr = br + i;
+						if (cellName) {
+							ccur = $.jgrid.getAccessor(cur, cellName) || cur;
+							idr = ccur != null && ccur[idn] !== undefined ? ccur[idn] : idr;
+							ccur = null;
+						}
+					}
+				}
+				rd = { };
+				rd[localReader.id] = idr;
+				if (cellName) {
+					cur = $.jgrid.getAccessor(cur, cellName) || cur;
+				}
+				rowReader = $.isArray(cur) ? arrayReader : objectReader;
+				for (j = 0; j < rowReader.length; j++) {
+					v = $.jgrid.getAccessor(cur, rowReader[j]);
+					rd[colModel[j + iOffset].name] = v;
+				}
+				$.extend(true, data[i], rd);
+			}
+		},
 		refreshIndex = function() {
 			var datalen = ts.p.data.length, idname, i, val;
 
@@ -2467,7 +2521,7 @@ $.fn.jqGrid = function( pin ) {
 		if(ts.p.scroll){
 			ts.p.pgbuttons = false; ts.p.pginput=false; ts.p.rowList=[];
 		}
-		if(ts.p.data.length) { refreshIndex(); }
+		if(ts.p.data.length) { normalizeData(); refreshIndex(); }
 		var thead = "<thead><tr class='ui-jqgrid-labels' role='rowheader'>",
 		tdc, idn, w, res, sort,
 		td, ptr, tbody, imgs,iac="",idc="",sortarr=[], sortord=[], sotmp=[];
@@ -2753,7 +2807,7 @@ $.fn.jqGrid = function( pin ) {
 			if (opts && opts.current) {
 				ts.grid.selectionPreserver(ts);
 			}
-			if(ts.p.datatype==="local"){ $(ts).jqGrid("resetSelection");  if(ts.p.data.length) { refreshIndex();} }
+			if(ts.p.datatype==="local"){ $(ts).jqGrid("resetSelection");  if(ts.p.data.length) { normalizeData(); refreshIndex();} }
 			else if(!ts.p.treeGrid) {
 				ts.p.selrow=null;
 				if(ts.p.multiselect) {ts.p.selarrrow =[];setHeadCheckBox(false);}
