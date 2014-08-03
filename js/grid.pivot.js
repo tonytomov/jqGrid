@@ -333,12 +333,21 @@ $.jgrid.extend({
 								if(lastval[items.level] !== items.text && items.children.length && items.text !== '_r_Totals') {
 									if(items.level>0) {
 										headers[items.level-1].groupHeaders.push({
-											titleText: items.text
+											titleText: items.text,
+											numberOfColumns : 0
 										});
-										var collen = headers[items.level-1].groupHeaders.length,
-										colpos = collen === 1 ? swaplen : initColLen+(collen-1)*aggrlen;
-										headers[items.level-1].groupHeaders[collen-1].startColumnName = columns[colpos].name;
-										headers[items.level-1].groupHeaders[collen-1].numberOfColumns = columns.length - colpos;
+										var collen = headers[items.level-1].groupHeaders.length-1,
+										colpos = collen === 0 ? swaplen : initColLen+aggrlen;
+										if(items.level-1===1) {
+											if(collen>0) {
+												var l1 = headers[items.level-1].groupHeaders[collen-1].numberOfColumns;
+												if(l1) {
+													colpos = l1 + 1 + o.aggregates.length;
+												}
+											}
+										}
+										headers[items.level-1].groupHeaders[collen].startColumnName = columns[colpos].name;
+										headers[items.level-1].groupHeaders[collen].numberOfColumns = columns.length - colpos;
 										initColLen = columns.length;
 									}
 								}
