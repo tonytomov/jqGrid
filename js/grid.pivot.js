@@ -407,7 +407,7 @@ $.jgrid.extend({
 				}
 			}
 
-			list(tree, 0);
+			list( tree );
 			var nm;
 			// loop again trougth the pivot rows in order to build grand total 
 			if(o.colTotals) {
