@@ -175,7 +175,7 @@ $.extend($.jgrid,{
 		}
 		
 		//handle daylightsaving
-        timestamp.setMinutes(timestamp.getMinutes() - timestamp.getTimezoneOffset());
+		timestamp.setMinutes(timestamp.getMinutes() - ((new Date()).getTimezoneOffset() - timestamp.getTimezoneOffset()));
 		
 		if( newformat === undefined ) {
 			return timestamp;
