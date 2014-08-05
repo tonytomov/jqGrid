@@ -338,7 +338,7 @@ $.jgrid.extend({
 										});
 										var collen = headers[items.level-1].groupHeaders.length-1,
 										colpos = collen === 0 ? swaplen : initColLen+aggrlen;
-										if(items.level-1===1) {
+										if(items.level-1=== (o.rowTotals ? 1 : 0)) {
 											if(collen>0) {
 												var l1 = headers[items.level-1].groupHeaders[collen-1].numberOfColumns;
 												if(l1) {
