@@ -13,7 +13,13 @@ $.extend($.jgrid,{
 		recordtext: "Peržiūrima {0} - {1} iš {2}",
 		emptyrecords: "Įrašų nėra",
 		loadtext: "Kraunama...",
-		pgtext : "Puslapis {0} iš {1}"
+		pgtext : "Puslapis {0} iš {1}",
+		pgfirst : "First Page",
+		pglast : "Last Page",
+		pgnext : "Next Page",
+		pgprev : "Previous Page",
+		pgrecs : "Records per Page",
+		showhide: "Toggle Expand Collapse Grid"
 	},
 	search : {
 		caption: "Paieška...",

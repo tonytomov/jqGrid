@@ -13,7 +13,13 @@ $.extend($.jgrid,{
 		recordtext: "View {0} - {1} of {2}",
 		emptyrecords: "Không có dữ liệu",
 		loadtext: "Đang nạp dữ liệu...",
-		pgtext : "Trang {0} trong tổng số {1}"
+		pgtext : "Trang {0} trong tổng số {1}",
+		pgfirst : "First Page",
+		pglast : "Last Page",
+		pgnext : "Next Page",
+		pgprev : "Previous Page",
+		pgrecs : "Records per Page",
+		showhide: "Toggle Expand Collapse Grid"
 	},
 	search : {
 		caption: "Tìm kiếm...",

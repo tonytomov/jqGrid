@@ -6,7 +6,13 @@ a.extend(a.jgrid,{
             recordtext: "regels {0} - {1} van {2}",
             emptyrecords: "Geen data gevonden.",
             loadtext: "laden...",
-            pgtext: "pagina  {0}  van {1}"
+            pgtext: "pagina  {0}  van {1}",
+			pgfirst : "First Page",
+			pglast : "Last Page",
+			pgnext : "Next Page",
+			pgprev : "Previous Page",
+			pgrecs : "Records per Page",
+			showhide: "Toggle Expand Collapse Grid"
         },
         search:
         {

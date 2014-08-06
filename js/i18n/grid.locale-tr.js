@@ -13,7 +13,13 @@ $.extend($.jgrid,{
 		recordtext: "{0}-{1} listeleniyor. Toplam:{2}",
 	    emptyrecords: "Kayıt bulunamadı",
 		loadtext: "Yükleniyor...",
-		pgtext : "{0}/{1}. Sayfa"
+		pgtext : "{0}/{1}. Sayfa",
+		pgfirst : "First Page",
+		pglast : "Last Page",
+		pgnext : "Next Page",
+		pgprev : "Previous Page",
+		pgrecs : "Records per Page",
+		showhide: "Toggle Expand Collapse Grid"
 	},
 	search : {
 	    caption: "Arama...",

@@ -13,7 +13,13 @@ $.extend($.jgrid,{
 		recordtext: "Zobrazených {0} - {1} z {2} záznamov",
 	    emptyrecords: "Neboli nájdené žiadne záznamy",
 		loadtext: "Načítám...",
-		pgtext : "Strana {0} z {1}"
+		pgtext : "Strana {0} z {1}",
+		pgfirst : "First Page",
+		pglast : "Last Page",
+		pgnext : "Next Page",
+		pgprev : "Previous Page",
+		pgrecs : "Records per Page",
+		showhide: "Toggle Expand Collapse Grid"
 	},
 	search : {
 		caption: "Vyhľadávam...",

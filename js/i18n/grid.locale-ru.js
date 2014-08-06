@@ -13,7 +13,13 @@ $.extend($.jgrid,{
 		recordtext: "Просмотр {0} - {1} из {2}",
 		emptyrecords: "Нет записей для просмотра",
 		loadtext: "Загрузка...",
-		pgtext : "Стр. {0} из {1}"
+		pgtext : "Стр. {0} из {1}",
+		pgfirst : "First Page",
+		pglast : "Last Page",
+		pgnext : "Next Page",
+		pgprev : "Previous Page",
+		pgrecs : "Records per Page",
+		showhide: "Toggle Expand Collapse Grid"
 	},
 	search : {
 		caption: "Поиск...",

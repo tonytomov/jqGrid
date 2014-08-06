@@ -13,7 +13,13 @@ $.extend($.jgrid,{
 		recordtext: "Visar {0} - {1} av {2}",
 		emptyrecords: "Det finns inga poster att visa",
 		loadtext: "Laddar...",
-		pgtext : "Sida {0} av {1}"
+		pgtext : "Sida {0} av {1}",
+		pgfirst : "First Page",
+		pglast : "Last Page",
+		pgnext : "Next Page",
+		pgprev : "Previous Page",
+		pgrecs : "Records per Page",
+		showhide: "Toggle Expand Collapse Grid"
 	},
 	search : {
 		caption: "Sök Poster - Ange sökvillkor",

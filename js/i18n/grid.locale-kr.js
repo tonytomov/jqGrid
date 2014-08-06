@@ -13,7 +13,13 @@ $.extend($.jgrid,{
 		recordtext: "보기 {0} - {1} / {2}",
 		emptyrecords: "표시할 행이 없습니다",
 		loadtext: "조회중...",
-		pgtext : "페이지 {0} / {1}"
+		pgtext : "페이지 {0} / {1}",
+		pgfirst : "First Page",
+		pglast : "Last Page",
+		pgnext : "Next Page",
+		pgprev : "Previous Page",
+		pgrecs : "Records per Page",
+		showhide: "Toggle Expand Collapse Grid"
 	},
 	search : {
 		caption: "검색...",

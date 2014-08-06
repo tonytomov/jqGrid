@@ -13,7 +13,13 @@ $.extend($.jgrid,{
 		recordtext: "Преглед {0} - {1} од {2}",
 		emptyrecords: "Не постоји ниједан запис",
 		loadtext: "Учитавање...",
-		pgtext : "Страна {0} од {1}"
+		pgtext : "Страна {0} од {1}",
+		pgfirst : "First Page",
+		pglast : "Last Page",
+		pgnext : "Next Page",
+		pgprev : "Previous Page",
+		pgrecs : "Records per Page",
+		showhide: "Toggle Expand Collapse Grid"
 	},
 	search : {
 		caption: "Тражење...",
