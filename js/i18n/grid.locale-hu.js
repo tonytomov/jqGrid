@@ -14,7 +14,13 @@ $.extend($.jgrid,{
 		recordtext: "Oldal {0} - {1} / {2}",
 		emptyrecords: "Nincs találat",
 		loadtext: "Betöltés...",
-		pgtext : "Oldal {0} / {1}"
+		pgtext : "Oldal {0} / {1}",
+		pgfirst : "First Page",
+		pglast : "Last Page",
+		pgnext : "Next Page",
+		pgprev : "Previous Page",
+		pgrecs : "Records per Page",
+		showhide: "Toggle Expand Collapse Grid"
 	},
 	search : {
 		caption: "Keresés...",

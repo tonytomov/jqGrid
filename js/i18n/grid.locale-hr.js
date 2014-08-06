@@ -14,7 +14,13 @@ $.extend($.jgrid,{
 		recordtext: "Pregled {0} - {1} od {2}",
 		emptyrecords: "Nema zapisa",
 		loadtext: "Učitavam...",
-		pgtext : "Stranica {0} od {1}"
+		pgtext : "Stranica {0} od {1}",
+		pgfirst : "First Page",
+		pglast : "Last Page",
+		pgnext : "Next Page",
+		pgprev : "Previous Page",
+		pgrecs : "Records per Page",
+		showhide: "Toggle Expand Collapse Grid"
 	},
 	search : {
 		caption: "Traži...",

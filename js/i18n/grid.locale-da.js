@@ -13,7 +13,13 @@ $.extend($.jgrid,{
 		recordtext: "Vis {0} - {1} of {2}",
 	    emptyrecords: "Ingen linjer fundet",
 		loadtext: "Henter...",
-		pgtext : "Side {0} af {1}"
+		pgtext : "Side {0} af {1}",
+		pgfirst : "First Page",
+		pglast : "Last Page",
+		pgnext : "Next Page",
+		pgprev : "Previous Page",
+		pgrecs : "Records per Page",
+		showhide: "Toggle Expand Collapse Grid"
 	},
 	search : {
 	    caption: "Søg...",

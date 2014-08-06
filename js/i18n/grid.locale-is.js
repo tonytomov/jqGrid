@@ -12,7 +12,13 @@ $.extend($.jgrid,{
 		recordtext: "Skoða {0} - {1} af {2}",
 	    emptyrecords: "Engar færslur",
 		loadtext: "Hleður...",
-		pgtext : "Síða {0} af {1}"
+		pgtext : "Síða {0} af {1}",
+		pgfirst : "First Page",
+		pglast : "Last Page",
+		pgnext : "Next Page",
+		pgprev : "Previous Page",
+		pgrecs : "Records per Page",
+		showhide: "Toggle Expand Collapse Grid"
 	},
 	search : {
 	    caption: "Leita...",

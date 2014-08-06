@@ -12,7 +12,13 @@ $.extend($.jgrid,{
 		recordtext: "Amosando {0} - {1} de {2}",
 	    emptyrecords: "Sen rexistros que amosar",
 		loadtext: "Cargando...",
-		pgtext : "Páxina {0} de {1}"
+		pgtext : "Páxina {0} de {1}",
+		pgfirst : "First Page",
+		pglast : "Last Page",
+		pgnext : "Next Page",
+		pgprev : "Previous Page",
+		pgrecs : "Records per Page",
+		showhide: "Toggle Expand Collapse Grid"
 	},
 	search : {
 	    caption: "Búsqueda...",

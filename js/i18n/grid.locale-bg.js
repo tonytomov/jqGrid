@@ -13,7 +13,14 @@ $.extend($.jgrid,{
 		recordtext: "{0} - {1} от {2}",
 		emptyrecords: "Няма запис(и)",
 		loadtext: "Зареждам...",
-		pgtext : "Стр. {0} от {1}"
+		pgtext : "Стр. {0} от {1}",
+		pgfirst : "Първа Стр.",
+		pglast : "Последна Стр.",
+		pgnext : "Следваща Стр.",
+		pgprev : "Предишна Стр.",
+		pgrecs : "Брой записи на Стр.",
+		showhide: "Свиване/Разтягане на таблицата"
+
 	},
 	search : {
 		caption: "Търсене...",

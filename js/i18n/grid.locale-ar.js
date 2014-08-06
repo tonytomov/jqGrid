@@ -13,7 +13,13 @@ $.extend($.jgrid,{
 		recordtext: "تسجيل {0} - {1} على {2}",
 		emptyrecords: "لا يوجد تسجيل",
 		loadtext: "تحميل...",
-		pgtext : "صفحة {0} على {1}"
+		pgtext : "صفحة {0} على {1}",
+		pgfirst : "First Page",
+		pglast : "Last Page",
+		pgnext : "Next Page",
+		pgprev : "Previous Page",
+		pgrecs : "Records per Page",
+		showhide: "Toggle Expand Collapse Grid"
 	},
 	search : {
 		caption: "بحث...",

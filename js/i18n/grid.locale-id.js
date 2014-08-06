@@ -13,7 +13,13 @@ $.extend($.jgrid,{
 		recordtext: "Data {0} - {1} dari {2}",
 		emptyrecords: "Tidak ada data",
 		loadtext: "Memuat...",
-		pgtext : "Halaman {0} dari {1}"
+		pgtext : "Halaman {0} dari {1}",
+		pgfirst : "First Page",
+		pglast : "Last Page",
+		pgnext : "Next Page",
+		pgprev : "Previous Page",
+		pgrecs : "Records per Page",
+		showhide: "Toggle Expand Collapse Grid"
 	},
 	search : {
 		caption: "Pencarian",

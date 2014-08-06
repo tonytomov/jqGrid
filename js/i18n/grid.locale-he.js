@@ -13,7 +13,13 @@ $.extend($.jgrid,{
 		recordtext: "מציג {0} - {1} מתוך {2}",
 		emptyrecords: "אין רשומות להציג",
 		loadtext: "טוען...",
-		pgtext : "דף {0} מתוך {1}"
+		pgtext : "דף {0} מתוך {1}",
+		pgfirst : "First Page",
+		pglast : "Last Page",
+		pgnext : "Next Page",
+		pgprev : "Previous Page",
+		pgrecs : "Records per Page",
+		showhide: "Toggle Expand Collapse Grid"
 	},
 	search : {
 		caption: "מחפש...",
