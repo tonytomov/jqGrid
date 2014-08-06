@@ -4725,7 +4725,8 @@ $.jgrid.extend({
 			}
 			if( maxfrozen>=0 && frozen) {
 				var top = $t.p.caption ? $($t.grid.cDiv).outerHeight() : 0,
-				hth = $(".ui-jqgrid-htable","#gview_"+$.jgrid.jqID($t.p.id)).height();
+				hth = $(".ui-jqgrid-htable","#gview_"+$.jgrid.jqID($t.p.id)).height(),
+				htoh = $(".ui-jqgrid-hdiv","#gview_"+$.jgrid.jqID($t.p.id)).outerHeight();
 				//headers
 				if($t.p.toppager) {
 					top = top + $($t.grid.topDiv).outerHeight();
@@ -4736,7 +4737,7 @@ $.jgrid.extend({
 					}
 				}
 				$t.grid.fhDiv = $('<div style="position:absolute;left:0px;top:'+top+'px;height:'+hth+'px;" class="frozen-div ui-state-default ui-jqgrid-hdiv"></div>');
-				$t.grid.fbDiv = $('<div style="position:absolute;left:0px;top:'+(parseInt(top,10)+parseInt(hth,10) + 1)+'px;overflow-y:hidden" class="frozen-bdiv ui-jqgrid-bdiv"></div>');
+				$t.grid.fbDiv = $('<div style="position:absolute;left:0px;top:'+(parseInt(top,10)+parseInt(htoh,10))+'px;overflow-y:hidden" class="frozen-bdiv ui-jqgrid-bdiv"></div>');
 				$("#gview_"+$.jgrid.jqID($t.p.id)).append($t.grid.fhDiv);
 				var htbl = $(".ui-jqgrid-htable","#gview_"+$.jgrid.jqID($t.p.id)).clone(true);
 				// groupheader support - only if useColSpanstyle is false
