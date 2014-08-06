@@ -2163,7 +2163,7 @@ $.fn.jqGrid = function( pin ) {
 			.attr("dir","ltr"); //explicit setting
 			if(ts.p.rowList.length >0){
 				str = "<td dir='"+dir+"'>";
-				str +="<select class='ui-pg-selbox' role='listbox'>";
+				str +="<select class='ui-pg-selbox' role='listbox' " + (ts.p.pgrecs ? "title='"+ts.p.pgrecs +"'" : "")+ ">";
 				var strnm;
 				for(i=0;i<ts.p.rowList.length;i++){
 					strnm = ts.p.rowList[i].toString().split(":");
@@ -2178,11 +2178,11 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.pginput===true) { pginp= "<td dir='"+dir+"'>"+$.jgrid.format(ts.p.pgtext || "","<input class='ui-pg-input' type='text' size='2' maxlength='7' value='0' role='textbox'/>","<span id='sp_1_"+$.jgrid.jqID(pgid)+"'></span>")+"</td>";}
 			if(ts.p.pgbuttons===true) {
 				var po=["first"+tp,"prev"+tp, "next"+tp,"last"+tp]; if(dir==="rtl") { po.reverse(); }
-				pgl += "<td id='"+po[0]+"' class='ui-pg-button ui-corner-all'><span class='ui-icon ui-icon-seek-first'></span></td>";
-				pgl += "<td id='"+po[1]+"' class='ui-pg-button ui-corner-all'><span class='ui-icon ui-icon-seek-prev'></span></td>";
+				pgl += "<td id='"+po[0]+"' class='ui-pg-button ui-corner-all' " + (ts.p.pgfirst ? "title='"+ts.p.pgfirst +"'" : "")+"><span class='ui-icon ui-icon-seek-first'></span></td>";
+				pgl += "<td id='"+po[1]+"' class='ui-pg-button ui-corner-all' " + (ts.p.pgprev ? "title='"+ts.p.pgprev +"'" : "")+"><span class='ui-icon ui-icon-seek-prev'></span></td>";
 				pgl += pginp !== "" ? sep+pginp+sep:"";
-				pgl += "<td id='"+po[2]+"' class='ui-pg-button ui-corner-all'><span class='ui-icon ui-icon-seek-next'></span></td>";
-				pgl += "<td id='"+po[3]+"' class='ui-pg-button ui-corner-all'><span class='ui-icon ui-icon-seek-end'></span></td>";
+				pgl += "<td id='"+po[2]+"' class='ui-pg-button ui-corner-all' " + (ts.p.pgnext ? "title='"+ts.p.pgnext +"'" : "")+"><span class='ui-icon ui-icon-seek-next'></span></td>";
+				pgl += "<td id='"+po[3]+"' class='ui-pg-button ui-corner-all' " + (ts.p.pglast ? "title='"+ts.p.pglast +"'" : "")+"><span class='ui-icon ui-icon-seek-end'></span></td>";
 			} else if (pginp !== "") { pgl += pginp; }
 			if(dir==="ltr") { pgl += str; }
 			pgl += "</tr></tbody></table>";
@@ -2879,7 +2879,7 @@ $.fn.jqGrid = function( pin ) {
 		}
 		if(hg) {$(grid.bDiv).hide();}
 		grid.cDiv = document.createElement("div");
-		var arf = ts.p.hidegrid===true ? $("<a role='link' class='ui-jqgrid-titlebar-close ui-corner-all HeaderButton' />").hover(
+		var arf = ts.p.hidegrid===true ? $("<a role='link' class='ui-jqgrid-titlebar-close ui-corner-all HeaderButton' " + (ts.p.showhide ? "title='"+ts.p.showhide+"'" : "")+" />").hover(
 			function(){ arf.addClass('ui-state-hover');},
 			function() {arf.removeClass('ui-state-hover');})
 		.append("<span class='ui-icon ui-icon-circle-triangle-n'></span>").css((dir==="rtl"?"left":"right"),"0px") : "";
