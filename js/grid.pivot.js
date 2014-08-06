@@ -59,6 +59,7 @@ $.jgrid.extend({
 		pivotrows =[],
 		summaries = [],
 		member=[],
+		labels=[],
 		groupOptions = {
 			grouping : true,
 			groupingView :  {
@@ -162,13 +163,16 @@ $.jgrid.extend({
 			 */
 			function agregateFunc ( row, aggr, value, curr) {
 				// default is sum
-				var arrln = aggr.length, i, label, j, jv;
+				var arrln = aggr.length, i, label, j, jv, mainval="",swapvals=[];
 				if($.isArray(value)) {
 					jv = value.length;
+					swapvals = value;
 				} else {
 					jv = 1;
+					swapvals[0]=value;
 				}
 				member = [];
+				labels = [];
 				member.root = 0;
 				for(j=0;j<jv;j++) {
 					var  tmpmember = [], vl;
@@ -176,17 +180,22 @@ $.jgrid.extend({
 						if(value == null) {
 							label = $.trim(aggr[i].member)+"_"+aggr[i].aggregator;
 							vl = label;
+							swapvals[0]= vl;
 						} else {
 							vl = value[j].replace(/\s+/g, '');
 							try {
-								label = (arrln === 1 ? vl : vl+"_"+aggr[i].aggregator+"_"+i);
+								label = (arrln === 1 ? mainval + vl : mainval + vl+"_"+aggr[i].aggregator+"_" + String(i));
 							} catch(e) {}
 						}
 						label = !isNaN(parseInt(label,10)) ? label + " " : label;
 						curr[label] =  tmpmember[label] = calculation( aggr[i].aggregator, curr[label], aggr[i].member, row);
+						if(j<=1 && vl !==  '_r_Totals' && mainval === "") { // this does not fix full the problem
+							mainval = vl;
+						}
 					}
-					vl = !isNaN(parseInt(vl,10)) ? vl + " " : vl;
-					member[vl] = tmpmember;
+					//vl = !isNaN(parseInt(vl,10)) ? vl + " " : vl;
+					member[label] = tmpmember;
+					labels[label] = swapvals[j];
 				}
 				return curr;
 			}
@@ -281,7 +290,7 @@ $.jgrid.extend({
 				for (kk in member) {
 					if(kj === 0) {
 						if (!tree.children||tree.children === undefined){
-							tree = { text: kk, level : 0, children: [] };
+							tree = { text: kk, level : 0, children: [], label: kk  };
 						}
 						current = tree.children;
 					} else {
@@ -296,7 +305,7 @@ $.jgrid.extend({
 						if (existing) {
 							current = existing.children;
 						} else {
-							current.push({ children: [], text: kk, level: kj,  fields: member[kk] });
+							current.push({ children: [], text: kk, level: kj,  fields: member[kk], label: labels[kk] });
 							current = current[current.length - 1].children;
 						}
 					}
@@ -333,7 +342,7 @@ $.jgrid.extend({
 								if(lastval[items.level] !== items.text && items.children.length && items.text !== '_r_Totals') {
 									if(items.level>0) {
 										headers[items.level-1].groupHeaders.push({
-											titleText: items.text,
+											titleText: items.label,
 											numberOfColumns : 0
 										});
 										var collen = headers[items.level-1].groupHeaders.length-1,
@@ -393,10 +402,10 @@ $.jgrid.extend({
 									}
 									if(aggrlen>1) {
 										col.name = l;
-										col.label = o.aggregates[j].label || l;
+										col.label = o.aggregates[j].label || items.label;
 									} else {
 										col.name = items.text;
-										col.label = items.text==='_r_Totals' ? o.rowTotalsText : items.text;
+										col.label = items.text==='_r_Totals' ? o.rowTotalsText : items.label;
 									}
 									columns.push (col);
 									j++;
