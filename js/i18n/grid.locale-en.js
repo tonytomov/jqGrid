@@ -158,7 +158,8 @@ $.extend($.jgrid,{
 				//    F - A full textual representation of a month
 				YearMonth: "F, Y" // in jQuery UI Datepicker: "MMMM, yyyy"
 			},
-			reformatAfterEdit : false
+			reformatAfterEdit : false,
+			userLocalTime : false
 		},
 		baseLinkUrl: '',
 		showAction: '',

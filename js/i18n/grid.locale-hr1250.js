@@ -152,7 +152,8 @@ $.extend($.jgrid,{
 				//    Y - A full numeric representation of a year, 4 digits
 				YearMonth: "F Y" // in jQuery UI Datepicker: "MMMM yyyy"
 			},
-			reformatAfterEdit : false
+			reformatAfterEdit : false,
+			userLocalTime : false
 		},
 		baseLinkUrl: '',
 		showAction: '',

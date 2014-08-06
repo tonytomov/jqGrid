@@ -135,7 +135,8 @@ a.extend(a.jgrid,{
                     UniversalSortableDateTime: "Y-m-d H:i:sO",
                     YearMonth: "F, Y"
                 },
-                reformatAfterEdit: false
+                reformatAfterEdit: false,
+				userLocalTime : false
             },
             baseLinkUrl: "",
             showAction: "",

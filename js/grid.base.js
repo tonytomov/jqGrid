@@ -93,7 +93,8 @@ $.extend($.jgrid,{
 			if (ampm === 0){ if (h === 12) { h = 0;} }
 			else { if (h !== 12) { h += 12; } }
 			return h;
-		};
+		},
+		offset =0;
 		if(opts === undefined) {
 			opts = $.jgrid.formatter.date;
 		}
@@ -112,13 +113,12 @@ $.extend($.jgrid,{
 			} else if( msMatch !== null ) {
 				timestamp = new Date(parseInt(msMatch[1], 10));
 				if (msMatch[3]) {
-					var offset = Number(msMatch[5]) * 60 + Number(msMatch[6]);
+					offset = Number(msMatch[5]) * 60 + Number(msMatch[6]);
 					offset *= ((msMatch[4] === '-') ? 1 : -1);
 					offset -= timestamp.getTimezoneOffset();
 					timestamp.setTime(Number(Number(timestamp) + (offset * 60 * 1000)));
 				}
 			} else {
-				var offset = 0;
 				//Support ISO8601Long that have Z at the end to indicate UTC timezone
 				if(opts.srcformat === 'ISO8601Long' && date.charAt(date.length - 1) === 'Z') {
 					offset -= (new Date()).getTimezoneOffset();
@@ -172,6 +172,12 @@ $.extend($.jgrid,{
 			}
 		} else {
 			timestamp = new Date(ts.y, ts.m, ts.d, ts.h, ts.i, ts.s, ts.u);
+		}
+		if(opts.userLocalTime && offset === 0) {
+			offset -= (new Date()).getTimezoneOffset();
+			if( offset > 0 ) {
+				timestamp.setTime(Number(Number(timestamp) + (offset * 60 * 1000)));
+			}
 		}
 		if( newformat === undefined ) {
 			return timestamp;
