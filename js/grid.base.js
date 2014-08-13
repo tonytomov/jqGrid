@@ -3961,6 +3961,30 @@ $.jgrid.extend({
 			}
 		});
 		return ret;
+	},
+	progressBar : function ( p ) {
+		p = $.extend({
+			htmlcontent : "",
+			method : "hide",
+			loadtype : "disable" 
+		}, p || {});
+		return this.each(function(){
+			var sh = p.method==="show" ? true : false;
+			if(p.htmlcontent !== "") {
+				$("#load_"+$.jgrid.jqID(this.p.id)).html( p.htmlcontent );
+			}
+			switch(p.loadtype) {
+				case "disable":
+					break;
+				case "enable":
+					$("#load_"+$.jgrid.jqID(this.p.id)).toggle( sh );
+					break;
+				case "block":
+					$("#lui_"+$.jgrid.jqID(this.p.id)).toggle( sh );
+					$("#load_"+$.jgrid.jqID(this.p.id)).toggle( sh );
+					break;
+			}
+		});
 	}
 });
 })(jQuery);
