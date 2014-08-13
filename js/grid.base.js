@@ -1967,31 +1967,11 @@ $.fn.jqGrid = function( pin ) {
 		beginReq = function() {
 			ts.grid.hDiv.loading = true;
 			if(ts.p.hiddengrid) { return;}
-			switch(ts.p.loadui) {
-				case "disable":
-					break;
-				case "enable":
-					$("#load_"+$.jgrid.jqID(ts.p.id)).show();
-					break;
-				case "block":
-					$("#lui_"+$.jgrid.jqID(ts.p.id)).show();
-					$("#load_"+$.jgrid.jqID(ts.p.id)).show();
-					break;
-			}
+			$(ts).jqGrid("progressBar", {method:"show", loadtype : ts.p.loadui, htmlcontent: ts.p.loadtext });
 		},
 		endReq = function() {
 			ts.grid.hDiv.loading = false;
-			switch(ts.p.loadui) {
-				case "disable":
-					break;
-				case "enable":
-					$("#load_"+$.jgrid.jqID(ts.p.id)).hide();
-					break;
-				case "block":
-					$("#lui_"+$.jgrid.jqID(ts.p.id)).hide();
-					$("#load_"+$.jgrid.jqID(ts.p.id)).hide();
-					break;
-			}
+			$(ts).jqGrid("progressBar", {method:"hide", loadtype : ts.p.loadui });
 		},
 		populate = function (npage) {
 			if(!ts.grid.hDiv.loading) {
