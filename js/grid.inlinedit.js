@@ -161,7 +161,9 @@ $.jgrid.extend({
 			errorfunc: null,
 			afterrestorefunc: null,
 			restoreAfterError: true,
-			mtype: "POST"
+			mtype: "POST",
+			saveui : "enable",
+			savetext : $.jgrid.defaults.savetext || "Saving..." 
 		}, $.jgrid.inlineEdit, o );
 		// End compatible
 
@@ -305,7 +307,7 @@ $.jgrid.extend({
 				success = true;
 				$(ind).removeClass("jqgrid-new-row").unbind("keydown");
 			} else {
-				$("#lui_"+$.jgrid.jqID($t.p.id)).show();
+				$($t).jqGrid("progressBar", {method:"show", loadtype : o.saveui, htmlcontent: o.savetext });
 				tmp3 = $.extend({},tmp,tmp3);
 				tmp3[idname] = $.jgrid.stripPref($t.p.idPrefix, tmp3[idname]);
 				$.ajax($.extend({
@@ -314,7 +316,7 @@ $.jgrid.extend({
 					type: o.mtype,
 					async : false, //?!?
 					complete: function(res,stat){
-						$("#lui_"+$.jgrid.jqID($t.p.id)).hide();
+						$($t).jqGrid("progressBar", {method:"hide", loadtype : o.saveui, htmlcontent: o.savetext});
 						if (stat === "success"){
 							var ret = true, sucret, k;
 							sucret = $($t).triggerHandler("jqGridInlineSuccessSaveRow", [res, rowid, o]);
