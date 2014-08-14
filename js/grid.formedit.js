@@ -733,6 +733,7 @@ $.jgrid.extend({
 						data: $.isFunction(rp_ge[$t.p.id].serializeEditData) ? rp_ge[$t.p.id].serializeEditData.call($t,postdata) :  postdata,
 						complete:function(data,status){
 							var key;
+							$("#sData", frmtb+"_2").removeClass('ui-state-active');
 							postdata[idname] = $t.p.idPrefix + postdata[idname];
 							if(data.status >= 300 && data.status !== 304) {
 								ret[0] = false;
@@ -820,7 +821,6 @@ $.jgrid.extend({
 								}
 							}
 							rp_ge[$t.p.id].processing=false;
-							$("#sData", frmtb+"_2").removeClass('ui-state-active');
 							try{$(':input:visible',"#"+frmgr)[0].focus();} catch (e){}
 						}
 					}, $.jgrid.ajaxOptions, rp_ge[$t.p.id].ajaxEditOptions );
@@ -1625,6 +1625,7 @@ $.jgrid.extend({
 							data: $.isFunction(rp_ge[$t.p.id].serializeDelData) ? rp_ge[$t.p.id].serializeDelData.call($t,postd) : postd,
 							complete:function(data,status){
 								var i;
+								$("#dData", "#"+dtbl+"_2").removeClass('ui-state-active');
 								if(data.status >= 300 && data.status !== 304) {
 									ret[0] = false;
 									if ($.isFunction(rp_ge[$t.p.id].errorTextFormat)) {
@@ -1661,7 +1662,6 @@ $.jgrid.extend({
 									}
 								}
 								rp_ge[$t.p.id].processing=false;
-								$("#dData", "#"+dtbl+"_2").removeClass('ui-state-active');
 								if(ret[0]) {$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, onClose: rp_ge[$t.p.id].onClose});}
 							}
 						}, $.jgrid.ajaxOptions, rp_ge[$t.p.id].ajaxDelOptions);
