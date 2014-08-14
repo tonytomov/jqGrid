@@ -163,7 +163,7 @@ $.jgrid.extend({
 			restoreAfterError: true,
 			mtype: "POST",
 			saveui : "enable",
-			savetext : $.jgrid.defaults.savetext || "Saving..." 
+			savetext : $.jgrid.defaults.savetext || "Saving..."
 		}, $.jgrid.inlineEdit, o );
 		// End compatible
 
