@@ -2290,7 +2290,7 @@ $.fn.jqGrid = function( pin ) {
 			if(!ts.p.colModel[idxcol].sortable) { return; }
 			if(ts.p.savedRow.length > 0) {return;}
 			if(!reload) {
-				if( ts.p.lastsort === idxcol ) {
+				if( ts.p.lastsort === idxcol && ts.p.sortname !== "" ) {
 					if( ts.p.sortorder === 'asc') {
 						ts.p.sortorder = 'desc';
 					} else if(ts.p.sortorder === 'desc') { ts.p.sortorder = 'asc';}
@@ -2320,6 +2320,8 @@ $.fn.jqGrid = function( pin ) {
 							ts.grid.fhDiv.find("span.s-ico").hide();
 						}
 						$("span.s-ico",previousSelectedTh).hide();
+						$("span.s-ico",newSelectedTh).show();
+					} else if (ts.p.sortname === "") { // if ts.p.lastsort === idxcol but ts.p.sortname === ""
 						$("span.s-ico",newSelectedTh).show();
 					}
 				}
@@ -2654,7 +2656,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 				} else {
 					if(ts.p.viewsortcols[0]) {$("div span.s-ico",this).show(); if(j===ts.p.lastsort){ $("div span.ui-icon-"+ts.p.sortorder,this).removeClass("ui-state-disabled");}}
-					else if( j === ts.p.lastsort) {$("div span.s-ico",this).show();$("div span.ui-icon-"+ts.p.sortorder,this).removeClass("ui-state-disabled");}
+					else if(j === ts.p.lastsort && ts.p.sortname !== "") {$("div span.s-ico",this).show();$("div span.ui-icon-"+ts.p.sortorder,this).removeClass("ui-state-disabled");}
 				}
 			}
 			if(ts.p.footerrow) { tfoot += "<td role='gridcell' "+formatCol(j,0,'', null, '', false)+">&#160;</td>"; }
