@@ -398,7 +398,7 @@ $.jgrid.extend({
 				});
 			};
 			// create the row
-			var tr = $("<tr class='ui-search-toolbar' role='rowheader'></tr>");
+			var tr = $("<tr class='ui-search-toolbar' role='row'></tr>");
 			var timeoutHnd;
 			$.each($t.p.colModel,function(ci){
 				var cm=this, soptions, surl, self, select = "", sot="=", so, i,
@@ -648,7 +648,7 @@ $.jgrid.extend({
 			if(!grid) { return; }
 
 			$(this).unbind('.setGroupHeaders');
-			$tr = $("<tr>", {role: "rowheader"}).addClass("ui-jqgrid-labels");
+			$tr = $("<tr>", {role: "row"}).addClass("ui-jqgrid-labels");
 			headers = grid.headers;
 			for (i = 0, l = headers.length; i < l; i++) {
 				hc = cm[i].hidden ? "none" : "";
@@ -716,7 +716,7 @@ $.jgrid.extend({
 			};
 
 			$(ts).prepend($thead);
-			$tr = $('<tr>', {role: "rowheader"}).addClass("ui-jqgrid-labels jqg-third-row-header");
+			$tr = $('<tr>', {role: "row"}).addClass("ui-jqgrid-labels jqg-third-row-header");
 			for (i = 0; i < cml; i++) {
 				th = ths[i].el;
 				$th = $(th);
