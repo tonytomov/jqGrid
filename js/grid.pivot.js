@@ -288,28 +288,30 @@ $.jgrid.extend({
 				// to make later the columns 
 				// 
 				for (kk in member) {
-					if(kj === 0) {
-						if (!tree.children||tree.children === undefined){
-							tree = { text: kk, level : 0, children: [], label: kk  };
-						}
-						current = tree.children;
-					} else {
-						existing = null;
-						for (i=0; i < current.length; i++) {
-							if (current[i].text === kk) {
+					if(member.hasOwnProperty( kk )) {
+						if(kj === 0) {
+							if (!tree.children||tree.children === undefined){
+								tree = { text: kk, level : 0, children: [], label: kk  };
+							}
+							current = tree.children;
+						} else {
+							existing = null;
+							for (i=0; i < current.length; i++) {
+								if (current[i].text === kk) {
 								//current[i].fields=member[kk];
-								existing = current[i];
-								break;
+									existing = current[i];
+									break;
+								}
+							}
+							if (existing) {
+								current = existing.children;
+							} else {
+								current.push({ children: [], text: kk, level: kj,  fields: member[kk], label: labels[kk] });
+								current = current[current.length - 1].children;
 							}
 						}
-						if (existing) {
-							current = existing.children;
-						} else {
-							current.push({ children: [], text: kk, level: kj,  fields: member[kk], label: labels[kk] });
-							current = current[current.length - 1].children;
-						}
+						kj++;
 					}
-					kj++;
 				}
 				r++;
 			}
@@ -387,28 +389,30 @@ $.jgrid.extend({
 							if(items.level >0){
 								j=0;
 								for(l in items.fields) {
-									col = {};
-									for(k in o.aggregates[j]) {
-										if(o.aggregates[j].hasOwnProperty(k)) {
-											switch( k ) {
-												case 'member':
-												case 'label':
-												case 'aggregator':
-													break;
-												default:
-													col[k] = o.aggregates[j][k];
+									if(items.fields.hasOwnProperty( l )) {
+										col = {};
+										for(k in o.aggregates[j]) {
+											if(o.aggregates[j].hasOwnProperty(k)) {
+												switch( k ) {
+													case 'member':
+													case 'label':
+													case 'aggregator':
+														break;
+													default:
+														col[k] = o.aggregates[j][k];
+												}
 											}
+										}	
+										if(aggrlen>1) {
+											col.name = l;
+											col.label = o.aggregates[j].label || items.label;
+										} else {
+											col.name = items.text;
+											col.label = items.text==='_r_Totals' ? o.rowTotalsText : items.label;
 										}
+										columns.push (col);
+										j++;
 									}
-									if(aggrlen>1) {
-										col.name = l;
-										col.label = o.aggregates[j].label || items.label;
-									} else {
-										col.name = items.text;
-										col.label = items.text==='_r_Totals' ? o.rowTotalsText : items.label;
-									}
-									columns.push (col);
-									j++;
 								}
 							}
 						}
