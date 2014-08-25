@@ -3125,11 +3125,10 @@ $.jgrid.extend({
 					$("#jqg_"+$.jgrid.jqID(t.p.id)+"_"+$.jgrid.jqID(sr), "#"+$.jgrid.jqID(t.p.id))[t.p.useProp ? 'prop': 'attr']("checked",false);
 					if(fid) { $("#jqg_"+$.jgrid.jqID(t.p.id)+"_"+$.jgrid.jqID(sr), "#"+$.jgrid.jqID(fid))[t.p.useProp ? 'prop': 'attr']("checked",false); }
 					t.setHeadCheckBox( false);
-
-         var ia = $.inArray($.jgrid.jqID(sr), t.p.selarrrow);
-          if (  ia !== -1 ){
-            t.p.selarrrow.splice(ia,1);
-          }
+					var ia = $.inArray($.jgrid.jqID(sr), t.p.selarrrow);
+					if (  ia !== -1 ){
+						t.p.selarrrow.splice(ia,1);
+					}
 				}
 				sr = null;
 			} else if(!t.p.multiselect) {
