@@ -9,9 +9,10 @@ client-side solution loading data dynamically through Ajax callbacks, it can be
 integrated with any server-side technology, including PHP, ASP, Java Servlets, 
 JSP, ColdFusion, and Perl.
 
-jqGrid uses a jQuery Java Script Library and is written as plugin for that 
-package. For more information on jQuery, please refer to the jQuery web site.
+jqGrid uses a jQuery JavaScript Library and is written as plugin for that 
+package. For more information on jQuery, please see <a href="http://jquery.com/">(jQuery.com)</a>.
 
-jqGrid's Home page can be found <a href="http://www.trirand.com/blog">here</a>.
+jqGrid's Home page can be found at <a href="http://www.trirand.com/blog">trirand.com</a>.
 
-Working examples of jqGrid, with explanations, can be found <a href="http://www.trirand.com/jqgrid/jqgrid.html">here</a>
+Working examples of jqGrid, with explanations, can be found
+<a href="http://www.trirand.com/jqgrid/jqgrid.html">here</a>.

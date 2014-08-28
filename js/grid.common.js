@@ -344,8 +344,10 @@ $.extend($.jgrid,{
 					$(elem).attr("aria-multiselectable","true");
 				} else { msl = false; }
 				if(options.dataUrl !== undefined) {
-					var rowid = options.name ? String(options.id).substring(0, String(options.id).length - String(options.name).length - 1) : String(options.id),
-						postData = options.postData || ajaxso.postData;
+					var rowid = null, postData = options.postData || ajaxso.postData;
+					try {
+						rowid = options.rowId;
+					} catch(e) {}
 
 					if ($t.p && $t.p.idPrefix) {
 						rowid = $.jgrid.stripPref($t.p.idPrefix, rowid);

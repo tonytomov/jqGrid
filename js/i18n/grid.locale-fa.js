@@ -11,13 +11,19 @@
             recordtext: "نمابش {0} - {1} از {2}",
             emptyrecords: "رکوردی یافت نشد",
             loadtext: "بارگزاري...",
-            pgtext: "صفحه {0} از {1}"
+            pgtext: "صفحه {0} از {1}",
+			pgfirst : "First Page",
+			pglast : "Last Page",
+			pgnext : "Next Page",
+			pgprev : "Previous Page",
+			pgrecs : "Records per Page",
+			showhide: "Toggle Expand Collapse Grid"
         },
         search: {
             caption: "جستجو...",
             Find: "يافته ها",
             Reset: "از نو",
-            odata: [{ oper:'eq', text:"برابر"},{ oper:'ne', text:"نا برابر"},{ oper:'lt', text:"به"},{ oper:'le', text:"کوچکتر"},{ oper:'gt', text:"از"},{ oper:'ge', text:"بزرگتر"},{ oper:'bw', text:"شروع با"},{ oper:'bn', text:"شروع نشود با"},{ oper:'in', text:"نباشد"},{ oper:'ni', text:"عضو این نباشد"},{ oper:'ew', text:"اتمام با"},{ oper:'en', text:"تمام نشود با"},{ oper:'cn', text:"حاوی"},{ oper:'nc', text:"نباشد حاوی"}],
+            odata: [{ oper:'eq', text:"برابر"},{ oper:'ne', text:"نا برابر"},{ oper:'lt', text:"به"},{ oper:'le', text:"کوچکتر"},{ oper:'gt', text:"از"},{ oper:'ge', text:"بزرگتر"},{ oper:'bw', text:"شروع با"},{ oper:'bn', text:"شروع نشود با"},{ oper:'in', text:"نباشد"},{ oper:'ni', text:"عضو این نباشد"},{ oper:'ew', text:"اتمام با"},{ oper:'en', text:"تمام نشود با"},{ oper:'cn', text:"حاوی"},{ oper:'nc', text:"نباشد حاوی"},{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}],
             groupOps: [{
                 op: "AND",
                 text: "کل"
@@ -25,7 +31,9 @@
             {
                 op: "OR",
                 text: "مجموع"
-            }]
+            }],
+			operandTitle : "Click to select search operation.",
+			resetTitle : "Reset Search Value"
         },
         edit: {
             addCaption: "اضافه کردن رکورد",
@@ -117,7 +125,7 @@
                 },
                 srcformat: "Y-m-d",
                 newformat: "d/m/Y",
-				parseRe : /[Tt\\\/:_;.,\t\s-]/,
+				parseRe : /[#%\\\/:_;.,\t\s-]/,
                 masks: {
                     ISO8601Long: "Y-m-d H:i:s",
                     ISO8601Short: "Y-m-d",
@@ -131,7 +139,8 @@
                     UniversalSortableDateTime: "Y-m-d H:i:sO",
                     YearMonth: "F, Y"
                 },
-                reformatAfterEdit: false
+                reformatAfterEdit: false,
+				userLocalTime : false
             },
             baseLinkUrl: "",
             showAction: "نمايش",
