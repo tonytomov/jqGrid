@@ -227,7 +227,7 @@ $.jgrid.extend({
 											}
 											if(ret[0] === true){
 												$(cc).empty();
-												$($t).jqGrid("setCell",$t.rows[iRow].id, iCol, v2, false, false, true);
+												$($t).jqGrid("setCell",$t.rows[iRow].id, iCol, $.jgrid.htmlEncode(v2), false, false, true);
 												$(cc).addClass("dirty-cell");
 												$($t.rows[iRow]).addClass("edited");
 												$($t).triggerHandler("jqGridAfterSaveCell", [$t.rows[iRow].id, nm, v, iRow, iCol]);
@@ -263,7 +263,7 @@ $.jgrid.extend({
 						}
 						if ($t.p.cellsubmit === 'clientArray') {
 							$(cc).empty();
-							$($t).jqGrid("setCell",$t.rows[iRow].id,iCol, v2, false, false, true);
+							$($t).jqGrid("setCell",$t.rows[iRow].id,iCol, $.jgrid.htmlEncode(v2), false, false, true);
 							$(cc).addClass("dirty-cell");
 							$($t.rows[iRow]).addClass("edited");
 							$($t).triggerHandler("jqGridAfterSaveCell", [$t.rows[iRow].id, nm, v, iRow, iCol]);
@@ -299,7 +299,7 @@ $.jgrid.extend({
 					} catch (e) {}
 				}
 				$(cc).empty().attr("tabindex","-1");
-				$($t).jqGrid("setCell",$t.rows[iRow].id, iCol, $t.p.savedRow[fr].v, false, false, true);
+				$($t).jqGrid("setCell",$t.rows[iRow].id, iCol, $.jgrid.htmlEncode($t.p.savedRow[fr].v), false, false, true);
 				$($t).triggerHandler("jqGridAfterRestoreCell", [$t.rows[iRow].id, $t.p.savedRow[fr].v, iRow, iCol]);
 				if ($.isFunction($t.p.afterRestoreCell)) {
 					$t.p.afterRestoreCell.call($t, $t.rows[iRow].id, $t.p.savedRow[fr].v, iRow, iCol);
