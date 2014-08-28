@@ -2639,7 +2639,7 @@ $.fn.jqGrid = function( pin ) {
 			if( typeof sort !== 'boolean') {ts.p.colModel[j].sortable =  true; sort=true;}
 			var nm = ts.p.colModel[j].name;
 			if( !(nm === 'cb' || nm==='subgrid' || nm==='rn') ) {
-				if(ts.p.viewsortcols[2]){
+				if(ts.p.viewsortcols[2] && sort){
 					$(">div",this).addClass('ui-jqgrid-sortable');
 				}
 			}
