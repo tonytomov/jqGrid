@@ -609,10 +609,11 @@ $.jgrid.extend({
 					} else {
 						$("td.ui-search-input select", ptr)[0].selectedIndex = 0;
 					}
+				} else if ($t.p.colModel[coli].stype === "custom" && $.isFunction(sval.custom_reset)) {
+					sval.custom_reset.call($("span[name='" + ($t.p.colModel[coli].index || $t.p.colModel[coli].name) + "'] .customelement", ptr));
 				} else {
 					$("td.ui-search-input input", ptr).val( dval );
 				}
-				// ToDo custom search type
 				if(p.autosearch===true){
 					triggerToolbar();
 				}
