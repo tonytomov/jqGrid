@@ -3141,7 +3141,7 @@ $.jgrid.extend({
 		});
 		return resall || res;
 	},
-	delRowData : function(rowid) {
+	delRowData : function(rowid, doPagerUpdate) {
 		var success = false, rowInd, ia;
 		this.each(function() {
 			var $t = this;
@@ -3150,7 +3150,7 @@ $.jgrid.extend({
 				$(rowInd).remove();
 				$t.p.records--;
 				$t.p.reccount--;
-				$t.updatepager(true,false);
+				if (doPagerUpdate !== false) {$t.updatepager(true,false);}
 				success=true;
 				if($t.p.multiselect) {
 					ia = $.inArray(rowid,$t.p.selarrrow);
