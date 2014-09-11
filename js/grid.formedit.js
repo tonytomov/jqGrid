@@ -364,7 +364,9 @@ $.jgrid.extend({
 			ajaxEditOptions : {},
 			serializeEditData : null,
 			viewPagerButtons : true,
-			overlayClass : 'ui-widget-overlay'
+			overlayClass : 'ui-widget-overlay',
+			removemodal : true,
+			form: 'edit'
 		}, $.jgrid.edit, p || {});
 		rp_ge[$(this)[0].p.id] = p;
 		return this.each(function(){
@@ -783,7 +785,7 @@ $.jgrid.extend({
 										if($t.p.treeGrid !== true){
 											$($t).jqGrid("setSelection",ret[2]);
 										}
-										$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal,onClose: rp_ge[$t.p.id].onClose});
+										$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal,onClose: rp_ge[$t.p.id].onClose, removemodal: rp_ge[$t.p.id].removemodal, formprop: !rp_ge[$t.p.id].recreateForm, form: rp_ge[$t.p.id].form});
 									} else if (rp_ge[$t.p.id].clearAfterAdd) {
 										fillData("_empty",$t,frmgr);
 									}
@@ -799,7 +801,7 @@ $.jgrid.extend({
 											$($t).jqGrid("setRowData", postdata[idname],postdata);
 										}
 									}
-									if(rp_ge[$t.p.id].closeAfterEdit) {$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal,onClose: rp_ge[$t.p.id].onClose});}
+									if(rp_ge[$t.p.id].closeAfterEdit) {$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal,onClose: rp_ge[$t.p.id].onClose, removemodal: rp_ge[$t.p.id].removemodal, formprop: !rp_ge[$t.p.id].recreateForm, form: rp_ge[$t.p.id].form});}
 								}
 								if($.isFunction(rp_ge[$t.p.id].afterComplete)) {
 									copydata = data;
@@ -843,10 +845,10 @@ $.jgrid.extend({
 								ret[1] = dpret[1] || "Error deleting the selected row!" ;
 							} else {
 								if(ajaxOptions.data.oper === opers.addoper && rp_ge[$t.p.id].closeAfterAdd ) {
-									$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, onClose: rp_ge[$t.p.id].onClose});
+									$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, onClose: rp_ge[$t.p.id].onClose, removemodal: rp_ge[$t.p.id].removemodal, formprop: !rp_ge[$t.p.id].recreateForm, form: rp_ge[$t.p.id].form});
 								}
 								if(ajaxOptions.data.oper === opers.editoper && rp_ge[$t.p.id].closeAfterEdit ) {
-									$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, onClose: rp_ge[$t.p.id].onClose});
+									$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, onClose: rp_ge[$t.p.id].onClose, removemodal: rp_ge[$t.p.id].removemodal, formprop: !rp_ge[$t.p.id].recreateForm, form: rp_ge[$t.p.id].form});
 								}
 							}
 						} else {
@@ -1008,7 +1010,7 @@ $.jgrid.extend({
 				}
 				if(e.which === 27) {
 					if(!checkUpdates()) {return false;}
-					if(cle)	{$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:p.gbox,jqm:p.jqModal, onClose: rp_ge[$t.p.id].onClose});}
+					if(cle)	{$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:p.gbox,jqm:p.jqModal, onClose: rp_ge[$t.p.id].onClose, removemodal: rp_ge[$t.p.id].removemodal, formprop: !rp_ge[$t.p.id].recreateForm, form: rp_ge[$t.p.id].form});}
 					return false;
 				}
 				if(rp_ge[$t.p.id].navkeys[0]===true) {
@@ -1028,7 +1030,7 @@ $.jgrid.extend({
 				$("a.ui-jqdialog-titlebar-close","#"+$.jgrid.jqID(IDs.themodal)).unbind("click")
 				.click(function(){
 					if(!checkUpdates()) {return false;}
-					$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal,onClose: rp_ge[$t.p.id].onClose});
+					$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal,onClose: rp_ge[$t.p.id].onClose, removemodal: rp_ge[$t.p.id].removemodal, formprop: !rp_ge[$t.p.id].recreateForm, form: rp_ge[$t.p.id].form});
 					return false;
 				});
 			}
@@ -1064,7 +1066,7 @@ $.jgrid.extend({
 				$("#cNew","#"+$.jgrid.jqID(IDs.themodal)).click(function(){
 					$(".confirm","#"+$.jgrid.jqID(IDs.themodal)).hide();
 					$("#"+frmgr).data("disabled",false);
-					$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal,onClose: rp_ge[$t.p.id].onClose});
+					$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal,onClose: rp_ge[$t.p.id].onClose, removemodal: rp_ge[$t.p.id].removemodal, formprop: !rp_ge[$t.p.id].recreateForm, form: rp_ge[$t.p.id].form});
 					return false;
 				});
 			}
@@ -1101,7 +1103,7 @@ $.jgrid.extend({
 			if(!closeovrl) {
 				$("." + $.jgrid.jqID(p.overlayClass)).click(function(){
 					if(!checkUpdates()) {return false;}
-					$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, onClose: rp_ge[$t.p.id].onClose});
+					$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, onClose: rp_ge[$t.p.id].onClose, removemodal: rp_ge[$t.p.id].removemodal, formprop: !rp_ge[$t.p.id].recreateForm, form: rp_ge[$t.p.id].form});
 					return false;
 				});
 			}
@@ -1133,7 +1135,7 @@ $.jgrid.extend({
 			});
 			$("#cData", frmtb+"_2").click(function(){
 				if(!checkUpdates()) {return false;}
-				$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal,onClose: rp_ge[$t.p.id].onClose});
+				$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal,onClose: rp_ge[$t.p.id].onClose, removemodal: rp_ge[$t.p.id].removemodal, formprop: !rp_ge[$t.p.id].recreateForm, form: rp_ge[$t.p.id].form});
 				return false;
 			});
 			$("#nData", frmtb+"_2").click(function(){
@@ -1208,7 +1210,9 @@ $.jgrid.extend({
 			beforeShowForm : null,
 			beforeInitData : null,
 			viewPagerButtons : true,
-			recreateForm : false
+			recreateForm : false,
+			removemodal: true,
+			form: 'view'
 		}, $.jgrid.view, p || {});
 		rp_ge[$(this)[0].p.id] = p;
 		return this.each(function(){
@@ -1410,7 +1414,7 @@ $.jgrid.extend({
 			bt = null;
 			$("#"+IDs.themodal).keydown( function( e ) {
 				if(e.which === 27) {
-					if(rp_ge[$t.p.id].closeOnEscape) {$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:p.gbox,jqm:p.jqModal, onClose: p.onClose});}
+					if(rp_ge[$t.p.id].closeOnEscape) {$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:p.gbox,jqm:p.jqModal, onClose: p.onClose, removemodal: rp_ge[$t.p.id].removemodal, formprop: !rp_ge[$t.p.id].recreateForm, form: rp_ge[$t.p.id].form});}
 					return false;
 				}
 				if(p.navkeys[0]===true) {
@@ -1454,7 +1458,7 @@ $.jgrid.extend({
 			);
 			focusaref();
 			$("#cData", "#"+frmtb+"_2").click(function(){
-				$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, onClose: p.onClose});
+				$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, onClose: p.onClose, removemodal: rp_ge[$t.p.id].removemodal, formprop: !rp_ge[$t.p.id].recreateForm, form: rp_ge[$t.p.id].form});
 				return false;
 			});
 			$("#nData", "#"+frmtb+"_2").click(function(){

@@ -20,10 +20,33 @@ $.extend($.jgrid,{
 		if(h.o) {h.o.remove();}
 	},
 	hideModal : function (selector,o) {
-		o = $.extend({jqm : true, gb :''}, o || {});
+		o = $.extend({jqm : true, gb :'', removemodal: false, formprop: false, form : ''}, o || {});
+		var thisgrid = o.gb && typeof o.gb === "string" && o.gb.substr(0,6) === "#gbox_" ? $("#" + o.gb.substr(6))[0] : false;
 		if(o.onClose) {
-			var oncret = o.gb && typeof o.gb === "string" && o.gb.substr(0,6) === "#gbox_" ? o.onClose.call($("#" + o.gb.substr(6))[0], selector) : o.onClose(selector);
+			var oncret = thisgrid ? o.onClose.call(thisgrid, selector) : o.onClose(selector);
 			if (typeof oncret === 'boolean'  && !oncret ) { return; }
+		}
+		if( o.formprop && thisgrid  && o.form) {
+			var fh = $(selector)[0].style.height;
+			if(fh.indexOf("px") > -1 ) {
+				fh = parseFloat(fh);
+			}
+			var frmgr, frmdata;
+			if(o.form==='edit'){
+				frmgr = '#' +$.jgrid.jqID("FrmGrid_"+ o.gb.substr(6));
+				frmdata = "formProp";
+			} else if( o.form === 'view') {
+				frmgr = '#' +$.jgrid.jqID("ViewGrid_"+ o.gb.substr(6));
+				frmdata = "viewProp";
+			}
+			$(thisgrid).data(frmdata, {
+				top:parseFloat($(selector).css("top")),
+				left : parseFloat($(selector).css("left")),
+				width : $(selector).width(),
+				height : fh,
+				dataheight : $(frmgr).height(),
+				datawidth: $(frmgr).width()
+			});
 		}
 		if ($.fn.jqm && o.jqm === true) {
 			$(selector).attr("aria-hidden","true").jqmHide();
@@ -32,6 +55,9 @@ $.extend($.jgrid,{
 				try {$(".jqgrid-overlay:first",o.gb).hide();} catch (e){}
 			}
 			$(selector).hide().attr("aria-hidden","true");
+		}
+		if( o.removemodal ) {
+			$(selector).remove();
 		}
 	},
 //Helper functions
@@ -99,7 +125,7 @@ $.extend($.jgrid,{
 		$("a.ui-jqdialog-titlebar-close",mh).click(function(){
 			var oncm = $("#"+$.jgrid.jqID(aIDs.themodal)).data("onClose") || p.onClose;
 			var gboxclose = $("#"+$.jgrid.jqID(aIDs.themodal)).data("gbox") || p.gbox;
-			self.hideModal("#"+$.jgrid.jqID(aIDs.themodal),{gb:gboxclose,jqm:p.jqModal,onClose:oncm});
+			self.hideModal("#"+$.jgrid.jqID(aIDs.themodal),{gb:gboxclose,jqm:p.jqModal,onClose:oncm, removemodal: p.removemodal || false, formprop : !p.recreateForm || false, form: p.form || ''});
 			return false;
 		});
 		if (p.width === 0 || !p.width) {p.width = 300;}
@@ -150,9 +176,9 @@ $.extend($.jgrid,{
 		}
 		if(p.closeOnEscape === true){
 			$(mw).keydown( function( e ) {
-				if( e.which == 27 ) {
+				if( e.which === 27 ) {
 					var cone = $("#"+$.jgrid.jqID(aIDs.themodal)).data("onClose") || p.onClose;
-					self.hideModal("#"+$.jgrid.jqID(aIDs.themodal),{gb:p.gbox,jqm:p.jqModal,onClose: cone});
+					self.hideModal("#"+$.jgrid.jqID(aIDs.themodal),{gb:p.gbox,jqm:p.jqModal,onClose: cone, removemodal: p.removemodal || false, formprop : !p.recreateForm || false, form: p.form || ''});
 				}
 			});
 		}
