@@ -772,6 +772,11 @@ $.fn.jqGrid = function( pin ) {
 	}
 	return this.each( function() {
 		if(this.grid) {return;}
+		var localData;
+		if (pin != null && pin.data !== undefined) {
+			localData = pin.data;
+			pin.data = [];
+		}
 
 		var p = $.extend(true,{
 			url: "",
@@ -880,6 +885,10 @@ $.fn.jqGrid = function( pin ) {
 			multiSort :  false,
 			minColWidth : 33
 		}, $.jgrid.defaults, pin || {});
+		if (localData !== undefined) {
+			p.data = localData;
+			pin.data = localData;
+		}
 		var ts= this, grid={
 			headers:[],
 			cols:[],
