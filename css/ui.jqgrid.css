@@ -153,6 +153,9 @@
 
 /* Toolbar Search Menu */
 .ui-search-menu { position: absolute; padding: 2px 5px;}
+.ui-search-menu.ui-menu .ui-menu-item { list-style-image: none; padding-right: 0; padding-left: 0; }
+.ui-search-menu.ui-menu .ui-menu-item a { display: block; }
+.ui-search-menu.ui-menu .ui-menu-item a.g-menu-item:hover { margin: -1px; font-weight: normal; }
 .ui-jqgrid .ui-search-table { padding: 0; border: 0 none; height:20px; width:100%;}
 .ui-jqgrid .ui-search-table .ui-search-oper { width:20px; }
 a.g-menu-item, a.soptclass, a.clearsearchclass { cursor: pointer; }
