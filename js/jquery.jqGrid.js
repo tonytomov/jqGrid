@@ -4376,6 +4376,15 @@ $.jgrid.extend({
 										ov.value = sv[0]; ov.innerHTML = sv[1];
 										elem.appendChild(ov);
 									}
+								} else if (Object.prototype.toString.call(oSv) === "[object Array]") {
+									// array of arrays
+									for (var i=0; i<oSv.length; i++) {
+										if(oSv[i].length === 2) {
+											ov = document.createElement("option");
+											ov.value = oSv[i][0]; ov.innerHTML = oSv[i][1];
+											elem.appendChild(ov);
+										}
+									}
 								} else if(typeof oSv === "object" ) {
 									for (key in oSv) {
 										if(oSv.hasOwnProperty(key)) {
