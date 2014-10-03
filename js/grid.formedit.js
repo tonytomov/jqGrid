@@ -400,7 +400,7 @@ $.jgrid.extend({
 				closeovrl = false;
 			}
 			function getFormData(){
-				$(frmtb+" > tbody > tr > td > .FormElement").each(function() {
+				$(frmtb+" > tbody > tr > td .FormElement").each(function() {
 					var celm = $(".customelement", this);
 					if (celm.length) {
 						var  elem = celm[0], nm = $(elem).attr('name');
