@@ -117,6 +117,7 @@ $.jgrid.extend({
 				try {
 					$(this).jqGrid('clearBeforeUnload');
 					$("#gbox_"+$.jgrid.jqID(this.id)).remove();
+					$("#alertmod_"+$.jgrid.jqID(this.id)).remove();
 				} catch (_) {}
 			}
 		});
