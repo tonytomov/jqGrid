@@ -119,7 +119,7 @@ $.jgrid.extend({
 		});
 	},
     columnChooser : function(opts) {
-		var self = self = this, selector, select, colMap = {}, fixedCols = [], dopts, mopts, $dialogContent, multiselectData, listHeight,
+		var self = this, selector, select, colMap = {}, fixedCols = [], dopts, mopts, $dialogContent, multiselectData, listHeight,
 			colModel = self.jqGrid("getGridParam", "colModel"),
 			colNames = self.jqGrid("getGridParam", "colNames"),
 			getMultiselectWidgetData = function ($elem) {
