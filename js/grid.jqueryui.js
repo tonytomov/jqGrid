@@ -119,10 +119,13 @@ $.jgrid.extend({
 		});
 	},
     columnChooser : function(opts) {
-		var self = this, selector, select, colMap = {}, fixedCols = [], dopts, mopts, $dialogContent, dividerLocation,
-			resizeSel = "#colchooser_" + $.jgrid.jqID(self[0].p.id),
+		var self = self = this, selector, select, colMap = {}, fixedCols = [], dopts, mopts, $dialogContent, multiselectData, listHeight,
 			colModel = self.jqGrid("getGridParam", "colModel"),
-			colNames = self.jqGrid("getGridParam", "colNames");
+			colNames = self.jqGrid("getGridParam", "colNames"),
+			getMultiselectWidgetData = function ($elem) {
+				return ($.ui.multiselect.prototype && $elem.data($.ui.multiselect.prototype.widgetFullName || $.ui.multiselect.prototype.widgetName)) ||
+					$elem.data("ui-multiselect") || $elem.data("multiselect");
+			};
 
 		if ($("#colchooser_" + $.jgrid.jqID(self[0].p.id)).length) { return; }
 		selector = $('<div id="colchooser_'+self[0].p.id+'" style="position:relative;overflow:hidden"><div><select multiple="multiple"></select></div></div>');
@@ -171,7 +174,8 @@ $.jgrid.extend({
 			   */
 			dlog : "dialog",
 			dialog_opts : {
-				minWidth: 470
+				minWidth: 470,
+				dialogClass: "ui-jqdialog"
 			},
 			/* dlog_opts is either an option object to be passed 
 			   to "dlog", or (more likely) a function that creates
@@ -196,14 +200,8 @@ $.jgrid.extend({
 					resizable: options.resizable || true,
 					width: options.width + 70,
 					resize: function () {
-						var $container = $(this).find(">div>div.ui-multiselect"),
-							$thisDialogContent = $container.closest(".ui-dialog-content"),
-							$selectedContainer = $container.find(">div.selected"),
-							$availableContainer = $container.find(">div.available"),
-							$selectedActions = $selectedContainer.find(">div.actions"),
-							$availableActions = $availableContainer.find(">div.actions"),
-							$selectedList = $selectedContainer.find(">ul.connected-list"),
-							$availableList = $availableContainer.find(">ul.connected-list");
+						var widgetData = getMultiselectWidgetData(select),
+							$thisDialogContent = widgetData.container.closest(".ui-dialog-content");
 
 						if ($thisDialogContent.length > 0 && typeof $thisDialogContent[0].style === "object") {
 							$thisDialogContent[0].style.width = "";
@@ -211,8 +209,8 @@ $.jgrid.extend({
 							$thisDialogContent.css("width", ""); // or just remove width style
 						}
 
-						$selectedList.height(Math.max($selectedContainer.height() - $selectedActions.outerHeight() - 1, 1));
-						$availableList.height(Math.max($availableContainer.height() - $availableActions.outerHeight() - 1, 1));
+						widgetData.selectedList.height(Math.max(widgetData.selectedContainer.height() - widgetData.selectedActions.outerHeight() - 1, 1));
+						widgetData.availableList.height(Math.max(widgetData.availableContainer.height() - widgetData.availableActions.outerHeight() - 1, 1));
 					}
 				}, options.dialog_opts || {});
 			},
@@ -300,15 +298,24 @@ $.jgrid.extend({
 		call(opts.msel, select, mopts);
 
 		// fix height of elements of the multiselect widget
-		$dialogContent = $(resizeSel);
+		$dialogContent = $("#colchooser_" + $.jgrid.jqID(self[0].p.id));
 
 		$dialogContent.css({ margin: "auto" });
 		$dialogContent.find(">div").css({ width: "100%", height: "100%", margin: "auto" });
-		$dialogContent.find(">div>.ui-multiselect").css({ width: "100%", height: "100%", margin: "auto" });
 
-		dividerLocation = opts.msel_opts.dividerLocation || $.ui.multiselect.defaults.dividerLocation;
-		$dialogContent.find(">div>.ui-multiselect>.selected").css({ width: dividerLocation * 100 + "%", height: "100%", margin: "auto", boxSizing: "border-box" });
-		$dialogContent.find(">div>.ui-multiselect>.available").css({ width: (100 - dividerLocation * 100) + "%", height: "100%", margin: "auto", boxSizing: "border-box" });
+		multiselectData = getMultiselectWidgetData(select);
+		multiselectData.container.css({ width: "100%", height: "100%", margin: "auto" });
+
+		multiselectData.selectedContainer.css({ width: multiselectData.options.dividerLocation * 100 + "%", height: "100%", margin: "auto", boxSizing: "border-box" });
+		multiselectData.availableContainer.css({ width: (100 - multiselectData.options.dividerLocation * 100) + "%", height: "100%", margin: "auto", boxSizing: "border-box" });
+
+		// set height for both selectedList and availableList
+		multiselectData.selectedList.css("height", "auto");
+		multiselectData.availableList.css("height", "auto");
+		listHeight = Math.max(multiselectData.selectedList.height(), multiselectData.availableList.height());
+		listHeight = Math.min(listHeight, $(window).height());
+		multiselectData.selectedList.css("height", listHeight);
+		multiselectData.availableList.css("height", listHeight);
 	},
 	sortableRows : function (opts) {
 		// Can accept all sortable options and events
