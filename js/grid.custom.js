@@ -975,9 +975,14 @@ $.jgrid.extend({
                         // introduces unacceptable ui lag.
                         $("#"+$.jgrid.jqID($g.p.id)+"_frozen").remove();
 					    var btbl = $("#" + $.jgrid.jqID($g.p.id)).clone(true);
-					    $("tr[role=row]",btbl).each(function(){
-						    $("td[role=gridcell]:gt("+maxfrozen+")",this).remove();
-					    });
+					    $("tr[role=row]", btbl).each(function () {
+		                                var rw = this;
+		                                if(this.id !== '') {
+		                                    var ht = $('#{0}'.format(rw.id), $("#" + $.jgrid.jqID($g.p.id)))[0].clientHeight;
+		                                    $(rw).height(ht);
+		                                }
+		                                $("td[role=gridcell]:gt(" + maxfrozen + ")", rw).remove();
+		                            });
 
 					    $(btbl).width(1).attr("id",$g.p.id+"_frozen");
 
