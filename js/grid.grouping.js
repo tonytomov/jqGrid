@@ -433,7 +433,7 @@ $.jgrid.extend({
 			}
 			var grp = $t.p.groupingView;
 			$t.p.grouping = true;
-
+			grp._locgr = false;
 			//Set default, in case visibilityOnNextGrouping is undefined 
 			if (grp.visibiltyOnNextGrouping === undefined) {
 				grp.visibiltyOnNextGrouping = [];
