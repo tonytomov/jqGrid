@@ -666,7 +666,7 @@ $.jgrid.extend({
 				});
 			}
 			function postIt() {
-				var copydata, ret=[true,"",""], onCS = {}, opers = $t.p.prmNames, idname, oper, key, selr, i;
+				var copydata, ret=[true,"",""], onCS = {}, opers = $t.p.prmNames, idname, oper, key, selr, i, url;
 				
 				var retvals = $($t).triggerHandler("jqGridAddEditBeforeCheckValues", [$("#"+frmgr), frmoper]);
 				if(retvals && typeof retvals === 'object') {postdata = retvals;}
@@ -699,8 +699,9 @@ $.jgrid.extend({
 				if(ret[0] && !rp_ge[$t.p.id].processing) {
 					rp_ge[$t.p.id].processing = true;
 					$("#sData", frmtb+"_2").addClass('ui-state-active');
+					url = rp_ge[$t.p.id].url || $($t).jqGrid('getGridParam','editurl');
 					oper = opers.oper;
-					idname = opers.id;
+					idname = url === 'clientArray' ? $t.p.keyName : opers.id;
 					// we add to pos data array the action - the name is oper
 					postdata[oper] = ($.trim(postdata[$t.p.id+"_id"]) === "_empty") ? opers.addoper : opers.editoper;
 					if(postdata[oper] !== opers.addoper) {
@@ -730,7 +731,7 @@ $.jgrid.extend({
 					
 					postdata[idname] = $.jgrid.stripPref($t.p.idPrefix, postdata[idname]);
 					var ajaxOptions = $.extend({
-						url: rp_ge[$t.p.id].url || $($t).jqGrid('getGridParam','editurl'),
+						url: url,
 						type: rp_ge[$t.p.id].mtype,
 						data: $.isFunction(rp_ge[$t.p.id].serializeEditData) ? rp_ge[$t.p.id].serializeEditData.call($t,postdata) :  postdata,
 						complete:function(data,status){
@@ -771,7 +772,11 @@ $.jgrid.extend({
 									//id processing
 									// user not set the id ret[2]
 									if(!ret[2]) {ret[2] = $.jgrid.randId();}
-									postdata[idname] = ret[2];
+									if(postdata[idname] == null){
+										postdata[idname] = ret[2];
+									} else {
+										ret[2] = postdata[idname];
+									}
 									if(rp_ge[$t.p.id].reloadAfterSubmit) {
 										$($t).trigger("reloadGrid");
 									} else {
@@ -853,6 +858,7 @@ $.jgrid.extend({
 							}
 						} else {
 							if(ajaxOptions.url === "clientArray") {
+								rp_ge[$t.p.id].reloadAfterSubmit = false;
 								postdata = ajaxOptions.data;
 								ajaxOptions.complete({status:200, statusText:''},'');
 							} else {
