@@ -436,6 +436,20 @@ $.extend($.jgrid,{
 							if (!msl &&  ($.trim(sv[0]) === $.trim(vl) || $.trim(sv[1]) === $.trim(vl))) { ov.selected ="selected"; }
 							if (msl && ($.inArray($.trim(sv[1]), ovm)>-1 || $.inArray($.trim(sv[0]), ovm)>-1)) {ov.selected ="selected";}
 						}
+					} else if (Object.prototype.toString.call(options.value) === "[object Array]") {
+						var oSv = options.value;
+						// array of arrays [[Key, Value], [Key, Value], ...]
+						for (var i=0; i<oSv.length; i++) {
+							if(oSv[i].length === 2) {
+								var key = oSv[i][0], value = oSv[i][1];
+								ov = document.createElement("option");
+								ov.setAttribute("role","option");
+								ov.value = key; ov.innerHTML = value;
+								elem.appendChild(ov);
+								if (!msl &&  ( $.trim(key) === $.trim(vl) || $.trim(value) === $.trim(vl)) ) { ov.selected ="selected"; }
+								if (msl && ($.inArray($.trim(value),ovm)>-1 || $.inArray($.trim(key),ovm)>-1)) { ov.selected ="selected"; }
+							}
+						}
 					} else if (typeof options.value === 'object') {
 						var oSv = options.value, key;
 						for (key in oSv) {
