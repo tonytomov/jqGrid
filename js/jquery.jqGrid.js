@@ -5341,7 +5341,70 @@ var xmlJsonClass = {
 		}
 		return e;
 	}
-};/*
+};
+
+var csvClass = {
+    toCsv: function (o, separator, hideColumns) {
+        // Param "o": Javascript Object.
+        // Param "separator": String that will be used to separate columns.
+        // Param "hideColumns": Columns that will be hidden.
+        // Returns:     CSV string
+
+        var csv = "";
+
+        csv += this.createHeaderCSV(o, separator, hideColumns);
+        csv += this.createDataCSV(o, separator, hideColumns);
+
+        return csv;
+    },
+    
+    // private members
+    shouldShowColumn: function(colModel, hideColumns) {
+        return !colModel.hidden && hideColumns.indexOf(colModel.name) == -1;
+    },
+    
+    createHeaderCSV: function(o, separator, hideColumns) {
+        var colNames = o.colNames;
+        var colModel = o.colModel;
+        
+        var line = "";
+        
+        for (var i = 0; i < colModel.length; i++) {
+            if (this.shouldShowColumn(colModel[i], hideColumns)) {
+                line += colNames[i] + separator;
+            }
+        }
+
+        line = line.slice(0, -1);
+
+        return line + '\r\n';
+    },
+    
+    createDataCSV: function (o, separator, hideColumns) {
+        var data = o.data;
+        var colModel = o.colModel;
+        
+        var lines = "";
+        var line = "";
+
+        for (var i = 0; i < data.length; i++) {
+            line = '';
+
+            for (var j = 0; j < colModel.length; j++) {
+                if (this.shouldShowColumn(colModel[j], hideColumns)) {
+                    line += data[i][colModel[j].name] + separator;
+                }
+            }
+
+            line = line.slice(0, -1);
+            lines += line + '\r\n';
+        }
+
+        return lines;
+    }
+};
+
+/*
 **
  * formatter for values but most of the values if for jqGrid
  * Some of this was inspired and based on how YUI does the table datagrid but in jQuery fashion
@@ -12068,7 +12131,9 @@ $.jgrid.extend({
             o = $.extend({
                 exptype : "xmlstring",
                 root: "grid",
-                ident: "\t"
+                ident: "\t",
+                separator: ";",
+                hideColumns: []
             }, o || {});
             var ret = null;
             this.each(function () {
@@ -12108,6 +12173,8 @@ $.jgrid.extend({
                             ret=ret.replace(/}]}"/,'}]}');
                         }
                         break;
+                    case 'csvstring':
+                        ret = csvClass.toCsv(gprm, o.separator, o.hideColumns);    
                 }
             });
             return ret;
