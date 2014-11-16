@@ -1099,15 +1099,15 @@ $.fn.jqGrid = function( pin ) {
 			return val;
 		},
 		formatCol = function (pos, rowInd, tv, rawObject, rowId, rdata){
-			var cm = ts.p.colModel[pos],
+			var cm = ts.p.colModel[pos], cellAttrFunc,
 			ral = cm.align, result="style=\"", clas = cm.classes, nm = cm.name, celp, acp=[];
 			if(ral) { result += "text-align:"+ral+";"; }
 			if(cm.hidden===true) { result += "display:none;"; }
 			if(rowInd===0) {
 				result += "width: "+grid.headers[pos].width+"px;";
-			} else if (cm.cellattr && $.isFunction(cm.cellattr))
-			{
-				celp = cm.cellattr.call(ts, rowId, tv, rawObject, cm, rdata);
+			} else if ($.isFunction(cm.cellattr) || (typeof cm.cellattr === "string" && $.jgrid.cellattr != null && $.isFunction($.jgrid.cellattr[cm.cellattr]))) {
+				cellAttrFunc = $.isFunction(cm.cellattr) ? cm.cellattr : $.jgrid.cellattr[cm.cellattr];
+				celp = cellAttrFunc.call(ts, rowId, tv, rawObject, cm, rdata);
 				if(celp && typeof celp === "string") {
 					celp = celp.replace(/style/i,'style').replace(/title/i,'title');
 					if(celp.indexOf('title') > -1) { cm.title=false;}
