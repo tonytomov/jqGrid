@@ -1445,7 +1445,8 @@ $.fn.jqGrid = function( pin ) {
 				} else if(ts.p.treeGrid === true && fpos > 0) {
 					$(ts.rows[fpos]).after(rowData.join(''));
 				} else {
-					$("tbody:first",t).append(rowData.join(''));
+					//$("tbody:first",t).append(rowData.join(''));
+					ts.firstElementChild.innerHTML += rowData.join(''); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
 				}
 			}
 			if(ts.p.subGrid === true ) {
@@ -1457,7 +1458,7 @@ $.fn.jqGrid = function( pin ) {
 			if( ts.p.treeGrid === true) {
 				try {self.jqGrid("setTreeNode", fpos+1, ir+fpos+1);} catch (e) {}
 			}
-			if(!ts.p.treeGrid && !ts.p.scroll) {ts.grid.bDiv.scrollTop = 0;}
+			//if(!ts.p.treeGrid && !ts.p.scroll) {ts.grid.bDiv.scrollTop = 0;}
 			ts.p.reccount=ir;
 			ts.p.treeANode = -1;
 			if(ts.p.userDataOnFooter) { self.jqGrid("footerData","set",ts.p.userData,true); }
@@ -1635,7 +1636,8 @@ $.fn.jqGrid = function( pin ) {
 				} else if(ts.p.treeGrid === true && fpos > 0) {
 					$(ts.rows[fpos]).after(rowData.join(''));
 				} else {
-					$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
+					//$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
+					ts.firstElementChild.innerHTML += rowData.join(''); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
 				}
 			}
 			if(ts.p.subGrid === true ) {
@@ -1649,7 +1651,7 @@ $.fn.jqGrid = function( pin ) {
 			if( ts.p.treeGrid === true) {
 				try {self.jqGrid("setTreeNode", fpos+1, ir+fpos+1);} catch (e) {}
 			}
-			if(!ts.p.treeGrid && !ts.p.scroll) {ts.grid.bDiv.scrollTop = 0;}
+			//if(!ts.p.treeGrid && !ts.p.scroll) {ts.grid.bDiv.scrollTop = 0;}
 			ts.p.reccount=ir;
 			ts.p.treeANode = -1;
 			if(ts.p.userDataOnFooter) { self.jqGrid("footerData","set",ts.p.userData,true); }
