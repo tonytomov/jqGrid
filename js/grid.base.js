@@ -1283,9 +1283,11 @@ $.fn.jqGrid = function( pin ) {
 			var tabindex = '-1', restAttr = '', attrName, style = hide ? 'display:none;' : '',
 				classes = 'ui-widget-content jqgrow ui-row-' + ts.p.direction + (altClass ? ' ' + altClass : '') + (selected ? ' ui-state-highlight' : ''),
 				rowAttrObj = $(ts).triggerHandler("jqGridRowAttr", [rd, cur, id]);
-				if( typeof rowAttrObj !== "object" ) {
-					rowAttrObj =   $.isFunction(ts.p.rowattr) ? ts.p.rowattr.call(ts, rd, cur, id) :{};
-				}
+			if( typeof rowAttrObj !== "object" ) {
+				rowAttrObj = $.isFunction(ts.p.rowattr) ? ts.p.rowattr.call(ts, rd, cur, id) :
+					(typeof ts.p.rowattr === "string" && $.jgrid.rowattr != null && $.isFunction($.jgrid.rowattr[ts.p.rowattr]) ?
+					 $.jgrid.rowattr[ts.p.rowattr].call(ts, rd, cur, id) : {});
+			}
 			if(!$.isEmptyObject( rowAttrObj )) {
 				if (rowAttrObj.hasOwnProperty("id")) {
 					id = rowAttrObj.id;
