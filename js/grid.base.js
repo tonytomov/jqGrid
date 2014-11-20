@@ -1447,6 +1447,7 @@ $.fn.jqGrid = function( pin ) {
 				} else {
 					//$("tbody:first",t).append(rowData.join(''));
 					ts.firstElementChild.innerHTML += rowData.join(''); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
+					ts.grid.cols = ts.rows[0].cells; // update cached first row
 				}
 			}
 			if(ts.p.subGrid === true ) {
@@ -1638,6 +1639,7 @@ $.fn.jqGrid = function( pin ) {
 				} else {
 					//$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
 					ts.firstElementChild.innerHTML += rowData.join(''); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
+					ts.grid.cols = ts.rows[0].cells; // update cached first row
 				}
 			}
 			if(ts.p.subGrid === true ) {
