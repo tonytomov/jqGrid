@@ -142,6 +142,6 @@
 
 })(jQuery);
 
-$(function() {
-  $('div.contextMenu').hide();
+jQuery(function() {
+  jQuery('div.contextMenu').hide();
 });
