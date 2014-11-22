@@ -7,7 +7,7 @@ repositories {
 }
 
 dependencies {
-    jscompiler 'com.google.javascript:closure-compiler:r1810'
+    jscompiler 'com.google.javascript:closure-compiler:v20141023'
 }
 
 def srcdir = new File('js')
@@ -15,6 +15,7 @@ def distdir = new File('dist')
 
 def jqGridFile = new File(distdir, 'jquery.jqGrid.js')
 def jqGridMinFile = new File(distdir, 'jquery.jqGrid.min.js')
+def jqGridSrcMapFile = new File(distdir, 'jquery.jqGrid.map.js')
 
 task init() {
     description = "Create distribution directory: $distdir.absolutePath"
@@ -48,7 +49,7 @@ task 'jqgrid-min'(dependsOn: 'jqgrid') {
 
     doLast {
         ant.taskdef(name: 'jscompile', classname: 'com.google.javascript.jscomp.ant.CompileTask', classpath: configurations.jscompiler.asPath)
-        ant.jscompile(output: jqGridMinFile, warning: 'QUIET', debug: logger.debugEnabled) {
+        ant.jscompile(output: jqGridMinFile, warning: 'QUIET', sourceMapFormat: 'V3', sourceMapOutputFile: jqGridSrcMapFile, debug: logger.debugEnabled) {
             ant.sources(dir: jqGridFile.parent) {
                 ant.file(name: jqGridFile.name)
             }
