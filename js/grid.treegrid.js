@@ -677,6 +677,18 @@ $.jgrid.extend({
 			}
 		}
 		//});
-	}
+	},
+	//add more than one node to tree
+	//data : array of data rows to be added 
+	//data[n] should have id,parent,expanded,isleaf and loaded properties (loaded should be set to true)
+	//example: 
+	//data = [{coulmn1:"data1",id:"id1",parent:"null",expanded:true,loaded:true,isLeaf:false},
+	//{coulmn1:"data2",id:"id2",parent:"id1",expanded:true,loaded:true,isLeaf:true}];
+    	addTreeData: function (data) {
+        	var $t = this[0];
+        	for (dt = 0; dt < data.length; dt++) {
+            		$($t).jqGrid('addChildNode', data[dt].id, data[dt].parent, data[dt], data.expanded);
+        	}
+    	}
 });
 })(jQuery);
