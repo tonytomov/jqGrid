@@ -21,13 +21,13 @@ require([
 	"jqgrid/JsonXml",
 
 	// plugins
-	"plugins/grid.addons",
-	"plugins/grid.postext",
-	"plugins/grid.setcolumns",
-	"plugins/jquery.contextmenu",
-	"plugins/jquery.searchFilter",
-	"plugins/jquery.tablednd",
-	"plugins/ui.multiselect"
+	"jqgrid/plugins/grid.addons",
+	"jqgrid/plugins/grid.postext",
+	"jqgrid/plugins/grid.setcolumns",
+	"jqgrid/plugins/jquery.contextmenu",
+	"jqgrid/plugins/jquery.searchFilter",
+	"jqgrid/plugins/jquery.tablednd",
+	"jqgrid/plugins/ui.multiselect"
 ], function ($) {
 	"use strict";
 	console.log("jqGrid loaded!");
