@@ -20,8 +20,21 @@
 	Author:      Tony Tomov
 */
 
-/*global alert */
-var xmlJsonClass = {
+/*global alert, define */
+
+(function( factory ) {
+	if ( typeof define === "function" && define.amd ) {
+
+		// AMD. Register as an anonymous module.
+		define( factory );
+	} else {
+
+		// Browser globals
+		factory();
+	}
+}(function() {
+
+window.xmlJsonClass = {
 	// Param "xml": Element or document DOM node.
 	// Param "tab": Tab or indent string for pretty output formatting omit or use empty string "" to supress.
 	// Returns:     JSON string
@@ -89,7 +102,7 @@ var xmlJsonClass = {
 				if (v === undefined ) { v = ""; }
 				if (v.toString() === "\"\"" || v.toString().length === 0) {
 					xml += ind + "<" + name + ">__EMPTY_STRING_</" + name + ">";
-				} 
+				}
 				else {
 					xml += ind + "<" + name + ">" + v.toString() + "</" + name + ">";
 				}
@@ -256,7 +269,7 @@ var xmlJsonClass = {
 			if (objRegExp.test(os) || FuncTest.test(os) || os==="false" || os==="true") {
 				// int or float
 				json += (name && ":")  + "\"" +os + "\"";
-			} 
+			}
 			else {
 			*/
 				json += (name && ":") + "\"" + o.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"";
@@ -337,3 +350,7 @@ var xmlJsonClass = {
 		return e;
 	}
 };
+
+return window.xmlJsonClass;
+
+}));

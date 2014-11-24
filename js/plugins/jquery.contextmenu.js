@@ -16,9 +16,23 @@
  *
  */
 
-(function($) {
+(function( factory ) {
+	if ( typeof define === "function" && define.amd ) {
 
- 	var menu, shadow, content, hash, currentTarget;
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base"
+		], factory );
+	} else {
+
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+//"use strict";
+
+  var menu, shadow, content, hash, currentTarget;
   var defaults = {
     menuStyle: {
       listStyle: 'none',
@@ -140,8 +154,8 @@
     }
   };
 
-})(jQuery);
-
 $(function() {
   $('div.contextMenu').hide();
 });
+
+}));

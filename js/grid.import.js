@@ -1,15 +1,30 @@
-/*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery, xmlJsonClass */
-(function($){
 /*
  * jqGrid extension for constructing Grid Data from external file
  * Tony Tomov tony@trirand.com
- * http://trirand.com/blog/ 
+ * http://trirand.com/blog/
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
-**/ 
+**/
 
+/* jshint eqeqeq:false, eqnull:true, devel:true */
+/* global jQuery, define, xmlJsonClass */
+
+(function( factory ) {
+	if ( typeof define === "function" && define.amd ) {
+
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./JsonXml",
+			"./grid.base"
+		], factory );
+	} else {
+
+		// Browser globals
+		factory( jQuery, xmlJsonClass );
+	}
+}(function( $, xmlJsonClass ) {
 "use strict";
     $.jgrid.extend({
         jqGridImport : function(o) {
@@ -212,4 +227,4 @@
             });
         }
     });
-})(jQuery);
+}));

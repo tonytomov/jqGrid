@@ -1,4 +1,21 @@
-(function(a) {
+/**
+ * ???
+**/
+(function( factory ) {
+	if ( typeof define === "function" && define.amd ) {
+
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base"
+		], factory );
+	} else {
+
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( a ) {
+
 a.jgrid = a.jgrid || {};
 a.extend(a.jgrid,{
         defaults:
@@ -154,4 +171,4 @@ a.extend(a.jgrid,{
             idName: "id"
         }
     });
-})(jQuery);
+}));

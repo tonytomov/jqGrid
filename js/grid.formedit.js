@@ -1,6 +1,3 @@
-/*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global xmlJsonClass, jQuery */
-(function($){
 /**
  * jqGrid extension for form editing Grid Data
  * Tony Tomov tony@trirand.com
@@ -9,6 +6,26 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/
+
+/* jshint eqeqeq:false, eqnull:true, devel:true */
+/* global jQuery, define, xmlJsonClass */
+
+(function( factory ) {
+	if ( typeof define === "function" && define.amd ) {
+
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./JsonXml",
+			"./grid.base",
+			"./grid.common"
+		], factory );
+	} else {
+
+		// Browser globals
+		factory( jQuery, xmlJsonClass );
+	}
+}(function( $, xmlJsonClass ) {
 "use strict";
 var rp_ge = {};
 $.jgrid.extend({
@@ -2110,4 +2127,4 @@ $.jgrid.extend({
 		});
 	}
 });
-})(jQuery);
+}));

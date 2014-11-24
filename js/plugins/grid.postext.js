@@ -1,4 +1,3 @@
-;(function($){
 /**
  * jqGrid extension
  * Paul Tiseo ptiseo@wasteconsultants.com
@@ -6,7 +5,23 @@
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
-**/ 
+**/
+
+(function( factory ) {
+	if ( typeof define === "function" && define.amd ) {
+
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base"
+		], factory );
+	} else {
+
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+//"use strict";
 $.jgrid.extend({
 	getPostData : function(){
 		var $t = this[0];
@@ -61,4 +76,4 @@ $.jgrid.extend({
 		return $t.p.userData[key];
 	}
 });
-})(jQuery);
+}));

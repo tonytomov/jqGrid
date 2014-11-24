@@ -25,7 +25,22 @@
  */
 
 
-(function($) {
+(function( factory ) {
+	if ( typeof define === "function" && define.amd ) {
+
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"jquery-ui/sortable",
+			"../grid.base"
+		], factory );
+	} else {
+
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+//"use strict";
 
 $.widget("ui.multiselect", {
 	_init: function() {
@@ -311,4 +326,4 @@ $.extend($.ui.multiselect, {
 	}
 });
 
-})(jQuery);
+}));

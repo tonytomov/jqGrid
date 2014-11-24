@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript" src="../bower_components/requirejs/require.js"></script>
+	<script type="text/javascript" src="../config.js"></script>
+	<script type="text/javascript">
+		require([
+			"jquery",
+			"examples/show",
+			"jqgrid/grid.jqueryui",
+			"css!examples/example.css",
+			"css!../css/ui.jqgrid.css",
+			"css!jquery-ui/../themes/ui-lightness/jquery-ui.css"
+		], function (jQuery) {
+
+			jQuery(function ($) {
+
+				$("#table").gridResize();
+
+			});
+
+		});
+	</script>
+</head>
+<body>
+
+<table id="table"></table>
+<div id="pager"></div>
+
+</body>
+</html>

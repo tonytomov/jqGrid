@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.css" rel="stylesheet">
+	<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.15/require.min.js"></script>
+	<script type="text/javascript">
+		require.config({
+			"baseUrl": "../",
+			"map": {
+				"jqgrid/grid.common": {
+					"jquery-ui/dialog": "jquery-ui"
+				}
+			},
+
+			"paths": {
+				// plugins
+				"css": "//cdnjs.cloudflare.com/ajax/libs/require-css/0.1.5/css.min",
+
+				// jqgrid
+				"jqgrid": "js",
+
+				// jquery
+				"jquery": "http://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min",
+				"jquery-ui": "http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min"
+
+			}
+		});
+	</script>
+	<script type="text/javascript">
+		require([
+			"examples/edit",
+			"css!examples/example.css",
+			"css!../css/ui.jqgrid.css"
+		], function (jQuery) {
+
+			/**
+			 * actually this part do nothing
+			 * all magic is inside examples/edit
+			 **/
+
+		});
+	</script>
+</head>
+<body>
+
+<table id="table"></table>
+<div id="pager"></div>
+
+</body>
+</html>

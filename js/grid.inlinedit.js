@@ -1,14 +1,29 @@
-/*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery */
-(function($){
 /**
  * jqGrid extension for manipulating Grid Data
  * Tony Tomov tony@trirand.com
- * http://trirand.com/blog/ 
+ * http://trirand.com/blog/
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
-**/ 
+**/
+
+/*jshint eqeqeq:false, eqnull:true, devel:true */
+/*global jQuery, define */
+
+(function( factory ) {
+	if ( typeof define === "function" && define.amd ) {
+
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base"
+		], factory );
+	} else {
+
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
 "use strict";
 $.jgrid.inlineEdit = $.jgrid.inlineEdit || {};
 $.jgrid.extend({
@@ -649,4 +664,4 @@ $.jgrid.extend({
 	}
 //end inline edit
 });
-})(jQuery);
+}));
