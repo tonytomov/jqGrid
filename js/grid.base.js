@@ -2772,16 +2772,19 @@ $.fn.jqGrid = function( pin ) {
 			}
 			if (td.tagName === 'A' || ((td.tagName === 'INPUT' || td.tagName === 'TEXTAREA' || td.tagName === 'OPTION' || td.tagName === 'SELECT' ) && !scb) ) { return; }
 			ri = ptr[0].id;
-			ci = $.jgrid.getCellIndex(td);
-			tdHtml = $(td).closest("td,th").html();
-			$(ts).triggerHandler("jqGridCellSelect", [ri,ci,tdHtml,e]);
-			if($.isFunction(ts.p.onCellSelect)) {
-				ts.p.onCellSelect.call(ts,ri,ci,tdHtml,e);
+			td = $(td).closest("tr.jqgrow>td");
+			if (td.length > 0) {
+				ci = $.jgrid.getCellIndex(td);
+				tdHtml = $(td).closest("td,th").html();
+				$(ts).triggerHandler("jqGridCellSelect", [ri,ci,tdHtml,e]);
+				if($.isFunction(ts.p.onCellSelect)) {
+					ts.p.onCellSelect.call(ts,ri,ci,tdHtml,e);
+				}
 			}
 			if(ts.p.cellEdit === true) {
 				if(ts.p.multiselect && scb && cSel){
 					$(ts).jqGrid("setSelection", ri ,true,e);
-				} else {
+				} else if (td.length > 0) {
 					ri = ptr[0].rowIndex;
 					try {$(ts).jqGrid("editCell",ri,ci,true);} catch (_) {}
 				}
