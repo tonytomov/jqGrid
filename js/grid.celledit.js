@@ -1,6 +1,3 @@
-/*jshint eqeqeq:false */
-/*global jQuery */
-(function($){
 /*
 **
  * jqGrid extension for cellediting Grid Data
@@ -28,7 +25,26 @@
  * cellsubmit (remote,clientArray) (added in grid options)
  * cellurl
  * ajaxCellOptions
-* */
+**/
+
+/* jshint eqeqeq:false */
+/* global jQuery, define */
+
+(function( factory ) {
+	if ( typeof define === "function" && define.amd ) {
+
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base",
+			//"jquery-ui/datepicker"
+		], factory );
+	} else {
+
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
 "use strict";
 $.jgrid.extend({
 	editCell : function (iRow,iCol, ed){
@@ -493,4 +509,4 @@ $.jgrid.extend({
 	}
 /// end  cell editing
 });
-})(jQuery);
+}));

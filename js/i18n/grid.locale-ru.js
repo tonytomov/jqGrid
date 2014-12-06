@@ -1,4 +1,3 @@
-;(function($){
 /**
  * jqGrid Russian Translation v1.0 02.07.2009 (based on translation by Alexey Kanaev v1.1 21.01.2009, http://softcore.com.ru)
  * Sergey Dyagovchenko
@@ -7,6 +6,22 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
+
+(function( factory ) {
+	if ( typeof define === "function" && define.amd ) {
+
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base"
+		], factory );
+	} else {
+
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
 	defaults : {
@@ -133,4 +148,4 @@ $.extend($.jgrid,{
 		idName : 'id'
 	}
 });
-})(jQuery);
+}));

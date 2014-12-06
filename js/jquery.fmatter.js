@@ -12,10 +12,24 @@
  * http://www.gnu.org/licenses/gpl-2.0.html
  * 
 **/
-/*jshint eqeqeq:false */
-/*global jQuery */
 
-(function($) {
+/* jshint eqeqeq:false */
+/* global jQuery, define */
+
+(function( factory ) {
+	if ( typeof define === "function" && define.amd ) {
+
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base"
+		], factory );
+	} else {
+
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
 "use strict";	
 	$.fmatter = {};
 	//opts can be id:row id for the row, rowdata:the data for the row, colmodel:the column model for this column
@@ -464,4 +478,4 @@
 		}
 		return $.fn.fmatter.defaultFormat(cellval, opts);
 	};
-})(jQuery);
+}));

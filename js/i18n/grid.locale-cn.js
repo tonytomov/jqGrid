@@ -1,4 +1,3 @@
-;(function($){
 /**
  * jqGrid Chinese Translation
  * 咖啡兔 yanhonglei@gmail.com
@@ -7,6 +6,22 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
+
+(function( factory ) {
+	if ( typeof define === "function" && define.amd ) {
+
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base"
+		], factory );
+	} else {
+
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
     defaults : {
@@ -173,4 +188,4 @@ $.extend($.jgrid,{
         idName : 'id'
     }
 });
-})(jQuery);
+}));

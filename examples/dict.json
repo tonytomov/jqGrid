@@ -1,0 +1,22 @@
+[
+	{
+		value: "a",
+		name: "A"
+	},
+	{
+		value: "b",
+		name: "B"
+	},
+	{
+		value: "c",
+		name: "C"
+	},
+	{
+		value: "d",
+		name: "D"
+	},
+	{
+		value: "e",
+		name: "E"
+	}
+]

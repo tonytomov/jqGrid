@@ -1,7 +1,24 @@
-/*jshint eqeqeq:false, eqnull:true */
-/*global jQuery */
-// Grouping module
-(function($){
+/**
+ * Grouping module
+**/
+
+/* jshint eqeqeq:false, eqnull:true */
+/* global jQuery, define */
+
+(function( factory ) {
+	if ( typeof define === "function" && define.amd ) {
+
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base"
+		], factory );
+	} else {
+
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
 "use strict";
 $.extend($.jgrid,{
 	template : function(format){ //jqgformat
@@ -530,4 +547,4 @@ $.jgrid.extend({
 		}	
 	}
 });
-})(jQuery);
+}));

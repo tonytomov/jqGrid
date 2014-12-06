@@ -1,4 +1,3 @@
-;(function($){
 /**
  * jqGrid extension for manipulating columns properties
  * Piotr Roznicki roznicki@o2.pl
@@ -7,6 +6,23 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/
+
+(function( factory ) {
+	if ( typeof define === "function" && define.amd ) {
+
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base"
+		], factory );
+	} else {
+
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+//"use strict";
+
 $.jgrid.extend({
 	setColumns : function(p) {
 		p = $.extend({
@@ -123,4 +139,4 @@ $.jgrid.extend({
 		});
 	}
 });
-})(jQuery);
+}));

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript" src="../bower_components/requirejs/require.js"></script>
+	<script type="text/javascript" src="../config.js"></script>
+	<script type="text/javascript">
+		require.config({
+			"map": {
+				"jqgrid/grid.common": {
+					"jquery-ui/dialog": "jqgrid/jqModal"
+				}
+			}
+		});
+	</script>
+	<script type="text/javascript">
+		require([
+			"examples/edit",
+			"css!examples/example.css",
+			"css!../css/ui.jqgrid.css",
+			"css!jquery-ui/../themes/ui-lightness/jquery-ui.css"
+		], function (jQuery) {
+
+			/**
+			 * actually this part do nothing
+			 * all magic is inside examples/edit
+			 **/
+
+		});
+	</script>
+</head>
+<body>
+
+<table id="table"></table>
+<div id="pager"></div>
+
+</body>
+</html>

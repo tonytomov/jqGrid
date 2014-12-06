@@ -11,24 +11,40 @@
  * The filter uses JSON entities to hold filter rules and groups. Here is an example of a filter:
 
 { "groupOp": "AND",
-      "groups" : [ 
+      "groups" : [
         { "groupOp": "OR",
             "rules": [
-                { "field": "name", "op": "eq", "data": "England" }, 
+                { "field": "name", "op": "eq", "data": "England" },
                 { "field": "id", "op": "le", "data": "5"}
              ]
-        } 
+        }
       ],
       "rules": [
-        { "field": "name", "op": "eq", "data": "Romania" }, 
+        { "field": "name", "op": "eq", "data": "Romania" },
         { "field": "id", "op": "le", "data": "1"}
       ]
 }
-*/
-/*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery */
 
-(function ($) {
+**/
+
+/*jshint eqeqeq:false, eqnull:true, devel:true */
+/* global jQuery, define */
+
+(function( factory ) {
+	if ( typeof define === "function" && define.amd ) {
+
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base",
+			"./grid.filter"
+		], factory );
+	} else {
+
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
 "use strict";
 
 $.fn.jqFilter = function( arg ) {
@@ -709,4 +725,4 @@ $.extend($.fn.jqFilter,{
 	}
 
 });
-})(jQuery);
+}));

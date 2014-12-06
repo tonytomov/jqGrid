@@ -1,4 +1,3 @@
-(function($){
 /*
  * jqGrid methods without support. Use as you wish
  * Tony Tomov tony@trirand.com
@@ -12,8 +11,25 @@
  * Some methods will be then overwritten.
  *
  */
-/*global jQuery, $ */
 
+/*global jQuery, define */
+
+(function( factory ) {
+	if ( typeof define === "function" && define.amd ) {
+
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base",
+			"./jquery.searchFilter"
+		], factory );
+	} else {
+
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+//"use strict";
 $.jgrid.extend({
 // This is the ols search Filter method used in navigator.
 	searchGrid : function (p) {
@@ -701,4 +717,4 @@ $.jgrid.extend({
 	}
 
 });
-})(jQuery);
+}));

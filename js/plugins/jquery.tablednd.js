@@ -76,6 +76,23 @@
  *                         Improved the serialize method to use a default (and settable) regular expression.
  *                         Added tableDnDupate() and tableDnDSerialize() to be called when you are outside the table
  */
+
+(function( factory ) {
+	if ( typeof define === "function" && define.amd ) {
+
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base"
+		], factory );
+	} else {
+
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( jQuery ) {
+//"use strict";
+
 jQuery.tableDnD = {
     /** Keep hold of the current table being dragged */
     currentTable : null,
@@ -386,3 +403,5 @@ jQuery.fn.extend(
 		unTableDnD : jQuery.tableDnD.destroy
 	}
 );
+
+}));
