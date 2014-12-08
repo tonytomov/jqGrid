@@ -328,7 +328,7 @@ $.jgrid.extend({
 				opts = $.extend({
 					"cursor":"move",
 					"axis" : "y",
-					"items": ".jqgrow"
+					"items": " > .jqgrow"
 					},
 				opts || {});
 				if(opts.start && $.isFunction(opts.start)) {
