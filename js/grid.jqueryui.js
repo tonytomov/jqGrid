@@ -366,7 +366,7 @@ $.jgrid.extend({
 					}
 				};
 				$("tbody:first",$t).sortable(opts);
-				$("tbody:first",$t).disableSelection();
+				$("tbody:first > .jqgrow",$t).disableSelection();
 			}
 		});
 	},
