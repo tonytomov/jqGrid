@@ -567,7 +567,7 @@ $.jgrid.extend({
 			loaded = $t.p.treeReader.loaded,
 			method, parentindex, parentdata, parentlevel, i, len, max=0, rowind = parentid, leaf, maxright;
 			if(expandData===undefined) {expandData = false;}
-			if ( nodeid === undefined || nodeid === null ) {
+			if ( nodeid == null ) {
 				i = $t.p.data.length-1;
 				if(	i>= 0 ) {
 					while(i>=0){max = Math.max(max, parseInt($t.p.data[i][$t.p.localReader.id],10)); i--;}
