@@ -2982,7 +2982,9 @@ $.fn.jqGrid = function( pin ) {
 			}
 		} else {
 			$(grid.cDiv).hide();
-			$(grid.hDiv).addClass('ui-corner-top');
+			if(!ts.p.toppager) {
+				$(grid.hDiv).addClass('ui-corner-top');
+			}
 		}
 		$(grid.hDiv).after(grid.bDiv)
 		.mousemove(function (e) {
