@@ -3374,15 +3374,15 @@ $.jgrid.extend({
 					rowid  = t.p.idPrefix + rowid;
 					if(ni){
 						prp = t.formatCol(0,1,'',null,rowid, true);
-						row[row.length] = "<td role=\"gridcell\" class=\"ui-state-default jqgrid-rownum\" "+prp+">0</td>";
+						row.push("<td role=\"gridcell\" class=\"ui-state-default jqgrid-rownum\" "+prp+">0</td>");
 					}
 					if(gi) {
 						v = "<input role=\"checkbox\" type=\"checkbox\""+" id=\"jqg_"+t.p.id+"_"+rowid+"\" class=\"cbox\"/>";
 						prp = t.formatCol(ni,1,'', null, rowid, true);
-						row[row.length] = "<td role=\"gridcell\" "+prp+">"+v+"</td>";
+						row.push("<td role=\"gridcell\" "+prp+">"+v+"</td>");
 					}
 					if(si) {
-						row[row.length] = $(t).jqGrid("addSubGridCell",gi+ni,1);
+						row.push($(t).jqGrid("addSubGridCell",gi+ni,1));
 					}
 					for(i = gi+si+ni; i < t.p.colModel.length;i++){
 						cm = t.p.colModel[i];
@@ -3390,10 +3390,10 @@ $.jgrid.extend({
 						lcdata[nm] = data[nm];
 						v = t.formatter( rowid, $.jgrid.getAccessor(data,nm), i, data );
 						prp = t.formatCol(i,1,v, data, rowid, lcdata);
-						row[row.length] = "<td role=\"gridcell\" "+prp+">"+v+"</td>";
+						row.push("<td role=\"gridcell\" "+prp+">"+v+"</td>");
 					}
 					row.unshift( t.constructTr(rowid, false, cna, lcdata, data, false ) );
-					row[row.length] = "</tr>";
+					row.push("</tr>");
 					row = row.join('');
 					if(t.rows.length === 0){
 						$("table:first",t.grid.bDiv).append(row);
