@@ -3394,30 +3394,35 @@ $.jgrid.extend({
 					}
 					row.unshift( t.constructTr(rowid, false, cna, lcdata, data, false ) );
 					row[row.length] = "</tr>";
+					row = row.join('');
 					if(t.rows.length === 0){
-						$("table:first",t.grid.bDiv).append(row.join(''));
+						$("table:first",t.grid.bDiv).append(row);
 					} else {
 						switch (pos) {
 							case 'last':
-								$(t.rows[t.rows.length-1]).after(row.join(''));
+								$(t.rows[t.rows.length-1]).after(row);
 								sind = t.rows.length-1;
 								break;
 							case 'first':
-								$(t.rows[0]).after(row.join(''));
+								$(t.rows[0]).after(row);
 								sind = 1;
 								break;
 							case 'after':
 								sind = $(t).jqGrid('getGridRowById', src);
 								if (sind) {
-									if($(t.rows[sind.rowIndex+1]).hasClass("ui-subgrid")) { $(t.rows[sind.rowIndex+1]).after(row); }
-									else { $(sind).after(row.join('')); }
-									sind=sind.rowIndex + 1;
+									if($(t.rows[sind.rowIndex+1]).hasClass("ui-subgrid")) {
+										$(t.rows[sind.rowIndex+1]).after(row);
+										sind=sind.rowIndex + 2;
+									} else {
+										$(sind).after(row);
+										sind=sind.rowIndex + 1;
+									}
 								}	
 								break;
 							case 'before':
 								sind = $(t).jqGrid('getGridRowById', src);
 								if(sind) {
-									$(sind).before(row.join(''));
+									$(sind).before(row);
 									sind=sind.rowIndex - 1;
 								}
 								break;
