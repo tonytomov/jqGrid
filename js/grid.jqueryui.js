@@ -328,7 +328,7 @@ $.jgrid.extend({
 				opts = $.extend({
 					"cursor":"move",
 					"axis" : "y",
-					"items": ".jqgrow"
+					"items": " > .jqgrow"
 					},
 				opts || {});
 				if(opts.start && $.isFunction(opts.start)) {
@@ -366,7 +366,7 @@ $.jgrid.extend({
 					}
 				};
 				$("tbody:first",$t).sortable(opts);
-				$("tbody:first",$t).disableSelection();
+				$("tbody:first > .jqgrow",$t).disableSelection();
 			}
 		});
 	},
