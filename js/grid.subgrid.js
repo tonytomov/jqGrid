@@ -195,10 +195,10 @@ addSubGrid : function( pos, sind ) {
 				}
 				$(ts.rows[i].cells[pos]).bind('click', function() {
 					var tr = $(this).parent("tr")[0];
+					pID = ts.p.id;
+					_id = tr.id;
 					$r = $("#" + pID + "_" + _id + "_expandedContent");
 					if($(this).hasClass("sgcollapsed")) {
-						pID = ts.p.id;
-						_id = tr.id;
 						if(ts.p.subGridOptions.reloadOnExpand === true || ( ts.p.subGridOptions.reloadOnExpand === false && !$r.hasClass('ui-subgrid') ) ) {
 							atd = pos >=1 ? "<td colspan='"+pos+"'>&#160;</td>":"";
 							bfsc = $(ts).triggerHandler("jqGridSubGridBeforeExpand", [pID + "_" + _id, _id]);
@@ -224,7 +224,6 @@ addSubGrid : function( pos, sind ) {
 					} else if($(this).hasClass("sgexpanded")) {
 						bfsc = $(ts).triggerHandler("jqGridSubGridRowColapsed", [pID + "_" + _id, _id]);
 						bfsc = (bfsc === false || bfsc === 'stop') ? false : true;
-						_id = tr.id;
 						if( bfsc &&  $.isFunction(ts.p.subGridRowColapsed)) {
 							bfsc = ts.p.subGridRowColapsed.call(ts, pID+"_"+_id,_id );
 						}
