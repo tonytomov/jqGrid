@@ -1211,7 +1211,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 		},
 		normalizeData = function() {
-			var p = ts.p, data = p.data, dataLength = data.length, i, j, cur, idn, idr, ccur, v, rd,
+			var p = ts.p, data = p.data, dataLength = data.length, i, j, cur, idn, idi, idr, ccur, v, rd,
 			localReader = p.localReader,
 			colModel = p.colModel,
 			cellName = localReader.cell,
@@ -1227,36 +1227,41 @@ $.fn.jqGrid = function( pin ) {
 			objectReader = reader("local");
 			// read ALL input items and convert items to be read by
 			// $.jgrid.getAccessor with column name as the second parameter
-			idn = p.keyIndex === false ?
+			idn = p.keyName === false ?
 				($.isFunction(localReader.id) ? localReader.id.call(ts, data) : localReader.id) :
-				p.keyIndex; 
+				p.keyName; 
+			if (!isNaN(idn)) {
+				idi = Number(idn);
+			}
+			for (i = 0; i < colModel.length; i++) {
+				if (colModel[i].name === idn) {
+					idi = i;
+					break;
+				}
+			}
 			for (i = 0; i < dataLength; i++) {
 				cur = data[i];
-				// read id in the same way like addJSONData do
-				// probably it would be better to start with "if (cellName) {...}"
-				// but the goal of the current implementation was just have THE SAME
-				// id values like in addJSONData ...
-				idr = $.jgrid.getAccessor(cur, idn);
+				if (cellName) {
+					cur = $.jgrid.getAccessor(cur, cellName) || cur;
+				}
+				if ($.isArray(cur)) {
+					rowReader = arrayReader;
+					idr = $.jgrid.getAccessor(cur, idi);
+				} else {
+					rowReader = objectReader;
+					idr = $.jgrid.getAccessor(cur, idn);
+				}
 				if (idr === undefined) {
-					if (typeof idn === "number" && colModel[idn + iOffset] != null) {
+					if (!isNaN(idn) && colModel[Number(idn) + iOffset] != null) {
 						// reread id by name
-						idr = $.jgrid.getAccessor(cur, colModel[idn + iOffset].name);
+						idr = $.jgrid.getAccessor(cur, colModel[Number(idn) + iOffset].name);
 					}
 					if (idr === undefined) {
 						idr = br + i;
-						if (cellName) {
-							ccur = $.jgrid.getAccessor(cur, cellName) || cur;
-							idr = ccur != null && ccur[idn] !== undefined ? ccur[idn] : idr;
-							ccur = null;
-						}
 					}
 				}
 				rd = { };
 				rd[localReader.id] = idr;
-				if (cellName) {
-					cur = $.jgrid.getAccessor(cur, cellName) || cur;
-				}
-				rowReader = $.isArray(cur) ? arrayReader : objectReader;
 				for (j = 0; j < rowReader.length; j++) {
 					v = $.jgrid.getAccessor(cur, rowReader[j]);
 					rd[colModel[j + iOffset].name] = v;
@@ -1524,7 +1529,7 @@ $.fn.jqGrid = function( pin ) {
 				dReader =  ts.p.jsonReader;
 				frd='json';
 			}
-			var self = $(ts), ir=0,v,i,j,f=[],cur,gi=ts.p.multiselect?1:0,si=ts.p.subGrid===true?1:0,addSubGridCell,ni=ts.p.rownumbers===true?1:0,arrayReader=orderedCols(gi+si+ni),objectReader=reader(frd),rowReader,len,drows,idn,rd={}, fpos, idr,rowData=[],cn=(ts.p.altRows === true) ? ts.p.altclass:"",cn1;
+			var self = $(ts), ir=0,v,i,j,cur,gi=ts.p.multiselect?1:0,si=ts.p.subGrid===true?1:0,addSubGridCell,ni=ts.p.rownumbers===true?1:0,arrayReader=orderedCols(gi+si+ni),objectReader=reader(frd),rowReader,len,drows,idn,rd={}, fpos, idr,rowData=[],cn=(ts.p.altRows === true) ? ts.p.altclass:"",cn1;
 			ts.p.page = intNum($.jgrid.getAccessor(data,dReader.page), ts.p.page);
 			ts.p.lastpage = intNum($.jgrid.getAccessor(data,dReader.total), 1);
 			ts.p.records = intNum($.jgrid.getAccessor(data,dReader.records));
@@ -1536,6 +1541,13 @@ $.fn.jqGrid = function( pin ) {
 				idn = $.isFunction(dReader.id) ? dReader.id.call(ts, data) : dReader.id; 
 			} else {
 				idn = ts.p.keyName;
+			}
+			var idi = !isNaN(idn) ? Number(idn) : undefined;
+			for (i=0; i<ts.p.colModel.length;i++) {
+				if (ts.p.colModel[i].name === idn) {
+					idi = i;
+					break;
+				}
 			}
 			drows = $.jgrid.getAccessor(data,dReader.root);
 			if (drows == null && $.isArray(data)) { drows = data; }
@@ -1554,21 +1566,27 @@ $.fn.jqGrid = function( pin ) {
 			}
 			while (i<len) {
 				cur = drows[i];
-				idr = $.jgrid.getAccessor(cur,idn);
+				rowReader = objectReader;
+				if (dReader.repeatitems) {
+					if(dReader.cell) {
+						cur = $.jgrid.getAccessor(cur, dReader.cell) || cur;
+					}
+					if ($.isArray(cur)) {
+						rowReader = arrayReader;
+						idr = $.jgrid.getAccessor(cur, idi);
+					} else {
+						idr = $.jgrid.getAccessor(cur, idn);
+					}
+				} else {
+					idr = $.jgrid.getAccessor(cur, idn);
+				}
 				if(idr === undefined) {
-					if (typeof idn === "number" && ts.p.colModel[idn+gi+si+ni] != null) {
+					if (!isNaN(idn) && ts.p.colModel[Number(idn)+gi+si+ni] != null) {
 						// reread id by name
-						idr = $.jgrid.getAccessor(cur,ts.p.colModel[idn+gi+si+ni].name);
+						idr = $.jgrid.getAccessor(cur,ts.p.colModel[Number(idn)+gi+si+ni].name);
 					}
 					if(idr === undefined) {
 						idr = br+i;
-						if(f.length===0){
-							if(dReader.cell){
-								var ccur = $.jgrid.getAccessor(cur,dReader.cell) || cur;
-								idr = ccur != null && ccur[idn] !== undefined ? ccur[idn] : idr;
-								ccur=null;
-							}
-						}
 					}
 				}
 				idr  = ts.p.idPrefix + idr;
@@ -1591,11 +1609,6 @@ $.fn.jqGrid = function( pin ) {
 				}
 				if( si ) {
 					rowData.push( addSubGridCell.call(self,gi+ni,i+rcnt) );
-				}
-				rowReader=objectReader;
-				if (dReader.repeatitems) {
-					if(dReader.cell) {cur = $.jgrid.getAccessor(cur,dReader.cell) || cur;}
-					if ($.isArray(cur)) { rowReader=arrayReader; }
 				}
 				for (j=0;j<rowReader.length;j++) {
 					v = $.jgrid.getAccessor(cur,rowReader[j]);
@@ -1665,31 +1678,31 @@ $.fn.jqGrid = function( pin ) {
 			if(locdata) {
 				while (ir<len && drows[ir]) {
 					cur = drows[ir];
-					idr = $.jgrid.getAccessor(cur,idn);
+					rowReader = objectReader;
+					if (dReader.repeatitems) {
+						if (dReader.cell) {
+							cur = $.jgrid.getAccessor(cur, dReader.cell) || cur;
+						}
+						if ($.isArray(cur)) {
+							rowReader = arrayReader;
+							idr = $.jgrid.getAccessor(cur, idi);
+						} else {
+							idr = $.jgrid.getAccessor(cur, idn);
+						}
+					} else {
+						idr = $.jgrid.getAccessor(cur, idn);
+					}
 					if(idr === undefined) {
-						if (typeof idn === "number" && ts.p.colModel[idn+gi+si+ni] != null) {
+						if (!isNaN(idn) && ts.p.colModel[Number(idn)+gi+si+ni] != null) {
 							// reread id by name
-							idr = $.jgrid.getAccessor(cur,ts.p.colModel[idn+gi+si+ni].name);
+							idr = $.jgrid.getAccessor(cur,ts.p.colModel[Number(idn)+gi+si+ni].name);
 						}
 						if(idr === undefined) {
 							idr = br+ir;
-							if(f.length===0){
-								if(dReader.cell){
-									var ccur2 = $.jgrid.getAccessor(cur,dReader.cell) || cur;
-									idr = ccur2 != null && ccur2[idn] !== undefined ? ccur2[idn] : idr;
-									ccur2=null;
-								}
-							}
 						}
 					}
+					idr = ts.p.idPrefix + idr;
 					if(cur) {
-						idr  = ts.p.idPrefix + idr;
-						rowReader=objectReader;
-						if (dReader.repeatitems) {
-							if(dReader.cell) {cur = $.jgrid.getAccessor(cur,dReader.cell) || cur;}
-							if ($.isArray(cur)) { rowReader=arrayReader; }
-						}
-
 						for (j=0;j<rowReader.length;j++) {
 							rd[ts.p.colModel[j+gi+si+ni].name] = $.jgrid.getAccessor(cur,rowReader[j]);
 						}
