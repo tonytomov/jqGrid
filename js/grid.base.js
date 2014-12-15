@@ -2,12 +2,10 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
 /**
- * @license jqGrid  4.7.0 - jQuery Grid
+ * @license Guriddo jqGrid JS 4.7.0 (2014-12-08)
  * Copyright (c) 2008, Tony Tomov, tony@trirand.com
- * Dual licensed under the MIT and GPL licenses
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2014-12-08
+ * 
+ * License: http://guriddo.net/?page_id=103334
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */

@@ -1,14 +1,6 @@
 /*jshint eqeqeq:false */
 /*global jQuery */
 (function($){
-/**
- * jqGrid pivot functions
- * Tony Tomov tony@trirand.com
- * http://trirand.com/blog/
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl-2.0.html
-*/
 "use strict";
 // To optimize the search we need custom array filter
 // This code is taken from

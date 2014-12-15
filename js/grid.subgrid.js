@@ -1,14 +1,6 @@
 /*jshint eqeqeq:false */
 /*global jQuery */
 (function($){
-/**
- * jqGrid extension for SubGrid Data
- * Tony Tomov tony@trirand.com
- * http://trirand.com/blog/ 
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl-2.0.html
-**/
 "use strict";
 $.jgrid.extend({
 setSubGrid : function () {
