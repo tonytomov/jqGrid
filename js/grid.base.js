@@ -2769,6 +2769,7 @@ $.fn.jqGrid = function( pin ) {
 					ri = ptr[0].rowIndex;
 					try {$(ts).jqGrid("editCell",ri,ci,true);} catch (_) {}
 				}
+				return;
 			}
 			if (!cSel) {
 				return;
