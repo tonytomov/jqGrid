@@ -5383,7 +5383,7 @@ $.jgrid.extend({
 			var triggerToolbar = function() {
 				var sdata={}, j=0, v, nm, sopt={},so;
 				$.each($t.p.colModel,function(){
-					var $elem = $("#gs_"+$.jgrid.jqID(this.name), (this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
+					var $elem = $("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(this.name), (this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
 					nm = this.index || this.name;
 					if(p.searchOperators ) {
 						so = $elem.parent().prev().children("a").attr("soper") || p.defaultSearch;
@@ -5439,7 +5439,7 @@ $.jgrid.extend({
 				var sdata={}, j=0, nm;
 				trigger = (typeof trigger !== 'boolean') ? true : trigger;
 				$.each($t.p.colModel,function(){
-					var v, $elem = $("#gs_"+$.jgrid.jqID(this.name),(this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
+					var v, $elem = $("#gs_"+$t.p.idPrefix+$.jgrid.jqID(this.name),(this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
 					if(this.searchoptions && this.searchoptions.defaultValue !== undefined) { v = this.searchoptions.defaultValue; }
 					nm = this.index || this.name;
 					switch (this.stype) {
@@ -5637,7 +5637,7 @@ $.jgrid.extend({
 										$("td:eq(1)",stbl).append(res);
 									}
 									if(soptions.defaultValue !== undefined) { $("select",self).val(soptions.defaultValue); }
-									$("select",self).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
+									$("select",self).attr({name:cm.index || cm.name, id: "gs_"+$t.p.idPrefix+cm.name});
 									if(soptions.attr) {$("select",self).attr(soptions.attr);}
 									$("select",self).css({width: "100%"});
 									// preserve autoserch
@@ -5665,7 +5665,7 @@ $.jgrid.extend({
 							if (oSv) {	
 								var elem = document.createElement("select");
 								elem.style.width = "100%";
-								$(elem).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
+								$(elem).attr({name:cm.index || cm.name, id: "gs_"+$t.p.idPrefix+cm.name});
 								var sv, ov, key, k;
 								if(typeof oSv === "string") {
 									so = oSv.split(delim);
@@ -5701,7 +5701,7 @@ $.jgrid.extend({
 					case "text":
 						var df = soptions.defaultValue !== undefined ? soptions.defaultValue: "";
 
-						$("td:eq(1)",stbl).append("<input type='text' style='width:100%;padding:0px;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"' value='"+df+"'/>");
+						$("td:eq(1)",stbl).append("<input type='text' style='width:100%;padding:0px;' name='"+(cm.index || cm.name)+"' id='gs_"+$t.p.idPrefix+cm.name+"' value='"+df+"'/>");
 						$(thd).append(stbl);
 
 						if(soptions.attr) {$("input",thd).attr(soptions.attr);}
@@ -5739,7 +5739,7 @@ $.jgrid.extend({
 						}
 						break;
 					case "custom":
-						$("td:eq(1)",stbl).append("<span style='width:95%;padding:0px;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"'/>");
+						$("td:eq(1)",stbl).append("<span style='width:95%;padding:0px;' name='"+(cm.index || cm.name)+"' id='gs_"+$t.p.idPrefix+cm.name+"'/>");
 						$(thd).append(stbl);
 						try {
 							if($.isFunction(soptions.custom_element)) {
@@ -9370,12 +9370,21 @@ $.jgrid.extend({
 				} catch (egv) {
 					gv = n.displayValue;
 				}
+				var grpTextStr = ''; 
+				if($.isFunction(grp.groupText[n.idx])) { 
+					grpTextStr = grp.groupText[n.idx].call($t, gv, n.cnt, n.summary);
+				} else {
+					grpTextStr = $.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary);
+				}
+				if( !(typeof grpTextStr ==='string' || typeof grpTextStr ==='number' ) ) {
+					grpTextStr = gv;
+				}
 				if(grp.groupSummaryPos[n.idx] === 'header')  {
-					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\"" + mul +">"+icon+$.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary)+"</td>";
+					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\"" + mul +">" + icon+grpTextStr + "</td>";
 					str += buildSummaryTd(i, 0, grp.groups, grp.groupColumnShow[n.idx] === false ? (mul ==="" ? 2 : 3) : ((mul ==="") ? 1 : 2) );
 					str += "</tr>";
 				} else {
-					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\" colspan=\""+(grp.groupColumnShow[n.idx] === false ? colspans-1 : colspans)+"\">"+icon+$.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary)+"</td></tr>";
+					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\" colspan=\""+(grp.groupColumnShow[n.idx] === false ? colspans-1 : colspans)+"\">" + icon + grpTextStr + "</td></tr>";
 				}
 				var leaf = len-1 === n.idx; 
 				if( leaf ) {
