@@ -18,6 +18,24 @@
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
 	version : "4.7.0",
+	formatter : { // set common formatter settings independent from the language and locale
+		date : {
+			parseRe : /[#%\\\/:_;.,\t\s-]/,
+			masks : {
+				ISO8601Long:"Y-m-d H:i:s",
+				ISO8601Short:"Y-m-d",
+				SortableDateTime: "Y-m-d\\TH:i:s",
+				UniversalSortableDateTime: "Y-m-d H:i:sO"
+			},
+			reformatAfterEdit : false,
+			userLocalTime : false
+		}
+		baseLinkUrl: '',
+		showAction: '',
+		target: '',
+		checkbox : {disabled:true},
+		idName : 'id'
+	},
 	htmlDecode : function(value){
 		if(value && (value==='&nbsp;' || value==='&#160;' || (value.length===1 && value.charCodeAt(0)===160))) { return "";}
 		return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");		

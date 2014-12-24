@@ -120,13 +120,10 @@ $.extend($.jgrid,{
 			S: function () {return '.';}, // one can also use 'er' instead of '.' but one have to use additional word like 'der' or 'den' before
 			srcformat: 'Y-m-d',
 			newformat: 'd.m.Y',
-			parseRe : /[#%\\\/:_;.,\t\s-]/,
 			masks : {
 				// see http://php.net/manual/en/function.date.php for PHP format used in jqGrid
 				// and see http://docs.jquery.com/UI/Datepicker/formatDate
 				// and https://github.com/jquery/globalize#dates for alternative formats used frequently
-				ISO8601Long: "Y-m-d H:i:s",
-				ISO8601Short: "Y-m-d",
 				// short date:
 				//    d - Day of the month, 2 digits with leading zeros
 				//    m - Numeric representation of a month, with leading zeros
@@ -160,21 +157,12 @@ $.extend($.jgrid,{
 				//    i - Minutes with leading zeros
 				//    s - Seconds, with leading zeros
 				LongTime: "H:i:s", // in jQuery UI Datepicker: "HH:mm:ss"
-				SortableDateTime: "Y-m-d\\TH:i:s",
-				UniversalSortableDateTime: "Y-m-d H:i:sO",
 				// month with year
 				//    F - A full textual representation of a month
 				//    Y - A full numeric representation of a year, 4 digits
 				YearMonth: "F Y" // in jQuery UI Datepicker: "MMMM yyyy"
-			},
-			reformatAfterEdit : false,
-			userLocalTime : false
-		},
-		baseLinkUrl: '',
-		showAction: '',
-		target: '',
-		checkbox : {disabled:true},
-		idName : 'id'
+			}
+		}
 	}
 });
 })(jQuery);

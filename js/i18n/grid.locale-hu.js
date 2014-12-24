@@ -111,28 +111,16 @@ $.extend($.jgrid,{
 			S: function (j) {return '.-ik';},
 			srcformat: 'Y-m-d',
 			newformat: 'Y/m/d',
-			parseRe : /[#%\\\/:_;.,\t\s-]/,
 			masks : {
-				ISO8601Long:"Y-m-d H:i:s",
-				ISO8601Short:"Y-m-d",
 				ShortDate: "Y/j/n",
 				LongDate: "Y. F hó d., l",
 				FullDateTime: "l, F d, Y g:i:s A",
 				MonthDay: "F d",
 				ShortTime: "a g:i",
 				LongTime: "a g:i:s",
-				SortableDateTime: "Y-m-d\\TH:i:s",
-				UniversalSortableDateTime: "Y-m-d H:i:sO",
 				YearMonth: "Y, F"
-			},
-			reformatAfterEdit : false,
-			userLocalTime : false
-		},
-		baseLinkUrl: '',
-		showAction: '',
-		target: '',
-		checkbox : {disabled:true},
-		idName : 'id'
+			}
+		}
 	}
 });
 })(jQuery);
