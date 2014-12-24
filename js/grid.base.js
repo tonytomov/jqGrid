@@ -2964,9 +2964,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 		} else {
 			$(grid.cDiv).hide();
-			if(!ts.p.toppager) {
-				$(grid.hDiv).addClass('ui-corner-top');
-			}
+			$(grid.cDiv).nextAll("div:visible").filter(":first").addClass('ui-corner-top'); // set on top toolbar, or toppager or on hdiv
 		}
 		$(grid.hDiv).after(grid.bDiv)
 		.mousemove(function (e) {
@@ -3688,7 +3686,7 @@ $.jgrid.extend({
 			this.p.caption=newcap;
 			$("span.ui-jqgrid-title, span.ui-jqgrid-title-rtl",this.grid.cDiv).html(newcap);
 			$(this.grid.cDiv).show();
-			$(this.grid.hDiv).removeClass('ui-corner-top');
+			$(grid.cDiv).nextAll("div").removeClass('ui-corner-top');
 		});
 	},
 	setLabel : function(colname, nData, prop, attrp ){
