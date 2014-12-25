@@ -7,15 +7,15 @@ repositories {
 }
 
 dependencies {
-    jscompiler 'com.google.javascript:closure-compiler:v20141120'
+    jscompiler 'com.google.javascript:closure-compiler:v20141215'
 }
 
 def srcdir = new File('js')
 def distdir = new File('dist')
 
-def jqGridFile = new File(distdir, 'jquery.jqGrid.js')
+def jqGridFile = new File(distdir, 'jquery.jqGrid.src.js')
 def jqGridMinFile = new File(distdir, 'jquery.jqGrid.min.js')
-def jqGridSrcMapFile = new File(distdir, 'jquery.jqGrid.map.js')
+def jqGridSrcMapFile = new File(distdir, 'jquery.jqGrid.min.map')
 
 task init() {
     description = "Create distribution directory: $distdir.absolutePath"
@@ -31,7 +31,7 @@ task init() {
 
 task jqgrid(dependsOn: 'init') {
     description = "Concatinate all javascript files into one javascript file: $jqGridFile.absolutePath"
-    def files = fileTree(dir: srcdir, include: '*.js', exclude: 'jquery.jqGrid.js')
+    def files = fileTree(dir: srcdir, include: '*.js', exclude: 'jquery.jqGrid.src.js')
     inputs.file files
     outputs.file jqGridFile
 
