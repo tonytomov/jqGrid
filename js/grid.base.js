@@ -29,7 +29,7 @@ $.extend($.jgrid,{
 			},
 			reformatAfterEdit : false,
 			userLocalTime : false
-		}
+		},
 		baseLinkUrl: '',
 		showAction: '',
 		target: '',
