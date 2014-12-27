@@ -1,4 +1,5 @@
-;(function($){
+(function($){
+"use strict";
 /**
  * jqGrid Arabic Translation
  * 
@@ -105,7 +106,7 @@ $.extend($.jgrid,{
 				"جانفي", "فيفري", "مارس", "أفريل", "ماي", "جوان", "جويلية", "أوت", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
 			],
 			AmPm : ["صباحا","مساءا","صباحا","مساءا"],
-			S: function (j) {return j == 1 ? 'er' : 'e';},
+			S: function (j) {return j === 1 ? 'er' : 'e';},
 			srcformat: 'Y-m-d',
 			newformat: 'd/m/Y',
 			masks : {
@@ -120,4 +121,4 @@ $.extend($.jgrid,{
 		}
 	}
 });
-})(jQuery);
+}(jQuery));
