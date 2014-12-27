@@ -2,7 +2,7 @@
 .ui-jqgrid {position: relative;}
 .ui-jqgrid div { line-height: normal; }
 .ui-jqgrid table { border-collapse: separate; border-style: none; }
-.ui-jqgrid>.ui-jqgrid-view {position: relative;left:0; top: 0; padding: 0; font-size:11px;}
+.ui-jqgrid>.ui-jqgrid-view {position: relative;left:0; top: 0; padding: 0; font-size:11px;border-right-color: inherit;}
 /* caption*/
 .ui-jqgrid .ui-jqgrid-titlebar {padding: .3em .2em .2em .3em; position: relative; font-size: 12px; border-left: 0 none;border-right: 0 none; border-top: 0 none;}
 .ui-jqgrid .ui-jqgrid-caption {text-align: left;}
@@ -53,7 +53,7 @@ div.ui-jqgrid-view table.ui-jqgrid-btable td, div.ui-jqgrid-view table.ui-jqgrid
 .ui-jqgrid tr.footrow-ltr td {text-align:left;border-right-width: 1px; border-right-color: inherit; border-right-style: solid;}
 .ui-jqgrid tr.footrow-rtl td {text-align:right;border-left-width: 1px; border-left-color: inherit; border-left-style: solid;}
 /* Pager*/
-.ui-jqgrid>.ui-jqgrid-pager { border-left: 0 none;border-right: 1px solid inherit; border-bottom: 0 none; border-top: 0 none; margin: 0; padding: 0; position: relative; height: auto;white-space: nowrap;overflow: hidden;font-size:11px;}
+.ui-jqgrid>.ui-jqgrid-pager { border-left: 0 none; border-right-width: 1px; border-right-color: inherit; border-right-style: solid; border-bottom: 0 none; border-top: 0 none; margin: 0; padding: 0; position: relative; height: auto;white-space: nowrap;overflow: hidden;font-size:11px;}
 .ui-jqgrid .ui-jqgrid-toppager .ui-pager-control, .ui-jqgrid .ui-jqgrid-pager .ui-pager-control {position: relative;border-left: 0;border-bottom: 0;border-top: 0;}
 .ui-jqgrid .ui-pg-table {position: relative; padding:0; width:auto; margin: 0;}
 .ui-jqgrid .ui-pg-table td {font-weight:normal; vertical-align:middle; padding:1px;}
@@ -70,7 +70,7 @@ div.ui-jqgrid-view table.ui-jqgrid-btable td, div.ui-jqgrid-view table.ui-jqgrid
 .ui-jqgrid .ui-jqgrid-pager .ui-pg-div  span.ui-icon {float:left;margin:0 2px;}
 .ui-jqgrid td input, .ui-jqgrid td select, .ui-jqgrid td textarea { margin: 0;}
 .ui-jqgrid td textarea {width:auto;height:auto;}
-.ui-jqgrid>.ui-jqgrid-view>.ui-jqgrid-toppager {border-left: 0 none;border-right: 1px solid inherit; border-top: 0 none; margin: 0; padding: 0; position: relative; height: auto;white-space: nowrap;overflow: hidden;}
+.ui-jqgrid>.ui-jqgrid-view>.ui-jqgrid-toppager {border-left: 0 none; border-right-width: 1px; border-right-style: solid; border-top: 0 none; margin: 0; padding: 0; position: relative; height: auto;white-space: nowrap;overflow: hidden;}
 .ui-jqgrid .ui-jqgrid-toppager .ui-pg-div {padding:1px 0;float:left;position:relative;}
 .ui-jqgrid .ui-jqgrid-toppager .ui-pg-button { cursor:pointer; }
 .ui-jqgrid .ui-jqgrid-toppager .ui-pg-div  span.ui-icon {float:left;margin:0 2px;}
