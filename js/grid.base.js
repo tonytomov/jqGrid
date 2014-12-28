@@ -1930,7 +1930,7 @@ $.fn.jqGrid = function( pin ) {
 				fmt = $.jgrid.formatter.integer || {};
 				cp = intNum(ts.p.page);
 				last = intNum(ts.p.lastpage);
-				$(".selbox",pgboxes)[ this.p.useProp ? 'prop' : 'attr' ]("disabled",false);
+				$(".selbox", pgboxes)[ts.p.useProp ? 'prop' : 'attr']("disabled", false);
 				if(ts.p.pginput===true) {
 					$('.ui-pg-input',pgboxes).val(ts.p.page);
 					sppg = ts.p.toppager ? '#sp_1'+tspg+",#sp_1"+tspg_t : '#sp_1'+tspg;
