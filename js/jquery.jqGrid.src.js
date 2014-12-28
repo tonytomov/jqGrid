@@ -2,12 +2,13 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
 /**
- * @license jqGrid  4.7.0 - jQuery Grid
+ * @license jqGrid  4.7.0-post - jQuery Grid
  * Copyright (c) 2008, Tony Tomov, tony@trirand.com
+ * Copyright (c) 2014, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2014-12-08
+ * Date: 2014-12-28
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -17,7 +18,25 @@
 "use strict";
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
-	version : "4.7.0",
+	version : "4.7.0-post",
+	formatter : { // set common formatter settings independent from the language and locale
+		date : {
+			parseRe : /[#%\\\/:_;.,\t\s-]/,
+			masks : {
+				ISO8601Long:"Y-m-d H:i:s",
+				ISO8601Short:"Y-m-d",
+				SortableDateTime: "Y-m-d\\TH:i:s",
+				UniversalSortableDateTime: "Y-m-d H:i:sO"
+			},
+			reformatAfterEdit : false,
+			userLocalTime : false
+		},
+		baseLinkUrl: '',
+		showAction: '',
+		target: '',
+		checkbox : {disabled:true},
+		idName : 'id'
+	},
 	htmlDecode : function(value){
 		if(value && (value==='&nbsp;' || value==='&#160;' || (value.length===1 && value.charCodeAt(0)===160))) { return "";}
 		return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");		
@@ -1211,7 +1230,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 		},
 		normalizeData = function() {
-			var p = ts.p, data = p.data, dataLength = data.length, i, j, cur, idn, idr, ccur, v, rd,
+			var p = ts.p, data = p.data, dataLength = data.length, i, j, cur, cells, idn, idi, idr, v, rd,
 			localReader = p.localReader,
 			colModel = p.colModel,
 			cellName = localReader.cell,
@@ -1227,38 +1246,36 @@ $.fn.jqGrid = function( pin ) {
 			objectReader = reader("local");
 			// read ALL input items and convert items to be read by
 			// $.jgrid.getAccessor with column name as the second parameter
-			idn = p.keyIndex === false ?
+			idn = p.keyName === false ?
 				($.isFunction(localReader.id) ? localReader.id.call(ts, data) : localReader.id) :
-				p.keyIndex; 
+				p.keyName;
+			if (!isNaN(idn)) {
+				idi = Number(idn);
+			}
+			for (i = 0; i < colModel.length; i++) {
+				if (colModel[i].name === idn) {
+					idi = i;
+					break;
+				}
+			}
 			for (i = 0; i < dataLength; i++) {
 				cur = data[i];
-				// read id in the same way like addJSONData do
-				// probably it would be better to start with "if (cellName) {...}"
-				// but the goal of the current implementation was just have THE SAME
-				// id values like in addJSONData ...
-				idr = $.jgrid.getAccessor(cur, idn);
+				cells = cellName ? $.jgrid.getAccessor(cur, cellName) || cur : cur;
+				rowReader = $.isArray(cells) ? arrayReader : objectReader;
+				idr = p.keyName === false ? $.jgrid.getAccessor(cur, idn) : $.jgrid.getAccessor(cells, rowReader[idi]);
 				if (idr === undefined) {
-					if (typeof idn === "number" && colModel[idn + iOffset] != null) {
-						// reread id by name
-						idr = $.jgrid.getAccessor(cur, colModel[idn + iOffset].name);
+					// it could be that one uses the index of column in localReader.id
+					if (!isNaN(idn) && colModel[Number(idn) + iOffset] != null) {
+						idr = $.jgrid.getAccessor(cells, rowReader[Number(idn)]);
 					}
 					if (idr === undefined) {
 						idr = br + i;
-						if (cellName) {
-							ccur = $.jgrid.getAccessor(cur, cellName) || cur;
-							idr = ccur != null && ccur[idn] !== undefined ? ccur[idn] : idr;
-							ccur = null;
-						}
 					}
 				}
 				rd = { };
 				rd[localReader.id] = idr;
-				if (cellName) {
-					cur = $.jgrid.getAccessor(cur, cellName) || cur;
-				}
-				rowReader = $.isArray(cur) ? arrayReader : objectReader;
 				for (j = 0; j < rowReader.length; j++) {
-					v = $.jgrid.getAccessor(cur, rowReader[j]);
+					v = $.jgrid.getAccessor(cells, rowReader[j]);
 					rd[colModel[j + iOffset].name] = v;
 				}
 				$.extend(true, data[i], rd);
@@ -1524,7 +1541,7 @@ $.fn.jqGrid = function( pin ) {
 				dReader =  ts.p.jsonReader;
 				frd='json';
 			}
-			var self = $(ts), ir=0,v,i,j,f=[],cur,gi=ts.p.multiselect?1:0,si=ts.p.subGrid===true?1:0,addSubGridCell,ni=ts.p.rownumbers===true?1:0,arrayReader=orderedCols(gi+si+ni),objectReader=reader(frd),rowReader,len,drows,idn,rd={}, fpos, idr,rowData=[],cn=(ts.p.altRows === true) ? ts.p.altclass:"",cn1;
+			var self = $(ts), ir,v,i,j,cur,cells,gi=ts.p.multiselect?1:0,si=ts.p.subGrid===true?1:0,addSubGridCell,ni=ts.p.rownumbers===true?1:0,arrayReader=orderedCols(gi+si+ni),objectReader=reader(frd),rowReader,len,drows,idn,idi,rd={}, fpos, idr,rowData=[],cn=(ts.p.altRows === true) ? ts.p.altclass:"",cn1;
 			ts.p.page = intNum($.jgrid.getAccessor(data,dReader.page), ts.p.page);
 			ts.p.lastpage = intNum($.jgrid.getAccessor(data,dReader.total), 1);
 			ts.p.records = intNum($.jgrid.getAccessor(data,dReader.records));
@@ -1537,38 +1554,42 @@ $.fn.jqGrid = function( pin ) {
 			} else {
 				idn = ts.p.keyName;
 			}
+			if (!isNaN(idn)) {
+				idi = Number(idn);
+			}
+			for (i=0; i<ts.p.colModel.length; i++) {
+				if (ts.p.colModel[i].name === idn) {
+					idi = i;
+					break;
+				}
+			}
 			drows = $.jgrid.getAccessor(data,dReader.root);
 			if (drows == null && $.isArray(data)) { drows = data; }
 			if (!drows) { drows = []; }
-			len = drows.length; i=0;
+			len = drows.length;
 			if (len > 0 && ts.p.page <= 0) { ts.p.page = 1; }
 			var rn = parseInt(ts.p.rowNum,10),br=ts.p.scroll?$.jgrid.randId():1, altr, selected=false, selr;
 			if (adjust) { rn *= adjust+1; }
 			if(ts.p.datatype === "local" && !ts.p.deselectAfterSort) {
 				selected = true;
 			}
-			var afterInsRow = $.isFunction(ts.p.afterInsertRow), grpdata=[],hiderow=false, groupingPrepare;
+			var afterInsRow = $.isFunction(ts.p.afterInsertRow), grpdata=[],hiderow=false, groupingPrepare, iStartTrTag;
 			if(ts.p.grouping)  {
 				hiderow = ts.p.groupingView.groupCollapse === true;
 				groupingPrepare = $.jgrid.getMethod("groupingPrepare");
 			}
-			while (i<len) {
+			for (i=0; i<len && i<rn; i++) {
 				cur = drows[i];
-				idr = $.jgrid.getAccessor(cur,idn);
+				cells = dReader.repeatitems && dReader.cell ? $.jgrid.getAccessor(cur, dReader.cell) || cur : cur;
+				rowReader = dReader.repeatitems && $.isArray(cells) ? arrayReader : objectReader;
+				idr = ts.p.keyName === false ? $.jgrid.getAccessor(cur, idn) : $.jgrid.getAccessor(cells, rowReader[idi]);
 				if(idr === undefined) {
-					if (typeof idn === "number" && ts.p.colModel[idn+gi+si+ni] != null) {
-						// reread id by name
-						idr = $.jgrid.getAccessor(cur,ts.p.colModel[idn+gi+si+ni].name);
+					// it could be that one uses the index of column in dReader.id
+					if (!isNaN(idn) && ts.p.colModel[Number(idn)+gi+si+ni] != null) {
+						idr = $.jgrid.getAccessor(cells, rowReader[Number(idn)]);
 					}
 					if(idr === undefined) {
 						idr = br+i;
-						if(f.length===0){
-							if(dReader.cell){
-								var ccur = $.jgrid.getAccessor(cur,dReader.cell) || cur;
-								idr = ccur != null && ccur[idn] !== undefined ? ccur[idn] : idr;
-								ccur=null;
-							}
-						}
 					}
 				}
 				idr  = ts.p.idPrefix + idr;
@@ -1581,7 +1602,7 @@ $.fn.jqGrid = function( pin ) {
 						selr = (idr === ts.p.selrow);
 					}
 				}
-				var iStartTrTag = rowData.length;
+				iStartTrTag = rowData.length;
 				rowData.push("");
 				if( ni ) {
 					rowData.push( addRowNum(0,i,ts.p.page,ts.p.rowNum) );
@@ -1592,17 +1613,12 @@ $.fn.jqGrid = function( pin ) {
 				if( si ) {
 					rowData.push( addSubGridCell.call(self,gi+ni,i+rcnt) );
 				}
-				rowReader=objectReader;
-				if (dReader.repeatitems) {
-					if(dReader.cell) {cur = $.jgrid.getAccessor(cur,dReader.cell) || cur;}
-					if ($.isArray(cur)) { rowReader=arrayReader; }
-				}
 				for (j=0;j<rowReader.length;j++) {
-					v = $.jgrid.getAccessor(cur,rowReader[j]);
+					v = $.jgrid.getAccessor(cells, rowReader[j]);
 					rd[ts.p.colModel[j+gi+si+ni].name] = v;
-					rowData.push( addCell(idr,v,j+gi+si+ni,i+rcnt,cur, rd) );
+					rowData.push( addCell(idr,v,j+gi+si+ni,i+rcnt,cells, rd) );
 				}
-				rowData[iStartTrTag] = constructTr(idr, hiderow, cn1, rd, cur, selr);
+				rowData[iStartTrTag] = constructTr(idr, hiderow, cn1, rd, cells, selr);
 				rowData.push( "</tr>" );
 				if(ts.p.grouping) {
 					grpdata.push( rowData );
@@ -1618,14 +1634,11 @@ $.fn.jqGrid = function( pin ) {
 				}
 				if(ts.p.gridview === false ) {
 					$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
-					self.triggerHandler("jqGridAfterInsertRow", [idr, rd, cur]);
-					if(afterInsRow) {ts.p.afterInsertRow.call(ts,idr,rd,cur);}
-					rowData=[];//ari=0;
+					self.triggerHandler("jqGridAfterInsertRow", [idr, rd, cells]);
+					if(afterInsRow) {ts.p.afterInsertRow.call(ts,idr,rd,cells);}
+					rowData=[];
 				}
 				rd={};
-				ir++;
-				i++;
-				if(ir===rn) { break; }
 			}
 			if(ts.p.gridview === true ) {
 				fpos = ts.p.treeANode > -1 ? ts.p.treeANode: 0;
@@ -1646,15 +1659,15 @@ $.fn.jqGrid = function( pin ) {
 				try { self.jqGrid("addSubGrid",gi+ni);} catch (_){}
 			}
 			ts.p.totaltime = new Date() - startReq;
-			if(ir>0) {
+			if(i>0) {
 				if(ts.p.records===0) { ts.p.records=len; }
 			}
 			rowData = null;
 			if( ts.p.treeGrid === true) {
-				try {self.jqGrid("setTreeNode", fpos+1, ir+fpos+1);} catch (e) {}
+				try {self.jqGrid("setTreeNode", fpos+1, i+fpos+1);} catch (e) {}
 			}
 			//if(!ts.p.treeGrid && !ts.p.scroll) {ts.grid.bDiv.scrollTop = 0;}
-			ts.p.reccount=ir;
+			ts.p.reccount=i;
 			ts.p.treeANode = -1;
 			if(ts.p.userDataOnFooter) { self.jqGrid("footerData","set",ts.p.userData,true); }
 			if(locdata) {
@@ -1663,35 +1676,23 @@ $.fn.jqGrid = function( pin ) {
 			}
 			if (!more) { ts.updatepager(false,true); }
 			if(locdata) {
-				while (ir<len && drows[ir]) {
+				for (ir=i; ir<len && drows[ir]; ir++) {
 					cur = drows[ir];
-					idr = $.jgrid.getAccessor(cur,idn);
+					cells = dReader.repeatitems && dReader.cell ? $.jgrid.getAccessor(cur, dReader.cell) || cur : cur;
+					rowReader = dReader.repeatitems && $.isArray(cells) ? arrayReader : objectReader;
+					idr = ts.p.keyName === false ? $.jgrid.getAccessor(cur, idn) : $.jgrid.getAccessor(cells, rowReader[idi]);
 					if(idr === undefined) {
-						if (typeof idn === "number" && ts.p.colModel[idn+gi+si+ni] != null) {
-							// reread id by name
-							idr = $.jgrid.getAccessor(cur,ts.p.colModel[idn+gi+si+ni].name);
+						// it could be that one uses the index of column in dReader.id
+						if (!isNaN(idn) && ts.p.colModel[Number(idn)+gi+si+ni] != null) {
+							idr = $.jgrid.getAccessor(cells, rowReader[Number(idn)]);
 						}
 						if(idr === undefined) {
 							idr = br+ir;
-							if(f.length===0){
-								if(dReader.cell){
-									var ccur2 = $.jgrid.getAccessor(cur,dReader.cell) || cur;
-									idr = ccur2 != null && ccur2[idn] !== undefined ? ccur2[idn] : idr;
-									ccur2=null;
-								}
-							}
 						}
 					}
-					if(cur) {
-						idr  = ts.p.idPrefix + idr;
-						rowReader=objectReader;
-						if (dReader.repeatitems) {
-							if(dReader.cell) {cur = $.jgrid.getAccessor(cur,dReader.cell) || cur;}
-							if ($.isArray(cur)) { rowReader=arrayReader; }
-						}
-
+					if(cells) {
 						for (j=0;j<rowReader.length;j++) {
-							rd[ts.p.colModel[j+gi+si+ni].name] = $.jgrid.getAccessor(cur,rowReader[j]);
+							rd[ts.p.colModel[j+gi+si+ni].name] = $.jgrid.getAccessor(cells,rowReader[j]);
 						}
 						rd[locid] = $.jgrid.stripPref(ts.p.idPrefix, idr);
 						if(ts.p.grouping) {
@@ -1701,7 +1702,6 @@ $.fn.jqGrid = function( pin ) {
 						ts.p._index[rd[locid]] = ts.p.data.length-1;
 						rd = {};
 					}
-					ir++;
 				}
 				if(ts.p.grouping) {
 					ts.p.groupingView._locgr = true;
@@ -1919,7 +1919,7 @@ $.fn.jqGrid = function( pin ) {
 					var top = base * rh;
 					var height = parseInt(ts.p.records,10) * rh;
 					$(">div:first",ts.grid.bDiv).css({height : height}).children("div:first").css({height:top,display:top?"":"none"});
-					if (ts.grid.bDiv.scrollTop == 0 && ts.p.page > 1) {
+					if (ts.grid.bDiv.scrollTop === 0 && ts.p.page > 1) {
 						ts.grid.bDiv.scrollTop = ts.p.rowNum * (ts.p.page - 1) * rh;
 					}
 				}
@@ -1931,7 +1931,7 @@ $.fn.jqGrid = function( pin ) {
 				fmt = $.jgrid.formatter.integer || {};
 				cp = intNum(ts.p.page);
 				last = intNum(ts.p.lastpage);
-				$(".selbox",pgboxes)[ this.p.useProp ? 'prop' : 'attr' ]("disabled",false);
+				$(".selbox", pgboxes)[ts.p.useProp ? 'prop' : 'attr']("disabled", false);
 				if(ts.p.pginput===true) {
 					$('.ui-pg-input',pgboxes).val(ts.p.page);
 					sppg = ts.p.toppager ? '#sp_1'+tspg+",#sp_1"+tspg_t : '#sp_1'+tspg;
@@ -2788,6 +2788,7 @@ $.fn.jqGrid = function( pin ) {
 					ri = ptr[0].rowIndex;
 					try {$(ts).jqGrid("editCell",ri,ci,true);} catch (_) {}
 				}
+				return;
 			}
 			if (!cSel) {
 				return;
@@ -2942,15 +2943,18 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.hidegrid===true) {
 				$(".ui-jqgrid-titlebar-close",grid.cDiv).click( function(e){
 					var onHdCl = $.isFunction(ts.p.onHeaderClick),
-					elems = ".ui-jqgrid-bdiv, .ui-jqgrid-hdiv, .ui-jqgrid-pager, .ui-jqgrid-sdiv",
+					elems = ".ui-jqgrid-bdiv,.ui-jqgrid-hdiv,.ui-jqgrid-pager,.ui-jqgrid-sdiv",
 					counter, self = this;
 					if(ts.p.toolbar[0]===true) {
 						if( ts.p.toolbar[1]==='both') {
-							elems += ', #' + $(grid.ubDiv).attr('id');
+							elems += ',#' + $.jgrid.jqID($(grid.ubDiv).attr('id'));
 						}
-						elems += ', #' + $(grid.uDiv).attr('id');
+						elems += ',#' + $.jgrid.jqID($(grid.uDiv).attr('id'));
 					}
 					counter = $(elems,"#gview_"+$.jgrid.jqID(ts.p.id)).length;
+					if(ts.p.toppager) {
+						elems += ',' + ts.p.toppager;
+					}
 
 					if(ts.p.gridstate === 'visible') {
 						$(elems,"#gbox_"+$.jgrid.jqID(ts.p.id)).slideUp("fast", function() {
@@ -2959,11 +2963,13 @@ $.fn.jqGrid = function( pin ) {
 								$("span",self).removeClass("ui-icon-circle-triangle-n").addClass("ui-icon-circle-triangle-s");
 								ts.p.gridstate = 'hidden';
 								if($("#gbox_"+$.jgrid.jqID(ts.p.id)).hasClass("ui-resizable")) { $(".ui-resizable-handle","#gbox_"+$.jgrid.jqID(ts.p.id)).hide(); }
+								$(ts.grid.cDiv).addClass("ui-corner-bottom");
 								$(ts).triggerHandler("jqGridHeaderClick", [ts.p.gridstate,e]);
 								if(onHdCl) {if(!hg) {ts.p.onHeaderClick.call(ts,ts.p.gridstate,e);}}
 							}
 						});
 					} else if(ts.p.gridstate === 'hidden'){
+						$(ts.grid.cDiv).removeClass("ui-corner-bottom");
 						$(elems,"#gbox_"+$.jgrid.jqID(ts.p.id)).slideDown("fast", function() {
 							counter--;
 							if (counter === 0) {
@@ -2982,7 +2988,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 		} else {
 			$(grid.cDiv).hide();
-			$(grid.hDiv).addClass('ui-corner-top');
+			$(grid.cDiv).nextAll("div:visible").filter(":first").addClass('ui-corner-top'); // set on top toolbar, or toppager or on hdiv
 		}
 		$(grid.hDiv).after(grid.bDiv)
 		.mousemove(function (e) {
@@ -3328,7 +3334,7 @@ $.jgrid.extend({
 		return success;
 	},
 	addRowData : function(rowid,rdata,pos,src) {
-		if(["first", "last", "before", "after"].indexOf(pos) == -1) {pos = "last";}
+		if(["first", "last", "before", "after"].indexOf(pos) === -1) {pos = "last";}
 		var success = false, nm, row, gi, si, ni,sind, i, v, prp="", aradd, cnm, cn, data, cm, id;
 		if(rdata) {
 			if($.isArray(rdata)) {
@@ -3374,15 +3380,15 @@ $.jgrid.extend({
 					rowid  = t.p.idPrefix + rowid;
 					if(ni){
 						prp = t.formatCol(0,1,'',null,rowid, true);
-						row[row.length] = "<td role=\"gridcell\" class=\"ui-state-default jqgrid-rownum\" "+prp+">0</td>";
+						row.push("<td role=\"gridcell\" class=\"ui-state-default jqgrid-rownum\" "+prp+">0</td>");
 					}
 					if(gi) {
 						v = "<input role=\"checkbox\" type=\"checkbox\""+" id=\"jqg_"+t.p.id+"_"+rowid+"\" class=\"cbox\"/>";
 						prp = t.formatCol(ni,1,'', null, rowid, true);
-						row[row.length] = "<td role=\"gridcell\" "+prp+">"+v+"</td>";
+						row.push("<td role=\"gridcell\" "+prp+">"+v+"</td>");
 					}
 					if(si) {
-						row[row.length] = $(t).jqGrid("addSubGridCell",gi+ni,1);
+						row.push($(t).jqGrid("addSubGridCell",gi+ni,1));
 					}
 					for(i = gi+si+ni; i < t.p.colModel.length;i++){
 						cm = t.p.colModel[i];
@@ -3390,34 +3396,39 @@ $.jgrid.extend({
 						lcdata[nm] = data[nm];
 						v = t.formatter( rowid, $.jgrid.getAccessor(data,nm), i, data );
 						prp = t.formatCol(i,1,v, data, rowid, lcdata);
-						row[row.length] = "<td role=\"gridcell\" "+prp+">"+v+"</td>";
+						row.push("<td role=\"gridcell\" "+prp+">"+v+"</td>");
 					}
 					row.unshift( t.constructTr(rowid, false, cna, lcdata, data, false ) );
-					row[row.length] = "</tr>";
+					row.push("</tr>");
+					row = row.join('');
 					if(t.rows.length === 0){
-						$("table:first",t.grid.bDiv).append(row.join(''));
+						$("table:first",t.grid.bDiv).append(row);
 					} else {
 						switch (pos) {
 							case 'last':
-								$(t.rows[t.rows.length-1]).after(row.join(''));
+								$(t.rows[t.rows.length-1]).after(row);
 								sind = t.rows.length-1;
 								break;
 							case 'first':
-								$(t.rows[0]).after(row.join(''));
+								$(t.rows[0]).after(row);
 								sind = 1;
 								break;
 							case 'after':
 								sind = $(t).jqGrid('getGridRowById', src);
 								if (sind) {
-									if($(t.rows[sind.rowIndex+1]).hasClass("ui-subgrid")) { $(t.rows[sind.rowIndex+1]).after(row); }
-									else { $(sind).after(row.join('')); }
-									sind=sind.rowIndex + 1;
+									if ($(t.rows[sind.rowIndex+1]).hasClass("ui-subgrid")) {
+										$(t.rows[sind.rowIndex+1]).after(row);
+										sind=sind.rowIndex + 2;
+									} else {
+										$(sind).after(row);
+										sind=sind.rowIndex + 1;
+									}
 								}	
 								break;
 							case 'before':
 								sind = $(t).jqGrid('getGridRowById', src);
 								if(sind) {
-									$(sind).before(row.join(''));
+									$(sind).before(row);
 									sind=sind.rowIndex - 1;
 								}
 								break;
@@ -3699,7 +3710,7 @@ $.jgrid.extend({
 			this.p.caption=newcap;
 			$("span.ui-jqgrid-title, span.ui-jqgrid-title-rtl",this.grid.cDiv).html(newcap);
 			$(this.grid.cDiv).show();
-			$(this.grid.hDiv).removeClass('ui-corner-top');
+			$(grid.cDiv).nextAll("div").removeClass('ui-corner-top');
 		});
 	},
 	setLabel : function(colname, nData, prop, attrp ){
@@ -4049,7 +4060,8 @@ $.jgrid.extend({
 		return this.each(function (){
 			var $t = this, nm, tmp,cc, cm;
 			if (!$t.grid || $t.p.cellEdit !== true) {return;}
-			iCol = parseInt(iCol,10);
+			iRow = parseInt(iRow, 10);
+			iCol = parseInt(iCol, 10);
 			// select the row that can be used for other methods
 			$t.p.selrow = $t.rows[iRow].id;
 			if (!$t.p.knv) {$($t).jqGrid("GridNav");}
@@ -4057,7 +4069,7 @@ $.jgrid.extend({
 			if ($t.p.savedRow.length>0) {
 				// prevent second click on that field and enable selects
 				if (ed===true ) {
-					if(iRow == $t.p.iRow && iCol == $t.p.iCol){
+					if(iRow === $t.p.iRow && iCol === $t.p.iCol){
 						return;
 					}
 				}
@@ -5584,7 +5596,7 @@ $.jgrid.extend({
 				$("#sopt_menu > li > a").hover(
 					function(){ $(this).addClass("ui-state-hover"); },
 					function(){ $(this).removeClass("ui-state-hover"); }
-				).click(function( e ){
+				).click(function(){
 					var v = $(this).attr("value"),
 					oper = $(this).attr("oper");
 					$($t).triggerHandler("jqGridToolbarSelectOper", [v, oper, elem]);
@@ -5799,7 +5811,7 @@ $.jgrid.extend({
 					}
 				});
 			}
-			$(".clearsearchclass",tr).click(function(e){
+			$(".clearsearchclass",tr).click(function(){
 				var ptr = $(this).parents("tr:first"),
 				coli = parseInt($("td.ui-search-oper", ptr).attr('colindex'),10),
 				sval  = $.extend({},$t.p.colModel[coli].searchoptions || {}),
@@ -7687,7 +7699,7 @@ $.jgrid.extend({
 									//id processing
 									// user not set the id ret[2]
 									if(!ret[2]) {ret[2] = $.jgrid.randId();}
-									if(postdata[idname] == null){
+									if(postdata[idname] == null || postdata[idname] === "_empty"){
 										postdata[idname] = ret[2];
 									} else {
 										ret[2] = postdata[idname];
@@ -8157,7 +8169,7 @@ $.jgrid.extend({
 				}
 			}
 			function createData(rowid,obj,tb,maxcols){
-				var nm, hc,trdata, cnt=0,tmp, dc, retpos=[], ind=false, i,
+				var nm, hc,trdata, cnt=0,tmp, dc, retpos=[], ind, i,
 				tdtmpl = "<td class='CaptionTD form-view-label ui-widget-content' width='"+p.labelswidth+"'>&#160;</td><td class='DataTD form-view-data ui-helper-reset ui-widget-content'>&#160;</td>", tmpl="",
 				tdtmpl2 = "<td class='CaptionTD form-view-label ui-widget-content'>&#160;</td><td class='DataTD form-view-data ui-widget-content'>&#160;</td>",
 				fmtnum = ['integer','number','currency'],max1 =0, max2=0 ,maxw,setme, viewfld;
@@ -11096,13 +11108,15 @@ $.jgrid.extend({
 			function findGroup(item, index) {
 				var j = 0, ret = true, i;
 				for(i in item) {
-					if(item[i] != this[j]) {
-						ret =  false;
-						break;
-					}
-					j++;
-					if(j>=this.length) {
-						break;
+					if (item.hasOwnProperty(i)) {
+						if(item[i] != this[j]) {
+							ret =  false;
+							break;
+						}
+						j++;
+						if(j>=this.length) {
+							break;
+						}
 					}
 				}
 				if(ret) {
@@ -11358,10 +11372,12 @@ $.jgrid.extend({
 								if( aggrlen > 1){
 									var ll=1;
 									for( l in items.fields) {
-										if(ll===1) {
-											headers[ylen-1].groupHeaders.push({startColumnName: l, numberOfColumns: 1, titleText: items.text});
+										if (items.fields.hasOwnProperty(l)) {
+											if(ll===1) {
+												headers[ylen-1].groupHeaders.push({startColumnName: l, numberOfColumns: 1, titleText: items.text});
+											}
+											ll++;
 										}
-										ll++;
 									}
 									headers[ylen-1].groupHeaders[headers[ylen-1].groupHeaders.length-1].numberOfColumns = ll-1;
 								} else {
@@ -12474,7 +12490,7 @@ $.jgrid.extend({
 			loaded = $t.p.treeReader.loaded,
 			method, parentindex, parentdata, parentlevel, i, len, max=0, rowind = parentid, leaf, maxright;
 			if(expandData===undefined) {expandData = false;}
-			if ( nodeid === undefined || nodeid === null ) {
+			if ( nodeid == null ) {
 				i = $t.p.data.length-1;
 				if(	i>= 0 ) {
 					while(i>=0){max = Math.max(max, parseInt($t.p.data[i][$t.p.localReader.id],10)); i--;}
