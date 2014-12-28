@@ -31,7 +31,7 @@ task init() {
 
 task jqgrid(dependsOn: 'init') {
     description = "Concatinate all javascript files into one javascript file: $jqGridFile.absolutePath"
-    def files = fileTree(dir: srcdir, include: '*.js', exclude: 'jquery.jqGrid.js')
+    def files = fileTree(dir: srcdir, include: '*.js', exclude: 'jquery.jqGrid.*.js')
     inputs.file files
     outputs.file jqGridFile
 
