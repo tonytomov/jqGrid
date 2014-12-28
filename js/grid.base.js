@@ -2942,15 +2942,18 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.hidegrid===true) {
 				$(".ui-jqgrid-titlebar-close",grid.cDiv).click( function(e){
 					var onHdCl = $.isFunction(ts.p.onHeaderClick),
-					elems = ".ui-jqgrid-bdiv, .ui-jqgrid-hdiv, .ui-jqgrid-pager, .ui-jqgrid-sdiv",
+					elems = ".ui-jqgrid-bdiv,.ui-jqgrid-hdiv,.ui-jqgrid-pager,.ui-jqgrid-sdiv",
 					counter, self = this;
 					if(ts.p.toolbar[0]===true) {
 						if( ts.p.toolbar[1]==='both') {
-							elems += ', #' + $(grid.ubDiv).attr('id');
+							elems += ',#' + $.jgrid.jqID($(grid.ubDiv).attr('id'));
 						}
-						elems += ', #' + $(grid.uDiv).attr('id');
+						elems += ',#' + $.jgrid.jqID($(grid.uDiv).attr('id'));
 					}
 					counter = $(elems,"#gview_"+$.jgrid.jqID(ts.p.id)).length;
+					if(ts.p.toppager) {
+						elems += ',' + ts.p.toppager;
+					}
 
 					if(ts.p.gridstate === 'visible') {
 						$(elems,"#gbox_"+$.jgrid.jqID(ts.p.id)).slideUp("fast", function() {
@@ -2959,11 +2962,13 @@ $.fn.jqGrid = function( pin ) {
 								$("span",self).removeClass("ui-icon-circle-triangle-n").addClass("ui-icon-circle-triangle-s");
 								ts.p.gridstate = 'hidden';
 								if($("#gbox_"+$.jgrid.jqID(ts.p.id)).hasClass("ui-resizable")) { $(".ui-resizable-handle","#gbox_"+$.jgrid.jqID(ts.p.id)).hide(); }
+								$(ts.grid.cDiv).addClass("ui-corner-bottom");
 								$(ts).triggerHandler("jqGridHeaderClick", [ts.p.gridstate,e]);
 								if(onHdCl) {if(!hg) {ts.p.onHeaderClick.call(ts,ts.p.gridstate,e);}}
 							}
 						});
 					} else if(ts.p.gridstate === 'hidden'){
+						$(ts.grid.cDiv).removeClass("ui-corner-bottom");
 						$(elems,"#gbox_"+$.jgrid.jqID(ts.p.id)).slideDown("fast", function() {
 							counter--;
 							if (counter === 0) {
