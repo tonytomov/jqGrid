@@ -35,7 +35,8 @@ $.jgrid.extend({
 		return this.each(function (){
 			var $t = this, nm, tmp,cc, cm;
 			if (!$t.grid || $t.p.cellEdit !== true) {return;}
-			iCol = parseInt(iCol,10);
+			iRow = parseInt(iRow, 10);
+			iCol = parseInt(iCol, 10);
 			// select the row that can be used for other methods
 			$t.p.selrow = $t.rows[iRow].id;
 			if (!$t.p.knv) {$($t).jqGrid("GridNav");}
@@ -43,7 +44,7 @@ $.jgrid.extend({
 			if ($t.p.savedRow.length>0) {
 				// prevent second click on that field and enable selects
 				if (ed===true ) {
-					if(iRow == $t.p.iRow && iCol == $t.p.iCol){
+					if(iRow === $t.p.iRow && iCol === $t.p.iCol){
 						return;
 					}
 				}
