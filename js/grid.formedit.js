@@ -1242,7 +1242,7 @@ $.jgrid.extend({
 				}
 			}
 			function createData(rowid,obj,tb,maxcols){
-				var nm, hc,trdata, cnt=0,tmp, dc, retpos=[], ind=false, i,
+				var nm, hc,trdata, cnt=0,tmp, dc, retpos=[], ind, i,
 				tdtmpl = "<td class='CaptionTD form-view-label ui-widget-content' width='"+p.labelswidth+"'>&#160;</td><td class='DataTD form-view-data ui-helper-reset ui-widget-content'>&#160;</td>", tmpl="",
 				tdtmpl2 = "<td class='CaptionTD form-view-label ui-widget-content'>&#160;</td><td class='DataTD form-view-data ui-widget-content'>&#160;</td>",
 				fmtnum = ['integer','number','currency'],max1 =0, max2=0 ,maxw,setme, viewfld;
