@@ -1,4 +1,5 @@
-;(function($){
+(function($){
+"use strict";
 /**
  * jqGrid Hungarian Translation
  * Őrszigety Ádám udx6bs@freemail.hu
@@ -108,7 +109,7 @@ $.extend($.jgrid,{
 				"Január", "Február", "Március", "Áprili", "Május", "Június", "Július", "Augusztus", "Szeptember", "Október", "November", "December"
 			],
 			AmPm : ["de","du","DE","DU"],
-			S: function (j) {return '.-ik';},
+			S: function () {return '.-ik';},
 			srcformat: 'Y-m-d',
 			newformat: 'Y/m/d',
 			masks : {
@@ -123,4 +124,4 @@ $.extend($.jgrid,{
 		}
 	}
 });
-})(jQuery);
+}(jQuery));

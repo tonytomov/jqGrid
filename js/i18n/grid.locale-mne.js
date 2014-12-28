@@ -1,4 +1,5 @@
-;(function($){
+(function($){
+"use strict";
 /**
  * jqGrid Montenegrian Translation
  * Bild Studio info@bild-studio.net
@@ -107,7 +108,7 @@ $.extend($.jgrid,{
 				"Januar", "Februar", "Mart", "April", "Maj", "Jun", "Jul", "Avgust", "Septembar", "Oktobar", "Novembar", "Decembar"
 			],
 			AmPm : ["am","pm","AM","PM"],
-			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th'},
+			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th';},
 			srcformat: 'Y-m-d',
 			newformat: 'd/m/Y',
 			masks : {
@@ -122,4 +123,4 @@ $.extend($.jgrid,{
 		}
 	}
 });
-})(jQuery);
+}(jQuery));

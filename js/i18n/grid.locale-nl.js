@@ -1,6 +1,7 @@
-(function(a) {
-a.jgrid = a.jgrid || {};
-a.extend(a.jgrid,{
+(function($) {
+"use strict";
+$.jgrid = $.jgrid || {};
+$.extend($.jgrid,{
         defaults:
         {
             recordtext: "regels {0} - {1} van {2}",
@@ -122,7 +123,7 @@ a.extend(a.jgrid,{
                 monthNames: ["Jan", "Feb", "Maa", "Apr", "Mei", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli", "Augustus", "September", "October", "November", "December"],
                 AmPm: ["am", "pm", "AM", "PM"],
                 S: function(b) {
-                    return b < 11 || b > 13 ? ["st", "nd", "rd", "th"][Math.min((b - 1) % 10, 3)] : "th"
+                    return b < 11 || b > 13 ? ["st", "nd", "rd", "th"][Math.min((b - 1) % 10, 3)] : "th";
                 },
                 srcformat: "Y-m-d",
                 newformat: "d/m/Y",
@@ -139,4 +140,4 @@ a.extend(a.jgrid,{
             }
         }
     });
-})(jQuery);
+}(jQuery));

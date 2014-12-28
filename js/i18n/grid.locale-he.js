@@ -1,4 +1,5 @@
-;(function($){
+(function($){
+"use strict";
 /**
  * jqGrid Hebrew Translation
  * Shuki Shukrun shukrun.shuki@gmail.com
@@ -106,7 +107,7 @@ $.extend($.jgrid,{
 				"ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"
 			],
 			AmPm : ["לפני הצהרים","אחר הצהרים","לפני הצהרים","אחר הצהרים"],
-			S: function (j) {return j < 11 || j > 13 ? ['', '', '', ''][Math.min((j - 1) % 10, 3)] : ''},
+			S: function (j) {return j < 11 || j > 13 ? ['', '', '', ''][Math.min((j - 1) % 10, 3)] : '';},
 			srcformat: 'Y-m-d',
 			newformat: 'd/m/Y',
 			masks : {
@@ -121,4 +122,4 @@ $.extend($.jgrid,{
 		}
 	}
 });
-})(jQuery);
+}(jQuery));

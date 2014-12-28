@@ -1,4 +1,5 @@
-;(function ($) {
+(function ($) {
+"use strict";
 /**
  * jqGrid Persian Translation
  * Dual licensed under the MIT and GPL licenses:
@@ -121,7 +122,7 @@
                 monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "ژانويه", "فوريه", "مارس", "آوريل", "مه", "ژوئن", "ژوئيه", "اوت", "سپتامبر", "اکتبر", "نوامبر", "December"],
                 AmPm: ["ب.ظ", "ب.ظ", "ق.ظ", "ق.ظ"],
                 S: function (b) {
-                    return b < 11 || b > 13 ? ["st", "nd", "rd", "th"][Math.min((b - 1) % 10, 3)] : "th"
+                    return b < 11 || b > 13 ? ["st", "nd", "rd", "th"][Math.min((b - 1) % 10, 3)] : "th";
                 },
                 srcformat: "Y-m-d",
                 newformat: "d/m/Y",
@@ -134,8 +135,7 @@
                     LongTime: "g:i:s A",
                     YearMonth: "F, Y"
                 }
-            },
-            showAction: "نمايش",
+            }
         }
     });
-})(jQuery);
+}(jQuery));

@@ -1,4 +1,5 @@
-;(function($){
+(function($){
+"use strict";
 /**
  * jqGrid Danish Translation
  * Kaare Rasmussen kjs@jasonic.dk
@@ -105,7 +106,7 @@ $.jgrid = {
 				"Januar", "Februar", "Marts", "April", "Maj", "Juni", "Juli", "August", "September", "Oktober", "November", "December"
 			],
 			AmPm : ["","","",""],
-			S: function (j) {return '.'},
+			S: function () {return '.';},
 			srcformat: 'Y-m-d',
 			newformat: 'd/m/Y',
 			masks : {
@@ -121,4 +122,4 @@ $.jgrid = {
 	}
 };
 // DK
-})(jQuery);
+}(jQuery));

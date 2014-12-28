@@ -1,4 +1,5 @@
-;(function($){
+(function($){
+"use strict";
 /**
  * jqGrid Catalan Translation
  * Traducció jqGrid en Catatà per Faserline, S.L.
@@ -107,7 +108,7 @@ $.extend($.jgrid,{
 				"Gener", "Febrer", "Març", "Abril", "Maig", "Juny", "Juliol", "Agost", "Setembre", "Octubre", "Novembre", "Desembre"
 			],
 			AmPm : ["am","pm","AM","PM"],
-			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th'},
+			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th';},
 			srcformat: 'Y-m-d',
 			newformat: 'd-m-Y',
 			masks : {
@@ -122,4 +123,4 @@ $.extend($.jgrid,{
 		}
 	}
 });
-})(jQuery);
+}(jQuery));

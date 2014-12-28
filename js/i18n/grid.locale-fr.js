@@ -1,4 +1,5 @@
-;(function($){
+(function($){
+"use strict";
 /**
  * jqGrid French Translation
  * Tony Tomov tony@trirand.com
@@ -105,7 +106,7 @@ $.extend($.jgrid,{
 				"Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Décembre"
 			],
 			AmPm : ["am","pm","AM","PM"],
-			S: function (j) {return j == 1 ? 'er' : 'e';},
+			S: function (j) {return j === 1 ? 'er' : 'e';},
 			srcformat: 'Y-m-d',
 			newformat: 'd/m/Y',
 			masks : {
@@ -120,4 +121,4 @@ $.extend($.jgrid,{
 		}
 	}
 });
-})(jQuery);
+}(jQuery));

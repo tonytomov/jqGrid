@@ -1,4 +1,5 @@
-;(function($){
+(function($){
+"use strict";
 /**
  * jqGrid Ukrainian Translation v1.0 02.07.2009
  * Sergey Dyagovchenko
@@ -11,7 +12,7 @@ $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
 	defaults : {
 		recordtext: "Перегляд {0} - {1} з {2}",
-	  emptyrecords: "Немає записів для перегляду",
+		emptyrecords: "Немає записів для перегляду",
 		loadtext: "Завантаження...",
 		pgtext : "Стор. {0} з {1}",
 		pgfirst : "First Page",
@@ -106,7 +107,7 @@ $.extend($.jgrid,{
 				"Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень", "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"
 			],
 			AmPm : ["am","pm","AM","PM"],
-			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th'},
+			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th';},
 			srcformat: 'Y-m-d',
 			newformat: 'd.m.Y',
 			masks : {
@@ -121,4 +122,4 @@ $.extend($.jgrid,{
 		}
 	}
 });
-})(jQuery);
+}(jQuery));

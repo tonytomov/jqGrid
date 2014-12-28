@@ -1,4 +1,5 @@
-;(function($){
+(function($){
+"use strict";
 /**
  * jqGrid Vietnamese Translation
  * Lê Đình Dũng dungtdc@gmail.com
@@ -162,4 +163,4 @@ $.extend($.jgrid,{
 		}
 	}
 });
-})(jQuery);
+}(jQuery));

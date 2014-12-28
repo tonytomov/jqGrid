@@ -1,4 +1,5 @@
-;(function($){
+(function($){
+"use strict";
 /**
  * jqGrid Croatian Translation
  * Version 1.0.1 (developed for jQuery Grid 4.4)
@@ -108,7 +109,7 @@ $.extend($.jgrid,{
 				"Siječanj", "Veljača", "Ožujak", "Travanj", "Svibanj", "Lipanj", "Srpanj", "Kolovoz", "Rujan", "Listopad", "Studeni", "Prosinac"
 			],
 			AmPm : ["am","pm","AM","PM"],
-			S: function (j) {return ''},
+			S: function () {return '';},
 			srcformat: 'Y-m-d',
 			newformat: 'd.m.Y.',
 			masks : {
@@ -156,4 +157,4 @@ $.extend($.jgrid,{
 		}
 	}
 });
-})(jQuery);
+}(jQuery));

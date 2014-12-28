@@ -1,4 +1,5 @@
-;(function($){
+(function($){
+"use strict";
 /**
  * jqGrid Polish Translation
  * Łukasz Schab lukasz@freetree.pl
@@ -111,7 +112,7 @@ $.extend($.jgrid,{
 				"styczeń", "luty", "marzec", "kwiecień", "maj", "czerwiec", "lipiec", "sierpień", "wrzesień", "październik", "listopad", "grudzień"
 				],
 			AmPm : ["","","",""],
-			S: function (j) {return '';},
+			S: function () {return '';},
 			srcformat: 'Y-m-d',
 			newformat: 'd.m.Y',
 			masks : {
@@ -126,4 +127,4 @@ $.extend($.jgrid,{
 		}
 	}
 });
-})(jQuery);
+}(jQuery));

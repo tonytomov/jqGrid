@@ -1,4 +1,5 @@
-;(function($){
+(function($){
+"use strict";
 /**
  * jqGrid (fi) Finnish Translation
  * Jukka Inkeri  awot.fi  2010-05-19
@@ -107,7 +108,7 @@ $.extend($.jgrid,{
 				"Tammikuu", "Helmikuu", "Maaliskuu", "Huhtikuu", "Toukokuu", "Kes&auml;kuu", "Hein&auml;kuu", "Elokuu", "Syyskuu", "Lokakuu", "Marraskuu", "Joulukuu"
 			],
 			AmPm: ["am","pm","AM","PM"],
-			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th'},
+			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th';},
 			srcformat: 'Y-m-d',
 			newformat: 'd.m.Y',
 			masks: {
@@ -123,4 +124,4 @@ $.extend($.jgrid,{
 	}
 });
 // FI
-})(jQuery);
+}(jQuery));

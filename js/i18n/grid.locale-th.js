@@ -1,4 +1,5 @@
-;(function($){
+(function($){
+"use strict";
 /**
  * jqGrid Thai Translation
  * Kittituch Manakul m.kittituch@Gmail.com
@@ -107,7 +108,7 @@ $.extend($.jgrid,{
 				"มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฏาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
 			],
 			AmPm : ["am","pm","AM","PM"],
-			S: function (j) {return ''},
+			S: function () {return '';},
 			srcformat: 'Y-m-d',
 			newformat: 'd/m/Y',
 			masks : {
@@ -122,4 +123,4 @@ $.extend($.jgrid,{
 		}
 	}
 });
-})(jQuery);
+}(jQuery));

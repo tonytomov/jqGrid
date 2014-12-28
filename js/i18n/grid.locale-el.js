@@ -1,4 +1,5 @@
-;(function($){
+(function($){
+"use strict";
 /**
  * jqGrid Greek (el) Translation
  * Alex Cicovic
@@ -105,7 +106,7 @@ $.extend($.jgrid,{
 				"Ιανουάριος", "Φεβρουάριος", "Μάρτιος", "Απρίλιος", "Μάιος", "Ιούνιος", "Ιούλιος", "Αύγουστος", "Σεπτέμβριος", "Οκτώβριος", "Νοέμβριος", "Δεκέμβριος"
 			],
 			AmPm : ["πμ","μμ","ΠΜ","ΜΜ"],
-			S: function (j) {return j == 1 || j > 1 ? ['η'][Math.min((j - 1) % 10, 3)] : ''},
+			S: function (j) {return j === 1 || j > 1 ? ['η'][Math.min((j - 1) % 10, 3)] : '';},
 			srcformat: 'Y-m-d',
 			newformat: 'd/m/Y',
 			masks : {
@@ -120,4 +121,4 @@ $.extend($.jgrid,{
 		}
 	}
 });
-})(jQuery);
+}(jQuery));
