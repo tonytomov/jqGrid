@@ -107,13 +107,15 @@ $.jgrid.extend({
 			function findGroup(item, index) {
 				var j = 0, ret = true, i;
 				for(i in item) {
-					if(item[i] != this[j]) {
-						ret =  false;
-						break;
-					}
-					j++;
-					if(j>=this.length) {
-						break;
+					if (item.hasOwnProperty(i)) {
+						if(item[i] != this[j]) {
+							ret =  false;
+							break;
+						}
+						j++;
+						if(j>=this.length) {
+							break;
+						}
 					}
 				}
 				if(ret) {
@@ -369,10 +371,12 @@ $.jgrid.extend({
 								if( aggrlen > 1){
 									var ll=1;
 									for( l in items.fields) {
-										if(ll===1) {
-											headers[ylen-1].groupHeaders.push({startColumnName: l, numberOfColumns: 1, titleText: items.text});
+										if (items.fields.hasOwnProperty(l)) {
+											if(ll===1) {
+												headers[ylen-1].groupHeaders.push({startColumnName: l, numberOfColumns: 1, titleText: items.text});
+											}
+											ll++;
 										}
-										ll++;
 									}
 									headers[ylen-1].groupHeaders[headers[ylen-1].groupHeaders.length-1].numberOfColumns = ll-1;
 								} else {
