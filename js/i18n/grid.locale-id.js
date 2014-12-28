@@ -1,6 +1,7 @@
-;(function($){
+(function($){
+"use strict";
 /**
- * jqGrid English Translation
+ * jqGrid Indonesian Translation
  * Tony Tomov tony@trirand.com
  * http://trirand.com/blog/ 
  * Dual licensed under the MIT and GPL licenses:
@@ -162,4 +163,4 @@ $.extend($.jgrid,{
 		}
 	}
 });
-})(jQuery);
+}(jQuery));
