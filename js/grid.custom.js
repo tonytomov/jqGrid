@@ -385,7 +385,7 @@ $.jgrid.extend({
 				$("#sopt_menu > li > a").hover(
 					function(){ $(this).addClass("ui-state-hover"); },
 					function(){ $(this).removeClass("ui-state-hover"); }
-				).click(function( e ){
+				).click(function(){
 					var v = $(this).attr("value"),
 					oper = $(this).attr("oper");
 					$($t).triggerHandler("jqGridToolbarSelectOper", [v, oper, elem]);
@@ -600,7 +600,7 @@ $.jgrid.extend({
 					}
 				});
 			}
-			$(".clearsearchclass",tr).click(function(e){
+			$(".clearsearchclass",tr).click(function(){
 				var ptr = $(this).parents("tr:first"),
 				coli = parseInt($("td.ui-search-oper", ptr).attr('colindex'),10),
 				sval  = $.extend({},$t.p.colModel[coli].searchoptions || {}),
