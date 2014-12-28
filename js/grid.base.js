@@ -3328,7 +3328,7 @@ $.jgrid.extend({
 		return success;
 	},
 	addRowData : function(rowid,rdata,pos,src) {
-		if(["first", "last", "before", "after"].indexOf(pos) == -1) {pos = "last";}
+		if(["first", "last", "before", "after"].indexOf(pos) === -1) {pos = "last";}
 		var success = false, nm, row, gi, si, ni,sind, i, v, prp="", aradd, cnm, cn, data, cm, id;
 		if(rdata) {
 			if($.isArray(rdata)) {
