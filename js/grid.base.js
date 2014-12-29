@@ -2535,7 +2535,7 @@ $.fn.jqGrid = function( pin ) {
 		td, ptr, tbody, imgs,iac="",idc="",sortarr=[], sortord=[], sotmp=[];
 		if(ts.p.shrinkToFit===true && ts.p.forceFit===true) {
 			for (i=ts.p.colModel.length-1;i>=0;i--){
-				if(!ts.p.colModel[i].hidden) {
+				if(ts.p.colModel[i].hidden !== true) {
 					ts.p.colModel[i].resizable=false;
 					break;
 				}
@@ -2649,7 +2649,7 @@ $.fn.jqGrid = function( pin ) {
 			$(this).css("width",w+"px").prepend(res);
 			res = null;
 			var hdcol = "";
-			if( ts.p.colModel[j].hidden ) {
+			if(ts.p.colModel[j].hidden === true) {
 				$(this).css("display","none");
 				hdcol = "display:none;";
 			}
