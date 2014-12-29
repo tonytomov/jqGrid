@@ -366,7 +366,13 @@ $.jgrid.extend({
 					}
 				};
 				$("tbody:first",$t).sortable(opts);
-				$("tbody:first",$t).disableSelection();
+				if ($.isFunction($.fn.disableSelection)) {
+					// disableSelection exist starting with jQuery UI 1.6,
+					// but it's declared as deprecated since jQuery UI 1.9
+					// see http://jqueryui.com/upgrade-guide/1.9/#deprecated-disableselection-and-enableselection
+					// so we use disableSelection only if it exists
+					$("tbody:first>.jqgrow",$t).disableSelection();
+				}
 			}
 		});
 	},
