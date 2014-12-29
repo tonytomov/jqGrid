@@ -2925,7 +2925,7 @@ $.fn.jqGrid = function( pin ) {
 			ts.p.toppager = $.jgrid.jqID(ts.p.id)+"_toppager";
 			grid.topDiv = $("<div id='"+ts.p.toppager+"'></div>")[0];
 			ts.p.toppager = "#"+ts.p.toppager;
-			$(grid.topDiv).addClass('ui-state-default ui-jqgrid-toppager').width(grid.width).insertBefore(grid.hDiv);
+			$(grid.topDiv).addClass('ui-state-default ui-jqgrid-toppager').css({width: grid.width+"px"}).insertBefore(grid.hDiv);
 			setPager(ts.p.toppager,'_t');
 		}
 		if(ts.p.footerrow) {
