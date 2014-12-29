@@ -44,6 +44,7 @@ task jqgrid(dependsOn: 'init') {
 
 task 'jqgrid-min'(dependsOn: 'jqgrid') {
     description = "Minimize $jqGridFile.absolutePath to $jqGridMinFile.absolutePath"
+	def outputMapFile = new File(srcdir, 'jquery.jqGrid.min.map')
     inputs.file jqGridFile
     outputs.file jqGridMinFile
 
@@ -54,6 +55,9 @@ task 'jqgrid-min'(dependsOn: 'jqgrid') {
                 ant.file(name: jqGridFile.name)
             }
         }
+		def fileContent = jqGridSrcMapFile.getText()
+		fileContent = fileContent.replace('"sources":["dist/jquery.jqGrid.src.js"],', '"sources":["jquery.jqGrid.src.js"],')
+		outputMapFile.write(fileContent)
     }
 }
 
@@ -83,9 +87,20 @@ task i18n(type: Copy, dependsOn: 'init') {
     def i18nDir = new File(distdir, 'i18n')
     description = "Copy all i18n files to $i18nDir.absolutePath"
 
+	duplicatesStrategy = 'exclude'
     from new File(srcdir, 'i18n')
     into i18nDir
     include('grid.locale-*.js')
+}
+
+task copySrcAndMin(type: Copy, dependsOn: 'jqgrid-min') {
+    description = "Copy $jqGridFile and $jqGridMinFile files to $srcdir.absolutePath"
+
+	delete new File(srcdir, 'jquery.jqGrid.src.js'), new File(srcdir, 'jquery.jqGrid.min.js')
+	
+    from distdir
+    into srcdir
+    include('jquery.jqGrid*.js')
 }
 
 task clean() {
@@ -95,10 +110,11 @@ task clean() {
         if (distdir.exists()) {
             distdir.deleteDir()
         }
+		delete new File(srcdir, 'jquery.jqGrid.min.map')
     }
 }
 
-task build(dependsOn: ['jqgrid-min', 'min-files', 'i18n']) {
+task build(dependsOn: ['jqgrid-min', 'i18n', 'copySrcAndMin']) {
     description = "Build the entire distribution"
 }
 
