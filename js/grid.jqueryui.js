@@ -328,7 +328,7 @@ $.jgrid.extend({
 				opts = $.extend({
 					"cursor":"move",
 					"axis" : "y",
-					"items": ".jqgrow"
+					"items": ">.jqgrow"
 					},
 				opts || {});
 				if(opts.start && $.isFunction(opts.start)) {
@@ -367,7 +367,7 @@ $.jgrid.extend({
 				};
 				$("tbody:first",$t).sortable(opts);
 				if ($.isFunction($.fn.disableSelection)) {
-					// disableSelection exist starting with jQuery UI 1.6,
+					// The method disableSelection exists starting with jQuery UI 1.6,
 					// but it's declared as deprecated since jQuery UI 1.9
 					// see http://jqueryui.com/upgrade-guide/1.9/#deprecated-disableselection-and-enableselection
 					// so we use disableSelection only if it exists
