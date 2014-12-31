@@ -2152,7 +2152,7 @@ $.fn.jqGrid = function( pin ) {
 			pgcnt = "pg_"+pgid;
 			lft = pgid+"_left"; cent = pgid+"_center"; rgt = pgid+"_right";
 			$("#"+$.jgrid.jqID(pgid) )
-			.append("<div id='"+pgcnt+"' class='ui-pager-control' role='group'><table cellspacing='0' cellpadding='0' border='0' class='ui-pg-table' style='width:100%;table-layout:fixed;height:100%;' role='row'><tbody><tr><td id='"+lft+"' align='left'></td><td id='"+cent+"' align='center' style='white-space:pre;'></td><td id='"+rgt+"' align='right'></td></tr></tbody></table></div>")
+			.append("<div id='"+pgcnt+"' class='ui-pager-control' role='group'><table cellspacing='0' cellpadding='0' border='0' class='ui-pg-table' style='width:100%;table-layout:fixed;height:100%;'><tbody><tr><td id='"+lft+"' align='left'></td><td id='"+cent+"' align='center' style='white-space:pre;'></td><td id='"+rgt+"' align='right'></td></tr></tbody></table></div>")
 			.attr("dir","ltr"); //explicit setting
 			pgcnt = "#" + $.jgrid.jqID(pgcnt); // modify to id selector
 			if(ts.p.rowList.length >0){
