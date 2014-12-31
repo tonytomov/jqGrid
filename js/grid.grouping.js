@@ -8,12 +8,13 @@ $.extend($.jgrid,{
 		var args = $.makeArray(arguments).slice(1), j, al = args.length;
 		if(format==null) { format = ""; }
 		return format.replace(/\{([\w\-]+)(?:\:([\w\.]*)(?:\((.*?)?\))?)?\}/g, function(m,i){
+			var nmarr, k;
 			if(!isNaN(parseInt(i,10))) {
 				return args[parseInt(i,10)];
 			}
 			for(j=0; j < al;j++) {
 				if($.isArray(args[j])) {
-					var nmarr = args[ j ],
+					nmarr = args[j];
 					k = nmarr.length;
 					while(k--) {
 						if(i===nmarr[k].nm) {
@@ -28,7 +29,7 @@ $.extend($.jgrid,{
 $.jgrid.extend({
 	groupingSetup : function () {
 		return this.each(function (){
-			var $t = this, i, j, cml, cm = $t.p.colModel, grp = $t.p.groupingView;
+			var $t = this, i, j, cml, cm = $t.p.colModel, grp = $t.p.groupingView, emptyFormatter = function(){return '';};
 			if(grp !== null && ( (typeof grp === 'object') || $.isFunction(grp) ) ) {
 				if(!grp.groupField.length) {
 					$t.p.grouping = false;
@@ -73,7 +74,7 @@ $.jgrid.extend({
 					for(j=0, cml = cm.length; j < cml; j++) {
 						if(grp.hideFirstGroupCol) {
 							if(!cm[j].hidden && grp.groupField[0] === cm[j].name) {
-								cm[j].formatter = function(){return '';};
+								cm[j].formatter = emptyFormatter;
 							}
 						}
 						if(cm[j].summaryType ) {
@@ -98,7 +99,17 @@ $.jgrid.extend({
 			v,
 			displayName,
 			displayValue,
-			changed = 0;
+			changed = 0,
+			buildSummaryValue = function() {
+				if ($.isFunction(this.st)) {
+					this.v = this.st.call($t, this.v, this.nm, record);
+				} else {
+					this.v = $($t).jqGrid('groupingCalculations.handler',this.st, this.v, this.nm, this.sr, this.srt, record);
+					if(this.st.toLowerCase() === 'avg' && this.sd) {
+						this.vd = $($t).jqGrid('groupingCalculations.handler',this.st, this.vd, this.sd, this.sr, this.srt, record);
+					}
+				}
+			};
 			for(i=0;i<grlen;i++) {
 				fieldName = grp.groupField[i];
 				displayName = grp.displayField[i];
@@ -114,16 +125,7 @@ $.jgrid.extend({
 						grp.groups.push({idx:i,dataIndex:fieldName,value:v, displayValue: displayValue, startRow: irow, cnt:1, summary : [] } );
 						grp.lastvalues[i] = v;
 						grp.counters[i] = {cnt:1, pos:grp.groups.length-1, summary: $.extend(true,[],grp.summary)};
-						$.each(grp.counters[i].summary,function() {
-							if ($.isFunction(this.st)) {
-								this.v = this.st.call($t, this.v, this.nm, record);
-							} else {
-								this.v = $($t).jqGrid('groupingCalculations.handler',this.st, this.v, this.nm, this.sr, this.srt, record);
-								if(this.st.toLowerCase() === 'avg' && this.sd) {
-									this.vd = $($t).jqGrid('groupingCalculations.handler',this.st, this.vd, this.sd, this.sr, this.srt, record);
-								}
-							}
-						});
+						$.each(grp.counters[i].summary, buildSummaryValue);
 						grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
 					} else {
 						if (typeof v !== "object" && ($.isArray(grp.isInTheSameGroup) && $.isFunction(grp.isInTheSameGroup[i]) ? ! grp.isInTheSameGroup[i].call($t, grp.lastvalues[i], v, i, grp): grp.lastvalues[i] !== v)) {
@@ -132,16 +134,7 @@ $.jgrid.extend({
 							grp.lastvalues[i] = v;
 							changed = 1;
 							grp.counters[i] = {cnt:1, pos:grp.groups.length-1, summary: $.extend(true,[],grp.summary)};
-							$.each(grp.counters[i].summary,function() {
-								if ($.isFunction(this.st)) {
-									this.v = this.st.call($t, this.v, this.nm, record);
-								} else {
-									this.v = $($t).jqGrid('groupingCalculations.handler',this.st, this.v, this.nm, this.sr, this.srt, record);
-									if(this.st.toLowerCase() === 'avg' && this.sd) {
-										this.vd = $($t).jqGrid('groupingCalculations.handler',this.st, this.vd, this.sd, this.sr, this.srt, record);
-									}
-								}
-							});
+							$.each(grp.counters[i].summary, buildSummaryValue);
 							grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
 						} else {
 							if (changed === 1) {
@@ -149,30 +142,12 @@ $.jgrid.extend({
 								grp.groups.push({idx:i,dataIndex:fieldName,value:v, displayValue: displayValue, startRow: irow, cnt:1, summary : [] } );
 								grp.lastvalues[i] = v;
 								grp.counters[i] = {cnt:1, pos:grp.groups.length-1, summary: $.extend(true,[],grp.summary)};
-								$.each(grp.counters[i].summary,function() {
-									if ($.isFunction(this.st)) {
-										this.v = this.st.call($t, this.v, this.nm, record);
-									} else {
-										this.v = $($t).jqGrid('groupingCalculations.handler',this.st, this.v, this.nm, this.sr, this.srt, record);
-										if(this.st.toLowerCase() === 'avg' && this.sd) {
-											this.vd = $($t).jqGrid('groupingCalculations.handler',this.st, this.vd, this.sd, this.sr, this.srt, record);
-										}
-									}
-								});
+								$.each(grp.counters[i].summary, buildSummaryValue);
 								grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
 							} else {
 								grp.counters[i].cnt += 1;
 								grp.groups[grp.counters[i].pos].cnt = grp.counters[i].cnt;
-								$.each(grp.counters[i].summary,function() {
-									if ($.isFunction(this.st)) {
-										this.v = this.st.call($t, this.v, this.nm, record);
-									} else {
-										this.v = $($t).jqGrid('groupingCalculations.handler',this.st, this.v, this.nm, this.sr, this.srt, record);
-										if(this.st.toLowerCase() === 'avg' && this.sd) {
-											this.vd = $($t).jqGrid('groupingCalculations.handler',this.st, this.vd, this.sd, this.sr, this.srt, record);
-										}
-									}
-								});
+								$.each(grp.counters[i].summary,buildSummaryValue);
 								grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
 							}
 						}
@@ -320,11 +295,12 @@ $.jgrid.extend({
 			function buildSummaryTd(i, ik, grp, foffset) {
 				var fdata = findGroupIdx(i, ik, grp),
 				cm = $t.p.colModel,
-				vv, grlen = fdata.cnt, str="", k;
+				grlen = fdata.cnt, strTd="", k, tmpdata, tplfld;
 				for(k=foffset; k<colspans;k++) {
-					var tmpdata = "<td "+$t.formatCol(k,1,'')+">&#160;</td>",
+					tmpdata = "<td "+$t.formatCol(k,1,'')+">&#160;</td>";
 					tplfld = "{0}";
 					$.each(fdata.summary,function(){
+						var vv;
 						if(this.nm === cm[k].name) {
 							if(cm[k].summaryTpl)  {
 								tplfld = cm[k].summaryTpl;
@@ -348,13 +324,12 @@ $.jgrid.extend({
 							return false;
 						}
 					});
-					str += tmpdata;
+					strTd += tmpdata;
 				}
-				return str;
+				return strTd;
 			}
-			var sumreverse = $.makeArray(grp.groupSummary), mul;
+			var sumreverse = $.makeArray(grp.groupSummary);
 			sumreverse.reverse();
-			mul = $t.p.multiselect ? " colspan=\"2\"" : "";
 			$.each(grp.groups,function(i,n){
 				if(grp._locgr) {
 					if( !(n.startRow +n.cnt > (page-1)*rn && n.startRow < page*rn)) {
@@ -375,13 +350,22 @@ $.jgrid.extend({
 				} catch (egv) {
 					gv = n.displayValue;
 				}
-				if(grp.groupSummaryPos[n.idx] === 'header')  {
-					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\"" + mul +">"+icon+$.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary)+"</td>";
-					str += buildSummaryTd(i, 0, grp.groups, grp.groupColumnShow[n.idx] === false ? (mul ==="" ? 2 : 3) : ((mul ==="") ? 1 : 2) );
-					str += "</tr>";
-				} else {
-					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\" colspan=\""+(grp.groupColumnShow[n.idx] === false ? colspans-1 : colspans)+"\">"+icon+$.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary)+"</td></tr>";
+				str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class=\"ui-widget-content jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\"";
+				var grpTextStr = $.isFunction(grp.groupText[n.idx]) ?
+						grp.groupText[n.idx].call($t, gv, n.cnt, n.summary) :
+						$.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary);
+				if(typeof grpTextStr !== "string" && typeof grpTextStr !== "number") {
+					grpTextStr = gv;
 				}
+				if(grp.groupSummaryPos[n.idx] === 'header')  {
+					var mul = $t.p.multiselect ? " colspan=\"2\"" : "";
+					str += mul +">"+icon+grpTextStr+"</td>";
+					str += buildSummaryTd(i, 0, grp.groups, grp.groupColumnShow[n.idx] === false ? (mul ==="" ? 2 : 3) : ((mul ==="") ? 1 : 2) );
+				} else {
+					str += " colspan=\""+(grp.groupColumnShow[n.idx] === false ? colspans-1 : colspans)+"\"" +
+						">"+icon+grpTextStr+"</td>";
+				}
+				str += "</tr>";
 				var leaf = len-1 === n.idx; 
 				if( leaf ) {
 					var gg = grp.groups[i+1], kk, ik, offset = 0, sgr = n.startRow,
@@ -397,7 +381,7 @@ $.jgrid.extend({
 						str += grdata[kk - offset].join('');
 					}
 					if(grp.groupSummaryPos[n.idx] !== 'header') {
-						var jj;
+						var jj, hhdr;
 						if (gg !== undefined) {
 							for (jj = 0; jj < grp.groupField.length; jj++) {
 								if (gg.dataIndex === grp.groupField[jj]) {
@@ -408,7 +392,7 @@ $.jgrid.extend({
 						}
 						for (ik = 0; ik < toEnd; ik++) {
 							if(!sumreverse[ik]) { continue; }
-							var hhdr = "";
+							hhdr = "";
 							if(grp.groupCollapse && !grp.showSummaryOnHide) {
 								hhdr = " style=\"display:none;\"";
 							}
@@ -530,4 +514,4 @@ $.jgrid.extend({
 		}	
 	}
 });
-})(jQuery);
+}(jQuery));
