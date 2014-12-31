@@ -9,7 +9,7 @@
  * http://www.gnu.org/licenses/gpl.html
 **/
 $.jgrid = $.jgrid || {};
-$.extend($.jgrid,{
+$.extend(true,$.jgrid,{
 	defaults : {
 		recordtext: "Zobrazených {0} - {1} z {2} záznamov",
 	    emptyrecords: "Neboli nájdené žiadne záznamy",

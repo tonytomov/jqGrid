@@ -1,7 +1,7 @@
 (function($) {
 "use strict";
 $.jgrid = $.jgrid || {};
-$.extend($.jgrid,{
+$.extend(true,$.jgrid,{
         defaults:
         {
             recordtext: "regels {0} - {1} van {2}",

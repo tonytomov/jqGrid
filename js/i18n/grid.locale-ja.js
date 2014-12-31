@@ -9,7 +9,7 @@
  * http://www.gnu.org/licenses/gpl.html
 **/
 $.jgrid = $.jgrid || {};
-$.extend($.jgrid, {
+$.extend(true,$.jgrid, {
 	defaults: {
 		recordtext: "{2} 件中 {0} - {1} を表示 ",
 		emptyrecords: "表示するレコードがありません",

@@ -1,7 +1,7 @@
 (function ($) {
 	"use strict";
 	$.jgrid = $.jgrid || {};
-	$.extend($.jgrid, {
+	$.extend(true,$.jgrid, {
 		defaults: {
 			recordtext: "Rad {0} - {1}, totalt {2}",
 			loadtext: "Laster...",

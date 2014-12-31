@@ -17,7 +17,7 @@
 (function ($) {
 "use strict";
 $.jgrid = $.jgrid || {};
-$.extend($.jgrid,{
+$.extend(true,$.jgrid,{
 	version : "4.7.0-post",
 	formatter : { // set common formatter settings independent from the language and locale
 		date : {

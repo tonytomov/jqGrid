@@ -10,7 +10,7 @@
  * 
 **/
 $.jgrid = $.jgrid || {};
-$.extend($.jgrid,{
+$.extend(true,$.jgrid,{
 	defaults : {
 		recordtext: "{0} - {1} 共 {2} 條",
 		emptyrecords: "沒有記錄",

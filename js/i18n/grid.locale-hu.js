@@ -10,7 +10,7 @@
 **/
 
 $.jgrid = $.jgrid || {};
-$.extend($.jgrid,{
+$.extend(true,$.jgrid,{
 	defaults : {
 		recordtext: "Oldal {0} - {1} / {2}",
 		emptyrecords: "Nincs találat",

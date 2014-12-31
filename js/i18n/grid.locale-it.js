@@ -1,7 +1,7 @@
 (function ($) {
 "use strict";
 $.jgrid = $.jgrid || {};
-$.extend($.jgrid, {
+$.extend(true,$.jgrid, {
 	defaults: {
 		recordtext: "Visualizzati {0} - {1} di {2}",
 		emptyrecords: "Nessun record da visualizzare",

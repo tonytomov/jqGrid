@@ -7,7 +7,7 @@
  * http://www.gnu.org/licenses/gpl.html
 **/
 	$.jgrid = $.jgrid || {};
-	$.extend($.jgrid,{
+	$.extend(true,$.jgrid,{
         defaults: {
             recordtext: "نمابش {0} - {1} از {2}",
             emptyrecords: "رکوردی یافت نشد",
