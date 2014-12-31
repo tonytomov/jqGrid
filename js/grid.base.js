@@ -1903,8 +1903,8 @@ $.fn.jqGrid = function( pin ) {
 			return  retresult;
 		},
 		updatepager = function(rn, dnd) {
-			var cp, last, base, from,to,tot,fmt, pgboxes = "", sppg,
-			tspg = ts.p.pager ? "_"+$.jgrid.jqID(ts.p.pager.substr(1)) : "",
+			var cp, last, base, from, to, tot, fmt, pgboxes = ts.p.pager || "", sppg,
+			tspg = ts.p.pager ? "_"+ts.p.pager.substr(1) : "",
 			tspg_t = ts.p.toppager ? "_"+ts.p.toppager.substr(1) : "";
 			base = parseInt(ts.p.page,10)-1;
 			if(base < 0) { base = 0; }
@@ -1925,8 +1925,7 @@ $.fn.jqGrid = function( pin ) {
 				}
 				ts.grid.bDiv.scrollLeft = ts.grid.hDiv.scrollLeft;
 			}
-			pgboxes = ts.p.pager || "";
-			pgboxes += ts.p.toppager ?  (pgboxes ? "," + ts.p.toppager : ts.p.toppager) : "";
+			pgboxes += ts.p.toppager ? (pgboxes ? ",": "") + ts.p.toppager : "";
 			if(pgboxes) {
 				fmt = $.jgrid.formatter.integer || {};
 				cp = intNum(ts.p.page);
@@ -2136,7 +2135,6 @@ $.fn.jqGrid = function( pin ) {
 			}
 		},
 		setPager = function (pgid, tp){
-			// TBD - consider escaping pgid with pgid = $.jgrid.jqID(pgid);
 			var sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='ui-separator'></span></td>",
 			pginp = "",
 			pgl="<table cellspacing='0' cellpadding='0' border='0' style='table-layout:auto;' class='ui-pg-table'><tbody><tr>",
@@ -2150,13 +2148,13 @@ $.fn.jqGrid = function( pin ) {
 				ts.p.savedRow = [];
 				return true;
 			};
-			pgid = pgid.substr(1);
 			tp += "_" + pgid;
 			pgcnt = "pg_"+pgid;
 			lft = pgid+"_left"; cent = pgid+"_center"; rgt = pgid+"_right";
 			$("#"+$.jgrid.jqID(pgid) )
 			.append("<div id='"+pgcnt+"' class='ui-pager-control' role='group'><table cellspacing='0' cellpadding='0' border='0' class='ui-pg-table' style='width:100%;table-layout:fixed;height:100%;' role='row'><tbody><tr><td id='"+lft+"' align='left'></td><td id='"+cent+"' align='center' style='white-space:pre;'></td><td id='"+rgt+"' align='right'></td></tr></tbody></table></div>")
 			.attr("dir","ltr"); //explicit setting
+			pgcnt = "#" + $.jgrid.jqID(pgcnt); // modify to id selector
 			if(ts.p.rowList.length >0){
 				str = "<td dir='"+dir+"'>";
 				str +="<select class='ui-pg-selbox' role='listbox' " + (ts.p.pgrecs ? "title='"+ts.p.pgrecs +"'" : "")+ ">";
@@ -2171,7 +2169,8 @@ $.fn.jqGrid = function( pin ) {
 				str +="</select></td>";
 			}
 			if(dir==="rtl") { pgl += str; }
-			if(ts.p.pginput===true) { pginp= "<td dir='"+dir+"'>"+$.jgrid.format(ts.p.pgtext || "","<input class='ui-pg-input' type='text' size='2' maxlength='7' value='0' role='textbox'/>","<span id='sp_1_"+$.jgrid.jqID(pgid)+"'></span>")+"</td>";}
+			if(ts.p.pginput===true) { pginp= "<td dir='"+dir+"'>"+$.jgrid.format(ts.p.pgtext || "","<input class='ui-pg-input' type='text' size='2' maxlength='7' value='0' role='textbox'/>","<span id='sp_1_"+pgid+"'></span>")+"</td>";}
+			pgid = "#"+$.jgrid.jqID(pgid); // modify to id selector
 			if(ts.p.pgbuttons===true) {
 				var po=["first"+tp,"prev"+tp, "next"+tp,"last"+tp]; if(dir==="rtl") { po.reverse(); }
 				pgl += "<td id='"+po[0]+"' class='ui-pg-button ui-corner-all' " + (ts.p.pgfirst ? "title='"+ts.p.pgfirst +"'" : "")+"><span class='ui-icon ui-icon-seek-first'></span></td>";
@@ -2182,21 +2181,21 @@ $.fn.jqGrid = function( pin ) {
 			} else if (pginp !== "") { pgl += pginp; }
 			if(dir==="ltr") { pgl += str; }
 			pgl += "</tr></tbody></table>";
-			if(ts.p.viewrecords===true) {$("td#"+pgid+"_"+ts.p.recordpos,"#"+pgcnt).append("<div dir='"+dir+"' style='text-align:"+ts.p.recordpos+"' class='ui-paging-info'></div>");}
-			$("td#"+pgid+"_"+ts.p.pagerpos,"#"+pgcnt).append(pgl);
+			if(ts.p.viewrecords===true) {$("td"+pgid+"_"+ts.p.recordpos,pgcnt).append("<div dir='"+dir+"' style='text-align:"+ts.p.recordpos+"' class='ui-paging-info'></div>");}
+			$("td"+pgid+"_"+ts.p.pagerpos,pgcnt).append(pgl);
 			tdw = $(".ui-jqgrid").css("font-size") || "11px";
 			$(document.body).append("<div id='testpg' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+tdw+";visibility:hidden;' ></div>");
 			twd = $(pgl).clone().appendTo("#testpg").width();
 			$("#testpg").remove();
 			if(twd > 0) {
 				if(pginp !== "") { twd += 50; } //should be param
-				$("td#"+pgid+"_"+ts.p.pagerpos,"#"+pgcnt).width(twd);
+				$("td"+pgid+"_"+ts.p.pagerpos,pgcnt).width(twd);
 			}
 			ts.p._nvtd = [];
 			ts.p._nvtd[0] = twd ? Math.floor((ts.p.width - twd)/2) : Math.floor(ts.p.width/3);
 			ts.p._nvtd[1] = 0;
 			pgl=null;
-			$('.ui-pg-selbox',"#"+pgcnt).bind('change',function() {
+			$('.ui-pg-selbox',pgcnt).bind('change',function() {
 				if(!clearVals('records')) { return false; }
 				ts.p.page = Math.round(ts.p.rowNum*(ts.p.page-1)/this.value-0.5)+1;
 				ts.p.rowNum = this.value;
@@ -2206,7 +2205,7 @@ $.fn.jqGrid = function( pin ) {
 				return false;
 			});
 			if(ts.p.pgbuttons===true) {
-			$(".ui-pg-button","#"+pgcnt).hover(function(){
+			$(".ui-pg-button",pgcnt).hover(function(){
 				if($(this).hasClass('ui-state-disabled')) {
 					this.style.cursor='default';
 				} else {
@@ -2244,7 +2243,7 @@ $.fn.jqGrid = function( pin ) {
 			});
 			}
 			if(ts.p.pginput===true) {
-			$('input.ui-pg-input',"#"+pgcnt).keypress( function(e) {
+			$('input.ui-pg-input',pgcnt).keypress( function(e) {
 				var key = e.charCode || e.keyCode || 0;
 				if(key === 13) {
 					if(!clearVals('user')) { return false; }
@@ -2736,12 +2735,25 @@ $.fn.jqGrid = function( pin ) {
 		hTable = null;
 		if(hg) { $(grid.hDiv).hide(); }
 		if(ts.p.pager){
-			// TBD -- escape ts.p.pager here?
-			if(typeof ts.p.pager === "string") {if(ts.p.pager.substr(0,1) !== "#") { ts.p.pager = "#"+ts.p.pager;} }
-			else { ts.p.pager = "#"+ $(ts.p.pager).attr("id");}
-			$(ts.p.pager).css({width: grid.width+"px"}).addClass('ui-state-default ui-jqgrid-pager ui-corner-bottom').appendTo(eg);
-			if(hg) {$(ts.p.pager).hide();}
-			setPager(ts.p.pager,'');
+			// see http://learn.jquery.com/using-jquery-core/faq/how-do-i-select-an-element-by-an-id-that-has-characters-used-in-css-notation/
+			// or http://api.jquery.com/id-selector/ or http://api.jquery.com/category/selectors/
+			// about the requirement to escape characters like '.', ':' or some other in case.
+			var $pager, pagerId;
+			if (typeof ts.p.pager === "string" && ts.p.pager.substr(0,1) !== "#") {
+				pagerId = ts.p.pager; // UNESCAPED id of the pager
+				$pager = $("#" + $.jgrid.jqID(ts.p.pager));
+			} else {
+				$pager = $(ts.p.pager); // jQuery wrapper or ESCAPED id selector
+				pagerId = $pager.attr("id");
+			}
+			if ($pager.length > 0) {
+				$pager.css({width: grid.width+"px"}).addClass('ui-state-default ui-jqgrid-pager ui-corner-bottom').appendTo(eg);
+				if(hg) {$pager.hide();}
+				setPager(pagerId,'');
+				ts.p.pager = "#" + $.jgrid.jqID(pagerId); // hold ESCAPED id selector in the pager
+			} else {
+				ts.p.pager = ""; // clear wrong value of the pager option
+			}
 		}
 		if( ts.p.cellEdit === false && ts.p.hoverrows === true) {
 		$(ts).bind('mouseover',function(e) {
@@ -2922,11 +2934,11 @@ $.fn.jqGrid = function( pin ) {
 			if(hg) {$(grid.uDiv).hide();}
 		}
 		if(ts.p.toppager) {
-			ts.p.toppager = $.jgrid.jqID(ts.p.id)+"_toppager";
+			ts.p.toppager = ts.p.id+"_toppager";
 			grid.topDiv = $("<div id='"+ts.p.toppager+"'></div>")[0];
-			ts.p.toppager = "#"+ts.p.toppager;
 			$(grid.topDiv).addClass('ui-state-default ui-jqgrid-toppager').css({width: grid.width+"px"}).insertBefore(grid.hDiv);
 			setPager(ts.p.toppager,'_t');
+			ts.p.toppager = "#"+$.jgrid.jqID(ts.p.toppager); // hold ESCAPED id selector in the toppager option
 		}
 		if(ts.p.footerrow) {
 			grid.sDiv = $("<div class='ui-jqgrid-sdiv'></div>")[0];
