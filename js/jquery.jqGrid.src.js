@@ -12938,8 +12938,8 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 		}
 		return $.fn.fmatter.defaultFormat(cellval,opts);
 	};
-	$.fn.fmatter.integer = function(cellval, opts) {
-		var op = $.extend({},opts.integer);
+	var numberHelper = function(cellval, opts, formatType) {
+		var op = $.extend({},opts[formatType]);
 		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
@@ -12947,26 +12947,15 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 			return op.defaultValue;
 		}
 		return $.fmatter.util.NumberFormat(cellval,op);
+	};
+	$.fn.fmatter.integer = function(cellval, opts) {
+		return numberHelper(cellval,opts,"integer");
 	};
 	$.fn.fmatter.number = function (cellval, opts) {
-		var op = $.extend({},opts.number);
-		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
-			op = $.extend({},op,opts.colModel.formatoptions);
-		}
-		if($.fmatter.isEmpty(cellval)) {
-			return op.defaultValue;
-		}
-		return $.fmatter.util.NumberFormat(cellval,op);
+		return numberHelper(cellval,opts,"number");
 	};
 	$.fn.fmatter.currency = function (cellval, opts) {
-		var op = $.extend({},opts.currency);
-		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
-			op = $.extend({},op,opts.colModel.formatoptions);
-		}
-		if($.fmatter.isEmpty(cellval)) {
-			return op.defaultValue;
-		}
-		return $.fmatter.util.NumberFormat(cellval,op);
+		return numberHelper(cellval,opts,"currency");
 	};
 	$.fn.fmatter.date = function (cellval, opts, rwd, act) {
 		var op = $.extend({},opts.date);
