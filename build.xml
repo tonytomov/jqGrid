@@ -26,7 +26,6 @@
 		<fileset file="js/grid.grouping.js"/>
 		<fileset file="js/grid.import.js"/>
 		<fileset file="js/grid.jqueryui.js"/>
-		<fileset file="js/grid.tbltogrid.js"/>
 		<fileset file="js/grid.pivot.js"/>
         </concat>
     </target>
