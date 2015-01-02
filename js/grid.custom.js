@@ -423,7 +423,7 @@ $.jgrid.extend({
 						var st = soptions.searchtitle != null ? soptions.searchtitle : p.operandTitle;
 						select = "<a title='"+st+"' style='padding-right: 0.5em;' soper='"+so+"' class='soptclass' colname='"+this.name+"'>"+sot+"</a>";
 					}
-					$("td:eq(0)",stbl).attr("colindex",ci).append(select);
+					$("td:eq(0)",stbl).data("colindex",ci).append(select);
 					if(soptions.clearSearch === undefined) {
 						soptions.clearSearch = this.stype === "text" ? true : false;
 					}
@@ -602,7 +602,7 @@ $.jgrid.extend({
 			}
 			$(".clearsearchclass",tr).click(function(){
 				var ptr = $(this).parents("tr:first"),
-				coli = parseInt($("td.ui-search-oper", ptr).attr('colindex'),10),
+				coli = parseInt($("td.ui-search-oper", ptr).data('colindex'),10),
 				sval  = $.extend({},$t.p.colModel[coli].searchoptions || {}),
 				dval = sval.defaultValue ? sval.defaultValue : "";
 				if($t.p.colModel[coli].stype === "select") {
