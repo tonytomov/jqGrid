@@ -160,7 +160,7 @@ $.jgrid.extend({
 		// End compatible
 
 		var success = false;
-		var $t = this[0], nm, tmp={}, tmp2={}, tmp3= {}, editable, fr, cv, ind;
+		var $t = this[0], nm, tmp={}, tmp2={}, tmp3= {}, editable, fr, cv, ind, nullIfEmpty=false;
 		if (!$t.grid ) { return success; }
 		ind = $($t).jqGrid("getInd",rowid,true);
 		if(ind === false) {return success;}
@@ -229,6 +229,7 @@ $.jgrid.extend({
 					if(o.url !== 'clientArray' && cm.editoptions && cm.editoptions.NullIfEmpty === true) {
 						if(tmp[nm] === "") {
 							tmp3[nm] = 'null';
+							nullIfEmpty = true;
 						}
 					}
 				}
@@ -312,7 +313,7 @@ $.jgrid.extend({
 						if (stat === "success"){
 							var ret = true, sucret, k;
 							sucret = $($t).triggerHandler("jqGridInlineSuccessSaveRow", [res, rowid, o]);
-							if (!$.isArray(sucret)) {sucret = [true, tmp];}
+							if (!$.isArray(sucret)) {sucret = [true, tmp3];}
 							if (sucret[0] && $.isFunction(o.successfunc)) {sucret = o.successfunc.call($t, res);}							
 							if($.isArray(sucret)) {
 								// expect array - status, data, rowid
@@ -325,6 +326,13 @@ $.jgrid.extend({
 								if($t.p.autoencode) {
 									$.each(tmp,function(n,v){
 										tmp[n] = $.jgrid.htmlDecode(v);
+									});
+								}
+								if(nullIfEmpty) {
+									$.each(tmp,function(n,v){
+										if(tmp[n] === 'null' ) {
+											tmp[n] = '';
+										}
 									});
 								}
 								tmp = $.extend({},tmp, tmp2);
