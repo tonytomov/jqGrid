@@ -1111,7 +1111,10 @@ $.fn.jqGrid = function( pin ) {
 		$(gv).attr("id","gview_"+this.id).appendTo(eg);
 		$("<div class='ui-widget-overlay jqgrid-overlay' id='lui_"+this.id+"'></div>").insertBefore(gv);
 		$("<div class='loading ui-state-default ui-state-active' id='load_"+this.id+"'>"+this.p.loadtext+"</div>").insertBefore(gv);
-		$(this).attr({cellspacing:"0",cellpadding:"0",border:"0","role":"presentation","aria-multiselectable":!!this.p.multiselect,"aria-labelledby":"gbox_"+this.id});
+		if (isMSIE && $.jgrid.msiever() < 8) {
+			$(this).attr({cellspacing:"0"});
+		}
+		$(this).attr({"role":"presentation","aria-multiselectable":!!this.p.multiselect,"aria-labelledby":"gbox_"+this.id});
 		var sortkeys = ["shiftKey","altKey","ctrlKey"],
 		intNum = function(val,defval) {
 			val = parseInt(val,10);
@@ -2136,7 +2139,7 @@ $.fn.jqGrid = function( pin ) {
 		setPager = function (pgid, tp){
 			var sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='ui-separator'></span></td>",
 			pginp = "",
-			pgl="<table cellspacing='0' cellpadding='0' border='0' style='table-layout:auto;' class='ui-pg-table'><tbody><tr>",
+			pgl="<table "+(isMSIE && $.jgrid.msiever() < 8 ? "cellspacing='0' " : "")+"style='table-layout:auto;' class='ui-pg-table'><tbody><tr>",
 			str="", pgcnt, lft, cent, rgt, twd, tdw, i,
 			clearVals = function(onpaging){
 				var ret;
@@ -2151,7 +2154,7 @@ $.fn.jqGrid = function( pin ) {
 			pgcnt = "pg_"+pgid;
 			lft = pgid+"_left"; cent = pgid+"_center"; rgt = pgid+"_right";
 			$("#"+$.jgrid.jqID(pgid) )
-			.append("<div id='"+pgcnt+"' class='ui-pager-control' role='group'><table cellspacing='0' cellpadding='0' border='0' class='ui-pg-table' style='width:100%;table-layout:fixed;height:100%;'><tbody><tr><td id='"+lft+"' align='left'></td><td id='"+cent+"' align='center' style='white-space:pre;'></td><td id='"+rgt+"' align='right'></td></tr></tbody></table></div>")
+			.append("<div id='"+pgcnt+"' class='ui-pager-control' role='group'><table "+(isMSIE && $.jgrid.msiever() < 8 ? "cellspacing='0' " : "")+"class='ui-pg-table' style='width:100%;table-layout:fixed;height:100%;'><tbody><tr><td id='"+lft+"' align='left'></td><td id='"+cent+"' align='center' style='white-space:pre;'></td><td id='"+rgt+"' align='right'></td></tr></tbody></table></div>")
 			.attr("dir","ltr"); //explicit setting
 			pgcnt = "#" + $.jgrid.jqID(pgcnt); // modify to id selector
 			if(ts.p.rowList.length >0){
@@ -2629,7 +2632,7 @@ $.fn.jqGrid = function( pin ) {
 		$(gv).css("width",grid.width+"px");
 		thead = $("thead:first",ts).get(0);
 		var	tfoot = "";
-		if(ts.p.footerrow) { tfoot += "<table role='presentation' style='width:"+ts.p.tblwidth+"px' class='ui-jqgrid-ftable' cellspacing='0' cellpadding='0' border='0'><tbody><tr role='row' class='ui-widget-content footrow footrow-"+dir+"'>"; }
+		if(ts.p.footerrow) { tfoot += "<table role='presentation' style='width:"+ts.p.tblwidth+"px' class='ui-jqgrid-ftable'"+(isMSIE && $.jgrid.msiever() < 8 ? " cellspacing='0'" : "")+"><tbody><tr role='row' class='ui-widget-content footrow footrow-"+dir+"'>"; }
 		var thr = $("tr:first",thead),
 		firstr = "<tr class='jqgfirstrow' role='row' style='height:auto'>";
 		ts.p.disableClick=false;
@@ -2721,7 +2724,7 @@ $.fn.jqGrid = function( pin ) {
 		this.appendChild(tbody);
 		$(this).addClass('ui-jqgrid-btable').append(firstr);
 		firstr = null;
-		var hTable = $("<table class='ui-jqgrid-htable' style='width:"+ts.p.tblwidth+"px' role='presentation' aria-labelledby='gbox_"+this.id+"' cellspacing='0' cellpadding='0' border='0'></table>").append(thead),
+		var hTable = $("<table class='ui-jqgrid-htable' style='width:"+ts.p.tblwidth+"px' role='presentation' aria-labelledby='gbox_"+this.id+"'"+(isMSIE && $.jgrid.msiever() < 8 ? " cellspacing='0'" : "")+"></table>").append(thead),
 		hg = (ts.p.caption && ts.p.hiddengrid===true) ? true : false,
 		hb = $("<div class='ui-jqgrid-hbox" + (dir==="rtl" ? "-rtl" : "" )+"'></div>");
 		thead = null;
@@ -5634,7 +5637,7 @@ $.jgrid.extend({
 					ina = $.inArray(options.sopt[i],aoprs);
 					if(ina !== -1) {
 						selclass = selected === p.odata[ina].oper ? "ui-state-highlight" : "";
-						str += '<li class="ui-menu-item '+selclass+'" role="presentation"><a class="ui-corner-all g-menu-item" tabindex="0" role="menuitem" value="'+p.odata[ina].oper+'" oper="'+p.operands[p.odata[ina].oper]+'"><table cellspacing="0" cellpadding="0" border="0"><tr><td width="25px">'+p.operands[p.odata[ina].oper]+'</td><td>'+ p.odata[ina].text+'</td></tr></table></a></li>';
+						str += '<li class="ui-menu-item '+selclass+'" role="presentation"><a class="ui-corner-all g-menu-item" tabindex="0" role="menuitem" value="'+p.odata[ina].oper+'" oper="'+p.operands[p.odata[ina].oper]+'"><table'+($.jgrid.msie && $.jgrid.msiever() < 8 ? ' cellspacing="0"' : '')+'><tr><td width="25px">'+p.operands[p.odata[ina].oper]+'</td><td>'+ p.odata[ina].text+'</td></tr></table></a></li>';
 					}
 				}
 				str += "</ul>";
@@ -5664,7 +5667,7 @@ $.jgrid.extend({
 				var cm=this, soptions, surl, self, select = "", sot="=", so, i,
 				th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-"+$t.p.direction+"'></th>"),
 				thd = $("<div style='position:relative;height:auto;padding-right:0.3em;padding-left:0.3em;'></div>"),
-				stbl = $("<table class='ui-search-table' cellspacing='0'><tr><td class='ui-search-oper'></td><td class='ui-search-input'></td><td class='ui-search-clear'></td></tr></table>");
+				stbl = $("<table class='ui-search-table'"+($.jgrid.msie && $.jgrid.msiever() < 8 ? " cellspacing='0'" : "")+"><tr><td class='ui-search-oper'></td><td class='ui-search-input'></td><td class='ui-search-clear'></td></tr></table>");
 				if(this.hidden===true) { $(th).css("display","none");}
 				this.search = this.search === false ? false : true;
 				if(this.stype === undefined) {this.stype='text';}
@@ -7912,7 +7915,7 @@ $.jgrid.extend({
 			var dh = isNaN(rp_ge[$(this)[0].p.id].dataheight) ? rp_ge[$(this)[0].p.id].dataheight : rp_ge[$(this)[0].p.id].dataheight+"px",
 			dw = isNaN(rp_ge[$(this)[0].p.id].datawidth) ? rp_ge[$(this)[0].p.id].datawidth : rp_ge[$(this)[0].p.id].datawidth+"px",
 			frm = $("<form name='FormPost' id='"+frmgr+"' class='FormGrid' onSubmit='return false;' style='width:"+dw+";overflow:auto;position:relative;height:"+dh+";'></form>").data("disabled",false),
-			tbl = $("<table id='"+frmtborg+"' class='EditTable' cellspacing='0' cellpadding='0' border='0'><tbody></tbody></table>");
+			tbl = $("<table id='"+frmtborg+"' class='EditTable'"+($.jgrid.msie && $.jgrid.msiever() < 8 ? " cellspacing='0'" : "")+"><tbody></tbody></table>");
 			$($t.p.colModel).each( function() {
 				var fmto = this.formoptions;
 				maxCols = Math.max(maxCols, fmto ? fmto.colpos || 0 : 0 );
@@ -7947,7 +7950,7 @@ $.jgrid.extend({
 			bN = "<a id='"+bn+"' class='fm-button ui-state-default ui-corner-right'><span class='ui-icon ui-icon-triangle-1-e'></span></a>",
 			bS  ="<a id='sData' class='fm-button ui-state-default ui-corner-all'>"+p.bSubmit+"</a>",
 			bC  ="<a id='cData' class='fm-button ui-state-default ui-corner-all'>"+p.bCancel+"</a>";
-			var bt = "<table border='0' cellspacing='0' cellpadding='0' class='EditTable' id='"+frmtborg+"_2'><tbody><tr><td colspan='2'><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr id='Act_Buttons'><td class='navButton'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton'>"+bS+bC+"</td></tr>";
+			var bt = "<table"+($.jgrid.msie && $.jgrid.msiever() < 8 ? " cellspacing='0'" : "")+" class='EditTable' id='"+frmtborg+"_2'><tbody><tr><td colspan='2'><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr id='Act_Buttons'><td class='navButton'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton'>"+bS+bC+"</td></tr>";
 			bt += "<tr style='display:none' class='binfo'><td class='bottominfo' colspan='2'>"+rp_ge[$t.p.id].bottominfo+"</td></tr>";
 			bt += "</tbody></table>";
 			if(maxRows >  0) {
@@ -8555,7 +8558,7 @@ $.jgrid.extend({
 				tbl += "</tbody></table></div>";
 				var bS  = "<a id='dData' class='fm-button ui-state-default ui-corner-all'>"+p.bSubmit+"</a>",
 				bC  = "<a id='eData' class='fm-button ui-state-default ui-corner-all'>"+p.bCancel+"</a>";
-				tbl += "<table cellspacing='0' cellpadding='0' border='0' class='EditTable' id='"+dtbl+"_2'><tbody><tr><td><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='DelButton EditButton'>"+bS+"&#160;"+bC+"</td></tr></tbody></table>";
+				tbl += "<table"+($.jgrid.msie && $.jgrid.msiever() < 8 ? " cellspacing='0'" : "")+" class='EditTable' id='"+dtbl+"_2'><tbody><tr><td><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='DelButton EditButton'>"+bS+"&#160;"+bC+"</td></tr></tbody></table>";
 				p.gbox = "#gbox_"+$.jgrid.jqID(gID);
 				$.jgrid.createModal(IDs,tbl,p,"#gview_"+$.jgrid.jqID($t.p.id),$("#gview_"+$.jgrid.jqID($t.p.id))[0]);
 
@@ -8779,7 +8782,7 @@ $.jgrid.extend({
 			if(o.cloneToTop && $t.p.toppager) {clone = 2;}
 			for(i = 0; i<clone; i++) {
 				var tbd,
-				navtbl = $("<table cellspacing='0' cellpadding='0' border='0' class='ui-pg-table navtable' style='float:left;table-layout:auto;'><tbody><tr></tr></tbody></table>"),
+				navtbl = $("<table"+($.jgrid.msie && $.jgrid.msiever() < 8 ? " cellspacing='0'" : "")+" class='ui-pg-table navtable' style='float:left;table-layout:auto;'><tbody><tr></tr></tbody></table>"),
 				sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='ui-separator'></span></td>",
 				pgid, elemids;
 				if(i===0) {
@@ -11602,7 +11605,7 @@ addSubGrid : function( pos, sind ) {
 		};
 		var subGridXml = function(sjxml, sbid){
 			var tddiv, i,  sgmap,
-			dummy = $("<table cellspacing='0' cellpadding='0' border='0'><tbody></tbody></table>"),
+			dummy = $("<table"+($.jgrid.msie && $.jgrid.msiever() < 8 ? " cellspacing='0'" : "")+"><tbody></tbody></table>"),
 			trdiv = $("<tr></tr>");
 			for (i = 0; i<ts.p.subGridModel[0].name.length; i++) {
 				tddiv = $("<th class='ui-state-default ui-th-subgrid ui-th-column ui-th-"+ts.p.direction+"'></th>");
@@ -11638,7 +11641,7 @@ addSubGrid : function( pos, sind ) {
 		};
 		var subGridJson = function(sjxml, sbid){
 			var tddiv,result,i,cur, sgmap,j,
-			dummy = $("<table cellspacing='0' cellpadding='0' border='0'><tbody></tbody></table>"),
+			dummy = $("<table"+($.jgrid.msie && $.jgrid.msiever() < 8 ? " cellspacing='0'" : "")+"><tbody></tbody></table>"),
 			trdiv = $("<tr></tr>");
 			for (i = 0; i<ts.p.subGridModel[0].name.length; i++) {
 				tddiv = $("<th class='ui-state-default ui-th-subgrid ui-th-column ui-th-"+ts.p.direction+"'></th>");

@@ -55,7 +55,7 @@ addSubGrid : function( pos, sind ) {
 		};
 		var subGridXml = function(sjxml, sbid){
 			var tddiv, i,  sgmap,
-			dummy = $("<table cellspacing='0' cellpadding='0' border='0'><tbody></tbody></table>"),
+			dummy = $("<table"+($.jgrid.msie && $.jgrid.msiever() < 8 ? " cellspacing='0'" : "")+"><tbody></tbody></table>"),
 			trdiv = $("<tr></tr>");
 			for (i = 0; i<ts.p.subGridModel[0].name.length; i++) {
 				tddiv = $("<th class='ui-state-default ui-th-subgrid ui-th-column ui-th-"+ts.p.direction+"'></th>");
@@ -91,7 +91,7 @@ addSubGrid : function( pos, sind ) {
 		};
 		var subGridJson = function(sjxml, sbid){
 			var tddiv,result,i,cur, sgmap,j,
-			dummy = $("<table cellspacing='0' cellpadding='0' border='0'><tbody></tbody></table>"),
+			dummy = $("<table"+($.jgrid.msie && $.jgrid.msiever() < 8 ? " cellspacing='0'" : "")+"><tbody></tbody></table>"),
 			trdiv = $("<tr></tr>");
 			for (i = 0; i<ts.p.subGridModel[0].name.length; i++) {
 				tddiv = $("<th class='ui-state-default ui-th-subgrid ui-th-column ui-th-"+ts.p.direction+"'></th>");

@@ -1111,7 +1111,10 @@ $.fn.jqGrid = function( pin ) {
 		$(gv).attr("id","gview_"+this.id).appendTo(eg);
 		$("<div class='ui-widget-overlay jqgrid-overlay' id='lui_"+this.id+"'></div>").insertBefore(gv);
 		$("<div class='loading ui-state-default ui-state-active' id='load_"+this.id+"'>"+this.p.loadtext+"</div>").insertBefore(gv);
-		$(this).attr({cellspacing:"0",cellpadding:"0",border:"0","role":"presentation","aria-multiselectable":!!this.p.multiselect,"aria-labelledby":"gbox_"+this.id});
+		if (isMSIE && $.jgrid.msiever() < 8) {
+			$(this).attr({cellspacing:"0"});
+		}
+		$(this).attr({"role":"presentation","aria-multiselectable":!!this.p.multiselect,"aria-labelledby":"gbox_"+this.id});
 		var sortkeys = ["shiftKey","altKey","ctrlKey"],
 		intNum = function(val,defval) {
 			val = parseInt(val,10);
@@ -2136,7 +2139,7 @@ $.fn.jqGrid = function( pin ) {
 		setPager = function (pgid, tp){
 			var sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='ui-separator'></span></td>",
 			pginp = "",
-			pgl="<table cellspacing='0' cellpadding='0' border='0' style='table-layout:auto;' class='ui-pg-table'><tbody><tr>",
+			pgl="<table "+(isMSIE && $.jgrid.msiever() < 8 ? "cellspacing='0' " : "")+"style='table-layout:auto;' class='ui-pg-table'><tbody><tr>",
 			str="", pgcnt, lft, cent, rgt, twd, tdw, i,
 			clearVals = function(onpaging){
 				var ret;
@@ -2151,7 +2154,7 @@ $.fn.jqGrid = function( pin ) {
 			pgcnt = "pg_"+pgid;
 			lft = pgid+"_left"; cent = pgid+"_center"; rgt = pgid+"_right";
 			$("#"+$.jgrid.jqID(pgid) )
-			.append("<div id='"+pgcnt+"' class='ui-pager-control' role='group'><table cellspacing='0' cellpadding='0' border='0' class='ui-pg-table' style='width:100%;table-layout:fixed;height:100%;'><tbody><tr><td id='"+lft+"' align='left'></td><td id='"+cent+"' align='center' style='white-space:pre;'></td><td id='"+rgt+"' align='right'></td></tr></tbody></table></div>")
+			.append("<div id='"+pgcnt+"' class='ui-pager-control' role='group'><table "+(isMSIE && $.jgrid.msiever() < 8 ? "cellspacing='0' " : "")+"class='ui-pg-table' style='width:100%;table-layout:fixed;height:100%;'><tbody><tr><td id='"+lft+"' align='left'></td><td id='"+cent+"' align='center' style='white-space:pre;'></td><td id='"+rgt+"' align='right'></td></tr></tbody></table></div>")
 			.attr("dir","ltr"); //explicit setting
 			pgcnt = "#" + $.jgrid.jqID(pgcnt); // modify to id selector
 			if(ts.p.rowList.length >0){
@@ -2629,7 +2632,7 @@ $.fn.jqGrid = function( pin ) {
 		$(gv).css("width",grid.width+"px");
 		thead = $("thead:first",ts).get(0);
 		var	tfoot = "";
-		if(ts.p.footerrow) { tfoot += "<table role='presentation' style='width:"+ts.p.tblwidth+"px' class='ui-jqgrid-ftable' cellspacing='0' cellpadding='0' border='0'><tbody><tr role='row' class='ui-widget-content footrow footrow-"+dir+"'>"; }
+		if(ts.p.footerrow) { tfoot += "<table role='presentation' style='width:"+ts.p.tblwidth+"px' class='ui-jqgrid-ftable'"+(isMSIE && $.jgrid.msiever() < 8 ? " cellspacing='0'" : "")+"><tbody><tr role='row' class='ui-widget-content footrow footrow-"+dir+"'>"; }
 		var thr = $("tr:first",thead),
 		firstr = "<tr class='jqgfirstrow' role='row' style='height:auto'>";
 		ts.p.disableClick=false;
@@ -2721,7 +2724,7 @@ $.fn.jqGrid = function( pin ) {
 		this.appendChild(tbody);
 		$(this).addClass('ui-jqgrid-btable').append(firstr);
 		firstr = null;
-		var hTable = $("<table class='ui-jqgrid-htable' style='width:"+ts.p.tblwidth+"px' role='presentation' aria-labelledby='gbox_"+this.id+"' cellspacing='0' cellpadding='0' border='0'></table>").append(thead),
+		var hTable = $("<table class='ui-jqgrid-htable' style='width:"+ts.p.tblwidth+"px' role='presentation' aria-labelledby='gbox_"+this.id+"'"+(isMSIE && $.jgrid.msiever() < 8 ? " cellspacing='0'" : "")+"></table>").append(thead),
 		hg = (ts.p.caption && ts.p.hiddengrid===true) ? true : false,
 		hb = $("<div class='ui-jqgrid-hbox" + (dir==="rtl" ? "-rtl" : "" )+"'></div>");
 		thead = null;

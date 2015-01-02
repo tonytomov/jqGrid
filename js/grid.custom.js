@@ -376,7 +376,7 @@ $.jgrid.extend({
 					ina = $.inArray(options.sopt[i],aoprs);
 					if(ina !== -1) {
 						selclass = selected === p.odata[ina].oper ? "ui-state-highlight" : "";
-						str += '<li class="ui-menu-item '+selclass+'" role="presentation"><a class="ui-corner-all g-menu-item" tabindex="0" role="menuitem" value="'+p.odata[ina].oper+'" oper="'+p.operands[p.odata[ina].oper]+'"><table cellspacing="0" cellpadding="0" border="0"><tr><td width="25px">'+p.operands[p.odata[ina].oper]+'</td><td>'+ p.odata[ina].text+'</td></tr></table></a></li>';
+						str += '<li class="ui-menu-item '+selclass+'" role="presentation"><a class="ui-corner-all g-menu-item" tabindex="0" role="menuitem" value="'+p.odata[ina].oper+'" oper="'+p.operands[p.odata[ina].oper]+'"><table'+($.jgrid.msie && $.jgrid.msiever() < 8 ? ' cellspacing="0"' : '')+'><tr><td width="25px">'+p.operands[p.odata[ina].oper]+'</td><td>'+ p.odata[ina].text+'</td></tr></table></a></li>';
 					}
 				}
 				str += "</ul>";
@@ -406,7 +406,7 @@ $.jgrid.extend({
 				var cm=this, soptions, surl, self, select = "", sot="=", so, i,
 				th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-"+$t.p.direction+"'></th>"),
 				thd = $("<div style='position:relative;height:auto;padding-right:0.3em;padding-left:0.3em;'></div>"),
-				stbl = $("<table class='ui-search-table' cellspacing='0'><tr><td class='ui-search-oper'></td><td class='ui-search-input'></td><td class='ui-search-clear'></td></tr></table>");
+				stbl = $("<table class='ui-search-table'"+($.jgrid.msie && $.jgrid.msiever() < 8 ? " cellspacing='0'" : "")+"><tr><td class='ui-search-oper'></td><td class='ui-search-input'></td><td class='ui-search-clear'></td></tr></table>");
 				if(this.hidden===true) { $(th).css("display","none");}
 				this.search = this.search === false ? false : true;
 				if(this.stype === undefined) {this.stype='text';}
