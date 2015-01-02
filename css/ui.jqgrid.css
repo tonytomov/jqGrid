@@ -122,11 +122,11 @@ div.ui-jqgrid-view table.ui-jqgrid-btable td, div.ui-jqgrid-view table.ui-jqgrid
 .ui-jqdialog-content .CaptionTD {vertical-align: middle;border: 0 none; padding: 2px;white-space: nowrap;}
 .ui-jqdialog-content .DataTD {padding: 2px; border: 0 none; vertical-align: top;}
 .ui-jqdialog-content .form-view-data {white-space:pre}
-.ui-jqdialog .ui-jqdialog-content .fm-button { display: inline-block; margin:0 4px 0 0; padding: .4em .5em; text-decoration:none; cursor:pointer; position: relative; text-align: center; zoom: 1; }
-.fm-button-icon-left { padding-left: 1.9em; }
-.fm-button-icon-right { padding-right: 1.9em; }
-.fm-button-icon-left .ui-icon { right: auto; left: .2em; margin-left: 0; position: absolute; top: 50%; margin-top: -8px; }
-.fm-button-icon-right .ui-icon { left: auto; right: .2em; margin-left: 0; position: absolute; top: 50%; margin-top: -8px;}
+.ui-jqdialog .fm-button { display: inline-block; margin:0 4px 0 0; padding: .4em .5em; text-decoration:none; cursor:pointer; position: relative; text-align: center; zoom: 1; }
+.ui-jqdialog .ui-jqdialog-content .fm-button-icon-left { padding-left: 1.9em; }
+.ui-jqdialog .ui-jqdialog-content .fm-button-icon-right { padding-right: 1.9em; }
+.ui-jqdialog .ui-jqdialog-content .fm-button-icon-left .ui-icon { right: auto; left: .2em; margin-left: 0; position: absolute; top: 50%; margin-top: -8px; }
+.ui-jqdialog .ui-jqdialog-content .fm-button-icon-right .ui-icon { left: auto; right: .2em; margin-left: 0; position: absolute; top: 50%; margin-top: -8px;}
 #nData, #pData { float: left; margin:3px;padding: 0; width: 15px; }
 /* End Eorm edit */
 /*.ui-jqgrid .edit-cell {}*/
