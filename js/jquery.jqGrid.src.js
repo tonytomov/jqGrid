@@ -2185,7 +2185,7 @@ $.fn.jqGrid = function( pin ) {
 			pgl += "</tr></tbody></table>";
 			if(ts.p.viewrecords===true) {$("td"+pgid+"_"+ts.p.recordpos,pgcnt).append("<div dir='"+dir+"' style='text-align:"+ts.p.recordpos+"' class='ui-paging-info'></div>");}
 			$("td"+pgid+"_"+ts.p.pagerpos,pgcnt).append(pgl);
-			tdw = $(".ui-jqgrid").css("font-size") || "11px";
+			tdw = $(".ui-jqgrid>.ui-jqgrid-view").css("font-size") || "11px";
 			$(document.body).append("<div id='testpg' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+tdw+";visibility:hidden;' ></div>");
 			twd = $(pgl).clone().appendTo("#testpg").width();
 			$("#testpg").remove();
