@@ -134,7 +134,7 @@ $.jgrid.extend({
 			$t.p.subGrid = false;$t.p.altRows =false;
 			$t.p.pgbuttons = false;$t.p.pginput = false;
 			$t.p.gridview =  true;
-			if($t.p.rowTotal === null ) { $t.p.rowNum = 10000; }
+			if($t.p.rowTotal === null ) { $t.p.rowNum = $t.p.maxRowNum; }
 			$t.p.multiselect = false;$t.p.rowList = [];
 			$t.p.expColInd = 0;
 			pico = 'ui-icon-triangle-1-' + ($t.p.direction==="rtl" ? 'w' : 'e');
