@@ -8528,27 +8528,27 @@ $.jgrid.extend({
 			onBeforeInit = $.isFunction(rp_ge[$t.p.id].beforeInitData) ? rp_ge[$t.p.id].beforeInitData : false,
 			gID = $t.p.id, onCS = {},
 			showFrm = true,
-			dtbl = "DelTbl_"+$.jgrid.jqID(gID),postd, idname, opers, oper,
+			dtbl = "#DelTbl_"+$.jgrid.jqID(gID),postd, idname, opers, oper,
 			dtbl_id = "DelTbl_" + gID,
-			IDs = {themodal:'delmod'+gID,modalhead:'delhd'+gID,modalcontent:'delcnt'+gID, scrollelm: dtbl};
+			IDs = {themodal:'delmod'+gID,modalhead:'delhd'+gID,modalcontent:'delcnt'+gID, scrollelm: dtbl_id};
 			if ($.isArray(rowids)) {rowids = rowids.join();}
 			if ( $("#"+$.jgrid.jqID(IDs.themodal))[0] !== undefined ) {
 				if(onBeforeInit) {
-					showFrm = onBeforeInit.call($t,$("#"+dtbl));
+					showFrm = onBeforeInit.call($t,$(dtbl));
 					if(showFrm === undefined) {
 						showFrm = true;
 					}
 				}
 				if(showFrm === false) {return;}
-				$("#DelData>td","#"+dtbl).text(rowids);
-				$("#DelError","#"+dtbl).hide();
+				$("#DelData>td",dtbl).text(rowids);
+				$("#DelError",dtbl).hide();
 				if( rp_ge[$t.p.id].processing === true) {
 					rp_ge[$t.p.id].processing=false;
-					$("#dData", "#"+dtbl).removeClass('ui-state-active');
+					$("#dData",dtbl).removeClass('ui-state-active');
 				}
-				if(onBeforeShow) {rp_ge[$t.p.id].beforeShowForm.call($t,$("#"+dtbl));}
+				if(onBeforeShow) {rp_ge[$t.p.id].beforeShowForm.call($t,$(dtbl));}
 				$.jgrid.viewModal("#"+$.jgrid.jqID(IDs.themodal),{gbox:"#gbox_"+$.jgrid.jqID(gID),jqm:rp_ge[$t.p.id].jqModal,jqM: false, overlay: rp_ge[$t.p.id].overlay, modal:rp_ge[$t.p.id].modal});
-				if(onAfterShow) {rp_ge[$t.p.id].afterShowForm.call($t,$("#"+dtbl));}
+				if(onAfterShow) {rp_ge[$t.p.id].afterShowForm.call($t,$(dtbl));}
 			} else {
 				var dh = isNaN(rp_ge[$t.p.id].dataheight) ? rp_ge[$t.p.id].dataheight : rp_ge[$t.p.id].dataheight+"px",
 				dw = isNaN(p.datawidth) ? p.datawidth : p.datawidth+"px",
@@ -8562,7 +8562,7 @@ $.jgrid.extend({
 				tbl += "</tbody></table></div>";
 				var bS  = "<a id='dData' class='fm-button ui-state-default ui-corner-all'>"+p.bSubmit+"</a>",
 				bC  = "<a id='eData' class='fm-button ui-state-default ui-corner-all'>"+p.bCancel+"</a>";
-				tbl += "<table"+($.jgrid.msie && $.jgrid.msiever() < 8 ? " cellspacing='0'" : "")+" class='EditTable' id='"+dtbl+"_2'><tbody><tr><td><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='DelButton EditButton'>"+bS+"&#160;"+bC+"</td></tr></tbody></table>";
+				tbl += "<table"+($.jgrid.msie && $.jgrid.msiever() < 8 ? " cellspacing='0'" : "")+" class='EditTable' id='"+dtbl_id+"_2'><tbody><tr><td><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='DelButton EditButton'>"+bS+"&#160;"+bC+"</td></tr></tbody></table>";
 				p.gbox = "#gbox_"+$.jgrid.jqID(gID);
 				$.jgrid.createModal(IDs,tbl,p,"#gview_"+$.jgrid.jqID($t.p.id),$("#gview_"+$.jgrid.jqID($t.p.id))[0]);
 
@@ -8574,23 +8574,23 @@ $.jgrid.extend({
 				}
 				if(showFrm === false) {return;}
 
-				$(".fm-button","#"+dtbl+"_2").hover(
+				$(".fm-button",dtbl+"_2").hover(
 					function(){$(this).addClass('ui-state-hover');},
 					function(){$(this).removeClass('ui-state-hover');}
 				);
 				p.delicon = $.extend([true,"left","ui-icon-scissors"],rp_ge[$t.p.id].delicon);
 				p.cancelicon = $.extend([true,"left","ui-icon-cancel"],rp_ge[$t.p.id].cancelicon);
 				if(p.delicon[0]===true) {
-					$("#dData","#"+dtbl+"_2").addClass(p.delicon[1] === "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
+					$("#dData",dtbl+"_2").addClass(p.delicon[1] === "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
 					.append("<span class='ui-icon "+p.delicon[2]+"'></span>");
 				}
 				if(p.cancelicon[0]===true) {
-					$("#eData","#"+dtbl+"_2").addClass(p.cancelicon[1] === "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
+					$("#eData",dtbl+"_2").addClass(p.cancelicon[1] === "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
 					.append("<span class='ui-icon "+p.cancelicon[2]+"'></span>");
 				}
-				$("#dData","#"+dtbl+"_2").click(function(){
+				$("#dData",dtbl+"_2").click(function(){
 					var ret=[true,""], pk,
-					postdata = $("#DelData>td","#"+dtbl).text(); //the pair is name=val1,val2,...
+					postdata = $("#DelData>td",dtbl).text(); //the pair is name=val1,val2,...
 					onCS = {};
 					if( $.isFunction( rp_ge[$t.p.id].onclickSubmit ) ) {onCS = rp_ge[$t.p.id].onclickSubmit.call($t,rp_ge[$t.p.id], postdata) || {};}
 					if( $.isFunction( rp_ge[$t.p.id].beforeSubmit ) ) {ret = rp_ge[$t.p.id].beforeSubmit.call($t,postdata);}
@@ -8616,7 +8616,7 @@ $.jgrid.extend({
 							data: $.isFunction(rp_ge[$t.p.id].serializeDelData) ? rp_ge[$t.p.id].serializeDelData.call($t,postd) : postd,
 							complete:function(data,status){
 								var i;
-								$("#dData", "#"+dtbl+"_2").removeClass('ui-state-active');
+								$("#dData",dtbl+"_2").removeClass('ui-state-active');
 								if(data.status >= 300 && data.status !== 304) {
 									ret[0] = false;
 									if ($.isFunction(rp_ge[$t.p.id].errorTextFormat)) {
@@ -8632,8 +8632,8 @@ $.jgrid.extend({
 									}
 								}
 								if(ret[0] === false) {
-									$("#DelError>td","#"+dtbl).html(ret[1]);
-									$("#DelError","#"+dtbl).show();
+									$("#DelError>td",dtbl).html(ret[1]);
+									$("#DelError",dtbl).show();
 								} else {
 									if(rp_ge[$t.p.id].reloadAfterSubmit && $t.p.datatype !== "local") {
 										$($t).trigger("reloadGrid");
@@ -8690,18 +8690,18 @@ $.jgrid.extend({
 					}
 
 					if(ret[0] === false) {
-						$("#DelError>td","#"+dtbl).html(ret[1]);
-						$("#DelError","#"+dtbl).show();
+						$("#DelError>td",dtbl).html(ret[1]);
+						$("#DelError",dtbl).show();
 					}
 					return false;
 				});
-				$("#eData", "#"+dtbl+"_2").click(function(){
+				$("#eData",dtbl+"_2").click(function(){
 					$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:rp_ge[$t.p.id].jqModal, onClose: rp_ge[$t.p.id].onClose});
 					return false;
 				});
-				if(onBeforeShow) {rp_ge[$t.p.id].beforeShowForm.call($t,$("#"+dtbl));}
+				if(onBeforeShow) {rp_ge[$t.p.id].beforeShowForm.call($t,$(dtbl));}
 				$.jgrid.viewModal("#"+$.jgrid.jqID(IDs.themodal),{gbox:"#gbox_"+$.jgrid.jqID(gID),jqm:rp_ge[$t.p.id].jqModal, overlay: rp_ge[$t.p.id].overlay, modal:rp_ge[$t.p.id].modal});
-				if(onAfterShow) {rp_ge[$t.p.id].afterShowForm.call($t,$("#"+dtbl));}
+				if(onAfterShow) {rp_ge[$t.p.id].afterShowForm.call($t,$(dtbl));}
 			}
 			if(rp_ge[$t.p.id].closeOnEscape===true) {
 				setTimeout(function(){$(".ui-jqdialog-titlebar-close","#"+$.jgrid.jqID(IDs.modalhead)).attr("tabindex","-1").focus();},0);
@@ -8862,7 +8862,7 @@ $.jgrid.extend({
 									$($t).jqGrid("viewGridRow",sr,pView);
 								}
 							} else {
-								$.jgrid.viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$.jgrid.jqID($t.p.id),jqm:true});
+								$.jgrid.viewModal("#"+$.jgrid.jqID(alertIDs.themodal),{gbox:"#gbox_"+$.jgrid.jqID($t.p.id),jqm:true});
 								$("#jqg_alrt").focus();
 							}
 						}
@@ -8893,7 +8893,7 @@ $.jgrid.extend({
 									$($t).jqGrid("delGridRow",dr,pDel);
 								}
 							} else  {
-								$.jgrid.viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$.jgrid.jqID($t.p.id),jqm:true});$("#jqg_alrt").focus();
+								$.jgrid.viewModal("#"+$.jgrid.jqID(alertIDs.themodal),{gbox:"#gbox_"+$.jgrid.jqID($t.p.id),jqm:true});$("#jqg_alrt").focus();
 							}
 						}
 						return false;
