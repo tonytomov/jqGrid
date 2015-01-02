@@ -5686,7 +5686,7 @@ $.jgrid.extend({
 					}
 					$("td:eq(0)",stbl).attr("colindex",ci).append(select);
 					if(soptions.clearSearch === undefined) {
-						soptions.clearSearch = true;
+						soptions.clearSearch = this.stype === "text" ? true : false;
 					}
 					if(soptions.clearSearch) {
 						var csv = p.resetTitle || 'Clear Search Value';
