@@ -802,6 +802,7 @@ $.fn.jqGrid = function( pin ) {
 			height: 150,
 			page: 1,
 			rowNum: 20,
+			maxRowNum: 10000,
 			rowTotal : null,
 			records: 0,
 			pager: "",
@@ -812,7 +813,7 @@ $.fn.jqGrid = function( pin ) {
 			colNames: [],
 			sortorder: "asc",
 			sortname: "",
-			datatype: "xml",
+			datatype: "local",
 			mtype: "GET",
 			altRows: false,
 			selarrrow: [],
@@ -876,7 +877,7 @@ $.fn.jqGrid = function( pin ) {
 			cellLayout: 5,
 			subGridWidth: 20,
 			multiselectWidth: 20,
-			gridview: false,
+			gridview: true,
 			rownumWidth: 25,
 			rownumbers : false,
 			pagerpos: 'center',
@@ -887,7 +888,7 @@ $.fn.jqGrid = function( pin ) {
 			altclass : 'ui-priority-secondary',
 			viewsortcols : [false,'vertical',true],
 			resizeclass : '',
-			autoencode : false,
+			autoencode : true,
 			remapColumns : [],
 			ajaxGridOptions :{},
 			direction : "ltr",
@@ -1189,9 +1190,7 @@ $.fn.jqGrid = function( pin ) {
 			for(i =0; i<ts.p.colModel.length; i++){
 				field = ts.p.colModel[i];
 				if (field.name !== 'cb' && field.name !=='subgrid' && field.name !=='rn') {
-					f[j]= datatype === "local" ?
-					field.name :
-					( (datatype==="xml" || datatype === "xmlstring") ? field.xmlmap || field.name : field.jsonmap || field.name );
+					f[j] = (datatype==="xml" || datatype === "xmlstring") ? field.xmlmap || field.name : field.jsonmap || field.name;
 					if(ts.p.keyName !== false && field.key===true ) {
 						ts.p.keyName = f[j];
 					}
@@ -2933,12 +2932,15 @@ $.fn.jqGrid = function( pin ) {
 			}
 			if(hg) {$(grid.uDiv).hide();}
 		}
+		ts.p.datatype = ts.p.datatype.toLowerCase();
 		if(ts.p.toppager) {
 			ts.p.toppager = ts.p.id+"_toppager";
 			grid.topDiv = $("<div id='"+ts.p.toppager+"'></div>")[0];
 			$(grid.topDiv).addClass('ui-state-default ui-jqgrid-toppager').css({width: grid.width+"px"}).insertBefore(grid.hDiv);
 			setPager(ts.p.toppager,'_t');
 			ts.p.toppager = "#"+$.jgrid.jqID(ts.p.toppager); // hold ESCAPED id selector in the toppager option
+		} else if (ts.p.pager === "" && ((ts.p.datatype !== "xml" && ts.p.datatype !== "json") || ((ts.p.datatype === "xml" || ts.p.datatype === "json") && loadonce === true))) {
+			$t.p.rowNum = $t.p.maxRowNum;
 		}
 		if(ts.p.footerrow) {
 			grid.sDiv = $("<div class='ui-jqgrid-sdiv'></div>")[0];
@@ -12092,7 +12094,7 @@ $.jgrid.extend({
 			$t.p.subGrid = false;$t.p.altRows =false;
 			$t.p.pgbuttons = false;$t.p.pginput = false;
 			$t.p.gridview =  true;
-			if($t.p.rowTotal === null ) { $t.p.rowNum = 10000; }
+			if($t.p.rowTotal === null ) { $t.p.rowNum = $t.p.maxRowNum; }
 			$t.p.multiselect = false;$t.p.rowList = [];
 			$t.p.expColInd = 0;
 			pico = 'ui-icon-triangle-1-' + ($t.p.direction==="rtl" ? 'w' : 'e');
