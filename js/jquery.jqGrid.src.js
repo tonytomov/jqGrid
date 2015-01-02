@@ -2544,8 +2544,8 @@ $.fn.jqGrid = function( pin ) {
 		}
 		if(ts.p.viewsortcols[1] === 'horizontal') {iac=" ui-i-asc";idc=" ui-i-desc";}
 		tdc = isMSIE ?  "class='ui-th-div-ie'" :"";
-		imgs = "<span class='s-ico' style='display:none'><span sort='asc' class='ui-grid-ico-sort ui-icon-asc"+iac+" ui-state-disabled ui-icon ui-icon-triangle-1-n ui-sort-"+dir+"'></span>";
-		imgs += "<span sort='desc' class='ui-grid-ico-sort ui-icon-desc"+idc+" ui-state-disabled ui-icon ui-icon-triangle-1-s ui-sort-"+dir+"'></span></span>";
+		imgs = "<span class='s-ico' style='display:none'><span class='ui-grid-ico-sort ui-icon-asc"+iac+" ui-state-disabled ui-icon ui-icon-triangle-1-n ui-sort-"+dir+"'></span>";
+		imgs += "<span class='ui-grid-ico-sort ui-icon-desc"+idc+" ui-state-disabled ui-icon ui-icon-triangle-1-s ui-sort-"+dir+"'></span></span>";
 		if(ts.p.multiSort) {
 			sortarr = ts.p.sortname.split(",");
 			for (i=0; i<sortarr.length; i++) {
@@ -2707,7 +2707,10 @@ $.fn.jqGrid = function( pin ) {
 			} else {
 				ci = getColumnHeaderIndex(this);
 			}
-			if (!ts.p.viewsortcols[2]) { r=true;d=t.attr("sort"); }
+			if (!ts.p.viewsortcols[2]) {
+				r = true;
+				d = t.hasClass("ui-icon-desc") ? "desc" : "asc";
+			}
 			if(ci != null){
 				sortData( $('div',this)[0].id, ci, r, d, this);
 			}
@@ -5684,7 +5687,7 @@ $.jgrid.extend({
 						var st = soptions.searchtitle != null ? soptions.searchtitle : p.operandTitle;
 						select = "<a title='"+st+"' style='padding-right: 0.5em;' soper='"+so+"' class='soptclass' colname='"+this.name+"'>"+sot+"</a>";
 					}
-					$("td:eq(0)",stbl).attr("colindex",ci).append(select);
+					$("td:eq(0)",stbl).data("colindex",ci).append(select);
 					if(soptions.clearSearch === undefined) {
 						soptions.clearSearch = this.stype === "text" ? true : false;
 					}
@@ -5863,7 +5866,7 @@ $.jgrid.extend({
 			}
 			$(".clearsearchclass",tr).click(function(){
 				var ptr = $(this).parents("tr:first"),
-				coli = parseInt($("td.ui-search-oper", ptr).attr('colindex'),10),
+				coli = parseInt($("td.ui-search-oper", ptr).data('colindex'),10),
 				sval  = $.extend({},$t.p.colModel[coli].searchoptions || {}),
 				dval = sval.defaultValue ? sval.defaultValue : "";
 				if($t.p.colModel[coli].stype === "select") {
