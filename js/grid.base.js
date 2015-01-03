@@ -799,7 +799,7 @@ $.fn.jqGrid = function( pin ) {
 
 		var p = $.extend(true,{
 			url: "",
-			height: 150,
+			height: "auto",
 			page: 1,
 			rowNum: 20,
 			maxRowNum: 10000,
