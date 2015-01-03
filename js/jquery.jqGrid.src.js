@@ -2953,7 +2953,7 @@ $.fn.jqGrid = function( pin ) {
 			setPager(ts.p.toppager,'_t');
 			ts.p.toppager = "#"+$.jgrid.jqID(ts.p.toppager); // hold ESCAPED id selector in the toppager option
 		} else if (ts.p.pager === "" && ((ts.p.datatype !== "xml" && ts.p.datatype !== "json") || ((ts.p.datatype === "xml" || ts.p.datatype === "json") && loadonce === true))) {
-			$t.p.rowNum = $t.p.maxRowNum;
+			ts.p.rowNum = ts.p.maxRowNum;
 		}
 		if(ts.p.footerrow) {
 			grid.sDiv = $("<div class='ui-jqgrid-sdiv'></div>")[0];
