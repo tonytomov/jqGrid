@@ -919,6 +919,7 @@ $.fn.jqGrid = function( pin ) {
 				this.hDiv.style.cursor = "col-resize";
 				this.curGbox = $("#rs_m"+$.jgrid.jqID(p.id),"#gbox_"+$.jgrid.jqID(p.id));
 				this.curGbox.css({display:"block",left:x.pageX-gridLeftPos,top:y[1],height:y[2]});
+				this.curGbox.data("idx",i);
 				$(ts).triggerHandler("jqGridResizeStart", [x, i]);
 				if($.isFunction(p.resizeStart)) { p.resizeStart.call(ts,x,i); }
 				document.onselectstart=function(){return false;};
@@ -2630,6 +2631,11 @@ $.fn.jqGrid = function( pin ) {
 		}
 		setColWidth();
 		$(eg).css("width",grid.width+"px").append("<div class='ui-jqgrid-resize-mark' id='rs_m"+ts.p.id+"'>&#160;</div>");
+		$("#rs_m"+$.jgrid.jqID(p.id)).dblclick(function () {
+			var iCol=$(this).data("idx"), cm = p.colModel[iCol];
+			$(ts).triggerHandler("jqGridResizeDblClick", [iCol, cm]);
+			if ($.isFunction(p.resizeDblClick)) { p.resizeDblClick.call(ts,iCol,cm); }
+		});
 		$(gv).css("width",grid.width+"px");
 		thead = $("thead:first",ts).get(0);
 		var	tfoot = "";
