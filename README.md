@@ -10,8 +10,8 @@ integrated with any server-side technology, including PHP, ASP, Java Servlets,
 JSP, ColdFusion, and Perl.
 
 
-    Official website: www.guriddo.net
-    Official download: www.guriddo.net/?page_id=103292
+    Official website: [www.guriddo.net](http://www.guriddo.net)
+    Official download: http://www.guriddo.net/?page_id=103292
     Licensing: www.guriddo.net/?page_id=103334
     Support: www.guriddo.net/?page_id=912
     Demo: http://www.guriddo.net/demo/guriddojs/
