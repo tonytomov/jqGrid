@@ -809,6 +809,7 @@ $.fn.jqGrid = function( pin ) {
 			autoResizableMaxColSize: 300,
 			autoResizableCompact: false,
 			autoResizableAdjustGridWidth: true,
+			doubleClickSensitivity: 250,
 			rowTotal : null,
 			records: 0,
 			pager: "",
@@ -952,13 +953,16 @@ $.fn.jqGrid = function( pin ) {
 				}
 			},
 			dragEnd: function() {
+				var self = this;
 				this.hDiv.style.cursor = "default";
 				if(this.resizing) {
 					var idx = this.resizing.idx,
 					nw = this.headers[idx].newWidth || this.headers[idx].width;
 					nw = parseInt(nw,10);
-					this.resizing = false;
-					$("#rs_m"+$.jgrid.jqID(p.id)).css("display","none");
+					setTimeout(function () {
+						$("#rs_m"+$.jgrid.jqID(p.id)).css("display","none");
+						self.resizing = false;
+					}, p.doubleClickSensitivity);
 					p.colModel[idx].width = nw;
 					this.headers[idx].width = nw;
 					this.headers[idx].el.style.width = nw + "px";
@@ -3046,9 +3050,7 @@ $.fn.jqGrid = function( pin ) {
 		$(eg).dblclick(function (e) {
 			var p = ts.p, doAutoresize, doAutoresizeCallback,
 				$resizer = $("#rs_m"+$.jgrid.jqID(p.id)),
-				resLeftOffset = parseFloat($resizer.css("left")),
-				resWidth = parseFloat($resizer.css("width")),
-				resParentBorderLeftWidth = parseFloat($resizer.parent().css("border-left-width")),
+				resizerOffset = $resizer.offset(),
 				iCol = $resizer.data("idx"),
 				cm = p.colModel[iCol];
 
@@ -3061,10 +3063,7 @@ $.fn.jqGrid = function( pin ) {
 				}
 			}
 
-			if (doAutoresize && !isNaN(resLeftOffset) && !isNaN(resParentBorderLeftWidth) &&
-					cm != null && cm.autoResizable &&
-					(e.offsetX < resLeftOffset + resParentBorderLeftWidth + resWidth) &&
-					(resLeftOffset + resParentBorderLeftWidth - resWidth < e.offsetX)) {
+			if (doAutoresize && (resizerOffset.left - 1 <= e.pageX && e.pageX <= resizerOffset.left + $resizer.outerWidth() + 1)) {
 				$(ts).jqGrid("autoResizeColumn", iCol);
 			}
 			return false;
