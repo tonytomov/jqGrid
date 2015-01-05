@@ -386,7 +386,9 @@
 					ret = ret.replace(stripTag,'').replace(op.decimalSeparator,'.');
 					break;
 				case 'checkbox':
-					var cbv = (options.colModel.editoptions) ? options.colModel.editoptions.value.split(":") : ["Yes","No"];
+					var cbv = (options.colModel.editoptions != null && typeof options.colModel.editoptions.value === "string") ?
+							options.colModel.editoptions.value.split(":") :
+							["Yes","No"];
 					ret = $('input',cellval).is(":checked") ? cbv[0] : cbv[1];
 					break;
 				case 'select' :
