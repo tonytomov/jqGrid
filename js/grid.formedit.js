@@ -367,8 +367,8 @@ $.jgrid.extend({
 			var gID = $t.p.id,
 			frmgr = "FrmGrid_"+gID, frmtborg = "TblGrid_"+gID, frmtb = "#"+$.jgrid.jqID(frmtborg), 
 			IDs = {themodal:'editmod'+gID,modalhead:'edithd'+gID,modalcontent:'editcnt'+gID, scrollelm : frmgr},
-			showFrm = true,
-			maxCols = 1, maxRows=0,	postdata, diff, frmoper;
+			showFrm = true, maxCols = 1, maxRows=0,	postdata, diff, frmoper;
+			
 			frmgr = $.jgrid.jqID(frmgr);
 			if (rowid === "new") {
 				rowid = "_empty";
