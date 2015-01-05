@@ -12139,23 +12139,24 @@ $.jgrid.extend({
             });
             return ret;
         },
-        excelExport : function(o) {
+        excelExport : function (o) {
             o = $.extend({
-                exptype : "remote",
-                url : null,
+                exptype: "remote",
+                url: null,
                 oper: "oper",
                 tag: "excel",
-                exportOptions : {}
+                exportOptions: {},
+                data: {}
             }, o || {});
-            return this.each(function(){
-                if(!this.grid) { return;}
+            return this.each(function () {
+                if (!this.grid) { return; }
                 var url;
-                if(o.exptype === "remote") {
-                    var pdata = $.extend({},this.p.postData);
+                if (o.exptype === "remote") {
+                    var pdata = $.isFunction(o.data) ? o.data.call(this, this.p.postData, true) : $.extend(o.data, this.p.postData);
                     pdata[o.oper] = o.tag;
                     var params = jQuery.param(pdata);
-                    if(o.url.indexOf("?") !== -1) { url = o.url+"&"+params; }
-                    else { url = o.url+"?"+params; }
+                    if (o.url.indexOf("?") !== -1) { url = o.url + "&" + params; }
+                    else { url = o.url + "?" + params; }
                     window.location = url;
                 }
             });
