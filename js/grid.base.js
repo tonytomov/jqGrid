@@ -809,6 +809,7 @@ $.fn.jqGrid = function( pin ) {
 			autoResizableMaxColSize: 300,
 			autoResizableCompact: false,
 			autoResizableAdjustGridWidth: true,
+			autoResizableFixWidthOnShrink: false,
 			doubleClickSensitivity: 250,
 			rowTotal : null,
 			records: 0,
@@ -937,6 +938,9 @@ $.fn.jqGrid = function( pin ) {
 					h = this.headers[this.resizing.idx],
 					newWidth = p.direction === "ltr" ? h.width + diff : h.width - diff, hn, nWn;
 					if(newWidth > 33) {
+						if (this.curGbox == null) {
+							this.curGbox = $("#rs_m"+$.jgrid.jqID(p.id),"#gbox_"+$.jgrid.jqID(p.id));
+						}
 						this.curGbox.css({left:this.resizing.sOL+diff});
 						if(p.forceFit===true ){
 							hn = this.headers[this.resizing.idx+p.nv];
@@ -4130,13 +4134,14 @@ $.jgrid.extend({
 	},
 	autoResizeColumn: function (iCol) {
 		return this.each(function () {
-			var rows = this.rows, row, cell, iRow, $cell, $cellFirstChild,
+			var rows = this.rows, row, cell, iRow, $cell, $cellFirstChild, widthOrg,
 				$th = $($(this.grid.hDiv).find(".ui-jqgrid-labels>.ui-th-column")[iCol]),
 				$thDiv = $th.find(">div"),
 				$wrapper = $thDiv.find(">.okCellWrapper"), 
 				colWidth = 0,
 				p = this.p,
 				cm = p.colModel[iCol],
+
 				autoResizableWrapperClassName = p.autoResizableWrapperClassName;
 
 			if (cm == null || !cm.autoResizable || $wrapper.length === 0 || cm.hidden || cm.fixed) {
@@ -4152,7 +4157,7 @@ $.jgrid.extend({
 				}
 			}
 			colWidth += $wrapper.outerWidth() +
-					parseFloat($th.css("padding-left")) + parseFloat($th.css("padding-right")) +
+					($.jgrid.cell_width ? parseFloat($th.css("padding-left")) + parseFloat($th.css("padding-right")) : 0) +
 					parseFloat($thDiv.css("margin-left")) + parseFloat($thDiv.css("margin-right"));
 			for (iRow = 0, rows = this.rows; iRow < rows.length; iRow++) {
 				row = rows[iRow];
@@ -4163,8 +4168,7 @@ $.jgrid.extend({
 						$cellFirstChild = $(cell.firstChild);
 						if ($cellFirstChild.hasClass(autoResizableWrapperClassName)) {
 							colWidth = Math.max(colWidth, $cellFirstChild.outerWidth() +
-									parseFloat($cell.css("padding-left")) +
-									parseFloat($cell.css("padding-right")) +
+									($.jgrid.cell_width ? parseFloat($cell.css("padding-left")) + parseFloat($cell.css("padding-right")) : 0) +
 									parseFloat($cellFirstChild.css("margin-left")) +
 									parseFloat($cellFirstChild.css("margin-right")));
 						}
@@ -4172,7 +4176,15 @@ $.jgrid.extend({
 				}
 			}
 			colWidth = Math.max(colWidth, cm.autoResizableMinColSize || p.autoResizableMinColSize);
-			$(this).jqGrid("setColWidth", iCol, Math.min(colWidth, p.autoResizableMaxColSize), p.autoResizableAdjustGridWidth);
+			$(this).jqGrid("setColWidth", iCol, Math.min(colWidth, p.autoResizableMaxColSize), p.autoResizableAdjustGridWidth && !p.autoResizableFixWidthOnShrink);
+			if (p.autoResizableFixWidthOnShrink && p.shrinkToFit) {
+				cm.fixed = true;
+				widthOrg = cm.widthOrg; // save the value in temporary variable
+				cm.widthOrg = cm.width; // to force not changing of the column width
+				$(this).jqGrid("setGridWidth", p.width, true);
+				cm.widthOrg = widthOrg;
+				cm.fixed = false;
+			}
 		});
 	}
 });
