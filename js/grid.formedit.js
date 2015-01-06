@@ -885,8 +885,7 @@ $.jgrid.extend({
 				}
 				return stat;
 			}
-			function restoreInline()
-			{
+			function restoreInline() {
 				var i;
 				if (rowid !== "_empty" && $t.p.savedRow !== undefined && $t.p.savedRow.length > 0 && $.isFunction($.fn.jqGrid.restoreRow)) {
 					for (i=0;i<$t.p.savedRow.length;i++) {
@@ -927,20 +926,18 @@ $.jgrid.extend({
 			frm = $("<form name='FormPost' id='"+frmgr+"' class='FormGrid' onSubmit='return false;' style='width:"+dw+";overflow:auto;position:relative;height:"+dh+";'></form>").data("disabled",false),
 			tbl = $("<table id='"+frmtborg+"' class='EditTable' cellspacing='0' cellpadding='0' border='0'><tbody></tbody></table>");
 			frmgr = "#"+ $.jgrid.jqID(frmgr);
+			// errors
 			$(frm).append("<div class='FormError ui-state-error' style='display:none;'></div>" );
+			// topinfo
+			$(frm).append("<div class='tinfo topinfo'>"+rp_ge[$t.p.id].topinfo+"</div>");
+
 			$($t.p.colModel).each( function() {
 				var fmto = this.formoptions;
 				maxCols = Math.max(maxCols, fmto ? fmto.colpos || 0 : 0 );
 				maxRows = Math.max(maxRows, fmto ? fmto.rowpos || 0 : 0 );
 			});
 			$(frm).append(tbl);
-			//var flr = $("<tr id='FormError' style='display:none'><td class='ui-state-error' colspan='"+(maxCols*2)+"'></td></tr>");
-			//flr[0].rp = 0;
-			//$(tbl).append(flr);
-			//topinfo
-			var flr = $("<tr style='display:none' class='tinfo'><td class='topinfo' colspan='"+(maxCols*2)+"'>"+rp_ge[$t.p.id].topinfo+"</td></tr>");
-			flr[0].rp = 0;
-			$(tbl).append(flr);
+
 			showFrm = $($t).triggerHandler("jqGridAddEditBeforeInitData", [frm, frmoper]);
 			if(showFrm === undefined) {
 				showFrm = true;
@@ -949,21 +946,22 @@ $.jgrid.extend({
 				showFrm = rp_ge[$t.p.id].beforeInitData.call($t,frm, frmoper);
 			}
 			if(showFrm === false) {return;}
+
 			restoreInline();
 			// set the id.
 			// use carefull only to change here colproperties.
 			// create data
+			createData(rowid,$t,tbl,maxCols);
+			// buttons at footer
 			var rtlb = $t.p.direction === "rtl" ? true :false,
 			bp = rtlb ? "nData" : "pData",
 			bn = rtlb ? "pData" : "nData";
-			createData(rowid,$t,tbl,maxCols);
-			// buttons at footer
 			var bP = "<a id='"+bp+"' class='fm-button ui-state-default ui-corner-left'><span class='ui-icon ui-icon-triangle-1-w'></span></a>",
 			bN = "<a id='"+bn+"' class='fm-button ui-state-default ui-corner-right'><span class='ui-icon ui-icon-triangle-1-e'></span></a>",
 			bS  ="<a id='sData' class='fm-button ui-state-default ui-corner-all'>"+p.bSubmit+"</a>",
 			bC  ="<a id='cData' class='fm-button ui-state-default ui-corner-all'>"+p.bCancel+"</a>";
 			var bt = "<table border='0' cellspacing='0' cellpadding='0' class='EditTable' id='"+frmtborg+"_2'><tbody><tr><td colspan='2'><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr id='Act_Buttons'><td class='navButton'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton'>"+bS+bC+"</td></tr>";
-			bt += "<tr style='display:none' class='binfo'><td class='bottominfo' colspan='2'>"+rp_ge[$t.p.id].bottominfo+"</td></tr>";
+			//bt += "<tr style='display:none' class='binfo'><td class='bottominfo' colspan='2'>"+rp_ge[$t.p.id].bottominfo+"</td></tr>";
 			bt += "</tbody></table>";
 			if(maxRows >  0) {
 				var sd=[];
@@ -986,13 +984,18 @@ $.jgrid.extend({
 				cle = true;
 			}
 			var tms = $("<div></div>").append(frm).append(bt);
+			$(frm).append("<div class='binfo topinfo bottominfo'>"+rp_ge[$t.p.id].bottominfo+"</div>");
+
 			$.jgrid.createModal(IDs,tms, rp_ge[$(this)[0].p.id] ,"#gview_"+$.jgrid.jqID($t.p.id),$("#gbox_"+$.jgrid.jqID($t.p.id))[0]);
+
 			if(rtlb) {
 				$("#pData, #nData",frmtb+"_2").css("float","right");
 				$(".EditButton",frmtb+"_2").css("text-align","left");
 			}
-			if(rp_ge[$t.p.id].topinfo) {$(".tinfo",frmtb).show();}
-			if(rp_ge[$t.p.id].bottominfo) {$(".binfo",frmtb+"_2").show();}
+
+			if(rp_ge[$t.p.id].topinfo) {$(".tinfo", frmgr).show();}
+			if(rp_ge[$t.p.id].bottominfo) {$(".binfo",frmgr).show();}
+
 			tms = null;bt=null;
 			$("#"+$.jgrid.jqID(IDs.themodal)).keydown( function( e ) {
 				var wkey = e.target;
