@@ -191,14 +191,15 @@ addSubGrid : function( pos, sind ) {
 					if($(this).hasClass("sgcollapsed")) {
 						pID = ts.p.id;
 						_id = tr.id;
+						bfsc = $(ts).triggerHandler("jqGridSubGridBeforeExpand", [pID + "_" + _id, _id]);
+						bfsc = (bfsc === false || bfsc === 'stop') ? false : true;
+						if(bfsc && $.isFunction(ts.p.subGridBeforeExpand)) {
+							bfsc = ts.p.subGridBeforeExpand.call(ts, pID+"_"+_id,_id);
+						}
+						if(bfsc === false) {return false;}
+
 						if(ts.p.subGridOptions.reloadOnExpand === true || ( ts.p.subGridOptions.reloadOnExpand === false && !$(r).hasClass('ui-subgrid') ) ) {
 							atd = pos >=1 ? "<td colspan='"+pos+"'>&#160;</td>":"";
-							bfsc = $(ts).triggerHandler("jqGridSubGridBeforeExpand", [pID + "_" + _id, _id]);
-							bfsc = (bfsc === false || bfsc === 'stop') ? false : true;
-							if(bfsc && $.isFunction(ts.p.subGridBeforeExpand)) {
-								bfsc = ts.p.subGridBeforeExpand.call(ts, pID+"_"+_id,_id);
-							}
-							if(bfsc === false) {return false;}
 							$(tr).after( "<tr role='row' class='ui-subgrid'>"+atd+"<td class='ui-widget-content subgrid-cell'><span class='ui-icon "+ts.p.subGridOptions.openicon+"'></span></td><td colspan='"+parseInt(ts.p.colNames.length-1-nhc,10)+"' class='ui-widget-content subgrid-data'><div id="+pID+"_"+_id+" class='tablediv'></div></td></tr>" );
 							$(ts).triggerHandler("jqGridSubGridRowExpanded", [pID + "_" + _id, _id]);
 							if( $.isFunction(ts.p.subGridRowExpanded)) {
