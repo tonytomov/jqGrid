@@ -19,6 +19,20 @@
 $.jgrid = $.jgrid || {};
 $.extend(true,$.jgrid,{
 	version : "4.7.0-post",
+	cmTemplate: {
+        integer: {
+            formatter: "integer", align: "right", sorttype: "integer",
+			searchoptions: { sopt: ["eq", "ne", "lt", "le", "gt", "ge"] }
+        },
+        number: {
+            formatter: "number", align: "right", sorttype: "number",
+			searchoptions: { sopt: ["eq", "ne", "lt", "le", "gt", "ge"] }
+        },
+		actions: {
+			formatter: "actions", width: 53, align: "center", autoResizable: false,
+			fixed: true, resizable: false, sortable: false, search: false, editable: false
+		}
+    },
 	formatter : { // set common formatter settings independent from the language and locale
 		date : {
 			parseRe : /[#%\\\/:_;.,\t\s-]/,
