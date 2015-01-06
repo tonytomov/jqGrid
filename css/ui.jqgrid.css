@@ -23,6 +23,8 @@
 .ui-first-th-ltr {border-right: 1px solid; }
 .ui-first-th-rtl {border-left: 1px solid; }
 .ui-jqgrid .ui-th-div-ie {white-space: nowrap; zoom :1; height:17px;}
+.ui-jqgrid .ui-th-column .cbox { margin-left: 1px; margin-right: 1px; }
+.ui-jqgrid .ui-th-column .ui-th-div-ie>.cbox { margin-left: -1px; margin-right: -1px; }
 .ui-jqgrid .ui-jqgrid-labels>.ui-th-column>.ui-jqgrid-resize {height:21px;position: relative; cursor :e-resize;display: inline;overflow: hidden;}
 .ui-jqgrid .ui-grid-ico-sort {overflow:hidden;position:absolute;display:inline}
 .ui-state-disabled.ui-grid-ico-sort {cursor: pointer !important;}/*to overwrite .ui-state-disabled { cursor: default !important; } from jQuery UI */
