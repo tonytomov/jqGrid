@@ -931,17 +931,30 @@ $.fn.jqGrid = function( pin ) {
 			p.data = localData;
 			pin.data = localData;
 		}
-		var ts= this, grid={
+		var ts= this,
+			myResizerClickHandler = function (e) {
+				var pageX = $(this).data("pageX"), oldPageX = pageX;
+				if (pageX) {
+					pageX = String(pageX).split(";");
+					pageX = pageX[pageX.length - 1];
+					$(this).data("pageX", pageX + ";" + e.pageX);
+				} else {
+					$(this).data("pageX", e.pageX);
+				}
+				if (console) { console.log("click in column resizer: pageX is modified from " + oldPageX + " to " + $(this).data("pageX")); }
+			},
+			grid={
 			headers:[],
 			cols:[],
 			footers: [],
 			dragStart: function(i,x,y) {
 				var gridLeftPos = $(this.bDiv).offset().left;
-				this.resizing = { idx: i, startX: x.pageX, sOL : x.pageX - gridLeftPos };
+				this.resizing = { idx: i, startX: x.pageX, sOL : x.pageX - gridLeftPos, moved: false };
 				this.hDiv.style.cursor = "col-resize";
 				this.curGbox = $("#rs_m"+$.jgrid.jqID(p.id),"#gbox_"+$.jgrid.jqID(p.id));
 				this.curGbox.css({display:"block",left:x.pageX-gridLeftPos,top:y[1],height:y[2]});
 				this.curGbox.data("idx",i);
+				myResizerClickHandler.call(this.curGbox, x); 
 				$(ts).triggerHandler("jqGridResizeStart", [x, i]);
 				if($.isFunction(p.resizeStart)) { p.resizeStart.call(ts,x,i); }
 				document.onselectstart=function(){return false;};
@@ -951,6 +964,7 @@ $.fn.jqGrid = function( pin ) {
 					var diff = x.pageX-this.resizing.startX,
 					h = this.headers[this.resizing.idx],
 					newWidth = p.direction === "ltr" ? h.width + diff : h.width - diff, hn, nWn;
+					this.resizing.moved = true;
 					if(newWidth > 33) {
 						if (this.curGbox == null) {
 							this.curGbox = $("#rs_m"+$.jgrid.jqID(p.id),"#gbox_"+$.jgrid.jqID(p.id));
@@ -970,41 +984,47 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 			},
-			dragEnd: function() {
-				var self = this;
-				this.hDiv.style.cursor = "default";
-				if(this.resizing) {
-					var idx = this.resizing.idx,
-					nw = this.headers[idx].newWidth || this.headers[idx].width;
-					nw = parseInt(nw,10);
-					setTimeout(function () {
-						$("#rs_m"+$.jgrid.jqID(p.id)).css("display","none");
-						self.resizing = false;
-					}, p.doubleClickSensitivity);
-					p.colModel[idx].width = nw;
-					this.headers[idx].width = nw;
-					this.headers[idx].el.style.width = nw + "px";
-					this.cols[idx].style.width = nw+"px";
-					if(this.footers.length>0) {this.footers[idx].style.width = nw+"px";}
-					if(p.forceFit===true){
-						nw = this.headers[idx+p.nv].newWidth || this.headers[idx+p.nv].width;
-						this.headers[idx+p.nv].width = nw;
-						this.headers[idx+p.nv].el.style.width = nw + "px";
-						this.cols[idx+p.nv].style.width = nw+"px";
-						if(this.footers.length>0) {this.footers[idx+p.nv].style.width = nw+"px";}
-						p.colModel[idx+p.nv].width = nw;
-					} else {
-						p.tblwidth = this.newWidth || p.tblwidth;
-						$('table:first',this.bDiv).css("width",p.tblwidth+"px");
-						$('table:first',this.hDiv).css("width",p.tblwidth+"px");
-						this.hDiv.scrollLeft = this.bDiv.scrollLeft;
-						if(p.footerrow) {
-							$('table:first',this.sDiv).css("width",p.tblwidth+"px");
-							this.sDiv.scrollLeft = this.bDiv.scrollLeft;
-						}
+			resizeColumn: function (idx, ts, skipCallbacks) {
+				var p = ts.p, nw = this.headers[idx].newWidth || this.headers[idx].width;
+				nw = parseInt(nw,10);
+				p.colModel[idx].width = nw;
+				this.headers[idx].width = nw;
+				this.headers[idx].el.style.width = nw + "px";
+				this.cols[idx].style.width = nw+"px";
+				if(this.footers.length>0) {this.footers[idx].style.width = nw+"px";}
+				if(p.forceFit===true){
+					nw = this.headers[idx+p.nv].newWidth || this.headers[idx+p.nv].width;
+					this.headers[idx+p.nv].width = nw;
+					this.headers[idx+p.nv].el.style.width = nw + "px";
+					this.cols[idx+p.nv].style.width = nw+"px";
+					if(this.footers.length>0) {this.footers[idx+p.nv].style.width = nw+"px";}
+					p.colModel[idx+p.nv].width = nw;
+				} else {
+					p.tblwidth = this.newWidth || p.tblwidth;
+					$('table:first',this.bDiv).css("width",p.tblwidth+"px");
+					$('table:first',this.hDiv).css("width",p.tblwidth+"px");
+					this.hDiv.scrollLeft = this.bDiv.scrollLeft;
+					if(p.footerrow) {
+						$('table:first',this.sDiv).css("width",p.tblwidth+"px");
+						this.sDiv.scrollLeft = this.bDiv.scrollLeft;
 					}
+				}
+				if (!skipCallbacks) {
 					$(ts).triggerHandler("jqGridResizeStop", [nw, idx]);
 					if($.isFunction(p.resizeStop)) { p.resizeStop.call(ts,nw,idx); }
+				}
+			},
+			dragEnd: function() {
+				this.hDiv.style.cursor = "default";
+				if(this.resizing) {
+					if (this.resizing !== null && this.resizing.moved === true) {
+						this.resizeColumn(this.resizing.idx, ts);
+					}
+					$("#rs_m"+$.jgrid.jqID(p.id)).removeData("pageX");
+					this.resizing = false;
+					setTimeout(function () {
+						$("#rs_m"+$.jgrid.jqID(p.id)).css("display","none");
+					}, p.doubleClickSensitivity);
 				}
 				this.curGbox = null;
 				document.onselectstart=function(){return true;};
@@ -2662,9 +2682,23 @@ $.fn.jqGrid = function( pin ) {
 		}
 		setColWidth();
 		$(eg).css("width",grid.width+"px").append("<div class='ui-jqgrid-resize-mark' id='rs_m"+ts.p.id+"'>&#160;</div>");
-		$("#rs_m"+$.jgrid.jqID(p.id)).dblclick(function () {
-			var iCol = $(this).data("idx"), cm = p.colModel[iCol], doAutoresize, doAutoresizeCallback;
+		$("#rs_m"+$.jgrid.jqID(p.id)).click(myResizerClickHandler).dblclick(function (e) {
+			var iCol = $(this).data("idx"), pageX = $(this).data("pageX"), arPageX, pageX1, pageX2, cm = p.colModel[iCol], doAutoresize, doAutoresizeCallback;
 
+			if (console) { console.log("dblclick in column resizer: pageX=" + pageX + ", idx=" + iCol + ", e.pageX=" + e.pageX + ", cm.name=" + (cm != null ? cm.name : "null")); }
+			if (pageX == null) {
+				if (console) { console.log("No pageX are saved in data: we skip processing of the dblclick"); }
+				return false;
+			}
+			arPageX = String(pageX).split(";");
+			pageX1 = parseFloat(arPageX[0]);
+			pageX2 = parseFloat(arPageX[1]);
+			if (arPageX.length === 2 && (Math.abs(pageX1-pageX2) > 5 || Math.abs(e.pageX-pageX1) > 5 || Math.abs(e.pageX-pageX2) > 5)) {
+				if (console) { console.log("we skip processing of the dblclick"); }
+				return false;
+			}
+			if (console) { console.log("we do resizing with e.pageX=" + e.pageX + " pageX1=" + pageX1 + " and pageX2=" + pageX2); }
+			
 			doAutoresize = $(ts).triggerHandler("jqGridResizeDblClick", [iCol, cm]);
 			doAutoresize = (doAutoresize === false || doAutoresize === "stop") ? false : true;
 			if ($.isFunction(p.resizeDblClick)) {
@@ -3065,13 +3099,28 @@ $.fn.jqGrid = function( pin ) {
 		.mousemove(function (e) {
 			if(grid.resizing){grid.dragMove(e);return false;}
 		});
-		$(eg).dblclick(function (e) {
-			var p = ts.p, doAutoresize, doAutoresizeCallback,
+		$(eg).click(myResizerClickHandler).dblclick(function (e) { // it's still needed for Firefox
+			var p = ts.p, doAutoresize, doAutoresizeCallback, arPageX, pageX1, pageX2,
 				$resizer = $("#rs_m"+$.jgrid.jqID(p.id)),
 				resizerOffset = $resizer.offset(),
 				iCol = $resizer.data("idx"),
-				cm = p.colModel[iCol];
+				cm = p.colModel[iCol],
+				pageX = $(this).data("pageX") || $resizer.data("pageX");
 
+			if (console) { console.log("GBOX: dblclick in column resizer: pageX=" + pageX + ", idx=" + iCol + ", e.pageX=" + e.pageX + ", cm.name=" + (cm != null ? cm.name : "null")); }
+			if (pageX == null) {
+				if (console) { console.log("GBOX: No pageX are saved in data: we skip processing of the dblclick"); }
+				return false;
+			}
+			arPageX = String(pageX).split(";");
+			pageX1 = parseFloat(arPageX[0]);
+			pageX2 = parseFloat(arPageX[1]);
+			if (arPageX.length === 2 && (Math.abs(pageX1-pageX2) > 5 || Math.abs(e.pageX-pageX1) > 5 || Math.abs(e.pageX-pageX2) > 5)) {
+				if (console) { console.log("GBOX: we skip processing of the dblclick"); }
+				return false;
+			}
+			if (console) { console.log("GBOX: we do resizing with e.pageX=" + e.pageX + " pageX1=" + pageX1 + " and pageX2=" + pageX2); }
+				
 			doAutoresize = $(ts).triggerHandler("jqGridResizeDblClick", [iCol, cm]);
 			doAutoresize = (doAutoresize === false || doAutoresize === "stop") ? false : true;
 			if ($.isFunction(p.resizeDblClick)) {
@@ -3091,7 +3140,10 @@ $.fn.jqGrid = function( pin ) {
 		}
 		$(".ui-jqgrid-labels",grid.hDiv).bind("selectstart", function () { return false; });
 		$(document).bind( "mouseup.jqGrid" + ts.p.id, function () {
-			if(grid.resizing) {	grid.dragEnd(); return false;}
+			if (grid.resizing !== false) {
+				grid.dragEnd();
+				return false;
+			}
 			return true;
 		});
 		ts.formatCol = formatCol;
@@ -4135,12 +4187,11 @@ $.jgrid.extend({
 			} else if (typeof iCol !== "number") {
 				return; // error: wrong parameters
 			}
-			grid.resizing = { idx: iCol };
 			grid.headers[iCol].newWidth = newWidth;
 			if (adjustGridWidth !== false) {
 				grid.newWidth = grid.width + newWidth - grid.headers[iCol].width;
 			}
-			grid.dragEnd();   // adjust column width
+			grid.resizeColumn(iCol, this, true);
 			if (adjustGridWidth !== false) {
 				$self.jqGrid("setGridWidth", grid.newWidth, false); // adjust grid width too
 			}
@@ -4155,7 +4206,8 @@ $.jgrid.extend({
 				colWidth = 0,
 				p = this.p,
 				cm = p.colModel[iCol],
-
+				userAgent = navigator.userAgent,
+				isSafari = userAgent.indexOf("Safari") >= 0 && userAgent.indexOf("Chrome") < 0 && userAgent.indexOf("OPR") < 0,
 				autoResizableWrapperClassName = p.autoResizableWrapperClassName;
 
 			if (cm == null || !cm.autoResizable || $wrapper.length === 0 || cm.hidden || cm.fixed) {
@@ -4171,7 +4223,7 @@ $.jgrid.extend({
 				}
 			}
 			colWidth += $wrapper.outerWidth() +
-					($.jgrid.cell_width ? parseFloat($th.css("padding-left")) + parseFloat($th.css("padding-right")) : 0) +
+					($.jgrid.cell_width || isSafari ? parseFloat($th.css("padding-left")) + parseFloat($th.css("padding-right")) + (isSafari ? 2 : 0) : 0) +
 					parseFloat($thDiv.css("margin-left")) + parseFloat($thDiv.css("margin-right"));
 			for (iRow = 0, rows = this.rows; iRow < rows.length; iRow++) {
 				row = rows[iRow];
