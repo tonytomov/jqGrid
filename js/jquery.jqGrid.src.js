@@ -2118,6 +2118,7 @@ $.fn.jqGrid = function( pin ) {
 							else { addJSONData(data,ts.grid.bDiv,rcnt,npage>1,adjust); }
 							$(ts).triggerHandler("jqGridLoadComplete", [data]);
 							if(lc) { lc.call(ts,data); }
+							if (ts.p.autoresizeOnLoad) {$(ts).jqGrid("autoResizeAllColumns");}
 							$(ts).triggerHandler("jqGridAfterLoadComplete", [data]);
 							if (pvis) { ts.grid.populateVisible(); }
 							if( ts.p.loadonce || ts.p.treeGrid) {ts.p.datatype = "local";}
@@ -2148,6 +2149,7 @@ $.fn.jqGrid = function( pin ) {
 					addXmlData(dstr,ts.grid.bDiv);
 					$(ts).triggerHandler("jqGridLoadComplete", [dstr]);
 					if(lcf) {ts.p.loadComplete.call(ts,dstr);}
+					if (ts.p.autoresizeOnLoad) {$(ts).jqGrid("autoResizeAllColumns");}
 					$(ts).triggerHandler("jqGridAfterLoadComplete", [dstr]);
 					ts.p.datatype = "local";
 					ts.p.datastr = null;
@@ -2160,6 +2162,7 @@ $.fn.jqGrid = function( pin ) {
 					addJSONData(dstr,ts.grid.bDiv);
 					$(ts).triggerHandler("jqGridLoadComplete", [dstr]);
 					if(lcf) {ts.p.loadComplete.call(ts,dstr);}
+					if (ts.p.autoresizeOnLoad) {$(ts).jqGrid("autoResizeAllColumns");}
 					$(ts).triggerHandler("jqGridAfterLoadComplete", [dstr]);
 					ts.p.datatype = "local";
 					ts.p.datastr = null;
@@ -2173,6 +2176,7 @@ $.fn.jqGrid = function( pin ) {
 					addJSONData(req,ts.grid.bDiv,rcnt,npage>1,adjust);
 					$(ts).triggerHandler("jqGridLoadComplete", [req]);
 					if(lc) { lc.call(ts,req); }
+					if (ts.p.autoresizeOnLoad) {$(ts).jqGrid("autoResizeAllColumns");}
 					$(ts).triggerHandler("jqGridAfterLoadComplete", [req]);
 					if (pvis) { ts.grid.populateVisible(); }
 					endReq();
@@ -4258,6 +4262,18 @@ $.jgrid.extend({
 				$(this).jqGrid("setGridWidth", p.width, true);
 				cm.widthOrg = widthOrg;
 				cm.fixed = false;
+			}
+		});
+	},
+	autoResizeAllColumns: function () {
+		return this.each(function () {
+			var $self = $(this), colModel = this.p.colModel, nCol = colModel.length, iCol, cm,
+				autoResizeColumn = $.jgrid.getMethod("autoResizeColumn"); // cache autoResizeColumn reference
+			for (iCol = 0; iCol < nCol; iCol++) {
+				cm = colModel[iCol];
+				if (cm.autoResizable && cm.formatter !== "actions") {
+					autoResizeColumn.call($self, iCol);
+				}
 			}
 		});
 	}
