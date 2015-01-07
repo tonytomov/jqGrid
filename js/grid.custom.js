@@ -424,6 +424,9 @@ $.jgrid.extend({
 						select = "<a title='"+st+"' style='padding-right: 0.5em;' soper='"+so+"' class='soptclass' colname='"+this.name+"'>"+sot+"</a>";
 					}
 					$("td:eq(0)",stbl).data("colindex",ci).append(select);
+					if (soptions.sopt == null || soptions.sopt.length === 1) {
+						$("td.ui-search-oper",stbl).hide();
+					}
 					if(soptions.clearSearch === undefined) {
 						soptions.clearSearch = this.stype === "text" ? true : false;
 					}
