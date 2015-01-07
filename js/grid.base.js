@@ -4202,19 +4202,24 @@ $.jgrid.extend({
 			var rows = this.rows, row, cell, iRow, $cell, $cellFirstChild, widthOrg,
 				$th = $($(this.grid.hDiv).find(".ui-jqgrid-labels>.ui-th-column")[iCol]),
 				$thDiv = $th.find(">div"),
+				thPaddingLeft = parseFloat($th.css("padding-left")),
+				thPaddingRight = parseFloat($th.css("padding-right")),
+				$incosDiv = $thDiv.find("span.s-ico"),
 				$wrapper = $thDiv.find(">.okCellWrapper"), 
+				wrapperOuterWidth = $wrapper.outerWidth(),
+				wrapperCssWidth = parseFloat($wrapper.css("width")),
 				colWidth = 0,
 				p = this.p,
 				cm = p.colModel[iCol],
-				userAgent = navigator.userAgent,
-				isSafari = userAgent.indexOf("Safari") >= 0 && userAgent.indexOf("Chrome") < 0 && userAgent.indexOf("OPR") < 0,
+				//userAgent = navigator.userAgent,
+				//isSafari = userAgent.indexOf("Safari") >= 0 && userAgent.indexOf("Chrome") < 0 && userAgent.indexOf("OPR") < 0,
 				autoResizableWrapperClassName = p.autoResizableWrapperClassName;
 
 			if (cm == null || !cm.autoResizable || $wrapper.length === 0 || cm.hidden || cm.fixed) {
 				return; // do nothing
 			}
-			if (!p.autoResizableCompact || $thDiv.find("span.s-ico").is(":visible")) {  //|| p.viewsortcols[0]
-				colWidth = p.sortIconSize; // $thDiv.find(".s-ico>span").width() can be grater as the visible part of icon
+			if (!p.autoResizableCompact || $incosDiv.is(":visible") || $incosDiv.css("display") !== "none") {  //|| p.viewsortcols[0]
+				colWidth = p.sortIconSize; // $incosDiv.width() can be grater as the visible part of icon
 				if ($thDiv.css("text-align") === "center") {
 					colWidth += colWidth; // *2
 				}
@@ -4222,8 +4227,9 @@ $.jgrid.extend({
 					colWidth += colWidth; // *2
 				}
 			}
-			colWidth += $wrapper.outerWidth() +
-					($.jgrid.cell_width || isSafari ? parseFloat($th.css("padding-left")) + parseFloat($th.css("padding-right")) + (isSafari ? 2 : 0) : 0) +
+			colWidth += wrapperOuterWidth + thPaddingLeft +
+					//($.jgrid.cell_width || isSafari ? parseFloat($th.css("padding-left")) + parseFloat($th.css("padding-right")) + (isSafari ? 2 : 0) : 0) +
+					(wrapperCssWidth === wrapperOuterWidth ? thPaddingLeft + thPaddingRight : 0) +
 					parseFloat($thDiv.css("margin-left")) + parseFloat($thDiv.css("margin-right"));
 			for (iRow = 0, rows = this.rows; iRow < rows.length; iRow++) {
 				row = rows[iRow];
