@@ -58,8 +58,8 @@
 .ui-jqgrid .ui-pg-button span { display: block; margin: 1px; float:left;}
 .ui-jqgrid .ui-pg-button:hover { padding: 0; }
 .ui-jqgrid .ui-state-disabled:hover {padding:1px;}
-.ui-jqgrid .ui-pg-input { height:auto;width: auto;font-size:.8em; margin:0;line-height: inherit;}
-.ui-jqgrid .ui-pg-selbox {font-size:.8em; line-height:inherit; display:block; height:auto; margin: 0; padding: 1px;}
+.ui-jqgrid .ui-pg-input,.ui-jqgrid .ui-jqgrid-toppager .ui-pg-input { height:auto;width: auto;font-size:.8em; margin:0;line-height: inherit;}
+.ui-jqgrid .ui-pg-selbox, .ui-jqgrid .ui-jqgrid-toppager .ui-pg-selbox {font-size:.8em; line-height:inherit; display:block; height:auto; margin: 0; padding: 3px 0px;}
 .ui-jqgrid .ui-separator {height: 18px; border-left: 1px solid #ccc ; border-right: 1px solid #ccc ; margin: 1px; float: right;}
 .ui-jqgrid .ui-paging-info {font-weight: normal;height:auto; margin-top:3px;margin-right:4px;display: inline;}
 .ui-jqgrid .ui-jqgrid-pager .ui-pg-div {padding:1px 0;float:left;position:relative;}
