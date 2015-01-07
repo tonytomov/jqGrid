@@ -1814,7 +1814,9 @@ $.fn.jqGrid = function( pin ) {
 				}
 			});
 			if(ts.p.treeGrid) {
-				$(ts).jqGrid("SortTree", st, ts.p.sortorder, cmtypes[st].stype || 'text', cmtypes[st].srcfmt || '');
+				$(ts).jqGrid("SortTree", st, ts.p.sortorder,
+					cmtypes[st] != null && cmtypes[st].stype ? cmtypes[st].stype : 'text',
+					cmtypes[st] != null && cmtypes[st].srcfmt ? cmtypes[st].srcfmt : '');
 				return;
 			}
 			var compareFnMap = {
@@ -3030,7 +3032,7 @@ $.fn.jqGrid = function( pin ) {
 			$(grid.topDiv).addClass('ui-state-default ui-jqgrid-toppager').css({width: grid.width+"px"}).insertBefore(grid.hDiv);
 			setPager(ts.p.toppager,'_t');
 			ts.p.toppager = "#"+$.jgrid.jqID(ts.p.toppager); // hold ESCAPED id selector in the toppager option
-		} else if (ts.p.pager === "" && ((ts.p.datatype !== "xml" && ts.p.datatype !== "json") || ((ts.p.datatype === "xml" || ts.p.datatype === "json") && loadonce === true))) {
+		} else if (ts.p.pager === "" && ((ts.p.datatype !== "xml" && ts.p.datatype !== "json") || ((ts.p.datatype === "xml" || ts.p.datatype === "json") && ts.p.loadonce === true))) {
 			ts.p.rowNum = ts.p.maxRowNum;
 		}
 		if(ts.p.footerrow) {
