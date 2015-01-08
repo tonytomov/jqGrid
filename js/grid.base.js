@@ -138,30 +138,37 @@ $.extend($.jgrid,{
 				format = format.replace(/\T/g,"#").replace(/\t/,"%").split(opts.parseRe);
 				// parsing for month names
 				for(k=0,hl=format.length;k<hl;k++){
-					if(format[k] === 'M') {
-						dM = $.inArray(date[k],opts.monthNames);
-						if(dM !== -1 && dM < 12){date[k] = dM+1; ts.m = date[k];}
-					}
-					if(format[k] === 'F') {
-						dM = $.inArray(date[k],opts.monthNames,12);
-						if(dM !== -1 && dM > 11){date[k] = dM+1-12; ts.m = date[k];}
-					}
-					if(format[k] === 'a') {
-						dM = $.inArray(date[k],opts.AmPm);
-						if(dM !== -1 && dM < 2 && date[k] === opts.AmPm[dM]){
-							date[k] = dM;
-							ts.h = h12to24(date[k], ts.h);
-						}
-					}
-					if(format[k] === 'A') {
-						dM = $.inArray(date[k],opts.AmPm);
-						if(dM !== -1 && dM > 1 && date[k] === opts.AmPm[dM]){
-							date[k] = dM-2;
-							ts.h = h12to24(date[k], ts.h);
-						}
-					}
-					if (format[k] === 'g') {
-						ts.h = parseInt(date[k], 10);
+					switch ( format[k] ) {
+						case 'M':
+							dM = $.inArray(date[k],opts.monthNames);
+							if(dM !== -1 && dM < 12){date[k] = dM+1; ts.m = date[k];}
+							break;
+						case 'F':
+							dM = $.inArray(date[k],opts.monthNames,12);
+							if(dM !== -1 && dM > 11){date[k] = dM+1-12; ts.m = date[k];}
+							break;
+						case 'n':
+							format[k] = 'm';
+							break;
+						case 'j': 
+							format[k] = 'd';
+							break;
+						case 'a':
+							dM = $.inArray(date[k],opts.AmPm);
+							if(dM !== -1 && dM < 2 && date[k] === opts.AmPm[dM]){
+								date[k] = dM;
+								ts.h = h12to24(date[k], ts.h);
+							}
+							break;
+						case 'A':
+							dM = $.inArray(date[k],opts.AmPm);
+							if(dM !== -1 && dM > 1 && date[k] === opts.AmPm[dM]){
+								date[k] = dM-2;
+								ts.h = h12to24(date[k], ts.h);
+							}
+						case 'g':
+							ts.h = parseInt(date[k], 10);
+							break;
 					}
 					if(date[k] !== undefined) {
 						ts[format[k].toLowerCase()] = parseInt(date[k],10);
