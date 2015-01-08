@@ -2588,7 +2588,7 @@ $.fn.jqGrid = function( pin ) {
 		}
 		if(ts.p.data.length) { normalizeData(); refreshIndex(); }
 		var thead = "<thead><tr class='ui-jqgrid-labels' role='row'>",
-		tdc, idn, w, res, sort,
+		tdc, idn, w, res, sort, cmi, tooltip, labelStyle,
 		td, ptr, tbody, imgs,iac="",idc="",sortarr=[], sortord=[], sotmp=[];
 		if(ts.p.shrinkToFit===true && ts.p.forceFit===true) {
 			for (i=ts.p.colModel.length-1;i>=0;i--){
@@ -2599,7 +2599,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 		}
 		if(ts.p.viewsortcols[1] === 'horizontal') {iac=" ui-i-asc";idc=" ui-i-desc";}
-		tdc = isMSIE ?  "class='ui-th-div-ie'" :"";
+		tdc = isMSIE ?  "ui-th-div-ie" :"";
 		imgs = "<span class='s-ico' style='display:none'><span class='ui-grid-ico-sort ui-icon-asc"+iac+" ui-state-disabled ui-icon ui-icon-triangle-1-n ui-sort-"+dir+"'></span>";
 		imgs += "<span class='ui-grid-ico-sort ui-icon-desc"+idc+" ui-state-disabled ui-icon ui-icon-triangle-1-s ui-sort-"+dir+"'></span></span>";
 		if(ts.p.multiSort) {
@@ -2611,24 +2611,43 @@ $.fn.jqGrid = function( pin ) {
 			}
 		}
 		for(i=0;i<this.p.colNames.length;i++){
-			var tooltip = ts.p.headertitles ? (" title=\""+$.jgrid.stripHtml(ts.p.colNames[i])+"\"") :"";
-			thead += "<th id='"+ts.p.id+"_"+ts.p.colModel[i].name+"' role='columnheader' class='ui-state-default ui-th-column ui-th-"+dir+"'"+ tooltip+">";
-			idn = ts.p.colModel[i].index || ts.p.colModel[i].name;
-			thead += "<div id='jqgh_"+ts.p.id+"_"+ts.p.colModel[i].name+"' "+tdc+">"+
-				(ts.p.colModel[i].autoResizable && ts.p.colModel[i].formatter !== "actions" ?
+			cmi = ts.p.colModel[i];
+			tooltip = ts.p.headertitles ? (" title=\""+$.jgrid.stripHtml(ts.p.colNames[i])+"\"") :"";
+			thead += "<th id='"+ts.p.id+"_"+cmi.name+"' role='columnheader' class='ui-state-default ui-th-column ui-th-"+dir+"'"+ tooltip+">";
+			idn = cmi.index || cmi.name;
+			switch (cmi.labelAlign) {
+				case "left":
+					labelStyle = "text-align:left;";
+					break;
+				case "right":
+					labelStyle = "text-align:right;";
+					break;
+				case "likeData":
+					labelStyle = cmi.align === undefined || cmi.align === "left" ? 
+							"text-align:left;" :
+							(cmi.align === "right" ? "text-align:right;" : "");
+					break;
+				default:
+					labelStyle = "";
+			}
+			thead += "<div id='jqgh_"+ts.p.id+"_"+cmi.name+"'" +
+				(tdc === "" && !cmi.labelClasses ? "" : " class='" + (tdc !== "" ? tdc + " " : "") + cmi.labelClasses + "'") +
+				(labelStyle === "" ? "" : " style='" + labelStyle + "'") +
+				">"+
+				(cmi.autoResizable && cmi.formatter !== "actions" ?
 					"<span class='" + ts.p.autoResizableWrapperClassName + "'>" + ts.p.colNames[i] + "</span>":
 					ts.p.colNames[i]);
-			if(!ts.p.colModel[i].width)  { ts.p.colModel[i].width = 150; }
-			else { ts.p.colModel[i].width = parseInt(ts.p.colModel[i].width,10); }
-			if(typeof ts.p.colModel[i].title !== "boolean") { ts.p.colModel[i].title = true; }
-			ts.p.colModel[i].lso = "";
+			if(!cmi.width)  { cmi.width = 150; }
+			else { cmi.width = parseInt(cmi.width,10); }
+			if(typeof cmi.title !== "boolean") { cmi.title = true; }
+			cmi.lso = "";
 			if (idn === ts.p.sortname) {
 				ts.p.lastsort = i;
 			}
 			if(ts.p.multiSort) {
 				sotmp = $.inArray(idn,sortarr);
 				if( sotmp !== -1 ) {
-					ts.p.colModel[i].lso = sortord[sotmp];
+					cmi.lso = sortord[sotmp];
 				}
 			}
 			thead += imgs+"</div></th>";
