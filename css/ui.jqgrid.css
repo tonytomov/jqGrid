@@ -173,3 +173,5 @@ a.g-menu-item, a.soptclass, a.clearsearchclass { cursor: pointer; }
 .ui-jqgrid .ui-jqgrid-view button {
     font-size: 11px
 }
+
+.ui-jqgrid .ui-scroll-popup {height: 20px;width: 95px;left: 100%;}
