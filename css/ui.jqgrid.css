@@ -1,5 +1,5 @@
 /*Grid*/
-.ui-jqgrid {position: relative;}
+.ui-jqgrid {position: relative; -moz-box-sizing: content-box; -webkit-box-sizing: content-box; box-sizing: content-box;}
 .ui-jqgrid div { line-height: normal; }
 .ui-jqgrid table { border-collapse: separate; border-style: none; border-spacing: 0; border-width: 0; }
 .ui-jqgrid table td { padding: 0 }
