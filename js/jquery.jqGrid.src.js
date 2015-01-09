@@ -5887,7 +5887,7 @@ $.jgrid.extend({
 				});
 			};
 			// create the row
-			var tr = $("<tr class='ui-search-toolbar' role='row'></tr>");
+			var tr = $("<tr class='ui-state-default ui-search-toolbar' role='row'></tr>");
 			var timeoutHnd;
 			$.each($t.p.colModel,function(ci){
 				var cm=this, soptions, surl, self, select = "", sot="=", so, i,
