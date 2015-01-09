@@ -1759,7 +1759,7 @@ $.jgrid.extend({
 			}
 		});
 	},
-	navGrid : function (elem, o, pEdit,pAdd,pDel,pSearch, pView) {
+	navGrid : function (elem, o, pEdit, pAdd, pDel, pSearch, pView) {
 		o = $.extend({
 			edit: true,
 			editicon: "ui-icon-pencil",
@@ -1852,8 +1852,8 @@ $.jgrid.extend({
 					elemids = $t.p.id+"_top";
 				}
 				if($t.p.direction === "rtl") {$(navtbl).attr("dir","rtl").css("float","right");}
+				pAdd = pAdd || {};
 				if (o.add) {
-					pAdd = pAdd || {};
 					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
 					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.addicon+"'></span>"+o.addtext+"</div>");
 					$("tr",navtbl).append(tbd);
@@ -1871,9 +1871,9 @@ $.jgrid.extend({
 					}).hover(onHoverIn, onHoverOut);
 					tbd = null;
 				}
+				pEdit = pEdit || {};
 				if (o.edit) {
 					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
-					pEdit = pEdit || {};
 					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.editicon+"'></span>"+o.edittext+"</div>");
 					$("tr",navtbl).append(tbd);
 					$(tbd,navtbl)
@@ -1896,9 +1896,9 @@ $.jgrid.extend({
 					}).hover(onHoverIn, onHoverOut);
 					tbd = null;
 				}
+				pView = pView || {};
 				if (o.view) {
 					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
-					pView = pView || {};
 					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.viewicon+"'></span>"+o.viewtext+"</div>");
 					$("tr",navtbl).append(tbd);
 					$(tbd,navtbl)
@@ -1921,9 +1921,9 @@ $.jgrid.extend({
 					}).hover(onHoverIn, onHoverOut);
 					tbd = null;
 				}
+				pDel = pDel || {};
 				if (o.del) {
 					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
-					pDel = pDel || {};
 					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.delicon+"'></span>"+o.deltext+"</div>");
 					$("tr",navtbl).append(tbd);
 					$(tbd,navtbl)
@@ -1952,9 +1952,9 @@ $.jgrid.extend({
 					tbd = null;
 				}
 				if(o.add || o.edit || o.del || o.view) {$("tr",navtbl).append(sep);}
+				pSearch = pSearch || {};
 				if (o.search) {
 					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
-					pSearch = pSearch || {};
 					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.searchicon+"'></span>"+o.searchtext+"</div>");
 					$("tr",navtbl).append(tbd);
 					$(tbd,navtbl)
@@ -2025,6 +2025,15 @@ $.jgrid.extend({
 				tdw =null;twd=null;navtbl =null;
 				this.nav = true;
 			}
+			if($t.p.storeNavOptions) {
+				$t.p.navOptions = o;
+				$t.p.editOptions = pEdit;
+				$t.p.addOptions = pAdd;
+				$t.p.delOptions = pDel;
+				$t.p.searchOptions = pSearch;
+				$t.p.viewOptions = pView;
+			}
+
 		});
 	},
 	navButtonAdd : function (elem, p) {

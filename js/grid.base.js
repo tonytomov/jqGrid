@@ -903,7 +903,8 @@ $.fn.jqGrid = function( pin ) {
 			multiSort :  false,
 			minColWidth : 33,
 			scrollPopUp : false,
-			scrollTopOffset: 0
+			scrollTopOffset: 0,
+			storeNavOptions: false
 		}, $.jgrid.defaults, pin || {});
 		if (localData !== undefined) {
 			p.data = localData;
