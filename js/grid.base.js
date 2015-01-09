@@ -1277,7 +1277,7 @@ $.fn.jqGrid = function( pin ) {
 				}
 			}
 			if(locdata === true && this.p.treeGrid) {
-				this.p.data = []; this.p._index = {};
+				this.p.data = []; this.p.lastSelectedData = []; this.p._index = {};
 			}
 		},
 		normalizeData = function() {
@@ -1392,6 +1392,7 @@ $.fn.jqGrid = function( pin ) {
 			if(locdata) {
 				ts.p.data = [];
 				ts.p._index = {};
+				ts.p.lastSelectedData = [];
 				ts.p.localReader.id = xmlid;
 			}
 			ts.p.reccount = 0;
@@ -1583,7 +1584,7 @@ $.fn.jqGrid = function( pin ) {
 
 			var dReader, locid = "_id_", frd,
 			locdata = (ts.p.datatype !== "local" && ts.p.loadonce) || ts.p.datatype === "jsonstring";
-			if(locdata) { ts.p.data = []; ts.p._index = {}; ts.p.localReader.id = locid;}
+			if(locdata) { ts.p.data = []; ts.p.lastSelectedData = []; ts.p._index = {}; ts.p.localReader.id = locid;}
 			ts.p.reccount = 0;
 			if(ts.p.datatype === "local") {
 				dReader =  ts.p.localReader;
@@ -1918,9 +1919,9 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 			}
-			var queryResults = query.select(),
-			recordsperpage = parseInt(ts.p.rowNum,10),
-			total = queryResults.length,
+			ts.p.lastSelectedData = query.select();
+			var recordsperpage = parseInt(ts.p.rowNum,10),
+			total = ts.p.lastSelectedData.length,
 			page = parseInt(ts.p.page,10),
 			totalpages = Math.ceil(total / recordsperpage),
 			retresult = {};
@@ -1938,21 +1939,19 @@ $.fn.jqGrid = function( pin ) {
 				for(j=0; j<total; j++) {
 					if(udc) {
 						for(key in ts.p.userData){
-							ts.p.userData[key] += parseFloat(queryResults[j][key] || 0);
+							ts.p.userData[key] += parseFloat(ts.p.lastSelectedData[j][key] || 0);
 						}
 					}
-					grPrepare.call($(ts),queryResults[j],j, recordsperpage );
+					grPrepare.call($(ts),ts.p.lastSelectedData[j],j, recordsperpage );
 				}
 			}
-			queryResults = queryResults.slice( (page-1)*recordsperpage , page*recordsperpage );
 			query = null;
 			cmtypes = null;
 			retresult[ts.p.localReader.total] = totalpages;
 			retresult[ts.p.localReader.page] = page;
 			retresult[ts.p.localReader.records] = total;
-			retresult[ts.p.localReader.root] = queryResults;
+			retresult[ts.p.localReader.root] = ts.p.lastSelectedData.slice((page-1)*recordsperpage, page*recordsperpage);
 			retresult[ts.p.localReader.userdata] = ts.p.userData;
-			queryResults = null;
 			return  retresult;
 		},
 		updatepager = function(rn, dnd) {
@@ -4049,7 +4048,7 @@ $.jgrid.extend({
 			if($t.p.footerrow && clearfooter) { $(".ui-jqgrid-ftable td",$t.grid.sDiv).html("&#160;"); }
 			$t.p.selrow = null; $t.p.selarrrow= []; $t.p.savedRow = [];
 			$t.p.records = 0;$t.p.page=1;$t.p.lastpage=0;$t.p.reccount=0;
-			$t.p.data = []; $t.p._index = {};
+			$t.p.data = []; $t.p.lastSelectedData = []; $t.p._index = {};
 			$t.updatepager(true,false);
 		});
 	},
