@@ -137,12 +137,13 @@
             o = $.extend({
                 exptype : "xmlstring",
                 root: "grid",
-                ident: "\t"
+                ident: "\t",
+				addOptions : {}
             }, o || {});
             var ret = null;
             this.each(function () {
                 if(!this.grid) { return;}
-                var key, gprm = $.extend(true, {},$(this).jqGrid("getGridParam"));
+                var key, gprm = $.extend(true, {}, $(this).jqGrid("getGridParam"), o.addOptions);
                 // we need to check for:
                 // 1.multiselect, 2.subgrid  3. treegrid and remove the unneded columns from colNames
                 if(gprm.rownumbers) {
@@ -201,6 +202,16 @@
                     window.location = url;
                 }
             });
-        }
+        },
+		saveState : function ( o ) {
+			var gridstate = "";
+			// to use navigator set storeNavOptions to true in grid options
+			this.each(function(){
+				if(!this.grid) { return;}
+				var data = $(this).jqGrid('getRowData');
+				gridstate  =  $(this).jqGrid('jqGridExport', { exptype : "jsonstring", ident:"", addOptions : { currentdata: data } });
+			});
+			return gridstate;
+		}
     });
 })(jQuery);
