@@ -941,7 +941,7 @@ $.fn.jqGrid = function( pin ) {
 				} else {
 					$(this).data("pageX", e.pageX);
 				}
-				if (console) { console.log("click in column resizer: pageX is modified from " + oldPageX + " to " + $(this).data("pageX")); }
+				//if (console) { console.log("click in column resizer: pageX is modified from " + oldPageX + " to " + $(this).data("pageX")); }
 			},
 			grid={
 			headers:[],
@@ -2047,6 +2047,7 @@ $.fn.jqGrid = function( pin ) {
 				prm = {}, dt, dstr, pN=ts.p.prmNames;
 				if(ts.p.page <=0) { ts.p.page = Math.min(1,ts.p.lastpage); }
 				if(pN.search !== null) {prm[pN.search] = ts.p.search;} if(pN.nd !== null) {prm[pN.nd] = new Date().getTime();}
+				if (isNaN(parseInt(ts.p.rowNum,10)) || parseInt(ts.p.rowNum,10) <= 0) { ts.p.rowNum = ts.p.maxRowNum; }
 				if(pN.rows !== null) {prm[pN.rows]= ts.p.rowNum;} if(pN.page !== null) {prm[pN.page]= ts.p.page;}
 				if(pN.sort !== null) {prm[pN.sort]= ts.p.sortname;} if(pN.order !== null) {prm[pN.order]= ts.p.sortorder;}
 				if(ts.p.rowTotal !== null && pN.totalrows !== null) { prm[pN.totalrows]= ts.p.rowTotal; }
@@ -2620,12 +2621,12 @@ $.fn.jqGrid = function( pin ) {
 					labelStyle = "text-align:left;";
 					break;
 				case "right":
-					labelStyle = "text-align:right;";
+					labelStyle = "text-align:right;" + (cmi.sortable === false ? "" : "padding-right:" + p.sortIconSize  + "px;");
 					break;
 				case "likeData":
 					labelStyle = cmi.align === undefined || cmi.align === "left" ? 
 							"text-align:left;" :
-							(cmi.align === "right" ? "text-align:right;" : "");
+							(cmi.align === "right" ? "text-align:right;" + (cmi.sortable === false ? "" : "padding-right:" + p.sortIconSize  + "px;") : "");
 					break;
 				default:
 					labelStyle = "";
@@ -2710,19 +2711,19 @@ $.fn.jqGrid = function( pin ) {
 		$("#rs_m"+$.jgrid.jqID(p.id)).click(myResizerClickHandler).dblclick(function (e) {
 			var iCol = $(this).data("idx"), pageX = $(this).data("pageX"), arPageX, pageX1, pageX2, cm = p.colModel[iCol], doAutoresize, doAutoresizeCallback;
 
-			if (console) { console.log("dblclick in column resizer: pageX=" + pageX + ", idx=" + iCol + ", e.pageX=" + e.pageX + ", cm.name=" + (cm != null ? cm.name : "null")); }
+			//if (console) { console.log("dblclick in column resizer: pageX=" + pageX + ", idx=" + iCol + ", e.pageX=" + e.pageX + ", cm.name=" + (cm != null ? cm.name : "null")); }
 			if (pageX == null) {
-				if (console) { console.log("No pageX are saved in data: we skip processing of the dblclick"); }
+				//if (console) { console.log("No pageX are saved in data: we skip processing of the dblclick"); }
 				return false;
 			}
 			arPageX = String(pageX).split(";");
 			pageX1 = parseFloat(arPageX[0]);
 			pageX2 = parseFloat(arPageX[1]);
 			if (arPageX.length === 2 && (Math.abs(pageX1-pageX2) > 5 || Math.abs(e.pageX-pageX1) > 5 || Math.abs(e.pageX-pageX2) > 5)) {
-				if (console) { console.log("we skip processing of the dblclick"); }
+				//if (console) { console.log("we skip processing of the dblclick"); }
 				return false;
 			}
-			if (console) { console.log("we do resizing with e.pageX=" + e.pageX + " pageX1=" + pageX1 + " and pageX2=" + pageX2); }
+			//if (console) { console.log("we do resizing with e.pageX=" + e.pageX + " pageX1=" + pageX1 + " and pageX2=" + pageX2); }
 			
 			doAutoresize = $(ts).triggerHandler("jqGridResizeDblClick", [iCol, cm]);
 			doAutoresize = (doAutoresize === false || doAutoresize === "stop") ? false : true;
@@ -3055,7 +3056,7 @@ $.fn.jqGrid = function( pin ) {
 			$(grid.topDiv).addClass('ui-state-default ui-jqgrid-toppager').css({width: grid.width+"px"}).insertBefore(grid.hDiv);
 			setPager(ts.p.toppager,'_t');
 			ts.p.toppager = "#"+$.jgrid.jqID(ts.p.toppager); // hold ESCAPED id selector in the toppager option
-		} else if (ts.p.pager === "" && ((ts.p.datatype !== "xml" && ts.p.datatype !== "json") || ((ts.p.datatype === "xml" || ts.p.datatype === "json") && ts.p.loadonce === true))) {
+		} else if (ts.p.pager === "") {
 			ts.p.rowNum = ts.p.maxRowNum;
 		}
 		if(ts.p.footerrow) {
@@ -3132,19 +3133,19 @@ $.fn.jqGrid = function( pin ) {
 				cm = p.colModel[iCol],
 				pageX = $(this).data("pageX") || $resizer.data("pageX");
 
-			if (console) { console.log("GBOX: dblclick in column resizer: pageX=" + pageX + ", idx=" + iCol + ", e.pageX=" + e.pageX + ", cm.name=" + (cm != null ? cm.name : "null")); }
+			//if (console) { console.log("GBOX: dblclick in column resizer: pageX=" + pageX + ", idx=" + iCol + ", e.pageX=" + e.pageX + ", cm.name=" + (cm != null ? cm.name : "null")); }
 			if (pageX == null) {
-				if (console) { console.log("GBOX: No pageX are saved in data: we skip processing of the dblclick"); }
+				//if (console) { console.log("GBOX: No pageX are saved in data: we skip processing of the dblclick"); }
 				return false;
 			}
 			arPageX = String(pageX).split(";");
 			pageX1 = parseFloat(arPageX[0]);
 			pageX2 = parseFloat(arPageX[1]);
 			if (arPageX.length === 2 && (Math.abs(pageX1-pageX2) > 5 || Math.abs(e.pageX-pageX1) > 5 || Math.abs(e.pageX-pageX2) > 5)) {
-				if (console) { console.log("GBOX: we skip processing of the dblclick"); }
+				//if (console) { console.log("GBOX: we skip processing of the dblclick"); }
 				return false;
 			}
-			if (console) { console.log("GBOX: we do resizing with e.pageX=" + e.pageX + " pageX1=" + pageX1 + " and pageX2=" + pageX2); }
+			//if (console) { console.log("GBOX: we do resizing with e.pageX=" + e.pageX + " pageX1=" + pageX1 + " and pageX2=" + pageX2); }
 				
 			doAutoresize = $(ts).triggerHandler("jqGridResizeDblClick", [iCol, cm]);
 			doAutoresize = (doAutoresize === false || doAutoresize === "stop") ? false : true;
