@@ -1,7 +1,7 @@
 (function($){
 "use strict";
 /**
- * jqGrid Russian Translation v1.0 02.07.2009 based on translation by Alexey Kanaev, v1.1 21.01.2009 (http://softcore.com.ru) and 07.01.2015 (http://smartcore.ru)
+ * jqGrid Russian Translation v1.0 02.07.2009 (based on translation by Alexey Kanaev v1.1 21.01.2009, http://softcore.com.ru)
  * Sergey Dyagovchenko
  * http://d.sumy.ua
  * Dual licensed under the MIT and GPL licenses:
@@ -15,12 +15,12 @@ $.extend(true,$.jgrid,{
 		emptyrecords: "Нет записей для просмотра",
 		loadtext: "Загрузка...",
 		pgtext : "Стр. {0} из {1}",
-		pgfirst : "Первая стр.",
-		pglast : "Последняя стр.",
-		pgnext : "След. стр.",
-		pgprev : "Пред. стр.",
-		pgrecs : "Записей на стр.",
-		showhide: "Показать/скрыть таблицу"
+		pgfirst : "First Page",
+		pglast : "Last Page",
+		pgnext : "Next Page",
+		pgprev : "Previous Page",
+		pgrecs : "Records per Page",
+		showhide: "Toggle Expand Collapse Grid"
 	},
 	search : {
 		caption: "Поиск...",
@@ -28,8 +28,8 @@ $.extend(true,$.jgrid,{
 		Reset: "Сброс",
 		odata: [{ oper:'eq', text:"равно"},{ oper:'ne', text:"не равно"},{ oper:'lt', text:"меньше"},{ oper:'le', text:"меньше или равно"},{ oper:'gt', text:"больше"},{ oper:'ge', text:"больше или равно"},{ oper:'bw', text:"начинается с"},{ oper:'bn', text:"не начинается с"},{ oper:'in', text:"находится в"},{ oper:'ni', text:"не находится в"},{ oper:'ew', text:"заканчивается на"},{ oper:'en', text:"не заканчивается на"},{ oper:'cn', text:"содержит"},{ oper:'nc', text:"не содержит"},{ oper:'nu', text:"равно NULL"},{ oper:'nn', text:"не равно NULL"}],
 		groupOps: [	{ op: "AND", text: "все" }, { op: "OR", text: "любой" }],
-		operandTitle : "Выбрать операцию поиска",
-		resetTitle : "Сбросить"
+		operandTitle : "Click to select search operation.",
+		resetTitle : "Reset Search Value"
 	},
 	edit : {
 		addCaption: "Добавить запись",
