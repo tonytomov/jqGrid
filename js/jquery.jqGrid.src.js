@@ -4302,7 +4302,7 @@ $.jgrid.extend({
 				}
 			}
 			colWidth = Math.max(colWidth, cm.autoResizableMinColSize || p.autoResizableMinColSize);
-			$(this).jqGrid("setColWidth", iCol, Math.min(colWidth, p.autoResizableMaxColSize), p.autoResizableAdjustGridWidth && !p.autoResizableFixWidthOnShrink);
+			$(this).jqGrid("setColWidth", iCol, Math.min(colWidth, cm.autoResizableMaxColSize || p.autoResizableMaxColSize), p.autoResizableAdjustGridWidth && !p.autoResizableFixWidthOnShrink);
 			if (p.autoResizableFixWidthOnShrink && p.shrinkToFit) {
 				cm.fixed = true;
 				widthOrg = cm.widthOrg; // save the value in temporary variable
