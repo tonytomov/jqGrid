@@ -173,10 +173,6 @@
 						break;
 					case 'jsonstring' :
 						ret = "{"+ xmlJsonClass.toJson(gprm,o.root,o.ident,false)+"}";
-						if(gprm.postData.filters !== undefined) {
-							ret=ret.replace(/filters":"/,'filters":');
-							ret=ret.replace(/}]}"/,'}]}');
-						}
 						break;
 				}
 			});
