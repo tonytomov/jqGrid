@@ -74,7 +74,8 @@ $.extend($.jgrid,{
 	},
 	createModal : function(aIDs, content, p, insertSelector, posSelector, appendsel, css) {
 		p = $.extend(true, {}, $.jgrid.jqModal || {}, p);
-		var mw  = document.createElement('div'), rtlsup, self = this;
+		var mw = document.createElement('div'), rtlsup, self = this, themodalSelector = "#"+$.jgrid.jqID(aIDs.themodal),
+		scrollelmSelector = aIDs.scrollelm ? "#"+$.jgrid.jqID(aIDs.scrollelm) : false;
 		css = $.extend({}, css || {});
 		rtlsup = $(p.gbox).attr("dir") === "rtl" ? true : false;
 		mw.className= "ui-widget ui-widget-content ui-corner-all ui-jqdialog";
@@ -123,9 +124,9 @@ $.extend($.jgrid,{
 			coord.top = p.top+"px";
 		}
 		$("a.ui-jqdialog-titlebar-close",mh).click(function(){
-			var oncm = $("#"+$.jgrid.jqID(aIDs.themodal)).data("onClose") || p.onClose;
-			var gboxclose = $("#"+$.jgrid.jqID(aIDs.themodal)).data("gbox") || p.gbox;
-			self.hideModal("#"+$.jgrid.jqID(aIDs.themodal),{gb:gboxclose,jqm:p.jqModal,onClose:oncm, removemodal: p.removemodal || false, formprop : !p.recreateForm || false, form: p.form || ''});
+			var oncm = $(themodalSelector).data("onClose") || p.onClose;
+			var gboxclose = $(themodalSelector).data("gbox") || p.gbox;
+			self.hideModal(themodalSelector,{gb:gboxclose,jqm:p.jqModal,onClose:oncm, removemodal: p.removemodal || false, formprop : !p.recreateForm || false, form: p.form || ''});
 			return false;
 		});
 		if (p.width === 0 || !p.width) {p.width = 300;}
@@ -167,18 +168,18 @@ $.extend($.jgrid,{
 		if(p.resize) {
 			if($.fn.jqResize) {
 				$(mw).append("<div class='jqResize ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se'></div>");
-				$("#"+$.jgrid.jqID(aIDs.themodal)).jqResize(".jqResize",aIDs.scrollelm ? "#"+$.jgrid.jqID(aIDs.scrollelm) : false);
+				$(themodalSelector).jqResize(".jqResize",scrollelmSelector);
 			} else {
 				try {
-					$(mw).resizable({handles: 'se, sw',alsoResize: aIDs.scrollelm ? "#"+$.jgrid.jqID(aIDs.scrollelm) : false});
+					$(mw).resizable({handles: 'se, sw',alsoResize: scrollelmSelector});
 				} catch (r) {}
 			}
 		}
 		if(p.closeOnEscape === true){
 			$(mw).keydown( function( e ) {
 				if( e.which === 27 ) {
-					var cone = $("#"+$.jgrid.jqID(aIDs.themodal)).data("onClose") || p.onClose;
-					self.hideModal("#"+$.jgrid.jqID(aIDs.themodal),{gb:p.gbox,jqm:p.jqModal,onClose: cone, removemodal: p.removemodal || false, formprop : !p.recreateForm || false, form: p.form || ''});
+					var cone = $(themodalSelector).data("onClose") || p.onClose;
+					self.hideModal(themodalSelector,{gb:p.gbox,jqm:p.jqModal,onClose: cone, removemodal: p.removemodal || false, formprop : !p.recreateForm || false, form: p.form || ''});
 				}
 			});
 		}
