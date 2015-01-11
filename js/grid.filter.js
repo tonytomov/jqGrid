@@ -162,7 +162,7 @@ $.fn.jqFilter = function( arg ) {
 		this.createTableForGroup = function(group, parentgroup) {
 			var that = this,  i;
 			// this table will hold all the group (tables) and rules (rows)
-			var table = $("<table class='group ui-widget ui-widget-content' style='border:0px none;'><tbody></tbody></table>"),
+			var table = $("<table class='group ui-widget ui-widget-content ui-search-table' style='border:0px none;'><tbody></tbody></table>"),
 			// create error message row
 			align = "left";
 			if(this.p.direction === "rtl") {
@@ -182,7 +182,7 @@ $.fn.jqFilter = function( arg ) {
 
 			if(this.p.ruleButtons === true) {
 			// dropdown for: choosing group operator type
-			var groupOpSelect = $("<select class='opsel'></select>");
+			var groupOpSelect = $("<select class='opsel ui-widget-content ui-corner-all'></select>");
 			th.append(groupOpSelect);
 			// populate dropdown with all posible group operators: or, and
 			var str= "", selected;
@@ -201,7 +201,7 @@ $.fn.jqFilter = function( arg ) {
 			// button for adding a new subgroup
 			var inputAddSubgroup ="<span></span>";
 			if(this.p.groupButton) {
-				inputAddSubgroup = $("<input type='button' value='+ {}' title='Add subgroup' class='add-group'/>");
+				inputAddSubgroup = $("<input type='button' value='+ {}' title='Add subgroup' class='add-group ui-widget-content ui-corner-all'/>");
 				inputAddSubgroup.bind('click',function() {
 					if (group.groups === undefined ) {
 						group.groups = [];
@@ -222,7 +222,7 @@ $.fn.jqFilter = function( arg ) {
 			th.append(inputAddSubgroup);
 			if(this.p.ruleButtons === true) {
 			// button for adding a new rule
-			var inputAddRule = $("<input type='button' value='+' title='Add rule' class='add-rule ui-add'/>"), cm;
+			var inputAddRule = $("<input type='button' value='+' title='Add rule' class='add-rule ui-add ui-widget-content ui-corner-all'/>"), cm;
 			inputAddRule.bind('click',function() {
 				//if(!group) { group = {};}
 				if (group.rules === undefined) {
@@ -261,7 +261,7 @@ $.fn.jqFilter = function( arg ) {
 
 			// button for delete the group
 			if (parentgroup !== null) { // ignore the first group
-				var inputDeleteGroup = $("<input type='button' value='-' title='Delete group' class='delete-group'/>");
+				var inputDeleteGroup = $("<input type='button' value='-' title='Delete group' class='delete-group ui-widget-content ui-corner-all'/>");
 				th.append(inputDeleteGroup);
 				inputDeleteGroup.bind('click',function() {
 				// remove group from parent
@@ -331,7 +331,7 @@ $.fn.jqFilter = function( arg ) {
 
 
 			// dropdown for: choosing field
-			var ruleFieldSelect = $("<select></select>"), ina, aoprs = [];
+			var ruleFieldSelect = $("<select class='ui-widget-content ui-corner-all'></select>"), ina, aoprs = [];
 			ruleFieldTd.append(ruleFieldSelect);
 			ruleFieldSelect.bind('change',function() {
 				rule.field = $(ruleFieldSelect).val();
@@ -351,7 +351,7 @@ $.fn.jqFilter = function( arg ) {
 					}
 				}
 				var elm = $.jgrid.createEl.call($t, cm.inputtype,cm.searchoptions, "", true, that.p.ajaxSelectOptions || {}, true);
-				$(elm).addClass("input-elm");
+				$(elm).addClass("input-elm ui-widget-content ui-corner-all");
 				//that.createElement(rule, "");
 
 				if( cm.searchoptions.sopt ) {op = cm.searchoptions.sopt;}
@@ -431,7 +431,7 @@ $.fn.jqFilter = function( arg ) {
 				$(ruleDataInput).attr('disabled','true');
 			} //retain the state of disabled text fields in case of null ops
 			// dropdown for: choosing operator
-			var ruleOperatorSelect = $("<select class='selectopts'></select>");
+			var ruleOperatorSelect = $("<select class='selectopts ui-widget-content ui-corner-all'></select>");
 			ruleOperatorTd.append(ruleOperatorSelect);
 			ruleOperatorSelect.bind('change',function() {
 				rule.op = $(ruleOperatorSelect).val();
@@ -476,7 +476,7 @@ $.fn.jqFilter = function( arg ) {
 			ruleDataTd.append(ruleDataInput);
 			$.jgrid.bindEv.call($t, ruleDataInput, cm.searchoptions);
 			$(ruleDataInput)
-			.addClass("input-elm")
+			.addClass("input-elm ui-widget-content ui-corner-all")
 			.bind('change', function() {
 				rule.data = cm.inputtype === 'custom' ? cm.searchoptions.custom_value.call($t, $(this).children(".customelement:first"),'get') : $(this).val();
 				that.onchange(); // signals that the filter has changed
@@ -488,7 +488,7 @@ $.fn.jqFilter = function( arg ) {
 
 			// create button for: delete rule
 			if(this.p.ruleButtons === true) {
-			var ruleDeleteInput = $("<input type='button' value='-' title='Delete rule' class='delete-rule ui-del'/>");
+			var ruleDeleteInput = $("<input type='button' value='-' title='Delete rule' class='delete-rule ui-del ui-widget-content ui-corner-all'/>");
 			ruleDeleteTd.append(ruleDeleteInput);
 			//$(ruleDeleteInput).html("").height(20).width(30).button({icons: {  primary: "ui-icon-minus", text:false}});
 			ruleDeleteInput.bind('click',function() {

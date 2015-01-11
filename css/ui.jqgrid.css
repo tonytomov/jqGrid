@@ -158,20 +158,16 @@
 .ui-search-menu.ui-menu .ui-menu-item a.g-menu-item:hover { margin: -1px; font-weight: normal; }
 .ui-jqgrid .ui-search-table { padding: 0; border: 0 none; height:20px; width:100%;}
 .ui-jqgrid .ui-search-table .ui-search-oper { width:20px; }
-a.g-menu-item, a.soptclass, a.clearsearchclass { cursor: pointer; }
-.ui-jqgrid .ui-search-table .ui-search-input>input,
-.ui-jqgrid .ui-search-table .ui-search-input>select
-{
-    display: block;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-} 
+a.g-menu-item, a.soptclass, a.clearsearchclass { cursor: pointer; } 
 .ui-jqgrid .ui-jqgrid-view input,
 .ui-jqgrid .ui-jqgrid-view select,
 .ui-jqgrid .ui-jqgrid-view textarea,
 .ui-jqgrid .ui-jqgrid-view button {
     font-size: 11px
 }
-
 .ui-jqgrid .ui-scroll-popup {height: 20px;width: 95px;left: 100%;}
+.ui-search-table select,
+.ui-search-table input 
+{
+	padding: 3px 3px;
+}
