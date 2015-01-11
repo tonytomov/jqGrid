@@ -447,11 +447,11 @@ $.fn.jqFilter = function( arg ) {
 				var rd = $(".input-elm",trpar)[0];
 				if (rule.op === "nu" || rule.op === "nn") { // disable for operator "is null" and "is not null"
 					rule.data = "";
-					if(rd.tagName.toUpperCase() !== 'SELECT') rd.value = "";
+					if(rd.tagName.toUpperCase() !== 'SELECT') { rd.value = ""; }
 					rd.setAttribute("readonly", "true");
 					rd.setAttribute("disabled", "true");
 				} else {
-					if(rd.tagName.toUpperCase() === 'SELECT') rule.data = rd.value;
+					if(rd.tagName.toUpperCase() === 'SELECT') { rule.data = rd.value; }
 					rd.removeAttribute("readonly");
 					rd.removeAttribute("disabled");
 				}
@@ -564,7 +564,7 @@ $.fn.jqFilter = function( arg ) {
 					break;
 				}
 			}
-			if (cm == undefined) { return ""; }
+			if (cm === undefined) { return ""; }
 			val = rule.data;
 			if(opC === 'bw' || opC === 'bn') { val = val+"%"; }
 			if(opC === 'ew' || opC === 'en') { val = "%"+val; }

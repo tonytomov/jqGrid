@@ -103,4 +103,4 @@ jQuery(selector).each(function() {
 		jQuery(this).jqGrid("setSelection",rowChecked[a]);
 	}
 });
-};
+}
