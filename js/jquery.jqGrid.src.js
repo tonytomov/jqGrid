@@ -783,6 +783,29 @@ $.extend(true,$.jgrid,{
 		};
 	return new QueryObject(source,null);
 	},
+	getGridComponent: function (componentName, iCol) {
+		// ??? probably better to return DOM instead of jQuery wrapper?
+		if (this == null && this.grid == null) {
+			return;
+		}
+		// this - the main table of the grid (ts)
+		switch (componentName) {
+			case "bTable": // body table
+				return $(this.grid.bDiv).find(">div>.ui-jqgrid-btable");
+			case "hTable": // header table
+				return $(this.grid.hDiv).find(">div>.ui-jqgrid-htable");
+			case "fTable": // footer/summary table
+				return $(this.grid.sDiv).find(">div>.ui-jqgrid-ftable");
+			case "bDiv":
+				return $(this.bDiv);
+			case "hDiv":
+				return $(this.hDiv);
+			case "sDiv":
+				return $(this.sDiv);
+			case "colHeader":
+				return $(this.gridheaders[iCol].el);
+		}
+	},
 	getMethod: function (name) {
         return this.getAccessor($.fn.jqGrid, name);
 	},
@@ -943,6 +966,7 @@ $.fn.jqGrid = function( pin ) {
 				}
 				//if (console) { console.log("click in column resizer: pageX is modified from " + oldPageX + " to " + $(this).data("pageX")); }
 			},
+			getGridComponent = $.jgrid.getGridComponent,
 			grid={
 			headers:[],
 			cols:[],
@@ -1001,11 +1025,11 @@ $.fn.jqGrid = function( pin ) {
 					p.colModel[idx+p.nv].width = nw;
 				} else {
 					p.tblwidth = this.newWidth || p.tblwidth;
-					$('table:first',this.bDiv).css("width",p.tblwidth+"px");
-					$('table:first',this.hDiv).css("width",p.tblwidth+"px");
+					$(this.bDiv).find(">div>.ui-jqgrid-btable").css("width",p.tblwidth+"px");
+					$(this.hDiv).find(">div>.ui-jqgrid-htable").css("width",p.tblwidth+"px");
 					this.hDiv.scrollLeft = this.bDiv.scrollLeft;
 					if(p.footerrow) {
-						$('table:first',this.sDiv).css("width",p.tblwidth+"px");
+						$(this.sDiv).find(">div>.ui-jqgrid-ftable").css("width",p.tblwidth+"px");
 						this.sDiv.scrollLeft = this.bDiv.scrollLeft;
 					}
 				}
@@ -1135,7 +1159,8 @@ $.fn.jqGrid = function( pin ) {
 			}
 		}
 		$(this).empty().attr("tabindex","0");
-		this.p = p ;
+		this.p = p;
+		this.grid = grid;
 		this.p.useProp = !!$.fn.prop;
 		var i, dir;
 		if(this.p.colNames.length === 0) {
@@ -2705,6 +2730,7 @@ $.fn.jqGrid = function( pin ) {
 			var pw = $(eg).innerWidth();
 			ts.p.width = pw > 0?  pw: 'nw';
 		}
+		ts.p.widthOrg = ts.p.width;
 		setColWidth();
 		$(eg).css("width",grid.width+"px").append("<div class='ui-jqgrid-resize-mark' id='rs_m"+ts.p.id+"'>&#160;</div>");
 		$("#rs_m"+$.jgrid.jqID(p.id)).click(myResizerClickHandler).dblclick(function (e) {
@@ -3014,7 +3040,7 @@ $.fn.jqGrid = function( pin ) {
 			.addClass("ui-jqgrid-bdiv")
 			.css({ height: ts.p.height+(isNaN(ts.p.height)?"":"px"), width: (grid.width)+"px"})
 			.scroll(grid.scrollGrid);
-		$("table:first",grid.bDiv).css({width:ts.p.tblwidth+"px"});
+		getGridComponent.call(ts,"bTable").css({width:ts.p.tblwidth+"px"});
 		if( !$.support.tbody ) { //IE
 			if( $("tbody",this).length === 2 ) { $("tbody:gt(0)",this).remove();}
 		}
@@ -3179,7 +3205,6 @@ $.fn.jqGrid = function( pin ) {
 		ts.constructTr = constructTr;
 		ts.formatter = function ( rowId, cellval , colpos, rwdat, act){return formatter(rowId, cellval , colpos, rwdat, act);};
 		$.extend(grid,{populate : populate, emptyRows: emptyRows, beginReq: beginReq, endReq: endReq});
-		this.grid = grid;
 		ts.addXmlData = function(d) {addXmlData(d,ts.grid.bDiv);};
 		ts.addJSONData = function(d) {addJSONData(d,ts.grid.bDiv);};
 		this.grid.cols = this.rows[0].cells;
@@ -4213,9 +4238,7 @@ $.jgrid.extend({
 				return; // error: wrong parameters
 			}
 			grid.headers[iCol].newWidth = newWidth;
-			if (adjustGridWidth !== false) {
-				grid.newWidth = grid.width + newWidth - grid.headers[iCol].width;
-			}
+			grid.newWidth = grid.width + newWidth - grid.headers[iCol].width;
 			grid.resizeColumn(iCol, this, true);
 			if (adjustGridWidth !== false) {
 				$self.jqGrid("setGridWidth", grid.newWidth, false); // adjust grid width too
@@ -4227,12 +4250,13 @@ $.jgrid.extend({
 			var rows = this.rows, row, cell, iRow, $cell, $cellFirstChild, widthOrg,
 				$th = $($(this.grid.hDiv).find(".ui-jqgrid-labels>.ui-th-column")[iCol]),
 				$thDiv = $th.find(">div"),
-				thPaddingLeft = parseFloat($th.css("padding-left")),
-				thPaddingRight = parseFloat($th.css("padding-right")),
+				thPaddingLeft = parseFloat($th.css("padding-left") || 0),
+				thPaddingRight = parseFloat($th.css("padding-right") || 0),
 				$incosDiv = $thDiv.find("span.s-ico"),
 				$wrapper = $thDiv.find(">.okCellWrapper"), 
 				wrapperOuterWidth = $wrapper.outerWidth(),
-				wrapperCssWidth = parseFloat($wrapper.css("width")),
+				wrapperCssWidth = parseFloat($wrapper.css("width") || 0),
+				widthOuter = 0,
 				colWidth = 0,
 				p = this.p,
 				cm = p.colModel[iCol],
@@ -4255,21 +4279,20 @@ $.jgrid.extend({
 			colWidth += wrapperOuterWidth + thPaddingLeft +
 					//($.jgrid.cell_width || isSafari ? parseFloat($th.css("padding-left")) + parseFloat($th.css("padding-right")) + (isSafari ? 2 : 0) : 0) +
 					(wrapperCssWidth === wrapperOuterWidth ? thPaddingLeft + thPaddingRight : 0) +
-					parseFloat($thDiv.css("margin-left")) + parseFloat($thDiv.css("margin-right"));
+					parseFloat($thDiv.css("margin-left") || 0) + parseFloat($thDiv.css("margin-right") || 0);
 			for (iRow = 0, rows = this.rows; iRow < rows.length; iRow++) {
 				row = rows[iRow];
-				if ($(row).hasClass("jqgrow")) {
-					cell = row.cells[iCol];
-					if (cell != null) {
-						$cell = $(cell);
-						$cellFirstChild = $(cell.firstChild);
-						if ($cellFirstChild.hasClass(autoResizableWrapperClassName)) {
-							colWidth = Math.max(colWidth, $cellFirstChild.outerWidth() +
-									($.jgrid.cell_width ? parseFloat($cell.css("padding-left")) + parseFloat($cell.css("padding-right")) : 0) +
-									parseFloat($cellFirstChild.css("margin-left")) +
-									parseFloat($cellFirstChild.css("margin-right")));
-						}
+				cell = row.cells[iCol];
+				$cell = $(row.cells[iCol]);
+				if ($(row).hasClass("jqgrow") && cell != null) {
+					$cellFirstChild = $(cell.firstChild);
+					if ($cellFirstChild.hasClass(autoResizableWrapperClassName)) {
+						colWidth = Math.max(colWidth, $cellFirstChild.outerWidth() + widthOuter);
 					}
+				} else if ($(row).hasClass("jqgfirstrow")) {
+					widthOuter = ($.jgrid.cell_width ? parseFloat($cell.css("padding-left") || 0) + parseFloat($cell.css("padding-right") || 0) : 0) +
+							parseFloat($cell.css("border-right") || 0) +
+							parseFloat($cell.css("border-left") || 0);
 				}
 			}
 			colWidth = Math.max(colWidth, cm.autoResizableMinColSize || p.autoResizableMinColSize);
@@ -4286,14 +4309,28 @@ $.jgrid.extend({
 	},
 	autoResizeAllColumns: function () {
 		return this.each(function () {
-			var $self = $(this), colModel = this.p.colModel, nCol = colModel.length, iCol, cm,
+			var $self = $(this), p = this.p, colModel = p.colModel, nCol = colModel.length, iCol, cm,
+				shrinkToFit = p.shrinkToFit, // save the original shrinkToFit value in the grid
+				autoResizableAdjustGridWidth = p.autoResizableAdjustGridWidth,
+				autoResizableFixWidthOnShrink = p.autoResizableFixWidthOnShrink,
+				width = parseInt(p.widthOrg,10),
 				autoResizeColumn = $.jgrid.getMethod("autoResizeColumn"); // cache autoResizeColumn reference
+
+			p.shrinkToFit = false; // make no shrinking during resizing of any columns 
+			p.autoResizableAdjustGridWidth = true;
+			p.autoResizableFixWidthOnShrink = false;
 			for (iCol = 0; iCol < nCol; iCol++) {
 				cm = colModel[iCol];
 				if (cm.autoResizable && cm.formatter !== "actions") {
 					autoResizeColumn.call($self, iCol);
 				}
 			}
+			p.autoResizableAdjustGridWidth = true;
+			p.autoResizableFixWidthOnShrink = false;
+			if (!isNaN(width)) {
+				$(this).jqGrid("setGridWidth", width, false);
+			}
+			p.shrinkToFit = shrinkToFit; // restore the original shrinkToFit value
 		});
 	}
 });
