@@ -200,13 +200,25 @@
 			});
 		},
 		saveState : function ( o ) {
-			var gridstate = "";
+			o = $.extend({
+				useLocalStorage : false,
+				beforeSetItem : null
+			}, o || {});
+			var gridstate = "", ret;
 			// to use navigator set storeNavOptions to true in grid options
 			this.each(function(){
 				if(!this.grid) { return;}
-				var data = $(this).jqGrid('getRowData');
-				gridstate  =  $(this).jqGrid('jqGridExport', { exptype : "jsonstring", ident:"", addOptions : { currentdata: data } });
+				gridstate  =  $(this).jqGrid('jqGridExport', { exptype : "jsonstring", ident:"" });
 			});
+			if($.isFunction(o.beforeSetItem)) {
+				ret = o.beforeSetItem.call(thid, gridstate);
+				if(ret != null) {
+					gridstate = ret;
+				}
+			}
+			if(o.useLocalStorage && $.jgrid.isLocalStorage()) {
+				localStorage.setItem("jqGrid"+this.id, gridstate);
+			}
 			return gridstate;
 		},
 		loadState : function () {

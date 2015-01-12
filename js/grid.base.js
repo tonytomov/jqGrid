@@ -319,6 +319,13 @@ $.extend($.jgrid,{
 		$testDiv.remove();
 		return Math.abs(testCell-5) > 0.1;
 	},
+	isLocalStorage : function () {
+		try {
+			return 'localStorage' in window && window['localStorage'] !== null;
+		} catch (e) {
+			return false;
+		}
+	},
 	cell_width : true,
 	ajaxOptions: {},
 	from : function(source){
