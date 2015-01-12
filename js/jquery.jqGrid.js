@@ -8971,13 +8971,14 @@ $.jgrid.extend({
 			title: '',
 			buttonicon : 'ui-icon-newwin',
 			onClickButton: null,
+			context:null,
 			position : "last",
 			cursor : 'pointer'
 		}, p ||{});
 		return this.each(function() {
 			if( !this.grid)  {return;}
 			if( typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+$.jgrid.jqID(elem);}
-			var findnav = $(".navtable",elem)[0], $t = this;
+			var findnav = $(".navtable",elem)[0], $t = p.context || this;
 			if (findnav) {
 				if( p.id && $("#"+$.jgrid.jqID(p.id), findnav)[0] !== undefined )  {return;}
 				var tbd = $("<td></td>");
