@@ -76,7 +76,7 @@ The most the changes corresponds the tendency of web development last years. Loc
 
 ### The following **bugs** are fixed
 
-* ...
+* ... to be included soon
 
 ### Other changes in jqGrid and remarks
 
@@ -84,3 +84,12 @@ The most the changes corresponds the tendency of web development last years. Loc
 * jqGrid display the alert message now if some additional fatal error will be detected. For example if one don't included  
 * some common properties which have no relation to the language are moved to
 * we *recommend* to use `getGridParam` *without* additional parameter to get the reference to object with all jqGrid options: `var p = $("#grid").jqGrid("gerGridParam");` for example. One can use the `p.rowNum` to access `rowNum` option. The usage of `$("#grid").jqGrid("gerGridParam", "rowNum")` will be supported too, but the usage of `$("#grid")[0].p.rowNum` could be not work in some of the future version, because the place of the option could be changed in the future.
+
+### Some demos which demonstrates new features
+
+* [GetFilteredData](http://www.ok-soft-gmbh.com/jqGrid/OK/GetFilteredData.htm) - demonstrates how to use new `lastSelectedData` option which returns, in contrast to `data`, *filtered* and *sorted* data items from all pages of jqGrid. Try to set some filter in the demo, make sorting by some column and set the page size to 2 for example. Click the button above the grid and see the displayed results.
+* [autoResizing](http://www.ok-soft-gmbh.com/jqGrid/OK/autoresizeOnDoubleClickOnColumnResizer.htm) - demonstrates the default behaviour of auto-resizing feature. Double-click on the column resizer (in the header close to the right border which divides the columns). You will see the default behaviour of column resizing.
+* [autoResizingCompact](http://www.ok-soft-gmbh.com/jqGrid/OK/autoresizeOnDoubleClickOnColumnResizer1.htm) - demonstrates the default behaviour of auto-resizing feature. Double-click on the column resizer (in the header close to the right border which divides the columns). You will see the behaviour of column resizing in case of usage `autoResizing: { compact: true }`.
+* [autoResizingWithShrinkCompact](http://www.ok-soft-gmbh.com/jqGrid/OK/autoresizeOnDoubleClickOnColumnResizerWithShrink.htm) - modification of the previous demo. It uses no `shrinkToFit: false` option and `width: 518` instead.
+* [autoresizeOnLoad](http://www.ok-soft-gmbh.com/jqGrid/OK/autoresizeOnLoad1.htm) - `autoResizing`
+* [alignLabel](http://www.ok-soft-gmbh.com/jqGrid/OK/alignLabel.htm) - demonstrates the usage of new `labelAlign` and `labelClasses` properties of `colModel`.
