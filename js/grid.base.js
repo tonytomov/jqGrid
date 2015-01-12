@@ -1273,7 +1273,9 @@ $.fn.jqGrid = function( pin ) {
 			for(i =0; i<ts.p.colModel.length; i++){
 				field = ts.p.colModel[i];
 				if (field.name !== 'cb' && field.name !=='subgrid' && field.name !=='rn') {
-					f[j] = (datatype==="xml" || datatype === "xmlstring") ? field.xmlmap || field.name : field.jsonmap || field.name;
+					f[j] = (datatype === "xml" || datatype === "xmlstring") ?
+							field.xmlmap || field.name :
+							(datatype === "local" && !ts.p.skipUsageOfJsonMap ? field.jsonmap || field.name : field.name);
 					if(ts.p.keyName !== false && field.key===true ) {
 						ts.p.keyName = f[j];
 					}
@@ -1366,7 +1368,7 @@ $.fn.jqGrid = function( pin ) {
 		refreshIndex = function() {
 			var datalen = ts.p.data.length, idname, i, val;
 
-			if(ts.p.keyName === false || ts.p.loadonce === true) {
+			if(ts.p.keyName === false || ts.p.loadonce) {
 				idname = ts.p.localReader.id;
 			} else {
 				idname = ts.p.keyName;
@@ -2152,7 +2154,11 @@ $.fn.jqGrid = function( pin ) {
 							if (ts.p.autoresizeOnLoad) {$(ts).jqGrid("autoResizeAllColumns");}
 							$(ts).triggerHandler("jqGridAfterLoadComplete", [data]);
 							if (pvis) { ts.grid.populateVisible(); }
-							if( ts.p.loadonce || ts.p.treeGrid) {ts.p.datatype = "local";}
+							if (ts.p.loadonce || ts.p.treeGrid) {
+								ts.p.dataTypeOrg = ts.p.datatype;
+								ts.p.datatype = "local";
+								ts.p.skipUsageOfJsonMap = true;
+							}
 							data=null;
 							if (npage === 1) { endReq(); }
 						},
@@ -2981,35 +2987,41 @@ $.fn.jqGrid = function( pin ) {
 				}
 			}
 		}).bind('reloadGrid', function(e,opts) {
-			if(ts.p.treeGrid ===true) {	ts.p.datatype = ts.p.treedatatype;}
+			var p = this.p, grid = this.grid, $self = $(this);
+			if (p.treeGrid === true) {
+				p.datatype = p.treedatatype;
+			}
+			if (p.datatype === "local" && p.dataTypeOrg && p.loadonce) {
+				p.datatype = String(p.dataTypeOrg);
+			}
 			if (opts && opts.current) {
-				ts.grid.selectionPreserver(ts);
+				grid.selectionPreserver(this);
 			}
-			if(ts.p.datatype==="local"){ $(ts).jqGrid("resetSelection");  if(ts.p.data.length) { normalizeData(); refreshIndex();} }
-			else if(!ts.p.treeGrid) {
-				ts.p.selrow=null;
-				if(ts.p.multiselect) {ts.p.selarrrow =[];setHeadCheckBox(false);}
-				ts.p.savedRow = [];
+			if(p.datatype==="local"){ $self.jqGrid("resetSelection");  if(p.data.length) { normalizeData(); refreshIndex();} }
+			else if(!p.treeGrid) {
+				p.selrow=null;
+				if(p.multiselect) {p.selarrrow =[];setHeadCheckBox(false);}
+				p.savedRow = [];
 			}
-			if(ts.p.scroll) {emptyRows.call(ts, true, false);}
+			if(p.scroll) {emptyRows.call(this, true, false);}
 			if (opts && opts.page) {
-				var page = opts.page;
-				if (page > ts.p.lastpage) { page = ts.p.lastpage; }
+				var page = parseInt(opts.page, 10);
+				if (page > p.lastpage) { page = p.lastpage; }
 				if (page < 1) { page = 1; }
-				ts.p.page = page;
-				if (ts.grid.prevRowHeight) {
-					ts.grid.bDiv.scrollTop = (page - 1) * ts.grid.prevRowHeight * ts.p.rowNum;
+				p.page = page;
+				if (grid.prevRowHeight) {
+					grid.bDiv.scrollTop = (page - 1) * grid.prevRowHeight * p.rowNum;
 				} else {
-					ts.grid.bDiv.scrollTop = 0;
+					grid.bDiv.scrollTop = 0;
 				}
 			}
-			if (ts.grid.prevRowHeight && ts.p.scroll) {
-				delete ts.p.lastpage;
-				ts.grid.populateVisible();
+			if (grid.prevRowHeight && p.scroll) {
+				delete p.lastpage;
+				grid.populateVisible();
 			} else {
-				ts.grid.populate();
+				grid.populate();
 			}
-			if(ts.p._inlinenav===true) {$(ts).jqGrid('showAddEditButtons');}
+			if(p._inlinenav===true) {$self.jqGrid('showAddEditButtons');}
 			return false;
 		})
 		.dblclick(function(e) {
