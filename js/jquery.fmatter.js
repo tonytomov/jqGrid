@@ -352,7 +352,7 @@
 		if (cellval instanceof jQuery && cellval.length > 0) {
 			cellval = cellval[0];
 		}
-		if (options.colModel.autoResizable && cellval != null && $(cellval.firstChild).hasClass(this.p.autoResizableWrapperClassName)) {
+		if (options.colModel.autoResizable && cellval != null && $(cellval.firstChild).hasClass(this.p.autoResizing.wrapperClassName)) {
 			cellval = cellval.firstChild;
 		}
 		if(unformatFunc !== undefined && $.isFunction(unformatFunc) ) {

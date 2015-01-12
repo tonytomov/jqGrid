@@ -16,10 +16,165 @@
 
 (function ($) {
 "use strict";
+var englishLanguageDefaults = {
+	defaults : {
+		recordtext: "View {0} - {1} of {2}",
+		emptyrecords: "No records to view",
+		loadtext: "Loading...",
+		pgtext : "Page {0} of {1}",
+		pgfirst : "First Page",
+		pglast : "Last Page",
+		pgnext : "Next Page",
+		pgprev : "Previous Page",
+		pgrecs : "Records per Page",
+		showhide: "Toggle Expand Collapse Grid"
+	},
+	search : {
+		caption: "Search...",
+		Find: "Find",
+		Reset: "Reset",
+		odata: [{ oper:'eq', text:'equal'},{ oper:'ne', text:'not equal'},{ oper:'lt', text:'less'},{ oper:'le', text:'less or equal'},{ oper:'gt', text:'greater'},{ oper:'ge', text:'greater or equal'},{ oper:'bw', text:'begins with'},{ oper:'bn', text:'does not begin with'},{ oper:'in', text:'is in'},{ oper:'ni', text:'is not in'},{ oper:'ew', text:'ends with'},{ oper:'en', text:'does not end with'},{ oper:'cn', text:'contains'},{ oper:'nc', text:'does not contain'},{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}],
+		groupOps: [{ op: "AND", text: "all" },{ op: "OR",  text: "any" }],
+		operandTitle : "Click to select search operation.",
+		resetTitle : "Reset Search Value"
+	},
+	edit : {
+		addCaption: "Add Record",
+		editCaption: "Edit Record",
+		bSubmit: "Submit",
+		bCancel: "Cancel",
+		bClose: "Close",
+		saveData: "Data has been changed! Save changes?",
+		bYes : "Yes",
+		bNo : "No",
+		bExit : "Cancel",
+		msg: {
+			required:"Field is required",
+			number:"Please, enter valid number",
+			minValue:"value must be greater than or equal to ",
+			maxValue:"value must be less than or equal to",
+			email: "is not a valid e-mail",
+			integer: "Please, enter valid integer value",
+			date: "Please, enter valid date value",
+			url: "is not a valid URL. Prefix required ('http://' or 'https://')",
+			nodefined : " is not defined!",
+			novalue : " return value is required!",
+			customarray : "Custom function should return array!",
+			customfcheck : "Custom function should be present in case of custom checking!"
+			
+		}
+	},
+	view : {
+		caption: "View Record",
+		bClose: "Close"
+	},
+	del : {
+		caption: "Delete",
+		msg: "Delete selected record(s)?",
+		bSubmit: "Delete",
+		bCancel: "Cancel"
+	},
+	nav : {
+		edittext: "",
+		edittitle: "Edit selected row",
+		addtext:"",
+		addtitle: "Add new row",
+		deltext: "",
+		deltitle: "Delete selected row",
+		searchtext: "",
+		searchtitle: "Find records",
+		refreshtext: "",
+		refreshtitle: "Reload Grid",
+		alertcap: "Warning",
+		alerttext: "Please, select row",
+		viewtext: "",
+		viewtitle: "View selected row"
+	},
+	col : {
+		caption: "Select columns",
+		bSubmit: "Ok",
+		bCancel: "Cancel"
+	},
+	errors : {
+		errcap : "Error",
+		nourl : "No url is set",
+		norecords: "No records to process",
+		model : "Length of colNames <> colModel!"
+	},
+	formatter : {
+		integer : {thousandsSeparator: ",", defaultValue: '0'},
+		number : {decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2, defaultValue: '0.00'},
+		currency : {decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2, prefix: "", suffix:"", defaultValue: '0.00'},
+		date : {
+			dayNames:   [
+				"Sun", "Mon", "Tue", "Wed", "Thr", "Fri", "Sat",
+				"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+			],
+			monthNames: [
+				"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+				"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+			],
+			AmPm : ["am","pm","AM","PM"],
+			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th';},
+			srcformat: 'Y-m-d',
+			newformat: 'n/j/Y',
+			masks : {
+				// see http://php.net/manual/en/function.date.php for PHP format used in jqGrid
+				// and see http://docs.jquery.com/UI/Datepicker/formatDate
+				// and https://github.com/jquery/globalize#dates for alternative formats used frequently
+				// one can find on https://github.com/jquery/globalize/tree/master/lib/cultures many
+				// information about date, time, numbers and currency formats used in different countries
+				// one should just convert the information in PHP format
+				// short date:
+				//    n - Numeric representation of a month, without leading zeros
+				//    j - Day of the month without leading zeros
+				//    Y - A full numeric representation of a year, 4 digits
+				// example: 3/1/2012 which means 1 March 2012
+				ShortDate: "n/j/Y", // in jQuery UI Datepicker: "M/d/yyyy"
+				// long date:
+				//    l - A full textual representation of the day of the week
+				//    F - A full textual representation of a month
+				//    d - Day of the month, 2 digits with leading zeros
+				//    Y - A full numeric representation of a year, 4 digits
+				LongDate: "l, F d, Y", // in jQuery UI Datepicker: "dddd, MMMM dd, yyyy"
+				// long date with long time:
+				//    l - A full textual representation of the day of the week
+				//    F - A full textual representation of a month
+				//    d - Day of the month, 2 digits with leading zeros
+				//    Y - A full numeric representation of a year, 4 digits
+				//    g - 12-hour format of an hour without leading zeros
+				//    i - Minutes with leading zeros
+				//    s - Seconds, with leading zeros
+				//    A - Uppercase Ante meridiem and Post meridiem (AM or PM)
+				FullDateTime: "l, F d, Y g:i:s A", // in jQuery UI Datepicker: "dddd, MMMM dd, yyyy h:mm:ss tt"
+				// month day:
+				//    F - A full textual representation of a month
+				//    d - Day of the month, 2 digits with leading zeros
+				MonthDay: "F d", // in jQuery UI Datepicker: "MMMM dd"
+				// short time (without seconds)
+				//    g - 12-hour format of an hour without leading zeros
+				//    i - Minutes with leading zeros
+				//    A - Uppercase Ante meridiem and Post meridiem (AM or PM)
+				ShortTime: "g:i A", // in jQuery UI Datepicker: "h:mm tt"
+				// long time (with seconds)
+				//    g - 12-hour format of an hour without leading zeros
+				//    i - Minutes with leading zeros
+				//    s - Seconds, with leading zeros
+				//    A - Uppercase Ante meridiem and Post meridiem (AM or PM)
+				LongTime: "g:i:s A", // in jQuery UI Datepicker: "h:mm:ss tt"
+				// month with year
+				//    Y - A full numeric representation of a year, 4 digits
+				//    F - A full textual representation of a month
+				YearMonth: "F, Y" // in jQuery UI Datepicker: "MMMM, yyyy"
+			}
+		}
+	}
+};
+
 $.jgrid = $.jgrid || {};
 $.extend(true,$.jgrid,{
 	version : "4.7.0-post",
-	cmTemplate: {
+	cmTemplate : {
         integer: {
             formatter: "integer", align: "right", sorttype: "integer",
 			searchoptions: { sopt: ["eq", "ne", "lt", "le", "gt", "ge"] }
@@ -34,9 +189,9 @@ $.extend(true,$.jgrid,{
 		}
     },
 	formatter : { // set common formatter settings independent from the language and locale
-		date : {
-			parseRe : /[#%\\\/:_;.,\t\s-]/,
-			masks : {
+		date: {
+			parseRe: /[#%\\\/:_;.,\t\s-]/,
+			masks: {
 				ISO8601Long:"Y-m-d H:i:s",
 				ISO8601Short:"Y-m-d",
 				SortableDateTime: "Y-m-d\\TH:i:s",
@@ -48,8 +203,9 @@ $.extend(true,$.jgrid,{
 		baseLinkUrl: '',
 		showAction: '',
 		target: '',
-		checkbox : {disabled:true},
-		idName : 'id'
+		checkbox: {disabled:true},
+		idName: 'id',
+		unused: '' // used only to detect whether the changes are overwritten because of wrong usage
 	},
 	htmlDecode : function(value){
 		if(value && (value==='&nbsp;' || value==='&#160;' || (value.length===1 && value.charCodeAt(0)===160))) { return "";}
@@ -828,10 +984,21 @@ $.fn.jqGrid = function( pin ) {
 	}
 	return this.each( function() {
 		if(this.grid) {return;}
-		var localData, jgrid = $.jgrid;
+		var localData, jgrid = $.jgrid, fatalErrorFunction = jgrid.defaults != null && $.isFunction(jgrid.defaults.fatalError) ? jgrid.defaults.fatalError : alert;
 		if (pin != null && pin.data !== undefined) {
 			localData = pin.data;
 			pin.data = [];
+		}
+		if (jgrid.defaults == null) {
+			//fatalErrorFunction("FATAL ERROR!!!\n\nthe locale file \"grid.locale-en.js\" or other are not included. It should be included before jquery.jqGrid.min.js\n");
+			//return;
+			
+			// set English options only if no grid.locale-XX.js file are included.
+			$.extend(true, $.jgrid, englishLanguageDefaults);
+		}
+		if (jgrid.formatter == null || jgrid.formatter.unused == null) {
+			// detect old locale file grid.locale-XX.js are included (without DEEP extend).
+			fatalErrorFunction("CRITICAL ERROR!!!\n\n\nOne uses probably\n\n	$.extend($.jgrid.defaults, {...});\n\nto set default settings of jqGrid instead of the usage the DEEP version of jQuery.extend (with true as the first parameter):\n\n	$.extend(true, $.jgrid.defaults, {...});\n\nOne other possible reason:\n\nyou included some OLD version of language file (grid.locale-en.js for example) AFTER jquery.jqGrid.min.js. For example all language files of jqGrid 4.7.0 uses non-deep call of jQuery.extend.\n\n\nSome options of jqGrid could still work, but another one will be broken.");
 		}
 
 		var p = $.extend(true,{
@@ -840,13 +1007,16 @@ $.fn.jqGrid = function( pin ) {
 			page: 1,
 			rowNum: 20,
 			maxRowNum: 10000,
-			autoResizableWrapperClassName: "okCellWrapper",
-			sortIconSize: 12, // width in pixel of one sorting icon (visible part of icon)
-			autoResizableMinColSize: 10,
-			autoResizableMaxColSize: 300,
-			autoResizableCompact: false,
-			autoResizableAdjustGridWidth: true,
-			autoResizableFixWidthOnShrink: false,
+			autoresizeOnLoad: false,
+			autoResizing: {
+				wrapperClassName: "ui-jqgrid-cell-wrapper",
+				widthOfVisiblePartOfSortIcon: 12,
+				minColWidth: 33,
+				maxColWidth: 300,
+				adjustGridWidth: true, // shrinkToFit and widthOrg (no width option or width:"auto" during jqGrid creation will be detected) will be used additionally with adjustGridWidth
+				compact: false,
+				fixWidthOnShrink: false
+			},
 			doubleClickSensitivity: 250,
 			rowTotal : null,
 			records: 0,
@@ -947,8 +1117,7 @@ $.fn.jqGrid = function( pin ) {
 			ignoreCase : false,
 			cmTemplate : {},
 			idPrefix : "",
-			multiSort :  false,
-			minColWidth : 33
+			multiSort :  false
 		}, jgrid.defaults, pin || {});
 		if (localData !== undefined) {
 			p.data = localData;
@@ -1002,7 +1171,7 @@ $.fn.jqGrid = function( pin ) {
 						if(p.forceFit===true ){
 							hn = this.headers[this.resizing.idx+p.nv];
 							nWn = p.direction === "ltr" ? hn.width - diff : hn.width + diff;
-							if(nWn > p.minColWidth ) {
+							if(nWn > p.autoResizing.minColWidth ) {
 								h.newWidth = newWidth;
 								hn.newWidth = nWn;
 							}
@@ -1154,12 +1323,12 @@ $.fn.jqGrid = function( pin ) {
 			}
 		};
 		if(this.tagName.toUpperCase() !== 'TABLE' || this.id == null) {
-			alert("Element is not a table or has no id!");
+			fatalErrorFunction("Element is not a table or has no id!");
 			return;
 		}
 		if(document.documentMode !== undefined ) { // IE only
 			if(document.documentMode <= 5) {
-				alert("Grid can not be used in this ('quirks') mode!");
+				fatalErrorFunction("Grid can not be used in this ('quirks') mode!");
 				return;
 			}
 		}
@@ -1174,7 +1343,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 		}
 		if( this.p.colNames.length !== this.p.colModel.length ) {
-			alert(jgrid.errors.model);
+			fatalErrorFunction(jgrid.errors.model);
 			return;
 		}
 		var gv = $("<div class='ui-jqgrid-view' role='grid' aria-multiselectable='" + !!this.p.multiselect +"'></div>"),
@@ -1250,7 +1419,7 @@ $.fn.jqGrid = function( pin ) {
 			} else {
 				v = cellVal(cellval);
 			}
-			return cm.autoResizable && cm.formatter !== "actions" ? "<span class='" + ts.p.autoResizableWrapperClassName + "'>" + v + "</span>" : v;
+			return cm.autoResizable && cm.formatter !== "actions" ? "<span class='" + ts.p.autoResizing.wrapperClassName + "'>" + v + "</span>" : v;
 		},
 		addCell = function(rowId,cell,pos,irow, srvr, rdata) {
 			var v,prp;
@@ -1887,7 +2056,7 @@ $.fn.jqGrid = function( pin ) {
 						}
 						try {
 							tojLinq(group.groups[index]);
-						} catch (e) {alert(e);}
+						} catch (e) {fatalErrorFunction(e);}
 						s++;
 					}
 					if (gor) {
@@ -1919,7 +2088,7 @@ $.fn.jqGrid = function( pin ) {
 						if (ror) {
 							query.orEnd();
 						}
-					} catch (g) {alert(g);}
+					} catch (g) {fatalErrorFunction(g);}
 				}
 			}
 
@@ -2656,12 +2825,12 @@ $.fn.jqGrid = function( pin ) {
 					labelStyle = "text-align:left;";
 					break;
 				case "right":
-					labelStyle = "text-align:right;" + (cmi.sortable === false ? "" : "padding-right:" + p.sortIconSize  + "px;");
+					labelStyle = "text-align:right;" + (cmi.sortable === false ? "" : "padding-right:" + p.autoResizing.widthOfVisiblePartOfSortIcon  + "px;");
 					break;
 				case "likeData":
 					labelStyle = cmi.align === undefined || cmi.align === "left" ? 
 							"text-align:left;" :
-							(cmi.align === "right" ? "text-align:right;" + (cmi.sortable === false ? "" : "padding-right:" + p.sortIconSize  + "px;") : "");
+							(cmi.align === "right" ? "text-align:right;" + (cmi.sortable === false ? "" : "padding-right:" + p.autoResizing.widthOfVisiblePartOfSortIcon  + "px;") : "");
 					break;
 				default:
 					labelStyle = "";
@@ -2671,7 +2840,7 @@ $.fn.jqGrid = function( pin ) {
 				(labelStyle === "" ? "" : " style='" + labelStyle + "'") +
 				">"+
 				(cmi.autoResizable && cmi.formatter !== "actions" ?
-					"<span class='" + ts.p.autoResizableWrapperClassName + "'>" + ts.p.colNames[i] + "</span>":
+					"<span class='" + ts.p.autoResizing.wrapperClassName + "'>" + ts.p.colNames[i] + "</span>":
 					ts.p.colNames[i]);
 			if(!cmi.width)  { cmi.width = 150; }
 			else { cmi.width = parseInt(cmi.width,10); }
@@ -4266,27 +4435,26 @@ $.jgrid.extend({
 	autoResizeColumn: function (iCol) {
 		return this.each(function () {
 			var rows = this.rows, row, cell, iRow, $cell, $cellFirstChild, widthOrg,
+				p = this.p,
+				cm = p.colModel[iCol],
 				$th = $($(this.grid.hDiv).find(".ui-jqgrid-labels>.ui-th-column")[iCol]),
 				$thDiv = $th.find(">div"),
 				thPaddingLeft = parseFloat($th.css("padding-left") || 0),
 				thPaddingRight = parseFloat($th.css("padding-right") || 0),
 				$incosDiv = $thDiv.find("span.s-ico"),
-				$wrapper = $thDiv.find(">.okCellWrapper"), 
+				$wrapper = $thDiv.find(">." + p.autoResizing.wrapperClassName),
 				wrapperOuterWidth = $wrapper.outerWidth(),
 				wrapperCssWidth = parseFloat($wrapper.css("width") || 0),
 				widthOuter = 0,
 				colWidth = 0,
-				p = this.p,
-				cm = p.colModel[iCol],
-				//userAgent = navigator.userAgent,
-				//isSafari = userAgent.indexOf("Safari") >= 0 && userAgent.indexOf("Chrome") < 0 && userAgent.indexOf("OPR") < 0,
-				autoResizableWrapperClassName = p.autoResizableWrapperClassName;
+				wrapperClassName = p.autoResizing.wrapperClassName;
 
 			if (cm == null || !cm.autoResizable || $wrapper.length === 0 || cm.hidden || cm.fixed) {
 				return; // do nothing
 			}
-			if (!p.autoResizableCompact || $incosDiv.is(":visible") || $incosDiv.css("display") !== "none") {  //|| p.viewsortcols[0]
-				colWidth = p.sortIconSize; // $incosDiv.width() can be grater as the visible part of icon
+			if (!(cm.autoResizing != null && cm.autoResizingOption.compact !== undefined ? cm.autoResizingOption.compact: p.autoResizing.compact)
+					|| $incosDiv.is(":visible") || $incosDiv.css("display") !== "none") {  //|| p.viewsortcols[0]
+				colWidth = p.autoResizing.widthOfVisiblePartOfSortIcon; // $incosDiv.width() can be grater as the visible part of icon
 				if ($thDiv.css("text-align") === "center") {
 					colWidth += colWidth; // *2
 				}
@@ -4295,7 +4463,6 @@ $.jgrid.extend({
 				}
 			}
 			colWidth += wrapperOuterWidth + thPaddingLeft +
-					//($.jgrid.cell_width || isSafari ? parseFloat($th.css("padding-left")) + parseFloat($th.css("padding-right")) + (isSafari ? 2 : 0) : 0) +
 					(wrapperCssWidth === wrapperOuterWidth ? thPaddingLeft + thPaddingRight : 0) +
 					parseFloat($thDiv.css("margin-left") || 0) + parseFloat($thDiv.css("margin-right") || 0);
 			for (iRow = 0, rows = this.rows; iRow < rows.length; iRow++) {
@@ -4304,7 +4471,7 @@ $.jgrid.extend({
 				$cell = $(row.cells[iCol]);
 				if ($(row).hasClass("jqgrow") && cell != null) {
 					$cellFirstChild = $(cell.firstChild);
-					if ($cellFirstChild.hasClass(autoResizableWrapperClassName)) {
+					if ($cellFirstChild.hasClass(wrapperClassName)) {
 						colWidth = Math.max(colWidth, $cellFirstChild.outerWidth() + widthOuter);
 					}
 				} else if ($(row).hasClass("jqgfirstrow")) {
@@ -4313,9 +4480,9 @@ $.jgrid.extend({
 							parseFloat($cell.css("border-left") || 0);
 				}
 			}
-			colWidth = Math.max(colWidth, cm.autoResizableMinColSize || p.autoResizableMinColSize);
-			$(this).jqGrid("setColWidth", iCol, Math.min(colWidth, cm.autoResizableMaxColSize || p.autoResizableMaxColSize), p.autoResizableAdjustGridWidth && !p.autoResizableFixWidthOnShrink);
-			if (p.autoResizableFixWidthOnShrink && p.shrinkToFit) {
+			colWidth = Math.max(colWidth, cm.autoResizing != null && cm.autoResizingOption.minColWidth !== undefined ? cm.autoResizingOption.minColWidth : p.autoResizing.minColWidth);
+			$(this).jqGrid("setColWidth", iCol, Math.min(colWidth, cm.autoResizing != null && cm.autoResizingOption.maxColWidth !== undefined ? cm.autoResizingOption.maxColWidth : p.autoResizing.maxColWidth), p.autoResizing.adjustGridWidth && !p.autoResizing.fixWidthOnShrink);
+			if (p.autoResizing.fixWidthOnShrink && p.shrinkToFit) {
 				cm.fixed = true;
 				widthOrg = cm.widthOrg; // save the value in temporary variable
 				cm.widthOrg = cm.width; // to force not changing of the column width
@@ -4329,26 +4496,27 @@ $.jgrid.extend({
 		return this.each(function () {
 			var $self = $(this), p = this.p, colModel = p.colModel, nCol = colModel.length, iCol, cm,
 				shrinkToFit = p.shrinkToFit, // save the original shrinkToFit value in the grid
-				autoResizableAdjustGridWidth = p.autoResizableAdjustGridWidth,
-				autoResizableFixWidthOnShrink = p.autoResizableFixWidthOnShrink,
+				adjustGridWidth = p.autoResizing.adjustGridWidth,
+				fixWidthOnShrink = p.autoResizing.fixWidthOnShrink,
 				width = parseInt(p.widthOrg,10),
 				autoResizeColumn = $.jgrid.getMethod("autoResizeColumn"); // cache autoResizeColumn reference
 
 			p.shrinkToFit = false; // make no shrinking during resizing of any columns 
-			p.autoResizableAdjustGridWidth = true;
-			p.autoResizableFixWidthOnShrink = false;
+			p.autoResizing.adjustGridWidth = true;
+			p.autoResizing.fixWidthOnShrink = false;
 			for (iCol = 0; iCol < nCol; iCol++) {
 				cm = colModel[iCol];
 				if (cm.autoResizable && cm.formatter !== "actions") {
 					autoResizeColumn.call($self, iCol);
 				}
 			}
-			p.autoResizableAdjustGridWidth = true;
-			p.autoResizableFixWidthOnShrink = false;
 			if (!isNaN(width)) {
 				$(this).jqGrid("setGridWidth", width, false);
 			}
-			p.shrinkToFit = shrinkToFit; // restore the original shrinkToFit value
+			// restore the original shrinkToFit value
+			p.autoResizing.fixWidthOnShrink = fixWidthOnShrink;
+			p.autoResizing.adjustGridWidth = adjustGridWidth;
+			p.shrinkToFit = shrinkToFit;
 		});
 	}
 });
