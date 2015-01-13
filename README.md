@@ -36,7 +36,7 @@ The most the changes corresponds the tendency of web development last years. Loc
 * one can specify the alignment of the column headers. See below the description of `labelAlign` and `labelClasses` properties of `colModel`.
 * CSS of jqGrid is changed to simplify integration of jqGrid in projects which uses frameworks other as jQuery UI, for example Bootstrap.
 * `jsonmap` property of `colModel` can be used now with `datatype: "local"`. The only exception is the existence of non-empty `dataTypeOrg` jqGrid option. The option will be set *automatically* after loading the data from the server and changing `datatype: "json"` and `datatype: "xml"` to `datatype: "local"`. The option allows to use `jsonmap` property for the data loading from the server and skip the property in later processing of the local data.
-* `.trigger("reloadGrid")` will reload the data from the server *automatically* in case of the usage remote `datatype` (`"json"` and `"xml"`) together with `loadonce: true`. No additional call of `setGridParam` to reset `datatype` to original value are more required (like described in [the old answer](http://stackoverflow.com/a/5398136/315935)).
+* `.trigger("reloadGrid")` has now additional option `fromServer: true` which allows to reload the data from the server in case of `loadonce: true` scenario.
 * including of English localization file `grid.locale-en.js` is not more required for successful working of jqGrid. 
 
 ### The following *new jqGrid options* are implemented (comparing with jqGrid 4.7)
