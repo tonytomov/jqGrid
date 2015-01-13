@@ -939,28 +939,25 @@ $.extend(true,$.jgrid,{
 		};
 	return new QueryObject(source,null);
 	},
-	getGridComponent: function (componentName, iCol) {
-		// ??? probably better to return DOM instead of jQuery wrapper?
-		if (this == null && this.grid == null) {
-			return;
+	feedback: function (callbackName) {
+		var self = this;
+		if (self == null || self.p == null || typeof callbackName !== "string" || callbackName.length < 2) {
+			return null; // incorrect call
 		}
-		// this - the main table of the grid (ts)
-		switch (componentName) {
-			case "bTable": // body table
-				return $(this.grid.bDiv).find(">div>.ui-jqgrid-btable");
-			case "hTable": // header table
-				return $(this.grid.hDiv).find(">div>.ui-jqgrid-htable");
-			case "fTable": // footer/summary table
-				return $(this.grid.sDiv).find(">div>.ui-jqgrid-ftable");
-			case "bDiv":
-				return $(this.bDiv);
-			case "hDiv":
-				return $(this.hDiv);
-			case "sDiv":
-				return $(this.sDiv);
-			case "colHeader":
-				return $(this.gridheaders[iCol].el);
+		var eventName = "jqGrid" + callbackName.charAt(0).toUpperCase() + callbackName.substring(1),
+			args = $.makeArray(arguments).slice(1),
+			callback = self.p[callbackName];
+
+		var result = $(self).triggerHandler(eventName, args);
+		result = (result === false || result === "stop") ? false : true;
+
+		if ($.isFunction(callback)) {
+			var callbackResult = callback.apply(self, args);
+			if (callbackResult === false || callbackResult === 'stop') {
+				result = false;
+			 }
 		}
+		return result;
 	},
 	getMethod: function (name) {
         return this.getAccessor($.fn.jqGrid, name);
@@ -1133,14 +1130,13 @@ $.fn.jqGrid = function( pin ) {
 				} else {
 					$(this).data("pageX", e.pageX);
 				}
-				//if (console) { console.log("click in column resizer: pageX is modified from " + oldPageX + " to " + $(this).data("pageX")); }
 			},
 			// cache some $.jgrid methods and properties to reduce the code of minimized version of jqGrid
-			getGridComponent = jgrid.getGridComponent,
 			jqID = jgrid.jqID,
 			getAccessor = jgrid.getAccessor,
 			stripPref = jgrid.stripPref,
 			getCellIndex = jgrid.getCellIndex,
+			feedback = jgrid.feedback,
 			grid={
 			headers:[],
 			cols:[],
@@ -1208,8 +1204,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 				if (!skipCallbacks) {
-					$(ts).triggerHandler("jqGridResizeStop", [nw, idx]);
-					if($.isFunction(p.resizeStop)) { p.resizeStop.call(ts,nw,idx); }
+					feedback.call(ts, "resizeStop", nw, idx);
 				}
 			},
 			dragEnd: function() {
@@ -2916,29 +2911,16 @@ $.fn.jqGrid = function( pin ) {
 		$("#rs_m"+jqID(p.id)).click(myResizerClickHandler).dblclick(function (e) {
 			var iCol = $(this).data("idx"), pageX = $(this).data("pageX"), arPageX, pageX1, pageX2, cm = p.colModel[iCol], doAutoresize, doAutoresizeCallback;
 
-			//if (console) { console.log("dblclick in column resizer: pageX=" + pageX + ", idx=" + iCol + ", e.pageX=" + e.pageX + ", cm.name=" + (cm != null ? cm.name : "null")); }
 			if (pageX == null) {
-				//if (console) { console.log("No pageX are saved in data: we skip processing of the dblclick"); }
 				return false;
 			}
 			arPageX = String(pageX).split(";");
 			pageX1 = parseFloat(arPageX[0]);
 			pageX2 = parseFloat(arPageX[1]);
 			if (arPageX.length === 2 && (Math.abs(pageX1-pageX2) > 5 || Math.abs(e.pageX-pageX1) > 5 || Math.abs(e.pageX-pageX2) > 5)) {
-				//if (console) { console.log("we skip processing of the dblclick"); }
 				return false;
 			}
-			//if (console) { console.log("we do resizing with e.pageX=" + e.pageX + " pageX1=" + pageX1 + " and pageX2=" + pageX2); }
-			
-			doAutoresize = $(ts).triggerHandler("jqGridResizeDblClick", [iCol, cm]);
-			doAutoresize = (doAutoresize === false || doAutoresize === "stop") ? false : true;
-			if ($.isFunction(p.resizeDblClick)) {
-				doAutoresizeCallback = p.resizeDblClick.call(ts, iCol, cm);
-				if (doAutoresizeCallback === false || doAutoresizeCallback === "stop") {
-					doAutoresize = false;
-				}
-			}
-
+			doAutoresize = feedback.call(ts, "resizeDblClick", iCol, cm, e);
 			if (doAutoresize && cm != null && cm.autoResizable) {
 				$(ts).jqGrid("autoResizeColumn", iCol);
 			}
@@ -3227,7 +3209,8 @@ $.fn.jqGrid = function( pin ) {
 			.addClass("ui-jqgrid-bdiv")
 			.css({ height: ts.p.height+(isNaN(ts.p.height)?"":"px"), width: (grid.width)+"px"})
 			.scroll(grid.scrollGrid);
-		getGridComponent.call(ts,"bTable").css({width:ts.p.tblwidth+"px"});
+		//getGridComponent.call(ts,"bTable").css({width:ts.p.tblwidth+"px"});
+		$(ts).jqGrid("getGridComponent", "bTable").css({width:ts.p.tblwidth+"px"});
 		if( !$.support.tbody ) { //IE
 			if( $("tbody",this).length === 2 ) { $("tbody:gt(0)",this).remove();}
 		}
@@ -3345,19 +3328,15 @@ $.fn.jqGrid = function( pin ) {
 				cm = p.colModel[iCol],
 				pageX = $(this).data("pageX") || $resizer.data("pageX");
 
-			//if (console) { console.log("GBOX: dblclick in column resizer: pageX=" + pageX + ", idx=" + iCol + ", e.pageX=" + e.pageX + ", cm.name=" + (cm != null ? cm.name : "null")); }
 			if (pageX == null) {
-				//if (console) { console.log("GBOX: No pageX are saved in data: we skip processing of the dblclick"); }
 				return false;
 			}
 			arPageX = String(pageX).split(";");
 			pageX1 = parseFloat(arPageX[0]);
 			pageX2 = parseFloat(arPageX[1]);
 			if (arPageX.length === 2 && (Math.abs(pageX1-pageX2) > 5 || Math.abs(e.pageX-pageX1) > 5 || Math.abs(e.pageX-pageX2) > 5)) {
-				//if (console) { console.log("GBOX: we skip processing of the dblclick"); }
 				return false;
 			}
-			//if (console) { console.log("GBOX: we do resizing with e.pageX=" + e.pageX + " pageX1=" + pageX1 + " and pageX2=" + pageX2); }
 				
 			doAutoresize = $(ts).triggerHandler("jqGridResizeDblClick", [iCol, cm]);
 			doAutoresize = (doAutoresize === false || doAutoresize === "stop") ? false : true;
@@ -4404,6 +4383,30 @@ $.jgrid.extend({
 					break;
 			}
 		});
+	},
+	getGridComponent: function (componentName, iCol) {
+		var self = this[0];
+		// ??? probably better to return DOM instead of jQuery wrapper?
+		if (self == null && self.grid == null) {
+			return $(); // return empty jQuery object
+		}
+		// this - the main table of the grid (ts)
+		switch (componentName) {
+			case "bTable": // body table
+				return $(self.grid.bDiv).find(">div>.ui-jqgrid-btable");
+			case "hTable": // header table
+				return $(self.grid.hDiv).find(">div>.ui-jqgrid-htable");
+			case "fTable": // footer/summary table
+				return $(self.grid.sDiv).find(">div>.ui-jqgrid-ftable");
+			case "bDiv":
+				return $(self.bDiv);
+			case "hDiv":
+				return $(self.hDiv);
+			case "sDiv":
+				return $(self.sDiv);
+			case "colHeader":
+				return $(self.gridheaders[iCol].el);
+		}
 	},
 	setColWidth: function (iCol, newWidth, adjustGridWidth) {
 		return this.each(function () {
