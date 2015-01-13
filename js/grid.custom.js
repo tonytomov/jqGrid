@@ -13,6 +13,80 @@
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/
 "use strict";
+$.jgrid = $.jgrid || {};
+$.extend($.jgrid,{
+	clearBeforeUnload : function( jqGridId ) {
+		var $t = $("#"+$.jgrid.jqID( jqGridId ))[0], grid;
+		if(!$t.grid) { return;}
+		grid = $t.grid;
+		if ($.isFunction(grid.emptyRows)) {
+			grid.emptyRows.call($t, true, true); // this work quick enough and reduce the size of memory leaks if we have someone
+		}
+
+		$(document).unbind("mouseup.jqGrid" + $t.p.id ); 
+		$(grid.hDiv).unbind("mousemove"); // TODO add namespace
+		$($t).unbind();
+		var i, l = grid.headers.length,
+		removevents = ['formatCol','sortData','updatepager','refreshIndex','setHeadCheckBox','constructTr','formatter','addXmlData','addJSONData','nav','grid','p'];
+		for (i = 0; i < l; i++) {
+			grid.headers[i].el = null;
+		}
+
+		for( var i in grid) {
+			if( grid.hasOwnProperty(i)) {
+				grid[i] = null;
+			}
+		}
+		l = removevents.length;
+		for(i = 0; i < l; i++) {
+			if(this.hasOwnProperty(removevents[i])) {
+				$t[removevents[i]] = null;
+				delete($t[removevents[i]]);
+			}
+		}
+	},
+	gridUnload : function ( jqGridId ) {
+		if(!jqGridId) { return; }
+		jqGridId = $.trim(jqGridId);
+		if(jqGridId.indexOf("#") === 0) {
+			jqGridId = jqGridId.substring(1);
+		}
+		
+		var $t = $("#"+ $.jgrid.jqID(jqGridId))[0];
+		if ( !$t.grid ) {return;}
+		var defgrid = {id: $($t).attr('id'),cl: $($t).attr('class')};
+		if ($t.p.pager) {
+			$($t.p.pager).unbind().empty().removeClass("ui-state-default ui-jqgrid-pager ui-corner-bottom");
+		}
+		var newtable = document.createElement('table');
+		newtable.className = defgrid.cl;
+		var gid = $.jgrid.jqID($t.id);
+		$(newtable).removeClass("ui-jqgrid-btable").insertBefore("#gbox_"+gid);
+		if( $($t.p.pager).parents("#gbox_"+gid).length === 1 ) {
+			$($t.p.pager).insertBefore("#gbox_"+gid);
+		}
+		$.jgrid.clearBeforeUnload( jqGridId );
+		$("#gbox_"+gid).remove();
+		$(newtable).attr({id:defgrid.id});
+	},
+	gridDestroy : function ( jqGridId ) {
+		if(!jqGridId) { return; }
+		jqGridId = $.trim(jqGridId);
+		if(jqGridId.indexOf("#") === 0) {
+			jqGridId = jqGridId.substring(1);
+		}
+		var $t = $("#"+ $.jgrid.jqID(jqGridId))[0];
+		if ( !$t.grid ) {return;}
+		if ( $t.p.pager ) { // if not part of grid
+			$($t.p.pager).remove();
+		}
+		try {
+			$jgrid.clearBeforeUnload( jqGridId );
+			$("#gbox_"+$.jgrid.jqID(jqGridId)).remove();
+			$("#alertmod_"+$.jgrid.jqID(jqGridId)).remove();
+		} catch (_) {}
+	}
+});
 $.jgrid.extend({
 	getColProp : function(colname){
 		var ret ={}, $t = this[0];
@@ -68,81 +142,13 @@ $.jgrid.extend({
 		});
 	},
 	clearBeforeUnload : function () {
-		return this.each(function(){
-			var grid = this.grid;
-			if ($.isFunction(grid.emptyRows)) {
-				grid.emptyRows.call(this, true, true); // this work quick enough and reduce the size of memory leaks if we have someone
-			}
-
-			$(document).unbind("mouseup.jqGrid" + this.p.id ); 
-			$(grid.hDiv).unbind("mousemove"); // TODO add namespace
-			$(this).unbind();
-
-			grid.dragEnd = null;
-			grid.dragMove = null;
-			grid.dragStart = null;
-			grid.emptyRows = null;
-			grid.populate = null;
-			grid.populateVisible = null;
-			grid.scrollGrid = null;
-			grid.selectionPreserver = null;
-
-			grid.bDiv = null;
-			grid.cDiv = null;
-			grid.hDiv = null;
-			grid.cols = null;
-			var i, l = grid.headers.length;
-			for (i = 0; i < l; i++) {
-				grid.headers[i].el = null;
-			}
-
-			this.formatCol = null;
-			this.sortData = null;
-			this.updatepager = null;
-			this.refreshIndex = null;
-			this.setHeadCheckBox = null;
-			this.constructTr = null;
-			this.formatter = null;
-			this.addXmlData = null;
-			this.addJSONData = null;
-			this.grid = null;
-		});
+		return this.each(function(){});
 	},
 	GridDestroy : function () {
-		return this.each(function(){
-			if ( this.grid ) { 
-				if ( this.p.pager ) { // if not part of grid
-					$(this.p.pager).remove();
-				}
-				try {
-					$(this).jqGrid('clearBeforeUnload');
-					$("#gbox_"+$.jgrid.jqID(this.id)).remove();
-					$("#alertmod_"+$.jgrid.jqID(this.id)).remove();
-				} catch (_) {}
-			}
-		});
+		return this.each(function(){});
 	},
 	GridUnload : function(){
-		return this.each(function(){
-			if ( !this.grid ) {return;}
-			var defgrid = {id: $(this).attr('id'),cl: $(this).attr('class')};
-			if (this.p.pager) {
-				$(this.p.pager).empty().removeClass("ui-state-default ui-jqgrid-pager ui-corner-bottom");
-			}
-			var newtable = document.createElement('table');
-			$(newtable).attr({id:defgrid.id});
-			newtable.className = defgrid.cl;
-			var gid = $.jgrid.jqID(this.id);
-			$(newtable).removeClass("ui-jqgrid-btable");
-			if( $(this.p.pager).parents("#gbox_"+gid).length === 1 ) {
-				$(newtable).insertBefore("#gbox_"+gid).show();
-				$(this.p.pager).insertBefore("#gbox_"+gid);
-			} else {
-				$(newtable).insertBefore("#gbox_"+gid).show();
-			}
-			$(this).jqGrid('clearBeforeUnload');
-			$("#gbox_"+gid).remove();
-		});
+		return this.each(function(){});
 	},
 	setGridState : function(state) {
 		return this.each(function(){
