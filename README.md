@@ -11,8 +11,8 @@ Below you can find short description of new features already implemented in the 
 
 ### Compatibility with jqGrid 4.7.0
 
-* the default values of some option of jqGrid are changed (see detailed description below).
-* some changes in "local files" from `i18n` folder are made. One should used the files included in the fork and not combine old "local files" of jqGrid 4.7.0 with new `jquery.jqGrid.min.js` or `jquery.jqGrid.src.js`.
+* the default values of some option of jqGrid are changed (see detailed description below). The most important are the changes of default values of `datatype`, `height`, `gridview` and `autoencode` options. **If you need to use other values of the options as new defaults then you should include the option explicitly as parameters.**
+* some changes in "localization files" from `i18n` folder are made. One should used the files included in the fork and not combine old "local files" of jqGrid 4.7.0 with new `jquery.jqGrid.min.js` or `jquery.jqGrid.src.js`.
 
 ### The following **new features** are implemented currently
 
@@ -81,9 +81,7 @@ The most the changes corresponds the tendency of web development last years. Loc
 ### Other changes in jqGrid and remarks
 
 * files from `i18n` are changes to UTF-8 format. The texts should be always used as Unicode characters if the corresponding characters are visible. Compare for example [grid.locale-ja.js](https://github.com/OlegKi/jqGrid/blob/master/js/i18n/grid.locale-ja.js) with the corresponding file included in jqGrid 4.7.0 (see [here](https://github.com/tonytomov/jqGrid/blob/v4.7.0/js/i18n/grid.locale-ja.js)).
-* jqGrid display the alert message now if some additional fatal error will be detected. For example if one don't included  
-* some common properties which have no relation to the language are moved to
-* we *recommend* to use `getGridParam` *without* additional parameter to get the reference to object with all jqGrid options: `var p = $("#grid").jqGrid("gerGridParam");` for example. One can use the `p.rowNum` to access `rowNum` option. The usage of `$("#grid").jqGrid("gerGridParam", "rowNum")` will be supported too, but the usage of `$("#grid")[0].p.rowNum` could be not work in some of the future version, because the place of the option could be changed in the future.
+* some common properties which have no relation to the language are moved from the localization files grid.locale-*.js to grid.base.js module.
 
 ### Some demos which demonstrates new features
 
