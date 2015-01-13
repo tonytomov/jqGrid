@@ -12152,9 +12152,10 @@ $.jgrid.extend({
                 if (!this.grid) { return; }
                 var url;
                 if (o.exptype === "remote") {
-                    var pdata = $.isFunction(o.data) ? o.data.call(this, this.p.postData, true) : $.extend(o.data, this.p.postData);
-                    pdata[o.oper] = o.tag;
-                    var params = jQuery.param(pdata);
+                    var pdata = $.isFunction(o.data) ? o.data.call(this, this.p.postData, true) : $.extend(o.data, this.p.postData), 
+                    	tdata = {};
+                    tdata[o.oper] = o.tag;
+                    var params = jQuery.param($.extend(tdata, pdata));
                     if (o.url.indexOf("?") !== -1) { url = o.url + "&" + params; }
                     else { url = o.url + "?" + params; }
                     window.location = url;
