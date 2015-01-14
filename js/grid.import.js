@@ -1,7 +1,123 @@
 /*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery, xmlJsonClass */
+/*global jQuery, xmlJsonClass, localStorage */
 (function($){
 "use strict";
+$.jgrid = $.jgrid || {};
+$.extend($.jgrid,{
+	saveState : function ( jqGridId, o ) {
+		o = $.extend({
+			useLocalStorage : true,
+			beforeSetItem : null,
+			compression: false,
+			compressionModule :  LZString, // object by example gzip, LZString
+			compressionMethod : 'compressToUTF16' // string by example zip, compressToUTF16
+		}, o || {});
+		if(!jqGridId) { return; }
+		var gridstate = "", data = "", ret, $t = $("#"+jqGridId)[0];
+		// to use navigator set storeNavOptions to true in grid options
+		if(!$t.grid) { return;}
+		gridstate  =  $($t).jqGrid('jqGridExport', { exptype : "jsonstring", ident:"", root:"" });
+		$($t.grid.bDiv).find(".ui-jqgrid-btable tr:gt(0)").each(function(i,d){
+			data += this.outerHTML;
+		});
+		if($.isFunction(o.beforeSetItem)) {
+			ret = o.beforeSetItem.call(thid, gridstate);
+			if(ret != null) {
+				gridstate = ret;
+			}
+		}
+		if(o.compression) {
+			if(o.compressionModule) {
+				try { 
+					ret = o.compressionModule[o.compressionMethod](gridstate);
+					if(ret != null) {
+						gridstate = ret;
+						data = o.compressionModule[o.compressionMethod](data);
+					}
+				} catch (e) {
+					// can not execute a compression.
+				}
+			}
+		}
+		if(o.useLocalStorage && $.jgrid.isLocalStorage()) {
+			try {
+				localStorage.setItem("jqGrid"+$t.p.id, gridstate);
+			} catch (e) {
+				if(e.code === 22) { // chrome is 21
+					// just for now. we should make some additionla changes and eventually clear some local items
+					alert("Local storage limit is over!");
+				}
+			}
+			localStorage.setItem("jqGrid"+$t.p.id+"_data", data);
+		}
+		return gridstate;
+	},
+	loadState : function (jqGridId, gridstring, o) {
+		o = $.extend({
+			useLocalStorage : true,
+			clearAfterLoad: false,
+			beforeSetGrid : null,
+			decompression: true,
+			decompressionModule :  LZString, // object by example gzip, LZString
+			decompressionMethod : 'decompressFromUTF16' // string by example unzip, decompressFromUTF16
+		}, o || {});
+		if(!jqGridId) { return; }
+		var ret, tmp, $t = $("#"+jqGridId)[0], data;
+		if($t.grid) { 
+			$.jgrid.gridUnload( jqGridId ); 
+		}
+		if(o.useLocalStorage) {
+			try {
+				gridstring = localStorage.getItem("jqGrid"+$t.id);
+				data = localStorage.getItem("jqGrid"+$t.id+"_data");
+			} catch (e) {
+				
+			}
+		}
+		if(!gridstring) { return; }
+		if(o.decompression) {
+			if(o.decompressionModule) {
+			try {
+					ret = o.decompressionModule[o.decompressionMethod]( gridstring );
+					if(ret != null ) {
+						gridstring = ret;
+						data = o.decompressionModule[o.decompressionMethod]( data );
+					}
+				} catch (e) {
+					// decompression can not be done
+				}
+			}
+		}
+		ret = $.jgrid.parse( gridstring );
+		if( ret && $.type(ret) === 'object') {
+			if($.isFunction(o.beforeSetGrid)) {
+				tmp = o.beforeSetGrid( ret );
+				if(tmp && $.type(tmp) === 'object') {
+					ret = tmp;
+				}
+			}
+			// some preparings
+			var retfunc = function( param ) { var p; p = param; return p;},
+			prm = {
+				"reccount" : ret.reccount,
+				"records" : ret.records,
+				"lastpage" : ret.lastpage,
+				"shrinkToFit" : retfunc( ret.shrinkToFit),
+				"data": retfunc(ret.data),
+				"datatype" : retfunc(ret.datatype)
+			};
+			ret.shrinkToFit = false;
+			ret.data = [];
+			ret.datatype = 'local';
+			var grid = $("#"+jqGridId).jqGrid( ret );
+			$("#"+jqGridId).append( data );
+			grid.jqGrid( 'setGridParam', prm);
+			grid[0].updatepager(true, true);
+		} else {
+			alert("can not convert to object");
+		}
+	}
+});
 	$.jgrid.extend({
 	   jqGridImport : function(o) {
 			o = $.extend({
@@ -172,7 +288,8 @@
 						ret = "<"+o.root+">"+xmlJsonClass.json2xml(gprm,o.ident)+"</"+o.root+">";
 						break;
 					case 'jsonstring' :
-						ret = "{"+ xmlJsonClass.toJson(gprm,o.root,o.ident,false)+"}";
+						ret =  xmlJsonClass.toJson(gprm,o.root,o.ident,false);
+						if(o.root) { ret = "{"+ret+"}"; }
 						break;
 				}
 			});
@@ -198,30 +315,6 @@
 					window.location = url;
 				}
 			});
-		},
-		saveState : function ( o ) {
-			o = $.extend({
-				useLocalStorage : false,
-				beforeSetItem : null
-			}, o || {});
-			var gridstate = "", ret;
-			// to use navigator set storeNavOptions to true in grid options
-			this.each(function(){
-				if(!this.grid) { return;}
-				gridstate  =  $(this).jqGrid('jqGridExport', { exptype : "jsonstring", ident:"" });
-			});
-			if($.isFunction(o.beforeSetItem)) {
-				ret = o.beforeSetItem.call(thid, gridstate);
-				if(ret != null) {
-					gridstate = ret;
-				}
-			}
-			if(o.useLocalStorage && $.jgrid.isLocalStorage()) {
-				localStorage.setItem("jqGrid"+this.id, gridstate);
-			}
-			return gridstate;
-		},
-		loadState : function () {
 		}
     });
 })(jQuery);
