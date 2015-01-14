@@ -1,4 +1,5 @@
 /*jshint eqeqeq:false */
+/*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
 /*global jQuery */
 (function($){
 /*
@@ -52,7 +53,7 @@ $.extend($.jgrid,{
 			$(selector).attr("aria-hidden","true").jqmHide();
 		} else {
 			if(o.gb !== '') {
-				try {$(".jqgrid-overlay:first",o.gb).hide();} catch (e){}
+				try {$(".jqgrid-overlay:first",o.gb).hide();} catch (ignore){}
 			}
 			$(selector).hide().attr("aria-hidden","true");
 		}
@@ -67,7 +68,8 @@ $.extend($.jgrid,{
 			do {
 				curleft += obj.offsetLeft;
 				curtop += obj.offsetTop;
-			} while (obj = obj.offsetParent);
+			    obj = obj.offsetParent;
+			} while (obj);
 			//do not change obj == obj.offsetParent
 		}
 		return [curleft,curtop];
@@ -162,7 +164,7 @@ $.extend($.jgrid,{
 			} else {
 				try {
 					$(mw).draggable({handle: $("#"+$.jgrid.jqID(mh.id))});
-				} catch (e) {}
+				} catch (ignore) {}
 			}
 		}
 		if(p.resize) {
@@ -172,7 +174,7 @@ $.extend($.jgrid,{
 			} else {
 				try {
 					$(mw).resizable({handles: 'se, sw',alsoResize: scrollelmSelector});
-				} catch (r) {}
+				} catch (ignore) {}
 			}
 		}
 		if(p.closeOnEscape === true){
@@ -205,7 +207,7 @@ $.extend($.jgrid,{
 				$(selector).data("gbox",o.gbox);
 			}
 			$(selector).show().attr("aria-hidden","false");
-			try{$(':input:visible',selector)[0].focus();}catch(_){}
+			try{$(':input:visible',selector)[0].focus();}catch(ignore){}
 		}
 	},
 	info_dialog : function(caption, content,c_b, modalopt) {
@@ -251,7 +253,7 @@ $.extend($.jgrid,{
 				$.jgrid.hideModal("#info_dialog",{jqm:jm});
 			}
 			$("#info_dialog").remove();
-		} catch (e){}
+		} catch (ignore){}
 		$.jgrid.createModal({
 			themodal:'info_dialog',
 			modalhead:'info_head',
@@ -289,7 +291,7 @@ $.extend($.jgrid,{
 			jqm:jm
 		});
 		if($.isFunction(mopt.afterOpen) ) { mopt.afterOpen(); }
-		try{ $("#info_dialog").focus();} catch (m){}
+		try{ $("#info_dialog").focus();} catch (ignore){}
 	},
 	bindEv: function  (el, opt) {
 		var $t = this;
@@ -340,7 +342,7 @@ $.extend($.jgrid,{
 				elem = document.createElement("input");
 				elem.type = "checkbox";
 				if( !options.value ) {
-					var vl1 = (vl+"").toLowerCase();
+					var vl1 = String(vl).toLowerCase();
 					if(vl1.search(/(false|f|0|no|n|off|undefined)/i)<0 && vl1!=="") {
 						elem.checked=true;
 						elem.defaultChecked=true;
@@ -374,7 +376,7 @@ $.extend($.jgrid,{
 					var rowid = null, postData = options.postData || ajaxso.postData;
 					try {
 						rowid = options.rowId;
-					} catch(e) {}
+					} catch(ignore) {}
 
 					if ($t.p && $t.p.idPrefix) {
 						rowid = $.jgrid.stripPref($t.p.idPrefix, rowid);
@@ -386,31 +388,31 @@ $.extend($.jgrid,{
 						data: $.isFunction(postData) ? postData.call($t, rowid, vl, String(options.name)) : postData,
 						context: {elem:elem, options:options, vl:vl},
 						success: function(data){
-							var ovm = [], elem = this.elem, vl = this.vl,
-							options = $.extend({},this.options),
-							msl = options.multiple===true,
-							a = $.isFunction(options.buildSelect) ? options.buildSelect.call($t,data) : data;
+							var ovm1 = [], elem1 = this.elem, vl2 = this.vl,
+							options1 = $.extend({},this.options),
+							msl1 = options1.multiple===true,
+							a = $.isFunction(options1.buildSelect) ? options1.buildSelect.call($t,data) : data;
 							if(typeof a === 'string') {
 								a = $( $.trim( a ) ).html();
 							}
 							if(a) {
-								$(elem).append(a);
-								setAttributes(elem, options, postData ? ['postData'] : undefined );
-								if(options.size === undefined) { options.size =  msl ? 3 : 1;}
-								if(msl) {
-									ovm = vl.split(",");
-									ovm = $.map(ovm,function(n){return $.trim(n);});
+								$(elem1).append(a);
+								setAttributes(elem1, options1, postData ? ['postData'] : undefined );
+								if(options1.size === undefined) { options1.size =  msl1 ? 3 : 1;}
+								if(msl1) {
+									ovm1 = vl2.split(",");
+									ovm1 = $.map(ovm1,function(n){return $.trim(n);});
 								} else {
-									ovm[0] = $.trim(vl);
+									ovm1[0] = $.trim(vl2);
 								}
 								//$(elem).attr(options);
 								setTimeout(function(){
-									$("option",elem).each(function(i){
+									$("option",elem1).each(function(i){
 										//if(i===0) { this.selected = ""; }
 										// fix IE8/IE7 problem with selecting of the first item on multiple=true
-										if (i === 0 && elem.multiple) { this.selected = false; }
+										if (i === 0 && elem1.multiple) { this.selected = false; }
 										$(this).attr("role","option");
-										if($.inArray($.trim($(this).text()),ovm) > -1 || $.inArray($.trim($(this).val()),ovm) > -1 ) {
+										if($.inArray($.trim($(this).text()),ovm1) > -1 || $.inArray($.trim($(this).val()),ovm1) > -1 ) {
 											this.selected= "selected";
 										}
 									});
@@ -430,13 +432,14 @@ $.extend($.jgrid,{
 					if(typeof options.value === 'function') { options.value = options.value(); }
 					var so,sv, ov, 
 					sep = options.separator === undefined ? ":" : options.separator,
-					delim = options.delimiter === undefined ? ";" : options.delimiter;
+					delim = options.delimiter === undefined ? ";" : options.delimiter,
+                    mapFunc = function(n,ii){if(ii>0) { return n;} };
 					if(typeof options.value === 'string') {
 						so = options.value.split(delim);
 						for(i=0; i<so.length;i++){
 							sv = so[i].split(sep);
 							if(sv.length > 2 ) {
-								sv[1] = $.map(sv,function(n,ii){if(ii>0) { return n;} }).join(sep);
+							    sv[1] = $.map(sv, mapFunc).join(sep);
 							}
 							ov = document.createElement("option");
 							ov.setAttribute("role","option");
@@ -529,9 +532,9 @@ $.extend($.jgrid,{
 		format = format.split(sep);
 		date = date.split(sep);
 		if (date.length !== 3) { return false; }
-		var j=-1,yln, dln=-1, mln=-1, i;
+		var j=-1,yln, dln=-1, mln=-1, i, dv;
 		for(i=0;i<format.length;i++){
-			var dv =  isNaN(date[i]) ? 0 : parseInt(date[i],10);
+			dv = isNaN(date[i]) ? 0 : parseInt(date[i],10);
 			tsp[format[i]] = dv;
 			yln = format[i];
 			if(yln.indexOf("y") !== -1) { j=i; }
@@ -687,4 +690,4 @@ $.extend($.jgrid,{
 		return [true,"",""];
 	}
 });
-})(jQuery);
+}(jQuery));
