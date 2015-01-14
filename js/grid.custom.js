@@ -39,7 +39,7 @@ $.extend($.jgrid,{
 		}
 		l = removevents.length;
 		for(i = 0; i < l; i++) {
-			if(this.hasOwnProperty(removevents[i])) {
+			if($t.hasOwnProperty(removevents[i])) {
 				$t[removevents[i]] = null;
 				delete($t[removevents[i]]);
 			}
