@@ -63,7 +63,7 @@ $.jgrid.extend({
 				}
 				if ( typeof sort !== 'boolean' ) { sort =  true; }
 				if ( typeof reload !=='boolean' ) { reload = false; }
-				if ( sort ) { $t.sortData("jqgh_"+$t.p.id+"_" + colname, idx, reload, sor, sobj); }
+				if ( sort ) { $t.sortData.call($t, "jqgh_"+$t.p.id+"_" + colname, idx, reload, sor, sobj); }
 			}
 		});
 	},

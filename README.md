@@ -67,12 +67,13 @@ The most the changes corresponds the tendency of web development last years. Loc
 
 * setColWidth - allows to change the width of the column after the grid is created.
 * autoResizeColumn - has no parameters. It resize of all columns having `autoResizable: true` property
-* getGridComponent - allows to get different components of jqGrid like . The method will be extended later.
+* getGridComponent - allows to get different components of jqGrid like "bTable", "hTable", "fTable", "bDiv" and some other. The method will be extended later.
 
 ### The following *new callbacks and jQuery events* are implemented (comparing with jqGrid 4.7)
 
 * `fatalError` - new callback which can be used to change displaying of critical error with respect of another function as default JvaScript function alert. One can use the feature in unit tests for example.
 * `resizeDblClick` callback and `jqGridResizeDblClick` event will be called on the double-click on the column resizer. It's important to stress that the callbacks will be called even if no `autoResizable: true` property are defined in `colModel`. It allows to implement some custom action on double-click on the column resizer. Returning `false` or `"stop"` value from `resizeDblClick` callback or `jqGridResizeDblClick` event in case of `autoResizable: true` property set in the column will prevent resizing on the column by calling of `autoResizeColumn`.
+* the callback `onShowHideCol` and `onRemapColumns` are added. There correspond `jqGridShowHideCol` and `jqGridRemapColumns` event which already exist in jqGrid 4.7.
 
 ### The following **bugs** are fixed
 
