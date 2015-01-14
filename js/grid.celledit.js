@@ -299,49 +299,49 @@ $.jgrid.extend({
 	},
 	nextCell : function (iRow,iCol) {
 		return this.each(function (){
-			var $t = this, nCol=false, i;
-			if (!$t.grid || $t.p.cellEdit !== true) {return;}
+			var $t = this, $self = $($t), p = $t.p, nCol=false, i;
+			if (!$t.grid || p.cellEdit !== true) {return;}
 			// try to find next editable cell
-			for (i=iCol+1; i<$t.p.colModel.length; i++) {
-				if ( $t.p.colModel[i].editable ===true) {
+			for (i=iCol+1; i<p.colModel.length; i++) {
+				if ( p.colModel[i].editable ===true) {
 					nCol = i; break;
 				}
 			}
 			if(nCol !== false) {
-				$($t).jqGrid("editCell",iRow,nCol,true);
+				$self.jqGrid("editCell",iRow,nCol,true);
 			} else {
-				if ($t.p.savedRow.length >0) {
-					$($t).jqGrid("saveCell",iRow,iCol);
+				if (p.savedRow.length >0) {
+					$self.jqGrid("saveCell",iRow,iCol);
 				}
 			}
 		});
 	},
 	prevCell : function (iRow,iCol) {
 		return this.each(function (){
-			var $t = this, nCol=false, i;
-			if (!$t.grid || $t.p.cellEdit !== true) {return;}
+			var $t = this, $self = $($t), p = $t.p, nCol=false, i;
+			if (!$t.grid || p.cellEdit !== true) {return;}
 			// try to find next editable cell
 			for (i=iCol-1; i>=0; i--) {
-				if ( $t.p.colModel[i].editable ===true) {
+				if ( p.colModel[i].editable ===true) {
 					nCol = i; break;
 				}
 			}
 			if(nCol !== false) {
-				$($t).jqGrid("editCell",iRow,nCol,true);
+				$self.jqGrid("editCell",iRow,nCol,true);
 			} else {
-				if ($t.p.savedRow.length >0) {
-					$($t).jqGrid("saveCell",iRow,iCol);
+				if (p.savedRow.length >0) {
+					$self.jqGrid("saveCell",iRow,iCol);
 				}
 			}
 		});
 	},
 	GridNav : function() {
 		return this.each(function () {
-			var  $t = this;
-			if (!$t.grid || $t.p.cellEdit !== true ) {return;}
+			var  $t = this, $self = $($t), p = $t.p;
+			if (!$t.grid || p.cellEdit !== true ) {return;}
 			// trick to process keydown on non input elements
-			$t.p.knv = $t.p.id + "_kn";
-			var selection = $("<div style='position:fixed;top:0px;width:1px;height:1px;' tabindex='0'><div tabindex='-1' style='width:1px;height:1px;' id='"+$t.p.knv+"'></div></div>"),
+			p.knv = p.id + "_kn";
+			var selection = $("<div style='position:fixed;top:0px;width:1px;height:1px;' tabindex='0'><div tabindex='-1' style='width:1px;height:1px;' id='"+p.knv+"'></div></div>"),
 			i, kdir;
 			function scrollGrid(iR, iC, tp){
 				if (tp.substr(0,1)==='v') {
@@ -377,7 +377,7 @@ $.jgrid.extend({
 				if(act === 'lft') {
 					ind = iC+1;
 					for (j=iC;j>=0;j--){
-						if ($t.p.colModel[j].hidden !== true) {
+						if (p.colModel[j].hidden !== true) {
 							ind = j;
 							break;
 						}
@@ -385,8 +385,8 @@ $.jgrid.extend({
 				}
 				if(act === 'rgt') {
 					ind = iC-1;
-					for (j=iC; j<$t.p.colModel.length;j++){
-						if ($t.p.colModel[j].hidden !== true) {
+					for (j=iC; j<p.colModel.length;j++){
+						if (p.colModel[j].hidden !== true) {
 							ind = j;
 							break;
 						}						
@@ -396,44 +396,44 @@ $.jgrid.extend({
 			}
 
 			$(selection).insertBefore($t.grid.cDiv);
-			$("#"+$t.p.knv)
+			$("#"+p.knv)
 			.focus()
 			.keydown(function (e){
 				kdir = e.keyCode;
-				if($t.p.direction === "rtl") {
+				if(p.direction === "rtl") {
 					if(kdir===37) { kdir = 39;}
 					else if (kdir===39) { kdir = 37; }
 				}
 				switch (kdir) {
 					case 38:
-						if ($t.p.iRow-1 >0 ) {
-							scrollGrid($t.p.iRow-1,$t.p.iCol,'vu');
-							$($t).jqGrid("editCell",$t.p.iRow-1,$t.p.iCol,false);
+						if (p.iRow-1 >0 ) {
+							scrollGrid(p.iRow-1,p.iCol,'vu');
+							$self.jqGrid("editCell",p.iRow-1,p.iCol,false);
 						}
 					break;
 					case 40 :
-						if ($t.p.iRow+1 <=  $t.rows.length-1) {
-							scrollGrid($t.p.iRow+1,$t.p.iCol,'vd');
-							$($t).jqGrid("editCell",$t.p.iRow+1,$t.p.iCol,false);
+						if (p.iRow+1 <=  $t.rows.length-1) {
+							scrollGrid(p.iRow+1,p.iCol,'vd');
+							$self.jqGrid("editCell",p.iRow+1,p.iCol,false);
 						}
 					break;
 					case 37 :
-						if ($t.p.iCol -1 >=  0) {
-							i = findNextVisible($t.p.iCol-1,'lft');
-							scrollGrid($t.p.iRow, i,'h');
-							$($t).jqGrid("editCell",$t.p.iRow, i,false);
+						if (p.iCol -1 >=  0) {
+							i = findNextVisible(p.iCol-1,'lft');
+							scrollGrid(p.iRow, i,'h');
+							$self.jqGrid("editCell",p.iRow, i,false);
 						}
 					break;
 					case 39 :
-						if ($t.p.iCol +1 <=  $t.p.colModel.length-1) {
-							i = findNextVisible($t.p.iCol+1,'rgt');
-							scrollGrid($t.p.iRow,i,'h');
-							$($t).jqGrid("editCell",$t.p.iRow,i,false);
+						if (p.iCol +1 <=  p.colModel.length-1) {
+							i = findNextVisible(p.iCol+1,'rgt');
+							scrollGrid(p.iRow,i,'h');
+							$self.jqGrid("editCell",p.iRow,i,false);
 						}
 					break;
 					case 13:
-						if (parseInt($t.p.iCol,10)>=0 && parseInt($t.p.iRow,10)>=0) {
-							$($t).jqGrid("editCell",$t.p.iRow,$t.p.iCol,true);
+						if (parseInt(p.iCol,10)>=0 && parseInt(p.iRow,10)>=0) {
+							$self.jqGrid("editCell",p.iRow,p.iCol,true);
 						}
 					break;
 					default :
@@ -447,27 +447,27 @@ $.jgrid.extend({
 		var ret=[];
 		if (!mthd) {mthd='all';}
 		this.each(function(){
-			var $t= this,nm, htmlDecode = $.jgrid.htmlDecode;
-			if (!$t.grid || $t.p.cellEdit !== true ) {return;}
+			var $t = this, p = $t.p, htmlDecode = $.jgrid.htmlDecode;
+			if (!$t.grid || p.cellEdit !== true ) {return;}
 			$($t.rows).each(function(j){
 				var res = {};
 				if ($(this).hasClass("edited")) {
 					$('td',this).each( function(i) {
-						nm = $t.p.colModel[i].name;
+						var cm = p.colModel[i], nm = cm.name, $td = $(this);
 						if ( nm !== 'cb' && nm !== 'subgrid') {
 							if (mthd==='dirty') {
-								if ($(this).hasClass('dirty-cell')) {
+								if ($td.hasClass('dirty-cell')) {
 									try {
-										res[nm] = $.unformat.call($t,this,{rowId:$t.rows[j].id, colModel:$t.p.colModel[i]},i);
+										res[nm] = $.unformat.call($t,this,{rowId:$t.rows[j].id, colModel:cm},i);
 									} catch (e){
-										res[nm] = htmlDecode($(this).html());
+										res[nm] = htmlDecode($td.html());
 									}
 								}
 							} else {
 								try {
-									res[nm] = $.unformat.call($t,this,{rowId:$t.rows[j].id,colModel:$t.p.colModel[i]},i);
+									res[nm] = $.unformat.call($t,this,{rowId:$t.rows[j].id,colModel:cm},i);
 								} catch (e) {
-									res[nm] = htmlDecode($(this).html());
+									res[nm] = htmlDecode($td.html());
 								}
 							}
 						}

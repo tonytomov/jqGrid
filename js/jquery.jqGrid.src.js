@@ -3207,7 +3207,6 @@ $.fn.jqGrid = function( pin ) {
 			.addClass("ui-jqgrid-bdiv")
 			.css({ height: p.height+(isNaN(p.height)?"":"px"), width: (grid.width)+"px"})
 			.scroll(grid.scrollGrid);
-		//getGridComponent.call(ts,"bTable").css({width:p.tblwidth+"px"});
 		$(ts).jqGrid("getGridComponent", "bTable").css({width:p.tblwidth+"px"});
 		if( !$.support.tbody ) { //IE
 			if( $("tbody",this).length === 2 ) { $("tbody:gt(0)",this).remove();}
@@ -4812,49 +4811,49 @@ $.jgrid.extend({
 	},
 	nextCell : function (iRow,iCol) {
 		return this.each(function (){
-			var $t = this, nCol=false, i;
-			if (!$t.grid || $t.p.cellEdit !== true) {return;}
+			var $t = this, $self = $($t), p = $t.p, nCol=false, i;
+			if (!$t.grid || p.cellEdit !== true) {return;}
 			// try to find next editable cell
-			for (i=iCol+1; i<$t.p.colModel.length; i++) {
-				if ( $t.p.colModel[i].editable ===true) {
+			for (i=iCol+1; i<p.colModel.length; i++) {
+				if ( p.colModel[i].editable ===true) {
 					nCol = i; break;
 				}
 			}
 			if(nCol !== false) {
-				$($t).jqGrid("editCell",iRow,nCol,true);
+				$self.jqGrid("editCell",iRow,nCol,true);
 			} else {
-				if ($t.p.savedRow.length >0) {
-					$($t).jqGrid("saveCell",iRow,iCol);
+				if (p.savedRow.length >0) {
+					$self.jqGrid("saveCell",iRow,iCol);
 				}
 			}
 		});
 	},
 	prevCell : function (iRow,iCol) {
 		return this.each(function (){
-			var $t = this, nCol=false, i;
-			if (!$t.grid || $t.p.cellEdit !== true) {return;}
+			var $t = this, $self = $($t), p = $t.p, nCol=false, i;
+			if (!$t.grid || p.cellEdit !== true) {return;}
 			// try to find next editable cell
 			for (i=iCol-1; i>=0; i--) {
-				if ( $t.p.colModel[i].editable ===true) {
+				if ( p.colModel[i].editable ===true) {
 					nCol = i; break;
 				}
 			}
 			if(nCol !== false) {
-				$($t).jqGrid("editCell",iRow,nCol,true);
+				$self.jqGrid("editCell",iRow,nCol,true);
 			} else {
-				if ($t.p.savedRow.length >0) {
-					$($t).jqGrid("saveCell",iRow,iCol);
+				if (p.savedRow.length >0) {
+					$self.jqGrid("saveCell",iRow,iCol);
 				}
 			}
 		});
 	},
 	GridNav : function() {
 		return this.each(function () {
-			var  $t = this;
-			if (!$t.grid || $t.p.cellEdit !== true ) {return;}
+			var  $t = this, $self = $($t), p = $t.p;
+			if (!$t.grid || p.cellEdit !== true ) {return;}
 			// trick to process keydown on non input elements
-			$t.p.knv = $t.p.id + "_kn";
-			var selection = $("<div style='position:fixed;top:0px;width:1px;height:1px;' tabindex='0'><div tabindex='-1' style='width:1px;height:1px;' id='"+$t.p.knv+"'></div></div>"),
+			p.knv = p.id + "_kn";
+			var selection = $("<div style='position:fixed;top:0px;width:1px;height:1px;' tabindex='0'><div tabindex='-1' style='width:1px;height:1px;' id='"+p.knv+"'></div></div>"),
 			i, kdir;
 			function scrollGrid(iR, iC, tp){
 				if (tp.substr(0,1)==='v') {
@@ -4890,7 +4889,7 @@ $.jgrid.extend({
 				if(act === 'lft') {
 					ind = iC+1;
 					for (j=iC;j>=0;j--){
-						if ($t.p.colModel[j].hidden !== true) {
+						if (p.colModel[j].hidden !== true) {
 							ind = j;
 							break;
 						}
@@ -4898,8 +4897,8 @@ $.jgrid.extend({
 				}
 				if(act === 'rgt') {
 					ind = iC-1;
-					for (j=iC; j<$t.p.colModel.length;j++){
-						if ($t.p.colModel[j].hidden !== true) {
+					for (j=iC; j<p.colModel.length;j++){
+						if (p.colModel[j].hidden !== true) {
 							ind = j;
 							break;
 						}						
@@ -4909,44 +4908,44 @@ $.jgrid.extend({
 			}
 
 			$(selection).insertBefore($t.grid.cDiv);
-			$("#"+$t.p.knv)
+			$("#"+p.knv)
 			.focus()
 			.keydown(function (e){
 				kdir = e.keyCode;
-				if($t.p.direction === "rtl") {
+				if(p.direction === "rtl") {
 					if(kdir===37) { kdir = 39;}
 					else if (kdir===39) { kdir = 37; }
 				}
 				switch (kdir) {
 					case 38:
-						if ($t.p.iRow-1 >0 ) {
-							scrollGrid($t.p.iRow-1,$t.p.iCol,'vu');
-							$($t).jqGrid("editCell",$t.p.iRow-1,$t.p.iCol,false);
+						if (p.iRow-1 >0 ) {
+							scrollGrid(p.iRow-1,p.iCol,'vu');
+							$self.jqGrid("editCell",p.iRow-1,p.iCol,false);
 						}
 					break;
 					case 40 :
-						if ($t.p.iRow+1 <=  $t.rows.length-1) {
-							scrollGrid($t.p.iRow+1,$t.p.iCol,'vd');
-							$($t).jqGrid("editCell",$t.p.iRow+1,$t.p.iCol,false);
+						if (p.iRow+1 <=  $t.rows.length-1) {
+							scrollGrid(p.iRow+1,p.iCol,'vd');
+							$self.jqGrid("editCell",p.iRow+1,p.iCol,false);
 						}
 					break;
 					case 37 :
-						if ($t.p.iCol -1 >=  0) {
-							i = findNextVisible($t.p.iCol-1,'lft');
-							scrollGrid($t.p.iRow, i,'h');
-							$($t).jqGrid("editCell",$t.p.iRow, i,false);
+						if (p.iCol -1 >=  0) {
+							i = findNextVisible(p.iCol-1,'lft');
+							scrollGrid(p.iRow, i,'h');
+							$self.jqGrid("editCell",p.iRow, i,false);
 						}
 					break;
 					case 39 :
-						if ($t.p.iCol +1 <=  $t.p.colModel.length-1) {
-							i = findNextVisible($t.p.iCol+1,'rgt');
-							scrollGrid($t.p.iRow,i,'h');
-							$($t).jqGrid("editCell",$t.p.iRow,i,false);
+						if (p.iCol +1 <=  p.colModel.length-1) {
+							i = findNextVisible(p.iCol+1,'rgt');
+							scrollGrid(p.iRow,i,'h');
+							$self.jqGrid("editCell",p.iRow,i,false);
 						}
 					break;
 					case 13:
-						if (parseInt($t.p.iCol,10)>=0 && parseInt($t.p.iRow,10)>=0) {
-							$($t).jqGrid("editCell",$t.p.iRow,$t.p.iCol,true);
+						if (parseInt(p.iCol,10)>=0 && parseInt(p.iRow,10)>=0) {
+							$self.jqGrid("editCell",p.iRow,p.iCol,true);
 						}
 					break;
 					default :
@@ -4960,27 +4959,27 @@ $.jgrid.extend({
 		var ret=[];
 		if (!mthd) {mthd='all';}
 		this.each(function(){
-			var $t= this,nm, htmlDecode = $.jgrid.htmlDecode;
-			if (!$t.grid || $t.p.cellEdit !== true ) {return;}
+			var $t = this, p = $t.p, htmlDecode = $.jgrid.htmlDecode;
+			if (!$t.grid || p.cellEdit !== true ) {return;}
 			$($t.rows).each(function(j){
 				var res = {};
 				if ($(this).hasClass("edited")) {
 					$('td',this).each( function(i) {
-						nm = $t.p.colModel[i].name;
+						var cm = p.colModel[i], nm = cm.name, $td = $(this);
 						if ( nm !== 'cb' && nm !== 'subgrid') {
 							if (mthd==='dirty') {
-								if ($(this).hasClass('dirty-cell')) {
+								if ($td.hasClass('dirty-cell')) {
 									try {
-										res[nm] = $.unformat.call($t,this,{rowId:$t.rows[j].id, colModel:$t.p.colModel[i]},i);
+										res[nm] = $.unformat.call($t,this,{rowId:$t.rows[j].id, colModel:cm},i);
 									} catch (e){
-										res[nm] = htmlDecode($(this).html());
+										res[nm] = htmlDecode($td.html());
 									}
 								}
 							} else {
 								try {
-									res[nm] = $.unformat.call($t,this,{rowId:$t.rows[j].id,colModel:$t.p.colModel[i]},i);
+									res[nm] = $.unformat.call($t,this,{rowId:$t.rows[j].id,colModel:cm},i);
 								} catch (e) {
-									res[nm] = htmlDecode($(this).html());
+									res[nm] = htmlDecode($td.html());
 								}
 							}
 						}
@@ -4996,6 +4995,7 @@ $.jgrid.extend({
 });
 }(jQuery));
 /*jshint eqeqeq:false */
+/*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
 /*global jQuery */
 (function($){
 /*
@@ -5049,7 +5049,7 @@ $.extend($.jgrid,{
 			$(selector).attr("aria-hidden","true").jqmHide();
 		} else {
 			if(o.gb !== '') {
-				try {$(".jqgrid-overlay:first",o.gb).hide();} catch (e){}
+				try {$(".jqgrid-overlay:first",o.gb).hide();} catch (ignore){}
 			}
 			$(selector).hide().attr("aria-hidden","true");
 		}
@@ -5064,7 +5064,8 @@ $.extend($.jgrid,{
 			do {
 				curleft += obj.offsetLeft;
 				curtop += obj.offsetTop;
-			} while (obj = obj.offsetParent);
+			    obj = obj.offsetParent;
+			} while (obj);
 			//do not change obj == obj.offsetParent
 		}
 		return [curleft,curtop];
@@ -5159,7 +5160,7 @@ $.extend($.jgrid,{
 			} else {
 				try {
 					$(mw).draggable({handle: $("#"+$.jgrid.jqID(mh.id))});
-				} catch (e) {}
+				} catch (ignore) {}
 			}
 		}
 		if(p.resize) {
@@ -5169,7 +5170,7 @@ $.extend($.jgrid,{
 			} else {
 				try {
 					$(mw).resizable({handles: 'se, sw',alsoResize: scrollelmSelector});
-				} catch (r) {}
+				} catch (ignore) {}
 			}
 		}
 		if(p.closeOnEscape === true){
@@ -5202,7 +5203,7 @@ $.extend($.jgrid,{
 				$(selector).data("gbox",o.gbox);
 			}
 			$(selector).show().attr("aria-hidden","false");
-			try{$(':input:visible',selector)[0].focus();}catch(_){}
+			try{$(':input:visible',selector)[0].focus();}catch(ignore){}
 		}
 	},
 	info_dialog : function(caption, content,c_b, modalopt) {
@@ -5248,7 +5249,7 @@ $.extend($.jgrid,{
 				$.jgrid.hideModal("#info_dialog",{jqm:jm});
 			}
 			$("#info_dialog").remove();
-		} catch (e){}
+		} catch (ignore){}
 		$.jgrid.createModal({
 			themodal:'info_dialog',
 			modalhead:'info_head',
@@ -5286,7 +5287,7 @@ $.extend($.jgrid,{
 			jqm:jm
 		});
 		if($.isFunction(mopt.afterOpen) ) { mopt.afterOpen(); }
-		try{ $("#info_dialog").focus();} catch (m){}
+		try{ $("#info_dialog").focus();} catch (ignore){}
 	},
 	bindEv: function  (el, opt) {
 		var $t = this;
@@ -5337,7 +5338,7 @@ $.extend($.jgrid,{
 				elem = document.createElement("input");
 				elem.type = "checkbox";
 				if( !options.value ) {
-					var vl1 = (vl+"").toLowerCase();
+					var vl1 = String(vl).toLowerCase();
 					if(vl1.search(/(false|f|0|no|n|off|undefined)/i)<0 && vl1!=="") {
 						elem.checked=true;
 						elem.defaultChecked=true;
@@ -5371,7 +5372,7 @@ $.extend($.jgrid,{
 					var rowid = null, postData = options.postData || ajaxso.postData;
 					try {
 						rowid = options.rowId;
-					} catch(e) {}
+					} catch(ignore) {}
 
 					if ($t.p && $t.p.idPrefix) {
 						rowid = $.jgrid.stripPref($t.p.idPrefix, rowid);
@@ -5383,31 +5384,31 @@ $.extend($.jgrid,{
 						data: $.isFunction(postData) ? postData.call($t, rowid, vl, String(options.name)) : postData,
 						context: {elem:elem, options:options, vl:vl},
 						success: function(data){
-							var ovm = [], elem = this.elem, vl = this.vl,
-							options = $.extend({},this.options),
-							msl = options.multiple===true,
-							a = $.isFunction(options.buildSelect) ? options.buildSelect.call($t,data) : data;
+							var ovm1 = [], elem1 = this.elem, vl2 = this.vl,
+							options1 = $.extend({},this.options),
+							msl1 = options1.multiple===true,
+							a = $.isFunction(options1.buildSelect) ? options1.buildSelect.call($t,data) : data;
 							if(typeof a === 'string') {
 								a = $( $.trim( a ) ).html();
 							}
 							if(a) {
-								$(elem).append(a);
-								setAttributes(elem, options, postData ? ['postData'] : undefined );
-								if(options.size === undefined) { options.size =  msl ? 3 : 1;}
-								if(msl) {
-									ovm = vl.split(",");
-									ovm = $.map(ovm,function(n){return $.trim(n);});
+								$(elem1).append(a);
+								setAttributes(elem1, options1, postData ? ['postData'] : undefined );
+								if(options1.size === undefined) { options1.size =  msl1 ? 3 : 1;}
+								if(msl1) {
+									ovm1 = vl2.split(",");
+									ovm1 = $.map(ovm1,function(n){return $.trim(n);});
 								} else {
-									ovm[0] = $.trim(vl);
+									ovm1[0] = $.trim(vl2);
 								}
 								//$(elem).attr(options);
 								setTimeout(function(){
-									$("option",elem).each(function(i){
+									$("option",elem1).each(function(i){
 										//if(i===0) { this.selected = ""; }
 										// fix IE8/IE7 problem with selecting of the first item on multiple=true
-										if (i === 0 && elem.multiple) { this.selected = false; }
+										if (i === 0 && elem1.multiple) { this.selected = false; }
 										$(this).attr("role","option");
-										if($.inArray($.trim($(this).text()),ovm) > -1 || $.inArray($.trim($(this).val()),ovm) > -1 ) {
+										if($.inArray($.trim($(this).text()),ovm1) > -1 || $.inArray($.trim($(this).val()),ovm1) > -1 ) {
 											this.selected= "selected";
 										}
 									});
@@ -5427,13 +5428,14 @@ $.extend($.jgrid,{
 					if(typeof options.value === 'function') { options.value = options.value(); }
 					var so,sv, ov, 
 					sep = options.separator === undefined ? ":" : options.separator,
-					delim = options.delimiter === undefined ? ";" : options.delimiter;
+					delim = options.delimiter === undefined ? ";" : options.delimiter,
+                    mapFunc = function(n,ii){if(ii>0) { return n;} };
 					if(typeof options.value === 'string') {
 						so = options.value.split(delim);
 						for(i=0; i<so.length;i++){
 							sv = so[i].split(sep);
 							if(sv.length > 2 ) {
-								sv[1] = $.map(sv,function(n,ii){if(ii>0) { return n;} }).join(sep);
+							    sv[1] = $.map(sv, mapFunc).join(sep);
 							}
 							ov = document.createElement("option");
 							ov.setAttribute("role","option");
@@ -5526,9 +5528,9 @@ $.extend($.jgrid,{
 		format = format.split(sep);
 		date = date.split(sep);
 		if (date.length !== 3) { return false; }
-		var j=-1,yln, dln=-1, mln=-1, i;
+		var j=-1,yln, dln=-1, mln=-1, i, dv;
 		for(i=0;i<format.length;i++){
-			var dv =  isNaN(date[i]) ? 0 : parseInt(date[i],10);
+			dv = isNaN(date[i]) ? 0 : parseInt(date[i],10);
 			tsp[format[i]] = dv;
 			yln = format[i];
 			if(yln.indexOf("y") !== -1) { j=i; }
@@ -5684,7 +5686,7 @@ $.extend($.jgrid,{
 		return [true,"",""];
 	}
 });
-})(jQuery);
+}(jQuery));
 /*jshint eqeqeq:false */
 /*global jQuery */
 (function($){
