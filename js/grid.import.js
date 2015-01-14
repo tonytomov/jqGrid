@@ -6,10 +6,11 @@ $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
 	saveState : function ( jqGridId, o ) {
 		o = $.extend({
-			useLocalStorage : true,
+			useStorage : true,
+			storageType : "localStorage", // localStorage or sessionStorage
 			beforeSetItem : null,
 			compression: false,
-			compressionModule :  LZString, // object by example gzip, LZString
+			compressionModule :  'LZString', // object by example gzip, LZString
 			compressionMethod : 'compressToUTF16' // string by example zip, compressToUTF16
 		}, o || {});
 		if(!jqGridId) { return; }
@@ -29,36 +30,37 @@ $.extend($.jgrid,{
 		if(o.compression) {
 			if(o.compressionModule) {
 				try { 
-					ret = o.compressionModule[o.compressionMethod](gridstate);
+					ret = window[o.compressionModule][o.compressionMethod](gridstate);
 					if(ret != null) {
 						gridstate = ret;
-						data = o.compressionModule[o.compressionMethod](data);
+						data = window[o.compressionModule][o.compressionMethod](data);
 					}
 				} catch (e) {
 					// can not execute a compression.
 				}
 			}
 		}
-		if(o.useLocalStorage && $.jgrid.isLocalStorage()) {
+		if(o.useStorage && $.jgrid.isLocalStorage()) {
 			try {
-				localStorage.setItem("jqGrid"+$t.p.id, gridstate);
+				window[o.storageType].setItem("jqGrid"+$t.p.id, gridstate);
+				window[o.storageType].setItem("jqGrid"+$t.p.id+"_data", data);
 			} catch (e) {
 				if(e.code === 22) { // chrome is 21
 					// just for now. we should make some additionla changes and eventually clear some local items
 					alert("Local storage limit is over!");
 				}
 			}
-			localStorage.setItem("jqGrid"+$t.p.id+"_data", data);
 		}
 		return gridstate;
 	},
 	loadState : function (jqGridId, gridstring, o) {
 		o = $.extend({
-			useLocalStorage : true,
-			clearAfterLoad: false,
+			useStorage : true,
+			storageType : "localStorage",
+			clearAfterLoad: false,  // clears the jqGrid localStorage items aftre load
 			beforeSetGrid : null,
 			decompression: false,
-			decompressionModule :  LZString, // object by example gzip, LZString
+			decompressionModule :  'LZString', // object by example gzip, LZString
 			decompressionMethod : 'decompressFromUTF16' // string by example unzip, decompressFromUTF16
 		}, o || {});
 		if(!jqGridId) { return; }
@@ -66,22 +68,22 @@ $.extend($.jgrid,{
 		if($t.grid) { 
 			$.jgrid.gridUnload( jqGridId ); 
 		}
-		if(o.useLocalStorage) {
+		if(o.useStorage) {
 			try {
-				gridstring = localStorage.getItem("jqGrid"+$t.id);
-				data = localStorage.getItem("jqGrid"+$t.id+"_data");
+				gridstring = window[o.storageType].getItem("jqGrid"+$t.id);
+				data = window[o.storageType].getItem("jqGrid"+$t.id+"_data");
 			} catch (e) {
-				
+				// can not get data
 			}
 		}
 		if(!gridstring) { return; }
 		if(o.decompression) {
 			if(o.decompressionModule) {
 			try {
-					ret = o.decompressionModule[o.decompressionMethod]( gridstring );
+					ret = window[o.decompressionModule][o.decompressionMethod]( gridstring );
 					if(ret != null ) {
 						gridstring = ret;
-						data = o.decompressionModule[o.decompressionMethod]( data );
+						data = window[o.decompressionModule][o.decompressionMethod]( data );
 					}
 				} catch (e) {
 					// decompression can not be done
@@ -113,6 +115,10 @@ $.extend($.jgrid,{
 			$("#"+jqGridId).append( data );
 			grid.jqGrid( 'setGridParam', prm);
 			grid[0].updatepager(true, true);
+			if(o.clearAfterLoad) {
+				window[o.storageType].removeItem("jqGrid"+$t.id);
+				window[o.storageType].removeItem("jqGrid"+$t.id + "_data");
+			}
 		} else {
 			alert("can not convert to object");
 		}
