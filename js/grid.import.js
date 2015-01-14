@@ -1,5 +1,5 @@
 /*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery, xmlJsonClass, localStorage */
+/*global jQuery, xmlJsonClass */
 (function($){
 "use strict";
 $.jgrid = $.jgrid || {};
@@ -22,7 +22,7 @@ $.extend($.jgrid,{
 			data += this.outerHTML;
 		});
 		if($.isFunction(o.beforeSetItem)) {
-			ret = o.beforeSetItem.call(thid, gridstate);
+			ret = o.beforeSetItem.call($t, gridstate);
 			if(ret != null) {
 				gridstate = ret;
 			}
