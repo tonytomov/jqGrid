@@ -57,7 +57,7 @@ $.extend($.jgrid,{
 			useLocalStorage : true,
 			clearAfterLoad: false,
 			beforeSetGrid : null,
-			decompression: true,
+			decompression: false,
 			decompressionModule :  LZString, // object by example gzip, LZString
 			decompressionMethod : 'decompressFromUTF16' // string by example unzip, decompressFromUTF16
 		}, o || {});
