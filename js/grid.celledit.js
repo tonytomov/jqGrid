@@ -347,15 +347,15 @@ $.jgrid.extend({
 				if (tp.substr(0,1)==='v') {
 					var ch = $($t.grid.bDiv)[0].clientHeight,
 					st = $($t.grid.bDiv)[0].scrollTop,
-					nROT = $t.rows[iR].offsetTop+$t.rows[iR].clientHeight,
-					pROT = $t.rows[iR].offsetTop;
+					nRot = $t.rows[iR].offsetTop+$t.rows[iR].clientHeight,
+					pRot = $t.rows[iR].offsetTop;
 					if(tp === 'vd') {
-						if(nROT >= ch) {
+						if(nRot >= ch) {
 							$($t.grid.bDiv)[0].scrollTop = $($t.grid.bDiv)[0].scrollTop + $t.rows[iR].clientHeight;
 						}
 					}
 					if(tp === 'vu'){
-						if (pROT < st ) {
+						if (pRot < st ) {
 							$($t.grid.bDiv)[0].scrollTop = $($t.grid.bDiv)[0].scrollTop - $t.rows[iR].clientHeight;
 						}
 					}
@@ -363,17 +363,17 @@ $.jgrid.extend({
 				if(tp==='h') {
 					var cw = $($t.grid.bDiv)[0].clientWidth,
 					sl = $($t.grid.bDiv)[0].scrollLeft,
-					nCOL = $t.rows[iR].cells[iC].offsetLeft+$t.rows[iR].cells[iC].clientWidth,
-					pCOL = $t.rows[iR].cells[iC].offsetLeft;
-					if(nCOL >= cw+parseInt(sl,10)) {
+					nCol = $t.rows[iR].cells[iC].offsetLeft+$t.rows[iR].cells[iC].clientWidth,
+					pCol = $t.rows[iR].cells[iC].offsetLeft;
+					if(nCol >= cw+parseInt(sl,10)) {
 						$($t.grid.bDiv)[0].scrollLeft = $($t.grid.bDiv)[0].scrollLeft + $t.rows[iR].cells[iC].clientWidth;
-					} else if (pCOL < sl) {
+					} else if (pCol < sl) {
 						$($t.grid.bDiv)[0].scrollLeft = $($t.grid.bDiv)[0].scrollLeft - $t.rows[iR].cells[iC].clientWidth;
 					}
 				}
 			}
 			function findNextVisible(iC,act){
-				var ind, j;
+				var ind = 0, j;
 				if(act === 'lft') {
 					ind = iC+1;
 					for (j=iC;j>=0;j--){

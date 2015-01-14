@@ -21,9 +21,6 @@
 	//opts can be id:row id for the row, rowdata:the data for the row, colmodel:the column model for this column
 	//example {id:1234,}
 	$.extend($.fmatter,{
-		isBoolean : function(o) {
-			return typeof o === 'boolean';
-		},
 		isObject : function(o) {
 			return (o && (typeof o === 'object' || $.isFunction(o))) || false;
 		},
@@ -34,7 +31,7 @@
 			return typeof o === 'number' && isFinite(o);
 		},
 		isValue : function (o) {
-			return (this.isObject(o) || this.isString(o) || this.isNumber(o) || this.isBoolean(o));
+			return (this.isObject(o) || this.isString(o) || this.isNumber(o) || typeof o === 'boolean');
 		},
 		isEmpty : function(o) {
 			if(!this.isString(o) && this.isValue(o)) {
@@ -60,15 +57,16 @@
 	$.fmatter.util = {
 		// Taken from YAHOO utils
 		NumberFormat : function(nData,opts) {
-			if(!$.fmatter.isNumber(nData)) {
+			var isNumber = $.fmatter.isNumber;
+			if(!isNumber(nData)) {
 				nData *= 1;
 			}
-			if($.fmatter.isNumber(nData)) {
+			if(isNumber(nData)) {
 				var bNegative = (nData < 0);
 				var sOutput = String(nData);
 				var sDecimalSeparator = opts.decimalSeparator || ".";
 				var nDotIndex;
-				if($.fmatter.isNumber(opts.decimalPlaces)) {
+				if(isNumber(opts.decimalPlaces)) {
 					// Round to the correct decimal place
 					var nDecimalPlaces = opts.decimalPlaces;
 					var nDecimal = Math.pow(10, nDecimalPlaces);
