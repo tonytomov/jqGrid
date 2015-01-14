@@ -40,7 +40,7 @@ $.extend($.jgrid,{
 		// experimental 
 		for( i in $t.p) {
 			if($t.p.hasOwnProperty(i)) {
-				$t.p[i] = null;
+				$t.p[i] = $.isArray($t.p[i]) ? [] : null;
 			}
 		}
 		l = removevents.length;
