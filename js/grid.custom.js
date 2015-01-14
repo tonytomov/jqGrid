@@ -32,9 +32,15 @@ $.extend($.jgrid,{
 			grid.headers[i].el = null;
 		}
 
-		for( var i in grid) {
+		for( i in grid) {
 			if( grid.hasOwnProperty(i)) {
 				grid[i] = null;
+			}
+		}
+		// experimental 
+		for( i in $t.p) {
+			if($t.p.hasOwnProperty(i)) {
+				$t.p[i] = null;
 			}
 		}
 		l = removevents.length;
