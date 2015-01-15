@@ -1717,6 +1717,15 @@ $.fn.jqGrid = function( pin ) {
 			} else {
 				idn = p.keyName;
 			}
+			if (isNaN(idn) && xmlRd.repeatitems) {
+				for (i=0; i<colModel.length; i++) {
+					if (colModel[i].name === idn) {
+						idn = i;
+						break;
+					}
+				}
+			}
+
 			if( String(idn).indexOf("[") === -1 ) {
 				if (f.length) {
 					getId = function( trow, k) {return $(idn,trow).text() || k;};
