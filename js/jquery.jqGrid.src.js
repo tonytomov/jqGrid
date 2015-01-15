@@ -3350,7 +3350,7 @@ $.fn.jqGrid = function( pin ) {
 			$(grid.topDiv).addClass('ui-state-default ui-jqgrid-toppager').css({width: grid.width+"px"}).insertBefore(grid.hDiv);
 			setPager(p.toppager,'_t');
 			p.toppager = "#"+jqID(p.toppager); // hold ESCAPED id selector in the toppager option
-		} else if (p.pager === "") {
+		} else if (p.pager === "" && !p.scroll) {
 			p.rowNum = p.maxRowNum;
 		}
 		if(p.footerrow) {
