@@ -114,6 +114,9 @@ $.extend($.jgrid,{
 			var grid = $("#"+jqGridId).jqGrid( ret );
 			$("#"+jqGridId).append( data );
 			grid.jqGrid( 'setGridParam', prm);
+			if(ret.storeNavOptions) {
+				$("#"+jqGridId).jqGrid('navGrid', ret.pager, ret.navOptions, ret.editOptions, ret.addOptions, ret.delOptions, ret.searchOptions, ret.viewOptions);
+			}
 			grid[0].updatepager(true, true);
 			if(o.clearAfterLoad) {
 				window[o.storageType].removeItem("jqGrid"+$t.id);
