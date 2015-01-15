@@ -1394,7 +1394,7 @@ $.fn.jqGrid = function( pin ) {
 			},
 			scrollGrid: function(e) { // this maus be bDiv
 				// TODO get ts from this bDiv
-				var bDiv = this, $bTable = getGridComponent($(this)), gridSelf;
+				var bDiv = this, $bTable = getGridComponent("bTable", $(this)), gridSelf;
 				if (e) { e.stopPropagation(); }
 				if ($bTable.length == 0) { return true; }
 				gridSelf = $bTable[0].grid;
