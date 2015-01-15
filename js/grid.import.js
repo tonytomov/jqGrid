@@ -1,6 +1,6 @@
 /*jshint eqeqeq:false, eqnull:true, devel:true */
 /*global jQuery, xmlJsonClass */
-(function($){
+(function ($) {
 "use strict";
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
@@ -19,7 +19,7 @@ $.extend($.jgrid,{
 		if(!$t.grid) { return;}
 		gridstate  =  $($t).jqGrid('jqGridExport', { exptype : "jsonstring", ident:"", root:"" });
 		$($t.grid.bDiv).find(".ui-jqgrid-btable tr:gt(0)").each(function(i,d){
-			data += this.outerHTML;
+			data += d.outerHTML;
 		});
 		if($.isFunction(o.beforeSetItem)) {
 			ret = o.beforeSetItem.call($t, gridstate);
@@ -106,11 +106,13 @@ $.extend($.jgrid,{
 				"lastpage" : ret.lastpage,
 				"shrinkToFit" : retfunc( ret.shrinkToFit),
 				"data": retfunc(ret.data),
-				"datatype" : retfunc(ret.datatype)
+				"datatype" : retfunc(ret.datatype),
+				"grouping" : retfunc(ret.grouping)
 			};
 			ret.shrinkToFit = false;
 			ret.data = [];
 			ret.datatype = 'local';
+			ret.grouping = false;
 			var grid = $("#"+jqGridId).jqGrid( ret );
 			$("#"+jqGridId).append( data );
 			grid.jqGrid( 'setGridParam', prm);
