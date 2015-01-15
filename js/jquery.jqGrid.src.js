@@ -1336,17 +1336,16 @@ $.fn.jqGrid = function( pin ) {
 				document.onselectstart=function(){return true;};
 			},
 			populateVisible: function() {
-				var self = this, gridSelf = self.grid, bDiv = gridSelf.bDiv, $bDiv = $(bDiv);
+				var self = this, $self = $(self), gridSelf = self.grid, bDiv = gridSelf.bDiv, $bDiv = $(bDiv);
 				if (gridSelf.timer) { clearTimeout(gridSelf.timer); }
 				gridSelf.timer = null;
 				var dh = $bDiv.height();
 				if (!dh) { return; }
-				var table = getGridComponent("bTable", $bDiv);
-				var rows, rh;
-				if(table[0].rows.length) {
+				var firstDataRow, rh;
+				if(self.rows.length) {
 					try {
-						rows = table[0].rows[1];
-						rh = rows ? $(rows).outerHeight() || gridSelf.prevRowHeight : gridSelf.prevRowHeight;
+						firstDataRow = self.rows[1]; // self.rows[0] is cols row (the first row (.jqgfirstrow)) used only to set column width
+						rh = firstDataRow ? $(firstDataRow).outerHeight() || gridSelf.prevRowHeight : gridSelf.prevRowHeight;
 					} catch (pv) {
 						rh = gridSelf.prevRowHeight;
 					}
@@ -1356,8 +1355,8 @@ $.fn.jqGrid = function( pin ) {
 				var rn = p.rowNum;
 				gridSelf.scrollTop = bDiv.scrollTop;
 				var scrollTop = gridSelf.scrollTop;
-				var ttop = Math.round(table.position().top) - scrollTop;
-				var tbot = ttop + table.height();
+				var ttop = Math.round($self.position().top) - scrollTop;
+				var tbot = ttop + $self.height();
 				var div = rh * rn;
 				var page, npage, empty;
 				if ( tbot < dh && ttop <= 0 &&
