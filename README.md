@@ -94,5 +94,5 @@ The most the changes corresponds the tendency of web development last years. Loc
 * [autoresizeOnLoadCompact](http://www.ok-soft-gmbh.com/jqGrid/OK/autoresizeOnLoad2.htm) - the same demo as before (auto-resizing on loading), but with the usage of `autoResizing: { compact: true }` additionally.
 * [autoResizingPerformane1000](http://www.ok-soft-gmbh.com/jqGrid/OK/performane-1000.htm) - the demo create the grid with 1000 rows. By double-click on resizer you can see the performance of resizing for relatively large number of rows.
 * [alignLabel](http://www.ok-soft-gmbh.com/jqGrid/OK/alignLabel.htm) - demonstrates the usage of new `labelAlign` and `labelClasses` properties of `colModel`.
-* [autoResizingGrouping](http://www.ok-soft-gmbh.com/jqGrid/OK/autoresizeOnDoubleClickOnColumnResizer.htm) - demonstrates then auto-resizing on loading works with grouping too.
-* [autoResizingGroupingRtl](http://www.ok-soft-gmbh.com/jqGrid/OK/autoresizeOnDoubleClickOnColumnResizer.htm) - the same as the previous demo, but it uses RTL.
+* [autoResizingGrouping](http://www.ok-soft-gmbh.com/jqGrid/OK/grouping1.htm) - demonstrates then auto-resizing on loading works with grouping too.
+* [autoResizingGroupingRtl](http://www.ok-soft-gmbh.com/jqGrid/OK/groupingRtl1.htm) - the same as the previous demo, but it uses RTL.
