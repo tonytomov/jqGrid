@@ -1191,6 +1191,7 @@ $.fn.jqGrid = function( pin ) {
 			headertitles: false,
 			scrollTimeout: 40,
 			data : [],
+			lastSelectedData : [],
 			_index : {},
 			grouping : false,
 			groupingView : {groupField:[],groupOrder:[], groupText:[],groupColumnShow:[],groupSummary:[], showSummaryOnHide: false, sortitems:[], sortnames:[], summary:[],summaryval:[], plusicon: 'ui-icon-circlesmall-plus', minusicon: 'ui-icon-circlesmall-minus', displayField: [], groupSummaryPos:[], formatDisplayField : [], _locgr : false},
@@ -1694,8 +1695,8 @@ $.fn.jqGrid = function( pin ) {
 			frd = p.datatype === "local" ? "local" : "xml";
 			if(locdata) {
 				clearArray(p.data); //p.data = [];
-				p._index = {};
 				clearArray(p.lastSelectedData); //p.lastSelectedData = [];
+				p._index = {};
 				p.localReader.id = xmlid;
 			}
 			p.reccount = 0;
