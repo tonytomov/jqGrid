@@ -3491,6 +3491,9 @@ $.jgrid.extend({
 		});
 	},
 	getGridRowById: function ( rowid ) {
+		if (rowid == null) {
+			return null;
+		}
 		var row, rowId = rowid.toString();
 		this.each( function(){
 			var i, rows = this.rows, tr;
@@ -3506,6 +3509,7 @@ $.jgrid.extend({
 				}
 			} catch ( e ) {
 				row = $(this.grid.bDiv).find( "#" + $.jgrid.jqID( rowid ));
+				row = row.length > 0 ? row[0] : null;
 			}
 		});
 		return row;
@@ -3556,9 +3560,11 @@ $.jgrid.extend({
 			if(!p.multiselect) {	
 				if(pt.className !== "ui-subgrid") {
 					if( p.selrow !== pt.id ) {
-						csr = $($t).jqGrid('getGridRowById', p.selrow);
-						if( csr ) {
-							$(  csr ).removeClass("ui-state-highlight").attr({"aria-selected":"false", "tabindex" : "-1"});
+						if (p.selrow !== null) {
+							csr = $($t).jqGrid('getGridRowById', p.selrow);
+							if( csr ) {
+								$(  csr ).removeClass("ui-state-highlight").attr({"aria-selected":"false", "tabindex" : "-1"});
+							}
 						}
 						$(pt).addClass("ui-state-highlight").attr({"aria-selected":"true", "tabindex" : "0"});//.focus();
 						if(fid) {
