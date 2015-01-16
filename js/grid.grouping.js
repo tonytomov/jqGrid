@@ -93,7 +93,7 @@ $.jgrid.extend({
 	},
 	groupingPrepare : function ( record, irow ) {
 		this.each(function(){
-			var grp = this.p.groupingView, $t= this, i,
+			var grp = this.p.groupingView, $t= this, i, newGroup, newCounter,
 			grlen = grp.groupField.length, 
 			fieldName,
 			v,
@@ -120,28 +120,30 @@ $.jgrid.extend({
 					displayValue = v;
 				}
 				if( v !== undefined ) {
+					newGroup = {idx:i,dataIndex:fieldName,value:v, displayValue: displayValue, startRow: irow, cnt:1, summary : [] };
 					if(irow === 0 ) {
 						// First record always starts a new group
-						grp.groups.push({idx:i,dataIndex:fieldName,value:v, displayValue: displayValue, startRow: irow, cnt:1, summary : [] } );
+						grp.groups.push(newGroup);
 						grp.lastvalues[i] = v;
 						grp.counters[i] = {cnt:1, pos:grp.groups.length-1, summary: $.extend(true,[],grp.summary)};
 						$.each(grp.counters[i].summary, buildSummaryValue);
 						grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
 					} else {
+						newCounter = {cnt:1, pos:grp.groups.length, summary: $.extend(true,[],grp.summary)};
 						if (typeof v !== "object" && ($.isArray(grp.isInTheSameGroup) && $.isFunction(grp.isInTheSameGroup[i]) ? ! grp.isInTheSameGroup[i].call($t, grp.lastvalues[i], v, i, grp): grp.lastvalues[i] !== v)) {
 							// This record is not in same group as previous one
-							grp.groups.push({idx:i,dataIndex:fieldName,value:v, displayValue: displayValue, startRow: irow, cnt:1, summary : [] } );
+							grp.groups.push(newGroup);
 							grp.lastvalues[i] = v;
 							changed = 1;
-							grp.counters[i] = {cnt:1, pos:grp.groups.length-1, summary: $.extend(true,[],grp.summary)};
+							grp.counters[i] = newCounter;
 							$.each(grp.counters[i].summary, buildSummaryValue);
 							grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
 						} else {
 							if (changed === 1) {
 								// This group has changed because an earlier group changed.
-								grp.groups.push({idx:i,dataIndex:fieldName,value:v, displayValue: displayValue, startRow: irow, cnt:1, summary : [] } );
+								grp.groups.push(newGroup);
 								grp.lastvalues[i] = v;
-								grp.counters[i] = {cnt:1, pos:grp.groups.length-1, summary: $.extend(true,[],grp.summary)};
+								grp.counters[i] = newCounter;
 								$.each(grp.counters[i].summary, buildSummaryValue);
 								grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
 							} else {
