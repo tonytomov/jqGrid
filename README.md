@@ -13,6 +13,7 @@ Below you can find short description of new features already implemented in the 
 
 * the default values of some option of jqGrid are changed (see detailed description below). The most important are the changes of default values of `datatype`, `height`, `gridview` and `autoencode` options. **If you need to use other values of the options as new defaults then you should include the option explicitly as parameters.**
 * some changes in "localization files" from `i18n` folder are made. One should used the files included in the fork and not combine old "local files" of jqGrid 4.7.0 with new `jquery.jqGrid.min.js` or `jquery.jqGrid.src.js`.
+* the internal method `$.fmatter.util.NumberFormat` is renamed to `$.fmatter.fmatter.NumberFormat`. You have to make the same renaming if you used *internal* method `$.fmatter.util.NumberFormat` **directly** in your code.
 
 ### The following **new features** are implemented currently
 
