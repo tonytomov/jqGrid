@@ -1480,7 +1480,7 @@ $.jgrid.extend({
 			alertzIndex : null
 		}, $.jgrid.nav, o ||{});
 		return this.each(function() {
-			if(this.navGrid) {return;}
+			if(this.p.navGrid) {return;}
 			var alertIDs = {themodal: 'alertmod_' + this.p.id, modalhead: 'alerthd_' + this.p.id,modalcontent: 'alertcnt_' + this.p.id},
 			$t = this, twd, tdw;
 			if(!$t.grid || typeof elem !== 'string') {return;}
@@ -1717,7 +1717,7 @@ $.jgrid.extend({
 					$t.p._nvtd[1] = twd;
 				}
 				tdw =null;twd=null;navtbl =null;
-				this.navGrid = true;
+				$t.p.navGrid = true;
 			}
 			if($t.p.storeNavOptions) {
 				$t.p.navOptions = o;

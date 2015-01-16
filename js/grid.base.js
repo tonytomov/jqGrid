@@ -796,7 +796,7 @@ $.extend($.jgrid,{
 		$(grid.hDiv).unbind("mousemove"); // TODO add namespace
 		$($t).unbind();
 		var i, l = grid.headers.length,
-		removevents = ['formatCol','sortData','updatepager','refreshIndex','setHeadCheckBox','constructTr','formatter','addXmlData','addJSONData','navGrid','grid','p', 'inlineNav'];
+		removevents = ['formatCol','sortData','updatepager','refreshIndex','setHeadCheckBox','constructTr','formatter','addXmlData','addJSONData','grid','p'];
 		for (i = 0; i < l; i++) {
 			grid.headers[i].el = null;
 		}
