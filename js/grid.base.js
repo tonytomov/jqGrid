@@ -4142,6 +4142,93 @@ $.jgrid.extend({
 					break;
 			}
 		});
+	},
+	getColProp : function(colname){
+		var ret ={}, $t = this[0];
+		if ( !$t.grid ) { return false; }
+		var cM = $t.p.colModel, i;
+		for ( i=0;i<cM.length;i++ ) {
+			if ( cM[i].name === colname ) {
+				ret = cM[i];
+				break;
+			}
+		}
+		return ret;
+	},
+	setColProp : function(colname, obj){
+		//do not set width will not work
+		return this.each(function(){
+			if ( this.grid ) {
+				if ( obj ) {
+					var cM = this.p.colModel, i;
+					for ( i=0;i<cM.length;i++ ) {
+						if ( cM[i].name === colname ) {
+							$.extend(true, this.p.colModel[i],obj);
+							break;
+						}
+					}
+				}
+			}
+		});
+	},
+	sortGrid : function(colname,reload, sor){
+		return this.each(function(){
+			var $t=this,idx=-1,i, sobj=false;
+			if ( !$t.grid ) { return;}
+			if ( !colname ) { colname = $t.p.sortname; }
+			for ( i=0;i<$t.p.colModel.length;i++ ) {
+				if ( $t.p.colModel[i].index === colname || $t.p.colModel[i].name === colname ) {
+					idx = i;
+					if($t.p.frozenColumns === true && $t.p.colModel[i].frozen === true) {
+						sobj = $t.grid.fhDiv.find("#" + $t.p.id + "_" + colname);
+					}
+					break;
+				}
+			}
+			if ( idx !== -1 ){
+				var sort = $t.p.colModel[idx].sortable;
+				if(!sobj) {
+					sobj = $t.grid.headers[idx].el;
+				}
+				if ( typeof sort !== 'boolean' ) { sort =  true; }
+				if ( typeof reload !=='boolean' ) { reload = false; }
+				if ( sort ) { $t.sortData("jqgh_"+$t.p.id+"_" + colname, idx, reload, sor, sobj); }
+			}
+		});
+	},
+	setGridState : function(state) {
+		return this.each(function(){
+			if ( !this.grid ) {return;}
+			var $t = this;
+			if(state === 'hidden'){
+				$(".ui-jqgrid-bdiv, .ui-jqgrid-hdiv","#gview_"+$.jgrid.jqID($t.p.id)).slideUp("fast");
+				if($t.p.pager) {$($t.p.pager).slideUp("fast");}
+				if($t.p.toppager) {$($t.p.toppager).slideUp("fast");}
+				if($t.p.toolbar[0]===true) {
+					if( $t.p.toolbar[1] === 'both') {
+						$($t.grid.ubDiv).slideUp("fast");
+					}
+					$($t.grid.uDiv).slideUp("fast");
+				}
+				if($t.p.footerrow) { $(".ui-jqgrid-sdiv","#gbox_"+$.jgrid.jqID($t.p.id)).slideUp("fast"); }
+				$(".ui-jqgrid-titlebar-close span",$t.grid.cDiv).removeClass("ui-icon-circle-triangle-n").addClass("ui-icon-circle-triangle-s");
+				$t.p.gridstate = 'hidden';
+			} else if(state === 'visible') {
+				$(".ui-jqgrid-hdiv, .ui-jqgrid-bdiv","#gview_"+$.jgrid.jqID($t.p.id)).slideDown("fast");
+				if($t.p.pager) {$($t.p.pager).slideDown("fast");}
+				if($t.p.toppager) {$($t.p.toppager).slideDown("fast");}
+				if($t.p.toolbar[0]===true) {
+					if( $t.p.toolbar[1] === 'both') {
+						$($t.grid.ubDiv).slideDown("fast");
+					}
+					$($t.grid.uDiv).slideDown("fast");
+				}
+				if($t.p.footerrow) { $(".ui-jqgrid-sdiv","#gbox_"+$.jgrid.jqID($t.p.id)).slideDown("fast"); }
+				$(".ui-jqgrid-titlebar-close span",$t.grid.cDiv).removeClass("ui-icon-circle-triangle-s").addClass("ui-icon-circle-triangle-n");
+				$t.p.gridstate = 'visible';
+			}
+
+		});
 	}
 });
 })(jQuery);
