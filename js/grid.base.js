@@ -3145,11 +3145,22 @@ $.fn.jqGrid = function( pin ) {
 	});
 };
 $.jgrid.extend({
-	getGridParam : function(pName) {
-		var $t = this[0];
+	getGridParam : function(name, module) {
+		var $t = this[0], ret;
 		if (!$t || !$t.grid) {return;}
-		if (!pName) { return $t.p; }
-		return $t.p[pName] !== undefined ? $t.p[pName] : null;
+		if(module === undefined && typeof module !== 'string') {
+			module = 'jqGrid'; //$t.p
+		}
+		ret = $t.p;
+		if(module !== 'jqGrid') {
+			try {
+				ret = $($t).data( module );
+			} catch (e) {
+				ret = $t.p;
+			}
+		}
+		if (!name) { return ret; }	
+		return ret[name] !== undefined ? ret[name] : null;
 	},
 	setGridParam : function (newParams, overwrite){
 		return this.each(function(){

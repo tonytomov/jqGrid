@@ -1453,8 +1453,8 @@ $.jgrid.extend({
 			}
 		});
 	},
-	navGrid : function (elem, o, pEdit, pAdd, pDel, pSearch, pView) {
-		o = $.extend({
+	navGrid : function (elem, p, pEdit, pAdd, pDel, pSearch, pView) {
+		p = $.extend({
 			edit: true,
 			editicon: "ui-icon-pencil",
 			add: true,
@@ -1478,12 +1478,17 @@ $.jgrid.extend({
 			alerttop: null,
 			alertleft: null,
 			alertzIndex : null
-		}, $.jgrid.nav, o ||{});
+		}, $.jgrid.nav, p ||{});
 		return this.each(function() {
 			if(this.p.navGrid) {return;}
 			var alertIDs = {themodal: 'alertmod_' + this.p.id, modalhead: 'alerthd_' + this.p.id,modalcontent: 'alertcnt_' + this.p.id},
-			$t = this, twd, tdw;
+			$t = this, twd, tdw, o;
 			if(!$t.grid || typeof elem !== 'string') {return;}
+			if(!$($t).data('navGrid')) {
+				$($t).data('navGrid',p);
+			}
+			// speedoverhead, but usefull for future 
+			o = $($t).data('navGrid');
 			if ($("#"+alertIDs.themodal)[0] === undefined) {
 				if(!o.alerttop && !o.alertleft) {
 					if (window.innerWidth !== undefined) {
