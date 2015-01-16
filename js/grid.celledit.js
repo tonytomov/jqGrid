@@ -337,47 +337,49 @@ $.jgrid.extend({
 	},
 	GridNav : function() {
 		return this.each(function () {
-			var  $t = this, $self = $($t), p = $t.p;
-			if (!$t.grid || p.cellEdit !== true ) {return;}
+			var  $t = this, $self = $($t), p = $t.p, grid = $t.grid;
+			if (!grid || p.cellEdit !== true ) {return;}
+			var bDiv = grid.bDiv;
 			// trick to process keydown on non input elements
 			p.knv = p.id + "_kn";
 			var selection = $("<div style='position:fixed;top:0px;width:1px;height:1px;' tabindex='0'><div tabindex='-1' style='width:1px;height:1px;' id='"+p.knv+"'></div></div>"),
 			i, kdir;
 			function scrollGrid(iR, iC, tp){
+				var tr = $t.rows[iR];
 				if (tp.substr(0,1)==='v') {
-					var ch = $($t.grid.bDiv)[0].clientHeight,
-					st = $($t.grid.bDiv)[0].scrollTop,
-					nRot = $t.rows[iR].offsetTop+$t.rows[iR].clientHeight,
-					pRot = $t.rows[iR].offsetTop;
+					var ch = bDiv.clientHeight,
+					st = bDiv.scrollTop,
+					nRot = tr.offsetTop+tr.clientHeight,
+					pRot = tr.offsetTop;
 					if(tp === 'vd') {
 						if(nRot >= ch) {
-							$($t.grid.bDiv)[0].scrollTop = $($t.grid.bDiv)[0].scrollTop + $t.rows[iR].clientHeight;
+							bDiv.scrollTop = bDiv.scrollTop + tr.clientHeight;
 						}
 					}
 					if(tp === 'vu'){
 						if (pRot < st ) {
-							$($t.grid.bDiv)[0].scrollTop = $($t.grid.bDiv)[0].scrollTop - $t.rows[iR].clientHeight;
+							bDiv.scrollTop = bDiv.scrollTop - tr.clientHeight;
 						}
 					}
 				}
 				if(tp==='h') {
-					var cw = $($t.grid.bDiv)[0].clientWidth,
-					sl = $($t.grid.bDiv)[0].scrollLeft,
-					nCol = $t.rows[iR].cells[iC].offsetLeft+$t.rows[iR].cells[iC].clientWidth,
-					pCol = $t.rows[iR].cells[iC].offsetLeft;
+					var cw = bDiv.clientWidth,
+					sl = bDiv.scrollLeft, td = tr.cells[iC],
+					nCol = td.offsetLeft+td.clientWidth,
+					pCol = td.offsetLeft;
 					if(nCol >= cw+parseInt(sl,10)) {
-						$($t.grid.bDiv)[0].scrollLeft = $($t.grid.bDiv)[0].scrollLeft + $t.rows[iR].cells[iC].clientWidth;
+						bDiv.scrollLeft = bDiv.scrollLeft + td.clientWidth;
 					} else if (pCol < sl) {
-						$($t.grid.bDiv)[0].scrollLeft = $($t.grid.bDiv)[0].scrollLeft - $t.rows[iR].cells[iC].clientWidth;
+						bDiv.scrollLeft = bDiv.scrollLeft - td.clientWidth;
 					}
 				}
 			}
 			function findNextVisible(iC,act){
-				var ind = 0, j;
+				var ind = 0, j, colModel = p.colModel;
 				if(act === 'lft') {
 					ind = iC+1;
 					for (j=iC;j>=0;j--){
-						if (p.colModel[j].hidden !== true) {
+						if (colModel[j].hidden !== true) {
 							ind = j;
 							break;
 						}
@@ -385,8 +387,8 @@ $.jgrid.extend({
 				}
 				if(act === 'rgt') {
 					ind = iC-1;
-					for (j=iC; j<p.colModel.length;j++){
-						if (p.colModel[j].hidden !== true) {
+					for (j=iC; j<colModel.length;j++){
+						if (colModel[j].hidden !== true) {
 							ind = j;
 							break;
 						}						
@@ -395,7 +397,7 @@ $.jgrid.extend({
 				return ind;
 			}
 
-			$(selection).insertBefore($t.grid.cDiv);
+			$(selection).insertBefore(grid.cDiv);
 			$("#"+p.knv)
 			.focus()
 			.keydown(function (e){

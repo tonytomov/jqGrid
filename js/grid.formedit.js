@@ -65,7 +65,7 @@ $.jgrid.extend({
 			showFrm = true,
 			mustReload = true,
 			ids = {themodal:'searchmod'+fid,modalhead:'searchhd'+fid,modalcontent:'searchcnt'+fid, scrollelm : fid},
-			themodalSelector = "#"+jqID(ids.themodal), gboxSelector = "#gbox_"+jqID(p.id), gviewSelector = "#gview_"+jqID(p.id),
+			themodalSelector = "#"+jqID(ids.themodal), gboxSelector = p.gBox, gviewSelector = p.gView,
 			defaultFilters  = p.postData[o.sFilter],
 			fl;
 			if(typeof defaultFilters === "string") {
@@ -91,7 +91,7 @@ $.jgrid.extend({
 				}
 			}
 			if ( $(themodalSelector)[0] !== undefined ) {
-				showFilter($("#fbox_"+jqID(+p.id)));
+				showFilter($("#fbox_"+p.idSel));
 			} else {
 				var fil = $("<div><div id='"+fid+"' class='searchFilter' style='overflow:auto'></div></div>").insertBefore(gviewSelector),
 				align = "left", butleft =""; 
@@ -377,7 +377,7 @@ $.jgrid.extend({
 			var p = $t.p, gID = p.id, jgrid = $.jgrid, jqID = jgrid.jqID, hideModal = jgrid.hideModal,
 			frmgr = "FrmGrid_"+gID, frmgrID = frmgr, frmtborg = "TblGrid_"+gID, frmtb = "#"+jqID(frmtborg), frmtb2 = frmtb+"_2",
 			ids = {themodal:'editmod'+gID,modalhead:'edithd'+gID,modalcontent:'editcnt'+gID, scrollelm : frmgr},
-			themodalSelector = "#"+jqID(ids.themodal), gboxSelector = "#gbox_"+jqID(gID),
+			themodalSelector = "#"+jqID(ids.themodal), gboxSelector = p.gBox,
 			onBeforeShow = $.isFunction(rp_ge[gID].beforeShowForm) ? rp_ge[gID].beforeShowForm : false,
 			onAfterShow = $.isFunction(rp_ge[gID].afterShowForm) ? rp_ge[gID].afterShowForm : false,
 			onBeforeInit = $.isFunction(rp_ge[gID].beforeInitData) ? rp_ge[gID].beforeInitData : false,
@@ -1000,7 +1000,7 @@ $.jgrid.extend({
 				cle = true;
 			}
 			var tms = $("<div></div>").append(frm).append(bt);
-			jgrid.createModal(ids,tms, rp_ge[gID] ,"#gview_"+jqID(gID),$(gboxSelector)[0]);
+			jgrid.createModal(ids,tms, rp_ge[gID] ,p.gView,$(gboxSelector)[0]);
 			if(rtlb) {
 				$("#pData, #nData",frmtb2).css("float","right");
 				$(".EditButton",frmtb2).css("text-align","left");
@@ -1231,7 +1231,7 @@ $.jgrid.extend({
 			frmgr = "#ViewGrid_"+jqID(gID), frmtb = "#ViewTbl_" + jqID(gID), frmtb2 = frmtb+"_2",
 			frmgrID = "ViewGrid_"+gID, frmtbID = "ViewTbl_"+gID,
 			ids = {themodal:'viewmod'+gID,modalhead:'viewhd'+gID,modalcontent:'viewcnt'+gID, scrollelm : frmgrID},
-			themodalSelector = "#"+jqID(ids.themodal), gboxSelector = "#gbox_"+jqID(gID),
+			themodalSelector = "#"+jqID(ids.themodal), gboxSelector = p.gBox,
 			onBeforeInit = $.isFunction(rp_ge[gID].beforeInitData) ? rp_ge[gID].beforeInitData : false,
 			showFrm = true,
 			maxCols = 1, maxRows=0;
@@ -1420,7 +1420,7 @@ $.jgrid.extend({
 			}
 			o.gbox = gboxSelector;
 			var bt = $("<div></div>").append(frm).append("<table border='0' class='EditTable' id='"+frmtbID+"_2'><tbody><tr id='Act_Buttons'><td class='navButton' width='"+o.labelswidth+"'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton'>"+bC+"</td></tr></tbody></table>");
-			jgrid.createModal(ids,bt,o,"#gview_"+jqID(gID),$("#gview_"+jqID(gID))[0]);
+			jgrid.createModal(ids,bt,o,p.gView,$(p.gView)[0]);
 			if(rtlb) {
 				$("#pData, #nData",frmtb2).css("float","right");
 				$(".EditButton",frmtb2).css("text-align","left");
@@ -1555,7 +1555,7 @@ $.jgrid.extend({
 			onAfterShow = $.isFunction(rp_ge[gID].afterShowForm), dtblID = "DelTbl_" + gID,
 			onBeforeInit = $.isFunction(rp_ge[gID].beforeInitData) ? rp_ge[gID].beforeInitData : false,
 			ids = {themodal:'delmod'+gID,modalhead:'delhd'+gID,modalcontent:'delcnt'+gID, scrollelm: dtblID},
-		    themodalSelector = "#"+jqID(ids.themodal), gboxSelector = "#gbox_"+jqID(gID),
+		    themodalSelector = "#"+jqID(ids.themodal), gboxSelector = p.gBox,
 			showFrm = true,
 			dtbl = "#DelTbl_"+jqID(gID),postd, idname, opers, oper;
 
@@ -1592,7 +1592,7 @@ $.jgrid.extend({
 				bC  = "<a id='eData' class='fm-button ui-state-default ui-corner-all'>"+o.bCancel+"</a>";
 				tbl += "<table"+(jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "")+" class='EditTable' id='"+dtblID+"_2'><tbody><tr><td><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='DelButton EditButton'>"+bS+"&#160;"+bC+"</td></tr></tbody></table>";
 				o.gbox = gboxSelector;
-				jgrid.createModal(ids,tbl,o,"#gview_"+jqID(gID),$("#gview_"+jqID(gID))[0]);
+				jgrid.createModal(ids,tbl,o,p.gView,$(p.gView)[0]);
 
 				if(onBeforeInit) {
 					showFrm = onBeforeInit.call($t,$(tbl));
@@ -1765,7 +1765,7 @@ $.jgrid.extend({
 		return this.each(function() {
 			if(this.nav) {return;}
 			var p = this.p, gridId = p.id, alertIDs = {themodal: 'alertmod_' + gridId, modalhead: 'alerthd_' + gridId,modalcontent: 'alertcnt_' + gridId},
-			$t = this, twd, tdw, jgrid = $.jgrid, jqID = jgrid.jqID, gridIdEscaped = jqID(p.id), gboxSelector = "#gbox_"+gridIdEscaped,
+			$t = this, twd, tdw, jgrid = $.jgrid, jqID = jgrid.jqID, gridIdEscaped = p.idSel, gboxSelector = p.gBox,
 			viewModalAlert = function () {
 				jgrid.viewModal("#"+jqID(alertIDs.themodal),{gbox:gboxSelector,jqm:true});
 				$("#jqg_alrt").focus();
@@ -2020,7 +2020,7 @@ $.jgrid.extend({
 			if( typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+jqID(elem);}
 			var findnav = $(".navtable",elem)[0], $t = this;
 			if (findnav) {
-				if( p.id && $("#"+jqID(p.id), findnav)[0] !== undefined )  {return;}
+				if( p.id && $(p.idSel, findnav)[0] !== undefined )  {return;}
 				var tbd = $("<td></td>");
 				if(p.buttonicon.toString().toUpperCase() === "NONE") {
                     $(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'>"+p.caption+"</div>");
