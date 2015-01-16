@@ -491,6 +491,10 @@ $.jgrid.extend({
 		return this.each(function(){
 			if (!this.grid ) { return; }
 			var $t = this, onSelect, gID = $.jgrid.jqID($t.p.id);
+			// check to see if navgrid is started, if not call it with all false parameters.
+			if(!$t.p.navGrid) {
+				$($t).jqGrid('navGrid',elem, {refresh:false, edit: false, add: false, del: false, search: false, view: false});
+			}
 			$t.p.inlineNav = true;
 			// detect the formatactions column
 			if(o.addParams.useFormatter === true) {
