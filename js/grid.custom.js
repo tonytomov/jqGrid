@@ -15,14 +15,5 @@
 "use strict";
 $.jgrid = $.jgrid || {};
 $.jgrid.extend({
-	clearBeforeUnload : function () {
-		return this.each(function(){});
-	},
-	GridDestroy : function () {
-		return this.each(function(){});
-	},
-	GridUnload : function(){
-		return this.each(function(){});
-	}
 });
 })(jQuery);
