@@ -3669,8 +3669,7 @@ $.jgrid.extend({
 	showCol : function(colname) {
 		return this.each(function(){$(this).jqGrid("showHideCol",colname,"");});
 	},
-	remapColumns : function(permutation, updateCells, keepHeader)
-	{
+	remapColumns : function(permutation, updateCells, keepHeader) {
 		function resortArray(a) {
 			var ac;
 			if (a.length) {
