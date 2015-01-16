@@ -796,7 +796,7 @@ $.extend($.jgrid,{
 		$(grid.hDiv).unbind("mousemove"); // TODO add namespace
 		$($t).unbind();
 		var i, l = grid.headers.length,
-		removevents = ['formatCol','sortData','updatepager','refreshIndex','setHeadCheckBox','constructTr','formatter','addXmlData','addJSONData','nav','grid','p'];
+		removevents = ['formatCol','sortData','updatepager','refreshIndex','setHeadCheckBox','constructTr','formatter','addXmlData','addJSONData','navGrid','grid','p', 'inlineNav'];
 		for (i = 0; i < l; i++) {
 			grid.headers[i].el = null;
 		}
@@ -2980,7 +2980,7 @@ $.fn.jqGrid = function( pin ) {
 			} else {
 				ts.grid.populate();
 			}
-			if(ts.p._inlinenav===true) {$(ts).jqGrid('showAddEditButtons');}
+			if(ts.p.inlineNav===true) {$(ts).jqGrid('showAddEditButtons');}
 			return false;
 		})
 		.dblclick(function(e) {

@@ -104,7 +104,7 @@ $.jgrid.extend({
 						$(ind).bind("keydown",function(e) {
 							if (e.keyCode === 27) {
 								$($t).jqGrid("restoreRow",rowid, o.afterrestorefunc);
-								if($t.p._inlinenav) {
+								if($t.p.inlineNav) {
 									try {
 										$($t).jqGrid('showAddEditButtons');
 									} catch (eer1) {}
@@ -115,7 +115,7 @@ $.jgrid.extend({
 								var ta = e.target;
 								if(ta.tagName === 'TEXTAREA') { return true; }
 								if( $($t).jqGrid("saveRow", rowid, o ) ) {
-									if($t.p._inlinenav) {
+									if($t.p.inlineNav) {
 										try {
 											$($t).jqGrid('showAddEditButtons');
 										} catch (eer2) {}
@@ -491,7 +491,7 @@ $.jgrid.extend({
 		return this.each(function(){
 			if (!this.grid ) { return; }
 			var $t = this, onSelect, gID = $.jgrid.jqID($t.p.id);
-			$t.p._inlinenav = true;
+			$t.p.inlineNav = true;
 			// detect the formatactions column
 			if(o.addParams.useFormatter === true) {
 				var cm = $t.p.colModel,i;
@@ -620,7 +620,7 @@ $.jgrid.extend({
 				}
 				$t.p.beforeSelectRow = function(id, stat) {
 					var ret = true;
-					if($t.p.savedRow.length > 0 && $t.p._inlinenav===true && ( id !== $t.p.selrow && $t.p.selrow !==null) ) {
+					if($t.p.savedRow.length > 0 && $t.p.inlineNav===true && ( id !== $t.p.selrow && $t.p.selrow !==null) ) {
 						if($t.p.selrow === o.addParams.rowID ) {
 							$($t).jqGrid('delRowData', $t.p.selrow);
 						} else {
