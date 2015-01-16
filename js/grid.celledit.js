@@ -31,10 +31,11 @@
  * ajaxCellOptions
 * */
 "use strict";
-$.jgrid.extend({
+var jgrid = $.jgrid;
+jgrid.extend({
 	editCell : function (iRow,iCol, ed){
 		return this.each(function (){
-			var $t = this, $self = $($t), p = $t.p, nm, tmp,cc, cm, jgrid = $.jgrid, feedback = jgrid.feedback;
+			var $t = this, $self = $($t), p = $t.p, nm, tmp,cc, cm, feedback = jgrid.feedback;
 			if (!$t.grid || p.cellEdit !== true) {return;}
 			iRow = parseInt(iRow, 10);
 			iCol = parseInt(iCol, 10);
@@ -126,7 +127,7 @@ $.jgrid.extend({
 	},
 	saveCell : function (iRow, iCol){
 		return this.each(function(){
-			var $t= this, $self = $($t), p = $t.p, fr, jgrid = $.jgrid, feedback = jgrid.feedback, infoDialog = jgrid.info_dialog, jqID = jgrid.jqID,
+			var $t= this, $self = $($t), p = $t.p, fr, feedback = jgrid.feedback, infoDialog = jgrid.info_dialog, jqID = jgrid.jqID,
 				errors = jgrid.errors, errcap = errors.errcap, edit = jgrid.edit, editMsg = jgrid.edit.msg, bClose = edit.bClose;
 			if (!$t.grid || p.cellEdit !== true) {return;}
 			if ( p.savedRow.length >= 1) {fr = 0;} else {fr=null;}
@@ -291,7 +292,7 @@ $.jgrid.extend({
 				}
 				$(cc).empty().attr("tabindex","-1");
 				$($t).jqGrid("setCell",rowid, iCol, p.savedRow[fr].v, false, false, true);
-				$.jgrid.feedback.call($t, "afterRestoreCell", rowid, p.savedRow[fr].v, iRow, iCol);
+				jgrid.feedback.call($t, "afterRestoreCell", rowid, p.savedRow[fr].v, iRow, iCol);
 				p.savedRow.splice(0,1);
 			}
 			window.setTimeout(function () { $("#"+p.knv).attr("tabindex","-1").focus();},0);
@@ -449,7 +450,7 @@ $.jgrid.extend({
 		var ret=[];
 		if (!mthd) {mthd='all';}
 		this.each(function(){
-			var $t = this, p = $t.p, htmlDecode = $.jgrid.htmlDecode;
+			var $t = this, p = $t.p, htmlDecode = jgrid.htmlDecode;
 			if (!$t.grid || p.cellEdit !== true ) {return;}
 			$($t.rows).each(function(j){
 				var res = {};

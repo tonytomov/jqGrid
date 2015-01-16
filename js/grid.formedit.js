@@ -10,8 +10,8 @@
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/
 "use strict";
-var rp_ge = {};
-$.jgrid.extend({
+var rp_ge = {}, jgrid = $.jgrid;
+jgrid.extend({
 	searchGrid : function (o) {
 		o = $.extend(true, {
 			recreateFilter: false,
@@ -57,9 +57,9 @@ $.jgrid.extend({
 			showOnLoad: false,
 			layer: null,
 			operands : { "eq" :"=", "ne":"<>","lt":"<","le":"<=","gt":">","ge":">=","bw":"LIKE","bn":"NOT LIKE","in":"IN","ni":"NOT IN","ew":"LIKE","en":"NOT LIKE","cn":"LIKE","nc":"NOT LIKE","nu":"IS NULL","nn":"ISNOT NULL"}
-		}, $.jgrid.search, o || {});
+		}, jgrid.search, o || {});
 		return this.each(function() {
-			var $t = this, $self = $($t), jgrid = $.jgrid, jqID = jgrid.jqID, p = $t.p;
+			var $t = this, $self = $($t), jqID = jgrid.jqID, p = $t.p;
 			if(!$t.grid) {return;}
 			var fid = "fbox_"+p.id,
 			showFrm = true,
@@ -369,12 +369,12 @@ $.jgrid.extend({
 			overlayClass : 'ui-widget-overlay',
 			removemodal : true,
 			form: 'edit'
-		}, $.jgrid.edit, o || {});
+		}, jgrid.edit, o || {});
 		rp_ge[$(this)[0].p.id] = o;
 		return this.each(function(){
 			var $t = this, $self = $($t);
 			if (!$t.grid || !rowid) {return;}
-			var p = $t.p, gID = p.id, jgrid = $.jgrid, jqID = jgrid.jqID, hideModal = jgrid.hideModal,
+			var p = $t.p, gID = p.id, jqID = jgrid.jqID, hideModal = jgrid.hideModal,
 			frmgr = "FrmGrid_"+gID, frmgrID = frmgr, frmtborg = "TblGrid_"+gID, frmtb = "#"+jqID(frmtborg), frmtb2 = frmtb+"_2",
 			ids = {themodal:'editmod'+gID,modalhead:'edithd'+gID,modalcontent:'editcnt'+gID, scrollelm : frmgr},
 			themodalSelector = "#"+jqID(ids.themodal), gboxSelector = p.gBox,
@@ -1222,12 +1222,12 @@ $.jgrid.extend({
 			recreateForm : false,
 			removemodal: true,
 			form: 'view'
-		}, $.jgrid.view, o || {});
+		}, jgrid.view, o || {});
 		rp_ge[$(this)[0].p.id] = o;
 		return this.each(function(){
 			var $t = this, $self = $($t);
 			if (!$t.grid || !rowid) {return;}
-			var p = $t.p, gID = p.id, jgrid = $.jgrid, jqID = jgrid.jqID,
+			var p = $t.p, gID = p.id, jqID = jgrid.jqID,
 			frmgr = "#ViewGrid_"+jqID(gID), frmtb = "#ViewTbl_" + jqID(gID), frmtb2 = frmtb+"_2",
 			frmgrID = "ViewGrid_"+gID, frmtbID = "ViewTbl_"+gID,
 			ids = {themodal:'viewmod'+gID,modalhead:'viewhd'+gID,modalcontent:'viewcnt'+gID, scrollelm : frmgrID},
@@ -1545,13 +1545,13 @@ $.jgrid.extend({
 			processing : false,
 			serializeDelData : null,
 			useDataProxy : false
-		}, $.jgrid.del, o ||{});
+		}, jgrid.del, o ||{});
 		rp_ge[$(this)[0].p.id] = o;
 		return this.each(function(){
 			var $t = this;
 			if (!$t.grid ) {return;}
 			if(!rowids) {return;}
-			var p = $t.p, gID = p.id, onBeforeShow = $.isFunction(rp_ge[gID].beforeShowForm), jgrid = $.jgrid, jqID = jgrid.jqID,
+			var p = $t.p, gID = p.id, onBeforeShow = $.isFunction(rp_ge[gID].beforeShowForm), jqID = jgrid.jqID,
 			onAfterShow = $.isFunction(rp_ge[gID].afterShowForm), dtblID = "DelTbl_" + gID,
 			onBeforeInit = $.isFunction(rp_ge[gID].beforeInitData) ? rp_ge[gID].beforeInitData : false,
 			ids = {themodal:'delmod'+gID,modalhead:'delhd'+gID,modalcontent:'delcnt'+gID, scrollelm: dtblID},
@@ -1761,11 +1761,11 @@ $.jgrid.extend({
 			alerttop: null,
 			alertleft: null,
 			alertzIndex : null
-		}, $.jgrid.nav, o ||{});
+		}, jgrid.nav, o ||{});
 		return this.each(function() {
 			if(this.nav) {return;}
 			var p = this.p, gridId = p.id, alertIDs = {themodal: 'alertmod_' + gridId, modalhead: 'alerthd_' + gridId,modalcontent: 'alertcnt_' + gridId},
-			$t = this, twd, tdw, jgrid = $.jgrid, jqID = jgrid.jqID, gridIdEscaped = p.idSel, gboxSelector = p.gBox,
+			$t = this, twd, tdw, jqID = jgrid.jqID, gridIdEscaped = p.idSel, gboxSelector = p.gBox,
 			viewModalAlert = function () {
 				jgrid.viewModal("#"+jqID(alertIDs.themodal),{gbox:gboxSelector,jqm:true});
 				$("#jqg_alrt").focus();
@@ -2015,7 +2015,7 @@ $.jgrid.extend({
 			cursor : 'pointer'
 		}, p ||{});
 		return this.each(function() {
-			var jqID = $.jgrid.jqID;
+			var jqID = jgrid.jqID;
 			if( !this.grid)  {return;}
 			if( typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+jqID(elem);}
 			var findnav = $(".navtable",elem)[0], $t = this;
@@ -2064,7 +2064,7 @@ $.jgrid.extend({
 		}, p ||{});
 		return this.each(function() {
 			if( !this.grid)  {return;}
-			if( typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+$.jgrid.jqID(elem);}
+			if( typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+jgrid.jqID(elem);}
 			var findnav = $(".navtable",elem)[0];
 			if(findnav) {
 				var sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='"+p.sepclass+"'></span>"+p.sepcontent+"</td>";
@@ -2088,7 +2088,7 @@ $.jgrid.extend({
 			if (rowdata) {
 				for(i in rowdata) {
 					if(rowdata.hasOwnProperty(i)) {
-					$field = $("[name="+$.jgrid.jqID(i)+"]",formid);
+					$field = $("[name="+jgrid.jqID(i)+"]",formid);
 					if ($field.is("input:radio") || $field.is("input:checkbox"))  {
 						$field.each( function() {
 							if( $(this).val() == rowdata[i] ) {

@@ -16,11 +16,12 @@
 /*global jQuery */
 
 (function($) {
-"use strict";	
-	$.fmatter = {};
+	"use strict";
+	var fmatter = {}, jgrid = $.jgrid;
+	$.fmatter = fmatter;
 	//opts can be id:row id for the row, rowdata:the data for the row, colmodel:the column model for this column
 	//example {id:1234,}
-	$.extend($.fmatter,{
+	$.extend(fmatter,{
 		isObject : function(o) {
 			return (o && (typeof o === 'object' || $.isFunction(o))) || false;
 		},
@@ -42,22 +43,9 @@
 			}
 			o = $.trim(o).replace(/\&nbsp\;/ig,'').replace(/\&#160\;/ig,'');
 			return o==="";	
-		}
-	});
-	$.fn.fmatter = function(formatType, cellval, opts, rwd, act) {
-		// build main options before element iteration
-		var v=cellval;
-		opts = $.extend({}, $.jgrid.formatter, opts);
-
-		try {
-			v = $.fn.fmatter[formatType].call(this, cellval, opts, rwd, act);
-		} catch(fe){}
-		return v;
-	};
-	$.fmatter.util = {
-		// Taken from YAHOO utils
+		},
 		NumberFormat : function(nData,opts) {
-			var isNumber = $.fmatter.isNumber;
+			var isNumber = fmatter.isNumber;
 			if(!isNumber(nData)) {
 				nData *= 1;
 			}
@@ -112,41 +100,52 @@
 			}
 			return nData;
 		}
+	});
+	var $FnFmatter = function(formatType, cellval, opts, rwd, act) {
+		// build main options before element iteration
+		var v=cellval;
+		opts = $.extend({}, jgrid.formatter, opts);
+
+		try {
+			v = $.fn.fmatter[formatType].call(this, cellval, opts, rwd, act);
+		} catch(fe){}
+		return v;
 	};
-	$.fn.fmatter.defaultFormat = function(cellval, opts) {
-		return ($.fmatter.isValue(cellval) && cellval!=="" ) ?  cellval : opts.defaultValue || "&#160;";
+	$.fn.fmatter = $FnFmatter;
+	$FnFmatter.defaultFormat = function(cellval, opts) {
+		return (fmatter.isValue(cellval) && cellval!=="" ) ?  cellval : opts.defaultValue || "&#160;";
 	};
-	$.fn.fmatter.email = function(cellval, opts) {
-		if(!$.fmatter.isEmpty(cellval)) {
+	$FnFmatter.email = function(cellval, opts) {
+		if(!fmatter.isEmpty(cellval)) {
 			return "<a href=\"mailto:" + cellval + "\">" + cellval + "</a>";
 		}
-		return $.fn.fmatter.defaultFormat(cellval,opts );
+		return $FnFmatter.defaultFormat(cellval,opts );
 	};
-	$.fn.fmatter.checkbox =function(cval, opts) {
+	$FnFmatter.checkbox =function(cval, opts) {
 		var op = $.extend({},opts.checkbox), ds;
 		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if(op.disabled===true) {ds = "disabled=\"disabled\"";} else {ds="";}
-		if($.fmatter.isEmpty(cval) || cval === undefined ) {cval = $.fn.fmatter.defaultFormat(cval,op);}
+		if(fmatter.isEmpty(cval) || cval === undefined ) {cval = $FnFmatter.defaultFormat(cval,op);}
 		cval=String(cval);
 		cval=(cval+"").toLowerCase();
 		var bchk = cval.search(/(false|f|0|no|n|off|undefined)/i)<0 ? " checked='checked' " : "";
 		return "<input type=\"checkbox\" " + bchk  + " value=\""+ cval+"\" offval=\"no\" "+ds+ "/>";
 	};
-	$.fn.fmatter.link = function(cellval, opts) {
+	$FnFmatter.link = function(cellval, opts) {
 		var op = {target:opts.target};
 		var target = "";
 		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if(op.target) {target = 'target=' + op.target;}
-		if(!$.fmatter.isEmpty(cellval)) {
+		if(!fmatter.isEmpty(cellval)) {
 			return "<a "+target+" href=\"" + cellval + "\">" + cellval + "</a>";
 		}
-		return $.fn.fmatter.defaultFormat(cellval,opts);
+		return $FnFmatter.defaultFormat(cellval,opts);
 	};
-	$.fn.fmatter.showlink = function(cellval, opts) {
+	$FnFmatter.showlink = function(cellval, opts) {
 		var op = {baseLinkUrl: opts.baseLinkUrl,showAction:opts.showAction, addParam: opts.addParam || "", target: opts.target, idName: opts.idName},
 		target = "", idUrl;
 		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
@@ -154,44 +153,44 @@
 		}
 		if(op.target) {target = 'target=' + op.target;}
 		idUrl = op.baseLinkUrl+op.showAction + '?'+ op.idName+'='+opts.rowId+op.addParam;
-		if($.fmatter.isString(cellval) || $.fmatter.isNumber(cellval)) {	//add this one even if its blank string
+		if(fmatter.isString(cellval) || fmatter.isNumber(cellval)) {	//add this one even if its blank string
 			return "<a "+target+" href=\"" + idUrl + "\">" + cellval + "</a>";
 		}
-		return $.fn.fmatter.defaultFormat(cellval,opts);
+		return $FnFmatter.defaultFormat(cellval,opts);
 	};
 	var numberHelper = function(cellval, opts, formatType) {
 		var op = $.extend({},opts[formatType]);
 		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
-		if($.fmatter.isEmpty(cellval)) {
+		if(fmatter.isEmpty(cellval)) {
 			return op.defaultValue;
 		}
-		return $.fmatter.util.NumberFormat(cellval,op);
+		return fmatter.NumberFormat(cellval,op);
 	};
-	$.fn.fmatter.integer = function(cellval, opts) {
+	$FnFmatter.integer = function(cellval, opts) {
 		return numberHelper(cellval,opts,"integer");
 	};
-	$.fn.fmatter.number = function (cellval, opts) {
+	$FnFmatter.number = function (cellval, opts) {
 		return numberHelper(cellval,opts,"number");
 	};
-	$.fn.fmatter.currency = function (cellval, opts) {
+	$FnFmatter.currency = function (cellval, opts) {
 		return numberHelper(cellval,opts,"currency");
 	};
-	$.fn.fmatter.date = function (cellval, opts, rwd, act) {
+	$FnFmatter.date = function (cellval, opts, rwd, act) {
 		var op = $.extend({},opts.date);
 		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if(!op.reformatAfterEdit && act === 'edit'){
-			return $.fn.fmatter.defaultFormat(cellval, opts);
+			return $FnFmatter.defaultFormat(cellval, opts);
 		}
-		if(!$.fmatter.isEmpty(cellval)) {
-			return $.jgrid.parseDate(op.srcformat,cellval,op.newformat,op);
+		if(!fmatter.isEmpty(cellval)) {
+			return jgrid.parseDate(op.srcformat,cellval,op.newformat,op);
 		}
-		return $.fn.fmatter.defaultFormat(cellval, opts);
+		return $FnFmatter.defaultFormat(cellval, opts);
 	};
-	$.fn.fmatter.select = function (cellval,opts) {
+	$FnFmatter.select = function (cellval,opts) {
 		// jqGrid specific
 		cellval = String(cellval);
 		var oSelect = false, ret=[], sep, delim;
@@ -208,7 +207,7 @@
 			var	msl =  (opts.colModel.editoptions != null && opts.colModel.editoptions.multiple === true) === true ? true : false,
 			scell = [], sv;
 			if(msl) {scell = cellval.split(",");scell = $.map(scell,function(n){return $.trim(n);});}
-			if ($.fmatter.isString(oSelect)) {
+			if (fmatter.isString(oSelect)) {
 				// mybe here we can use some caching with care ????
 				var so = oSelect.split(delim), j=0, i;
 				for(i=0; i<so.length;i++){
@@ -226,7 +225,7 @@
 						break;
 					}
 				}
-			} else if($.fmatter.isObject(oSelect)) {
+			} else if(fmatter.isObject(oSelect)) {
 				// this is quicker
 				if(msl) {
 					ret = $.map(scell, function(n){
@@ -238,17 +237,17 @@
 			}
 		}
 		cellval = ret.join(", ");
-		return  cellval === "" ? $.fn.fmatter.defaultFormat(cellval,opts) : cellval;
+		return  cellval === "" ? $FnFmatter.defaultFormat(cellval,opts) : cellval;
 	};
-	$.fn.fmatter.rowactions = function(act) {
+	$FnFmatter.rowactions = function(act) {
 		var $tr = $(this).closest("tr.jqgrow"),
 			rid = $tr.attr("id"),
 			$id = $(this).closest("table.ui-jqgrid-btable").attr('id').replace(/_frozen([^_]*)$/,'$1'),
-			$grid = $("#"+$.jgrid.jqID($id)),
+			$grid = $("#"+jgrid.jqID($id)),
 			$t = $grid[0],
 			p = $t.p,
-			cm = p.colModel[$.jgrid.getCellIndex(this)],
-			$actionsDiv = cm.frozen ? $("tr#"+$.jgrid.jqID(rid)+" td:eq("+$.jgrid.getCellIndex(this)+") > div",$grid) :$(this).parent(),
+			cm = p.colModel[jgrid.getCellIndex(this)],
+			$actionsDiv = cm.frozen ? $("tr#"+jgrid.jqID(rid)+" td:eq("+jgrid.getCellIndex(this)+") > div",$grid) :$(this).parent(),
 			op = {
 				extraparam: {}
 			},
@@ -317,13 +316,13 @@
 				break;
 		}
 	};
-	$.fn.fmatter.actions = function(cellval,opts) {
-		var op={keys:false, editbutton:true, delbutton:true, editformbutton: false}, nav = $.jgrid.nav, edit = $.jgrid.edit,
+	$FnFmatter.actions = function(cellval,opts) {
+		var op={keys:false, editbutton:true, delbutton:true, editformbutton: false}, nav = jgrid.nav, edit = jgrid.edit,
 			rowid=opts.rowId, str="",ocl;
 		if(opts.colModel.formatoptions !== undefined) {
 			op = $.extend(op,opts.colModel.formatoptions);
 		}
-		if(rowid === undefined || $.fmatter.isEmpty(rowid)) {return "";}
+		if(rowid === undefined || fmatter.isEmpty(rowid)) {return "";}
 		if(op.editformbutton){
 			ocl = "id='jEditButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'formedit'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
 			str += "<div title='"+nav.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='ui-icon ui-icon-pencil'></span></div>";
@@ -346,7 +345,7 @@
 		var ret, formatType = options.colModel.formatter,
 		op =options.colModel.formatoptions || {}, sep,
 		re = /([\.\*\_\'\(\)\{\}\+\?\\])/g,
-		unformatFunc = options.colModel.unformat||($.fn.fmatter[formatType] && $.fn.fmatter[formatType].unformat);
+		unformatFunc = options.colModel.unformat||($FnFmatter[formatType] && $FnFmatter[formatType].unformat);
 		if (cellval instanceof jQuery && cellval.length > 0) {
 			cellval = cellval[0];
 		}
@@ -355,8 +354,8 @@
 		}
 		if(unformatFunc !== undefined && $.isFunction(unformatFunc) ) {
 			ret = unformatFunc.call(this, $(cellval).text(), options, cellval);
-		} else if(formatType !== undefined && $.fmatter.isString(formatType) ) {
-			var opts = $.jgrid.formatter || {}, stripTag;
+		} else if(formatType !== undefined && fmatter.isString(formatType) ) {
+			var opts = jgrid.formatter || {}, stripTag;
 			switch(formatType) {
 				case 'integer' :
 					op = $.extend({},opts.integer,op);
@@ -398,7 +397,7 @@
 					ret= $(cellval).text();
 			}
 		}
-		ret = ret !== undefined ? ret : cnt===true ? $(cellval).text() : $.jgrid.htmlDecode($(cellval).html());
+		ret = ret !== undefined ? ret : cnt===true ? $(cellval).text() : jgrid.htmlDecode($(cellval).html());
 		return ret;
 	};
 	$.unformat.select = function (cellval,options,pos,cnt) {
@@ -416,7 +415,7 @@
 			msl =  op.multiple === true ? true : false,
 			scell = [], sv;
 			if(msl) {scell = cell.split(",");scell = $.map(scell,function(n){return $.trim(n);});}
-			if ($.fmatter.isString(oSelect)) {
+			if (fmatter.isString(oSelect)) {
 				var so = oSelect.split(delim), j=0, i;
 				for(i=0; i<so.length;i++){
 					sv = so[i].split(sep);
@@ -433,7 +432,7 @@
 						break;
 					}
 				}
-			} else if($.fmatter.isObject(oSelect) || $.isArray(oSelect) ){
+			} else if(fmatter.isObject(oSelect) || $.isArray(oSelect) ){
 				if(!msl) {scell[0] =  cell;}
 				ret = $.map(scell, function(n){
 					var rv;
@@ -451,13 +450,13 @@
 		return cell || "";
 	};
 	$.unformat.date = function (cellval, opts) {
-		var op = $.jgrid.formatter.date || {};
+		var op = jgrid.formatter.date || {};
 		if(opts.formatoptions !== undefined) {
 			op = $.extend({},op,opts.formatoptions);
 		}		
-		if(!$.fmatter.isEmpty(cellval)) {
-			return $.jgrid.parseDate(op.newformat,cellval,op.srcformat,op);
+		if(!fmatter.isEmpty(cellval)) {
+			return jgrid.parseDate(op.newformat,cellval,op.srcformat,op);
 		}
-		return $.fn.fmatter.defaultFormat(cellval, opts);
+		return $FnFmatter.defaultFormat(cellval, opts);
 	};
 })(jQuery);

@@ -14,7 +14,8 @@
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/
 "use strict";
-$.jgrid.extend({
+var jgrid = $.jgrid;
+jgrid.extend({
 	getColProp : function(colname){
 		var ret ={}, $t = this[0];
 		if ( !$t.grid ) { return false; }
@@ -68,7 +69,7 @@ $.jgrid.extend({
 	},
 	clearBeforeUnload : function () {
 		return this.each(function(){
-			var self = this, p = self.p, grid = self.grid, propOrMethod, clearArray = $.jgrid.clearArray;
+			var self = this, p = self.p, grid = self.grid, propOrMethod, clearArray = jgrid.clearArray;
 			if ($.isFunction(grid.emptyRows)) {
 				grid.emptyRows.call(self, true, true); // this work quick enough and reduce the size of memory leaks if we have someone
 			}
@@ -197,7 +198,6 @@ $.jgrid.extend({
 		});
 	},
 	filterToolbar : function(o){
-		var jgrid = $.jgrid;
 		o = $.extend({
 			autosearch: true,
 			autosearchDelay: 500,
@@ -643,10 +643,10 @@ $.jgrid.extend({
 				}
 
 			});
-			this.ftoolbar = true;
-			this.triggerToolbar = triggerToolbar;
-			this.clearToolbar = clearToolbar;
-			this.toggleToolbar = toggleToolbar;
+			$t.ftoolbar = true;
+			$t.triggerToolbar = triggerToolbar;
+			$t.clearToolbar = clearToolbar;
+			$t.toggleToolbar = toggleToolbar;
 		});
 	},
 	destroyFilterToolbar: function () {
@@ -841,7 +841,7 @@ $.jgrid.extend({
 	},
 	setFrozenColumns : function () {
 		return this.each(function() {
-			var $t = this, $self = $($t), p = $t.p, grid = $t.grid, jqID = $.jgrid.jqID;
+			var $t = this, $self = $($t), p = $t.p, grid = $t.grid, jqID = jgrid.jqID;
 			if (!grid) {return;}
 			var cm = p.colModel,i=0, len = cm.length, maxfrozen = -1, frozen= false;
 			// TODO treeGrid and grouping  Support

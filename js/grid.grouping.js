@@ -3,7 +3,8 @@
 // Grouping module
 (function($){
 "use strict";
-$.extend($.jgrid,{
+var jgrid = $.jgrid;
+$.extend(jgrid,{
 	template : function(format){ //jqgformat
 		var args = $.makeArray(arguments).slice(1), j, al = args.length;
 		if(format==null) { format = ""; }
@@ -26,7 +27,7 @@ $.extend($.jgrid,{
 		});
 	}
 });
-$.jgrid.extend({
+jgrid.extend({
 	groupingSetup : function () {
 		return this.each(function (){
 			var $t = this, i, j, cml, p = $t.p, cm = p.colModel, grp = p.groupingView, emptyFormatter = function(){return '';};
@@ -63,7 +64,7 @@ $.jgrid.extend({
 							grp.visibiltyOnNextGrouping[i] = true;
 							$($t).jqGrid('showCol',grp.groupField[i]);
 						} else {
-							grp.visibiltyOnNextGrouping[i] = $("#"+$.jgrid.jqID(p.id+"_"+grp.groupField[i])).is(":visible");
+							grp.visibiltyOnNextGrouping[i] = $("#"+jgrid.jqID(p.id+"_"+grp.groupField[i])).is(":visible");
 							$($t).jqGrid('hideCol',grp.groupField[i]);
 						}
 					}
@@ -162,7 +163,7 @@ $.jgrid.extend({
 	},
 	groupingToggle : function(hid){
 		this.each(function(){
-			var $t = this, p = $t.p, jqID = $.jgrid.jqID,
+			var $t = this, p = $t.p, jqID = jgrid.jqID,
 			grp = p.groupingView,
 			strpos = hid.split('_'),
 			num = parseInt(strpos[strpos.length-2], 10);
@@ -322,7 +323,7 @@ $.jgrid.extend({
 							} catch (ef) {
 								vv = this.v;
 							}
-							tmpdata= "<td "+$t.formatCol(k,1,'')+">"+$.jgrid.format(tplfld,vv)+ "</td>";
+							tmpdata= "<td "+$t.formatCol(k,1,'')+">"+jgrid.format(tplfld,vv)+ "</td>";
 							return false;
 						}
 					});
@@ -341,7 +342,7 @@ $.jgrid.extend({
 				toEnd++;
 				clid = p.id+"ghead_"+n.idx;
 				hid = clid+"_"+i;
-				icon = "<span style='cursor:pointer;' class='ui-icon "+pmrtl+"' onclick=\"jQuery('#"+$.jgrid.jqID(p.id).replace("\\", "\\\\")+"').jqGrid('groupingToggle','"+hid+"');return false;\"></span>";
+				icon = "<span style='cursor:pointer;' class='ui-icon "+pmrtl+"' onclick=\"jQuery('#"+jgrid.jqID(p.id).replace("\\", "\\\\")+"').jqGrid('groupingToggle','"+hid+"');return false;\"></span>";
 				try {
 					if ($.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
 						n.displayValue = grp.formatDisplayField[n.idx].call($t, n.displayValue, n.value, p.colModel[cp[n.idx]], n.idx, grp);
@@ -355,7 +356,7 @@ $.jgrid.extend({
 				str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class=\"ui-widget-content jqgroup ui-row-"+p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\"";
 				var grpTextStr = $.isFunction(grp.groupText[n.idx]) ?
 						grp.groupText[n.idx].call($t, gv, n.cnt, n.summary) :
-						$.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary);
+						jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary);
 				if(typeof grpTextStr !== "string" && typeof grpTextStr !== "number") {
 					grpTextStr = gv;
 				}
@@ -433,7 +434,7 @@ $.jgrid.extend({
 			}
 			// set visibility status of current group columns on next grouping
 			for(i=0;i<name.length;i++) {
-				grp.visibiltyOnNextGrouping[i] = $("#"+$.jgrid.jqID(p.id)+"_"+$.jgrid.jqID(name[i])).is(":visible");
+				grp.visibiltyOnNextGrouping[i] = $(p.idSel+"_"+jgrid.jqID(name[i])).is(":visible");
 			}
 			p.groupingView = $.extend(p.groupingView, options || {});
 			grp.groupField = name;
@@ -442,7 +443,7 @@ $.jgrid.extend({
 	},
 	groupingRemove : function (current) {
 		return this.each(function(){
-			var $t = this, p = $t.p;
+			var $t = this, p = $t.p, tbody = $t.tBodies[0];
 			if(current === undefined) {
 				current = true;
 			}
@@ -455,8 +456,8 @@ $.jgrid.extend({
 						$($t).jqGrid('showCol', grp.groupField);
 					}
 				}
-				$("tr.jqgroup, tr.jqfoot","#"+$.jgrid.jqID(p.id)+" tbody:first").remove();
-				$("tr.jqgrow:hidden","#"+$.jgrid.jqID(p.id)+" tbody:first").show();
+				$("tr.jqgroup, tr.jqfoot",tbody).remove();
+				$("tr.jqgrow:hidden",tbody).show();
 			} else {
 				$($t).trigger("reloadGrid");
 			}

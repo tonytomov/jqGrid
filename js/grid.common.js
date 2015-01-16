@@ -11,7 +11,8 @@
  * http://www.gnu.org/licenses/gpl-2.0.html
 */
 "use strict";
-$.extend($.jgrid,{
+var jgrid = $.jgrid;
+$.extend(jgrid,{
 // Modal functions
 	showModal : function(h) {
 		h.w.show();
@@ -34,10 +35,10 @@ $.extend($.jgrid,{
 			}
 			var frmgr, frmdata;
 			if(o.form==='edit'){
-				frmgr = '#' +$.jgrid.jqID("FrmGrid_"+ o.gb.substr(6));
+				frmgr = '#' +jgrid.jqID("FrmGrid_"+ o.gb.substr(6));
 				frmdata = "formProp";
 			} else if( o.form === 'view') {
-				frmgr = '#' +$.jgrid.jqID("ViewGrid_"+ o.gb.substr(6));
+				frmgr = '#' +jgrid.jqID("ViewGrid_"+ o.gb.substr(6));
 				frmdata = "viewProp";
 			}
 			$(thisgrid).data(frmdata, {
@@ -75,7 +76,7 @@ $.extend($.jgrid,{
 		return [curleft,curtop];
 	},
 	createModal : function(aIDs, content, p, insertSelector, posSelector, appendsel, css) {
-		var jgrid = $.jgrid, jqID = jgrid.jqID;
+		var jqID = jgrid.jqID;
 		p = $.extend(true, {}, jgrid.jqModal || {}, p);
 		var mw = document.createElement('div'), rtlsup, self = this, themodalSelector = "#"+jqID(aIDs.themodal),
 		scrollelmSelector = aIDs.scrollelm ? "#"+jqID(aIDs.scrollelm) : false;
@@ -188,7 +189,6 @@ $.extend($.jgrid,{
 		}
 	},
 	viewModal : function (selector,o){
-		var jgrid = $.jgrid;
 		o = $.extend({
 			toTop: true,
 			overlay: 10,
@@ -230,7 +230,7 @@ $.extend($.jgrid,{
 			buttons : []
 		// {text:'textbutt', id:"buttid", onClick : function(){...}}
 		// if the id is not provided we set it like info_button_+ the index in the array - i.e info_button_0,info_button_1...
-		}, jgrid = $.jgrid;
+		};
 		$.extend(true, mopt, jgrid.jqModal || {}, {caption:"<b>"+caption+"</b>"}, modalopt || {});
 		var jm = mopt.jqModal, self = this;
 		if($.fn.jqm && !jm) { jm = false; }
@@ -312,7 +312,7 @@ $.extend($.jgrid,{
 	},
 // Form Functions
 	createEl : function(eltype,options,vl,autowidth, ajaxso) {
-		var elem = "", $t = this, jgrid = $.jgrid, infoDialog = jgrid.info_dialog,
+		var elem = "", $t = this, infoDialog = jgrid.info_dialog,
 		errcap = jgrid.errors.errcap, edit = jgrid.edit, editMsg = jgrid.edit.msg, bClose = edit.bClose;
 		function setAttributes(elm, atr, exl ) {
 			var exclude = ['dataInit','dataEvents','dataUrl', 'buildSelect','sopt', 'searchhidden', 'defaultValue', 'attr', 'custom_element', 'custom_value'];
@@ -586,7 +586,7 @@ $.extend($.jgrid,{
 	checkTime : function(time){
 	// checks only hh:ss (and optional am/pm)
 		var re = /^(\d{1,2}):(\d{2})([apAP][Mm])?$/,regs;
-		if(!$.jgrid.isEmpty(time))
+		if(!jgrid.isEmpty(time))
 		{
 			regs = time.match(re);
 			if(regs) {
@@ -605,7 +605,7 @@ $.extend($.jgrid,{
 		return true;
 	},
 	checkValues : function(val, valref, customobject, nam) {
-		var edtrul,i, nm, dft, len, g = this, p = g.p, cm = p.colModel, jgrid = $.jgrid, isEmpty = jgrid.isEmpty,
+		var edtrul,i, nm, dft, len, g = this, p = g.p, cm = p.colModel, isEmpty = jgrid.isEmpty,
 		editMsg = jgrid.edit.msg, dateMasks = jgrid.formatter.date.masks;
 		if(customobject === undefined) {
 			if(typeof valref==='string'){

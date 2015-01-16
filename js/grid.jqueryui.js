@@ -123,7 +123,7 @@ $.jgrid.extend({
 			colModel = self.jqGrid("getGridParam", "colModel"),
 			colNames = self.jqGrid("getGridParam", "colNames"),
 			getMultiselectWidgetData = function ($elem) {
-				return ($.ui.multiselect.prototype && $elem.data($.ui.multiselect.prototype.widgetFullName || $.ui.multiselect.prototype.widgetName)) ||
+				return ($.ui.multiselect && $.ui.multiselect.prototype && $elem.data($.ui.multiselect.prototype.widgetFullName || $.ui.multiselect.prototype.widgetName)) ||
 					$elem.data("ui-multiselect") || $elem.data("multiselect");
 			};
 
@@ -304,18 +304,20 @@ $.jgrid.extend({
 		$dialogContent.find(">div").css({ width: "100%", height: "100%", margin: "auto" });
 
 		multiselectData = getMultiselectWidgetData(select);
-		multiselectData.container.css({ width: "100%", height: "100%", margin: "auto" });
+		if (multiselectData) {
+			multiselectData.container.css({ width: "100%", height: "100%", margin: "auto" });
 
-		multiselectData.selectedContainer.css({ width: multiselectData.options.dividerLocation * 100 + "%", height: "100%", margin: "auto", boxSizing: "border-box" });
-		multiselectData.availableContainer.css({ width: (100 - multiselectData.options.dividerLocation * 100) + "%", height: "100%", margin: "auto", boxSizing: "border-box" });
+			multiselectData.selectedContainer.css({ width: multiselectData.options.dividerLocation * 100 + "%", height: "100%", margin: "auto", boxSizing: "border-box" });
+			multiselectData.availableContainer.css({ width: (100 - multiselectData.options.dividerLocation * 100) + "%", height: "100%", margin: "auto", boxSizing: "border-box" });
 
-		// set height for both selectedList and availableList
-		multiselectData.selectedList.css("height", "auto");
-		multiselectData.availableList.css("height", "auto");
-		listHeight = Math.max(multiselectData.selectedList.height(), multiselectData.availableList.height());
-		listHeight = Math.min(listHeight, $(window).height());
-		multiselectData.selectedList.css("height", listHeight);
-		multiselectData.availableList.css("height", listHeight);
+			// set height for both selectedList and availableList
+			multiselectData.selectedList.css("height", "auto");
+			multiselectData.availableList.css("height", "auto");
+			listHeight = Math.max(multiselectData.selectedList.height(), multiselectData.availableList.height());
+			listHeight = Math.min(listHeight, $(window).height());
+			multiselectData.selectedList.css("height", listHeight);
+			multiselectData.availableList.css("height", listHeight);
+		}
 	},
 	sortableRows : function (opts) {
 		// Can accept all sortable options and events
