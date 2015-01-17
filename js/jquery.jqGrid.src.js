@@ -1054,7 +1054,10 @@ $.fn.jqGrid = function( pin ) {
 		getGridComponent = jgrid.getGridComponent,
 		jqID = jgrid.jqID, getAccessor = jgrid.getAccessor,	stripPref = jgrid.stripPref, getCellIndex = jgrid.getCellIndex,
 		fatalErrorFunction = jgrid.defaults != null && $.isFunction(jgrid.defaults.fatalError) ? jgrid.defaults.fatalError : alert;
-		if (pin != null && pin.data !== undefined) {
+		if (pin == null) {
+			pin = { datatype: "local" };
+		}
+		if (pin.data !== undefined) {
 			localData = pin.data;
 			pin.data = []; // don't clear the array, just change the value of data property
 		}
@@ -1069,17 +1072,15 @@ $.fn.jqGrid = function( pin ) {
 			// detect old locale file grid.locale-XX.js are included (without DEEP extend).
 			fatalErrorFunction("CRITICAL ERROR!!!\n\n\nOne uses probably\n\n	$.extend($.jgrid.defaults, {...});\n\nto set default settings of jqGrid instead of the usage the DEEP version of jQuery.extend (with true as the first parameter):\n\n	$.extend(true, $.jgrid.defaults, {...});\n\nOne other possible reason:\n\nyou included some OLD version of language file (grid.locale-en.js for example) AFTER jquery.jqGrid.min.js. For example all language files of jqGrid 4.7.0 uses non-deep call of jQuery.extend.\n\n\nSome options of jqGrid could still work, but another one will be broken.");
 		}
-		if (pin != null) {
-			if (pin.datatype === undefined && pin.dataType !== undefined) {
-				// fix the bug in the usage of dataType instead of datatype
-				pin.datatype = pin.dataType;
-				delete pin.dataType;
-			}
-			if (pin.mtype === undefined && pin.type !== undefined) {
-				// fix the bug in the usage of type instead of mtype
-				pin.mtype = pin.type;
-				delete pin.type;
-			}
+		if (pin.datatype === undefined && pin.dataType !== undefined) {
+			// fix the bug in the usage of dataType instead of datatype
+			pin.datatype = pin.dataType;
+			delete pin.dataType;
+		}
+		if (pin.mtype === undefined && pin.type !== undefined) {
+			// fix the bug in the usage of type instead of mtype
+			pin.mtype = pin.type;
+			delete pin.type;
 		}
 
 		var p = $.extend(true,{
@@ -1109,7 +1110,9 @@ $.fn.jqGrid = function( pin ) {
 			colNames: [],
 			sortorder: "asc",
 			sortname: "",
-			//datatype: "xml",
+			datatype: pin.datatype !== undefined ? pin.datatype : // datatype parameter are specified - use it
+				localData !== undefined || pin.url == null ? "local" : // data parameter specified or no url are specified
+					pin.jsonReader != null && typeof pin.jsonReader === "object" ? "json" : "xml", // if jsonReader are specified - use "json". In all other cases - use "xml"
 			mtype: "GET",
 			altRows: false,
 			selarrrow: [],
@@ -1160,7 +1163,7 @@ $.fn.jqGrid = function( pin ) {
 			forceFit : false,
 			gridstate : "visible",
 			cellEdit: false,
-			cellsubmit: "clientArray",
+			cellsubmit: pin.cellurl === undefined ? "clientArray" : "remote",
 			nv:0,
 			loadui: "enable",
 			toolbar: [false,""],
@@ -1173,7 +1176,7 @@ $.fn.jqGrid = function( pin ) {
 			cellLayout: 5,
 			subGridWidth: 20,
 			multiselectWidth: 20,
-			gridview: true,
+			gridview: (pin == null || pin.afterInsertRow == null), // use true if callback afterInsertRow is not specified
 			rownumWidth: 25,
 			rownumbers : false,
 			pagerpos: 'center',
@@ -1201,10 +1204,6 @@ $.fn.jqGrid = function( pin ) {
 			idPrefix : "",
 			multiSort :  false
 		},
-		// if no datatype is specified, but data option exist then use datatype: "local" else "xml"
-		pin == null || pin.datatype !== undefined ? {} : // if datatype is specified explicitly
-			localData !== undefined || pin.url == null ? { datatype: "local" } : // no url is specified or data is explicitly specified
-			pin.jsonReader != null && typeof pin.jsonReader === "object" ? { datatype: "json" } : { datatype: "xml" },
 		jgrid.defaults, pin || {});
 		if (localData !== undefined) {
 			p.data = localData;
@@ -2278,6 +2277,22 @@ $.fn.jqGrid = function( pin ) {
 			retresult[localReader.userdata] = p.userData;
 			return retresult;
 		},
+		setWidthOfPagerTdWithPager = function ($pgTable) {
+			var self = this, w = $pgTable.outerWidth(), fontSize;
+			if (w <= 0) { // not visible
+				fontSize = $(self).closest(".ui-jqgrid>.ui-jqgrid-view").css("font-size") || "11px";
+				$(document.body).append("<div id='testpg' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+
+					fontSize+
+					";visibility:hidden;' ></div>");
+				$($pgTable).clone().appendTo("#testpg");
+				w = $("#testpg>.ui-pg-table").width();
+				$("#testpg").remove();
+			}
+			if (w > 0) {
+				$pgTable.parent().width(w);
+			}
+			return w;
+		},
 		updatepager = function(rn, dnd) {
 			var self = this, $self = $(self), gridSelf = self.grid, cp, last, base, from, to, tot, fmt, pgboxes = p.pager || "", sppg,
 			tspg = p.pager ? "_"+p.pager.substr(1) : "", bDiv = gridSelf.bDiv, NumberFormat = $.fmatter.NumberFormat,
@@ -2310,8 +2325,10 @@ $.fn.jqGrid = function( pin ) {
 				if(p.pginput===true) {
 					$('.ui-pg-input',pgboxes).val(p.page);
 					sppg = p.toppager ? '#sp_1'+tspg+",#sp_1"+tspg_t : '#sp_1'+tspg;
-					$(sppg).html($.fmatter ? NumberFormat(p.lastpage,fmt):p.lastpage);
-
+					$(sppg).html($.fmatter ? NumberFormat(p.lastpage,fmt):p.lastpage)
+						.closest(".ui-pg-table").each(function () {
+							setWidthOfPagerTdWithPager.call(self, $(this));
+						});
 				}
 				if (p.viewrecords){
 					if(p.reccount === 0) {
@@ -2518,7 +2535,7 @@ $.fn.jqGrid = function( pin ) {
 			pginp = "",
 			blockAlign = p.pagerpos === "left" ? "margin-right:auto;" : (p.pagerpos === "right" ? "margin-left:auto;" : "margin-left:auto;margin-right:auto;"),
 			pgl="<table "+(isMSIE8 ? "cellspacing='0' " : "")+"style='table-layout:auto;"+blockAlign+"' class='ui-pg-table'><tbody><tr>",
-			str="", pgcnt, lft, cent, rgt, twd, tdw, i,
+			str="", pgcnt, lft, cent, rgt, twd, i,
 			clearVals = function(onpaging){
 				var ret;
 				if ($.isFunction(p.onPaging) ) { ret = p.onPaging.call(ts,onpaging); }
@@ -2552,7 +2569,7 @@ $.fn.jqGrid = function( pin ) {
 				str +="</select></td>";
 			}
 			if(dir==="rtl") { pgl += str; }
-			if(p.pginput===true) { pginp= "<td dir='"+dir+"'>"+jgrid.format(p.pgtext || "","<input class='ui-pg-input' type='text' size='2' maxlength='7' value='0' role='textbox'/>","<span id='sp_1_"+pgid+"'></span>")+"</td>";}
+			if(p.pginput===true) { pginp= "<td dir='"+dir+"'>"+jgrid.format(p.pgtext || "","<input class='ui-pg-input' type='text' size='2' maxlength='7' value='0' role='textbox'/>","<span id='sp_1_"+pgid+"'>0</span>")+"</td>";}
 			pgid = "#"+jqID(pgid); // modify to id selector
 			if(p.pgbuttons===true) {
 				var po=["first"+tp,"prev"+tp, "next"+tp,"last"+tp]; if(dir==="rtl") { po.reverse(); }
@@ -2565,15 +2582,9 @@ $.fn.jqGrid = function( pin ) {
 			if(dir==="ltr") { pgl += str; }
 			pgl += "</tr></tbody></table>";
 			if(p.viewrecords===true) {$("td"+pgid+"_"+p.recordpos,pgcnt).append("<div dir='"+dir+"' style='text-align:"+p.recordpos+"' class='ui-paging-info'></div>");}
-			$("td"+pgid+"_"+p.pagerpos,pgcnt).append(pgl);
-			tdw = $(".ui-jqgrid>.ui-jqgrid-view").css("font-size") || "11px";
-			$(document.body).append("<div id='testpg' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+tdw+";visibility:hidden;' ></div>");
-			twd = $(pgl).clone().appendTo("#testpg").width();
-			$("#testpg").remove();
-			if(twd > 0) {
-				if(pginp !== "") { twd += 50; } //should be param
-				$("td"+pgid+"_"+p.pagerpos,pgcnt).width(twd);
-			}
+			var $pagerIn = $("td"+pgid+"_"+p.pagerpos,pgcnt);
+			$pagerIn.append(pgl);
+			twd = setWidthOfPagerTdWithPager.call(this, $pagerIn.children(".ui-pg-table"));
 			p._nvtd = [];
 			p._nvtd[0] = twd ? Math.floor((p.width - twd)/2) : Math.floor(p.width/3);
 			p._nvtd[1] = 0;
@@ -3175,7 +3186,7 @@ $.fn.jqGrid = function( pin ) {
 			if ($pager.length > 0) {
 				$pager.css({width: grid.width+"px"}).addClass('ui-state-default ui-jqgrid-pager ui-corner-bottom').appendTo(eg);
 				if(hg) {$pager.hide();}
-				setPager(pagerId,'');
+				setPager.call(ts, pagerId, '');
 				p.pager = "#" + jqID(pagerId); // hold ESCAPED id selector in the pager
 			} else {
 				p.pager = ""; // clear wrong value of the pager option
@@ -3357,7 +3368,7 @@ $.fn.jqGrid = function( pin ) {
 			p.toppager = p.id+"_toppager";
 			grid.topDiv = $("<div id='"+p.toppager+"'></div>")[0];
 			$(grid.topDiv).addClass('ui-state-default ui-jqgrid-toppager').css({width: grid.width+"px"}).insertBefore(grid.hDiv);
-			setPager(p.toppager,'_t');
+			setPager.call(ts, p.toppager, '_t');
 			p.toppager = "#"+jqID(p.toppager); // hold ESCAPED id selector in the toppager option
 		} else if (p.pager === "" && !p.scroll) {
 			p.rowNum = p.maxRowNum;

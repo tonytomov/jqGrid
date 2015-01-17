@@ -11,7 +11,7 @@ Below you can find short description of new features already implemented in the 
 
 ### Compatibility with jqGrid 4.7.0
 
-* the default values of some option of jqGrid are changed (see detailed description below). The most important are the changes of default values of `datatype`, `height`, `gridview` and `autoencode` options. **If you need to use other values of the options as new defaults then you should include the option explicitly as parameters.**
+* the default values of some option of jqGrid are changed (see detailed description below). The most important are the changes of default values of `autoencode` to `true`. It means that the input data will be interpreted as text instead of HTML fragments per default. **If you need to use other values of the options as new defaults then you should include the option explicitly as parameters.**
 * some changes in "localization files" from `i18n` folder are made. One should used the files included in the fork and not combine old "local files" of jqGrid 4.7.0 with new `jquery.jqGrid.min.js` or `jquery.jqGrid.src.js`.
 * the internal method `$.fmatter.util.NumberFormat` is renamed to `$.fmatter.NumberFormat`. You have to make the same renaming if you used *internal* method `$.fmatter.util.NumberFormat` **directly** in your code.
 
@@ -21,11 +21,11 @@ Below you can find short description of new features already implemented in the 
 
 ### The default values of the following old jqGrid options are changed (comparing with jqGrid 4.7)
 
-* **gridview: true** are used now. It improves performance of rendering of the grid. In case of usage `afterInsertRow` instead of `cellatr` and `rowattr` (which is *very ineffective*) in old projects one will have to need to specify `gridview: true` explicitly.
-* **autoencode: false** are used now instead of `autoencode: false` used before. It corresponds to rendering on the client side. The old default `autoencode: false` combined with JSON data loaded from the server or local data loaded from the object produces sometimes to strange side effects if the data contains symbols `&`, `;`, `>` and other used in HTML markup.
 * **height: "auto"** are used now instead of `150` before. It improves the visibility of small grids or the grids having small number of rows. No `scrollOffset: 0` are required to remove unneeded free space which one sees on some grids which have no vertical scrollbar.
+* **gridview: true** are used as default with the only exception: `afterInsertRow` callback are defined. The usage of `gridview: true` improves performance of rendering of the grid. In case of usage `afterInsertRow` in old projects instead of much more effective `cellatr`, `rowattr` or custom formatters one will have backward compatibility.
+* **autoencode: false** are used now instead of `autoencode: false` used before. It corresponds to rendering on the client side. The old default `autoencode: false` combined with JSON data loaded from the server or local data loaded from the object produces sometimes to strange side effects if the data contains symbols `&`, `;`, `>` and other used in HTML markup.
 * *dynamic* default value is used now for `rowNum`. The default value `rowNum: 20` will be changed to 10000 (the value of the new `maxRowNum` property) if no pager exists in jqGrid (no `pager` and `toppager: true` option are used) or if one uses jqGrid option which switches off the pagination (like `treeGrid: true`). New jqGrid option `maxRowNum` can be used to change the maximal value of rows displayed in the grid from 10000 default to another value.
-* **datatype: "local"** are use now instead of **datatype: "xml"** used before. If one uses `"xml"` input data then one should add **datatype: "xml"** option which explicitly specify the type of data.
+* *dynamic* default value is used now for `datatype`. If one uses input option `data` or if one don't specified any `url` option, then undefined `datatype` will be initialized to `"local"`. If one uses no `data` option and specifies `url` option then one initializes `datatype` to `"json"` if the input option `jsonReader` are used. In case of usage any other combinations of input parameters the option `datatype` will be set to **"xml"** to stay mostly compatible to jqGrid 4.7.0 and older.
 * **editurl: "clientArray"** are use now instead of **editurl: null** used before. It allows to use *local* editing without minimal additional efforts and the requirement to have any server part implemented.
 * **cellsubmit: "clientArray"** are use now instead of **cellsubmit: "remote"** used before.
 
@@ -46,7 +46,7 @@ The most the changes corresponds the tendency of web development last years. Loc
 * new `widthOrg` option saves the value of `width` during creating of the grid. It will be used internally mostly to detect the case when jqGrid was created without specifying of any `width` explicitly. It will be interpreted so, that the width of the grid could be adjusted on other changes of the width of the columns.
 * new `dataTypeOrg` option will be used internally in case of the usage remote `datatype` (`"json"` and `"xml"`) together with `loadonce: true`. The option will be deleted by `.trigger("reloadGrid")`.
 * new `doubleClickSensitivity` option with the default value `250` specify the time in ms. The resizer will stay visible at least the time after the first click. In the time the user can makes the second click and the double-click on the resizer could be detect.
-* new `autoresizeOnLoad` option used in combination with `autoResizable: true` property of `colModel`. If `autoresizeOnLoad: true` option are used then jqGrid make auto-resizing of all columns having `autoResizable: true` property direct after `loadComplete`.
+* new `autoresizeOnLoad` option used in combination with `autoResizable: true` property of `colModel`. If `autoresizeOnLoad: true` option are used then jqGrid make auto-resizing of all columns having `autoResizable: true` property direct after `loadComplete`. REMARK: Auto-resizing of hidden grids not work. So if you for example fill the grid on the hidden jQuery UI Tab for example then you can include the call of `autoResizeAllColumns` method directly after the tab will be active.
 * new `autoResizing` option is map of properties like `groupingView` used in grouping. It allows to tune some behaviour of auto-resizing.
   * compact - default value `false`. Means the usage of compact calculation of the width of the column header without reservation of the place of sorting icons
   * widthOfVisiblePartOfSortIcon: default value 12. Should be used only if one replaces the default jQuery UI icons to another icons.
@@ -67,7 +67,8 @@ The most the changes corresponds the tendency of web development last years. Loc
 ### The following *new methods* are implemented (comparing with jqGrid 4.7)
 
 * setColWidth - allows to change the width of the column after the grid is created.
-* autoResizeColumn - has no parameters. It resize of all columns having `autoResizable: true` property
+* autoResizeColumn - has integer iCol as parameters. It resize the column iCol if it has `autoResizable: true` property. Remark: Auto-resizing don't work with hidden grids.
+* autoResizeAllColumns - has integer iCol as parameters. It resize of all columns having `autoResizable: true` property. Remark: Auto-resizing don't work with hidden grids.
 * getGridComponent - allows to get different components of jqGrid like "bTable", "hTable", "fTable", "bDiv" and some other. The method will be extended later.
 
 ### The following *new callbacks and jQuery events* are implemented (comparing with jqGrid 4.7)
