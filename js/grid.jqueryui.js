@@ -78,10 +78,10 @@ jgrid.extend({
 					}
 				},
 				"update": function(event, ui) {
-					var th = $(">th", $(ui.item).parent()),	colModel = p.colModel, cmMap = {}, tid = p.id + "_", permutation = [];
+					var th = $(">th", $(ui.item).parent()),	colModel = p.colModel, cmMap = {}, tid1 = p.id + "_", permutation = [];
 					$.each(colModel, function(i) { cmMap[this.name]=i; });
 					th.each(function() {
-						var id = $(">div", this).get(0).id.replace(/^jqgh_/, "").replace(tid,"");
+						var id = $(">div", this).get(0).id.replace(/^jqgh_/, "").replace(tid1,"");
 							if (cmMap.hasOwnProperty(id)) {
 								permutation.push(cmMap[id]);
 							}
@@ -349,7 +349,7 @@ jgrid.extend({
 						var subgid = $(ui.item).attr("id");
 						try {
 							$($t).jqGrid('collapseSubGridRow',subgid);
-						} catch (e) {}
+						} catch (ignore) {}
 					}
 					if(opts._start_) {
 						opts._start_.apply(this,[ev,ui]);
@@ -379,7 +379,7 @@ jgrid.extend({
 	},
 	gridDnD : function(opts) {
 		return this.each(function(){
-		var $t = this, i, cn;
+		var $t = this, j, cn;
 		if(!$t.grid) { return; }
 		// Currently we disable a treeGrid drag and drop
 		if($t.p.treeGrid) { return; }
@@ -408,7 +408,7 @@ jgrid.extend({
 							subgid = $(ui.helper).attr("id");
 							try {
 								$($t).jqGrid('collapseSubGridRow',subgid);
-							} catch (e) {}
+							} catch (ignore) {}
 						}
 						// hack
 						// drag and drop does not insert tr in table, when the table has no rows
@@ -445,8 +445,8 @@ jgrid.extend({
 						if (!$(d).hasClass('jqgrow')) { return d;}
 						var tid = $(d).closest("table.ui-jqgrid-btable");
 						if(tid.length > 0 && $.data(tid[0],"dnd") !== undefined) {
-							var cn = $.data(tid[0],"dnd").connectWith;
-							return $.inArray('#'+jqID(this.id),cn) !== -1 ? true : false;
+							var cn1 = $.data(tid[0],"dnd").connectWith;
+							return $.inArray('#'+jqID(this.id),cn1) !== -1 ? true : false;
 						}
 						return false;
 					},
@@ -455,22 +455,22 @@ jgrid.extend({
 						var accept = $(ui.draggable).attr("id");
 						var getdata = ui.draggable.parent().parent().jqGrid('getRowData',accept);
 						if(!opts.dropbyname) {
-							var j =0, tmpdata = {}, nm, key;
+							var i =0, tmpdata = {}, nm, key;
 							var dropmodel = $("#"+jqID(this.id)).jqGrid('getGridParam','colModel');
 							try {
 								for (key in getdata) {
 									if (getdata.hasOwnProperty(key)) {
-									nm = dropmodel[j].name;
+									nm = dropmodel[i].name;
 									if( !(nm === 'cb' || nm === 'rn' || nm === 'subgrid' )) {
-										if(getdata.hasOwnProperty(key) && dropmodel[j]) {
+										if(getdata.hasOwnProperty(key) && dropmodel[i]) {
 											tmpdata[nm] = getdata[key];
 										}
 									}
-									j++;
+									i++;
 								}
 								}
 								getdata = tmpdata;
-							} catch (e) {}
+							} catch (ignore) {}
 						}
 						ui.helper.dropped = true;
 						if(opts.beforedrop && $.isFunction(opts.beforedrop) ) {
@@ -526,15 +526,15 @@ jgrid.extend({
 			updateDnD();
 		}
 		$t.p.jqgdnd = true;
-		for (i=0;i<opts.connectWith.length;i++){
-			cn =opts.connectWith[i];
+		for (j=0;j<opts.connectWith.length;j++){
+			cn =opts.connectWith[j];
 			$(cn).droppable($.isFunction(opts.drop) ? opts.drop.call($($t),opts) : opts.drop);
 		}
 		});
 	},
 	gridResize : function(opts) {
 		return this.each(function(){
-			var $t = this, grid = $t.grid, p = $t.p, gID = jqID(p.id), bdivSelector = p.gView+">.ui-jqgrid-bdiv";
+			var $t = this, grid = $t.grid, p = $t.p, bdivSelector = p.gView+">.ui-jqgrid-bdiv";
 			if(!grid || !$.fn.resizable) { return; }
 			opts = $.extend({}, opts || {});
 			if(opts.alsoResize ) {
@@ -566,4 +566,4 @@ jgrid.extend({
 		});
 	}
 });
-})(jQuery);
+}(jQuery));
