@@ -1126,6 +1126,7 @@ $.fn.jqGrid = function( pin ) {
 			lastpage: 0,
 			lastsort: 0,
 			selrow: null,
+			singleSelectClickMode: "toggle",
 			beforeSelectRow: null,
 			onSelectRow: null,
 			onSortCol: null,
@@ -3249,7 +3250,12 @@ $.fn.jqGrid = function( pin ) {
 						$(ts).jqGrid("setSelection",ri,true,e);
 					}
 				} else {
+					var oldSelRow = p.selrow;
 					$(ts).jqGrid("setSelection",ri,true,e);
+					if (p.singleSelectClickMode === "toggle" && oldSelRow === ri) {
+						td.parent().removeClass("ui-state-highlight").attr({"aria-selected":"false", "tabindex" : "-1"});
+						p.selrow = null;
+					}
 				}
 			} else {
 				if(e[p.multikey]) {

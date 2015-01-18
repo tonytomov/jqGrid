@@ -55,6 +55,7 @@ The most the changes corresponds the tendency of web development last years. Loc
   * wrapperClassName: "ui-jqgrid-cell-wrapper" - the name of the class assign to `<span>` included in every cell of the grid
   * adjustGridWidth: true - means that the width of the grid need be adjusted after resizing of the column
   * fixWidthOnShrink: false - fill be removed later. It will be not included in the release
+* new `singleSelectClickMode` option with default value `"toggle"`. It allows to control deselection of previously selected row on clicking on the row. Default behaviour now is toggle of selection. The have old behavior one need to specify any other value for `singleSelectClickMode` option, for example `singleSelectClickMode: "selectonly"` or `singleSelectClickMode: ""`. It's important to stress, that the behaviour of `setSelection` method is **not changed**. Multiple calls of `setSelection` will **not deselect** the row.
 
 ### The following *new `colModel` properties* are implemented (comparing with jqGrid 4.7)
 
