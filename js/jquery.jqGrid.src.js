@@ -1188,7 +1188,7 @@ $.fn.jqGrid = function( pin ) {
 			altclass : 'ui-priority-secondary',
 			viewsortcols : [false,'vertical',true],
 			resizeclass : '',
-			autoencode : true,
+			autoencode : false, // true is better for the most cases, but we hold old value to have better backwards compatibility
 			remapColumns : [],
 			ajaxGridOptions :{},
 			direction : "ltr",
