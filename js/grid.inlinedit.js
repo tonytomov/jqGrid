@@ -395,9 +395,9 @@ jgrid.extend({
 		// End compatible
 
 		return this.each(function(){
-			var $t = this, $self = $($t), p = $t.p, fr=-1, ind, ares={}, k;
+			var $t = this, $self = $($t), p = $t.p, fr=-1, ares={}, k;
 			if (!$t.grid ) { return; }
-			ind = $self.jqGrid("getInd",rowid,true);
+			var ind = $self.jqGrid("getInd",rowid,true);
 			if(ind === false) {return;}
 			var bfcr = $.isFunction( o.beforeCancelRow ) ?	o.beforeCancelRow.call($t, o, rowid) :  undefined;
 			if( bfcr === undefined ) {
