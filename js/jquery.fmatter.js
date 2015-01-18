@@ -3,16 +3,17 @@
  * formatter for values but most of the values if for jqGrid
  * Some of this was inspired and based on how YUI does the table datagrid but in jQuery fashion
  * we are trying to keep it as light as possible
- * Joshua Burnett josh@9ci.com	
+ * Joshua Burnett josh@9ci.com
  * http://www.greenbill.com
  *
  * Changes from Tony Tomov tony@trirand.com
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * 
+ *
 **/
 /*jshint eqeqeq:false */
+/*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
 /*global jQuery */
 
 (function($) {
@@ -108,7 +109,7 @@
 
 		try {
 			v = $.fn.fmatter[formatType].call(this, cellval, opts, rwd, act);
-		} catch(fe){}
+		} catch(ignore){}
 		return v;
 	};
 	$.fn.fmatter = $FnFmatter;
@@ -129,7 +130,7 @@
 		if(op.disabled===true) {ds = "disabled=\"disabled\"";} else {ds="";}
 		if(fmatter.isEmpty(cval) || cval === undefined ) {cval = $FnFmatter.defaultFormat(cval,op);}
 		cval=String(cval);
-		cval=(cval+"").toLowerCase();
+		cval=String(cval).toLowerCase();
 		var bchk = cval.search(/(false|f|0|no|n|off|undefined)/i)<0 ? " checked='checked' " : "";
 		return "<input type=\"checkbox\" " + bchk  + " value=\""+ cval+"\" offval=\"no\" "+ds+ "/>";
 	};
@@ -205,7 +206,7 @@
 		}
 		if (oSelect) {
 			var	msl =  (opts.colModel.editoptions != null && opts.colModel.editoptions.multiple === true) === true ? true : false,
-			scell = [], sv;
+			scell = [], sv, mapFunc = function(n,i){if(i>0) {return n;}};
 			if(msl) {scell = cellval.split(",");scell = $.map(scell,function(n){return $.trim(n);});}
 			if (fmatter.isString(oSelect)) {
 				// mybe here we can use some caching with care ????
@@ -213,7 +214,7 @@
 				for(i=0; i<so.length;i++){
 					sv = so[i].split(sep);
 					if(sv.length > 2 ) {
-						sv[1] = $.map(sv,function(n,i){if(i>0) {return n;}}).join(sep);
+						sv[1] = $.map(sv,mapFunc).join(sep);
 					}
 					if(msl) {
 						if($.inArray(sv[0],scell)>-1) {
@@ -413,14 +414,14 @@
 		if(op.value){
 			var oSelect = op.value,
 			msl =  op.multiple === true ? true : false,
-			scell = [], sv;
+			scell = [], sv, mapFunc = function(n,i){if(i>0) {return n;}};
 			if(msl) {scell = cell.split(",");scell = $.map(scell,function(n){return $.trim(n);});}
 			if (fmatter.isString(oSelect)) {
 				var so = oSelect.split(delim), j=0, i;
 				for(i=0; i<so.length;i++){
 					sv = so[i].split(sep);
 					if(sv.length > 2 ) {
-						sv[1] = $.map(sv,function(n,i){if(i>0) {return n;}}).join(sep);
+						sv[1] = $.map(sv,mapFunc).join(sep);
 					}					
 					if(msl) {
 						if($.inArray(sv[1],scell)>-1) {
@@ -459,4 +460,4 @@
 		}
 		return $FnFmatter.defaultFormat(cellval, opts);
 	};
-})(jQuery);
+}(jQuery));

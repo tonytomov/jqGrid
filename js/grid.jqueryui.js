@@ -560,6 +560,8 @@ jgrid.extend({
 				opts.alsoResize = bdivSelector;
 			}
 			delete opts._alsoResize_;
+			// TODO: register resize callback (or event) and resize ONLY height of cDiv, hDiv, topDiv, uDiv, ubDiv, sDiv 
+			// based on the code of https://github.com/jquery/jquery-ui/blob/1.10.4/ui/jquery.ui.resizable.js#L818-L877
 			$(p.gBox).resizable(opts);
 		});
 	}

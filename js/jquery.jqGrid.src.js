@@ -9655,6 +9655,7 @@ jgrid.extend({
 });
 }(jQuery));
 /*jshint eqeqeq:false, eqnull:true */
+/*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, continue: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
 /*global jQuery */
 // Grouping module
 (function($){
@@ -9952,37 +9953,34 @@ jgrid.extend({
 				return ret;
 			}
 			function buildSummaryTd(i, ik, grp, foffset) {
-				var fdata = findGroupIdx(i, ik, grp),
-				cm = p.colModel,
-				grlen = fdata.cnt, strTd="", k, tmpdata, tplfld;
-				for(k=foffset; k<colspans;k++) {
-					tmpdata = "<td "+$t.formatCol(k,1,'')+">&#160;</td>";
-					tplfld = "{0}";
-					$.each(fdata.summary,function(){
-						var vv;
-						if(this.nm === cm[k].name) {
-							if(cm[k].summaryTpl)  {
-								tplfld = cm[k].summaryTpl;
-							}
-							if(typeof this.st === 'string' && this.st.toLowerCase() === 'avg') {
-								if(this.sd && this.vd) { 
-									this.v = (this.v/this.vd);
-								} else if(this.v && grlen > 0) {
-									this.v = (this.v/grlen);
+				var fdata = findGroupIdx(i, ik, grp), cm = p.colModel,
+				grlen = fdata.cnt, strTd="", k, tmpdata, tplfld,
+				processSummary = function () {
+						var vv, summary = this;
+						if(summary.nm === cm[k].name) {
+							tplfld = cm[k].summaryTpl || "{0}";
+							if(typeof summary.st === 'string' && summary.st.toLowerCase() === 'avg') {
+								if(summary.sd && summary.vd) { 
+									summary.v = (summary.v/summary.vd);
+								} else if(summary.v && grlen > 0) {
+									summary.v = (summary.v/grlen);
 								}
 							}
 							try {
-								this.groupCount = fdata.cnt;
-								this.groupIndex = fdata.dataIndex;
-								this.groupValue = fdata.value;
-								vv = $t.formatter('', this.v, k, this);
+								summary.groupCount = fdata.cnt;
+								summary.groupIndex = fdata.dataIndex;
+								summary.groupValue = fdata.value;
+								vv = $t.formatter('', summary.v, k, summary);
 							} catch (ef) {
-								vv = this.v;
+								vv = summary.v;
 							}
 							tmpdata= "<td "+$t.formatCol(k,1,'')+">"+jgrid.format(tplfld,vv)+ "</td>";
 							return false;
 						}
-					});
+					};
+				for(k=foffset; k<colspans;k++) {
+					tmpdata = "<td "+$t.formatCol(k,1,'')+">&#160;</td>";
+					$.each(fdata.summary, processSummary);
 					strTd += tmpdata;
 				}
 				return strTd;
@@ -11606,6 +11604,8 @@ jgrid.extend({
 				opts.alsoResize = bdivSelector;
 			}
 			delete opts._alsoResize_;
+			// TODO: register resize callback (or event) and resize ONLY height of cDiv, hDiv, topDiv, uDiv, ubDiv, sDiv 
+			// based on the code of https://github.com/jquery/jquery-ui/blob/1.10.4/ui/jquery.ui.resizable.js#L818-L877
 			$(p.gBox).resizable(opts);
 		});
 	}
@@ -12625,7 +12625,8 @@ jgrid.extend({
 					ldat[isLeaf] = false;
 					lf="";
 				}
-				ldat[expanded] = ((ldat[expanded] === "true" || ldat[expanded] === true) ? true : false) && (ldat[loaded] || ldat[loaded] === undefined);
+				ldat[expanded] = (ldat[expanded] === "true" || ldat[expanded] === true) ? true : false;
+				ldat[expanded] = ldat[expanded] && (ldat[loaded] || ldat[loaded] === undefined);
 				if(ldat[expanded] === false) {
 					twrap += ((ldat[isLeaf] === true) ? "'" : p.treeIcons.plus+" tree-plus treeclick'");
 				} else {
@@ -13356,16 +13357,17 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
  * formatter for values but most of the values if for jqGrid
  * Some of this was inspired and based on how YUI does the table datagrid but in jQuery fashion
  * we are trying to keep it as light as possible
- * Joshua Burnett josh@9ci.com	
+ * Joshua Burnett josh@9ci.com
  * http://www.greenbill.com
  *
  * Changes from Tony Tomov tony@trirand.com
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * 
+ *
 **/
 /*jshint eqeqeq:false */
+/*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
 /*global jQuery */
 
 (function($) {
@@ -13461,7 +13463,7 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 
 		try {
 			v = $.fn.fmatter[formatType].call(this, cellval, opts, rwd, act);
-		} catch(fe){}
+		} catch(ignore){}
 		return v;
 	};
 	$.fn.fmatter = $FnFmatter;
@@ -13482,7 +13484,7 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 		if(op.disabled===true) {ds = "disabled=\"disabled\"";} else {ds="";}
 		if(fmatter.isEmpty(cval) || cval === undefined ) {cval = $FnFmatter.defaultFormat(cval,op);}
 		cval=String(cval);
-		cval=(cval+"").toLowerCase();
+		cval=String(cval).toLowerCase();
 		var bchk = cval.search(/(false|f|0|no|n|off|undefined)/i)<0 ? " checked='checked' " : "";
 		return "<input type=\"checkbox\" " + bchk  + " value=\""+ cval+"\" offval=\"no\" "+ds+ "/>";
 	};
@@ -13558,7 +13560,7 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 		}
 		if (oSelect) {
 			var	msl =  (opts.colModel.editoptions != null && opts.colModel.editoptions.multiple === true) === true ? true : false,
-			scell = [], sv;
+			scell = [], sv, mapFunc = function(n,i){if(i>0) {return n;}};
 			if(msl) {scell = cellval.split(",");scell = $.map(scell,function(n){return $.trim(n);});}
 			if (fmatter.isString(oSelect)) {
 				// mybe here we can use some caching with care ????
@@ -13566,7 +13568,7 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 				for(i=0; i<so.length;i++){
 					sv = so[i].split(sep);
 					if(sv.length > 2 ) {
-						sv[1] = $.map(sv,function(n,i){if(i>0) {return n;}}).join(sep);
+						sv[1] = $.map(sv,mapFunc).join(sep);
 					}
 					if(msl) {
 						if($.inArray(sv[0],scell)>-1) {
@@ -13766,14 +13768,14 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 		if(op.value){
 			var oSelect = op.value,
 			msl =  op.multiple === true ? true : false,
-			scell = [], sv;
+			scell = [], sv, mapFunc = function(n,i){if(i>0) {return n;}};
 			if(msl) {scell = cell.split(",");scell = $.map(scell,function(n){return $.trim(n);});}
 			if (fmatter.isString(oSelect)) {
 				var so = oSelect.split(delim), j=0, i;
 				for(i=0; i<so.length;i++){
 					sv = so[i].split(sep);
 					if(sv.length > 2 ) {
-						sv[1] = $.map(sv,function(n,i){if(i>0) {return n;}}).join(sep);
+						sv[1] = $.map(sv,mapFunc).join(sep);
 					}					
 					if(msl) {
 						if($.inArray(sv[1],scell)>-1) {
@@ -13812,7 +13814,7 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 		}
 		return $FnFmatter.defaultFormat(cellval, opts);
 	};
-})(jQuery);
+}(jQuery));
 /*
 	The below work is licensed under Creative Commons GNU LGPL License.
 

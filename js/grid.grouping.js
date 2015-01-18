@@ -1,4 +1,5 @@
 /*jshint eqeqeq:false, eqnull:true */
+/*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, continue: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
 /*global jQuery */
 // Grouping module
 (function($){
@@ -296,37 +297,34 @@ jgrid.extend({
 				return ret;
 			}
 			function buildSummaryTd(i, ik, grp, foffset) {
-				var fdata = findGroupIdx(i, ik, grp),
-				cm = p.colModel,
-				grlen = fdata.cnt, strTd="", k, tmpdata, tplfld;
-				for(k=foffset; k<colspans;k++) {
-					tmpdata = "<td "+$t.formatCol(k,1,'')+">&#160;</td>";
-					tplfld = "{0}";
-					$.each(fdata.summary,function(){
-						var vv;
-						if(this.nm === cm[k].name) {
-							if(cm[k].summaryTpl)  {
-								tplfld = cm[k].summaryTpl;
-							}
-							if(typeof this.st === 'string' && this.st.toLowerCase() === 'avg') {
-								if(this.sd && this.vd) { 
-									this.v = (this.v/this.vd);
-								} else if(this.v && grlen > 0) {
-									this.v = (this.v/grlen);
+				var fdata = findGroupIdx(i, ik, grp), cm = p.colModel,
+				grlen = fdata.cnt, strTd="", k, tmpdata, tplfld,
+				processSummary = function () {
+						var vv, summary = this;
+						if(summary.nm === cm[k].name) {
+							tplfld = cm[k].summaryTpl || "{0}";
+							if(typeof summary.st === 'string' && summary.st.toLowerCase() === 'avg') {
+								if(summary.sd && summary.vd) { 
+									summary.v = (summary.v/summary.vd);
+								} else if(summary.v && grlen > 0) {
+									summary.v = (summary.v/grlen);
 								}
 							}
 							try {
-								this.groupCount = fdata.cnt;
-								this.groupIndex = fdata.dataIndex;
-								this.groupValue = fdata.value;
-								vv = $t.formatter('', this.v, k, this);
+								summary.groupCount = fdata.cnt;
+								summary.groupIndex = fdata.dataIndex;
+								summary.groupValue = fdata.value;
+								vv = $t.formatter('', summary.v, k, summary);
 							} catch (ef) {
-								vv = this.v;
+								vv = summary.v;
 							}
 							tmpdata= "<td "+$t.formatCol(k,1,'')+">"+jgrid.format(tplfld,vv)+ "</td>";
 							return false;
 						}
-					});
+					};
+				for(k=foffset; k<colspans;k++) {
+					tmpdata = "<td "+$t.formatCol(k,1,'')+">&#160;</td>";
+					$.each(fdata.summary, processSummary);
 					strTd += tmpdata;
 				}
 				return strTd;
