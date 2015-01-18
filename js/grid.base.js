@@ -557,448 +557,448 @@ $.extend(true,jgrid,{
 		// Original Author Hugo Bonacci
 		// License MIT http://jlinq.codeplex.com/license
 		var QueryObject=function(d,q){
-		if(typeof d==="string"){
-			d=$.data(d);
-		}
-		var self=this,
-		_data=d,
-		_usecase=true,
-		_trim=false,
-		_query=q,
-		_stripNum = /[\$,%]/g,
-		_lastCommand=null,
-		_lastField=null,
-		_orDepth=0,
-		_negate=false,
-		_queuedOperator="",
-		_sorting=[],
-		_useProperties=true;
-		if(typeof d==="object"&&d.push) {
-			if(d.length>0){
-				if(typeof d[0]!=="object"){
-					_useProperties=false;
-				}else{
-					_useProperties=true;
-				}
+			if(typeof d==="string"){
+				d=$.data(d);
 			}
-		}else{
-			throw "data provides is not an array";
-		}
-		this._hasData=function(){
-			return _data===null?false:_data.length===0?false:true;
-		};
-		this._getStr=function(s){
-			var phrase=[];
-			if(_trim){
-				phrase.push("jQuery.trim(");
-			}
-			phrase.push("String("+s+")");
-			if(_trim){
-				phrase.push(")");
-			}
-			if(!_usecase){
-				phrase.push(".toLowerCase()");
-			}
-			return phrase.join("");
-		};
-		this._strComp=function(val){
-			if(typeof val==="string"){
-				return".toString()";
-			}
-			return"";
-		};
-		this._group=function(f,u){
-			return({field:f.toString(),unique:u,items:[]});
-		};
-		this._toStr=function(phrase){
-			if(_trim){
-				phrase=$.trim(phrase);
-			}
-			phrase=phrase.toString().replace(/\\/g,'\\\\').replace(/\"/g,'\\"');
-			return _usecase ? phrase : phrase.toLowerCase();
-		};
-		this._funcLoop=function(func){
-			var results=[];
-			$.each(_data,function(i,v){
-				results.push(func(v));
-			});
-			return results;
-		};
-		this._append=function(s){
-			var i;
-			if(_query===null){
-				_query="";
-			} else {
-				_query+=_queuedOperator === "" ? " && " :_queuedOperator;
-			}
-			for (i=0;i<_orDepth;i++){
-				_query+="(";
-			}
-			if(_negate){
-				_query+="!";
-			}
-			_query+="("+s+")";
-			_negate=false;
-			_queuedOperator="";
-			_orDepth=0;
-		};
-		this._setCommand=function(f,c){
-			_lastCommand=f;
-			_lastField=c;
-		};
-		this._resetNegate=function(){
-			_negate=false;
-		};
-		this._repeatCommand=function(f,v){
-			if(_lastCommand===null){
-				return self;
-			}
-			if(f!==null&&v!==null){
-				return _lastCommand(f,v);
-			}
-			if(_lastField===null){
-				return _lastCommand(f);
-			}
-			if(!_useProperties){
-				return _lastCommand(f);
-			}
-			return _lastCommand(_lastField,f);
-		};
-		this._equals=function(a,b){
-			return(self._compare(a,b,1)===0);
-		};
-		this._compare=function(a,b,d){
-			var toString = Object.prototype.toString;
-			if( d === undefined) { d = 1; }
-			if(a===undefined) { a = null; }
-			if(b===undefined) { b = null; }
-			if(a===null && b===null){
-				return 0;
-			}
-			if(a===null&&b!==null){
-				return 1;
-			}
-			if(a!==null&&b===null){
-				return -1;
-			}
-			if (toString.call(a) === '[object Date]' && toString.call(b) === '[object Date]') {
-				if (a < b) { return -d; }
-				if (a > b) { return d; }
-				return 0;
-			}
-			if(!_usecase && typeof a !== "number" && typeof b !== "number" ) {
-				a=String(a);
-				b=String(b);
-			}
-			if(a<b){return -d;}
-			if(a>b){return d;}
-			return 0;
-		};
-		this._performSort=function(){
-			if(_sorting.length===0){return;}
-			_data=self._doSort(_data,0);
-		};
-		this._doSort=function(d,q){
-			var by=_sorting[q].by,
-			dir=_sorting[q].dir,
-			type = _sorting[q].type,
-			dfmt = _sorting[q].datefmt,
-			sfunc = _sorting[q].sfunc;
-			if(q===_sorting.length-1){
-				return self._getOrder(d, by, dir, type, dfmt, sfunc);
-			}
-			q++;
-			var values=self._getGroup(d,by,dir,type,dfmt), results=[], i, j, sorted;
-			for(i=0;i<values.length;i++){
-				sorted=self._doSort(values[i].items,q);
-				for(j=0;j<sorted.length;j++){
-					results.push(sorted[j]);
-				}
-			}
-			return results;
-		};
-		this._getOrder=function(data,by,dir,type, dfmt, sfunc){
-			var sortData=[],_sortData=[], newDir = dir==="a" ? 1 : -1, i,ab,j,
-			findSortKey;
-
-			if(type === undefined ) { type = "text"; }
-			if (type === 'float' || type=== 'number' || type=== 'currency' || type=== 'numeric') {
-				findSortKey = function($cell) {
-					var key = parseFloat( String($cell).replace(_stripNum, ''));
-					return isNaN(key) ? Number.NEGATIVE_INFINITY : key;
-				};
-			} else if (type==='int' || type==='integer') {
-				findSortKey = function($cell) {
-					return $cell ? parseFloat(String($cell).replace(_stripNum, '')) : Number.NEGATIVE_INFINITY;
-				};
-			} else if(type === 'date' || type === 'datetime') {
-				findSortKey = function($cell) {
-					return jgrid.parseDate(dfmt,$cell).getTime();
-				};
-			} else if($.isFunction(type)) {
-				findSortKey = type;
-			} else {
-				findSortKey = function($cell) {
-					$cell = $cell ? $.trim(String($cell)) : "";
-					return _usecase ? $cell : $cell.toLowerCase();
-				};
-			}
-			$.each(data,function(i,v){
-				ab = by!=="" ? jgrid.getAccessor(v,by) : v;
-				if(ab === undefined) { ab = ""; }
-				ab = findSortKey(ab, v);
-				_sortData.push({ 'vSort': ab,'index':i});
-			});
-			if($.isFunction(sfunc)) {
-				_sortData.sort(function(a,b){
-					a = a.vSort;
-					b = b.vSort;
-					return sfunc.call(this,a,b,newDir);
-				});
-			} else {
-				_sortData.sort(function(a,b){
-					a = a.vSort;
-					b = b.vSort;
-					return self._compare(a,b,newDir);
-				});
-			}
-			j=0;
-			var nrec= data.length;
-			// overhead, but we do not change the original data.
-			while(j<nrec) {
-				i = _sortData[j].index;
-				sortData.push(data[i]);
-				j++;
-			}
-			return sortData;
-		};
-		this._getGroup=function(data,by,dir,type, dfmt){
-			var results=[],
-			group=null,
-			last=null;
-			$.each(self._getOrder(data,by,dir,type, dfmt),function(i,v){
-				var val = jgrid.getAccessor(v, by);
-				if(val == null) { val = ""; }
-				if(!self._equals(last,val)){
-					last=val;
-					if(group !== null){
-						results.push(group);
+			var self=this,
+			_data=d,
+			_usecase=true,
+			_trim=false,
+			_query=q,
+			_stripNum = /[\$,%]/g,
+			_lastCommand=null,
+			_lastField=null,
+			_orDepth=0,
+			_negate=false,
+			_queuedOperator="",
+			_sorting=[],
+			_useProperties=true;
+			if(typeof d==="object"&&d.push) {
+				if(d.length>0){
+					if(typeof d[0]!=="object"){
+						_useProperties=false;
+					}else{
+						_useProperties=true;
 					}
-					group=self._group(by,val);
 				}
-				group.items.push(v);
-			});
-			if(group !== null){
-				results.push(group);
+			}else{
+				throw "data provides is not an array";
 			}
-			return results;
-		};
-		this.ignoreCase=function(){
-			_usecase=false;
-			return self;
-		};
-		this.useCase=function(){
-			_usecase=true;
-			return self;
-		};
-		this.trim=function(){
-			_trim=true;
-			return self;
-		};
-		this.noTrim=function(){
-			_trim=false;
-			return self;
-		};
-		this.execute=function(){
-			var match=_query, results=[];
-			if(match === null){
-				return self;
-			}
-			$.each(_data,function(){
-				if(eval(match)){results.push(this);}
-			});
-			_data=results;
-			return self;
-		};
-		this.data=function(){
-			return _data;
-		};
-		this.select=function(f){
-			self._performSort();
-			if(!self._hasData()){ return[]; }
-			self.execute();
-			if($.isFunction(f)){
+			this._hasData=function(){
+				return _data===null?false:_data.length===0?false:true;
+			};
+			this._getStr=function(s){
+				var phrase=[];
+				if(_trim){
+					phrase.push("jQuery.trim(");
+				}
+				phrase.push("String("+s+")");
+				if(_trim){
+					phrase.push(")");
+				}
+				if(!_usecase){
+					phrase.push(".toLowerCase()");
+				}
+				return phrase.join("");
+			};
+			this._strComp=function(val){
+				if(typeof val==="string"){
+					return".toString()";
+				}
+				return"";
+			};
+			this._group=function(f,u){
+				return({field:f.toString(),unique:u,items:[]});
+			};
+			this._toStr=function(phrase){
+				if(_trim){
+					phrase=$.trim(phrase);
+				}
+				phrase=phrase.toString().replace(/\\/g,'\\\\').replace(/\"/g,'\\"');
+				return _usecase ? phrase : phrase.toLowerCase();
+			};
+			this._funcLoop=function(func){
 				var results=[];
 				$.each(_data,function(i,v){
-					results.push(f(v));
+					results.push(func(v));
 				});
 				return results;
-			}
-			return _data;
-		};
-		this.hasMatch=function(){
-			if(!self._hasData()) { return false; }
-			self.execute();
-			return _data.length>0;
-		};
-		this.andNot=function(f,v,x){
-			_negate=!_negate;
-			return self.and(f,v,x);
-		};
-		this.orNot=function(f,v,x){
-			_negate=!_negate;
-			return self.or(f,v,x);
-		};
-		this.not=function(f,v,x){
-			return self.andNot(f,v,x);
-		};
-		this.and=function(f,v,x){
-			_queuedOperator=" && ";
-			if(f===undefined){
+			};
+			this._append=function(s){
+				var i;
+				if(_query===null){
+					_query="";
+				} else {
+					_query+=_queuedOperator === "" ? " && " :_queuedOperator;
+				}
+				for (i=0;i<_orDepth;i++){
+					_query+="(";
+				}
+				if(_negate){
+					_query+="!";
+				}
+				_query+="("+s+")";
+				_negate=false;
+				_queuedOperator="";
+				_orDepth=0;
+			};
+			this._setCommand=function(f,c){
+				_lastCommand=f;
+				_lastField=c;
+			};
+			this._resetNegate=function(){
+				_negate=false;
+			};
+			this._repeatCommand=function(f,v){
+				if(_lastCommand===null){
+					return self;
+				}
+				if(f!==null&&v!==null){
+					return _lastCommand(f,v);
+				}
+				if(_lastField===null){
+					return _lastCommand(f);
+				}
+				if(!_useProperties){
+					return _lastCommand(f);
+				}
+				return _lastCommand(_lastField,f);
+			};
+			this._equals=function(a,b){
+				return(self._compare(a,b,1)===0);
+			};
+			this._compare=function(a,b,d){
+				var toString = Object.prototype.toString;
+				if( d === undefined) { d = 1; }
+				if(a===undefined) { a = null; }
+				if(b===undefined) { b = null; }
+				if(a===null && b===null){
+					return 0;
+				}
+				if(a===null&&b!==null){
+					return 1;
+				}
+				if(a!==null&&b===null){
+					return -1;
+				}
+				if (toString.call(a) === '[object Date]' && toString.call(b) === '[object Date]') {
+					if (a < b) { return -d; }
+					if (a > b) { return d; }
+					return 0;
+				}
+				if(!_usecase && typeof a !== "number" && typeof b !== "number" ) {
+					a=String(a);
+					b=String(b);
+				}
+				if(a<b){return -d;}
+				if(a>b){return d;}
+				return 0;
+			};
+			this._performSort=function(){
+				if(_sorting.length===0){return;}
+				_data=self._doSort(_data,0);
+			};
+			this._doSort=function(d,q){
+				var by=_sorting[q].by,
+				dir=_sorting[q].dir,
+				type = _sorting[q].type,
+				dfmt = _sorting[q].datefmt,
+				sfunc = _sorting[q].sfunc;
+				if(q===_sorting.length-1){
+					return self._getOrder(d, by, dir, type, dfmt, sfunc);
+				}
+				q++;
+				var values=self._getGroup(d,by,dir,type,dfmt), results=[], i, j, sorted;
+				for(i=0;i<values.length;i++){
+					sorted=self._doSort(values[i].items,q);
+					for(j=0;j<sorted.length;j++){
+						results.push(sorted[j]);
+					}
+				}
+				return results;
+			};
+			this._getOrder=function(data,by,dir,type, dfmt, sfunc){
+				var sortData=[],_sortData=[], newDir = dir==="a" ? 1 : -1, i,ab,j,
+				findSortKey;
+
+				if(type === undefined ) { type = "text"; }
+				if (type === 'float' || type=== 'number' || type=== 'currency' || type=== 'numeric') {
+					findSortKey = function($cell) {
+						var key = parseFloat( String($cell).replace(_stripNum, ''));
+						return isNaN(key) ? Number.NEGATIVE_INFINITY : key;
+					};
+				} else if (type==='int' || type==='integer') {
+					findSortKey = function($cell) {
+						return $cell ? parseFloat(String($cell).replace(_stripNum, '')) : Number.NEGATIVE_INFINITY;
+					};
+				} else if(type === 'date' || type === 'datetime') {
+					findSortKey = function($cell) {
+						return jgrid.parseDate(dfmt,$cell).getTime();
+					};
+				} else if($.isFunction(type)) {
+					findSortKey = type;
+				} else {
+					findSortKey = function($cell) {
+						$cell = $cell ? $.trim(String($cell)) : "";
+						return _usecase ? $cell : $cell.toLowerCase();
+					};
+				}
+				$.each(data,function(i,v){
+					ab = by!=="" ? jgrid.getAccessor(v,by) : v;
+					if(ab === undefined) { ab = ""; }
+					ab = findSortKey(ab, v);
+					_sortData.push({ 'vSort': ab,'index':i});
+				});
+				if($.isFunction(sfunc)) {
+					_sortData.sort(function(a,b){
+						a = a.vSort;
+						b = b.vSort;
+						return sfunc.call(this,a,b,newDir);
+					});
+				} else {
+					_sortData.sort(function(a,b){
+						a = a.vSort;
+						b = b.vSort;
+						return self._compare(a,b,newDir);
+					});
+				}
+				j=0;
+				var nrec= data.length;
+				// overhead, but we do not change the original data.
+				while(j<nrec) {
+					i = _sortData[j].index;
+					sortData.push(data[i]);
+					j++;
+				}
+				return sortData;
+			};
+			this._getGroup=function(data,by,dir,type, dfmt){
+				var results=[],
+				group=null,
+				last=null;
+				$.each(self._getOrder(data,by,dir,type, dfmt),function(i,v){
+					var val = jgrid.getAccessor(v, by);
+					if(val == null) { val = ""; }
+					if(!self._equals(last,val)){
+						last=val;
+						if(group !== null){
+							results.push(group);
+						}
+						group=self._group(by,val);
+					}
+					group.items.push(v);
+				});
+				if(group !== null){
+					results.push(group);
+				}
+				return results;
+			};
+			this.ignoreCase=function(){
+				_usecase=false;
 				return self;
-			}
-			return self._repeatCommand(f,v,x);
-		};
-		this.or=function(f,v,x){
-			_queuedOperator=" || ";
-			if(f===undefined) { return self; }
-			return self._repeatCommand(f,v,x);
-		};
-		this.orBegin=function(){
-			_orDepth++;
+			};
+			this.useCase=function(){
+				_usecase=true;
+				return self;
+			};
+			this.trim=function(){
+				_trim=true;
+				return self;
+			};
+			this.noTrim=function(){
+				_trim=false;
+				return self;
+			};
+			this.execute=function(){
+				var match=_query, results=[];
+				if(match === null){
+					return self;
+				}
+				$.each(_data,function(){
+					if(eval(match)){results.push(this);}
+				});
+				_data=results;
+				return self;
+			};
+			this.data=function(){
+				return _data;
+			};
+			this.select=function(f){
+				self._performSort();
+				if(!self._hasData()){ return[]; }
+				self.execute();
+				if($.isFunction(f)){
+					var results=[];
+					$.each(_data,function(i,v){
+						results.push(f(v));
+					});
+					return results;
+				}
+				return _data;
+			};
+			this.hasMatch=function(){
+				if(!self._hasData()) { return false; }
+				self.execute();
+				return _data.length>0;
+			};
+			this.andNot=function(f,v,x){
+				_negate=!_negate;
+				return self.and(f,v,x);
+			};
+			this.orNot=function(f,v,x){
+				_negate=!_negate;
+				return self.or(f,v,x);
+			};
+			this.not=function(f,v,x){
+				return self.andNot(f,v,x);
+			};
+			this.and=function(f,v,x){
+				_queuedOperator=" && ";
+				if(f===undefined){
+					return self;
+				}
+				return self._repeatCommand(f,v,x);
+			};
+			this.or=function(f,v,x){
+				_queuedOperator=" || ";
+				if(f===undefined) { return self; }
+				return self._repeatCommand(f,v,x);
+			};
+			this.orBegin=function(){
+				_orDepth++;
+				return self;
+			};
+			this.orEnd=function(){
+				if (_query !== null){
+					_query+=")";
+				}
+				return self;
+			};
+			this.isNot=function(f){
+				_negate=!_negate;
+				return self.is(f);
+			};
+			this.is=function(f){
+				self._append('this.'+f);
+				self._resetNegate();
+				return self;
+			};
+			this._compareValues=function(func,f,v,how,t){
+				var fld;
+				if(_useProperties){
+					fld='jQuery.jgrid.getAccessor(this,\''+f+'\')';
+				}else{
+					fld='this';
+				}
+				if(v===undefined) { v = null; }
+				//var val=v===null?f:v,
+				var val =v,
+				swst = t.stype === undefined ? "text" : t.stype;
+				if(v !== null) {
+				switch(swst) {
+					case 'int':
+					case 'integer':
+						val = (isNaN(Number(val)) || val==="") ? '0' : val; // To be fixed with more inteligent code
+						fld = 'parseInt('+fld+',10)';
+						val = 'parseInt('+val+',10)';
+						break;
+					case 'float':
+					case 'number':
+					case 'numeric':
+						val = String(val).replace(_stripNum, '');
+						val = (isNaN(Number(val)) || val==="") ? '0' : val; // To be fixed with more inteligent code
+						fld = 'parseFloat('+fld+')';
+						val = 'parseFloat('+val+')';
+						break;
+					case 'date':
+					case 'datetime':
+						val = String(jgrid.parseDate(t.newfmt || 'Y-m-d',val).getTime());
+						fld = 'jQuery.jgrid.parseDate("'+t.srcfmt+'",'+fld+').getTime()';
+						break;
+					default :
+						fld=self._getStr(fld);
+						val=self._getStr('"'+self._toStr(val)+'"');
+				}
+				}
+				self._append(fld+' '+how+' '+val);
+				self._setCommand(func,f);
+				self._resetNegate();
+				return self;
+			};
+			this.equals=function(f,v,t){
+				return self._compareValues(self.equals,f,v,"==",t);
+			};
+			this.notEquals=function(f,v,t){
+				return self._compareValues(self.equals,f,v,"!==",t);
+			};
+			this.isNull = function(f,v,t){
+				return self._compareValues(self.equals,f,null,"===",t);
+			};
+			this.greater=function(f,v,t){
+				return self._compareValues(self.greater,f,v,">",t);
+			};
+			this.less=function(f,v,t){
+				return self._compareValues(self.less,f,v,"<",t);
+			};
+			this.greaterOrEquals=function(f,v,t){
+				return self._compareValues(self.greaterOrEquals,f,v,">=",t);
+			};
+			this.lessOrEquals=function(f,v,t){
+				return self._compareValues(self.lessOrEquals,f,v,"<=",t);
+			};
+			this.startsWith=function(f,v){
+				var val = (v==null) ? f: v,
+				length=_trim ? $.trim(val.toString()).length : val.toString().length;
+				if(_useProperties){
+					self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(v)+'"'));
+				}else{
+					if (v!=null) { length=_trim?$.trim(v.toString()).length:v.toString().length; }
+					self._append(self._getStr('this')+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(f)+'"'));
+				}
+				self._setCommand(self.startsWith,f);
+				self._resetNegate();
+				return self;
+			};
+			this.endsWith=function(f,v){
+				var val = (v==null) ? f: v,
+				length=_trim ? $.trim(val.toString()).length:val.toString().length;
+				if(_useProperties){
+					self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.substr('+self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.length-'+length+','+length+') == "'+self._toStr(v)+'"');
+				} else {
+					self._append(self._getStr('this')+'.substr('+self._getStr('this')+'.length-"'+self._toStr(f)+'".length,"'+self._toStr(f)+'".length) == "'+self._toStr(f)+'"');
+				}
+				self._setCommand(self.endsWith,f);self._resetNegate();
+				return self;
+			};
+			this.contains=function(f,v){
+				if(_useProperties){
+					self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.indexOf("'+self._toStr(v)+'",0) > -1');
+				}else{
+					self._append(self._getStr('this')+'.indexOf("'+self._toStr(f)+'",0) > -1');
+				}
+				self._setCommand(self.contains,f);
+				self._resetNegate();
+				return self;
+			};
+			this.groupBy=function(by,dir,type, datefmt){
+				if(!self._hasData()){
+					return null;
+				}
+				return self._getGroup(_data,by,dir,type, datefmt);
+			};
+			this.orderBy=function(by,dir,stype, dfmt, sfunc){
+				dir = dir == null ? "a" :$.trim(dir.toString().toLowerCase());
+				if(stype == null) { stype = "text"; }
+				if(dfmt == null) { dfmt = "Y-m-d"; }
+				if(sfunc == null) { sfunc = false; }
+				if(dir==="desc"||dir==="descending"){dir="d";}
+				if(dir==="asc"||dir==="ascending"){dir="a";}
+				_sorting.push({by:by,dir:dir,type:stype, datefmt: dfmt, sfunc: sfunc});
+				return self;
+			};
 			return self;
 		};
-		this.orEnd=function(){
-			if (_query !== null){
-				_query+=")";
-			}
-			return self;
-		};
-		this.isNot=function(f){
-			_negate=!_negate;
-			return self.is(f);
-		};
-		this.is=function(f){
-			self._append('this.'+f);
-			self._resetNegate();
-			return self;
-		};
-		this._compareValues=function(func,f,v,how,t){
-			var fld;
-			if(_useProperties){
-				fld='jQuery.jgrid.getAccessor(this,\''+f+'\')';
-			}else{
-				fld='this';
-			}
-			if(v===undefined) { v = null; }
-			//var val=v===null?f:v,
-			var val =v,
-			swst = t.stype === undefined ? "text" : t.stype;
-			if(v !== null) {
-			switch(swst) {
-				case 'int':
-				case 'integer':
-					val = (isNaN(Number(val)) || val==="") ? '0' : val; // To be fixed with more inteligent code
-					fld = 'parseInt('+fld+',10)';
-					val = 'parseInt('+val+',10)';
-					break;
-				case 'float':
-				case 'number':
-				case 'numeric':
-					val = String(val).replace(_stripNum, '');
-					val = (isNaN(Number(val)) || val==="") ? '0' : val; // To be fixed with more inteligent code
-					fld = 'parseFloat('+fld+')';
-					val = 'parseFloat('+val+')';
-					break;
-				case 'date':
-				case 'datetime':
-					val = String(jgrid.parseDate(t.newfmt || 'Y-m-d',val).getTime());
-					fld = 'jQuery.jgrid.parseDate("'+t.srcfmt+'",'+fld+').getTime()';
-					break;
-				default :
-					fld=self._getStr(fld);
-					val=self._getStr('"'+self._toStr(val)+'"');
-			}
-			}
-			self._append(fld+' '+how+' '+val);
-			self._setCommand(func,f);
-			self._resetNegate();
-			return self;
-		};
-		this.equals=function(f,v,t){
-			return self._compareValues(self.equals,f,v,"==",t);
-		};
-		this.notEquals=function(f,v,t){
-			return self._compareValues(self.equals,f,v,"!==",t);
-		};
-		this.isNull = function(f,v,t){
-			return self._compareValues(self.equals,f,null,"===",t);
-		};
-		this.greater=function(f,v,t){
-			return self._compareValues(self.greater,f,v,">",t);
-		};
-		this.less=function(f,v,t){
-			return self._compareValues(self.less,f,v,"<",t);
-		};
-		this.greaterOrEquals=function(f,v,t){
-			return self._compareValues(self.greaterOrEquals,f,v,">=",t);
-		};
-		this.lessOrEquals=function(f,v,t){
-			return self._compareValues(self.lessOrEquals,f,v,"<=",t);
-		};
-		this.startsWith=function(f,v){
-			var val = (v==null) ? f: v,
-			length=_trim ? $.trim(val.toString()).length : val.toString().length;
-			if(_useProperties){
-				self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(v)+'"'));
-			}else{
-				if (v!=null) { length=_trim?$.trim(v.toString()).length:v.toString().length; }
-				self._append(self._getStr('this')+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(f)+'"'));
-			}
-			self._setCommand(self.startsWith,f);
-			self._resetNegate();
-			return self;
-		};
-		this.endsWith=function(f,v){
-			var val = (v==null) ? f: v,
-			length=_trim ? $.trim(val.toString()).length:val.toString().length;
-			if(_useProperties){
-				self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.substr('+self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.length-'+length+','+length+') == "'+self._toStr(v)+'"');
-			} else {
-				self._append(self._getStr('this')+'.substr('+self._getStr('this')+'.length-"'+self._toStr(f)+'".length,"'+self._toStr(f)+'".length) == "'+self._toStr(f)+'"');
-			}
-			self._setCommand(self.endsWith,f);self._resetNegate();
-			return self;
-		};
-		this.contains=function(f,v){
-			if(_useProperties){
-				self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.indexOf("'+self._toStr(v)+'",0) > -1');
-			}else{
-				self._append(self._getStr('this')+'.indexOf("'+self._toStr(f)+'",0) > -1');
-			}
-			self._setCommand(self.contains,f);
-			self._resetNegate();
-			return self;
-		};
-		this.groupBy=function(by,dir,type, datefmt){
-			if(!self._hasData()){
-				return null;
-			}
-			return self._getGroup(_data,by,dir,type, datefmt);
-		};
-		this.orderBy=function(by,dir,stype, dfmt, sfunc){
-			dir = dir == null ? "a" :$.trim(dir.toString().toLowerCase());
-			if(stype == null) { stype = "text"; }
-			if(dfmt == null) { dfmt = "Y-m-d"; }
-			if(sfunc == null) { sfunc = false; }
-			if(dir==="desc"||dir==="descending"){dir="d";}
-			if(dir==="asc"||dir==="ascending"){dir="a";}
-			_sorting.push({by:by,dir:dir,type:stype, datefmt: dfmt, sfunc: sfunc});
-			return self;
-		};
-		return self;
-		};
-	return new QueryObject(source,null);
+		return new QueryObject(source,null);
 	},
 	feedback: function (callbackName) {
 		var self = this;
@@ -2184,11 +2184,6 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 				if (group.rules != null) {
-					//if(s>0) {
-					//	var result = query.select();
-					//	query = $.jgrid.from( result);
-					//	if (p.ignoreCase) { query = query.ignoreCase(); } 
-					//}
 					try{
 						ror = group.rules.length && group.groupOp.toString().toUpperCase() === "OR";
 						if (ror) {
@@ -3114,13 +3109,15 @@ $.fn.jqGrid = function( pin ) {
 				}
 			}
 			if(p.footerrow) { tfoot += "<td role='gridcell' "+formatCol(j,0,'', null, '', false)+">&#160;</td>"; }
-		}).mousedown(function(e) {
+		})
+		.mousedown(function(e) {
 			if ($(e.target).closest("th>span.ui-jqgrid-resize").length !== 1) { return; }
 			var ci = getColumnHeaderIndex(this);
 			if(p.forceFit===true) {p.nv= nextVisible(ci);}
 			grid.dragStart(ci, e, getOffset(ci));
 			return false;
-		}).click(function(e) {
+		})
+		.click(function(e) {
 			if (p.disableClick) {
 				p.disableClick = false;
 				return false;
@@ -3194,15 +3191,15 @@ $.fn.jqGrid = function( pin ) {
 			}
 		}
 		if( p.cellEdit === false && p.hoverrows === true) {
-		$(ts).bind('mouseover',function(e) {
-			ptr = $(e.target).closest("tr.jqgrow");
-			if($(ptr).attr("class") !== "ui-subgrid") {
-				$(ptr).addClass("ui-state-hover");
-			}
-		}).bind('mouseout',function(e) {
-			ptr = $(e.target).closest("tr.jqgrow");
-			$(ptr).removeClass("ui-state-hover");
-		});
+			$(ts).bind('mouseover',function(e) {
+				ptr = $(e.target).closest("tr.jqgrow");
+				if($(ptr).attr("class") !== "ui-subgrid") {
+					$(ptr).addClass("ui-state-hover");
+				}
+			}).bind('mouseout',function(e) {
+				ptr = $(e.target).closest("tr.jqgrow");
+				$(ptr).removeClass("ui-state-hover");
+			});
 		}
 		var ri,ci, tdHtml;
 		$(ts).before(grid.hDiv).click(function(e) {
@@ -4030,8 +4027,7 @@ jgrid.extend({
 	showCol : function(colname) {
 		return this.each(function(){$(this).jqGrid("showHideCol",colname,"");});
 	},
-	remapColumns : function(permutation, updateCells, keepHeader)
-	{
+	remapColumns : function(permutation, updateCells, keepHeader) {
 		function resortArray(a) {
 			var ac;
 			if (a.length) {
