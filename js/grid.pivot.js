@@ -13,7 +13,7 @@
 // To optimize the search we need custom array filter
 // This code is taken from
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
-
+var jgrid = $.jgrid;
 function _pivotfilter (fn, context) {
 	var i,
 		value,
@@ -50,7 +50,7 @@ $.assocArraySize = function(obj) {
     return size;
 };
 
-$.jgrid.extend({
+jgrid.extend({
 	pivotSetup : function( data, options ){
 		// data should come in json format
 		// The function return the new colModel and the transformed data
@@ -466,7 +466,7 @@ $.jgrid.extend({
 			function pivot( data) {
 				var pivotGrid = jQuery($t).jqGrid('pivotSetup',data, pivotOpt),
 				footerrow = $.assocArraySize(pivotGrid.summary) > 0 ? true : false,
-				query= $.jgrid.from(pivotGrid.rows), i;
+				query= jgrid.from(pivotGrid.rows), i;
 				for(i=0; i< pivotGrid.groupOptions.groupingView.groupField.length; i++) {
 					query.orderBy(pivotGrid.groupOptions.groupingView.groupField[i], "a", 'text', '');
 				}
@@ -497,7 +497,7 @@ $.jgrid.extend({
 					url : data,
 					dataType: 'json',
 					success : function(response) {
-						pivot($.jgrid.getAccessor(response, ajaxOpt && ajaxOpt.reader ? ajaxOpt.reader: 'rows') );
+						pivot(jgrid.getAccessor(response, ajaxOpt && ajaxOpt.reader ? ajaxOpt.reader: 'rows') );
 					}
 				}, ajaxOpt || {}) );
 			} else {

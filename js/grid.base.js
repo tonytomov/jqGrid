@@ -1394,7 +1394,7 @@ $.fn.jqGrid = function( pin ) {
 			},
 			scrollGrid: function(e) { // this maus be bDiv
 				// TODO get ts from this bDiv
-				var bDiv = this, $bTable = getGridComponent("bTable", $(this)), gridSelf;
+				var bDiv = this, $bTable = getGridComponent("bTable", $(bDiv)), gridSelf;
 				if (e) { e.stopPropagation(); }
 				if ($bTable.length == 0) { return true; }
 				gridSelf = $bTable[0].grid;
@@ -1455,17 +1455,17 @@ $.fn.jqGrid = function( pin ) {
 		if($.inArray(p.direction,["ltr","rtl"]) === -1) { p.direction = "ltr"; }
 		dir = p.direction;
 
-		$(gv).insertBefore(this);
-		$(this).removeClass("scroll").appendTo(gv);
+		$(gv).insertBefore(ts);
+		$(ts).removeClass("scroll").appendTo(gv);
 		var eg = $("<div class='ui-jqgrid ui-widget ui-widget-content ui-corner-all'></div>");
 		$(eg).attr({"id": p.gBoxId,"dir": dir}).insertBefore(gv);
 		$(gv).attr("id", p.gViewId).appendTo(eg);
-		$("<div class='ui-widget-overlay jqgrid-overlay' id='lui_"+this.id+"'></div>").insertBefore(gv);
-		$("<div class='loading ui-state-default ui-state-active' id='load_"+this.id+"'>"+p.loadtext+"</div>").insertBefore(gv);
+		$("<div class='ui-widget-overlay jqgrid-overlay' id='lui_"+p.id+"'></div>").insertBefore(gv);
+		$("<div class='loading ui-state-default ui-state-active' id='load_"+p.id+"'>"+p.loadtext+"</div>").insertBefore(gv);
 		if (isMSIE8) {
-			$(this).attr({cellspacing:"0"});
+			$(ts).attr({cellspacing:"0"});
 		}
-		$(this).attr({"role":"presentation","aria-labelledby":"gbox_"+this.id});
+		$(ts).attr({"role":"presentation","aria-labelledby":"gbox_"+ts.id});
 		var sortkeys = ["shiftKey","altKey","ctrlKey"],
 		intNum = function(val,defval) {
 			val = parseInt(val,10);
@@ -1564,7 +1564,7 @@ $.fn.jqGrid = function( pin ) {
 			return order;
 		},
 		emptyRows = function (scroll, locdata) {
-			var firstrow, self = this, rows = this.rows, bDiv = self.grid.bDiv;
+			var firstrow, self = this, rows = self.rows, bDiv = self.grid.bDiv;
 			if (p.deepempty) {
 				$(rows).slice(1).remove();
 			} else {
@@ -2095,44 +2095,44 @@ $.fn.jqGrid = function( pin ) {
 			}
 			var grpview = p.grouping ? p.groupingView : false, lengrp, gin;
 			$.each(p.colModel,function(){
-				var grindex = this.index || this.name;
-				sorttype = this.sorttype || "text";
+				var cm = this, grindex = cm.index || cm.name;
+				sorttype = cm.sorttype || "text";
 				if(sorttype === "date" || sorttype === "datetime") {
-					if(this.formatter && typeof this.formatter === 'string' && this.formatter === 'date') {
-						if(this.formatoptions && this.formatoptions.srcformat) {
-							srcformat = this.formatoptions.srcformat;
+					if(cm.formatter && typeof cm.formatter === 'string' && cm.formatter === 'date') {
+						if(cm.formatoptions && cm.formatoptions.srcformat) {
+							srcformat = cm.formatoptions.srcformat;
 						} else {
 							srcformat = jgrid.formatter.date.srcformat;
 						}
-						if(this.formatoptions && this.formatoptions.newformat) {
-							newformat = this.formatoptions.newformat;
+						if(cm.formatoptions && cm.formatoptions.newformat) {
+							newformat = cm.formatoptions.newformat;
 						} else {
 							newformat = jgrid.formatter.date.newformat;
 						}
 					} else {
-						srcformat = newformat = this.datefmt || "Y-m-d";
+						srcformat = newformat = cm.datefmt || "Y-m-d";
 					}
-					cmtypes[this.name] = {"stype": sorttype, "srcfmt": srcformat,"newfmt":newformat, "sfunc": this.sortfunc || null};
+					cmtypes[cm.name] = {"stype": sorttype, "srcfmt": srcformat,"newfmt":newformat, "sfunc": cm.sortfunc || null};
 				} else {
-					cmtypes[this.name] = {"stype": sorttype, "srcfmt":'',"newfmt":'', "sfunc": this.sortfunc || null};
+					cmtypes[cm.name] = {"stype": sorttype, "srcfmt":'',"newfmt":'', "sfunc": cm.sortfunc || null};
 				}
 				if(p.grouping) {
 					for(gin =0, lengrp = grpview.groupField.length; gin< lengrp; gin++) {
-						if( this.name === grpview.groupField[gin]) {
+						if( cm.name === grpview.groupField[gin]) {
 							grtypes[gin] = cmtypes[grindex];
 							grindexes[gin]= grindex;
 						}
 					}
 				}
 				if(p.multiSort) {
-					if(this.lso) {
-						st.push(this.name);
-						var tmplso= this.lso.split("-");
+					if(cm.lso) {
+						st.push(cm.name);
+						var tmplso= cm.lso.split("-");
 						sto.push( tmplso[tmplso.length-1] );
 					}
 				} else {
-					if(!fndsort && (this.index === p.sortname || this.name === p.sortname)){
-						st = this.name; // ???
+					if(!fndsort && (cm.index === p.sortname || cm.name === p.sortname)){
+						st = cm.name; // ???
 						fndsort = true;
 					}
 				}
@@ -2866,7 +2866,7 @@ $.fn.jqGrid = function( pin ) {
 			p.gridview = true;
 		}
 		if(p.treeGrid === true) {
-			try { $(this).jqGrid("setTreeGrid");} catch (ignore) {}
+			try { $(ts).jqGrid("setTreeGrid");} catch (ignore) {}
 			if(p.datatype !== "local") { p.localReader = {id: "_id_"};	}
 		}
 		if(p.subGrid) {
@@ -2986,11 +2986,11 @@ $.fn.jqGrid = function( pin ) {
 		}
 		thead += "</tr></thead>";
 		imgs = null;
-		$(this).append(thead);
-		$("thead tr:first th",this).hover(function(){$(this).addClass('ui-state-hover');},function(){$(this).removeClass('ui-state-hover');});
+		$(ts).append(thead);
+		$("thead tr:first th",ts).hover(function(){$(this).addClass('ui-state-hover');},function(){$(this).removeClass('ui-state-hover');});
 		if(p.multiselect) {
 			var emp=[], chk;
-			$(p.cb,this).bind('click',function(){
+			$(p.cb,ts).bind('click',function(){
 				clearArray(p.selarrrow); // p.selarrrow = [];
 				var froz = p.frozenColumns === true ? p.id + "_frozen" : "";
 				if (this.checked) {
@@ -3154,10 +3154,10 @@ $.fn.jqGrid = function( pin ) {
 		if(p.footerrow) { tfoot += "</tr></tbody></table>"; }
 		firstr += "</tr>";
 		tbody = document.createElement("tbody");
-		this.appendChild(tbody);
-		$(this).addClass('ui-jqgrid-btable').append(firstr);
+		ts.appendChild(tbody);
+		$(ts).addClass('ui-jqgrid-btable').append(firstr);
 		firstr = null;
-		var hTable = $("<table class='ui-jqgrid-htable' style='width:"+p.tblwidth+"px' role='presentation' aria-labelledby='gbox_"+this.id+"'"+(isMSIE8 ? " cellspacing='0'" : "")+"></table>").append(thead),
+		var hTable = $("<table class='ui-jqgrid-htable' style='width:"+p.tblwidth+"px' role='presentation' aria-labelledby='gbox_"+p.id+"'"+(isMSIE8 ? " cellspacing='0'" : "")+"></table>").append(thead),
 		hg = (p.caption && p.hiddengrid===true) ? true : false,
 		hb = $("<div class='ui-jqgrid-hbox" + (dir==="rtl" ? "-rtl" : "" )+"'></div>");
 		thead = null;
@@ -3334,7 +3334,7 @@ $.fn.jqGrid = function( pin ) {
 			.scroll(grid.scrollGrid);
 		$(ts).css({width:p.tblwidth+"px"});
 		if( !$.support.tbody ) { //IE
-			if( $(">tbody",this).length === 2 ) { $(">tbody:gt(0)",this).remove();}
+			if( $(">tbody",ts).length === 2 ) { $(">tbody:gt(0)",ts).remove();}
 		}
 		if(p.multikey){
 			if( jgrid.msie) {
@@ -3358,11 +3358,11 @@ $.fn.jqGrid = function( pin ) {
 			else if (p.toolbar[1]==="bottom" ) {$(grid.uDiv).insertAfter(grid.hDiv);}
 			if(p.toolbar[1]==="both") {
 				grid.ubDiv = document.createElement("div");
-				$(grid.uDiv).addClass("ui-userdata ui-state-default").attr("id","t_"+this.id).insertBefore(grid.hDiv);
-				$(grid.ubDiv).addClass("ui-userdata ui-state-default").attr("id","tb_"+this.id).insertAfter(grid.hDiv);
+				$(grid.uDiv).addClass("ui-userdata ui-state-default").attr("id","t_"+p.id).insertBefore(grid.hDiv);
+				$(grid.ubDiv).addClass("ui-userdata ui-state-default").attr("id","tb_"+p.id).insertAfter(grid.hDiv);
 				if(hg)  {$(grid.ubDiv).hide();}
 			} else {
-				$(grid.uDiv).width(grid.width).addClass("ui-userdata ui-state-default").attr("id","t_"+this.id);
+				$(grid.uDiv).width(grid.width).addClass("ui-userdata ui-state-default").attr("id","t_"+p.id);
 			}
 			if(hg) {$(grid.uDiv).hide();}
 		}
@@ -3484,7 +3484,7 @@ $.fn.jqGrid = function( pin ) {
 		$.extend(grid,{populate : populate, emptyRows: emptyRows, beginReq: beginReq, endReq: endReq});
 		ts.addXmlData = function(d) {addXmlData.call(ts,d);};
 		ts.addJSONData = function(d) {addJSONData.call(ts,d);};
-		this.grid.cols = this.rows[0].cells;
+		ts.grid.cols = ts.rows[0].cells;
 		feedback.call(ts, "onInitGrid");
 
 		populate.call(ts);p.hiddengrid=false;
