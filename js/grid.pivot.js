@@ -13,8 +13,7 @@
 // To optimize the search we need custom array filter
 // This code is taken from
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
-var jgrid = $.jgrid;
-function _pivotfilter (fn, context) {
+var jgrid = $.jgrid, _pivotfilter = function (fn, context) {
 	var i,
 		value,
 		result = [],
@@ -38,7 +37,7 @@ function _pivotfilter (fn, context) {
 		}
 	}
 	return result;
-}
+};
 $.assocArraySize = function(obj) {
     // http://stackoverflow.com/a/6700/11236
     var size = 0, key;
@@ -104,7 +103,7 @@ jgrid.extend({
 			 * If the row is not find in pivot rows retun null,
 			 * otherviese the column
 			 */
-			function findGroup(item, index) {
+			var findGroup = function (item, index) {
 				var j = 0, ret = true, i;
 				for(i in item) {
 					if (item.hasOwnProperty(i)) {
@@ -122,7 +121,7 @@ jgrid.extend({
 					rowindex =  index;
 				}
 				return ret;
-			}
+			};
 			/*
 			 * Perform calculations of the pivot values.
 			 */
