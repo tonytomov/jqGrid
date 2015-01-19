@@ -1,0 +1,103 @@
+/**
+ * Copyright (c) 2013, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
+ * Dual licensed under the MIT and GPL licenses
+ * http://www.opensource.org/licenses/mit-license.php
+ * http://www.gnu.org/licenses/gpl-2.0.html
+ * Date: 2013-11-23
+ * see http://stackoverflow.com/a/20165553/315935 for more details
+ */
+.ui-jqgrid .ui-pg-table .ui-pg-div > span.fa, #jqContextMenu .ui-menu-item > a > span.fa {
+    text-indent:0;
+    height: auto;
+    width: auto;
+    background-image: none;
+    overflow: visible;
+    padding-top: 1px;
+}
+.ui-jqgrid .ui-jqgrid-titlebar-close.fa-title {
+    width: auto; /* ovewrite 19px used by jqGrid */
+    height: auto;/* ovewrite 18px used by jqGrid */
+    padding: 0px;
+    margin-top: -0.2em;
+    top: auto;
+    right: 0.3em;
+}
+.ui-jqgrid .ui-jqgrid-titlebar-close.fa-title > span.fa {
+    font-size: 18px;
+    display: inline-block;
+    margin: 0;
+    position: relative;
+}
+.ui-jqgrid .ui-icon-asc.fa {
+	height: auto;
+	margin-top: 0;
+}
+.ui-jqgrid .ui-icon-asc.fa, .ui-jqgrid .ui-icon-desc.fa {
+    height: auto;
+	margin-top: 2px;
+	margin-left: 2px;
+}
+.ui-jqgrid .s-ico > .ui-state-disabled.fa, .s-ico > .ui-state-disabled.fa {
+	padding: 0;
+}
+.ui-jqdialog .ui-jqdialog-titlebar-close, .ui-jqgrid-titlebar .ui-jqdialog-titlebar-close {
+    text-decoration: none;
+}
+.ui-jqdialog .ui-jqdialog-titlebar-close:hover, .ui-jqgrid-titlebar .ui-jqdialog-titlebar-close:hover {
+    text-decoration: none;
+    margin-top: -0.8em; /* -0.9px */
+}
+.ui-jqgrid .ui-jqgrid-titlebar-close.fa-title span {
+    margin-top: 0.1em
+}
+.ui-jqgrid .ui-jqgrid-titlebar-close.fa-title.ui-state-hover {
+    right: 0.1em;
+    margin-top: -0.3em
+}
+.ui-jqgrid .ui-jqgrid-titlebar-close.fa-title.ui-state-hover span {
+    margin: 0.0 0.1em;
+}
+.ui-jqdialog .ui-jqdialog-titlebar-close > span,
+.ui-jqgrid-titlebar .ui-jqdialog-titlebar-close > span {
+    margin-top: 0.3em;
+    margin-left: 0.4em;
+    margin-right: 0.4em
+}
+.fm-button-icon-left > span.fa {
+    margin-left: -1.2em;
+    left: 1.8em;
+    position: absolute;
+    top: 0.6em;
+}
+.fm-button-icon-right > span.fa {
+    margin-right: -1.2em;
+    right: 1.7em;
+    position: absolute;
+    top: 0.6em;
+}
+.ui-jqgrid .ui-jqdialog .fm-button > span {
+	margin-left: 0.5em;
+	margin-right: 0;
+}
+.ui-jqdialog > .ui-resizable-se {
+	bottom: -3px;
+	right: -3px
+}
+.jqgrow .ui-pg-div > span.fa {
+	background: none;
+	border: 0 none;
+}
+.ui-subgrid > .subgrid-cell span.ui-icon.fa {
+	text-indent: 0;
+	background: none;
+	border: 0 none;
+	margin-bottom: 4px;
+	margin-left: 10px;
+}
+.jqgrow > .ui-sgcollapsed span.ui-icon.fa {
+	text-indent: 0;
+	background: none;
+	border: 0 none;
+	margin-top: 4px;
+	margin-left: 3px;
+}
