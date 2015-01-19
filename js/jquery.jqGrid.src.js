@@ -1013,7 +1013,7 @@ $.extend(true,jgrid,{
 		}
 		// onSortCol -> jqGridSortCol, onSelectAll -> jqGridSelectAll, ondblClickRow -> jqGridDblClickRow
 		// resizeStop -> jqGridResizeStop
-		var eventName = callbackName.substring(0, 1) === "on"?
+		var eventName = callbackName.substring(0, 2) === "on"?
 				"jqGrid" + callbackName.charAt(2).toUpperCase() + callbackName.substring(3):
 				"jqGrid" + callbackName.charAt(0).toUpperCase() + callbackName.substring(1),
 			args = $.makeArray(arguments).slice(1),
