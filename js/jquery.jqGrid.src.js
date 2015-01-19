@@ -2432,7 +2432,23 @@ $.fn.jqGrid = function( pin ) {
 					prm[pN.sort] = gs + prm[pN.sort];
 				}
 				$.extend(p.postData,prm);
-				var rcnt = !p.scroll ? 1 : self.rows.length-1;
+				var rcnt = !p.scroll ? 1 : self.rows.length-1,
+				finalReportSteps = function () {
+					feedback.call(self, "loadComplete", dstr);
+					if (p.autoresizeOnLoad) {$self.jqGrid("autoResizeAllColumns");}
+					$self.triggerHandler("jqGridAfterLoadComplete", [dstr]);
+					endReq.call(self);
+					p.datatype = "local";
+					p.datastr = null;
+				},
+				finalReportVirtual = function (data) {
+					$self.triggerHandler("jqGridLoadComplete", [data]);
+					if(lc) { lc.call(self, data); }
+					if (p.autoresizeOnLoad) {$self.jqGrid("autoResizeAllColumns");}
+					$self.triggerHandler("jqGridAfterLoadComplete", [data]);
+					if (pvis) { gridSelf.populateVisible.call(self); }
+					if (npage === 1) { endReq.call(self); }
+				};
 				if (!feedback.call(self, "beforeRequest")) { return; }
 				if ($.isFunction(p.datatype)) { p.datatype.call(self,p.postData,"load_"+p.id, rcnt, npage, adjust); return;}
 				dt = p.datatype.toLowerCase();
@@ -2456,17 +2472,18 @@ $.fn.jqGrid = function( pin ) {
 							}
 							if(dt === "xml") { addXmlData.call(self,data,rcnt,npage>1,adjust); }
 							else { addJSONData.call(self,data,rcnt,npage>1,adjust); }
-							$self.triggerHandler("jqGridLoadComplete", [data]);
+							finalReportVirtual(data);
+							/*$self.triggerHandler("jqGridLoadComplete", [data]);
 							if(lc) { lc.call(self,data); }
 							if (p.autoresizeOnLoad) {$self.jqGrid("autoResizeAllColumns");}
 							$self.triggerHandler("jqGridAfterLoadComplete", [data]);
 							if (pvis) { gridSelf.populateVisible.call(self); }
+							if (npage === 1) { endReq.call(self); }*/
 							if (p.loadonce || p.treeGrid) {
 								p.dataTypeOrg = p.datatype;
 								p.datatype = "local";
 							}
 							data=null;
-							if (npage === 1) { endReq.call(self); }
 						},
 						error:function(xhr,st,err){
 							if($.isFunction(p.loadError)) { p.loadError.call(self,xhr,st,err); }
@@ -2488,26 +2505,29 @@ $.fn.jqGrid = function( pin ) {
 				break;
 				case "xmlstring":
 					beginReq.call(self);
-					dstr = typeof p.datastr !== 'string' ? p.datastr : $.parseXML(p.datastr);
+					dstr = typeof p.datastr === 'string' ? $.parseXML(p.datastr) : p.datastr;
 					addXmlData.call(self,dstr);
-					feedback.call(self, "loadComplete", dstr);
+					finalReportSteps();
+
+					/*feedback.call(self, "loadComplete", dstr);
 					if (p.autoresizeOnLoad) {$self.jqGrid("autoResizeAllColumns");}
 					$self.triggerHandler("jqGridAfterLoadComplete", [dstr]);
-					p.datatype = "local";
-					p.datastr = null;
 					endReq.call(self);
+					p.datatype = "local";
+					p.datastr = null;*/
 				break;
 				case "jsonstring":
 					beginReq.call(self);
-					if(typeof p.datastr === 'string') { dstr = jgrid.parse(p.datastr); }
-					else { dstr = p.datastr; }
+					dstr = typeof p.datastr === 'string' ? jgrid.parse(p.datastr) : p.datastr;
 					addJSONData.call(self,dstr);
-					feedback.call(self, "loadComplete", dstr);
+					finalReportSteps();
+
+					/*feedback.call(self, "loadComplete", dstr);
 					if (p.autoresizeOnLoad) {$self.jqGrid("autoResizeAllColumns");}
 					$self.triggerHandler("jqGridAfterLoadComplete", [dstr]);
-					p.datatype = "local";
-					p.datastr = null;
 					endReq.call(self);
+					p.datatype = "local";
+					p.datastr = null;*/
 				break;
 				case "local":
 				case "clientside":
@@ -2515,12 +2535,13 @@ $.fn.jqGrid = function( pin ) {
 					p.datatype = "local";
 					var req = addLocalData.call(self);
 					addJSONData.call(self,req,rcnt,npage>1,adjust);
-					$self.triggerHandler("jqGridLoadComplete", [req]);
+					finalReportVirtual(req);
+					/*$self.triggerHandler("jqGridLoadComplete", [req]);
 					if(lc) { lc.call(self,req); }
 					if (p.autoresizeOnLoad) {$self.jqGrid("autoResizeAllColumns");}
 					$self.triggerHandler("jqGridAfterLoadComplete", [req]);
 					if (pvis) { gridSelf.populateVisible.call(self); }
-					endReq.call(self);
+					endReq.call(self);*/
 				break;
 				}
 			}
