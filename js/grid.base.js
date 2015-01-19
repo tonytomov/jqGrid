@@ -177,6 +177,14 @@ var englishLanguageDefaults = {
 
 $.jgrid = $.jgrid || {};
 var jgrid = $.jgrid;
+if (jgrid.defaults == null) {
+	//fatalErrorFunction("FATAL ERROR!!!\n\nthe locale file \"grid.locale-en.js\" or other are not included. It should be included before jquery.jqGrid.min.js\n");
+	//return;
+	
+	// set English options only if no grid.locale-XX.js file are included.
+	$.extend(true, jgrid, englishLanguageDefaults);
+}
+
 $.extend(true,jgrid,{
 	version : "4.7.0-post",
 	cmTemplate : {
@@ -1063,13 +1071,6 @@ $.fn.jqGrid = function( pin ) {
 		if (pin.data !== undefined) {
 			localData = pin.data;
 			pin.data = []; // don't clear the array, just change the value of data property
-		}
-		if (jgrid.defaults == null) {
-			//fatalErrorFunction("FATAL ERROR!!!\n\nthe locale file \"grid.locale-en.js\" or other are not included. It should be included before jquery.jqGrid.min.js\n");
-			//return;
-			
-			// set English options only if no grid.locale-XX.js file are included.
-			$.extend(true, jgrid, englishLanguageDefaults);
 		}
 		if (jgrid.formatter == null || jgrid.formatter.unused == null) {
 			// detect old locale file grid.locale-XX.js are included (without DEEP extend).
