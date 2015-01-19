@@ -2438,12 +2438,12 @@ $.fn.jqGrid = function( pin ) {
 					// the horizontal scrollbar of bDiv will be disabled. The fix set CSS height to 1px
 					// on btable in the case to fix the problem
 					var gBodyWidth = $self.width(), gViewWidth = $self.closest(".ui-jqgrid-view").width(),
-                        gridCssHeight = $self.css("height");
-                    if (gViewWidth < gBodyWidth && p.reccount === 0) {
-                        $self.css("height", "1px");
-                    } else if (gridCssHeight !== "0" && gridCssHeight !== "0px") {
-                        $self.css("height", "");
-                    }
+						gridCssHeight = $self.css("height");
+					if (gViewWidth < gBodyWidth && p.reccount === 0) {
+						$self.css("height", "1px");
+					} else if (gridCssHeight !== "0" && gridCssHeight !== "0px") {
+						$self.css("height", "");
+					}
 				},
 				finalReportSteps = function () {
 					feedback.call(self, "loadComplete", dstr);
