@@ -1,0 +1,108 @@
+configurations {
+    jscompiler
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    jscompiler 'com.google.javascript:closure-compiler:v20141120'
+}
+
+def srcdir = new File('js')
+def distdir = new File('dist')
+
+def jqGridFile = new File(distdir, 'jquery.jqGrid.js')
+def jqGridMinFile = new File(distdir, 'jquery.jqGrid.min.js')
+def jqGridSrcMapFile = new File(distdir, 'jquery.jqGrid.map.js')
+
+task init() {
+    description = "Create distribution directory: $distdir.absolutePath"
+
+    outputs.dir distdir
+
+    doLast {
+        if (!distdir.exists()) {
+            distdir.mkdirs()
+        }
+    }
+}
+
+task jqgrid(dependsOn: 'init') {
+    description = "Concatinate all javascript files into one javascript file: $jqGridFile.absolutePath"
+    def files = fileTree(dir: srcdir, include: '*.js', exclude: 'jquery.jqGrid.js')
+    inputs.file files
+    outputs.file jqGridFile
+
+    doLast {
+        ant.concat(destfile: jqGridFile) {
+            files.each { fileset(file: it) }
+        }
+    }
+}
+
+task 'jqgrid-min'(dependsOn: 'jqgrid') {
+    description = "Minimize $jqGridFile.absolutePath to $jqGridMinFile.absolutePath"
+    inputs.file jqGridFile
+    outputs.file jqGridMinFile
+
+    doLast {
+        ant.taskdef(name: 'jscompile', classname: 'com.google.javascript.jscomp.ant.CompileTask', classpath: configurations.jscompiler.asPath)
+        ant.jscompile(output: jqGridMinFile, warning: 'QUIET', sourceMapFormat: 'V3', sourceMapOutputFile: jqGridSrcMapFile, debug: logger.debugEnabled) {
+            ant.sources(dir: jqGridFile.parent) {
+                ant.file(name: jqGridFile.name)
+            }
+        }
+    }
+}
+
+task 'min-files'(dependsOn: 'init') {
+    def minDir = new File(distdir, 'min')
+    description = "Minimize all javascript files to $minDir.absolutePath"
+    def files = fileTree(dir: srcdir, include: '*.js')
+    inputs.file files
+    outputs.dir minDir
+
+    doLast {
+        if (!minDir.exists()) {
+            minDir.mkdirs()
+        }
+        ant.taskdef(name: 'jscompile', classname: 'com.google.javascript.jscomp.ant.CompileTask', classpath: configurations.jscompiler.asPath)
+        files.each { File f ->
+            ant.jscompile(output: new File(minDir, f.name), warning: 'QUIET', debug: logger.debugEnabled) {
+                ant.sources(dir: f.parent) {
+                    ant.file(name: f.name)
+                }
+            }
+        }
+    }
+}
+
+task i18n(type: Copy, dependsOn: 'init') {
+    def i18nDir = new File(distdir, 'i18n')
+    description = "Copy all i18n files to $i18nDir.absolutePath"
+
+    from new File(srcdir, 'i18n')
+    into i18nDir
+    include('grid.locale-*.js')
+}
+
+task clean() {
+    description = "Delete distribution directory: $distdir.absolutePath"
+
+    doLast {
+        if (distdir.exists()) {
+            distdir.deleteDir()
+        }
+    }
+}
+
+task build(dependsOn: ['jqgrid-min', 'min-files', 'i18n']) {
+    description = "Build the entire distribution"
+}
+
+
+task wrap(type: Wrapper) {
+    gradleVersion = '1.0-milestone-8a'
+}

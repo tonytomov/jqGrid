@@ -1,0 +1,12 @@
+{
+	"name": "jqGrid",
+	"version": "4.7.0",
+	"main": [
+		"js/i18n/grid.locale-en.js",
+		"js/jquery.jqGrid.js",
+		"css/ui.jqgrid.css"
+	],
+	"dependencies": {
+		"jquery": ">=1.7.0"
+	}
+}
