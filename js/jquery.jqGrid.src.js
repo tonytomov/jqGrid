@@ -2433,6 +2433,18 @@ $.fn.jqGrid = function( pin ) {
 				}
 				$.extend(p.postData,prm);
 				var rcnt = !p.scroll ? 1 : self.rows.length-1,
+				fixDisplayingHorizontalScrollbar = function () {
+					// if no items are displayed in the btable, but the column header is too wide
+					// the horizontal scrollbar of bDiv will be disabled. The fix set CSS height to 1px
+					// on btable in the case to fix the problem
+					var gBodyWidth = $self.width(), gViewWidth = $self.closest(".ui-jqgrid-view").width(),
+                        gridCssHeight = $self.css("height");
+                    if (gViewWidth < gBodyWidth && p.reccount === 0) {
+                        $self.css("height", "1px");
+                    } else if (gridCssHeight !== "0" && gridCssHeight !== "0px") {
+                        $self.css("height", "");
+                    }
+				},
 				finalReportSteps = function () {
 					feedback.call(self, "loadComplete", dstr);
 					if (p.autoresizeOnLoad) {$self.jqGrid("autoResizeAllColumns");}
@@ -2440,6 +2452,7 @@ $.fn.jqGrid = function( pin ) {
 					endReq.call(self);
 					p.datatype = "local";
 					p.datastr = null;
+					fixDisplayingHorizontalScrollbar();
 				},
 				finalReportVirtual = function (data) {
 					$self.triggerHandler("jqGridLoadComplete", [data]);
@@ -2448,6 +2461,7 @@ $.fn.jqGrid = function( pin ) {
 					$self.triggerHandler("jqGridAfterLoadComplete", [data]);
 					if (pvis) { gridSelf.populateVisible.call(self); }
 					if (npage === 1) { endReq.call(self); }
+					fixDisplayingHorizontalScrollbar();
 				};
 				if (!feedback.call(self, "beforeRequest")) { return; }
 				if ($.isFunction(p.datatype)) { p.datatype.call(self,p.postData,"load_"+p.id, rcnt, npage, adjust); return;}
@@ -2473,12 +2487,6 @@ $.fn.jqGrid = function( pin ) {
 							if(dt === "xml") { addXmlData.call(self,data,rcnt,npage>1,adjust); }
 							else { addJSONData.call(self,data,rcnt,npage>1,adjust); }
 							finalReportVirtual(data);
-							/*$self.triggerHandler("jqGridLoadComplete", [data]);
-							if(lc) { lc.call(self,data); }
-							if (p.autoresizeOnLoad) {$self.jqGrid("autoResizeAllColumns");}
-							$self.triggerHandler("jqGridAfterLoadComplete", [data]);
-							if (pvis) { gridSelf.populateVisible.call(self); }
-							if (npage === 1) { endReq.call(self); }*/
 							if (p.loadonce || p.treeGrid) {
 								p.dataTypeOrg = p.datatype;
 								p.datatype = "local";
@@ -2508,26 +2516,12 @@ $.fn.jqGrid = function( pin ) {
 					dstr = typeof p.datastr === 'string' ? $.parseXML(p.datastr) : p.datastr;
 					addXmlData.call(self,dstr);
 					finalReportSteps();
-
-					/*feedback.call(self, "loadComplete", dstr);
-					if (p.autoresizeOnLoad) {$self.jqGrid("autoResizeAllColumns");}
-					$self.triggerHandler("jqGridAfterLoadComplete", [dstr]);
-					endReq.call(self);
-					p.datatype = "local";
-					p.datastr = null;*/
 				break;
 				case "jsonstring":
 					beginReq.call(self);
 					dstr = typeof p.datastr === 'string' ? jgrid.parse(p.datastr) : p.datastr;
 					addJSONData.call(self,dstr);
 					finalReportSteps();
-
-					/*feedback.call(self, "loadComplete", dstr);
-					if (p.autoresizeOnLoad) {$self.jqGrid("autoResizeAllColumns");}
-					$self.triggerHandler("jqGridAfterLoadComplete", [dstr]);
-					endReq.call(self);
-					p.datatype = "local";
-					p.datastr = null;*/
 				break;
 				case "local":
 				case "clientside":
@@ -2536,12 +2530,6 @@ $.fn.jqGrid = function( pin ) {
 					var req = addLocalData.call(self);
 					addJSONData.call(self,req,rcnt,npage>1,adjust);
 					finalReportVirtual(req);
-					/*$self.triggerHandler("jqGridLoadComplete", [req]);
-					if(lc) { lc.call(self,req); }
-					if (p.autoresizeOnLoad) {$self.jqGrid("autoResizeAllColumns");}
-					$self.triggerHandler("jqGridAfterLoadComplete", [req]);
-					if (pvis) { gridSelf.populateVisible.call(self); }
-					endReq.call(self);*/
 				break;
 				}
 			}
