@@ -116,7 +116,10 @@ var englishLanguageDefaults = {
 				"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
 			],
 			AmPm : ["am","pm","AM","PM"],
-			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th';},
+			S: function (j) {
+				var a=['st', 'nd', 'rd', 'th'];
+				return j < 11 || j > 13 ? a[Math.min((j - 1) % 10, 3)] : 'th';
+			},
 			srcformat: 'Y-m-d',
 			newformat: 'n/j/Y',
 			masks : {
@@ -192,7 +195,7 @@ $.extend(true,jgrid,{
     },
 	formatter : { // set common formatter settings independent from the language and locale
 		date: {
-			parseRe: /[#%\\\/:_;.,\t\s-]/,
+			parseRe: /[#%\\\/:_;.,\t\s\-]/,
 			masks: {
 				ISO8601Long:"Y-m-d H:i:s",
 				ISO8601Short:"Y-m-d",
@@ -233,7 +236,7 @@ $.extend(true,jgrid,{
 	msiever : function () {
 		var rv = -1;
 		var ua = navigator.userAgent;
-		var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+		var re  = new RegExp("MSIE ([0-9]{1,}[.0-9]{0,})");
 		if (re.exec(ua) != null) {
 			rv = parseFloat( RegExp.$1 );
 		}
@@ -274,8 +277,8 @@ $.extend(true,jgrid,{
 	},
 	parseDate : function(format, date, newformat, opts) {
 		var	token = /\\.|[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]/g,
-		timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
-		timezoneClip = /[^-+\dA-Z]/g,
+		timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[\-+]\d{4})?)\b/g,
+		timezoneClip = /[^\-+\dA-Z]/g,
 		msDateRegExp = new RegExp("^\/Date\\((([-+])?[0-9]+)(([-+])([0-9]{2})([0-9]{2}))?\\)\/$"),
 		msMatch = ((typeof date === 'string') ? date.match(msDateRegExp): null),
 		pad = function (value, length) {
@@ -297,11 +300,11 @@ $.extend(true,jgrid,{
 		}
 		// old lang files
 		if(opts.parseRe === undefined ) {
-			opts.parseRe = /[#%\\\/:_;.,\t\s-]/;
+			opts.parseRe = /[#%\\\/:_;.,\t\s\-]/;
 		}
 		if( opts.masks.hasOwnProperty(format) ) { format = opts.masks[format]; }
 		if(date && date != null) {
-			if( !isNaN( date - 0 ) && String(format).toLowerCase() === "u") {
+			if( !isNaN(date) && String(format).toLowerCase() === "u") {
 				//Unix timestamp
 				timestamp = new Date( parseFloat(date)*1000 );
 			} else if(date.constructor === Date) {
@@ -4559,12 +4562,13 @@ jgrid.extend({
 				wrapperCssWidth = parseFloat($wrapper.css("width") || 0),
 				widthOuter = 0,
 				colWidth = 0,
+				compact = (cm.autoResizing != null && cm.autoResizingOption.compact !== undefined) ? cm.autoResizingOption.compact: p.autoResizing.compact,
 				wrapperClassName = p.autoResizing.wrapperClassName;
 
 			if (cm == null || !cm.autoResizable || $wrapper.length === 0 || cm.hidden || cm.fixed) {
 				return; // do nothing
 			}
-			if (!((cm.autoResizing != null && cm.autoResizingOption.compact !== undefined) ? cm.autoResizingOption.compact: p.autoResizing.compact) || $incosDiv.is(":visible") || ($incosDiv.css("display") !== "none")) {  //|| p.viewsortcols[0]
+			if (!compact || $incosDiv.is(":visible") || ($incosDiv.css("display") !== "none")) {  //|| p.viewsortcols[0]
 				colWidth = p.autoResizing.widthOfVisiblePartOfSortIcon; // $incosDiv.width() can be grater as the visible part of icon
 				if ($thDiv.css("text-align") === "center") {
 					colWidth += colWidth; // *2
