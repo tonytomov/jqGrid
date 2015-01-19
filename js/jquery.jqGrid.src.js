@@ -1453,7 +1453,7 @@ $.fn.jqGrid = function( pin ) {
 		}
 		var gv = $("<div class='ui-jqgrid-view' role='grid' aria-multiselectable='" + !!p.multiselect +"'></div>"),
 		isMSIE = jgrid.msie,
-		isMSIE8 = isMSIE && jgrid.msiever() < 8;
+		isMSIE7 = isMSIE && jgrid.msiever() < 8;
 		p.direction = $.trim(p.direction.toLowerCase());
 		if($.inArray(p.direction,["ltr","rtl"]) === -1) { p.direction = "ltr"; }
 		dir = p.direction;
@@ -1465,7 +1465,7 @@ $.fn.jqGrid = function( pin ) {
 		$(gv).attr("id", p.gViewId).appendTo(eg);
 		$("<div class='ui-widget-overlay jqgrid-overlay' id='lui_"+p.id+"'></div>").insertBefore(gv);
 		$("<div class='loading ui-state-default ui-state-active' id='load_"+p.id+"'>"+p.loadtext+"</div>").insertBefore(gv);
-		if (isMSIE8) {
+		if (isMSIE7) {
 			$(ts).attr({cellspacing:"0"});
 		}
 		$(ts).attr({"role":"presentation","aria-labelledby":"gbox_"+ts.id});
@@ -2438,12 +2438,12 @@ $.fn.jqGrid = function( pin ) {
 					// the horizontal scrollbar of bDiv will be disabled. The fix set CSS height to 1px
 					// on btable in the case to fix the problem
 					var gBodyWidth = $self.width(), gViewWidth = $self.closest(".ui-jqgrid-view").width(),
-                        gridCssHeight = $self.css("height");
-                    if (gViewWidth < gBodyWidth && p.reccount === 0) {
-                        $self.css("height", "1px");
-                    } else if (gridCssHeight !== "0" && gridCssHeight !== "0px") {
-                        $self.css("height", "");
-                    }
+						gridCssHeight = $self.css("height");
+					if (gViewWidth < gBodyWidth && p.reccount === 0) {
+						$self.css("height", "1px");
+					} else if (gridCssHeight !== "0" && gridCssHeight !== "0px") {
+						$self.css("height", "");
+					}
 				},
 				finalReportSteps = function () {
 					feedback.call(self, "loadComplete", dstr);
@@ -2546,7 +2546,7 @@ $.fn.jqGrid = function( pin ) {
 			var sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='ui-separator'></span></td>",
 			pginp = "",
 			blockAlign = p.pagerpos === "left" ? "margin-right:auto;" : (p.pagerpos === "right" ? "margin-left:auto;" : "margin-left:auto;margin-right:auto;"),
-			pgl="<table "+(isMSIE8 ? "cellspacing='0' " : "")+"style='table-layout:auto;"+blockAlign+"' class='ui-pg-table'><tbody><tr>",
+			pgl="<table "+(isMSIE7 ? "cellspacing='0' " : "")+"style='table-layout:auto;"+blockAlign+"' class='ui-pg-table'><tbody><tr>",
 			str="", pgcnt, lft, cent, rgt, twd, i,
 			clearVals = function(onpaging){
 				var ret;
@@ -2564,7 +2564,7 @@ $.fn.jqGrid = function( pin ) {
 			pgcnt = "pg_"+pgid;
 			lft = pgid+"_left"; cent = pgid+"_center"; rgt = pgid+"_right";
 			$("#"+jqID(pgid) )
-			.append("<div id='"+pgcnt+"' class='ui-pager-control' role='group'><table "+(isMSIE8 ? "cellspacing='0' " : "")+"class='ui-pg-table' style='width:100%;table-layout:fixed;height:100%;'><tbody><tr><td id='"+lft+"' style='text-align:left;'></td><td id='"+cent+"' style='text-align:center;white-space:pre;'></td><td id='"+rgt+"' style='text-align:right;'></td></tr></tbody></table></div>")
+			.append("<div id='"+pgcnt+"' class='ui-pager-control' role='group'><table "+(isMSIE7 ? "cellspacing='0' " : "")+"class='ui-pg-table' style='width:100%;table-layout:fixed;height:100%;'><tbody><tr><td id='"+lft+"' style='text-align:left;'></td><td id='"+cent+"' style='text-align:center;white-space:pre;'></td><td id='"+rgt+"' style='text-align:right;'></td></tr></tbody></table></div>")
 			.attr("dir","ltr"); //explicit setting
 			pgcnt = "#" + jqID(pgcnt); // modify to id selector
 			if(p.rowList.length >0){
@@ -3076,7 +3076,7 @@ $.fn.jqGrid = function( pin ) {
 		$(gv).css("width",grid.width+"px");
 		thead = $("thead:first",ts).get(0);
 		var	tfoot = "";
-		if(p.footerrow) { tfoot += "<table role='presentation' style='width:"+p.tblwidth+"px' class='ui-jqgrid-ftable'"+(isMSIE8 ? " cellspacing='0'" : "")+"><tbody><tr role='row' class='ui-widget-content footrow footrow-"+dir+"'>"; }
+		if(p.footerrow) { tfoot += "<table role='presentation' style='width:"+p.tblwidth+"px' class='ui-jqgrid-ftable'"+(isMSIE7 ? " cellspacing='0'" : "")+"><tbody><tr role='row' class='ui-widget-content footrow footrow-"+dir+"'>"; }
 		var thr = $("tr:first",thead),
 		firstr = "<tr class='jqgfirstrow' role='row' style='height:auto'>";
 		p.disableClick=false;
@@ -3173,7 +3173,7 @@ $.fn.jqGrid = function( pin ) {
 		ts.appendChild(tbody);
 		$(ts).addClass('ui-jqgrid-btable').append(firstr);
 		firstr = null;
-		var hTable = $("<table class='ui-jqgrid-htable' style='width:"+p.tblwidth+"px' role='presentation' aria-labelledby='gbox_"+p.id+"'"+(isMSIE8 ? " cellspacing='0'" : "")+"></table>").append(thead),
+		var hTable = $("<table class='ui-jqgrid-htable' style='width:"+p.tblwidth+"px' role='presentation' aria-labelledby='gbox_"+p.id+"'"+(isMSIE7 ? " cellspacing='0'" : "")+"></table>").append(thead),
 		hg = (p.caption && p.hiddengrid===true) ? true : false,
 		hb = $("<div class='ui-jqgrid-hbox" + (dir==="rtl" ? "-rtl" : "" )+"'></div>");
 		thead = null;
@@ -3344,7 +3344,7 @@ $.fn.jqGrid = function( pin ) {
 		grid.bDiv = document.createElement("div");
 		if(isMSIE) { if(String(p.height).toLowerCase() === "auto") { p.height = "100%"; } }
 		$(grid.bDiv)
-			.append($('<div style="position:relative;'+(isMSIE8 ? "height:0.01%;" : "")+'"></div>').append('<div></div>').append(ts))
+			.append($('<div style="position:relative;'+(isMSIE7 ? "height:0.01%;" : "")+'"></div>').append('<div></div>').append(ts))
 			.addClass("ui-jqgrid-bdiv")
 			.css({ height: p.height+(isNaN(p.height)?"":"px"), width: (grid.width)+"px"})
 			.scroll(grid.scrollGrid);
@@ -11598,10 +11598,10 @@ jgrid.extend({
 	},
 	gridResize : function(opts) {
 		return this.each(function(){
-			var $t = this, grid = $t.grid, p = $t.p, bdivSelector = p.gView+">.ui-jqgrid-bdiv";
+			var $t = this, grid = $t.grid, p = $t.p, bdivSelector = p.gView+">.ui-jqgrid-bdiv", onlyHorizontal = false, sel, gridHeight = p.height;
 			if(!grid || !$.fn.resizable) { return; }
 			opts = $.extend({}, opts || {});
-			if(opts.alsoResize ) {
+			if(opts.alsoResize) {
 				opts._alsoResize_ = opts.alsoResize;
 				delete opts.alsoResize;
 			} else {
@@ -11614,18 +11614,43 @@ jgrid.extend({
 				opts._stop_ = false;
 			}
 			opts.stop = function (ev, ui) {
-				$($t).jqGrid('setGridParam',{height:$(bdivSelector).height()});
+				if (!onlyHorizontal) {
+					$($t).jqGrid('setGridParam',{height: $(bdivSelector).height()});
+				} else {
+					$(p.gView+">.ui-jqgrid-titlebar").css("width", "");
+					$(sel).each(function () {
+						$(this).css("height", "");
+					});
+					if (gridHeight === "auto" || gridHeight === "100%") {
+						$(grid.bDiv).css("height", gridHeight);
+					}
+				}
 				$($t).jqGrid('setGridWidth',ui.size.width,opts.shrinkToFit);
 				if(opts._stop_) { opts._stop_.call($t,ev,ui); }
 			};
+			sel = bdivSelector;
+			if ((gridHeight === "auto" || gridHeight === "100%") && opts.handles === undefined) {
+				opts.handles = "e,w";
+			}
+			if (opts.handles) {
+				// test for "e, w"
+				var ar = $.map(String(opts.handles).split(","), function(item) {
+					return $.trim(item);
+				});
+				if (ar.length === 2 && ((ar[0] === "e" && ar[1] === "w") || (ar[1] === "e" && ar[1] === "w"))) {
+					sel = p.gView + ">div";
+					onlyHorizontal = true;
+					if (p.pager) {
+						sel += "," + p.pager;
+					}
+				}
+			}
 			if(opts._alsoResize_) {
-				opts.alsoResize = bdivSelector + "," + opts._alsoResize_;
+				opts.alsoResize = sel + "," + opts._alsoResize_;
 			} else {
-				opts.alsoResize = bdivSelector;
+				opts.alsoResize = sel;
 			}
 			delete opts._alsoResize_;
-			// TODO: register resize callback (or event) and resize ONLY height of cDiv, hDiv, topDiv, uDiv, ubDiv, sDiv 
-			// based on the code of https://github.com/jquery/jquery-ui/blob/1.10.4/ui/jquery.ui.resizable.js#L818-L877
 			$(p.gBox).resizable(opts);
 		});
 	}
@@ -12457,7 +12482,7 @@ toggleSubGridRow : function(rowid) {
 // Addition - selector can be a class or id
 (function($){
 "use strict";
-function tableToGrid(selector, options) {
+window.tableToGrid = function (selector, options) {
 $(selector).each(function() {
 	var self = this, $self = $(this);
 	if(self.grid) {return;} //Adedd from Tony Tomov

@@ -534,10 +534,10 @@ jgrid.extend({
 	},
 	gridResize : function(opts) {
 		return this.each(function(){
-			var $t = this, grid = $t.grid, p = $t.p, bdivSelector = p.gView+">.ui-jqgrid-bdiv";
+			var $t = this, grid = $t.grid, p = $t.p, bdivSelector = p.gView+">.ui-jqgrid-bdiv", onlyHorizontal = false, sel, gridHeight = p.height;
 			if(!grid || !$.fn.resizable) { return; }
 			opts = $.extend({}, opts || {});
-			if(opts.alsoResize ) {
+			if(opts.alsoResize) {
 				opts._alsoResize_ = opts.alsoResize;
 				delete opts.alsoResize;
 			} else {
@@ -550,18 +550,43 @@ jgrid.extend({
 				opts._stop_ = false;
 			}
 			opts.stop = function (ev, ui) {
-				$($t).jqGrid('setGridParam',{height:$(bdivSelector).height()});
+				if (!onlyHorizontal) {
+					$($t).jqGrid('setGridParam',{height: $(bdivSelector).height()});
+				} else {
+					$(p.gView+">.ui-jqgrid-titlebar").css("width", "");
+					$(sel).each(function () {
+						$(this).css("height", "");
+					});
+					if (gridHeight === "auto" || gridHeight === "100%") {
+						$(grid.bDiv).css("height", gridHeight);
+					}
+				}
 				$($t).jqGrid('setGridWidth',ui.size.width,opts.shrinkToFit);
 				if(opts._stop_) { opts._stop_.call($t,ev,ui); }
 			};
+			sel = bdivSelector;
+			if ((gridHeight === "auto" || gridHeight === "100%") && opts.handles === undefined) {
+				opts.handles = "e,w";
+			}
+			if (opts.handles) {
+				// test for "e, w"
+				var ar = $.map(String(opts.handles).split(","), function(item) {
+					return $.trim(item);
+				});
+				if (ar.length === 2 && ((ar[0] === "e" && ar[1] === "w") || (ar[1] === "e" && ar[1] === "w"))) {
+					sel = p.gView + ">div";
+					onlyHorizontal = true;
+					if (p.pager) {
+						sel += "," + p.pager;
+					}
+				}
+			}
 			if(opts._alsoResize_) {
-				opts.alsoResize = bdivSelector + "," + opts._alsoResize_;
+				opts.alsoResize = sel + "," + opts._alsoResize_;
 			} else {
-				opts.alsoResize = bdivSelector;
+				opts.alsoResize = sel;
 			}
 			delete opts._alsoResize_;
-			// TODO: register resize callback (or event) and resize ONLY height of cDiv, hDiv, topDiv, uDiv, ubDiv, sDiv 
-			// based on the code of https://github.com/jquery/jquery-ui/blob/1.10.4/ui/jquery.ui.resizable.js#L818-L877
 			$(p.gBox).resizable(opts);
 		});
 	}
