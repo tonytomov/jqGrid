@@ -7,7 +7,7 @@
 // Addition - selector can be a class or id
 (function($){
 "use strict";
-windows.tableToGrid = function (selector, options) {
+window.tableToGrid = function (selector, options) {
 $(selector).each(function() {
 	var self = this, $self = $(this);
 	if(self.grid) {return;} //Adedd from Tony Tomov
