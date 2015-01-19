@@ -37,7 +37,8 @@ The most the changes corresponds the tendency of web development last years. Loc
 * CSS of jqGrid is changed to simplify integration of jqGrid in projects which uses frameworks other as jQuery UI, for example Bootstrap.
 * `jsonmap` property of `colModel` can be used now with `datatype: "local"`. The only exception is the existence of non-empty `dataTypeOrg` jqGrid option. The option will be set *automatically* after loading the data from the server and changing `datatype: "json"` and `datatype: "xml"` to `datatype: "local"`. The option allows to use `jsonmap` property for the data loading from the server and skip the property in later processing of the local data.
 * `.trigger("reloadGrid")` has now additional option `fromServer: true` which allows to reload the data from the server in case of `loadonce: true` scenario.
-* including of English localization file `grid.locale-en.js` is not more required for successful working of jqGrid. 
+* including of English localization file `grid.locale-en.js` is not more required for successful working of jqGrid.
+* new `formatter: "checkboxFontAwesome4"` (in `plugins/jQuery.jqGrid.checkboxFontAwesome4.js`) and the method `initFontAwesome` (in `plugins/jQuery.jqGrid.fontAwesome4.css` and `plugins/jQuery.jqGrid.fontAwesome4.js`).
 
 ### The following *new jqGrid options* are implemented (comparing with jqGrid 4.7)
 
@@ -100,3 +101,4 @@ The most the changes corresponds the tendency of web development last years. Loc
 * [autoResizingGrouping](http://www.ok-soft-gmbh.com/jqGrid/OK/grouping1.htm) - demonstrates then auto-resizing on loading works with grouping too.
 * [autoResizingGroupingRtl](http://www.ok-soft-gmbh.com/jqGrid/OK/groupingRtl1.htm) - the same as the previous demo, but it uses RTL.
 * [LocalTreeGrid](http://www.ok-soft-gmbh.com/jqGrid/OK/LocalAdjacencyTree.htm) - TreeGrid filled with local data.
+* [FontAwesome4](http://www.ok-soft-gmbh.com/jqGrid/OK/FontAwesome4.htm) - Demo which demonstrate the usage of Font Awesome 4 plugin.

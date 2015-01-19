@@ -9,6 +9,7 @@
 /*global $ */
 (function ($) {
     "use strict";
+	$.jgrid = $.jgrid || {};
     /*jslint unparam: true */
     $.extend(true, $.jgrid, {
         icons: {
@@ -52,6 +53,7 @@
         }
     });
 
+	$.jgrid.nav = $.jgrid.nav || {};
     $.extend(true, $.jgrid.nav, {
         editicon: $.jgrid.icons.getClass("navEdit"),
         addicon: $.jgrid.icons.getClass("navAdd"),
@@ -63,6 +65,7 @@
         viewicon: $.jgrid.icons.getClass("navView")
     });
 
+	$.jgrid.defaults = $.jgrid.defaults || {};
     $.extend(true, $.jgrid.defaults, {
         fontAwesomeIcons: true // the new option will be used in callbacks
     });
@@ -80,6 +83,7 @@
         }
     });
 
+	$.jgrid.view = $.jgrid.view || {};
     $.extend(true, $.jgrid.view, {
         beforeShowForm: function ($form) {
             var $dialog = $form.closest(".ui-jqdialog"),
@@ -99,6 +103,7 @@
         }
     });
 
+	$.jgrid.del = $.jgrid.del || {};
     $.extend(true, $.jgrid.del, {
         afterShowForm: function ($form) {
             var $dialog = $form.closest(".ui-jqdialog"),
