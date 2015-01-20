@@ -4123,7 +4123,7 @@ jgrid.extend({
 				shrink=p.shrinkToFit;
 			}
 			if(isNaN(nwidth)) {return;}
-			nwidth = parseInt(nwidth,10); 
+			nwidth = parseInt(nwidth,10); // round till integer value of px 
 			grid.width = p.width = nwidth;
 			$(p.gBox).css("width",nwidth+"px");
 			$(p.gView).css("width",nwidth+"px");
@@ -4552,7 +4552,7 @@ jgrid.extend({
 	},
 	setColWidth: function (iCol, newWidth, adjustGridWidth) {
 		return this.each(function () {
-			var $self = $(this), grid = this.grid, colName, colModel, i, nCol;
+			var self = this, $self = $(self), grid = self.grid, colName, colModel, i, nCol;
 			if (typeof iCol === "string") {
 				// the first parametrer is column name instead of index
 				colName = iCol;
@@ -4570,7 +4570,7 @@ jgrid.extend({
 				return; // error: wrong parameters
 			}
 			grid.headers[iCol].newWidth = newWidth;
-			grid.newWidth = grid.width + newWidth - grid.headers[iCol].width;
+			grid.newWidth = self.p.tblwidth + newWidth - grid.headers[iCol].width;
 			grid.resizeColumn(iCol, this, true);
 			if (adjustGridWidth !== false) {
 				$self.jqGrid("setGridWidth", grid.newWidth, false); // adjust grid width too
