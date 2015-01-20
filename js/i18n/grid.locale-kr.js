@@ -1,12 +1,7 @@
 (function($){
 "use strict";
 /**
- * jqGrid English Translation
- * Tony Tomov tony@trirand.com
- * http://trirand.com/blog/ 
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl.html
+ * jqGrid Korean Translation
 **/
 $.jgrid = $.jgrid || {};
 $.extend(true,$.jgrid,{
