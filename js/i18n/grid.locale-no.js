@@ -1,9 +1,13 @@
 (function ($) {
+/**
+ * jqGrid Norwegian Translation
+**/
 	"use strict";
 	$.jgrid = $.jgrid || {};
 	$.extend(true,$.jgrid, {
 		defaults: {
 			recordtext: "Rad {0} - {1}, totalt {2}",
+			emptyrecords: "Ingen poster funnet",
 			loadtext: "Laster...",
 			pgtext: "Side {0} av {1}",
 			pgfirst: "First Page",

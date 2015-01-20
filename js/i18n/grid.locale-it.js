@@ -1,4 +1,7 @@
 (function ($) {
+/**
+ * jqGrid Italian Translation
+**/
 "use strict";
 $.jgrid = $.jgrid || {};
 $.extend(true,$.jgrid, {
