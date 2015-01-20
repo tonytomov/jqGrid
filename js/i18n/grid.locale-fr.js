@@ -15,21 +15,21 @@ $.extend(true,$.jgrid,{
 		emptyrecords: "Aucun enregistrement à afficher",
 		loadtext: "Chargement...",
 		pgtext : "Page {0} sur {1}",
-		pgfirst : "First Page",
-		pglast : "Last Page",
-		pgnext : "Next Page",
-		pgprev : "Previous Page",
-		pgrecs : "Records per Page",
+		pgfirst : "Première Page",
+		pglast : "Dernière Page",
+		pgnext : "Page Suivante",
+		pgprev : "Page Précédente",
+		pgrecs : "Enregistrements par page",
 		showhide: "Toggle Expand Collapse Grid"
 	},
 	search : {
 		caption: "Recherche...",
 		Find: "Chercher",
 		Reset: "Réinitialiser",
-		odata: [{ oper:'eq', text:"égal"},{ oper:'ne', text:"différent"},{ oper:'lt', text:"inférieur"},{ oper:'le', text:"inférieur ou égal"},{ oper:'gt', text:"supérieur"},{ oper:'ge', text:"supérieur ou égal"},{ oper:'bw', text:"commence par"},{ oper:'bn', text:"ne commence pas par"},{ oper:'in', text:"est dans"},{ oper:'ni', text:"n'est pas dans"},{ oper:'ew', text:"finit par"},{ oper:'en', text:"ne finit pas par"},{ oper:'cn', text:"contient"},{ oper:'nc', text:"ne contient pas"},{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}],
+		odata: [{ oper:'eq', text:"égal"},{ oper:'ne', text:"différent"},{ oper:'lt', text:"inférieur"},{ oper:'le', text:"inférieur ou égal"},{ oper:'gt', text:"supérieur"},{ oper:'ge', text:"supérieur ou égal"},{ oper:'bw', text:"commence par"},{ oper:'bn', text:"ne commence pas par"},{ oper:'in', text:"est dans"},{ oper:'ni', text:"n'est pas dans"},{ oper:'ew', text:"finit par"},{ oper:'en', text:"ne finit pas par"},{ oper:'cn', text:"contient"},{ oper:'nc', text:"ne contient pas"},{ oper:'nu', text:"est null"},{ oper:'nn', text:"n'est pas null"}],
 		groupOps: [	{ op: "AND", text: "tous" },	{ op: "OR",  text: "au moins un" }	],
-		operandTitle : "Click to select search operation.",
-		resetTitle : "Reset Search Value"
+		operandTitle : "Cliquer pour sélectionner l'opérateur de recherche.",
+		resetTitle : "Vider la valeur de recherche"
 	},
 	edit : {
 		addCaption: "Ajouter",
