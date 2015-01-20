@@ -12390,7 +12390,7 @@ addSubGrid : function( pos, sind ) {
 						bfsc = p.subGridBeforeExpand.call(ts, pID+"_"+_id,_id);
 					}
 					if(bfsc === false) {return false;}
-					$(tr).after( "<tr role='row' class='ui-subgrid'>"+atd+"<td class='ui-widget-content subgrid-cell'><span class='ui-icon "+p.subGridOptions.openicon+"'></span></td><td colspan='"+parseInt(p.colNames.length-nhc,10)+"' class='ui-widget-content subgrid-data'><div id="+pID+"_"+_id+" class='tablediv'></div></td></tr>" );
+					$(tr).after( "<tr role='row' class='ui-widget-content ui-subgrid ui-row-"+p.direction+"'>"+atd+"<td class='ui-widget-content subgrid-cell'><span class='ui-icon "+p.subGridOptions.openicon+"'></span></td><td colspan='"+parseInt(p.colNames.length-nhc,10)+"' class='ui-widget-content subgrid-data'><div id="+pID+"_"+_id+" class='tablediv'></div></td></tr>" );
 					$(ts).triggerHandler("jqGridSubGridRowExpanded", [pID + "_" + _id, _id]);
 					if( $.isFunction(p.subGridRowExpanded)) {
 						p.subGridRowExpanded.call(ts, pID+"_"+ _id,_id);
