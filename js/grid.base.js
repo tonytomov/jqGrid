@@ -514,6 +514,21 @@ $.extend(true,jgrid,{
 				return $(); // return empty jQuery object
 		}
 	},
+	fixScrollOffsetAndhBoxPadding: function () {
+		var self = this, grid = self.grid;
+		if (!grid) {
+			return;
+		}
+
+		var p = self.p, bDiv = grid.bDiv, $hDiv = $(grid.hDiv), $hBox = $hDiv.children("div").filter(":first");
+		if ($(bDiv).width() > 0) {
+			p.scrollOffset = (bDiv.offsetWidth - bDiv.clientWidth); // can be 0 if no scrollbar exist
+			// TODO: add detection of the width of vertical scroll bar if the grid is hidden now
+			// one need just create close construction with visible:hidden style, add to body and get its width
+			$hBox.css($hBox.hasClass("ui-jqgrid-hbox-rtl") ? "padding-left": "padding-right", p.scrollOffset + "px");
+			grid.hDiv.scrollLeft = bDiv.scrollLeft;
+		}
+	},
 	guid : 1,
 	uidPref: 'jqg',
 	randId : function( prefix )	{
@@ -1243,6 +1258,7 @@ $.fn.jqGrid = function( pin ) {
 		p.propOrAttr = p.useProp ? 'prop' : 'attr';
 
 		var propOrAttr = p.propOrAttr,
+		fixScrollOffsetAndhBoxPadding = jgrid.fixScrollOffsetAndhBoxPadding,
 		myResizerClickHandler = function (e) {
 			var pageX = $(this).data("pageX");
 			if (pageX) {
@@ -1295,13 +1311,15 @@ $.fn.jqGrid = function( pin ) {
 				}
 			},
 			resizeColumn: function (idx, ts, skipCallbacks) {
-				var self = this, headers = self.headers, footers = self.footers, h = headers[idx], hn, nw = h.newWidth || h.width;
+				var self = this, headers = self.headers, footers = self.footers, h = headers[idx], hn, nw = h.newWidth || h.width,
+					$bTable = getGridComponent("bTable", $(self.bDiv));
 				nw = parseInt(nw,10);
 				p.colModel[idx].width = nw;
 				h.width = nw;
 				h.el.style.width = nw + "px";
 				self.cols[idx].style.width = nw+"px";
 				if(footers.length>0) {footers[idx].style.width = nw+"px";}
+				fixScrollOffsetAndhBoxPadding.call($bTable[0]);
 				if(p.forceFit===true){
 					hn = headers[idx+p.nv]; // next visible th
 					nw = hn.newWidth || hn.width;
@@ -1312,7 +1330,7 @@ $.fn.jqGrid = function( pin ) {
 					p.colModel[idx+p.nv].width = nw;
 				} else {
 					p.tblwidth = self.newWidth || p.tblwidth;
-					getGridComponent("bTable", $(self.bDiv)).css("width",p.tblwidth+"px");
+					$bTable.css("width",p.tblwidth+"px");
 					getGridComponent("hTable", $(self.hDiv)).css("width",p.tblwidth+"px");
 					self.hDiv.scrollLeft = self.bDiv.scrollLeft;
 					if(p.footerrow) {
@@ -2453,6 +2471,7 @@ $.fn.jqGrid = function( pin ) {
 					endReq.call(self);
 					p.datatype = "local";
 					p.datastr = null;
+					fixScrollOffsetAndhBoxPadding.call(self);
 					fixDisplayingHorizontalScrollbar();
 				},
 				finalReportVirtual = function (data) {
@@ -2462,6 +2481,7 @@ $.fn.jqGrid = function( pin ) {
 					$self.triggerHandler("jqGridAfterLoadComplete", [data]);
 					if (pvis) { gridSelf.populateVisible.call(self); }
 					if (npage === 1) { endReq.call(self); }
+					fixScrollOffsetAndhBoxPadding.call(self);
 					fixDisplayingHorizontalScrollbar();
 				};
 				if (!feedback.call(self, "beforeRequest")) { return; }
