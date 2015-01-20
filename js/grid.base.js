@@ -502,12 +502,12 @@ $.extend(true,jgrid,{
 				return $p.hasClass("ui-jqgrid-hdiv") ? $p.find(">div>.ui-jqgrid-htable") : $();
 			case "fTable": // footer/summary table from sDiv
 				return $p.hasClass("ui-jqgrid-sdiv") ? $p.find(">div>.ui-jqgrid-ftable") : $();
-			case "bDiv":
-				return $p.hasClass("ui-jqgrid-bdiv") && p.grid != null ? $(p.grid.bDiv) : $();
-			case "hDiv":
-				return $p.hasClass("ui-jqgrid-bdiv") && p.grid != null ? $(p.grid.hDiv) : $();
-			case "sDiv":
-				return $p.hasClass("ui-jqgrid-bdiv") && p.grid != null ? $(p.grid.sDiv) : $();
+			case "bDiv":   // get bDiv of grid (bTable)
+				return $p.hasClass("ui-jqgrid-btable") && p.grid != null ? $(p.grid.bDiv) : $();
+			case "hDiv":   // get hDiv of grid (bTable)
+				return $p.hasClass("ui-jqgrid-btable") && p.grid != null ? $(p.grid.hDiv) : $();
+			case "sDiv":   // get sDiv of grid (bTable)
+				return $p.hasClass("ui-jqgrid-btable") && p.grid != null ? $(p.grid.sDiv) : $();
 			case "colHeader": // p should be iCol
 				return !isNaN(p1) && p.grid != null && p.grid.headers != null && p.grid.headers[p1] != null ? $(p.grid.headers[p1].el) : $();
 			default:
