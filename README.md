@@ -78,6 +78,7 @@ The most the changes corresponds the tendency of web development last years. Loc
 * one allows to use `navGrid` skipping of `pager` parameter. `navGrid` will will create the navigator bar on all pagers of the grid (on one or two pagers depend on the values of `pager` and `toppager` option of jqGrid).
 * one allows to call `inlineNav` skipping of `pager` parameter. `inlineNav` will will create the navigator bar on all pagers of the grid.
 * one allows to call `inlineNav` without previous calling of `navGrid` to create the empty pager.  `inlineNav` will call `navGrid` itself if it's required.
+* Method `gridResize` are improved for the case of usage of the jqGrid option `height: "auto"` or `height: "100%"`. It allows only horizontal resizing of such grid. See **FontAwesome4** demo below to see how new version of `gridResize` works.
 
 ### The following *new callbacks and jQuery events* are implemented (comparing with jqGrid 4.7)
 
