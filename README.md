@@ -11,7 +11,7 @@ Below you can find short description of new features already implemented in the 
 
 ### Compatibility with jqGrid 4.7.0
 
-* the default values of some option of jqGrid are changed (see detailed description below). The most important are the changes of default values of `autoencode` to `true`. It means that the input data will be interpreted as text instead of HTML fragments per default. **If you need to use other values of the options as new defaults then you should include the option explicitly as parameters.**
+* the default values of some option of jqGrid are changed (see detailed description below). **If you need to use other values as new defaults then you should include the option explicitly as parameters.**
 * some changes in "localization files" from `i18n` folder are made. One should used the files included in the fork and not combine old "local files" of jqGrid 4.7.0 with new `jquery.jqGrid.min.js` or `jquery.jqGrid.src.js`.
 * the internal method `$.fmatter.util.NumberFormat` is renamed to `$.fmatter.NumberFormat`. You have to make the same renaming if you used *internal* method `$.fmatter.util.NumberFormat` **directly** in your code.
 
@@ -72,6 +72,13 @@ The most the changes corresponds the tendency of web development last years. Loc
 * autoResizeAllColumns - has integer iCol as parameters. It resize of all columns having `autoResizable: true` property. Remark: Auto-resizing don't work with hidden grids.
 * getGridComponent - allows to get different components of jqGrid like "bTable", "hTable", "fTable", "bDiv" and some other. The method will be extended later.
 
+### Changes in existing methods and jqGrid options
+* one allows to create the grid from `<table>` element existing on the HTML page even if it has no `id` attribute. jqGrid assign unique id to the `<table>` automatically.
+* one can use `pager: true` option of jqGrid. In the case new `<div>` with unique `id` will be generated, placed on the `<body>` and the `pager` option will be modified to id selector of the new `<div>`
+* one allows to use `navGrid` skipping of `pager` parameter. `navGrid` will will create the navigator bar on all pagers of the grid (on one or two pagers depend on the values of `pager` and `toppager` option of jqGrid).
+* one allows to call `inlineNav` skipping of `pager` parameter. `inlineNav` will will create the navigator bar on all pagers of the grid.
+* one allows to call `inlineNav` without previous calling of `navGrid` to create the empty pager.  `inlineNav` will call `navGrid` itself if it's required.
+
 ### The following *new callbacks and jQuery events* are implemented (comparing with jqGrid 4.7)
 
 * `fatalError` - new callback which can be used to change displaying of critical error with respect of another function as default JvaScript function alert. One can use the feature in unit tests for example.
@@ -87,6 +94,12 @@ The most the changes corresponds the tendency of web development last years. Loc
 * files from `i18n` are changes to UTF-8 format. The texts should be always used as Unicode characters if the corresponding characters are visible. Compare for example [grid.locale-ja.js](https://github.com/OlegKi/jqGrid/blob/master/js/i18n/grid.locale-ja.js) with the corresponding file included in jqGrid 4.7.0 (see [here](https://github.com/tonytomov/jqGrid/blob/v4.7.0/js/i18n/grid.locale-ja.js)).
 * some common properties which have no relation to the language are moved from the localization files grid.locale-*.js to grid.base.js module.
 * We plan to change default value of `autoencode` from `true` to `false` in the next release of jqGrid. We recommend all to include `autoencode` option explicitly. We remind that `autoencode: false` means that input data (including JSON data loaded from the server or local data loaded from the object) are interpreted as HTML fragments and not as pure data. It can produces some strange side effects if the data contains symbols `&`, `;`, `>` and other used in HTML markup.
+
+### Changes in grid.locale-*.js files
+
+* the files are renamed to corresponds ISO 639-1 or ISO 3166-2 defines abbreviations for languages. The list of changes:
+  * grid.locale-cat.js with Catalan translation is renamed into           grid.locale-ca.js (ISO 639-1)
+  * grid.locale-mne.js with Montenegrin translation is renamed into       grid.locale-me.js (ISO 3166-2)
 
 ### Some demos which demonstrates new features
 
