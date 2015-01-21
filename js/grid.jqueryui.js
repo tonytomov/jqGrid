@@ -550,6 +550,7 @@ jgrid.extend({
 				opts._stop_ = false;
 			}
 			opts.stop = function (ev, ui) {
+				$($t).jqGrid('setGridWidth',ui.size.width,opts.shrinkToFit);
 				if (!onlyHorizontal) {
 					$($t).jqGrid('setGridParam',{height: $(bdivSelector).height()});
 				} else {
@@ -561,7 +562,6 @@ jgrid.extend({
 						$(grid.bDiv).css("height", gridHeight);
 					}
 				}
-				$($t).jqGrid('setGridWidth',ui.size.width,opts.shrinkToFit);
 				if(opts._stop_) { opts._stop_.call($t,ev,ui); }
 			};
 			sel = bdivSelector;
