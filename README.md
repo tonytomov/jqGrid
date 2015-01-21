@@ -116,3 +116,10 @@ The most the changes corresponds the tendency of web development last years. Loc
 * [autoResizingGroupingRtl](http://www.ok-soft-gmbh.com/jqGrid/OK/groupingRtl1.htm) - the same as the previous demo, but it uses RTL.
 * [LocalTreeGrid](http://www.ok-soft-gmbh.com/jqGrid/OK/LocalAdjacencyTree.htm) - TreeGrid filled with local data.
 * [FontAwesome4](http://www.ok-soft-gmbh.com/jqGrid/OK/FontAwesome4.htm) - Demo which demonstrate the usage of Font Awesome 4 plugin.
+
+* [navButtons0](http://www.ok-soft-gmbh.com/jqGrid/OK/navButtons0.htm) - demonstrates resizeable navigator bar with icons
+* [navButtons1](http://www.ok-soft-gmbh.com/jqGrid/OK/navButtons1.htm) - demonstrates resizeable navigator bar with icons and texts
+* [navButtons2](http://www.ok-soft-gmbh.com/jqGrid/OK/navButtons2.htm) - demonstrate new iconsOverText:true option
+* [navButtons0-fa4](http://www.ok-soft-gmbh.com/jqGrid/OK/navButtons0-fa4.htm) - demonstrates resizeable navigator bar with icons. It uses Font Awesome 4.
+* [navButtons1-fa4](http://www.ok-soft-gmbh.com/jqGrid/OK/navButtons1-fa4.htm) - demonstrates resizeable navigator bar with icons and texts. It uses Font Awesome 4.
+* [navButtons2-fa4](http://www.ok-soft-gmbh.com/jqGrid/OK/navButtons2-fa4.htm) - demonstrate new iconsOverText:true option. It uses Font Awesome 4.
