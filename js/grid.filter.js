@@ -692,7 +692,7 @@ $.extend($.fn.jqFilter,{
 	addFilter: function (pfilter) {
 		if (typeof pfilter === "string") {
 			pfilter = $.jgrid.parse( pfilter );
-	}
+		}
 		this.each(function(){
 			this.p.filter = pfilter;
 			this.reDraw();
