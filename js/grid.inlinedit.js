@@ -491,6 +491,7 @@ jgrid.extend({
 			saveicon:"ui-icon-disk",
 			cancel: true,
 			cancelicon:"ui-icon-cancel",
+			iconsOverText : false,
 			addParams : {addRowParams: {extraparam: {}}},
 			editParams : {},
 			restoreAfterSelect : true
@@ -561,6 +562,7 @@ jgrid.extend({
 					caption : o.addtext,
 					title : o.addtitle,
 					buttonicon : o.addicon,
+					iconsOverText: o.iconsOverText,
 					id : p.id+"_iladd",
 					onClickButton : function () {
 						$self.jqGrid('addRow', o.addParams);
@@ -578,6 +580,7 @@ jgrid.extend({
 					caption : o.edittext,
 					title : o.edittitle,
 					buttonicon : o.editicon,
+					iconsOverText: o.iconsOverText,
 					id : p.id+"_iledit",
 					onClickButton : function () {
 						var sr = $self.jqGrid('getGridParam','selrow');
@@ -598,6 +601,7 @@ jgrid.extend({
 					caption : o.savetext || '',
 					title : o.savetitle || 'Save row',
 					buttonicon : o.saveicon,
+					iconsOverText: o.iconsOverText,
 					id : p.id+"_ilsave",
 					onClickButton : function () {
 						var sr = p.savedRow[0].id;
@@ -628,6 +632,7 @@ jgrid.extend({
 					caption : o.canceltext || '',
 					title : o.canceltitle || 'Cancel row editing',
 					buttonicon : o.cancelicon,
+					iconsOverText: o.iconsOverText,
 					id : p.id+"_ilcancel",
 					onClickButton : function () {
 						var sr = p.savedRow[0].id, cancelPrm = o.editParams;

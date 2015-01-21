@@ -197,7 +197,7 @@ $.extend(true,jgrid,{
 			searchoptions: { sopt: ["eq", "ne", "lt", "le", "gt", "ge"] }
         },
 		actions: {
-			formatter: "actions", width: 53, align: "center", autoResizable: false,
+			formatter: "actions", width: 42, align: "center", autoResizable: false,
 			fixed: true, resizable: false, sortable: false, search: false, editable: false, viewable: false
 		}
     },
@@ -9370,7 +9370,9 @@ jgrid.extend({
 			alertheight : 'auto',
 			alerttop: null,
 			alertleft: null,
-			alertzIndex : null
+			alertzIndex : null,
+			commonIconClass : "ui-icon",
+			iconsOverText : false
 		}, jgrid.nav, o ||{});
 		return this.each(function() {
 			var $t = this, p = $t.p, gridId = p.id;
@@ -9435,13 +9437,13 @@ jgrid.extend({
 						closeOnEscape:o.closeOnEscape, 
 						zIndex: o.alertzIndex
 					},
-					"#gview_"+gridIdEscaped,
+					p.gView,
 					$(gboxSelector)[0],
 					true
 				);
 			}
 			var clone = 1, i, tbd, navtbl, pgid, elemids,
-			sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='ui-separator'></span></td>",
+			sep = "<div class='ui-pg-button ui-state-disabled'><span class='ui-separator'></span></div>",
 			onHoverIn = function () {
 				if (!$(this).hasClass('ui-state-disabled')) {
 					$(this).addClass("ui-state-hover");
@@ -9549,18 +9551,27 @@ jgrid.extend({
 				return false;
 			},
 			stdButtonActivation = function (name, id, onClick, navtbl, elemids) {
-				var $tdButton = $("<td class='ui-pg-button ui-corner-all'></td>");
-				$($tdButton).append("<div class='ui-pg-div'><span class='ui-icon "+o[name+"icon"]+"'></span>"+o[name+"text"]+"</div>");
-				$("tr",navtbl).append($tdButton);
-				$($tdButton, navtbl)
-					.attr({"title":o[name+"title"] || "",id : id || name + "_" + elemids})
+				var $button = $("<div class='ui-pg-button ui-corner-all'></div>"), classes = [],
+					iconClass = o[name+"icon"], iconText = o[name+"text"];
+				if (o.iconsOverText) {
+					classes.push("ui-pg-button-icon-over-text");
+				}
+				if (iconClass) {
+					classes.push(o.commonIconClass);
+					classes.push(iconClass);
+				}
+				$button.append("<div class='ui-pg-div'><span class='" + classes.join(" ") + "'></span>" +
+					(iconText ? "<span class='ui-pg-button-text"+(o.iconsOverText ? " ui-pg-button-icon-over-text" : "") +"'>"+iconText+"</span>" : "")+
+					"</div>");
+				$(navtbl).append($button);
+				$button.attr({"title":o[name+"title"] || "",id : id || name + "_" + elemids})
 					.click(onClick)
 					.hover(onHoverIn, onHoverOut);
-				return $tdButton;
+				return $button;
 			};
 			if(o.cloneToTop && p.toppager) {clone = 2;}
 			for(i = 0; i<clone; i++) {
-				navtbl = $("<table"+(jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "")+" class='ui-pg-table navtable' style='float:left;table-layout:auto;'><tbody><tr></tr></tbody></table>");
+				navtbl = $("<div"+" class='ui-pg-table navtable' style='float:left;table-layout:auto;'></div>");
 				if(i===0) {
 					pgid = elem;
 					elemids = gridId;
@@ -9585,7 +9596,7 @@ jgrid.extend({
 				if (o.del) {
 					stdButtonActivation("del", pDel.id, onDel, navtbl, elemids);
 				}
-				if(o.add || o.edit || o.del || o.view) {$("tr",navtbl).append(sep);}
+				if(o.add || o.edit || o.del || o.view) {$(navtbl).append(sep);}
 				if (o.search) {
 					tbd = stdButtonActivation("search", pSearch.id, onSearch, navtbl, elemids);
 					if (pSearch.showOnLoad && pSearch.showOnLoad === true) {
@@ -9619,7 +9630,9 @@ jgrid.extend({
 			buttonicon : 'ui-icon-newwin',
 			onClickButton: null,
 			position : "last",
-			cursor : 'pointer'
+			cursor : 'pointer',
+			commonIconClass : "ui-icon",
+			iconsOverText : false
 		}, p ||{});
 		return this.each(function() {
 			var $t = this, jqID = jgrid.jqID;
@@ -9628,21 +9641,31 @@ jgrid.extend({
 			var findnav = $(".navtable",elem)[0];
 			if (findnav) {
 				if( p.id && $(p.idSel, findnav)[0] !== undefined )  {return;}
-				var tbd = $("<td></td>");
+				var tbd = $("<div></div>"), classes = [];
 				if(p.buttonicon.toString().toUpperCase() === "NONE") {
-                    $(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'>"+p.caption+"</div>");
-				} else	{
-					$(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'><span class='ui-icon "+p.buttonicon+"'></span>"+p.caption+"</div>");
+                    $(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'>"+
+						(p.caption ? "<span class='ui-pg-button-text" + (p.iconsOverText ? " ui-pg-button-icon-over-text" : "") + "'>"+p.caption+"</span>" : "") +
+						"</div>");
+				} else {
+					if (p.iconsOverText) {
+						classes.push("ui-pg-button-icon-over-text");
+					}
+					classes.push(p.commonIconClass);
+					classes.push(p.buttonicon);
+					$(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'>" +
+						"<span class='" + classes.join(" ") +"'></span>"+
+						(p.caption ? "<span class='ui-pg-button-text" + (p.iconsOverText ? " ui-pg-button-icon-over-text" : "") + "'>"+p.caption+"</span>" : "") +
+						"</div>");
 				}
 				if(p.id) {$(tbd).attr("id",p.id);}
 				if(p.position==='first'){
-					if(findnav.rows[0].cells.length ===0 ) {
-						$("tr",findnav).append(tbd);
+					if($(">div.ui-pg-button",findnav).length === 0) {
+						$(findnav).append(tbd);
 					} else {
-						$("tr td:eq(0)",findnav).before(tbd);
+						$(">div.ui-pg-button",findnav).filter(":first").before(tbd);
 					}
 				} else {
-					$("tr",findnav).append(tbd);
+					$(findnav).append(tbd);
 				}
 				$(tbd,findnav)
 				.attr("title",p.title  || "")
@@ -9673,16 +9696,16 @@ jgrid.extend({
 			if( !this.grid)  {return;}
 			if( typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+jgrid.jqID(elem);}
 			var findnav = $(".navtable",elem)[0];
-			if(findnav) {
-				var sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='"+p.sepclass+"'></span>"+p.sepcontent+"</td>";
+			if(findnav.length > 0) {
+				var sep = "<div class='ui-pg-button ui-state-disabled'><span class='"+p.sepclass+"'></span>"+p.sepcontent+"</div>";
 				if (p.position === 'first') {
-					if (findnav.rows[0].cells.length === 0) {
-						$("tr", findnav).append(sep);
+					if ($(">div.ui-pg-button",findnav).length === 0) {
+						findnav.append(sep);
 					} else {
-						$("tr td:eq(0)", findnav).before(sep);
+						$(">div.ui-pg-button", findnav).filter(":first").before(sep);
 					}
 				} else {
-					$("tr", findnav).append(sep);
+					findnav.append(sep);
 				}
 			}
 		});
@@ -10953,6 +10976,7 @@ jgrid.extend({
 			saveicon:"ui-icon-disk",
 			cancel: true,
 			cancelicon:"ui-icon-cancel",
+			iconsOverText : false,
 			addParams : {addRowParams: {extraparam: {}}},
 			editParams : {},
 			restoreAfterSelect : true
@@ -11023,6 +11047,7 @@ jgrid.extend({
 					caption : o.addtext,
 					title : o.addtitle,
 					buttonicon : o.addicon,
+					iconsOverText: o.iconsOverText,
 					id : p.id+"_iladd",
 					onClickButton : function () {
 						$self.jqGrid('addRow', o.addParams);
@@ -11040,6 +11065,7 @@ jgrid.extend({
 					caption : o.edittext,
 					title : o.edittitle,
 					buttonicon : o.editicon,
+					iconsOverText: o.iconsOverText,
 					id : p.id+"_iledit",
 					onClickButton : function () {
 						var sr = $self.jqGrid('getGridParam','selrow');
@@ -11060,6 +11086,7 @@ jgrid.extend({
 					caption : o.savetext || '',
 					title : o.savetitle || 'Save row',
 					buttonicon : o.saveicon,
+					iconsOverText: o.iconsOverText,
 					id : p.id+"_ilsave",
 					onClickButton : function () {
 						var sr = p.savedRow[0].id;
@@ -11090,6 +11117,7 @@ jgrid.extend({
 					caption : o.canceltext || '',
 					title : o.canceltitle || 'Cancel row editing',
 					buttonicon : o.cancelicon,
+					iconsOverText: o.iconsOverText,
 					id : p.id+"_ilcancel",
 					onClickButton : function () {
 						var sr = p.savedRow[0].id, cancelPrm = o.editParams;
@@ -11697,6 +11725,7 @@ jgrid.extend({
 				opts._stop_ = false;
 			}
 			opts.stop = function (ev, ui) {
+				$($t).jqGrid('setGridWidth',ui.size.width,opts.shrinkToFit);
 				if (!onlyHorizontal) {
 					$($t).jqGrid('setGridParam',{height: $(bdivSelector).height()});
 				} else {
@@ -11708,7 +11737,6 @@ jgrid.extend({
 						$(grid.bDiv).css("height", gridHeight);
 					}
 				}
-				$($t).jqGrid('setGridWidth',ui.size.width,opts.shrinkToFit);
 				if(opts._stop_) { opts._stop_.call($t,ev,ui); }
 			};
 			sel = bdivSelector;
@@ -13810,20 +13838,20 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 		if(rowid === undefined || fmatter.isEmpty(rowid)) {return "";}
 		if(op.editformbutton){
 			ocl = "id='jEditButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'formedit'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-			str += "<div title='"+nav.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='ui-icon ui-icon-pencil'></span></div>";
+			str += "<div title='"+nav.edittitle+"' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='ui-icon ui-icon-pencil'></span></div>";
 		} else if(op.editbutton){
 			ocl = "id='jEditButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'edit'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover') ";
-			str += "<div title='"+nav.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='ui-icon ui-icon-pencil'></span></div>";
+			str += "<div title='"+nav.edittitle+"' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='ui-icon ui-icon-pencil'></span></div>";
 		}
 		if(op.delbutton) {
 			ocl = "id='jDeleteButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'del'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-			str += "<div title='"+nav.deltitle+"' style='float:left;margin-left:5px;' class='ui-pg-div ui-inline-del' "+ocl+"><span class='ui-icon ui-icon-trash'></span></div>";
+			str += "<div title='"+nav.deltitle+"' class='ui-pg-div ui-inline-del' "+ocl+"><span class='ui-icon ui-icon-trash'></span></div>";
 		}
 		ocl = "id='jSaveButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'save'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-		str += "<div title='"+edit.bSubmit+"' style='float:left;display:none' class='ui-pg-div ui-inline-save' "+ocl+"><span class='ui-icon ui-icon-disk'></span></div>";
+		str += "<div title='"+edit.bSubmit+"' style='display:none' class='ui-pg-div ui-inline-save' "+ocl+"><span class='ui-icon ui-icon-disk'></span></div>";
 		ocl = "id='jCancelButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'cancel'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-		str += "<div title='"+edit.bCancel+"' style='float:left;display:none;margin-left:5px;' class='ui-pg-div ui-inline-cancel' "+ocl+"><span class='ui-icon ui-icon-cancel'></span></div>";
-		return "<div style='margin-left:8px;'>" + str + "</div>";
+		str += "<div title='"+edit.bCancel+"' style='display:none;' class='ui-pg-div ui-inline-cancel' "+ocl+"><span class='ui-icon ui-icon-cancel'></span></div>";
+		return "<div class='ui-jqgrid-actions'>" + str + "</div>";
 	};
 	$.unformat = function (cellval,options,pos,cnt) {
 		// specific for jqGrid only

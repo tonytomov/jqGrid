@@ -249,7 +249,7 @@
 	border: 0 none;
 	z-index: 99999;
 }
-span.okCellWrapper {
+span.ui-jqgrid-cell-wrapper {
 	margin: 0 !important;
 	padding: 0 !important;
 }
@@ -301,7 +301,6 @@ span.okCellWrapper {
 	position: relative;
 	height: auto;
 	min-height: 22px;
-	white-space: nowrap;
 	overflow: hidden;
 	font-size: 11px;
 }
@@ -324,6 +323,7 @@ span.okCellWrapper {
 	padding: 1px;
 }
 .ui-jqgrid .ui-pager-control .ui-pg-button {
+	display: inline-block;
 	height: auto;
 }
 .ui-jqgrid .ui-pg-button span {
@@ -350,10 +350,10 @@ span.okCellWrapper {
 	padding: 1px;
 }
 .ui-jqgrid .ui-separator {
-	height: 18px;
+	height: 12px;
 	border-left: 1px solid #ccc;
 	border-right: 1px solid #ccc;
-	margin: 1px;
+	margin: -1px;
 	float: right;
 }
 .ui-jqgrid .ui-paging-info {
@@ -393,7 +393,6 @@ span.okCellWrapper {
 	position: relative;
 	height: auto;
 	min-height: 22px;
-	white-space: nowrap;
 	overflow: hidden;
 }
 .ui-jqgrid .ui-jqgrid-toppager .ui-pg-div {
@@ -407,6 +406,38 @@ span.okCellWrapper {
 .ui-jqgrid .ui-jqgrid-toppager .ui-pg-div  span.ui-icon {
 	float: left;
 	margin: 0 2px;
+}
+
+/* navigator buttons */
+.ui-jqgrid .navtable>.ui-pg-button.ui-state-hover {
+	font-weight: normal;
+	margin: 1px;
+}
+.ui-jqgrid .navtable>.ui-pg-button.ui-state-hover {
+	font-weight: normal;
+	margin: 1px;
+}
+.ui-jqgrid .navtable>.ui-pg-button:hover {
+	font-weight: normal;
+	margin: 1px;
+}
+.ui-jqgrid .navtable>.ui-pg-button {
+	margin: 2px;
+}
+.ui-jqgrid .navtable .ui-pg-div span.ui-pg-button-text,
+.ui-jqgrid .navtable .ui-pg-div span.ui-pg-button-text {
+	padding-left: 0.2em;
+	padding-right: 0.2em;
+}
+.ui-jqgrid .ui-pg-div {
+	text-align: center;
+	vertical-align: middle;
+	display: inline-block;
+}
+.ui-jqgrid .navtable .ui-pg-div>span.ui-pg-button-icon-over-text {
+	margin-left: auto;
+	margin-right: auto;
+	float: none;
 }
 
 /*subgrid*/
@@ -762,10 +793,21 @@ a.clearsearchclass {
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
+	/*
+	width: 100%;
+	height: auto;*/
 }
 .ui-jqgrid > .ui-jqgrid-view input,
 .ui-jqgrid > .ui-jqgrid-view select,
 .ui-jqgrid > .ui-jqgrid-view textarea,
 .ui-jqgrid > .ui-jqgrid-view button {
 	font-size: 11px;
+}
+.ui-jqgrid  .jqgrow .ui-jqgrid-actions {
+	margin: 0;
+}
+.jqgrow .ui-jqgrid-actions .ui-pg-div {
+	cursor: pointer;
+	float: left;
+	margin: 0 1px;
 }
