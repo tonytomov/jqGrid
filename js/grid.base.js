@@ -981,7 +981,7 @@ $.fn.jqGrid = function( pin ) {
 			_index : {},
 			grouping : false,
 			groupingView : {groupField:[],groupOrder:[], groupText:[],groupColumnShow:[],groupSummary:[], showSummaryOnHide: false, sortitems:[], sortnames:[], summary:[],summaryval:[], plusicon: 'ui-icon-circlesmall-plus', minusicon: 'ui-icon-circlesmall-minus', displayField: [], groupSummaryPos:[], formatDisplayField : [], _locgr : false},
-			ignoreCase : false,
+			ignoreCase : true,
 			cmTemplate : {},
 			idPrefix : "",
 			multiSort :  false,
@@ -1873,7 +1873,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 			});
-			if(ts.p.treeGrid) {
+			if(ts.p.treeGrid && !ts.p.search) {
 				$(ts).jqGrid("SortTree", st, ts.p.sortorder, cmtypes[st].stype || 'text', cmtypes[st].srcfmt || '');
 				return;
 			}
@@ -2013,6 +2013,10 @@ $.fn.jqGrid = function( pin ) {
 					}
 					grPrepare.call($(ts),queryResults[j],j, recordsperpage );
 				}
+			}
+			if(ts.p.treeGrid && ts.p.search) {
+				$(ts).jqGrid("searchTree", queryResults);
+				return;
 			}
 			queryResults = queryResults.slice( (page-1)*recordsperpage , page*recordsperpage );
 			query = null;
