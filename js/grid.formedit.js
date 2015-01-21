@@ -1740,6 +1740,16 @@ jgrid.extend({
 		});
 	},
 	navGrid : function (elem, o, pEdit,pAdd,pDel,pSearch, pView) {
+		if (typeof elem === "object") {
+			// the option pager are skipped
+			pView = pSearch;
+			pSearch = pDel;
+			pDel = pAdd;
+			pAdd = pEdit;
+			pEdit = o;
+			o = elem;
+			elem = undefined;
+		}
 		o = $.extend({
 			edit: true,
 			editicon: "ui-icon-pencil",
@@ -1767,14 +1777,31 @@ jgrid.extend({
 		}, jgrid.nav, o ||{});
 		return this.each(function() {
 			var $t = this, p = $t.p, gridId = p.id;
-			if($t.nav) {return;}
+			if($t.nav && $(elem).find(".navtable").length > 0) {
+				return;
+			}
 			var alertIDs = {themodal: 'alertmod_' + gridId, modalhead: 'alerthd_' + gridId,modalcontent: 'alertcnt_' + gridId},
 			twd, tdw, jqID = jgrid.jqID, gridIdEscaped = p.idSel, gboxSelector = p.gBox,
 			viewModalAlert = function () {
 				jgrid.viewModal("#"+jqID(alertIDs.themodal),{gbox:gboxSelector,jqm:true});
 				$("#jqg_alrt").focus();
 			};
-			if(!$t.grid || typeof elem !== 'string') {return;}
+			if(!$t.grid) {
+				return; // error
+			}
+			if (elem === undefined) {
+				if ($t.p.pager) {
+					elem = $t.p.pager;
+					if ($t.p.toppager) {
+						o.cloneToTop = true; // add buttons to both pagers
+					}
+				} else if ($t.p.toppager) {
+					elem = $t.p.toppager;
+				}
+			}
+			if (elem === undefined) {
+				return; // error
+			}
 			pAdd = pAdd || {};
 			pEdit = pEdit || {};
 			pView = pView || {};

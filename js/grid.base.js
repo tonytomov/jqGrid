@@ -3214,6 +3214,11 @@ $.fn.jqGrid = function( pin ) {
 			if (typeof p.pager === "string" && p.pager.substr(0,1) !== "#") {
 				pagerId = p.pager; // UNESCAPED id of the pager
 				$pager = $("#" + jqID(p.pager));
+			} else if (p.pager === true) {
+				pagerId = jgrid.randId();
+				$pager = $("<div id='" + pagerId + "'></div>");
+				$pager.appendTo("body");
+				p.pager = "#" + jqID(pagerId);
 			} else {
 				$pager = $(p.pager); // jQuery wrapper or ESCAPED id selector
 				pagerId = $pager.attr("id");

@@ -477,6 +477,11 @@ jgrid.extend({
 		});
 	},
 	inlineNav : function (elem, o) {
+		if (typeof elem === "object") {
+			// the option pager are skipped
+			o = elem;
+			elem = undefined;
+		}
 		o = $.extend(true,{
 			edit: true,
 			editicon: "ui-icon-pencil",
@@ -492,7 +497,32 @@ jgrid.extend({
 		}, jgrid.nav, o ||{});
 		return this.each(function(){
 			if (!this.grid ) { return; }
-			var $t = this, $self = $($t), onSelect, p = $t.p, gID = p.idSel;
+			var $t = this, $self = $($t), onSelect, p = $t.p, gID = p.idSel, $elem;
+
+			if (elem === undefined) {
+				if (p.pager) {
+					$self.jqGrid("inlineNav", p.pager, o)
+					if ($t.p.toppager) {
+						elem = $t.p.toppager;
+					} else {
+						return;
+					}
+				} else if ($t.p.toppager) {
+					elem = $t.p.toppager;
+				}
+			}
+			if (elem === undefined) {
+				return; // error
+			}
+			$elem = $(elem);
+			if ($elem.length <= 0) {
+				return; // error
+			}
+			if ($elem.find(".navtable").length <= 0) {
+				// create navigator bar if it is not yet exist
+				$self.jqGrid("navGrid", elem, {add: false, edit: false, del: false, search: false, refresh: false, view: false});
+			}
+
 			p._inlinenav = true;
 			// detect the formatactions column
 			if(o.addParams.useFormatter === true) {
