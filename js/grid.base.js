@@ -197,7 +197,7 @@ $.extend(true,jgrid,{
 			searchoptions: { sopt: ["eq", "ne", "lt", "le", "gt", "ge"] }
         },
 		actions: {
-			formatter: "actions", width: 53, align: "center", autoResizable: false,
+			formatter: "actions", width: 42, align: "center", autoResizable: false,
 			fixed: true, resizable: false, sortable: false, search: false, editable: false, viewable: false
 		}
     },
