@@ -1317,7 +1317,7 @@ $.fn.jqGrid = function( pin ) {
 					this.grid.bDiv.scrollTop = 0;
 				}
 			}
-			if(locdata === true && this.p.treeGrid) {
+			if(locdata === true && this.p.treeGrid && !this.p.loadonce ) {
 				this.p.data = []; this.p._index = {};
 			}
 		},
@@ -1722,7 +1722,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 					rowData = [];
 				}
-				if(locdata || ts.p.treeGrid===true) {
+				if(locdata /*|| ts.p.treeGrid===true*/) {
 					rd[locid] = $.jgrid.stripPref(ts.p.idPrefix, idr);
 					ts.p.data.push(rd);
 					ts.p._index[rd[locid]] = ts.p.data.length-1;
@@ -1873,7 +1873,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 			});
-			if(ts.p.treeGrid && !ts.p.search) {
+			if(ts.p.treeGrid && ts.p._sort) {
 				$(ts).jqGrid("SortTree", st, ts.p.sortorder, cmtypes[st].stype || 'text', cmtypes[st].srcfmt || '');
 				return;
 			}
@@ -2014,11 +2014,12 @@ $.fn.jqGrid = function( pin ) {
 					grPrepare.call($(ts),queryResults[j],j, recordsperpage );
 				}
 			}
-			if(ts.p.treeGrid && ts.p.search) {
-				$(ts).jqGrid("searchTree", queryResults);
-				return;
-			}
 			queryResults = queryResults.slice( (page-1)*recordsperpage , page*recordsperpage );
+			if(ts.p.treeGrid && ts.p.search) {
+				queryResults = $(ts).jqGrid("searchTree", queryResults);
+			} else {
+				queryResults = queryResults.slice( (page-1)*recordsperpage , page*recordsperpage );
+			}
 			query = null;
 			cmtypes = null;
 			retresult[ts.p.localReader.total] = totalpages;
@@ -2257,6 +2258,7 @@ $.fn.jqGrid = function( pin ) {
 					endReq();
 				break;
 				}
+				ts.p._sort = false;
 			}
 		},
 		setHeadCheckBox = function ( checked ) {
@@ -2499,6 +2501,7 @@ $.fn.jqGrid = function( pin ) {
 					$(this).trigger("click");
 				});
 			}
+			ts.p._sort = true;
 			populate();
 			ts.p.lastsort = idxcol;
 			if(ts.p.sortname !== index && idxcol) {ts.p.lastsort = idxcol;}

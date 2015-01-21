@@ -122,6 +122,7 @@ $.jgrid.extend({
 			var $t = this, i=0, pico, ecol = false, nm, key, tkey, dupcols=[];
 			if(!$t.p.treeGrid) {return;}
 			if(!$t.p.treedatatype ) {$.extend($t.p,{treedatatype: $t.p.datatype});}
+			if($t.p.loadonce) { $t.p.treedatatype = 'local'; }
 			$t.p.subGrid = false;$t.p.altRows =false;
 			$t.p.pgbuttons = false;$t.p.pginput = false;
 			$t.p.gridview =  true;
@@ -473,6 +474,31 @@ $.jgrid.extend({
 			});
 			query = null;roots=null;records=null;
 		});
+	},
+	searchTree : function ( recs ) {
+		var i, len = recs.length || 0, res=[], lid, roots=[], result=[],tid;
+		this.each(function(){
+			if(!this.grid || !this.p.treeGrid) {return;}
+
+			if(len) {
+				lid = this.p.localReader.id;
+				for(i = 0; i < len ; i++) {
+					res = $(this).jqGrid('getNodeAncestors', recs[i]);
+					if(res.length) {
+						tid = res[res.length-1][lid]; // root node
+						if($.inArray(tid, roots ) !== -1) { // ignore repeated
+							continue;
+						} else {
+							roots.push( tid );
+						}
+					}
+					res = $(this).jqGrid('getFullTreeNode', res[res.length-1]);
+					
+					result = result.concat( res );
+				}	
+			}
+		});
+		return result;
 	},
 	collectChildrenSortTree : function(records, rec, sortname, newDir,st, datefmt) {
 		return this.each(function(){
