@@ -197,26 +197,30 @@ jgrid.extend({
 
 		});
 	},
-	filterToolbar : function(o){
-		o = $.extend({
-			autosearch: true,
-			autosearchDelay: 500,
-			searchOnEnter : true,
-			beforeSearch: null,
-			afterSearch: null,
-			beforeClear: null,
-			afterClear: null,
-			searchurl : '',
-			stringResult: false,
-			groupOp: 'AND',
-			defaultSearch : "bw",
-			searchOperators : false,
-			resetIcon : "x",
-			operands : { "eq" :"==", "ne":"!","lt":"<","le":"<=","gt":">","ge":">=","bw":"^","bn":"!^","in":"=","ni":"!=","ew":"|","en":"!@","cn":"~","nc":"!~","nu":"#","nn":"!#"}
-		}, jgrid.search , o  || {});
+	filterToolbar : function(oMuligrid){
+		// if one uses jQuery wrapper with multiple grids, then oMultiple specify the object with common options
 		return this.each(function(){
 			var $t = this, grid = $t.grid, $self = $($t), p = $t.p, bindEv = jgrid.bindEv, info_dialog = jgrid.info_dialog;
 			if(this.ftoolbar) { return; }
+			// make new copy of the options and use it for ONE specific grid.
+			// p.searching can contains grid specific options
+			// we will don't modify the input options oMuligrid
+			var o = $.extend(true, {
+				autosearch: true,
+				autosearchDelay: 500,
+				searchOnEnter : true,
+				beforeSearch: null,
+				afterSearch: null,
+				beforeClear: null,
+				afterClear: null,
+				searchurl : '',
+				stringResult: false,
+				groupOp: 'AND',
+				defaultSearch : "bw",
+				searchOperators : false,
+				resetIcon : "x",
+				operands : { "eq" :"==", "ne":"!","lt":"<","le":"<=","gt":">","ge":">=","bw":"^","bn":"!^","in":"=","ni":"!=","ew":"|","en":"!@","cn":"~","nc":"!~","nu":"#","nn":"!#"}
+			}, jgrid.search, p.searching || {}, oMuligrid || {});
 			var colModel = p.colModel, errcap = jgrid.errors.errcap, bClose = jgrid.edit.bClose, editMsg = jgrid.edit.msg, jqID = jgrid.jqID;
 			var triggerToolbar = function() {
 				var sdata={}, j=0, v, nm, sopt={},so;

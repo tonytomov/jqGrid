@@ -178,10 +178,8 @@ var englishLanguageDefaults = {
 $.jgrid = $.jgrid || {};
 var jgrid = $.jgrid;
 if (jgrid.defaults == null) {
-	//fatalErrorFunction("FATAL ERROR!!!\n\nthe locale file \"grid.locale-en.js\" or other are not included. It should be included before jquery.jqGrid.min.js\n");
-	//return;
-	
-	// set English options only if no grid.locale-XX.js file are included.
+	// set English options only if no grid.locale-XX.js file are included before jquery.jqGrid.min.js or jquery.jqGrid.src.js
+	// the files included AFTER jquery.jqGrid.min.js or jquery.jqGrid.src.js will just overwrite all the settings which were set previously
 	$.extend(true, jgrid, englishLanguageDefaults);
 }
 
@@ -6053,26 +6051,30 @@ jgrid.extend({
 
 		});
 	},
-	filterToolbar : function(o){
-		o = $.extend({
-			autosearch: true,
-			autosearchDelay: 500,
-			searchOnEnter : true,
-			beforeSearch: null,
-			afterSearch: null,
-			beforeClear: null,
-			afterClear: null,
-			searchurl : '',
-			stringResult: false,
-			groupOp: 'AND',
-			defaultSearch : "bw",
-			searchOperators : false,
-			resetIcon : "x",
-			operands : { "eq" :"==", "ne":"!","lt":"<","le":"<=","gt":">","ge":">=","bw":"^","bn":"!^","in":"=","ni":"!=","ew":"|","en":"!@","cn":"~","nc":"!~","nu":"#","nn":"!#"}
-		}, jgrid.search , o  || {});
+	filterToolbar : function(oMuligrid){
+		// if one uses jQuery wrapper with multiple grids, then oMultiple specify the object with common options
 		return this.each(function(){
 			var $t = this, grid = $t.grid, $self = $($t), p = $t.p, bindEv = jgrid.bindEv, info_dialog = jgrid.info_dialog;
 			if(this.ftoolbar) { return; }
+			// make new copy of the options and use it for ONE specific grid.
+			// p.searching can contains grid specific options
+			// we will don't modify the input options oMuligrid
+			var o = $.extend(true, {
+				autosearch: true,
+				autosearchDelay: 500,
+				searchOnEnter : true,
+				beforeSearch: null,
+				afterSearch: null,
+				beforeClear: null,
+				afterClear: null,
+				searchurl : '',
+				stringResult: false,
+				groupOp: 'AND',
+				defaultSearch : "bw",
+				searchOperators : false,
+				resetIcon : "x",
+				operands : { "eq" :"==", "ne":"!","lt":"<","le":"<=","gt":">","ge":">=","bw":"^","bn":"!^","in":"=","ni":"!=","ew":"|","en":"!@","cn":"~","nc":"!~","nu":"#","nn":"!#"}
+			}, jgrid.search, p.searching || {}, oMuligrid || {});
 			var colModel = p.colModel, errcap = jgrid.errors.errcap, bClose = jgrid.edit.bClose, editMsg = jgrid.edit.msg, jqID = jgrid.jqID;
 			var triggerToolbar = function() {
 				var sdata={}, j=0, v, nm, sopt={},so;
@@ -7629,55 +7631,60 @@ var rp_ge = {}, jgrid = $.jgrid,
 		if(h.o) {h.o.remove();}
 	};
 jgrid.extend({
-	searchGrid : function (o) {
-		o = $.extend(true, {
-			recreateFilter: false,
-			drag: true,
-			sField:'searchField',
-			sValue:'searchString',
-			sOper: 'searchOper',
-			sFilter: 'filters',
-			loadDefaults: true, // this options activates loading of default filters from grid's postData for Multipe Search only.
-			beforeShowSearch: null,
-			afterShowSearch : null,
-			onInitializeSearch: null,
-			afterRedraw : null,
-			afterChange: null,
-			closeAfterSearch : false,
-			closeAfterReset: false,
-			closeOnEscape : false,
-			searchOnEnter : false,
-			multipleSearch : false,
-			multipleGroup : false,
-			//cloneSearchRowOnAdd: true,
-			top : 0,
-			left: 0,
-			jqModal : true,
-			modal: false,
-			resize : true,
-			width: 450,
-			height: 'auto',
-			dataheight: 'auto',
-			showQuery: false,
-			errorcheck : true,
-			sopt: null,
-			stringResult: undefined,
-			onClose : null,
-			onSearch : null,
-			onReset : null,
-			toTop : true,
-			overlay : 30,
-			columns : [],
-			tmplNames : null,
-			tmplFilters : null,
-			tmplLabel : ' Template: ',
-			showOnLoad: false,
-			layer: null,
-			operands : { "eq" :"=", "ne":"<>","lt":"<","le":"<=","gt":">","ge":">=","bw":"LIKE","bn":"NOT LIKE","in":"IN","ni":"NOT IN","ew":"LIKE","en":"NOT LIKE","cn":"LIKE","nc":"NOT LIKE","nu":"IS NULL","nn":"ISNOT NULL"}
-		}, jgrid.search, o || {});
+	searchGrid : function (oMuligrid) {
+		// if one uses jQuery wrapper with multiple grids, then oMuligrid specify the object with common options
 		return this.each(function() {
 			var $t = this, $self = $($t), jqID = jgrid.jqID, p = $t.p;
-			if(!$t.grid) {return;}
+			if(!$t.grid || p == null) {return;}
+			// make new copy of the options and use it for ONE specific grid.
+			// p.searching can contains grid specific options
+			// we will don't modify the input options oMuligrid
+			var o = $.extend(true, {
+				recreateFilter: false,
+				drag: true,
+				sField:'searchField',
+				sValue:'searchString',
+				sOper: 'searchOper',
+				sFilter: 'filters',
+				loadDefaults: true, // this options activates loading of default filters from grid's postData for Multipe Search only.
+				beforeShowSearch: null,
+				afterShowSearch : null,
+				onInitializeSearch: null,
+				afterRedraw : null,
+				afterChange: null,
+				closeAfterSearch : false,
+				closeAfterReset: false,
+				closeOnEscape : false,
+				searchOnEnter : false,
+				multipleSearch : false,
+				multipleGroup : false,
+				//cloneSearchRowOnAdd: true,
+				top : 0,
+				left: 0,
+				jqModal : true,
+				modal: false,
+				resize : true,
+				width: 450,
+				height: 'auto',
+				dataheight: 'auto',
+				showQuery: false,
+				errorcheck : true,
+				sopt: null,
+				stringResult: undefined,
+				onClose : null,
+				onSearch : null,
+				onReset : null,
+				toTop : true,
+				overlay : 30,
+				columns : [],
+				tmplNames : null,
+				tmplFilters : null,
+				tmplLabel : ' Template: ',
+				showOnLoad: false,
+				layer: null,
+				operands : { "eq" :"=", "ne":"<>","lt":"<","le":"<=","gt":">","ge":">=","bw":"LIKE","bn":"NOT LIKE","in":"IN","ni":"NOT IN","ew":"LIKE","en":"NOT LIKE","cn":"LIKE","nc":"NOT LIKE","nu":"IS NULL","nn":"ISNOT NULL"}
+			}, jgrid.search, p.searching || {}, oMuligrid || {});
+
 			var fid = "fbox_"+p.id,
 			showFrm = true,
 			mustReload = true,
@@ -7936,61 +7943,66 @@ jgrid.extend({
 			}
 		});
 	},
-	editGridRow : function(rowid, o){
-		o = $.extend(true, {
-			top : 0,
-			left: 0,
-			width: 300,
-			datawidth: 'auto',
-			height: 'auto',
-			dataheight: 'auto',
-			modal: false,
-			overlay : 30,
-			drag: true,
-			resize: true,
-			url: null,
-			mtype : "POST",
-			clearAfterAdd :true,
-			closeAfterEdit : false,
-			reloadAfterSubmit : true,
-			onInitializeForm: null,
-			beforeInitData: null,
-			beforeShowForm: null,
-			afterShowForm: null,
-			beforeSubmit: null,
-			afterSubmit: null,
-			onclickSubmit: null,
-			afterComplete: null,
-			onclickPgButtons : null,
-			afterclickPgButtons: null,
-			editData : {},
-			recreateForm : false,
-			jqModal : true,
-			closeOnEscape : false,
-			addedrow : "first",
-			topinfo : '',
-			bottominfo: '',
-			saveicon : [],
-			closeicon : [],
-			savekey: [false,13],
-			navkeys: [false,38,40],
-			checkOnSubmit : false,
-			checkOnUpdate : false,
-			_savedData : {},
-			processing : false,
-			onClose : null,
-			ajaxEditOptions : {},
-			serializeEditData : null,
-			viewPagerButtons : true,
-			overlayClass : 'ui-widget-overlay',
-			removemodal : true,
-			form: 'edit'
-		}, jgrid.edit, o || {});
-		rp_ge[$(this)[0].p.id] = o;
+	editGridRow : function(rowid, oMuligrid){		// if one uses jQuery wrapper with multiple grids, then oMultiple specify the object with common options
 		return this.each(function(){
-			var $t = this, $self = $($t);
-			if (!$t.grid || !rowid) {return;}
-			var p = $t.p, gID = p.id, jqID = jgrid.jqID, hideModal = jgrid.hideModal, propOrAttr = p.propOrAttr,
+			var $t = this, $self = $($t), p = $t.p;
+			if (!$t.grid || p == null || !rowid) {return;}
+			// make new copy of the options oMuligrid and use it for ONE specific grid.
+			// p.formEditing can contains grid specific options
+			// we will don't modify the input options oMuligrid
+			var gID = p.id,
+			o = $.extend(true, {
+				top : 0,
+				left: 0,
+				width: 300,
+				datawidth: 'auto',
+				height: 'auto',
+				dataheight: 'auto',
+				modal: false,
+				overlay : 30,
+				drag: true,
+				resize: true,
+				url: null,
+				mtype : "POST",
+				clearAfterAdd :true,
+				closeAfterEdit : false,
+				reloadAfterSubmit : true,
+				onInitializeForm: null,
+				beforeInitData: null,
+				beforeShowForm: null,
+				afterShowForm: null,
+				beforeSubmit: null,
+				afterSubmit: null,
+				onclickSubmit: null,
+				afterComplete: null,
+				onclickPgButtons : null,
+				afterclickPgButtons: null,
+				editData : {},
+				recreateForm : false,
+				jqModal : true,
+				closeOnEscape : false,
+				addedrow : "first",
+				topinfo : '',
+				bottominfo: '',
+				saveicon : [],
+				closeicon : [],
+				savekey: [false,13],
+				navkeys: [false,38,40],
+				checkOnSubmit : false,
+				checkOnUpdate : false,
+				_savedData : {},
+				processing : false,
+				onClose : null,
+				ajaxEditOptions : {},
+				serializeEditData : null,
+				viewPagerButtons : true,
+				overlayClass : 'ui-widget-overlay',
+				removemodal : true,
+				form: 'edit'
+			}, jgrid.edit, p.formEditing || {}, oMuligrid || {});
+			rp_ge[gID] = o; // ??? I don't think that it's needed now and one can just use o instead of rp_ge[gID] below
+			
+			var jqID = jgrid.jqID, hideModal = jgrid.hideModal, propOrAttr = p.propOrAttr,
 			frmgr = "FrmGrid_"+gID, frmgrID = frmgr, frmtborg = "TblGrid_"+gID, frmtb = "#"+jqID(frmtborg), frmtb2 = frmtb+"_2",
 			ids = {themodal:'editmod'+gID,modalhead:'edithd'+gID,modalcontent:'editcnt'+gID, scrollelm : frmgr},
 			themodalSelector = "#"+jqID(ids.themodal), gboxSelector = p.gBox,
@@ -8802,36 +8814,41 @@ jgrid.extend({
 			updateNav(posInit[0],posInit);
 		});
 	},
-	viewGridRow : function(rowid, o){
-		o = $.extend(true, {
-			top : 0,
-			left: 0,
-			width: 0,
-			datawidth: 'auto',
-			height: 'auto',
-			dataheight: 'auto',
-			modal: false,
-			overlay: 30,
-			drag: true,
-			resize: true,
-			jqModal: true,
-			closeOnEscape : false,
-			labelswidth: '30%',
-			closeicon: [],
-			navkeys: [false,38,40],
-			onClose: null,
-			beforeShowForm : null,
-			beforeInitData : null,
-			viewPagerButtons : true,
-			recreateForm : false,
-			removemodal: true,
-			form: 'view'
-		}, jgrid.view, o || {});
-		rp_ge[$(this)[0].p.id] = o;
+	viewGridRow : function(rowid, oMuligrid){
 		return this.each(function(){
-			var $t = this, $self = $($t);
-			if (!$t.grid || !rowid) {return;}
-			var p = $t.p, gID = p.id, jqID = jgrid.jqID,
+			var $t = this, $self = $($t), p = $t.p;
+			if (!$t.grid || p == null || !rowid) {return;}
+			// make new copy of the options oMuligrid and use it for ONE specific grid.
+			// p.formViewing can contains grid specific options
+			// we will don't modify the input options oMuligrid
+			var gID = p.id,
+			o = $.extend(true, {
+				top : 0,
+				left: 0,
+				width: 0,
+				datawidth: 'auto',
+				height: 'auto',
+				dataheight: 'auto',
+				modal: false,
+				overlay: 30,
+				drag: true,
+				resize: true,
+				jqModal: true,
+				closeOnEscape : false,
+				labelswidth: '30%',
+				closeicon: [],
+				navkeys: [false,38,40],
+				onClose: null,
+				beforeShowForm : null,
+				beforeInitData : null,
+				viewPagerButtons : true,
+				recreateForm : false,
+				removemodal: true,
+				form: 'view'
+			}, jgrid.view, p.formViewing || {}, oMuligrid || {});
+			rp_ge[gID] = o; // ??? I don't think that it's needed now and one can just use o instead of rp_ge[gID] below
+
+			var jqID = jgrid.jqID,
 			frmgr = "#ViewGrid_"+jqID(gID), frmtb = "#ViewTbl_" + jqID(gID), frmtb2 = frmtb+"_2",
 			frmgrID = "ViewGrid_"+gID, frmtbID = "ViewTbl_"+gID,
 			ids = {themodal:'viewmod'+gID,modalhead:'viewhd'+gID,modalcontent:'viewcnt'+gID, scrollelm : frmgrID},
@@ -9112,43 +9129,47 @@ jgrid.extend({
 			updateNav(posInit[0],posInit);
 		});
 	},
-	delGridRow : function(rowids,o) {
-		o = $.extend(true, {
-			top : 0,
-			left: 0,
-			width: 240,
-			height: 'auto',
-			dataheight : 'auto',
-			modal: false,
-			overlay: 30,
-			drag: true,
-			resize: true,
-			url : '',
-			mtype : "POST",
-			reloadAfterSubmit: true,
-			beforeShowForm: null,
-			beforeInitData : null,
-			afterShowForm: null,
-			beforeSubmit: null,
-			onclickSubmit: null,
-			afterSubmit: null,
-			jqModal : true,
-			closeOnEscape : false,
-			delData: {},
-			delicon : [],
-			cancelicon : [],
-			onClose : null,
-			ajaxDelOptions : {},
-			processing : false,
-			serializeDelData : null,
-			useDataProxy : false
-		}, jgrid.del, o ||{});
-		rp_ge[$(this)[0].p.id] = o;
+	delGridRow : function(rowids,oMuligrid) {
 		return this.each(function(){
-			var $t = this;
-			if (!$t.grid ) {return;}
-			if(!rowids) {return;}
-			var p = $t.p, gID = p.id, onBeforeShow = $.isFunction(rp_ge[gID].beforeShowForm), jqID = jgrid.jqID,
+			var $t = this, p = $t.p;
+			if (!$t.grid || p == null || !rowids) {return;}
+			// make new copy of the options oMuligrid and use it for ONE specific grid.
+			// p.formDeleting can contains grid specific options
+			// we will don't modify the input options oMuligrid
+			var gID = p.id,
+			o = $.extend(true, {
+				top : 0,
+				left: 0,
+				width: 240,
+				height: 'auto',
+				dataheight : 'auto',
+				modal: false,
+				overlay: 30,
+				drag: true,
+				resize: true,
+				url : '',
+				mtype : "POST",
+				reloadAfterSubmit: true,
+				beforeShowForm: null,
+				beforeInitData : null,
+				afterShowForm: null,
+				beforeSubmit: null,
+				onclickSubmit: null,
+				afterSubmit: null,
+				jqModal : true,
+				closeOnEscape : false,
+				delData: {},
+				delicon : [],
+				cancelicon : [],
+				onClose : null,
+				ajaxDelOptions : {},
+				processing : false,
+				serializeDelData : null,
+				useDataProxy : false
+			}, jgrid.del, p.formDeleting || {}, oMuligrid || {});
+			rp_ge[gID] = o; // ??? I don't think that it's needed now and one can just use o instead of rp_ge[gID] below
+
+			var onBeforeShow = $.isFunction(rp_ge[gID].beforeShowForm), jqID = jgrid.jqID,
 			onAfterShow = $.isFunction(rp_ge[gID].afterShowForm), dtblID = "DelTbl_" + gID,
 			onBeforeInit = $.isFunction(rp_ge[gID].beforeInitData) ? rp_ge[gID].beforeInitData : false,
 			ids = {themodal:'delmod'+gID,modalhead:'delhd'+gID,modalcontent:'delcnt'+gID, scrollelm: dtblID},
@@ -9333,49 +9354,59 @@ jgrid.extend({
 			}
 		});
 	},
-	navGrid : function (elem, o, pEdit,pAdd,pDel,pSearch, pView) {
+	navGrid : function (elem, oMuligrid, pEdit,pAdd,pDel,pSearch, pView) {
 		if (typeof elem === "object") {
 			// the option pager are skipped
 			pView = pSearch;
 			pSearch = pDel;
 			pDel = pAdd;
 			pAdd = pEdit;
-			pEdit = o;
-			o = elem;
+			pEdit = oMuligrid;
+			oMuligrid = elem;
 			elem = undefined;
 		}
-		o = $.extend({
-			edit: true,
-			editicon: "ui-icon-pencil",
-			add: true,
-			addicon:"ui-icon-plus",
-			del: true,
-			delicon:"ui-icon-trash",
-			search: true,
-			searchicon:"ui-icon-search",
-			refresh: true,
-			refreshicon:"ui-icon-refresh",
-			refreshstate: 'firstpage',
-			view: false,
-			viewicon : "ui-icon-document",
-			position : "left",
-			closeOnEscape : true,
-			beforeRefresh : null,
-			afterRefresh : null,
-			cloneToTop : false,
-			alertwidth : 200,
-			alertheight : 'auto',
-			alerttop: null,
-			alertleft: null,
-			alertzIndex : null,
-			commonIconClass : "ui-icon",
-			iconsOverText : false
-		}, jgrid.nav, o ||{});
+		pAdd = pAdd || {};
+		pEdit = pEdit || {};
+		pView = pView || {};
+		pDel = pDel || {};
+		pSearch = pSearch || {};
 		return this.each(function() {
-			var $t = this, p = $t.p, gridId = p.id;
-			if($t.nav && $(elem).find(".navtable").length > 0) {
-				return;
+			var $t = this, p = $t.p;
+			if(!$t.grid || p == null || ($t.nav && $(elem).find(".navtable").length > 0)) {
+				return; // error or the navigator bar already exists
 			}
+			// make new copy of the options oMuligrid and use it for ONE specific grid.
+			// p.navOptions can contains grid specific options
+			// we will don't modify the input options oMuligrid
+			var gridId = p.id,
+			o = $.extend({
+				edit: true,
+				editicon: "ui-icon-pencil",
+				add: true,
+				addicon:"ui-icon-plus",
+				del: true,
+				delicon:"ui-icon-trash",
+				search: true,
+				searchicon:"ui-icon-search",
+				refresh: true,
+				refreshicon:"ui-icon-refresh",
+				refreshstate: 'firstpage',
+				view: false,
+				viewicon : "ui-icon-document",
+				position : "left",
+				closeOnEscape : true,
+				beforeRefresh : null,
+				afterRefresh : null,
+				cloneToTop : false,
+				alertwidth : 200,
+				alertheight : 'auto',
+				alerttop: null,
+				alertleft: null,
+				alertzIndex : null,
+				commonIconClass : "ui-icon",
+				iconsOverText : false
+			}, jgrid.nav, p.navOptions || {}, oMuligrid || {});
+
 			var alertIDs = {themodal: 'alertmod_' + gridId, modalhead: 'alerthd_' + gridId,modalcontent: 'alertcnt_' + gridId},
 			twd, tdw, jqID = jgrid.jqID, gridIdEscaped = p.idSel, gboxSelector = p.gBox,
 			viewModalAlert = function () {
@@ -9395,14 +9426,6 @@ jgrid.extend({
 					elem = $t.p.toppager;
 				}
 			}
-			if (elem === undefined) {
-				return; // error
-			}
-			pAdd = pAdd || {};
-			pEdit = pEdit || {};
-			pView = pView || {};
-			pDel = pDel || {};
-			pSearch = pSearch || {};
 
 			if ($("#" + jqID(alertIDs.themodal))[0] === undefined) {
 				if(!o.alerttop && !o.alertleft) {
@@ -9536,11 +9559,11 @@ jgrid.extend({
 					} catch (ignore) {}
 					switch (o.refreshstate) {
 						case 'firstpage':
-							$($t).trigger("reloadGrid", [{page:1}]);
+							$($t).trigger("reloadGrid", [$.extend({}, o.reloadGridOptions || {}, {page:1})]);
 							break;
 						case 'current':
 						case 'currentfilter':
-							$($t).trigger("reloadGrid", [{current:true}]);
+							$($t).trigger("reloadGrid", [$.extend({}, o.reloadGridOptions || {}, {current:true})]);
 							break;
 					}
 					if($.isFunction(o.afterRefresh)) {o.afterRefresh.call($t);}
@@ -9620,8 +9643,8 @@ jgrid.extend({
 			}
 		});
 	},
-	navButtonAdd : function (elem, p) {
-		p = $.extend({
+	navButtonAdd : function (elem, o) {
+		o = $.extend({
 			caption : "newButton",
 			title: '',
 			buttonicon : 'ui-icon-newwin',
@@ -9630,45 +9653,41 @@ jgrid.extend({
 			cursor : 'pointer',
 			commonIconClass : "ui-icon",
 			iconsOverText : false
-		}, p ||{});
+		}, o ||{});
 		return this.each(function() {
 			var $t = this, jqID = jgrid.jqID;
-			if( !$t.grid)  {return;}
-			if( typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+jqID(elem);}
-			var findnav = $(".navtable",elem)[0];
-			if (findnav) {
-				if( p.id && $(p.idSel, findnav)[0] !== undefined )  {return;}
+			if (!$t.grid)  {return;}
+			if (typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+jqID(elem);}
+			var findnav = $(".navtable",elem);
+			if (findnav.length > 0) {
+				if (o.id && findnav.find("#" + jqID(o.id)).length > 0)  {return;}
 				var tbd = $("<div></div>"), classes = [];
-				if(p.buttonicon.toString().toUpperCase() === "NONE") {
-                    $(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'>"+
-						(p.caption ? "<span class='ui-pg-button-text" + (p.iconsOverText ? " ui-pg-button-icon-over-text" : "") + "'>"+p.caption+"</span>" : "") +
+				if (o.buttonicon.toString().toUpperCase() === "NONE") {
+					$(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'>"+
+						(o.caption ? "<span class='ui-pg-button-text" + (o.iconsOverText ? " ui-pg-button-icon-over-text" : "") + "'>"+o.caption+"</span>" : "") +
 						"</div>");
 				} else {
-					if (p.iconsOverText) {
+					if (o.iconsOverText) {
 						classes.push("ui-pg-button-icon-over-text");
 					}
-					classes.push(p.commonIconClass);
-					classes.push(p.buttonicon);
+					classes.push(o.commonIconClass);
+					classes.push(o.buttonicon);
 					$(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'>" +
 						"<span class='" + classes.join(" ") +"'></span>"+
-						(p.caption ? "<span class='ui-pg-button-text" + (p.iconsOverText ? " ui-pg-button-icon-over-text" : "") + "'>"+p.caption+"</span>" : "") +
+						(o.caption ? "<span class='ui-pg-button-text" + (o.iconsOverText ? " ui-pg-button-icon-over-text" : "") + "'>"+o.caption+"</span>" : "") +
 						"</div>");
 				}
-				if(p.id) {$(tbd).attr("id",p.id);}
-				if(p.position==='first'){
-					if($(">div.ui-pg-button",findnav).length === 0) {
-						$(findnav).append(tbd);
-					} else {
-						$(">div.ui-pg-button",findnav).filter(":first").before(tbd);
-					}
+				if (o.id) {$(tbd).attr("id",o.id);}
+				if (o.position === 'first' && findnav.children("div.ui-pg-button").length > 0){
+					findnav.children("div.ui-pg-button").filter(":first").before(tbd);
 				} else {
-					$(findnav).append(tbd);
+					findnav.append(tbd);
 				}
 				$(tbd,findnav)
-				.attr("title",p.title  || "")
+				.attr("title",o.title  || "")
 				.click(function(e){
 					if (!$(this).hasClass('ui-state-disabled')) {
-						if ($.isFunction(p.onClickButton) ) {p.onClickButton.call($t,e);}
+						if ($.isFunction(o.onClickButton) ) {o.onClickButton.call($t,e);}
 					}
 					return false;
 				})
@@ -10499,41 +10518,42 @@ jgrid.extend({
 //Editing
 	editRow : function(rowid,keys,oneditfunc,successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
 		// Compatible mode old versions
-		var o={}, args = $.makeArray(arguments).slice(1);
+		var oMuligrid={}, args = $.makeArray(arguments).slice(1);
 
 		if( $.type(args[0]) === "object" ) {
-			o = args[0];
+			oMuligrid = args[0];
 		} else {
-			if (keys !== undefined) { o.keys = keys; }
-			if ($.isFunction(oneditfunc)) { o.oneditfunc = oneditfunc; }
-			if ($.isFunction(successfunc)) { o.successfunc = successfunc; }
-			if (url !== undefined) { o.url = url; }
-			if (extraparam !== undefined) { o.extraparam = extraparam; }
-			if ($.isFunction(aftersavefunc)) { o.aftersavefunc = aftersavefunc; }
-			if ($.isFunction(errorfunc)) { o.errorfunc = errorfunc; }
-			if ($.isFunction(afterrestorefunc)) { o.afterrestorefunc = afterrestorefunc; }
+			if (keys !== undefined) { oMuligrid.keys = keys; }
+			if ($.isFunction(oneditfunc)) { oMuligrid.oneditfunc = oneditfunc; }
+			if ($.isFunction(successfunc)) { oMuligrid.successfunc = successfunc; }
+			if (url !== undefined) { oMuligrid.url = url; }
+			if (extraparam !== undefined) { oMuligrid.extraparam = extraparam; }
+			if ($.isFunction(aftersavefunc)) { oMuligrid.aftersavefunc = aftersavefunc; }
+			if ($.isFunction(errorfunc)) { oMuligrid.errorfunc = errorfunc; }
+			if ($.isFunction(afterrestorefunc)) { oMuligrid.afterrestorefunc = afterrestorefunc; }
 			// last two not as param, but as object (sorry)
-			//if (restoreAfterError !== undefined) { o.restoreAfterError = restoreAfterError; }
-			//if (mtype !== undefined) { o.mtype = mtype || "POST"; }			
+			//if (restoreAfterError !== undefined) { oMuligrid.restoreAfterError = restoreAfterError; }
+			//if (mtype !== undefined) { oMuligrid.mtype = mtype || "POST"; }			
 		}
-		o = $.extend(true, {
-			keys : false,
-			oneditfunc: null,
-			successfunc: null,
-			url: null,
-			extraparam: {},
-			aftersavefunc: null,
-			errorfunc: null,
-			afterrestorefunc: null,
-			restoreAfterError: true,
-			mtype: "POST",
-			focusField : true
-		}, jgrid.inlineEdit, o );
 
 		// End compatible
 		return this.each(function(){
 			var $t = this, $self = $($t), p = $t.p, nm, tmp, cnt=0, focus=null, svr={},cm, bfer;
 			if (!$t.grid ) { return; }
+			var o = $.extend(true, {
+				keys : false,
+				oneditfunc: null,
+				successfunc: null,
+				url: null,
+				extraparam: {},
+				aftersavefunc: null,
+				errorfunc: null,
+				afterrestorefunc: null,
+				restoreAfterError: true,
+				mtype: "POST",
+				focusField : true
+			}, jgrid.inlineEdit, p.inlineEditing || {}, oMuligrid );
+
 			var ind = $self.jqGrid("getInd",rowid,true);
 			if( ind === false ) {return;}
 			bfer = $.isFunction( o.beforeEditRow ) ? o.beforeEditRow.call($t,o, rowid) :  undefined;
@@ -10625,9 +10645,10 @@ jgrid.extend({
 	},
 	saveRow : function(rowid, successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
 		// Compatible mode old versions
-		var args = $.makeArray(arguments).slice(1), o = {};
+		var args = $.makeArray(arguments).slice(1), o = {}, $t = this[0], $self = $($t), p = $t != null ? $t.p : null, success = false;
+		if (!$t.grid || p == null) { return success; }
 
-		if( $.type(args[0]) === "object" ) {
+		if ($.type(args[0]) === "object") {
 			o = args[0];
 		} else {
 			if ($.isFunction(successfunc)) { o.successfunc = successfunc; }
@@ -10648,14 +10669,11 @@ jgrid.extend({
 			mtype: "POST",
 			saveui : "enable",
 			savetext : jgrid.defaults.savetext || "Saving..."
-		}, jgrid.inlineEdit, o );
+		}, jgrid.inlineEdit, p.inlineEditing || {}, o);
 		// End compatible
 		// TODO: add return this.each(function(){....}
-		var success = false;
-		var $self = this, $t = $self[0], p = $t.p, nm, tmp={}, tmp2={}, tmp3= {}, editable, fr, cv, ind;
-		if (!$t.grid ) { return success; }
-		ind = $self.jqGrid("getInd",rowid,true);
-		if(ind === false) {return success;}
+		var nm, tmp = {}, tmp2 = {}, tmp3 = {}, editable, fr, cv, ind = $self.jqGrid("getInd",rowid,true);
+		if(ind === false) {return succss;}
 		var bfsr = $.isFunction( o.beforeSaveRow ) ?	o.beforeSaveRow.call($t,o, rowid) :  undefined;
 		if( bfsr === undefined ) {
 			bfsr = true;
@@ -10865,20 +10883,21 @@ jgrid.extend({
 	},
 	restoreRow : function(rowid, afterrestorefunc) {
 		// Compatible mode old versions
-		var args = $.makeArray(arguments).slice(1), o={};
+		var args = $.makeArray(arguments).slice(1), oMuligrid={};
 
 		if( $.type(args[0]) === "object" ) {
-			o = args[0];
+			oMuligrid = args[0];
 		} else {
-			if ($.isFunction(afterrestorefunc)) { o.afterrestorefunc = afterrestorefunc; }
+			if ($.isFunction(afterrestorefunc)) { oMuligrid.afterrestorefunc = afterrestorefunc; }
 		}
-		o = $.extend(true, {}, jgrid.inlineEdit, o );
 
 		// End compatible
 
 		return this.each(function(){
 			var $t = this, $self = $($t), p = $t.p, fr=-1, ares={}, k;
 			if (!$t.grid ) { return; }
+			var o = $.extend(true, {}, jgrid.inlineEdit, p.inlineEditing || {}, oMuligrid);
+
 			var ind = $self.jqGrid("getInd",rowid,true);
 			if(ind === false) {return;}
 			var bfcr = $.isFunction( o.beforeCancelRow ) ?	o.beforeCancelRow.call($t, o, rowid) :  undefined;
@@ -10958,40 +10977,41 @@ jgrid.extend({
 			}
 		});
 	},
-	inlineNav : function (elem, o) {
+	inlineNav : function (elem, oMuligrid) {
 		if (typeof elem === "object") {
 			// the option pager are skipped
-			o = elem;
+			oMuligrid = elem;
 			elem = undefined;
 		}
-		o = $.extend(true,{
-			edit: true,
-			editicon: "ui-icon-pencil",
-			add: true,
-			addicon:"ui-icon-plus",
-			save: true,
-			saveicon:"ui-icon-disk",
-			cancel: true,
-			cancelicon:"ui-icon-cancel",
-			iconsOverText : false,
-			addParams : {addRowParams: {extraparam: {}}},
-			editParams : {},
-			restoreAfterSelect : true
-		}, jgrid.nav, o ||{});
 		return this.each(function(){
-			if (!this.grid ) { return; }
-			var $t = this, $self = $($t), onSelect, p = $t.p, gID = p.idSel, $elem;
+			var $t = this, $self = $($t), p = $t.p;
+			if (!this.grid || p == null) { return; }
+			var onSelect, $elem, gID = p.idSel,
+			o = $.extend(true,{
+				edit: true,
+				editicon: "ui-icon-pencil",
+				add: true,
+				addicon:"ui-icon-plus",
+				save: true,
+				saveicon:"ui-icon-disk",
+				cancel: true,
+				cancelicon:"ui-icon-cancel",
+				iconsOverText : false,
+				addParams : {addRowParams: {extraparam: {}}},
+				editParams : {},
+				restoreAfterSelect : true
+			}, jgrid.nav, p.navOptions || {}, oMuligrid || {});
 
 			if (elem === undefined) {
 				if (p.pager) {
 					$self.jqGrid("inlineNav", p.pager, o)
-					if ($t.p.toppager) {
-						elem = $t.p.toppager;
+					if (p.toppager) {
+						elem = p.toppager;
 					} else {
 						return;
 					}
-				} else if ($t.p.toppager) {
-					elem = $t.p.toppager;
+				} else if (p.toppager) {
+					elem = p.toppager;
 				}
 			}
 			if (elem === undefined) {

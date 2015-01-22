@@ -17,41 +17,42 @@ jgrid.extend({
 //Editing
 	editRow : function(rowid,keys,oneditfunc,successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
 		// Compatible mode old versions
-		var o={}, args = $.makeArray(arguments).slice(1);
+		var oMuligrid={}, args = $.makeArray(arguments).slice(1);
 
 		if( $.type(args[0]) === "object" ) {
-			o = args[0];
+			oMuligrid = args[0];
 		} else {
-			if (keys !== undefined) { o.keys = keys; }
-			if ($.isFunction(oneditfunc)) { o.oneditfunc = oneditfunc; }
-			if ($.isFunction(successfunc)) { o.successfunc = successfunc; }
-			if (url !== undefined) { o.url = url; }
-			if (extraparam !== undefined) { o.extraparam = extraparam; }
-			if ($.isFunction(aftersavefunc)) { o.aftersavefunc = aftersavefunc; }
-			if ($.isFunction(errorfunc)) { o.errorfunc = errorfunc; }
-			if ($.isFunction(afterrestorefunc)) { o.afterrestorefunc = afterrestorefunc; }
+			if (keys !== undefined) { oMuligrid.keys = keys; }
+			if ($.isFunction(oneditfunc)) { oMuligrid.oneditfunc = oneditfunc; }
+			if ($.isFunction(successfunc)) { oMuligrid.successfunc = successfunc; }
+			if (url !== undefined) { oMuligrid.url = url; }
+			if (extraparam !== undefined) { oMuligrid.extraparam = extraparam; }
+			if ($.isFunction(aftersavefunc)) { oMuligrid.aftersavefunc = aftersavefunc; }
+			if ($.isFunction(errorfunc)) { oMuligrid.errorfunc = errorfunc; }
+			if ($.isFunction(afterrestorefunc)) { oMuligrid.afterrestorefunc = afterrestorefunc; }
 			// last two not as param, but as object (sorry)
-			//if (restoreAfterError !== undefined) { o.restoreAfterError = restoreAfterError; }
-			//if (mtype !== undefined) { o.mtype = mtype || "POST"; }			
+			//if (restoreAfterError !== undefined) { oMuligrid.restoreAfterError = restoreAfterError; }
+			//if (mtype !== undefined) { oMuligrid.mtype = mtype || "POST"; }			
 		}
-		o = $.extend(true, {
-			keys : false,
-			oneditfunc: null,
-			successfunc: null,
-			url: null,
-			extraparam: {},
-			aftersavefunc: null,
-			errorfunc: null,
-			afterrestorefunc: null,
-			restoreAfterError: true,
-			mtype: "POST",
-			focusField : true
-		}, jgrid.inlineEdit, o );
 
 		// End compatible
 		return this.each(function(){
 			var $t = this, $self = $($t), p = $t.p, nm, tmp, cnt=0, focus=null, svr={},cm, bfer;
 			if (!$t.grid ) { return; }
+			var o = $.extend(true, {
+				keys : false,
+				oneditfunc: null,
+				successfunc: null,
+				url: null,
+				extraparam: {},
+				aftersavefunc: null,
+				errorfunc: null,
+				afterrestorefunc: null,
+				restoreAfterError: true,
+				mtype: "POST",
+				focusField : true
+			}, jgrid.inlineEdit, p.inlineEditing || {}, oMuligrid );
+
 			var ind = $self.jqGrid("getInd",rowid,true);
 			if( ind === false ) {return;}
 			bfer = $.isFunction( o.beforeEditRow ) ? o.beforeEditRow.call($t,o, rowid) :  undefined;
@@ -143,9 +144,10 @@ jgrid.extend({
 	},
 	saveRow : function(rowid, successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
 		// Compatible mode old versions
-		var args = $.makeArray(arguments).slice(1), o = {};
+		var args = $.makeArray(arguments).slice(1), o = {}, $t = this[0], $self = $($t), p = $t != null ? $t.p : null, success = false;
+		if (!$t.grid || p == null) { return success; }
 
-		if( $.type(args[0]) === "object" ) {
+		if ($.type(args[0]) === "object") {
 			o = args[0];
 		} else {
 			if ($.isFunction(successfunc)) { o.successfunc = successfunc; }
@@ -166,14 +168,11 @@ jgrid.extend({
 			mtype: "POST",
 			saveui : "enable",
 			savetext : jgrid.defaults.savetext || "Saving..."
-		}, jgrid.inlineEdit, o );
+		}, jgrid.inlineEdit, p.inlineEditing || {}, o);
 		// End compatible
 		// TODO: add return this.each(function(){....}
-		var success = false;
-		var $self = this, $t = $self[0], p = $t.p, nm, tmp={}, tmp2={}, tmp3= {}, editable, fr, cv, ind;
-		if (!$t.grid ) { return success; }
-		ind = $self.jqGrid("getInd",rowid,true);
-		if(ind === false) {return success;}
+		var nm, tmp = {}, tmp2 = {}, tmp3 = {}, editable, fr, cv, ind = $self.jqGrid("getInd",rowid,true);
+		if(ind === false) {return succss;}
 		var bfsr = $.isFunction( o.beforeSaveRow ) ?	o.beforeSaveRow.call($t,o, rowid) :  undefined;
 		if( bfsr === undefined ) {
 			bfsr = true;
@@ -383,20 +382,21 @@ jgrid.extend({
 	},
 	restoreRow : function(rowid, afterrestorefunc) {
 		// Compatible mode old versions
-		var args = $.makeArray(arguments).slice(1), o={};
+		var args = $.makeArray(arguments).slice(1), oMuligrid={};
 
 		if( $.type(args[0]) === "object" ) {
-			o = args[0];
+			oMuligrid = args[0];
 		} else {
-			if ($.isFunction(afterrestorefunc)) { o.afterrestorefunc = afterrestorefunc; }
+			if ($.isFunction(afterrestorefunc)) { oMuligrid.afterrestorefunc = afterrestorefunc; }
 		}
-		o = $.extend(true, {}, jgrid.inlineEdit, o );
 
 		// End compatible
 
 		return this.each(function(){
 			var $t = this, $self = $($t), p = $t.p, fr=-1, ares={}, k;
 			if (!$t.grid ) { return; }
+			var o = $.extend(true, {}, jgrid.inlineEdit, p.inlineEditing || {}, oMuligrid);
+
 			var ind = $self.jqGrid("getInd",rowid,true);
 			if(ind === false) {return;}
 			var bfcr = $.isFunction( o.beforeCancelRow ) ?	o.beforeCancelRow.call($t, o, rowid) :  undefined;
@@ -476,40 +476,41 @@ jgrid.extend({
 			}
 		});
 	},
-	inlineNav : function (elem, o) {
+	inlineNav : function (elem, oMuligrid) {
 		if (typeof elem === "object") {
 			// the option pager are skipped
-			o = elem;
+			oMuligrid = elem;
 			elem = undefined;
 		}
-		o = $.extend(true,{
-			edit: true,
-			editicon: "ui-icon-pencil",
-			add: true,
-			addicon:"ui-icon-plus",
-			save: true,
-			saveicon:"ui-icon-disk",
-			cancel: true,
-			cancelicon:"ui-icon-cancel",
-			iconsOverText : false,
-			addParams : {addRowParams: {extraparam: {}}},
-			editParams : {},
-			restoreAfterSelect : true
-		}, jgrid.nav, o ||{});
 		return this.each(function(){
-			if (!this.grid ) { return; }
-			var $t = this, $self = $($t), onSelect, p = $t.p, gID = p.idSel, $elem;
+			var $t = this, $self = $($t), p = $t.p;
+			if (!this.grid || p == null) { return; }
+			var onSelect, $elem, gID = p.idSel,
+			o = $.extend(true,{
+				edit: true,
+				editicon: "ui-icon-pencil",
+				add: true,
+				addicon:"ui-icon-plus",
+				save: true,
+				saveicon:"ui-icon-disk",
+				cancel: true,
+				cancelicon:"ui-icon-cancel",
+				iconsOverText : false,
+				addParams : {addRowParams: {extraparam: {}}},
+				editParams : {},
+				restoreAfterSelect : true
+			}, jgrid.nav, p.navOptions || {}, oMuligrid || {});
 
 			if (elem === undefined) {
 				if (p.pager) {
 					$self.jqGrid("inlineNav", p.pager, o)
-					if ($t.p.toppager) {
-						elem = $t.p.toppager;
+					if (p.toppager) {
+						elem = p.toppager;
 					} else {
 						return;
 					}
-				} else if ($t.p.toppager) {
-					elem = $t.p.toppager;
+				} else if (p.toppager) {
+					elem = p.toppager;
 				}
 			}
 			if (elem === undefined) {

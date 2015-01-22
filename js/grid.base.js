@@ -178,10 +178,8 @@ var englishLanguageDefaults = {
 $.jgrid = $.jgrid || {};
 var jgrid = $.jgrid;
 if (jgrid.defaults == null) {
-	//fatalErrorFunction("FATAL ERROR!!!\n\nthe locale file \"grid.locale-en.js\" or other are not included. It should be included before jquery.jqGrid.min.js\n");
-	//return;
-	
-	// set English options only if no grid.locale-XX.js file are included.
+	// set English options only if no grid.locale-XX.js file are included before jquery.jqGrid.min.js or jquery.jqGrid.src.js
+	// the files included AFTER jquery.jqGrid.min.js or jquery.jqGrid.src.js will just overwrite all the settings which were set previously
 	$.extend(true, jgrid, englishLanguageDefaults);
 }
 
