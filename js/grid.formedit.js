@@ -11,7 +11,26 @@
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/
 "use strict";
-var rp_ge = {}, jgrid = $.jgrid;
+var rp_ge = {}, jgrid = $.jgrid,
+	getCssStyleOrFloat = function ($elem, styleName) {
+		var v = $elem[0].style[styleName];
+		return v.indexOf("px") >= 0 ? parseFloat(v) : v;
+	},
+	savePositionOnHide = function (propName, frmgr, h) {
+		var $w = h.w, $form = $(frmgr);
+		// we use below .style.height and .style.width to save correctly "auto" and "100%" values
+		// the "px" suffix will be saved too, but it's not a problem 
+		this.data(propName, {
+			top: getCssStyleOrFloat($w, "top"),					//parseFloat($w.css("top")),
+			left: getCssStyleOrFloat($w, "left"),				//parseFloat($w.css("left")),
+			width: getCssStyleOrFloat($w, "width"),				//$(h.w).width(),
+			height: getCssStyleOrFloat($w, "height"),			//$(h.w).height(),
+			dataheight: getCssStyleOrFloat($form, "height"),	//$(frmgr).height(),
+			datawidth: getCssStyleOrFloat($form, "width")		//$(frmgr).width()
+		});
+		$w.remove();
+		if(h.o) {h.o.remove();}
+	};
 jgrid.extend({
 	searchGrid : function (o) {
 		o = $.extend(true, {
@@ -1094,20 +1113,7 @@ jgrid.extend({
 				modal:o.modal, 
 				overlayClass: o.overlayClass,
 				onHide :  function(h) {
-					var fh = $(themodalSelector)[0].style.height;
-					if(fh.indexOf("px") > -1 ) {
-						fh = parseFloat(fh);
-					}
-					$self.data("formProp", {
-						top:parseFloat($(h.w).css("top")),
-						left : parseFloat($(h.w).css("left")),
-						width : $(h.w).width(),
-						height : fh,
-						dataheight : $(frmgr).height(),
-						datawidth: $(frmgr).width()
-					});
-					h.w.remove();
-					if(h.o) {h.o.remove();}
+					savePositionOnHide.call($self, "formProp", frmgr, h);
 				}
 			});
 			if(!closeovrl) {
@@ -1458,16 +1464,7 @@ jgrid.extend({
 				overlay: o.overlay, 
 				modal:o.modal,
 				onHide :  function(h) {
-					$self.data("viewProp", {
-						top:parseFloat($(h.w).css("top")),
-						left : parseFloat($(h.w).css("left")),
-						width : $(h.w).width(),
-						height : $(h.w).height(),
-						dataheight : $(frmgr).height(),
-						datawidth: $(frmgr).width()
-					});
-					h.w.remove();
-					if(h.o) {h.o.remove();}
+					savePositionOnHide.call($self, "viewProp", frmgr, h);
 				}
 			});
 			$(".fm-button:not(.ui-state-disabled)",frmtb2).hover(

@@ -122,4 +122,4 @@ The most the changes corresponds the tendency of web development last years. Loc
 * [navButtons2](http://www.ok-soft-gmbh.com/jqGrid/OK/navButtons2.htm) - demonstrate new iconsOverText:true option
 * [navButtons0-fa4](http://www.ok-soft-gmbh.com/jqGrid/OK/navButtons0-fa4.htm) - demonstrates resizeable navigator bar with icons. It uses Font Awesome 4.
 * [navButtons1-fa4](http://www.ok-soft-gmbh.com/jqGrid/OK/navButtons1-fa4.htm) - demonstrates resizeable navigator bar with icons and texts. It uses Font Awesome 4.
-* [navButtons2-fa4](http://www.ok-soft-gmbh.com/jqGrid/OK/navButtons2-fa4.htm) - demonstrate new iconsOverText:true option. It uses Font Awesome 4.
+* [navButtons2-fa4](http://www.ok-soft-gmbh.com/jqGrid/OK/navButtons2-fa4.htm) - demonstrate new `iconsOverText:true` option. It uses Font Awesome 4.
