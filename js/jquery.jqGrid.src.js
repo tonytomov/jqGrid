@@ -195,7 +195,7 @@ $.extend(true,jgrid,{
 			searchoptions: { sopt: ["eq", "ne", "lt", "le", "gt", "ge"] }
         },
 		actions: {
-			formatter: "actions", width: 42, align: "center", autoResizable: false,
+			formatter: "actions", width: 42, align: "center", autoResizable: false, frozen: true,
 			fixed: true, resizable: false, sortable: false, search: false, editable: false, viewable: false
 		}
     },
@@ -208,7 +208,7 @@ $.extend(true,jgrid,{
 				SortableDateTime: "Y-m-d\\TH:i:s",
 				UniversalSortableDateTime: "Y-m-d H:i:sO"
 			},
-			reformatAfterEdit : false,
+			reformatAfterEdit : true,
 			userLocalTime : false
 		},
 		baseLinkUrl: '',
