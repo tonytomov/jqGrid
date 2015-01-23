@@ -1969,6 +1969,10 @@ $.fn.jqGrid = function( pin ) {
 						query = compareFnMap[ts.p.postData.searchOper](query)(ts.p.postData.searchField, ts.p.postData.searchString,cmtypes[ts.p.postData.searchField]);
 					} catch (se){}
 				}
+			} else {
+				if(ts.p.treeGrid && ts.p.treeGridModel === "nested") {
+					query.orderBy(ts.p.treeReader.left_field, 'asc', 'integer', '', null);
+				}
 			}
 			if(ts.p.grouping) {
 				for(gin=0; gin<lengrp;gin++) {
@@ -2014,7 +2018,6 @@ $.fn.jqGrid = function( pin ) {
 					grPrepare.call($(ts),queryResults[j],j, recordsperpage );
 				}
 			}
-			queryResults = queryResults.slice( (page-1)*recordsperpage , page*recordsperpage );
 			if(ts.p.treeGrid && ts.p.search) {
 				queryResults = $(ts).jqGrid("searchTree", queryResults);
 			} else {
