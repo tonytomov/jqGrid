@@ -23,7 +23,9 @@
     });
     $.extend($.fn.fmatter.checkboxFontAwesome4, {
         unformat: function (cellValue, options, elem) {
-            var cbv = (options.colModel.editoptions) ? options.colModel.editoptions.value.split(":") : ["Yes", "No"];
+            var cbv = (options.colModel.editoptions != null && options.colModel.editoptions.value) ?
+					options.colModel.editoptions.value.split(":") :
+					["Yes", "No"];
             return $(">i", elem).hasClass("fa-check-square-o") ? cbv[0] : cbv[1];
         }
     });
