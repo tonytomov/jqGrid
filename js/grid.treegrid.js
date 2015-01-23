@@ -210,25 +210,41 @@ $.jgrid.extend({
 		});
 	},
 	// NS ,adjacency models
-	getRootNodes : function() {
+	getRootNodes : function(currentview) {
 		var result = [];
 		this.each(function(){
-			var $t = this;
+			var $t = this, level, parent_id, view;
 			if(!$t.grid || !$t.p.treeGrid) {return;}
+			if( typeof currentview !== 'boolean') {
+				currentview = false;
+			}
+			if(currentview) {
+				view = $($t).jqGrid('getRowData');
+			} else {
+				view = $t.p.data;
+			}
 			switch ($t.p.treeGridModel) {
 				case 'nested' :
-					var level = $t.p.treeReader.level_field;
-					$($t.p.data).each(function(){
+					level = $t.p.treeReader.level_field;
+					$(view).each(function( i ){
 						if(parseInt(this[level],10) === parseInt($t.p.tree_root_level,10)) {
+							if(currentview){
+								result.push($t.p.data[$t.p._index[this[$t.p.keyName]]]);
+							} else {
 							result.push(this);
+						}
 						}
 					});
 					break;
 				case 'adjacency' :
-					var parent_id = $t.p.treeReader.parent_id_field;
-					$($t.p.data).each(function(){
+					parent_id = $t.p.treeReader.parent_id_field;
+					$(view).each(function(){
 						if(this[parent_id] === null || String(this[parent_id]).toLowerCase() === "null") {
-							result.push(this);
+							if(currentview){
+								result.push($t.p.data[$t.p._index[this[$t.p.keyName]]]);
+							} else {
+								result.push(this);
+							}
 						}
 					});
 					break;
@@ -461,7 +477,7 @@ $.jgrid.extend({
 			if(!this.grid || !this.p.treeGrid) {return;}
 			var i, len,
 			rec, records = [], $t = this, query, roots,
-			rt = $(this).jqGrid("getRootNodes");
+			rt = $(this).jqGrid("getRootNodes", $t.p.search);
 			// Sorting roots
 			query = $.jgrid.from(rt);
 			query.orderBy(sortname,newDir,st, datefmt);
