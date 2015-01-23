@@ -119,8 +119,7 @@ jgrid.extend({
 	},
     columnChooser : function(opts) {
 		var $self = this, self = $self[0], p = self.p, selector, select, colMap = {}, fixedCols = [], dopts, mopts, $dialogContent, multiselectData, listHeight,
-			colModel = $self.jqGrid("getGridParam", "colModel"),
-			colNames = $self.jqGrid("getGridParam", "colNames"),
+			colModel = p.colModel, colNames = p.colNames,
 			getMultiselectWidgetData = function ($elem) {
 				return ($UiMultiselect && $UiMultiselect.prototype && $elem.data($UiMultiselect.prototype.widgetFullName || $UiMultiselect.prototype.widgetName)) ||
 					$elem.data("ui-multiselect") || $elem.data("multiselect");
