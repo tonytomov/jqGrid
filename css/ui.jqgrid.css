@@ -27,7 +27,7 @@
 .ui-jqgrid .ui-i-asc {margin-top:0;height:16px;}
 .ui-jqgrid .ui-i-desc {margin-top:0;margin-left:13px;height:16px;}
 .ui-jqgrid .ui-jqgrid-sortable {cursor:pointer;}
-.ui-jqgrid tr.ui-search-toolbar th { border-top-width: 1px !important; border-top-color: inherit !important; border-top-style: ridge !important }
+.ui-jqgrid tr.ui-search-toolbar th { padding: 2px 2px; }
 .ui-jqgrid tr.ui-search-toolbar input {margin: 1px 0 0 0}
 .ui-jqgrid tr.ui-search-toolbar select {margin: 1px 0 0 0}
 /* body */ 
