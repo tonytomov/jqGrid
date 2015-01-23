@@ -928,8 +928,8 @@ $.jgrid.extend({
 			var timeoutHnd;
 			$.each($t.p.colModel,function(ci){
 				var cm=this, soptions, surl, self, select = "", sot="=", so, i,
-				th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-"+$t.p.direction+"' id='gsh_" + $t.p.id + "_" + cm.name + "' ></th>"),
-				thd = $("<div style='position:relative;height:auto;padding-right:0.3em;padding-left:0.3em;'></div>"),
+				th = $("<th role='columnheader' class='ui-state-default ui-th-"+$t.p.direction+"' id='gsh_" + $t.p.id + "_" + cm.name + "' ></th>"),
+				thd = $("<div></div>"),
 				stbl = $("<table class='ui-search-table' cellspacing='0'><tr><td class='ui-search-oper' headers=''></td><td class='ui-search-input' headers=''></td><td class='ui-search-clear' headers=''></td></tr></table>");
 				if(this.hidden===true) { $(th).css("display","none");}
 				this.search = this.search === false ? false : true;
@@ -981,7 +981,7 @@ $.jgrid.extend({
 									if(soptions.defaultValue !== undefined) { $("select",self).val(soptions.defaultValue); }
 									$("select",self).attr({name:cm.index || cm.name, id: "gs_"+$t.p.idPrefix+cm.name});
 									if(soptions.attr) {$("select",self).attr(soptions.attr);}
-									$("select",self).css({width: "100%"});
+									$("select",self).css({width: "100%"}).addClass("ui-widget-content");
 									// preserve autoserch
 									$.jgrid.bindEv.call($t, $("select",self)[0], soptions);
 									if(p.autosearch===true){
@@ -1026,6 +1026,7 @@ $.jgrid.extend({
 										}
 									}
 								}
+								$(elem).addClass("ui-widget-content ui-corner-all");
 								if(soptions.defaultValue !== undefined) { $(elem).val(soptions.defaultValue); }
 								if(soptions.attr) {$(elem).attr(soptions.attr);}
 								$(thd).append(stbl);
@@ -1043,7 +1044,7 @@ $.jgrid.extend({
 					case "text":
 						var df = soptions.defaultValue !== undefined ? soptions.defaultValue: "";
 
-						$("td:eq(1)",stbl).append("<input type='text' style='width:100%;padding:0px;' name='"+(cm.index || cm.name)+"' id='gs_"+$t.p.idPrefix+cm.name+"' value='"+df+"'/>");
+						$("td:eq(1)",stbl).append("<input class='ui-widget ui-widget-content ui-corner-all' type='text' style='width:100%;' name='"+(cm.index || cm.name)+"' id='gs_"+$t.p.idPrefix+cm.name+"' value='"+df+"'/>");
 						$(thd).append(stbl);
 
 						if(soptions.attr) {$("input",thd).attr(soptions.attr);}
