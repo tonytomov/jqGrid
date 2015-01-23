@@ -172,7 +172,7 @@ jgrid.extend({
 		// End compatible
 		// TODO: add return this.each(function(){....}
 		var nm, tmp = {}, tmp2 = {}, tmp3 = {}, editable, fr, cv, ind = $self.jqGrid("getInd",rowid,true);
-		if(ind === false) {return succss;}
+		if(ind === false) {return success;}
 		var bfsr = $.isFunction( o.beforeSaveRow ) ?	o.beforeSaveRow.call($t,o, rowid) :  undefined;
 		if( bfsr === undefined ) {
 			bfsr = true;
@@ -235,9 +235,14 @@ jgrid.extend({
 						return false;
 					}
 					if(p.autoencode) { tmp[nm] = jgrid.htmlEncode(tmp[nm]); }
+					if (cm.formatter && cm.formatter === "date" && (cm.formatoptions == null || cm.formatoptions.sendFormatted !== true)) {
+						// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
+						// Floating point separator for example
+						tmp[nm] = $.unformat.date.call($t, tmp[nm], cm);
+					}
 					if(o.url !== 'clientArray' && cm.editoptions && cm.editoptions.NullIfEmpty === true) {
 						if(tmp[nm] === "") {
-							tmp3[nm] = 'null';
+							tmp[nm] = 'null';
 						}
 					}
 				}
@@ -416,6 +421,11 @@ jgrid.extend({
 				$.each(p.colModel, function(){
 					if(this.editable === true && p.savedRow[fr].hasOwnProperty(this.name)) {
 						ares[this.name] = p.savedRow[fr][this.name];
+						if (this.formatter && this.formatter === "date" && (this.formatoptions == null || this.formatoptions.sendFormatted !== true)) {
+							// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
+							// Floating point separator for example
+							ares[this.name] = $.unformat.date.call($t, ares[this.name], this);
+						}
 					}
 				});
 				$self.jqGrid("setRowData",rowid,ares);
@@ -503,7 +513,7 @@ jgrid.extend({
 
 			if (elem === undefined) {
 				if (p.pager) {
-					$self.jqGrid("inlineNav", p.pager, o)
+					$self.jqGrid("inlineNav", p.pager, o);
 					if (p.toppager) {
 						elem = p.toppager;
 					} else {
@@ -584,7 +594,7 @@ jgrid.extend({
 					iconsOverText: o.iconsOverText,
 					id : p.id+"_iledit",
 					onClickButton : function () {
-						var sr = $self.jqGrid('getGridParam','selrow');
+						var sr = p.selrow;
 						if(sr) {
 							$self.jqGrid('editRow', sr, o.editParams);
 							$(gID+"_ilsave").removeClass('ui-state-disabled');

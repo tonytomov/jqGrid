@@ -197,6 +197,11 @@ jgrid.extend({
 							if (!addpost) {addpost={};}
 						}
 						if( $("input.hasDatepicker",cc).length >0) { $("input.hasDatepicker",cc).datepicker('hide'); }
+						if (cm.formatter && cm.formatter === "date" && (cm.formatoptions == null || cm.formatoptions.sendFormatted !== true)) {
+							// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
+							// Floating point separator for example
+							v2 = $.unformat.date.call($t, v2, cm);
+						}
 						if (p.cellsubmit === 'remote') {
 							if (p.cellurl) {
 								var postdata = {};
@@ -218,7 +223,7 @@ jgrid.extend({
 									complete: function (result, stat) {
 										$self.jqGrid("progressBar", {method:"hide", loadtype : p.loadui });
 										$t.grid.hDiv.loading = false;
-										if (stat === 'success') {
+										if (stat === 'success' || result.status < 400) {
 											var ret = $self.triggerHandler("jqGridAfterSubmitCell", [$t, result, postdata.id, nm, v, iRow, iCol]) || [true, ''];
 											if (ret[0] === true && $.isFunction(p.afterSubmitCell)) {
 												ret = p.afterSubmitCell.call($t, result,postdata.id,nm,v,iRow,iCol);
@@ -279,7 +284,7 @@ jgrid.extend({
 	},
 	restoreCell : function(iRow, iCol) {
 		return this.each(function(){
-			var $t= this, p = $t.p, fr, tr = $t.rows[iRow], rowid = tr.id;
+			var $t= this, p = $t.p, fr, tr = $t.rows[iRow], rowid = tr.id, v, cm;
 			if (!$t.grid || p.cellEdit !== true ) {return;}
 			if ( p.savedRow.length >= 1) {fr = 0;} else {fr=null;}
 			if(fr !== null) {
@@ -291,8 +296,15 @@ jgrid.extend({
 					} catch (ignore) {}
 				}
 				$(cc).empty().attr("tabindex","-1");
-				$($t).jqGrid("setCell",rowid, iCol, p.savedRow[fr].v, false, false, true);
-				jgrid.feedback.call($t, "afterRestoreCell", rowid, p.savedRow[fr].v, iRow, iCol);
+				v = p.savedRow[fr].v;
+				cm = p.colModel[iCol];
+				if (cm.formatter && cm.formatter === "date" && (cm.formatoptions == null || cm.formatoptions.sendFormatted !== true)) {
+					// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
+					// Floating point separator for example
+					v = $.unformat.date.call($t, v, cm);
+				}
+				$($t).jqGrid("setCell",rowid, iCol, v, false, false, true);
+				jgrid.feedback.call($t, "afterRestoreCell", rowid, v, iRow, iCol);
 				p.savedRow.splice(0,1);
 			}
 			window.setTimeout(function () { $("#"+p.knv).attr("tabindex","-1").focus();},0);

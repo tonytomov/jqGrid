@@ -3730,6 +3730,7 @@ jgrid.extend({
 		});
 	},
 	getRowData : function( rowid ) {
+		// TODO: add additional parameter, which will inform whether the output data need be in formatted or unformatted form
 		var res = {}, resall;
 		this.each(function(){
 			var $t = this, p = $t.p, getall=false, ind, len = 2, j=0, rows = $t.rows, i, $td, cm, nm, td;
@@ -3813,6 +3814,7 @@ jgrid.extend({
 		return success;
 	},
 	setRowData : function(rowid, data, cssp) {
+		// TODO: add additional parameter to setRowData which inform that input data is in formatted or unformatted form
 		var success=true;
 		this.each(function(){
 			var t = this, p = t.p, vl, ind, cp = typeof cssp, lcdata={};
@@ -3825,7 +3827,7 @@ jgrid.extend({
 						var cm = this, nm = cm.name, title;
 						var dval =jgrid.getAccessor(data,nm);
 						if( dval !== undefined) {
-							lcdata[nm] = cm.formatter && typeof cm.formatter === 'string' && cm.formatter === 'date' ? $.unformat.date.call(t,dval,cm) : dval;
+							lcdata[nm] = dval;
 							vl = t.formatter( rowid, lcdata[nm], i, data, 'edit');
 							title = cm.title ? {"title":jgrid.stripHtml(vl)} : {};
 							if(p.treeGrid===true && nm === p.ExpandColumn) {
@@ -3862,6 +3864,7 @@ jgrid.extend({
 		return success;
 	},
 	addRowData : function(rowid,rdata,pos,src) {
+		// TODO: add an additional parameter, which will inform whether the input data rdata is in formatted or unformatted form
 		if(["first", "last", "before", "after"].indexOf(pos) === -1) {pos = "last";}
 		var success = false, nm, row, gi, si, ni,sind, i, v, prp="", aradd, cnm, cn, data, cm, id;
 		if(rdata) {
@@ -3992,6 +3995,7 @@ jgrid.extend({
 		return success;
 	},
 	footerData : function(action,data, format) {
+		// TODO: add an additional parameter, which will inform whether the input data "data" is in formatted or unformatted form
 		var nm, success=false, res={}, title;
 		function isEmpty(obj) {
 			var i;
@@ -4268,6 +4272,7 @@ jgrid.extend({
 		});
 	},
 	setCell : function(rowid,colname,nData,cssp,attrp, forceupd) {
+		// TODO: add an additional parameter, which will inform whether the input data nData is in formatted or unformatted form
 		return this.each(function(){
 			var $t = this, pos =-1,v, title;
 			if(!$t.grid) {return;}
@@ -4297,7 +4302,6 @@ jgrid.extend({
 						}
 						if($t.p.datatype === "local") {
 							var cm = $t.p.colModel[pos], index;
-							nData = cm.formatter && typeof cm.formatter === 'string' && cm.formatter === 'date' ? $.unformat.date.call($t,nData,cm) : nData;
 							index = $t.p._index[jgrid.stripPref($t.p.idPrefix, rowid)];
 							if(index !== undefined) {
 								$t.p.data[index][cm.name] = nData;
@@ -4315,6 +4319,7 @@ jgrid.extend({
 		});
 	},
 	getCell : function(rowid,col) {
+		// TODO: add an additional parameter, which will inform whether the output data should be in formatted or unformatted form
 		var ret = false;
 		this.each(function(){
 			var $t=this, pos=-1;
@@ -4340,6 +4345,7 @@ jgrid.extend({
 		return ret;
 	},
 	getCol : function (col, obj, mathopr) {
+		// TODO: add an additional parameter, which will inform whether the output data should be in formatted or unformatted form
 		var ret = [], val, sum=0, min, max, v;
 		obj = typeof obj !== 'boolean' ? false : obj;
 		if(mathopr === undefined) { mathopr = false; }
@@ -4559,11 +4565,10 @@ jgrid.extend({
 	},
 	setColWidth: function (iCol, newWidth, adjustGridWidth) {
 		return this.each(function () {
-			var self = this, $self = $(self), grid = self.grid, colName, colModel, i, nCol;
+			var self = this, $self = $(self), grid = self.grid, p = self.p, colModel = p.colModel, colName, i, nCol;
 			if (typeof iCol === "string") {
 				// the first parametrer is column name instead of index
 				colName = iCol;
-				colModel = $self.jqGrid("getGridParam", "colModel");
 				for (i = 0, nCol = colModel.length; i < nCol; i++) {
 					if (colModel[i].name === colName) {
 						iCol = i;
@@ -4577,7 +4582,7 @@ jgrid.extend({
 				return; // error: wrong parameters
 			}
 			grid.headers[iCol].newWidth = newWidth;
-			grid.newWidth = self.p.tblwidth + newWidth - grid.headers[iCol].width;
+			grid.newWidth = p.tblwidth + newWidth - grid.headers[iCol].width;
 			grid.resizeColumn(iCol, this, true);
 			if (adjustGridWidth !== false) {
 				$self.jqGrid("setGridWidth", grid.newWidth, false); // adjust grid width too
@@ -4872,6 +4877,11 @@ jgrid.extend({
 							if (!addpost) {addpost={};}
 						}
 						if( $("input.hasDatepicker",cc).length >0) { $("input.hasDatepicker",cc).datepicker('hide'); }
+						if (cm.formatter && cm.formatter === "date" && (cm.formatoptions == null || cm.formatoptions.sendFormatted !== true)) {
+							// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
+							// Floating point separator for example
+							v2 = $.unformat.date.call($t, v2, cm);
+						}
 						if (p.cellsubmit === 'remote') {
 							if (p.cellurl) {
 								var postdata = {};
@@ -4893,7 +4903,7 @@ jgrid.extend({
 									complete: function (result, stat) {
 										$self.jqGrid("progressBar", {method:"hide", loadtype : p.loadui });
 										$t.grid.hDiv.loading = false;
-										if (stat === 'success') {
+										if (stat === 'success' || result.status < 400) {
 											var ret = $self.triggerHandler("jqGridAfterSubmitCell", [$t, result, postdata.id, nm, v, iRow, iCol]) || [true, ''];
 											if (ret[0] === true && $.isFunction(p.afterSubmitCell)) {
 												ret = p.afterSubmitCell.call($t, result,postdata.id,nm,v,iRow,iCol);
@@ -4954,7 +4964,7 @@ jgrid.extend({
 	},
 	restoreCell : function(iRow, iCol) {
 		return this.each(function(){
-			var $t= this, p = $t.p, fr, tr = $t.rows[iRow], rowid = tr.id;
+			var $t= this, p = $t.p, fr, tr = $t.rows[iRow], rowid = tr.id, v, cm;
 			if (!$t.grid || p.cellEdit !== true ) {return;}
 			if ( p.savedRow.length >= 1) {fr = 0;} else {fr=null;}
 			if(fr !== null) {
@@ -4966,8 +4976,15 @@ jgrid.extend({
 					} catch (ignore) {}
 				}
 				$(cc).empty().attr("tabindex","-1");
-				$($t).jqGrid("setCell",rowid, iCol, p.savedRow[fr].v, false, false, true);
-				jgrid.feedback.call($t, "afterRestoreCell", rowid, p.savedRow[fr].v, iRow, iCol);
+				v = p.savedRow[fr].v;
+				cm = p.colModel[iCol];
+				if (cm.formatter && cm.formatter === "date" && (cm.formatoptions == null || cm.formatoptions.sendFormatted !== true)) {
+					// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
+					// Floating point separator for example
+					v = $.unformat.date.call($t, v, cm);
+				}
+				$($t).jqGrid("setCell",rowid, iCol, v, false, false, true);
+				jgrid.feedback.call($t, "afterRestoreCell", rowid, v, iRow, iCol);
 				p.savedRow.splice(0,1);
 			}
 			window.setTimeout(function () { $("#"+p.knv).attr("tabindex","-1").focus();},0);
@@ -8083,6 +8100,7 @@ jgrid.extend({
 
 						break;
 					}
+					// REMARK: to be exactly one should call htmlEncode LATER and to use validation and unformatting of unencoded data!!
 					if(p.autoencode) {postdata[this.name] = jgrid.htmlEncode(postdata[this.name]);}
 					}
 				});
@@ -8292,11 +8310,18 @@ jgrid.extend({
 				});
 				if(cnt>0) {$("#id_g",frmtb).val(rowid);}
 			}
-			function setNulls() {
-				$.each(p.colModel, function(i,n){
-					if(n.editoptions && n.editoptions.NullIfEmpty === true) {
-						if(postdata.hasOwnProperty(n.name) && postdata[n.name] === "") {
-							postdata[n.name] = 'null';
+			function setNullsOrUnformat() {
+				var url = rp_ge[gID].url || p.editurl;
+				$.each(p.colModel, function(i, cm){
+					var cmName = cm.name, value = postdata[cmName];
+					if (cm.formatter && cm.formatter === "date" && (cm.formatoptions == null || cm.formatoptions.sendFormatted !== true)) {
+						// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
+						// Floating point separator for example
+						postdata[cmName] = $.unformat.date.call($t, value, cm);
+					}
+					if (url !== "clientArray" && cm.editoptions && cm.editoptions.NullIfEmpty === true) {
+						if(postdata.hasOwnProperty(cmName) && value === "") {
+							postdata[cmName] = 'null';
 						}
 					}
 				});
@@ -8317,7 +8342,7 @@ jgrid.extend({
 						if(ret[0] === false) {break;}
 					}
 				}
-				setNulls();
+				setNullsOrUnformat();
 				if(ret[0]) {
 					onCS = $self.triggerHandler("jqGridAddEditClickSubmit", [rp_ge[gID], postdata, frmoper]);
 					if( onCS === undefined && $.isFunction( rp_ge[gID].onclickSubmit)) { 
@@ -8335,7 +8360,7 @@ jgrid.extend({
 				if(ret[0] && !rp_ge[gID].processing) {
 					rp_ge[gID].processing = true;
 					$("#sData", frmtb2).addClass('ui-state-active');
-					url = rp_ge[gID].url || $self.jqGrid('getGridParam','editurl');
+					url = rp_ge[gID].url || p.editurl;
 					oper = opers.oper;
 					idname = url === 'clientArray' ? p.keyName : opers.id;
 					// we add to pos data array the action - the name is oper
@@ -8350,7 +8375,7 @@ jgrid.extend({
 					postdata = $.extend(postdata,rp_ge[gID].editData,onCS);
 					if(p.treeGrid === true)  {
 						if(postdata[oper] === opers.addoper) {
-							selr = $self.jqGrid("getGridParam", 'selrow');
+							selr = p.selrow;
 							var trParID = p.treeGridModel === 'adjacency' ? p.treeReader.parent_id_field : 'parent_id';
 							postdata[trParID] = selr;
 						}
@@ -8373,7 +8398,7 @@ jgrid.extend({
 						complete:function(data,status){
 							$("#sData", frmtb2).removeClass('ui-state-active');
 							postdata[idname] = p.idPrefix + postdata[idname];
-							if(data.status >= 300 && data.status !== 304) {
+							if(data.status >= 400) {
 								ret[0] = false;
 								ret[1] = $self.triggerHandler("jqGridAddEditErrorTextFormat", [data, frmoper]);
 								if ($.isFunction(rp_ge[gID].errorTextFormat)) {
@@ -8534,8 +8559,7 @@ jgrid.extend({
 				}
 				return stat;
 			}
-			function restoreInline()
-			{
+			function restoreInline() {
 				var i;
 				if (rowid !== "_empty" && p.savedRow !== undefined && p.savedRow.length > 0 && $.isFunction($.fn.jqGrid.restoreRow)) {
 					for (i=0;i<p.savedRow.length;i++) {
@@ -9261,7 +9285,7 @@ jgrid.extend({
 						postd[idname] = postdata.join();
 						$(this).addClass('ui-state-active');
 						var ajaxOptions = $.extend({
-							url: rp_ge[gID].url || $($t).jqGrid('getGridParam','editurl'),
+							url: rp_ge[gID].url || p.editurl,
 							type: rp_ge[gID].mtype,
 							data: $.isFunction(rp_ge[gID].serializeDelData) ? rp_ge[gID].serializeDelData.call($t,postd) : postd,
 							complete:function(data,status){
@@ -10677,7 +10701,7 @@ jgrid.extend({
 		// End compatible
 		// TODO: add return this.each(function(){....}
 		var nm, tmp = {}, tmp2 = {}, tmp3 = {}, editable, fr, cv, ind = $self.jqGrid("getInd",rowid,true);
-		if(ind === false) {return succss;}
+		if(ind === false) {return success;}
 		var bfsr = $.isFunction( o.beforeSaveRow ) ?	o.beforeSaveRow.call($t,o, rowid) :  undefined;
 		if( bfsr === undefined ) {
 			bfsr = true;
@@ -10740,9 +10764,14 @@ jgrid.extend({
 						return false;
 					}
 					if(p.autoencode) { tmp[nm] = jgrid.htmlEncode(tmp[nm]); }
+					if (cm.formatter && cm.formatter === "date" && (cm.formatoptions == null || cm.formatoptions.sendFormatted !== true)) {
+						// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
+						// Floating point separator for example
+						tmp[nm] = $.unformat.date.call($t, tmp[nm], cm);
+					}
 					if(o.url !== 'clientArray' && cm.editoptions && cm.editoptions.NullIfEmpty === true) {
 						if(tmp[nm] === "") {
-							tmp3[nm] = 'null';
+							tmp[nm] = 'null';
 						}
 					}
 				}
@@ -10921,6 +10950,11 @@ jgrid.extend({
 				$.each(p.colModel, function(){
 					if(this.editable === true && p.savedRow[fr].hasOwnProperty(this.name)) {
 						ares[this.name] = p.savedRow[fr][this.name];
+						if (this.formatter && this.formatter === "date" && (this.formatoptions == null || this.formatoptions.sendFormatted !== true)) {
+							// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
+							// Floating point separator for example
+							ares[this.name] = $.unformat.date.call($t, ares[this.name], this);
+						}
 					}
 				});
 				$self.jqGrid("setRowData",rowid,ares);
@@ -11008,7 +11042,7 @@ jgrid.extend({
 
 			if (elem === undefined) {
 				if (p.pager) {
-					$self.jqGrid("inlineNav", p.pager, o)
+					$self.jqGrid("inlineNav", p.pager, o);
 					if (p.toppager) {
 						elem = p.toppager;
 					} else {
@@ -11089,7 +11123,7 @@ jgrid.extend({
 					iconsOverText: o.iconsOverText,
 					id : p.id+"_iledit",
 					onClickButton : function () {
-						var sr = $self.jqGrid('getGridParam','selrow');
+						var sr = p.selrow;
 						if(sr) {
 							$self.jqGrid('editRow', sr, o.editParams);
 							$(gID+"_ilsave").removeClass('ui-state-disabled');

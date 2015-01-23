@@ -480,6 +480,7 @@ jgrid.extend({
 
 						break;
 					}
+					// REMARK: to be exactly one should call htmlEncode LATER and to use validation and unformatting of unencoded data!!
 					if(p.autoencode) {postdata[this.name] = jgrid.htmlEncode(postdata[this.name]);}
 					}
 				});
@@ -689,11 +690,18 @@ jgrid.extend({
 				});
 				if(cnt>0) {$("#id_g",frmtb).val(rowid);}
 			}
-			function setNulls() {
-				$.each(p.colModel, function(i,n){
-					if(n.editoptions && n.editoptions.NullIfEmpty === true) {
-						if(postdata.hasOwnProperty(n.name) && postdata[n.name] === "") {
-							postdata[n.name] = 'null';
+			function setNullsOrUnformat() {
+				var url = rp_ge[gID].url || p.editurl;
+				$.each(p.colModel, function(i, cm){
+					var cmName = cm.name, value = postdata[cmName];
+					if (cm.formatter && cm.formatter === "date" && (cm.formatoptions == null || cm.formatoptions.sendFormatted !== true)) {
+						// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
+						// Floating point separator for example
+						postdata[cmName] = $.unformat.date.call($t, value, cm);
+					}
+					if (url !== "clientArray" && cm.editoptions && cm.editoptions.NullIfEmpty === true) {
+						if(postdata.hasOwnProperty(cmName) && value === "") {
+							postdata[cmName] = 'null';
 						}
 					}
 				});
@@ -714,7 +722,7 @@ jgrid.extend({
 						if(ret[0] === false) {break;}
 					}
 				}
-				setNulls();
+				setNullsOrUnformat();
 				if(ret[0]) {
 					onCS = $self.triggerHandler("jqGridAddEditClickSubmit", [rp_ge[gID], postdata, frmoper]);
 					if( onCS === undefined && $.isFunction( rp_ge[gID].onclickSubmit)) { 
@@ -732,7 +740,7 @@ jgrid.extend({
 				if(ret[0] && !rp_ge[gID].processing) {
 					rp_ge[gID].processing = true;
 					$("#sData", frmtb2).addClass('ui-state-active');
-					url = rp_ge[gID].url || $self.jqGrid('getGridParam','editurl');
+					url = rp_ge[gID].url || p.editurl;
 					oper = opers.oper;
 					idname = url === 'clientArray' ? p.keyName : opers.id;
 					// we add to pos data array the action - the name is oper
@@ -747,7 +755,7 @@ jgrid.extend({
 					postdata = $.extend(postdata,rp_ge[gID].editData,onCS);
 					if(p.treeGrid === true)  {
 						if(postdata[oper] === opers.addoper) {
-							selr = $self.jqGrid("getGridParam", 'selrow');
+							selr = p.selrow;
 							var trParID = p.treeGridModel === 'adjacency' ? p.treeReader.parent_id_field : 'parent_id';
 							postdata[trParID] = selr;
 						}
@@ -770,7 +778,7 @@ jgrid.extend({
 						complete:function(data,status){
 							$("#sData", frmtb2).removeClass('ui-state-active');
 							postdata[idname] = p.idPrefix + postdata[idname];
-							if(data.status >= 300 && data.status !== 304) {
+							if(data.status >= 400) {
 								ret[0] = false;
 								ret[1] = $self.triggerHandler("jqGridAddEditErrorTextFormat", [data, frmoper]);
 								if ($.isFunction(rp_ge[gID].errorTextFormat)) {
@@ -931,8 +939,7 @@ jgrid.extend({
 				}
 				return stat;
 			}
-			function restoreInline()
-			{
+			function restoreInline() {
 				var i;
 				if (rowid !== "_empty" && p.savedRow !== undefined && p.savedRow.length > 0 && $.isFunction($.fn.jqGrid.restoreRow)) {
 					for (i=0;i<p.savedRow.length;i++) {
@@ -1658,7 +1665,7 @@ jgrid.extend({
 						postd[idname] = postdata.join();
 						$(this).addClass('ui-state-active');
 						var ajaxOptions = $.extend({
-							url: rp_ge[gID].url || $($t).jqGrid('getGridParam','editurl'),
+							url: rp_ge[gID].url || p.editurl,
 							type: rp_ge[gID].mtype,
 							data: $.isFunction(rp_ge[gID].serializeDelData) ? rp_ge[gID].serializeDelData.call($t,postd) : postd,
 							complete:function(data,status){

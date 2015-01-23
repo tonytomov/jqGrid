@@ -3730,6 +3730,7 @@ jgrid.extend({
 		});
 	},
 	getRowData : function( rowid ) {
+		// TODO: add additional parameter, which will inform whether the output data need be in formatted or unformatted form
 		var res = {}, resall;
 		this.each(function(){
 			var $t = this, p = $t.p, getall=false, ind, len = 2, j=0, rows = $t.rows, i, $td, cm, nm, td;
@@ -3813,6 +3814,7 @@ jgrid.extend({
 		return success;
 	},
 	setRowData : function(rowid, data, cssp) {
+		// TODO: add additional parameter to setRowData which inform that input data is in formatted or unformatted form
 		var success=true;
 		this.each(function(){
 			var t = this, p = t.p, vl, ind, cp = typeof cssp, lcdata={};
@@ -3825,7 +3827,7 @@ jgrid.extend({
 						var cm = this, nm = cm.name, title;
 						var dval =jgrid.getAccessor(data,nm);
 						if( dval !== undefined) {
-							lcdata[nm] = cm.formatter && typeof cm.formatter === 'string' && cm.formatter === 'date' ? $.unformat.date.call(t,dval,cm) : dval;
+							lcdata[nm] = dval;
 							vl = t.formatter( rowid, lcdata[nm], i, data, 'edit');
 							title = cm.title ? {"title":jgrid.stripHtml(vl)} : {};
 							if(p.treeGrid===true && nm === p.ExpandColumn) {
@@ -3862,6 +3864,7 @@ jgrid.extend({
 		return success;
 	},
 	addRowData : function(rowid,rdata,pos,src) {
+		// TODO: add an additional parameter, which will inform whether the input data rdata is in formatted or unformatted form
 		if(["first", "last", "before", "after"].indexOf(pos) === -1) {pos = "last";}
 		var success = false, nm, row, gi, si, ni,sind, i, v, prp="", aradd, cnm, cn, data, cm, id;
 		if(rdata) {
@@ -3992,6 +3995,7 @@ jgrid.extend({
 		return success;
 	},
 	footerData : function(action,data, format) {
+		// TODO: add an additional parameter, which will inform whether the input data "data" is in formatted or unformatted form
 		var nm, success=false, res={}, title;
 		function isEmpty(obj) {
 			var i;
@@ -4268,6 +4272,7 @@ jgrid.extend({
 		});
 	},
 	setCell : function(rowid,colname,nData,cssp,attrp, forceupd) {
+		// TODO: add an additional parameter, which will inform whether the input data nData is in formatted or unformatted form
 		return this.each(function(){
 			var $t = this, pos =-1,v, title;
 			if(!$t.grid) {return;}
@@ -4297,7 +4302,6 @@ jgrid.extend({
 						}
 						if($t.p.datatype === "local") {
 							var cm = $t.p.colModel[pos], index;
-							nData = cm.formatter && typeof cm.formatter === 'string' && cm.formatter === 'date' ? $.unformat.date.call($t,nData,cm) : nData;
 							index = $t.p._index[jgrid.stripPref($t.p.idPrefix, rowid)];
 							if(index !== undefined) {
 								$t.p.data[index][cm.name] = nData;
@@ -4315,6 +4319,7 @@ jgrid.extend({
 		});
 	},
 	getCell : function(rowid,col) {
+		// TODO: add an additional parameter, which will inform whether the output data should be in formatted or unformatted form
 		var ret = false;
 		this.each(function(){
 			var $t=this, pos=-1;
@@ -4340,6 +4345,7 @@ jgrid.extend({
 		return ret;
 	},
 	getCol : function (col, obj, mathopr) {
+		// TODO: add an additional parameter, which will inform whether the output data should be in formatted or unformatted form
 		var ret = [], val, sum=0, min, max, v;
 		obj = typeof obj !== 'boolean' ? false : obj;
 		if(mathopr === undefined) { mathopr = false; }
@@ -4559,11 +4565,10 @@ jgrid.extend({
 	},
 	setColWidth: function (iCol, newWidth, adjustGridWidth) {
 		return this.each(function () {
-			var self = this, $self = $(self), grid = self.grid, colName, colModel, i, nCol;
+			var self = this, $self = $(self), grid = self.grid, p = self.p, colModel = p.colModel, colName, i, nCol;
 			if (typeof iCol === "string") {
 				// the first parametrer is column name instead of index
 				colName = iCol;
-				colModel = $self.jqGrid("getGridParam", "colModel");
 				for (i = 0, nCol = colModel.length; i < nCol; i++) {
 					if (colModel[i].name === colName) {
 						iCol = i;
@@ -4577,7 +4582,7 @@ jgrid.extend({
 				return; // error: wrong parameters
 			}
 			grid.headers[iCol].newWidth = newWidth;
-			grid.newWidth = self.p.tblwidth + newWidth - grid.headers[iCol].width;
+			grid.newWidth = p.tblwidth + newWidth - grid.headers[iCol].width;
 			grid.resizeColumn(iCol, this, true);
 			if (adjustGridWidth !== false) {
 				$self.jqGrid("setGridWidth", grid.newWidth, false); // adjust grid width too
