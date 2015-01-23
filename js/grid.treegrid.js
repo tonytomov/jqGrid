@@ -505,15 +505,16 @@ $.jgrid.extend({
 				lid = this.p.localReader.id;
 				for(i = 0; i < len ; i++) {
 					res = $(this).jqGrid('getNodeAncestors', recs[i]);
-					if(res.length) {
+					if(!res.length) { // is root or leaf root
+						res.push(recs[i]);
+					}
 						tid = res[res.length-1][lid]; // root node
 						if($.inArray(tid, roots ) !== -1) { // ignore repeated
 							continue;
 						} else {
 							roots.push( tid );
 						}
-					}
-					res = $(this).jqGrid('getFullTreeNode', res[res.length-1]);
+					res = $(this).jqGrid('getFullTreeNode', res[res.length-1], true);
 					
 					result = result.concat( res );
 				}	
