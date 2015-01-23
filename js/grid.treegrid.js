@@ -316,11 +316,14 @@ $.jgrid.extend({
 		});
 		return result;
 	},
-	getFullTreeNode : function(rc) {
+	getFullTreeNode : function(rc, expand) {
 		var result = [];
 		this.each(function(){
-			var $t = this, len;
+			var $t = this, len,expanded = $t.p.treeReader.expanded_field;
 			if(!$t.grid || !$t.p.treeGrid) {return;}
+			if(expand == null || typeof expand !== 'boolean') {
+				expand = false;
+			}
 			switch ($t.p.treeGridModel) {
 				case 'nested' :
 					var lftc = $t.p.treeReader.left_field,
@@ -329,6 +332,7 @@ $.jgrid.extend({
 					lft = parseInt(rc[lftc],10), rgt = parseInt(rc[rgtc],10), level = parseInt(rc[levelc],10);
 					$(this.p.data).each(function(){
 						if(parseInt(this[levelc],10) >= level && parseInt(this[lftc],10) >= lft && parseInt(this[lftc],10) <= rgt) {
+							if(expand) { this[expanded] = true; }
 							result.push(this);
 						}
 					});
@@ -342,6 +346,7 @@ $.jgrid.extend({
 						len = result.length;
 						for (i = 0; i < len; i++) {
 							if ($.jgrid.stripPref($t.p.idPrefix, result[i][dtid]) === this[parent_id]) {
+								if(expand) { this[expanded] = true; }
 								result.push(this);
 								break;
 							}
