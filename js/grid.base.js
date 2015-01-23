@@ -3204,6 +3204,10 @@ $.fn.jqGrid = function( pin ) {
 		$(hb).append(hTable);
 		hTable = null;
 		if(hg) { $(grid.hDiv).hide(); }
+		p.rowNum = parseInt(p.rowNum, 10);
+		if (isNaN(p.rowNum) || p.rowNum <= 0) {
+			p.rowNum = p.maxRowNum;
+		}
 		if(p.pager){
 			// see http://learn.jquery.com/using-jquery-core/faq/how-do-i-select-an-element-by-an-id-that-has-characters-used-in-css-notation/
 			// or http://api.jquery.com/id-selector/ or http://api.jquery.com/category/selectors/
