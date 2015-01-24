@@ -68,8 +68,9 @@ $.jgrid.extend({
 				$($t.rows[i].cells[expCol]).wrapInner("<span class='cell-wrapper"+lf+"'></span>").prepend(twrap);
 
 				if(curLevel !== parseInt($t.p.tree_root_level,10)) {
-					var pn = $($t).jqGrid('getNodeParent',ldat);
-					expan = pn && pn.hasOwnProperty(expanded) ? pn[expanded] : true;
+					//var pn = $($t).jqGrid('getNodeParent',ldat);
+					//expan = pn && pn.hasOwnProperty(expanded) ? pn[expanded] : true;
+					expan = $($t).jqGrid('isVisibleNode',ldat); // overhead
 					if( !expan ){
 						$($t.rows[i]).css("display","none");
 					}
@@ -219,7 +220,7 @@ $.jgrid.extend({
 				currentview = false;
 			}
 			if(currentview) {
-				view = $($t).jqGrid('getRowData');
+				view = $($t).jqGrid('getRowData', null, true);
 			} else {
 				view = $t.p.data;
 			}
