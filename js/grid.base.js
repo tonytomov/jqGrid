@@ -959,7 +959,7 @@ $.fn.jqGrid = function( pin ) {
 			cellLayout: 5,
 			subGridWidth: 20,
 			multiselectWidth: 20,
-			gridview: false,
+			gridview: true,
 			rownumWidth: 25,
 			rownumbers : false,
 			pagerpos: 'center',
@@ -1973,6 +1973,10 @@ $.fn.jqGrid = function( pin ) {
 				if(ts.p.treeGrid && ts.p.treeGridModel === "nested") {
 					query.orderBy(ts.p.treeReader.left_field, 'asc', 'integer', '', null);
 				}
+			}
+			if(ts.p.treeGrid && ts.p.treeGridModel === "adjacency") {
+				lengrp =0;
+				st = null;
 			}
 			if(ts.p.grouping) {
 				for(gin=0; gin<lengrp;gin++) {
@@ -3355,7 +3359,7 @@ $.jgrid.extend({
 		var res = {}, resall, getall=false, len, j=0;
 		this.each(function(){
 			var $t = this,nm,ind;
-			if(rowid === undefined) {
+			if(rowid == null) {
 				getall = true;
 				resall = [];
 				len = $t.rows.length;
