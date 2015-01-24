@@ -3351,7 +3351,7 @@ $.jgrid.extend({
 			t.p.savedRow = [];
 		});
 	},
-	getRowData : function( rowid ) {
+	getRowData : function( rowid, usedata ) {
 		var res = {}, resall, getall=false, len, j=0;
 		this.each(function(){
 			var $t = this,nm,ind;
@@ -3364,23 +3364,30 @@ $.jgrid.extend({
 				if(!ind) { return res; }
 				len = 2;
 			}
+			if( !(usedata && usedata === true && $t.p.data.length > 0)  ) {
+				usedata = false;
+			}
 			while(j<len){
 				if(getall) { ind = $t.rows[j]; }
 				if( $(ind).hasClass('jqgrow') ) {
-					$('td[role="gridcell"]',ind).each( function(i) {
-						nm = $t.p.colModel[i].name;
-						if ( nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn') {
-							if($t.p.treeGrid===true && nm === $t.p.ExpandColumn) {
-								res[nm] = $.jgrid.htmlDecode($("span:first",this).html());
-							} else {
-								try {
-									res[nm] = $.unformat.call($t,this,{rowId:ind.id, colModel:$t.p.colModel[i]},i);
-								} catch (e){
-									res[nm] = $.jgrid.htmlDecode($(this).html());
+					if(usedata) {
+						res = $t.p.data[$t.p._index[ind.id]]; 
+					} else {
+						$('td[role="gridcell"]',ind).each( function(i) {
+							nm = $t.p.colModel[i].name;
+							if ( nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn') {
+								if($t.p.treeGrid===true && nm === $t.p.ExpandColumn) {
+									res[nm] = $.jgrid.htmlDecode($("span:first",this).html());
+								} else {
+									try {
+										res[nm] = $.unformat.call($t,this,{rowId:ind.id, colModel:$t.p.colModel[i]},i);
+									} catch (e){
+										res[nm] = $.jgrid.htmlDecode($(this).html());
+									}
 								}
 							}
-						}
-					});
+						});
+					}
 					if(getall) { resall.push(res); res={}; }
 				}
 				j++;
