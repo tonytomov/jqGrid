@@ -78,7 +78,7 @@ $.extend(jgrid,{
 	createModal : function(aIDs, content, p, insertSelector, posSelector, appendsel, css) {
 		var jqID = jgrid.jqID;
 		p = $.extend(true, {}, jgrid.jqModal || {}, p);
-		var mw = document.createElement('div'), rtlsup, self = this, themodalSelector = "#"+jqID(aIDs.themodal),
+		var mw = document.createElement('div'), rtlsup, themodalSelector = "#"+jqID(aIDs.themodal),
 		scrollelmSelector = aIDs.scrollelm ? "#"+jqID(aIDs.scrollelm) : false;
 		css = $.extend({}, css || {});
 		rtlsup = $(p.gbox).attr("dir") === "rtl" ? true : false;
@@ -130,7 +130,7 @@ $.extend(jgrid,{
 		$("a.ui-jqdialog-titlebar-close",mh).click(function(){
 			var oncm = $(themodalSelector).data("onClose") || p.onClose;
 			var gboxclose = $(themodalSelector).data("gbox") || p.gbox;
-			self.hideModal(themodalSelector,{gb:gboxclose,jqm:p.jqModal,onClose:oncm, removemodal: p.removemodal || false, formprop : !p.recreateForm || false, form: p.form || ''});
+			jgrid.hideModal(themodalSelector,{gb:gboxclose,jqm:p.jqModal,onClose:oncm, removemodal: p.removemodal || false, formprop : !p.recreateForm || false, form: p.form || ''});
 			return false;
 		});
 		if (p.width === 0 || !p.width) {p.width = 300;}
@@ -183,7 +183,7 @@ $.extend(jgrid,{
 			$(mw).keydown( function( e ) {
 				if( e.which === 27 ) {
 					var cone = $(themodalSelector).data("onClose") || p.onClose;
-					self.hideModal(themodalSelector,{gb:p.gbox,jqm:p.jqModal,onClose: cone, removemodal: p.removemodal || false, formprop : !p.recreateForm || false, form: p.form || ''});
+					jgrid.hideModal(themodalSelector,{gb:p.gbox,jqm:p.jqModal,onClose: cone, removemodal: p.removemodal || false, formprop : !p.recreateForm || false, form: p.form || ''});
 				}
 			});
 		}
@@ -232,7 +232,7 @@ $.extend(jgrid,{
 		// if the id is not provided we set it like info_button_+ the index in the array - i.e info_button_0,info_button_1...
 		};
 		$.extend(true, mopt, jgrid.jqModal || {}, {caption:"<b>"+caption+"</b>"}, modalopt || {});
-		var jm = mopt.jqModal, self = this;
+		var jm = mopt.jqModal;
 		if($.fn.jqm && !jm) { jm = false; }
 		// in case there is no jqModal
 		var buttstr ="", i;
@@ -256,11 +256,13 @@ $.extend(jgrid,{
 			}
 			$("#info_dialog").remove();
 		} catch (ignore){}
-		jgrid.createModal({
-			themodal:'info_dialog',
-			modalhead:'info_head',
-			modalcontent:'info_content',
-			scrollelm: 'infocnt'},
+		jgrid.createModal.call(this,
+			{
+				themodal:'info_dialog',
+				modalhead:'info_head',
+				modalcontent:'info_content',
+				scrollelm: 'infocnt'
+			},
 			cnt,
 			mopt,
 			'','',true
@@ -272,7 +274,7 @@ $.extend(jgrid,{
 			});
 		}
 		$("#closedialog", "#info_id").click(function(){
-			self.hideModal("#info_dialog",{
+			jgrid.hideModal("#info_dialog",{
 				jqm:jm,
 				onClose: $("#info_dialog").data("onClose") || mopt.onClose,
 				gb: $("#info_dialog").data("gbox") || mopt.gbox

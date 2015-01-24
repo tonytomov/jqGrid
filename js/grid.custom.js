@@ -599,9 +599,9 @@ jgrid.extend({
 								throw "e1";
 							}
 						} catch (e) {
-							if (e === "e1") { info_dialog(errcap,"function 'custom_element' "+editMsg.nodefined,bClose);}
-							if (e === "e2") { info_dialog(errcap,"function 'custom_element' "+editMsg.novalue,bClose);}
-							else { info_dialog(errcap,typeof e==="string"?e:e.message,bClose); }
+							if (e === "e1") { info_dialog.call($t,errcap,"function 'custom_element' "+editMsg.nodefined,bClose);}
+							if (e === "e2") { info_dialog.call($t,errcap,"function 'custom_element' "+editMsg.novalue,bClose);}
+							else { info_dialog.call($t,errcap,typeof e==="string"?e:e.message,bClose); }
 						}
 						break;
 					}

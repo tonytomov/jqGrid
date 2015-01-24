@@ -224,9 +224,9 @@ jgrid.extend({
 									if (tmp[nm] === undefined) { throw "e2"; }
 								} else { throw "e1"; }
 							} catch (e) {
-								if (e==="e1") { jgrid.info_dialog(jgrid.errors.errcap,"function 'custom_value' "+jgrid.edit.msg.nodefined,jgrid.edit.bClose); }
-								if (e==="e2") { jgrid.info_dialog(jgrid.errors.errcap,"function 'custom_value' "+jgrid.edit.msg.novalue,jgrid.edit.bClose); }
-								else { jgrid.info_dialog(jgrid.errors.errcap,e.message,jgrid.edit.bClose); }
+								if (e==="e1") { jgrid.info_dialog.call($t,jgrid.errors.errcap,"function 'custom_value' "+jgrid.edit.msg.nodefined,jgrid.edit.bClose); }
+								if (e==="e2") { jgrid.info_dialog.call($t,jgrid.errors.errcap,"function 'custom_value' "+jgrid.edit.msg.novalue,jgrid.edit.bClose); }
+								else { jgrid.info_dialog.call($t,jgrid.errors.errcap,e.message,jgrid.edit.bClose); }
 							}
 							break;
 					}
@@ -250,7 +250,7 @@ jgrid.extend({
 			if (cv[0] === false){
 				try {
 					var tr = $self.jqGrid('getGridRowById', rowid), positions = jgrid.findPos(tr);
-					jgrid.info_dialog(jgrid.errors.errcap,cv[1],jgrid.edit.bClose,{left:positions[0],top:positions[1]+$(tr).outerHeight()});
+					jgrid.info_dialog.call($t,jgrid.errors.errcap,cv[1],jgrid.edit.bClose,{left:positions[0],top:positions[1]+$(tr).outerHeight()});
 				} catch (e) {
 					alert(cv[1]);
 				}
@@ -371,7 +371,7 @@ jgrid.extend({
 						} else {
 							var rT = res.responseText || res.statusText;
 							try {
-								jgrid.info_dialog(jgrid.errors.errcap,'<div class="ui-state-error">'+ rT +'</div>', jgrid.edit.bClose,{buttonalign:'right'});
+								jgrid.info_dialog.call($t,jgrid.errors.errcap,'<div class="ui-state-error">'+ rT +'</div>', jgrid.edit.bClose,{buttonalign:'right'});
 							} catch(e) {
 								alert(rT);
 							}

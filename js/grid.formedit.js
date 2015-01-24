@@ -222,9 +222,9 @@ jgrid.extend({
 					o.onInitializeSearch.call($t, $(fid));
 				}
 				if (o.layer) {
-					jgrid.createModal(ids ,fil,o,gviewSelector,$(gboxSelector)[0], "#"+jqID(o.layer), {position: "relative"});
+					jgrid.createModal.call($t, ids, fil, o, gviewSelector, $(gboxSelector)[0], "#"+jqID(o.layer), {position: "relative"});
 				} else {
-					jgrid.createModal(ids ,fil,o,gviewSelector,$(gboxSelector)[0]);
+					jgrid.createModal.call($t, ids, fil, o, gviewSelector, $(gboxSelector)[0]);
 				}
 				if (o.searchOnEnter || o.closeOnEscape) {
 					$(themodalSelector).keydown(function (e) {
@@ -442,8 +442,8 @@ jgrid.extend({
 									postdata[nm] = this.editoptions.custom_value.call($t, $("#"+jqID(nm),frmtb),'get');
 									if (postdata[nm] === undefined) {throw "e1";}
 								} catch (e) {
-									if (e==="e1") {jgrid.info_dialog(jgrid.errors.errcap,"function 'custom_value' "+jgrid.edit.msg.novalue,jgrid.edit.bClose);}
-									else {jgrid.info_dialog(jgrid.errors.errcap,e.message,jgrid.edit.bClose);}
+									if (e==="e1") {jgrid.info_dialog.call($t,jgrid.errors.errcap,"function 'custom_value' "+jgrid.edit.msg.novalue,jgrid.edit.bClose);}
+									else {jgrid.info_dialog.call($t,jgrid.errors.errcap,e.message,jgrid.edit.bClose);}
 								}
 								return true;
 							}
@@ -680,8 +680,8 @@ jgrid.extend({
 										cm[i].editoptions.custom_value.call($t, $(nm,fmid),'set',tmp);
 									} else {throw "e1";}
 								} catch (e) {
-									if (e==="e1") {jgrid.info_dialog(jgrid.errors.errcap,"function 'custom_value' "+jgrid.edit.msg.nodefined,jgrid.edit.bClose);}
-									else {jgrid.info_dialog(jgrid.errors.errcap,e.message,jgrid.edit.bClose);}
+									if (e==="e1") {jgrid.info_dialog.call($t,jgrid.errors.errcap,"function 'custom_value' "+jgrid.edit.msg.nodefined,jgrid.edit.bClose);}
+									else {jgrid.info_dialog.call($t,jgrid.errors.errcap,e.message,jgrid.edit.bClose);}
 								}
 								break;
 						}
@@ -1037,7 +1037,7 @@ jgrid.extend({
 				cle = true;
 			}
 			var tms = $("<div></div>").append(frm).append(bt);
-			jgrid.createModal(ids,tms, rp_ge[gID] ,p.gView,$(gboxSelector)[0]);
+			jgrid.createModal.call($t, ids,tms, rp_ge[gID] ,p.gView,$(gboxSelector)[0]);
 			if(rtlb) {
 				$("#pData, #nData",frmtb2).css("float","right");
 				$(".EditButton",frmtb2).css("text-align","left");
@@ -1451,7 +1451,7 @@ jgrid.extend({
 			}
 			o.gbox = gboxSelector;
 			var bt = $("<div></div>").append(frm).append("<table border='0' class='EditTable' id='"+frmtbID+"_2'><tbody><tr id='Act_Buttons'><td class='navButton' width='"+o.labelswidth+"'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton'>"+bC+"</td></tr></tbody></table>");
-			jgrid.createModal(ids,bt,o,p.gView,$(p.gView)[0]);
+			jgrid.createModal.call($t,ids,bt,o,p.gView,$(p.gView)[0]);
 			if(rtlb) {
 				$("#pData, #nData",frmtb2).css("float","right");
 				$(".EditButton",frmtb2).css("text-align","left");
@@ -1618,7 +1618,7 @@ jgrid.extend({
 				bC  = "<a id='eData' class='fm-button ui-state-default ui-corner-all'>"+o.bCancel+"</a>";
 				tbl += "<table"+(jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "")+" class='EditTable' id='"+dtblID+"_2'><tbody><tr><td><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='DelButton EditButton'>"+bS+"&#160;"+bC+"</td></tr></tbody></table>";
 				o.gbox = gboxSelector;
-				jgrid.createModal(ids,tbl,o,p.gView,$(p.gView)[0]);
+				jgrid.createModal.call($t,ids,tbl,o,p.gView,$(p.gView)[0]);
 
 				if(onBeforeInit) {
 					showFrm = onBeforeInit.call($t,$(tbl));
@@ -1825,13 +1825,13 @@ jgrid.extend({
 				return; // error
 			}
 			if (elem === undefined) {
-				if ($t.p.pager) {
-					elem = $t.p.pager;
-					if ($t.p.toppager) {
+				if (p.pager) {
+					elem = p.pager;
+					if (p.toppager) {
 						o.cloneToTop = true; // add buttons to both pagers
 					}
-				} else if ($t.p.toppager) {
-					elem = $t.p.toppager;
+				} else if (p.toppager) {
+					elem = p.toppager;
 				}
 			}
 
@@ -1850,7 +1850,7 @@ jgrid.extend({
 					o.alertleft = o.alertleft/2 - parseInt(o.alertwidth,10)/2;
 					o.alerttop = o.alerttop/2-25;
 				}
-				jgrid.createModal(alertIDs,
+				jgrid.createModal.call($t, alertIDs,
 					"<div>"+o.alerttext+"</div><span tabindex='0'><span tabindex='-1' id='jqg_alrt'></span></span>",
 					{ 
 						gbox:gboxSelector,
