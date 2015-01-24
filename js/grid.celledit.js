@@ -12,21 +12,21 @@
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/ 
 /**
- * all events and options here are aded anonynous and not in the base grid
+ * all events and options here are added anonymous and not in the base grid
  * since the array is to big. Here is the order of execution.
  * From this point we use jQuery isFunction
  * formatCell
  * beforeEditCell,
- * onSelectCell (used only for noneditable cels)
+ * onSelectCell (used only for non-editable cells)
  * afterEditCell,
  * beforeSaveCell, (called before validation of values if any)
- * beforeSubmitCell (if cellsubmit remote (ajax))
- * afterSubmitCell(if cellsubmit remote (ajax)),
+ * beforeSubmitCell (if cellsubmit remote (Ajax))
+ * afterSubmitCell(if cellsubmit remote (Ajax)),
  * afterSaveCell,
  * errorCell,
  * serializeCellData - new
  * Options
- * cellsubmit (remote,clientArray) (added in grid options)
+ * cellsubmit ("remote","clientArray") (added in grid options)
  * cellurl
  * ajaxCellOptions
 * */
@@ -136,7 +136,7 @@ jgrid.extend({
 				cm = p.colModel[iCol], nm = cm.name, iRowNmSelector = "#"+iRow+"_"+jqID(nm);
 				switch (cm.edittype) {
 					case "select":
-						if(!cm.editoptions.multiple) {
+						if(cm.editoptions == null || !cm.editoptions.multiple) {
 							v = $(iRowNmSelector+" option:selected",tr).val();
 							v2 = $(iRowNmSelector+" option:selected",tr).text();
 						} else {
@@ -154,7 +154,7 @@ jgrid.extend({
 						break;
 					case "checkbox":
 						var cbv  = ["Yes","No"];
-						if(cm.editoptions){
+						if(cm.editoptions && cm.editoptions.value){
 							cbv = cm.editoptions.value.split(":");
 						}
 						v = $(iRowNmSelector,tr).is(":checked") ? cbv[0] : cbv[1];
