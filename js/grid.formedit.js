@@ -940,10 +940,25 @@ jgrid.extend({
 				return stat;
 			}
 			function restoreInline() {
-				var i;
-				if (rowid !== "_empty" && p.savedRow !== undefined && p.savedRow.length > 0 && $.isFunction($.fn.jqGrid.restoreRow)) {
+				var i, savedRowInfo, tr;
+				if (rowid !== "_empty" && p.savedRow !== undefined && p.savedRow.length > 0) {
 					for (i=0;i<p.savedRow.length;i++) {
-						if (p.savedRow[i].id === rowid) {
+						savedRowInfo = p.savedRow[i];
+						// TODO detect cell editing or inline editing mode
+						if (typeof savedRowInfo.id === "number" && typeof savedRowInfo.ic === "number" &&
+								savedRowInfo.name !== undefined && savedRowInfo.v !== undefined &&
+								$t.rows[savedRowInfo.id] != null && $t.rows[savedRowInfo.id].id === rowid &&
+								$.isFunction($.fn.jqGrid.restoreCell)) {
+							// cell editing
+							tr = $t.rows[savedRowInfo.id];
+							if (tr != null && tr.id === rowid) {
+								$self.jqGrid("restoreCell", savedRowInfo.id, savedRowInfo.ic);
+								//p.selrow = null; // to make more clean selecton 
+								//$self.jqGrid("setSelection", rowid, false);
+								$(tr.cells[savedRowInfo.ic]).removeClass("edit-cell ui-state-highlight");
+								$(tr).addClass("ui-state-highlight").attr({"aria-selected":"true", "tabindex" : "0"});
+							}
+						} else if (savedRowInfo.id === rowid && $.isFunction($.fn.jqGrid.restoreRow)) {
 							$self.jqGrid('restoreRow',rowid);
 							break;
 						}
