@@ -21,6 +21,27 @@
                 '<i class="fa fa-square-o fa-lg"' + title + '></i>';
         }
     });
+	$.extend(true,$.jgrid, {
+		cmTemplate: {
+			booleanCheckboxFa: {
+				align: "center", formatter: "checkboxFontAwesome4",
+				edittype: "checkbox", editoptions: {value: "true:false", defaultValue: "false"},
+				convertOnSave: function (nData, cm) {
+					var lnData = String(nData).toLowerCase(),
+						cbv = cm.editoptions != null && typeof cm.editoptions.value === "string" ?
+							cm.editoptions.value.split(":") : ["yes","no"];
+
+					if ($.inArray(lnData, ["1", "true", cbv[0].toLowerCase()]) >= 0) {
+						nData = true;
+					} else if ($.inArray(lnData, ["0", "false", cbv[1].toLowerCase()]) >= 0) {
+						nData = false;
+					}
+					return nData;
+				},
+				stype: "select", searchoptions: { sopt: ["eq", "ne"], value: ":Any;true:Yes;false:No" }
+			},
+		}
+	});
     $.extend($.fn.fmatter.checkboxFontAwesome4, {
         unformat: function (cellValue, options, elem) {
             var cbv = (options.colModel.editoptions != null && options.colModel.editoptions.value) ?
