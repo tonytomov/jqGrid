@@ -559,6 +559,20 @@ $.extend(true,jgrid,{
 			grid.hDiv.scrollLeft = bDiv.scrollLeft;
 		}
 	},
+	mergeCssClasses: function () {
+		var args = $.makeArray(arguments), map = {}, i, j, ar, cssClass, classes = [];
+		for (i = 0; i < args.length; i++) {
+			ar = String(args[i]).split(" ");
+			for (j = 0; j < ar.length; j++) {
+				cssClass = ar[j];
+				if (!map.hasOwnProperty(cssClass)) {
+					map[cssClass] = true;
+					classes.push(cssClass);
+				}
+			}
+		}
+		return classes.join(" ");
+	},
 	guid : 1,
 	uidPref: 'jqg',
 	randId : function( prefix )	{
