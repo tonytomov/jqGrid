@@ -359,8 +359,7 @@ span.ui-jqgrid-cell-wrapper {
 .ui-jqgrid .ui-paging-info {
 	font-weight: normal;
 	height: auto;
-	margin-top: 3px;
-	margin-right: 4px;
+	margin: 0 .2em 0 .2em;
 	display: inline;
 }
 .ui-jqgrid .ui-jqgrid-pager .ui-pg-div {
@@ -444,6 +443,7 @@ span.ui-jqgrid-cell-wrapper {
 /*subgrid*/
 .ui-jqgrid .ui-jqgrid-btable .jqgrow .ui-sgcollapsed {
 	text-align: center;
+	vertical-align: middle;
 }
 .ui-jqgrid .ui-jqgrid-btable .ui-sgcollapsed span {
 	display: inline-block;
@@ -465,6 +465,12 @@ span.ui-jqgrid-cell-wrapper {
 }
 .ui-jqgrid .ui-th-subgrid {
 	height: 20px;
+}
+.ui-jqgrid .ui-row-ltr.ui-subgrid > .subgrid-cell > span {
+	float: right;
+}
+.ui-jqgrid .ui-row-rtl.ui-subgrid > .subgrid-cell > span {
+	float: left;
 }
 
 /* loading */
@@ -678,11 +684,16 @@ span.ui-jqgrid-cell-wrapper {
 }
 
 /* inline edit actions button*/
-.ui-inline-del.ui-state-hover span,
-.ui-inline-edit.ui-state-hover span,
-.ui-inline-save.ui-state-hover span,
-.ui-inline-cancel.ui-state-hover span {
-	margin: -1px;
+.ui-jqgrid  .jqgrow .ui-jqgrid-actions {
+	margin: 0;
+}
+.ui-jqgrid  .jqgrow  .ui-jqgrid-actions > .ui-pg-div.ui-state-hover {
+	margin: -1px 0 -1px 0;
+}
+.jqgrow .ui-jqgrid-actions .ui-pg-div {
+	cursor: pointer;
+	float: left;
+	margin: 0 1px;
 }
 
 /* Tree Grid */
@@ -806,16 +817,4 @@ a.clearsearchclass {
 .ui-jqgrid > .ui-jqgrid-view textarea,
 .ui-jqgrid > .ui-jqgrid-view button {
 	font-size: 11px;
-}
-.ui-jqgrid  .jqgrow .ui-jqgrid-actions {
-	margin: 0;
-}
-.ui-jqgrid  .jqgrow  .ui-jqgrid-actions > .ui-pg-div.ui-state-hover {
-	margin-top: 0;
-	margin-bottom: 0;
-}
-.jqgrow .ui-jqgrid-actions .ui-pg-div {
-	cursor: pointer;
-	float: left;
-	margin: 0 1px;
 }
