@@ -285,9 +285,8 @@ jgrid.extend({
 	restoreCell : function(iRow, iCol) {
 		return this.each(function(){
 			var $t= this, p = $t.p, fr, tr = $t.rows[iRow], rowid = tr.id, v, cm;
-			if (!$t.grid || p.cellEdit !== true ) {return;}
-			if ( p.savedRow.length >= 1) {fr = 0;} else {fr=null;}
-			if(fr !== null) {
+			if (!$t.grid || p.cellEdit !== true) {return;}
+			if (p.savedRow.length >= 1) {
 				var cc = $("td:eq("+iCol+")",tr);
 				// datepicker fix
 				if($.isFunction($.fn.datepicker)) {
@@ -296,7 +295,7 @@ jgrid.extend({
 					} catch (ignore) {}
 				}
 				$(cc).empty().attr("tabindex","-1");
-				v = p.savedRow[fr].v;
+				v = p.savedRow[0].v;
 				cm = p.colModel[iCol];
 				if (cm.formatter && cm.formatter === "date" && (cm.formatoptions == null || cm.formatoptions.sendFormatted !== true)) {
 					// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
