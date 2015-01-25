@@ -13921,7 +13921,7 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 			};
 
 		if (cm.formatoptions !== undefined) {
-			op = $.extend(op,cm.formatoptions);
+			op = $.extend(true, op, cm.formatoptions);
 		}
 		if (p.editOptions !== undefined) {
 			op.editOptions = p.editOptions;
@@ -13975,27 +13975,38 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 		}
 	};
 	$FnFmatter.actions = function(cellval,opts) {
-		var op={keys:false, editbutton:true, delbutton:true, editformbutton: false}, nav = jgrid.nav, edit = jgrid.edit,
-			rowid=opts.rowId, str="",ocl;
-		if(opts.colModel.formatoptions !== undefined) {
-			op = $.extend(op,opts.colModel.formatoptions);
-		}
+		var rowid=opts.rowId, str="", ocl, nav = jgrid.nav, edit = jgrid.edit,
+			op = $.extend({
+				editbutton: true,
+				delbutton: true,
+				editformbutton: false,
+				commonIconClass: "ui-icon",
+				editicon: "ui-icon-pencil",
+				delicon: "ui-icon-trash",
+				addicon: "ui-icon-plus",
+				saveicon: "ui-icon-disk",
+				cancelicon: "ui-icon-cancel",
+				edittitle: nav.edittitle,
+				deltitle: nav.deltitle,
+				savetitle: edit.bSubmit,
+				canceltitle: edit.bCancel
+			}, jgrid.nav, this.p.navOptions || {}, opts.colModel.formatoptions || {});
 		if(rowid === undefined || fmatter.isEmpty(rowid)) {return "";}
 		if(op.editformbutton){
 			ocl = "id='jEditButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'formedit'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-			str += "<div title='"+nav.edittitle+"' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='ui-icon ui-icon-pencil'></span></div>";
+			str += "<div title='"+op.edittitle+"' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='" + [op.commonIconClass, op.editicon].join(" ") + "'></span></div>";
 		} else if(op.editbutton){
 			ocl = "id='jEditButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'edit'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover') ";
-			str += "<div title='"+nav.edittitle+"' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='ui-icon ui-icon-pencil'></span></div>";
+			str += "<div title='"+op.edittitle+"' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='" + [op.commonIconClass, op.editicon].join(" ") + "'></span></div>";
 		}
 		if(op.delbutton) {
 			ocl = "id='jDeleteButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'del'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-			str += "<div title='"+nav.deltitle+"' class='ui-pg-div ui-inline-del' "+ocl+"><span class='ui-icon ui-icon-trash'></span></div>";
+			str += "<div title='"+op.deltitle+"' class='ui-pg-div ui-inline-del' "+ocl+"><span class='" + [op.commonIconClass, op.delicon].join(" ") + "'></span></div>";
 		}
 		ocl = "id='jSaveButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'save'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-		str += "<div title='"+edit.bSubmit+"' style='display:none' class='ui-pg-div ui-inline-save' "+ocl+"><span class='ui-icon ui-icon-disk'></span></div>";
+		str += "<div title='"+op.savetitle+"' style='display:none' class='ui-pg-div ui-inline-save' "+ocl+"><span class='" + [op.commonIconClass, op.saveicon].join(" ") + "'></span></div>";
 		ocl = "id='jCancelButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'cancel'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-		str += "<div title='"+edit.bCancel+"' style='display:none;' class='ui-pg-div ui-inline-cancel' "+ocl+"><span class='ui-icon ui-icon-cancel'></span></div>";
+		str += "<div title='"+op.canceltitle+"' style='display:none;' class='ui-pg-div ui-inline-cancel' "+ocl+"><span class='" + [op.commonIconClass, op.cancelicon].join(" ") + "'></span></div>";
 		return "<div class='ui-jqgrid-actions'>" + str + "</div>";
 	};
 	$.unformat = function (cellval,options,pos,cnt) {
