@@ -560,7 +560,9 @@ $.extend(true,jgrid,{
 			$hDivhBox.css($hDivhBox.hasClass("ui-jqgrid-hbox-rtl") ? "padding-left": "padding-right", p.scrollOffset + "px");
 			$sDivhBox.css($sDivhBox.hasClass("ui-jqgrid-hbox-rtl") ? "padding-left": "padding-right", p.scrollOffset + "px");
 			grid.hDiv.scrollLeft = bDiv.scrollLeft;
-			grid.sDiv.scrollLeft = bDiv.scrollLeft;
+			if (grid.sDiv) {
+				grid.sDiv.scrollLeft = bDiv.scrollLeft;
+			}
 		}
 	},
 	mergeCssClasses: function () {
