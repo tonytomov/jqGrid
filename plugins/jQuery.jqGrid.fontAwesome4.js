@@ -53,18 +53,6 @@
         }
     });
 
-	$.jgrid.nav = $.jgrid.nav || {};
-    $.extend(true, $.jgrid.nav, {
-        editicon: $.jgrid.icons.getClass("navEdit"),
-        addicon: $.jgrid.icons.getClass("navAdd"),
-        delicon: $.jgrid.icons.getClass("navDel"),
-		saveicon: $.jgrid.icons.getClass("navSave"),
-		cancelicon: $.jgrid.icons.getClass("navCancel"),
-        searchicon: $.jgrid.icons.getClass("navSearch"),
-        refreshicon: $.jgrid.icons.getClass("navRefresh"),
-        viewicon: $.jgrid.icons.getClass("navView")
-    });
-
 	$.jgrid.defaults = $.jgrid.defaults || {};
     $.extend(true, $.jgrid.defaults, {
         fontAwesomeIcons: true // the new option will be used in callbacks
@@ -79,52 +67,6 @@
                     .removeClass("ui-icon ui-icon-closethick")
                     .addClass($.jgrid.icons.getClass("close"));
                 $("#" + $.jgrid.jqID(aIDs.themodal) + ">div.jqResize").removeClass("ui-icon-grip-diagonal-se");
-            }
-        }
-    });
-
-	$.jgrid.view = $.jgrid.view || {};
-    $.extend(true, $.jgrid.view, {
-        beforeShowForm: function ($form) {
-            var $dialog = $form.closest(".ui-jqdialog"),
-                $iconSpans = $dialog.find("a.fm-button>span.ui-icon");
-            $iconSpans.each(function () {
-                var $this = $(this), $fmButton = $this.parent();
-                if ($this.hasClass("ui-icon-triangle-1-w")) {
-                    $this.removeClass("ui-icon ui-icon-triangle-1-w")
-                        .addClass($.jgrid.icons.getClass("formPrev"));
-                } else if ($this.hasClass("ui-icon-triangle-1-e")) {
-                    $this.removeClass("ui-icon ui-icon-triangle-1-e")
-                        .addClass($.jgrid.icons.getClass("formNext"));
-                } else if ($this.hasClass("ui-icon-close")) {
-                    $fmButton.html("<span class=\"" + $.jgrid.icons.getClass("close") + "\"></span><span>" + $fmButton.text() + "</span>");
-                }
-            });
-        }
-    });
-
-	$.jgrid.del = $.jgrid.del || {};
-    $.extend(true, $.jgrid.del, {
-        afterShowForm: function ($form) {
-            var $dialog = $form.closest(".ui-jqdialog"),
-                $tdButtons = $dialog.find(".EditTable .DelButton"),
-                $fmButtonNew = $("<td class=\"DelButton EditButton\" style=\"float: right;\">"),
-                $iconSpans = $tdButtons.find(">a.fm-button>span.ui-icon");
-
-            $tdButtons.css("float", "right");
-            $iconSpans.each(function () {
-                var $this = $(this), $fmButton = $this.parent();
-                if ($this.hasClass("ui-icon-scissors")) {
-                    $fmButton.html("<span class=\"" + $.jgrid.icons.getClass("formDel") + "\"></span><span>" + $fmButton.text() + "</span>");
-                    $fmButtonNew.append($fmButton);
-                } else if ($this.hasClass("ui-icon-cancel")) {
-                    $fmButton.html("<span class=\"" + $.jgrid.icons.getClass("formUndo") + "\"></span><span>" + $fmButton.text() + "</span>");
-                    $fmButtonNew.append($fmButton);
-                }
-            });
-            if ($fmButtonNew.children().length > 0) {
-                // remove &nbsp; between buttons
-                $tdButtons.replaceWith($fmButtonNew);
             }
         }
     });
@@ -237,13 +179,72 @@
                         $sortables.find(">span.ui-icon-triangle-1-n")
                             .removeClass("ui-icon ui-icon-triangle-1-n")
                             .addClass($.jgrid.icons.getClass("sortDesc"));
-							
+
 						if (p.subGrid) {
 							p.subGridOptions = p.subGridOptions || {};
 							p.subGridOptions.plusicon = $.jgrid.icons.getClass("subgridPlus");   //"ui-icon-plus";
 							p.subGridOptions.minusicon = $.jgrid.icons.getClass("subgridMinus"); //"ui-icon-minus";
 							p.subGridOptions.openicon = $.jgrid.icons.getClass("subgridOpen");   //"ui-icon-carat-1-sw";
 						}
+						
+						p.navOptions = p.navOptions || {};
+						$.extend(true, p.navOptions, {
+							editicon: $.jgrid.icons.getClass("navEdit"),
+							addicon: $.jgrid.icons.getClass("navAdd"),
+							delicon: $.jgrid.icons.getClass("navDel"),
+							saveicon: $.jgrid.icons.getClass("navSave"),
+							cancelicon: $.jgrid.icons.getClass("navCancel"),
+							searchicon: $.jgrid.icons.getClass("navSearch"),
+							refreshicon: $.jgrid.icons.getClass("navRefresh"),
+							viewicon: $.jgrid.icons.getClass("navView")
+						});
+						
+						p.formViewing = p.formViewing || {};
+						$.extend(true, p.formViewing, {
+							// beforeShowForm MUST be replaced with jqGridAddEditBeforeShowForm
+							beforeShowForm: function ($form) {
+								var $dialog = $form.closest(".ui-jqdialog"),
+									$iconSpans = $dialog.find("a.fm-button>span.ui-icon");
+								$iconSpans.each(function () {
+									var $this = $(this), $fmButton = $this.parent();
+									if ($this.hasClass("ui-icon-triangle-1-w")) {
+										$this.removeClass("ui-icon ui-icon-triangle-1-w")
+											.addClass($.jgrid.icons.getClass("formPrev"));
+									} else if ($this.hasClass("ui-icon-triangle-1-e")) {
+										$this.removeClass("ui-icon ui-icon-triangle-1-e")
+											.addClass($.jgrid.icons.getClass("formNext"));
+									} else if ($this.hasClass("ui-icon-close")) {
+										$fmButton.html("<span class=\"" + $.jgrid.icons.getClass("close") + "\"></span><span>" + $fmButton.text() + "</span>");
+									}
+								});
+							}
+						});
+						
+						p.formDeleting = p.formDeleting || {};
+						$.extend(true, p.formDeleting, {
+							afterShowForm: function ($form) {
+								var $dialog = $form.closest(".ui-jqdialog"),
+									$tdButtons = $dialog.find(".EditTable .DelButton"),
+									$fmButtonNew = $("<td class=\"DelButton EditButton\" style=\"float: right;\">"),
+									$iconSpans = $tdButtons.find(">a.fm-button>span.ui-icon");
+
+								$tdButtons.css("float", "right");
+								$iconSpans.each(function () {
+									var $this = $(this), $fmButton = $this.parent();
+									if ($this.hasClass("ui-icon-scissors")) {
+										$fmButton.html("<span class=\"" + $.jgrid.icons.getClass("formDel") + "\"></span><span>" + $fmButton.text() + "</span>");
+										$fmButtonNew.append($fmButton);
+									} else if ($this.hasClass("ui-icon-cancel")) {
+										$fmButton.html("<span class=\"" + $.jgrid.icons.getClass("formUndo") + "\"></span><span>" + $fmButton.text() + "</span>");
+										$fmButtonNew.append($fmButton);
+									}
+								});
+								if ($fmButtonNew.children().length > 0) {
+									// remove &nbsp; between buttons
+									$tdButtons.replaceWith($fmButtonNew);
+								}
+							}
+						});
                     }
                 });
             });
