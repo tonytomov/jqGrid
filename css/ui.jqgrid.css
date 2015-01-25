@@ -423,6 +423,7 @@ span.ui-jqgrid-cell-wrapper {
 }
 .ui-jqgrid .navtable>.ui-pg-button {
 	margin: 2px;
+	vertical-align: middle;
 }
 .ui-jqgrid .navtable .ui-pg-div span.ui-pg-button-text,
 .ui-jqgrid .navtable .ui-pg-div span.ui-pg-button-text {
@@ -805,6 +806,10 @@ a.clearsearchclass {
 }
 .ui-jqgrid  .jqgrow .ui-jqgrid-actions {
 	margin: 0;
+}
+.ui-jqgrid  .jqgrow  .ui-jqgrid-actions > .ui-pg-div.ui-state-hover {
+	margin-top: -1px;
+	margin-bottom: -1px;
 }
 .jqgrow .ui-jqgrid-actions .ui-pg-div {
 	cursor: pointer;
