@@ -44,9 +44,11 @@
             searchReset: "fa-undo",
             searchQuery: "fa-comments-o",
             searchSearch: "fa-search",
-            subgridPlus: "fa-plus ui-state-default fa-fw",
-            subgridMinus: "fa-minus ui-state-default fa-fw",
-			subgridOpen: "fa-reply ui-state-default fa-rotate-180 fa-fw",
+			subgridCommonIconClass: "ui-state-default fa-fw",
+            subgridPlus: "fa-plus",
+            subgridMinus: "fa-minus",
+			subgridOpenltr: "fa-reply fa-rotate-180",
+			subgridOpenrtl: "fa-share fa-rotate-180",
             getClass: function (prop) {
                 return this.common !== "" ? this.common + " " + this[prop] : this[prop];
             }
@@ -166,7 +168,7 @@
                             .removeClass("ui-icon ui-icon-circle-triangle-n")
                             .addClass($.jgrid.icons.getClass("titleVisibleGrid"))
                             .parent()
-                            .addClass("ui-corner-all" + $.jgrid.icons.getClass("titleButton"))
+                            .addClass("ui-corner-all " + $.jgrid.icons.getClass("titleButton"))
                             .css({
                               right: ""  // ovewrite "right: 0px;" which set jqGrid currently
                             });
@@ -182,9 +184,10 @@
 
 						if (p.subGrid) {
 							p.subGridOptions = p.subGridOptions || {};
+							p.subGridOptions.commonIconClass = $.jgrid.icons.getClass("subgridCommonIconClass");
 							p.subGridOptions.plusicon = $.jgrid.icons.getClass("subgridPlus");   //"ui-icon-plus";
 							p.subGridOptions.minusicon = $.jgrid.icons.getClass("subgridMinus"); //"ui-icon-minus";
-							p.subGridOptions.openicon = $.jgrid.icons.getClass("subgridOpen");   //"ui-icon-carat-1-sw";
+							p.subGridOptions.openicon = $.jgrid.icons.getClass("subgridOpen" + p.direction);   //"ui-icon-carat-1-sw";
 						}
 						
 						p.navOptions = p.navOptions || {};
@@ -196,7 +199,8 @@
 							cancelicon: $.jgrid.icons.getClass("navCancel"),
 							searchicon: $.jgrid.icons.getClass("navSearch"),
 							refreshicon: $.jgrid.icons.getClass("navRefresh"),
-							viewicon: $.jgrid.icons.getClass("navView")
+							viewicon: $.jgrid.icons.getClass("navView"),
+							commonIconClass: ""
 						});
 						
 						p.formViewing = p.formViewing || {};

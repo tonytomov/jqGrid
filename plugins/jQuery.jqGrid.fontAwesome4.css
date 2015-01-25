@@ -18,12 +18,17 @@
     width: auto; /* ovewrite 19px used by jqGrid */
     height: auto;/* ovewrite 18px used by jqGrid */
     padding: 0px;
-    margin-top: -0.2em;
+    margin-top: -.1em;
     top: auto;
-    right: 0.3em;
 }
-.ui-jqgrid .ui-jqgrid-titlebar-close.fa-title > span.fa {
-    font-size: 18px;
+.ui-jqgrid .ui-jqgrid-caption > .fa-title {
+    right: .2em;
+}
+.ui-jqgrid .ui-jqgrid-caption-rtl > .fa-title {
+    margin-left: .2em;
+}
+.ui-jqgrid .ui-jqgrid-titlebar > .fa-title > span.fa {
+    font-size: 16px;
     display: inline-block;
     margin: 0;
     position: relative;
@@ -51,8 +56,13 @@
     margin-top: 0.1em
 }
 .ui-jqgrid .ui-jqgrid-titlebar-close.fa-title.ui-state-hover {
-    right: 0.1em;
-    margin-top: -0.3em
+    margin-top: -0.2em
+}
+.ui-jqgrid .ui-jqgrid-caption > .fa-title.ui-state-hover {
+    margin-right: -0.1em;
+}
+.ui-jqgrid .ui-jqgrid-caption-rtl > .fa-title.ui-state-hover {
+    margin-left: 0;
 }
 .ui-jqgrid .ui-jqgrid-titlebar-close.fa-title.ui-state-hover span {
     margin: 0.0 0.1em;
@@ -87,17 +97,16 @@
 	background: none;
 	border: 0 none;
 }
-.ui-subgrid > .subgrid-cell span.ui-icon.fa {
+.ui-subgrid > .subgrid-cell span.fa {
 	text-indent: 0;
 	background: none;
 	border: 0 none;
 	margin-bottom: 4px;
-	margin-left: 10px;
 }
-.jqgrow > .ui-sgcollapsed span.ui-icon.fa {
+
+.jqgrow > .ui-sgcollapsed span.fa {
 	text-indent: 0;
 	background: none;
 	border: 0 none;
-	margin-top: 4px;
-	margin-left: 3px;
+	margin: 0;
 }
