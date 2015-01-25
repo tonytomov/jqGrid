@@ -442,8 +442,11 @@ span.ui-jqgrid-cell-wrapper {
 }
 
 /*subgrid*/
+.ui-jqgrid .ui-jqgrid-btable .jqgrow .ui-sgcollapsed {
+	text-align: center;
+}
 .ui-jqgrid .ui-jqgrid-btable .ui-sgcollapsed span {
-	display: block;
+	display: inline-block;
 }
 .ui-jqgrid .ui-subgrid {
 	margin: 0;
@@ -808,8 +811,8 @@ a.clearsearchclass {
 	margin: 0;
 }
 .ui-jqgrid  .jqgrow  .ui-jqgrid-actions > .ui-pg-div.ui-state-hover {
-	margin-top: -1px;
-	margin-bottom: -1px;
+	margin-top: 0;
+	margin-bottom: 0;
 }
 .jqgrow .ui-jqgrid-actions .ui-pg-div {
 	cursor: pointer;
