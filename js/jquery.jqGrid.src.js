@@ -5040,9 +5040,8 @@ jgrid.extend({
 	restoreCell : function(iRow, iCol) {
 		return this.each(function(){
 			var $t= this, p = $t.p, fr, tr = $t.rows[iRow], rowid = tr.id, v, cm;
-			if (!$t.grid || p.cellEdit !== true ) {return;}
-			if ( p.savedRow.length >= 1) {fr = 0;} else {fr=null;}
-			if(fr !== null) {
+			if (!$t.grid || p.cellEdit !== true) {return;}
+			if (p.savedRow.length >= 1) {
 				var cc = $("td:eq("+iCol+")",tr);
 				// datepicker fix
 				if($.isFunction($.fn.datepicker)) {
@@ -5051,7 +5050,7 @@ jgrid.extend({
 					} catch (ignore) {}
 				}
 				$(cc).empty().attr("tabindex","-1");
-				v = p.savedRow[fr].v;
+				v = p.savedRow[0].v;
 				cm = p.colModel[iCol];
 				if (cm.formatter && cm.formatter === "date" && (cm.formatoptions == null || cm.formatoptions.sendFormatted !== true)) {
 					// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
@@ -8637,10 +8636,25 @@ jgrid.extend({
 				return stat;
 			}
 			function restoreInline() {
-				var i;
-				if (rowid !== "_empty" && p.savedRow !== undefined && p.savedRow.length > 0 && $.isFunction($.fn.jqGrid.restoreRow)) {
+				var i, savedRowInfo, tr;
+				if (rowid !== "_empty" && p.savedRow !== undefined && p.savedRow.length > 0) {
 					for (i=0;i<p.savedRow.length;i++) {
-						if (p.savedRow[i].id === rowid) {
+						savedRowInfo = p.savedRow[i];
+						// TODO detect cell editing or inline editing mode
+						if (typeof savedRowInfo.id === "number" && typeof savedRowInfo.ic === "number" &&
+								savedRowInfo.name !== undefined && savedRowInfo.v !== undefined &&
+								$t.rows[savedRowInfo.id] != null && $t.rows[savedRowInfo.id].id === rowid &&
+								$.isFunction($.fn.jqGrid.restoreCell)) {
+							// cell editing
+							tr = $t.rows[savedRowInfo.id];
+							if (tr != null && tr.id === rowid) {
+								$self.jqGrid("restoreCell", savedRowInfo.id, savedRowInfo.ic);
+								//p.selrow = null; // to make more clean selecton 
+								//$self.jqGrid("setSelection", rowid, false);
+								$(tr.cells[savedRowInfo.ic]).removeClass("edit-cell ui-state-highlight");
+								$(tr).addClass("ui-state-highlight").attr({"aria-selected":"true", "tabindex" : "0"});
+							}
+						} else if (savedRowInfo.id === rowid && $.isFunction($.fn.jqGrid.restoreRow)) {
 							$self.jqGrid('restoreRow',rowid);
 							break;
 						}

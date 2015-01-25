@@ -186,14 +186,46 @@ if (jgrid.defaults == null) {
 $.extend(true,jgrid,{
 	version : "4.7.0-post",
 	cmTemplate : {
+        integerStr: {
+            formatter: "integer", align: "right", sorttype: "integer",
+			searchoptions: { sopt: ["eq", "ne", "lt", "le", "gt", "ge"] }
+        },
         integer: {
             formatter: "integer", align: "right", sorttype: "integer",
+			convertOnSave: function (nData) {
+				return isNaN(nData) ? nData : parseInt(nData, 10);
+			},
+			searchoptions: { sopt: ["eq", "ne", "lt", "le", "gt", "ge"] }
+        },
+        numberStr: {
+            formatter: "number", align: "right", sorttype: "number",
 			searchoptions: { sopt: ["eq", "ne", "lt", "le", "gt", "ge"] }
         },
         number: {
             formatter: "number", align: "right", sorttype: "number",
+			convertOnSave: function (nData) {
+				return isNaN(nData) ? nData : parseFloat(nData);
+			},
 			searchoptions: { sopt: ["eq", "ne", "lt", "le", "gt", "ge"] }
         },
+		booleanCheckbox: {
+			align: "center", formatter: "checkbox",
+			edittype: "checkbox", editoptions: {value: "true:false", defaultValue: "false"},
+			convertOnSave: function (nData, cm) {
+				var lnData = String(nData).toLowerCase(),
+					cbv = cm.editoptions != null && typeof cm.editoptions.value === "string" ?
+						cm.editoptions.value.split(":") : ["yes","no"];
+
+				if ($.inArray(lnData, ["1", "true", cbv[0].toLowerCase()]) >= 0) {
+					nData = true;
+				} else if ($.inArray(lnData, ["0", "false", cbv[1].toLowerCase()]) >= 0) {
+					nData = false;
+				}
+				return nData;
+			},
+			stype: "select", searchoptions: { sopt: ["eq", "ne"], value: ":Any;true:Yes;false:No" }
+		},
+		// TODO: add cmTemplate for currency and date
 		actions: {
 			formatter: "actions", width: 42, align: "center", autoResizable: false, frozen: true,
 			fixed: true, resizable: false, sortable: false, search: false, editable: false, viewable: false
@@ -1051,6 +1083,40 @@ $.extend(true,jgrid,{
 		}
 		return result;
 	},
+	convertOnSaveLocally: function (nData, cm, oData, rowid) {
+		var self = this, p = self.p;
+		if (p == null) {
+			return nData;
+		}
+		if ($.isFunction(cm.convertOnSave)) {
+			// TODO: add convertOnSave to cmTemplate:"integer" and cmTemplate:"number"
+			return cm.convertOnSave.call(this, nData, cm, oData, rowid);
+		}
+		if (typeof oData !== "boolean" && typeof oData !== "number") {
+			// we support first of all editing of boolean and numeric data
+			// TODO: more data types (like Date) need be implemented
+			return nData;
+		}
+		
+		if (typeof oData === "boolean" && (cm.edittype === "checkbox" || cm.formatter === "checkbox")) {
+			// convert nData to boolean if possible
+			var lnData = String(nData).toLowerCase(),
+				cbv = cm.editoptions != null && typeof cm.editoptions.value === "string" ?
+					cm.editoptions.value.split(":") : ["yes","no"];
+			if ($.inArray(lnData, ["1", "true", cbv[0].toLowerCase()]) >= 0) {
+				nData = true;
+			} else if ($.inArray(lnData, ["0", "false", cbv[1].toLowerCase()]) >= 0) {
+				nData = false;
+			}
+		} else if (typeof oData === "number" && !isNaN(nData)) {
+			if (cm.formatter === "number" || cm.formatter === "currency") {
+				nData = parseFloat(nData);
+			} else if (cm.formatter === "integer") {
+				nData = parseInt(nData, 10);
+			}
+		}
+		return nData;
+	},
 	getMethod: function (name) {
         return this.getAccessor($.fn.jqGrid, name);
 	},
@@ -1064,7 +1130,7 @@ $.extend(true,jgrid,{
 var clearArray = jgrid.clearArray, feedback = jgrid.feedback, jqID = jgrid.jqID,
 	getGridComponentIdSelector = jgrid.getGridComponentIdSelector, getGridComponentId = jgrid.getGridComponentId,
 	getGridComponent = jgrid.getGridComponent, stripPref = jgrid.stripPref, randId = jgrid.randId,
-	getAccessor = jgrid.getAccessor, getCellIndex = jgrid.getCellIndex,
+	getAccessor = jgrid.getAccessor, getCellIndex = jgrid.getCellIndex, convertOnSaveLocally = jgrid.convertOnSaveLocally,
 	stripHtml = jgrid.stripHtml, htmlEncode = jgrid.htmlEncode, htmlDecode = jgrid.htmlDecode;
 
 $.fn.jqGrid = function( pin ) {
@@ -3829,12 +3895,14 @@ jgrid.extend({
 			if(!ind) { return false; }
 			if( data ) {
 				try {
+					var id = stripPref(p.idPrefix, rowid), key, pos = p._index[id], oData = pos != null ? p.data[pos] : undefined;
 					$(p.colModel).each(function(i){
-						var cm = this, nm = cm.name, title;
-						var dval = getAccessor(data,nm);
+						var cm = this, nm = cm.name, title, dval = getAccessor(data,nm);
 						if( dval !== undefined) {
-							lcdata[nm] = dval;
-							vl = t.formatter( rowid, lcdata[nm], i, data, 'edit');
+							if (p.datatype === 'local' && oData != null) {
+								lcdata[nm] = convertOnSaveLocally.call(t, dval, cm, oData[nm], id);
+							}
+							vl = t.formatter( rowid, dval, i, data, 'edit');
 							title = cm.title ? {"title":stripHtml(vl)} : {};
 							if(p.treeGrid===true && nm === p.ExpandColumn) {
 								$("td[role='gridcell']:eq("+i+") > span:first",ind).html(vl).attr(title);
@@ -3844,8 +3912,6 @@ jgrid.extend({
 						}
 					});
 					if(p.datatype === 'local') {
-						var id = stripPref(p.idPrefix, rowid),
-						pos = p._index[id], key;
 						if(p.treeGrid) {
 							for(key in p.treeReader){
 								if(p.treeReader.hasOwnProperty(key)) {
@@ -3853,8 +3919,8 @@ jgrid.extend({
 								}
 							}
 						}
-						if(pos !== undefined) {
-							p.data[pos] = $.extend(true, p.data[pos], lcdata);
+						if(oData !== undefined) {
+							p.data[pos] = $.extend(true, oData, lcdata);
 						}
 						lcdata = null;
 					}
@@ -3929,7 +3995,7 @@ jgrid.extend({
 					for(i = gi+si+ni; i < p.colModel.length;i++){
 						cm = p.colModel[i];
 						nm = cm.name;
-						lcdata[nm] = data[nm];
+						lcdata[nm] = convertOnSaveLocally.call(t, data[nm], cm, undefined, id);
 						v = t.formatter( rowid, getAccessor(data,nm), i, data );
 						prp = t.formatCol(i,1,v, data, rowid, lcdata);
 						row.push("<td role=\"gridcell\" "+prp+">"+v+"</td>");
@@ -4280,37 +4346,40 @@ jgrid.extend({
 	setCell : function(rowid,colname,nData,cssp,attrp, forceupd) {
 		// TODO: add an additional parameter, which will inform whether the input data nData is in formatted or unformatted form
 		return this.each(function(){
-			var $t = this, pos =-1,v, title;
+			var $t = this, p = $t.p, pos =-1, v, title, cl, cm, item, ind, tcell, rawdat=[], id, index;
 			if(!$t.grid) {return;}
 			if(isNaN(colname)) {
-				$($t.p.colModel).each(function(i){
+				$(p.colModel).each(function(i){
 					if (this.name === colname) {
 						pos = i;return false;
 					}
 				});
 			} else {pos = parseInt(colname,10);}
 			if(pos>=0) {
-				var ind = $($t).jqGrid('getGridRowById', rowid); 
+				ind = $($t).jqGrid('getGridRowById', rowid); 
 				if (ind){
-					var tcell = $("td:eq("+pos+")",ind), cl=0, rawdat=[];
+					tcell = $("td:eq("+pos+")",ind);
 					if(nData !== "" || forceupd === true) {
-						while(cl<ind.cells.length) {
+						for(cl=0; cl<ind.cells.length; cl++) {
 							// slow down speed
 							rawdat.push(ind.cells[cl].innerHTML);
-							cl++;
 						}
 						v = $t.formatter(rowid, nData, pos, rawdat, 'edit');
-						title = $t.p.colModel[pos].title ? {"title":stripHtml(v)} : {};
-						if($t.p.treeGrid && $(".tree-wrap",$(tcell)).length>0) {
+						title = p.colModel[pos].title ? {"title":stripHtml(v)} : {};
+						if(p.treeGrid && $(".tree-wrap",$(tcell)).length>0) {
 							$("span",$(tcell)).html(v).attr(title);
 						} else {
 							$(tcell).html(v).attr(title);
 						}
-						if($t.p.datatype === "local") {
-							var cm = $t.p.colModel[pos], index;
-							index = $t.p._index[stripPref($t.p.idPrefix, rowid)];
+						if(p.datatype === "local") {
+							id = stripPref(p.idPrefix, rowid);
+							index = p._index[id];
 							if(index !== undefined) {
-								$t.p.data[index][cm.name] = nData;
+								item = p.data[index];
+								if (item != null) {
+									cm = p.colModel[pos];
+									item[cm.name] = convertOnSaveLocally.call($t, nData, cm, item[cm.name], id);
+								}
 							}
 						}
 					}
@@ -4447,15 +4516,15 @@ jgrid.extend({
 			scrollingRows : true
 		},settings || {});
 		return this.each(function(){
-			var $t = this;
+			var $t = this, p = $t.p;
 			if( !$('body').is('[role]') ){$('body').attr('role','application');}
-			$t.p.scrollrows = o.scrollingRows;
+			p.scrollrows = o.scrollingRows;
 			$($t).keydown(function(event){
 				var target = $($t).find('tr[tabindex=0]')[0], id, r, mind,
-				expanded = $t.p.treeReader.expanded_field;
+				expanded = p.treeReader.expanded_field;
 				//check for arrow keys
 				if(target) {
-					mind = $t.p._index[stripPref($t.p.idPrefix, target.id)];
+					mind = p._index[stripPref(p.idPrefix, target.id)];
 					if(event.keyCode === 37 || event.keyCode === 38 || event.keyCode === 39 || event.keyCode === 40){
 						// up key
 						if(event.keyCode === 38 ){
@@ -4493,35 +4562,35 @@ jgrid.extend({
 						}
 						// left
 						if(event.keyCode === 37 ){
-							if($t.p.treeGrid && $t.p.data[mind][expanded]) {
+							if(p.treeGrid && p.data[mind][expanded]) {
 								$(target).find("div.treeclick").trigger('click');
 							}
-							$($t).triggerHandler("jqGridKeyLeft", [$t.p.selrow]);
+							$($t).triggerHandler("jqGridKeyLeft", [p.selrow]);
 							if($.isFunction(o.onLeftKey)) {
-								o.onLeftKey.call($t, $t.p.selrow);
+								o.onLeftKey.call($t, p.selrow);
 							}
 						}
 						// right
 						if(event.keyCode === 39 ){
-							if($t.p.treeGrid && !$t.p.data[mind][expanded]) {
+							if(p.treeGrid && !p.data[mind][expanded]) {
 								$(target).find("div.treeclick").trigger('click');
 							}
-							$($t).triggerHandler("jqGridKeyRight", [$t.p.selrow]);
+							$($t).triggerHandler("jqGridKeyRight", [p.selrow]);
 							if($.isFunction(o.onRightKey)) {
-								o.onRightKey.call($t, $t.p.selrow);
+								o.onRightKey.call($t, p.selrow);
 							}
 						}
 					}
 					//check if enter was pressed on a grid or treegrid node
 					else if( event.keyCode === 13 ){
-						$($t).triggerHandler("jqGridKeyEnter", [$t.p.selrow]);
+						$($t).triggerHandler("jqGridKeyEnter", [p.selrow]);
 						if($.isFunction(o.onEnter)) {
-							o.onEnter.call($t, $t.p.selrow);
+							o.onEnter.call($t, p.selrow);
 						}
 					} else if(event.keyCode === 32) {
-						$($t).triggerHandler("jqGridKeySpace", [$t.p.selrow]);
+						$($t).triggerHandler("jqGridKeySpace", [p.selrow]);
 						if($.isFunction(o.onSpace)) {
-							o.onSpace.call($t, $t.p.selrow);
+							o.onSpace.call($t, p.selrow);
 						}
 					}
 				}
