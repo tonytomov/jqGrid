@@ -550,13 +550,17 @@ $.extend(true,jgrid,{
 			return;
 		}
 
-		var p = self.p, bDiv = grid.bDiv, $hDiv = $(grid.hDiv), $hBox = $hDiv.children("div").filter(":first");
+		var p = self.p, bDiv = grid.bDiv,
+			$hDivhBox = $(grid.hDiv).children("div").filter(":first"),
+			$sDivhBox = $(grid.sDiv).children("div").filter(":first");
 		if ($(bDiv).width() > 0) {
 			p.scrollOffset = (bDiv.offsetWidth - bDiv.clientWidth); // can be 0 if no scrollbar exist
 			// TODO: add detection of the width of vertical scroll bar if the grid is hidden now
 			// one need just create close construction with visible:hidden style, add to body and get its width
-			$hBox.css($hBox.hasClass("ui-jqgrid-hbox-rtl") ? "padding-left": "padding-right", p.scrollOffset + "px");
+			$hDivhBox.css($hDivhBox.hasClass("ui-jqgrid-hbox-rtl") ? "padding-left": "padding-right", p.scrollOffset + "px");
+			$sDivhBox.css($sDivhBox.hasClass("ui-jqgrid-hbox-rtl") ? "padding-left": "padding-right", p.scrollOffset + "px");
 			grid.hDiv.scrollLeft = bDiv.scrollLeft;
+			grid.sDiv.scrollLeft = bDiv.scrollLeft;
 		}
 	},
 	mergeCssClasses: function () {
