@@ -1076,12 +1076,12 @@ $.extend(true,jgrid,{
 		};
 		return new QueryObject(source,null);
 	},
-	feedback: function (callbackName) {
+	feedback: function (p, callbackName) {
 		var self = this;
 		if (self instanceof jQuery && self.length > 0) {
 			self = self[0];
 		}
-		if (self.p == null || typeof callbackName !== "string" || callbackName.length < 2) {
+		if (p == null || typeof callbackName !== "string" || callbackName.length < 2) {
 			return null; // incorrect call
 		}
 		// onSortCol -> jqGridSortCol, onSelectAll -> jqGridSelectAll, ondblClickRow -> jqGridDblClickRow
@@ -1089,8 +1089,8 @@ $.extend(true,jgrid,{
 		var eventName = callbackName.substring(0, 2) === "on"?
 				"jqGrid" + callbackName.charAt(2).toUpperCase() + callbackName.substring(3):
 				"jqGrid" + callbackName.charAt(0).toUpperCase() + callbackName.substring(1),
-			args = $.makeArray(arguments).slice(1),
-			callback = self.p[callbackName];
+			args = $.makeArray(arguments).slice(2),
+			callback = p[callbackName];
 
 		var result = $(self).triggerHandler(eventName, args);
 		result = (result === false || result === "stop") ? false : true;
@@ -1147,11 +1147,17 @@ $.extend(true,jgrid,{
 		}
 	}
 });
-var clearArray = jgrid.clearArray, feedback = jgrid.feedback, jqID = jgrid.jqID,
+var clearArray = jgrid.clearArray, jqID = jgrid.jqID,
 	getGridComponentIdSelector = jgrid.getGridComponentIdSelector, getGridComponentId = jgrid.getGridComponentId,
 	getGridComponent = jgrid.getGridComponent, stripPref = jgrid.stripPref, randId = jgrid.randId,
 	getAccessor = jgrid.getAccessor, getCellIndex = jgrid.getCellIndex, convertOnSaveLocally = jgrid.convertOnSaveLocally,
-	stripHtml = jgrid.stripHtml, htmlEncode = jgrid.htmlEncode, htmlDecode = jgrid.htmlDecode;
+	stripHtml = jgrid.stripHtml, htmlEncode = jgrid.htmlEncode, htmlDecode = jgrid.htmlDecode,
+	feedback = function () {
+		// short form of $.jgrid.feedback to save usage this.p as the first parameter
+		var args = $.makeArray(arguments);
+		args.unshift(this.p);
+		return jgrid.feedback.apply(this, args);
+	};
 
 $.fn.jqGrid = function( pin ) {
 	if (typeof pin === 'string') {
