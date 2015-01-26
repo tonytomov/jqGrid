@@ -241,13 +241,11 @@
 		return  cellval === "" ? $FnFmatter.defaultFormat(cellval,opts) : cellval;
 	};
 	$FnFmatter.rowactions = function(act) {
-		var $tr = $(this).closest("tr.jqgrow"),
-			rid = $tr.attr("id"),
+		var cm = p.colModel[jgrid.getCellIndex(this)], $tr = $(this).closest("tr.jqgrow"),	rid = $tr.attr("id"),
 			$id = $(this).closest("table.ui-jqgrid-btable").attr('id').replace(/_frozen([^_]*)$/,'$1'),
 			$grid = $("#"+jgrid.jqID($id)),
 			$t = $grid[0],
 			p = $t.p,
-			cm = p.colModel[jgrid.getCellIndex(this)],
 			$actionsDiv = cm.frozen ? $("tr#"+jgrid.jqID(rid)+" td:eq("+jgrid.getCellIndex(this)+") > div",$grid) :$(this).parent(),
 			op = {
 				extraparam: {}
@@ -287,8 +285,7 @@
 			restoreAfterError: op.restoreAfterError,
 			mtype: op.mtype
 		};
-		switch(act)
-		{
+		switch(act)	{
 			case 'edit':
 				$grid.jqGrid('editRow', rid, actop);
 				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").hide();
