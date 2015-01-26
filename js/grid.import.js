@@ -1,4 +1,5 @@
 /*jshint eqeqeq:false, eqnull:true, devel:true */
+/*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
 /*global jQuery, xmlJsonClass */
 (function($){
 /*
@@ -124,7 +125,7 @@
                                     if($.isFunction(o.importComplete)) {
                                         o.importComplete(json);
                                     }
-                                } catch (ee){}
+                                } catch (ignore){}
                                 json=null;
                             }
                         }, o.ajaxOptions ));
@@ -183,7 +184,7 @@
                         ret = "{"+ xmlJsonClass.toJson(gprm,o.root,o.ident,false)+"}";
                         if(gprm.postData.filters !== undefined) {
                             ret=ret.replace(/filters":"/,'filters":');
-                            ret=ret.replace(/}]}"/,'}]}');
+                            ret=ret.replace(/\}\]\}"/,'}]}');
                         }
                         break;
                 }
@@ -212,4 +213,4 @@
             });
         }
     });
-})(jQuery);
+}(jQuery));
