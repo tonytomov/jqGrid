@@ -3443,7 +3443,7 @@ $.fn.jqGrid = function( pin ) {
 			} else {
 				gridSelf.populate.call(self);
 			}
-			if(p._inlinenav===true) {$self.jqGrid('showAddEditButtons');}
+			if(p._inlinenav===true) {$self.jqGrid('showAddEditButtons', false);}
 			return false;
 		})
 		.dblclick(function(e) {
@@ -3890,7 +3890,7 @@ jgrid.extend({
 				}
 				if (p.multiselect && p.selarrrow.length > 0) {
 					p.selrow = p.selarrrow[p.selarrrow.length-1];
-				} else {
+				} else if (p.selrow === rowid) {
 					p.selrow = null;
 				}
 			if(p.datatype === 'local') {
