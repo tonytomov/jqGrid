@@ -1076,7 +1076,19 @@ $.extend(true,jgrid,{
 		};
 		return new QueryObject(source,null);
 	},
-	feedback: function (p, callbackName) {
+	fullBoolFeedback: function (callback, eventName) {
+		var self = this, args = $.makeArray(arguments).slice(2), result = $(self).triggerHandler(eventName, args);
+
+		result = (result === false || result === "stop") ? false : true;
+		if ($.isFunction(callback)) {
+			var callbackResult = callback.apply(self, args);
+			if (callbackResult === false || callbackResult === 'stop') {
+				result = false;
+			 }
+		}
+		return result;
+	},
+	feedback: function (p, eventPrefix, callbackSuffix, callbackName) {
 		var self = this;
 		if (self instanceof jQuery && self.length > 0) {
 			self = self[0];
@@ -1087,21 +1099,14 @@ $.extend(true,jgrid,{
 		// onSortCol -> jqGridSortCol, onSelectAll -> jqGridSelectAll, ondblClickRow -> jqGridDblClickRow
 		// resizeStop -> jqGridResizeStop
 		var eventName = callbackName.substring(0, 2) === "on"?
-				"jqGrid" + callbackName.charAt(2).toUpperCase() + callbackName.substring(3):
-				"jqGrid" + callbackName.charAt(0).toUpperCase() + callbackName.substring(1),
-			args = $.makeArray(arguments).slice(2),
-			callback = p[callbackName];
+				"jqGrid" + eventPrefix + callbackName.charAt(2).toUpperCase() + callbackName.substring(3):
+				"jqGrid" + eventPrefix + callbackName.charAt(0).toUpperCase() + callbackName.substring(1),
+			args = $.makeArray(arguments).slice(4),
+			callback = p[callbackName + callbackSuffix];
 
-		var result = $(self).triggerHandler(eventName, args);
-		result = (result === false || result === "stop") ? false : true;
-
-		if ($.isFunction(callback)) {
-			var callbackResult = callback.apply(self, args);
-			if (callbackResult === false || callbackResult === 'stop') {
-				result = false;
-			 }
-		}
-		return result;
+		args.unshift(eventName);
+		args.unshift(callback);
+		return jgrid.fullBoolFeedback.apply(self, args);
 	},
 	convertOnSaveLocally: function (nData, cm, oData, rowid) {
 		var self = this, p = self.p;
@@ -1155,6 +1160,8 @@ var clearArray = jgrid.clearArray, jqID = jgrid.jqID,
 	feedback = function () {
 		// short form of $.jgrid.feedback to save usage this.p as the first parameter
 		var args = $.makeArray(arguments);
+		args.unshift("");
+		args.unshift("");
 		args.unshift(this.p);
 		return jgrid.feedback.apply(this, args);
 	};

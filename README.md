@@ -88,6 +88,7 @@ The most the changes corresponds the tendency of web development last years. Loc
 
 ### The following **bugs** are fixed
 
+* fixing id duplicates in case of usage `inlineNav` for both top pager and bottom pager
 * ... to be included soon
 
 ### Other changes in jqGrid and remarks

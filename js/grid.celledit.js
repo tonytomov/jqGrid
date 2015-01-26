@@ -284,7 +284,7 @@ jgrid.extend({
 	},
 	restoreCell : function(iRow, iCol) {
 		return this.each(function(){
-			var $t= this, p = $t.p, fr, tr = $t.rows[iRow], rowid = tr.id, v, cm;
+			var $t= this, p = $t.p, tr = $t.rows[iRow], rowid = tr.id, v, cm;
 			if (!$t.grid || p.cellEdit !== true) {return;}
 			if (p.savedRow.length >= 1) {
 				var cc = $("td:eq("+iCol+")",tr);

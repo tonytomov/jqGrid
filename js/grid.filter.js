@@ -131,7 +131,7 @@ $.fn.jqFilter = function( arg ) {
 			} else if(jgrid && jgrid.checkValues) {
 				try {
 					ret = jgrid.checkValues.call($t, val, -1, colModelItem.searchrules, colModelItem.label);
-				} catch (e) {}
+				} catch (ignore) {}
 			}
 			if(ret && ret.length && ret[0] === false) {
 				p.error = !ret[0];

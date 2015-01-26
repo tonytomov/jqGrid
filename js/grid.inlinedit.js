@@ -484,7 +484,7 @@ jgrid.extend({
 		return this.each(function(){
 			var $t = this, $self = $($t), p = $t.p;
 			if (!this.grid || p == null) { return; }
-			var onSelect, $elem, gID = elem === p.toppager ? p.idSel + "_top" : p.idSel,
+			var $elem, gID = elem === p.toppager ? p.idSel + "_top" : p.idSel,
 			o = $.extend(true,{
 				edit: true,
 				editicon: "ui-icon-pencil",
