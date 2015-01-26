@@ -4725,6 +4725,9 @@ jgrid.extend({
 					$cellFirstChild = $(cell.firstChild);
 					if ($cellFirstChild.hasClass(wrapperClassName)) {
 						colWidth = Math.max(colWidth, $cellFirstChild.outerWidth() + widthOuter);
+					} else if (p.treeGrid && p.ExpandColumn === cm.name) {
+						$cellFirstChild = $cell.children(".cell-wrapper,.cell-wrapperleaf");
+						colWidth = Math.max(colWidth, $cellFirstChild.outerWidth() + widthOuter + $cell.children(".tree-wrap").outerWidth());						
 					}
 				} else if ($(row).hasClass("jqgfirstrow")) {
 					widthOuter = (jgrid.cell_width ? parseFloat($cell.css("padding-left") || 0) + parseFloat($cell.css("padding-right") || 0) : 0) +
@@ -13920,13 +13923,11 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 		return  cellval === "" ? $FnFmatter.defaultFormat(cellval,opts) : cellval;
 	};
 	$FnFmatter.rowactions = function(act) {
-		var $tr = $(this).closest("tr.jqgrow"),
-			rid = $tr.attr("id"),
+		var cm = p.colModel[jgrid.getCellIndex(this)], $tr = $(this).closest("tr.jqgrow"),	rid = $tr.attr("id"),
 			$id = $(this).closest("table.ui-jqgrid-btable").attr('id').replace(/_frozen([^_]*)$/,'$1'),
 			$grid = $("#"+jgrid.jqID($id)),
 			$t = $grid[0],
 			p = $t.p,
-			cm = p.colModel[jgrid.getCellIndex(this)],
 			$actionsDiv = cm.frozen ? $("tr#"+jgrid.jqID(rid)+" td:eq("+jgrid.getCellIndex(this)+") > div",$grid) :$(this).parent(),
 			op = {
 				extraparam: {}
@@ -13966,8 +13967,7 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 			restoreAfterError: op.restoreAfterError,
 			mtype: op.mtype
 		};
-		switch(act)
-		{
+		switch(act)	{
 			case 'edit':
 				$grid.jqGrid('editRow', rid, actop);
 				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").hide();

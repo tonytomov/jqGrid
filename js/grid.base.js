@@ -4725,6 +4725,9 @@ jgrid.extend({
 					$cellFirstChild = $(cell.firstChild);
 					if ($cellFirstChild.hasClass(wrapperClassName)) {
 						colWidth = Math.max(colWidth, $cellFirstChild.outerWidth() + widthOuter);
+					} else if (p.treeGrid && p.ExpandColumn === cm.name) {
+						$cellFirstChild = $cell.children(".cell-wrapper,.cell-wrapperleaf");
+						colWidth = Math.max(colWidth, $cellFirstChild.outerWidth() + widthOuter + $cell.children(".tree-wrap").outerWidth());						
 					}
 				} else if ($(row).hasClass("jqgfirstrow")) {
 					widthOuter = (jgrid.cell_width ? parseFloat($cell.css("padding-left") || 0) + parseFloat($cell.css("padding-right") || 0) : 0) +
