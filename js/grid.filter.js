@@ -26,6 +26,7 @@
 }
 */
 /*jshint eqeqeq:false, eqnull:true, devel:true */
+/*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
 /*global jQuery */
 
 (function ($) {
@@ -74,7 +75,7 @@ $.fn.jqFilter = function( arg ) {
 				groups: []
 			};
 		}
-		var i, len = p.columns.length, cl,
+		var iColumn, len = p.columns.length, cl,
 		isIE = /msie/i.test(navigator.userAgent) && !window.opera;
 
 		// translating the options
@@ -82,8 +83,8 @@ $.fn.jqFilter = function( arg ) {
 
 		// set default values for the columns if they are not set
 		if( !len ) {return;}
-		for(i=0; i < len; i++) {
-			cl = p.columns[i];
+		for(iColumn=0; iColumn < len; iColumn++) {
+			cl = p.columns[iColumn];
 			if( cl.stype ) {
 				// grid compatibility
 				cl.inputtype = cl.stype;
@@ -232,14 +233,15 @@ $.fn.jqFilter = function( arg ) {
 			// button for adding a new rule
 			var inputAddRule = $("<input type='button' value='+' title='Add rule' class='add-rule ui-add'/>"), cm;
 			inputAddRule.bind('click',function() {
+				var searchable, hidden, ignoreHiding;
 				//if(!group) { group = {};}
 				if (group.rules === undefined) {
 					group.rules = [];
 				}
 				for (i = 0; i < that.p.columns.length; i++) {
 				// but show only serchable and serchhidden = true fields
-					var searchable = (that.p.columns[i].search === undefined) ?  true: that.p.columns[i].search,
-					hidden = (that.p.columns[i].hidden === true),
+					searchable = (that.p.columns[i].search === undefined) ? true: that.p.columns[i].search;
+					hidden = (that.p.columns[i].hidden === true);
 					ignoreHiding = (that.p.columns[i].searchoptions.searchhidden === true);
 					if ((ignoreHiding && searchable) || (searchable && !hidden)) {
 						cm = that.p.columns[i];
@@ -289,14 +291,15 @@ $.fn.jqFilter = function( arg ) {
 
 			// append subgroup rows
 			if (group.groups !== undefined) {
+				var trHolderForSubgroup, tdFirstHolderForSubgroup, tdMainHolderForSubgroup;
 				for (i = 0; i < group.groups.length; i++) {
-					var trHolderForSubgroup = $("<tr></tr>");
+					trHolderForSubgroup = $("<tr></tr>");
 					table.append(trHolderForSubgroup);
 
-					var tdFirstHolderForSubgroup = $("<td class='first'></td>");
+					tdFirstHolderForSubgroup = $("<td class='first'></td>");
 					trHolderForSubgroup.append(tdFirstHolderForSubgroup);
 
-					var tdMainHolderForSubgroup = $("<td colspan='4'></td>");
+					tdMainHolderForSubgroup = $("<td colspan='4'></td>");
 					tdMainHolderForSubgroup.append(this.createTableForGroup(group.groups[i], group));
 					trHolderForSubgroup.append(tdMainHolderForSubgroup);
 				}
@@ -403,11 +406,11 @@ $.fn.jqFilter = function( arg ) {
 			});
 
 			// populate drop down with user provided column definitions
-			var j=0;
+			var j=0, searchable, hidden, ignoreHiding;
 			for (i = 0; i < that.p.columns.length; i++) {
 				// but show only serchable and serchhidden = true fields
-				var searchable = (that.p.columns[i].search === undefined) ? true: that.p.columns[i].search,
-				hidden = (that.p.columns[i].hidden === true),
+				searchable = (that.p.columns[i].search === undefined) ? true: that.p.columns[i].search;
+				hidden = (that.p.columns[i].hidden === true);
 				ignoreHiding = (that.p.columns[i].searchoptions.searchhidden === true);
 				if ((ignoreHiding && searchable) || (searchable && !hidden)) {
 					selected = "";
@@ -564,7 +567,7 @@ $.fn.jqFilter = function( arg ) {
 					break;
 				}
 			}
-			if (cm === undefined) { return ""; }
+			if (cm == null) { return ""; }
 			val = rule.data;
 			if(opC === 'bw' || opC === 'bn') { val = val+"%"; }
 			if(opC === 'ew' || opC === 'en') { val = "%"+val; }
@@ -709,4 +712,4 @@ $.extend($.fn.jqFilter,{
 	}
 
 });
-})(jQuery);
+}(jQuery));
