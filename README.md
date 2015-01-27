@@ -88,7 +88,10 @@ The most the changes corresponds the tendency of web development last years. Loc
 
 ### The following **bugs** are fixed
 
-* fixing id duplicates in case of usage `inlineNav` for both top pager and bottom pager
+* reading of XML/JSON data having default `repeatitems: true` property in `jsonReader` or `xmlReader` in case of usage `key: true` in some column of the `colModel`.
+* many parts of jqGrid are fixed to allow to use special characters like dot in ids.
+* id duplicates in case of usage `inlineNav` for both top pager and bottom pager.
+* the bug in data grouping with hiding of parent summary row on hiding of the last subgroup.
 * ... to be included soon
 
 ### Other changes in jqGrid and remarks

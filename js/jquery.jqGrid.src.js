@@ -7046,6 +7046,7 @@ jgrid.extend({
 }
 */
 /*jshint eqeqeq:false, eqnull:true, devel:true */
+/*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
 /*global jQuery */
 
 (function ($) {
@@ -7094,7 +7095,7 @@ $.fn.jqFilter = function( arg ) {
 				groups: []
 			};
 		}
-		var i, len = p.columns.length, cl,
+		var iColumn, len = p.columns.length, cl,
 		isIE = /msie/i.test(navigator.userAgent) && !window.opera;
 
 		// translating the options
@@ -7102,8 +7103,8 @@ $.fn.jqFilter = function( arg ) {
 
 		// set default values for the columns if they are not set
 		if( !len ) {return;}
-		for(i=0; i < len; i++) {
-			cl = p.columns[i];
+		for(iColumn=0; iColumn < len; iColumn++) {
+			cl = p.columns[iColumn];
 			if( cl.stype ) {
 				// grid compatibility
 				cl.inputtype = cl.stype;
@@ -7252,14 +7253,15 @@ $.fn.jqFilter = function( arg ) {
 			// button for adding a new rule
 			var inputAddRule = $("<input type='button' value='+' title='Add rule' class='add-rule ui-add'/>"), cm;
 			inputAddRule.bind('click',function() {
+				var searchable, hidden, ignoreHiding;
 				//if(!group) { group = {};}
 				if (group.rules === undefined) {
 					group.rules = [];
 				}
 				for (i = 0; i < that.p.columns.length; i++) {
 				// but show only serchable and serchhidden = true fields
-					var searchable = (that.p.columns[i].search === undefined) ?  true: that.p.columns[i].search,
-					hidden = (that.p.columns[i].hidden === true),
+					searchable = (that.p.columns[i].search === undefined) ? true: that.p.columns[i].search;
+					hidden = (that.p.columns[i].hidden === true);
 					ignoreHiding = (that.p.columns[i].searchoptions.searchhidden === true);
 					if ((ignoreHiding && searchable) || (searchable && !hidden)) {
 						cm = that.p.columns[i];
@@ -7309,14 +7311,15 @@ $.fn.jqFilter = function( arg ) {
 
 			// append subgroup rows
 			if (group.groups !== undefined) {
+				var trHolderForSubgroup, tdFirstHolderForSubgroup, tdMainHolderForSubgroup;
 				for (i = 0; i < group.groups.length; i++) {
-					var trHolderForSubgroup = $("<tr></tr>");
+					trHolderForSubgroup = $("<tr></tr>");
 					table.append(trHolderForSubgroup);
 
-					var tdFirstHolderForSubgroup = $("<td class='first'></td>");
+					tdFirstHolderForSubgroup = $("<td class='first'></td>");
 					trHolderForSubgroup.append(tdFirstHolderForSubgroup);
 
-					var tdMainHolderForSubgroup = $("<td colspan='4'></td>");
+					tdMainHolderForSubgroup = $("<td colspan='4'></td>");
 					tdMainHolderForSubgroup.append(this.createTableForGroup(group.groups[i], group));
 					trHolderForSubgroup.append(tdMainHolderForSubgroup);
 				}
@@ -7423,11 +7426,11 @@ $.fn.jqFilter = function( arg ) {
 			});
 
 			// populate drop down with user provided column definitions
-			var j=0;
+			var j=0, searchable, hidden, ignoreHiding;
 			for (i = 0; i < that.p.columns.length; i++) {
 				// but show only serchable and serchhidden = true fields
-				var searchable = (that.p.columns[i].search === undefined) ? true: that.p.columns[i].search,
-				hidden = (that.p.columns[i].hidden === true),
+				searchable = (that.p.columns[i].search === undefined) ? true: that.p.columns[i].search;
+				hidden = (that.p.columns[i].hidden === true);
 				ignoreHiding = (that.p.columns[i].searchoptions.searchhidden === true);
 				if ((ignoreHiding && searchable) || (searchable && !hidden)) {
 					selected = "";
@@ -7584,7 +7587,7 @@ $.fn.jqFilter = function( arg ) {
 					break;
 				}
 			}
-			if (cm === undefined) { return ""; }
+			if (cm == null) { return ""; }
 			val = rule.data;
 			if(opC === 'bw' || opC === 'bn') { val = val+"%"; }
 			if(opC === 'ew' || opC === 'en') { val = "%"+val; }
@@ -7729,7 +7732,7 @@ $.extend($.fn.jqFilter,{
 	}
 
 });
-})(jQuery);
+}(jQuery));
 /*jshint eqeqeq:false, eqnull:true, devel:true */
 /*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, continue: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
 /*global xmlJsonClass, jQuery */
@@ -10041,67 +10044,79 @@ jgrid.extend({
 			tar2 = frz ? $("#"+jqID(hid), "#"+jqID(frz) ) : false,
 			r2 = (tar2 && tar2.length) ? tar2[0].nextSibling : null;
 			if( tarspan.hasClass(minus) ) {
-				if(grp.showSummaryOnHide) {
-					if(r){
-						while(r) {
-							itemGroupingLevel = getGroupingLevelFromClass(r.className);
-							if (itemGroupingLevel !== undefined && itemGroupingLevel <= num) {
-								break;
-							}
+				// collapse
+				while(r) {
+					if ($(r).hasClass("jqfoot")) {
+						// hide all till the summary row of the same level.
+						// don't hide the summary row if grp.showSummaryOnHide === true
+						itemGroupingLevel = parseInt($(r).data("jqfootlevel"), 10);
+						if ((!grp.showSummaryOnHide && itemGroupingLevel === num) || itemGroupingLevel > num) {
 							$(r).hide();
-							r = r.nextSibling;
 							if(frz) {
 								$(r2).hide();
-								r2 = r2.nextSibling;
 							}
+						}
+						if (itemGroupingLevel < num) {
+							// stop hiding of rows if the footer of parent group are found
+							break;
+						}
+					} else {
+						itemGroupingLevel = getGroupingLevelFromClass(r.className);
+						if (itemGroupingLevel !== undefined && itemGroupingLevel <= num) {
+							// stop hiding of rows if the grouping header of the next group of the same (or higher) level are found
+							break;
+						}
+						$(r).hide();
+						if(frz) {
+							$(r2).hide();
 						}
 					}
-				} else  {
-					if(r){
-						while(r) {
-							itemGroupingLevel = getGroupingLevelFromClass(r.className);
-							if (itemGroupingLevel !== undefined && itemGroupingLevel <= num) {
-								break;
-							}
-							$(r).hide();
-							r = r.nextSibling;
-							if(frz) {
-								$(r2).hide();
-								r2 = r2.nextSibling;
-							}
-						}
+					r = r.nextSibling;
+					if(frz) {
+						r2 = r2.nextSibling;
 					}
 				}
 				tarspan.removeClass(minus).addClass(plus);
 				collapsed = true;
 			} else {
-				if(r){
-					showData = undefined;
-					while(r) {
-						itemGroupingLevel = getGroupingLevelFromClass(r.className);
-						if (showData === undefined) {
-							showData = itemGroupingLevel === undefined; // if the first row after the opening group is data row then show the data rows
-						}
-						if (itemGroupingLevel !== undefined) {
-							if (itemGroupingLevel <= num) {
-								break;// next item of the same lever are found
-							}
-							if (itemGroupingLevel === num + 1) {
-								$(r).show().find(">td>span."+"tree-wrap-"+p.direction).removeClass(minus).addClass(plus);
-								if(frz) {
-									$(r2).show().find(">td>span."+"tree-wrap-"+p.direction).removeClass(minus).addClass(plus);
-								}
-							}
-						} else if (showData) {
+				// expand
+				showData = undefined;
+				while(r) {
+					if ($(r).hasClass("jqfoot")) {
+						itemGroupingLevel = parseInt($(r).data("jqfootlevel"), 10);
+						if (itemGroupingLevel === num || (grp.showSummaryOnHide && itemGroupingLevel === num + 1)) {
 							$(r).show();
 							if(frz) {
 								$(r2).show();
 							}
 						}
-						r = r.nextSibling;
-						if(frz) {
-							r2 = r2.nextSibling;
+						if (itemGroupingLevel <= num) {
+							break;
 						}
+					}
+					itemGroupingLevel = getGroupingLevelFromClass(r.className);
+					if (showData === undefined) {
+						showData = itemGroupingLevel === undefined; // if the first row after the opening group is data row then show the data rows
+					}
+					if (itemGroupingLevel !== undefined) {
+						if (itemGroupingLevel < num) {
+							break;// next grouping header of the same lever are found
+						}
+						if (itemGroupingLevel === num + 1) {
+							$(r).show().find(">td>span."+"tree-wrap-"+p.direction).removeClass(minus).addClass(plus);
+							if(frz) {
+								$(r2).show().find(">td>span."+"tree-wrap-"+p.direction).removeClass(minus).addClass(plus);
+							}
+						}
+					} else if (showData) {
+						$(r).show();
+						if(frz) {
+							$(r2).show();
+						}
+					}
+					r = r.nextSibling;
+					if(frz) {
+						r2 = r2.nextSibling;
 					}
 				}
 				tarspan.removeClass(plus).addClass(minus);

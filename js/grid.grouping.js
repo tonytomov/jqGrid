@@ -190,67 +190,79 @@ jgrid.extend({
 			tar2 = frz ? $("#"+jqID(hid), "#"+jqID(frz) ) : false,
 			r2 = (tar2 && tar2.length) ? tar2[0].nextSibling : null;
 			if( tarspan.hasClass(minus) ) {
-				if(grp.showSummaryOnHide) {
-					if(r){
-						while(r) {
-							itemGroupingLevel = getGroupingLevelFromClass(r.className);
-							if (itemGroupingLevel !== undefined && itemGroupingLevel <= num) {
-								break;
-							}
+				// collapse
+				while(r) {
+					if ($(r).hasClass("jqfoot")) {
+						// hide all till the summary row of the same level.
+						// don't hide the summary row if grp.showSummaryOnHide === true
+						itemGroupingLevel = parseInt($(r).data("jqfootlevel"), 10);
+						if ((!grp.showSummaryOnHide && itemGroupingLevel === num) || itemGroupingLevel > num) {
 							$(r).hide();
-							r = r.nextSibling;
 							if(frz) {
 								$(r2).hide();
-								r2 = r2.nextSibling;
 							}
+						}
+						if (itemGroupingLevel < num) {
+							// stop hiding of rows if the footer of parent group are found
+							break;
+						}
+					} else {
+						itemGroupingLevel = getGroupingLevelFromClass(r.className);
+						if (itemGroupingLevel !== undefined && itemGroupingLevel <= num) {
+							// stop hiding of rows if the grouping header of the next group of the same (or higher) level are found
+							break;
+						}
+						$(r).hide();
+						if(frz) {
+							$(r2).hide();
 						}
 					}
-				} else  {
-					if(r){
-						while(r) {
-							itemGroupingLevel = getGroupingLevelFromClass(r.className);
-							if (itemGroupingLevel !== undefined && itemGroupingLevel <= num) {
-								break;
-							}
-							$(r).hide();
-							r = r.nextSibling;
-							if(frz) {
-								$(r2).hide();
-								r2 = r2.nextSibling;
-							}
-						}
+					r = r.nextSibling;
+					if(frz) {
+						r2 = r2.nextSibling;
 					}
 				}
 				tarspan.removeClass(minus).addClass(plus);
 				collapsed = true;
 			} else {
-				if(r){
-					showData = undefined;
-					while(r) {
-						itemGroupingLevel = getGroupingLevelFromClass(r.className);
-						if (showData === undefined) {
-							showData = itemGroupingLevel === undefined; // if the first row after the opening group is data row then show the data rows
-						}
-						if (itemGroupingLevel !== undefined) {
-							if (itemGroupingLevel <= num) {
-								break;// next item of the same lever are found
-							}
-							if (itemGroupingLevel === num + 1) {
-								$(r).show().find(">td>span."+"tree-wrap-"+p.direction).removeClass(minus).addClass(plus);
-								if(frz) {
-									$(r2).show().find(">td>span."+"tree-wrap-"+p.direction).removeClass(minus).addClass(plus);
-								}
-							}
-						} else if (showData) {
+				// expand
+				showData = undefined;
+				while(r) {
+					if ($(r).hasClass("jqfoot")) {
+						itemGroupingLevel = parseInt($(r).data("jqfootlevel"), 10);
+						if (itemGroupingLevel === num || (grp.showSummaryOnHide && itemGroupingLevel === num + 1)) {
 							$(r).show();
 							if(frz) {
 								$(r2).show();
 							}
 						}
-						r = r.nextSibling;
-						if(frz) {
-							r2 = r2.nextSibling;
+						if (itemGroupingLevel <= num) {
+							break;
 						}
+					}
+					itemGroupingLevel = getGroupingLevelFromClass(r.className);
+					if (showData === undefined) {
+						showData = itemGroupingLevel === undefined; // if the first row after the opening group is data row then show the data rows
+					}
+					if (itemGroupingLevel !== undefined) {
+						if (itemGroupingLevel < num) {
+							break;// next grouping header of the same lever are found
+						}
+						if (itemGroupingLevel === num + 1) {
+							$(r).show().find(">td>span."+"tree-wrap-"+p.direction).removeClass(minus).addClass(plus);
+							if(frz) {
+								$(r2).show().find(">td>span."+"tree-wrap-"+p.direction).removeClass(minus).addClass(plus);
+							}
+						}
+					} else if (showData) {
+						$(r).show();
+						if(frz) {
+							$(r2).show();
+						}
+					}
+					r = r.nextSibling;
+					if(frz) {
+						r2 = r2.nextSibling;
 					}
 				}
 				tarspan.removeClass(plus).addClass(minus);
