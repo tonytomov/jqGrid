@@ -12,7 +12,7 @@
 **/
 "use strict";
 var jgrid = $.jgrid, feedback = jgrid.feedback, fullBoolFeedback = jgrid.fullBoolFeedback, jqID = jgrid.jqID,
-	hideModal = jgrid.hideModal, viewModal = jgrid.viewModal, createModal = jgrid.createModal, info_dialog = jgrid.info_dialog,
+	hideModal = jgrid.hideModal, viewModal = jgrid.viewModal, createModal = jgrid.createModal, infoDialog = jgrid.info_dialog,
 	getCssStyleOrFloat = function ($elem, styleName) {
 		var v = $elem[0].style[styleName];
 		return v.indexOf("px") >= 0 ? parseFloat(v) : v;
@@ -84,7 +84,7 @@ jgrid.extend({
 				tmplLabel : ' Template: ',
 				showOnLoad: false,
 				layer: null,
-				operands : { "eq" :"=", "ne":"<>","lt":"<","le":"<=","gt":">","ge":">=","bw":"LIKE","bn":"NOT LIKE","in":"IN","ni":"NOT IN","ew":"LIKE","en":"NOT LIKE","cn":"LIKE","nc":"NOT LIKE","nu":"IS NULL","nn":"ISNOT NULL"}
+				operands : { "eq" :"=", "ne":"<>","lt":"<","le":"<=","gt":">","ge":">=","bw":"LIKE","bn":"NOT LIKE","in":"IN","ni":"NOT IN","ew":"LIKE","en":"NOT LIKE","cn":"LIKE","nc":"NOT LIKE","nu":"IS NULL","nn":"IS NOT NULL"}
 			}, jgrid.search, p.searching || {}, oMuligrid || {});
 
 			var fid = "fbox_"+p.id,
@@ -419,8 +419,8 @@ jgrid.extend({
 									postdata[nm] = this.editoptions.custom_value.call($t, $("#"+jqID(nm),frmtb),'get');
 									if (postdata[nm] === undefined) {throw "e1";}
 								} catch (e) {
-									if (e==="e1") {info_dialog.call($t,jgrid.errors.errcap,"function 'custom_value' "+jgrid.edit.msg.novalue,jgrid.edit.bClose);}
-									else {info_dialog.call($t,jgrid.errors.errcap,e.message,jgrid.edit.bClose);}
+									if (e==="e1") {infoDialog.call($t,jgrid.errors.errcap,"function 'custom_value' "+jgrid.edit.msg.novalue,jgrid.edit.bClose);}
+									else {infoDialog.call($t,jgrid.errors.errcap,e.message,jgrid.edit.bClose);}
 								}
 								return true;
 							}
@@ -657,8 +657,8 @@ jgrid.extend({
 										cm[i].editoptions.custom_value.call($t, $(nm,fmid),'set',tmp);
 									} else {throw "e1";}
 								} catch (e) {
-									if (e==="e1") {info_dialog.call($t,jgrid.errors.errcap,"function 'custom_value' "+jgrid.edit.msg.nodefined,jgrid.edit.bClose);}
-									else {info_dialog.call($t,jgrid.errors.errcap,e.message,jgrid.edit.bClose);}
+									if (e==="e1") {infoDialog.call($t,jgrid.errors.errcap,"function 'custom_value' "+jgrid.edit.msg.nodefined,jgrid.edit.bClose);}
+									else {infoDialog.call($t,jgrid.errors.errcap,e.message,jgrid.edit.bClose);}
 								}
 								break;
 						}
@@ -2089,7 +2089,7 @@ jgrid.extend({
 						if ($field.is("input:radio") || $field.is("input:checkbox")) {
 							for (iField = 0; iField < $field.length; iField++) {
 								$fieldi = $($field[iField]);
-								$fieldi[propOrAttr]("checked", $fieldi.val() == rowdata[i]);
+								$fieldi[propOrAttr]("checked", $fieldi.val() === String(rowdata[i]));
 							}
 						} else {
 						// this is very slow on big table and form.
