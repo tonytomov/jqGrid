@@ -42,12 +42,21 @@
 }
 .ui-jqgrid .ui-jqgrid-titlebar-close {
 	position: absolute;
+	text-align: center;
 	top: 50%;
 	width: 19px;
 	margin: -10px 0 0 0;
 	padding: 1px;
 	height: 18px;
 	cursor: pointer;
+}
+.ui-jqgrid  .ui-jqgrid-caption .ui-jqgrid-titlebar-close {
+	right: 0;
+	float: right;
+}
+.ui-jqgrid  .ui-jqgrid-caption-rtl .ui-jqgrid-titlebar-close {
+	left: 0;
+	float: left;
 }
 .ui-jqgrid .ui-jqgrid-titlebar-close span {
 	display: block;
@@ -492,15 +501,13 @@ span.ui-jqgrid-cell-wrapper {
 	display: none;
 	z-index: 100;
 }
-/* IE * html .jqgrid-overlay {width: expression(this.parentNode.offsetWidth+'px');height: expression(this.parentNode.offsetHeight+'px');} */
 * .jqgrid-overlay iframe {
 	position: absolute;
 	top: 0;
 	left: 0;
 	z-index: -1;
 }
-/* IE width: expression(this.parentNode.offsetWidth+'px');height: expression(this.parentNode.offsetHeight+'px');}*/
-/* end loading div */
+
 /* toolbar */
 .ui-jqgrid > .ui-jqgrid-view > .ui-userdata {
 	border-left: 0 none;
@@ -572,7 +579,6 @@ span.ui-jqgrid-cell-wrapper {
 	bottom: -3px;
 	right: -3px;
 }
-/* end Modal window*/
 
 /* Form edit */
 .ui-jqdialog-content .FormGrid {
@@ -637,44 +643,23 @@ span.ui-jqgrid-cell-wrapper {
 }
 .ui-jqdialog .fm-button {
 	display: inline-block;
-	margin: 0 4px 0 0;
-	padding: .4em .5em;
+	padding: .4em;
 	text-decoration: none;
 	cursor: pointer;
 	position: relative;
 	text-align: center;
 	zoom: 1;
 }
-.ui-jqdialog .ui-jqdialog-content .fm-button-icon-left {
-	padding-left: 1.9em;
-}
-.ui-jqdialog .ui-jqdialog-content .fm-button-icon-right {
-	padding-right: 1.9em;
+.ui-jqdialog .fm-button > span {
+	display: inline-block;
+	vertical-align: middle;
 }
 .ui-jqdialog .ui-jqdialog-content .fm-button-icon-left .ui-icon {
-	right: auto;
-	left: .2em;
-	margin-left: 0;
-	position: absolute;
-	top: 50%;
-	margin-top: -8px;
+    margin-right: 2px;
 }
 .ui-jqdialog .ui-jqdialog-content .fm-button-icon-right .ui-icon {
-	left: auto;
-	right: .2em;
-	margin-left: 0;
-	position: absolute;
-	top: 50%;
-	margin-top: -8px;
+    margin-left: 2px;
 }
-#nData,
-#pData {
-	float: left;
-	margin: 3px;
-	padding: 0;
-	width: 15px;
-}
-/* End Eorm edit */
 
 /*.ui-jqgrid .edit-cell {}*/
 .ui-jqgrid .selected-row,
@@ -726,14 +711,13 @@ span.ui-jqgrid-cell-wrapper {
 	cursor: pointer;
 }
 
-/* moda dialog */
+/* modal dialog */
 * iframe.jqm {
 	position: absolute;
 	top: 0;
 	left: 0;
 	z-index: -1;
 }
-/*	 width: expression(this.parentNode.offsetWidth+'px');height: expression(this.parentNode.offsetHeight+'px');}*/
 .ui-jqgrid-dnd tr td {
 	border-right-width: 1px;
 	border-right-color: inherit;
@@ -808,9 +792,6 @@ a.clearsearchclass {
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
-	/*
-	width: 100%;
-	height: auto;*/
 }
 .ui-jqgrid > .ui-jqgrid-view input,
 .ui-jqgrid > .ui-jqgrid-view select,

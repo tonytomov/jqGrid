@@ -14,20 +14,7 @@
     overflow: visible;
     padding-top: 1px;
 }
-.ui-jqgrid .ui-jqgrid-titlebar-close.fa-title {
-    width: auto; /* ovewrite 19px used by jqGrid */
-    height: auto;/* ovewrite 18px used by jqGrid */
-    padding: 0px;
-    margin-top: -.1em;
-    top: auto;
-}
-.ui-jqgrid .ui-jqgrid-caption > .fa-title {
-    right: .2em;
-}
-.ui-jqgrid .ui-jqgrid-caption-rtl > .fa-title {
-    margin-left: .2em;
-}
-.ui-jqgrid .ui-jqgrid-titlebar > .fa-title > span.fa {
+.ui-jqgrid .ui-jqgrid-titlebar > .ui-jqgrid-titlebar-close > span.fa {
     font-size: 16px;
     display: inline-block;
     margin: 0;
@@ -48,46 +35,19 @@
 .ui-jqdialog .ui-jqdialog-titlebar-close, .ui-jqgrid-titlebar .ui-jqdialog-titlebar-close {
     text-decoration: none;
 }
-.ui-jqdialog .ui-jqdialog-titlebar-close:hover, .ui-jqgrid-titlebar .ui-jqdialog-titlebar-close:hover {
-    text-decoration: none;
-    margin-top: -0.8em; /* -0.9px */
-}
-.ui-jqgrid .ui-jqgrid-titlebar-close.fa-title span {
-    margin-top: 0.1em
-}
-.ui-jqgrid .ui-jqgrid-titlebar-close.fa-title.ui-state-hover {
-    margin-top: -0.2em
-}
-.ui-jqgrid .ui-jqgrid-caption > .fa-title.ui-state-hover {
-    margin-right: -0.1em;
-}
-.ui-jqgrid .ui-jqgrid-caption-rtl > .fa-title.ui-state-hover {
-    margin-left: 0;
-}
-.ui-jqgrid .ui-jqgrid-titlebar-close.fa-title.ui-state-hover span {
-    margin: 0.0 0.1em;
-}
-.ui-jqdialog .ui-jqdialog-titlebar-close > span,
-.ui-jqgrid-titlebar .ui-jqdialog-titlebar-close > span {
+.ui-jqdialog .ui-jqdialog-titlebar-close > span.fa,
+.ui-jqgrid-titlebar .ui-jqdialog-titlebar-close > span.fa {
     margin-top: 0.3em;
     margin-left: 0.4em;
     margin-right: 0.4em
 }
-.fm-button-icon-left > span.fa {
-    margin-left: -1.2em;
-    left: 1.8em;
-    position: absolute;
-    top: 0.6em;
+.ui-jqdialog .ui-jqdialog-content .fm-button-icon-left > span.fa {
+	margin-top: -2px;
+    margin-right: 2px;
 }
-.fm-button-icon-right > span.fa {
-    margin-right: -1.2em;
-    right: 1.7em;
-    position: absolute;
-    top: 0.6em;
-}
-.ui-jqgrid .ui-jqdialog .fm-button > span {
-	margin-left: 0.5em;
-	margin-right: 0;
+.ui-jqdialog .ui-jqdialog-content .fm-button-icon-right > span.fa {
+	margin-top: -2px;
+    margin-left: 2px;
 }
 .ui-jqdialog > .ui-resizable-se {
 	bottom: -3px;
@@ -103,7 +63,6 @@
 	border: 0 none;
 	margin-bottom: 4px;
 }
-
 .jqgrow > .ui-sgcollapsed span.fa {
 	text-indent: 0;
 	background: none;

@@ -85,11 +85,23 @@
                         var $this = $(this), $fmButton = $this.parent();
                         $this.removeClass("ui-icon");
                         if ($this.hasClass("ui-icon-search")) {
-                            $fmButton.html("<span class=\"" + $.jgrid.icons.getClass("searchSearch") + "\"></span><span>" + $fmButton.text() + "</span>");
+							if ($fmButton.hasClass("fm-button-icon-right")) {
+								$fmButton.html("<span>" + $fmButton.text() + "</span><span class=\"" + $.jgrid.icons.getClass("searchSearch") + "\"></span>");
+							} else {
+								$fmButton.html("<span class=\"" + $.jgrid.icons.getClass("searchSearch") + "\"></span><span>" + $fmButton.text() + "</span>");
+							}
                         } else if ($this.hasClass("ui-icon-arrowreturnthick-1-w")) {
-                            $fmButton.html("<span class=\"" + $.jgrid.icons.getClass("searchReset") + "\"></span><span>" + $fmButton.text() + "</span>");
+							if ($fmButton.hasClass("fm-button-icon-right")) {
+								$fmButton.html("<span>" + $fmButton.text() + "</span><span class=\"" + $.jgrid.icons.getClass("searchReset") + "\"></span>");
+							} else {
+								$fmButton.html("<span class=\"" + $.jgrid.icons.getClass("searchReset") + "\"></span><span>" + $fmButton.text() + "</span>");
+							}
                         } else if ($this.hasClass("ui-icon-comment")) {
-                            $fmButton.html("<span class=\"" + $.jgrid.icons.getClass("searchQuery") + "\"></span><span>" + $fmButton.text() + "</span>");
+							if ($fmButton.hasClass("fm-button-icon-right")) {
+								$fmButton.html("<span>" + $fmButton.text() + "</span><span class=\"" + $.jgrid.icons.getClass("searchQuery") + "\"></span>");
+							} else {
+								$fmButton.html("<span class=\"" + $.jgrid.icons.getClass("searchQuery") + "\"></span><span>" + $fmButton.text() + "</span>");
+							}
                         }
                     });
                 }).bind("jqGridAddEditBeforeShowForm", function (e, $form) {
@@ -109,14 +121,14 @@
                             if ($fmButton.hasClass("fm-button-icon-right")) {
                                 $fmButton.html("<span>" + $fmButton.text() + "</span><span class=\"" + $.jgrid.icons.getClass("formSave") + "\"></span>");
                             } else {
-                                $fmButton.html("<span>" + $fmButton.text() + "</span><span class=\"" + $.jgrid.icons.getClass("formSave") + "\"></span>");
+                                $fmButton.html("<span class=\"" + $.jgrid.icons.getClass("formSave") + "\"></span><span>" + $fmButton.text() + "</span>");
                             }
                         } else if ($this.hasClass("ui-icon-close")) {
                             //$this.closest(".EditButton").css("float", "right");
                             if ($fmButton.hasClass("fm-button-icon-right")) {
                                 $fmButton.html("<span>" + $fmButton.text() + "</span><span class=\"" + $.jgrid.icons.getClass("formUndo") + "\"></span>");
                             } else {
-                                $fmButton.html("<span>" + $fmButton.text() + "</span><span class=\"" + $.jgrid.icons.getClass("formUndo") + "\"></span>");
+                                $fmButton.html("<span class=\"" + $.jgrid.icons.getClass("formUndo") + "\"></span><span>" + $fmButton.text() + "</span>");
                             }
                         }
                     });
@@ -132,7 +144,11 @@
 							$this.removeClass("ui-icon ui-icon-triangle-1-e")
 								.addClass($.jgrid.icons.getClass("formNext"));
 						} else if ($this.hasClass("ui-icon-close")) {
-							$fmButton.html("<span class=\"" + $.jgrid.icons.getClass("close") + "\"></span><span>" + $fmButton.text() + "</span>");
+							if ($fmButton.hasClass("fm-button-icon-right")) {
+								$fmButton.html("<span>" + $fmButton.text() + "</span><span class=\"" + $.jgrid.icons.getClass("close") + "\"></span>");
+							} else {
+								$fmButton.html("<span class=\"" + $.jgrid.icons.getClass("close") + "\"></span><span>" + $fmButton.text() + "</span>");
+							}
 						}
 					});
 				}).bind("jqGridDeleteBeforeShowForm", function (e, $form) {
@@ -203,9 +219,9 @@
                             .find(".ui-jqgrid-titlebar>.ui-jqgrid-titlebar-close>.ui-icon-circle-triangle-n")
                             .removeClass("ui-icon ui-icon-circle-triangle-n")
                             .addClass($.jgrid.icons.getClass("titleVisibleGrid"))
-                            .parent()
-                            .addClass("ui-corner-all " + $.jgrid.icons.getClass("titleButton"))
-                            .css({right: ""}); // ovewrite "right: 0px;" which set jqGrid currently
+                            .parent();
+                            //.addClass("ui-corner-all " + $.jgrid.icons.getClass("titleButton"))
+                            //.css({right: ""}); // ovewrite "right: 0px;" which set jqGrid currently
 
                         $sortables = $this.closest(".ui-jqgrid")
                                 .find(".ui-jqgrid-htable .ui-jqgrid-labels .ui-jqgrid-sortable span.s-ico");
