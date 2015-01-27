@@ -3494,7 +3494,7 @@ $.fn.jqGrid = function( pin ) {
 		}
 		if(hg) {$(grid.bDiv).hide();}
 		grid.cDiv = document.createElement("div");
-		var arf = p.hidegrid===true ? $("<a role='link' class='ui-jqgrid-titlebar-close ui-corner-all HeaderButton' " + (p.showhide ? "title='"+p.showhide+"'" : "")+" />").hover(
+		var arf = p.hidegrid===true ? $("<a role='link' class='ui-jqgrid-titlebar-close ui-corner-all' " + (p.showhide ? "title='"+p.showhide+"'" : "")+" />").hover(
 			function(){ arf.addClass('ui-state-hover');},
 			function() {arf.removeClass('ui-state-hover');})
 		.append("<span class='ui-icon ui-icon-circle-triangle-n'></span>").css((dir==="rtl"?"left":"right"),"0") : "";
