@@ -1,6 +1,18 @@
 /*jshint eqeqeq:false */
-/*global jQuery */
-(function($){
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
 /**
  * all events and options here are aded anonynous and not in the base grid
  * since the array is to big. Here is the order of execution.
@@ -484,4 +496,4 @@ $.jgrid.extend({
 	}
 /// end  cell editing
 });
-})(jQuery);
+}));
