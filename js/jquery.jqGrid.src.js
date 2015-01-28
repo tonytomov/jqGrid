@@ -1734,7 +1734,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			for (i = 0; i < colModel.length; i++) {
 				if (colModel[i].name === idn) {
-					idi = i;
+					idi = i - iOffset;
 					break;
 				}
 			}
