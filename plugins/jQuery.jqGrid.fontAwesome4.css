@@ -14,11 +14,20 @@
     overflow: visible;
     padding-top: 1px;
 }
-.ui-jqgrid .ui-jqgrid-titlebar > .ui-jqgrid-titlebar-close > span.fa {
+.ui-jqgrid-titlebar > .ui-jqgrid-titlebar-close > span.fa {
     font-size: 16px;
     display: inline-block;
-    margin: 0;
-    position: relative;
+}
+.ui-jqgrid .ui-jqgrid-titlebar-close ,
+.ui-jqdialog .ui-jqdialog-titlebar-close {
+    text-decoration: none;
+}
+.ui-jqdialog .ui-jqdialog-titlebar-close > span.fa {
+    margin: 0.3em;
+}
+.ui-jqdialog > .ui-resizable-se {
+	bottom: -3px;
+	right: -3px
 }
 .ui-jqgrid .ui-icon-asc.fa {
 	height: auto;
@@ -31,27 +40,6 @@
 }
 .ui-jqgrid .s-ico > .ui-state-disabled.fa, .s-ico > .ui-state-disabled.fa {
 	padding: 0;
-}
-.ui-jqdialog .ui-jqdialog-titlebar-close, .ui-jqgrid-titlebar .ui-jqdialog-titlebar-close {
-    text-decoration: none;
-}
-.ui-jqdialog .ui-jqdialog-titlebar-close > span.fa,
-.ui-jqgrid-titlebar .ui-jqdialog-titlebar-close > span.fa {
-    margin-top: 0.3em;
-    margin-left: 0.4em;
-    margin-right: 0.4em
-}
-.ui-jqdialog .ui-jqdialog-content .fm-button-icon-left > span.fa {
-	margin-top: -2px;
-    margin-right: 2px;
-}
-.ui-jqdialog .ui-jqdialog-content .fm-button-icon-right > span.fa {
-	margin-top: -2px;
-    margin-left: 2px;
-}
-.ui-jqdialog > .ui-resizable-se {
-	bottom: -3px;
-	right: -3px
 }
 .jqgrow .ui-pg-div > span.fa {
 	background: none;
