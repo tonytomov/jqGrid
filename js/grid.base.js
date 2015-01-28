@@ -1438,7 +1438,7 @@ $.fn.jqGrid = function( pin ) {
 			return '<tr role="row" id="' + id + '" tabindex="' + tabindex + '" class="' + classes + '"' +
 				(style === '' ? '' : ' style="' + style + '"') + restAttr + '>';
 		},
-		addXmlData = function (xml,t, rcnt, more, adjust) {
+		addXmlData = function (xml, rcnt, more, adjust) {
 			var startReq = new Date(),
 			locdata = (ts.p.datatype !== "local" && ts.p.loadonce) || ts.p.datatype === "xmlstring",
 			xmlid = "_id_", xmlRd = ts.p.xmlReader,
@@ -1546,7 +1546,7 @@ $.fn.jqGrid = function( pin ) {
 					ts.p._index[rd[xmlid]] = ts.p.data.length-1;
 				}
 				if(ts.p.gridview === false ) {
-					$("tbody:first",t).append(rowData.join(''));
+					$("tbody:first", ts.grid.bDiv).append(rowData.join(''));
 					self.triggerHandler("jqGridAfterInsertRow", [rid, rd, xmlr]);
 					if(afterInsRow) {ts.p.afterInsertRow.call(ts,rid,rd,xmlr);}
 					rowData=[];
@@ -1626,7 +1626,7 @@ $.fn.jqGrid = function( pin ) {
 				}
 			}
 		},
-		addJSONData = function(data,t, rcnt, more, adjust) {
+		addJSONData = function(data, rcnt, more, adjust) {
 			var startReq = new Date();
 			if(data) {
 				if(ts.p.treeANode === -1 && !ts.p.scroll) {
@@ -2214,8 +2214,8 @@ $.fn.jqGrid = function( pin ) {
 									return;
 								}
 							}
-							if(dt === "xml") { addXmlData(data,ts.grid.bDiv,rcnt,npage>1,adjust); }
-							else { addJSONData(data,ts.grid.bDiv,rcnt,npage>1,adjust); }
+							if(dt === "xml") { addXmlData(data, rcnt,npage>1,adjust); }
+							else { addJSONData(data, rcnt, npage>1, adjust); }
 							$(ts).triggerHandler("jqGridLoadComplete", [data]);
 							if(lc) { lc.call(ts,data); }
 							$(ts).triggerHandler("jqGridAfterLoadComplete", [data]);
@@ -2245,7 +2245,7 @@ $.fn.jqGrid = function( pin ) {
 				case "xmlstring":
 					beginReq();
 					dstr = typeof ts.p.datastr !== 'string' ? ts.p.datastr : $.parseXML(ts.p.datastr);
-					addXmlData(dstr,ts.grid.bDiv);
+					addXmlData(dstr);
 					$(ts).triggerHandler("jqGridLoadComplete", [dstr]);
 					if(lcf) {ts.p.loadComplete.call(ts,dstr);}
 					$(ts).triggerHandler("jqGridAfterLoadComplete", [dstr]);
@@ -2257,7 +2257,7 @@ $.fn.jqGrid = function( pin ) {
 					beginReq();
 					if(typeof ts.p.datastr === 'string') { dstr = $.jgrid.parse(ts.p.datastr); }
 					else { dstr = ts.p.datastr; }
-					addJSONData(dstr,ts.grid.bDiv);
+					addJSONData(dstr);
 					$(ts).triggerHandler("jqGridLoadComplete", [dstr]);
 					if(lcf) {ts.p.loadComplete.call(ts,dstr);}
 					$(ts).triggerHandler("jqGridAfterLoadComplete", [dstr]);
@@ -2270,7 +2270,7 @@ $.fn.jqGrid = function( pin ) {
 					beginReq();
 					ts.p.datatype = "local";
 					var req = addLocalData();
-					addJSONData(req,ts.grid.bDiv,rcnt,npage>1,adjust);
+					addJSONData(req,rcnt,npage>1,adjust);
 					$(ts).triggerHandler("jqGridLoadComplete", [req]);
 					if(lc) { lc.call(ts,req); }
 					$(ts).triggerHandler("jqGridAfterLoadComplete", [req]);
@@ -3162,8 +3162,8 @@ $.fn.jqGrid = function( pin ) {
 		ts.formatter = function ( rowId, cellval , colpos, rwdat, act){return formatter(rowId, cellval , colpos, rwdat, act);};
 		$.extend(grid,{populate : populate, emptyRows: emptyRows, beginReq: beginReq, endReq: endReq});
 		this.grid = grid;
-		ts.addXmlData = function(d) {addXmlData(d,ts.grid.bDiv);};
-		ts.addJSONData = function(d) {addJSONData(d,ts.grid.bDiv);};
+		ts.addXmlData = function(d) {addXmlData( d );};
+		ts.addJSONData = function(d) {addJSONData( d );};
 		this.grid.cols = this.rows[0].cells;
 		$(ts).triggerHandler("jqGridInitGrid");
 		if ($.isFunction( ts.p.onInitGrid )) { ts.p.onInitGrid.call(ts); }
