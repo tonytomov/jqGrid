@@ -18,9 +18,22 @@
 }
 */
 /*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery */
+/*global jQuery, define, xmlJsonClass */
 
-(function ($) {
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base",
+			"./grid.common"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
 "use strict";
 
 $.fn.jqFilter = function( arg ) {
@@ -556,7 +569,7 @@ $.fn.jqFilter = function( arg ) {
 					break;
 				}
 			}
-			if (cm == undefined) { return ""; }
+			if (cm === undefined) { return ""; }
 			val = rule.data;
 			if(opC === 'bw' || opC === 'bn') { val = val+"%"; }
 			if(opC === 'ew' || opC === 'en') { val = "%"+val; }
@@ -909,7 +922,7 @@ $.jgrid.extend({
 				$("#sopt_menu > li > a").hover(
 					function(){ $(this).addClass("ui-state-hover"); },
 					function(){ $(this).removeClass("ui-state-hover"); }
-				).click(function( e ){
+				).click(function() {
 					var v = $(this).attr("value"),
 					oper = $(this).attr("oper");
 					$($t).triggerHandler("jqGridToolbarSelectOper", [v, oper, elem]);
@@ -927,7 +940,7 @@ $.jgrid.extend({
 			var tr = $("<tr class='ui-search-toolbar' role='row'></tr>");
 			var timeoutHnd;
 			$.each($t.p.colModel,function(ci){
-				var cm=this, soptions, surl, self, select = "", sot="=", so, i, st, csv, df, elem,
+				var cm=this, soptions, select = "", sot="=", so, i, st, csv, df, elem,
 				th = $("<th role='columnheader' class='ui-state-default ui-th-"+$t.p.direction+"' id='gsh_" + $t.p.id + "_" + cm.name + "' ></th>"),
 				thd = $("<div></div>"),
 				stbl = $("<table class='ui-search-table' cellspacing='0'><tr><td class='ui-search-oper' headers=''></td><td class='ui-search-input' headers=''></td><td class='ui-search-clear' headers=''></td></tr></table>");
@@ -1045,7 +1058,7 @@ $.jgrid.extend({
 					}
 				});
 			}
-			$(".clearsearchclass",tr).click(function(e){
+			$(".clearsearchclass",tr).click(function() {
 				var ptr = $(this).parents("tr:first"),
 				coli = parseInt($("td.ui-search-oper", ptr).attr('colindex'),10),
 				sval  = $.extend({},$t.p.colModel[coli].searchoptions || {}),
@@ -1390,4 +1403,4 @@ $.jgrid.extend({
 		});
 	}
 });
-})(jQuery);
+}));
