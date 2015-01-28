@@ -1,7 +1,19 @@
 /*jshint eqeqeq:false, eqnull:true */
-/*global jQuery */
+/*global jQuery, define */
 // Grouping module
-(function($){
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
 "use strict";
 $.jgrid.extend({
 	groupingSetup : function () {
@@ -667,4 +679,4 @@ $.jgrid.extend({
 		});
 	}
 });
-})(jQuery);
+}));
