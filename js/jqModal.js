@@ -9,7 +9,21 @@
  * 
  * $Version: 07/06/2008 +r13
  */
-(function($) {
+/*jshint eqeqeq:false */
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+} (function( $ ) {
+"use strict";
 $.fn.jqm=function(o){
 var p={
 overlay: 50,
@@ -34,12 +48,12 @@ if(p.trigger)$(this).jqmAddTrigger(p.trigger);
 $.fn.jqmAddClose=function(e){return hs(this,e,'jqmHide');};
 $.fn.jqmAddTrigger=function(e){return hs(this,e,'jqmShow');};
 $.fn.jqmShow=function(t){return this.each(function(){$.jqm.open(this._jqm,t);});};
-$.fn.jqmHide=function(t){return this.each(function(){$.jqm.close(this._jqm,t)});};
+$.fn.jqmHide=function(t){return this.each(function(){$.jqm.close(this._jqm,t);});};
 
 $.jqm = {
 hash:{},
 open:function(s,t){var h=H[s],c=h.c,cc='.'+c.closeClass,z=(parseInt(h.w.css('z-index')));z=(z>0)?z:3000;var o=$('<div></div>').css({height:'100%',width:'100%',position:'fixed',left:0,top:0,'z-index':z-1,opacity:c.overlay/100});if(h.a)return F;h.t=t;h.a=true;h.w.css('z-index',z);
- if(c.modal) {if(!A[0])setTimeout(function(){L('bind');},1);A.push(s);}
+ if(c.modal) {if(!A[0]){setTimeout(function(){ L('bind');},1); }A.push(s);}
  else if(c.overlay > 0) {if(c.closeoverlay) h.w.jqmAddClose(o);}
  else o=F;
 
@@ -65,4 +79,4 @@ L=function(t){$(document)[t]("keypress",m)[t]("keydown",m)[t]("mousedown",m);},
 m=function(e){var h=H[A[A.length-1]],r=(!$(e.target).parents('.jqmID'+h.s)[0]);if(r){$('.jqmID'+h.s).each(function(){var $self=$(this),offset=$self.offset();if(offset.top<=e.pageY && e.pageY<=offset.top+$self.height() && offset.left<=e.pageX && e.pageX<=offset.left+$self.width()){r=false;return false;}});f(h);}return !r;},
 hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function() {
  if(!this[c]){this[c]=[];$(this).click(function(){for(var i in {jqmShow:1,jqmHide:1})for(var s in this[i])if(H[this[i][s]])H[this[i][s]].w[i](this);return F;});}this[c].push(s);});});};
-})(jQuery);
+}));
