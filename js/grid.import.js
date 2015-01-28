@@ -1,6 +1,19 @@
 /*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery, xmlJsonClass */
-(function ($) {
+/*global jQuery, xmlJsonClass, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./JsonXml",
+			"./grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
 "use strict";
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
@@ -328,4 +341,4 @@ $.extend($.jgrid,{
 			});
 		}
     });
-})(jQuery);
+}));
