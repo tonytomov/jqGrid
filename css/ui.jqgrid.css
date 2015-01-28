@@ -25,9 +25,10 @@
 	font-size: 11px;
 }
 
-/* caption*/
-.ui-jqgrid .ui-jqgrid-titlebar {
-	padding: .3em .2em .2em .3em;
+/* caption of grid and title of ui-jqdialog */
+.ui-jqgrid .ui-jqgrid-titlebar,
+.ui-jqdialog .ui-jqdialog-titlebar {
+	padding: .3em .3em .3em .3em;
 	position: relative;
 	font-size: 12px;
 	border-left: 0 none;
@@ -37,32 +38,55 @@
 .ui-jqgrid .ui-jqgrid-caption {
 	text-align: left;
 }
-.ui-jqgrid .ui-jqgrid-title {
-	margin: .1em 0 .2em;
+.ui-jqgrid .ui-jqgrid-caption-rtl {
+	text-align: right;
 }
-.ui-jqgrid .ui-jqgrid-titlebar-close {
-	position: absolute;
+.ui-jqgrid .ui-jqgrid-titlebar-close ,
+.ui-jqdialog .ui-jqdialog-titlebar-close {
+	vertical-align: middle;
 	text-align: center;
+	position: absolute;
 	top: 50%;
-	width: 19px;
+	width: 18px;
 	margin: -10px 0 0 0;
-	padding: 1px;
+	padding: 1px 0;
 	height: 18px;
 	cursor: pointer;
 }
-.ui-jqgrid  .ui-jqgrid-caption .ui-jqgrid-titlebar-close {
-	right: 0;
-	float: right;
+.ui-jqgrid .ui-jqgrid-titlebar-close.ui-state-hover,
+.ui-jqdialog .ui-jqdialog-titlebar-close.ui-state-hover {
+	margin: -10px -1px 5px -1px;
 }
-.ui-jqgrid  .ui-jqgrid-caption-rtl .ui-jqgrid-titlebar-close {
-	left: 0;
-	float: left;
+.ui-jqgrid  .ui-jqgrid-caption .ui-jqgrid-titlebar-close,
+.ui-jqdialog  .ui-jqdialog-titlebar-ltr .ui-jqdialog-titlebar-close {
+	right: .1em;
 }
-.ui-jqgrid .ui-jqgrid-titlebar-close span {
+.ui-jqgrid  .ui-jqgrid-caption-rtl .ui-jqgrid-titlebar-close,
+.ui-jqdialog  .ui-jqdialog-titlebar-rtl .ui-jqdialog-titlebar-close {
+	left: .1em;
+}
+.ui-jqgrid  .ui-jqgrid-caption .ui-jqgrid-title,
+.ui-jqdialog  .ui-jqdialog-titlebar-ltr .ui-jqdialog-title {
+	position: relative;
+	left: .1em;
+}
+.ui-jqgrid  .ui-jqgrid-caption-rtl .ui-jqgrid-title,
+.ui-jqdialog  .ui-jqdialog-titlebar-rtl .ui-jqdialog-title {
+	position: relative;
+	right: .1em;
+}
+.ui-jqgrid .ui-jqgrid-titlebar-close span,
+.ui-jqdialog .ui-jqdialog-titlebar-close span {
+	vertical-align: middle;
+	text-align: center;
 	display: block;
 	margin: 1px;
 }
-.ui-jqgrid .ui-jqgrid-titlebar-close:hover {
+.ui-jqgrid .ui-jqgrid-titlebar-close:hover,
+.ui-jqgrid .ui-jqgrid-titlebar-close:focus,
+.ui-jqdialog .ui-jqdialog-titlebar-close:hover,
+.ui-jqdialog .ui-jqdialog-titlebar-close:focus {
+	margin: -10px -1px 5px -1px;
 	padding: 0;
 }
 
@@ -528,30 +552,6 @@ span.ui-jqgrid-cell-wrapper {
 	font-size: 11px;
 	overflow: visible;
 }
-.ui-jqdialog .ui-jqdialog-titlebar {
-	padding: .3em .2em;
-	position: relative;
-}
-.ui-jqdialog .ui-jqdialog-title {
-	margin: .1em 0 .2em;
-}
-.ui-jqdialog .ui-jqdialog-titlebar-close {
-	position: absolute;
-	top: 50%;
-	width: 19px;
-	margin: -10px 0 0 0;
-	padding: 1px;
-	height: 18px;
-	cursor: pointer;
-}
-.ui-jqdialog .ui-jqdialog-titlebar-close span {
-	display: block;
-	margin: 1px;
-}
-.ui-jqdialog .ui-jqdialog-titlebar-close:hover,
-.ui-jqdialog .ui-jqdialog-titlebar-close:focus {
-	padding: 0;
-}
 .ui-jqdialog-content,
 .ui-jqdialog .ui-jqdialog-content {
 	border: 0;
@@ -602,20 +602,35 @@ span.ui-jqgrid-cell-wrapper {
 	height: auto;
 }
 .ui-jqdialog-content td.EditButton {
-	text-align: right;
 	border-top: 0 none;
 	border-left: 0 none;
 	border-right: 0 none;
-	padding-bottom: 5px;
-	padding-top: 5px;
+	padding: 5px 0;
+}
+.ui-jqdialog-content td.EditButton-ltr {
+	text-align: right;
+}
+.ui-jqdialog-content td.EditButton-rtl {
+	text-align: left;
 }
 .ui-jqdialog-content td.navButton {
-	text-align: center;
+	text-align: left;
 	border-left: 0 none;
 	border-top: 0 none;
 	border-right: 0 none;
-	padding-bottom: 5px;
-	padding-top: 5px;
+	padding: 5px 0;
+}
+.ui-jqdialog-content td.navButton-ltr {
+	text-align: left;
+}
+.ui-jqdialog-content td.navButton-ltr > .fm-button {
+	float: left;
+}
+.ui-jqdialog-content td.navButton-rtl {
+	text-align: right;
+}
+.ui-jqdialog-content td.navButton-rtl > .fm-button {
+	float: right;
 }
 .ui-jqdialog-content input.FormElement {
 	padding: .3em;
@@ -643,7 +658,7 @@ span.ui-jqgrid-cell-wrapper {
 }
 .ui-jqdialog .fm-button {
 	display: inline-block;
-	padding: .4em;
+	padding: .4em .5em;
 	text-decoration: none;
 	cursor: pointer;
 	position: relative;
@@ -654,11 +669,20 @@ span.ui-jqgrid-cell-wrapper {
 	display: inline-block;
 	vertical-align: middle;
 }
-.ui-jqdialog .ui-jqdialog-content .fm-button-icon-left .ui-icon {
-    margin-right: 2px;
+.ui-jqdialog .fm-button .fm-button-text {
+	padding: 0 .2em;
 }
-.ui-jqdialog .ui-jqdialog-content .fm-button-icon-right .ui-icon {
-    margin-left: 2px;
+.ui-jqdialog .EditButton-ltr .fm-button-icon-left .fm-button-icon {
+    margin-right: .2em;
+}
+.ui-jqdialog .EditButton-ltr .fm-button-icon-right .fm-button-icon {
+    margin-left: .2em;
+}
+.ui-jqdialog .EditButton-rtl .fm-button-icon-right .fm-button-icon {
+    margin-right: .2em;
+}
+.ui-jqdialog .EditButton-rtl .fm-button-icon-left .fm-button-icon {
+    margin-left: .2em;
 }
 
 /*.ui-jqgrid .edit-cell {}*/

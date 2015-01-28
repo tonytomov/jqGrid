@@ -125,11 +125,8 @@ jgrid.extend({
 			if ( $(themodalSelector)[0] !== undefined ) {
 				showFilter($("#fbox_"+p.idSel));
 			} else {
-				var fil = $("<div><div id='"+fid+"' class='searchFilter' style='overflow:auto'></div></div>").insertBefore(gviewSelector),
-				align = "left", butleft =""; 
+				var fil = $("<div><div id='"+fid+"' class='searchFilter' style='overflow:auto'></div></div>").insertBefore(gviewSelector); 
 				if(p.direction === "rtl") {
-					align = "right";
-					butleft = " style='text-align:left'";
 					fil.attr("dir","rtl");
 				}
 				var columns = $.extend([],p.colModel),
@@ -183,7 +180,7 @@ jgrid.extend({
 					tmpl += "</select>";
 				}
 
-				bt = "<table class='EditTable' style='border:0px none;margin-top:5px' id='"+fid+"_2'><tbody><tr><td colspan='2'><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='EditButton' style='text-align:"+align+"'>"+bC+tmpl+"</td><td class='EditButton' "+butleft+">"+bQ+bS+"</td></tr></tbody></table>";
+				bt = "<table class='EditTable' style='border:0px none;margin-top:5px' id='"+fid+"_2'><tbody><tr><td colspan='2'><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='EditButton EditButton-" + p.direction + "'  style='float:"+ (p.direction === "rtl" ? "right" : "left") +";'>"+bC+tmpl+"</td><td class='EditButton EditButton-" + p.direction + "'>"+bQ+bS+"</td></tr></tbody></table>";
 				fid = jqID(fid);
 				o.gbox = "#gbox_"+fid;
 				fid = "#"+fid;
@@ -1009,7 +1006,7 @@ jgrid.extend({
 			bN = "<a id='"+bn+"' class='fm-button ui-state-default ui-corner-right'><span class='ui-icon ui-icon-triangle-1-e'></span></a>",
 			bS  ="<a id='sData' class='fm-button ui-state-default ui-corner-all'><span class='fm-button-text'>"+o.bSubmit+"</span></a>",
 			bC  ="<a id='cData' class='fm-button ui-state-default ui-corner-all'><span class='fm-button-text'>"+o.bCancel+"</span></a>";
-			var bt = "<table"+(jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "")+" class='EditTable' id='"+frmtborg+"_2'><tbody><tr><td colspan='2'><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr id='Act_Buttons'><td class='navButton'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton'>"+bS+bC+"</td></tr>";
+			var bt = "<table"+(jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "")+" class='EditTable' id='"+frmtborg+"_2'><tbody><tr><td colspan='2'><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr id='Act_Buttons'><td class='navButton navButton-" + p.direction + "'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton EditButton-" + p.direction + "'>"+bS+bC+"</td></tr>";
 			bt += "<tr style='display:none' class='binfo'><td class='bottominfo' colspan='2'>"+o.bottominfo+"</td></tr>";
 			bt += "</tbody></table>";
 			if(maxRows >  0) {
@@ -1034,10 +1031,6 @@ jgrid.extend({
 			}
 			var tms = $("<div></div>").append(frm).append(bt);
 			jgrid.createModal.call($t, ids,tms, o ,p.gView,$(gboxSelector)[0]);
-			if(rtlb) {
-				$("#pData, #nData",frmtb2).css("float","right");
-				$(".EditButton",frmtb2).css("text-align","left");
-			}
 			if(o.topinfo) {$(".tinfo",frmtb).show();}
 			if(o.bottominfo) {$(".binfo",frmtb2).show();}
 			tms = null;bt=null;
@@ -1417,12 +1410,8 @@ jgrid.extend({
 				});
 			}
 			o.gbox = gboxSelector;
-			var bt = $("<div></div>").append(frm).append("<table border='0' class='EditTable' id='"+frmtbID+"_2'><tbody><tr id='Act_Buttons'><td class='navButton' width='"+(o.labelswidth || "auto")+"'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton'>"+bC+"</td></tr></tbody></table>");
+			var bt = $("<div></div>").append(frm).append("<table border='0' class='EditTable' id='"+frmtbID+"_2'><tbody><tr id='Act_Buttons'><td class='navButton navButton-" + p.direction + "' width='"+(o.labelswidth || "auto")+"'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton EditButton-" + p.direction + "'>"+bC+"</td></tr></tbody></table>");
 			jgrid.createModal.call($t,ids,bt,o,p.gView,$(p.gView)[0]);
-			if(rtlb) {
-				$("#pData, #nData",frmtb2).css("float","right");
-				$(".EditButton",frmtb2).css("text-align","left");
-			}
 			if(!o.viewPagerButtons) {$("#pData, #nData",frmtb2).hide();}
 			bt = null;
 			$(themodalSelector).keydown( function( e ) {
@@ -1568,7 +1557,7 @@ jgrid.extend({
 				tbl += "</tbody></table></div>";
 				var bS  = "<a id='dData' class='fm-button ui-state-default ui-corner-all'><span class='fm-button-text'>"+o.bSubmit+"</span></a>",
 				bC  = "<a id='eData' class='fm-button ui-state-default ui-corner-all'><span class='fm-button-text'>"+o.bCancel+"</span></a>";
-				tbl += "<table"+(jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "")+" class='EditTable' id='"+dtblID+"_2'><tbody><tr><td><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='DelButton EditButton'>"+bS+"&#160;"+bC+"</td></tr></tbody></table>";
+				tbl += "<table"+(jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "")+" class='EditTable' id='"+dtblID+"_2'><tbody><tr><td><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='DelButton EditButton EditButton-" + p.direction + "'>"+bS+"&#160;"+bC+"</td></tr></tbody></table>";
 				o.gbox = gboxSelector;
 				jgrid.createModal.call($t,ids,tbl,o,p.gView,$(p.gView)[0]);
 
