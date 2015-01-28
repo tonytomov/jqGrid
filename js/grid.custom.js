@@ -806,7 +806,6 @@ jgrid.extend({
 						}
 					} else {
 						// move the header to the next row
-						//$th.css({"padding-top": "2px", height: "19px"});
 						$tr.append(th);
 						skip--;
 					}
