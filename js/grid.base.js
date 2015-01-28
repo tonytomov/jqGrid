@@ -1662,17 +1662,17 @@ $.fn.jqGrid = function( pin ) {
 				formatCol(pos,irow,v, null, irow, true)+">"+v+"</td>";
 		},
 		reader = function (datatype) {
-			var field, f=[], j=0, i, colModel = p.colModel, nCol = colModel.length;
+			var field, f=[], j=0, i, colModel = p.colModel, nCol = colModel.length, name;
 			for(i=0; i<nCol; i++){
 				field = colModel[i];
 				if (field.name !== 'cb' && field.name !=='subgrid' && field.name !=='rn') {
-					f[j] = (datatype === "xml" || datatype === "xmlstring") ?
+					name = (datatype === "xml" || datatype === "xmlstring") ?
 							field.xmlmap || field.name :
 							(datatype === "local" && !p.dataTypeOrg ? field.jsonmap || field.name : field.name);
 					if(p.keyName !== false && field.key===true ) {
-						p.keyName = f[j];
+						p.keyName = name;
 					}
-					j++;
+					f.push(name);
 				}
 			}
 			return f;
@@ -1856,7 +1856,7 @@ $.fn.jqGrid = function( pin ) {
 			if (isNaN(idn) && xmlRd.repeatitems) {
 				for (i=0; i<colModel.length; i++) {
 					if (colModel[i].name === idn) {
-						idn = i;
+						idn = i - (gi+si+ni);
 						break;
 					}
 				}
@@ -2072,8 +2072,10 @@ $.fn.jqGrid = function( pin ) {
 				idi = Number(idn);
 			}
 			for (i=0; i<p.colModel.length; i++) {
+				// we need to have idi with corresponds the indexes in rowReader which SKIPS
+				// columns 'cb', 'subgrid' and !=='rn'
 				if (p.colModel[i].name === idn) {
-					idi = i;
+					idi = i - (gi+si+ni);
 					break;
 				}
 			}
