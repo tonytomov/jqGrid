@@ -26,6 +26,7 @@
 		// AMD. Register as an anonymous module.
 		define([
 			"jquery",
+			"./JsonXml",
 			"./grid.base",
 			"./grid.common"
 		], factory );

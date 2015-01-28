@@ -1,7 +1,20 @@
 /*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global xmlJsonClass, jQuery */
-(function($){
-"use strict";
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./JsonXml",
+			"./grid.base",
+			"./grid.common"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {"use strict";
 var rp_ge = {};
 $.jgrid.extend({
 	editGridRow : function(rowid, p){
@@ -1850,4 +1863,4 @@ $.jgrid.extend({
 		});
 	}
 });
-})(jQuery);
+}));
