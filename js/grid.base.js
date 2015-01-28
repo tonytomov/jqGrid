@@ -1689,6 +1689,7 @@ $.fn.jqGrid = function( pin ) {
 		},
 		emptyRows = function (scroll, locdata) {
 			var firstrow, self = this, rows = self.rows, bDiv = self.grid.bDiv;
+			$(self).unbind(".jqGridFormatter");
 			if (p.deepempty) {
 				$(rows).slice(1).remove();
 			} else {
@@ -1811,6 +1812,16 @@ $.fn.jqGrid = function( pin ) {
 			}
 			return '<tr role="row" id="' + id + '" tabindex="' + tabindex + '" class="' + classes + '"' +
 				(style === '' ? '' : ' style="' + style + '"') + restAttr + '>';
+		},
+		finalizationFormatters = function () {
+			var i, formatName;
+			for (i=0; i<p.colModel.length; i++) {
+				formatName = p.colModel[i].formatter;
+				if (typeof formatName === "string" && $.fn.fmatter != null &&
+						$.isFunction($.fn.fmatter[formatName]) && $.isFunction($.fn.fmatter[formatName].pageFinalization)) {
+					$.fn.fmatter[formatName].pageFinalization.call(this, i);
+				}
+			}
 		},
 		addXmlData = function (xml, rcnt, more, adjust) {
 			var self = this, $self = $(this), startReq = new Date(), getXmlData = jgrid.getXmlData,
@@ -1979,6 +1990,7 @@ $.fn.jqGrid = function( pin ) {
 				p.lastpage = Math.ceil(gl/ rn);
 			}
 			if (!more) { self.updatepager(false,true); }
+			finalizationFormatters.call(self);
 			if(locdata) {
 				while (ir<gl) {
 					xmlr = gxml[ir];
@@ -2180,6 +2192,7 @@ $.fn.jqGrid = function( pin ) {
 				p.lastpage = Math.ceil(len/ rn);
 			}
 			if (!more) { self.updatepager(false,true); }
+			finalizationFormatters.call(self);
 			if(locdata) {
 				for (ir=i; ir<len && drows[ir]; ir++) {
 					cur = drows[ir];
@@ -4511,6 +4524,7 @@ jgrid.extend({
 			var $t = this, p = $t.p, gridIdEscaped = jqID(p.id);
 			if(!$t.grid) {return;}
 			if(typeof clearfooter !== 'boolean') { clearfooter = false; }
+			$(self).unbind(".jqGridFormatter");
 			if(p.deepempty) {$("#"+gridIdEscaped+" tbody:first tr:gt(0)").remove();}
 			else {
 				var trf = $("#"+gridIdEscaped+" tbody:first tr:first")[0];

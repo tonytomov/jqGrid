@@ -247,24 +247,8 @@
 			$t = $grid[0],
 			p = $t.p,
 			cm = p.colModel[jgrid.getCellIndex(this)],
-			$actionsDiv = cm.frozen ? $("tr#"+jgrid.jqID(rid)+" td:eq("+jgrid.getCellIndex(this)+") > div",$grid) :$(this).parent(),
-			op = {
-				extraparam: {}
-			},
-			saverow = function(rowid, res) {
-				if($.isFunction(op.afterSave)) { op.afterSave.call($t, rowid, res); }
-				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").show();
-				$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").hide();
-			},
-			restorerow = function(rowid) {
-				if($.isFunction(op.afterRestore)) { op.afterRestore.call($t, rowid); }
-				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").show();
-				$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").hide();
-			};
+			op = $.extend(true, { extraparam: {}}, cm.formatoptions || {});
 
-		if (cm.formatoptions !== undefined) {
-			op = $.extend(true, op, cm.formatoptions);
-		}
 		if (p.editOptions !== undefined) {
 			op.editOptions = p.editOptions;
 		}
@@ -280,31 +264,21 @@
 			successfunc: op.onSuccess,
 			url: op.url,
 			extraparam: op.extraparam,
-			aftersavefunc: saverow,
+			aftersavefunc: op.afterSave,
 			errorfunc: op.onError,
-			afterrestorefunc: restorerow,
+			afterrestorefunc: op.afterRestore,
 			restoreAfterError: op.restoreAfterError,
 			mtype: op.mtype
 		};
 		switch(act)	{
 			case 'edit':
 				$grid.jqGrid('editRow', rid, actop);
-				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").hide();
-				$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").show();
-				$grid.triggerHandler("jqGridAfterGridComplete");
 				break;
 			case 'save':
-				if ($grid.jqGrid('saveRow', rid, actop)) {
-					$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").show();
-					$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").hide();
-					$grid.triggerHandler("jqGridAfterGridComplete");
-				}
+				$grid.jqGrid('saveRow', rid, actop);
 				break;
 			case 'cancel' :
-				$grid.jqGrid('restoreRow', rid, restorerow);
-				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").show();
-				$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").hide();
-				$grid.triggerHandler("jqGridAfterGridComplete");
+				$grid.jqGrid('restoreRow', rid, op.afterRestore);
 				break;
 			case 'del':
 				$grid.jqGrid('delGridRow', rid, op.delOptions);
@@ -349,6 +323,43 @@
 		ocl = "id='jCancelButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'cancel'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
 		str += "<div title='"+op.canceltitle+"' style='display:none;' class='ui-pg-div ui-inline-cancel' "+ocl+"><span class='" + [op.commonIconClass, op.cancelicon].join(" ") + "'></span></div>";
 		return "<div class='ui-jqgrid-actions'>" + str + "</div>";
+	};
+	$FnFmatter.actions.pageFinalization = function (iCol) {
+		var $self = $(this), p = this.p, colModel = p.colModel, cm = colModel[iCol],
+			showHideEditDelete = function (show, rowid) {
+				// TODO: implement support for frozen columns
+				// if(cm.frozen && p.frozenColumns) {} && iCol < number of frozen columns in the table of the frozen div
+				var tr = $self.jqGrid("getGridRowById", rowid);
+				if (tr != null && tr.cells != null) {
+					//$actionsDiv = cm.frozen ? $("tr#"+jgrid.jqID(rid)+" td:eq("+jgrid.getCellIndex(this)+") > div",$grid) :$(this).parent(),
+					var $actionsDiv = $(tr.cells[iCol]).children(".ui-jqgrid-actions");
+					if (show) {
+						$actionsDiv.find(">.ui-inline-edit,>.ui-inline-del").show();
+						$actionsDiv.find(">.ui-inline-save,>.ui-inline-cancel").hide();
+					} else {
+						$actionsDiv.find(">.ui-inline-edit,>.ui-inline-del").hide();
+						$actionsDiv.find(">.ui-inline-save,>.ui-inline-cancel").show();
+					}
+				}
+			},
+			showEditDelete = function (e, rowid) {
+				showHideEditDelete(true, rowid);
+				return false;
+			},
+			hideEditDelete = function (e, rowid) {
+				showHideEditDelete(false, rowid);
+				return false;
+			};
+		if (cm.formatoptions != null && cm.formatoptions.editformbutton) {
+			// TODO: implement support for form editing buttons
+			// form editing buttons
+		} else {
+			// we use unbind to be sure that we don't register the same events multiple times
+			$self.unbind("jqGridInlineAfterRestoreRow.jqGridFormatter jqGridInlineAfterSaveRow.jqGridFormatter", showEditDelete);
+			$self.bind("jqGridInlineAfterRestoreRow.jqGridFormatter jqGridInlineAfterSaveRow.jqGridFormatter", showEditDelete);
+			$self.unbind("jqGridInlineEditRow.jqGridFormatter", hideEditDelete);
+			$self.bind("jqGridInlineEditRow.jqGridFormatter", hideEditDelete);
+		}
 	};
 	$.unformat = function (cellval,options,pos,cnt) {
 		// specific for jqGrid only

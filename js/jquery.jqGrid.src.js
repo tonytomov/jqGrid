@@ -1689,6 +1689,7 @@ $.fn.jqGrid = function( pin ) {
 		},
 		emptyRows = function (scroll, locdata) {
 			var firstrow, self = this, rows = self.rows, bDiv = self.grid.bDiv;
+			$(self).unbind(".jqGridFormatter");
 			if (p.deepempty) {
 				$(rows).slice(1).remove();
 			} else {
@@ -1811,6 +1812,16 @@ $.fn.jqGrid = function( pin ) {
 			}
 			return '<tr role="row" id="' + id + '" tabindex="' + tabindex + '" class="' + classes + '"' +
 				(style === '' ? '' : ' style="' + style + '"') + restAttr + '>';
+		},
+		finalizationFormatters = function () {
+			var i, formatName;
+			for (i=0; i<p.colModel.length; i++) {
+				formatName = p.colModel[i].formatter;
+				if (typeof formatName === "string" && $.fn.fmatter != null &&
+						$.isFunction($.fn.fmatter[formatName]) && $.isFunction($.fn.fmatter[formatName].pageFinalization)) {
+					$.fn.fmatter[formatName].pageFinalization.call(this, i);
+				}
+			}
 		},
 		addXmlData = function (xml, rcnt, more, adjust) {
 			var self = this, $self = $(this), startReq = new Date(), getXmlData = jgrid.getXmlData,
@@ -1979,6 +1990,7 @@ $.fn.jqGrid = function( pin ) {
 				p.lastpage = Math.ceil(gl/ rn);
 			}
 			if (!more) { self.updatepager(false,true); }
+			finalizationFormatters.call(self);
 			if(locdata) {
 				while (ir<gl) {
 					xmlr = gxml[ir];
@@ -2180,6 +2192,7 @@ $.fn.jqGrid = function( pin ) {
 				p.lastpage = Math.ceil(len/ rn);
 			}
 			if (!more) { self.updatepager(false,true); }
+			finalizationFormatters.call(self);
 			if(locdata) {
 				for (ir=i; ir<len && drows[ir]; ir++) {
 					cur = drows[ir];
@@ -4511,6 +4524,7 @@ jgrid.extend({
 			var $t = this, p = $t.p, gridIdEscaped = jqID(p.id);
 			if(!$t.grid) {return;}
 			if(typeof clearfooter !== 'boolean') { clearfooter = false; }
+			$(self).unbind(".jqGridFormatter");
 			if(p.deepempty) {$("#"+gridIdEscaped+" tbody:first tr:gt(0)").remove();}
 			else {
 				var trf = $("#"+gridIdEscaped+" tbody:first tr:first")[0];
@@ -13836,24 +13850,8 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 			$t = $grid[0],
 			p = $t.p,
 			cm = p.colModel[jgrid.getCellIndex(this)],
-			$actionsDiv = cm.frozen ? $("tr#"+jgrid.jqID(rid)+" td:eq("+jgrid.getCellIndex(this)+") > div",$grid) :$(this).parent(),
-			op = {
-				extraparam: {}
-			},
-			saverow = function(rowid, res) {
-				if($.isFunction(op.afterSave)) { op.afterSave.call($t, rowid, res); }
-				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").show();
-				$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").hide();
-			},
-			restorerow = function(rowid) {
-				if($.isFunction(op.afterRestore)) { op.afterRestore.call($t, rowid); }
-				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").show();
-				$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").hide();
-			};
+			op = $.extend(true, { extraparam: {}}, cm.formatoptions || {});
 
-		if (cm.formatoptions !== undefined) {
-			op = $.extend(true, op, cm.formatoptions);
-		}
 		if (p.editOptions !== undefined) {
 			op.editOptions = p.editOptions;
 		}
@@ -13869,31 +13867,21 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 			successfunc: op.onSuccess,
 			url: op.url,
 			extraparam: op.extraparam,
-			aftersavefunc: saverow,
+			aftersavefunc: op.afterSave,
 			errorfunc: op.onError,
-			afterrestorefunc: restorerow,
+			afterrestorefunc: op.afterRestore,
 			restoreAfterError: op.restoreAfterError,
 			mtype: op.mtype
 		};
 		switch(act)	{
 			case 'edit':
 				$grid.jqGrid('editRow', rid, actop);
-				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").hide();
-				$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").show();
-				$grid.triggerHandler("jqGridAfterGridComplete");
 				break;
 			case 'save':
-				if ($grid.jqGrid('saveRow', rid, actop)) {
-					$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").show();
-					$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").hide();
-					$grid.triggerHandler("jqGridAfterGridComplete");
-				}
+				$grid.jqGrid('saveRow', rid, actop);
 				break;
 			case 'cancel' :
-				$grid.jqGrid('restoreRow', rid, restorerow);
-				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").show();
-				$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").hide();
-				$grid.triggerHandler("jqGridAfterGridComplete");
+				$grid.jqGrid('restoreRow', rid, op.afterRestore);
 				break;
 			case 'del':
 				$grid.jqGrid('delGridRow', rid, op.delOptions);
@@ -13940,30 +13928,40 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 		return "<div class='ui-jqgrid-actions'>" + str + "</div>";
 	};
 	$FnFmatter.actions.pageFinalization = function (iCol) {
-		var $self = $(this), p = this.p, colModel = p.colModel, cm = colModel[iCol], rows = this.rows, tr, $td;
+		var $self = $(this), p = this.p, colModel = p.colModel, cm = colModel[iCol],
+			showHideEditDelete = function (show, rowid) {
+				// TODO: implement support for frozen columns
+				// if(cm.frozen && p.frozenColumns) {} && iCol < number of frozen columns in the table of the frozen div
+				var tr = $self.jqGrid("getGridRowById", rowid);
+				if (tr != null && tr.cells != null) {
+					//$actionsDiv = cm.frozen ? $("tr#"+jgrid.jqID(rid)+" td:eq("+jgrid.getCellIndex(this)+") > div",$grid) :$(this).parent(),
+					var $actionsDiv = $(tr.cells[iCol]).children(".ui-jqgrid-actions");
+					if (show) {
+						$actionsDiv.find(">.ui-inline-edit,>.ui-inline-del").show();
+						$actionsDiv.find(">.ui-inline-save,>.ui-inline-cancel").hide();
+					} else {
+						$actionsDiv.find(">.ui-inline-edit,>.ui-inline-del").hide();
+						$actionsDiv.find(">.ui-inline-save,>.ui-inline-cancel").show();
+					}
+				}
+			},
+			showEditDelete = function (e, rowid) {
+				showHideEditDelete(true, rowid);
+				return false;
+			},
+			hideEditDelete = function (e, rowid) {
+				showHideEditDelete(false, rowid);
+				return false;
+			};
 		if (cm.formatoptions != null && cm.formatoptions.editformbutton) {
+			// TODO: implement support for form editing buttons
 			// form editing buttons
 		} else {
-			$self.bind("jqGridInlineAfterRestoreRow jqGridInlineAfterSaveRow", function (e, rowid) {
-				//$("#"+jgrid.jqID(rowid))
-				tr = $self.jqGid("getGridRowById", rowid);
-				if (tr == null || tr.cells == null) {
-					return false;
-				}
-				$td = $(tr.cells[iCol]);
-				$td.find(">.ui-inline-edit,>.ui-inline-del").show();
-				$td.find(">.ui-inline-save,>.ui-inline-cancel").hide();
-				// if(cm.frozen && p.frozenColumns) {}
-			});
-			$self.bind("jqGridInlineEditRow", function (e, rowid) {
-				tr = $self.jqGid("getGridRowById", rowid);
-				if (tr == null || tr.cells == null) {
-					return false;
-				}
-				$td = $(tr.cells[iCol]);
-				$td.find(">.ui-inline-edit,>.ui-inline-del").hide();
-				$td.find(">.ui-inline-save,>.ui-inline-cancel").show();
-			});
+			// we use unbind to be sure that we don't register the same events multiple times
+			$self.unbind("jqGridInlineAfterRestoreRow.jqGridFormatter jqGridInlineAfterSaveRow.jqGridFormatter", showEditDelete);
+			$self.bind("jqGridInlineAfterRestoreRow.jqGridFormatter jqGridInlineAfterSaveRow.jqGridFormatter", showEditDelete);
+			$self.unbind("jqGridInlineEditRow.jqGridFormatter", hideEditDelete);
+			$self.bind("jqGridInlineEditRow.jqGridFormatter", hideEditDelete);
 		}
 	};
 	$.unformat = function (cellval,options,pos,cnt) {
