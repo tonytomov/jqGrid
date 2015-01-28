@@ -3429,11 +3429,12 @@ $.fn.jqGrid = function( pin ) {
 			if (p.treeGrid === true) {
 				p.datatype = p.treedatatype;
 			}
+			opts = opts || {};
 			if (p.datatype === "local" && p.dataTypeOrg && p.loadonce && opts.fromServer) {
 				p.datatype = p.dataTypeOrg;
 				delete p.dataTypeOrg;
 			}
-			if (opts && opts.current) {
+			if (opts.current) {
 				gridSelf.selectionPreserver.call(self);
 			}
 			if(p.datatype==="local"){ $self.jqGrid("resetSelection");  if(p.data.length) { normalizeData.call(self); refreshIndex();} }
@@ -3446,7 +3447,7 @@ $.fn.jqGrid = function( pin ) {
 				clearArray(p.savedRow); // p.savedRow = [];
 			}
 			if(p.scroll) {emptyRows.call(self, true, false);}
-			if (opts && opts.page) {
+			if (opts.page) {
 				var page = parseInt(opts.page, 10);
 				if (page > p.lastpage) { page = p.lastpage; }
 				if (page < 1) { page = 1; }
