@@ -1,17 +1,31 @@
 /*jshint eqeqeq:false */
-/*global jQuery */
-(function($){
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base",
+			"./grid.grouping"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
 "use strict";
 // To optimize the search we need custom array filter
 // This code is taken from
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
 
 function _pivotfilter (fn, context) {
+	/*jshint validthis: true */
 	var i,
 		value,
 		result = [],
 		length;
-
+		
 	if (!this || typeof fn !== 'function' || (fn instanceof RegExp)) {
 		throw new TypeError();
 	}
@@ -97,11 +111,14 @@ $.jgrid.extend({
 			 * otherviese the column
 			 */
 			function findGroup(item, index) {
+				/*jshint validthis: true */
 				var j = 0, ret = true, i;
 				for(i in item) {
-					if(item[i] != this[j]) {
-						ret =  false;
-						break;
+					if( item.hasOwnProperty(i) ) {
+						if(item[i] != this[j]) {
+							ret =  false;
+							break;
+						}
 					}
 					j++;
 					if(j>=this.length) {
@@ -361,8 +378,10 @@ $.jgrid.extend({
 								if( aggrlen > 1){
 									var ll=1;
 									for( l in items.fields) {
-										if(ll===1) {
-											headers[ylen-1].groupHeaders.push({startColumnName: l, numberOfColumns: 1, titleText: items.text});
+										if(items.fields.hasOwnProperty(l)) {
+											if(ll===1) {
+												headers[ylen-1].groupHeaders.push({startColumnName: l, numberOfColumns: 1, titleText: items.text});
+											}
 										}
 										ll++;
 									}
@@ -494,4 +513,4 @@ $.jgrid.extend({
 		});
 	}
 });
-})(jQuery);
+}));
