@@ -1,6 +1,19 @@
 /*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery */
-(function($){
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base",
+			"./grid.common"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
 "use strict";
 $.jgrid.inlineEdit = $.jgrid.inlineEdit || {};
 $.jgrid.extend({
@@ -329,7 +342,7 @@ $.jgrid.extend({
 									});
 								}
 								if(nullIfEmpty) {
-									$.each(tmp,function(n,v){
+									$.each(tmp,function( n ){
 										if(tmp[n] === 'null' ) {
 											tmp[n] = '';
 										}
@@ -653,4 +666,4 @@ $.jgrid.extend({
 	}
 //end inline edit
 });
-})(jQuery);
+}));
