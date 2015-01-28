@@ -1,7 +1,24 @@
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery */
-(function($){
-/*
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base",
+			"jquery-ui/dialog",
+			"jquery-ui/draggable",
+			"jquery-ui/droppable",
+			"jquery-ui/resizable",
+			"jquery-ui/sortable",
+			"./plugins/ui.multiselect"		
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {/*
 **
  * jqGrid addons using jQuery UI 
  * Author: Mark Williams
@@ -558,4 +575,4 @@ $.jgrid.extend({
 		});
 	}
 });
-})(jQuery);
+}));
