@@ -54,7 +54,7 @@ $.extend(jgrid,{
 			$(selector).attr("aria-hidden","true").jqmHide();
 		} else {
 			if(o.gb !== '') {
-				try {$(".jqgrid-overlay:first",o.gb).hide();} catch (ignore){}
+				try {$(">.jqgrid-overlay",o.gb).filter(':first').hide();} catch (ignore){}
 			}
 			$(selector).hide().attr("aria-hidden","true");
 		}
@@ -76,16 +76,21 @@ $.extend(jgrid,{
 		return [curleft,curtop];
 	},
 	createModal : function(aIDs, content, p, insertSelector, posSelector, appendsel, css) {
+		// TODO: make as parameters:
+		// ui-icon
+		// ui-icon-closethick
+		// ui-icon-gripsmall-diagonal-se
 		var jqID = jgrid.jqID;
 		p = $.extend(true, {}, jgrid.jqModal || {}, p);
-		var mw = document.createElement('div'), rtlsup, themodalSelector = "#"+jqID(aIDs.themodal),
+		var mw = document.createElement('div'), themodalSelector = "#"+jqID(aIDs.themodal),
+		rtlsup = $(p.gbox).attr("dir") === "rtl" ? true : false, 
 		scrollelmSelector = aIDs.scrollelm ? "#"+jqID(aIDs.scrollelm) : false;
 		css = $.extend({}, css || {});
-		rtlsup = $(p.gbox).attr("dir") === "rtl" ? true : false;
 		mw.className= "ui-widget ui-widget-content ui-corner-all ui-jqdialog";
 		mw.id = aIDs.themodal;
 		var mh = document.createElement('div');
-		mh.className = "ui-jqdialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix";
+		mh.className = "ui-jqdialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix " +
+			(rtlsup ? "ui-jqdialog-titlebar-rtl" : "ui-jqdialog-titlebar-ltr");
 		mh.id = aIDs.modalhead;
 		$(mh).append("<span class='ui-jqdialog-title'>"+p.caption+"</span>");
 		var ahr= $("<a class='ui-jqdialog-titlebar-close ui-corner-all'></a>")
@@ -93,15 +98,7 @@ $.extend(jgrid,{
 			function(){ahr.removeClass('ui-state-hover');})
 		.append("<span class='ui-icon ui-icon-closethick'></span>");
 		$(mh).append(ahr);
-		if(rtlsup) {
-			mw.dir = "rtl";
-			$(".ui-jqdialog-title",mh).css("float","right");
-			$(".ui-jqdialog-titlebar-close",mh).css("left",0.3+"em");
-		} else {
-			mw.dir = "ltr";
-			$(".ui-jqdialog-title",mh).css("float","left");
-			$(".ui-jqdialog-titlebar-close",mh).css("right",0.3+"em");
-		}
+		mw.dir = rtlsup ? "rtl" : "ltr";
 		var mc = document.createElement('div');
 		$(mc).addClass("ui-jqdialog-content ui-widget-content").attr("id",aIDs.modalcontent);
 		$(mc).append(content);
@@ -160,8 +157,8 @@ $.extend(jgrid,{
 		if(p.drag === undefined) { p.drag=true;}
 		if(p.resize === undefined) {p.resize=true;}
 		if (p.drag) {
-			$(mh).css('cursor','move');
 			if($.fn.jqDrag) {
+				$(mh).addClass("ui-draggable"); //css('cursor','move');
 				$(mw).jqDrag(mh);
 			} else {
 				try {
@@ -205,7 +202,7 @@ $.extend(jgrid,{
 			else {$(selector).attr("aria-hidden","false").jqmShow();}
 		} else {
 			if(o.gbox !== '') {
-				$(".jqgrid-overlay:first",o.gbox).show();
+				$(">.jqgrid-overlay",o.gbox).filter(':first').show();
 				$(selector).data("gbox",o.gbox);
 			}
 			$(selector).show().attr("aria-hidden","false");
