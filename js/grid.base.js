@@ -9,9 +9,19 @@
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery */
-
-(function ($) {
+/*global jQuery, window, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([ 
+			"jquery"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
 "use strict";
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
@@ -4447,4 +4457,4 @@ $.jgrid.extend({
 		});
 	}
 });
-})(jQuery);
+}));
