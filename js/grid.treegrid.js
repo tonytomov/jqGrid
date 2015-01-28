@@ -1,6 +1,18 @@
 /*jshint eqeqeq:false */
-/*global jQuery */
-(function($) {
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
 "use strict";
 $.jgrid.extend({
 	setTreeNode : function(i, len){
@@ -227,7 +239,7 @@ $.jgrid.extend({
 			switch ($t.p.treeGridModel) {
 				case 'nested' :
 					level = $t.p.treeReader.level_field;
-					$(view).each(function( i ){
+					$(view).each(function() {
 						if(parseInt(this[level],10) === parseInt($t.p.tree_root_level,10)) {
 							if(currentview){
 								result.push($t.p.data[$t.p._index[this[$t.p.keyName]]]);
@@ -719,4 +731,4 @@ $.jgrid.extend({
 		//});
 	}
 });
-})(jQuery);
+}));
