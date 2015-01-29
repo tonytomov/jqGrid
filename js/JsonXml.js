@@ -20,9 +20,21 @@
 	Author:      Tony Tomov
 */
 
-/*global alert */
-var xmlJsonClass = {
-	// Param "xml": Element or document DOM node.
+/*global alert, define */
+
+(function( factory ) {
+	if ( typeof define === "function" && define.amd ) {
+
+	// AMD. Register as an anonymous module.
+		define( factory );
+	} else {
+
+	// Browser globals
+		factory();
+	}
+}(function() {
+
+window.xmlJsonClass = {	// Param "xml": Element or document DOM node.
 	// Param "tab": Tab or indent string for pretty output formatting omit or use empty string "" to supress.
 	// Returns:     JSON string
 	xml2json: function(xml, tab) {
@@ -58,25 +70,28 @@ var xmlJsonClass = {
 				var hasChild = false;
 				xml += ind + "<" + name;
 				var m;
-				for (m in v) if (v.hasOwnProperty(m)) {
-					if (m.charAt(0) === "@") {
-						xml += " " + m.substr(1) + "=\"" + v[m].toString() + "\"";
-					}
-					else {
-						hasChild = true;
+				for (m in v) {
+					if (v.hasOwnProperty(m)) {
+						if (m.charAt(0) === "@") {
+							xml += " " + m.substr(1) + "=\"" + v[m].toString() + "\"";
+						} else {
+							hasChild = true;
+						}
 					}
 				}
 				xml += hasChild ? ">" : "/>";
 				if (hasChild) {
-					for (m in v) if (v.hasOwnProperty(m)) {
-						if (m === "#text") {
-							xml += v[m];
-						}
-						else if (m === "#cdata") {
-							xml += "<![CDATA[" + v[m] + "]]>";
-						}
-						else if (m.charAt(0) !== "@") {
-							xml += toXml(v[m], m, ind+"\t");
+					for (m in v) {
+						if (v.hasOwnProperty(m)) {
+							if (m === "#text") {
+								xml += v[m];
+							}
+							else if (m === "#cdata") {
+								xml += "<![CDATA[" + v[m] + "]]>";
+							}
+							else if (m.charAt(0) !== "@") {
+								xml += toXml(v[m], m, ind+"\t");
+							}
 						}
 					}
 					xml += (xml.charAt(xml.length - 1) === "\n" ? ind : "") + "</" + name + ">";
@@ -98,8 +113,10 @@ var xmlJsonClass = {
 		};
 		var xml = "";
 		var m;
-		for (m in o) if (o.hasOwnProperty(m)) {
-			xml += toXml(o[m], m, "");
+		for (m in o) { 
+			if (o.hasOwnProperty(m)) {
+				xml += toXml(o[m], m, "");
+			}
 		}
 		return tab ? xml.replace(/\t/g, tab) : xml.replace(/\t|\n/g, "");
 	},
@@ -220,7 +237,7 @@ var xmlJsonClass = {
 		return o;
 	},
 	toJson: function(o, name, ind, wellform) {
-		if(wellform === undefined) wellform = true;
+		if(wellform === undefined) { wellform = true; }
 		var json = name ? ("\"" + name + "\"") : "", tab = "\t", newline = "\n";
 		if(!wellform) {
 			tab= ""; newline= "";
@@ -337,3 +354,7 @@ var xmlJsonClass = {
 		return e;
 	}
 };
+
+return window.xmlJsonClass;
+
+}));
