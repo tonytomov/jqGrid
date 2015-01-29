@@ -6271,6 +6271,7 @@ $.fn.jqFilter = function( arg ) {
 	var p = $.extend(true,{
 		filter: null,
 		columns: [],
+		sortStrategy: null,
 		onChange : null,
 		afterRedraw : null,
 		checkValues : null,
@@ -6300,6 +6301,12 @@ $.fn.jqFilter = function( arg ) {
 				groups: []
 			};
 		}
+
+		// Sort the columns if the sort strategy is provided.
+		if (this.p.sortStrategy != null && $.isFunction(this.p.sortStrategy)) {
+			this.p.columns.sort(this.p.sortStrategy);
+		}
+
 		var i, len = this.p.columns.length, cl,
 		isIE = /msie/i.test(navigator.userAgent) && !window.opera;
 
@@ -6956,6 +6963,7 @@ $.jgrid.extend({
 			onInitializeSearch: null,
 			afterRedraw : null,
 			afterChange: null,
+			sortStrategy: null,
 			closeAfterSearch : false,
 			closeAfterReset: false,
 			closeOnEscape : false,
@@ -7083,7 +7091,8 @@ $.jgrid.extend({
 				bt = "<table class='EditTable' style='border:0px none;margin-top:5px' id='"+fid+"_2'><tbody><tr><td colspan='2'><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='EditButton' style='text-align:"+align+"'>"+bC+tmpl+"</td><td class='EditButton' "+butleft+">"+bQ+bS+"</td></tr></tbody></table>";
 				fid = $.jgrid.jqID( fid);
 				$("#"+fid).jqFilter({
-					columns : columns,
+					columns: columns,
+					sortStrategy: p.sortStrategy,
 					filter: p.loadDefaults ? defaultFilters : null,
 					showQuery: p.showQuery,
 					errorcheck : p.errorcheck,
