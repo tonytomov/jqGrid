@@ -36,7 +36,7 @@
 	}
 }(function( $ ) {
 "use strict";
-
+//module begin
 $.fn.jqFilter = function( arg ) {
 	if (typeof arg === 'string') {
 		
@@ -1404,4 +1404,5 @@ $.jgrid.extend({
 		});
 	}
 });
+//module end
 }));

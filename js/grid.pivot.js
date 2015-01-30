@@ -18,7 +18,7 @@
 // To optimize the search we need custom array filter
 // This code is taken from
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
-
+//module begin
 function _pivotfilter (fn, context) {
 	/*jshint validthis: true */
 	var i,
@@ -513,4 +513,5 @@ $.jgrid.extend({
 		});
 	}
 });
+//module end
 }));

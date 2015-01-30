@@ -14,6 +14,7 @@
 	}
 }(function( $ ) {
 "use strict";
+//module begin
 $.jgrid.extend({
 	setTreeNode : function(i, len){
 		return this.each(function(){
@@ -731,4 +732,5 @@ $.jgrid.extend({
 		//});
 	}
 });
+//module end
 }));

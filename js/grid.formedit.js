@@ -14,7 +14,9 @@
 		// Browser globals
 		factory( jQuery );
 	}
-}(function( $ ) {"use strict";
+}(function( $ ) {
+"use strict";
+//module begin
 var rp_ge = {};
 $.jgrid.extend({
 	editGridRow : function(rowid, p){
@@ -1863,4 +1865,5 @@ $.jgrid.extend({
 		});
 	}
 });
+//module end
 }));

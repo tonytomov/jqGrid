@@ -33,6 +33,7 @@
  * ajaxCellOptions
 * */
 "use strict";
+//module begin
 $.jgrid.extend({
 	editCell : function (iRow,iCol, ed){
 		return this.each(function (){
@@ -496,4 +497,5 @@ $.jgrid.extend({
 	}
 /// end  cell editing
 });
+//module end
 }));

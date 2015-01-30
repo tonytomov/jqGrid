@@ -12,7 +12,7 @@
 			"jquery-ui/droppable",
 			"jquery-ui/resizable",
 			"jquery-ui/sortable",
-			"./plugins/ui.multiselect"		
+			"./addons/ui.multiselect"		
 		], factory );
 	} else {
 		// Browser globals
@@ -28,6 +28,7 @@
  * depends on jQuery UI 
 **/
 "use strict";
+//module begin
 if ($.jgrid.msie && $.jgrid.msiever()===8) {
 	$.expr[":"].hidden = function(elem) {
 		return elem.offsetWidth === 0 || elem.offsetHeight === 0 ||
@@ -575,4 +576,5 @@ $.jgrid.extend({
 		});
 	}
 });
+//module end
 }));

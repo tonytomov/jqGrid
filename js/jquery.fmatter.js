@@ -28,7 +28,8 @@
 		factory( jQuery );
 	}
 }(function( $ ) {
-"use strict";	
+"use strict";
+//module begin
 	$.fmatter = {};
 	//opts can be id:row id for the row, rowdata:the data for the row, colmodel:the column model for this column
 	//example {id:1234,}
@@ -476,4 +477,5 @@
 		}
 		return $.fn.fmatter.defaultFormat(cellval, opts);
 	};
+//module end
 }));

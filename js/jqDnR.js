@@ -22,6 +22,7 @@
 	}
 } (function( $ ) {
 "use strict";
+//module begin
 $.fn.jqDrag=function(h){return i(this,h,'d');};
 $.fn.jqResize=function(h,ar){return i(this,h,'r',ar);};
 $.jqDnR={
@@ -81,4 +82,5 @@ i=function(e,h,k,aR){
 },
 f=function(k){return parseInt(E.css(k),10)||false;},
 f1=function(k){return parseInt(E1.css(k),10)||false;};
+//module end
 }));

@@ -15,6 +15,7 @@
 	}
 }(function( $ ) {
 "use strict";
+//module begin
 $.jgrid.extend({
 	groupingSetup : function () {
 		return this.each(function (){
@@ -679,4 +680,5 @@ $.jgrid.extend({
 		});
 	}
 });
+//module end
 }));

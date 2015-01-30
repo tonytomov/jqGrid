@@ -14,6 +14,7 @@
 	}
 }(function( $ ) {
 "use strict";
+//module begin
 $.jgrid.extend({
 setSubGrid : function () {
 	return this.each(function (){
@@ -309,4 +310,5 @@ toggleSubGridRow : function(rowid) {
 	});
 }
 });
+//module end
 }));

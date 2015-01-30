@@ -15,6 +15,7 @@
 	}
 }(function( $ ) {
 "use strict";
+//module begin
 $.jgrid.inlineEdit = $.jgrid.inlineEdit || {};
 $.jgrid.extend({
 //Editing
@@ -666,4 +667,5 @@ $.jgrid.extend({
 	}
 //end inline edit
 });
+//module end
 }));

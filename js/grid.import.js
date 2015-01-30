@@ -15,6 +15,7 @@
 	}
 }(function( $ ) {
 "use strict";
+//module begin
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
 	saveState : function ( jqGridId, o ) {
@@ -341,4 +342,5 @@ $.extend($.jgrid,{
 			});
 		}
     });
+//module end
 }));

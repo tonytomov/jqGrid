@@ -16,6 +16,7 @@
 	}
 }(function( $ ) {
 "use strict";
+//module begin
 $.extend($.jgrid,{
 // Modal functions
 	showModal : function(h) {
@@ -692,4 +693,5 @@ $.extend($.jgrid,{
 		return [true,"",""];
 	}
 });
+//module end
 }));

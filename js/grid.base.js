@@ -23,6 +23,7 @@
 	}
 }(function( $ ) {
 "use strict";
+//module begin
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
 	version : "4.7.1",
@@ -4460,4 +4461,5 @@ $.jgrid.extend({
 		});
 	}
 });
+//module end
 }));

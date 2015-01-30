@@ -33,7 +33,7 @@
 		factory();
 	}
 }(function() {
-
+//module begin
 window.xmlJsonClass = {	// Param "xml": Element or document DOM node.
 	// Param "tab": Tab or indent string for pretty output formatting omit or use empty string "" to supress.
 	// Returns:     JSON string
@@ -354,7 +354,7 @@ window.xmlJsonClass = {	// Param "xml": Element or document DOM node.
 		return e;
 	}
 };
-
+//module end
 return window.xmlJsonClass;
 
 }));
