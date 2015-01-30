@@ -1508,7 +1508,7 @@ $.fn.jqGrid = function( pin ) {
 					rowData.push( addMulti(rid,ni,j, false) );
 				}
 				if( si ) {
-					rowData.push( addSubGridCell.call(ts,gi+ni,j+rcnt) );
+					rowData.push( addSubGridCell.call(self, gi+ni, j+rcnt) );
 				}
 				if(xmlRd.repeatitems){
 					if (!F) { F=orderedCols(gi+si+ni); }
@@ -1532,7 +1532,7 @@ $.fn.jqGrid = function( pin ) {
 				if(ts.p.grouping) {
 					grpdata.push( rowData );
 					if(!ts.p.groupingView._locgr) {
-						groupingPrepare.call(ts , rd, j );
+						groupingPrepare.call(self , rd, j );
 					}
 					rowData = [];
 				}
@@ -1608,7 +1608,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 					rd[xmlid] = $.jgrid.stripPref(ts.p.idPrefix, rid);
 					if( ts.p.grouping ) {
-						groupingPrepare.call(ts, rd, ir );
+						groupingPrepare.call(self, rd, ir );
 					}
 					ts.p.data.push(rd);
 					ts.p._index[rd[xmlid]] = ts.p.data.length-1;
@@ -1708,7 +1708,7 @@ $.fn.jqGrid = function( pin ) {
 					rowData.push( addMulti(idr,ni,i,selr) );
 				}
 				if( si ) {
-					rowData.push( addSubGridCell.call(ts ,gi+ni,i+rcnt) );
+					rowData.push( addSubGridCell.call(self ,gi+ni,i+rcnt) );
 				}
 				rowReader=objectReader;
 				if (dReader.repeatitems) {
@@ -1725,7 +1725,7 @@ $.fn.jqGrid = function( pin ) {
 				if(ts.p.grouping) {
 					grpdata.push( rowData );
 					if(!ts.p.groupingView._locgr) {
-						groupingPrepare.call(ts , rd, i);
+						groupingPrepare.call(self , rd, i);
 					}
 					rowData = [];
 				}
@@ -1813,7 +1813,7 @@ $.fn.jqGrid = function( pin ) {
 						}
 						rd[locid] = $.jgrid.stripPref(ts.p.idPrefix, idr);
 						if(ts.p.grouping) {
-							groupingPrepare.call(ts, rd, ir );
+							groupingPrepare.call(self, rd, ir );
 						}
 						ts.p.data.push(rd);
 						ts.p._index[rd[locid]] = ts.p.data.length-1;
