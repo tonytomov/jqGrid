@@ -9232,7 +9232,7 @@ jgrid.extend({
 	},
 	delGridRow : function(rowids,oMuligrid) {
 		return this.each(function(){
-			var $t = this, p = $t.p;
+			var $t = this, p = $t.p, $self = $($t);
 			if (!$t.grid || p == null || !rowids) {return;}
 			// make new copy of the options oMuligrid and use it for ONE specific grid.
 			// p.formDeleting can contains grid specific options
@@ -9280,10 +9280,10 @@ jgrid.extend({
 				return feedback.apply($t, args);
 			};
 
-			if ($.isArray(rowids)) { rowids = rowids.join(); }
+			if (!$.isArray(rowids)) { rowids = [String(rowids)]; }
 			if ( $(themodalSelector)[0] !== undefined ) {
 				if (!deleteFeedback("beforeInitData", $(dtbl))) {return;}
-				$("#DelData>td",dtbl).text(rowids);
+				$("#DelData>td",dtbl).text(rowids.join());
 				$("#DelError",dtbl).hide();
 				if( o.processing === true) {
 					o.processing=false;
@@ -9299,7 +9299,7 @@ jgrid.extend({
 				tbl += "<table class='DelTable'><tbody>";
 				// error data
 				tbl += "<tr id='DelError' style='display:none'><td class='ui-state-error'></td></tr>";
-				tbl += "<tr id='DelData' style='display:none'><td >"+rowids+"</td></tr>";
+				tbl += "<tr id='DelData' style='display:none'><td >"+rowids.join()+"</td></tr>";
 				tbl += "<tr><td class=\"delmsg\" style=\"white-space:pre;\">"+o.msg+"</td></tr><tr><td >&#160;</td></tr>";
 				// buttons at footer
 				tbl += "</tbody></table></div>";
@@ -9331,7 +9331,7 @@ jgrid.extend({
 						oper = opers.oper;
 						postd[oper] = opers.deloper;
 						idname = opers.id;
-						postdata = String(postdata).split(",");
+						postdata = rowids.slice(0);
 						if(!postdata.length) { return false; }
 						for(pk in postdata) {
 							if(postdata.hasOwnProperty(pk)) {
@@ -9366,17 +9366,18 @@ jgrid.extend({
 									$("#DelError",dtbl).show();
 								} else {
 									if(o.reloadAfterSubmit && p.datatype !== "local") {
-										$($t).trigger("reloadGrid");
+										$self.trigger("reloadGrid");
 									} else {
 										if(p.treeGrid===true){
-												try {$($t).jqGrid("delTreeNode",p.idPrefix+postdata[0]);} catch(ignore){}
+												try {$self.jqGrid("delTreeNode",rowids[0]);} catch(ignore){}
 										} else {
-											for(i=0;i<postdata.length;i++) {
-												$($t).jqGrid("delRowData",p.idPrefix+ postdata[i]);
+											// make copy to be sure the rowids will be not changed during deleting
+											// (for example in case of usage selarrrow as parameter)
+											rowids = rowids.slice(0);
+											for(i=0;i<rowids.length;i++) {
+												$self.jqGrid("delRowData",rowids[i]);
 											}
 										}
-										p.selrow = null;
-										p.selarrrow = [];
 									}
 									setTimeout(function(){
 										deleteFeedback("afterComplete", data, postdata);
