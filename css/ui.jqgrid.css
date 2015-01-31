@@ -230,11 +230,19 @@
 	overflow: hidden;
 	white-space: pre;
 	height: 22px;
-	padding: 0 2px 0 2px;
 	border-top: 0 none;
 	border-bottom-width: 1px;
 	border-bottom-color: inherit;
 	border-bottom-style: solid;
+}
+.ui-jqgrid tr.jqgrow > td,
+.ui-jqgrid tr.jqgroup > td,
+.ui-jqgrid tr.jqfoot > td,
+.ui-jqgrid tr.jqfoot > td {
+	padding: 0 2px 0 2px;
+}
+.ui-jqgrid tr.ui-subgrid > td {
+	padding: 0;
 }
 .ui-jqgrid tr.jqgfirstrow > td {
 	padding: 0 2px 0 2px;
