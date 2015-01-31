@@ -508,7 +508,7 @@ $.extend(true,jgrid,{
 				return "alertmod_" + id;
 			case "columnResizer":
 				return "rs_m" + id;
-			case "selectAlCheckbox":
+			case "selectAllCheckbox":
 				return "cb_" + id;
 			case "searchOperationMenu":
 				return "sopt_menu";
@@ -3413,7 +3413,7 @@ $.fn.jqGrid = function( pin ) {
 				} else {
 					var oldSelRow = p.selrow;
 					$(ts).jqGrid("setSelection",ri,true,e);
-					if (p.singleSelectClickMode === "toggle" && oldSelRow === ri) {
+					if (p.singleSelectClickMode === "toggle" && oldSelRow === ri && p.savedRow.length === 0) {
 						td.parent().removeClass("ui-state-highlight").attr({"aria-selected":"false", "tabindex" : "-1"});
 						p.selrow = null;
 					}
