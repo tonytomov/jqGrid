@@ -579,6 +579,32 @@ $.extend(true,jgrid,{
 		}
 		return classes.join(" ");
 	},
+	detectRowEditing: function (rowid) {
+		var i, savedRowInfo, tr, self = this, rows = self.rows, p = self.p;
+		if (!self.grid || rows == null || p == null) {
+			return null; // this is not a grid
+		}
+		if (p.savedRow === undefined || p.savedRow.length === 0) {
+			return null; // the row is not editing now
+		}
+		for (i = 0; i < p.savedRow.length; i++) {
+			savedRowInfo = p.savedRow[i];
+			// sell editing saves in savedRow array items like {id: iRow, ic: iCol, name: colModel[iCol].name, v: cellValue}
+			if (typeof savedRowInfo.id === "number" && typeof savedRowInfo.ic === "number" &&
+					savedRowInfo.name !== undefined && savedRowInfo.v !== undefined &&
+					rows[savedRowInfo.id] != null && rows[savedRowInfo.id].id === rowid &&
+					$.isFunction($.fn.jqGrid.restoreCell)) {
+				// cell editing
+				tr = rows[savedRowInfo.id];
+				if (tr != null && tr.id === rowid) {
+					return { mode: "cellEditing", savedRow: savedRowInfo };
+				}
+			} else if (savedRowInfo.id === rowid && $.isFunction($.fn.jqGrid.restoreRow)) {
+				return { mode: "inlineEditing", savedRow: savedRowInfo };
+			}
+		}
+		return null;
+	},
 	guid : 1,
 	uidPref: 'jqg',
 	randId : function( prefix )	{
@@ -1662,7 +1688,7 @@ $.fn.jqGrid = function( pin ) {
 				formatCol(pos,irow,v, null, irow, true)+">"+v+"</td>";
 		},
 		reader = function (datatype) {
-			var field, f=[], j=0, i, colModel = p.colModel, nCol = colModel.length, name;
+			var field, f=[], i, colModel = p.colModel, nCol = colModel.length, name;
 			for(i=0; i<nCol; i++){
 				field = colModel[i];
 				if (field.name !== 'cb' && field.name !=='subgrid' && field.name !=='rn') {
@@ -3151,7 +3177,10 @@ $.fn.jqGrid = function( pin ) {
 				if (this.checked) {
 					$(ts.rows).each(function(i) {
 						if (i>0) {
-							if(!$(this).hasClass("ui-subgrid") && !$(this).hasClass("jqgroup") && !$(this).hasClass('ui-state-disabled') && !$(this).hasClass("jqfoot")){
+							if(!$(this).hasClass("ui-subgrid") &&
+									!$(this).hasClass("jqgroup") &&
+									!$(this).hasClass('ui-state-disabled') &&
+									!$(this).hasClass("jqfoot")){
 								$("#jqg_"+jqID(p.id)+"_"+jqID(this.id) )[p.propOrAttr]("checked",true);
 								$(this).addClass("ui-state-highlight").attr("aria-selected","true");  
 								p.selarrrow.push(this.id);
@@ -3169,7 +3198,11 @@ $.fn.jqGrid = function( pin ) {
 				else {
 					$(ts.rows).each(function(i) {
 						if(i>0) {
-							if(!$(this).hasClass("ui-subgrid") && !$(this).hasClass("jqgroup") && !$(this).hasClass('ui-state-disabled') && !$(this).hasClass("jqfoot")){
+							if(!$(this).hasClass("ui-subgrid") &&
+									!$(this).hasClass("jqgroup") &&
+									!$(this).hasClass('ui-state-disabled') &&
+									!$(this).hasClass("jqfoot") &&
+									jgrid.detectRowEditing.call(ts, this.id) === null){
 								$("#jqg_"+jqID(p.id)+"_"+jqID(this.id) )[p.propOrAttr]("checked", false);
 								$(this).removeClass("ui-state-highlight").attr("aria-selected","false");
 								emp.push(this.id);
@@ -3372,9 +3405,9 @@ $.fn.jqGrid = function( pin ) {
 			if($(ptr).length === 0 || ptr[0].className.indexOf( 'ui-state-disabled' ) > -1 || ($(td,ts).closest("table.ui-jqgrid-btable").attr('id') || '').replace("_frozen","") !== ts.id ) {
 				return this;
 			}
-			var scb = $(td).hasClass("cbox"), cSel = feedback.call(ts, "beforeSelectRow", ptr[0].id, e);
-			if (td.tagName === 'A' || ((td.tagName === 'INPUT' || td.tagName === 'TEXTAREA' || td.tagName === 'OPTION' || td.tagName === 'SELECT' ) && !scb) ) { return; }
 			ri = ptr[0].id;
+			var scb = $(td).hasClass("cbox"), cSel = feedback.call(ts, "beforeSelectRow", ri, e);
+			if (td.tagName === 'A' || ((jgrid.detectRowEditing.call(ts, ri) !== null) && !scb)) { return; }
 			td = $(td).closest("tr.jqgrow>td");
 			if (td.length > 0) {
 				ci = getCellIndex(td);
@@ -3413,7 +3446,7 @@ $.fn.jqGrid = function( pin ) {
 				} else {
 					var oldSelRow = p.selrow;
 					$(ts).jqGrid("setSelection",ri,true,e);
-					if (p.singleSelectClickMode === "toggle" && oldSelRow === ri && p.savedRow.length === 0) {
+					if (p.singleSelectClickMode === "toggle" && oldSelRow === ri) {
 						td.parent().removeClass("ui-state-highlight").attr({"aria-selected":"false", "tabindex" : "-1"});
 						p.selrow = null;
 					}
@@ -3777,7 +3810,11 @@ jgrid.extend({
 					if(pt.className !== "ui-subgrid") { $(pt).addClass("ui-state-highlight").attr("aria-selected","true");}
 					stat = true;
 					p.selarrrow.push(p.selrow);
+				} else if (jgrid.detectRowEditing.call($t, pt.id) !== null) {
+					// the row is editing and selected now. The checkbox is clicked
+					stat = true; // set to force the checkbox stay selected
 				} else {
+					// deselect only if the row is not in editing mode
 					if(pt.className !== "ui-subgrid") { $(pt).removeClass("ui-state-highlight").attr("aria-selected","false");}
 					stat = false;
 					p.selarrrow.splice(ia,1);
@@ -3786,7 +3823,7 @@ jgrid.extend({
 				}
 				$("#jqg_"+jqID(p.id)+"_"+jqID(pt.id))[p.propOrAttr]("checked",stat);
 				if(fid) {
-					if(ia === -1) {
+					if(ia === -1 || stat) {
 						$("#"+jqID(selection), "#"+jqID(fid)).addClass("ui-state-highlight");
 					} else {
 						$("#"+jqID(selection), "#"+jqID(fid)).removeClass("ui-state-highlight");
@@ -4527,7 +4564,7 @@ jgrid.extend({
 			var $t = this, p = $t.p, gridIdEscaped = jqID(p.id);
 			if(!$t.grid) {return;}
 			if(typeof clearfooter !== 'boolean') { clearfooter = false; }
-			$(self).unbind(".jqGridFormatter");
+			$($t).unbind(".jqGridFormatter");
 			if(p.deepempty) {$("#"+gridIdEscaped+" tbody:first tr:gt(0)").remove();}
 			else {
 				var trf = $("#"+gridIdEscaped+" tbody:first tr:first")[0];
@@ -8673,28 +8710,17 @@ jgrid.extend({
 				return stat;
 			}
 			function restoreInline() {
-				var i, savedRowInfo, tr;
-				if (rowid !== "_empty" && p.savedRow !== undefined && p.savedRow.length > 0) {
-					for (i=0;i<p.savedRow.length;i++) {
-						savedRowInfo = p.savedRow[i];
-						// TODO detect cell editing or inline editing mode
-						if (typeof savedRowInfo.id === "number" && typeof savedRowInfo.ic === "number" &&
-								savedRowInfo.name !== undefined && savedRowInfo.v !== undefined &&
-								$t.rows[savedRowInfo.id] != null && $t.rows[savedRowInfo.id].id === rowid &&
-								$.isFunction($.fn.jqGrid.restoreCell)) {
-							// cell editing
-							tr = $t.rows[savedRowInfo.id];
-							if (tr != null && tr.id === rowid) {
-								$self.jqGrid("restoreCell", savedRowInfo.id, savedRowInfo.ic);
-								//p.selrow = null; // to make more clean selecton 
-								//$self.jqGrid("setSelection", rowid, false);
-								$(tr.cells[savedRowInfo.ic]).removeClass("edit-cell ui-state-highlight");
-								$(tr).addClass("ui-state-highlight").attr({"aria-selected":"true", "tabindex" : "0"});
-							}
-						} else if (savedRowInfo.id === rowid && $.isFunction($.fn.jqGrid.restoreRow)) {
-							$self.jqGrid('restoreRow',rowid);
-							break;
-						}
+				var editingInfo = jgrid.detectRowEditing.call($t, rowid);
+				if (editingInfo != null) {
+					if (editingInfo.mode === "inlineEditing") {
+						$self.jqGrid("restoreRow", rowid);
+					} else {
+						var savedRowInfo = editingInfo.savedRow;
+						tr = $t.rows[savedRowInfo.id];
+						$self.jqGrid("restoreCell", savedRowInfo.id, savedRowInfo.ic);
+						// remove highlighting of the cell
+						$(tr.cells[savedRowInfo.ic]).removeClass("edit-cell ui-state-highlight");
+						$(tr).addClass("ui-state-highlight").attr({"aria-selected":"true", "tabindex" : "0"});
 					}
 				}
 			}
@@ -13847,7 +13873,7 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 		cellval = ret.join(", ");
 		return  cellval === "" ? $FnFmatter.defaultFormat(cellval,opts) : cellval;
 	};
-	$FnFmatter.rowactions = function(act) {
+	$FnFmatter.rowactions = function(e, act) {
 		var $tr = $(this).closest("tr.jqgrow"),rid = $tr.attr("id"),
 			$id = $(this).closest("table.ui-jqgrid-btable").attr('id').replace(/_frozen([^_]*)$/,'$1'),
 			$grid = $("#"+jgrid.jqID($id)),
@@ -13877,6 +13903,9 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 			restoreAfterError: op.restoreAfterError,
 			mtype: op.mtype
 		};
+		if ((!p.multiselect && rid !== p.selrow) || (p.multiselect && $.inArray(rid, p.selarrrow) < 0)) {
+			$grid.jqGrid('setSelection', rid, e);
+		}
 		switch(act)	{
 			case 'edit':
 				$grid.jqGrid('editRow', rid, actop);
@@ -13891,10 +13920,13 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 				$grid.jqGrid('delGridRow', rid, op.delOptions);
 				break;
 			case 'formedit':
-				$grid.jqGrid('setSelection', rid);
 				$grid.jqGrid('editGridRow', rid, op.editOptions);
 				break;
 		}
+		if (e.stopPropagation) {
+			e.stopPropagation();
+		}
+		return false; // prevent other processing of the click on the row
 	};
 	$FnFmatter.actions = function(cellval,opts) {
 		var rowid=opts.rowId, str="", ocl, nav = jgrid.nav, edit = jgrid.edit,
@@ -13915,19 +13947,19 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 			}, jgrid.nav, this.p.navOptions || {}, opts.colModel.formatoptions || {});
 		if(rowid === undefined || fmatter.isEmpty(rowid)) {return "";}
 		if(op.editformbutton){
-			ocl = "id='jEditButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'formedit'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
+			ocl = "id='jEditButton_"+rowid+"' onclick='return jQuery.fn.fmatter.rowactions.call(this,event,\"formedit\");' onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
 			str += "<div title='"+op.edittitle+"' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='" + [op.commonIconClass, op.editicon].join(" ") + "'></span></div>";
 		} else if(op.editbutton){
-			ocl = "id='jEditButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'edit'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover') ";
+			ocl = "id='jEditButton_"+rowid+"' onclick='return jQuery.fn.fmatter.rowactions.call(this,event,\"edit\");' onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover') ";
 			str += "<div title='"+op.edittitle+"' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='" + [op.commonIconClass, op.editicon].join(" ") + "'></span></div>";
 		}
 		if(op.delbutton) {
-			ocl = "id='jDeleteButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'del'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
+			ocl = "id='jDeleteButton_"+rowid+"' onclick='return jQuery.fn.fmatter.rowactions.call(this,event,\"del\");' onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
 			str += "<div title='"+op.deltitle+"' class='ui-pg-div ui-inline-del' "+ocl+"><span class='" + [op.commonIconClass, op.delicon].join(" ") + "'></span></div>";
 		}
-		ocl = "id='jSaveButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'save'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
+		ocl = "id='jSaveButton_"+rowid+"' onclick='return jQuery.fn.fmatter.rowactions.call(this,event,\"save\");' onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
 		str += "<div title='"+op.savetitle+"' style='display:none' class='ui-pg-div ui-inline-save' "+ocl+"><span class='" + [op.commonIconClass, op.saveicon].join(" ") + "'></span></div>";
-		ocl = "id='jCancelButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'cancel'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
+		ocl = "id='jCancelButton_"+rowid+"' onclick='return jQuery.fn.fmatter.rowactions.call(this,event,\"cancel\");' onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
 		str += "<div title='"+op.canceltitle+"' style='display:none;' class='ui-pg-div ui-inline-cancel' "+ocl+"><span class='" + [op.commonIconClass, op.cancelicon].join(" ") + "'></span></div>";
 		return "<div class='ui-jqgrid-actions'>" + str + "</div>";
 	};
