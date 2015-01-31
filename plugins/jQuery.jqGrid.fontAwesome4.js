@@ -81,7 +81,7 @@
                     var $dialog = $form.closest(".ui-jqdialog"),
                         $iconSpans = $dialog.find("a.fm-button>span.ui-icon");
                     $iconSpans.each(function () {
-                        var $this = $(this), $fmButton = $this.parent();
+                        var $this = $(this);
                         $this.removeClass("ui-icon");
                         if ($this.hasClass("ui-icon-search")) {
                             $this.removeClass("ui-icon ui-icon-search")
@@ -99,7 +99,7 @@
                     var $dialog = $form.closest(".ui-jqdialog"),
                         $iconSpans = $dialog.find("a.fm-button>span.ui-icon");
                     $iconSpans.each(function () {
-                        var $this = $(this), $fmButton = $this.parent();
+                        var $this = $(this);
                         if ($this.hasClass("ui-icon-triangle-1-w")) {
                             $this.removeClass("ui-icon ui-icon-triangle-1-w")
                                 .addClass($.jgrid.icons.getClass("formPrev"));
@@ -118,7 +118,7 @@
 					var $dialog = $form.closest(".ui-jqdialog"),
 						$iconSpans = $dialog.find("a.fm-button>span.ui-icon");
 					$iconSpans.each(function () {
-						var $this = $(this), $fmButton = $this.parent();
+						var $this = $(this);
 						if ($this.hasClass("ui-icon-triangle-1-w")) {
 							$this.removeClass("ui-icon ui-icon-triangle-1-w")
 								.addClass($.jgrid.icons.getClass("formPrev"));
@@ -136,7 +136,7 @@
 						$iconSpans = $tdButtons.find(">a.fm-button>span.ui-icon");
 
 					$iconSpans.each(function () {
-						var $this = $(this), $fmButton = $this.parent();
+						var $this = $(this);
 						if ($this.hasClass("ui-icon-scissors")) {
 							$this.removeClass("ui-icon ui-icon-scissors")
 								.addClass($.jgrid.icons.getClass("formDel"));
