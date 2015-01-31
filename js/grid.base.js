@@ -1351,8 +1351,8 @@ $.fn.jqGrid = function( pin ) {
 		p.gView = getGridComponentIdSelector.call(ts, "gView"); // gview selector like "#gview_list" or "#gview_my\\.list"
 		p.rsId = getGridComponentId.call(ts, "columnResizer"); // vertical div inside of gbox which will be seen on resizing of columns
 		p.rs = getGridComponentIdSelector.call(ts, "columnResizer"); // vertical div inside of gbox which will be seen on resizing of columns
-		p.cbId = getGridComponentId.call(ts, "selectAlCheckbox"); // "cb_" +id
-		p.cb = getGridComponentIdSelector.call(ts, "selectAlCheckbox"); // "cb_" +id
+		p.cbId = getGridComponentId.call(ts, "selectAllCheckbox"); // "cb_" +id
+		p.cb = getGridComponentIdSelector.call(ts, "selectAllCheckbox"); // "cb_" +id
 		p.useProp = !!$.fn.prop;
 		p.propOrAttr = p.useProp ? 'prop' : 'attr';
 
