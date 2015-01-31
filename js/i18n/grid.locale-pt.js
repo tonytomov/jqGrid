@@ -65,13 +65,13 @@ $.extend(true,$.jgrid,{
 	    bCancel: "Cancelar"
 	},
 	nav : {
-		edittext: " ",
+		edittext: "",
 	    edittitle: "Modificar registo seleccionado",
-		addtext:" ",
+		addtext: "",
 	    addtitle: "Adicionar novo registo",
-	    deltext: " ",
+	    deltext: "",
 	    deltitle: "Eliminar registo seleccionado",
-	    searchtext: " ",
+	    searchtext: "",
 	    searchtitle: "Procurar",
 	    refreshtext: "",
 	    refreshtitle: "Actualizar",

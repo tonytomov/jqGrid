@@ -67,13 +67,13 @@ $.extend(true,$.jgrid,{
 	    bCancel: "Відміна"
 	},
 	nav : {
-  		edittext: " ",
+  		edittext: "",
 	    edittitle: "Змінити вибраний запис",
-  		addtext:" ",
+  		addtext: "",
 	    addtitle: "Додати новий запис",
-	    deltext: " ",
+	    deltext: "",
 	    deltitle: "Видалити вибраний запис",
-	    searchtext: " ",
+	    searchtext: "",
 	    searchtitle: "Знайти записи",
 	    refreshtext: "",
 	    refreshtitle: "Оновити таблицю",

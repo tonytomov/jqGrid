@@ -79,13 +79,13 @@ $.extend(true,$.jgrid, {
 		bCancel: "キャンセル"
 	},
 	nav: {
-		edittext: " ",
+		edittext: "",
 		edittitle: "選択した行を編集",
-		addtext: " ",
+		addtext: "",
 		addtitle: "行を新規追加",
-		deltext: " ",
+		deltext: "",
 		deltitle: "選択した行を削除",
-		searchtext: " ",
+		searchtext: "",
 		searchtitle: "レコード検索",
 		refreshtext: "",
 		refreshtitle: "グリッドをリロード",

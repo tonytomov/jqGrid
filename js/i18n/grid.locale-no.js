@@ -71,19 +71,19 @@
 			processData: "Behandler..."
 		},
 		nav: {
-			edittext: " ",
+			edittext: "",
 			edittitle: "Rediger valgte rad(er)",
-			addtext: " ",
+			addtext: "",
 			addtitle: "Legg til ny rad",
-			deltext: " ",
+			deltext: "",
 			deltitle: "Slett valgte rad(er)",
-			searchtext: " ",
+			searchtext: "",
 			searchtitle: "Søk",
 			refreshtext: "",
 			refreshtitle: "Oppdater tabell",
 			alertcap: "Advarsel",
 			alerttext: "Velg rad",
-			viewtext: " ",
+			viewtext: "",
 			viewtitle: "Åpne valgt rad"
 		},
 		col: {

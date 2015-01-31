@@ -68,13 +68,13 @@ $.extend(true,$.jgrid,{
 		bCancel: "Storno"
 	},
 	nav : {
-		edittext: " ",
+		edittext: "",
 		edittitle: "Editovat vybraný řádek",
 		addtext:" ",
 		addtitle: "Přidat nový řádek",
-		deltext: " ",
+		deltext: "",
 		deltitle: "Smazat vybraný záznam ",
-		searchtext: " ",
+		searchtext: "",
 		searchtitle: "Najít záznamy",
 		refreshtext: "",
 		refreshtitle: "Obnovit tabulku",

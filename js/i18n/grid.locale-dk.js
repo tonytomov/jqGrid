@@ -67,13 +67,13 @@ $.extend(true,$.jgrid,{
 	    bCancel: "Annuller"
 	},
 	nav : {
-		edittext: " ",
+		edittext: "",
 	    edittitle: "Rediger valgte række",
-		addtext:" ",
+		addtext: "",
 	    addtitle: "Tilføj ny række",
-	    deltext: " ",
+	    deltext: "",
 	    deltitle: "Slet valgte række",
-	    searchtext: " ",
+	    searchtext: "",
 	    searchtitle: "Find poster",
 	    refreshtext: "",
 	    refreshtitle: "Indlæs igen",

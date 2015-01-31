@@ -67,13 +67,13 @@ $.extend(true,$.jgrid,{
 	    bCancel: "Fortryd"
 	},
 	nav : {
-		edittext: " ",
+		edittext: "",
 	    edittitle: "Rediger valgte linje",
-		addtext:" ",
+		addtext: "",
 	    addtitle: "Tilføj ny linje",
-	    deltext: " ",
+	    deltext: "",
 	    deltitle: "Slet valgte linje",
-	    searchtext: " ",
+	    searchtext: "",
 	    searchtitle: "Find linjer",
 	    refreshtext: "",
 	    refreshtitle: "Indlæs igen",

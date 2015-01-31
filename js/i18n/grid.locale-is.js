@@ -66,13 +66,13 @@ $.extend(true,$.jgrid,{
 	    bCancel: "Hætta við"
 	},
 	nav : {
-		edittext: " ",
+		edittext: "",
 	    edittitle: "Breyta færslu",
-		addtext:" ",
+		addtext: "",
 	    addtitle: "Ný færsla",
-	    deltext: " ",
+	    deltext: "",
 	    deltitle: "Eyða færslu",
-	    searchtext: " ",
+	    searchtext: "",
 	    searchtitle: "Leita",
 	    refreshtext: "",
 	    refreshtitle: "Endurhlaða",

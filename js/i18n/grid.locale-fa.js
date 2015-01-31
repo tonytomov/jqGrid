@@ -72,13 +72,13 @@
             bCancel: "ابطال"
         },
         nav: {
-            edittext: " ",
+            edittext: "",
             edittitle: "ويرايش رديف هاي انتخاب شده",
-            addtext: " ",
+            addtext: "",
             addtitle: "افزودن رديف جديد",
-            deltext: " ",
+            deltext: "",
             deltitle: "حذف ردبف هاي انتیاب شده",
-            searchtext: " ",
+            searchtext: "",
             searchtitle: "جستجوي رديف",
             refreshtext: "",
             refreshtitle: "بازيابي مجدد صفحه",

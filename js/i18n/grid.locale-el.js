@@ -66,13 +66,13 @@ $.extend(true,$.jgrid,{
 	    bCancel: "Άκυρο"
 	},
 	nav : {
-		edittext: " ",
+		edittext: "",
 	    edittitle: "Επεξεργασία επιλεγμένης εγγραφής",
-		addtext:" ",
+		addtext: "",
 	    addtitle: "Εισαγωγή νέας εγγραφής",
-	    deltext: " ",
+	    deltext: "",
 	    deltitle: "Διαγραφή επιλεγμένης εγγραφής",
-	    searchtext: " ",
+	    searchtext: "",
 	    searchtitle: "Εύρεση Εγγραφών",
 	    refreshtext: "",
 	    refreshtitle: "Ανανέωση Πίνακα",

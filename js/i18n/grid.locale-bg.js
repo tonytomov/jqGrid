@@ -68,13 +68,13 @@ $.extend(true,$.jgrid,{
 		bCancel: "Отказ"
 	},
 	nav : {
-		edittext: " ",
+		edittext: "",
 		edittitle: "Редакция избран запис",
-		addtext:" ",
+		addtext: "",
 		addtitle: "Добавяне нов запис",
-		deltext: " ",
+		deltext: "",
 		deltitle: "Изтриване избран запис",
-		searchtext: " ",
+		searchtext: "",
 		searchtitle: "Търсене запис(и)",
 		refreshtext: "",
 		refreshtitle: "Обнови таблица",

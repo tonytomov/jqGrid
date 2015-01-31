@@ -67,13 +67,13 @@ $.extend(true,$.jgrid,{
 		bCancel: "Отмена"
 	},
 	nav : {
-		edittext: " ",
+		edittext: "",
 		edittitle: "Редактировать выбранную запись",
-		addtext:" ",
+		addtext: "",
 		addtitle: "Добавить новую запись",
-		deltext: " ",
+		deltext: "",
 		deltitle: "Удалить выбранную запись",
-		searchtext: " ",
+		searchtext: "",
 		searchtitle: "Найти записи",
 		refreshtext: "",
 		refreshtitle: "Обновить таблицу",

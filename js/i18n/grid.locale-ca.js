@@ -67,19 +67,19 @@ $.extend(true,$.jgrid,{
 		bCancel: "Cancelar"
 	},
 	nav : {
-		edittext: " ",
+		edittext: "",
 		edittitle: "Modificar fila seleccionada",
-		addtext:" ",
+		addtext: "",
 		addtitle: "Agregar nova fila",
-		deltext: " ",
+		deltext: "",
 		deltitle: "Eliminar fila seleccionada",
-		searchtext: " ",
+		searchtext: "",
 		searchtitle: "Cercar informació",
 		refreshtext: "",
 		refreshtitle: "Refrescar taula",
 		alertcap: "Avís",
 		alerttext: "Seleccioni una fila",
-		viewtext: " ",
+		viewtext: "",
 		viewtitle: "Veure fila seleccionada"
 	},
 // setcolumns module

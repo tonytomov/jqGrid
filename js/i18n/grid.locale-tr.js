@@ -66,13 +66,13 @@ $.extend(true,$.jgrid,{
 	    bCancel: "İptal"
 	},
 	nav : {
-		edittext: " ",
+		edittext: "",
 	    edittitle: "Seçili satırı düzenle",
-		addtext:" ",
+		addtext: "",
 	    addtitle: "Yeni satır ekle",
-	    deltext: " ",
+	    deltext: "",
 	    deltitle: "Seçili satırı sil",
-	    searchtext: " ",
+	    searchtext: "",
 	    searchtitle: "Kayıtları bul",
 	    refreshtext: "",
 	    refreshtitle: "Tabloyu yenile",

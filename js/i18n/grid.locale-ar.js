@@ -66,13 +66,13 @@ $.extend(true,$.jgrid,{
 		bCancel: "إلغاء"
 	},
 	nav : {
-		edittext: " ",
+		edittext: "",
 		edittitle: "تغيير التسجيل المختار",
-		addtext:" ",
+		addtext: "",
 		addtitle: "إضافة تسجيل",
-		deltext: " ",
+		deltext: "",
 		deltitle: "حذف التسجيل المختار",
-		searchtext: " ",
+		searchtext: "",
 		searchtitle: "بحث عن تسجيل",
 		refreshtext: "",
 		refreshtitle: "تحديث الجدول",

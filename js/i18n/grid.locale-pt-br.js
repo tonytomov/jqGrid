@@ -75,13 +75,13 @@ $.extend(true,$.jgrid,{
 	    bCancel: "Cancelar"
 	},
 	nav : {
-		edittext: " ",
+		edittext: "",
 	    edittitle: "Alterar registro selecionado",
-		addtext:" ",
+		addtext: "",
 	    addtitle: "Incluir novo registro",
-	    deltext: " ",
+	    deltext: "",
 	    deltitle: "Apagar registro selecionado",
-	    searchtext: " ",
+	    searchtext: "",
 	    searchtitle: "Procurar registros",
 	    refreshtext: "",
 	    refreshtitle: "Recarregando tabela",

@@ -78,13 +78,13 @@ $.extend(true,$.jgrid,{
 		bCancel: "Abbrechen"
 	},
 	nav : {
-		edittext: " ",
+		edittext: "",
 		edittitle: "Ausgewählte Zeile editieren",
-		addtext:" ",
+		addtext: "",
 		addtitle: "Neue Zeile einfügen",
-		deltext: " ",
+		deltext: "",
 		deltitle: "Ausgewählte Zeile löschen",
-		searchtext: " ",
+		searchtext: "",
 		searchtitle: "Datensatz suchen",
 		refreshtext: "",
 		refreshtitle: "Tabelle neu laden",

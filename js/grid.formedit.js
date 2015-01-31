@@ -1909,7 +1909,7 @@ jgrid.extend({
 			},
 			stdButtonActivation = function (name, id, onClick, navtbl, elemids) {
 				var $button = $("<div class='ui-pg-button ui-corner-all'></div>"), classes = [],
-					iconClass = o[name+"icon"], iconText = o[name+"text"];
+					iconClass = o[name+"icon"], iconText = $.trim(o[name+"text"]);
 				if (o.iconsOverText) {
 					classes.push("ui-pg-button-icon-over-text");
 				}
