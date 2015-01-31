@@ -9,10 +9,12 @@
 .ui-jqgrid .ui-pg-table .ui-pg-div > span.fa, #jqContextMenu .ui-menu-item > a > span.fa {
     text-indent:0;
     height: auto;
-    width: auto;
     background-image: none;
     overflow: visible;
     padding-top: 1px;
+}
+#jqContextMenu .ui-menu-item > a > span.fa {
+    width: auto;
 }
 .ui-jqgrid-titlebar > .ui-jqgrid-titlebar-close > span.fa {
     font-size: 16px;
