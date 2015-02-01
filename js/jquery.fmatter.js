@@ -311,7 +311,7 @@
 				deltitle: nav.deltitle,
 				savetitle: edit.bSubmit,
 				canceltitle: edit.bCancel
-			}, jgrid.nav, this.p.navOptions || {}, opts.colModel.formatoptions || {});
+			}, jgrid.nav, this.p.navOptions || {}, jgrid.actionsNav, this.p.actionsNavOptions || {}, opts.colModel.formatoptions || {});
 		if(rowid === undefined || fmatter.isEmpty(rowid)) {return "";}
 		if(op.editformbutton){
 			ocl = "id='jEditButton_"+rowid+"' onclick='return jQuery.fn.fmatter.rowactions.call(this,event,\"formedit\");' onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
