@@ -226,9 +226,20 @@ $.extend(true,jgrid,{
 			stype: "select", searchoptions: { sopt: ["eq", "ne"], value: ":Any;true:Yes;false:No" }
 		},
 		// TODO: add cmTemplate for currency and date
-		actions: {
-			formatter: "actions", width: 42, align: "center", autoResizable: false, frozen: true,
-			fixed: true, resizable: false, sortable: false, search: false, editable: false, viewable: false
+		actions: function () {
+			return {
+				formatter: "actions",
+				width: (this.p != null && this.p.fontAwesomeIcons ? 33 : 36) + ($.jgrid.cellWidth() ? 5 : 0),
+				align: "center",
+				autoResizable: false,
+				frozen: true,
+				fixed: true,
+				resizable: false,
+				sortable: false,
+				search: false,
+				editable: false,
+				viewable: false
+			};
 		}
     },
 	formatter : { // set common formatter settings independent from the language and locale
@@ -571,7 +582,7 @@ $.extend(true,jgrid,{
 			ar = String(args[i]).split(" ");
 			for (j = 0; j < ar.length; j++) {
 				cssClass = ar[j];
-				if (!map.hasOwnProperty(cssClass)) {
+				if (cssClass !== "" && !map.hasOwnProperty(cssClass)) {
 					map[cssClass] = true;
 					classes.push(cssClass);
 				}
@@ -1319,8 +1330,8 @@ $.fn.jqGrid = function( pin ) {
 			autowidth: false,
 			scrollOffset :18,
 			cellLayout: 5,
-			subGridWidth: 20,
-			multiselectWidth: 20,
+			subGridWidth: 16,
+			multiselectWidth: 16,
 			gridview: (pin == null || pin.afterInsertRow == null), // use true if callback afterInsertRow is not specified
 			rownumWidth: 25,
 			rownumbers : false,
@@ -1539,7 +1550,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 			},
-			scrollGrid: function(e) { // this maus be bDiv
+			scrollGrid: function(e) { // this must be bDiv
 				// TODO get ts from this bDiv
 				var bDiv = this, $bTable = getGridComponent("bTable", $(bDiv)), gridSelf;
 				if (e) { e.stopPropagation(); }
@@ -1584,7 +1595,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 		};
 		ts.grid = grid;
-
+		feedback.call(ts, "beforeInitGrid");
 		var iCol, dir;
 		if(p.colNames.length === 0) {
 			for (iCol=0;iCol<p.colModel.length;iCol++){
@@ -2473,7 +2484,8 @@ $.fn.jqGrid = function( pin ) {
 				if (rh) {
 					var top = base * rh;
 					var height = parseInt(p.records,10) * rh;
-					$(">div",bDiv).filter(":first").css({height : height}).children("div").filter(":first").css({height:top,display:top?"":"none"});
+					$(bDiv).children("div").filter(":first").css({height : height + "px"})
+						.children("div").filter(":first").css({height:top + "px",display:top + "px"?"":"none"});
 					if (bDiv.scrollTop === 0 && p.page > 1) {
 						bDiv.scrollTop = p.rowNum * (p.page - 1) * rh;
 					}
@@ -3027,18 +3039,22 @@ $.fn.jqGrid = function( pin ) {
 		colTemplate;
 		if ($.inArray(p.multikey,sortkeys) === -1 ) {p.multikey = false;}
 		p.keyName=false;
+		p.sortorder = p.sortorder.toLowerCase();
+		jgrid.cell_width = jgrid.cellWidth();
 		var jgridCmTemplate = jgrid.cmTemplate;
 		for (iCol=0; iCol<p.colModel.length;iCol++) {
 			colTemplate = typeof p.colModel[iCol].template === "string" ?
-				(jgridCmTemplate != null && typeof jgridCmTemplate[p.colModel[iCol].template] === "object" ? jgridCmTemplate[p.colModel[iCol].template]: {}) :
+				(jgridCmTemplate != null && (typeof jgridCmTemplate[p.colModel[iCol].template] === "object" || typeof jgridCmTemplate[p.colModel[iCol].template] === "function") ?
+					jgridCmTemplate[p.colModel[iCol].template]: {}) :
 				p.colModel[iCol].template;
+			if ($.isFunction(colTemplate)) {
+				colTemplate = colTemplate.call(ts, {cm: p.colModel[iCol], iCol: iCol});
+			}
 			p.colModel[iCol] = $.extend(true, {}, p.cmTemplate, colTemplate || {}, p.colModel[iCol]);
 			if (p.keyName === false && p.colModel[iCol].key===true) {
 				p.keyName = p.colModel[iCol].name;
 			}
 		}
-		p.sortorder = p.sortorder.toLowerCase();
-		jgrid.cell_width = jgrid.cellWidth();
 		if(p.grouping===true) {
 			p.scroll = false;
 			p.rownumbers = false;
@@ -3055,11 +3071,11 @@ $.fn.jqGrid = function( pin ) {
 		}
 		if(p.multiselect) {
 			p.colNames.unshift("<input role='checkbox' id='"+p.cbId+"' class='cbox' type='checkbox' aria-checked='false'/>");
-			p.colModel.unshift({name:'cb',width:jgrid.cell_width ? p.multiselectWidth+p.cellLayout : p.multiselectWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center',fixed:true});
+			p.colModel.unshift({name:'cb',width:jgrid.cell_width ? p.multiselectWidth+p.cellLayout : p.multiselectWidth,labelClasses:"jqgh_cbox",classes:"td_cbox",sortable:false,resizable:false,hidedlg:true,search:false,align:'center',fixed:true});
 		}
 		if(p.rownumbers) {
 			p.colNames.unshift("");
-			p.colModel.unshift({name:'rn',width:p.rownumWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center',fixed:true});
+			p.colModel.unshift({name:'rn',width:jgrid.cell_width ? p.rownumWidth+p.cellLayout : p.rownumWidth,labelClasses:"jqgh_rn",classes:"td_rn",sortable:false,resizable:false,hidedlg:true,search:false,align:'center',fixed:true});
 		}
 		p.xmlReader = $.extend(true,{
 			root: "rows",

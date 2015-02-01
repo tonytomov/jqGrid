@@ -226,9 +226,20 @@ $.extend(true,jgrid,{
 			stype: "select", searchoptions: { sopt: ["eq", "ne"], value: ":Any;true:Yes;false:No" }
 		},
 		// TODO: add cmTemplate for currency and date
-		actions: {
-			formatter: "actions", width: 42, align: "center", autoResizable: false, frozen: true,
-			fixed: true, resizable: false, sortable: false, search: false, editable: false, viewable: false
+		actions: function () {
+			return {
+				formatter: "actions",
+				width: (this.p != null && this.p.fontAwesomeIcons ? 33 : 36) + ($.jgrid.cellWidth() ? 5 : 0),
+				align: "center",
+				autoResizable: false,
+				frozen: true,
+				fixed: true,
+				resizable: false,
+				sortable: false,
+				search: false,
+				editable: false,
+				viewable: false
+			};
 		}
     },
 	formatter : { // set common formatter settings independent from the language and locale
@@ -571,7 +582,7 @@ $.extend(true,jgrid,{
 			ar = String(args[i]).split(" ");
 			for (j = 0; j < ar.length; j++) {
 				cssClass = ar[j];
-				if (!map.hasOwnProperty(cssClass)) {
+				if (cssClass !== "" && !map.hasOwnProperty(cssClass)) {
 					map[cssClass] = true;
 					classes.push(cssClass);
 				}
@@ -1319,8 +1330,8 @@ $.fn.jqGrid = function( pin ) {
 			autowidth: false,
 			scrollOffset :18,
 			cellLayout: 5,
-			subGridWidth: 20,
-			multiselectWidth: 20,
+			subGridWidth: 16,
+			multiselectWidth: 16,
 			gridview: (pin == null || pin.afterInsertRow == null), // use true if callback afterInsertRow is not specified
 			rownumWidth: 25,
 			rownumbers : false,
@@ -1539,7 +1550,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 			},
-			scrollGrid: function(e) { // this maus be bDiv
+			scrollGrid: function(e) { // this must be bDiv
 				// TODO get ts from this bDiv
 				var bDiv = this, $bTable = getGridComponent("bTable", $(bDiv)), gridSelf;
 				if (e) { e.stopPropagation(); }
@@ -1584,7 +1595,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 		};
 		ts.grid = grid;
-
+		feedback.call(ts, "beforeInitGrid");
 		var iCol, dir;
 		if(p.colNames.length === 0) {
 			for (iCol=0;iCol<p.colModel.length;iCol++){
@@ -2473,7 +2484,8 @@ $.fn.jqGrid = function( pin ) {
 				if (rh) {
 					var top = base * rh;
 					var height = parseInt(p.records,10) * rh;
-					$(">div",bDiv).filter(":first").css({height : height}).children("div").filter(":first").css({height:top,display:top?"":"none"});
+					$(bDiv).children("div").filter(":first").css({height : height + "px"})
+						.children("div").filter(":first").css({height:top + "px",display:top + "px"?"":"none"});
 					if (bDiv.scrollTop === 0 && p.page > 1) {
 						bDiv.scrollTop = p.rowNum * (p.page - 1) * rh;
 					}
@@ -3027,18 +3039,22 @@ $.fn.jqGrid = function( pin ) {
 		colTemplate;
 		if ($.inArray(p.multikey,sortkeys) === -1 ) {p.multikey = false;}
 		p.keyName=false;
+		p.sortorder = p.sortorder.toLowerCase();
+		jgrid.cell_width = jgrid.cellWidth();
 		var jgridCmTemplate = jgrid.cmTemplate;
 		for (iCol=0; iCol<p.colModel.length;iCol++) {
 			colTemplate = typeof p.colModel[iCol].template === "string" ?
-				(jgridCmTemplate != null && typeof jgridCmTemplate[p.colModel[iCol].template] === "object" ? jgridCmTemplate[p.colModel[iCol].template]: {}) :
+				(jgridCmTemplate != null && (typeof jgridCmTemplate[p.colModel[iCol].template] === "object" || typeof jgridCmTemplate[p.colModel[iCol].template] === "function") ?
+					jgridCmTemplate[p.colModel[iCol].template]: {}) :
 				p.colModel[iCol].template;
+			if ($.isFunction(colTemplate)) {
+				colTemplate = colTemplate.call(ts, {cm: p.colModel[iCol], iCol: iCol});
+			}
 			p.colModel[iCol] = $.extend(true, {}, p.cmTemplate, colTemplate || {}, p.colModel[iCol]);
 			if (p.keyName === false && p.colModel[iCol].key===true) {
 				p.keyName = p.colModel[iCol].name;
 			}
 		}
-		p.sortorder = p.sortorder.toLowerCase();
-		jgrid.cell_width = jgrid.cellWidth();
 		if(p.grouping===true) {
 			p.scroll = false;
 			p.rownumbers = false;
@@ -3055,11 +3071,11 @@ $.fn.jqGrid = function( pin ) {
 		}
 		if(p.multiselect) {
 			p.colNames.unshift("<input role='checkbox' id='"+p.cbId+"' class='cbox' type='checkbox' aria-checked='false'/>");
-			p.colModel.unshift({name:'cb',width:jgrid.cell_width ? p.multiselectWidth+p.cellLayout : p.multiselectWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center',fixed:true});
+			p.colModel.unshift({name:'cb',width:jgrid.cell_width ? p.multiselectWidth+p.cellLayout : p.multiselectWidth,labelClasses:"jqgh_cbox",classes:"td_cbox",sortable:false,resizable:false,hidedlg:true,search:false,align:'center',fixed:true});
 		}
 		if(p.rownumbers) {
 			p.colNames.unshift("");
-			p.colModel.unshift({name:'rn',width:p.rownumWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center',fixed:true});
+			p.colModel.unshift({name:'rn',width:jgrid.cell_width ? p.rownumWidth+p.cellLayout : p.rownumWidth,labelClasses:"jqgh_rn",classes:"td_rn",sortable:false,resizable:false,hidedlg:true,search:false,align:'center',fixed:true});
 		}
 		p.xmlReader = $.extend(true,{
 			root: "rows",
@@ -7798,6 +7814,7 @@ $.extend($.fn.jqFilter,{
 "use strict";
 var jgrid = $.jgrid, feedback = jgrid.feedback, fullBoolFeedback = jgrid.fullBoolFeedback, jqID = jgrid.jqID,
 	hideModal = jgrid.hideModal, viewModal = jgrid.viewModal, infoDialog = jgrid.info_dialog,
+	mergeCssClasses = jgrid.mergeCssClasses,
 	getCssStyleOrFloat = function ($elem, styleName) {
 		var v = $elem[0].style[styleName];
 		return v.indexOf("px") >= 0 ? parseFloat(v) : v;
@@ -8715,8 +8732,7 @@ jgrid.extend({
 					if (editingInfo.mode === "inlineEditing") {
 						$self.jqGrid("restoreRow", rowid);
 					} else {
-						var savedRowInfo = editingInfo.savedRow;
-						tr = $t.rows[savedRowInfo.id];
+						var savedRowInfo = editingInfo.savedRow, tr = $t.rows[savedRowInfo.id];
 						$self.jqGrid("restoreCell", savedRowInfo.id, savedRowInfo.ic);
 						// remove highlighting of the cell
 						$(tr.cells[savedRowInfo.ic]).removeClass("edit-cell ui-state-highlight");
@@ -9682,16 +9698,13 @@ jgrid.extend({
 				return false;
 			},
 			stdButtonActivation = function (name, id, onClick, navtbl, elemids) {
-				var $button = $("<div class='ui-pg-button ui-corner-all'></div>"), classes = [],
+				var $button = $("<div class='ui-pg-button ui-corner-all'></div>"),
 					iconClass = o[name+"icon"], iconText = $.trim(o[name+"text"]);
-				if (o.iconsOverText) {
-					classes.push("ui-pg-button-icon-over-text");
-				}
-				if (iconClass) {
-					classes.push(o.commonIconClass);
-					classes.push(iconClass);
-				}
-				$button.append("<div class='ui-pg-div'><span class='" + classes.join(" ") + "'></span>" +
+				$button.append("<div class='ui-pg-div'><span class='" +
+					(o.iconsOverText ?
+						mergeCssClasses("ui-pg-button-icon-over-text", o.commonIconClass, iconClass) :
+						mergeCssClasses(o.commonIconClass, iconClass)) +
+					"'></span>" +
 					(iconText ? "<span class='ui-pg-button-text"+(o.iconsOverText ? " ui-pg-button-icon-over-text" : "") +"'>"+iconText+"</span>" : "")+
 					"</div>");
 				$(navtbl).append($button);
@@ -9772,19 +9785,18 @@ jgrid.extend({
 			var findnav = $(".navtable",elem);
 			if (findnav.length > 0) {
 				if (o.id && findnav.find("#" + jqID(o.id)).length > 0)  {return;}
-				var tbd = $("<div></div>"), classes = [];
+				var tbd = $("<div></div>")
 				if (o.buttonicon.toString().toUpperCase() === "NONE") {
 					$(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'>"+
 						(o.caption ? "<span class='ui-pg-button-text" + (o.iconsOverText ? " ui-pg-button-icon-over-text" : "") + "'>"+o.caption+"</span>" : "") +
 						"</div>");
 				} else {
-					if (o.iconsOverText) {
-						classes.push("ui-pg-button-icon-over-text");
-					}
-					classes.push(o.commonIconClass);
-					classes.push(o.buttonicon);
 					$(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'>" +
-						"<span class='" + classes.join(" ") +"'></span>"+
+						"<span class='" +
+						(o.iconsOverText ?
+							mergeCssClasses("ui-pg-button-icon-over-text", o.commonIconClass, o.buttonicon) :
+							mergeCssClasses(o.commonIconClass, o.buttonicon)) +
+						"'></span>"+
 						(o.caption ? "<span class='ui-pg-button-text" + (o.iconsOverText ? " ui-pg-button-icon-over-text" : "") + "'>"+o.caption+"</span>" : "") +
 						"</div>");
 				}
@@ -11119,6 +11131,7 @@ jgrid.extend({
 				saveicon:"ui-icon-disk",
 				cancel: true,
 				cancelicon:"ui-icon-cancel",
+				commonIconClass : "ui-icon",
 				iconsOverText : false,
 				addParams : {addRowParams: {extraparam: {}}},
 				editParams : {},
@@ -11186,6 +11199,7 @@ jgrid.extend({
 				$self.jqGrid('navButtonAdd', elem,{
 					caption : o.addtext,
 					title : o.addtitle,
+					commonIconClass : o.commonIconClass,
 					buttonicon : o.addicon,
 					iconsOverText: o.iconsOverText,
 					id : p.id+"_iladd",
@@ -11198,6 +11212,7 @@ jgrid.extend({
 				$self.jqGrid('navButtonAdd', elem,{
 					caption : o.edittext,
 					title : o.edittitle,
+					commonIconClass : o.commonIconClass,
 					buttonicon : o.editicon,
 					iconsOverText: o.iconsOverText,
 					id : p.id+"_iledit",
@@ -11215,6 +11230,7 @@ jgrid.extend({
 				$self.jqGrid('navButtonAdd', elem,{
 					caption : o.savetext || '',
 					title : o.savetitle || 'Save row',
+					commonIconClass : o.commonIconClass,
 					buttonicon : o.saveicon,
 					iconsOverText: o.iconsOverText,
 					id : p.id+"_ilsave",
@@ -11244,6 +11260,7 @@ jgrid.extend({
 				$self.jqGrid('navButtonAdd', elem,{
 					caption : o.canceltext || '',
 					title : o.canceltitle || 'Cancel row editing',
+					commonIconClass : o.commonIconClass,
 					buttonicon : o.cancelicon,
 					iconsOverText: o.iconsOverText,
 					id : p.id+"_ilcancel",
@@ -12410,8 +12427,8 @@ var jgrid = $.jgrid;
 jgrid.extend({
 setSubGrid : function () {
 	return this.each(function (){
-		var $t = this, p = $t.p, cm, i,
-		suboptions = {
+		var $t = this, p = $t.p, cm, i;
+		p.subGridOptions = $.extend({
 			commonIconClass: "ui-icon",
 			plusicon : "ui-icon-plus",
 			minusicon : "ui-icon-minus",
@@ -12421,10 +12438,9 @@ setSubGrid : function () {
 			selectOnExpand : false,
 			selectOnCollapse : false,
 			reloadOnExpand : true
-		};
-		p.subGridOptions = $.extend(suboptions, p.subGridOptions || {});
+		}, p.subGridOptions || {});
 		p.colNames.unshift("");
-		p.colModel.unshift({name:'subgrid',width: jgrid.cell_width ?  p.subGridWidth+p.cellLayout : p.subGridWidth,sortable: false,resizable:false,hidedlg:true,search:false,fixed:true});
+		p.colModel.unshift({name:'subgrid',width: jgrid.cell_width ?  p.subGridWidth+p.cellLayout : p.subGridWidth,labelClasses:"jqgh_subgrid",sortable: false,resizable:false,hidedlg:true,search:false,fixed:true});
 		cm = p.subGridModel;
 		if(cm[0]) {
 			cm[0].align = $.extend([],cm[0].align || []);
@@ -13944,7 +13960,7 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 				deltitle: nav.deltitle,
 				savetitle: edit.bSubmit,
 				canceltitle: edit.bCancel
-			}, jgrid.nav, this.p.navOptions || {}, opts.colModel.formatoptions || {});
+			}, jgrid.nav, this.p.navOptions || {}, jgrid.actionsNav, this.p.actionsNavOptions || {}, opts.colModel.formatoptions || {});
 		if(rowid === undefined || fmatter.isEmpty(rowid)) {return "";}
 		if(op.editformbutton){
 			ocl = "id='jEditButton_"+rowid+"' onclick='return jQuery.fn.fmatter.rowactions.call(this,event,\"formedit\");' onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
