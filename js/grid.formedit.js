@@ -13,6 +13,7 @@
 "use strict";
 var jgrid = $.jgrid, feedback = jgrid.feedback, fullBoolFeedback = jgrid.fullBoolFeedback, jqID = jgrid.jqID,
 	hideModal = jgrid.hideModal, viewModal = jgrid.viewModal, infoDialog = jgrid.info_dialog,
+	mergeCssClasses = jgrid.mergeCssClasses,
 	getCssStyleOrFloat = function ($elem, styleName) {
 		var v = $elem[0].style[styleName];
 		return v.indexOf("px") >= 0 ? parseFloat(v) : v;
@@ -930,8 +931,7 @@ jgrid.extend({
 					if (editingInfo.mode === "inlineEditing") {
 						$self.jqGrid("restoreRow", rowid);
 					} else {
-						var savedRowInfo = editingInfo.savedRow;
-						tr = $t.rows[savedRowInfo.id];
+						var savedRowInfo = editingInfo.savedRow, tr = $t.rows[savedRowInfo.id];
 						$self.jqGrid("restoreCell", savedRowInfo.id, savedRowInfo.ic);
 						// remove highlighting of the cell
 						$(tr.cells[savedRowInfo.ic]).removeClass("edit-cell ui-state-highlight");
@@ -1897,16 +1897,13 @@ jgrid.extend({
 				return false;
 			},
 			stdButtonActivation = function (name, id, onClick, navtbl, elemids) {
-				var $button = $("<div class='ui-pg-button ui-corner-all'></div>"), classes = [],
+				var $button = $("<div class='ui-pg-button ui-corner-all'></div>"),
 					iconClass = o[name+"icon"], iconText = $.trim(o[name+"text"]);
-				if (o.iconsOverText) {
-					classes.push("ui-pg-button-icon-over-text");
-				}
-				if (iconClass) {
-					classes.push(o.commonIconClass);
-					classes.push(iconClass);
-				}
-				$button.append("<div class='ui-pg-div'><span class='" + classes.join(" ") + "'></span>" +
+				$button.append("<div class='ui-pg-div'><span class='" +
+					(o.iconsOverText ?
+						mergeCssClasses("ui-pg-button-icon-over-text", o.commonIconClass, iconClass) :
+						mergeCssClasses(o.commonIconClass, iconClass)) +
+					"'></span>" +
 					(iconText ? "<span class='ui-pg-button-text"+(o.iconsOverText ? " ui-pg-button-icon-over-text" : "") +"'>"+iconText+"</span>" : "")+
 					"</div>");
 				$(navtbl).append($button);
@@ -1987,19 +1984,18 @@ jgrid.extend({
 			var findnav = $(".navtable",elem);
 			if (findnav.length > 0) {
 				if (o.id && findnav.find("#" + jqID(o.id)).length > 0)  {return;}
-				var tbd = $("<div></div>"), classes = [];
+				var tbd = $("<div></div>")
 				if (o.buttonicon.toString().toUpperCase() === "NONE") {
 					$(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'>"+
 						(o.caption ? "<span class='ui-pg-button-text" + (o.iconsOverText ? " ui-pg-button-icon-over-text" : "") + "'>"+o.caption+"</span>" : "") +
 						"</div>");
 				} else {
-					if (o.iconsOverText) {
-						classes.push("ui-pg-button-icon-over-text");
-					}
-					classes.push(o.commonIconClass);
-					classes.push(o.buttonicon);
 					$(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'>" +
-						"<span class='" + classes.join(" ") +"'></span>"+
+						"<span class='" +
+						(o.iconsOverText ?
+							mergeCssClasses("ui-pg-button-icon-over-text", o.commonIconClass, o.buttonicon) :
+							mergeCssClasses(o.commonIconClass, o.buttonicon)) +
+						"'></span>"+
 						(o.caption ? "<span class='ui-pg-button-text" + (o.iconsOverText ? " ui-pg-button-icon-over-text" : "") + "'>"+o.caption+"</span>" : "") +
 						"</div>");
 				}
