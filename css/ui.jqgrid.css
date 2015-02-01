@@ -146,9 +146,12 @@
 	zoom: 1;
 	height: 17px;
 }
+.ui-jqgrid .ui-th-column > .jqgh_cbox {
+	margin: 3px 0;
+}
 .ui-jqgrid .ui-th-column .cbox {
-	margin-left: 1px;
-	margin-right: 1px;
+	margin: 0;
+	vertical-align: middle;
 }
 .ui-jqgrid .ui-th-column .ui-th-div-ie > .cbox {
 	margin-left: -1px;
@@ -275,6 +278,18 @@
 	padding: 0 2px 0 2px;
 	margin: 0;
 	border: 0 none;
+}
+.ui-jqgrid .jqgrow> td.td_cbox {
+	padding: 2px;
+	text-align: center;
+	vertical-align: middle;
+}
+.ui-jqgrid .jqgrow> td.ui-sgcollapsed {
+	text-align: center;
+	vertical-align: middle;
+}
+.ui-jqgrid .jqgrow> td > .cbox {
+	vertical-align: middle;
 }
 .ui-jqgrid .ui-jqgrid-resize-mark {
 	width: 2px;
@@ -482,7 +497,7 @@ span.ui-jqgrid-cell-wrapper {
 }
 
 /*subgrid*/
-.ui-jqgrid .ui-jqgrid-btable .jqgrow .ui-sgcollapsed {
+.ui-jqgrid .ui-jqgrid-btable .jqgrow > .ui-sgcollapsed {
 	text-align: center;
 	vertical-align: middle;
 }
