@@ -75,15 +75,15 @@ $.extend(jgrid,{
 		}
 		return [curleft,curtop];
 	},
-	createModal : function(aIDs, content, p, insertSelector, posSelector, appendsel, css) {
-		// TODO: make as parameters:
-		// ui-icon
-		// ui-icon-closethick
-		// ui-icon-gripsmall-diagonal-se
-		var jqID = jgrid.jqID;
-		p = $.extend(true, {}, jgrid.jqModal || {}, p);
+	createModal : function(aIDs, content, o, insertSelector, posSelector, appendsel, css) {
+		var jqID = jgrid.jqID, gridjqModal = this.p != null ? this.p.jqModal || {} : {};
+		o = $.extend(true, {
+			commonIconClass: "ui-icon",
+			closeIcon: "ui-icon-closethick",
+			resizingRightBottomIcon: "ui-icon ui-icon-gripsmall-diagonal-se"
+		}, jgrid.jqModal || {}, gridjqModal, o);
 		var mw = document.createElement('div'), themodalSelector = "#"+jqID(aIDs.themodal),
-		rtlsup = $(p.gbox).attr("dir") === "rtl" ? true : false, 
+		rtlsup = $(o.gbox).attr("dir") === "rtl" ? true : false, 
 		scrollelmSelector = aIDs.scrollelm ? "#"+jqID(aIDs.scrollelm) : false;
 		css = $.extend({}, css || {});
 		mw.className= "ui-widget ui-widget-content ui-corner-all ui-jqdialog";
@@ -92,11 +92,11 @@ $.extend(jgrid,{
 		mh.className = "ui-jqdialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix " +
 			(rtlsup ? "ui-jqdialog-titlebar-rtl" : "ui-jqdialog-titlebar-ltr");
 		mh.id = aIDs.modalhead;
-		$(mh).append("<span class='ui-jqdialog-title'>"+p.caption+"</span>");
+		$(mh).append("<span class='ui-jqdialog-title'>"+o.caption+"</span>");
 		var ahr= $("<a class='ui-jqdialog-titlebar-close ui-corner-all'></a>")
 		.hover(function(){ahr.addClass('ui-state-hover');},
 			function(){ahr.removeClass('ui-state-hover');})
-		.append("<span class='ui-icon ui-icon-closethick'></span>");
+		.append("<span class='" + jgrid.mergeCssClasses(o.commonIconClass, o.closeIcon) + "'></span>");
 		$(mh).append(ahr);
 		mw.dir = rtlsup ? "rtl" : "ltr";
 		var mc = document.createElement('div');
@@ -109,54 +109,54 @@ $.extend(jgrid,{
 			$(appendsel).append(mw);
 		} else {$(mw).insertBefore(insertSelector);}
 		$(mw).css(css);
-		if(p.jqModal === undefined) {p.jqModal = true;} // internal use
+		if(o.jqModal === undefined) {o.jqModal = true;} // internal use
 		var coord = {};
-		if ( $.fn.jqm && p.jqModal === true) {
-			if(p.left ===0 && p.top===0 && p.overlay) {
+		if ( $.fn.jqm && o.jqModal === true) {
+			if(o.left ===0 && o.top===0 && o.overlay) {
 				var pos = [];
 				pos = jgrid.findPos(posSelector);
-				p.left = pos[0] + 4;
-				p.top = pos[1] + 4;
+				o.left = pos[0] + 4;
+				o.top = pos[1] + 4;
 			}
-			coord.top = p.top+"px";
-			coord.left = p.left;
-		} else if(p.left !==0 || p.top!==0) {
-			coord.left = p.left;
-			coord.top = p.top+"px";
+			coord.top = o.top+"px";
+			coord.left = o.left;
+		} else if(o.left !==0 || o.top!==0) {
+			coord.left = o.left;
+			coord.top = o.top+"px";
 		}
 		$("a.ui-jqdialog-titlebar-close",mh).click(function(){
-			var oncm = $(themodalSelector).data("onClose") || p.onClose;
-			var gboxclose = $(themodalSelector).data("gbox") || p.gbox;
-			jgrid.hideModal(themodalSelector,{gb:gboxclose,jqm:p.jqModal,onClose:oncm, removemodal: p.removemodal || false, formprop : !p.recreateForm || false, form: p.form || ''});
+			var oncm = $(themodalSelector).data("onClose") || o.onClose;
+			var gboxclose = $(themodalSelector).data("gbox") || o.gbox;
+			jgrid.hideModal(themodalSelector,{gb:gboxclose,jqm:o.jqModal,onClose:oncm, removemodal: o.removemodal || false, formprop : !o.recreateForm || false, form: o.form || ''});
 			return false;
 		});
-		if (p.width === 0 || !p.width) {p.width = 300;}
-		if(p.height === 0 || !p.height) {p.height =200;}
-		if(!p.zIndex) {
+		if (o.width === 0 || !o.width) {o.width = 300;}
+		if(o.height === 0 || !o.height) {o.height =200;}
+		if(!o.zIndex) {
 			var parentZ = $(insertSelector).parents("*[role=dialog]").filter(':first').css("z-index");
 			if(parentZ) {
-				p.zIndex = parseInt(parentZ,10)+2;
+				o.zIndex = parseInt(parentZ,10)+2;
 			} else {
-				p.zIndex = 950;
+				o.zIndex = 950;
 			}
 		}
 		var rtlt = 0;
 		if( rtlsup && coord.left && !appendsel) {
-			rtlt = $(p.gbox).width()- (!isNaN(p.width) ? parseInt(p.width,10) :0) - 8; // to do
+			rtlt = $(o.gbox).width()- (!isNaN(o.width) ? parseInt(o.width,10) :0) - 8; // to do
 		// just in case
 			coord.left = parseInt(coord.left,10) + parseInt(rtlt,10);
 		}
 		if(coord.left) { coord.left += "px"; }
 		$(mw).css($.extend({
-			width: isNaN(p.width) ? "auto": p.width+"px",
-			height:isNaN(p.height) ? "auto" : p.height + "px",
-			zIndex:p.zIndex,
+			width: isNaN(o.width) ? "auto": o.width+"px",
+			height:isNaN(o.height) ? "auto" : o.height + "px",
+			zIndex:o.zIndex,
 			overflow: 'hidden'
 		},coord))
 		.attr({tabIndex: "-1","role":"dialog","aria-labelledby":aIDs.modalhead,"aria-hidden":"true"});
-		if(p.drag === undefined) { p.drag=true;}
-		if(p.resize === undefined) {p.resize=true;}
-		if (p.drag) {
+		if(o.drag === undefined) { o.drag=true;}
+		if(o.resize === undefined) {o.resize=true;}
+		if (o.drag) {
 			if($.fn.jqDrag) {
 				$(mh).addClass("ui-draggable"); //css('cursor','move');
 				$(mw).jqDrag(mh);
@@ -166,9 +166,9 @@ $.extend(jgrid,{
 				} catch (ignore) {}
 			}
 		}
-		if(p.resize) {
+		if(o.resize) {
 			if($.fn.jqResize) {
-				$(mw).append("<div class='jqResize ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se'></div>");
+				$(mw).append("<div class='jqResize ui-resizable-handle ui-resizable-se " + o.resizingRightBottomIcon + "'></div>");
 				$(themodalSelector).jqResize(".jqResize",scrollelmSelector);
 			} else {
 				try {
@@ -176,11 +176,11 @@ $.extend(jgrid,{
 				} catch (ignore) {}
 			}
 		}
-		if(p.closeOnEscape === true){
+		if(o.closeOnEscape === true){
 			$(mw).keydown( function( e ) {
 				if( e.which === 27 ) {
-					var cone = $(themodalSelector).data("onClose") || p.onClose;
-					jgrid.hideModal(themodalSelector,{gb:p.gbox,jqm:p.jqModal,onClose: cone, removemodal: p.removemodal || false, formprop : !p.recreateForm || false, form: p.form || ''});
+					var cone = $(themodalSelector).data("onClose") || o.onClose;
+					jgrid.hideModal(themodalSelector,{gb:o.gbox,jqm:o.jqModal,onClose: cone, removemodal: o.removemodal || false, formprop : !o.recreateForm || false, form: o.form || ''});
 				}
 			});
 		}
