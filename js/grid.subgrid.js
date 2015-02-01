@@ -14,8 +14,8 @@ var jgrid = $.jgrid;
 jgrid.extend({
 setSubGrid : function () {
 	return this.each(function (){
-		var $t = this, p = $t.p, cm, i,
-		suboptions = {
+		var $t = this, p = $t.p, cm, i;
+		p.subGridOptions = $.extend({
 			commonIconClass: "ui-icon",
 			plusicon : "ui-icon-plus",
 			minusicon : "ui-icon-minus",
@@ -25,10 +25,9 @@ setSubGrid : function () {
 			selectOnExpand : false,
 			selectOnCollapse : false,
 			reloadOnExpand : true
-		};
-		p.subGridOptions = $.extend(suboptions, p.subGridOptions || {});
+		}, p.subGridOptions || {});
 		p.colNames.unshift("");
-		p.colModel.unshift({name:'subgrid',width: jgrid.cell_width ?  p.subGridWidth+p.cellLayout : p.subGridWidth,sortable: false,resizable:false,hidedlg:true,search:false,fixed:true});
+		p.colModel.unshift({name:'subgrid',width: jgrid.cell_width ?  p.subGridWidth+p.cellLayout : p.subGridWidth,labelClasses:"jqgh_subgrid",sortable: false,resizable:false,hidedlg:true,search:false,fixed:true});
 		cm = p.subGridModel;
 		if(cm[0]) {
 			cm[0].align = $.extend([],cm[0].align || []);
