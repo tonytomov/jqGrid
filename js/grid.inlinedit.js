@@ -494,6 +494,7 @@ jgrid.extend({
 				saveicon:"ui-icon-disk",
 				cancel: true,
 				cancelicon:"ui-icon-cancel",
+				commonIconClass : "ui-icon",
 				iconsOverText : false,
 				addParams : {addRowParams: {extraparam: {}}},
 				editParams : {},
@@ -561,6 +562,7 @@ jgrid.extend({
 				$self.jqGrid('navButtonAdd', elem,{
 					caption : o.addtext,
 					title : o.addtitle,
+					commonIconClass : o.commonIconClass,
 					buttonicon : o.addicon,
 					iconsOverText: o.iconsOverText,
 					id : p.id+"_iladd",
@@ -573,6 +575,7 @@ jgrid.extend({
 				$self.jqGrid('navButtonAdd', elem,{
 					caption : o.edittext,
 					title : o.edittitle,
+					commonIconClass : o.commonIconClass,
 					buttonicon : o.editicon,
 					iconsOverText: o.iconsOverText,
 					id : p.id+"_iledit",
@@ -590,6 +593,7 @@ jgrid.extend({
 				$self.jqGrid('navButtonAdd', elem,{
 					caption : o.savetext || '',
 					title : o.savetitle || 'Save row',
+					commonIconClass : o.commonIconClass,
 					buttonicon : o.saveicon,
 					iconsOverText: o.iconsOverText,
 					id : p.id+"_ilsave",
@@ -619,6 +623,7 @@ jgrid.extend({
 				$self.jqGrid('navButtonAdd', elem,{
 					caption : o.canceltext || '',
 					title : o.canceltitle || 'Cancel row editing',
+					commonIconClass : o.commonIconClass,
 					buttonicon : o.cancelicon,
 					iconsOverText: o.iconsOverText,
 					id : p.id+"_ilcancel",
