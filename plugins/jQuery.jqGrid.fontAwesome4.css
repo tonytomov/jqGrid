@@ -6,7 +6,8 @@
  * Date: 2013-11-23
  * see http://stackoverflow.com/a/20165553/315935 for more details
  */
-.ui-jqgrid .ui-pg-table .ui-pg-div > span.fa, #jqContextMenu .ui-menu-item > a > span.fa {
+.ui-jqgrid .ui-pg-table .ui-pg-div > span.fa,
+#jqContextMenu .ui-menu-item > a > span.fa {
     text-indent:0;
     height: auto;
     background-image: none;
@@ -25,7 +26,10 @@
     text-decoration: none;
 }
 .ui-jqdialog .ui-jqdialog-titlebar-close > span.fa {
-    margin: 0.3em;
+    margin: .3em;
+}
+.ui-jqdialog .ui-jqdialog-titlebar-close:hover > span.fa {
+    margin-top: .2em;
 }
 .ui-jqdialog > .ui-resizable-se {
 	bottom: -3px;
