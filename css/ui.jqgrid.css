@@ -86,8 +86,14 @@
 .ui-jqgrid .ui-jqgrid-titlebar-close:focus,
 .ui-jqdialog .ui-jqdialog-titlebar-close:hover,
 .ui-jqdialog .ui-jqdialog-titlebar-close:focus {
-	margin: -10px -1px 5px -1px;
+	margin: -9px 0 0 0;
 	padding: 0;
+}
+.ui-jqgrid .ui-jqgrid-titlebar-close:hover > span,
+.ui-jqgrid .ui-jqgrid-titlebar-close:focus > span,
+.ui-jqdialog .ui-jqdialog-titlebar-close:hover > span,
+.ui-jqdialog .ui-jqdialog-titlebar-close:focus > span {
+	margin: 0;
 }
 
 /* header*/
