@@ -19,18 +19,16 @@
             close: "fa-times",
             sortAsc: "fa-sort-asc fa-lg",
             sortDesc: "fa-sort-desc fa-lg",
-            navEdit: "fa-pencil fa-fw",
-            navAdd: "fa-plus fa-fw",
-            navDel: "fa-trash-o fa-fw",
-            navSearch: "fa-search fa-fw",
-            navRefresh: "fa-refresh fa-fw",
-            navView: "fa-file-o fa-fw",
-			navSave: "fa-floppy-o fa-fw",
-			navCancel: "fa-ban fa-fw",
-			actionEdit: "fa-fw ui-state-default fa-pencil",
-			actionDel: "fa-fw ui-state-default fa-trash-o",
-			actionSave: "fa-fw ui-state-default fa-floppy-o",
-			actionCancel: "fa-fw ui-state-default fa-ban",
+			navCommonIconClass: "fa-fw",
+            navEdit: "fa-pencil",
+            navAdd: "fa-plus",
+            navDel: "fa-trash-o",
+            navSearch: "fa-search",
+            navRefresh: "fa-refresh",
+            navView: "fa-file-o",
+			navSave: "fa-floppy-o",
+			navCancel: "fa-ban",
+			actionCommonIconClass: "ui-state-default fa-fw",
             pagerFirst: "fa-step-backward fa-fw",
             pagerPrev: "fa-backward fa-fw",
             pagerNext: "fa-forward fa-fw",
@@ -54,11 +52,6 @@
         }
     });
 
-	$.jgrid.defaults = $.jgrid.defaults || {};
-    $.extend(true, $.jgrid.defaults, {
-        fontAwesomeIcons: true // the new option will be used in callbacks
-    });
-
     $.extend(true, $.jgrid, {
         originalCreateModal: $.jgrid.originalCreateModal || $.jgrid.createModal,
         createModal: function (aIDs, content, p, insertSelector, posSelector, appendsel, css) {
@@ -76,6 +69,7 @@
         initFontAwesome: function () {
             return this.each(function () {
                 var $grid = $(this);
+
                 $grid.bind("jqGridFilterAfterShow", function (e, $form) {
                     // an alternative to afterShowSearch
                     var $dialog = $form.closest(".ui-jqdialog"),
@@ -157,73 +151,69 @@
                                 .addClass($.jgrid.icons.getClass("titleHiddenGrid"));
                         }
                     }
-                }).bind("jqGridLoadComplete jqGridAfterInsertRow", function () {
-                    var $this = $(this);
-                    $this.find(">tbody>.jqgrow>td div.ui-inline-edit").html("<span class=\"" + $.jgrid.icons.getClass("actionEdit") + "\"></span>");
-                    $this.find(">tbody>.jqgrow>td div.ui-inline-del").html("<span class=\"" + $.jgrid.icons.getClass("actionDel") + "\"></span>");
-                    $this.find(">tbody>.jqgrow>td div.ui-inline-save").html("<span class=\"" + $.jgrid.icons.getClass("actionSave") + "\"></span>");
-                    $this.find(">tbody>.jqgrow>td div.ui-inline-cancel").html("<span class=\"" + $.jgrid.icons.getClass("actionCancel") + "\"></span>");
                 }).bind("jqGridInitGrid", function () {
                     var $this = $(this), $pager, $sortables, p = this.p;
-                    
-                    $this.closest(".ui-jqgrid-view")
-                        .find(">.ui-jqgrid-toppager")
-                        .removeClass("ui-state-default")
-                        .addClass("ui-widget-content")
-                        .find(">.ui-pager-control")
-                        .addClass("ui-state-default");
+					
+					if (p.fontAwesomeIcons) {
+						$pager = $this.closest(".ui-jqgrid").find(".ui-pg-table");
+						$pager.find(".ui-pg-button>span.ui-icon-seek-first")
+							.removeClass("ui-icon ui-icon-seek-first")
+							.addClass($.jgrid.icons.getClass("pagerFirst"));
+						$pager.find(".ui-pg-button>span.ui-icon-seek-prev")
+							.removeClass("ui-icon ui-icon-seek-prev")
+							.addClass($.jgrid.icons.getClass("pagerPrev"));
+						$pager.find(".ui-pg-button>span.ui-icon-seek-next")
+							.removeClass("ui-icon ui-icon-seek-next")
+							.addClass($.jgrid.icons.getClass("pagerNext"));
+						$pager.find(".ui-pg-button>span.ui-icon-seek-end")
+							.removeClass("ui-icon ui-icon-seek-end")
+							.addClass($.jgrid.icons.getClass("pagerLast"));
 
-                    if (p.fontAwesomeIcons) {
-                        $pager = $this.closest(".ui-jqgrid").find(".ui-pg-table");
-                        $pager.find(".ui-pg-button>span.ui-icon-seek-first")
-                            .removeClass("ui-icon ui-icon-seek-first")
-                            .addClass($.jgrid.icons.getClass("pagerFirst"));
-                        $pager.find(".ui-pg-button>span.ui-icon-seek-prev")
-                            .removeClass("ui-icon ui-icon-seek-prev")
-                            .addClass($.jgrid.icons.getClass("pagerPrev"));
-                        $pager.find(".ui-pg-button>span.ui-icon-seek-next")
-                            .removeClass("ui-icon ui-icon-seek-next")
-                            .addClass($.jgrid.icons.getClass("pagerNext"));
-                        $pager.find(".ui-pg-button>span.ui-icon-seek-end")
-                            .removeClass("ui-icon ui-icon-seek-end")
-                            .addClass($.jgrid.icons.getClass("pagerLast"));
+						$this.closest(".ui-jqgrid")
+							.find(".ui-jqgrid-titlebar>.ui-jqgrid-titlebar-close>.ui-icon-circle-triangle-n")
+							.removeClass("ui-icon ui-icon-circle-triangle-n")
+							.addClass($.jgrid.icons.getClass("titleVisibleGrid"))
+							.parent();
 
-                        $this.closest(".ui-jqgrid")
-                            .find(".ui-jqgrid-titlebar>.ui-jqgrid-titlebar-close>.ui-icon-circle-triangle-n")
-                            .removeClass("ui-icon ui-icon-circle-triangle-n")
-                            .addClass($.jgrid.icons.getClass("titleVisibleGrid"))
-                            .parent();
+						$sortables = $this.closest(".ui-jqgrid")
+								.find(".ui-jqgrid-htable .ui-jqgrid-labels .ui-jqgrid-sortable span.s-ico");
+						$sortables.find(">span.ui-icon-triangle-1-s")
+							.removeClass("ui-icon ui-icon-triangle-1-s")
+							.addClass($.jgrid.icons.getClass("sortAsc"));
+						$sortables.find(">span.ui-icon-triangle-1-n")
+							.removeClass("ui-icon ui-icon-triangle-1-n")
+							.addClass($.jgrid.icons.getClass("sortDesc"));
+					}
+                }).bind("jqGridBeforeInitGrid", function () {
+                    var $this = $(this), $pager, $sortables, p = this.p;
 
-                        $sortables = $this.closest(".ui-jqgrid")
-                                .find(".ui-jqgrid-htable .ui-jqgrid-labels .ui-jqgrid-sortable span.s-ico");
-                        $sortables.find(">span.ui-icon-triangle-1-s")
-                            .removeClass("ui-icon ui-icon-triangle-1-s")
-                            .addClass($.jgrid.icons.getClass("sortAsc"));
-                        $sortables.find(">span.ui-icon-triangle-1-n")
-                            .removeClass("ui-icon ui-icon-triangle-1-n")
-                            .addClass($.jgrid.icons.getClass("sortDesc"));
+					p.fontAwesomeIcons = true;
 
-						if (p.subGrid) {
-							p.subGridOptions = p.subGridOptions || {};
-							p.subGridOptions.commonIconClass = $.jgrid.icons.getClass("subgridCommonIconClass");
-							p.subGridOptions.plusicon = $.jgrid.icons.getClass("subgridPlus");   //"ui-icon-plus";
-							p.subGridOptions.minusicon = $.jgrid.icons.getClass("subgridMinus"); //"ui-icon-minus";
-							p.subGridOptions.openicon = $.jgrid.icons.getClass("subgridOpen" + p.direction);   //"ui-icon-carat-1-sw";
-						}
-						
-						p.navOptions = p.navOptions || {};
-						$.extend(true, p.navOptions, {
-							editicon: $.jgrid.icons.getClass("navEdit"),
-							addicon: $.jgrid.icons.getClass("navAdd"),
-							delicon: $.jgrid.icons.getClass("navDel"),
-							saveicon: $.jgrid.icons.getClass("navSave"),
-							cancelicon: $.jgrid.icons.getClass("navCancel"),
-							searchicon: $.jgrid.icons.getClass("navSearch"),
-							refreshicon: $.jgrid.icons.getClass("navRefresh"),
-							viewicon: $.jgrid.icons.getClass("navView"),
-							commonIconClass: ""
-						});
-                    }
+					if (p.subGrid) {
+						p.subGridOptions = $.extend(true, {
+							commonIconClass: $.jgrid.icons.getClass("subgridCommonIconClass"),
+							plusicon: $.jgrid.icons.getClass("subgridPlus"),				//"ui-icon-plus";
+							minusicon: $.jgrid.icons.getClass("subgridMinus"),				//"ui-icon-minus";
+							openicon: $.jgrid.icons.getClass("subgridOpen" + p.direction)	//"ui-icon-carat-1-sw";
+						},
+						p.subGridOptions || {});
+					}
+					
+					p.navOptions = $.extend(true, {
+						editicon: $.jgrid.icons.getClass("navEdit"),
+						addicon: $.jgrid.icons.getClass("navAdd"),
+						delicon: $.jgrid.icons.getClass("navDel"),
+						saveicon: $.jgrid.icons.getClass("navSave"),
+						cancelicon: $.jgrid.icons.getClass("navCancel"),
+						searchicon: $.jgrid.icons.getClass("navSearch"),
+						refreshicon: $.jgrid.icons.getClass("navRefresh"),
+						viewicon: $.jgrid.icons.getClass("navView"),
+						commonIconClass: $.jgrid.icons.getClass("navCommonIconClass")
+					}, p.navOptions || {});
+					
+					p.actionsNavOptions = $.extend(true, {
+						commonIconClass: $.jgrid.icons.getClass("actionCommonIconClass")
+					}, p.actionsNavOptions || {});
                 });
             });
         }
