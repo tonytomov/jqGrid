@@ -261,6 +261,107 @@ $.extend(true,jgrid,{
 		idName: 'id',
 		unused: '' // used only to detect whether the changes are overwritten because of wrong usage
 	},
+	icons: {
+		jQueryUI: {
+			common: "ui-icon",
+			pager: {
+				firstIcon: "ui-icon-seek-first",
+				prevIcon: "ui-icon-seek-prev",
+				nextIcon: "ui-icon-seek-next",
+				lastIcon: "ui-icon-seek-end"
+			},
+			sort: {
+				ascIcon: "ui-icon-triangle-1-s",
+				descIcon: "ui-icon-triangle-1-n"
+			},
+			gridMinimize: {
+				visibleIcon: "ui-icon-circle-triangle-n",
+				hiddenIcon: "ui-icon-circle-triangle-s"
+			},
+			nav: {
+				edit: "ui-icon-pencil",
+				add: "ui-icon-plus",
+				del: "ui-icon-trash",
+				search: "ui-icon-search",
+				refresh: "ui-icon-refresh",
+				view: "ui-icon-document",
+				save: "ui-icon-disk",
+				cancel: "ui-icon-cancel"
+			},
+			actions: {
+			},
+			form: {
+				prev: "ui-icon-triangle-1-w",
+				next: "ui-icon-triangle-1-e",
+				formSave: "ui-icon-disk",
+				formUndo: "ui-icon-close",
+				formDel: "ui-icon-scissors"
+			},
+			search: {
+				search: "ui-icon-search",
+				reset: "ui-icon-arrowreturnthick-1-w",
+				query: "ui-icon-comment"
+			},
+			subgrid: {
+				plus: "ui-icon-plus",
+				minus: "ui-icon-minus",
+				openLtr: "ui-icon-carat-1-sw",
+				openRtl: "ui-icon-carat-1-se"
+			}
+		},
+		fontAwesome: {
+			common: "fa",
+			pager: {
+				common: "fa-fw",
+				firstIcon: "fa-step-backward",
+				prevIcon: "fa-backward",
+				nextIcon: "fa-forward",
+				lastIcon: "fa-step-forward"
+			},
+			sort: {
+				common: "fa-lg",
+				ascIcon: "fa-sort-asc",
+				descIcon: "fa-sort-desc"
+			},
+			gridMinimize: {
+				visibleIcon: "fa-chevron-circle-up",
+				hiddenIcon: "fa-chevron-circle-down"
+			},
+			nav: {
+				common: "fa-fw",
+				edit: "fa-pencil",
+				add: "fa-plus",
+				del: "fa-trash-o",
+				search: "fa-search",
+				refresh: "fa-refresh",
+				view: "fa-file-o",
+				save: "fa-floppy-o",
+				cancel: "fa-ban"
+			},
+			actions: {
+				common: "ui-state-default fa-fw"
+			},
+			form: {
+				prev: "fa-caret-left",
+				next: "fa-caret-right",
+				formSave: "fa-floppy-o",
+				formUndo: "fa-undo",
+				formDel: "fa-trash-o"
+			},
+			search: {
+				search: "fa-search",
+				reset: "fa-undo",
+				query: "fa-comments-o"
+			},
+			subgrid: {
+				common: "ui-state-default fa-fw",
+				plus: "fa-plus",
+				minus: "fa-minus",
+				openLtr: "fa-reply fa-rotate-180",
+				openRtl: "fa-share fa-rotate-180"
+			}
+		}
+	},
 	htmlDecode : function(value){
 		if(value && (value==='&nbsp;' || value==='&#160;' || (value.length===1 && value.charCodeAt(0)===160))) { return "";}
 		return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");		
