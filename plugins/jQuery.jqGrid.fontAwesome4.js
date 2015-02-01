@@ -57,52 +57,7 @@
             return this.each(function () {
                 var $grid = $(this);
 
-				$grid.bind("jqGridHeaderClick", function (e, gridstate) {
-                    var $icon;
-                    if (this.p.fontAwesomeIcons) {
-                        $icon = $(this).closest(".ui-jqgrid").find(".ui-jqgrid-titlebar>.ui-jqgrid-titlebar-close>span");
-                        if (gridstate === "visible") {
-                            $icon.removeClass("ui-icon ui-icon-circle-triangle-n ui-icon-circle-triangle-s " + $.jgrid.icons.getClass("titleHiddenGrid"))
-                                .addClass($.jgrid.icons.getClass("titleVisibleGrid"));
-                        } else if (gridstate === "hidden") {
-                            $icon.removeClass("ui-icon ui-icon-circle-triangle-n ui-icon-circle-triangle-s " + $.jgrid.icons.getClass("titleVisibleGrid"))
-                                .addClass($.jgrid.icons.getClass("titleHiddenGrid"));
-                        }
-                    }
-                }).bind("jqGridInitGrid", function () {
-                    var $this = $(this), $pager, $sortables, p = this.p;
-
-					if (p.fontAwesomeIcons) {
-						$pager = $this.closest(".ui-jqgrid").find(".ui-pg-table");
-						$pager.find(".ui-pg-button>span.ui-icon-seek-first")
-							.removeClass("ui-icon ui-icon-seek-first")
-							.addClass($.jgrid.icons.getClass("pagerFirst"));
-						$pager.find(".ui-pg-button>span.ui-icon-seek-prev")
-							.removeClass("ui-icon ui-icon-seek-prev")
-							.addClass($.jgrid.icons.getClass("pagerPrev"));
-						$pager.find(".ui-pg-button>span.ui-icon-seek-next")
-							.removeClass("ui-icon ui-icon-seek-next")
-							.addClass($.jgrid.icons.getClass("pagerNext"));
-						$pager.find(".ui-pg-button>span.ui-icon-seek-end")
-							.removeClass("ui-icon ui-icon-seek-end")
-							.addClass($.jgrid.icons.getClass("pagerLast"));
-
-						$this.closest(".ui-jqgrid")
-							.find(".ui-jqgrid-titlebar>.ui-jqgrid-titlebar-close>.ui-icon-circle-triangle-n")
-							.removeClass("ui-icon ui-icon-circle-triangle-n")
-							.addClass($.jgrid.icons.getClass("titleVisibleGrid"))
-							.parent();
-
-						$sortables = $this.closest(".ui-jqgrid")
-								.find(".ui-jqgrid-htable .ui-jqgrid-labels .ui-jqgrid-sortable span.s-ico");
-						$sortables.find(">span.ui-icon-triangle-1-s")
-							.removeClass("ui-icon ui-icon-triangle-1-s")
-							.addClass($.jgrid.icons.getClass("sortAsc"));
-						$sortables.find(">span.ui-icon-triangle-1-n")
-							.removeClass("ui-icon ui-icon-triangle-1-n")
-							.addClass($.jgrid.icons.getClass("sortDesc"));
-					}
-                }).bind("jqGridBeforeInitGrid", function () {
+				$grid.bind("jqGridBeforeInitGrid", function () {
                     var $this = $(this), $pager, $sortables, p = this.p;
 
 					p.fontAwesomeIcons = true;
@@ -111,6 +66,17 @@
 						commonIconClass: "",
 						closeIcon: $.jgrid.icons.getClass("close")
 					}, p.jqModal || {});
+					
+					$.extend(true, p, {
+						pagerFirstIcon: $.jgrid.icons.getClass("pagerFirst"),
+						pagerPrevIcon: $.jgrid.icons.getClass("pagerPrev"),
+						pagerNextIcon: $.jgrid.icons.getClass("pagerNext"),
+						pagerLastIcon: $.jgrid.icons.getClass("pagerLast"),
+						sortAscIcon: $.jgrid.icons.getClass("sortAsc"),
+						sortDescIcon: $.jgrid.icons.getClass("sortDesc"),
+						visibleGridIcon: $.jgrid.icons.getClass("titleVisibleGrid"),
+						hiddenGridIcon: $.jgrid.icons.getClass("titleHiddenGrid")
+					});
 
 					if (p.subGrid) {
 						p.subGridOptions = $.extend(true, {

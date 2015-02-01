@@ -1358,7 +1358,15 @@ $.fn.jqGrid = function( pin ) {
 			ignoreCase : true,
 			cmTemplate : {},
 			idPrefix : "",
-			multiSort :  false
+			multiSort :  false,
+			pagerFirstIcon: "ui-icon ui-icon-seek-first",
+			pagerPrevIcon: "ui-icon ui-icon-seek-prev",
+			pagerNextIcon: "ui-icon ui-icon-seek-next",
+			pagerLastIcon: "ui-icon ui-icon-seek-end",
+			sortAscIcon: "ui-icon ui-icon-triangle-1-s",
+			sortDescIcon: "ui-icon ui-icon-triangle-1-n",
+			visibleGridIcon: "ui-icon ui-icon-circle-triangle-n",
+			hiddenGridIcon: "ui-icon ui-icon-circle-triangle-s"
 		},
 		jgrid.defaults, pin || {});
 		if (localData !== undefined) {
@@ -2761,11 +2769,11 @@ $.fn.jqGrid = function( pin ) {
 			pgid = "#"+jqID(pgid); // modify to id selector
 			if(p.pgbuttons===true) {
 				var po=["first"+tp,"prev"+tp, "next"+tp,"last"+tp]; if(dir==="rtl") { po.reverse(); }
-				pgl += "<td id='"+po[0]+"' class='ui-pg-button ui-corner-all' " + (p.pgfirst ? "title='"+p.pgfirst +"'" : "")+"><span class='ui-icon ui-icon-seek-first'></span></td>";
-				pgl += "<td id='"+po[1]+"' class='ui-pg-button ui-corner-all' " + (p.pgprev ? "title='"+p.pgprev +"'" : "")+"><span class='ui-icon ui-icon-seek-prev'></span></td>";
+				pgl += "<td id='"+po[0]+"' class='ui-pg-button ui-corner-all' " + (p.pgfirst ? "title='"+p.pgfirst +"'" : "")+"><span class='" + p.pagerFirstIcon + "'></span></td>";
+				pgl += "<td id='"+po[1]+"' class='ui-pg-button ui-corner-all' " + (p.pgprev ? "title='"+p.pgprev +"'" : "")+"><span class='" + p.pagerPrevIcon + "'></span></td>";
 				pgl += pginp !== "" ? sep+pginp+sep:"";
-				pgl += "<td id='"+po[2]+"' class='ui-pg-button ui-corner-all' " + (p.pgnext ? "title='"+p.pgnext +"'" : "")+"><span class='ui-icon ui-icon-seek-next'></span></td>";
-				pgl += "<td id='"+po[3]+"' class='ui-pg-button ui-corner-all' " + (p.pglast ? "title='"+p.pglast +"'" : "")+"><span class='ui-icon ui-icon-seek-end'></span></td>";
+				pgl += "<td id='"+po[2]+"' class='ui-pg-button ui-corner-all' " + (p.pgnext ? "title='"+p.pgnext +"'" : "")+"><span class='" + p.pagerNextIcon + "'></span></td>";
+				pgl += "<td id='"+po[3]+"' class='ui-pg-button ui-corner-all' " + (p.pglast ? "title='"+p.pglast +"'" : "")+"><span class='" + p.pagerLastIcon + "'></span></td>";
 			} else if (pginp !== "") { pgl += pginp; }
 			if(dir==="ltr") { pgl += str; }
 			pgl += "</tr></tbody></table>";
@@ -3128,8 +3136,8 @@ $.fn.jqGrid = function( pin ) {
 		}
 		if(p.viewsortcols[1] === 'horizontal') {iac=" ui-i-asc";idc=" ui-i-desc";}
 		tdc = isMSIE ?  "ui-th-div-ie" :"";
-		imgs = "<span class='s-ico' style='display:none'><span class='ui-grid-ico-sort ui-icon-asc"+iac+" ui-state-disabled ui-icon ui-icon-triangle-1-n ui-sort-"+dir+"'></span>";
-		imgs += "<span class='ui-grid-ico-sort ui-icon-desc"+idc+" ui-state-disabled ui-icon ui-icon-triangle-1-s ui-sort-"+dir+"'></span></span>";
+		imgs = "<span class='s-ico' style='display:none'><span class='ui-grid-ico-sort ui-icon-asc"+iac+" ui-state-disabled " + p.sortDescIcon + " ui-sort-"+dir+"'></span>";
+		imgs += "<span class='ui-grid-ico-sort ui-icon-desc"+idc+" ui-state-disabled " + p.sortAscIcon + " ui-sort-"+dir+"'></span></span>";
 		if(p.multiSort) {
 			sortarr = p.sortname.split(",");
 			var iSort;
@@ -3562,7 +3570,7 @@ $.fn.jqGrid = function( pin ) {
 		var arf = p.hidegrid===true ? $("<a role='link' class='ui-jqgrid-titlebar-close ui-corner-all'" + (p.showhide ? " title='"+p.showhide+"'" : "")+"/>").hover(
 			function(){ arf.addClass('ui-state-hover');},
 			function() {arf.removeClass('ui-state-hover');})
-		.append("<span class='ui-icon ui-icon-circle-triangle-n'></span>") : "";
+		.append("<span class='" + p.visibleGridIcon + "'></span>") : "";
 		$(grid.cDiv).append("<span class='ui-jqgrid-title'>"+p.caption+"</span>").append(arf)
 		.addClass("ui-jqgrid-titlebar ui-jqgrid-caption"+(dir==="rtl" ? "-rtl" :"" )+" ui-widget-header ui-corner-top ui-helper-clearfix");
 		$(grid.cDiv).insertBefore(grid.hDiv);
@@ -3621,7 +3629,7 @@ $.fn.jqGrid = function( pin ) {
 						$(elems, p.gBox).slideUp("fast", function() {
 							counter--;
 							if (counter === 0) {
-								$("span",self).removeClass("ui-icon-circle-triangle-n").addClass("ui-icon-circle-triangle-s");
+								$("span",self).removeClass(p.visibleGridIcon).addClass(p.hiddenGridIcon);
 								p.gridstate = 'hidden';
 								if($(p.gBox).hasClass("ui-resizable")) { $(".ui-resizable-handle",p.gBox).hide(); }
 								$(grid.cDiv).addClass("ui-corner-bottom");
@@ -3633,7 +3641,7 @@ $.fn.jqGrid = function( pin ) {
 						$(elems,p.gBox).slideDown("fast", function() {
 							counter--;
 							if (counter === 0) {
-								$("span",self).removeClass("ui-icon-circle-triangle-s").addClass("ui-icon-circle-triangle-n");
+								$("span",self).removeClass(p.hiddenGridIcon).addClass(p.visibleGridIcon);
 								if(hg) {p.datatype = tdt;populate.call(ts);hg=false;}
 								p.gridstate = 'visible';
 								if($(p.gBox).hasClass("ui-resizable")) { $(".ui-resizable-handle",p.gBox).show(); }
