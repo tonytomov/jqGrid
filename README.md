@@ -84,12 +84,15 @@ The most the changes corresponds the tendency of web development last years. Loc
 
 * `fatalError` - new callback which can be used to change displaying of critical error with respect of another function as default JvaScript function alert. One can use the feature in unit tests for example.
 * `resizeDblClick` callback and `jqGridResizeDblClick` event will be called on the double-click on the column resizer. It's important to stress that the callbacks will be called even if no `autoResizable: true` property are defined in `colModel`. It allows to implement some custom action on double-click on the column resizer. Returning `false` or `"stop"` value from `resizeDblClick` callback or `jqGridResizeDblClick` event in case of `autoResizable: true` property set in the column will prevent resizing on the column by calling of `autoResizeColumn`.
+* the callback `beforeInitGrid` and the event `jqGridBeforeInitGrid` are added. There will be executed directly at the beginning of creating jqGrid. It allows to make some changes *before* any parts of grid will be created.
 * the callback `onShowHideCol` and `onRemapColumns` are added. There correspond `jqGridShowHideCol` and `jqGridRemapColumns` event which already exist in jqGrid 4.7.
 
 ### The following **bugs** are fixed
 
 * reading of XML/JSON data having default `repeatitems: true` property in `jsonReader` or `xmlReader` in case of usage `key: true` in some column of the `colModel`.
 * many parts of jqGrid are fixed to allow to use special characters like dot in ids.
+* deleting of rows which id contains comma character.
+* 
 * id duplicates in case of usage `inlineNav` for both top pager and bottom pager.
 * the bug in data grouping with hiding of parent summary row on hiding of the last subgroup.
 * ... to be included soon
