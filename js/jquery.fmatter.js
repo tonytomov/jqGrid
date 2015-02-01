@@ -271,7 +271,9 @@
 			mtype: op.mtype
 		};
 		if ((!p.multiselect && rid !== p.selrow) || (p.multiselect && $.inArray(rid, p.selarrrow) < 0)) {
-			$grid.jqGrid('setSelection', rid, e);
+			$grid.jqGrid('setSelection', rid, true, e);
+		} else {
+			jgrid.fullBoolFeedback.call($t, "onSelectRow", "jqGridSelectRow", rid, true, e);
 		}
 		switch(act)	{
 			case 'edit':

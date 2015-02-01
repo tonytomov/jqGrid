@@ -642,7 +642,7 @@ jgrid.extend({
 				$(gID+"_ilcancel").addClass('ui-state-disabled');
 			}
 			if(o.restoreAfterSelect === true) {
-				$self.bind("jqGridBeforeSelectRow", function (e, rowid) {
+				$self.bind("jqGridSelectRow", function (e, rowid) {
 					if (p.savedRow.length > 0 && p._inlinenav === true) {
 						var editingRowId = p.savedRow[0].id;
 						if (rowid !== editingRowId) {
