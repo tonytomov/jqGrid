@@ -5434,15 +5434,15 @@ $.extend(jgrid,{
 		}
 		return [curleft,curtop];
 	},
-	createModal : function(aIDs, content, p, insertSelector, posSelector, appendsel, css) {
-		// TODO: make as parameters:
-		// ui-icon
-		// ui-icon-closethick
-		// ui-icon-gripsmall-diagonal-se
-		var jqID = jgrid.jqID;
-		p = $.extend(true, {}, jgrid.jqModal || {}, p);
+	createModal : function(aIDs, content, o, insertSelector, posSelector, appendsel, css) {
+		var jqID = jgrid.jqID, gridjqModal = this.p != null ? this.p.jqModal || {} : {};
+		o = $.extend(true, {
+			commonIconClass: "ui-icon",
+			closeIcon: "ui-icon-closethick",
+			resizingRightBottomIcon: "ui-icon ui-icon-gripsmall-diagonal-se"
+		}, jgrid.jqModal || {}, gridjqModal, o);
 		var mw = document.createElement('div'), themodalSelector = "#"+jqID(aIDs.themodal),
-		rtlsup = $(p.gbox).attr("dir") === "rtl" ? true : false, 
+		rtlsup = $(o.gbox).attr("dir") === "rtl" ? true : false, 
 		scrollelmSelector = aIDs.scrollelm ? "#"+jqID(aIDs.scrollelm) : false;
 		css = $.extend({}, css || {});
 		mw.className= "ui-widget ui-widget-content ui-corner-all ui-jqdialog";
@@ -5451,11 +5451,11 @@ $.extend(jgrid,{
 		mh.className = "ui-jqdialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix " +
 			(rtlsup ? "ui-jqdialog-titlebar-rtl" : "ui-jqdialog-titlebar-ltr");
 		mh.id = aIDs.modalhead;
-		$(mh).append("<span class='ui-jqdialog-title'>"+p.caption+"</span>");
+		$(mh).append("<span class='ui-jqdialog-title'>"+o.caption+"</span>");
 		var ahr= $("<a class='ui-jqdialog-titlebar-close ui-corner-all'></a>")
 		.hover(function(){ahr.addClass('ui-state-hover');},
 			function(){ahr.removeClass('ui-state-hover');})
-		.append("<span class='ui-icon ui-icon-closethick'></span>");
+		.append("<span class='" + jgrid.mergeCssClasses(o.commonIconClass, o.closeIcon) + "'></span>");
 		$(mh).append(ahr);
 		mw.dir = rtlsup ? "rtl" : "ltr";
 		var mc = document.createElement('div');
@@ -5468,54 +5468,54 @@ $.extend(jgrid,{
 			$(appendsel).append(mw);
 		} else {$(mw).insertBefore(insertSelector);}
 		$(mw).css(css);
-		if(p.jqModal === undefined) {p.jqModal = true;} // internal use
+		if(o.jqModal === undefined) {o.jqModal = true;} // internal use
 		var coord = {};
-		if ( $.fn.jqm && p.jqModal === true) {
-			if(p.left ===0 && p.top===0 && p.overlay) {
+		if ( $.fn.jqm && o.jqModal === true) {
+			if(o.left ===0 && o.top===0 && o.overlay) {
 				var pos = [];
 				pos = jgrid.findPos(posSelector);
-				p.left = pos[0] + 4;
-				p.top = pos[1] + 4;
+				o.left = pos[0] + 4;
+				o.top = pos[1] + 4;
 			}
-			coord.top = p.top+"px";
-			coord.left = p.left;
-		} else if(p.left !==0 || p.top!==0) {
-			coord.left = p.left;
-			coord.top = p.top+"px";
+			coord.top = o.top+"px";
+			coord.left = o.left;
+		} else if(o.left !==0 || o.top!==0) {
+			coord.left = o.left;
+			coord.top = o.top+"px";
 		}
 		$("a.ui-jqdialog-titlebar-close",mh).click(function(){
-			var oncm = $(themodalSelector).data("onClose") || p.onClose;
-			var gboxclose = $(themodalSelector).data("gbox") || p.gbox;
-			jgrid.hideModal(themodalSelector,{gb:gboxclose,jqm:p.jqModal,onClose:oncm, removemodal: p.removemodal || false, formprop : !p.recreateForm || false, form: p.form || ''});
+			var oncm = $(themodalSelector).data("onClose") || o.onClose;
+			var gboxclose = $(themodalSelector).data("gbox") || o.gbox;
+			jgrid.hideModal(themodalSelector,{gb:gboxclose,jqm:o.jqModal,onClose:oncm, removemodal: o.removemodal || false, formprop : !o.recreateForm || false, form: o.form || ''});
 			return false;
 		});
-		if (p.width === 0 || !p.width) {p.width = 300;}
-		if(p.height === 0 || !p.height) {p.height =200;}
-		if(!p.zIndex) {
+		if (o.width === 0 || !o.width) {o.width = 300;}
+		if(o.height === 0 || !o.height) {o.height =200;}
+		if(!o.zIndex) {
 			var parentZ = $(insertSelector).parents("*[role=dialog]").filter(':first').css("z-index");
 			if(parentZ) {
-				p.zIndex = parseInt(parentZ,10)+2;
+				o.zIndex = parseInt(parentZ,10)+2;
 			} else {
-				p.zIndex = 950;
+				o.zIndex = 950;
 			}
 		}
 		var rtlt = 0;
 		if( rtlsup && coord.left && !appendsel) {
-			rtlt = $(p.gbox).width()- (!isNaN(p.width) ? parseInt(p.width,10) :0) - 8; // to do
+			rtlt = $(o.gbox).width()- (!isNaN(o.width) ? parseInt(o.width,10) :0) - 8; // to do
 		// just in case
 			coord.left = parseInt(coord.left,10) + parseInt(rtlt,10);
 		}
 		if(coord.left) { coord.left += "px"; }
 		$(mw).css($.extend({
-			width: isNaN(p.width) ? "auto": p.width+"px",
-			height:isNaN(p.height) ? "auto" : p.height + "px",
-			zIndex:p.zIndex,
+			width: isNaN(o.width) ? "auto": o.width+"px",
+			height:isNaN(o.height) ? "auto" : o.height + "px",
+			zIndex:o.zIndex,
 			overflow: 'hidden'
 		},coord))
 		.attr({tabIndex: "-1","role":"dialog","aria-labelledby":aIDs.modalhead,"aria-hidden":"true"});
-		if(p.drag === undefined) { p.drag=true;}
-		if(p.resize === undefined) {p.resize=true;}
-		if (p.drag) {
+		if(o.drag === undefined) { o.drag=true;}
+		if(o.resize === undefined) {o.resize=true;}
+		if (o.drag) {
 			if($.fn.jqDrag) {
 				$(mh).addClass("ui-draggable"); //css('cursor','move');
 				$(mw).jqDrag(mh);
@@ -5525,9 +5525,9 @@ $.extend(jgrid,{
 				} catch (ignore) {}
 			}
 		}
-		if(p.resize) {
+		if(o.resize) {
 			if($.fn.jqResize) {
-				$(mw).append("<div class='jqResize ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se'></div>");
+				$(mw).append("<div class='jqResize ui-resizable-handle ui-resizable-se " + o.resizingRightBottomIcon + "'></div>");
 				$(themodalSelector).jqResize(".jqResize",scrollelmSelector);
 			} else {
 				try {
@@ -5535,11 +5535,11 @@ $.extend(jgrid,{
 				} catch (ignore) {}
 			}
 		}
-		if(p.closeOnEscape === true){
+		if(o.closeOnEscape === true){
 			$(mw).keydown( function( e ) {
 				if( e.which === 27 ) {
-					var cone = $(themodalSelector).data("onClose") || p.onClose;
-					jgrid.hideModal(themodalSelector,{gb:p.gbox,jqm:p.jqModal,onClose: cone, removemodal: p.removemodal || false, formprop : !p.recreateForm || false, form: p.form || ''});
+					var cone = $(themodalSelector).data("onClose") || o.onClose;
+					jgrid.hideModal(themodalSelector,{gb:o.gbox,jqm:o.jqModal,onClose: cone, removemodal: o.removemodal || false, formprop : !o.recreateForm || false, form: o.form || ''});
 				}
 			});
 		}
@@ -7834,10 +7834,10 @@ var jgrid = $.jgrid, feedback = jgrid.feedback, fullBoolFeedback = jgrid.fullBoo
 		$w.remove();
 		if(h.o) {h.o.remove();}
 	},
-	addFormIcon = function ($fmButton, iconInfos) {
+	addFormIcon = function ($fmButton, iconInfos, commonIcon) {
 		var iconspan;
 		if (iconInfos[0] === true) {
-			iconspan = "<span class='fm-button-icon ui-icon "+iconInfos[2]+"'></span>";
+			iconspan = "<span class='" + mergeCssClasses("fm-button-icon", commonIcon, iconInfos[2]) + "'></span>";
 			if (iconInfos[1] === "right") {
 				$fmButton.addClass('fm-button-icon-right').append(iconspan);
 			} else {
@@ -7874,6 +7874,11 @@ jgrid.extend({
 				multipleSearch : false,
 				multipleGroup : false,
 				//cloneSearchRowOnAdd: true,
+				// we can't use srort names like resetIcon because of conflict with existing "x" of filterToolbar
+				commonIconClass: "ui-icon",
+				findDialogIcon: "ui-icon-search",
+				resetDialogIcon: "ui-icon-arrowreturnthick-1-w",
+				queryDialogIcon: "ui-icon-comment",
 				top : 0,
 				left: 0,
 				jqModal : true,
@@ -7900,7 +7905,7 @@ jgrid.extend({
 				operands : { "eq" :"=", "ne":"<>","lt":"<","le":"<=","gt":">","ge":">=","bw":"LIKE","bn":"NOT LIKE","in":"IN","ni":"NOT IN","ew":"LIKE","en":"NOT LIKE","cn":"LIKE","nc":"NOT LIKE","nu":"IS NULL","nn":"IS NOT NULL"}
 			}, jgrid.search, p.searching || {}, oMuligrid || {});
 
-			var fid = "fbox_"+p.id,
+			var fid = "fbox_"+p.id, commonIconClass = o.commonIconClass,
 			ids = {themodal:'searchmod'+fid,modalhead:'searchhd'+fid,modalcontent:'searchcnt'+fid, scrollelm : fid},
 			themodalSelector = "#"+jqID(ids.themodal), gboxSelector = p.gBox, gviewSelector = p.gView,
 			defaultFilters = p.postData[o.sFilter],
@@ -7932,11 +7937,11 @@ jgrid.extend({
 					fil.attr("dir","rtl");
 				}
 				var columns = $.extend([],p.colModel),
-				bS = "<a id='"+fid+"_search' class='fm-button ui-state-default ui-corner-all fm-button-icon-right ui-reset'></span><span class='fm-button-text'>"+o.Find+"</span><span class='fm-button-icon ui-icon ui-icon-search'></a>",
-				bC = "<a id='"+fid+"_reset' class='fm-button ui-state-default ui-corner-all fm-button-icon-left ui-search'><span class='fm-button-icon ui-icon ui-icon-arrowreturnthick-1-w'></span><span class='fm-button-text'>"+o.Reset+"</span></a>",
+				bS = "<a id='"+fid+"_search' class='fm-button ui-state-default ui-corner-all fm-button-icon-right ui-reset'></span><span class='fm-button-text'>"+o.Find+"</span><span class='fm-button-icon " + mergeCssClasses(commonIconClass, o.findDialogIcon) + "'></a>",
+				bC = "<a id='"+fid+"_reset' class='fm-button ui-state-default ui-corner-all fm-button-icon-left ui-search'><span class='fm-button-icon " + mergeCssClasses(commonIconClass, o.resetDialogIcon) + "'></span><span class='fm-button-text'>"+o.Reset+"</span></a>",
 				bQ = "", tmpl="", colnm, found = false, bt, cmi=-1;
 				if(o.showQuery) {
-					bQ ="<a id='"+fid+"_query' class='fm-button ui-state-default ui-corner-all fm-button-icon-left'><span class='fm-button-icon ui-icon ui-icon-comment'></span><span class='fm-button-text'>Query</span></a>";
+					bQ ="<a id='"+fid+"_query' class='fm-button ui-state-default ui-corner-all fm-button-icon-left'><span class='fm-button-icon " + mergeCssClasses(commonIconClass, o.queryDialogIcon) + "'></span><span class='fm-button-text'>Query</span></a>";
 				}
 				if(!o.columns.length) {
 					$.each(columns, function(i,n){
@@ -8172,8 +8177,11 @@ jgrid.extend({
 				addedrow : "first",
 				topinfo : '',
 				bottominfo: '',
-				saveicon : [],
-				closeicon : [],
+				commonIconClass: "ui-icon",
+				prevIcon: "ui-icon-triangle-1-w",
+				nextIcon: "ui-icon-triangle-1-e",
+				saveicon : [true,"left","ui-icon-disk"],
+				closeicon : [true,"left","ui-icon-close"],
 				savekey: [false,13],
 				navkeys: [false,38,40],
 				checkOnSubmit : false,
@@ -8192,7 +8200,7 @@ jgrid.extend({
 			var frmgr = "FrmGrid_"+gID, frmgrID = frmgr, frmtborg = "TblGrid_"+gID, frmtb = "#"+jqID(frmtborg), frmtb2 = frmtb+"_2",
 			ids = {themodal:'editmod'+gID,modalhead:'edithd'+gID,modalcontent:'editcnt'+gID, scrollelm : frmgr},
 			themodalSelector = "#"+jqID(ids.themodal), gboxSelector = p.gBox, propOrAttr = p.propOrAttr,
-			maxCols = 1, maxRows=0,	postdata, diff, frmoper,
+			maxCols = 1, maxRows=0,	postdata, diff, frmoper, commonIconClass = o.commonIconClass,
 			editFeedback = function () {
 				var args = $.makeArray(arguments);
 				args.unshift("");
@@ -8792,8 +8800,8 @@ jgrid.extend({
 			bn = rtlb ? "pData" : "nData";
 			createData(rowid,tbl,maxCols);
 			// buttons at footer
-			var bP = "<a id='"+bp+"' class='fm-button ui-state-default ui-corner-left'><span class='ui-icon ui-icon-triangle-1-w'></span></a>",
-			bN = "<a id='"+bn+"' class='fm-button ui-state-default ui-corner-right'><span class='ui-icon ui-icon-triangle-1-e'></span></a>",
+			var bP = "<a id='"+bp+"' class='fm-button ui-state-default ui-corner-left'><span class='" + mergeCssClasses(commonIconClass, o.prevIcon) + "'></span></a>",
+			bN = "<a id='"+bn+"' class='fm-button ui-state-default ui-corner-right'><span class='" + mergeCssClasses(commonIconClass, o.nextIcon) + "'></span></a>",
 			bS  ="<a id='sData' class='fm-button ui-state-default ui-corner-all'><span class='fm-button-text'>"+o.bSubmit+"</span></a>",
 			bC  ="<a id='cData' class='fm-button ui-state-default ui-corner-all'><span class='fm-button-text'>"+o.bCancel+"</span></a>";
 			var bt = "<table"+(jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "")+" class='EditTable' id='"+frmtborg+"_2'><tbody><tr><td colspan='2'><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr id='Act_Buttons'><td class='navButton navButton-" + p.direction + "'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton EditButton-" + p.direction + "'>"+bS+bC+"</td></tr>";
@@ -8859,11 +8867,8 @@ jgrid.extend({
 					return false;
 				});
 			}
-			o.saveicon = $.extend([true,"left","ui-icon-disk"],o.saveicon);
-			o.closeicon = $.extend([true,"left","ui-icon-close"],o.closeicon);
-			// beforeinitdata after creation of the form
-			addFormIcon($("#sData",frmtb2), o.saveicon);
-			addFormIcon($("#cData",frmtb2), o.closeicon);
+			addFormIcon($("#sData",frmtb2), o.saveicon, commonIconClass);
+			addFormIcon($("#cData",frmtb2), o.closeicon, commonIconClass);
 			if(o.checkOnSubmit || o.checkOnUpdate) {
 				bS  ="<a id='sNew' class='fm-button ui-state-default ui-corner-all' style='z-index:1002'>"+o.bYes+"</a>";
 				bN  ="<a id='nNew' class='fm-button ui-state-default ui-corner-all' style='z-index:1002'>"+o.bNo+"</a>";
@@ -8997,7 +9002,10 @@ jgrid.extend({
 				jqModal: true,
 				closeOnEscape : false,
 				labelswidth: '30%',
-				closeicon: [],
+				commonIconClass: "ui-icon",
+				prevIcon: "ui-icon-triangle-1-w",
+				nextIcon: "ui-icon-triangle-1-e",
+				closeicon: [true,"left","ui-icon-close"],
 				navkeys: [false,38,40],
 				onClose: null,
 				beforeShowForm : null,
@@ -9009,7 +9017,7 @@ jgrid.extend({
 			}, jgrid.view, p.formViewing || {}, oMuligrid || {});
 
 			var frmgr = "#ViewGrid_"+jqID(gID), frmtb = "#ViewTbl_" + jqID(gID), frmtb2 = frmtb+"_2",
-			frmgrID = "ViewGrid_"+gID, frmtbID = "ViewTbl_"+gID,
+			frmgrID = "ViewGrid_"+gID, frmtbID = "ViewTbl_"+gID, commonIconClass = o.commonIconClass,
 			ids = {themodal:'viewmod'+gID,modalhead:'viewhd'+gID,modalcontent:'viewcnt'+gID, scrollelm : frmgrID},
 			themodalSelector = "#"+jqID(ids.themodal), gboxSelector = p.gBox,
 			maxCols = 1, maxRows = 0,
@@ -9182,8 +9190,8 @@ jgrid.extend({
 			bp = rtlb ? "nData" : "pData",
 			bn = rtlb ? "pData" : "nData",
 				// buttons at footer
-			bP = "<a id='"+bp+"' class='fm-button ui-state-default ui-corner-left'><span class='fm-button-icon ui-icon ui-icon-triangle-1-w'></span></a>",
-			bN = "<a id='"+bn+"' class='fm-button ui-state-default ui-corner-right'><span class='fm-button-icon ui-icon ui-icon-triangle-1-e'></span></a>",
+			bP = "<a id='"+bp+"' class='fm-button ui-state-default ui-corner-left'><span class='fm-button-icon " + mergeCssClasses(commonIconClass, o.prevIcon) + "'></span></a>",
+			bN = "<a id='"+bn+"' class='fm-button ui-state-default ui-corner-right'><span class='fm-button-icon " + mergeCssClasses(commonIconClass, o.nextIcon) + "'></span></a>",
 			bC  ="<a id='cData' class='fm-button ui-state-default ui-corner-all'><span class='fm-button-text'>"+o.bClose+"</span></a>";
 			if(maxRows >  0) {
 				var sd=[];
@@ -9220,8 +9228,7 @@ jgrid.extend({
 					}
 				}
 			});
-			o.closeicon = $.extend([true,"left","ui-icon-close"],o.closeicon);
-			addFormIcon($("#cData",frmtb2), o.closeicon);
+			addFormIcon($("#cData",frmtb2), o.closeicon, commonIconClass);
 			viewFeedback("beforeShowForm", $(frmgr));
 			viewModal(themodalSelector,{
 				gbox:gboxSelector,
@@ -9302,8 +9309,9 @@ jgrid.extend({
 				jqModal : true,
 				closeOnEscape : false,
 				delData: {},
-				delicon : [],
-				cancelicon : [],
+				commonIconClass: "ui-icon",
+				delicon : [true,"left","ui-icon-scissors"],
+				cancelicon : [true,"left","ui-icon-cancel"],
 				onClose : null,
 				ajaxDelOptions : {},
 				processing : false,
@@ -9313,7 +9321,7 @@ jgrid.extend({
 
 			var dtblID = "DelTbl_" + gID, dtbl = "#DelTbl_"+jqID(gID), postd, idname, opers, oper,
 			ids = {themodal:'delmod'+gID,modalhead:'delhd'+gID,modalcontent:'delcnt'+gID, scrollelm: dtblID},
-		    themodalSelector = "#"+jqID(ids.themodal), gboxSelector = p.gBox,
+		    themodalSelector = "#"+jqID(ids.themodal), gboxSelector = p.gBox, commonIconClass = o.commonIconClass,
 			deleteFeedback = function () {
 				var args = $.makeArray(arguments);
 				args.unshift("");
@@ -9356,10 +9364,8 @@ jgrid.extend({
 					function(){$(this).addClass('ui-state-hover');},
 					function(){$(this).removeClass('ui-state-hover');}
 				);
-				o.delicon = $.extend([true,"left","ui-icon-scissors"],o.delicon);
-				o.cancelicon = $.extend([true,"left","ui-icon-cancel"],o.cancelicon);
-				addFormIcon($("#dData",dtbl+"_2"), o.delicon);
-				addFormIcon($("#eData",dtbl+"_2"), o.cancelicon);
+				addFormIcon($("#dData",dtbl+"_2"), o.delicon, commonIconClass);
+				addFormIcon($("#eData",dtbl+"_2"), o.cancelicon, commonIconClass);
 				$("#dData",dtbl+"_2").click(function(){
 					var ret=[true,""], pk,
 					postdata = $("#DelData>td",dtbl).text(), //the pair is name=val1,val2,...
@@ -9535,7 +9541,7 @@ jgrid.extend({
 			}, jgrid.nav, p.navOptions || {}, oMuligrid || {});
 
 			var alertIDs = {themodal: 'alertmod_' + gridId, modalhead: 'alerthd_' + gridId,modalcontent: 'alertcnt_' + gridId},
-			twd, tdw, gridIdEscaped = p.idSel, gboxSelector = p.gBox,
+			twd, tdw, gridIdEscaped = p.idSel, gboxSelector = p.gBox, commonIconClass = o.commonIconClass,
 			viewModalAlert = function () {
 				viewModal("#"+jqID(alertIDs.themodal),{gbox:gboxSelector,jqm:true});
 				$("#jqg_alrt").focus();
@@ -9702,8 +9708,8 @@ jgrid.extend({
 					iconClass = o[name+"icon"], iconText = $.trim(o[name+"text"]);
 				$button.append("<div class='ui-pg-div'><span class='" +
 					(o.iconsOverText ?
-						mergeCssClasses("ui-pg-button-icon-over-text", o.commonIconClass, iconClass) :
-						mergeCssClasses(o.commonIconClass, iconClass)) +
+						mergeCssClasses("ui-pg-button-icon-over-text", commonIconClass, iconClass) :
+						mergeCssClasses(commonIconClass, iconClass)) +
 					"'></span>" +
 					(iconText ? "<span class='ui-pg-button-text"+(o.iconsOverText ? " ui-pg-button-icon-over-text" : "") +"'>"+iconText+"</span>" : "")+
 					"</div>");
@@ -9782,10 +9788,10 @@ jgrid.extend({
 			var $t = this;
 			if (!$t.grid)  {return;}
 			if (typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+jqID(elem);}
-			var findnav = $(".navtable",elem);
+			var findnav = $(".navtable",elem), commonIconClass = o.commonIconClass;
 			if (findnav.length > 0) {
 				if (o.id && findnav.find("#" + jqID(o.id)).length > 0)  {return;}
-				var tbd = $("<div></div>")
+				var tbd = $("<div></div>");
 				if (o.buttonicon.toString().toUpperCase() === "NONE") {
 					$(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'>"+
 						(o.caption ? "<span class='ui-pg-button-text" + (o.iconsOverText ? " ui-pg-button-icon-over-text" : "") + "'>"+o.caption+"</span>" : "") +
@@ -9794,8 +9800,8 @@ jgrid.extend({
 					$(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'>" +
 						"<span class='" +
 						(o.iconsOverText ?
-							mergeCssClasses("ui-pg-button-icon-over-text", o.commonIconClass, o.buttonicon) :
-							mergeCssClasses(o.commonIconClass, o.buttonicon)) +
+							mergeCssClasses("ui-pg-button-icon-over-text", commonIconClass, o.buttonicon) :
+							mergeCssClasses(commonIconClass, o.buttonicon)) +
 						"'></span>"+
 						(o.caption ? "<span class='ui-pg-button-text" + (o.iconsOverText ? " ui-pg-button-icon-over-text" : "") + "'>"+o.caption+"</span>" : "") +
 						"</div>");
@@ -11279,7 +11285,7 @@ jgrid.extend({
 				$(gID+"_ilcancel").addClass('ui-state-disabled');
 			}
 			if(o.restoreAfterSelect === true) {
-				$self.bind("jqGridBeforeSelectRow", function (e, rowid) {
+				$self.bind("jqGridSelectRow", function (e, rowid) {
 					if (p.savedRow.length > 0 && p._inlinenav === true) {
 						var editingRowId = p.savedRow[0].id;
 						if (rowid !== editingRowId) {
@@ -13920,7 +13926,9 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 			mtype: op.mtype
 		};
 		if ((!p.multiselect && rid !== p.selrow) || (p.multiselect && $.inArray(rid, p.selarrrow) < 0)) {
-			$grid.jqGrid('setSelection', rid, e);
+			$grid.jqGrid('setSelection', rid, true, e);
+		} else {
+			jgrid.fullBoolFeedback.call($t, "onSelectRow", "jqGridSelectRow", rid, true, e);
 		}
 		switch(act)	{
 			case 'edit':
