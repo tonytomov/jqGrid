@@ -8,28 +8,28 @@
  */
 .ui-jqgrid .ui-pg-table .ui-pg-div > span.fa,
 #jqContextMenu .ui-menu-item > a > span.fa {
-    text-indent:0;
-    height: auto;
-    background-image: none;
-    overflow: visible;
-    padding-top: 1px;
+	text-indent:0;
+	height: auto;
+	background-image: none;
+	overflow: visible;
+	padding-top: 1px;
 }
 #jqContextMenu .ui-menu-item > a > span.fa {
-    width: auto;
+	width: auto;
 }
 .ui-jqgrid-titlebar > .ui-jqgrid-titlebar-close > span.fa {
-    font-size: 16px;
-    display: inline-block;
+	font-size: 16px;
+	display: inline-block;
 }
 .ui-jqgrid .ui-jqgrid-titlebar-close ,
 .ui-jqdialog .ui-jqdialog-titlebar-close {
-    text-decoration: none;
+	text-decoration: none;
 }
 .ui-jqdialog .ui-jqdialog-titlebar-close > span.fa {
-    margin: .3em;
+	margin: .3em;
 }
 .ui-jqdialog .ui-jqdialog-titlebar-close:hover > span.fa {
-    margin-top: .2em;
+	margin-top: .2em;
 }
 .ui-jqdialog > .ui-resizable-se {
 	bottom: -3px;
@@ -40,7 +40,7 @@
 	margin-top: 0;
 }
 .ui-jqgrid .ui-icon-asc.fa, .ui-jqgrid .ui-icon-desc.fa {
-    height: auto;
+	height: auto;
 	margin-top: 2px;
 	margin-left: 2px;
 }
