@@ -27,8 +27,8 @@ var jgrid = $.jgrid, feedback = jgrid.feedback, fullBoolFeedback = jgrid.fullBoo
 			left: getCssStyleOrFloat($w, "left"),				//parseFloat($w.css("left")),
 			width: getCssStyleOrFloat($w, "width"),				//$(h.w).width(),
 			height: getCssStyleOrFloat($w, "height"),			//$(h.w).height(),
-			dataheight: getCssStyleOrFloat($form, "height"),	//$(frmgr).height(),
-			datawidth: getCssStyleOrFloat($form, "width")		//$(frmgr).width()
+			dataheight: getCssStyleOrFloat($form, "height") || "auto",
+			datawidth: getCssStyleOrFloat($form, "width") || "auto"
 		});
 		$w.remove();
 		if(h.o) {h.o.remove();}
@@ -122,10 +122,23 @@ jgrid.extend({
 			}
 			if(o.recreateFilter === true) {
 				$(themodalSelector).remove();
+			} else if ($self.data("searchProp")) {
+				$.extend(o, $self.data("searchProp"));
 			}
 			function showFilter($filter) {
 				if(searchFeedback("beforeShow", $filter)) {
-					viewModal(themodalSelector,{gbox:gboxSelector,jqm:o.jqModal, modal:o.modal, overlay: o.overlay, toTop: o.toTop});
+					$(themodalSelector).data("onClose",o.onClose);
+					viewModal(themodalSelector,{
+						gbox:gboxSelector,
+						jqm:o.jqModal, 
+						overlay: o.overlay,
+						modal:o.modal, 
+						overlayClass: o.overlayClass,
+						toTop: o.toTop,
+						onHide :  function(h) {
+							savePositionOnHide.call($self, "searchProp", fid, h);
+						}
+					});
 					searchFeedback("afterShow", $filter);
 				}
 			}
@@ -190,6 +203,7 @@ jgrid.extend({
 				bt = "<table class='EditTable' style='border:0px none;margin-top:5px' id='"+fid+"_2'><tbody><tr><td colspan='2'><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='EditButton EditButton-" + p.direction + "'  style='float:"+ (p.direction === "rtl" ? "right" : "left") +";'>"+bC+tmpl+"</td><td class='EditButton EditButton-" + p.direction + "'>"+bQ+bS+"</td></tr></tbody></table>";
 				fid = jqID(fid);
 				o.gbox = "#gbox_"+fid;
+				o.height = "auto";
 				fid = "#"+fid;
 				$(fid).jqFilter({
 					columns : columns,
