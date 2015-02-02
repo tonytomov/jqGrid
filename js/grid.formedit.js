@@ -94,7 +94,7 @@ jgrid.extend({
 				onClose : null,
 				onSearch : null,
 				onReset : null,
-				toTop : true,
+				toTop : false,
 				overlay : 30,
 				columns : [],
 				tmplNames : null,
@@ -1800,7 +1800,7 @@ jgrid.extend({
 					},
 					p.gView,
 					$(gboxSelector)[0],
-					true
+					false
 				);
 			}
 			var clone = 1, i, tbd, navtbl, pgid, elemids,

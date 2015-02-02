@@ -82,12 +82,17 @@ $.extend(jgrid,{
 			closeIcon: "ui-icon-closethick",
 			resizingRightBottomIcon: "ui-icon ui-icon-gripsmall-diagonal-se"
 		}, jgrid.jqModal || {}, gridjqModal, o);
+		// create main window "div.ui-jqdialog", which will contains other components of the modal window:
+		// "div.ui-jqdialog-titlebar", "div.ui-jqdialog-content" and optionally resizer like "div.jqResize"
 		var mw = document.createElement('div'), themodalSelector = "#"+jqID(aIDs.themodal),
 		rtlsup = $(o.gbox).attr("dir") === "rtl" ? true : false, 
 		scrollelmSelector = aIDs.scrollelm ? "#"+jqID(aIDs.scrollelm) : false;
 		css = $.extend({}, css || {});
 		mw.className= "ui-widget ui-widget-content ui-corner-all ui-jqdialog";
 		mw.id = aIDs.themodal;
+		mw.dir = rtlsup ? "rtl" : "ltr";
+		// create the title "div.ui-jqdialog-titlebar", which contains:
+		// "span.ui-jqdialog-title" with the title text and "a.ui-jqdialog-titlebar-close" with the closing button
 		var mh = document.createElement('div');
 		mh.className = "ui-jqdialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix " +
 			(rtlsup ? "ui-jqdialog-titlebar-rtl" : "ui-jqdialog-titlebar-ltr");
@@ -98,14 +103,17 @@ $.extend(jgrid,{
 			function(){ahr.removeClass('ui-state-hover');})
 		.append("<span class='" + jgrid.mergeCssClasses(o.commonIconClass, o.closeIcon) + "'></span>");
 		$(mh).append(ahr);
-		mw.dir = rtlsup ? "rtl" : "ltr";
+		// create "div.ui-jqdialog-content" which hold some HTML content (see input parameter)
 		var mc = document.createElement('div');
 		$(mc).addClass("ui-jqdialog-content ui-widget-content").attr("id",aIDs.modalcontent);
 		$(mc).append(content);
+		// place "div.ui-jqdialog-content" and "div.ui-jqdialog-titlebar" in main window "div.ui-jqdialog"
 		mw.appendChild(mc);
 		$(mw).prepend(mh);
-		if(appendsel===true) { $('body').append(mw); } //append as first child in body -for alert dialog
-		else if (typeof appendsel === "string") {
+		// appendsel and insertSelector specifies where the dialog should be placed on the HTML page
+		if(appendsel===true) {
+			$('body').append(mw);  //append as first child in body -for alert dialog
+		} else if (typeof appendsel === "string") {
 			$(appendsel).append(mw);
 		} else {$(mw).insertBefore(insertSelector);}
 		$(mw).css(css);
@@ -187,7 +195,7 @@ $.extend(jgrid,{
 	},
 	viewModal : function (selector,o){
 		o = $.extend({
-			toTop: true,
+			toTop: false,
 			overlay: 10,
 			modal: false,
 			overlayClass : 'ui-widget-overlay',
