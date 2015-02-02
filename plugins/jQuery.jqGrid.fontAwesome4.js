@@ -8,57 +8,57 @@
  */
 /*global $ */
 (function ($) {
-    "use strict";
+	"use strict";
 	$.jgrid = $.jgrid || {};
-    /*jslint unparam: true */
-    $.extend(true, $.jgrid, {
-        icons: {
-            common: "fa", // "fa fa-lg"
-            titleVisibleGrid: "fa-chevron-circle-up",
-            titleHiddenGrid: "fa-chevron-circle-down",
-            close: "fa-times",
-            sortAsc: "fa-sort-asc fa-lg",
-            sortDesc: "fa-sort-desc fa-lg",
+	/*jslint unparam: true */
+	$.extend(true, $.jgrid, {
+		icons: {
+			common: "fa", // "fa fa-lg"
+			titleVisibleGrid: "fa-chevron-circle-up",
+			titleHiddenGrid: "fa-chevron-circle-down",
+			close: "fa-times",
+			sortAsc: "fa-sort-asc fa-lg",
+			sortDesc: "fa-sort-desc fa-lg",
 			navCommonIconClass: "fa-fw",
-            navEdit: "fa-pencil",
-            navAdd: "fa-plus",
-            navDel: "fa-trash-o",
-            navSearch: "fa-search",
-            navRefresh: "fa-refresh",
-            navView: "fa-file-o",
+			navEdit: "fa-pencil",
+			navAdd: "fa-plus",
+			navDel: "fa-trash-o",
+			navSearch: "fa-search",
+			navRefresh: "fa-refresh",
+			navView: "fa-file-o",
 			navSave: "fa-floppy-o",
 			navCancel: "fa-ban",
 			actionCommonIconClass: "ui-state-default fa-fw",
-            pagerFirst: "fa-step-backward fa-fw",
-            pagerPrev: "fa-backward fa-fw",
-            pagerNext: "fa-forward fa-fw",
-            pagerLast: "fa-step-forward fa-fw",
-            formPrev: "fa-caret-left",
-            formNext: "fa-caret-right",
-            formSave: "fa-floppy-o",
-            formUndo: "fa-undo",
-            formDel: "fa-trash-o",
-            searchReset: "fa-undo",
-            searchQuery: "fa-comments-o",
-            searchSearch: "fa-search",
+			pagerFirst: "fa-step-backward fa-fw",
+			pagerPrev: "fa-backward fa-fw",
+			pagerNext: "fa-forward fa-fw",
+			pagerLast: "fa-step-forward fa-fw",
+			formPrev: "fa-caret-left",
+			formNext: "fa-caret-right",
+			formSave: "fa-floppy-o",
+			formUndo: "fa-undo",
+			formDel: "fa-trash-o",
+			searchReset: "fa-undo",
+			searchQuery: "fa-comments-o",
+			searchSearch: "fa-search",
 			subgridCommonIconClass: "ui-state-default fa-fw",
-            subgridPlus: "fa-plus",
-            subgridMinus: "fa-minus",
+			subgridPlus: "fa-plus",
+			subgridMinus: "fa-minus",
 			subgridOpenltr: "fa-reply fa-rotate-180",
 			subgridOpenrtl: "fa-share fa-rotate-180",
-            getClass: function (prop) {
-                return this.common !== "" ? this.common + " " + this[prop] : this[prop];
-            }
-        }
-    });
+			getClass: function (prop) {
+				return this.common !== "" ? this.common + " " + this[prop] : this[prop];
+			}
+		}
+	});
 
-    $.jgrid.extend({
-        initFontAwesome: function () {
-            return this.each(function () {
-                var $grid = $(this);
+	$.jgrid.extend({
+		initFontAwesome: function () {
+			return this.each(function () {
+				var $grid = $(this);
 
 				$grid.bind("jqGridBeforeInitGrid", function () {
-                    var $this = $(this), $pager, $sortables, p = this.p;
+					var p = this.p;
 
 					p.fontAwesomeIcons = true;
 
@@ -117,20 +117,20 @@
 						prevIcon: $.jgrid.icons.getClass("formPrev"),
 						nextIcon: $.jgrid.icons.getClass("formNext"),
 						saveicon : [true,"left",$.jgrid.icons.getClass("formSave")],
-						closeicon : [true,"left",$.jgrid.icons.getClass("close")],
+						closeicon : [true,"left",$.jgrid.icons.getClass("close")]
 					}, p.formEditing || {});
 
 					p.formViewing = $.extend(true, {
 						commonIconClass: "",
 						prevIcon: $.jgrid.icons.getClass("formPrev"),
 						nextIcon: $.jgrid.icons.getClass("formNext"),
-						closeicon: [true,"left",$.jgrid.icons.getClass("close")],
+						closeicon: [true,"left",$.jgrid.icons.getClass("close")]
 					}, p.formViewing || {});
 
 					p.formDeleting = $.extend(true, {
 						commonIconClass: "",
 						delicon : [true,"left",$.jgrid.icons.getClass("formDel")],
-						cancelicon : [true,"left",$.jgrid.icons.getClass("formUndo")],
+						cancelicon : [true,"left",$.jgrid.icons.getClass("formUndo")]
 					}, p.formDeleting || {});
 
 					p.searching = $.extend(true, {
@@ -143,8 +143,8 @@
 					p.actionsNavOptions = $.extend(true, {
 						commonIconClass: $.jgrid.icons.getClass("actionCommonIconClass")
 					}, p.actionsNavOptions || {});
-                });
-            });
-        }
-    });
+				});
+			});
+		}
+	});
 }(jQuery));
