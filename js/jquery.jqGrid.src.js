@@ -261,6 +261,127 @@ $.extend(true,jgrid,{
 		idName: 'id',
 		unused: '' // used only to detect whether the changes are overwritten because of wrong usage
 	},
+	icons: {
+		jQueryUI: {
+			common: "ui-icon",
+			pager: {
+				firstIcon: "ui-icon-seek-first",
+				prevIcon: "ui-icon-seek-prev",
+				nextIcon: "ui-icon-seek-next",
+				lastIcon: "ui-icon-seek-end"
+			},
+			sort: {
+				ascIcon: "ui-icon-triangle-1-s",
+				descIcon: "ui-icon-triangle-1-n"
+			},
+			gridMinimize: {
+				visibleIcon: "ui-icon-circle-triangle-n",
+				hiddenIcon: "ui-icon-circle-triangle-s"
+			},
+			nav: {
+				edit: "ui-icon-pencil",
+				add: "ui-icon-plus",
+				del: "ui-icon-trash",
+				search: "ui-icon-search",
+				refresh: "ui-icon-refresh",
+				view: "ui-icon-document",
+				save: "ui-icon-disk",
+				cancel: "ui-icon-cancel"
+			},
+			actions: {
+			},
+			form: {
+				prev: "ui-icon-triangle-1-w",
+				next: "ui-icon-triangle-1-e",
+				formSave: "ui-icon-disk",
+				formUndo: "ui-icon-close",
+				formDel: "ui-icon-scissors"
+			},
+			search: {
+				search: "ui-icon-search",
+				reset: "ui-icon-arrowreturnthick-1-w",
+				query: "ui-icon-comment"
+			},
+			subgrid: {
+				plus: "ui-icon-plus",
+				minus: "ui-icon-minus",
+				openLtr: "ui-icon-carat-1-sw",
+				openRtl: "ui-icon-carat-1-se"
+			},
+			grouping: {
+				plus: "ui-icon-circlesmall-plus",
+				minus: "ui-icon-circlesmall-minus"
+			},
+			treeGrid: {
+				minus: "ui-icon-triangle-1-s",
+				leaf: "ui-icon-radio-off",
+				plusLtr: "ui-icon-triangle-1-e",
+				plusRtl: "ui-icon-triangle-1-w"
+			}
+		},
+		fontAwesome: {
+			common: "fa",
+			pager: {
+				common: "fa-fw",
+				firstIcon: "fa-step-backward",
+				prevIcon: "fa-backward",
+				nextIcon: "fa-forward",
+				lastIcon: "fa-step-forward"
+			},
+			sort: {
+				common: "fa-lg",
+				ascIcon: "fa-sort-asc",
+				descIcon: "fa-sort-desc"
+			},
+			gridMinimize: {
+				visibleIcon: "fa-chevron-circle-up",
+				hiddenIcon: "fa-chevron-circle-down"
+			},
+			nav: {
+				common: "fa-fw",
+				edit: "fa-pencil",
+				add: "fa-plus",
+				del: "fa-trash-o",
+				search: "fa-search",
+				refresh: "fa-refresh",
+				view: "fa-file-o",
+				save: "fa-floppy-o",
+				cancel: "fa-ban"
+			},
+			actions: {
+				common: "ui-state-default fa-fw"
+			},
+			form: {
+				prev: "fa-caret-left",
+				next: "fa-caret-right",
+				formSave: "fa-floppy-o",
+				formUndo: "fa-undo",
+				formDel: "fa-trash-o"
+			},
+			search: {
+				search: "fa-search",
+				reset: "fa-undo",
+				query: "fa-comments-o"
+			},
+			subgrid: {
+				common: "ui-state-default fa-fw",
+				plus: "fa-plus",
+				minus: "fa-minus",
+				openLtr: "fa-reply fa-rotate-180",
+				openRtl: "fa-share fa-rotate-180"
+			},
+			grouping: {
+				plus: "fa-plus-square-o",
+				minus: "fa-minus-square-o"
+			},
+			treeGrid: {
+				minus: "fa-sort-asc",
+				leaf: "fa-dot-circle-o",
+				plusLtr: "a-caret-right",
+				plusRtl: "fa-caret-left"
+			}
+		}
+	},
 	htmlDecode : function(value){
 		if(value && (value==='&nbsp;' || value==='&#160;' || (value.length===1 && value.charCodeAt(0)===160))) { return "";}
 		return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");		
@@ -1354,7 +1475,8 @@ $.fn.jqGrid = function( pin ) {
 			lastSelectedData : [],
 			_index : {},
 			grouping : false,
-			groupingView : {groupField:[],groupOrder:[], groupText:[],groupColumnShow:[],groupSummary:[], showSummaryOnHide: false, sortitems:[], sortnames:[], summary:[],summaryval:[], plusicon: 'ui-icon-circlesmall-plus', minusicon: 'ui-icon-circlesmall-minus', displayField: [], groupSummaryPos:[], formatDisplayField : [], _locgr : false},
+			groupingView : {groupField:[],groupOrder:[], groupText:[],groupColumnShow:[],groupSummary:[], showSummaryOnHide: false, sortitems:[], sortnames:[], summary:[],summaryval:[], commonIconClass: 'ui-icon' , plusicon: 'ui-icon-circlesmall-plus', minusicon: 'ui-icon-circlesmall-minus', displayField: [], groupSummaryPos:[], formatDisplayField : [], _locgr : false},
+			treeIcons: {commonIconClass: 'ui-icon', plusRtl: 'ui-icon-triangle-1-w', plusLtr: 'ui-icon-triangle-1-e', minus: 'ui-icon-triangle-1-s', leaf:'ui-icon-radio-off'},
 			ignoreCase : true,
 			cmTemplate : {},
 			idPrefix : "",
@@ -10257,7 +10379,7 @@ jgrid.extend({
 				toEnd++;
 				clid = p.id+"ghead_"+n.idx;
 				hid = clid+"_"+i;
-				icon = "<span style='cursor:pointer;' class='ui-icon "+pmrtl+"' onclick=\"jQuery('#"+jgrid.jqID(p.id).replace("\\", "\\\\")+"').jqGrid('groupingToggle','"+hid+"');return false;\"></span>";
+				icon = "<span style='cursor:pointer;' class='" + grp.commonIconClass + " "+pmrtl+"' onclick=\"jQuery('#"+jgrid.jqID(p.id).replace("\\", "\\\\")+"').jqGrid('groupingToggle','"+hid+"');return false;\"></span>";
 				try {
 					if ($.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
 						n.displayValue = grp.formatDisplayField[n.idx].call($t, n.displayValue, n.value, p.colModel[cp[n.idx]], n.idx, grp);
@@ -12916,7 +13038,7 @@ jgrid.extend({
 					lftpos = curLevel -1;
 				}
 				twrap = "<div class='tree-wrap tree-wrap-"+p.direction+"' style='width:"+(ident*18)+"px;'>";
-				twrap += "<div style='"+(p.direction==="rtl" ? "right:" : "left:")+(lftpos*18)+"px;' class='ui-icon ";
+				twrap += "<div style='"+(p.direction==="rtl" ? "right:" : "left:")+(lftpos*18)+"px;' class='" + p.treeIcons.commonIconClass + " ";
 
 
 				if(ldat[loaded] !== undefined) {
@@ -12977,8 +13099,9 @@ jgrid.extend({
 			if(p.rowTotal === null ) { p.rowNum = p.maxRowNum; }
 			p.multiselect = false;p.rowList = [];
 			p.expColInd = 0;
-			pico = 'ui-icon-triangle-1-' + (p.direction==="rtl" ? 'w' : 'e');
-			p.treeIcons = $.extend({plus:pico,minus:'ui-icon-triangle-1-s',leaf:'ui-icon-radio-off'},p.treeIcons || {});
+			//pico = 'ui-icon-triangle-1-' + (p.direction==="rtl" ? 'w' : 'e');
+			//p.treeIcons = $.extend({plus:pico,minus:'ui-icon-triangle-1-s',leaf:'ui-icon-radio-off'},p.treeIcons || {});
+			p.treeIcons.plus = p.direction === "rtl" ? p.treeIcons.plusRtl : p.treeIcons.plusLtr;
 			if(p.treeGridModel === 'nested') {
 				p.treeReader = $.extend({
 					level_field: "level",

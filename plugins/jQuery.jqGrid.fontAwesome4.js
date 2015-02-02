@@ -75,7 +75,19 @@
 						sortAscIcon: $.jgrid.icons.getClass("sortAsc"),
 						sortDescIcon: $.jgrid.icons.getClass("sortDesc"),
 						visibleGridIcon: $.jgrid.icons.getClass("titleVisibleGrid"),
-						hiddenGridIcon: $.jgrid.icons.getClass("titleHiddenGrid")
+						hiddenGridIcon: $.jgrid.icons.getClass("titleHiddenGrid"),
+						groupingView: {
+							commonIconClass: "",
+							plusicon: "fa fa-fw fa-plus-square-o",
+							minusicon: "fa fa-fw fa-minus-square-o"
+						},
+						treeIcons: {
+							commonIconClass: "fa fa-fw",
+							plusRtl: "fa-lg fa-caret-left",
+							plusLtr: "fa-lg fa-caret-right",
+							minus: "fa-lg fa-sort-desc",
+							leaf: "fa-dot-circle-o"
+						}
 					});
 
 					if (p.subGrid) {

@@ -72,7 +72,7 @@ jgrid.extend({
 					lftpos = curLevel -1;
 				}
 				twrap = "<div class='tree-wrap tree-wrap-"+p.direction+"' style='width:"+(ident*18)+"px;'>";
-				twrap += "<div style='"+(p.direction==="rtl" ? "right:" : "left:")+(lftpos*18)+"px;' class='ui-icon ";
+				twrap += "<div style='"+(p.direction==="rtl" ? "right:" : "left:")+(lftpos*18)+"px;' class='" + p.treeIcons.commonIconClass + " ";
 
 
 				if(ldat[loaded] !== undefined) {
@@ -133,8 +133,9 @@ jgrid.extend({
 			if(p.rowTotal === null ) { p.rowNum = p.maxRowNum; }
 			p.multiselect = false;p.rowList = [];
 			p.expColInd = 0;
-			pico = 'ui-icon-triangle-1-' + (p.direction==="rtl" ? 'w' : 'e');
-			p.treeIcons = $.extend({plus:pico,minus:'ui-icon-triangle-1-s',leaf:'ui-icon-radio-off'},p.treeIcons || {});
+			//pico = 'ui-icon-triangle-1-' + (p.direction==="rtl" ? 'w' : 'e');
+			//p.treeIcons = $.extend({plus:pico,minus:'ui-icon-triangle-1-s',leaf:'ui-icon-radio-off'},p.treeIcons || {});
+			p.treeIcons.plus = p.direction === "rtl" ? p.treeIcons.plusRtl : p.treeIcons.plusLtr;
 			if(p.treeGridModel === 'nested') {
 				p.treeReader = $.extend({
 					level_field: "level",

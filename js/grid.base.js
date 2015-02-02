@@ -307,6 +307,16 @@ $.extend(true,jgrid,{
 				minus: "ui-icon-minus",
 				openLtr: "ui-icon-carat-1-sw",
 				openRtl: "ui-icon-carat-1-se"
+			},
+			grouping: {
+				plus: "ui-icon-circlesmall-plus",
+				minus: "ui-icon-circlesmall-minus"
+			},
+			treeGrid: {
+				minus: "ui-icon-triangle-1-s",
+				leaf: "ui-icon-radio-off",
+				plusLtr: "ui-icon-triangle-1-e",
+				plusRtl: "ui-icon-triangle-1-w"
 			}
 		},
 		fontAwesome: {
@@ -359,6 +369,16 @@ $.extend(true,jgrid,{
 				minus: "fa-minus",
 				openLtr: "fa-reply fa-rotate-180",
 				openRtl: "fa-share fa-rotate-180"
+			},
+			grouping: {
+				plus: "fa-plus-square-o",
+				minus: "fa-minus-square-o"
+			},
+			treeGrid: {
+				minus: "fa-sort-asc",
+				leaf: "fa-dot-circle-o",
+				plusLtr: "a-caret-right",
+				plusRtl: "fa-caret-left"
 			}
 		}
 	},
@@ -1455,7 +1475,8 @@ $.fn.jqGrid = function( pin ) {
 			lastSelectedData : [],
 			_index : {},
 			grouping : false,
-			groupingView : {groupField:[],groupOrder:[], groupText:[],groupColumnShow:[],groupSummary:[], showSummaryOnHide: false, sortitems:[], sortnames:[], summary:[],summaryval:[], plusicon: 'ui-icon-circlesmall-plus', minusicon: 'ui-icon-circlesmall-minus', displayField: [], groupSummaryPos:[], formatDisplayField : [], _locgr : false},
+			groupingView : {groupField:[],groupOrder:[], groupText:[],groupColumnShow:[],groupSummary:[], showSummaryOnHide: false, sortitems:[], sortnames:[], summary:[],summaryval:[], commonIconClass: 'ui-icon' , plusicon: 'ui-icon-circlesmall-plus', minusicon: 'ui-icon-circlesmall-minus', displayField: [], groupSummaryPos:[], formatDisplayField : [], _locgr : false},
+			treeIcons: {commonIconClass: 'ui-icon', plusRtl: 'ui-icon-triangle-1-w', plusLtr: 'ui-icon-triangle-1-e', minus: 'ui-icon-triangle-1-s', leaf:'ui-icon-radio-off'},
 			ignoreCase : true,
 			cmTemplate : {},
 			idPrefix : "",
