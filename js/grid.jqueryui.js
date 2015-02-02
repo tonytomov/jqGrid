@@ -12,7 +12,7 @@
  * depends on jQuery UI 
 **/
 "use strict";
-var jgrid = $.jgrid, $UiMultiselect = $.ui.multiselect, jqID = jgrid.jqID;
+var jgrid = $.jgrid, $UiMultiselect = $.ui != null ? $.ui.multiselect : null, jqID = jgrid.jqID;
 if (jgrid.msie && jgrid.msiever()===8) {
 	$.expr[":"].hidden = function(elem) {
 		return elem.offsetWidth === 0 || elem.offsetHeight === 0 ||
