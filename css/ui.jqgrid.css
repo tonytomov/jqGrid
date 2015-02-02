@@ -49,21 +49,17 @@
 	top: 50%;
 	width: 18px;
 	margin: -10px 0 0 0;
-	padding: 1px 0;
+	padding: 1px;
 	height: 18px;
 	cursor: pointer;
 }
-.ui-jqgrid .ui-jqgrid-titlebar-close.ui-state-hover,
-.ui-jqdialog .ui-jqdialog-titlebar-close.ui-state-hover {
-	margin: -10px -1px 5px -1px;
-}
 .ui-jqgrid  .ui-jqgrid-caption .ui-jqgrid-titlebar-close,
 .ui-jqdialog  .ui-jqdialog-titlebar-ltr .ui-jqdialog-titlebar-close {
-	right: .1em;
+	right: 2px;
 }
 .ui-jqgrid  .ui-jqgrid-caption-rtl .ui-jqgrid-titlebar-close,
 .ui-jqdialog  .ui-jqdialog-titlebar-rtl .ui-jqdialog-titlebar-close {
-	left: .1em;
+	left: 2px;
 }
 .ui-jqgrid  .ui-jqgrid-caption .ui-jqgrid-title,
 .ui-jqdialog  .ui-jqdialog-titlebar-ltr .ui-jqdialog-title {
