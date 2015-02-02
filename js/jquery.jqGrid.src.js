@@ -8011,6 +8011,7 @@ jgrid.extend({
 				queryDialogIcon: "ui-icon-comment",
 				top : 0,
 				left: 0,
+				removemodal: true,
 				jqModal : true,
 				modal: false,
 				resize : true,
@@ -8232,7 +8233,7 @@ jgrid.extend({
 						$self.trigger("reloadGrid",[{page:1}]);
 					}
 					if(o.closeAfterSearch) {
-						hideModal(themodalSelector,{gb:gboxSelector,jqm:o.jqModal,onClose: o.onClose});
+						hideModal(themodalSelector,{gb:gboxSelector,jqm:o.jqModal,onClose: o.onClose,removemodal:o.removemodal});
 					}
 					return false;
 				});
@@ -8254,7 +8255,7 @@ jgrid.extend({
 						$self.trigger("reloadGrid",[{page:1}]);
 					}
 					if (o.closeAfterReset) {
-						hideModal(themodalSelector,{gb:gboxSelector,jqm:o.jqModal,onClose: o.onClose});
+						hideModal(themodalSelector,{gb:gboxSelector,jqm:o.jqModal,onClose: o.onClose,removemodal: o.removemodal});
 					}
 					return false;
 				});
@@ -8702,7 +8703,7 @@ jgrid.extend({
 						data: $.isFunction(o.serializeEditData) ? o.serializeEditData.call($t,postdata) :  postdata,
 						complete:function(data,status){
 							$("#sData", frmtb2).removeClass('ui-state-active');
-							postdata[idname] = p.idPrefix + postdata[idname];
+							postdata[idname] = p.idPrefix + $("#id_g",frmtb).val();
 							if(data.status >= 400) {
 								ret[0] = false;
 								ret[1] = $self.triggerHandler("jqGridAddEditErrorTextFormat", [data, frmoper]);
@@ -9006,6 +9007,10 @@ jgrid.extend({
 				var zI = o.zIndex  || 999;zI ++;
 				$("<div class='"+ o.overlayClass+" jqgrid-overlay confirm' style='z-index:"+zI+";display:none;'>&#160;"+"</div><div class='confirm ui-widget-content ui-jqconfirm' style='z-index:"+(zI+1)+"'>"+o.saveData+"<br/><br/>"+bS+bN+bC+"</div>").insertAfter(frmgr);
 				$("#sNew",themodalSelector).click(function(){
+					// if the form will be hidden at the first usage and it will be shown at the next usage
+					// then the execution context click handler and all other functions like postIt()
+					// will contains the variables (like rowid, postdata and so on) from THE FIRST call
+					// of editGridRow. One should be very careful in the code of postIt()
 					postIt();
 					$(frmgr).data("disabled",false);
 					$(".confirm",themodalSelector).hide();
@@ -9018,6 +9023,9 @@ jgrid.extend({
 					return false;
 				});
 				$("#cNew",themodalSelector).click(function(){
+					// if the form will be hidden at the first usage and it will be shown at the next usage
+					// then the execution context click handler and all other functions like postIt()
+					// will contains the variables (like o) from THE FIRST call
 					$(".confirm",themodalSelector).hide();
 					$(frmgr).data("disabled",false);
 					hideModal(themodalSelector,{gb:gboxSelector,jqm:o.jqModal,onClose: o.onClose, removemodal: o.removemodal, formprop: !o.recreateForm, form: o.form});
@@ -9421,6 +9429,7 @@ jgrid.extend({
 				top : 0,
 				left: 0,
 				width: 240,
+				removemodal: true,
 				height: 'auto',
 				dataheight : 'auto',
 				modal: false,
@@ -9463,7 +9472,7 @@ jgrid.extend({
 			if (!$.isArray(rowids)) { rowids = [String(rowids)]; }
 			if ( $(themodalSelector)[0] !== undefined ) {
 				if (!deleteFeedback("beforeInitData", $(dtbl))) {return;}
-				$("#DelData>td",dtbl).text(rowids.join());
+				$("#DelData>td",dtbl).text(rowids.join()).data("rowids", rowids);
 				$("#DelError",dtbl).hide();
 				if( o.processing === true) {
 					o.processing=false;
@@ -9488,6 +9497,7 @@ jgrid.extend({
 				tbl += "<table"+(jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "")+" class='EditTable' id='"+dtblID+"_2'><tbody><tr><td><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='DelButton EditButton EditButton-" + p.direction + "'>"+bS+"&#160;"+bC+"</td></tr></tbody></table>";
 				o.gbox = gboxSelector;
 				jgrid.createModal.call($t,ids,tbl,o,p.gView,$(p.gView)[0]);
+				$("#DelData>td",dtbl).data("rowids", rowids);
 
 				if (!deleteFeedback("beforeInitData", $(tbl))) {return;}
 				$(".fm-button",dtbl+"_2").hover(
@@ -9497,8 +9507,9 @@ jgrid.extend({
 				addFormIcon($("#dData",dtbl+"_2"), o.delicon, commonIconClass);
 				addFormIcon($("#eData",dtbl+"_2"), o.cancelicon, commonIconClass);
 				$("#dData",dtbl+"_2").click(function(){
-					var ret=[true,""], pk,
-					postdata = $("#DelData>td",dtbl).text(), //the pair is name=val1,val2,...
+					var ret=[true,""], pk, $delData = $("#DelData>td",dtbl),
+					postdata = $delData.text(), //the pair is name=val1,val2,...
+					formRowIds = $delData.data("rowids"),
 					cs = {};
 					if( $.isFunction( o.onclickSubmit ) ) {cs = o.onclickSubmit.call($t,o, postdata) || {};}
 					if( $.isFunction( o.beforeSubmit ) ) {ret = o.beforeSubmit.call($t,postdata);}
@@ -9509,7 +9520,7 @@ jgrid.extend({
 						oper = opers.oper;
 						postd[oper] = opers.deloper;
 						idname = opers.id;
-						postdata = rowids.slice(0);
+						postdata = formRowIds;
 						if(!postdata.length) { return false; }
 						for(pk in postdata) {
 							if(postdata.hasOwnProperty(pk)) {
@@ -9547,22 +9558,19 @@ jgrid.extend({
 										$self.trigger("reloadGrid");
 									} else {
 										if(p.treeGrid===true){
-												try {$self.jqGrid("delTreeNode",rowids[0]);} catch(ignore){}
+												try {$self.jqGrid("delTreeNode",formRowIds[0]);} catch(ignore){}
 										} else {
-											// make copy to be sure the rowids will be not changed during deleting
-											// (for example in case of usage selarrrow as parameter)
-											rowids = rowids.slice(0);
-											for(i=0;i<rowids.length;i++) {
-												$self.jqGrid("delRowData",rowids[i]);
+											for(i=0;i<formRowIds.length;i++) {
+												$self.jqGrid("delRowData",formRowIds[i]);
 											}
 										}
 									}
 									setTimeout(function(){
-										deleteFeedback("afterComplete", data, postdata);
+										deleteFeedback("afterComplete", data, postdata, $(dtbl));
 									}, 500);
 								}
 								o.processing=false;
-								if(ret[0]) {hideModal(themodalSelector,{gb:gboxSelector,jqm:o.jqModal, onClose: o.onClose});}
+								if(ret[0]) {hideModal(themodalSelector,{gb:gboxSelector,jqm:o.jqModal, onClose: o.onClose, removemodal: o.removemodal});}
 							}
 						}, jgrid.ajaxOptions, o.ajaxDelOptions);
 
@@ -9584,7 +9592,7 @@ jgrid.extend({
 									ret[0] = false;
 									ret[1] = dpret[1] || "Error deleting the selected row!" ;
 								} else {
-									hideModal(themodalSelector,{gb:gboxSelector,jqm:o.jqModal, onClose: o.onClose});
+									hideModal(themodalSelector,{gb:gboxSelector,jqm:o.jqModal, onClose: o.onClose, removemodal: o.removemodal});
 								}
 							}
 							else {
@@ -9605,7 +9613,7 @@ jgrid.extend({
 					return false;
 				});
 				$("#eData",dtbl+"_2").click(function(){
-					hideModal(themodalSelector,{gb:gboxSelector,jqm:o.jqModal, onClose: o.onClose});
+					hideModal(themodalSelector,{gb:gboxSelector,jqm:o.jqModal, onClose: o.onClose, removemodal: o.removemodal});
 					return false;
 				});
 				deleteFeedback("beforeShowForm", $(dtbl));
@@ -11460,7 +11468,7 @@ jgrid.extend({
  * depends on jQuery UI 
 **/
 "use strict";
-var jgrid = $.jgrid, $UiMultiselect = $.ui.multiselect, jqID = jgrid.jqID;
+var jgrid = $.jgrid, $UiMultiselect = $.ui != null ? $.ui.multiselect : null, jqID = jgrid.jqID;
 if (jgrid.msie && jgrid.msiever()===8) {
 	$.expr[":"].hidden = function(elem) {
 		return elem.offsetWidth === 0 || elem.offsetHeight === 0 ||
