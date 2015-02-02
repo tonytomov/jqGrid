@@ -631,13 +631,7 @@ $.jgrid.extend({
 				$("#"+gID+"_ilcancel").addClass('ui-state-disabled');
 			}
 			if(o.restoreAfterSelect === true) {
-				if($.isFunction($t.p.beforeSelectRow)) {
-					onSelect = $t.p.beforeSelectRow;
-				} else {
-					onSelect =  false;
-				}
-				$t.p.beforeSelectRow = function(id, stat) {
-					var ret = true;
+				$($t).bind("jqGridBeforeSelectRow.inlineNav", function(id, stat) {
 					if($t.p.savedRow.length > 0 && $t.p.inlineNav===true && ( id !== $t.p.selrow && $t.p.selrow !==null) ) {
 						if($t.p.selrow === o.addParams.rowID ) {
 							$($t).jqGrid('delRowData', $t.p.selrow);
@@ -646,11 +640,7 @@ $.jgrid.extend({
 						}
 						$($t).jqGrid('showAddEditButtons');
 					}
-					if(onSelect) {
-						ret = onSelect.call($t, id, stat);
-					}
-					return ret;
-				};
+				});
 			}
 
 		});
