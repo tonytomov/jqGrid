@@ -39,7 +39,7 @@
 					return nData;
 				},
 				stype: "select", searchoptions: { sopt: ["eq", "ne"], value: ":Any;true:Yes;false:No" }
-			},
+			}
 		}
 	});
 	$.extend($.fn.fmatter.checkboxFontAwesome4, {
