@@ -265,18 +265,18 @@ $.extend(true,jgrid,{
 		jQueryUI: {
 			common: "ui-icon",
 			pager: {
-				firstIcon: "ui-icon-seek-first",
-				prevIcon: "ui-icon-seek-prev",
-				nextIcon: "ui-icon-seek-next",
-				lastIcon: "ui-icon-seek-end"
+				first: "ui-icon-seek-first",
+				prev: "ui-icon-seek-prev",
+				next: "ui-icon-seek-next",
+				last: "ui-icon-seek-end"
 			},
 			sort: {
-				ascIcon: "ui-icon-triangle-1-s",
-				descIcon: "ui-icon-triangle-1-n"
+				asc: "ui-icon-triangle-1-s",
+				desc: "ui-icon-triangle-1-n"
 			},
 			gridMinimize: {
-				visibleIcon: "ui-icon-circle-triangle-n",
-				hiddenIcon: "ui-icon-circle-triangle-s"
+				visible: "ui-icon-circle-triangle-n",
+				hidden: "ui-icon-circle-triangle-s"
 			},
 			nav: {
 				edit: "ui-icon-pencil",
@@ -293,9 +293,9 @@ $.extend(true,jgrid,{
 			form: {
 				prev: "ui-icon-triangle-1-w",
 				next: "ui-icon-triangle-1-e",
-				formSave: "ui-icon-disk",
-				formUndo: "ui-icon-close",
-				formDel: "ui-icon-scissors"
+				save: "ui-icon-disk",
+				undo: "ui-icon-close",
+				del: "ui-icon-scissors"
 			},
 			search: {
 				search: "ui-icon-search",
@@ -323,19 +323,19 @@ $.extend(true,jgrid,{
 			common: "fa",
 			pager: {
 				common: "fa-fw",
-				firstIcon: "fa-step-backward",
-				prevIcon: "fa-backward",
-				nextIcon: "fa-forward",
-				lastIcon: "fa-step-forward"
+				first: "fa-step-backward",
+				prev: "fa-backward",
+				next: "fa-forward",
+				last: "fa-step-forward"
 			},
 			sort: {
 				common: "fa-lg",
-				ascIcon: "fa-sort-asc",
-				descIcon: "fa-sort-desc"
+				asc: "fa-sort-asc",
+				desc: "fa-sort-desc"
 			},
 			gridMinimize: {
-				visibleIcon: "fa-chevron-circle-up",
-				hiddenIcon: "fa-chevron-circle-down"
+				visible: "fa-chevron-circle-up",
+				hidden: "fa-chevron-circle-down"
 			},
 			nav: {
 				common: "fa-fw",
@@ -354,9 +354,9 @@ $.extend(true,jgrid,{
 			form: {
 				prev: "fa-caret-left",
 				next: "fa-caret-right",
-				formSave: "fa-floppy-o",
-				formUndo: "fa-undo",
-				formDel: "fa-trash-o"
+				save: "fa-floppy-o",
+				undo: "fa-undo",
+				del: "fa-trash-o"
 			},
 			search: {
 				search: "fa-search",
@@ -371,14 +371,16 @@ $.extend(true,jgrid,{
 				openRtl: "fa-share fa-rotate-180"
 			},
 			grouping: {
+				common: "fa-fw",
 				plus: "fa-plus-square-o",
 				minus: "fa-minus-square-o"
 			},
 			treeGrid: {
-				minus: "fa-sort-asc",
+				common: "fa-fw",
+				minus: "fa-lg fa-sort-desc",
 				leaf: "fa-dot-circle-o",
-				plusLtr: "a-caret-right",
-				plusRtl: "fa-caret-left"
+				plusLtr: "fa-lg fa-caret-right",
+				plusRtl: "fa-lg fa-caret-left"
 			}
 		}
 	},
@@ -1266,6 +1268,28 @@ $.extend(true,jgrid,{
 		args.unshift(callback);
 		return jgrid.fullBoolFeedback.apply(self, args);
 	},
+	getIconRes: function (base, path) {
+		var base = jgrid.icons[base], pathParts = path.split("."), root = base, n = pathParts.length, i, classes = [];
+		if (root.common) {
+			classes.push(root.common);
+		}
+		for (i = 0; i < n; i++) {
+			if (!pathParts[i]) {
+				break;
+			}
+			root = root[pathParts[i]];
+			if (root === undefined) {
+				break;
+			}
+			if (typeof root === "string") {
+				classes.push(root);
+				break;
+			} else if (root != null && root.common) {
+				classes.push(root.common);
+			}
+		}
+		return jgrid.mergeCssClasses.apply(this, classes);
+	},
 	convertOnSaveLocally: function (nData, cm, oData, rowid) {
 		var self = this, p = self.p;
 		if (p == null) {
@@ -1475,22 +1499,17 @@ $.fn.jqGrid = function( pin ) {
 			lastSelectedData : [],
 			_index : {},
 			grouping : false,
-			groupingView : {groupField:[],groupOrder:[], groupText:[],groupColumnShow:[],groupSummary:[], showSummaryOnHide: false, sortitems:[], sortnames:[], summary:[],summaryval:[], commonIconClass: 'ui-icon' , plusicon: 'ui-icon-circlesmall-plus', minusicon: 'ui-icon-circlesmall-minus', displayField: [], groupSummaryPos:[], formatDisplayField : [], _locgr : false},
-			treeIcons: {commonIconClass: 'ui-icon', plusRtl: 'ui-icon-triangle-1-w', plusLtr: 'ui-icon-triangle-1-e', minus: 'ui-icon-triangle-1-s', leaf:'ui-icon-radio-off'},
+			groupingView : {groupField:[],groupOrder:[], groupText:[],groupColumnShow:[],groupSummary:[], showSummaryOnHide: false, sortitems:[], sortnames:[], summary:[],summaryval:[], displayField: [], groupSummaryPos:[], formatDisplayField : [], _locgr : false},
 			ignoreCase : true,
 			cmTemplate : {},
 			idPrefix : "",
-			multiSort :  false,
-			pagerFirstIcon: "ui-icon ui-icon-seek-first",
-			pagerPrevIcon: "ui-icon ui-icon-seek-prev",
-			pagerNextIcon: "ui-icon ui-icon-seek-next",
-			pagerLastIcon: "ui-icon ui-icon-seek-end",
-			sortAscIcon: "ui-icon ui-icon-triangle-1-s",
-			sortDescIcon: "ui-icon ui-icon-triangle-1-n",
-			visibleGridIcon: "ui-icon ui-icon-circle-triangle-n",
-			hiddenGridIcon: "ui-icon ui-icon-circle-triangle-s"
+			iconSet: "jQueryUI",
+			multiSort :  false
 		},
-		jgrid.defaults, pin || {});
+		jgrid.defaults, pin || {}),
+		getIcon = function (path) {
+			return jgrid.getIconRes(p.iconSet, path);
+		};
 		if (localData !== undefined) {
 			p.data = localData;
 			pin.data = localData;
@@ -1726,6 +1745,24 @@ $.fn.jqGrid = function( pin ) {
 		};
 		ts.grid = grid;
 		feedback.call(ts, "beforeInitGrid");
+		p.groupingView = $.extend(true, {
+			commonIconClass: getIcon("grouping.common"),
+			plusicon: getIcon("grouping.plus"),
+			minusicon: getIcon("grouping.minus")
+		}, p.groupingView);
+		p.treeIcons = $.extend(true, {
+			commonIconClass: getIcon("treeGrid.common"),
+			plusLtr: getIcon("treeGrid.plusLtr"),
+			plusRtl: getIcon("treeGrid.plusRtl"),
+			minus: getIcon("treeGrid.minus"),
+			leaf: getIcon("treeGrid.leaf")
+		}, p.treeIcons || {});
+		p.subGridOptions = $.extend({
+			commonIconClass: getIcon("subgrid.common"),
+			plusicon : getIcon("subgrid.plus"),
+			minusicon : getIcon("subgrid.minus"),
+			openicon: p.direction === "rtl" ? getIcon("subgrid.openLtr") : getIcon("subgrid.openLtr")
+		}, p.subGridOptions || {});
 		var iCol, dir;
 		if(p.colNames.length === 0) {
 			for (iCol=0;iCol<p.colModel.length;iCol++){
@@ -2891,11 +2928,11 @@ $.fn.jqGrid = function( pin ) {
 			pgid = "#"+jqID(pgid); // modify to id selector
 			if(p.pgbuttons===true) {
 				var po=["first"+tp,"prev"+tp, "next"+tp,"last"+tp]; if(dir==="rtl") { po.reverse(); }
-				pgl += "<td id='"+po[0]+"' class='ui-pg-button ui-corner-all' " + (p.pgfirst ? "title='"+p.pgfirst +"'" : "")+"><span class='" + p.pagerFirstIcon + "'></span></td>";
-				pgl += "<td id='"+po[1]+"' class='ui-pg-button ui-corner-all' " + (p.pgprev ? "title='"+p.pgprev +"'" : "")+"><span class='" + p.pagerPrevIcon + "'></span></td>";
+				pgl += "<td id='"+po[0]+"' class='ui-pg-button ui-corner-all' " + (p.pgfirst ? "title='"+p.pgfirst +"'" : "")+"><span class='" + getIcon("pager.first") + "'></span></td>";
+				pgl += "<td id='"+po[1]+"' class='ui-pg-button ui-corner-all' " + (p.pgprev ? "title='"+p.pgprev +"'" : "")+"><span class='" + getIcon("pager.prev") + "'></span></td>";
 				pgl += pginp !== "" ? sep+pginp+sep:"";
-				pgl += "<td id='"+po[2]+"' class='ui-pg-button ui-corner-all' " + (p.pgnext ? "title='"+p.pgnext +"'" : "")+"><span class='" + p.pagerNextIcon + "'></span></td>";
-				pgl += "<td id='"+po[3]+"' class='ui-pg-button ui-corner-all' " + (p.pglast ? "title='"+p.pglast +"'" : "")+"><span class='" + p.pagerLastIcon + "'></span></td>";
+				pgl += "<td id='"+po[2]+"' class='ui-pg-button ui-corner-all' " + (p.pgnext ? "title='"+p.pgnext +"'" : "")+"><span class='" + getIcon("pager.next") + "'></span></td>";
+				pgl += "<td id='"+po[3]+"' class='ui-pg-button ui-corner-all' " + (p.pglast ? "title='"+p.pglast +"'" : "")+"><span class='" + getIcon("pager.last") + "'></span></td>";
 			} else if (pginp !== "") { pgl += pginp; }
 			if(dir==="ltr") { pgl += str; }
 			pgl += "</tr></tbody></table>";
@@ -3258,8 +3295,8 @@ $.fn.jqGrid = function( pin ) {
 		}
 		if(p.viewsortcols[1] === 'horizontal') {iac=" ui-i-asc";idc=" ui-i-desc";}
 		tdc = isMSIE ?  "ui-th-div-ie" :"";
-		imgs = "<span class='s-ico' style='display:none'><span class='ui-grid-ico-sort ui-icon-asc"+iac+" ui-state-disabled " + p.sortDescIcon + " ui-sort-"+dir+"'></span>";
-		imgs += "<span class='ui-grid-ico-sort ui-icon-desc"+idc+" ui-state-disabled " + p.sortAscIcon + " ui-sort-"+dir+"'></span></span>";
+		imgs = "<span class='s-ico' style='display:none'><span class='ui-grid-ico-sort ui-icon-asc"+iac+" ui-state-disabled " + getIcon("sort.desc") + " ui-sort-"+dir+"'></span>";
+		imgs += "<span class='ui-grid-ico-sort ui-icon-desc"+idc+" ui-state-disabled " + getIcon("sort.asc") + " ui-sort-"+dir+"'></span></span>";
 		if(p.multiSort) {
 			sortarr = p.sortname.split(",");
 			var iSort;
@@ -3689,10 +3726,11 @@ $.fn.jqGrid = function( pin ) {
 		}
 		if(hg) {$(grid.bDiv).hide();}
 		grid.cDiv = document.createElement("div");
-		var arf = p.hidegrid===true ? $("<a role='link' class='ui-jqgrid-titlebar-close ui-corner-all'" + (p.showhide ? " title='"+p.showhide+"'" : "")+"/>").hover(
+		var visibleGridIcon = getIcon("gridMinimize.visible"), hiddenGridIcon = getIcon("gridMinimize.hidden"),
+			arf = p.hidegrid===true ? $("<a role='link' class='ui-jqgrid-titlebar-close ui-corner-all'" + (p.showhide ? " title='"+p.showhide+"'" : "")+"/>").hover(
 			function(){ arf.addClass('ui-state-hover');},
 			function() {arf.removeClass('ui-state-hover');})
-		.append("<span class='" + p.visibleGridIcon + "'></span>") : "";
+		.append("<span class='" + visibleGridIcon + "'></span>") : "";
 		$(grid.cDiv).append("<span class='ui-jqgrid-title'>"+p.caption+"</span>").append(arf)
 		.addClass("ui-jqgrid-titlebar ui-jqgrid-caption"+(dir==="rtl" ? "-rtl" :"" )+" ui-widget-header ui-corner-top ui-helper-clearfix");
 		$(grid.cDiv).insertBefore(grid.hDiv);
@@ -3751,7 +3789,7 @@ $.fn.jqGrid = function( pin ) {
 						$(elems, p.gBox).slideUp("fast", function() {
 							counter--;
 							if (counter === 0) {
-								$("span",self).removeClass(p.visibleGridIcon).addClass(p.hiddenGridIcon);
+								$("span",self).removeClass(visibleGridIcon).addClass(hiddenGridIcon);
 								p.gridstate = 'hidden';
 								if($(p.gBox).hasClass("ui-resizable")) { $(".ui-resizable-handle",p.gBox).hide(); }
 								$(grid.cDiv).addClass("ui-corner-bottom");
@@ -3763,7 +3801,7 @@ $.fn.jqGrid = function( pin ) {
 						$(elems,p.gBox).slideDown("fast", function() {
 							counter--;
 							if (counter === 0) {
-								$("span",self).removeClass(p.hiddenGridIcon).addClass(p.visibleGridIcon);
+								$("span",self).removeClass(hiddenGridIcon).addClass(visibleGridIcon);
 								if(hg) {p.datatype = tdt;populate.call(ts);hg=false;}
 								p.gridstate = 'visible';
 								if($(p.gBox).hasClass("ui-resizable")) { $(".ui-resizable-handle",p.gBox).show(); }

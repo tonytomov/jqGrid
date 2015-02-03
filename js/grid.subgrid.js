@@ -16,10 +16,6 @@ setSubGrid : function () {
 	return this.each(function (){
 		var $t = this, p = $t.p, cm, i;
 		p.subGridOptions = $.extend({
-			commonIconClass: "ui-icon",
-			plusicon : "ui-icon-plus",
-			minusicon : "ui-icon-minus",
-			openicon: "ui-icon-carat-1-sw",
 			expandOnLoad:  false,
 			delayOnLoad : 50,
 			selectOnExpand : false,
