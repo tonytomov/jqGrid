@@ -849,3 +849,44 @@ a.clearsearchclass {
 .ui-jqgrid > .ui-jqgrid-view button {
 	font-size: 11px;
 }
+
+/* support of fontAwesome */
+.ui-jqgrid-titlebar > .ui-jqgrid-titlebar-close > span.fa {
+	font-size: 16px;
+	display: inline-block;
+}
+.ui-jqdialog .ui-jqdialog-titlebar-close > span.fa {
+	margin-top: 3px;
+}
+.ui-jqdialog .ui-jqdialog-titlebar-close:hover > span.fa {
+	margin-top: 2px;
+}
+.ui-jqgrid .ui-icon-asc.fa {
+	height: auto;
+	margin-top: 0;
+}
+.ui-jqgrid .ui-icon-asc.fa,
+.ui-jqgrid .ui-icon-desc.fa {
+	height: auto;
+	margin-top: 2px;
+	margin-left: 2px;
+}
+.ui-jqgrid .s-ico > .ui-state-disabled.fa {
+	padding: 0;
+}
+.jqgrow .ui-pg-div > span.fa {
+	background: none;
+	border: 0 none;
+}
+.ui-subgrid > .subgrid-cell span.fa {
+	text-indent: 0;
+	background: none;
+	border: 0 none;
+	margin-bottom: 4px;
+}
+.jqgrow > .ui-sgcollapsed span.fa {
+	text-indent: 0;
+	background: none;
+	border: 0 none;
+	margin: 0;
+}
