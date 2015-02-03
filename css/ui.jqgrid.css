@@ -471,7 +471,7 @@ span.ui-jqgrid-cell-wrapper {
 }
 .ui-jqgrid .ui-pg-table .ui-pg-button:hover {
 	font-weight: normal;
-	padding: -2px;
+	padding: -1px;
 	margin: 1px;
 }
 .ui-jqgrid .ui-pg-table .ui-pg-button.ui-state-disabled:hover > .ui-separator {
