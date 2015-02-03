@@ -1216,7 +1216,9 @@ $.extend(true,jgrid,{
 		return jgrid.fullBoolFeedback.apply(self, args);
 	},
 	getIconRes: function (base, path) {
-		var base = jgrid.icons[base], pathParts = path.split("."), root = base, n = pathParts.length, i, classes = [];
+		var pathParts = path.split("."), root, n = pathParts.length, i, classes = [];
+		base = jgrid.icons[base];
+		root = base;
 		if (root.common) {
 			classes.push(root.common);
 		}
@@ -1231,7 +1233,8 @@ $.extend(true,jgrid,{
 			if (typeof root === "string") {
 				classes.push(root);
 				break;
-			} else if (root != null && root.common) {
+			}
+			if (root != null && root.common) {
 				classes.push(root.common);
 			}
 		}
@@ -1746,9 +1749,9 @@ $.fn.jqGrid = function( pin ) {
 		}, p.treeIcons || {});
 		p.subGridOptions = $.extend({
 			commonIconClass: getIcon("subgrid.common"),
-			plusicon : getIcon("subgrid.plus"),
-			minusicon : getIcon("subgrid.minus"),
-			openicon: p.direction === "rtl" ? getIcon("subgrid.openLtr") : getIcon("subgrid.openLtr")
+			plusicon: getIcon("subgrid.plus"),
+			minusicon: getIcon("subgrid.minus"),
+			openicon: (p.direction === "rtl" ? getIcon("subgrid.openRtl") : getIcon("subgrid.openLtr"))
 		}, p.subGridOptions || {});
 		var iCol, dir;
 		if(p.colNames.length === 0) {
@@ -2873,7 +2876,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 		},
 		setPager = function (pgid, tp){
-			var sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='ui-separator'></span></td>",
+			var sep = "<td class='ui-pg-button ui-state-disabled'><span class='ui-separator'></span></td>",
 			pginp = "",
 			blockAlign = p.pagerpos === "left" ? "margin-right:auto;" : (p.pagerpos === "right" ? "margin-left:auto;" : "margin-left:auto;margin-right:auto;"),
 			pgl="<table "+(isMSIE7 ? "cellspacing='0' " : "")+"style='table-layout:auto;"+blockAlign+"' class='ui-pg-table'><tbody><tr>",
