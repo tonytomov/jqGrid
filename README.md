@@ -18,6 +18,7 @@ Below you can find short description of new features already implemented in the 
 ### The following **new features** are implemented currently
 
 * Auto-adjustment of the width on columns based on the content of data in the column and the column headers.
+* Redesign of the structure of Navigator Bar of the pagers. Allow wrapping of icons in multiple lines and allow to place texts under the navigator icons.
 * Support of other icons as jQuery UI icons. New jqGrid `iconSet` can be used to redefine full set of icons. Currently allowed values of `iconSet` option are "jQueryUI" and "fontAwesome". It's enough to define new set of icons under `$.jgrid.icons` in the same way like "jQueryUI" and "fontAwesome" and use new value of `iconSet` option.
 
 ### The default values of the following old jqGrid options are changed (comparing with jqGrid 4.7)
