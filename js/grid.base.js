@@ -185,63 +185,6 @@ if (jgrid.defaults == null) {
 
 $.extend(true,jgrid,{
 	version : "4.7.0-post",
-	cmTemplate : {
-        integerStr: {
-            formatter: "integer", align: "right", sorttype: "integer",
-			searchoptions: { sopt: ["eq", "ne", "lt", "le", "gt", "ge"] }
-        },
-        integer: {
-            formatter: "integer", align: "right", sorttype: "integer",
-			convertOnSave: function (nData) {
-				return isNaN(nData) ? nData : parseInt(nData, 10);
-			},
-			searchoptions: { sopt: ["eq", "ne", "lt", "le", "gt", "ge"] }
-        },
-        numberStr: {
-            formatter: "number", align: "right", sorttype: "number",
-			searchoptions: { sopt: ["eq", "ne", "lt", "le", "gt", "ge"] }
-        },
-        number: {
-            formatter: "number", align: "right", sorttype: "number",
-			convertOnSave: function (nData) {
-				return isNaN(nData) ? nData : parseFloat(nData);
-			},
-			searchoptions: { sopt: ["eq", "ne", "lt", "le", "gt", "ge"] }
-        },
-		booleanCheckbox: {
-			align: "center", formatter: "checkbox",
-			edittype: "checkbox", editoptions: {value: "true:false", defaultValue: "false"},
-			convertOnSave: function (nData, cm) {
-				var lnData = String(nData).toLowerCase(),
-					cbv = cm.editoptions != null && typeof cm.editoptions.value === "string" ?
-						cm.editoptions.value.split(":") : ["yes","no"];
-
-				if ($.inArray(lnData, ["1", "true", cbv[0].toLowerCase()]) >= 0) {
-					nData = true;
-				} else if ($.inArray(lnData, ["0", "false", cbv[1].toLowerCase()]) >= 0) {
-					nData = false;
-				}
-				return nData;
-			},
-			stype: "select", searchoptions: { sopt: ["eq", "ne"], value: ":Any;true:Yes;false:No" }
-		},
-		// TODO: add cmTemplate for currency and date
-		actions: function () {
-			return {
-				formatter: "actions",
-				width: (this.p != null && this.p.fontAwesomeIcons ? 33 : 36) + ($.jgrid.cellWidth() ? 5 : 0),
-				align: "center",
-				autoResizable: false,
-				frozen: true,
-				fixed: true,
-				resizable: false,
-				sortable: false,
-				search: false,
-				editable: false,
-				viewable: false
-			};
-		}
-    },
 	formatter : { // set common formatter settings independent from the language and locale
 		date: {
 			parseRe: /[#%\\\/:_;.,\t\s\-]/,
