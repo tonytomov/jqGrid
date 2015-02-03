@@ -291,11 +291,13 @@ $.extend(true,jgrid,{
 			actions: {
 			},
 			form: {
+				close: "ui-icon-closethick",
 				prev: "ui-icon-triangle-1-w",
 				next: "ui-icon-triangle-1-e",
 				save: "ui-icon-disk",
 				undo: "ui-icon-close",
-				del: "ui-icon-scissors"
+				del: "ui-icon-scissors",
+				cancel: "ui-icon-cancel"
 			},
 			search: {
 				search: "ui-icon-search",
@@ -352,11 +354,13 @@ $.extend(true,jgrid,{
 				common: "ui-state-default fa-fw"
 			},
 			form: {
+				close: "fa-times",
 				prev: "fa-caret-left",
 				next: "fa-caret-right",
 				save: "fa-floppy-o",
 				undo: "fa-undo",
-				del: "fa-trash-o"
+				del: "fa-trash-o",
+				cancel: "fa-ban"
 			},
 			search: {
 				search: "fa-search",
@@ -1745,6 +1749,46 @@ $.fn.jqGrid = function( pin ) {
 		};
 		ts.grid = grid;
 		feedback.call(ts, "beforeInitGrid");
+		p.navOptions = $.extend(true, {
+			commonIconClass: getIcon("nav.common"),
+			editicon: getIcon("nav.edit"),
+			addicon: getIcon("nav.add"),
+			delicon: getIcon("nav.del"),
+			searchicon: getIcon("nav.search"),
+			refreshicon: getIcon("nav.refresh"),
+			viewicon: getIcon("nav.view"),
+			saveicon: getIcon("nav.save"),
+			cancelicon: getIcon("nav.cancel")
+		}, p.navOptions);
+		p.actionsNavOptions = $.extend(true, {
+			commonIconClass: getIcon("actions.common")
+		}, p.actionsNavOptions);
+		p.formEditing = $.extend(true, {
+			commonIconClass: getIcon("form.common"),
+			prevIcon: getIcon("form.prev"),
+			nextIcon: getIcon("form.next"),
+			saveicon: [true, "left", getIcon("form.save")],
+			closeicon: [true, "left", getIcon("form.undo")]
+		}, p.formEditing);
+		p.searching = $.extend(true, {
+			commonIconClass: getIcon("search.common"),
+			findDialogIcon: getIcon("search.search"),
+			resetDialogIcon: getIcon("search.reset"),
+			queryDialogIcon: getIcon("search.query")
+		}, p.searching);
+		p.formViewing = $.extend(true, {
+			commonIconClass: getIcon("form.common"),
+			prevIcon: getIcon("form.prev"),
+			nextIcon: getIcon("form.next"),
+			closeicon: [true, "left", getIcon("form.undo")]
+		}, p.formViewing);
+		p.formDeleting = $.extend(true, {
+			commonIconClass: getIcon("form.common"),
+			prevIcon: getIcon("form.prev"),
+			nextIcon: getIcon("form.next"),
+			delicon: [true, "left", getIcon("form.del")],
+			cancelicon: [true, "left", getIcon("form.cancel")]
+		}, p.formDeleting);
 		p.groupingView = $.extend(true, {
 			commonIconClass: getIcon("grouping.common"),
 			plusicon: getIcon("grouping.plus"),

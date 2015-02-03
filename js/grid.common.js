@@ -76,10 +76,8 @@ $.extend(jgrid,{
 		return [curleft,curtop];
 	},
 	createModal : function(aIDs, content, o, insertSelector, posSelector, appendsel, css) {
-		var jqID = jgrid.jqID, gridjqModal = this.p != null ? this.p.jqModal || {} : {};
+		var jqID = jgrid.jqID, p = this.p, gridjqModal = p != null ? p.jqModal || {} : {};
 		o = $.extend(true, {
-			commonIconClass: "ui-icon",
-			closeIcon: "ui-icon-closethick",
 			resizingRightBottomIcon: "ui-icon ui-icon-gripsmall-diagonal-se"
 		}, jgrid.jqModal || {}, gridjqModal, o);
 		// create main window "div.ui-jqdialog", which will contains other components of the modal window:
@@ -101,7 +99,7 @@ $.extend(jgrid,{
 		var ahr= $("<a class='ui-jqdialog-titlebar-close ui-corner-all'></a>")
 		.hover(function(){ahr.addClass('ui-state-hover');},
 			function(){ahr.removeClass('ui-state-hover');})
-		.append("<span class='" + jgrid.mergeCssClasses(o.commonIconClass, o.closeIcon) + "'></span>");
+		.append("<span class='" + jgrid.getIconRes(p.iconSet, "form.close") + "'></span>");
 		$(mh).append(ahr);
 		// create "div.ui-jqdialog-content" which hold some HTML content (see input parameter)
 		var mc = document.createElement('div');
