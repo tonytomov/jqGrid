@@ -111,9 +111,9 @@ jgrid.extend({
 			if (p.sortable.exclude) {
 				sortableOpts.items += ":not("+p.sortable.exclude+")";
 			}
-			var $e = tblrow.sortable(sortableOpts), dataObj = $e.data("sortable") || $e.data("uiSortable");
+			var $e = tblrow.sortable(sortableOpts), dataObj = $e.data("sortable") || $e.data("uiSortable") || $e.data("ui-sortable");
 			if (dataObj != null) {
-				dataObj.data("sortable").floating = true;
+				dataObj.floating = true;
 			}
 		});
 	},
