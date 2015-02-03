@@ -1996,19 +1996,19 @@ jgrid.extend({
 		});
 	},
 	navButtonAdd : function (elem, o) {
-		o = $.extend({
-			caption : "newButton",
-			title: '',
-			buttonicon : 'ui-icon-newwin',
-			onClickButton: null,
-			position : "last",
-			cursor : 'pointer',
-			commonIconClass : "ui-icon",
-			iconsOverText : false
-		}, o ||{});
 		return this.each(function() {
 			var $t = this;
 			if (!$t.grid)  {return;}
+			o = $.extend({
+				caption : "newButton",
+				title: '',
+				buttonicon : 'ui-icon-newwin',
+				onClickButton: null,
+				position : "last",
+				cursor : 'pointer',
+				commonIconClass : "ui-icon",
+				iconsOverText : false
+			}, jgrid.nav, $t.p.navOptions || {}, o || {});
 			if (typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+jqID(elem);}
 			var findnav = $(".navtable",elem), commonIconClass = o.commonIconClass;
 			if (findnav.length > 0) {
