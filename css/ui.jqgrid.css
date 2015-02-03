@@ -282,16 +282,16 @@
 	margin: 0;
 	border: 0 none;
 }
-.ui-jqgrid .jqgrow> td.td_cbox {
+.ui-jqgrid .jqgrow > td.td_cbox {
 	padding: 2px;
 	text-align: center;
 	vertical-align: middle;
 }
-.ui-jqgrid .jqgrow> td.ui-sgcollapsed {
+.ui-jqgrid .jqgrow > td.ui-sgcollapsed {
 	text-align: center;
 	vertical-align: middle;
 }
-.ui-jqgrid .jqgrow> td > .cbox {
+.ui-jqgrid .jqgrow > td > .cbox {
 	vertical-align: middle;
 }
 .ui-jqgrid .ui-jqgrid-resize-mark {
@@ -390,12 +390,6 @@ span.ui-jqgrid-cell-wrapper {
 	margin: 1px;
 	float: left;
 }
-.ui-jqgrid .ui-pg-button:hover {
-	padding: 0;
-}
-.ui-jqgrid .ui-state-disabled:hover {
-	padding: 1px;
-}
 .ui-jqgrid .ui-pg-table .ui-pg-input,
 .ui-jqgrid .ui-pg-table .ui-pg-selbox {
 	height: auto;
@@ -467,19 +461,24 @@ span.ui-jqgrid-cell-wrapper {
 }
 
 /* navigator buttons */
-.ui-jqgrid .navtable>.ui-pg-button.ui-state-hover {
+.ui-jqgrid .ui-pg-table .ui-pg-button.ui-state-disabled:hover {
+	margin: 1px;
+	padding: 2px;
+}
+.ui-jqgrid .navtable .ui-pg-button.ui-state-disabled:hover {
+	margin: 0;
+	padding: 2px;
+}
+.ui-jqgrid .ui-pg-table .ui-pg-button:hover {
 	font-weight: normal;
+	padding: -2px;
 	margin: 1px;
 }
-.ui-jqgrid .navtable>.ui-pg-button.ui-state-hover {
-	font-weight: normal;
-	margin: 1px;
+.ui-jqgrid .ui-pg-table .ui-pg-button.ui-state-disabled:hover > .ui-separator {
+	margin: -1px 1px;
+	padding: 0 0px;
 }
-.ui-jqgrid .navtable>.ui-pg-button:hover {
-	font-weight: normal;
-	margin: 1px;
-}
-.ui-jqgrid .navtable>.ui-pg-button {
+.ui-jqgrid .ui-pg-table .ui-pg-button {
 	margin: 2px;
 	vertical-align: middle;
 }
@@ -493,7 +492,7 @@ span.ui-jqgrid-cell-wrapper {
 	vertical-align: middle;
 	display: inline-block;
 }
-.ui-jqgrid .navtable .ui-pg-div>span.ui-pg-button-icon-over-text {
+.ui-jqgrid .navtable .ui-pg-div > span.ui-pg-button-icon-over-text {
 	margin-left: auto;
 	margin-right: auto;
 	float: none;
@@ -690,6 +689,9 @@ span.ui-jqgrid-cell-wrapper {
 	position: relative;
 	text-align: center;
 	zoom: 1;
+}
+.ui-jqdialog .fm-button.ui-state-disabled:hover {
+	padding: .4em .5em;
 }
 .ui-jqdialog .fm-button > span {
 	display: inline-block;
