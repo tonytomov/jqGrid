@@ -101,20 +101,19 @@
 	//opts can be id:row id for the row, rowdata:the data for the row, colmodel:the column model for this column
 	//example {id:1234,}
 	$.extend(fmatter,{
+		// one can consider to use $.type instead of some functions below (see http://api.jquery.com/jQuery.type/)
 		isObject : function(o) {
 			return (o && (typeof o === 'object' || $.isFunction(o))) || false;
 		},
-		isString : function(o) {
-			return typeof o === 'string';
-		},
 		isNumber : function(o) {
-			return typeof o === 'number' && isFinite(o);
+			// probably Number.isFinite can be used instead.
+			return typeof o === 'number' && isFinite(o); // return false for +infinity, -infinity, or NaN 
 		},
 		isValue : function (o) {
-			return (this.isObject(o) || this.isString(o) || this.isNumber(o) || typeof o === 'boolean');
+			return (this.isObject(o) || typeof o === "string" || this.isNumber(o) || typeof o === 'boolean');
 		},
 		isEmpty : function(o) {
-			if(!this.isString(o) && this.isValue(o)) {
+			if(typeof o !== "string" && this.isValue(o)) {
 				return false;
 			}
 			if (!this.isValue(o)){
@@ -247,7 +246,7 @@
 		}
 		if(op.target) {target = 'target=' + op.target;}
 		idUrl = op.baseLinkUrl+op.showAction + '?'+ op.idName+'='+opts.rowId+op.addParam;
-		if(fmatter.isString(cellval) || fmatter.isNumber(cellval)) {	//add this one even if its blank string
+		if(typeof cellval === 'string' || fmatter.isNumber(cellval)) {	//add this one even if its blank string
 			return "<a "+target+" href=\"" + idUrl + "\">" + cellval + "</a>";
 		}
 		return $FnFmatter.defaultFormat(cellval,opts);
@@ -301,7 +300,7 @@
 			var	msl =  (opts.colModel.editoptions != null && opts.colModel.editoptions.multiple === true) === true ? true : false,
 			scell = [], sv, mapFunc = function(n,i){if(i>0) {return n;}};
 			if(msl) {scell = cellval.split(",");scell = $.map(scell,function(n){return $.trim(n);});}
-			if (fmatter.isString(oSelect)) {
+			if (typeof oSelect === "string") {
 				// mybe here we can use some caching with care ????
 				var so = oSelect.split(delim), j=0, i;
 				for(i=0; i<so.length;i++){
@@ -476,7 +475,7 @@
 		}
 		if(unformatFunc !== undefined && $.isFunction(unformatFunc) ) {
 			ret = unformatFunc.call(this, $(cellval).text(), options, cellval);
-		} else if(formatType !== undefined && fmatter.isString(formatType) ) {
+		} else if(formatType !== undefined && typeof formatType === "string") {
 			var opts = jgrid.formatter || {}, stripTag;
 			switch(formatType) {
 				case 'integer' :
@@ -537,7 +536,7 @@
 			msl =  op.multiple === true ? true : false,
 			scell = [], sv, mapFunc = function(n,i){if(i>0) {return n;}};
 			if(msl) {scell = cell.split(",");scell = $.map(scell,function(n){return $.trim(n);});}
-			if (fmatter.isString(oSelect)) {
+			if (typeof oSelect === "string") {
 				var so = oSelect.split(delim), j=0, i;
 				for(i=0; i<so.length;i++){
 					sv = so[i].split(sep);
