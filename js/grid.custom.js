@@ -233,7 +233,7 @@ jgrid.extend({
 						so  = (cm.searchoptions && cm.searchoptions.sopt) ? cm.searchoptions.sopt[0] : cm.stype==='select'?  'eq' : o.defaultSearch;
 					}
 					v = cm.stype === "custom" && $.isFunction(cm.searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN" ?
-						cm.searchoptions.custom_value.call($t, $elem.children(".customelement:first"), "get") :
+						cm.searchoptions.custom_value.call($t, $elem.children(".customelement").filter(":first"), "get") :
 						$elem.val();
 					if(v || so==="nu" || so==="nn") {
 						sdata[nm] = v;
@@ -316,7 +316,7 @@ jgrid.extend({
 							break;
 						case 'custom':
 							if ($.isFunction(cm.searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN") {
-								cm.searchoptions.custom_value.call($t, $elem.children(".customelement:first"), "set", v || "");
+								cm.searchoptions.custom_value.call($t, $elem.children(".customelement").filter(":first"), "set", v || "");
 							}
 							break;
 					}
@@ -447,7 +447,7 @@ jgrid.extend({
 						var st = soptions.searchtitle != null ? soptions.searchtitle : o.operandTitle;
 						select = "<a title='"+st+"' style='padding-right: 0.5em;' soper='"+so+"' class='soptclass' colname='"+this.name+"'>"+sot+"</a>";
 					}
-					$("td:eq(0)",stbl).data("colindex",ci).append(select);
+					$("td",stbl).filter(":first").data("colindex",ci).append(select);
 					if (soptions.sopt == null || soptions.sopt.length === 1) {
 						$("td.ui-search-oper",stbl).hide();
 					}
@@ -456,9 +456,9 @@ jgrid.extend({
 					}
 					if(soptions.clearSearch) {
 						var csv = o.resetTitle || 'Clear Search Value';
-						$("td:eq(2)",stbl).append("<a title='"+csv+"' style='padding-right: 0.3em;padding-left: 0.3em;' class='clearsearchclass'>"+o.resetIcon+"</a>");
+						$("td",stbl).eq(2).append("<a title='"+csv+"' style='padding-right: 0.3em;padding-left: 0.3em;' class='clearsearchclass'>"+o.resetIcon+"</a>");
 					} else {
-						$("td:eq(2)", stbl).hide();
+						$("td",stbl).eq(2).hide();
 					}
 					switch (this.stype)
 					{
@@ -476,10 +476,10 @@ jgrid.extend({
 									if(soptions.buildSelect !== undefined) {
 										var d = soptions.buildSelect(res);
 										if (d) {
-											$("td:eq(1)",stbl).append(d);
+											$("td",stbl).eq(1).append(d);
 										}
 									} else {
-										$("td:eq(1)",stbl).append(res);
+										$("td",stbl).eq(1).append(res);
 									}
 									if(soptions.defaultValue !== undefined) { $("select",self).val(soptions.defaultValue); }
 									$("select",self).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
@@ -533,7 +533,7 @@ jgrid.extend({
 								if(soptions.attr) {$(elem).attr(soptions.attr);}
 								$(thd).append(stbl);
 								bindEv.call($t, elem , soptions);
-								$("td:eq(1)",stbl).append( elem );
+								$("td",stbl).eq(1).append( elem );
 								if(o.autosearch===true){
 									$(elem).change(function(){
 										triggerToolbar();
@@ -546,7 +546,7 @@ jgrid.extend({
 					case "text":
 						var df = soptions.defaultValue !== undefined ? soptions.defaultValue: "";
 
-						$("td:eq(1)",stbl).append("<input type='text' style='width:100%;padding:0;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"' value='"+df+"'/>");
+						$("td",stbl).eq(1).append("<input type='text' style='width:100%;padding:0;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"' value='"+df+"'/>");
 						$(thd).append(stbl);
 
 						if(soptions.attr) {$("input",thd).attr(soptions.attr);}
@@ -584,7 +584,7 @@ jgrid.extend({
 						}
 						break;
 					case "custom":
-						$("td:eq(1)",stbl).append("<span style='width:95%;padding:0;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"'/>");
+						$("td",stbl).eq(1).append("<span style='width:95%;padding:0;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"'/>");
 						$(thd).append(stbl);
 						try {
 							if($.isFunction(soptions.custom_element)) {
@@ -609,7 +609,7 @@ jgrid.extend({
 				$(th).append(thd);
 				$(tr).append(th);
 				if(!o.searchOperators) {
-					$("td:eq(0)",stbl).hide();
+					$("td",stbl).eq(0).hide();
 				}
 			});
 			$("table thead",grid.hDiv).append(tr);
@@ -628,7 +628,7 @@ jgrid.extend({
 				});
 			}
 			$(".clearsearchclass",tr).click(function(){
-				var ptr = $(this).parents("tr:first"),
+				var ptr = $(this).parents("tr").filter(":first"),
 				coli = parseInt($("td.ui-search-oper", ptr).data('colindex'),10),
 				sval  = $.extend({},colModel[coli].searchoptions || {}),
 				dval = sval.defaultValue || "";

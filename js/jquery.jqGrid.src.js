@@ -3341,7 +3341,7 @@ $.fn.jqGrid = function( pin ) {
 		thead += "</tr></thead>";
 		imgs = null;
 		$(ts).append(thead);
-		$("thead tr:first th",ts).hover(function(){$(this).addClass('ui-state-hover');},function(){$(this).removeClass('ui-state-hover');});
+		$(ts.tHead).children("tr").children("th").hover(function(){$(this).addClass('ui-state-hover');},function(){$(this).removeClass('ui-state-hover');});
 		if(p.multiselect) {
 			var emp=[], chk;
 			$(p.cb,ts).bind('click',function(){
@@ -3419,13 +3419,11 @@ $.fn.jqGrid = function( pin ) {
 			return false; // stop propagate
 		});
 		$(gv).css("width",grid.width+"px");
-		thead = $("thead:first",ts).get(0);
 		var	tfoot = "";
 		if(p.footerrow) { tfoot += "<table role='presentation' style='width:"+p.tblwidth+"px' class='ui-jqgrid-ftable'"+(isMSIE7 ? " cellspacing='0'" : "")+"><tbody><tr role='row' class='ui-widget-content footrow footrow-"+dir+"'>"; }
-		var thr = $("tr:first",thead),
-		firstr = "<tr class='jqgfirstrow' role='row' style='height:auto'>";
+		var firstr = "<tr class='jqgfirstrow' role='row' style='height:auto'>";
 		p.disableClick=false;
-		$("th",thr).each(function ( j ) {
+		$("th",ts.tHead.rows[0]).each(function ( j ) {
 			w = p.colModel[j].width;
 			if(p.colModel[j].resizable === undefined) {p.colModel[j].resizable = true;}
 			if(p.colModel[j].resizable){
@@ -3518,10 +3516,9 @@ $.fn.jqGrid = function( pin ) {
 		ts.appendChild(tbody);
 		$(ts).addClass('ui-jqgrid-btable').append(firstr);
 		firstr = null;
-		var hTable = $("<table class='ui-jqgrid-htable' style='width:"+p.tblwidth+"px' role='presentation' aria-labelledby='gbox_"+p.id+"'"+(isMSIE7 ? " cellspacing='0'" : "")+"></table>").append(thead),
+		var hTable = $("<table class='ui-jqgrid-htable' style='width:"+p.tblwidth+"px' role='presentation' aria-labelledby='gbox_"+p.id+"'"+(isMSIE7 ? " cellspacing='0'" : "")+"></table>").append(ts.tHead),
 		hg = (p.caption && p.hiddengrid===true) ? true : false,
 		hb = $("<div class='ui-jqgrid-hbox" + (dir==="rtl" ? "-rtl" : "" )+"'></div>");
-		thead = null;
 		grid.hDiv = document.createElement("div");
 		$(grid.hDiv)
 			.css({ width: grid.width+"px"})
@@ -4546,11 +4543,11 @@ jgrid.extend({
 				}
 			}
 			if(p.tblwidth) {
-				$('table:first',bDiv).css("width",p.tblwidth+"px");
-				$('table:first',hDiv).css("width",p.tblwidth+"px");
+				$($t).css("width",p.tblwidth+"px");
+				getGridComponent("hTable", $(hDiv)).css("width",p.tblwidth+"px");
 				hDiv.scrollLeft = bDiv.scrollLeft;
 				if(p.footerrow) {
-					$('table:first',sDiv).css("width",p.tblwidth+"px");
+					getGridComponent("hTable", $(sDiv)).css("width",p.tblwidth+"px");
 				}
 			}
 		});
@@ -6451,7 +6448,7 @@ jgrid.extend({
 						so  = (cm.searchoptions && cm.searchoptions.sopt) ? cm.searchoptions.sopt[0] : cm.stype==='select'?  'eq' : o.defaultSearch;
 					}
 					v = cm.stype === "custom" && $.isFunction(cm.searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN" ?
-						cm.searchoptions.custom_value.call($t, $elem.children(".customelement:first"), "get") :
+						cm.searchoptions.custom_value.call($t, $elem.children(".customelement").filter(":first"), "get") :
 						$elem.val();
 					if(v || so==="nu" || so==="nn") {
 						sdata[nm] = v;
@@ -6534,7 +6531,7 @@ jgrid.extend({
 							break;
 						case 'custom':
 							if ($.isFunction(cm.searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN") {
-								cm.searchoptions.custom_value.call($t, $elem.children(".customelement:first"), "set", v || "");
+								cm.searchoptions.custom_value.call($t, $elem.children(".customelement").filter(":first"), "set", v || "");
 							}
 							break;
 					}
@@ -6665,7 +6662,7 @@ jgrid.extend({
 						var st = soptions.searchtitle != null ? soptions.searchtitle : o.operandTitle;
 						select = "<a title='"+st+"' style='padding-right: 0.5em;' soper='"+so+"' class='soptclass' colname='"+this.name+"'>"+sot+"</a>";
 					}
-					$("td:eq(0)",stbl).data("colindex",ci).append(select);
+					$("td",stbl).filter(":first").data("colindex",ci).append(select);
 					if (soptions.sopt == null || soptions.sopt.length === 1) {
 						$("td.ui-search-oper",stbl).hide();
 					}
@@ -6674,9 +6671,9 @@ jgrid.extend({
 					}
 					if(soptions.clearSearch) {
 						var csv = o.resetTitle || 'Clear Search Value';
-						$("td:eq(2)",stbl).append("<a title='"+csv+"' style='padding-right: 0.3em;padding-left: 0.3em;' class='clearsearchclass'>"+o.resetIcon+"</a>");
+						$("td",stbl).eq(2).append("<a title='"+csv+"' style='padding-right: 0.3em;padding-left: 0.3em;' class='clearsearchclass'>"+o.resetIcon+"</a>");
 					} else {
-						$("td:eq(2)", stbl).hide();
+						$("td",stbl).eq(2).hide();
 					}
 					switch (this.stype)
 					{
@@ -6694,10 +6691,10 @@ jgrid.extend({
 									if(soptions.buildSelect !== undefined) {
 										var d = soptions.buildSelect(res);
 										if (d) {
-											$("td:eq(1)",stbl).append(d);
+											$("td",stbl).eq(1).append(d);
 										}
 									} else {
-										$("td:eq(1)",stbl).append(res);
+										$("td",stbl).eq(1).append(res);
 									}
 									if(soptions.defaultValue !== undefined) { $("select",self).val(soptions.defaultValue); }
 									$("select",self).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
@@ -6751,7 +6748,7 @@ jgrid.extend({
 								if(soptions.attr) {$(elem).attr(soptions.attr);}
 								$(thd).append(stbl);
 								bindEv.call($t, elem , soptions);
-								$("td:eq(1)",stbl).append( elem );
+								$("td",stbl).eq(1).append( elem );
 								if(o.autosearch===true){
 									$(elem).change(function(){
 										triggerToolbar();
@@ -6764,7 +6761,7 @@ jgrid.extend({
 					case "text":
 						var df = soptions.defaultValue !== undefined ? soptions.defaultValue: "";
 
-						$("td:eq(1)",stbl).append("<input type='text' style='width:100%;padding:0;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"' value='"+df+"'/>");
+						$("td",stbl).eq(1).append("<input type='text' style='width:100%;padding:0;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"' value='"+df+"'/>");
 						$(thd).append(stbl);
 
 						if(soptions.attr) {$("input",thd).attr(soptions.attr);}
@@ -6802,7 +6799,7 @@ jgrid.extend({
 						}
 						break;
 					case "custom":
-						$("td:eq(1)",stbl).append("<span style='width:95%;padding:0;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"'/>");
+						$("td",stbl).eq(1).append("<span style='width:95%;padding:0;' name='"+(cm.index || cm.name)+"' id='gs_"+cm.name+"'/>");
 						$(thd).append(stbl);
 						try {
 							if($.isFunction(soptions.custom_element)) {
@@ -6827,7 +6824,7 @@ jgrid.extend({
 				$(th).append(thd);
 				$(tr).append(th);
 				if(!o.searchOperators) {
-					$("td:eq(0)",stbl).hide();
+					$("td",stbl).eq(0).hide();
 				}
 			});
 			$("table thead",grid.hDiv).append(tr);
@@ -6846,7 +6843,7 @@ jgrid.extend({
 				});
 			}
 			$(".clearsearchclass",tr).click(function(){
-				var ptr = $(this).parents("tr:first"),
+				var ptr = $(this).parents("tr").filter(":first"),
 				coli = parseInt($("td.ui-search-oper", ptr).data('colindex'),10),
 				sval  = $.extend({},colModel[coli].searchoptions || {}),
 				dval = sval.defaultValue || "";
@@ -9961,19 +9958,19 @@ jgrid.extend({
 		});
 	},
 	navButtonAdd : function (elem, o) {
-		o = $.extend({
-			caption : "newButton",
-			title: '',
-			buttonicon : 'ui-icon-newwin',
-			onClickButton: null,
-			position : "last",
-			cursor : 'pointer',
-			commonIconClass : "ui-icon",
-			iconsOverText : false
-		}, o ||{});
 		return this.each(function() {
 			var $t = this;
 			if (!$t.grid)  {return;}
+			o = $.extend({
+				caption : "newButton",
+				title: '',
+				buttonicon : 'ui-icon-newwin',
+				onClickButton: null,
+				position : "last",
+				cursor : 'pointer',
+				commonIconClass : "ui-icon",
+				iconsOverText : false
+			}, jgrid.nav, $t.p.navOptions || {}, o || {});
 			if (typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+jqID(elem);}
 			var findnav = $(".navtable",elem), commonIconClass = o.commonIconClass;
 			if (findnav.length > 0) {
@@ -11616,9 +11613,9 @@ jgrid.extend({
 			if (p.sortable.exclude) {
 				sortableOpts.items += ":not("+p.sortable.exclude+")";
 			}
-			var $e = tblrow.sortable(sortableOpts), dataObj = $e.data("sortable") || $e.data("uiSortable");
+			var $e = tblrow.sortable(sortableOpts), dataObj = $e.data("sortable") || $e.data("uiSortable") || $e.data("ui-sortable");
 			if (dataObj != null) {
-				dataObj.data("sortable").floating = true;
+				dataObj.floating = true;
 			}
 		});
 	},
@@ -13940,20 +13937,19 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 	//opts can be id:row id for the row, rowdata:the data for the row, colmodel:the column model for this column
 	//example {id:1234,}
 	$.extend(fmatter,{
+		// one can consider to use $.type instead of some functions below (see http://api.jquery.com/jQuery.type/)
 		isObject : function(o) {
 			return (o && (typeof o === 'object' || $.isFunction(o))) || false;
 		},
-		isString : function(o) {
-			return typeof o === 'string';
-		},
 		isNumber : function(o) {
-			return typeof o === 'number' && isFinite(o);
+			// probably Number.isFinite can be used instead.
+			return typeof o === 'number' && isFinite(o); // return false for +infinity, -infinity, or NaN 
 		},
 		isValue : function (o) {
-			return (this.isObject(o) || this.isString(o) || this.isNumber(o) || typeof o === 'boolean');
+			return (this.isObject(o) || typeof o === "string" || this.isNumber(o) || typeof o === 'boolean');
 		},
 		isEmpty : function(o) {
-			if(!this.isString(o) && this.isValue(o)) {
+			if(typeof o !== "string" && this.isValue(o)) {
 				return false;
 			}
 			if (!this.isValue(o)){
@@ -14086,7 +14082,7 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 		}
 		if(op.target) {target = 'target=' + op.target;}
 		idUrl = op.baseLinkUrl+op.showAction + '?'+ op.idName+'='+opts.rowId+op.addParam;
-		if(fmatter.isString(cellval) || fmatter.isNumber(cellval)) {	//add this one even if its blank string
+		if(typeof cellval === 'string' || fmatter.isNumber(cellval)) {	//add this one even if its blank string
 			return "<a "+target+" href=\"" + idUrl + "\">" + cellval + "</a>";
 		}
 		return $FnFmatter.defaultFormat(cellval,opts);
@@ -14140,7 +14136,7 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 			var	msl =  (opts.colModel.editoptions != null && opts.colModel.editoptions.multiple === true) === true ? true : false,
 			scell = [], sv, mapFunc = function(n,i){if(i>0) {return n;}};
 			if(msl) {scell = cellval.split(",");scell = $.map(scell,function(n){return $.trim(n);});}
-			if (fmatter.isString(oSelect)) {
+			if (typeof oSelect === "string") {
 				// mybe here we can use some caching with care ????
 				var so = oSelect.split(delim), j=0, i;
 				for(i=0; i<so.length;i++){
@@ -14315,7 +14311,7 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 		}
 		if(unformatFunc !== undefined && $.isFunction(unformatFunc) ) {
 			ret = unformatFunc.call(this, $(cellval).text(), options, cellval);
-		} else if(formatType !== undefined && fmatter.isString(formatType) ) {
+		} else if(formatType !== undefined && typeof formatType === "string") {
 			var opts = jgrid.formatter || {}, stripTag;
 			switch(formatType) {
 				case 'integer' :
@@ -14376,7 +14372,7 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 			msl =  op.multiple === true ? true : false,
 			scell = [], sv, mapFunc = function(n,i){if(i>0) {return n;}};
 			if(msl) {scell = cell.split(",");scell = $.map(scell,function(n){return $.trim(n);});}
-			if (fmatter.isString(oSelect)) {
+			if (typeof oSelect === "string") {
 				var so = oSelect.split(delim), j=0, i;
 				for(i=0; i<so.length;i++){
 					sv = so[i].split(sep);
