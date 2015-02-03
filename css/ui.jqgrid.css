@@ -45,6 +45,7 @@
 .ui-jqdialog .ui-jqdialog-titlebar-close {
 	vertical-align: middle;
 	text-align: center;
+	text-decoration: none;
 	position: absolute;
 	top: 50%;
 	width: 18px;
