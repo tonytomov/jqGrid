@@ -310,7 +310,7 @@ jgrid.extend({
 					type: o.mtype,
 					complete: function(res,stat){
 						$self.jqGrid("progressBar", {method:"hide", loadtype : o.saveui, htmlcontent: o.savetext});
-						if (stat === "success"){
+						if (data.status < 400 || stat === "success"){ // stat can be "abort", "timeout", "error", "parsererror" or some text from text part of HTTP error occurs
 							var ret, sucret, j;
 							sucret = $self.triggerHandler("jqGridInlineSuccessSaveRow", [res, rowid, o]);
 							if (!$.isArray(sucret)) {sucret = [true, tmp];}

@@ -13,7 +13,7 @@
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
 /*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
-/*global jQuery */
+/*global jQuery, HTMLElement */
 
 (function ($) {
 "use strict";
@@ -572,6 +572,71 @@ $.extend(true,jgrid,{
 	jqID : function(sid){
 		return String(sid).replace(/[!"#$%&'()*+,.\/:; <=>?@\[\\\]\^`{|}~]/g,"\\$&");
 	},
+	/*gridComponent: { // enum
+		// let us this - <table> from which grid is created. Then
+		//	gBox (grid box) - outer div which includes all grid components: $(this).closest(".ui-jqgrid")[0]
+		// In the same way 
+
+		GRID_BOX_DIV: 0,								// tagName: "div". class: "ui-jqgrid". Id: "gbox_" + gridId
+			GRID_OVERLAY_DIV: 1,						// tagName: "div". class: "jqgrid-overlay". Id: "lui_" + gridId
+			LOADING_DIV: 2,								// tagName: "div". class: "loading". Id: "load_" + gridId
+			DIALOG_ALERT_DIV: 3,						// tagName: "div". class: "ui-jqdialog". Id: "alertmod_" + gridId
+			DIALOG_SEARCH_DIV: 4,						// tagName: "div". class: "ui-jqdialog". Id: "searchmodfbox_" + gridId
+			DIALOG_VIEW_DIV: 5,							// tagName: "div". class: "ui-jqdialog". Id: "viewmod" + gridId
+			DIALOG_EDIT_DIV: 6,							// tagName: "div". class: "ui-jqdialog". Id: "editmod" + gridId
+			DIALOG_DELETE_DIV: 7,						// tagName: "div". class: "ui-jqdialog". Id: "delmod" + gridId
+
+			GRID_VIEW_DIV: 8,							// tagName: "div". class: "ui-jqgrid-view". Id: "gview_" + gridId
+				TITLE_BAR_DIV: 9,						// tagName: "div". class: "ui-jqgrid-titlebar" and either "ui-jqgrid-caption" or "ui-jqgrid-caption-rtl"
+
+				UPPER_TOOLBAR_DIV: 10,					// tagName: "div". class: "ui-userdata". Id: "tb_" + gridId
+
+				TOP_PAGER_DIV: 11,						// tagName: "div". class: "ui-jqgrid-toppager". Id: gridId + "_toppager"
+
+				HEADER_DIV: 12,							// tagName: "div". class: "ui-jqgrid-hdiv"
+					HEADER_BOX_DIV: 13,					// tagName: "div". class: either "ui-jqgrid-hdiv" or "ui-jqgrid-hbox-rtl"
+						HEADER_TABLE: 14,				// tagName: "table". class: "ui-jqgrid-htable"
+							HEADER_COLS_ROW: 15,		// tagName: "tr". class: "jqgfirstrow"
+								HEADER_COLS: 16,		// tagName: "th". class: either "ui-first-th-rtl" or "ui-first-th-rtl"
+							SEARCH_TOOLBAR: 17,			// tagName: "tr". class: "ui-search-toolbar". Its direct children are th having class "ui-th-column" and optionally "ui-th-rtl"
+
+				BODY_DIV: 18,							// tagName: "div". class: "ui-jqgrid-bdiv"
+					BODY_SCROLL_FULL_DIV: 19,			// tagName: "div"
+						BODY_SCROLL_TOP_DIV: 20,		// tagName: "div"
+							BODY_TABLE: 21,				// tagName: "table". class: "ui-jqgrid-btable". Id: gridId
+								BODY_COLS_ROW: 22,		// tagName: "tr". class: "jqgfirstrow"
+									BODY_COLS: 23,		// tagName: "td"
+								BODY_DATA_ROWS: 24,		// tagName: "tr". class: "jqgrow" and optionally "ui-row-rtl"
+				FOOTER_DIV: 25,							// tagName: "div". class: "ui-jqgrid-sdiv"
+					FOOTER_BOX_DIV: 26, 				// tagName: "div". class: either "ui-jqgrid-hdiv" or "ui-jqgrid-hbox-rtl". ??? is it really needed ???
+						FOOTER_TABLE: 27,				// tagName: "table". class: "ui-jqgrid-ftable"
+							FOOTER_DATA_ROWS: 28,		// tagName: "tr". class: "footrow", optionally additionally "footrow-rtl"
+
+				BOTTOM_TOOLBAR_DIV: 29,					// tagName: "div". class: "ui-userdata". Id: "tb_" + gridId
+
+				FROZEN_HEADER_DIV: 30,					// tagName: "div". class: "frozen-div" and "ui-jqgrid-hdiv"
+					// no hBox currently exists
+					FROZEN_HEADER_TABLE: 31,			// tagName: "table". class: "ui-jqgrid-htable"
+						FROZEN_HEADER_COLS_ROW: 32,		// tagName: "tr". class: "jqgfirstrow"
+							FROZEN_HEADER_COLS: 33,		// tagName: "th". class: either "ui-first-th-rtl" or "ui-first-th-rtl"
+						FROZEN_SEARCH_TOOLBAR: 34,		// tagName: "tr". class: "ui-search-toolbar". Its direct children are th having class "ui-th-column" and optionally "ui-th-rtl"
+		// TODO: fix id of children of .ui-search-input to have no id duplicates with the main grid
+
+				FROZEN_FOOTER_DIV: 35,					// tagName: "div". class: "frozen-div" and "ui-jqgrid-sdiv"
+					FROZEN_FOOTER_TABLE: 36,			// tagName: "table". class: "ui-jqgrid-ftable"
+						FROZEN_FOOTER_DATA_ROWS: 37,	// tagName: "tr". class: "footrow", optionally additionally "footrow-rtl"
+
+				FROZEN_BODY_DIV: 38,					// tagName: "div". class: "frozen-div" and "ui-jqgrid-bdiv"
+					// no full scroll div and top scroll div is currently exist
+					FROZEN_BODY_TABLE: 39,				// tagName: "table". class: "ui-jqgrid-btable". Id: gridId + "_frozen"
+						FROZEN_BODY_COLS_ROW: 40,		// tagName: "tr". class: "jqgfirstrow"
+							FROZEN_BODY_COLS: 41,		// tagName: "td"
+						FROZEN_BODY_DATA_ROWS: 42,		// tagName: "tr". class: "jqgrow" and optionally "ui-row-rtl"
+		// TODO: fix id of children of .jqgrow to have no id duplicates with the main grid
+
+			COLUMN_RESIZER_DIV: 43,						// tagName: "div". class: "ui-jqgrid-resize-mark". Id: "rs_m" + gridId
+			BOTTOM_PAGER_DIV: 44						// tagName: "div". class: "ui-jqgrid-pager"
+	},*/
 	getGridComponentId: function (componentName) {
 		var self = this, id;
 		if (self == null || self.p == null || !self.p.id) {
@@ -602,14 +667,19 @@ $.extend(true,jgrid,{
 		return id ? "#" + jgrid.jqID(id) : "";
 	},
 	getGridComponent: function (componentName, $p, p1) {
-		if (!($p instanceof jQuery) || $p.length === 0) {
+		var p;
+		if ($p instanceof jQuery || $p.length > 0) {
+			p = $p[0];
+		} else if ($p instanceof HTMLElement) {
+			p = $p;
+			$p = $(p);
+		} else {
 			return $(); // return empty jQuery object
 		}
-		var p = $p[0];
 		switch (componentName) {
 			case "bTable": // get body table from bDiv
 				return $p.hasClass("ui-jqgrid-bdiv") ? $p.find(">div>.ui-jqgrid-btable") : $();
-			case "hTable": // header table from bHiv
+			case "hTable": // header table from bDiv
 				return $p.hasClass("ui-jqgrid-hdiv") ? $p.find(">div>.ui-jqgrid-htable") : $();
 			case "fTable": // footer/summary table from sDiv
 				return $p.hasClass("ui-jqgrid-sdiv") ? $p.find(">div>.ui-jqgrid-ftable") : $();
@@ -620,7 +690,8 @@ $.extend(true,jgrid,{
 			case "sDiv":   // get sDiv of grid (bTable)
 				return $p.hasClass("ui-jqgrid-btable") && p.grid != null ? $(p.grid.sDiv) : $();
 			case "colHeader": // p should be iCol
-				return !isNaN(p1) && p.grid != null && p.grid.headers != null && p.grid.headers[p1] != null ? $(p.grid.headers[p1].el) : $();
+				return !isNaN(p1) && p.grid != null && p.grid.headers != null && p.grid.headers[p1] != null ?
+					$(p.grid.headers[p1].el) : $();
 			default:
 				return $(); // return empty jQuery object
 		}
@@ -3507,7 +3578,7 @@ $.fn.jqGrid = function( pin ) {
 		});
 		if (p.sortable && $.fn.sortable) {
 			try {
-				$(ts).jqGrid("sortableColumns", thr);
+				$(ts).jqGrid("sortableColumns", $(ts.tHead.rows[0]));
 			} catch (ignore){}
 		}
 		if(p.footerrow) { tfoot += "</tr></tbody></table>"; }
@@ -4547,7 +4618,7 @@ jgrid.extend({
 				getGridComponent("hTable", $(hDiv)).css("width",p.tblwidth+"px");
 				hDiv.scrollLeft = bDiv.scrollLeft;
 				if(p.footerrow) {
-					getGridComponent("hTable", $(sDiv)).css("width",p.tblwidth+"px");
+					getGridComponent("fTable", $(sDiv)).css("width",p.tblwidth+"px");
 				}
 			}
 		});
@@ -10960,8 +11031,8 @@ jgrid.extend({
 	},
 	saveRow : function(rowid, successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
 		// Compatible mode old versions
-		var args = $.makeArray(arguments).slice(1), o = {}, $t = this[0], $self = $($t), p = $t != null ? $t.p : null, success = false;
-		if (!$t.grid || p == null) { return success; }
+		var args = $.makeArray(arguments).slice(1), o = {}, $t = this[0], $self = $($t), p = $t != null ? $t.p : null;
+		if (!$t.grid || p == null) { return; }
 
 		if ($.type(args[0]) === "object") {
 			o = args[0];
@@ -10988,12 +11059,12 @@ jgrid.extend({
 		// End compatible
 		// TODO: add return this.each(function(){....}
 		var nm, tmp = {}, tmp2 = {}, tmp3 = {}, editable, fr, cv, ind = $self.jqGrid("getInd",rowid,true);
-		if(ind === false) {return success;}
+		if(ind === false) {return;}
 		var bfsr = $.isFunction( o.beforeSaveRow ) ?	o.beforeSaveRow.call($t,o, rowid) :  undefined;
 		if( bfsr === undefined ) {
 			bfsr = true;
 		}
-		if (!bfsr) { return success; }
+		if (!bfsr) { return; }
 		editable = $(ind).attr("editable");
 		o.url = o.url || p.editurl;
 		if (editable==="1") {
@@ -11070,7 +11141,7 @@ jgrid.extend({
 				} catch (e) {
 					alert(cv[1]);
 				}
-				return success;
+				return;
 			}
 			var idname, opers = p.prmNames, oldRowId = rowid;
 			if (p.keyName === false) {
@@ -11126,7 +11197,6 @@ jgrid.extend({
 				if(fr >= 0) { p.savedRow.splice(fr,1); }
 				$self.triggerHandler("jqGridInlineAfterSaveRow", [rowid, resp, tmp, o]);
 				if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, resp, tmp, o); }
-				success = true;
 				$(ind).removeClass("jqgrid-new-row").unbind("keydown");
 			} else {
 				$self.jqGrid("progressBar", {method:"show", loadtype : o.saveui, htmlcontent: o.savetext });
@@ -11136,10 +11206,9 @@ jgrid.extend({
 					url:o.url,
 					data: $.isFunction(p.serializeRowData) ? p.serializeRowData.call($t, tmp3) : tmp3,
 					type: o.mtype,
-					async : false, //?!?
 					complete: function(res,stat){
 						$self.jqGrid("progressBar", {method:"hide", loadtype : o.saveui, htmlcontent: o.savetext});
-						if (stat === "success"){
+						if (data.status < 400 || stat === "success"){ // stat can be "abort", "timeout", "error", "parsererror" or some text from text part of HTTP error occurs
 							var ret, sucret, j;
 							sucret = $self.triggerHandler("jqGridInlineSuccessSaveRow", [res, rowid, o]);
 							if (!$.isArray(sucret)) {sucret = [true, tmp];}
@@ -11166,7 +11235,6 @@ jgrid.extend({
 								if(fr >= 0) { p.savedRow.splice(fr,1); }
 								$self.triggerHandler("jqGridInlineAfterSaveRow", [rowid, res, tmp, o]);
 								if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, res, tmp, o); }
-								success = true;
 								$(ind).removeClass("jqgrid-new-row").unbind("keydown");
 							} else {
 								$self.triggerHandler("jqGridInlineErrorSaveRow", [rowid, res, stat, null, o]);
@@ -11199,7 +11267,7 @@ jgrid.extend({
 				}, jgrid.ajaxOptions, p.ajaxRowOptions || {}));
 			}
 		}
-		return success;
+		return;
 	},
 	restoreRow : function(rowid, afterrestorefunc) {
 		// Compatible mode old versions
