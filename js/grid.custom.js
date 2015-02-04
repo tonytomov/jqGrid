@@ -1001,24 +1001,22 @@ jgrid.extend({
 					}
 					btbl=null;
 				});
-				/*$(p.gBox).bind("resizestop.setFrozenColumns", function () {
-					var gboxOffsetTop = $(this).offset().top,
-						$gvew = $(this).children(".ui-jqgrid-view"),
-						gviewOffsetTop = $gvew.offset().top,
-						gviewPositionTop = $gvew.position().top;
-					if (grid.fhDiv != null && grid.fhDiv.length > 0) {
-						$(grid.fhDiv).height(grid.hDiv.clientHeight);
-						$(grid.fhDiv).css($(grid.hDiv).position());
-					}
-					if (grid.fbDiv != null && grid.fbDiv.length > 0) {
-						$(grid.fbDiv).height(grid.bDiv.clientHeight);
-						$(grid.fbDiv).css($(grid.bDiv).position());
-					}
-					if (grid.fsDiv != null && grid.fsDiv.length > 0) {
-						$(grid.fsDiv).height(grid.sDiv.clientHeight);
-						$(grid.fsDiv).css($(grid.sDiv).position());
-					}
-				});*/
+				$(p.gBox).bind("resizestop.setFrozenColumns", function () {
+					setTimeout(function () {
+						if (grid.fhDiv != null && grid.fhDiv.length > 0) {
+							$(grid.fhDiv).height(grid.hDiv.clientHeight);
+							$(grid.fhDiv).css($(grid.hDiv).position());
+						}
+						if (grid.fbDiv != null && grid.fbDiv.length > 0) {
+							$(grid.fbDiv).height(grid.bDiv.clientHeight);
+							$(grid.fbDiv).css($(grid.bDiv).position());
+						}
+						if (grid.fsDiv != null && grid.fsDiv.length > 0) {
+							$(grid.fsDiv).height(grid.sDiv.clientHeight);
+							$(grid.fsDiv).css($(grid.sDiv).position());
+						}
+					}, 50);
+				});
 				if(!grid.hDiv.loading) {
 					$self.triggerHandler("jqGridAfterGridComplete");
 				}
