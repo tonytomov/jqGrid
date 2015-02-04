@@ -573,7 +573,7 @@ jgrid.extend({
 					return $.trim(item);
 				});
 				if (ar.length === 2 && ((ar[0] === "e" && ar[1] === "w") || (ar[1] === "e" && ar[1] === "w"))) {
-					sel = p.gView + ">div";
+					sel = p.gView + ">div:not(.frozen-div)";
 					onlyHorizontal = true;
 					if (p.pager) {
 						sel += "," + p.pager;

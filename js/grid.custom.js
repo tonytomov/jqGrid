@@ -972,7 +972,7 @@ jgrid.extend({
 				}
 				$self.bind('jqGridAfterGridComplete.setFrozenColumns', function () {
 					$(p.idSel+"_frozen").remove();
-					$(grid.fbDiv).height($(grid.bDiv).height()-16);
+					$(grid.fbDiv).height(grid.hDiv.clientHeight);
 					var btbl = $(p.idSel).clone(true);
 					$("tr[role=row]",btbl).each(function(){
 						$("td[role=gridcell]:gt("+maxfrozen+")",this).remove();
@@ -990,8 +990,35 @@ jgrid.extend({
 							function(){ var tr = this; $(tr).removeClass("ui-state-hover"); $("#"+jqID(tr.id), p.idSel+"_frozen").removeClass("ui-state-hover"); }
 						);
 					}
+					//grid.fbDiv[0].scrollHeight = 
+					$(grid.fhDiv).css($(grid.hDiv).position());
+					$(grid.fhDiv).height(grid.hDiv.clientHeight);
+					$(grid.fbDiv).css($(grid.bDiv).position());
+					$(grid.fbDiv).height(grid.bDiv.clientHeight);
+					if (grid.fsDiv != null && grid.fsDiv.length > 0) {
+						$(grid.fsDiv).height(grid.sDiv.clientHeight);
+						$(grid.fsDiv).css($(grid.sDiv).position());
+					}
 					btbl=null;
 				});
+				/*$(p.gBox).bind("resizestop.setFrozenColumns", function () {
+					var gboxOffsetTop = $(this).offset().top,
+						$gvew = $(this).children(".ui-jqgrid-view"),
+						gviewOffsetTop = $gvew.offset().top,
+						gviewPositionTop = $gvew.position().top;
+					if (grid.fhDiv != null && grid.fhDiv.length > 0) {
+						$(grid.fhDiv).height(grid.hDiv.clientHeight);
+						$(grid.fhDiv).css($(grid.hDiv).position());
+					}
+					if (grid.fbDiv != null && grid.fbDiv.length > 0) {
+						$(grid.fbDiv).height(grid.bDiv.clientHeight);
+						$(grid.fbDiv).css($(grid.bDiv).position());
+					}
+					if (grid.fsDiv != null && grid.fsDiv.length > 0) {
+						$(grid.fsDiv).height(grid.sDiv.clientHeight);
+						$(grid.fsDiv).css($(grid.sDiv).position());
+					}
+				});*/
 				if(!grid.hDiv.loading) {
 					$self.triggerHandler("jqGridAfterGridComplete");
 				}

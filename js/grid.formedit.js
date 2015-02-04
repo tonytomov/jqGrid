@@ -2038,7 +2038,7 @@ jgrid.extend({
 				.attr("title",o.title  || "")
 				.click(function(e){
 					if (!$(this).hasClass('ui-state-disabled')) {
-						if ($.isFunction(o.onClickButton) ) {o.onClickButton.call($t,e);}
+						if ($.isFunction(o.onClickButton) ) {o.onClickButton.call($t,o,e);}
 					}
 					return false;
 				})

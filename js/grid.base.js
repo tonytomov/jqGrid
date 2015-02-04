@@ -1616,7 +1616,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 			},
-			resizeColumn: function (idx, ts, skipCallbacks) {
+			resizeColumn: function (idx, skipCallbacks) {
 				var self = this, headers = self.headers, footers = self.footers, h = headers[idx], hn, nw = h.newWidth || h.width,
 					$bTable = getGridComponent("bTable", $(self.bDiv));
 				nw = parseInt(nw,10);
@@ -1645,7 +1645,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 				if (!skipCallbacks) {
-					feedback.call(ts, "resizeStop", nw, idx);
+					feedback.call($bTable[0], "resizeStop", nw, idx);
 				}
 			},
 			dragEnd: function() {
@@ -1653,7 +1653,7 @@ $.fn.jqGrid = function( pin ) {
 				self.hDiv.style.cursor = "default";
 				if(self.resizing) {
 					if (self.resizing !== null && self.resizing.moved === true) {
-						self.resizeColumn(self.resizing.idx, getGridComponent("bTable", $(self.bDiv)));
+						self.resizeColumn(self.resizing.idx, false);
 					}
 					$(p.rs).removeData("pageX");
 					self.resizing = false;
@@ -4987,7 +4987,7 @@ jgrid.extend({
 			}
 			grid.headers[iCol].newWidth = newWidth;
 			grid.newWidth = p.tblwidth + newWidth - grid.headers[iCol].width;
-			grid.resizeColumn(iCol, this, true);
+			grid.resizeColumn(iCol, true);
 			if (adjustGridWidth !== false) {
 				$self.jqGrid("setGridWidth", grid.newWidth, false); // adjust grid width too
 			}
