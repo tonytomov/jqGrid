@@ -133,8 +133,8 @@ jgrid.extend({
 	},
 	saveRow : function(rowid, successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
 		// Compatible mode old versions
-		var args = $.makeArray(arguments).slice(1), o = {}, $t = this[0], $self = $($t), p = $t != null ? $t.p : null, success = false;
-		if (!$t.grid || p == null) { return success; }
+		var args = $.makeArray(arguments).slice(1), o = {}, $t = this[0], $self = $($t), p = $t != null ? $t.p : null;
+		if (!$t.grid || p == null) { return; }
 
 		if ($.type(args[0]) === "object") {
 			o = args[0];
@@ -161,12 +161,12 @@ jgrid.extend({
 		// End compatible
 		// TODO: add return this.each(function(){....}
 		var nm, tmp = {}, tmp2 = {}, tmp3 = {}, editable, fr, cv, ind = $self.jqGrid("getInd",rowid,true);
-		if(ind === false) {return success;}
+		if(ind === false) {return;}
 		var bfsr = $.isFunction( o.beforeSaveRow ) ?	o.beforeSaveRow.call($t,o, rowid) :  undefined;
 		if( bfsr === undefined ) {
 			bfsr = true;
 		}
-		if (!bfsr) { return success; }
+		if (!bfsr) { return; }
 		editable = $(ind).attr("editable");
 		o.url = o.url || p.editurl;
 		if (editable==="1") {
@@ -243,7 +243,7 @@ jgrid.extend({
 				} catch (e) {
 					alert(cv[1]);
 				}
-				return success;
+				return;
 			}
 			var idname, opers = p.prmNames, oldRowId = rowid;
 			if (p.keyName === false) {
@@ -299,7 +299,6 @@ jgrid.extend({
 				if(fr >= 0) { p.savedRow.splice(fr,1); }
 				$self.triggerHandler("jqGridInlineAfterSaveRow", [rowid, resp, tmp, o]);
 				if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, resp, tmp, o); }
-				success = true;
 				$(ind).removeClass("jqgrid-new-row").unbind("keydown");
 			} else {
 				$self.jqGrid("progressBar", {method:"show", loadtype : o.saveui, htmlcontent: o.savetext });
@@ -309,7 +308,6 @@ jgrid.extend({
 					url:o.url,
 					data: $.isFunction(p.serializeRowData) ? p.serializeRowData.call($t, tmp3) : tmp3,
 					type: o.mtype,
-					async : false, //?!?
 					complete: function(res,stat){
 						$self.jqGrid("progressBar", {method:"hide", loadtype : o.saveui, htmlcontent: o.savetext});
 						if (stat === "success"){
@@ -339,7 +337,6 @@ jgrid.extend({
 								if(fr >= 0) { p.savedRow.splice(fr,1); }
 								$self.triggerHandler("jqGridInlineAfterSaveRow", [rowid, res, tmp, o]);
 								if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, res, tmp, o); }
-								success = true;
 								$(ind).removeClass("jqgrid-new-row").unbind("keydown");
 							} else {
 								$self.triggerHandler("jqGridInlineErrorSaveRow", [rowid, res, stat, null, o]);
@@ -372,7 +369,7 @@ jgrid.extend({
 				}, jgrid.ajaxOptions, p.ajaxRowOptions || {}));
 			}
 		}
-		return success;
+		return;
 	},
 	restoreRow : function(rowid, afterrestorefunc) {
 		// Compatible mode old versions
