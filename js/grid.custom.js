@@ -1003,16 +1003,21 @@ jgrid.extend({
 				});
 				$(p.gBox).bind("resizestop.setFrozenColumns", function () {
 					setTimeout(function () {
+						// TODO: the width of all column headers can be changed
+						// so one should recalculate frozenWidth in other way.
+						var frozenWidth = grid.hDiv.clientWidth;
 						if (grid.fhDiv != null && grid.fhDiv.length > 0) {
 							$(grid.fhDiv).height(grid.hDiv.clientHeight);
 							$(grid.fhDiv).css($(grid.hDiv).position());
 						}
 						if (grid.fbDiv != null && grid.fbDiv.length > 0) {
 							$(grid.fbDiv).height(grid.bDiv.clientHeight);
+							$(grid.fbDiv).width(frozenWidth);
 							$(grid.fbDiv).css($(grid.bDiv).position());
 						}
 						if (grid.fsDiv != null && grid.fsDiv.length > 0) {
 							$(grid.fsDiv).height(grid.sDiv.clientHeight);
+							$(grid.fsDiv).width(frozenWidth);
 							$(grid.fsDiv).css($(grid.sDiv).position());
 						}
 					}, 50);
