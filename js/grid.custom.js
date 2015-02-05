@@ -970,6 +970,16 @@ jgrid.extend({
 				if(p.hoverrows === true) {
 					$(p.idSel).unbind('mouseover').unbind('mouseout');
 				}
+				var fixDiv = function ($hDiv, hDivBase) {
+						var pos = $(hDivBase).position();
+						if ($hDiv != null && $hDiv.length > 0) {
+							$hDiv.css({
+								top: pos.top,
+								left: p.direction === "rtl" ? hDivBase.clientWidth - grid.fhDiv.width() : 0
+							});
+						}
+						$hDiv.height(hDivBase.clientHeight);
+					};
 				$self.bind('jqGridAfterGridComplete.setFrozenColumns', function () {
 					$(p.idSel+"_frozen").remove();
 					$(grid.fbDiv).height(grid.hDiv.clientHeight);
@@ -990,35 +1000,32 @@ jgrid.extend({
 							function(){ var tr = this; $(tr).removeClass("ui-state-hover"); $("#"+jqID(tr.id), p.idSel+"_frozen").removeClass("ui-state-hover"); }
 						);
 					}
-					//grid.fbDiv[0].scrollHeight = 
-					$(grid.fhDiv).css($(grid.hDiv).position());
-					$(grid.fhDiv).height(grid.hDiv.clientHeight);
-					$(grid.fbDiv).css($(grid.bDiv).position());
-					$(grid.fbDiv).height(grid.bDiv.clientHeight);
-					if (grid.fsDiv != null && grid.fsDiv.length > 0) {
-						$(grid.fsDiv).height(grid.sDiv.clientHeight);
-						$(grid.fsDiv).css($(grid.sDiv).position());
-					}
+					fixDiv(grid.fhDiv, grid.hDiv);
+					fixDiv(grid.fbDiv, grid.bDiv);
+					fixDiv(grid.fsDiv, grid.sDiv);
 					btbl=null;
 				});
 				$(p.gBox).bind("resizestop.setFrozenColumns", function () {
 					setTimeout(function () {
 						// TODO: the width of all column headers can be changed
 						// so one should recalculate frozenWidth in other way.
-						var frozenWidth = grid.hDiv.clientWidth;
+						fixDiv(grid.fhDiv, grid.hDiv);
+						fixDiv(grid.fbDiv, grid.bDiv);
+						fixDiv(grid.fsDiv, grid.sDiv);
+						var frozenWidth = grid.fhDiv[0].clientWidth;
 						if (grid.fhDiv != null && grid.fhDiv.length > 0) {
 							$(grid.fhDiv).height(grid.hDiv.clientHeight);
-							$(grid.fhDiv).css($(grid.hDiv).position());
+							//$(grid.fhDiv).css("top", $(grid.hDiv).position().top);
 						}
 						if (grid.fbDiv != null && grid.fbDiv.length > 0) {
-							$(grid.fbDiv).height(grid.bDiv.clientHeight);
+							//$(grid.fbDiv).height(grid.bDiv.clientHeight);
 							$(grid.fbDiv).width(frozenWidth);
-							$(grid.fbDiv).css($(grid.bDiv).position());
+							//$(grid.fbDiv).css("top", $(grid.bDiv).position().top);
 						}
 						if (grid.fsDiv != null && grid.fsDiv.length > 0) {
-							$(grid.fsDiv).height(grid.sDiv.clientHeight);
+							//$(grid.fsDiv).height(grid.sDiv.clientHeight);
 							$(grid.fsDiv).width(frozenWidth);
-							$(grid.fsDiv).css($(grid.sDiv).position());
+							//$(grid.fsDiv).css("top", $(grid.sDiv).position().top);
 						}
 					}, 50);
 				});
