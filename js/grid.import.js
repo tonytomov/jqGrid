@@ -28,9 +28,17 @@ $.extend($.jgrid,{
 			compressionMethod : 'compressToUTF16' // string by example zip, compressToUTF16
 		}, o || {});
 		if(!jqGridId) { return; }
-		var gridstate = "", data = "", ret, $t = $("#"+jqGridId)[0];
+		var gridstate = "", data = "", ret, $t = $("#"+jqGridId)[0], tmp;
 		// to use navigator set storeNavOptions to true in grid options
 		if(!$t.grid) { return;}
+		tmp = $($t).data('inlineNav');
+		if(tmp && $t.p.inlineNav) {
+			$($t).jqGrid('setGridParam',{_iN: tmp});
+		}
+		tmp = $($t).data('filterToolbar');
+		if(tmp && $t.p.filterToolbar) {
+			$($t).jqGrid('setGridParam',{_fT: tmp});
+		}
 		gridstate  =  $($t).jqGrid('jqGridExport', { exptype : "jsonstring", ident:"", root:"" });
 		$($t.grid.bDiv).find(".ui-jqgrid-btable tr:gt(0)").each(function(i,d){
 			data += d.outerHTML;
@@ -78,7 +86,7 @@ $.extend($.jgrid,{
 			decompressionMethod : 'decompressFromUTF16' // string by example unzip, decompressFromUTF16
 		}, o || {});
 		if(!jqGridId) { return; }
-		var ret, tmp, $t = $("#"+jqGridId)[0], data;
+		var ret, tmp, $t = $("#"+jqGridId)[0], data, iN, fT;
 		if($t.grid) { 
 			$.jgrid.gridUnload( jqGridId ); 
 		}
@@ -127,11 +135,29 @@ $.extend($.jgrid,{
 			ret.data = [];
 			ret.datatype = 'local';
 			ret.grouping = false;
+			ret.navGrid = false;
+
+			if(ret.inlineNav) {
+				iN = retfunc( ret._iN );
+				ret._iN = null; delete ret._iN; 
+			}
+			if(ret.filterToolbar) {
+				fT = retfunc( ret._fT );
+				ret._fT = null; delete ret._fT; 
+			}
 			var grid = $("#"+jqGridId).jqGrid( ret );
-			$("#"+jqGridId).append( data );
+			grid.append( data );
 			grid.jqGrid( 'setGridParam', prm);
 			if(ret.storeNavOptions) {
-				$("#"+jqGridId).jqGrid('navGrid', ret.pager, ret.navOptions, ret.editOptions, ret.addOptions, ret.delOptions, ret.searchOptions, ret.viewOptions);
+				grid.jqGrid('navGrid', ret.pager, ret.navOptions, ret.editOptions, ret.addOptions, ret.delOptions, ret.searchOptions, ret.viewOptions);
+			}
+			if(ret.inlineNav && iN) {
+				grid.jqGrid('setGridParam', { inlineNav:false });
+				grid.jqGrid('inlineNav', ret.pager, iN);
+			}
+			if(ret.filterToolbar && fT) {
+				grid.jqGrid('setGridParam', { filterToolbar:false });
+				grid.jqGrid('filterToolbar', fT);
 			}
 			grid[0].updatepager(true, true);
 			if(o.clearAfterLoad) {
@@ -140,6 +166,37 @@ $.extend($.jgrid,{
 			}
 		} else {
 			alert("can not convert to object");
+		}
+	},
+	setRegional : function( jqGridId , options) {
+		$.jgrid.saveState( jqGridId, {
+			storageType: "sessionStorage"
+		});
+		$.jgrid.loadState( jqGridId, null, {
+			storageType: "sessionStorage",
+			beforeSetGrid: function(params) {
+				params.regional = options.regional;
+				params.force_regional = true;
+				return params;
+			}
+		});
+		// check for formatter actions
+		var grid = $("#"+jqGridId)[0],
+		model = $(grid).jqGrid('getGridParam','colModel'), i=-1, nav = $.jgrid.getRegional(grid, 'nav');
+		$.each(model,function(k){
+			if(this.formatter && this.formatter === 'actions') {
+				i = k;
+				return false;
+			}
+		});
+		if(i !== -1 && nav) {
+			$("#"+jqGridId + " tbody tr").each(function(){
+				var td = this.cells[i];
+				$(td).find(".ui-inline-edit").attr("title",nav.edittitle);
+				$(td).find(".ui-inline-del").attr("title",nav.deltitle);
+				$(td).find(".ui-inline-save").attr("title",nav.savetitle);
+				$(td).find(".ui-inline-cancel").attr("title",nav.canceltitle);
+			});
 		}
 	}
 });
