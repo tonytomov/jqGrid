@@ -36,7 +36,7 @@ $.jgrid.regional["ru"] = {
 		pgfirst : "Первая",
 		pglast : "Последняя",
 		pgnext : "Следующая",
-		pgprev : "апиредыдущая",
+		pgprev : "Предыдущая",
 		pgrecs : "Записей на стр.",
 		showhide: "Показать/Скрыть таблицу"
 	},
