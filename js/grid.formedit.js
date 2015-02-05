@@ -784,26 +784,26 @@ jgrid.extend({
 						url: url,
 						type: o.mtype,
 						data: $.isFunction(o.serializeEditData) ? o.serializeEditData.call($t,postdata) :  postdata,
-						complete:function(data,status){
+						complete: function (jqXHR, textStatus) {
 							$("#sData", frmtb2).removeClass('ui-state-active');
 							postdata[idname] = p.idPrefix + $("#id_g",frmtb).val();
-							if(data.status >= 400) {
+							if((jqXHR.status >= 300 && jqXHR.status !== 304) || (jqXHR.status === 0 && jqXHR.readyState === 4)) {
 								ret[0] = false;
-								ret[1] = $self.triggerHandler("jqGridAddEditErrorTextFormat", [data, frmoper]);
+								ret[1] = $self.triggerHandler("jqGridAddEditErrorTextFormat", [jqXHR, frmoper]);
 								if ($.isFunction(o.errorTextFormat)) {
-									ret[1] = o.errorTextFormat.call($t, data, frmoper);
+									ret[1] = o.errorTextFormat.call($t, jqXHR, frmoper);
 								} else {
-									ret[1] = status + " Status: '" + data.statusText + "'. Error code: " + data.status;
+									ret[1] = textStatus + " Status: '" + jqXHR.statusText + "'. Error code: " + jqXHR.status;
 								}
 							} else {
 								// data is posted successful
 								// execute aftersubmit with the returned data from server
-								ret = $self.triggerHandler("jqGridAddEditAfterSubmit", [data, postdata, frmoper]);
+								ret = $self.triggerHandler("jqGridAddEditAfterSubmit", [jqXHR, postdata, frmoper]);
 								if(ret === undefined) {
 									ret = [true,"",""];
 								}
 								if( ret[0] && $.isFunction(o.afterSubmit) ) {
-									ret = o.afterSubmit.call($t, data,postdata, frmoper);
+									ret = o.afterSubmit.call($t, jqXHR,postdata, frmoper);
 								}
 							}
 							if(ret[0] === false) {
@@ -858,7 +858,7 @@ jgrid.extend({
 									if(o.closeAfterEdit) {hideModal(themodalSelector,{gb:gboxSelector,jqm:o.jqModal,onClose: o.onClose, removemodal: o.removemodal, formprop: !o.recreateForm, form: o.form});}
 								}
 								if($.isFunction(o.afterComplete)) {
-									copydata = data;
+									copydata = jqXHR;
 									setTimeout(function(){
 										$self.triggerHandler("jqGridAddEditAfterComplete", [copydata, postdata, $(frmgr), frmoper]);
 										o.afterComplete.call($t, copydata, postdata, $(frmgr), frmoper);
@@ -1616,21 +1616,21 @@ jgrid.extend({
 							url: o.url || p.editurl,
 							type: o.mtype,
 							data: $.isFunction(o.serializeDelData) ? o.serializeDelData.call($t,postd) : postd,
-							complete:function(data,status){
+							complete: function (jqXHR, textStatus) {
 								var i;
 								$("#dData",dtbl+"_2").removeClass('ui-state-active');
-								if(data.status >= 300 && data.status !== 304) {
+								if((jqXHR.status >= 300 && jqXHR.status !== 304) || (jqXHR.status === 0 && jqXHR.readyState === 4)) {
 									ret[0] = false;
 									if ($.isFunction(o.errorTextFormat)) {
-										ret[1] = o.errorTextFormat.call($t,data);
+										ret[1] = o.errorTextFormat.call($t,jqXHR);
 									} else {
-										ret[1] = status + " Status: '" + data.statusText + "'. Error code: " + data.status;
+										ret[1] = textStatus + " Status: '" + jqXHR.statusText + "'. Error code: " + jqXHR.status;
 									}
 								} else {
 									// data is posted successful
 									// execute aftersubmit with the returned data from server
 									if( $.isFunction( o.afterSubmit ) ) {
-										ret = o.afterSubmit.call($t,data,postd);
+										ret = o.afterSubmit.call($t,jqXHR,postd);
 									}
 								}
 								if(ret[0] === false) {
@@ -1649,7 +1649,7 @@ jgrid.extend({
 										}
 									}
 									setTimeout(function(){
-										deleteFeedback("afterComplete", data, postdata, $(dtbl));
+										deleteFeedback("afterComplete", jqXHR, postdata, $(dtbl));
 									}, 500);
 								}
 								o.processing=false;

@@ -308,13 +308,15 @@ jgrid.extend({
 					url:o.url,
 					data: $.isFunction(p.serializeRowData) ? p.serializeRowData.call($t, tmp3) : tmp3,
 					type: o.mtype,
-					complete: function(res,stat){
+					complete: function (jqXHR, textStatus) {
 						$self.jqGrid("progressBar", {method:"hide", loadtype : o.saveui, htmlcontent: o.savetext});
-						if (data.status < 400 || (stat === "success" || "notmodified")){ // stat can be "abort", "timeout", "error", "parsererror" or some text from text part of HTTP error occurs
+						// textStatus can be "abort", "timeout", "error", "parsererror" or some text from text part of HTTP error occurs
+						// see the answer http://stackoverflow.com/a/3617710/315935 about xhr.readyState === 4 && xhr.status === 0
+						if ((jqXHR.status < 300 || jqXHR.status === 304) && (jqXHR.status !== 0 || jqXHR.readyState !== 4)){
 							var ret, sucret, j;
-							sucret = $self.triggerHandler("jqGridInlineSuccessSaveRow", [res, rowid, o]);
+							sucret = $self.triggerHandler("jqGridInlineSuccessSaveRow", [jqXHR, rowid, o]);
 							if (!$.isArray(sucret)) {sucret = [true, tmp];}
-							if (sucret[0] && $.isFunction(o.successfunc)) {sucret = o.successfunc.call($t, res);}							
+							if (sucret[0] && $.isFunction(o.successfunc)) {sucret = o.successfunc.call($t, jqXHR);}							
 							if($.isArray(sucret)) {
 								// expect array - status, data, rowid
 								ret = sucret[0];
@@ -335,13 +337,13 @@ jgrid.extend({
 									if( String(p.savedRow[j].id) === String(rowid)) {fr = j; break;}
 								}
 								if(fr >= 0) { p.savedRow.splice(fr,1); }
-								$self.triggerHandler("jqGridInlineAfterSaveRow", [rowid, res, tmp, o]);
-								if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, res, tmp, o); }
+								$self.triggerHandler("jqGridInlineAfterSaveRow", [rowid, jqXHR, tmp, o]);
+								if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, jqXHR, tmp, o); }
 								$(ind).removeClass("jqgrid-new-row").unbind("keydown");
 							} else {
-								$self.triggerHandler("jqGridInlineErrorSaveRow", [rowid, res, stat, null, o]);
+								$self.triggerHandler("jqGridInlineErrorSaveRow", [rowid, jqXHR, textStatus, null, o]);
 								if($.isFunction(o.errorfunc) ) {
-									o.errorfunc.call($t, rowid, res, stat, null);
+									o.errorfunc.call($t, rowid, jqXHR, textStatus, null);
 								}
 								if(o.restoreAfterError === true) {
 									$self.jqGrid("restoreRow",rowid, o.afterrestorefunc);

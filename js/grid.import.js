@@ -43,29 +43,30 @@
                                 jstr1=jstr[key];
                             }
                         }
-                        if(xmldata) {
-                        // save the datatype
-                            var svdatatype = jstr.grid.datatype;
-                            jstr.grid.datatype = 'xmlstring';
-                            jstr.grid.datastr = xml;
-                            $($t).jqGrid( jstr1 ).jqGrid("setGridParam",{datatype:svdatatype});
-                        } else {
-                            $($t).jqGrid( jstr1 );
+                        if (jstr1 !== undefined) {
+                            if (xmldata) {
+                                // save the datatype
+                                var svdatatype = jstr.grid.datatype;
+                                jstr.grid.datatype = 'xmlstring';
+                                jstr.grid.datastr = xml;
+                                $($t).jqGrid(jstr1).jqGrid("setGridParam", { datatype: svdatatype });
+                            } else {
+                                $($t).jqGrid(jstr1);
+                            }
                         }
-                        jstr = null;jstr1=null;
                     } else {
                         alert("xml2json or parse are not present");
                     }
                 };
                 var jsonConvert = function (jsonstr,o){
                     if (jsonstr && typeof jsonstr === 'string') {
-						var _jsonparse = false;
+						var jsonparse = false;
 						if($.jgrid.useJSON) {
 							$.jgrid.useJSON = false;
-							_jsonparse = true;
+							jsonparse = true;
 						}
                         var json = $.jgrid.parse(jsonstr);
-						if(_jsonparse) { $.jgrid.useJSON = true; }
+						if(jsonparse) { $.jgrid.useJSON = true; }
                         var gprm = json[o.jsonGrid.config];
                         var jdata = json[o.jsonGrid.data];
                         if(jdata) {
@@ -85,15 +86,14 @@
                             type:o.mtype,
                             data: o.impData,
                             dataType:"xml",
-                            complete: function(xml,stat) {
-                                if(stat === 'success') {
-                                    xmlConvert(xml.responseXML,o);
-                                    $($t).triggerHandler("jqGridImportComplete", [xml, o]);
+                            complete: function (jqXHR) {
+                                if((jqXHR.status < 300 || jqXHR.status === 304) && (jqXHR.status !== 0 || jqXHR.readyState !== 4)) {
+                                    xmlConvert(jqXHR.responseXML,o);
+                                    $($t).triggerHandler("jqGridImportComplete", [jqXHR, o]);
                                     if($.isFunction(o.importComplete)) {
-                                        o.importComplete(xml);
+                                        o.importComplete(jqXHR);
                                     }
                                 }
-                                xml=null;
                             }
                         }, o.ajaxOptions));
                         break;
@@ -109,7 +109,6 @@
                                 }
                                 o.impstring = null;
                             }
-                            xmld = null;
                         }
                         break;
                     case 'json':
@@ -118,15 +117,16 @@
                             type:o.mtype,
                             data: o.impData,
                             dataType:"json",
-                            complete: function(json) {
-                                try {
-                                    jsonConvert(json.responseText,o );
-                                    $($t).triggerHandler("jqGridImportComplete", [json, o]);
-                                    if($.isFunction(o.importComplete)) {
-                                        o.importComplete(json);
-                                    }
-                                } catch (ignore){}
-                                json=null;
+                            complete: function (jqXHR) {
+								try {
+									if((jqXHR.status < 300 || jqXHR.status === 304) && (jqXHR.status !== 0 || jqXHR.readyState !== 4)) {
+										jsonConvert(jqXHR.responseText,o );
+										$($t).triggerHandler("jqGridImportComplete", [jqXHR, o]);
+										if($.isFunction(o.importComplete)) {
+											o.importComplete(jqXHR);
+										}
+									}
+								} catch (ignore){}
                             }
                         }, o.ajaxOptions ));
                         break;

@@ -704,7 +704,7 @@ $.extend(true,jgrid,{
 
 		var p = self.p, bDiv = grid.bDiv,
 			fixhBox = function (hDiv) {
-				var $hDivhBox = $(hDiv).children("div").filter(":first");
+				var $hDivhBox = $(hDiv).children("div").first();
 				$hDivhBox.css($hDivhBox.hasClass("ui-jqgrid-hbox-rtl") ? "padding-left": "padding-right", p.scrollOffset);
 				hDiv.scrollLeft = bDiv.scrollLeft;
 			};
@@ -1644,6 +1644,15 @@ $.fn.jqGrid = function( pin ) {
 						getGridComponent("fTable", $(self.sDiv)).css("width",p.tblwidth+"px");
 						self.sDiv.scrollLeft = self.bDiv.scrollLeft;
 					}
+				}
+				if (!p.autowidth && (p.widthOrg === undefined || p.widthOrg === "auto" || p.widthOrg === "100%")) {
+                    var newWidth = self.newWidth, maxIterations = 3, i;
+                    for (i = 0; i < maxIterations; i++) {
+                        $bTable.jqGrid("setGridWidth", newWidth + i);
+                        if (self.bDiv.offsetHeight <= self.bDiv.clientHeight) {
+                            break;
+                        }
+                    }
 				}
 				if (!skipCallbacks) {
 					feedback.call($bTable[0], "resizeStop", nw, idx);
@@ -2716,8 +2725,8 @@ $.fn.jqGrid = function( pin ) {
 				if (rh) {
 					var top = base * rh;
 					var height = parseInt(p.records,10) * rh;
-					$(bDiv).children("div").filter(":first").css({height : height + "px"})
-						.children("div").filter(":first").css({height:top + "px",display:top + "px"?"":"none"});
+					$(bDiv).children("div").first().css({height : height + "px"})
+						.children("div").first().css({height:top + "px",display:top + "px"?"":"none"});
 					if (bDiv.scrollTop === 0 && p.page > 1) {
 						bDiv.scrollTop = p.rowNum * (p.page - 1) * rh;
 					}
@@ -3875,7 +3884,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 		} else {
 			$(grid.cDiv).hide();
-			$(grid.cDiv).nextAll("div:visible").filter(":first").addClass('ui-corner-top'); // set on top toolbar or toppager or on hDiv
+			$(grid.cDiv).nextAll("div:visible").first().addClass('ui-corner-top'); // set on top toolbar or toppager or on hDiv
 		}
 		$(grid.hDiv).after(grid.bDiv)
 		.mousemove(function (e) {
@@ -4154,7 +4163,7 @@ jgrid.extend({
 						if ( nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn' && cm.formatter !== "actions") {
 							td = $td[i];
 							if(p.treeGrid===true && nm === p.ExpandColumn) {
-								res[nm] = htmlDecode($("span",td).filter(":first").html());
+								res[nm] = htmlDecode($("span",td).first().html());
 							} else {
 								try {
 									res[nm] = $.unformat.call($t,td,{rowId:ind.id, colModel:cm},i);
@@ -4235,7 +4244,7 @@ jgrid.extend({
 							vl = t.formatter( rowid, dval, i, data, 'edit');
 							title = cm.title ? {"title":stripHtml(vl)} : {};
 							if(p.treeGrid===true && nm === p.ExpandColumn) {
-								$("td[role='gridcell']:eq("+i+") > span:first",ind).html(vl).attr(title);
+								$("td[role='gridcell']:eq("+i+") > span:first",ind).first().html(vl).attr(title);
 							} else {
 								$("td[role='gridcell']:eq("+i+")",ind).html(vl).attr(title);
 							}
@@ -5309,13 +5318,13 @@ jgrid.extend({
 									url: p.cellurl,
 									data :$.isFunction(p.serializeCellData) ? p.serializeCellData.call($t, postdata) : postdata,
 									type: "POST",
-									complete: function (result, stat) {
+									complete: function (jqXHR, stat) {
 										$self.jqGrid("progressBar", {method:"hide", loadtype : p.loadui });
 										$t.grid.hDiv.loading = false;
-										if (stat === 'success' || result.status < 400) {
-											var ret = $self.triggerHandler("jqGridAfterSubmitCell", [$t, result, postdata.id, nm, v, iRow, iCol]) || [true, ''];
+										if (stat === 'success' || jqXHR.status < 400) {
+											var ret = $self.triggerHandler("jqGridAfterSubmitCell", [$t, jqXHR, postdata.id, nm, v, iRow, iCol]) || [true, ''];
 											if (ret[0] === true && $.isFunction(p.afterSubmitCell)) {
-												ret = p.afterSubmitCell.call($t, result,postdata.id,nm,v,iRow,iCol);
+												ret = p.afterSubmitCell.call($t, jqXHR,postdata.id,nm,v,iRow,iCol);
 											}
 											if(ret[0] === true){
 												cc.empty();
@@ -8856,26 +8865,26 @@ jgrid.extend({
 						url: url,
 						type: o.mtype,
 						data: $.isFunction(o.serializeEditData) ? o.serializeEditData.call($t,postdata) :  postdata,
-						complete:function(data,status){
+						complete:function(jqXHR,status){
 							$("#sData", frmtb2).removeClass('ui-state-active');
 							postdata[idname] = p.idPrefix + $("#id_g",frmtb).val();
-							if(data.status >= 400) {
+							if((jqXHR.status >= 300 && jqXHR.status !== 304) || (jqXHR.status === 0 && jqXHR.readyState === 4)) {
 								ret[0] = false;
-								ret[1] = $self.triggerHandler("jqGridAddEditErrorTextFormat", [data, frmoper]);
+								ret[1] = $self.triggerHandler("jqGridAddEditErrorTextFormat", [jqXHR, frmoper]);
 								if ($.isFunction(o.errorTextFormat)) {
-									ret[1] = o.errorTextFormat.call($t, data, frmoper);
+									ret[1] = o.errorTextFormat.call($t, jqXHR, frmoper);
 								} else {
-									ret[1] = status + " Status: '" + data.statusText + "'. Error code: " + data.status;
+									ret[1] = status + " Status: '" + jqXHR.statusText + "'. Error code: " + jqXHR.status;
 								}
 							} else {
 								// data is posted successful
 								// execute aftersubmit with the returned data from server
-								ret = $self.triggerHandler("jqGridAddEditAfterSubmit", [data, postdata, frmoper]);
+								ret = $self.triggerHandler("jqGridAddEditAfterSubmit", [jqXHR, postdata, frmoper]);
 								if(ret === undefined) {
 									ret = [true,"",""];
 								}
 								if( ret[0] && $.isFunction(o.afterSubmit) ) {
-									ret = o.afterSubmit.call($t, data,postdata, frmoper);
+									ret = o.afterSubmit.call($t, jqXHR,postdata, frmoper);
 								}
 							}
 							if(ret[0] === false) {
@@ -8930,7 +8939,7 @@ jgrid.extend({
 									if(o.closeAfterEdit) {hideModal(themodalSelector,{gb:gboxSelector,jqm:o.jqModal,onClose: o.onClose, removemodal: o.removemodal, formprop: !o.recreateForm, form: o.form});}
 								}
 								if($.isFunction(o.afterComplete)) {
-									copydata = data;
+									copydata = jqXHR;
 									setTimeout(function(){
 										$self.triggerHandler("jqGridAddEditAfterComplete", [copydata, postdata, $(frmgr), frmoper]);
 										o.afterComplete.call($t, copydata, postdata, $(frmgr), frmoper);
@@ -9688,21 +9697,21 @@ jgrid.extend({
 							url: o.url || p.editurl,
 							type: o.mtype,
 							data: $.isFunction(o.serializeDelData) ? o.serializeDelData.call($t,postd) : postd,
-							complete:function(data,status){
+							complete:function(jqXHR,status){
 								var i;
 								$("#dData",dtbl+"_2").removeClass('ui-state-active');
-								if(data.status >= 300 && data.status !== 304) {
+								if((jqXHR.status >= 300 && jqXHR.status !== 304) || (jqXHR.status === 0 && jqXHR.readyState === 4)) {
 									ret[0] = false;
 									if ($.isFunction(o.errorTextFormat)) {
-										ret[1] = o.errorTextFormat.call($t,data);
+										ret[1] = o.errorTextFormat.call($t,jqXHR);
 									} else {
-										ret[1] = status + " Status: '" + data.statusText + "'. Error code: " + data.status;
+										ret[1] = status + " Status: '" + jqXHR.statusText + "'. Error code: " + jqXHR.status;
 									}
 								} else {
 									// data is posted successful
 									// execute aftersubmit with the returned data from server
 									if( $.isFunction( o.afterSubmit ) ) {
-										ret = o.afterSubmit.call($t,data,postd);
+										ret = o.afterSubmit.call($t,jqXHR,postd);
 									}
 								}
 								if(ret[0] === false) {
@@ -9721,7 +9730,7 @@ jgrid.extend({
 										}
 									}
 									setTimeout(function(){
-										deleteFeedback("afterComplete", data, postdata, $(dtbl));
+										deleteFeedback("afterComplete", jqXHR, postdata, $(dtbl));
 									}, 500);
 								}
 								o.processing=false;
@@ -10806,15 +10815,15 @@ jgrid.extend({
                             type:o.mtype,
                             data: o.impData,
                             dataType:"xml",
-                            complete: function(xml,stat) {
+                            complete: function(jqXHR,stat) {
                                 if(stat === 'success') {
-                                    xmlConvert(xml.responseXML,o);
-                                    $($t).triggerHandler("jqGridImportComplete", [xml, o]);
+                                    xmlConvert(jqXHR.responseXML,o);
+                                    $($t).triggerHandler("jqGridImportComplete", [jqXHR, o]);
                                     if($.isFunction(o.importComplete)) {
-                                        o.importComplete(xml);
+                                        o.importComplete(jqXHR);
                                     }
                                 }
-                                xml=null;
+                                jqXHR=null;
                             }
                         }, o.ajaxOptions));
                         break;
@@ -10839,15 +10848,15 @@ jgrid.extend({
                             type:o.mtype,
                             data: o.impData,
                             dataType:"json",
-                            complete: function(json) {
+                            complete: function(jqXHR) {
                                 try {
-                                    jsonConvert(json.responseText,o );
-                                    $($t).triggerHandler("jqGridImportComplete", [json, o]);
+                                    jsonConvert(jqXHR.responseText,o );
+                                    $($t).triggerHandler("jqGridImportComplete", [jqXHR, o]);
                                     if($.isFunction(o.importComplete)) {
-                                        o.importComplete(json);
+                                        o.importComplete(jqXHR);
                                     }
                                 } catch (ignore){}
-                                json=null;
+                                jqXHR=null;
                             }
                         }, o.ajaxOptions ));
                         break;
@@ -11245,13 +11254,13 @@ jgrid.extend({
 					url:o.url,
 					data: $.isFunction(p.serializeRowData) ? p.serializeRowData.call($t, tmp3) : tmp3,
 					type: o.mtype,
-					complete: function(res,stat){
+					complete: function(jqXHR,stat){
 						$self.jqGrid("progressBar", {method:"hide", loadtype : o.saveui, htmlcontent: o.savetext});
 						if (data.status < 400 || (stat === "success" || "notmodified")){ // stat can be "abort", "timeout", "error", "parsererror" or some text from text part of HTTP error occurs
 							var ret, sucret, j;
-							sucret = $self.triggerHandler("jqGridInlineSuccessSaveRow", [res, rowid, o]);
+							sucret = $self.triggerHandler("jqGridInlineSuccessSaveRow", [jqXHR, rowid, o]);
 							if (!$.isArray(sucret)) {sucret = [true, tmp];}
-							if (sucret[0] && $.isFunction(o.successfunc)) {sucret = o.successfunc.call($t, res);}							
+							if (sucret[0] && $.isFunction(o.successfunc)) {sucret = o.successfunc.call($t, jqXHR);}							
 							if($.isArray(sucret)) {
 								// expect array - status, data, rowid
 								ret = sucret[0];
@@ -11272,13 +11281,13 @@ jgrid.extend({
 									if( String(p.savedRow[j].id) === String(rowid)) {fr = j; break;}
 								}
 								if(fr >= 0) { p.savedRow.splice(fr,1); }
-								$self.triggerHandler("jqGridInlineAfterSaveRow", [rowid, res, tmp, o]);
-								if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, res, tmp, o); }
+								$self.triggerHandler("jqGridInlineAfterSaveRow", [rowid, jqXHR, tmp, o]);
+								if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, jqXHR, tmp, o); }
 								$(ind).removeClass("jqgrid-new-row").unbind("keydown");
 							} else {
-								$self.triggerHandler("jqGridInlineErrorSaveRow", [rowid, res, stat, null, o]);
+								$self.triggerHandler("jqGridInlineErrorSaveRow", [rowid, jqXHR, stat, null, o]);
 								if($.isFunction(o.errorfunc) ) {
-									o.errorfunc.call($t, rowid, res, stat, null);
+									o.errorfunc.call($t, rowid, jqXHR, stat, null);
 								}
 								if(o.restoreAfterError === true) {
 									$self.jqGrid("restoreRow",rowid, o.afterrestorefunc);
@@ -12873,13 +12882,13 @@ addSubGrid : function( pos, sind ) {
 						url: $.isFunction(p.subGridUrl) ? p.subGridUrl.call(ts, dp) : p.subGridUrl,
 						dataType:p.subgridtype,
 						data: $.isFunction(p.serializeSubGridData)? p.serializeSubGridData.call(ts, dp) : dp,
-						complete: function(sxml) {
+						complete: function(jqXHR) {
 							if(p.subgridtype === "xml") {
-								subGridXml(sxml.responseXML, sid);
+								subGridXml(jqXHR.responseXML, sid);
 							} else {
-								subGridJson(jgrid.parse(sxml.responseText),sid);
+								subGridJson(jgrid.parse(jqXHR.responseText),sid);
 							}
-							sxml=null;
+							jqXHR=null;
 						}
 					}, jgrid.ajaxOptions, p.ajaxSubgridOptions || {}));
 					break;

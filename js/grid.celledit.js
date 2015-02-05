@@ -220,13 +220,13 @@ jgrid.extend({
 									url: p.cellurl,
 									data :$.isFunction(p.serializeCellData) ? p.serializeCellData.call($t, postdata) : postdata,
 									type: "POST",
-									complete: function (result, stat) {
+									complete: function (jqXHR) {
 										$self.jqGrid("progressBar", {method:"hide", loadtype : p.loadui });
 										$t.grid.hDiv.loading = false;
-										if (stat === 'success' || result.status < 400) {
-											var ret = $self.triggerHandler("jqGridAfterSubmitCell", [$t, result, postdata.id, nm, v, iRow, iCol]) || [true, ''];
+										if ((jqXHR.status < 300 || jqXHR.status === 304) && (jqXHR.status !== 0 || jqXHR.readyState !== 4)) {
+											var ret = $self.triggerHandler("jqGridAfterSubmitCell", [$t, jqXHR, postdata.id, nm, v, iRow, iCol]) || [true, ''];
 											if (ret[0] === true && $.isFunction(p.afterSubmitCell)) {
-												ret = p.afterSubmitCell.call($t, result,postdata.id,nm,v,iRow,iCol);
+												ret = p.afterSubmitCell.call($t, jqXHR,postdata.id,nm,v,iRow,iCol);
 											}
 											if(ret[0] === true){
 												cc.empty();
@@ -241,15 +241,15 @@ jgrid.extend({
 											}
 										}
 									},
-									error:function(res,stat,err) {
+									error: function (jqXHR, textStatus, errorThrown) {
 										$("#lui_"+jqID(p.id)).hide();
 										$t.grid.hDiv.loading = false;
-										$self.triggerHandler("jqGridErrorCell", [res, stat, err]);
+										$self.triggerHandler("jqGridErrorCell", [jqXHR, textStatus, errorThrown]);
 										if ($.isFunction(p.errorCell)) {
-											p.errorCell.call($t, res,stat,err);
+											p.errorCell.call($t, jqXHR,textStatus,errorThrown);
 											$self.jqGrid("restoreCell",iRow,iCol);
 										} else {
-											infoDialog(errcap,res.status+" : "+res.statusText+"<br/>"+stat,bClose);
+											infoDialog(errcap,jqXHR.status+" : "+jqXHR.statusText+"<br/>"+textStatus,bClose);
 											$self.jqGrid("restoreCell",iRow,iCol);
 										}
 									}

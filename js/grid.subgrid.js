@@ -158,13 +158,13 @@ addSubGrid : function( pos, sind ) {
 						url: $.isFunction(p.subGridUrl) ? p.subGridUrl.call(ts, dp) : p.subGridUrl,
 						dataType:p.subgridtype,
 						data: $.isFunction(p.serializeSubGridData)? p.serializeSubGridData.call(ts, dp) : dp,
-						complete: function(sxml) {
+						complete: function(jqXHR) {
 							if(p.subgridtype === "xml") {
-								subGridXml(sxml.responseXML, sid);
+								subGridXml(jqXHR.responseXML, sid);
 							} else {
-								subGridJson(jgrid.parse(sxml.responseText),sid);
+								subGridJson(jgrid.parse(jqXHR.responseText),sid);
 							}
-							sxml=null;
+							jqXHR=null;
 						}
 					}, jgrid.ajaxOptions, p.ajaxSubgridOptions || {}));
 					break;

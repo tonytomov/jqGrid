@@ -200,7 +200,7 @@ jgrid.extend({
 	filterToolbar : function(oMuligrid){
 		// if one uses jQuery wrapper with multiple grids, then oMultiple specify the object with common options
 		return this.each(function(){
-			var $t = this, grid = $t.grid, $self = $($t), p = $t.p, bindEv = jgrid.bindEv, info_dialog = jgrid.info_dialog;
+			var $t = this, grid = $t.grid, $self = $($t), p = $t.p, bindEv = jgrid.bindEv, infoDialog = jgrid.info_dialog;
 			if(this.ftoolbar) { return; }
 			// make new copy of the options and use it for ONE specific grid.
 			// p.searching can contains grid specific options
@@ -472,14 +472,14 @@ jgrid.extend({
 							$.ajax($.extend({
 								url: surl,
 								dataType: "html",
-								success: function(res) {
+								success: function (data) {
 									if(soptions.buildSelect !== undefined) {
-										var d = soptions.buildSelect(res);
+										var d = soptions.buildSelect(data);
 										if (d) {
 											$("td",stbl).eq(1).append(d);
 										}
 									} else {
-										$("td",stbl).eq(1).append(res);
+										$("td",stbl).eq(1).append(data);
 									}
 									if(soptions.defaultValue !== undefined) { $("select",self).val(soptions.defaultValue); }
 									$("select",self).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
@@ -493,7 +493,7 @@ jgrid.extend({
 											return false;
 										});
 									}
-									res=null;
+									data=null;
 								}
 							}, jgrid.ajaxOptions, p.ajaxSelectOptions || {} ));
 						} else {
@@ -599,9 +599,9 @@ jgrid.extend({
 								throw "e1";
 							}
 						} catch (e) {
-							if (e === "e1") { info_dialog.call($t,errcap,"function 'custom_element' "+editMsg.nodefined,bClose);}
-							if (e === "e2") { info_dialog.call($t,errcap,"function 'custom_element' "+editMsg.novalue,bClose);}
-							else { info_dialog.call($t,errcap,typeof e==="string"?e:e.message,bClose); }
+							if (e === "e1") { infoDialog.call($t,errcap,"function 'custom_element' "+editMsg.nodefined,bClose);}
+							if (e === "e2") { infoDialog.call($t,errcap,"function 'custom_element' "+editMsg.novalue,bClose);}
+							else { infoDialog.call($t,errcap,typeof e==="string"?e:e.message,bClose); }
 						}
 						break;
 					}
