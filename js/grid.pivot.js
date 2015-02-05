@@ -1,4 +1,5 @@
 /*jshint eqeqeq:false */
+/*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
 /*global jQuery */
 (function($){
 /**
@@ -13,17 +14,14 @@
 // To optimize the search we need custom array filter
 // This code is taken from
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
-var jgrid = $.jgrid, _pivotfilter = function (fn, context) {
-	var i,
-		value,
-		result = [],
-		length;
+var jgrid = $.jgrid, pivotFilter = function (fn, context) {
+	var i, value, result = [];
 
-	if (!this || typeof fn !== 'function' || (fn instanceof RegExp)) {
+	if (typeof fn !== 'function' || (fn instanceof RegExp)) {
 		throw new TypeError();
 	}
 
-	length = this.length;
+	var length = this.length;
 
 	for (i = 0; i < length; i++) {
 		if (this.hasOwnProperty(i)) {
@@ -95,7 +93,7 @@ jgrid.extend({
 			 */
 			function find(ar, fun, extra) {
 				var res;
-				res = _pivotfilter.call(ar, fun, extra);
+				res = pivotFilter.call(ar, fun, extra);
 				return res.length > 0 ? res[0] : null;
 			}
 			/*
@@ -104,10 +102,10 @@ jgrid.extend({
 			 * otherviese the column
 			 */
 			var findGroup = function (item, index) {
-				var j = 0, ret = true, i;
-				for(i in item) {
-					if (item.hasOwnProperty(i)) {
-						if(item[i] != this[j]) {
+				var j = 0, ret = true, name;
+				for(name in item) {
+					if (item.hasOwnProperty(name)) {
+						if(item[name] != this[j]) {
 							ret =  false;
 							break;
 						}
@@ -128,7 +126,7 @@ jgrid.extend({
 			function calculation(oper, v, field, rc)  {
 				var ret;
 				switch (oper) {
-					case  "sum" : 
+					case "sum" : 
 						ret = parseFloat(v||0) + parseFloat((rc[field]||0));
 						break;
 					case "count" :
@@ -164,7 +162,7 @@ jgrid.extend({
 			 */
 			function agregateFunc ( row, aggr, value, curr) {
 				// default is sum
-				var arrln = aggr.length, i, label, j, jv, mainval="",swapvals=[];
+			    var arrln = aggr.length, n, label, j, jv, mainval = "", swapvals = [], tmpmember, vl;
 				if($.isArray(value)) {
 					jv = value.length;
 					swapvals = value;
@@ -176,20 +174,20 @@ jgrid.extend({
 				labels = [];
 				member.root = 0;
 				for(j=0;j<jv;j++) {
-					var  tmpmember = [], vl;
-					for(i=0; i < arrln; i++) {
+					tmpmember = [];
+					for(n=0; n < arrln; n++) {
 						if(value == null) {
-							label = $.trim(aggr[i].member)+"_"+aggr[i].aggregator;
+							label = $.trim(aggr[n].member)+"_"+aggr[n].aggregator;
 							vl = label;
 							swapvals[j]= vl;
 						} else {
 							vl = value[j].replace(/\s+/g, '');
 							try {
-								label = (arrln === 1 ? mainval + vl : mainval + vl+"_"+aggr[i].aggregator+"_" + String(i));
-							} catch(e) {}
+								label = (arrln === 1 ? mainval + vl : mainval + vl+"_"+aggr[n].aggregator+"_" + String(n));
+							} catch(ignore) {}
 						}
 						label = !isNaN(parseInt(label,10)) ? label + " " : label;
-						curr[label] =  tmpmember[label] = calculation( aggr[i].aggregator, curr[label], aggr[i].member, row);
+						curr[label] =  tmpmember[label] = calculation( aggr[n].aggregator, curr[label], aggr[n].member, row);
 						if(j<=1 && vl !==  '_r_Totals' && mainval === "") { // this does not fix full the problem
 							mainval = vl;
 						}
@@ -222,13 +220,13 @@ jgrid.extend({
 				colc = $.extend(true, colc, o.xDimension[i]);
 				columns.push( colc );
 			}
-			var groupfields = xlen - 1, tree={};
+			var groupfields = xlen - 1, tree = {}, xValue, yValue, k, kj, current, existing, kk;
 			//tree = { text: 'root', leaf: false, children: [] };
 			//loop over alll the source data
 			while( r < rowlen ) {
 				row = data[r];
-				var xValue = [];
-				var yValue = []; 
+				xValue = [];
+				yValue = []; 
 				tmp = {};
 				i = 0;
 				// build the data from xDimension
@@ -238,7 +236,7 @@ jgrid.extend({
 					i++;
 				} while( i < xlen );
 				
-				var k = 0;
+				k = 0;
 				rowindex = -1;
 				// check to see if the row is in our new pivotrow set
 				newObj = find(pivotrows, findGroup, xValue);
@@ -284,7 +282,9 @@ jgrid.extend({
 						pivotrows[rowindex] = newObj;
 					}
 				}
-				var kj=0, current = null,existing = null, kk;
+				kj = 0;
+				current = null;
+				existing = null;
 				// Build a JSON tree from the member (see aggregateFunc) 
 				// to make later the columns 
 				// 
@@ -325,7 +325,7 @@ jgrid.extend({
 			 * columns from the pivot values and set the group Headers
 			 */
 			function list(items) {
-				var l, j, key, k, col;
+			    var l, j, key, n, col, collen, colpos, l1, ll;
 				for (key in items) { // iterate
 					if (items.hasOwnProperty(key)) {
 					// write amount of spaces according to level
@@ -348,11 +348,11 @@ jgrid.extend({
 											titleText: items.label,
 											numberOfColumns : 0
 										});
-										var collen = headers[items.level-1].groupHeaders.length-1,
+									    collen = headers[items.level - 1].groupHeaders.length - 1;
 										colpos = collen === 0 ? swaplen : initColLen+aggrlen;
 										if(items.level-1=== (o.rowTotals ? 1 : 0)) {
 											if(collen>0) {
-												var l1 = headers[items.level-1].groupHeaders[collen-1].numberOfColumns;
+												l1 = headers[items.level-1].groupHeaders[collen-1].numberOfColumns;
 												if(l1) {
 													colpos = l1 + 1 + o.aggregates.length;
 												}
@@ -368,7 +368,7 @@ jgrid.extend({
 							// This is in case when the member contain more than one summary item
 							if(items.level === ylen  && key==='level' && ylen >0) {
 								if( aggrlen > 1){
-									var ll=1;
+									ll=1;
 									for( l in items.fields) {
 										if (items.fields.hasOwnProperty(l)) {
 											if(ll===1) {
@@ -394,15 +394,15 @@ jgrid.extend({
 								for(l in items.fields) {
 									if(items.fields.hasOwnProperty( l )) {
 										col = {};
-										for(k in o.aggregates[j]) {
-											if(o.aggregates[j].hasOwnProperty(k)) {
-												switch( k ) {
+										for(n in o.aggregates[j]) {
+											if(o.aggregates[j].hasOwnProperty(n)) {
+												switch( n ) {
 													case 'member':
 													case 'label':
 													case 'aggregator':
 														break;
 													default:
-														col[k] = o.aggregates[j][k];
+														col[n] = o.aggregates[j][n];
 												}
 											}
 										}	
@@ -495,8 +495,8 @@ jgrid.extend({
 				$.ajax($.extend({
 					url : data,
 					dataType: 'json',
-					success : function(response) {
-						pivot(jgrid.getAccessor(response, ajaxOpt && ajaxOpt.reader ? ajaxOpt.reader: 'rows') );
+					success : function(data) {
+						pivot(jgrid.getAccessor(data, ajaxOpt && ajaxOpt.reader ? ajaxOpt.reader: 'rows') );
 					}
 				}, ajaxOpt || {}) );
 			} else {
@@ -505,4 +505,4 @@ jgrid.extend({
 		});
 	}
 });
-})(jQuery);
+}(jQuery));
