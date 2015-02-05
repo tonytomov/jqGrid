@@ -228,7 +228,7 @@ jgrid.extend({
 					var cm = this, $elem = $("#gs_"+jqID(cm.name), (cm.frozen===true && p.frozenColumns === true) ?  grid.fhDiv : grid.hDiv);
 					nm = cm.index || cm.name;
 					if(o.searchOperators ) {
-						so = $elem.parent().prev().children("a").attr("soper") || o.defaultSearch;
+						so = $elem.parent().prev().children("a").data("soper") || o.defaultSearch;
 					} else {
 						so  = (cm.searchoptions && cm.searchoptions.sopt) ? cm.searchoptions.sopt[0] : cm.stype==='select'?  'eq' : o.defaultSearch;
 					}
@@ -381,9 +381,9 @@ jgrid.extend({
 
 				var fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
 				var str = '<ul id="sopt_menu" class="ui-search-menu" role="menu" tabindex="0" style="font-size:'+fs+';left:'+left+'px;top:'+top+'px;">',
-				selected = $(elem).attr("soper"), selclass,
+				selected = $(elem).data("soper"), selclass,
 				aoprs = [], ina;
-				var i=0, nm =$(elem).attr("colname"),len = colModel.length;
+				var i=0, nm =$(elem).data("colname"),len = colModel.length;
 				while(i<len) {
 					if(colModel[i].name === nm) {
 						break;
@@ -414,7 +414,7 @@ jgrid.extend({
 					oper = $(this).attr("oper");
 					$self.triggerHandler("jqGridToolbarSelectOper", [v, oper, elem]);
 					$("#sopt_menu").hide();
-					$(elem).text(oper).attr("soper",v);
+					$(elem).text(oper).data("soper",v);
 					if(o.autosearch===true){
 						var inpelm = $(elem).parent().next().children()[0];
 						if( $(inpelm).val() || v==="nu" || v ==="nn") {
@@ -445,7 +445,7 @@ jgrid.extend({
 							}
 						}
 						var st = soptions.searchtitle != null ? soptions.searchtitle : o.operandTitle;
-						select = "<a title='"+st+"' style='padding-right: 0.5em;' soper='"+so+"' class='soptclass' colname='"+this.name+"'>"+sot+"</a>";
+						select = "<a title='"+st+"' style='padding-right: 0.5em;' data-soper='"+so+"' class='soptclass' data-colname='"+this.name+"'>"+sot+"</a>";
 					}
 					$("td",stbl).filter(":first").data("colindex",ci).append(select);
 					if (soptions.sopt == null || soptions.sopt.length === 1) {
