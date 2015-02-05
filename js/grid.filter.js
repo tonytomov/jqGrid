@@ -717,6 +717,7 @@ $.extend($.fn.jqFilter,{
 });
 $.jgrid.extend({
 	filterToolbar : function(p){
+		var regional =  $.jgrid.getRegional(this[0], 'search');
 		p = $.extend({
 			autosearch: true,
 			autosearchDelay: 500,
@@ -732,10 +733,16 @@ $.jgrid.extend({
 			searchOperators : false,
 			resetIcon : "x",
 			operands : { "eq" :"==", "ne":"!","lt":"<","le":"<=","gt":">","ge":">=","bw":"^","bn":"!^","in":"=","ni":"!=","ew":"|","en":"!@","cn":"~","nc":"!~","nu":"#","nn":"!#"}
-		}, $.jgrid.search , p  || {});
+		}, regional , p  || {});
 		return this.each(function(){
 			var $t = this;
-			if(this.ftoolbar) { return; }
+			if($t.p.filterToolbar) { return; }
+			if(!$($t).data('filterToolbar')) {
+				$($t).data('filterToolbar', p);
+			}
+			if($t.p.force_regional) {
+				p = $.extend(p, regional);
+			}
 			var triggerToolbar = function() {
 				var sdata={}, j=0, v, nm, sopt={},so;
 				$.each($t.p.colModel,function(){
@@ -1079,7 +1086,7 @@ $.jgrid.extend({
 				}
 
 			});
-			this.ftoolbar = true;
+			this.p.filterToolbar = true;
 			this.triggerToolbar = triggerToolbar;
 			this.clearToolbar = clearToolbar;
 			this.toggleToolbar = toggleToolbar;
@@ -1087,17 +1094,18 @@ $.jgrid.extend({
 	},
 	destroyFilterToolbar: function () {
 		return this.each(function () {
-			if (!this.ftoolbar) {
+			if (!this.p.filterToolbar) {
 				return;
 			}
 			this.triggerToolbar = null;
 			this.clearToolbar = null;
 			this.toggleToolbar = null;
-			this.ftoolbar = false;
+			this.p.filterToolbar = false;
 			$(this.grid.hDiv).find("table thead tr.ui-search-toolbar").remove();
 		});
 	},
 	searchGrid : function (p) {
+		var regional =  $.jgrid.getRegional(this[0], 'search');
 		p = $.extend(true, {
 			recreateFilter: false,
 			drag: true,
@@ -1142,7 +1150,7 @@ $.jgrid.extend({
 			showOnLoad: false,
 			layer: null,
 			operands : { "eq" :"=", "ne":"<>","lt":"<","le":"<=","gt":">","ge":">=","bw":"LIKE","bn":"NOT LIKE","in":"IN","ni":"NOT IN","ew":"LIKE","en":"NOT LIKE","cn":"LIKE","nc":"NOT LIKE","nu":"IS NULL","nn":"ISNOT NULL"}
-		}, $.jgrid.search, p || {});
+		}, regional,  p || {});
 		return this.each(function() {
 			var $t = this;
 			if(!$t.grid) {return;}

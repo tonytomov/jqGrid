@@ -135,7 +135,9 @@ $.jgrid.extend({
 	},
 	saveCell : function (iRow, iCol){
 		return this.each(function(){
-			var $t= this, fr;
+			var $t= this, fr,
+			errors = $.jgrid.getRegional(this, 'errors'),
+			edit =$.jgrid.getRegional(this, 'edit');
 			if (!$t.grid || $t.p.cellEdit !== true) {return;}
 			if ( $t.p.savedRow.length >= 1) {fr = 0;} else {fr=null;} 
 			if(fr !== null) {
@@ -181,9 +183,9 @@ $.jgrid.extend({
 								if (v===undefined) { throw "e2";} else { v2=v; }
 							} else { throw "e1"; }
 						} catch (e) {
-							if (e==="e1") { $.jgrid.info_dialog($.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.nodefined,$.jgrid.edit.bClose); }
-							if (e==="e2") { $.jgrid.info_dialog($.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.novalue,$.jgrid.edit.bClose); }
-							else {$.jgrid.info_dialog($.jgrid.errors.errcap,e.message,$.jgrid.edit.bClose); }
+							if (e==="e1") { $.jgrid.info_dialog(errors.errcap, "function 'custom_value' " + edit.msg.nodefined, edit.bClose); }
+							if (e==="e2") { $.jgrid.info_dialog(errors.errcap, "function 'custom_value' " + edit.msg.novalue, edit.bClose); }
+							else {$.jgrid.info_dialog(errors.errcap, e.message, edit.bClose); }
 						}
 						break;
 				}
@@ -240,7 +242,7 @@ $.jgrid.extend({
 												}
 												$t.p.savedRow.splice(0,1);
 											} else {
-												$.jgrid.info_dialog($.jgrid.errors.errcap,ret[1],$.jgrid.edit.bClose);
+												$.jgrid.info_dialog(errors.errcap,ret[1],edit.bClose);
 												$($t).jqGrid("restoreCell",iRow,iCol);
 											}
 										}
@@ -253,14 +255,14 @@ $.jgrid.extend({
 											$t.p.errorCell.call($t, res,stat,err);
 											$($t).jqGrid("restoreCell",iRow,iCol);
 										} else {
-											$.jgrid.info_dialog($.jgrid.errors.errcap,res.status+" : "+res.statusText+"<br/>"+stat,$.jgrid.edit.bClose);
+											$.jgrid.info_dialog(errors.errcap,res.status+" : "+res.statusText+"<br/>"+stat, edit.bClose);
 											$($t).jqGrid("restoreCell",iRow,iCol);
 										}
 									}
 								}, $.jgrid.ajaxOptions, $t.p.ajaxCellOptions || {}));
 							} else {
 								try {
-									$.jgrid.info_dialog($.jgrid.errors.errcap,$.jgrid.errors.nourl,$.jgrid.edit.bClose);
+									$.jgrid.info_dialog(errors.errcap,errors.nourl, edit.bClose);
 									$($t).jqGrid("restoreCell",iRow,iCol);
 								} catch (e) {}
 							}
@@ -278,7 +280,7 @@ $.jgrid.extend({
 						}
 					} else {
 						try {
-							window.setTimeout(function(){$.jgrid.info_dialog($.jgrid.errors.errcap,v+" "+cv[1],$.jgrid.edit.bClose);},100);
+							window.setTimeout(function(){$.jgrid.info_dialog(errors.errcap,v+ " " + cv[1], edit.bClose);},100);
 							$($t).jqGrid("restoreCell",iRow,iCol);
 						} catch (e) {}
 					}

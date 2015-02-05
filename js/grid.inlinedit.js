@@ -178,7 +178,9 @@ $.jgrid.extend({
 		if (!$t.grid ) { return success; }
 		ind = $($t).jqGrid("getInd",rowid,true);
 		if(ind === false) {return success;}
-		var bfsr = $.isFunction( o.beforeSaveRow ) ?	o.beforeSaveRow.call($t,o, rowid) :  undefined;
+		var errors = $.jgrid.getRegional(this, 'errors'),
+		edit =$.jgrid.getRegional(this, 'edit'),
+		bfsr = $.isFunction( o.beforeSaveRow ) ?	o.beforeSaveRow.call($t,o, rowid) :  undefined;
 		if( bfsr === undefined ) {
 			bfsr = true;
 		}
@@ -229,9 +231,9 @@ $.jgrid.extend({
 									if (tmp[nm] === undefined) { throw "e2"; }
 								} else { throw "e1"; }
 							} catch (e) {
-								if (e==="e1") { $.jgrid.info_dialog($.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.nodefined,$.jgrid.edit.bClose); }
-								if (e==="e2") { $.jgrid.info_dialog($.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.novalue,$.jgrid.edit.bClose); }
-								else { $.jgrid.info_dialog($.jgrid.errors.errcap,e.message,$.jgrid.edit.bClose); }
+								if (e==="e1") { $.jgrid.info_dialog(errors.errcap,"function 'custom_value' "+edit.msg.nodefined,edit.bClose); }
+								if (e==="e2") { $.jgrid.info_dialog(errors.errcap,"function 'custom_value' "+edit.msg.novalue,edit.bClose); }
+								else { $.jgrid.info_dialog(errors.errcap,e.message,edit.bClose); }
 							}
 							break;
 					}
@@ -251,7 +253,7 @@ $.jgrid.extend({
 			if (cv[0] === false){
 				try {
 					var tr = $($t).jqGrid('getGridRowById', rowid), positions = $.jgrid.findPos(tr);
-					$.jgrid.info_dialog($.jgrid.errors.errcap,cv[1],$.jgrid.edit.bClose,{left:positions[0],top:positions[1]+$(tr).outerHeight()});
+					$.jgrid.info_dialog(errors.errcap,cv[1],edit.bClose,{left:positions[0],top:positions[1]+$(tr).outerHeight()});
 				} catch (e) {
 					alert(cv[1]);
 				}
@@ -379,7 +381,7 @@ $.jgrid.extend({
 						} else {
 							var rT = res.responseText || res.statusText;
 							try {
-								$.jgrid.info_dialog($.jgrid.errors.errcap,'<div class="ui-state-error">'+ rT +'</div>', $.jgrid.edit.bClose,{buttonalign:'right'});
+								$.jgrid.info_dialog(errors.errcap,'<div class="ui-state-error">'+ rT +'</div>', edit.bClose, {buttonalign:'right'});
 							} catch(e) {
 								alert(rT);
 							}
@@ -489,6 +491,7 @@ $.jgrid.extend({
 		});
 	},
 	inlineNav : function (elem, o) {
+		var regional =  $.jgrid.getRegional(this[0], 'nav');
 		o = $.extend(true,{
 			edit: true,
 			editicon: "ui-icon-pencil",
@@ -501,14 +504,21 @@ $.jgrid.extend({
 			addParams : {addRowParams: {extraparam: {}}},
 			editParams : {},
 			restoreAfterSelect : true
-		}, $.jgrid.nav, o ||{});
+		}, regional, o ||{});
 		return this.each(function(){
-			if (!this.grid ) { return; }
+			if (!this.grid  || this.p.inlineNav) { return; }
 			var $t = this, onSelect, gID = $.jgrid.jqID($t.p.id);
 			// check to see if navgrid is started, if not call it with all false parameters.
 			if(!$t.p.navGrid) {
 				$($t).jqGrid('navGrid',elem, {refresh:false, edit: false, add: false, del: false, search: false, view: false});
 			}
+			if(!$($t).data('inlineNav')) {
+				$($t).data('inlineNav',o);
+			}
+			if($t.p.force_regional) {
+				o = $.extend(o, regional);
+			}
+
 			$t.p.inlineNav = true;
 			// detect the formatactions column
 			if(o.addParams.useFormatter === true) {
@@ -574,7 +584,7 @@ $.jgrid.extend({
 							$("#"+gID+"_iladd").addClass('ui-state-disabled');
 							$("#"+gID+"_iledit").addClass('ui-state-disabled');
 						} else {
-							$.jgrid.viewModal("#alertmod",{gbox:"#gbox_"+gID,jqm:true});$("#jqg_alrt").focus();							
+							$.jgrid.viewModal("#alertmod_"+gID, {gbox:"#gbox_"+gID,jqm:true});$("#jqg_alrt").focus();							
 						}
 					}
 				});
@@ -603,7 +613,7 @@ $.jgrid.extend({
 								$($t).jqGrid('showAddEditButtons');
 							}
 						} else {
-							$.jgrid.viewModal("#alertmod",{gbox:"#gbox_"+gID,jqm:true});$("#jqg_alrt").focus();							
+							$.jgrid.viewModal("#alertmod_"+gID, {gbox:"#gbox_"+gID,jqm:true});$("#jqg_alrt").focus();							
 						}
 					}
 				});

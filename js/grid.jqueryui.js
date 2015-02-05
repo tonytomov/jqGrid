@@ -143,7 +143,8 @@ $.jgrid.extend({
 			getMultiselectWidgetData = function ($elem) {
 				return ($.ui.multiselect.prototype && $elem.data($.ui.multiselect.prototype.widgetFullName || $.ui.multiselect.prototype.widgetName)) ||
 					$elem.data("ui-multiselect") || $elem.data("multiselect");
-			};
+			},
+			regional =  $.jgrid.getRegional(this[0], 'col');
 
 		if ($("#colchooser_" + $.jgrid.jqID(self[0].p.id)).length) { return; }
 		selector = $('<div id="colchooser_'+self[0].p.id+'" style="position:relative;overflow:hidden"><div><select multiple="multiple"></select></div></div>');
@@ -268,7 +269,7 @@ $.jgrid.extend({
 				}
 			},
 			msel_opts : {}
-		}, $.jgrid.col, opts || {});
+		}, regional );
 		if($.ui) {
 			if ($.ui.multiselect && $.ui.multiselect.defaults) {
 				if (!$.jgrid._multiselect) {

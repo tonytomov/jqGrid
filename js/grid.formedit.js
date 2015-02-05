@@ -20,6 +20,7 @@
 var rp_ge = {};
 $.jgrid.extend({
 	editGridRow : function(rowid, p){
+		var regional =  $.jgrid.getRegional(this[0], 'edit');
 		p = $.extend(true, {
 			top : 0,
 			left: 0,
@@ -69,7 +70,7 @@ $.jgrid.extend({
 			removemodal : true,
 			form: 'edit',
 			template : null
-		}, $.jgrid.edit, p || {});
+		}, regional, p || {});
 		rp_ge[$(this)[0].p.id] = p;
 		return this.each(function(){
 			var $t = this;
@@ -78,7 +79,8 @@ $.jgrid.extend({
 			frmgr = "FrmGrid_"+gID, frmtborg = "TblGrid_"+gID, frmtb = "#"+$.jgrid.jqID(frmtborg), frmtb2,
 			IDs = {themodal:'editmod'+gID,modalhead:'edithd'+gID,modalcontent:'editcnt'+gID, scrollelm : frmgr},
 			showFrm = true, maxCols = 1, maxRows=0,	postdata, diff, frmoper,
-			templ = typeof rp_ge[$t.p.id].template === "string" && rp_ge[$t.p.id].template.length > 0;
+			templ = typeof rp_ge[$t.p.id].template === "string" && rp_ge[$t.p.id].template.length > 0,
+			errors =$.jgrid.getRegional(this, 'errors');
 			
 			if (rowid === "new") {
 				rowid = "_empty";
@@ -108,8 +110,8 @@ $.jgrid.extend({
 									postdata[nm] = this.editoptions.custom_value.call($t, $("#"+$.jgrid.jqID(nm),frmtb),'get');
 									if (postdata[nm] === undefined) {throw "e1";}
 								} catch (e) {
-									if (e==="e1") {$.jgrid.info_dialog($.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.novalue,$.jgrid.edit.bClose);}
-									else {$.jgrid.info_dialog($.jgrid.errors.errcap,e.message,$.jgrid.edit.bClose);}
+									if (e==="e1") {$.jgrid.info_dialog(errors.errcap,"function 'custom_value' "+rp_ge[$(this)[0]].p.msg.novalue,rp_ge[$(this)[0]].p.bClose);}
+									else {$.jgrid.info_dialog(errors.errcap,e.message,rp_ge[$(this)[0]].p.bClose);}
 								}
 								return true;
 							}
@@ -357,8 +359,8 @@ $.jgrid.extend({
 										cm[i].editoptions.custom_value.call($t, $("#"+nm, fmid),'set',tmp);
 									} else {throw "e1";}
 								} catch (e) {
-									if (e==="e1") {$.jgrid.info_dialog($.jgrid.errors.errcap,"function 'custom_value' "+$.jgrid.edit.msg.nodefined,$.jgrid.edit.bClose);}
-									else {$.jgrid.info_dialog($.jgrid.errors.errcap,e.message,$.jgrid.edit.bClose);}
+									if (e==="e1") {$.jgrid.info_dialog(errors.errcap,"function 'custom_value' "+rp_ge[$(this)[0]].p.msg.nodefined,$.rp_ge[$(this)[0]].p.bClose);}
+									else {$.jgrid.info_dialog(errors.errcap,e.message,$.rp_ge[$(this)[0]].p.bClose);}
 								}
 								break;
 						}
@@ -547,7 +549,7 @@ $.jgrid.extend({
 						if ($.isFunction($t.p.dataProxy)) {
 							rp_ge[$t.p.id].useDataProxy = true;
 						} else {
-							ret[0]=false;ret[1] += " "+$.jgrid.errors.nourl;
+							ret[0]=false;ret[1] += " "+errors.nourl;
 						}
 					}
 					if (ret[0]) {
@@ -937,6 +939,7 @@ $.jgrid.extend({
 		});
 	},
 	viewGridRow : function(rowid, p){
+		var regional =  $.jgrid.getRegional(this[0], 'view');
 		p = $.extend(true, {
 			top : 0,
 			left: 0,
@@ -960,7 +963,7 @@ $.jgrid.extend({
 			recreateForm : false,
 			removemodal: true,
 			form: 'view'
-		}, $.jgrid.view, p || {});
+		}, regional, p || {});
 		rp_ge[$(this)[0].p.id] = p;
 		return this.each(function(){
 			var $t = this;
@@ -1248,6 +1251,7 @@ $.jgrid.extend({
 		});
 	},
 	delGridRow : function(rowids,p) {
+		var regional =  $.jgrid.getRegional(this[0], 'del');
 		p = $.extend(true, {
 			top : 0,
 			left: 0,
@@ -1277,7 +1281,7 @@ $.jgrid.extend({
 			processing : false,
 			serializeDelData : null,
 			useDataProxy : false
-		}, $.jgrid.del, p ||{});
+		}, regional, p ||{});
 		rp_ge[$(this)[0].p.id] = p;
 		return this.each(function(){
 			var $t = this;
@@ -1422,7 +1426,7 @@ $.jgrid.extend({
 							if ($.isFunction($t.p.dataProxy)) {
 								rp_ge[$t.p.id].useDataProxy = true;
 							} else {
-								ret[0]=false;ret[1] += " "+$.jgrid.errors.nourl;
+								ret[0]=false;ret[1] += " "+$.jgrid.getRegional($t, 'errors.nourl');
 							}
 						}
 						if (ret[0]) {
@@ -1469,6 +1473,7 @@ $.jgrid.extend({
 		});
 	},
 	navGrid : function (elem, p, pEdit, pAdd, pDel, pSearch, pView) {
+		var regional =  $.jgrid.getRegional(this[0], 'nav');
 		p = $.extend({
 			edit: true,
 			editicon: "ui-icon-pencil",
@@ -1493,7 +1498,7 @@ $.jgrid.extend({
 			alerttop: null,
 			alertleft: null,
 			alertzIndex : null
-		}, $.jgrid.nav, p ||{});
+		}, regional, p ||{});
 		return this.each(function() {
 			if(this.p.navGrid) {return;}
 			var alertIDs = {themodal: 'alertmod_' + this.p.id, modalhead: 'alerthd_' + this.p.id,modalcontent: 'alertcnt_' + this.p.id},
@@ -1504,6 +1509,9 @@ $.jgrid.extend({
 			}
 			// speedoverhead, but usefull for future 
 			o = $($t).data('navGrid');
+			if($t.p.force_regional) {
+				o = $.extend(o, regional);
+			}
 			if ($("#"+alertIDs.themodal)[0] === undefined) {
 				if(!o.alerttop && !o.alertleft) {
 					if (window.innerWidth !== undefined) {
