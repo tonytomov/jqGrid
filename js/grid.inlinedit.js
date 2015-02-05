@@ -310,7 +310,7 @@ jgrid.extend({
 					type: o.mtype,
 					complete: function(res,stat){
 						$self.jqGrid("progressBar", {method:"hide", loadtype : o.saveui, htmlcontent: o.savetext});
-						if (data.status < 400 || stat === "success"){ // stat can be "abort", "timeout", "error", "parsererror" or some text from text part of HTTP error occurs
+						if (data.status < 400 || (stat === "success" || "notmodified")){ // stat can be "abort", "timeout", "error", "parsererror" or some text from text part of HTTP error occurs
 							var ret, sucret, j;
 							sucret = $self.triggerHandler("jqGridInlineSuccessSaveRow", [res, rowid, o]);
 							if (!$.isArray(sucret)) {sucret = [true, tmp];}
@@ -482,6 +482,7 @@ jgrid.extend({
 			var $t = this, $self = $($t), p = $t.p;
 			if (!this.grid || p == null) { return; }
 			var $elem, gID = elem === p.toppager ? p.idSel + "_top" : p.idSel,
+			gid = elem === p.toppager ? p.id + "_top" : p.id,
 			o = $.extend(true,{
 				edit: true,
 				editicon: "ui-icon-pencil",
@@ -503,11 +504,15 @@ jgrid.extend({
 					$self.jqGrid("inlineNav", p.pager, o);
 					if (p.toppager) {
 						elem = p.toppager;
+						gID = p.idSel + "_top";
+						gid = p.id + "_top";
 					} else {
 						return;
 					}
 				} else if (p.toppager) {
 					elem = p.toppager;
+					gID = p.idSel + "_top";
+					gid = p.id + "_top";
 				}
 			}
 			if (elem === undefined) {
@@ -562,7 +567,7 @@ jgrid.extend({
 					commonIconClass : o.commonIconClass,
 					buttonicon : o.addicon,
 					iconsOverText: o.iconsOverText,
-					id : p.id+"_iladd",
+					id : gid + "_iladd",
 					onClickButton : function () {
 						$self.jqGrid('addRow', o.addParams);
 					}
@@ -575,7 +580,7 @@ jgrid.extend({
 					commonIconClass : o.commonIconClass,
 					buttonicon : o.editicon,
 					iconsOverText: o.iconsOverText,
-					id : p.id+"_iledit",
+					id : gid + "_iledit",
 					onClickButton : function () {
 						var sr = p.selrow;
 						if(sr) {
@@ -593,7 +598,7 @@ jgrid.extend({
 					commonIconClass : o.commonIconClass,
 					buttonicon : o.saveicon,
 					iconsOverText: o.iconsOverText,
-					id : p.id+"_ilsave",
+					id : gid + "_ilsave",
 					onClickButton : function () {
 						var sr = p.savedRow[0].id;
 						if(sr) {
@@ -614,7 +619,7 @@ jgrid.extend({
 						}
 					}
 				});
-				$(gID+"_ilsave").addClass('ui-state-disabled');
+				$(gID + "_ilsave").addClass('ui-state-disabled');
 			}
 			if(o.cancel) {
 				$self.jqGrid('navButtonAdd', elem,{
@@ -623,7 +628,7 @@ jgrid.extend({
 					commonIconClass : o.commonIconClass,
 					buttonicon : o.cancelicon,
 					iconsOverText: o.iconsOverText,
-					id : p.id+"_ilcancel",
+					id : gid + "_ilcancel",
 					onClickButton : function () {
 						var sr = p.savedRow[0].id, cancelPrm = o.editParams;
 						if(sr) {
@@ -636,7 +641,7 @@ jgrid.extend({
 						}
 					}
 				});
-				$(gID+"_ilcancel").addClass('ui-state-disabled');
+				$(gID + "_ilcancel").addClass('ui-state-disabled');
 			}
 			if(o.restoreAfterSelect === true) {
 				$self.bind("jqGridSelectRow", function (e, rowid) {
