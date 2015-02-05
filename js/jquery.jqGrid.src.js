@@ -703,17 +703,19 @@ $.extend(true,jgrid,{
 		}
 
 		var p = self.p, bDiv = grid.bDiv,
-			$hDivhBox = $(grid.hDiv).children("div").filter(":first"),
-			$sDivhBox = $(grid.sDiv).children("div").filter(":first");
+			fixhBox = function (hDiv) {
+				var $hDivhBox = $(hDiv).children("div").filter(":first");
+				$hDivhBox.css($hDivhBox.hasClass("ui-jqgrid-hbox-rtl") ? "padding-left": "padding-right", p.scrollOffset);
+				hDiv.scrollLeft = bDiv.scrollLeft;
+			};
 		if ($(bDiv).width() > 0) {
 			p.scrollOffset = (bDiv.offsetWidth - bDiv.clientWidth); // can be 0 if no scrollbar exist
-			// TODO: add detection of the width of vertical scroll bar if the grid is hidden now
+			// TODO: add detection of the width of vertical scroll bar if the grid is hidden
+			// at the moment of executing fixScrollOffsetAndhBoxPadding (for example inside of inactive jQuery UI Tab)
 			// one need just create close construction with visible:hidden style, add to body and get its width
-			$hDivhBox.css($hDivhBox.hasClass("ui-jqgrid-hbox-rtl") ? "padding-left": "padding-right", p.scrollOffset + "px");
-			$sDivhBox.css($sDivhBox.hasClass("ui-jqgrid-hbox-rtl") ? "padding-left": "padding-right", p.scrollOffset + "px");
-			grid.hDiv.scrollLeft = bDiv.scrollLeft;
+			fixhBox(grid.hDiv);
 			if (grid.sDiv) {
-				grid.sDiv.scrollLeft = bDiv.scrollLeft;
+				fixhBox(grid.sDiv);
 			}
 		}
 	},
@@ -3377,12 +3379,12 @@ $.fn.jqGrid = function( pin ) {
 					labelStyle = "text-align:left;";
 					break;
 				case "right":
-					labelStyle = "text-align:right;" + (cmi.sortable === false ? "" : "padding-right:" + p.autoResizing.widthOfVisiblePartOfSortIcon  + "px;");
+					labelStyle = "text-align:right;" + (cmi.sortable === false ? "" : "padding-right:" + p.autoResizing.widthOfVisiblePartOfSortIcon + "px;");
 					break;
 				case "likeData":
 					labelStyle = cmi.align === undefined || cmi.align === "left" ? 
 							"text-align:left;" :
-							(cmi.align === "right" ? "text-align:right;" + (cmi.sortable === false ? "" : "padding-right:" + p.autoResizing.widthOfVisiblePartOfSortIcon  + "px;") : "");
+							(cmi.align === "right" ? "text-align:right;" + (cmi.sortable === false ? "" : "padding-right:" + p.autoResizing.widthOfVisiblePartOfSortIcon + "px;") : "");
 					break;
 				default:
 					labelStyle = "";
