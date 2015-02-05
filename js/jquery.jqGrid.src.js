@@ -2894,9 +2894,9 @@ $.fn.jqGrid = function( pin ) {
 						type:p.mtype,
 						dataType: dt ,
 						data: $.isFunction(p.serializeGridData)? p.serializeGridData.call(self,p.postData) : p.postData,
-						success:function(data,st, xhr) {
+						success: function (data, textStatus, jqXHR) {
 							if ($.isFunction(p.beforeProcessing)) {
-								if (p.beforeProcessing.call(self, data, st, xhr) === false) {
+								if (p.beforeProcessing.call(self, data, textStatus, jqXHR) === false) {
 									endReq.call(self);
 									return;
 								}
@@ -2909,14 +2909,14 @@ $.fn.jqGrid = function( pin ) {
 								p.datatype = "local";
 							}
 						},
-						error:function(xhr,st,err){
-							if($.isFunction(p.loadError)) { p.loadError.call(self,xhr,st,err); }
+						error: function (jqXHR, textStatus, errorThrown) {
+							if($.isFunction(p.loadError)) { p.loadError.call(self,jqXHR,textStatus,errorThrown); }
 							if (npage === 1) { endReq.call(self); }
 						},
-						beforeSend: function(xhr, settings ){
+						beforeSend: function (jqXHR, settings) {
 							var gotoreq = true;
 							if($.isFunction(p.loadBeforeSend)) {
-								gotoreq = p.loadBeforeSend.call(self,xhr, settings); 
+								gotoreq = p.loadBeforeSend.call(self,jqXHR, settings); 
 							}
 							if(gotoreq === undefined) { gotoreq = true; }
 							if(gotoreq === false) {
@@ -5318,10 +5318,10 @@ jgrid.extend({
 									url: p.cellurl,
 									data :$.isFunction(p.serializeCellData) ? p.serializeCellData.call($t, postdata) : postdata,
 									type: "POST",
-									complete: function (jqXHR, stat) {
+									complete: function (jqXHR) {
 										$self.jqGrid("progressBar", {method:"hide", loadtype : p.loadui });
 										$t.grid.hDiv.loading = false;
-										if (stat === 'success' || jqXHR.status < 400) {
+										if ((jqXHR.status < 300 || jqXHR.status === 304) && (jqXHR.status !== 0 || jqXHR.readyState !== 4)) {
 											var ret = $self.triggerHandler("jqGridAfterSubmitCell", [$t, jqXHR, postdata.id, nm, v, iRow, iCol]) || [true, ''];
 											if (ret[0] === true && $.isFunction(p.afterSubmitCell)) {
 												ret = p.afterSubmitCell.call($t, jqXHR,postdata.id,nm,v,iRow,iCol);
@@ -5339,15 +5339,15 @@ jgrid.extend({
 											}
 										}
 									},
-									error:function(res,stat,err) {
+									error: function (jqXHR, textStatus, errorThrown) {
 										$("#lui_"+jqID(p.id)).hide();
 										$t.grid.hDiv.loading = false;
-										$self.triggerHandler("jqGridErrorCell", [res, stat, err]);
+										$self.triggerHandler("jqGridErrorCell", [jqXHR, textStatus, errorThrown]);
 										if ($.isFunction(p.errorCell)) {
-											p.errorCell.call($t, res,stat,err);
+											p.errorCell.call($t, jqXHR,textStatus,errorThrown);
 											$self.jqGrid("restoreCell",iRow,iCol);
 										} else {
-											infoDialog(errcap,res.status+" : "+res.statusText+"<br/>"+stat,bClose);
+											infoDialog(errcap,jqXHR.status+" : "+jqXHR.statusText+"<br/>"+textStatus,bClose);
 											$self.jqGrid("restoreCell",iRow,iCol);
 										}
 									}
@@ -6497,7 +6497,7 @@ jgrid.extend({
 	filterToolbar : function(oMuligrid){
 		// if one uses jQuery wrapper with multiple grids, then oMultiple specify the object with common options
 		return this.each(function(){
-			var $t = this, grid = $t.grid, $self = $($t), p = $t.p, bindEv = jgrid.bindEv, info_dialog = jgrid.info_dialog;
+			var $t = this, grid = $t.grid, $self = $($t), p = $t.p, bindEv = jgrid.bindEv, infoDialog = jgrid.info_dialog;
 			if(this.ftoolbar) { return; }
 			// make new copy of the options and use it for ONE specific grid.
 			// p.searching can contains grid specific options
@@ -6769,14 +6769,14 @@ jgrid.extend({
 							$.ajax($.extend({
 								url: surl,
 								dataType: "html",
-								success: function(res) {
+								success: function (data) {
 									if(soptions.buildSelect !== undefined) {
-										var d = soptions.buildSelect(res);
+										var d = soptions.buildSelect(data);
 										if (d) {
 											$("td",stbl).eq(1).append(d);
 										}
 									} else {
-										$("td",stbl).eq(1).append(res);
+										$("td",stbl).eq(1).append(data);
 									}
 									if(soptions.defaultValue !== undefined) { $("select",self).val(soptions.defaultValue); }
 									$("select",self).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
@@ -6790,7 +6790,7 @@ jgrid.extend({
 											return false;
 										});
 									}
-									res=null;
+									data=null;
 								}
 							}, jgrid.ajaxOptions, p.ajaxSelectOptions || {} ));
 						} else {
@@ -6896,9 +6896,9 @@ jgrid.extend({
 								throw "e1";
 							}
 						} catch (e) {
-							if (e === "e1") { info_dialog.call($t,errcap,"function 'custom_element' "+editMsg.nodefined,bClose);}
-							if (e === "e2") { info_dialog.call($t,errcap,"function 'custom_element' "+editMsg.novalue,bClose);}
-							else { info_dialog.call($t,errcap,typeof e==="string"?e:e.message,bClose); }
+							if (e === "e1") { infoDialog.call($t,errcap,"function 'custom_element' "+editMsg.nodefined,bClose);}
+							if (e === "e2") { infoDialog.call($t,errcap,"function 'custom_element' "+editMsg.novalue,bClose);}
+							else { infoDialog.call($t,errcap,typeof e==="string"?e:e.message,bClose); }
 						}
 						break;
 					}
@@ -8865,7 +8865,7 @@ jgrid.extend({
 						url: url,
 						type: o.mtype,
 						data: $.isFunction(o.serializeEditData) ? o.serializeEditData.call($t,postdata) :  postdata,
-						complete:function(jqXHR,status){
+						complete: function (jqXHR, textStatus) {
 							$("#sData", frmtb2).removeClass('ui-state-active');
 							postdata[idname] = p.idPrefix + $("#id_g",frmtb).val();
 							if((jqXHR.status >= 300 && jqXHR.status !== 304) || (jqXHR.status === 0 && jqXHR.readyState === 4)) {
@@ -8874,7 +8874,7 @@ jgrid.extend({
 								if ($.isFunction(o.errorTextFormat)) {
 									ret[1] = o.errorTextFormat.call($t, jqXHR, frmoper);
 								} else {
-									ret[1] = status + " Status: '" + jqXHR.statusText + "'. Error code: " + jqXHR.status;
+									ret[1] = textStatus + " Status: '" + jqXHR.statusText + "'. Error code: " + jqXHR.status;
 								}
 							} else {
 								// data is posted successful
@@ -9697,7 +9697,7 @@ jgrid.extend({
 							url: o.url || p.editurl,
 							type: o.mtype,
 							data: $.isFunction(o.serializeDelData) ? o.serializeDelData.call($t,postd) : postd,
-							complete:function(jqXHR,status){
+							complete: function (jqXHR, textStatus) {
 								var i;
 								$("#dData",dtbl+"_2").removeClass('ui-state-active');
 								if((jqXHR.status >= 300 && jqXHR.status !== 304) || (jqXHR.status === 0 && jqXHR.readyState === 4)) {
@@ -9705,7 +9705,7 @@ jgrid.extend({
 									if ($.isFunction(o.errorTextFormat)) {
 										ret[1] = o.errorTextFormat.call($t,jqXHR);
 									} else {
-										ret[1] = status + " Status: '" + jqXHR.statusText + "'. Error code: " + jqXHR.status;
+										ret[1] = textStatus + " Status: '" + jqXHR.statusText + "'. Error code: " + jqXHR.status;
 									}
 								} else {
 									// data is posted successful
@@ -10773,29 +10773,30 @@ jgrid.extend({
                                 jstr1=jstr[key];
                             }
                         }
-                        if(xmldata) {
-                        // save the datatype
-                            var svdatatype = jstr.grid.datatype;
-                            jstr.grid.datatype = 'xmlstring';
-                            jstr.grid.datastr = xml;
-                            $($t).jqGrid( jstr1 ).jqGrid("setGridParam",{datatype:svdatatype});
-                        } else {
-                            $($t).jqGrid( jstr1 );
+                        if (jstr1 !== undefined) {
+                            if (xmldata) {
+                                // save the datatype
+                                var svdatatype = jstr.grid.datatype;
+                                jstr.grid.datatype = 'xmlstring';
+                                jstr.grid.datastr = xml;
+                                $($t).jqGrid(jstr1).jqGrid("setGridParam", { datatype: svdatatype });
+                            } else {
+                                $($t).jqGrid(jstr1);
+                            }
                         }
-                        jstr = null;jstr1=null;
                     } else {
                         alert("xml2json or parse are not present");
                     }
                 };
                 var jsonConvert = function (jsonstr,o){
                     if (jsonstr && typeof jsonstr === 'string') {
-						var _jsonparse = false;
+						var jsonparse = false;
 						if($.jgrid.useJSON) {
 							$.jgrid.useJSON = false;
-							_jsonparse = true;
+							jsonparse = true;
 						}
                         var json = $.jgrid.parse(jsonstr);
-						if(_jsonparse) { $.jgrid.useJSON = true; }
+						if(jsonparse) { $.jgrid.useJSON = true; }
                         var gprm = json[o.jsonGrid.config];
                         var jdata = json[o.jsonGrid.data];
                         if(jdata) {
@@ -10815,15 +10816,14 @@ jgrid.extend({
                             type:o.mtype,
                             data: o.impData,
                             dataType:"xml",
-                            complete: function(jqXHR,stat) {
-                                if(stat === 'success') {
+                            complete: function (jqXHR) {
+                                if((jqXHR.status < 300 || jqXHR.status === 304) && (jqXHR.status !== 0 || jqXHR.readyState !== 4)) {
                                     xmlConvert(jqXHR.responseXML,o);
                                     $($t).triggerHandler("jqGridImportComplete", [jqXHR, o]);
                                     if($.isFunction(o.importComplete)) {
                                         o.importComplete(jqXHR);
                                     }
                                 }
-                                jqXHR=null;
                             }
                         }, o.ajaxOptions));
                         break;
@@ -10839,7 +10839,6 @@ jgrid.extend({
                                 }
                                 o.impstring = null;
                             }
-                            xmld = null;
                         }
                         break;
                     case 'json':
@@ -10848,15 +10847,16 @@ jgrid.extend({
                             type:o.mtype,
                             data: o.impData,
                             dataType:"json",
-                            complete: function(jqXHR) {
-                                try {
-                                    jsonConvert(jqXHR.responseText,o );
-                                    $($t).triggerHandler("jqGridImportComplete", [jqXHR, o]);
-                                    if($.isFunction(o.importComplete)) {
-                                        o.importComplete(jqXHR);
-                                    }
-                                } catch (ignore){}
-                                jqXHR=null;
+                            complete: function (jqXHR) {
+								try {
+									if((jqXHR.status < 300 || jqXHR.status === 304) && (jqXHR.status !== 0 || jqXHR.readyState !== 4)) {
+										jsonConvert(jqXHR.responseText,o );
+										$($t).triggerHandler("jqGridImportComplete", [jqXHR, o]);
+										if($.isFunction(o.importComplete)) {
+											o.importComplete(jqXHR);
+										}
+									}
+								} catch (ignore){}
                             }
                         }, o.ajaxOptions ));
                         break;
@@ -11254,9 +11254,11 @@ jgrid.extend({
 					url:o.url,
 					data: $.isFunction(p.serializeRowData) ? p.serializeRowData.call($t, tmp3) : tmp3,
 					type: o.mtype,
-					complete: function(jqXHR,stat){
+					complete: function (jqXHR, textStatus) {
 						$self.jqGrid("progressBar", {method:"hide", loadtype : o.saveui, htmlcontent: o.savetext});
-						if (data.status < 400 || (stat === "success" || "notmodified")){ // stat can be "abort", "timeout", "error", "parsererror" or some text from text part of HTTP error occurs
+						// textStatus can be "abort", "timeout", "error", "parsererror" or some text from text part of HTTP error occurs
+						// see the answer http://stackoverflow.com/a/3617710/315935 about xhr.readyState === 4 && xhr.status === 0
+						if ((jqXHR.status < 300 || jqXHR.status === 304) && (jqXHR.status !== 0 || jqXHR.readyState !== 4)){
 							var ret, sucret, j;
 							sucret = $self.triggerHandler("jqGridInlineSuccessSaveRow", [jqXHR, rowid, o]);
 							if (!$.isArray(sucret)) {sucret = [true, tmp];}
@@ -11285,9 +11287,9 @@ jgrid.extend({
 								if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, jqXHR, tmp, o); }
 								$(ind).removeClass("jqgrid-new-row").unbind("keydown");
 							} else {
-								$self.triggerHandler("jqGridInlineErrorSaveRow", [rowid, jqXHR, stat, null, o]);
+								$self.triggerHandler("jqGridInlineErrorSaveRow", [rowid, jqXHR, textStatus, null, o]);
 								if($.isFunction(o.errorfunc) ) {
-									o.errorfunc.call($t, rowid, jqXHR, stat, null);
+									o.errorfunc.call($t, rowid, jqXHR, textStatus, null);
 								}
 								if(o.restoreAfterError === true) {
 									$self.jqGrid("restoreRow",rowid, o.afterrestorefunc);
@@ -12215,6 +12217,7 @@ jgrid.extend({
 });
 }(jQuery));
 /*jshint eqeqeq:false */
+/*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
 /*global jQuery */
 (function($){
 /**
@@ -12229,17 +12232,14 @@ jgrid.extend({
 // To optimize the search we need custom array filter
 // This code is taken from
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
-var jgrid = $.jgrid, _pivotfilter = function (fn, context) {
-	var i,
-		value,
-		result = [],
-		length;
+var jgrid = $.jgrid, pivotFilter = function (fn, context) {
+	var i, value, result = [];
 
-	if (!this || typeof fn !== 'function' || (fn instanceof RegExp)) {
+	if (typeof fn !== 'function' || (fn instanceof RegExp)) {
 		throw new TypeError();
 	}
 
-	length = this.length;
+	var length = this.length;
 
 	for (i = 0; i < length; i++) {
 		if (this.hasOwnProperty(i)) {
@@ -12311,7 +12311,7 @@ jgrid.extend({
 			 */
 			function find(ar, fun, extra) {
 				var res;
-				res = _pivotfilter.call(ar, fun, extra);
+				res = pivotFilter.call(ar, fun, extra);
 				return res.length > 0 ? res[0] : null;
 			}
 			/*
@@ -12320,10 +12320,10 @@ jgrid.extend({
 			 * otherviese the column
 			 */
 			var findGroup = function (item, index) {
-				var j = 0, ret = true, i;
-				for(i in item) {
-					if (item.hasOwnProperty(i)) {
-						if(item[i] != this[j]) {
+				var j = 0, ret = true, name;
+				for(name in item) {
+					if (item.hasOwnProperty(name)) {
+						if(item[name] != this[j]) {
 							ret =  false;
 							break;
 						}
@@ -12344,7 +12344,7 @@ jgrid.extend({
 			function calculation(oper, v, field, rc)  {
 				var ret;
 				switch (oper) {
-					case  "sum" : 
+					case "sum" : 
 						ret = parseFloat(v||0) + parseFloat((rc[field]||0));
 						break;
 					case "count" :
@@ -12380,7 +12380,7 @@ jgrid.extend({
 			 */
 			function agregateFunc ( row, aggr, value, curr) {
 				// default is sum
-				var arrln = aggr.length, i, label, j, jv, mainval="",swapvals=[];
+			    var arrln = aggr.length, n, label, j, jv, mainval = "", swapvals = [], tmpmember, vl;
 				if($.isArray(value)) {
 					jv = value.length;
 					swapvals = value;
@@ -12392,20 +12392,20 @@ jgrid.extend({
 				labels = [];
 				member.root = 0;
 				for(j=0;j<jv;j++) {
-					var  tmpmember = [], vl;
-					for(i=0; i < arrln; i++) {
+					tmpmember = [];
+					for(n=0; n < arrln; n++) {
 						if(value == null) {
-							label = $.trim(aggr[i].member)+"_"+aggr[i].aggregator;
+							label = $.trim(aggr[n].member)+"_"+aggr[n].aggregator;
 							vl = label;
 							swapvals[j]= vl;
 						} else {
 							vl = value[j].replace(/\s+/g, '');
 							try {
-								label = (arrln === 1 ? mainval + vl : mainval + vl+"_"+aggr[i].aggregator+"_" + String(i));
-							} catch(e) {}
+								label = (arrln === 1 ? mainval + vl : mainval + vl+"_"+aggr[n].aggregator+"_" + String(n));
+							} catch(ignore) {}
 						}
 						label = !isNaN(parseInt(label,10)) ? label + " " : label;
-						curr[label] =  tmpmember[label] = calculation( aggr[i].aggregator, curr[label], aggr[i].member, row);
+						curr[label] =  tmpmember[label] = calculation( aggr[n].aggregator, curr[label], aggr[n].member, row);
 						if(j<=1 && vl !==  '_r_Totals' && mainval === "") { // this does not fix full the problem
 							mainval = vl;
 						}
@@ -12438,13 +12438,13 @@ jgrid.extend({
 				colc = $.extend(true, colc, o.xDimension[i]);
 				columns.push( colc );
 			}
-			var groupfields = xlen - 1, tree={};
+			var groupfields = xlen - 1, tree = {}, xValue, yValue, k, kj, current, existing, kk;
 			//tree = { text: 'root', leaf: false, children: [] };
 			//loop over alll the source data
 			while( r < rowlen ) {
 				row = data[r];
-				var xValue = [];
-				var yValue = []; 
+				xValue = [];
+				yValue = []; 
 				tmp = {};
 				i = 0;
 				// build the data from xDimension
@@ -12454,7 +12454,7 @@ jgrid.extend({
 					i++;
 				} while( i < xlen );
 				
-				var k = 0;
+				k = 0;
 				rowindex = -1;
 				// check to see if the row is in our new pivotrow set
 				newObj = find(pivotrows, findGroup, xValue);
@@ -12500,7 +12500,9 @@ jgrid.extend({
 						pivotrows[rowindex] = newObj;
 					}
 				}
-				var kj=0, current = null,existing = null, kk;
+				kj = 0;
+				current = null;
+				existing = null;
 				// Build a JSON tree from the member (see aggregateFunc) 
 				// to make later the columns 
 				// 
@@ -12541,7 +12543,7 @@ jgrid.extend({
 			 * columns from the pivot values and set the group Headers
 			 */
 			function list(items) {
-				var l, j, key, k, col;
+			    var l, j, key, n, col, collen, colpos, l1, ll;
 				for (key in items) { // iterate
 					if (items.hasOwnProperty(key)) {
 					// write amount of spaces according to level
@@ -12564,11 +12566,11 @@ jgrid.extend({
 											titleText: items.label,
 											numberOfColumns : 0
 										});
-										var collen = headers[items.level-1].groupHeaders.length-1,
+									    collen = headers[items.level - 1].groupHeaders.length - 1;
 										colpos = collen === 0 ? swaplen : initColLen+aggrlen;
 										if(items.level-1=== (o.rowTotals ? 1 : 0)) {
 											if(collen>0) {
-												var l1 = headers[items.level-1].groupHeaders[collen-1].numberOfColumns;
+												l1 = headers[items.level-1].groupHeaders[collen-1].numberOfColumns;
 												if(l1) {
 													colpos = l1 + 1 + o.aggregates.length;
 												}
@@ -12584,7 +12586,7 @@ jgrid.extend({
 							// This is in case when the member contain more than one summary item
 							if(items.level === ylen  && key==='level' && ylen >0) {
 								if( aggrlen > 1){
-									var ll=1;
+									ll=1;
 									for( l in items.fields) {
 										if (items.fields.hasOwnProperty(l)) {
 											if(ll===1) {
@@ -12610,15 +12612,15 @@ jgrid.extend({
 								for(l in items.fields) {
 									if(items.fields.hasOwnProperty( l )) {
 										col = {};
-										for(k in o.aggregates[j]) {
-											if(o.aggregates[j].hasOwnProperty(k)) {
-												switch( k ) {
+										for(n in o.aggregates[j]) {
+											if(o.aggregates[j].hasOwnProperty(n)) {
+												switch( n ) {
 													case 'member':
 													case 'label':
 													case 'aggregator':
 														break;
 													default:
-														col[k] = o.aggregates[j][k];
+														col[n] = o.aggregates[j][n];
 												}
 											}
 										}	
@@ -12711,8 +12713,8 @@ jgrid.extend({
 				$.ajax($.extend({
 					url : data,
 					dataType: 'json',
-					success : function(response) {
-						pivot(jgrid.getAccessor(response, ajaxOpt && ajaxOpt.reader ? ajaxOpt.reader: 'rows') );
+					success : function(data) {
+						pivot(jgrid.getAccessor(data, ajaxOpt && ajaxOpt.reader ? ajaxOpt.reader: 'rows') );
 					}
 				}, ajaxOpt || {}) );
 			} else {
@@ -12721,7 +12723,7 @@ jgrid.extend({
 		});
 	}
 });
-})(jQuery);
+}(jQuery));
 /*jshint eqeqeq:false */
 /*global jQuery */
 (function($){
@@ -13261,7 +13263,7 @@ jgrid.extend({
 	},
 	setTreeGrid : function() {
 		return this.each(function (){
-			var $t = this, p = $t.p, i=0, pico, ecol = false, nm, key, tkey, dupcols=[];
+			var $t = this, p = $t.p, i=0, ecol = false, nm, key, tkey, dupcols=[];
 			if(!p.treeGrid) {return;}
 			if(!p.treedatatype ) {$.extend($t.p,{treedatatype: p.datatype});}
 			p.subGrid = false;p.altRows =false;
@@ -13367,9 +13369,9 @@ jgrid.extend({
 					});
 					break;
 				case 'adjacency' :
-					var parent_id = p.treeReader.parent_id_field;
+					var parentId = p.treeReader.parent_id_field;
 					$(p.data).each(function(){
-						if(this[parent_id] === null || String(this[parent_id]).toLowerCase() === "null") {
+						if(this[parentId] === null || String(this[parentId]).toLowerCase() === "null") {
 							result.push(this);
 						}
 					});
@@ -13414,11 +13416,11 @@ jgrid.extend({
 					});
 					break;
 				case 'adjacency' :
-					var parent_id = p.treeReader.parent_id_field,
+					var parentId = p.treeReader.parent_id_field,
 					dtid = p.localReader.id,
 					ind = rc[dtid], pos = p._index[ind];
 					while(pos--) {
-						if(p.data[pos][dtid] === jgrid.stripPref(p.idPrefix, rc[parent_id])) {
+						if(p.data[pos][dtid] === jgrid.stripPref(p.idPrefix, rc[parentId])) {
 							result = p.data[pos];
 							break;
 						}
@@ -13446,10 +13448,10 @@ jgrid.extend({
 					});
 					break;
 				case 'adjacency' :
-					var parent_id = p.treeReader.parent_id_field,
+					var parentId = p.treeReader.parent_id_field,
 					dtid = p.localReader.id;
 					$(p.data).each(function(){
-						if(this[parent_id] == jgrid.stripPref(p.idPrefix, rc[dtid])) {
+						if(this[parentId] == jgrid.stripPref(p.idPrefix, rc[dtid])) {
 							result.push(this);
 						}
 					});
@@ -13478,12 +13480,13 @@ jgrid.extend({
 				case 'adjacency' :
 					if(rc) {
 					result.push(rc);
-					var parent_id = p.treeReader.parent_id_field,
+					var parentId = p.treeReader.parent_id_field,
 					dtid = p.localReader.id;
-					$(p.data).each(function(i){
-						len = result.length;
+					$(p.data).each(function(){
+					    var i;
+					    len = result.length;
 						for (i = 0; i < len; i++) {
-							if (jgrid.stripPref(p.idPrefix, result[i][dtid]) === this[parent_id]) {
+							if (jgrid.stripPref(p.idPrefix, result[i][dtid]) === this[parentId]) {
 								result.push(this);
 								break;
 							}
