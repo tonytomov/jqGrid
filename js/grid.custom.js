@@ -400,7 +400,7 @@ jgrid.extend({
 					ina = $.inArray(options.sopt[i],aoprs);
 					if(ina !== -1) {
 						selclass = selected === o.odata[ina].oper ? "ui-state-highlight" : "";
-						str += '<li class="ui-menu-item '+selclass+'" role="presentation"><a class="ui-corner-all g-menu-item" tabindex="0" role="menuitem" value="'+o.odata[ina].oper+'" oper="'+o.operands[o.odata[ina].oper]+'"><table'+(jgrid.msie && jgrid.msiever() < 8 ? ' cellspacing="0"' : '')+'><tr><td width="25px">'+o.operands[o.odata[ina].oper]+'</td><td>'+ o.odata[ina].text+'</td></tr></table></a></li>';
+						str += '<li class="ui-menu-item '+selclass+'" role="presentation"><a class="ui-corner-all g-menu-item" tabindex="0" role="menuitem" value="'+o.odata[ina].oper+'" data-oper="'+o.operands[o.odata[ina].oper]+'"><table'+(jgrid.msie && jgrid.msiever() < 8 ? ' cellspacing="0"' : '')+'><tr><td style="width:25px">'+o.operands[o.odata[ina].oper]+'</td><td>'+ o.odata[ina].text+'</td></tr></table></a></li>';
 					}
 				}
 				str += "</ul>";
@@ -411,7 +411,7 @@ jgrid.extend({
 					function(){ $(this).removeClass("ui-state-hover"); }
 				).click(function(){
 					var v = $(this).attr("value"),
-					oper = $(this).attr("oper");
+					oper = $(this).data("oper");
 					$self.triggerHandler("jqGridToolbarSelectOper", [v, oper, elem]);
 					$("#sopt_menu").hide();
 					$(elem).text(oper).data("soper",v);
