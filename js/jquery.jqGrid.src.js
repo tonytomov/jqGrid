@@ -3689,7 +3689,7 @@ $.fn.jqGrid = function( pin ) {
 				} else {
 					var oldSelRow = p.selrow;
 					$(ts).jqGrid("setSelection",ri,true,e);
-					if (p.singleSelectClickMode === "toggle" && oldSelRow === ri) {
+					if (p.singleSelectClickMode === "toggle" && !p.multiselect && oldSelRow === ri) {
 						td.parent().removeClass("ui-state-highlight").attr({"aria-selected":"false", "tabindex" : "-1"});
 						p.selrow = null;
 					}
