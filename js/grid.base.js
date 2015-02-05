@@ -704,7 +704,7 @@ $.extend(true,jgrid,{
 
 		var p = self.p, bDiv = grid.bDiv,
 			fixhBox = function (hDiv) {
-				var $hDivhBox = $(hDiv).children("div").filter(":first");
+				var $hDivhBox = $(hDiv).children("div").first();
 				$hDivhBox.css($hDivhBox.hasClass("ui-jqgrid-hbox-rtl") ? "padding-left": "padding-right", p.scrollOffset);
 				hDiv.scrollLeft = bDiv.scrollLeft;
 			};
@@ -1644,6 +1644,15 @@ $.fn.jqGrid = function( pin ) {
 						getGridComponent("fTable", $(self.sDiv)).css("width",p.tblwidth+"px");
 						self.sDiv.scrollLeft = self.bDiv.scrollLeft;
 					}
+				}
+				if (!p.autowidth && (p.widthOrg === undefined || p.widthOrg === "auto" || p.widthOrg === "100%")) {
+                    var newWidth = self.newWidth, maxIterations = 3, i;
+                    for (i = 0; i < maxIterations; i++) {
+                        $bTable.jqGrid("setGridWidth", newWidth + i);
+                        if (self.bDiv.offsetHeight <= self.bDiv.clientHeight) {
+                            break;
+                        }
+                    }
 				}
 				if (!skipCallbacks) {
 					feedback.call($bTable[0], "resizeStop", nw, idx);
@@ -2716,8 +2725,8 @@ $.fn.jqGrid = function( pin ) {
 				if (rh) {
 					var top = base * rh;
 					var height = parseInt(p.records,10) * rh;
-					$(bDiv).children("div").filter(":first").css({height : height + "px"})
-						.children("div").filter(":first").css({height:top + "px",display:top + "px"?"":"none"});
+					$(bDiv).children("div").first().css({height : height + "px"})
+						.children("div").first().css({height:top + "px",display:top + "px"?"":"none"});
 					if (bDiv.scrollTop === 0 && p.page > 1) {
 						bDiv.scrollTop = p.rowNum * (p.page - 1) * rh;
 					}
@@ -2885,9 +2894,9 @@ $.fn.jqGrid = function( pin ) {
 						type:p.mtype,
 						dataType: dt ,
 						data: $.isFunction(p.serializeGridData)? p.serializeGridData.call(self,p.postData) : p.postData,
-						success:function(data,st, xhr) {
+						success: function (data, textStatus, jqXHR) {
 							if ($.isFunction(p.beforeProcessing)) {
-								if (p.beforeProcessing.call(self, data, st, xhr) === false) {
+								if (p.beforeProcessing.call(self, data, textStatus, jqXHR) === false) {
 									endReq.call(self);
 									return;
 								}
@@ -2900,14 +2909,14 @@ $.fn.jqGrid = function( pin ) {
 								p.datatype = "local";
 							}
 						},
-						error:function(xhr,st,err){
-							if($.isFunction(p.loadError)) { p.loadError.call(self,xhr,st,err); }
+						error: function (jqXHR, textStatus, errorThrown) {
+							if($.isFunction(p.loadError)) { p.loadError.call(self,jqXHR,textStatus,errorThrown); }
 							if (npage === 1) { endReq.call(self); }
 						},
-						beforeSend: function(xhr, settings ){
+						beforeSend: function (jqXHR, settings) {
 							var gotoreq = true;
 							if($.isFunction(p.loadBeforeSend)) {
-								gotoreq = p.loadBeforeSend.call(self,xhr, settings); 
+								gotoreq = p.loadBeforeSend.call(self,jqXHR, settings); 
 							}
 							if(gotoreq === undefined) { gotoreq = true; }
 							if(gotoreq === false) {
@@ -3875,7 +3884,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 		} else {
 			$(grid.cDiv).hide();
-			$(grid.cDiv).nextAll("div:visible").filter(":first").addClass('ui-corner-top'); // set on top toolbar or toppager or on hDiv
+			$(grid.cDiv).nextAll("div:visible").first().addClass('ui-corner-top'); // set on top toolbar or toppager or on hDiv
 		}
 		$(grid.hDiv).after(grid.bDiv)
 		.mousemove(function (e) {
@@ -4154,7 +4163,7 @@ jgrid.extend({
 						if ( nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn' && cm.formatter !== "actions") {
 							td = $td[i];
 							if(p.treeGrid===true && nm === p.ExpandColumn) {
-								res[nm] = htmlDecode($("span",td).filter(":first").html());
+								res[nm] = htmlDecode($("span",td).first().html());
 							} else {
 								try {
 									res[nm] = $.unformat.call($t,td,{rowId:ind.id, colModel:cm},i);
@@ -4235,7 +4244,7 @@ jgrid.extend({
 							vl = t.formatter( rowid, dval, i, data, 'edit');
 							title = cm.title ? {"title":stripHtml(vl)} : {};
 							if(p.treeGrid===true && nm === p.ExpandColumn) {
-								$("td[role='gridcell']:eq("+i+") > span:first",ind).html(vl).attr(title);
+								$("td[role='gridcell']:eq("+i+") > span:first",ind).first().html(vl).attr(title);
 							} else {
 								$("td[role='gridcell']:eq("+i+")",ind).html(vl).attr(title);
 							}
