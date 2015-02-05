@@ -124,7 +124,7 @@ jgrid.extend({
 	},
 	setTreeGrid : function() {
 		return this.each(function (){
-			var $t = this, p = $t.p, i=0, pico, ecol = false, nm, key, tkey, dupcols=[];
+			var $t = this, p = $t.p, i=0, ecol = false, nm, key, tkey, dupcols=[];
 			if(!p.treeGrid) {return;}
 			if(!p.treedatatype ) {$.extend($t.p,{treedatatype: p.datatype});}
 			p.subGrid = false;p.altRows =false;
@@ -230,9 +230,9 @@ jgrid.extend({
 					});
 					break;
 				case 'adjacency' :
-					var parent_id = p.treeReader.parent_id_field;
+					var parentId = p.treeReader.parent_id_field;
 					$(p.data).each(function(){
-						if(this[parent_id] === null || String(this[parent_id]).toLowerCase() === "null") {
+						if(this[parentId] === null || String(this[parentId]).toLowerCase() === "null") {
 							result.push(this);
 						}
 					});
@@ -277,11 +277,11 @@ jgrid.extend({
 					});
 					break;
 				case 'adjacency' :
-					var parent_id = p.treeReader.parent_id_field,
+					var parentId = p.treeReader.parent_id_field,
 					dtid = p.localReader.id,
 					ind = rc[dtid], pos = p._index[ind];
 					while(pos--) {
-						if(p.data[pos][dtid] === jgrid.stripPref(p.idPrefix, rc[parent_id])) {
+						if(p.data[pos][dtid] === jgrid.stripPref(p.idPrefix, rc[parentId])) {
 							result = p.data[pos];
 							break;
 						}
@@ -309,10 +309,10 @@ jgrid.extend({
 					});
 					break;
 				case 'adjacency' :
-					var parent_id = p.treeReader.parent_id_field,
+					var parentId = p.treeReader.parent_id_field,
 					dtid = p.localReader.id;
 					$(p.data).each(function(){
-						if(this[parent_id] == jgrid.stripPref(p.idPrefix, rc[dtid])) {
+						if(this[parentId] == jgrid.stripPref(p.idPrefix, rc[dtid])) {
 							result.push(this);
 						}
 					});
@@ -341,12 +341,13 @@ jgrid.extend({
 				case 'adjacency' :
 					if(rc) {
 					result.push(rc);
-					var parent_id = p.treeReader.parent_id_field,
+					var parentId = p.treeReader.parent_id_field,
 					dtid = p.localReader.id;
-					$(p.data).each(function(i){
-						len = result.length;
+					$(p.data).each(function(){
+					    var i;
+					    len = result.length;
 						for (i = 0; i < len; i++) {
-							if (jgrid.stripPref(p.idPrefix, result[i][dtid]) === this[parent_id]) {
+							if (jgrid.stripPref(p.idPrefix, result[i][dtid]) === this[parentId]) {
 								result.push(this);
 								break;
 							}
