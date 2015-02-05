@@ -638,11 +638,11 @@ $.extend(true,jgrid,{
 			BOTTOM_PAGER_DIV: 44						// tagName: "div". class: "ui-jqgrid-pager"
 	},*/
 	getGridComponentId: function (componentName) {
-		var self = this, id;
-		if (self == null || self.p == null || !self.p.id) {
+		var self = this;
+		if (self.p == null || !self.p.id) {
 			return ""; // return empty string
 		}
-		id = self.p.id;
+		var id = self.p.id;
 		switch (componentName) {
 			case "grid":
 				return id;
@@ -784,7 +784,7 @@ $.extend(true,jgrid,{
 		return ret;
 	},
 	getXmlData: function (obj, expr, returnObj) {
-		var ret, m = typeof expr === 'string' ? expr.match(/^(.*)\[(\w+)\]$/) : null;
+		var m = typeof expr === 'string' ? expr.match(/^(.*)\[(\w+)\]$/) : null;
 		if (typeof expr === 'function') { return expr(obj); }
 		if (m && m[2]) {
 			// m[2] is the attribute selector
@@ -792,10 +792,10 @@ $.extend(true,jgrid,{
 			// examples: "[id]", "rows[page]"
 			return m[1] ? $(m[1], obj).attr(m[2]) : $(obj).attr(m[2]);
 		}
-			ret = $(expr, obj);
-			if (returnObj) { return ret; }
-			//$(expr, obj).filter(':last'); // we use ':last' to be more compatible with old version of jqGrid
-			return ret.length > 0 ? $(ret).text() : undefined;
+		var ret = $(expr, obj);
+		if (returnObj) { return ret; }
+		//$(expr, obj).filter(':last'); // we use ':last' to be more compatible with old version of jqGrid
+		return ret.length > 0 ? $(ret).text() : undefined;
 	},
 	cellWidth : function () {
 		var $testDiv = $("<div class='ui-jqgrid' style='left:10000px'><table class='ui-jqgrid-btable' style='width:5px;'><tr class='jqgrow'><td style='width:5px;display:block;'></td></tr></table></div>"),
@@ -972,7 +972,7 @@ $.extend(true,jgrid,{
 				return results;
 			};
 			this._getOrder=function(data,by,dir,type, dfmt, sfunc){
-				var sortData=[],_sortData=[], newDir = dir==="a" ? 1 : -1, i,ab,j,
+				var sortData=[],_sortData=[], newDir = dir==="a" ? 1 : -1, i,ab,
 				findSortKey;
 
 				if(type === undefined ) { type = "text"; }
@@ -1016,8 +1016,7 @@ $.extend(true,jgrid,{
 						return self._compare(a,b,newDir);
 					});
 				}
-				j=0;
-				var nrec= data.length;
+				var j = 0, nrec= data.length;
 				// overhead, but we do not change the original data.
 				while(j<nrec) {
 					i = _sortData[j].index;
@@ -1260,7 +1259,7 @@ $.extend(true,jgrid,{
 		result = (result === false || result === "stop") ? false : true;
 		if ($.isFunction(callback)) {
 			var callbackResult = callback.apply(self, args);
-			if (callbackResult === false || callbackResult === 'stop') {
+			if (callbackResult === false || callbackResult === "stop") {
 				result = false;
 			 }
 		}
@@ -1722,10 +1721,10 @@ $.fn.jqGrid = function( pin ) {
 			},
 			scrollGrid: function(e) { // this must be bDiv
 				// TODO get ts from this bDiv
-				var bDiv = this, $bTable = getGridComponent("bTable", $(bDiv)), gridSelf;
+				var bDiv = this, $bTable = getGridComponent("bTable", $(bDiv));
 				if (e) { e.stopPropagation(); }
 				if ($bTable.length === 0) { return true; }
-				gridSelf = $bTable[0].grid;
+				var gridSelf = $bTable[0].grid;
 				if (p.scroll) {
 					var scrollTop = bDiv.scrollTop;
 					// save last scrollTop of bDiv as property of grid object
@@ -1824,6 +1823,9 @@ $.fn.jqGrid = function( pin ) {
 			minusicon: getIcon("subgrid.minus"),
 			openicon: (p.direction === "rtl" ? getIcon("subgrid.openRtl") : getIcon("subgrid.openLtr"))
 		}, p.subGridOptions || {});
+	    // TODO: replace altclass : 'ui-priority-secondary',
+	    // set default buttonicon : 'ui-icon-newwin' of navButtonAdd
+	    // change the order in $.extend to allows to set icons using $.jgrid (for example $.jgrid.nav). It will be ovewritten currently by p.navOptions which we set above.
 		var iCol, dir;
 		if(p.colNames.length === 0) {
 			for (iCol=0;iCol<p.colModel.length;iCol++){
@@ -2895,12 +2897,10 @@ $.fn.jqGrid = function( pin ) {
 								p.dataTypeOrg = p.datatype;
 								p.datatype = "local";
 							}
-							data=null;
 						},
 						error:function(xhr,st,err){
 							if($.isFunction(p.loadError)) { p.loadError.call(self,xhr,st,err); }
 							if (npage === 1) { endReq.call(self); }
-							xhr=null;
 						},
 						beforeSend: function(xhr, settings ){
 							var gotoreq = true;
@@ -4404,7 +4404,7 @@ jgrid.extend({
 			}
 			return true;
 		}
-		if(action === undefined) { action = "get"; }
+		if(action == null) { action = "get"; }
 		if(typeof format !== "boolean") { format  = true; }
 		action = action.toLowerCase();
 		this.each(function(){
@@ -4756,9 +4756,9 @@ jgrid.extend({
 			var $t=this, pos=-1;
 			if(!$t.grid) {return;}
 			if(isNaN(col)) {
-				$($t.p.colModel).each(function(i){
+				$($t.p.colModel).each(function(j){
 					if (this.name === col) {
-						pos = i;return false;
+						pos = j;return false;
 					}
 				});
 			} else {pos = parseInt(col,10);}
