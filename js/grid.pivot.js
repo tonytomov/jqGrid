@@ -181,7 +181,7 @@ jgrid.extend({
 						if(value == null) {
 							label = $.trim(aggr[i].member)+"_"+aggr[i].aggregator;
 							vl = label;
-							swapvals[0]= vl;
+							swapvals[j]= vl;
 						} else {
 							vl = value[j].replace(/\s+/g, '');
 							try {
@@ -372,7 +372,7 @@ jgrid.extend({
 									for( l in items.fields) {
 										if (items.fields.hasOwnProperty(l)) {
 											if(ll===1) {
-												headers[ylen-1].groupHeaders.push({startColumnName: l, numberOfColumns: 1, titleText: items.text});
+												headers[ylen-1].groupHeaders.push({startColumnName: l, numberOfColumns: 1, titleText: items.label});
 											}
 											ll++;
 										}
