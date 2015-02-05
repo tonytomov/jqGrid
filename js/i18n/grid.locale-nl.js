@@ -1,6 +1,24 @@
-(function(a) {
-a.jgrid = a.jgrid || {};
-a.extend(a.jgrid,{
+//NETHERLANDS
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+
+$.jgrid = $.jgrid || {};
+if(!$.jgrid.hasOwnProperty("regional")) {
+	$.jgrid.regional = [];
+}
+$.jgrid.regional["nl"] = {
         defaults:
         {
             recordtext: "regels {0} - {1} van {2}",
@@ -78,7 +96,12 @@ a.extend(a.jgrid,{
             alertcap: "Waarschuwing",
             alerttext: "Selecteer a.u.b. een regel",
             viewtext: "",
-            viewtitle: "Openen"
+            viewtitle: "Openen",
+			savetext: "",
+			savetitle: "Save row",
+			canceltext: "",
+			canceltitle : "Cancel row editing"
+
         },
         col:
         {
@@ -153,5 +176,5 @@ a.extend(a.jgrid,{
             },
             idName: "id"
         }
-    });
-})(jQuery);
+    };
+}));

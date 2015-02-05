@@ -1,4 +1,3 @@
-;(function($){
 /**
  * jqGrid English Translation
  * Tony Tomov tony@trirand.com
@@ -7,8 +6,26 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+
 $.jgrid = $.jgrid || {};
-$.extend($.jgrid,{
+if(!$.jgrid.hasOwnProperty("regional")) {
+	$.jgrid.regional = [];
+}
+$.jgrid.regional["kr"] = {
 	defaults : {
 		recordtext: "보기 {0} - {1} / {2}",
 		emptyrecords: "표시할 행이 없습니다",
@@ -80,7 +97,11 @@ $.extend($.jgrid,{
 		alertcap: "경고",
 		alerttext: "행을 선택하세요",
 		viewtext: "",
-		viewtitle: "선택된 행 조회"
+		viewtitle: "선택된 행 조회",
+		savetext: "",
+		savetitle: "Save row",
+		canceltext: "",
+		canceltitle : "Cancel row editing"
 	},
 	col : {
 		caption: "열을 선택하세요",
@@ -133,5 +154,5 @@ $.extend($.jgrid,{
 		checkbox : {disabled:true},
 		idName : 'id'
 	}
-});
-})(jQuery);
+};
+}));

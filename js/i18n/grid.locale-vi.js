@@ -1,4 +1,3 @@
-;(function($){
 /**
  * jqGrid Vietnamese Translation
  * Lê Đình Dũng dungtdc@gmail.com
@@ -7,8 +6,26 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+
 $.jgrid = $.jgrid || {};
-$.extend($.jgrid,{
+if(!$.jgrid.hasOwnProperty("regional")) {
+	$.jgrid.regional = [];
+}
+$.jgrid.regional["vi"] = {
 	defaults : {
 		recordtext: "View {0} - {1} of {2}",
 		emptyrecords: "Không có dữ liệu",
@@ -80,7 +97,11 @@ $.extend($.jgrid,{
 		alertcap: "Cảnh báo",
 		alerttext: "Hãy chọn một dòng",
 		viewtext: "",
-		viewtitle: "Xem dòng đã chọn"
+		viewtitle: "Xem dòng đã chọn",
+		savetext: "",
+		savetitle: "Save row",
+		canceltext: "",
+		canceltitle : "Cancel row editing"
 	},
 	col : {
 		caption: "Chọn cột",
@@ -173,5 +194,5 @@ $.extend($.jgrid,{
 		checkbox : {disabled:true},
 		idName : 'id'
 	}
-});
-})(jQuery);
+};
+}));

@@ -1,4 +1,3 @@
-;(function($){
 /**
  * jqGrid Ukrainian Translation v1.0 02.07.2009
  * Sergey Dyagovchenko
@@ -7,8 +6,26 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+
 $.jgrid = $.jgrid || {};
-$.extend($.jgrid,{
+if(!$.jgrid.hasOwnProperty("regional")) {
+	$.jgrid.regional = [];
+}
+$.jgrid.regional["ua"] = {
 	defaults : {
 		recordtext: "Перегляд {0} - {1} з {2}",
 	  emptyrecords: "Немає записів для перегляду",
@@ -79,7 +96,11 @@ $.extend($.jgrid,{
 	    alertcap: "Попередження",
 	    alerttext: "Будь ласка, виберіть запис",
   		viewtext: "",
-  		viewtitle: "Переглянути обраний запис"
+  		viewtitle: "Переглянути обраний запис",
+		savetext: "",
+		savetitle: "Save row",
+		canceltext: "",
+		canceltitle : "Cancel row editing"
 	},
 	col : {
 	    caption: "Показати/Приховати стовпці",
@@ -132,5 +153,5 @@ $.extend($.jgrid,{
 	  checkbox : {disabled:true},
 		idName : 'id'
 	}
-});
-})(jQuery);
+};
+}));

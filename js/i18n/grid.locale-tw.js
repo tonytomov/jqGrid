@@ -1,4 +1,3 @@
-;(function($){
 /**
  * jqGrid Chinese (Taiwan) Translation for v4.2
  * linquize
@@ -8,8 +7,26 @@
  * http://www.gnu.org/licenses/gpl.html
  * 
 **/
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+
 $.jgrid = $.jgrid || {};
-$.extend($.jgrid,{
+if(!$.jgrid.hasOwnProperty("regional")) {
+	$.jgrid.regional = [];
+}
+$.jgrid.regional["tw"] = {
 	defaults : {
 		recordtext: "{0} - {1} 共 {2} 條",
 		emptyrecords: "沒有記錄",
@@ -81,7 +98,11 @@ $.extend($.jgrid,{
 		alertcap: "警告",
 		alerttext: "請選擇列",
 		viewtext: "",
-		viewtitle: "檢視已選列"
+		viewtitle: "檢視已選列",
+		savetext: "",
+		savetitle: "Save row",
+		canceltext: "",
+		canceltitle : "Cancel row editing"
 	},
 	col : {
 		caption: "選擇欄",
@@ -134,5 +155,5 @@ $.extend($.jgrid,{
 		checkbox : {disabled:true},
 		idName : 'id'
 	}
-});
-})(jQuery);
+};
+}));

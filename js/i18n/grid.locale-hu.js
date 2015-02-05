@@ -1,4 +1,3 @@
-;(function($){
 /**
  * jqGrid Hungarian Translation
  * Őrszigety Ádám udx6bs@freemail.hu
@@ -8,8 +7,26 @@
  * http://www.gnu.org/licenses/gpl.html
 **/
 
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+
 $.jgrid = $.jgrid || {};
-$.extend($.jgrid,{
+if(!$.jgrid.hasOwnProperty("regional")) {
+	$.jgrid.regional = [];
+}
+$.jgrid.regional["hu"] = {
 	defaults : {
 		recordtext: "Oldal {0} - {1} / {2}",
 		emptyrecords: "Nincs találat",
@@ -81,7 +98,11 @@ $.extend($.jgrid,{
 		alertcap: "Figyelmeztetés",
 		alerttext: "Kérem válasszon tételt.",
 		viewtext: "",
-		viewtitle: "Tétel megtekintése"
+		viewtitle: "Tétel megtekintése",
+		savetext: "",
+		savetitle: "Save row",
+		canceltext: "",
+		canceltitle : "Cancel row editing"
 	},
 	col : {
 		caption: "Oszlopok kiválasztása",
@@ -134,5 +155,5 @@ $.extend($.jgrid,{
 		checkbox : {disabled:true},
 		idName : 'id'
 	}
-});
-})(jQuery);
+};
+}));

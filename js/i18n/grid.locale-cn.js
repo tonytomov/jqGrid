@@ -1,4 +1,3 @@
-;(function($){
 /**
  * jqGrid Chinese Translation
  * 咖啡兔 yanhonglei@gmail.com
@@ -7,8 +6,26 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+
 $.jgrid = $.jgrid || {};
-$.extend($.jgrid,{
+if(!$.jgrid.hasOwnProperty("regional")) {
+	$.jgrid.regional = [];
+}
+$.jgrid.regional["cn"] = {
     defaults : {
         recordtext: "{0} - {1}\u3000共 {2} 条", // 共字前是全角空格
         emptyrecords: "无数据显示",
@@ -79,7 +96,11 @@ $.extend($.jgrid,{
         alertcap: "注意",
         alerttext: "请选择记录",
         viewtext: "",
-        viewtitle: "查看所选记录"
+        viewtitle: "查看所选记录",
+		savetext: "",
+		savetitle: "Save row",
+		canceltext: "",
+		canceltitle : "Cancel row editing"
     },
     col : {
         caption: "选择列",
@@ -172,5 +193,5 @@ $.extend($.jgrid,{
         checkbox : {disabled:true},
         idName : 'id'
     }
-});
-})(jQuery);
+};
+}));

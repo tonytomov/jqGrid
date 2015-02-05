@@ -1,4 +1,3 @@
-;(function($){
 /**
  * jqGrid (fi) Finnish Translation
  * Jukka Inkeri  awot.fi  2010-05-19
@@ -8,8 +7,26 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+
 $.jgrid = $.jgrid || {};
-$.extend($.jgrid,{
+if(!$.jgrid.hasOwnProperty("regional")) {
+	$.jgrid.regional = [];
+}
+$.jgrid.regional["fi"] = {
 	defaults: {
 		recordtext: "Rivit {0} - {1} / {2}",
 	    emptyrecords: "Ei n&auml;ytett&auml;vi&auml;",
@@ -80,7 +97,11 @@ $.extend($.jgrid,{
 	    alertcap: "Varoitus",
 	    alerttext: "Valitse rivi",
 		viewtext: "",
-		viewtitle: "N&auml;yta valitut rivit"
+		viewtitle: "N&auml;yta valitut rivit",
+		savetext: "",
+		savetitle: "Save row",
+		canceltext: "",
+		canceltitle : "Cancel row editing"		
 	},
 	col: {
 	    caption: "Valitse sarakkeet",
@@ -133,6 +154,6 @@ $.extend($.jgrid,{
 	    checkbox: {disabled:true},
 		idName: 'id'
 	}
-});
+};
 // FI
-})(jQuery);
+}));

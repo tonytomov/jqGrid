@@ -1,4 +1,3 @@
-;(function($){
 /**
  * jqGrid German Translation
  * Version 1.0.0 (developed for jQuery Grid 3.3.1)
@@ -13,13 +12,35 @@
  * Oleg Kiriljuk oleg.kiriljuk@ok-soft-gmbh.com
  * the format corresponds now the format from
  * https://github.com/jquery/globalize/blob/master/lib/cultures/globalize.culture.de.js
+ * 
+ * Updated for jqGrid 4.8
+ * Tony Tomov
+ * http://www.guriddo.net
  *
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+
 $.jgrid = $.jgrid || {};
-$.extend($.jgrid,{
+if(!$.jgrid.hasOwnProperty("regional")) {
+	$.jgrid.regional = [];
+}
+$.jgrid.regional["de"] = {
 	defaults : {
 		recordtext: "Zeige {0} - {1} von {2}",
 		emptyrecords: "Keine Datensätze vorhanden",
@@ -90,7 +111,11 @@ $.extend($.jgrid,{
 		alertcap: "Warnung",
 		alerttext: "Bitte Zeile auswählen",
 		viewtext: "",
-		viewtitle: "Ausgewählte Zeile anzeigen"
+		viewtitle: "Ausgewählte Zeile anzeigen",
+		savetext: "",
+		savetitle: "Zeile speihern",
+		canceltext: "",
+		canceltitle : "Zeile abbrechen"
 	},
 	col : {
 		caption: "Spalten auswählen",
@@ -176,5 +201,5 @@ $.extend($.jgrid,{
 		checkbox : {disabled:true},
 		idName : 'id'
 	}
-});
-})(jQuery);
+};
+}));

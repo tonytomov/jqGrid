@@ -1,4 +1,3 @@
-;(function($){
 /**
  * jqGrid Catalan Translation
  * Traducció jqGrid en Catatà per Faserline, S.L.
@@ -7,8 +6,26 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+
 $.jgrid = $.jgrid || {};
-$.extend($.jgrid,{
+if(!$.jgrid.hasOwnProperty("regional")) {
+	$.jgrid.regional = [];
+}
+$.jgrid.regional["ca"] = {
 	defaults : {
 		recordtext: "Mostrant {0} - {1} de {2}",
 	    emptyrecords: "Sense registres que mostrar",
@@ -79,7 +96,11 @@ $.extend($.jgrid,{
 		alertcap: "Avís",
 		alerttext: "Seleccioni una fila",
 		viewtext: " ",
-		viewtitle: "Veure fila seleccionada"
+		viewtitle: "Veure fila seleccionada",
+		savetext: "",
+		savetitle: "Save row",
+		canceltext: "",
+		canceltitle : "Cancel row editing"
 	},
 // setcolumns module
 	col : {
@@ -133,5 +154,5 @@ $.extend($.jgrid,{
 	    checkbox : {disabled:true},
 		idName : 'id'
 	}
-});
-})(jQuery);
+};
+}));
