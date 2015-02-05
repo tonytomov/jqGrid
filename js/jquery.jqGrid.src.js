@@ -6686,7 +6686,7 @@ jgrid.extend({
 					ina = $.inArray(options.sopt[i],aoprs);
 					if(ina !== -1) {
 						selclass = selected === o.odata[ina].oper ? "ui-state-highlight" : "";
-						str += '<li class="ui-menu-item '+selclass+'" role="presentation"><a class="ui-corner-all g-menu-item" tabindex="0" role="menuitem" value="'+o.odata[ina].oper+'" oper="'+o.operands[o.odata[ina].oper]+'"><table'+(jgrid.msie && jgrid.msiever() < 8 ? ' cellspacing="0"' : '')+'><tr><td width="25px">'+o.operands[o.odata[ina].oper]+'</td><td>'+ o.odata[ina].text+'</td></tr></table></a></li>';
+						str += '<li class="ui-menu-item '+selclass+'" role="presentation"><a class="ui-corner-all g-menu-item" tabindex="0" role="menuitem" value="'+o.odata[ina].oper+'" data-oper="'+o.operands[o.odata[ina].oper]+'"><table'+(jgrid.msie && jgrid.msiever() < 8 ? ' cellspacing="0"' : '')+'><tr><td style="width:25px">'+o.operands[o.odata[ina].oper]+'</td><td>'+ o.odata[ina].text+'</td></tr></table></a></li>';
 					}
 				}
 				str += "</ul>";
@@ -6697,7 +6697,7 @@ jgrid.extend({
 					function(){ $(this).removeClass("ui-state-hover"); }
 				).click(function(){
 					var v = $(this).attr("value"),
-					oper = $(this).attr("oper");
+					oper = $(this).data("oper");
 					$self.triggerHandler("jqGridToolbarSelectOper", [v, oper, elem]);
 					$("#sopt_menu").hide();
 					$(elem).text(oper).data("soper",v);
@@ -11238,7 +11238,7 @@ jgrid.extend({
 					type: o.mtype,
 					complete: function(res,stat){
 						$self.jqGrid("progressBar", {method:"hide", loadtype : o.saveui, htmlcontent: o.savetext});
-						if (data.status < 400 || stat === "success"){ // stat can be "abort", "timeout", "error", "parsererror" or some text from text part of HTTP error occurs
+						if (data.status < 400 || (stat === "success" || "notmodified")){ // stat can be "abort", "timeout", "error", "parsererror" or some text from text part of HTTP error occurs
 							var ret, sucret, j;
 							sucret = $self.triggerHandler("jqGridInlineSuccessSaveRow", [res, rowid, o]);
 							if (!$.isArray(sucret)) {sucret = [true, tmp];}
@@ -11410,6 +11410,7 @@ jgrid.extend({
 			var $t = this, $self = $($t), p = $t.p;
 			if (!this.grid || p == null) { return; }
 			var $elem, gID = elem === p.toppager ? p.idSel + "_top" : p.idSel,
+			gid = elem === p.toppager ? p.id + "_top" : p.id,
 			o = $.extend(true,{
 				edit: true,
 				editicon: "ui-icon-pencil",
@@ -11431,11 +11432,15 @@ jgrid.extend({
 					$self.jqGrid("inlineNav", p.pager, o);
 					if (p.toppager) {
 						elem = p.toppager;
+						gID = p.idSel + "_top";
+						gid = p.id + "_top";
 					} else {
 						return;
 					}
 				} else if (p.toppager) {
 					elem = p.toppager;
+					gID = p.idSel + "_top";
+					gid = p.id + "_top";
 				}
 			}
 			if (elem === undefined) {
@@ -11490,7 +11495,7 @@ jgrid.extend({
 					commonIconClass : o.commonIconClass,
 					buttonicon : o.addicon,
 					iconsOverText: o.iconsOverText,
-					id : p.id+"_iladd",
+					id : gid + "_iladd",
 					onClickButton : function () {
 						$self.jqGrid('addRow', o.addParams);
 					}
@@ -11503,7 +11508,7 @@ jgrid.extend({
 					commonIconClass : o.commonIconClass,
 					buttonicon : o.editicon,
 					iconsOverText: o.iconsOverText,
-					id : p.id+"_iledit",
+					id : gid + "_iledit",
 					onClickButton : function () {
 						var sr = p.selrow;
 						if(sr) {
@@ -11521,7 +11526,7 @@ jgrid.extend({
 					commonIconClass : o.commonIconClass,
 					buttonicon : o.saveicon,
 					iconsOverText: o.iconsOverText,
-					id : p.id+"_ilsave",
+					id : gid + "_ilsave",
 					onClickButton : function () {
 						var sr = p.savedRow[0].id;
 						if(sr) {
@@ -11542,7 +11547,7 @@ jgrid.extend({
 						}
 					}
 				});
-				$(gID+"_ilsave").addClass('ui-state-disabled');
+				$(gID + "_ilsave").addClass('ui-state-disabled');
 			}
 			if(o.cancel) {
 				$self.jqGrid('navButtonAdd', elem,{
@@ -11551,7 +11556,7 @@ jgrid.extend({
 					commonIconClass : o.commonIconClass,
 					buttonicon : o.cancelicon,
 					iconsOverText: o.iconsOverText,
-					id : p.id+"_ilcancel",
+					id : gid + "_ilcancel",
 					onClickButton : function () {
 						var sr = p.savedRow[0].id, cancelPrm = o.editParams;
 						if(sr) {
@@ -11564,7 +11569,7 @@ jgrid.extend({
 						}
 					}
 				});
-				$(gID+"_ilcancel").addClass('ui-state-disabled');
+				$(gID + "_ilcancel").addClass('ui-state-disabled');
 			}
 			if(o.restoreAfterSelect === true) {
 				$self.bind("jqGridSelectRow", function (e, rowid) {
@@ -14342,19 +14347,19 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 			}, jgrid.nav, this.p.navOptions || {}, jgrid.actionsNav, this.p.actionsNavOptions || {}, opts.colModel.formatoptions || {});
 		if(rowid === undefined || fmatter.isEmpty(rowid)) {return "";}
 		if(op.editformbutton){
-			ocl = "id='jEditButton_"+rowid+"' onclick='return jQuery.fn.fmatter.rowactions.call(this,event,\"formedit\");' onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
+			ocl = "id='jEditButton_"+rowid+"' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'formedit');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
 			str += "<div title='"+op.edittitle+"' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='" + [op.commonIconClass, op.editicon].join(" ") + "'></span></div>";
 		} else if(op.editbutton){
-			ocl = "id='jEditButton_"+rowid+"' onclick='return jQuery.fn.fmatter.rowactions.call(this,event,\"edit\");' onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover') ";
+			ocl = "id='jEditButton_"+rowid+"' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'edit');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover') ";
 			str += "<div title='"+op.edittitle+"' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='" + [op.commonIconClass, op.editicon].join(" ") + "'></span></div>";
 		}
 		if(op.delbutton) {
-			ocl = "id='jDeleteButton_"+rowid+"' onclick='return jQuery.fn.fmatter.rowactions.call(this,event,\"del\");' onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
+			ocl = "id='jDeleteButton_"+rowid+"' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'del');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
 			str += "<div title='"+op.deltitle+"' class='ui-pg-div ui-inline-del' "+ocl+"><span class='" + [op.commonIconClass, op.delicon].join(" ") + "'></span></div>";
 		}
-		ocl = "id='jSaveButton_"+rowid+"' onclick='return jQuery.fn.fmatter.rowactions.call(this,event,\"save\");' onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
+		ocl = "id='jSaveButton_"+rowid+"' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'save');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
 		str += "<div title='"+op.savetitle+"' style='display:none' class='ui-pg-div ui-inline-save' "+ocl+"><span class='" + [op.commonIconClass, op.saveicon].join(" ") + "'></span></div>";
-		ocl = "id='jCancelButton_"+rowid+"' onclick='return jQuery.fn.fmatter.rowactions.call(this,event,\"cancel\");' onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
+		ocl = "id='jCancelButton_"+rowid+"' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'cancel');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
 		str += "<div title='"+op.canceltitle+"' style='display:none;' class='ui-pg-div ui-inline-cancel' "+ocl+"><span class='" + [op.commonIconClass, op.cancelicon].join(" ") + "'></span></div>";
 		return "<div class='ui-jqgrid-actions'>" + str + "</div>";
 	};
