@@ -200,9 +200,9 @@ addSubGrid : function( pos, sind ) {
 				}
 				$(ts.rows[i].cells[pos]).bind('click', function() {
 					var tr = $(this).parent("tr")[0];
-					$r = $("#" + pID + "_" + _id + "_expandedContent");
 					pID = ts.p.id;
 					_id = tr.id;
+					$r = $("#" + pID + "_" + _id + "_expandedContent");
 					if($(this).hasClass("sgcollapsed")) {
 						bfsc = $(ts).triggerHandler("jqGridSubGridBeforeExpand", [pID + "_" + _id, _id]);
 						bfsc = (bfsc === false || bfsc === 'stop') ? false : true;
