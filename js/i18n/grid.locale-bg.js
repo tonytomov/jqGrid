@@ -13,7 +13,7 @@
 		// AMD. Register as an anonymous module.
 		define([
 			"jquery",
-			"./grid.base"
+			"../grid.base"
 		], factory );
 	} else {
 		// Browser globals
