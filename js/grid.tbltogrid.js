@@ -4,6 +4,8 @@
  If the first column of the table contains checkboxes or
  radiobuttons then the jqGrid is made selectable.
 */
+/*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
+/*global jQuery */
 // Addition - selector can be a class or id
 (function($){
 "use strict";
@@ -81,9 +83,9 @@ $(selector).each(function() {
 	}, options || {}));
 
 	// Add data
-	var a;
+	var a, id;
 	for (a = 0; a < data.length; a++) {
-		var id = null;
+		id = null;
 		if (rowIds.length > 0) {
 			id = rowIds[a];
 			if (id && id.replace) {
@@ -93,7 +95,7 @@ $(selector).each(function() {
 			}
 		}
 		if (id === null) {
-			id = a + 1;
+			id = $.jgrid.randId();
 		}
 		$self.jqGrid("addRowData",id, data[a]);
 	}
@@ -103,5 +105,5 @@ $(selector).each(function() {
 		$self.jqGrid("setSelection",rowChecked[a]);
 	}
 });
-}
+};
 }(jQuery));
