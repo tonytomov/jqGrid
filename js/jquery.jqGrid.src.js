@@ -5680,7 +5680,7 @@ $.extend(jgrid,{
 		// "div.ui-jqdialog-titlebar", "div.ui-jqdialog-content" and optionally resizer like "div.jqResize"
 		var mw = document.createElement('div'), themodalSelector = "#"+jqID(aIDs.themodal),
 		rtlsup = $(o.gbox).attr("dir") === "rtl" ? true : false, 
-		scrollelmSelector = aIDs.scrollelm ? "#"+jqID(aIDs.scrollelm) : false;
+		resizeAlso = aIDs.resizeAlso ? "#" + jqID(aIDs.resizeAlso) : false;
 		css = $.extend({}, css || {});
 		mw.className= "ui-widget ui-widget-content ui-corner-all ui-jqdialog";
 		mw.id = aIDs.themodal;
@@ -5771,10 +5771,10 @@ $.extend(jgrid,{
 		if(o.resize) {
 			if($.fn.jqResize) {
 				$(mw).append("<div class='jqResize ui-resizable-handle ui-resizable-se " + o.resizingRightBottomIcon + "'></div>");
-				$(themodalSelector).jqResize(".jqResize",scrollelmSelector);
+				$(themodalSelector).jqResize(".jqResize",resizeAlso);
 			} else {
 				try {
-					$(mw).resizable({handles: 'se, sw',alsoResize: scrollelmSelector});
+					$(mw).resizable({handles: 'se, sw',alsoResize: resizeAlso});
 				} catch (ignore) {}
 			}
 		}
@@ -5860,7 +5860,7 @@ $.extend(jgrid,{
 				themodal:'info_dialog',
 				modalhead:'info_head',
 				modalcontent:'info_content',
-				scrollelm: 'infocnt'
+				resizeAlso: 'infocnt'
 			},
 			cnt,
 			mopt,
@@ -8187,7 +8187,7 @@ jgrid.extend({
 			}, jgrid.search, p.searching || {}, oMuligrid || {});
 
 			var fid = "fbox_"+p.id, commonIconClass = o.commonIconClass,
-			ids = {themodal:'searchmod'+fid,modalhead:'searchhd'+fid,modalcontent:'searchcnt'+fid, scrollelm : fid},
+			ids = {themodal:'searchmod'+fid,modalhead:'searchhd'+fid,modalcontent:'searchcnt'+fid, resizeAlso : fid},
 			themodalSelector = "#"+jqID(ids.themodal), gboxSelector = p.gBox, gviewSelector = p.gView,
 			defaultFilters = p.postData[o.sFilter],
 			searchFeedback = function () {
@@ -8493,7 +8493,7 @@ jgrid.extend({
 			}, jgrid.edit, p.formEditing || {}, oMuligrid || {});
 			
 			var frmgr = "FrmGrid_"+gID, frmgrID = frmgr, frmtborg = "TblGrid_"+gID, frmtb = "#"+jqID(frmtborg), frmtb2 = frmtb+"_2",
-			ids = {themodal:'editmod'+gID,modalhead:'edithd'+gID,modalcontent:'editcnt'+gID, scrollelm : frmgr},
+			ids = {themodal:'editmod'+gID,modalhead:'edithd'+gID,modalcontent:'editcnt'+gID, resizeAlso : frmgr},
 			themodalSelector = "#"+jqID(ids.themodal), gboxSelector = p.gBox, propOrAttr = p.propOrAttr,
 			maxCols = 1, maxRows=0,	postdata, diff, frmoper, commonIconClass = o.commonIconClass,
 			editFeedback = function () {
@@ -9320,7 +9320,7 @@ jgrid.extend({
 
 			var frmgr = "#ViewGrid_"+jqID(gID), frmtb = "#ViewTbl_" + jqID(gID), frmtb2 = frmtb+"_2",
 			frmgrID = "ViewGrid_"+gID, frmtbID = "ViewTbl_"+gID, commonIconClass = o.commonIconClass,
-			ids = {themodal:'viewmod'+gID,modalhead:'viewhd'+gID,modalcontent:'viewcnt'+gID, scrollelm : frmgrID},
+			ids = {themodal:'viewmod'+gID,modalhead:'viewhd'+gID,modalcontent:'viewcnt'+gID, resizeAlso : frmgrID},
 			themodalSelector = "#"+jqID(ids.themodal), gboxSelector = p.gBox,
 			maxCols = 1, maxRows = 0,
 			viewFeedback = function () {
@@ -9623,7 +9623,7 @@ jgrid.extend({
 			}, jgrid.del, p.formDeleting || {}, oMuligrid || {});
 
 			var dtblID = "DelTbl_" + gID, dtbl = "#DelTbl_"+jqID(gID), postd, idname, opers, oper,
-			ids = {themodal:'delmod'+gID,modalhead:'delhd'+gID,modalcontent:'delcnt'+gID, scrollelm: dtblID},
+			ids = {themodal:'delmod'+gID,modalhead:'delhd'+gID,modalcontent:'delcnt'+gID, resizeAlso: dtblID},
 		    themodalSelector = "#"+jqID(ids.themodal), gboxSelector = p.gBox, commonIconClass = o.commonIconClass,
 			deleteFeedback = function () {
 				var args = $.makeArray(arguments);
@@ -12725,6 +12725,7 @@ jgrid.extend({
 });
 }(jQuery));
 /*jshint eqeqeq:false */
+/*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
 /*global jQuery */
 (function($){
 /**
@@ -12775,7 +12776,7 @@ addSubGrid : function( pos, sind ) {
 			$(trdiv).append(tddiv);
 		};
 		var subGridXml = function(sjxml, sbid){
-			var tddiv, i,  sgmap,
+			var tddiv, i, sgmap, f,
 			dummy = $("<table"+(jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "")+"><tbody></tbody></table>"),
 			trdiv = $("<tr></tr>");
 			for (i = 0; i<p.subGridModel[0].name.length; i++) {
@@ -12794,7 +12795,7 @@ addSubGrid : function( pos, sind ) {
 							subGridCell(trdiv, $(this).text() || '&#160;',i);
 						});
 					} else {
-						var f = p.subGridModel[0].mapping || p.subGridModel[0].name;
+						f = p.subGridModel[0].mapping || p.subGridModel[0].name;
 						if (f) {
 							for (i=0;i<f.length;i++) {
 								subGridCell(trdiv, $(f[i],this).text() || '&#160;',i);
@@ -12811,7 +12812,7 @@ addSubGrid : function( pos, sind ) {
 			return false;
 		};
 		var subGridJson = function(sjxml, sbid){
-			var tddiv,result,i,cur, sgmap,j,
+			var tddiv,result,i,cur, sgmap, j, f,
 			dummy = $("<table"+(jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "")+"><tbody></tbody></table>"),
 			trdiv = $("<tr></tr>");
 			for (i = 0; i<p.subGridModel[0].name.length; i++) {
@@ -12834,7 +12835,7 @@ addSubGrid : function( pos, sind ) {
 								subGridCell(trdiv, cur[j] || '&#160;',j);
 							}
 						} else {
-							var f = p.subGridModel[0].mapping || p.subGridModel[0].name;
+							f = p.subGridModel[0].mapping || p.subGridModel[0].name;
 							if(f.length) {
 								for (j=0;j<f.length;j++) {
 									subGridCell(trdiv, cur[f[j]] || '&#160;',j);
@@ -13029,13 +13030,15 @@ toggleSubGridRow : function(rowid) {
 	});
 }
 });
-})(jQuery);
+}(jQuery));
 /*
  Transform a table to a jqGrid.
  Peter Romianowski <peter.romianowski@optivo.de> 
  If the first column of the table contains checkboxes or
  radiobuttons then the jqGrid is made selectable.
 */
+/*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
+/*global jQuery */
 // Addition - selector can be a class or id
 (function($){
 "use strict";
@@ -13113,9 +13116,9 @@ $(selector).each(function() {
 	}, options || {}));
 
 	// Add data
-	var a;
+	var a, id;
 	for (a = 0; a < data.length; a++) {
-		var id = null;
+		id = null;
 		if (rowIds.length > 0) {
 			id = rowIds[a];
 			if (id && id.replace) {
@@ -13125,7 +13128,7 @@ $(selector).each(function() {
 			}
 		}
 		if (id === null) {
-			id = a + 1;
+			id = $.jgrid.randId();
 		}
 		$self.jqGrid("addRowData",id, data[a]);
 	}
@@ -13135,7 +13138,7 @@ $(selector).each(function() {
 		$self.jqGrid("setSelection",rowChecked[a]);
 	}
 });
-}
+};
 }(jQuery));
 /**
  * jqGrid extension - Tree Grid
@@ -13829,69 +13832,150 @@ jgrid.extend({
  * http://www.opensource.org/licenses/mit-license.php
  * 
  * $Version: 2007.08.19 +r2
+ * Updated by Oleg Kiriljuk to support touch devices
  */
-
-(function($){
-$.fn.jqDrag=function(h){return i(this,h,'d');};
-$.fn.jqResize=function(h,ar){return i(this,h,'r',ar);};
-$.jqDnR={
-	dnr:{},
-	e:0,
-	drag:function(v){
-		if(M.k == 'd'){E.css({left:M.X+v.pageX-M.pX,top:M.Y+v.pageY-M.pY});}
-		else {
-			E.css({width:Math.max(v.pageX-M.pX+M.W,0),height:Math.max(v.pageY-M.pY+M.H,0)});
-			if(M1){E1.css({width:Math.max(v.pageX-M1.pX+M1.W,0),height:Math.max(v.pageY-M1.pY+M1.H,0)});}
-		}
-		return false;
-	},
-	stop:function(){
-		//E.css('opacity',M.o);
-		$(document).unbind('mousemove',J.drag).unbind('mouseup',J.stop);
-	}
-};
-var J=$.jqDnR,M=J.dnr,E=J.e,E1,M1,
-i=function(e,h,k,aR){
-	return e.each(function(){
-		h=(h)?$(h,e):e;
-		h.bind('mousedown',{e:e,k:k},function(v){
-			var d=v.data,p={};E=d.e;E1 = aR ? $(aR) : false;
-			// attempt utilization of dimensions plugin to fix IE issues
-			if(E.css('position') != 'relative'){try{E.position(p);}catch(e){}}
-			M={
-				X:p.left||f('left')||0,
-				Y:p.top||f('top')||0,
-				W:f('width')||E[0].scrollWidth||0,
-				H:f('height')||E[0].scrollHeight||0,
-				pX:v.pageX,
-				pY:v.pageY,
-				k:d.k
-				//o:E.css('opacity')
-			};
-			// also resize
-			if(E1 && d.k != 'd'){
-				M1={
-					X:p.left||f1('left')||0,
-					Y:p.top||f1('top')||0,
-					W:E1[0].offsetWidth||f1('width')||0,
-					H:E1[0].offsetHeight||f1('height')||0,
-					pX:v.pageX,
-					pY:v.pageY,
-					k:d.k
-				};
-			} else {M1 = false;}			
-			//E.css({opacity:0.8});
-			if($("input.hasDatepicker",E[0])[0]) {
-			try {$("input.hasDatepicker",E[0]).datepicker('hide');}catch (dpe){}
+/*jslint browser: true, white: true */
+/*global jQuery */
+(function ($) {
+	"use strict";
+	var namespace = ".jqGrid", mouseDown = "mousedown", mouseMove = "mousemove", mouseUp = "mouseup",
+		getMouseCoordinates = function (e) {
+	        var orgEvent = e.originalEvent, touches = orgEvent.targetTouches;
+	        if (touches) {
+	            touches = touches[0];
+	            return { x: touches.pageX, y: touches.pageY };
+	        } else if (orgEvent.getCurrentPoint) {
+				var pt = orgEvent.getCurrentPoint(orgEvent.currentTarget);
+				var ptTargetProperties = pt.properties;
+				return { x: e.screenX, y: e.screenY };
 			}
-			$(document).mousemove($.jqDnR.drag).mouseup($.jqDnR.stop);
-			return false;
-		});
-	});
-},
-f=function(k){return parseInt(E.css(k),10)||false;},
-f1=function(k){return parseInt(E1.css(k),10)||false;};
-})(jQuery);/*
+	        return { x: e.pageX, y: e.pageY };
+	    },
+        jqDnR = {
+			drag: function (e) {
+			    var d = e.data, $mainDialog = d.e, dnrMainDialog = d.dnr, $alsoResize = d.ar, dnrAlsoResize = d.dnrAr,
+                    xy = getMouseCoordinates(e);
+				if (dnrMainDialog.k === "move") {
+					$mainDialog.css({
+					    left: dnrMainDialog.X + xy.x - dnrMainDialog.pX,
+					    top: dnrMainDialog.Y + xy.y - dnrMainDialog.pY
+					});
+				} else {
+					$mainDialog.css({
+					    width: Math.max(xy.x - dnrMainDialog.pX + dnrMainDialog.W, 0),
+					    height: Math.max(xy.y - dnrMainDialog.pY + dnrMainDialog.H, 0)
+					});
+					if (dnrAlsoResize) {
+						$alsoResize.css({
+						    width: Math.max(xy.x - dnrAlsoResize.pX + dnrAlsoResize.W, 0),
+						    height: Math.max(xy.y - dnrAlsoResize.pY + dnrAlsoResize.H, 0)
+						});
+					}
+				}
+				return false;
+			},
+			stop: function () {
+				//$mainDialog.css("opacity", dnr.o);
+				$(document).unbind(mouseMove, jqDnR.drag).unbind(mouseUp, jqDnR.stop);
+			}
+		},
+		init = function ($this, handle, actionName, alsoResize) {
+			return $this.each(function () {
+				handle = handle ? $(handle, $this) : $this;
+				handle.bind(mouseDown, { e: $this, k: actionName }, function (e) {
+					var d = e.data, p = {}, $inputDatePicker, $mainDialog, dnrMainDialog, $alsoResize, dnrAlsoResize,
+						getCssProp = function ($elem, propertyName) { return parseInt($elem.css(propertyName), 10) || false; },
+						getMainCssProp = function (propertyName) { return getCssProp($mainDialog, propertyName); },
+						getAlsoResizeCssProp = function (propertyName) { return getCssProp($alsoResize, propertyName); },
+				        xy = getMouseCoordinates(e),
+						eventData;
+						
+					if ($(e.target).hasClass("ui-jqdialog-titlebar-close") || $(e.target).parent().hasClass("ui-jqdialog-titlebar-close")) {
+						$(e.target).click();
+						return;
+					}
+
+					$mainDialog = d.e;
+					$alsoResize = alsoResize ? $(alsoResize) : false;
+					// attempt utilization of dimensions plugin to fix IE issues
+					if ($mainDialog.css("position") !== "relative") {
+						try {
+							// ???? probably one want to GET position and save it in p ?
+							// the current implementation use always p = {}
+							// probably one mean some additional work together with Dimensions Plugin (dimensions.js)
+							$mainDialog.position(p);
+						} catch (ignore) { }
+					}
+					dnrMainDialog = {
+						X: p.left || getMainCssProp("left") || 0,
+						Y: p.top || getMainCssProp("top") || 0,
+						W: getMainCssProp("width") || $mainDialog[0].scrollWidth || 0,
+						H: getMainCssProp("height") || $mainDialog[0].scrollHeight || 0,
+						pX: xy.x,
+						pY: xy.y,
+						k: d.k
+						//o:$mainDialog.css("opacity")
+					};
+					// also resize
+					if ($alsoResize && d.k !== "move") {
+						dnrAlsoResize = {
+							X: p.left || getAlsoResizeCssProp("left") || 0,
+							Y: p.top || getAlsoResizeCssProp("top") || 0,
+							W: $alsoResize[0].offsetWidth || getAlsoResizeCssProp("width") || 0,
+							H: $alsoResize[0].offsetHeight || getAlsoResizeCssProp("height") || 0,
+							pX: xy.x,
+							pY: xy.y,
+							k: d.k
+						};
+					} else {
+						dnrAlsoResize = false;
+					}
+					//E.css({opacity:0.8});
+					$inputDatePicker = $mainDialog.find("input.hasDatepicker");
+					if ($inputDatePicker.length > 0) {
+						try {
+							$inputDatePicker.datepicker("hide");
+						} catch (ignore) { }
+					}
+					eventData = {
+						e: $mainDialog,
+						dnr: dnrMainDialog,
+						ar: $alsoResize,
+						dnrAr: dnrAlsoResize
+					};
+					$(document).bind(mouseMove, eventData, jqDnR.drag);
+					$(document).bind(mouseUp, eventData, jqDnR.stop);
+					return false;
+				});
+			});
+		};
+
+	// navigator.maxTouchPoints == 2, navigator.msMaxTouchPoints
+	// https://msdn.microsoft.com/en-us/library/ie/dn304886(v=vs.85).aspx
+	if (window.PointerEvent) {
+		mouseDown += namespace + " pointerdown" + namespace;
+		mouseMove += namespace + " pointermove" + namespace;
+		mouseUp += namespace + " pointerup" + namespace;
+	} else if (window.MSPointerEvent) {
+		mouseDown += namespace + " mspointerdown" + namespace,
+		mouseMove += namespace + " mspointermove" + namespace;
+		mouseUp += namespace + " mspointerup";
+	} else /*if (document.hasOwnProperty("ontouchend"))*/ {
+		mouseDown += namespace + " touchstart" + namespace;
+		mouseMove += namespace + " touchmove" + namespace;
+		mouseUp += namespace + " touchend" + namespace;
+	}
+
+	$.jqDnR = jqDnR;
+
+	$.fn.jqDrag = function (handle) {
+		return init(this, handle, "move");
+	};
+
+	$.fn.jqResize = function (handle, alsoResize) {
+		return init(this, handle, "resize", alsoResize);
+	};
+}(jQuery));/*
  * jqModal - Minimalist Modaling with jQuery
  *   (http://dev.iceburg.net/jquery/jqmodal/)
  *
@@ -14541,30 +14625,33 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 		return $FnFmatter.defaultFormat(cellval, opts);
 	};
 }(jQuery));
+/*jslint browser: true, vars: true, white: true, regexp: true */
+/*global alert */
+
 /*
 	The below work is licensed under Creative Commons GNU LGPL License.
 
 	Original work:
 
-	License:     http://creativecommons.org/licenses/LGPL/2.1/
-	Author:      Stefan Goessner/2006
-	Web:         http://goessner.net/ 
+	License:	 http://creativecommons.org/licenses/LGPL/2.1/
+	Author:		 Stefan Goessner/2006
+	Web:		 http://goessner.net/ 
 
 	Modifications made:
 
-	Version:     0.9-p5
+	Version:	 0.9-p5
 	Description: Restructured code, JSLint validated (no strict whitespaces),
-	             added handling of empty arrays, empty strings, and int/floats values.
-	Author:      Michael Schøler/2008-01-29
-	Web:         http://michael.hinnerup.net/blog/2008/01/26/converting-json-to-xml-and-xml-to-json/
+				 added handling of empty arrays, empty strings, and int/floats values.
+	Author:		 Michael Schøler/2008-01-29
+	Web:		 http://michael.hinnerup.net/blog/2008/01/26/converting-json-to-xml-and-xml-to-json/
 	
 	Description: json2xml added support to convert functions as CDATA
-	             so it will be easy to write characters that cause some problems when convert
-	Author:      Tony Tomov
+				 so it will be easy to write characters that cause some problems when convert
+	Author:		 Tony Tomov
 */
-
-/*global alert */
-var xmlJsonClass = {
+(function () {
+"use strict";
+window.xmlJsonClass = {
 	// Param "xml": Element or document DOM node.
 	// Param "tab": Tab or indent string for pretty output formatting omit or use empty string "" to supress.
 	// Returns:     JSON string
@@ -14584,48 +14671,50 @@ var xmlJsonClass = {
 	// Returns:     XML string
 	json2xml: function(o, tab) {
 		var toXml = function(v, name, ind) {
-			var xml = "";
-			var i, n;
+		    var xml = "", i, n, sXml, hasChild, m;
 			if (v instanceof Array) {
 				if (v.length === 0) {
 					xml += ind + "<"+name+">__EMPTY_ARRAY_</"+name+">\n";
 				}
 				else {
 					for (i = 0, n = v.length; i < n; i += 1) {
-						var sXml = ind + toXml(v[i], name, ind+"\t") + "\n";
+						sXml = ind + toXml(v[i], name, ind+"\t") + "\n";
 						xml += sXml;
 					}
 				}
 			}
-			else if (typeof(v) === "object") {
-				var hasChild = false;
+			else if (typeof v === "object") {
+				hasChild = false;
 				xml += ind + "<" + name;
-				var m;
-				for (m in v) if (v.hasOwnProperty(m)) {
-					if (m.charAt(0) === "@") {
-						xml += " " + m.substr(1) + "=\"" + v[m].toString() + "\"";
-					}
-					else {
-						hasChild = true;
+				for (m in v) {
+					if (v.hasOwnProperty(m)) {
+						if (m.charAt(0) === "@") {
+							xml += " " + m.substr(1) + "=\"" + v[m].toString() + "\"";
+						}
+						else {
+							hasChild = true;
+						}
 					}
 				}
 				xml += hasChild ? ">" : "/>";
 				if (hasChild) {
-					for (m in v) if (v.hasOwnProperty(m)) {
-						if (m === "#text") {
-							xml += v[m];
-						}
-						else if (m === "#cdata") {
-							xml += "<![CDATA[" + v[m] + "]]>";
-						}
-						else if (m.charAt(0) !== "@") {
-							xml += toXml(v[m], m, ind+"\t");
+					for (m in v) {
+						if (v.hasOwnProperty(m)) {
+							if (m === "#text") {
+								xml += v[m];
+							}
+							else if (m === "#cdata") {
+								xml += "<![CDATA[" + v[m] + "]]>";
+							}
+							else if (m.charAt(0) !== "@") {
+								xml += toXml(v[m], m, ind+"\t");
+							}
 						}
 					}
 					xml += (xml.charAt(xml.length - 1) === "\n" ? ind : "") + "</" + name + ">";
 				}
 			}
-			else if (typeof(v) === "function") {
+			else if (typeof v === "function") {
 				xml += ind + "<" + name + ">" + "<![CDATA[" + v + "]]>" + "</" + name + ">";
 			}
 			else {
@@ -14639,17 +14728,18 @@ var xmlJsonClass = {
 			}
 			return xml;
 		};
-		var xml = "";
-		var m;
-		for (m in o) if (o.hasOwnProperty(m)) {
-			xml += toXml(o[m], m, "");
+		var xml = "", m;
+		for (m in o) {
+			if (o.hasOwnProperty(m)) {
+				xml += toXml(o[m], m, "");
+			}
 		}
 		return tab ? xml.replace(/\t/g, tab) : xml.replace(/\t|\n/g, "");
 	},
 	// Internal methods
 	toObj: function(xml) {
 		var o = {};
-		var FuncTest = /function/i;
+		var funcTest = /function/i;
 		if (xml.nodeType === 1) {
 			// element node ..
 			if (xml.attributes.length) {
@@ -14687,7 +14777,7 @@ var xmlJsonClass = {
 							}
 							else if (n.nodeType === 4) {
 								// cdata node
-								if (FuncTest.test(n.nodeValue)) {
+								if (funcTest.test(n.nodeValue)) {
 									o[n.nodeName] = [o[n.nodeName], n.nodeValue];
 								} else {
 									o["#cdata"] = this.escape(n.nodeValue);
@@ -14739,12 +14829,11 @@ var xmlJsonClass = {
 					}
 					else {
 						for (n = xml.firstChild; n; n = n.nextSibling) {
-							if(FuncTest.test(xml.firstChild.nodeValue)) {
+							if(funcTest.test(xml.firstChild.nodeValue)) {
 								o = xml.firstChild.nodeValue;
 								break;
-							} else {
-								o["#cdata"] = this.escape(n.nodeValue);
 							}
+							o["#cdata"] = this.escape(n.nodeValue);
 						}
 					}
 				}
@@ -14763,7 +14852,7 @@ var xmlJsonClass = {
 		return o;
 	},
 	toJson: function(o, name, ind, wellform) {
-		if(wellform === undefined) wellform = true;
+		if(wellform === undefined) {wellform = true;}
 		var json = name ? ("\"" + name + "\"") : "", tab = "\t", newline = "\n";
 		if(!wellform) {
 			tab= ""; newline= "";
@@ -14782,7 +14871,7 @@ var xmlJsonClass = {
 		else if (o === null) {
 			json += (name && ":") + "null";
 		}
-		else if (typeof(o) === "object") {
+		else if (typeof o === "object") {
 			var arr = [], m;
 			for (m in o) {
 				if (o.hasOwnProperty(m)) {
@@ -14791,59 +14880,48 @@ var xmlJsonClass = {
 		}
 			json += (name ? ":{" : "{") + (arr.length > 1 ? (newline + ind + tab + arr.join(","+newline + ind + tab) + newline + ind) : arr.join("")) + "}";
 		}
-		else if (typeof(o) === "string") {
-			/*
-			var objRegExp  = /(^-?\d+\.?\d*$)/;
-			var FuncTest = /function/i;
-			var os = o.toString();
-			if (objRegExp.test(os) || FuncTest.test(os) || os==="false" || os==="true") {
-				// int or float
-				json += (name && ":")  + "\"" +os + "\"";
-			} 
-			else {
-			*/
-				json += (name && ":") + "\"" + o.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"";
-			//}
-			}
+		else if (typeof o === "string") {
+			json += (name && ":") + "\"" + o.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"";
+		}
 		else {
 			json += (name && ":") +  o.toString();
 		}
 		return json;
 	},
 	innerXml: function(node) {
-		var s = "";
-		if ("innerHTML" in node) {
+	    var s = "", child;
+		if (node.hasOwnProperty("innerHTML")) {
 			s = node.innerHTML;
 		}
 		else {
 			var asXml = function(n) {
-				var s = "", i;
+				var str = "", i, c;
 				if (n.nodeType === 1) {
-					s += "<" + n.nodeName;
+					str += "<" + n.nodeName;
 					for (i = 0; i < n.attributes.length; i += 1) {
-						s += " " + n.attributes[i].nodeName + "=\"" + (n.attributes[i].nodeValue || "").toString() + "\"";
+						str += " " + n.attributes[i].nodeName + "=\"" + (n.attributes[i].nodeValue || "").toString() + "\"";
 					}
 					if (n.firstChild) {
-						s += ">";
-						for (var c = n.firstChild; c; c = c.nextSibling) {
-							s += asXml(c);
+						str += ">";
+						for (c = n.firstChild; c; c = c.nextSibling) {
+							str += asXml(c);
 						}
-						s += "</" + n.nodeName + ">";
+						str += "</" + n.nodeName + ">";
 					}
 					else {
-						s += "/>";
+						str += "/>";
 					}
 				}
 				else if (n.nodeType === 3) {
-					s += n.nodeValue;
+					str += n.nodeValue;
 				}
 				else if (n.nodeType === 4) {
-					s += "<![CDATA[" + n.nodeValue + "]]>";
+					str += "<![CDATA[" + n.nodeValue + "]]>";
 				}
-				return s;
+				return str;
 			};
-			for (var c = node.firstChild; c; c = c.nextSibling) {
-				s += asXml(c);
+			for (child = node.firstChild; child; child = child.nextSibling) {
+				s += asXml(child);
 			}
 		}
 		return s;
@@ -14853,13 +14931,13 @@ var xmlJsonClass = {
 	},
 	removeWhite: function(e) {
 		e.normalize();
-		var n;
-		for (n = e.firstChild; n; ) {
+	    var n = e.firstChild, nxt;
+		 while (n) {
 			if (n.nodeType === 3) {
 				// text node
 				if (!n.nodeValue.match(/[^ \f\n\r\t\v]/)) {
 					// pure whitespace text node
-					var nxt = n.nextSibling;
+					nxt = n.nextSibling;
 					e.removeChild(n);
 					n = nxt;
 				}
@@ -14880,3 +14958,4 @@ var xmlJsonClass = {
 		return e;
 	}
 };
+}());
