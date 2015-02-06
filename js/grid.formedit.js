@@ -106,7 +106,7 @@ jgrid.extend({
 			}, jgrid.search, p.searching || {}, oMuligrid || {});
 
 			var fid = "fbox_"+p.id, commonIconClass = o.commonIconClass,
-			ids = {themodal:'searchmod'+fid,modalhead:'searchhd'+fid,modalcontent:'searchcnt'+fid, scrollelm : fid},
+			ids = {themodal:'searchmod'+fid,modalhead:'searchhd'+fid,modalcontent:'searchcnt'+fid, resizeAlso : fid},
 			themodalSelector = "#"+jqID(ids.themodal), gboxSelector = p.gBox, gviewSelector = p.gView,
 			defaultFilters = p.postData[o.sFilter],
 			searchFeedback = function () {
@@ -412,7 +412,7 @@ jgrid.extend({
 			}, jgrid.edit, p.formEditing || {}, oMuligrid || {});
 			
 			var frmgr = "FrmGrid_"+gID, frmgrID = frmgr, frmtborg = "TblGrid_"+gID, frmtb = "#"+jqID(frmtborg), frmtb2 = frmtb+"_2",
-			ids = {themodal:'editmod'+gID,modalhead:'edithd'+gID,modalcontent:'editcnt'+gID, scrollelm : frmgr},
+			ids = {themodal:'editmod'+gID,modalhead:'edithd'+gID,modalcontent:'editcnt'+gID, resizeAlso : frmgr},
 			themodalSelector = "#"+jqID(ids.themodal), gboxSelector = p.gBox, propOrAttr = p.propOrAttr,
 			maxCols = 1, maxRows=0,	postdata, diff, frmoper, commonIconClass = o.commonIconClass,
 			editFeedback = function () {
@@ -1239,7 +1239,7 @@ jgrid.extend({
 
 			var frmgr = "#ViewGrid_"+jqID(gID), frmtb = "#ViewTbl_" + jqID(gID), frmtb2 = frmtb+"_2",
 			frmgrID = "ViewGrid_"+gID, frmtbID = "ViewTbl_"+gID, commonIconClass = o.commonIconClass,
-			ids = {themodal:'viewmod'+gID,modalhead:'viewhd'+gID,modalcontent:'viewcnt'+gID, scrollelm : frmgrID},
+			ids = {themodal:'viewmod'+gID,modalhead:'viewhd'+gID,modalcontent:'viewcnt'+gID, resizeAlso : frmgrID},
 			themodalSelector = "#"+jqID(ids.themodal), gboxSelector = p.gBox,
 			maxCols = 1, maxRows = 0,
 			viewFeedback = function () {
@@ -1542,7 +1542,7 @@ jgrid.extend({
 			}, jgrid.del, p.formDeleting || {}, oMuligrid || {});
 
 			var dtblID = "DelTbl_" + gID, dtbl = "#DelTbl_"+jqID(gID), postd, idname, opers, oper,
-			ids = {themodal:'delmod'+gID,modalhead:'delhd'+gID,modalcontent:'delcnt'+gID, scrollelm: dtblID},
+			ids = {themodal:'delmod'+gID,modalhead:'delhd'+gID,modalcontent:'delcnt'+gID, resizeAlso: dtblID},
 		    themodalSelector = "#"+jqID(ids.themodal), gboxSelector = p.gBox, commonIconClass = o.commonIconClass,
 			deleteFeedback = function () {
 				var args = $.makeArray(arguments);

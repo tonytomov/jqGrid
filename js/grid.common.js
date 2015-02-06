@@ -84,7 +84,7 @@ $.extend(jgrid,{
 		// "div.ui-jqdialog-titlebar", "div.ui-jqdialog-content" and optionally resizer like "div.jqResize"
 		var mw = document.createElement('div'), themodalSelector = "#"+jqID(aIDs.themodal),
 		rtlsup = $(o.gbox).attr("dir") === "rtl" ? true : false, 
-		scrollelmSelector = aIDs.scrollelm ? "#"+jqID(aIDs.scrollelm) : false;
+		resizeAlso = aIDs.resizeAlso ? "#" + jqID(aIDs.resizeAlso) : false;
 		css = $.extend({}, css || {});
 		mw.className= "ui-widget ui-widget-content ui-corner-all ui-jqdialog";
 		mw.id = aIDs.themodal;
@@ -175,10 +175,10 @@ $.extend(jgrid,{
 		if(o.resize) {
 			if($.fn.jqResize) {
 				$(mw).append("<div class='jqResize ui-resizable-handle ui-resizable-se " + o.resizingRightBottomIcon + "'></div>");
-				$(themodalSelector).jqResize(".jqResize",scrollelmSelector);
+				$(themodalSelector).jqResize(".jqResize",resizeAlso);
 			} else {
 				try {
-					$(mw).resizable({handles: 'se, sw',alsoResize: scrollelmSelector});
+					$(mw).resizable({handles: 'se, sw',alsoResize: resizeAlso});
 				} catch (ignore) {}
 			}
 		}
@@ -264,7 +264,7 @@ $.extend(jgrid,{
 				themodal:'info_dialog',
 				modalhead:'info_head',
 				modalcontent:'info_content',
-				scrollelm: 'infocnt'
+				resizeAlso: 'infocnt'
 			},
 			cnt,
 			mopt,
