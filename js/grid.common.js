@@ -316,7 +316,7 @@ $.extend($.jgrid,{
 	createEl : function(eltype,options,vl,autowidth, ajaxso) {
 		var elem = "", $t = this;
 		function setAttributes(elm, atr, exl ) {
-			var exclude = ['dataInit','dataEvents','dataUrl', 'buildSelect','sopt', 'searchhidden', 'defaultValue', 'attr', 'custom_element', 'custom_value'];
+			var exclude = ['dataInit','dataEvents','dataUrl', 'buildSelect','sopt', 'searchhidden', 'defaultValue', 'attr', 'custom_element', 'custom_value', 'oper'];
 			if(exl !== undefined && $.isArray(exl)) {
 				$.merge(exclude, exl);
 			}
@@ -376,7 +376,7 @@ $.extend($.jgrid,{
 					elem.multiple="multiple";
 					$(elem).attr("aria-multiselectable","true");
 				} else { msl = false; }
-				if(options.dataUrl !== undefined) {
+				if(options.dataUrl != null) {
 					var rowid = null, postData = options.postData || ajaxso.postData;
 					try {
 						rowid = options.rowId;
@@ -395,6 +395,8 @@ $.extend($.jgrid,{
 							var ovm = [], elem = this.elem, vl = this.vl,
 							options = $.extend({},this.options),
 							msl = options.multiple===true,
+							cU = options.cacheUrlData === true,
+							oV ='', txt, vl,
 							a = $.isFunction(options.buildSelect) ? options.buildSelect.call($t,data) : data;
 							if(typeof a === 'string') {
 								a = $( $.trim( a ) ).html();
@@ -412,14 +414,38 @@ $.extend($.jgrid,{
 								//$(elem).attr(options);
 								setTimeout(function(){
 									$("option",elem).each(function(i){
+										txt = $(this).text();
+										vl = $(this).val() || txt;
+										if(cU) {
+											oV += (i!== 0 ? ";": "")+ vl+":"+txt; 
+										}
 										//if(i===0) { this.selected = ""; }
 										// fix IE8/IE7 problem with selecting of the first item on multiple=true
 										if (i === 0 && elem.multiple) { this.selected = false; }
 										$(this).attr("role","option");
-										if($.inArray($.trim($(this).text()),ovm) > -1 || $.inArray($.trim($(this).val()),ovm) > -1 ) {
+										if($.inArray($.trim(txt),ovm) > -1 || $.inArray($.trim(vl),ovm) > -1 ) {
 											this.selected= "selected";
 										}
 									});
+									if(cU) {
+										if(options.oper === 'edit') {
+											$($t).jqGrid('setColProp',options.name,{ editoptions: {buildSelect: null, dataUrl : null, value : oV} });
+										} else if(options.oper === 'search') {
+											$($t).jqGrid('setColProp',options.name,{ searchoptions: {dataUrl : null, value : oV} });
+										} else if(options.oper ==='filter') {
+											if($("#fbox_"+$t.p.id)[0].p) {
+												var cols = $("#fbox_"+$t.p.id)[0].p.columns, nm;
+												$.each(cols,function(i) {
+													nm  =  this.index || this.name;
+													if(options.name === nm) {
+														this.searchoptions.dataUrl = null;
+														this.searchoptions.value = oV;
+														return false;
+													}
+												});
+											}
+										}
+									}
 								},0);
 							}
 						}

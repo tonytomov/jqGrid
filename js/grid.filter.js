@@ -360,7 +360,7 @@ $.fn.jqFilter = function( arg ) {
 				if(!cm) {return;}
 				cm.searchoptions.id = $.jgrid.randId();
 				cm.searchoptions.name = rule.field;
-				cm.searchoptions.oper = 'search';
+				cm.searchoptions.oper = 'filter';
 				
 				if(isIE && cm.inputtype === "text") {
 					if(!cm.searchoptions.size) {
@@ -443,7 +443,7 @@ $.fn.jqFilter = function( arg ) {
 				}
 			}
 			cm.searchoptions.name = rule.field;
-			cm.searchoptions.oper = 'search';
+			cm.searchoptions.oper = 'filter';
 			var ruleDataInput = $.jgrid.createEl.call($t, cm.inputtype,cm.searchoptions, rule.data, true, that.p.ajaxSelectOptions || {}, true);
 			if(rule.op === 'nu' || rule.op === 'nn') {
 				$(ruleDataInput).attr('readonly','true');
