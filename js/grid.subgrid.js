@@ -1,4 +1,5 @@
 /*jshint eqeqeq:false */
+/*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
 /*global jQuery */
 (function($){
 /**
@@ -49,7 +50,7 @@ addSubGrid : function( pos, sind ) {
 			$(trdiv).append(tddiv);
 		};
 		var subGridXml = function(sjxml, sbid){
-			var tddiv, i,  sgmap,
+			var tddiv, i, sgmap, f,
 			dummy = $("<table"+(jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "")+"><tbody></tbody></table>"),
 			trdiv = $("<tr></tr>");
 			for (i = 0; i<p.subGridModel[0].name.length; i++) {
@@ -68,7 +69,7 @@ addSubGrid : function( pos, sind ) {
 							subGridCell(trdiv, $(this).text() || '&#160;',i);
 						});
 					} else {
-						var f = p.subGridModel[0].mapping || p.subGridModel[0].name;
+						f = p.subGridModel[0].mapping || p.subGridModel[0].name;
 						if (f) {
 							for (i=0;i<f.length;i++) {
 								subGridCell(trdiv, $(f[i],this).text() || '&#160;',i);
@@ -85,7 +86,7 @@ addSubGrid : function( pos, sind ) {
 			return false;
 		};
 		var subGridJson = function(sjxml, sbid){
-			var tddiv,result,i,cur, sgmap,j,
+			var tddiv,result,i,cur, sgmap, j, f,
 			dummy = $("<table"+(jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "")+"><tbody></tbody></table>"),
 			trdiv = $("<tr></tr>");
 			for (i = 0; i<p.subGridModel[0].name.length; i++) {
@@ -108,7 +109,7 @@ addSubGrid : function( pos, sind ) {
 								subGridCell(trdiv, cur[j] || '&#160;',j);
 							}
 						} else {
-							var f = p.subGridModel[0].mapping || p.subGridModel[0].name;
+							f = p.subGridModel[0].mapping || p.subGridModel[0].name;
 							if(f.length) {
 								for (j=0;j<f.length;j++) {
 									subGridCell(trdiv, cur[f[j]] || '&#160;',j);
@@ -303,4 +304,4 @@ toggleSubGridRow : function(rowid) {
 	});
 }
 });
-})(jQuery);
+}(jQuery));
