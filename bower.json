@@ -1,44 +1,51 @@
 {
-	"name": "free-jqGrid",
-	"description": "grid as jQuery plugin - fork of jqGrid before licensing change",
-	"version": "4.8.0-beta.1",
-	"main": [
-		"js/jquery.jqGrid.min.js",
-		"js/jquery.jqGrid.src.js",
-		"js/jquery.jqGrid.min.map",
-		"css/ui.jqgrid.css"
-	],
-	"licenses": [
-		"MIT",
-		"GPL-2.0"
-	],
-	"ignore": [
-		"gradlew.bat",
-		"gradle/wrapper",
-		"gradlew"
-	]
-	"keywords": [
-		"grid",
-		"table",
-		"jqGrid",
-		"jQuery grid",
-		"TreeGrid",
-		"Subgrid",
-		"sorting",
-		"paging",
-		"editing",
-		"grouping",
-		"searching"
-	],
-	"authors": [
-		{ "name": "Oleg Kiriljuk", "email": "oleg.kiriljuk@ok-soft-gmbh.com"}
-	],
-	"homepage": "https://github.com/free-jqgrid/jqGrid.git",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/free-jqgrid/jqGrid.git"
-	},
-	"dependencies": {
-		"jquery": ">=1.7.0"
-	}
+  "name": "free-jqGrid",
+  "description": "grid as jQuery plugin - fork of jqGrid before licensing change",
+  "version": "4.8.0-beta.1",
+  "main": [
+    "js/jquery.jqGrid.min.js",
+    "js/jquery.jqGrid.src.js",
+    "js/jquery.jqGrid.min.map",
+    "css/ui.jqgrid.css"
+  ],
+  "keywords": [
+    "grid",
+    "table",
+    "jqGrid",
+    "jQuery",
+    "grid",
+    "TreeGrid",
+    "Subgrid",
+    "sorting",
+    "paging",
+    "editing",
+    "grouping",
+    "searching"
+  ],
+  "authors": [
+    "Oleg Kiriljuk",
+    "other contributors to jqGrid before version 4.7.1"
+  ],
+  "homepage": "https://github.com/free-jqgrid/jqGrid.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/free-jqgrid/jqGrid.git"
+  },
+  "dependencies": {
+    "jquery": ">=1.7.0",
+  },
+  "license": [
+    "MIT",
+    "GPL-2.0"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "gradlew.bat",
+    "gradle/wrapper",
+    "gradlew"
+  ]
 }
