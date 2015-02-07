@@ -18,7 +18,7 @@
         a = [],
         setFocusOnFirstVisibleInput = function (h) {
             try {
-                $(":input:visible", h.w)[0].focus();
+                $(":input:visible", h.w).focus();
             } catch (ignore) {}
         },
         setFocus = function (h) {
