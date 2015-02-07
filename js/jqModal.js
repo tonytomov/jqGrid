@@ -9,60 +9,211 @@
  * 
  * $Version: 07/06/2008 +r13
  */
-(function($) {
-$.fn.jqm=function(o){
-var p={
-overlay: 50,
-closeoverlay : false,
-overlayClass: 'jqmOverlay',
-closeClass: 'jqmClose',
-trigger: '.jqModal',
-ajax: F,
-ajaxText: '',
-target: F,
-modal: F,
-toTop: F,
-onShow: F,
-onHide: F,
-onLoad: F
-};
-return this.each(function(){if(this._jqm)return H[this._jqm].c=$.extend({},H[this._jqm].c,o);s++;this._jqm=s;
-H[s]={c:$.extend(p,$.jqm.params,o),a:F,w:$(this).addClass('jqmID'+s),s:s};
-if(p.trigger)$(this).jqmAddTrigger(p.trigger);
-});};
+/*jslint browser: true, nomen: true, plusplus: true, white: true */
+/*global jQuery */
+(function ($) {
+    "use strict";
+    var jqmHashLength = 0,
+        jqmHash,
+        a = [],
+        setFocusOnFirstVisibleInput = function (h) {
+            try {
+                $(":input:visible", h.w)[0].focus();
+            } catch (ignore) {}
+        },
+        setFocus = function (h) {
+            setFocusOnFirstVisibleInput(h);
+        },
+        m = function (e) {
+            var h = jqmHash[a[a.length - 1]],
+                r = !$(e.target).parents(".jqmID" + h.s)[0];
+            if (r) {
+                $(".jqmID" + h.s).each(function () {
+                    var $self = $(this), offset = $self.offset();
+                    if (offset.top <= e.pageY &&
+                            e.pageY <= offset.top + $self.height() &&
+                            offset.left <= e.pageX &&
+                            e.pageX <= offset.left + $self.width()) {
+                        r = false;
+                        return false;
+                    }
+                });
+                setFocusOnFirstVisibleInput(h);
+            }
+            return !r;
+        },
+        bindOrUnbindEvents = function (t) {
+            $(document)[t]("keypress", m)[t]("keydown", m)[t]("mousedown", m);
+        },
+        hs = function (w, t, c) {
+            return w.each(function () {
+                var thisJqm = this._jqm;
+                $(t).each(function () {
+                    if (!this[c]) {
+                        this[c] = [];
+                        $(this).click(function () {
+                            var i, method, propertyName, methods = ["jqmShow", "jqmHide"];
+                            for (i = 0; i < methods.length; i++) {
+                                method = methods[i];
+                                for (propertyName in this[method]) {
+                                    if (this[method].hasOwnProperty(propertyName) && jqmHash[this[method][propertyName]]) {
+                                        jqmHash[this[method][propertyName]].w[method](this);
+                                    }
+                                }
+                            }
+                            return false;
+                        });
+                    }
+                    this[c].push(thisJqm);
+                });
+            });
+        };
 
-$.fn.jqmAddClose=function(e){return hs(this,e,'jqmHide');};
-$.fn.jqmAddTrigger=function(e){return hs(this,e,'jqmShow');};
-$.fn.jqmShow=function(t){return this.each(function(){$.jqm.open(this._jqm,t);});};
-$.fn.jqmHide=function(t){return this.each(function(){$.jqm.close(this._jqm,t)});};
+    $.fn.jqm = function (o) {
+        var p = {
+            overlay: 50,
+            closeoverlay: false,
+            overlayClass: "jqmOverlay",
+            closeClass: "jqmClose",
+            trigger: ".jqModal",
+            ajax: false,
+            ajaxText: "",
+            target: false,
+            modal: false,
+            toTop: false,
+            onShow: false,
+            onHide: false,
+            onLoad: false
+        };
+        return this.each(function () {
+            if (this._jqm) {
+                jqmHash[this._jqm].c = $.extend({}, jqmHash[this._jqm].c, o);
+                return jqmHash[this._jqm].c;
+            }
+            jqmHashLength++;
+            this._jqm = jqmHashLength;
+            jqmHash[jqmHashLength] = {
+                // comment from https://github.com/briceburg/jqModal/blob/master/jqModal.js
+                // hash object;
+                //  w: (jQuery object) The modal element
+                //  c: (object) The modal's options object 
+                //  o: (jQuery object) The overlay element
+                //  t: (DOM object) The triggering element
+                c: $.extend(p, $.jqm.params, o),
+                a: false,
+                w: $(this).addClass("jqmID" + jqmHashLength),
+                s: jqmHashLength
+            };
+            if (p.trigger) {
+                $(this).jqmAddTrigger(p.trigger);
+            }
+        });
+    };
 
-$.jqm = {
-hash:{},
-open:function(s,t){var h=H[s],c=h.c,cc='.'+c.closeClass,z=(parseInt(h.w.css('z-index')));z=(z>0)?z:3000;var o=$('<div></div>').css({height:'100%',width:'100%',position:'fixed',left:0,top:0,'z-index':z-1,opacity:c.overlay/100});if(h.a)return F;h.t=t;h.a=true;h.w.css('z-index',z);
- if(c.modal) {if(!A[0])setTimeout(function(){L('bind');},1);A.push(s);}
- else if(c.overlay > 0) {if(c.closeoverlay) h.w.jqmAddClose(o);}
- else o=F;
+    $.fn.jqmAddClose = function (trigger) { return hs(this, trigger, "jqmHide"); };
+    $.fn.jqmAddTrigger = function (trigger) { return hs(this, trigger, "jqmShow"); };
+    $.fn.jqmShow = function (trigger) { return this.each(function () { $.jqm.open(this._jqm, trigger); }); };
+    $.fn.jqmHide = function (trigger) { return this.each(function () { $.jqm.close(this._jqm, trigger); }); };
 
- h.o=(o)?o.addClass(c.overlayClass).prependTo('body'):F;
+    $.jqm = {
+        hash: {},
+        open: function (s, t) {
+            var h = jqmHash[s], $overlay, target, url,
+                options = h.c,
+                cc = "." + options.closeClass,
+                z = (parseInt(h.w.css("z-index"), 10));
+            z = (z > 0) ? z : 3000;
+            $overlay = $("<div></div>").css({
+                height: "100%",
+                width: "100%",
+                position: "fixed",
+                left: 0,
+                top: 0,
+                "z-index": z - 1,
+                opacity: options.overlay / 100
+            });
+            if (h.a) {
+                return false;
+            }
+            h.t = t;
+            h.a = true;
+            h.w.css("z-index", z);
+            if (options.modal) {
+                if (!a[0]) {
+                    setTimeout(function () {
+                        bindOrUnbindEvents("bind");
+                    }, 1);
+                }
+                a.push(s);
+            } else if (options.overlay > 0) {
+                if (options.closeoverlay) {
+                    h.w.jqmAddClose($overlay);
+                }
+            } else {
+                $overlay = false;
+            }
 
- if(c.ajax) {var r=c.target||h.w,u=c.ajax;r=(typeof r == 'string')?$(r,h.w):$(r);u=(u.substr(0,1) == '@')?$(t).attr(u.substring(1)):u;
-  r.html(c.ajaxText).load(u,function(){if(c.onLoad)c.onLoad.call(this,h);if(cc)h.w.jqmAddClose($(cc,h.w));e(h);});}
- else if(cc)h.w.jqmAddClose($(cc,h.w));
+            h.o = $overlay ? $overlay.addClass(options.overlayClass).prependTo("body") : false;
 
- if(c.toTop&&h.o)h.w.before('<span id="jqmP'+h.w[0]._jqm+'"></span>').insertAfter(h.o);	
- (c.onShow)?c.onShow(h):h.w.show();e(h);return F;
-},
-close:function(s){var h=H[s];if(!h.a)return F;h.a=F;
- if(A[0]){A.pop();if(!A[0])L('unbind');}
- if(h.c.toTop&&h.o)$('#jqmP'+h.w[0]._jqm).after(h.w).remove();
- if(h.c.onHide)h.c.onHide(h);else{h.w.hide();if(h.o)h.o.remove();} return F;
-},
-params:{}};
-var s=0,H=$.jqm.hash,A=[],F=false,
-e=function(h){f(h);},
-f=function(h){try{$(':input:visible',h.w)[0].focus();}catch(_){}},
-L=function(t){$(document)[t]("keypress",m)[t]("keydown",m)[t]("mousedown",m);},
-m=function(e){var h=H[A[A.length-1]],r=(!$(e.target).parents('.jqmID'+h.s)[0]);if(r){$('.jqmID'+h.s).each(function(){var $self=$(this),offset=$self.offset();if(offset.top<=e.pageY && e.pageY<=offset.top+$self.height() && offset.left<=e.pageX && e.pageX<=offset.left+$self.width()){r=false;return false;}});f(h);}return !r;},
-hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function() {
- if(!this[c]){this[c]=[];$(this).click(function(){for(var i in {jqmShow:1,jqmHide:1})for(var s in this[i])if(H[this[i][s]])H[this[i][s]].w[i](this);return F;});}this[c].push(s);});});};
-})(jQuery);
+            if (options.ajax) {
+                target = options.target || h.w;
+                url = options.ajax;
+                target = (typeof target === "string") ? $(target, h.w) : $(target);
+                url = (url.substr(0, 1) === "@") ? $(t).attr(url.substring(1)) : url;
+                target.html(options.ajaxText)
+                    .load(url, function() {
+                        if (options.onLoad) {
+                            options.onLoad.call(this, h);
+                        }
+                        if (cc) {
+                            h.w.jqmAddClose($(cc, h.w));
+                        }
+                        setFocus(h);
+                    });
+            } else if (cc) {
+                h.w.jqmAddClose($(cc, h.w));
+            }
+
+            if (options.toTop && h.o) {
+                h.w.before('<span id="jqmP' + h.w[0]._jqm + '"></span>')
+                    .insertAfter(h.o);
+            }
+            if (options.onShow) {
+                options.onShow(h);
+            } else {
+                h.w.show();
+            }
+            setFocus(h);
+            return false;
+        },
+        close: function (s) {
+            var h = jqmHash[s];
+            if (!h.a) {
+                return false;
+            }
+            h.a = false;
+            if (a[0]) {
+                a.pop();
+                if (!a[0]) {
+                    bindOrUnbindEvents("unbind");
+                }
+            }
+            if (h.c.toTop && h.o) {
+                $("#jqmP" + h.w[0]._jqm)
+                    .after(h.w)
+                    .remove();
+            }
+            if (h.c.onHide) {
+                h.c.onHide(h);
+            } else {
+                h.w.hide();
+                if (h.o) {
+                    h.o.remove();
+                }
+            }
+            return false;
+        },
+        params: {}
+    };
+    jqmHash = $.jqm.hash;
+}(jQuery));
