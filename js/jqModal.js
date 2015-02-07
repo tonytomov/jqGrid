@@ -15,42 +15,43 @@
     "use strict";
     var jqmHashLength = 0,
         jqmHash,
-        a = [],
+        createdModals = [],
         setFocusOnFirstVisibleInput = function (h) {
             try {
-                $(":input:visible", h.w).focus();
+                $(":input:visible", h.w).first().focus();
             } catch (ignore) {}
         },
         setFocus = function (h) {
             setFocusOnFirstVisibleInput(h);
         },
-        m = function (e) {
-            var h = jqmHash[a[a.length - 1]],
-                r = !$(e.target).parents(".jqmID" + h.s)[0];
-            if (r) {
-                $(".jqmID" + h.s).each(function () {
+        keyOrMouseEventHandler = function (e) {
+            var activeModal = jqmHash[createdModals[createdModals.length - 1]],
+                modal = !$(e.target).parents(".jqmID" + activeModal.s)[0];
+            if (modal) {
+                $(".jqmID" + activeModal.s).each(function () {
                     var $self = $(this), offset = $self.offset();
                     if (offset.top <= e.pageY &&
                             e.pageY <= offset.top + $self.height() &&
                             offset.left <= e.pageX &&
                             e.pageX <= offset.left + $self.width()) {
-                        r = false;
+                        modal = false;
                         return false;
                     }
                 });
-                setFocusOnFirstVisibleInput(h);
+                setFocusOnFirstVisibleInput(activeModal);
             }
-            return !r;
+            return !modal;
         },
-        bindOrUnbindEvents = function (t) {
-            $(document)[t]("keypress", m)[t]("keydown", m)[t]("mousedown", m);
+        bindOrUnbindEvents = function (bindOrUnbind) {
+            // bindOrUnbind is either "bind" or "unbind" string
+            $(document)[bindOrUnbind]("keypress keydown mousedown", keyOrMouseEventHandler);
         },
-        hs = function (w, t, c) {
+        registerHideOrShow = function (w, trigger, key) {
             return w.each(function () {
-                var thisJqm = this._jqm;
-                $(t).each(function () {
-                    if (!this[c]) {
-                        this[c] = [];
+                var jqm = this._jqm;
+                $(trigger).each(function () {
+                    if (!this[key]) {
+                        this[key] = [];
                         $(this).click(function () {
                             var i, method, propertyName, methods = ["jqmShow", "jqmHide"];
                             for (i = 0; i < methods.length; i++) {
@@ -64,7 +65,7 @@
                             return false;
                         });
                     }
-                    this[c].push(thisJqm);
+                    this[key].push(jqm);
                 });
             });
         };
@@ -102,7 +103,7 @@
                 c: $.extend(p, $.jqm.params, o),
                 a: false,
                 w: $(this).addClass("jqmID" + jqmHashLength),
-                s: jqmHashLength
+                s: jqmHashLength // used as id too
             };
             if (p.trigger) {
                 $(this).jqmAddTrigger(p.trigger);
@@ -110,14 +111,14 @@
         });
     };
 
-    $.fn.jqmAddClose = function (trigger) { return hs(this, trigger, "jqmHide"); };
-    $.fn.jqmAddTrigger = function (trigger) { return hs(this, trigger, "jqmShow"); };
+    $.fn.jqmAddClose = function (trigger) { return registerHideOrShow(this, trigger, "jqmHide"); };
+    $.fn.jqmAddTrigger = function (trigger) { return registerHideOrShow(this, trigger, "jqmShow"); };
     $.fn.jqmShow = function (trigger) { return this.each(function () { $.jqm.open(this._jqm, trigger); }); };
     $.fn.jqmHide = function (trigger) { return this.each(function () { $.jqm.close(this._jqm, trigger); }); };
 
     $.jqm = {
         hash: {},
-        open: function (s, t) {
+        open: function (s, trigger) {
             var h = jqmHash[s], $overlay, target, url,
                 options = h.c,
                 cc = "." + options.closeClass,
@@ -135,16 +136,16 @@
             if (h.a) {
                 return false;
             }
-            h.t = t;
+            h.t = trigger;
             h.a = true;
             h.w.css("z-index", z);
             if (options.modal) {
-                if (!a[0]) {
+                if (!createdModals[0]) {
                     setTimeout(function () {
                         bindOrUnbindEvents("bind");
                     }, 1);
                 }
-                a.push(s);
+                createdModals.push(s);
             } else if (options.overlay > 0) {
                 if (options.closeoverlay) {
                     h.w.jqmAddClose($overlay);
@@ -159,7 +160,7 @@
                 target = options.target || h.w;
                 url = options.ajax;
                 target = (typeof target === "string") ? $(target, h.w) : $(target);
-                url = (url.substr(0, 1) === "@") ? $(t).attr(url.substring(1)) : url;
+                url = (url.substr(0, 1) === "@") ? $(trigger).attr(url.substring(1)) : url;
                 target.html(options.ajaxText)
                     .load(url, function() {
                         if (options.onLoad) {
@@ -192,9 +193,9 @@
                 return false;
             }
             h.a = false;
-            if (a[0]) {
-                a.pop();
-                if (!a[0]) {
+            if (createdModals[0]) {
+                createdModals.pop();
+                if (!createdModals[0]) {
                     bindOrUnbindEvents("unbind");
                 }
             }
