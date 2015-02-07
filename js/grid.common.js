@@ -14,12 +14,30 @@
 var jgrid = $.jgrid;
 $.extend(jgrid,{
 // Modal functions
-	showModal : function(h) {
-		h.w.show();
+    // The methods showModal and closeModal will be used as callback of $.jqm jQuery plugin defined in jqModal.js
+    // The modul can support multiple modal dialods. It hold the information about evety active modules in internal array of "hashes".
+    // The modal dialogs as hidden typically. Before the dialog will be visible onShow callback (showModal) will be called.
+    //
+    // Every eleement contains "hash object" which have 4 properties:
+    //  w: (jQuery object) The modal element, represent the outer div of the modal dialog
+    //  o: (jQuery object) The overlay element. It will be assigned on the first opening of the modal
+    //  c: (object) The modal's options object. The options used durin creating the modal.
+    //          One can use global $.jgrid.jqModal or gris specifif p.jqModal to specify defaults of the options.
+    //  t: (DOM object) The triggering element.
+    //  s: numeric part of "id" used for modal dialog. The modal dialog have class "jqmID" + s.
+    //  a: Boolean. It's false initially. It will be set to true during opening and will set to false on closing.
+    showModal: function (h) {
+	    //  w: (jQuery object) The modal element
+	    h.w.show();
 	},
-	closeModal : function(h) {
+	closeModal: function (h) {
+	    //  w: (jQuery object) The modal element
+	    //  o: (jQuery object) The overlay element
+	    //  c: (object) The modal's options object 
 		h.w.hide().attr("aria-hidden","true");
-		if(h.o) {h.o.remove();}
+		if (h.o) {
+		    h.o.remove();
+		}
 	},
 	hideModal : function (selector,o) {
 		o = $.extend({jqm : true, gb :'', removemodal: false, formprop: false, form : ''}, o || {});
