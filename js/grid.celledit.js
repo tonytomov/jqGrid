@@ -2,10 +2,10 @@
 /*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
 /*global jQuery */
 (function($){
-/*
-**
+/**
  * jqGrid extension for cellediting Grid Data
- * Tony Tomov tony@trirand.com
+ * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com
+ * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  * http://trirand.com/blog/ 
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
@@ -36,7 +36,7 @@ jgrid.extend({
 	editCell : function (iRow,iCol, ed){
 		return this.each(function (){
 			var $t = this, $self = $($t), p = $t.p, nm, tmp,cc, cm, feedback = jgrid.feedback;
-			if (!$t.grid || p.cellEdit !== true) {return;}
+			if (!$t.grid || p.cellEdit !== true || $t.rows == null || $t.rows[iRow] == null) {return;}
 			iRow = parseInt(iRow, 10);
 			iCol = parseInt(iCol, 10);
 			var tr = $t.rows[iRow], rowid = tr.id, $tr = $(tr), $trOld = $($t.rows[p.iRow]);
@@ -60,7 +60,17 @@ jgrid.extend({
 			nm = cm.name;
 			if (nm==='subgrid' || nm==='cb' || nm==='rn') {return;}
 			cc = $("td:eq("+iCol+")",tr);
-			if (cm.editable===true && ed===true && !cc.hasClass("not-editable-cell")) {
+			var editable = cm.editable;
+			if ($.isFunction(editable)) {
+				editable = editable.call($t, {
+					rowid: rowid,
+					iCol: iCol,
+					iRow: iRow,
+					name: nm,
+					cm: cm
+				});
+			}
+			if (editable===true && ed===true && !cc.hasClass("not-editable-cell")) {
 				if(parseInt(p.iCol,10)>=0  && parseInt(p.iRow,10)>=0) {
 					$("td:eq("+p.iCol+")",$trOld).removeClass("edit-cell ui-state-highlight");
 					$trOld.removeClass("selected-row ui-state-hover");
@@ -311,11 +321,22 @@ jgrid.extend({
 	},
 	nextCell : function (iRow,iCol) {
 		return this.each(function (){
-			var $t = this, $self = $($t), p = $t.p, nCol=false, i;
-			if (!$t.grid || p.cellEdit !== true) {return;}
+			var $t = this, $self = $($t), p = $t.p, nCol=false, i, editable, cm;
+			if (!$t.grid || p.cellEdit !== true || $t.rows == null || $t.rows[iRow] == null) {return;}
 			// try to find next editable cell
 			for (i=iCol+1; i<p.colModel.length; i++) {
-				if ( p.colModel[i].editable ===true) {
+				cm = p.colModel[i];
+				editable = cm.editable;
+				if ($.isFunction(editable)) {
+					editable = editable.call($t, {
+						rowid: $t.rows[iRow].id,
+						iCol: i,
+						iRow: iRow,
+						name: cm.name,
+						cm: cm
+					});
+				}
+				if (editable === true) {
 					nCol = i; break;
 				}
 			}
@@ -330,11 +351,23 @@ jgrid.extend({
 	},
 	prevCell : function (iRow,iCol) {
 		return this.each(function (){
-			var $t = this, $self = $($t), p = $t.p, nCol=false, i;
-			if (!$t.grid || p.cellEdit !== true) {return;}
+			var $t = this, $self = $($t), p = $t.p, nCol=false, i, editable, cm;
+			if (!$t.grid || p.cellEdit !== true || $t.rows == null || $t.rows[iRow] == null) {return;}
 			// try to find next editable cell
 			for (i=iCol-1; i>=0; i--) {
-				if ( p.colModel[i].editable ===true) {
+				cm = p.colModel[i];
+				editable = cm.editable;
+				if ($.isFunction(editable)) {
+					editable = editable.call($t, {
+						rowid: $t.rows[iRow].id,
+						iCol: i,
+						iRow: iRow,
+						name: cm.name,
+						cm: cm,
+						mode: "cell"
+					});
+				}
+				if (editable === true) {
 					nCol = i; break;
 				}
 			}

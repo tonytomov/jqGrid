@@ -4,7 +4,8 @@
 (function($){
 /**
  * jqGrid extension for form editing Grid Data
- * Tony Tomov tony@trirand.com
+ * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com
+ * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  * http://trirand.com/blog/
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
@@ -505,15 +506,38 @@ jgrid.extend({
 					ind = $self.jqGrid("getInd",rowid);
 				}
 				$(p.colModel).each( function(i) {
-					var cm = this, nm = cm.name, hc, trdata, tmp, dc, elc;
+					var cm = this, nm = cm.name, hc, trdata, tmp, dc, elc, editable = cm.editable, disabled = false, readonly = false;
+					if ($.isFunction(editable)) {
+						editable = editable.call($t, {
+							rowid: rowid,
+							iCol: i,
+							iRow: ind, // can be false for Add operation
+							name: nm,
+							cm: cm,
+							mode: rowid === "_empty" ? "addForm" : "editForm"
+						});
+					}
 					// hidden fields are included in the form
 					if(cm.editrules && cm.editrules.edithidden === true) {
 						hc = false;
 					} else {
-						hc = cm.hidden === true ? true : false;
+						hc = cm.hidden === true || editable === "hidden" ? true : false;
 					}
 					dc = hc ? "style='display:none'" : "";
-					if ( nm !== 'cb' && nm !== 'subgrid' && cm.editable===true && nm !== 'rn') {
+					switch (String(editable).toLowerCase()) {
+						case "hidden":
+							editable = true;
+							break;
+						case "disabled":
+							editable = true;
+							disabled = true;
+							break;
+						case "readonly":
+							editable = true;
+							readonly = true;
+							break;
+					}
+					if (nm !== 'cb' && nm !== 'subgrid' && editable === true && nm !== 'rn') {
 						if(ind === false) {
 							tmp = "";
 						} else {
@@ -557,8 +581,18 @@ jgrid.extend({
 							$(tb).append(trdata);
 							trdata[0].rp = rp;
 						}
-						$("td:eq("+(cp-2)+")",trdata[0]).html(frmopt.label === undefined ? p.colNames[i]: frmopt.label);
-						$("td:eq("+(cp-1)+")",trdata[0]).html(frmopt.elmprefix).append(elc).append(frmopt.elmsuffix);
+						var $label = $("td:eq("+(cp-2)+")",trdata[0]),
+							$data = $("td:eq("+(cp-1)+")",trdata[0]);
+						$label.html(frmopt.label === undefined ? p.colNames[i]: frmopt.label);
+						$data.html(frmopt.elmprefix).append(elc).append(frmopt.elmsuffix);
+						if (disabled) {
+							$label.addClass("ui-state-disabled");
+							$data.addClass("ui-state-disabled");
+							$(elc).prop("readonly", true);
+							$(elc).prop("disabled", true);
+						} else if (readonly) {
+							$(elc).prop("readonly", true);
+						}
 						if(cm.edittype==='custom' && $.isFunction(opt.custom_value) ) {
 							opt.custom_value.call($t, $("#"+jqID(nm),frmgr),'set',tmp);
 						}

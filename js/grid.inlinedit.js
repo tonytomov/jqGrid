@@ -4,7 +4,8 @@
 (function($){
 /**
  * jqGrid extension for manipulating Grid Data
- * Tony Tomov tony@trirand.com
+ * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com
+ * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  * http://trirand.com/blog/ 
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
@@ -37,7 +38,7 @@ jgrid.extend({
 
 		// End compatible
 		return this.each(function(){
-			var $t = this, $self = $($t), p = $t.p, nm, tmp, cnt=0, focus=null, svr={},cm, bfer;
+			var $t = this, $self = $($t), p = $t.p, nm, tmp, cnt=0, focus=null, svr={}, colModel = p.colModel, cm, bfer;
 			if (!$t.grid ) { return; }
 			var o = $.extend(true, {
 				keys : false,
@@ -62,35 +63,46 @@ jgrid.extend({
 			if(!bfer) { return; }
 			var editable = $(ind).attr("editable") || "0";
 			if (editable === "0" && !$(ind).hasClass("not-editable-row")) {
-				cm = p.colModel;
 				$('td[role="gridcell"]',ind).each( function(i) {
-					nm = cm[i].name;
+					cm = colModel[i];
+					nm = cm.name;
 					var treeg = p.treeGrid===true && nm === p.ExpandColumn;
 					if(treeg) { tmp = $("span:first",this).html();}
 					else {
 						try {
-							tmp = $.unformat.call($t,this,{rowId:rowid, colModel:cm[i]},i);
+							tmp = $.unformat.call($t,this,{rowId:rowid, colModel:cm},i);
 						} catch (_) {
-							tmp =  ( cm[i].edittype && cm[i].edittype === 'textarea' ) ? $(this).text() : $(this).html();
+							tmp =  ( cm.edittype && cm.edittype === 'textarea' ) ? $(this).text() : $(this).html();
 						}
 					}
 					if ( nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn') {
 						if(p.autoencode) { tmp = jgrid.htmlDecode(tmp); }
 						svr[nm]=tmp;
-						if(cm[i].editable===true) {
+						var isEditable = cm.editable;
+						if ($.isFunction(editable)) {
+							isEditable = editable.call($t, {
+								rowid: rowid,
+								iCol: i,
+								iRow: ind.rowIndex,
+								name: nm,
+								cm: cm,
+								mode: $(ind).hasClass("jqgrid-new-row") ? "add" : "edit"
+							});
+						}
+						if(isEditable===true) {
 							if(focus===null) { focus = i; }
 							if (treeg) { $("span:first",this).html(""); }
 							else { $(this).html(""); }
-							var opt = $.extend({},cm[i].editoptions || {},{id:rowid+"_"+nm,name:nm,rowId:rowid});
-							if(!cm[i].edittype) { cm[i].edittype = "text"; }
+							var opt = $.extend({},cm.editoptions || {},{id:rowid+"_"+nm,name:nm,rowId:rowid});
+							if(!cm.edittype) { cm.edittype = "text"; }
 							if(tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length===1 && tmp.charCodeAt(0)===160) ) {tmp='';}
-							var elc = jgrid.createEl.call($t,cm[i].edittype,opt,tmp,true,$.extend({},jgrid.ajaxOptions,p.ajaxSelectOptions || {}));
+							var elc = jgrid.createEl.call($t,cm.edittype,opt,tmp,true,$.extend({},jgrid.ajaxOptions,p.ajaxSelectOptions || {}));
 							$(elc).addClass("editable");
 							if(treeg) { $("span:first",this).append(elc); }
 							else { $(this).append(elc); }
 							jgrid.bindEv.call($t, elc, opt);
 							//Again IE
-							if(cm[i].edittype === "select" && cm[i].editoptions!==undefined && cm[i].editoptions.multiple===true  && cm[i].editoptions.dataUrl===undefined && jgrid.msie) {
+							if(cm.edittype === "select" && cm.editoptions!==undefined && cm.editoptions.multiple===true  && cm.editoptions.dataUrl===undefined && jgrid.msie) {
 								$(elc).width($(elc).width());
 							}
 							cnt++;
@@ -101,7 +113,7 @@ jgrid.extend({
 					svr.id = rowid; p.savedRow.push(svr);
 					$(ind).attr("editable","1");
 					if(o.focusField ) {
-						if(typeof o.focusField === 'number' && parseInt(o.focusField,10) <= cm.length) {
+						if(typeof o.focusField === 'number' && parseInt(o.focusField,10) <= colModel.length) {
 							focus = o.focusField;
 						}
 						setTimeout(function(){ 
@@ -174,7 +186,7 @@ jgrid.extend({
 			$('td[role="gridcell"]',ind).each(function(i) {
 				cm = p.colModel[i];
 				nm = cm.name;
-				if ( nm !== 'cb' && nm !== 'subgrid' && cm.editable===true && nm !== 'rn' && !$(this).hasClass('not-editable-cell')) {
+				if ( nm !== 'cb' && nm !== 'subgrid' /*&& cm.editable===true */&& nm !== 'rn' && !$(this).hasClass('not-editable-cell')) {
 					switch (cm.edittype) {
 						case "checkbox":
 							var cbv = ["Yes","No"];
@@ -407,7 +419,7 @@ jgrid.extend({
 					} catch (ignore) {}
 				}
 				$.each(p.colModel, function(){
-					if(this.editable === true && p.savedRow[fr].hasOwnProperty(this.name)) {
+					if(/*this.editable === true && */p.savedRow[fr].hasOwnProperty(this.name)) {
 						ares[this.name] = p.savedRow[fr][this.name];
 						if (this.formatter && this.formatter === "date" && (this.formatoptions == null || this.formatoptions.sendFormatted !== true)) {
 							// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
