@@ -175,6 +175,16 @@
 	position: absolute;
 	display: inline;
 }
+.ui-grid-ico-sort {
+	/* use pointer cursor over all visible icons. It can be important if
+		viewsortcols: [true, "vertical", false] or viewsortcols: [true, "horizontal", false]
+		mode are used. The viewsortcols[2] element means that sorting are made only on clicking
+		on the sorting icon. So the class ui-jqgrid-sortable will be not added to the div of
+		the column header. It informs the user that clicking on the text of the column header
+		will do nothing. One still need to have the cursor over the icon which inform about sorting.
+	*/
+	cursor: pointer;
+}
 .ui-state-disabled.ui-grid-ico-sort {
 	cursor: pointer !important;/*to overwrite .ui-state-disabled { cursor: default !important; } from jQuery UI */
 }
@@ -195,7 +205,10 @@
 	margin-left: 13px;
 	height: 16px;
 }
-.ui-jqgrid .ui-jqgrid-sortable {
+.ui-jqgrid .ui-th-column > div {
+	cursor: default;
+}
+.ui-jqgrid .ui-th-column > div.ui-jqgrid-sortable {
 	cursor: pointer;
 }
 .ui-jqgrid .ui-jqgrid-hdiv .ui-search-toolbar {
@@ -862,8 +875,11 @@ a.clearsearchclass {
 .ui-jqdialog .ui-jqdialog-titlebar-close > span.fa {
 	margin-top: 3px;
 }
+.ui-jqgrid-titlebar > .ui-jqgrid-titlebar-close:hover > span.fa {
+	margin-top: 1px;
+}
 .ui-jqdialog .ui-jqdialog-titlebar-close:hover > span.fa {
-	margin-top: 2px;
+	margin-top: 3px;
 }
 .ui-jqgrid .ui-icon-asc.fa {
 	height: auto;
