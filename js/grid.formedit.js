@@ -75,10 +75,6 @@ jgrid.extend({
 				multipleGroup : false,
 				//cloneSearchRowOnAdd: true,
 				// we can't use srort names like resetIcon because of conflict with existing "x" of filterToolbar
-				commonIconClass: "ui-icon",
-				findDialogIcon: "ui-icon-search",
-				resetDialogIcon: "ui-icon-arrowreturnthick-1-w",
-				queryDialogIcon: "ui-icon-comment",
 				top : 0,
 				left: 0,
 				removemodal: true,
@@ -392,11 +388,6 @@ jgrid.extend({
 				addedrow : "first",
 				topinfo : '',
 				bottominfo: '',
-				commonIconClass: "ui-icon",
-				prevIcon: "ui-icon-triangle-1-w",
-				nextIcon: "ui-icon-triangle-1-e",
-				saveicon : [true,"left","ui-icon-disk"],
-				closeicon : [true,"left","ui-icon-close"],
 				savekey: [false,13],
 				navkeys: [false,38,40],
 				checkOnSubmit : false,
@@ -1257,10 +1248,6 @@ jgrid.extend({
 				jqModal: true,
 				closeOnEscape : false,
 				labelswidth: '30%',
-				commonIconClass: "ui-icon",
-				prevIcon: "ui-icon-triangle-1-w",
-				nextIcon: "ui-icon-triangle-1-e",
-				closeicon: [true,"left","ui-icon-close"],
 				navkeys: [false,38,40],
 				onClose: null,
 				beforeShowForm : null,
@@ -1565,9 +1552,6 @@ jgrid.extend({
 				jqModal : true,
 				closeOnEscape : false,
 				delData: {},
-				commonIconClass: "ui-icon",
-				delicon : [true,"left","ui-icon-scissors"],
-				cancelicon : [true,"left","ui-icon-cancel"],
 				onClose : null,
 				ajaxDelOptions : {},
 				processing : false,
@@ -1769,18 +1753,12 @@ jgrid.extend({
 			var gridId = p.id,
 			o = $.extend({
 				edit: true,
-				editicon: "ui-icon-pencil",
 				add: true,
-				addicon:"ui-icon-plus",
 				del: true,
-				delicon:"ui-icon-trash",
 				search: true,
-				searchicon:"ui-icon-search",
 				refresh: true,
-				refreshicon:"ui-icon-refresh",
 				refreshstate: 'firstpage',
 				view: false,
-				viewicon : "ui-icon-document",
 				position : "left",
 				closeOnEscape : true,
 				beforeRefresh : null,
@@ -1791,7 +1769,6 @@ jgrid.extend({
 				alerttop: null,
 				alertleft: null,
 				alertzIndex : null,
-				commonIconClass : "ui-icon",
 				iconsOverText : false
 			}, jgrid.nav, p.navOptions || {}, oMuligrid || {});
 
@@ -2036,11 +2013,9 @@ jgrid.extend({
 			o = $.extend({
 				caption : "newButton",
 				title: '',
-				buttonicon : 'ui-icon-newwin',
 				onClickButton: null,
 				position : "last",
 				cursor : 'pointer',
-				commonIconClass : "ui-icon",
 				iconsOverText : false
 			}, jgrid.nav, $t.p.navOptions || {}, o || {});
 			if (typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+jqID(elem);}

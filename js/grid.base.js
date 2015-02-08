@@ -229,7 +229,8 @@ $.extend(true,jgrid,{
 				refresh: "ui-icon-refresh",
 				view: "ui-icon-document",
 				save: "ui-icon-disk",
-				cancel: "ui-icon-cancel"
+				cancel: "ui-icon-cancel",
+				newbutton: "ui-icon-newwin"
 			},
 			actions: {
 			},
@@ -291,7 +292,8 @@ $.extend(true,jgrid,{
 				refresh: "fa-refresh",
 				view: "fa-file-o",
 				save: "fa-floppy-o",
-				cancel: "fa-ban"
+				cancel: "fa-ban",
+				newbutton: "fa-external-link"
 			},
 			actions: {
 				common: "ui-state-default fa-fw"
@@ -1361,7 +1363,6 @@ $.extend(true,jgrid,{
 			return nData;
 		}
 		if ($.isFunction(cm.convertOnSave)) {
-			// TODO: add convertOnSave to cmTemplate:"integer" and cmTemplate:"number"
 			return cm.convertOnSave.call(this, nData, cm, oData, rowid);
 		}
 		if (typeof oData !== "boolean" && typeof oData !== "number") {
@@ -1691,7 +1692,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 				if (!p.autowidth && (p.widthOrg === undefined || p.widthOrg === "auto" || p.widthOrg === "100%")) {
-					$bTable.jqGrid("setGridWidth", self.newWidth);
+					$bTable.jqGrid("setGridWidth", self.newWidth, false);
 				}
 				if (!skipCallbacks) {
 					feedback.call($bTable[0], "resizeStop", nw, idx);
@@ -1770,7 +1771,6 @@ $.fn.jqGrid = function( pin ) {
 				}
 			},
 			scrollGrid: function(e) { // this must be bDiv
-				// TODO get ts from this bDiv
 				var bDiv = this, $bTable = getGridComponent("bTable", $(bDiv));
 				if (e) { e.stopPropagation(); }
 				if ($bTable.length === 0) { return true; }
@@ -1815,46 +1815,52 @@ $.fn.jqGrid = function( pin ) {
 		};
 		ts.grid = grid;
 		feedback.call(ts, "beforeInitGrid");
+		var def = jgrid.nav;
 		p.navOptions = $.extend(true, {
-			commonIconClass: getIcon("nav.common"),
-			editicon: getIcon("nav.edit"),
-			addicon: getIcon("nav.add"),
-			delicon: getIcon("nav.del"),
-			searchicon: getIcon("nav.search"),
-			refreshicon: getIcon("nav.refresh"),
-			viewicon: getIcon("nav.view"),
-			saveicon: getIcon("nav.save"),
-			cancelicon: getIcon("nav.cancel")
+			commonIconClass: def.commonIconClass || getIcon("nav.common"),
+			editicon: def.editicon || getIcon("nav.edit"),
+			addicon: def.addicon || getIcon("nav.add"),
+			delicon: def.delicon || getIcon("nav.del"),
+			searchicon: def.searchicon || getIcon("nav.search"),
+			refreshicon: def.refreshicon || getIcon("nav.refresh"),
+			viewicon: def.viewicon || getIcon("nav.view"),
+			saveicon: def.saveicon || getIcon("nav.save"),
+			cancelicon: def.cancelicon || getIcon("nav.cancel"),
+			buttonicon: def.buttonicon || getIcon("nav.newbutton")
 		}, p.navOptions);
+		jgrid.actionsNav = jgrid.actionsNav || {};
 		p.actionsNavOptions = $.extend(true, {
-			commonIconClass: getIcon("actions.common")
+			commonIconClass: jgrid.actionsNav.commonIconClass || getIcon("actions.common")
 		}, p.actionsNavOptions);
+		def = jgrid.edit;
 		p.formEditing = $.extend(true, {
-			commonIconClass: getIcon("form.common"),
-			prevIcon: getIcon("form.prev"),
-			nextIcon: getIcon("form.next"),
-			saveicon: [true, "left", getIcon("form.save")],
-			closeicon: [true, "left", getIcon("form.undo")]
+			commonIconClass: def.commonIconClass || getIcon("form.common"),
+			prevIcon: def.prevIcon || getIcon("form.prev"),
+			nextIcon: def.nextIcon || getIcon("form.next"),
+			saveicon: def.saveicon || [true, "left", getIcon("form.save")],
+			closeicon: def.closeicon || [true, "left", getIcon("form.undo")]
 		}, p.formEditing);
+		def = jgrid.search;
 		p.searching = $.extend(true, {
-			commonIconClass: getIcon("search.common"),
-			findDialogIcon: getIcon("search.search"),
-			resetDialogIcon: getIcon("search.reset"),
-			queryDialogIcon: getIcon("search.query")
+			commonIconClass: def.commonIconClass || getIcon("search.common"),
+			findDialogIcon: def.findDialogIcon || getIcon("search.search"),
+			resetDialogIcon: def.resetDialogIcon || getIcon("search.reset"),
+			queryDialogIcon: def.queryDialogIcon || getIcon("search.query")
 		}, p.searching);
+		def = jgrid.view;
 		p.formViewing = $.extend(true, {
-			commonIconClass: getIcon("form.common"),
-			prevIcon: getIcon("form.prev"),
-			nextIcon: getIcon("form.next"),
-			closeicon: [true, "left", getIcon("form.undo")]
+			commonIconClass: def.commonIconClass || getIcon("form.common"),
+			prevIcon: def.prevIcon || getIcon("form.prev"),
+			nextIcon: def.nextIcon || getIcon("form.next"),
+			closeicon: def.closeicon || [true, "left", getIcon("form.undo")]
 		}, p.formViewing);
+		def = jgrid.del;
 		p.formDeleting = $.extend(true, {
-			commonIconClass: getIcon("form.common"),
-			prevIcon: getIcon("form.prev"),
-			nextIcon: getIcon("form.next"),
-			delicon: [true, "left", getIcon("form.del")],
-			cancelicon: [true, "left", getIcon("form.cancel")]
+			commonIconClass: def.commonIconClass || getIcon("form.common"),
+			delicon: def.delicon || [true, "left", getIcon("form.del")],
+			cancelicon: def.cancelicon || [true, "left", getIcon("form.cancel")]
 		}, p.formDeleting);
+		def = jgrid.del;
 		p.groupingView = $.extend(true, {
 			commonIconClass: getIcon("grouping.common"),
 			plusicon: getIcon("grouping.plus"),
@@ -1874,7 +1880,7 @@ $.fn.jqGrid = function( pin ) {
 			openicon: (p.direction === "rtl" ? getIcon("subgrid.openRtl") : getIcon("subgrid.openLtr"))
 		}, p.subGridOptions || {});
 	    // TODO: replace altclass : 'ui-priority-secondary',
-	    // set default buttonicon : 'ui-icon-newwin' of navButtonAdd
+	    // set default buttonicon : 'ui-icon-newwin' of navButtonAdd: fa-external-link, fa-desktop or other 
 	    // change the order in $.extend to allows to set icons using $.jgrid (for example $.jgrid.nav). It will be ovewritten currently by p.navOptions which we set above.
 		var iCol, dir;
 		if(p.colNames.length === 0) {
