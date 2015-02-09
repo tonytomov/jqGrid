@@ -79,8 +79,8 @@ jgrid.extend({
 						if(p.autoencode) { tmp = jgrid.htmlDecode(tmp); }
 						svr[nm]=tmp;
 						var isEditable = cm.editable;
-						if ($.isFunction(editable)) {
-							isEditable = editable.call($t, {
+						if ($.isFunction(isEditable)) {
+							isEditable = isEditable.call($t, {
 								rowid: rowid,
 								iCol: i,
 								iRow: ind.rowIndex,
@@ -89,7 +89,7 @@ jgrid.extend({
 								mode: $(ind).hasClass("jqgrid-new-row") ? "add" : "edit"
 							});
 						}
-						if(isEditable===true) {
+						if (isEditable === true) {
 							if(focus===null) { focus = i; }
 							if (treeg) { $("span:first",this).html(""); }
 							else { $(this).html(""); }
@@ -186,7 +186,18 @@ jgrid.extend({
 			$('td[role="gridcell"]',ind).each(function(i) {
 				cm = p.colModel[i];
 				nm = cm.name;
-				if ( nm !== 'cb' && nm !== 'subgrid' /*&& cm.editable===true */&& nm !== 'rn' && !$(this).hasClass('not-editable-cell')) {
+				var isEditable = cm.editable;
+				if ($.isFunction(isEditable)) {
+					isEditable = isEditable.call($t, {
+						rowid: rowid,
+						iCol: i,
+						iRow: ind.rowIndex,
+						name: nm,
+						cm: cm,
+						mode: $(ind).hasClass("jqgrid-new-row") ? "add" : "edit"
+					});
+				}
+				if ( nm !== 'cb' && nm !== 'subgrid' && isEditable === true && nm !== 'rn' && !$(this).hasClass('not-editable-cell')) {
 					switch (cm.edittype) {
 						case "checkbox":
 							var cbv = ["Yes","No"];
@@ -419,12 +430,23 @@ jgrid.extend({
 					} catch (ignore) {}
 				}
 				$.each(p.colModel, function(){
-					if(/*this.editable === true && */p.savedRow[fr].hasOwnProperty(this.name)) {
-						ares[this.name] = p.savedRow[fr][this.name];
+					var isEditable = this.editable, nm = this.name;
+					if ($.isFunction(isEditable)) {
+						isEditable = isEditable.call($t, {
+							rowid: rowid,
+							iCol: i,
+							iRow: ind.rowIndex,
+							name: nm,
+							cm: cm,
+							mode: $(ind).hasClass("jqgrid-new-row") ? "add" : "edit"
+						});
+					}
+					if(isEditable === true && p.savedRow[fr].hasOwnProperty(nm)) {
+						ares[nm] = p.savedRow[fr][nm];
 						if (this.formatter && this.formatter === "date" && (this.formatoptions == null || this.formatoptions.sendFormatted !== true)) {
 							// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
 							// Floating point separator for example
-							ares[this.name] = $.unformat.date.call($t, ares[this.name], this);
+							ares[nm] = $.unformat.date.call($t, ares[nm], this);
 						}
 					}
 				});
