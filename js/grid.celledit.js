@@ -217,7 +217,7 @@ $.jgrid.extend({
 								postdata[idname] = $.jgrid.stripPref($t.p.idPrefix, $t.rows[iRow].id);
 								postdata[oper] = opers.editoper;
 								postdata = $.extend(addpost,postdata);
-								$($t).jqGrid("progressBar", {method:"show", loadtype : $t.p.loadui, htmlcontent: $.jgrid.defaults.savetext || "Saving..." });
+								$($t).jqGrid("progressBar", {method:"show", loadtype : $t.p.loadui, htmlcontent: $.jgrid.getRegional($t,'defaults.savetext') });
 								$t.grid.hDiv.loading = true;
 								$.ajax( $.extend( {
 									url: $t.p.cellurl,

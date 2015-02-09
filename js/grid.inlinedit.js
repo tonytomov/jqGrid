@@ -147,7 +147,7 @@ $.jgrid.extend({
 	},
 	saveRow : function(rowid, successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
 		// Compatible mode old versions
-		var args = $.makeArray(arguments).slice(1), o = {};
+		var args = $.makeArray(arguments).slice(1), o = {}, $t = this[0];
 
 		if( $.type(args[0]) === "object" ) {
 			o = args[0];
@@ -169,12 +169,11 @@ $.jgrid.extend({
 			restoreAfterError: true,
 			mtype: "POST",
 			saveui : "enable",
-			savetext : $.jgrid.defaults.savetext || "Saving..."
+			savetext : $.jgrid.getRegional($t,'defaults.savetext')
 		}, $.jgrid.inlineEdit, o );
 		// End compatible
 
-		var success = false;
-		var $t = this[0], nm, tmp={}, tmp2={}, tmp3= {}, editable, fr, cv, ind, nullIfEmpty=false;
+		var success = false, nm, tmp={}, tmp2={}, tmp3= {}, editable, fr, cv, ind, nullIfEmpty=false;
 		if (!$t.grid ) { return success; }
 		ind = $($t).jqGrid("getInd",rowid,true);
 		if(ind === false) {return success;}
