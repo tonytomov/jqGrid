@@ -184,7 +184,7 @@ if (jgrid.defaults == null) {
 }
 
 $.extend(true,jgrid,{
-	version : "4.7.0-post",
+	version : "4.8.0-beta2",
 	formatter : { // set common formatter settings independent from the language and locale
 		date: {
 			parseRe: /[#%\\\/:_;.,\t\s\-]/,
@@ -3551,7 +3551,10 @@ $.fn.jqGrid = function( pin ) {
 		p.widthOrg = p.width;
 		setColWidth();
 		$(eg).css("width",grid.width+"px").append("<div class='ui-jqgrid-resize-mark' id='"+p.rsId+"'>&#160;</div>");
-		$(p.rs).click(myResizerClickHandler).dblclick(function (e) {
+		$(p.rs).bind("selectstart", function () {
+			return false;
+		})
+		.click(myResizerClickHandler).dblclick(function (e) {
 		    var iColIndex = $(this).data("idx"),
                 pageX = $(this).data("pageX"),
                 cm = p.colModel[iColIndex];
@@ -3588,7 +3591,10 @@ $.fn.jqGrid = function( pin ) {
 				res = document.createElement("span");
 				$(res).html("&#160;")
 					.addClass('ui-jqgrid-resize ui-jqgrid-resize-'+dir)
-					.css("cursor","col-resize");
+					//.css("cursor","col-resize")
+					.bind("selectstart", function () {
+						return false;
+					});
 				$th.addClass(p.resizeclass);
 			} else {
 				res = "";
@@ -4688,7 +4694,7 @@ jgrid.extend({
 					}
 				});
 				if(vc  === 0) { return; }
-				p.tblwidth = initwidth;
+				p.tblwidth = parseInt(initwidth, 10); // round till integer value of px;
 				aw = nwidth-brd*vc-gw;
 				if(!isNaN(p.height)) {
 					if(bDiv.clientHeight < bDiv.scrollHeight || $t.rows.length === 1){
@@ -4725,7 +4731,7 @@ jgrid.extend({
 				}
 				cm = colModel[lvc];
 				cm.width += cr;
-				p.tblwidth = initwidth+cr+brd*vc+gw;
+				p.tblwidth = parseInt(initwidth+cr+brd*vc+gw, 10); // round till integer value of px;
 				if(p.tblwidth > nwidth) {
 					delta = p.tblwidth - parseInt(nwidth,10);
 					p.tblwidth = nwidth;
@@ -4753,6 +4759,7 @@ jgrid.extend({
 				}
 			}
 			if(p.tblwidth) {
+				p.tblwidth = parseInt(p.tblwidth, 10); // round till integer value of px;
 				$($t).css("width",p.tblwidth+"px");
 				getGridComponent("hTable", $(hDiv)).css("width",p.tblwidth+"px");
 				hDiv.scrollLeft = bDiv.scrollLeft;
