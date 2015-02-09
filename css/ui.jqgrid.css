@@ -85,14 +85,13 @@
 .ui-jqgrid .ui-jqgrid-titlebar-close:focus,
 .ui-jqdialog .ui-jqdialog-titlebar-close:hover,
 .ui-jqdialog .ui-jqdialog-titlebar-close:focus {
-	margin: -9px 0 0 0;
 	padding: 0;
 }
 .ui-jqgrid .ui-jqgrid-titlebar-close:hover > span,
 .ui-jqgrid .ui-jqgrid-titlebar-close:focus > span,
 .ui-jqdialog .ui-jqdialog-titlebar-close:hover > span,
 .ui-jqdialog .ui-jqdialog-titlebar-close:focus > span {
-	margin: 0;
+	margin: 1px 0 0 1px;
 }
 
 /* header*/
@@ -873,7 +872,11 @@ a.clearsearchclass {
 	display: inline-block;
 }
 .ui-jqdialog .ui-jqdialog-titlebar-close > span.fa {
-	margin-top: 3px;
+	margin-top: 4px;
+}
+.ui-jqgrid-titlebar > .ui-jqgrid-titlebar-close:hover,
+.ui-jqdialog .ui-jqdialog-titlebar-close:hover  {
+	margin-top: -9px;
 }
 .ui-jqgrid-titlebar > .ui-jqgrid-titlebar-close:hover > span.fa {
 	margin-top: 1px;

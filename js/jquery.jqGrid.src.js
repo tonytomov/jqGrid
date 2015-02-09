@@ -214,8 +214,8 @@ $.extend(true,jgrid,{
 				last: "ui-icon-seek-end"
 			},
 			sort: {
-				asc: "ui-icon-triangle-1-s",
-				desc: "ui-icon-triangle-1-n"
+				asc: "ui-icon-triangle-1-n",
+				desc: "ui-icon-triangle-1-s"
 			},
 			gridMinimize: {
 				visible: "ui-icon-circle-triangle-n",
@@ -3161,7 +3161,7 @@ $.fn.jqGrid = function( pin ) {
 
 			if (so) {
 				$iconsSpan.show();
-				$iconsActive.removeClass("ui-state-disabled").show();
+				$iconsActive.removeClass("ui-state-disabled").css("display", ""); // show;
 				if (p.showOneSortIcon) {
 					$iconsInictive.hide();
 				}
@@ -3214,9 +3214,9 @@ $.fn.jqGrid = function( pin ) {
 					self.grid.fhDiv.find("span.ui-grid-ico-sort").addClass("ui-state-disabled");
 					self.grid.fhDiv.find("th").attr("aria-selected", "false");
 				}
-				$iconsActive.removeClass("ui-state-disabled").show();
+				$iconsActive.removeClass("ui-state-disabled").css("display", ""); // show
 				if (p.showOneSortIcon) {
-					$iconsInictive.hide();
+					$iconsInictive.removeClass("ui-state-disabled").hide();
 				}
 				$newSelectedTh.attr("aria-selected","true");
 				if(!p.viewsortcols[0]) {
