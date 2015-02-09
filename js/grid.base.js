@@ -241,7 +241,8 @@ $.extend(true,jgrid,{
 				save: "ui-icon-disk",
 				undo: "ui-icon-close",
 				del: "ui-icon-scissors",
-				cancel: "ui-icon-cancel"
+				cancel: "ui-icon-cancel",
+				resizableLtr: "ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se"
 			},
 			search: {
 				search: "ui-icon-search",
@@ -305,7 +306,8 @@ $.extend(true,jgrid,{
 				save: "fa-floppy-o",
 				undo: "fa-undo",
 				del: "fa-trash-o",
-				cancel: "fa-ban"
+				cancel: "fa-ban",
+				resizableLtr: "ui-resizable-se ui-state-default fa fa-rss fa-rotate-270"
 			},
 			search: {
 				search: "fa-search",
@@ -1549,7 +1551,6 @@ $.fn.jqGrid = function( pin ) {
 			rownumWidth: 25,
 			rownumbers : false,
 			pagerpos: 'center',
-			recordpos: 'right',
 			footerrow : false,
 			userDataOnFooter : false,
 			hoverrows : true,
@@ -1578,6 +1579,8 @@ $.fn.jqGrid = function( pin ) {
 		getIcon = function (path) {
 			return jgrid.getIconRes(p.iconSet, path);
 		};
+		p.recordpos = p.recordpos || (p.direction === "rtl" ? "left" : "right");
+
 		if (localData !== undefined) {
 			p.data = localData;
 			pin.data = localData;

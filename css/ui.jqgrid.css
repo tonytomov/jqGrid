@@ -43,8 +43,8 @@
 .ui-jqgrid .ui-jqgrid-caption-rtl {
 	text-align: right;
 }
-.ui-jqgrid .ui-jqgrid-titlebar-close ,
-.ui-jqdialog .ui-jqdialog-titlebar-close {
+.ui-jqgrid-titlebar > .ui-jqgrid-titlebar-close ,
+.ui-jqdialog-titlebar > .ui-jqdialog-titlebar-close {
 	vertical-align: middle;
 	text-align: center;
 	text-decoration: none;
@@ -74,23 +74,23 @@
 	position: relative;
 	right: .1em;
 }
-.ui-jqgrid .ui-jqgrid-titlebar-close span,
-.ui-jqdialog .ui-jqdialog-titlebar-close span {
+.ui-jqgrid-titlebar > .ui-jqgrid-titlebar-close span,
+.ui-jqdialog-titlebar > .ui-jqdialog-titlebar-close span {
 	vertical-align: middle;
 	text-align: center;
 	display: block;
 	margin: 1px;
 }
-.ui-jqgrid .ui-jqgrid-titlebar-close:hover,
-.ui-jqgrid .ui-jqgrid-titlebar-close:focus,
-.ui-jqdialog .ui-jqdialog-titlebar-close:hover,
-.ui-jqdialog .ui-jqdialog-titlebar-close:focus {
+.ui-jqgrid-titlebar > .ui-jqgrid-titlebar-close:hover,
+.ui-jqgrid-titlebar > .ui-jqgrid-titlebar-close:focus,
+.ui-jqdialog-titlebar > .ui-jqdialog-titlebar-close:hover,
+.ui-jqdialog-titlebar > .ui-jqdialog-titlebar-close:focus {
 	padding: 0;
 }
-.ui-jqgrid .ui-jqgrid-titlebar-close:hover > span,
-.ui-jqgrid .ui-jqgrid-titlebar-close:focus > span,
-.ui-jqdialog .ui-jqdialog-titlebar-close:hover > span,
-.ui-jqdialog .ui-jqdialog-titlebar-close:focus > span {
+.ui-jqgrid-titlebar > .ui-jqgrid-titlebar-close:hover > span,
+.ui-jqgrid-titlebar > .ui-jqgrid-titlebar-close:focus > span,
+.ui-jqdialog-titlebar > .ui-jqdialog-titlebar-close:hover > span,
+.ui-jqdialog-titlebar > .ui-jqdialog-titlebar-close:focus > span {
 	margin: 1px 0 0 1px;
 }
 
@@ -622,11 +622,8 @@ span.ui-jqgrid-cell-wrapper {
 	width: 220px;
 	text-align: center;
 }
+.ui-jqgrid > .ui-resizable-se,
 .ui-jqdialog > .ui-resizable-se {
-	bottom: -3px;
-	right: -3px;
-}
-.ui-jqgrid > .ui-resizable-se {
 	bottom: -3px;
 	right: -3px;
 }
@@ -887,13 +884,13 @@ a.clearsearchclass {
 	margin-top: 4px;
 }
 .ui-jqgrid-titlebar > .ui-jqgrid-titlebar-close:hover,
-.ui-jqdialog .ui-jqdialog-titlebar-close:hover  {
+.ui-jqdialog-titlebar > .ui-jqdialog-titlebar-close:hover  {
 	margin-top: -9px;
 }
 .ui-jqgrid-titlebar > .ui-jqgrid-titlebar-close:hover > span.fa {
 	margin-top: 1px;
 }
-.ui-jqdialog .ui-jqdialog-titlebar-close:hover > span.fa {
+.ui-jqdialog-titlebar > .ui-jqdialog-titlebar-close:hover > span.fa {
 	margin-top: 3px;
 }
 .ui-jqgrid .ui-icon-asc.fa {
@@ -925,3 +922,20 @@ a.clearsearchclass {
 	border: 0 none;
 	margin: 0;
 }
+.ui-jqgrid .ui-resizable-se.fa {
+	filter: alpha(opacity=40);
+	opacity: 0.4;
+	background: none;
+	border-style: none;
+	right: -3px;
+	font-weight: normal;
+}
+.ui-jqgrid-ltr .ui-resizable-se.fa {
+	right: -3px;
+	bottom: 0;
+}
+.ui-jqgrid-rtl .ui-resizable-se.fa {
+	left: 0px;
+	bottom: 1px;
+}
+/*left: 0px; bottom: 1px;*/

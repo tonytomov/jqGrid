@@ -241,7 +241,8 @@ $.extend(true,jgrid,{
 				save: "ui-icon-disk",
 				undo: "ui-icon-close",
 				del: "ui-icon-scissors",
-				cancel: "ui-icon-cancel"
+				cancel: "ui-icon-cancel",
+				resizableLtr: "ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se"
 			},
 			search: {
 				search: "ui-icon-search",
@@ -305,7 +306,8 @@ $.extend(true,jgrid,{
 				save: "fa-floppy-o",
 				undo: "fa-undo",
 				del: "fa-trash-o",
-				cancel: "fa-ban"
+				cancel: "fa-ban",
+				resizableLtr: "ui-resizable-se ui-state-default fa fa-rss fa-rotate-270"
 			},
 			search: {
 				search: "fa-search",
@@ -1549,7 +1551,6 @@ $.fn.jqGrid = function( pin ) {
 			rownumWidth: 25,
 			rownumbers : false,
 			pagerpos: 'center',
-			recordpos: 'right',
 			footerrow : false,
 			userDataOnFooter : false,
 			hoverrows : true,
@@ -1578,6 +1579,8 @@ $.fn.jqGrid = function( pin ) {
 		getIcon = function (path) {
 			return jgrid.getIconRes(p.iconSet, path);
 		};
+		p.recordpos = p.recordpos || (p.direction === "rtl" ? "left" : "right");
+
 		if (localData !== undefined) {
 			p.data = localData;
 			pin.data = localData;
@@ -5940,12 +5943,15 @@ $.extend(jgrid,{
 				o.zIndex = 950;
 			}
 		}
-		var rtlt = 0;
+		// ONE NEEDS correction of left position in case of RTL, but the current code places
+		// modal dialog OUT OF visible part of/ the window if <body dir="rtl">.
+		// Thus first of all the lines are commented. Later the FIXED code below will be included.
+		/*var rtlt = 0;
 		if( rtlsup && coord.left && !appendsel) {
 			rtlt = $(o.gbox).width()- (!isNaN(o.width) ? parseInt(o.width,10) :0) - 8; // to do
 		// just in case
 			coord.left = parseInt(coord.left,10) + parseInt(rtlt,10);
-		}
+		}*/
 		if(coord.left) { coord.left += "px"; }
 		$(mw).css($.extend({
 			width: isNaN(o.width) ? "auto": o.width+"px",
@@ -10038,7 +10044,6 @@ jgrid.extend({
 				refresh: true,
 				refreshstate: 'firstpage',
 				view: false,
-				position : "left",
 				closeOnEscape : true,
 				beforeRefresh : null,
 				afterRefresh : null,
@@ -10050,6 +10055,8 @@ jgrid.extend({
 				alertzIndex : null,
 				iconsOverText : false
 			}, jgrid.nav, p.navOptions || {}, oMuligrid || {});
+			// set default position depend of RTL/LTR direction of the grid
+			o.position = o.position || (p.direction === "rtl" ? "right" : "left");
 
 			var alertIDs = {themodal: 'alertmod_' + gridId, modalhead: 'alerthd_' + gridId,modalcontent: 'alertcnt_' + gridId},
 			twd, tdw, gridIdEscaped = p.idSel, gboxSelector = p.gBox, commonIconClass = o.commonIconClass,

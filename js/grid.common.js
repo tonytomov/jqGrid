@@ -164,12 +164,15 @@ $.extend(jgrid,{
 				o.zIndex = 950;
 			}
 		}
-		var rtlt = 0;
+		// ONE NEEDS correction of left position in case of RTL, but the current code places
+		// modal dialog OUT OF visible part of/ the window if <body dir="rtl">.
+		// Thus first of all the lines are commented. Later the FIXED code below will be included.
+		/*var rtlt = 0;
 		if( rtlsup && coord.left && !appendsel) {
 			rtlt = $(o.gbox).width()- (!isNaN(o.width) ? parseInt(o.width,10) :0) - 8; // to do
 		// just in case
 			coord.left = parseInt(coord.left,10) + parseInt(rtlt,10);
-		}
+		}*/
 		if(coord.left) { coord.left += "px"; }
 		$(mw).css($.extend({
 			width: isNaN(o.width) ? "auto": o.width+"px",

@@ -1759,7 +1759,6 @@ jgrid.extend({
 				refresh: true,
 				refreshstate: 'firstpage',
 				view: false,
-				position : "left",
 				closeOnEscape : true,
 				beforeRefresh : null,
 				afterRefresh : null,
@@ -1771,6 +1770,8 @@ jgrid.extend({
 				alertzIndex : null,
 				iconsOverText : false
 			}, jgrid.nav, p.navOptions || {}, oMuligrid || {});
+			// set default position depend of RTL/LTR direction of the grid
+			o.position = o.position || (p.direction === "rtl" ? "right" : "left");
 
 			var alertIDs = {themodal: 'alertmod_' + gridId, modalhead: 'alerthd_' + gridId,modalcontent: 'alertcnt_' + gridId},
 			twd, tdw, gridIdEscaped = p.idSel, gboxSelector = p.gBox, commonIconClass = o.commonIconClass,
