@@ -7,7 +7,7 @@ jqGrid was developed mostly by [Tony Tomov](https://github.com/tonytomov) in the
 
 The code from the GitHib repository is the fork of jqGrid 4.7.0 - the latest version available under MIT/GPL-licences. It will be provided under MIT/GPL-licences.
 
-Below you can find short description of new features already implemented in the fork.
+Below you can find short description of new features already implemented in the fork. The version is developed by [Oleg Kiriljuk](https://github.com/OlegKi), alias [Oleg](http://stackoverflow.com/users/315935/oleg) on the stackoverflow and [OlegK](http://www.trirand.com/blog/?page_id=393) on trirand forum.
 
 ### Compatibility with jqGrid 4.7.0
 
@@ -66,6 +66,7 @@ The most the changes corresponds the tendency of web development last years. Loc
 * `autoResizingOption` property is an object like `editoptions`, `searchoptions` or `formatoptions`. It can be used to change some common `autoResizing` grid options to another value which is specific for the column only. The properties of `autoResizingOption`: `minColWidth`, `maxColWidth`, `compact`.
 * `labelAlign` property with "left", "center" (default), "right" and "likeData" values, 
 * `labelClasses` property allows to add CSS class to the column header.
+* `editable` property can be defined as function. It have one parameter as object with properties: `rowid`, `iCol`, `iRow`, `name` (column name), `cm` (column item in `colModel`), `mode` (`"add"` or `"edit"` in case of inline editing, `"cell"` for cell editing and `"addForm"` or `"editForm"` in case of form editing). The callback function can return `true` to make the cell in the column editable. Form editing allows some other strings as return value: `"hidden"`, `"disabled"`, `"readonly"`. The value `"hidden"` means including the information in the form as hidden row. The value will be sent to the server in case of remote editing. The value `"readonly"` means making the text input field readonly. The value `"disabled"` means making data input field (select/checkbox/textarea and other) and the label disabled and readonly.
 
 ### The following *new methods* are implemented (comparing with jqGrid 4.7)
 
