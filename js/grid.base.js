@@ -1458,7 +1458,7 @@ $.fn.jqGrid = function( pin ) {
 			autoresizeOnLoad: false,
 			autoResizing: {
 				wrapperClassName: "ui-jqgrid-cell-wrapper",
-				widthOfVisiblePartOfSortIcon: 12,
+				widthOfVisiblePartOfSortIcon: pin.iconSet === "fontAwesome" ? 13 : 12,
 				minColWidth: 33,
 				maxColWidth: 300,
 				adjustGridWidth: true, // shrinkToFit and widthOrg (no width option or width:"auto" during jqGrid creation will be detected) will be used additionally with adjustGridWidth
