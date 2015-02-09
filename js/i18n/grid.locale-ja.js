@@ -31,6 +31,7 @@ $.jgrid.regional["ja"] = {
 	    emptyrecords: "\u8868\u793A\u3059\u308B\u30EC\u30B3\u30FC\u30C9\u304C\u3042\u308A\u307E\u305B\u3093",
 		loadtext: "\u8aad\u307f\u8fbc\u307f\u4e2d...",
 		pgtext : "{1} \u30DA\u30FC\u30B8\u4E2D {0} \u30DA\u30FC\u30B8\u76EE ",
+		savetext: "Saving...",
 		pgfirst : "First Page",
 		pglast : "Last Page",
 		pgnext : "Next Page",

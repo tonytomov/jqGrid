@@ -23,6 +23,7 @@ $.jgrid.regional["no"] = {
         recordtext: "Rad {0} - {1}, totalt {2}",
         loadtext: "Laster...",
         pgtext: "Side {0} av {1}",
+		savetext: "Saving...",
         pgfirst: "First Page",
         pglast: "Last Page",
         pgnext: "Next Page",

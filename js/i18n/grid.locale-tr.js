@@ -31,6 +31,7 @@ $.jgrid.regional["tr"] = {
 	    emptyrecords: "Kayıt bulunamadı",
 		loadtext: "Yükleniyor...",
 		pgtext : "{0}/{1}. Sayfa",
+		savetext: "Saving...",
 		pgfirst : "First Page",
 		pglast : "Last Page",
 		pgnext : "Next Page",

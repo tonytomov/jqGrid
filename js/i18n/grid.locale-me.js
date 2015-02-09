@@ -31,6 +31,7 @@ $.jgrid.regional["me"] = {
 		emptyrecords: "Ne postoji nijedan zapis",
 		loadtext: "Učitivanje...",
 		pgtext : "Strana {0} od {1}",
+		savetext: "Saving...",
 		pgfirst : "First Page",
 		pglast : "Last Page",
 		pgnext : "Next Page",

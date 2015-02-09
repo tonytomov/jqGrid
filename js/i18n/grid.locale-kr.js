@@ -31,6 +31,7 @@ $.jgrid.regional["kr"] = {
 		emptyrecords: "표시할 행이 없습니다",
 		loadtext: "조회중...",
 		pgtext : "페이지 {0} / {1}",
+		savetext: "Saving...",
 		pgfirst : "First Page",
 		pglast : "Last Page",
 		pgnext : "Next Page",

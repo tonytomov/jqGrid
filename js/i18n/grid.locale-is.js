@@ -30,6 +30,7 @@ $.jgrid.regional["is"] = {
 	    emptyrecords: "Engar færslur",
 		loadtext: "Hleður...",
 		pgtext : "Síða {0} af {1}",
+		savetext: "Saving...",
 		pgfirst : "First Page",
 		pglast : "Last Page",
 		pgnext : "Next Page",

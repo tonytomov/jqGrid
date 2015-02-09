@@ -30,6 +30,7 @@ $.jgrid.regional["pt"] = {
 	    emptyrecords: "No records to view",
 		loadtext: "A carregar...",
 		pgtext : "Página {0} de {1}",
+		savetext: "Saving...",
 		pgfirst : "First Page",
 		pglast : "Last Page",
 		pgnext : "Next Page",

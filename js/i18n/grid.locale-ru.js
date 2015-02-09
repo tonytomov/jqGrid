@@ -33,6 +33,7 @@ $.jgrid.regional["ru"] = {
 		emptyrecords: "Нет записей для просмотра",
 		loadtext: "Загрузка...",
 		pgtext : "Стр. {0} из {1}",
+		savetext: "Сохранения...",
 		pgfirst : "Первая",
 		pglast : "Последняя",
 		pgnext : "Следующая",

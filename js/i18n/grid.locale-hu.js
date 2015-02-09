@@ -32,6 +32,7 @@ $.jgrid.regional["hu"] = {
 		emptyrecords: "Nincs találat",
 		loadtext: "Betöltés...",
 		pgtext : "Oldal {0} / {1}",
+		savetext: "Saving...",
 		pgfirst : "First Page",
 		pglast : "Last Page",
 		pgnext : "Next Page",

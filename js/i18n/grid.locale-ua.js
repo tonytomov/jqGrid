@@ -31,6 +31,7 @@ $.jgrid.regional["ua"] = {
 	  emptyrecords: "Немає записів для перегляду",
 		loadtext: "Завантаження...",
 		pgtext : "Стор. {0} з {1}",
+		savetext: "Saving...",
 		pgfirst : "First Page",
 		pglast : "Last Page",
 		pgnext : "Next Page",

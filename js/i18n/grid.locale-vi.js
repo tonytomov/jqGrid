@@ -31,6 +31,7 @@ $.jgrid.regional["vi"] = {
 		emptyrecords: "Không có dữ liệu",
 		loadtext: "Đang nạp dữ liệu...",
 		pgtext : "Trang {0} trong tổng số {1}",
+		savetext: "Saving...",
 		pgfirst : "First Page",
 		pglast : "Last Page",
 		pgnext : "Next Page",

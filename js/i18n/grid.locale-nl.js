@@ -25,6 +25,7 @@ $.jgrid.regional["nl"] = {
             emptyrecords: "Geen data gevonden.",
             loadtext: "Laden...",
             pgtext: "pagina  {0}  van {1}",
+			savetext: "Saving...",
 			pgfirst : "Eerste Pagina",
 			pglast : "Laatste Pagina",
 			pgnext : "Volgende Pagina",

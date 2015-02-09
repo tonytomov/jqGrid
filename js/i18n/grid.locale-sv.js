@@ -31,6 +31,7 @@ $.jgrid.regional["sv"] = {
 		emptyrecords: "Det finns inga poster att visa",
 		loadtext: "Laddar...",
 		pgtext : "Sida {0} av {1}",
+		savetext: "Saving...",
 		pgfirst : "First Page",
 		pglast : "Last Page",
 		pgnext : "Next Page",

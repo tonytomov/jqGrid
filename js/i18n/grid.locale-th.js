@@ -31,6 +31,7 @@ $.jgrid.regional["th"] = {
 		emptyrecords: "ไม่พบข้อมูล",
 		loadtext: "กำลังร้องขอข้อมูล...",
 		pgtext : "หน้า {0} จาก {1}",
+		savetext: "Saving...",
 		pgfirst : "First Page",
 		pglast : "Last Page",
 		pgnext : "Next Page",

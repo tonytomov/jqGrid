@@ -32,6 +32,7 @@ $.jgrid.regional["tw"] = {
 		emptyrecords: "沒有記錄",
 		loadtext: "載入中...",
 		pgtext : " {0} 共 {1} 頁",
+		savetext: "Saving...",
 		pgfirst : "First Page",
 		pglast : "Last Page",
 		pgnext : "Next Page",

@@ -31,6 +31,7 @@ $.jgrid.regional["cs"] = {
 		recordtext: "Zobrazeno {0} - {1} z {2} záznamů",
 	    emptyrecords: "Nenalezeny žádné záznamy",
 		loadtext: "Načítám...",
+		savetext: "Saving...",
 		pgtext : "Strana {0} z {1}",
 		pgfirst : "First Page",
 		pglast : "Last Page",

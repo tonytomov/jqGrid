@@ -31,6 +31,7 @@ $.jgrid.regional["fi"] = {
 		recordtext: "Rivit {0} - {1} / {2}",
 	    emptyrecords: "Ei n&auml;ytett&auml;vi&auml;",
 		loadtext: "Haetaan...",
+		savetext: "Saving...",
 		pgtext: "Sivu {0} / {1}",		
 		pgfirst : "First Page",
 		pglast : "Last Page",

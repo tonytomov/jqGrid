@@ -30,6 +30,7 @@ $.jgrid.regional["bg"] = {
 		recordtext: "{0} - {1} от {2}",
 		emptyrecords: "Няма запис(и)",
 		loadtext: "Зареждам...",
+		savetext: "Записвам...",
 		pgtext : "Стр. {0} от {1}",
 		pgfirst : "Първа Стр.",
 		pglast : "Последна Стр.",

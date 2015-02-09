@@ -31,6 +31,7 @@ $.jgrid.regional["sk"] = {
 	    emptyrecords: "Neboli nájdené žiadne záznamy",
 		loadtext: "Načítám...",
 		pgtext : "Strana {0} z {1}",
+		savetext: "Saving...",
 		pgfirst : "First Page",
 		pglast : "Last Page",
 		pgnext : "Next Page",

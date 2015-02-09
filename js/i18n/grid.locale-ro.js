@@ -31,6 +31,7 @@ $.jgrid.regional["ro"] = {
 		emptyrecords: "Nu există înregistrări de vizualizat",
 		loadtext: "Încărcare...",
 		pgtext : "Pagina {0} din {1}",
+		savetext: "Saving...",
 		pgfirst : "First Page",
 		pglast : "Last Page",
 		pgnext : "Next Page",

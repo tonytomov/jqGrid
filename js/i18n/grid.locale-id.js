@@ -31,6 +31,7 @@ $.jgrid.regional["id"] = {
 		emptyrecords: "Tidak ada data",
 		loadtext: "Memuat...",
 		pgtext : "Halaman {0} dari {1}",
+		savetext: "Saving...",
 		pgfirst : "First Page",
 		pglast : "Last Page",
 		pgnext : "Next Page",

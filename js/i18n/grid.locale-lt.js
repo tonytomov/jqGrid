@@ -31,6 +31,7 @@ $.jgrid.regional["lt"] = {
 		emptyrecords: "Įrašų nėra",
 		loadtext: "Kraunama...",
 		pgtext : "Puslapis {0} iš {1}",
+		savetext: "Saving...",
 		pgfirst : "First Page",
 		pglast : "Last Page",
 		pgnext : "Next Page",

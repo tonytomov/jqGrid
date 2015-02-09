@@ -31,6 +31,7 @@ $.jgrid.regional["he"] = {
 		emptyrecords: "אין רשומות להציג",
 		loadtext: "טוען...",
 		pgtext : "דף {0} מתוך {1}",
+		savetext: "Saving...",
 		pgfirst : "First Page",
 		pglast : "Last Page",
 		pgnext : "Next Page",
