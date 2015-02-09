@@ -1452,7 +1452,7 @@ $.fn.jqGrid = function( pin ) {
 		}
 
 		var p = $.extend(true,{
-			url: "",
+			//url: "",
 			height: "auto",
 			page: 1,
 			rowNum: 20,
@@ -1460,7 +1460,7 @@ $.fn.jqGrid = function( pin ) {
 			autoresizeOnLoad: false,
 			autoResizing: {
 				wrapperClassName: "ui-jqgrid-cell-wrapper",
-				widthOfVisiblePartOfSortIcon: pin.iconSet === "fontAwesome" ? 13 : 12,
+				//widthOfVisiblePartOfSortIcon: pin.iconSet === "fontAwesome" ? 13 : 12,
 				minColWidth: 33,
 				maxColWidth: 300,
 				adjustGridWidth: true, // shrinkToFit and widthOrg (no width option or width:"auto" during jqGrid creation will be detected) will be used additionally with adjustGridWidth
@@ -1477,19 +1477,19 @@ $.fn.jqGrid = function( pin ) {
 			rowList: [],
 			colNames: [],
 			sortorder: "asc",
-			showOneSortIcon: pin.showOneSortIcon !== undefined ? pin.showOneSortIcon :
-				pin.iconSet === "fontAwesome" ? true : false, // hide or set ui-state-disabled class on the other icon
+			//showOneSortIcon: pin.showOneSortIcon !== undefined ? pin.showOneSortIcon :
+			//	pin.iconSet === "fontAwesome" ? true : false, // hide or set ui-state-disabled class on the other icon
 			sortname: "",
-			datatype: pin.datatype !== undefined ? pin.datatype : // datatype parameter are specified - use it
-				localData !== undefined || pin.url == null ? "local" : // data parameter specified or no url are specified
-					pin.jsonReader != null && typeof pin.jsonReader === "object" ? "json" : "xml", // if jsonReader are specified - use "json". In all other cases - use "xml"
+			//datatype: pin.datatype !== undefined ? pin.datatype : // datatype parameter are specified - use it
+			//	localData !== undefined || pin.url == null ? "local" : // data parameter specified or no url are specified
+			//		pin.jsonReader != null && typeof pin.jsonReader === "object" ? "json" : "xml", // if jsonReader are specified - use "json". In all other cases - use "xml"
 			mtype: "GET",
 			altRows: false,
 			selarrrow: [],
 			savedRow: [],
 			shrinkToFit: true,
 			xmlReader: {},
-			jsonReader: {},
+			//jsonReader: {},
 			subGrid: false,
 			subGridModel :[],
 			reccount: 0,
@@ -1534,7 +1534,7 @@ $.fn.jqGrid = function( pin ) {
 			forceFit : false,
 			gridstate : "visible",
 			cellEdit: false,
-			cellsubmit: pin.cellurl === undefined ? "clientArray" : "remote",
+			//cellsubmit: pin.cellurl === undefined ? "clientArray" : "remote",
 			nv:0,
 			loadui: "enable",
 			toolbar: [false,""],
@@ -1579,7 +1579,22 @@ $.fn.jqGrid = function( pin ) {
 		getIcon = function (path) {
 			return jgrid.getIconRes(p.iconSet, path);
 		};
+		// set dynamic options
 		p.recordpos = p.recordpos || (p.direction === "rtl" ? "left" : "right");
+		p.autoResizing.widthOfVisiblePartOfSortIcon =
+			p.autoResizing.widthOfVisiblePartOfSortIcon !== undefined ?
+			p.autoResizing.widthOfVisiblePartOfSortIcon :
+			(p.iconSet === "fontAwesome" ? 13 : 12);
+		p.showOneSortIcon = p.showOneSortIcon !== undefined ? p.showOneSortIcon :
+			(p.iconSet === "fontAwesome" ? true : false);
+		p.datatype = p.datatype !== undefined ? p.datatype : // datatype parameter are specified - use it
+			localData !== undefined || p.url == null ? "local" : // data parameter specified or no url are specified
+				p.jsonReader != null && typeof p.jsonReader === "object" ? "json" : "xml"; // if jsonReader are specified - use "json". In all other cases - use "xml"
+		p.jsonReader = p.jsonReader || {};
+		p.url = p.url || "";
+		p.cellsubmit = p.cellsubmit !== undefined ? p.cellsubmit :
+			p.cellurl === undefined ? "clientArray" : "remote";
+		p.gridview = p.gridview !== undefined ? p.gridview : (p.afterInsertRow == null);
 
 		if (localData !== undefined) {
 			p.data = localData;
@@ -1994,7 +2009,7 @@ $.fn.jqGrid = function( pin ) {
 				if (field.name !== 'cb' && field.name !=='subgrid' && field.name !=='rn') {
 					name = (datatype === "xml" || datatype === "xmlstring") ?
 							field.xmlmap || field.name :
-							(datatype === "local" && !p.dataTypeOrg ? field.jsonmap || field.name : field.name);
+							(datatype === "local" && !p.dataTypeOrg) || datatype === "json" ? field.jsonmap || field.name : field.name;
 					if(p.keyName !== false && field.key===true ) {
 						p.keyName = name;
 					}
