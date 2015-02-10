@@ -1,6 +1,6 @@
 /*jshint eqeqeq:false */
 /*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
-/*global jQuery */
+/*global jQuery, HTMLElement */
 (function($){
 /*
  * jqGrid common function
@@ -521,19 +521,19 @@ $.extend(jgrid,{
 				try {
 					if($.isFunction(options.custom_element)) {
 						var celm = options.custom_element.call($t,vl,options);
-						if(celm) {
+						if (celm instanceof jQuery || celm instanceof HTMLElement || typeof celm === "string") {
 							celm = $(celm).addClass("customelement").attr({id:options.id,name:options.name});
 							$(elem).empty().append(celm);
 						} else {
-							throw "e2";
+							throw "editoptions.custom_element returns value of a wrong type";
 						}
 					} else {
-						throw "e1";
+						throw "editoptions.custom_element is not a function";
 					}
 				} catch (e) {
-					if (e==="e1") { infoDialog(errcap,"function 'custom_element' "+editMsg.nodefined, bClose);}
-					if (e==="e2") { infoDialog(errcap,"function 'custom_element' "+editMsg.novalue,bClose);}
-					else { infoDialog(errcap,typeof e==="string"?e:e.message,bClose); }
+					if (e==="e1") { infoDialog.call($t,errcap,"function 'custom_element' "+editMsg.nodefined, bClose);}
+					if (e==="e2") { infoDialog.call($t,errcap,"function 'custom_element' "+editMsg.novalue,bClose);}
+					else { infoDialog.call($t,errcap,typeof e==="string"?e:e.message,bClose); }
 				}
 			break;
 		}
