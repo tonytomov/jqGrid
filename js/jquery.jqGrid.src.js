@@ -5230,6 +5230,7 @@ jgrid.extend({
 				cm.widthOrg = widthOrg;
 				cm.fixed = false;
 			}
+			$th.data("autoResized", "true");
 		});
 	},
 	autoResizeAllColumns: function () {
@@ -5240,6 +5241,24 @@ jgrid.extend({
 				fixWidthOnShrink = p.autoResizing.fixWidthOnShrink,
 				width = parseInt(p.widthOrg,10),
 				autoResizeColumn = jgrid.getMethod("autoResizeColumn"); // cache autoResizeColumn reference
+				
+			// TODO:
+			//    0) Add the option, which force the usage of the optimal column width instead of widthOrg
+			//       during grid resizing. The potion should be made probably as DEFAULT.
+			//    0a) Consider to add "lessImportant" or integer "contentImportance" property in colModel.
+			//       The columns with the lowest priority will be squeezed first of all holding 
+			//       other columns to optimal width. If the smallest width of the columns having the lowest
+			//       importance is not enough to reduce the total grid width then the columns will be hold to
+			//       its minimal width, but one will try to reduce width of less important columns to get
+			//       the current grid width.
+			//       The changes should be done in setGridWidth (not in autoResizeAllColumns)
+			//    1) Analyse colModel, colNames properties and sortname parameter to calculate
+			//       minimal and optimal width of every column and the grid. It could be
+			//       some important cases which should be 
+			//      a) The current width of the grid is LESS then optimal width and resizable column don't have fixed:true property.
+			//         1. save widthOrg of the resizable column in temporary variable
+			//         2. set widthOrg property of the resizable column to optimal size and set additionally fixed:true
+			//         3. call setGridWidth with the CURRENT grid width to change shrink width of all fixed:false
 
 			p.shrinkToFit = false; // make no shrinking during resizing of any columns 
 			p.autoResizing.adjustGridWidth = true;
@@ -5448,9 +5467,9 @@ jgrid.extend({
 								v2=v;
 							} else { throw "e1"; }
 						} catch (e) {
-							if (e==="e1") { infoDialog(errcap,"function 'custom_value' "+editMsg.nodefined,bClose); }
-							if (e==="e2") { infoDialog(errcap,"function 'custom_value' "+editMsg.novalue,bClose); }
-							else {infoDialog(errcap,e.message,bClose); }
+							if (e==="e1") { infoDialog.call($t,errcap,"function 'custom_value' "+editMsg.nodefined,bClose); }
+							if (e==="e2") { infoDialog.call($t,errcap,"function 'custom_value' "+editMsg.novalue,bClose); }
+							else {infoDialog.call($t,errcap,e.message,bClose); }
 						}
 						break;
 				}
@@ -5509,7 +5528,7 @@ jgrid.extend({
 												feedback.call($t, "afterSaveCell", rowid,nm, v, iRow,iCol);
 												p.savedRow.splice(0,1);
 											} else {
-												infoDialog(errcap,ret[1],bClose);
+												infoDialog.call($t,errcap,ret[1],bClose);
 												$self.jqGrid("restoreCell",iRow,iCol);
 											}
 										}
@@ -5522,14 +5541,14 @@ jgrid.extend({
 											p.errorCell.call($t, jqXHR,textStatus,errorThrown);
 											$self.jqGrid("restoreCell",iRow,iCol);
 										} else {
-											infoDialog(errcap,jqXHR.status+" : "+jqXHR.statusText+"<br/>"+textStatus,bClose);
+											infoDialog.call($t,errcap,jqXHR.status+" : "+jqXHR.statusText+"<br/>"+textStatus,bClose);
 											$self.jqGrid("restoreCell",iRow,iCol);
 										}
 									}
 								}, jgrid.ajaxOptions, p.ajaxCellOptions || {}));
 							} else {
 								try {
-									infoDialog(errcap,errors.nourl,bClose);
+									infoDialog.call($t,errcap,errors.nourl,bClose);
 									$self.jqGrid("restoreCell",iRow,iCol);
 								} catch (ignore) {}
 							}
@@ -5544,7 +5563,7 @@ jgrid.extend({
 						}
 					} else {
 						try {
-							window.setTimeout(function(){infoDialog(errcap,v+" "+cv[1],bClose);},100);
+							window.setTimeout(function(){infoDialog.call($t,errcap,v+" "+cv[1],bClose);},100);
 							$self.jqGrid("restoreCell",iRow,iCol);
 						} catch (ignore) {}
 					}
@@ -5794,7 +5813,7 @@ jgrid.extend({
 }(jQuery));
 /*jshint eqeqeq:false */
 /*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
-/*global jQuery */
+/*global jQuery, HTMLElement */
 (function($){
 /*
  * jqGrid common function
@@ -6315,19 +6334,19 @@ $.extend(jgrid,{
 				try {
 					if($.isFunction(options.custom_element)) {
 						var celm = options.custom_element.call($t,vl,options);
-						if(celm) {
+						if (celm instanceof jQuery || celm instanceof HTMLElement || typeof celm === "string") {
 							celm = $(celm).addClass("customelement").attr({id:options.id,name:options.name});
 							$(elem).empty().append(celm);
 						} else {
-							throw "e2";
+							throw "editoptions.custom_element returns value of a wrong type";
 						}
 					} else {
-						throw "e1";
+						throw "editoptions.custom_element is not a function";
 					}
 				} catch (e) {
-					if (e==="e1") { infoDialog(errcap,"function 'custom_element' "+editMsg.nodefined, bClose);}
-					if (e==="e2") { infoDialog(errcap,"function 'custom_element' "+editMsg.novalue,bClose);}
-					else { infoDialog(errcap,typeof e==="string"?e:e.message,bClose); }
+					if (e==="e1") { infoDialog.call($t,errcap,"function 'custom_element' "+editMsg.nodefined, bClose);}
+					if (e==="e2") { infoDialog.call($t,errcap,"function 'custom_element' "+editMsg.novalue,bClose);}
+					else { infoDialog.call($t,errcap,typeof e==="string"?e:e.message,bClose); }
 				}
 			break;
 		}
@@ -11604,7 +11623,7 @@ jgrid.extend({
 						$("input.hasDatepicker","#"+jgrid.jqID(ind.id)).datepicker('hide');
 					} catch (ignore) {}
 				}
-				$.each(p.colModel, function(){
+				$.each(p.colModel, function(i){
 					var isEditable = this.editable, nm = this.name;
 					if ($.isFunction(isEditable)) {
 						isEditable = isEditable.call($t, {
@@ -11612,7 +11631,7 @@ jgrid.extend({
 							iCol: i,
 							iRow: ind.rowIndex,
 							name: nm,
-							cm: cm,
+							cm: this,
 							mode: $(ind).hasClass("jqgrid-new-row") ? "add" : "edit"
 						});
 					}
@@ -13162,23 +13181,22 @@ addSubGrid : function( pos, sind ) {
 			}
 			return false;
 		};
-		var _id, pID,atd, nhc=1, bfsc, r;
-		$.each(p.colModel,function(){
-			if(this.hidden === true || this.name === 'rn' || this.name === 'cb') {
-				nhc++;
-			}
-		});
 		var len = ts.rows.length, i=1;
 		if( sind !== undefined && sind > 0) {
 			i = sind;
 			len = sind+1;
 		}
 		var onClick = function() {
-			var tr = $(this).parent("tr")[0],
+			var tr = $(this).parent("tr")[0], r = tr.nextSibling, _id, pID, atd, bfsc,
 				iconClass = function (iconName) {
 					return [p.subGridOptions.commonIconClass, p.subGridOptions[iconName]].join(" ");
-				};
-			r = tr.nextSibling;
+				},
+				nhc = 1;
+			$.each(p.colModel,function(){
+				if(this.hidden === true || this.name === 'rn' || this.name === 'cb') {
+					nhc++;
+				}
+			});
 			if($(this).hasClass("sgcollapsed")) {
 				pID = p.id;
 				_id = tr.id;
