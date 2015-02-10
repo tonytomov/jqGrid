@@ -429,7 +429,7 @@ jgrid.extend({
 						$("input.hasDatepicker","#"+jgrid.jqID(ind.id)).datepicker('hide');
 					} catch (ignore) {}
 				}
-				$.each(p.colModel, function(){
+				$.each(p.colModel, function(i){
 					var isEditable = this.editable, nm = this.name;
 					if ($.isFunction(isEditable)) {
 						isEditable = isEditable.call($t, {
@@ -437,7 +437,7 @@ jgrid.extend({
 							iCol: i,
 							iRow: ind.rowIndex,
 							name: nm,
-							cm: cm,
+							cm: this,
 							mode: $(ind).hasClass("jqgrid-new-row") ? "add" : "edit"
 						});
 					}
