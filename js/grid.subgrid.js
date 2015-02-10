@@ -173,23 +173,22 @@ addSubGrid : function( pos, sind ) {
 			}
 			return false;
 		};
-		var _id, pID,atd, nhc=1, bfsc, r;
-		$.each(p.colModel,function(){
-			if(this.hidden === true || this.name === 'rn' || this.name === 'cb') {
-				nhc++;
-			}
-		});
 		var len = ts.rows.length, i=1;
 		if( sind !== undefined && sind > 0) {
 			i = sind;
 			len = sind+1;
 		}
 		var onClick = function() {
-			var tr = $(this).parent("tr")[0],
+			var tr = $(this).parent("tr")[0], r = tr.nextSibling, _id, pID, atd, bfsc,
 				iconClass = function (iconName) {
 					return [p.subGridOptions.commonIconClass, p.subGridOptions[iconName]].join(" ");
-				};
-			r = tr.nextSibling;
+				},
+				nhc = 1;
+			$.each(p.colModel,function(){
+				if(this.hidden === true || this.name === 'rn' || this.name === 'cb') {
+					nhc++;
+				}
+			});
 			if($(this).hasClass("sgcollapsed")) {
 				pID = p.id;
 				_id = tr.id;
