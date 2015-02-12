@@ -185,23 +185,7 @@ if (jgrid.defaults == null) {
 
 $.extend(true,jgrid,{
 	version : "4.8.0-beta2",
-	formatter : { // set common formatter settings independent from the language and locale
-		date: {
-			parseRe: /[#%\\\/:_;.,\t\s\-]/,
-			masks: {
-				ISO8601Long:"Y-m-d H:i:s",
-				ISO8601Short:"Y-m-d",
-				SortableDateTime: "Y-m-d\\TH:i:s",
-				UniversalSortableDateTime: "Y-m-d H:i:sO"
-			},
-			reformatAfterEdit : true,
-			userLocalTime : false
-		},
-		baseLinkUrl: '',
-		showAction: '',
-		target: '',
-		checkbox: {disabled:true},
-		idName: 'id',
+	formatter : {
 		unused: '' // used only to detect whether the changes are overwritten because of wrong usage
 	},
 	icons: {
