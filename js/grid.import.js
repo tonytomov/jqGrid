@@ -240,7 +240,6 @@ $.extend($.jgrid,{
 						} else {
 							$($t).jqGrid( jstr1 );
 						}
-						jstr = null;jstr1=null;
 					} else {
 						alert("xml2json or parse are not present");
 					}
@@ -289,9 +288,7 @@ $.extend($.jgrid,{
 								if($.isFunction(o.importComplete)) {
 									o.importComplete(xmld);
 								}
-								o.impstring = null;
 							}
-							xmld = null;
 						}
 						break;
 					case 'json':
@@ -319,7 +316,6 @@ $.extend($.jgrid,{
 							if($.isFunction(o.importComplete)) {
 								o.importComplete(o.impstring);
 							}
-							o.impstring = null;
 						}
 						break;
 				}
