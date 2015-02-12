@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v4.7.1 - 2015-02-05
+* @license Guriddo jqGrid JS - v4.7.1 - 2015-02-12
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -4526,7 +4526,7 @@ $.jgrid.extend({
 				if ($.isFunction($t.p.beforeEditCell)) {
 					$t.p.beforeEditCell.call($t, $t.rows[iRow].id,nm,tmp,iRow,iCol);
 				}
-				var opt = $.extend({}, cm.editoptions || {} ,{id:iRow+"_"+nm,name:nm,rowId: $t.rows[iRow].id});
+				var opt = $.extend({}, cm.editoptions || {} ,{id:iRow+"_"+nm,name:nm,rowId: $t.rows[iRow].id, oper:'edit'});
 				var elc = $.jgrid.createEl.call($t,cm.edittype,opt,tmp,true,$.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions || {}));
 				$(cc).html("").append(elc).attr("tabindex","0");
 				$.jgrid.bindEv.call($t, elc, opt);
@@ -4659,7 +4659,7 @@ $.jgrid.extend({
 								postdata[idname] = $.jgrid.stripPref($t.p.idPrefix, $t.rows[iRow].id);
 								postdata[oper] = opers.editoper;
 								postdata = $.extend(addpost,postdata);
-								$($t).jqGrid("progressBar", {method:"show", loadtype : $t.p.loadui, htmlcontent: $.jgrid.defaults.savetext || "Saving..." });
+								$($t).jqGrid("progressBar", {method:"show", loadtype : $t.p.loadui, htmlcontent: $.jgrid.getRegional($t,'defaults.savetext') });
 								$t.grid.hDiv.loading = true;
 								$.ajax( $.extend( {
 									url: $t.p.cellurl,
@@ -5242,7 +5242,7 @@ $.extend($.jgrid,{
 	createEl : function(eltype,options,vl,autowidth, ajaxso) {
 		var elem = "", $t = this;
 		function setAttributes(elm, atr, exl ) {
-			var exclude = ['dataInit','dataEvents','dataUrl', 'buildSelect','sopt', 'searchhidden', 'defaultValue', 'attr', 'custom_element', 'custom_value'];
+			var exclude = ['dataInit','dataEvents','dataUrl', 'buildSelect','sopt', 'searchhidden', 'defaultValue', 'attr', 'custom_element', 'custom_value', 'oper'];
 			if(exl !== undefined && $.isArray(exl)) {
 				$.merge(exclude, exl);
 			}
@@ -5302,7 +5302,7 @@ $.extend($.jgrid,{
 					elem.multiple="multiple";
 					$(elem).attr("aria-multiselectable","true");
 				} else { msl = false; }
-				if(options.dataUrl !== undefined) {
+				if(options.dataUrl != null) {
 					var rowid = null, postData = options.postData || ajaxso.postData;
 					try {
 						rowid = options.rowId;
@@ -5321,6 +5321,8 @@ $.extend($.jgrid,{
 							var ovm = [], elem = this.elem, vl = this.vl,
 							options = $.extend({},this.options),
 							msl = options.multiple===true,
+							cU = options.cacheUrlData === true,
+							oV ='', txt, vl,
 							a = $.isFunction(options.buildSelect) ? options.buildSelect.call($t,data) : data;
 							if(typeof a === 'string') {
 								a = $( $.trim( a ) ).html();
@@ -5338,14 +5340,38 @@ $.extend($.jgrid,{
 								//$(elem).attr(options);
 								setTimeout(function(){
 									$("option",elem).each(function(i){
+										txt = $(this).text();
+										vl = $(this).val() || txt;
+										if(cU) {
+											oV += (i!== 0 ? ";": "")+ vl+":"+txt; 
+										}
 										//if(i===0) { this.selected = ""; }
 										// fix IE8/IE7 problem with selecting of the first item on multiple=true
 										if (i === 0 && elem.multiple) { this.selected = false; }
 										$(this).attr("role","option");
-										if($.inArray($.trim($(this).text()),ovm) > -1 || $.inArray($.trim($(this).val()),ovm) > -1 ) {
+										if($.inArray($.trim(txt),ovm) > -1 || $.inArray($.trim(vl),ovm) > -1 ) {
 											this.selected= "selected";
 										}
 									});
+									if(cU) {
+										if(options.oper === 'edit') {
+											$($t).jqGrid('setColProp',options.name,{ editoptions: {buildSelect: null, dataUrl : null, value : oV} });
+										} else if(options.oper === 'search') {
+											$($t).jqGrid('setColProp',options.name,{ searchoptions: {dataUrl : null, value : oV} });
+										} else if(options.oper ==='filter') {
+											if($("#fbox_"+$t.p.id)[0].p) {
+												var cols = $("#fbox_"+$t.p.id)[0].p.columns, nm;
+												$.each(cols,function(i) {
+													nm  =  this.index || this.name;
+													if(options.name === nm) {
+														this.searchoptions.dataUrl = null;
+														this.searchoptions.value = oV;
+														return false;
+													}
+												});
+											}
+										}
+									}
 								},0);
 							}
 						}
@@ -5962,6 +5988,9 @@ $.fn.jqFilter = function( arg ) {
 				}
 				if(!cm) {return;}
 				cm.searchoptions.id = $.jgrid.randId();
+				cm.searchoptions.name = rule.field;
+				cm.searchoptions.oper = 'filter';
+				
 				if(isIE && cm.inputtype === "text") {
 					if(!cm.searchoptions.size) {
 						cm.searchoptions.size = 10;
@@ -6042,6 +6071,8 @@ $.fn.jqFilter = function( arg ) {
 					cm.searchoptions.size = 10;
 				}
 			}
+			cm.searchoptions.name = rule.field;
+			cm.searchoptions.oper = 'filter';
 			var ruleDataInput = $.jgrid.createEl.call($t, cm.inputtype,cm.searchoptions, rule.data, true, that.p.ajaxSelectOptions || {}, true);
 			if(rule.op === 'nu' || rule.op === 'nn') {
 				$(ruleDataInput).attr('readonly','true');
@@ -6558,7 +6589,7 @@ $.jgrid.extend({
 				if(this.hidden===true) { $(th).css("display","none");}
 				this.search = this.search === false ? false : true;
 				if(this.stype === undefined) {this.stype='text';}
-				soptions = $.extend({},this.searchoptions || {}, {name:cm.index || cm.name, id: "gs_"+$t.p.idPrefix+cm.name});
+				soptions = $.extend({},this.searchoptions || {}, {name:cm.index || cm.name, id: "gs_"+$t.p.idPrefix+cm.name, oper:'search'});
 				if(this.search){
 					if(p.searchOperators) {
 						so  = (soptions.sopt) ? soptions.sopt[0] : cm.stype==='select' ?  'eq' : p.defaultSearch;
@@ -6937,13 +6968,8 @@ $.jgrid.extend({
 
 					if(p.stringResult) {
 						try {
-							// xmlJsonClass or JSON.stringify
-							res = xmlJsonClass.toJson(filters, '', '', false);
-						} catch (e) {
-							try {
-								res = JSON.stringify(filters);
-							} catch (e2) { }
-						}
+							res = JSON.stringify(filters);
+						} catch (e2) { }
 						if(typeof res==="string") {
 							sdata[p.sFilter] = res;
 							$.each([p.sField,p.sValue, p.sOper], function() {sdata[this] = "";});
@@ -7186,7 +7212,7 @@ $.jgrid.extend({
 								if(!tmp || tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length===1 && tmp.charCodeAt(0)===160) ) {tmp='';}
 							}
 						}
-						var opt = $.extend({}, this.editoptions || {} ,{id:nm,name:nm, rowId: rowid}),
+						var opt = $.extend({}, this.editoptions || {} ,{id:nm,name:nm, rowId: rowid, oper:'edit'}),
 						frmopt = $.extend({}, {elmprefix:'',elmsuffix:'',rowabove:false,rowcontent:''}, this.formoptions || {}),
 						rp = parseInt(frmopt.rowpos,10) || cnt+1,
 						cp = parseInt((parseInt(frmopt.colpos,10) || 1)*2,10);
@@ -9748,9 +9774,9 @@ $.extend($.jgrid,{
 				var xmlConvert = function (xml,o) {
 					var cnfg = $(o.xmlGrid.config,xml)[0];
 					var xmldata = $(o.xmlGrid.data,xml)[0], jstr, jstr1, key;
-					if(xmlJsonClass.xml2json && $.jgrid.parse) {
-						jstr = xmlJsonClass.xml2json(cnfg," ");
-						jstr = $.jgrid.parse(jstr);
+					if(jqGridUtils.xmlToJSON ) {
+						jstr = jqGridUtils.xmlToJSON( cnfg );
+						//jstr = $.jgrid.parse(jstr);
 						for(key in jstr) {
 							if(jstr.hasOwnProperty(key)) {
 								jstr1=jstr[key];
@@ -9892,11 +9918,11 @@ $.extend($.jgrid,{
 				}
 				switch (o.exptype) {
 					case 'xmlstring' :
-						ret = "<"+o.root+">"+xmlJsonClass.json2xml(gprm,o.ident)+"</"+o.root+">";
+						ret = "<"+o.root+">"+ jqGridUtils.jsonToXML( gprm, {xmlDecl:""} )+"</"+o.root+">";
 						break;
 					case 'jsonstring' :
-						ret =  xmlJsonClass.toJson(gprm,o.root,o.ident,false);
-						if(o.root) { ret = "{"+ret+"}"; }
+						ret =  jqGridUtils.stringify( gprm );
+						if(o.root) { ret = "{"+ o.root +":"+ret+"}"; }
 						break;
 				}
 			});
@@ -9994,7 +10020,7 @@ $.jgrid.extend({
 							if(focus===null) { focus = i; }
 							if (treeg) { $("span:first",this).html(""); }
 							else { $(this).html(""); }
-							var opt = $.extend({},cm[i].editoptions || {},{id:rowid+"_"+nm,name:nm,rowId:rowid});
+							var opt = $.extend({},cm[i].editoptions || {},{id:rowid+"_"+nm,name:nm,rowId:rowid, oper:'edit'});
 							if(!cm[i].edittype) { cm[i].edittype = "text"; }
 							if(tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length===1 && tmp.charCodeAt(0)===160) ) {tmp='';}
 							var elc = $.jgrid.createEl.call($t,cm[i].edittype,opt,tmp,true,$.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions || {}));
@@ -10057,7 +10083,7 @@ $.jgrid.extend({
 	},
 	saveRow : function(rowid, successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
 		// Compatible mode old versions
-		var args = $.makeArray(arguments).slice(1), o = {};
+		var args = $.makeArray(arguments).slice(1), o = {}, $t = this[0];
 
 		if( $.type(args[0]) === "object" ) {
 			o = args[0];
@@ -10079,12 +10105,11 @@ $.jgrid.extend({
 			restoreAfterError: true,
 			mtype: "POST",
 			saveui : "enable",
-			savetext : $.jgrid.defaults.savetext || "Saving..."
+			savetext : $.jgrid.getRegional($t,'defaults.savetext')
 		}, $.jgrid.inlineEdit, o );
 		// End compatible
 
-		var success = false;
-		var $t = this[0], nm, tmp={}, tmp2={}, tmp3= {}, editable, fr, cv, ind, nullIfEmpty=false;
+		var success = false, nm, tmp={}, tmp2={}, tmp3= {}, editable, fr, cv, ind, nullIfEmpty=false;
 		if (!$t.grid ) { return success; }
 		ind = $($t).jqGrid("getInd",rowid,true);
 		if(ind === false) {return success;}
@@ -13209,324 +13234,232 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 	};
 
 //module begin
-window.xmlJsonClass = {	// Param "xml": Element or document DOM node.
-	// Param "tab": Tab or indent string for pretty output formatting omit or use empty string "" to supress.
-	// Returns:     JSON string
-	xml2json: function(xml, tab) {
-		if (xml.nodeType === 9) {
-			// document node
-			xml = xml.documentElement;
-		}
-		var nws = this.removeWhite(xml);
-		var obj = this.toObj(nws);
-		var json = this.toJson(obj, xml.nodeName, "\t");
-		return "{\n" + tab + (tab ? json.replace(/\t/g, tab) : json.replace(/\t|\n/g, "")) + "\n}";
+window.jqGridUtils = {
+	stringify : function(obj) {
+		return JSON.stringify(obj,function(key, value){
+            return (typeof value === 'function' ) ? value.toString() : value;
+        });
 	},
-
-	// Param "o":   JavaScript object
-	// Param "tab": tab or indent string for pretty output formatting omit or use empty string "" to supress.
-	// Returns:     XML string
-	json2xml: function(o, tab) {
-		var toXml = function(v, name, ind) {
-			var xml = "";
-			var i, n;
-			if (v instanceof Array) {
-				if (v.length === 0) {
-					xml += ind + "<"+name+">__EMPTY_ARRAY_</"+name+">\n";
+	parse : function(str) {
+		return JSON.parse(str,function(key, value){
+			if(typeof value === "string" && value.indexOf("function") !== -1) {
+				return  eval('('+value+')');
+			}
+			return value;
+		});
+	},
+	encode : function ( text ) { // repeated, but should not depend on grid
+		return String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+	},
+	jsonToXML : function ( tree, options ) {
+		var o = $.extend( {
+			xmlDecl : '<?xml version="1.0" encoding="UTF-8" ?>\n',
+			attr_prefix : '-'
+		}, options || {}),
+		that = this,
+		scalarToxml = function ( name, text ) {
+			if ( name === "#text" ) {
+				return that.encode(text);
+			} else if(typeof(text) ==='function') {
+				return "<"+name+"><![CDATA["+ text +"]]></"+name+">\n";
+			} if(text === "") {
+				return "<"+name+">_EMPTY_STRING_</"+name+">\n";
+			} else {
+				return "<"+name+">"+that.encode(text)+"</"+name+">\n";
+			}
+		},
+		arrayToxml = function ( name, array ) {
+			var out = [];
+		    for( var i=0; i<array.length; i++ ) {
+				var val = array[i];
+		        if ( typeof(val) === "undefined" || val == null ) {
+					out[out.length] = "<"+name+" />";
+				} else if ( typeof(val) === "object" && val.constructor == Array ) {
+					out[out.length] = arrayToxml( name, val );
+				} else if ( typeof(val) === "object" ) {
+					out[out.length] = hashToxml( name, val );
+				} else {
+					out[out.length] = scalarToxml( name, val );
 				}
-				else {
-					for (i = 0, n = v.length; i < n; i += 1) {
-						var sXml = ind + toXml(v[i], name, ind+"\t") + "\n";
-						xml += sXml;
+			}
+			if(!out.length) {
+				out[0] = "<"+ name+">_EMPTY_ARRAY_</"+name+">\n";
+			}
+			return out.join("");
+		},
+		hashToxml = function ( name, tree ) {
+			var elem = [];
+		    var attr = [];
+		    for( var key in tree ) {
+				if ( ! tree.hasOwnProperty(key) ) continue;
+				var val = tree[key];
+				if ( key.charAt(0) !==  o.attr_prefix ) {
+					if ( val == null ) { // null or undefined
+		               elem[elem.length] = "<"+key+" />";
+					} else if ( typeof(val) === "object" && val.constructor === Array ) {
+		                elem[elem.length] = arrayToxml( key, val );
+		            } else if ( typeof(val) === "object" ) {
+						elem[elem.length] = hashToxml( key, val );
+					} else {
+						elem[elem.length] = scalarToxml( key, val );
 					}
+				} else {
+					attr[attr.length] = " "+(key.substring(1))+'="'+(that.encode( val ))+'"';
 				}
 			}
-			else if (typeof(v) === "object") {
-				var hasChild = false;
-				xml += ind + "<" + name;
-				var m;
-				for (m in v) {
-					if (v.hasOwnProperty(m)) {
-						if (m.charAt(0) === "@") {
-							xml += " " + m.substr(1) + "=\"" + v[m].toString() + "\"";
-						} else {
-							hasChild = true;
-						}
-					}
+			var jattr = attr.join("");
+			var jelem = elem.join("");
+			if ( name == null ) { // null or undefined
+				// no tag
+			} else if ( elem.length > 0 ) {
+				if ( jelem.match( /\n/ )) {
+					jelem = "<"+name+jattr+">\n"+jelem+"</"+name+">\n";
+				} else {
+					jelem = "<"+name+jattr+">"  +jelem+"</"+name+">\n";
 				}
-				xml += hasChild ? ">" : "/>";
-				if (hasChild) {
-					for (m in v) {
-						if (v.hasOwnProperty(m)) {
-							if (m === "#text") {
-								xml += v[m];
-							}
-							else if (m === "#cdata") {
-								xml += "<![CDATA[" + v[m] + "]]>";
-							}
-							else if (m.charAt(0) !== "@") {
-								xml += toXml(v[m], m, ind+"\t");
-							}
-						}
-					}
-					xml += (xml.charAt(xml.length - 1) === "\n" ? ind : "") + "</" + name + ">";
-				}
+			} else {
+				jelem = "<"+name+jattr+" />\n";
 			}
-			else if (typeof(v) === "function") {
-				xml += ind + "<" + name + ">" + "<![CDATA[" + v + "]]>" + "</" + name + ">";
-			}
-			else {
-				if (v === undefined ) { v = ""; }
-				if (v.toString() === "\"\"" || v.toString().length === 0) {
-					xml += ind + "<" + name + ">__EMPTY_STRING_</" + name + ">";
-				} 
-				else {
-					xml += ind + "<" + name + ">" + v.toString() + "</" + name + ">";
-				}
-			}
-			return xml;
+			return jelem;
 		};
-		var xml = "";
-		var m;
-		for (m in o) { 
-			if (o.hasOwnProperty(m)) {
-				xml += toXml(o[m], m, "");
-			}
-		}
-		return tab ? xml.replace(/\t/g, tab) : xml.replace(/\t|\n/g, "");
-	},
-	// Internal methods
-	toObj: function(xml) {
-		var o = {};
-		var FuncTest = /function/i;
-		if (xml.nodeType === 1) {
-			// element node ..
-			if (xml.attributes.length) {
-				// element with attributes ..
-				var i;
-				for (i = 0; i < xml.attributes.length; i += 1) {
-					o["@" + xml.attributes[i].nodeName] = (xml.attributes[i].nodeValue || "").toString();
-				}
-			}
-			if (xml.firstChild) {
-				// element has child nodes ..
-				var textChild = 0, cdataChild = 0, hasElementChild = false;
-				var n;
-				for (n = xml.firstChild; n; n = n.nextSibling) {
-					if (n.nodeType === 1) {
-						hasElementChild = true;
-					}
-					else if (n.nodeType === 3 && n.nodeValue.match(/[^ \f\n\r\t\v]/)) {
-						// non-whitespace text
-						textChild += 1;
-					}
-					else if (n.nodeType === 4) {
-						// cdata section node
-						cdataChild += 1;
-					}
-				}
-				if (hasElementChild) {
-					if (textChild < 2 && cdataChild < 2) {
-						// structured element with evtl. a single text or/and cdata node ..
-						this.removeWhite(xml);
-						for (n = xml.firstChild; n; n = n.nextSibling) {
-							if (n.nodeType === 3) {
-								// text node
-								o["#text"] = this.escape(n.nodeValue);
-							}
-							else if (n.nodeType === 4) {
-								// cdata node
-								if (FuncTest.test(n.nodeValue)) {
-									o[n.nodeName] = [o[n.nodeName], n.nodeValue];
-								} else {
-									o["#cdata"] = this.escape(n.nodeValue);
-								}
-							}
-							else if (o[n.nodeName]) {
-								// multiple occurence of element ..
-								if (o[n.nodeName] instanceof Array) {
-									o[n.nodeName][o[n.nodeName].length] = this.toObj(n);
-								}
-								else {
-									o[n.nodeName] = [o[n.nodeName], this.toObj(n)];
-								}
-							}
-							else {
-								// first occurence of element ..
-								o[n.nodeName] = this.toObj(n);
-							}
-						}
-					}
-					else {
-						// mixed content
-						if (!xml.attributes.length) {
-							o = this.escape(this.innerXml(xml));
-						}
-						else {
-							o["#text"] = this.escape(this.innerXml(xml));
-						}
-					}
-				}
-				else if (textChild) {
-					// pure text
-					if (!xml.attributes.length) {
-						o = this.escape(this.innerXml(xml));
-						if (o === "__EMPTY_ARRAY_") {
-							o = "[]";
-						} else if (o === "__EMPTY_STRING_") {
-							o = "";
-						}
-					}
-					else {
-						o["#text"] = this.escape(this.innerXml(xml));
-					}
-				}
-				else if (cdataChild) {
-					// cdata
-					if (cdataChild > 1) {
-						o = this.escape(this.innerXml(xml));
-					}
-					else {
-						for (n = xml.firstChild; n; n = n.nextSibling) {
-							if(FuncTest.test(xml.firstChild.nodeValue)) {
-								o = xml.firstChild.nodeValue;
-								break;
-							} else {
-								o["#cdata"] = this.escape(n.nodeValue);
-							}
-						}
-					}
-				}
-			}
-			if (!xml.attributes.length && !xml.firstChild) {
-				o = null;
-			}
-		}
-		else if (xml.nodeType === 9) {
-			// document.node
-			o = this.toObj(xml.documentElement);
-		}
-		else {
-			alert("unhandled node type: " + xml.nodeType);
-		}
-		return o;
-	},
-	toJson: function(o, name, ind, wellform) {
-		if(wellform === undefined) { wellform = true; }
-		var json = name ? ("\"" + name + "\"") : "", tab = "\t", newline = "\n";
-		if(!wellform) {
-			tab= ""; newline= "";
-		}
 
-		if (o === "[]") {
-			json += (name ? ":[]" : "[]");
-		}
-		else if (o instanceof Array) {
-			var n, i, ar=[];
-			for (i = 0, n = o.length; i < n; i += 1) {
-				ar[i] = this.toJson(o[i], "", ind + tab, wellform);
-			}
-			json += (name ? ":[" : "[") + (ar.length > 1 ? (newline + ind + tab + ar.join(","+newline + ind + tab) + newline + ind) : ar.join("")) + "]";
-		}
-		else if (o === null) {
-			json += (name && ":") + "null";
-		}
-		else if (typeof(o) === "object") {
-			var arr = [], m;
-			for (m in o) {
-				if (o.hasOwnProperty(m)) {
-					arr[arr.length] = this.toJson(o[m], m, ind + tab, wellform);
+		var xml = hashToxml( null, tree );
+		return o.xmlDecl + xml;
+	},
+	xmlToJSON : function ( root, options ) {
+		var o = $.extend ( {
+			force_array : [], //[ "rdf:li", "item", "-xmlns" ];
+			attr_prefix : '-'
+		}, options || {} );
+		
+		if(!root) { return; }
+		
+	    var __force_array = {};
+		if ( o.force_array ) {
+			for( var i=0; i< o.force_array.length; i++ ) {
+				__force_array[o.force_array[i]] = 1;
 			}
 		}
-			json += (name ? ":{" : "{") + (arr.length > 1 ? (newline + ind + tab + arr.join(","+newline + ind + tab) + newline + ind) : arr.join("")) + "}";
+		
+		if(typeof root === 'string') {
+			root = $.parseXML(root);
+		} 
+		if(root.documentElement) {
+			root = root.documentElement;
 		}
-		else if (typeof(o) === "string") {
-			/*
-			var objRegExp  = /(^-?\d+\.?\d*$)/;
-			var FuncTest = /function/i;
-			var os = o.toString();
-			if (objRegExp.test(os) || FuncTest.test(os) || os==="false" || os==="true") {
-				// int or float
-				json += (name && ":")  + "\"" +os + "\"";
+		var addNode = function ( hash, key, cnts, val ) {
+			if(typeof val === 'string') {
+				if( val.indexOf('function') !== -1) {
+					val =  eval( '(' + val +')'); // we need this in our implement
+				} else if(val === '_EMPTY_ARRAY_') {
+					val = [];
+				} else if(val === '_EMPTY_STRING_') {
+					val = "";
+				}
 			} 
-			else {
-			*/
-				json += (name && ":") + "\"" + o.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"";
-			//}
+			if ( __force_array[key] ) {
+				if ( cnts === 1 ) {
+					hash[key] = [];
+				}
+				hash[key][hash[key].length] = val;      // push
+			} else if ( cnts === 1 ) {                   // 1st sibling
+				hash[key] = val;
+			} else if ( cnts === 2 ) {                   // 2nd sibling
+				hash[key] = [ hash[key], val ];
+			} else {                                    // 3rd sibling and more
+				hash[key][hash[key].length] = val;
 			}
-		else {
-			json += (name && ":") +  o.toString();
+		},
+		parseElement = function ( elem ) {
+			//  COMMENT_NODE
+			if ( elem.nodeType === 7 ) {
+				return;
+			}
+
+			//  TEXT_NODE CDATA_SECTION_NODE
+			if ( elem.nodeType === 3 || elem.nodeType === 4 ) {
+				var bool = elem.nodeValue.match( /[^\x00-\x20]/ );
+				if ( bool == null ) return;     // ignore white spaces
+				return elem.nodeValue;
+			}
+			
+			var retval,	cnt = {}, i, key, val;
+
+			//  parse attributes
+			if ( elem.attributes && elem.attributes.length ) {
+				retval = {};
+				for ( i=0; i<elem.attributes.length; i++ ) {
+					key = elem.attributes[i].nodeName;
+					if ( typeof(key) !== "string" )  {
+						continue;
+					}
+					val = elem.attributes[i].nodeValue;
+					if ( ! val ) {
+						continue;
+					}
+					key = o.attr_prefix + key;
+					if ( typeof(cnt[key]) === "undefined" ) {
+						cnt[key] = 0;
+					}
+					cnt[key] ++;
+					addNode( retval, key, cnt[key], val );
+				}
+			}
+
+			//  parse child nodes (recursive)
+			if ( elem.childNodes && elem.childNodes.length ) {
+				var textonly = true;
+				if ( retval ) {
+					textonly = false;
+				}        // some attributes exists
+				for ( i=0; i<elem.childNodes.length && textonly; i++ ) {
+					var ntype = elem.childNodes[i].nodeType;
+					if ( ntype === 3 || ntype === 4 ) {
+						continue;
+					}
+					textonly = false;
+				}
+				if ( textonly ) {
+					if ( ! retval ) {
+						retval = "";
+					}
+					for ( i=0; i<elem.childNodes.length; i++ ) {
+						retval += elem.childNodes[i].nodeValue;
+					}
+				} else {
+					if ( ! retval ) {
+						retval = {};
+					}
+					for ( i=0; i<elem.childNodes.length; i++ ) {
+						key = elem.childNodes[i].nodeName;
+						if ( typeof(key) !== "string" ) {
+							continue;
+						}
+						val = parseElement( elem.childNodes[i] );
+						if ( !val ) {
+							continue;
+						}
+						if ( typeof(cnt[key]) === "undefined" ) {
+							cnt[key] = 0;
+						}
+						cnt[key] ++;
+						addNode( retval, key, cnt[key], val );
+					}
+				}
+			}
+			return retval;
+		};
+		
+	    var json = parseElement( root );   // parse root node
+		if ( __force_array[root.nodeName] ) {
+			json = [ json ];
+		}
+		if ( root.nodeType !== 11 ) {            // DOCUMENT_FRAGMENT_NODE
+			var tmp = {};
+			tmp[root.nodeName] = json;          // root nodeName
+			json = tmp;
 		}
 		return json;
-	},
-	innerXml: function(node) {
-		var s = "";
-		if ("innerHTML" in node) {
-			s = node.innerHTML;
-		}
-		else {
-			var asXml = function(n) {
-				var s = "", i;
-				if (n.nodeType === 1) {
-					s += "<" + n.nodeName;
-					for (i = 0; i < n.attributes.length; i += 1) {
-						s += " " + n.attributes[i].nodeName + "=\"" + (n.attributes[i].nodeValue || "").toString() + "\"";
-					}
-					if (n.firstChild) {
-						s += ">";
-						for (var c = n.firstChild; c; c = c.nextSibling) {
-							s += asXml(c);
-						}
-						s += "</" + n.nodeName + ">";
-					}
-					else {
-						s += "/>";
-					}
-				}
-				else if (n.nodeType === 3) {
-					s += n.nodeValue;
-				}
-				else if (n.nodeType === 4) {
-					s += "<![CDATA[" + n.nodeValue + "]]>";
-				}
-				return s;
-			};
-			for (var c = node.firstChild; c; c = c.nextSibling) {
-				s += asXml(c);
-			}
-		}
-		return s;
-	},
-	escape: function(txt) {
-		return txt.replace(/[\\]/g, "\\\\").replace(/[\"]/g, '\\"').replace(/[\n]/g, '\\n').replace(/[\r]/g, '\\r');
-	},
-	removeWhite: function(e) {
-		e.normalize();
-		var n;
-		for (n = e.firstChild; n; ) {
-			if (n.nodeType === 3) {
-				// text node
-				if (!n.nodeValue.match(/[^ \f\n\r\t\v]/)) {
-					// pure whitespace text node
-					var nxt = n.nextSibling;
-					e.removeChild(n);
-					n = nxt;
-				}
-				else {
-					n = n.nextSibling;
-				}
-			}
-			else if (n.nodeType === 1) {
-				// element node
-				this.removeWhite(n);
-				n = n.nextSibling;
-			}
-			else {
-				// any other node
-				n = n.nextSibling;
-			}
-		}
-		return e;
 	}
 };
 
