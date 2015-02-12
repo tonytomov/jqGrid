@@ -9663,7 +9663,7 @@ $.extend($.jgrid,{
 				}
 			}
 		}
-		ret = $.jgrid.parse( gridstring );
+		ret = jqGridUtils.parse( gridstring );
 		if( ret && $.type(ret) === 'object') {
 			if($.isFunction(o.beforeSetGrid)) {
 				tmp = o.beforeSetGrid( ret );
