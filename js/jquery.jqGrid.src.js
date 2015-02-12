@@ -6849,18 +6849,20 @@ jgrid.extend({
 				var sdata={}, j=0, nm;
 				trigger = (typeof trigger !== 'boolean') ? true : trigger;
 				$.each(colModel,function(){
-					var v, cm = this, $elem = $("#gs_"+jqID(cm.name),(cm.frozen===true && p.frozenColumns === true) ?  grid.fhDiv : grid.hDiv);
+					var v, cm = this, $elem = $("#gs_"+jqID(cm.name),(cm.frozen===true && p.frozenColumns === true) ? grid.fhDiv : grid.hDiv),
+						isSindleSelect;
 					if(cm.searchoptions && cm.searchoptions.defaultValue !== undefined) { v = cm.searchoptions.defaultValue; }
 					nm = cm.index || cm.name;
 					switch (cm.stype) {
 						case 'select' :
+							isSindleSelect = $elem.length > 0 ? !$elem[0].multiple : true;
 							$elem.find("option").each(function (i){
-								if(i===0) { this.selected = true; }
+								this.selected = i === 0 && isSindleSelect;
 								if ($(this).val() === v) {
 									this.selected = true;
 									return false;
 								}
-							});
+							}).trigger("change");
 							if ( v !== undefined ) {
 								// post the key and not the text
 								sdata[nm] = v;
