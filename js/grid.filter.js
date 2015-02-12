@@ -18,7 +18,7 @@
 }
 */
 /*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery, define, xmlJsonClass */
+/*global jQuery, define */
 
 (function( factory ) {
 	"use strict";
@@ -26,7 +26,6 @@
 		// AMD. Register as an anonymous module.
 		define([
 			"jquery",
-			"./JsonXml",
 			"./grid.base",
 			"./grid.common"
 		], factory );
@@ -1339,13 +1338,8 @@ $.jgrid.extend({
 
 					if(p.stringResult) {
 						try {
-							// xmlJsonClass or JSON.stringify
-							res = xmlJsonClass.toJson(filters, '', '', false);
-						} catch (e) {
-							try {
-								res = JSON.stringify(filters);
-							} catch (e2) { }
-						}
+							res = JSON.stringify(filters);
+						} catch (e2) { }
 						if(typeof res==="string") {
 							sdata[p.sFilter] = res;
 							$.each([p.sField,p.sValue, p.sOper], function() {sdata[this] = "";});
