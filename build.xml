@@ -13,7 +13,7 @@
 		<fileset file="js/grid.base.js"/>
 		<fileset file="js/jqModal.js"/>
 		<fileset file="js/jqDnR.js"/>
-		<fileset file="js/JsonXml.js"/>
+		<fileset file="js/grid.utils.js"/>
 		<fileset file="js/jquery.fmatter.js"/>
 		<fileset file="js/grid.common.js"/>
 		<fileset file="js/grid.filter.js"/>

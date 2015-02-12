@@ -19,7 +19,7 @@ var
 		"jqDnR",
 		"jqModal",
 		"jquery.fmatter",
-		"JsonXml"
+		"grid.utils"
 	],
 
 	gridFiles = allFiles.map(function( file ) {

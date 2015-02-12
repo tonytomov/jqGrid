@@ -17,7 +17,7 @@ require([
 	"jqgrid/jqDnR",
 	"jqgrid/jqModal",
 	"jqgrid/jquery.fmatter",
-	"jqgrid/JsonXml",
+	"jqgrid/grid.utils",
 	"jqgrid/addons/ui.multiselect"
 
 ], function ($) {
