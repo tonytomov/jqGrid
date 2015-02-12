@@ -848,6 +848,7 @@ jgrid.extend({
 			if (!grid) {return;}
 			var cm = p.colModel,i=0, len = cm.length, maxfrozen = -1, frozen= false;
 			// TODO treeGrid and grouping  Support
+			// TODO: allow to edit columns AFTER frozen columns
 			if(p.subGrid === true || p.treeGrid === true || p.cellEdit === true || p.sortable || p.scroll )
 			{
 				return;

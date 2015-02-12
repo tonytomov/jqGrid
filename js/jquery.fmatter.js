@@ -217,7 +217,7 @@
 			strCellValue = String(cellValue).toLowerCase(),
 			editoptions = options.colModel.editoptions,
 			editYes = editoptions != null && typeof editoptions.value === "string" ? editoptions.value.split(":")[0] : "yes";
-		return (cellValue === 1 || strCellValue === "1" || cellValue === true || strCellValue === "true" || strCellValue === "yes" || strCellValue === editYes) ?
+		return (cellValue === 1 || strCellValue === "1" || strCellValue === "x" || cellValue === true || strCellValue === "true" || strCellValue === "yes" || strCellValue === editYes) ?
 			'<i class="fa fa-check-square-o fa-lg"' + title + '></i>' :
 			'<i class="fa fa-square-o fa-lg"' + title + '></i>';
 	};

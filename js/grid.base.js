@@ -1458,6 +1458,7 @@ $.fn.jqGrid = function( pin ) {
 			rowNum: 20,
 			maxRowNum: 10000,
 			autoresizeOnLoad: false,
+			columnsToReResizing: [],
 			autoResizing: {
 				wrapperClassName: "ui-jqgrid-cell-wrapper",
 				//widthOfVisiblePartOfSortIcon: pin.iconSet === "fontAwesome" ? 13 : 12,
@@ -1721,6 +1722,7 @@ $.fn.jqGrid = function( pin ) {
 				self.hDiv.style.cursor = "default";
 				if(self.resizing) {
 					if (self.resizing !== null && self.resizing.moved === true) {
+						$(self.headers[self.resizing.idx].el).removeData("autoResized");
 						self.resizeColumn(self.resizing.idx, false);
 					}
 					$(p.rs).removeData("pageX");
@@ -2049,6 +2051,7 @@ $.fn.jqGrid = function( pin ) {
 				clearArray(p.lastSelectedData); //p.lastSelectedData = [];
 				p._index = {};
 			}
+			//$(self.grid.headers).each(function () { $(this.el).removeData("autoResized"); });
 		},
 		normalizeData = function() {
 			var data = p.data, dataLength = data.length, i, j, cur, cells, idn, idi, idr, v, rd,
@@ -2923,9 +2926,21 @@ $.fn.jqGrid = function( pin ) {
 						$self.css("height", "");
 					}
 				},
+				resort = function () {
+					var iRes;
+					if (p.autoresizeOnLoad) {
+						$self.jqGrid("autoResizeAllColumns");
+						clearArray(p.columnsToReResizing);
+					} else {
+						for (iRes = 0; iRes < p.columnsToReResizing.length; iRes++) {
+							$self.jqGrid("autoResizeColumn", p.columnsToReResizing[iRes]);
+						}
+						clearArray(p.columnsToReResizing);
+					}
+				},
 				finalReportSteps = function () {
 					feedback.call(self, "loadComplete", dstr);
-					if (p.autoresizeOnLoad) {$self.jqGrid("autoResizeAllColumns");}
+					resort();
 					$self.triggerHandler("jqGridAfterLoadComplete", [dstr]);
 					endReq.call(self);
 					p.datatype = "local";
@@ -2936,7 +2951,7 @@ $.fn.jqGrid = function( pin ) {
 				finalReportVirtual = function (data) {
 					$self.triggerHandler("jqGridLoadComplete", [data]);
 					if(lc) { lc.call(self, data); }
-					if (p.autoresizeOnLoad) {$self.jqGrid("autoResizeAllColumns");}
+					resort();
 					$self.triggerHandler("jqGridAfterLoadComplete", [data]);
 					if (pvis) { gridSelf.populateVisible.call(self); }
 					if (npage === 1) { endReq.call(self); }
@@ -3202,7 +3217,7 @@ $.fn.jqGrid = function( pin ) {
 			p.sortname = sort;
 		},
 		sortData = function (index, idxcol,reload,sor, obj){
-			var self = this;
+			var self = this, mygrid = self.grid;
 			if(!p.colModel[idxcol].sortable) { return; }
 			if(p.savedRow.length > 0) {return;}
 			if(!reload) {
@@ -3220,17 +3235,18 @@ $.fn.jqGrid = function( pin ) {
 					if(p.lastsort === idxcol && p.sortorder === sor && !reload) { return; }
 					p.sortorder = sor;
 				}
-				var $previousSelectedTh = self.grid.headers[p.lastsort] ? $(self.grid.headers[p.lastsort].el) : $(),
-					$newSelectedTh = p.frozenColumns ? $(obj) : $(self.grid.headers[idxcol].el),
-					$iconsSpan = $newSelectedTh.find("span.s-ico"),
+				var headers = mygrid.headers, fhDiv = mygrid.fhDiv,
+					$previousSelectedTh = headers[p.lastsort] ? $(headers[p.lastsort].el) : $(),
+					$newSelectedTh = p.frozenColumns ? $(obj) : $(headers[idxcol].el),
+					$iconsSpan = $newSelectedTh.find("span.s-ico"), cm = p.colModel[p.lastsort],
 					$iconsActive = $iconsSpan.children("span.ui-icon-" + p.sortorder),
 					$iconsInictive = $iconsSpan.children("span.ui-icon-" + (p.sortorder === "asc" ? "desc" : "asc"));
 
 				$previousSelectedTh.find("span.ui-grid-ico-sort").addClass("ui-state-disabled");
 				$previousSelectedTh.attr("aria-selected", "false");
 				if (p.frozenColumns) {
-					self.grid.fhDiv.find("span.ui-grid-ico-sort").addClass("ui-state-disabled");
-					self.grid.fhDiv.find("th").attr("aria-selected", "false");
+					fhDiv.find("span.ui-grid-ico-sort").addClass("ui-state-disabled");
+					fhDiv.find("th").attr("aria-selected", "false");
 				}
 				$iconsActive.removeClass("ui-state-disabled").css("display", ""); // show
 				if (p.showOneSortIcon) {
@@ -3240,12 +3256,30 @@ $.fn.jqGrid = function( pin ) {
 				if(!p.viewsortcols[0]) {
 					if(p.lastsort !== idxcol) {
 						if(p.frozenColumns){
-							self.grid.fhDiv.find("span.s-ico").hide();
+							fhDiv.find("span.s-ico").hide();
 						}
 						$previousSelectedTh.find("span.s-ico").hide();
 						$iconsSpan.show();
 					} else if (p.sortname === "") { // if p.lastsort === idxcol but p.sortname === ""
 						$iconsSpan.show();
+					}
+				}
+				if (p.lastsort !== idxcol) {
+					if ($previousSelectedTh.data("autoResized") === "true" &&
+							((cm != null && cm.autoResizing != null && cm.autoResizing.compact) ||
+								p.autoResizing.compact)) {
+						// recalculate the width of the column after removing sort icon
+						//$(self).jqGrid("autoResizeColumn", p.lastsort);
+						p.columnsToReResizing.push(p.lastsort);
+					}
+				}
+				if (p.lastsort !== idxcol && $newSelectedTh.data("autoResized") === "true") {
+					cm = p.colModel[idxcol];
+					if ((cm != null && cm.autoResizing != null && cm.autoResizing.compact) ||
+							p.autoResizing.compact) {
+						// recalculate the width of the column after removing sort icon
+						p.columnsToReResizing.push(idxcol);
+						//$(self).jqGrid("autoResizeColumn", idxcol);
 					}
 				}
 				// the index looks like "jqgh_" + p.id + "_" + colIndex (like "jqgh_list_invdate")
@@ -3265,9 +3299,9 @@ $.fn.jqGrid = function( pin ) {
 				clearArray(p.savedRow); //p.savedRow =[];
 			}
 			if(p.scroll) {
-				var sscroll = self.grid.bDiv.scrollLeft;
+				var sscroll = mygrid.bDiv.scrollLeft;
 				emptyRows.call(self, true, false);
-				self.grid.hDiv.scrollLeft = sscroll;
+				mygrid.hDiv.scrollLeft = sscroll;
 			}
 			if(p.subGrid && p.datatype === 'local') {
 				$("td.sgexpanded","#"+jqID(p.id)).each(function(){
@@ -5169,67 +5203,91 @@ jgrid.extend({
 			}
 		});
 	},
+	getAutoResizableWidth: function (iCol) {
+		var self = this;
+		if (self.length === 0) {
+			return -1;
+		}
+		self = self[0];
+		var rows = self.rows, row, cell, iRow, $cell, $cellFirstChild,
+			p = self.p,
+			cm = p.colModel[iCol],
+			$th = $($(self.grid.hDiv).find(".ui-jqgrid-labels>.ui-th-column")[iCol]),
+			$thDiv = $th.find(">div"),
+			thPaddingLeft = parseFloat($th.css("padding-left") || 0),
+			thPaddingRight = parseFloat($th.css("padding-right") || 0),
+			$incosDiv = $thDiv.find("span.s-ico"),
+			$wrapper = $thDiv.find(">." + p.autoResizing.wrapperClassName),
+			wrapperOuterWidth = $wrapper.outerWidth(),
+			wrapperCssWidth = parseFloat($wrapper.css("width") || 0),
+			widthOuter = 0,
+			colWidth = 0,
+			compact = (cm.autoResizing != null && cm.autoResizing.compact !== undefined) ? cm.autoResizing.compact: p.autoResizing.compact,
+			wrapperClassName = p.autoResizing.wrapperClassName;
+
+		if (cm == null || !cm.autoResizable || $wrapper.length === 0 || cm.hidden || cm.fixed) {
+			return -1; // do nothing
+		}
+		if (!compact || $incosDiv.is(":visible") || ($incosDiv.css("display") !== "none")) {  //|| p.viewsortcols[0]
+			colWidth = p.autoResizing.widthOfVisiblePartOfSortIcon; // $incosDiv.width() can be grater as the visible part of icon
+			if ($thDiv.css("text-align") === "center") {
+				colWidth += colWidth; // *2
+			}
+			if (p.viewsortcols[1] === "horizontal") {
+				colWidth += colWidth; // *2
+			}
+		}
+		colWidth += wrapperOuterWidth + thPaddingLeft +
+				(wrapperCssWidth === wrapperOuterWidth ? thPaddingLeft + thPaddingRight : 0) +
+				parseFloat($thDiv.css("margin-left") || 0) + parseFloat($thDiv.css("margin-right") || 0);
+		for (iRow = 0, rows = self.rows; iRow < rows.length; iRow++) {
+			row = rows[iRow];
+			cell = row.cells[iCol];
+			$cell = $(row.cells[iCol]);
+			if ($(row).hasClass("jqgrow") && cell != null) {
+				$cellFirstChild = $(cell.firstChild);
+				if ($cellFirstChild.hasClass(wrapperClassName)) {
+					colWidth = Math.max(colWidth, $cellFirstChild.outerWidth() + widthOuter);
+				} else if (p.treeGrid && p.ExpandColumn === cm.name) {
+					$cellFirstChild = $cell.children(".cell-wrapper,.cell-wrapperleaf");
+					colWidth = Math.max(colWidth, $cellFirstChild.outerWidth() + widthOuter + $cell.children(".tree-wrap").outerWidth());						
+				}
+			} else if ($(row).hasClass("jqgfirstrow")) {
+				widthOuter = (jgrid.cell_width ? parseFloat($cell.css("padding-left") || 0) + parseFloat($cell.css("padding-right") || 0) : 0) +
+						parseFloat($cell.css("border-right") || 0) +
+						parseFloat($cell.css("border-left") || 0);
+			}
+		}
+		colWidth = Math.max(colWidth,
+			cm.autoResizing != null && cm.autoResizing.minColWidth !== undefined ?
+			cm.autoResizing.minColWidth :
+			p.autoResizing.minColWidth);
+		return Math.min(
+			colWidth,
+			cm.autoResizing != null && cm.autoResizing.maxColWidth !== undefined ?
+				cm.autoResizing.maxColWidth :
+				p.autoResizing.maxColWidth
+		);
+	},
 	autoResizeColumn: function (iCol) {
 		return this.each(function () {
-			var rows = this.rows, row, cell, iRow, $cell, $cellFirstChild, widthOrg,
-				p = this.p,
-				cm = p.colModel[iCol],
-				$th = $($(this.grid.hDiv).find(".ui-jqgrid-labels>.ui-th-column")[iCol]),
-				$thDiv = $th.find(">div"),
-				thPaddingLeft = parseFloat($th.css("padding-left") || 0),
-				thPaddingRight = parseFloat($th.css("padding-right") || 0),
-				$incosDiv = $thDiv.find("span.s-ico"),
-				$wrapper = $thDiv.find(">." + p.autoResizing.wrapperClassName),
-				wrapperOuterWidth = $wrapper.outerWidth(),
-				wrapperCssWidth = parseFloat($wrapper.css("width") || 0),
-				widthOuter = 0,
-				colWidth = 0,
-				compact = (cm.autoResizing != null && cm.autoResizingOption.compact !== undefined) ? cm.autoResizingOption.compact: p.autoResizing.compact,
-				wrapperClassName = p.autoResizing.wrapperClassName;
+			var self = this, $self = $(this), p = self.p, cm = p.colModel[iCol], widthOrg,
+				$th = $($(self.grid.hDiv).find(".ui-jqgrid-labels>.ui-th-column")[iCol]),
+				newWidth = $self.jqGrid("getAutoResizableWidth", iCol);
 
-			if (cm == null || !cm.autoResizable || $wrapper.length === 0 || cm.hidden || cm.fixed) {
-				return; // do nothing
+			if (cm == null || newWidth < 0) {
+				return;
 			}
-			if (!compact || $incosDiv.is(":visible") || ($incosDiv.css("display") !== "none")) {  //|| p.viewsortcols[0]
-				colWidth = p.autoResizing.widthOfVisiblePartOfSortIcon; // $incosDiv.width() can be grater as the visible part of icon
-				if ($thDiv.css("text-align") === "center") {
-					colWidth += colWidth; // *2
-				}
-				if (p.viewsortcols[1] === "horizontal") {
-					colWidth += colWidth; // *2
-				}
-			}
-			colWidth += wrapperOuterWidth + thPaddingLeft +
-					(wrapperCssWidth === wrapperOuterWidth ? thPaddingLeft + thPaddingRight : 0) +
-					parseFloat($thDiv.css("margin-left") || 0) + parseFloat($thDiv.css("margin-right") || 0);
-			for (iRow = 0, rows = this.rows; iRow < rows.length; iRow++) {
-				row = rows[iRow];
-				cell = row.cells[iCol];
-				$cell = $(row.cells[iCol]);
-				if ($(row).hasClass("jqgrow") && cell != null) {
-					$cellFirstChild = $(cell.firstChild);
-					if ($cellFirstChild.hasClass(wrapperClassName)) {
-						colWidth = Math.max(colWidth, $cellFirstChild.outerWidth() + widthOuter);
-					} else if (p.treeGrid && p.ExpandColumn === cm.name) {
-						$cellFirstChild = $cell.children(".cell-wrapper,.cell-wrapperleaf");
-						colWidth = Math.max(colWidth, $cellFirstChild.outerWidth() + widthOuter + $cell.children(".tree-wrap").outerWidth());						
-					}
-				} else if ($(row).hasClass("jqgfirstrow")) {
-					widthOuter = (jgrid.cell_width ? parseFloat($cell.css("padding-left") || 0) + parseFloat($cell.css("padding-right") || 0) : 0) +
-							parseFloat($cell.css("border-right") || 0) +
-							parseFloat($cell.css("border-left") || 0);
-				}
-			}
-			colWidth = Math.max(colWidth, cm.autoResizing != null && cm.autoResizingOption.minColWidth !== undefined ? cm.autoResizingOption.minColWidth : p.autoResizing.minColWidth);
-			$(this).jqGrid("setColWidth", iCol, Math.min(colWidth, cm.autoResizing != null && cm.autoResizingOption.maxColWidth !== undefined ? cm.autoResizingOption.maxColWidth : p.autoResizing.maxColWidth), p.autoResizing.adjustGridWidth && !p.autoResizing.fixWidthOnShrink);
+			$self.jqGrid("setColWidth", iCol, newWidth, p.autoResizing.adjustGridWidth && !p.autoResizing.fixWidthOnShrink);
 			if (p.autoResizing.fixWidthOnShrink && p.shrinkToFit) {
 				cm.fixed = true;
 				widthOrg = cm.widthOrg; // save the value in temporary variable
 				cm.widthOrg = cm.width; // to force not changing of the column width
-				$(this).jqGrid("setGridWidth", p.width, true);
+				$self.jqGrid("setGridWidth", p.width, true);
 				cm.widthOrg = widthOrg;
 				cm.fixed = false;
 			}
+			$th.data("autoResized", "true");
 		});
 	},
 	autoResizeAllColumns: function () {
@@ -5240,6 +5298,14 @@ jgrid.extend({
 				fixWidthOnShrink = p.autoResizing.fixWidthOnShrink,
 				width = parseInt(p.widthOrg,10),
 				autoResizeColumn = jgrid.getMethod("autoResizeColumn"); // cache autoResizeColumn reference
+				
+			//    1) Analyse colModel, colNames properties and sortname parameter to calculate
+			//       minimal and optimal width of every column and the grid. It could be
+			//       some important cases which should be 
+			//      a) The current width of the grid is LESS then optimal width and resizable column don't have fixed:true property.
+			//         1. save widthOrg of the resizable column in temporary variable
+			//         2. set widthOrg property of the resizable column to optimal size and set additionally fixed:true
+			//         3. call setGridWidth with the CURRENT grid width to change shrink width of all fixed:false
 
 			p.shrinkToFit = false; // make no shrinking during resizing of any columns 
 			p.autoResizing.adjustGridWidth = true;
