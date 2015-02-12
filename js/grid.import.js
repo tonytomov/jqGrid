@@ -198,6 +198,10 @@ $.extend($.jgrid,{
 				$(td).find(".ui-inline-cancel").attr("title",nav.canceltitle);
 			});
 		}
+		try {
+			window['sessionStorage'].removeItem("jqGrid"+grid.id);
+			window['sessionStorage'].removeItem("jqGrid"+grid.id+"_data");
+		} catch (e) {}
 	},
 	jqGridImport : function(jqGridId, o) {
 		o = $.extend({
