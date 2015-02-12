@@ -163,7 +163,7 @@ $.fn.jqFilter = function( arg ) {
 				p.afterRedraw.call(this, p);
 			}
 		};
-		/*
+		/**
 		 * Creates a grouping data for the filter
 		 * @param group - object
 		 * @param parentgroup - object
