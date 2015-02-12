@@ -341,11 +341,15 @@ $.extend(true,jgrid,{
 	},
 	msie : navigator.appName === 'Microsoft Internet Explorer',
 	msiever : function () {
-		var rv = -1;
-		var ua = navigator.userAgent;
-		var re  = new RegExp("MSIE ([0-9]{1,}[.0-9]{0,})");
-		if (re.exec(ua) != null) {
-			rv = parseFloat( RegExp.$1 );
+		// Trident/4.0 - Internet Explorer 8,
+		// Trident/5.0 - Internet Explorer 9,
+		// Trident/6.0 - Internet Explorer 10
+		// Trident/7.0 - IE11
+		// Version tokens MSIE might not reflect the actual version of the browser
+		// If Compatibility View is enabled for a webpage or the browser mode is set to an earlier version
+		var rv = -1, match = /(MSIE) ([0-9]{1,}[.0-9]{0,})/.exec(navigator.userAgent);
+		if (match.length === 3) {
+			rv = parseFloat(match[2] || -1);
 		}
 		return rv;
 	},
@@ -358,9 +362,8 @@ $.extend(true,jgrid,{
 	},
 	stripHtml : function(v) {
 		v = String(v);
-		var regexp = /<("[^"]*"|'[^']*'|[^'">])*>/gi;
 		if (v) {
-			v = v.replace(regexp,"");
+			v = v.replace(/<("[^"]*"|'[^']*'|[^'">])*>/gi,"");
 			return (v && v !== '&nbsp;' && v !== '&#160;') ? v.replace(/\"/g,"'") : "";
 		} 
 			return v;
@@ -386,8 +389,7 @@ $.extend(true,jgrid,{
 		var	token = /\\.|[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]/g,
 		timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[\-+]\d{4})?)\b/g,
 		timezoneClip = /[^\-+\dA-Z]/g,
-		msDateRegExp = new RegExp("^\/Date\\((([-+])?[0-9]+)(([-+])([0-9]{2})([0-9]{2}))?\\)\/$"),
-		msMatch = ((typeof date === 'string') ? date.match(msDateRegExp): null),
+		msMatch = ((typeof date === 'string') ? date.match(/^\/Date\((([-+])?[0-9]+)(([-+])([0-9]{2})([0-9]{2}))?\)\/$/): null),
 		pad = function (value, length) {
 			value = String(value);
 			length = parseInt(length,10) || 2;
@@ -682,7 +684,7 @@ $.extend(true,jgrid,{
 	},
 	getGridComponent: function (componentName, $p, p1) {
 		var p;
-		if ($p instanceof jQuery || $p.length > 0) {
+		if ($p instanceof $ || $p.length > 0) {
 			p = $p[0];
 		} else if ($p instanceof HTMLElement) {
 			p = $p;
@@ -1283,7 +1285,7 @@ $.extend(true,jgrid,{
 	},
 	feedback: function (p, eventPrefix, callbackSuffix, callbackName) {
 		var self = this;
-		if (self instanceof jQuery && self.length > 0) {
+		if (self instanceof $ && self.length > 0) {
 			self = self[0];
 		}
 		if (p == null || typeof callbackName !== "string" || callbackName.length < 2) {
@@ -7799,7 +7801,7 @@ $.fn.jqFilter = function( arg ) {
 				p.afterRedraw.call(this, p);
 			}
 		};
-		/*
+		/**
 		 * Creates a grouping data for the filter
 		 * @param group - object
 		 * @param parentgroup - object
