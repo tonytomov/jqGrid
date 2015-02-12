@@ -1,12 +1,12 @@
 /*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery, xmlJsonClass, define */
+/*global jQuery, jqGridUtils, define */
 (function( factory ) {
 	"use strict";
 	if ( typeof define === "function" && define.amd ) {
 		// AMD. Register as an anonymous module.
 		define([
 			"jquery",
-			"./JsonXml",
+			"./grid.utils",
 			"./grid.base"
 		], factory );
 	} else {
@@ -223,9 +223,9 @@ $.extend($.jgrid,{
 				var xmlConvert = function (xml,o) {
 					var cnfg = $(o.xmlGrid.config,xml)[0];
 					var xmldata = $(o.xmlGrid.data,xml)[0], jstr, jstr1, key;
-					if(xmlJsonClass.xml2json && $.jgrid.parse) {
-						jstr = xmlJsonClass.xml2json(cnfg," ");
-						jstr = $.jgrid.parse(jstr);
+					if(jqGridUtils.xmlToJSON ) {
+						jstr = jqGridUtils.xmlToJSON( cnfg );
+						//jstr = $.jgrid.parse(jstr);
 						for(key in jstr) {
 							if(jstr.hasOwnProperty(key)) {
 								jstr1=jstr[key];
@@ -367,11 +367,11 @@ $.extend($.jgrid,{
 				}
 				switch (o.exptype) {
 					case 'xmlstring' :
-						ret = "<"+o.root+">"+xmlJsonClass.json2xml(gprm,o.ident)+"</"+o.root+">";
+						ret = "<"+o.root+">"+ jqGridUtils.jsonToXML( gprm, {xmlDecl:""} )+"</"+o.root+">";
 						break;
 					case 'jsonstring' :
-						ret =  xmlJsonClass.toJson(gprm,o.root,o.ident,false);
-						if(o.root) { ret = "{"+ret+"}"; }
+						ret =  jqGridUtils.stringify( gprm );
+						if(o.root) { ret = "{"+ o.root +":"+ret+"}"; }
 						break;
 				}
 			});
