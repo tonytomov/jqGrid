@@ -132,10 +132,21 @@ window.jqGridUtils = {
 			if(typeof val === 'string') {
 				if( val.indexOf('function') !== -1) {
 					val =  eval( '(' + val +')'); // we need this in our implement
-				} else if(val === '_EMPTY_ARRAY_') {
-					val = [];
-				} else if(val === '_EMPTY_STRING_') {
-					val = "";
+				} else {
+					switch(val) {
+						case '_EMPTY_ARRAY_' :
+							val = [];
+							break;
+						case '_EMPTY_STRING_':
+							val = "";
+							break;
+						case "false" :
+							val = false;
+							break;
+						case "true":
+							val = true;
+							break;
+					}
 				}
 			} 
 			if ( __force_array[key] ) {
