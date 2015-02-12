@@ -23,6 +23,24 @@
 	$.jgrid = $.jgrid || {};
 	var fmatter = $.fmatter, jgrid = $.jgrid;
 	$.extend(true, jgrid, {
+		formatter: { // setting common formatter settings, which are independent from the language and locale
+			date: {
+				parseRe: /[#%\\\/:_;.,\t\s\-]/,
+				masks: {
+					ISO8601Long: "Y-m-d H:i:s",
+					ISO8601Short: "Y-m-d",
+					SortableDateTime: "Y-m-d\\TH:i:s",
+					UniversalSortableDateTime: "Y-m-d H:i:sO"
+				},
+				reformatAfterEdit: true,
+				userLocalTime: false
+			},
+			baseLinkUrl: "",
+			showAction: "",
+			target: "",
+			checkbox: { disabled: true },
+			idName: "id"
+		},
 		cmTemplate: {
 			integerStr: {
 				formatter: "integer", align: "right", sorttype: "integer",
@@ -239,17 +257,58 @@
 		}
 		return $FnFmatter.defaultFormat(cellval,opts);
 	};
-	$FnFmatter.showlink = function(cellval, opts) {
-		var op = {baseLinkUrl: opts.baseLinkUrl,showAction:opts.showAction, addParam: opts.addParam || "", target: opts.target, idName: opts.idName},
-		target = "", idUrl;
-		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
-			op = $.extend({},op,opts.colModel.formatoptions);
+	$FnFmatter.showlink = function(cellval, opts, rowData) {
+		var self = this,
+			op = {
+				baseLinkUrl: opts.baseLinkUrl,
+				showAction: opts.showAction,
+				addParam: opts.addParam || "",
+				target: opts.target,
+				idName: opts.idName,
+				hrefDefaultValue: "#"
+			},
+			target = "",
+			idUrl,
+			idParam,
+			addParam,
+			getOptionValue = function (option, encode) {
+				return $.isFunction(option) ?
+					option.call(self, {
+						cellValue: cellval,
+						rowid: opts.rowId,
+						rowData: rowData,
+						options: op
+					}) :
+					(encode ? encodeURIComponent(option) : option);
+			};
+		
+		if (opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
+			op = $.extend({}, op, opts.colModel.formatoptions);
 		}
-		if(op.target) {target = 'target=' + op.target;}
-		idUrl = op.baseLinkUrl+op.showAction + '?'+ op.idName+'='+opts.rowId+op.addParam;
-		if(typeof cellval === 'string' || fmatter.isNumber(cellval)) {	//add this one even if its blank string
-			return "<a "+target+" href=\"" + idUrl + "\">" + cellval + "</a>";
+
+		if (op.target) {
+			target = 'target=' + getOptionValue(op.target);
 		}
+		idUrl = getOptionValue(op.baseLinkUrl) + getOptionValue(op.showAction);
+		idParam = op.idName ? getOptionValue(op.idName, true) + '=' + getOptionValue(opts.rowId, true) : "";
+		addParam = !op.addParam ? "" :
+			typeof op.addParam === "object" && op.addParam !== null ?
+				$.param(op.addParam) :
+				getOptionValue(op.addParam);
+		idUrl += !idParam && !addParam ? "" :
+				'?' + idParam + (idParam && addParam ? "&" : "") + addParam;
+		if (idUrl === "") {
+			idUrl = getOptionValue(op.hrefDefaultValue);
+		}
+		if (typeof cellval === 'string' || fmatter.isNumber(cellval) || $.isFunction(op.cellValue)) {
+			//add this one even if cellval is blank string
+			return "<a "+target+" href=\"" + idUrl + "\">" +
+				($.isFunction(op.cellValue) ? getOptionValue(op.cellValue) : cellval) +
+				"</a>";
+		}
+		// the code below will be called typically for undefined cellval or 
+		// if cellval have null value or some other unclear value like an object
+		// and no cellValue callback function are defined "to decode" the value
 		return $FnFmatter.defaultFormat(cellval,opts);
 	};
 	var numberHelper = function(cellval, opts, formatType) {
