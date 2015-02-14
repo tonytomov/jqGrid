@@ -245,7 +245,7 @@ jgrid.extend({
 						showData = itemGroupingLevel === undefined; // if the first row after the opening group is data row then show the data rows
 					}
 					if (itemGroupingLevel !== undefined) {
-						if (itemGroupingLevel < num) {
+						if (itemGroupingLevel <= num) {
 							break;// next grouping header of the same lever are found
 						}
 						if (itemGroupingLevel === num + 1) {
