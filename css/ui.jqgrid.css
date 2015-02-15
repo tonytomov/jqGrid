@@ -845,6 +845,7 @@ span.ui-jqgrid-cell-wrapper {
 	padding-left: 0;
 }
 .ui-search-menu.ui-menu .ui-menu-item a {
+	text-decoration: none;
 	display: block;
 }
 .ui-search-menu.ui-menu .ui-menu-item a.g-menu-item:hover {
@@ -863,6 +864,7 @@ span.ui-jqgrid-cell-wrapper {
 a.g-menu-item,
 a.soptclass,
 a.clearsearchclass {
+	text-decoration: none;
 	cursor: pointer;
 }
 .ui-jqgrid .ui-search-table .ui-search-input > input,
