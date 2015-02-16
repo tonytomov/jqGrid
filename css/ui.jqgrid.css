@@ -749,6 +749,8 @@ span.ui-jqgrid-cell-wrapper {
 
 /* inline edit actions button*/
 .ui-jqgrid  .jqgrow .ui-jqgrid-actions {
+	display: inline-block;
+	vertical-align: middle;
 	margin: 0;
 }
 .ui-jqgrid  .jqgrow  .ui-jqgrid-actions > .ui-pg-div.ui-state-hover {
@@ -759,7 +761,6 @@ span.ui-jqgrid-cell-wrapper {
 	float: left;
 	margin: 0 1px;
 }
-
 /* Tree Grid */
 .ui-jqgrid .tree-wrap {
 	float: left;
@@ -913,16 +914,23 @@ a.clearsearchclass {
 	padding: 0;
 }
 .jqgrow .ui-pg-div > span.fa {
+	font-weight: normal;
+	font-size: 12px;
+	vertical-align: baseline;
 	background: none;
 	border: 0 none;
 }
 .ui-subgrid > .subgrid-cell span.fa {
+	font-weight: normal;
+	font-size: 12px;
 	text-indent: 0;
 	background: none;
 	border: 0 none;
 	margin-bottom: 4px;
 }
 .jqgrow > .ui-sgcollapsed span.fa {
+	font-weight: normal;
+	font-size: 12px;
 	text-indent: 0;
 	background: none;
 	border: 0 none;
