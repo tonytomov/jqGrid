@@ -1701,10 +1701,12 @@ $.fn.jqGrid = function( pin ) {
 		},
 		pin || {}),
 		getRes = function (path) {
-			return jgrid.getRes(jgrid, path) || jgrid.getRes(locales[locale], path);
+			//return jgrid.getRes(jgrid, path) || jgrid.getRes(locales[locale], path);
+			return $(ts).jqGrid("getGridRes", path);
 		},
 		getDef = function (path) {
-			return jgrid.getRes(jgrid, path) || jgrid.getRes(locales[locale], "defaults." + path) || jgrid.getRes(locales["en"], "defaults." + path);
+			//return jgrid.getRes(jgrid, path) || jgrid.getRes(locales[locale], "defaults." + path) || jgrid.getRes(locales["en-US"], "defaults." + path);
+			return $(ts).jqGrid("getGridRes", "defaults." + path);
 		};
 		// set dynamic options
 		p.recordpos = p.recordpos || (p.direction === "rtl" ? "left" : "right");
