@@ -2,7 +2,7 @@
 "use strict";
 /**
  * jqGrid French Translation
- * Tony Tomov tony@trirand.com
+ * Tony Tomov tony@trirand.com with changes by Laurent Rajchenbach.
  * http://trirand.com/blog/ 
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
@@ -107,17 +107,19 @@ $.extend(true,$.jgrid,{
 				"Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Décembre"
 			],
 			AmPm : ["am","pm","AM","PM"],
-			S: function (j) {return j === 1 ? 'er' : 'e';},
+			S: function (j) {
+				return j === 1 ? 'er' : 'e';
+			},
 			srcformat: 'Y-m-d',
 			newformat: 'd/m/Y',
 			masks : {
-				ShortDate: "n/j/Y",
-				LongDate: "l, F d, Y",
-				FullDateTime: "l, F d, Y g:i:s A",
-				MonthDay: "F d",
-				ShortTime: "g:i A",
-				LongTime: "g:i:s A",
-				YearMonth: "F, Y"
+				ShortDate: "j/n/Y",
+				LongDate: "l j n F Y",
+				FullDateTime: "l j n F Y H:i:s",
+				MonthDay: "j F",
+				ShortTime: "H:i",
+				LongTime: "H:i:s",
+				YearMonth: "F Y"
 			}
 		}
 	}
