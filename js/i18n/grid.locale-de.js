@@ -1,5 +1,3 @@
-(function($){
-"use strict";
 /**
  * jqGrid German Translation
  * Version 1.0.0 (developed for jQuery Grid 3.3.1)
@@ -10,7 +8,7 @@
  * Andreas Flack
  * http://www.contentcontrol-berlin.de
  *
- * Updated for jQuery 4.4
+ * Updated for jQuery 4.4 and for 4.8 by
  * Oleg Kiriljuk oleg.kiriljuk@ok-soft-gmbh.com
  * the format corresponds now the format from
  * https://github.com/jquery/globalize/blob/master/lib/cultures/globalize.culture.de.js
@@ -19,19 +17,23 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
-$.jgrid = $.jgrid || {};
-$.extend(true,$.jgrid,{
+
+/*global jQuery */
+(function($){
+"use strict";
+var locInfo = {
 	defaults : {
 		recordtext: "Zeige {0} - {1} von {2}",
 		emptyrecords: "Keine Datensätze vorhanden",
-		loadtext: "Lädt...",
+		loadtext: "Ladevorgang...",
 		pgtext : "Seite {0} von {1}",
 		pgfirst : "Erste Seite",
 		pglast : "Letzte Seite",
 		pgnext : "Nächste Seite",
 		pgprev : "Vorherige Seite",
 		pgrecs : "Datensätze pro Seite",
-		showhide: "Tabelle auf- oder zuklappen"
+		showhide: "Tabelle auf- oder zuklappen",
+		savetext: "Wird gespeichert..."
 	},
 	search : {
 		caption: "Suche...",
@@ -164,6 +166,29 @@ $.extend(true,$.jgrid,{
 				YearMonth: "F Y" // in jQuery UI Datepicker: "MMMM yyyy"
 			}
 		}
+	}
+};
+$.jgrid = $.jgrid || {};
+$.jgrid.locales = $.jgrid.locales || {};
+$.jgrid.locales.de = $.jgrid.locales["de-DE"] = locInfo;
+// we set locInfo under $.jgrid only to have more compatibility with the previous
+// version of jqGrid. All new code should get string resources only regional part directly
+// using getRes function.
+$.extend(true, $.jgrid, {
+	defaults: {
+		//direction: "ltr",
+		locale: "de-DE",
+		localeName: "Deutsch (Deutschland)",
+		localeNameEnglish: "German (Germany)"
+	},
+	locales: {
+		// In general the property name is free, but it's recommended to use the names based on
+		// http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
+		// http://rishida.net/utils/subtags/ and RFC 5646. See Appendix A of RFC 5646 for examples.
+		// One can use the lang attribute to specify language tags in HTML, and the xml:lang attribute for XML
+		// if it exists. See http://www.w3.org/International/articles/language-tags/#extlang
+		de: locInfo,        // set default locale for German
+		"de-DE": locInfo    // and for German (Germany)
 	}
 });
 }(jQuery));
