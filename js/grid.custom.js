@@ -380,7 +380,7 @@ jgrid.extend({
 					}
 				}
 			},
-			odata = getRes("search.odata"),
+			odata = getRes("search.odata") || [],
 			buildRuleMenu = function( elem, left, top ){
 				$("#sopt_menu").remove();
 
