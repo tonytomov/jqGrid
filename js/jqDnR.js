@@ -18,11 +18,7 @@
 	        if (touches) {
 	            touches = touches[0];
 	            return { x: touches.pageX, y: touches.pageY };
-	        } else if (orgEvent.getCurrentPoint) {
-				var pt = orgEvent.getCurrentPoint(orgEvent.currentTarget);
-				var ptTargetProperties = pt.properties;
-				return { x: e.screenX, y: e.screenY };
-			}
+	        }
 	        return { x: e.pageX, y: e.pageY };
 	    },
         jqDnR = {
@@ -131,7 +127,7 @@
 		mouseMove += namespace + " pointermove" + namespace;
 		mouseUp += namespace + " pointerup" + namespace;
 	} else if (window.MSPointerEvent) {
-		mouseDown += namespace + " mspointerdown" + namespace,
+		mouseDown += namespace + " mspointerdown" + namespace;
 		mouseMove += namespace + " mspointermove" + namespace;
 		mouseUp += namespace + " mspointerup";
 	} else /*if (document.hasOwnProperty("ontouchend"))*/ {
