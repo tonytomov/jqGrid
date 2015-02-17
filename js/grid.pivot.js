@@ -463,13 +463,13 @@ jgrid.extend({
 			var $t = this;
 
 			function pivot( data) {
-				var pivotGrid = jQuery($t).jqGrid('pivotSetup',data, pivotOpt),
+				var pivotGrid = $($t).jqGrid('pivotSetup',data, pivotOpt),
 				footerrow = $.assocArraySize(pivotGrid.summary) > 0 ? true : false,
-				query= jgrid.from(pivotGrid.rows), i;
+				query= jgrid.from.call($t,pivotGrid.rows), i;
 				for(i=0; i< pivotGrid.groupOptions.groupingView.groupField.length; i++) {
 					query.orderBy(pivotGrid.groupOptions.groupingView.groupField[i], "a", 'text', '');
 				}
-				jQuery($t).jqGrid($.extend(true, {
+				$($t).jqGrid($.extend(true, {
 					datastr: $.extend(query.select(),footerrow ? {userdata:pivotGrid.summary} : {}),
 					datatype: "jsonstring",
 					footerrow : footerrow,
@@ -482,12 +482,12 @@ jgrid.extend({
 				if(gHead.length) {
 					for( i = 0;i < gHead.length ; i++) {
 						if(gHead[i] && gHead[i].groupHeaders.length) {
-							jQuery($t).jqGrid('setGroupHeaders',gHead[i]);
+							$($t).jqGrid('setGroupHeaders',gHead[i]);
 						}
 					}
 				}
 				if(pivotOpt.frozenStaticCols) {
-					jQuery($t).jqGrid("setFrozenColumns");
+					$($t).jqGrid("setFrozenColumns");
 				}
 			}
 
