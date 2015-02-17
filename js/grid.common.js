@@ -11,7 +11,7 @@
  * http://www.gnu.org/licenses/gpl-2.0.html
 */
 "use strict";
-var jgrid = $.jgrid;
+var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes");
 $.extend(jgrid,{
 // Modal functions
     // The methods showModal and closeModal will be used as callback of $.jqm jQuery plugin defined in jqModal.js
@@ -339,7 +339,8 @@ $.extend(jgrid,{
 // Form Functions
 	createEl : function(eltype,options,vl,autowidth, ajaxso) {
 		var elem = "", $t = this, infoDialog = jgrid.info_dialog,
-		errcap = jgrid.errors.errcap, edit = jgrid.edit, editMsg = jgrid.edit.msg, bClose = edit.bClose;
+		getRes = function (path) { return getGridRes.call($($t), path); },
+		errcap = getRes("errors.errcap"), edit = getRes("edit"), editMsg = edit.msg, bClose = edit.bClose;
 		function setAttributes(elm, atr, exl ) {
 			var exclude = ['dataInit','dataEvents','dataUrl', 'buildSelect','sopt', 'searchhidden', 'defaultValue', 'attr', 'custom_element', 'custom_value'];
 			if(exl !== undefined && $.isArray(exl)) {
@@ -632,7 +633,7 @@ $.extend(jgrid,{
 	},
 	checkValues : function(val, valref, customobject, nam) {
 		var edtrul,i, nm, dft, len, g = this, p = g.p, cm = p.colModel, isEmpty = jgrid.isEmpty,
-		editMsg = jgrid.edit.msg, dateMasks = jgrid.formatter.date.masks;
+		editMsg = getGridRes.call($(g), "edit.msg"), dateMasks = getGridRes.call($(g), "formatter.date.masks");
 		if(customobject === undefined) {
 			if(typeof valref==='string'){
 				for( i =0, len=cm.length;i<len; i++){

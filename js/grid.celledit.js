@@ -138,7 +138,8 @@ jgrid.extend({
 	saveCell : function (iRow, iCol){
 		return this.each(function(){
 			var $t= this, $self = $($t), p = $t.p, fr, feedback = jgrid.feedback, infoDialog = jgrid.info_dialog, jqID = jgrid.jqID,
-				errors = jgrid.errors, errcap = errors.errcap, edit = jgrid.edit, editMsg = jgrid.edit.msg, bClose = edit.bClose;
+				errors = $self.jqGrid("getGridRes","errors"), errcap = errors.errcap,
+				edit = $self.jqGrid("getGridRes","edit"), editMsg = edit.msg, bClose = edit.bClose;
 			if (!$t.grid || p.cellEdit !== true) {return;}
 			if ( p.savedRow.length >= 1) {fr = 0;} else {fr=null;}
 			if(fr !== null) {

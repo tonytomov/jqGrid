@@ -12,7 +12,8 @@
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/
 "use strict";
-var jgrid = $.jgrid, feedback = jgrid.feedback, fullBoolFeedback = jgrid.fullBoolFeedback, jqID = jgrid.jqID,
+var jgrid = $.jgrid, locales = jgrid.locales, getRes = jgrid.getRes,
+	feedback = jgrid.feedback, fullBoolFeedback = jgrid.fullBoolFeedback, jqID = jgrid.jqID,
 	hideModal = jgrid.hideModal, viewModal = jgrid.viewModal, infoDialog = jgrid.info_dialog,
 	mergeCssClasses = jgrid.mergeCssClasses,
 	getCssStyleOrFloat = function ($elem, styleName) {
@@ -100,7 +101,11 @@ jgrid.extend({
 				showOnLoad: false,
 				layer: null,
 				operands : { "eq" :"=", "ne":"<>","lt":"<","le":"<=","gt":">","ge":">=","bw":"LIKE","bn":"NOT LIKE","in":"IN","ni":"NOT IN","ew":"LIKE","en":"NOT LIKE","cn":"LIKE","nc":"NOT LIKE","nu":"IS NULL","nn":"IS NOT NULL"}
-			}, jgrid.search, p.searching || {}, oMuligrid || {});
+			},
+			getRes(locales[p.locale], "search"),
+			jgrid.search || {},
+			p.searching || {},
+			oMuligrid || {});
 
 			var fid = "fbox_"+p.id, commonIconClass = o.commonIconClass,
 			ids = {themodal:'searchmod'+fid,modalhead:'searchhd'+fid,modalcontent:'searchcnt'+fid, resizeAlso : fid},
@@ -147,11 +152,11 @@ jgrid.extend({
 					fil.attr("dir","rtl");
 				}
 				var columns = $.extend([],p.colModel),
-				bS = "<a id='"+fid+"_search' class='fm-button ui-state-default ui-corner-all fm-button-icon-right ui-reset'></span><span class='fm-button-text'>"+o.Find+"</span><span class='fm-button-icon " + mergeCssClasses(commonIconClass, o.findDialogIcon) + "'></a>",
+				bS = "<a id='"+fid+"_search' class='fm-button ui-state-default ui-corner-all fm-button-icon-right ui-reset'><span class='fm-button-icon " + mergeCssClasses(commonIconClass, o.findDialogIcon) + "'></span><span class='fm-button-text'>"+o.Find+"</span></a>",
 				bC = "<a id='"+fid+"_reset' class='fm-button ui-state-default ui-corner-all fm-button-icon-left ui-search'><span class='fm-button-icon " + mergeCssClasses(commonIconClass, o.resetDialogIcon) + "'></span><span class='fm-button-text'>"+o.Reset+"</span></a>",
 				bQ = "", tmpl="", colnm, found = false, bt, cmi=-1;
 				if(o.showQuery) {
-					bQ ="<a id='"+fid+"_query' class='fm-button ui-state-default ui-corner-all fm-button-icon-left'><span class='fm-button-icon " + mergeCssClasses(commonIconClass, o.queryDialogIcon) + "'></span><span class='fm-button-text'>Query</span></a>";
+					bQ ="<a id='"+fid+"_query' class='fm-button ui-state-default ui-corner-all fm-button-icon-left'><span class='fm-button-icon " + mergeCssClasses(commonIconClass, o.queryDialogIcon) + "'></span><span class='fm-button-text'>Query</span></a>&#160;";
 				}
 				if(!o.columns.length) {
 					$.each(columns, function(i,n){
@@ -401,7 +406,11 @@ jgrid.extend({
 				overlayClass : 'ui-widget-overlay',
 				removemodal : true,
 				form: 'edit'
-			}, jgrid.edit, p.formEditing || {}, oMuligrid || {});
+			},
+			getRes(locales[p.locale], "edit"),
+			jgrid.edit,
+			p.formEditing || {},
+			oMuligrid || {});
 			
 			var frmgr = "FrmGrid_"+gID, frmgrID = frmgr, frmtborg = "TblGrid_"+gID, frmtb = "#"+jqID(frmtborg), frmtb2 = frmtb+"_2",
 			ids = {themodal:'editmod'+gID,modalhead:'edithd'+gID,modalcontent:'editcnt'+gID, resizeAlso : frmgr},
@@ -1043,7 +1052,7 @@ jgrid.extend({
 			bN = "<a id='"+bn+"' class='fm-button ui-state-default ui-corner-right'><span class='" + mergeCssClasses(commonIconClass, o.nextIcon) + "'></span></a>",
 			bS  ="<a id='sData' class='fm-button ui-state-default ui-corner-all'><span class='fm-button-text'>"+o.bSubmit+"</span></a>",
 			bC  ="<a id='cData' class='fm-button ui-state-default ui-corner-all'><span class='fm-button-text'>"+o.bCancel+"</span></a>";
-			var bt = "<table"+(jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "")+" class='EditTable' id='"+frmtborg+"_2'><tbody><tr><td colspan='2'><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr id='Act_Buttons'><td class='navButton navButton-" + p.direction + "'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton EditButton-" + p.direction + "'>"+bS+bC+"</td></tr>";
+			var bt = "<table"+(jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "")+" class='EditTable' id='"+frmtborg+"_2'><tbody><tr><td colspan='2'><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr id='Act_Buttons'><td class='navButton navButton-" + p.direction + "'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton EditButton-" + p.direction + "'>"+bS+"&#160;"+bC+"</td></tr>";
 			bt += "<tr style='display:none' class='binfo'><td class='bottominfo' colspan='2'>"+o.bottominfo+"</td></tr>";
 			bt += "</tbody></table>";
 			if(maxRows >  0) {
@@ -1256,7 +1265,11 @@ jgrid.extend({
 				recreateForm : false,
 				removemodal: true,
 				form: 'view'
-			}, jgrid.view, p.formViewing || {}, oMuligrid || {});
+			},
+			getRes(locales[p.locale], "view"),
+			jgrid.view || {},
+			p.formViewing || {},
+			oMuligrid || {});
 
 			var frmgr = "#ViewGrid_"+jqID(gID), frmtb = "#ViewTbl_" + jqID(gID), frmtb2 = frmtb+"_2",
 			frmgrID = "ViewGrid_"+gID, frmtbID = "ViewTbl_"+gID, commonIconClass = o.commonIconClass,
@@ -1557,7 +1570,11 @@ jgrid.extend({
 				processing : false,
 				serializeDelData : null,
 				useDataProxy : false
-			}, jgrid.del, p.formDeleting || {}, oMuligrid || {});
+			},
+			getRes(locales[p.locale], "del"),
+			jgrid.del || {},
+			p.formDeleting || {},
+			oMuligrid || {});
 
 			var dtblID = "DelTbl_" + gID, dtbl = "#DelTbl_"+jqID(gID), postd, idname, opers, oper,
 			ids = {themodal:'delmod'+gID,modalhead:'delhd'+gID,modalcontent:'delcnt'+gID, resizeAlso: dtblID},
@@ -1769,7 +1786,11 @@ jgrid.extend({
 				alertleft: null,
 				alertzIndex : null,
 				iconsOverText : false
-			}, jgrid.nav, p.navOptions || {}, oMuligrid || {});
+			},
+			getRes(locales[p.locale], "nav"),
+			jgrid.nav || {},
+			p.navOptions || {},
+			oMuligrid || {});
 			// set default position depend of RTL/LTR direction of the grid
 			o.position = o.position || (p.direction === "rtl" ? "right" : "left");
 
@@ -2009,7 +2030,7 @@ jgrid.extend({
 	},
 	navButtonAdd : function (elem, o) {
 		return this.each(function() {
-			var $t = this;
+			var $t = this, p = $t.p;
 			if (!$t.grid)  {return;}
 			o = $.extend({
 				caption : "newButton",
@@ -2018,7 +2039,11 @@ jgrid.extend({
 				position : "last",
 				cursor : 'pointer',
 				iconsOverText : false
-			}, jgrid.nav, $t.p.navOptions || {}, o || {});
+			},
+			getRes(locales[p.locale], "nav"),
+			jgrid.nav || {},
+			p.navOptions || {},
+			o || {});
 			if (typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+jqID(elem);}
 			var findnav = $(".navtable",elem), commonIconClass = o.commonIconClass;
 			if (findnav.length > 0) {

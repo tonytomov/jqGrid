@@ -467,7 +467,7 @@ jgrid.extend({
 			var i, len,	rec, records = [], query, roots,
 			rt = $(this).jqGrid("getRootNodes");
 			// Sorting roots
-			query = jgrid.from(rt);
+			query = jgrid.from.call($t,rt);
 			query.orderBy(sortname,newDir,st, datefmt);
 			roots = query.select();
 
@@ -491,7 +491,7 @@ jgrid.extend({
 			var i, len,
 			child, ch, query, children;
 			ch = $self.jqGrid("getNodeChildren",rec);
-			query = jgrid.from(ch);
+			query = jgrid.from.call($t,ch);
 			query.orderBy(sortname, newDir, st, datefmt);
 			children = query.select();
 			for (i = 0, len = children.length; i < len; i++) {
@@ -530,7 +530,7 @@ jgrid.extend({
 				}
 				if( p.treeGridModel === "nested") {
 					// ToDo - update grid data
-					res = jgrid.from(p.data)
+					res = jgrid.from.call($t,p.data)
 						.greater(left,myright,{stype:'integer'})
 						.select();
 					if(res.length) {
@@ -540,7 +540,7 @@ jgrid.extend({
 							}
 						}
 					}
-					res = jgrid.from(p.data)
+					res = jgrid.from.call($t,p.data)
 						.greater(right,myright,{stype:'integer'})
 						.select();
 					if(res.length) {
@@ -629,7 +629,7 @@ jgrid.extend({
 				// ToDo - update grid data
 				if(parentid !== null) {
 					maxright = parseInt(parentdata[right],10);
-					query = jgrid.from(p.data);
+					query = jgrid.from.call($t,p.data);
 					query = query.greaterOrEquals(right,maxright,{stype:'integer'});
 					res = query.select();
 					if(res.length) {
@@ -644,7 +644,7 @@ jgrid.extend({
 					data[right]= maxright+1;
 				} else {
 					maxright = parseInt( $self.jqGrid('getCol', right, false, 'max'), 10);
-					res = jgrid.from(p.data)
+					res = jgrid.from.call($t,p.data)
 						.greater(left,maxright,{stype:'integer'})
 						.select();
 					if(res.length) {
@@ -654,7 +654,7 @@ jgrid.extend({
 							}
 						}
 					}
-					res = jgrid.from(p.data)
+					res = jgrid.from.call($t,p.data)
 						.greater(right,maxright,{stype:'integer'})
 						.select();
 					if(res.length) {

@@ -12,7 +12,7 @@
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/ 
 "use strict";
-var jgrid = $.jgrid;
+var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes");
 jgrid.inlineEdit = jgrid.inlineEdit || {};
 jgrid.extend({
 //Editing
@@ -158,6 +158,7 @@ jgrid.extend({
 			if ($.isFunction(errorfunc)) { o.errorfunc = errorfunc; }
 			if ($.isFunction(afterrestorefunc)) { o.afterrestorefunc = afterrestorefunc; }
 		}
+		var getRes = function (path) { return getGridRes.call($self, path); };
 		o = $.extend(true, {
 			successfunc: null,
 			url: null,
@@ -168,13 +169,14 @@ jgrid.extend({
 			restoreAfterError: true,
 			mtype: "POST",
 			saveui : "enable",
-			savetext : jgrid.defaults.savetext || "Saving..."
+			savetext : getRes("defaults.savetext") || "Saving..."
 		}, jgrid.inlineEdit, p.inlineEditing || {}, o);
 		// End compatible
 		// TODO: add return this.each(function(){....}
-		var nm, tmp = {}, tmp2 = {}, tmp3 = {}, editable, fr, cv, ind = $self.jqGrid("getInd",rowid,true);
+		var nm, tmp = {}, tmp2 = {}, tmp3 = {}, editable, fr, cv, ind = $self.jqGrid("getInd",rowid,true),
+		errcap = getRes("errors.errcap"), bClose = getRes("edit.bClose"), editMsg = getRes("edit.msg");
 		if(ind === false) {return;}
-		var bfsr = $.isFunction( o.beforeSaveRow ) ?	o.beforeSaveRow.call($t,o, rowid) :  undefined;
+		var bfsr = $.isFunction( o.beforeSaveRow ) ? o.beforeSaveRow.call($t,o, rowid) :  undefined;
 		if( bfsr === undefined ) {
 			bfsr = true;
 		}
@@ -236,9 +238,9 @@ jgrid.extend({
 									if (tmp[nm] === undefined) { throw "e2"; }
 								} else { throw "e1"; }
 							} catch (e) {
-								if (e==="e1") { jgrid.info_dialog.call($t,jgrid.errors.errcap,"function 'custom_value' "+jgrid.edit.msg.nodefined,jgrid.edit.bClose); }
-								if (e==="e2") { jgrid.info_dialog.call($t,jgrid.errors.errcap,"function 'custom_value' "+jgrid.edit.msg.novalue,jgrid.edit.bClose); }
-								else { jgrid.info_dialog.call($t,jgrid.errors.errcap,e.message,jgrid.edit.bClose); }
+								if (e==="e1") { jgrid.info_dialog.call($t,errcap,"function 'custom_value' "+editMsg.nodefined,bClose); }
+								if (e==="e2") { jgrid.info_dialog.call($t,errcap,"function 'custom_value' "+editMsg.novalue,bClose); }
+								else { jgrid.info_dialog.call($t,errcap,e.message,bClose); }
 							}
 							break;
 					}
@@ -262,7 +264,7 @@ jgrid.extend({
 			if (cv[0] === false){
 				try {
 					var tr = $self.jqGrid('getGridRowById', rowid), positions = jgrid.findPos(tr);
-					jgrid.info_dialog.call($t,jgrid.errors.errcap,cv[1],jgrid.edit.bClose,{left:positions[0],top:positions[1]+$(tr).outerHeight()});
+					jgrid.info_dialog.call($t,errcap,cv[1],bClose,{left:positions[0],top:positions[1]+$(tr).outerHeight()});
 				} catch (e) {
 					alert(cv[1]);
 				}
@@ -382,7 +384,7 @@ jgrid.extend({
 						} else {
 							var rT = res.responseText || res.statusText;
 							try {
-								jgrid.info_dialog.call($t,jgrid.errors.errcap,'<div class="ui-state-error">'+ rT +'</div>', jgrid.edit.bClose,{buttonalign:'right'});
+								jgrid.info_dialog.call($t,errcap,'<div class="ui-state-error">'+ rT +'</div>', bClose,{buttonalign:'right'});
 							} catch(e) {
 								alert(rT);
 							}
@@ -533,7 +535,14 @@ jgrid.extend({
 				addParams : {addRowParams: {extraparam: {}}},
 				editParams : {},
 				restoreAfterSelect : true
-			}, jgrid.nav, p.navOptions || {}, oMuligrid || {});
+			},
+			//TODO make getRes(locales[p.locale], "nav"), jgrid.nav || {}, p.navOptions || {}
+			// as the result of working getRes("nav")
+			//getRes(locales[p.locale], "nav"),
+			$self.jqGrid("getGridRes","nav"),
+			jgrid.nav || {},
+			p.navOptions || {},
+			oMuligrid || {});
 
 			if (elem === undefined) {
 				if (p.pager) {

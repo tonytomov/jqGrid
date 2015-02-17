@@ -14,7 +14,7 @@
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/
 "use strict";
-var jgrid = $.jgrid;
+var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes");
 jgrid.extend({
 	getColProp : function(colname){
 		var ret ={}, $t = this[0];
@@ -221,7 +221,12 @@ jgrid.extend({
 				resetIcon : "x",
 				operands : { "eq" :"==", "ne":"!","lt":"<","le":"<=","gt":">","ge":">=","bw":"^","bn":"!^","in":"=","ni":"!=","ew":"|","en":"!@","cn":"~","nc":"!~","nu":"#","nn":"!#"}
 			}, jgrid.search, p.searching || {}, oMuligrid || {});
-			var colModel = p.colModel, errcap = jgrid.errors.errcap, bClose = jgrid.edit.bClose, editMsg = jgrid.edit.msg, jqID = jgrid.jqID;
+			var colModel = p.colModel,
+				getRes = function (path) {
+					return getGridRes.call($self, path);
+				},
+				errcap = getRes("errors.errcap"), bClose = getRes("edit.bClose"), editMsg = getRes("edit.msg"),
+				jqID = jgrid.jqID;
 			var triggerToolbar = function() {
 				var sdata={}, j=0, v, nm, sopt={},so;
 				$.each(colModel,function(){
@@ -375,6 +380,7 @@ jgrid.extend({
 					}
 				}
 			},
+			odata = getRes("search.odata"),
 			buildRuleMenu = function( elem, left, top ){
 				$("#sopt_menu").remove();
 
@@ -397,12 +403,12 @@ jgrid.extend({
 					options.sopt = [];
 					options.sopt[0]= cm.stype==='select' ?  'eq' : o.defaultSearch;
 				}
-				$.each(o.odata, function() { aoprs.push(this.oper); });
+				$.each(odata, function() { aoprs.push(this.oper); });
 				for ( i = 0 ; i < options.sopt.length; i++) {
 					ina = $.inArray(options.sopt[i],aoprs);
 					if(ina !== -1) {
-						selclass = selected === o.odata[ina].oper ? "ui-state-highlight" : "";
-						str += '<li class="ui-menu-item '+selclass+'" role="presentation"><a class="ui-corner-all g-menu-item" tabindex="0" role="menuitem" value="'+o.odata[ina].oper+'" data-oper="'+o.operands[o.odata[ina].oper]+'"><table'+(jgrid.msie && jgrid.msiever() < 8 ? ' cellspacing="0"' : '')+'><tr><td style="width:25px">'+o.operands[o.odata[ina].oper]+'</td><td>'+ o.odata[ina].text+'</td></tr></table></a></li>';
+						selclass = selected === odata[ina].oper ? "ui-state-highlight" : "";
+						str += '<li class="ui-menu-item '+selclass+'" role="presentation"><a class="ui-corner-all g-menu-item" tabindex="0" role="menuitem" value="'+odata[ina].oper+'" data-oper="'+o.operands[odata[ina].oper]+'"><table'+(jgrid.msie && jgrid.msiever() < 8 ? ' cellspacing="0"' : '')+'><tr><td style="width:25px">'+o.operands[odata[ina].oper]+'</td><td>'+ odata[ina].text+'</td></tr></table></a></li>';
 					}
 				}
 				str += "</ul>";
@@ -440,13 +446,13 @@ jgrid.extend({
 				if(this.search){
 					if(o.searchOperators) {
 						so  = (soptions.sopt) ? soptions.sopt[0] : cm.stype==='select' ?  'eq' : o.defaultSearch;
-						for(i = 0;i<o.odata.length;i++) {
-							if(o.odata[i].oper === so) {
+						for(i = 0;i<odata.length;i++) {
+							if(odata[i].oper === so) {
 								sot = o.operands[so] || "";
 								break;
 							}
 						}
-						var st = soptions.searchtitle != null ? soptions.searchtitle : o.operandTitle;
+						var st = soptions.searchtitle != null ? soptions.searchtitle : getRes("search.operandTitle");
 						select = "<a title='"+st+"' style='padding-right: 0.5em;' data-soper='"+so+"' class='soptclass' data-colname='"+this.name+"'>"+sot+"</a>";
 					}
 					$("td",stbl).filter(":first").data("colindex",ci).append(select);
@@ -457,7 +463,7 @@ jgrid.extend({
 						soptions.clearSearch = this.stype === "text" ? true : false;
 					}
 					if(soptions.clearSearch) {
-						var csv = o.resetTitle || 'Clear Search Value';
+						var csv = getRes("search.resetTitle") || 'Clear Search Value';
 						$("td",stbl).eq(2).append("<a title='"+csv+"' style='padding-right: 0.3em;padding-left: 0.3em;' class='clearsearchclass'>"+o.resetIcon+"</a>");
 					} else {
 						$("td",stbl).eq(2).hide();
@@ -668,8 +674,7 @@ jgrid.extend({
 			$(self.grid.hDiv).find("table thead tr.ui-search-toolbar").remove();
 		});
 	},
-	destroyGroupHeader : function(nullHeader)
-	{
+	destroyGroupHeader : function(nullHeader) {
 		if(nullHeader === undefined) {
 			nullHeader = true;
 		}

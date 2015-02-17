@@ -21,7 +21,7 @@
 	"use strict";
 	$.fmatter = $.fmatter || {};
 	$.jgrid = $.jgrid || {};
-	var fmatter = $.fmatter, jgrid = $.jgrid;
+	var fmatter = $.fmatter, jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes"); // locales = jgrid.locales, getRes = jgrid.getRes
 	$.extend(true, jgrid, {
 		formatter: { // setting common formatter settings, which are independent from the language and locale
 			date: {
@@ -201,7 +201,8 @@
 	var $FnFmatter = function(formatType, cellval, opts, rwd, act) {
 		// build main options before element iteration
 		var v=cellval;
-		opts = $.extend({}, jgrid.formatter, opts);
+		opts = $.extend(true, {}, getGridRes.call($(this), "formatter"), opts);
+		//$.extend(true, {}, getRes(locales[this.p.locale], "formatter"), jgrid.formatter, opts);
 
 		try {
 			v = $.fn.fmatter[formatType].call(this, cellval, opts, rwd, act);
@@ -339,7 +340,7 @@
 			return $FnFmatter.defaultFormat(cellval, opts);
 		}
 		if(!fmatter.isEmpty(cellval)) {
-			return jgrid.parseDate(op.srcformat,cellval,op.newformat,op);
+			return jgrid.parseDate.call(this,op.srcformat,cellval,op.newformat,op);
 		}
 		return $FnFmatter.defaultFormat(cellval, opts);
 	};
@@ -450,7 +451,11 @@
 		return false; // prevent other processing of the click on the row
 	};
 	$FnFmatter.actions = function(cellval,opts) {
-		var rowid=opts.rowId, str="", ocl, nav = jgrid.nav, edit = jgrid.edit,
+		var rowid = opts.rowId, str = "", ocl, $t = this, p = $t.p, $self = $($t), //locale = jgrid.locales[p.locale],
+			//navRegional = getRes(locale, "nav") || {},
+			//nav = $.extend(true, {}, navRegional, jgrid.nav || {}),
+			edit = getGridRes.call($self, "edit") || {},
+			//edit = $.extend(true, {}, getRes(locale, "edit") || {}, jgrid.edit || {}),
 			op = $.extend({
 				editbutton: true,
 				delbutton: true,
@@ -458,30 +463,41 @@
 				commonIconClass: "ui-icon",
 				editicon: "ui-icon-pencil",
 				delicon: "ui-icon-trash",
-				addicon: "ui-icon-plus",
+				//addicon: "ui-icon-plus",
 				saveicon: "ui-icon-disk",
 				cancelicon: "ui-icon-cancel",
-				edittitle: nav.edittitle,
-				deltitle: nav.deltitle,
-				savetitle: edit.bSubmit,
-				canceltitle: edit.bCancel
-			}, jgrid.nav, this.p.navOptions || {}, jgrid.actionsNav, this.p.actionsNavOptions || {}, opts.colModel.formatoptions || {});
+				//edittitle: nav.edittitle,
+				//deltitle: nav.deltitle,
+				savetitle: edit.bSubmit || "",
+				canceltitle: edit.bCancel || ""
+			},
+			getGridRes.call($self, "nav") || {},
+			jgrid.nav || {},
+			p.navOptions || {},
+			getGridRes.call($self, "actionsNav") || {},
+			jgrid.actionsNav || {},
+			p.actionsNavOptions || {},
+			opts.colModel.formatoptions || {}),
+			cssIconClass = function (name) {
+				return jgrid.mergeCssClasses(op.commonIconClass, op[name + "icon"]);
+			};
+
 		if(rowid === undefined || fmatter.isEmpty(rowid)) {return "";}
 		if(op.editformbutton){
 			ocl = "id='jEditButton_"+rowid+"' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'formedit');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-			str += "<div title='"+op.edittitle+"' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='" + [op.commonIconClass, op.editicon].join(" ") + "'></span></div>";
+			str += "<div title='"+op.edittitle+"' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='" + cssIconClass("edit") + "'></span></div>";
 		} else if(op.editbutton){
 			ocl = "id='jEditButton_"+rowid+"' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'edit');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover') ";
-			str += "<div title='"+op.edittitle+"' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='" + [op.commonIconClass, op.editicon].join(" ") + "'></span></div>";
+			str += "<div title='"+op.edittitle+"' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='" + cssIconClass("edit") + "'></span></div>";
 		}
 		if(op.delbutton) {
 			ocl = "id='jDeleteButton_"+rowid+"' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'del');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-			str += "<div title='"+op.deltitle+"' class='ui-pg-div ui-inline-del' "+ocl+"><span class='" + [op.commonIconClass, op.delicon].join(" ") + "'></span></div>";
+			str += "<div title='"+op.deltitle+"' class='ui-pg-div ui-inline-del' "+ocl+"><span class='" + cssIconClass("del") + "'></span></div>";
 		}
 		ocl = "id='jSaveButton_"+rowid+"' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'save');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-		str += "<div title='"+op.savetitle+"' style='display:none' class='ui-pg-div ui-inline-save' "+ocl+"><span class='" + [op.commonIconClass, op.saveicon].join(" ") + "'></span></div>";
+		str += "<div title='"+op.savetitle+"' style='display:none' class='ui-pg-div ui-inline-save' "+ocl+"><span class='" + cssIconClass("save") + "'></span></div>";
 		ocl = "id='jCancelButton_"+rowid+"' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'cancel');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-		str += "<div title='"+op.canceltitle+"' style='display:none;' class='ui-pg-div ui-inline-cancel' "+ocl+"><span class='" + [op.commonIconClass, op.cancelicon].join(" ") + "'></span></div>";
+		str += "<div title='"+op.canceltitle+"' style='display:none;' class='ui-pg-div ui-inline-cancel' "+ocl+"><span class='" + cssIconClass("cancel") + "'></span></div>";
 		return "<div class='ui-jqgrid-actions'>" + str + "</div>";
 	};
 	$FnFmatter.actions.pageFinalization = function (iCol) {
@@ -510,10 +526,7 @@
 				showHideEditDelete(false, rowid);
 				return false;
 			};
-		if (cm.formatoptions != null && cm.formatoptions.editformbutton) {
-			// TODO: implement support for form editing buttons
-			// form editing buttons
-		} else {
+		if (cm.formatoptions == null || !cm.formatoptions.editformbutton) {
 			// we use unbind to be sure that we don't register the same events multiple times
 			$self.unbind("jqGridInlineAfterRestoreRow.jqGridFormatter jqGridInlineAfterSaveRow.jqGridFormatter", showEditDelete);
 			$self.bind("jqGridInlineAfterRestoreRow.jqGridFormatter jqGridInlineAfterSaveRow.jqGridFormatter", showEditDelete);
@@ -523,20 +536,21 @@
 	};
 	$.unformat = function (cellval,options,pos,cnt) {
 		// specific for jqGrid only
-		var ret, formatType = options.colModel.formatter,
+		var ret, formatType = options.colModel.formatter, p = this.p,
 		op =options.colModel.formatoptions || {}, sep,
 		re = /([\.\*\_\'\(\)\{\}\+\?\\])/g,
 		unformatFunc = options.colModel.unformat||($FnFmatter[formatType] && $FnFmatter[formatType].unformat);
 		if (cellval instanceof jQuery && cellval.length > 0) {
 			cellval = cellval[0];
 		}
-		if (options.colModel.autoResizable && cellval != null && $(cellval.firstChild).hasClass(this.p.autoResizing.wrapperClassName)) {
+		if (options.colModel.autoResizable && cellval != null && $(cellval.firstChild).hasClass(p.autoResizing.wrapperClassName)) {
 			cellval = cellval.firstChild;
 		}
 		if(unformatFunc !== undefined && $.isFunction(unformatFunc) ) {
 			ret = unformatFunc.call(this, $(cellval).text(), options, cellval);
 		} else if(formatType !== undefined && typeof formatType === "string") {
-			var opts = jgrid.formatter || {}, stripTag;
+			//var opts = $.extend(true, {}, getRes(locales[p.locale], "formatter"), jgrid.formatter || {}), stripTag;
+			var opts = getGridRes.call($(this), "formatter"), stripTag;
 			switch(formatType) {
 				case 'integer' :
 					op = $.extend({},opts.integer,op);
@@ -631,12 +645,17 @@
 		return cell || "";
 	};
 	$.unformat.date = function (cellval, opts) {
-		var op = jgrid.formatter.date || {};
+		// TODO
+		var op = $.extend(true, {},
+				//getRes(locales[this.p.locale], "formatter.date"),
+				getGridRes.call($(this), "formatter.date"),
+				jgrid.formatter != null && jgrid.formatter.date != null ? jgrid.formatter.date : {});
+
 		if(opts.formatoptions !== undefined) {
 			op = $.extend({},op,opts.formatoptions);
 		}		
 		if(!fmatter.isEmpty(cellval)) {
-			return jgrid.parseDate(op.newformat,cellval,op.srcformat,op);
+			return jgrid.parseDate.call(this,op.newformat,cellval,op.srcformat,op);
 		}
 		return $FnFmatter.defaultFormat(cellval, opts);
 	};
