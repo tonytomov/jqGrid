@@ -20,7 +20,8 @@ $.extend(true,$.jgrid,{
 		pgnext : "След. стр.",
 		pgprev : "Пред. стр.",
 		pgrecs : "Записей на стр.",
-		showhide: "Показать/скрыть таблицу"
+		showhide: "Показать/скрыть таблицу",
+		savetext: "Сохранение..."
 	},
 	search : {
 		caption: "Поиск...",

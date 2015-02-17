@@ -20,7 +20,8 @@ $.extend(true,$.jgrid, {
 		pgnext: "Next Page",
 		pgprev: "Previous Page",
 		pgrecs: "Records per Page",
-		showhide: "Toggle Expand Collapse Grid"
+		showhide: "Toggle Expand Collapse Grid",
+		savetext: "保存中..."
 	},
 	search: {
 		caption: "検索...",

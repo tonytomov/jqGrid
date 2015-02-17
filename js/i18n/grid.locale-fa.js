@@ -18,7 +18,8 @@
 			pgnext : "Next Page",
 			pgprev : "Previous Page",
 			pgrecs : "Records per Page",
-			showhide: "Toggle Expand Collapse Grid"
+			showhide: "Toggle Expand Collapse Grid",
+			savetext: "در حال ذخیره..."
         },
         search: {
             caption: "جستجو...",

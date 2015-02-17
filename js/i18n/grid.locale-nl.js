@@ -16,7 +16,8 @@ $.extend(true,$.jgrid,{
 			pgnext : "Volgende Pagina",
 			pgprev : "Vorige Pagina",
 			pgrecs : "Records per Pagina",
-			showhide: "Schakelen Uitklappen Inklappen Grid"
+			showhide: "Schakelen Uitklappen Inklappen Grid",
+			savetext: "Opslaan..."
         },
         search:
         {

@@ -15,7 +15,8 @@ $.extend(true,$.jgrid,{
 		pgnext : "Next Page",
 		pgprev : "Previous Page",
 		pgrecs : "Records per Page",
-		showhide: "Toggle Expand Collapse Grid"
+		showhide: "Toggle Expand Collapse Grid",
+		savetext: "저장 중..."
 	},
 	search : {
 		caption: "검색...",

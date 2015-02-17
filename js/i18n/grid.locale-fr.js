@@ -20,7 +20,8 @@ $.extend(true,$.jgrid,{
 		pgnext : "Page Suivante",
 		pgprev : "Page Précédente",
 		pgrecs : "Enregistrements par page",
-		showhide: "Toggle Expand Collapse Grid"
+		showhide: "Toggle Expand Collapse Grid",
+		savetext: "Enregistrement..."
 	},
 	search : {
 		caption: "Recherche...",
