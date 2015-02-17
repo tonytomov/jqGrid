@@ -34,7 +34,6 @@
 var jgrid = $.jgrid;
 $.fn.jqFilter = function( arg ) {
 	if (typeof arg === 'string') {
-		
 		var fn = $.fn.jqFilter[arg];
 		if (!fn) {
 			throw ("jqFilter - No such method: " + arg);
@@ -190,22 +189,22 @@ $.fn.jqFilter = function( arg ) {
 			tr.append(th);
 
 			if(p.ruleButtons === true) {
-			// dropdown for: choosing group operator type
-			var groupOpSelect = $("<select class='opsel'></select>");
-			th.append(groupOpSelect);
-			// populate dropdown with all posible group operators: or, and
-			var str= "", selected;
-			for (i = 0; i < p.groupOps.length; i++) {
-				selected =  group.groupOp === that.p.groupOps[i].op ? " selected='selected'" :"";
-				str += "<option value='"+that.p.groupOps[i].op+"'" + selected+">"+that.p.groupOps[i].text+"</option>";
-			}
+				// dropdown for: choosing group operator type
+				var groupOpSelect = $("<select class='opsel'></select>");
+				th.append(groupOpSelect);
+				// populate dropdown with all posible group operators: or, and
+				var str= "", selected;
+				for (i = 0; i < p.groupOps.length; i++) {
+					selected =  group.groupOp === that.p.groupOps[i].op ? " selected='selected'" :"";
+					str += "<option value='"+that.p.groupOps[i].op+"'" + selected+">"+that.p.groupOps[i].text+"</option>";
+				}
 
-			groupOpSelect
-			.append(str)
-			.bind('change',function() {
-				group.groupOp = $(groupOpSelect).val();
-				that.onchange(); // signals that the filter has changed
-			});
+				groupOpSelect
+				.append(str)
+				.bind('change',function() {
+					group.groupOp = $(groupOpSelect).val();
+					that.onchange(); // signals that the filter has changed
+				});
 			}
 			// button for adding a new subgroup
 			var inputAddSubgroup ="<span></span>";
@@ -230,43 +229,43 @@ $.fn.jqFilter = function( arg ) {
 			}
 			th.append(inputAddSubgroup);
 			if(p.ruleButtons === true) {
-			// button for adding a new rule
-			var inputAddRule = $("<input type='button' value='+' title='Add rule' class='add-rule ui-add'/>"), cm;
-			inputAddRule.bind('click',function() {
-				var searchable, hidden, ignoreHiding;
-				//if(!group) { group = {};}
-				if (group.rules === undefined) {
-					group.rules = [];
-				}
-				for (i = 0; i < that.p.columns.length; i++) {
-				// but show only serchable and serchhidden = true fields
-					searchable = (that.p.columns[i].search === undefined) ? true: that.p.columns[i].search;
-					hidden = (that.p.columns[i].hidden === true);
-					ignoreHiding = (that.p.columns[i].searchoptions.searchhidden === true);
-					if ((ignoreHiding && searchable) || (searchable && !hidden)) {
-						cm = that.p.columns[i];
-						break;
+				// button for adding a new rule
+				var inputAddRule = $("<input type='button' value='+' title='Add rule' class='add-rule ui-add'/>"), cm;
+				inputAddRule.bind('click',function() {
+					var searchable, hidden, ignoreHiding;
+					//if(!group) { group = {};}
+					if (group.rules === undefined) {
+						group.rules = [];
 					}
-				}
-				
-				var opr;
-				if( cm.searchoptions.sopt ) {opr = cm.searchoptions.sopt;}
-				else if(that.p.sopt) { opr= that.p.sopt; }
-				else if  ( $.inArray(cm.searchtype, that.p.strarr) !== -1 ) {opr = that.p.stropts;}
-				else {opr = that.p.numopts;}
+					for (i = 0; i < that.p.columns.length; i++) {
+					// but show only serchable and serchhidden = true fields
+						searchable = (that.p.columns[i].search === undefined) ? true: that.p.columns[i].search;
+						hidden = (that.p.columns[i].hidden === true);
+						ignoreHiding = (that.p.columns[i].searchoptions.searchhidden === true);
+						if ((ignoreHiding && searchable) || (searchable && !hidden)) {
+							cm = that.p.columns[i];
+							break;
+						}
+					}
+					
+					var opr;
+					if( cm.searchoptions.sopt ) {opr = cm.searchoptions.sopt;}
+					else if(that.p.sopt) { opr= that.p.sopt; }
+					else if  ( $.inArray(cm.searchtype, that.p.strarr) !== -1 ) {opr = that.p.stropts;}
+					else {opr = that.p.numopts;}
 
-				group.rules.push({
-					field: cm.name,
-					op: opr[0],
-					data: ""
-				}); // adding a new rule
+					group.rules.push({
+						field: cm.name,
+						op: opr[0],
+						data: ""
+					}); // adding a new rule
 
-				that.reDraw(); // the html has changed, force reDraw
-				// for the moment no change have been made to the rule, so
-				// this will not trigger onchange event
-				return false;
-			});
-			th.append(inputAddRule);
+					that.reDraw(); // the html has changed, force reDraw
+					// for the moment no change have been made to the rule, so
+					// this will not trigger onchange event
+					return false;
+				});
+				th.append(inputAddRule);
 			}
 
 			// button for delete the group
@@ -667,8 +666,7 @@ $.extend($.fn.jqFilter,{
 	/*
 	 * Return SQL like string. Can be used directly
 	 */
-	toSQLString : function()
-	{
+	toSQLString : function() {
 		var s ="";
 		this.each(function(){
 			s = this.toUserFriendlyString();
@@ -678,8 +676,7 @@ $.extend($.fn.jqFilter,{
 	/*
 	 * Return filter data as object.
 	 */
-	filterData : function()
-	{
+	filterData : function() {
 		var s;
 		this.each(function(){
 			s = this.p.filter;
@@ -703,13 +700,12 @@ $.extend($.fn.jqFilter,{
 	addFilter: function (pfilter) {
 		if (typeof pfilter === "string") {
 			pfilter = jgrid.parse( pfilter );
-	}
+		}
 		this.each(function(){
 			this.p.filter = pfilter;
 			this.reDraw();
 			this.onchange();
 		});
 	}
-
 });
 }(jQuery));
