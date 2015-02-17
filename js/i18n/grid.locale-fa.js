@@ -1,25 +1,28 @@
-(function ($) {
-"use strict";
 /**
  * jqGrid Persian Translation
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
-	$.jgrid = $.jgrid || {};
-	$.extend(true,$.jgrid,{
+
+/*jslint white: true */
+/*global jQuery */
+(function ($) {
+    "use strict";
+    var locInfo = {
+        isRTL: true,
         defaults: {
             recordtext: "نمابش {0} - {1} از {2}",
             emptyrecords: "رکوردی یافت نشد",
             loadtext: "بارگزاري...",
             pgtext: "صفحه {0} از {1}",
-			pgfirst : "First Page",
-			pglast : "Last Page",
-			pgnext : "Next Page",
-			pgprev : "Previous Page",
-			pgrecs : "Records per Page",
-			showhide: "Toggle Expand Collapse Grid",
-			savetext: "در حال ذخیره..."
+            pgfirst : "First Page",
+            pglast : "Last Page",
+            pgnext : "Next Page",
+            pgprev : "Previous Page",
+            pgrecs : "Records per Page",
+            showhide: "Toggle Expand Collapse Grid",
+            savetext: "در حال ذخیره..."
         },
         search: {
             caption: "جستجو...",
@@ -34,8 +37,8 @@
                 op: "OR",
                 text: "مجموع"
             }],
-			operandTitle : "Click to select search operation.",
-			resetTitle : "Reset Search Value"
+            operandTitle : "Click to select search operation.",
+            resetTitle : "Reset Search Value"
         },
         edit: {
             addCaption: "اضافه کردن رکورد",
@@ -137,6 +140,21 @@
                     YearMonth: "F, Y"
                 }
             }
+        }
+    };
+    $.jgrid = $.jgrid || {};
+    $.extend(true, $.jgrid, {
+        defaults: {
+            locale: "fa"
+        },
+        locales: {
+            // In general the property name is free, but it's recommended to use the names based on
+            // http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
+            // http://rishida.net/utils/subtags/ and RFC 5646. See Appendix A of RFC 5646 for examples.
+            // One can use the lang attribute to specify language tags in HTML, and the xml:lang attribute for XML
+            // if it exists. See http://www.w3.org/International/articles/language-tags/#extlang
+            fa: $.extend({}, locInfo, { name: "فارسى", nameEnglish: "Persian" }),
+            "fa-IR": $.extend({}, locInfo, { name: "فارسى (ایران)", nameEnglish: "Persian (Iran)" })
         }
     });
 }(jQuery));

@@ -8,6 +8,7 @@
  * http://www.gnu.org/licenses/gpl.html
 **/
 
+/*jslint white: true */
 /*global jQuery */
 (function ($) {
     "use strict";
@@ -217,8 +218,7 @@
             // http://rishida.net/utils/subtags/ and RFC 5646. See Appendix A of RFC 5646 for examples.
             // One can use the lang attribute to specify language tags in HTML, and the xml:lang attribute for XML
             // if it exists. See http://www.w3.org/International/articles/language-tags/#extlang
-            en: locInfo,        // set default locale for English
-            "en-US": locInfo    // and for English US
+            "en-US": locInfo
         }
     });
 }(jQuery));

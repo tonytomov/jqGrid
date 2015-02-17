@@ -1,10 +1,13 @@
-(function($){
-"use strict";
 /**
  * jqGrid Korean Translation
 **/
-$.jgrid = $.jgrid || {};
-$.extend(true,$.jgrid,{
+
+/*jslint white: true */
+/*global jQuery */
+(function($){
+"use strict";
+var locInfo = {
+	isRTL: false,
 	defaults : {
 		recordtext: "보기 {0} - {1} / {2}",
 		emptyrecords: "표시할 행이 없습니다",
@@ -117,6 +120,22 @@ $.extend(true,$.jgrid,{
 				YearMonth: "F, Y"
 			}
 		}
+	}
+};
+$.jgrid = $.jgrid || {};
+$.extend(true, $.jgrid, {
+	defaults: {
+		locale: "kr"
+	},
+	locales: {
+		// In general the property name is free, but it's recommended to use the names based on
+		// http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
+		// http://rishida.net/utils/subtags/ and RFC 5646. See Appendix A of RFC 5646 for examples.
+		// One can use the lang attribute to specify language tags in HTML, and the xml:lang attribute for XML
+		// if it exists. See http://www.w3.org/International/articles/language-tags/#extlang
+		kr: $.extend({}, locInfo, { name: "한국어", nameEnglish: "Korean" }),
+		ko: $.extend({}, locInfo, { name: "한국어", nameEnglish: "Korean" }),
+		"ko-KR": $.extend({}, locInfo, { name: "한국어 (대한민국)", nameEnglish: "Korean (Korea)" })
 	}
 });
 }(jQuery));

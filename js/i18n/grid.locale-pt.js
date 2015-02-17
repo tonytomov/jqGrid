@@ -1,5 +1,3 @@
-(function($){
-"use strict";
 /**
  * jqGrid Portuguese Translation
  * Tradução da jqGrid em Portugues por Frederico Carvalho, http://www.eyeviewdesign.pt
@@ -7,8 +5,13 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
-$.jgrid = $.jgrid || {};
-$.extend(true,$.jgrid,{
+
+/*jslint white: true */
+/*global jQuery */
+(function($){
+"use strict";
+var locInfo = {
+	isRTL: false,
 	defaults : {
 		recordtext: "View {0} - {1} of {2}",
 	    emptyrecords: "No records to view",
@@ -119,6 +122,21 @@ $.extend(true,$.jgrid,{
 	            YearMonth: "F, Y"
 	        }
 		}
+	}
+};
+$.jgrid = $.jgrid || {};
+$.extend(true, $.jgrid, {
+	defaults: {
+		locale: "pt"
+	},
+	locales: {
+		// In general the property name is free, but it's recommended to use the names based on
+		// http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
+		// http://rishida.net/utils/subtags/ and RFC 5646. See Appendix A of RFC 5646 for examples.
+		// One can use the lang attribute to specify language tags in HTML, and the xml:lang attribute for XML
+		// if it exists. See http://www.w3.org/International/articles/language-tags/#extlang
+		pt: $.extend({}, locInfo, { name: "Português", nameEnglish: "Portuguese" }),
+		"pt-PT": $.extend({}, locInfo, { name: "português (Portugal)", nameEnglish: "Portuguese (Portugal)" })
 	}
 });
 }(jQuery));

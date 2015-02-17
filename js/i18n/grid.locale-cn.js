@@ -1,5 +1,3 @@
-(function($){
-"use strict";
 /**
  * jqGrid Chinese Translation
  * 咖啡兔 yanhonglei@gmail.com
@@ -8,8 +6,13 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
-$.jgrid = $.jgrid || {};
-$.extend(true,$.jgrid,{
+
+/*jslint white: true */
+/*global jQuery */
+(function($){
+"use strict";
+var locInfo = {
+	isRTL: false,
     defaults : {
         recordtext: "{0} - {1}\u3000共 {2} 条", // 共字前是全角空格
         emptyrecords: "无数据显示",
@@ -108,7 +111,7 @@ $.extend(true,$.jgrid,{
                 "一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"
             ],
             AmPm : ["am","pm","上午","下午"],
-            S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th';},
+            S: function () {return "";},
             srcformat: 'Y-m-d',
             newformat: 'Y-m-d',
             masks : {
@@ -162,5 +165,21 @@ $.extend(true,$.jgrid,{
             }
         }
     }
+};
+$.jgrid = $.jgrid || {};
+$.extend(true, $.jgrid, {
+	defaults: {
+		locale: "cn"
+	},
+	locales: {
+		// In general the property name is free, but it's recommended to use the names based on
+		// http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
+		// http://rishida.net/utils/subtags/ and RFC 5646. See Appendix A of RFC 5646 for examples.
+		// One can use the lang attribute to specify language tags in HTML, and the xml:lang attribute for XML
+		// if it exists. See http://www.w3.org/International/articles/language-tags/#extlang
+		cn: $.extend({}, locInfo, { name: "中文", nameEnglish: "Chinese" }),
+		zh: $.extend({}, locInfo, { name: "中文", nameEnglish: "Chinese" }),
+		"zh-CN": $.extend({}, locInfo, { name: "中文(中华人民共和国)", nameEnglish: "Chinese (Simplified, PRC)" })
+	}
 });
 }(jQuery));

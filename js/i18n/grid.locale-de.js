@@ -18,12 +18,11 @@
  * http://www.gnu.org/licenses/gpl.html
 **/
 
+/*jslint white: true */
 /*global jQuery */
 (function($){
 "use strict";
 var locInfo = {
-	name: "Deutsch (Deutschland)",
-	nameEnglish: "German (Germany)",
 	isRTL: false,
 	defaults : {
 		recordtext: "Zeige {0} - {1} von {2}",
@@ -182,8 +181,8 @@ $.extend(true, $.jgrid, {
 		// http://rishida.net/utils/subtags/ and RFC 5646. See Appendix A of RFC 5646 for examples.
 		// One can use the lang attribute to specify language tags in HTML, and the xml:lang attribute for XML
 		// if it exists. See http://www.w3.org/International/articles/language-tags/#extlang
-		de: locInfo,        // set default locale for German
-		"de-DE": locInfo    // and for German (Germany)
+		de: $.extend({}, locInfo, { name: "Deutsch", nameEnglish: "German" }),
+		"de-DE": $.extend({}, locInfo, { name: "Deutsch (Deutschland)", nameEnglish: "German (Germany)" })
 	}
 });
 }(jQuery));

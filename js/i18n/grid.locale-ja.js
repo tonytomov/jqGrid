@@ -1,6 +1,4 @@
-﻿(function ($) {
-"use strict";
-/**
+﻿/**
  * jqGrid Japanese Translation
  * OKADA Yoshitada okada.dev@sth.jp
  * http://trirand.com/blog/ 
@@ -8,19 +6,24 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
-$.jgrid = $.jgrid || {};
-$.extend(true,$.jgrid, {
+
+/*jslint white: true */
+/*global jQuery */
+(function ($) {
+"use strict";
+var locInfo = {
+	isRTL: false,
 	defaults: {
 		recordtext: "{2} 件中 {0} - {1} を表示 ",
 		emptyrecords: "表示するレコードがありません",
 		loadtext: "読み込み中...",
 		pgtext: "{1} ページ中 {0} ページ目 ",
-		pgfirst: "First Page",
-		pglast: "Last Page",
-		pgnext: "Next Page",
-		pgprev: "Previous Page",
-		pgrecs: "Records per Page",
-		showhide: "Toggle Expand Collapse Grid",
+		pgfirst: "先頭ページ",
+		pglast: "最後のページ",
+		pgnext: "次のページ",
+		pgprev: "前のページ",
+		pgrecs: "ページ当たりのレコード数",
+		showhide: "切り替え 展開 折りたたみ グリッド",
 		savetext: "保存中..."
 	},
 	search: {
@@ -35,14 +38,14 @@ $.extend(true,$.jgrid, {
 			{ oper: "in", text: "次に含まれる" }, { oper: "ni", text: "次に含まれない" },
 			{ oper: "ew", text: "次で終わる" }, { oper: "en", text: "次で終わらない" },
 			{ oper: "cn", text: "次を含む" }, { oper: "nc", text: "次を含まない" },
-			{ oper: "nu", text: "is null" }, { oper: "nn", text: "is not null" }
+			{ oper: "nu", text: "NULL です" }, { oper: "nn", text: "NULL ではありません" }
 		],
 		groupOps: [
 			{ op: "AND", text: "すべての" },
 			{ op: "OR", text: "いずれかの" }
 		],
-		operandTitle: "Click to select search operation.",
-		resetTitle: "Reset Search Value"
+		operandTitle: "検索操作をクリックして選択する",
+		resetTitle: "値の検索のリセット"
 	},
 	edit: {
 		addCaption: "レコード追加",
@@ -148,6 +151,21 @@ $.extend(true,$.jgrid, {
 				YearMonth: "F, Y"
 			}
 		}
+	}
+};
+$.jgrid = $.jgrid || {};
+$.extend(true, $.jgrid, {
+	defaults: {
+		locale: "ja"
+	},
+	locales: {
+		// In general the property name is free, but it's recommended to use the names based on
+		// http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
+		// http://rishida.net/utils/subtags/ and RFC 5646. See Appendix A of RFC 5646 for examples.
+		// One can use the lang attribute to specify language tags in HTML, and the xml:lang attribute for XML
+		// if it exists. See http://www.w3.org/International/articles/language-tags/#extlang
+		ja: $.extend({}, locInfo, { name: "日本語", nameEnglish: "Japanese" }),
+		"ja-JP": $.extend({}, locInfo, { name: "日本語 (日本)", nameEnglish: "Japanese (Japan)" })
 	}
 });
 }(jQuery));

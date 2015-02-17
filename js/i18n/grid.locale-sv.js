@@ -1,5 +1,3 @@
-(function($){
-"use strict";
 /**
  * jqGrid Swedish Translation
  * Harald Normann harald.normann@wts.se, harald.normann@gmail.com
@@ -8,8 +6,13 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
-$.jgrid = $.jgrid || {};
-$.extend(true,$.jgrid,{
+
+/*jslint white: true */
+/*global jQuery */
+(function($){
+"use strict";
+var locInfo = {
+	isRTL: false,
 	defaults : {
 		recordtext: "Visar {0} - {1} av {2}",
 		emptyrecords: "Det finns inga poster att visa",
@@ -121,6 +124,21 @@ $.extend(true,$.jgrid,{
 	            YearMonth: "F, Y"
 			}
 		}
+	}
+};
+$.jgrid = $.jgrid || {};
+$.extend(true, $.jgrid, {
+	defaults: {
+		locale: "sv"
+	},
+	locales: {
+		// In general the property name is free, but it's recommended to use the names based on
+		// http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
+		// http://rishida.net/utils/subtags/ and RFC 5646. See Appendix A of RFC 5646 for examples.
+		// One can use the lang attribute to specify language tags in HTML, and the xml:lang attribute for XML
+		// if it exists. See http://www.w3.org/International/articles/language-tags/#extlang
+		sv: $.extend({}, locInfo, { name: "svenska", nameEnglish: "Swedish" }),
+		"sv-SE": $.extend({}, locInfo, { name: "svenska (Sverige)", nameEnglish: "Swedish (Sweden)" })
 	}
 });
 }(jQuery));

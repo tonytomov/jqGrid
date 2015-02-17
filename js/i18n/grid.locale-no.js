@@ -1,10 +1,15 @@
-(function ($) {
 /**
  * jqGrid Norwegian Translation
 **/
+
+/*jslint white: true */
+/*global jQuery */
+(function ($) {
 	"use strict";
-	$.jgrid = $.jgrid || {};
-	$.extend(true,$.jgrid, {
+	var locInfo = {
+		name: "norsk",
+		nameEnglish: "Norwegian",
+		isRTL: false,
 		defaults: {
 			recordtext: "Rad {0} - {1}, totalt {2}",
 			emptyrecords: "Ingen poster funnet",
@@ -124,6 +129,20 @@
 					YearMonth: "F Y"
 				}
 			}
+		}
+	};
+	$.jgrid = $.jgrid || {};
+	$.extend(true, $.jgrid, {
+		defaults: {
+			locale: "no"
+		},
+		locales: {
+			// In general the property name is free, but it's recommended to use the names based on
+			// http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
+			// http://rishida.net/utils/subtags/ and RFC 5646. See Appendix A of RFC 5646 for examples.
+			// One can use the lang attribute to specify language tags in HTML, and the xml:lang attribute for XML
+			// if it exists. See http://www.w3.org/International/articles/language-tags/#extlang
+			no: locInfo
 		}
 	});
 }(jQuery));

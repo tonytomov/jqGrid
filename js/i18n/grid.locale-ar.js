@@ -1,5 +1,3 @@
-(function($){
-"use strict";
 /**
  * jqGrid Arabic Translation
  * 
@@ -8,8 +6,15 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
-$.jgrid = $.jgrid || {};
-$.extend(true,$.jgrid,{
+
+/*jslint white: true */
+/*global jQuery */
+(function($){
+"use strict";
+var locInfo = {
+	name: "العربية",
+	nameEnglish: "Arabic",
+	isRTL: true,
 	defaults : {
 		recordtext: "تسجيل {0} - {1} على {2}",
 		emptyrecords: "لا يوجد تسجيل",
@@ -31,7 +36,7 @@ $.extend(true,$.jgrid,{
 		groupOps: [	{ op: "مع", text: "الكل" },	{ op: "أو",  text: "لا أحد" }],
 		operandTitle : "Click to select search operation.",
 		resetTitle : "Reset Search Value"
-},
+	},
 	edit : {
 		addCaption: "اضافة",
 		editCaption: "تحديث",
@@ -120,6 +125,20 @@ $.extend(true,$.jgrid,{
 				YearMonth: "F, Y"
 			}
 		}
+	}
+};
+$.jgrid = $.jgrid || {};
+$.extend(true, $.jgrid, {
+	defaults: {
+		locale: "ar"
+	},
+	locales: {
+		// In general the property name is free, but it's recommended to use the names based on
+		// http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
+		// http://rishida.net/utils/subtags/ and RFC 5646. See Appendix A of RFC 5646 for examples.
+		// One can use the lang attribute to specify language tags in HTML, and the xml:lang attribute for XML
+		// if it exists. See http://www.w3.org/International/articles/language-tags/#extlang
+		ar: locInfo
 	}
 });
 }(jQuery));

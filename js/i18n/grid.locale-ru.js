@@ -7,12 +7,11 @@
  * http://www.gnu.org/licenses/gpl.html
 **/
 
+/*jslint white: true */
 /*global jQuery */
 (function($){
 "use strict";
 var locInfo = {
-	name: "русский (Россия)",
-	nameEnglish: "Russian (Russia)",
 	isRTL: false,
 	defaults : {
 		recordtext: "Просмотр {0} - {1} из {2}",
@@ -130,7 +129,7 @@ var locInfo = {
 $.jgrid = $.jgrid || {};
 $.extend(true, $.jgrid, {
 	defaults: {
-		locale: "ru-RU"
+		locale: "ru"
 	},
 	locales: {
 		// In general the property name is free, but it's recommended to use the names based on
@@ -138,8 +137,8 @@ $.extend(true, $.jgrid, {
 		// http://rishida.net/utils/subtags/ and RFC 5646. See Appendix A of RFC 5646 for examples.
 		// One can use the lang attribute to specify language tags in HTML, and the xml:lang attribute for XML
 		// if it exists. See http://www.w3.org/International/articles/language-tags/#extlang
-		ru: locInfo,        // set default locale for Russian
-		"ru-RU": locInfo    // and for Russian (Russia)
+		ru: $.extend({}, locInfo, { name: "русский", nameEnglish: "Russian" }),
+		"ru-RU": $.extend({}, locInfo, { name: "русский (Россия)", nameEnglish: "Russian (Russia)" })
 	}
 });
 }(jQuery));

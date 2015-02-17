@@ -1,5 +1,3 @@
-(function($){
-"use strict";
 /**
  * jqGrid Vietnamese Translation
  * Lê Đình Dũng dungtdc@gmail.com
@@ -8,8 +6,13 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
-$.jgrid = $.jgrid || {};
-$.extend(true,$.jgrid,{
+
+/*jslint white: true */
+/*global jQuery */
+(function($){
+"use strict";
+var locInfo = {
+	isRTL: false,
 	defaults : {
 		recordtext: "View {0} - {1} of {2}",
 		emptyrecords: "Không có dữ liệu",
@@ -162,6 +165,21 @@ $.extend(true,$.jgrid,{
 				YearMonth: "F, Y" // in jQuery UI Datepicker: "MMMM, yyyy"
 			}
 		}
+	}
+};
+$.jgrid = $.jgrid || {};
+$.extend(true, $.jgrid, {
+	defaults: {
+		locale: "vi"
+	},
+	locales: {
+		// In general the property name is free, but it's recommended to use the names based on
+		// http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
+		// http://rishida.net/utils/subtags/ and RFC 5646. See Appendix A of RFC 5646 for examples.
+		// One can use the lang attribute to specify language tags in HTML, and the xml:lang attribute for XML
+		// if it exists. See http://www.w3.org/International/articles/language-tags/#extlang
+		vi: $.extend({}, locInfo, { name: "Tiếng Việt", nameEnglish: "Vietnamese" }),
+		"vi-VN": $.extend({}, locInfo, { name: "Tiếng Việt (Việt Nam)", nameEnglish: "Vietnamese (Vietnam)" })
 	}
 });
 }(jQuery));
