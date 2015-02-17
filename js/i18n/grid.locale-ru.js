@@ -1,5 +1,3 @@
-(function($){
-"use strict";
 /**
  * jqGrid Russian Translation v1.0 02.07.2009 based on translation by Alexey Kanaev, v1.1 21.01.2009 (http://softcore.com.ru) and 07.01.2015 (http://smartcore.ru)
  * Sergey Dyagovchenko
@@ -8,8 +6,11 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
-$.jgrid = $.jgrid || {};
-$.extend(true,$.jgrid,{
+
+/*global jQuery */
+(function($){
+"use strict";
+var locInfo = {
 	defaults : {
 		recordtext: "Просмотр {0} - {1} из {2}",
 		emptyrecords: "Нет записей для просмотра",
@@ -108,7 +109,7 @@ $.extend(true,$.jgrid,{
 				"Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
 			],
 			AmPm : ["am","pm","AM","PM"],
-			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th';},
+			S: function () {return "";},
 			srcformat: 'Y-m-d',
 			newformat: 'd.m.Y',
 			masks : {
@@ -121,6 +122,29 @@ $.extend(true,$.jgrid,{
 				YearMonth: "F, Y"
 			}
 		}
+	}
+};
+$.jgrid = $.jgrid || {};
+$.jgrid.locales = $.jgrid.locales || {};
+$.jgrid.locales.ru = $.jgrid.locales["ru-RU"] = locInfo;
+// we set locInfo under $.jgrid only to have more compatibility with the previous
+// version of jqGrid. All new code should get string resources only regional part directly
+// using getRes function.
+$.extend(true, $.jgrid, {
+	defaults: {
+		//direction: "ltr",
+		locale: "ru-RU",
+		localeName: "русский (Россия)",
+		localeNameEnglish: "Russian (Russia)"
+	},
+	locales: {
+		// In general the property name is free, but it's recommended to use the names based on
+		// http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
+		// http://rishida.net/utils/subtags/ and RFC 5646. See Appendix A of RFC 5646 for examples.
+		// One can use the lang attribute to specify language tags in HTML, and the xml:lang attribute for XML
+		// if it exists. See http://www.w3.org/International/articles/language-tags/#extlang
+		ru: locInfo,        // set default locale for Russian
+		"ru-RU": locInfo    // and for Russian (Russia)
 	}
 });
 }(jQuery));
