@@ -22,6 +22,9 @@
 (function($){
 "use strict";
 var locInfo = {
+	name: "Deutsch (Deutschland)",
+	nameEnglish: "German (Germany)",
+	isRTL: false,
 	defaults : {
 		recordtext: "Zeige {0} - {1} von {2}",
 		emptyrecords: "Keine Datensätze vorhanden",
@@ -169,17 +172,9 @@ var locInfo = {
 	}
 };
 $.jgrid = $.jgrid || {};
-$.jgrid.locales = $.jgrid.locales || {};
-$.jgrid.locales.de = $.jgrid.locales["de-DE"] = locInfo;
-// we set locInfo under $.jgrid only to have more compatibility with the previous
-// version of jqGrid. All new code should get string resources only regional part directly
-// using getRes function.
 $.extend(true, $.jgrid, {
 	defaults: {
-		//direction: "ltr",
-		locale: "de-DE",
-		localeName: "Deutsch (Deutschland)",
-		localeNameEnglish: "German (Germany)"
+		locale: "de-DE"
 	},
 	locales: {
 		// In general the property name is free, but it's recommended to use the names based on

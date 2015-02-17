@@ -18,6 +18,9 @@
 (function ($) {
 "use strict";
 var englishLanguageDefaults = {
+	name: "English (United States)",
+	nameEnglish: "English (United States)",
+	isRTL: false,
 	defaults: {
 		recordtext: "View {0} - {1} of {2}",
 		emptyrecords: "No records to view",
@@ -215,20 +218,27 @@ var jgrid = $.jgrid;
 jgrid.locales = jgrid.locales || {};
 var locales = jgrid.locales;
 
-if (jgrid.defaults == null || $.isEmptyObject(locales)) {
+if (jgrid.defaults == null || $.isEmptyObject(locales) || locales.en === undefined || locales["en-US"] === undefined) {
 	// set English options only if no grid.locale-XX.js file are included before jquery.jqGrid.min.js or jquery.jqGrid.src.js
 	// the files included AFTER jquery.jqGrid.min.js or jquery.jqGrid.src.js will just overwrite all the settings which were set previously
 
-	// we set locInfo under $.jgrid additionally to setting under $.jgrid.locales[locale] 
+	// We can set locInfo under $.jgrid additionally to setting under $.jgrid.locales[locale] 
 	// only to have more compatibility with the previous version of jqGrid.
-	// All new code should get string resources only locales part directly
-	// using getRes function.
-	$.extend(true, $.jgrid, /*englishLanguageDefaults,*/ {
-		locales: {
-			en: englishLanguageDefaults,		// set default locale for English
-			"en-US": englishLanguageDefaults	// and for English US
-		}
-	});
+	// We don't make this currently.
+	if (locales.en === undefined) {
+		$.extend(true, $.jgrid, /*englishLanguageDefaults,*/ {
+			locales: {
+				en: englishLanguageDefaults			// set default locale for English
+			}
+		});
+	}
+	if (locales["en-US"] === undefined) {
+		$.extend(true, $.jgrid, /*englishLanguageDefaults,*/ {
+			locales: {
+				"en-US": englishLanguageDefaults	// and for English US
+			}
+		});
+	}
 }
 
 $.extend(true,jgrid,{
@@ -443,6 +453,9 @@ $.extend(true,jgrid,{
 	},
 	getRes: function (base, path) {
 		var pathParts = path.split("."), n = pathParts.length, i;
+		if (base == null) {
+			return undefined;
+		}
 		for (i = 0; i < n; i++) {
 			if (!pathParts[i]) {
 				return null;
@@ -1474,6 +1487,7 @@ $.fn.jqGrid = function( pin ) {
 		var ts = this, localData, 
 		fatalErrorFunction = jgrid.defaults != null && $.isFunction(jgrid.defaults.fatalError) ? jgrid.defaults.fatalError : alert,
 		locale = pin.locale || ($.jgrid.defaults || {}).locale || "en-US",
+		direction = locales[locale] != null && typeof locales[locale].isRTL === "boolean" ? (locales[locale].isRTL ? "rtl" : "ltr") : "ltr",
 		iconSet = pin.iconSet || ($.jgrid.defaults || {}).iconSet || "fontAwesome", //"jQueryUI",
 		getIcon = function (path) {
 			return jgrid.getIconRes(iconSet, path);
@@ -1610,7 +1624,7 @@ $.fn.jqGrid = function( pin ) {
 			autoencode : false, // true is better for the most cases, but we hold old value to have better backwards compatibility
 			remapColumns : [],
 			ajaxGridOptions :{},
-			direction : "ltr",
+			direction : direction,
 			toppager: false,
 			headertitles: false,
 			scrollTimeout: 40,
@@ -1690,7 +1704,7 @@ $.fn.jqGrid = function( pin ) {
 			return jgrid.getRes(jgrid, path) || jgrid.getRes(locales[locale], path);
 		},
 		getDef = function (path) {
-			return jgrid.getRes(jgrid, path) || jgrid.getRes(locales[locale], "defaults." + path);
+			return jgrid.getRes(jgrid, path) || jgrid.getRes(locales[locale], "defaults." + path) || jgrid.getRes(locales["en"], "defaults." + path);
 		};
 		// set dynamic options
 		p.recordpos = p.recordpos || (p.direction === "rtl" ? "left" : "right");
@@ -4249,7 +4263,7 @@ jgrid.extend({
 		var $t = this[0];
 		if (!$t || !$t.grid || !$t.p) {return null;}
 		// One need get defaultPropName from $.jgrid root first. If no value exist then one should get it from $.jgrid[reg] root
-		var res = jgrid.getRes(locales[$t.p.locale], defaultPropName),
+		var res = jgrid.getRes(locales[$t.p.locale], defaultPropName) || jgrid.getRes(locales["en-US"], defaultPropName),
 			resDef = jgrid.getRes(jgrid, defaultPropName);
 		return typeof res === "object" && res !== null ?
 			$.extend(true, {}, res, resDef || {}) :

@@ -18,6 +18,9 @@
 (function ($) {
 "use strict";
 var englishLanguageDefaults = {
+	name: "English (United States)",
+	nameEnglish: "English (United States)",
+	isRTL: false,
 	defaults: {
 		recordtext: "View {0} - {1} of {2}",
 		emptyrecords: "No records to view",
@@ -215,20 +218,27 @@ var jgrid = $.jgrid;
 jgrid.locales = jgrid.locales || {};
 var locales = jgrid.locales;
 
-if (jgrid.defaults == null || $.isEmptyObject(locales)) {
+if (jgrid.defaults == null || $.isEmptyObject(locales) || locales.en === undefined || locales["en-US"] === undefined) {
 	// set English options only if no grid.locale-XX.js file are included before jquery.jqGrid.min.js or jquery.jqGrid.src.js
 	// the files included AFTER jquery.jqGrid.min.js or jquery.jqGrid.src.js will just overwrite all the settings which were set previously
 
-	// we set locInfo under $.jgrid additionally to setting under $.jgrid.locales[locale] 
+	// We can set locInfo under $.jgrid additionally to setting under $.jgrid.locales[locale] 
 	// only to have more compatibility with the previous version of jqGrid.
-	// All new code should get string resources only locales part directly
-	// using getRes function.
-	$.extend(true, $.jgrid, /*englishLanguageDefaults,*/ {
-		locales: {
-			en: englishLanguageDefaults,		// set default locale for English
-			"en-US": englishLanguageDefaults	// and for English US
-		}
-	});
+	// We don't make this currently.
+	if (locales.en === undefined) {
+		$.extend(true, $.jgrid, /*englishLanguageDefaults,*/ {
+			locales: {
+				en: englishLanguageDefaults			// set default locale for English
+			}
+		});
+	}
+	if (locales["en-US"] === undefined) {
+		$.extend(true, $.jgrid, /*englishLanguageDefaults,*/ {
+			locales: {
+				"en-US": englishLanguageDefaults	// and for English US
+			}
+		});
+	}
 }
 
 $.extend(true,jgrid,{
@@ -443,6 +453,9 @@ $.extend(true,jgrid,{
 	},
 	getRes: function (base, path) {
 		var pathParts = path.split("."), n = pathParts.length, i;
+		if (base == null) {
+			return undefined;
+		}
 		for (i = 0; i < n; i++) {
 			if (!pathParts[i]) {
 				return null;
@@ -1474,6 +1487,7 @@ $.fn.jqGrid = function( pin ) {
 		var ts = this, localData, 
 		fatalErrorFunction = jgrid.defaults != null && $.isFunction(jgrid.defaults.fatalError) ? jgrid.defaults.fatalError : alert,
 		locale = pin.locale || ($.jgrid.defaults || {}).locale || "en-US",
+		direction = locales[locale] != null && typeof locales[locale].isRTL === "boolean" ? (locales[locale].isRTL ? "rtl" : "ltr") : "ltr",
 		iconSet = pin.iconSet || ($.jgrid.defaults || {}).iconSet || "fontAwesome", //"jQueryUI",
 		getIcon = function (path) {
 			return jgrid.getIconRes(iconSet, path);
@@ -1610,7 +1624,7 @@ $.fn.jqGrid = function( pin ) {
 			autoencode : false, // true is better for the most cases, but we hold old value to have better backwards compatibility
 			remapColumns : [],
 			ajaxGridOptions :{},
-			direction : "ltr",
+			direction : direction,
 			toppager: false,
 			headertitles: false,
 			scrollTimeout: 40,
@@ -1690,7 +1704,7 @@ $.fn.jqGrid = function( pin ) {
 			return jgrid.getRes(jgrid, path) || jgrid.getRes(locales[locale], path);
 		},
 		getDef = function (path) {
-			return jgrid.getRes(jgrid, path) || jgrid.getRes(locales[locale], "defaults." + path);
+			return jgrid.getRes(jgrid, path) || jgrid.getRes(locales[locale], "defaults." + path) || jgrid.getRes(locales["en"], "defaults." + path);
 		};
 		// set dynamic options
 		p.recordpos = p.recordpos || (p.direction === "rtl" ? "left" : "right");
@@ -4249,7 +4263,7 @@ jgrid.extend({
 		var $t = this[0];
 		if (!$t || !$t.grid || !$t.p) {return null;}
 		// One need get defaultPropName from $.jgrid root first. If no value exist then one should get it from $.jgrid[reg] root
-		var res = jgrid.getRes(locales[$t.p.locale], defaultPropName),
+		var res = jgrid.getRes(locales[$t.p.locale], defaultPropName) || jgrid.getRes(locales["en-US"], defaultPropName),
 			resDef = jgrid.getRes(jgrid, defaultPropName);
 		return typeof res === "object" && res !== null ?
 			$.extend(true, {}, res, resDef || {}) :
@@ -7115,7 +7129,7 @@ jgrid.extend({
 					}
 				}
 			},
-			odata = getRes("search.odata"),
+			odata = getRes("search.odata") || [],
 			buildRuleMenu = function( elem, left, top ){
 				$("#sopt_menu").remove();
 
@@ -8535,9 +8549,8 @@ $.extend($.fn.jqFilter,{
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/
 "use strict";
-var jgrid = $.jgrid, locales = jgrid.locales, getRes = jgrid.getRes,
-	feedback = jgrid.feedback, fullBoolFeedback = jgrid.fullBoolFeedback, jqID = jgrid.jqID,
-	hideModal = jgrid.hideModal, viewModal = jgrid.viewModal, infoDialog = jgrid.info_dialog,
+var jgrid = $.jgrid, feedback = jgrid.feedback, fullBoolFeedback = jgrid.fullBoolFeedback, jqID = jgrid.jqID,
+	hideModal = jgrid.hideModal, viewModal = jgrid.viewModal, createModal = jgrid.createModal, infoDialog = jgrid.info_dialog,
 	mergeCssClasses = jgrid.mergeCssClasses,
 	getCssStyleOrFloat = function ($elem, styleName) {
 		var v = $elem[0].style[styleName];
@@ -8625,7 +8638,7 @@ jgrid.extend({
 				layer: null,
 				operands : { "eq" :"=", "ne":"<>","lt":"<","le":"<=","gt":">","ge":">=","bw":"LIKE","bn":"NOT LIKE","in":"IN","ni":"NOT IN","ew":"LIKE","en":"NOT LIKE","cn":"LIKE","nc":"NOT LIKE","nu":"IS NULL","nn":"IS NOT NULL"}
 			},
-			getRes(locales[p.locale], "search"),
+			$self.jqGrid("getGridRes", "search"),
 			jgrid.search || {},
 			p.searching || {},
 			oMuligrid || {});
@@ -8767,9 +8780,9 @@ jgrid.extend({
 				if(o.multipleGroup === true) {o.multipleSearch = true;}
 				searchFeedback("onInitialize", $(fid));
 				if (o.layer) {
-					jgrid.createModal.call($t, ids, fil, o, gviewSelector, $(gboxSelector)[0], "#"+jqID(o.layer), {position: "relative"});
+					createModal.call($t, ids, fil, o, gviewSelector, $(gboxSelector)[0], "#"+jqID(o.layer), {position: "relative"});
 				} else {
-					jgrid.createModal.call($t, ids, fil, o, gviewSelector, $(gboxSelector)[0]);
+					createModal.call($t, ids, fil, o, gviewSelector, $(gboxSelector)[0]);
 				}
 				if (o.searchOnEnter || o.closeOnEscape) {
 					$(themodalSelector).keydown(function (e) {
@@ -8930,7 +8943,7 @@ jgrid.extend({
 				removemodal : true,
 				form: 'edit'
 			},
-			getRes(locales[p.locale], "edit"),
+			$self.jqGrid("getGridRes", "edit"),
 			jgrid.edit,
 			p.formEditing || {},
 			oMuligrid || {});
@@ -9599,7 +9612,7 @@ jgrid.extend({
 				cle = true;
 			}
 			var tms = $("<div></div>").append(frm).append(bt);
-			jgrid.createModal.call($t, ids,tms, o ,p.gView,$(gboxSelector)[0]);
+			createModal.call($t, ids,tms, o ,p.gView,$(gboxSelector)[0]);
 			if(o.topinfo) {$(".tinfo",frmtb).show();}
 			if(o.bottominfo) {$(".binfo",frmtb2).show();}
 			tms = null;bt=null;
@@ -9789,7 +9802,7 @@ jgrid.extend({
 				removemodal: true,
 				form: 'view'
 			},
-			getRes(locales[p.locale], "view"),
+			$self.jqGrid("getGridRes", "view"),
 			jgrid.view || {},
 			p.formViewing || {},
 			oMuligrid || {});
@@ -9987,7 +10000,7 @@ jgrid.extend({
 			}
 			o.gbox = gboxSelector;
 			var bt = $("<div></div>").append(frm).append("<table border='0' class='EditTable' id='"+frmtbID+"_2'><tbody><tr id='Act_Buttons'><td class='navButton navButton-" + p.direction + "' width='"+(o.labelswidth || "auto")+"'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton EditButton-" + p.direction + "'>"+bC+"</td></tr></tbody></table>");
-			jgrid.createModal.call($t,ids,bt,o,p.gView,$(p.gView)[0]);
+			createModal.call($t,ids,bt,o,p.gView,$(p.gView)[0]);
 			if(!o.viewPagerButtons) {$("#pData, #nData",frmtb2).hide();}
 			bt = null;
 			$(themodalSelector).keydown( function( e ) {
@@ -10094,7 +10107,7 @@ jgrid.extend({
 				serializeDelData : null,
 				useDataProxy : false
 			},
-			getRes(locales[p.locale], "del"),
+			$self.jqGrid("getGridRes", "del"),
 			jgrid.del || {},
 			p.formDeleting || {},
 			oMuligrid || {});
@@ -10137,7 +10150,7 @@ jgrid.extend({
 				bC  = "<a id='eData' class='fm-button ui-state-default ui-corner-all'><span class='fm-button-text'>"+o.bCancel+"</span></a>";
 				tbl += "<table"+(jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "")+" class='EditTable' id='"+dtblID+"_2'><tbody><tr><td><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='DelButton EditButton EditButton-" + p.direction + "'>"+bS+"&#160;"+bC+"</td></tr></tbody></table>";
 				o.gbox = gboxSelector;
-				jgrid.createModal.call($t,ids,tbl,o,p.gView,$(p.gView)[0]);
+				createModal.call($t,ids,tbl,o,p.gView,$(p.gView)[0]);
 				$("#DelData>td",dtbl).data("rowids", rowids);
 
 				if (!deleteFeedback("beforeInitData", $(tbl))) {return;}
@@ -10283,7 +10296,7 @@ jgrid.extend({
 		pDel = pDel || {};
 		pSearch = pSearch || {};
 		return this.each(function() {
-			var $t = this, p = $t.p;
+			var $t = this, p = $t.p, $self = $($t);
 			if(!$t.grid || p == null || ($t.nav && $(elem).find(".navtable").length > 0)) {
 				return; // error or the navigator bar already exists
 			}
@@ -10310,7 +10323,7 @@ jgrid.extend({
 				alertzIndex : null,
 				iconsOverText : false
 			},
-			getRes(locales[p.locale], "nav"),
+			$self.jqGrid("getGridRes", "nav"),
 			jgrid.nav || {},
 			p.navOptions || {},
 			oMuligrid || {});
@@ -10352,7 +10365,7 @@ jgrid.extend({
 					o.alertleft = o.alertleft/2 - parseInt(o.alertwidth,10)/2;
 					o.alerttop = o.alerttop/2-25;
 				}
-				jgrid.createModal.call($t, alertIDs,
+				createModal.call($t, alertIDs,
 					"<div>"+o.alerttext+"</div><span tabindex='0'><span tabindex='-1' id='jqg_alrt'></span></span>",
 					{ 
 						gbox:gboxSelector,
@@ -10388,7 +10401,7 @@ jgrid.extend({
 					if ($.isFunction( o.addfunc )) {
 						o.addfunc.call($t);
 					} else {
-						$($t).jqGrid("editGridRow","new",pAdd);
+						$self.jqGrid("editGridRow","new",pAdd);
 					}
 				}
 				return false;
@@ -10400,7 +10413,7 @@ jgrid.extend({
 						if($.isFunction( o.editfunc ) ) {
 							o.editfunc.call($t, sr);
 						} else {
-							$($t).jqGrid("editGridRow",sr,pEdit);
+							$self.jqGrid("editGridRow",sr,pEdit);
 						}
 					} else {
 						viewModalAlert();
@@ -10415,7 +10428,7 @@ jgrid.extend({
 						if($.isFunction( o.viewfunc ) ) {
 							o.viewfunc.call($t, sr);
 						} else {
-							$($t).jqGrid("viewGridRow",sr,pView);
+							$self.jqGrid("viewGridRow",sr,pView);
 						}
 					} else {
 						viewModalAlert();
@@ -10436,7 +10449,7 @@ jgrid.extend({
 						if($.isFunction( o.delfunc )){
 							o.delfunc.call($t, dr);
 						}else{
-							$($t).jqGrid("delGridRow",dr,pDel);
+							$self.jqGrid("delGridRow",dr,pDel);
 						}
 					} else  {
 						viewModalAlert();
@@ -10449,7 +10462,7 @@ jgrid.extend({
 					if($.isFunction( o.searchfunc )) {
 						o.searchfunc.call($t, pSearch);
 					} else {
-						$($t).jqGrid("searchGrid",pSearch);
+						$self.jqGrid("searchGrid",pSearch);
 					}
 				}
 				return false;
@@ -10470,11 +10483,11 @@ jgrid.extend({
 					} catch (ignore) {}
 					switch (o.refreshstate) {
 						case 'firstpage':
-							$($t).trigger("reloadGrid", [$.extend({}, o.reloadGridOptions || {}, {page:1})]);
+							$self.trigger("reloadGrid", [$.extend({}, o.reloadGridOptions || {}, {page:1})]);
 							break;
 						case 'current':
 						case 'currentfilter':
-							$($t).trigger("reloadGrid", [$.extend({}, o.reloadGridOptions || {}, {current:true})]);
+							$self.trigger("reloadGrid", [$.extend({}, o.reloadGridOptions || {}, {current:true})]);
 							break;
 					}
 					if($.isFunction(o.afterRefresh)) {o.afterRefresh.call($t);}
@@ -10563,7 +10576,7 @@ jgrid.extend({
 				cursor : 'pointer',
 				iconsOverText : false
 			},
-			getRes(locales[p.locale], "nav"),
+			$($t).jqGrid("getGridRes", "nav"),
 			jgrid.nav || {},
 			p.navOptions || {},
 			o || {});
