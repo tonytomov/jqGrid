@@ -299,7 +299,7 @@ jgrid.extend({
 									this.selected = true;
 									return false;
 								}
-							}).trigger("change");
+							});
 							if ( v !== undefined ) {
 								// post the key and not the text
 								sdata[nm] = v;
