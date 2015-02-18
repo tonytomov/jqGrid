@@ -500,17 +500,20 @@ jgrid.extend({
 			initdata : {},
 			position :"first",
 			useDefValues : true,
-			useFormatter : false,
+			useFormatter: false,
+		    	beforeAddRow: null,
 			addRowParams : {extraparam:{}}
 		},o  || {});
 		return this.each(function(){
-			if (!this.grid ) { return; }
-			var $t = this, $self = $($t), p = $t.p,
-			bfar = $.isFunction( o.beforeAddRow ) ?	o.beforeAddRow.call($t,o.addRowParams) :  undefined;
-			if( bfar === undefined ) {
-				bfar = true;
+		    if (!this.grid) { return; }
+
+			var $t = this, $self = $($t), p = $t.p;
+			var bfar = $self.triggerHandler("jqGridInlineBeforeAddRow", o.addRowParams);
+			if (bfar === false && $.isFunction(o.beforeAddRow)) {
+			    bfar = o.beforeAddRow.call($t, o.addRowParams);
 			}
-			if(!bfar) { return; }
+			if (bfar === false) { return; }
+
 			o.rowID = $.isFunction(o.rowID) ? o.rowID.call($t, o) : ( (o.rowID != null) ? o.rowID : jgrid.randId());
 			if(o.useDefValues === true) {
 				$(p.colModel).each(function(){
