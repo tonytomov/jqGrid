@@ -1,6 +1,6 @@
 ﻿
 /*
- * jqGrid OData (WebApi v3) support
+ * jqGrid OData (WebApi v3/v4) support
  *
  * Authors:
  *  Mark Babayev (https://github.com/mirik123)
@@ -13,12 +13,28 @@
  *
  * the example of using plugin is shown in InitJqGridODataSample
  *
- * TODO: add OData v4 support using annotations instead of odata.nextLink/odata.count
+ * TODO: add OData v4 server side part that generates annotations.
  */
 
+"use strict";
 function InitJqGridODataSample() {
     var colModelDefinition = GetODataMetadata('http://localhost:59661/odata');
-    SetODataDefaults('grid', 25, "http://localhost:59661/odata/ODClient", colModelDefinition);
+
+    //odata v3
+    SetODataDefaults('grid', "http://localhost:59661/odata/ODClient", colModelDefinition, {
+        annotations: false,
+        inlinecount: true,
+        count: false,
+        top: false
+    });
+
+    //odata v4
+    SetODataDefaults('grid', "http://localhost:59661/odata/ODClient", colModelDefinition, {
+        annotations: true,
+        inlinecount: false,
+        count: true,
+        top: true
+    });
 
     $("#grid").jqGrid({
         height: '100%',
@@ -105,7 +121,16 @@ function GetODataMetadata(url) {
     return colModel;
 }
 
-function SetODataDefaults(gID, pageSize, url, colModel) {
+function SetODataDefaults(gID, url, colModel, options) {
+    options = $.extend(true, {
+        pageSize: 25,
+        annotations: false,
+        annotationName: "@jqgrid.GridModelAnnotate",
+        inlinecount: true,
+        count: false,
+        top: false
+    }, options);
+
     $.extend(true, $.jgrid.inlineEdit, {
         beforeSaveRow: function (options, rowid, frmoper) {
             if (options.extraparam.oper == 'edit') {
@@ -164,7 +189,7 @@ function SetODataDefaults(gID, pageSize, url, colModel) {
     });
 
     $.extend(true, $.jgrid.defaults, {
-        rowNum: pageSize,
+        rowNum: options.pageSize,
         datatype: "json",
         url: url,
         colModel: colModel,
@@ -177,7 +202,7 @@ function SetODataDefaults(gID, pageSize, url, colModel) {
             jqXHR.setRequestHeader("Prefer", 'odata.include-annotations="*"');
         },
         serializeGridData: function (postData) {
-            postData = setupWebServiceData(postData, colModel, pageSize);
+            postData = setupWebServiceData(postData, colModel, options);
             return postData;
         },
         ajaxRowOptions: {
@@ -208,16 +233,48 @@ function SetODataDefaults(gID, pageSize, url, colModel) {
             userdata: "userdata"
         }
     });
+
+    if (options.annotations) {
+        $.extend(true, $.jgrid.defaults, {
+            loadBeforeSend: function (jqXHR) {
+                jqXHR.setRequestHeader("Prefer", 'odata.include-annotations="*"');
+            },
+            jsonReader: {
+                root: "value",
+                repeatitems: false,
+                records: function (data) {
+                    return data[options.annotationName].records;
+                },
+                page: function (data) {
+                    return data[options.annotationName].page;
+                },
+                total: function (data) {
+                    return data[options.annotationName].total;
+                },
+                userdata: function (data) {
+                    return data[options.annotationName].userdata;
+                }
+            }
+        });
+    }
 }
 
-function setupWebServiceData(postData, cols, pageSize) {
+function setupWebServiceData(postData, cols, options) {
     // basic posting parameters to the OData service.
     var params = {
         //$top: postData.rows, //- we cannot use $top because of it removes odata.nextLink parameter
-        $skip: (parseInt(postData.page, pageSize) - 1) * pageSize,
-        $inlinecount: "allpages" //- not relevant for V4
-        //$count:true
+        $skip: (parseInt(postData.page, options.pageSize) - 1) * options.pageSize,
+        //$inlinecount: "allpages" //- not relevant for V4
     };
+
+    if (options.count)
+        params.$count = true;
+
+    if (options.top)
+        params.$top = postData.rows;
+
+    if (options.inlinecount)
+        params.$inlinecount = "allpages";
 
     // if we have an order-by clause to use, then we build it.
     if (postData.sidx) {
