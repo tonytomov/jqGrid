@@ -14767,7 +14767,9 @@ jgrid.extend({
 				}
 			},
 			msel_opts : {}
-		}, jgrid.col, opts || {});
+		},
+		$self.jqGrid("getGridRes", "col"),
+		jgrid.col, opts || {});
 		if($.ui) {
 			if ($UiMultiselect && $UiMultiselect.defaults) {
 				if (!jgrid._multiselect) {

@@ -47,6 +47,11 @@
 			<arg value="--js" />
 			<mapper type="glob" from="${target}" to="${target.min}" />
 		</apply>
+		<copy todir="${srcdir}" overwrite="true">
+			<fileset dir="${distdir}">
+				<include name="jquery.jqGrid.*" />
+			</fileset>
+		</copy>
 		<echo message="${target.min} built." />
 	</target>
 
