@@ -2,13 +2,13 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
 /**
- * @license jqGrid  4.8.0-beta2 - jQuery Grid
+ * @license jqGrid  4.8.0-beta3 - jQuery Grid
  * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com
  * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-02-17
+ * Date: 2015-02-18
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -242,8 +242,16 @@ if (jgrid.defaults == null || $.isEmptyObject(locales) || locales.en === undefin
 }
 
 $.extend(true,jgrid,{
-	version : "4.8.0-beta2",
-	formatter : {
+	version: "4.8.0-beta3",
+	defaults: {},
+	search: {},
+	edit: {},
+	view: {},
+	del: {},
+	nav: {},
+	col: {},
+	errors: {},
+	formatter: {
 		unused: '' // used only to detect whether the changes are overwritten because of wrong usage
 	},
 	icons: {
