@@ -437,16 +437,15 @@ jgrid.extend({
 
 		return this.each(function(){
 			var $t = this, $self = $($t), p = $t.p, fr=-1, ares={}, k;
-			if (!$t.grid ) { return; }
-			var o = $.extend(true, {}, jgrid.inlineEdit, p.inlineEditing || {}, oMuligrid);
+			if (!$t.grid) { return; }
 
+			var o = $.extend(true, {}, jgrid.inlineEdit, p.inlineEditing || {}, oMuligrid);
 			var ind = $self.jqGrid("getInd",rowid,true);
-			if(ind === false) {return;}
+			if (ind === false) { return; }
+
 			var bfcr = $.isFunction( o.beforeCancelRow ) ?	o.beforeCancelRow.call($t, o, rowid) :  undefined;
-			if( bfcr === undefined ) {
-				bfcr = true;
-			}
-			if(!bfcr) { return; }
+			if (bfcr === false) { return; }
+
 			for(k=0;k<p.savedRow.length;k++) {
 				if( String(p.savedRow[k].id) === String(rowid)) {fr = k; break;}
 			}
