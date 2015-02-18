@@ -39,31 +39,33 @@ jgrid.extend({
 
 		// End compatible
 		return this.each(function(){
-			var $t = this, $self = $($t), p = $t.p, nm, tmp, cnt=0, focus=null, svr={}, colModel = p.colModel, cm, bfer;
-			if (!$t.grid ) { return; }
-			var o = $.extend(true, {
-				keys : false,
-				oneditfunc: null,
-				successfunc: null,
-				url: null,
-				extraparam: {},
-				aftersavefunc: null,
-				errorfunc: null,
-				afterrestorefunc: null,
-				restoreAfterError: true,
-			    	beforeEditRow: null,
-				mtype: "POST",
-				focusField : true
-			}, jgrid.inlineEdit, p.inlineEditing || {}, oMuligrid );
+		    var $t = this, $self = $($t), p = $t.p, nm, tmp, cnt=0, focus=null, svr={}, colModel = p.colModel, cm, bfer, opers = p.prmNames;
+		    if (!$t.grid ) { return; }
+		    var o = $.extend(true, {
+		        keys : false,
+		        oneditfunc: null,
+		        successfunc: null,
+		        url: null,
+		        extraparam: {},
+		        aftersavefunc: null,
+		        errorfunc: null,
+		        afterrestorefunc: null,
+		        restoreAfterError: true,
+		        beforeEditRow: null,
+		        mtype: "POST",
+		        focusField : true
+		    }, jgrid.inlineEdit, p.inlineEditing || {}, oMuligrid );
 
-			var ind = $self.jqGrid("getInd",rowid,true);
-			if (ind === false) { return; }
-            
-			bfer = $self.triggerHandler("jqGridInlineBeforeEditRow", [o, rowid]);
-			if (bfer === false && $.isFunction(o.beforeEditRow)) {
-			    bfer = o.beforeEditRow.call($t, o, rowid);
-			}
-			if (bfer === false) { return; }
+		    var ind = $self.jqGrid("getInd",rowid,true);
+		    if (ind === false) { return; }
+           
+		    if (o.extraparam[opers.oper] === opers.editoper) {
+			    bfer = $self.triggerHandler("jqGridInlineBeforeEditRow", [o, rowid]);
+		        if (bfer === false && $.isFunction(o.beforeEditRow)) {
+		            bfer = o.beforeEditRow.call($t, o, rowid);
+		        }
+		        if (bfer === false) { return; }
+		    }
 
 			var editable = $(ind).attr("editable") || "0";
 			if (editable === "0" && !$(ind).hasClass("not-editable-row")) {
