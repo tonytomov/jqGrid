@@ -7577,7 +7577,7 @@ window.xmlJsonClass = {
 				$.param(op.addParam) :
 				getOptionValue(op.addParam);
 		idUrl += !idParam && !addParam ? "" :
-				'?' + idParam + (idParam && addParam ? "&" : "") + addParam;
+				'?' + idParam /*+ (idParam && addParam ? "&" : "")*/ + addParam;
 		if (idUrl === "") {
 			idUrl = getOptionValue(op.hrefDefaultValue);
 		}
