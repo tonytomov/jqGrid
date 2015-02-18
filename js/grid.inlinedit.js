@@ -16,7 +16,7 @@ var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes");
 jgrid.inlineEdit = jgrid.inlineEdit || {};
 jgrid.extend({
 //Editing
-	editRow : function(rowid,keys,oneditfunc,successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
+    editRow: function (rowid, keys, oneditfunc, successfunc, url, extraparam, aftersavefunc, errorfunc, afterrestorefunc, beforeEditRow) {
 		// Compatible mode old versions
 		var oMuligrid={}, args = $.makeArray(arguments).slice(1);
 
@@ -31,6 +31,7 @@ jgrid.extend({
 			if ($.isFunction(aftersavefunc)) { oMuligrid.aftersavefunc = aftersavefunc; }
 			if ($.isFunction(errorfunc)) { oMuligrid.errorfunc = errorfunc; }
 			if ($.isFunction(afterrestorefunc)) { oMuligrid.afterrestorefunc = afterrestorefunc; }
+			if ($.isFunction(beforeEditRow)) { oMuligrid.beforeEditRow = beforeEditRow; }
 			// last two not as param, but as object (sorry)
 			//if (restoreAfterError !== undefined) { oMuligrid.restoreAfterError = restoreAfterError; }
 			//if (mtype !== undefined) { oMuligrid.mtype = mtype || "POST"; }			
@@ -50,17 +51,20 @@ jgrid.extend({
 				errorfunc: null,
 				afterrestorefunc: null,
 				restoreAfterError: true,
+			    	beforeEditRow: null,
 				mtype: "POST",
 				focusField : true
 			}, jgrid.inlineEdit, p.inlineEditing || {}, oMuligrid );
 
 			var ind = $self.jqGrid("getInd",rowid,true);
-			if( ind === false ) {return;}
-			bfer = $.isFunction( o.beforeEditRow ) ? o.beforeEditRow.call($t,o, rowid) :  undefined;
-			if( bfer === undefined ) {
-				bfer = true;
+			if (ind === false) { return; }
+            
+			bfer = $self.triggerHandler("jqGridInlineBeforeEditRow", [o, rowid]);
+			if (bfer === false && $.isFunction(o.beforeEditRow)) {
+			    bfer = o.beforeEditRow.call($t, o, rowid);
 			}
-			if(!bfer) { return; }
+			if (bfer === false) { return; }
+
 			var editable = $(ind).attr("editable") || "0";
 			if (editable === "0" && !$(ind).hasClass("not-editable-row")) {
 				$('td[role="gridcell"]',ind).each( function(i) {
