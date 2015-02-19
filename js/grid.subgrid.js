@@ -158,7 +158,8 @@ addSubGrid : function( pos, sind ) {
 						type:p.mtype,
 						url: $.isFunction(p.subGridUrl) ? p.subGridUrl.call(ts, dp) : p.subGridUrl,
 						dataType:p.subgridtype,
-						data: $.isFunction(p.serializeSubGridData)? p.serializeSubGridData.call(ts, dp) : dp,
+						//data: $.isFunction(p.serializeSubGridData)? p.serializeSubGridData.call(ts, dp) : dp,
+						data: jgrid.serializeFeedback.call(ts, p.serializeSubGridData, "jqGridSerializeSubGridData", dp),
 						complete: function(jqXHR) {
 							if(p.subgridtype === "xml") {
 								subGridXml(jqXHR.responseXML, sid);

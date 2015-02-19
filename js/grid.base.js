@@ -1379,7 +1379,10 @@ $.extend(true,jgrid,{
 		if (typeof eventResult === "string") {
 			return eventResult;
 		}
-		return callback.call(self, typeof eventResult === "object" && eventResult != null ? eventResult : postData);
+		if (eventResult == null || typeof eventResult !== "object") {
+			eventResult = postData; // uses original postData
+		}
+		return $.isFunction(callback) ? callback.call(self, eventResult) : eventResult;
 	},
 	fullBoolFeedback: function (callback, eventName) {
 		var self = this, args = $.makeArray(arguments).slice(2), result = $(self).triggerHandler(eventName, args);
@@ -3123,7 +3126,8 @@ $.fn.jqGrid = function( pin ) {
 						url:p.url,
 						type:p.mtype,
 						dataType: dt ,
-						data: $.isFunction(p.serializeGridData)? p.serializeGridData.call(self,p.postData) : p.postData,
+						//data: $.isFunction(p.serializeGridData)? p.serializeGridData.call(self,p.postData) : p.postData,
+						data: jgrid.serializeFeedback.call(ts, p.serializeGridData, "jqGridSerializeGridData", p.postData),
 						success: function (data, textStatus, jqXHR) {
 							if ($.isFunction(p.beforeProcessing)) {
 								if (p.beforeProcessing.call(self, data, textStatus, jqXHR) === false) {

@@ -816,7 +816,11 @@ jgrid.extend({
 					var ajaxOptions = $.extend({
 						url: url,
 						type: o.mtype,
-						data: $.isFunction(o.serializeEditData) ? o.serializeEditData.call($t,postdata) :  postdata,
+						//data: $.isFunction(o.serializeEditData) ? o.serializeEditData.call($t,postdata) :  postdata,
+						data: jgrid.serializeFeedback.call($t,
+							$.isFunction(o.serializeEditData) ? o.serializeEditData : p.serializeEditData,
+							"jqGridAddEditSerializeEditData",
+							postdata),						
 						complete: function (jqXHR, textStatus) {
 							$("#sData", frmtb2).removeClass('ui-state-active');
 							postdata[idname] = p.idPrefix + $("#id_g",frmtb).val();

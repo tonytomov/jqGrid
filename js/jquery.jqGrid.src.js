@@ -1379,7 +1379,10 @@ $.extend(true,jgrid,{
 		if (typeof eventResult === "string") {
 			return eventResult;
 		}
-		return callback.call(self, typeof eventResult === "object" && eventResult != null ? eventResult : postData);
+		if (eventResult == null || typeof eventResult !== "object") {
+			eventResult = postData; // uses original postData
+		}
+		return $.isFunction(callback) ? callback.call(self, eventResult) : eventResult;
 	},
 	fullBoolFeedback: function (callback, eventName) {
 		var self = this, args = $.makeArray(arguments).slice(2), result = $(self).triggerHandler(eventName, args);
@@ -3123,7 +3126,8 @@ $.fn.jqGrid = function( pin ) {
 						url:p.url,
 						type:p.mtype,
 						dataType: dt ,
-						data: $.isFunction(p.serializeGridData)? p.serializeGridData.call(self,p.postData) : p.postData,
+						//data: $.isFunction(p.serializeGridData)? p.serializeGridData.call(self,p.postData) : p.postData,
+						data: jgrid.serializeFeedback.call(ts, p.serializeGridData, "jqGridSerializeGridData", p.postData),
 						success: function (data, textStatus, jqXHR) {
 							if ($.isFunction(p.beforeProcessing)) {
 								if (p.beforeProcessing.call(self, data, textStatus, jqXHR) === false) {
@@ -10206,7 +10210,11 @@ jgrid.extend({
 					var ajaxOptions = $.extend({
 						url: url,
 						type: o.mtype,
-						data: $.isFunction(o.serializeEditData) ? o.serializeEditData.call($t,postdata) :  postdata,
+						//data: $.isFunction(o.serializeEditData) ? o.serializeEditData.call($t,postdata) :  postdata,
+						data: jgrid.serializeFeedback.call($t,
+							$.isFunction(o.serializeEditData) ? o.serializeEditData : p.serializeEditData,
+							"jqGridAddEditSerializeEditData",
+							postdata),						
 						complete: function (jqXHR, textStatus) {
 							$("#sData", frmtb2).removeClass('ui-state-active');
 							postdata[idname] = p.idPrefix + $("#id_g",frmtb).val();
@@ -12501,7 +12509,8 @@ jgrid.extend({
 								$t.grid.hDiv.loading = true;
 								$.ajax( $.extend( {
 									url: p.cellurl,
-									data :$.isFunction(p.serializeCellData) ? p.serializeCellData.call($t, postdata) : postdata,
+									//data :$.isFunction(p.serializeCellData) ? p.serializeCellData.call($t, postdata) : postdata,
+									data: jgrid.serializeFeedback.call($t, p.serializeCellData, "jqGridSerializeCellData", postdata),
 									type: "POST",
 									complete: function (jqXHR) {
 										$self.jqGrid("progressBar", {method:"hide", loadtype : p.loadui });
@@ -12962,7 +12971,8 @@ addSubGrid : function( pos, sind ) {
 						type:p.mtype,
 						url: $.isFunction(p.subGridUrl) ? p.subGridUrl.call(ts, dp) : p.subGridUrl,
 						dataType:p.subgridtype,
-						data: $.isFunction(p.serializeSubGridData)? p.serializeSubGridData.call(ts, dp) : dp,
+						//data: $.isFunction(p.serializeSubGridData)? p.serializeSubGridData.call(ts, dp) : dp,
+						data: jgrid.serializeFeedback.call(ts, p.serializeSubGridData, "jqGridSerializeSubGridData", dp),
 						complete: function(jqXHR) {
 							if(p.subgridtype === "xml") {
 								subGridXml(jqXHR.responseXML, sid);
