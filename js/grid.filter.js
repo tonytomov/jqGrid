@@ -369,16 +369,27 @@ $.fn.jqFilter = function( arg ) {
 				else if  ($.inArray(cm.searchtype, that.p.strarr) !== -1) {op = that.p.stropts;}
 				else {op = that.p.numopts;}
 				// operators
-				var s ="", so = 0;
+				var s ="", so = 0, odataItem, itemOper, itemText;
 				aoprs = [];
 				$.each(that.p.ops, function() { aoprs.push(this.oper); });
+				// append aoprs array with custom operations defined in customSortOperations parameter jqGrid
+				$.each(that.p.cops, function(propertyName) { aoprs.push(propertyName); });
 				for ( i = 0 ; i < op.length; i++) {
+					itemOper = op[i];
 					ina = $.inArray(op[i],aoprs);
 					if(ina !== -1) {
-						if(so===0) {
-							rule.op = that.p.ops[ina].oper;
+						odataItem = that.p.ops[ina];
+						if (odataItem !== undefined) {
+							// standard operation
+							itemText = odataItem.text;
+							if(so===0) {
+								rule.op = itemOper; //odataItem.oper;
+							}
+						} else {
+							// custom operation
+							itemText = that.p.cops[itemOper].text;
 						}
-						s += "<option value='"+that.p.ops[ina].oper+"'>"+that.p.ops[ina].text+"</option>";
+						s += "<option value='"+itemOper+"'>"+itemText+"</option>";
 						so++;
 					}
 				}
@@ -467,12 +478,19 @@ $.fn.jqFilter = function( arg ) {
 			else if  ($.inArray(cm.searchtype, that.p.strarr) !== -1) {op = that.p.stropts;}
 			else {op = that.p.numopts;}
 			str="";
+			var odataItem, itemOper;
 			$.each(that.p.ops, function() { aoprs.push(this.oper); });
+			// append aoprs array with custom operations defined in customSortOperations parameter jqGrid
+			$.each(that.p.cops, function(propertyName) { aoprs.push(propertyName); });
 			for ( i = 0; i < op.length; i++) {
+				itemOper = op[i];
 				ina = $.inArray(op[i],aoprs);
 				if(ina !== -1) {
-					selected = rule.op === that.p.ops[ina].oper ? " selected='selected'" : "";
-					str += "<option value='"+that.p.ops[ina].oper+"'"+selected+">"+that.p.ops[ina].text+"</option>";
+					odataItem = that.p.ops[ina];
+					selected = rule.op === itemOper ? " selected='selected'" : "";
+					str += "<option value='"+itemOper+"'"+selected+">"+
+						(odataItem !== undefined ? odataItem.text : that.p.cops[itemOper].text)+
+						"</option>";
 				}
 			}
 			ruleOperatorSelect.append( str );
@@ -551,13 +569,24 @@ $.fn.jqFilter = function( arg ) {
 			return s;
 		};
 		this.getStringForRule = function(rule) {
-			var opUF = "",opC="", i, cm, ret, val,
+			var opUF = "",opC="", i, cm, ret, val = rule.data, oper,
 			numtypes = ['int', 'integer', 'float', 'number', 'currency']; // jqGrid
 			for (i = 0; i < p.ops.length; i++) {
 				if (p.ops[i].oper === rule.op) {
 					opUF = p.operands.hasOwnProperty(rule.op) ? p.operands[rule.op] : "";
 					opC = p.ops[i].oper;
 					break;
+				}
+			}
+			if (opC === "") {
+				for (oper in p.cops) {
+					if (p.cops.hasOwnProperty(oper)) {
+						opC = oper;
+						opUF = p.cops[oper].operand;
+						if ($.isFunction(p.cops[oper].buildQueryValue)) {
+							return p.cops[oper].buildQueryValue.call(p, {cmName: rule.field, searchValue: val, operand: opUF});
+						}
+					}
 				}
 			}
 			for (i=0; i<p.columns.length; i++) {
@@ -567,7 +596,6 @@ $.fn.jqFilter = function( arg ) {
 				}
 			}
 			if (cm == null) { return ""; }
-			val = rule.data;
 			if(opC === 'bw' || opC === 'bn') { val = val+"%"; }
 			if(opC === 'ew' || opC === 'en') { val = "%"+val; }
 			if(opC === 'cn' || opC === 'nc') { val = "%"+val+"%"; }

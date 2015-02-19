@@ -216,6 +216,7 @@ jgrid.extend({
 					ruleButtons : o.multipleSearch,
 					afterRedraw : o.afterRedraw,
 					ops : o.odata,
+					cops: p.customSortOperations,
 					operands : o.operands,
 					ajaxSelectOptions: p.ajaxSelectOptions,
 					groupOps: o.groupOps,
