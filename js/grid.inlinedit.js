@@ -12,7 +12,15 @@
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/ 
 "use strict";
-var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes");
+var jgrid = $.jgrid, fullBoolFeedback = jgrid.fullBoolFeedback,
+	getGridRes = jgrid.getMethod("getGridRes"),
+	editFeedback = function (o) {
+		var args = $.makeArray(arguments).slice(1);
+		args.unshift("");
+		args.unshift("Inline");
+		args.unshift(o);
+		return jgrid.feedback.apply(this, args);
+	};
 jgrid.inlineEdit = jgrid.inlineEdit || {};
 jgrid.extend({
 //Editing
@@ -39,7 +47,7 @@ jgrid.extend({
 
 		// End compatible
 		return this.each(function(){
-		    var $t = this, $self = $($t), p = $t.p, nm, tmp, cnt=0, focus=null, svr={}, colModel = p.colModel, cm, bfer, opers = p.prmNames;
+		    var $t = this, $self = $($t), p = $t.p, nm, tmp, cnt=0, focus=null, svr={}, colModel = p.colModel, cm, opers = p.prmNames;
 		    if (!$t.grid ) { return; }
 		    var o = $.extend(true, {
 		        keys : false,
@@ -59,12 +67,8 @@ jgrid.extend({
 		    var ind = $self.jqGrid("getInd",rowid,true);
 		    if (ind === false) { return; }
            
-		    if (o.extraparam[opers.oper] === opers.editoper) {
-			    bfer = $self.triggerHandler("jqGridInlineBeforeEditRow", [o, rowid]);
-		        if (bfer === false && $.isFunction(o.beforeEditRow)) {
-		            bfer = o.beforeEditRow.call($t, o, rowid);
-		        }
-		        if (bfer === false) { return; }
+		    if (o.extraparam[opers.oper] !== opers.addoper) {
+				if (!editFeedback.call($t, o, "beforeEditRow", o, rowid)) { return; }
 		    }
 
 			var editable = $(ind).attr("editable") || "0";
@@ -143,8 +147,7 @@ jgrid.extend({
 							}
 						});
 					}
-					$self.triggerHandler("jqGridInlineEditRow", [rowid, o]);
-					if( $.isFunction(o.oneditfunc)) { o.oneditfunc.call($t, rowid); }
+					fullBoolFeedback.call($t, o.oneditfunc, "jqGridInlineEditRow", rowid, o);
 				}
 			}
 		});
@@ -188,18 +191,9 @@ jgrid.extend({
 		if(ind === false) {return;}
 		
 		var opers = p.prmNames;
-		if (o.extraparam[opers.oper] === opers.editoper) {
-		    frmoper = "edit";
-		}
-		else if (o.extraparam[opers.oper] === opers.addoper) {
-		    frmoper = "add";
-		}
+		frmoper = o.extraparam[opers.oper] === opers.addoper ? "add" : "edit";
 
-		var bfsr = $self.triggerHandler("jqGridInlineBeforeSaveRow", [o, rowid, frmoper]);
-		if (bfsr === false && $.isFunction(o.beforeSaveRow)) {
-		    bfsr = o.beforeSaveRow.call($t, o, rowid, frmoper);
-		}
-		if (bfsr === false) { return; }
+		if (!editFeedback.call($t, o, "beforeSaveRow", o, rowid, frmoper)) { return; }
 
 		editable = $(ind).attr("editable");
 		o.url = o.url || p.editurl;
@@ -290,7 +284,8 @@ jgrid.extend({
 				}
 				return;
 			}
-			var idname, opers = p.prmNames, oldRowId = rowid;
+			var idname, oldRowId = rowid;
+			opers = p.prmNames;
 			if (p.keyName === false) {
 				idname = opers.id;
 			} else {
@@ -342,8 +337,7 @@ jgrid.extend({
 					if( String(p.savedRow[k].id) === String(oldRowId)) {fr = k; break;}
 				}
 				if(fr >= 0) { p.savedRow.splice(fr,1); }
-				$self.triggerHandler("jqGridInlineAfterSaveRow", [rowid, resp, tmp, o]);
-				if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, resp, tmp, o); }
+				fullBoolFeedback.call($t, o.aftersavefunc, "jqGridInlineAfterSaveRow", rowid, resp, tmp, o);
 				$(ind).removeClass("jqgrid-new-row").unbind("keydown");
 			} else {
 				$self.jqGrid("progressBar", {method:"show", loadtype : o.saveui, htmlcontent: o.savetext });
@@ -351,10 +345,11 @@ jgrid.extend({
 				postData[idname] = jgrid.stripPref(p.idPrefix, postData[idname]);
 
 				var newPostData = $self.triggerHandler("jqGridInlineSerializeSaveData", postData);
-				if(newPostData === undefined)
+				if(newPostData === undefined) {
 				    newPostData = $.isFunction(o.serializeSaveData) ? o.serializeSaveData.call($t, postData) :
                             		$.isFunction(p.serializeRowData) ? p.serializeRowData.call($t, postData) :
                                 		postData;
+				}
 
 				$.ajax($.extend({
 					url:o.url,
@@ -389,14 +384,10 @@ jgrid.extend({
 									if( String(p.savedRow[j].id) === String(rowid)) {fr = j; break;}
 								}
 								if(fr >= 0) { p.savedRow.splice(fr,1); }
-								$self.triggerHandler("jqGridInlineAfterSaveRow", [rowid, jqXHR, tmp, o]);
-								if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, jqXHR, tmp, o); }
+								fullBoolFeedback.call($t, o.aftersavefunc, "jqGridInlineAfterSaveRow", rowid, jqXHR, tmp, o);
 								$(ind).removeClass("jqgrid-new-row").unbind("keydown");
 							} else {
-								$self.triggerHandler("jqGridInlineErrorSaveRow", [rowid, jqXHR, textStatus, null, o]);
-								if($.isFunction(o.errorfunc) ) {
-									o.errorfunc.call($t, rowid, jqXHR, textStatus, null);
-								}
+								fullBoolFeedback.call($t, o.errorfunc, "jqGridInlineErrorSaveRow", rowid, jqXHR, textStatus, null, o);
 								if(o.restoreAfterError === true) {
 									$self.jqGrid("restoreRow",rowid, o.afterrestorefunc);
 								}
@@ -445,8 +436,7 @@ jgrid.extend({
 			var ind = $self.jqGrid("getInd",rowid,true);
 			if (ind === false) { return; }
 
-			var bfcr = $.isFunction( o.beforeCancelRow ) ?	o.beforeCancelRow.call($t, o, rowid) :  undefined;
-			if (bfcr === false) { return; }
+			if (!editFeedback.call($t, o, "beforeCancelRow", o, rowid)) { return; }
 
 			for(k=0;k<p.savedRow.length;k++) {
 				if( String(p.savedRow[k].id) === String(rowid)) {fr = k; break;}
@@ -488,32 +478,24 @@ jgrid.extend({
 					},0);
 				}
 			}
-			$self.triggerHandler("jqGridInlineAfterRestoreRow", [rowid]);
-			if ($.isFunction(o.afterrestorefunc))
-			{
-				o.afterrestorefunc.call($t, rowid);
-			}
+			fullBoolFeedback.call($t, o.afterrestorefunc, "jqGridInlineAfterRestoreRow", rowid);
 		});
 	},
-	addRow : function ( o ) {
-		o = $.extend(true, {
-			rowID : null,
-			initdata : {},
-			position :"first",
-			useDefValues : true,
-			useFormatter: false,
-		    	beforeAddRow: null,
-			addRowParams : {extraparam:{}}
-		},o  || {});
+	addRow : function (oMuligrid) {
 		return this.each(function(){
 		    if (!this.grid) { return; }
 
-			var $t = this, $self = $($t), p = $t.p;
-			var bfar = $self.triggerHandler("jqGridInlineBeforeAddRow", o.addRowParams);
-			if (bfar === false && $.isFunction(o.beforeAddRow)) {
-			    bfar = o.beforeAddRow.call($t, o.addRowParams);
-			}
-			if (bfar === false) { return; }
+			var $t = this, $self = $($t), p = $t.p,
+				o = $.extend(true, {
+					rowID : null,
+					initdata : {},
+					position :"first",
+					useDefValues : true,
+					useFormatter: false,
+					beforeAddRow: null,
+					addRowParams : {extraparam:{}}
+				}, jgrid.inlineEdit, p.inlineEditing || {}, oMuligrid || {});
+			if (!editFeedback.call($t, o, "beforeAddRow", o.addRowParams)) { return; }
 
 			o.rowID = $.isFunction(o.rowID) ? o.rowID.call($t, o) : ( (o.rowID != null) ? o.rowID : jgrid.randId());
 			if(o.useDefValues === true) {
