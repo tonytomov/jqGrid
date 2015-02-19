@@ -4238,7 +4238,7 @@ jgrid.extend({
 		// One need get defaultPropName from $.jgrid root first. If no value exist then one should get it from $.jgrid[reg] root
 		var res = jgrid.getRes(locales[$t.p.locale], defaultPropName) || jgrid.getRes(locales["en-US"], defaultPropName),
 			resDef = jgrid.getRes(jgrid, defaultPropName);
-		return typeof res === "object" && res !== null ?
+		return typeof res === "object" && res !== null && !$.isArray(res) ?
 			$.extend(true, {}, res, resDef || {}) :
 			resDef !== undefined ? resDef : res;
 	},
