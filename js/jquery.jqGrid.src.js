@@ -9032,15 +9032,10 @@ $.fn.jqFilter = function( arg ) {
 					ina = $.inArray(op[i],aoprs);
 					if(ina !== -1) {
 						odataItem = that.p.ops[ina];
-						if (odataItem !== undefined) {
-							// standard operation
-							itemText = odataItem.text;
-							if(so===0) {
-								rule.op = itemOper; //odataItem.oper;
-							}
-						} else {
-							// custom operation
-							itemText = that.p.cops[itemOper].text;
+						itemText = odataItem !== undefined ? odataItem.text : that.p.cops[itemOper].text;
+						if (so===0) {
+							// the first select item will be automatically selected in single-select
+							rule.op = itemOper;
 						}
 						s += "<option value='"+itemOper+"'>"+itemText+"</option>";
 						so++;
@@ -9508,8 +9503,7 @@ jgrid.extend({
 				args.unshift("Filter");
 				args.unshift(o);
 				return feedback.apply($t, args);
-			},
-			fl;
+			};
 			if(typeof defaultFilters === "string") {
 				defaultFilters = jgrid.parse( defaultFilters );
 			}
@@ -9667,9 +9661,11 @@ jgrid.extend({
 					o.stringResult = o.multipleSearch;
 				}
 				$(fid+"_search").bind('click', function(){
-					var sdata={}, res, filters;
-					fl = $(fid);
-					fl.find(".input-elm:focus").change();
+					var sdata={}, res, filters, fl = $(fid), $inputs = fl.find(".input-elm");
+					if ($inputs.filter(":focus")) {
+						$inputs = $inputs.filter(":focus");
+					}
+					$inputs.change();
 					filters = fl.jqFilter('filterData');
 					if(o.errorcheck) {
 						fl[0].hideError();

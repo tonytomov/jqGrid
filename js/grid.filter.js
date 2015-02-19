@@ -379,15 +379,10 @@ $.fn.jqFilter = function( arg ) {
 					ina = $.inArray(op[i],aoprs);
 					if(ina !== -1) {
 						odataItem = that.p.ops[ina];
-						if (odataItem !== undefined) {
-							// standard operation
-							itemText = odataItem.text;
-							if(so===0) {
-								rule.op = itemOper; //odataItem.oper;
-							}
-						} else {
-							// custom operation
-							itemText = that.p.cops[itemOper].text;
+						itemText = odataItem !== undefined ? odataItem.text : that.p.cops[itemOper].text;
+						if (so===0) {
+							// the first select item will be automatically selected in single-select
+							rule.op = itemOper;
 						}
 						s += "<option value='"+itemOper+"'>"+itemText+"</option>";
 						so++;

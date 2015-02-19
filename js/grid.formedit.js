@@ -116,8 +116,7 @@ jgrid.extend({
 				args.unshift("Filter");
 				args.unshift(o);
 				return feedback.apply($t, args);
-			},
-			fl;
+			};
 			if(typeof defaultFilters === "string") {
 				defaultFilters = jgrid.parse( defaultFilters );
 			}
@@ -275,9 +274,11 @@ jgrid.extend({
 					o.stringResult = o.multipleSearch;
 				}
 				$(fid+"_search").bind('click', function(){
-					var sdata={}, res, filters;
-					fl = $(fid);
-					fl.find(".input-elm:focus").change();
+					var sdata={}, res, filters, fl = $(fid), $inputs = fl.find(".input-elm");
+					if ($inputs.filter(":focus")) {
+						$inputs = $inputs.filter(":focus");
+					}
+					$inputs.change();
 					filters = fl.jqFilter('filterData');
 					if(o.errorcheck) {
 						fl[0].hideError();
