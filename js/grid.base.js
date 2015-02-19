@@ -1367,6 +1367,20 @@ $.extend(true,jgrid,{
 		};
 		return new QueryObject(source,null);
 	},
+	serializeFeedback: function (callback, eventName, postData) {
+		var self = this, eventResult;
+		if (self instanceof $ && self.length > 0) {
+			self = self[0];
+		}
+		if (typeof postData === "string") {
+			return postData;
+		}
+		eventResult = $(self).triggerHandler(eventName, postData);
+		if (typeof eventResult === "string") {
+			return eventResult;
+		}
+		return callback.call(self, typeof eventResult === "object" && eventResult != null ? eventResult : postData);
+	},
 	fullBoolFeedback: function (callback, eventName) {
 		var self = this, args = $.makeArray(arguments).slice(2), result = $(self).triggerHandler(eventName, args);
 

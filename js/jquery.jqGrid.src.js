@@ -1367,6 +1367,20 @@ $.extend(true,jgrid,{
 		};
 		return new QueryObject(source,null);
 	},
+	serializeFeedback: function (callback, eventName, postData) {
+		var self = this, eventResult;
+		if (self instanceof $ && self.length > 0) {
+			self = self[0];
+		}
+		if (typeof postData === "string") {
+			return postData;
+		}
+		eventResult = $(self).triggerHandler(eventName, postData);
+		if (typeof eventResult === "string") {
+			return eventResult;
+		}
+		return callback.call(self, typeof eventResult === "object" && eventResult != null ? eventResult : postData);
+	},
 	fullBoolFeedback: function (callback, eventName) {
 		var self = this, args = $.makeArray(arguments).slice(2), result = $(self).triggerHandler(eventName, args);
 
@@ -11873,16 +11887,12 @@ jgrid.extend({
 				postData = $.extend({},tmp,postData);
 				postData[idname] = jgrid.stripPref(p.idPrefix, postData[idname]);
 
-				var newPostData = $self.triggerHandler("jqGridInlineSerializeSaveData", postData);
-				if(newPostData === undefined) {
-				    newPostData = $.isFunction(o.serializeSaveData) ? o.serializeSaveData.call($t, postData) :
-                            		$.isFunction(p.serializeRowData) ? p.serializeRowData.call($t, postData) :
-                                		postData;
-				}
-
 				$.ajax($.extend({
 					url:o.url,
-					data: newPostData,
+					data: jgrid.serializeFeedback.call($t,
+							$.isFunction(o.serializeSaveData) ? o.serializeSaveData : p.serializeRowData,
+							"jqGridInlineSerializeSaveData",
+							postData),
 					type: o.mtype,
 					complete: function (jqXHR, textStatus) {
 						$self.jqGrid("progressBar", {method:"hide", loadtype : o.saveui, htmlcontent: o.savetext});
