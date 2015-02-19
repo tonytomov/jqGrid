@@ -1262,30 +1262,30 @@ $.extend(true,jgrid,{
 				var val =v,
 				swst = t.stype === undefined ? "text" : t.stype;
 				if(v !== null) {
-				switch(swst) {
-					case 'int':
-					case 'integer':
-						val = (isNaN(Number(val)) || val==="") ? '0' : val; // To be fixed with more inteligent code
-						fld = 'parseInt('+fld+',10)';
-						val = 'parseInt('+val+',10)';
-						break;
-					case 'float':
-					case 'number':
-					case 'numeric':
-						val = String(val).replace(_stripNum, '');
-						val = (isNaN(Number(val)) || val==="") ? '0' : val; // To be fixed with more inteligent code
-						fld = 'parseFloat('+fld+')';
-						val = 'parseFloat('+val+')';
-						break;
-					case 'date':
-					case 'datetime':
-						val = String(jgrid.parseDate.call(context,t.newfmt || 'Y-m-d',val).getTime());
-						fld = 'jQuery.jgrid.parseDate.call(jQuery("'+context.p.idSel+'")[0],"'+t.srcfmt+'",'+fld+').getTime()';
-						break;
-					default :
-						fld=self._getStr(fld);
-						val=self._getStr('"'+self._toStr(val)+'"');
-				}
+					switch(swst) {
+						case 'int':
+						case 'integer':
+							val = (isNaN(Number(val)) || val==="") ? '0' : val; // To be fixed with more inteligent code
+							fld = 'parseInt('+fld+',10)';
+							val = 'parseInt('+val+',10)';
+							break;
+						case 'float':
+						case 'number':
+						case 'numeric':
+							val = String(val).replace(_stripNum, '');
+							val = (isNaN(Number(val)) || val==="") ? '0' : val; // To be fixed with more inteligent code
+							fld = 'parseFloat('+fld+')';
+							val = 'parseFloat('+val+')';
+							break;
+						case 'date':
+						case 'datetime':
+							val = String(jgrid.parseDate.call(context,t.newfmt || 'Y-m-d',val).getTime());
+							fld = 'jQuery.jgrid.parseDate.call(jQuery("'+context.p.idSel+'")[0],"'+t.srcfmt+'",'+fld+').getTime()';
+							break;
+						default :
+							fld=self._getStr(fld);
+							val=self._getStr('"'+self._toStr(val)+'"');
+					}
 				}
 				self._append(fld+' '+how+' '+val);
 				self._setCommand(func,f);
@@ -1361,6 +1361,12 @@ $.extend(true,jgrid,{
 				if(dir==="desc"||dir==="descending"){dir="d";}
 				if(dir==="asc"||dir==="ascending"){dir="a";}
 				_sorting.push({by:by,dir:dir,type:stype, datefmt: dfmt, sfunc: sfunc});
+				return self;
+			};
+			this.custom = function (funcName, field, data) {
+				self._append('jQuery("'+context.p.idSel+'")[0].p.'+funcName+'.call(jQuery("'+context.p.idSel+'")[0],{item:this,cmName:"'+field+'",searchValue:"'+data+'"})');
+				self._setCommand(self.custom,field);
+				self._resetNegate();
 				return self;
 			};
 			return self;
@@ -1989,70 +1995,7 @@ $.fn.jqGrid = function( pin ) {
 		};
 		ts.grid = grid;
 		feedback.call(ts, "beforeInitGrid");
-		/*var def = jgrid.nav || {};
-		p.navOptions = $.extend(true, {
-			commonIconClass: def.commonIconClass || getIcon("nav.common"),
-			editicon: def.editicon || getIcon("nav.edit"),
-			addicon: def.addicon || getIcon("nav.add"),
-			delicon: def.delicon || getIcon("nav.del"),
-			searchicon: def.searchicon || getIcon("nav.search"),
-			refreshicon: def.refreshicon || getIcon("nav.refresh"),
-			viewicon: def.viewicon || getIcon("nav.view"),
-			saveicon: def.saveicon || getIcon("nav.save"),
-			cancelicon: def.cancelicon || getIcon("nav.cancel"),
-			buttonicon: def.buttonicon || getIcon("nav.newbutton")
-		}, p.navOptions);
-		jgrid.actionsNav = jgrid.actionsNav || {};
-		p.actionsNavOptions = $.extend(true, {
-			commonIconClass: jgrid.actionsNav.commonIconClass || getIcon("actions.common")
-		}, p.actionsNavOptions);
-		def = jgrid.edit || {};
-		p.formEditing = $.extend(true, {
-			commonIconClass: def.commonIconClass || getIcon("form.common"),
-			prevIcon: def.prevIcon || getIcon("form.prev"),
-			nextIcon: def.nextIcon || getIcon("form.next"),
-			saveicon: def.saveicon || [true, "left", getIcon("form.save")],
-			closeicon: def.closeicon || [true, "left", getIcon("form.undo")]
-		}, p.formEditing);
-		def = jgrid.search || {};
-		p.searching = $.extend(true, {
-			commonIconClass: def.commonIconClass || getIcon("search.common"),
-			findDialogIcon: def.findDialogIcon || getIcon("search.search"),
-			resetDialogIcon: def.resetDialogIcon || getIcon("search.reset"),
-			queryDialogIcon: def.queryDialogIcon || getIcon("search.query")
-		}, p.searching);
-		def = jgrid.view || {};
-		p.formViewing = $.extend(true, {
-			commonIconClass: def.commonIconClass || getIcon("form.common"),
-			prevIcon: def.prevIcon || getIcon("form.prev"),
-			nextIcon: def.nextIcon || getIcon("form.next"),
-			closeicon: def.closeicon || [true, "left", getIcon("form.cancel")]
-		}, p.formViewing);
-		def = jgrid.del || {};
-		p.formDeleting = $.extend(true, {
-			commonIconClass: def.commonIconClass || getIcon("form.common"),
-			delicon: def.delicon || [true, "left", getIcon("form.del")],
-			cancelicon: def.cancelicon || [true, "left", getIcon("form.cancel")]
-		}, p.formDeleting);
-		def = jgrid.del || {};
-		p.groupingView = $.extend(true, {
-			commonIconClass: getIcon("grouping.common"),
-			plusicon: getIcon("grouping.plus"),
-			minusicon: getIcon("grouping.minus")
-		}, p.groupingView);
-		p.treeIcons = $.extend(true, {
-			commonIconClass: getIcon("treeGrid.common"),
-			plusLtr: getIcon("treeGrid.plusLtr"),
-			plusRtl: getIcon("treeGrid.plusRtl"),
-			minus: getIcon("treeGrid.minus"),
-			leaf: getIcon("treeGrid.leaf")
-		}, p.treeIcons || {});
-		p.subGridOptions = $.extend({
-			commonIconClass: getIcon("subgrid.common"),
-			plusicon: getIcon("subgrid.plus"),
-			minusicon: getIcon("subgrid.minus"),
-			openicon: (p.direction === "rtl" ? getIcon("subgrid.openRtl") : getIcon("subgrid.openLtr"))
-		}, p.subGridOptions || {});*/
+
 	    // TODO: replace altclass : 'ui-priority-secondary',
 	    // set default buttonicon : 'ui-icon-newwin' of navButtonAdd: fa-external-link, fa-desktop or other 
 	    // change the order in $.extend to allows to set icons using $.jgrid (for example $.jgrid.nav). It will be ovewritten currently by p.navOptions which we set above.
@@ -2838,6 +2781,8 @@ $.fn.jqGrid = function( pin ) {
 									query = query.or();
 								}
 								query = compareFnMap[rule.op](query, opr)(rule.field, rule.data, cmtypes[rule.field]);
+							} else if (p.customSortOperations != null && p.customSortOperations[rule.op] != null && $.isFunction(p[p.customSortOperations[rule.op].funcName])) {
+								query = query.custom(p.customSortOperations[rule.op].funcName, rule.field, rule.data);
 							}
 							s++;
 						}
@@ -4293,7 +4238,7 @@ jgrid.extend({
 		// One need get defaultPropName from $.jgrid root first. If no value exist then one should get it from $.jgrid[reg] root
 		var res = jgrid.getRes(locales[$t.p.locale], defaultPropName) || jgrid.getRes(locales["en-US"], defaultPropName),
 			resDef = jgrid.getRes(jgrid, defaultPropName);
-		return typeof res === "object" && res !== null ?
+		return typeof res === "object" && res !== null && !$.isArray(res) ?
 			$.extend(true, {}, res, resDef || {}) :
 			resDef !== undefined ? resDef : res;
 	},
