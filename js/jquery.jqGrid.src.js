@@ -3142,10 +3142,14 @@ $.fn.jqGrid = function( pin ) {
 			blockAlign = p.pagerpos === "left" ? "margin-right:auto;" : (p.pagerpos === "right" ? "margin-left:auto;" : "margin-left:auto;margin-right:auto;"),
 			pgl="<table "+(isMSIE7 ? "cellspacing='0' " : "")+"style='table-layout:auto;"+blockAlign+"' class='ui-pg-table'><tbody><tr>",
 			str="", pgcnt, lft, cent, rgt, twd, i,
-			clearVals = function(onpaging){
-				var ret;
-				if ($.isFunction(p.onPaging) ) { ret = p.onPaging.call(ts,onpaging); }
-				if(ret==='stop') {return false;}
+			clearVals = function(onpaging, newPage, newRowNum){
+				if (!feedback.call(ts, "onPaging", onpaging, {
+							newPage: newPage,
+							currentPage: intNum(p.page,1),
+							lastPage: intNum(p.lastpage,1),
+							currentRowNum: intNum(p.rowNum,10),
+							newRowNum: newRowNum
+						})) {return false;}
 				p.selrow = null;
 				if(p.multiselect) {
 					clearArray(p.selarrrow); // p.selarrrow = [];
@@ -3202,11 +3206,13 @@ $.fn.jqGrid = function( pin ) {
 			p._nvtd[1] = 0;
 			pgl=null;
 			$('.ui-pg-selbox',pgcnt).bind('change',function() {
-				if(!clearVals('records')) { return false; }
-				p.page = Math.round(p.rowNum*(p.page-1)/this.value-0.5)+1;
-				p.rowNum = this.value;
-				if(p.pager) { $('.ui-pg-selbox',p.pager).val(this.value); }
-				if(p.toppager) { $('.ui-pg-selbox',p.toppager).val(this.value); }
+				var newRowNum = intNum(this.value, 10),
+					newPage = Math.round(p.rowNum*(p.page-1)/newRowNum-0.5)+1;
+				if(!clearVals('records', newPage, newRowNum)) { return false; }
+				p.page = newPage;
+				p.rowNum = newRowNum;
+				if(p.pager) { $('.ui-pg-selbox',p.pager).val(newRowNum); }
+				if(p.toppager) { $('.ui-pg-selbox',p.toppager).val(newRowNum); }
 				populate.call(ts);
 				return false;
 			});
@@ -3228,7 +3234,7 @@ $.fn.jqGrid = function( pin ) {
 				if ($(this).hasClass("ui-state-disabled")) {
 					return false;
 				}
-				var cp = intNum(p.page,1),
+				var cp = intNum(p.page,1), newPage = cp, onpaging = this.id,
 				last = intNum(p.lastpage,1), selclick = false,
 				fp=true, pp=true, np=true,lp=true;
 				if(last ===0 || last===1) {fp=false;pp=false;np=false;lp=false; }
@@ -3237,11 +3243,12 @@ $.fn.jqGrid = function( pin ) {
 					//else if( cp>1 && cp <last){ }
 					else if( cp===last){ np=false;lp=false; }
 				} else if( last>1 && cp===0 ) { np=false;lp=false; cp=last-1;}
-				if(!clearVals(this.id)) { return false; }
-				if( this.id === 'first'+tp && fp ) { p.page=1; selclick=true;}
-				if( this.id === 'prev'+tp && pp) { p.page=(cp-1); selclick=true;}
-				if( this.id === 'next'+tp && np) { p.page=(cp+1); selclick=true;}
-				if( this.id === 'last'+tp && lp) { p.page=last; selclick=true;}
+				if( this.id === 'first'+tp && fp ) { onpaging = 'first'; newPage=1; selclick=true;}
+				if( this.id === 'prev'+tp && pp) { onpaging = 'prev'; newPage=(cp-1); selclick=true;}
+				if( this.id === 'next'+tp && np) { onpaging = 'next'; newPage=(cp+1); selclick=true;}
+				if( this.id === 'last'+tp && lp) { onpaging = 'last'; newPage=last; selclick=true;}
+				if(!clearVals(onpaging, newPage, intNum(p.rowNum,10))) { return false; }
+				p.page = newPage;
 				if(selclick) {
 					populate.call(ts);
 				}
@@ -3250,10 +3257,10 @@ $.fn.jqGrid = function( pin ) {
 			}
 			if(p.pginput===true) {
 			$('input.ui-pg-input',pgcnt).keypress( function(e) {
-				var key = e.charCode || e.keyCode || 0;
+				var key = e.charCode || e.keyCode || 0, newPage = intNum($(this).val(), 1);
 				if(key === 13) {
-					if(!clearVals('user')) { return false; }
-					$(this).val( intNum( $(this).val(), 1));
+					if(!clearVals('user', newPage, intNum(p.rowNum,10))) { return false; }
+					$(this).val(newPage);
 					p.page = ($(this).val()>0) ? $(this).val():p.page;
 					populate.call(ts);
 					return false;
