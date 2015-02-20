@@ -242,18 +242,10 @@ function SetODataDefaults(gID, url, colModel, options) {
             jsonReader: {
                 root: "value",
                 repeatitems: false,
-                records: function (data) {
-                    return data[options.annotationName].records;
-                },
-                page: function (data) {
-                    return data[options.annotationName].page;
-                },
-                total: function (data) {
-                    return data[options.annotationName].total;
-                },
-                userdata: function (data) {
-                    return data[options.annotationName].userdata;
-                }
+                records: [options.annotationName, 'records'],
+                page: [options.annotationName, 'page'],
+                total: [options.annotationName, 'total'],
+                userdata: [options.annotationName, 'userdata']
             }
         });
     }
