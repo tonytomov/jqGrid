@@ -116,8 +116,7 @@ jgrid.extend({
 				args.unshift("Filter");
 				args.unshift(o);
 				return feedback.apply($t, args);
-			},
-			fl;
+			};
 			if(typeof defaultFilters === "string") {
 				defaultFilters = jgrid.parse( defaultFilters );
 			}
@@ -216,6 +215,7 @@ jgrid.extend({
 					ruleButtons : o.multipleSearch,
 					afterRedraw : o.afterRedraw,
 					ops : o.odata,
+					cops: p.customSortOperations,
 					operands : o.operands,
 					ajaxSelectOptions: p.ajaxSelectOptions,
 					groupOps: o.groupOps,
@@ -274,9 +274,11 @@ jgrid.extend({
 					o.stringResult = o.multipleSearch;
 				}
 				$(fid+"_search").bind('click', function(){
-					var sdata={}, res, filters;
-					fl = $(fid);
-					fl.find(".input-elm:focus").change();
+					var sdata={}, res, filters, fl = $(fid), $inputs = fl.find(".input-elm");
+					if ($inputs.filter(":focus")) {
+						$inputs = $inputs.filter(":focus");
+					}
+					$inputs.change();
 					filters = fl.jqFilter('filterData');
 					if(o.errorcheck) {
 						fl[0].hideError();
@@ -816,7 +818,11 @@ jgrid.extend({
 					var ajaxOptions = $.extend({
 						url: url,
 						type: o.mtype,
-						data: $.isFunction(o.serializeEditData) ? o.serializeEditData.call($t,postdata) :  postdata,
+						//data: $.isFunction(o.serializeEditData) ? o.serializeEditData.call($t,postdata) :  postdata,
+						data: jgrid.serializeFeedback.call($t,
+							$.isFunction(o.serializeEditData) ? o.serializeEditData : p.serializeEditData,
+							"jqGridAddEditSerializeEditData",
+							postdata),						
 						complete: function (jqXHR, textStatus) {
 							$("#sData", frmtb2).removeClass('ui-state-active');
 							postdata[idname] = p.idPrefix + $("#id_g",frmtb).val();

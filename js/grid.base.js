@@ -1363,9 +1363,32 @@ $.extend(true,jgrid,{
 				_sorting.push({by:by,dir:dir,type:stype, datefmt: dfmt, sfunc: sfunc});
 				return self;
 			};
+			this.custom = function (funcName, field, data) {
+				self._append('jQuery("'+context.p.idSel+'")[0].p.'+funcName+'.call(jQuery("'+context.p.idSel+'")[0],{item:this,cmName:"'+field+'",searchValue:"'+data+'"})');
+				self._setCommand(self.custom,field);
+				self._resetNegate();
+				return self;
+			};
 			return self;
 		};
 		return new QueryObject(source,null);
+	},
+	serializeFeedback: function (callback, eventName, postData) {
+		var self = this, eventResult;
+		if (self instanceof $ && self.length > 0) {
+			self = self[0];
+		}
+		if (typeof postData === "string") {
+			return postData;
+		}
+		eventResult = $(self).triggerHandler(eventName, postData);
+		if (typeof eventResult === "string") {
+			return eventResult;
+		}
+		if (eventResult == null || typeof eventResult !== "object") {
+			eventResult = postData; // uses original postData
+		}
+		return $.isFunction(callback) ? callback.call(self, eventResult) : eventResult;
 	},
 	fullBoolFeedback: function (callback, eventName) {
 		var self = this, args = $.makeArray(arguments).slice(2), result = $(self).triggerHandler(eventName, args);
@@ -1972,70 +1995,7 @@ $.fn.jqGrid = function( pin ) {
 		};
 		ts.grid = grid;
 		feedback.call(ts, "beforeInitGrid");
-		/*var def = jgrid.nav || {};
-		p.navOptions = $.extend(true, {
-			commonIconClass: def.commonIconClass || getIcon("nav.common"),
-			editicon: def.editicon || getIcon("nav.edit"),
-			addicon: def.addicon || getIcon("nav.add"),
-			delicon: def.delicon || getIcon("nav.del"),
-			searchicon: def.searchicon || getIcon("nav.search"),
-			refreshicon: def.refreshicon || getIcon("nav.refresh"),
-			viewicon: def.viewicon || getIcon("nav.view"),
-			saveicon: def.saveicon || getIcon("nav.save"),
-			cancelicon: def.cancelicon || getIcon("nav.cancel"),
-			buttonicon: def.buttonicon || getIcon("nav.newbutton")
-		}, p.navOptions);
-		jgrid.actionsNav = jgrid.actionsNav || {};
-		p.actionsNavOptions = $.extend(true, {
-			commonIconClass: jgrid.actionsNav.commonIconClass || getIcon("actions.common")
-		}, p.actionsNavOptions);
-		def = jgrid.edit || {};
-		p.formEditing = $.extend(true, {
-			commonIconClass: def.commonIconClass || getIcon("form.common"),
-			prevIcon: def.prevIcon || getIcon("form.prev"),
-			nextIcon: def.nextIcon || getIcon("form.next"),
-			saveicon: def.saveicon || [true, "left", getIcon("form.save")],
-			closeicon: def.closeicon || [true, "left", getIcon("form.undo")]
-		}, p.formEditing);
-		def = jgrid.search || {};
-		p.searching = $.extend(true, {
-			commonIconClass: def.commonIconClass || getIcon("search.common"),
-			findDialogIcon: def.findDialogIcon || getIcon("search.search"),
-			resetDialogIcon: def.resetDialogIcon || getIcon("search.reset"),
-			queryDialogIcon: def.queryDialogIcon || getIcon("search.query")
-		}, p.searching);
-		def = jgrid.view || {};
-		p.formViewing = $.extend(true, {
-			commonIconClass: def.commonIconClass || getIcon("form.common"),
-			prevIcon: def.prevIcon || getIcon("form.prev"),
-			nextIcon: def.nextIcon || getIcon("form.next"),
-			closeicon: def.closeicon || [true, "left", getIcon("form.cancel")]
-		}, p.formViewing);
-		def = jgrid.del || {};
-		p.formDeleting = $.extend(true, {
-			commonIconClass: def.commonIconClass || getIcon("form.common"),
-			delicon: def.delicon || [true, "left", getIcon("form.del")],
-			cancelicon: def.cancelicon || [true, "left", getIcon("form.cancel")]
-		}, p.formDeleting);
-		def = jgrid.del || {};
-		p.groupingView = $.extend(true, {
-			commonIconClass: getIcon("grouping.common"),
-			plusicon: getIcon("grouping.plus"),
-			minusicon: getIcon("grouping.minus")
-		}, p.groupingView);
-		p.treeIcons = $.extend(true, {
-			commonIconClass: getIcon("treeGrid.common"),
-			plusLtr: getIcon("treeGrid.plusLtr"),
-			plusRtl: getIcon("treeGrid.plusRtl"),
-			minus: getIcon("treeGrid.minus"),
-			leaf: getIcon("treeGrid.leaf")
-		}, p.treeIcons || {});
-		p.subGridOptions = $.extend({
-			commonIconClass: getIcon("subgrid.common"),
-			plusicon: getIcon("subgrid.plus"),
-			minusicon: getIcon("subgrid.minus"),
-			openicon: (p.direction === "rtl" ? getIcon("subgrid.openRtl") : getIcon("subgrid.openLtr"))
-		}, p.subGridOptions || {});*/
+
 	    // TODO: replace altclass : 'ui-priority-secondary',
 	    // set default buttonicon : 'ui-icon-newwin' of navButtonAdd: fa-external-link, fa-desktop or other 
 	    // change the order in $.extend to allows to set icons using $.jgrid (for example $.jgrid.nav). It will be ovewritten currently by p.navOptions which we set above.
@@ -2821,6 +2781,8 @@ $.fn.jqGrid = function( pin ) {
 									query = query.or();
 								}
 								query = compareFnMap[rule.op](query, opr)(rule.field, rule.data, cmtypes[rule.field]);
+							} else if (p.customSortOperations != null && p.customSortOperations[rule.op] != null && $.isFunction(p[p.customSortOperations[rule.op].funcName])) {
+								query = query.custom(p.customSortOperations[rule.op].funcName, rule.field, rule.data);
 							}
 							s++;
 						}
@@ -3109,7 +3071,8 @@ $.fn.jqGrid = function( pin ) {
 						url:p.url,
 						type:p.mtype,
 						dataType: dt ,
-						data: $.isFunction(p.serializeGridData)? p.serializeGridData.call(self,p.postData) : p.postData,
+						//data: $.isFunction(p.serializeGridData)? p.serializeGridData.call(self,p.postData) : p.postData,
+						data: jgrid.serializeFeedback.call(ts, p.serializeGridData, "jqGridSerializeGridData", p.postData),
 						success: function (data, textStatus, jqXHR) {
 							if ($.isFunction(p.beforeProcessing)) {
 								if (p.beforeProcessing.call(self, data, textStatus, jqXHR) === false) {
@@ -4275,7 +4238,7 @@ jgrid.extend({
 		// One need get defaultPropName from $.jgrid root first. If no value exist then one should get it from $.jgrid[reg] root
 		var res = jgrid.getRes(locales[$t.p.locale], defaultPropName) || jgrid.getRes(locales["en-US"], defaultPropName),
 			resDef = jgrid.getRes(jgrid, defaultPropName);
-		return typeof res === "object" && res !== null ?
+		return typeof res === "object" && res !== null && !$.isArray(res) ?
 			$.extend(true, {}, res, resDef || {}) :
 			resDef !== undefined ? resDef : res;
 	},

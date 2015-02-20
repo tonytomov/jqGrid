@@ -229,7 +229,8 @@ jgrid.extend({
 								$t.grid.hDiv.loading = true;
 								$.ajax( $.extend( {
 									url: p.cellurl,
-									data :$.isFunction(p.serializeCellData) ? p.serializeCellData.call($t, postdata) : postdata,
+									//data :$.isFunction(p.serializeCellData) ? p.serializeCellData.call($t, postdata) : postdata,
+									data: jgrid.serializeFeedback.call($t, p.serializeCellData, "jqGridSerializeCellData", postdata),
 									type: "POST",
 									complete: function (jqXHR) {
 										$self.jqGrid("progressBar", {method:"hide", loadtype : p.loadui });

@@ -1363,9 +1363,32 @@ $.extend(true,jgrid,{
 				_sorting.push({by:by,dir:dir,type:stype, datefmt: dfmt, sfunc: sfunc});
 				return self;
 			};
+			this.custom = function (funcName, field, data) {
+				self._append('jQuery("'+context.p.idSel+'")[0].p.'+funcName+'.call(jQuery("'+context.p.idSel+'")[0],{item:this,cmName:"'+field+'",searchValue:"'+data+'"})');
+				self._setCommand(self.custom,field);
+				self._resetNegate();
+				return self;
+			};
 			return self;
 		};
 		return new QueryObject(source,null);
+	},
+	serializeFeedback: function (callback, eventName, postData) {
+		var self = this, eventResult;
+		if (self instanceof $ && self.length > 0) {
+			self = self[0];
+		}
+		if (typeof postData === "string") {
+			return postData;
+		}
+		eventResult = $(self).triggerHandler(eventName, postData);
+		if (typeof eventResult === "string") {
+			return eventResult;
+		}
+		if (eventResult == null || typeof eventResult !== "object") {
+			eventResult = postData; // uses original postData
+		}
+		return $.isFunction(callback) ? callback.call(self, eventResult) : eventResult;
 	},
 	fullBoolFeedback: function (callback, eventName) {
 		var self = this, args = $.makeArray(arguments).slice(2), result = $(self).triggerHandler(eventName, args);
@@ -1972,70 +1995,7 @@ $.fn.jqGrid = function( pin ) {
 		};
 		ts.grid = grid;
 		feedback.call(ts, "beforeInitGrid");
-		/*var def = jgrid.nav || {};
-		p.navOptions = $.extend(true, {
-			commonIconClass: def.commonIconClass || getIcon("nav.common"),
-			editicon: def.editicon || getIcon("nav.edit"),
-			addicon: def.addicon || getIcon("nav.add"),
-			delicon: def.delicon || getIcon("nav.del"),
-			searchicon: def.searchicon || getIcon("nav.search"),
-			refreshicon: def.refreshicon || getIcon("nav.refresh"),
-			viewicon: def.viewicon || getIcon("nav.view"),
-			saveicon: def.saveicon || getIcon("nav.save"),
-			cancelicon: def.cancelicon || getIcon("nav.cancel"),
-			buttonicon: def.buttonicon || getIcon("nav.newbutton")
-		}, p.navOptions);
-		jgrid.actionsNav = jgrid.actionsNav || {};
-		p.actionsNavOptions = $.extend(true, {
-			commonIconClass: jgrid.actionsNav.commonIconClass || getIcon("actions.common")
-		}, p.actionsNavOptions);
-		def = jgrid.edit || {};
-		p.formEditing = $.extend(true, {
-			commonIconClass: def.commonIconClass || getIcon("form.common"),
-			prevIcon: def.prevIcon || getIcon("form.prev"),
-			nextIcon: def.nextIcon || getIcon("form.next"),
-			saveicon: def.saveicon || [true, "left", getIcon("form.save")],
-			closeicon: def.closeicon || [true, "left", getIcon("form.undo")]
-		}, p.formEditing);
-		def = jgrid.search || {};
-		p.searching = $.extend(true, {
-			commonIconClass: def.commonIconClass || getIcon("search.common"),
-			findDialogIcon: def.findDialogIcon || getIcon("search.search"),
-			resetDialogIcon: def.resetDialogIcon || getIcon("search.reset"),
-			queryDialogIcon: def.queryDialogIcon || getIcon("search.query")
-		}, p.searching);
-		def = jgrid.view || {};
-		p.formViewing = $.extend(true, {
-			commonIconClass: def.commonIconClass || getIcon("form.common"),
-			prevIcon: def.prevIcon || getIcon("form.prev"),
-			nextIcon: def.nextIcon || getIcon("form.next"),
-			closeicon: def.closeicon || [true, "left", getIcon("form.cancel")]
-		}, p.formViewing);
-		def = jgrid.del || {};
-		p.formDeleting = $.extend(true, {
-			commonIconClass: def.commonIconClass || getIcon("form.common"),
-			delicon: def.delicon || [true, "left", getIcon("form.del")],
-			cancelicon: def.cancelicon || [true, "left", getIcon("form.cancel")]
-		}, p.formDeleting);
-		def = jgrid.del || {};
-		p.groupingView = $.extend(true, {
-			commonIconClass: getIcon("grouping.common"),
-			plusicon: getIcon("grouping.plus"),
-			minusicon: getIcon("grouping.minus")
-		}, p.groupingView);
-		p.treeIcons = $.extend(true, {
-			commonIconClass: getIcon("treeGrid.common"),
-			plusLtr: getIcon("treeGrid.plusLtr"),
-			plusRtl: getIcon("treeGrid.plusRtl"),
-			minus: getIcon("treeGrid.minus"),
-			leaf: getIcon("treeGrid.leaf")
-		}, p.treeIcons || {});
-		p.subGridOptions = $.extend({
-			commonIconClass: getIcon("subgrid.common"),
-			plusicon: getIcon("subgrid.plus"),
-			minusicon: getIcon("subgrid.minus"),
-			openicon: (p.direction === "rtl" ? getIcon("subgrid.openRtl") : getIcon("subgrid.openLtr"))
-		}, p.subGridOptions || {});*/
+
 	    // TODO: replace altclass : 'ui-priority-secondary',
 	    // set default buttonicon : 'ui-icon-newwin' of navButtonAdd: fa-external-link, fa-desktop or other 
 	    // change the order in $.extend to allows to set icons using $.jgrid (for example $.jgrid.nav). It will be ovewritten currently by p.navOptions which we set above.
@@ -2821,6 +2781,8 @@ $.fn.jqGrid = function( pin ) {
 									query = query.or();
 								}
 								query = compareFnMap[rule.op](query, opr)(rule.field, rule.data, cmtypes[rule.field]);
+							} else if (p.customSortOperations != null && p.customSortOperations[rule.op] != null && $.isFunction(p[p.customSortOperations[rule.op].funcName])) {
+								query = query.custom(p.customSortOperations[rule.op].funcName, rule.field, rule.data);
 							}
 							s++;
 						}
@@ -3109,7 +3071,8 @@ $.fn.jqGrid = function( pin ) {
 						url:p.url,
 						type:p.mtype,
 						dataType: dt ,
-						data: $.isFunction(p.serializeGridData)? p.serializeGridData.call(self,p.postData) : p.postData,
+						//data: $.isFunction(p.serializeGridData)? p.serializeGridData.call(self,p.postData) : p.postData,
+						data: jgrid.serializeFeedback.call(ts, p.serializeGridData, "jqGridSerializeGridData", p.postData),
 						success: function (data, textStatus, jqXHR) {
 							if ($.isFunction(p.beforeProcessing)) {
 								if (p.beforeProcessing.call(self, data, textStatus, jqXHR) === false) {
@@ -4275,7 +4238,7 @@ jgrid.extend({
 		// One need get defaultPropName from $.jgrid root first. If no value exist then one should get it from $.jgrid[reg] root
 		var res = jgrid.getRes(locales[$t.p.locale], defaultPropName) || jgrid.getRes(locales["en-US"], defaultPropName),
 			resDef = jgrid.getRes(jgrid, defaultPropName);
-		return typeof res === "object" && res !== null ?
+		return typeof res === "object" && res !== null && !$.isArray(res) ?
 			$.extend(true, {}, res, resDef || {}) :
 			resDef !== undefined ? resDef : res;
 	},
@@ -5803,7 +5766,7 @@ jgrid.extend({
 									this.selected = true;
 									return false;
 								}
-							}).trigger("change");
+							});
 							if ( v !== undefined ) {
 								// post the key and not the text
 								sdata[nm] = v;
@@ -5885,6 +5848,7 @@ jgrid.extend({
 				}
 			},
 			odata = getRes("search.odata") || [],
+			customSortOperations = p.customSortOperations,
 			buildRuleMenu = function( elem, left, top ){
 				$("#sopt_menu").remove();
 
@@ -5902,17 +5866,31 @@ jgrid.extend({
 					}
 					i++;
 				}
-				var cm = colModel[i], options = $.extend({}, cm.searchoptions);
+				var cm = colModel[i], options = $.extend({}, cm.searchoptions), odataItem, item, itemOper, itemOperand, itemText;
 				if(!options.sopt) {
 					options.sopt = [];
 					options.sopt[0]= cm.stype==='select' ?  'eq' : o.defaultSearch;
 				}
 				$.each(odata, function() { aoprs.push(this.oper); });
+				// append aoprs array with custom operations defined in customSortOperations parameter jqGrid
+				$.each(customSortOperations, function(propertyName) { aoprs.push(propertyName); });
 				for ( i = 0 ; i < options.sopt.length; i++) {
-					ina = $.inArray(options.sopt[i],aoprs);
+					itemOper = options.sopt[i];
+					ina = $.inArray(itemOper,aoprs);
 					if(ina !== -1) {
-						selclass = selected === odata[ina].oper ? "ui-state-highlight" : "";
-						str += '<li class="ui-menu-item '+selclass+'" role="presentation"><a class="ui-corner-all g-menu-item" tabindex="0" role="menuitem" value="'+odata[ina].oper+'" data-oper="'+o.operands[odata[ina].oper]+'"><table'+(jgrid.msie && jgrid.msiever() < 8 ? ' cellspacing="0"' : '')+'><tr><td style="width:25px">'+o.operands[odata[ina].oper]+'</td><td>'+ odata[ina].text+'</td></tr></table></a></li>';
+						odataItem = odata[ina];
+						if (odataItem !== undefined) {
+							// standard operation
+							itemOperand = o.operands[itemOper];
+							itemText = odataItem.text;
+						} else {
+							// custom operation
+							item = customSortOperations[itemOper];
+							itemOperand = item.operand;							
+							itemText = item.text;
+						}
+						selclass = selected === itemOper ? "ui-state-highlight" : "";
+						str += '<li class="ui-menu-item '+selclass+'" role="presentation"><a class="ui-corner-all g-menu-item" tabindex="0" role="menuitem" value="'+itemOper+'" data-oper="'+itemOperand+'"><table'+(jgrid.msie && jgrid.msiever() < 8 ? ' cellspacing="0"' : '')+'><tr><td style="width:25px">'+itemOperand+'</td><td>'+ itemText+'</td></tr></table></a></li>';
 					}
 				}
 				str += "</ul>";
@@ -5939,7 +5917,7 @@ jgrid.extend({
 			var tr = $("<tr class='ui-search-toolbar' role='row'></tr>");
 			var timeoutHnd;
 			$.each(colModel,function(ci){
-				var cm=this, soptions, surl, self, select = "", sot="=", so, i, searchoptions = cm.searchoptions, editoptions = cm.editoptions,
+				var cm=this, soptions, surl, self, select = "", sot, so, i, searchoptions = cm.searchoptions, editoptions = cm.editoptions,
 				th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-"+p.direction+"'></th>"),
 				thd = $("<div style='position:relative;height:auto;padding-right:0.3em;padding-left:0.3em;'></div>"),
 				stbl = $("<table class='ui-search-table'"+(jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "")+"><tr><td class='ui-search-oper'></td><td class='ui-search-input'></td><td class='ui-search-clear'></td></tr></table>");
@@ -5949,13 +5927,23 @@ jgrid.extend({
 				soptions = $.extend({},this.searchoptions || {});
 				if(this.search){
 					if(o.searchOperators) {
-						so  = (soptions.sopt) ? soptions.sopt[0] : cm.stype==='select' ?  'eq' : o.defaultSearch;
+						so = (soptions.sopt) ? soptions.sopt[0] : cm.stype==='select' ?  'eq' : o.defaultSearch;
 						for(i = 0;i<odata.length;i++) {
 							if(odata[i].oper === so) {
 								sot = o.operands[so] || "";
 								break;
 							}
 						}
+						if (sot === undefined && customSortOperations != null) {
+							var customOp;
+							for (customOp in customSortOperations) {
+								if (customSortOperations.hasOwnProperty(customOp)) {
+									sot = customSortOperations[customOp].operand;
+									soptions.searchtitle = customSortOperations[customOp].title;
+								}
+							}
+						}
+						if (sot === undefined) { sot = "="; }
 						var st = soptions.searchtitle != null ? soptions.searchtitle : getRes("search.operandTitle");
 						select = "<a title='"+st+"' style='padding-right: 0.5em;' data-soper='"+so+"' class='soptclass' data-colname='"+this.name+"'>"+sot+"</a>";
 					}
@@ -7577,7 +7565,7 @@ window.xmlJsonClass = {
 				$.param(op.addParam) :
 				getOptionValue(op.addParam);
 		idUrl += !idParam && !addParam ? "" :
-				'?' + idParam + (idParam && addParam ? "&" : "") + addParam;
+				'?' + idParam /*+ (idParam && addParam ? "&" : "")*/ + addParam;
 		if (idUrl === "") {
 			idUrl = getOptionValue(op.hrefDefaultValue);
 		}
@@ -9034,16 +9022,22 @@ $.fn.jqFilter = function( arg ) {
 				else if  ($.inArray(cm.searchtype, that.p.strarr) !== -1) {op = that.p.stropts;}
 				else {op = that.p.numopts;}
 				// operators
-				var s ="", so = 0;
+				var s ="", so = 0, odataItem, itemOper, itemText;
 				aoprs = [];
 				$.each(that.p.ops, function() { aoprs.push(this.oper); });
+				// append aoprs array with custom operations defined in customSortOperations parameter jqGrid
+				$.each(that.p.cops, function(propertyName) { aoprs.push(propertyName); });
 				for ( i = 0 ; i < op.length; i++) {
+					itemOper = op[i];
 					ina = $.inArray(op[i],aoprs);
 					if(ina !== -1) {
-						if(so===0) {
-							rule.op = that.p.ops[ina].oper;
+						odataItem = that.p.ops[ina];
+						itemText = odataItem !== undefined ? odataItem.text : that.p.cops[itemOper].text;
+						if (so===0) {
+							// the first select item will be automatically selected in single-select
+							rule.op = itemOper;
 						}
-						s += "<option value='"+that.p.ops[ina].oper+"'>"+that.p.ops[ina].text+"</option>";
+						s += "<option value='"+itemOper+"'>"+itemText+"</option>";
 						so++;
 					}
 				}
@@ -9132,12 +9126,19 @@ $.fn.jqFilter = function( arg ) {
 			else if  ($.inArray(cm.searchtype, that.p.strarr) !== -1) {op = that.p.stropts;}
 			else {op = that.p.numopts;}
 			str="";
+			var odataItem, itemOper;
 			$.each(that.p.ops, function() { aoprs.push(this.oper); });
+			// append aoprs array with custom operations defined in customSortOperations parameter jqGrid
+			$.each(that.p.cops, function(propertyName) { aoprs.push(propertyName); });
 			for ( i = 0; i < op.length; i++) {
+				itemOper = op[i];
 				ina = $.inArray(op[i],aoprs);
 				if(ina !== -1) {
-					selected = rule.op === that.p.ops[ina].oper ? " selected='selected'" : "";
-					str += "<option value='"+that.p.ops[ina].oper+"'"+selected+">"+that.p.ops[ina].text+"</option>";
+					odataItem = that.p.ops[ina];
+					selected = rule.op === itemOper ? " selected='selected'" : "";
+					str += "<option value='"+itemOper+"'"+selected+">"+
+						(odataItem !== undefined ? odataItem.text : that.p.cops[itemOper].text)+
+						"</option>";
 				}
 			}
 			ruleOperatorSelect.append( str );
@@ -9216,13 +9217,24 @@ $.fn.jqFilter = function( arg ) {
 			return s;
 		};
 		this.getStringForRule = function(rule) {
-			var opUF = "",opC="", i, cm, ret, val,
+			var opUF = "",opC="", i, cm, ret, val = rule.data, oper,
 			numtypes = ['int', 'integer', 'float', 'number', 'currency']; // jqGrid
 			for (i = 0; i < p.ops.length; i++) {
 				if (p.ops[i].oper === rule.op) {
 					opUF = p.operands.hasOwnProperty(rule.op) ? p.operands[rule.op] : "";
 					opC = p.ops[i].oper;
 					break;
+				}
+			}
+			if (opC === "") {
+				for (oper in p.cops) {
+					if (p.cops.hasOwnProperty(oper)) {
+						opC = oper;
+						opUF = p.cops[oper].operand;
+						if ($.isFunction(p.cops[oper].buildQueryValue)) {
+							return p.cops[oper].buildQueryValue.call(p, {cmName: rule.field, searchValue: val, operand: opUF});
+						}
+					}
 				}
 			}
 			for (i=0; i<p.columns.length; i++) {
@@ -9232,7 +9244,6 @@ $.fn.jqFilter = function( arg ) {
 				}
 			}
 			if (cm == null) { return ""; }
-			val = rule.data;
 			if(opC === 'bw' || opC === 'bn') { val = val+"%"; }
 			if(opC === 'ew' || opC === 'en') { val = "%"+val; }
 			if(opC === 'cn' || opC === 'nc') { val = "%"+val+"%"; }
@@ -9492,8 +9503,7 @@ jgrid.extend({
 				args.unshift("Filter");
 				args.unshift(o);
 				return feedback.apply($t, args);
-			},
-			fl;
+			};
 			if(typeof defaultFilters === "string") {
 				defaultFilters = jgrid.parse( defaultFilters );
 			}
@@ -9592,6 +9602,7 @@ jgrid.extend({
 					ruleButtons : o.multipleSearch,
 					afterRedraw : o.afterRedraw,
 					ops : o.odata,
+					cops: p.customSortOperations,
 					operands : o.operands,
 					ajaxSelectOptions: p.ajaxSelectOptions,
 					groupOps: o.groupOps,
@@ -9650,9 +9661,11 @@ jgrid.extend({
 					o.stringResult = o.multipleSearch;
 				}
 				$(fid+"_search").bind('click', function(){
-					var sdata={}, res, filters;
-					fl = $(fid);
-					fl.find(".input-elm:focus").change();
+					var sdata={}, res, filters, fl = $(fid), $inputs = fl.find(".input-elm");
+					if ($inputs.filter(":focus")) {
+						$inputs = $inputs.filter(":focus");
+					}
+					$inputs.change();
 					filters = fl.jqFilter('filterData');
 					if(o.errorcheck) {
 						fl[0].hideError();
@@ -10192,7 +10205,11 @@ jgrid.extend({
 					var ajaxOptions = $.extend({
 						url: url,
 						type: o.mtype,
-						data: $.isFunction(o.serializeEditData) ? o.serializeEditData.call($t,postdata) :  postdata,
+						//data: $.isFunction(o.serializeEditData) ? o.serializeEditData.call($t,postdata) :  postdata,
+						data: jgrid.serializeFeedback.call($t,
+							$.isFunction(o.serializeEditData) ? o.serializeEditData : p.serializeEditData,
+							"jqGridAddEditSerializeEditData",
+							postdata),						
 						complete: function (jqXHR, textStatus) {
 							$("#sData", frmtb2).removeClass('ui-state-active');
 							postdata[idname] = p.idPrefix + $("#id_g",frmtb).val();
@@ -11541,11 +11558,19 @@ jgrid.extend({
  * http://www.gnu.org/licenses/gpl-2.0.html
 **/ 
 "use strict";
-var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes");
+var jgrid = $.jgrid, fullBoolFeedback = jgrid.fullBoolFeedback,
+	getGridRes = jgrid.getMethod("getGridRes"),
+	editFeedback = function (o) {
+		var args = $.makeArray(arguments).slice(1);
+		args.unshift("");
+		args.unshift("Inline");
+		args.unshift(o);
+		return jgrid.feedback.apply(this, args);
+	};
 jgrid.inlineEdit = jgrid.inlineEdit || {};
 jgrid.extend({
 //Editing
-	editRow : function(rowid,keys,oneditfunc,successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
+    editRow: function (rowid, keys, oneditfunc, successfunc, url, extraparam, aftersavefunc, errorfunc, afterrestorefunc, beforeEditRow) {
 		// Compatible mode old versions
 		var oMuligrid={}, args = $.makeArray(arguments).slice(1);
 
@@ -11560,6 +11585,7 @@ jgrid.extend({
 			if ($.isFunction(aftersavefunc)) { oMuligrid.aftersavefunc = aftersavefunc; }
 			if ($.isFunction(errorfunc)) { oMuligrid.errorfunc = errorfunc; }
 			if ($.isFunction(afterrestorefunc)) { oMuligrid.afterrestorefunc = afterrestorefunc; }
+			if ($.isFunction(beforeEditRow)) { oMuligrid.beforeEditRow = beforeEditRow; }
 			// last two not as param, but as object (sorry)
 			//if (restoreAfterError !== undefined) { oMuligrid.restoreAfterError = restoreAfterError; }
 			//if (mtype !== undefined) { oMuligrid.mtype = mtype || "POST"; }			
@@ -11567,29 +11593,30 @@ jgrid.extend({
 
 		// End compatible
 		return this.each(function(){
-			var $t = this, $self = $($t), p = $t.p, nm, tmp, cnt=0, focus=null, svr={}, colModel = p.colModel, cm, bfer;
-			if (!$t.grid ) { return; }
-			var o = $.extend(true, {
-				keys : false,
-				oneditfunc: null,
-				successfunc: null,
-				url: null,
-				extraparam: {},
-				aftersavefunc: null,
-				errorfunc: null,
-				afterrestorefunc: null,
-				restoreAfterError: true,
-				mtype: "POST",
-				focusField : true
-			}, jgrid.inlineEdit, p.inlineEditing || {}, oMuligrid );
+		    var $t = this, $self = $($t), p = $t.p, nm, tmp, cnt=0, focus=null, svr={}, colModel = p.colModel, cm, opers = p.prmNames;
+		    if (!$t.grid ) { return; }
+		    var o = $.extend(true, {
+		        keys : false,
+		        oneditfunc: null,
+		        successfunc: null,
+		        url: null,
+		        extraparam: {},
+		        aftersavefunc: null,
+		        errorfunc: null,
+		        afterrestorefunc: null,
+		        restoreAfterError: true,
+		        beforeEditRow: null,
+		        mtype: "POST",
+		        focusField : true
+		    }, jgrid.inlineEdit, p.inlineEditing || {}, oMuligrid );
 
-			var ind = $self.jqGrid("getInd",rowid,true);
-			if( ind === false ) {return;}
-			bfer = $.isFunction( o.beforeEditRow ) ? o.beforeEditRow.call($t,o, rowid) :  undefined;
-			if( bfer === undefined ) {
-				bfer = true;
-			}
-			if(!bfer) { return; }
+		    var ind = $self.jqGrid("getInd",rowid,true);
+		    if (ind === false) { return; }
+           
+		    if (o.extraparam[opers.oper] !== opers.addoper) {
+				if (!editFeedback.call($t, o, "beforeEditRow", o, rowid)) { return; }
+		    }
+
 			var editable = $(ind).attr("editable") || "0";
 			if (editable === "0" && !$(ind).hasClass("not-editable-row")) {
 				$('td[role="gridcell"]',ind).each( function(i) {
@@ -11666,15 +11693,14 @@ jgrid.extend({
 							}
 						});
 					}
-					$self.triggerHandler("jqGridInlineEditRow", [rowid, o]);
-					if( $.isFunction(o.oneditfunc)) { o.oneditfunc.call($t, rowid); }
+					fullBoolFeedback.call($t, o.oneditfunc, "jqGridInlineEditRow", rowid, o);
 				}
 			}
 		});
 	},
-	saveRow : function(rowid, successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
+	saveRow: function (rowid, successfunc, url, extraparam, aftersavefunc, errorfunc, afterrestorefunc, beforeSaveRow) {
 		// Compatible mode old versions
-		var args = $.makeArray(arguments).slice(1), o = {}, $t = this[0], $self = $($t), p = $t != null ? $t.p : null;
+	    var args = $.makeArray(arguments).slice(1), o = {}, $t = this[0], $self = $($t), p = $t != null ? $t.p : null, frmoper;
 		if (!$t.grid || p == null) { return; }
 
 		if ($.type(args[0]) === "object") {
@@ -11686,6 +11712,7 @@ jgrid.extend({
 			if ($.isFunction(aftersavefunc)) { o.aftersavefunc = aftersavefunc; }
 			if ($.isFunction(errorfunc)) { o.errorfunc = errorfunc; }
 			if ($.isFunction(afterrestorefunc)) { o.afterrestorefunc = afterrestorefunc; }
+			if ($.isFunction(beforeSaveRow)) { o.beforeSaveRow = beforeSaveRow; }
 		}
 		var getRes = function (path) { return getGridRes.call($self, path); };
 		o = $.extend(true, {
@@ -11696,20 +11723,24 @@ jgrid.extend({
 			errorfunc: null,
 			afterrestorefunc: null,
 			restoreAfterError: true,
+			beforeSaveRow: null,
+			ajaxSaveOptions: {},
+			serializeSaveData: null,
 			mtype: "POST",
 			saveui : "enable",
 			savetext : getRes("defaults.savetext") || "Saving..."
 		}, jgrid.inlineEdit, p.inlineEditing || {}, o);
 		// End compatible
 		// TODO: add return this.each(function(){....}
-		var nm, tmp = {}, tmp2 = {}, tmp3 = {}, editable, fr, cv, ind = $self.jqGrid("getInd",rowid,true),
+		var nm, tmp = {}, tmp2 = {}, postData = {}, editable, fr, cv, ind = $self.jqGrid("getInd",rowid,true),
 		errcap = getRes("errors.errcap"), bClose = getRes("edit.bClose"), editMsg = getRes("edit.msg");
 		if(ind === false) {return;}
-		var bfsr = $.isFunction( o.beforeSaveRow ) ? o.beforeSaveRow.call($t,o, rowid) :  undefined;
-		if( bfsr === undefined ) {
-			bfsr = true;
-		}
-		if (!bfsr) { return; }
+		
+		var opers = p.prmNames;
+		frmoper = o.extraparam[opers.oper] === opers.addoper ? "add" : "edit";
+
+		if (!editFeedback.call($t, o, "beforeSaveRow", o, rowid, frmoper)) { return; }
+
 		editable = $(ind).attr("editable");
 		o.url = o.url || p.editurl;
 		if (editable==="1") {
@@ -11799,7 +11830,8 @@ jgrid.extend({
 				}
 				return;
 			}
-			var idname, opers = p.prmNames, oldRowId = rowid;
+			var idname, oldRowId = rowid;
+			opers = p.prmNames;
 			if (p.keyName === false) {
 				idname = opers.id;
 			} else {
@@ -11851,16 +11883,19 @@ jgrid.extend({
 					if( String(p.savedRow[k].id) === String(oldRowId)) {fr = k; break;}
 				}
 				if(fr >= 0) { p.savedRow.splice(fr,1); }
-				$self.triggerHandler("jqGridInlineAfterSaveRow", [rowid, resp, tmp, o]);
-				if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, resp, tmp, o); }
+				fullBoolFeedback.call($t, o.aftersavefunc, "jqGridInlineAfterSaveRow", rowid, resp, tmp, o);
 				$(ind).removeClass("jqgrid-new-row").unbind("keydown");
 			} else {
 				$self.jqGrid("progressBar", {method:"show", loadtype : o.saveui, htmlcontent: o.savetext });
-				tmp3 = $.extend({},tmp,tmp3);
-				tmp3[idname] = jgrid.stripPref(p.idPrefix, tmp3[idname]);
+				postData = $.extend({},tmp,postData);
+				postData[idname] = jgrid.stripPref(p.idPrefix, postData[idname]);
+
 				$.ajax($.extend({
 					url:o.url,
-					data: $.isFunction(p.serializeRowData) ? p.serializeRowData.call($t, tmp3) : tmp3,
+					data: jgrid.serializeFeedback.call($t,
+							$.isFunction(o.serializeSaveData) ? o.serializeSaveData : p.serializeRowData,
+							"jqGridInlineSerializeSaveData",
+							postData),
 					type: o.mtype,
 					complete: function (jqXHR, textStatus) {
 						$self.jqGrid("progressBar", {method:"hide", loadtype : o.saveui, htmlcontent: o.savetext});
@@ -11891,14 +11926,10 @@ jgrid.extend({
 									if( String(p.savedRow[j].id) === String(rowid)) {fr = j; break;}
 								}
 								if(fr >= 0) { p.savedRow.splice(fr,1); }
-								$self.triggerHandler("jqGridInlineAfterSaveRow", [rowid, jqXHR, tmp, o]);
-								if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, jqXHR, tmp, o); }
+								fullBoolFeedback.call($t, o.aftersavefunc, "jqGridInlineAfterSaveRow", rowid, jqXHR, tmp, o);
 								$(ind).removeClass("jqgrid-new-row").unbind("keydown");
 							} else {
-								$self.triggerHandler("jqGridInlineErrorSaveRow", [rowid, jqXHR, textStatus, null, o]);
-								if($.isFunction(o.errorfunc) ) {
-									o.errorfunc.call($t, rowid, jqXHR, textStatus, null);
-								}
+								fullBoolFeedback.call($t, o.errorfunc, "jqGridInlineErrorSaveRow", rowid, jqXHR, textStatus, null, o);
 								if(o.restoreAfterError === true) {
 									$self.jqGrid("restoreRow",rowid, o.afterrestorefunc);
 								}
@@ -11922,7 +11953,7 @@ jgrid.extend({
 							$self.jqGrid("restoreRow",rowid, o.afterrestorefunc);
 						}
 					}
-				}, jgrid.ajaxOptions, p.ajaxRowOptions || {}));
+				}, jgrid.ajaxOptions, p.ajaxRowOptions, o.ajaxSaveOptions || {}));
 			}
 		}
 		return;
@@ -11941,16 +11972,14 @@ jgrid.extend({
 
 		return this.each(function(){
 			var $t = this, $self = $($t), p = $t.p, fr=-1, ares={}, k;
-			if (!$t.grid ) { return; }
-			var o = $.extend(true, {}, jgrid.inlineEdit, p.inlineEditing || {}, oMuligrid);
+			if (!$t.grid) { return; }
 
+			var o = $.extend(true, {}, jgrid.inlineEdit, p.inlineEditing || {}, oMuligrid);
 			var ind = $self.jqGrid("getInd",rowid,true);
-			if(ind === false) {return;}
-			var bfcr = $.isFunction( o.beforeCancelRow ) ?	o.beforeCancelRow.call($t, o, rowid) :  undefined;
-			if( bfcr === undefined ) {
-				bfcr = true;
-			}
-			if(!bfcr) { return; }
+			if (ind === false) { return; }
+
+			if (!editFeedback.call($t, o, "beforeCancelRow", o, rowid)) { return; }
+
 			for(k=0;k<p.savedRow.length;k++) {
 				if( String(p.savedRow[k].id) === String(rowid)) {fr = k; break;}
 			}
@@ -11991,30 +12020,25 @@ jgrid.extend({
 					},0);
 				}
 			}
-			$self.triggerHandler("jqGridInlineAfterRestoreRow", [rowid]);
-			if ($.isFunction(o.afterrestorefunc))
-			{
-				o.afterrestorefunc.call($t, rowid);
-			}
+			fullBoolFeedback.call($t, o.afterrestorefunc, "jqGridInlineAfterRestoreRow", rowid);
 		});
 	},
-	addRow : function ( o ) {
-		o = $.extend(true, {
-			rowID : null,
-			initdata : {},
-			position :"first",
-			useDefValues : true,
-			useFormatter : false,
-			addRowParams : {extraparam:{}}
-		},o  || {});
+	addRow : function (oMuligrid) {
 		return this.each(function(){
-			if (!this.grid ) { return; }
+		    if (!this.grid) { return; }
+
 			var $t = this, $self = $($t), p = $t.p,
-			bfar = $.isFunction( o.beforeAddRow ) ?	o.beforeAddRow.call($t,o.addRowParams) :  undefined;
-			if( bfar === undefined ) {
-				bfar = true;
-			}
-			if(!bfar) { return; }
+				o = $.extend(true, {
+					rowID : null,
+					initdata : {},
+					position :"first",
+					useDefValues : true,
+					useFormatter: false,
+					beforeAddRow: null,
+					addRowParams : {extraparam:{}}
+				}, jgrid.inlineEdit, p.inlineEditing || {}, oMuligrid || {});
+			if (!editFeedback.call($t, o, "beforeAddRow", o.addRowParams)) { return; }
+
 			o.rowID = $.isFunction(o.rowID) ? o.rowID.call($t, o) : ( (o.rowID != null) ? o.rowID : jgrid.randId());
 			if(o.useDefValues === true) {
 				$(p.colModel).each(function(){
@@ -12480,7 +12504,8 @@ jgrid.extend({
 								$t.grid.hDiv.loading = true;
 								$.ajax( $.extend( {
 									url: p.cellurl,
-									data :$.isFunction(p.serializeCellData) ? p.serializeCellData.call($t, postdata) : postdata,
+									//data :$.isFunction(p.serializeCellData) ? p.serializeCellData.call($t, postdata) : postdata,
+									data: jgrid.serializeFeedback.call($t, p.serializeCellData, "jqGridSerializeCellData", postdata),
 									type: "POST",
 									complete: function (jqXHR) {
 										$self.jqGrid("progressBar", {method:"hide", loadtype : p.loadui });
@@ -12941,7 +12966,8 @@ addSubGrid : function( pos, sind ) {
 						type:p.mtype,
 						url: $.isFunction(p.subGridUrl) ? p.subGridUrl.call(ts, dp) : p.subGridUrl,
 						dataType:p.subgridtype,
-						data: $.isFunction(p.serializeSubGridData)? p.serializeSubGridData.call(ts, dp) : dp,
+						//data: $.isFunction(p.serializeSubGridData)? p.serializeSubGridData.call(ts, dp) : dp,
+						data: jgrid.serializeFeedback.call(ts, p.serializeSubGridData, "jqGridSerializeSubGridData", dp),
 						complete: function(jqXHR) {
 							if(p.subgridtype === "xml") {
 								subGridXml(jqXHR.responseXML, sid);

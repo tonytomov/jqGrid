@@ -299,7 +299,7 @@ jgrid.extend({
 									this.selected = true;
 									return false;
 								}
-							}).trigger("change");
+							});
 							if ( v !== undefined ) {
 								// post the key and not the text
 								sdata[nm] = v;
@@ -381,6 +381,7 @@ jgrid.extend({
 				}
 			},
 			odata = getRes("search.odata") || [],
+			customSortOperations = p.customSortOperations,
 			buildRuleMenu = function( elem, left, top ){
 				$("#sopt_menu").remove();
 
@@ -398,17 +399,31 @@ jgrid.extend({
 					}
 					i++;
 				}
-				var cm = colModel[i], options = $.extend({}, cm.searchoptions);
+				var cm = colModel[i], options = $.extend({}, cm.searchoptions), odataItem, item, itemOper, itemOperand, itemText;
 				if(!options.sopt) {
 					options.sopt = [];
 					options.sopt[0]= cm.stype==='select' ?  'eq' : o.defaultSearch;
 				}
 				$.each(odata, function() { aoprs.push(this.oper); });
+				// append aoprs array with custom operations defined in customSortOperations parameter jqGrid
+				$.each(customSortOperations, function(propertyName) { aoprs.push(propertyName); });
 				for ( i = 0 ; i < options.sopt.length; i++) {
-					ina = $.inArray(options.sopt[i],aoprs);
+					itemOper = options.sopt[i];
+					ina = $.inArray(itemOper,aoprs);
 					if(ina !== -1) {
-						selclass = selected === odata[ina].oper ? "ui-state-highlight" : "";
-						str += '<li class="ui-menu-item '+selclass+'" role="presentation"><a class="ui-corner-all g-menu-item" tabindex="0" role="menuitem" value="'+odata[ina].oper+'" data-oper="'+o.operands[odata[ina].oper]+'"><table'+(jgrid.msie && jgrid.msiever() < 8 ? ' cellspacing="0"' : '')+'><tr><td style="width:25px">'+o.operands[odata[ina].oper]+'</td><td>'+ odata[ina].text+'</td></tr></table></a></li>';
+						odataItem = odata[ina];
+						if (odataItem !== undefined) {
+							// standard operation
+							itemOperand = o.operands[itemOper];
+							itemText = odataItem.text;
+						} else {
+							// custom operation
+							item = customSortOperations[itemOper];
+							itemOperand = item.operand;							
+							itemText = item.text;
+						}
+						selclass = selected === itemOper ? "ui-state-highlight" : "";
+						str += '<li class="ui-menu-item '+selclass+'" role="presentation"><a class="ui-corner-all g-menu-item" tabindex="0" role="menuitem" value="'+itemOper+'" data-oper="'+itemOperand+'"><table'+(jgrid.msie && jgrid.msiever() < 8 ? ' cellspacing="0"' : '')+'><tr><td style="width:25px">'+itemOperand+'</td><td>'+ itemText+'</td></tr></table></a></li>';
 					}
 				}
 				str += "</ul>";
@@ -435,7 +450,7 @@ jgrid.extend({
 			var tr = $("<tr class='ui-search-toolbar' role='row'></tr>");
 			var timeoutHnd;
 			$.each(colModel,function(ci){
-				var cm=this, soptions, surl, self, select = "", sot="=", so, i, searchoptions = cm.searchoptions, editoptions = cm.editoptions,
+				var cm=this, soptions, surl, self, select = "", sot, so, i, searchoptions = cm.searchoptions, editoptions = cm.editoptions,
 				th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-"+p.direction+"'></th>"),
 				thd = $("<div style='position:relative;height:auto;padding-right:0.3em;padding-left:0.3em;'></div>"),
 				stbl = $("<table class='ui-search-table'"+(jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "")+"><tr><td class='ui-search-oper'></td><td class='ui-search-input'></td><td class='ui-search-clear'></td></tr></table>");
@@ -445,13 +460,23 @@ jgrid.extend({
 				soptions = $.extend({},this.searchoptions || {});
 				if(this.search){
 					if(o.searchOperators) {
-						so  = (soptions.sopt) ? soptions.sopt[0] : cm.stype==='select' ?  'eq' : o.defaultSearch;
+						so = (soptions.sopt) ? soptions.sopt[0] : cm.stype==='select' ?  'eq' : o.defaultSearch;
 						for(i = 0;i<odata.length;i++) {
 							if(odata[i].oper === so) {
 								sot = o.operands[so] || "";
 								break;
 							}
 						}
+						if (sot === undefined && customSortOperations != null) {
+							var customOp;
+							for (customOp in customSortOperations) {
+								if (customSortOperations.hasOwnProperty(customOp)) {
+									sot = customSortOperations[customOp].operand;
+									soptions.searchtitle = customSortOperations[customOp].title;
+								}
+							}
+						}
+						if (sot === undefined) { sot = "="; }
 						var st = soptions.searchtitle != null ? soptions.searchtitle : getRes("search.operandTitle");
 						select = "<a title='"+st+"' style='padding-right: 0.5em;' data-soper='"+so+"' class='soptclass' data-colname='"+this.name+"'>"+sot+"</a>";
 					}
