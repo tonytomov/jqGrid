@@ -878,7 +878,14 @@ $.extend(true,jgrid,{
 	getAccessor : function(obj, expr) {
 		var ret,p,prm = [], i;
 		if( typeof expr === 'function') { return expr(obj); }
-		ret = obj[expr];
+		if (expr instanceof Array) {
+		    ret = obj;
+		    do {
+		        ret = ret[expr[0]];
+		        expr = expr.slice(1, expr.length);
+		    } while (expr instanceof Array && expr.length > 0);
+		}
+		else { ret = obj[expr]; }
 		if(ret===undefined) {
 			try {
 				if ( typeof expr === 'string' ) {
