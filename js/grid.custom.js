@@ -472,7 +472,7 @@ jgrid.extend({
 							for (customOp in customSortOperations) {
 								if (customSortOperations.hasOwnProperty(customOp)) {
 									sot = customSortOperations[customOp].operand;
-									soptions.searchtitle = customSortOperations[customOp].title;
+									//soptions.searchtitle = customSortOperations[customOp].title;
 								}
 							}
 						}

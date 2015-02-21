@@ -1363,8 +1363,8 @@ $.extend(true,jgrid,{
 				_sorting.push({by:by,dir:dir,type:stype, datefmt: dfmt, sfunc: sfunc});
 				return self;
 			};
-			this.custom = function (funcName, field, data) {
-				self._append('jQuery("'+context.p.idSel+'")[0].p.'+funcName+'.call(jQuery("'+context.p.idSel+'")[0],{item:this,cmName:"'+field+'",searchValue:"'+data+'"})');
+			this.custom = function (ruleOp, field, data) {
+				self._append('jQuery("'+context.p.idSel+'")[0].p.customSortOperations.'+ruleOp+'.filter.call(jQuery("'+context.p.idSel+'")[0],{item:this,cmName:"'+field+'",searchValue:"'+data+'"})');
 				self._setCommand(self.custom,field);
 				self._resetNegate();
 				return self;
@@ -2781,8 +2781,8 @@ $.fn.jqGrid = function( pin ) {
 									query = query.or();
 								}
 								query = compareFnMap[rule.op](query, opr)(rule.field, rule.data, cmtypes[rule.field]);
-							} else if (p.customSortOperations != null && p.customSortOperations[rule.op] != null && $.isFunction(p[p.customSortOperations[rule.op].funcName])) {
-								query = query.custom(p.customSortOperations[rule.op].funcName, rule.field, rule.data);
+							} else if (p.customSortOperations != null && p.customSortOperations[rule.op] != null && $.isFunction(p.customSortOperations[rule.op].filter)) {
+								query = query.custom(rule.op, rule.field, rule.data);
 							}
 							s++;
 						}
