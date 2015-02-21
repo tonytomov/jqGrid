@@ -1519,7 +1519,7 @@ $.fn.jqGrid = function( pin ) {
 		fatalErrorFunction = jgrid.defaults != null && $.isFunction(jgrid.defaults.fatalError) ? jgrid.defaults.fatalError : alert,
 		locale = pin.locale || ($.jgrid.defaults || {}).locale || "en-US",
 		direction = locales[locale] != null && typeof locales[locale].isRTL === "boolean" ? (locales[locale].isRTL ? "rtl" : "ltr") : "ltr",
-		iconSet = pin.iconSet || ($.jgrid.defaults || {}).iconSet || "fontAwesome", //"jQueryUI",
+		iconSet = pin.iconSet || ($.jgrid.defaults || {}).iconSet || "jQueryUI",
 		getIcon = function (path) {
 			return jgrid.getIconRes(iconSet, path);
 		};
