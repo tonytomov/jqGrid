@@ -272,15 +272,15 @@
 			idUrl,
 			idParam,
 			addParam,
-			getOptionValue = function (option, encode) {
+			getOptionValue = function (option) {
 				return $.isFunction(option) ?
 					option.call(self, {
 						cellValue: cellval,
 						rowid: opts.rowId,
 						rowData: rowData,
 						options: op
-					}) :
-					(encode ? encodeURIComponent(option) : option);
+					}):
+					option || "";
 			};
 		
 		if (opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
@@ -291,13 +291,13 @@
 			target = 'target=' + getOptionValue(op.target);
 		}
 		idUrl = getOptionValue(op.baseLinkUrl) + getOptionValue(op.showAction);
-		idParam = op.idName ? getOptionValue(op.idName, true) + '=' + getOptionValue(opts.rowId, true) : "";
-		addParam = !op.addParam ? "" :
-			typeof op.addParam === "object" && op.addParam !== null ?
-				$.param(op.addParam) :
-				getOptionValue(op.addParam);
-		idUrl += !idParam && !addParam ? "" :
-				'?' + idParam /*+ (idParam && addParam ? "&" : "")*/ + addParam;
+		idParam = op.idName ? encodeURIComponent(getOptionValue(op.idName)) + '=' + encodeURIComponent(getOptionValue(op.rowId) || opts.rowId) : "";
+		addParam = getOptionValue(op.addParam);
+		if (typeof addParam === "object" && addParam !== null) {
+			// add "&" only in case of usage object for of addParam
+			addParam = (idParam !== "" ? "&" : "") + $.param(addParam);
+		}
+		idUrl += !idParam && !addParam ? "" : '?' + idParam + addParam;
 		if (idUrl === "") {
 			idUrl = getOptionValue(op.hrefDefaultValue);
 		}
