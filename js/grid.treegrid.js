@@ -323,7 +323,7 @@ jgrid.extend({
 					var parentId = p.treeReader.parent_id_field,
 					dtid = p.localReader.id;
 					$(p.data).each(function(){
-						if(this[parentId] == stripPref(p.idPrefix, rc[dtid])) {
+						if(this[parentId] == rc[dtid]) {
 							result.push(this);
 						}
 					});
@@ -358,7 +358,7 @@ jgrid.extend({
 					    var i;
 					    len = result.length;
 						for (i = 0; i < len; i++) {
-							if (stripPref(p.idPrefix, result[i][dtid]) === this[parentId]) {
+							if (result[i][dtid] === this[parentId]) {
 								result.push(this);
 								break;
 							}
@@ -432,7 +432,7 @@ jgrid.extend({
 
 			if(!rc[expanded]) {
 				var id = getAccessor(rc,p.localReader.id);
-				if (!treeGridFeedback.call($t, "beforeExpandNode", {rowid: stripPref(p.idPrefix, id), item: rc})) {return;}
+				if (!treeGridFeedback.call($t, "beforeExpandNode", {rowid: id, item: rc})) {return;}
 				var rc1 = $("#" + p.idPrefix + jqID(id),$t.grid.bDiv)[0];
 				var position = p._index[id];
 				if( $(this).jqGrid("isNodeLoaded",p.data[position]) ) {
@@ -456,7 +456,7 @@ jgrid.extend({
 						$(this).jqGrid("setGridParam",{postData:{nodeid:'',parentid:'',n_level:''}}); 
 					}
 				}
-				treeGridFeedback.call($t, "afterExpandNode", {rowid: stripPref(p.idPrefix, id), item: rc});
+				treeGridFeedback.call($t, "afterExpandNode", {rowid: id, item: rc});
 			}
 		});
 	},
@@ -467,11 +467,11 @@ jgrid.extend({
 			var expanded = p.treeReader.expanded_field;
 			if(rc[expanded]) {
 				var id = getAccessor(rc,p.localReader.id);
-				if (!treeGridFeedback.call($t, "beforeCollapseNode", {rowid: stripPref(p.idPrefix, id), item: rc})) {return;}
+				if (!treeGridFeedback.call($t, "beforeCollapseNode", {rowid: id, item: rc})) {return;}
 				rc[expanded] = false;
 				var rc1 = $("#" + p.idPrefix + jqID(id),$t.grid.bDiv)[0];
 				$("div.treeclick",rc1).removeClass(p.treeIcons.minus+" tree-minus").addClass(p.treeIcons.plus+" tree-plus");
-				treeGridFeedback.call($t, "afterCollapseNode", {rowid: stripPref(p.idPrefix, id), item: rc});
+				treeGridFeedback.call($t, "afterCollapseNode", {rowid: id, item: rc});
 			}
 		});
 	},
