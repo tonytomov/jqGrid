@@ -13137,8 +13137,9 @@ toggleSubGridRow : function(rowid) {
 var jgrid = $.jgrid, getAccessor = jgrid.getAccessor, stripPref = jgrid.stripPref, jqID = jgrid.jqID,
 	treeGridFeedback = function () {
 		var args = $.makeArray(arguments);
+		args[0] = "treeGrid" + args[0].charAt(0).toUpperCase() + args[0].substring(1);
 		args.unshift("");
-		args.unshift("TreeGrid");
+		args.unshift("");
 		args.unshift(this.p);
 		return jgrid.feedback.apply(this, args);
 	};
