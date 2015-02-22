@@ -2476,7 +2476,10 @@ $.fn.jqGrid = function( pin ) {
 					emptyRows.call(self, false, true);
 					rcnt=1;
 				} else { rcnt = rcnt > 1 ? rcnt :1; }
-			} else { return; }
+			} else {
+				// in case of usage TreeGrid for example
+				return;
+			}
 
 			var dReader, locid = "_id_", frd,
 			locdata = (p.datatype !== "local" && p.loadonce) || p.datatype === "jsonstring";
@@ -2725,7 +2728,7 @@ $.fn.jqGrid = function( pin ) {
 				$self.jqGrid("SortTree", st, p.sortorder,
 					cmtypes[st] != null && cmtypes[st].stype ? cmtypes[st].stype : 'text',
 					cmtypes[st] != null && cmtypes[st].srcfmt ? cmtypes[st].srcfmt : '');
-				return {};
+				return false;
 			}
 			var compareFnMap = {
 				'eq':function(queryObj) {return queryObj.equals;},
