@@ -1,4 +1,5 @@
-﻿
+
+(function($){
 /*
  * jqGrid OData (WebApi v3/v4) support
  *
@@ -16,379 +17,310 @@
  * TODO: add OData v4 server side part that generates annotations.
  */
 
-"use strict";
-function InitJqGridODataSample() {
-    var colModelDefinition = GetODataMetadata('http://localhost:59661/odata');
+ "use strict";
+$.jgrid.extend({
+	setColModelMetadata: function (savecolfunc, successfunc, errorfunc) {
+		var $t = this;
+		if (!$t.grid ) { return; }
+		
+		$.ajax({
+			url: $t.url+'/$metadata',
+			type: 'GET',
+			dataType: 'xml'
+		})
+		.done(function (data, st, xhr) {
+			//var xmldata = $.parseXML(xhr.responseText);
+			var props = $('EntityType[Name!="Default"] Property', data);
+			if (props.length > 0) {
+				$t.colModel = [];
+				props.each(function (n, itm) {
+					var name = $(itm).attr('Name');
+					var type = $(itm).attr('Type').replace('Edm.', '');
+					var nullable = $(itm).attr('Nullable');
+					
+					var origcol = { label: name, name: name, index: name, editable: true };
+					var newcol = $self.triggerHandler("jqGridODataSaveColumnModel", origcol);
+					if (newcol === undefined && $.isFunction(savecolfunc)) { newcol = savecolfunc(origcol); }		
+					if (newcol !== undefined) {
+						$t.colModel.push(newcol);
+					}
+				});
+				
+				if($.isFunction(successfunc)) { successfunc(data, st, xhr); }
+			}
+			else
+			{
+				if($.isFunction(errorfunc)) { errorfunc(data, st, xhr); }
+			}
+		})
+		.fail(function (jqXHR, st, err) {
+			if($.isFunction(errorfunc)) { errorfunc(jqXHR, st, err); }
+		});
+	}
 
-    //odata v3
-    SetODataDefaults('grid', "http://localhost:59661/odata/ODClient", colModelDefinition, {
-        annotations: false,
-        inlinecount: true,
-        count: false,
-        top: false
-    });
+	initODataDefaults: function (p) {
+		return this.each(function(){
+			var $t = this;
+			if (!$t.grid ) { return; }
+			
+			p = $.extend(true, {
+				pageSize: $t.rowNum,
+				annotations: false,
+				annotationName: "@jqgrid.GridModelAnnotate",
+				inlinecount: true,
+				count: false,
+				top: false
+			}, p || {});
+			
+			$t.inlineEditing({
+				beforeSaveRow: function (options, rowid, frmoper) {
+					if (options.extraparam.oper === 'edit') {
+						options.url = $t.url;
+						options.mtype = "PATCH";
+						options.url += '(' + rowid + ')';
+					}
+					else {
+						options.url = $t.url;
+						options.mtype = "PUT";
+					}
 
-    //odata v4
-    SetODataDefaults('grid', "http://localhost:59661/odata/ODClient", colModelDefinition, {
-        annotations: true,
-        inlinecount: false,
-        count: true,
-        top: true
-    });
+					return true;
+				},
+				serializeSaveData: function (postdata) {
+					return JSON.stringify(postdata);
+				}
+			});
 
-    $("#grid").jqGrid({
-        height: '100%',
-        pager: $('#gridpager'),
-        sortname: 'id',
-        viewrecords: true,
-        sortorder: "asc",
-        deepempty: true,
-        altRows: true,
-        footerrow: false,
-        shrinkToFit: true,
-        ignoreCase: true,
-        gridview: true,
-        headertitles: true,
-        sortable: true,
-        autowidth: true,
-        toppager: true,
-        toolbar: [true, 'top'],
-        ondblClickRow: function (id) {
-            $('#grid').jqGrid('editRow', id, {
-                beforeEditRow: function (options, rowid) {
-                    return true;
-                }
-            });
-            $("#grid_ilsave").removeClass('ui-state-disabled');
-        },
-        multiSort: true,
-        colModel: colModelDefinition
-    })
-    .jqGrid("navGrid", "#pg_grid_toppager", { add: true, del: true, edit: true, view: true, reload: true, search: false, cloneToTop: true },
-        {
-            //edit
-            closeAfterEdit: true
-        },
-        {   //add
-            closeAfterAdd: true
-        })
-    .jqGrid('inlineNav', "#pg_grid_toppager", { add: true, edit: false, save: true, cancel: false,
-        editParams: {
-            keys: true
-        }
-    })
-    .jqGrid('filterToolbar', { searchOnEnter: false, enableClear: false, stringResult: true })
-    .jqGrid('searchGrid', { multipleSearch: true, multipleGroup: false, overlay: 0 });
-};
+			$t.formEditing({
+				onclickSubmit: function (options, postdata, frmoper) {
+					if (frmoper === 'add') {
+						options.url = $t.url;
+						options.mtype = "POST";
+					}
+					else if (frmoper === 'edit') {
+						options.url = $t.url + '(' + postdata[$t.gID + "_id"] + ')';
+						options.mtype = "PUT";
+					}
 
-function GetODataMetadata(url) {
-    var colModel = [];
+					return postdata;
+				},
+				ajaxEditOptions: {
+					contentType: 'application/json;charset=utf-8',
+					datatype: 'json'
+				},
+				serializeEditData: function (postdata) {
+					return JSON.stringify(postdata);
+				}
+			});
 
-    $.ajax({
-        url: url+'/$metadata',
-        type: 'GET',
-        dataType: 'xml',
-        async: false
-    })
-    .done(function (data, st, xhr) {
-        
-        //var xmldata = $.parseXML(xhr.responseText);
-        var props = $('EntityType[Name!="Default"] Property', data);
-        props.each(function (n, itm) {
-            var name = $(itm).attr('Name');
-            var type = $(itm).attr('Type').replace('Edm.', '');
-            var isNullable = $(itm).attr('Nullable');
-            colModel.push({ label: name, name: name, index: name, editable: true });
-        });
-    })
-    .fail(function (jqXHR, st, err) {
-        var title = err, message = jqXHR.responseText;
+			$t.formDeleting({
+				url: $t.url,
+				mtype: "DELETE",
+				serializeDelData: function (postdata) {
+					return "";
+				},
+				onclickSubmit: function (options, postdata) {
+					options.url += '(' + postdata + ')';
+					return '';
+				},
+				ajaxDelOptions: {
+					contentType: 'application/json;charset=utf-8',
+					datatype: 'json'
+				}
+			});
+			
+			$t.p.serializeGridData = function (postData) {
+					postData = setupWebServiceData(postData);
+					return postData;
+				};
+				
+			$t.p.ajaxGridOptions = {
+					contentType: "application/json;charset=utf-8",
+					datatype: 'json'
+				};
 
-        if (jqXHR.responseJSON) {
-            if (jqXHR.responseJSON.InnerException) {
-                title = jqXHR.responseJSON.InnerException.ExceptionMessage;
-                message = jqXHR.responseJSON.InnerException.StackTrace;
-            }
-            else {
-                title = jqXHR.responseJSON.ExceptionMessage;
-                message = jqXHR.responseJSON.StackTrace;
-            }
-        }
+			$.extend(true, $.jgrid.defaults, {
+				datatype: "json",
+				mtype: 'GET',
+				rowNum: p.pageSize,
+				jsonReader: {
+					root: "value",
+					repeatitems: false,
+					records: "odata.count",
+					page: function (data) {
+						if (data["odata.nextLink"] !== undefined) {
+							var skip = data["odata.nextLink"].split('skip=')[1];
+							return Math.ceil(parseInt(skip, 0) / $t.rowNum);
+						}
+						else {
+							var total = data["odata.count"];
+							return Math.ceil(parseInt(total, 0) / $t.rowNum);
+						}
+					},
+					total: function (data) {
+						var total = data["odata.count"];
+						return Math.ceil(parseInt(total, 0) / $t.rowNum);
+					},
+					userdata: "userdata"
+				}
+			});
 
-        $.jgrid.info_dialog($.jgrid.errors.errcap, "<div>Message: " + title + '</div><br/><div>' + message + '</div>', $.jgrid.edit.bClose);
-    });
+			if (p.annotations) {
+				$.extend(true, $.jgrid.defaults, {
+					loadBeforeSend: function (jqXHR) {
+						jqXHR.setRequestHeader("Prefer", 'odata.include-annotations="*"');
+					},
+					jsonReader: {
+						root: "value",
+						repeatitems: false,
+						records: function(data) { return data[p.annotationName].records; },
+						page: function(data) { return data[p.annotationName].page; },
+						total: function(data) { return data[p.annotationName].total; },
+						userdata: function(data) { return data[p.annotationName].userdata; }
+					}
+				});
+			}
+		});
+	}
 
-    return colModel;
-}
+	setupWebServiceData: function (postData) {
+		// basic posting parameters to the OData service.
+		var params = {
+			//$top: postData.rows, //- we cannot use $top because of it removes odata.nextLink parameter
+			$skip: (parseInt(postData.page, $t.rowNum) - 1) * $t.rowNum,
+			//$inlinecount: "allpages" //- not relevant for V4
+		};
 
-function SetODataDefaults(gID, url, colModel, options) {
-    options = $.extend(true, {
-        pageSize: 25,
-        annotations: false,
-        annotationName: "@jqgrid.GridModelAnnotate",
-        inlinecount: true,
-        count: false,
-        top: false
-    }, options);
+		if (p.count) {params.$count = true;}
+		if (p.top) {params.$top = postData.rows;}
+		if (p.inlinecount) {params.$inlinecount = "allpages";}
 
-    $.extend(true, $.jgrid.inlineEdit, {
-        beforeSaveRow: function (options, rowid, frmoper) {
-            if (options.extraparam.oper == 'edit') {
-                options.url = url;
-                options.mtype = "PATCH";
-                options.url += '(' + rowid + ')';
-            }
-            else {
-                options.url = url;
-                options.mtype = "PUT";
-            }
+		// if we have an order-by clause to use, then we build it.
+		if (postData.sidx) {
+			// two columns have the following data:
+			// postData.sidx = "{ColumnName} {order}, {ColumnName} "
+			// postData.sord = "{order}"
+			// we need to split sidx by the ", " and see if there are multiple columns.  If there are, we need to go through
+			// each column and get its parts, then parse that for the appropriate columns to build for the sort.
 
-            return true;
-        },
-        serializeSaveData: function (postdata) {
-            return JSON.stringify(postdata);
-        }
-    });
+			params.$orderby = postData.sidx + " " + postData.sord;
+		}
 
-    $.extend(true, $.jgrid.edit, {
-        onclickSubmit: function (options, postdata, frmoper) {
-            if (frmoper == 'add') {
-                options.url = url;
-                options.mtype = "POST";
-            }
-            else if (frmoper == 'edit') {
-                options.url = url + '(' + postdata[gID + "_id"] + ')';
-                options.mtype = "PUT";
-            }
+		if (!postData._search) {return params;}
 
-            return postdata;
-        },
-        ajaxEditOptions: {
-            contentType: 'application/json;charset=utf-8',
-            datatype: 'json'
-        },
-        serializeEditData: function (postdata) {
-            return JSON.stringify(postdata);
-        }
-    });
+		// if we want to support "in" clauses, we need to follow this stackoverflow article:
+		//http://stackoverflow.com/questions/7745231/odata-where-id-in-list-query/7745321#7745321
+		// this is for basic searching, with a single term.
+		if (postData.searchField && (postData.searchString !== null || postData.searchOper === 'nu' || postData.searchOper === 'nn')) {
+			//append '' when searched field is of the string type
+			//var col = getGridColumn(postData.searchField);
+			var col = $.grep($t.colModel, function (n, i) { return n.name === postData.searchField; });
+			if (col !== null && col.length > 0) {
+				col = col[0];
+				if (col.stype === 'select' && rule.data.length === 0){
+					return params;
+				}
+				if (col.stype === 'select') {
+					postData.searchField = postData.searchField + '/' + $t.jsonReader.id;
+				}
+				else if (col.searchrules === undefined || col.searchrules.integer !== true) {
+					postData.searchString = "'" + postData.searchString + "'";
+				}
+				else if (rule.searchString === '') {
+					return params;
+				}
+			}
 
-    $.extend(true, $.jgrid.del, {
-        url: url,
-        mtype: "DELETE",
-        serializeDelData: function (postdata) {
-            return "";
-        },
-        onclickSubmit: function (options, postdata) {
-            options.url += '(' + postdata + ')';
-            return '';
-        },
-        ajaxDelOptions: {
-            contentType: 'application/json;charset=utf-8',
-            datatype: 'json'
-        }
-    });
+			params.$filter = odataExpression(postData.searchOper, postData.searchField, postData.searchString);
+		}
 
-    $.extend(true, $.jgrid.defaults, {
-        rowNum: options.pageSize,
-        datatype: "json",
-        url: url,
-        colModel: colModel,
-        mtype: 'GET',
-        ajaxGridOptions: {
-            contentType: "application/json;charset=utf-8",
-            datatype: 'json'
-        },
-        loadBeforeSend: function(jqXHR) {
-            jqXHR.setRequestHeader("Prefer", 'odata.include-annotations="*"');
-        },
-        serializeGridData: function (postData) {
-            postData = setupWebServiceData(postData, colModel, options);
-            return postData;
-        },
-        ajaxRowOptions: {
-            contentType: "application/json;charset=utf-8",
-            dataType: "json"
-        },
-        serializeRowData: function (postData) {
-            return JSON.stringify(postData);
-        },
-        jsonReader: {
-            root: "value",
-            repeatitems: false,
-            records: "odata.count",
-            page: function (data) {
-                if (data["odata.nextLink"] != undefined) {
-                    var skip = data["odata.nextLink"].split('skip=')[1];
-                    return Math.ceil(parseInt(skip) / pageSize);
-                }
-                else {
-                    var total = data["odata.count"];
-                    return Math.ceil(parseInt(total) / pageSize);
-                }
-            },
-            total: function (data) {
-                var total = data["odata.count"];
-                return Math.ceil(parseInt(total) / pageSize);
-            },
-            userdata: "userdata"
-        }
-    });
+		// complex searching, with a groupOp.  This is for if we enable the form for multiple selection criteria.
+		if (postData.filters) {
+			var filterGroup = $.parseJSON(postData.filters);
+			var groupSearch = parseFilterGroup(filterGroup);
 
-    if (options.annotations) {
-        $.extend(true, $.jgrid.defaults, {
-            loadBeforeSend: function (jqXHR) {
-                jqXHR.setRequestHeader("Prefer", 'odata.include-annotations="*"');
-            },
-            jsonReader: {
-                root: "value",
-                repeatitems: false,
-                records: [options.annotationName, 'records'],
-                page: [options.annotationName, 'page'],
-                total: [options.annotationName, 'total'],
-                userdata: [options.annotationName, 'userdata']
-            }
-        });
-    }
-}
+			if (groupSearch.length > 0) {
+				params.$filter = groupSearch;
+			}
+		}
 
-function setupWebServiceData(postData, cols, options) {
-    // basic posting parameters to the OData service.
-    var params = {
-        //$top: postData.rows, //- we cannot use $top because of it removes odata.nextLink parameter
-        $skip: (parseInt(postData.page, options.pageSize) - 1) * options.pageSize,
-        //$inlinecount: "allpages" //- not relevant for V4
-    };
+		return params;
+	}
 
-    if (options.count)
-        params.$count = true;
+	// builds out OData expressions... the condition.
+	odataExpression: function (op, field, data) {
+		switch (op) {
+			case "cn":
+				return "substringof(" + data + ", " + field + ") eq true";
+			case "nc": // does not contain.
+				return "substringof(" + data + ", " + field + ") eq false";
+			case "bw":
+				return "startswith(" + field + ", " + data + ") eq true";
+			case "bn": // does not begin with
+				return "startswith(" + field + ", " + data + ") eq false";
+			case "ew":
+				return "endswith(" + field + ", " + data + ") eq true";
+			case "en": // does not end with.
+				return "endswith(" + field + ", " + data + ") eq false";
+			case "nu":
+				return field + " eq null";
+			case "nn":
+				return field + " ne null";
+			default:
+				return field + " " + op + " " + data;
+		}
+	}
 
-    if (options.top)
-        params.$top = postData.rows;
+	// when dealing with the advanced query dialog, this parses the encapsulating Json object
+	// which we will then build the advanced OData expression from.
+	parseFilterGroup: function (filterGroup) {
+		var filterText = "";
+		if (filterGroup.groups) {
+			if (filterGroup.groups.length) {
+				for (var i = 0; i < filterGroup.groups.length; i++) {
+					filterText += "(" + parseFilterGroup(filterGroup.groups[i]) + ")";
 
-    if (options.inlinecount)
-        params.$inlinecount = "allpages";
+					if (i < filterGroup.groups.length - 1) {
+						filterText += " " + filterGroup.groupOp.toLowerCase() + " ";
+					}
+				}
 
-    // if we have an order-by clause to use, then we build it.
-    if (postData.sidx) {
-        // two columns have the following data:
-        // postData.sidx = "{ColumnName} {order}, {ColumnName} "
-        // postData.sord = "{order}"
-        // we need to split sidx by the ", " and see if there are multiple columns.  If there are, we need to go through
-        // each column and get its parts, then parse that for the appropriate columns to build for the sort.
+				if (filterGroup.rules && filterGroup.rules.length) {
+					filterText += " " + filterGroup.groupOp.toLowerCase() + " ";
+				}
+			}
+		}
 
-        params.$orderby = postData.sidx + " " + postData.sord;
-    }
+		if (filterGroup.rules.length) {
+			for (var i = 0; i < filterGroup.rules.length; i++) {
+				var rule = filterGroup.rules[i];
 
-    if (!postData._search)
-        return params;
+				if (rule.data === null && rule.op !== 'nu' && rule.op !== 'nn') {
+					continue;
+				}
 
-    // if we want to support "in" clauses, we need to follow this stackoverflow article:
-    //http://stackoverflow.com/questions/7745231/odata-where-id-in-list-query/7745321#7745321
-    // this is for basic searching, with a single term.
-    if (postData.searchField && (postData.searchString != null || postData.searchOper == 'nu' || postData.searchOper == 'nn')) {
-        //append '' when searched field is of the string type
-        var col = GetGridColumn(cols, postData.searchField);
-        if (col != null) {
-            if (col.stype == 'select' && rule.data == '-1')
-                return params;
-            if (col.stype == 'select')
-                postData.searchField = postData.searchField + '/Id';
-            else if (col.searchrules == undefined || col.searchrules.integer != true)
-                postData.searchString = "'" + postData.searchString + "'";
-            else if (rule.searchString == '')
-                return params;
-        }
+				var col = $.grep($t.colModel, function (n, i) { return n.name === rule.field; });
+				if (col !== null && col.length > 0) {
+					col = col[0];
+					if (col.stype === 'select' && rule.data.length === 0) {
+						continue;
+					}
+					if (col.stype === 'select') {
+						rule.field = rule.field + '/' + $t.jsonReader.id;
+					}
+					else if (col.searchrules === undefined || col.searchrules.integer !== true) {
+						rule.data = "'" + rule.data + "'";
+					}
+					else if (rule.data === '') {
+						continue;
+					}
+				}
+				filterText += odataExpression(rule.op, rule.field, rule.data) + " " + filterGroup.groupOp.toLowerCase() + " ";
+			}
+		}
 
-        params.$filter = ODataExpression(postData.searchOper, postData.searchField, postData.searchString);
-    }
+		filterText = filterText.trim().replace(/.(and|or)$/, '').trim();
 
-    // complex searching, with a groupOp.  This is for if we enable the form for multiple selection criteria.
-    if (postData.filters) {
-        var filterGroup = $.parseJSON(postData.filters);
-        var groupSearch = parseFilterGroup(filterGroup, cols);
-
-        if (groupSearch.length > 0)
-            params.$filter = groupSearch;
-    }
-
-    return params;
-}
-
-function GetGridColumn(cols, field) {
-    var col = $.grep(cols, function (n, i) { return n.name == field; });
-    if (col.length == 0)
-        return null;
-    else
-        return col[0];
-}
-
-// builds out OData expressions... the condition.
-function ODataExpression(op, field, data) {
-    switch (op) {
-        case "cn":
-            return "substringof(" + data + ", " + field + ") eq true";
-        case "nc": // does not contain.
-            return "substringof(" + data + ", " + field + ") eq false";
-        case "bw":
-            return "startswith(" + field + ", " + data + ") eq true";
-        case "bn": // does not begin with
-            return "startswith(" + field + ", " + data + ") eq false";
-        case "ew":
-            return "endswith(" + field + ", " + data + ") eq true";
-        case "en": // does not end with.
-            return "endswith(" + field + ", " + data + ") eq false";
-        case "nu":
-            return field + " eq null";
-        case "nn":
-            return field + " ne null";
-        default:
-            return field + " " + op + " " + data;
-    }
-};
-
-// when dealing with the advanced query dialog, this parses the encapsulating Json object
-// which we will then build the advanced OData expression from.
-function parseFilterGroup(filterGroup, cols) {
-    var filterText = "";
-    if (filterGroup.groups) {
-        if (filterGroup.groups.length) {
-            for (var i = 0; i < filterGroup.groups.length; i++) {
-                filterText += "(" + parseFilterGroup(filterGroup.groups[i]) + ")";
-
-                if (i < filterGroup.groups.length - 1) {
-                    filterText += " " + filterGroup.groupOp.toLowerCase() + " ";
-                }
-            }
-
-            if (filterGroup.rules && filterGroup.rules.length) {
-                filterText += " " + filterGroup.groupOp.toLowerCase() + " ";
-            }
-        }
-    }
-
-    if (filterGroup.rules.length) {
-        for (var i = 0; i < filterGroup.rules.length; i++) {
-            var rule = filterGroup.rules[i];
-
-            if (rule.data == null && rule.op != 'nu' && rule.op != 'nn')
-                continue;
-
-            var col = GetGridColumn(cols, rule.field);
-            if (col != null) {
-                if (col.stype == 'select' && rule.data == '-1')
-                    continue;
-                if (col.stype == 'select')
-                    rule.field = rule.field + '/Id';
-                else if (col.searchrules == undefined || col.searchrules.integer != true)
-                    rule.data = "'" + rule.data + "'";
-                else if (rule.data == '')
-                    continue;
-            }
-            filterText += ODataExpression(rule.op, rule.field, rule.data) + " " + filterGroup.groupOp.toLowerCase() + " ";
-        }
-    }
-
-    filterText = filterText.trim().replace(/.(and|or)$/, '').trim();
-
-    return filterText;
-}
+		return filterText;
+	}
+}(jQuery));
