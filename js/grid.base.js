@@ -1515,7 +1515,7 @@ $.fn.jqGrid = function( pin ) {
 	}
 	return this.each( function() {
 		if(this.grid) {return;}
-		var ts = this, localData, 
+		var ts = this, localData, localDataStr,
 		fatalErrorFunction = jgrid.defaults != null && $.isFunction(jgrid.defaults.fatalError) ? jgrid.defaults.fatalError : alert,
 		locale = pin.locale || ($.jgrid.defaults || {}).locale || "en-US",
 		direction = locales[locale] != null && typeof locales[locale].isRTL === "boolean" ? (locales[locale].isRTL ? "rtl" : "ltr") : "ltr",
@@ -1525,6 +1525,10 @@ $.fn.jqGrid = function( pin ) {
 		};
 		if (pin == null) {
 			pin = { datatype: "local" };
+		}
+		if (pin.datastr !== undefined && $.isArray(pin.datastr)) {
+			localDataStr = pin.datastr;
+			pin.datastr = []; // don't clear the array, just change the value of datastr property
 		}
 		if (pin.data !== undefined) {
 			localData = pin.data;
@@ -1760,6 +1764,10 @@ $.fn.jqGrid = function( pin ) {
 		if (localData !== undefined) {
 			p.data = localData;
 			pin.data = localData;
+		}
+		if (localDataStr !== undefined) {
+			p.datastr = localDataStr;
+			pin.datastr = localDataStr;
 		}
 		if(ts.tagName.toUpperCase() !== 'TABLE') {
 			fatalErrorFunction("Element is not a table!");
@@ -4216,6 +4224,13 @@ $.fn.jqGrid = function( pin ) {
 		ts.addJSONData = function(d) {addJSONData.call(ts,d);};
 		ts.grid.cols = ts.rows[0].cells;
 		feedback.call(ts, "onInitGrid");
+		
+		// fix to allow to load TreeGrid using datatype:"local", data:mydata instead of treeGrid: true
+		if (p.treeGrid && p.datatype === "local" && p.data != null && p.data.length > 0) {
+			p.datatype = "jsonstring";
+			p.datastr = p.data;
+			p.data = [];
+		}
 
 		populate.call(ts);p.hiddengrid=false;
 	});
