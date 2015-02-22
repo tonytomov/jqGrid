@@ -13134,7 +13134,14 @@ toggleSubGridRow : function(rowid) {
 /*global jQuery */
 (function($) {
 "use strict";
-var jgrid = $.jgrid;
+var jgrid = $.jgrid, getAccessor = jgrid.getAccessor, stripPref = jgrid.stripPref, jqID = jgrid.jqID,
+	treeGridFeedback = function () {
+		var args = $.makeArray(arguments);
+		args.unshift("");
+		args.unshift("TreeGrid");
+		args.unshift(this.p);
+		return jgrid.feedback.apply(this, args);
+	};
 jgrid.extend({
 	setTreeNode : function(i, len){
 		return this.each(function(){
@@ -13148,7 +13155,7 @@ jgrid.extend({
 			loaded = p.treeReader.loaded,  lft, rgt, curLevel, ident,lftpos, twrap,
 			ldat, lf, pn, tr, ind, dind, expan,
 			onClickTreeNode = function(e){
-				var ind2 =jgrid.stripPref(p.idPrefix,$(e.target || e.srcElement,rows).closest("tr.jqgrow")[0].id),
+				var ind2 = stripPref(p.idPrefix,$(e.target || e.srcElement,rows).closest("tr.jqgrow")[0].id),
 				pos = p._index[ind2], item = p.data[pos];
 				if(!item[isLeaf]){
 					if(item[expanded]){
@@ -13162,14 +13169,14 @@ jgrid.extend({
 				return false;
 			},
 			onClickTreeNodeWithSelection = function(e){
-				var ind2 =jgrid.stripPref(p.idPrefix,$(e.target || e.srcElement,rows).closest("tr.jqgrow")[0].id);
+				var ind2 = stripPref(p.idPrefix,$(e.target || e.srcElement,rows).closest("tr.jqgrow")[0].id);
 				onClickTreeNode.call(this, e);
 				$self.jqGrid("setSelection",ind2);
 				return false;
 			};
 			while(i<len) {
 				tr = rows[i];
-				ind = jgrid.stripPref(p.idPrefix, tr.id);
+				ind = stripPref(p.idPrefix, tr.id);
 				dind = p._index[ind];
 				ldat = p.data[dind];
 				//tr.level = ldat[level];
@@ -13308,32 +13315,36 @@ jgrid.extend({
 		this.each(function(){
 			var $t = this, $self = $($t), p = $t.p;
 			if(!$t.grid || !p.treeGrid) {return;}
+			var rowid = record[p.localReader.id]; // without prefix
+			if (!treeGridFeedback.call($t, "beforeExpandRow", {rowid: rowid, item: record})) {return;}
 			var childern = $self.jqGrid("getNodeChildren",record),
-			//if ($self.jqGrid("isVisibleNode",record)) {
 			expanded = p.treeReader.expanded_field;
 			$(childern).each(function(){
-				var id  = p.idPrefix + jgrid.getAccessor(this,p.localReader.id);
+				var id  = p.idPrefix + getAccessor(this,p.localReader.id);
 				$($self.jqGrid('getGridRowById', id)).css("display","");
 				if(this[expanded]) {
 					$self.jqGrid("expandRow",this);
 				}
 			});
-			//}
+			treeGridFeedback.call($t, "afterExpandRow", {rowid: rowid, item: record});
 		});
 	},
 	collapseRow : function (record) {
 		this.each(function(){
 			var $t = this, $self = $($t), p = $t.p;
 			if(!$t.grid || !p.treeGrid) {return;}
+			var rowid = record[p.localReader.id]; // without prefix
+			if (!treeGridFeedback.call($t, "beforeCollapseRow", {rowid: rowid, item: record})) {return;}
 			var childern = $self.jqGrid("getNodeChildren",record),
 			expanded = p.treeReader.expanded_field;
 			$(childern).each(function(){
-				var id  = p.idPrefix + jgrid.getAccessor(this,p.localReader.id);
+				var id  = p.idPrefix + getAccessor(this,p.localReader.id);
 				$($self.jqGrid('getGridRowById', id)).css("display","none");
 				if(this[expanded]){
 					$self.jqGrid("collapseRow",this);
 				}
 			});
+			treeGridFeedback.call($t, "afterCollapseRow", {rowid: rowid, item: record});
 		});
 	},
 	// NS ,adjacency models
@@ -13403,7 +13414,7 @@ jgrid.extend({
 					dtid = p.localReader.id,
 					ind = rc[dtid], pos = p._index[ind];
 					while(pos--) {
-						if(p.data[pos][dtid] === jgrid.stripPref(p.idPrefix, rc[parentId])) {
+						if(p.data[pos][dtid] === rc[parentId]) {
 							result = p.data[pos];
 							break;
 						}
@@ -13434,7 +13445,7 @@ jgrid.extend({
 					var parentId = p.treeReader.parent_id_field,
 					dtid = p.localReader.id;
 					$(p.data).each(function(){
-						if(this[parentId] == jgrid.stripPref(p.idPrefix, rc[dtid])) {
+						if(this[parentId] == stripPref(p.idPrefix, rc[dtid])) {
 							result.push(this);
 						}
 					});
@@ -13469,7 +13480,7 @@ jgrid.extend({
 					    var i;
 					    len = result.length;
 						for (i = 0; i < len; i++) {
-							if (jgrid.stripPref(p.idPrefix, result[i][dtid]) === this[parentId]) {
+							if (stripPref(p.idPrefix, result[i][dtid]) === this[parentId]) {
 								result.push(this);
 								break;
 							}
@@ -13542,8 +13553,9 @@ jgrid.extend({
 			rgt = p.treeReader.right_field;
 
 			if(!rc[expanded]) {
-				var id = jgrid.getAccessor(rc,p.localReader.id);
-				var rc1 = $("#" + p.idPrefix + jgrid.jqID(id),$t.grid.bDiv)[0];
+				var id = getAccessor(rc,p.localReader.id);
+				if (!treeGridFeedback.call($t, "beforeExpandNode", {rowid: stripPref(p.idPrefix, id), item: rc})) {return;}
+				var rc1 = $("#" + p.idPrefix + jqID(id),$t.grid.bDiv)[0];
 				var position = p._index[id];
 				if( $(this).jqGrid("isNodeLoaded",p.data[position]) ) {
 					rc[expanded] = true;
@@ -13566,6 +13578,7 @@ jgrid.extend({
 						$(this).jqGrid("setGridParam",{postData:{nodeid:'',parentid:'',n_level:''}}); 
 					}
 				}
+				treeGridFeedback.call($t, "afterExpandNode", {rowid: stripPref(p.idPrefix, id), item: rc});
 			}
 		});
 	},
@@ -13575,10 +13588,12 @@ jgrid.extend({
 			if(!$t.grid || !p.treeGrid) {return;}
 			var expanded = p.treeReader.expanded_field;
 			if(rc[expanded]) {
+				var id = getAccessor(rc,p.localReader.id);
+				if (!treeGridFeedback.call($t, "beforeCollapseNode", {rowid: stripPref(p.idPrefix, id), item: rc})) {return;}
 				rc[expanded] = false;
-				var id = jgrid.getAccessor(rc,p.localReader.id);
-				var rc1 = $("#" + p.idPrefix + jgrid.jqID(id),$t.grid.bDiv)[0];
+				var rc1 = $("#" + p.idPrefix + jqID(id),$t.grid.bDiv)[0];
 				$("div.treeclick",rc1).removeClass(p.treeIcons.minus+" tree-minus").addClass(p.treeIcons.plus+" tree-plus");
+				treeGridFeedback.call($t, "afterCollapseNode", {rowid: stripPref(p.idPrefix, id), item: rc});
 			}
 		});
 	},
@@ -13600,8 +13615,8 @@ jgrid.extend({
 				$(this).jqGrid("collectChildrenSortTree",records, rec, sortname, newDir,st, datefmt);
 			}
 			$.each(records, function(index) {
-				var id  = jgrid.getAccessor(this,p.localReader.id);
-				$('#'+jgrid.jqID(p.id)+ ' tbody tr:eq('+index+')').after($('tr#'+jgrid.jqID(id),$t.grid.bDiv));
+				var id  = getAccessor(this,p.localReader.id);
+				$('#'+jqID(p.id)+ ' tbody tr:eq('+index+')').after($('tr#'+jqID(id),$t.grid.bDiv));
 			});
 			query = null;roots=null;records=null;
 		});
