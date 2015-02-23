@@ -1858,7 +1858,7 @@ $.fn.jqGrid = function( pin ) {
 				p.colModel[idx].width = nw;
 				h.width = nw;
 				if ($hCols.length > 0) {
-					$hCols[0].cells(idx).style.width = nw + "px";
+					$hCols[0].cells[idx].style.width = nw + "px";
 				} else {
 					h.el.style.width = nw + "px";
 				}
