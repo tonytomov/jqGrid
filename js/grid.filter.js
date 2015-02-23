@@ -373,7 +373,9 @@ $.fn.jqFilter = function( arg ) {
 				aoprs = [];
 				$.each(that.p.ops, function() { aoprs.push(this.oper); });
 				// append aoprs array with custom operations defined in customSortOperations parameter jqGrid
-				$.each(that.p.cops, function(propertyName) { aoprs.push(propertyName); });
+				if (that.p.cops) {
+					$.each(that.p.cops, function(propertyName) { aoprs.push(propertyName); });
+				}
 				for ( i = 0 ; i < op.length; i++) {
 					itemOper = op[i];
 					ina = $.inArray(op[i],aoprs);
@@ -476,7 +478,9 @@ $.fn.jqFilter = function( arg ) {
 			var odataItem, itemOper;
 			$.each(that.p.ops, function() { aoprs.push(this.oper); });
 			// append aoprs array with custom operations defined in customSortOperations parameter jqGrid
-			$.each(that.p.cops, function(propertyName) { aoprs.push(propertyName); });
+			if (that.p.cops) {
+				$.each(that.p.cops, function(propertyName) { aoprs.push(propertyName); });
+			}
 			for ( i = 0; i < op.length; i++) {
 				itemOper = op[i];
 				ina = $.inArray(op[i],aoprs);
@@ -573,7 +577,7 @@ $.fn.jqFilter = function( arg ) {
 					break;
 				}
 			}
-			if (opC === "") {
+			if (opC === "" && p.cops != null) {
 				for (oper in p.cops) {
 					if (p.cops.hasOwnProperty(oper)) {
 						opC = oper;
