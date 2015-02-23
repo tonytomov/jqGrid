@@ -1853,15 +1853,11 @@ $.fn.jqGrid = function( pin ) {
 			resizeColumn: function (idx, skipCallbacks) {
 				var self = this, headers = self.headers, footers = self.footers, h = headers[idx], hn, nw = h.newWidth || h.width,
 					$bTable = getGridComponent("bTable", $(self.bDiv)), $hTable = getGridComponent("hTable", $(self.hDiv)),
-					$hCols = $hTable.children("thead").children("tr.jqg-first-row-header");
+					hCols = $hTable.children("thead").children("tr").first()[0].cells;
 				nw = parseInt(nw,10);
 				p.colModel[idx].width = nw;
 				h.width = nw;
-				if ($hCols.length > 0) {
-					$hCols[0].cells[idx].style.width = nw + "px";
-				} else {
-					h.el.style.width = nw + "px";
-				}
+				hCols[idx].style.width = nw + "px";
 				self.cols[idx].style.width = nw+"px";
 				if(footers.length>0) {footers[idx].style.width = nw+"px";}
 				fixScrollOffsetAndhBoxPadding.call($bTable[0]);
@@ -1869,7 +1865,7 @@ $.fn.jqGrid = function( pin ) {
 					hn = headers[idx+p.nv]; // next visible th
 					nw = hn.newWidth || hn.width;
 					hn.width = nw;
-					hn.el.style.width = nw + "px";
+					hCols[idx+p.nv].style.width = nw + "px";
 					self.cols[idx+p.nv].style.width = nw+"px";
 					if(footers.length>0) {footers[idx+p.nv].style.width = nw+"px";}
 					p.colModel[idx+p.nv].width = nw;
@@ -4222,6 +4218,7 @@ $.fn.jqGrid = function( pin ) {
 		ts.updatepager = updatepager;
 		ts.refreshIndex = refreshIndex;
 		ts.setHeadCheckBox = setHeadCheckBox;
+		ts.fixScrollOffsetAndhBoxPadding = fixScrollOffsetAndhBoxPadding;
 		ts.constructTr = constructTr;
 		ts.formatter = function ( rowId, cellval , colpos, rwdat, act){return formatter(rowId, cellval , colpos, rwdat, act);};
 		$.extend(grid,{populate : populate, emptyRows: emptyRows, beginReq: beginReq, endReq: endReq});
@@ -4872,6 +4869,7 @@ jgrid.extend({
 			var colModel = p.colModel, cm, scw = p.scrollOffset, brd = jgrid.cell_width ? 0 : p.cellLayout, thInfo,
 				headers = grid.headers, footers = grid.footers, bDiv = grid.bDiv, hDiv = grid.hDiv, sDiv = grid.sDiv,
 				cols = grid.cols, delta, cle,
+				hCols = $(hDiv).find(">div>.ui-jqgrid-htable>thead>tr").first()[0].cells,
 				setWidthOfAllDivs = function (newWidth) {
 					grid.width = p.width = newWidth;
 					$(p.gBox).css("width", newWidth + "px");
@@ -4932,7 +4930,7 @@ jgrid.extend({
 						this.width =cw;
 						initwidth += cw;
 						headers[i].width=cw;
-						headers[i].el.style.width=cw+"px";
+						hCols[i].style.width=cw+"px";
 						if(p.footerrow) { footers[i].style.width = cw+"px"; }
 						if(cle) { cols[i].style.width = cw+"px"; }
 						lvc = i;
@@ -4960,7 +4958,7 @@ jgrid.extend({
 				cw = cm.width;
 				thInfo = headers[lvc];
 				thInfo.width = cw;
-				thInfo.el.style.width=cw+"px";
+				hCols[lvc].style.width=cw+"px";
 				if(cle) { cols[lvc].style.width = cw+"px"; }
 				if(p.footerrow) {
 					footers[lvc].style.width = cw+"px";

@@ -552,16 +552,19 @@ jgrid.extend({
 			}
 			opts.stop = function (ev, ui) {
 				$($t).jqGrid('setGridWidth',ui.size.width,opts.shrinkToFit);
+				$(p.gView+">.ui-jqgrid-titlebar").css("width", "");
 				if (!onlyHorizontal) {
 					$($t).jqGrid('setGridParam',{height: $(bdivSelector).height()});
 				} else {
-					$(p.gView+">.ui-jqgrid-titlebar").css("width", "");
 					$(sel).each(function () {
 						$(this).css("height", "");
 					});
 					if (gridHeight === "auto" || gridHeight === "100%") {
 						$(grid.bDiv).css("height", gridHeight);
 					}
+				}
+				if ($t.fixScrollOffsetAndhBoxPadding) {
+					$t.fixScrollOffsetAndhBoxPadding();
 				}
 				if(opts._stop_) { opts._stop_.call($t,ev,ui); }
 			};
