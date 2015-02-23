@@ -1852,11 +1852,16 @@ $.fn.jqGrid = function( pin ) {
 			},
 			resizeColumn: function (idx, skipCallbacks) {
 				var self = this, headers = self.headers, footers = self.footers, h = headers[idx], hn, nw = h.newWidth || h.width,
-					$bTable = getGridComponent("bTable", $(self.bDiv));
+					$bTable = getGridComponent("bTable", $(self.bDiv)), $hTable = getGridComponent("hTable", $(self.hDiv)),
+					$hCols = $hTable.children("thead").children("tr.jqg-first-row-header");
 				nw = parseInt(nw,10);
 				p.colModel[idx].width = nw;
 				h.width = nw;
-				h.el.style.width = nw + "px";
+				if ($hCols.length > 0) {
+					$hCols[0].cells(idx).style.width = nw + "px";
+				} else {
+					h.el.style.width = nw + "px";
+				}
 				self.cols[idx].style.width = nw+"px";
 				if(footers.length>0) {footers[idx].style.width = nw+"px";}
 				fixScrollOffsetAndhBoxPadding.call($bTable[0]);
@@ -6258,8 +6263,7 @@ jgrid.extend({
 			} else {
 				$firstHeaderRow.empty();
 			}
-			var $firstRow,
-			inColumnHeader = function (text, columnHeaders) {
+			var inColumnHeader = function (text, columnHeaders) {
 				var length = columnHeaders.length, j;
 				for (j = 0; j < length; j++) {
 					if (columnHeaders[j].startColumnName === text) {
@@ -6359,11 +6363,6 @@ jgrid.extend({
 					}
 				});
 			}
-
-			$firstRow = $theadInTable.find("tr.jqg-first-row-header");
-			$(ts).bind('jqGridResizeStop.setGroupHeaders', function (e, nw, idx) {
-				$firstRow.find('th').eq(idx).width(nw);
-			});
 		});				
 	},
 	setFrozenColumns : function () {

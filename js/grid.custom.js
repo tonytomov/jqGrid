@@ -766,8 +766,7 @@ jgrid.extend({
 			} else {
 				$firstHeaderRow.empty();
 			}
-			var $firstRow,
-			inColumnHeader = function (text, columnHeaders) {
+			var inColumnHeader = function (text, columnHeaders) {
 				var length = columnHeaders.length, j;
 				for (j = 0; j < length; j++) {
 					if (columnHeaders[j].startColumnName === text) {
@@ -867,11 +866,6 @@ jgrid.extend({
 					}
 				});
 			}
-
-			$firstRow = $theadInTable.find("tr.jqg-first-row-header");
-			$(ts).bind('jqGridResizeStop.setGroupHeaders', function (e, nw, idx) {
-				$firstRow.find('th').eq(idx).width(nw);
-			});
 		});				
 	},
 	setFrozenColumns : function () {
