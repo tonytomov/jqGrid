@@ -4603,7 +4603,7 @@ jgrid.extend({
 	},
 	addRowData : function(rowid,rdata,pos,src) {
 		// TODO: add an additional parameter, which will inform whether the input data rdata is in formatted or unformatted form
-		if(["first", "last", "before", "after"].indexOf(pos) === -1) {pos = "last";}
+		if($.inArray(pos, ["first", "last", "before", "after"]) < -1) {pos = "last";}
 		var success = false, nm, row, gi, si, ni,sind, i, v, prp="", aradd, cnm, cn, data, cm, id;
 		if(rdata) {
 			if($.isArray(rdata)) {
