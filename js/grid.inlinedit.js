@@ -74,7 +74,7 @@ jgrid.extend({
 			var editable = $(ind).attr("editable") || "0";
 			if (editable === "0" && !$(ind).hasClass("not-editable-row")) {
 				var editingInfo = jgrid.detectRowEditing.call($t, rowid);
-				if (editingInfo.mode === "cellEditing") {
+				if (editingInfo != null && editingInfo.mode === "cellEditing") {
 					var savedRowInfo = editingInfo.savedRow, tr = $t.rows[savedRowInfo.id];
 						$self.jqGrid("restoreCell", savedRowInfo.id, savedRowInfo.ic);
 						// remove highlighting of the cell

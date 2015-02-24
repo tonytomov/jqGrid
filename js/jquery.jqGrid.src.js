@@ -11446,11 +11446,15 @@ jgrid.extend({
 			}
 		});
 	},
-	navButtonAdd : function (elem, o) {
+	navButtonAdd : function (elem, oMuligrid) {
+		if (typeof elem === "object") {
+			oMuligrid = elem;
+			elem = undefined;
+		}
 		return this.each(function() {
 			var $t = this, p = $t.p;
 			if (!$t.grid)  {return;}
-			o = $.extend({
+			var o = $.extend({
 				caption : "newButton",
 				title: '',
 				onClickButton: null,
@@ -11461,7 +11465,19 @@ jgrid.extend({
 			$($t).jqGrid("getGridRes", "nav"),
 			jgrid.nav || {},
 			p.navOptions || {},
-			o || {});
+			oMuligrid || {});
+			if (elem === undefined) {
+				if (p.pager) {
+					$($t).jqGrid("navButtonAdd", p.pager, o);
+					if (p.toppager) {
+						elem = p.toppager;
+					} else {
+						return;
+					}
+				} else if (p.toppager) {
+					elem = p.toppager;
+				}
+			}
 			if (typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+jqID(elem);}
 			var findnav = $(".navtable",elem), commonIconClass = o.commonIconClass;
 			if (findnav.length > 0) {
@@ -11646,7 +11662,7 @@ jgrid.extend({
 			var editable = $(ind).attr("editable") || "0";
 			if (editable === "0" && !$(ind).hasClass("not-editable-row")) {
 				var editingInfo = jgrid.detectRowEditing.call($t, rowid);
-				if (editingInfo.mode === "cellEditing") {
+				if (editingInfo != null && editingInfo.mode === "cellEditing") {
 					var savedRowInfo = editingInfo.savedRow, tr = $t.rows[savedRowInfo.id];
 						$self.jqGrid("restoreCell", savedRowInfo.id, savedRowInfo.ic);
 						// remove highlighting of the cell

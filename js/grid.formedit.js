@@ -2033,11 +2033,15 @@ jgrid.extend({
 			}
 		});
 	},
-	navButtonAdd : function (elem, o) {
+	navButtonAdd : function (elem, oMuligrid) {
+		if (typeof elem === "object") {
+			oMuligrid = elem;
+			elem = undefined;
+		}
 		return this.each(function() {
 			var $t = this, p = $t.p;
 			if (!$t.grid)  {return;}
-			o = $.extend({
+			var o = $.extend({
 				caption : "newButton",
 				title: '',
 				onClickButton: null,
@@ -2048,7 +2052,19 @@ jgrid.extend({
 			$($t).jqGrid("getGridRes", "nav"),
 			jgrid.nav || {},
 			p.navOptions || {},
-			o || {});
+			oMuligrid || {});
+			if (elem === undefined) {
+				if (p.pager) {
+					$($t).jqGrid("navButtonAdd", p.pager, o);
+					if (p.toppager) {
+						elem = p.toppager;
+					} else {
+						return;
+					}
+				} else if (p.toppager) {
+					elem = p.toppager;
+				}
+			}
 			if (typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+jqID(elem);}
 			var findnav = $(".navtable",elem), commonIconClass = o.commonIconClass;
 			if (findnav.length > 0) {
