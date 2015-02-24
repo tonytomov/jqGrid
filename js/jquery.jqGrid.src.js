@@ -11645,6 +11645,14 @@ jgrid.extend({
 
 			var editable = $(ind).attr("editable") || "0";
 			if (editable === "0" && !$(ind).hasClass("not-editable-row")) {
+				var editingInfo = jgrid.detectRowEditing.call($t, rowid);
+				if (editingInfo.mode === "cellEditing") {
+					var savedRowInfo = editingInfo.savedRow, tr = $t.rows[savedRowInfo.id];
+						$self.jqGrid("restoreCell", savedRowInfo.id, savedRowInfo.ic);
+						// remove highlighting of the cell
+						$(tr.cells[savedRowInfo.ic]).removeClass("edit-cell ui-state-highlight");
+						$(tr).addClass("ui-state-highlight").attr({"aria-selected":"true", "tabindex" : "0"});
+				}
 				$('td[role="gridcell"]',ind).each( function(i) {
 					cm = colModel[i];
 					nm = cm.name;
