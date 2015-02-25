@@ -14,6 +14,8 @@ Below you can find short description of new features already implemented in the 
 * the default values of some option of jqGrid are changed (see detailed description below). **If you need to use other values as new defaults then you should include the option explicitly as parameters.**
 * some changes in "localization files" from `i18n` folder are made. One should used the files included in the fork and not combine old "local files" of jqGrid 4.7.0 with new `jquery.jqGrid.min.js` or `jquery.jqGrid.src.js`.
 * the internal method `$.fmatter.util.NumberFormat` is renamed to `$.fmatter.NumberFormat`. You have to make the same renaming if you used *internal* method `$.fmatter.util.NumberFormat` **directly** in your code.
+* the internal methods `$.jgrid.createModal` and `$.jgrid.info_dialog` are changed. The methods expect DOM of the grid as `this`. So if you used the methods *directly* in your code you should replace `$.jgrid.info_dialog(...)` to something like `$.jgrid.info_dialog.call($("#grid")[0], ...)`.
+* because of changing the structure of the "localization files" from `i18n` folder the access to the strings are changed. If you used any strings from the locale files in your code *directly*, like `$.jgrid.errors.errcap` for example then you should use the code to use `$("#grid").jqGrid("errors.errcap")`. The new method allow to access localized strings, which corresponds to *the current* locale of the grid. If you want to access some specific locale, for example `"de"` then `$.jgrid.errors.errcap` can be accessed now as `$.jgrid.locales.de.errors.errcap`. The same string from the default US-English locale is accessible under `$.jgrid.locales."en-US".errors.errcap`.
 
 ### The following **new features** are implemented currently
 
