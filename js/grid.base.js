@@ -4707,6 +4707,9 @@ jgrid.extend({
 					}
 					p.records++;
 					p.reccount++;
+					if (p.lastpage === 0) {
+						p.lastpage = 1;
+					}
 					feedback.call(t, "afterInsertRow", rowid, data, data);
 					k++;
 					if(p.datatype === 'local') {
