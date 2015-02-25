@@ -35,18 +35,19 @@ window.jqGridUtils = {
 	jsonToXML : function ( tree, options ) {
 		var o = $.extend( {
 			xmlDecl : '<?xml version="1.0" encoding="UTF-8" ?>\n',
-			attr_prefix : '-'
+			attr_prefix : '-',
+			encode : true
 		}, options || {}),
 		that = this,
 		scalarToxml = function ( name, text ) {
 			if ( name === "#text" ) {
-				return that.encode(text);
+				return (o.encode ? that.encode(text) : text);
 			} else if(typeof(text) ==='function') {
 				return "<"+name+"><![CDATA["+ text +"]]></"+name+">\n";
 			} if(text === "") {
 				return "<"+name+">_EMPTY_STRING_</"+name+">\n";
 			} else {
-				return "<"+name+">"+that.encode(text)+"</"+name+">\n";
+				return "<"+name+">"+(o.encode ? that.encode(text) : text )+"</"+name+">\n";
 			}
 		},
 		arrayToxml = function ( name, array ) {
@@ -85,7 +86,7 @@ window.jqGridUtils = {
 						elem[elem.length] = scalarToxml( key, val );
 					}
 				} else {
-					attr[attr.length] = " "+(key.substring(1))+'="'+(that.encode( val ))+'"';
+					attr[attr.length] = " "+(key.substring(1))+'="'+(o.encode ? that.encode( val ) : val)+'"';
 				}
 			}
 			var jattr = attr.join("");
