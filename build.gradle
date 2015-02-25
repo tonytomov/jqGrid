@@ -7,7 +7,7 @@ repositories {
 }
 
 dependencies {
-    jscompiler 'com.google.javascript:closure-compiler:v20141215'
+    jscompiler 'com.google.javascript:closure-compiler:v20150126'
 }
 
 def srcdir = new File('js')
