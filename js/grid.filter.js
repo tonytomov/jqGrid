@@ -1187,7 +1187,7 @@ $.jgrid.extend({
 				}
 			}
 			if ( $("#"+$.jgrid.jqID(IDs.themodal))[0] !== undefined ) {
-				showFilter($("#fbox_"+$.jgrid.jqID(+$t.p.id)));
+				showFilter($("#fbox_"+$.jgrid.jqID( $t.p.id )));
 			} else {
 				var fil = $("<div><div id='"+fid+"' class='searchFilter' style='overflow:auto'></div></div>").insertBefore("#gview_"+$.jgrid.jqID($t.p.id)),
 				align = "left", butleft =""; 
