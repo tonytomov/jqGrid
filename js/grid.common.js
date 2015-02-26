@@ -460,7 +460,7 @@ $.extend(jgrid,{
 						ovm = $.map(ovm,function(n){return $.trim(n);});
 					}
 					if(typeof options.value === 'function') { options.value = options.value(); }
-					var so,sv, ov, 
+					var so,sv, ov, svv, svt,
 					sep = options.separator === undefined ? ":" : options.separator,
 					delim = options.delimiter === undefined ? ";" : options.delimiter,
                     mapFunc = function(n,ii){if(ii>0) { return n;} };
@@ -473,10 +473,13 @@ $.extend(jgrid,{
 							}
 							ov = document.createElement("option");
 							ov.setAttribute("role","option");
+							// consider to trim BEFORE filling the options
 							ov.value = sv[0]; ov.innerHTML = sv[1];
 							elem.appendChild(ov);
-							if (!msl &&  ($.trim(sv[0]) === $.trim(vl) || $.trim(sv[1]) === $.trim(vl))) { ov.selected ="selected"; }
-							if (msl && ($.inArray($.trim(sv[1]), ovm)>-1 || $.inArray($.trim(sv[0]), ovm)>-1)) {ov.selected ="selected";}
+							svv = $.trim(sv[0]);
+							svt = $.trim(sv[1]);
+							if (!msl &&  (svv === $.trim(vl) || svt === $.trim(vl))) { ov.selected ="selected"; }
+							if (msl && ($.inArray(svt, ovm)>-1 || $.inArray(svv, ovm)>-1)) {ov.selected ="selected";}
 						}
 					} else if (typeof options.value === 'object') {
 						var oSv = options.value, key;
