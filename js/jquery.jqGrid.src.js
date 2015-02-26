@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-02-25
+ * Date: 2015-02-26
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -238,9 +238,9 @@ if (jgrid.defaults == null || $.isEmptyObject(locales) || locales["en-US"] === u
 	}
 }
 
-if (jgrid.defaults.locale && locales[jgrid.defaults.locale]) {
-	$.extend(true, $.jgrid, locales[jgrid.defaults.locale]); // add to improve compatibility only
-}
+//if (jgrid.defaults.locale && locales[jgrid.defaults.locale]) {
+//	$.extend(true, $.jgrid, locales[jgrid.defaults.locale]); // add to improve compatibility only
+//}
 
 $.extend(true,jgrid,{
 	version: "4.8.0-beta3",
@@ -2692,8 +2692,11 @@ $.fn.jqGrid = function( pin ) {
 			}
 			var grpview = p.grouping ? p.groupingView : false, lengrp, gin;
 			$.each(p.colModel,function(){
-				var cm = this, grindex = cm.index || cm.name;
+				var cm = this, grindex = cm.index || cm.name,
+					reader = !p.dataTypeOrg ? cm.jsonmap || cm.name : cm.name;
+
 				sorttype = cm.sorttype || "text";
+				cmtypes[cm.name] = {reader: reader, stype: sorttype, srcfmt:'', newfmt:'', sfunc: cm.sortfunc || null};
 				if(sorttype === "date" || sorttype === "datetime") {
 					if(cm.formatter && typeof cm.formatter === 'string' && cm.formatter === 'date') {
 						if(cm.formatoptions && cm.formatoptions.srcformat) {
@@ -2709,9 +2712,8 @@ $.fn.jqGrid = function( pin ) {
 					} else {
 						srcformat = newformat = cm.datefmt || "Y-m-d";
 					}
-					cmtypes[cm.name] = {"stype": sorttype, "srcfmt": srcformat,"newfmt":newformat, "sfunc": cm.sortfunc || null};
-				} else {
-					cmtypes[cm.name] = {"stype": sorttype, "srcfmt":'',"newfmt":'', "sfunc": cm.sortfunc || null};
+					cmtypes[cm.name].srcfmt = srcformat;
+					cmtypes[cm.name].newfmt = newformat;
 				}
 				if(p.grouping) {
 					for(gin =0, lengrp = grpview.groupField.length; gin< lengrp; gin++) {
@@ -2793,7 +2795,7 @@ $.fn.jqGrid = function( pin ) {
 								if(s > 0 && opr && opr === "OR") {
 									query = query.or();
 								}
-								query = compareFnMap[rule.op](query, opr)(rule.field, rule.data, cmtypes[rule.field]);
+								query = compareFnMap[rule.op](query, opr)(cmtypes[rule.field].reader, rule.data, cmtypes[rule.field]);
 							} else if (p.customSortOperations != null && p.customSortOperations[rule.op] != null && $.isFunction(p.customSortOperations[rule.op].filter)) {
 								query = query.custom(rule.op, rule.field, rule.data);
 							}
@@ -6492,7 +6494,7 @@ $.extend(jgrid,{
 						ovm = $.map(ovm,function(n){return $.trim(n);});
 					}
 					if(typeof options.value === 'function') { options.value = options.value(); }
-					var so,sv, ov, 
+					var so,sv, ov, svv, svt,
 					sep = options.separator === undefined ? ":" : options.separator,
 					delim = options.delimiter === undefined ? ";" : options.delimiter,
                     mapFunc = function(n,ii){if(ii>0) { return n;} };
@@ -6505,10 +6507,13 @@ $.extend(jgrid,{
 							}
 							ov = document.createElement("option");
 							ov.setAttribute("role","option");
+							// consider to trim BEFORE filling the options
 							ov.value = sv[0]; ov.innerHTML = sv[1];
 							elem.appendChild(ov);
-							if (!msl &&  ($.trim(sv[0]) === $.trim(vl) || $.trim(sv[1]) === $.trim(vl))) { ov.selected ="selected"; }
-							if (msl && ($.inArray($.trim(sv[1]), ovm)>-1 || $.inArray($.trim(sv[0]), ovm)>-1)) {ov.selected ="selected";}
+							svv = $.trim(sv[0]);
+							svt = $.trim(sv[1]);
+							if (!msl &&  (svv === $.trim(vl) || svt === $.trim(vl))) { ov.selected ="selected"; }
+							if (msl && ($.inArray(svt, ovm)>-1 || $.inArray(svv, ovm)>-1)) {ov.selected ="selected";}
 						}
 					} else if (typeof options.value === 'object') {
 						var oSv = options.value, key;
@@ -15167,7 +15172,7 @@ jgrid.extend({
 						sv[1] = $.map(sv,mapFunc).join(sep);
 					}
 					if(msl) {
-						if($.inArray(sv[0],scell)>-1) {
+						if($.inArray($.trim(sv[0]),scell)>-1) {
 							ret[j] = sv[1];
 							j++;
 						}
@@ -15415,7 +15420,7 @@ jgrid.extend({
 						sv[1] = $.map(sv,mapFunc).join(sep);
 					}					
 					if(msl) {
-						if($.inArray(sv[1],scell)>-1) {
+						if($.inArray($.trim(sv[1]),scell)>-1) {
 							ret[j] = sv[0];
 							j++;
 						}

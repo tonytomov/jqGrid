@@ -370,7 +370,7 @@
 						sv[1] = $.map(sv,mapFunc).join(sep);
 					}
 					if(msl) {
-						if($.inArray(sv[0],scell)>-1) {
+						if($.inArray($.trim(sv[0]),scell)>-1) {
 							ret[j] = sv[1];
 							j++;
 						}
@@ -618,7 +618,7 @@
 						sv[1] = $.map(sv,mapFunc).join(sep);
 					}					
 					if(msl) {
-						if($.inArray(sv[1],scell)>-1) {
+						if($.inArray($.trim(sv[1]),scell)>-1) {
 							ret[j] = sv[0];
 							j++;
 						}
