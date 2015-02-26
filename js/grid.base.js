@@ -2692,8 +2692,11 @@ $.fn.jqGrid = function( pin ) {
 			}
 			var grpview = p.grouping ? p.groupingView : false, lengrp, gin;
 			$.each(p.colModel,function(){
-				var cm = this, grindex = cm.index || cm.name;
+				var cm = this, grindex = cm.index || cm.name,
+					reader = !p.dataTypeOrg ? cm.jsonmap || cm.name : cm.name;
+
 				sorttype = cm.sorttype || "text";
+				cmtypes[cm.name] = {reader: reader, stype: sorttype, srcfmt:'', newfmt:'', sfunc: cm.sortfunc || null};
 				if(sorttype === "date" || sorttype === "datetime") {
 					if(cm.formatter && typeof cm.formatter === 'string' && cm.formatter === 'date') {
 						if(cm.formatoptions && cm.formatoptions.srcformat) {
@@ -2709,9 +2712,8 @@ $.fn.jqGrid = function( pin ) {
 					} else {
 						srcformat = newformat = cm.datefmt || "Y-m-d";
 					}
-					cmtypes[cm.name] = {"stype": sorttype, "srcfmt": srcformat,"newfmt":newformat, "sfunc": cm.sortfunc || null};
-				} else {
-					cmtypes[cm.name] = {"stype": sorttype, "srcfmt":'',"newfmt":'', "sfunc": cm.sortfunc || null};
+					cmtypes[cm.name].srcfmt = srcformat;
+					cmtypes[cm.name].newfmt = newformat;
 				}
 				if(p.grouping) {
 					for(gin =0, lengrp = grpview.groupField.length; gin< lengrp; gin++) {
@@ -2793,7 +2795,7 @@ $.fn.jqGrid = function( pin ) {
 								if(s > 0 && opr && opr === "OR") {
 									query = query.or();
 								}
-								query = compareFnMap[rule.op](query, opr)(rule.field, rule.data, cmtypes[rule.field]);
+								query = compareFnMap[rule.op](query, opr)(cmtypes[rule.field].reader, rule.data, cmtypes[rule.field]);
 							} else if (p.customSortOperations != null && p.customSortOperations[rule.op] != null && $.isFunction(p.customSortOperations[rule.op].filter)) {
 								query = query.custom(rule.op, rule.field, rule.data);
 							}
