@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-02-18
+ * Date: 2015-02-26
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -218,20 +218,13 @@ var jgrid = $.jgrid;
 jgrid.locales = jgrid.locales || {};
 var locales = jgrid.locales;
 
-if (jgrid.defaults == null || $.isEmptyObject(locales) || locales.en === undefined || locales["en-US"] === undefined) {
+if (jgrid.defaults == null || $.isEmptyObject(locales) || locales["en-US"] === undefined) {
 	// set English options only if no grid.locale-XX.js file are included before jquery.jqGrid.min.js or jquery.jqGrid.src.js
 	// the files included AFTER jquery.jqGrid.min.js or jquery.jqGrid.src.js will just overwrite all the settings which were set previously
 
 	// We can set locInfo under $.jgrid additionally to setting under $.jgrid.locales[locale] 
 	// only to have more compatibility with the previous version of jqGrid.
 	// We don't make this currently.
-	if (locales.en === undefined) {
-		$.extend(true, $.jgrid, /*englishLanguageDefaults,*/ {
-			locales: {
-				en: englishLanguageDefaults			// set default locale for English
-			}
-		});
-	}
 	if (locales["en-US"] === undefined) {
 		$.extend(true, $.jgrid, /*englishLanguageDefaults,*/ {
 			locales: {
@@ -239,7 +232,15 @@ if (jgrid.defaults == null || $.isEmptyObject(locales) || locales.en === undefin
 			}
 		});
 	}
+	jgrid.defaults = jgrid.defaults || {};
+	if (jgrid.defaults.locale === undefined) {
+		jgrid.defaults.locale = "en-US";
+	}
 }
+
+//if (jgrid.defaults.locale && locales[jgrid.defaults.locale]) {
+//	$.extend(true, $.jgrid, locales[jgrid.defaults.locale]); // add to improve compatibility only
+//}
 
 $.extend(true,jgrid,{
 	version: "4.8.0-beta3",
