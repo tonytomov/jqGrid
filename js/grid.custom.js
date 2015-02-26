@@ -406,7 +406,9 @@ jgrid.extend({
 				}
 				$.each(odata, function() { aoprs.push(this.oper); });
 				// append aoprs array with custom operations defined in customSortOperations parameter jqGrid
-				$.each(customSortOperations, function(propertyName) { aoprs.push(propertyName); });
+				if (customSortOperations != null) {
+					$.each(customSortOperations, function(propertyName) { aoprs.push(propertyName); });
+				}
 				for ( i = 0 ; i < options.sopt.length; i++) {
 					itemOper = options.sopt[i];
 					ina = $.inArray(itemOper,aoprs);
@@ -416,7 +418,7 @@ jgrid.extend({
 							// standard operation
 							itemOperand = o.operands[itemOper];
 							itemText = odataItem.text;
-						} else {
+						} else if (customSortOperations != null) {
 							// custom operation
 							item = customSortOperations[itemOper];
 							itemOperand = item.operand;							

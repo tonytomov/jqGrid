@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-02-18
+ * Date: 2015-02-25
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -218,20 +218,13 @@ var jgrid = $.jgrid;
 jgrid.locales = jgrid.locales || {};
 var locales = jgrid.locales;
 
-if (jgrid.defaults == null || $.isEmptyObject(locales) || locales.en === undefined || locales["en-US"] === undefined) {
+if (jgrid.defaults == null || $.isEmptyObject(locales) || locales["en-US"] === undefined) {
 	// set English options only if no grid.locale-XX.js file are included before jquery.jqGrid.min.js or jquery.jqGrid.src.js
 	// the files included AFTER jquery.jqGrid.min.js or jquery.jqGrid.src.js will just overwrite all the settings which were set previously
 
 	// We can set locInfo under $.jgrid additionally to setting under $.jgrid.locales[locale] 
 	// only to have more compatibility with the previous version of jqGrid.
 	// We don't make this currently.
-	if (locales.en === undefined) {
-		$.extend(true, $.jgrid, /*englishLanguageDefaults,*/ {
-			locales: {
-				en: englishLanguageDefaults			// set default locale for English
-			}
-		});
-	}
 	if (locales["en-US"] === undefined) {
 		$.extend(true, $.jgrid, /*englishLanguageDefaults,*/ {
 			locales: {
@@ -239,6 +232,14 @@ if (jgrid.defaults == null || $.isEmptyObject(locales) || locales.en === undefin
 			}
 		});
 	}
+	jgrid.defaults = jgrid.defaults || {};
+	if (jgrid.defaults.locale === undefined) {
+		jgrid.defaults.locale = "en-US";
+	}
+}
+
+if (jgrid.defaults.locale && locales[jgrid.defaults.locale]) {
+	$.extend(true, $.jgrid, locales[jgrid.defaults.locale]); // add to improve compatibility only
 }
 
 $.extend(true,jgrid,{
@@ -7160,7 +7161,9 @@ jgrid.extend({
 				}
 				$.each(odata, function() { aoprs.push(this.oper); });
 				// append aoprs array with custom operations defined in customSortOperations parameter jqGrid
-				$.each(customSortOperations, function(propertyName) { aoprs.push(propertyName); });
+				if (customSortOperations != null) {
+					$.each(customSortOperations, function(propertyName) { aoprs.push(propertyName); });
+				}
 				for ( i = 0 ; i < options.sopt.length; i++) {
 					itemOper = options.sopt[i];
 					ina = $.inArray(itemOper,aoprs);
@@ -7170,7 +7173,7 @@ jgrid.extend({
 							// standard operation
 							itemOperand = o.operands[itemOper];
 							itemText = odataItem.text;
-						} else {
+						} else if (customSortOperations != null) {
 							// custom operation
 							item = customSortOperations[itemOper];
 							itemOperand = item.operand;							
