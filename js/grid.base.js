@@ -2425,7 +2425,7 @@ $.fn.jqGrid = function( pin ) {
 						lp=false; 
 						cp=last-1;
 					}
-					if(!clearVals(this.id)) { return false; }
+					if(!clearVals(this.id.split("_")[0])) { return false; }
 					if( this.id === 'first'+tp && fp ) { ts.p.page=1; selclick=true;}
 					if( this.id === 'prev'+tp && pp) { ts.p.page=(cp-1); selclick=true;}
 					if( this.id === 'next'+tp && np) { ts.p.page=(cp+1); selclick=true;}
