@@ -120,5 +120,5 @@ task build(dependsOn: ['jqgrid-min', 'i18n', 'copySrcAndMin']) {
 
 
 task wrap(type: Wrapper) {
-    gradleVersion = '2.2.1'
+    gradleVersion = '2.3'
 }
