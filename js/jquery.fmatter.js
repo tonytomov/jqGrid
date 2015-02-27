@@ -48,7 +48,8 @@
 			},
 			integer: {
 				formatter: "integer", align: "right", sorttype: "integer",
-				convertOnSave: function (nData) {
+				convertOnSave: function (options) {
+					var nData = options.newValue;
 					return isNaN(nData) ? nData : parseInt(nData, 10);
 				},
 				searchoptions: { sopt: ["eq", "ne", "lt", "le", "gt", "ge"] }
@@ -59,7 +60,8 @@
 			},
 			number: {
 				formatter: "number", align: "right", sorttype: "number",
-				convertOnSave: function (nData) {
+				convertOnSave: function (options) {
+					var nData = options.newValue;
 					return isNaN(nData) ? nData : parseFloat(nData);
 				},
 				searchoptions: { sopt: ["eq", "ne", "lt", "le", "gt", "ge"] }
@@ -67,8 +69,9 @@
 			booleanCheckbox: {
 				align: "center", formatter: "checkbox",
 				edittype: "checkbox", editoptions: {value: "true:false", defaultValue: "false"},
-				convertOnSave: function (nData, cm) {
-					var lnData = String(nData).toLowerCase(),
+				convertOnSave: function (options) {
+					var nData = options.newValue, cm = options.cm,
+						lnData = String(nData).toLowerCase(),
 						cbv = cm.editoptions != null && typeof cm.editoptions.value === "string" ?
 							cm.editoptions.value.split(":") : ["yes","no"];
 
@@ -84,8 +87,9 @@
 			booleanCheckboxFa: {
 				align: "center", formatter: "checkboxFontAwesome4",
 				edittype: "checkbox", editoptions: {value: "true:false", defaultValue: "false"},
-				convertOnSave: function (nData, cm) {
-					var lnData = String(nData).toLowerCase(),
+				convertOnSave: function (options) {
+					var nData = options.newValue, cm = options.cm,
+						lnData = String(nData).toLowerCase(),
 						cbv = cm.editoptions != null && typeof cm.editoptions.value === "string" ?
 							cm.editoptions.value.split(":") : ["yes","no"];
 

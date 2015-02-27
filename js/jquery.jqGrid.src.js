@@ -1448,13 +1448,13 @@ $.extend(true,jgrid,{
 		}
 		return jgrid.mergeCssClasses.apply(this, classes);
 	},
-	convertOnSaveLocally: function (nData, cm, oData, rowid) {
+	convertOnSaveLocally: function (nData, cm, oData, rowid, item, iCol) {
 		var self = this, p = self.p;
 		if (p == null) {
 			return nData;
 		}
 		if ($.isFunction(cm.convertOnSave)) {
-			return cm.convertOnSave.call(this, nData, cm, oData, rowid);
+			return cm.convertOnSave.call(this, {newValue: nData, cm: cm, oldValue: oData, id: rowid, item: item, iCol: iCol});
 		}
 		if (typeof oData !== "boolean" && typeof oData !== "number") {
 			// we support first of all editing of boolean and numeric data
@@ -4574,9 +4574,9 @@ jgrid.extend({
 						var cm = this, nm = cm.name, title, dval = getAccessor(data,nm);
 						if( dval !== undefined) {
 							if (p.datatype === 'local' && oData != null) {
-								vl = convertOnSaveLocally.call(t, dval, cm, oData[nm], id);
+								vl = convertOnSaveLocally.call(t, dval, cm, oData[nm], id, oData, i);
 								if ($.isFunction(cm.saveLocally)) {
-									cm.saveLocally.call(t, { newValue: vl, newItem: lcdata, oldItem: oData, id: id, cm: cm, nm: nm });
+									cm.saveLocally.call(t, { newValue: vl, newItem: lcdata, oldItem: oData, id: id, cm: cm, cmName: nm, iCol: i });
 								} else {
 									lcdata[nm] = vl;
 								}
@@ -4674,9 +4674,9 @@ jgrid.extend({
 					for(i = gi+si+ni; i < p.colModel.length;i++){
 						cm = p.colModel[i];
 						nm = cm.name;
-						v = convertOnSaveLocally.call(t, data[nm], cm, undefined, id);
+						v = convertOnSaveLocally.call(t, data[nm], cm, undefined, id, {}, i);
 						if ($.isFunction(cm.saveLocally)) {
-							cm.saveLocally.call(t, { newValue: v, newItem: lcdata, oldItem: {}, id: id, cm: cm, nm: nm });
+							cm.saveLocally.call(t, { newValue: v, newItem: lcdata, oldItem: {}, id: id, cm: cm, cmName: nm, iCol: i });
 						} else {
 							lcdata[nm] = v;
 						}
@@ -5103,9 +5103,9 @@ jgrid.extend({
 								item = p.data[index];
 								if (item != null) {
 									cm = p.colModel[pos];
-									v = convertOnSaveLocally.call($t, nData, cm, item[cm.name], id);
+									v = convertOnSaveLocally.call($t, nData, cm, item[cm.name], id, item, pos);
 									if ($.isFunction(cm.saveLocally)) {
-										cm.saveLocally.call($t, { newValue: v, newItem: item, oldItem: item, id: id, cm: cm, nm: cm.name });
+										cm.saveLocally.call($t, { newValue: v, newItem: item, oldItem: item, id: id, cm: cm, cmName: cm.name, iCol: pos });
 									} else {
 										item[cm.name] = v;
 									}
@@ -14870,7 +14870,8 @@ jgrid.extend({
 			},
 			integer: {
 				formatter: "integer", align: "right", sorttype: "integer",
-				convertOnSave: function (nData) {
+				convertOnSave: function (options) {
+					var nData = options.newValue;
 					return isNaN(nData) ? nData : parseInt(nData, 10);
 				},
 				searchoptions: { sopt: ["eq", "ne", "lt", "le", "gt", "ge"] }
@@ -14881,7 +14882,8 @@ jgrid.extend({
 			},
 			number: {
 				formatter: "number", align: "right", sorttype: "number",
-				convertOnSave: function (nData) {
+				convertOnSave: function (options) {
+					var nData = options.newValue;
 					return isNaN(nData) ? nData : parseFloat(nData);
 				},
 				searchoptions: { sopt: ["eq", "ne", "lt", "le", "gt", "ge"] }
@@ -14889,8 +14891,9 @@ jgrid.extend({
 			booleanCheckbox: {
 				align: "center", formatter: "checkbox",
 				edittype: "checkbox", editoptions: {value: "true:false", defaultValue: "false"},
-				convertOnSave: function (nData, cm) {
-					var lnData = String(nData).toLowerCase(),
+				convertOnSave: function (options) {
+					var nData = options.newValue, cm = options.cm,
+						lnData = String(nData).toLowerCase(),
 						cbv = cm.editoptions != null && typeof cm.editoptions.value === "string" ?
 							cm.editoptions.value.split(":") : ["yes","no"];
 
@@ -14906,8 +14909,9 @@ jgrid.extend({
 			booleanCheckboxFa: {
 				align: "center", formatter: "checkboxFontAwesome4",
 				edittype: "checkbox", editoptions: {value: "true:false", defaultValue: "false"},
-				convertOnSave: function (nData, cm) {
-					var lnData = String(nData).toLowerCase(),
+				convertOnSave: function (options) {
+					var nData = options.newValue, cm = options.cm,
+						lnData = String(nData).toLowerCase(),
 						cbv = cm.editoptions != null && typeof cm.editoptions.value === "string" ?
 							cm.editoptions.value.split(":") : ["yes","no"];
 
