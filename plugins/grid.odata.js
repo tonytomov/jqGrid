@@ -14,14 +14,6 @@
      * based on Richard Bennett gist code: jqGrid.ODataExtensions.js 
      * https://gist.github.com/dealproc/6678280
      *
-     * The using example:
-     *  $("#grid").jqGrid({...})
-     *  .jqGrid('odataInit', {
-     *    version: 4,
-     *    gencolumns: true,
-     *    odataurl: "http://localhost:56216/odata/ODClient",
-     *    metadataurl: 'http://localhost:56216/odata/$metadata'
-     * 	});
      */
 
     "use strict";
@@ -72,8 +64,9 @@
                             p.colModel = newcol;
                         }
                         else {
+                            var i;
                             p.colModel = [];
-                            for (var i = 0; i < cols.length; i++) {
+                            for (i = 0; i < cols.length; i++) {
                                 p.colModel.push({ label: cols[i].name, name: cols[i].name, index: cols[i].name, editable: true });
                             }
                         }
@@ -241,10 +234,9 @@
                                     var skip = data["odata.nextLink"].split('skip=')[1];
                                     return Math.ceil(parseInt(skip, 10) / p.rowNum);
                                 }
-                                else {
-                                    var total = data["odata.count"];
-                                    return Math.ceil(parseInt(total, 10) / p.rowNum);
-                                }
+                                
+                                var total = data["odata.count"];
+                                return Math.ceil(parseInt(total, 10) / p.rowNum);
                             },
                             total: function (data) {
                                 var total = data["odata.count"];
@@ -292,7 +284,7 @@
                     var col = $.grep(p.colModel, function (n, i) { return n.name === postData.searchField; });
                     if (col !== null && col.length > 0) {
                         col = col[0];
-                        if (col.stype === 'select' && rule.data.length === 0) {
+                        if (col.stype === 'select' && postData.searchString.length === 0) {
                             return params;
                         }
                         if (col.stype === 'select') {
@@ -306,7 +298,7 @@
                             //v3: postData.searchString = "datetimeoffset'" + postData.searchString + "'";  
                             //v2: postData.searchString = "DateTime'" + postData.searchString + "'"; 
                         }
-                        else if (rule.searchString === '') {
+                        else if (postData.searchString === '') {
                             return params;
                         }
                     }
@@ -317,7 +309,7 @@
                 // complex searching, with a groupOp.  This is for if we enable the form for multiple selection criteria.
                 if (postData.filters) {
                     var filterGroup = $.parseJSON(postData.filters);
-                    var groupSearch = parseFilterGroup(filterGroup, p.jsonReader.id);
+                    var groupSearch = parseFilterGroup(filterGroup, p);
 
                     if (groupSearch.length > 0) {
                         params.$filter = groupSearch;
@@ -355,16 +347,14 @@
                 }
             }
 
-
-
             // when dealing with the advanced query dialog, this parses the encapsulating Json object
             // which we will then build the advanced OData expression from.
-            function parseFilterGroup(filterGroup, idName) {
-                var filterText = "";
+            function parseFilterGroup(filterGroup, p) {
+                var i, rule, col, filterText = "";
                 if (filterGroup.groups) {
                     if (filterGroup.groups.length) {
-                        for (var i = 0; i < filterGroup.groups.length; i++) {
-                            filterText += "(" + parseFilterGroup(filterGroup.groups[i]) + ")";
+                        for (i = 0; i < filterGroup.groups.length; i++) {
+                            filterText += "(" + parseFilterGroup(filterGroup.groups[i], p) + ")";
 
                             if (i < filterGroup.groups.length - 1) {
                                 filterText += " " + filterGroup.groupOp.toLowerCase() + " ";
@@ -378,27 +368,27 @@
                 }
 
                 if (filterGroup.rules.length) {
-                    for (var i = 0; i < filterGroup.rules.length; i++) {
-                        var rule = filterGroup.rules[i];
+                    for (i = 0; i < filterGroup.rules.length; i++) {
+                        rule = filterGroup.rules[i];
 
                         if (rule.data === null && rule.op !== 'nu' && rule.op !== 'nn') {
                             continue;
                         }
 
-                        var col = $.grep($t.colModel, function (n, i) { return n.name === rule.field; });
+                        col = $.grep(p.colModel, function (n, i) { return n.name === rule.field; });
                         if (col !== null && col.length > 0) {
                             col = col[0];
                             if (col.stype === 'select' && rule.data.length === 0) {
                                 continue;
                             }
                             if (col.stype === 'select') {
-                                rule.field = rule.field + '/' + idName;
+                                rule.field = rule.field + '/' + p.jsonReader.id;
                             }
                             else if (!col.searchrules || (!col.searchrules.integer && !col.searchrules.date)) {
                                 rule.data = "'" + rule.data + "'";
                             }
                             else if (col.searchrules && col.searchrules.date) {
-                                rule.data = (new Date(prule.data)).toISOString();
+                                rule.data = (new Date(rule.data)).toISOString();
                                 //v3: rule.data = "datetimeoffset'" + rule.data + "'";  
                                 //v2: rule.data = "DateTime'" + rule.data + "'"; 
                             }
