@@ -14,6 +14,14 @@
      * based on Richard Bennett gist code: jqGrid.ODataExtensions.js 
      * https://gist.github.com/dealproc/6678280
      *
+     * The using example:		
+     *  $("#grid").jqGrid({...})		
+     *  .jqGrid('odataInit', {		
+     *    version: 4,		
+     *    gencolumns: true,		
+     *    odataurl: "http://localhost:56216/odata/ODClient",		
+     *    metadataurl: 'http://localhost:56216/odata/$metadata'		
+     * 	});
      */
 
     "use strict";
