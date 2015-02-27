@@ -2692,11 +2692,9 @@ $.fn.jqGrid = function( pin ) {
 			}
 			var grpview = p.grouping ? p.groupingView : false, lengrp, gin;
 			$.each(p.colModel,function(iCol){
-				var cm = this, grindex = cm.index || cm.name,
-					reader = !p.dataTypeOrg ? cm.jsonmap || cm.name : cm.name;
-
+				var cm = this, grindex = cm.index || cm.name;
 				sorttype = cm.sorttype || "text";
-				cmtypes[cm.name] = {reader: reader, iCol: iCol, stype: sorttype, srcfmt:'', newfmt:'', sfunc: cm.sortfunc || null};
+				cmtypes[cm.name] = {reader: !p.dataTypeOrg ? cm.jsonmap || cm.name : cm.name, iCol: iCol, stype: sorttype, srcfmt:'', newfmt:'', sfunc: cm.sortfunc || null};
 				if(sorttype === "date" || sorttype === "datetime") {
 					if(cm.formatter && typeof cm.formatter === 'string' && cm.formatter === 'date') {
 						if(cm.formatoptions && cm.formatoptions.srcformat) {
