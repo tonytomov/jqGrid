@@ -442,7 +442,7 @@
 						sv[1] = $.map(sv,function(n,i){if(i>0) {return n;}}).join(sep);
 					}					
 					if(msl) {
-						if($.inArray(sv[1],scell)>-1) {
+						if($.inArray($.trim(sv[1]),scell)>-1) {
 							ret[j] = sv[0];
 							j++;
 						}
