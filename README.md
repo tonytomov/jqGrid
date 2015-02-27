@@ -32,7 +32,7 @@ Below you can find short description of new features already implemented in the 
 * **editurl: "clientArray"** are use now instead of **editurl: null** used before. It allows to use *local* editing without minimal additional efforts and the requirement to have any server part implemented.
 * **cellsubmit: "clientArray"** are use now instead of **cellsubmit: "remote"** used before.
 
-The most the changes corresponds the tendency of web development last years. Local JavaScript data and JSON data loaded from the server (especially in combination with `loadonce: true`) are used now much more frequently. The data
+The most the changes corresponds the tendency of web development last years. Local JavaScript data and JSON data loaded from the server (especially in combination with `loadonce: true`) are used now much more frequently. The data will be more and more quickly processed by web browsers espessially the data which are not placed on the HTML page as DOM elements. Thus free jqGrid improves support of local data source and it will continue to do this in the next versions.
 
 ### The following *new features* are implemented (comparing with jqGrid 4.7)
 
