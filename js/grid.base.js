@@ -1254,7 +1254,7 @@ $.extend(true,jgrid,{
 			this._compareValues=function(func,f,v,how,t){
 				var fld;
 				if(_useProperties){
-					fld='jQuery.jgrid.getAccessor(this,\''+f+'\')';
+					fld=f;
 				}else{
 					fld='this';
 				}
@@ -1318,7 +1318,7 @@ $.extend(true,jgrid,{
 				var val = (v==null) ? f: v,
 				length=_trim ? $.trim(val.toString()).length : val.toString().length;
 				if(_useProperties){
-					self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(v)+'"'));
+					self._append(self._getStr(f)+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(v)+'"'));
 				}else{
 					if (v!=null) { length=_trim?$.trim(v.toString()).length:v.toString().length; }
 					self._append(self._getStr('this')+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(f)+'"'));
@@ -1331,7 +1331,7 @@ $.extend(true,jgrid,{
 				var val = (v==null) ? f: v,
 				length=_trim ? $.trim(val.toString()).length:val.toString().length;
 				if(_useProperties){
-					self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.substr('+self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.length-'+length+','+length+') == "'+self._toStr(v)+'"');
+					self._append(self._getStr(f)+'.substr('+self._getStr(f)+'.length-'+length+','+length+') == "'+self._toStr(v)+'"');
 				} else {
 					self._append(self._getStr('this')+'.substr('+self._getStr('this')+'.length-"'+self._toStr(f)+'".length,"'+self._toStr(f)+'".length) == "'+self._toStr(f)+'"');
 				}
@@ -1340,7 +1340,7 @@ $.extend(true,jgrid,{
 			};
 			this.contains=function(f,v){
 				if(_useProperties){
-					self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.indexOf("'+self._toStr(v)+'",0) > -1');
+					self._append(self._getStr(f)+'.indexOf("'+self._toStr(v)+'",0) > -1');
 				}else{
 					self._append(self._getStr('this')+'.indexOf("'+self._toStr(f)+'",0) > -1');
 				}
@@ -2691,12 +2691,12 @@ $.fn.jqGrid = function( pin ) {
 				return {};
 			}
 			var grpview = p.grouping ? p.groupingView : false, lengrp, gin;
-			$.each(p.colModel,function(){
+			$.each(p.colModel,function(iCol){
 				var cm = this, grindex = cm.index || cm.name,
 					reader = !p.dataTypeOrg ? cm.jsonmap || cm.name : cm.name;
 
 				sorttype = cm.sorttype || "text";
-				cmtypes[cm.name] = {reader: reader, stype: sorttype, srcfmt:'', newfmt:'', sfunc: cm.sortfunc || null};
+				cmtypes[cm.name] = {reader: reader, iCol: iCol, stype: sorttype, srcfmt:'', newfmt:'', sfunc: cm.sortfunc || null};
 				if(sorttype === "date" || sorttype === "datetime") {
 					if(cm.formatter && typeof cm.formatter === 'string' && cm.formatter === 'date') {
 						if(cm.formatoptions && cm.formatoptions.srcformat) {
@@ -2763,7 +2763,7 @@ $.fn.jqGrid = function( pin ) {
 			query = jgrid.from.call(this,p.data);
 			if (p.ignoreCase) { query = query.ignoreCase(); }
 			function tojLinq ( group ) {
-				var s = 0, index, gor, ror, opr, rule;
+				var s = 0, index, gor, ror, opr, rule, r, cmi;
 				if (group.groups != null) {
 					gor = group.groups.length && group.groupOp.toString().toUpperCase() === "OR";
 					if (gor) {
@@ -2795,7 +2795,14 @@ $.fn.jqGrid = function( pin ) {
 								if(s > 0 && opr && opr === "OR") {
 									query = query.or();
 								}
-								query = compareFnMap[rule.op](query, opr)(cmtypes[rule.field].reader, rule.data, cmtypes[rule.field]);
+								cmi = cmtypes[rule.field];
+								r = cmi.reader;
+								query = compareFnMap[rule.op](query, opr)(
+									$.isFunction(r) ?
+										'jQuery.jgrid.getAccessor(this,jQuery("'+p.idSel+'")[0].p.colModel['+ cmi.iCol +'].jsonmap)' :
+										'jQuery.jgrid.getAccessor(this,\''+r+'\')',
+									rule.data,
+									cmtypes[rule.field]);
 							} else if (p.customSortOperations != null && p.customSortOperations[rule.op] != null && $.isFunction(p.customSortOperations[rule.op].filter)) {
 								query = query.custom(rule.op, rule.field, rule.data);
 							}
