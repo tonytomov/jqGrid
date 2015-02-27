@@ -4574,7 +4574,12 @@ jgrid.extend({
 						var cm = this, nm = cm.name, title, dval = getAccessor(data,nm);
 						if( dval !== undefined) {
 							if (p.datatype === 'local' && oData != null) {
-								lcdata[nm] = convertOnSaveLocally.call(t, dval, cm, oData[nm], id);
+								vl = convertOnSaveLocally.call(t, dval, cm, oData[nm], id);
+								if ($.isFunction(cm.saveLocally)) {
+									cm.saveLocally.call(t, { newValue: vl, newItem: lcdata, oldItem: oData, id: id, cm: cm, nm: nm });
+								} else {
+									lcdata[nm] = vl;
+								}
 							}
 							vl = t.formatter( rowid, dval, i, data, 'edit');
 							title = cm.title ? {"title":stripHtml(vl)} : {};
@@ -4669,7 +4674,12 @@ jgrid.extend({
 					for(i = gi+si+ni; i < p.colModel.length;i++){
 						cm = p.colModel[i];
 						nm = cm.name;
-						lcdata[nm] = convertOnSaveLocally.call(t, data[nm], cm, undefined, id);
+						v = convertOnSaveLocally.call(t, data[nm], cm, undefined, id);
+						if ($.isFunction(cm.saveLocally)) {
+							cm.saveLocally.call(t, { newValue: v, newItem: lcdata, oldItem: {}, id: id, cm: cm, nm: nm });
+						} else {
+							lcdata[nm] = v;
+						}
 						v = t.formatter( rowid, getAccessor(data,nm), i, data );
 						prp = t.formatCol(i,1,v, data, rowid, lcdata);
 						row.push("<td role=\"gridcell\" "+prp+">"+v+"</td>");
@@ -5093,7 +5103,12 @@ jgrid.extend({
 								item = p.data[index];
 								if (item != null) {
 									cm = p.colModel[pos];
-									item[cm.name] = convertOnSaveLocally.call($t, nData, cm, item[cm.name], id);
+									v = convertOnSaveLocally.call($t, nData, cm, item[cm.name], id);
+									if ($.isFunction(cm.saveLocally)) {
+										cm.saveLocally.call($t, { newValue: v, newItem: item, oldItem: item, id: id, cm: cm, nm: cm.name });
+									} else {
+										item[cm.name] = v;
+									}
 								}
 							}
 						}
