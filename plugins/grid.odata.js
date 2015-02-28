@@ -7,21 +7,35 @@
      *
      * Authors:
      *  Mark Babayev (https://github.com/mirik123)
-     *  Richard Bennett (https://gist.github.com/dealproc)
      * 
      * License MIT (MIT-LICENSE.txt)
      * 
      * based on Richard Bennett gist code: jqGrid.ODataExtensions.js 
      * https://gist.github.com/dealproc/6678280
      *
-     * The using example:		
-     *  $("#grid").jqGrid({...})		
-     *  .jqGrid('odataInit', {		
-     *    version: 4,		
-     *    gencolumns: true,		
-     *    odataurl: "http://localhost:56216/odata/ODClient",		
-     *    metadataurl: 'http://localhost:56216/odata/$metadata'		
-     * 	});
+     * The use examples:		
+     * $("#grid").jqGrid({
+     *    ...,
+     *    beforeInitGrid: function () {           //can be also put at: onInitGrid
+     *        $(this).jqGrid('odataInit', {
+     *            version: 4,
+     *            odataurl: 'http://localhost:56216/odata/ODClient'
+     *        });
+     *    }
+     * });
+     * 
+     * $("#grid").jqGrid({
+     *    ...,
+     *    beforeInitGrid: function () {
+     *        $(this).jqGrid('odataInit', {
+     *            version: 4,
+     *            async: false,
+     *            gencolumns: true,
+     *            odataurl: 'http://localhost:56216/odata/ODClient',
+     *            metadataurl: 'http://localhost:56216/odata/$metadata'
+     *        });
+     *    }
+     * });
      */
 
     "use strict";
@@ -34,13 +48,15 @@
                 parsemetadatafunc: null, 
                 successfunc: null, 
                 errorfunc: null,
-                metadataurl: p.url + '/$metadata'
+                metadataurl: p.url + '/$metadata',
+                async: false
             }, options || {});
 
             $.ajax({
                 url: o.metadataurl,
                 type: 'GET',
                 dataType: 'xml',
+                async: o.async,
                 cache: false
             })
             .done(function (data, st, xhr) {
@@ -97,16 +113,12 @@
 
                 var o = $.extend(true, {
                     datatype: 'json',	//json,jsonp
-                    parsecolfunc: null,
-                    parsemetadatafunc: null,
-                    errorfunc: null,
-                    odataurl: p.url,
-                    metadataurl: (options.odataurl || p.url) + '/$metadata'
+                    gencolumns: false,
+                    odataurl: p.url                    
                 }, options || {});
 
                 if (!o.version || o.version < 4) {
                     o = $.extend(true, {
-                        gencolumns: true,
                         annotations: false,
                         annotationName: "",
                         inlinecount: true,
@@ -116,7 +128,6 @@
                 }
                 else {
                     o = $.extend(true, {
-                        gencolumns: true,
                         annotations: true,
                         annotationName: "@jqgrid.GridModelAnnotate",
                         inlinecount: false,
@@ -125,17 +136,30 @@
                     }, o || {});
                 }
 
-                o.successfunc = function () { $self.trigger('reloadGrid'); };
                 if (o.datatype === 'jsonp') { o.callback = "jsonCallback_" + Math.floor((Math.random() * 1000) + 1); }
                 if (o.gencolumns) {
-                    initDefaults(p, o);
-                    $self.jqGrid('odataGenColModel', o);
+                    var gencol = $.extend(true, {
+                        parsecolfunc: null,
+                        parsemetadatafunc: null,
+                        errorfunc: null,
+                        successfunc: null,
+                        async: false,
+                        metadataurl: (options.odataurl || p.url) + '/$metadata'
+                    }, options || {});
+
+                    if (gencol.async) {
+                        gencol.successfunc = function () {
+                            if ($t.grid.hDiv) { $t.grid.hDiv.loading = false; }
+                            $self.trigger('reloadGrid');
+                        };
+
+                        if ($t.grid.hDiv) { $t.grid.hDiv.loading = true; }
+                    }
+
+                    $self.jqGrid('odataGenColModel', gencol);
                 }
-                else {
-                    initDefaults(p, o);
-                    o.successfunc();
-                    //self.grid.populate.call(self);
-                }
+
+                initDefaults(p, o);
             });
 
             function initDefaults(p, o) {
@@ -148,7 +172,7 @@
                         }
                         else {
                             options.url = o.odataurl;
-                            options.mtype = "PUT";
+                            options.mtype = "POST";
                         }
 
                         return true;
@@ -169,7 +193,7 @@
                             options.mtype = "POST";
                         }
                         else if (frmoper === 'edit') {
-                            options.url = o.odataurl + '(' + postdata[p.idSel + "_id"] + ')';
+                            options.url = o.odataurl + '(' + postdata[p.id + "_id"] + ')';
                             options.mtype = "PUT";
                         }
 
@@ -282,38 +306,7 @@
                 }
 
                 if (!postData._search) { return params; }
-
-                // if we want to support "in" clauses, we need to follow this stackoverflow article:
-                //http://stackoverflow.com/questions/7745231/odata-where-id-in-list-query/7745321#7745321
-                // this is for basic searching, with a single term.
-                if (postData.searchField && (postData.searchString !== null || postData.searchOper === 'nu' || postData.searchOper === 'nn')) {
-                    //append '' when searched field is of the string type
-                    //var col = getGridColumn(postData.searchField);
-                    var col = $.grep(p.colModel, function (n, i) { return n.name === postData.searchField; });
-                    if (col !== null && col.length > 0) {
-                        col = col[0];
-                        if (col.stype === 'select' && postData.searchString.length === 0) {
-                            return params;
-                        }
-                        if (col.stype === 'select') {
-                            postData.searchField = postData.searchField + '/' + p.jsonReader.id;
-                        }
-                        else if (!col.searchrules || (!col.searchrules.integer && !col.searchrules.date)) {
-                            postData.searchString = "'" + postData.searchString + "'";
-                        }
-                        else if (col.searchrules && col.searchrules.date) {
-                            postData.searchString = (new Date(postData.searchString)).toISOString();
-                            //v3: postData.searchString = "datetimeoffset'" + postData.searchString + "'";  
-                            //v2: postData.searchString = "DateTime'" + postData.searchString + "'"; 
-                        }
-                        else if (postData.searchString === '') {
-                            return params;
-                        }
-                    }
-
-                    params.$filter = odataExpression(postData.searchOper, postData.searchField, postData.searchString);
-                }
-
+            
                 // complex searching, with a groupOp.  This is for if we enable the form for multiple selection criteria.
                 if (postData.filters) {
                     var filterGroup = $.parseJSON(postData.filters);
@@ -323,42 +316,76 @@
                         params.$filter = groupSearch;
                     }
                 }
+                else {
+                    params.$filter = prepareExpression(p, postData.searchField, postData.searchString, postData.searchOper);
+                }
 
                 return params;
             }
 
             // builds out OData expressions... the condition.
-            function odataExpression(op, field, data) {
-                switch (op) {
-                    case "in":  // is in
-                    case "cn":	// contains
-                        return "substringof(" + data + ", " + field + ") eq true";
-                        //return "indexof(tolower(" + field + "), '" + data + "') gt -1";
-                    case "ni": // is not in
-                    case "nc": // does not contain.
-                        return "substringof(" + data + ", " + field + ") eq false";
-                        //return "indexof(tolower(" + field + "), '" + data + "') eq -1";
-                    case "bw": // begins with
-                        return "startswith(" + field + ", " + data + ") eq true";
-                    case "bn": // does not begin with
-                        return "startswith(" + field + ", " + data + ") eq false";
-                    case "ew": // ends with
-                        return "endswith(" + field + ", " + data + ") eq true";
-                    case "en": // does not end with.
-                        return "endswith(" + field + ", " + data + ") eq false";
-                    case "nu": // is null
-                        return field + " eq null";
-                    case "nn": // is not null
-                        return field + " ne null";
-                    default:   // eq,ne,lt,le,gt,ge,
-                        return field + " " + op + " " + data;
+            function prepareExpression(p, searchField, searchString, searchOper) {
+                var i, col;
+                
+                // if we want to support "in" clauses, we need to follow this stackoverflow article:
+                //http://stackoverflow.com/questions/7745231/odata-where-id-in-list-query/7745321#7745321
+                // this is for basic searching, with a single term.
+                if (searchField && (searchString || searchOper === 'nu' || searchOper === 'nn')) {
+                    if (searchString) {
+                        //append '' when searched field is of the string type
+                        for (i = 0; i < p.colModel.length; i++) {
+                            col = p.colModel[i];
+                            if (col.name === searchField) {
+                                if (col.odata === false) { return; }
+                                if (col.odataunformat) {
+                                    searchField = $.isFunction(col.odataunformat) ? col.odataunformat(searchField, searchString, searchOper) : col.odataunformat;
+                                    if (!searchField) { return; }
+                                }
+                                if (!col.searchrules || (!col.searchrules.integer && !col.searchrules.date)) {
+                                    searchString = "'" + searchString + "'";
+                                }
+                                else if (col.searchrules && col.searchrules.date) {
+                                    searchString = (new Date(searchString)).toISOString();
+                                    //v3: postData.searchString = "datetimeoffset'" + postData.searchString + "'";  
+                                    //v2: postData.searchString = "DateTime'" + postData.searchString + "'"; 
+                                }
+
+                                break;
+                            }
+                        }
+                    }
+
+                    switch (searchOper) {
+                        case "in":  // is in
+                        case "cn":	// contains
+                            return "substringof(" + searchString + ", " + searchField + ") eq true";
+                            //return "indexof(tolower(" + field + "), '" + data + "') gt -1";
+                        case "ni": // is not in
+                        case "nc": // does not contain.
+                            return "substringof(" + searchString + ", " + searchField + ") eq false";
+                            //return "indexof(tolower(" + field + "), '" + data + "') eq -1";
+                        case "bw": // begins with
+                            return "startswith(" + searchField + ", " + searchString + ") eq true";
+                        case "bn": // does not begin with
+                            return "startswith(" + searchField + ", " + searchString + ") eq false";
+                        case "ew": // ends with
+                            return "endswith(" + searchField + ", " + searchString + ") eq true";
+                        case "en": // does not end with.
+                            return "endswith(" + searchField + ", " + searchString + ") eq false";
+                        case "nu": // is null
+                            return searchField + " eq null";
+                        case "nn": // is not null
+                            return searchField + " ne null";
+                        default:   // eq,ne,lt,le,gt,ge,
+                            return searchField + " " + searchOper + " " + searchString;
+                    }
                 }
             }
 
             // when dealing with the advanced query dialog, this parses the encapsulating Json object
             // which we will then build the advanced OData expression from.
             function parseFilterGroup(filterGroup, p) {
-                var i, rule, col, filterText = "";
+                var i, rule, filterText = "", filterRes;
                 if (filterGroup.groups) {
                     if (filterGroup.groups.length) {
                         for (i = 0; i < filterGroup.groups.length; i++) {
@@ -379,32 +406,10 @@
                     for (i = 0; i < filterGroup.rules.length; i++) {
                         rule = filterGroup.rules[i];
 
-                        if (rule.data === null && rule.op !== 'nu' && rule.op !== 'nn') {
-                            continue;
+                        filterRes = prepareExpression(p, rule.field, rule.data, rule.op);
+                        if (filterRes) {
+                            filterText += filterRes + " " + filterGroup.groupOp.toLowerCase() + " ";
                         }
-
-                        col = $.grep(p.colModel, function (n, i) { return n.name === rule.field; });
-                        if (col !== null && col.length > 0) {
-                            col = col[0];
-                            if (col.stype === 'select' && rule.data.length === 0) {
-                                continue;
-                            }
-                            if (col.stype === 'select') {
-                                rule.field = rule.field + '/' + p.jsonReader.id;
-                            }
-                            else if (!col.searchrules || (!col.searchrules.integer && !col.searchrules.date)) {
-                                rule.data = "'" + rule.data + "'";
-                            }
-                            else if (col.searchrules && col.searchrules.date) {
-                                rule.data = (new Date(rule.data)).toISOString();
-                                //v3: rule.data = "datetimeoffset'" + rule.data + "'";  
-                                //v2: rule.data = "DateTime'" + rule.data + "'"; 
-                            }
-                            else if (rule.data === '') {
-                                continue;
-                            }
-                        }
-                        filterText += odataExpression(rule.op, rule.field, rule.data) + " " + filterGroup.groupOp.toLowerCase() + " ";
                     }
                 }
 
