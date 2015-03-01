@@ -342,7 +342,7 @@ $.extend(jgrid,{
 		getRes = function (path) { return getGridRes.call($($t), path); },
 		errcap = getRes("errors.errcap"), edit = getRes("edit"), editMsg = edit.msg, bClose = edit.bClose;
 		function setAttributes(elm, atr, exl ) {
-			var exclude = ['dataInit','dataEvents','dataUrl', 'buildSelect','sopt', 'searchhidden', 'defaultValue', 'attr', 'custom_element', 'custom_value'];
+			var exclude = ['dataInit','dataEvents','dataUrl', 'buildSelect','sopt', 'searchhidden', 'defaultValue', 'attr', 'custom_element', 'custom_value', 'selectFilled'];
 			if(exl !== undefined && $.isArray(exl)) {
 				$.merge(exclude, exl);
 			}
@@ -446,6 +446,7 @@ $.extend(jgrid,{
 											this.selected= "selected";
 										}
 									});
+									jgrid.fullBoolFeedback.call($t, options1.selectFilled, "jqGridSelectFilled", elem1, options1);
 								},0);
 							}
 						}
@@ -495,6 +496,7 @@ $.extend(jgrid,{
 						}
 					}
 					setAttributes(elem, options, ['value']);
+					jgrid.fullBoolFeedback.call($t, options.selectFilled, "jqGridSelectFilled", elem, options);
 				}
 			break;
 			case "text" :

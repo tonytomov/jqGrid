@@ -516,19 +516,20 @@ jgrid.extend({
 									} else {
 										$("td",stbl).eq(1).append(data);
 									}
-									if(soptions.defaultValue !== undefined) { $("select",self).val(soptions.defaultValue); }
-									$("select",self).attr({name:cm.index || cm.name, id: "gs_"+cm.name});
-									if(soptions.attr) {$("select",self).attr(soptions.attr);}
-									$("select",self).css({width: "100%"});
+									var $select = stbl.find("td.ui-search-input>select"); // stbl.find(">tbody>tr>td.ui-search-input>select")
+									if(soptions.defaultValue !== undefined) { $select.val(soptions.defaultValue); }
+									$select.attr({name:cm.index || cm.name, id: "gs_"+cm.name});
+									if(soptions.attr) {$select.attr(soptions.attr);}
+									$select.css({width: "100%"});
 									// preserve autoserch
-									bindEv.call($t, $("select",self)[0], soptions);
+									bindEv.call($t, $select[0], soptions);
+									jgrid.fullBoolFeedback.call($t, soptions.selectFilled, "jqGridSelectFilled", $select[0], soptions);
 									if(o.autosearch===true){
-										$("select",self).change(function(){
+										$select.change(function(){
 											triggerToolbar();
 											return false;
 										});
 									}
-									data=null;
 								}
 							}, jgrid.ajaxOptions, p.ajaxSelectOptions || {} ));
 						} else {
@@ -569,6 +570,7 @@ jgrid.extend({
 								$(thd).append(stbl);
 								bindEv.call($t, elem , soptions);
 								$("td",stbl).eq(1).append( elem );
+								jgrid.fullBoolFeedback.call($t, searchoptions.selectFilled, "jqGridSelectFilled", elem, searchoptions);
 								if(o.autosearch===true){
 									$(elem).change(function(){
 										triggerToolbar();

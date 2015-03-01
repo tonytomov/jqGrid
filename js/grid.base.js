@@ -1426,6 +1426,9 @@ $.extend(true,jgrid,{
 	getIconRes: function (base, path) {
 		var pathParts = path.split("."), root, n = pathParts.length, i, classes = [];
 		base = jgrid.icons[base];
+		if (base == null) {
+			return ""; // error unknows iconSet
+		}
 		root = base;
 		if (root.common) {
 			classes.push(root.common);
