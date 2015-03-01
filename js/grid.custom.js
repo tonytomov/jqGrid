@@ -523,7 +523,13 @@ jgrid.extend({
 									$select.css({width: "100%"});
 									// preserve autoserch
 									bindEv.call($t, $select[0], soptions);
-									jgrid.fullBoolFeedback.call($t, soptions.selectFilled, "jqGridSelectFilled", $select[0], soptions);
+									jgrid.fullBoolFeedback.call($t, soptions.selectFilled, "jqGridSelectFilled", {
+										elem: $select[0],
+										options: soptions,
+										cm: cm,
+										cmName: cm.name,
+										iCol: ci
+									});
 									if(o.autosearch===true){
 										$select.change(function(){
 											triggerToolbar();
@@ -570,7 +576,13 @@ jgrid.extend({
 								$(thd).append(stbl);
 								bindEv.call($t, elem , soptions);
 								$("td",stbl).eq(1).append( elem );
-								jgrid.fullBoolFeedback.call($t, searchoptions.selectFilled, "jqGridSelectFilled", elem, searchoptions);
+								jgrid.fullBoolFeedback.call($t, searchoptions.selectFilled, "jqGridSelectFilled", {
+									elem: elem,
+									options: searchoptions,
+									cm: cm,
+									cmName: cm.name,
+									iCol: ci
+								});
 								if(o.autosearch===true){
 									$(elem).change(function(){
 										triggerToolbar();

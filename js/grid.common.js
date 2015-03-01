@@ -338,7 +338,7 @@ $.extend(jgrid,{
 	},
 // Form Functions
 	createEl : function(eltype,options,vl,autowidth, ajaxso) {
-		var elem = "", $t = this, infoDialog = jgrid.info_dialog,
+		var elem = "", $t = this, p = $t.p, infoDialog = jgrid.info_dialog,
 		getRes = function (path) { return getGridRes.call($($t), path); },
 		errcap = getRes("errors.errcap"), edit = getRes("edit"), editMsg = edit.msg, bClose = edit.bClose;
 		function setAttributes(elm, atr, exl ) {
@@ -396,7 +396,13 @@ $.extend(jgrid,{
 			case "select" :
 				elem = document.createElement("select");
 				elem.setAttribute("role","select");
-				var msl, ovm = [];
+				var msl, ovm = [], cm, iCol;
+				for (iCol = 0; iCol < p.colModel.length; iCol++) {
+					cm = p.colModel[iCol];
+					if (cm.name === options.name) {
+						break;
+					}
+				}
 				if(options.multiple===true) {
 					msl = true;
 					elem.multiple="multiple";
@@ -408,17 +414,17 @@ $.extend(jgrid,{
 						rowid = options.rowId;
 					} catch(ignore) {}
 
-					if ($t.p && $t.p.idPrefix) {
-						rowid = jgrid.stripPref($t.p.idPrefix, rowid);
+					if (p && p.idPrefix) {
+						rowid = jgrid.stripPref(p.idPrefix, rowid);
 					}
 					$.ajax($.extend({
 						url: $.isFunction(options.dataUrl) ? options.dataUrl.call($t, rowid, vl, String(options.name)) : options.dataUrl,
 						type : "GET",
 						dataType: "html",
 						data: $.isFunction(postData) ? postData.call($t, rowid, vl, String(options.name)) : postData,
-						context: {elem:elem, options:options, vl:vl},
+						context: {elem:elem, options:options, vl:vl, cm: cm, iCol: iCol},
 						success: function(data){
-							var ovm1 = [], elem1 = this.elem, vl2 = this.vl,
+							var ovm1 = [], elem1 = this.elem, vl2 = this.vl, cm1 = this.cm, iCol1 = this.iCol,
 							options1 = $.extend({},this.options),
 							msl1 = options1.multiple===true,
 							a = $.isFunction(options1.buildSelect) ? options1.buildSelect.call($t,data) : data;
@@ -446,7 +452,13 @@ $.extend(jgrid,{
 											this.selected= "selected";
 										}
 									});
-									jgrid.fullBoolFeedback.call($t, options1.selectFilled, "jqGridSelectFilled", elem1, options1);
+									jgrid.fullBoolFeedback.call($t, options1.selectFilled, "jqGridSelectFilled", {
+										elem: elem1,
+										options: options1,
+										cm: cm1,
+										cmName: cm1.name,
+										iCol: iCol1
+									});
 								},0);
 							}
 						}
@@ -496,7 +508,13 @@ $.extend(jgrid,{
 						}
 					}
 					setAttributes(elem, options, ['value']);
-					jgrid.fullBoolFeedback.call($t, options.selectFilled, "jqGridSelectFilled", elem, options);
+					jgrid.fullBoolFeedback.call($t, options.selectFilled, "jqGridSelectFilled", {
+						elem: elem,
+						options: options,
+						cm: cm,
+						cmName: cm.name,
+						iCol: iCol
+					});
 				}
 			break;
 			case "text" :
