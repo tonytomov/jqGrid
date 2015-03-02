@@ -45,7 +45,7 @@ window.jqGridUtils = {
 			} else if(typeof(text) ==='function') {
 				return "<"+name+"><![CDATA["+ text +"]]></"+name+">\n";
 			} if(text === "") {
-				return "<"+name+">_EMPTY_STRING_</"+name+">\n";
+				return "<"+name+">__EMPTY_STRING_</"+name+">\n";
 			} else {
 				return "<"+name+">"+(o.encode ? that.encode(text) : text )+"</"+name+">\n";
 			}
@@ -65,7 +65,7 @@ window.jqGridUtils = {
 				}
 			}
 			if(!out.length) {
-				out[0] = "<"+ name+">_EMPTY_ARRAY_</"+name+">\n";
+				out[0] = "<"+ name+">__EMPTY_ARRAY_</"+name+">\n";
 			}
 			return out.join("");
 		},
@@ -135,10 +135,10 @@ window.jqGridUtils = {
 					val =  eval( '(' + val +')'); // we need this in our implement
 				} else {
 					switch(val) {
-						case '_EMPTY_ARRAY_' :
+						case '__EMPTY_ARRAY_' :
 							val = [];
 							break;
-						case '_EMPTY_STRING_':
+						case '__EMPTY_STRING_':
 							val = "";
 							break;
 						case "false" :
