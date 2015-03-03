@@ -9,6 +9,8 @@ The code from the GitHib repository is the fork of jqGrid 4.7.0 - the latest ver
 
 Below you can find short description of new features already implemented in the fork. The version is developed by [Oleg Kiriljuk](https://github.com/OlegKi), alias [Oleg](http://stackoverflow.com/users/315935/oleg) on the stackoverflow and [OlegK](http://www.trirand.com/blog/?page_id=393) on trirand forum.
 
+Read [Wiki](https://github.com/free-jqgrid/jqGrid/wiki) for more detailed information about the features of free-jqGrid.
+
 ### Compatibility with jqGrid 4.7.0
 
 * the default values of some option of jqGrid are changed (see detailed description below). **If you need to use other values as new defaults then you should include the option explicitly as parameters.**
@@ -26,7 +28,7 @@ Below you can find short description of new features already implemented in the 
 ### The default values of the following old jqGrid options are changed (comparing with jqGrid 4.7)
 
 * **height: "auto"** are used now instead of `150` before. It improves the visibility of small grids or the grids having small number of rows. No `scrollOffset: 0` are required to remove unneeded free space which one sees on some grids which have no vertical scrollbar.
-* **gridview: true** are used as default with the only exception: `afterInsertRow` callback are defined. The usage of `gridview: true` improves performance of rendering of the grid. In case of usage `afterInsertRow` in old projects instead of much more effective `cellatr`, `rowattr` or custom formatters one will have backward compatibility.
+* **gridview: true** are used as default with the only exception: `afterInsertRow` callback are defined. The usage of `gridview: true` improves performance of rendering of the grid. In case of usage `afterInsertRow` in old projects instead of much more effective `cellattr`, `rowattr` or custom formatters one will have backward compatibility.
 * *dynamic* default value is used now for `rowNum`. The default value `rowNum: 20` will be changed to 10000 (the value of the new `maxRowNum` property) if no pager exists in jqGrid (no `pager` and `toppager: true` option are used) or if one uses jqGrid option which switches off the pagination (like `treeGrid: true`). New jqGrid option `maxRowNum` can be used to change the maximal value of rows displayed in the grid from 10000 default to another value. By the way jqGrid allow now to specify `rowNum: 0` or `rowNum: 0`. In the case jqGrid replace the `rowNum` value to `maxRowNum` during initialization of the grid.
 * *dynamic* default value is used now for `datatype`. If one uses input option `data` or if one don't specified any `url` option, then undefined `datatype` will be initialized to `"local"`. If one uses no `data` option and specifies `url` option then one initializes `datatype` to `"json"` if the input option `jsonReader` are used. In case of usage any other combinations of input parameters the option `datatype` will be set to **"xml"** to stay mostly compatible to jqGrid 4.7.0 and older.
 * **editurl: "clientArray"** are use now instead of **editurl: null** used before. It allows to use *local* editing without minimal additional efforts and the requirement to have any server part implemented.
@@ -97,10 +99,9 @@ The most the changes corresponds the tendency of web development last years. Loc
 * reading of XML/JSON data having default `repeatitems: true` property in `jsonReader` or `xmlReader` in case of usage `key: true` in some column of the `colModel`.
 * many parts of jqGrid are fixed to allow to use special characters like dot in ids.
 * deleting of rows which id contains comma character.
-* 
 * id duplicates in case of usage `inlineNav` for both top pager and bottom pager.
 * the bug in data grouping with hiding of parent summary row on hiding of the last subgroup.
-* ... to be included soon
+* ... 
 
 ### Other changes in jqGrid and remarks
 

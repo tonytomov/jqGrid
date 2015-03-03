@@ -1,7 +1,7 @@
 {
   "name": "free-jqGrid",
   "description": "grid as jQuery plugin - fork of jqGrid before licensing change",
-  "version": "4.8.0-beta.2",
+  "version": "4.8.0",
   "main": [
     "js/jquery.jqGrid.min.js",
     "js/jquery.jqGrid.src.js",
@@ -46,6 +46,7 @@
     "tests",
     "gradlew.bat",
     "gradle/wrapper",
+    ".gradle",
     "gradlew"
   ]
 }

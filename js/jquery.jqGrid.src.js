@@ -2,13 +2,13 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
 /**
- * @license jqGrid  4.8.0-beta3 - jQuery Grid
+ * @license jqGrid  4.8.0 - free jqGrid
  * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com
  * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-02-26
+ * Date: 2015-03-02
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -243,7 +243,8 @@ if (jgrid.defaults == null || $.isEmptyObject(locales) || locales["en-US"] === u
 //}
 
 $.extend(true,jgrid,{
-	version: "4.8.0-beta3",
+	version: "4.8.0",
+	productName: "free jqGrid",
 	defaults: {},
 	search: {},
 	edit: {},
