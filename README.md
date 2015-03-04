@@ -11,6 +11,8 @@ Below you can find short description of new features already implemented in the 
 
 Read [Wiki](https://github.com/free-jqgrid/jqGrid/wiki) for more detailed information about the features of free-jqGrid.
 
+Free jqGrid can be used *for free*. You can still donate by sending money via Paypal to oleg.kiriljuk@ok-soft-gmbh.com with the comment "free jqGrid".
+
 ### Compatibility with jqGrid 4.7.0
 
 * the default values of some option of jqGrid are changed (see detailed description below). **If you need to use other values as new defaults then you should include the option explicitly as parameters.**
