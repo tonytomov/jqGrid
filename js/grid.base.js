@@ -3958,11 +3958,13 @@ $.jgrid.extend({
 				var ind = $($t).jqGrid('getGridRowById', rowid); 
 				if (ind){
 					var tcell = $("td:eq("+pos+")",ind), cl=0, rawdat=[];
-					if(nData !== "" || forceupd === true) {
-						while(cl<ind.cells.length) {
-							// slow down speed
-							rawdat.push(ind.cells[cl].innerHTML);
-							cl++;
+					if(nData !== "" || forceupd === true ) {
+						if(ind.cells !== undefined) {
+							while(cl<ind.cells.length) {
+								// slow down speed
+								rawdat.push(ind.cells[cl].innerHTML);
+								cl++;
+							}
 						}
 						v = $t.formatter(rowid, nData, pos, rawdat, 'edit');
 						title = $t.p.colModel[pos].title ? {"title":$.jgrid.stripHtml(v)} : {};
