@@ -13,6 +13,8 @@ Read [Wiki](https://github.com/free-jqgrid/jqGrid/wiki) for more detailed inform
 
 Free jqGrid can be used *for free*. You can still donate by sending money via Paypal to oleg.kiriljuk@ok-soft-gmbh.com with the comment "free jqGrid".
 
+One can install the package with respect of [bower](http://bower.io/search/?q=free-jqgrid) by using "bower install free-jqgrid" or from [NuGet](https://www.nuget.org/packages/free-jqGrid) by using "Install-Package free-jqGrid".
+
 ### Compatibility with jqGrid 4.7.0
 
 * the default values of some option of jqGrid are changed (see detailed description below). **If you need to use other values as new defaults then you should include the option explicitly as parameters.**
