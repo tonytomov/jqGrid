@@ -12,9 +12,9 @@
 		<concat destfile="${distdir}/${target}">
 			<fileset file="js/grid.base.js"/>
 			<fileset file="js/grid.custom.js"/>
-			<fileset file="js/jqModal.js"/>
-			<fileset file="js/jqDnR.js"/>
-			<fileset file="js/JsonXml.js"/>
+			<fileset file="js/jqmodal.js"/>
+			<fileset file="js/jqdnr.js"/>
+			<fileset file="js/jsonxml.js"/>
 			<fileset file="js/jquery.fmatter.js"/>
 			<fileset file="js/grid.common.js"/>
 			<fileset file="js/grid.filter.js"/>
@@ -49,7 +49,7 @@
 		</apply>
 		<copy todir="${srcdir}" overwrite="true">
 			<fileset dir="${distdir}">
-				<include name="jquery.jqGrid.*" />
+				<include name="jquery.jqgrid.*" />
 			</fileset>
 		</copy>
 		<echo message="${target.min} built." />

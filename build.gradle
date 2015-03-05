@@ -13,9 +13,9 @@ dependencies {
 def srcdir = new File('js')
 def distdir = new File('dist')
 
-def jqGridFile = new File(distdir, 'jquery.jqGrid.src.js')
-def jqGridMinFile = new File(distdir, 'jquery.jqGrid.min.js')
-def jqGridSrcMapFile = new File(distdir, 'jquery.jqGrid.min.map')
+def jqGridFile = new File(distdir, 'jquery.jqgrid.src.js')
+def jqGridMinFile = new File(distdir, 'jquery.jqgrid.min.js')
+def jqGridSrcMapFile = new File(distdir, 'jquery.jqgrid.min.map')
 
 task init() {
     description = "Create distribution directory: $distdir.absolutePath"
@@ -31,7 +31,7 @@ task init() {
 
 task jqgrid(dependsOn: 'init') {
     description = "Concatinate all javascript files into one javascript file: $jqGridFile.absolutePath"
-    def files = fileTree(dir: srcdir, include: '*.js', exclude: 'jquery.jqGrid.*.js')
+    def files = fileTree(dir: srcdir, include: '*.js', exclude: 'jquery.jqgrid.*.js')
     inputs.file files
     outputs.file jqGridFile
 
@@ -44,7 +44,7 @@ task jqgrid(dependsOn: 'init') {
 
 task 'jqgrid-min'(dependsOn: 'jqgrid') {
     description = "Minimize $jqGridFile.absolutePath to $jqGridMinFile.absolutePath"
-	def outputMapFile = new File(srcdir, 'jquery.jqGrid.min.map')
+	def outputMapFile = new File(srcdir, 'jquery.jqgrid.min.map')
     inputs.file jqGridFile
     outputs.file jqGridMinFile
 
@@ -56,7 +56,7 @@ task 'jqgrid-min'(dependsOn: 'jqgrid') {
             }
         }
 		def fileContent = jqGridSrcMapFile.getText()
-		fileContent = fileContent.replace('"sources":["dist/jquery.jqGrid.src.js"],', '"sources":["jquery.jqGrid.src.js"],')
+		fileContent = fileContent.replace('"sources":["dist/jquery.jqgrid.src.js"],', '"sources":["jquery.jqgrid.src.js"],')
 		outputMapFile.write(fileContent)
     }
 }
@@ -96,11 +96,11 @@ task i18n(type: Copy, dependsOn: 'init') {
 task copySrcAndMin(type: Copy, dependsOn: 'jqgrid-min') {
     description = "Copy $jqGridFile and $jqGridMinFile files to $srcdir.absolutePath"
 
-	delete new File(srcdir, 'jquery.jqGrid.src.js'), new File(srcdir, 'jquery.jqGrid.min.js')
+	delete new File(srcdir, 'jquery.jqgrid.src.js'), new File(srcdir, 'jquery.jqgrid.min.js')
 	
     from distdir
     into srcdir
-    include('jquery.jqGrid*.js')
+    include('jquery.jqgrid*.js')
 }
 
 task clean() {
@@ -110,7 +110,7 @@ task clean() {
         if (distdir.exists()) {
             distdir.deleteDir()
         }
-		delete new File(srcdir, 'jquery.jqGrid.min.map')
+		delete new File(srcdir, 'jquery.jqgrid.min.map')
     }
 }
 

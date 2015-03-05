@@ -1,0 +1,36 @@
+{
+  "name": "free-jqgrid",
+  "title": "free jqGrid",
+  "version": "4.8.0",
+  "description": "grid as jQuery plugin - fork of jqGrid before licensing change",
+  "main": "js/jquery.jqgrid.src.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/free-jqgrid/jqGrid.git"
+  },
+  "keywords": [
+    "jqGrid",
+	"jQuery",
+    "JavaScript",
+	"grid",
+    "table",
+    "jQuery",
+    "grid",
+    "TreeGrid",
+    "Subgrid",
+    "sorting",
+    "paging",
+    "editing",
+    "grouping",
+    "searching"
+  ],
+  "author": "Oleg Kiriljuk <oleg.kiriljuk@ok-soft-gmbh.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/free-jqgrid/jqGrid/issues"
+  },
+  "homepage": "https://github.com/free-jqgrid/jqGrid"
+}
