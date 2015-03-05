@@ -1,5 +1,19 @@
 {
   "name": "free-jqgrid",
+  "npmName": "free-jqgrid",
+  "npmFileMap": [
+    {
+      "basePath": "/",
+      "files": [
+        "css/ui.jqgrid.css",
+        "js/jquery.jqgrid.min.js",
+        "js/jquery.jqgrid.min.map",
+        "js/jquery.jqgrid.src.js",
+		"js/i18n/*.js",
+		"plugins/*.*"
+      ]
+    }
+  ],
   "title": "free jqGrid",
   "version": "4.8.0",
   "description": "grid as jQuery plugin - fork of jqGrid before licensing change",
