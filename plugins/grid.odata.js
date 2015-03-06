@@ -40,293 +40,11 @@
 
     "use strict";
     $.jgrid.extend({
-        odataGenColModel: function (options) {
-            var $t = this[0], p = $t.p, $self = $($t);
-
-            var o = $.extend(true, {
-                parsecolfunc: null, 
-                parsemetadatafunc: null, 
-                successfunc: null, 
-                errorfunc: null,
-                metadataurl: p.url + '/$metadata',
-                async: false
-            }, options || {});
-
-            $.ajax({
-                url: o.metadataurl,
-                type: 'GET',
-                dataType: 'xml',
-                async: o.async,
-                cache: false
-            })
-            .done(function (data, st, xhr) {
-                var newcol = $self.triggerHandler("jqGridODataParseMetadata", data);
-                if (newcol === undefined && $.isFunction(o.parsemetadatafunc)) { newcol = o.parsemetadatafunc(data, st, xhr); }
-                if (newcol !== undefined) {
-                    p.colModel = newcol;
-                }
-                else {
-                    //var xmldata = $.parseXML(xhr.responseText);
-                    var props = $('EntityType[Name!="Default"] Property', data);
-                    if (props.length > 0) {
-                        var cols = [];
-                        props.each(function (n, itm) {
-                            var name = $(itm).attr('Name');
-                            var type = $(itm).attr('Type').replace('Edm.', '');
-                            var nullable = $(itm).attr('Nullable');
-
-                            cols.push({ name: name, type: type, nullable: nullable });
-                        });
-
-                        if (cols.length === 0) {
-                            if ($.isFunction(o.errorfunc)) { o.errorfunc(xhr, 'parse $metadata error', 0); }
-                        }
-
-                        newcol = $self.triggerHandler("jqGridODataParseColumns", cols);
-                        if (newcol === undefined && $.isFunction(o.parsecolfunc)) { newcol = o.parsecolfunc(cols); }
-                        if (newcol !== undefined) {
-                            p.colModel = newcol;
-                        }
-                        else {
-                            var i;
-                            p.colModel = [];
-                            for (i = 0; i < cols.length; i++) {
-                                p.colModel.push({ label: cols[i].name, name: cols[i].name, index: cols[i].name, editable: true });
-                            }
-                        }
-                    }
-                }
-
-                if ($.isFunction(o.successfunc)) {
-                    o.successfunc();
-                }
-            })
-            .fail(function (xhr, err, code) {
-                if ($.isFunction(o.errorfunc)) { o.errorfunc(xhr, err, code); }
-            });
-        },
-
         odataInit: function (options) {
-            return this.each(function () {
-                var $t = this, $self = $($t), p = $t.p;
-                if (!$t.grid || !p) { return; }
-
-                var o = $.extend(true, {
-                    datatype: 'json',	//json,jsonp
-                    gencolumns: false,
-                    odataurl: p.url                    
-                }, options || {});
-
-                if (!o.version || o.version < 4) {
-                    o = $.extend(true, {
-                        annotations: false,
-                        annotationName: "",
-                        inlinecount: true,
-                        count: false,
-                        top: false
-                    }, o || {});
-                }
-                else {
-                    o = $.extend(true, {
-                        annotations: true,
-                        annotationName: "@jqgrid.GridModelAnnotate",
-                        inlinecount: false,
-                        count: true,
-                        top: true
-                    }, o || {});
-                }
-
-                if (o.datatype === 'jsonp') { o.callback = "jsonCallback_" + Math.floor((Math.random() * 1000) + 1); }
-                if (o.gencolumns) {
-                    var gencol = $.extend(true, {
-                        parsecolfunc: null,
-                        parsemetadatafunc: null,
-                        errorfunc: null,
-                        successfunc: null,
-                        async: false,
-                        metadataurl: (options.odataurl || p.url) + '/$metadata'
-                    }, options || {});
-
-                    if (gencol.async) {
-                        gencol.successfunc = function () {
-                            if ($t.grid.hDiv) { $t.grid.hDiv.loading = false; }
-                            $self.trigger('reloadGrid');
-                        };
-
-                        if ($t.grid.hDiv) { $t.grid.hDiv.loading = true; }
-                    }
-
-                    $self.jqGrid('odataGenColModel', gencol);
-                }
-
-                initDefaults(p, o);
-            });
-
-            function initDefaults(p, o) {
-                p.inlineEditing = $.extend(true, {
-                    beforeSaveRow: function (options, rowid, frmoper) {
-                        if (options.extraparam.oper === 'edit') {
-                            options.url = o.odataurl;
-                            options.mtype = "PATCH";
-                            options.url += '(' + rowid + ')';
-                        }
-                        else {
-                            options.url = o.odataurl;
-                            options.mtype = "POST";
-                        }
-
-                        return true;
-                    },
-                    serializeSaveData: function (postdata) {
-                        return JSON.stringify(postdata);
-                    },
-                    ajaxSaveOptions: {
-                        contentType: 'application/json;charset=utf-8',
-                        datatype: 'json'
-                    }
-                }, p.inlineEditing || {});
-
-                $.extend(p.formEditing, {
-                    onclickSubmit: function (options, postdata, frmoper) {
-                        if (frmoper === 'add') {
-                            options.url = o.odataurl;
-                            options.mtype = "POST";
-                        }
-                        else if (frmoper === 'edit') {
-                            options.url = o.odataurl + '(' + postdata[p.id + "_id"] + ')';
-                            options.mtype = "PUT";
-                        }
-
-                        return postdata;
-                    },
-                    ajaxEditOptions: {
-                        contentType: 'application/json;charset=utf-8',
-                        datatype: 'json'
-                    },
-                    serializeEditData: function (postdata) {
-                        return JSON.stringify(postdata);
-                    }
-                });
-
-                $.extend(p.formDeleting, {
-                    url: o.odataurl,
-                    mtype: "DELETE",
-                    serializeDelData: function (postdata) {
-                        return "";
-                    },
-                    onclickSubmit: function (options, postdata) {
-                        options.url += '(' + postdata + ')';
-                        return '';
-                    },
-                    ajaxDelOptions: {
-                        contentType: 'application/json;charset=utf-8',
-                        datatype: 'json'
-                    }
-                });
-
-                $.extend(p, { 
-                    serializeGridData: function (postData) {
-                        postData = setupWebServiceData(p, o, postData);
-                        return postData;
-                    },
-                    ajaxGridOptions: {
-                        contentType: "application/json;charset=utf-8",
-                        datatype: 'json'
-                    },
-                    datatype: o.datatype,
-                    jsonpCallback: o.callback,
-                    contentType: "application/json;charset=utf-8",
-                    mtype: 'GET',
-                    url: o.odataurl
-                });
-
-                if (o.annotations) {
-                    $.extend(true, p, {
-                        loadBeforeSend: function (jqXHR) {
-                            jqXHR.setRequestHeader("Prefer", 'odata.include-annotations="*"');
-                        },
-                        jsonReader: {
-                            root: "value",
-                            repeatitems: false,
-                            records: function (data) { return data[o.annotationName].records; },
-                            page: function (data) { return data[o.annotationName].page; },
-                            total: function (data) { return data[o.annotationName].total; },
-                            userdata: function (data) { return data[o.annotationName].userdata; }
-                        }
-                    });
-                }
-                else {
-                    $.extend(true, p, {
-                        jsonReader: {
-                            root: "value",
-                            repeatitems: false,
-                            records: "odata.count",
-                            page: function (data) {
-                                if (data["odata.nextLink"] !== undefined) {
-                                    var skip = data["odata.nextLink"].split('skip=')[1];
-                                    return Math.ceil(parseInt(skip, 10) / p.rowNum);
-                                }
-                                
-                                var total = data["odata.count"];
-                                return Math.ceil(parseInt(total, 10) / p.rowNum);
-                            },
-                            total: function (data) {
-                                var total = data["odata.count"];
-                                return Math.ceil(parseInt(total, 10) / p.rowNum);
-                            },
-                            userdata: "userdata"
-                        }
-                    });
-                }
-            }
-
-            function setupWebServiceData(p, o, postData) {
-                // basic posting parameters to the OData service.
-                var params = {
-                    //$top: postData.rows, //- we cannot use $top because of it removes odata.nextLink parameter
-                    $skip: (parseInt(postData.page, 10) - 1) * p.rowNum,
-                    $format: o.datatype
-                    //$inlinecount: "allpages" //- not relevant for V4
-                };
-
-                if (o.datatype === 'jsonp') { params.$callback = o.jsonpCallback; }
-                if (o.count) { params.$count = true; }
-                if (o.top) { params.$top = postData.rows; }
-                if (o.inlinecount) { params.$inlinecount = "allpages"; }
-
-                // if we have an order-by clause to use, then we build it.
-                if (postData.sidx) {
-                    // two columns have the following data:
-                    // postData.sidx = "{ColumnName} {order}, {ColumnName} "
-                    // postData.sord = "{order}"
-                    // we need to split sidx by the ", " and see if there are multiple columns.  If there are, we need to go through
-                    // each column and get its parts, then parse that for the appropriate columns to build for the sort.
-
-                    params.$orderby = postData.sidx + " " + postData.sord;
-                }
-
-                if (!postData._search) { return params; }
-            
-                // complex searching, with a groupOp.  This is for if we enable the form for multiple selection criteria.
-                if (postData.filters) {
-                    var filterGroup = $.parseJSON(postData.filters);
-                    var groupSearch = parseFilterGroup(filterGroup, p);
-
-                    if (groupSearch.length > 0) {
-                        params.$filter = groupSearch;
-                    }
-                }
-                else {
-                    params.$filter = prepareExpression(p, postData.searchField, postData.searchString, postData.searchOper);
-                }
-
-                return params;
-            }
-
             // builds out OData expressions... the condition.
             function prepareExpression(p, searchField, searchString, searchOper) {
                 var i, col;
-                
+
                 // if we want to support "in" clauses, we need to follow this stackoverflow article:
                 //http://stackoverflow.com/questions/7745231/odata-where-id-in-list-query/7745321#7745321
                 // this is for basic searching, with a single term.
@@ -413,10 +131,302 @@
                     }
                 }
 
-                filterText = filterText.trim().replace(/.(and|or)$/, '').trim();
+                filterText = filterText.trim().replace(/\s(and|or)$/, '').trim();
 
                 return filterText;
             }
+
+            function setupWebServiceData(p, o, postData) {
+                // basic posting parameters to the OData service.
+                var params = {
+                    //$top: postData.rows, //- we cannot use $top because of it removes odata.nextLink parameter
+                    $skip: (parseInt(postData.page, 10) - 1) * p.rowNum,
+                    $format: o.datatype
+                    //$inlinecount: "allpages" //- not relevant for V4
+                };
+
+                if (o.datatype === 'jsonp') { params.$callback = o.callback; }
+                if (o.count) { params.$count = true; }
+                if (o.top) { params.$top = postData.rows; }
+                if (o.inlinecount) { params.$inlinecount = "allpages"; }
+
+                // if we have an order-by clause to use, then we build it.
+                if (postData.sidx) {
+                    // two columns have the following data:
+                    // postData.sidx = "{ColumnName} {order}, {ColumnName} "
+                    // postData.sord = "{order}"
+                    // we need to split sidx by the ", " and see if there are multiple columns.  If there are, we need to go through
+                    // each column and get its parts, then parse that for the appropriate columns to build for the sort.
+
+                    params.$orderby = postData.sidx + " " + postData.sord;
+                }
+
+                if (!postData._search) { return params; }
+            
+                // complex searching, with a groupOp.  This is for if we enable the form for multiple selection criteria.
+                if (postData.filters) {
+                    var filterGroup = $.parseJSON(postData.filters);
+                    var groupSearch = parseFilterGroup(filterGroup, p);
+
+                    if (groupSearch.length > 0) {
+                        params.$filter = groupSearch;
+                    }
+                }
+                else {
+                    params.$filter = prepareExpression(p, postData.searchField, postData.searchString, postData.searchOper);
+                }
+
+                return params;
+            }
+
+            function initDefaults(p, o) {
+                p.inlineEditing = $.extend(true, {
+                    beforeSaveRow: function (options, rowid, frmoper) {
+                        if (options.extraparam.oper === 'edit') {
+                            options.url = o.odataurl;
+                            options.mtype = "PATCH";
+                            options.url += '(' + rowid + ')';
+                        }
+                        else {
+                            options.url = o.odataurl;
+                            options.mtype = "POST";
+                        }
+
+                        return true;
+                    },
+                    serializeSaveData: function (postdata) {
+                        return JSON.stringify(postdata);
+                    },
+                    ajaxSaveOptions: {
+                        contentType: 'application/json;charset=utf-8',
+                        datatype: 'json'
+                    }
+                }, p.inlineEditing || {});
+
+                $.extend(p.formEditing, {
+                    onclickSubmit: function (options, postdata, frmoper) {
+                        if (frmoper === 'add') {
+                            options.url = o.odataurl;
+                            options.mtype = "POST";
+                        }
+                        else if (frmoper === 'edit') {
+                            options.url = o.odataurl + '(' + postdata[p.id + "_id"] + ')';
+                            options.mtype = "PUT";
+                        }
+
+                        return postdata;
+                    },
+                    ajaxEditOptions: {
+                        contentType: 'application/json;charset=utf-8',
+                        datatype: 'json'
+                    },
+                    serializeEditData: function (postdata) {
+                        return JSON.stringify(postdata);
+                    }
+                });
+
+                $.extend(p.formDeleting, {
+                    url: o.odataurl,
+                    mtype: "DELETE",
+                    serializeDelData: function (postdata) {
+                        return "";
+                    },
+                    onclickSubmit: function (options, postdata) {
+                        options.url += '(' + postdata + ')';
+                        return '';
+                    },
+                    ajaxDelOptions: {
+                        contentType: 'application/json;charset=utf-8',
+                        datatype: 'json'
+                    }
+                });
+
+                $.extend(p, {
+                    serializeGridData: function (postData) {
+                        postData = setupWebServiceData(p, o, postData);
+                        return postData;
+                    },
+                    ajaxGridOptions: {
+                        contentType: "application/json;charset=utf-8",
+                        datatype: 'json'
+                    },
+                    datatype: o.datatype,
+                    jsonpCallback: o.callback,
+                    contentType: "application/json;charset=utf-8",
+                    mtype: 'GET',
+                    url: o.odataurl
+                });
+
+                if (o.annotations) {
+                    $.extend(true, p, {
+                        loadBeforeSend: function (jqXHR) {
+                            jqXHR.setRequestHeader("Prefer", 'odata.include-annotations="*"');
+                        },
+                        jsonReader: {
+                            root: "value",
+                            repeatitems: false,
+                            records: function (data) { return data[o.annotationName].records; },
+                            page: function (data) { return data[o.annotationName].page; },
+                            total: function (data) { return data[o.annotationName].total; },
+                            userdata: function (data) { return data[o.annotationName].userdata; }
+                        }
+                    });
+                }
+                else {
+                    $.extend(true, p, {
+                        jsonReader: {
+                            root: "value",
+                            repeatitems: false,
+                            records: "odata.count",
+                            page: function (data) {
+                                if (data["odata.nextLink"] !== undefined) {
+                                    var skip = data["odata.nextLink"].split('skip=')[1];
+                                    return Math.ceil(parseInt(skip, 10) / p.rowNum);
+                                }
+
+                                var total = data["odata.count"];
+                                return Math.ceil(parseInt(total, 10) / p.rowNum);
+                            },
+                            total: function (data) {
+                                var total = data["odata.count"];
+                                return Math.ceil(parseInt(total, 10) / p.rowNum);
+                            },
+                            userdata: "userdata"
+                        }
+                    });
+                }
+            }
+
+            return this.each(function () {
+                var $t = this, $self = $($t), p = $t.p;
+                if (!$t.grid || !p) { return; }
+
+                var o = $.extend(true, {
+                    datatype: 'json',	//json,jsonp
+                    gencolumns: false,
+                    odataurl: p.url
+                }, options || {});
+
+                if (!o.version || o.version < 4) {
+                    o = $.extend(true, {
+                        annotations: false,
+                        annotationName: "",
+                        inlinecount: true,
+                        count: false,
+                        top: false
+                    }, o || {});
+                }
+                else {
+                    o = $.extend(true, {
+                        annotations: true,
+                        annotationName: "@jqgrid.GridModelAnnotate",
+                        inlinecount: false,
+                        count: true,
+                        top: true
+                    }, o || {});
+                }
+
+                if (o.datatype === 'jsonp') { o.callback = "jsonCallback_" + $.jgrid.randId(); }
+                if (o.gencolumns) {
+                    var gencol = $.extend(true, {
+                        parsecolfunc: null,
+                        parsemetadatafunc: null,
+                        errorfunc: null,
+                        successfunc: null,
+                        async: false,
+                        metadataurl: (options.odataurl || p.url) + '/$metadata'
+                    }, options || {});
+
+                    if (gencol.async) {
+                        gencol.successfunc = function () {
+                            if ($t.grid.hDiv) { $t.grid.hDiv.loading = false; }
+                            $self.trigger('reloadGrid');
+                        };
+
+                        if ($t.grid.hDiv) { $t.grid.hDiv.loading = true; }
+                    }
+
+                    $self.jqGrid('odataGenColModel', gencol);
+                }
+
+                initDefaults(p, o);
+            });
+        },
+
+        odataGenColModel: function (options) {
+            var $t = this[0], p = $t.p, $self = $($t);
+
+            var o = $.extend(true, {
+                parsecolfunc: null, 
+                parsemetadatafunc: null, 
+                successfunc: null, 
+                errorfunc: null,
+                metadataurl: p.url + '/$metadata',
+                async: false
+            }, options || {});
+
+            $.ajax({
+                url: o.metadataurl,
+                type: 'GET',
+                dataType: 'xml',
+                async: o.async,
+                cache: false
+            })
+            .done(function (data, st, xhr) {
+                var i = 0, j = 0;
+                var newcol = $self.triggerHandler("jqGridODataParseMetadata", data);
+
+                if (newcol === undefined && $.isFunction(o.parsemetadatafunc)) { newcol = o.parsemetadatafunc(data, st, xhr); }
+                if (newcol === undefined) {
+                    //var xmldata = $.parseXML(xhr.responseText);
+                    var props = $('EntityType[Name!="Default"] Property', data);
+                    var keys = $('EntityType[Name!="Default"] Key PropertyRef', data);
+                    if (props.length > 0) {
+                        var key = keys.length>0 ? keys.first().attr('Name') : '';
+                        
+                        var cols = [];
+                        props.each(function (n, itm) {
+                            var name = $(itm).attr('Name');
+                            var type = $(itm).attr('Type').replace('Edm.', '');
+                            var nullable = $(itm).attr('Nullable');
+                            var iskey = (name === key);
+
+                            cols.push({ name: name, type: type, nullable: nullable, iskey: iskey });
+                        });
+
+                        if (cols.length === 0) {
+                            if ($.isFunction(o.errorfunc)) { o.errorfunc(xhr, 'parse $metadata error', 0); }
+                        }
+
+                        newcol = $self.triggerHandler("jqGridODataParseColumns", cols);
+                        if (newcol === undefined && $.isFunction(o.parsecolfunc)) { newcol = o.parsecolfunc(cols); }
+                        if (newcol === undefined) {
+                            newcol = [];
+                            for (i = 0; i < cols.length; i++) {
+                                newcol.push({ label: cols[i].name, name: cols[i].name, index: cols[i].name, editable: !cols[i].iskey });
+                            }
+                        }
+                    }
+                }
+
+                for (i = 0; i < p.colModel.length; i++) {
+                    for (j = 0; j < newcol.length; j++) {
+                        if (newcol[j].name === p.colModel[i].name) {
+                            $.extend(true, newcol[j], p.colModel[i]);
+                            break;
+                        }
+                    }
+                }
+                p.colModel = newcol;
+
+                if ($.isFunction(o.successfunc)) {
+                    o.successfunc();
+                }
+            })
+            .fail(function (xhr, err, code) {
+                if ($.isFunction(o.errorfunc)) { o.errorfunc(xhr, err, code); }
+            });
         }
+
     });
 }(jQuery));
