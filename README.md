@@ -15,6 +15,23 @@ Free jqGrid can be used *for free*. You can still donate by sending money via Pa
 
 One can install the package with respect of [bower](http://bower.io/search/?q=free-jqgrid) by using "bower install free-jqgrid", with respect of [npm](https://www.npmjs.com/package/free-jqgrid) by using "npm install free-jqgrid" or from [NuGet](https://www.nuget.org/packages/free-jqGrid) by using "Install-Package free-jqGrid".
 
+The repository is included on [cdnjs](https://cdnjs.com/). So one can include CSS by using
+```html
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.8.0/css/ui.jqgrid.css"/>
+```
+If you skip `http:` and `https:` prefix in the URL then the prefix of the current page will be used. In the same way you can access JavaScript files by
+```html
+<script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.8.0/js/jquery.jqgrid.min.js"></script>
+```
+or
+```html
+<script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.8.0/js/jquery.jqgrid.src.js"></script>
+```
+All language files are available in `js/i18n` sub-folder and plugins under `plugins` sub-folder. For example
+```html
+<script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.8.0/js/i18n/grid.locale-de.js"></script>
+```
+
 ### Compatibility with jqGrid 4.7.0
 
 * the default values of some option of jqGrid are changed (see detailed description below). **If you need to use other values as new defaults then you should include the option explicitly as parameters.**
