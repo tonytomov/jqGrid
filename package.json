@@ -9,8 +9,8 @@
         "js/jquery.jqgrid.min.js",
         "js/jquery.jqgrid.min.map",
         "js/jquery.jqgrid.src.js",
-		"js/i18n/*.js",
-		"plugins/*.*"
+        "js/i18n/*.js",
+        "plugins/*.*"
       ]
     }
   ],
@@ -28,9 +28,9 @@
   },
   "keywords": [
     "jqGrid",
-	"jQuery",
+    "jQuery",
     "JavaScript",
-	"grid",
+    "grid",
     "table",
     "jQuery",
     "grid",
