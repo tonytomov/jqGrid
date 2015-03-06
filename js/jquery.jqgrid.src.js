@@ -6873,7 +6873,8 @@ jgrid.extend({
 	},
 	clearBeforeUnload : function () {
 		return this.each(function(){
-			var self = this, p = self.p, grid = self.grid, propOrMethod, clearArray = jgrid.clearArray;
+			var self = this, p = self.p, grid = self.grid, propOrMethod, clearArray = jgrid.clearArray,
+				hasOwnProperty = Object.prototype.hasOwnProperty;
 			if ($.isFunction(grid.emptyRows)) {
 				grid.emptyRows.call(self, true, true); // this work quick enough and reduce the size of memory leaks if we have someone
 			}
@@ -6919,7 +6920,7 @@ jgrid.extend({
 			var propOrMethods = ['formatCol','sortData','updatepager','refreshIndex','setHeadCheckBox','constructTr','formatter','addXmlData','addJSONData','nav','grid','p'];
 			l = propOrMethods.length;
 			for(i = 0; i < l; i++) {
-				if(self.hasOwnProperty(propOrMethods[i])) {
+				if(hasOwnProperty.call(self, propOrMethods[i])) {
 					self[propOrMethods[i]] = null;
 				}
 			}
