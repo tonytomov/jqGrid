@@ -17,7 +17,7 @@ One can install the package with respect of [bower](http://bower.io/search/?q=fr
 
 The repository is included on [cdnjs](https://cdnjs.com/). So one can include CSS by using
 ```html
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.8.0/css/ui.jqgrid.css"/>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.8.0/css/ui.jqgrid.css">
 ```
 If you skip `http:` and `https:` prefix in the URL then the prefix of the current page will be used. In the same way you can access JavaScript files by
 ```html
@@ -31,6 +31,21 @@ All language files are available in `js/i18n` sub-folder and plugins under `plug
 ```html
 <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.8.0/js/i18n/grid.locale-de.js"></script>
 ```
+
+In the same way free jqGrid can be loaded from jsDelivr CDN too (see [here](http://www.jsdelivr.com/#!free-jqgrid)). 
+```html
+<link rel="stylesheet" href="//cdn.jsdelivr.net/free-jqgrid/4.8.0/css/ui.jqgrid.css">
+<script src="//cdn.jsdelivr.net/free-jqgrid/4.8.0/js/i18n/grid.locale-de.js"></script>
+<script src="//cdn.jsdelivr.net/free-jqgrid/4.8.0/js/jquery.jqgrid.min.js"></script>
+```
+
+It somebody want to test the *latest* version of free jqGrid one can load it directly from GitHib using [RawGit](http://rawgit.com/) service:
+```html
+<link rel="stylesheet" href="//rawgit.com/free-jqgrid/jqGrid/master/css/ui.jqgrid.css">
+<script src="//rawgit.com/free-jqgrid/jqGrid/master/js/i18n/grid.locale-de.js"></script>
+<script src="//rawgit.com/free-jqgrid/jqGrid/master/js/jquery.jqgrid.src.js"></script>
+```
+
 
 ### Compatibility with jqGrid 4.7.0
 
