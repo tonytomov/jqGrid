@@ -15,7 +15,7 @@ Free jqGrid can be used *for free*. You can still donate by sending money via Pa
 
 One can install the package with respect of [bower](http://bower.io/search/?q=free-jqgrid) by using "bower install free-jqgrid", with respect of [npm](https://www.npmjs.com/package/free-jqgrid) by using "npm install free-jqgrid" or from [NuGet](https://www.nuget.org/packages/free-jqGrid) by using "Install-Package free-jqGrid".
 
-The repository is included on [cdnjs](https://cdnjs.com/). So one can include CSS by using
+The repository is included on [cdnjs](https://cdnjs.com/libraries/free-jqgrid). So one can include CSS by using
 ```html
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.8.0/css/ui.jqgrid.css">
 ```
