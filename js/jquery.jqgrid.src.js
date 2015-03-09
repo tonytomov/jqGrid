@@ -4620,7 +4620,7 @@ jgrid.extend({
 	},
 	addRowData : function(rowid,rdata,pos,src) {
 		// TODO: add an additional parameter, which will inform whether the input data rdata is in formatted or unformatted form
-		if($.inArray(pos, ["first", "last", "before", "after"]) < 0) {pos = "last";}
+		if($.inArray(pos, ["first", "last", "before", "after", "afterSelected", "beforeSelected"]) < 0) {pos = "last";}
 		var success = false, nm, row, gi, si, ni,sind, i, v, prp="", aradd, cnm, cn, data, cm, id;
 		if(rdata) {
 			if($.isArray(rdata)) {
@@ -4694,6 +4694,14 @@ jgrid.extend({
 					if(t.rows.length === 0){
 						$("table:first",t.grid.bDiv).append(row);
 					} else {
+						if (pos === "afterSelected" || pos === "beforeSelected") {
+							if (src === undefined && p.selrow !== null) {
+								src = p.selrow;
+								pos = (pos === "afterSelected") ? "after" : "before";
+							} else {
+								pos = (pos === "afterSelected") ? "last" : "first";
+							}
+						}
 						switch (pos) {
 							case 'last':
 								$(t.rows[t.rows.length-1]).after(row);
