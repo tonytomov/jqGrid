@@ -4061,7 +4061,7 @@ $.fn.jqGrid = function( pin ) {
 			ptr = $(td,ts.rows).closest("tr.jqgrow");
 			if($(ptr).length === 0 ){return;}
 			ri = ptr[0].rowIndex;
-			ci = getCellIndex(td);
+			ci = getCellIndex($(td).closest("tr.jqgrow>td"));
 			if (!feedback.call(ts, "ondblClickRow", $(ptr).attr("id"), ri, ci, e)) {
 				return false; // e.preventDefault() and e.stopPropagation() together
 			}
@@ -4072,7 +4072,7 @@ $.fn.jqGrid = function( pin ) {
 			if($(ptr).length === 0 ){return;}
 			if(!p.multiselect) {	$(ts).jqGrid("setSelection",ptr[0].id,true,e);	}
 			ri = ptr[0].rowIndex;
-			ci = getCellIndex(td);
+			ci = getCellIndex($(td).closest("tr.jqgrow>td"));
 			if (!feedback.call(ts, "onRightClickRow", $(ptr).attr("id"), ri, ci, e)) {
 				return false; // e.preventDefault() and e.stopPropagation() together
 			}
