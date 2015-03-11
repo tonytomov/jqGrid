@@ -632,12 +632,12 @@ $.jgrid.extend({
 				// Set position of the sortable div (the main lable)
 				// with the column header text to the middle of the cell.
 				// One should not do this for hidden headers.
-				$htable.find("div.ui-jqgrid-sortable").each(function () {
-					var $ts = $(this), $parent = $ts.parent();
-					if ($parent.is(":visible") && $parent.is(":has(span.ui-jqgrid-resize)")) {
-						$ts.css('top', ($parent.height() - $ts.outerHeight()) / 2 + 'px');
-					}
-				});
+				//$htable.find("div.ui-jqgrid-sortable").each(function () {
+					//var $ts = $(this), $parent = $ts.parent();
+					//if ($parent.is(":visible") && $parent.is(":has(span.ui-jqgrid-resize)")) {
+						//$ts.css('top', ($parent.height() - $ts.outerHeight()) / 2 + 'px');
+					//}
+				//});
 			}
 
 			$firstRow = $theadInTable.find("tr.jqg-first-row-header");
@@ -675,7 +675,7 @@ $.jgrid.extend({
 				if ($resizing.length>0) {// resizable column
 					$resizing[0].style.height = "";
 				}
-				$th.children("div")[0].style.top = "";
+				//$th.children("div")[0].style.top = "";
 			}
 			$(thead).children('tr.ui-jqgrid-labels').remove();
 			$(thead).prepend($tr);
