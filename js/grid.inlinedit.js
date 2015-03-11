@@ -557,7 +557,15 @@ jgrid.extend({
 			$self.jqGrid("getGridRes","nav"),
 			jgrid.nav || {},
 			p.navOptions || {},
-			oMuligrid || {});
+			oMuligrid || {}),
+			viewModalAlert = function () {
+				jgrid.viewModal("#alertmod_" + p.id,{gbox:p.gBox,jqm:true});
+				var $close = $("#alerthd_" + p.id).find(".ui-jqdialog-titlebar-close");
+				$close.attr({tabindex: "0", href: "#", role: "button"});
+				setTimeout(function () {
+					$close.focus();
+				}, 50);
+			};
 
 			if (elem === undefined) {
 				if (p.pager) {
@@ -646,7 +654,7 @@ jgrid.extend({
 						if(sr) {
 							$self.jqGrid('editRow', sr, o.editParams);
 						} else {
-							jgrid.viewModal("#alertmod",{gbox:p.gBox,jqm:true});$("#jqg_alrt").focus();							
+							viewModalAlert();
 						}
 					}
 				});
@@ -675,7 +683,7 @@ jgrid.extend({
 							}
 							$self.jqGrid('saveRow', sr, tmpParams);
 						} else {
-							jgrid.viewModal("#alertmod",{gbox:p.gBox,jqm:true});$("#jqg_alrt").focus();							
+							viewModalAlert();
 						}
 					}
 				});
@@ -697,7 +705,7 @@ jgrid.extend({
 							}
 							$self.jqGrid('restoreRow', sr, cancelPrm);
 						} else {
-							jgrid.viewModal("#alertmod",{gbox:p.gBox,jqm:true});$("#jqg_alrt").focus();							
+							viewModalAlert();
 						}
 					}
 				});
