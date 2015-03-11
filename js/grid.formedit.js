@@ -1803,7 +1803,11 @@ jgrid.extend({
 			twd, tdw, gridIdEscaped = p.idSel, gboxSelector = p.gBox, commonIconClass = o.commonIconClass,
 			viewModalAlert = function () {
 				viewModal("#"+jqID(alertIDs.themodal),{gbox:gboxSelector,jqm:true});
-				$("#jqg_alrt").focus();
+				var $close = $("#"+jqID(alertIDs.modalhead)).find(".ui-jqdialog-titlebar-close");
+				$close.attr({tabindex: "0", href: "#", role: "button"});
+				setTimeout(function () {
+					$close.focus();
+				}, 50);
 			};
 			if(!$t.grid) {
 				return; // error
