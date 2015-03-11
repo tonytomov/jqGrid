@@ -2417,7 +2417,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 				} else if(p.treeGrid === true && fpos > 0) {
 					$(self.rows[fpos]).after(rowData.join(''));
-				} else if (self.firstElementChild) {
+				} else if (self.firstElementChild && (document.documentMode !== undefined && document.documentMode > 9)) {
 					//$("tbody:first",self.grid.bDiv).append(rowData.join(''));
 					self.firstElementChild.innerHTML += rowData.join(''); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
 					self.grid.cols = self.rows[0].cells; // update cached first row
@@ -2623,7 +2623,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 				} else if(p.treeGrid === true && fpos > 0) {
 					$(self.rows[fpos]).after(rowData.join(''));
-				} else if (self.firstElementChild) {
+				} else if (self.firstElementChild && (document.documentMode !== undefined && document.documentMode > 9)) {
 					self.firstElementChild.innerHTML += rowData.join(''); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
 					self.grid.cols = self.rows[0].cells; // update cached first row
 				} else {

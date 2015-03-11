@@ -2417,7 +2417,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 				} else if(p.treeGrid === true && fpos > 0) {
 					$(self.rows[fpos]).after(rowData.join(''));
-				} else if (self.firstElementChild) {
+				} else if (self.firstElementChild && (document.documentMode !== undefined && document.documentMode > 9)) {
 					//$("tbody:first",self.grid.bDiv).append(rowData.join(''));
 					self.firstElementChild.innerHTML += rowData.join(''); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
 					self.grid.cols = self.rows[0].cells; // update cached first row
@@ -2623,7 +2623,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 				} else if(p.treeGrid === true && fpos > 0) {
 					$(self.rows[fpos]).after(rowData.join(''));
-				} else if (self.firstElementChild) {
+				} else if (self.firstElementChild && (document.documentMode !== undefined && document.documentMode > 9)) {
 					self.firstElementChild.innerHTML += rowData.join(''); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
 					self.grid.cols = self.rows[0].cells; // update cached first row
 				} else {
@@ -10466,7 +10466,11 @@ jgrid.extend({
 			twd, tdw, gridIdEscaped = p.idSel, gboxSelector = p.gBox, commonIconClass = o.commonIconClass,
 			viewModalAlert = function () {
 				viewModal("#"+jqID(alertIDs.themodal),{gbox:gboxSelector,jqm:true});
-				$("#jqg_alrt").focus();
+				var $close = $("#"+jqID(alertIDs.modalhead)).find(".ui-jqdialog-titlebar-close");
+				$close.attr({tabindex: "0", href: "#", role: "button"});
+				setTimeout(function () {
+					$close.focus();
+				}, 50);
 			};
 			if(!$t.grid) {
 				return; // error
@@ -12141,7 +12145,15 @@ jgrid.extend({
 			$self.jqGrid("getGridRes","nav"),
 			jgrid.nav || {},
 			p.navOptions || {},
-			oMuligrid || {});
+			oMuligrid || {}),
+			viewModalAlert = function () {
+				jgrid.viewModal("#alertmod_" + p.id,{gbox:p.gBox,jqm:true});
+				var $close = $("#alerthd_" + p.id).find(".ui-jqdialog-titlebar-close");
+				$close.attr({tabindex: "0", href: "#", role: "button"});
+				setTimeout(function () {
+					$close.focus();
+				}, 50);
+			};
 
 			if (elem === undefined) {
 				if (p.pager) {
@@ -12230,7 +12242,7 @@ jgrid.extend({
 						if(sr) {
 							$self.jqGrid('editRow', sr, o.editParams);
 						} else {
-							jgrid.viewModal("#alertmod",{gbox:p.gBox,jqm:true});$("#jqg_alrt").focus();							
+							viewModalAlert();
 						}
 					}
 				});
@@ -12259,7 +12271,7 @@ jgrid.extend({
 							}
 							$self.jqGrid('saveRow', sr, tmpParams);
 						} else {
-							jgrid.viewModal("#alertmod",{gbox:p.gBox,jqm:true});$("#jqg_alrt").focus();							
+							viewModalAlert();
 						}
 					}
 				});
@@ -12281,7 +12293,7 @@ jgrid.extend({
 							}
 							$self.jqGrid('restoreRow', sr, cancelPrm);
 						} else {
-							jgrid.viewModal("#alertmod",{gbox:p.gBox,jqm:true});$("#jqg_alrt").focus();							
+							viewModalAlert();
 						}
 					}
 				});
