@@ -10306,7 +10306,7 @@ jgrid.extend({
 						oper = opers.oper;
 						postd[oper] = opers.deloper;
 						idname = opers.id;
-						postdata = formRowIds;
+						postdata = formRowIds.slice();
 						if(!postdata.length) { return false; }
 						for(pk in postdata) {
 							if(postdata.hasOwnProperty(pk)) {
