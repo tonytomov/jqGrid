@@ -41,7 +41,9 @@ var
 			sourceMap :  true
 		},
 		main: {
-			options: {},
+			options: {
+				banner: createBanner( true )
+			},
 			files: {
 				"js/minified/jquery.jqGrid.min.js": "js/jquery.jqGrid.js"
 			}
@@ -77,10 +79,10 @@ var
 		'"use strict";'+'\n';
 
 
-	function createBanner( files ) {
+	function createBanner( date ) {
 		return "/**\n*\n"+
-			"* @license Guriddo <%= pkg.name %> JS - v<%= pkg.version %> - " +
-			"<%= grunt.template.today('isoDate') %>\n"+
+			"* @license Guriddo <%= pkg.name %> JS - v<%= pkg.version %> " +
+			( date ? "- <%= grunt.template.today('isoDate') %>\n" : "\n") +
 			"* Copyright(c) 2008, <%=pkg.author.name%>, <%=pkg.author.email%>\n"+
 			"* \n"+
 			"* License: <%= pkg.licenses[0].url %>\n"+
@@ -90,7 +92,7 @@ var
 	gridFiles.concat( ).forEach(function( file ) {
 		minify[ file ] = {
 			options: {
-				banner: createBanner(),
+				banner: createBanner( false ),
 				sourceMap: false
 			},
 			files: {}
@@ -127,7 +129,7 @@ var
 		concat: {
 			grid: {
 				options: {
-					banner: createBanner()+ header,
+					banner: createBanner( true )+ header,
 					footer: '\n'+"}));",
 					process: function(src, filepath) {
 						var begin = src.indexOf("//module begin");
