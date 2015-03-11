@@ -1012,7 +1012,8 @@ $.fn.jqGrid = function( pin ) {
 			multiSort :  false,
 			minColWidth : 33,
 			scrollPopUp : false,
-			scrollTopOffset: 0,
+			scrollTopOffset: 0, // pixel
+			scrollLeftOffset : "100%", //percent
 			storeNavOptions: false,
 			regional :  "en"
 		}, $.jgrid.defaults || {}, pin );
@@ -1145,7 +1146,7 @@ $.fn.jqGrid = function( pin ) {
 						grid.populate(npage);
 					}
 					if(p.scrollPopUp && p.lastpage != null) {
-						$("#scroll_g"+p.id).show().html( $.jgrid.template( $.jgrid.getRegional(ts, "defaults.pgtext", p.pgtext) , p.page, p.lastpage)).css("top",p.scrollTopOffset+scrollTop*((parseInt(p.height,10) - 45)/ (parseInt(rh,10)*parseInt(p.records,10))) +"px");
+						$("#scroll_g"+p.id).show().html( $.jgrid.template( $.jgrid.getRegional(ts, "defaults.pgtext", p.pgtext) , p.page, p.lastpage)).css({ "top": p.scrollTopOffset+scrollTop*((parseInt(p.height,10) - 45)/ (parseInt(rh,10)*parseInt(p.records,10))) +"px", "left" : p.scrollLeftOffset});
 						$(this).mouseout(function(){ 
 							$("#scroll_g"+p.id).hide();
 						});
