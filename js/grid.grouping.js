@@ -172,6 +172,7 @@ $.jgrid.extend({
 			itemGroupingLevel,
 			showData,
 			collapsed = false,
+			skip = false,
 			frz = $t.p.frozenColumns ? $t.p.id+"_frozen" : false,
 			tar2 = frz ? $("#"+$.jgrid.jqID(hid), "#"+$.jgrid.jqID(frz) ) : false,
 			r2 = (tar2 && tar2.length) ? tar2[0].nextSibling : null;
@@ -217,20 +218,25 @@ $.jgrid.extend({
 						if (showData === undefined) {
 							showData = itemGroupingLevel === undefined; // if the first row after the opening group is data row then show the data rows
 						}
+						skip = $(r).hasClass("ui-subgrid") && $(r).hasClass("ui-sg-collapsed");
 						if (itemGroupingLevel !== undefined) {
 							if (itemGroupingLevel <= num) {
 								break;// next item of the same lever are found
 							}
 							if (itemGroupingLevel === num + 1) {
-								$(r).show().find(">td>span."+"tree-wrap-"+$t.p.direction).removeClass(minus).addClass(plus);
-								if(frz) {
-									$(r2).show().find(">td>span."+"tree-wrap-"+$t.p.direction).removeClass(minus).addClass(plus);
+								if(!skip) {
+									$(r).show().find(">td>span."+"tree-wrap-"+$t.p.direction).removeClass(minus).addClass(plus);
+									if(frz) {
+										$(r2).show().find(">td>span."+"tree-wrap-"+$t.p.direction).removeClass(minus).addClass(plus);
+									}
 								}
 							}
 						} else if (showData) {
-							$(r).show();
-							if(frz) {
-								$(r2).show();
+							if(!skip) {
+								$(r).show();
+								if(frz) {
+									$(r2).show();
+								}
 							}
 						}
 						r = r.nextSibling;
