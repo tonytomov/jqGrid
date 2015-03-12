@@ -197,7 +197,22 @@ $.jgrid.extend({
 						elc = $.jgrid.createEl.call($t,this.edittype,opt,tmp,false,$.extend({},$.jgrid.ajaxOptions,obj.p.ajaxSelectOptions || {}));
 						//if(tmp === "" && this.edittype == "checkbox") {tmp = $(elc).attr("offval");}
 						//if(tmp === "" && this.edittype == "select") {tmp = $("option:eq(0)",elc).text();}
-						if(rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate) {rp_ge[$t.p.id]._savedData[nm] = tmp;}
+						if(this.edittype === "select") {
+							tmp = $(elc).val();
+							if($(elc).get(0).type === 'select-multiple') {
+								tmp = tmp.join(",");
+							}
+						}
+						if(this.edittype === 'checkbox') {
+							if($(elc).is(":checked")) {
+								tmp= $(elc).val();
+							} else {
+								tmp = $(elc).attr("offval");
+							}
+						}
+						if(rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate) {
+							rp_ge[$t.p.id]._savedData[nm] = tmp;
+						}
 						$(elc).addClass("FormElement");
 						if( $.inArray(this.edittype, ['text','textarea','password','select']) > -1) {
 							$(elc).addClass("ui-widget-content ui-corner-all");
@@ -331,6 +346,13 @@ $.jgrid.extend({
 										this.selected = false;
 									}
 								});
+								if(rp_ge[$t.p.id].checkOnSubmit===true || rp_ge[$t.p.id].checkOnUpdate) {
+									tmp = $("#"+nm,fmid).val();
+									if(cm[i].editoptions.multiple) {
+										tmp = tmp.join(",");
+									}
+									rp_ge[$t.p.id]._savedData[nm] = tmp;
+								}
 								break;
 							case "checkbox":
 								tmp = String(tmp);
@@ -349,6 +371,13 @@ $.jgrid.extend({
 									} else {
 										$("#"+nm, fmid)[$t.p.useProp ? 'prop': 'attr']("checked", false);
 										$("#"+nm, fmid)[$t.p.useProp ? 'prop': 'attr']("defaultChecked", false); //ie
+									}
+								}
+								if(rp_ge[$t.p.id].checkOnSubmit===true || rp_ge[$t.p.id].checkOnUpdate) {
+									if($("#"+nm, fmid).is(":checked")) {
+										tmp = $("#"+nm, fmid).val();
+									} else {
+										tmp = $("#"+nm, fmid).attr("offval");
 									}
 								}
 								break;
