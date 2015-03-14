@@ -18,7 +18,7 @@
      *    ...,
      *    beforeInitGrid: function () {           //can be also put at: onInitGrid
      *        $(this).jqGrid('odataInit', {
-     *            version: 4,
+     *            version: 3,
      *            gencolumns: false,
      *            odataurl: 'http://localhost:56216/odata/ODClient'
      *        });
@@ -30,7 +30,7 @@
      *    beforeInitGrid: function () {
      *        $(this).jqGrid('odataInit', {
      *            version: 4,
-     *            async: false,
+     *            annotations: true,
      *            gencolumns: true,
      *            entityType: 'ClientModel',
      *            odataurl: 'http://localhost:56216/odata/ODClient',
@@ -141,7 +141,7 @@
             function setupWebServiceData(p, o, postData) {
                 // basic posting parameters to the OData service.
                 var params = {
-                    //$top: postData.rows, //- we cannot use $top because of it removes odata.nextLink parameter
+                    $top: postData.rows, //- $top removes odata.nextLink parameter
                     $skip: (parseInt(postData.page, 10) - 1) * p.rowNum,
                     $format: o.datatype
                     //$inlinecount: "allpages" //- not relevant for V4
@@ -149,7 +149,6 @@
 
                 //if (o.datatype === 'jsonp') { params.$callback = o.callback; }
                 if (o.count) { params.$count = true; }
-                if (o.top) { params.$top = postData.rows; }
                 if (o.inlinecount) { params.$inlinecount = "allpages"; }
 
                 // if we have an order-by clause to use, then we build it.
@@ -242,6 +241,7 @@
                 $.extend(p, {
                     serializeGridData: function (postData) {
                         postData = setupWebServiceData(p, o, postData);
+                        this.p.odataPostData = postData;
                         return postData;
                     },
                     ajaxGridOptions: defaultAjaxOptions,                   
@@ -253,9 +253,6 @@
                 if (o.datatype === 'xml') {
                     if (o.annotations) {
                         $.extend(true, p, {
-                            loadBeforeSend: function (jqXHR) {
-                                jqXHR.setRequestHeader("Prefer", 'odata.include-annotations="*"');
-                            },
                             //xmlReader: { ??? }
                         });
                     }
@@ -281,18 +278,22 @@
                             jsonReader: {
                                 root: "value",
                                 repeatitems: false,
-                                records: "odata.count",
+                                records: function (data) { return data["odata.count"] || data["@odata.count"]; },
                                 page: function (data) {
-                                    if (data["odata.nextLink"] !== undefined) {
-                                        var skip = data["odata.nextLink"].split('skip=')[1];
-                                        return Math.ceil(parseInt(skip, 10) / p.rowNum);
+                                    var skip;
+                                    if (data["odata.nextLink"]) {
+                                        skip = parseInt(data["odata.nextLink"].split('skip=')[1], 10);
                                     }
-
-                                    var total = data["odata.count"];
-                                    return Math.ceil(parseInt(total, 10) / p.rowNum);
+                                    else {
+                                        skip = p.odataPostData.$skip + p.rowNum;
+                                        var total = data["odata.count"] || data["@odata.count"];
+                                        if (skip > total) {skip = total;}
+                                    }
+                                    
+                                    return Math.ceil(skip / p.rowNum);
                                 },
                                 total: function (data) {
-                                    var total = data["odata.count"];
+                                    var total = data["odata.count"] || data["@odata.count"];
                                     return Math.ceil(parseInt(total, 10) / p.rowNum);
                                 },
                                 userdata: "userdata"
@@ -309,7 +310,9 @@
                 var o = $.extend(true, {
                     gencolumns: false,
                     odataurl: p.url,
-                    datatype: 'json'     //json,xml
+                    datatype: 'json',     //json,jsonp,xml
+                    annotations: false,
+                    annotationName: "@jqgrid.GridModelAnnotate"
                 }, options || {});
 
                 //xml dataType is not supported
@@ -317,20 +320,14 @@
 
                 if (!o.version || o.version < 4) {
                     o = $.extend(true, {
-                        annotations: false,
-                        annotationName: "",
                         inlinecount: true,
-                        count: false,
-                        top: false
+                        count: false
                     }, o || {});
                 }
                 else {
                     o = $.extend(true, {
-                        annotations: true,
-                        annotationName: "@jqgrid.GridModelAnnotate",
                         inlinecount: false,
-                        count: true,
-                        top: true
+                        count: true
                     }, o || {});
                 }
 
@@ -362,8 +359,131 @@
             });
         },
 
-        odataGenColModel: function (options) {
-            var $t = this[0], p = $t.p, $self = $($t);
+        odataGenColModel: function (options) {           
+			//http://stackoverflow.com/questions/15312529/resolve-circular-references-from-json-object
+            function resolveReferences(json) {
+				var i, ref, byid = {}, // all objects by id
+                    refs = []; // references to objects that could not be resolved
+				
+				function recurse(obj, prop, parent) {
+					if (typeof obj !== 'object' || !obj) {// a primitive value
+                        return obj;
+					}
+                    if (Object.prototype.toString.call(obj) === '[object Array]') {
+						for (i = 0; i < obj.length; i++) {
+                            // check also if the array element is not a primitive value
+                            if (typeof obj[i] !== 'object' || !obj[i]) {// a primitive value
+                                return obj[i];
+							}
+                            if (obj[i].$ref) {
+                                obj[i] = recurse(obj[i], i, obj);
+							}
+                            else {
+                                obj[i] = recurse(obj[i], prop, obj);
+							}
+                        }
+                        return obj;
+                    }
+                    if (obj.$ref) { // a reference
+                        ref = obj.$ref;
+                        if (byid[ref]){
+                            return byid[ref];
+						}
+                        // else we have to make it lazy:
+                        refs.push([parent, prop, ref]);
+                        return;
+                    }
+					if (obj.$id) {
+                        var id = obj.$id;
+                        delete obj.$id;
+                        if (obj.$values) {// an array
+                            obj = obj.$values.map(recurse);
+						}
+                        else {// a plain object
+                            var itm;
+							for (itm in obj) {
+                                if (obj.hasOwnProperty(itm)) {
+									obj[itm] = recurse(obj[itm], itm, obj);
+								}
+                            }
+                        }
+                        byid[id] = obj;
+                    }
+                    return obj;
+                }
+				
+				if (typeof json === 'string'){json = JSON.parse(json);}
+				json = recurse(json); // run it!
+
+                for (i = 0; i < refs.length; i++) { // resolve previously unknown references
+                    ref = refs[i];
+                    ref[0][ref[1]] = byid[ref[2]];
+                    // Notice that this throws if you put in a reference at top-level
+                }
+				
+                return json;
+            }
+			
+			function parseXmlData(data, entityType) {
+                var cols = [], props, keys, key, name, type, nullable, iskey;
+
+                //var xmldata = $.parseXML(xhr.responseText);
+                props = $('EntityType[Name="' + entityType + '"] Property', data);
+                keys = $('EntityType[Name="' + entityType + '"] Key PropertyRef', data);
+
+                key = keys && keys.length > 0 ? keys.first().attr('Name') : '';
+                if (props) {
+                    props.each(function (n, itm) {
+                        name = $(itm).attr('Name');
+                        type = $(itm).attr('Type');
+                        nullable = $(itm).attr('Nullable');
+                        iskey = (name === key);
+
+                        cols.push({ name: name, type: type, nullable: nullable, iskey: iskey });
+                    });
+                }
+
+                return cols;
+            }
+
+            function parseJsonData(data, entityType) {
+                var cols = [], props, keys, key, name, type, nullable, iskey, i;
+                var schemaElements = (data.SchemaElements.$values || data.SchemaElements);
+                for (i = 0; i < schemaElements.length ; i++) {
+                    if (schemaElements[i].Name === entityType) {
+                        props = schemaElements[i].DeclaredProperties.$values || schemaElements[i].DeclaredProperties;
+                        keys = schemaElements[i].DeclaredKey.$values || schemaElements[i].DeclaredKey;
+                        break;
+                    }
+                }
+
+                key = keys && keys.length > 0 ? keys[0].Name : '';
+                if (props) {
+                    for (i = 0; i < props.length; i++) {
+                        if (props[i].$ref) {
+                            cols.push({ name: props[i].$ref, type: null, nullable: false, iskey: false });
+                        }
+                        else {
+                            name = props[i].Name;
+                            iskey = (name === key);
+                            nullable = props[i].Type.IsNullable;
+
+                            if (props[i].Type.Definition.$ref) {
+                                type = props[i].Type.Definition.$ref;
+                            }
+                            else {
+                                type = props[i].Type.Definition.Namespace + '.' + props[i].Type.Definition.Name;
+                            }
+
+                            cols.push({ name: name, type: type, nullable: nullable, iskey: iskey });
+                        }
+                    }
+                }
+
+                return cols;
+            }
+			
+			var $t = this[0], p = $t.p, $self = $($t);
 
             var o = $.extend(true, {
                 parsecolfunc: null, 
@@ -386,6 +506,10 @@
                 type: 'GET',
                 dataType: o.datatype,
                 contentType: 'application/' + o.datatype + ';charset=utf-8',
+                //headers: {
+                    //"OData-Version": "4.0"
+                    //"Accept": "application/json;odata=light;q=1,application/json;odata=verbose;q=0.5"
+                //},
                 async: o.async,
                 cache: false
             })
@@ -452,117 +576,6 @@
             .fail(function (xhr, err, code) {
                 if ($.isFunction(o.errorfunc)) { o.errorfunc(xhr, err, code); }
             });
-
-            function parseXmlData(data, entityType) {
-                var cols = [], props, keys, key, name, type, nullable, iskey;
-
-                //var xmldata = $.parseXML(xhr.responseText);
-                props = $('EntityType[Name="' + entityType + '"] Property', data);
-                keys = $('EntityType[Name="' + entityType + '"] Key PropertyRef', data);
-
-                key = keys && keys.length > 0 ? keys.first().attr('Name') : '';
-                if (props) {
-                    props.each(function (n, itm) {
-                        name = $(itm).attr('Name');
-                        type = $(itm).attr('Type');
-                        nullable = $(itm).attr('Nullable');
-                        iskey = (name === key);
-
-                        cols.push({ name: name, type: type, nullable: nullable, iskey: iskey });
-                    });
-                }
-
-                return cols;
-            }
-
-            //http:// stackoverflow.com/questions/15312529/resolve-circular-references-from-json-object
-            function resolveReferences(json) {
-                if (typeof json === 'string')
-                    json = JSON.parse(json);
-
-                var byid = {}, // all objects by id
-                    refs = []; // references to objects that could not be resolved
-                json = (function recurse(obj, prop, parent) {
-                    if (typeof obj !== 'object' || !obj) // a primitive value
-                        return obj;
-                    if (Object.prototype.toString.call(obj) === '[object Array]') {
-                        for (var i = 0; i < obj.length; i++) {
-                            // check also if the array element is not a primitive value
-                            if (typeof obj[i] !== 'object' || !obj[i]) // a primitive value
-                                return obj[i];
-                            else if ("$ref" in obj[i])
-                                obj[i] = recurse(obj[i], i, obj);
-                            else
-                                obj[i] = recurse(obj[i], prop, obj);
-                        }
-                        return obj;
-                    }
-                    if ("$ref" in obj) { // a reference
-                        var ref = obj.$ref;
-                        if (ref in byid)
-                            return byid[ref];
-                        // else we have to make it lazy:
-                        refs.push([parent, prop, ref]);
-                        return;
-                    } else if ("$id" in obj) {
-                        var id = obj.$id;
-                        delete obj.$id;
-                        if ("$values" in obj) // an array
-                            obj = obj.$values.map(recurse);
-                        else {// a plain object
-                            for (var prop in obj) {
-                                obj[prop] = recurse(obj[prop], prop, obj);
-                            }
-                        }
-                        byid[id] = obj;
-                    }
-                    return obj;
-                })(json); // run it!
-
-                for (var i = 0; i < refs.length; i++) { // resolve previously unknown references
-                    var ref = refs[i];
-                    ref[0][ref[1]] = byid[ref[2]];
-                    // Notice that this throws if you put in a reference at top-level
-                }
-                return json;
-            }
-
-            function parseJsonData(data, entityType) {
-                var cols = [], props, keys, key, name, type, nullable, iskey, i, j;
-                var schemaElements = (data.SchemaElements.$values || data.SchemaElements);
-                for (i = 0; i < schemaElements.length ; i++) {
-                    if (schemaElements[i].Name === o.entityType) {
-                        props = schemaElements[i].DeclaredProperties.$values || schemaElements[i].DeclaredProperties;
-                        keys = schemaElements[i].DeclaredKey.$values || schemaElements[i].DeclaredKey;
-                        break;
-                    }
-                }
-
-                key = keys && keys.length > 0 ? keys[0].Name : '';
-                if (props) {
-                    for (i = 0; i < props.length; i++) {
-                        if (props[i].$ref) {
-                            cols.push({ name: props[i].$ref, type: null, nullable: false, iskey: false });
-                        }
-                        else {
-                            name = props[i].Name;
-                            iskey = (name === key);
-                            nullable = props[i].Type.IsNullable;
-
-                            if (props[i].Type.Definition.$ref) {
-                                type = props[i].Type.Definition.$ref;
-                            }
-                            else {
-                                type = props[i].Type.Definition.Namespace + '.' + props[i].Type.Definition.Name;
-                            }
-
-                            cols.push({ name: name, type: type, nullable: nullable, iskey: iskey });
-                        }
-                    }
-                }
-
-                return cols;
-            }
         }
     });
 }(jQuery));
