@@ -3164,7 +3164,7 @@ $.fn.jqGrid = function( pin ) {
 			var sep = "<td class='ui-pg-button ui-state-disabled'><span class='ui-separator'></span></td>",
 			pginp = "",
 			blockAlign = p.pagerpos === "left" ? "margin-right:auto;" : (p.pagerpos === "right" ? "margin-left:auto;" : "margin-left:auto;margin-right:auto;"),
-			pgl="<table "+(isMSIE7 ? "cellspacing='0' " : "")+"style='table-layout:auto;"+blockAlign+"' class='ui-pg-table'><tbody><tr>",
+			pgl="<table "+(isMSIE7 ? "cellspacing='0' " : "")+"style='table-layout:auto;white-space: pre;"+blockAlign+"' class='ui-pg-table'><tbody><tr>",
 			str="", pgcnt, lft, cent, rgt, twd, i,
 			clearVals = function(onpaging, newPage, newRowNum){
 				if (!feedback.call(ts, "onPaging", onpaging, {
