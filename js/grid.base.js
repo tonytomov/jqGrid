@@ -1676,7 +1676,7 @@ $.fn.jqGrid = function( pin ) {
 			ignoreCase : true,
 			cmTemplate : {},
 			idPrefix : "",
-			iconSet: "fontAwesome", //"jQueryUI",
+			iconSet: iconSet, // "fontAwesome" or "jQueryUI" or some custom value
 			locale: locale,
 			multiSort :  false,
 			treeIcons: {
