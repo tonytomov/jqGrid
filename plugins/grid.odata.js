@@ -1,6 +1,126 @@
 /*jslint continue: true, nomen: true, plusplus: true, unparam: true, todo: true, vars: true, white: true */
 /*global jQuery */
 
+//global functions
+(function () {
+    "use strict";
+    window.gridODataHelpers = {
+
+        //http://stackoverflow.com/questions/15312529/resolve-circular-references-from-json-object
+        resolveJsonReferences: function (json, refs) {
+            var i, ref, byid = {}; // all objects by id
+            refs = refs || []; // references to objects that could not be resolved
+
+            function recurse(obj, prop, parent) {
+                if (typeof obj !== 'object' || !obj) {// a primitive value
+                    return obj;
+                }
+                if (Object.prototype.toString.call(obj) === '[object Array]') {
+                    for (i = 0; i < obj.length; i++) {
+                        // check also if the array element is not a primitive value
+                        if (typeof obj[i] !== 'object' || !obj[i]) {// a primitive value
+                            return obj[i];
+                        }
+                        if (obj[i].$ref) {
+                            obj[i] = recurse(obj[i], i, obj);
+                        }
+                        else {
+                            obj[i] = recurse(obj[i], prop, obj);
+                        }
+                    }
+                    return obj;
+                }
+                if (obj.$ref) { // a reference
+                    ref = obj.$ref;
+                    if (byid[ref]) {
+                        return byid[ref];
+                    }
+                    // else we have to make it lazy:
+                    refs.push([parent, prop, ref]);
+                    return;
+                }
+                if (obj.$id) {
+                    var id = obj.$id;
+                    delete obj.$id;
+                    if (obj.$values) {// an array
+                        obj = obj.$values.map(recurse);
+                    }
+                    else {// a plain object
+                        var itm;
+                        for (itm in obj) {
+                            if (obj.hasOwnProperty(itm)) {
+                                obj[itm] = recurse(obj[itm], itm, obj);
+                            }
+                        }
+                    }
+                    byid[id] = obj;
+                }
+                return obj;
+            }
+
+            if (typeof json === 'string') { json = JSON.parse(json); }
+            json = recurse(json); // run it!
+
+            for (i = 0; i < refs.length; i++) { // resolve previously unknown references
+                ref = refs[i];
+                ref[0][ref[1]] = byid[ref[2]];
+                // Notice that this throws if you put in a reference at top-level
+            }
+
+            return json;
+        },
+
+        // Changes XML to JSON
+        //http://davidwalsh.name/convert-xml-json
+        convertXmlToJson: function (xml) {
+            // Create the return object
+            var obj = {}, i, j, attribute, item, nodeName, old;
+
+            if (xml.nodeType === 1) { // element
+                // do attributes
+                if (xml.attributes.length > 0) {
+                    obj["@attributes"] = {};
+                    for (j = 0; j < xml.attributes.length; j++) {
+                        attribute = xml.attributes.item(j);
+                        obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
+                    }
+                }
+            }
+            else if (xml.nodeType === 3) { // text
+                obj = xml.nodeValue;
+            }
+            else if (!xml.nodeType) {
+                obj = xml;
+            }
+
+            // do children
+            if (xml.hasChildNodes && xml.hasChildNodes()) {
+                for (i = 0; i < xml.childNodes.length; i++) {
+                    item = xml.childNodes.item(i);
+                    if (item.nodeType === 3) {
+                        return item.nodeValue;
+                    }
+
+                    nodeName = item.nodeName;
+                    if (obj[nodeName] === undefined) {
+                        obj[nodeName] = gridODataHelpers.convertXmlToJson(item);
+                    } else {
+                        if (obj[nodeName].push === undefined) {
+                            old = obj[nodeName];
+                            obj[nodeName] = [];
+                            obj[nodeName].push(old);
+                        }
+                        obj[nodeName].push(gridODataHelpers.convertXmlToJson(item));
+                    }
+                }
+            }
+
+            return $.isEmptyObject(obj) ? null : obj;
+        }
+    };
+}());
+
+
 (function ($) {
     /*
      * jqGrid OData (WebApi v3/v4) support
@@ -16,7 +136,7 @@
      * The use examples:		
      * $("#grid").jqGrid({
      *    ...,
-     *    beforeInitGrid: function () {           //can be also put at: onInitGrid
+     *    beforeInitGrid: function () {           // can be also put at onInitGrid when columns are defined manually
      *        $(this).jqGrid('odataInit', {
      *            version: 3,
      *            gencolumns: false,
@@ -30,7 +150,24 @@
      *    beforeInitGrid: function () {
      *        $(this).jqGrid('odataInit', {
      *            version: 4,
+                  datatype: 'json',
      *            annotations: true,
+     *            gencolumns: true,
+     *            entityType: 'ClientModel',
+     *            odataurl: 'http://localhost:56216/odata/ODClient',
+     *            metadataurl: 'http://localhost:56216/odata/$metadata'
+     *        });
+     *    }
+     * });
+     * 
+     * annotation are not supported by OData v3/4 XML serializer
+     * $("#grid").jqGrid({
+     *    ...,
+     *    beforeInitGrid: function () {
+     *        $(this).jqGrid('odataInit', {
+     *            version: 4,
+                  datatype: 'xml',
+     *            annotations: false,
      *            gencolumns: true,
      *            entityType: 'ClientModel',
      *            odataurl: 'http://localhost:56216/odata/ODClient',
@@ -142,8 +279,8 @@
                 // basic posting parameters to the OData service.
                 var params = {
                     $top: postData.rows, //- $top removes odata.nextLink parameter
-                    $skip: (parseInt(postData.page, 10) - 1) * p.rowNum,
-                    $format: o.datatype
+                    $skip: (parseInt(postData.page, 10) - 1) * p.rowNum
+                    //$format: 'application/' + o.datatype + ';odata.metadata=full'
                     //$inlinecount: "allpages" //- not relevant for V4
                 };
 
@@ -253,9 +390,31 @@
                 if (o.datatype === 'xml') {
                     if (o.annotations) {
                         $.extend(true, p, {
-                            //xmlReader: { ??? }
+                            loadBeforeSend: function (jqXHR) {
+                                jqXHR.setRequestHeader("Prefer", 'odata.include-annotations="*"');
+                            }
                         });
                     }
+
+                    $.extend(true, p, {
+                        xmlReader: {
+                            root: 'ArrayOf' + o.entityType,
+                            row: o.entityType,
+                            records: function (data) { return $('ArrayOf' + o.entityType + ' ' + o.entityType, data).length; },
+                            page: function (data) {
+                                var skip = p.odataPostData.$skip + p.rowNum;
+                                return Math.ceil(skip / p.rowNum);
+                            },
+                            total: function (data) {
+                                var records = $('ArrayOf' + o.entityType + ' ' + o.entityType, data).length;
+                                var skip = p.odataPostData.$skip + p.rowNum;
+                                return Math.ceil(skip / p.rowNum) + (records > 0 ? 1:0);
+                            },
+                            repeatitems: false,
+                            id: p.id,
+                            userdata: "ArrayOfUserData UserData"
+                        }
+                    });
                 }
                 else {
                     if (o.annotations) {
@@ -311,12 +470,15 @@
                     gencolumns: false,
                     odataurl: p.url,
                     datatype: 'json',     //json,jsonp,xml
+                    entityType: null,
                     annotations: false,
                     annotationName: "@jqgrid.GridModelAnnotate"
                 }, options || {});
 
-                //xml dataType is not supported
-                o.datatype = 'json';
+                if (!o.entityType && (o.gencolumns || o.datatype === 'xml')) {
+                    if ($.isFunction(o.errorfunc)) { o.errorfunc({}, 'entityType cannot be empty', 0); }
+                    return;
+                }
 
                 if (!o.version || o.version < 4) {
                     o = $.extend(true, {
@@ -360,69 +522,6 @@
         },
 
         odataGenColModel: function (options) {           
-			//http://stackoverflow.com/questions/15312529/resolve-circular-references-from-json-object
-            function resolveReferences(json) {
-				var i, ref, byid = {}, // all objects by id
-                    refs = []; // references to objects that could not be resolved
-				
-				function recurse(obj, prop, parent) {
-					if (typeof obj !== 'object' || !obj) {// a primitive value
-                        return obj;
-					}
-                    if (Object.prototype.toString.call(obj) === '[object Array]') {
-						for (i = 0; i < obj.length; i++) {
-                            // check also if the array element is not a primitive value
-                            if (typeof obj[i] !== 'object' || !obj[i]) {// a primitive value
-                                return obj[i];
-							}
-                            if (obj[i].$ref) {
-                                obj[i] = recurse(obj[i], i, obj);
-							}
-                            else {
-                                obj[i] = recurse(obj[i], prop, obj);
-							}
-                        }
-                        return obj;
-                    }
-                    if (obj.$ref) { // a reference
-                        ref = obj.$ref;
-                        if (byid[ref]){
-                            return byid[ref];
-						}
-                        // else we have to make it lazy:
-                        refs.push([parent, prop, ref]);
-                        return;
-                    }
-					if (obj.$id) {
-                        var id = obj.$id;
-                        delete obj.$id;
-                        if (obj.$values) {// an array
-                            obj = obj.$values.map(recurse);
-						}
-                        else {// a plain object
-                            var itm;
-							for (itm in obj) {
-                                if (obj.hasOwnProperty(itm)) {
-									obj[itm] = recurse(obj[itm], itm, obj);
-								}
-                            }
-                        }
-                        byid[id] = obj;
-                    }
-                    return obj;
-                }
-				
-				if (typeof json === 'string'){json = JSON.parse(json);}
-				json = recurse(json); // run it!
-
-                for (i = 0; i < refs.length; i++) { // resolve previously unknown references
-                    ref = refs[i];
-                    ref[0][ref[1]] = byid[ref[2]];
-                    // Notice that this throws if you put in a reference at top-level
-                }
-				
-                return json;
-            }
 			
 			function parseXmlData(data, entityType) {
                 var cols = [], props, keys, key, name, type, nullable, iskey;
@@ -518,7 +617,7 @@
                 var intTypes = 'Edm.Byte,Edm.Int16,Edm.Int32,Edm.Int64,Edm.SByte';
                 var numTypes = 'Edm.Decimal,Edm.Double,Edm.Single';
 
-                if (o.datatype === 'json') { data = resolveReferences(data); }
+                if (o.datatype === 'json') { data = gridODataHelpers.resolveJsonReferences(data); }
                 var newcol = $self.triggerHandler("jqGridODataParseMetadata", data);
                 if (newcol === undefined && $.isFunction(o.parsemetadatafunc)) { newcol = o.parsemetadatafunc(data, st, xhr); }
                 if (newcol === undefined) {
