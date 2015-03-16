@@ -1556,7 +1556,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 					rowData = [];
 				}
-				if(locdata /*|| ts.p.treeGrid === true*/) {
+				if(locdata || ts.p.treeGrid === true ) {
 					rd[xmlid] = $.jgrid.stripPref(ts.p.idPrefix, rid);
 					ts.p.data.push(rd);
 					ts.p._index[rd[xmlid]] = ts.p.data.length-1;
@@ -1749,7 +1749,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 					rowData = [];
 				}
-				if(locdata /*|| ts.p.treeGrid===true*/) {
+				if(locdata || ts.p.treeGrid===true ) {
 					rd[locid] = $.jgrid.stripPref(ts.p.idPrefix, idr);
 					ts.p.data.push(rd);
 					ts.p._index[rd[locid]] = ts.p.data.length-1;
