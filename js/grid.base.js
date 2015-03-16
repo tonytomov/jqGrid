@@ -1584,7 +1584,11 @@ $.fn.jqGrid = function( pin ) {
 					$(ts.rows[fpos]).after(rowData.join(''));
 				} else {
 					//$("tbody:first",t).append(rowData.join(''));
-					ts.firstElementChild.innerHTML += rowData.join(''); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
+					if (ts.firstElementChild) {
+						ts.firstElementChild.innerHTML += rowData.join(''); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
+					} else {
+						$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
+					}
 					ts.grid.cols = ts.rows[0].cells; // update cached first row
 				}
 			}
