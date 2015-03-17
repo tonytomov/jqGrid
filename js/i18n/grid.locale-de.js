@@ -48,7 +48,7 @@ $.jgrid.regional["de"] = {
 		savetext: "Speichern...",
 		pgtext : "Seite {0} von {1}",
 		pgfirst : "erste Seite",
-		pglast : "letzte Page",
+		pglast : "letzte Seite",
 		pgnext : "nächste Seite",
 		pgprev : "vorherige Seite",
 		pgrecs : "Datensätze pro Seite",
