@@ -218,6 +218,20 @@ var jgrid = $.jgrid;
 jgrid.locales = jgrid.locales || {};
 var locales = jgrid.locales;
 
+/**
+ * Enum with different elements of jqGrid.
+ * @enum {number} @const
+ */
+var componentNames = {
+	grid: 0,
+	gBox: 1,
+	gView: 2,
+	alertMod: 3,
+	columnResizer: 4,
+	selectAllCheckbox: 5,
+	searchOperationMenu: 6
+};
+
 if (jgrid.defaults == null || $.isEmptyObject(locales) || locales["en-US"] === undefined) {
 	// set English options only if no grid.locale-XX.js file are included before jquery.jqGrid.min.js or jquery.jqGrid.src.js
 	// the files included AFTER jquery.jqGrid.min.js or jquery.jqGrid.src.js will just overwrite all the settings which were set previously
@@ -750,6 +764,9 @@ $.extend(true,jgrid,{
 			COLUMN_RESIZER_DIV: 43,						// tagName: "div". class: "ui-jqgrid-resize-mark". Id: "rs_m" + gridId
 			BOTTOM_PAGER_DIV: 44						// tagName: "div". class: "ui-jqgrid-pager"
 	},*/
+	/**
+	 *  @param {componentNames} componentName
+	 */
 	getGridComponentId: function (componentName) {
 		var self = this;
 		if (self.p == null || !self.p.id) {
@@ -757,24 +774,27 @@ $.extend(true,jgrid,{
 		}
 		var id = self.p.id;
 		switch (componentName) {
-			case "grid":
+			case componentNames.grid:
 				return id;
-			case "gBox":
+			case componentNames.gBox:
 				return "gbox_" + id;
-			case "gView":
+			case componentNames.gView:
 				return "gview_" + id;
-			case "alertMod": // footer/summary table
+			case componentNames.alertMod: // footer/summary table
 				return "alertmod_" + id;
-			case "columnResizer":
+			case componentNames.columnResizer:
 				return "rs_m" + id;
-			case "selectAllCheckbox":
+			case componentNames.selectAllCheckbox:
 				return "cb_" + id;
-			case "searchOperationMenu":
+			case componentNames.searchOperationMenu:
 				return "sopt_menu";
 			default:
 				return ""; // return empty string
 		}
 	},
+	/**
+	 *  @param {componentNames} componentName
+	 */
 	getGridComponentIdSelector: function (componentName) {
 		var id = jgrid.getGridComponentId.call(this, componentName);
 		return id ? "#" + jgrid.jqID(id) : "";
@@ -1791,14 +1811,14 @@ $.fn.jqGrid = function( pin ) {
 		ts.p = p;
 		p.id = ts.id;
 		p.idSel = "#" + jqID(ts.id);
-		p.gBoxId = getGridComponentId.call(ts, "gBox");   // gbox id like "gbox_list" or "gbox_my.list"
-		p.gBox = getGridComponentIdSelector.call(ts, "gBox");   // gbox selector like "#gbox_list" or "#gbox_my\\.list"
-		p.gViewId = getGridComponentId.call(ts, "gView"); // gview id like "gview_list" or "gview_my.list"
-		p.gView = getGridComponentIdSelector.call(ts, "gView"); // gview selector like "#gview_list" or "#gview_my\\.list"
-		p.rsId = getGridComponentId.call(ts, "columnResizer"); // vertical div inside of gbox which will be seen on resizing of columns
-		p.rs = getGridComponentIdSelector.call(ts, "columnResizer"); // vertical div inside of gbox which will be seen on resizing of columns
-		p.cbId = getGridComponentId.call(ts, "selectAllCheckbox"); // "cb_" +id
-		p.cb = getGridComponentIdSelector.call(ts, "selectAllCheckbox"); // "cb_" +id
+		p.gBoxId = getGridComponentId.call(ts, componentNames.gBox);   // gbox id like "gbox_list" or "gbox_my.list"
+		p.gBox = getGridComponentIdSelector.call(ts, componentNames.gBox);   // gbox selector like "#gbox_list" or "#gbox_my\\.list"
+		p.gViewId = getGridComponentId.call(ts, componentNames.gView); // gview id like "gview_list" or "gview_my.list"
+		p.gView = getGridComponentIdSelector.call(ts, componentNames.gView); // gview selector like "#gview_list" or "#gview_my\\.list"
+		p.rsId = getGridComponentId.call(ts, componentNames.columnResizer); // vertical div inside of gbox which will be seen on resizing of columns
+		p.rs = getGridComponentIdSelector.call(ts, componentNames.columnResizer); // vertical div inside of gbox which will be seen on resizing of columns
+		p.cbId = getGridComponentId.call(ts, componentNames.selectAllCheckbox); // "cb_" +id
+		p.cb = getGridComponentIdSelector.call(ts, componentNames.selectAllCheckbox); // "cb_" +id
 		p.useProp = !!$.fn.prop;
 		p.propOrAttr = p.useProp ? 'prop' : 'attr';
 
