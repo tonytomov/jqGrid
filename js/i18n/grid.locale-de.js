@@ -47,12 +47,12 @@ $.jgrid.regional["de"] = {
 		loadtext: "Lädt...",
 		savetext: "Speichern...",
 		pgtext : "Seite {0} von {1}",
-		pgfirst : "First Page",
-		pglast : "Last Page",
-		pgnext : "Next Page",
-		pgprev : "Previous Page",
-		pgrecs : "Records per Page",
-		showhide: "Toggle Expand Collapse Grid"
+		pgfirst : "erste Seite",
+		pglast : "letzte Page",
+		pgnext : "nächste Seite",
+		pgprev : "vorherige Seite",
+		pgrecs : "Datensätze pro Seite",
+		showhide: "Toggle erweitern reduzieren"
 	},
 	search : {
 		caption: "Suche...",
