@@ -91,7 +91,7 @@
 /* toolbar */
 .ui-jqgrid .ui-userdata {border-left: 0 none;    border-right: 0 none;	height : 21px;overflow: hidden;	}
 /*Modal Window */
-.ui-jqgrid .ui-jqdialog { font-size:11px; }
+.ui-jqdialog { font-size:11px !important; }
 .ui-jqdialog { display: none; width: 300px; position: absolute; padding: .2em; font-size:11px; overflow:visible;}
 .ui-jqdialog .ui-jqdialog-titlebar { padding: .3em .2em; position: relative; height:20px;}
 .ui-jqdialog .ui-jqdialog-title { margin: .3em 0 .2em; } 
