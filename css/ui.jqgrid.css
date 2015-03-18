@@ -957,3 +957,16 @@ a.clearsearchclass {
 	left: 0;
 	bottom: 1px;
 }
+
+/* classes for jquery.contextmenu-ui.js plugin we included here */
+.jqContextMenu .ui-menu .ui-menu-item a.ui-state-hover {
+	font-weight: normal;
+	margin: -1px;
+}
+.jqContextMenu .ui-menu .ui-menu-item.ui-state-hover {
+	font-weight: normal;
+	margin: -1px;
+}
+.jqContextMenu .ui-menu-icons > .ui-menu-item {
+	font-size: 11px;
+}
