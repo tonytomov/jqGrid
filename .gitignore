@@ -7,3 +7,4 @@ compiler.jar
 yuicompressor.jar
 .gradle
 .DS_Store
+release
