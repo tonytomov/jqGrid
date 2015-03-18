@@ -4067,7 +4067,7 @@ $.fn.jqGrid = function( pin ) {
 					gridSelf.bDiv.scrollTop = 0;
 				}
 			}
-			if (gridSelf.prevRowHeight && p.scroll) {
+			if (gridSelf.prevRowHeight && p.scroll && opts.page === undefined) {
 				delete p.lastpage;
 				gridSelf.populateVisible.call(self);
 			} else {
