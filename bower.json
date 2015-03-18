@@ -1,6 +1,6 @@
 {
 	"name": "jqGrid",
-	"version": "4.7.1",
+	"version": "4.8.0",
 	"main": [
 		"js/i18n/grid.locale-en.js",
 		"js/jquery.jqGrid.js",

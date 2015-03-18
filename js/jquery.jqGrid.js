@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v4.7.1 - 2015-03-18
+* @license Guriddo jqGrid JS - v4.8.0 - 2015-03-18
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -21,7 +21,7 @@
 //module begin
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
-	version : "4.7.1",
+	version : "4.8.0",
 	htmlDecode : function(value){
 		if(value && (value==='&nbsp;' || value==='&#160;' || (value.length===1 && value.charCodeAt(0)===160))) { return "";}
 		return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");		
@@ -1217,6 +1217,7 @@ $.fn.jqGrid = function( pin ) {
 		var gv = $("<div class='ui-jqgrid-view' role='grid'></div>"),
 		isMSIE = $.jgrid.msie;
 		ts.p.direction = $.trim(ts.p.direction.toLowerCase());
+		ts.p._ald = false;
 		if($.inArray(ts.p.direction,["ltr","rtl"]) === -1) { ts.p.direction = "ltr"; }
 		dir = ts.p.direction;
 
@@ -1554,7 +1555,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 					rowData = [];
 				}
-				if(locdata || ts.p.treeGrid === true ) {
+				if(locdata || (ts.p.treeGrid === true && !(ts.p._ald)) ) {
 					rd[xmlid] = $.jgrid.stripPref(ts.p.idPrefix, rid);
 					ts.p.data.push(rd);
 					ts.p._index[rd[xmlid]] = ts.p.data.length-1;
@@ -1751,7 +1752,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 					rowData = [];
 				}
-				if(locdata || ts.p.treeGrid===true ) {
+				if(locdata || (ts.p.treeGrid===true && !(ts.p._ald))) {
 					rd[locid] = $.jgrid.stripPref(ts.p.idPrefix, idr);
 					ts.p.data.push(rd);
 					ts.p._index[rd[locid]] = ts.p.data.length-1;
@@ -2291,6 +2292,7 @@ $.fn.jqGrid = function( pin ) {
 				case "clientside":
 					beginReq();
 					ts.p.datatype = "local";
+					ts.p._ald = true;
 					var req = addLocalData();
 					addJSONData(req,rcnt,npage>1,adjust);
 					$(ts).triggerHandler("jqGridLoadComplete", [req]);
@@ -2298,6 +2300,7 @@ $.fn.jqGrid = function( pin ) {
 					$(ts).triggerHandler("jqGridAfterLoadComplete", [req]);
 					if (pvis) { ts.grid.populateVisible(); }
 					endReq();
+					ts.p._ald = false;
 				break;
 				}
 				ts.p._sort = false;
