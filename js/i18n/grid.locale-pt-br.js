@@ -10,6 +10,9 @@
  * Updated by Fabio Ferreira da Silva fabio_ferreiradasilva@yahoo.com.br
  * 
  *
+ * Updated by Anderson Pimentel anderson.pimentel[at]gmail.com
+ * 
+ * 
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
@@ -28,22 +31,22 @@ var locInfo = {
 	    emptyrecords: "Nenhum registro para visualizar",
 		loadtext: "Carregando...",
 		pgtext : "Página {0} de {1}",
-		pgfirst : "First Page",
-		pglast : "Last Page",
-		pgnext : "Next Page",
-		pgprev : "Previous Page",
-		pgrecs : "Records per Page",
-		showhide: "Toggle Expand Collapse Grid",
+		pgfirst : "Primeira Página",
+		pglast : "Última Página",
+		pgnext : "Próxima Página",
+		pgprev : "Página Anterior",
+		pgrecs : "Registros por Página",
+		showhide: "Exibir/Ocultar Grid",
 		savetext: "Salvando..."
 	},
 	search : {
 	    caption: "Procurar...",
 	    Find: "Procurar",
-	    Reset: "Resetar",
+	    Reset: "Limpar",
 	    odata: [{ oper:'eq', text:"igual"},{ oper:'ne', text:"diferente"},{ oper:'lt', text:"menor"},{ oper:'le', text:"menor ou igual"},{ oper:'gt', text:"maior"},{ oper:'ge', text:"maior ou igual"},{ oper:'bw', text:"inicia com"},{ oper:'bn', text:"não inicia com"},{ oper:'in', text:"está em"},{ oper:'ni', text:"não está em"},{ oper:'ew', text:"termina com"},{ oper:'en', text:"não termina com"},{ oper:'cn', text:"contém"},{ oper:'nc', text:"não contém"},{ oper:'nu', text:"nulo"},{ oper:'nn', text:"não nulo"}],
 	    groupOps: [	{ op: "AND", text: "todos" },{ op: "OR",  text: "qualquer um" }	],
-		operandTitle : "Click to select search operation.",
-		resetTitle : "Reset Search Value"
+		operandTitle : "Clique para escolher a operação de pesquisa.",
+		resetTitle : "Limpar valor da pesquisa"
 	},
 	edit : {
 	    addCaption: "Incluir",
@@ -90,7 +93,7 @@ var locInfo = {
 	    searchtext: "",
 	    searchtitle: "Procurar registros",
 	    refreshtext: "",
-	    refreshtitle: "Recarregando tabela",
+	    refreshtitle: "Recarregar tabela",
 	    alertcap: "Aviso",
 	    alerttext: "Por favor, selecione um registro",
 		viewtext: "",
