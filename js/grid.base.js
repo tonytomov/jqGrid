@@ -438,10 +438,22 @@ $.extend(true,jgrid,{
 		// Version tokens MSIE might not reflect the actual version of the browser
 		// If Compatibility View is enabled for a webpage or the browser mode is set to an earlier version
 		var rv = -1, match = /(MSIE) ([0-9]{1,}[.0-9]{0,})/.exec(navigator.userAgent);
-		if (match.length === 3) {
+		if (match != null && match.length === 3) {
 			rv = parseFloat(match[2] || -1);
 		}
 		return rv;
+	},
+	fixMaxHeightOfDiv: function (height) {
+		// we place the fixing of maximal height in the method to allow easy
+		// to overwrite the method and to change the behaviour of jqGrid
+		// in case of usage virtual scrolling
+		if (navigator.appName === "Microsoft Internet Explorer") {
+			return Math.min(height, 1533917); // ??? 1022611
+		}
+		if (/(Firefox)/.exec(navigator.userAgent) != null) {
+			return Math.min(height, 17895696);
+		}
+		return height;
 	},
 	getCellIndex : function (cell) {
 		var c = $(cell);
@@ -723,13 +735,13 @@ $.extend(true,jgrid,{
 				HEADER_DIV: 12,							// tagName: "div". class: "ui-jqgrid-hdiv"
 					HEADER_BOX_DIV: 13,					// tagName: "div". class: either "ui-jqgrid-hdiv" or "ui-jqgrid-hbox-rtl"
 						HEADER_TABLE: 14,				// tagName: "table". class: "ui-jqgrid-htable"
-							HEADER_COLS_ROW: 15,		// tagName: "tr". class: "jqgfirstrow"
+							HEADER_COLS_ROW: 15,		// tagName: "tr". class: "jqgfirstrow" or the row with column headers
 								HEADER_COLS: 16,		// tagName: "th". class: either "ui-first-th-rtl" or "ui-first-th-rtl"
 							SEARCH_TOOLBAR: 17,			// tagName: "tr". class: "ui-search-toolbar". Its direct children are th having class "ui-th-column" and optionally "ui-th-rtl"
 
 				BODY_DIV: 18,							// tagName: "div". class: "ui-jqgrid-bdiv"
-					BODY_SCROLL_FULL_DIV: 19,			// tagName: "div"
-						BODY_SCROLL_TOP_DIV: 20,		// tagName: "div"
+					BODY_SCROLL_FULL_DIV: 19,			// tagName: "div" - It can have height CSS property which simulate the total size of virtual data. 
+						BODY_SCROLL_TOP_DIV: 20,		// tagName: "div" - It can have height CSS property which simulate virtual data before the current displayed in btable. 
 							BODY_TABLE: 21,				// tagName: "table". class: "ui-jqgrid-btable". Id: gridId
 								BODY_COLS_ROW: 22,		// tagName: "tr". class: "jqgfirstrow"
 									BODY_COLS: 23,		// tagName: "td"
@@ -1838,6 +1850,23 @@ $.fn.jqGrid = function( pin ) {
 			headers:[],
 			cols:[],
 			footers: [],
+			// Some properties will be created dynamically on demand
+			// cDiv
+			// uDiv
+			// topDiv
+			// hDiv
+			// bDiv
+			// sDiv
+			// ubDiv
+			// fhDiv
+			// fbDiv
+			// fsDiv
+			// width
+			// newWidth
+			// resizing
+			// scrollTop
+			// timer
+			// prevRowHeight
 			dragStart: function(i,x,y) {
 				var self = this, $bDiv = $(self.bDiv), gridLeftPos = $bDiv.offset().left;
 				self.resizing = { idx: i, startX: x.pageX, sOL : x.pageX - gridLeftPos, moved: false };
@@ -2643,7 +2672,9 @@ $.fn.jqGrid = function( pin ) {
 					}
 				} else if(p.treeGrid === true && fpos > 0) {
 					$(self.rows[fpos]).after(rowData.join(''));
-				} else if (self.firstElementChild && (document.documentMode !== undefined && document.documentMode > 9)) {
+				} else if (p.scroll) {
+					$tbody.append(rowData.join(''));
+				} else if (self.firstElementChild && (document.documentMode != undefined || document.documentMode > 9)) {
 					self.firstElementChild.innerHTML += rowData.join(''); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
 					self.grid.cols = self.rows[0].cells; // update cached first row
 				} else {
@@ -2934,7 +2965,7 @@ $.fn.jqGrid = function( pin ) {
 				var rh = rows.outerHeight() || gridSelf.prevRowHeight;
 				if (rh) {
 					var top = base * rh;
-					var height = parseInt(p.records,10) * rh;
+					var height = jgrid.fixMaxHeightOfDiv.call(self, parseInt(p.records,10) * rh);
 					$(bDiv).children("div").first().css({height : height + "px"})
 						.children("div").first().css({height:top + "px",display:top + "px"?"":"none"});
 					if (bDiv.scrollTop === 0 && p.page > 1) {
