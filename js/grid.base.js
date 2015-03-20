@@ -904,9 +904,9 @@ $.fn.jqGrid = function( pin ) {
 			localData = pin.data;
 			pin.data = [];
 		}
-		if(!pin.hasOwnProperty("regional")) {
-			pin.regional = 'en';
-		}
+		//if(!pin.hasOwnProperty("regional")) {
+			//pin.regional = 'en';
+		//}
 
 		var p = $.extend(true,{
 			url: "",
@@ -1019,7 +1019,7 @@ $.fn.jqGrid = function( pin ) {
 			scrollLeftOffset : "100%", //percent
 			storeNavOptions: false,
 			regional :  "en"
-		}, $.jgrid.regional[pin.regional].defaults || {}, pin );
+		}, pin );
 		if (localData !== undefined) {
 			p.data = localData;
 			pin.data = localData;
