@@ -3,8 +3,11 @@
 
 //global functions
 (function () {
+    //   resolveJsonReferences                   - json = $.jgrid.ODataHelper.resolveJsonReferences(json, out refs);
+    //   convertXmlToJson                        - json = $.jgrid.ODataHelper.convertXmlToJson(xml);
+
     "use strict";
-    window.gridODataHelpers = {
+    $.jgrid.ODataHelper = {
 
         //http://stackoverflow.com/questions/15312529/resolve-circular-references-from-json-object
         resolveJsonReferences: function (json, refs) {
@@ -103,14 +106,14 @@
 
                     nodeName = item.nodeName;
                     if (obj[nodeName] === undefined) {
-                        obj[nodeName] = gridODataHelpers.convertXmlToJson(item);
+                        obj[nodeName] = $.jgrid.convertXmlToJson(item);
                     } else {
                         if (obj[nodeName].push === undefined) {
                             old = obj[nodeName];
                             obj[nodeName] = [];
                             obj[nodeName].push(old);
                         }
-                        obj[nodeName].push(gridODataHelpers.convertXmlToJson(item));
+                        obj[nodeName].push($.jgrid.convertXmlToJson(item));
                     }
                 }
             }
@@ -133,7 +136,42 @@
      * based on Richard Bennett gist code: jqGrid.ODataExtensions.js 
      * https://gist.github.com/dealproc/6678280
      *
-     * The use examples:		
+     *Functions:
+     *   odataGenColModel                        - $("#grid").jqGrid('odataGenColModel', {...});
+     *       This function generates jqgrid columns by requesting odata $metadata.
+     *       It is called by odataInit when gencolumns=true.
+     *       
+     *       Options:
+     *           async: false                    - set ajax sync/async for $metadata request (only async is supported)
+     *           entityType: null                - required field, odata entityType name
+     *           metadatatype: datatype || 'xml' - set ajax dataType for $metadata request
+     *           metadataurl: (odataurl || p.url) + '/$metadata' 
+     *                                           - set ajax url for $metadata request
+     *           successfunc: null               - odataGenColModel callback to see when metadata request is over and jqgrid can be refreshed
+     *           parsecolfunc: null              - event for converting parsed metadata data array in form of {name,type,nullable,iskey} to the jqgrid colModel array
+     *           parsemetadatafunc: null         - event for converting unparsed metadata data (xml or json) to the jqgrid colModel array
+     *           errorfunc: null                 - error callback
+     *
+     *       jqGrid Events:
+     *           jqGridODataParseMetadata        - the same as parsemetadatafunc
+     *           jqGridODataParseColumns         - the same as parsecolfunc
+     *
+     *   odataInit                               - $("#grid").jqGrid('odataInit', {...});
+     *       This is main plugin function. It should be called before colModel is initialized.
+     *       When columns are defined manually it can be called from events beforeInitGrid, onInitGrid.
+     *       When columns are created automatically it can be called from event beforeInitGrid only.
+     *       
+     *       Options:
+     *           gencolumns: false               - automatically generate columns from odata $metadata (calls odataGenColModel)
+     *           odataurl: p.url                 - required field, main odata url
+     *           datatype: 'json'                - ajax dataType, can be json or xml
+     *           entityType: null                - required field, odata entityType name
+     *           annotations: false              - use odata annotations for getting jqgrid parameters: page,records,count,total
+     *           annotationName: "@jqgrid.GridModelAnnotate" - odata annotations class and namespace
+     *           version                         - odata version, used to set $count=true or $inlinecount=allpages
+     *           errorfunc: null                 - error callback
+     *
+     * Examples:		
      * $("#grid").jqGrid({
      *    ...,
      *    beforeInitGrid: function () {           // can be also put at onInitGrid when columns are defined manually
@@ -502,9 +540,11 @@
                         errorfunc: null,
                         async: false,
                         entityType: null,
+                        metadatatype: options.datatype || 'xml',
                         metadataurl: (options.odataurl || p.url) + '/$metadata'
                     }, options || {});
 
+                    gencol.datatype = gencol.metadatatype;
                     if (gencol.async) {
                         gencol.successfunc = function () {
                             if ($t.grid.hDiv) { $t.grid.hDiv.loading = false; }
@@ -617,7 +657,7 @@
                 var intTypes = 'Edm.Byte,Edm.Int16,Edm.Int32,Edm.Int64,Edm.SByte';
                 var numTypes = 'Edm.Decimal,Edm.Double,Edm.Single';
 
-                if (o.datatype === 'json') { data = gridODataHelpers.resolveJsonReferences(data); }
+                if (o.datatype === 'json') { data = $.jgrid.ODataHelper.resolveJsonReferences(data); }
                 var newcol = $self.triggerHandler("jqGridODataParseMetadata", data);
                 if (newcol === undefined && $.isFunction(o.parsemetadatafunc)) { newcol = o.parsemetadatafunc(data, st, xhr); }
                 if (newcol === undefined) {
