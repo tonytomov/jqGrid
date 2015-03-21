@@ -106,7 +106,7 @@
 			actions: function () {
 				return {
 					formatter: "actions",
-					width: (this.p != null && this.p.fontAwesomeIcons ? 33 : 36) + ($.jgrid.cellWidth() ? 5 : 0),
+					width: (this.p != null && this.p.fontAwesomeIcons ? 33 : 36) + (jgrid.cellWidth() ? 5 : 0),
 					align: "center",
 					autoResizable: false,
 					frozen: true,
