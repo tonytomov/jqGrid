@@ -2,12 +2,12 @@
 /*global jQuery */
 
 //global functions
-(function () {
-    //   resolveJsonReferences                   - json = $.jgrid.ODataHelper.resolveJsonReferences(json, out refs);
-    //   convertXmlToJson                        - json = $.jgrid.ODataHelper.convertXmlToJson(xml);
+(function ($) {
+    //   resolveJsonReferences                   - json = $.jgrid.odataHelper.resolveJsonReferences(json, out refs);
+    //   convertXmlToJson                        - json = $.jgrid.odataHelper.convertXmlToJson(xml);
 
     "use strict";
-    $.jgrid.ODataHelper = {
+    $.jgrid.odataHelper = {
 
         //http://stackoverflow.com/questions/15312529/resolve-circular-references-from-json-object
         resolveJsonReferences: function (json, refs) {
@@ -106,14 +106,14 @@
 
                     nodeName = item.nodeName;
                     if (obj[nodeName] === undefined) {
-                        obj[nodeName] = $.jgrid.ODataHelper.convertXmlToJson(item);
+                        obj[nodeName] = $.jgrid.odataHelper.convertXmlToJson(item);
                     } else {
                         if (obj[nodeName].push === undefined) {
                             old = obj[nodeName];
                             obj[nodeName] = [];
                             obj[nodeName].push(old);
                         }
-                        obj[nodeName].push($.jgrid.ODataHelper.convertXmlToJson(item));
+                        obj[nodeName].push($.jgrid.odataHelper.convertXmlToJson(item));
                     }
                 }
             }
@@ -121,7 +121,7 @@
             return $.isEmptyObject(obj) ? null : obj;
         }
     };
-}());
+}(jQuery));
 
 
 (function ($) {
@@ -659,7 +659,7 @@
                 var intTypes = 'Edm.Byte,Edm.Int16,Edm.Int32,Edm.Int64,Edm.SByte';
                 var numTypes = 'Edm.Decimal,Edm.Double,Edm.Single';
 
-                if (o.datatype === 'json') { data = $.jgrid.ODataHelper.resolveJsonReferences(data); }
+                if (o.datatype === 'json') { data = $.jgrid.odataHelper.resolveJsonReferences(data); }
                 var newcol = $self.triggerHandler("jqGridODataParseMetadata", data);
                 if (newcol === undefined && $.isFunction(o.parsemetadatafunc)) { newcol = o.parsemetadatafunc(data, st, xhr); }
                 if (newcol === undefined) {
