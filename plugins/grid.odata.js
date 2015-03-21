@@ -106,14 +106,14 @@
 
                     nodeName = item.nodeName;
                     if (obj[nodeName] === undefined) {
-                        obj[nodeName] = $.jgrid.convertXmlToJson(item);
+                        obj[nodeName] = $.jgrid.ODataHelper.convertXmlToJson(item);
                     } else {
                         if (obj[nodeName].push === undefined) {
                             old = obj[nodeName];
                             obj[nodeName] = [];
                             obj[nodeName].push(old);
                         }
-                        obj[nodeName].push($.jgrid.convertXmlToJson(item));
+                        obj[nodeName].push($.jgrid.ODataHelper.convertXmlToJson(item));
                     }
                 }
             }
@@ -142,9 +142,9 @@
      *       It is called by odataInit when gencolumns=true.
      *       
      *       Options:
-     *           async: false                    - set ajax sync/async for $metadata request (only async is supported)
+     *           datatype: 'xml'                 - ajax dataType, can be json or xml           
+     *           async: false                    - set ajax sync/async for $metadata request (when calling from odataInit only async=false is supported)
      *           entityType: null                - required field, odata entityType name
-     *           metadatatype: datatype || 'xml' - set ajax dataType for $metadata request
      *           metadataurl: (odataurl || p.url) + '/$metadata' 
      *                                           - set ajax url for $metadata request
      *           successfunc: null               - odataGenColModel callback to see when metadata request is over and jqgrid can be refreshed
@@ -170,6 +170,8 @@
      *           annotationName: "@jqgrid.GridModelAnnotate" - odata annotations class and namespace
      *           version                         - odata version, used to set $count=true or $inlinecount=allpages
      *           errorfunc: null                 - error callback
+     *           metadatatype: datatype || 'xml' - when gencolumns=true, alternative ajax dataType for $metadata request
+     *           
      *
      * Examples:		
      * $("#grid").jqGrid({
