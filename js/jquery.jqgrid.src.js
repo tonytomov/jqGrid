@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-03-21
+ * Date: 2015-03-22
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -4746,7 +4746,11 @@ jgrid.extend({
 				aradd = false;
 			}
 			this.each(function() {
-				var t = this, p = t.p, datalen = rdata.length;
+				var t = this, p = t.p, datalen = rdata.length,
+				guiStyle = p.guiStyle || ($.jgrid.defaults || {}).guiStyle || "jQueryUI",
+				getGuiStyles = function (jqClasses, path) {
+					return mergeCssClasses(jqClasses, jgrid.getRes(jgrid.guiStyles[guiStyle], path));
+				};
 				ni = p.rownumbers===true ? 1 :0;
 				gi = p.multiselect ===true ? 1 :0;
 				si = p.subGrid===true ? 1 :0;
