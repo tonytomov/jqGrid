@@ -658,9 +658,8 @@
 		if(opts.formatoptions !== undefined) {
 			op = $.extend({},op,opts.formatoptions);
 		}		
-		if(!fmatter.isEmpty(cellval)) {
-			return jgrid.parseDate.call(this,op.newformat,cellval,op.srcformat,op);
-		}
-		return $FnFmatter.defaultFormat(cellval, opts);
+		return !fmatter.isEmpty(cellval) ?
+			jgrid.parseDate.call(this,op.newformat,cellval,op.srcformat,op) :
+			"";
 	};
 }(jQuery));
