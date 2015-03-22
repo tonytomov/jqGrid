@@ -9268,7 +9268,7 @@ jgrid.extend({
 							break;
 						case "date":
 							postdata[this.name] = $(this).val();
-							if (String(tmp[nm]).split("-").length === 3) {
+							if (String(postdata[this.name]).split("-").length === 3) {
 								var colName = this.name;
 								$.each(p.colModel, function(){
 									if (this.name === colName) {
