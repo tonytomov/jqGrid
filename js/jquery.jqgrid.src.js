@@ -11948,7 +11948,7 @@ jgrid.extend({
 						case 'textarea':
 						case "button" :
 							tmp[nm]=$("input, textarea",this).val();
-							if ($("input",this)[p.propOrAttr]("type") === "date") {
+							if ($("input",this)[p.propOrAttr]("type") === "date" && String(tmp[nm]).split("-").length === 3) {
 								var newformat = cm.formatoptions != null && cm.formatoptions.newformat ?
 										cm.formatoptions.newformat :
 										$self.jqGrid("getGridRes", "formatter.date.newformat");
