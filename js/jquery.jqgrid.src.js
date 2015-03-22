@@ -9265,7 +9265,18 @@ jgrid.extend({
 						case "textarea":
 						case "button":
 							postdata[this.name] = $(this).val();
-
+							break;
+						case "date":
+							postdata[this.name] = $(this).val();
+							var colName = this.name;
+							$.each(p.colModel, function(){
+								if (this.name === colName) {
+									var newformat = this.formatoptions != null && this.formatoptions.newformat ?
+											this.formatoptions.newformat :
+											$self.jqGrid("getGridRes", "formatter.date.newformat");
+									postdata[this.name] = $.jgrid.parseDate.call($self[0], "Y-m-d", postdata[this.name], newformat);
+								}
+							});
 						break;
 					}
 					// REMARK: to be exactly one should call htmlEncode LATER and to use validation and unformatting of unencoded data!!
@@ -11937,6 +11948,12 @@ jgrid.extend({
 						case 'textarea':
 						case "button" :
 							tmp[nm]=$("input, textarea",this).val();
+							if ($("input",this).attr("type") === "date") {
+								var newformat = cm.formatoptions != null && cm.formatoptions.newformat ?
+										cm.formatoptions.newformat :
+										$self.jqGrid("getGridRes", "formatter.date.newformat");
+								tmp[nm] = $.jgrid.parseDate.call($t, "Y-m-d", tmp[nm], newformat);
+							}
 							break;
 						case 'select':
 							if(!cm.editoptions.multiple) {
