@@ -9268,15 +9268,17 @@ jgrid.extend({
 							break;
 						case "date":
 							postdata[this.name] = $(this).val();
-							var colName = this.name;
-							$.each(p.colModel, function(){
-								if (this.name === colName) {
-									var newformat = this.formatoptions != null && this.formatoptions.newformat ?
-											this.formatoptions.newformat :
-											$self.jqGrid("getGridRes", "formatter.date.newformat");
-									postdata[this.name] = $.jgrid.parseDate.call($self[0], "Y-m-d", postdata[this.name], newformat);
-								}
-							});
+							if (String(tmp[nm]).split("-").length === 3) {
+								var colName = this.name;
+								$.each(p.colModel, function(){
+									if (this.name === colName) {
+										var newformat = this.formatoptions != null && this.formatoptions.newformat ?
+												this.formatoptions.newformat :
+												$self.jqGrid("getGridRes", "formatter.date.newformat");
+										postdata[this.name] = $.jgrid.parseDate.call($self[0], "Y-m-d", postdata[this.name], newformat);
+									}
+								});
+							}
 						break;
 					}
 					// REMARK: to be exactly one should call htmlEncode LATER and to use validation and unformatting of unencoded data!!
