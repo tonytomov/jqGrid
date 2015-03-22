@@ -470,6 +470,36 @@ $.extend(true,jgrid,{
 			}
 		}
 	},
+	guiStyles: {
+		jQueryUI: {
+			gBox: "ui-widget ui-widget-content ui-corner-all",	// ui-widget-content??? for the children of gbox
+			overlay: "ui-widget-overlay",
+			loading: "ui-state-default ui-state-active",
+			hDiv: "ui-state-default ui-corner-top",
+			hTable: "",
+			colHeaders: "ui-state-default",
+			states: {
+				select: "ui-state-highlight",
+				disabled: "ui-state-disabled",
+				hover: "ui-state-hover",	// can be table-hover on <table> only and style like .table-hover tbody tr:hover td
+				focus: "ui-state-focus",
+				active: "ui-state-active",
+				hidden: "ui-helper-hidden",	//??? 
+				textOfClickable: "ui-state-default"
+			},
+			grid: "",
+			gridRow: "ui-widget-content",
+			rowNum: "ui-state-default",
+			gridFooter: "ui-widget-content",
+			rowFooter: "ui-state-default",
+			gridTitle: "ui-widget-header ui-corner-top ui-helper-clearfix",
+			toolbarUpper: "ui-state-default",
+			toolbarBottom: "ui-state-default",
+			topPager: "ui-state-default",
+			pagerBottom: "ui-state-default ui-corner-bottom",
+			pagerButton: "ui-corner-all ui-state-disabled"
+		}
+	},
 	htmlDecode : function(value){
 		if(value && (value==='&nbsp;' || value==='&#160;' || (value.length===1 && value.charCodeAt(0)===160))) { return "";}
 		return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");		
@@ -1555,6 +1585,7 @@ var clearArray = jgrid.clearArray, jqID = jgrid.jqID,
 	getGridComponent = jgrid.getGridComponent, stripPref = jgrid.stripPref, randId = jgrid.randId,
 	getAccessor = jgrid.getAccessor, getCellIndex = jgrid.getCellIndex, convertOnSaveLocally = jgrid.convertOnSaveLocally,
 	stripHtml = jgrid.stripHtml, htmlEncode = jgrid.htmlEncode, htmlDecode = jgrid.htmlDecode,
+	mergeCssClasses = jgrid.mergeCssClasses,
 	feedback = function () {
 		// short form of $.jgrid.feedback to save usage this.p as the first parameter
 		var args = $.makeArray(arguments);
@@ -1564,6 +1595,9 @@ var clearArray = jgrid.clearArray, jqID = jgrid.jqID,
 		return jgrid.feedback.apply(this, args);
 	};
 
+/**
+ * @param {(string|Object)} pin
+ */
 $.fn.jqGrid = function( pin ) {
 	if (typeof pin === 'string') {
 		var fn = jgrid.getMethod(pin);
@@ -1580,8 +1614,12 @@ $.fn.jqGrid = function( pin ) {
 		locale = pin.locale || ($.jgrid.defaults || {}).locale || "en-US",
 		direction = locales[locale] != null && typeof locales[locale].isRTL === "boolean" ? (locales[locale].isRTL ? "rtl" : "ltr") : "ltr",
 		iconSet = pin.iconSet || ($.jgrid.defaults || {}).iconSet || "jQueryUI",
+		guiStyle = pin.guiStyle || ($.jgrid.defaults || {}).guiStyle || "jQueryUI",
 		getIcon = function (path) {
 			return jgrid.getIconRes(iconSet, path);
+		},
+		getGuiStyles = function (jqClasses, path) {
+			return mergeCssClasses(jqClasses, jgrid.getRes(jgrid.guiStyles[guiStyle], path));
 		};
 		if (pin == null) {
 			pin = { datatype: "local" };
@@ -2105,11 +2143,11 @@ $.fn.jqGrid = function( pin ) {
 
 		$(gv).insertBefore(ts);
 		$(ts).removeClass("scroll").appendTo(gv);
-		var eg = $("<div class='ui-jqgrid ui-widget ui-widget-content ui-corner-all'></div>");
+		var eg = $("<div class='" + getGuiStyles("ui-jqgrid", "gBox") + "'></div>");
 		$(eg).attr({"id": p.gBoxId,"dir": dir}).insertBefore(gv);
 		$(gv).attr("id", p.gViewId).appendTo(eg);
-		$("<div class='ui-widget-overlay jqgrid-overlay' id='lui_"+p.id+"'></div>").insertBefore(gv);
-		$("<div class='loading ui-state-default ui-state-active' id='load_"+p.id+"'>"+getDef("loadtext")+"</div>").insertBefore(gv);
+		$("<div class='" + getGuiStyles("jqgrid-overlay", "overlay") + "' id='lui_"+p.id+"'></div>").insertBefore(gv);
+		$("<div class='" + getGuiStyles("loading", "loading") + "' id='load_"+p.id+"'>"+getDef("loadtext")+"</div>").insertBefore(gv);
 		if (isMSIE7) {
 			$(ts).attr({cellspacing:"0"});
 		}
@@ -2185,7 +2223,7 @@ $.fn.jqGrid = function( pin ) {
 		},
 		addRowNum = function (pos,irow,pG,rN) {
 			var v = (parseInt(pG,10)-1)*parseInt(rN,10)+1+irow;
-			return "<td role=\"gridcell\" class=\"ui-state-default jqgrid-rownum\" "+
+			return "<td role=\"gridcell\" class=\"" + getGuiStyles("jqgrid-rownum", "rowNum") + "\" "+
 				formatCol(pos,irow,v, null, irow, true)+">"+v+"</td>";
 		},
 		reader = function (datatype) {
@@ -2306,7 +2344,7 @@ $.fn.jqGrid = function( pin ) {
 		},
 		constructTr = function(id, hide, altClass, rd, cur, selected) {
 			var tabindex = '-1', restAttr = '', attrName, style = hide ? 'display:none;' : '', self = this,
-				classes = 'ui-widget-content jqgrow ui-row-' + p.direction + (altClass ? ' ' + altClass : '') + (selected ? ' ui-state-highlight' : ''),
+				classes = getGuiStyles("jqgrow ui-row-" + p.direction, "gridRow") + (altClass ? " " + altClass : "") + (selected ? ' ui-state-highlight' : ""),
 				rowAttrObj = $(self).triggerHandler("jqGridRowAttr", [rd, cur, id]);
 			if( typeof rowAttrObj !== "object" ) {
 				rowAttrObj = $.isFunction(p.rowattr) ? p.rowattr.call(self, rd, cur, id) :
@@ -2962,7 +3000,7 @@ $.fn.jqGrid = function( pin ) {
 			var self = this, w = $pgTable.outerWidth(), fontSize;
 			if (w <= 0) { // not visible
 				fontSize = $(self).closest(".ui-jqgrid>.ui-jqgrid-view").css("font-size") || "11px";
-				$(document.body).append("<div id='testpg' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+
+				$(document.body).append("<div id='testpg' class='"+getGuiStyles("","gBox")+"' style='font-size:"+
 					fontSize+
 					";visibility:hidden;' ></div>");
 				$($pgTable).clone().appendTo("#testpg");
@@ -3715,7 +3753,7 @@ $.fn.jqGrid = function( pin ) {
 		for(iCol=0;iCol<p.colNames.length;iCol++){
 			cmi = p.colModel[iCol];
 			tooltip = p.headertitles ? (" title=\""+stripHtml(p.colNames[iCol])+"\"") :"";
-			thead += "<th id='"+p.id+"_"+cmi.name+"' role='columnheader' class='ui-state-default ui-th-column ui-th-"+dir+"'"+ tooltip+">";
+			thead += "<th id='"+p.id+"_"+cmi.name+"' role='columnheader' class='"+getGuiStyles("ui-th-column ui-th-"+dir, "colHeaders")+"'"+ tooltip+">";
 			idn = cmi.index || cmi.name;
 			switch (cmi.labelAlign) {
 				case "left":
@@ -3841,7 +3879,7 @@ $.fn.jqGrid = function( pin ) {
 		});
 		$(gv).css("width",grid.width+"px");
 		var	tfoot = "";
-		if(p.footerrow) { tfoot += "<table role='presentation' style='width:"+p.tblwidth+"px' class='ui-jqgrid-ftable'"+(isMSIE7 ? " cellspacing='0'" : "")+"><tbody><tr role='row' class='ui-widget-content footrow footrow-"+dir+"'>"; }
+		if(p.footerrow) { tfoot += "<table role='presentation' style='width:"+p.tblwidth+"px' class='ui-jqgrid-ftable'"+(isMSIE7 ? " cellspacing='0'" : "")+"><tbody><tr role='row' class='"+getGuiStyles("footrow footrow-"+dir,"rowFooter")+"'>"; }
 		var firstr = "<tr class='jqgfirstrow' role='row' style='height:auto'>";
 		p.disableClick=false;
 		$("th",ts.tHead.rows[0]).each(function (j) {
@@ -3971,15 +4009,15 @@ $.fn.jqGrid = function( pin ) {
 		firstr += "</tr>";
 		tbody = document.createElement("tbody");
 		ts.appendChild(tbody);
-		$(ts).addClass('ui-jqgrid-btable').append(firstr);
+		$(ts).addClass(getGuiStyles("ui-jqgrid-btable", "grid")).append(firstr);
 		firstr = null;
-		var hTable = $("<table class='ui-jqgrid-htable' style='width:"+p.tblwidth+"px' role='presentation' aria-labelledby='gbox_"+p.id+"'"+(isMSIE7 ? " cellspacing='0'" : "")+"></table>").append(ts.tHead),
+		var hTable = $("<table class='"+getGuiStyles("ui-jqgrid-htable", "hTable")+"' style='width:"+p.tblwidth+"px' role='presentation' aria-labelledby='gbox_"+p.id+"'"+(isMSIE7 ? " cellspacing='0'" : "")+"></table>").append(ts.tHead),
 		hg = (p.caption && p.hiddengrid===true) ? true : false,
 		hb = $("<div class='ui-jqgrid-hbox" + (dir==="rtl" ? "-rtl" : "" )+"'></div>");
 		grid.hDiv = document.createElement("div");
 		$(grid.hDiv)
 			.css({ width: grid.width+"px"})
-			.addClass("ui-state-default ui-jqgrid-hdiv")
+			.addClass(getGuiStyles("ui-jqgrid-hdiv", "hDiv"))
 			.append(hb);
 		$(hb).append(hTable);
 		hTable = null;
@@ -4006,7 +4044,7 @@ $.fn.jqGrid = function( pin ) {
 				pagerId = $pager.attr("id");
 			}
 			if ($pager.length > 0) {
-				$pager.css({width: grid.width+"px"}).addClass('ui-state-default ui-jqgrid-pager ui-corner-bottom').appendTo(eg);
+				$pager.css({width: grid.width+"px"}).addClass(getGuiStyles("ui-jqgrid-pager", "pagerBottom")).appendTo(eg);
 				if(hg) {$pager.hide();}
 				setPager.call(ts, pagerId, '');
 				p.pager = "#" + jqID(pagerId); // hold ESCAPED id selector in the pager
@@ -4178,19 +4216,20 @@ $.fn.jqGrid = function( pin ) {
 			function() {arf.removeClass('ui-state-hover');})
 		.append("<span class='" + visibleGridIcon + "'></span>") : "";
 		$(grid.cDiv).append("<span class='ui-jqgrid-title'>"+p.caption+"</span>").append(arf)
-		.addClass("ui-jqgrid-titlebar ui-jqgrid-caption"+(dir==="rtl" ? "-rtl" :"" )+" ui-widget-header ui-corner-top ui-helper-clearfix");
+		.addClass(getGuiStyles("ui-jqgrid-titlebar ui-jqgrid-caption"+(dir==="rtl" ? "-rtl" :"" ), "gridTitle"));
 		$(grid.cDiv).insertBefore(grid.hDiv);
 		if( p.toolbar[0] ) {
 			grid.uDiv = document.createElement("div");
 			if(p.toolbar[1] === "top") {$(grid.uDiv).insertBefore(grid.hDiv);}
 			else if (p.toolbar[1]==="bottom" ) {$(grid.uDiv).insertAfter(grid.hDiv);}
+			var toolbarUpperClasses = getGuiStyles("ui-userdata", "toolbarUpper");
 			if(p.toolbar[1]==="both") {
 				grid.ubDiv = document.createElement("div");
-				$(grid.uDiv).addClass("ui-userdata ui-state-default").attr("id","t_"+p.id).insertBefore(grid.hDiv);
-				$(grid.ubDiv).addClass("ui-userdata ui-state-default").attr("id","tb_"+p.id).insertAfter(grid.hDiv);
+				$(grid.uDiv).addClass(toolbarUpperClasses).attr("id","t_"+p.id).insertBefore(grid.hDiv);
+				$(grid.ubDiv).addClass(getGuiStyles("ui-userdata", "toolbarBottom")).attr("id","tb_"+p.id).insertAfter(grid.hDiv);
 				if(hg)  {$(grid.ubDiv).hide();}
 			} else {
-				$(grid.uDiv).width(grid.width).addClass("ui-userdata ui-state-default").attr("id","t_"+p.id);
+				$(grid.uDiv).width(grid.width).addClass(toolbarUpperClasses).attr("id","t_"+p.id);
 			}
 			if(hg) {$(grid.uDiv).hide();}
 		}
@@ -4198,7 +4237,7 @@ $.fn.jqGrid = function( pin ) {
 		if(p.toppager) {
 			p.toppager = p.id+"_toppager";
 			grid.topDiv = $("<div id='"+p.toppager+"'></div>")[0];
-			$(grid.topDiv).addClass('ui-state-default ui-jqgrid-toppager').css({width: grid.width+"px"}).insertBefore(grid.hDiv);
+			$(grid.topDiv).addClass(getGuiStyles("ui-jqgrid-toppager", "topPager")).css({width: grid.width+"px"}).insertBefore(grid.hDiv);
 			setPager.call(ts, p.toppager, '_t');
 			p.toppager = "#"+jqID(p.toppager); // hold ESCAPED id selector in the toppager option
 		} else if (p.pager === "" && !p.scroll) {
@@ -4210,7 +4249,7 @@ $.fn.jqGrid = function( pin ) {
 			$(grid.sDiv).append(hb).width(grid.width).insertAfter(grid.hDiv);
 			$(hb).append(tfoot);
 			grid.footers = $(".ui-jqgrid-ftable",grid.sDiv)[0].rows[0].cells;
-			if(p.rownumbers) { grid.footers[0].className = 'ui-state-default jqgrid-rownum'; }
+			if(p.rownumbers) { grid.footers[0].className = getGuiStyles("jqgrid-rownum", "rowNum"); }
 			if(hg) {$(grid.sDiv).hide();}
 		}
 		hb = null;
@@ -4740,7 +4779,7 @@ jgrid.extend({
 					rowid  = p.idPrefix + rowid;
 					if(ni){
 						prp = t.formatCol(0,1,'',null,rowid, true);
-						row.push("<td role=\"gridcell\" class=\"ui-state-default jqgrid-rownum\" "+prp+">0</td>");
+						row.push("<td role=\"gridcell\" class=\""+getGuiStyles("jqgrid-rownum", "rowNum")+"\" "+prp+">0</td>");
 					}
 					if(gi) {
 						v = "<input role=\"checkbox\" type=\"checkbox\""+" id=\"jqg_"+p.id+"_"+rowid+"\" class=\"cbox\" aria-checked=\"false\"/>";
@@ -15614,10 +15653,9 @@ jgrid.extend({
 		if(opts.formatoptions !== undefined) {
 			op = $.extend({},op,opts.formatoptions);
 		}		
-		if(!fmatter.isEmpty(cellval)) {
-			return jgrid.parseDate.call(this,op.newformat,cellval,op.srcformat,op);
-		}
-		return $FnFmatter.defaultFormat(cellval, opts);
+		return !fmatter.isEmpty(cellval) ?
+			jgrid.parseDate.call(this,op.newformat,cellval,op.srcformat,op) :
+			"";
 	};
 }(jQuery));
 /*jslint browser: true, vars: true, white: true, regexp: true */
