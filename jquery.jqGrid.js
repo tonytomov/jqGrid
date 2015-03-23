@@ -1,11 +1,12 @@
 //This file should be used if you want to debug and develop
 function jqGridInclude()
 {
+    var deferred = new jQuery.Deferred();
+    
     var pathtojsfiles = "js/"; // need to be ajusted
     // set include to false if you do not want some modules to be included
     var modules = [
         { include: true, incfile:'i18n/grid.locale-en.js'}, // jqGrid translation
-        { include: true, incfile:'grid.base.js'}, // jqGrid base
         { include: true, incfile:'grid.common.js'}, // jqGrid common for editing
         { include: true, incfile:'grid.formedit.js'}, // jqGrid Form editing
         { include: true, incfile:'grid.inlinedit.js'}, // jqGrid inline editing
@@ -21,30 +22,31 @@ function jqGridInclude()
         { include: true, incfile:'grid.jqueryui.js'}, //jQuery UI utils
         { include: true, incfile:'grid.filter.js'} // filter Plugin
     ];
-    var filename;
-    for(var i=0;i<modules.length; i++)
+    
+    var includeJs = function( module )
     {
-        if(modules[i].include === true) {
-        	filename = pathtojsfiles+modules[i].incfile;
-			if(jQuery.browser.safari) {
-				jQuery.ajax({url:filename,dataType:'script', async:false, cache: true});
-			} else {
-				if (jQuery.browser.msie) {
-					document.write('<script charset="utf-8" type="text/javascript" src="'+filename+'"></script>');
-				} else {
-					IncludeJavaScript(filename);
-				}
-			}
-		}
-    }
-	function IncludeJavaScript(jsFile)
+        if ( module.include === true )
+        {
+            return jQuery.getScript( pathtojsfiles+module.incfile );
+        }
+    };
+    
+    // First get base, then everything else
+    jQuery.getScript(pathtojsfiles+'grid.base.js').then(function()
     {
-        var oHead = document.getElementsByTagName('head')[0];
-        var oScript = document.createElement('script');
-        oScript.setAttribute('type', 'text/javascript');
-        oScript.setAttribute('language', 'javascript');
-        oScript.setAttribute('src', jsFile);
-        oHead.appendChild(oScript);
-    }
+        jQuery.when.apply(jQuery, jQuery.map(modules, includeJs)).then(function()
+        {
+            deferred.resolve();
+        }).fail(function()
+        {
+            deferred.reject();
+        });
+    });
+    
+    return deferred.promise();
 }
-jqGridInclude();
+
+// Instead of using $(document).ready(function(){  }); you should use
+jQuery.when( jqGridInclude() ).then(function(){
+    // do stuff	
+});
