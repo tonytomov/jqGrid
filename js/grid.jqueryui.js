@@ -269,7 +269,7 @@ $.jgrid.extend({
 				}
 			},
 			msel_opts : {}
-		}, regional );
+		}, regional, opts || {} );
 		if($.ui) {
 			if ($.ui.multiselect && $.ui.multiselect.defaults) {
 				if (!$.jgrid._multiselect) {
