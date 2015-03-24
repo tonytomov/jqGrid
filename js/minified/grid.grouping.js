@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v4.8.1 
+* @license Guriddo jqGrid JS - v4.8.2 
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334

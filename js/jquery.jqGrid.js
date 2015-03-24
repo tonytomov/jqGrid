@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v4.8.1 - 2015-03-22
+* @license Guriddo jqGrid JS - v4.8.2 - 2015-03-24
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -20,8 +20,11 @@
 "use strict";
 //module begin
 $.jgrid = $.jgrid || {};
+if(!$.jgrid.hasOwnProperty("defaults")) {
+	$.jgrid.defaults = {};
+}
 $.extend($.jgrid,{
-	version : "4.8.1",
+	version : "4.8.2",
 	htmlDecode : function(value){
 		if(value && (value==='&nbsp;' || value==='&#160;' || (value.length===1 && value.charCodeAt(0)===160))) { return "";}
 		return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");		
@@ -113,7 +116,7 @@ $.extend($.jgrid,{
 		},
 		offset =0;
 		if(opts === undefined) {
-			opts = $.jgrid.getRegional(ts, "formatter.date");//$.jgrid.formatter.date;
+			opts = $.jgrid.getRegional(this, "formatter.date");//$.jgrid.formatter.date;
 		}
 		// old lang files
 		if(opts.parseRe === undefined ) {
@@ -351,7 +354,8 @@ $.extend($.jgrid,{
 	from : function(source){
 		// Original Author Hugo Bonacci
 		// License MIT http://jlinq.codeplex.com/license
-		var QueryObject=function(d,q){
+		var $t = this,
+		QueryObject=function(d,q){
 		if(typeof d==="string"){
 			d=$.data(d);
 		}
@@ -528,7 +532,7 @@ $.extend($.jgrid,{
 				};
 			} else if(type === 'date' || type === 'datetime') {
 				findSortKey = function($cell) {
-					return $.jgrid.parseDate(dfmt,$cell).getTime();
+					return $.jgrid.parseDate.call($t, dfmt, $cell).getTime();
 				};
 			} else if($.isFunction(type)) {
 				findSortKey = type;
@@ -707,8 +711,8 @@ $.extend($.jgrid,{
 					break;
 				case 'date':
 				case 'datetime':
-					val = String($.jgrid.parseDate(t.newfmt || 'Y-m-d',val).getTime());
-					fld = 'jQuery.jgrid.parseDate("'+t.srcfmt+'",'+fld+').getTime()';
+					val = String($.jgrid.parseDate.call($t, t.srcfmt || 'Y-m-d',val).getTime());
+					fld = 'jQuery.jgrid.parseDate.call(jQuery("#'+$.jgrid.jqID($t.p.id)+'")[0],"'+t.srcfmt+'",'+fld+').getTime()';
 					break;
 				default :
 					fld=self._getStr(fld);
@@ -1011,7 +1015,7 @@ $.fn.jqGrid = function( pin ) {
 			scrollLeftOffset : "100%", //percent
 			storeNavOptions: false,
 			regional :  "en"
-		}, $.jgrid.defaults || {} , pin );
+		}, $.jgrid.defaults , pin );
 		if (localData !== undefined) {
 			p.data = localData;
 			pin.data = localData;
@@ -1926,7 +1930,7 @@ $.fn.jqGrid = function( pin ) {
 				'nn':function(queryObj,op) {return op === "OR" ? queryObj.orNot().isNull : queryObj.andNot().isNull;}
 
 			},
-			query = $.jgrid.from(ts.p.data);
+			query = $.jgrid.from.call(ts, ts.p.data);
 			if (ts.p.ignoreCase) { query = query.ignoreCase(); }
 			function tojLinq ( group ) {
 				var s = 0, index, gor, ror, opr, rule, fld;
@@ -1969,7 +1973,7 @@ $.fn.jqGrid = function( pin ) {
 								fld = cmtypes[rule.field];
 								if(fld.stype === 'date') {
 									if(fld.srcfmt && fld.newfmt && fld.srcfmt !== fld.newfmt ) {
-										rule.data = $.jgrid.parseDate(fld.newfmt, rule.data, fld.srcfmt);
+										rule.data = $.jgrid.parseDate.call(ts, fld.newfmt, rule.data, fld.srcfmt);
 									}
 								}
 								query = compareFnMap[rule.op](query, opr)(rule.field, rule.data, cmtypes[rule.field]);
@@ -1993,7 +1997,7 @@ $.fn.jqGrid = function( pin ) {
 						sfld = cmtypes[ts.p.postData.searchField];
 						if(sfld.stype === 'date') {
 							if(sfld.srcfmt && sfld.newfmt && sfld.srcfmt !== sfld.newfmt ) {
-								ts.p.postData.searchString = $.jgrid.parseDate(sfld.newfmt, ts.p.postData.searchString, sfld.srcfmt);
+								ts.p.postData.searchString = $.jgrid.parseDate.call(ts, sfld.newfmt, ts.p.postData.searchString, sfld.srcfmt);
 							}
 						}
 						query = compareFnMap[ts.p.postData.searchOper](query)(ts.p.postData.searchField, ts.p.postData.searchString,cmtypes[ts.p.postData.searchField]);
@@ -10902,7 +10906,7 @@ $.jgrid.extend({
 				}
 			},
 			msel_opts : {}
-		}, regional );
+		}, regional, opts || {} );
 		if($.ui) {
 			if ($.ui.multiselect && $.ui.multiselect.defaults) {
 				if (!$.jgrid._multiselect) {
@@ -11666,7 +11670,7 @@ $.jgrid.extend({
 			function pivot( data) {
 				var pivotGrid = jQuery($t).jqGrid('pivotSetup',data, pivotOpt),
 				footerrow = $.assocArraySize(pivotGrid.summary) > 0 ? true : false,
-				query= $.jgrid.from(pivotGrid.rows), i;
+				query= $.jgrid.from.call($t, pivotGrid.rows), i;
 				for(i=0; i< pivotGrid.groupOptions.groupingView.groupField.length; i++) {
 					query.orderBy(pivotGrid.groupOptions.groupingView.groupField[i], "a", 'text', '');
 				}
@@ -12482,7 +12486,7 @@ $.jgrid.extend({
 			rec, records = [], $t = this, query, roots,
 			rt = $(this).jqGrid("getRootNodes", $t.p.search);
 			// Sorting roots
-			query = $.jgrid.from(rt);
+			query = $.jgrid.from.call(this, rt);
 			query.orderBy(sortname,newDir,st, datefmt);
 			roots = query.select();
 
@@ -12531,7 +12535,7 @@ $.jgrid.extend({
 			var i, len,
 			child, ch, query, children;
 			ch = $(this).jqGrid("getNodeChildren",rec);
-			query = $.jgrid.from(ch);
+			query = $.jgrid.from.call(this, ch);
 			query.orderBy(sortname, newDir, st, datefmt);
 			children = query.select();
 			for (i = 0, len = children.length; i < len; i++) {
@@ -12570,7 +12574,7 @@ $.jgrid.extend({
 				}
 				if( $t.p.treeGridModel === "nested") {
 					// ToDo - update grid data
-					res = $.jgrid.from($t.p.data)
+					res = $.jgrid.from.call($t, $t.p.data)
 						.greater(left,myright,{stype:'integer'})
 						.select();
 					if(res.length) {
@@ -12580,7 +12584,7 @@ $.jgrid.extend({
 							}
 						}
 					}
-					res = $.jgrid.from($t.p.data)
+					res = $.jgrid.from.call($t, $t.p.data)
 						.greater(right,myright,{stype:'integer'})
 						.select();
 					if(res.length) {
@@ -12669,7 +12673,7 @@ $.jgrid.extend({
 				// ToDo - update grid data
 				if(parentid !== null) {
 					maxright = parseInt(parentdata[right],10);
-					query = $.jgrid.from($t.p.data);
+					query = $.jgrid.from.call($t, $t.p.data);
 					query = query.greaterOrEquals(right,maxright,{stype:'integer'});
 					res = query.select();
 					if(res.length) {
@@ -12684,7 +12688,7 @@ $.jgrid.extend({
 					data[right]= maxright+1;
 				} else {
 					maxright = parseInt( $($t).jqGrid('getCol', right, false, 'max'), 10);
-					res = $.jgrid.from($t.p.data)
+					res = $.jgrid.from.call($t, $t.p.data)
 						.greater(left,maxright,{stype:'integer'})
 						.select();
 					if(res.length) {
@@ -12694,7 +12698,7 @@ $.jgrid.extend({
 							}
 						}
 					}
-					res = $.jgrid.from($t.p.data)
+					res = $.jgrid.from.call($t, $t.p.data)
 						.greater(right,maxright,{stype:'integer'})
 						.select();
 					if(res.length) {
@@ -13025,7 +13029,7 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 			return $.fn.fmatter.defaultFormat(cellval, opts);
 		}
 		if(!$.fmatter.isEmpty(cellval)) {
-			return $.jgrid.parseDate(op.srcformat,cellval,op.newformat,op);
+			return $.jgrid.parseDate.call(this, op.srcformat,cellval,op.newformat,op);
 		}
 		return $.fn.fmatter.defaultFormat(cellval, opts);
 	};
@@ -13286,7 +13290,7 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 			op = $.extend({},op,opts.formatoptions);
 		}		
 		if(!$.fmatter.isEmpty(cellval)) {
-			return $.jgrid.parseDate(op.newformat,cellval,op.srcformat,op);
+			return $.jgrid.parseDate.call(this, op.newformat,cellval,op.srcformat,op);
 		}
 		return $.fn.fmatter.defaultFormat(cellval, opts);
 	};
