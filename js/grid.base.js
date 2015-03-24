@@ -25,6 +25,9 @@
 "use strict";
 //module begin
 $.jgrid = $.jgrid || {};
+if(!$.jgrid.hasOwnProperty("defaults")) {
+	$.jgrid.defaults = {};
+}
 $.extend($.jgrid,{
 	version : "4.8.1",
 	htmlDecode : function(value){
@@ -1016,7 +1019,7 @@ $.fn.jqGrid = function( pin ) {
 			scrollLeftOffset : "100%", //percent
 			storeNavOptions: false,
 			regional :  "en"
-		}, $.jgrid.defaults || {} , pin );
+		}, $.jgrid.defaults , pin );
 		if (localData !== undefined) {
 			p.data = localData;
 			pin.data = localData;
