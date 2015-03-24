@@ -121,7 +121,7 @@ $.extend($.jgrid,{
 		},
 		offset =0;
 		if(opts === undefined) {
-			opts = $.jgrid.getRegional(ts, "formatter.date");//$.jgrid.formatter.date;
+			opts = $.jgrid.getRegional(this, "formatter.date");//$.jgrid.formatter.date;
 		}
 		// old lang files
 		if(opts.parseRe === undefined ) {
@@ -359,7 +359,8 @@ $.extend($.jgrid,{
 	from : function(source){
 		// Original Author Hugo Bonacci
 		// License MIT http://jlinq.codeplex.com/license
-		var QueryObject=function(d,q){
+		var $t = this,
+		QueryObject=function(d,q){
 		if(typeof d==="string"){
 			d=$.data(d);
 		}
@@ -536,7 +537,7 @@ $.extend($.jgrid,{
 				};
 			} else if(type === 'date' || type === 'datetime') {
 				findSortKey = function($cell) {
-					return $.jgrid.parseDate(dfmt,$cell).getTime();
+					return $.jgrid.parseDate.call($t, dfmt, $cell).getTime();
 				};
 			} else if($.isFunction(type)) {
 				findSortKey = type;
@@ -715,8 +716,8 @@ $.extend($.jgrid,{
 					break;
 				case 'date':
 				case 'datetime':
-					val = String($.jgrid.parseDate(t.newfmt || 'Y-m-d',val).getTime());
-					fld = 'jQuery.jgrid.parseDate("'+t.srcfmt+'",'+fld+').getTime()';
+					val = String($.jgrid.parseDate.call($t, t.srcfmt || 'Y-m-d',val).getTime());
+					fld = 'jQuery.jgrid.parseDate.call(jQuery("#'+$.jgrid.jqID($t.p.id)+'")[0],"'+t.srcfmt+'",'+fld+').getTime()';
 					break;
 				default :
 					fld=self._getStr(fld);
@@ -1934,7 +1935,7 @@ $.fn.jqGrid = function( pin ) {
 				'nn':function(queryObj,op) {return op === "OR" ? queryObj.orNot().isNull : queryObj.andNot().isNull;}
 
 			},
-			query = $.jgrid.from(ts.p.data);
+			query = $.jgrid.from.call(ts, ts.p.data);
 			if (ts.p.ignoreCase) { query = query.ignoreCase(); }
 			function tojLinq ( group ) {
 				var s = 0, index, gor, ror, opr, rule, fld;
@@ -1977,7 +1978,7 @@ $.fn.jqGrid = function( pin ) {
 								fld = cmtypes[rule.field];
 								if(fld.stype === 'date') {
 									if(fld.srcfmt && fld.newfmt && fld.srcfmt !== fld.newfmt ) {
-										rule.data = $.jgrid.parseDate(fld.newfmt, rule.data, fld.srcfmt);
+										rule.data = $.jgrid.parseDate.call(ts, fld.newfmt, rule.data, fld.srcfmt);
 									}
 								}
 								query = compareFnMap[rule.op](query, opr)(rule.field, rule.data, cmtypes[rule.field]);
@@ -2001,7 +2002,7 @@ $.fn.jqGrid = function( pin ) {
 						sfld = cmtypes[ts.p.postData.searchField];
 						if(sfld.stype === 'date') {
 							if(sfld.srcfmt && sfld.newfmt && sfld.srcfmt !== sfld.newfmt ) {
-								ts.p.postData.searchString = $.jgrid.parseDate(sfld.newfmt, ts.p.postData.searchString, sfld.srcfmt);
+								ts.p.postData.searchString = $.jgrid.parseDate.call(ts, sfld.newfmt, ts.p.postData.searchString, sfld.srcfmt);
 							}
 						}
 						query = compareFnMap[ts.p.postData.searchOper](query)(ts.p.postData.searchField, ts.p.postData.searchString,cmtypes[ts.p.postData.searchField]);
