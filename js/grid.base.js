@@ -1589,11 +1589,7 @@ $.fn.jqGrid = function( pin ) {
 					$(ts.rows[fpos]).after(rowData.join(''));
 				} else {
 					//$("tbody:first",t).append(rowData.join(''));
-					if (ts.firstElementChild) {
-						ts.firstElementChild.innerHTML += rowData.join(''); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
-					} else {
-						$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
-					}
+					$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
 					ts.grid.cols = ts.rows[0].cells; // update cached first row
 				}
 			}
@@ -1784,11 +1780,7 @@ $.fn.jqGrid = function( pin ) {
 				} else if(ts.p.treeGrid === true && fpos > 0) {
 					$(ts.rows[fpos]).after(rowData.join(''));
 				} else { 
-					if (ts.firstElementChild) {
-						ts.firstElementChild.innerHTML += rowData.join(''); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
-					} else {
-						$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
-					}
+					$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
 					ts.grid.cols = ts.rows[0].cells;
 				}
 			}
