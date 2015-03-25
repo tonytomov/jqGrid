@@ -220,7 +220,7 @@ jgrid.locales = jgrid.locales || {};
 var locales = jgrid.locales;
 
 /**
- * Enum with different elements of jqGrid.
+ * Enum with different components of jqGrid.
  * @enum {number} @const
  */
 var COMPONENT_NAMES = {

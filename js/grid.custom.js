@@ -512,9 +512,9 @@ jgrid.extend({
 							$.ajax($.extend({
 								url: surl,
 								dataType: "html",
-								success: function (data) {
+								success: function (data, textStatus, jqXHR) {
 									if(soptions.buildSelect !== undefined) {
-										var d = soptions.buildSelect(data);
+										var d = soptions.buildSelect(data,jqXHR);
 										if (d) {
 											$("td",stbl).eq(1).append(d);
 										}
