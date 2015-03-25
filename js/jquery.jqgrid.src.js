@@ -299,7 +299,7 @@ if (jgrid.defaults == null || $.isEmptyObject(locales) || locales["en-US"] === u
 	// only to have more compatibility with the previous version of jqGrid.
 	// We don't make this currently.
 	if (locales["en-US"] === undefined) {
-		$.extend(true, $.jgrid, /*englishLanguageDefaults,*/ {
+		$.extend(true, jgrid, /*englishLanguageDefaults,*/ {
 			locales: {
 				"en-US": englishLanguageDefaults	// and for English US
 			}
@@ -310,6 +310,8 @@ if (jgrid.defaults == null || $.isEmptyObject(locales) || locales["en-US"] === u
 		jgrid.defaults.locale = "en-US";
 	}
 }
+jgrid.defaults = jgrid.defaults || {};
+var defaults = jgrid.defaults;
 
 //if (jgrid.defaults.locale && locales[jgrid.defaults.locale]) {
 //	$.extend(true, $.jgrid, locales[jgrid.defaults.locale]); // add to improve compatibility only
@@ -1610,11 +1612,11 @@ $.fn.jqGrid = function( pin ) {
 	return this.each( function() {
 		if(this.grid) {return;}
 		var ts = this, localData, localDataStr,
-		fatalErrorFunction = jgrid.defaults != null && $.isFunction(jgrid.defaults.fatalError) ? jgrid.defaults.fatalError : alert,
-		locale = pin.locale || ($.jgrid.defaults || {}).locale || "en-US",
+		fatalErrorFunction = $.isFunction(defaults.fatalError) ? defaults.fatalError : alert,
+		locale = pin.locale || defaults.locale || "en-US",
 		direction = locales[locale] != null && typeof locales[locale].isRTL === "boolean" ? (locales[locale].isRTL ? "rtl" : "ltr") : "ltr",
-		iconSet = pin.iconSet || ($.jgrid.defaults || {}).iconSet || "jQueryUI",
-		guiStyle = pin.guiStyle || ($.jgrid.defaults || {}).guiStyle || "jQueryUI",
+		iconSet = pin.iconSet || defaults.iconSet || "jQueryUI",
+		guiStyle = pin.guiStyle || defaults.guiStyle || "jQueryUI",
 		getIcon = function (path) {
 			return jgrid.getIconRes(iconSet, path);
 		},
@@ -1787,7 +1789,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 		},
 		//locales[locale].defaults,
-		jgrid.defaults,
+		defaults,
 		{
 			navOptions: $.extend(true, {
 				commonIconClass: getIcon("nav.common"),
@@ -2528,13 +2530,14 @@ $.fn.jqGrid = function( pin ) {
 					}
 				} else if(p.treeGrid === true && fpos > 0) {
 					$(self.rows[fpos]).after(rowData.join(''));
-				} else if (self.firstElementChild && (document.documentMode !== undefined && document.documentMode > 9)) {
-					//$("tbody:first",self.grid.bDiv).append(rowData.join(''));
-					self.firstElementChild.innerHTML += rowData.join(''); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
+				} else if (p.scroll) {
+					$tbody.append(rowData.join(''));
+				} else if (self.firstElementChild == null || (document.documentMode != undefined && document.documentMode <= 9)) {
+					// for IE8 for example
+					$tbody.html($tbody.html() + rowData.join('')); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
 					self.grid.cols = self.rows[0].cells; // update cached first row
 				} else {
-					// for IE8 for example
-					$tbody($tbody.html() + rowData.join('')); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
+					self.firstElementChild.innerHTML += rowData.join(''); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
 					self.grid.cols = self.rows[0].cells; // update cached first row
 				}
 			}
@@ -2736,12 +2739,12 @@ $.fn.jqGrid = function( pin ) {
 					$(self.rows[fpos]).after(rowData.join(''));
 				} else if (p.scroll) {
 					$tbody.append(rowData.join(''));
-				} else if (self.firstElementChild && (document.documentMode != undefined || document.documentMode > 9)) {
-					self.firstElementChild.innerHTML += rowData.join(''); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
-					self.grid.cols = self.rows[0].cells; // update cached first row
-				} else {
+				} else if (self.firstElementChild == null || (document.documentMode != undefined && document.documentMode <= 9)) {
 					// for IE8 for example
 					$tbody.html($tbody.html() + rowData.join('')); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
+					self.grid.cols = self.rows[0].cells; // update cached first row
+				} else {
+					self.firstElementChild.innerHTML += rowData.join(''); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
 					self.grid.cols = self.rows[0].cells; // update cached first row
 				}
 			}
@@ -4131,7 +4134,7 @@ $.fn.jqGrid = function( pin ) {
 			if (p.treeGrid === true) {
 				p.datatype = p.treedatatype;
 			}
-			opts = $.extend({}, ($.jgrid.defaults || {}).reloadGridOptions || {}, p.reloadGridOptions || {}, opts || {});
+			opts = $.extend({}, defaults.reloadGridOptions || {}, p.reloadGridOptions || {}, opts || {});
 			if (p.datatype === "local" && p.dataTypeOrg && p.loadonce && opts.fromServer) {
 				p.datatype = p.dataTypeOrg;
 				delete p.dataTypeOrg;
@@ -4747,7 +4750,7 @@ jgrid.extend({
 			}
 			this.each(function() {
 				var t = this, p = t.p, datalen = rdata.length,
-				guiStyle = p.guiStyle || ($.jgrid.defaults || {}).guiStyle || "jQueryUI",
+				guiStyle = p.guiStyle || defaults.guiStyle || "jQueryUI",
 				getGuiStyles = function (jqClasses, path) {
 					return mergeCssClasses(jqClasses, jgrid.getRes(jgrid.guiStyles[guiStyle], path));
 				};
