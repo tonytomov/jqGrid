@@ -489,6 +489,11 @@ $.extend(true,jgrid,{
 				hidden: "ui-helper-hidden",	//??? 
 				textOfClickable: "ui-state-default"
 			},
+			dialog: {
+				header: "ui-widget-header ui-corner-all ui-helper-clearfix",
+				window: "ui-widget ui-widget-content ui-corner-all ui-front",
+				content: "ui-widget-content"
+			},
 			grid: "",
 			gridRow: "ui-widget-content",
 			rowNum: "ui-state-default",
@@ -6198,7 +6203,11 @@ jgrid.extend({
  * http://www.gnu.org/licenses/gpl-2.0.html
 */
 "use strict";
-var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes");
+var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes"),
+	getGuiStyles = function (jqClasses, path) {
+		var p = this.p, guiStyle = p.guiStyle || jgrid.defaults.guiStyle || "jQueryUI";
+		return jgrid.mergeCssClasses(jqClasses, jgrid.getRes(jgrid.guiStyles[guiStyle], path));
+	};
 $.extend(jgrid,{
 // Modal functions
     // The methods showModal and closeModal will be used as callback of $.jqm jQuery plugin defined in jqModal.js
@@ -6291,14 +6300,17 @@ $.extend(jgrid,{
 		rtlsup = $(o.gbox).attr("dir") === "rtl" ? true : false, 
 		resizeAlso = aIDs.resizeAlso ? "#" + jqID(aIDs.resizeAlso) : false;
 		css = $.extend({}, css || {});
-		mw.className= "ui-widget ui-widget-content ui-corner-all ui-jqdialog";
+		mw.className = getGuiStyles.call(this, "ui-jqdialog", "dialog.window"); //"ui-widget ui-widget-content ui-corner-all ui-jqdialog";
 		mw.id = aIDs.themodal;
 		mw.dir = rtlsup ? "rtl" : "ltr";
 		// create the title "div.ui-jqdialog-titlebar", which contains:
 		// "span.ui-jqdialog-title" with the title text and "a.ui-jqdialog-titlebar-close" with the closing button
 		var mh = document.createElement('div');
-		mh.className = "ui-jqdialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix " +
-			(rtlsup ? "ui-jqdialog-titlebar-rtl" : "ui-jqdialog-titlebar-ltr");
+		//mh.className = "ui-jqdialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix " +
+		//	(rtlsup ? "ui-jqdialog-titlebar-rtl" : "ui-jqdialog-titlebar-ltr");
+		mh.className = getGuiStyles.call(this,
+			"ui-jqdialog-titlebar " + (rtlsup ? "ui-jqdialog-titlebar-rtl" : "ui-jqdialog-titlebar-ltr"),
+			"dialog.header");
 		mh.id = aIDs.modalhead;
 		$(mh).append("<span class='ui-jqdialog-title'>"+o.caption+"</span>");
 		var ahr= $("<a class='ui-jqdialog-titlebar-close ui-corner-all'></a>")
@@ -6308,7 +6320,9 @@ $.extend(jgrid,{
 		$(mh).append(ahr);
 		// create "div.ui-jqdialog-content" which hold some HTML content (see input parameter)
 		var mc = document.createElement('div');
-		$(mc).addClass("ui-jqdialog-content ui-widget-content").attr("id",aIDs.modalcontent);
+		//$(mc).addClass("ui-jqdialog-content ui-widget-content").attr("id",aIDs.modalcontent);
+		$(mc).addClass(getGuiStyles.call(this, "ui-jqdialog-content", "dialog.content"))
+			.attr("id",aIDs.modalcontent);
 		$(mc).append(content);
 		// place "div.ui-jqdialog-content" and "div.ui-jqdialog-titlebar" in main window "div.ui-jqdialog"
 		mw.appendChild(mc);

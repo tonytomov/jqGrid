@@ -489,6 +489,11 @@ $.extend(true,jgrid,{
 				hidden: "ui-helper-hidden",	//??? 
 				textOfClickable: "ui-state-default"
 			},
+			dialog: {
+				header: "ui-widget-header ui-corner-all ui-helper-clearfix",
+				window: "ui-widget ui-widget-content ui-corner-all ui-front",
+				content: "ui-widget-content"
+			},
 			grid: "",
 			gridRow: "ui-widget-content",
 			rowNum: "ui-state-default",
