@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-03-22
+ * Date: 2015-03-24
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -4131,7 +4131,7 @@ $.fn.jqGrid = function( pin ) {
 			if (p.treeGrid === true) {
 				p.datatype = p.treedatatype;
 			}
-			opts = opts || {};
+			opts = $.extend({}, ($.jgrid.defaults || {}).reloadGridOptions || {}, p.reloadGridOptions || {}, opts || {});
 			if (p.datatype === "local" && p.dataTypeOrg && p.loadonce && opts.fromServer) {
 				p.datatype = p.dataTypeOrg;
 				delete p.dataTypeOrg;

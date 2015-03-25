@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-03-22
+ * Date: 2015-03-24
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -4131,7 +4131,7 @@ $.fn.jqGrid = function( pin ) {
 			if (p.treeGrid === true) {
 				p.datatype = p.treedatatype;
 			}
-			opts = opts || {};
+			opts = $.extend({}, ($.jgrid.defaults || {}).reloadGridOptions || {}, p.reloadGridOptions || {}, opts || {});
 			if (p.datatype === "local" && p.dataTypeOrg && p.loadonce && opts.fromServer) {
 				p.datatype = p.dataTypeOrg;
 				delete p.dataTypeOrg;
@@ -7208,7 +7208,10 @@ jgrid.extend({
 				}
 				var bsr = $self.triggerHandler("jqGridToolbarBeforeSearch") === 'stop' ? true : false;
 				if(!bsr && $.isFunction(o.beforeSearch)){bsr = o.beforeSearch.call($t);}
-				if(!bsr) { $self.jqGrid("setGridParam",{search:sd}).trigger("reloadGrid",[{page:1}]); }
+				if(!bsr) {
+					$self.jqGrid("setGridParam",{search:sd})
+						.trigger("reloadGrid",[$.extend({page:1}, o.reloadGridSearchOptions || {})]);
+				}
 				if(saveurl) {$self.jqGrid("setGridParam",{url:saveurl});}
 				$self.triggerHandler("jqGridToolbarAfterSearch");
 				if($.isFunction(o.afterSearch)){o.afterSearch.call($t);}
@@ -7289,7 +7292,8 @@ jgrid.extend({
 				if(!bcv && $.isFunction(o.beforeClear)){bcv = o.beforeClear.call($t);}
 				if(!bcv) {
 					if(trigger) {
-						$self.jqGrid("setGridParam",{search:sd}).trigger("reloadGrid",[{page:1}]);
+						$self.jqGrid("setGridParam",{search:sd})
+							.trigger("reloadGrid",[$.extend({page:1}, o.reloadGridResetOptions || {})]);
 					}
 				}
 				if(saveurl) {$self.jqGrid("setGridParam",{url:saveurl});}
@@ -9097,7 +9101,7 @@ jgrid.extend({
 					p.search = true;
 					$.extend(p.postData,sdata);
 					if (fullBoolFeedback.call($t, o.onSearch, "jqGridFilterSearch", p.filters)) {
-						$self.trigger("reloadGrid",[{page:1}]);
+						$self.trigger("reloadGrid",[$.extend({page:1}, o.reloadGridSearchOptions || {})]);
 					}
 					if(o.closeAfterSearch) {
 						hideModal(themodalSelector,{gb:gboxSelector,jqm:o.jqModal,onClose: o.onClose,removemodal:o.removemodal});
@@ -9119,7 +9123,7 @@ jgrid.extend({
 					}
 					$.extend(p.postData,sdata);
 					if(fullBoolFeedback.call($t, o.onReset, "jqGridFilterReset")) {
-						$self.trigger("reloadGrid",[{page:1}]);
+						$self.trigger("reloadGrid",[$.extend({page:1}, o.reloadGridResetOptions || {})]);
 					}
 					if (o.closeAfterReset) {
 						hideModal(themodalSelector,{gb:gboxSelector,jqm:o.jqModal,onClose: o.onClose,removemodal: o.removemodal});
@@ -9650,6 +9654,7 @@ jgrid.extend({
 								}
 								//o.reloadAfterSubmit = o.reloadAfterSubmit && $t.o.datatype != "local";
 								// the action is add
+								var reloadGridOptions = [$.extend({}, o.reloadGridOptions || {})];
 								if(postdata[oper] === opers.addoper ) {
 									//id processing
 									// user not set the id ret[2]
@@ -9660,7 +9665,7 @@ jgrid.extend({
 										ret[2] = postdata[idname];
 									}
 									if(o.reloadAfterSubmit) {
-										$self.trigger("reloadGrid");
+										$self.trigger("reloadGrid", reloadGridOptions);
 									} else {
 										if(p.treeGrid === true){
 											$self.jqGrid("addChildNode",ret[2],selr,postdata );
@@ -9679,7 +9684,7 @@ jgrid.extend({
 								} else {
 									// the action is update
 									if(o.reloadAfterSubmit) {
-										$self.trigger("reloadGrid");
+										$self.trigger("reloadGrid", reloadGridOptions);
 										if( !o.closeAfterEdit ) {setTimeout(function(){$self.jqGrid("setSelection",postdata[idname]);},1000);}
 									} else {
 										if(p.treeGrid === true) {
@@ -10472,7 +10477,7 @@ jgrid.extend({
 									$("#DelError",dtbl).show();
 								} else {
 									if(o.reloadAfterSubmit && p.datatype !== "local") {
-										$self.trigger("reloadGrid");
+										$self.trigger("reloadGrid", [$.extend({}, o.reloadGridOptions || {})]);
 									} else {
 										if(p.treeGrid===true){
 												try {$self.jqGrid("delTreeNode",formRowIds[0]);} catch(ignore){}

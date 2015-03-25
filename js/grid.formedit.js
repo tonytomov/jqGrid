@@ -316,7 +316,7 @@ jgrid.extend({
 					p.search = true;
 					$.extend(p.postData,sdata);
 					if (fullBoolFeedback.call($t, o.onSearch, "jqGridFilterSearch", p.filters)) {
-						$self.trigger("reloadGrid",[{page:1}]);
+						$self.trigger("reloadGrid",[$.extend({page:1}, o.reloadGridSearchOptions || {})]);
 					}
 					if(o.closeAfterSearch) {
 						hideModal(themodalSelector,{gb:gboxSelector,jqm:o.jqModal,onClose: o.onClose,removemodal:o.removemodal});
@@ -338,7 +338,7 @@ jgrid.extend({
 					}
 					$.extend(p.postData,sdata);
 					if(fullBoolFeedback.call($t, o.onReset, "jqGridFilterReset")) {
-						$self.trigger("reloadGrid",[{page:1}]);
+						$self.trigger("reloadGrid",[$.extend({page:1}, o.reloadGridResetOptions || {})]);
 					}
 					if (o.closeAfterReset) {
 						hideModal(themodalSelector,{gb:gboxSelector,jqm:o.jqModal,onClose: o.onClose,removemodal: o.removemodal});
@@ -869,6 +869,7 @@ jgrid.extend({
 								}
 								//o.reloadAfterSubmit = o.reloadAfterSubmit && $t.o.datatype != "local";
 								// the action is add
+								var reloadGridOptions = [$.extend({}, o.reloadGridOptions || {})];
 								if(postdata[oper] === opers.addoper ) {
 									//id processing
 									// user not set the id ret[2]
@@ -879,7 +880,7 @@ jgrid.extend({
 										ret[2] = postdata[idname];
 									}
 									if(o.reloadAfterSubmit) {
-										$self.trigger("reloadGrid");
+										$self.trigger("reloadGrid", reloadGridOptions);
 									} else {
 										if(p.treeGrid === true){
 											$self.jqGrid("addChildNode",ret[2],selr,postdata );
@@ -898,7 +899,7 @@ jgrid.extend({
 								} else {
 									// the action is update
 									if(o.reloadAfterSubmit) {
-										$self.trigger("reloadGrid");
+										$self.trigger("reloadGrid", reloadGridOptions);
 										if( !o.closeAfterEdit ) {setTimeout(function(){$self.jqGrid("setSelection",postdata[idname]);},1000);}
 									} else {
 										if(p.treeGrid === true) {
@@ -1691,7 +1692,7 @@ jgrid.extend({
 									$("#DelError",dtbl).show();
 								} else {
 									if(o.reloadAfterSubmit && p.datatype !== "local") {
-										$self.trigger("reloadGrid");
+										$self.trigger("reloadGrid", [$.extend({}, o.reloadGridOptions || {})]);
 									} else {
 										if(p.treeGrid===true){
 												try {$self.jqGrid("delTreeNode",formRowIds[0]);} catch(ignore){}

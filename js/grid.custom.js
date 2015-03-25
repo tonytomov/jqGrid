@@ -278,7 +278,10 @@ jgrid.extend({
 				}
 				var bsr = $self.triggerHandler("jqGridToolbarBeforeSearch") === 'stop' ? true : false;
 				if(!bsr && $.isFunction(o.beforeSearch)){bsr = o.beforeSearch.call($t);}
-				if(!bsr) { $self.jqGrid("setGridParam",{search:sd}).trigger("reloadGrid",[{page:1}]); }
+				if(!bsr) {
+					$self.jqGrid("setGridParam",{search:sd})
+						.trigger("reloadGrid",[$.extend({page:1}, o.reloadGridSearchOptions || {})]);
+				}
 				if(saveurl) {$self.jqGrid("setGridParam",{url:saveurl});}
 				$self.triggerHandler("jqGridToolbarAfterSearch");
 				if($.isFunction(o.afterSearch)){o.afterSearch.call($t);}
@@ -359,7 +362,8 @@ jgrid.extend({
 				if(!bcv && $.isFunction(o.beforeClear)){bcv = o.beforeClear.call($t);}
 				if(!bcv) {
 					if(trigger) {
-						$self.jqGrid("setGridParam",{search:sd}).trigger("reloadGrid",[{page:1}]);
+						$self.jqGrid("setGridParam",{search:sd})
+							.trigger("reloadGrid",[$.extend({page:1}, o.reloadGridResetOptions || {})]);
 					}
 				}
 				if(saveurl) {$self.jqGrid("setGridParam",{url:saveurl});}
