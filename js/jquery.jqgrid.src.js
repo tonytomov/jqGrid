@@ -5542,7 +5542,7 @@ jgrid.extend({
 		var rows = self.rows, row, cell, iRow, $cell, $cellFirstChild,
 			p = self.p,
 			cm = p.colModel[iCol],
-			$th = $($(self.grid.hDiv).find(".ui-jqgrid-labels>.ui-th-column")[iCol]),
+			$th = $(self.grid.headers[iCol].el),
 			$thDiv = $th.find(">div"),
 			thPaddingLeft = parseFloat($th.css("padding-left") || 0),
 			thPaddingRight = parseFloat($th.css("padding-right") || 0),
@@ -5602,7 +5602,7 @@ jgrid.extend({
 	autoResizeColumn: function (iCol) {
 		return this.each(function () {
 			var self = this, $self = $(this), p = self.p, cm = p.colModel[iCol], widthOrg,
-				$th = $($(self.grid.hDiv).find(".ui-jqgrid-labels>.ui-th-column")[iCol]),
+				$th = $(self.grid.headers[iCol].el),
 				newWidth = $self.jqGrid("getAutoResizableWidth", iCol);
 
 			if (cm == null || newWidth < 0) {
@@ -6300,14 +6300,12 @@ $.extend(jgrid,{
 		rtlsup = $(o.gbox).attr("dir") === "rtl" ? true : false, 
 		resizeAlso = aIDs.resizeAlso ? "#" + jqID(aIDs.resizeAlso) : false;
 		css = $.extend({}, css || {});
-		mw.className = getGuiStyles.call(this, "ui-jqdialog", "dialog.window"); //"ui-widget ui-widget-content ui-corner-all ui-jqdialog";
+		mw.className = getGuiStyles.call(this, "ui-jqdialog", "dialog.window");
 		mw.id = aIDs.themodal;
 		mw.dir = rtlsup ? "rtl" : "ltr";
 		// create the title "div.ui-jqdialog-titlebar", which contains:
 		// "span.ui-jqdialog-title" with the title text and "a.ui-jqdialog-titlebar-close" with the closing button
 		var mh = document.createElement('div');
-		//mh.className = "ui-jqdialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix " +
-		//	(rtlsup ? "ui-jqdialog-titlebar-rtl" : "ui-jqdialog-titlebar-ltr");
 		mh.className = getGuiStyles.call(this,
 			"ui-jqdialog-titlebar " + (rtlsup ? "ui-jqdialog-titlebar-rtl" : "ui-jqdialog-titlebar-ltr"),
 			"dialog.header");
@@ -6320,7 +6318,6 @@ $.extend(jgrid,{
 		$(mh).append(ahr);
 		// create "div.ui-jqdialog-content" which hold some HTML content (see input parameter)
 		var mc = document.createElement('div');
-		//$(mc).addClass("ui-jqdialog-content ui-widget-content").attr("id",aIDs.modalcontent);
 		$(mc).addClass(getGuiStyles.call(this, "ui-jqdialog-content", "dialog.content"))
 			.attr("id",aIDs.modalcontent);
 		$(mc).append(content);
@@ -7830,7 +7827,7 @@ jgrid.extend({
 				$htable.find("div.ui-jqgrid-sortable").each(function () {
 					var $ts = $(this), $parent = $ts.parent();
 					if ($parent.is(":visible") && $parent.is(":has(span.ui-jqgrid-resize)")) {
-						$ts.css('top', ($parent.height() - $ts.outerHeight()) / 2 + 'px');
+						$ts.css('top', ($parent.height() - $ts.outerHeight(true)) / 2 + 'px');
 					}
 				});
 			}

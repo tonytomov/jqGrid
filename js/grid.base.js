@@ -5542,7 +5542,7 @@ jgrid.extend({
 		var rows = self.rows, row, cell, iRow, $cell, $cellFirstChild,
 			p = self.p,
 			cm = p.colModel[iCol],
-			$th = $($(self.grid.hDiv).find(".ui-jqgrid-labels>.ui-th-column")[iCol]),
+			$th = $(self.grid.headers[iCol].el),
 			$thDiv = $th.find(">div"),
 			thPaddingLeft = parseFloat($th.css("padding-left") || 0),
 			thPaddingRight = parseFloat($th.css("padding-right") || 0),
@@ -5602,7 +5602,7 @@ jgrid.extend({
 	autoResizeColumn: function (iCol) {
 		return this.each(function () {
 			var self = this, $self = $(this), p = self.p, cm = p.colModel[iCol], widthOrg,
-				$th = $($(self.grid.hDiv).find(".ui-jqgrid-labels>.ui-th-column")[iCol]),
+				$th = $(self.grid.headers[iCol].el),
 				newWidth = $self.jqGrid("getAutoResizableWidth", iCol);
 
 			if (cm == null || newWidth < 0) {
