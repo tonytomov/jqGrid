@@ -123,11 +123,13 @@
 	height: auto;
 	margin: 2px 2px;
 }
-.ui-jqgrid-labels .ui-th-column,
+.ui-jqgrid-labels .ui-th-column-header,
 .ui-jqgrid .ui-jqgrid-labels th.ui-th-column {
 	overflow: hidden;
 	white-space: nowrap;
 	text-align: center;
+}
+.ui-jqgrid .ui-jqgrid-labels th.ui-th-column {
 	border-top: 0 none;
 	border-bottom: 0 none;
 }
