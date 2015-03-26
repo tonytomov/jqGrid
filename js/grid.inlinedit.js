@@ -553,6 +553,7 @@ jgrid.extend({
 				cancelicon:"ui-icon-cancel",
 				commonIconClass : "ui-icon",
 				iconsOverText : false,
+				//alertToTop: false, use undefined to be able to use defaults from $.jgrid.jqModal or later from p.jqModal
 				addParams : {addRowParams: {extraparam: {}}},
 				editParams : {},
 				restoreAfterSelect : true
@@ -565,7 +566,7 @@ jgrid.extend({
 			p.navOptions || {},
 			oMuligrid || {}),
 			viewModalAlert = function () {
-				jgrid.viewModal("#alertmod_" + p.id,{gbox:p.gBox,jqm:true});
+				jgrid.viewModal("#alertmod_" + p.id,{gbox:p.gBox,toTop:o.alertToTop,jqm:true});
 				var $close = $("#alerthd_" + p.id).find(".ui-jqdialog-titlebar-close");
 				$close.attr({tabindex: "0", href: "#", role: "button"});
 				setTimeout(function () {

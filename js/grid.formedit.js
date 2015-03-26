@@ -78,8 +78,8 @@ jgrid.extend({
 				top : 0,
 				left: 0,
 				removemodal: true,
-				jqModal : true,
-				modal: false,
+				//jqModal : true,
+				//modal: false,
 				resize : true,
 				width: 450,
 				height: 'auto',
@@ -91,8 +91,8 @@ jgrid.extend({
 				onClose : null,
 				onSearch : null,
 				onReset : null,
-				toTop : false,
-				overlay : 30,
+				//toTop : false,
+				//overlay : 30,
 				columns : [],
 				tmplNames : null,
 				tmplFilters : null,
@@ -368,8 +368,9 @@ jgrid.extend({
 				datawidth: 'auto',
 				height: 'auto',
 				dataheight: 'auto',
-				modal: false,
-				overlay : 30,
+				//modal: false,
+				//toTop : false,
+				//overlay : 30,
 				drag: true,
 				resize: true,
 				url: null,
@@ -389,7 +390,7 @@ jgrid.extend({
 				afterclickPgButtons: null,
 				editData : {},
 				recreateForm : false,
-				jqModal : true,
+				//jqModal : true,
 				closeOnEscape : false,
 				addedrow : "first",
 				topinfo : '',
@@ -439,7 +440,7 @@ jgrid.extend({
 				}
 			}
 			var closeovrl = true;
-			if(o.checkOnUpdate && o.jqModal && !o.modal) {
+			if(o.checkOnUpdate && (o.jqModal === true || o.jqModal === undefined) && !o.modal) {
 				closeovrl = false;
 			}
 			function getFormData(){
@@ -1179,6 +1180,7 @@ jgrid.extend({
 				overlay: o.overlay,
 				modal:o.modal, 
 				overlayClass: o.overlayClass,
+				toTop: o.toTop,
 				onHide :  function(h) {
 					savePositionOnHide.call($self, "formProp", frmgr, h);
 				}
@@ -1269,11 +1271,12 @@ jgrid.extend({
 				datawidth: 'auto',
 				height: 'auto',
 				dataheight: 'auto',
-				modal: false,
-				overlay: 30,
+				//modal: false,
+				//toTop : false,
+				//overlay: 30,
 				drag: true,
 				resize: true,
-				jqModal: true,
+				//jqModal: true,
 				closeOnEscape : false,
 				labelswidth: '30%',
 				navkeys: [false,38,40],
@@ -1508,6 +1511,7 @@ jgrid.extend({
 				gbox:gboxSelector,
 				jqm:o.jqModal,
 				overlay: o.overlay, 
+				toTop: o.toTop,
 				modal:o.modal,
 				onHide :  function(h) {
 					savePositionOnHide.call($self, "viewProp", frmgr, h);
@@ -1568,8 +1572,9 @@ jgrid.extend({
 				removemodal: true,
 				height: 'auto',
 				dataheight : 'auto',
-				modal: false,
-				overlay: 30,
+				//modal: false,
+				//toTop: false,
+				//overlay: 30,
 				drag: true,
 				resize: true,
 				url : '',
@@ -1581,7 +1586,7 @@ jgrid.extend({
 				beforeSubmit: null,
 				onclickSubmit: null,
 				afterSubmit: null,
-				jqModal : true,
+				//jqModal : true,
 				closeOnEscape : false,
 				delData: {},
 				onClose : null,
@@ -1616,7 +1621,7 @@ jgrid.extend({
 					$("#dData",dtbl).removeClass('ui-state-active');
 				}
 				deleteFeedback("beforeShowForm", $(dtbl));
-				viewModal(themodalSelector,{gbox:gboxSelector,jqm:o.jqModal,jqM: false, overlay: o.overlay, modal:o.modal});
+				viewModal(themodalSelector,{gbox:gboxSelector,jqm:o.jqModal,jqM: false, overlay: o.overlay, toTop: o.toTop, modal:o.modal});
 				deleteFeedback("afterShowForm", $(dtbl));
 			} else {
 				var dh = isNaN(o.dataheight) ? o.dataheight : o.dataheight+"px",
@@ -1754,7 +1759,7 @@ jgrid.extend({
 					return false;
 				});
 				deleteFeedback("beforeShowForm", $(dtbl));
-				viewModal(themodalSelector,{gbox:gboxSelector,jqm:o.jqModal, overlay: o.overlay, modal:o.modal});
+				viewModal(themodalSelector,{gbox:gboxSelector,jqm:o.jqModal, overlay: o.overlay, toTop: o.toTop, modal:o.modal});
 				deleteFeedback("afterShowForm", $(dtbl));
 			}
 			if(o.closeOnEscape===true) {
@@ -1799,9 +1804,11 @@ jgrid.extend({
 				beforeRefresh : null,
 				afterRefresh : null,
 				cloneToTop : false,
+				//jqModal: true,
 				alertwidth : 200,
 				alertheight : 'auto',
 				alerttop: null,
+				//alertToTop: false,
 				alertleft: null,
 				alertzIndex : null,
 				iconsOverText : false
@@ -1816,7 +1823,7 @@ jgrid.extend({
 			var alertIDs = {themodal: 'alertmod_' + gridId, modalhead: 'alerthd_' + gridId,modalcontent: 'alertcnt_' + gridId},
 			twd, tdw, gridIdEscaped = p.idSel, gboxSelector = p.gBox, commonIconClass = o.commonIconClass,
 			viewModalAlert = function () {
-				viewModal("#"+jqID(alertIDs.themodal),{gbox:gboxSelector,jqm:true});
+				viewModal("#"+jqID(alertIDs.themodal),{gbox:gboxSelector,toTop:o.alertToTop,jqm:o.jqModal});
 				var $close = $("#"+jqID(alertIDs.modalhead)).find(".ui-jqdialog-titlebar-close");
 				$close.attr({tabindex: "0", href: "#", role: "button"});
 				setTimeout(function () {
@@ -1856,7 +1863,7 @@ jgrid.extend({
 					"<div>"+o.alerttext+"</div><span tabindex='0'><span tabindex='-1' id='jqg_alrt'></span></span>",
 					{ 
 						gbox:gboxSelector,
-						jqModal:true,
+						jqModal:o.jqModal,
 						drag:true,
 						resize:true,
 						caption:o.alertcap,

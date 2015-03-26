@@ -219,9 +219,9 @@ $.extend(jgrid,{
 		}
 	},
 	viewModal : function (selector,o){
-		o = $.extend({
+		o = $.extend(true, {
 			toTop: false,
-			overlay: 10,
+			overlay: 30,
 			modal: false,
 			overlayClass : 'ui-widget-overlay',
 			onShow: jgrid.showModal,
@@ -229,7 +229,7 @@ $.extend(jgrid,{
 			gbox: '',
 			jqm : true,
 			jqM : true
-		}, o || {});
+		}, jgrid.jqModal || {}, o || {});
 		if ($.fn.jqm && o.jqm === true) {
 			if(o.jqM) { $(selector).attr("aria-hidden","false").jqm(o).jqmShow(); }
 			else {$(selector).attr("aria-hidden","false").jqmShow();}
@@ -243,25 +243,29 @@ $.extend(jgrid,{
 		}
 	},
 	info_dialog : function(caption, content,c_b, modalopt) {
-		var mopt = {
-			width:290,
-			height:'auto',
-			dataheight: 'auto',
-			drag: true,
-			resize: false,
-			left:250,
-			top:170,
-			zIndex : 1000,
-			jqModal : true,
-			modal : false,
-			closeOnEscape : true,
-			align: 'center',
-			buttonalign : 'center',
-			buttons : []
-		// {text:'textbutt', id:"buttid", onClick : function(){...}}
-		// if the id is not provided we set it like info_button_+ the index in the array - i.e info_button_0,info_button_1...
-		};
-		$.extend(true, mopt, jgrid.jqModal || {}, {caption:"<b>"+caption+"</b>"}, modalopt || {});
+		var p = this.p, gridjqModal = p != null ? p.jqModal || {} : {},
+			mopt = $.extend(true, {
+				width:290,
+				height:'auto',
+				dataheight: 'auto',
+				drag: true,
+				resize: false,
+				left:250,
+				top:170,
+				zIndex : 1000,
+				jqModal : true,
+				modal : false,
+				closeOnEscape : true,
+				align: 'center',
+				buttonalign : 'center',
+				buttons : []
+			// {text:'textbutt', id:"buttid", onClick : function(){...}}
+			// if the id is not provided we set it like info_button_+ the index in the array - i.e info_button_0,info_button_1...
+			},
+			jgrid.jqModal || {},
+			gridjqModal,
+			{caption:"<b>"+caption+"</b>"},
+			modalopt || {});
 		var jm = mopt.jqModal;
 		if($.fn.jqm && !jm) { jm = false; }
 		// in case there is no jqModal
