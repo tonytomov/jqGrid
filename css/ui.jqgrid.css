@@ -306,6 +306,11 @@
 	margin: 0;
 	border: 0 none;
 }
+.ui-jqgrid .ui-jqgrid-btable td.jqgrid-rownum {
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: inherit;
+}
 .ui-jqgrid .jqgrow > td.td_cbox {
 	padding: 2px;
 	text-align: center;
@@ -368,6 +373,9 @@ span.ui-jqgrid-cell-wrapper {
 	border-top-width: 1px;
 	border-top-color: inherit;
 	border-top-style: solid;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: inherit;
 }
 .ui-jqgrid tr.footrow-ltr td {
 	text-align: left;

@@ -497,8 +497,8 @@ $.extend(true,jgrid,{
 			grid: "",
 			gridRow: "ui-widget-content",
 			rowNum: "ui-state-default",
-			gridFooter: "ui-widget-content",
-			rowFooter: "ui-state-default",
+			gridFooter: "",
+			rowFooter: "ui-widget-content",
 			gridTitle: "ui-widget-header ui-corner-top ui-helper-clearfix",
 			toolbarUpper: "ui-state-default",
 			toolbarBottom: "ui-state-default",
@@ -11784,7 +11784,7 @@ jgrid.extend({
 			if ($.isFunction(oneditfunc)) { oMuligrid.oneditfunc = oneditfunc; }
 			if ($.isFunction(successfunc)) { oMuligrid.successfunc = successfunc; }
 			if (url !== undefined) { oMuligrid.url = url; }
-			if (extraparam !== undefined) { oMuligrid.extraparam = extraparam; }
+			if (extraparam != null) { oMuligrid.extraparam = extraparam; }
 			if ($.isFunction(aftersavefunc)) { oMuligrid.aftersavefunc = aftersavefunc; }
 			if ($.isFunction(errorfunc)) { oMuligrid.errorfunc = errorfunc; }
 			if ($.isFunction(afterrestorefunc)) { oMuligrid.afterrestorefunc = afterrestorefunc; }
