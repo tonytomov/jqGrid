@@ -35,7 +35,7 @@ jgrid.extend({
 			if ($.isFunction(oneditfunc)) { oMuligrid.oneditfunc = oneditfunc; }
 			if ($.isFunction(successfunc)) { oMuligrid.successfunc = successfunc; }
 			if (url !== undefined) { oMuligrid.url = url; }
-			if (extraparam !== undefined) { oMuligrid.extraparam = extraparam; }
+			if (extraparam != null) { oMuligrid.extraparam = extraparam; }
 			if ($.isFunction(aftersavefunc)) { oMuligrid.aftersavefunc = aftersavefunc; }
 			if ($.isFunction(errorfunc)) { oMuligrid.errorfunc = errorfunc; }
 			if ($.isFunction(afterrestorefunc)) { oMuligrid.afterrestorefunc = afterrestorefunc; }
