@@ -12,9 +12,9 @@
 */
 "use strict";
 var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes"),
-	getGuiStyles = function (jqClasses, path) {
+	getGuiStyles = function (path, jqClasses) {
 		var p = this.p, guiStyle = p.guiStyle || jgrid.defaults.guiStyle || "jQueryUI";
-		return jgrid.mergeCssClasses(jqClasses, jgrid.getRes(jgrid.guiStyles[guiStyle], path));
+		return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[guiStyle], path), jqClasses);
 	};
 $.extend(jgrid,{
 // Modal functions
@@ -108,15 +108,15 @@ $.extend(jgrid,{
 		rtlsup = $(o.gbox).attr("dir") === "rtl" ? true : false, 
 		resizeAlso = aIDs.resizeAlso ? "#" + jqID(aIDs.resizeAlso) : false;
 		css = $.extend({}, css || {});
-		mw.className = getGuiStyles.call(this, "ui-jqdialog", "dialog.window");
+		mw.className = getGuiStyles.call(this, "dialog.window", "ui-jqdialog");
 		mw.id = aIDs.themodal;
 		mw.dir = rtlsup ? "rtl" : "ltr";
 		// create the title "div.ui-jqdialog-titlebar", which contains:
 		// "span.ui-jqdialog-title" with the title text and "a.ui-jqdialog-titlebar-close" with the closing button
 		var mh = document.createElement('div');
 		mh.className = getGuiStyles.call(this,
-			"ui-jqdialog-titlebar " + (rtlsup ? "ui-jqdialog-titlebar-rtl" : "ui-jqdialog-titlebar-ltr"),
-			"dialog.header");
+			"dialog.header",
+			"ui-jqdialog-titlebar " + (rtlsup ? "ui-jqdialog-titlebar-rtl" : "ui-jqdialog-titlebar-ltr"));
 		mh.id = aIDs.modalhead;
 		$(mh).append("<span class='ui-jqdialog-title'>"+o.caption+"</span>");
 		var ahr= $("<a class='ui-jqdialog-titlebar-close ui-corner-all'></a>")
@@ -126,7 +126,7 @@ $.extend(jgrid,{
 		$(mh).append(ahr);
 		// create "div.ui-jqdialog-content" which hold some HTML content (see input parameter)
 		var mc = document.createElement('div');
-		$(mc).addClass(getGuiStyles.call(this, "ui-jqdialog-content", "dialog.content"))
+		$(mc).addClass(getGuiStyles.call(this, "dialog.content", "ui-jqdialog-content"))
 			.attr("id",aIDs.modalcontent);
 		$(mc).append(content);
 		// place "div.ui-jqdialog-content" and "div.ui-jqdialog-titlebar" in main window "div.ui-jqdialog"
