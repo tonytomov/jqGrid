@@ -280,6 +280,7 @@ jgrid.extend({
 
 		select.empty();
 		$.each(colModel, function(i) {
+			var colName;
 			colMap[this.name] = i;
 			if (this.hidedlg) {
 				if (!this.hidden) {
@@ -287,9 +288,16 @@ jgrid.extend({
 				}
 				return;
 			}
-
+			colName = $.isFunction(opts.colNames) ?
+				opts.colNames.call(self, {
+					iCol: i,
+					cm: this,
+					cmName: this.name,
+					colName: colNames[i]
+				}):
+				jgrid.stripHtml(colNames[i]);
 			select.append("<option value='"+i+"' "+
-						  (this.hidden?"":"selected='selected'")+">"+jgrid.stripHtml(colNames[i])+"</option>");
+						  (this.hidden?"":"selected='selected'")+">"+colName+"</option>");
 		});
 
 		dopts = $.isFunction(opts.dlog_opts) ? opts.dlog_opts.call($self, opts) : opts.dlog_opts;
