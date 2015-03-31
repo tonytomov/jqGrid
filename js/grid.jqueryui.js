@@ -119,7 +119,7 @@ jgrid.extend({
 	},
     columnChooser : function(opts) {
 		var $self = this, self = $self[0], p = self.p, selector, select, colMap = {}, fixedCols = [], dopts, mopts, $dialogContent, multiselectData, listHeight,
-			colModel = p.colModel, colNames = p.colNames,
+			colModel = p.colModel, nCol = colModel.length, colNames = p.colNames,
 			getMultiselectWidgetData = function ($elem) {
 				return ($UiMultiselect && $UiMultiselect.prototype && $elem.data($UiMultiselect.prototype.widgetFullName || $UiMultiselect.prototype.widgetName)) ||
 					$elem.data("ui-multiselect") || $elem.data("multiselect");
@@ -155,7 +155,11 @@ jgrid.extend({
 			width : 400,
 			height : 240,
 			classname : null,
-			done : function(perm) { if (perm) { $self.jqGrid("remapColumns", perm, true); } },
+			done : function(perm) {
+				if (perm && p.groupHeader == null) {
+					$self.jqGrid("remapColumns", perm, true);
+				}
+			},
 			/* msel is either the name of a ui widget class that
 			   extends a multiselect, or a function that supports
 			   creating a multiselect object (with no argument,
@@ -279,8 +283,46 @@ jgrid.extend({
 		}
 
 		select.empty();
+		var gh = p.groupHeader, iColByName = {}, colHeader = {}, i, j, l, iCol, ghItem;
+		// first fill the helper map which get iCol by the column name
+		for (iCol = 0; iCol < nCol; iCol++) {
+			iColByName[colModel[iCol].name] = iCol;
+		}
+		// fill colHeader for columns which have column header
+		if (gh != null && gh.groupHeaders != null) {
+			for (i = 0, l = gh.groupHeaders.length; i < l; i++) {
+				ghItem = gh.groupHeaders[i];
+				for (j = 0; j < ghItem.numberOfColumns; j++) {
+					iCol = iColByName[ghItem.startColumnName] + j;
+					colHeader[iCol] = $.isFunction(opts.buildItemText) ?
+							opts.buildItemText.call($self[0], {
+								iCol: iCol,
+								cm: colModel[iCol],
+								cmName: colModel[iCol].name,
+								colName: colNames[iCol],
+								groupTitleText: ghItem.titleText
+							}) :
+							$.jgrid.stripHtml(ghItem.titleText) + ": " +
+								$.jgrid.stripHtml(colNames[iCol] === "" ? colModel[iCol].name : colNames[iCol]);
+				}
+			}
+		}
+		// fill colHeader for all other columns
+		for (iCol = 0; iCol < nCol; iCol++) {
+			if (colHeader[iCol] === undefined) {
+				colHeader[iCol] = $.isFunction(opts.buildItemText) ?
+						opts.buildItemText.call($self[0], {
+							iCol: iCol,
+							cm: colModel[iCol],
+							cmName: colModel[iCol].name,
+							colName: colNames[iCol],
+							groupTitleText: null
+						}) :
+						$.jgrid.stripHtml(colNames[iCol]);
+			}
+		}
 		$.each(colModel, function(i) {
-			var colName;
+			
 			colMap[this.name] = i;
 			if (this.hidedlg) {
 				if (!this.hidden) {
@@ -288,16 +330,8 @@ jgrid.extend({
 				}
 				return;
 			}
-			colName = $.isFunction(opts.colNames) ?
-				opts.colNames.call(self, {
-					iCol: i,
-					cm: this,
-					cmName: this.name,
-					colName: colNames[i]
-				}):
-				jgrid.stripHtml(colNames[i]);
 			select.append("<option value='"+i+"' "+
-						  (this.hidden?"":"selected='selected'")+">"+colName+"</option>");
+						  (this.hidden?"":"selected='selected'")+">"+colHeader[i]+"</option>");
 		});
 
 		dopts = $.isFunction(opts.dlog_opts) ? opts.dlog_opts.call($self, opts) : opts.dlog_opts;
