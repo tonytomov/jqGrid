@@ -1207,10 +1207,19 @@ $.fn.jqGrid = function( pin ) {
 				return;
 			}
 		}
+		var i =0, lr, lk, dir;
+		for( lk in $.jgrid.regional ){
+			if($.jgrid.regional.hasOwnProperty(lk)) {
+				if(i===0) { lr = lk; }
+				i++;
+			}
+		}
+		if(i === 1 && lr !== p.regional) {
+			p.regional = lr;
+		}
 		$(this).empty().attr("tabindex","0");
 		this.p = p ;
 		this.p.useProp = !!$.fn.prop;
-		var i, dir;
 		if(this.p.colNames.length === 0) {
 			for (i=0;i<this.p.colModel.length;i++){
 				this.p.colNames[i] = this.p.colModel[i].label || this.p.colModel[i].name;
