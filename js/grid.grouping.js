@@ -524,6 +524,7 @@ $.jgrid.extend({
 			numberOfColumns,
 			titleText,
 			cVisibleColumns,
+			className,
 			colModel = ts.p.colModel,
 			cml = colModel.length,
 			ths = ts.grid.headers,
@@ -564,7 +565,7 @@ $.jgrid.extend({
 					cghi = o.groupHeaders[iCol];
 					numberOfColumns = cghi.numberOfColumns;
 					titleText = cghi.titleText;
-
+					className = cghi.className || "";
 					// caclulate the number of visible columns from the next numberOfColumns columns
 					for (cVisibleColumns = 0, iCol = 0; iCol < numberOfColumns && (i + iCol < cml); iCol++) {
 						if (!colModel[i + iCol].hidden) {
@@ -576,7 +577,7 @@ $.jgrid.extend({
 					// in the current row will be placed the new column header with the titleText.
 					// The text will be over the cVisibleColumns columns
 					$colHeader = $('<th>').attr({role: "columnheader"})
-						.addClass("ui-state-default ui-th-column-header ui-th-"+ts.p.direction)
+						.addClass("ui-state-default ui-th-column-header ui-th-"+ts.p.direction+" "+className)
 						//.css({'height':'22px', 'border-top': '0 none'})
 						.html(titleText);
 					if(cVisibleColumns > 0) {
