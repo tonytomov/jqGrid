@@ -15183,6 +15183,7 @@ jgrid.extend({
 					autoResizable: false,
 					frozen: true,
 					fixed: true,
+					hidedlg: true,
 					resizable: false,
 					sortable: false,
 					search: false,
