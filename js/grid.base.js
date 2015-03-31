@@ -4224,20 +4224,34 @@ $.jgrid.extend({
 			loadtype : "disable" 
 		}, p || {});
 		return this.each(function(){
-			var sh = p.method==="show" ? true : false;
+			var sh = p.method==="show" ? true : false,
+			loadDiv = $("#load_"+$.jgrid.jqID(this.p.id)), 
+			offsetParent, top, 
+			scrollTop = $(window).scrollTop();
 			if(p.htmlcontent !== "") {
-				$("#load_"+$.jgrid.jqID(this.p.id)).html( p.htmlcontent );
+				loadDiv.html( p.htmlcontent );
 			}
 			switch(p.loadtype) {
 				case "disable":
 					break;
 				case "enable":
-					$("#load_"+$.jgrid.jqID(this.p.id)).toggle( sh );
+					loadDiv.toggle( sh );
 					break;
 				case "block":
 					$("#lui_"+$.jgrid.jqID(this.p.id)).toggle( sh );
-					$("#load_"+$.jgrid.jqID(this.p.id)).toggle( sh );
+					loadDiv.toggle( sh );
 					break;
+			}
+			if (loadDiv.is(':visible')) {
+				offsetParent = loadDiv.offsetParent();
+				loadDiv.css('top', '');
+				if (loadDiv.offset().top < scrollTop) {
+					top = Math.min(
+						10 + scrollTop - offsetParent.offset().top,
+						offsetParent.height() - loadDiv.height()
+					);
+					loadDiv.css('top', top + 'px');
+				}
 			}
 		});
 	},
