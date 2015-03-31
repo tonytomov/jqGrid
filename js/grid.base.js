@@ -3027,7 +3027,7 @@ $.fn.jqGrid = function( pin ) {
 					$(ts).jqGrid("setSelection",ri,true,e);
 				} else if(ts.p.multiselect && scb) {
 					scb = $("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+ri).is(":checked");
-					$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+ri)[ts.p.useProp ? 'prop' : 'attr']("checked", scb);
+					$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+ri)[ts.p.useProp ? 'prop' : 'attr']("checked", !scb);
 				}
 			}
 		}).bind('reloadGrid', function(e,opts) {
