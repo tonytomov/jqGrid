@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v4.8.2 - 2015-03-24
+* @license Guriddo jqGrid JS - v4.8.2 - 2015-03-31
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1202,10 +1202,19 @@ $.fn.jqGrid = function( pin ) {
 				return;
 			}
 		}
+		var i =0, lr, lk, dir;
+		for( lk in $.jgrid.regional ){
+			if($.jgrid.regional.hasOwnProperty(lk)) {
+				if(i===0) { lr = lk; }
+				i++;
+			}
+		}
+		if(i === 1 && lr !== p.regional) {
+			p.regional = lr;
+		}
 		$(this).empty().attr("tabindex","0");
 		this.p = p ;
 		this.p.useProp = !!$.fn.prop;
-		var i, dir;
 		if(this.p.colNames.length === 0) {
 			for (i=0;i<this.p.colModel.length;i++){
 				this.p.colNames[i] = this.p.colModel[i].label || this.p.colModel[i].name;
@@ -1584,11 +1593,7 @@ $.fn.jqGrid = function( pin ) {
 					$(ts.rows[fpos]).after(rowData.join(''));
 				} else {
 					//$("tbody:first",t).append(rowData.join(''));
-					if (ts.firstElementChild) {
-						ts.firstElementChild.innerHTML += rowData.join(''); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
-					} else {
-						$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
-					}
+					$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
 					ts.grid.cols = ts.rows[0].cells; // update cached first row
 				}
 			}
@@ -1779,11 +1784,7 @@ $.fn.jqGrid = function( pin ) {
 				} else if(ts.p.treeGrid === true && fpos > 0) {
 					$(ts.rows[fpos]).after(rowData.join(''));
 				} else { 
-					if (ts.firstElementChild) {
-						ts.firstElementChild.innerHTML += rowData.join(''); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
-					} else {
-						$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
-					}
+					$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
 					ts.grid.cols = ts.rows[0].cells;
 				}
 			}
@@ -3021,7 +3022,7 @@ $.fn.jqGrid = function( pin ) {
 					$(ts).jqGrid("setSelection",ri,true,e);
 				} else if(ts.p.multiselect && scb) {
 					scb = $("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+ri).is(":checked");
-					$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+ri)[ts.p.useProp ? 'prop' : 'attr']("checked", scb);
+					$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+ri)[ts.p.useProp ? 'prop' : 'attr']("checked", !scb);
 				}
 			}
 		}).bind('reloadGrid', function(e,opts) {
@@ -4218,20 +4219,34 @@ $.jgrid.extend({
 			loadtype : "disable" 
 		}, p || {});
 		return this.each(function(){
-			var sh = p.method==="show" ? true : false;
+			var sh = p.method==="show" ? true : false,
+			loadDiv = $("#load_"+$.jgrid.jqID(this.p.id)), 
+			offsetParent, top, 
+			scrollTop = $(window).scrollTop();
 			if(p.htmlcontent !== "") {
-				$("#load_"+$.jgrid.jqID(this.p.id)).html( p.htmlcontent );
+				loadDiv.html( p.htmlcontent );
 			}
 			switch(p.loadtype) {
 				case "disable":
 					break;
 				case "enable":
-					$("#load_"+$.jgrid.jqID(this.p.id)).toggle( sh );
+					loadDiv.toggle( sh );
 					break;
 				case "block":
 					$("#lui_"+$.jgrid.jqID(this.p.id)).toggle( sh );
-					$("#load_"+$.jgrid.jqID(this.p.id)).toggle( sh );
+					loadDiv.toggle( sh );
 					break;
+			}
+			if (loadDiv.is(':visible')) {
+				offsetParent = loadDiv.offsetParent();
+				loadDiv.css('top', '');
+				if (loadDiv.offset().top < scrollTop) {
+					top = Math.min(
+						10 + scrollTop - offsetParent.offset().top,
+						offsetParent.height() - loadDiv.height()
+					);
+					loadDiv.css('top', top + 'px');
+				}
 			}
 		});
 	},
@@ -9472,6 +9487,7 @@ $.jgrid.extend({
 			numberOfColumns,
 			titleText,
 			cVisibleColumns,
+			className,
 			colModel = ts.p.colModel,
 			cml = colModel.length,
 			ths = ts.grid.headers,
@@ -9512,7 +9528,7 @@ $.jgrid.extend({
 					cghi = o.groupHeaders[iCol];
 					numberOfColumns = cghi.numberOfColumns;
 					titleText = cghi.titleText;
-
+					className = cghi.className || "";
 					// caclulate the number of visible columns from the next numberOfColumns columns
 					for (cVisibleColumns = 0, iCol = 0; iCol < numberOfColumns && (i + iCol < cml); iCol++) {
 						if (!colModel[i + iCol].hidden) {
@@ -9524,7 +9540,7 @@ $.jgrid.extend({
 					// in the current row will be placed the new column header with the titleText.
 					// The text will be over the cVisibleColumns columns
 					$colHeader = $('<th>').attr({role: "columnheader"})
-						.addClass("ui-state-default ui-th-column-header ui-th-"+ts.p.direction)
+						.addClass("ui-state-default ui-th-column-header ui-th-"+ts.p.direction+" "+className)
 						//.css({'height':'22px', 'border-top': '0 none'})
 						.html(titleText);
 					if(cVisibleColumns > 0) {
