@@ -887,6 +887,7 @@ jgrid.extend({
 					}
 				});
 			}
+			$(ts).triggerHandler("jqGridAfterSetGroupHeaders");
 		});				
 	},
 	setFrozenColumns : function () {

@@ -980,3 +980,7 @@ a.clearsearchclass {
 .jqContextMenu .ui-menu-icons > .ui-menu-item {
 	font-size: 11px;
 }
+/* classes for jQuery.jqGrid.showHideColumnMenu.js plugin */
+.ui-jqgrid-showHideColumnMenu .ui-menu-item:hover {
+	font-weight: normal;
+}
