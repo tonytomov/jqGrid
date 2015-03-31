@@ -59,11 +59,12 @@
 									ghItem = gh.groupHeaders[i];
 									for (j = 0; j < ghItem.numberOfColumns; j++) {
 										iCol = iColByName[ghItem.startColumnName] + j;
+										cm = colModel[iCol];
 										colHeader[iCol] = $.isFunction(options.buildItemText) ?
 												options.buildItemText.call($self[0], {
 													iCol: iCol,
-													cm: colModel[iCol],
-													cmName: colModel[iCol].name,
+													cm: cm,
+													cmName: cm.name,
 													colName: colNames[iCol],
 													groupTitleText: ghItem.titleText
 												}) :
@@ -75,11 +76,12 @@
 							// fill colHeader for all other columns
 							for (iCol = 0; iCol < nCol; iCol++) {
 								if (colHeader[iCol] === undefined) {
+									cm = colModel[iCol];
 									colHeader[iCol] = $.isFunction(options.buildItemText) ?
 											options.buildItemText.call($self[0], {
 												iCol: iCol,
-												cm: colModel[iCol],
-												cmName: colModel[iCol].name,
+												cm: cm,
+												cmName: cm.name,
 												colName: colNames[iCol],
 												groupTitleText: null
 											}) :
