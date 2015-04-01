@@ -4138,7 +4138,7 @@ $.fn.jqGrid = function( pin ) {
 					$(ts).jqGrid("setSelection",ri,true,e);
 				} else if(p.multiselect && scb) {
 					scb = $("#jqg_"+jqID(p.id)+"_"+ri).is(":checked");
-					$("#jqg_"+jqID(p.id)+"_"+ri)[propOrAttr]("checked", scb);
+					$("#jqg_"+jqID(p.id)+"_"+ri)[propOrAttr]("checked", !scb);
 				}
 			}
 		}).bind('reloadGrid', function(e,opts) {
