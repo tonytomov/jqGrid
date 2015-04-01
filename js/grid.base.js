@@ -3032,7 +3032,8 @@ $.fn.jqGrid = function( pin ) {
 			}
 		}).bind('reloadGrid', function(e,opts) {
 			if(ts.p.treeGrid ===true) {	ts.p.datatype = ts.p.treedatatype;}
-			if (opts && opts.current) {
+			opts = opts || {};
+			if (opts.current) {
 				ts.grid.selectionPreserver(ts);
 			}
 			if(ts.p.datatype==="local"){ $(ts).jqGrid("resetSelection");  if(ts.p.data.length) { normalizeData(); refreshIndex();} }
@@ -3042,7 +3043,7 @@ $.fn.jqGrid = function( pin ) {
 				ts.p.savedRow = [];
 			}
 			if(ts.p.scroll) {emptyRows.call(ts, true, false);}
-			if (opts && opts.page) {
+			if (opts.page) {
 				var page = opts.page;
 				if (page > ts.p.lastpage) { page = ts.p.lastpage; }
 				if (page < 1) { page = 1; }
@@ -3053,7 +3054,7 @@ $.fn.jqGrid = function( pin ) {
 					ts.grid.bDiv.scrollTop = 0;
 				}
 			}
-			if (ts.grid.prevRowHeight && ts.p.scroll) {
+			if (ts.grid.prevRowHeight && ts.p.scroll && opts.page === undefined) {
 				delete ts.p.lastpage;
 				ts.grid.populateVisible();
 			} else {
