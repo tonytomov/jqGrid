@@ -2326,9 +2326,9 @@ $.fn.jqGrid = function( pin ) {
 			pginp = "",
 			pgl="<table cellspacing='0' cellpadding='0' border='0' style='table-layout:auto;' class='ui-pg-table'><tbody><tr>",
 			str="", pgcnt, lft, cent, rgt, twd, tdw, i,
-			clearVals = function(onpaging){
+			clearVals = function(onpaging, thus){
 				var ret;
-				if ($.isFunction(ts.p.onPaging) ) { ret = ts.p.onPaging.call(ts,onpaging); }
+				if ($.isFunction(ts.p.onPaging) ) { ret = ts.p.onPaging.call(ts,onpaging, thus); }
 				if(ret==='stop') {return false;}
 				ts.p.selrow = null;
 				if(ts.p.multiselect) {ts.p.selarrrow =[]; setHeadCheckBox( false );}
@@ -2391,7 +2391,7 @@ $.fn.jqGrid = function( pin ) {
 			ts.p._nvtd[1] = 0;
 			pgl=null;
 			$('.ui-pg-selbox',"#"+pgcnt).bind('change',function() {
-				if(!clearVals('records')) { return false; }
+				if(!clearVals('records', this)) { return false; }
 				ts.p.page = Math.round(ts.p.rowNum*(ts.p.page-1)/this.value-0.5)+1;
 				ts.p.rowNum = this.value;
 				if(ts.p.pager) { $('.ui-pg-selbox',ts.p.pager).val(this.value); }
@@ -2438,7 +2438,7 @@ $.fn.jqGrid = function( pin ) {
 						lp=false; 
 						cp=last-1;
 					}
-					if(!clearVals(this.id.split("_")[0])) { return false; }
+					if(!clearVals(this.id.split("_")[0], this)) { return false; }
 					if( this.id === 'first'+tp && fp ) { ts.p.page=1; selclick=true;}
 					if( this.id === 'prev'+tp && pp) { ts.p.page=(cp-1); selclick=true;}
 					if( this.id === 'next'+tp && np) { ts.p.page=(cp+1); selclick=true;}
@@ -2453,7 +2453,7 @@ $.fn.jqGrid = function( pin ) {
 				$("#"+pgcnt).on('keypress','input.ui-pg-input', function(e) {
 					var key = e.charCode || e.keyCode || 0;
 					if(key === 13) {
-						if(!clearVals('user')) { return false; }
+						if(!clearVals('user', this)) { return false; }
 						$(this).val( intNum( $(this).val(), 1));
 						ts.p.page = ($(this).val()>0) ? $(this).val():ts.p.page;
 						populate();
