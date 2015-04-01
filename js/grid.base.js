@@ -5145,7 +5145,7 @@ jgrid.extend({
 				if(p.footerrow) {
 					footers[lvc].style.width = cw+"px";
 				}
-				if (p.tblwidth < p.width) {
+				if (p.tblwidth + (hs ? scw: 0) < p.width) { // prabably bDiv.offsetWidth - bDiv.clientWidth is better as scw
 					// decrease the width if required
 					setWidthOfAllDivs(p.tblwidth);
 				}
