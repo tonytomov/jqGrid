@@ -4,9 +4,10 @@
  * Copyright (c) 2007 Brice Burgess <bhb@iceburg.net>, http://www.iceburg.net
  * Licensed under the MIT License:
  * http://www.opensource.org/licenses/mit-license.php
- * 
+ *
  * $Version: 2007.08.19 +r2
  * Updated by Oleg Kiriljuk to support touch devices
+ * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  */
 /*jslint browser: true, white: true */
 /*global jQuery */
@@ -14,31 +15,31 @@
 	"use strict";
 	var namespace = ".jqGrid", mouseDown = "mousedown", mouseMove = "mousemove", mouseUp = "mouseup",
 		getMouseCoordinates = function (e) {
-	        var orgEvent = e.originalEvent, touches = orgEvent.targetTouches;
-	        if (touches) {
-	            touches = touches[0];
-	            return { x: touches.pageX, y: touches.pageY };
-	        }
-	        return { x: e.pageX, y: e.pageY };
-	    },
-        jqDnR = {
+			var orgEvent = e.originalEvent, touches = orgEvent.targetTouches;
+			if (touches) {
+				touches = touches[0];
+				return { x: touches.pageX, y: touches.pageY };
+			}
+			return { x: e.pageX, y: e.pageY };
+		},
+		jqDnR = {
 			drag: function (e) {
-			    var d = e.data, $mainDialog = d.e, dnrMainDialog = d.dnr, $alsoResize = d.ar, dnrAlsoResize = d.dnrAr,
-                    xy = getMouseCoordinates(e);
+				var d = e.data, $mainDialog = d.e, dnrMainDialog = d.dnr, $alsoResize = d.ar, dnrAlsoResize = d.dnrAr,
+					xy = getMouseCoordinates(e);
 				if (dnrMainDialog.k === "move") {
 					$mainDialog.css({
-					    left: dnrMainDialog.X + xy.x - dnrMainDialog.pX,
-					    top: dnrMainDialog.Y + xy.y - dnrMainDialog.pY
+						left: dnrMainDialog.X + xy.x - dnrMainDialog.pX,
+						top: dnrMainDialog.Y + xy.y - dnrMainDialog.pY
 					});
 				} else {
 					$mainDialog.css({
-					    width: Math.max(xy.x - dnrMainDialog.pX + dnrMainDialog.W, 0),
-					    height: Math.max(xy.y - dnrMainDialog.pY + dnrMainDialog.H, 0)
+						width: Math.max(xy.x - dnrMainDialog.pX + dnrMainDialog.W, 0),
+						height: Math.max(xy.y - dnrMainDialog.pY + dnrMainDialog.H, 0)
 					});
 					if (dnrAlsoResize) {
 						$alsoResize.css({
-						    width: Math.max(xy.x - dnrAlsoResize.pX + dnrAlsoResize.W, 0),
-						    height: Math.max(xy.y - dnrAlsoResize.pY + dnrAlsoResize.H, 0)
+							width: Math.max(xy.x - dnrAlsoResize.pX + dnrAlsoResize.W, 0),
+							height: Math.max(xy.y - dnrAlsoResize.pY + dnrAlsoResize.H, 0)
 						});
 					}
 				}
@@ -54,12 +55,18 @@
 				handle = handle ? $(handle, $this) : $this;
 				handle.bind(mouseDown, { e: $this, k: actionName }, function (e) {
 					var d = e.data, p = {}, $inputDatePicker, $mainDialog, dnrMainDialog, $alsoResize, dnrAlsoResize,
-						getCssProp = function ($elem, propertyName) { return parseInt($elem.css(propertyName), 10) || false; },
-						getMainCssProp = function (propertyName) { return getCssProp($mainDialog, propertyName); },
-						getAlsoResizeCssProp = function (propertyName) { return getCssProp($alsoResize, propertyName); },
-				        xy = getMouseCoordinates(e),
+						getCssProp = function ($elem, propertyName) {
+							return parseInt($elem.css(propertyName), 10) || false;
+						},
+						getMainCssProp = function (propertyName) {
+							return getCssProp($mainDialog, propertyName);
+						},
+						getAlsoResizeCssProp = function (propertyName) {
+							return getCssProp($alsoResize, propertyName);
+						},
+						xy = getMouseCoordinates(e),
 						eventData;
-						
+
 					if ($(e.target).hasClass("ui-jqdialog-titlebar-close") || $(e.target).parent().hasClass("ui-jqdialog-titlebar-close")) {
 						$(e.target).click();
 						return;
@@ -130,7 +137,7 @@
 		mouseDown += namespace + " mspointerdown" + namespace;
 		mouseMove += namespace + " mspointermove" + namespace;
 		mouseUp += namespace + " mspointerup";
-	} else /*if (document.hasOwnProperty("ontouchend"))*/ {
+	} else {/*if (document.hasOwnProperty("ontouchend"))*/
 		mouseDown += namespace + " touchstart" + namespace;
 		mouseMove += namespace + " touchmove" + namespace;
 		mouseUp += namespace + " touchend" + namespace;

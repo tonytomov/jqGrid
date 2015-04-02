@@ -14,10 +14,10 @@
  *
 **/
 /*jshint eqeqeq:false */
-/*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
+/*jslint eqeq: true, plusplus: true, unparam: true, vars: true, regexp: true, white: true, todo: true */
 /*global jQuery */
 
-(function($) {
+(function ($) {
 	"use strict";
 	$.fmatter = $.fmatter || {};
 	$.jgrid = $.jgrid || {};
@@ -68,12 +68,12 @@
 			},
 			booleanCheckbox: {
 				align: "center", formatter: "checkbox",
-				edittype: "checkbox", editoptions: {value: "true:false", defaultValue: "false"},
+				edittype: "checkbox", editoptions: { value: "true:false", defaultValue: "false" },
 				convertOnSave: function (options) {
 					var nData = options.newValue, cm = options.cm,
 						lnData = String(nData).toLowerCase(),
 						cbv = cm.editoptions != null && typeof cm.editoptions.value === "string" ?
-							cm.editoptions.value.split(":") : ["yes","no"];
+							cm.editoptions.value.split(":") : ["yes", "no"];
 
 					if ($.inArray(lnData, ["1", "true", cbv[0].toLowerCase()]) >= 0) {
 						nData = true;
@@ -86,12 +86,12 @@
 			},
 			booleanCheckboxFa: {
 				align: "center", formatter: "checkboxFontAwesome4",
-				edittype: "checkbox", editoptions: {value: "true:false", defaultValue: "false"},
+				edittype: "checkbox", editoptions: { value: "true:false", defaultValue: "false" },
 				convertOnSave: function (options) {
 					var nData = options.newValue, cm = options.cm,
 						lnData = String(nData).toLowerCase(),
 						cbv = cm.editoptions != null && typeof cm.editoptions.value === "string" ?
-							cm.editoptions.value.split(":") : ["yes","no"];
+							cm.editoptions.value.split(":") : ["yes", "no"];
 
 					if ($.inArray(lnData, ["1", "true", cbv[0].toLowerCase()]) >= 0) {
 						nData = true;
@@ -124,72 +124,70 @@
 
 	//opts can be id:row id for the row, rowdata:the data for the row, colmodel:the column model for this column
 	//example {id:1234,}
-	$.extend(fmatter,{
+	$.extend(fmatter, {
 		// one can consider to use $.type instead of some functions below (see http://api.jquery.com/jQuery.type/)
-		isObject : function(o) {
-			return (o && (typeof o === 'object' || $.isFunction(o))) || false;
+		isObject: function (o) {
+			return (o && (typeof o === "object" || $.isFunction(o))) || false;
 		},
-		isNumber : function(o) {
+		isNumber: function (o) {
 			// probably Number.isFinite can be used instead.
-			return typeof o === 'number' && isFinite(o); // return false for +infinity, -infinity, or NaN 
+			return typeof o === "number" && isFinite(o); // return false for +infinity, -infinity, or NaN 
 		},
-		isValue : function (o) {
-			return (this.isObject(o) || typeof o === "string" || this.isNumber(o) || typeof o === 'boolean');
+		isValue: function (o) {
+			return (this.isObject(o) || typeof o === "string" || this.isNumber(o) || typeof o === "boolean");
 		},
-		isEmpty : function(o) {
-			if(typeof o !== "string" && this.isValue(o)) {
+		isEmpty: function (o) {
+			if (typeof o !== "string" && this.isValue(o)) {
 				return false;
 			}
-			if (!this.isValue(o)){
+			if (!this.isValue(o)) {
 				return true;
 			}
-			o = $.trim(o).replace(/\&nbsp\;/ig,'').replace(/\&#160\;/ig,'');
-			return o==="";	
+			o = $.trim(o).replace(/\&nbsp\;/ig, "").replace(/\&#160\;/ig, "");
+			return o === "";
 		},
-		NumberFormat : function(nData,opts) {
+		NumberFormat: function (nData, opts) {
 			var isNumber = fmatter.isNumber;
-			if(!isNumber(nData)) {
+			if (!isNumber(nData)) {
 				nData *= 1;
 			}
-			if(isNumber(nData)) {
+			if (isNumber(nData)) {
 				var bNegative = (nData < 0);
 				var sOutput = String(nData);
 				var sDecimalSeparator = opts.decimalSeparator || ".";
 				var nDotIndex;
-				if(isNumber(opts.decimalPlaces)) {
+				if (isNumber(opts.decimalPlaces)) {
 					// Round to the correct decimal place
 					var nDecimalPlaces = opts.decimalPlaces;
 					var nDecimal = Math.pow(10, nDecimalPlaces);
-					sOutput = String(Math.round(nData*nDecimal)/nDecimal);
+					sOutput = String(Math.round(nData * nDecimal) / nDecimal);
 					nDotIndex = sOutput.lastIndexOf(".");
-					if(nDecimalPlaces > 0) {
-					// Add the decimal separator
-						if(nDotIndex < 0) {
+					if (nDecimalPlaces > 0) {
+						// Add the decimal separator
+						if (nDotIndex < 0) {
 							sOutput += sDecimalSeparator;
-							nDotIndex = sOutput.length-1;
+							nDotIndex = sOutput.length - 1;
+						} else if (sDecimalSeparator !== ".") { // Replace the "."
+							sOutput = sOutput.replace(".", sDecimalSeparator);
 						}
-						// Replace the "."
-						else if(sDecimalSeparator !== "."){
-							sOutput = sOutput.replace(".",sDecimalSeparator);
-						}
-					// Add missing zeros
-						while((sOutput.length - 1 - nDotIndex) < nDecimalPlaces) {
+						// Add missing zeros
+						while ((sOutput.length - 1 - nDotIndex) < nDecimalPlaces) {
 							sOutput += "0";
 						}
 					}
 				}
-				if(opts.thousandsSeparator) {
+				if (opts.thousandsSeparator) {
 					var sThousandsSeparator = opts.thousandsSeparator;
 					nDotIndex = sOutput.lastIndexOf(sDecimalSeparator);
 					nDotIndex = (nDotIndex > -1) ? nDotIndex : sOutput.length;
 					var sNewOutput = sOutput.substring(nDotIndex);
 					var nCount = -1, i;
-					for (i=nDotIndex; i>0; i--) {
+					for (i = nDotIndex; i > 0; i--) {
 						nCount++;
-						if ((nCount%3 === 0) && (i !== nDotIndex) && (!bNegative || (i > 1))) {
+						if ((nCount % 3 === 0) && (i !== nDotIndex) && (!bNegative || (i > 1))) {
 							sNewOutput = sThousandsSeparator + sNewOutput;
 						}
-						sNewOutput = sOutput.charAt(i-1) + sNewOutput;
+						sNewOutput = sOutput.charAt(i - 1) + sNewOutput;
 					}
 					sOutput = sNewOutput;
 				}
@@ -198,52 +196,52 @@
 				// Append suffix
 				sOutput = (opts.suffix) ? sOutput + opts.suffix : sOutput;
 				return sOutput;
-				
+
 			}
 			return nData;
 		}
 	});
-	var $FnFmatter = function(formatType, cellval, opts, rwd, act) {
+	var $FnFmatter = function (formatType, cellval, opts, rwd, act) {
 		// build main options before element iteration
-		var v=cellval;
+		var v = cellval;
 		opts = $.extend(true, {}, getGridRes.call($(this), "formatter"), opts);
 		//$.extend(true, {}, getRes(locales[this.p.locale], "formatter"), jgrid.formatter, opts);
 
 		try {
 			v = $.fn.fmatter[formatType].call(this, cellval, opts, rwd, act);
-		} catch(ignore){}
+		} catch (ignore) { }
 		return v;
 	};
 	$.fn.fmatter = $FnFmatter;
-	$FnFmatter.defaultFormat = function(cellval, opts) {
-		return (fmatter.isValue(cellval) && cellval!=="" ) ?  cellval : opts.defaultValue || "&#160;";
+	$FnFmatter.defaultFormat = function (cellval, opts) {
+		return (fmatter.isValue(cellval) && cellval !== "") ? cellval : opts.defaultValue || "&#160;";
 	};
-	$FnFmatter.email = function(cellval, opts) {
-		if(!fmatter.isEmpty(cellval)) {
+	$FnFmatter.email = function (cellval, opts) {
+		if (!fmatter.isEmpty(cellval)) {
 			return "<a href=\"mailto:" + cellval + "\">" + cellval + "</a>";
 		}
-		return $FnFmatter.defaultFormat(cellval,opts );
+		return $FnFmatter.defaultFormat(cellval, opts);
 	};
-	$FnFmatter.checkbox =function(cval, opts) {
-		var op = $.extend({},opts.checkbox), ds;
-		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
-			op = $.extend({},op,opts.colModel.formatoptions);
+	$FnFmatter.checkbox = function (cval, opts) {
+		var op = $.extend({}, opts.checkbox), ds;
+		if (opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
+			op = $.extend({}, op, opts.colModel.formatoptions);
 		}
-		if(op.disabled===true) {ds = "disabled=\"disabled\"";} else {ds="";}
-		if(fmatter.isEmpty(cval) || cval === undefined ) {cval = $FnFmatter.defaultFormat(cval,op);}
-		cval=String(cval);
-		cval=String(cval).toLowerCase();
-		var bchk = cval.search(/(false|f|0|no|n|off|undefined)/i)<0 ? " checked='checked' " : "";
-		return "<input type=\"checkbox\" " + bchk  + " value=\""+ cval+"\" offval=\"no\" "+ds+ "/>";
+		if (op.disabled === true) { ds = "disabled=\"disabled\""; } else { ds = ""; }
+		if (fmatter.isEmpty(cval) || cval === undefined) { cval = $FnFmatter.defaultFormat(cval, op); }
+		cval = String(cval);
+		cval = String(cval).toLowerCase();
+		var bchk = cval.search(/(false|f|0|no|n|off|undefined)/i) < 0 ? " checked='checked' " : "";
+		return "<input type=\"checkbox\" " + bchk + " value=\"" + cval + "\" offval=\"no\" " + ds + "/>";
 	};
 	$FnFmatter.checkboxFontAwesome4 = function (cellValue, options) {
-		var title = options.colModel.title !== false ? ' title="' + (options.colName || options.colModel.label || options.colModel.name) + '"' : '',
+		var title = options.colModel.title !== false ? ' title="' + (options.colName || options.colModel.label || options.colModel.name) + '"' : "",
 			strCellValue = String(cellValue).toLowerCase(),
 			editoptions = options.colModel.editoptions,
 			editYes = editoptions != null && typeof editoptions.value === "string" ? editoptions.value.split(":")[0] : "yes";
 		return (cellValue === 1 || strCellValue === "1" || strCellValue === "x" || cellValue === true || strCellValue === "true" || strCellValue === "yes" || strCellValue === editYes) ?
-			'<i class="fa fa-check-square-o fa-lg"' + title + '></i>' :
-			'<i class="fa fa-square-o fa-lg"' + title + '></i>';
+				'<i class="fa fa-check-square-o fa-lg"' + title + "></i>" :
+				'<i class="fa fa-square-o fa-lg"' + title + "></i>";
 	};
 	$FnFmatter.checkboxFontAwesome4.unformat = function (cellValue, options, elem) {
 		var cbv = (options.colModel.editoptions != null && options.colModel.editoptions.value) ?
@@ -251,19 +249,19 @@
 				["Yes", "No"];
 		return $(">i", elem).hasClass("fa-check-square-o") ? cbv[0] : cbv[1];
 	};
-	$FnFmatter.link = function(cellval, opts) {
-		var op = {target:opts.target};
+	$FnFmatter.link = function (cellval, opts) {
+		var op = { target: opts.target };
 		var target = "";
-		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
-			op = $.extend({},op,opts.colModel.formatoptions);
+		if (opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
+			op = $.extend({}, op, opts.colModel.formatoptions);
 		}
-		if(op.target) {target = 'target=' + op.target;}
-		if(!fmatter.isEmpty(cellval)) {
-			return "<a "+target+" href=\"" + cellval + "\">" + cellval + "</a>";
+		if (op.target) { target = "target=" + op.target; }
+		if (!fmatter.isEmpty(cellval)) {
+			return "<a " + target + " href=\"" + cellval + "\">" + cellval + "</a>";
 		}
-		return $FnFmatter.defaultFormat(cellval,opts);
+		return $FnFmatter.defaultFormat(cellval, opts);
 	};
-	$FnFmatter.showlink = function(cellval, opts, rowData) {
+	$FnFmatter.showlink = function (cellval, opts, rowData) {
 		var self = this,
 			op = {
 				baseLinkUrl: opts.baseLinkUrl,
@@ -279,115 +277,115 @@
 			addParam,
 			getOptionValue = function (option) {
 				return $.isFunction(option) ?
-					option.call(self, {
-						cellValue: cellval,
-						rowid: opts.rowId,
-						rowData: rowData,
-						options: op
-					}):
-					option || "";
+						option.call(self, {
+							cellValue: cellval,
+							rowid: opts.rowId,
+							rowData: rowData,
+							options: op
+						}) :
+						option || "";
 			};
-		
+
 		if (opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
 			op = $.extend({}, op, opts.colModel.formatoptions);
 		}
 
 		if (op.target) {
-			target = 'target=' + getOptionValue(op.target);
+			target = "target=" + getOptionValue(op.target);
 		}
 		idUrl = getOptionValue(op.baseLinkUrl) + getOptionValue(op.showAction);
-		idParam = op.idName ? encodeURIComponent(getOptionValue(op.idName)) + '=' + encodeURIComponent(getOptionValue(op.rowId) || opts.rowId) : "";
+		idParam = op.idName ? encodeURIComponent(getOptionValue(op.idName)) + "=" + encodeURIComponent(getOptionValue(op.rowId) || opts.rowId) : "";
 		addParam = getOptionValue(op.addParam);
 		if (typeof addParam === "object" && addParam !== null) {
 			// add "&" only in case of usage object for of addParam
 			addParam = (idParam !== "" ? "&" : "") + $.param(addParam);
 		}
-		idUrl += !idParam && !addParam ? "" : '?' + idParam + addParam;
+		idUrl += !idParam && !addParam ? "" : "?" + idParam + addParam;
 		if (idUrl === "") {
 			idUrl = getOptionValue(op.hrefDefaultValue);
 		}
-		if (typeof cellval === 'string' || fmatter.isNumber(cellval) || $.isFunction(op.cellValue)) {
+		if (typeof cellval === "string" || fmatter.isNumber(cellval) || $.isFunction(op.cellValue)) {
 			//add this one even if cellval is blank string
-			return "<a "+target+" href=\"" + idUrl + "\">" +
+			return "<a " + target + " href=\"" + idUrl + "\">" +
 				($.isFunction(op.cellValue) ? getOptionValue(op.cellValue) : cellval) +
 				"</a>";
 		}
 		// the code below will be called typically for undefined cellval or 
 		// if cellval have null value or some other unclear value like an object
 		// and no cellValue callback function are defined "to decode" the value
-		return $FnFmatter.defaultFormat(cellval,opts);
+		return $FnFmatter.defaultFormat(cellval, opts);
 	};
-	var numberHelper = function(cellval, opts, formatType) {
-		var op = $.extend({},opts[formatType]);
-		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
-			op = $.extend({},op,opts.colModel.formatoptions);
+	var numberHelper = function (cellval, opts, formatType) {
+		var op = $.extend({}, opts[formatType]);
+		if (opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
+			op = $.extend({}, op, opts.colModel.formatoptions);
 		}
-		if(fmatter.isEmpty(cellval)) {
+		if (fmatter.isEmpty(cellval)) {
 			return op.defaultValue;
 		}
-		return fmatter.NumberFormat(cellval,op);
+		return fmatter.NumberFormat(cellval, op);
 	};
-	$FnFmatter.integer = function(cellval, opts) {
-		return numberHelper(cellval,opts,"integer");
+	$FnFmatter.integer = function (cellval, opts) {
+		return numberHelper(cellval, opts, "integer");
 	};
 	$FnFmatter.number = function (cellval, opts) {
-		return numberHelper(cellval,opts,"number");
+		return numberHelper(cellval, opts, "number");
 	};
 	$FnFmatter.currency = function (cellval, opts) {
-		return numberHelper(cellval,opts,"currency");
+		return numberHelper(cellval, opts, "currency");
 	};
 	$FnFmatter.date = function (cellval, opts, rwd, act) {
-		var op = $.extend({},opts.date);
-		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
-			op = $.extend({},op,opts.colModel.formatoptions);
+		var op = $.extend({}, opts.date);
+		if (opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
+			op = $.extend({}, op, opts.colModel.formatoptions);
 		}
-		if(!op.reformatAfterEdit && act === 'edit'){
+		if (!op.reformatAfterEdit && act === "edit") {
 			return $FnFmatter.defaultFormat(cellval, opts);
 		}
-		if(!fmatter.isEmpty(cellval)) {
-			return jgrid.parseDate.call(this,op.srcformat,cellval,op.newformat,op);
+		if (!fmatter.isEmpty(cellval)) {
+			return jgrid.parseDate.call(this, op.srcformat, cellval, op.newformat, op);
 		}
 		return $FnFmatter.defaultFormat(cellval, opts);
 	};
-	$FnFmatter.select = function (cellval,opts) {
+	$FnFmatter.select = function (cellval, opts) {
 		// jqGrid specific
 		cellval = String(cellval);
-		var oSelect = false, ret=[], sep, delim;
-		if(opts.colModel.formatoptions !== undefined){
-			oSelect= opts.colModel.formatoptions.value;
+		var oSelect = false, ret = [], sep, delim;
+		if (opts.colModel.formatoptions !== undefined) {
+			oSelect = opts.colModel.formatoptions.value;
 			sep = opts.colModel.formatoptions.separator === undefined ? ":" : opts.colModel.formatoptions.separator;
 			delim = opts.colModel.formatoptions.delimiter === undefined ? ";" : opts.colModel.formatoptions.delimiter;
-		} else if(opts.colModel.editoptions !== undefined){
-			oSelect= opts.colModel.editoptions.value;
+		} else if (opts.colModel.editoptions !== undefined) {
+			oSelect = opts.colModel.editoptions.value;
 			sep = opts.colModel.editoptions.separator === undefined ? ":" : opts.colModel.editoptions.separator;
 			delim = opts.colModel.editoptions.delimiter === undefined ? ";" : opts.colModel.editoptions.delimiter;
 		}
 		if (oSelect) {
-			var	msl =  (opts.colModel.editoptions != null && opts.colModel.editoptions.multiple === true) === true ? true : false,
-			scell = [], sv, mapFunc = function(n,i){if(i>0) {return n;}};
-			if(msl) {scell = cellval.split(",");scell = $.map(scell,function(n){return $.trim(n);});}
+			var msl = (opts.colModel.editoptions != null && opts.colModel.editoptions.multiple === true) === true ? true : false,
+			scell = [], sv, mapFunc = function (n, i) { if (i > 0) { return n; } };
+			if (msl) { scell = cellval.split(","); scell = $.map(scell, function (n) { return $.trim(n); }); }
 			if (typeof oSelect === "string") {
 				// mybe here we can use some caching with care ????
-				var so = oSelect.split(delim), j=0, i;
-				for(i=0; i<so.length;i++){
+				var so = oSelect.split(delim), j = 0, i;
+				for (i = 0; i < so.length; i++) {
 					sv = so[i].split(sep);
-					if(sv.length > 2 ) {
-						sv[1] = $.map(sv,mapFunc).join(sep);
+					if (sv.length > 2) {
+						sv[1] = $.map(sv, mapFunc).join(sep);
 					}
-					if(msl) {
-						if($.inArray($.trim(sv[0]),scell)>-1) {
+					if (msl) {
+						if ($.inArray($.trim(sv[0]), scell) > -1) {
 							ret[j] = sv[1];
 							j++;
 						}
-					} else if($.trim(sv[0]) === $.trim(cellval)) {
+					} else if ($.trim(sv[0]) === $.trim(cellval)) {
 						ret[0] = sv[1];
 						break;
 					}
 				}
-			} else if(fmatter.isObject(oSelect)) {
+			} else if (fmatter.isObject(oSelect)) {
 				// this is quicker
-				if(msl) {
-					ret = $.map(scell, function(n){
+				if (msl) {
+					ret = $.map(scell, function (n) {
 						return oSelect[n];
 					});
 				} else {
@@ -396,16 +394,16 @@
 			}
 		}
 		cellval = ret.join(", ");
-		return  cellval === "" ? $FnFmatter.defaultFormat(cellval,opts) : cellval;
+		return cellval === "" ? $FnFmatter.defaultFormat(cellval, opts) : cellval;
 	};
-	$FnFmatter.rowactions = function(e, act) {
-		var $tr = $(this).closest("tr.jqgrow"),rid = $tr.attr("id"),
-			$id = $(this).closest("table.ui-jqgrid-btable").attr('id').replace(/_frozen([^_]*)$/,'$1'),
-			$grid = $("#"+jgrid.jqID($id)),
+	$FnFmatter.rowactions = function (e, act) {
+		var $tr = $(this).closest("tr.jqgrow"), rid = $tr.attr("id"),
+			$id = $(this).closest("table.ui-jqgrid-btable").attr("id").replace(/_frozen([^_]*)$/, "$1"),
+			$grid = $("#" + jgrid.jqID($id)),
 			$t = $grid[0],
 			p = $t.p,
 			cm = p.colModel[jgrid.getCellIndex(this)],
-			op = $.extend(true, { extraparam: {}}, cm.formatoptions || {});
+			op = $.extend(true, { extraparam: {} }, cm.formatoptions || {});
 
 		if (p.editOptions !== undefined) {
 			op.editOptions = p.editOptions;
@@ -413,7 +411,7 @@
 		if (p.delOptions !== undefined) {
 			op.delOptions = p.delOptions;
 		}
-		if ($tr.hasClass("jqgrid-new-row")){
+		if ($tr.hasClass("jqgrid-new-row")) {
 			op.extraparam[p.prmNames.oper] = p.prmNames.addoper;
 		}
 		var actop = {
@@ -429,25 +427,25 @@
 			mtype: op.mtype
 		};
 		if ((!p.multiselect && rid !== p.selrow) || (p.multiselect && $.inArray(rid, p.selarrrow) < 0)) {
-			$grid.jqGrid('setSelection', rid, true, e);
+			$grid.jqGrid("setSelection", rid, true, e);
 		} else {
 			jgrid.fullBoolFeedback.call($t, "onSelectRow", "jqGridSelectRow", rid, true, e);
 		}
-		switch(act)	{
-			case 'edit':
-				$grid.jqGrid('editRow', rid, actop);
+		switch (act) {
+			case "edit":
+				$grid.jqGrid("editRow", rid, actop);
 				break;
-			case 'save':
-				$grid.jqGrid('saveRow', rid, actop);
+			case "save":
+				$grid.jqGrid("saveRow", rid, actop);
 				break;
-			case 'cancel' :
-				$grid.jqGrid('restoreRow', rid, op.afterRestore);
+			case "cancel":
+				$grid.jqGrid("restoreRow", rid, op.afterRestore);
 				break;
-			case 'del':
-				$grid.jqGrid('delGridRow', rid, op.delOptions);
+			case "del":
+				$grid.jqGrid("delGridRow", rid, op.delOptions);
 				break;
-			case 'formedit':
-				$grid.jqGrid('editGridRow', rid, op.editOptions);
+			case "formedit":
+				$grid.jqGrid("editGridRow", rid, op.editOptions);
 				break;
 		}
 		if (e.stopPropagation) {
@@ -455,7 +453,7 @@
 		}
 		return false; // prevent other processing of the click on the row
 	};
-	$FnFmatter.actions = function(cellval,opts) {
+	$FnFmatter.actions = function (cellval, opts) {
 		var rowid = opts.rowId, str = "", ocl, $t = this, p = $t.p, $self = $($t), //locale = jgrid.locales[p.locale],
 			//navRegional = getRes(locale, "nav") || {},
 			//nav = $.extend(true, {}, navRegional, jgrid.nav || {}),
@@ -487,22 +485,22 @@
 				return jgrid.mergeCssClasses(op.commonIconClass, op[name + "icon"]);
 			};
 
-		if(rowid === undefined || fmatter.isEmpty(rowid)) {return "";}
-		if(op.editformbutton){
-			ocl = "id='jEditButton_"+rowid+"' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'formedit');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-			str += "<div title='"+op.edittitle+"' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='" + cssIconClass("edit") + "'></span></div>";
-		} else if(op.editbutton){
-			ocl = "id='jEditButton_"+rowid+"' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'edit');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover') ";
-			str += "<div title='"+op.edittitle+"' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='" + cssIconClass("edit") + "'></span></div>";
+		if (rowid === undefined || fmatter.isEmpty(rowid)) { return ""; }
+		if (op.editformbutton) {
+			ocl = "id='jEditButton_" + rowid + "' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'formedit');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
+			str += "<div title='" + op.edittitle + "' class='ui-pg-div ui-inline-edit' " + ocl + "><span class='" + cssIconClass("edit") + "'></span></div>";
+		} else if (op.editbutton) {
+			ocl = "id='jEditButton_" + rowid + "' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'edit');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover') ";
+			str += "<div title='" + op.edittitle + "' class='ui-pg-div ui-inline-edit' " + ocl + "><span class='" + cssIconClass("edit") + "'></span></div>";
 		}
-		if(op.delbutton) {
-			ocl = "id='jDeleteButton_"+rowid+"' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'del');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-			str += "<div title='"+op.deltitle+"' class='ui-pg-div ui-inline-del' "+ocl+"><span class='" + cssIconClass("del") + "'></span></div>";
+		if (op.delbutton) {
+			ocl = "id='jDeleteButton_" + rowid + "' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'del');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
+			str += "<div title='" + op.deltitle + "' class='ui-pg-div ui-inline-del' " + ocl + "><span class='" + cssIconClass("del") + "'></span></div>";
 		}
-		ocl = "id='jSaveButton_"+rowid+"' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'save');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-		str += "<div title='"+op.savetitle+"' style='display:none' class='ui-pg-div ui-inline-save' "+ocl+"><span class='" + cssIconClass("save") + "'></span></div>";
-		ocl = "id='jCancelButton_"+rowid+"' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'cancel');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-		str += "<div title='"+op.canceltitle+"' style='display:none;' class='ui-pg-div ui-inline-cancel' "+ocl+"><span class='" + cssIconClass("cancel") + "'></span></div>";
+		ocl = "id='jSaveButton_" + rowid + "' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'save');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
+		str += "<div title='" + op.savetitle + "' style='display:none' class='ui-pg-div ui-inline-save' " + ocl + "><span class='" + cssIconClass("save") + "'></span></div>";
+		ocl = "id='jCancelButton_" + rowid + "' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'cancel');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
+		str += "<div title='" + op.canceltitle + "' style='display:none;' class='ui-pg-div ui-inline-cancel' " + ocl + "><span class='" + cssIconClass("cancel") + "'></span></div>";
 		return "<div class='ui-jqgrid-actions'>" + str + "</div>";
 	};
 	$FnFmatter.actions.pageFinalization = function (iCol) {
@@ -539,39 +537,39 @@
 			$self.bind("jqGridInlineEditRow.jqGridFormatter", hideEditDelete);
 		}
 	};
-	$.unformat = function (cellval,options,pos,cnt) {
+	$.unformat = function (cellval, options, pos, cnt) {
 		// specific for jqGrid only
 		var ret, formatType = options.colModel.formatter, p = this.p,
-		op =options.colModel.formatoptions || {}, sep,
-		re = /([\.\*\_\'\(\)\{\}\+\?\\])/g,
-		unformatFunc = options.colModel.unformat||($FnFmatter[formatType] && $FnFmatter[formatType].unformat);
+			op = options.colModel.formatoptions || {}, sep,
+			re = /([\.\*\_\'\(\)\{\}\+\?\\])/g,
+			unformatFunc = options.colModel.unformat || ($FnFmatter[formatType] && $FnFmatter[formatType].unformat);
 		if (cellval instanceof jQuery && cellval.length > 0) {
 			cellval = cellval[0];
 		}
 		if (options.colModel.autoResizable && cellval != null && $(cellval.firstChild).hasClass(p.autoResizing.wrapperClassName)) {
 			cellval = cellval.firstChild;
 		}
-		if(unformatFunc !== undefined && $.isFunction(unformatFunc) ) {
+		if (unformatFunc !== undefined && $.isFunction(unformatFunc)) {
 			ret = unformatFunc.call(this, $(cellval).text(), options, cellval);
-		} else if(formatType !== undefined && typeof formatType === "string") {
+		} else if (formatType !== undefined && typeof formatType === "string") {
 			//var opts = $.extend(true, {}, getRes(locales[p.locale], "formatter"), jgrid.formatter || {}), stripTag;
 			var opts = getGridRes.call($(this), "formatter"), stripTag;
-			switch(formatType) {
-				case 'integer' :
-					op = $.extend({},opts.integer,op);
-					sep = op.thousandsSeparator.replace(re,"\\$1");
+			switch (formatType) {
+				case "integer":
+					op = $.extend({}, opts.integer, op);
+					sep = op.thousandsSeparator.replace(re, "\\$1");
 					stripTag = new RegExp(sep, "g");
-					ret = $(cellval).text().replace(stripTag,'');
+					ret = $(cellval).text().replace(stripTag, "");
 					break;
-				case 'number' :
-					op = $.extend({},opts.number,op);
-					sep = op.thousandsSeparator.replace(re,"\\$1");
+				case "number":
+					op = $.extend({}, opts.number, op);
+					sep = op.thousandsSeparator.replace(re, "\\$1");
 					stripTag = new RegExp(sep, "g");
-					ret = $(cellval).text().replace(stripTag,"").replace(op.decimalSeparator,'.');
+					ret = $(cellval).text().replace(stripTag, "").replace(op.decimalSeparator, ".");
 					break;
-				case 'currency':
-					op = $.extend({},opts.currency,op);
-					sep = op.thousandsSeparator.replace(re,"\\$1");
+				case "currency":
+					op = $.extend({}, opts.currency, op);
+					sep = op.thousandsSeparator.replace(re, "\\$1");
 					stripTag = new RegExp(sep, "g");
 					ret = $(cellval).text();
 					if (op.prefix && op.prefix.length) {
@@ -580,69 +578,68 @@
 					if (op.suffix && op.suffix.length) {
 						ret = ret.substr(0, ret.length - op.suffix.length);
 					}
-					ret = ret.replace(stripTag,'').replace(op.decimalSeparator,'.');
+					ret = ret.replace(stripTag, "").replace(op.decimalSeparator, ".");
 					break;
-				case 'checkbox':
+				case "checkbox":
 					var cbv = (options.colModel.editoptions != null && typeof options.colModel.editoptions.value === "string") ?
 							options.colModel.editoptions.value.split(":") :
-							["Yes","No"];
-					ret = $('input',cellval).is(":checked") ? cbv[0] : cbv[1];
+							["Yes", "No"];
+					ret = $("input", cellval).is(":checked") ? cbv[0] : cbv[1];
 					break;
-				case 'select' :
-					ret = $.unformat.select(cellval,options,pos,cnt);
+				case "select":
+					ret = $.unformat.select(cellval, options, pos, cnt);
 					break;
-				case 'actions':
+				case "actions":
 					return "";
 				default:
-					ret= $(cellval).text();
+					ret = $(cellval).text();
 			}
 		}
-		ret = ret !== undefined ? ret : cnt===true ? $(cellval).text() : jgrid.htmlDecode($(cellval).html());
+		ret = ret !== undefined ? ret : cnt === true ? $(cellval).text() : jgrid.htmlDecode($(cellval).html());
 		return ret;
 	};
-	$.unformat.select = function (cellval,options,pos,cnt) {
+	$.unformat.select = function (cellval, options, pos, cnt) {
 		// Spacial case when we have local data and perform a sort
 		// cnt is set to true only in sortDataArray
-		var ret = [];
-		var cell = $(cellval).text();
-		if(cnt===true) {return cell;}
-		var op = $.extend({}, options.colModel.formatoptions !== undefined ? options.colModel.formatoptions: options.colModel.editoptions),
-		sep = op.separator === undefined ? ":" : op.separator,
-		delim = op.delimiter === undefined ? ";" : op.delimiter;
-		
-		if(op.value){
+		var ret = [], cell = $(cellval).text();
+		if (cnt === true) { return cell; }
+		var op = $.extend({}, options.colModel.formatoptions !== undefined ? options.colModel.formatoptions : options.colModel.editoptions),
+			sep = op.separator === undefined ? ":" : op.separator,
+			delim = op.delimiter === undefined ? ";" : op.delimiter;
+
+		if (op.value) {
 			var oSelect = op.value,
-			msl =  op.multiple === true ? true : false,
-			scell = [], sv, mapFunc = function(n,i){if(i>0) {return n;}};
-			if(msl) {scell = cell.split(",");scell = $.map(scell,function(n){return $.trim(n);});}
+				msl = op.multiple === true ? true : false,
+				scell = [], sv, mapFunc = function (n, i) { if (i > 0) { return n; } };
+			if (msl) { scell = cell.split(","); scell = $.map(scell, function (n) { return $.trim(n); }); }
 			if (typeof oSelect === "string") {
-				var so = oSelect.split(delim), j=0, i;
-				for(i=0; i<so.length;i++){
+				var so = oSelect.split(delim), j = 0, i;
+				for (i = 0; i < so.length; i++) {
 					sv = so[i].split(sep);
-					if(sv.length > 2 ) {
-						sv[1] = $.map(sv,mapFunc).join(sep);
-					}					
-					if(msl) {
-						if($.inArray($.trim(sv[1]),scell)>-1) {
+					if (sv.length > 2) {
+						sv[1] = $.map(sv, mapFunc).join(sep);
+					}
+					if (msl) {
+						if ($.inArray($.trim(sv[1]), scell) > -1) {
 							ret[j] = sv[0];
 							j++;
 						}
-					} else if($.trim(sv[1]) === $.trim(cell)) {
+					} else if ($.trim(sv[1]) === $.trim(cell)) {
 						ret[0] = sv[0];
 						break;
 					}
 				}
-			} else if(fmatter.isObject(oSelect) || $.isArray(oSelect) ){
-				if(!msl) {scell[0] =  cell;}
-				ret = $.map(scell, function(n){
+			} else if (fmatter.isObject(oSelect) || $.isArray(oSelect)) {
+				if (!msl) { scell[0] = cell; }
+				ret = $.map(scell, function (n) {
 					var rv;
-					$.each(oSelect, function(i,val){
+					$.each(oSelect, function (i, val) {
 						if (val === n) {
 							rv = i;
 							return false;
 						}
 					});
-					if( rv !== undefined ) {return rv;}
+					if (rv !== undefined) { return rv; }
 				});
 			}
 			return ret.join(", ");
@@ -656,11 +653,11 @@
 				getGridRes.call($(this), "formatter.date"),
 				jgrid.formatter != null && jgrid.formatter.date != null ? jgrid.formatter.date : {});
 
-		if(opts.formatoptions !== undefined) {
-			op = $.extend({},op,opts.formatoptions);
-		}		
+		if (opts.formatoptions !== undefined) {
+			op = $.extend({}, op, opts.formatoptions);
+		}
 		return !fmatter.isEmpty(cellval) ?
-			jgrid.parseDate.call(this,op.newformat,cellval,op.srcformat,op) :
-			"";
+				jgrid.parseDate.call(this, op.newformat, cellval, op.srcformat, op) :
+				"";
 	};
 }(jQuery));
