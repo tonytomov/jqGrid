@@ -154,7 +154,7 @@
 .ui-jqgrid .ui-ellipsis {-moz-text-overflow:ellipsis;text-overflow:ellipsis;}
 
 /* Toolbar Search Menu */
-.ui-search-menu { position: absolute; padding: 2px 5px;}
+.ui-search-menu { position: absolute; padding: 2px 5px; z-index:99999;}
 .ui-search-menu.ui-menu .ui-menu-item { list-style-image: none; padding-right: 0; padding-left: 0; }
 .ui-search-menu.ui-menu .ui-menu-item a { display: block; }
 .ui-search-menu.ui-menu .ui-menu-item a.g-menu-item:hover { margin: -1px; font-weight: normal; }
