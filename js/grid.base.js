@@ -3392,11 +3392,13 @@ $.jgrid.extend({
 						t.p.selarrrow.splice(ia,1);
 					}
 				}
+				if( t.p.onUnSelectRow) { t.p.onUnSelectRow.call(t, sr ); }
 				sr = null;
 			} else if(!t.p.multiselect) {
 				if(t.p.selrow) {
 					$("#"+$.jgrid.jqID(t.p.id)+" tbody:first tr#"+$.jgrid.jqID(t.p.selrow)).removeClass("ui-state-highlight").attr("aria-selected","false");
 					if(fid) { $("#"+$.jgrid.jqID(t.p.selrow), "#"+$.jgrid.jqID(fid)).removeClass("ui-state-highlight"); }
+					if( t.p.onUnSelectRow) { t.p.onUnSelectRow.call(t, t.p.selrow ); }
 					t.p.selrow = null;
 				}
 			} else {
@@ -3407,6 +3409,7 @@ $.jgrid.extend({
 						$("#"+$.jgrid.jqID(n), "#"+$.jgrid.jqID(fid)).removeClass("ui-state-highlight"); 
 						$("#jqg_"+$.jgrid.jqID(t.p.id)+"_"+$.jgrid.jqID(n), "#"+$.jgrid.jqID(fid))[t.p.useProp ? 'prop': 'attr']("checked",false);
 					}
+					if( t.p.onUnSelectRow) { t.p.onUnSelectRow.call(t, n); }
 				});
 				t.setHeadCheckBox( false );
 				t.p.selarrrow = [];
