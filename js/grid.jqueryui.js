@@ -565,6 +565,9 @@ $.jgrid.extend({
 				$($t).jqGrid('setGridParam',{height:$("#gview_"+gID+" .ui-jqgrid-bdiv").height()});
 				$($t).jqGrid('setGridWidth',ui.size.width,opts.shrinkToFit);
 				if(opts._stop_) { opts._stop_.call($t,ev,ui); }
+				if($t.p.caption) {
+					$("#gbox_"+ gID).css({ 'height': 'auto' });
+				}
 			};
 			if(opts._alsoResize_) {
 				var optstest = "{\'#gview_"+gID+" .ui-jqgrid-bdiv\':true,'" +opts._alsoResize_+"':true}";
