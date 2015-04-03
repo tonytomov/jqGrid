@@ -546,7 +546,7 @@ $.jgrid.extend({
 	},
 	gridResize : function(opts) {
 		return this.each(function(){
-			var $t = this, gID = $.jgrid.jqID($t.p.id);
+			var $t = this, gID = $.jgrid.jqID($t.p.id), req;
 			if(!$t.grid || !$.fn.resizable) { return; }
 			opts = $.extend({}, opts || {});
 			if(opts.alsoResize ) {
@@ -567,6 +567,14 @@ $.jgrid.extend({
 				if(opts._stop_) { opts._stop_.call($t,ev,ui); }
 				if($t.p.caption) {
 					$("#gbox_"+ gID).css({ 'height': 'auto' });
+				}
+				if($t.p.frozenColumns) {
+					if (req ) clearTimeout(req);
+					req = setTimeout(function(){
+						if (req ) clearTimeout(req);
+						$("#" + gID).jqGrid("destroyFrozenColumns");
+						$("#" + gID).jqGrid("setFrozenColumns");
+					});
 				}
 			};
 			if(opts._alsoResize_) {
