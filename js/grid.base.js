@@ -1783,6 +1783,7 @@
 					cmTemplate: {},
 					idPrefix: "",
 					iconSet: iconSet, // "fontAwesome" or "jQueryUI" or some custom value
+					guiStyle: guiStyle,
 					locale: locale,
 					multiSort: false,
 					treeIcons: {
@@ -3783,10 +3784,6 @@
 				normalizeData.call(ts);
 				refreshIndex();
 			}
-			var tdc, idn, w, res, sort, cmi, tooltip, labelStyle, td, ptr, tbody, imgs, iac = "", idc = "", sortarr = [], sortord = [], sotmp = [],
-				thead = "<thead><tr class='ui-jqgrid-labels' role='row'>",
-				hoverStateClasses = getGuiStyles("states.hover"),
-				disabledStateClasses = getGuiStyles("states.disabled");
 			if (p.shrinkToFit === true && p.forceFit === true) {
 				for (iCol = p.colModel.length - 1; iCol >= 0; iCol--) {
 					if (p.colModel[iCol].hidden !== true) {
@@ -3795,10 +3792,29 @@
 					}
 				}
 			}
-			if (p.viewsortcols[1] === "horizontal") { iac = " ui-i-asc"; idc = " ui-i-desc"; }
+			var tdc, idn, w, res, sort, cmi, tooltip, labelStyle, td, ptr, tbody, sortarr = [], sortord = [], sotmp = [],
+				thead = "<thead><tr class='ui-jqgrid-labels' role='row'>",
+				hoverStateClasses = getGuiStyles("states.hover"),
+				disabledStateClasses = getGuiStyles("states.disabled"),
+				builderSortIcons = function (/*iCol*/) {
+					// iCol is unused currently, but one can modify the code to set for example different sorting 
+					// icons for columns based on sorttype option of colModel
+					var getClasses = function (ascOrDesc) {
+						return jgrid.mergeCssClasses(
+							"ui-grid-ico-sort",
+							"ui-icon-" + ascOrDesc,
+							p.viewsortcols[1] === "horizontal" ? "ui-i-" + ascOrDesc : "",
+							disabledStateClasses,
+							getIcon("sort." + ascOrDesc),
+							"ui-sort-" + p.direction
+						);
+					};
+
+					return "<span class='s-ico' style='display:none'><span class='" + getClasses("asc") +
+						"'></span>" + "<span class='" + getClasses("desc") + "'></span></span>";
+				};
 			tdc = isMSIE ? "ui-th-div-ie" : "";
-			imgs = "<span class='s-ico' style='display:none'><span class='ui-grid-ico-sort ui-icon-asc" + iac + " " + disabledStateClasses + " " + getIcon("sort.asc") + " ui-sort-" + dir + "'></span>";
-			imgs += "<span class='ui-grid-ico-sort ui-icon-desc" + idc + " " + disabledStateClasses + " " + getIcon("sort.desc") + " ui-sort-" + dir + "'></span></span>";
+
 			if (p.multiSort) {
 				sortarr = p.sortname.split(",");
 				var iSort;
@@ -3851,10 +3867,9 @@
 						cmi.lso = sortord[sotmp];
 					}
 				}
-				thead += imgs + "</div></th>";
+				thead += (p.builderSortIcons || builderSortIcons)(iCol) + "</div></th>";
 			}
 			thead += "</tr></thead>";
-			imgs = null;
 			$(ts).append(thead);
 			$(ts.tHead).children("tr").children("th").hover(function () { $(this).addClass(hoverStateClasses); }, function () { $(this).removeClass(hoverStateClasses); });
 			if (p.multiselect) {
