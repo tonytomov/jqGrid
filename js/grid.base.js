@@ -3674,7 +3674,7 @@ $.jgrid.extend({
 				}
 				if( t.p.altRows === true && !aradd) {
 					if (pos === "last") {
-						if ((t.rows.length-1)%2 === 1)  {$(t.rows[t.rows.length-1]).addClass(cn);}
+						if ((t.rows.length-1)%2 === 0)  {$(t.rows[t.rows.length-1]).addClass(cn);}
 					} else {
 						$(t.rows).each(function(i){
 							if(i % 2 ===1) { $(this).addClass(cn); }
