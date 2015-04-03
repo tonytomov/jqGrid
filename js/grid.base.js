@@ -1052,7 +1052,7 @@
 							phrase.push(")");
 						}
 						if (!_usecase) {
-							phrase.push(".toLowerCase()");
+							phrase.push(".toUpperCase()");
 						}
 						return phrase.join("");
 					};
@@ -1073,7 +1073,7 @@
 							phrase = $.trim(phrase);
 						}
 						phrase = phrase.toString().replace(/\\/g, "\\\\").replace(/\"/g, "\\\"");
-						return _usecase ? phrase : phrase.toLowerCase();
+						return _usecase ? phrase : phrase.toUpperCase();
 					};
 					/** @private */
 					this._funcLoop = function (func) {
@@ -1207,7 +1207,7 @@
 						} else {
 							findSortKey = function ($cell) {
 								$cell = $cell ? $.trim(String($cell)) : "";
-								return _usecase ? $cell : $cell.toLowerCase();
+								return _usecase ? $cell : $cell.toUpperCase();
 							};
 						}
 						$.each(data, function (i, v) {
@@ -1455,7 +1455,7 @@
 						return self._getGroup(_data, by, dir, type, datefmt);
 					};
 					this.orderBy = function (by, dir, stype, dfmt, sfunc) {
-						dir = dir == null ? "a" : $.trim(dir.toString().toLowerCase());
+						dir = dir == null ? "a" : $.trim(dir.toString().toUpperCase());
 						if (stype == null) { stype = "text"; }
 						if (dfmt == null) { dfmt = "Y-m-d"; }
 						if (sfunc == null) { sfunc = false; }

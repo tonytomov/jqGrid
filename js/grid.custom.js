@@ -124,15 +124,15 @@
 		},
 		GridDestroy: function () {
 			return this.each(function () {
-				var self = this, p = self.p, pager = p.pager;
-				if (self.grid) {
-					if (pager) { // if not part of grid
-						$(pager).remove();
+				var self = this, p = self.p;
+				if (self.grid && p != null) {
+					if (p.pager) { // if not part of grid
+						$(p.pager).remove();
 					}
 					try {
+						$("#alertmod_" + p.idSel).remove();
 						$(self).jqGrid("clearBeforeUnload");
 						$(p.gBox).remove();
-						$("#alertmod_" + p.idSel).remove();
 					} catch (ignore) { }
 				}
 			});
