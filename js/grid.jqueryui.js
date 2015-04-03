@@ -79,12 +79,12 @@
 						}
 					},
 					update: function (event, ui) {
-						var th = $(">th", $(ui.item).parent()), colModel = p.colModel, cmMap = {}, tid1 = p.id + "_", permutation = [];
-						$.each(colModel, function (i) { cmMap[this.name] = i; });
+						var th = $(">th", $(ui.item).parent()), tid1 = p.id + "_", permutation = [];
 						th.each(function () {
-							var id = $(">div", this).get(0).id.replace(/^jqgh_/, "").replace(tid1, "");
-							if (cmMap.hasOwnProperty(id)) {
-								permutation.push(cmMap[id]);
+							var id = $(">div", this).get(0).id.replace(/^jqgh_/, "").replace(tid1, ""),
+								iCol = p.iColByName[id];
+							if (iCol !== undefined) {
+								permutation.push(iCol);
 							}
 						});
 
@@ -284,17 +284,13 @@
 			}
 
 			select.empty();
-			var gh = p.groupHeader, iColByName = {}, colHeader = {}, i, j, l, iCol, ghItem;
-			// first fill the helper map which get iCol by the column name
-			for (iCol = 0; iCol < nCol; iCol++) {
-				iColByName[colModel[iCol].name] = iCol;
-			}
+			var gh = p.groupHeader, colHeader = {}, i, j, l, iCol, ghItem;
 			// fill colHeader for columns which have column header
 			if (gh != null && gh.groupHeaders != null) {
 				for (i = 0, l = gh.groupHeaders.length; i < l; i++) {
 					ghItem = gh.groupHeaders[i];
 					for (j = 0; j < ghItem.numberOfColumns; j++) {
-						iCol = iColByName[ghItem.startColumnName] + j;
+						iCol = p.iColByName[ghItem.startColumnName] + j;
 						colHeader[iCol] = $.isFunction(opts.buildItemText) ?
 								opts.buildItemText.call($self[0], {
 									iCol: iCol,

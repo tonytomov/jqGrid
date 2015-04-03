@@ -143,17 +143,16 @@
 						return false;
 					},
 					populatesubgrid = function (rd) {
-						var sid = $(rd).attr("id"), dp = { nd_: (new Date().getTime()) }, i, j;
+						var sid = $(rd).attr("id"), dp = { nd_: (new Date().getTime()) }, iCol, j;
 						dp[p.prmNames.subgridid] = sid;
 						if (!p.subGridModel[0]) {
 							return false;
 						}
 						if (p.subGridModel[0].params) {
 							for (j = 0; j < p.subGridModel[0].params.length; j++) {
-								for (i = 0; i < p.colModel.length; i++) {
-									if (p.colModel[i].name === p.subGridModel[0].params[j]) {
-										dp[p.colModel[i].name] = $(rd.cells[i]).text().replace(/\&#160\;/ig, "");
-									}
+								iCol = p.iColByName[p.subGridModel[0].params[j]];
+								if (iCol !== undefined) {
+									dp[p.colModel[iCol].name] = $(rd.cells[iCol]).text().replace(/\&#160\;/ig, "");
 								}
 							}
 						}

@@ -446,13 +446,15 @@
 				}
 				function getFormData() {
 					$(frmtb + " > tbody > tr > td .FormElement").each(function () {
-						var celm = $(".customelement", this);
-						if (celm.length) {
-							var elem = celm[0], nm = $(elem).attr("name");
-							$.each(p.colModel, function () {
-								if (this.name === nm && this.editoptions && $.isFunction(this.editoptions.custom_value)) {
+						var $celm = $(".customelement", this), nm = this.name, cm, iCol;
+						if ($celm.length) {
+							nm = $celm.attr("name");
+							iCol = p.iColByName[nm];
+							if (iCol !== undefined) {
+								cm = p.colModel[iCol];
+								if (cm.editoptions && $.isFunction(cm.editoptions.custom_value)) {
 									try {
-										postdata[nm] = this.editoptions.custom_value.call($t, $("#" + jqID(nm), frmtb), "get");
+										postdata[nm] = cm.editoptions.custom_value.call($t, $("#" + jqID(nm), frmtb), "get");
 										if (postdata[nm] === undefined) { throw "e1"; }
 									} catch (e) {
 										if (e === "e1") {
@@ -463,26 +465,26 @@
 									}
 									return true;
 								}
-							});
+							}
 						} else {
 							switch ($(this).get(0).type) {
 								case "checkbox":
 									if ($(this).is(":checked")) {
-										postdata[this.name] = $(this).val();
+										postdata[nm] = $(this).val();
 									} else {
 										var ofv = $(this).attr("offval");
-										postdata[this.name] = ofv;
+										postdata[nm] = ofv;
 									}
 									break;
 								case "select-one":
-									postdata[this.name] = $("option:selected", this).val();
+									postdata[nm] = $("option:selected", this).val();
 									break;
 								case "select-multiple":
-									postdata[this.name] = $(this).val();
-									if (postdata[this.name]) {
-										postdata[this.name] = postdata[this.name].join(",");
+									postdata[nm] = $(this).val();
+									if (postdata[nm]) {
+										postdata[nm] = postdata[nm].join(",");
 									} else {
-										postdata[this.name] = "";
+										postdata[nm] = "";
 									}
 									var selectedText = [];
 									$("option:selected", this).each(
@@ -495,25 +497,24 @@
 								case "text":
 								case "textarea":
 								case "button":
-									postdata[this.name] = $(this).val();
+									postdata[nm] = $(this).val();
 									break;
 								case "date":
-									postdata[this.name] = $(this).val();
-									if (String(postdata[this.name]).split("-").length === 3) {
-										var colName = this.name;
-										$.each(p.colModel, function () {
-											if (this.name === colName) {
-												var newformat = this.formatoptions != null && this.formatoptions.newformat ?
-														this.formatoptions.newformat :
+									postdata[nm] = $(this).val();
+									if (String(postdata[nm]).split("-").length === 3) {
+										iCol = p.iColByName[nm];
+										if (iCol !== undefined) {
+											cm = p.colModel[iCol];
+											var newformat = cm.formatoptions != null && cm.formatoptions.newformat ?
+														cm.formatoptions.newformat :
 														$self.jqGrid("getGridRes", "formatter.date.newformat");
-												postdata[this.name] = $.jgrid.parseDate.call($self[0], "Y-m-d", postdata[this.name], newformat);
-											}
-										});
+											postdata[nm] = $.jgrid.parseDate.call($self[0], "Y-m-d", postdata[nm], newformat);
+										}
 									}
 									break;
 							}
 							// REMARK: to be exactly one should call htmlEncode LATER and to use validation and unformatting of unencoded data!!
-							if (p.autoencode) { postdata[this.name] = jgrid.htmlEncode(postdata[this.name]); }
+							if (p.autoencode) { postdata[nm] = jgrid.htmlEncode(postdata[nm]); }
 						}
 					});
 					return true;

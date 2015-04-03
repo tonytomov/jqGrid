@@ -10,20 +10,18 @@
 **/
 
 /*jshint eqeqeq:false */
-/*jslint browser: true, devel: true, eqeq: true, nomen: true, plusplus: true, vars: true, unparam: true, todo: true */
+/*jslint browser: true, devel: true, eqeq: true, nomen: true, plusplus: true, vars: true, unparam: true, white: true, todo: true */
 /*global jQuery */
 (function ($) {
 	"use strict";
 	var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes");
 	jgrid.extend({
 		getColProp: function (colname) {
-			var ret = {}, $t = this[0];
-			if (!$t.grid) { return false; }
-			var cM = $t.p.colModel, i;
-			for (i = 0; i < cM.length; i++) {
-				if (cM[i].name === colname) {
-					ret = cM[i];
-					break;
+			var ret = {}, t = this[0], iCol;
+			if (t != null && t.grid) {
+				iCol = t.p.iColByName[colname];
+				if (iCol !== undefined) {
+					return t.p.colModel[iCol];
 				}
 			}
 			return ret;
@@ -31,14 +29,11 @@
 		setColProp: function (colname, obj) {
 			//do not set width will not work
 			return this.each(function () {
-				var self = this, p = self.p;
+				var self = this, p = self.p, iCol;
 				if (self.grid && p != null && obj) {
-					var cM = p.colModel, i;
-					for (i = 0; i < cM.length; i++) {
-						if (cM[i].name === colname) {
-							$.extend(true, cM[i], obj);
-							break;
-						}
+					iCol = p.iColByName[colname];
+					if (iCol !== undefined) {
+						$.extend(true, p.colModel[iCol], obj);
 					}
 				}
 			});
@@ -394,15 +389,11 @@
 						left = parseInt(left, 10);
 						top = parseInt(top, 10) + 18;
 
-						var selclass, ina, i = 0, aoprs = [], selected = $(elem).data("soper"), nm = $(elem).data("colname"), len = colModel.length,
+						var selclass, ina, i = 0, aoprs = [], selected = $(elem).data("soper"), nm = $(elem).data("colname"),
 							fs = $(".ui-jqgrid-view").css("font-size") || "11px",
 							str = '<ul id="sopt_menu" class="ui-search-menu" role="menu" tabindex="0" style="font-size:' + fs + ";left:" + left + "px;top:" + top + 'px;">';
-						while (i < len) {
-							if (colModel[i].name === nm) {
-								break;
-							}
-							i++;
-						}
+						i = p.iColByName[nm];
+						if (i === undefined) { return; }
 						var cm = colModel[i], options = $.extend({}, cm.searchoptions), odataItem, item, itemOper, itemOperand, itemText;
 						if (!options.sopt) {
 							options.sopt = [];

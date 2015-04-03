@@ -9,7 +9,7 @@
 
 /*jshint eqeqeq:false */
 /*global jQuery, HTMLElement */
-/*jslint browser: true, eqeq: true, plusplus: true, unparam: true, vars: true */
+/*jslint browser: true, eqeq: true, plusplus: true, unparam: true, white: true, vars: true */
 (function ($) {
 	"use strict";
 	var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes"),
@@ -411,12 +411,8 @@
 					elem = document.createElement("select");
 					elem.setAttribute("role", "select");
 					var msl, ovm = [], cm, iCol;
-					for (iCol = 0; iCol < p.colModel.length; iCol++) {
-						cm = p.colModel[iCol];
-						if (cm.name === options.name) {
-							break;
-						}
-					}
+					iCol = p.iColByName[options.name];
+					cm = p.colModel[iCol];
 					if (options.multiple === true) {
 						msl = true;
 						elem.multiple = "multiple";
@@ -684,28 +680,26 @@
 			return true;
 		},
 		checkValues: function (val, valref, customobject, nam) {
-			var edtrul, i, nm, dft, len, g = this, p = g.p, cm = p.colModel, isEmpty = jgrid.isEmpty,
+			var edtrul, nm, dft, g = this, p = g.p, colModel = p.colModel, cm, isEmpty = jgrid.isEmpty,
 				editMsg = getGridRes.call($(g), "edit.msg"),
 				dateMasks = getGridRes.call($(g), "formatter.date.masks");
 			if (customobject === undefined) {
 				if (typeof valref === "string") {
-					for (i = 0, len = cm.length; i < len; i++) {
-						if (cm[i].name === valref) {
-							edtrul = cm[i].editrules;
-							valref = i;
-							if (cm[i].formoptions != null) { nm = cm[i].formoptions.label; }
-							break;
-						}
-					}
-				} else if (valref >= 0) {
-					edtrul = cm[valref].editrules;
+					valref = p.iColByName[valref];
 				}
+				if (valref === undefined || valref < 0) {
+					return [true, "", ""];
+				}
+				cm = colModel[valref];
+				edtrul = cm.editrules;
+				if (cm.formoptions != null) { nm = cm.formoptions.label; }
 			} else {
 				edtrul = customobject;
 				nm = nam === undefined ? "_" : nam;
+				cm = colModel[valref];
 			}
 			if (edtrul) {
-				if (!nm) { nm = p.colNames != null ? p.colNames[valref] : cm[valref].label; }
+				if (!nm) { nm = p.colNames != null ? p.colNames[valref] : cm.label; }
 				if (edtrul.required === true) {
 					if (isEmpty(val)) { return [false, nm + ": " + editMsg.required, ""]; }
 				}
@@ -738,13 +732,13 @@
 				}
 				if (edtrul.date === true) {
 					if (!(rqfield === false && isEmpty(val))) {
-						if (cm[valref].formatoptions && cm[valref].formatoptions.newformat) {
-							dft = cm[valref].formatoptions.newformat;
+						if (cm.formatoptions && cm.formatoptions.newformat) {
+							dft = cm.formatoptions.newformat;
 							if (dateMasks.hasOwnProperty(dft)) {
 								dft = dateMasks[dft];
 							}
 						} else {
-							dft = cm[valref].datefmt || "Y-m-d";
+							dft = colModel[valref].datefmt || "Y-m-d";
 						}
 						if (!jgrid.checkDate(dft, val)) { return [false, nm + ": " + editMsg.date + " - " + dft, ""]; }
 					}
