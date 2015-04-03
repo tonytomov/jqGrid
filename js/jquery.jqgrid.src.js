@@ -2325,12 +2325,6 @@
 					}
 					i = p.iColByName[idn];
 					if (i !== undefined) { idi = i - iOffset; }
-					/*for (i = 0; i < colModel.length; i++) {
-						if (colModel[i].name === idn) {
-							idi = i - iOffset;
-							break;
-						}
-					}*/
 					for (i = 0; i < dataLength; i++) {
 						cur = data[i];
 						cells = cellName ? getAccessor(cur, cellName) || cur : cur;
@@ -2449,12 +2443,6 @@
 					if (isNaN(idn) && xmlRd.repeatitems) {
 						i = p.iColByName[idn];
 						if (i !== undefined) { idn = i - iOffset; }
-						/*for (i = 0; i < colModel.length; i++) {
-							if (colModel[i].name === idn) {
-								idn = i - iOffset;
-								break;
-							}
-						}*/
 					}
 
 					if (String(idn).indexOf("[") === -1) {
@@ -2671,14 +2659,6 @@
 					}
 					i = p.iColByName[idn];
 					if (i !== undefined) { idi = i - iOffset; }
-					/*for (i = 0; i < p.colModel.length; i++) {
-						// we need to have idi with corresponds the indexes in rowReader which SKIPS
-						// columns "cb", "subgrid" and !=="rn"
-						if (p.colModel[i].name === idn) {
-							idi = i - iOffset;
-							break;
-						}
-					}*/
 					drows = getAccessor(data, dReader.root);
 					if (drows == null && $.isArray(data)) { drows = data; }
 					if (!drows) { drows = []; }
@@ -4080,12 +4060,6 @@
 					if (p.frozenColumns) {
 						var tid = $(this)[0].id.substring(p.id.length + 1);
 						ci = p.iColByName[tid];
-						/*$(p.colModel).each(function (i) {
-							if (this.name === tid) {
-								ci = i;
-								return false;
-							}
-						});*/
 					} else {
 						ci = getColumnHeaderIndex(this);
 					}
@@ -4998,7 +4972,7 @@
 					}
 					if (p.altRows === true && !aradd) {
 						if (pos === "last") {
-							if ((t.rows.length - 1) % 2 === 1) { $(t.rows[t.rows.length - 1]).addClass(cn); }
+							if ((t.rows.length - 1) % 2 === 0) { $(t.rows[t.rows.length - 1]).addClass(cn); }
 						} else {
 							$(t.rows).each(function (i) {
 								if (i % 2 === 1) {
@@ -5319,14 +5293,6 @@
 					pos = p.iColByName[colname];
 					if (pos === undefined) { return; }
 				} else { pos = parseInt(colname, 10); }
-				/*if (colname !== undefined) {
-					$(p.colModel).each(function (i) {
-						if (this.name === colname) {
-							pos = i;
-							return false;
-						}
-					});
-				} else { return; }*/
 				if (pos >= 0) {
 					var thecol = $("tr.ui-jqgrid-labels th:eq(" + pos + ")", $t.grid.hDiv);
 					if (nData) {
@@ -5349,12 +5315,6 @@
 				if (isNaN(colname)) {
 					pos = p.iColByName[colname];
 					if (pos === undefined) { return; }
-					/*$(p.colModel).each(function (i) {
-						if (this.name === colname) {
-							pos = i;
-							return false;
-						}
-					});*/
 				} else { pos = parseInt(colname, 10); }
 				if (pos >= 0) {
 					ind = $($t).jqGrid("getGridRowById", rowid);
@@ -5408,12 +5368,6 @@
 				if (isNaN(col)) {
 					pos = p.iColByName[col];
 					if (pos === undefined) { return; }
-					/*$($t.p.colModel).each(function (i) {
-						if (this.name === col) {
-							pos = i;
-							return false;
-						}
-					});*/
 				} else { pos = parseInt(col, 10); }
 				if (pos >= 0) {
 					var ind = $($t).jqGrid("getGridRowById", rowid);
@@ -5439,12 +5393,6 @@
 				if (isNaN(col)) {
 					pos = p.iColByName[col];
 					if (pos === undefined) { return; }
-					/*$($t.p.colModel).each(function (j) {
-						if (this.name === col) {
-							pos = j;
-							return false;
-						}
-					});*/
 				} else { pos = parseInt(col, 10); }
 				if (pos >= 0) {
 					var ln = $t.rows.length, i = 0, dlen = 0;
@@ -5663,21 +5611,11 @@
 		},
 		setColWidth: function (iCol, newWidth, adjustGridWidth) {
 			return this.each(function () {
-				var self = this, $self = $(self), grid = self.grid, p = self.p, h; //, colModel = p.colModel, colName, i, nCol;
+				var self = this, $self = $(self), grid = self.grid, p = self.p, h;
 				if (typeof iCol === "string") {
 					// the first parametrer is column name instead of index
-					//colName = iCol;
 					iCol = p.iColByName[iCol];
 					if (iCol === undefined) { return; }
-					/*for (i = 0, nCol = colModel.length; i < nCol; i++) {
-						if (colModel[i].name === colName) {
-							iCol = i;
-							break;
-						}
-					}
-					if (i >= nCol) {
-						return; // error: non-existing column name specified as the first parameter
-					}*/
 				} else if (typeof iCol !== "number") {
 					return; // error: wrong parameters
 				}
@@ -6841,12 +6779,6 @@
 					var msl, ovm = [], cm, iCol;
 					iCol = p.iColByName[options.name];
 					cm = p.colModel[iCol];
-					/*for (iCol = 0; iCol < p.colModel.length; iCol++) {
-						cm = p.colModel[iCol];
-						if (cm.name === options.name) {
-							break;
-						}
-					}*/
 					if (options.multiple === true) {
 						msl = true;
 						elem.multiple = "multiple";
@@ -7114,7 +7046,7 @@
 			return true;
 		},
 		checkValues: function (val, valref, customobject, nam) {
-			var edtrul, nm, dft, g = this, p = g.p, colModel = p.colModel, cm, isEmpty = jgrid.isEmpty,// i, len
+			var edtrul, nm, dft, g = this, p = g.p, colModel = p.colModel, cm, isEmpty = jgrid.isEmpty,
 				editMsg = getGridRes.call($(g), "edit.msg"),
 				dateMasks = getGridRes.call($(g), "formatter.date.masks");
 			if (customobject === undefined) {
