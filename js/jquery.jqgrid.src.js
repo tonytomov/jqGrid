@@ -1206,7 +1206,7 @@
 							findSortKey = type;
 						} else {
 							findSortKey = function ($cell) {
-								$cell = $cell ? $.trim(String($cell)) : "";
+								$cell = $cell != null ? $.trim(String($cell)) : "";
 								return _usecase ? $cell : $cell.toUpperCase();
 							};
 						}
@@ -1455,7 +1455,7 @@
 						return self._getGroup(_data, by, dir, type, datefmt);
 					};
 					this.orderBy = function (by, dir, stype, dfmt, sfunc) {
-						dir = dir == null ? "a" : $.trim(dir.toString().toUpperCase());
+						dir = dir == null ? "a" : $.trim(dir.toString().toLowerCase());
 						if (stype == null) { stype = "text"; }
 						if (dfmt == null) { dfmt = "Y-m-d"; }
 						if (sfunc == null) { sfunc = false; }
