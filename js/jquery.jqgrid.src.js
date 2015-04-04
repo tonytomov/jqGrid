@@ -7603,8 +7603,9 @@
 							if (sot === undefined && customSortOperations != null) {
 								var customOp;
 								for (customOp in customSortOperations) {
-									if (customSortOperations.hasOwnProperty(customOp)) {
+									if (customSortOperations.hasOwnProperty(customOp) && customOp === so) {
 										sot = customSortOperations[customOp].operand;
+										break;
 										//soptions.searchtitle = customSortOperations[customOp].title;
 									}
 								}
