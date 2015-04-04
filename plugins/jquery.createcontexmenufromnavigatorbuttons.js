@@ -67,7 +67,7 @@
                         versionParts = $.ui != null && typeof $.ui.version === "string" ? /^([0-9]+)\.([0-9]+)\.([0-9]+)$/.exec($.ui.version) : [],
                         isAncorRequired = versionParts != null && versionParts.length === 4 && versionParts[1] === "1" && versionParts[2] < 11;
 
-                    $(pager + " .navtable .ui-pg-button").filter(function () {
+                    $(pager).find(".navtable .ui-pg-button").filter(function () {
                         return !($(this).prop("disabled") || $(this).hasClass("ui-state-disabled"));
                     }).each(function () {
                         var $spanIcon, text, $td, id, $li,
