@@ -315,6 +315,36 @@
 		// and no cellValue callback function are defined "to decode" the value
 		return $FnFmatter.defaultFormat(cellval, opts);
 	};
+	$FnFmatter.showlink.pageFinalization = function (iCol) {
+		var $self = $(this), p = this.p, colModel = p.colModel, cm = colModel[iCol], iRow, rows = this.rows, nRows = rows.length, row, td,
+			onClick = function (e) {
+				var $tr = $(this).closest(".jqgrow");
+				if ($tr.length > 0) {
+					return cm.formatoptions.onClick.call($self[0], {
+						iCol: iCol,
+						iRow: $tr[0].rowIndex,
+						rowid: $tr.attr("id"),
+						cm: cm,
+						cmName: cm.name,
+						cellValue: $(this).text(),
+						a: this,
+						event: e
+					});
+				}
+			};
+		if (cm.formatoptions != null && $.isFunction(cm.formatoptions.onClick)) {
+			for (iRow = 0; iRow < nRows; iRow++) {
+				row = rows[iRow];
+				if ($(row).hasClass("jqgrow")) {
+					td = row.cells[iCol];
+					if (cm.autoResizable && td != null && $(td.firstChild).hasClass(p.autoResizing.wrapperClassName)) {
+						td = td.firstChild;
+					}
+					$(td.firstChild).bind("click", onClick);
+				}
+			}
+		}
+	};
 	var numberHelper = function (cellval, opts, formatType) {
 		var op = $.extend({}, opts[formatType]);
 		if (opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
