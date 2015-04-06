@@ -120,6 +120,13 @@
 											$(this).parent().css("zoom", 1); // fix visibility in IE
 											$menu.menu("focus", event, ui.item);
 										}
+									},
+									create: function () {
+										var mHeight = $menu.height(),
+											wHeight = window.innerHeight || document.documentElement.clientHeight;
+										if (mHeight > wHeight) {
+											$menu.height(wHeight).css("overflow-y", "scroll");
+										}
 									}
 								})
 								.mouseleave(function () {
