@@ -3,7 +3,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2014-11-13, 2015-03-18, 2015-03-31
+ * Date: 2014-11-13-2015-04-06
  * see https://github.com/tonytomov/jqGrid/issues/650 for more details
  */
 /*global jQuery */
@@ -48,7 +48,7 @@
 						$(this.grid.hDiv).find(".ui-jqgrid-labels").contextmenu(function (e) {
 							var p = $self.jqGrid("getGridParam"), colModel = p.colModel, colNames = p.colNames, iCol, nCol = colModel.length, cm, $li,
 								gh = p.groupHeader, iColByName = {}, colHeader = {}, i, j, l, ghItem,
-								$menu = $("<ul class=\"ui-jqgrid-showHideColumnMenu\"></ul>");
+								$menu = $("<ul class='ui-jqgrid-showHideColumnMenu'></ul>");
 							// first fill the helper map which get iCol by the column name
 							for (iCol = 0; iCol < nCol; iCol++) {
 								iColByName[colModel[iCol].name] = iCol;
@@ -107,21 +107,15 @@
 								.menu({
 									select: function (event, ui) {
 										var index = parseInt(ui.item.data("iCol"), 10), $cb = ui.item.find(options.checkboxSelector),
-											colWidth,
 											cmi = colModel[index],
 											toHide = options.isChecked.call($self[0], $cb, event, cmi);
 										if (!isNaN(index) && index >= 0 && cmi != null && $cb.length > 0) {
 											if (toHide) {
 												options.toUnCheck.call($self[0], $cb, event, cmi);
-												colWidth = $($self[0].grid.headers[index].el).outerWidth();
 												$self.jqGrid("hideCol", cmi.name);
 											} else {
 												options.toCheck.call($self[0], $cb, event, cmi);
 												$self.jqGrid("showCol", cmi.name);
-												colWidth = $($self[0].grid.headers[index].el).outerWidth();
-											}
-											if (colWidth === 0) {
-												colWidth = $self[0].grid.headers[index].width + (!$.jgrid.cell_width ? p.cellLayout : 0);
 											}
 											$(this).parent().css("zoom", 1); // fix visibility in IE
 											$menu.menu("focus", event, ui.item);
@@ -135,7 +129,7 @@
 									of: $(e.target),
 									my: "left top",
 									at: "right center",
-									collision: "none none"
+									collision: "flipfit flipfit"
 								});
 
 							return false; // prevent creating of the standard context menu of web browser
