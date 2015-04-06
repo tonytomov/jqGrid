@@ -1779,6 +1779,7 @@
 					toppager: false,
 					headertitles: false,
 					scrollTimeout: 40,
+					maxItemsToJoin: 32768,
 					data: [],
 					lastSelectedData: [],
 					/** @dict */
@@ -2533,6 +2534,9 @@
 							ir++;
 							j++;
 							if (ir === rn) { break; }
+							if (rowData.length > p.maxItemsToJoin) {
+								rowData = [rowData.join("")];
+							}
 						}
 					}
 					if (p.gridview === true) {
@@ -2735,6 +2739,9 @@
 							clearArray(rowData); // rowData=[];
 						}
 						rd = {};
+						if (rowData.length > p.maxItemsToJoin) {
+							rowData = [rowData.join("")];
+						}
 					}
 					if (p.gridview === true) {
 						fpos = p.treeANode > -1 ? p.treeANode : 0;
