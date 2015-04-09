@@ -26,38 +26,32 @@
 			return this.each(function () {
 				var $t = this, $self = $($t), p = $t.p, rows = $t.rows;
 				if (!$t.grid || !p.treeGrid) { return; }
-				var lft, rgt, curLevel, ident, lftpos, twrap, ldat, lf, pn, tr, ind, dind, expan, expCol = p.expColInd,
+				var lft, rgt, curLevel, ident, lftpos, twrap, ldat, lf, pn, tr, expan, expCol = p.expColInd,
 					expanded = p.treeReader.expanded_field,
 					isLeaf = p.treeReader.leaf_field,
 					level = p.treeReader.level_field,
 					icon = p.treeReader.icon_field,
 					loaded = p.treeReader.loaded,
+					getRowId = function (e) {
+						return $(e.target).closest("tr.jqgrow").attr("id");
+					},
 					onClickTreeNode = function (e) {
-						var ind2 = stripPref(p.idPrefix, $(e.target || e.srcElement, rows).closest("tr.jqgrow")[0].id),
-							pos = p._index[ind2],
-							item = p.data[pos];
+						var item = p.data[p._index[stripPref(p.idPrefix, getRowId(e))]],
+							collapseOrExpand = item[expanded] ? "collapse" : "expand";
 						if (!item[isLeaf]) {
-							if (item[expanded]) {
-								$self.jqGrid("collapseRow", item);
-								$self.jqGrid("collapseNode", item);
-							} else {
-								$self.jqGrid("expandRow", item);
-								$self.jqGrid("expandNode", item);
-							}
+							$self.jqGrid(collapseOrExpand + "Row", item);
+							$self.jqGrid(collapseOrExpand + "Node", item);
 						}
 						return false;
 					},
 					onClickTreeNodeWithSelection = function (e) {
-						var ind2 = stripPref(p.idPrefix, $(e.target || e.srcElement, rows).closest("tr.jqgrow")[0].id);
 						onClickTreeNode.call(this, e);
-						$self.jqGrid("setSelection", ind2);
+						$self.jqGrid("setSelection", getRowId(e));
 						return false;
 					};
 				while (i < len) {
 					tr = rows[i];
-					ind = stripPref(p.idPrefix, tr.id);
-					dind = p._index[ind];
-					ldat = p.data[dind];
+					ldat = p.data[p._index[stripPref(p.idPrefix, tr.id)]];
 					//tr.level = ldat[level];
 					if (p.treeGridModel === "nested") {
 						if (!ldat[isLeaf]) {
@@ -65,7 +59,7 @@
 							rgt = parseInt(ldat[p.treeReader.right_field], 10);
 							// NS Model
 							ldat[isLeaf] = (rgt === lft + 1) ? "true" : "false";
-							tr.cells[p._treeleafpos].innerHTML = ldat[isLeaf];
+							tr.cells[p._treeleafpos].innerHTML = ldat[isLeaf]; // ???
 						}
 					}
 					//else {
@@ -81,7 +75,6 @@
 					}
 					twrap = "<div class='tree-wrap tree-wrap-" + p.direction + "' style='width:" + (ident * 18) + "px;'>";
 					twrap += "<div style='" + (p.direction === "rtl" ? "right:" : "left:") + (lftpos * 18) + "px;' class='" + p.treeIcons.commonIconClass + " ";
-
 
 					if (ldat[loaded] !== undefined) {
 						ldat[loaded] = ldat[loaded] === "true" || ldat[loaded] === true;
