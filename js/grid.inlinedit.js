@@ -19,6 +19,9 @@
 			args.unshift("Inline");
 			args.unshift(o);
 			return jgrid.feedback.apply(this, args);
+		},
+		getGuiStateStyles = function (path) {
+			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], "states" + path));
 		};
 	jgrid.inlineEdit = jgrid.inlineEdit || {};
 	jgrid.extend({
@@ -74,11 +77,12 @@
 				if (editable === "0" && !$(ind).hasClass("not-editable-row")) {
 					var editingInfo = jgrid.detectRowEditing.call($t, rowid);
 					if (editingInfo != null && editingInfo.mode === "cellEditing") {
-						var savedRowInfo = editingInfo.savedRow, tr = $t.rows[savedRowInfo.id];
+						var savedRowInfo = editingInfo.savedRow, tr = $t.rows[savedRowInfo.id],
+							highlightClass = getGuiStateStyles.call($t, "select");
 						$self.jqGrid("restoreCell", savedRowInfo.id, savedRowInfo.ic);
 						// remove highlighting of the cell
-						$(tr.cells[savedRowInfo.ic]).removeClass("edit-cell ui-state-highlight");
-						$(tr).addClass("ui-state-highlight").attr({ "aria-selected": "true", "tabindex": "0" });
+						$(tr.cells[savedRowInfo.ic]).removeClass("edit-cell " + highlightClass);
+						$(tr).addClass(highlightClass).attr({ "aria-selected": "true", "tabindex": "0" });
 					}
 					$("td[role=gridcell]", ind).each(function (i) {
 						cm = colModel[i];
@@ -432,7 +436,7 @@
 							} else {
 								var rT = res.responseText || res.statusText;
 								try {
-									jgrid.info_dialog.call($t, errcap, '<div class="ui-state-error">' + rT + "</div>", bClose, { buttonalign: "right" });
+									jgrid.info_dialog.call($t, errcap, '<div class="' + getGuiStateStyles.call($t, "error") + '">' + rT + "</div>", bClose, { buttonalign: "right" });
 								} catch (e) {
 									alert(rT);
 								}
@@ -562,7 +566,7 @@
 				var $t = this, $self = $($t), p = $t.p;
 				if (!this.grid || p == null) { return; }
 				var $elem, gID = elem === p.toppager ? p.idSel + "_top" : p.idSel,
-					gid = elem === p.toppager ? p.id + "_top" : p.id,
+					gid = elem === p.toppager ? p.id + "_top" : p.id, disabledClass = getGuiStateStyles.call($t, "disabled"),
 					o = $.extend(true,
 						{
 							edit: true,
@@ -716,7 +720,7 @@
 							}
 						}
 					});
-					$(gID + "_ilsave").addClass("ui-state-disabled");
+					$(gID + "_ilsave").addClass(disabledClass);
 				}
 				if (o.cancel) {
 					$self.jqGrid("navButtonAdd", elem, {
@@ -738,7 +742,7 @@
 							}
 						}
 					});
-					$(gID + "_ilcancel").addClass("ui-state-disabled");
+					$(gID + "_ilcancel").addClass(disabledClass);
 				}
 				if (o.restoreAfterSelect === true) {
 					$self.bind("jqGridSelectRow", function (e, rowid) {
@@ -762,11 +766,11 @@
 			return this.each(function () {
 				var $t = this;
 				if (!$t.grid) { return; }
-				var p = $t.p, gID = p.idSel,
+				var p = $t.p, gID = p.idSel, disabledClass = getGuiStateStyles.call($t, "disabled"),
 					saveCancel = gID + "_ilsave," + gID + "_ilcancel" + (p.toppager ? "," + gID + "_top_ilsave," + gID + "_top_ilcancel" : ""),
 					addEdit = gID + "_iladd," + gID + "_iledit" + (p.toppager ? "," + gID + "_top_iladd," + gID + "_top_iledit" : "");
-				$(isEditing ? addEdit : saveCancel).addClass("ui-state-disabled");
-				$(isEditing ? saveCancel : addEdit).removeClass("ui-state-disabled");
+				$(isEditing ? addEdit : saveCancel).addClass(disabledClass);
+				$(isEditing ? saveCancel : addEdit).removeClass(disabledClass);
 			});
 		}
 		//end inline edit
