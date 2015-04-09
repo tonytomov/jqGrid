@@ -488,9 +488,8 @@
 					select: "ui-state-highlight",
 					disabled: "ui-state-disabled",
 					hover: "ui-state-hover",    // can be table-hover on <table> only and style like .table-hover tbody tr:hover td
-					focus: "ui-state-focus",
+					error: "ui-state-error",
 					active: "ui-state-active",
-					hidden: "ui-helper-hidden", //??? 
 					textOfClickable: "ui-state-default"
 				},
 				dialog: {
@@ -2153,7 +2152,7 @@
 			var iCol, dir;
 			if (p.colNames.length === 0) {
 				for (iCol = 0; iCol < p.colModel.length; iCol++) {
-					p.colNames[iCol] = p.colModel[iCol].label || p.colModel[iCol].name;
+					p.colNames[iCol] = p.colModel[iCol].label !== undefined ? p.colModel[iCol].label : p.colModel[iCol].name;
 				}
 			}
 			if (p.colNames.length !== p.colModel.length) {
@@ -2254,6 +2253,7 @@
 				},
 				reader = function (datatype) {
 					var field, f = [], i, colModel = p.colModel, nCol = colModel.length, name;
+					// TODO add own properties of treeReader at the end of f array in case of usage TreeGrid:true
 					for (i = 0; i < nCol; i++) {
 						field = colModel[i];
 						if (field.name !== "cb" && field.name !== "subgrid" && field.name !== "rn") {
@@ -2429,12 +2429,8 @@
 							rcnt = 1;
 						} else { rcnt = rcnt > 1 ? rcnt : 1; }
 					} else { return; }
-					var i, fpos, ir = 0, v, gi = p.multiselect === true ? 1 : 0, si = 0, addSubGridCell, ni = p.rownumbers === true ? 1 : 0, idn, getId, f = [], colOrder, rd = {},
+					var i, fpos, ir = 0, v, gi = p.multiselect === true ? 1 : 0, si = p.subGrid === true ? 1 : 0, addSubGridCell = jgrid.getMethod("addSubGridCell"), ni = p.rownumbers === true ? 1 : 0, idn, getId, f = [], colOrder, rd = {},
 						iOffset = gi + si + ni, xmlr, rid, rowData = [], cn = (p.altRows === true) ? p.altclass : "", cn1;
-					if (p.subGrid === true) {
-						si = 1;
-						addSubGridCell = jgrid.getMethod("addSubGridCell");
-					}
 					if (!xmlRd.repeatitems) { f = reader(frd); }
 					if (p.keyName === false) {
 						idn = $.isFunction(xmlRd.id) ? xmlRd.id.call(self, xml) : xmlRd.id;
@@ -2504,6 +2500,9 @@
 									rd[colModel[i + iOffset].name] = v;
 									rowData.push(addCell(rid, v, i + iOffset, j + rcnt, xmlr, rd));
 								}
+								// TODO: read additional TreeGrid properties starting with colOrder.length
+								// and save the data under the corresponding names in rd. One don't need fill rowData
+								// one can use extendedProperties parameter of make all more flexible
 							} else {
 								for (i = 0; i < f.length; i++) {
 									v = getXmlData(xmlr, f[i]);

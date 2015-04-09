@@ -488,9 +488,8 @@
 					select: "ui-state-highlight",
 					disabled: "ui-state-disabled",
 					hover: "ui-state-hover",    // can be table-hover on <table> only and style like .table-hover tbody tr:hover td
-					focus: "ui-state-focus",
+					error: "ui-state-error",
 					active: "ui-state-active",
-					hidden: "ui-helper-hidden", //??? 
 					textOfClickable: "ui-state-default"
 				},
 				dialog: {
@@ -2153,7 +2152,7 @@
 			var iCol, dir;
 			if (p.colNames.length === 0) {
 				for (iCol = 0; iCol < p.colModel.length; iCol++) {
-					p.colNames[iCol] = p.colModel[iCol].label || p.colModel[iCol].name;
+					p.colNames[iCol] = p.colModel[iCol].label !== undefined ? p.colModel[iCol].label : p.colModel[iCol].name;
 				}
 			}
 			if (p.colNames.length !== p.colModel.length) {
@@ -2254,6 +2253,7 @@
 				},
 				reader = function (datatype) {
 					var field, f = [], i, colModel = p.colModel, nCol = colModel.length, name;
+					// TODO add own properties of treeReader at the end of f array in case of usage TreeGrid:true
 					for (i = 0; i < nCol; i++) {
 						field = colModel[i];
 						if (field.name !== "cb" && field.name !== "subgrid" && field.name !== "rn") {
@@ -2429,12 +2429,8 @@
 							rcnt = 1;
 						} else { rcnt = rcnt > 1 ? rcnt : 1; }
 					} else { return; }
-					var i, fpos, ir = 0, v, gi = p.multiselect === true ? 1 : 0, si = 0, addSubGridCell, ni = p.rownumbers === true ? 1 : 0, idn, getId, f = [], colOrder, rd = {},
+					var i, fpos, ir = 0, v, gi = p.multiselect === true ? 1 : 0, si = p.subGrid === true ? 1 : 0, addSubGridCell = jgrid.getMethod("addSubGridCell"), ni = p.rownumbers === true ? 1 : 0, idn, getId, f = [], colOrder, rd = {},
 						iOffset = gi + si + ni, xmlr, rid, rowData = [], cn = (p.altRows === true) ? p.altclass : "", cn1;
-					if (p.subGrid === true) {
-						si = 1;
-						addSubGridCell = jgrid.getMethod("addSubGridCell");
-					}
 					if (!xmlRd.repeatitems) { f = reader(frd); }
 					if (p.keyName === false) {
 						idn = $.isFunction(xmlRd.id) ? xmlRd.id.call(self, xml) : xmlRd.id;
@@ -2504,6 +2500,9 @@
 									rd[colModel[i + iOffset].name] = v;
 									rowData.push(addCell(rid, v, i + iOffset, j + rcnt, xmlr, rd));
 								}
+								// TODO: read additional TreeGrid properties starting with colOrder.length
+								// and save the data under the corresponding names in rd. One don't need fill rowData
+								// one can use extendedProperties parameter of make all more flexible
 							} else {
 								for (i = 0; i < f.length; i++) {
 									v = getXmlData(xmlr, f[i]);
@@ -12036,6 +12035,9 @@
 			args.unshift("Inline");
 			args.unshift(o);
 			return jgrid.feedback.apply(this, args);
+		},
+		getGuiStateStyles = function (path) {
+			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], "states" + path));
 		};
 	jgrid.inlineEdit = jgrid.inlineEdit || {};
 	jgrid.extend({
@@ -12091,11 +12093,12 @@
 				if (editable === "0" && !$(ind).hasClass("not-editable-row")) {
 					var editingInfo = jgrid.detectRowEditing.call($t, rowid);
 					if (editingInfo != null && editingInfo.mode === "cellEditing") {
-						var savedRowInfo = editingInfo.savedRow, tr = $t.rows[savedRowInfo.id];
+						var savedRowInfo = editingInfo.savedRow, tr = $t.rows[savedRowInfo.id],
+							highlightClass = getGuiStateStyles.call($t, "select");
 						$self.jqGrid("restoreCell", savedRowInfo.id, savedRowInfo.ic);
 						// remove highlighting of the cell
-						$(tr.cells[savedRowInfo.ic]).removeClass("edit-cell ui-state-highlight");
-						$(tr).addClass("ui-state-highlight").attr({ "aria-selected": "true", "tabindex": "0" });
+						$(tr.cells[savedRowInfo.ic]).removeClass("edit-cell " + highlightClass);
+						$(tr).addClass(highlightClass).attr({ "aria-selected": "true", "tabindex": "0" });
 					}
 					$("td[role=gridcell]", ind).each(function (i) {
 						cm = colModel[i];
@@ -12449,7 +12452,7 @@
 							} else {
 								var rT = res.responseText || res.statusText;
 								try {
-									jgrid.info_dialog.call($t, errcap, '<div class="ui-state-error">' + rT + "</div>", bClose, { buttonalign: "right" });
+									jgrid.info_dialog.call($t, errcap, '<div class="' + getGuiStateStyles.call($t, "error") + '">' + rT + "</div>", bClose, { buttonalign: "right" });
 								} catch (e) {
 									alert(rT);
 								}
@@ -12579,7 +12582,7 @@
 				var $t = this, $self = $($t), p = $t.p;
 				if (!this.grid || p == null) { return; }
 				var $elem, gID = elem === p.toppager ? p.idSel + "_top" : p.idSel,
-					gid = elem === p.toppager ? p.id + "_top" : p.id,
+					gid = elem === p.toppager ? p.id + "_top" : p.id, disabledClass = getGuiStateStyles.call($t, "disabled"),
 					o = $.extend(true,
 						{
 							edit: true,
@@ -12733,7 +12736,7 @@
 							}
 						}
 					});
-					$(gID + "_ilsave").addClass("ui-state-disabled");
+					$(gID + "_ilsave").addClass(disabledClass);
 				}
 				if (o.cancel) {
 					$self.jqGrid("navButtonAdd", elem, {
@@ -12755,7 +12758,7 @@
 							}
 						}
 					});
-					$(gID + "_ilcancel").addClass("ui-state-disabled");
+					$(gID + "_ilcancel").addClass(disabledClass);
 				}
 				if (o.restoreAfterSelect === true) {
 					$self.bind("jqGridSelectRow", function (e, rowid) {
@@ -12779,11 +12782,11 @@
 			return this.each(function () {
 				var $t = this;
 				if (!$t.grid) { return; }
-				var p = $t.p, gID = p.idSel,
+				var p = $t.p, gID = p.idSel, disabledClass = getGuiStateStyles.call($t, "disabled"),
 					saveCancel = gID + "_ilsave," + gID + "_ilcancel" + (p.toppager ? "," + gID + "_top_ilsave," + gID + "_top_ilcancel" : ""),
 					addEdit = gID + "_iladd," + gID + "_iledit" + (p.toppager ? "," + gID + "_top_iladd," + gID + "_top_iledit" : "");
-				$(isEditing ? addEdit : saveCancel).addClass("ui-state-disabled");
-				$(isEditing ? saveCancel : addEdit).removeClass("ui-state-disabled");
+				$(isEditing ? addEdit : saveCancel).addClass(disabledClass);
+				$(isEditing ? saveCancel : addEdit).removeClass(disabledClass);
 			});
 		}
 		//end inline edit
@@ -14370,38 +14373,32 @@
 			return this.each(function () {
 				var $t = this, $self = $($t), p = $t.p, rows = $t.rows;
 				if (!$t.grid || !p.treeGrid) { return; }
-				var lft, rgt, curLevel, ident, lftpos, twrap, ldat, lf, pn, tr, ind, dind, expan, expCol = p.expColInd,
+				var lft, rgt, curLevel, ident, lftpos, twrap, ldat, lf, pn, tr, expan, expCol = p.expColInd,
 					expanded = p.treeReader.expanded_field,
 					isLeaf = p.treeReader.leaf_field,
 					level = p.treeReader.level_field,
 					icon = p.treeReader.icon_field,
 					loaded = p.treeReader.loaded,
+					getRowId = function (e) {
+						return $(e.target).closest("tr.jqgrow").attr("id");
+					},
 					onClickTreeNode = function (e) {
-						var ind2 = stripPref(p.idPrefix, $(e.target || e.srcElement, rows).closest("tr.jqgrow")[0].id),
-							pos = p._index[ind2],
-							item = p.data[pos];
+						var item = p.data[p._index[stripPref(p.idPrefix, getRowId(e))]],
+							collapseOrExpand = item[expanded] ? "collapse" : "expand";
 						if (!item[isLeaf]) {
-							if (item[expanded]) {
-								$self.jqGrid("collapseRow", item);
-								$self.jqGrid("collapseNode", item);
-							} else {
-								$self.jqGrid("expandRow", item);
-								$self.jqGrid("expandNode", item);
-							}
+							$self.jqGrid(collapseOrExpand + "Row", item);
+							$self.jqGrid(collapseOrExpand + "Node", item);
 						}
 						return false;
 					},
 					onClickTreeNodeWithSelection = function (e) {
-						var ind2 = stripPref(p.idPrefix, $(e.target || e.srcElement, rows).closest("tr.jqgrow")[0].id);
 						onClickTreeNode.call(this, e);
-						$self.jqGrid("setSelection", ind2);
+						$self.jqGrid("setSelection", getRowId(e));
 						return false;
 					};
 				while (i < len) {
 					tr = rows[i];
-					ind = stripPref(p.idPrefix, tr.id);
-					dind = p._index[ind];
-					ldat = p.data[dind];
+					ldat = p.data[p._index[stripPref(p.idPrefix, tr.id)]];
 					//tr.level = ldat[level];
 					if (p.treeGridModel === "nested") {
 						if (!ldat[isLeaf]) {
@@ -14409,7 +14406,7 @@
 							rgt = parseInt(ldat[p.treeReader.right_field], 10);
 							// NS Model
 							ldat[isLeaf] = (rgt === lft + 1) ? "true" : "false";
-							tr.cells[p._treeleafpos].innerHTML = ldat[isLeaf];
+							tr.cells[p._treeleafpos].innerHTML = ldat[isLeaf]; // ???
 						}
 					}
 					//else {
@@ -14425,7 +14422,6 @@
 					}
 					twrap = "<div class='tree-wrap tree-wrap-" + p.direction + "' style='width:" + (ident * 18) + "px;'>";
 					twrap += "<div style='" + (p.direction === "rtl" ? "right:" : "left:") + (lftpos * 18) + "px;' class='" + p.treeIcons.commonIconClass + " ";
-
 
 					if (ldat[loaded] !== undefined) {
 						ldat[loaded] = ldat[loaded] === "true" || ldat[loaded] === true;
