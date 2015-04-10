@@ -32,6 +32,7 @@
 					level = p.treeReader.level_field,
 					icon = p.treeReader.icon_field,
 					loaded = p.treeReader.loaded,
+					rootLevel = parseInt(p.tree_root_level, 10),
 					getRowId = function (e) {
 						return $(e.target).closest("tr.jqgrow").attr("id");
 					},
@@ -66,7 +67,7 @@
 					//row.parent_id = rd[p.treeReader.parent_id_field];
 					//}
 					curLevel = parseInt(ldat[level], 10);
-					if (p.tree_root_level === 0) {
+					if (rootLevel === 0) {
 						ident = curLevel + 1;
 						lftpos = curLevel;
 					} else {
@@ -99,7 +100,9 @@
 					twrap += "></div></div>";
 					$(tr.cells[expCol]).wrapInner("<span class='cell-wrapper" + lf + "'></span>").prepend(twrap);
 
-					if (curLevel !== parseInt(p.tree_root_level, 10)) {
+					if (curLevel !== rootLevel) {
+						// TODO: create map for previously added nodes: id -> isExpanded
+						// getNodeParent should uses the map instead of loop over all items
 						pn = $self.jqGrid("getNodeParent", ldat);
 						expan = pn && pn.hasOwnProperty(expanded) ? pn[expanded] : true;
 						if (!expan) {
@@ -178,7 +181,17 @@
 						if (j === "leaf_field") { p._treeleafpos = i; }
 						i++;
 						p.colNames.push(n);
-						p.colModel.push({ name: n, width: 1, hidden: true, sortable: false, resizable: false, hidedlg: true, editable: true, search: false });
+						p.colModel.push({
+							name: n,
+							width: 1,
+							//internal: true,
+							hidden: true,
+							sortable: false,
+							resizable: false,
+							hidedlg: true,
+							editable: true,
+							search: false
+						});
 					}
 				});
 			});
@@ -281,6 +294,8 @@
 					break;
 				case "adjacency":
 					var parentId = p.treeReader.parent_id_field, dtid = p.localReader.id, ind = rc[dtid], pos = p._index[ind];
+					//??? var iParent = _index[rc[parentId]]; 
+					//    return iParent != undefined ? p.data[pos] : null;
 					while (pos--) {
 						if (p.data[pos][dtid] === rc[parentId]) {
 							result = p.data[pos];

@@ -32,11 +32,19 @@
 /*jslint browser: true, eqeq: true, plusplus: true, vars: true, white: true, todo: true */
 (function ($) {
 	"use strict";
-	var jgrid = $.jgrid;
+	var jgrid = $.jgrid,
+		feedback = function () {
+			// short form of $.jgrid.feedback to save usage this.p as the first parameter
+			var args = $.makeArray(arguments);
+			args.unshift("");
+			args.unshift("");
+			args.unshift(this.p);
+			return jgrid.feedback.apply(this, args);
+		};
 	jgrid.extend({
 		editCell: function (iRow, iCol, ed) {
 			return this.each(function () {
-				var $t = this, $self = $($t), p = $t.p, nm, tmp, cc, cm, feedback = jgrid.feedback;
+				var $t = this, $self = $($t), p = $t.p, nm, tmp, cc, cm;
 				if (!$t.grid || p.cellEdit !== true || $t.rows == null || $t.rows[iRow] == null) {
 					return;
 				}
@@ -163,7 +171,7 @@
 		},
 		saveCell: function (iRow, iCol) {
 			return this.each(function () {
-				var $t = this, $self = $($t), p = $t.p, fr, feedback = jgrid.feedback, infoDialog = jgrid.info_dialog, jqID = jgrid.jqID,
+				var $t = this, $self = $($t), p = $t.p, fr, infoDialog = jgrid.info_dialog, jqID = jgrid.jqID,
 					errors = $self.jqGrid("getGridRes", "errors"), errcap = errors.errcap,
 					edit = $self.jqGrid("getGridRes", "edit"), editMsg = edit.msg, bClose = edit.bClose;
 				if (!$t.grid || p.cellEdit !== true) {
@@ -373,7 +381,7 @@
 						v = $.unformat.date.call($t, v, cm);
 					}
 					$($t).jqGrid("setCell", rowid, iCol, v, false, false, true);
-					jgrid.feedback.call($t, "afterRestoreCell", rowid, v, iRow, iCol);
+					feedback.call($t, "afterRestoreCell", rowid, v, iRow, iCol);
 					p.savedRow.splice(0, 1);
 				}
 				window.setTimeout(function () {

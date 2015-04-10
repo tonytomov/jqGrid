@@ -2498,7 +2498,9 @@
 									}
 									v = cell.textContent || cell.text;
 									rd[colModel[i + iOffset].name] = v;
-									rowData.push(addCell(rid, v, i + iOffset, j + rcnt, xmlr, rd));
+									//if (colModel[i + iOffset].internal !== true) {
+										rowData.push(addCell(rid, v, i + iOffset, j + rcnt, xmlr, rd));
+									//}
 								}
 								// TODO: read additional TreeGrid properties starting with colOrder.length
 								// and save the data under the corresponding names in rd. One don't need fill rowData
@@ -2507,7 +2509,9 @@
 								for (i = 0; i < f.length; i++) {
 									v = getXmlData(xmlr, f[i]);
 									rd[colModel[i + iOffset].name] = v;
-									rowData.push(addCell(rid, v, i + iOffset, j + rcnt, xmlr, rd));
+									//if (colModel[i + iOffset].internal !== true) {
+										rowData.push(addCell(rid, v, i + iOffset, j + rcnt, xmlr, rd));
+									//}
 								}
 							}
 							rowData[iStartTrTag] = constructTr.call(self, rid, hiderow, cn1, rd, xmlr, false);
