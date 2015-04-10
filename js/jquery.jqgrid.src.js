@@ -10748,6 +10748,7 @@
 											if (p.treeGrid === true) {
 												try { $self.jqGrid("delTreeNode", formRowIds[0]); } catch (ignore) { }
 											} else {
+												formRowIds = formRowIds.slice(); // make copy for save deleting
 												for (i = 0; i < formRowIds.length; i++) {
 													$self.jqGrid("delRowData", formRowIds[i]);
 												}
