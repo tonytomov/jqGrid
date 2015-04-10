@@ -811,7 +811,7 @@
 						$("#sData", frmtb2).addClass("ui-state-active");
 						url = o.url || p.editurl;
 						oper = opers.oper;
-						idname = url === "clientArray" ? p.keyName : opers.id;
+						idname = url === "clientArray" && p.keyName !== false ? p.keyName : opers.id;
 						// we add to pos data array the action - the name is oper
 						postdata[oper] = ($.trim(postdata[gridId + "_id"]) === "_empty") ? opers.addoper : opers.editoper;
 						if (postdata[oper] !== opers.addoper) {
