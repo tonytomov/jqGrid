@@ -50,72 +50,15 @@
 						$self.jqGrid("setSelection", getRowId(e));
 						return false;
 					};
+				// TODO: replace with jqGridBeforeSelectRow event handler
 				while (i < len) {
 					tr = rows[i];
-					ldat = p.data[p._index[stripPref(p.idPrefix, tr.id)]];
-					//tr.level = ldat[level];
-					if (p.treeGridModel === "nested") {
-						if (!ldat[isLeaf]) {
-							lft = parseInt(ldat[p.treeReader.left_field], 10);
-							rgt = parseInt(ldat[p.treeReader.right_field], 10);
-							// NS Model
-							ldat[isLeaf] = (rgt === lft + 1) ? "true" : "false";
-							tr.cells[p._treeleafpos].innerHTML = ldat[isLeaf]; // ???
-						}
-					}
-					//else {
-					//row.parent_id = rd[p.treeReader.parent_id_field];
-					//}
-					curLevel = parseInt(ldat[level], 10);
-					if (rootLevel === 0) {
-						ident = curLevel + 1;
-						lftpos = curLevel;
-					} else {
-						ident = curLevel;
-						lftpos = curLevel - 1;
-					}
-					twrap = "<div class='tree-wrap tree-wrap-" + p.direction + "' style='width:" + (ident * 18) + "px;'>";
-					twrap += "<div style='" + (p.direction === "rtl" ? "right:" : "left:") + (lftpos * 18) + "px;' class='" + p.treeIcons.commonIconClass + " ";
-
-					if (ldat[loaded] !== undefined) {
-						ldat[loaded] = ldat[loaded] === "true" || ldat[loaded] === true;
-					}
-					if (ldat[isLeaf] === "true" || ldat[isLeaf] === true) {
-						twrap += ((ldat[icon] !== undefined && ldat[icon] !== "") ? ldat[icon] : p.treeIcons.leaf) + " tree-leaf treeclick";
-						ldat[isLeaf] = true;
-						lf = "leaf";
-					} else {
-						ldat[isLeaf] = false;
-						lf = "";
-					}
-					ldat[expanded] = (ldat[expanded] === "true" || ldat[expanded] === true) ? true : false;
-					ldat[expanded] = ldat[expanded] && (ldat[loaded] || ldat[loaded] === undefined);
-					twrap += ldat[isLeaf] === true ?
-							"'" :
-							(ldat[expanded] === false ?
-									p.treeIcons.plus + " tree-plus" :
-									p.treeIcons.minus + " tree-minus") +
-							" treeclick'";
-
-					twrap += "></div></div>";
-					$(tr.cells[expCol]).wrapInner("<span class='cell-wrapper" + lf + "'></span>").prepend(twrap);
-
-					if (curLevel !== rootLevel) {
-						// TODO: create map for previously added nodes: id -> isExpanded
-						// getNodeParent should uses the map instead of loop over all items
-						pn = $self.jqGrid("getNodeParent", ldat);
-						expan = pn && pn.hasOwnProperty(expanded) ? pn[expanded] : true;
-						if (!expan) {
-							$(tr).css("display", "none");
-						}
-					}
 					$(tr.cells[expCol])
 						.find("div.treeclick")
 						.bind("click", onClickTreeNode);
 					if (p.ExpandColClick === true) {
 						$(tr.cells[expCol])
 							.find("span.cell-wrapper")
-							.css("cursor", "pointer")
 							.bind("click", onClickTreeNodeWithSelection);
 					}
 					i++;

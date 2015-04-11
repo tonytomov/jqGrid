@@ -2220,11 +2220,11 @@
 				cellVal = function (val) {
 					return val == null || val === "" ? "&#160;" : (p.autoencode ? htmlEncode(val) : String(val));
 				},
-				formatter = function (rowId, cellval, colpos, rwdat, act) {
+				formatter = function (rowId, cellval, colpos, rwdat, act, rdata) {
 					var cm = p.colModel[colpos], v;
 					if (cm.formatter !== undefined) {
 						rowId = String(p.idPrefix) !== "" ? stripGridPrefix(rowId) : rowId;
-						var opts = { rowId: rowId, colModel: cm, gid: p.id, pos: colpos };
+						var opts = { rowId: rowId, colModel: cm, gid: p.id, pos: colpos, rowData: rdata };
 						if ($.isFunction(cm.formatter)) {
 							v = cm.formatter.call(ts, cellval, opts, rwdat, act);
 						} else if ($.fmatter) {
@@ -2235,10 +2235,34 @@
 					} else {
 						v = cellVal(cellval);
 					}
-					return cm.autoResizable && cm.formatter !== "actions" ? "<span class='" + p.autoResizing.wrapperClassName + "'>" + v + "</span>" : v;
+					v = cm.autoResizable && cm.formatter !== "actions" ? "<span class='" + p.autoResizing.wrapperClassName + "'>" + v + "</span>" : v;
+					if (p.treeGrid && ((p.ExpandColumn === undefined && colpos === 0) || (p.ExpandColumn === cm.name))) { //p.expColInd === colpos) {
+						if (rdata == null) { rdata = p.data[p._index[rowId]]; }
+						var curLevel = parseInt(rdata[p.treeReader.level_field], 10), levelOffset = 18,
+							rootLevel = parseInt(p.tree_root_level, 10),
+							lftpos = rootLevel === 0 ? curLevel : curLevel - 1,
+							isLeaf = rdata[p.treeReader.leaf_field],
+							isExpanded = rdata[p.treeReader.expanded_field],
+							icon = rdata[p.treeReader.icon_field],
+							iconClass = isLeaf ?
+									((icon !== undefined && icon !== "") ? icon : p.treeIcons.leaf) + " tree-leaf" :
+									(isExpanded ? p.treeIcons.minus + " tree-minus" : p.treeIcons.plus + " tree-plus");
+
+						v = "<div class='tree-wrap tree-wrap-" + p.direction +
+							"' style='width:" + ((lftpos + 1) * levelOffset) +
+							"px;'><div class='" +
+							mergeCssClasses(p.treeIcons.commonIconClass, iconClass, "treeclick") + 
+							"' style='" +
+							(p.ExpandColClick === true ? "cursor:pointer;" : "") +
+							(p.direction === "rtl" ? "right:" : "left:") +
+							(lftpos * levelOffset) + "px;'></div></div>" +
+							"<span class='cell-wrapper" + (isLeaf ? "leaf" : "") + "'>" +
+							v + "</span>";
+					}
+					return v;
 				},
 				addCell = function (rowId, cell, pos, irow, srvr, rdata) {
-					var v = formatter(rowId, cell, pos, srvr, "add");
+					var v = formatter(rowId, cell, pos, srvr, "add", rdata);
 					return "<td role=\"gridcell\" " + formatCol(pos, irow, v, srvr, rowId, rdata) + ">" + v + "</td>";
 				},
 				addMulti = function (rowid, pos, irow, checked) {
@@ -2390,11 +2414,24 @@
 							classes += " " + rowAttrObj["class"];
 							delete rowAttrObj["class"];
 						}
-						// dot't allow to change role attribute
+						// don't allow to change role attribute
 						try { delete rowAttrObj.role; } catch (ignore) { }
 						for (attrName in rowAttrObj) {
 							if (rowAttrObj.hasOwnProperty(attrName)) {
 								restAttr += " " + attrName + "=" + rowAttrObj[attrName];
+							}
+						}
+					}
+					if (p.treeGrid) {
+						if (parseInt(rd[p.treeReader.level_field], 10) !== parseInt(p.tree_root_level, 10)) {
+							var parentId = rd[p.treeReader.parent_id_field],
+								iParent = p._index[parentId],
+								pn = iParent != undefined ? p.data[iParent] : null,
+								expan = pn && pn.hasOwnProperty(p.treeReader.expanded_field) ?
+										pn[p.treeReader.expanded_field] : true;
+							if (!expan && !hide) {
+								// TODO: append ";" to style if required
+								style += "display:none;";
 							}
 						}
 					}
@@ -2431,7 +2468,29 @@
 					} else { return; }
 					var i, fpos, ir = 0, v, gi = p.multiselect === true ? 1 : 0, si = p.subGrid === true ? 1 : 0, addSubGridCell = jgrid.getMethod("addSubGridCell"), ni = p.rownumbers === true ? 1 : 0, idn, getId, f = [], colOrder, rd = {},
 						iOffset = gi + si + ni, xmlr, rid, rowData = [], cn = (p.altRows === true) ? p.altclass : "", cn1;
-					if (!xmlRd.repeatitems) { f = reader(frd); }
+					if (!xmlRd.repeatitems) {
+						f = reader(frd);
+						// optimize the reader for simple names
+						for (i = 0; i < f.length; i++) {
+							if (typeof f[i] === "string" && /^\w+$/.test(f[i])) {
+								f[i] = (function (nodeName) {
+									return function (obj) {
+										var elem = null, childNodes = obj.childNodes, i, n = childNodes.length, node;
+										for (i = 0; i < n; i++) {
+											node = childNodes[i];
+											if (node.nodeType === 1 && node.nodeName === nodeName) {
+												elem = node;
+												break;
+											}
+										}
+										if (elem === null) { return undefined; }
+										childNodes = elem.childNodes;
+										return childNodes.length > 0 ? childNodes[0].nodeValue : undefined;
+									};
+								})(f[i]);
+							}
+						}
+					}
 					if (p.keyName === false) {
 						idn = $.isFunction(xmlRd.id) ? xmlRd.id.call(self, xml) : xmlRd.id;
 					} else {
@@ -2468,7 +2527,18 @@
 						hiderow = p.groupingView.groupCollapse === true;
 						groupingPrepare = jgrid.getMethod("groupingPrepare");
 					}
-					var cell, $tbody = $(self.tBodies[0]); //$self.children("tbody").filter(":first");
+					var cell, $tbody = $(self.tBodies[0]),
+						loaded = p.treeReader.loaded,
+						isLeaf = p.treeReader.leaf_field,
+						expanded = p.treeReader.expanded_field,
+						normalizeTreeGridProperties = function (ldat) {
+							if (ldat[loaded] !== undefined) {
+								ldat[loaded] = ldat[loaded] === "true" || ldat[loaded] === true;
+							}
+							ldat[isLeaf] = ldat[isLeaf] === "true" || ldat[isLeaf] === true ? true : false;
+							ldat[expanded] = (ldat[expanded] === "true" || ldat[expanded] === true) ? true : false;
+							ldat[expanded] = ldat[expanded] && (ldat[loaded] || ldat[loaded] === undefined);
+						};
 					if (gxml && gl) {
 						if (adjust) { rn *= adjust + 1; }
 						while (j < gl) {
@@ -2498,8 +2568,11 @@
 									}
 									v = cell.textContent || cell.text;
 									rd[colModel[i + iOffset].name] = v;
+								}
+								if (p.treeGrid) { normalizeTreeGridProperties(rd); }
+								for (i = 0; i < colOrder.length; i++) {
 									//if (colModel[i + iOffset].internal !== true) {
-										rowData.push(addCell(rid, v, i + iOffset, j + rcnt, xmlr, rd));
+									rowData.push(addCell(rid, rd[colModel[i + iOffset].name], i + iOffset, j + rcnt, xmlr, rd));
 									//}
 								}
 								// TODO: read additional TreeGrid properties starting with colOrder.length
@@ -2509,8 +2582,11 @@
 								for (i = 0; i < f.length; i++) {
 									v = getXmlData(xmlr, f[i]);
 									rd[colModel[i + iOffset].name] = v;
+								}
+								if (p.treeGrid) { normalizeTreeGridProperties(rd); }
+								for (i = 0; i < f.length; i++) {
 									//if (colModel[i + iOffset].internal !== true) {
-										rowData.push(addCell(rid, v, i + iOffset, j + rcnt, xmlr, rd));
+									rowData.push(addCell(rid, rd[colModel[i + iOffset].name], i + iOffset, j + rcnt, xmlr, rd));
 									//}
 								}
 							}
@@ -2681,7 +2757,18 @@
 						hiderow = p.groupingView.groupCollapse === true;
 						groupingPrepare = jgrid.getMethod("groupingPrepare");
 					}
-					var $tbody = $(self.tBodies[0]); //$self.children("tbody").filter(":first");
+					var $tbody = $(self.tBodies[0]),
+						loaded = p.treeReader.loaded,
+						isLeaf = p.treeReader.leaf_field,
+						expanded = p.treeReader.expanded_field,
+						normalizeTreeGridProperties = function (ldat) {
+							if (ldat[loaded] !== undefined) {
+								ldat[loaded] = ldat[loaded] === "true" || ldat[loaded] === true;
+							}
+							ldat[isLeaf] = ldat[isLeaf] === "true" || ldat[isLeaf] === true ? true : false;
+							ldat[expanded] = (ldat[expanded] === "true" || ldat[expanded] === true) ? true : false;
+							ldat[expanded] = ldat[expanded] && (ldat[loaded] || ldat[loaded] === undefined);
+						};
 					for (i = 0; i < len && i < rn; i++) {
 						cur = drows[i];
 						cells = dReader.repeatitems && dReader.cell ? getAccessor(cur, dReader.cell) || cur : cur;
@@ -2720,7 +2807,10 @@
 						for (j = 0; j < rowReader.length; j++) {
 							v = getAccessor(cells, rowReader[j]);
 							rd[p.colModel[j + iOffset].name] = v;
-							rowData.push(addCell(idr, v, j + iOffset, i + rcnt, cells, rd));
+						}
+						if (p.treeGrid) { normalizeTreeGridProperties(rd); }
+						for (j = 0; j < rowReader.length; j++) {
+							rowData.push(addCell(idr, rd[p.colModel[j + iOffset].name], j + iOffset, i + rcnt, cells, rd));
 						}
 						rowData[iStartTrTag] = constructTr.call(self, idr, hiderow, cn1, rd, cells, selr);
 						rowData.push("</tr>");
@@ -14410,72 +14500,15 @@
 						$self.jqGrid("setSelection", getRowId(e));
 						return false;
 					};
+				// TODO: replace with jqGridBeforeSelectRow event handler
 				while (i < len) {
 					tr = rows[i];
-					ldat = p.data[p._index[stripPref(p.idPrefix, tr.id)]];
-					//tr.level = ldat[level];
-					if (p.treeGridModel === "nested") {
-						if (!ldat[isLeaf]) {
-							lft = parseInt(ldat[p.treeReader.left_field], 10);
-							rgt = parseInt(ldat[p.treeReader.right_field], 10);
-							// NS Model
-							ldat[isLeaf] = (rgt === lft + 1) ? "true" : "false";
-							tr.cells[p._treeleafpos].innerHTML = ldat[isLeaf]; // ???
-						}
-					}
-					//else {
-					//row.parent_id = rd[p.treeReader.parent_id_field];
-					//}
-					curLevel = parseInt(ldat[level], 10);
-					if (rootLevel === 0) {
-						ident = curLevel + 1;
-						lftpos = curLevel;
-					} else {
-						ident = curLevel;
-						lftpos = curLevel - 1;
-					}
-					twrap = "<div class='tree-wrap tree-wrap-" + p.direction + "' style='width:" + (ident * 18) + "px;'>";
-					twrap += "<div style='" + (p.direction === "rtl" ? "right:" : "left:") + (lftpos * 18) + "px;' class='" + p.treeIcons.commonIconClass + " ";
-
-					if (ldat[loaded] !== undefined) {
-						ldat[loaded] = ldat[loaded] === "true" || ldat[loaded] === true;
-					}
-					if (ldat[isLeaf] === "true" || ldat[isLeaf] === true) {
-						twrap += ((ldat[icon] !== undefined && ldat[icon] !== "") ? ldat[icon] : p.treeIcons.leaf) + " tree-leaf treeclick";
-						ldat[isLeaf] = true;
-						lf = "leaf";
-					} else {
-						ldat[isLeaf] = false;
-						lf = "";
-					}
-					ldat[expanded] = (ldat[expanded] === "true" || ldat[expanded] === true) ? true : false;
-					ldat[expanded] = ldat[expanded] && (ldat[loaded] || ldat[loaded] === undefined);
-					twrap += ldat[isLeaf] === true ?
-							"'" :
-							(ldat[expanded] === false ?
-									p.treeIcons.plus + " tree-plus" :
-									p.treeIcons.minus + " tree-minus") +
-							" treeclick'";
-
-					twrap += "></div></div>";
-					$(tr.cells[expCol]).wrapInner("<span class='cell-wrapper" + lf + "'></span>").prepend(twrap);
-
-					if (curLevel !== rootLevel) {
-						// TODO: create map for previously added nodes: id -> isExpanded
-						// getNodeParent should uses the map instead of loop over all items
-						pn = $self.jqGrid("getNodeParent", ldat);
-						expan = pn && pn.hasOwnProperty(expanded) ? pn[expanded] : true;
-						if (!expan) {
-							$(tr).css("display", "none");
-						}
-					}
 					$(tr.cells[expCol])
 						.find("div.treeclick")
 						.bind("click", onClickTreeNode);
 					if (p.ExpandColClick === true) {
 						$(tr.cells[expCol])
 							.find("span.cell-wrapper")
-							.css("cursor", "pointer")
 							.bind("click", onClickTreeNodeWithSelection);
 					}
 					i++;
