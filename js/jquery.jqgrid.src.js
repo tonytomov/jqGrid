@@ -14635,37 +14635,12 @@
 			return ret;
 		},
 		getNodeParent: function (rc) {
-			var result = null;
-			this.each(function () {
-				var $t = this, p = $t.p;
-				if (!$t.grid || !p.treeGrid) { return; }
-				switch (p.treeGridModel) {
-				case "nested":
-					var lftc = p.treeReader.left_field, rgtc = p.treeReader.right_field, levelc = p.treeReader.level_field,
-						lft = parseInt(rc[lftc], 10),
-						rgt = parseInt(rc[rgtc], 10),
-						level = parseInt(rc[levelc], 10);
-					$(p.data).each(function () {
-						if (parseInt(this[levelc], 10) === level - 1 && parseInt(this[lftc], 10) < lft && parseInt(this[rgtc], 10) > rgt) {
-							result = this;
-							return false;
-						}
-					});
-					break;
-				case "adjacency":
-					var parentId = p.treeReader.parent_id_field, dtid = p.localReader.id, ind = rc[dtid], pos = p._index[ind];
-					//??? var iParent = _index[rc[parentId]]; 
-					//    return iParent != undefined ? p.data[pos] : null;
-					while (pos--) {
-						if (p.data[pos][dtid] === rc[parentId]) {
-							result = p.data[pos];
-							break;
-						}
-					}
-					break;
-				}
-			});
-			return result;
+			var $t = this[0];
+			if (!$t || !$t.grid || $t.p == null || !$t.p.treeGrid || rc == null) { return null; }
+			var p = $t.p, parentIdName = p.treeReader.parent_id_field, parentId = rc[parentIdName];
+			if (parentId === null || parentId === "null") { return result; }
+			var iParent = p._index[parentId];
+			return iParent != undefined ? p.data[iParent] : null;
 		},
 		getNodeChildren: function (rc) {
 			var result = [];
