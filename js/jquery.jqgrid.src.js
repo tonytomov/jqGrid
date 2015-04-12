@@ -16023,6 +16023,9 @@
 		if (cellval instanceof jQuery && cellval.length > 0) {
 			cellval = cellval[0];
 		}
+		if (p.treeGrid && cellval != null && $(cellval.firstChild).hasClass("tree-wrap") && $(cellval.lastChild).hasClass("cell-wrapper")) {
+			cellval = cellval.lastChild.firstChild;
+		}
 		if (options.colModel.autoResizable && cellval != null && $(cellval.firstChild).hasClass(p.autoResizing.wrapperClassName)) {
 			cellval = cellval.firstChild;
 		}
