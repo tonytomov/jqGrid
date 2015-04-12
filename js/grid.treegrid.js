@@ -26,13 +26,9 @@
 			return this.each(function () {
 				var $t = this, $self = $($t), p = $t.p, rows = $t.rows;
 				if (!$t.grid || !p.treeGrid) { return; }
-				var lft, rgt, curLevel, ident, lftpos, twrap, ldat, lf, pn, tr, expan, expCol = p.expColInd,
+				var tr, expCol = p.expColInd,
 					expanded = p.treeReader.expanded_field,
 					isLeaf = p.treeReader.leaf_field,
-					level = p.treeReader.level_field,
-					icon = p.treeReader.icon_field,
-					loaded = p.treeReader.loaded,
-					rootLevel = parseInt(p.tree_root_level, 10),
 					getRowId = function (e) {
 						return $(e.target).closest("tr.jqgrow").attr("id");
 					},
@@ -123,18 +119,7 @@
 					if (n && $.inArray(n, dupcols) === -1) {
 						if (j === "leaf_field") { p._treeleafpos = i; }
 						i++;
-						p.colNames.push(n);
-						p.colModel.push({
-							name: n,
-							width: 1,
-							//internal: true,
-							hidden: true,
-							sortable: false,
-							resizable: false,
-							hidedlg: true,
-							editable: true,
-							search: false
-						});
+						p.additionalProperties.push(n);
 					}
 				});
 			});
@@ -221,7 +206,7 @@
 			var $t = this[0];
 			if (!$t || !$t.grid || $t.p == null || !$t.p.treeGrid || rc == null) { return null; }
 			var p = $t.p, parentIdName = p.treeReader.parent_id_field, parentId = rc[parentIdName];
-			if (parentId === null || parentId === "null") { return result; }
+			if (parentId === null || parentId === "null") { return null; }
 			var iParent = p._index[parentId];
 			return iParent != undefined ? p.data[iParent] : null;
 		},

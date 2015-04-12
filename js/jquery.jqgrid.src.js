@@ -1688,6 +1688,7 @@
 					pgbuttons: true,
 					pginput: true,
 					colModel: [],
+					additionalProperties: [],
 					rowList: [],
 					colNames: [],
 					sortorder: "asc",
@@ -2466,28 +2467,29 @@
 							rcnt = 1;
 						} else { rcnt = rcnt > 1 ? rcnt : 1; }
 					} else { return; }
-					var i, fpos, ir = 0, v, gi = p.multiselect === true ? 1 : 0, si = p.subGrid === true ? 1 : 0, addSubGridCell = jgrid.getMethod("addSubGridCell"), ni = p.rownumbers === true ? 1 : 0, idn, getId, f = [], colOrder, rd = {},
-						iOffset = gi + si + ni, xmlr, rid, rowData = [], cn = (p.altRows === true) ? p.altclass : "", cn1;
+					var i, fpos, ir = 0, gi = p.multiselect === true ? 1 : 0, si = p.subGrid === true ? 1 : 0, addSubGridCell = jgrid.getMethod("addSubGridCell"), ni = p.rownumbers === true ? 1 : 0, idn, getId, f = [], colOrder, rd = {},
+						iOffset = gi + si + ni, xmlr, rid, rowData = [], cn = (p.altRows === true) ? p.altclass : "", cn1,
+						nodeReader = function (nodeName) {
+							return function (obj) {
+								var elem = null, childNodes = obj.childNodes, iNode, nNodes = childNodes.length, node;
+								for (iNode = 0; iNode < nNodes; iNode++) {
+									node = childNodes[iNode];
+									if (node.nodeType === 1 && node.nodeName === nodeName) {
+										elem = node;
+										break;
+									}
+								}
+								if (elem === null) { return undefined; }
+								childNodes = elem.childNodes;
+								return childNodes.length > 0 ? childNodes[0].nodeValue : undefined;
+							};
+						};
 					if (!xmlRd.repeatitems) {
 						f = reader(frd);
 						// optimize the reader for simple names
 						for (i = 0; i < f.length; i++) {
 							if (typeof f[i] === "string" && /^\w+$/.test(f[i])) {
-								f[i] = (function (nodeName) {
-									return function (obj) {
-										var elem = null, childNodes = obj.childNodes, i, n = childNodes.length, node;
-										for (i = 0; i < n; i++) {
-											node = childNodes[i];
-											if (node.nodeType === 1 && node.nodeName === nodeName) {
-												elem = node;
-												break;
-											}
-										}
-										if (elem === null) { return undefined; }
-										childNodes = elem.childNodes;
-										return childNodes.length > 0 ? childNodes[0].nodeValue : undefined;
-									};
-								})(f[i]);
+								f[i] = nodeReader(f[i]);
 							}
 						}
 					}
@@ -2538,7 +2540,8 @@
 							ldat[isLeaf] = ldat[isLeaf] === "true" || ldat[isLeaf] === true ? true : false;
 							ldat[expanded] = (ldat[expanded] === "true" || ldat[expanded] === true) ? true : false;
 							ldat[expanded] = ldat[expanded] && (ldat[loaded] || ldat[loaded] === undefined);
-						};
+						},
+						additionalProperties = p.additionalProperties;
 					if (gxml && gl) {
 						if (adjust) { rn *= adjust + 1; }
 						while (j < gl) {
@@ -2563,31 +2566,28 @@
 								cells = getXmlData(xmlr, xmlRd.cell, true);
 								for (i = 0; i < colOrder.length; i++) {
 									cell = cells[colOrder[i]];
-									if (!cell) {
-										break;
-									}
-									v = cell.textContent || cell.text;
-									rd[colModel[i + iOffset].name] = v;
+									if (!cell) { break; }
+									rd[colModel[i + iOffset].name] = cell.textContent || cell.text;
+								}
+								for (i = 0; i < additionalProperties.length; i++) {
+									cell = cells[i + colOrder.length];
+									if (!cell) { break; }
+									rd[additionalProperties[i]] = cell.textContent || cell.text;
 								}
 								if (p.treeGrid) { normalizeTreeGridProperties(rd); }
 								for (i = 0; i < colOrder.length; i++) {
-									//if (colModel[i + iOffset].internal !== true) {
 									rowData.push(addCell(rid, rd[colModel[i + iOffset].name], i + iOffset, j + rcnt, xmlr, rd));
-									//}
 								}
-								// TODO: read additional TreeGrid properties starting with colOrder.length
-								// and save the data under the corresponding names in rd. One don't need fill rowData
-								// one can use extendedProperties parameter of make all more flexible
 							} else {
 								for (i = 0; i < f.length; i++) {
-									v = getXmlData(xmlr, f[i]);
-									rd[colModel[i + iOffset].name] = v;
+									rd[colModel[i + iOffset].name] = getXmlData(xmlr, f[i]);
+								}
+								for (i = 0; i < additionalProperties.length; i++) {
+									rd[additionalProperties[i]] = getXmlData(xmlr, additionalProperties[i]);
 								}
 								if (p.treeGrid) { normalizeTreeGridProperties(rd); }
 								for (i = 0; i < f.length; i++) {
-									//if (colModel[i + iOffset].internal !== true) {
 									rowData.push(addCell(rid, rd[colModel[i + iOffset].name], i + iOffset, j + rcnt, xmlr, rd));
-									//}
 								}
 							}
 							rowData[iStartTrTag] = constructTr.call(self, rid, hiderow, cn1, rd, xmlr, false);
@@ -2667,17 +2667,23 @@
 								cells = getXmlData(xmlr, xmlRd.cell, true);
 								for (i = 0; i < colOrder.length; i++) {
 									cell = cells[colOrder[i]];
-									if (!cell) {
-										break;
-									}
+									if (!cell) { break; }
 									rd[colModel[i + iOffset].name] = cell.textContent || cell.text;
+								}
+								for (i = 0; i < additionalProperties.length; i++) {
+									cell = cells[i + colOrder.length];
+									if (!cell) { break; }
+									rd[additionalProperties[i]] = cell.textContent || cell.text;
 								}
 							} else {
 								for (i = 0; i < f.length; i++) {
-									v = getXmlData(xmlr, f[i]);
-									rd[colModel[i + iOffset].name] = v;
+									rd[colModel[i + iOffset].name] = getXmlData(xmlr, f[i]);
+								}
+								for (i = 0; i < additionalProperties.length; i++) {
+									rd[additionalProperties[i]] = getXmlData(xmlr, additionalProperties[i]);
 								}
 							}
+							if (p.treeGrid) { normalizeTreeGridProperties(rd); }
 							rd[xmlid] = stripGridPrefix(rid);
 							if (p.grouping) {
 								groupingPrepare.call($self, rd, ir);
@@ -2722,7 +2728,7 @@
 						dReader = p.jsonReader;
 						frd = "json";
 					}
-					var ir, v, i, j, cur, cells, gi = p.multiselect ? 1 : 0, si = p.subGrid === true ? 1 : 0, addSubGridCell, ni = p.rownumbers === true ? 1 : 0,
+					var ir, i, j, cur, cells, gi = p.multiselect ? 1 : 0, si = p.subGrid === true ? 1 : 0, addSubGridCell, ni = p.rownumbers === true ? 1 : 0,
 						arrayReader = orderedCols(gi + si + ni), objectReader = reader(frd), rowReader, len, drows, idn, idi, rd = {}, fpos, idr, rowData = [],
 						iOffset = gi + si + ni, cn = (p.altRows === true) ? p.altclass : "", cn1;
 					p.page = intNum(getAccessor(data, dReader.page), p.page);
@@ -2768,7 +2774,8 @@
 							ldat[isLeaf] = ldat[isLeaf] === "true" || ldat[isLeaf] === true ? true : false;
 							ldat[expanded] = (ldat[expanded] === "true" || ldat[expanded] === true) ? true : false;
 							ldat[expanded] = ldat[expanded] && (ldat[loaded] || ldat[loaded] === undefined);
-						};
+						},
+						additionalProperties = p.additionalProperties;
 					for (i = 0; i < len && i < rn; i++) {
 						cur = drows[i];
 						cells = dReader.repeatitems && dReader.cell ? getAccessor(cur, dReader.cell) || cur : cur;
@@ -2805,8 +2812,10 @@
 							rowData.push(addSubGridCell.call($self, gi + ni, i + rcnt));
 						}
 						for (j = 0; j < rowReader.length; j++) {
-							v = getAccessor(cells, rowReader[j]);
-							rd[p.colModel[j + iOffset].name] = v;
+							rd[p.colModel[j + iOffset].name] = getAccessor(cells, rowReader[j]);
+						}
+						for (j = 0; j < additionalProperties.length; j++) {
+							rd[additionalProperties[j]] = getAccessor(cells, additionalProperties[j]);
 						}
 						if (p.treeGrid) { normalizeTreeGridProperties(rd); }
 						for (j = 0; j < rowReader.length; j++) {
@@ -2896,6 +2905,10 @@
 								for (j = 0; j < rowReader.length; j++) {
 									rd[p.colModel[j + iOffset].name] = getAccessor(cells, rowReader[j]);
 								}
+								for (j = 0; j < additionalProperties.length; j++) {
+									rd[additionalProperties[j]] = getAccessor(cells, additionalProperties[j]);
+								}
+								if (p.treeGrid) { normalizeTreeGridProperties(rd); }
 								rd[locid] = stripGridPrefix(idr);
 								if (p.grouping) {
 									groupingPrepare.call($self, rd, ir);
@@ -14476,13 +14489,9 @@
 			return this.each(function () {
 				var $t = this, $self = $($t), p = $t.p, rows = $t.rows;
 				if (!$t.grid || !p.treeGrid) { return; }
-				var lft, rgt, curLevel, ident, lftpos, twrap, ldat, lf, pn, tr, expan, expCol = p.expColInd,
+				var tr, expCol = p.expColInd,
 					expanded = p.treeReader.expanded_field,
 					isLeaf = p.treeReader.leaf_field,
-					level = p.treeReader.level_field,
-					icon = p.treeReader.icon_field,
-					loaded = p.treeReader.loaded,
-					rootLevel = parseInt(p.tree_root_level, 10),
 					getRowId = function (e) {
 						return $(e.target).closest("tr.jqgrow").attr("id");
 					},
@@ -14573,18 +14582,7 @@
 					if (n && $.inArray(n, dupcols) === -1) {
 						if (j === "leaf_field") { p._treeleafpos = i; }
 						i++;
-						p.colNames.push(n);
-						p.colModel.push({
-							name: n,
-							width: 1,
-							//internal: true,
-							hidden: true,
-							sortable: false,
-							resizable: false,
-							hidedlg: true,
-							editable: true,
-							search: false
-						});
+						p.additionalProperties.push(n);
 					}
 				});
 			});
@@ -14671,7 +14669,7 @@
 			var $t = this[0];
 			if (!$t || !$t.grid || $t.p == null || !$t.p.treeGrid || rc == null) { return null; }
 			var p = $t.p, parentIdName = p.treeReader.parent_id_field, parentId = rc[parentIdName];
-			if (parentId === null || parentId === "null") { return result; }
+			if (parentId === null || parentId === "null") { return null; }
 			var iParent = p._index[parentId];
 			return iParent != undefined ? p.data[iParent] : null;
 		},
