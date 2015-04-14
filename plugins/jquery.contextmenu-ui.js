@@ -182,7 +182,8 @@
 
             menu.css({
                 left: e[cur.eventPosX],
-                top: e[cur.eventPosY]
+                top: e[cur.eventPosY],
+                "white-space": "pre",
             }).show().removeAttr("aria-hidden");
             if (cur.shadow) {
                 shadow.css({
@@ -192,6 +193,24 @@
                     top: e.pageY + 2
                 }).show().removeAttr("aria-hidden");
             }
+            var of = menu.offset(), topDelta = 0;
+            if (of.top + menu.height() > $(window).scrollTop() + window.innerHeight) {
+                topDelta = $(window).scrollTop() - of.top - menu.height() + window.innerHeight;
+                of.top += topDelta;
+                menu.offset(of);
+                of = shadow.offset();
+                of.top += topDelta;
+                shadow.offset(of);
+            }
+            /*of = menu.offset(), topDelta = 0;
+            if (of.left + menu.width() > $(window).scrollLeft() + window.innerWidth) {
+                topDelta = $(window).scrollLeft() - of.top - menu.width() + window.innerWidth;
+                of.left += topDelta;
+                menu.offset(of);
+                of = shadow.offset();
+                of.left += topDelta;
+                shadow.offset(of);
+            }*/
             $(document).one("click", hide);
         }
 
