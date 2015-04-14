@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v4.8.2 - 2015-04-10
+* @license Guriddo jqGrid JS - v4.8.2 - 2015-04-14
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -10924,7 +10924,7 @@ $.jgrid.extend({
 				if (opts.done) {
 					opts.done.call(self, perm);
 				}
-				self.jqGrid("setGridWidth", self[0].p.tblwidth, self[0].p.shrinkToFit);
+				self.jqGrid("setGridWidth", self[0].p.width, self[0].p.shrinkToFit);
 			},
 			/* Function to cleanup the dialog, and select. Also calls the
 			   done function with no permutation (to indicate that the

@@ -255,7 +255,7 @@ $.jgrid.extend({
 				if (opts.done) {
 					opts.done.call(self, perm);
 				}
-				self.jqGrid("setGridWidth", self[0].p.tblwidth, self[0].p.shrinkToFit);
+				self.jqGrid("setGridWidth", self[0].p.width, self[0].p.shrinkToFit);
 			},
 			/* Function to cleanup the dialog, and select. Also calls the
 			   done function with no permutation (to indicate that the
