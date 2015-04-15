@@ -239,7 +239,9 @@
 					if (opts.done) {
 						opts.done.call($self, perm);
 					}
-					$self.jqGrid("setGridWidth", p.width, p.shrinkToFit);
+					$self.jqGrid("setGridWidth",
+						!p.autowidth && (p.widthOrg === undefined || p.widthOrg === "auto" || p.widthOrg === "100%") ? p.tblwidth : p.width,
+						p.shrinkToFit);
 				},
 				/* Function to cleanup the dialog, and select. Also calls the
 				   done function with no permutation (to indicate that the
