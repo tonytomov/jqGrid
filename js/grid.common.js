@@ -446,6 +446,7 @@ $.extend($.jgrid,{
 											}
 										}
 									}
+									$($t).triggerHandler("jqGridAddEditAfterSelectUrlComplete", [elem]);
 								},0);
 							}
 						}
