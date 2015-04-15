@@ -776,7 +776,7 @@
 					});
 				}
 				function postIt() {
-				    var copydata, ret = [true, "", ""], onClickSubmitResult = {}, opers = p.prmNames, idname, oper, key, selr, i, url, itm;
+				    var ret = [true, "", ""], onClickSubmitResult = {}, opers = p.prmNames, idname, oper, key, selr, i, url, itm;
 
 					var retvals = $self.triggerHandler("jqGridAddEditBeforeCheckValues", [$(frmgr), frmoper]);
 					if (retvals && typeof retvals === "object") { postdata = retvals; }
@@ -923,7 +923,7 @@
 										if (o.closeAfterEdit) { hideModal(themodalSelector, { gb: gboxSelector, jqm: o.jqModal, onClose: o.onClose, removemodal: o.removemodal, formprop: !o.recreateForm, form: o.form }); }
 									}
 									if ($.isFunction(o.afterComplete)) {
-										copydata = jqXHR;
+										var copydata = jqXHR;
 										setTimeout(function () {
 											$self.triggerHandler("jqGridAddEditAfterComplete", [copydata, postdata, $(frmgr), frmoper]);
 											o.afterComplete.call($t, copydata, postdata, $(frmgr), frmoper);
