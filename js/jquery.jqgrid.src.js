@@ -13134,7 +13134,7 @@
 				apply_perm: function () {
 					var perm = [];
 					$("option", select).each(function () {
-						if ($(this).is("[selected]")) {
+						if ($(this).is(":selected")) {
 							$self.jqGrid("showCol", colModel[this.value].name);
 						} else {
 							$self.jqGrid("hideCol", colModel[this.value].name);
@@ -13142,7 +13142,7 @@
 					});
 
 					//fixedCols.slice(0);
-					$("option[selected]", select).each(function () { perm.push(parseInt(this.value, 10)); });
+					$("option", select).filter(":selected").each(function () { perm.push(parseInt(this.value, 10)); });
 					$.each(perm, function () { delete colMap[colModel[parseInt(this, 10)].name]; });
 					$.each(colMap, function () {
 						var ti = parseInt(this, 10);
@@ -13151,7 +13151,7 @@
 					if (opts.done) {
 						opts.done.call($self, perm);
 					}
-					$self.jqGrid("setGridWidth", p.tblwidth, p.shrinkToFit);
+					$self.jqGrid("setGridWidth", p.width, p.shrinkToFit);
 				},
 				/* Function to cleanup the dialog, and select. Also calls the
 				   done function with no permutation (to indicate that the
