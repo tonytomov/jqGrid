@@ -630,11 +630,11 @@
 					return h;
 				};
 
-			if (opts === undefined) {
-				opts = this.p != null ?
-						jgrid.getRes(locales[this.p.locale], "formatter.date") || jgrid.formatter.date :
-						jgrid.formatter.date;
-			}
+			opts = $.extend(true, {}, (jgrid.formatter || {}).date,
+				(this.p != null ?
+						jgrid.getRes(locales[this.p.locale], "formatter.date") :
+						{}) || {},
+				opts || {});
 			// old lang files
 			if (opts.parseRe === undefined) {
 				opts.parseRe = /[#%\\\/:_;.,\t\s\-]/;
@@ -663,7 +663,7 @@
 					date = String(date).replace(/\T/g, "#").replace(/\t/, "%").split(opts.parseRe);
 					format = format.replace(/\T/g, "#").replace(/\t/, "%").split(opts.parseRe);
 					// parsing for month names and time
-					for (k = 0, hl = format.length; k < hl; k++) {
+					for (k = 0, hl = Math.min(format.length, date.length); k < hl; k++) {
 						switch (format[k]) {
 						case "M":
 							// A short textual representation of a month, three letters Jan through Dec
