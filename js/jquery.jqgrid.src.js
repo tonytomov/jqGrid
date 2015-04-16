@@ -631,9 +631,9 @@
 				};
 
 			opts = $.extend(true, {}, (jgrid.formatter || {}).date,
-				(this.p != null ?
-						jgrid.getRes(locales[this.p.locale], "formatter.date") :
-						{}) || {},
+				this.p != null ?
+						jgrid.getRes(locales[this.p.locale], "formatter.date") || {} :
+						{},
 				opts || {});
 			// old lang files
 			if (opts.parseRe === undefined) {
@@ -5185,42 +5185,54 @@
 		showCol: function (colname) {
 			return this.each(function () { $(this).jqGrid("showHideCol", colname, ""); });
 		},
-		//remapColumnsByName: function (permutation, updateCells, keepHeader) {
-		//},
+		remapColumnsByName: function (permutationByName, updateCells, keepHeader) {
+			var ts = this[0], p = ts.p, permutation = [], i, n, cmNames = permutationByName.slice();
+
+			if (p.subGrid && $.inArray("subgrid", cmNames) < 0) {
+				cmNames.unshift("subgrid");
+			}
+			if (p.multiselect && $.inArray("cb", cmNames) < 0) {
+				cmNames.unshift("cb");
+			}
+			if (p.rownumbers && $.inArray("rn", cmNames) < 0) {
+				cmNames.unshift("rn");
+			}
+			for (i = 0, n = cmNames.length; i < n; i++) {
+				permutation.push(p.iColByName[cmNames[i]]);
+			}
+			this.jqGrid("remapColumns", permutation, updateCells, keepHeader);
+		},
 		remapColumns: function (permutation, updateCells, keepHeader) {
 			function resortArray(a) {
-				var ac;
-				if (a.length) {
-					ac = $.makeArray(a);
-				} else {
-					ac = $.extend({}, a);
-				}
+				var ac = a.length ? $.makeArray(a) : $.extend({}, a);
 				$.each(permutation, function (i) {
 					a[i] = ac[this];
 				});
 			}
-			var ts = this.get(0), p = ts.p, grid = ts.grid, i, n;
-			function resortRows(parent, clobj) {
-				$(">tr" + (clobj || ""), parent).each(function () {
-					var row = this;
-					var elems = $.makeArray(row.cells);
-					$.each(permutation, function () {
-						var e = elems[this];
-						if (e) {
-							row.appendChild(e);
+			function resortRows($parent, selector) {
+				var $rows = selector ? $parent.children(selector) : $parent.children();
+				$rows.each(function () {
+					var row = this, elems = $.makeArray(row.cells);
+					$.each(permutation, function (i) {
+						var e = elems[this], oldElem = row.cells[i];
+						if (e.cellIndex !== i) { // if not already on the correct place
+							e.parentNode.insertBefore(e, oldElem);
 						}
 					});
 				});
 			}
+			var ts = this[0], p = ts.p, grid = ts.grid, i, n;
+			if (grid == null || p == null) { return; }
 			resortArray(p.colModel);
 			resortArray(p.colNames);
 			resortArray(grid.headers);
-			resortRows($("thead:first", grid.hDiv), keepHeader && ":not(.ui-jqgrid-labels)");
+			// $("thead:first", grid.hDiv)
+			resortRows($(grid.hDiv).find(">div>.ui-jqgrid-htable>thead"), keepHeader && ":not(.ui-jqgrid-labels)");
 			if (updateCells) {
-				resortRows($(ts.tBodies[0]), ".jqgfirstrow, tr.jqgrow, tr.jqfoot");
+				resortRows($(ts.tBodies[0]), "tr.jqgfirstrow,tr.jqgrow,tr.jqfoot");
 			}
 			if (p.footerrow) {
-				resortRows($("tbody:first", grid.sDiv));
+				resortRows($(grid.sDiv).find(">div>.ui-jqgrid-ftable>tbody").first());
 			}
 			if (p.remapColumns) {
 				if (!p.remapColumns.length) {
