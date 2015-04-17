@@ -9705,7 +9705,7 @@
 									} catch (_) {
 										tmp = (cm.edittype && cm.edittype === "textarea") ? $("td[role=gridcell]:eq(" + i + ")", $t.rows[ind]).text() : $("td[role=gridcell]:eq(" + i + ")", $t.rows[ind]).html();
 									}
-									if (!tmp || tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) { tmp = ""; }
+									if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) { tmp = ""; }
 								}
 							}
 							var opt = $.extend({}, cm.editoptions || {}, { id: nm, name: nm, rowId: rowid }),
