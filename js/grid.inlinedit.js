@@ -49,32 +49,31 @@
 
 			// End compatible
 			return this.each(function () {
-				var $t = this, $self = $($t), p = $t.p, nm, tmp, cnt = 0, focus = null, svr = {}, colModel = p.colModel, cm, opers = p.prmNames;
+				var $t = this, $self = $($t), p = $t.p, cnt = 0, focus = null, svr = {}, colModel = p.colModel, opers = p.prmNames;
 				if (!$t.grid) { return; }
 				var o = $.extend(true, {
-					keys: false,
-					oneditfunc: null,
-					successfunc: null,
-					url: null,
-					extraparam: {},
-					aftersavefunc: null,
-					errorfunc: null,
-					afterrestorefunc: null,
-					restoreAfterError: true,
-					beforeEditRow: null,
-					mtype: "POST",
-					focusField: true
-				}, jgrid.inlineEdit, p.inlineEditing || {}, oMuligrid);
+						keys: false,
+						oneditfunc: null,
+						successfunc: null,
+						url: null,
+						extraparam: {},
+						aftersavefunc: null,
+						errorfunc: null,
+						afterrestorefunc: null,
+						restoreAfterError: true,
+						beforeEditRow: null,
+						mtype: "POST",
+						focusField: true
+					}, jgrid.inlineEdit, p.inlineEditing || {}, oMuligrid),
+					ind = $self.jqGrid("getInd", rowid, true);
 
-				var ind = $self.jqGrid("getInd", rowid, true);
 				if (ind === false) { return; }
 
 				if (o.extraparam[opers.oper] !== opers.addoper) {
 					if (!editFeedback.call($t, o, "beforeEditRow", o, rowid)) { return; }
 				}
 
-				var editable = $(ind).attr("editable") || "0";
-				if (editable === "0" && !$(ind).hasClass("not-editable-row")) {
+				if (($(ind).attr("editable") || "0") === "0" && !$(ind).hasClass("not-editable-row")) {
 					var editingInfo = jgrid.detectRowEditing.call($t, rowid);
 					if (editingInfo != null && editingInfo.mode === "cellEditing") {
 						var savedRowInfo = editingInfo.savedRow, tr = $t.rows[savedRowInfo.id],
@@ -85,17 +84,11 @@
 						$(tr).addClass(highlightClass).attr({ "aria-selected": "true", "tabindex": "0" });
 					}
 					$("td[role=gridcell]", ind).each(function (i) {
-						cm = colModel[i];
-						nm = cm.name;
-						var treeg = p.treeGrid === true && nm === p.ExpandColumn;
-						if (treeg) {
-							tmp = $("span:first", this).html();
-						} else {
-							try {
-								tmp = $.unformat.call($t, this, { rowId: rowid, colModel: cm }, i);
-							} catch (_) {
-								tmp = (cm.edittype && cm.edittype === "textarea") ? $(this).text() : $(this).html();
-							}
+						var cm = colModel[i], nm = cm.name, tmp;
+						try {
+							tmp = $.unformat.call($t, this, { rowId: rowid, colModel: cm }, i);
+						} catch (_) {
+							tmp = (cm.edittype && cm.edittype === "textarea") ? $(this).text() : $(this).html();
 						}
 						if (nm !== "cb" && nm !== "subgrid" && nm !== "rn") {
 							if (p.autoencode) { tmp = jgrid.htmlDecode(tmp); }
@@ -113,20 +106,20 @@
 							}
 							if (isEditable === true) {
 								if (focus === null) { focus = i; }
-								if (treeg) {
-									$("span:first", this).html("");
-								} else {
-									$(this).html("");
+								var $dataFiled = $(this),
+									editingColumnWithTreeGridIcon = p.treeGrid === true && nm === p.ExpandColumn;
+								if (editingColumnWithTreeGridIcon) {
+									$dataFiled = $dataFiled.children("span.cell-wrapperleaf,span.cell-wrapper").first();
 								}
+								$dataFiled.html("");
 								var opt = $.extend({}, cm.editoptions || {}, { id: rowid + "_" + nm, name: nm, rowId: rowid });
 								if (!cm.edittype) { cm.edittype = "text"; }
 								if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) { tmp = ""; }
 								var elc = jgrid.createEl.call($t, cm.edittype, opt, tmp, true, $.extend({}, jgrid.ajaxOptions, p.ajaxSelectOptions || {}));
 								$(elc).addClass("editable");
-								if (treeg) {
-									$("span:first", this).append(elc);
-								} else {
-									$(this).append(elc);
+								$dataFiled.append(elc);
+								if (editingColumnWithTreeGridIcon) {
+									$(elc).width($(this).width()-$(this).children("div.tree-wrap").outerWidth());
 								}
 								jgrid.bindEv.call($t, elc, opt);
 								//Again IE
@@ -748,7 +741,7 @@
 					$self.bind("jqGridSelectRow", function (e, rowid) {
 						if (p.savedRow.length > 0 && p._inlinenav === true) {
 							var editingRowId = p.savedRow[0].id;
-							if (rowid !== editingRowId) {
+							if (rowid !== editingRowId && typeof editingRowId !== "number") {
 								$self.jqGrid("restoreRow", editingRowId, o.editParams);
 							}
 						}

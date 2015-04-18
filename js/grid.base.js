@@ -2237,7 +2237,7 @@
 						v = cellVal(cellval);
 					}
 					v = cm.autoResizable && cm.formatter !== "actions" ? "<span class='" + p.autoResizing.wrapperClassName + "'>" + v + "</span>" : v;
-					if (p.treeGrid && ((p.ExpandColumn === undefined && colpos === 0) || (p.ExpandColumn === cm.name))) { //p.expColInd === colpos) {
+					if (p.treeGrid && act !== "edit" && ((p.ExpandColumn === undefined && colpos === 0) || (p.ExpandColumn === cm.name))) { //p.expColInd === colpos) {
 						if (rdata == null) { rdata = p.data[p._index[rowId]]; }
 						var curLevel = parseInt(rdata[p.treeReader.level_field], 10), levelOffset = 18,
 							rootLevel = parseInt(p.tree_root_level, 10),
@@ -4917,11 +4917,11 @@
 								}
 								vl = t.formatter(rowid, dval, i, data, "edit");
 								title = cm.title ? { "title": stripHtml(vl) } : {};
+								var $dataFiled = $("td[role=gridcell]:eq(" + i + ")", ind);
 								if (p.treeGrid === true && nm === p.ExpandColumn) {
-									$("td[role=gridcell]:eq(" + i + ") > span:first", ind).first().html(vl).attr(title);
-								} else {
-									$("td[role=gridcell]:eq(" + i + ")", ind).html(vl).attr(title);
+									$dataFiled = $dataFiled.children("span.cell-wrapperleaf,span.cell-wrapper").first();
 								}
+								$dataFiled.html(vl).attr(title);
 							}
 						});
 						if (p.datatype === "local") {
@@ -5435,7 +5435,7 @@
 		setCell: function (rowid, colname, nData, cssp, attrp, forceupd) {
 			// TODO: add an additional parameter, which will inform whether the input data nData is in formatted or unformatted form
 			return this.each(function () {
-				var $t = this, p = $t.p, pos = -1, v, title, cl, cm, item, ind, tcell, rawdat = [], id, index;
+				var $t = this, p = $t.p, pos = -1, v, title, cl, cm, item, ind, $tcell, rawdat = [], id, index;
 				if (!$t.grid) { return; }
 				if (isNaN(colname)) {
 					pos = p.iColByName[colname];
@@ -5444,7 +5444,7 @@
 				if (pos >= 0) {
 					ind = $($t).jqGrid("getGridRowById", rowid);
 					if (ind) {
-						tcell = $("td:eq(" + pos + ")", ind);
+						$tcell = $(ind).children("td:eq(" + pos + ")");
 						if (nData !== "" || forceupd === true) {
 							for (cl = 0; cl < ind.cells.length; cl++) {
 								// slow down speed
@@ -5452,10 +5452,10 @@
 							}
 							v = $t.formatter(rowid, nData, pos, rawdat, "edit");
 							title = p.colModel[pos].title ? { "title": stripHtml(v) } : {};
-							if (p.treeGrid && $(".tree-wrap", $(tcell)).length > 0) {
-								$("span", $(tcell)).html(v).attr(title);
+							if (p.treeGrid && $tcell.children("div.tree-wrap").length > 0) {
+								$tcell.children("span.cell-wrapperleaf,span.cell-wrapper").html(v).attr(title);
 							} else {
-								$(tcell).html(v).attr(title);
+								$tcell.html(v).attr(title);
 							}
 							if (p.datatype === "local") {
 								id = stripPref(p.idPrefix, rowid);
@@ -5475,11 +5475,11 @@
 							}
 						}
 						if (typeof cssp === "string") {
-							$(tcell).addClass(cssp);
+							$tcell.addClass(cssp);
 						} else if (cssp) {
-							$(tcell).css(cssp);
+							$tcell.css(cssp);
 						}
-						if (typeof attrp === "object") { $(tcell).attr(attrp); }
+						if (typeof attrp === "object") { $tcell.attr(attrp); }
 					}
 				}
 			});

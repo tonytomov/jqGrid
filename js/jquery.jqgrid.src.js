@@ -2237,7 +2237,7 @@
 						v = cellVal(cellval);
 					}
 					v = cm.autoResizable && cm.formatter !== "actions" ? "<span class='" + p.autoResizing.wrapperClassName + "'>" + v + "</span>" : v;
-					if (p.treeGrid && ((p.ExpandColumn === undefined && colpos === 0) || (p.ExpandColumn === cm.name))) { //p.expColInd === colpos) {
+					if (p.treeGrid && act !== "edit" && ((p.ExpandColumn === undefined && colpos === 0) || (p.ExpandColumn === cm.name))) { //p.expColInd === colpos) {
 						if (rdata == null) { rdata = p.data[p._index[rowId]]; }
 						var curLevel = parseInt(rdata[p.treeReader.level_field], 10), levelOffset = 18,
 							rootLevel = parseInt(p.tree_root_level, 10),
@@ -4917,11 +4917,11 @@
 								}
 								vl = t.formatter(rowid, dval, i, data, "edit");
 								title = cm.title ? { "title": stripHtml(vl) } : {};
+								var $dataFiled = $("td[role=gridcell]:eq(" + i + ")", ind);
 								if (p.treeGrid === true && nm === p.ExpandColumn) {
-									$("td[role=gridcell]:eq(" + i + ") > span:first", ind).first().html(vl).attr(title);
-								} else {
-									$("td[role=gridcell]:eq(" + i + ")", ind).html(vl).attr(title);
+									$dataFiled = $dataFiled.children("span.cell-wrapperleaf,span.cell-wrapper").first();
 								}
+								$dataFiled.html(vl).attr(title);
 							}
 						});
 						if (p.datatype === "local") {
@@ -5435,7 +5435,7 @@
 		setCell: function (rowid, colname, nData, cssp, attrp, forceupd) {
 			// TODO: add an additional parameter, which will inform whether the input data nData is in formatted or unformatted form
 			return this.each(function () {
-				var $t = this, p = $t.p, pos = -1, v, title, cl, cm, item, ind, tcell, rawdat = [], id, index;
+				var $t = this, p = $t.p, pos = -1, v, title, cl, cm, item, ind, $tcell, rawdat = [], id, index;
 				if (!$t.grid) { return; }
 				if (isNaN(colname)) {
 					pos = p.iColByName[colname];
@@ -5444,7 +5444,7 @@
 				if (pos >= 0) {
 					ind = $($t).jqGrid("getGridRowById", rowid);
 					if (ind) {
-						tcell = $("td:eq(" + pos + ")", ind);
+						$tcell = $(ind).children("td:eq(" + pos + ")");
 						if (nData !== "" || forceupd === true) {
 							for (cl = 0; cl < ind.cells.length; cl++) {
 								// slow down speed
@@ -5452,10 +5452,10 @@
 							}
 							v = $t.formatter(rowid, nData, pos, rawdat, "edit");
 							title = p.colModel[pos].title ? { "title": stripHtml(v) } : {};
-							if (p.treeGrid && $(".tree-wrap", $(tcell)).length > 0) {
-								$("span", $(tcell)).html(v).attr(title);
+							if (p.treeGrid && $tcell.children("div.tree-wrap").length > 0) {
+								$tcell.children("span.cell-wrapperleaf,span.cell-wrapper").html(v).attr(title);
 							} else {
-								$(tcell).html(v).attr(title);
+								$tcell.html(v).attr(title);
 							}
 							if (p.datatype === "local") {
 								id = stripPref(p.idPrefix, rowid);
@@ -5475,11 +5475,11 @@
 							}
 						}
 						if (typeof cssp === "string") {
-							$(tcell).addClass(cssp);
+							$tcell.addClass(cssp);
 						} else if (cssp) {
-							$(tcell).css(cssp);
+							$tcell.css(cssp);
 						}
-						if (typeof attrp === "object") { $(tcell).attr(attrp); }
+						if (typeof attrp === "object") { $tcell.attr(attrp); }
 					}
 				}
 			});
@@ -5957,7 +5957,7 @@
 				if (nm === "subgrid" || nm === "cb" || nm === "rn") {
 					return;
 				}
-				cc = $("td:eq(" + iCol + ")", tr);
+				cc = $tr.children("td:eq(" + iCol + ")");
 				var editable = cm.editable;
 				if ($.isFunction(editable)) {
 					editable = editable.call($t, {
@@ -5998,8 +5998,16 @@
 					}
 					feedback.call($t, "beforeEditCell", rowid, nm, tmp, iRow, iCol);
 					var opt = $.extend({}, cm.editoptions || {}, { id: iRow + "_" + nm, name: nm, rowId: rowid });
-					var elc = jgrid.createEl.call($t, cm.edittype, opt, tmp, true, $.extend({}, jgrid.ajaxOptions, p.ajaxSelectOptions || {}));
-					cc.html("").append(elc).attr("tabindex", "0");
+					var elc = jgrid.createEl.call($t, cm.edittype, opt, tmp, true, $.extend({}, jgrid.ajaxOptions, p.ajaxSelectOptions || {})),
+						$dataFiled = cc,
+						editingColumnWithTreeGridIcon = p.treeGrid === true && nm === p.ExpandColumn;
+					if (editingColumnWithTreeGridIcon) {
+						$dataFiled = cc.children("span.cell-wrapperleaf,span.cell-wrapper");
+					}
+					$dataFiled.html("").append(elc).attr("tabindex", "0");
+					if (editingColumnWithTreeGridIcon) { // && elc.style.width === "100%"
+						$(elc).width(cc.width()-cc.children("div.tree-wrap").outerWidth());
+					}
 					jgrid.bindEv.call($t, elc, opt);
 					window.setTimeout(function () {
 						$(elc).focus();
@@ -6182,7 +6190,11 @@
 													ret = p.afterSubmitCell.call($t, jqXHR, postdata.id, nm, v, iRow, iCol);
 												}
 												if (ret[0] === true) {
-													cc.empty();
+													if (p.treeGrid === true && nm === p.ExpandColumn) {
+														cc.children("span.cell-wrapperleaf,span.cell-wrapper").empty();
+													} else {
+														cc.empty();
+													}
 													$self.jqGrid("setCell", rowid, iCol, v2, false, false, true);
 													cc.addClass("dirty-cell");
 													$tr.addClass("edited");
@@ -6215,7 +6227,11 @@
 								}
 							}
 							if (p.cellsubmit === "clientArray") {
-								cc.empty();
+								if (p.treeGrid === true && nm === p.ExpandColumn) {
+									cc.children("span.cell-wrapperleaf,span.cell-wrapper").empty();
+								} else {
+									cc.empty();
+								}
 								$self.jqGrid("setCell", rowid, iCol, v2, false, false, true);
 								cc.addClass("dirty-cell");
 								$tr.addClass("edited");
@@ -6253,9 +6269,14 @@
 							$("input.hasDatepicker", cc).datepicker("hide");
 						} catch (ignore) { }
 					}
-					$(cc).empty().attr("tabindex", "-1");
-					v = p.savedRow[0].v;
 					cm = p.colModel[iCol];
+					if (p.treeGrid === true && cm.name === p.ExpandColumn) {
+						cc.children("span.cell-wrapperleaf,span.cell-wrapper").empty();
+					} else {
+						cc.empty();
+					}
+					$(cc).attr("tabindex", "-1");
+					v = p.savedRow[0].v;
 					if (cm.formatter && cm.formatter === "date" && (cm.formatoptions == null || cm.formatoptions.sendFormatted !== true)) {
 						// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
 						// Floating point separator for example
@@ -9697,16 +9718,12 @@
 							if (ind === false) {
 								tmp = "";
 							} else {
-								if (nm === p.ExpandColumn && p.treeGrid === true) {
-									tmp = $("td[role=gridcell]:eq(" + i + ")", $t.rows[ind]).text();
-								} else {
-									try {
-										tmp = $.unformat.call($t, $("td[role=gridcell]:eq(" + i + ")", $t.rows[ind]), { rowId: rowid, colModel: cm }, i);
-									} catch (_) {
-										tmp = (cm.edittype && cm.edittype === "textarea") ? $("td[role=gridcell]:eq(" + i + ")", $t.rows[ind]).text() : $("td[role=gridcell]:eq(" + i + ")", $t.rows[ind]).html();
-									}
-									if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) { tmp = ""; }
+								try {
+									tmp = $.unformat.call($t, $("td[role=gridcell]:eq(" + i + ")", $t.rows[ind]), { rowId: rowid, colModel: cm }, i);
+								} catch (_) {
+									tmp = (cm.edittype && cm.edittype === "textarea") ? $("td[role=gridcell]:eq(" + i + ")", $t.rows[ind]).text() : $("td[role=gridcell]:eq(" + i + ")", $t.rows[ind]).html();
 								}
+								if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) { tmp = ""; }
 							}
 							var opt = $.extend({}, cm.editoptions || {}, { id: nm, name: nm, rowId: rowid }),
 								frmopt = $.extend({}, { elmprefix: "", elmsuffix: "", rowabove: false, rowcontent: "" }, cm.formoptions || {}),
@@ -9814,14 +9831,10 @@
 						nm = cm[i].name;
 						// hidden fields are included in the form
 						if (nm !== "cb" && nm !== "subgrid" && nm !== "rn" && cm[i].editable === true) {
-							if (nm === p.ExpandColumn && p.treeGrid === true) {
-								tmp = $(this).text();
-							} else {
-								try {
-									tmp = $.unformat.call($t, $(this), { rowId: rowid, colModel: cm[i] }, i);
-								} catch (_) {
-									tmp = cm[i].edittype === "textarea" ? $(this).text() : $(this).html();
-								}
+							try {
+								tmp = $.unformat.call($t, $(this), { rowId: rowid, colModel: cm[i] }, i);
+							} catch (_) {
+								tmp = cm[i].edittype === "textarea" ? $(this).text() : $(this).html();
 							}
 							if (p.autoencode) { tmp = jgrid.htmlDecode(tmp); }
 							if (o.checkOnSubmit === true || o.checkOnUpdate) { o._savedData[nm] = tmp; }
@@ -12195,32 +12208,31 @@
 
 			// End compatible
 			return this.each(function () {
-				var $t = this, $self = $($t), p = $t.p, nm, tmp, cnt = 0, focus = null, svr = {}, colModel = p.colModel, cm, opers = p.prmNames;
+				var $t = this, $self = $($t), p = $t.p, cnt = 0, focus = null, svr = {}, colModel = p.colModel, opers = p.prmNames;
 				if (!$t.grid) { return; }
 				var o = $.extend(true, {
-					keys: false,
-					oneditfunc: null,
-					successfunc: null,
-					url: null,
-					extraparam: {},
-					aftersavefunc: null,
-					errorfunc: null,
-					afterrestorefunc: null,
-					restoreAfterError: true,
-					beforeEditRow: null,
-					mtype: "POST",
-					focusField: true
-				}, jgrid.inlineEdit, p.inlineEditing || {}, oMuligrid);
+						keys: false,
+						oneditfunc: null,
+						successfunc: null,
+						url: null,
+						extraparam: {},
+						aftersavefunc: null,
+						errorfunc: null,
+						afterrestorefunc: null,
+						restoreAfterError: true,
+						beforeEditRow: null,
+						mtype: "POST",
+						focusField: true
+					}, jgrid.inlineEdit, p.inlineEditing || {}, oMuligrid),
+					ind = $self.jqGrid("getInd", rowid, true);
 
-				var ind = $self.jqGrid("getInd", rowid, true);
 				if (ind === false) { return; }
 
 				if (o.extraparam[opers.oper] !== opers.addoper) {
 					if (!editFeedback.call($t, o, "beforeEditRow", o, rowid)) { return; }
 				}
 
-				var editable = $(ind).attr("editable") || "0";
-				if (editable === "0" && !$(ind).hasClass("not-editable-row")) {
+				if (($(ind).attr("editable") || "0") === "0" && !$(ind).hasClass("not-editable-row")) {
 					var editingInfo = jgrid.detectRowEditing.call($t, rowid);
 					if (editingInfo != null && editingInfo.mode === "cellEditing") {
 						var savedRowInfo = editingInfo.savedRow, tr = $t.rows[savedRowInfo.id],
@@ -12231,17 +12243,11 @@
 						$(tr).addClass(highlightClass).attr({ "aria-selected": "true", "tabindex": "0" });
 					}
 					$("td[role=gridcell]", ind).each(function (i) {
-						cm = colModel[i];
-						nm = cm.name;
-						var treeg = p.treeGrid === true && nm === p.ExpandColumn;
-						if (treeg) {
-							tmp = $("span:first", this).html();
-						} else {
-							try {
-								tmp = $.unformat.call($t, this, { rowId: rowid, colModel: cm }, i);
-							} catch (_) {
-								tmp = (cm.edittype && cm.edittype === "textarea") ? $(this).text() : $(this).html();
-							}
+						var cm = colModel[i], nm = cm.name, tmp;
+						try {
+							tmp = $.unformat.call($t, this, { rowId: rowid, colModel: cm }, i);
+						} catch (_) {
+							tmp = (cm.edittype && cm.edittype === "textarea") ? $(this).text() : $(this).html();
 						}
 						if (nm !== "cb" && nm !== "subgrid" && nm !== "rn") {
 							if (p.autoencode) { tmp = jgrid.htmlDecode(tmp); }
@@ -12259,20 +12265,20 @@
 							}
 							if (isEditable === true) {
 								if (focus === null) { focus = i; }
-								if (treeg) {
-									$("span:first", this).html("");
-								} else {
-									$(this).html("");
+								var $dataFiled = $(this),
+									editingColumnWithTreeGridIcon = p.treeGrid === true && nm === p.ExpandColumn;
+								if (editingColumnWithTreeGridIcon) {
+									$dataFiled = $dataFiled.children("span.cell-wrapperleaf,span.cell-wrapper").first();
 								}
+								$dataFiled.html("");
 								var opt = $.extend({}, cm.editoptions || {}, { id: rowid + "_" + nm, name: nm, rowId: rowid });
 								if (!cm.edittype) { cm.edittype = "text"; }
 								if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) { tmp = ""; }
 								var elc = jgrid.createEl.call($t, cm.edittype, opt, tmp, true, $.extend({}, jgrid.ajaxOptions, p.ajaxSelectOptions || {}));
 								$(elc).addClass("editable");
-								if (treeg) {
-									$("span:first", this).append(elc);
-								} else {
-									$(this).append(elc);
+								$dataFiled.append(elc);
+								if (editingColumnWithTreeGridIcon) {
+									$(elc).width($(this).width()-$(this).children("div.tree-wrap").outerWidth());
 								}
 								jgrid.bindEv.call($t, elc, opt);
 								//Again IE
@@ -12894,7 +12900,7 @@
 					$self.bind("jqGridSelectRow", function (e, rowid) {
 						if (p.savedRow.length > 0 && p._inlinenav === true) {
 							var editingRowId = p.savedRow[0].id;
-							if (rowid !== editingRowId) {
+							if (rowid !== editingRowId && typeof editingRowId !== "number") {
 								$self.jqGrid("restoreRow", editingRowId, o.editParams);
 							}
 						}
@@ -16037,8 +16043,8 @@
 		if (cellval instanceof jQuery && cellval.length > 0) {
 			cellval = cellval[0];
 		}
-		if (p.treeGrid && cellval != null && $(cellval.firstChild).hasClass("tree-wrap") && $(cellval.lastChild).hasClass("cell-wrapper")) {
-			cellval = cellval.lastChild.firstChild;
+		if (p.treeGrid && cellval != null && $(cellval.firstChild).hasClass("tree-wrap") && ($(cellval.lastChild).hasClass("cell-wrapper") || $(cellval.lastChild).hasClass("cell-wrapperleaf"))) {
+			cellval = cellval.lastChild;
 		}
 		if (options.colModel.autoResizable && cellval != null && $(cellval.firstChild).hasClass(p.autoResizing.wrapperClassName)) {
 			cellval = cellval.firstChild;

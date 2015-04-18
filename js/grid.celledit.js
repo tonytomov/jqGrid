@@ -76,7 +76,7 @@
 				if (nm === "subgrid" || nm === "cb" || nm === "rn") {
 					return;
 				}
-				cc = $("td:eq(" + iCol + ")", tr);
+				cc = $tr.children("td:eq(" + iCol + ")");
 				var editable = cm.editable;
 				if ($.isFunction(editable)) {
 					editable = editable.call($t, {
@@ -117,8 +117,16 @@
 					}
 					feedback.call($t, "beforeEditCell", rowid, nm, tmp, iRow, iCol);
 					var opt = $.extend({}, cm.editoptions || {}, { id: iRow + "_" + nm, name: nm, rowId: rowid });
-					var elc = jgrid.createEl.call($t, cm.edittype, opt, tmp, true, $.extend({}, jgrid.ajaxOptions, p.ajaxSelectOptions || {}));
-					cc.html("").append(elc).attr("tabindex", "0");
+					var elc = jgrid.createEl.call($t, cm.edittype, opt, tmp, true, $.extend({}, jgrid.ajaxOptions, p.ajaxSelectOptions || {})),
+						$dataFiled = cc,
+						editingColumnWithTreeGridIcon = p.treeGrid === true && nm === p.ExpandColumn;
+					if (editingColumnWithTreeGridIcon) {
+						$dataFiled = cc.children("span.cell-wrapperleaf,span.cell-wrapper");
+					}
+					$dataFiled.html("").append(elc).attr("tabindex", "0");
+					if (editingColumnWithTreeGridIcon) { // && elc.style.width === "100%"
+						$(elc).width(cc.width()-cc.children("div.tree-wrap").outerWidth());
+					}
 					jgrid.bindEv.call($t, elc, opt);
 					window.setTimeout(function () {
 						$(elc).focus();
@@ -301,7 +309,11 @@
 													ret = p.afterSubmitCell.call($t, jqXHR, postdata.id, nm, v, iRow, iCol);
 												}
 												if (ret[0] === true) {
-													cc.empty();
+													if (p.treeGrid === true && nm === p.ExpandColumn) {
+														cc.children("span.cell-wrapperleaf,span.cell-wrapper").empty();
+													} else {
+														cc.empty();
+													}
 													$self.jqGrid("setCell", rowid, iCol, v2, false, false, true);
 													cc.addClass("dirty-cell");
 													$tr.addClass("edited");
@@ -334,7 +346,11 @@
 								}
 							}
 							if (p.cellsubmit === "clientArray") {
-								cc.empty();
+								if (p.treeGrid === true && nm === p.ExpandColumn) {
+									cc.children("span.cell-wrapperleaf,span.cell-wrapper").empty();
+								} else {
+									cc.empty();
+								}
 								$self.jqGrid("setCell", rowid, iCol, v2, false, false, true);
 								cc.addClass("dirty-cell");
 								$tr.addClass("edited");
@@ -372,9 +388,14 @@
 							$("input.hasDatepicker", cc).datepicker("hide");
 						} catch (ignore) { }
 					}
-					$(cc).empty().attr("tabindex", "-1");
-					v = p.savedRow[0].v;
 					cm = p.colModel[iCol];
+					if (p.treeGrid === true && cm.name === p.ExpandColumn) {
+						cc.children("span.cell-wrapperleaf,span.cell-wrapper").empty();
+					} else {
+						cc.empty();
+					}
+					$(cc).attr("tabindex", "-1");
+					v = p.savedRow[0].v;
 					if (cm.formatter && cm.formatter === "date" && (cm.formatoptions == null || cm.formatoptions.sendFormatted !== true)) {
 						// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
 						// Floating point separator for example

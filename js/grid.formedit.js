@@ -564,16 +564,12 @@
 							if (ind === false) {
 								tmp = "";
 							} else {
-								if (nm === p.ExpandColumn && p.treeGrid === true) {
-									tmp = $("td[role=gridcell]:eq(" + i + ")", $t.rows[ind]).text();
-								} else {
-									try {
-										tmp = $.unformat.call($t, $("td[role=gridcell]:eq(" + i + ")", $t.rows[ind]), { rowId: rowid, colModel: cm }, i);
-									} catch (_) {
-										tmp = (cm.edittype && cm.edittype === "textarea") ? $("td[role=gridcell]:eq(" + i + ")", $t.rows[ind]).text() : $("td[role=gridcell]:eq(" + i + ")", $t.rows[ind]).html();
-									}
-									if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) { tmp = ""; }
+								try {
+									tmp = $.unformat.call($t, $("td[role=gridcell]:eq(" + i + ")", $t.rows[ind]), { rowId: rowid, colModel: cm }, i);
+								} catch (_) {
+									tmp = (cm.edittype && cm.edittype === "textarea") ? $("td[role=gridcell]:eq(" + i + ")", $t.rows[ind]).text() : $("td[role=gridcell]:eq(" + i + ")", $t.rows[ind]).html();
 								}
+								if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) { tmp = ""; }
 							}
 							var opt = $.extend({}, cm.editoptions || {}, { id: nm, name: nm, rowId: rowid }),
 								frmopt = $.extend({}, { elmprefix: "", elmsuffix: "", rowabove: false, rowcontent: "" }, cm.formoptions || {}),
@@ -681,14 +677,10 @@
 						nm = cm[i].name;
 						// hidden fields are included in the form
 						if (nm !== "cb" && nm !== "subgrid" && nm !== "rn" && cm[i].editable === true) {
-							if (nm === p.ExpandColumn && p.treeGrid === true) {
-								tmp = $(this).text();
-							} else {
-								try {
-									tmp = $.unformat.call($t, $(this), { rowId: rowid, colModel: cm[i] }, i);
-								} catch (_) {
-									tmp = cm[i].edittype === "textarea" ? $(this).text() : $(this).html();
-								}
+							try {
+								tmp = $.unformat.call($t, $(this), { rowId: rowid, colModel: cm[i] }, i);
+							} catch (_) {
+								tmp = cm[i].edittype === "textarea" ? $(this).text() : $(this).html();
 							}
 							if (p.autoencode) { tmp = jgrid.htmlDecode(tmp); }
 							if (o.checkOnSubmit === true || o.checkOnUpdate) { o._savedData[nm] = tmp; }
