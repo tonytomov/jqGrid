@@ -15905,7 +15905,7 @@
 			$t = $grid[0],
 			p = $t.p,
 			cm = p.colModel[jgrid.getCellIndex(this)],
-			op = $.extend(true, { extraparam: {} }, cm.formatoptions || {});
+			op = $.extend(true, { extraparam: {} }, jgrid.actionsNav || {},	p.actionsNavOptions || {}, cm.formatoptions || {});
 
 		if (p.editOptions !== undefined) {
 			op.editOptions = p.editOptions;
@@ -15949,6 +15949,16 @@
 			case "formedit":
 				$grid.jqGrid("editGridRow", rid, op.editOptions);
 				break;
+			default:
+				if (op.custom != null && op.custom.length > 0) {
+					var i, n = op.custom.length, customAction;
+					for (i = 0; i < n; i++) {
+						customAction = op.custom[i];
+						if (customAction.action === act && $.isFunction(customAction.onClick)) {
+							customAction.onClick.call($t, {rowid: rid, event: e, action: act, options: customAction});
+						}
+					}
+				}
 		}
 		if (e.stopPropagation) {
 			e.stopPropagation();
@@ -15956,11 +15966,8 @@
 		return false; // prevent other processing of the click on the row
 	};
 	$FnFmatter.actions = function (cellval, opts) {
-		var rowid = opts.rowId, str = "", ocl, $t = this, p = $t.p, $self = $($t), //locale = jgrid.locales[p.locale],
-			//navRegional = getRes(locale, "nav") || {},
-			//nav = $.extend(true, {}, navRegional, jgrid.nav || {}),
+		var rowid = opts.rowId, str = "", ocl, $t = this, p = $t.p, $self = $($t), i, customAction,
 			edit = getGridRes.call($self, "edit") || {},
-			//edit = $.extend(true, {}, getRes(locale, "edit") || {}, jgrid.edit || {}),
 			op = $.extend({
 				editbutton: true,
 				delbutton: true,
@@ -15968,11 +15975,8 @@
 				commonIconClass: "ui-icon",
 				editicon: "ui-icon-pencil",
 				delicon: "ui-icon-trash",
-				//addicon: "ui-icon-plus",
 				saveicon: "ui-icon-disk",
 				cancelicon: "ui-icon-cancel",
-				//edittitle: nav.edittitle,
-				//deltitle: nav.deltitle,
 				savetitle: edit.bSubmit || "",
 				canceltitle: edit.bCancel || ""
 			},
@@ -15983,26 +15987,51 @@
 			jgrid.actionsNav || {},
 			p.actionsNavOptions || {},
 			opts.colModel.formatoptions || {}),
+			mergeCssClasses = jgrid.mergeCssClasses,
 			cssIconClass = function (name) {
-				return jgrid.mergeCssClasses(op.commonIconClass, op[name + "icon"]);
-			};
+				return mergeCssClasses(op.commonIconClass, op[name + "icon"]);
+			},
+			hoverClass = mergeCssClasses(jgrid.getRes(jgrid.guiStyles[p.guiStyle], "states.hover")),
+			hoverAttributes = "onmouseover=jQuery(this).addClass('" + hoverClass +
+				"'); onmouseout=jQuery(this).removeClass('" + hoverClass + "'); ",
+			actionButton = function (options) {
+				var action = options.action, actionName = options.actionName || action,
+					idPrefix = options.idPrefix || (action.charAt(0).toUpperCase() + action.substring(1));
+				return "<div title='" + op[action+"title"] +
+					(options.hidden ? "' style='display:none;" : "") +
+					"' class='ui-pg-div ui-inline-" + action + "' " +
+					"id='j" + idPrefix + "Button_" + rowid +
+					"' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'" + actionName + "');\" " +
+					hoverAttributes + "><span class='" +
+					cssIconClass(action) + "'></span></div>";
+			},
+			n = op.custom != null ? op.custom.length : 0;
 
 		if (rowid === undefined || fmatter.isEmpty(rowid)) { return ""; }
+		for (i = 0; i < n; i++) {
+			customAction = op.custom[i];
+			if (customAction.position === "first") {
+				str += actionButton({action: customAction.action});
+			}
+		}
 		if (op.editformbutton) {
-			ocl = "id='jEditButton_" + rowid + "' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'formedit');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-			str += "<div title='" + op.edittitle + "' class='ui-pg-div ui-inline-edit' " + ocl + "><span class='" + cssIconClass("edit") + "'></span></div>";
+			str += actionButton({action: "edit", actionName: "formedit"});
 		} else if (op.editbutton) {
-			ocl = "id='jEditButton_" + rowid + "' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'edit');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover') ";
-			str += "<div title='" + op.edittitle + "' class='ui-pg-div ui-inline-edit' " + ocl + "><span class='" + cssIconClass("edit") + "'></span></div>";
+			str += actionButton({action: "edit"});
 		}
 		if (op.delbutton) {
-			ocl = "id='jDeleteButton_" + rowid + "' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'del');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-			str += "<div title='" + op.deltitle + "' class='ui-pg-div ui-inline-del' " + ocl + "><span class='" + cssIconClass("del") + "'></span></div>";
+			str += actionButton({action: "del", idPrefix: "Delete"});
 		}
-		ocl = "id='jSaveButton_" + rowid + "' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'save');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-		str += "<div title='" + op.savetitle + "' style='display:none' class='ui-pg-div ui-inline-save' " + ocl + "><span class='" + cssIconClass("save") + "'></span></div>";
-		ocl = "id='jCancelButton_" + rowid + "' onclick=\"return jQuery.fn.fmatter.rowactions.call(this,event,'cancel');\" onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-		str += "<div title='" + op.canceltitle + "' style='display:none;' class='ui-pg-div ui-inline-cancel' " + ocl + "><span class='" + cssIconClass("cancel") + "'></span></div>";
+		if (op.editformbutton || op.editbutton) {
+			str += actionButton({action: "save", hidden: true});
+			str += actionButton({action: "cancel", hidden: true});
+		}
+		for (i = 0; i < n; i++) {
+			customAction = op.custom[i];
+			if (customAction.position !== "first") {
+				str += actionButton({action: customAction.action});
+			}
+		}
 		return "<div class='ui-jqgrid-actions'>" + str + "</div>";
 	};
 	$FnFmatter.actions.pageFinalization = function (iCol) {
