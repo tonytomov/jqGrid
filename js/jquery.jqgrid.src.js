@@ -5921,6 +5921,9 @@
 			args.unshift("");
 			args.unshift(this.p);
 			return jgrid.feedback.apply(this, args);
+		},
+		getGuiStateStyles = function (path, moreClasses) {
+			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], "states." + path), moreClasses || "");
 		};
 	jgrid.extend({
 		editCell: function (iRow, iCol, ed) {
@@ -5968,13 +5971,15 @@
 						cm: cm
 					});
 				}
+				var highlightClasses = getGuiStateStyles.call($t, "select", "edit-cell"),
+					hoverClasses = getGuiStateStyles.call($t, "hover", "selected-row");
 				if (editable === true && ed === true && !cc.hasClass("not-editable-cell")) {
 					if (parseInt(p.iCol, 10) >= 0 && parseInt(p.iRow, 10) >= 0) {
-						$("td:eq(" + p.iCol + ")", $trOld).removeClass("edit-cell ui-state-highlight");
-						$trOld.removeClass("selected-row ui-state-hover");
+						$("td:eq(" + p.iCol + ")", $trOld).removeClass(highlightClasses);
+						$trOld.removeClass(hoverClasses);
 					}
-					cc.addClass("edit-cell ui-state-highlight");
-					$tr.addClass("selected-row ui-state-hover");
+					cc.addClass(highlightClasses);
+					$tr.addClass(hoverClasses);
 					try {
 						tmp = $.unformat.call($t, cc, { rowId: rowid, colModel: cm }, iCol);
 					} catch (ex) {
@@ -6046,11 +6051,11 @@
 					$self.triggerHandler("jqGridAfterEditCell", [rowid, nm, tmp, iRow, iCol]);
 				} else {
 					if (parseInt(p.iCol, 10) >= 0 && parseInt(p.iRow, 10) >= 0) {
-						$("td:eq(" + p.iCol + ")", $trOld).removeClass("edit-cell ui-state-highlight");
-						$trOld.removeClass("selected-row ui-state-hover");
+						$("td:eq(" + p.iCol + ")", $trOld).removeClass(highlightClasses);
+						$trOld.removeClass(hoverClasses);
 					}
-					cc.addClass("edit-cell ui-state-highlight");
-					$tr.addClass("selected-row ui-state-hover");
+					cc.addClass(highlightClasses);
+					$tr.addClass(hoverClasses);
 					tmp = cc.html().replace(/\&#160\;/ig, "");
 					feedback.call($t, "onSelectCell", rowid, nm, tmp, iRow, iCol);
 				}
