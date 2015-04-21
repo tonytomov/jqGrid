@@ -5774,7 +5774,7 @@
 				wrapperCssWidth = parseFloat($wrapper.css("width") || 0),
 				widthOuter = 0,
 				colWidth = 0,
-				compact = (cm.autoResizing != null && cm.autoResizing.compact !== undefined) ? cm.autoResizing.compact : p.autoResizing.compact,
+				compact = (cm.autoResizing != null && cm.autoResizable.compact !== undefined) ? cm.autoResizable.compact : p.autoResizing.compact,
 				wrapperClassName = p.autoResizing.wrapperClassName;
 
 			if (cm == null || !cm.autoResizable || $wrapper.length === 0 || cm.hidden || cm.fixed) {
@@ -5796,7 +5796,7 @@
 				row = rows[iRow];
 				cell = row.cells[iCol];
 				$cell = $(row.cells[iCol]);
-				if ($(row).hasClass("jqgrow") && cell != null) {
+				if (cell != null && ($(row).hasClass("jqgrow") || ($(row).hasClass("jqgroup") && cell.colSpan === 1))) {
 					$cellFirstChild = $(cell.firstChild);
 					if ($cellFirstChild.hasClass(wrapperClassName)) {
 						colWidth = Math.max(colWidth, $cellFirstChild.outerWidth() + widthOuter);
