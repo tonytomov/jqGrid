@@ -9,7 +9,7 @@
 
 /*jshint eqeqeq:false */
 /*global jQuery */
-/*jslint browser: true, devel: true, eqeq: true, evil: true, nomen: true, plusplus: true, regexp: true, unparam: true, todo: true, vars: true, white: true, maxerr: 999 */
+/*jslint eqeq: true, plusplus: true, white: true */
 (function ($) {
     "use strict";
     // To optimize the search we need custom array filter
@@ -78,7 +78,8 @@
                     }, options || {});
             this.each(function () {
                 var row, rowindex, i, rowlen = data.length, xlen, ylen, aggrlen, tmp, newObj, dn, colc, r = 0, groupfields,
-                    tree = {}, xValue, yValue, k, kj, current, existing, kk,
+                    tree = {}, xValue, yValue, k, kj, current, nm, plen,
+					existing, kk, lastval = [], initColLen = columns.length, swaplen = initColLen,
                     /*
                      * Check if the grouped row column exist (See find)
                      * If the row is not find in pivot rows retun null,
@@ -308,7 +309,6 @@
                     }
                     r++;
                 }
-                var lastval = [], initColLen = columns.length, swaplen = initColLen;
                 if (ylen > 0) {
                     headers[ylen - 1] = { useColSpanStyle: false, groupHeaders: [] };
                 }
@@ -416,7 +416,6 @@
                 }
 
                 list(tree);
-                var nm, plen;
                 // loop again trougth the pivot rows in order to build grand total
                 if (o.colTotals) {
                     plen = pivotrows.length;
