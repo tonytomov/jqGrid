@@ -3089,7 +3089,7 @@
 						page = parseInt(p.page, 10),
 						totalpages = Math.ceil(total / recordsperpage),
 						retresult = {};
-					if ((p.search || p.resetsearch) && p.grouping && p.groupingView._locgr) {
+					if (p.grouping && p.groupingView._locgr) {
 						p.groupingView.groups = [];
 						var j, grPrepare = jgrid.getMethod("groupingPrepare"), key, udc;
 						if (p.footerrow && p.userDataOnFooter) {
