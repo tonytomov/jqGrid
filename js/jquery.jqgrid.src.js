@@ -13642,14 +13642,14 @@
 				},
 				headers = [],
 				o = $.extend({
-						rowTotals: false,
-						rowTotalsText: "Total",
-						// summary columns
-						colTotals: false,
-						groupSummary: true,
-						groupSummaryPos: "header",
-						frozenStaticCols: false
-					}, options || {});
+					rowTotals: false,
+					rowTotalsText: "Total",
+					// summary columns
+					colTotals: false,
+					groupSummary: true,
+					groupSummaryPos: "header",
+					frozenStaticCols: false
+				}, options || {});
 			this.each(function () {
 				var row, rowindex, i, rowlen = data.length, xlen, ylen, aggrlen, tmp, newObj, dn, colc, r = 0, groupfields,
 					tree = {}, xValue, yValue, k, kj, current, nm, plen,
@@ -14029,15 +14029,14 @@
 
 				function pivot(data) {
 					var gHead, pivotGrid = $($t).jqGrid("pivotSetup", data, pivotOpt),
-					footerrow = $.assocArraySize(pivotGrid.summary) > 0 ? true : false,
-					groupingView = pivotGrid.groupOptions.groupingView,
-					query = jgrid.from.call($t, pivotGrid.rows), i;
+						footerrow = $.assocArraySize(pivotGrid.summary) > 0 ? true : false,
+						groupingView = pivotGrid.groupOptions.groupingView,
+						query = jgrid.from.call($t, pivotGrid.rows), i;
 					for (i = 0; i < groupingView.groupField.length; i++) {
 						query.orderBy(groupingView.groupField[i],
 							gridOpt != null && gridOpt.groupingView && gridOpt.groupingView.groupOrder != null && gridOpt.groupingView.groupOrder[i] === "desc" ? "d" : "a",
 							"text",
-							""
-						);
+							"");
 					}
 					$($t).jqGrid($.extend(true, {
 						datastr: $.extend(query.select(), footerrow ? { userdata: pivotGrid.summary } : {}),
@@ -14050,7 +14049,7 @@
 					}, pivotGrid.groupOptions, gridOpt || {}));
 					gHead = pivotGrid.groupHeaders;
 					if (gHead.length) {
-						for (i = 0; i < gHead.length ; i++) {
+						for (i = 0; i < gHead.length; i++) {
 							if (gHead[i] && gHead[i].groupHeaders.length) {
 								$($t).jqGrid("setGroupHeaders", gHead[i]);
 							}
