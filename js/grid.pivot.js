@@ -457,9 +457,14 @@
                 function pivot(data) {
                     var gHead, pivotGrid = $($t).jqGrid("pivotSetup", data, pivotOpt),
                     footerrow = $.assocArraySize(pivotGrid.summary) > 0 ? true : false,
+                    groupingView = pivotGrid.groupOptions.groupingView,
                     query = jgrid.from.call($t, pivotGrid.rows), i;
-                    for (i = 0; i < pivotGrid.groupOptions.groupingView.groupField.length; i++) {
-                        query.orderBy(pivotGrid.groupOptions.groupingView.groupField[i], "a", "text", "");
+                    for (i = 0; i < groupingView.groupField.length; i++) {
+                        query.orderBy(groupingView.groupField[i],
+                            gridOpt != null && gridOpt.groupingView && gridOpt.groupingView.groupOrder != null && gridOpt.groupingView.groupOrder[i] === "desc" ? "d" : "a",
+                            "text",
+                            ""
+                        );
                     }
                     $($t).jqGrid($.extend(true, {
                         datastr: $.extend(query.select(), footerrow ? { userdata: pivotGrid.summary } : {}),

@@ -3089,7 +3089,7 @@
 						page = parseInt(p.page, 10),
 						totalpages = Math.ceil(total / recordsperpage),
 						retresult = {};
-					if ((p.search || p.resetsearch) && p.grouping && p.groupingView._locgr) {
+					if (p.grouping && p.groupingView._locgr) {
 						p.groupingView.groups = [];
 						var j, grPrepare = jgrid.getMethod("groupingPrepare"), key, udc;
 						if (p.footerrow && p.userDataOnFooter) {
@@ -14031,9 +14031,14 @@
                 function pivot(data) {
                     var gHead, pivotGrid = $($t).jqGrid("pivotSetup", data, pivotOpt),
                     footerrow = $.assocArraySize(pivotGrid.summary) > 0 ? true : false,
+                    groupingView = pivotGrid.groupOptions.groupingView,
                     query = jgrid.from.call($t, pivotGrid.rows), i;
-                    for (i = 0; i < pivotGrid.groupOptions.groupingView.groupField.length; i++) {
-                        query.orderBy(pivotGrid.groupOptions.groupingView.groupField[i], "a", "text", "");
+                    for (i = 0; i < groupingView.groupField.length; i++) {
+                        query.orderBy(groupingView.groupField[i],
+                            gridOpt != null && gridOpt.groupingView && gridOpt.groupingView.groupOrder != null && gridOpt.groupingView.groupOrder[i] === "desc" ? "d" : "a",
+                            "text",
+                            ""
+                        );
                     }
                     $($t).jqGrid($.extend(true, {
                         datastr: $.extend(query.select(), footerrow ? { userdata: pivotGrid.summary } : {}),
