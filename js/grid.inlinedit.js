@@ -11,7 +11,7 @@
 /*global jQuery */
 (function ($) {
 	"use strict";
-	var jgrid = $.jgrid, fullBoolFeedback = jgrid.fullBoolFeedback,
+	var jgrid = $.jgrid, fullBoolFeedback = jgrid.fullBoolFeedback, hasOneFromClasses = jgrid.hasOneFromClasses,
 		getGridRes = jgrid.getMethod("getGridRes"),
 		editFeedback = function (o) {
 			var args = $.makeArray(arguments).slice(1);
@@ -664,7 +664,9 @@
 						iconsOverText: o.iconsOverText,
 						id: gid + "_iladd",
 						onClickButton: function () {
-							$self.jqGrid("addRow", o.addParams);
+							if (!hasOneFromClasses(this, disabledClass)) {
+								$self.jqGrid("addRow", o.addParams);
+							}
 						}
 					});
 				}
@@ -677,11 +679,13 @@
 						iconsOverText: o.iconsOverText,
 						id: gid + "_iledit",
 						onClickButton: function () {
-							var sr = p.selrow;
-							if (sr) {
-								$self.jqGrid("editRow", sr, o.editParams);
-							} else {
-								viewModalAlert();
+							if (!hasOneFromClasses(this, disabledClass)) {
+								var sr = p.selrow;
+								if (sr) {
+									$self.jqGrid("editRow", sr, o.editParams);
+								} else {
+									viewModalAlert();
+								}
 							}
 						}
 					});
@@ -695,21 +699,23 @@
 						iconsOverText: o.iconsOverText,
 						id: gid + "_ilsave",
 						onClickButton: function () {
-							var sr = p.savedRow[0].id;
-							if (sr) {
-								var opers = p.prmNames, oper = opers.oper, tmpParams = o.editParams;
-								if ($("#" + jgrid.jqID(sr), $t).hasClass("jqgrid-new-row")) {
-									o.addParams.addRowParams.extraparam[oper] = opers.addoper;
-									tmpParams = o.addParams.addRowParams;
-								} else {
-									if (!o.editParams.extraparam) {
-										o.editParams.extraparam = {};
+							if (!hasOneFromClasses(this, disabledClass)) {
+								var sr = p.savedRow[0].id;
+								if (sr) {
+									var opers = p.prmNames, oper = opers.oper, tmpParams = o.editParams;
+									if ($("#" + jgrid.jqID(sr), $t).hasClass("jqgrid-new-row")) {
+										o.addParams.addRowParams.extraparam[oper] = opers.addoper;
+										tmpParams = o.addParams.addRowParams;
+									} else {
+										if (!o.editParams.extraparam) {
+											o.editParams.extraparam = {};
+										}
+										o.editParams.extraparam[oper] = opers.editoper;
 									}
-									o.editParams.extraparam[oper] = opers.editoper;
+									$self.jqGrid("saveRow", sr, tmpParams);
+								} else {
+									viewModalAlert();
 								}
-								$self.jqGrid("saveRow", sr, tmpParams);
-							} else {
-								viewModalAlert();
 							}
 						}
 					});
@@ -724,14 +730,16 @@
 						iconsOverText: o.iconsOverText,
 						id: gid + "_ilcancel",
 						onClickButton: function () {
-							var sr = p.savedRow[0].id, cancelPrm = o.editParams;
-							if (sr) {
-								if ($("#" + jgrid.jqID(sr), $t).hasClass("jqgrid-new-row")) {
-									cancelPrm = o.addParams.addRowParams;
+							if (!hasOneFromClasses(this, disabledClass)) {
+								var sr = p.savedRow[0].id, cancelPrm = o.editParams;
+								if (sr) {
+									if ($("#" + jgrid.jqID(sr), $t).hasClass("jqgrid-new-row")) {
+										cancelPrm = o.addParams.addRowParams;
+									}
+									$self.jqGrid("restoreRow", sr, cancelPrm);
+								} else {
+									viewModalAlert();
 								}
-								$self.jqGrid("restoreRow", sr, cancelPrm);
-							} else {
-								viewModalAlert();
 							}
 						}
 					});

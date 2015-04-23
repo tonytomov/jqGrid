@@ -486,7 +486,7 @@
 				colHeaders: "ui-state-default",
 				states: {
 					select: "ui-state-highlight",
-					disabled: "ui-state-disabled",
+					disabled: "ui-state-disabled ui-jqgrid-disablePointerEvents",
 					hover: "ui-state-hover",    // can be table-hover on <table> only and style like .table-hover tbody tr:hover td
 					error: "ui-state-error",
 					active: "ui-state-active",
@@ -507,7 +507,7 @@
 				toolbarBottom: "ui-state-default",
 				topPager: "ui-state-default",
 				pagerBottom: "ui-state-default ui-corner-bottom",
-				pagerButton: "ui-corner-all ui-state-disabled"
+				pagerButton: "ui-corner-all ui-state-disabled ui-jqgrid-disablePointerEvents"
 			}
 		},
 		htmlDecode: function (value) {
@@ -920,6 +920,15 @@
 				}
 			}
 			return classes.join(" ");
+		},
+		hasOneFromClasses: function (elem, classes) {
+			var $elem = $(elem), arClasses = classes.split(" "), i, n = arClasses.length;
+			for (i = 0; i < n; i++) {
+				if ($elem.hasClass(arClasses[i])) {
+					return true;
+				}
+			}
+			return false;
 		},
 		detectRowEditing: function (rowid) {
 			var i, savedRowInfo, tr, self = this, rows = self.rows, p = self.p;
@@ -1599,7 +1608,7 @@
 		getGridComponent = jgrid.getGridComponent, stripPref = jgrid.stripPref, randId = jgrid.randId,
 		getAccessor = jgrid.getAccessor, getCellIndex = jgrid.getCellIndex, convertOnSaveLocally = jgrid.convertOnSaveLocally,
 		stripHtml = jgrid.stripHtml, htmlEncode = jgrid.htmlEncode, htmlDecode = jgrid.htmlDecode,
-		mergeCssClasses = jgrid.mergeCssClasses,
+		mergeCssClasses = jgrid.mergeCssClasses, hasOneFromClasses = jgrid.hasOneFromClasses,
 		feedback = function () {
 			// short form of $.jgrid.feedback to save usage this.p as the first parameter
 			var args = $.makeArray(arguments);
@@ -3504,20 +3513,20 @@
 					});
 					if (p.pgbuttons === true) {
 						$(".ui-pg-button", pgcnt).hover(function () {
-							if ($(this).hasClass(disabledClasses)) {
+							if (hasOneFromClasses(this, disabledClasses)) {
 								this.style.cursor = "default";
 							} else {
 								$(this).addClass(hoverClasses);
 								this.style.cursor = "pointer";
 							}
 						}, function () {
-							if (!$(this).hasClass(disabledClasses)) {
+							if (hasOneFromClasses(this, disabledClasses)) {
 								$(this).removeClass(hoverClasses);
 								this.style.cursor = "default";
 							}
 						});
 						$("#first" + jqID(tp) + ", #prev" + jqID(tp) + ", #next" + jqID(tp) + ", #last" + jqID(tp)).click(function () {
-							if ($(this).hasClass(disabledClasses)) {
+							if (hasOneFromClasses(this, disabledClasses)) {
 								return false;
 							}
 							var cp = intNum(p.page, 1), newPage = cp, onpaging = this.id,
@@ -4011,7 +4020,7 @@
 							if (i > 0) {
 								if (!$(this).hasClass("ui-subgrid") &&
 										!$(this).hasClass("jqgroup") &&
-										!$(this).hasClass(disabledStateClasses) &&
+										!hasOneFromClasses(this, disabledStateClasses) &&
 										!$(this).hasClass("jqfoot")) {
 									$("#jqg_" + jqID(p.id) + "_" + jqID(this.id))[p.propOrAttr]("checked", true);
 									$(this).addClass(highlightClass).attr("aria-selected", "true");
@@ -4031,7 +4040,7 @@
 							if (i > 0) {
 								if (!$(this).hasClass("ui-subgrid") &&
 										!$(this).hasClass("jqgroup") &&
-										!$(this).hasClass(disabledStateClasses) &&
+										!hasOneFromClasses(this, disabledStateClasses) &&
 										!$(this).hasClass("jqfoot") &&
 										jgrid.detectRowEditing.call(ts, this.id) === null) {
 									$("#jqg_" + jqID(p.id) + "_" + jqID(this.id))[p.propOrAttr]("checked", false);
@@ -6558,7 +6567,7 @@
 	var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes"),
 		getGuiStyles = function (path, jqClasses) {
 			var p = this.p, guiStyle = p.guiStyle || jgrid.defaults.guiStyle || "jQueryUI";
-			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[guiStyle], path), jqClasses);
+			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[guiStyle], path), jqClasses || "");
 		};
 	$.extend(jgrid, {
 		// Modal functions
@@ -9210,7 +9219,7 @@
 	"use strict";
 	var jgrid = $.jgrid, feedback = jgrid.feedback, fullBoolFeedback = jgrid.fullBoolFeedback, jqID = jgrid.jqID,
 		hideModal = jgrid.hideModal, viewModal = jgrid.viewModal, createModal = jgrid.createModal, infoDialog = jgrid.info_dialog,
-		mergeCssClasses = jgrid.mergeCssClasses,
+		mergeCssClasses = jgrid.mergeCssClasses, hasOneFromClasses = jgrid.hasOneFromClasses,
 		getCssStyleOrFloat = function ($elem, styleName) {
 			var v = $elem[0].style[styleName];
 			return v.indexOf("px") >= 0 ? parseFloat(v) : v;
@@ -9243,7 +9252,7 @@
 		},
 		getGuiStyles = function (path, jqClasses) {
 			var p = this.p, guiStyle = p.guiStyle || jgrid.defaults.guiStyle || "jQueryUI";
-			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[guiStyle], path), jqClasses);
+			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[guiStyle], path), jqClasses || "");
 		};
 	jgrid.extend({
 		searchGrid: function (oMuligrid) {
@@ -9548,7 +9557,7 @@
 					showFilter($(fid));
 					var hoverClasses = getGuiStyles.call($t, "states.hover");
 					// !!! The next row will not work if "states.disabled" is defined using more as one CSS class
-					$(".fm-button:not(." + getGuiStyles.call($t, "states.disabled") + ")", fil).hover(
+					$(".fm-button:not(." + getGuiStyles.call($t, "states.disabled").split(" ").join(".") + ")", fil).hover(
 						function () { $(this).addClass(hoverClasses); },
 						function () { $(this).removeClass(hoverClasses); }
 					);
@@ -10231,7 +10240,7 @@
 					var totr = posarr[1].length - 1;
 					if (cr === 0) {
 						$("#pData", frmtb2).addClass(disabledClass);
-					} else if (posarr[1][cr - 1] !== undefined && $("#" + jqID(posarr[1][cr - 1])).hasClass(disabledClass)) {
+					} else if (posarr[1][cr - 1] !== undefined && hasOneFromClasses($("#" + jqID(posarr[1][cr - 1])), disabledClass)) {
 						$("#pData", frmtb2).addClass(disabledClass);
 					} else {
 						$("#pData", frmtb2).removeClass(disabledClass);
@@ -10239,7 +10248,7 @@
 
 					if (cr === totr) {
 						$("#nData", frmtb2).addClass(disabledClass);
-					} else if (posarr[1][cr + 1] !== undefined && $("#" + jqID(posarr[1][cr + 1])).hasClass(disabledClass)) {
+					} else if (posarr[1][cr + 1] !== undefined && hasOneFromClasses($("#" + jqID(posarr[1][cr + 1])), disabledClass)) {
 						$("#nData", frmtb2).addClass(disabledClass);
 					} else {
 						$("#nData", frmtb2).removeClass(disabledClass);
@@ -10470,7 +10479,7 @@
 					var ppos = getCurrPos();
 					if (ppos[0] !== -1 && ppos[1][ppos[0] - 1]) {
 						if (!editFeedback("onclickPgButtons", "prev", $(frmgr), ppos[1][ppos[0]])) { return false; }
-						if ($("#" + jqID(ppos[1][ppos[0] - 1])).hasClass(disabledClass)) { return false; }
+						if (hasOneFromClasses($("#" + jqID(ppos[1][ppos[0] - 1])), disabledClass)) { return false; }
 						fillData(ppos[1][ppos[0] - 1], frmgr);
 						$self.jqGrid("setSelection", ppos[1][ppos[0] - 1]);
 						editFeedback("afterclickPgButtons", "prev", $(frmgr), ppos[1][ppos[0] - 1]);
@@ -10661,14 +10670,14 @@
 					var totr = posarr[1].length - 1;
 					if (cr === 0) {
 						$("#pData", frmtb2).addClass(disabledClass);
-					} else if (posarr[1][cr - 1] !== undefined && $("#" + jqID(posarr[1][cr - 1])).hasClass(disabledClass)) {
+					} else if (posarr[1][cr - 1] !== undefined && hasOneFromClasses($("#" + jqID(posarr[1][cr - 1])), disabledClass)) {
 						$("#pData", frmtb2).addClass(disabledClass);
 					} else {
 						$("#pData", frmtb2).removeClass(disabledClass);
 					}
 					if (cr === totr) {
 						$("#nData", frmtb2).addClass(disabledClass);
-					} else if (posarr[1][cr + 1] !== undefined && $("#" + jqID(posarr[1][cr + 1])).hasClass(disabledClass)) {
+					} else if (posarr[1][cr + 1] !== undefined && hasOneFromClasses($("#" + jqID(posarr[1][cr + 1])), disabledClass)) {
 						$("#nData", frmtb2).addClass(disabledClass);
 					} else {
 						$("#nData", frmtb2).removeClass(disabledClass);
@@ -10748,7 +10757,7 @@
 						savePositionOnHide.call($self, "viewProp", frmgr, h);
 					}
 				});
-				$(".fm-button:not(." + disabledClass + ")", frmtb2).hover(
+				$(".fm-button:not(." + disabledClass.split(" ").join(".") + ")", frmtb2).hover(
 					function () { $(this).addClass(hoverClasses); },
 					function () { $(this).removeClass(hoverClasses); }
 				);
@@ -11120,10 +11129,10 @@
 						$(gboxSelector)[0],
 						false);
 				}
-				var clone = 1, i, tbd, navtbl, pgid, elemids, iPart, $pagerPart, pagerParts = ["left", "center", "right"],
+				var clone = 1, i, tbd, navtbl, pgid, elemids, iPart, pagerTable, $pagerPart, pagerParts = ["left", "center", "right"],
 					sep = "<div class='ui-pg-button " + disabledClass + "'><span class='ui-separator'></span></div>",
 					onHoverIn = function () {
-						if (!$(this).hasClass(disabledClass)) {
+						if (!hasOneFromClasses(this, disabledClass)) {
 							$(this).addClass(hoverClasses);
 						}
 					},
@@ -11131,7 +11140,7 @@
 						$(this).removeClass(hoverClasses);
 					},
 					onAdd = function () {
-						if (!$(this).hasClass(disabledClass)) {
+						if (!hasOneFromClasses(this, disabledClass)) {
 							if ($.isFunction(o.addfunc)) {
 								o.addfunc.call($t);
 							} else {
@@ -11141,7 +11150,7 @@
 						return false;
 					},
 					onEdit = function () {
-						if (!$(this).hasClass(disabledClass)) {
+						if (!hasOneFromClasses(this, disabledClass)) {
 							var sr = p.selrow;
 							if (sr) {
 								if ($.isFunction(o.editfunc)) {
@@ -11156,7 +11165,7 @@
 						return false;
 					},
 					onView = function () {
-						if (!$(this).hasClass(disabledClass)) {
+						if (!hasOneFromClasses(this, disabledClass)) {
 							var sr = p.selrow;
 							if (sr) {
 								if ($.isFunction(o.viewfunc)) {
@@ -11172,7 +11181,7 @@
 					},
 					onDel = function () {
 						var dr;
-						if (!$(this).hasClass(disabledClass)) {
+						if (!hasOneFromClasses(this, disabledClass)) {
 							if (p.multiselect) {
 								dr = p.selarrrow;
 								if (dr.length === 0) { dr = null; }
@@ -11192,7 +11201,7 @@
 						return false;
 					},
 					onSearch = function () {
-						if (!$(this).hasClass(disabledClass)) {
+						if (!hasOneFromClasses(this, disabledClass)) {
 							if ($.isFunction(o.searchfunc)) {
 								o.searchfunc.call($t, pSearch);
 							} else {
@@ -11202,7 +11211,7 @@
 						return false;
 					},
 					onRefresh = function () {
-						if (!$(this).hasClass(disabledClass)) {
+						if (!hasOneFromClasses(this, disabledClass)) {
 							if ($.isFunction(o.beforeRefresh)) { o.beforeRefresh.call($t); }
 							p.search = false;
 							p.resetsearch = true;
@@ -11294,10 +11303,13 @@
 						for (iPart = 0; iPart < pagerParts.length; iPart++) {
 							if (pagerParts[iPart] !== o.position) {
 								$pagerPart = $(pgid + "_" + pagerParts[iPart], pgid);
-								if ($pagerPart.length === 0 ||
-										$pagerPart[0].childNodes.length === 0 ||
-										($pagerPart[0].childNodes.length === 1 && $($pagerPart[0].firstChild).is("table.ui-pg-table") && $pagerPart[0].firstChild.cells.length === 0)) {
+								if ($pagerPart.length === 0 || $pagerPart[0].childNodes.length === 0) {
 									$pagerPart.hide();
+								} else if ($pagerPart[0].childNodes.length === 1) {
+									pagerTable = $pagerPart[0].firstChild;
+									if ($(pagerTable).is("table.ui-pg-table") && (pagerTable.rows === 0 || pagerTable.rows[0].cells.length === 0)) {
+										$pagerPart.hide();
+									}
 								}
 							}
 						}
@@ -11377,14 +11389,14 @@
 					$(tbd, findnav)
 						.attr("title", o.title || "")
 						.click(function (e) {
-							if (!$(this).hasClass(disabledClass)) {
+							if (!hasOneFromClasses(this, disabledClass)) {
 								if ($.isFunction(o.onClickButton)) { o.onClickButton.call($t, o, e); }
 							}
 							return false;
 						})
 						.hover(
 							function () {
-								if (!$(this).hasClass(disabledClass)) {
+								if (!hasOneFromClasses(this, disabledClass)) {
 									$(this).addClass(hoverClasses);
 								}
 							},
@@ -12247,7 +12259,7 @@
 /*global jQuery */
 (function ($) {
 	"use strict";
-	var jgrid = $.jgrid, fullBoolFeedback = jgrid.fullBoolFeedback,
+	var jgrid = $.jgrid, fullBoolFeedback = jgrid.fullBoolFeedback, hasOneFromClasses = jgrid.hasOneFromClasses,
 		getGridRes = jgrid.getMethod("getGridRes"),
 		editFeedback = function (o) {
 			var args = $.makeArray(arguments).slice(1);
@@ -12900,7 +12912,9 @@
 						iconsOverText: o.iconsOverText,
 						id: gid + "_iladd",
 						onClickButton: function () {
-							$self.jqGrid("addRow", o.addParams);
+							if (!hasOneFromClasses(this, disabledClass)) {
+								$self.jqGrid("addRow", o.addParams);
+							}
 						}
 					});
 				}
@@ -12913,11 +12927,13 @@
 						iconsOverText: o.iconsOverText,
 						id: gid + "_iledit",
 						onClickButton: function () {
-							var sr = p.selrow;
-							if (sr) {
-								$self.jqGrid("editRow", sr, o.editParams);
-							} else {
-								viewModalAlert();
+							if (!hasOneFromClasses(this, disabledClass)) {
+								var sr = p.selrow;
+								if (sr) {
+									$self.jqGrid("editRow", sr, o.editParams);
+								} else {
+									viewModalAlert();
+								}
 							}
 						}
 					});
@@ -12931,21 +12947,23 @@
 						iconsOverText: o.iconsOverText,
 						id: gid + "_ilsave",
 						onClickButton: function () {
-							var sr = p.savedRow[0].id;
-							if (sr) {
-								var opers = p.prmNames, oper = opers.oper, tmpParams = o.editParams;
-								if ($("#" + jgrid.jqID(sr), $t).hasClass("jqgrid-new-row")) {
-									o.addParams.addRowParams.extraparam[oper] = opers.addoper;
-									tmpParams = o.addParams.addRowParams;
-								} else {
-									if (!o.editParams.extraparam) {
-										o.editParams.extraparam = {};
+							if (!hasOneFromClasses(this, disabledClass)) {
+								var sr = p.savedRow[0].id;
+								if (sr) {
+									var opers = p.prmNames, oper = opers.oper, tmpParams = o.editParams;
+									if ($("#" + jgrid.jqID(sr), $t).hasClass("jqgrid-new-row")) {
+										o.addParams.addRowParams.extraparam[oper] = opers.addoper;
+										tmpParams = o.addParams.addRowParams;
+									} else {
+										if (!o.editParams.extraparam) {
+											o.editParams.extraparam = {};
+										}
+										o.editParams.extraparam[oper] = opers.editoper;
 									}
-									o.editParams.extraparam[oper] = opers.editoper;
+									$self.jqGrid("saveRow", sr, tmpParams);
+								} else {
+									viewModalAlert();
 								}
-								$self.jqGrid("saveRow", sr, tmpParams);
-							} else {
-								viewModalAlert();
 							}
 						}
 					});
@@ -12960,14 +12978,16 @@
 						iconsOverText: o.iconsOverText,
 						id: gid + "_ilcancel",
 						onClickButton: function () {
-							var sr = p.savedRow[0].id, cancelPrm = o.editParams;
-							if (sr) {
-								if ($("#" + jgrid.jqID(sr), $t).hasClass("jqgrid-new-row")) {
-									cancelPrm = o.addParams.addRowParams;
+							if (!hasOneFromClasses(this, disabledClass)) {
+								var sr = p.savedRow[0].id, cancelPrm = o.editParams;
+								if (sr) {
+									if ($("#" + jgrid.jqID(sr), $t).hasClass("jqgrid-new-row")) {
+										cancelPrm = o.addParams.addRowParams;
+									}
+									$self.jqGrid("restoreRow", sr, cancelPrm);
+								} else {
+									viewModalAlert();
 								}
-								$self.jqGrid("restoreRow", sr, cancelPrm);
-							} else {
-								viewModalAlert();
 							}
 						}
 					});

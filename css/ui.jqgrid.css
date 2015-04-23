@@ -984,3 +984,6 @@ a.clearsearchclass {
 .ui-jqgrid-showHideColumnMenu .ui-menu-item:hover {
 	font-weight: normal;
 }
+.ui-jqgrid-disablePointerEvents {
+	pointer-events: none;
+}

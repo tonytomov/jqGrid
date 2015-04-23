@@ -486,7 +486,7 @@
 				colHeaders: "ui-state-default",
 				states: {
 					select: "ui-state-highlight",
-					disabled: "ui-state-disabled",
+					disabled: "ui-state-disabled ui-jqgrid-disablePointerEvents",
 					hover: "ui-state-hover",    // can be table-hover on <table> only and style like .table-hover tbody tr:hover td
 					error: "ui-state-error",
 					active: "ui-state-active",
@@ -507,7 +507,7 @@
 				toolbarBottom: "ui-state-default",
 				topPager: "ui-state-default",
 				pagerBottom: "ui-state-default ui-corner-bottom",
-				pagerButton: "ui-corner-all ui-state-disabled"
+				pagerButton: "ui-corner-all ui-state-disabled ui-jqgrid-disablePointerEvents"
 			}
 		},
 		htmlDecode: function (value) {
@@ -920,6 +920,15 @@
 				}
 			}
 			return classes.join(" ");
+		},
+		hasOneFromClasses: function (elem, classes) {
+			var $elem = $(elem), arClasses = classes.split(" "), i, n = arClasses.length;
+			for (i = 0; i < n; i++) {
+				if ($elem.hasClass(arClasses[i])) {
+					return true;
+				}
+			}
+			return false;
 		},
 		detectRowEditing: function (rowid) {
 			var i, savedRowInfo, tr, self = this, rows = self.rows, p = self.p;
@@ -1599,7 +1608,7 @@
 		getGridComponent = jgrid.getGridComponent, stripPref = jgrid.stripPref, randId = jgrid.randId,
 		getAccessor = jgrid.getAccessor, getCellIndex = jgrid.getCellIndex, convertOnSaveLocally = jgrid.convertOnSaveLocally,
 		stripHtml = jgrid.stripHtml, htmlEncode = jgrid.htmlEncode, htmlDecode = jgrid.htmlDecode,
-		mergeCssClasses = jgrid.mergeCssClasses,
+		mergeCssClasses = jgrid.mergeCssClasses, hasOneFromClasses = jgrid.hasOneFromClasses,
 		feedback = function () {
 			// short form of $.jgrid.feedback to save usage this.p as the first parameter
 			var args = $.makeArray(arguments);
@@ -3504,20 +3513,20 @@
 					});
 					if (p.pgbuttons === true) {
 						$(".ui-pg-button", pgcnt).hover(function () {
-							if ($(this).hasClass(disabledClasses)) {
+							if (hasOneFromClasses(this, disabledClasses)) {
 								this.style.cursor = "default";
 							} else {
 								$(this).addClass(hoverClasses);
 								this.style.cursor = "pointer";
 							}
 						}, function () {
-							if (!$(this).hasClass(disabledClasses)) {
+							if (hasOneFromClasses(this, disabledClasses)) {
 								$(this).removeClass(hoverClasses);
 								this.style.cursor = "default";
 							}
 						});
 						$("#first" + jqID(tp) + ", #prev" + jqID(tp) + ", #next" + jqID(tp) + ", #last" + jqID(tp)).click(function () {
-							if ($(this).hasClass(disabledClasses)) {
+							if (hasOneFromClasses(this, disabledClasses)) {
 								return false;
 							}
 							var cp = intNum(p.page, 1), newPage = cp, onpaging = this.id,
@@ -4011,7 +4020,7 @@
 							if (i > 0) {
 								if (!$(this).hasClass("ui-subgrid") &&
 										!$(this).hasClass("jqgroup") &&
-										!$(this).hasClass(disabledStateClasses) &&
+										!hasOneFromClasses(this, disabledStateClasses) &&
 										!$(this).hasClass("jqfoot")) {
 									$("#jqg_" + jqID(p.id) + "_" + jqID(this.id))[p.propOrAttr]("checked", true);
 									$(this).addClass(highlightClass).attr("aria-selected", "true");
@@ -4031,7 +4040,7 @@
 							if (i > 0) {
 								if (!$(this).hasClass("ui-subgrid") &&
 										!$(this).hasClass("jqgroup") &&
-										!$(this).hasClass(disabledStateClasses) &&
+										!hasOneFromClasses(this, disabledStateClasses) &&
 										!$(this).hasClass("jqfoot") &&
 										jgrid.detectRowEditing.call(ts, this.id) === null) {
 									$("#jqg_" + jqID(p.id) + "_" + jqID(this.id))[p.propOrAttr]("checked", false);
