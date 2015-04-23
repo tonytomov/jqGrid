@@ -5168,8 +5168,9 @@
 							$(this.cells[i]).css("display", show);
 						});
 						$($t.rows).each(function () {
-							if (!$(this).hasClass("jqgroup")) {
-								$(this.cells[i]).css("display", show);
+							var cell = this.cells[i];
+							if (!$(this).hasClass("jqgroup") || (cell !== undefined && cell.colSpan === 1)) {
+								$(cell).css("display", show);
 							}
 						});
 						if (p.footerrow) { $("tr.footrow td:eq(" + i + ")", $t.grid.sDiv).css("display", show); }
