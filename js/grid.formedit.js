@@ -1845,6 +1845,7 @@
 							beforeRefresh: null,
 							afterRefresh: null,
 							cloneToTop: false,
+							hideEmptyPagerParts: true,
 							//jqModal: true,
 							alertwidth: 200,
 							alertheight: "auto",
@@ -1923,7 +1924,7 @@
 						$(gboxSelector)[0],
 						false);
 				}
-				var clone = 1, i, tbd, navtbl, pgid, elemids,
+				var clone = 1, i, tbd, navtbl, pgid, elemids, iPart, $pagerPart, pagerParts = ["left", "center", "right"],
 					sep = "<div class='ui-pg-button " + disabledClass + "'><span class='ui-separator'></span></div>",
 					onHoverIn = function () {
 						if (!$(this).hasClass(disabledClass)) {
@@ -2051,7 +2052,9 @@
 
 				if (o.cloneToTop && p.toppager) { clone = 2; }
 				for (i = 0; i < clone; i++) {
-					navtbl = $("<div" + " class='ui-pg-table navtable' style='float:left;table-layout:auto;'></div>");
+					navtbl = $("<div" + " class='ui-pg-table navtable' style='float:" +
+						(p.direction === "rtl" ? "right" : "left") +
+						";table-layout:auto;'></div>");
 					if (i === 0) {
 						pgid = elem;
 						elemids = gridId;
@@ -2063,7 +2066,6 @@
 						pgid = p.toppager;
 						elemids = gridId + "_top";
 					}
-					if (p.direction === "rtl") { $(navtbl).attr("dir", "rtl").css("float", "right"); }
 					if (o.add) {
 						stdButtonActivation("add", pAdd.id, onAdd, navtbl, elemids);
 					}
@@ -2092,6 +2094,18 @@
 					twd = $(navtbl).clone().appendTo("#testpg2").width();
 					$("#testpg2").remove();
 					$(pgid + "_" + o.position, pgid).append(navtbl);
+					if (o.hideEmptyPagerParts) {
+						for (iPart = 0; iPart < pagerParts.length; iPart++) {
+							if (pagerParts[iPart] !== o.position) {
+								$pagerPart = $(pgid + "_" + pagerParts[iPart], pgid);
+								if ($pagerPart.length === 0 ||
+										$pagerPart[0].childNodes.length === 0 ||
+										($pagerPart[0].childNodes.length === 1 && $($pagerPart[0].firstChild).is("table.ui-pg-table") && $pagerPart[0].firstChild.cells.length === 0)) {
+									$pagerPart.hide();
+								}
+							}
+						}
+					}
 					if (p._nvtd) {
 						if (twd > p._nvtd[0]) {
 							$(pgid + "_" + o.position, pgid).width(twd);
