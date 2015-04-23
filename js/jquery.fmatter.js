@@ -564,12 +564,23 @@
 	$FnFmatter.actions.pageFinalization = function (iCol) {
 		var $self = $(this), p = this.p, colModel = p.colModel, cm = colModel[iCol],
 			showHideEditDelete = function (show, rowid) {
-				// TODO: implement support for frozen columns
-				// if(cm.frozen && p.frozenColumns) {} && iCol < number of frozen columns in the table of the frozen div
-				var tr = $self.jqGrid("getGridRowById", rowid);
+				var maxfrozen = 0, tr, $actionsDiv, len = colModel.length, i;
+				for (i = 0; i < len; i++) {
+					// from left, no breaking frozen
+					if (colModel[i].frozen !== true) {
+						break;
+					}
+					maxfrozen = i;
+				}
+				tr = $self.jqGrid("getGridRowById", rowid);
 				if (tr != null && tr.cells != null) {
 					//$actionsDiv = cm.frozen ? $("tr#"+jgrid.jqID(rid)+" td:eq("+jgrid.getCellIndex(this)+") > div",$grid) :$(this).parent(),
-					var $actionsDiv = $(tr.cells[iCol]).children(".ui-jqgrid-actions");
+					iCol = p.iColByName[cm.name];
+					if (cm.frozen && p.frozenColumns && iCol <= maxfrozen) {
+						// replace tr to tr from frozen div with the same rowIndex
+						tr = $self[0].grid.fbDiv.children()[0].rows[tr.rowIndex];
+					}
+					$actionsDiv = $(tr.cells[iCol]).children(".ui-jqgrid-actions");
 					if (show) {
 						$actionsDiv.find(">.ui-inline-edit,>.ui-inline-del").show();
 						$actionsDiv.find(">.ui-inline-save,>.ui-inline-cancel").hide();
