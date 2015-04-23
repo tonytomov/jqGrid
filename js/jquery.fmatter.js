@@ -576,11 +576,12 @@
 				if (tr != null && tr.cells != null) {
 					//$actionsDiv = cm.frozen ? $("tr#"+jgrid.jqID(rid)+" td:eq("+jgrid.getCellIndex(this)+") > div",$grid) :$(this).parent(),
 					iCol = p.iColByName[cm.name];
+					$actionsDiv = $(tr.cells[iCol]).children(".ui-jqgrid-actions");
 					if (cm.frozen && p.frozenColumns && iCol <= maxfrozen) {
 						// replace tr to tr from frozen div with the same rowIndex
 						tr = $self[0].grid.fbDiv.children()[0].rows[tr.rowIndex];
+						$actionsDiv = $actionsDiv.add($(tr.cells[iCol]).children(".ui-jqgrid-actions"));
 					}
-					$actionsDiv = $(tr.cells[iCol]).children(".ui-jqgrid-actions");
 					if (show) {
 						$actionsDiv.find(">.ui-inline-edit,>.ui-inline-del").show();
 						$actionsDiv.find(">.ui-inline-save,>.ui-inline-cancel").hide();
