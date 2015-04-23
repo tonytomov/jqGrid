@@ -5172,6 +5172,9 @@
 							if (!$(this).hasClass("jqgroup") || (cell !== undefined && cell.colSpan === 1)) {
 								$(cell).css("display", show);
 							}
+							// to follow HTML standards exactly one should probably add hidden column in 
+							// grouping header row if ($(this).hasClass("jqgroup")) and decrement the value of
+							// colspan.
 						});
 						if (p.footerrow) { $("tr.footrow td:eq(" + i + ")", $t.grid.sDiv).css("display", show); }
 						cw = parseInt(this.width, 10);
