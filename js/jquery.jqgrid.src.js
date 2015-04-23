@@ -7336,7 +7336,7 @@
 /*global jQuery */
 (function ($) {
 	"use strict";
-	var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes");
+	var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes"), jqID = jgrid.jqID;
 	jgrid.extend({
 		getColProp: function (colname) {
 			var ret = {}, t = this[0], iCol;
@@ -7544,8 +7544,7 @@
 					},
 					errcap = getRes("errors.errcap"),
 					bClose = getRes("edit.bClose"),
-					editMsg = getRes("edit.msg"),
-					jqID = jgrid.jqID;
+					editMsg = getRes("edit.msg");
 				var triggerToolbar = function () {
 						var sdata = {}, j = 0, v, nm, sopt = {}, so;
 						$.each(colModel, function () {
@@ -8200,12 +8199,13 @@
 		},
 		setFrozenColumns: function () {
 			return this.each(function () {
-				var $t = this, $self = $($t), p = $t.p, grid = $t.grid, jqID = jgrid.jqID;
+				var $t = this, $self = $($t), p = $t.p, grid = $t.grid;
 				if (!grid) { return; }
-				var cm = p.colModel, i, len = cm.length, maxfrozen = -1, frozen = false;
+				var cm = p.colModel, i, len = cm.length, maxfrozen = -1, frozen = false, frozenIds = [], $colHeaderRow,// nonFrozenIds = [],
+					tid = jqID(p.id); // one can use p.idSel and remove "#"
 				// TODO treeGrid and grouping  Support
 				// TODO: allow to edit columns AFTER frozen columns
-				if (p.subGrid === true || p.treeGrid === true || p.cellEdit === true || p.sortable || p.scroll) {
+				if (p.subGrid === true || p.treeGrid === true || p.cellEdit === true || p.scroll) {
 					return;
 				}
 
@@ -8214,9 +8214,22 @@
 					// from left, no breaking frozen
 					if (cm[i].frozen !== true) {
 						break;
-					}
+						//nonFrozenIds.push("#jqgh_" + tid + "_" + jqID(cm[i].name));
+					}// else {
 					frozen = true;
 					maxfrozen = i;
+					frozenIds.push("#jqgh_" + tid + "_" + jqID(cm[i].name));
+					//}
+				}
+				if (p.sortable) {
+					$colHeaderRow = $(grid.hDiv).find(".ui-jqgrid-htable .ui-jqgrid-labels");
+					$colHeaderRow.sortable("destroy");
+					$self.jqGrid("setGridParam", {sortable: {options: {
+						items: frozenIds.length > 0 ?
+								">th:not(:has(" + frozenIds.join(",") + "),:hidden)" :
+								">th:not(:hidden)"
+					}}});
+					$self.jqGrid("sortableColumns", $colHeaderRow);
 				}
 				if (maxfrozen >= 0 && frozen) {
 					var top = p.caption ? $(grid.cDiv).outerHeight() : 0,
@@ -8316,6 +8329,16 @@
 					$(grid.bDiv).scroll(function () {
 						$(grid.fbDiv).scrollTop($(this).scrollTop());
 					});
+					/*if (p.sortable) {
+						$colHeaderRow = $(grid.fhDiv).find(".ui-jqgrid-htable .ui-jqgrid-labels");
+						//$colHeaderRow.sortable("destroy");
+						$self.jqGrid("setGridParam", {sortable: {options: {
+							items: nonFrozenIds.length > 0 ?
+									">th:not(:has(" + nonFrozenIds.join(",") + "),:hidden)" :
+									">th:not(:hidden)"
+						}}});
+						$self.jqGrid("sortableColumns", $colHeaderRow);
+					}*/
 					if (p.hoverrows === true) {
 						$(p.idSel).unbind("mouseover").unbind("mouseout");
 					}
@@ -8400,7 +8423,7 @@
 							myResize();
 						}, 50);
 					});
-					$self.bind("jqGridInlineEditRow.setFrozenColumns jqGridResetFrozenHeights.setFrozenColumns", myResize);
+					$self.bind("jqGridInlineEditRow.setFrozenColumns jqGridAfterEditCell.setFrozenColumns jqGridAfterRestoreCell.setFrozenColumns jqGridInlineAfterRestoreRow.setFrozenColumns jqGridAfterSaveCell.setFrozenColumns jqGridInlineAfterSaveRow.setFrozenColumns jqGridResetFrozenHeights.setFrozenColumns", myResize);
 					if (!grid.hDiv.loading) {
 						$self.triggerHandler("jqGridAfterGridComplete");
 					}
@@ -8410,7 +8433,7 @@
 		},
 		destroyFrozenColumns: function () {
 			return this.each(function () {
-				var $t = this, $self = $($t), grid = $t.grid, p = $t.p;
+				var $t = this, $self = $($t), grid = $t.grid, p = $t.p, tid = jqID(p.id);
 				if (!grid) { return; }
 				if (p.frozenColumns === true) {
 					$(grid.fhDiv).remove();
@@ -8435,6 +8458,14 @@
 						});
 					}
 					p.frozenColumns = false;
+					if (p.sortable) {
+						var $colHeaderRow = $(grid.hDiv).find(".ui-jqgrid-htable .ui-jqgrid-labels");
+						$colHeaderRow.sortable("destroy");
+						$self.jqGrid("setGridParam", {sortable: {options: {
+							items: ">th:not(:has(#jqgh_" + tid + "_cb" + ",#jqgh_" + tid + "_rn" + ",#jqgh_" + tid + "_subgrid),:hidden)"
+						}}});
+						$self.jqGrid("sortableColumns", $colHeaderRow);
+					}
 				}
 			});
 		}
@@ -14210,7 +14241,8 @@
 					resizable: false,
 					hidedlg: true,
 					search: false,
-					fixed: true
+					fixed: true,
+					frozen: true
 				});
 				if (cm) {
 					cm.align = $.extend([], cm.align || []);
