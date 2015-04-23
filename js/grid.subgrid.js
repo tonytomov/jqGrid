@@ -41,7 +41,8 @@
 					resizable: false,
 					hidedlg: true,
 					search: false,
-					fixed: true
+					fixed: true,
+					frozen: true
 				});
 				if (cm) {
 					cm.align = $.extend([], cm.align || []);
