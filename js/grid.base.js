@@ -3483,7 +3483,7 @@
 					} else if (pginp !== "") { pgl += pginp; }
 					if (dir === "ltr") { pgl += str; }
 					pgl += "</tr></tbody></table>";
-					if (p.viewrecords === true) { $("td" + pgid + "_" + p.recordpos, pgcnt).append("<div dir='" + dir + "' style='text-align:" + p.recordpos + "' class='ui-paging-info'></div>"); }
+					if (p.viewrecords === true) { $("td" + pgid + "_" + p.recordpos, pgcnt).append("<span dir='" + dir + "' style='text-align:" + p.recordpos + "' class='ui-paging-info'></span>"); }
 					var $pagerIn = $("td" + pgid + "_" + p.pagerpos, pgcnt);
 					$pagerIn.append(pgl);
 					twd = setWidthOfPagerTdWithPager.call(this, $pagerIn.children(".ui-pg-table"));
@@ -3862,11 +3862,11 @@
 			}
 			if (p.multiselect) {
 				p.colNames.unshift("<input role='checkbox' id='" + p.cbId + "' class='cbox' type='checkbox' aria-checked='false'/>");
-				p.colModel.unshift({ name: "cb", width: jgrid.cell_width ? p.multiselectWidth + p.cellLayout : p.multiselectWidth, labelClasses: "jqgh_cbox", classes: "td_cbox", sortable: false, resizable: false, hidedlg: true, search: false, align: "center", fixed: true });
+				p.colModel.unshift({ name: "cb", width: jgrid.cell_width ? p.multiselectWidth + p.cellLayout : p.multiselectWidth, labelClasses: "jqgh_cbox", classes: "td_cbox", sortable: false, resizable: false, hidedlg: true, search: false, align: "center", fixed: true, frozen: true });
 			}
 			if (p.rownumbers) {
 				p.colNames.unshift("");
-				p.colModel.unshift({ name: "rn", width: jgrid.cell_width ? p.rownumWidth + p.cellLayout : p.rownumWidth, labelClasses: "jqgh_rn", classes: "td_rn", sortable: false, resizable: false, hidedlg: true, search: false, align: "center", fixed: true });
+				p.colModel.unshift({ name: "rn", width: jgrid.cell_width ? p.rownumWidth + p.cellLayout : p.rownumWidth, labelClasses: "jqgh_rn", classes: "td_rn", sortable: false, resizable: false, hidedlg: true, search: false, align: "center", fixed: true, frozen: true });
 			}
 			p.iColByName = buildColNameMap(p.colModel);
 			p.xmlReader = $.extend(true, {
