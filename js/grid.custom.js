@@ -880,25 +880,21 @@
 			return this.each(function () {
 				var $t = this, $self = $($t), p = $t.p, grid = $t.grid, jqID = jgrid.jqID;
 				if (!grid) { return; }
-				var cm = p.colModel, i = 0, len = cm.length, maxfrozen = -1, frozen = false;
+				var cm = p.colModel, i, len = cm.length, maxfrozen = -1, frozen = false;
 				// TODO treeGrid and grouping  Support
 				// TODO: allow to edit columns AFTER frozen columns
 				if (p.subGrid === true || p.treeGrid === true || p.cellEdit === true || p.sortable || p.scroll) {
 					return;
 				}
-				if (p.rownumbers) { i++; }
-				if (p.multiselect) { i++; }
 
 				// get the max index of frozen col
-				while (i < len) {
+				for (i = 0; i < len; i++) {
 					// from left, no breaking frozen
-					if (cm[i].frozen === true) {
-						frozen = true;
-						maxfrozen = i;
-					} else {
+					if (cm[i].frozen !== true) {
 						break;
 					}
-					i++;
+					frozen = true;
+					maxfrozen = i;
 				}
 				if (maxfrozen >= 0 && frozen) {
 					var top = p.caption ? $(grid.cDiv).outerHeight() : 0,
@@ -978,7 +974,6 @@
 					});
 					// sorting stuff
 					$self.bind("jqGridSortCol.setFrozenColumns", function (e, index, idxcol) {
-
 						var previousSelectedTh = $("tr.ui-jqgrid-labels:last th:eq(" + p.lastsort + ")", grid.fhDiv), newSelectedTh = $("tr.ui-jqgrid-labels:last th:eq(" + idxcol + ")", grid.fhDiv);
 
 						$("span.ui-grid-ico-sort", previousSelectedTh).addClass("ui-state-disabled");
@@ -1003,14 +998,34 @@
 						$(p.idSel).unbind("mouseover").unbind("mouseout");
 					}
 					var fixDiv = function ($hDiv, hDivBase) {
-						var pos = $(hDivBase).position();
+						var iRow, n, $frozenRows, $rows, $row, $frozenRow, posFrozen, height, heightFrozen, newHeightFrozen,
+							pos = $(hDivBase).position();
 						if ($hDiv != null && $hDiv.length > 0) {
 							$hDiv.css({
 								top: pos.top,
 								left: p.direction === "rtl" ? hDivBase.clientWidth - grid.fhDiv.width() : 0
 							});
+							$frozenRows = $hDiv.children("table").children("tbody,thead").children("tr");
+							$rows = $(hDivBase).children("div").children("table").children("tbody,thead").children("tr");
+							n = Math.min($frozenRows.length, $rows.length);
+							for (iRow = 0; iRow < n; iRow++) {
+								$row = $($rows[iRow]);
+								pos = $row.position();
+								$frozenRow = $($frozenRows[iRow]);
+								posFrozen = $frozenRow.position();
+								height = $row.height();
+								heightFrozen = $frozenRow.height();
+								newHeightFrozen = height + pos.top - posFrozen.top;
+								if (Math.abs(heightFrozen - newHeightFrozen) > 1) {
+								    $frozenRow.height(newHeightFrozen);
+									heightFrozen = $frozenRow.height();
+									if (Math.abs(newHeightFrozen - heightFrozen) > 1) {
+										$frozenRow.height(newHeightFrozen + Math.round((newHeightFrozen - heightFrozen)));
+									}
+								}
+							}
+							$hDiv.height(hDivBase.clientHeight);
 						}
-						$hDiv.height(hDivBase.clientHeight);
 					};
 					$self.bind("jqGridAfterGridComplete.setFrozenColumns", function () {
 						$(p.idSel + "_frozen").remove();
@@ -1036,8 +1051,7 @@
 						fixDiv(grid.fbDiv, grid.bDiv);
 						fixDiv(grid.fsDiv, grid.sDiv);
 					});
-					$(p.gBox).bind("resizestop.setFrozenColumns", function () {
-						setTimeout(function () {
+					var myResize = function () {
 							// TODO: the width of all column headers can be changed
 							// so one should recalculate frozenWidth in other way.
 							fixDiv(grid.fhDiv, grid.hDiv);
@@ -1058,8 +1072,13 @@
 								$(grid.fsDiv).width(frozenWidth);
 								//$(grid.fsDiv).css("top", $(grid.sDiv).position().top);
 							}
+						};
+					$(p.gBox).bind("resizestop.setFrozenColumns", function () {
+						setTimeout(function () {
+							myResize();
 						}, 50);
 					});
+					$self.bind("jqGridInlineEditRow.setFrozenColumns jqGridResetFrozenHeights.setFrozenColumns", myResize);
 					if (!grid.hDiv.loading) {
 						$self.triggerHandler("jqGridAfterGridComplete");
 					}
