@@ -44,6 +44,10 @@
 					$fmButton.addClass("fm-button-icon-left").prepend(iconspan);
 				}
 			}
+		},
+		getGuiStyles = function (path, jqClasses) {
+			var p = this.p, guiStyle = p.guiStyle || jgrid.defaults.guiStyle || "jQueryUI";
+			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[guiStyle], path), jqClasses);
 		};
 	jgrid.extend({
 		searchGrid: function (oMuligrid) {
@@ -346,9 +350,11 @@
 						return false;
 					});
 					showFilter($(fid));
-					$(".fm-button:not(.ui-state-disabled)", fil).hover(
-						function () { $(this).addClass("ui-state-hover"); },
-						function () { $(this).removeClass("ui-state-hover"); }
+					var hoverClasses = getGuiStyles.call($t, "states.hover");
+					// !!! The next row will not work if "states.disabled" is defined using more as one CSS class
+					$(".fm-button:not(." + getGuiStyles.call($t, "states.disabled") + ")", fil).hover(
+						function () { $(this).addClass(hoverClasses); },
+						function () { $(this).removeClass(hoverClasses); }
 					);
 				}
 			});
@@ -360,7 +366,7 @@
 				// make new copy of the options oMuligrid and use it for ONE specific grid.
 				// p.formEditing can contains grid specific options
 				// we will don't modify the input options oMuligrid
-			    var gridId = p.id,
+				var gridId = p.id,
 					o = $.extend(true,
 						{
 							top: 0,
@@ -425,7 +431,12 @@
 						args.unshift("AddEdit");
 						args.unshift(o);
 						return feedback.apply($t, args);
-					};
+					},
+					hoverClasses = getGuiStyles.call($t, "states.hover"),
+					disabledClass = getGuiStyles.call($t, "states.disabled"),
+					highlightClass = getGuiStyles.call($t, "states.select"),
+					activeClass = getGuiStyles.call($t, "states.active"),
+					errorClass = getGuiStyles.call($t, "states.error");
 				frmgr = "#" + jqID(frmgr);
 				if (rowid === "new") {
 					rowid = "_empty";
@@ -605,8 +616,8 @@
 							$label.html(frmopt.label === undefined ? p.colNames[i] : frmopt.label);
 							$data.html(frmopt.elmprefix).append(elc).append(frmopt.elmsuffix);
 							if (disabled) {
-								$label.addClass("ui-state-disabled");
-								$data.addClass("ui-state-disabled");
+								$label.addClass(disabledClass);
+								$data.addClass(disabledClass);
 								$(elc).prop("readonly", true);
 								$(elc).prop("disabled", true);
 							} else if (readonly) {
@@ -768,7 +779,7 @@
 					});
 				}
 				function postIt() {
-				    var ret = [true, "", ""], onClickSubmitResult = {}, opers = p.prmNames, idname, oper, key, selr, i, url, itm;
+					var ret = [true, "", ""], onClickSubmitResult = {}, opers = p.prmNames, idname, oper, key, selr, i, url, itm;
 
 					var retvals = $self.triggerHandler("jqGridAddEditBeforeCheckValues", [$(frmgr), frmoper]);
 					if (retvals && typeof retvals === "object") { postdata = retvals; }
@@ -800,7 +811,7 @@
 
 					if (ret[0] && !o.processing) {
 						o.processing = true;
-						$("#sData", frmtb2).addClass("ui-state-active");
+						$("#sData", frmtb2).addClass(activeClass);
 						url = o.url || p.editurl;
 						oper = opers.oper;
 						idname = url === "clientArray" && p.keyName !== false ? p.keyName : opers.id;
@@ -841,7 +852,7 @@
 								"jqGridAddEditSerializeEditData",
 								postdata),
 							complete: function (jqXHR, textStatus) {
-								$("#sData", frmtb2).removeClass("ui-state-active");
+								$("#sData", frmtb2).removeClass(activeClass);
 								postdata[idname] = p.idPrefix + $("#id_g", frmtb).val();
 								if ((jqXHR.status >= 300 && jqXHR.status !== 304) || (jqXHR.status === 0 && jqXHR.readyState === 4)) {
 									ret[0] = false;
@@ -1015,27 +1026,27 @@
 							var savedRowInfo = editingInfo.savedRow, tr = $t.rows[savedRowInfo.id];
 							$self.jqGrid("restoreCell", savedRowInfo.id, savedRowInfo.ic);
 							// remove highlighting of the cell
-							$(tr.cells[savedRowInfo.ic]).removeClass("edit-cell ui-state-highlight");
-							$(tr).addClass("ui-state-highlight").attr({ "aria-selected": "true", "tabindex": "0" });
+							$(tr.cells[savedRowInfo.ic]).removeClass("edit-cell " + highlightClass);
+							$(tr).addClass(highlightClass).attr({ "aria-selected": "true", "tabindex": "0" });
 						}
 					}
 				}
 				function updateNav(cr, posarr) {
 					var totr = posarr[1].length - 1;
 					if (cr === 0) {
-						$("#pData", frmtb2).addClass("ui-state-disabled");
-					} else if (posarr[1][cr - 1] !== undefined && $("#" + jqID(posarr[1][cr - 1])).hasClass("ui-state-disabled")) {
-						$("#pData", frmtb2).addClass("ui-state-disabled");
+						$("#pData", frmtb2).addClass(disabledClass);
+					} else if (posarr[1][cr - 1] !== undefined && $("#" + jqID(posarr[1][cr - 1])).hasClass(disabledClass)) {
+						$("#pData", frmtb2).addClass(disabledClass);
 					} else {
-						$("#pData", frmtb2).removeClass("ui-state-disabled");
+						$("#pData", frmtb2).removeClass(disabledClass);
 					}
 
 					if (cr === totr) {
-						$("#nData", frmtb2).addClass("ui-state-disabled");
-					} else if (posarr[1][cr + 1] !== undefined && $("#" + jqID(posarr[1][cr + 1])).hasClass("ui-state-disabled")) {
-						$("#nData", frmtb2).addClass("ui-state-disabled");
+						$("#nData", frmtb2).addClass(disabledClass);
+					} else if (posarr[1][cr + 1] !== undefined && $("#" + jqID(posarr[1][cr + 1])).hasClass(disabledClass)) {
+						$("#nData", frmtb2).addClass(disabledClass);
 					} else {
-						$("#nData", frmtb2).removeClass("ui-state-disabled");
+						$("#nData", frmtb2).removeClass(disabledClass);
 					}
 				}
 				function getCurrPos() {
@@ -1055,7 +1066,7 @@
 					maxRows = Math.max(maxRows, fmto ? fmto.rowpos || 0 : 0);
 				});
 				$(frm).append(tbl);
-				var flr = $("<tr id='FormError' style='display:none'><td class='ui-state-error' colspan='" + (maxCols * 2) + "'></td></tr>");
+				var flr = $("<tr id='FormError' style='display:none'><td class='" + errorClass + "' colspan='" + (maxCols * 2) + "'></td></tr>");
 				flr[0].rp = 0;
 				$(tbl).append(flr);
 				//topinfo
@@ -1212,8 +1223,8 @@
 					});
 				}
 				$(".fm-button", themodalSelector).hover(
-					function () { $(this).addClass("ui-state-hover"); },
-					function () { $(this).removeClass("ui-state-hover"); }
+					function () { $(this).addClass(hoverClasses); },
+					function () { $(this).removeClass(hoverClasses); }
 				);
 				$("#sData", frmtb2).click(function () {
 					postdata = {};
@@ -1263,7 +1274,7 @@
 					var ppos = getCurrPos();
 					if (ppos[0] !== -1 && ppos[1][ppos[0] - 1]) {
 						if (!editFeedback("onclickPgButtons", "prev", $(frmgr), ppos[1][ppos[0]])) { return false; }
-						if ($("#" + jqID(ppos[1][ppos[0] - 1])).hasClass("ui-state-disabled")) { return false; }
+						if ($("#" + jqID(ppos[1][ppos[0] - 1])).hasClass(disabledClass)) { return false; }
 						fillData(ppos[1][ppos[0] - 1], frmgr);
 						$self.jqGrid("setSelection", ppos[1][ppos[0] - 1]);
 						editFeedback("afterclickPgButtons", "prev", $(frmgr), ppos[1][ppos[0] - 1]);
@@ -1325,7 +1336,10 @@
 						args.unshift("View");
 						args.unshift(o);
 						return feedback.apply($t, args);
-					};
+					},
+					hoverClasses = getGuiStyles.call($t, "states.hover"),
+					disabledClass = getGuiStyles.call($t, "states.disabled");
+
 				if (!o.recreateForm) {
 					if ($self.data("viewProp")) {
 						$.extend(o, $self.data("viewProp"));
@@ -1450,18 +1464,18 @@
 				function updateNav(cr, posarr) {
 					var totr = posarr[1].length - 1;
 					if (cr === 0) {
-						$("#pData", frmtb2).addClass("ui-state-disabled");
-					} else if (posarr[1][cr - 1] !== undefined && $("#" + jqID(posarr[1][cr - 1])).hasClass("ui-state-disabled")) {
-						$("#pData", frmtb2).addClass("ui-state-disabled");
+						$("#pData", frmtb2).addClass(disabledClass);
+					} else if (posarr[1][cr - 1] !== undefined && $("#" + jqID(posarr[1][cr - 1])).hasClass(disabledClass)) {
+						$("#pData", frmtb2).addClass(disabledClass);
 					} else {
-						$("#pData", frmtb2).removeClass("ui-state-disabled");
+						$("#pData", frmtb2).removeClass(disabledClass);
 					}
 					if (cr === totr) {
-						$("#nData", frmtb2).addClass("ui-state-disabled");
-					} else if (posarr[1][cr + 1] !== undefined && $("#" + jqID(posarr[1][cr + 1])).hasClass("ui-state-disabled")) {
-						$("#nData", frmtb2).addClass("ui-state-disabled");
+						$("#nData", frmtb2).addClass(disabledClass);
+					} else if (posarr[1][cr + 1] !== undefined && $("#" + jqID(posarr[1][cr + 1])).hasClass(disabledClass)) {
+						$("#nData", frmtb2).addClass(disabledClass);
 					} else {
-						$("#nData", frmtb2).removeClass("ui-state-disabled");
+						$("#nData", frmtb2).removeClass(disabledClass);
 					}
 				}
 				function getCurrPos() {
@@ -1538,9 +1552,9 @@
 						savePositionOnHide.call($self, "viewProp", frmgr, h);
 					}
 				});
-				$(".fm-button:not(.ui-state-disabled)", frmtb2).hover(
-					function () { $(this).addClass("ui-state-hover"); },
-					function () { $(this).removeClass("ui-state-hover"); }
+				$(".fm-button:not(." + disabledClass + ")", frmtb2).hover(
+					function () { $(this).addClass(hoverClasses); },
+					function () { $(this).removeClass(hoverClasses); }
 				);
 				focusaref();
 				$("#cData", frmtb2).click(function () {
@@ -1631,7 +1645,10 @@
 						args.unshift("Delete");
 						args.unshift(o);
 						return feedback.apply($t, args);
-					};
+					},
+					hoverClasses = getGuiStyles.call($t, "states.hover"),
+					activeClass = getGuiStyles.call($t, "states.active"),
+					errorClass = getGuiStyles.call($t, "states.error");
 
 				if (!$.isArray(rowids)) { rowids = [String(rowids)]; }
 				if ($(themodalSelector)[0] !== undefined) {
@@ -1640,7 +1657,7 @@
 					$("#DelError", dtbl).hide();
 					if (o.processing === true) {
 						o.processing = false;
-						$("#dData", dtbl).removeClass("ui-state-active");
+						$("#dData", dtbl).removeClass(activeClass);
 					}
 					deleteFeedback("beforeShowForm", $(dtbl));
 					viewModal(themodalSelector, { gbox: gboxSelector, jqm: o.jqModal, jqM: false, overlay: o.overlay, toTop: o.toTop, modal: o.modal });
@@ -1651,7 +1668,7 @@
 						tbl = "<div id='" + dtblId + "' class='formdata' style='width:" + dw + ";overflow:auto;position:relative;height:" + dh + ";'>";
 					tbl += "<table class='DelTable'><tbody>";
 					// error data
-					tbl += "<tr id='DelError' style='display:none'><td class='ui-state-error'></td></tr>";
+					tbl += "<tr id='DelError' style='display:none'><td class='" + errorClass + "'></td></tr>";
 					tbl += "<tr id='DelData' style='display:none'><td >" + rowids.join() + "</td></tr>";
 					tbl += "<tr><td class=\"delmsg\" style=\"white-space:pre;\">" + o.msg + "</td></tr><tr><td >&#160;</td></tr>";
 					// buttons at footer
@@ -1665,8 +1682,8 @@
 
 					if (!deleteFeedback("beforeInitData", $(tbl))) { return; }
 					$(".fm-button", dtbl + "_2").hover(
-						function () { $(this).addClass("ui-state-hover"); },
-						function () { $(this).removeClass("ui-state-hover"); }
+						function () { $(this).addClass(hoverClasses); },
+						function () { $(this).removeClass(hoverClasses); }
 					);
 					addFormIcon($("#dData", dtbl + "_2"), o.delicon, commonIconClass);
 					addFormIcon($("#eData", dtbl + "_2"), o.cancelicon, commonIconClass);
@@ -1692,14 +1709,14 @@
 								}
 							}
 							postd[idname] = postdata.join();
-							$(this).addClass("ui-state-active");
+							$(this).addClass(activeClass);
 							var ajaxOptions = $.extend({
 								url: o.url || p.editurl,
 								type: o.mtype,
 								data: $.isFunction(o.serializeDelData) ? o.serializeDelData.call($t, postd) : postd,
 								complete: function (jqXHR, textStatus) {
 									var i;
-									$("#dData", dtbl + "_2").removeClass("ui-state-active");
+									$("#dData", dtbl + "_2").removeClass(activeClass);
 									if ((jqXHR.status >= 300 && jqXHR.status !== 304) || (jqXHR.status === 0 && jqXHR.readyState === 4)) {
 										ret[0] = false;
 										if ($.isFunction(o.errorTextFormat)) {
@@ -1854,7 +1871,9 @@
 						setTimeout(function () {
 							$close.focus();
 						}, 50);
-					};
+					},
+					hoverClasses = getGuiStyles.call($t, "states.hover"),
+					disabledClass = getGuiStyles.call($t, "states.disabled");
 				if (!$t.grid) {
 					return; // error
 				}
@@ -1905,17 +1924,17 @@
 						false);
 				}
 				var clone = 1, i, tbd, navtbl, pgid, elemids,
-					sep = "<div class='ui-pg-button ui-state-disabled'><span class='ui-separator'></span></div>",
+					sep = "<div class='ui-pg-button " + disabledClass + "'><span class='ui-separator'></span></div>",
 					onHoverIn = function () {
-						if (!$(this).hasClass("ui-state-disabled")) {
-							$(this).addClass("ui-state-hover");
+						if (!$(this).hasClass(disabledClass)) {
+							$(this).addClass(hoverClasses);
 						}
 					},
 					onHoverOut = function () {
-						$(this).removeClass("ui-state-hover");
+						$(this).removeClass(hoverClasses);
 					},
 					onAdd = function () {
-						if (!$(this).hasClass("ui-state-disabled")) {
+						if (!$(this).hasClass(disabledClass)) {
 							if ($.isFunction(o.addfunc)) {
 								o.addfunc.call($t);
 							} else {
@@ -1925,7 +1944,7 @@
 						return false;
 					},
 					onEdit = function () {
-						if (!$(this).hasClass("ui-state-disabled")) {
+						if (!$(this).hasClass(disabledClass)) {
 							var sr = p.selrow;
 							if (sr) {
 								if ($.isFunction(o.editfunc)) {
@@ -1940,7 +1959,7 @@
 						return false;
 					},
 					onView = function () {
-						if (!$(this).hasClass("ui-state-disabled")) {
+						if (!$(this).hasClass(disabledClass)) {
 							var sr = p.selrow;
 							if (sr) {
 								if ($.isFunction(o.viewfunc)) {
@@ -1956,7 +1975,7 @@
 					},
 					onDel = function () {
 						var dr;
-						if (!$(this).hasClass("ui-state-disabled")) {
+						if (!$(this).hasClass(disabledClass)) {
 							if (p.multiselect) {
 								dr = p.selarrrow;
 								if (dr.length === 0) { dr = null; }
@@ -1976,7 +1995,7 @@
 						return false;
 					},
 					onSearch = function () {
-						if (!$(this).hasClass("ui-state-disabled")) {
+						if (!$(this).hasClass(disabledClass)) {
 							if ($.isFunction(o.searchfunc)) {
 								o.searchfunc.call($t, pSearch);
 							} else {
@@ -1986,7 +2005,7 @@
 						return false;
 					},
 					onRefresh = function () {
-						if (!$(this).hasClass("ui-state-disabled")) {
+						if (!$(this).hasClass(disabledClass)) {
 							if ($.isFunction(o.beforeRefresh)) { o.beforeRefresh.call($t); }
 							p.search = false;
 							p.resetsearch = true;
@@ -2105,7 +2124,9 @@
 						jgrid.nav || {},
 						p.navOptions || {},
 						oMuligrid || {}
-					);
+					),
+					hoverClasses = getGuiStyles.call($t, "states.hover"),
+					disabledClass = getGuiStyles.call($t, "states.disabled");
 				if (elem === undefined) {
 					if (p.pager) {
 						$($t).jqGrid("navButtonAdd", p.pager, o);
@@ -2146,18 +2167,18 @@
 					$(tbd, findnav)
 						.attr("title", o.title || "")
 						.click(function (e) {
-							if (!$(this).hasClass("ui-state-disabled")) {
+							if (!$(this).hasClass(disabledClass)) {
 								if ($.isFunction(o.onClickButton)) { o.onClickButton.call($t, o, e); }
 							}
 							return false;
 						})
 						.hover(
 							function () {
-								if (!$(this).hasClass("ui-state-disabled")) {
-									$(this).addClass("ui-state-hover");
+								if (!$(this).hasClass(disabledClass)) {
+									$(this).addClass(hoverClasses);
 								}
 							},
-							function () { $(this).removeClass("ui-state-hover"); }
+							function () { $(this).removeClass(hoverClasses); }
 						);
 				}
 			});
@@ -2173,7 +2194,7 @@
 				if (typeof elem === "string" && elem.indexOf("#") !== 0) { elem = "#" + jqID(elem); }
 				var findnav = $(".navtable", elem)[0];
 				if (findnav.length > 0) {
-					var sep = "<div class='ui-pg-button ui-state-disabled'><span class='" + p.sepclass + "'></span>" + p.sepcontent + "</div>";
+					var sep = "<div class='ui-pg-button " + getGuiStyles.call(this, "states.disabled") + "'><span class='" + p.sepclass + "'></span>" + p.sepcontent + "</div>";
 					if (p.position === "first") {
 						if ($(">div.ui-pg-button", findnav).length === 0) {
 							findnav.append(sep);
