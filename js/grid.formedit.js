@@ -1944,14 +1944,14 @@
 						}
 						return false;
 					},
-					onEdit = function () {
+					editOrViewOfSelectedRow = function (func, methodName, param) {
 						if (!hasOneFromClasses(this, disabledClass)) {
 							var sr = p.selrow;
 							if (sr) {
-								if ($.isFunction(o.editfunc)) {
-									o.editfunc.call($t, sr);
+								if ($.isFunction(func)) {
+									func.call($t, sr);
 								} else {
-									$self.jqGrid("editGridRow", sr, pEdit);
+									$self.jqGrid(methodName, sr, param);
 								}
 							} else {
 								viewModalAlert();
@@ -1959,20 +1959,11 @@
 						}
 						return false;
 					},
+					onEdit = function () {
+						return editOrViewOfSelectedRow.call(this, o.editfunc, "editGridRow", pEdit);
+					},
 					onView = function () {
-						if (!hasOneFromClasses(this, disabledClass)) {
-							var sr = p.selrow;
-							if (sr) {
-								if ($.isFunction(o.viewfunc)) {
-									o.viewfunc.call($t, sr);
-								} else {
-									$self.jqGrid("viewGridRow", sr, pView);
-								}
-							} else {
-								viewModalAlert();
-							}
-						}
-						return false;
+						return editOrViewOfSelectedRow.call(this, o.viewfunc, "viewGridRow", pView);
 					},
 					onDel = function () {
 						var dr;
