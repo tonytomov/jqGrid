@@ -8397,6 +8397,7 @@
 						fixDiv(grid.fsDiv, grid.sDiv);
 					});
 					var myResize = function () {
+							$(grid.fbDiv).scrollTop($(grid.bDiv).scrollTop());
 							// TODO: the width of all column headers can be changed
 							// so one should recalculate frozenWidth in other way.
 							fixDiv(grid.fhDiv, grid.hDiv);
