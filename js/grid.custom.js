@@ -878,7 +878,7 @@
 		setFrozenColumns: function () {
 			return this.each(function () {
 				var $t = this, $self = $($t), p = $t.p, grid = $t.grid;
-				if (!grid) { return; }
+				if (!grid || p == null || p.frozenColumns === true) { return; }
 				var cm = p.colModel, i, len = cm.length, maxfrozen = -1, frozen = false, frozenIds = [], $colHeaderRow,// nonFrozenIds = [],
 					tid = jqID(p.id); // one can use p.idSel and remove "#"
 				// TODO treeGrid and grouping  Support

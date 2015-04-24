@@ -8200,7 +8200,7 @@
 		setFrozenColumns: function () {
 			return this.each(function () {
 				var $t = this, $self = $($t), p = $t.p, grid = $t.grid;
-				if (!grid) { return; }
+				if (!grid || p == null || p.frozenColumns === true) { return; }
 				var cm = p.colModel, i, len = cm.length, maxfrozen = -1, frozen = false, frozenIds = [], $colHeaderRow,// nonFrozenIds = [],
 					tid = jqID(p.id); // one can use p.idSel and remove "#"
 				// TODO treeGrid and grouping  Support
@@ -11180,14 +11180,14 @@
 						}
 						return false;
 					},
-					onEdit = function () {
+					editOrViewOfSelectedRow = function (func, methodName, param) {
 						if (!hasOneFromClasses(this, disabledClass)) {
 							var sr = p.selrow;
 							if (sr) {
-								if ($.isFunction(o.editfunc)) {
-									o.editfunc.call($t, sr);
+								if ($.isFunction(func)) {
+									func.call($t, sr);
 								} else {
-									$self.jqGrid("editGridRow", sr, pEdit);
+									$self.jqGrid(methodName, sr, param);
 								}
 							} else {
 								viewModalAlert();
@@ -11195,20 +11195,11 @@
 						}
 						return false;
 					},
+					onEdit = function () {
+						return editOrViewOfSelectedRow.call(this, o.editfunc, "editGridRow", pEdit);
+					},
 					onView = function () {
-						if (!hasOneFromClasses(this, disabledClass)) {
-							var sr = p.selrow;
-							if (sr) {
-								if ($.isFunction(o.viewfunc)) {
-									o.viewfunc.call($t, sr);
-								} else {
-									$self.jqGrid("viewGridRow", sr, pView);
-								}
-							} else {
-								viewModalAlert();
-							}
-						}
-						return false;
+						return editOrViewOfSelectedRow.call(this, o.viewfunc, "viewGridRow", pView);
 					},
 					onDel = function () {
 						var dr;
