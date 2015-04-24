@@ -3520,7 +3520,7 @@
 								this.style.cursor = "pointer";
 							}
 						}, function () {
-							if (hasOneFromClasses(this, disabledClasses)) {
+							if (!hasOneFromClasses(this, disabledClasses)) {
 								$(this).removeClass(hoverClasses);
 								this.style.cursor = "default";
 							}
