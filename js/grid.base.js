@@ -5412,6 +5412,8 @@
 						}
 					}
 				}
+				$t.fixScrollOffsetAndhBoxPadding();
+				$($t).triggerHandler("jqGridResetFrozenHeights");
 			});
 		},
 		setGridHeight: function (nh) {
@@ -5426,6 +5428,8 @@
 				}
 				p.height = nh;
 				if (p.scroll) { grid.populateVisible.call($t); }
+				$t.fixScrollOffsetAndhBoxPadding();
+				$($t).triggerHandler("jqGridResetFrozenHeights");
 			});
 		},
 		setCaption: function (newcap) {
@@ -5435,6 +5439,7 @@
 				$("span.ui-jqgrid-title, span.ui-jqgrid-title-rtl", cDiv).html(newcap);
 				$(cDiv).show();
 				$(cDiv).nextAll("div").removeClass("ui-corner-top");
+				$(this).triggerHandler("jqGridResetFrozenHeights");
 			});
 		},
 		setLabel: function (colname, nData, prop, attrp) {
