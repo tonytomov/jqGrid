@@ -5993,14 +5993,15 @@
 					return;
 				}
 				cc = $tr.children("td:eq(" + iCol + ")");
-				var editable = cm.editable;
+				var editable = cm.editable, mode = "cell";
 				if ($.isFunction(editable)) {
 					editable = editable.call($t, {
 						rowid: rowid,
 						iCol: iCol,
 						iRow: iRow,
 						name: nm,
-						cm: cm
+						cm: cm,
+						mode: mode
 					});
 				}
 				var highlightClasses = getGuiStateStyles.call($t, "select", "edit-cell"),
@@ -6034,7 +6035,7 @@
 						}
 					}
 					feedback.call($t, "beforeEditCell", rowid, nm, tmp, iRow, iCol);
-					var opt = $.extend({}, cm.editoptions || {}, { id: iRow + "_" + nm, name: nm, rowId: rowid });
+					var opt = $.extend({}, cm.editoptions || {}, { id: iRow + "_" + nm, name: nm, rowId: rowid, mode: mode });
 					var elc = jgrid.createEl.call($t, cm.edittype, opt, tmp, true, $.extend({}, jgrid.ajaxOptions, p.ajaxSelectOptions || {})),
 						$dataFiled = cc,
 						editingColumnWithTreeGridIcon = p.treeGrid === true && nm === p.ExpandColumn;
@@ -6344,7 +6345,8 @@
 							iCol: i,
 							iRow: iRow,
 							name: cm.name,
-							cm: cm
+							cm: cm,
+							mode: "cell"
 						});
 					}
 					if (editable === true) {
@@ -7773,14 +7775,14 @@
 					tr = $("<tr class='ui-search-toolbar' role='row'></tr>");
 				// create the row
 				$.each(colModel, function (ci) {
-					var cm = this, soptions, surl, self, select = "", sot, so, i, searchoptions = cm.searchoptions, editoptions = cm.editoptions,
+					var cm = this, soptions, mode = "filter", surl, self, select = "", sot, so, i, searchoptions = cm.searchoptions, editoptions = cm.editoptions,
 						th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-" + p.direction + "'></th>"),
 						thd = $("<div style='position:relative;height:auto;padding-right:0.3em;padding-left:0.3em;'></div>"),
 						stbl = $("<table class='ui-search-table'" + (jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "") + "><tr><td class='ui-search-oper'></td><td class='ui-search-input'></td><td class='ui-search-clear'></td></tr></table>");
 					if (this.hidden === true) { $(th).css("display", "none"); }
 					this.search = this.search === false ? false : true;
 					if (this.stype === undefined) { this.stype = "text"; }
-					soptions = $.extend({}, this.searchoptions || {});
+					soptions = $.extend({mode: mode}, searchoptions || {});
 					if (this.search) {
 						if (o.searchOperators) {
 							so = (soptions.sopt) ? soptions.sopt[0] : cm.stype === "select" ? "eq" : o.defaultSearch;
@@ -7849,7 +7851,8 @@
 												options: soptions,
 												cm: cm,
 												cmName: cm.name,
-												iCol: ci
+												iCol: ci,
+												mode: mode
 											});
 											if (o.autosearch === true) {
 												$select.change(function () {
@@ -7904,7 +7907,8 @@
 											options: searchoptions,
 											cm: cm,
 											cmName: cm.name,
-											iCol: ci
+											iCol: ci,
+											mode: mode
 										});
 										if (o.autosearch === true) {
 											$(elem).change(function () {
@@ -8368,7 +8372,7 @@
 							}
 						},
 						fixDiv = function ($hDiv, hDivBase) {
-							var iRow, n, $frozenRows, $rows, $row, $frozenRow, posFrozenTop, height, heightFrozen, newHeightFrozen,
+							var iRow, n, $frozenRows, $rows, $row, $frozenRow, posFrozenTop, height, newHeightFrozen,
 								posTop = $(hDivBase).position().top, frozenTableTop, tableTop;
 							if ($hDiv != null && $hDiv.length > 0) {
 								$hDiv.css({
@@ -8386,7 +8390,6 @@
 									$frozenRow = $($frozenRows[iRow]);
 									posFrozenTop = $frozenRow.position().top;
 									height = $row.height();
-									heightFrozen = $frozenRow.height();
 									newHeightFrozen = height + (posTop - tableTop) + (frozenTableTop - posFrozenTop);
 									safeHeightSet($frozenRow, newHeightFrozen);
 								}
@@ -8396,21 +8399,35 @@
 					$self.bind("jqGridAfterGridComplete.setFrozenColumns", function () {
 						$(p.idSel + "_frozen").remove();
 						$(grid.fbDiv).height(grid.hDiv.clientHeight);
-						var btbl = $(p.idSel).clone(true);
-						$("tr[role=row]", btbl).each(function () {
+						var $frozenBTable = $(this).clone(true);
+						$("tr[role=row]", $frozenBTable).each(function () {
 							$("td[role=gridcell]:gt(" + maxfrozen + ")", this).remove();
 						});
 
-						$(btbl).width(1).attr("id", p.id + "_frozen");
-						$(grid.fbDiv).append(btbl);
+						$frozenBTable.width(1).attr("id", p.id + "_frozen");
+						$frozenBTable.appendTo(grid.fbDiv);
 						if (p.hoverrows === true) {
-							$("tr.jqgrow", btbl).hover(
-								function () { var tr = this; $(tr).addClass("ui-state-hover"); $("#" + jqID(tr.id), p.idSel).addClass("ui-state-hover"); },
-								function () { var tr = this; $(tr).removeClass("ui-state-hover"); $("#" + jqID(tr.id), p.idSel).removeClass("ui-state-hover"); }
+							var frozenRows = $frozenBTable[0].rows,
+								rows = $self[0].rows,
+								hoverRows = function (tr, method, additionalRows) {
+									$(tr)[method]("ui-state-hover");
+									$(additionalRows[tr.rowIndex])[method]("ui-state-hover");
+								};
+							$(frozenRows).filter(".jqgrow").hover(
+								function () {
+									hoverRows(this, "addClass", rows);
+								},
+								function () {
+									hoverRows(this, "removeClass", rows);
+								}
 							);
-							$("tr.jqgrow", p.idSel).hover(
-								function () { var tr = this; $(tr).addClass("ui-state-hover"); $("#" + jqID(tr.id), p.idSel + "_frozen").addClass("ui-state-hover"); },
-								function () { var tr = this; $(tr).removeClass("ui-state-hover"); $("#" + jqID(tr.id), p.idSel + "_frozen").removeClass("ui-state-hover"); }
+							$(rows).filter(".jqgrow").hover(
+								function () {
+									hoverRows(this, "addClass", frozenRows);
+								},
+								function () {
+									hoverRows(this, "removeClass", frozenRows);
+								}
 							);
 						}
 						fixDiv(grid.fhDiv, grid.hDiv);
@@ -8424,7 +8441,7 @@
 							fixDiv(grid.fhDiv, grid.hDiv);
 							fixDiv(grid.fbDiv, grid.bDiv);
 							if (grid.sDiv) { fixDiv(grid.fsDiv, grid.sDiv); }
-							var frozenWidth = grid.fhDiv[0].clientWidth, width, newWidth;
+							var frozenWidth = grid.fhDiv[0].clientWidth;
 							if (grid.fhDiv != null && grid.fhDiv.length >= 1) {
 								safeHeightSet($(grid.fhDiv), grid.hDiv.clientHeight);
 							}
@@ -8818,7 +8835,7 @@
 				// be referenced in anonimous method calls
 
 				var that = this, $t = getGrid(), tr = $("<tr></tr>"),
-					i, op, trpar, cm, str = "", selected;
+					i, op, cm, str = "", selected;
 
 				tr.append("<td class='first'></td>");
 
@@ -8832,30 +8849,30 @@
 				ruleFieldSelect.bind("change", function () {
 					rule.field = $(ruleFieldSelect).val();
 
-					trpar = $(this).parents("tr:first");
-					for (i = 0; i < that.p.columns.length; i++) {
-						if (that.p.columns[i].name === rule.field) {
-							cm = that.p.columns[i];
+					var trpar = $(this).parents("tr:first"), columns, k; // define LOCAL variables
+					for (k = 0; k < that.p.columns.length; k++) {
+						if (that.p.columns[k].name === rule.field) {
+							columns = that.p.columns[k];
 							break;
 						}
 					}
-					if (!cm) { return; }
-					if (isIE && cm.inputtype === "text") {
-						if (!cm.searchoptions.size) {
-							cm.searchoptions.size = 10;
+					if (!columns) { return; }
+					var searchoptions = $.extend({}, columns.searchoptions || {}, { id: jgrid.randId(), name: columns.name, mode: "search" });
+					if (isIE && columns.inputtype === "text") {
+						if (!searchoptions.size) {
+							searchoptions.size = 10;
 						}
 					}
-					var elm = jgrid.createEl.call($t, cm.inputtype,
-								$.extend({}, cm.searchoptions || {}, { id: jgrid.randId(), name: cm.name }),
+					var elm = jgrid.createEl.call($t, columns.inputtype, searchoptions,
 								"", true, that.p.ajaxSelectOptions || {}, true);
 					$(elm).addClass("input-elm");
 					//that.createElement(rule, "");
 
-					if (cm.searchoptions.sopt) {
-						op = cm.searchoptions.sopt;
+					if (searchoptions.sopt) {
+						op = searchoptions.sopt;
 					} else if (that.p.sopt) {
 						op = that.p.sopt;
-					} else if ($.inArray(cm.searchtype, that.p.strarr) !== -1) {
+					} else if ($.inArray(columns.searchtype, that.p.strarr) !== -1) {
 						op = that.p.stropts;
 					} else {
 						op = that.p.numopts;
@@ -8868,9 +8885,9 @@
 					if (that.p.cops) {
 						$.each(that.p.cops, function (propertyName) { aoprs.push(propertyName); });
 					}
-					for (i = 0; i < op.length; i++) {
-						itemOper = op[i];
-						ina = $.inArray(op[i], aoprs);
+					for (k = 0; k < op.length; k++) {
+						itemOper = op[k];
+						ina = $.inArray(op[k], aoprs);
 						if (ina !== -1) {
 							odataItem = that.p.ops[ina];
 							itemText = odataItem !== undefined ? odataItem.text : that.p.cops[itemOper].text;
@@ -8891,11 +8908,11 @@
 					}
 					// data
 					$(".data", trpar).empty().append(elm);
-					jgrid.bindEv.call($t, elm, cm.searchoptions);
+					jgrid.bindEv.call($t, elm, searchoptions);
 					$(".input-elm", trpar).bind("change", function (e) {
 						var elem = e.target;
-						rule.data = elem.nodeName.toUpperCase() === "SPAN" && cm.searchoptions && $.isFunction(cm.searchoptions.custom_value) ?
-								cm.searchoptions.custom_value.call($t, $(elem).children(".customelement:first"), "get") : elem.value;
+						rule.data = elem.nodeName.toUpperCase() === "SPAN" && searchoptions && $.isFunction(searchoptions.custom_value) ?
+								searchoptions.custom_value.call($t, $(elem).children(".customelement:first"), "get") : elem.value;
 						that.onchange(); // signals that the filter has changed
 					});
 					setTimeout(function () { //IE, Opera, Chrome
@@ -8946,8 +8963,8 @@
 				ruleOperatorTd.append(ruleOperatorSelect);
 				ruleOperatorSelect.bind("change", function () {
 					rule.op = $(ruleOperatorSelect).val();
-					trpar = $(this).parents("tr:first");
-					var rd = $(".input-elm", trpar)[0];
+					var trpar = $(this).parents("tr:first"),
+						rd = $(".input-elm", trpar)[0];
 					if (rule.op === "nu" || rule.op === "nn") { // disable for operator "is null" and "is not null"
 						rule.data = "";
 						if (rd.tagName.toUpperCase() !== "SELECT") { rd.value = ""; }
@@ -9793,7 +9810,8 @@
 						ind = $self.jqGrid("getInd", rowid);
 					}
 					$(p.colModel).each(function (i) {
-						var cm = this, nm = cm.name, hc, trdata, tmp, dc, elc, editable = cm.editable, disabled = false, readonly = false;
+						var cm = this, nm = cm.name, hc, trdata, tmp, dc, elc, editable = cm.editable, disabled = false, readonly = false,
+							mode = rowid === "_empty" ? "addForm" : "editForm";
 						if ($.isFunction(editable)) {
 							editable = editable.call($t, {
 								rowid: rowid,
@@ -9801,7 +9819,7 @@
 								iRow: ind, // can be false for Add operation
 								name: nm,
 								cm: cm,
-								mode: rowid === "_empty" ? "addForm" : "editForm"
+								mode: mode
 							});
 						}
 						// hidden fields are included in the form
@@ -9835,7 +9853,7 @@
 								}
 								if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) { tmp = ""; }
 							}
-							var opt = $.extend({}, cm.editoptions || {}, { id: nm, name: nm, rowId: rowid }),
+							var opt = $.extend({}, cm.editoptions || {}, { id: nm, name: nm, rowId: rowid, mode: mode }),
 								frmopt = $.extend({}, { elmprefix: "", elmsuffix: "", rowabove: false, rowcontent: "" }, cm.formoptions || {}),
 								rp = parseInt(frmopt.rowpos, 10) || cnt + 1,
 								cp = parseInt((parseInt(frmopt.colpos, 10) || 1) * 2, 10);
@@ -12382,7 +12400,8 @@
 						if (nm !== "cb" && nm !== "subgrid" && nm !== "rn") {
 							if (p.autoencode) { tmp = jgrid.htmlDecode(tmp); }
 							svr[nm] = tmp;
-							var isEditable = cm.editable;
+							var isEditable = cm.editable,
+								mode = $(ind).hasClass("jqgrid-new-row") ? "add" : "edit";
 							if ($.isFunction(isEditable)) {
 								isEditable = isEditable.call($t, {
 									rowid: rowid,
@@ -12390,7 +12409,7 @@
 									iRow: ind.rowIndex,
 									name: nm,
 									cm: cm,
-									mode: $(ind).hasClass("jqgrid-new-row") ? "add" : "edit"
+									mode: mode
 								});
 							}
 							if (isEditable === true) {
@@ -12401,7 +12420,7 @@
 									$dataFiled = $dataFiled.children("span.cell-wrapperleaf,span.cell-wrapper").first();
 								}
 								$dataFiled.html("");
-								var opt = $.extend({}, cm.editoptions || {}, { id: rowid + "_" + nm, name: nm, rowId: rowid });
+								var opt = $.extend({}, cm.editoptions || {}, { id: rowid + "_" + nm, name: nm, rowId: rowid, mode: mode });
 								if (!cm.edittype) { cm.edittype = "text"; }
 								if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) { tmp = ""; }
 								var elc = jgrid.createEl.call($t, cm.edittype, opt, tmp, true, $.extend({}, jgrid.ajaxOptions, p.ajaxSelectOptions || {}));

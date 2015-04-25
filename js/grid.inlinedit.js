@@ -93,7 +93,8 @@
 						if (nm !== "cb" && nm !== "subgrid" && nm !== "rn") {
 							if (p.autoencode) { tmp = jgrid.htmlDecode(tmp); }
 							svr[nm] = tmp;
-							var isEditable = cm.editable;
+							var isEditable = cm.editable,
+								mode = $(ind).hasClass("jqgrid-new-row") ? "add" : "edit";
 							if ($.isFunction(isEditable)) {
 								isEditable = isEditable.call($t, {
 									rowid: rowid,
@@ -101,7 +102,7 @@
 									iRow: ind.rowIndex,
 									name: nm,
 									cm: cm,
-									mode: $(ind).hasClass("jqgrid-new-row") ? "add" : "edit"
+									mode: mode
 								});
 							}
 							if (isEditable === true) {
@@ -112,7 +113,7 @@
 									$dataFiled = $dataFiled.children("span.cell-wrapperleaf,span.cell-wrapper").first();
 								}
 								$dataFiled.html("");
-								var opt = $.extend({}, cm.editoptions || {}, { id: rowid + "_" + nm, name: nm, rowId: rowid });
+								var opt = $.extend({}, cm.editoptions || {}, { id: rowid + "_" + nm, name: nm, rowId: rowid, mode: mode });
 								if (!cm.edittype) { cm.edittype = "text"; }
 								if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) { tmp = ""; }
 								var elc = jgrid.createEl.call($t, cm.edittype, opt, tmp, true, $.extend({}, jgrid.ajaxOptions, p.ajaxSelectOptions || {}));

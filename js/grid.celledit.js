@@ -80,14 +80,15 @@
 					return;
 				}
 				cc = $tr.children("td:eq(" + iCol + ")");
-				var editable = cm.editable;
+				var editable = cm.editable, mode = "cell";
 				if ($.isFunction(editable)) {
 					editable = editable.call($t, {
 						rowid: rowid,
 						iCol: iCol,
 						iRow: iRow,
 						name: nm,
-						cm: cm
+						cm: cm,
+						mode: mode
 					});
 				}
 				var highlightClasses = getGuiStateStyles.call($t, "select", "edit-cell"),
@@ -121,7 +122,7 @@
 						}
 					}
 					feedback.call($t, "beforeEditCell", rowid, nm, tmp, iRow, iCol);
-					var opt = $.extend({}, cm.editoptions || {}, { id: iRow + "_" + nm, name: nm, rowId: rowid });
+					var opt = $.extend({}, cm.editoptions || {}, { id: iRow + "_" + nm, name: nm, rowId: rowid, mode: mode });
 					var elc = jgrid.createEl.call($t, cm.edittype, opt, tmp, true, $.extend({}, jgrid.ajaxOptions, p.ajaxSelectOptions || {})),
 						$dataFiled = cc,
 						editingColumnWithTreeGridIcon = p.treeGrid === true && nm === p.ExpandColumn;
@@ -431,7 +432,8 @@
 							iCol: i,
 							iRow: iRow,
 							name: cm.name,
-							cm: cm
+							cm: cm,
+							mode: "cell"
 						});
 					}
 					if (editable === true) {

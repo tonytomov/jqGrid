@@ -328,7 +328,7 @@
 				// be referenced in anonimous method calls
 
 				var that = this, $t = getGrid(), tr = $("<tr></tr>"),
-					i, op, trpar, cm, str = "", selected;
+					i, op, cm, str = "", selected;
 
 				tr.append("<td class='first'></td>");
 
@@ -342,30 +342,30 @@
 				ruleFieldSelect.bind("change", function () {
 					rule.field = $(ruleFieldSelect).val();
 
-					trpar = $(this).parents("tr:first");
-					for (i = 0; i < that.p.columns.length; i++) {
-						if (that.p.columns[i].name === rule.field) {
-							cm = that.p.columns[i];
+					var trpar = $(this).parents("tr:first"), columns, k; // define LOCAL variables
+					for (k = 0; k < that.p.columns.length; k++) {
+						if (that.p.columns[k].name === rule.field) {
+							columns = that.p.columns[k];
 							break;
 						}
 					}
-					if (!cm) { return; }
-					if (isIE && cm.inputtype === "text") {
-						if (!cm.searchoptions.size) {
-							cm.searchoptions.size = 10;
+					if (!columns) { return; }
+					var searchoptions = $.extend({}, columns.searchoptions || {}, { id: jgrid.randId(), name: columns.name, mode: "search" });
+					if (isIE && columns.inputtype === "text") {
+						if (!searchoptions.size) {
+							searchoptions.size = 10;
 						}
 					}
-					var elm = jgrid.createEl.call($t, cm.inputtype,
-								$.extend({}, cm.searchoptions || {}, { id: jgrid.randId(), name: cm.name }),
+					var elm = jgrid.createEl.call($t, columns.inputtype, searchoptions,
 								"", true, that.p.ajaxSelectOptions || {}, true);
 					$(elm).addClass("input-elm");
 					//that.createElement(rule, "");
 
-					if (cm.searchoptions.sopt) {
-						op = cm.searchoptions.sopt;
+					if (searchoptions.sopt) {
+						op = searchoptions.sopt;
 					} else if (that.p.sopt) {
 						op = that.p.sopt;
-					} else if ($.inArray(cm.searchtype, that.p.strarr) !== -1) {
+					} else if ($.inArray(columns.searchtype, that.p.strarr) !== -1) {
 						op = that.p.stropts;
 					} else {
 						op = that.p.numopts;
@@ -378,9 +378,9 @@
 					if (that.p.cops) {
 						$.each(that.p.cops, function (propertyName) { aoprs.push(propertyName); });
 					}
-					for (i = 0; i < op.length; i++) {
-						itemOper = op[i];
-						ina = $.inArray(op[i], aoprs);
+					for (k = 0; k < op.length; k++) {
+						itemOper = op[k];
+						ina = $.inArray(op[k], aoprs);
 						if (ina !== -1) {
 							odataItem = that.p.ops[ina];
 							itemText = odataItem !== undefined ? odataItem.text : that.p.cops[itemOper].text;
@@ -401,11 +401,11 @@
 					}
 					// data
 					$(".data", trpar).empty().append(elm);
-					jgrid.bindEv.call($t, elm, cm.searchoptions);
+					jgrid.bindEv.call($t, elm, searchoptions);
 					$(".input-elm", trpar).bind("change", function (e) {
 						var elem = e.target;
-						rule.data = elem.nodeName.toUpperCase() === "SPAN" && cm.searchoptions && $.isFunction(cm.searchoptions.custom_value) ?
-								cm.searchoptions.custom_value.call($t, $(elem).children(".customelement:first"), "get") : elem.value;
+						rule.data = elem.nodeName.toUpperCase() === "SPAN" && searchoptions && $.isFunction(searchoptions.custom_value) ?
+								searchoptions.custom_value.call($t, $(elem).children(".customelement:first"), "get") : elem.value;
 						that.onchange(); // signals that the filter has changed
 					});
 					setTimeout(function () { //IE, Opera, Chrome
@@ -456,8 +456,8 @@
 				ruleOperatorTd.append(ruleOperatorSelect);
 				ruleOperatorSelect.bind("change", function () {
 					rule.op = $(ruleOperatorSelect).val();
-					trpar = $(this).parents("tr:first");
-					var rd = $(".input-elm", trpar)[0];
+					var trpar = $(this).parents("tr:first"),
+						rd = $(".input-elm", trpar)[0];
 					if (rule.op === "nu" || rule.op === "nn") { // disable for operator "is null" and "is not null"
 						rule.data = "";
 						if (rd.tagName.toUpperCase() !== "SELECT") { rd.value = ""; }

@@ -540,7 +540,8 @@
 						ind = $self.jqGrid("getInd", rowid);
 					}
 					$(p.colModel).each(function (i) {
-						var cm = this, nm = cm.name, hc, trdata, tmp, dc, elc, editable = cm.editable, disabled = false, readonly = false;
+						var cm = this, nm = cm.name, hc, trdata, tmp, dc, elc, editable = cm.editable, disabled = false, readonly = false,
+							mode = rowid === "_empty" ? "addForm" : "editForm";
 						if ($.isFunction(editable)) {
 							editable = editable.call($t, {
 								rowid: rowid,
@@ -548,7 +549,7 @@
 								iRow: ind, // can be false for Add operation
 								name: nm,
 								cm: cm,
-								mode: rowid === "_empty" ? "addForm" : "editForm"
+								mode: mode
 							});
 						}
 						// hidden fields are included in the form
@@ -582,7 +583,7 @@
 								}
 								if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) { tmp = ""; }
 							}
-							var opt = $.extend({}, cm.editoptions || {}, { id: nm, name: nm, rowId: rowid }),
+							var opt = $.extend({}, cm.editoptions || {}, { id: nm, name: nm, rowId: rowid, mode: mode }),
 								frmopt = $.extend({}, { elmprefix: "", elmsuffix: "", rowabove: false, rowcontent: "" }, cm.formoptions || {}),
 								rp = parseInt(frmopt.rowpos, 10) || cnt + 1,
 								cp = parseInt((parseInt(frmopt.colpos, 10) || 1) * 2, 10);
@@ -1112,6 +1113,8 @@
 				}
 				var tms = $("<div></div>").append(frm).append(bt);
 				createModal.call($t, ids, tms, o, p.gView, $(gboxSelector)[0]);
+				// TODO: remove the call of jgrid.bindEv and probably call of opt.custom_value from createData
+				// and place the calls here AFTER the form are placed on the HTML page
 				if (o.topinfo) { $(".tinfo", frmtb).show(); }
 				if (o.bottominfo) { $(".binfo", frmtb2).show(); }
 				tms = null;
