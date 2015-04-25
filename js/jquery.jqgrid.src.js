@@ -2,13 +2,13 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
 /**
- * @license jqGrid  4.8.0-post - free jqGrid
+ * @license jqGrid  4.9.0-beta1 - free jqGrid
  * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com
  * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-04-23
+ * Date: 2015-04-25
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -8368,31 +8368,31 @@
 							}
 						},
 						fixDiv = function ($hDiv, hDivBase) {
-						var iRow, n, $frozenRows, $rows, $row, $frozenRow, posFrozenTop, height, heightFrozen, newHeightFrozen,
-							posTop = $(hDivBase).position().top, frozenTableTop, tableTop;
-						if ($hDiv != null && $hDiv.length > 0) {
-							$hDiv.css({
-								top: posTop,
-								left: p.direction === "rtl" ? hDivBase.clientWidth - grid.fhDiv.width() : 0
-							});
-							$frozenRows = $hDiv.children("table").children("tbody,thead").children("tr");
-							$rows = $(hDivBase).children("div").children("table").children("tbody,thead").children("tr");
-							n = Math.min($frozenRows.length, $rows.length);
-							frozenTableTop = n > 0 ? $($frozenRows[0]).position().top : 0;
-							tableTop = n > 0 ? $($rows[0]).position().top : 0; // typically 0
-							for (iRow = 0; iRow < n; iRow++) {
-								$row = $($rows[iRow]);
-								posTop = $row.position().top;
-								$frozenRow = $($frozenRows[iRow]);
-								posFrozenTop = $frozenRow.position().top;
-								height = $row.height();
-								heightFrozen = $frozenRow.height();
-								newHeightFrozen = height + (posTop - tableTop) + (frozenTableTop - posFrozenTop);
-								safeHeightSet($frozenRow, newHeightFrozen);
+							var iRow, n, $frozenRows, $rows, $row, $frozenRow, posFrozenTop, height, heightFrozen, newHeightFrozen,
+								posTop = $(hDivBase).position().top, frozenTableTop, tableTop;
+							if ($hDiv != null && $hDiv.length > 0) {
+								$hDiv.css({
+									top: posTop,
+									left: p.direction === "rtl" ? hDivBase.clientWidth - grid.fhDiv.width() : 0
+								});
+								$frozenRows = $hDiv.children("table").children("tbody,thead").children("tr");
+								$rows = $(hDivBase).children("div").children("table").children("tbody,thead").children("tr");
+								n = Math.min($frozenRows.length, $rows.length);
+								frozenTableTop = n > 0 ? $($frozenRows[0]).position().top : 0;
+								tableTop = n > 0 ? $($rows[0]).position().top : 0; // typically 0
+								for (iRow = 0; iRow < n; iRow++) {
+									$row = $($rows[iRow]);
+									posTop = $row.position().top;
+									$frozenRow = $($frozenRows[iRow]);
+									posFrozenTop = $frozenRow.position().top;
+									height = $row.height();
+									heightFrozen = $frozenRow.height();
+									newHeightFrozen = height + (posTop - tableTop) + (frozenTableTop - posFrozenTop);
+									safeHeightSet($frozenRow, newHeightFrozen);
+								}
+								safeHeightSet($hDiv, hDivBase.clientHeight);
 							}
-							safeHeightSet($hDiv, hDivBase.clientHeight);
-						}
-					};
+						};
 					$self.bind("jqGridAfterGridComplete.setFrozenColumns", function () {
 						$(p.idSel + "_frozen").remove();
 						$(grid.fbDiv).height(grid.hDiv.clientHeight);
@@ -8415,7 +8415,7 @@
 						}
 						fixDiv(grid.fhDiv, grid.hDiv);
 						fixDiv(grid.fbDiv, grid.bDiv);
-						fixDiv(grid.fsDiv, grid.sDiv);
+						if (grid.sDiv) { fixDiv(grid.fsDiv, grid.sDiv); }
 					});
 					var myResize = function () {
 							$(grid.fbDiv).scrollTop($(grid.bDiv).scrollTop());
@@ -8423,7 +8423,7 @@
 							// so one should recalculate frozenWidth in other way.
 							fixDiv(grid.fhDiv, grid.hDiv);
 							fixDiv(grid.fbDiv, grid.bDiv);
-							fixDiv(grid.fsDiv, grid.sDiv);
+							if (grid.sDiv) { fixDiv(grid.fsDiv, grid.sDiv); }
 							var frozenWidth = grid.fhDiv[0].clientWidth, width, newWidth;
 							if (grid.fhDiv != null && grid.fhDiv.length >= 1) {
 								safeHeightSet($(grid.fhDiv), grid.hDiv.clientHeight);
