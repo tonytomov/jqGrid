@@ -2109,6 +2109,7 @@
 					}
 					$t.nav = true;
 				}
+				$self.triggerHandler("jqGridResetFrozenHeights");
 			});
 		},
 		navButtonAdd: function (elem, oMuligrid) {
@@ -2188,6 +2189,7 @@
 							},
 							function () { $(this).removeClass(hoverClasses); }
 						);
+					$($t).triggerHandler("jqGridResetFrozenHeights");
 				}
 			});
 		},
