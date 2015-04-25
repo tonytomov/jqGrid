@@ -5412,6 +5412,8 @@
 						}
 					}
 				}
+				$t.fixScrollOffsetAndhBoxPadding();
+				$($t).triggerHandler("jqGridResetFrozenHeights");
 			});
 		},
 		setGridHeight: function (nh) {
@@ -5426,6 +5428,8 @@
 				}
 				p.height = nh;
 				if (p.scroll) { grid.populateVisible.call($t); }
+				$t.fixScrollOffsetAndhBoxPadding();
+				$($t).triggerHandler("jqGridResetFrozenHeights");
 			});
 		},
 		setCaption: function (newcap) {
@@ -5435,6 +5439,7 @@
 				$("span.ui-jqgrid-title, span.ui-jqgrid-title-rtl", cDiv).html(newcap);
 				$(cDiv).show();
 				$(cDiv).nextAll("div").removeClass("ui-corner-top");
+				$(this).triggerHandler("jqGridResetFrozenHeights");
 			});
 		},
 		setLabel: function (colname, nData, prop, attrp) {
@@ -8342,34 +8347,50 @@
 					if (p.hoverrows === true) {
 						$(p.idSel).unbind("mouseover").unbind("mouseout");
 					}
-					var fixDiv = function ($hDiv, hDivBase) {
-						var iRow, n, $frozenRows, $rows, $row, $frozenRow, posFrozen, height, heightFrozen, newHeightFrozen,
-							pos = $(hDivBase).position();
+					var safeHeightSet = function ($elem, newHeight) {
+							var height = $elem.height();
+							if (Math.abs(height - newHeight) >= 1) {
+								$elem.height(newHeight);
+								height = $elem.height();
+								if (Math.abs(newHeight - height) >= 1) {
+									$elem.height(newHeight + Math.round((newHeight - height)));
+								}
+							}
+						},
+						safeWidthSet = function ($elem, newWidth) {
+							var width = $elem.width();
+							if (Math.abs(width - newWidth) >= 1) {
+								$elem.width(newWidth);
+								width = $elem.width();
+								if (Math.abs(newWidth - width) >= 1) {
+									$elem.width(newWidth + Math.round((newWidth - width)));
+								}
+							}
+						},
+						fixDiv = function ($hDiv, hDivBase) {
+						var iRow, n, $frozenRows, $rows, $row, $frozenRow, posFrozenTop, height, heightFrozen, newHeightFrozen,
+							posTop = $(hDivBase).position().top, frozenTableTop, tableTop;
 						if ($hDiv != null && $hDiv.length > 0) {
 							$hDiv.css({
-								top: pos.top,
+								top: posTop,
 								left: p.direction === "rtl" ? hDivBase.clientWidth - grid.fhDiv.width() : 0
 							});
 							$frozenRows = $hDiv.children("table").children("tbody,thead").children("tr");
 							$rows = $(hDivBase).children("div").children("table").children("tbody,thead").children("tr");
 							n = Math.min($frozenRows.length, $rows.length);
+							frozenTableTop = n > 0 ? $($frozenRows[0]).position().top : 0;
+							tableTop = n > 0 ? $($rows[0]).position().top : 0; // typically 0
 							for (iRow = 0; iRow < n; iRow++) {
 								$row = $($rows[iRow]);
-								pos = $row.position();
+								posTop = $row.position().top;
 								$frozenRow = $($frozenRows[iRow]);
-								posFrozen = $frozenRow.position();
+								posFrozenTop = $frozenRow.position().top;
 								height = $row.height();
 								heightFrozen = $frozenRow.height();
-								newHeightFrozen = height + pos.top - posFrozen.top;
-								if (Math.abs(heightFrozen - newHeightFrozen) > 1) {
-								    $frozenRow.height(newHeightFrozen);
-									heightFrozen = $frozenRow.height();
-									if (Math.abs(newHeightFrozen - heightFrozen) > 1) {
-										$frozenRow.height(newHeightFrozen + Math.round((newHeightFrozen - heightFrozen)));
-									}
-								}
+								newHeightFrozen = height + (posTop - tableTop) + (frozenTableTop - posFrozenTop);
+								safeHeightSet($frozenRow, newHeightFrozen);
 							}
-							$hDiv.height(hDivBase.clientHeight);
+							safeHeightSet($hDiv, hDivBase.clientHeight);
 						}
 					};
 					$self.bind("jqGridAfterGridComplete.setFrozenColumns", function () {
@@ -8403,20 +8424,15 @@
 							fixDiv(grid.fhDiv, grid.hDiv);
 							fixDiv(grid.fbDiv, grid.bDiv);
 							fixDiv(grid.fsDiv, grid.sDiv);
-							var frozenWidth = grid.fhDiv[0].clientWidth;
-							if (grid.fhDiv != null && grid.fhDiv.length > 0) {
-								$(grid.fhDiv).height(grid.hDiv.clientHeight);
-								//$(grid.fhDiv).css("top", $(grid.hDiv).position().top);
+							var frozenWidth = grid.fhDiv[0].clientWidth, width, newWidth;
+							if (grid.fhDiv != null && grid.fhDiv.length >= 1) {
+								safeHeightSet($(grid.fhDiv), grid.hDiv.clientHeight);
 							}
 							if (grid.fbDiv != null && grid.fbDiv.length > 0) {
-								//$(grid.fbDiv).height(grid.bDiv.clientHeight);
-								$(grid.fbDiv).width(frozenWidth);
-								//$(grid.fbDiv).css("top", $(grid.bDiv).position().top);
+								safeWidthSet($(grid.fbDiv), frozenWidth);
 							}
-							if (grid.fsDiv != null && grid.fsDiv.length > 0) {
-								//$(grid.fsDiv).height(grid.sDiv.clientHeight);
-								$(grid.fsDiv).width(frozenWidth);
-								//$(grid.fsDiv).css("top", $(grid.sDiv).position().top);
+							if (grid.fsDiv != null && grid.fsDiv.length >= 0) {
+								safeWidthSet($(grid.fsDiv), frozenWidth);
 							}
 						};
 					$(p.gBox).bind("resizestop.setFrozenColumns", function () {
@@ -11346,6 +11362,7 @@
 					}
 					$t.nav = true;
 				}
+				$self.triggerHandler("jqGridResetFrozenHeights");
 			});
 		},
 		navButtonAdd: function (elem, oMuligrid) {
@@ -11425,6 +11442,7 @@
 							},
 							function () { $(this).removeClass(hoverClasses); }
 						);
+					$($t).triggerHandler("jqGridResetFrozenHeights");
 				}
 			});
 		},
