@@ -5780,7 +5780,7 @@
 				if (h != null) {
 					h.newWidth = newWidth;
 					grid.newWidth = p.tblwidth + newWidth - h.width;
-					grid.resizeColumn(iCol, true);
+					grid.resizeColumn(iCol, !p.frozenColumns);
 					if (adjustGridWidth !== false) {
 						$self.jqGrid("setGridWidth", grid.newWidth, false); // adjust grid width too
 					}
@@ -8308,12 +8308,12 @@
 					}
 					$self.bind("jqGridResizeStop.setFrozenColumns", function (e, w, index) {
 						var rhth = $(".ui-jqgrid-htable", grid.fhDiv);
-						$("th:eq(" + index + ")", rhth).width(w);
+						$(rhth[0].rows[0].cells[index]).css("width", w);
 						var btd = $(".ui-jqgrid-btable", grid.fbDiv);
-						$("tr:first td:eq(" + index + ")", btd).width(w);
+						$(btd[0].rows[0].cells[index]).css("width", w);
 						if (p.footerrow) {
 							var ftd = $(".ui-jqgrid-ftable", grid.fsDiv);
-							$("tr:first td:eq(" + index + ")", ftd).width(w);
+							$(ftd[0].rows[0].cells[index]).css("width", w);
 						}
 					});
 					// sorting stuff
@@ -8399,17 +8399,17 @@
 					$self.bind("jqGridAfterGridComplete.setFrozenColumns", function () {
 						$(p.idSel + "_frozen").remove();
 						$(grid.fbDiv).height(grid.hDiv.clientHeight);
-						var $frozenBTable = $(this).clone(true);
-						$("tr[role=row]", $frozenBTable).each(function () {
-							$("td[role=gridcell]:gt(" + maxfrozen + ")", this).remove();
+						var $frozenBTable = $(this).clone(true),
+							frozenRows = $frozenBTable[0].rows,
+							rows = $self[0].rows;
+						$(frozenRows).filter("tr[role=row]").each(function () {
+							$(this.cells).filter("td[role=gridcell]:gt(" + maxfrozen + ")").remove();
 						});
 
 						$frozenBTable.width(1).attr("id", p.id + "_frozen");
 						$frozenBTable.appendTo(grid.fbDiv);
 						if (p.hoverrows === true) {
-							var frozenRows = $frozenBTable[0].rows,
-								rows = $self[0].rows,
-								hoverRows = function (tr, method, additionalRows) {
+							var hoverRows = function (tr, method, additionalRows) {
 									$(tr)[method]("ui-state-hover");
 									$(additionalRows[tr.rowIndex])[method]("ui-state-hover");
 								};
@@ -10383,6 +10383,8 @@
 				}
 				var tms = $("<div></div>").append(frm).append(bt);
 				createModal.call($t, ids, tms, o, p.gView, $(gboxSelector)[0]);
+				// TODO: remove the call of jgrid.bindEv and probably call of opt.custom_value from createData
+				// and place the calls here AFTER the form are placed on the HTML page
 				if (o.topinfo) { $(".tinfo", frmtb).show(); }
 				if (o.bottominfo) { $(".binfo", frmtb2).show(); }
 				tms = null;

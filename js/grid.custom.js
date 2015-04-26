@@ -446,14 +446,14 @@
 					tr = $("<tr class='ui-search-toolbar' role='row'></tr>");
 				// create the row
 				$.each(colModel, function (ci) {
-					var cm = this, soptions, surl, self, select = "", sot, so, i, searchoptions = cm.searchoptions, editoptions = cm.editoptions,
+					var cm = this, soptions, mode = "filter", surl, self, select = "", sot, so, i, searchoptions = cm.searchoptions, editoptions = cm.editoptions,
 						th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-" + p.direction + "'></th>"),
 						thd = $("<div style='position:relative;height:auto;padding-right:0.3em;padding-left:0.3em;'></div>"),
 						stbl = $("<table class='ui-search-table'" + (jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "") + "><tr><td class='ui-search-oper'></td><td class='ui-search-input'></td><td class='ui-search-clear'></td></tr></table>");
 					if (this.hidden === true) { $(th).css("display", "none"); }
 					this.search = this.search === false ? false : true;
 					if (this.stype === undefined) { this.stype = "text"; }
-					soptions = $.extend({}, this.searchoptions || {});
+					soptions = $.extend({mode: mode}, searchoptions || {});
 					if (this.search) {
 						if (o.searchOperators) {
 							so = (soptions.sopt) ? soptions.sopt[0] : cm.stype === "select" ? "eq" : o.defaultSearch;
@@ -522,7 +522,8 @@
 												options: soptions,
 												cm: cm,
 												cmName: cm.name,
-												iCol: ci
+												iCol: ci,
+												mode: mode
 											});
 											if (o.autosearch === true) {
 												$select.change(function () {
@@ -577,7 +578,8 @@
 											options: searchoptions,
 											cm: cm,
 											cmName: cm.name,
-											iCol: ci
+											iCol: ci,
+											mode: mode
 										});
 										if (o.autosearch === true) {
 											$(elem).change(function () {
@@ -977,12 +979,12 @@
 					}
 					$self.bind("jqGridResizeStop.setFrozenColumns", function (e, w, index) {
 						var rhth = $(".ui-jqgrid-htable", grid.fhDiv);
-						$("th:eq(" + index + ")", rhth).width(w);
+						$(rhth[0].rows[0].cells[index]).css("width", w);
 						var btd = $(".ui-jqgrid-btable", grid.fbDiv);
-						$("tr:first td:eq(" + index + ")", btd).width(w);
+						$(btd[0].rows[0].cells[index]).css("width", w);
 						if (p.footerrow) {
 							var ftd = $(".ui-jqgrid-ftable", grid.fsDiv);
-							$("tr:first td:eq(" + index + ")", ftd).width(w);
+							$(ftd[0].rows[0].cells[index]).css("width", w);
 						}
 					});
 					// sorting stuff
@@ -1041,7 +1043,7 @@
 							}
 						},
 						fixDiv = function ($hDiv, hDivBase) {
-							var iRow, n, $frozenRows, $rows, $row, $frozenRow, posFrozenTop, height, heightFrozen, newHeightFrozen,
+							var iRow, n, $frozenRows, $rows, $row, $frozenRow, posFrozenTop, height, newHeightFrozen,
 								posTop = $(hDivBase).position().top, frozenTableTop, tableTop;
 							if ($hDiv != null && $hDiv.length > 0) {
 								$hDiv.css({
@@ -1059,7 +1061,6 @@
 									$frozenRow = $($frozenRows[iRow]);
 									posFrozenTop = $frozenRow.position().top;
 									height = $row.height();
-									heightFrozen = $frozenRow.height();
 									newHeightFrozen = height + (posTop - tableTop) + (frozenTableTop - posFrozenTop);
 									safeHeightSet($frozenRow, newHeightFrozen);
 								}
@@ -1069,21 +1070,35 @@
 					$self.bind("jqGridAfterGridComplete.setFrozenColumns", function () {
 						$(p.idSel + "_frozen").remove();
 						$(grid.fbDiv).height(grid.hDiv.clientHeight);
-						var btbl = $(p.idSel).clone(true);
-						$("tr[role=row]", btbl).each(function () {
-							$("td[role=gridcell]:gt(" + maxfrozen + ")", this).remove();
+						var $frozenBTable = $(this).clone(true),
+							frozenRows = $frozenBTable[0].rows,
+							rows = $self[0].rows;
+						$(frozenRows).filter("tr[role=row]").each(function () {
+							$(this.cells).filter("td[role=gridcell]:gt(" + maxfrozen + ")").remove();
 						});
 
-						$(btbl).width(1).attr("id", p.id + "_frozen");
-						$(grid.fbDiv).append(btbl);
+						$frozenBTable.width(1).attr("id", p.id + "_frozen");
+						$frozenBTable.appendTo(grid.fbDiv);
 						if (p.hoverrows === true) {
-							$("tr.jqgrow", btbl).hover(
-								function () { var tr = this; $(tr).addClass("ui-state-hover"); $("#" + jqID(tr.id), p.idSel).addClass("ui-state-hover"); },
-								function () { var tr = this; $(tr).removeClass("ui-state-hover"); $("#" + jqID(tr.id), p.idSel).removeClass("ui-state-hover"); }
+							var hoverRows = function (tr, method, additionalRows) {
+									$(tr)[method]("ui-state-hover");
+									$(additionalRows[tr.rowIndex])[method]("ui-state-hover");
+								};
+							$(frozenRows).filter(".jqgrow").hover(
+								function () {
+									hoverRows(this, "addClass", rows);
+								},
+								function () {
+									hoverRows(this, "removeClass", rows);
+								}
 							);
-							$("tr.jqgrow", p.idSel).hover(
-								function () { var tr = this; $(tr).addClass("ui-state-hover"); $("#" + jqID(tr.id), p.idSel + "_frozen").addClass("ui-state-hover"); },
-								function () { var tr = this; $(tr).removeClass("ui-state-hover"); $("#" + jqID(tr.id), p.idSel + "_frozen").removeClass("ui-state-hover"); }
+							$(rows).filter(".jqgrow").hover(
+								function () {
+									hoverRows(this, "addClass", frozenRows);
+								},
+								function () {
+									hoverRows(this, "removeClass", frozenRows);
+								}
 							);
 						}
 						fixDiv(grid.fhDiv, grid.hDiv);
@@ -1097,7 +1112,7 @@
 							fixDiv(grid.fhDiv, grid.hDiv);
 							fixDiv(grid.fbDiv, grid.bDiv);
 							if (grid.sDiv) { fixDiv(grid.fsDiv, grid.sDiv); }
-							var frozenWidth = grid.fhDiv[0].clientWidth, width, newWidth;
+							var frozenWidth = grid.fhDiv[0].clientWidth;
 							if (grid.fhDiv != null && grid.fhDiv.length >= 1) {
 								safeHeightSet($(grid.fhDiv), grid.hDiv.clientHeight);
 							}

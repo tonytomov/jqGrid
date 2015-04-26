@@ -5780,7 +5780,7 @@
 				if (h != null) {
 					h.newWidth = newWidth;
 					grid.newWidth = p.tblwidth + newWidth - h.width;
-					grid.resizeColumn(iCol, true);
+					grid.resizeColumn(iCol, !p.frozenColumns);
 					if (adjustGridWidth !== false) {
 						$self.jqGrid("setGridWidth", grid.newWidth, false); // adjust grid width too
 					}
