@@ -3751,7 +3751,7 @@
 					if (p.sortname !== index && idxcol) { p.lastsort = idxcol; }
 				},
 				setColWidth = function () {
-					var initwidth = 0, brd = jgrid.cell_width ? 0 : intNum(p.cellLayout, 0), vc = 0, lvc, scw = intNum(p.scrollOffset, 0), cw, hs = false, aw, gw = 0, cr;
+					var initialWidth = 0, borderAndPaddingWidth = jgrid.cell_width ? 0 : intNum(p.cellLayout, 0), numberOfVariableColumns = 0, iLastVariableColumn, scrollbarWidth = intNum(p.scrollOffset, 0), columnWidth, hasScrollbar = false, totalVariableWidth, fixedColumnsWidth = 0, correctur;
 					$.each(p.colModel, function () {
 						if (this.hidden === undefined) { this.hidden = false; }
 						if (p.grouping && p.autowidth) {
@@ -3760,49 +3760,49 @@
 								this.hidden = !p.groupingView.groupColumnShow[ind];
 							}
 						}
-						this.widthOrg = cw = intNum(this.width, 0);
+						this.widthOrg = columnWidth = intNum(this.width, 0);
 						if (this.hidden === false) {
-							initwidth += cw + brd;
+							initialWidth += columnWidth + borderAndPaddingWidth;
 							if (this.fixed) {
-								gw += cw + brd;
+								fixedColumnsWidth += columnWidth + borderAndPaddingWidth;
 							} else {
-								vc++;
+								numberOfVariableColumns++;
 							}
 						}
 					});
 					if (isNaN(p.width)) {
-						p.width = initwidth + ((p.shrinkToFit === false && !isNaN(p.height)) ? scw : 0);
+						p.width = initialWidth + ((p.shrinkToFit === false && !isNaN(p.height)) ? scrollbarWidth : 0);
 					}
 					grid.width = p.width;
-					p.tblwidth = initwidth;
+					p.tblwidth = initialWidth;
 					if (p.shrinkToFit === false && p.forceFit === true) { p.forceFit = false; }
-					if (p.shrinkToFit === true && vc > 0) {
-						aw = grid.width - brd * vc - gw;
+					if (p.shrinkToFit === true && numberOfVariableColumns > 0) {
+						totalVariableWidth = grid.width - borderAndPaddingWidth * numberOfVariableColumns - fixedColumnsWidth;
 						if (!isNaN(p.height)) {
-							aw -= scw;
-							hs = true;
+							totalVariableWidth -= scrollbarWidth;
+							hasScrollbar = true;
 						}
-						initwidth = 0;
+						initialWidth = 0;
 						$.each(p.colModel, function (i) {
 							if (this.hidden === false && !this.fixed) {
-								cw = Math.round(aw * this.width / (p.tblwidth - brd * vc - gw));
-								this.width = cw;
-								initwidth += cw;
-								lvc = i;
+								columnWidth = Math.round(totalVariableWidth * this.width / (p.tblwidth - borderAndPaddingWidth * numberOfVariableColumns - fixedColumnsWidth));
+								this.width = columnWidth;
+								initialWidth += columnWidth;
+								iLastVariableColumn = i;
 							}
 						});
-						cr = 0;
-						if (hs) {
-							if (grid.width - gw - (initwidth + brd * vc) !== scw) {
-								cr = grid.width - gw - (initwidth + brd * vc) - scw;
+						correctur = 0;
+						if (hasScrollbar) {
+							if (grid.width - fixedColumnsWidth - (initialWidth + borderAndPaddingWidth * numberOfVariableColumns) !== scrollbarWidth) {
+								correctur = grid.width - fixedColumnsWidth - (initialWidth + borderAndPaddingWidth * numberOfVariableColumns) - scrollbarWidth;
 							}
-						} else if (!hs && Math.abs(grid.width - gw - (initwidth + brd * vc)) !== 1) {
-							cr = grid.width - gw - (initwidth + brd * vc);
+						} else if (!hasScrollbar && Math.abs(grid.width - fixedColumnsWidth - (initialWidth + borderAndPaddingWidth * numberOfVariableColumns)) !== 1) {
+							correctur = grid.width - fixedColumnsWidth - (initialWidth + borderAndPaddingWidth * numberOfVariableColumns);
 						}
-						p.colModel[lvc].width += cr;
-						p.tblwidth = initwidth + cr + brd * vc + gw;
+						p.colModel[iLastVariableColumn].width += correctur;
+						p.tblwidth = initialWidth + correctur + borderAndPaddingWidth * numberOfVariableColumns + fixedColumnsWidth;
 						if (p.tblwidth > p.width) {
-							p.colModel[lvc].width -= (p.tblwidth - parseInt(p.width, 10));
+							p.colModel[iLastVariableColumn].width -= (p.tblwidth - parseInt(p.width, 10));
 							p.tblwidth = p.width;
 						}
 					}
@@ -5277,13 +5277,24 @@
 			}
 			feedback.call(ts, "onRemapColumns", permutation, updateCells, keepHeader);
 		},
-		setGridWidth: function (nwidth, shrink) {
+		setGridWidth: function (newGridWidth, shrink) {
 			return this.each(function () {
-				var $t = this, p = $t.p, cw, grid = $t.grid, initwidth = 0, lvc, vc = 0, hs = false, aw, gw = 0, cr;
+				var $t = this, p = $t.p, columnWidth, grid = $t.grid, initialWidth = 0, iLastVariableColumn, numberOfVariableColumns = 0, hasScrollbar = false, totalVariableWidth, fixedColumnsWidth = 0, correctur;
 				if (!grid || p == null) { return; }
-				var colModel = p.colModel, cm, scw = p.scrollOffset, brd = jgrid.cell_width ? 0 : p.cellLayout, thInfo,
+				$t.fixScrollOffsetAndhBoxPadding();
+				// there are tree categorien of columns important below:
+				//   1) hidden - the columns will be not used in calculation of width
+				//   2) fixed  - we will use the existing width of the columns in the calculation of the total width, but we well not change its width
+				//   3) variable columns - all other visible columns which width can be changed in general
+				// The width of every column consist from the innerWidth and the with of outer parts which will be 0 or cellLayout depend on boxing model used.
+				// The total width of the grid consist of the sum of width of all visible (fixed and variable) columns.
+				// There are outer bDiv which could have scroll bars. The p.scrollOffset hold the width or vertical scrollbar if it exists.
+				// grid.width and p.width need be set to the width of bDiv. The width of all other divs should be set to the same value.
+				//
+				// the input parameter newGridWidth specify new value of outer width (the width of bDiv)
+				var colModel = p.colModel, cm, scrollbarWidth = p.scrollOffset, borderAndPaddingWidth = jgrid.cell_width ? 0 : p.cellLayout, thInfo,
 					headers = grid.headers, footers = grid.footers, bDiv = grid.bDiv, hDiv = grid.hDiv, sDiv = grid.sDiv,
-					cols = grid.cols, delta, cle,
+					cols = grid.cols, delta, colsExist, shrinkFactor,
 					hCols = $(hDiv).find(">div>.ui-jqgrid-htable>thead>tr").first()[0].cells,
 					setWidthOfAllDivs = function (newWidth) {
 						grid.width = p.width = newWidth;
@@ -5304,83 +5315,88 @@
 							}
 						}
 						if (p.footerrow) {
-							$(sDiv).css("width", nwidth + "px");
+							$(sDiv).css("width", newWidth + "px");
 						}
 					};
 				if (typeof shrink !== "boolean") {
 					shrink = p.shrinkToFit;
 				}
-				if (isNaN(nwidth)) { return; }
-				nwidth = parseInt(nwidth, 10); // round till integer value of px
-				setWidthOfAllDivs(nwidth);
+				if (isNaN(newGridWidth)) { return; }
+				newGridWidth = parseInt(newGridWidth, 10); // round till integer value of px
+				setWidthOfAllDivs(newGridWidth);
 				if (shrink === false && p.forceFit === true) { p.forceFit = false; }
 				if (shrink === true) {
+					// calculate initialWidth, fixedColumnsWidth and numberOfVariableColumns
 					$.each(colModel, function () {
 						if (this.hidden === false) {
-							cw = this.widthOrg;
-							initwidth += cw + brd;
+							columnWidth = this.widthOrg;
+							initialWidth += columnWidth + borderAndPaddingWidth;
 							if (this.fixed) {
-								gw += cw + brd;
+								fixedColumnsWidth += this.width + borderAndPaddingWidth;
 							} else {
-								vc++;
+								numberOfVariableColumns++;
 							}
 						}
 					});
-					if (vc === 0) { return; }
-					p.tblwidth = parseInt(initwidth, 10); // round till integer value of px;
-					aw = nwidth - brd * vc - gw;
+					if (numberOfVariableColumns === 0) { return; }
+					p.tblwidth = parseInt(initialWidth, 10); // round till integer value of px;
+					totalVariableWidth = newGridWidth - borderAndPaddingWidth * numberOfVariableColumns - fixedColumnsWidth;
 					if (!isNaN(p.height)) {
 						if (bDiv.clientHeight < bDiv.scrollHeight || $t.rows.length === 1) {
-							hs = true;
-							aw -= scw;
+							hasScrollbar = true;
+							totalVariableWidth -= scrollbarWidth;
 						}
 					}
-					initwidth = 0;
-					cle = cols.length > 0;
+					shrinkFactor = totalVariableWidth / (p.tblwidth - borderAndPaddingWidth * numberOfVariableColumns - fixedColumnsWidth);
+					if (shrinkFactor < 0) { return; }
+					initialWidth = 0;
+					colsExist = cols.length > 0;
 					$.each(colModel, function (i) {
 						if (this.hidden === false && !this.fixed) {
-							cw = this.widthOrg;
-							cw = Math.round(aw * cw / (p.tblwidth - brd * vc - gw));
-							if (cw < 0) { return; }
-							this.width = cw;
-							initwidth += cw;
-							headers[i].width = cw;
-							hCols[i].style.width = cw + "px";
-							if (p.footerrow) { footers[i].style.width = cw + "px"; }
-							if (cle) { cols[i].style.width = cw + "px"; }
-							lvc = i;
+							columnWidth = Math.round(this.widthOrg * shrinkFactor);
+							this.width = columnWidth;
+							initialWidth += columnWidth;
+							headers[i].width = columnWidth;
+							hCols[i].style.width = columnWidth + "px";
+							if (p.footerrow) {
+								footers[i].style.width = columnWidth + "px";
+							}
+							if (colsExist) {
+								cols[i].style.width = columnWidth + "px";
+							}
+							iLastVariableColumn = i;
 						}
 					});
 
-					if (!lvc) { return; }
+					if (!iLastVariableColumn) { return; }
 
-					cr = 0;
-					if (hs) {
-						if (nwidth - gw - (initwidth + brd * vc) !== scw) {
-							cr = nwidth - gw - (initwidth + brd * vc) - scw;
+					correctur = 0;
+					if (hasScrollbar) {
+						if (newGridWidth - fixedColumnsWidth - (initialWidth + borderAndPaddingWidth * numberOfVariableColumns) !== scrollbarWidth) {
+							correctur = newGridWidth - fixedColumnsWidth - (initialWidth + borderAndPaddingWidth * numberOfVariableColumns) - scrollbarWidth;
 						}
-					} else if (Math.abs(nwidth - gw - (initwidth + brd * vc)) !== 1) {
-						cr = nwidth - gw - (initwidth + brd * vc);
+					} else if (Math.abs(newGridWidth - fixedColumnsWidth - (initialWidth + borderAndPaddingWidth * numberOfVariableColumns)) !== 1) {
+						correctur = newGridWidth - fixedColumnsWidth - (initialWidth + borderAndPaddingWidth * numberOfVariableColumns);
 					}
-					cm = colModel[lvc];
-					cm.width += cr;
-					p.tblwidth = parseInt(initwidth + cr + brd * vc + gw, 10); // round till integer value of px;
-					if (p.tblwidth > nwidth) {
-						delta = p.tblwidth - parseInt(nwidth, 10);
-						p.tblwidth = nwidth;
+					cm = colModel[iLastVariableColumn];
+					cm.width += correctur;
+					p.tblwidth = parseInt(initialWidth + correctur + borderAndPaddingWidth * numberOfVariableColumns + fixedColumnsWidth, 10); // round till integer value of px;
+					if (p.tblwidth > newGridWidth) {
+						delta = p.tblwidth - parseInt(newGridWidth, 10);
+						p.tblwidth = newGridWidth;
 						cm.width = cm.width - delta;
 					}
-					cw = cm.width;
-					thInfo = headers[lvc];
-					thInfo.width = cw;
-					hCols[lvc].style.width = cw + "px";
-					if (cle) { cols[lvc].style.width = cw + "px"; }
+					columnWidth = cm.width;
+					thInfo = headers[iLastVariableColumn];
+					thInfo.width = columnWidth;
+					hCols[iLastVariableColumn].style.width = columnWidth + "px";
+					if (colsExist) { cols[iLastVariableColumn].style.width = columnWidth + "px"; }
 					if (p.footerrow) {
-						footers[lvc].style.width = cw + "px";
+						footers[iLastVariableColumn].style.width = columnWidth + "px";
 					}
-					if (p.tblwidth + (hs ? scw : 0) < p.width) { // prabably bDiv.offsetWidth - bDiv.clientWidth is better as scw
+					if (p.tblwidth + (hasScrollbar ? scrollbarWidth : 0) < p.width) { // prabably bDiv.offsetWidth - bDiv.clientWidth is better as scw
 						// decrease the width if required
-						setWidthOfAllDivs(p.tblwidth);
+						setWidthOfAllDivs(p.tblwidth + (hasScrollbar ? scrollbarWidth : 0));
 					}
 					if (bDiv.offsetWidth > bDiv.clientWidth) { // the part seems never work
 						// horizontal scroll bar exist.
@@ -5393,17 +5409,18 @@
 				}
 				if (p.tblwidth) {
 					p.tblwidth = parseInt(p.tblwidth, 10); // round till integer value of px;
-					$($t).css("width", p.tblwidth + "px");
-					getGridComponent(COMPONENT_NAMES.HEADER_TABLE, $(hDiv)).css("width", p.tblwidth + "px");
+					newGridWidth = p.tblwidth;
+					$($t).css("width", newGridWidth + "px");
+					getGridComponent(COMPONENT_NAMES.HEADER_TABLE, $(hDiv)).css("width", newGridWidth + "px");
 					hDiv.scrollLeft = bDiv.scrollLeft;
 					if (p.footerrow) {
-						getGridComponent(COMPONENT_NAMES.FOOTER_TABLE, $(sDiv)).css("width", p.tblwidth + "px");
+						getGridComponent(COMPONENT_NAMES.FOOTER_TABLE, $(sDiv)).css("width", newGridWidth + "px");
 					}
 					// small fix which origin should be examined more exactly
-					delta = Math.abs(p.tblwidth - p.width);
+					delta = Math.abs(newGridWidth - p.width);
 					if (p.shrinkToFit && !shrink && delta < 3 && delta > 0) {
-						if (p.tblwidth < p.width) {
-							setWidthOfAllDivs(p.tblwidth); // decrease the width if required
+						if (newGridWidth < p.width) {
+							setWidthOfAllDivs(newGridWidth); // decrease the width if required
 						}
 						if (bDiv.offsetWidth > bDiv.clientWidth) { // the part seems never work
 							if (!p.autowidth && (p.widthOrg === undefined || p.widthOrg === "auto" || p.widthOrg === "100%")) {
