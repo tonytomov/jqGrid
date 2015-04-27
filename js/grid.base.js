@@ -3421,8 +3421,7 @@
 				setHeadCheckBox = function (checked) {
 					var self = this, gridSelf = self.grid;
 					$(p.cb, gridSelf.hDiv)[p.propOrAttr]("checked", checked);
-					var fid = p.frozenColumns ? p.id + "_frozen" : "";
-					if (fid) {
+					if (p.frozenColumns) {
 						$(p.cb, gridSelf.fhDiv)[p.propOrAttr]("checked", checked);
 					}
 				},
@@ -4010,53 +4009,38 @@
 			$(ts).append(thead);
 			$(ts.tHead).children("tr").children("th").hover(function () { $(this).addClass(hoverStateClasses); }, function () { $(this).removeClass(hoverStateClasses); });
 			if (p.multiselect) {
-				var emp = [], chk;
 				$(p.cb, ts).bind("click", function () {
 					clearArray(p.selarrrow); // p.selarrrow = [];
-					var froz = p.frozenColumns === true ? p.id + "_frozen" : "",
-						highlightClass = getGuiStyles("states.select");
+					var highlightClass = getGuiStyles("states.select"), toCheck, method, ariaSelected, emp = [],
+						iColCb = p.iColByName.cb,
+						frozenRows = p.frozenColumns && grid.fbDiv != null ?
+								grid.fbDiv.children(".ui-jqgrid-btable")[0].rows : null,
+						checkOrUncheck = function (row) {
+							$(row)[method](highlightClass).attr("aria-selected", ariaSelected);
+							$(row.cells[iColCb]).children("input.cbox")[p.propOrAttr]("checked", toCheck);
+						},
+						skipClasses = disabledStateClasses + " ui-subgrid jqgroup jqfoot jqgfirstrow";
 					if (this.checked) {
-						$(ts.rows).each(function (i) {
-							if (i > 0) {
-								if (!$(this).hasClass("ui-subgrid") &&
-										!$(this).hasClass("jqgroup") &&
-										!hasOneFromClasses(this, disabledStateClasses) &&
-										!$(this).hasClass("jqfoot")) {
-									$("#jqg_" + jqID(p.id) + "_" + jqID(this.id))[p.propOrAttr]("checked", true);
-									$(this).addClass(highlightClass).attr("aria-selected", "true");
-									p.selarrrow.push(this.id);
-									p.selrow = this.id;
-									if (froz) {
-										$("#jqg_" + jqID(p.id) + "_" + jqID(this.id), ts.grid.fbDiv)[p.propOrAttr]("checked", true);
-										$("#" + jqID(this.id), ts.grid.fbDiv).addClass(highlightClass);
-									}
-								}
-							}
-						});
-						chk = true;
-						emp = [];
+						toCheck = true;
+						ariaSelected = "true";
+						method = "addClass";
+						p.selrow = ts.rows.length > 1 ? ts.rows[ts.rows.length - 1].id : null;
 					} else {
-						$(ts.rows).each(function (i) {
-							if (i > 0) {
-								if (!$(this).hasClass("ui-subgrid") &&
-										!$(this).hasClass("jqgroup") &&
-										!hasOneFromClasses(this, disabledStateClasses) &&
-										!$(this).hasClass("jqfoot") &&
-										jgrid.detectRowEditing.call(ts, this.id) === null) {
-									$("#jqg_" + jqID(p.id) + "_" + jqID(this.id))[p.propOrAttr]("checked", false);
-									$(this).removeClass(highlightClass).attr("aria-selected", "false");
-									emp.push(this.id);
-									if (froz) {
-										$("#jqg_" + jqID(p.id) + "_" + jqID(this.id), ts.grid.fbDiv)[p.propOrAttr]("checked", false);
-										$("#" + jqID(this.id), ts.grid.fbDiv).removeClass(highlightClass);
-									}
-								}
-							}
-						});
+						toCheck = false;
+						ariaSelected = "false";
+						method = "removeClass";
 						p.selrow = null;
-						chk = false;
 					}
-					feedback.call(ts, "onSelectAll", chk ? p.selarrrow : emp, chk);
+					$(ts.rows).each(function (i) {
+						if (!hasOneFromClasses(this, skipClasses)) {
+							checkOrUncheck(this);
+							(toCheck ? p.selarrrow : emp).push(this.id);
+							if (frozenRows) {
+								checkOrUncheck(frozenRows[i]);
+							}
+						}
+					});
+					feedback.call(ts, "onSelectAll", toCheck ? p.selarrrow : emp, toCheck);
 				});
 			}
 
