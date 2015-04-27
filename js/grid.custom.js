@@ -14,7 +14,11 @@
 /*global jQuery */
 (function ($) {
 	"use strict";
-	var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes"), jqID = jgrid.jqID;
+	var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes"), jqID = jgrid.jqID,
+		getGuiStyles = function (path, jqClasses) {
+			var p = this.p, guiStyle = p.guiStyle || jgrid.defaults.guiStyle || "jQueryUI";
+			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[guiStyle], path), jqClasses || "");
+		};
 	jgrid.extend({
 		getColProp: function (colname) {
 			var ret = {}, t = this[0], iCol;
@@ -207,29 +211,31 @@
 				// p.searching can contains grid specific options
 				// we will don't modify the input options oMuligrid
 				var o = $.extend(true, {
-					autosearch: true,
-					autosearchDelay: 500,
-					searchOnEnter: true,
-					beforeSearch: null,
-					afterSearch: null,
-					beforeClear: null,
-					afterClear: null,
-					searchurl: "",
-					stringResult: false,
-					groupOp: "AND",
-					defaultSearch: "bw",
-					searchOperators: false,
-					resetIcon: "x",
-					operands: { "eq": "==", "ne": "!", "lt": "<", "le": "<=", "gt": ">", "ge": ">=", "bw": "^", "bn": "!^", "in": "=", "ni": "!=", "ew": "|", "en": "!@", "cn": "~", "nc": "!~", "nu": "#", "nn": "!#" }
-				}, jgrid.search, p.searching || {}, oMuligrid || {});
-				var colModel = p.colModel,
+						autosearch: true,
+						autosearchDelay: 500,
+						searchOnEnter: true,
+						beforeSearch: null,
+						afterSearch: null,
+						beforeClear: null,
+						afterClear: null,
+						searchurl: "",
+						stringResult: false,
+						groupOp: "AND",
+						defaultSearch: "bw",
+						searchOperators: false,
+						resetIcon: "x",
+						operands: { "eq": "==", "ne": "!", "lt": "<", "le": "<=", "gt": ">", "ge": ">=", "bw": "^", "bn": "!^", "in": "=", "ni": "!=", "ew": "|", "en": "!@", "cn": "~", "nc": "!~", "nu": "#", "nn": "!#" }
+					}, jgrid.search, p.searching || {}, oMuligrid || {}),
+					colModel = p.colModel,
 					getRes = function (path) {
 						return getGridRes.call($self, path);
 					},
 					errcap = getRes("errors.errcap"),
 					bClose = getRes("edit.bClose"),
-					editMsg = getRes("edit.msg");
-				var triggerToolbar = function () {
+					editMsg = getRes("edit.msg"),
+					hoverClasses = getGuiStyles.call($t, "states.hover"),
+					highlightClass = getGuiStyles.call($t, "states.select"),
+					triggerToolbar = function () {
 						var sdata = {}, j = 0, v, nm, sopt = {}, so;
 						$.each(colModel, function () {
 							var cm = this, $elem = $("#gs_" + jqID(cm.name), (cm.frozen === true && p.frozenColumns === true) ? grid.fhDiv : grid.hDiv);
@@ -424,7 +430,7 @@
 									itemOperand = item.operand;
 									itemText = item.text;
 								}
-								selclass = selected === itemOper ? "ui-state-highlight" : "";
+								selclass = selected === itemOper ? highlightClass : "";
 								str += '<li class="ui-menu-item ' + selclass + '" role="presentation"><a class="ui-corner-all g-menu-item" tabindex="0" role="menuitem" value="' + itemOper + '" data-oper="' + itemOperand + '"><table' + (jgrid.msie && jgrid.msiever() < 8 ? ' cellspacing="0"' : '') + '><tr><td style="width:25px">' + itemOperand + '</td><td>' + itemText + '</td></tr></table></a></li>';
 							}
 						}
@@ -432,8 +438,8 @@
 						$("body").append(str);
 						$("#sopt_menu").addClass("ui-menu ui-widget ui-widget-content ui-corner-all");
 						$("#sopt_menu > li > a").hover(
-							function () { $(this).addClass("ui-state-hover"); },
-							function () { $(this).removeClass("ui-state-hover"); }
+							function () { $(this).addClass(hoverClasses); },
+							function () { $(this).removeClass(hoverClasses); }
 						).click(function () {
 							var v = $(this).attr("value"),
 								oper = $(this).data("oper");
@@ -888,7 +894,9 @@
 				var $t = this, $self = $($t), p = $t.p, grid = $t.grid;
 				if (!grid || p == null || p.frozenColumns === true) { return; }
 				var cm = p.colModel, i, len = cm.length, maxfrozen = -1, frozen = false, frozenIds = [], $colHeaderRow,// nonFrozenIds = [],
-					tid = jqID(p.id); // one can use p.idSel and remove "#"
+					tid = jqID(p.id), // one can use p.idSel and remove "#"
+					hoverClasses = getGuiStyles.call($t, "states.hover"),
+					disabledClass = getGuiStyles.call($t, "states.disabled");
 				// TODO treeGrid and grouping  Support
 				// TODO: allow to edit columns AFTER frozen columns
 				if (p.subGrid === true || p.treeGrid === true || p.cellEdit === true || p.scroll) {
@@ -997,9 +1005,9 @@
 					$self.bind("jqGridSortCol.setFrozenColumns", function (e, index, idxcol) {
 						var previousSelectedTh = $("tr.ui-jqgrid-labels:last th:eq(" + p.lastsort + ")", grid.fhDiv), newSelectedTh = $("tr.ui-jqgrid-labels:last th:eq(" + idxcol + ")", grid.fhDiv);
 
-						$("span.ui-grid-ico-sort", previousSelectedTh).addClass("ui-state-disabled");
+						$("span.ui-grid-ico-sort", previousSelectedTh).addClass(disabledClass);
 						$(previousSelectedTh).attr("aria-selected", "false");
-						$("span.ui-icon-" + p.sortorder, newSelectedTh).removeClass("ui-state-disabled");
+						$("span.ui-icon-" + p.sortorder, newSelectedTh).removeClass(disabledClass);
 						$(newSelectedTh).attr("aria-selected", "true");
 						if (!p.viewsortcols[0]) {
 							if (p.lastsort !== idxcol) {
@@ -1087,8 +1095,8 @@
 						$frozenBTable.appendTo(grid.fbDiv);
 						if (p.hoverrows === true) {
 							var hoverRows = function (tr, method, additionalRows) {
-									$(tr)[method]("ui-state-hover");
-									$(additionalRows[tr.rowIndex])[method]("ui-state-hover");
+									$(tr)[method](hoverClasses);
+									$(additionalRows[tr.rowIndex])[method](hoverClasses);
 								};
 							$(frozenRows).filter(".jqgrow").hover(
 								function () {
@@ -1157,15 +1165,15 @@
 					}
 					$self.unbind(".setFrozenColumns");
 					if (p.hoverrows === true) {
-						var ptr;
+						var ptr, hoverClasses = getGuiStyles.call($t, "states.hover");
 						$self.bind("mouseover", function (e) {
 							ptr = $(e.target).closest("tr.jqgrow");
 							if ($(ptr).attr("class") !== "ui-subgrid") {
-								$(ptr).addClass("ui-state-hover");
+								$(ptr).addClass(hoverClasses);
 							}
 						}).bind("mouseout", function (e) {
 							ptr = $(e.target).closest("tr.jqgrow");
-							$(ptr).removeClass("ui-state-hover");
+							$(ptr).removeClass(hoverClasses);
 						});
 					}
 					p.frozenColumns = false;
