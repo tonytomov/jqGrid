@@ -197,7 +197,10 @@ $.jgrid.extend({
 			if(!$t.grid || !$t.p.treeGrid) {return;}
 			var childern = $($t).jqGrid("getNodeChildren",record),
 			//if ($($t).jqGrid("isVisibleNode",record)) {
-			expanded = $t.p.treeReader.expanded_field;
+			expanded = $t.p.treeReader.expanded_field,
+			rowid  = record[$t.p.localReader.id];
+			var ret = $.isFunction($t.p.beforeExpandTreeGridRow) ? $t.p.beforeExpandTreeGridRow.call($t, rowid, record, childern) : true;
+			if( ret === false ) { return; }
 			$(childern).each(function(){
 				var id  = $t.p.idPrefix + $.jgrid.getAccessor(this,$t.p.localReader.id);
 				$($($t).jqGrid('getGridRowById', id)).css("display","");
@@ -205,6 +208,9 @@ $.jgrid.extend({
 					$($t).jqGrid("expandRow",this);
 				}
 			});
+			if($.isFunction($t.p.afterExpandTreeGridRow)) {
+				$t.p.afterExpandTreeGridRow.call($t, rowid, record, childern);
+			}
 			//}
 		});
 	},
@@ -213,7 +219,10 @@ $.jgrid.extend({
 			var $t = this;
 			if(!$t.grid || !$t.p.treeGrid) {return;}
 			var childern = $($t).jqGrid("getNodeChildren",record),
-			expanded = $t.p.treeReader.expanded_field;
+			expanded = $t.p.treeReader.expanded_field,
+			rowid  = record[$t.p.localReader.id];
+			var ret = $.isFunction($t.p.beforeCollapseTreeGridRow) ? $t.p.beforeCollapseTreeGridRow.call($t, rowid, record, childern) : true;
+			if( ret === false ) { return; }
 			$(childern).each(function(){
 				var id  = $t.p.idPrefix + $.jgrid.getAccessor(this,$t.p.localReader.id);
 				$($($t).jqGrid('getGridRowById', id)).css("display","none");
@@ -221,6 +230,9 @@ $.jgrid.extend({
 					$($t).jqGrid("collapseRow",this);
 				}
 			});
+			if($.isFunction($t.p.afterCollapseTreeGridRow)) {
+				$t.p.afterCollapseTreeGridRow.call($t, rowid, record, childern);
+			}			
 		});
 	},
 	// NS ,adjacency models
@@ -447,9 +459,12 @@ $.jgrid.extend({
 			rgt = this.p.treeReader.right_field;
 
 			if(!rc[expanded]) {
-				var id = $.jgrid.getAccessor(rc,this.p.localReader.id);
-				var rc1 = $("#" + this.p.idPrefix + $.jgrid.jqID(id),this.grid.bDiv)[0];
-				var position = this.p._index[id];
+				var id = $.jgrid.getAccessor(rc,this.p.localReader.id),
+				rc1 = $("#" + this.p.idPrefix + $.jgrid.jqID(id),this.grid.bDiv)[0],
+				position = this.p._index[id],
+				ret = $.isFunction(this.p.beforeExpandTreeGridNode) ? this.p.beforeExpandTreeGridNode.call(this, id, rc ) : true;
+				if( ret === false ) { return; }
+
 				if( $(this).jqGrid("isNodeLoaded",this.p.data[position]) ) {
 					rc[expanded] = true;
 					$("div.treeclick",rc1).removeClass(this.p.treeIcons.plus+" tree-plus").addClass(this.p.treeIcons.minus+" tree-minus");
@@ -471,6 +486,9 @@ $.jgrid.extend({
 						$(this).jqGrid("setGridParam",{postData:{nodeid:'',parentid:'',n_level:''}}); 
 					}
 				}
+				if($.isFunction(this.p.afterExpandTreeGridNode)) {
+					this.p.afterExpandTreeGridNode.call(this, id, rc )
+				}
 			}
 		});
 	},
@@ -479,10 +497,15 @@ $.jgrid.extend({
 			if(!this.grid || !this.p.treeGrid) {return;}
 			var expanded = this.p.treeReader.expanded_field;
 			if(rc[expanded]) {
+				var id = $.jgrid.getAccessor(rc,this.p.localReader.id),
+				ret = $.isFunction(this.p.beforeCollapseTreeGridNode) ? this.p.beforeCollapseTreeGridNode.call(this, id, rc ) : true,
+				rc1 = $("#" + this.p.idPrefix + $.jgrid.jqID(id),this.grid.bDiv)[0];
 				rc[expanded] = false;
-				var id = $.jgrid.getAccessor(rc,this.p.localReader.id);
-				var rc1 = $("#" + this.p.idPrefix + $.jgrid.jqID(id),this.grid.bDiv)[0];
+				if( ret === false ) { return; }
 				$("div.treeclick",rc1).removeClass(this.p.treeIcons.minus+" tree-minus").addClass(this.p.treeIcons.plus+" tree-plus");
+				if($.isFunction(this.p.afterCollapseTreeGridNode)) {
+					this.p.afterCollapseTreeGridNode.call(this, id, rc )
+				}
 			}
 		});
 	},
