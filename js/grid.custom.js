@@ -162,7 +162,13 @@
 		setGridState: function (state) {
 			return this.each(function () {
 				var $t = this, p = $t.p, grid = $t.grid, cDiv = grid.cDiv, $uDiv = $(grid.uDiv), $ubDiv = $(grid.ubDiv);
-				if (!grid) { return; }
+				if (!grid || p == null) { return; }
+				var iconSet = p.iconSet || jgrid.defaults.iconSet || "jQueryUI",
+					getMinimizeIcon = function (path) {
+						return jgrid.getIconRes(iconSet, "gridMinimize." + path);
+					},
+					visibleGridIcon = getMinimizeIcon("visible"), // "ui-icon-circle-triangle-n"
+					hiddenGridIcon = getMinimizeIcon("hidden");  // "ui-icon-circle-triangle-s"
 				if (state === "hidden") {
 					$(".ui-jqgrid-bdiv, .ui-jqgrid-hdiv", p.gView).slideUp("fast");
 					if (p.pager) { $(p.pager).slideUp("fast"); }
@@ -174,7 +180,7 @@
 						$uDiv.slideUp("fast");
 					}
 					if (p.footerrow) { $(".ui-jqgrid-sdiv", p.gBox).slideUp("fast"); }
-					$(".ui-jqgrid-titlebar-close span", cDiv).removeClass("ui-icon-circle-triangle-n").addClass("ui-icon-circle-triangle-s");
+					$(".ui-jqgrid-titlebar-close span", cDiv).removeClass(visibleGridIcon).addClass(hiddenGridIcon);
 					p.gridstate = "hidden";
 				} else if (state === "visible") {
 					$(".ui-jqgrid-hdiv, .ui-jqgrid-bdiv", p.gView).slideDown("fast");
@@ -187,7 +193,7 @@
 						$uDiv.slideDown("fast");
 					}
 					if (p.footerrow) { $(".ui-jqgrid-sdiv", p.gBox).slideDown("fast"); }
-					$(".ui-jqgrid-titlebar-close span", cDiv).removeClass("ui-icon-circle-triangle-s").addClass("ui-icon-circle-triangle-n");
+					$(".ui-jqgrid-titlebar-close span", cDiv).removeClass(hiddenGridIcon).addClass(visibleGridIcon);
 					p.gridstate = "visible";
 				}
 			});
