@@ -205,7 +205,7 @@
 	var $FnFmatter = function (formatType, cellval, opts, rwd, act) {
 		// build main options before element iteration
 		var v = cellval;
-		opts = $.extend(true, {}, getGridRes.call($(this), "formatter"), opts);
+		opts = $.extend({}, getGridRes.call($(this), "formatter"), opts);
 		//$.extend(true, {}, getRes(locales[this.p.locale], "formatter"), jgrid.formatter, opts);
 
 		try {
@@ -610,8 +610,8 @@
 	$.unformat = function (cellval, options, pos, cnt) {
 		// specific for jqGrid only
 		var ret, formatType = options.colModel.formatter, p = this.p,
-			op = options.colModel.formatoptions || {}, sep,
-			re = /([\.\*\_\'\(\)\{\}\+\?\\])/g,
+			op = options.colModel.formatoptions || {},// sep,
+			//re = /([\.\*\_\'\(\)\{\}\+\?\\])/g,
 			unformatFunc = options.colModel.unformat || ($FnFmatter[formatType] && $FnFmatter[formatType].unformat);
 		if (cellval instanceof jQuery && cellval.length > 0) {
 			cellval = cellval[0];
@@ -626,32 +626,37 @@
 			ret = unformatFunc.call(this, $(cellval).text(), options, cellval);
 		} else if (formatType !== undefined && typeof formatType === "string") {
 			//var opts = $.extend(true, {}, getRes(locales[p.locale], "formatter"), jgrid.formatter || {}), stripTag;
-			var opts = getGridRes.call($(this), "formatter"), stripTag;
+			var $self = $(this), //stripTag, //opts = getGridRes.call($self, "formatter"),
+				getFormaterOption = function (formatterName, optionName) {
+					return op[optionName] !== undefined ?
+						op[optionName] :
+						getGridRes.call($self, "formatter." + formatterName + "." + optionName);
+				},
+				cutThousandsSeparator = function (formatterName, val) {
+					var separator = getFormaterOption(formatterName, "thousandsSeparator")
+							.replace(/([\.\*\_\'\(\)\{\}\+\?\\])/g, "\\$1");
+					return val.replace(new RegExp(separator, "g"), "");
+				};
 			switch (formatType) {
 				case "integer":
-					op = $.extend({}, opts.integer, op);
-					sep = op.thousandsSeparator.replace(re, "\\$1");
-					stripTag = new RegExp(sep, "g");
-					ret = $(cellval).text().replace(stripTag, "");
+					ret = cutThousandsSeparator("integer", $(cellval).text());
 					break;
 				case "number":
-					op = $.extend({}, opts.number, op);
-					sep = op.thousandsSeparator.replace(re, "\\$1");
-					stripTag = new RegExp(sep, "g");
-					ret = $(cellval).text().replace(stripTag, "").replace(op.decimalSeparator, ".");
+					ret = cutThousandsSeparator("number", $(cellval).text())
+							.replace(getFormaterOption("number", "decimalSeparator"), ".");
 					break;
 				case "currency":
-					op = $.extend({}, opts.currency, op);
-					sep = op.thousandsSeparator.replace(re, "\\$1");
-					stripTag = new RegExp(sep, "g");
 					ret = $(cellval).text();
-					if (op.prefix && op.prefix.length) {
-						ret = ret.substr(op.prefix.length);
+					var prefix = getFormaterOption("currency", "prefix"),
+						suffix = getFormaterOption("currency", "suffix");
+					if (prefix && prefix.length) {
+						ret = ret.substr(prefix.length);
 					}
-					if (op.suffix && op.suffix.length) {
-						ret = ret.substr(0, ret.length - op.suffix.length);
+					if (suffix && suffix.length) {
+						ret = ret.substr(0, ret.length - suffix.length);
 					}
-					ret = ret.replace(stripTag, "").replace(op.decimalSeparator, ".");
+					ret = cutThousandsSeparator("number", ret)
+							.replace(getFormaterOption("number", "decimalSeparator"), ".");
 					break;
 				case "checkbox":
 					var cbv = (options.colModel.editoptions != null && typeof options.colModel.editoptions.value === "string") ?
