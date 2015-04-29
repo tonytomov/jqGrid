@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v4.8.2 - 2015-04-27
+* @license Guriddo jqGrid JS - v4.8.2 - 2015-04-29
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1039,7 +1039,7 @@ $.fn.jqGrid = function( pin ) {
 					var diff = x.pageX-this.resizing.startX,
 					h = this.headers[this.resizing.idx],
 					newWidth = p.direction === "ltr" ? h.width + diff : h.width - diff, hn, nWn;
-					if(newWidth > 33) {
+					if(newWidth > p.minColWidth) {
 						this.curGbox.css({left:this.resizing.sOL+diff});
 						if(p.forceFit===true ){
 							hn = this.headers[this.resizing.idx+p.nv];
@@ -1055,7 +1055,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 			},
-			dragEnd: function() {
+			dragEnd: function( events ) {
 				this.hDiv.style.cursor = "default";
 				if(this.resizing) {
 					var idx = this.resizing.idx,
@@ -1085,8 +1085,10 @@ $.fn.jqGrid = function( pin ) {
 							this.sDiv.scrollLeft = this.bDiv.scrollLeft;
 						}
 					}
-					$(ts).triggerHandler("jqGridResizeStop", [nw, idx]);
-					if($.isFunction(p.resizeStop)) { p.resizeStop.call(ts,nw,idx); }
+					if( events ) {
+						$(ts).triggerHandler("jqGridResizeStop", [nw, idx]);
+						if($.isFunction(p.resizeStop)) { p.resizeStop.call(ts,nw,idx); }
+					}
 				}
 				this.curGbox = null;
 				document.onselectstart=function(){return true;};
@@ -3200,7 +3202,7 @@ $.fn.jqGrid = function( pin ) {
 		});
 		$(".ui-jqgrid-labels",grid.hDiv).bind("selectstart", function () { return false; });
 		$(document).bind( "mouseup.jqGrid" + ts.p.id, function () {
-			if(grid.resizing) {	grid.dragEnd(); return false;}
+			if(grid.resizing) {	grid.dragEnd( true ); return false;}
 			return true;
 		});
 		ts.formatCol = formatCol;
@@ -4526,6 +4528,51 @@ $.jgrid.extend({
 				}
 				this.p.frozenColumns = false;
 			}
+		});
+	},
+	resizeColumn : function (iCol, newWidth) {
+		return this.each(function(){
+			var grid = this.grid, p = this.p, cm = p.colModel, i, cmLen = cm.length, diff, diffnv;
+			if(typeof iCol === "string" ) {
+				for(i = 0; i < cmLen; i++) {
+					if(cm[i].name === iCol) {
+						iCol = i;
+						break;
+					}
+				}
+			} else {
+				iCol = parseInt( iCol, 10 );
+			}
+
+			newWidth = parseInt( newWidth, 10);
+
+			// filters
+			if(typeof iCol !== "number" || iCol < 0 || iCol > cm.length-1 || typeof newWidth !== "number" ) { 
+				return; 
+			}
+
+			if( newWidth < p.minColWidth ) { return; }
+			
+			if( p.forceFit ) {
+				p.nv = 0;
+				for (i = iCol+1; i < cmLen; i++){
+					if(cm[i].hidden !== true ) {
+						p.nv = i - iCol; 
+						break;
+					}
+				}
+			}
+			// use resize stuff
+			grid.resizing = {idx : iCol };
+			diff = newWidth - grid.headers[iCol].width;
+			if(p.forceFit) {
+				diffnv = grid.headers[ iCol + p.nv].width - diff;
+				if(diffnv < p.minColWidth) { return; }
+				grid.headers[ iCol + p.nv].newWidth = grid.headers[ iCol + p.nv].width - diff;
+			} 
+			grid.newWidth = p.tblwidth + diff;
+			grid.headers[ iCol ].newWidth = newWidth;
+			grid.dragEnd( false );
 		});
 	}
 });
