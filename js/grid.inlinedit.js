@@ -83,6 +83,11 @@
 						$(tr.cells[savedRowInfo.ic]).removeClass("edit-cell " + highlightClass);
 						$(tr).addClass(highlightClass).attr({ "aria-selected": "true", "tabindex": "0" });
 					}
+					// TODO: get indFrozen (tdFrozen), enumerate colModel instead of td of ind
+					// one can test whether column is still frozen. In the case one can get td by rowIndex (iCol)
+					// from tdFrozen. The last (non-frozen) td elements one should get from ind (td)
+					// one can consider to introduce the method which enumerates td in the row. It
+					// should return the mix from frozen and non-frozen cells of the row specified by iCol (rowIndex)
 					$("td[role=gridcell]", ind).each(function (i) {
 						var cm = colModel[i], nm = cm.name, tmp;
 						try {
