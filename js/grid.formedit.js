@@ -15,6 +15,7 @@
 	var jgrid = $.jgrid, feedback = jgrid.feedback, fullBoolFeedback = jgrid.fullBoolFeedback, jqID = jgrid.jqID,
 		hideModal = jgrid.hideModal, viewModal = jgrid.viewModal, createModal = jgrid.createModal, infoDialog = jgrid.info_dialog,
 		mergeCssClasses = jgrid.mergeCssClasses, hasOneFromClasses = jgrid.hasOneFromClasses,
+		builderFmButon = jgrid.builderFmButon,
 		getCssStyleOrFloat = function ($elem, styleName) {
 			var v = $elem[0].style[styleName];
 			return v.indexOf("px") >= 0 ? parseFloat(v) : v;
@@ -45,9 +46,11 @@
 				}
 			}
 		},
-		getGuiStyles = function (path, jqClasses) {
-			var p = this.p, guiStyle = p.guiStyle || jgrid.defaults.guiStyle || "jQueryUI";
-			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[guiStyle], path), jqClasses || "");
+		//getGuiStyles = function (path, jqClasses) {
+		//	return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], path), jqClasses || "");
+		//},
+		getGuiStateStyles = function (path) {
+			return jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], "states." + path);
 		};
 	jgrid.extend({
 		searchGrid: function (oMuligrid) {
@@ -155,10 +158,11 @@
 						fil.attr("dir", "rtl");
 					}
 					var bQ = "", tmpl = "", colnm, found = false, bt, cmi = -1, columns = $.extend([], p.colModel),
-						bS = "<a id='" + fid + "_search' class='fm-button ui-state-default ui-corner-all fm-button-icon-right ui-reset'><span class='fm-button-icon " + mergeCssClasses(commonIconClass, o.findDialogIcon) + "'></span><span class='fm-button-text'>" + o.Find + "</span></a>",
-						bC = "<a id='" + fid + "_reset' class='fm-button ui-state-default ui-corner-all fm-button-icon-left ui-search'><span class='fm-button-icon " + mergeCssClasses(commonIconClass, o.resetDialogIcon) + "'></span><span class='fm-button-text'>" + o.Reset + "</span></a>";
+						bS = builderFmButon.call($t, fid + "_search", o.Find, mergeCssClasses(commonIconClass, o.findDialogIcon), "right"),
+						bC = builderFmButon.call($t, fid + "_reset", o.Reset, mergeCssClasses(commonIconClass, o.resetDialogIcon), "left");
 					if (o.showQuery) {
-						bQ = "<a id='" + fid + "_query' class='fm-button ui-state-default ui-corner-all fm-button-icon-left'><span class='fm-button-icon " + mergeCssClasses(commonIconClass, o.queryDialogIcon) + "'></span><span class='fm-button-text'>Query</span></a>&#160;";
+						bQ = builderFmButon.call($t, fid + "_query", "Query", mergeCssClasses(commonIconClass, o.queryDialogIcon), "left") +
+							"&#160;";
 					}
 					if (!o.columns.length) {
 						$.each(columns, function (i, n) {
@@ -350,9 +354,9 @@
 						return false;
 					});
 					showFilter($(fid));
-					var hoverClasses = getGuiStyles.call($t, "states.hover");
+					var hoverClasses = getGuiStateStyles.call($t, "hover");
 					// !!! The next row will not work if "states.disabled" is defined using more as one CSS class
-					$(".fm-button:not(." + getGuiStyles.call($t, "states.disabled").split(" ").join(".") + ")", fil).hover(
+					$(".fm-button:not(." + getGuiStateStyles.call($t, "disabled").split(" ").join(".") + ")", fil).hover(
 						function () { $(this).addClass(hoverClasses); },
 						function () { $(this).removeClass(hoverClasses); }
 					);
@@ -423,8 +427,9 @@
 
 				var frmgr = "FrmGrid_" + gridId, frmgrId = frmgr, frmtborg = "TblGrid_" + gridId, frmtb = "#" + jqID(frmtborg), frmtb2 = frmtb + "_2",
 					ids = { themodal: "editmod" + gridId, modalhead: "edithd" + gridId, modalcontent: "editcnt" + gridId, resizeAlso: frmgr },
-					themodalSelector = "#" + jqID(ids.themodal), gboxSelector = p.gBox, propOrAttr = p.propOrAttr,
+					themodalSelector = "#" + jqID(ids.themodal), gboxSelector = p.gBox, propOrAttr = p.propOrAttr, colModel = p.colModel, iColByName = p.iColByName,
 					maxCols = 1, maxRows = 0, postdata, diff, frmoper, commonIconClass = o.commonIconClass,
+					errcap = $self.jqGrid("getGridRes", "errors.errcap"),
 					editFeedback = function () {
 						var args = $.makeArray(arguments);
 						args.unshift("");
@@ -432,11 +437,11 @@
 						args.unshift(o);
 						return feedback.apply($t, args);
 					},
-					hoverClasses = getGuiStyles.call($t, "states.hover"),
-					disabledClass = getGuiStyles.call($t, "states.disabled"),
-					highlightClass = getGuiStyles.call($t, "states.select"),
-					activeClass = getGuiStyles.call($t, "states.active"),
-					errorClass = getGuiStyles.call($t, "states.error");
+					hoverClasses = getGuiStateStyles.call($t, "hover"),
+					disabledClass = getGuiStateStyles.call($t, "disabled"),
+					highlightClass = getGuiStateStyles.call($t, "select"),
+					activeClass = getGuiStateStyles.call($t, "active"),
+					errorClass = getGuiStateStyles.call($t, "error");
 				frmgr = "#" + jqID(frmgr);
 				if (rowid === "new") {
 					rowid = "_empty";
@@ -457,21 +462,22 @@
 				}
 				function getFormData() {
 					$(frmtb + " > tbody > tr > td .FormElement").each(function () {
-						var $celm = $(".customelement", this), nm = this.name, cm, iCol;
+						var $celm = $(".customelement", this), nm = this.name, cm, iCol, editoptions, formatoptions, newformat;
 						if ($celm.length) {
 							nm = $celm.attr("name");
-							iCol = p.iColByName[nm];
+							iCol = iColByName[nm];
 							if (iCol !== undefined) {
-								cm = p.colModel[iCol];
-								if (cm.editoptions && $.isFunction(cm.editoptions.custom_value)) {
+								cm = colModel[iCol];
+								editoptions = cm.editoptions || {};
+								if ($.isFunction(editoptions.custom_value)) {
 									try {
-										postdata[nm] = cm.editoptions.custom_value.call($t, $("#" + jqID(nm), frmtb), "get");
+										postdata[nm] = editoptions.custom_value.call($t, $("#" + jqID(nm), frmtb), "get");
 										if (postdata[nm] === undefined) { throw "e1"; }
 									} catch (e) {
 										if (e === "e1") {
-											infoDialog.call($t, jgrid.errors.errcap, "function 'custom_value' " + jgrid.edit.msg.novalue, jgrid.edit.bClose);
+											infoDialog.call($t, errcap, "function 'custom_value' " + o.msg.novalue, o.bClose);
 										} else {
-											infoDialog.call($t, jgrid.errors.errcap, e.message, jgrid.edit.bClose);
+											infoDialog.call($t, errcap, e.message, o.bClose);
 										}
 									}
 									return true;
@@ -480,23 +486,14 @@
 						} else {
 							switch ($(this).get(0).type) {
 								case "checkbox":
-									if ($(this).is(":checked")) {
-										postdata[nm] = $(this).val();
-									} else {
-										var ofv = $(this).attr("offval");
-										postdata[nm] = ofv;
-									}
+									postdata[nm] = $(this).is(":checked") ? $(this).val() : $(this).attr("offval");
 									break;
 								case "select-one":
 									postdata[nm] = $("option:selected", this).val();
 									break;
 								case "select-multiple":
 									postdata[nm] = $(this).val();
-									if (postdata[nm]) {
-										postdata[nm] = postdata[nm].join(",");
-									} else {
-										postdata[nm] = "";
-									}
+									postdata[nm] = postdata[nm] ? postdata[nm].join(",") : "";
 									var selectedText = [];
 									$("option:selected", this).each(
 										function (i, selected) {
@@ -513,13 +510,12 @@
 								case "date":
 									postdata[nm] = $(this).val();
 									if (String(postdata[nm]).split("-").length === 3) {
-										iCol = p.iColByName[nm];
+										iCol = iColByName[nm];
 										if (iCol !== undefined) {
-											cm = p.colModel[iCol];
-											var newformat = cm.formatoptions != null && cm.formatoptions.newformat ?
-														cm.formatoptions.newformat :
-														$self.jqGrid("getGridRes", "formatter.date.newformat");
-											postdata[nm] = $.jgrid.parseDate.call($self[0], "Y-m-d", postdata[nm], newformat);
+											cm = colModel[iCol];
+											formatoptions = cm.formatoptions || {};
+											newformat = formatoptions.newformat || $self.jqGrid("getGridRes", "formatter.date.newformat");
+											postdata[nm] = jgrid.parseDate.call($self[0], "Y-m-d", postdata[nm], newformat);
 										}
 									}
 									break;
@@ -539,8 +535,8 @@
 					if (rowid !== "_empty") {
 						ind = $self.jqGrid("getInd", rowid);
 					}
-					$(p.colModel).each(function (i) {
-						var cm = this, nm = cm.name, hc, trdata, tmp, dc, elc, editable = cm.editable, disabled = false, readonly = false,
+					$(colModel).each(function (i) {
+						var cm = this, nm = cm.name, $td, hc, trdata, tmp, dc, elc, editable = cm.editable, disabled = false, readonly = false,
 							mode = rowid === "_empty" ? "addForm" : "editForm";
 						if ($.isFunction(editable)) {
 							editable = editable.call($t, {
@@ -576,10 +572,11 @@
 							if (ind === false) {
 								tmp = "";
 							} else {
+								$td = $($t.rows[ind].cells[i]); // $("td[role=gridcell]:eq(" + i + ")", $t.rows[ind])
 								try {
-									tmp = $.unformat.call($t, $("td[role=gridcell]:eq(" + i + ")", $t.rows[ind]), { rowId: rowid, colModel: cm }, i);
+									tmp = $.unformat.call($t, $td, { rowId: rowid, colModel: cm }, i);
 								} catch (_) {
-									tmp = (cm.edittype && cm.edittype === "textarea") ? $("td[role=gridcell]:eq(" + i + ")", $t.rows[ind]).text() : $("td[role=gridcell]:eq(" + i + ")", $t.rows[ind]).html();
+									tmp = (cm.edittype && cm.edittype === "textarea") ? $td.text() : $td.html();
 								}
 								if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) { tmp = ""; }
 							}
@@ -685,7 +682,8 @@
 					}
 					var tre = $self.jqGrid("getInd", rowid, true);
 					if (!tre) { return; }
-					$("td[role=gridcell]", tre).each(function (i) {
+					//$("td[role=gridcell]", tre)
+					$(tre.cells).filter("td[role=gridcell]").each(function (i) {
 						nm = cm[i].name;
 						// hidden fields are included in the form
 						if (nm !== "cb" && nm !== "subgrid" && nm !== "rn" && cm[i].editable === true) {
@@ -751,9 +749,9 @@
 										} else { throw "e1"; }
 									} catch (e) {
 										if (e === "e1") {
-											infoDialog.call($t, jgrid.errors.errcap, "function 'custom_value' " + jgrid.edit.msg.nodefined, jgrid.edit.bClose);
+											infoDialog.call($t, errcap, "function 'custom_value' " + o.msg.nodefined, o.bClose);
 										} else {
-											infoDialog.call($t, jgrid.errors.errcap, e.message, jgrid.edit.bClose);
+											infoDialog.call($t, errcap, e.message, o.bClose);
 										}
 									}
 									break;
@@ -765,9 +763,9 @@
 				}
 				function setNullsOrUnformat() {
 					var url = o.url || p.editurl;
-					$.each(p.colModel, function (i, cm) {
+					$.each(colModel, function (i, cm) {
 						var cmName = cm.name, value = postdata[cmName];
-						if (cm.formatter && cm.formatter === "date" && (cm.formatoptions == null || cm.formatoptions.sendFormatted !== true)) {
+						if (cm.formatter === "date" && (cm.formatoptions == null || cm.formatoptions.sendFormatted !== true)) {
 							// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
 							// Floating point separator for example
 							postdata[cmName] = $.unformat.date.call($t, value, cm);
@@ -1061,7 +1059,7 @@
 					dw = isNaN(o.datawidth) ? o.datawidth : o.datawidth + "px",
 					frm = $("<form name='FormPost' id='" + frmgrId + "' class='FormGrid' onSubmit='return false;' style='width:" + dw + ";overflow:auto;position:relative;height:" + dh + ";'></form>").data("disabled", false),
 					tbl = $("<table id='" + frmtborg + "' class='EditTable'" + (jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "") + "><tbody></tbody></table>");
-				$(p.colModel).each(function () {
+				$(colModel).each(function () {
 					var fmto = this.formoptions;
 					maxCols = Math.max(maxCols, fmto ? fmto.colpos || 0 : 0);
 					maxRows = Math.max(maxRows, fmto ? fmto.rowpos || 0 : 0);
@@ -1084,10 +1082,10 @@
 					bn = rtlb ? "pData" : "nData";
 				createData(rowid, tbl, maxCols);
 				// buttons at footer
-				var bP = "<a id='" + bp + "' class='fm-button ui-state-default ui-corner-left'><span class='" + mergeCssClasses(commonIconClass, o.prevIcon) + "'></span></a>",
-					bN = "<a id='" + bn + "' class='fm-button ui-state-default ui-corner-right'><span class='" + mergeCssClasses(commonIconClass, o.nextIcon) + "'></span></a>",
-					bS = "<a id='sData' class='fm-button ui-state-default ui-corner-all'><span class='fm-button-text'>" + o.bSubmit + "</span></a>",
-					bC = "<a id='cData' class='fm-button ui-state-default ui-corner-all'><span class='fm-button-text'>" + o.bCancel + "</span></a>",
+				var bP = builderFmButon.call($t, bp, "", mergeCssClasses(commonIconClass, o.prevIcon), "", "left"),
+					bN = builderFmButon.call($t, bn, "", mergeCssClasses(commonIconClass, o.nextIcon), "", "right"),
+					bS = builderFmButon.call($t, "sData", o.bSubmit),
+					bC = builderFmButon.call($t, "cData", o.bCancel),
 					bt = "<table" + (jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "") + " class='EditTable' id='" + frmtborg + "_2'><tbody><tr><td colspan='2'><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr id='Act_Buttons'><td class='navButton navButton-" + p.direction + "'>" + (rtlb ? bN + bP : bP + bN) + "</td><td class='EditButton EditButton-" + p.direction + "'>" + bS + "&#160;" + bC + "</td></tr>";
 				bt += "<tr style='display:none' class='binfo'><td class='bottominfo' colspan='2'>" + o.bottominfo + "</td></tr>";
 				bt += "</tbody></table>";
@@ -1166,9 +1164,9 @@
 				addFormIcon($("#sData", frmtb2), o.saveicon, commonIconClass);
 				addFormIcon($("#cData", frmtb2), o.closeicon, commonIconClass);
 				if (o.checkOnSubmit || o.checkOnUpdate) {
-					bS = "<a id='sNew' class='fm-button ui-state-default ui-corner-all' style='z-index:1002'>" + o.bYes + "</a>";
-					bN = "<a id='nNew' class='fm-button ui-state-default ui-corner-all' style='z-index:1002'>" + o.bNo + "</a>";
-					bC = "<a id='cNew' class='fm-button ui-state-default ui-corner-all' style='z-index:1002'>" + o.bExit + "</a>";
+					bS = builderFmButon.call($t, "sNew", o.bYes);
+					bN = builderFmButon.call($t, "nNew", o.bNo);
+					bC = builderFmButon.call($t, "cNew", o.bExit);
 					var zI = o.zIndex || 999;
 					zI++;
 					$("<div class='" + o.overlayClass + " jqgrid-overlay confirm' style='z-index:" + zI + ";display:none;'>&#160;" + "</div><div class='confirm ui-widget-content ui-jqconfirm' style='z-index:" + (zI + 1) + "'>" + o.saveData + "<br/><br/>" + bS + bN + bC + "</div>").insertAfter(frmgr);
@@ -1331,7 +1329,7 @@
 				var frmgr = "#ViewGrid_" + jqID(gridId), frmtb = "#ViewTbl_" + jqID(gridId), frmtb2 = frmtb + "_2",
 					frmgrId = "ViewGrid_" + gridId, frmtbId = "ViewTbl_" + gridId, commonIconClass = o.commonIconClass,
 					ids = { themodal: "viewmod" + gridId, modalhead: "viewhd" + gridId, modalcontent: "viewcnt" + gridId, resizeAlso: frmgrId },
-					themodalSelector = "#" + jqID(ids.themodal), gboxSelector = p.gBox,
+					themodalSelector = "#" + jqID(ids.themodal), gboxSelector = p.gBox, colModel = p.colModel,
 					maxCols = 1, maxRows = 0,
 					viewFeedback = function () {
 						var args = $.makeArray(arguments);
@@ -1340,8 +1338,8 @@
 						args.unshift(o);
 						return feedback.apply($t, args);
 					},
-					hoverClasses = getGuiStyles.call($t, "states.hover"),
-					disabledClass = getGuiStyles.call($t, "states.disabled");
+					hoverClasses = getGuiStateStyles.call($t, "hover"),
+					disabledClass = getGuiStateStyles.call($t, "disabled");
 
 				if (!o.recreateForm) {
 					if ($self.data("viewProp")) {
@@ -1362,7 +1360,7 @@
 						tmpl += i === 1 ? tdtmpl : tdtmpl2;
 					}
 					// find max number align rigth with property formatter
-					$(p.colModel).each(function () {
+					$(colModel).each(function () {
 						var cm = this;
 						if (cm.editrules && cm.editrules.edithidden === true) {
 							hc = false;
@@ -1378,7 +1376,7 @@
 						}
 					});
 					maxw = max1 !== 0 ? max1 : max2 !== 0 ? max2 : 0;
-					$(p.colModel).each(function (i) {
+					$(colModel).each(function (i) {
 						var $td, cm = this;
 						nm = cm.name;
 						setme = false;
@@ -1440,7 +1438,7 @@
 					var nm, hc, cnt = 0, tmp, trv = $self.jqGrid("getInd", rowid, true), cm;
 					if (!trv) { return; }
 					$("td", trv).each(function (i) {
-						cm = p.colModel[i];
+						cm = colModel[i];
 						nm = cm.name;
 						// hidden fields are included in the form
 						if (cm.editrules && cm.editrules.edithidden === true) {
@@ -1492,7 +1490,7 @@
 					dw = isNaN(o.datawidth) ? o.datawidth : o.datawidth + "px",
 					frm = $("<form name='FormPost' id='" + frmgrId + "' class='FormGrid' style='width:" + dw + ";overflow:auto;position:relative;height:" + dh + ";'></form>"),
 					tbl = $("<table id='" + frmtbId + "' class='EditTable' cellspacing='1' cellpadding='2' border='0' style='table-layout:fixed'><tbody></tbody></table>");
-				$(p.colModel).each(function () {
+				$(colModel).each(function () {
 					var fmto = this.formoptions;
 					maxCols = Math.max(maxCols, fmto ? fmto.colpos || 0 : 0);
 					maxRows = Math.max(maxRows, fmto ? fmto.rowpos || 0 : 0);
@@ -1505,9 +1503,10 @@
 					bp = rtlb ? "nData" : "pData",
 					bn = rtlb ? "pData" : "nData",
 						// buttons at footer
-					bP = "<a id='" + bp + "' class='fm-button ui-state-default ui-corner-left'><span class='fm-button-icon " + mergeCssClasses(commonIconClass, o.prevIcon) + "'></span></a>",
-					bN = "<a id='" + bn + "' class='fm-button ui-state-default ui-corner-right'><span class='fm-button-icon " + mergeCssClasses(commonIconClass, o.nextIcon) + "'></span></a>",
-					bC = "<a id='cData' class='fm-button ui-state-default ui-corner-all'><span class='fm-button-text'>" + o.bClose + "</span></a>";
+					bP = builderFmButon.call($t, bp, "", mergeCssClasses(commonIconClass, o.prevIcon), "", "left"),
+					bN = builderFmButon.call($t, bn, "", mergeCssClasses(commonIconClass, o.nextIcon), "", "right"),
+					bC = builderFmButon.call($t, "cData", o.bClose);
+
 				if (maxRows > 0) {
 					var sd = [];
 					$.each($(tbl)[0].rows, function (i, r) {
@@ -1649,9 +1648,9 @@
 						args.unshift(o);
 						return feedback.apply($t, args);
 					},
-					hoverClasses = getGuiStyles.call($t, "states.hover"),
-					activeClass = getGuiStyles.call($t, "states.active"),
-					errorClass = getGuiStyles.call($t, "states.error");
+					hoverClasses = getGuiStateStyles.call($t, "hover"),
+					activeClass = getGuiStateStyles.call($t, "active"),
+					errorClass = getGuiStateStyles.call($t, "error");
 
 				if (!$.isArray(rowids)) { rowids = [String(rowids)]; }
 				if ($(themodalSelector)[0] !== undefined) {
@@ -1676,8 +1675,8 @@
 					tbl += "<tr><td class=\"delmsg\" style=\"white-space:pre;\">" + o.msg + "</td></tr><tr><td >&#160;</td></tr>";
 					// buttons at footer
 					tbl += "</tbody></table></div>";
-					var bS = "<a id='dData' class='fm-button ui-state-default ui-corner-all'><span class='fm-button-text'>" + o.bSubmit + "</span></a>",
-						bC = "<a id='eData' class='fm-button ui-state-default ui-corner-all'><span class='fm-button-text'>" + o.bCancel + "</span></a>";
+					var bS = builderFmButon.call($t, "dData", o.bSubmit),
+						bC = builderFmButon.call($t, "eData", o.bCancel);
 					tbl += "<table" + (jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "") + " class='EditTable' id='" + dtblId + "_2'><tbody><tr><td><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='DelButton EditButton EditButton-" + p.direction + "'>" + bS + "&#160;" + bC + "</td></tr></tbody></table>";
 					o.gbox = gboxSelector;
 					createModal.call($t, ids, tbl, o, p.gView, $(p.gView)[0]);
@@ -1876,8 +1875,8 @@
 							$close.focus();
 						}, 50);
 					},
-					hoverClasses = getGuiStyles.call($t, "states.hover"),
-					disabledClass = getGuiStyles.call($t, "states.disabled");
+					hoverClasses = getGuiStateStyles.call($t, "hover"),
+					disabledClass = getGuiStateStyles.call($t, "disabled");
 				if (!$t.grid) {
 					return; // error
 				}
@@ -1894,12 +1893,13 @@
 
 				if ($("#" + jqID(alertIDs.themodal))[0] === undefined) {
 					if (!o.alerttop && !o.alertleft) {
-						if (window.innerWidth !== undefined) {
-							o.alertleft = window.innerWidth;
-							o.alerttop = window.innerHeight;
-						} else if (document.documentElement !== undefined && document.documentElement.clientWidth !== undefined && document.documentElement.clientWidth !== 0) {
-							o.alertleft = document.documentElement.clientWidth;
-							o.alerttop = document.documentElement.clientHeight;
+						var documentElement = document.documentElement, w = window;
+						if (w.innerWidth !== undefined) {
+							o.alertleft = w.innerWidth;
+							o.alerttop = w.innerHeight;
+						} else if (documentElement !== null && documentElement.clientWidth !== undefined && documentElement.clientWidth !== 0) {
+							o.alertleft = documentElement.clientWidth;
+							o.alerttop = documentElement.clientHeight;
 						} else {
 							o.alertleft = 1024;
 							o.alerttop = 768;
@@ -2137,8 +2137,8 @@
 						p.navOptions || {},
 						oMuligrid || {}
 					),
-					hoverClasses = getGuiStyles.call($t, "states.hover"),
-					disabledClass = getGuiStyles.call($t, "states.disabled");
+					hoverClasses = getGuiStateStyles.call($t, "hover"),
+					disabledClass = getGuiStateStyles.call($t, "disabled");
 				if (elem === undefined) {
 					if (p.pager) {
 						$($t).jqGrid("navButtonAdd", p.pager, o);
@@ -2207,7 +2207,7 @@
 				if (typeof elem === "string" && elem.indexOf("#") !== 0) { elem = "#" + jqID(elem); }
 				var findnav = $(".navtable", elem)[0];
 				if (findnav.length > 0) {
-					var sep = "<div class='ui-pg-button " + getGuiStyles.call(this, "states.disabled") + "'><span class='" + p.sepclass + "'></span>" + p.sepcontent + "</div>";
+					var sep = "<div class='ui-pg-button " + getGuiStateStyles.call(this, "disabled") + "'><span class='" + p.sepclass + "'></span>" + p.sepcontent + "</div>";
 					if (p.position === "first") {
 						if ($(">div.ui-pg-button", findnav).length === 0) {
 							findnav.append(sep);
