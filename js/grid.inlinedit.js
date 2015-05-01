@@ -12,7 +12,8 @@
 (function ($) {
 	"use strict";
 	var jgrid = $.jgrid, fullBoolFeedback = jgrid.fullBoolFeedback, hasOneFromClasses = jgrid.hasOneFromClasses,
-		getGridRes = jgrid.getMethod("getGridRes"),
+		enumEditableCells = jgrid.enumEditableCells,
+		info_dialog = jgrid.info_dialog,
 		editFeedback = function (o) {
 			var args = $.makeArray(arguments).slice(1);
 			args.unshift("");
@@ -21,7 +22,7 @@
 			return jgrid.feedback.apply(this, args);
 		},
 		getGuiStateStyles = function (path) {
-			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], "states." + path));
+			return jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], "states." + path);
 		};
 	jgrid.inlineEdit = jgrid.inlineEdit || {};
 	jgrid.extend({
@@ -65,7 +66,8 @@
 						mtype: "POST",
 						focusField: true
 					}, jgrid.inlineEdit, p.inlineEditing || {}, oMuligrid),
-					ind = $self.jqGrid("getInd", rowid, true);
+					ind = $self.jqGrid("getInd", rowid, true),
+					focusField = o.focusField;
 
 				if (ind === false) { return; }
 
@@ -83,69 +85,49 @@
 						$(tr.cells[savedRowInfo.ic]).removeClass("edit-cell " + highlightClass);
 						$(tr).addClass(highlightClass).attr({ "aria-selected": "true", "tabindex": "0" });
 					}
-					// TODO: get indFrozen (tdFrozen), enumerate colModel instead of td of ind
-					// one can test whether column is still frozen. In the case one can get td by rowIndex (iCol)
-					// from tdFrozen. The last (non-frozen) td elements one should get from ind (td)
-					// one can consider to introduce the method which enumerates td in the row. It
-					// should return the mix from frozen and non-frozen cells of the row specified by iCol (rowIndex)
-					$("td[role=gridcell]", ind).each(function (i) {
-						var cm = colModel[i], nm = cm.name, tmp;
+					enumEditableCells.call($t, ind, $(ind).hasClass("jqgrid-new-row") ? "add" : "edit", function (options) {
+						var cm = options.cm, $dataFiled = $(options.dataElement), dataWidth = options.dataWidth, tmp, opt, elc,
+							nm = cm.name, edittype = cm.edittype, iCol = options.iCol, editoptions = cm.editoptions || {};
 						try {
-							tmp = $.unformat.call($t, this, { rowId: rowid, colModel: cm }, i);
+							tmp = $.unformat.call(this, options.td, { rowId: rowid, colModel: cm }, iCol);
 						} catch (_) {
-							tmp = (cm.edittype && cm.edittype === "textarea") ? $(this).text() : $(this).html();
+							tmp = edittype === "textarea" ? $dataFiled.text() : $dataFiled.html();
 						}
-						if (nm !== "cb" && nm !== "subgrid" && nm !== "rn") {
-							if (p.autoencode) { tmp = jgrid.htmlDecode(tmp); }
-							svr[nm] = tmp;
-							var isEditable = cm.editable,
-								mode = $(ind).hasClass("jqgrid-new-row") ? "add" : "edit";
-							if ($.isFunction(isEditable)) {
-								isEditable = isEditable.call($t, {
-									rowid: rowid,
-									iCol: i,
-									iRow: ind.rowIndex,
-									name: nm,
-									cm: cm,
-									mode: mode
-								});
-							}
-							if (isEditable === true) {
-								if (focus === null) { focus = i; }
-								var $dataFiled = $(this),
-									editingColumnWithTreeGridIcon = p.treeGrid === true && nm === p.ExpandColumn;
-								if (editingColumnWithTreeGridIcon) {
-									$dataFiled = $dataFiled.children("span.cell-wrapperleaf,span.cell-wrapper").first();
-								}
-								$dataFiled.html("");
-								var opt = $.extend({}, cm.editoptions || {}, { id: rowid + "_" + nm, name: nm, rowId: rowid, mode: mode });
-								if (!cm.edittype) { cm.edittype = "text"; }
-								if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) { tmp = ""; }
-								var elc = jgrid.createEl.call($t, cm.edittype, opt, tmp, true, $.extend({}, jgrid.ajaxOptions, p.ajaxSelectOptions || {}));
-								$(elc).addClass("editable");
-								$dataFiled.append(elc);
-								if (editingColumnWithTreeGridIcon) {
-									$(elc).width($(this).width()-$(this).children("div.tree-wrap").outerWidth());
-								}
-								jgrid.bindEv.call($t, elc, opt);
-								//Again IE
-								if (cm.edittype === "select" && cm.editoptions !== undefined && cm.editoptions.multiple === true && cm.editoptions.dataUrl === undefined && jgrid.msie) {
-									$(elc).width($(elc).width());
-								}
-								cnt++;
-							}
+						svr[nm] = tmp;
+						$dataFiled.html("");
+						opt = $.extend({}, editoptions, { id: rowid + "_" + nm, name: nm, rowId: rowid, mode: options.mode });
+						if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) { tmp = ""; }
+						elc = jgrid.createEl.call($t, edittype, opt, tmp, true, $.extend({}, jgrid.ajaxOptions, p.ajaxSelectOptions || {}));
+						$(elc).addClass("editable");
+						$dataFiled.append(elc);
+						if (dataWidth) {
+							// change the width from auto or the value from editoptions
+							// in case of editing ExpandColumn of TreeGrid
+							$(elc).width(options.dataWidth);
 						}
+						jgrid.bindEv.call($t, elc, opt);
+						//Again IE
+						if (edittype === "select" && editoptions.multiple === true && editoptions.dataUrl === undefined && jgrid.msie) {
+							$(elc).width($(elc).width());
+						}
+						if (focus === null) { focus = iCol; }
+						cnt++;
 					});
 					if (cnt > 0) {
 						svr.id = rowid;
 						p.savedRow.push(svr);
 						$(ind).attr("editable", "1");
-						if (o.focusField) {
-							if (typeof o.focusField === "number" && parseInt(o.focusField, 10) <= colModel.length) {
-								focus = o.focusField;
+						if (focusField) {
+							if (typeof focusField === "number" && parseInt(focusField, 10) <= colModel.length) {
+								focus = focusField;
+							} else if (typeof focusField === "string") {
+								focus = p.iColByName[focusField];
 							}
 							setTimeout(function () {
-								var fe = $("td:eq(" + focus + ") :input:visible", ind).not(":disabled");
+								// we want to use ":focusable"
+								var fe = $(ind.cells[focus])
+										.find("input,textarea,select,button,object,*[tabindex]")
+										.filter(":input:visible:not(:disabled)");
 								if (fe.length > 0) {
 									fe.focus();
 								}
@@ -186,7 +168,7 @@
 				if ($.isFunction(afterrestorefunc)) { o.afterrestorefunc = afterrestorefunc; }
 				if ($.isFunction(beforeSaveRow)) { o.beforeSaveRow = beforeSaveRow; }
 			}
-			var getRes = function (path) { return getGridRes.call($self, path); };
+			var getRes = function (path) { $self.jqGrid("getGridRes", path); };
 			o = $.extend(true, {
 				successfunc: null,
 				url: null,
@@ -204,8 +186,9 @@
 			}, jgrid.inlineEdit, p.inlineEditing || {}, o);
 			// End compatible
 			// TODO: add return this.each(function(){....}
-			var nm, tmp = {}, tmp2 = {}, postData = {}, editable, fr, cv, ind = $self.jqGrid("getInd", rowid, true), opers = p.prmNames,
-				errcap = getRes("errors.errcap"), bClose = getRes("edit.bClose"), editMsg = getRes("edit.msg");
+			var tmp = {}, tmp2 = {}, postData = {}, editable, k, fr, resp, cv, ind = $self.jqGrid("getInd", rowid, true), $tr = $(ind),
+				opers = p.prmNames, errcap = getRes("errors.errcap"), bClose = getRes("edit.bClose"), isRemoteSave,
+				nodefined = getRes("edit.msg.nodefined"), novalue = getRes("edit.msg.novalue");
 
 			if (ind === false) { return; }
 
@@ -213,109 +196,95 @@
 
 			if (!editFeedback.call($t, o, "beforeSaveRow", o, rowid, frmoper)) { return; }
 
-			editable = $(ind).attr("editable");
+			editable = $tr.attr("editable");
 			o.url = o.url || p.editurl;
+			isRemoteSave = o.url !== "clientArray";
 			if (editable === "1") {
-				var cm;
-				$("td[role=gridcell]", ind).each(function (i) {
-					cm = p.colModel[i];
-					nm = cm.name;
-					var isEditable = cm.editable;
-					if ($.isFunction(isEditable)) {
-						isEditable = isEditable.call($t, {
-							rowid: rowid,
-							iCol: i,
-							iRow: ind.rowIndex,
-							name: nm,
-							cm: cm,
-							mode: $(ind).hasClass("jqgrid-new-row") ? "add" : "edit"
-						});
-					}
-					if (nm !== "cb" && nm !== "subgrid" && isEditable === true && nm !== "rn" && !$(this).hasClass("not-editable-cell")) {
-						switch (cm.edittype) {
-							case "checkbox":
-								var cbv = ["Yes", "No"];
-								if (cm.editoptions) {
-									cbv = cm.editoptions.value.split(":");
-								}
-								tmp[nm] = $("input", this).is(":checked") ? cbv[0] : cbv[1];
-								break;
-							case "text":
-							case "password":
-							case "textarea":
-							case "button":
-								tmp[nm] = $("input, textarea", this).val();
-								if ($("input", this)[p.propOrAttr]("type") === "date" && String(tmp[nm]).split("-").length === 3) {
-									var newformat = cm.formatoptions != null && cm.formatoptions.newformat ?
-											cm.formatoptions.newformat :
-											$self.jqGrid("getGridRes", "formatter.date.newformat");
-									tmp[nm] = $.jgrid.parseDate.call($t, "Y-m-d", tmp[nm], newformat);
-								}
-								break;
-							case "select":
-								if (!cm.editoptions.multiple) {
-									tmp[nm] = $("select option:selected", this).val();
-									tmp2[nm] = $("select option:selected", this).text();
-								} else {
-									var sel = $("select", this), selectedText = [];
-									tmp[nm] = $(sel).val();
-									if (tmp[nm]) {
-										tmp[nm] = tmp[nm].join(",");
-									} else {
-										tmp[nm] = "";
-									}
-									$("select option:selected", this).each(
-										function (i, selected) {
-											selectedText[i] = $(selected).text();
-										}
-									);
-									tmp2[nm] = selectedText.join(",");
-								}
-								if (cm.formatter && cm.formatter === "select") { tmp2 = {}; }
-								break;
-							case "custom":
-								try {
-									if (cm.editoptions && $.isFunction(cm.editoptions.custom_value)) {
-										tmp[nm] = cm.editoptions.custom_value.call($t, $(".customelement", this), "get");
-										if (tmp[nm] === undefined) {
-											throw "e2";
-										}
-									} else {
-										throw "e1";
-									}
-								} catch (e) {
-									if (e === "e1") {
-										jgrid.info_dialog.call($t, errcap, "function 'custom_value' " + editMsg.nodefined, bClose);
-									}
-									if (e === "e2") {
-										jgrid.info_dialog.call($t, errcap, "function 'custom_value' " + editMsg.novalue, bClose);
-									} else {
-										jgrid.info_dialog.call($t, errcap, e.message, bClose);
-									}
-								}
-								break;
-						}
-						cv = jgrid.checkValues.call($t, tmp[nm], i);
-						if (cv[0] === false) {
-							return false;
-						}
-						if (p.autoencode) { tmp[nm] = jgrid.htmlEncode(tmp[nm]); }
-						if (cm.formatter && cm.formatter === "date" && (cm.formatoptions == null || cm.formatoptions.sendFormatted !== true)) {
-							// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
-							// Floating point separator for example
-							tmp[nm] = $.unformat.date.call($t, tmp[nm], cm);
-						}
-						if (o.url !== "clientArray" && cm.editoptions && cm.editoptions.NullIfEmpty === true) {
-							if (tmp[nm] === "") {
-								tmp[nm] = "null";
+				enumEditableCells.call($t, ind, $tr.hasClass("jqgrid-new-row") ? "add" : "edit", function (options) {
+					var cm = options.cm, $dataFiled = $(options.dataElement), cbv, $field, newformat,
+						nm = cm.name, editoptions = cm.editoptions || {}, selectedText, selectedValues,
+						formatoptions = cm.formatoptions || {}, formatter = cm.formatter;
+
+					switch (cm.edittype) {
+						case "checkbox":
+							cbv = ["Yes", "No"];
+							if (typeof editoptions.value === "string") {
+								cbv = editoptions.value.split(":");
 							}
+							tmp[nm] = $dataFiled.find("input").is(":checked") ? cbv[0] : cbv[1];
+							break;
+						case "text":
+						case "password":
+						case "textarea":
+						case "button":
+							$field = $dataFiled.find("input, textarea");
+							tmp[nm] = $field.val();
+							if ($field[p.propOrAttr]("type") === "date" && String(tmp[nm]).split("-").length === 3) {
+								newformat = formatoptions.newformat || $self.jqGrid("getGridRes", "formatter.date.newformat");
+								tmp[nm] = jgrid.parseDate.call($t, "Y-m-d", tmp[nm], newformat);
+							}
+							break;
+						case "select":
+							$field = $dataFiled.find("select option:selected");
+							if (!editoptions.multiple) {
+								tmp[nm] = $field.val();
+								tmp2[nm] = $field.text();
+							} else {
+								selectedText = [];
+								selectedValues = [];
+								$field.each(function (i, option) {
+									var $option = $(this);
+									selectedValues.push($option.val());
+									selectedText.push($option.text());
+								});
+								tmp[nm] = selectedValues.join(",");
+								tmp2[nm] = selectedText.join(",");
+							}
+							if (formatter === "select") { tmp2 = {}; }
+							break;
+						case "custom":
+							try {
+								if ($.isFunction(editoptions.custom_value)) {
+									tmp[nm] = editoptions.custom_value.call($t, $dataFiled.find(".customelement"), "get");
+									if (tmp[nm] === undefined) {
+										throw "e2";
+									}
+								} else {
+									throw "e1";
+								}
+							} catch (e) {
+								if (e === "e1") {
+									info_dialog.call($t, errcap, "function 'custom_value' " + nodefined, bClose);
+								}
+								if (e === "e2") {
+									info_dialog.call($t, errcap, "function 'custom_value' " + novalue, bClose);
+								} else {
+									info_dialog.call($t, errcap, e.message, bClose);
+								}
+							}
+							break;
+					}
+					cv = jgrid.checkValues.call($t, tmp[nm], options.iCol);
+					if (cv[0] === false) {
+						return false;
+					}
+					if (isRemoteSave && p.autoencode) { tmp[nm] = jgrid.htmlEncode(tmp[nm]); }
+					if (formatter === "date" && formatoptions.sendFormatted !== true) {
+						// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
+						// Floating point separator for example
+						tmp[nm] = $.unformat.date.call($t, tmp[nm], cm);
+					}
+					if (isRemoteSave && editoptions.NullIfEmpty === true) {
+						if (tmp[nm] === "") {
+							tmp[nm] = "null";
 						}
 					}
 				});
+
 				if (cv[0] === false) {
 					try {
 						var tr = $self.jqGrid("getGridRowById", rowid), positions = jgrid.findPos(tr);
-						jgrid.info_dialog.call($t, errcap, cv[1], bClose, { left: positions[0], top: positions[1] + $(tr).outerHeight() });
+						info_dialog.call($t, errcap, cv[1], bClose, { left: positions[0], top: positions[1] + $(tr).outerHeight() });
 					} catch (e) {
 						alert(cv[1]);
 					}
@@ -340,7 +309,8 @@
 							delete p._index[oldid];
 						}
 						rowid = p.idPrefix + tmp[idname];
-						$(ind).attr("id", rowid);
+						// TODO: to test the case of frozen columns
+						$tr.attr("id", rowid);
 						if (p.selrow === oldRowId) {
 							p.selrow = rowid;
 						}
@@ -352,30 +322,23 @@
 						}
 						if (p.multiselect) {
 							var newCboxId = "jqg_" + p.id + "_" + rowid;
-							$("input.cbox", ind)
+							$tr.find("input.cbox")
 								.attr("id", newCboxId)
 								.attr("name", newCboxId);
 						}
-						// TODO: to test the case of frozen columns
 					}
-					if (p.inlineData === undefined) { p.inlineData = {}; }
-					tmp = $.extend({}, tmp, p.inlineData, o.extraparam);
+					tmp = $.extend({}, tmp, p.inlineData || {}, o.extraparam);
 				}
-				if (o.url === "clientArray") {
+				if (!isRemoteSave) {
 					tmp = $.extend({}, tmp, tmp2);
-					if (p.autoencode) {
-						$.each(tmp, function (n, v) {
-							tmp[n] = jgrid.htmlDecode(v);
-						});
-					}
-					var k, resp = $self.jqGrid("setRowData", rowid, tmp);
-					$(ind).attr("editable", "0");
+					resp = $self.jqGrid("setRowData", rowid, tmp);
+					$tr.attr("editable", "0");
 					for (k = 0; k < p.savedRow.length; k++) {
 						if (String(p.savedRow[k].id) === String(oldRowId)) { fr = k; break; }
 					}
 					if (fr >= 0) { p.savedRow.splice(fr, 1); }
 					fullBoolFeedback.call($t, o.aftersavefunc, "jqGridInlineAfterSaveRow", rowid, resp, tmp, o);
-					$(ind).removeClass("jqgrid-new-row").unbind("keydown");
+					$tr.removeClass("jqgrid-new-row").unbind("keydown");
 				} else {
 					$self.jqGrid("progressBar", { method: "show", loadtype: o.saveui, htmlcontent: o.savetext });
 					postData = $.extend({}, tmp, postData);
@@ -412,13 +375,13 @@
 									}
 									tmp = $.extend({}, tmp, tmp2);
 									$self.jqGrid("setRowData", rowid, tmp);
-									$(ind).attr("editable", "0");
+									$tr.attr("editable", "0");
 									for (j = 0; j < p.savedRow.length; j++) {
 										if (String(p.savedRow[j].id) === String(rowid)) { fr = j; break; }
 									}
 									if (fr >= 0) { p.savedRow.splice(fr, 1); }
 									fullBoolFeedback.call($t, o.aftersavefunc, "jqGridInlineAfterSaveRow", rowid, jqXHR, tmp, o);
-									$(ind).removeClass("jqgrid-new-row").unbind("keydown");
+									$tr.removeClass("jqgrid-new-row").unbind("keydown");
 								} else {
 									fullBoolFeedback.call($t, o.errorfunc, "jqGridInlineErrorSaveRow", rowid, jqXHR, textStatus, null, o);
 									if (o.restoreAfterError === true) {
@@ -435,7 +398,7 @@
 							} else {
 								var rT = res.responseText || res.statusText;
 								try {
-									jgrid.info_dialog.call($t, errcap, '<div class="' + getGuiStateStyles.call($t, "error") + '">' + rT + "</div>", bClose, { buttonalign: "right" });
+									info_dialog.call($t, errcap, '<div class="' + getGuiStateStyles.call($t, "error") + '">' + rT + "</div>", bClose, { buttonalign: "right" });
 								} catch (e) {
 									alert(rT);
 								}
