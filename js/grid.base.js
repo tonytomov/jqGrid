@@ -495,7 +495,11 @@
 				dialog: {
 					header: "ui-widget-header ui-corner-all ui-helper-clearfix",
 					window: "ui-widget ui-widget-content ui-corner-all ui-front",
-					content: "ui-widget-content"
+					content: "ui-widget-content",
+					fmButton: "ui-state-default",
+					leftCorner: "ui-corner-left",
+					rightCorner: "ui-corner-right",
+					defaultCorner: "ui-corner-all"
 				},
 				grid: "",
 				gridRow: "ui-widget-content",
@@ -956,6 +960,65 @@
 			}
 			return null;
 		},
+		enumEditableCells: function (tr, mode, callback) {
+			var self = this, grid = self.grid, rows = self.rows, p = self.p;
+			if (grid == null || rows == null || p == null || tr == null || tr.rowIndex == null || !tr.id || !$.isFunction(callback)) {
+				return null; // this is not a grid or tr is not tr
+			}
+			var iCol, frozen = p.frozenColumns && grid.fbDiv != null, colModel = p.colModel, nCol = colModel.length, cm, nm, options,
+				isEditable, iRow = tr.rowIndex, td, $dataElement, dataWidth,
+				frozenRows = frozen ? grid.fbDiv.children(".ui-jqgrid-btable")[0].rows : null, 
+				trFrozen = frozenRows != null ? frozenRows[iRow] : null;
+
+			// normalize tr if required
+			if (frozenRows && !$.contains(self, tr)) {
+				// The event could be inside of frozen div. We normalize it.
+				tr = self.rows[tr.rowIndex];
+			}
+
+			for (iCol = 0; iCol < nCol; iCol++) {
+				cm = colModel[iCol];
+				nm = cm.name;
+				if (nm !== "cb" && nm !== "subgrid" && nm !== "rn") {
+					if (frozen && !cm.frozen) {
+						frozen = false;
+					}
+					td = (frozen ? trFrozen : tr).cells[iCol];
+					$dataElement = $(td);
+					if (!$dataElement.hasClass("not-editable-cell")) {
+						dataWidth = $dataElement.width();
+						if (p.treeGrid === true && nm === p.ExpandColumn) {
+							dataWidth -= $dataElement.children("div.tree-wrap").outerWidth();
+							$dataElement = $dataElement.children("span.cell-wrapperleaf,span.cell-wrapper").first();
+						} else {
+							dataWidth = 0; // we can test it in the callback and use width:auto in the case
+						}
+
+						options = {
+							rowid: tr.id,
+							iCol: iCol,
+							iRow: iRow,
+							name: nm,
+							cm: cm,
+							mode: mode,
+							td: td,
+							tr: tr,
+							trFrozen: trFrozen,
+							dataElement: $dataElement[0],
+							dataWidth: dataWidth
+						};
+						if (!cm.edittype) { cm.edittype = "text"; }
+						isEditable = cm.editable;
+						isEditable = $.isFunction(isEditable) ?
+								isEditable.call(self, options) :
+								isEditable;
+						if (isEditable === true) {
+							callback.call(self, options);
+						}
+					}
+				}
+			}
+		},
 		guid: 1,
 		uidPref: "jqg",
 		randId: function (prefix) {
@@ -1027,6 +1090,7 @@
 						_negate = false,
 						_queuedOperator = "",
 						_sorting = [],
+						toString = Object.prototype.toString,
 						_useProperties = true;
 					if (typeof d === "object" && d.push) {
 						if (d.length > 0) {
@@ -1141,7 +1205,6 @@
 					};
 					/** @private */
 					this._compare = function (a, b, d) {
-						var toString = Object.prototype.toString;
 						if (d === undefined) { d = 1; }
 						if (a === undefined) { a = null; }
 						if (b === undefined) { b = null; }
@@ -1536,7 +1599,7 @@
 			var pathParts = path.split("."), root, n = pathParts.length, i, classes = [];
 			base = jgrid.icons[base];
 			if (base == null) {
-				return ""; // error unknows iconSet
+				return ""; // error unknown iconSet
 			}
 			root = base;
 			if (root.common) {
@@ -1548,7 +1611,7 @@
 				}
 				root = root[pathParts[i]];
 				if (root === undefined) {
-					break;
+					return ""; // error unknown icon path
 				}
 				if (typeof root === "string") {
 					classes.push(root);
@@ -1559,6 +1622,51 @@
 				}
 			}
 			return jgrid.mergeCssClasses.apply(this, classes);
+		},
+		builderSortIcons: function (/*iCol*/) {
+			// iCol is unused currently, but one can modify the code to set for example different sorting 
+			// icons for columns based on sorttype option of colModel
+			var p = this.p,
+				disabledStateClasses = jgrid.getRes(jgrid.guiStyles[p.guiStyle], "states.disabled"),
+				getClasses = function (ascOrDesc) {
+					return jgrid.mergeCssClasses(
+						"ui-grid-ico-sort",
+						"ui-icon-" + ascOrDesc,
+						p.viewsortcols[1] === "horizontal" ? "ui-i-" + ascOrDesc : "",
+						disabledStateClasses,
+						jgrid.getIconRes(p.iconSet, "sort." + ascOrDesc),
+						"ui-sort-" + p.direction
+					);
+				};
+
+			return "<span class='s-ico' style='display:none'><span class='" + getClasses("asc") +
+				"'></span>" + "<span class='" + getClasses("desc") + "'></span></span>";
+		},
+		/**
+		 *  @param {String} id
+		 *  @param {String} text
+		 *  @param {String} icon
+		 *  @param {String} iconOnLeftOrRight - string "left", "right" or undefined
+		 *  @param {String} conner - string "left", "right" or undefined.
+		 */
+		 builderFmButon: function (id, text, icon, iconOnLeftOrRight, conner) {
+			var p = this.p,
+				getDialogGuiStyles = function (name) {
+					return jgrid.getRes(jgrid.guiStyles[p.guiStyle], "dialog." + name);
+				};
+			if (p == null) { return; }
+			
+			return "<a id='" + id + "' class='" +
+				jgrid.mergeCssClasses("fm-button",
+					getDialogGuiStyles("fmButton"),
+					getDialogGuiStyles(conner === "right" ? "rightCorner": (conner === "left" ? "leftCorner" : "defaultCorner")),
+					iconOnLeftOrRight === "right" ?
+							"fm-button-icon-right" :
+							(iconOnLeftOrRight === "left" ? "fm-button-icon-left" : "")
+				) + "'>" +
+				(icon ? "<span class='fm-button-icon " + (jgrid.getIconRes(p.iconSet, icon) || icon) + "'></span>" : "") +
+				(text ? "<span class='fm-button-text'>" + text + "</span>" : "") +
+				"</a>";
 		},
 		convertOnSaveLocally: function (nData, cm, oData, rowid, item, iCol) {
 			var self = this, p = self.p;
@@ -3197,7 +3305,7 @@
 						fontSize = $(self).closest(".ui-jqgrid>.ui-jqgrid-view").css("font-size") || "11px";
 						$(document.body).append("<div id='testpg' class='" + getGuiStyles("gBox", "ui-jqgrid") + "' style='font-size:" +
 							fontSize +
-							";visibility:hidden;' ></div>");
+							";visibility:hidden;margin:0;padding:0;' ></div>");
 						$($pgTable).clone().appendTo("#testpg");
 						w = $("#testpg>.ui-pg-table").width();
 						$("#testpg").remove();
@@ -3978,8 +4086,8 @@
 			var tdc, idn, w, res, sort, cmi, tooltip, labelStyle, td, ptr, tbody, sortarr = [], sortord = [], sotmp = [],
 				thead = "<thead><tr class='ui-jqgrid-labels' role='row'>",
 				hoverStateClasses = getGuiStyles("states.hover"),
-				disabledStateClasses = getGuiStyles("states.disabled"),
-				builderSortIcons = function (/*iCol*/) {
+				disabledStateClasses = getGuiStyles("states.disabled")/*,
+				builderSortIcons = function (iCol) {
 					// iCol is unused currently, but one can modify the code to set for example different sorting 
 					// icons for columns based on sorttype option of colModel
 					var getClasses = function (ascOrDesc) {
@@ -3995,7 +4103,7 @@
 
 					return "<span class='s-ico' style='display:none'><span class='" + getClasses("asc") +
 						"'></span>" + "<span class='" + getClasses("desc") + "'></span></span>";
-				};
+				}*/;
 			tdc = isMSIE ? "ui-th-div-ie" : "";
 
 			if (p.multiSort) {
@@ -4050,7 +4158,7 @@
 						cmi.lso = sortord[sotmp];
 					}
 				}
-				thead += (p.builderSortIcons || builderSortIcons)(iCol) + "</div></th>";
+				thead += (p.builderSortIcons || jgrid.builderSortIcons).call(ts, iCol) + "</div></th>";
 			}
 			thead += "</tr></thead>";
 			$(ts).append(thead);
@@ -4225,7 +4333,7 @@
 					var t = $(e.target).closest(s);
 					if (t.length !== 1) { return; }
 					var ci;
-					if (p.frozenColumns) {
+					if (p.frozenColumns) {// !!! this can be either inside of frozen or non-frozen div !!!
 						var tid = $(this)[0].id.substring(p.id.length + 1);
 						ci = p.iColByName[tid];
 					} else {
@@ -4866,6 +4974,8 @@
 			return this.each(function () {
 				var $t = this, $self = $(this), p = $t.p, row,
 					highlightClass = $self.jqGrid("getGuiStyles", "states.select"), //"ui-state-highlight"
+					cellEditCellHighlightClasses = "edit-cell " + highlightClass,
+					cellEditRowHighlightClasses = "selected-row " + $self.jqGrid("getGuiStyles", "states.hover"),
 					iColCb = p.iColByName.cb,
 					frozenRows = p.frozenColumns && $t.grid.fbDiv != null ?
 							$t.grid.fbDiv.children(".ui-jqgrid-btable")[0].rows : null,
@@ -4916,14 +5026,14 @@
 					if (parseInt(p.iCol, 10) >= 0 && parseInt(p.iRow, 10) >= 0) {
 						row = $t.rows[p.iRow];
 						if (row != null) {
-							$(row.cells[p.iCol]).removeClass("edit-cell " + highlightClass);
-							$(row).removeClass("selected-row " + $self.jqGrid("getGuiStyles", "states.hover"));
+							$(row.cells[p.iCol]).removeClass(cellEditCellHighlightClasses);
+							$(row).removeClass(cellEditRowHighlightClasses);
 						}
 						if (frozenRows) {
 							row = frozenRows[p.iRow];
 							if (row != null) {
-								$(row.cells[p.iCol]).removeClass("edit-cell " + highlightClass);
-								$(row).removeClass("selected-row " + $self.jqGrid("getGuiStyles", "states.hover"));
+								$(row.cells[p.iCol]).removeClass(cellEditCellHighlightClasses);
+								$(row).removeClass(cellEditRowHighlightClasses);
 							}
 						}
 					}
