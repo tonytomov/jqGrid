@@ -2224,7 +2224,7 @@
 			return this.each(function () {
 				var $t = this, i, $field, iField, $fieldi;
 				if (!$t.grid) { return; }
-				var rowdata = $($t).jqGrid("getRowData", rowid), propOrAttr = $t.p.useProp;
+				var rowdata = $($t).jqGrid("getRowData", rowid), propOrAttr = $t.p.propOrAttr;
 				if (rowdata) {
 					for (i in rowdata) {
 						if (rowdata.hasOwnProperty(i)) {
