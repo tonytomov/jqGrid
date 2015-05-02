@@ -88,6 +88,7 @@
 				grid.selectionPreserver = null;
 	
 				grid.bDiv = null;
+				grid.fbRows = null;
 				grid.cDiv = null;
 				grid.hDiv = null;
 				grid.cols = null;*/
@@ -973,6 +974,12 @@
 							$("th:gt(" + maxfrozen + ")", this).remove();
 						});
 					}
+					// htable, bdiv and ftable uses table-layout:fixed; style
+					// to make it working one have to set ANY width value on table.
+					// The value of the width will be ignored, the sum of widths
+					// of the first column will be used as the width of tables
+					// and all columns will have the same width like the first row.
+					// We set below just width=1 of the tables.
 					$(htbl).width(1);
 					// resizing stuff
 					$(grid.fhDiv).append(htbl)
@@ -994,8 +1001,7 @@
 					$self.bind("jqGridResizeStop.setFrozenColumns", function (e, w, index) {
 						var rhth = $(".ui-jqgrid-htable", grid.fhDiv);
 						$(rhth[0].rows[0].cells[index]).css("width", w);
-						var btd = $(".ui-jqgrid-btable", grid.fbDiv);
-						$(btd[0].rows[0].cells[index]).css("width", w);
+						$(grid.fbRows[0].cells[index]).css("width", w);
 						if (p.footerrow) {
 							var ftd = $(".ui-jqgrid-ftable", grid.fsDiv);
 							$(ftd[0].rows[0].cells[index]).css("width", w);
@@ -1090,6 +1096,7 @@
 						$(frozenRows).filter("tr[role=row]").each(function () {
 							$(this.cells).filter("td[role=gridcell]:gt(" + maxfrozen + ")").remove();
 						});
+						grid.fbRows = frozenRows;
 
 						$frozenBTable.width(1).attr("id", p.id + "_frozen");
 						$frozenBTable.appendTo(grid.fbDiv);
@@ -1159,6 +1166,7 @@
 					$(grid.fbDiv).remove();
 					grid.fhDiv = null;
 					grid.fbDiv = null;
+					grid.fbRows = null;
 					if (p.footerrow) {
 						$(grid.fsDiv).remove();
 						grid.fsDiv = null;

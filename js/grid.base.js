@@ -965,15 +965,17 @@
 			if (grid == null || rows == null || p == null || tr == null || tr.rowIndex == null || !tr.id || !$.isFunction(callback)) {
 				return null; // this is not a grid or tr is not tr
 			}
-			var iCol, frozen = p.frozenColumns && grid.fbDiv != null, colModel = p.colModel, nCol = colModel.length, cm, nm, options,
+			var iCol, colModel = p.colModel, nCol = colModel.length, cm, nm, options,
 				isEditable, iRow = tr.rowIndex, td, $dataElement, dataWidth,
-				frozenRows = frozen ? grid.fbDiv.children(".ui-jqgrid-btable")[0].rows : null, 
-				trFrozen = frozenRows != null ? frozenRows[iRow] : null;
+				frozenRows = grid.fbRows, frozen = frozenRows != null,
+				trFrozen = frozen ? frozenRows[iRow] : null;
 
 			// normalize tr if required
-			if (frozenRows && !$.contains(self, tr)) {
-				// The event could be inside of frozen div. We normalize it.
-				tr = self.rows[tr.rowIndex];
+			if (frozen/* && !$.contains(self, tr)*/) {
+				// The event could be inside of frozen div.
+				// Thus tr could be the same as trFrozen
+				// We normalize it based on the rowIndex.
+				tr = self.rows[iRow];
 			}
 
 			for (iCol = 0; iCol < nCol; iCol++) {
@@ -2424,31 +2426,26 @@
 					return order;
 				},
 				emptyRows = function (scroll, locdata) {
-					var firstrow, self = this, rows = self.rows, bDiv = self.grid.bDiv,
-						frozenTable = self.p.frozenColumns && self.grid.fbDiv != null ?
-							self.grid.fbDiv.children(".ui-jqgrid-btable")[0] : null,
-						frozenRows = frozenTable != null ? frozenTable.rows : null;
-					$(self).unbind(".jqGridFormatter");
-					if (p.deepempty) {
-						if (frozenRows) { $(frozenRows).slice(1).remove(); }
-						$(rows).slice(1).remove();
-					} else if (p.quickEmpty) {
-						if (frozenRows) {
-							while (frozenRows.length > 1) {
-								frozenTable.deleteRow(frozenRows.length-1);
+					var self = this, bDiv = grid.bDiv,
+						frozenTable = grid.fbDiv != null ?
+							grid.fbDiv.children(".ui-jqgrid-btable")[0] : null,
+						removeRows = function (table) {
+							if (!table) { return; }
+							var tableRows = table.rows, firstrow;
+							if (p.deepempty) {
+								if (tableRows) { $(tableRows).slice(1).remove(); }
+							} else if (p.quickEmpty) {
+								while (tableRows.length > 1) {
+									table.deleteRow(tableRows.length-1);
+								}
+							} else {
+								firstrow = tableRows[0];
+								$(table.firstChild).empty().append(firstrow);
 							}
-						}
-						while (rows.length > 1) {
-							self.deleteRow(rows.length-1);
-						}
-					} else {
-						firstrow = rows.length > 0 ? rows[0] : null;
-						$(self.firstChild).empty().append(firstrow);
-						if (frozenRows) {
-							firstrow = frozenRows.length > 0 ? frozenRows[0] : null;
-							$(frozenTable.firstChild).empty().append(firstrow);
-						}
-					}
+						};
+					$(self).unbind(".jqGridFormatter");
+					removeRows(self);
+					removeRows(frozenTable);
 					if (scroll && p.scroll) {
 						$(bDiv.firstChild).css({ height: "auto" });
 						$(bDiv.firstChild.firstChild).css({ height: 0, display: "none" });
@@ -4177,8 +4174,7 @@
 								$(tr.cells[iColCb]).children("input.cbox")[p.propOrAttr]("checked", toSelect);
 							}
 						},
-						frozenRows = p.frozenColumns && grid.fbDiv != null ?
-								grid.fbDiv.children(".ui-jqgrid-btable")[0].rows : null,
+						frozenRows = grid.fbRows,
 						skipClasses = disabledStateClasses + " ui-subgrid jqgroup jqfoot jqgfirstrow";
 					if (this.checked) {
 						toCheck = true;
@@ -4834,8 +4830,7 @@
 				var method = toSelect ? "addClass" : "removeClass", frozenRow, iSel,
 					highlightClass = $self.jqGrid("getGuiStyles", "states.select"),
 					iColCb = p.iColByName.cb,
-					frozenRows = p.frozenColumns && $t.grid.fbDiv != null ?
-							$t.grid.fbDiv.children(".ui-jqgrid-btable")[0].rows : null,
+					frozenRows = $t.grid.fbRows,
 					attributes = toSelect ?
 							{ "aria-selected": "true", tabindex: "0" } :
 							{ "aria-selected": "false", tabindex: "-1" };
@@ -4869,23 +4864,21 @@
 				var $t = this, $self = $($t), p = $t.p, stat, pt, ner, ia, tpsr, csr, $tr,
 					highlightClass = $self.jqGrid("getGuiStyles", "states.select"),
 					disabledClasses = $self.jqGrid("getGuiStyles", "states.disabled"),
-					frozenRows = p.frozenColumns && $t.grid.fbDiv != null ?
-							$t.grid.fbDiv.children(".ui-jqgrid-btable")[0].rows : null,
-					selectUnselectRow = function (tr, toSelect) {
-						var method = toSelect ? "addClass" : "removeClass", iColCb = p.iColByName.cb, frozenRow,
+					frozenRows = $t.grid.fbRows,
+					selectUnselectRow = function (tr1, toSelect) {
+						var method = toSelect ? "addClass" : "removeClass", iColCb = p.iColByName.cb,
 							attributes = toSelect ?
 									{ "aria-selected": "true", tabindex: "0" } :
-									{ "aria-selected": "false", tabindex: "-1" };
-						$(tr)[method](highlightClass).attr(attributes);
-						if (iColCb) { // p.multiselect or p.multiselectCheckboxes
-							$(tr.cells[iColCb]).children("input.cbox")[p.propOrAttr]("checked", toSelect);
-						}
+									{ "aria-selected": "false", tabindex: "-1" },
+							selectUnselectRowInTable = function (tr) {
+								$(tr)[method](highlightClass).attr(attributes);
+								if (iColCb) { // p.multiselect or p.multiselectCheckboxes
+									$(tr.cells[iColCb]).children("input.cbox")[p.propOrAttr]("checked", toSelect);
+								}
+							};
+						selectUnselectRowInTable(tr1);
 						if (frozenRows) {
-							frozenRow = frozenRows[tr.rowIndex];
-							$(frozenRow)[method](highlightClass).attr(attributes);
-							if (iColCb) { // p.multiselect or p.multiselectCheckboxes
-								$(frozenRow.cells[iColCb]).children("input.cbox")[p.propOrAttr]("checked", toSelect);
-							}
+							selectUnselectRowInTable(frozenRows[tr1.rowIndex]);
 						}
 					};
 				if (selection === undefined) { return; }
@@ -4895,8 +4888,10 @@
 					$tr = $(e.target).closest("tr.jqgrow");
 					if ($tr.length > 0) {
 						pt = $tr[0];
-						if (frozenRows && !$.contains($t, pt)) {
-							// The event could be inside of frozen div. We normalize it.
+						if (frozenRows/* && !$.contains($t, pt)*/) {
+							// The event could be inside of frozen div.
+							// Thus tr could be the same as trFrozen (frozenRows[pt.rowIndex])
+							// We normalize it based on the rowIndex.
 							pt = $t.rows[pt.rowIndex];
 						}
 					}
@@ -4977,8 +4972,7 @@
 					cellEditCellHighlightClasses = "edit-cell " + highlightClass,
 					cellEditRowHighlightClasses = "selected-row " + $self.jqGrid("getGuiStyles", "states.hover"),
 					iColCb = p.iColByName.cb,
-					frozenRows = p.frozenColumns && $t.grid.fbDiv != null ?
-							$t.grid.fbDiv.children(".ui-jqgrid-btable")[0].rows : null,
+					frozenRows = $t.grid.fbRows,
 					deselectRow = function (tr) {
 						var method = "removeClass", frozenRow,
 							attributes = { "aria-selected": "false", tabindex: "-1" };
