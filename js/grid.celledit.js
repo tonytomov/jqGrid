@@ -43,34 +43,40 @@
 		},
 		getGuiStateStyles = function (path, moreClasses) {
 			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], "states." + path), moreClasses || "");
+		},
+		getTdByColumnIndex = function (tr, iCol) {
+			var $t = this, frozenRows = $t.grid.fbRows;
+			return $((frozenRows != null && frozenRows[0].length > iCol ? frozenRows[tr.rowIndex] : tr).cells[iCol]);
 		};
 	jgrid.extend({
 		editCell: function (iRow, iCol, ed) {
 			return this.each(function () {
-				var $t = this, $self = $($t), p = $t.p, nm, tmp, cc, cm;
-				if (!$t.grid || p.cellEdit !== true || $t.rows == null || $t.rows[iRow] == null) {
+				var $t = this, $self = $($t), p = $t.p, nm, tmp, cc, cm, rows = $t.rows;
+				if (!$t.grid || p.cellEdit !== true || rows == null || rows[iRow] == null) {
 					return;
 				}
 				iRow = parseInt(iRow, 10);
 				iCol = parseInt(iCol, 10);
-				var tr = $t.rows[iRow], rowid = tr.id, $tr = $(tr), $trOld = $($t.rows[p.iRow]);
+				var tr = rows[iRow], rowid = tr.id, $tr = $(tr), edittype,
+					iColOld = parseInt(p.iCol, 10), iRowOld = parseInt(p.iRow, 10),
+					$trOld = $(rows[iRowOld]), savedRow = p.savedRow;
 				// select the row that can be used for other methods
 				p.selrow = rowid;
 				if (!p.knv) {
 					$self.jqGrid("GridNav");
 				}
 				// check to see if we have already edited cell
-				if (p.savedRow.length > 0) {
+				if (savedRow.length > 0) {
 					// prevent second click on that field and enable selects
 					if (ed === true) {
-						if (iRow === p.iRow && iCol === p.iCol) {
+						if (iRow === iRowOld && iCol === iColOld) {
 							return;
 						}
 					}
 					// save the cell
-					$self.jqGrid("saveCell", p.savedRow[0].id, p.savedRow[0].ic);
+					$self.jqGrid("saveCell", savedRow[0].id, savedRow[0].ic);
 				} else {
-					window.setTimeout(function () {
+					setTimeout(function () {
 						$("#" + jgrid.jqID(p.knv)).attr("tabindex", "-1").focus();
 					}, 1);
 				}
@@ -79,7 +85,7 @@
 				if (nm === "subgrid" || nm === "cb" || nm === "rn") {
 					return;
 				}
-				cc = $tr.children("td:eq(" + iCol + ")");
+				cc = getTdByColumnIndex.call($t, tr, iCol);
 				var editable = cm.editable, mode = "cell";
 				if ($.isFunction(editable)) {
 					editable = editable.call($t, {
@@ -94,24 +100,25 @@
 				var highlightClasses = getGuiStateStyles.call($t, "select", "edit-cell"),
 					hoverClasses = getGuiStateStyles.call($t, "hover", "selected-row");
 				if (editable === true && ed === true && !cc.hasClass("not-editable-cell")) {
-					if (parseInt(p.iCol, 10) >= 0 && parseInt(p.iRow, 10) >= 0) {
-						$("td:eq(" + p.iCol + ")", $trOld).removeClass(highlightClasses);
+					if (iColOld >= 0 && iRowOld >= 0) {
+						getTdByColumnIndex.call($t, $trOld[0], iColOld).removeClass(highlightClasses);
 						$trOld.removeClass(hoverClasses);
 					}
 					cc.addClass(highlightClasses);
 					$tr.addClass(hoverClasses);
+					if (!cm.edittype) {
+						cm.edittype = "text";
+					}
+					edittype = cm.edittype;
 					try {
 						tmp = $.unformat.call($t, cc, { rowId: rowid, colModel: cm }, iCol);
 					} catch (ex) {
-						tmp = (cm.edittype && cm.edittype === "textarea") ? cc.text() : cc.html();
+						tmp = edittype === "textarea" ? cc.text() : cc.html();
 					}
 					if (p.autoencode) {
 						tmp = jgrid.htmlDecode(tmp);
 					}
-					if (!cm.edittype) {
-						cm.edittype = "text";
-					}
-					p.savedRow.push({ id: iRow, ic: iCol, name: nm, v: tmp });
+					savedRow.push({ id: iRow, ic: iCol, name: nm, v: tmp });
 					if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) {
 						tmp = "";
 					}
@@ -123,7 +130,7 @@
 					}
 					feedback.call($t, "beforeEditCell", rowid, nm, tmp, iRow, iCol);
 					var opt = $.extend({}, cm.editoptions || {}, { id: iRow + "_" + nm, name: nm, rowId: rowid, mode: mode });
-					var elc = jgrid.createEl.call($t, cm.edittype, opt, tmp, true, $.extend({}, jgrid.ajaxOptions, p.ajaxSelectOptions || {})),
+					var elc = jgrid.createEl.call($t, edittype, opt, tmp, true, $.extend({}, jgrid.ajaxOptions, p.ajaxSelectOptions || {})),
 						$dataFiled = cc,
 						editingColumnWithTreeGridIcon = p.treeGrid === true && nm === p.ExpandColumn;
 					if (editingColumnWithTreeGridIcon) {
@@ -131,10 +138,10 @@
 					}
 					$dataFiled.html("").append(elc).attr("tabindex", "0");
 					if (editingColumnWithTreeGridIcon) { // && elc.style.width === "100%"
-						$(elc).width(cc.width()-cc.children("div.tree-wrap").outerWidth());
+						$(elc).width(cc.width() - cc.children("div.tree-wrap").outerWidth());
 					}
 					jgrid.bindEv.call($t, elc, opt);
-					window.setTimeout(function () {
+					setTimeout(function () {
 						$(elc).focus();
 					}, 1);
 					$("input, select, textarea", cc).bind("keydown", function (e) {
@@ -170,8 +177,8 @@
 					feedback.call($t, "afterEditCell", rowid, nm, tmp, iRow, iCol);
 					$self.triggerHandler("jqGridAfterEditCell", [rowid, nm, tmp, iRow, iCol]);
 				} else {
-					if (parseInt(p.iCol, 10) >= 0 && parseInt(p.iRow, 10) >= 0) {
-						$("td:eq(" + p.iCol + ")", $trOld).removeClass(highlightClasses);
+					if (iColOld >= 0 && iRowOld >= 0) {
+						getTdByColumnIndex.call($t, $trOld[0], iColOld).removeClass(highlightClasses);
 						$trOld.removeClass(hoverClasses);
 					}
 					cc.addClass(highlightClasses);
@@ -185,15 +192,17 @@
 		},
 		saveCell: function (iRow, iCol) {
 			return this.each(function () {
-				var $t = this, $self = $($t), p = $t.p, fr, infoDialog = jgrid.info_dialog, jqID = jgrid.jqID,
-					errors = $self.jqGrid("getGridRes", "errors"), errcap = errors.errcap,
-					edit = $self.jqGrid("getGridRes", "edit"), editMsg = edit.msg, bClose = edit.bClose;
+				var $t = this, $self = $($t), p = $t.p, infoDialog = jgrid.info_dialog, jqID = jgrid.jqID;
+					
 				if (!$t.grid || p.cellEdit !== true) {
 					return;
 				}
-				fr = p.savedRow.length >= 1 ? 0 : null;
+				var errors = $self.jqGrid("getGridRes", "errors"), errcap = errors.errcap,
+					edit = $self.jqGrid("getGridRes", "edit"), editMsg = edit.msg, bClose = edit.bClose,
+					savedRow = p.savedRow, fr = savedRow.length >= 1 ? 0 : null;
 				if (fr !== null) {
-					var tr = $t.rows[iRow], rowid = tr.id, $tr = $(tr), cc = $("td:eq(" + iCol + ")", tr), v, v2,
+					var tr = $t.rows[iRow], rowid = tr.id, $tr = $(tr), v, v2,
+						cc = getTdByColumnIndex.call($t, tr, iCol),
 						cm = p.colModel[iCol], nm = cm.name, iRowNmSelector = "#" + iRow + "_" + jqID(nm);
 					switch (cm.edittype) {
 						case "select":
@@ -258,7 +267,7 @@
 							break;
 					}
 					// The common approach is if nothing changed do not do anything
-					if (v2 !== p.savedRow[fr].v) {
+					if (v2 !== savedRow[fr].v) {
 						var vvv = $self.triggerHandler("jqGridBeforeSaveCell", [rowid, nm, v, iRow, iCol]);
 						if (vvv) {
 							v = vvv;
@@ -271,7 +280,7 @@
 								v2 = vv;
 							}
 						}
-						var cv = jgrid.checkValues.call($t, v, iCol);
+						var cv = jgrid.checkValues.call($t, v, iCol), formatoptions = cm.formatoptions || {};
 						if (cv[0] === true) {
 							var addpost = $self.triggerHandler("jqGridBeforeSubmitCell", [rowid, nm, v, iRow, iCol]) || {};
 							if ($.isFunction(p.beforeSubmitCell)) {
@@ -283,7 +292,7 @@
 							if ($("input.hasDatepicker", cc).length > 0) {
 								$("input.hasDatepicker", cc).datepicker("hide");
 							}
-							if (cm.formatter && cm.formatter === "date" && (cm.formatoptions == null || cm.formatoptions.sendFormatted !== true)) {
+							if (cm.formatter === "date" && formatoptions.sendFormatted !== true) {
 								// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
 								// Floating point separator for example
 								v2 = $.unformat.date.call($t, v2, cm);
@@ -295,12 +304,12 @@
 										v = jgrid.htmlEncode(v);
 									}
 									postdata[nm] = v;
-									var opers = p.prmNames, idname = opers.id, oper = opers.oper;
+									var opers = p.prmNames, idname = opers.id, oper = opers.oper, hDiv = $t.grid.hDiv;
 									postdata[idname] = jgrid.stripPref(p.idPrefix, rowid);
 									postdata[oper] = opers.editoper;
 									postdata = $.extend(addpost, postdata);
 									$self.jqGrid("progressBar", { method: "show", loadtype: p.loadui, htmlcontent: jgrid.defaults.savetext || "Saving..." });
-									$t.grid.hDiv.loading = true;
+									hDiv.loading = true;
 									$.ajax($.extend({
 										url: p.cellurl,
 										//data :$.isFunction(p.serializeCellData) ? p.serializeCellData.call($t, postdata) : postdata,
@@ -308,7 +317,7 @@
 										type: "POST",
 										complete: function (jqXHR) {
 											$self.jqGrid("progressBar", { method: "hide", loadtype: p.loadui });
-											$t.grid.hDiv.loading = false;
+											hDiv.loading = false;
 											if ((jqXHR.status < 300 || jqXHR.status === 304) && (jqXHR.status !== 0 || jqXHR.readyState !== 4)) {
 												var ret = $self.triggerHandler("jqGridAfterSubmitCell", [$t, jqXHR, postdata.id, nm, v, iRow, iCol]) || [true, ""];
 												if (ret[0] === true && $.isFunction(p.afterSubmitCell)) {
@@ -324,7 +333,7 @@
 													cc.addClass("dirty-cell");
 													$tr.addClass("edited");
 													feedback.call($t, "afterSaveCell", rowid, nm, v, iRow, iCol);
-													p.savedRow.splice(0, 1);
+													savedRow.splice(0, 1);
 												} else {
 													infoDialog.call($t, errcap, ret[1], bClose);
 													$self.jqGrid("restoreCell", iRow, iCol);
@@ -333,7 +342,7 @@
 										},
 										error: function (jqXHR, textStatus, errorThrown) {
 											$("#lui_" + jqID(p.id)).hide();
-											$t.grid.hDiv.loading = false;
+											hDiv.loading = false;
 											$self.triggerHandler("jqGridErrorCell", [jqXHR, textStatus, errorThrown]);
 											if ($.isFunction(p.errorCell)) {
 												p.errorCell.call($t, jqXHR, textStatus, errorThrown);
@@ -361,11 +370,11 @@
 								cc.addClass("dirty-cell");
 								$tr.addClass("edited");
 								feedback.call($t, "afterSaveCell", rowid, nm, v, iRow, iCol);
-								p.savedRow.splice(0, 1);
+								savedRow.splice(0, 1);
 							}
 						} else {
 							try {
-								window.setTimeout(function () {
+								setTimeout(function () {
 									infoDialog.call($t, errcap, v + " " + cv[1], bClose);
 								}, 100);
 								$self.jqGrid("restoreCell", iRow, iCol);
@@ -375,19 +384,19 @@
 						$self.jqGrid("restoreCell", iRow, iCol);
 					}
 				}
-				window.setTimeout(function () {
+				setTimeout(function () {
 					$("#" + jqID(p.knv)).attr("tabindex", "-1").focus();
 				}, 0);
 			});
 		},
 		restoreCell: function (iRow, iCol) {
 			return this.each(function () {
-				var $t = this, p = $t.p, tr = $t.rows[iRow], rowid = tr.id, v, cm;
+				var $t = this, p = $t.p, tr = $t.rows[iRow], rowid = tr.id, v, cm, formatoptions;
 				if (!$t.grid || p.cellEdit !== true) {
 					return;
 				}
-				if (p.savedRow.length >= 1) {
-					var cc = $("td:eq(" + iCol + ")", tr);
+				var savedRow = p.savedRow, cc = getTdByColumnIndex.call($t, tr, iCol);
+				if (savedRow.length >= 1) {
 					// datepicker fix
 					if ($.isFunction($.fn.datepicker)) {
 						try {
@@ -400,26 +409,27 @@
 					} else {
 						cc.empty();
 					}
-					$(cc).attr("tabindex", "-1");
-					v = p.savedRow[0].v;
-					if (cm.formatter && cm.formatter === "date" && (cm.formatoptions == null || cm.formatoptions.sendFormatted !== true)) {
+					cc.attr("tabindex", "-1");
+					v = savedRow[0].v;
+					formatoptions = cm.formatoptions || {};
+					if (cm.formatter === "date" && formatoptions.sendFormatted !== true) {
 						// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
 						// Floating point separator for example
 						v = $.unformat.date.call($t, v, cm);
 					}
 					$($t).jqGrid("setCell", rowid, iCol, v, false, false, true);
 					feedback.call($t, "afterRestoreCell", rowid, v, iRow, iCol);
-					p.savedRow.splice(0, 1);
+					savedRow.splice(0, 1);
 				}
-				window.setTimeout(function () {
+				setTimeout(function () {
 					$("#" + p.knv).attr("tabindex", "-1").focus();
 				}, 0);
 			});
 		},
 		nextCell: function (iRow, iCol) {
 			return this.each(function () {
-				var $t = this, $self = $($t), p = $t.p, nCol = false, i, editable, cm;
-				if (!$t.grid || p.cellEdit !== true || $t.rows == null || $t.rows[iRow] == null) {
+				var $t = this, $self = $($t), p = $t.p, nCol = false, i, editable, cm, rows = $t.rows;
+				if (!$t.grid || p.cellEdit !== true || rows == null || rows[iRow] == null) {
 					return;
 				}
 				// try to find next editable cell
@@ -428,7 +438,7 @@
 					editable = cm.editable;
 					if ($.isFunction(editable)) {
 						editable = editable.call($t, {
-							rowid: $t.rows[iRow].id,
+							rowid: rows[iRow].id,
 							iCol: i,
 							iRow: iRow,
 							name: cm.name,
@@ -452,8 +462,8 @@
 		},
 		prevCell: function (iRow, iCol) {
 			return this.each(function () {
-				var $t = this, $self = $($t), p = $t.p, nCol = false, i, editable, cm;
-				if (!$t.grid || p.cellEdit !== true || $t.rows == null || $t.rows[iRow] == null) {
+				var $t = this, $self = $($t), p = $t.p, nCol = false, i, editable, cm, rows = $t.rows;
+				if (!$t.grid || p.cellEdit !== true || rows == null || rows[iRow] == null) {
 					return;
 				}
 				// try to find next editable cell
@@ -462,7 +472,7 @@
 					editable = cm.editable;
 					if ($.isFunction(editable)) {
 						editable = editable.call($t, {
-							rowid: $t.rows[iRow].id,
+							rowid: rows[iRow].id,
 							iCol: i,
 							iRow: iRow,
 							name: cm.name,
@@ -554,6 +564,7 @@
 				$("#" + p.knv)
 					.focus()
 					.keydown(function (e) {
+						var iRowOld = parseInt(p.iRow, 10), iColOld = parseInt(p.iCol, 10);
 						kdir = e.keyCode;
 						if (p.direction === "rtl") {
 							if (kdir === 37) {
@@ -564,34 +575,34 @@
 						}
 						switch (kdir) {
 							case 38:
-								if (p.iRow - 1 > 0) {
-									scrollGrid(p.iRow - 1, p.iCol, "vu");
-									$self.jqGrid("editCell", p.iRow - 1, p.iCol, false);
+								if (iRowOld - 1 > 0) {
+									scrollGrid(iRowOld - 1, iColOld, "vu");
+									$self.jqGrid("editCell", iRowOld - 1, iColOld, false);
 								}
 								break;
 							case 40:
-								if (p.iRow + 1 <= $t.rows.length - 1) {
-									scrollGrid(p.iRow + 1, p.iCol, "vd");
-									$self.jqGrid("editCell", p.iRow + 1, p.iCol, false);
+								if (iRowOld + 1 <= $t.rows.length - 1) {
+									scrollGrid(iRowOld + 1, iColOld, "vd");
+									$self.jqGrid("editCell", iRowOld + 1, iColOld, false);
 								}
 								break;
 							case 37:
-								if (p.iCol - 1 >= 0) {
-									i = findNextVisible(p.iCol - 1, "lft");
-									scrollGrid(p.iRow, i, "h");
-									$self.jqGrid("editCell", p.iRow, i, false);
+								if (iColOld - 1 >= 0) {
+									i = findNextVisible(iColOld - 1, "lft");
+									scrollGrid(iRowOld, i, "h");
+									$self.jqGrid("editCell", iRowOld, i, false);
 								}
 								break;
 							case 39:
-								if (p.iCol + 1 <= p.colModel.length - 1) {
-									i = findNextVisible(p.iCol + 1, "rgt");
-									scrollGrid(p.iRow, i, "h");
-									$self.jqGrid("editCell", p.iRow, i, false);
+								if (iColOld + 1 <= p.colModel.length - 1) {
+									i = findNextVisible(iColOld + 1, "rgt");
+									scrollGrid(iRowOld, i, "h");
+									$self.jqGrid("editCell", iRowOld, i, false);
 								}
 								break;
 							case 13:
-								if (parseInt(p.iCol, 10) >= 0 && parseInt(p.iRow, 10) >= 0) {
-									$self.jqGrid("editCell", p.iRow, p.iCol, true);
+								if (iColOld >= 0 && iRowOld >= 0) {
+									$self.jqGrid("editCell", iRowOld, iColOld, true);
 								}
 								break;
 							default:
@@ -607,30 +618,21 @@
 				mthd = "all";
 			}
 			this.each(function () {
-				var $t = this, p = $t.p, htmlDecode = jgrid.htmlDecode;
+				var $t = this, p = $t.p, htmlDecode = jgrid.htmlDecode, rows = $t.rows;
 				if (!$t.grid || p.cellEdit !== true) {
 					return;
 				}
-				$($t.rows).each(function (j) {
+				$(rows).each(function (j) {
 					var res = {};
 					if ($(this).hasClass("edited")) {
-						$("td", this).each(function (i) {
-							var cm = p.colModel[i], nm = cm.name, $td = $(this);
-							if (nm !== "cb" && nm !== "subgrid") {
-								if (mthd === "dirty") {
-									if ($td.hasClass("dirty-cell")) {
-										try {
-											res[nm] = $.unformat.call($t, this, { rowId: $t.rows[j].id, colModel: cm }, i);
-										} catch (e) {
-											res[nm] = htmlDecode($td.html());
-										}
-									}
-								} else {
-									try {
-										res[nm] = $.unformat.call($t, this, { rowId: $t.rows[j].id, colModel: cm }, i);
-									} catch (e) {
-										res[nm] = htmlDecode($td.html());
-									}
+						var tr = this;
+						$(this.cells).each(function (i) {
+							var cm = p.colModel[i], nm = cm.name, $td = getTdByColumnIndex.call($t, tr, i); // $td = $(this);
+							if (nm !== "cb" && nm !== "subgrid" && nm !== "rn" && (mthd !== "dirty" || $td.hasClass("dirty-cell"))) {
+								try {
+									res[nm] = $.unformat.call($t, $td[0], { rowId: rows[j].id, colModel: cm }, i);
+								} catch (e) {
+									res[nm] = htmlDecode($td.html());
 								}
 							}
 						});
