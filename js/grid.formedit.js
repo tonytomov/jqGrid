@@ -2027,7 +2027,7 @@
 						return false;
 					},
 					stdButtonActivation = function (name, id, onClick, navtbl, elemids) {
-						var $button = $("<div class='ui-pg-button ui-corner-all'></div>"),
+						var $button = $("<div class='ui-pg-button ui-corner-all' role='button'></div>"),
 							iconClass = o[name + "icon"],
 							iconText = $.trim(o[name + "text"]);
 						$button.append("<div class='ui-pg-div'><span class='" +
@@ -2046,7 +2046,8 @@
 
 				if (o.cloneToTop && p.toppager) { clone = 2; }
 				for (i = 0; i < clone; i++) {
-					navtbl = $("<div" + " class='ui-pg-table navtable' style='float:" +
+					// we can set aria-activedescendant="idOfFirstButton" later
+					navtbl = $("<div" + " class='ui-pg-table navtable' role='toolbar' tabindex='0' style='float:" +
 						(p.direction === "rtl" ? "right" : "left") +
 						";table-layout:auto;'></div>");
 					if (i === 0) {
@@ -2155,7 +2156,7 @@
 				var findnav = $(".navtable", elem), commonIconClass = o.commonIconClass;
 				if (findnav.length > 0) {
 					if (o.id && findnav.find("#" + jqID(o.id)).length > 0) { return; }
-					var tbd = $("<div></div>");
+					var tbd = $("<div role='button'></div>");
 					if (o.buttonicon.toString().toUpperCase() === "NONE") {
 						$(tbd).addClass("ui-pg-button ui-corner-all").append("<div class='ui-pg-div'>" +
 							(o.caption ? "<span class='ui-pg-button-text" + (o.iconsOverText ? " ui-pg-button-icon-over-text" : "") + "'>" + o.caption + "</span>" : "") +
