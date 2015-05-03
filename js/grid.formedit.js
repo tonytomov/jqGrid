@@ -484,7 +484,7 @@
 								}
 							}
 						} else {
-							switch ($(this).get(0).type) {
+							switch ($(this)[0].type) {
 								case "checkbox":
 									postdata[nm] = $(this).is(":checked") ? $(this).val() : $(this).attr("offval");
 									break;
