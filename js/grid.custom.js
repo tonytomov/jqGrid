@@ -900,7 +900,7 @@
 					disabledClass = getGuiStyles.call($t, "states.disabled");
 				// TODO treeGrid and grouping  Support
 				// TODO: allow to edit columns AFTER frozen columns
-				if (p.subGrid === true || p.treeGrid === true || p.cellEdit === true || p.scroll) {
+				if (p.subGrid === true || p.treeGrid === true || p.scroll) {
 					return;
 				}
 

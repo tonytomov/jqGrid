@@ -46,7 +46,7 @@
 		},
 		getTdByColumnIndex = function (tr, iCol) {
 			var $t = this, frozenRows = $t.grid.fbRows;
-			return $((frozenRows != null && frozenRows[0].length > iCol ? frozenRows[tr.rowIndex] : tr).cells[iCol]);
+			return $((frozenRows != null && frozenRows[0].cells.length > iCol ? frozenRows[tr.rowIndex] : tr).cells[iCol]);
 		};
 	jgrid.extend({
 		editCell: function (iRow, iCol, ed) {
@@ -201,23 +201,24 @@
 					edit = $self.jqGrid("getGridRes", "edit"), editMsg = edit.msg, bClose = edit.bClose,
 					savedRow = p.savedRow, fr = savedRow.length >= 1 ? 0 : null;
 				if (fr !== null) {
-					var tr = $t.rows[iRow], rowid = tr.id, $tr = $(tr), v, v2,
+					var tr = $t.rows[iRow], rowid = tr.id, $tr = $(tr), v, v2, $field,
 						cc = getTdByColumnIndex.call($t, tr, iCol),
-						cm = p.colModel[iCol], nm = cm.name, iRowNmSelector = "#" + iRow + "_" + jqID(nm);
+						cm = p.colModel[iCol], nm = cm.name;
 					switch (cm.edittype) {
 						case "select":
+							$field = cc.find("select option:selected");
 							if (cm.editoptions == null || !cm.editoptions.multiple) {
-								v = $(iRowNmSelector + " option:selected", tr).val();
-								v2 = $(iRowNmSelector + " option:selected", tr).text();
+								v = $field.val();
+								v2 = $field.text();
 							} else {
-								var sel = $(iRowNmSelector, tr), selectedText = [];
-								v = $(sel).val();
+								var selectedText = [];
+								v = $field.val();
 								if (v) {
 									v.join(",");
 								} else {
 									v = "";
 								}
-								$("option:selected", sel).each(
+								$field.each(
 									function (i, selected) {
 										selectedText[i] = $(selected).text();
 									}
@@ -233,14 +234,14 @@
 							if (cm.editoptions && cm.editoptions.value) {
 								cbv = cm.editoptions.value.split(":");
 							}
-							v = $(iRowNmSelector, tr).is(":checked") ? cbv[0] : cbv[1];
+							v = cc.find("input[type=checkbox]").is(":checked") ? cbv[0] : cbv[1];
 							v2 = v;
 							break;
 						case "password":
 						case "text":
 						case "textarea":
 						case "button":
-							v = $(iRowNmSelector, tr).val();
+							v = cc.find("input[name=" + jqID(nm) + "]").val();
 							v2 = v;
 							break;
 						case "custom":
@@ -324,11 +325,6 @@
 													ret = p.afterSubmitCell.call($t, jqXHR, postdata.id, nm, v, iRow, iCol);
 												}
 												if (ret[0] === true) {
-													if (p.treeGrid === true && nm === p.ExpandColumn) {
-														cc.children("span.cell-wrapperleaf,span.cell-wrapper").empty();
-													} else {
-														cc.empty();
-													}
 													$self.jqGrid("setCell", rowid, iCol, v2, false, false, true);
 													cc.addClass("dirty-cell");
 													$tr.addClass("edited");
@@ -361,11 +357,6 @@
 								}
 							}
 							if (p.cellsubmit === "clientArray") {
-								if (p.treeGrid === true && nm === p.ExpandColumn) {
-									cc.children("span.cell-wrapperleaf,span.cell-wrapper").empty();
-								} else {
-									cc.empty();
-								}
 								$self.jqGrid("setCell", rowid, iCol, v2, false, false, true);
 								cc.addClass("dirty-cell");
 								$tr.addClass("edited");

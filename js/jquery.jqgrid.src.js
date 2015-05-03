@@ -13,7 +13,7 @@
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
 /*jslint browser: true, devel: true, eqeq: true, nomen: true, plusplus: true, unparam: true, vars: true, evil: true, regexp: true, white: true, todo: true */
-/*global jQuery, HTMLElement */
+/*global jQuery, HTMLElement, HTMLTableRowElement */
 
 (function ($) {
 	"use strict";
@@ -959,6 +959,33 @@
 				}
 			}
 			return null;
+		},
+		// The method returns jQuery wrapper with the cell (<td>) of the row.
+		// It can return jQuery wrapper with two cells in case of usage frozen data:
+		// one cell of the main grid and another cell with the corresponding cell from the frozen body table
+		getCell: function (tr, iCol) {
+			var grid = this.grid, p = this.p, frozenRows, $td;
+			if (!grid || !p) { return; } // not a grid
+			if (tr instanceof $ || tr.length > 0) {
+				tr = tr[0]; // unwrap jQuery object to DOM element
+			}
+			if (!(tr instanceof HTMLTableRowElement) || tr.cells == null) {
+				return $(); // return empty jQuery object
+			}
+			$td = $(tr.cells[iCol]);
+			frozenRows = grid.fbRows;
+			return frozenRows != null && iCol < frozenRows[0].cells.length ?
+					$td.add(frozenRows[tr.rowIndex].cells[iCol]) :
+					$td;
+		},
+		getDataFieldOfCell: function (tr, iCol) {
+			var p = this.p, $td = jgrid.getCell.call(this, tr, iCol);
+			if (p.treeGrid && $td.children("div.tree-wrap").length > 0) {
+				$td = $td.children("span.cell-wrapperleaf,span.cell-wrapper");
+			}
+			return p.colModel[iCol].autoResizable ?
+					$td.children("span." + p.autoResizing.wrapperClassName) :
+					$td;
 		},
 		enumEditableCells: function (tr, mode, callback) {
 			var self = this, grid = self.grid, rows = self.rows, p = self.p;
@@ -5146,7 +5173,7 @@
 								}
 								vl = t.formatter(rowid, dval, i, data, "edit");
 								title = cm.title ? { "title": stripHtml(vl) } : {};
-								var $dataFiled = $("td[role=gridcell]:eq(" + i + ")", ind);
+								var $dataFiled = $(ind.cells[i]);//$("td[role=gridcell]:eq(" + i + ")", ind);
 								if (p.treeGrid === true && nm === p.ExpandColumn) {
 									$dataFiled = $dataFiled.children("span.cell-wrapperleaf,span.cell-wrapper").first();
 								}
@@ -5687,102 +5714,113 @@
 				}
 			});
 		},
-		setCell: function (rowid, colname, nData, cssp, attrp, forceupd) {
+		setCell: function (rowid, colName, nData, cssp, attrp, forceUpdate) {
 			// TODO: add an additional parameter, which will inform whether the input data nData is in formatted or unformatted form
 			return this.each(function () {
-				var $t = this, p = $t.p, pos = -1, v, title, cl, cm, item, ind, $tcell, rawdat = [], id, index;
+				var $t = this, p = $t.p, iCol = -1, colModel = p.colModel, v, title, i, cm, item, tr, $td, $tdi, val, rawdat = {}, id, index;
 				if (!$t.grid) { return; }
-				if (isNaN(colname)) {
-					pos = p.iColByName[colname];
-					if (pos === undefined) { return; }
-				} else { pos = parseInt(colname, 10); }
-				if (pos >= 0) {
-					ind = $($t).jqGrid("getGridRowById", rowid);
-					if (ind) {
-						$tcell = $(ind).children("td:eq(" + pos + ")");
-						if (nData !== "" || forceupd === true) {
-							for (cl = 0; cl < ind.cells.length; cl++) {
-								// slow down speed
-								rawdat.push(ind.cells[cl].innerHTML);
-							}
-							v = $t.formatter(rowid, nData, pos, rawdat, "edit");
-							title = p.colModel[pos].title ? { "title": stripHtml(v) } : {};
-							if (p.treeGrid && $tcell.children("div.tree-wrap").length > 0) {
-								$tcell.children("span.cell-wrapperleaf,span.cell-wrapper").html(v).attr(title);
-							} else {
-								$tcell.html(v).attr(title);
-							}
+				iCol = isNaN(colName) ? p.iColByName[colName] : parseInt(colName, 10);
+				if (iCol >= 0) {
+					tr = $($t).jqGrid("getGridRowById", rowid);
+					if (tr) {
+						$td = jgrid.getCell.call($t, tr, iCol);
+						if (nData !== "" || forceUpdate === true) {
+							cm = colModel[iCol];
 							if (p.datatype === "local") {
 								id = stripPref(p.idPrefix, rowid);
 								index = p._index[id];
 								if (index !== undefined) {
 									item = p.data[index];
-									if (item != null) {
-										cm = p.colModel[pos];
-										v = convertOnSaveLocally.call($t, nData, cm, item[cm.name], id, item, pos);
-										if ($.isFunction(cm.saveLocally)) {
-											cm.saveLocally.call($t, { newValue: v, newItem: item, oldItem: item, id: id, cm: cm, cmName: cm.name, iCol: pos });
-										} else {
-											item[cm.name] = v;
+								}
+							}
+							// !!! filling of the rawdat for all cells slow down speed
+							// probably one should use p.data[index] (see below) instead ???
+							if (item == null) {
+								for (i = 0; i < tr.cells.length; i++) {
+									// !!! BUG the usage of innerHTML is wrong
+									// one have to use p.data[index] or unformat the data
+									if (i !== iCol) {
+										$tdi = jgrid.getDataFieldOfCell.call($t, tr, i);
+										if ($tdi.length > 0) {
+											try {
+												val = $.unformat.call($t, $tdi, { rowId: rowid, colModel: colModel[i] }, i);
+											} catch (exception) {
+												val = htmlDecode($tdi[0].innerHTML);
+											}
+											rawdat[colModel[i].name] = val;
 										}
 									}
 								}
+							} else {
+								rawdat = item;
+							}
+							rawdat[cm.name] = nData;
+							v = $t.formatter(rowid, nData, iCol, rawdat, "edit");
+							title = p.colModel[iCol].title ? { "title": stripHtml(v) } : {};
+							$td.html(v).attr(title);
+							if (item != null) { // p.datatype === "local"
+								v = convertOnSaveLocally.call($t, nData, cm, item[cm.name], id, item, iCol);
+								if ($.isFunction(cm.saveLocally)) {
+									cm.saveLocally.call($t, { newValue: v, newItem: item, oldItem: item, id: id, cm: cm, cmName: cm.name, iCol: iCol });
+								} else {
+									item[cm.name] = v;
+								}
 							}
 						}
-						if (typeof cssp === "string") {
-							$tcell.addClass(cssp);
-						} else if (cssp) {
-							$tcell.css(cssp);
+						if (cssp || attrp) {
+							$td = jgrid.getCell.call(tr, iCol);
+							if (cssp) {
+								$td[typeof cssp === "string" ? "addClass" : "css"](cssp);
+							}
+							if (typeof attrp === "object") {
+								$td.attr(attrp);
+							}
 						}
-						if (typeof attrp === "object") { $tcell.attr(attrp); }
 					}
 				}
 			});
 		},
-		getCell: function (rowid, col) {
+		getCell: function (rowid, colName) {
 			// TODO: add an additional parameter, which will inform whether the output data should be in formatted or unformatted form
 			var ret = false;
 			this.each(function () {
-				var $t = this, pos = -1, p = $t.p;
+				var $t = this, iCol = -1, p = $t.p, tr, $td;
 				if (!$t.grid) { return; }
-				if (isNaN(col)) {
-					pos = p.iColByName[col];
-					if (pos === undefined) { return; }
-				} else { pos = parseInt(col, 10); }
-				if (pos >= 0) {
-					var ind = $($t).jqGrid("getGridRowById", rowid);
-					if (ind) {
+				iCol = isNaN(colName) ? p.iColByName[colName] : parseInt(colName, 10);
+				if (iCol >= 0) { //isNaN(iCol)>=0 is false and undefined >= 0 is false
+					tr = $($t).jqGrid("getGridRowById", rowid);
+					if (tr) {
+						$td = jgrid.getDataFieldOfCell.call($t, tr, iCol).first();
 						try {
-							ret = $.unformat.call($t, $("td:eq(" + pos + ")", ind), { rowId: ind.id, colModel: p.colModel[pos] }, pos);
+							ret = $.unformat.call($t, $td, { rowId: tr.id, colModel: p.colModel[iCol] }, iCol);
 						} catch (exception) {
-							ret = htmlDecode($("td:eq(" + pos + ")", ind).html());
+							ret = htmlDecode($td.html());
 						}
 					}
 				}
 			});
 			return ret;
 		},
-		getCol: function (col, obj, mathopr) {
+		getCol: function (colName, obj, mathopr) {
 			// TODO: add an additional parameter, which will inform whether the output data should be in formatted or unformatted form
 			var ret = [], val, sum = 0, min, max, v;
 			obj = typeof obj !== "boolean" ? false : obj;
 			if (mathopr === undefined) { mathopr = false; }
 			this.each(function () {
-				var $t = this, pos = -1, p = $t.p;
+				var $t = this, iCol = -1, p = $t.p, $td;
 				if (!$t.grid) { return; }
-				if (isNaN(col)) {
-					pos = p.iColByName[col];
-					if (pos === undefined) { return; }
-				} else { pos = parseInt(col, 10); }
-				if (pos >= 0) {
-					var ln = $t.rows.length, i = 0, dlen = 0;
+				iCol = isNaN(colName) ? p.iColByName[colName] : parseInt(colName, 10);
+				if (iCol >= 0) { //isNaN(iCol)>=0 is false and undefined >= 0 is false
+					var ln = $t.rows.length, i = 0, dlen = 0, tr;
 					if (ln && ln > 0) {
 						while (i < ln) {
-							if ($($t.rows[i]).hasClass("jqgrow")) {
+							tr = $t.rows[i];
+							if ($(tr).hasClass("jqgrow")) {
+								$td = jgrid.getDataFieldOfCell.call($t, tr, iCol).first(); //$(tr.cells[iCol]);
 								try {
-									val = $.unformat.call($t, $($t.rows[i].cells[pos]), { rowId: $t.rows[i].id, colModel: p.colModel[pos] }, pos);
+									val = $.unformat.call($t, $td, { rowId: tr.id, colModel: p.colModel[iCol] }, iCol);
 								} catch (exception) {
-									val = htmlDecode($t.rows[i].cells[pos].innerHTML);
+									val = htmlDecode($td.html());
 								}
 								if (mathopr) {
 									v = parseFloat(val);
@@ -5794,7 +5832,7 @@
 										dlen++;
 									}
 								} else if (obj) {
-									ret.push({ id: $t.rows[i].id, value: val });
+									ret.push({ id: tr.id, value: val });
 								} else {
 									ret.push(val);
 								}
@@ -6174,7 +6212,7 @@
 		},
 		getTdByColumnIndex = function (tr, iCol) {
 			var $t = this, frozenRows = $t.grid.fbRows;
-			return $((frozenRows != null && frozenRows[0].length > iCol ? frozenRows[tr.rowIndex] : tr).cells[iCol]);
+			return $((frozenRows != null && frozenRows[0].cells.length > iCol ? frozenRows[tr.rowIndex] : tr).cells[iCol]);
 		};
 	jgrid.extend({
 		editCell: function (iRow, iCol, ed) {
@@ -6329,23 +6367,24 @@
 					edit = $self.jqGrid("getGridRes", "edit"), editMsg = edit.msg, bClose = edit.bClose,
 					savedRow = p.savedRow, fr = savedRow.length >= 1 ? 0 : null;
 				if (fr !== null) {
-					var tr = $t.rows[iRow], rowid = tr.id, $tr = $(tr), v, v2,
+					var tr = $t.rows[iRow], rowid = tr.id, $tr = $(tr), v, v2, $field,
 						cc = getTdByColumnIndex.call($t, tr, iCol),
-						cm = p.colModel[iCol], nm = cm.name, iRowNmSelector = "#" + iRow + "_" + jqID(nm);
+						cm = p.colModel[iCol], nm = cm.name;
 					switch (cm.edittype) {
 						case "select":
+							$field = cc.find("select option:selected");
 							if (cm.editoptions == null || !cm.editoptions.multiple) {
-								v = $(iRowNmSelector + " option:selected", tr).val();
-								v2 = $(iRowNmSelector + " option:selected", tr).text();
+								v = $field.val();
+								v2 = $field.text();
 							} else {
-								var sel = $(iRowNmSelector, tr), selectedText = [];
-								v = $(sel).val();
+								var selectedText = [];
+								v = $field.val();
 								if (v) {
 									v.join(",");
 								} else {
 									v = "";
 								}
-								$("option:selected", sel).each(
+								$field.each(
 									function (i, selected) {
 										selectedText[i] = $(selected).text();
 									}
@@ -6361,14 +6400,14 @@
 							if (cm.editoptions && cm.editoptions.value) {
 								cbv = cm.editoptions.value.split(":");
 							}
-							v = $(iRowNmSelector, tr).is(":checked") ? cbv[0] : cbv[1];
+							v = cc.find("input[type=checkbox]").is(":checked") ? cbv[0] : cbv[1];
 							v2 = v;
 							break;
 						case "password":
 						case "text":
 						case "textarea":
 						case "button":
-							v = $(iRowNmSelector, tr).val();
+							v = cc.find("input[name=" + jqID(nm) + "]").val();
 							v2 = v;
 							break;
 						case "custom":
@@ -6452,11 +6491,6 @@
 													ret = p.afterSubmitCell.call($t, jqXHR, postdata.id, nm, v, iRow, iCol);
 												}
 												if (ret[0] === true) {
-													if (p.treeGrid === true && nm === p.ExpandColumn) {
-														cc.children("span.cell-wrapperleaf,span.cell-wrapper").empty();
-													} else {
-														cc.empty();
-													}
 													$self.jqGrid("setCell", rowid, iCol, v2, false, false, true);
 													cc.addClass("dirty-cell");
 													$tr.addClass("edited");
@@ -6489,11 +6523,6 @@
 								}
 							}
 							if (p.cellsubmit === "clientArray") {
-								if (p.treeGrid === true && nm === p.ExpandColumn) {
-									cc.children("span.cell-wrapperleaf,span.cell-wrapper").empty();
-								} else {
-									cc.empty();
-								}
 								$self.jqGrid("setCell", rowid, iCol, v2, false, false, true);
 								cc.addClass("dirty-cell");
 								$tr.addClass("edited");
@@ -8446,7 +8475,7 @@
 					disabledClass = getGuiStyles.call($t, "states.disabled");
 				// TODO treeGrid and grouping  Support
 				// TODO: allow to edit columns AFTER frozen columns
-				if (p.subGrid === true || p.treeGrid === true || p.cellEdit === true || p.scroll) {
+				if (p.subGrid === true || p.treeGrid === true || p.scroll) {
 					return;
 				}
 
@@ -11536,7 +11565,7 @@
 						return false;
 					},
 					stdButtonActivation = function (name, id, onClick, navtbl, elemids) {
-						var $button = $("<div class='ui-pg-button ui-corner-all'></div>"),
+						var $button = $("<div class='ui-pg-button ui-corner-all' role='button'></div>"),
 							iconClass = o[name + "icon"],
 							iconText = $.trim(o[name + "text"]);
 						$button.append("<div class='ui-pg-div'><span class='" +
@@ -11555,7 +11584,8 @@
 
 				if (o.cloneToTop && p.toppager) { clone = 2; }
 				for (i = 0; i < clone; i++) {
-					navtbl = $("<div" + " class='ui-pg-table navtable' style='float:" +
+					// we can set aria-activedescendant="idOfFirstButton" later
+					navtbl = $("<div" + " class='ui-pg-table navtable' role='toolbar' tabindex='0' style='float:" +
 						(p.direction === "rtl" ? "right" : "left") +
 						";table-layout:auto;'></div>");
 					if (i === 0) {
@@ -11664,7 +11694,7 @@
 				var findnav = $(".navtable", elem), commonIconClass = o.commonIconClass;
 				if (findnav.length > 0) {
 					if (o.id && findnav.find("#" + jqID(o.id)).length > 0) { return; }
-					var tbd = $("<div></div>");
+					var tbd = $("<div role='button'></div>");
 					if (o.buttonicon.toString().toUpperCase() === "NONE") {
 						$(tbd).addClass("ui-pg-button ui-corner-all").append("<div class='ui-pg-div'>" +
 							(o.caption ? "<span class='ui-pg-button-text" + (o.iconsOverText ? " ui-pg-button-icon-over-text" : "") + "'>" + o.caption + "</span>" : "") +
