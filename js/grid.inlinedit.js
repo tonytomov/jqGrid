@@ -187,8 +187,7 @@
 			// End compatible
 			// TODO: add return this.each(function(){....}
 			var tmp = {}, tmp2 = {}, postData = {}, editable, k, fr, resp, cv, ind = $self.jqGrid("getInd", rowid, true), $tr = $(ind),
-				opers = p.prmNames, errcap = getRes("errors.errcap"), bClose = getRes("edit.bClose"), isRemoteSave,
-				nodefined = getRes("edit.msg.nodefined"), novalue = getRes("edit.msg.novalue");
+				opers = p.prmNames, errcap = getRes("errors.errcap"), bClose = getRes("edit.bClose"), isRemoteSave;
 
 			if (ind === false) { return; }
 
@@ -201,84 +200,26 @@
 			isRemoteSave = o.url !== "clientArray";
 			if (editable === "1") {
 				enumEditableCells.call($t, ind, $tr.hasClass("jqgrid-new-row") ? "add" : "edit", function (options) {
-					var cm = options.cm, $dataFiled = $(options.dataElement), cbv, $field, newformat,
-						nm = cm.name, editoptions = cm.editoptions || {}, selectedText, selectedValues,
-						formatoptions = cm.formatoptions || {}, formatter = cm.formatter;
+					var cm = options.cm, v, formatter = cm.formatter, editoptions = cm.editoptions || {},
+						formatoptions = cm.formatoptions || {};
 
-					switch (cm.edittype) {
-						case "checkbox":
-							cbv = ["Yes", "No"];
-							if (typeof editoptions.value === "string") {
-								cbv = editoptions.value.split(":");
-							}
-							tmp[nm] = $dataFiled.find("input").is(":checked") ? cbv[0] : cbv[1];
-							break;
-						case "text":
-						case "password":
-						case "textarea":
-						case "button":
-							$field = $dataFiled.find("input, textarea");
-							tmp[nm] = $field.val();
-							if ($field[p.propOrAttr]("type") === "date" && String(tmp[nm]).split("-").length === 3) {
-								newformat = formatoptions.newformat || $self.jqGrid("getGridRes", "formatter.date.newformat");
-								tmp[nm] = jgrid.parseDate.call($t, "Y-m-d", tmp[nm], newformat);
-							}
-							break;
-						case "select":
-							$field = $dataFiled.find("select option:selected");
-							if (!editoptions.multiple) {
-								tmp[nm] = $field.val();
-								tmp2[nm] = $field.text();
-							} else {
-								selectedText = [];
-								selectedValues = [];
-								$field.each(function (i, option) {
-									var $option = $(this);
-									selectedValues.push($option.val());
-									selectedText.push($option.text());
-								});
-								tmp[nm] = selectedValues.join(",");
-								tmp2[nm] = selectedText.join(",");
-							}
-							if (formatter === "select") { tmp2 = {}; }
-							break;
-						case "custom":
-							try {
-								if ($.isFunction(editoptions.custom_value)) {
-									tmp[nm] = editoptions.custom_value.call($t, $dataFiled.find(".customelement"), "get");
-									if (tmp[nm] === undefined) {
-										throw "e2";
-									}
-								} else {
-									throw "e1";
-								}
-							} catch (e) {
-								if (e === "e1") {
-									info_dialog.call($t, errcap, "function 'custom_value' " + nodefined, bClose);
-								}
-								if (e === "e2") {
-									info_dialog.call($t, errcap, "function 'custom_value' " + novalue, bClose);
-								} else {
-									info_dialog.call($t, errcap, e.message, bClose);
-								}
-							}
-							break;
-					}
-					cv = jgrid.checkValues.call($t, tmp[nm], options.iCol);
+					v = jgrid.getEditedValue.call($t, $(options.dataElement), cm, !formatter);
+					cv = jgrid.checkValues.call($t, v, options.iCol);
 					if (cv[0] === false) {
 						return false;
 					}
-					if (isRemoteSave && p.autoencode) { tmp[nm] = jgrid.htmlEncode(tmp[nm]); }
+					if (isRemoteSave && p.autoencode) { v = jgrid.htmlEncode(v); }
 					if (formatter === "date" && formatoptions.sendFormatted !== true) {
 						// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
 						// Floating point separator for example
-						tmp[nm] = $.unformat.date.call($t, tmp[nm], cm);
+						v = $.unformat.date.call($t, v, cm);
 					}
 					if (isRemoteSave && editoptions.NullIfEmpty === true) {
-						if (tmp[nm] === "") {
-							tmp[nm] = "null";
+						if (v === "") {
+							v = "null";
 						}
 					}
+					tmp[cm.name] = v;
 				});
 
 				if (cv[0] === false) {

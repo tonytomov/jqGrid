@@ -198,87 +198,22 @@
 					return;
 				}
 				var errors = $self.jqGrid("getGridRes", "errors"), errcap = errors.errcap,
-					edit = $self.jqGrid("getGridRes", "edit"), editMsg = edit.msg, bClose = edit.bClose,
+					edit = $self.jqGrid("getGridRes", "edit"), bClose = edit.bClose,
 					savedRow = p.savedRow, fr = savedRow.length >= 1 ? 0 : null;
 				if (fr !== null) {
-					var tr = $t.rows[iRow], rowid = tr.id, $tr = $(tr), v, v2, $field,
-						cc = getTdByColumnIndex.call($t, tr, iCol),
-						cm = p.colModel[iCol], nm = cm.name;
-					switch (cm.edittype) {
-						case "select":
-							$field = cc.find("select option:selected");
-							if (cm.editoptions == null || !cm.editoptions.multiple) {
-								v = $field.val();
-								v2 = $field.text();
-							} else {
-								var selectedText = [];
-								v = $field.val();
-								if (v) {
-									v.join(",");
-								} else {
-									v = "";
-								}
-								$field.each(
-									function (i, selected) {
-										selectedText[i] = $(selected).text();
-									}
-								);
-								v2 = selectedText.join(",");
-							}
-							if (cm.formatter) {
-								v2 = v;
-							}
-							break;
-						case "checkbox":
-							var cbv = ["Yes", "No"];
-							if (cm.editoptions && cm.editoptions.value) {
-								cbv = cm.editoptions.value.split(":");
-							}
-							v = cc.find("input[type=checkbox]").is(":checked") ? cbv[0] : cbv[1];
-							v2 = v;
-							break;
-						case "password":
-						case "text":
-						case "textarea":
-						case "button":
-							v = cc.find("input[name=" + jqID(nm) + "]").val();
-							v2 = v;
-							break;
-						case "custom":
-							try {
-								if (cm.editoptions && $.isFunction(cm.editoptions.custom_value)) {
-									v = cm.editoptions.custom_value.call($t, $(".customelement", cc), "get");
-									if (v === undefined) {
-										throw "e2";
-									}
-									v2 = v;
-								} else {
-									throw "e1";
-								}
-							} catch (e) {
-								if (e === "e1") {
-									infoDialog.call($t, errcap, "function 'custom_value' " + editMsg.nodefined, bClose);
-								}
-								if (e === "e2") {
-									infoDialog.call($t, errcap, "function 'custom_value' " + editMsg.novalue, bClose);
-								} else {
-									infoDialog.call($t, errcap, e.message, bClose);
-								}
-							}
-							break;
-					}
+					var tr = $t.rows[iRow], rowid = tr.id, $tr = $(tr), cm = p.colModel[iCol], nm = cm.name, v, vv,
+						cc = getTdByColumnIndex.call($t, tr, iCol);
+					v = jgrid.getEditedValue.call($t, cc, cm, !cm.formatter);
 					// The common approach is if nothing changed do not do anything
-					if (v2 !== savedRow[fr].v) {
-						var vvv = $self.triggerHandler("jqGridBeforeSaveCell", [rowid, nm, v, iRow, iCol]);
-						if (vvv) {
-							v = vvv;
-							v2 = vvv;
+					if (v !== savedRow[fr].v) {
+						vv = $self.triggerHandler("jqGridBeforeSaveCell", [rowid, nm, v, iRow, iCol]);
+						if (vv !== undefined) {
+							v = vv;
 						}
 						if ($.isFunction(p.beforeSaveCell)) {
-							var vv = p.beforeSaveCell.call($t, rowid, nm, v, iRow, iCol);
-							if (vv) {
+							vv = p.beforeSaveCell.call($t, rowid, nm, v, iRow, iCol);
+							if (vv !== undefined) {
 								v = vv;
-								v2 = vv;
 							}
 						}
 						var cv = jgrid.checkValues.call($t, v, iCol), formatoptions = cm.formatoptions || {};
@@ -296,7 +231,7 @@
 							if (cm.formatter === "date" && formatoptions.sendFormatted !== true) {
 								// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
 								// Floating point separator for example
-								v2 = $.unformat.date.call($t, v2, cm);
+								v = $.unformat.date.call($t, v, cm);
 							}
 							if (p.cellsubmit === "remote") {
 								if (p.cellurl) {
@@ -325,7 +260,7 @@
 													ret = p.afterSubmitCell.call($t, jqXHR, postdata.id, nm, v, iRow, iCol);
 												}
 												if (ret[0] === true) {
-													$self.jqGrid("setCell", rowid, iCol, v2, false, false, true);
+													$self.jqGrid("setCell", rowid, iCol, v, false, false, true);
 													cc.addClass("dirty-cell");
 													$tr.addClass("edited");
 													feedback.call($t, "afterSaveCell", rowid, nm, v, iRow, iCol);
@@ -357,7 +292,7 @@
 								}
 							}
 							if (p.cellsubmit === "clientArray") {
-								$self.jqGrid("setCell", rowid, iCol, v2, false, false, true);
+								$self.jqGrid("setCell", rowid, iCol, v, false, false, true);
 								cc.addClass("dirty-cell");
 								$tr.addClass("edited");
 								feedback.call($t, "afterSaveCell", rowid, nm, v, iRow, iCol);
