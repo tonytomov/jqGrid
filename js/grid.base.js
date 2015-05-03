@@ -1042,11 +1042,77 @@
 								isEditable.call(self, options) :
 								isEditable;
 						if (isEditable === true) {
-							callback.call(self, options);
+							if (callback.call(self, options) === false) { break; }
 						}
 					}
 				}
 			}
+		},
+		getEditedValue: function ($dataFiled, cm, useTextInSelects) {
+			var result, checkBoxValues, newformat, $field, valuesOrTexts, selectMethod = useTextInSelects ? "text" : "val",
+				formatoptions = cm.formatoptions || {}, editoptions = cm.editoptions || {}, customValue = cm.custom_value,
+				nameSelector = "[name=" + jgrid.jqID(cm.name) + "]", $t = this, $self = $($t), info_dialog, getRes, errcap, bClose;
+			switch (cm.edittype) {
+				case "checkbox":
+					checkBoxValues = ["Yes", "No"];
+					if (typeof editoptions.value === "string") {
+						checkBoxValues = editoptions.value.split(":");
+					}
+					result = $dataFiled.find("input[type=checkbox]").is(":checked") ? checkBoxValues[0] : checkBoxValues[1];
+					break;
+				case "text":
+				case "password":
+				case "textarea":
+				case "button":
+					$field = $dataFiled.find("input" + nameSelector + ",textarea" + nameSelector);
+					result = $field.val();
+					if ($field[$t.p.propOrAttr]("type") === "date" && String(result).split("-").length === 3) {
+						newformat = formatoptions.newformat || $self.jqGrid("getGridRes", "formatter.date.newformat");
+						result = jgrid.parseDate.call($t, "Y-m-d", result, newformat);
+					}
+					break;
+				case "select":
+					$field = $dataFiled.find("select option:selected");
+					if (editoptions.multiple) {
+						valuesOrTexts = [];
+						$field.each(function (i, option) {
+							valuesOrTexts.push($(this)[selectMethod]());
+						});
+						result = valuesOrTexts.join(",");
+					} else {
+						result = $field[selectMethod]();
+					}
+					break;
+				case "custom":
+					try {
+						if ($.isFunction(customValue)) {
+							result = customValue.call($t, $dataFiled.find(".customelement"), "get");
+							if (result === undefined) {
+								throw "e2";
+							}
+						} else {
+							throw "e1";
+						}
+					} catch (e) {
+						info_dialog = jgrid.info_dialog;
+						getRes = function (path) { $self.jqGrid("getGridRes", path); };
+						errcap = getRes("errors.errcap");
+						bClose = getRes("edit.bClose");
+						if (e === "e1") {
+							info_dialog.call($t, errcap, "function 'custom_value' " + getRes("edit.msg.nodefined"), bClose);
+						}
+						if (e === "e2") {
+							info_dialog.call($t, errcap, "function 'custom_value' " + getRes("edit.msg.novalue"), bClose);
+						} else {
+							info_dialog.call($t, errcap, e.message, bClose);
+						}
+					}
+					break;
+				default:
+					result = $dataFiled.find("*" + nameSelector).text();
+					break;
+			}
+			return result;
 		},
 		guid: 1,
 		uidPref: "jqg",
