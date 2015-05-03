@@ -230,9 +230,9 @@
 		return defaultFormat(cellval, opts);
 	};
 	$FnFmatter.checkbox = function (cval, opts) {
-		var op = $.extend({}, opts.checkbox), ds;
-		if (opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
-			op = $.extend({}, op, opts.colModel.formatoptions);
+		var colModel = opts.colModel, op = $.extend({}, opts.checkbox), ds;
+		if (colModel != null) {
+			op = $.extend({}, op, colModel.formatoptions || {});
 		}
 		if (op.disabled === true) { ds = "disabled=\"disabled\""; } else { ds = ""; }
 		if (fmatter.isEmpty(cval) || cval === undefined) { cval = defaultFormat(cval, op); }
@@ -242,9 +242,9 @@
 		return "<input type=\"checkbox\" " + bchk + " value=\"" + cval + "\" offval=\"no\" " + ds + "/>";
 	};
 	$FnFmatter.checkbox.getCellBuilder = function (opts) {
-		var op = $.extend({}, opts.checkbox), tagEnd;
-		if (opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
-			op = $.extend({}, op, opts.colModel.formatoptions);
+		var colModel = opts.colModel, op = $.extend({}, opts.checkbox), tagEnd;
+		if (colModel != null) {
+			op = $.extend({}, op, colModel.formatoptions || {});
 		}
 		tagEnd = "\" offval=\"no\" " + (op.disabled === true ? "disabled=\"disabled\"" : "") + "/>";
 		return function (cval) {
@@ -256,18 +256,18 @@
 		};
 	};
 	$FnFmatter.checkboxFontAwesome4 = function (cellValue, options) {
-		var title = options.colModel.title !== false ? ' title="' + (options.colName || options.colModel.label || options.colModel.name) + '"' : "",
+		var colModel = options.colModel, title = colModel.title !== false ? ' title="' + (options.colName || colModel.label || colModel.name) + '"' : "",
 			strCellValue = String(cellValue).toLowerCase(),
-			editoptions = options.colModel.editoptions,
-			editYes = editoptions != null && typeof editoptions.value === "string" ? editoptions.value.split(":")[0] : "yes";
+			editoptions = colModel.editoptions || {},
+			editYes = typeof editoptions.value === "string" ? editoptions.value.split(":")[0] : "yes";
 		return (cellValue === 1 || strCellValue === "1" || strCellValue === "x" || cellValue === true || strCellValue === "true" || strCellValue === "yes" || strCellValue === editYes) ?
 				'<i class="fa fa-check-square-o fa-lg"' + title + "></i>" :
 				'<i class="fa fa-square-o fa-lg"' + title + "></i>";
 	};
 	$FnFmatter.checkboxFontAwesome4.getCellBuilder = function (options) {
-		var title = options.colModel.title !== false ? ' title="' + (options.colName || options.colModel.label || options.colModel.name) + '"' : "",
-			editoptions = options.colModel.editoptions,
-			editYes = editoptions != null && typeof editoptions.value === "string" ? editoptions.value.split(":")[0] : "yes",
+		var colModel = options.colModel, title = colModel.title !== false ? ' title="' + (options.colName || colModel.label || colModel.name) + '"' : "",
+			editoptions = colModel.editoptions || {},
+			editYes = typeof editoptions.value === "string" ? editoptions.value.split(":")[0] : "yes",
 			checked = '<i class="fa fa-check-square-o fa-lg"' + title + "></i>",
 			unchecked = '<i class="fa fa-square-o fa-lg"' + title + "></i>";
 		return function (cellValue) {
@@ -277,25 +277,23 @@
 		};
 	};
 	$FnFmatter.checkboxFontAwesome4.unformat = function (cellValue, options, elem) {
-		var cbv = (options.colModel.editoptions != null && options.colModel.editoptions.value) ?
-				options.colModel.editoptions.value.split(":") :
-				["Yes", "No"];
+		var colModel = options.colModel, editoptions = colModel.editoptions || {},
+			cbv = typeof editoptions.value === "string" ? editoptions.value.split(":") : ["Yes", "No"];
 		return $(">i", elem).hasClass("fa-check-square-o") ? cbv[0] : cbv[1];
 	};
 	$FnFmatter.link = function (cellval, opts) {
-		var op = { target: opts.target };
-		var target = "";
-		if (opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
-			op = $.extend({}, op, opts.colModel.formatoptions);
+		var colModel = opts.colModel, target = "", op = { target: opts.target };
+		if (colModel != null) {
+			op = $.extend({}, op, colModel.formatoptions || {});
 		}
 		if (op.target) { target = "target=" + op.target; }
 		if (!fmatter.isEmpty(cellval)) {
 			return "<a " + target + " href=\"" + cellval + "\">" + cellval + "</a>";
 		}
-		return defaultFormat(cellval, opts);
+		return defaultFormat(cellval, op);
 	};
 	$FnFmatter.showlink = function (cellval, opts, rowData) {
-		var self = this,
+		var self = this, colModel = opts.colModel,
 			op = {
 				baseLinkUrl: opts.baseLinkUrl,
 				showAction: opts.showAction,
@@ -319,8 +317,8 @@
 						option || "";
 			};
 
-		if (opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
-			op = $.extend({}, op, opts.colModel.formatoptions);
+		if (colModel != null) {
+			op = $.extend({}, op, colModel.formatoptions || {});
 		}
 
 		if (op.target) {
@@ -346,7 +344,7 @@
 		// the code below will be called typically for undefined cellval or 
 		// if cellval have null value or some other unclear value like an object
 		// and no cellValue callback function are defined "to decode" the value
-		return defaultFormat(cellval, opts);
+		return defaultFormat(cellval, op);
 	};
 	$FnFmatter.showlink.getCellBuilder = function (opts) {
 		var op = {
@@ -356,19 +354,20 @@
 				target: opts.target,
 				idName: opts.idName,
 				hrefDefaultValue: "#"
-			};
+			},
+			colModel = opts.colModel;
 
-		if (opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
-			op = $.extend({}, op, opts.colModel.formatoptions);
+		if (colModel != null) {
+			op = $.extend({}, op, colModel.formatoptions || {});
 		}
 
 		return function (cellval, opts, rowData) {
-			var self = this, target = "", idUrl, idParam, addParam,
+			var self = this, rowid = opts.rowId, target = "", idUrl, idParam, addParam,
 				getOptionValue = function (option) {
 					return $.isFunction(option) ?
 							option.call(self, {
 								cellValue: cellval,
-								rowid: opts.rowId,
+								rowid: rowid,
 								rowData: rowData,
 								options: op
 							}) :
@@ -378,7 +377,7 @@
 				target = "target=" + getOptionValue(op.target);
 			}
 			idUrl = getOptionValue(op.baseLinkUrl) + getOptionValue(op.showAction);
-			idParam = op.idName ? encodeURIComponent(getOptionValue(op.idName)) + "=" + encodeURIComponent(getOptionValue(op.rowId) || opts.rowId) : "";
+			idParam = op.idName ? encodeURIComponent(getOptionValue(op.idName)) + "=" + encodeURIComponent(getOptionValue(rowid) || opts.rowId) : "";
 			addParam = getOptionValue(op.addParam);
 			if (typeof addParam === "object" && addParam !== null) {
 				// add "&" only in case of usage object for of addParam
@@ -397,7 +396,7 @@
 			// the code below will be called typically for undefined cellval or 
 			// if cellval have null value or some other unclear value like an object
 			// and no cellValue callback function are defined "to decode" the value
-			return defaultFormat(cellval, opts);
+			return defaultFormat(cellval, op);
 		};
 	};
 	$FnFmatter.showlink.pageFinalization = function (iCol) {
@@ -431,9 +430,9 @@
 		}
 	};
 	var numberHelper = function (cellval, opts, formatType) {
-		var op = $.extend({}, opts[formatType]);
-		if (opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
-			op = $.extend({}, op, opts.colModel.formatoptions);
+		var colModel = opts.colModel, op = $.extend({}, opts[formatType]);
+		if (colModel != null) {
+			op = $.extend({}, op, colModel.formatoptions || {});
 		}
 		if (fmatter.isEmpty(cellval)) {
 			return op.defaultValue;
@@ -451,9 +450,9 @@
 	};
 	
 	var numberCellBuilder = function (opts, formatType) {
-		var op = $.extend({}, opts[formatType]);
-		if (opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
-			op = $.extend({}, op, opts.colModel.formatoptions);
+		var colModel = opts.colModel, op = $.extend({}, opts[formatType]);
+		if (colModel != null) {
+			op = $.extend({}, op, colModel.formatoptions || {});
 		}
 		var numberFormat = fmatter.NumberFormat,
 			defaultValue = op.defaultValue;
@@ -473,12 +472,12 @@
 		return numberCellBuilder(options, "currency");
 	};
 	$FnFmatter.date = function (cellval, opts, rwd, act) {
-		var op = $.extend({}, opts.date);
-		if (opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
-			op = $.extend({}, op, opts.colModel.formatoptions);
+		var colModel = opts.colModel, op = $.extend({}, opts.date);
+		if (colModel != null) {
+			op = $.extend({}, op, colModel.formatoptions || {});
 		}
 		if (!op.reformatAfterEdit && act === "edit") {
-			return defaultFormat(cellval, opts);
+			return defaultFormat(cellval, op);
 		}
 		if (!fmatter.isEmpty(cellval)) {
 			return jgrid.parseDate.call(this, op.srcformat, cellval, op.newformat, op);
@@ -487,8 +486,8 @@
 	};
 	$FnFmatter.date.getCellBuilder = function (opts, act) {
 		var op = $.extend({}, opts.date);
-		if (opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
-			op = $.extend({}, op, opts.colModel.formatoptions);
+		if (opts.colModel != null) {
+			op = $.extend({}, op, opts.colModel.formatoptions || {});
 		}
 		var parseDate = jgrid.parseDate,
 			srcformat = op.srcformat, newformat = op.newformat;
@@ -504,79 +503,63 @@
 		};
 	};
 	$FnFmatter.select = function (cellval, opts) {
-		// jqGrid specific
-		cellval = String(cellval);
-		var oSelect = false, ret = [], sep, delim;
-		if (opts.colModel.formatoptions !== undefined) {
-			oSelect = opts.colModel.formatoptions.value;
-			sep = opts.colModel.formatoptions.separator === undefined ? ":" : opts.colModel.formatoptions.separator;
-			delim = opts.colModel.formatoptions.delimiter === undefined ? ";" : opts.colModel.formatoptions.delimiter;
-		} else if (opts.colModel.editoptions !== undefined) {
-			oSelect = opts.colModel.editoptions.value;
-			sep = opts.colModel.editoptions.separator === undefined ? ":" : opts.colModel.editoptions.separator;
-			delim = opts.colModel.editoptions.delimiter === undefined ? ";" : opts.colModel.editoptions.delimiter;
-		}
+		var ret = [], colModel = opts.colModel, defaultValue,
+			op = $.extend({}, colModel.editoptions || {}, colModel.formatoptions || {}),
+			oSelect = op.value, sep = op.separator || ":", delim = op.delimiter || ";";
 		if (oSelect) {
-			var msl = (opts.colModel.editoptions != null && opts.colModel.editoptions.multiple === true) === true ? true : false,
-			scell = [], sv, mapFunc = function (n, i) { if (i > 0) { return n; } };
-			if (msl) { scell = cellval.split(","); scell = $.map(scell, function (n) { return $.trim(n); }); }
+			var msl = op.multiple === true ? true : false, scell = [], sv,
+			mapFunc = function (n, i) { if (i > 0) { return n; } };
+			if (msl) {
+				scell = $.map(String(cellval).split(","), function (n) { return $.trim(n); });
+			}
 			if (typeof oSelect === "string") {
 				// maybe here we can use some caching with care ????
-				var so = oSelect.split(delim), j = 0, i;
+				var so = oSelect.split(delim), i, v;
 				for (i = 0; i < so.length; i++) {
 					sv = so[i].split(sep);
 					if (sv.length > 2) {
 						sv[1] = $.map(sv, mapFunc).join(sep);
 					}
+					v = $.trim(sv[0]);
+					if (op.defaultValue === v) {
+						defaultValue = sv[1];
+					}
 					if (msl) {
-						if ($.inArray($.trim(sv[0]), scell) > -1) {
-							ret[j] = sv[1];
-							j++;
+						if ($.inArray(v, scell) > -1) {
+							ret.push(sv[1]);
 						}
-					} else if ($.trim(sv[0]) === $.trim(cellval)) {
-						ret[0] = sv[1];
+					} else if (v === $.trim(cellval)) {
+						ret = [sv[1]];
 						break;
 					}
 				}
 			} else if (fmatter.isObject(oSelect)) {
-				// this is quicker
+				defaultValue = oSelect[op.defaultValue];
 				if (msl) {
 					ret = $.map(scell, function (n) {
 						return oSelect[n];
 					});
 				} else {
-					ret[0] = oSelect[cellval] || "";
+					ret = [oSelect[cellval] === undefined ? "" : oSelect[cellval]];
 				}
 			}
 		}
 		cellval = ret.join(", ");
-		return cellval === "" ? $FnFmatter.defaultFormat(cellval, opts) : cellval;
+		return cellval !== "" ? cellval :
+				(op.defaultValue !== undefined ? defaultValue : defaultFormat(cellval, op));
 	};
 	$FnFmatter.select.getCellBuilder = function (opts) {
 		// jqGrid specific
-		var oSelect = false, sep, delim;
-		if (opts.colModel.formatoptions !== undefined) {
-			oSelect = opts.colModel.formatoptions.value;
-			sep = opts.colModel.formatoptions.separator === undefined ? ":" : opts.colModel.formatoptions.separator;
-			delim = opts.colModel.formatoptions.delimiter === undefined ? ";" : opts.colModel.formatoptions.delimiter;
-		} else if (opts.colModel.editoptions !== undefined) {
-			oSelect = opts.colModel.editoptions.value;
-			sep = opts.colModel.editoptions.separator === undefined ? ":" : opts.colModel.editoptions.separator;
-			delim = opts.colModel.editoptions.delimiter === undefined ? ";" : opts.colModel.editoptions.delimiter;
-		}
-		if (!oSelect) {
-			return function (cellValue) {
-				cellValue = String(cellValue);
-				return cellValue === "" ? $FnFmatter.defaultFormat(cellValue, opts) : cellValue;
-			};
-		}
-
-		var isMultiple = (opts.colModel.editoptions != null && opts.colModel.editoptions.multiple === true) === true ? true : false,
-			sv, selOptions = {},
+		var colModel = opts.colModel, $fnDefaultFormat = $FnFmatter.defaultFormat,
+			op = $.extend({}, colModel.editoptions || {}, colModel.formatoptions || {}),
+			oSelect = op.value, sep = op.separator || ":", delim = op.delimiter || ";",
+			defaultValue, defaultValueDefined = op.defaultValue !== undefined,
+			isMultiple = op.multiple === true ? true : false, sv, so, i, nOpts, selOptions = {},
 			mapFunc = function (n, i) { if (i > 0) { return n; } };
 		if (typeof oSelect === "string") {
 			// maybe here we can use some caching with care ????
-			var so = oSelect.split(delim), i, nOpts = so.length;
+			so = oSelect.split(delim);
+			nOpts = so.length;
 			for (i = nOpts - 1; i >= 0; i--) {
 				sv = so[i].split(sep);
 				if (sv.length > 2) {
@@ -584,41 +567,35 @@
 				}
 				selOptions[$.trim(sv[0])] = sv[1];
 			}
-			return isMultiple ?
-				function (cellValue) {
-					var ret = [], iOpt,
-						splitedCell = $.map(String(cellValue).split(","), function (n) { return $.trim(n); });
-					for (iOpt = 0; iOpt < splitedCell.length; iOpt++) {
-						cellValue = splitedCell[iOpt];
-						if (selOptions.hasOwnProperty(cellValue)) {
-							ret.push(selOptions[cellValue]);
-						}
+		} else if (fmatter.isObject(oSelect)) {
+			selOptions = oSelect;
+		} else {
+			return function (cellValue) {
+				return cellValue ? String(cellValue) : $fnDefaultFormat(cellValue, op);
+			};
+		}
+		if (defaultValueDefined) {
+			defaultValue = selOptions[op.defaultValue];
+		}
+		return isMultiple ?
+			function (cellValue) {
+				var ret = [], iOpt,
+					splitedCell = $.map(String(cellValue).split(","), function (n) { return $.trim(n); });
+				for (iOpt = 0; iOpt < splitedCell.length; iOpt++) {
+					cellValue = splitedCell[iOpt];
+					if (selOptions.hasOwnProperty(cellValue)) {
+						ret.push(selOptions[cellValue]);
 					}
-					cellValue = ret.join(", ");
-					return cellValue === "" ? $FnFmatter.defaultFormat(cellValue, opts) : cellValue;
-				} :
-				function (cellValue) {
-					var ret = selOptions[String(cellValue)];
-					return ret === "" ? $FnFmatter.defaultFormat(cellValue, opts) : ret;
-				};
-		}
-		if (fmatter.isObject(oSelect)) {
-			// this is quicker
-			return isMultiple ?
-				function (cellValue) {
-					cellValue = oSelect[cellValue] || "";
-					var splitedCell = $.map(cellValue.split(","), function (n) { return $.trim(n); }),
-						ret = $.map(splitedCell, function (n) {
-							return oSelect[n];
-						});
-					cellValue = ret.join(", ");
-					return cellValue === "" ? $FnFmatter.defaultFormat(cellValue, opts) : cellValue;
-				} : 
-				function (cellValue) {
-					cellValue = oSelect[cellValue] || "";
-					return cellValue === "" ? $FnFmatter.defaultFormat(cellValue, opts) : cellValue;
-				};
-		}
+				}
+				cellValue = ret.join(", ");
+				return cellValue !== "" ? cellValue :
+						(defaultValueDefined ? defaultValue : $fnDefaultFormat(cellValue, op));
+			} :
+			function (cellValue) {
+				var ret = selOptions[String(cellValue)];
+				return ret !== "" && ret !== undefined ? ret :
+						(defaultValueDefined ? defaultValue : $fnDefaultFormat(cellValue, op));
+			};
 	};
 	$FnFmatter.rowactions = function (e, act) {
 		var $tr = $(this).closest("tr.jqgrow"), rid = $tr.attr("id"),
@@ -804,17 +781,17 @@
 	};
 	$.unformat = function (cellval, options, pos, cnt) {
 		// specific for jqGrid only
-		var ret, formatType = options.colModel.formatter, p = this.p,
-			op = options.colModel.formatoptions || {},// sep,
+		var ret, colModel = options.colModel, formatType = colModel.formatter, p = this.p,
+			op = colModel.formatoptions || {},// sep,
 			//re = /([\.\*\_\'\(\)\{\}\+\?\\])/g,
-			unformatFunc = options.colModel.unformat || ($FnFmatter[formatType] && $FnFmatter[formatType].unformat);
+			unformatFunc = colModel.unformat || ($FnFmatter[formatType] && $FnFmatter[formatType].unformat);
 		if (cellval instanceof jQuery && cellval.length > 0) {
 			cellval = cellval[0];
 		}
 		if (p.treeGrid && cellval != null && $(cellval.firstChild).hasClass("tree-wrap") && ($(cellval.lastChild).hasClass("cell-wrapper") || $(cellval.lastChild).hasClass("cell-wrapperleaf"))) {
 			cellval = cellval.lastChild;
 		}
-		if (options.colModel.autoResizable && cellval != null && $(cellval.firstChild).hasClass(p.autoResizing.wrapperClassName)) {
+		if (colModel.autoResizable && cellval != null && $(cellval.firstChild).hasClass(p.autoResizing.wrapperClassName)) {
 			cellval = cellval.firstChild;
 		}
 		if (unformatFunc !== undefined && $.isFunction(unformatFunc)) {
@@ -854,8 +831,8 @@
 							.replace(getFormaterOption("number", "decimalSeparator"), ".");
 					break;
 				case "checkbox":
-					var cbv = (options.colModel.editoptions != null && typeof options.colModel.editoptions.value === "string") ?
-							options.colModel.editoptions.value.split(":") :
+					var cbv = (colModel.editoptions != null && typeof colModel.editoptions.value === "string") ?
+							colModel.editoptions.value.split(":") :
 							["Yes", "No"];
 					ret = $("input", cellval).is(":checked") ? cbv[0] : cbv[1];
 					break;
@@ -874,9 +851,9 @@
 	$.unformat.select = function (cellval, options, pos, cnt) {
 		// Spacial case when we have local data and perform a sort
 		// cnt is set to true only in sortDataArray
-		var ret = [], cell = $(cellval).text();
+		var ret = [], cell = $(cellval).text(), colModel = options.colModel;
 		if (cnt === true) { return cell; }
-		var op = $.extend({}, options.colModel.formatoptions !== undefined ? options.colModel.formatoptions : options.colModel.editoptions),
+		var op = $.extend({}, colModel.editoptions || {}, colModel.formatoptions || {}),
 			sep = op.separator === undefined ? ":" : op.separator,
 			delim = op.delimiter === undefined ? ";" : op.delimiter;
 
@@ -922,13 +899,10 @@
 	$.unformat.date = function (cellval, opts) {
 		// TODO
 		var op = $.extend(true, {},
-				//getRes(locales[this.p.locale], "formatter.date"),
 				getGridRes.call($(this), "formatter.date"),
-				jgrid.formatter != null && jgrid.formatter.date != null ? jgrid.formatter.date : {});
+				jgrid.formatter.date || {},
+				opts.formatoptions || {});
 
-		if (opts.formatoptions !== undefined) {
-			op = $.extend({}, op, opts.formatoptions);
-		}
 		return !fmatter.isEmpty(cellval) ?
 				jgrid.parseDate.call(this, op.newformat, cellval, op.srcformat, op) :
 				"";
