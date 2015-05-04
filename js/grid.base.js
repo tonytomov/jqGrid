@@ -969,7 +969,7 @@
 			if (tr instanceof $ || tr.length > 0) {
 				tr = tr[0]; // unwrap jQuery object to DOM element
 			}
-			if (!(tr instanceof HTMLTableRowElement) || tr.cells == null) {
+			if (!(tr instanceof HTMLTableRowElement) || tr.cells == null) { // the line will be failed in IE7
 				return $(); // return empty jQuery object
 			}
 			$td = $(tr.cells[iCol]);
@@ -2452,7 +2452,7 @@
 						v = cellVal(cellval);
 					}
 					v = cm.autoResizable && cm.formatter !== "actions" ? "<span class='" + p.autoResizing.wrapperClassName + "'>" + v + "</span>" : v;
-					if (p.treeGrid && act !== "edit" && ((p.ExpandColumn === undefined && colpos === 0) || (p.ExpandColumn === cm.name))) { //p.expColInd === colpos) {
+					if (p.treeGrid && act !== "edit" && ((p.ExpandColumn === undefined && colpos === 0) || (p.ExpandColumn === cm.name))) {
 						if (rdata == null) { rdata = p.data[p._index[rowId]]; }
 						var curLevel = parseInt(rdata[p.treeReader.level_field], 10), levelOffset = 18,
 							rootLevel = parseInt(p.tree_root_level, 10),
@@ -4263,7 +4263,7 @@
 								.attr(toSelect ?
 										{ "aria-selected": "true", tabindex: "0" } :
 										{ "aria-selected": "false", tabindex: "-1" });
-							if (p.multiselect) { // p.multiselectCheckboxes
+							if (iColCb !== undefined) { // p.multiselectCheckboxes
 								$(tr.cells[iColCb]).children("input.cbox")[p.propOrAttr]("checked", toSelect);
 							}
 						},
@@ -4965,7 +4965,7 @@
 									{ "aria-selected": "false", tabindex: "-1" },
 							selectUnselectRowInTable = function (tr) {
 								$(tr)[method](highlightClass).attr(attributes);
-								if (iColCb) { // p.multiselect or p.multiselectCheckboxes
+								if (iColCb !== undefined) { // p.multiselect or p.multiselectCheckboxes
 									$(tr.cells[iColCb]).children("input.cbox")[p.propOrAttr]("checked", toSelect);
 								}
 							};
@@ -5065,18 +5065,19 @@
 					cellEditCellHighlightClasses = "edit-cell " + highlightClass,
 					cellEditRowHighlightClasses = "selected-row " + $self.jqGrid("getGuiStyles", "states.hover"),
 					iColCb = p.iColByName.cb,
+					multiselectChechboxes = iColCb !== undefined,
 					frozenRows = $t.grid.fbRows,
 					deselectRow = function (tr) {
 						var method = "removeClass", frozenRow,
 							attributes = { "aria-selected": "false", tabindex: "-1" };
 						$(tr)[method](highlightClass).attr(attributes);
-						if (iColCb) { // p.multiselect or p.multiselectCheckboxes
+						if (multiselectChechboxes) { // p.multiselect or p.multiselectCheckboxes
 							$(tr.cells[iColCb]).children("input.cbox")[p.propOrAttr]("checked", false);
 						}
 						if (frozenRows) {
 							frozenRow = frozenRows[tr.rowIndex];
 							$(frozenRow)[method](highlightClass).attr(attributes);
-							if (iColCb) { // p.multiselect or p.multiselectCheckboxes
+							if (multiselectChechboxes) { // p.multiselect or p.multiselectCheckboxes
 								$(frozenRow.cells[iColCb]).children("input.cbox")[p.propOrAttr]("checked", false);
 							}
 						}
@@ -5084,7 +5085,7 @@
 				if (rowid !== undefined) {
 					row = $self.jqGrid("getGridRowById", rowid);
 					deselectRow(row);
-					if (iColCb) {
+					if (multiselectChechboxes) {
 						$t.setHeadCheckBox(false);
 						var ia = $.inArray(rowid, p.selarrrow);
 						if (ia !== -1) {
@@ -5568,7 +5569,6 @@
 				}
 			}
 			p.lastsort = $.inArray(p.lastsort, permutation);
-			if (p.treeGrid) { p.expColInd = $.inArray(p.expColInd, permutation); }
 			// rebuild iColByName
 			p.iColByName = {};
 			for (i = 0, n = p.colModel.length; i < n; i++) {
