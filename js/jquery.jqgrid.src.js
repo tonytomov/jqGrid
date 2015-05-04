@@ -4263,7 +4263,7 @@
 								.attr(toSelect ?
 										{ "aria-selected": "true", tabindex: "0" } :
 										{ "aria-selected": "false", tabindex: "-1" });
-							if (p.multiselect) { // p.multiselectCheckboxes
+							if (iColCb !== undefined) { // p.multiselectCheckboxes
 								$(tr.cells[iColCb]).children("input.cbox")[p.propOrAttr]("checked", toSelect);
 							}
 						},
