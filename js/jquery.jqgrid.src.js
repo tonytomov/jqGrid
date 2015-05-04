@@ -969,7 +969,7 @@
 			if (tr instanceof $ || tr.length > 0) {
 				tr = tr[0]; // unwrap jQuery object to DOM element
 			}
-			if (!(tr instanceof HTMLTableRowElement) || tr.cells == null) {
+			if (!(tr instanceof HTMLTableRowElement) || tr.cells == null) { // the line will be failed in IE7
 				return $(); // return empty jQuery object
 			}
 			$td = $(tr.cells[iCol]);
@@ -2452,7 +2452,7 @@
 						v = cellVal(cellval);
 					}
 					v = cm.autoResizable && cm.formatter !== "actions" ? "<span class='" + p.autoResizing.wrapperClassName + "'>" + v + "</span>" : v;
-					if (p.treeGrid && act !== "edit" && ((p.ExpandColumn === undefined && colpos === 0) || (p.ExpandColumn === cm.name))) { //p.expColInd === colpos) {
+					if (p.treeGrid && act !== "edit" && ((p.ExpandColumn === undefined && colpos === 0) || (p.ExpandColumn === cm.name))) {
 						if (rdata == null) { rdata = p.data[p._index[rowId]]; }
 						var curLevel = parseInt(rdata[p.treeReader.level_field], 10), levelOffset = 18,
 							rootLevel = parseInt(p.tree_root_level, 10),
@@ -4965,7 +4965,7 @@
 									{ "aria-selected": "false", tabindex: "-1" },
 							selectUnselectRowInTable = function (tr) {
 								$(tr)[method](highlightClass).attr(attributes);
-								if (iColCb) { // p.multiselect or p.multiselectCheckboxes
+								if (iColCb !== undefined) { // p.multiselect or p.multiselectCheckboxes
 									$(tr.cells[iColCb]).children("input.cbox")[p.propOrAttr]("checked", toSelect);
 								}
 							};
@@ -5065,18 +5065,19 @@
 					cellEditCellHighlightClasses = "edit-cell " + highlightClass,
 					cellEditRowHighlightClasses = "selected-row " + $self.jqGrid("getGuiStyles", "states.hover"),
 					iColCb = p.iColByName.cb,
+					multiselectChechboxes = iColCb !== undefined,
 					frozenRows = $t.grid.fbRows,
 					deselectRow = function (tr) {
 						var method = "removeClass", frozenRow,
 							attributes = { "aria-selected": "false", tabindex: "-1" };
 						$(tr)[method](highlightClass).attr(attributes);
-						if (iColCb) { // p.multiselect or p.multiselectCheckboxes
+						if (multiselectChechboxes) { // p.multiselect or p.multiselectCheckboxes
 							$(tr.cells[iColCb]).children("input.cbox")[p.propOrAttr]("checked", false);
 						}
 						if (frozenRows) {
 							frozenRow = frozenRows[tr.rowIndex];
 							$(frozenRow)[method](highlightClass).attr(attributes);
-							if (iColCb) { // p.multiselect or p.multiselectCheckboxes
+							if (multiselectChechboxes) { // p.multiselect or p.multiselectCheckboxes
 								$(frozenRow.cells[iColCb]).children("input.cbox")[p.propOrAttr]("checked", false);
 							}
 						}
@@ -5084,7 +5085,7 @@
 				if (rowid !== undefined) {
 					row = $self.jqGrid("getGridRowById", rowid);
 					deselectRow(row);
-					if (iColCb) {
+					if (multiselectChechboxes) {
 						$t.setHeadCheckBox(false);
 						var ia = $.inArray(rowid, p.selarrrow);
 						if (ia !== -1) {
@@ -5568,7 +5569,6 @@
 				}
 			}
 			p.lastsort = $.inArray(p.lastsort, permutation);
-			if (p.treeGrid) { p.expColInd = $.inArray(p.expColInd, permutation); }
 			// rebuild iColByName
 			p.iColByName = {};
 			for (i = 0, n = p.colModel.length; i < n; i++) {
@@ -8459,6 +8459,7 @@
 					$htable.find("div.ui-jqgrid-sortable").each(function () {
 						var $ts = $(this), $parent = $ts.parent();
 						if ($parent.is(":visible") && $parent.is(":has(span.ui-jqgrid-resize)")) {
+							// !!! it seems be wrong now
 							$ts.css("top", ($parent.height() - $ts.outerHeight(true)) / 2 + "px");
 						}
 					});
@@ -8520,18 +8521,33 @@
 					var htbl = $(".ui-jqgrid-htable", p.gView).clone(true);
 					// groupheader support - only if useColSpanstyle is false
 					if (p.groupHeader) {
-						$("tr.jqg-first-row-header, tr.jqg-third-row-header", htbl).each(function () {
+						// TODO: remove all th which corresponds non-frozen columns. One can identify there by id
+						// for example. Consider to use name attribute of th on column headers. It simplifies
+						// identifying of the columns.
+						$("tr.jqg-first-row-header", htbl).each(function () {
 							$("th:gt(" + maxfrozen + ")", this).remove();
+						});
+						$("tr.jqg-third-row-header", htbl).each(function () {
+							$(this).children("th[id]")
+								.each(function () {
+									var id = $(this).attr("id"), colName;
+									if (id && id.substr(0, $t.id.length + 1) === $t.id + "_") {
+										colName = id.substr($t.id.length + 1);
+										if (p.iColByName[colName] > maxfrozen) {
+											$(this).remove();
+										}
+									}
+								});
+							//$("th:gt(" + maxfrozen + ")", this).remove();
 						});
 						var swapfroz = -1, fdel = -1, cs, rs;
 						$("tr.jqg-second-row-header th", htbl).each(function () {
-							cs = parseInt($(this).attr("colspan"), 10);
-							rs = parseInt($(this).attr("rowspan"), 10);
-							if (rs) {
+							cs = parseInt($(this).attr("colspan") || 1, 10);
+							rs = parseInt($(this).attr("rowspan") || 1, 10);
+							if (rs > 1) {
 								swapfroz++;
 								fdel++;
-							}
-							if (cs) {
+							} else if (cs) {
 								swapfroz = swapfroz + cs;
 								fdel++;
 							}
@@ -8658,6 +8674,7 @@
 									posFrozenTop = $frozenRow.position().top;
 									height = $row.height();
 									newHeightFrozen = height + (posTop - tableTop) + (frozenTableTop - posFrozenTop);
+									// the newHeightFrozen will be wrong in case of usage rowspan in some from th/td 
 									safeHeightSet($frozenRow, newHeightFrozen);
 								}
 								safeHeightSet($hDiv, hDivBase.clientHeight);
@@ -14853,7 +14870,7 @@
 			return this.each(function () {
 				var $t = this, $self = $($t), p = $t.p, rows = $t.rows;
 				if (!$t.grid || !p.treeGrid) { return; }
-				var tr, expCol = p.expColInd,
+				var tr, expCol = p.iColByName[p.ExpandColumn],
 					expanded = p.treeReader.expanded_field,
 					isLeaf = p.treeReader.leaf_field,
 					getRowId = function (e) {
@@ -14891,7 +14908,7 @@
 		},
 		setTreeGrid: function () {
 			return this.each(function () {
-				var $t = this, p = $t.p, i = 0, ecol = false, nm, key, tkey, dupcols = [];
+				var $t = this, p = $t.p, nm, key, tkey, dupcols = [];
 				if (!p.treeGrid) { return; }
 				if (!p.treedatatype) { $.extend($t.p, { treedatatype: p.datatype }); }
 				p.subGrid = false;
@@ -14900,9 +14917,7 @@
 				p.pginput = false;
 				p.gridview = true;
 				if (p.rowTotal === null) { p.rowNum = p.maxRowNum; }
-				p.multiselect = false;
 				p.rowList = [];
-				p.expColInd = 0;
 				//pico = "ui-icon-triangle-1-" + (p.direction==="rtl" ? "w" : "e");
 				//p.treeIcons = $.extend({plus:pico,minus:"ui-icon-triangle-1-s",leaf:"ui-icon-radio-off"},p.treeIcons || {});
 				p.treeIcons.plus = p.direction === "rtl" ? p.treeIcons.plusRtl : p.treeIcons.plusLtr;
@@ -14929,12 +14944,6 @@
 				for (key in p.colModel) {
 					if (p.colModel.hasOwnProperty(key)) {
 						nm = p.colModel[key].name;
-						if (nm === p.ExpandColumn && !ecol) {
-							ecol = true;
-							p.expColInd = i;
-						}
-						i++;
-						//
 						for (tkey in p.treeReader) {
 							if (p.treeReader.hasOwnProperty(tkey) && p.treeReader[tkey] === nm) {
 								dupcols.push(nm);
@@ -14942,11 +14951,10 @@
 						}
 					}
 				}
-				$.each(p.treeReader, function (j, n) {
-					if (n && $.inArray(n, dupcols) === -1) {
-						if (j === "leaf_field") { p._treeleafpos = i; }
-						i++;
-						p.additionalProperties.push(n);
+				$.each(p.treeReader, function () {
+					var name = this;
+					if (name && $.inArray(name, dupcols) === -1) {
+						p.additionalProperties.push(name);
 					}
 				});
 			});

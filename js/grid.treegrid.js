@@ -26,7 +26,7 @@
 			return this.each(function () {
 				var $t = this, $self = $($t), p = $t.p, rows = $t.rows;
 				if (!$t.grid || !p.treeGrid) { return; }
-				var tr, expCol = p.expColInd,
+				var tr, expCol = p.iColByName[p.ExpandColumn],
 					expanded = p.treeReader.expanded_field,
 					isLeaf = p.treeReader.leaf_field,
 					getRowId = function (e) {
@@ -64,7 +64,7 @@
 		},
 		setTreeGrid: function () {
 			return this.each(function () {
-				var $t = this, p = $t.p, i = 0, ecol = false, nm, key, tkey, dupcols = [];
+				var $t = this, p = $t.p, nm, key, tkey, dupcols = [];
 				if (!p.treeGrid) { return; }
 				if (!p.treedatatype) { $.extend($t.p, { treedatatype: p.datatype }); }
 				p.subGrid = false;
@@ -73,9 +73,7 @@
 				p.pginput = false;
 				p.gridview = true;
 				if (p.rowTotal === null) { p.rowNum = p.maxRowNum; }
-				p.multiselect = false;
 				p.rowList = [];
-				p.expColInd = 0;
 				//pico = "ui-icon-triangle-1-" + (p.direction==="rtl" ? "w" : "e");
 				//p.treeIcons = $.extend({plus:pico,minus:"ui-icon-triangle-1-s",leaf:"ui-icon-radio-off"},p.treeIcons || {});
 				p.treeIcons.plus = p.direction === "rtl" ? p.treeIcons.plusRtl : p.treeIcons.plusLtr;
@@ -102,12 +100,6 @@
 				for (key in p.colModel) {
 					if (p.colModel.hasOwnProperty(key)) {
 						nm = p.colModel[key].name;
-						if (nm === p.ExpandColumn && !ecol) {
-							ecol = true;
-							p.expColInd = i;
-						}
-						i++;
-						//
 						for (tkey in p.treeReader) {
 							if (p.treeReader.hasOwnProperty(tkey) && p.treeReader[tkey] === nm) {
 								dupcols.push(nm);
@@ -115,11 +107,10 @@
 						}
 					}
 				}
-				$.each(p.treeReader, function (j, n) {
-					if (n && $.inArray(n, dupcols) === -1) {
-						if (j === "leaf_field") { p._treeleafpos = i; }
-						i++;
-						p.additionalProperties.push(n);
+				$.each(p.treeReader, function () {
+					var name = this;
+					if (name && $.inArray(name, dupcols) === -1) {
+						p.additionalProperties.push(name);
 					}
 				});
 			});
