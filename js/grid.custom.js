@@ -883,6 +883,7 @@
 					$htable.find("div.ui-jqgrid-sortable").each(function () {
 						var $ts = $(this), $parent = $ts.parent();
 						if ($parent.is(":visible") && $parent.is(":has(span.ui-jqgrid-resize)")) {
+							// !!! it seems be wrong now
 							$ts.css("top", ($parent.height() - $ts.outerHeight(true)) / 2 + "px");
 						}
 					});
@@ -944,18 +945,33 @@
 					var htbl = $(".ui-jqgrid-htable", p.gView).clone(true);
 					// groupheader support - only if useColSpanstyle is false
 					if (p.groupHeader) {
-						$("tr.jqg-first-row-header, tr.jqg-third-row-header", htbl).each(function () {
+						// TODO: remove all th which corresponds non-frozen columns. One can identify there by id
+						// for example. Consider to use name attribute of th on column headers. It simplifies
+						// identifying of the columns.
+						$("tr.jqg-first-row-header", htbl).each(function () {
 							$("th:gt(" + maxfrozen + ")", this).remove();
+						});
+						$("tr.jqg-third-row-header", htbl).each(function () {
+							$(this).children("th[id]")
+								.each(function () {
+									var id = $(this).attr("id"), colName;
+									if (id && id.substr(0, $t.id.length + 1) === $t.id + "_") {
+										colName = id.substr($t.id.length + 1);
+										if (p.iColByName[colName] > maxfrozen) {
+											$(this).remove();
+										}
+									}
+								});
+							//$("th:gt(" + maxfrozen + ")", this).remove();
 						});
 						var swapfroz = -1, fdel = -1, cs, rs;
 						$("tr.jqg-second-row-header th", htbl).each(function () {
-							cs = parseInt($(this).attr("colspan"), 10);
-							rs = parseInt($(this).attr("rowspan"), 10);
-							if (rs) {
+							cs = parseInt($(this).attr("colspan") || 1, 10);
+							rs = parseInt($(this).attr("rowspan") || 1, 10);
+							if (rs > 1) {
 								swapfroz++;
 								fdel++;
-							}
-							if (cs) {
+							} else if (cs) {
 								swapfroz = swapfroz + cs;
 								fdel++;
 							}
@@ -1082,6 +1098,7 @@
 									posFrozenTop = $frozenRow.position().top;
 									height = $row.height();
 									newHeightFrozen = height + (posTop - tableTop) + (frozenTableTop - posFrozenTop);
+									// the newHeightFrozen will be wrong in case of usage rowspan in some from th/td 
 									safeHeightSet($frozenRow, newHeightFrozen);
 								}
 								safeHeightSet($hDiv, hDivBase.clientHeight);
