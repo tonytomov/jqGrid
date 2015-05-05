@@ -1991,6 +1991,7 @@
 					resizeclass: "",
 					autoencode: false, // true is better for the most cases, but we hold old value to have better backwards compatibility
 					remapColumns: [],
+					cmNamesInputOrder: [],
 					ajaxGridOptions: {},
 					direction: direction,
 					toppager: false,
@@ -2466,6 +2467,18 @@
 				cellVal = function (val) {
 					return val == null || val === "" ? "&#160;" : (p.autoencode ? htmlEncode(val) : String(val));
 				},
+				normalizeTreeGridProperties = function (ldat) {
+					var treeReader = p.treeReader,
+						loaded = treeReader.loaded,
+						isLeaf = treeReader.leaf_field,
+						expanded = treeReader.expanded_field;
+					if (ldat[loaded] !== undefined) {
+						ldat[loaded] = ldat[loaded] === "true" || ldat[loaded] === true;
+					}
+					ldat[isLeaf] = ldat[isLeaf] === "true" || ldat[isLeaf] === true ? true : false;
+					ldat[expanded] = (ldat[expanded] === "true" || ldat[expanded] === true) ? true : false;
+					ldat[expanded] = ldat[expanded] && (ldat[loaded] || ldat[loaded] === undefined);
+				},
 				formatter = function (rowId, cellval, colpos, rwdat, act, rdata) {
 					var cm = p.colModel[colpos], v;
 					if (cm.formatter !== undefined) {
@@ -2486,7 +2499,7 @@
 					v = cm.autoResizable && cm.formatter !== "actions" ? "<span class='" + p.autoResizing.wrapperClassName + "'>" + v + "</span>" : v;
 					if (p.treeGrid && act !== "edit" && ((p.ExpandColumn === undefined && colpos === 0) || (p.ExpandColumn === cm.name))) {
 						if (rdata == null) { rdata = p.data[p._index[rowId]]; }
-						var curLevel = parseInt(rdata[p.treeReader.level_field], 10), levelOffset = 18,
+						var curLevel = parseInt(rdata[p.treeReader.level_field] || 0, 10), levelOffset = 18,
 							rootLevel = parseInt(p.tree_root_level, 10),
 							lftpos = rootLevel === 0 ? curLevel : curLevel - 1,
 							isLeaf = rdata[p.treeReader.leaf_field],
@@ -2495,6 +2508,7 @@
 							iconClass = isLeaf ?
 									((icon !== undefined && icon !== "") ? icon : p.treeIcons.leaf) + " tree-leaf" :
 									(isExpanded ? p.treeIcons.minus + " tree-minus" : p.treeIcons.plus + " tree-plus");
+							normalizeTreeGridProperties(rdata);
 
 						v = "<div class='tree-wrap tree-wrap-" + p.direction +
 							"' style='width:" + ((lftpos + 1) * levelOffset) +
@@ -2811,17 +2825,6 @@
 						hiderow = p.groupingView.groupCollapse === true;
 					}
 					var cell, $tbody = $(self.tBodies[0]),
-						loaded = p.treeReader.loaded,
-						isLeaf = p.treeReader.leaf_field,
-						expanded = p.treeReader.expanded_field,
-						normalizeTreeGridProperties = function (ldat) {
-							if (ldat[loaded] !== undefined) {
-								ldat[loaded] = ldat[loaded] === "true" || ldat[loaded] === true;
-							}
-							ldat[isLeaf] = ldat[isLeaf] === "true" || ldat[isLeaf] === true ? true : false;
-							ldat[expanded] = (ldat[expanded] === "true" || ldat[expanded] === true) ? true : false;
-							ldat[expanded] = ldat[expanded] && (ldat[loaded] || ldat[loaded] === undefined);
-						},
 						additionalProperties = p.additionalProperties;
 					if (gxml && gl) {
 						if (adjust) { rn *= adjust + 1; }
@@ -3051,17 +3054,6 @@
 						hiderow = p.groupingView.groupCollapse === true;
 					}
 					var $tbody = $(self.tBodies[0]),
-						loaded = p.treeReader.loaded,
-						isLeaf = p.treeReader.leaf_field,
-						expanded = p.treeReader.expanded_field,
-						normalizeTreeGridProperties = function (ldat) {
-							if (ldat[loaded] !== undefined) {
-								ldat[loaded] = ldat[loaded] === "true" || ldat[loaded] === true;
-							}
-							ldat[isLeaf] = ldat[isLeaf] === "true" || ldat[isLeaf] === true ? true : false;
-							ldat[expanded] = (ldat[expanded] === "true" || ldat[expanded] === true) ? true : false;
-							ldat[expanded] = ldat[expanded] && (ldat[loaded] || ldat[loaded] === undefined);
-						},
 						additionalProperties = p.additionalProperties;
 					fillOrClearCellBuilder();
 					for (i = 0; i < len && i < rn; i++) {
@@ -4186,6 +4178,7 @@
 				p.pginput = false;
 				p.rowList = [];
 			}
+			normalizeRemapColumns();
 			if (p.data.length) {
 				normalizeData.call(ts);
 				refreshIndex();
@@ -4824,7 +4817,7 @@
 			ts.setHeadCheckBox = setHeadCheckBox;
 			ts.fixScrollOffsetAndhBoxPadding = fixScrollOffsetAndhBoxPadding;
 			ts.constructTr = constructTr;
-			ts.formatter = function (rowId, cellval, colpos, rwdat, act) { return formatter(rowId, cellval, colpos, rwdat, act); };
+			ts.formatter = formatter;
 			extend(grid, { populate: populate, emptyRows: emptyRows, beginReq: beginReq, endReq: endReq });
 			ts.addXmlData = addXmlData;
 			ts.addJSONData = addJSONData;
@@ -5315,7 +5308,8 @@
 				}
 				this.each(function () {
 					var t = this, p = t.p, datalen = rdata.length, $self = $(t), rows = t.rows,
-						getGridRowById = base.getGridRowById,
+						getGridRowById = base.getGridRowById, colModel = p.colModel,
+						additionalProperties = p.additionalProperties,
 						guiStyle = p.guiStyle || defaults.guiStyle || "jQueryUI",
 						getGuiStyles = function (path, jqClasses) {
 							return mergeCssClasses(jgrid.getRes(jgrid.guiStyles[guiStyle], path), jqClasses || "");
@@ -5362,8 +5356,8 @@
 						if (si) {
 							row.push(base.addSubGridCell.call($self, gi + ni, 1));
 						}
-						for (i = gi + si + ni; i < p.colModel.length; i++) {
-							cm = p.colModel[i];
+						for (i = gi + si + ni; i < colModel.length; i++) {
+							cm = colModel[i];
 							nm = cm.name;
 							v = convertOnSaveLocally.call(t, data[nm], cm, undefined, id, {}, i);
 							if ($.isFunction(cm.saveLocally)) {
@@ -5371,7 +5365,22 @@
 							} else {
 								lcdata[nm] = v;
 							}
-							v = t.formatter(rowid, getAccessor(data, nm), i, data);
+						}
+						for (i = 0; i < additionalProperties.length; i++) {
+							v = getAccessor(data, additionalProperties[i]);
+							if (v !== undefined) {
+								lcdata[additionalProperties[i]] = v;
+							}
+						}
+
+						if (p.datatype === "local") {
+							lcdata[p.localReader.id] = id;
+							p._index[id] = p.data.length;
+							p.data.push(lcdata);
+						}
+						for (i = gi + si + ni; i < colModel.length; i++) {
+							nm = colModel[i].name;
+							v = t.formatter(rowid, getAccessor(data, nm), i, data, "add", lcdata);
 							prp = t.formatCol(i, 1, v, data, rowid, lcdata);
 							row.push("<td role=\"gridcell\" " + prp + ">" + v + "</td>");
 						}
@@ -5429,12 +5438,6 @@
 						}
 						feedback.call(t, "afterInsertRow", rowid, data, data);
 						k++;
-						if (p.datatype === "local") {
-							lcdata[p.localReader.id] = id;
-							p._index[id] = p.data.length;
-							p.data.push(lcdata);
-							lcdata = {};
-						}
 					}
 					if (p.altRows === true && !aradd) {
 						if (pos === "last") {
