@@ -1691,7 +1691,7 @@
 			return jgrid.fullBoolFeedback.apply(self, args);
 		},
 		getIconRes: function (base, path) {
-			var pathParts = path.split("."), root, n = pathParts.length, i, classes = [];
+			var pathParts = path.split("."), root, n = pathParts.length, part, i, classes = [];
 			base = jgrid.icons[base];
 			if (base == null) {
 				return ""; // error unknown iconSet
@@ -1701,11 +1701,13 @@
 				classes.push(root.common);
 			}
 			for (i = 0; i < n; i++) {
-				if (!pathParts[i]) {
+				part = pathParts[i];
+				if (!part) {
 					break;
 				}
-				root = root[pathParts[i]];
+				root = root[part];
 				if (root === undefined) {
+					if (part === "common") { break; }
 					return ""; // error unknown icon path
 				}
 				if (typeof root === "string") {
