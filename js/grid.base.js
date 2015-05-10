@@ -2707,33 +2707,6 @@
 					}
 					return v;
 				},
-				reader = function (datatype) {
-					var field, f = [], i, colModel = p.colModel, nCol = colModel.length, name;
-					// TODO add own properties of treeReader at the end of f array in case of usage TreeGrid:true
-					for (i = 0; i < nCol; i++) {
-						field = colModel[i];
-						if (field.name !== "cb" && field.name !== "subgrid" && field.name !== "rn") {
-							name = (datatype === "xml" || datatype === "xmlstring") ?
-									field.xmlmap || field.name :
-									(datatype === "local" && !p.dataTypeOrg) || datatype === "json" ? field.jsonmap || field.name : field.name;
-							if (p.keyName !== false && field.key === true) {
-								p.keyName = name;
-							}
-							f.push(name);
-						}
-					}
-					return f;
-				},
-				orderedCols = function (offset) {
-					var order = p.remapColumns;
-					if (!order || !order.length) {
-						order = $.map(p.colModel, function (v, i) { return i; });
-					}
-					if (offset) {
-						order = $.map(order, function (v) { return v < offset ? null : v - offset; });
-					}
-					return order;
-				},
 				emptyRows = function (scroll, locdata) {
 					var self = this, bDiv = grid.bDiv,
 						frozenTable = grid.fbDiv != null ?
@@ -2771,12 +2744,10 @@
 					//$(self.grid.headers).each(function () { $(this.el).removeData("autoResized"); });
 				},
 				normalizeData = function () {
-					var data = p.data, dataLength = data.length, i, cur, cells, idn, idi, idr, v, rd,
+					var data = p.data, dataLength = data.length, i, cur, cells, idName, idIndex, v, rd, id,
 						localReader = p.localReader, additionalProperties = p.additionalProperties,
-						colModel = p.colModel, cellName = localReader.cell, cmName, isArrayCells,
-						iOffset = (p.multiselect === true ? 1 : 0) + (p.subGrid === true ? 1 : 0) + (p.rownumbers === true ? 1 : 0),
-						br = p.scroll ? randId() : 1, arrayReaderInfos = p.arrayReaderInfos, addProp, info,
-						arrayReader, objectReader, rowReader;
+						cellName = localReader.cell, cmName, isArrayCells, addProp, info,
+						arrayReaderInfos = p.arrayReaderInfos;
 
 					if (p.datatype !== "local" || localReader.repeatitems !== true) {
 						if (p.treeGrid) {
@@ -2787,36 +2758,32 @@
 						return; // nothing to do
 					}
 
-					arrayReader = orderedCols(iOffset);
-					objectReader = reader("local");
-					// read ALL input items and convert items to be read by
-					// $.jgrid.getAccessor with column name as the second parameter
-					idn = p.keyName === false ?
-							(isFunction(localReader.id) ? localReader.id.call(this, data) : localReader.id) :
+					idName = p.keyName === false ?
+							(isFunction(localReader.id) ? localReader.id.call(ts, data) : localReader.id) :
 							p.keyName;
-					if (!isNaN(idn)) {
-						idi = Number(idn);
-					}
-					i = p.iColByName[idn];
-					if (i !== undefined) { idi = i - iOffset; }
+					if (!isNaN(idName)) {
+						idIndex = Number(idName);
+						/*for (cmName in arrayReaderInfos) {
+							if (arrayReaderInfos.hasOwnProperty(cmName)) {
+								info = arrayReaderInfos[cmName];
+								if (info.order === idIndex) {
+									idName = info.name;
+									break;
+								}
+							}
+						}*/
+					} else if (!isFunction(idName)) {
+						if (p.arrayReaderInfos[idName] != null) {
+							idIndex = p.arrayReaderInfos[idName].order;
+						}
+					}					
+					
 					for (i = 0; i < dataLength; i++) {
 						cur = data[i];
 						cells = cellName ? getAccessor(cur, cellName) || cur : cur;
 						isArrayCells = isArray(cells);
-						rowReader = isArrayCells ? arrayReader : objectReader;
-						idr = p.keyName === false ? getAccessor(cur, idn) : getAccessor(cells, rowReader[idi]);
-						if (idr === undefined) {
-							// it could be that one uses the index of column in localReader.id
-							if (!isNaN(idn) && colModel[Number(idn) + iOffset] != null) {
-								idr = getAccessor(cells, rowReader[Number(idn)]);
-							}
-							if (idr === undefined) {
-								idr = br + i;
-							}
-						}
-						rd = {};
-						rd[localReader.id] = idr;
 
+						rd = {};
 						for (cmName in arrayReaderInfos) {
 							if (arrayReaderInfos.hasOwnProperty(cmName)) {
 								info = arrayReaderInfos[cmName];
@@ -2832,6 +2799,30 @@
 								}
 							}
 						}
+
+						// read id.
+						if (rd[idName] !== undefined) {
+							// in case of p.keyName or if there exist column with the same id name
+							// probably one should test only for rd[p.keyName] !== undefined
+							// and get rd[p.keyName] below, but the probability that the user
+							// wanted to use the column rd[idName] as the rowid seemd me
+							// higher as the opposite case.
+
+							// the id should be already read in p.keyName column.
+							// One need generate id only if the input data had no id
+							id = rd[idName] !== undefined ? rd[idName] : randId(); //id = br + i;
+						} else {
+							id = getAccessor(cur, isArray(cur) ? idIndex : idName);
+							if (id === undefined) {
+								id = getAccessor(cells, isArray(cells) ? idIndex : idName);
+							}
+							if (id === undefined) {
+								id = randId(); //id = br + i;
+							}
+						}
+						id = String(id);
+						rd[localReader.id] = id; //p.idPrefix + id;
+						
 						// the next two line are the most important!
 						// one should consider to remove true parameter to improve the performance !!!
 						if (p.treeGrid) { normalizeTreeGridProperties(rd); }			
@@ -3073,11 +3064,19 @@
 
 					if (!isNaN(idName)) {
 						idIndex = Number(idName);
+						/*for (cmName in arrayReaderInfos) {
+							if (arrayReaderInfos.hasOwnProperty(cmName)) {
+								info = arrayReaderInfos[cmName];
+								if (info.order === idIndex) {
+									idName = info.name;
+									break;
+								}
+							}
+						}*/
 					} else if (!isFunction(idName)) {
-						i = p.iColByName[idName];
-						if (i !== undefined) {
-							info = arrayReaderInfos[cmName];
-							idIndex = info.order;
+						//if (p.iColByName[idName] !== undefined || p.iPropByName[idName] !== undefined) {
+						if (arrayReaderInfos[cmName]) {
+							idIndex = arrayReaderInfos[cmName].order;
 						}
 						if (isXML) {
 							if (typeof idName === "string" && /^\[\w+\]$/.test(idName)) {
@@ -3165,10 +3164,10 @@
 						}
 						
 						// read id.
-						if (p.keyName !== false) {
+						if (rd[idName] !== undefined) {
 							// the id should be already read in p.keyName column.
 							// One need generate id only if the input data had no id
-							id = rd[p.keyName] !== undefined ? rd[p.keyName] : randId(); //id = br + i;
+							id = rd[idName] !== undefined ? rd[idName] : randId(); //id = br + i;
 						} else {
 							id = fieldReader(cur, isArray(cur) ? idIndex : idName);
 							if (id === undefined) {
@@ -4338,9 +4337,10 @@
 			p.widthOrg = p.width;
 			setColWidth();
 			$(eg).css("width", grid.width + "px").append("<div class='ui-jqgrid-resize-mark' id='" + p.rsId + "'>&#160;</div>");
-			$(p.rs).bind("selectstart", function () {
-				return false;
-			})
+			$(p.rs)
+				.bind("selectstart", function () {
+					return false;
+				})
 				.click(myResizerClickHandler).dblclick(function (e) {
 					var iColIndex = $(this).data("idx"),
 						pageX = $(this).data("pageX"),
@@ -4537,7 +4537,8 @@
 					if ($(ptr).attr("class") !== "ui-subgrid") {
 						$(ptr).addClass(hoverStateClasses);
 					}
-				}).bind("mouseout", function (e) {
+				})
+				.bind("mouseout", function (e) {
 					ptr = $(e.target).closest("tr.jqgrow");
 					$(ptr).removeClass(hoverStateClasses);
 				});
@@ -4557,73 +4558,75 @@
 						}
 					} while ($td.length > 0);
 				};
-			$self0.before(grid.hDiv).click(function (e) {
-				var highlightClass = getGuiStyles("states.select"), target = e.target,
-					$td = getTdFromTarget.call(this, target),
-					$tr = $td.parent();
-				// we uses ts.rows context below to be sure that we don't process the clicks in the subgrid
-				// probably one can change the rule and to step over the parents till one will have 
-				// "tr.jqgrow>td" AND the parent of parent (the table element) will be ts.
-				// one can use the same processing in click, dblclick and contextmenu
-				//ptr = $(td, ts.rows).closest("tr.jqgrow");
-				if ($tr.length === 0 || hasOneFromClasses($tr, disabledStateClasses)) {
-					return;
-				}
-				ri = $tr[0].id;
-				var scb = $(target).hasClass("cbox"), cSel = feedback.call(ts, "beforeSelectRow", ri, e),
-					editingInfo = jgrid.detectRowEditing.call(ts, ri),
-					locked = editingInfo != null && editingInfo.mode !== "cellEditing"; // editingInfo.savedRow.ic
-				if (target.tagName === "A" || (locked && !scb)) { return; }
-				ci = $td[0].cellIndex;
-				tdHtml = $td.html();
-				feedback.call(ts, "onCellSelect", ri, ci, tdHtml, e);
-				if (p.cellEdit === true) {
-					if (p.multiselect && scb && cSel) {
-						setSelection.call($self0, ri, true, e);
-					} else {
-						ri = $tr[0].rowIndex;
-						try { $j.editCell.call($self0, ri, ci, true); } catch (ignore) { }
+			$self0.before(grid.hDiv)
+				.click(function (e) {
+					var highlightClass = getGuiStyles("states.select"), target = e.target,
+						$td = getTdFromTarget.call(this, target),
+						$tr = $td.parent();
+					// we uses ts.rows context below to be sure that we don't process the clicks in the subgrid
+					// probably one can change the rule and to step over the parents till one will have 
+					// "tr.jqgrow>td" AND the parent of parent (the table element) will be ts.
+					// one can use the same processing in click, dblclick and contextmenu
+					//ptr = $(td, ts.rows).closest("tr.jqgrow");
+					if ($tr.length === 0 || hasOneFromClasses($tr, disabledStateClasses)) {
+						return;
 					}
-					return;
-				}
-				if (!cSel) {
-					return;
-				}
-				if (!p.multikey) {
-					if (p.multiselect && p.multiboxonly) {
-						if (scb) {
+					ri = $tr[0].id;
+					var scb = $(target).hasClass("cbox"), cSel = feedback.call(ts, "beforeSelectRow", ri, e),
+						editingInfo = jgrid.detectRowEditing.call(ts, ri),
+						locked = editingInfo != null && editingInfo.mode !== "cellEditing"; // editingInfo.savedRow.ic
+					if (target.tagName === "A" || (locked && !scb)) { return; }
+					ci = $td[0].cellIndex;
+					tdHtml = $td.html();
+					feedback.call(ts, "onCellSelect", ri, ci, tdHtml, e);
+					if (p.cellEdit === true) {
+						if (p.multiselect && scb && cSel) {
 							setSelection.call($self0, ri, true, e);
 						} else {
-							var frz = p.frozenColumns ? p.id + "_frozen" : "";
-							$(p.selarrrow).each(function (i, n) {
-								var trid = $j.getGridRowById.call($self0, n);
-								if (trid) { $(trid).removeClass(highlightClass); }
-								$("#jqg_" + jqID(p.id) + "_" + jqID(n))[p.propOrAttr]("checked", false);
-								if (frz) {
-									$("#" + jqID(n), "#" + jqID(frz)).removeClass(highlightClass);
-									$("#jqg_" + jqID(p.id) + "_" + jqID(n), "#" + jqID(frz))[p.propOrAttr]("checked", false);
-								}
-							});
-							clearArray(p.selarrrow); // p.selarrrow = [];
+							ri = $tr[0].rowIndex;
+							try { $j.editCell.call($self0, ri, ci, true); } catch (ignore) { }
+						}
+						return;
+					}
+					if (!cSel) {
+						return;
+					}
+					if (!p.multikey) {
+						if (p.multiselect && p.multiboxonly) {
+							if (scb) {
+								setSelection.call($self0, ri, true, e);
+							} else {
+								var frz = p.frozenColumns ? p.id + "_frozen" : "";
+								$(p.selarrrow).each(function (i, n) {
+									var trid = $j.getGridRowById.call($self0, n);
+									if (trid) { $(trid).removeClass(highlightClass); }
+									$("#jqg_" + jqID(p.id) + "_" + jqID(n))[p.propOrAttr]("checked", false);
+									if (frz) {
+										$("#" + jqID(n), "#" + jqID(frz)).removeClass(highlightClass);
+										$("#jqg_" + jqID(p.id) + "_" + jqID(n), "#" + jqID(frz))[p.propOrAttr]("checked", false);
+									}
+								});
+								clearArray(p.selarrrow); // p.selarrrow = [];
+								setSelection.call($self0, ri, true, e);
+							}
+						} else {
+							var oldSelRow = p.selrow;
 							setSelection.call($self0, ri, true, e);
+							if (p.singleSelectClickMode === "toggle" && !p.multiselect && oldSelRow === ri) {
+								$tr.removeClass(highlightClass).attr({ "aria-selected": "false", "tabindex": "-1" });
+								p.selrow = null;
+							}
 						}
 					} else {
-						var oldSelRow = p.selrow;
-						setSelection.call($self0, ri, true, e);
-						if (p.singleSelectClickMode === "toggle" && !p.multiselect && oldSelRow === ri) {
-							$tr.removeClass(highlightClass).attr({ "aria-selected": "false", "tabindex": "-1" });
-							p.selrow = null;
+						if (e[p.multikey]) {
+							setSelection.call($self0, ri, true, e);
+						} else if (p.multiselect && scb) {
+							scb = $("#jqg_" + jqID(p.id) + "_" + ri).is(":checked");
+							$("#jqg_" + jqID(p.id) + "_" + ri)[propOrAttr]("checked", !scb);
 						}
 					}
-				} else {
-					if (e[p.multikey]) {
-						setSelection.call($self0, ri, true, e);
-					} else if (p.multiselect && scb) {
-						scb = $("#jqg_" + jqID(p.id) + "_" + ri).is(":checked");
-						$("#jqg_" + jqID(p.id) + "_" + ri)[propOrAttr]("checked", !scb);
-					}
-				}
-			}).bind("reloadGrid", function (e, opts) {
+				})
+				.bind("reloadGrid", function (e, opts) {
 				var self = this, gridSelf = self.grid, $self = $(this);
 				if (p.treeGrid === true) {
 					p.datatype = p.treedatatype;
@@ -4700,11 +4703,7 @@
 				if ($(">tbody", ts).length === 2) { $(">tbody:gt(0)", ts).remove(); }
 			}
 			if (p.multikey) {
-				if (jgrid.msie) {
-					$(grid.bDiv).bind("selectstart", function () { return false; });
-				} else {
-					$(grid.bDiv).bind("mousedown", function () { return false; });
-				}
+				$(grid.bDiv).bind(jgrid.msie ? "selectstart" : "mousedown", function () { return false; });
 			}
 			if (hg) { $(grid.bDiv).hide(); }
 			grid.cDiv = document.createElement("div");
