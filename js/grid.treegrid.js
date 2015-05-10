@@ -32,6 +32,13 @@
 					getRowId = function (e) {
 						return $(e.target).closest("tr.jqgrow").attr("id");
 					},
+					/*beforeSelectRow = function (e, rowid, eOrg) {
+						if (eOrg != null) {
+							var $td = $(eOrg.target).closest("tr.jqgrow>td");
+							showHideEditDelete(false, rowid);
+							return true; // allow selection
+						}
+					},*/
 					onClickTreeNode = function (e) {
 						var item = p.data[p._index[stripPref(p.idPrefix, getRowId(e))]],
 							collapseOrExpand = item[expanded] ? "collapse" : "expand";
@@ -59,12 +66,16 @@
 					}
 					i++;
 				}
+				//$self.unbind("jqGridBeforeSelectRow.setTreeNode", showEditDelete);
+				//$self.bind("jqGridBeforeSelectRow.setTreeNode", showEditDelete);
 
 			});
 		},
 		setTreeGrid: function () {
 			return this.each(function () {
-				var $t = this, p = $t.p, nm, key, tkey, dupcols = [];
+				var $t = this, p = $t.p, nm, key, tkey, dupcols = [],
+					boolProp = ["leaf_field", "expanded_field", "loaded"],
+					iOffset = p.colModel.length - (p.multiselect === true ? 1 : 0) - (p.subGrid === true ? 1 : 0) - (p.rownumbers === true ? 1 : 0);
 				if (!p.treeGrid) { return; }
 				if (!p.treedatatype) { $.extend($t.p, { treedatatype: p.datatype }); }
 				p.subGrid = false;
@@ -107,10 +118,19 @@
 						}
 					}
 				}
-				$.each(p.treeReader, function () {
-					var name = this;
+				$.each(p.treeReader, function (prop) {
+					var name = String(this);
 					if (name && $.inArray(name, dupcols) === -1) {
-						p.additionalProperties.push(name);
+						if ($.inArray(prop, boolProp) >= 0) {
+							p.additionalProperties.push({
+								name: name,
+								convert: function (data) {
+									return data === true || String(data).toLowerCase() === "true" || String(data) === "1" ? true : false;
+								}
+							});
+						} else {
+							p.additionalProperties.push(name);
+						}
 					}
 				});
 			});
@@ -328,7 +348,7 @@
 					if (!treeGridFeedback.call($t, "beforeExpandNode", { rowid: id, item: rc })) { return; }
 					var rc1 = $("#" + p.idPrefix + jqID(id), $t.grid.bDiv)[0],
 						position = p._index[id];
-					if ($($t).jqGrid("isNodeLoaded", p.data[position])) {
+					if (p.datatype === "local" || $($t).jqGrid("isNodeLoaded", p.data[position])) {
 						rc[expanded] = true;
 						$("div.treeclick", rc1).removeClass(p.treeIcons.plus + " tree-plus").addClass(p.treeIcons.minus + " tree-minus");
 					} else if (!$t.grid.hDiv.loading) {

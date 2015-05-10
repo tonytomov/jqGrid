@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-04-25
+ * Date: 2015-05-10
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -219,6 +219,15 @@
 	jgrid.locales = jgrid.locales || {};
 	var locales = jgrid.locales;
 
+	/**
+	 * Enum with different components of jqGrid.
+	 * @enum {number} @const
+	 */
+	/*var INPUT_NAME_TYPE = {
+		COL_NAME: 0,
+		ADDITIONAL_PROPERTY: 1,
+		ROWID: 2
+	};*/
 	/**
 	 * Enum with different components of jqGrid.
 	 * @enum {number} @const
@@ -566,6 +575,7 @@
 			var c = $(cell);
 			if (c.is("tr")) { return -1; }
 			c = (!c.is("td") && !c.is("th") ? c.closest("td,th") : c)[0];
+			if (c === undefined) { return -1; }
 			if (jgrid.msie) { return $.inArray(c, c.parentNode.cells); }
 			return c.cellIndex;
 		},
@@ -590,7 +600,7 @@
 			if (js.substr(0, 9) === "while(1);") { js = js.substr(9); }
 			if (js.substr(0, 2) === "/*") { js = js.substr(2, js.length - 4); }
 			if (!js) { js = "{}"; }
-			return (jgrid.useJSON === true && typeof JSON === "object" && typeof JSON.parse === "function") ?
+			return (jgrid.useJSON === true && typeof JSON === "object" && $.isFunction(JSON.parse)) ?
 					JSON.parse(js) :
 					eval("(" + js + ")");
 		},
@@ -935,7 +945,7 @@
 			return false;
 		},
 		detectRowEditing: function (rowid) {
-			var i, savedRowInfo, tr, self = this, rows = self.rows, p = self.p;
+			var i, savedRowInfo, tr, self = this, rows = self.rows, p = self.p, isFunction = $.isFunction;
 			if (!self.grid || rows == null || p == null) {
 				return null; // this is not a grid
 			}
@@ -948,13 +958,13 @@
 				if (typeof savedRowInfo.id === "number" && typeof savedRowInfo.ic === "number" &&
 						savedRowInfo.name !== undefined && savedRowInfo.v !== undefined &&
 						rows[savedRowInfo.id] != null && rows[savedRowInfo.id].id === rowid &&
-						$.isFunction($.fn.jqGrid.restoreCell)) {
+						isFunction($.fn.jqGrid.restoreCell)) {
 					// cell editing
 					tr = rows[savedRowInfo.id];
 					if (tr != null && tr.id === rowid) {
 						return { mode: "cellEditing", savedRow: savedRowInfo };
 					}
-				} else if (savedRowInfo.id === rowid && $.isFunction($.fn.jqGrid.restoreRow)) {
+				} else if (savedRowInfo.id === rowid && isFunction($.fn.jqGrid.restoreRow)) {
 					return { mode: "inlineEditing", savedRow: savedRowInfo };
 				}
 			}
@@ -1121,7 +1131,7 @@
 		},
 		getAccessor: function (obj, expr) {
 			var ret, p, prm = [], i;
-			if (typeof expr === "function") { return expr(obj); }
+			if ($.isFunction(expr)) { return expr(obj); }
 			ret = obj[expr];
 			if (ret === undefined) {
 				try {
@@ -1142,20 +1152,28 @@
 		},
 		getXmlData: function (obj, expr, returnObj) {
 			var m = typeof expr === "string" ? expr.match(/^(.*)\[(\w+)\]$/) : null;
-			if (typeof expr === "function") { return expr(obj); }
+			if ($.isFunction(expr)) { return expr(obj); }
 			if (m && m[2]) {
 				// m[2] is the attribute selector
 				// m[1] is an optional element selector
 				// examples: "[id]", "rows[page]"
 				return m[1] ? $(m[1], obj).attr(m[2]) : $(obj).attr(m[2]);
 			}
-			var ret = $(expr, obj);
+			if (obj === undefined) { alert("expr"); }
+			// !!! one should never use another form $(expr, obj) if obj could be undefined
+			// In the case the $(expr, obj) could be $("someString") and jQuery can
+			// parse it as array of characters ($("someString").length will be "someString".length) !!!
+			// The problem take place if expr is not string object, but object new String("someString").
+			// The problem can exist if one use $.each with array of strings.
+			// The "this" inside of $.each is the string converted to object.
+			var ret = $(obj).find(expr);
 			if (returnObj) { return ret; }
 			//$(expr, obj).filter(":last"); // we use ":last" to be more compatible with old version of jqGrid
 			return ret.length > 0 ? $(ret).text() : undefined;
 		},
 		cellWidth: function () {
-			var $testDiv = $("<div class='ui-jqgrid' style='left:10000px'><table class='ui-jqgrid-btable' style='width:5px;'><tr class='jqgrow'><td style='width:5px;display:block;'></td></tr></table></div>"),
+			// TODO: use all other classes in grid. Probably one should set the visibility explicitly to show (display:block)
+			var $testDiv = $("<div class='ui-jqgrid' style='left:10000px'><div class='ui-jqgrid-view'><div class='ui-jqgrid-bdiv'><table class='ui-jqgrid-btable' style='width:5px;'><tr class='jqgrow'><td style='width:5px;display:block;'></td></tr></table></div></div></div>"),
 				testCell = $testDiv.appendTo("body")
 					.find("td")
 					.width();
@@ -1746,7 +1764,7 @@
 		 *  @param {String} iconOnLeftOrRight - string "left", "right" or undefined
 		 *  @param {String} conner - string "left", "right" or undefined.
 		 */
-		 builderFmButon: function (id, text, icon, iconOnLeftOrRight, conner) {
+		builderFmButon: function (id, text, icon, iconOnLeftOrRight, conner) {
 			var p = this.p,
 				getDialogGuiStyles = function (name) {
 					return jgrid.getRes(jgrid.guiStyles[p.guiStyle], "dialog." + name);
@@ -1798,6 +1816,92 @@
 			}
 			return nData;
 		},
+		parseDataToHtml: function (len, ids, items, cellsToDisplay, rcnt, adjust, readAllInputData) {
+			var self = this, p = self.p, $self = $(self), i, j, altr, cn1, selr, idr, rd, cells, iStartTrTag,
+				selected = false, rowData = [],	cn = (p.altRows === true) ? p.altclass : "", grpdata = [],
+				hiderow = p.grouping ? p.groupingView.groupCollapse === true : false,
+				rn = parseInt(p.rowNum, 10), cmName, $j = $.fn.jqGrid,
+				// prepare to build the map rowIndexes, which will simplify us to get rowIndex
+				// of any row of table by its rowid.
+				// ??? probably rcnt can be used too
+				rowIndex = p.treeGrid === true && p.treeANode > -1 ?
+						self.rows[p.treeANode].rowIndex + 1 :
+						self.rows.length,
+				formatCol = self.formatCol,
+				addCell = function (rowId, cell, pos, irow, srvr, rdata) {
+					var v = self.formatter(rowId, cell, pos, srvr, "add", rdata);
+					return "<td role='gridcell' " + formatCol(pos, irow, v, srvr, rowId, rdata) + ">" + v + "</td>";
+				},
+				addMulti = function (rowid, pos, irow, checked) {
+					return "<td role='gridcell' " + formatCol(pos, irow, "", null, rowid, true) + ">" +
+						"<input role='checkbox' type='checkbox'" + " id='jqg_" + p.id + "_" + rowid +
+						"' class='cbox' name='jqg_" + p.id + "_" + rowid + "'" +
+						(checked ? " checked='checked' aria-checked='true'" : " aria-checked='false'") + "/></td>";
+				},
+				addRowNum = function (pos, irow, pG, rN) {
+					var v = (parseInt(pG, 10) - 1) * parseInt(rN, 10) + 1 + irow;
+					return "<td role='gridcell' class='" + $j.getGuiStyles.call($self, "rowNum", "jqgrid-rownum") + "' " +
+						formatCol(pos, irow, v, null, irow, true) + ">" + v + "</td>";
+				};
+			if (rowIndex <= 1) { p.rowIndexes = {}; }
+			if (p.datatype === "local" && !p.deselectAfterSort) { selected = true; }
+			if (adjust) { rn *= adjust + 1; }
+			for (i = 0; i < Math.min(len, rn); i++) {
+				idr = ids[i];
+				rd = items[i];
+				cells = cellsToDisplay != null ? cellsToDisplay[i] : rd;
+				altr = rcnt === 1 ? 0 : rcnt; // probably rowIndex should be used instead
+				cn1 = (altr + i) % 2 === 1 ? cn : "";
+				if (selected) {
+					if (p.multiselect) {
+						selr = ($.inArray(idr, p.selarrrow) !== -1);
+					} else {
+						selr = (idr === p.selrow);
+					}
+				}
+				iStartTrTag = rowData.length;
+				rowData.push("");
+				for (j = 0; j < p.colModel.length; j++) {
+					cmName = p.colModel[j].name;
+					switch (cmName) {
+						case "rn":
+							rowData.push(addRowNum(j, i, p.page, p.rowNum));
+							break;
+						case "cb":
+							rowData.push(addMulti(idr, j, i, selr));
+							break;
+						case "subgrid":
+							rowData.push($j.addSubGridCell.call($self, j, i + rcnt));
+							break;
+						default:
+							rowData.push(addCell(idr, rd[cmName], j, i + rcnt, cells, rd));
+					}
+				}
+				rowData[iStartTrTag] = self.constructTr(idr, hiderow, cn1, rd, cells, selr);
+				rowData.push("</tr>");
+				p.rowIndexes[idr] = rowIndex;
+				rowIndex++;
+				//TODO: fix p.rowIndexes in case of usage grouping.
+				if (p.grouping) {
+					grpdata.push(rowData);
+					if (!p.groupingView._locgr) {
+						$j.groupingPrepare.call($self, rd, i);
+					}
+					rowData = []; // the data for rendering are moved in grpdata
+				}
+				if (rowData.length > p.maxItemsToJoin) {
+					rowData = [rowData.join("")];
+				}
+			}
+			if (p.grouping) {
+				if (readAllInputData) {
+					p.groupingView._locgr = true;
+				}
+				rowData = [$j.groupingRender.call($self, grpdata, p.colModel.length, p.page, rn)];
+				jgrid.clearArray(grpdata); //grpdata = null;
+			}
+			return rowData;
+		},
 		getMethod: function (name) {
 			return this.getAccessor($.fn.jqGrid, name);
 		},
@@ -1842,7 +1946,6 @@
 			var ts = this, localData, localDataStr, $self0 = $(ts),
 				isFunction = $.isFunction, isArray = $.isArray, extend = $.extend, inArray = $.inArray,
 				trim = $.trim, each = $.each, setSelection = $j.setSelection, getGridRes = $j.getGridRes,
-				groupingRender = $j.groupingRender,
 				fatalErrorFunction = isFunction(defaults.fatalError) ? defaults.fatalError : alert,
 				locale = pin.locale || defaults.locale || "en-US",
 				direction = locales[locale] != null && typeof locales[locale].isRTL === "boolean" ? (locales[locale].isRTL ? "rtl" : "ltr") : "ltr",
@@ -1906,6 +2009,7 @@
 					pginput: true,
 					colModel: [],
 					additionalProperties: [],
+					arrayReader: [],
 					rowList: [],
 					colNames: [],
 					sortorder: "asc",
@@ -2003,6 +2107,9 @@
 					quickEmpty: true,
 					/** @dict */
 					_index: {},
+					iColByName: {},
+					iPropByName: {},
+					reservedColumnNames: ["rn", "cb", "subgrid"],
 					grouping: false,
 					groupingView: { groupField: [], groupOrder: [], groupText: [], groupColumnShow: [], groupSummary: [], showSummaryOnHide: false, sortitems: [], sortnames: [], summary: [], summaryval: [], displayField: [], groupSummaryPos: [], formatDisplayField: [], _locgr: false, commonIconClass: getIcon("grouping.common"), plusicon: getIcon("grouping.plus"), minusicon: getIcon("grouping.minus") },
 					ignoreCase: true,
@@ -2144,6 +2251,56 @@
 					}
 					return m;
 				},
+				buildAddPropMap = function (additionalProperties) {
+					var m = {}, i, n = additionalProperties.length, addPropInfo;
+					for (i = 0; i < n; i++) {
+						addPropInfo = additionalProperties[i];
+						m[typeof addPropInfo === "string" ? addPropInfo : addPropInfo.name] = i;
+					}
+					return m;
+				},
+				buildArrayReader = function () {
+					var i, colModel = p.colModel, cmNamesInputOrder = p.cmNamesInputOrder,
+						additionalProperties = p.additionalProperties, n = cmNamesInputOrder.length, arrayReaderInfos,
+						name, index, order = 0;
+					p.arrayReaderInfos = {};
+					arrayReaderInfos = p.arrayReaderInfos;
+					for (order = 0; order < n; order++) {
+						name = cmNamesInputOrder[order];
+						if (inArray(name, p.reservedColumnNames) < 0 && !arrayReaderInfos.hasOwnProperty(name)) {
+							index = p.iColByName[name];
+							if (index !== undefined) {
+								arrayReaderInfos[name] = {name: colModel[index].name, index: index, order: order, type: 0}; // INPUT_NAME_TYPE.COL_NAME
+							} else {
+								index = p.iPropByName[name];
+								if (index !== undefined) {
+									arrayReaderInfos[name] = {name: colModel[index].name, index: index, order: order, type: 1};// INPUT_NAME_TYPE.ADDITIONAL_PROPERTY
+								} else if (name === (p.prmNames.rowidName || "rowid")) {
+									arrayReaderInfos[name] = {index: index, type: 2};// INPUT_NAME_TYPE.ROWID
+								}
+							}
+						}
+					}
+					n = colModel.length;
+					for (i = 0; i < n; i++) {
+						name = colModel[i].name;
+						if (inArray(name, p.reservedColumnNames) < 0 && !arrayReaderInfos.hasOwnProperty(name)) {
+							arrayReaderInfos[name] = {name: name, index: i, order: order, type: 0};// INPUT_NAME_TYPE.COL_NAME
+							order++;
+						}
+					}
+					n = additionalProperties.length;
+					for (i = 0; i < n; i++) {
+						name = additionalProperties[i];
+						if (name != null && !arrayReaderInfos.hasOwnProperty(name)) {
+							if (typeof name === "object" && $.type(name.name) === "string") {
+								name = name.name;
+							}
+							arrayReaderInfos[name] = {name: name, index: i, order: order, type: 1};
+							order++;
+						}
+					}
+				},
 				myResizerClickHandler = function (e) {
 					var pageX = $(this).data("pageX");
 					if (pageX) {
@@ -2211,7 +2368,7 @@
 							}
 						}
 					},
-					resizeColumn: function (idx, skipCallbacks) {
+					resizeColumn: function (idx, skipCallbacks, skipGridAdjustments) {
 						var self = this, headers = self.headers, footers = self.footers, h = headers[idx], hn, nw = h.newWidth || h.width,
 							$bTable = getGridComponent(COMPONENT_NAMES.BODY_TABLE, $(self.bDiv)), $hTable = getGridComponent(COMPONENT_NAMES.HEADER_TABLE, $(self.hDiv)),
 							hCols = $hTable.children("thead").children("tr").first()[0].cells;
@@ -2221,7 +2378,9 @@
 						hCols[idx].style.width = nw + "px";
 						self.cols[idx].style.width = nw + "px";
 						if (footers.length > 0) { footers[idx].style.width = nw + "px"; }
-						fixScrollOffsetAndhBoxPadding.call($bTable[0]);
+						if (skipGridAdjustments !== true) {
+							fixScrollOffsetAndhBoxPadding.call($bTable[0]);
+						}
 						if (p.forceFit === true) {
 							hn = headers[idx + p.nv]; // next visible th
 							nw = hn.newWidth || hn.width;
@@ -2234,13 +2393,17 @@
 							p.tblwidth = self.newWidth || p.tblwidth;
 							$bTable.css("width", p.tblwidth + "px");
 							getGridComponent(COMPONENT_NAMES.HEADER_TABLE, $(self.hDiv)).css("width", p.tblwidth + "px");
-							self.hDiv.scrollLeft = self.bDiv.scrollLeft;
+							if (skipGridAdjustments !== true) {
+								self.hDiv.scrollLeft = self.bDiv.scrollLeft;
+							}
 							if (p.footerrow) {
 								getGridComponent(COMPONENT_NAMES.FOOTER_TABLE, $(self.sDiv)).css("width", p.tblwidth + "px");
-								self.sDiv.scrollLeft = self.bDiv.scrollLeft;
+								if (skipGridAdjustments !== true) {
+									self.sDiv.scrollLeft = self.bDiv.scrollLeft;
+								}
 							}
 						}
-						if (!p.autowidth && (p.widthOrg === undefined || p.widthOrg === "auto" || p.widthOrg === "100%")) {
+						if (!p.autowidth && (p.widthOrg === undefined || p.widthOrg === "auto" || p.widthOrg === "100%") && skipGridAdjustments != true) {
 							$j.setGridWidth.call($bTable, self.newWidth, false);
 						}
 						if (!skipCallbacks) {
@@ -2364,6 +2527,7 @@
 				};
 			ts.grid = grid;
 			p.iColByName = buildColNameMap(p.colModel);
+			p.iPropByName = buildAddPropMap(p.additionalProperties);
 			feedback.call(ts, "beforeInitGrid");
 
 			// TODO: replace altclass : "ui-priority-secondary",
@@ -2405,17 +2569,21 @@
 				// The function should be called only if no p.cmNamesInputOrder is specified
 				normalizeRemapColumns = function () {
 					// offset is the number of columns in colModel which should be skipped in calculation of the mapping
-					// offset is the number of columns from the list "nm", "cb", "subgrid".
-					// The index 0 in the p.remapColumns means the first column after the "nm", "cb", "subgrid"
+					// offset is the number of columns from the list "rn", "cb", "subgrid".
+					// The index 0 in the p.remapColumns means the first column after the "rn", "cb", "subgrid"
 					var remapColumns = p.remapColumns, colModel = p.colModel, nCol = colModel.length, cmNames = [], i, remappedCmNames,
-						reservedColumns = ["nm", "cb", "subgrid"];
+						name;
 					for (iCol = 0; iCol < nCol; iCol++) {
-						if (inArray(i, reservedColumns) < 0) {
-							cmNames.push(colModel[iCol].name);
+						name = colModel[iCol].name;
+						if (inArray(name, p.reservedColumnNames) < 0) {
+							cmNames.push(name);
 							i++;
 						}
 					}
 					
+					// it's important to remark that the numbers in remapColumns or in
+					// jsonReder, localReader, xmlReader are based on the position of column
+					// in colModel BEFORE adding columns "rn", "cb", "subgrid"
 					if (remapColumns == null) {
 						// now we should remap items in cmNames corresponds to the indexes from p.remapColumns array
 						remappedCmNames = cmNames.slice(); // make copy of cmNames array
@@ -2471,20 +2639,26 @@
 					var treeReader = p.treeReader,
 						loaded = treeReader.loaded,
 						isLeaf = treeReader.leaf_field,
-						expanded = treeReader.expanded_field;
+						expanded = treeReader.expanded_field,
+						getBool = function (val) {
+							return val === true || val === "true" || val === "1";
+						};
 					if (ldat[loaded] !== undefined) {
-						ldat[loaded] = ldat[loaded] === "true" || ldat[loaded] === true;
+						ldat[loaded] = getBool(ldat[loaded]);
 					}
-					ldat[isLeaf] = ldat[isLeaf] === "true" || ldat[isLeaf] === true ? true : false;
-					ldat[expanded] = (ldat[expanded] === "true" || ldat[expanded] === true) ? true : false;
-					ldat[expanded] = ldat[expanded] && (ldat[loaded] || ldat[loaded] === undefined);
+					ldat[isLeaf] = getBool(ldat[isLeaf]);
+					ldat[expanded] = getBool(ldat[expanded]);
+					// the next line is suspected. The local data which missing loaded property
+					// can be be changed to have expanded=false
+					// we comment it.
+					//ldat[expanded] = ldat[expanded] && (ldat[loaded] || ldat[loaded] === undefined);
 				},
 				formatter = function (rowId, cellval, colpos, rwdat, act, rdata) {
 					var cm = p.colModel[colpos], v;
 					if (cm.formatter !== undefined) {
 						rowId = String(p.idPrefix) !== "" ? stripGridPrefix(rowId) : rowId;
 						var opts = { rowId: rowId, colModel: cm, gid: p.id, pos: colpos, rowData: rdata };
-					    if (isFunction(cm.cellBuilder)) {
+						if (isFunction(cm.cellBuilder)) {
 							v = cm.cellBuilder.call(ts, cellval, opts, rwdat, act);
 						} else if (isFunction(cm.formatter)) {
 							v = cm.formatter.call(ts, cellval, opts, rwdat, act);
@@ -2508,7 +2682,7 @@
 							iconClass = isLeaf ?
 									((icon !== undefined && icon !== "") ? icon : p.treeIcons.leaf) + " tree-leaf" :
 									(isExpanded ? p.treeIcons.minus + " tree-minus" : p.treeIcons.plus + " tree-plus");
-							normalizeTreeGridProperties(rdata);
+							//normalizeTreeGridProperties(rdata); // ??? don't needed more probably
 
 						v = "<div class='tree-wrap tree-wrap-" + p.direction +
 							"' style='width:" + ((lftpos + 1) * levelOffset) +
@@ -2522,20 +2696,6 @@
 							v + "</span>";
 					}
 					return v;
-				},
-				addCell = function (rowId, cell, pos, irow, srvr, rdata) {
-					var v = formatter(rowId, cell, pos, srvr, "add", rdata);
-					return "<td role=\"gridcell\" " + formatCol(pos, irow, v, srvr, rowId, rdata) + ">" + v + "</td>";
-				},
-				addMulti = function (rowid, pos, irow, checked) {
-					var v = "<input role=\"checkbox\" type=\"checkbox\"" + " id=\"jqg_" + p.id + "_" + rowid + "\" class=\"cbox\" name=\"jqg_" + p.id + "_" + rowid + "\"" + (checked ? " checked=\"checked\" aria-checked=\"true\"" : " aria-checked=\"false\"") + "/>";
-					return "<td role=\"gridcell\" " +
-						formatCol(pos, irow, "", null, rowid, true) + ">" + v + "</td>";
-				},
-				addRowNum = function (pos, irow, pG, rN) {
-					var v = (parseInt(pG, 10) - 1) * parseInt(rN, 10) + 1 + irow;
-					return "<td role=\"gridcell\" class=\"" + getGuiStyles("rowNum", "jqgrid-rownum") + "\" " +
-						formatCol(pos, irow, v, null, irow, true) + ">" + v + "</td>";
 				},
 				reader = function (datatype) {
 					var field, f = [], i, colModel = p.colModel, nCol = colModel.length, name;
@@ -2597,18 +2757,23 @@
 						clearArray(p.lastSelectedData); //p.lastSelectedData = [];
 						p._index = {};
 					}
+					p.rowIndexes = {};
 					//$(self.grid.headers).each(function () { $(this.el).removeData("autoResized"); });
 				},
 				normalizeData = function () {
-					var data = p.data, dataLength = data.length, i, j, cur, cells, idn, idi, idr, v, rd,
-						localReader = p.localReader,
-						colModel = p.colModel,
-						cellName = localReader.cell,
+					var data = p.data, dataLength = data.length, i, cur, cells, idn, idi, idr, v, rd,
+						localReader = p.localReader, additionalProperties = p.additionalProperties,
+						colModel = p.colModel, cellName = localReader.cell, cmName, isArrayCells,
 						iOffset = (p.multiselect === true ? 1 : 0) + (p.subGrid === true ? 1 : 0) + (p.rownumbers === true ? 1 : 0),
-						br = p.scroll ? randId() : 1,
+						br = p.scroll ? randId() : 1, arrayReaderInfos = p.arrayReaderInfos, addProp, info,
 						arrayReader, objectReader, rowReader;
 
 					if (p.datatype !== "local" || localReader.repeatitems !== true) {
+						if (p.treeGrid) {
+							for (i = 0; i < dataLength; i++) {
+								normalizeTreeGridProperties(data[i]);
+							}
+						}
 						return; // nothing to do
 					}
 
@@ -2627,7 +2792,8 @@
 					for (i = 0; i < dataLength; i++) {
 						cur = data[i];
 						cells = cellName ? getAccessor(cur, cellName) || cur : cur;
-						rowReader = isArray(cells) ? arrayReader : objectReader;
+						isArrayCells = isArray(cells);
+						rowReader = isArrayCells ? arrayReader : objectReader;
 						idr = p.keyName === false ? getAccessor(cur, idn) : getAccessor(cells, rowReader[idi]);
 						if (idr === undefined) {
 							// it could be that one uses the index of column in localReader.id
@@ -2640,11 +2806,26 @@
 						}
 						rd = {};
 						rd[localReader.id] = idr;
-						for (j = 0; j < rowReader.length; j++) {
-							v = getAccessor(cells, rowReader[j]);
-							rd[colModel[j + iOffset].name] = v;
+
+						for (cmName in arrayReaderInfos) {
+							if (arrayReaderInfos.hasOwnProperty(cmName)) {
+								info = arrayReaderInfos[cmName];
+								v = getAccessor(cells, isArrayCells ? info.order : info.name);
+								if (info.type === 1) { // additional property
+									addProp = additionalProperties[info.index];
+									if (addProp != null && isFunction(addProp.convert)) {
+										v = addProp.convert(v);
+									}
+								}
+								if (v !== undefined) {
+									rd[cmName] = v;
+								}
+							}
 						}
-						extend(true, data[i], rd);
+						// the next two line are the most important!
+						// one should consider to remove true parameter to improve the performance !!!
+						if (p.treeGrid) { normalizeTreeGridProperties(rd); }			
+						extend(data[i], rd); // extend(true, data[i], rd);
 					}
 				},
 				refreshIndex = function () {
@@ -2735,7 +2916,7 @@
 						cm.cellBuilder = null;
 						if (!clear) {
 							opt = { colModel: cm, gid: p.id, pos: i };
-						    if (cm.formatter === undefined) {
+							if (cm.formatter === undefined) {
 								cm.cellBuilder = p.autoencode ? autoencodeCellBuilder : simpleCellBuilder;
 							} else if (typeof cm.formatter === "string") {
 								cm.cellBuilder = $.fn.fmatter.getCellBuilder.call(ts, cm.formatter, opt, act || "add");
@@ -2745,412 +2926,311 @@
 						}
 					}
 				},
-				addXmlData = function (xml, rcnt, more, adjust) {
-					var self = this, $self = $(this), startReq = new Date(), getXmlData = jgrid.getXmlData,
-						locdata = (p.datatype !== "local" && p.loadonce) || p.datatype === "xmlstring",
-						xmlid = "_id_", xmlRd = p.xmlReader, colModel = p.colModel,
-						frd = p.datatype === "local" ? "local" : "xml";
-					if (locdata) {
-						clearArray(p.data); //p.data = [];
-						clearArray(p.lastSelectedData); //p.lastSelectedData = [];
-						p._index = {};
-						p.localReader.id = xmlid;
-					}
-					p.reccount = 0;
-					if ($.isXMLDoc(xml)) {
-						if (p.treeANode === -1 && !p.scroll) {
-							grid.emptyRows.call(self, false, true);
-							rcnt = 1;
-						} else { rcnt = rcnt > 1 ? rcnt : 1; }
-					} else { return; }
-					var i, fpos, ir = 0, gi = p.multiselect === true ? 1 : 0, si = p.subGrid === true ? 1 : 0, ni = p.rownumbers === true ? 1 : 0, idn, getId, f = [], colOrder, rd = {},
-						iOffset = gi + si + ni, xmlr, rid, rowData = [], cn = (p.altRows === true) ? p.altclass : "", cn1, v,
-						nodeReader = function (nodeName) {
-							return function (obj) {
-								var elem = null, childNodes = obj.childNodes, iNode, nNodes = childNodes.length, node;
-								for (iNode = 0; iNode < nNodes; iNode++) {
-									node = childNodes[iNode];
-									if (node.nodeType === 1 && node.nodeName === nodeName) {
-										elem = node;
-										break;
-									}
-								}
-								if (elem === null) { return undefined; }
-								childNodes = elem.childNodes;
-								return childNodes.length > 0 ? childNodes[0].nodeValue : undefined;
-							};
-						};
-					if (!xmlRd.repeatitems) {
-						f = reader(frd);
-						// optimize the reader for simple names
-						for (i = 0; i < f.length; i++) {
-							if (typeof f[i] === "string" && /^\w+$/.test(f[i])) {
-								f[i] = nodeReader(f[i]);
-							}
-						}
-					}
-					if (p.keyName === false) {
-						idn = isFunction(xmlRd.id) ? xmlRd.id.call(self, xml) : xmlRd.id;
-					} else {
-						idn = p.keyName;
-					}
-					if (isNaN(idn) && xmlRd.repeatitems) {
-						i = p.iColByName[idn];
-						if (i !== undefined) { idn = i - iOffset; }
-					}
+				readInput = function (data, rcnt, more, adjust) {
+					var self = this, $self = $(self), startReq = new Date(), datatype = p.datatype, 
+						// readAllInputData shows that one should read ALL input items, not only the current page of data
+						readAllInputData = (datatype !== "local" && p.loadonce) || datatype === "xmlstring" || datatype === "jsonstring",
+						isXML = (datatype === "xmlstring" || datatype === "xml") && $.isXMLDoc(data),
+						locid = "_id_", dataReader = p.localReader, fieldReader = getAccessor;
 
-					if (String(idn).indexOf("[") === -1) {
-						if (f.length) {
-							getId = function (trow, k) { return $(idn, trow).text() || k; };
-						} else {
-							getId = function (trow, k) { return $(xmlRd.cell, trow).eq(idn).text() || k; };
-						}
-					} else {
-						getId = function (trow, k) { return trow.getAttribute(idn.replace(/[\[\]]/g, "")) || k; };
-					}
-					p.userData = {};
-					p.page = intNum(getXmlData(xml, xmlRd.page), p.page);
-					p.lastpage = intNum(getXmlData(xml, xmlRd.total), 1);
-					p.records = intNum(getXmlData(xml, xmlRd.records));
-					if (isFunction(xmlRd.userdata)) {
-						p.userData = xmlRd.userdata.call(self, xml) || {};
-					} else {
-						getXmlData(xml, xmlRd.userdata, true).each(function () { p.userData[this.getAttribute("name")] = $(this).text(); });
-					}
-					var hiderow = false, gxml = getXmlData(xml, xmlRd.root, true);
-					gxml = getXmlData(gxml, xmlRd.row, true) || [];
-					var gl = gxml.length, j = 0, grpdata = [], rn = parseInt(p.rowNum, 10), br = p.scroll ? randId() : 1, altr, iStartTrTag, cells;
-					if (gl > 0 && p.page <= 0) { p.page = 1; }
-					if (p.grouping) {
-						hiderow = p.groupingView.groupCollapse === true;
-					}
-					var cell, $tbody = $(self.tBodies[0]),
-						additionalProperties = p.additionalProperties;
-					if (gxml && gl) {
-						if (adjust) { rn *= adjust + 1; }
-						fillOrClearCellBuilder();
-						while (j < gl) {
-							xmlr = gxml[j];
-							rid = getId(xmlr, br + j);
-							rid = p.idPrefix + rid;
-							altr = rcnt === 0 ? 0 : rcnt + 1;
-							cn1 = (altr + j) % 2 === 1 ? cn : "";
-							iStartTrTag = rowData.length;
-							rowData.push("");
-							if (ni) {
-								rowData.push(addRowNum(0, j, p.page, p.rowNum));
-							}
-							if (gi) {
-								rowData.push(addMulti(rid, ni, j, false));
-							}
-							if (si) {
-								rowData.push($j.addSubGridCell.call($self, gi + ni, j + rcnt));
-							}
-							if (xmlRd.repeatitems) {
-								if (!colOrder) { colOrder = orderedCols(iOffset); }
-								cells = getXmlData(xmlr, xmlRd.cell, true);
-								for (i = 0; i < colOrder.length; i++) {
-									cell = cells[colOrder[i]];
-									if (!cell) { break; }
-									rd[colModel[i + iOffset].name] = cell.textContent || cell.text;
-								}
-								for (i = 0; i < additionalProperties.length; i++) {
-									cell = cells[i + colOrder.length];
-									if (cell !== undefined) {
-										rd[additionalProperties[i]] = cell.textContent || cell.text;
-									}
-								}
-								if (p.treeGrid) { normalizeTreeGridProperties(rd); }
-								for (i = 0; i < colOrder.length; i++) {
-									rowData.push(addCell(rid, rd[colModel[i + iOffset].name], i + iOffset, j + rcnt, xmlr, rd));
-								}
-							} else {
-								for (i = 0; i < f.length; i++) {
-									rd[colModel[i + iOffset].name] = getXmlData(xmlr, f[i]);
-								}
-								for (i = 0; i < additionalProperties.length; i++) {
-									v = getXmlData(xmlr, additionalProperties[i]);
-									if (v !== undefined) {
-										rd[additionalProperties[i]] = v;
-									}
-								}
-								if (p.treeGrid) { normalizeTreeGridProperties(rd); }
-								for (i = 0; i < f.length; i++) {
-									rowData.push(addCell(rid, rd[colModel[i + iOffset].name], i + iOffset, j + rcnt, xmlr, rd));
-								}
-							}
-							rowData[iStartTrTag] = constructTr.call(self, rid, hiderow, cn1, rd, xmlr, false);
-							rowData.push("</tr>");
-							if (p.grouping) {
-								grpdata.push(rowData);
-								if (!p.groupingView._locgr) {
-									$j.groupingPrepare.call($self, rd, j);
-								}
-								rowData = [];
-							}
-							if (locdata || p.treeGrid === true) {
-								rd[xmlid] = stripGridPrefix(rid);
-								p.data.push(rd);
-								p._index[rd[xmlid]] = p.data.length - 1;
-							}
-							if (p.gridview === false) {
-								$tbody.append(rowData.join(""));
-								feedback.call(self, "afterInsertRow", rid, rd, xmlr);
-								clearArray(rowData);//rowData=[];
-							}
-							rd = {};
-							ir++;
-							j++;
-							if (ir === rn) { break; }
-							if (rowData.length > p.maxItemsToJoin) {
-								rowData = [rowData.join("")];
-							}
-						}
-						fillOrClearCellBuilder(true); // clear cellBuilders
-					}
-					if (p.gridview === true) {
-						fpos = p.treeANode > -1 ? p.treeANode : 0;
-						if (p.grouping) {
-							if (!locdata) {
-								groupingRender.call($self, grpdata, colModel.length, p.page, rn);
-								grpdata = null;
-							}
-						} else if (p.treeGrid === true && fpos > 0) {
-							$(self.rows[fpos]).after(rowData.join(""));
-						} else if (p.scroll) {
-							$tbody.append(rowData.join(""));
-						} else if (self.firstElementChild == null || (document.documentMode != undefined && document.documentMode <= 9)) {
-							// for IE8 for example
-							$tbody.html($tbody.html() + rowData.join("")); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
-							self.grid.cols = self.rows[0].cells; // update cached first row
-						} else {
-							self.firstElementChild.innerHTML += rowData.join(""); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
-							self.grid.cols = self.rows[0].cells; // update cached first row
-						}
-					}
-					if (p.subGrid === true) {
-						try { $j.addSubGrid.call($self, gi + ni); } catch (ignore) { }
-					}
-					p.totaltime = new Date() - startReq;
-					if (ir > 0) { if (p.records === 0) { p.records = gl; } }
-					clearArray(rowData);
-					if (p.treeGrid === true) {
-						try { $j.setTreeNode.call($self, fpos + 1, ir + fpos + 1); } catch (ignore) { }
-					}
-					//if(!p.treeGrid && !p.scroll) {grid.bDiv.scrollTop = 0;}
-					p.reccount = ir;
-					p.treeANode = -1;
-					if (p.userDataOnFooter) { $j.footerData.call($self, "set", p.userData, true); }
-					if (locdata) {
-						p.records = gl;
-						p.lastpage = Math.ceil(gl / rn);
-					}
-					if (!more) { self.updatepager(false, true); }
-					finalizationFormatters.call(self);
-					if (locdata) {
-						while (ir < gl) {
-							xmlr = gxml[ir];
-							rid = getId(xmlr, ir + br);
-							rid = p.idPrefix + rid;
-							if (xmlRd.repeatitems) {
-								if (!colOrder) { colOrder = orderedCols(iOffset); }
-								cells = getXmlData(xmlr, xmlRd.cell, true);
-								for (i = 0; i < colOrder.length; i++) {
-									cell = cells[colOrder[i]];
-									if (!cell) { break; }
-									rd[colModel[i + iOffset].name] = cell.textContent || cell.text;
-								}
-								for (i = 0; i < additionalProperties.length; i++) {
-									cell = cells[i + colOrder.length];
-									if (cell !== undefined) {
-										rd[additionalProperties[i]] = cell.textContent || cell.text;
-									}
-								}
-							} else {
-								for (i = 0; i < f.length; i++) {
-									rd[colModel[i + iOffset].name] = getXmlData(xmlr, f[i]);
-								}
-								for (i = 0; i < additionalProperties.length; i++) {
-									v = getXmlData(xmlr, additionalProperties[i]);
-									if (v !== undefined) {
-										rd[additionalProperties[i]] = v;
-									}
-								}
-							}
-							if (p.treeGrid) { normalizeTreeGridProperties(rd); }
-							rd[xmlid] = stripGridPrefix(rid);
-							if (p.grouping) {
-								$j.groupingPrepare.call($self, rd, ir);
-							}
-							p.data.push(rd);
-							p._index[rd[xmlid]] = p.data.length - 1;
-							rd = {};
-							ir++;
-						}
-						if (p.grouping) {
-							p.groupingView._locgr = true;
-							groupingRender.call($self, grpdata, colModel.length, p.page, rn);
-							grpdata = null;
-						}
-					}
-				},
-				addJSONData = function (data, rcnt, more, adjust) {
-					var self = this, $self = $(self), startReq = new Date();
 					if (data) {
+						if (datatype === "xml" && !isXML) {
+							return;
+						}
 						if (p.treeANode === -1 && !p.scroll) {
 							grid.emptyRows.call(self, false, true);
 							rcnt = 1;
-						} else { rcnt = rcnt > 1 ? rcnt : 1; }
+						} else {
+							rcnt = rcnt > 1 ? rcnt : 1;
+						}
 					} else {
 						// in case of usage TreeGrid for example
 						return;
 					}
 
-					var dReader, locid = "_id_", frd,
-						locdata = (p.datatype !== "local" && p.loadonce) || p.datatype === "jsonstring";
-					if (locdata) {
+					if (readAllInputData) {
 						clearArray(p.data); //p.data = [];
 						clearArray(p.lastSelectedData); //p.lastSelectedData = [];
 						p._index = {};
-						p.localReader.id = locid;
+						p.localReader.id = locid; // consider to place the statement in if (p.treeGrid) {...}
 					}
 					p.reccount = 0;
-					if (p.datatype === "local") {
-						dReader = p.localReader;
-						frd = "local";
+					switch (datatype) {
+						case "xml":
+						case "xmlstring":
+							dataReader = p.xmlReader;
+							fieldReader = jgrid.getXmlData;
+							break;
+						case "json":
+						case "jsonstring":
+							dataReader = p.jsonReader;
+							break;
+						default:
+							break;
+					}
+
+					var i, cells, len, drows, idName, idIndex, rd = {}, idr,
+						colModel = p.colModel, nCol = colModel.length, cm, cmName,
+						iChild, children, nChildren, child,
+						arrayReaderInfos = p.arrayReaderInfos, info, preloadedNodes = {},
+						attrReader = function (nodeName) {
+							return function (obj) {
+								var attrValue = obj.getAttribute(nodeName);
+								return attrValue !== null ? attrValue : undefined;
+							};
+						},
+						nodeReader = function (nodeName) {
+							return function (obj) {
+								// commented code which used getElementsByTagName works
+								// good in new web browsers (Chrome, Firefox, Safari),
+								// but it is slowly in IE10 and especially in IE8.
+								// So we use the code which is very good for all web browsers
+								/*var elem = obj.getElementsByTagName(nodeName)[0], childNodes;
+								if (elem != null) {
+									childNodes = elem.childNodes;
+									return childNodes.length > 0 ? childNodes[0].nodeValue : undefined;
+								}
+								return undefined;*/
+								var elem = preloadedNodes[nodeName], childNodes;
+								if (elem == null) { return undefined; }
+								childNodes = elem.childNodes;
+								return childNodes.length > 0 ? childNodes[0].nodeValue : undefined;
+							};
+						};
+
+					p.page = intNum(fieldReader(data, dataReader.page), p.page);
+					p.lastpage = intNum(fieldReader(data, dataReader.total), 1);
+					p.records = intNum(fieldReader(data, dataReader.records));
+					
+					if (isFunction(dataReader.userdata)) {
+						p.userData = dataReader.userdata.call(self, data) || {};
+					} else if (isXML) {
+						fieldReader(data, dataReader.userdata, true)
+							.each(function () {
+								p.userData[this.getAttribute("name")] = $(this).text();
+							});
 					} else {
-						dReader = p.jsonReader;
-						frd = "json";
+						p.userData = fieldReader(data, dataReader.userdata) || {};
 					}
-					var ir, i, j, cur, cells, gi = p.multiselect ? 1 : 0, si = p.subGrid === true ? 1 : 0, ni = p.rownumbers === true ? 1 : 0,
-						arrayReader = orderedCols(gi + si + ni), objectReader = reader(frd), rowReader, len, drows, idn, idi, rd = {}, fpos, idr, rowData = [],
-						iOffset = gi + si + ni, cn = (p.altRows === true) ? p.altclass : "", cn1;
-					p.page = intNum(getAccessor(data, dReader.page), p.page);
-					p.lastpage = intNum(getAccessor(data, dReader.total), 1);
-					p.records = intNum(getAccessor(data, dReader.records));
-					p.userData = getAccessor(data, dReader.userdata) || {};
-					if (p.keyName === false) {
-						idn = isFunction(dReader.id) ? dReader.id.call(self, data) : dReader.id;
-					} else {
-						idn = p.keyName;
+
+					// fill colReader and 
+					fillOrClearCellBuilder();
+					var colReader = {}, nameReader, isArrayCells, v, addProp, items,
+						additionalProperties = p.additionalProperties,
+						setSimpleColReaderIfPossible = function (nameReaderOrAddProp) {
+							if (isXML && typeof nameReaderOrAddProp === "string") {
+								if (/^\w+$/.test(nameReaderOrAddProp)) {
+									colReader[nameReaderOrAddProp] = nodeReader(nameReaderOrAddProp);
+								} else if (/^\[\w+\]$/.test(nameReaderOrAddProp)) {
+									colReader[nameReaderOrAddProp] = attrReader(nameReaderOrAddProp.substring(1, nameReaderOrAddProp.length - 1));
+								}
+							}
+						};
+					for (i = 0; i < nCol; i++) {
+						cm = colModel[i];
+						cmName = cm.name;
+						if (cmName !== "cb" && cmName !== "subgrid" && cmName !== "rn") {
+							nameReader = isXML ?
+									cm.xmlmap || cmName :
+									(datatype === "local" && !p.dataTypeOrg) || datatype === "json" ? cm.jsonmap || cmName : cmName;
+							if (p.keyName !== false && cm.key === true) {
+								p.keyName = cmName; // TODO: replace nameReader to cmName if we don't will read it at the second time
+							}
+							colReader[cmName] = nameReader;
+							setSimpleColReaderIfPossible(cmName);
+						}
 					}
-					if (!isNaN(idn)) {
-						idi = Number(idn);
+					nCol = additionalProperties.length;
+					for (i = 0; i < nCol; i++) {
+						addProp = additionalProperties[i];
+						if (typeof addProp === "object" && addProp != null) {
+							addProp = addProp.name;
+						}
+						setSimpleColReaderIfPossible(addProp);
 					}
-					i = p.iColByName[idn];
-					if (i !== undefined) { idi = i - iOffset; }
-					drows = getAccessor(data, dReader.root);
+					// TODO: Consider to allow to specify key:true property in additionalProperties
+					// in the case the item of additionalProperties should looks not like
+					// "myProp" and not like {name: "myProp", convert: function (data) {...}} used in TreeGrid,
+					// but in more common form {name: "myProp", key:true, convert: function (data) {...}}
+
+					// prepare to read id of data items
+					// if p.keyName !== false it contains the name of the column or the nameReader functoin (jsonmap or xmlmap)
+					// in the case the reading of id is simple and one DON'T NEED TO READ IT AT ALL
+					// because it will be already read during reading of the columns
+					idName = p.keyName === false ?
+							(isFunction(dataReader.id) ? dataReader.id.call(self, data) : dataReader.id) :
+							p.keyName;
+
+					if (!isNaN(idName)) {
+						idIndex = Number(idName);
+					} else if (!isFunction(idName)) {
+						i = p.iColByName[idName];
+						if (i !== undefined) {
+							info = arrayReaderInfos[cmName];
+							idIndex = info.order;
+						}
+						if (isXML) {
+							if (typeof idName === "string" && /^\[\w+\]$/.test(idName)) {
+								idName = attrReader(idName.substring(1, idName.length - 1));
+							} else if (typeof idName === "string" && /^\w+$/.test(idName)) {
+								idName = nodeReader(idName);
+							}
+						}
+					}
+
+					// get array of items from the input data
+					drows = fieldReader(data, dataReader.root, true);
+					if (dataReader.row) {
+						if (drows.length === 1 && typeof dataReader.row === "string" && /^\w+$/.test(dataReader.row)) {
+							items = [];
+							children = drows[0].childNodes;
+							nChildren = children.length;
+							for (iChild = 0; iChild < nChildren; iChild++) {
+								child = children[iChild];
+								if (child.nodeType === 1 && child.nodeName === dataReader.row) {
+									items.push(child);
+								}
+							}
+							drows = items;
+						} else {
+							drows = fieldReader(drows, dataReader.row, true); // || [];
+						}
+					}
 					if (drows == null && isArray(data)) { drows = data; }
 					if (!drows) { drows = []; }
 					len = drows.length;
 					if (len > 0 && p.page <= 0) { p.page = 1; }
-					var rn = parseInt(p.rowNum, 10), br = p.scroll ? randId() : 1, altr, selected = false, selr;
+
+					var rn = parseInt(p.rowNum, 10); // br = p.scroll ? randId() : 1
 					if (adjust) { rn *= adjust + 1; }
-					if (p.datatype === "local" && !p.deselectAfterSort) {
-						selected = true;
-					}
-					var grpdata = [], hiderow = false, iStartTrTag;
-					if (p.grouping) {
-						hiderow = p.groupingView.groupCollapse === true;
-					}
-					var $tbody = $(self.tBodies[0]),
-						additionalProperties = p.additionalProperties;
-					fillOrClearCellBuilder();
-					for (i = 0; i < len && i < rn; i++) {
+
+					// The first loop (from 0 till len) read ALL data and saves it in array
+					var cellsToDisplay = [], ids = [], id, cur;
+					items = [];
+					for (i = 0; i < len; i++) {
 						cur = drows[i];
-						cells = dReader.repeatitems && dReader.cell ? getAccessor(cur, dReader.cell) || cur : cur;
-						rowReader = dReader.repeatitems && isArray(cells) ? arrayReader : objectReader;
-						idr = p.keyName === false ? getAccessor(cur, idn) : getAccessor(cells, rowReader[idi]);
-						if (idr === undefined) {
-							// it could be that one uses the index of column in dReader.id
-							if (!isNaN(idn) && p.colModel[Number(idn) + iOffset] != null) {
-								idr = getAccessor(cells, rowReader[Number(idn)]);
-							}
-							if (idr === undefined) {
-								idr = br + i;
-							}
-						}
-						idr = p.idPrefix + idr;
-						altr = rcnt === 1 ? 0 : rcnt;
-						cn1 = (altr + i) % 2 === 1 ? cn : "";
-						if (selected) {
-							if (p.multiselect) {
-								selr = (inArray(idr, p.selarrrow) !== -1);
-							} else {
-								selr = (idr === p.selrow);
+						cells = dataReader.repeatitems && dataReader.cell ? fieldReader(cur, dataReader.cell, true) || cur : cur;
+						isArrayCells = dataReader.repeatitems && (isXML || isArray(cells));
+
+						// the first step: reading the input data from the current item
+						rd = {}; // require to prevent modification of items previously placed in p.data
+						
+						preloadedNodes = {};
+						if (isXML && !isArrayCells && cells != null) {
+							// reading of simple children nodes by name can be relatively slow
+							// because one enumerates all children nodes to find the node with
+							// specified name 
+							children = cells.childNodes;
+							nChildren = children.length;
+							for (iChild = 0; iChild < nChildren; iChild++) {
+								child = children[iChild];
+								if (child.nodeType === 1) {
+									preloadedNodes[child.nodeName] = child;
+								}
 							}
 						}
-						iStartTrTag = rowData.length;
-						rowData.push("");
-						if (ni) {
-							rowData.push(addRowNum(0, i, p.page, p.rowNum));
-						}
-						if (gi) {
-							rowData.push(addMulti(idr, ni, i, selr));
-						}
-						if (si) {
-							rowData.push($j.addSubGridCell.call($self, gi + ni, i + rcnt));
-						}
-						for (j = 0; j < rowReader.length; j++) {
-							rd[p.colModel[j + iOffset].name] = getAccessor(cells, rowReader[j]);
-						}
-						for (j = 0; j < additionalProperties.length; j++) {
-							cur = getAccessor(cells, isArray(cells) ? j + rowReader.length : additionalProperties[j]);
-							if (cur !== undefined) {
-								rd[additionalProperties[j]] = cur;
+						for (cmName in arrayReaderInfos) {
+							if (arrayReaderInfos.hasOwnProperty(cmName)) {
+								info = arrayReaderInfos[cmName];
+								if (isArrayCells) {
+									v = cells[info.order];
+									if (isXML && v != null) {
+										v = v.textContent || v.text;
+									}
+								} else if (isFunction(colReader[cmName])) {
+									v = colReader[cmName](cells);
+								} else {
+									v = fieldReader(cells, info.name);
+								}
+								if (info.type === 1) { // additional property
+									addProp = additionalProperties[info.index];
+									if (addProp != null && isFunction(addProp.convert)) {
+										v = addProp.convert(v);
+									}
+								}
+								if (v !== undefined) {
+									rd[cmName] = v;
+								}
 							}
 						}
-						if (p.treeGrid) { normalizeTreeGridProperties(rd); }
-						for (j = 0; j < rowReader.length; j++) {
-							rowData.push(addCell(idr, rd[p.colModel[j + iOffset].name], j + iOffset, i + rcnt, cells, rd));
-						}
-						rowData[iStartTrTag] = constructTr.call(self, idr, hiderow, cn1, rd, cells, selr);
-						rowData.push("</tr>");
-						if (p.grouping) {
-							grpdata.push(rowData);
-							if (!p.groupingView._locgr) {
-								$j.groupingPrepare.call($self, rd, i);
+						
+						// read id.
+						if (p.keyName !== false) {
+							// the id should be already read in p.keyName column.
+							// One need generate id only if the input data had no id
+							id = rd[p.keyName] !== undefined ? rd[p.keyName] : randId(); //id = br + i;
+						} else {
+							id = fieldReader(cur, isArray(cur) ? idIndex : idName);
+							if (id === undefined) {
+								id = fieldReader(cells, isArray(cells) ? idIndex : idName);
 							}
-							rowData = [];
+							if (id === undefined) {
+								id = randId(); //id = br + i;
+							}
 						}
-						if (locdata || p.treeGrid === true) {
-							rd[locid] = stripGridPrefix(idr);
+						id = String(id);
+						idr = p.idPrefix + id;
+						
+						// final steps of reading the row
+						if (i < rn) {
+							ids.push(idr);
+							cellsToDisplay.push(cells);
+							items.push(rd);
+						} else if (!readAllInputData) {
+							break;
+						}
+						if (readAllInputData || p.treeGrid === true) {
+							rd[locid] = id; //stripGridPrefix(idr);
 							p.data.push(rd);
 							p._index[rd[locid]] = p.data.length - 1;
 						}
-						if (p.gridview === false) {
-							$tbody.append(rowData.join("")); // ??? $self.append(rowData.join(""));
-							feedback.call(self, "afterInsertRow", idr, rd, cells);
-							clearArray(rowData); // rowData=[];
-						}
-						rd = {};
-						if (rowData.length > p.maxItemsToJoin) {
-							rowData = [rowData.join("")];
-						}
 					}
 					fillOrClearCellBuilder(true); // clear cellBuilders
-					if (p.gridview === true) {
-						fpos = p.treeANode > -1 ? p.treeANode : 0;
-						if (p.grouping) {
-							if (!locdata) {
-								groupingRender.call($self, grpdata, p.colModel.length, p.page, rn);
-								grpdata = null;
+
+					// of rd items plus array cells items (almost the same as drows).
+					// The second loop (from 0 till min(len,rn)) will build rowData from the both arrays
+					// Then one place rowData AT ONCE to the body any calls afterInsertRow in the loop
+					// for every inserted row.
+					// Finally one clean up the both arrays
+					var rowData = jgrid.parseDataToHtml.call(self, len, ids, items, cellsToDisplay, rcnt, adjust, readAllInputData);
+					
+					// place the HTML string fragments collected in rowData in the body of grid
+					var fpos = p.treeANode > -1 ? p.treeANode : 0;
+					var $tbody = $(self.tBodies[0]);
+					if (p.treeGrid === true && fpos > 0) {
+						$(self.rows[fpos]).after(rowData.join(""));
+					} else if (p.scroll) {
+						$tbody.append(rowData.join(""));
+					} else if (self.firstElementChild == null || (document.documentMode != undefined && document.documentMode <= 9)) {
+						// for IE8 for example
+						$tbody.html($tbody.html() + rowData.join("")); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
+						self.grid.cols = self.rows[0].cells; // update cached first row
+					} else {
+						self.firstElementChild.innerHTML += rowData.join(""); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
+						self.grid.cols = self.rows[0].cells; // update cached first row
+					}
+					
+					// refresh rowIndexes cash in case of usage grouping
+					if (p.grouping) {
+						p.rowIndexes = {};
+						var row;
+						for (i = 0; i < self.rows.length; i++) {
+							row = self.rows[i];
+							if ($(row).hasClass("jqgrow")) {
+								p.rowIndexes[row.id] = row.rowIndex;
 							}
-						} else if (p.treeGrid === true && fpos > 0) {
-							$(self.rows[fpos]).after(rowData.join(""));
-						} else if (p.scroll) {
-							$tbody.append(rowData.join(""));
-						} else if (self.firstElementChild == null || (document.documentMode != undefined && document.documentMode <= 9)) {
-							// for IE8 for example
-							$tbody.html($tbody.html() + rowData.join("")); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
-							self.grid.cols = self.rows[0].cells; // update cached first row
-						} else {
-							self.firstElementChild.innerHTML += rowData.join(""); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
-							self.grid.cols = self.rows[0].cells; // update cached first row
 						}
 					}
+
+					//
 					if (p.subGrid === true) {
-						try { $j.addSubGrid.call($self, gi + ni); } catch (ignore) { }
+						// make subgrid specific actions: bind click event handler to "+"
+						try { $j.addSubGrid.call($self, p.iColByName.subgrid); } catch (ignore) { }
+					}
+					if (p.gridview === false || isFunction(p.afterInsertRow)) {
+						for (i = 0; i < Math.min(len, rn); i++) {
+							feedback.call(self, "afterInsertRow", ids[i], rd, cellsToDisplay[i]);
+						}
 					}
 					p.totaltime = new Date() - startReq;
 					if (i > 0) {
@@ -3158,59 +3238,17 @@
 					}
 					clearArray(rowData);
 					if (p.treeGrid === true) {
-						try { $.setTreeNode.call($self, fpos + 1, i + fpos + 1); } catch (ignore) { }
+						try { $j.setTreeNode.call($self, fpos + 1, i + fpos + 1); } catch (ignore) { }
 					}
-					//if(!p.treeGrid && !p.scroll) {grid.bDiv.scrollTop = 0;}
-					p.reccount = i;
+					p.reccount = Math.min(len, rn);
 					p.treeANode = -1;
 					if (p.userDataOnFooter) { $j.footerData.call($self, "set", p.userData, true); }
-					if (locdata) {
+					if (readAllInputData) {
 						p.records = len;
 						p.lastpage = Math.ceil(len / rn);
 					}
 					if (!more) { self.updatepager(false, true); }
 					finalizationFormatters.call(self);
-					if (locdata) {
-						for (ir = i; ir < len && drows[ir]; ir++) {
-							cur = drows[ir];
-							cells = dReader.repeatitems && dReader.cell ? getAccessor(cur, dReader.cell) || cur : cur;
-							rowReader = dReader.repeatitems && isArray(cells) ? arrayReader : objectReader;
-							idr = p.keyName === false ? getAccessor(cur, idn) : getAccessor(cells, rowReader[idi]);
-							if (idr === undefined) {
-								// it could be that one uses the index of column in dReader.id
-								if (!isNaN(idn) && p.colModel[Number(idn) + iOffset] != null) {
-									idr = getAccessor(cells, rowReader[Number(idn)]);
-								}
-								if (idr === undefined) {
-									idr = br + ir;
-								}
-							}
-							if (cells) {
-								for (j = 0; j < rowReader.length; j++) {
-									rd[p.colModel[j + iOffset].name] = getAccessor(cells, rowReader[j]);
-								}
-								for (j = 0; j < additionalProperties.length; j++) {
-									cur = getAccessor(cells, isArray(cells) ? j + rowReader.length : additionalProperties[j]);
-									if (cur !== undefined) {
-										rd[additionalProperties[j]] = cur;
-									}
-								}
-								if (p.treeGrid) { normalizeTreeGridProperties(rd); }
-								rd[locid] = stripGridPrefix(idr);
-								if (p.grouping) {
-									$j.groupingPrepare.call($self, rd, ir);
-								}
-								p.data.push(rd);
-								p._index[rd[locid]] = p.data.length - 1;
-								rd = {};
-							}
-						}
-						if (p.grouping) {
-							p.groupingView._locgr = true;
-							groupingRender.call($self, grpdata, p.colModel.length, p.page, rn);
-							grpdata = null;
-						}
-					}
 				},
 				addLocalData = function () {
 					var $self = $(this), st = p.multiSort ? [] : "", sto = [], fndsort = false, cmtypes = {}, grtypes = [], grindexes = [], srcformat, sorttype, newformat,
@@ -3631,11 +3669,7 @@
 											return;
 										}
 									}
-									if (dt === "xml") {
-										addXmlData.call(self, data, rcnt, npage > 1, adjust);
-									} else {
-										addJSONData.call(self, data, rcnt, npage > 1, adjust);
-									}
+									readInput.call(self, data, rcnt, npage > 1, adjust);
 									finalReportVirtual(data);
 									if (p.loadonce || p.treeGrid) {
 										p.dataTypeOrg = p.datatype;
@@ -3662,13 +3696,13 @@
 						case "xmlstring":
 							beginReq.call(self);
 							dstr = typeof p.datastr === "string" ? $.parseXML(p.datastr) : p.datastr;
-							addXmlData.call(self, dstr);
+							readInput.call(self, dstr);
 							finalReportSteps();
 							break;
 						case "jsonstring":
 							beginReq.call(self);
 							dstr = typeof p.datastr === "string" ? jgrid.parse(p.datastr) : p.datastr;
-							addJSONData.call(self, dstr);
+							readInput.call(self, dstr);
 							finalReportSteps();
 							break;
 						case "local":
@@ -3676,7 +3710,7 @@
 							beginReq.call(self);
 							p.datatype = "local";
 							var req = addLocalData.call(self);
-							addJSONData.call(self, req, rcnt, npage > 1, adjust);
+							readInput.call(self, req, rcnt, npage > 1, adjust);
 							finalReportVirtual(req);
 							break;
 						}
@@ -4105,7 +4139,7 @@
 			var jgridCmTemplate = jgrid.cmTemplate;
 			for (iCol = 0; iCol < p.colModel.length; iCol++) {
 				colTemplate = typeof p.colModel[iCol].template === "string" ?
-						(jgridCmTemplate != null && (typeof jgridCmTemplate[p.colModel[iCol].template] === "object" || typeof jgridCmTemplate[p.colModel[iCol].template] === "function") ?
+						(jgridCmTemplate != null && (typeof jgridCmTemplate[p.colModel[iCol].template] === "object" || $.isFunction(jgridCmTemplate[p.colModel[iCol].template])) ?
 								jgridCmTemplate[p.colModel[iCol].template] : {}) :
 						p.colModel[iCol].template;
 				if (isFunction(colTemplate)) {
@@ -4122,10 +4156,6 @@
 				//p.subGrid = false; expiremental
 				p.treeGrid = false;
 				p.gridview = true;
-			}
-			if (p.treeGrid === true) {
-				try { $j.setTreeGrid.call($self0); } catch (ignore) { }
-				if (p.datatype !== "local") { p.localReader = { id: "_id_" }; }
 			}
 			if (p.subGrid) {
 				try { $j.setSubGrid.call($self0); } catch (ignore) { }
@@ -4178,7 +4208,15 @@
 				p.pginput = false;
 				p.rowList = [];
 			}
+			if (p.treeGrid === true) {
+				try { $j.setTreeGrid.call($self0); } catch (ignore) { }
+				if (p.datatype !== "local") { p.localReader = { id: "_id_" }; }
+				// rebuild p.iPropByName after modification of p.additionalProperties
+				p.iPropByName = buildAddPropMap(p.additionalProperties);
+			}
 			normalizeRemapColumns();
+			buildArrayReader();
+
 			if (p.data.length) {
 				normalizeData.call(ts);
 				refreshIndex();
@@ -4191,27 +4229,10 @@
 					}
 				}
 			}
-			var tdc, idn, w, res, sort, cmi, tooltip, labelStyle, td, ptr, tbody, sortarr = [], sortord = [], sotmp = [],
+			var tdc, idn, w, res, sort, cmi, tooltip, labelStyle, ptr, tbody, sortarr = [], sortord = [], sotmp = [],
 				thead = "<thead><tr class='ui-jqgrid-labels' role='row'>",
 				hoverStateClasses = getGuiStyles("states.hover"),
-				disabledStateClasses = getGuiStyles("states.disabled")/*,
-				builderSortIcons = function (iCol) {
-					// iCol is unused currently, but one can modify the code to set for example different sorting 
-					// icons for columns based on sorttype option of colModel
-					var getClasses = function (ascOrDesc) {
-						return jgrid.mergeCssClasses(
-							"ui-grid-ico-sort",
-							"ui-icon-" + ascOrDesc,
-							p.viewsortcols[1] === "horizontal" ? "ui-i-" + ascOrDesc : "",
-							disabledStateClasses,
-							getIcon("sort." + ascOrDesc),
-							"ui-sort-" + p.direction
-						);
-					};
-
-					return "<span class='s-ico' style='display:none'><span class='" + getClasses("asc") +
-						"'></span>" + "<span class='" + getClasses("desc") + "'></span></span>";
-				}*/;
+				disabledStateClasses = getGuiStyles("states.disabled");
 			tdc = isMSIE ? "ui-th-div-ie" : "";
 
 			if (p.multiSort) {
@@ -4308,7 +4329,7 @@
 			}
 
 			if (p.autowidth === true) {
-				var pw = $(eg).innerWidth();
+				var pw = Math.floor($(eg).innerWidth());
 				p.width = pw > 0 ? pw : "nw";
 			}
 			p.widthOrg = p.width;
@@ -4518,30 +4539,46 @@
 					$(ptr).removeClass(hoverStateClasses);
 				});
 			}
-			var ri, ci, tdHtml;
+			var ri, ci, tdHtml,
+				getTdFromTarget = function (target) {
+					var $td, $tr, $table;
+					do {
+						$td = $(target).closest("td");
+						if ($td.length > 0) {
+							$tr = $td.parent();
+							$table = $tr.parent().parent();
+							if ($table[0] === this || ($table.is("table.ui-jqgrid-btable") && ($table[0].id || "").replace("_frozen", "") === this.id)) {
+								return $td;
+							}
+							target = $td.parent();
+						}
+					} while ($td.length > 0);
+				};
 			$self0.before(grid.hDiv).click(function (e) {
-				var highlightClass = getGuiStyles("states.select");
-				td = e.target;
-				ptr = $(td, ts.rows).closest("tr.jqgrow");
-				if ($(ptr).length === 0 || ptr[0].className.indexOf(disabledStateClasses) > -1 || ($(td, ts).closest("table.ui-jqgrid-btable").attr("id") || "").replace("_frozen", "") !== ts.id) {
-					return this;
+				var highlightClass = getGuiStyles("states.select"), target = e.target,
+					$td = getTdFromTarget.call(this, target),
+					$tr = $td.parent();
+				// we uses ts.rows context below to be sure that we don't process the clicks in the subgrid
+				// probably one can change the rule and to step over the parents till one will have 
+				// "tr.jqgrow>td" AND the parent of parent (the table element) will be ts.
+				// one can use the same processing in click, dblclick and contextmenu
+				//ptr = $(td, ts.rows).closest("tr.jqgrow");
+				if ($tr.length === 0 || hasOneFromClasses($tr, disabledStateClasses)) {
+					return;
 				}
-				ri = ptr[0].id;
-				var scb = $(td).hasClass("cbox"), cSel = feedback.call(ts, "beforeSelectRow", ri, e),
+				ri = $tr[0].id;
+				var scb = $(target).hasClass("cbox"), cSel = feedback.call(ts, "beforeSelectRow", ri, e),
 					editingInfo = jgrid.detectRowEditing.call(ts, ri),
 					locked = editingInfo != null && editingInfo.mode !== "cellEditing"; // editingInfo.savedRow.ic
-				if (td.tagName === "A" || (locked && !scb)) { return; }
-				td = $(td).closest("tr.jqgrow>td");
-				if (td.length > 0) {
-					ci = getCellIndex(td);
-					tdHtml = $(td).closest("td,th").html();
-					feedback.call(ts, "onCellSelect", ri, ci, tdHtml, e);
-				}
+				if (target.tagName === "A" || (locked && !scb)) { return; }
+				ci = $td[0].cellIndex;
+				tdHtml = $td.html();
+				feedback.call(ts, "onCellSelect", ri, ci, tdHtml, e);
 				if (p.cellEdit === true) {
 					if (p.multiselect && scb && cSel) {
 						setSelection.call($self0, ri, true, e);
-					} else if (td.length > 0) {
-						ri = ptr[0].rowIndex;
+					} else {
+						ri = $tr[0].rowIndex;
 						try { $j.editCell.call($self0, ri, ci, true); } catch (ignore) { }
 					}
 					return;
@@ -4571,7 +4608,7 @@
 						var oldSelRow = p.selrow;
 						setSelection.call($self0, ri, true, e);
 						if (p.singleSelectClickMode === "toggle" && !p.multiselect && oldSelRow === ri) {
-							td.parent().removeClass(highlightClass).attr({ "aria-selected": "false", "tabindex": "-1" });
+							$tr.removeClass(highlightClass).attr({ "aria-selected": "false", "tabindex": "-1" });
 							p.selrow = null;
 						}
 					}
@@ -4629,30 +4666,23 @@
 				return false;
 			})
 				.dblclick(function (e) {
-					td = e.target;
-					ptr = $(td, ts.rows).closest("tr.jqgrow");
-					if ($(ptr).length === 0) { return; }
-					ri = ptr[0].rowIndex;
-					td = $(td).closest("tr.jqgrow>td");
-					if (td.length > 0) {
-						ci = getCellIndex(td);
-						if (!feedback.call(ts, "ondblClickRow", $(ptr).attr("id"), ri, ci, e)) {
-							return false; // e.preventDefault() and e.stopPropagation() together
-						}
+					var $td = getTdFromTarget.call(this, e.target), $tr = $td.parent();
+					// TODO: replace ts below to method which use $(this) in case of click
+					// on the grid and the table of the main grid if one click inside the FROZEN column
+					if ($td.length > 0 && !feedback.call(ts, "ondblClickRow", $tr.attr("id"), $tr[0].rowIndex, $td[0].cellIndex, e)) {
+						return false; // e.preventDefault() and e.stopPropagation() together
 					}
 				})
 				.bind("contextmenu", function (e) {
-					td = e.target;
-					ptr = $(td, ts.rows).closest("tr.jqgrow");
-					if ($(ptr).length === 0) { return; }
-					if (!p.multiselect) { setSelection.call($self0, ptr[0].id, true, e); }
-					ri = ptr[0].rowIndex;
-					td = $(td).closest("tr.jqgrow>td");
-					if (td.length > 0) {
-						ci = getCellIndex(td);
-						if (!feedback.call(ts, "onRightClickRow", $(ptr).attr("id"), ri, ci, e)) {
-							return false; // e.preventDefault() and e.stopPropagation() together
-						}
+					var $td = getTdFromTarget.call(this, e.target), $tr = $td.parent(), rowid = $tr.attr("id");
+					if ($td.length === 0) { return; }
+					if (!p.multiselect) {
+						// TODO: replace $self0 and ts below to method which use $(this) in case of click
+						// on the grid and the table of the main grid if one click inside the FROZEN column
+						setSelection.call($self0, rowid, true, e);
+					}
+					if (!feedback.call(ts, "onRightClickRow", rowid, $tr[0].rowIndex, $td[0].cellIndex, e)) {
+						return false; // e.preventDefault() and e.stopPropagation() together
 					}
 				});
 			grid.bDiv = document.createElement("div");
@@ -4819,8 +4849,8 @@
 			ts.constructTr = constructTr;
 			ts.formatter = formatter;
 			extend(grid, { populate: populate, emptyRows: emptyRows, beginReq: beginReq, endReq: endReq });
-			ts.addXmlData = addXmlData;
-			ts.addJSONData = addJSONData;
+			ts.addXmlData = readInput;
+			ts.addJSONData = readInput;
 			ts.grid.cols = ts.rows[0].cells;
 			feedback.call(ts, "onInitGrid");
 
@@ -4902,20 +4932,29 @@
 			}
 			var row, rowId = rowid.toString();
 			this.each(function () {
-				var i, rows = this.rows, tr;
-				try {
-					//row = this.rows.namedItem( rowid );
-					i = rows.length;
-					while (i--) {
-						tr = rows[i];
-						if (rowId === tr.id) {
-							row = tr;
-							break;
-						}
+				var i, rows = this.rows, tr, rowIndex;
+				if (this.p.rowIndexes != null) {
+					rowIndex = this.p.rowIndexes[rowId];
+					tr = rows[rowIndex];
+					if (tr && tr.id === rowId) {
+						row = tr;
 					}
-				} catch (e) {
-					row = $(this.grid.bDiv).find("#" + jqID(rowid));
-					row = row.length > 0 ? row[0] : null;
+				}
+				if (!row) {
+					try {
+						//row = this.rows.namedItem( rowid );
+						i = rows.length;
+						while (i--) {
+							tr = rows[i];
+							if (rowId === tr.id) {
+								row = tr;
+								break;
+							}
+						}
+					} catch (e) {
+						row = $(this.grid.bDiv).find("#" + jqID(rowid));
+						row = row.length > 0 ? row[0] : null;
+					}
 				}
 			});
 			return row;
@@ -5028,9 +5067,12 @@
 					}
 				}
 				if (p.scrollrows === true) {
-					ner = getGridRowById.call($self, selection).rowIndex;
-					if (ner >= 0) {
-						scrGrid($t.rows[ner], $t.grid.bDiv);
+					ner = getGridRowById.call($self, selection);
+					if (ner != null) {
+						ner = ner.rowIndex;
+						if (ner >= 0) {
+							scrGrid($t.rows[ner], $t.grid.bDiv);
+						}
 					}
 				}
 				if (!p.multiselect) {
@@ -5296,7 +5338,7 @@
 		addRowData: function (rowid, rdata, pos, src) {
 			// TODO: add an additional parameter, which will inform whether the input data rdata is in formatted or unformatted form
 			if ($.inArray(pos, ["first", "last", "before", "after", "afterSelected", "beforeSelected"]) < 0) { pos = "last"; }
-			var success = false, nm, row, gi, si, ni, sind, i, v, prp = "", aradd, cnm, cn, data, cm, id;
+			var success = false, nm, row, sind, i, v, aradd, cnm, cn, data, cm, id;
 			if (rdata) {
 				if ($.isArray(rdata)) {
 					aradd = true;
@@ -5307,16 +5349,9 @@
 					aradd = false;
 				}
 				this.each(function () {
-					var t = this, p = t.p, datalen = rdata.length, $self = $(t), rows = t.rows,
-						getGridRowById = base.getGridRowById, colModel = p.colModel,
-						additionalProperties = p.additionalProperties,
-						guiStyle = p.guiStyle || defaults.guiStyle || "jQueryUI",
-						getGuiStyles = function (path, jqClasses) {
-							return mergeCssClasses(jgrid.getRes(jgrid.guiStyles[guiStyle], path), jqClasses || "");
-						};
-					ni = p.rownumbers === true ? 1 : 0;
-					gi = p.multiselect === true ? 1 : 0;
-					si = p.subGrid === true ? 1 : 0;
+					var t = this, p = t.p, datalen = rdata.length, $self = $(t), rows = t.rows, k = 0,
+						getGridRowById = base.getGridRowById, colModel = p.colModel, lcdata = {},// cna,
+						additionalProperties = p.additionalProperties;
 					if (!aradd) {
 						if (rowid !== undefined) {
 							rowid = String(rowid);
@@ -5329,7 +5364,8 @@
 						}
 					}
 					cn = p.altclass;
-					var k = 0, cna = "", lcdata = {};
+					// TODO: call jgrid.parseDataToHtml once with ALL data,
+					// TODO: set correct the altrow classes inside of jgrid.parseDataToHtml (use params)
 					while (k < datalen) {
 						data = rdata[k];
 						row = [];
@@ -5340,30 +5376,19 @@
 									rowid = randId();
 								}
 							} catch (exception) { rowid = randId(); }
-							cna = p.altRows === true ? (rows.length - 1) % 2 === 0 ? cn : "" : "";
+							//cna = p.altRows === true ? (rows.length - 1) % 2 === 0 ? cn : "" : "";
 						}
 						id = rowid;
-						rowid = p.idPrefix + rowid;
-						if (ni) {
-							prp = t.formatCol(0, 1, "", null, rowid, true);
-							row.push("<td role=\"gridcell\" class=\"" + getGuiStyles("rowNum", "jqgrid-rownum") + "\" " + prp + ">0</td>");
-						}
-						if (gi) {
-							v = "<input role=\"checkbox\" type=\"checkbox\"" + " id=\"jqg_" + p.id + "_" + rowid + "\" class=\"cbox\" aria-checked=\"false\"/>";
-							prp = t.formatCol(ni, 1, "", null, rowid, true);
-							row.push("<td role=\"gridcell\" " + prp + ">" + v + "</td>");
-						}
-						if (si) {
-							row.push(base.addSubGridCell.call($self, gi + ni, 1));
-						}
-						for (i = gi + si + ni; i < colModel.length; i++) {
+						for (i = 0; i < colModel.length; i++) {
 							cm = colModel[i];
 							nm = cm.name;
-							v = convertOnSaveLocally.call(t, data[nm], cm, undefined, id, {}, i);
-							if ($.isFunction(cm.saveLocally)) {
-								cm.saveLocally.call(t, { newValue: v, newItem: lcdata, oldItem: {}, id: id, cm: cm, cmName: nm, iCol: i });
-							} else {
-								lcdata[nm] = v;
+							if (nm !== "rn" && nm !== "cb" && nm !== "subgrid") {
+								v = convertOnSaveLocally.call(t, data[nm], cm, undefined, id, {}, i);
+								if ($.isFunction(cm.saveLocally)) {
+									cm.saveLocally.call(t, { newValue: v, newItem: lcdata, oldItem: {}, id: id, cm: cm, cmName: nm, iCol: i });
+								} else {
+									lcdata[nm] = v;
+								}
 							}
 						}
 						for (i = 0; i < additionalProperties.length; i++) {
@@ -5378,14 +5403,7 @@
 							p._index[id] = p.data.length;
 							p.data.push(lcdata);
 						}
-						for (i = gi + si + ni; i < colModel.length; i++) {
-							nm = colModel[i].name;
-							v = t.formatter(rowid, getAccessor(data, nm), i, data, "add", lcdata);
-							prp = t.formatCol(i, 1, v, data, rowid, lcdata);
-							row.push("<td role=\"gridcell\" " + prp + ">" + v + "</td>");
-						}
-						row.unshift(t.constructTr(rowid, false, cna, lcdata, data, false));
-						row.push("</tr>");
+						row = jgrid.parseDataToHtml.call(t, 1, [rowid], [data]);
 						row = row.join("");
 						if (rows.length === 0) {
 							$("table:first", t.grid.bDiv).append(row);
@@ -5429,7 +5447,7 @@
 							}
 						}
 						if (p.subGrid === true) {
-							base.addSubGrid.call($self, gi + ni, sind);
+							base.addSubGrid.call($self, p.iColByName.subgrid, sind);
 						}
 						p.records++;
 						p.reccount++;
@@ -6112,7 +6130,7 @@
 				}
 			});
 		},
-		setColWidth: function (iCol, newWidth, adjustGridWidth) {
+		setColWidth: function (iCol, newWidth, adjustGridWidth, skipGridAdjustments) {
 			return this.each(function () {
 				var self = this, $self = $(self), grid = self.grid, p = self.p, h;
 				if (typeof iCol === "string") {
@@ -6126,14 +6144,15 @@
 				if (h != null) {
 					h.newWidth = newWidth;
 					grid.newWidth = p.tblwidth + newWidth - h.width;
-					grid.resizeColumn(iCol, !p.frozenColumns);
-					if (adjustGridWidth !== false) {
+					grid.resizeColumn(iCol, !p.frozenColumns, skipGridAdjustments);
+					if (adjustGridWidth !== false || !skipGridAdjustments) {
 						base.setGridWidth.call($self, grid.newWidth, false); // adjust grid width too
 					}
 				}
 			});
 		},
 		getAutoResizableWidth: function (iCol) {
+			// the most expensive in below code is getting padding-left
 			var self = this;
 			if (self.length === 0) {
 				return -1;
@@ -6144,8 +6163,8 @@
 				cm = p.colModel[iCol],
 				$th = $(self.grid.headers[iCol].el),
 				$thDiv = $th.find(">div"),
-				thPaddingLeft = parseFloat($th.css("padding-left") || 0),
-				thPaddingRight = parseFloat($th.css("padding-right") || 0),
+				thPaddingLeft = parseFloat($th.css("padding-left") || 0),  // typically 2
+				thPaddingRight = parseFloat($th.css("padding-right") || 0),// typically 2
 				$incosDiv = $thDiv.find("span.s-ico"),
 				$wrapper = $thDiv.find(">." + p.autoResizing.wrapperClassName),
 				wrapperOuterWidth = $wrapper.outerWidth(),
@@ -6183,6 +6202,7 @@
 						colWidth = Math.max(colWidth, $cellFirstChild.outerWidth() + widthOuter + $cell.children(".tree-wrap").outerWidth());
 					}
 				} else if ($(row).hasClass("jqgfirstrow")) {
+					// widthOuter is 4 typically (if jgrid.cell_width is true).
 					widthOuter = (jgrid.cell_width ? parseFloat($cell.css("padding-left") || 0) + parseFloat($cell.css("padding-right") || 0) : 0) +
 							parseFloat($cell.css("border-right") || 0) +
 							parseFloat($cell.css("border-left") || 0);
@@ -6199,7 +6219,7 @@
 						p.autoResizing.maxColWidth
 			);
 		},
-		autoResizeColumn: function (iCol) {
+		autoResizeColumn: function (iCol, skipGridAdjustments) {
 			return this.each(function () {
 				var self = this, $self = $(this), p = self.p, cm = p.colModel[iCol], widthOrg,
 					$th = $(self.grid.headers[iCol].el),
@@ -6208,8 +6228,8 @@
 				if (cm == null || newWidth < 0) {
 					return;
 				}
-				base.setColWidth.call($self, iCol, newWidth, p.autoResizing.adjustGridWidth && !p.autoResizing.fixWidthOnShrink);
-				if (p.autoResizing.fixWidthOnShrink && p.shrinkToFit) {
+				base.setColWidth.call($self, iCol, newWidth, p.autoResizing.adjustGridWidth && !p.autoResizing.fixWidthOnShrink && !skipGridAdjustments, skipGridAdjustments);
+				if (p.autoResizing.fixWidthOnShrink && p.shrinkToFit && !skipGridAdjustments) {
 					cm.fixed = true;
 					widthOrg = cm.widthOrg; // save the value in temporary variable
 					cm.widthOrg = cm.width; // to force not changing of the column width
@@ -6226,8 +6246,18 @@
 					shrinkToFit = p.shrinkToFit, // save the original shrinkToFit value in the grid
 					adjustGridWidth = p.autoResizing.adjustGridWidth,
 					fixWidthOnShrink = p.autoResizing.fixWidthOnShrink,
-					width = parseInt(p.widthOrg, 10),
+					width = parseInt(p.widthOrg, 10), grid = this.grid,
 					autoResizeColumn = base.autoResizeColumn; // cache autoResizeColumn reference
+
+				// autoResizeAllColumns calls multiple times autoResizeColumn
+				// which calls setColWidth, which calls resizeColumn, which calls
+				// fixScrollOffsetAndhBoxPadding and setGridWidth.
+				// The method setGridWidth will be called ADDITIONALLY by autoResizeColumn too
+				// As the result the most time spending by autoResizeAllColumns is 
+				// for multiple calling of setGridWidth and fixScrollOffsetAndhBoxPadding
+				//
+				// So we skipp internal calls of fixScrollOffsetAndhBoxPadding and setGridWidth
+				// and to call the method ONCE after the end of loop below
 
 				//    1) Analyse colModel, colNames properties and sortname parameter to calculate
 				//       minimal and optimal width of every column and the grid. It could be
@@ -6243,16 +6273,25 @@
 				for (iCol = 0; iCol < nCol; iCol++) {
 					cm = colModel[iCol];
 					if (cm.autoResizable && cm.formatter !== "actions") {
-						autoResizeColumn.call($self, iCol);
+						autoResizeColumn.call($self, iCol, true);
 					}
 				}
 				if (!isNaN(width)) {
 					base.setGridWidth.call($self, width, false);
+				} else if (adjustGridWidth) {
+					base.setGridWidth.call($self, grid.newWidth, false);
 				}
 				// restore the original shrinkToFit value
 				p.autoResizing.fixWidthOnShrink = fixWidthOnShrink;
 				p.autoResizing.adjustGridWidth = adjustGridWidth;
 				p.shrinkToFit = shrinkToFit;
+				
+				// finalization
+				grid.hDiv.scrollLeft = grid.bDiv.scrollLeft;
+				if (p.footerrow) {
+					grid.sDiv.scrollLeft = grid.bDiv.scrollLeft;
+				}
+				this.fixScrollOffsetAndhBoxPadding();
 			});
 		}
 	});
@@ -8710,6 +8749,7 @@
 					$self.bind("jqGridAfterGridComplete.setFrozenColumns", function () {
 						$(p.idSel + "_frozen").remove();
 						$(grid.fbDiv).height(grid.hDiv.clientHeight);
+						// clone with data and events !!!
 						var $frozenBTable = $(this).clone(true),
 							frozenRows = $frozenBTable[0].rows,
 							rows = $self[0].rows;
@@ -11853,7 +11893,7 @@
 // Grouping module
 (function ($) {
 	"use strict";
-	var jgrid = $.jgrid;
+	var jgrid = $.jgrid, base = $.fn.jqGrid;
 	$.extend(jgrid, {
 		template: function (format) { //jqgformat
 			var args = $.makeArray(arguments).slice(1), j, al = args.length;
@@ -11882,7 +11922,7 @@
 	jgrid.extend({
 		groupingSetup: function () {
 			return this.each(function () {
-				var $t = this, i, j, cml, p = $t.p, cm = p.colModel, grp = p.groupingView,
+				var $t = this, i, j, cml, p = $t.p, colModel = p.colModel, grp = p.groupingView, cm, summary,
 					emptyFormatter = function () {
 						return "";
 					};
@@ -11915,12 +11955,17 @@
 							if (!grp.groupSummaryPos[i]) {
 								grp.groupSummaryPos[i] = "footer";
 							}
+							cm = colModel[p.iColByName[grp.groupField[i]]];
 							if (grp.groupColumnShow[i] === true) {
 								grp.visibiltyOnNextGrouping[i] = true;
-								$($t).jqGrid("showCol", grp.groupField[i]);
+								if (cm != null && cm.hidden === true) {
+									base.showCol.call($($t), grp.groupField[i]);
+								}
 							} else {
 								grp.visibiltyOnNextGrouping[i] = $("#" + jgrid.jqID(p.id + "_" + grp.groupField[i])).is(":visible");
-								$($t).jqGrid("hideCol", grp.groupField[i]);
+								if (cm != null && cm.hidden !== true) {
+									base.hideCol.call($($t), grp.groupField[i]);
+								}
 							}
 						}
 						grp.summary = [];
@@ -11929,18 +11974,20 @@
 								return v;
 							};
 						}
-						for (j = 0, cml = cm.length; j < cml; j++) {
+						for (j = 0, cml = colModel.length; j < cml; j++) {
+							cm = colModel[j];
 							if (grp.hideFirstGroupCol) {
-								if (!cm[j].hidden && grp.groupField[0] === cm[j].name) {
-									cm[j].formatter = emptyFormatter;
+								if (!cm.hidden && grp.groupField[0] === cm.name) {
+									cm.formatter = emptyFormatter;
 								}
 							}
-							if (cm[j].summaryType) {
-								if (cm[j].summaryDivider) {
-									grp.summary.push({ nm: cm[j].name, st: cm[j].summaryType, v: "", sd: cm[j].summaryDivider, vd: "", sr: cm[j].summaryRound, srt: cm[j].summaryRoundType || "round" });
-								} else {
-									grp.summary.push({ nm: cm[j].name, st: cm[j].summaryType, v: "", sr: cm[j].summaryRound, srt: cm[j].summaryRoundType || "round" });
+							if (cm.summaryType) {
+								summary = { nm: cm.name, st: cm.summaryType, v: "", sr: cm.summaryRound, srt: cm.summaryRoundType || "round" };
+								if (cm.summaryDivider) {
+									summary.sd = cm.summaryDivider;
+									summary.vd = "";
 								}
+								grp.summary.push(summary);
 							}
 						}
 					}
@@ -11951,20 +11998,17 @@
 		},
 		groupingPrepare: function (record, irow) {
 			this.each(function () {
-				var grp = this.p.groupingView, $t = this, i, newGroup, newCounter,
-					grlen = grp.groupField.length,
-					fieldName,
-					v,
-					displayName,
-					displayValue,
-					changed = 0,
+				var $t = this, grp = $t.p.groupingView, groups = grp.groups, counters = grp.counters,
+					lastvalues = grp.lastvalues, isInTheSameGroup = grp.isInTheSameGroup, grlen = grp.groupField.length,
+					i, newGroup, newCounter, fieldName,	v, displayName,	displayValue, changed = 0,
+					groupingCalculationsHandler = base.groupingCalculations.handler,
 					buildSummaryValue = function () {
 						if ($.isFunction(this.st)) {
 							this.v = this.st.call($t, this.v, this.nm, record);
 						} else {
-							this.v = $($t).jqGrid("groupingCalculations.handler", this.st, this.v, this.nm, this.sr, this.srt, record);
+							this.v = groupingCalculationsHandler.call($($t), this.st, this.v, this.nm, this.sr, this.srt, record);
 							if (this.st.toLowerCase() === "avg" && this.sd) {
-								this.vd = $($t).jqGrid("groupingCalculations.handler", this.st, this.vd, this.sd, this.sr, this.srt, record);
+								this.vd = groupingCalculationsHandler.call($($t), this.st, this.vd, this.sd, this.sr, this.srt, record);
 							}
 						}
 					};
@@ -11982,34 +12026,34 @@
 						newGroup = { idx: i, dataIndex: fieldName, value: v, displayValue: displayValue, startRow: irow, cnt: 1, summary: [] };
 						if (irow === 0) {
 							// First record always starts a new group
-							grp.groups.push(newGroup);
-							grp.lastvalues[i] = v;
-							grp.counters[i] = { cnt: 1, pos: grp.groups.length - 1, summary: $.extend(true, [], grp.summary) };
-							$.each(grp.counters[i].summary, buildSummaryValue);
-							grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
+							groups.push(newGroup);
+							lastvalues[i] = v;
+							counters[i] = { cnt: 1, pos: groups.length - 1, summary: $.extend(true, [], grp.summary) };
+							$.each(counters[i].summary, buildSummaryValue);
+							groups[counters[i].pos].summary = counters[i].summary;
 						} else {
-							newCounter = { cnt: 1, pos: grp.groups.length, summary: $.extend(true, [], grp.summary) };
-							if (typeof v !== "object" && ($.isArray(grp.isInTheSameGroup) && $.isFunction(grp.isInTheSameGroup[i]) ? !grp.isInTheSameGroup[i].call($t, grp.lastvalues[i], v, i, grp) : grp.lastvalues[i] !== v)) {
+							newCounter = { cnt: 1, pos: groups.length, summary: $.extend(true, [], grp.summary) };
+							if (typeof v !== "object" && ($.isArray(isInTheSameGroup) && $.isFunction(isInTheSameGroup[i]) ? !isInTheSameGroup[i].call($t, lastvalues[i], v, i, grp) : lastvalues[i] !== v)) {
 								// This record is not in same group as previous one
-								grp.groups.push(newGroup);
-								grp.lastvalues[i] = v;
+								groups.push(newGroup);
+								lastvalues[i] = v;
 								changed = 1;
-								grp.counters[i] = newCounter;
-								$.each(grp.counters[i].summary, buildSummaryValue);
-								grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
+								counters[i] = newCounter;
+								$.each(counters[i].summary, buildSummaryValue);
+								groups[counters[i].pos].summary = counters[i].summary;
 							} else {
 								if (changed === 1) {
 									// This group has changed because an earlier group changed.
-									grp.groups.push(newGroup);
-									grp.lastvalues[i] = v;
-									grp.counters[i] = newCounter;
-									$.each(grp.counters[i].summary, buildSummaryValue);
-									grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
+									groups.push(newGroup);
+									lastvalues[i] = v;
+									counters[i] = newCounter;
+									$.each(counters[i].summary, buildSummaryValue);
+									groups[counters[i].pos].summary = counters[i].summary;
 								} else {
-									grp.counters[i].cnt += 1;
-									grp.groups[grp.counters[i].pos].cnt = grp.counters[i].cnt;
-									$.each(grp.counters[i].summary, buildSummaryValue);
-									grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
+									counters[i].cnt += 1;
+									groups[counters[i].pos].cnt = counters[i].cnt;
+									$.each(counters[i].summary, buildSummaryValue);
+									groups[counters[i].pos].summary = counters[i].summary;
 								}
 							}
 						}
@@ -12135,164 +12179,161 @@
 			return false;
 		},
 		groupingRender: function (grdata, colspans, page, rn) {
-			return this.each(function () {
-				var $t = this, p = $t.p, toEnd = 0, grp = p.groupingView, sumreverse = $.makeArray(grp.groupSummary), gv, cp = [],
-					str = "", icon = "", hid, clid, pmrtl = (grp.groupCollapse ? grp.plusicon : grp.minusicon) + " tree-wrap-" + p.direction,
-					len = grp.groupField.length;
+			var str = "", $t = this[0], p = $t.p, toEnd = 0, grp = p.groupingView, sumreverse = $.makeArray(grp.groupSummary), gv, cp = [],
+				icon = "", hid, clid, pmrtl = (grp.groupCollapse ? grp.plusicon : grp.minusicon) + " tree-wrap-" + p.direction,
+				len = grp.groupField.length;
 
-				function findGroupIdx(ind, offset, grp) {
-					var ret = false, i, id;
-					if (offset === 0) {
+			function findGroupIdx(ind, offset, grp) {
+				var ret = false, i, id;
+				if (offset === 0) {
+					ret = grp[ind];
+				} else {
+					id = grp[ind].idx;
+					if (id === 0) {
 						ret = grp[ind];
 					} else {
-						id = grp[ind].idx;
-						if (id === 0) {
-							ret = grp[ind];
-						} else {
-							for (i = ind; i >= 0; i--) {
-								if (grp[i].idx === id - offset) {
-									ret = grp[i];
+						for (i = ind; i >= 0; i--) {
+							if (grp[i].idx === id - offset) {
+								ret = grp[i];
+								break;
+							}
+						}
+					}
+				}
+				return ret;
+			}
+
+			function buildSummaryTd(i, ik, grp, foffset) {
+				var fdata = findGroupIdx(i, ik, grp), cm = p.colModel,
+					grlen = fdata.cnt, strTd = "", k, tmpdata, tplfld,
+					processSummary = function () {
+						var vv, summary = this;
+						if (summary.nm === cm[k].name) {
+							tplfld = cm[k].summaryTpl || "{0}";
+							if (typeof summary.st === "string" && summary.st.toLowerCase() === "avg") {
+								if (summary.sd && summary.vd) {
+									summary.v = (summary.v / summary.vd);
+								} else if (summary.v && grlen > 0) {
+									summary.v = (summary.v / grlen);
+								}
+							}
+							try {
+								summary.groupCount = fdata.cnt;
+								summary.groupIndex = fdata.dataIndex;
+								summary.groupValue = fdata.value;
+								vv = $t.formatter("", summary.v, k, summary);
+							} catch (ef) {
+								vv = summary.v;
+							}
+							tmpdata = "<td " + $t.formatCol(k, 1, "") + ">" + jgrid.format(tplfld, vv) + "</td>";
+							return false;
+						}
+					};
+
+				for (k = foffset; k < colspans; k++) {
+					tmpdata = "<td " + $t.formatCol(k, 1, "") + ">&#160;</td>";
+					$.each(fdata.summary, processSummary);
+					strTd += tmpdata;
+				}
+				return strTd;
+			}
+
+			$.each(p.colModel, function (i, n) {
+				var ii;
+				for (ii = 0; ii < len; ii++) {
+					if (grp.groupField[ii] === n.name) {
+						cp[ii] = i;
+						break;
+					}
+				}
+			});
+
+			sumreverse.reverse();
+			$.each(grp.groups, function (i, n) {
+				if (grp._locgr) {
+					if (!(n.startRow + n.cnt > (page - 1) * rn && n.startRow < page * rn)) {
+						return true;
+					}
+				}
+				toEnd++;
+				clid = p.id + "ghead_" + n.idx;
+				hid = clid + "_" + i;
+				icon = "<span style='cursor:pointer;' class='" + grp.commonIconClass + " " + pmrtl + "' onclick=\"jQuery('#" + jgrid.jqID(p.id).replace("\\", "\\\\") + "').jqGrid('groupingToggle','" + hid + "');return false;\"></span>";
+				try {
+					if ($.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
+						n.displayValue = grp.formatDisplayField[n.idx].call($t, n.displayValue, n.value, p.colModel[cp[n.idx]], n.idx, grp);
+						gv = n.displayValue;
+					} else {
+						gv = $t.formatter(hid, n.displayValue, cp[n.idx], n.value);
+					}
+				} catch (egv) {
+					gv = n.displayValue;
+				}
+				str += "<tr id=\"" + hid + "\"" + (grp.groupCollapse && n.idx > 0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class=\"ui-widget-content jqgroup ui-row-" + p.direction + " " + clid + "\"><td style=\"padding-left:" + (n.idx * 12) + "px;" + "\"";
+				var grpTextStr = $.isFunction(grp.groupText[n.idx]) ?
+						grp.groupText[n.idx].call($t, gv, n.cnt, n.summary) :
+						jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary),
+					mul, jj, hhdr, kk, ik, offset = 0, sgr, gg, end,
+					leaf = len - 1 === n.idx;
+				if (typeof grpTextStr !== "string" && typeof grpTextStr !== "number") {
+					grpTextStr = gv;
+				}
+				if (grp.groupSummaryPos[n.idx] === "header") {
+					mul = p.multiselect ? " colspan=\"2\"" : "";
+					str += mul + ">" + icon + grpTextStr + "</td>";
+					str += buildSummaryTd(i, 0, grp.groups, grp.groupColumnShow[n.idx] === false ? (mul === "" ? 2 : 3) : ((mul === "") ? 1 : 2));
+				} else {
+					str += " colspan=\"" + (grp.groupColumnShow[n.idx] === false ? colspans - 1 : colspans) + "\"" +
+						">" + icon + grpTextStr + "</td>";
+				}
+				str += "</tr>";
+				if (leaf) {
+					gg = grp.groups[i + 1];
+					sgr = n.startRow;
+					end = gg !== undefined ? gg.startRow : grp.groups[i].startRow + grp.groups[i].cnt;
+					if (grp._locgr) {
+						offset = (page - 1) * rn;
+						if (offset > n.startRow) {
+							sgr = offset;
+						}
+					}
+					for (kk = sgr; kk < end; kk++) {
+						if (!grdata[kk - offset]) {
+							break;
+						}
+						str += grdata[kk - offset].join("");
+					}
+					if (grp.groupSummaryPos[n.idx] !== "header") {
+						if (gg !== undefined) {
+							for (jj = 0; jj < grp.groupField.length; jj++) {
+								if (gg.dataIndex === grp.groupField[jj]) {
 									break;
 								}
 							}
+							toEnd = grp.groupField.length - jj;
 						}
+						for (ik = 0; ik < toEnd; ik++) {
+							if (!sumreverse[ik]) {
+								continue;
+							}
+							hhdr = "";
+							if (grp.groupCollapse && !grp.showSummaryOnHide) {
+								hhdr = " style=\"display:none;\"";
+							}
+							str += "<tr" + hhdr + " data-jqfootlevel=\"" + (n.idx - ik) + "\" role=\"row\" class=\"ui-widget-content jqfoot ui-row-" + p.direction + "\">";
+							str += buildSummaryTd(i, ik, grp.groups, 0);
+							str += "</tr>";
+						}
+						toEnd = jj;
 					}
-					return ret;
 				}
-
-				function buildSummaryTd(i, ik, grp, foffset) {
-					var fdata = findGroupIdx(i, ik, grp), cm = p.colModel,
-						grlen = fdata.cnt, strTd = "", k, tmpdata, tplfld,
-						processSummary = function () {
-							var vv, summary = this;
-							if (summary.nm === cm[k].name) {
-								tplfld = cm[k].summaryTpl || "{0}";
-								if (typeof summary.st === "string" && summary.st.toLowerCase() === "avg") {
-									if (summary.sd && summary.vd) {
-										summary.v = (summary.v / summary.vd);
-									} else if (summary.v && grlen > 0) {
-										summary.v = (summary.v / grlen);
-									}
-								}
-								try {
-									summary.groupCount = fdata.cnt;
-									summary.groupIndex = fdata.dataIndex;
-									summary.groupValue = fdata.value;
-									vv = $t.formatter("", summary.v, k, summary);
-								} catch (ef) {
-									vv = summary.v;
-								}
-								tmpdata = "<td " + $t.formatCol(k, 1, "") + ">" + jgrid.format(tplfld, vv) + "</td>";
-								return false;
-							}
-						};
-
-					for (k = foffset; k < colspans; k++) {
-						tmpdata = "<td " + $t.formatCol(k, 1, "") + ">&#160;</td>";
-						$.each(fdata.summary, processSummary);
-						strTd += tmpdata;
-					}
-					return strTd;
-				}
-
-				$.each(p.colModel, function (i, n) {
-					var ii;
-					for (ii = 0; ii < len; ii++) {
-						if (grp.groupField[ii] === n.name) {
-							cp[ii] = i;
-							break;
-						}
-					}
-				});
-
-				sumreverse.reverse();
-				$.each(grp.groups, function (i, n) {
-					if (grp._locgr) {
-						if (!(n.startRow + n.cnt > (page - 1) * rn && n.startRow < page * rn)) {
-							return true;
-						}
-					}
-					toEnd++;
-					clid = p.id + "ghead_" + n.idx;
-					hid = clid + "_" + i;
-					icon = "<span style='cursor:pointer;' class='" + grp.commonIconClass + " " + pmrtl + "' onclick=\"jQuery('#" + jgrid.jqID(p.id).replace("\\", "\\\\") + "').jqGrid('groupingToggle','" + hid + "');return false;\"></span>";
-					try {
-						if ($.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
-							n.displayValue = grp.formatDisplayField[n.idx].call($t, n.displayValue, n.value, p.colModel[cp[n.idx]], n.idx, grp);
-							gv = n.displayValue;
-						} else {
-							gv = $t.formatter(hid, n.displayValue, cp[n.idx], n.value);
-						}
-					} catch (egv) {
-						gv = n.displayValue;
-					}
-					str += "<tr id=\"" + hid + "\"" + (grp.groupCollapse && n.idx > 0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class=\"ui-widget-content jqgroup ui-row-" + p.direction + " " + clid + "\"><td style=\"padding-left:" + (n.idx * 12) + "px;" + "\"";
-					var grpTextStr = $.isFunction(grp.groupText[n.idx]) ?
-							grp.groupText[n.idx].call($t, gv, n.cnt, n.summary) :
-							jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary),
-						mul, jj, hhdr, kk, ik, offset = 0, sgr, gg, end,
-						leaf = len - 1 === n.idx;
-					if (typeof grpTextStr !== "string" && typeof grpTextStr !== "number") {
-						grpTextStr = gv;
-					}
-					if (grp.groupSummaryPos[n.idx] === "header") {
-						mul = p.multiselect ? " colspan=\"2\"" : "";
-						str += mul + ">" + icon + grpTextStr + "</td>";
-						str += buildSummaryTd(i, 0, grp.groups, grp.groupColumnShow[n.idx] === false ? (mul === "" ? 2 : 3) : ((mul === "") ? 1 : 2));
-					} else {
-						str += " colspan=\"" + (grp.groupColumnShow[n.idx] === false ? colspans - 1 : colspans) + "\"" +
-							">" + icon + grpTextStr + "</td>";
-					}
-					str += "</tr>";
-					if (leaf) {
-						gg = grp.groups[i + 1];
-						sgr = n.startRow;
-						end = gg !== undefined ? gg.startRow : grp.groups[i].startRow + grp.groups[i].cnt;
-						if (grp._locgr) {
-							offset = (page - 1) * rn;
-							if (offset > n.startRow) {
-								sgr = offset;
-							}
-						}
-						for (kk = sgr; kk < end; kk++) {
-							if (!grdata[kk - offset]) {
-								break;
-							}
-							str += grdata[kk - offset].join("");
-						}
-						if (grp.groupSummaryPos[n.idx] !== "header") {
-							if (gg !== undefined) {
-								for (jj = 0; jj < grp.groupField.length; jj++) {
-									if (gg.dataIndex === grp.groupField[jj]) {
-										break;
-									}
-								}
-								toEnd = grp.groupField.length - jj;
-							}
-							for (ik = 0; ik < toEnd; ik++) {
-								if (!sumreverse[ik]) {
-									continue;
-								}
-								hhdr = "";
-								if (grp.groupCollapse && !grp.showSummaryOnHide) {
-									hhdr = " style=\"display:none;\"";
-								}
-								str += "<tr" + hhdr + " data-jqfootlevel=\"" + (n.idx - ik) + "\" role=\"row\" class=\"ui-widget-content jqfoot ui-row-" + p.direction + "\">";
-								str += buildSummaryTd(i, ik, grp.groups, 0);
-								str += "</tr>";
-							}
-							toEnd = jj;
-						}
-					}
-				});
-				$($t.tBodies[0]).append(str);
-				// free up memory
-				str = null;
 			});
+			//$($t.tBodies[0]).append(str);
+			return str;
 		},
 		groupingGroupBy: function (name, options) {
 			return this.each(function () {
-				var $t = this, p = $t.p, grp = p.groupingView, i;
+				var $t = this, p = $t.p, grp = p.groupingView, i, cm;
 				if (typeof name === "string") {
 					name = [name];
 				}
@@ -12304,8 +12345,9 @@
 				}
 				// show previous hidden groups if they are hidden and weren't removed yet
 				for (i = 0; i < grp.groupField.length; i++) {
-					if (!grp.groupColumnShow[i] && grp.visibiltyOnNextGrouping[i]) {
-						$($t).jqGrid("showCol", grp.groupField[i]);
+					cm = p.colModel[p.iColByName[grp.groupField[i]]];
+					if (!grp.groupColumnShow[i] && grp.visibiltyOnNextGrouping[i] && cm != null && cm.hidden === true) {
+						base.showCol.call($($t), grp.groupField[i]);
 					}
 				}
 				// set visibility status of current group columns on next grouping
@@ -12328,7 +12370,7 @@
 					// show previous hidden groups if they are hidden and weren't removed yet
 					for (i = 0; i < grp.groupField.length; i++) {
 						if (!grp.groupColumnShow[i] && grp.visibiltyOnNextGrouping[i]) {
-							$($t).jqGrid("showCol", grp.groupField);
+							base.showCol.call($($t), grp.groupField);
 						}
 					}
 					$("tr.jqgroup, tr.jqfoot", tbody).remove();
@@ -14903,6 +14945,13 @@
 					getRowId = function (e) {
 						return $(e.target).closest("tr.jqgrow").attr("id");
 					},
+					/*beforeSelectRow = function (e, rowid, eOrg) {
+						if (eOrg != null) {
+							var $td = $(eOrg.target).closest("tr.jqgrow>td");
+							showHideEditDelete(false, rowid);
+							return true; // allow selection
+						}
+					},*/
 					onClickTreeNode = function (e) {
 						var item = p.data[p._index[stripPref(p.idPrefix, getRowId(e))]],
 							collapseOrExpand = item[expanded] ? "collapse" : "expand";
@@ -14930,12 +14979,16 @@
 					}
 					i++;
 				}
+				//$self.unbind("jqGridBeforeSelectRow.setTreeNode", showEditDelete);
+				//$self.bind("jqGridBeforeSelectRow.setTreeNode", showEditDelete);
 
 			});
 		},
 		setTreeGrid: function () {
 			return this.each(function () {
-				var $t = this, p = $t.p, nm, key, tkey, dupcols = [];
+				var $t = this, p = $t.p, nm, key, tkey, dupcols = [],
+					boolProp = ["leaf_field", "expanded_field", "loaded"],
+					iOffset = p.colModel.length - (p.multiselect === true ? 1 : 0) - (p.subGrid === true ? 1 : 0) - (p.rownumbers === true ? 1 : 0);
 				if (!p.treeGrid) { return; }
 				if (!p.treedatatype) { $.extend($t.p, { treedatatype: p.datatype }); }
 				p.subGrid = false;
@@ -14978,10 +15031,19 @@
 						}
 					}
 				}
-				$.each(p.treeReader, function () {
-					var name = this;
+				$.each(p.treeReader, function (prop) {
+					var name = String(this);
 					if (name && $.inArray(name, dupcols) === -1) {
-						p.additionalProperties.push(name);
+						if ($.inArray(prop, boolProp) >= 0) {
+							p.additionalProperties.push({
+								name: name,
+								convert: function (data) {
+									return data === true || String(data).toLowerCase() === "true" || String(data) === "1" ? true : false;
+								}
+							});
+						} else {
+							p.additionalProperties.push(name);
+						}
 					}
 				});
 			});
@@ -15199,7 +15261,7 @@
 					if (!treeGridFeedback.call($t, "beforeExpandNode", { rowid: id, item: rc })) { return; }
 					var rc1 = $("#" + p.idPrefix + jqID(id), $t.grid.bDiv)[0],
 						position = p._index[id];
-					if ($($t).jqGrid("isNodeLoaded", p.data[position])) {
+					if (p.datatype === "local" || $($t).jqGrid("isNodeLoaded", p.data[position])) {
 						rc[expanded] = true;
 						$("div.treeclick", rc1).removeClass(p.treeIcons.plus + " tree-plus").addClass(p.treeIcons.minus + " tree-minus");
 					} else if (!$t.grid.hDiv.loading) {
