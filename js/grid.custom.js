@@ -1107,6 +1107,7 @@
 					$self.bind("jqGridAfterGridComplete.setFrozenColumns", function () {
 						$(p.idSel + "_frozen").remove();
 						$(grid.fbDiv).height(grid.hDiv.clientHeight);
+						// clone with data and events !!!
 						var $frozenBTable = $(this).clone(true),
 							frozenRows = $frozenBTable[0].rows,
 							rows = $self[0].rows;
