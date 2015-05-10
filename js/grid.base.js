@@ -2259,6 +2259,16 @@
 					}
 					return m;
 				},
+				rebuildRowIndexes = function () {
+					var rowIndexes = {}, row, i;
+					this.p.rowIndexes = rowIndexes;
+					for (i = 0; i < this.rows.length; i++) {
+						row = this.rows[i];
+						if ($(row).hasClass("jqgrow")) {
+							rowIndexes[row.id] = row.rowIndex;
+						}
+					}
+				},
 				buildArrayReader = function () {
 					var i, colModel = p.colModel, cmNamesInputOrder = p.cmNamesInputOrder,
 						additionalProperties = p.additionalProperties, n = cmNamesInputOrder.length, arrayReaderInfos,
@@ -3212,14 +3222,7 @@
 					
 					// refresh rowIndexes cash in case of usage grouping
 					if (p.grouping) {
-						p.rowIndexes = {};
-						var row;
-						for (i = 0; i < self.rows.length; i++) {
-							row = self.rows[i];
-							if ($(row).hasClass("jqgrow")) {
-								p.rowIndexes[row.id] = row.rowIndex;
-							}
-						}
+						rebuildRowIndexes.call(self);
 					}
 
 					//
@@ -4851,6 +4854,7 @@
 			extend(grid, { populate: populate, emptyRows: emptyRows, beginReq: beginReq, endReq: endReq });
 			ts.addXmlData = readInput;
 			ts.addJSONData = readInput;
+			ts.rebuildRowIndexes = rebuildRowIndexes;
 			ts.grid.cols = ts.rows[0].cells;
 			feedback.call(ts, "onInitGrid");
 
@@ -5267,14 +5271,15 @@
 						$t.refreshIndex();
 					}
 				}
+				$t.rebuildRowIndexes();
 				if (p.altRows === true && success) {
-					var cn = p.altclass;
+					var cn = p.altclass, frozenRows = $t.grid.fbRows;
 					$($t.rows).each(function (i) {
-						if (i % 2 === 1) {
-							$(this).addClass(cn);
-						} else {
-							$(this).removeClass(cn);
+						var $row = $(this);
+						if (frozenRows) {
+							$row = $row.add(frozenRows[this.rowIndex]);
 						}
+						$row[i % 2 === 0 ? "addClass" : "removeClass"](cn);
 					});
 				}
 			});
@@ -5458,6 +5463,8 @@
 						k++;
 					}
 					if (p.altRows === true && !aradd) {
+						// even in case of usage correct parameter for parseDataToHtml
+						// one will need to reset the classes if the row will be inserted not at the end of jqGrid
 						if (pos === "last") {
 							if ((rows.length - 1) % 2 === 0) { $(rows[rows.length - 1]).addClass(cn); }
 						} else {
@@ -5470,6 +5477,7 @@
 							});
 						}
 					}
+					t.rebuildRowIndexes(); // we can remove the call later if pos==="last"
 					t.updatepager(true, true);
 					success = true;
 				});
