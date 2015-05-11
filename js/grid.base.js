@@ -2963,6 +2963,7 @@
 							fieldReader = jgrid.getXmlData;
 							break;
 						case "json":
+						case "jsonp":
 						case "jsonstring":
 							dataReader = p.jsonReader;
 							break;
@@ -3033,7 +3034,7 @@
 						if (cmName !== "cb" && cmName !== "subgrid" && cmName !== "rn") {
 							nameReader = isXML ?
 									cm.xmlmap || cmName :
-									(datatype === "local" && !p.dataTypeOrg) || datatype === "json" ? cm.jsonmap || cmName : cmName;
+									(datatype === "local" && !p.dataTypeOrg) || datatype === "json" || datatype === "jsonp" ? cm.jsonmap || cmName : cmName;
 							if (p.keyName !== false && cm.key === true) {
 								p.keyName = cmName; // TODO: replace nameReader to cmName if we don't will read it at the second time
 							}
