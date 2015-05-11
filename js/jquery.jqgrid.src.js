@@ -2083,6 +2083,7 @@
 					cellLayout: 5,
 					subGridWidth: 16,
 					multiselectWidth: 16,
+					multiselectPosition: "left",
 					gridview: (pin == null || pin.afterInsertRow == null), // use true if callback afterInsertRow is not specified
 					rownumWidth: 25,
 					rownumbers: false,
@@ -4163,9 +4164,10 @@
 			if (p.subGrid) {
 				try { $j.setSubGrid.call($self0); } catch (ignore) { }
 			}
-			if (p.multiselect) {
-				p.colNames.unshift("<input role='checkbox' id='" + p.cbId + "' class='cbox' type='checkbox' aria-checked='false'/>");
-				p.colModel.unshift({ name: "cb", width: jgrid.cell_width ? p.multiselectWidth + p.cellLayout : p.multiselectWidth, labelClasses: "jqgh_cbox", classes: "td_cbox", sortable: false, resizable: false, hidedlg: true, search: false, align: "center", fixed: true, frozen: true });
+			if (p.multiselect && (p.multiselectPosition === "left" || p.multiselectPosition === "right")) {
+				var insertMethod = p.multiselectPosition === "left" ? "unshift" : "push";
+				p.colNames[insertMethod]("<input role='checkbox' id='" + p.cbId + "' class='cbox' type='checkbox' aria-checked='false'/>");
+				p.colModel[insertMethod]({ name: "cb", width: jgrid.cell_width ? p.multiselectWidth + p.cellLayout : p.multiselectWidth, labelClasses: "jqgh_cbox", classes: "td_cbox", sortable: false, resizable: false, hidedlg: true, search: false, align: "center", fixed: true, frozen: true });
 			}
 			if (p.rownumbers) {
 				p.colNames.unshift("");
@@ -5634,6 +5636,7 @@
 				permutation.push(p.iColByName[cmNames[i]]);
 			}
 			base.remapColumns.call(this, permutation, updateCells, keepHeader);
+			return this;
 		},
 		setGridWidth: function (newGridWidth, shrink) {
 			return this.each(function () {
