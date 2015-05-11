@@ -12281,15 +12281,26 @@
 				var grpTextStr = $.isFunction(grp.groupText[n.idx]) ?
 						grp.groupText[n.idx].call($t, gv, n.cnt, n.summary) :
 						jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary),
-					mul, jj, hhdr, kk, ik, offset = 0, sgr, gg, end,
+					k, colspan = 1, jj, hhdr, kk, ik, offset = 0, sgr, gg, end,
 					leaf = len - 1 === n.idx;
 				if (typeof grpTextStr !== "string" && typeof grpTextStr !== "number") {
 					grpTextStr = gv;
 				}
 				if (grp.groupSummaryPos[n.idx] === "header") {
-					mul = p.multiselect ? " colspan=\"2\"" : "";
-					str += mul + ">" + icon + grpTextStr + "</td>";
-					str += buildSummaryTd(i, 0, grp.groups, grp.groupColumnShow[n.idx] === false ? (mul === "" ? 2 : 3) : ((mul === "") ? 1 : 2));
+					colspan = 0;
+					if (p.colModel[0].name === "cb" || p.colModel[1].name === "cb") {
+						colspan++;
+					}
+					if (p.colModel[0].name === "subgrid" || p.colModel[1].name === "subgrid") {
+						colspan++;
+					}
+					str += (colspan > 1 ? " colspan='" + colspan + "'" : "") + ">" + icon + grpTextStr + "</td>";
+					/*for (k = grp.groupColumnShow[n.idx] === false ? 1 : 2; k < colspan; k++) {
+						str += "<td style='display:none;'></td>";
+					}*/
+					str += buildSummaryTd(i, 0, grp.groups, grp.groupColumnShow[n.idx] === false ?
+							colspan - 1:
+							colspan);
 				} else {
 					str += " colspan=\"" + (grp.groupColumnShow[n.idx] === false ? colspans - 1 : colspans) + "\"" +
 						">" + icon + grpTextStr + "</td>";
@@ -16128,6 +16139,7 @@
 	};
 	$.fn.fmatter = $FnFmatter;
 	$FnFmatter.getCellBuilder = function (formatType, opts, act) {
+		if ($.fn.fmatter[formatType] == null) { return null; }
 		var cellBuilder = $.fn.fmatter[formatType].getCellBuilder;
 		return $.isFunction(cellBuilder) ?
 			cellBuilder.call(this, $.extend({}, getGridRes.call($(this), "formatter"), opts), act) :
