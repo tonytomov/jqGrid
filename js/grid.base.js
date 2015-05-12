@@ -2703,7 +2703,8 @@
 							(p.ExpandColClick === true ? "cursor:pointer;" : "") +
 							(p.direction === "rtl" ? "right:" : "left:") +
 							(lftpos * levelOffset) + "px;'></div></div>" +
-							"<span class='cell-wrapper" + (isLeaf ? "leaf" : "") + "'>" +
+							"<span class='cell-wrapper" + (isLeaf ? "leaf" : "") + "'" +
+							(p.ExpandColClick ? " style='cursor:pointer;'" : "") + ">" +
 							v + "</span>";
 					}
 					return v;
@@ -3039,7 +3040,9 @@
 							if (p.keyName !== false && cm.key === true) {
 								p.keyName = cmName; // TODO: replace nameReader to cmName if we don't will read it at the second time
 							}
-							colReader[cmName] = nameReader;
+							if (typeof nameReader === "string" || isFunction(nameReader)) {
+								colReader[cmName] = nameReader;
+							}
 							setSimpleColReaderIfPossible(cmName);
 						}
 					}
@@ -3148,7 +3151,7 @@
 									if (isXML && v != null) {
 										v = v.textContent || v.text;
 									}
-								} else if (isFunction(colReader[cmName])) {
+								} else if (typeof colReader[cmName] !== "string") { // isFunction(colReader[cmName])
 									v = colReader[cmName](cells);
 								} else {
 									v = fieldReader(cells, info.name);
@@ -6026,7 +6029,7 @@
 				if (!$("body").is("[role]")) { $("body").attr("role", "application"); }
 				p.scrollrows = o.scrollingRows;
 				$self.keydown(function (event) {
-					var target = $self.find("tr[tabindex=0]")[0], id, r, mind, expanded = p.treeReader.expanded_field;
+					var target = $(this).find("tr[tabindex=0]")[0], id, r, mind, expanded = p.treeReader.expanded_field;
 					//check for arrow keys
 					if (target) {
 						mind = p._index[stripPref(p.idPrefix, target.id)];
@@ -6045,7 +6048,7 @@
 										id = r.id;
 									}
 								}
-								setSelection.call($self, id, true, event);
+								setSelection.call($self, id, true);
 								event.preventDefault();
 							}
 							//if key is down arrow
@@ -6062,7 +6065,7 @@
 										id = r.id;
 									}
 								}
-								setSelection.call($self, id, true, event);
+								setSelection.call($self, id, true);
 								event.preventDefault();
 							}
 							// left
