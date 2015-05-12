@@ -29,45 +29,31 @@
 				var tr, expCol = p.iColByName[p.ExpandColumn],
 					expanded = p.treeReader.expanded_field,
 					isLeaf = p.treeReader.leaf_field,
-					getRowId = function (e) {
-						return $(e.target).closest("tr.jqgrow").attr("id");
-					},
-					/*beforeSelectRow = function (e, rowid, eOrg) {
+					beforeSelectRow = function (e, rowid, eOrg) {
+						var expendOrCollaps = function (rowid) {
+								var item = p.data[p._index[stripPref(p.idPrefix, rowid)]],
+									collapseOrExpand = item[expanded] ? "collapse" : "expand";
+								if (!item[isLeaf]) {
+									$self.jqGrid(collapseOrExpand + "Row", item);
+									$self.jqGrid(collapseOrExpand + "Node", item);
+								}
+							};
 						if (eOrg != null) {
-							var $td = $(eOrg.target).closest("tr.jqgrow>td");
-							showHideEditDelete(false, rowid);
+							var $target = $(eOrg.target);
+							if ($target.is("div.treeclick")) {
+								expendOrCollaps(rowid);
+							} else if (p.ExpandColClick) {
+								var $td = $target.closest("tr.jqgrow>td");
+								if ($td.length > 0 && $target.closest("span.ui-jqgrid-cell-wrapper", $td).length > 0) {
+									expendOrCollaps(rowid);
+								}
+							}
 							return true; // allow selection
 						}
-					},*/
-					onClickTreeNode = function (e) {
-						var item = p.data[p._index[stripPref(p.idPrefix, getRowId(e))]],
-							collapseOrExpand = item[expanded] ? "collapse" : "expand";
-						if (!item[isLeaf]) {
-							$self.jqGrid(collapseOrExpand + "Row", item);
-							$self.jqGrid(collapseOrExpand + "Node", item);
-						}
-						return false;
-					},
-					onClickTreeNodeWithSelection = function (e) {
-						onClickTreeNode.call(this, e);
-						$self.jqGrid("setSelection", getRowId(e));
-						return false;
 					};
-				// TODO: replace with jqGridBeforeSelectRow event handler
-				while (i < len) {
-					tr = rows[i];
-					$(tr.cells[expCol])
-						.find("div.treeclick")
-						.bind("click", onClickTreeNode);
-					if (p.ExpandColClick === true) {
-						$(tr.cells[expCol])
-							.find("span.cell-wrapper")
-							.bind("click", onClickTreeNodeWithSelection);
-					}
-					i++;
-				}
-				//$self.unbind("jqGridBeforeSelectRow.setTreeNode", showEditDelete);
-				//$self.bind("jqGridBeforeSelectRow.setTreeNode", showEditDelete);
+
+				$self.unbind("jqGridBeforeSelectRow.setTreeNode", beforeSelectRow);
+				$self.bind("jqGridBeforeSelectRow.setTreeNode", beforeSelectRow);
 
 			});
 		},
