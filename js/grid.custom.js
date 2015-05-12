@@ -965,6 +965,7 @@
 							//$("th:gt(" + maxfrozen + ")", this).remove();
 						});
 						var swapfroz = -1, fdel = -1, cs, rs;
+						// TODO: Fix processing of hidden columns 
 						$("tr.jqg-second-row-header th", htbl).each(function () {
 							cs = parseInt($(this).attr("colspan") || 1, 10);
 							rs = parseInt($(this).attr("rowspan") || 1, 10);

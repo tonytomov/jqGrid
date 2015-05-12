@@ -6157,7 +6157,8 @@
 					grid.newWidth = p.tblwidth + newWidth - h.width;
 					grid.resizeColumn(iCol, !p.frozenColumns, skipGridAdjustments);
 					if (adjustGridWidth !== false || !skipGridAdjustments) {
-						base.setGridWidth.call($self, grid.newWidth, false); // adjust grid width too
+						self.fixScrollOffsetAndhBoxPadding();
+						base.setGridWidth.call($self, grid.newWidth + p.scrollOffset, false); // adjust grid width too
 					}
 				}
 			});
@@ -6253,11 +6254,11 @@
 		},
 		autoResizeAllColumns: function () {
 			return this.each(function () {
-				var $self = $(this), p = this.p, colModel = p.colModel, nCol = colModel.length, iCol, cm,
+				var self = this, $self = $(self), p = self.p, colModel = p.colModel, nCol = colModel.length, iCol, cm,
 					shrinkToFit = p.shrinkToFit, // save the original shrinkToFit value in the grid
 					adjustGridWidth = p.autoResizing.adjustGridWidth,
 					fixWidthOnShrink = p.autoResizing.fixWidthOnShrink,
-					width = parseInt(p.widthOrg, 10), grid = this.grid,
+					width = parseInt(p.widthOrg, 10), grid = self.grid,
 					autoResizeColumn = base.autoResizeColumn; // cache autoResizeColumn reference
 
 				// autoResizeAllColumns calls multiple times autoResizeColumn
@@ -6287,22 +6288,23 @@
 						autoResizeColumn.call($self, iCol, true);
 					}
 				}
-				if (!isNaN(width)) {
-					base.setGridWidth.call($self, width, false);
-				} else if (adjustGridWidth) {
-					base.setGridWidth.call($self, grid.newWidth, false);
-				}
-				// restore the original shrinkToFit value
-				p.autoResizing.fixWidthOnShrink = fixWidthOnShrink;
-				p.autoResizing.adjustGridWidth = adjustGridWidth;
-				p.shrinkToFit = shrinkToFit;
-				
+
 				// finalization
 				grid.hDiv.scrollLeft = grid.bDiv.scrollLeft;
 				if (p.footerrow) {
 					grid.sDiv.scrollLeft = grid.bDiv.scrollLeft;
 				}
-				this.fixScrollOffsetAndhBoxPadding();
+				self.fixScrollOffsetAndhBoxPadding();
+
+				if (!isNaN(width)) {
+					base.setGridWidth.call($self, width, false);
+				} else if (adjustGridWidth) {
+					base.setGridWidth.call($self, grid.newWidth + p.scrollOffset, false);
+				}
+				// restore the original shrinkToFit value
+				p.autoResizing.fixWidthOnShrink = fixWidthOnShrink;
+				p.autoResizing.adjustGridWidth = adjustGridWidth;
+				p.shrinkToFit = shrinkToFit;
 			});
 		}
 	});
