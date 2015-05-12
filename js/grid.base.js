@@ -3925,7 +3925,7 @@ $.jgrid.extend({
 			bDiv.css({height: nh+(isNaN(nh)?"":"px")});
 			if($t.p.frozenColumns === true){
 				//follow the original set height to use 16, better scrollbar width detection
-				$('#'+$.jgrid.jqID($t.p.id)+"_frozen").parent().height(bDiv.height() - 16);
+				$('#'+$.jgrid.jqID($t.p.id)+"_frozen").parent().height(bDiv.height());
 			}
 			$t.p.height = nh;
 			if ($t.p.scroll) { $t.grid.populateVisible(); }
@@ -4479,7 +4479,7 @@ $.jgrid.extend({
 				}
 				$($t).bind('jqGridAfterGridComplete.setFrozenColumns', function () {
 					$("#"+$.jgrid.jqID($t.p.id)+"_frozen").remove();
-					$($t.grid.fbDiv).height($($t.grid.bDiv).height()-16);
+					$($t.grid.fbDiv).height($($t.grid.bDiv).height());
 					var btbl = $("#"+$.jgrid.jqID($t.p.id)).clone(true);
 					$("tr[role=row]",btbl).each(function(){
 						$("td[role=gridcell]:gt("+maxfrozen+")",this).remove();
