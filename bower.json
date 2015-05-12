@@ -8,8 +8,6 @@
 	],
 	"dependencies": {
 		"jquery": ">=1.7.0",
-		"jquery-ui": ">=1.7.0",
-		"requirejs": "2.1.8",
-		"require-css": "0.1.7"
+		"jquery-ui": ">=1.7.0"
 	}
 }
