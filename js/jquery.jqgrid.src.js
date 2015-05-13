@@ -14100,11 +14100,11 @@
 			this.each(function () {
 				var row, rowindex, i, rowlen = data.length, xlen, ylen, aggrlen, tmp, newObj, dn, colc, r = 0, groupfields,
 					tree = {}, xValue, yValue, k, kj, current, nm, plen,
-					existing, kk, lastval = [], initColLen = columns.length, swaplen = initColLen,
+					existing, kk, lastval = [], initColLen, swaplen,
 					/*
 					 * Check if the grouped row column exist (See find)
 					 * If the row is not find in pivot rows retun null,
-					 * otherviese the column
+					 * otherwise the column
 					 */
 					findGroup = function (item, index) {
 						var j = 0, ret = true, name;
@@ -14127,7 +14127,7 @@
 					};
 				// utility funcs
 				/*
-				 * Filter the data to a given criteria. Return the firt occurance
+				 * Filter the data to a given criteria. Return the first occurrence
 				 */
 				function find(ar, fun, extra) {
 					var res = pivotFilter.call(ar, fun, extra);
@@ -14170,7 +14170,7 @@
 					return ret;
 				}
 				/*
-				 * The function agragates the values of the pivot grid.
+				 * The function aggregates the values of the pivot grid.
 				 * Return the current row with pivot summary values
 				 */
 				function agregateFunc(row, aggr, value, curr) {
@@ -14224,7 +14224,7 @@
 				ylen = o.yDimension.length;
 				aggrlen = $.isArray(o.aggregates) ? o.aggregates.length : 0;
 				if (xlen === 0 || aggrlen === 0) {
-					throw ("xDimension or aggregates optiona are not set!");
+					throw ("xDimension or aggregates options are not set!");
 				}
 				for (i = 0; i < xlen; i++) {
 					colc = { name: o.xDimension[i].dataName, frozen: o.frozenStaticCols };
@@ -14234,9 +14234,11 @@
 					colc = $.extend(true, colc, o.xDimension[i]);
 					columns.push(colc);
 				}
+				initColLen = columns.length;
+				swaplen = initColLen;
 				groupfields = xlen - 1;
 				//tree = { text: "root", leaf: false, children: [] };
-				//loop over alll the source data
+				//loop over all the source data
 				while (r < rowlen) {
 					row = data[r];
 					xValue = [];
@@ -14252,7 +14254,7 @@
 
 					k = 0;
 					rowindex = -1;
-					// check to see if the row is in our new pivotrow set
+					// check to see if the row is in our new pivot-row set
 					newObj = find(pivotrows, findGroup, xValue);
 					if (!newObj) {
 						// if the row is not in our set
@@ -14267,7 +14269,7 @@
 									yValue[k] = o.yDimension[k].converter.call(this, yValue[k], xValue, yValue);
 								}
 							}
-							// make the colums based on aggregates definition
+							// make the columns based on aggregates definition
 							// and return the members for late calculation
 							tmp = agregateFunc(row, o.aggregates, yValue, tmp);
 						} else if (ylen === 0) {
@@ -14437,7 +14439,7 @@
 				}
 
 				list(tree);
-				// loop again trougth the pivot rows in order to build grand total
+				// loop again trough the pivot rows in order to build grand total
 				if (o.colTotals) {
 					plen = pivotrows.length;
 					while (plen--) {
