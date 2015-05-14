@@ -1933,7 +1933,7 @@
 	$.fn.jqGrid = function (pin) {
 		var $j = $.fn.jqGrid, fn;
 		if (typeof pin === "string") {
-			fn = $.fn.jqGrid[pin];
+			fn = $j[pin];
 			if (!fn) {
 				throw ("jqGrid - No such method: " + pin);
 			}
@@ -14951,11 +14951,11 @@
 **/
 
 /*jshint eqeqeq:false */
-/*jslint browser: true, eqeq: true, plusplus: true, nomen: true, vars: true, white: true, todo: true */
+/*jslint browser: true, eqeq: true, plusplus: true, nomen: true, unparam: true, vars: true, white: true, todo: true */
 /*global jQuery */
 (function ($) {
 	"use strict";
-	var jgrid = $.jgrid, getAccessor = jgrid.getAccessor, stripPref = jgrid.stripPref, jqID = jgrid.jqID,
+	var jgrid = $.jgrid, getAccessor = jgrid.getAccessor, stripPref = jgrid.stripPref, jqID = jgrid.jqID, base = $.fn.jqGrid,
 		treeGridFeedback = function () {
 			var args = $.makeArray(arguments);
 			args[0] = "treeGrid" + args[0].charAt(0).toUpperCase() + args[0].substring(1);
@@ -14965,20 +14965,21 @@
 			return jgrid.feedback.apply(this, args);
 		};
 	jgrid.extend({
-		setTreeNode: function (i, len) {
+		setTreeNode: function () {
+			// TODO: Move the code in setTreeGrid because it uses currently no parameters
+			// and it's don't make any actions with specific row
 			return this.each(function () {
-				var $t = this, $self = $($t), p = $t.p, rows = $t.rows;
+				var $t = this, $self = $($t), p = $t.p;
 				if (!$t.grid || !p.treeGrid) { return; }
-				var tr, expCol = p.iColByName[p.ExpandColumn],
-					expanded = p.treeReader.expanded_field,
+				var expanded = p.treeReader.expanded_field,
 					isLeaf = p.treeReader.leaf_field,
 					beforeSelectRow = function (e, rowid, eOrg) {
 						var expendOrCollaps = function (rowid) {
 								var item = p.data[p._index[stripPref(p.idPrefix, rowid)]],
 									collapseOrExpand = item[expanded] ? "collapse" : "expand";
 								if (!item[isLeaf]) {
-									$self.jqGrid(collapseOrExpand + "Row", item);
-									$self.jqGrid(collapseOrExpand + "Node", item);
+									base[collapseOrExpand + "Row"].call($self, item);
+									base[collapseOrExpand + "Node"].call($self, item);
 								}
 							};
 						if (eOrg != null) {
@@ -15003,8 +15004,7 @@
 		setTreeGrid: function () {
 			return this.each(function () {
 				var $t = this, p = $t.p, nm, key, tkey, dupcols = [],
-					boolProp = ["leaf_field", "expanded_field", "loaded"],
-					iOffset = p.colModel.length - (p.multiselect === true ? 1 : 0) - (p.subGrid === true ? 1 : 0) - (p.rownumbers === true ? 1 : 0);
+					boolProp = ["leaf_field", "expanded_field", "loaded"];
 				if (!p.treeGrid) { return; }
 				if (!p.treedatatype) { $.extend($t.p, { treedatatype: p.datatype }); }
 				p.subGrid = false;
@@ -15070,12 +15070,12 @@
 				if (!$t.grid || !p.treeGrid) { return; }
 				var expanded = p.treeReader.expanded_field, rowid = record[p.localReader.id]; // without prefix
 				if (!treeGridFeedback.call($t, "beforeExpandRow", { rowid: rowid, item: record })) { return; }
-				var childern = $self.jqGrid("getNodeChildren", record);
+				var childern = base.getNodeChildren.call($self, record);
 				$(childern).each(function () {
 					var id = p.idPrefix + getAccessor(this, p.localReader.id);
-					$($self.jqGrid("getGridRowById", id)).css("display", "");
+					$(base.getGridRowById.call($self, id)).css("display", "");
 					if (this[expanded]) {
-						$self.jqGrid("expandRow", this);
+						base.expandRow.call($self, this);
 					}
 				});
 				treeGridFeedback.call($t, "afterExpandRow", { rowid: rowid, item: record });
@@ -15087,12 +15087,12 @@
 				if (!$t.grid || !p.treeGrid) { return; }
 				var expanded = p.treeReader.expanded_field, rowid = record[p.localReader.id]; // without prefix
 				if (!treeGridFeedback.call($t, "beforeCollapseRow", { rowid: rowid, item: record })) { return; }
-				var childern = $self.jqGrid("getNodeChildren", record);
+				var childern = base.getNodeChildren.call($self, record);
 				$(childern).each(function () {
 					var id = p.idPrefix + getAccessor(this, p.localReader.id);
-					$($self.jqGrid("getGridRowById", id)).css("display", "none");
+					$(base.getGridRowById.call($self, id)).css("display", "none");
 					if (this[expanded]) {
-						$self.jqGrid("collapseRow", this);
+						base.collapseRow.call($self, this);
 					}
 				});
 				treeGridFeedback.call($t, "afterCollapseRow", { rowid: rowid, item: record });
@@ -15136,7 +15136,7 @@
 					ret = parseInt(rc[level], 10) - parseInt(p.tree_root_level, 10);
 					break;
 				case "adjacency":
-					ret = $($t).jqGrid("getNodeAncestors", rc).length;
+					ret = base.getNodeAncestors.call($($t), rc).length;
 					break;
 				}
 			});
@@ -15220,12 +15220,12 @@
 		getNodeAncestors: function (rc) {
 			var ancestors = [];
 			this.each(function () {
-				var $t = this, $self = $($t);
+				var $t = this, $self = $($t), getNodeParent = base.getNodeParent;
 				if (!$t.grid || !$t.p.treeGrid) { return; }
-				var parent = $self.jqGrid("getNodeParent", rc);
+				var parent = getNodeParent.call($self, rc);
 				while (parent) {
 					ancestors.push(parent);
-					parent = $self.jqGrid("getNodeParent", parent);
+					parent = getNodeParent.call($self, parent);
 				}
 			});
 			return ancestors;
@@ -15235,7 +15235,7 @@
 			this.each(function () {
 				var $t = this, p = $t.p;
 				if (!$t.grid || !p.treeGrid) { return; }
-				var ancestors = $($t).jqGrid("getNodeAncestors", rc), expanded = p.treeReader.expanded_field;
+				var ancestors = base.getNodeAncestors.call($($t), rc), expanded = p.treeReader.expanded_field;
 				$(ancestors).each(function () {
 					result = result && this[expanded];
 					if (!result) { return false; }
@@ -15252,7 +15252,7 @@
 				if (rc !== undefined) {
 					if (rc[loaded] !== undefined) {
 						result = rc[loaded];
-					} else if (rc[isLeaf] || $($t).jqGrid("getNodeChildren", rc).length > 0) {
+					} else if (rc[isLeaf] || base.getNodeChildren.call($($t), rc).length > 0) {
 						result = true;
 					} else {
 						result = false;
@@ -15277,7 +15277,7 @@
 					if (!treeGridFeedback.call($t, "beforeExpandNode", { rowid: id, item: rc })) { return; }
 					var rc1 = $("#" + p.idPrefix + jqID(id), $t.grid.bDiv)[0],
 						position = p._index[id];
-					if (p.datatype === "local" || $($t).jqGrid("isNodeLoaded", p.data[position])) {
+					if (p.datatype === "local" || base.isNodeLoaded.call($($t), p.data[position])) {
 						rc[expanded] = true;
 						$("div.treeclick", rc1).removeClass(p.treeIcons.plus + " tree-plus").addClass(p.treeIcons.minus + " tree-minus");
 					} else if (!$t.grid.hDiv.loading) {
@@ -15285,14 +15285,14 @@
 						$("div.treeclick", rc1).removeClass(p.treeIcons.plus + " tree-plus").addClass(p.treeIcons.minus + " tree-minus");
 						p.treeANode = rc1.rowIndex;
 						p.datatype = p.treedatatype;
-						$($t).jqGrid("setGridParam", {
+						base.setGridParam.call($($t), {
 							postData: p.treeGridModel === "nested" ?
 									{ nodeid: id, n_level: rc[level], n_left: rc[lft], n_right: rc[rgt] } :
 									{ nodeid: id, n_level: rc[level], parentid: rc[parent] }
 						});
 						$($t).trigger("reloadGrid");
 						rc[loaded] = true;
-						$($t).jqGrid("setGridParam", {
+						base.setGridParam.call($($t), {
 							postData: p.treeGridModel === "nested" ?
 									{ nodeid: "", n_level: "", n_left: "", n_right: "" } :
 									{ nodeid: "", n_level: "", parentid: "" }
@@ -15321,7 +15321,7 @@
 			return this.each(function () {
 				var $t = this, p = $t.p, $self = $($t);
 				if (!$t.grid || !p.treeGrid) { return; }
-				var i, len, rec, records = [], rt = $self.jqGrid("getRootNodes"), query = jgrid.from.call($t, rt);
+				var i, len, rec, records = [], rt = base.getRootNodes.call($self), query = jgrid.from.call($t, rt);
 				// Sorting roots
 				query.orderBy(sortname, newDir, st, datefmt);
 				var roots = query.select();
@@ -15330,7 +15330,7 @@
 				for (i = 0, len = roots.length; i < len; i++) {
 					rec = roots[i];
 					records.push(rec);
-					$self.jqGrid("collectChildrenSortTree", records, rec, sortname, newDir, st, datefmt);
+					base.collectChildrenSortTree.call($self, records, rec, sortname, newDir, st, datefmt);
 				}
 				$.each(records, function (index) {
 					var id = getAccessor(this, p.localReader.id);
@@ -15342,13 +15342,13 @@
 			return this.each(function () {
 				var $t = this, $self = $($t);
 				if (!$t.grid || !$t.p.treeGrid) { return; }
-				var i, len, child, ch = $self.jqGrid("getNodeChildren", rec), query = jgrid.from.call($t, ch);
+				var i, len, child, ch = base.getNodeChildren.call($self, rec), query = jgrid.from.call($t, ch);
 				query.orderBy(sortname, newDir, st, datefmt);
 				var children = query.select();
 				for (i = 0, len = children.length; i < len; i++) {
 					child = children[i];
 					records.push(child);
-					$self.jqGrid("collectChildrenSortTree", records, child, sortname, newDir, st, datefmt);
+					base.collectChildrenSortTree.call($self, records, child, sortname, newDir, st, datefmt);
 				}
 			});
 		},
@@ -15358,7 +15358,7 @@
 			this.each(function () {
 				var t = this;
 				if (!t.grid || !t.p.treeGrid) { return; }
-				success = $(t).jqGrid("setRowData", rowid, data);
+				success = base.setRowData.call($(t), rowid, data);
 			});
 			return success;
 		},
@@ -15373,10 +15373,10 @@
 					// nested
 					myright = parseInt(p.data[rc][right], 10);
 					width = myright - parseInt(p.data[rc][left], 10) + 1;
-					var dr = $self.jqGrid("getFullTreeNode", p.data[rc]);
+					var dr = base.getFullTreeNode.call($self, p.data[rc]);
 					if (dr.length > 0) {
 						for (i = 0; i < dr.length; i++) {
-							$self.jqGrid("delRowData", dr[i][rid]);
+							base.delRowData.call($self, dr[i][rid]);
 						}
 					}
 					if (p.treeGridModel === "nested") {
@@ -15407,7 +15407,7 @@
 		},
 		addChildNode: function (nodeid, parentid, data, expandData) {
 			//return this.each(function(){
-			var $self = $(this), $t = $self[0], p = $t.p;
+			var $self = $(this), $t = $self[0], p = $t.p, getInd = base.getInd;
 			if (data) {
 				// we suppose tha the id is autoincremet and
 				var method, parentindex, parentdata, parentlevel, i, len, max = 0, rowind = parentid, leaf, maxright,
@@ -15425,7 +15425,7 @@
 					}
 					nodeid = max + 1;
 				}
-				var prow = $self.jqGrid("getInd", parentid);
+				var prow = getInd.call($self, parentid);
 				leaf = false;
 				// if not a parent we assume root
 				if (parentid === undefined || parentid === null || parentid === "") {
@@ -15440,20 +15440,20 @@
 					parentdata = p.data[parentindex];
 					parentid = parentdata[p.localReader.id];
 					parentlevel = parseInt(parentdata[level], 10) + 1;
-					var childs = $self.jqGrid("getFullTreeNode", parentdata);
+					var childs = base.getFullTreeNode.call($self, parentdata);
 					// if there are child nodes get the last index of it
 					if (childs.length) {
 						i = childs[childs.length - 1][p.localReader.id];
 						rowind = i;
-						i = $self.jqGrid("getInd", rowind) + 1;
+						i = getInd.call($self, rowind) + 1;
 					} else {
-						i = $self.jqGrid("getInd", parentid) + 1;
+						i = getInd.call($self, parentid) + 1;
 					}
 					// if the node is leaf
 					if (parentdata[isLeaf]) {
 						leaf = true;
 						parentdata[expanded] = true;
-						//var prow = $self.jqGrid("getInd", parentid);
+						//var prow = getInd.call($self, parentid);
 						$($t.rows[prow])
 							.find("span.cell-wrapperleaf").removeClass("cell-wrapperleaf").addClass("cell-wrapper")
 							.end()
@@ -15492,7 +15492,7 @@
 						data[left] = maxright;
 						data[right] = maxright + 1;
 					} else {
-						maxright = parseInt($self.jqGrid("getCol", right, false, "max"), 10);
+						maxright = parseInt(base.getCol.call($self, right, false, "max"), 10);
 						res = jgrid.from.call($t, p.data)
 							.greater(left, maxright, { stype: "integer" })
 							.select();
@@ -15517,9 +15517,9 @@
 						data[right] = maxright + 2;
 					}
 				}
-				if (parentid === null || $self.jqGrid("isNodeLoaded", parentdata) || leaf) {
-					$self.jqGrid("addRowData", nodeid, data, method, rowind);
-					$self.jqGrid("setTreeNode", i, len);
+				if (parentid === null || base.isNodeLoaded.call($self, parentdata) || leaf) {
+					base.addRowData.call($self, nodeid, data, method, rowind);
+					base.setTreeNode.call($self, i, len);
 				}
 				if (parentdata && !parentdata[expanded] && expandData) {
 					$($t.rows[prow])

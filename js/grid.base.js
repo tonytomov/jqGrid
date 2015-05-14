@@ -1933,7 +1933,7 @@
 	$.fn.jqGrid = function (pin) {
 		var $j = $.fn.jqGrid, fn;
 		if (typeof pin === "string") {
-			fn = $.fn.jqGrid[pin];
+			fn = $j[pin];
 			if (!fn) {
 				throw ("jqGrid - No such method: " + pin);
 			}
