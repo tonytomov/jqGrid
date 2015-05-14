@@ -12296,7 +12296,7 @@
 					grpTextStr = gv;
 				}
 				if (grp.groupSummaryPos[n.idx] === "header") {
-					colspan = 0;
+					colspan = 1;
 					if (p.colModel[0].name === "cb" || p.colModel[1].name === "cb") {
 						colspan++;
 					}
