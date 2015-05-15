@@ -28,19 +28,37 @@
 		},
 		keyOrMouseEventHandler = function (e) {
 			var activeModal = jqmHash[createdModals[createdModals.length - 1]],
-				modal = !$(e.target).parents(".jqmID" + activeModal.s)[0];
-			if (modal) {
-				$(".jqmID" + activeModal.s).each(function () {
-					var $self = $(this), offset = $self.offset();
-					if (offset.top <= e.pageY &&
-							e.pageY <= offset.top + $self.height() &&
-							offset.left <= e.pageX &&
-							e.pageX <= offset.left + $self.width()) {
-						modal = false;
-						return false;
-					}
-				});
-				setFocusOnFirstVisibleInput(activeModal);
+				modal = !$(e.target).parents(".jqmID" + activeModal.s)[0],
+				targetOffset = $(e.target).offset(),
+				eX = e.pageX !== undefined ? e.pageX : targetOffset.left,
+				eY = e.pageY !== undefined ? e.pageY : targetOffset.top,
+				isEventInsideOfModal = function () {
+					var isInside = false;
+					$(".jqmID" + activeModal.s).each(function () {
+						var $self = $(this), offset = $self.offset();
+							// mouse event have e.pageX and e.pageY
+							// keyboard event have e.type == "keydown" or "keypress",
+							// e.pageX and e.pageY are undefined and one can use 
+							// $(e.target).offset()
+						if (offset.top <= eY && eY <= offset.top + $self.height() &&
+								offset.left <= eX && eX <= offset.left + $self.width()) {
+							isInside = true;
+							return false; // stop enumeration
+						}
+					});
+					return isInside;
+				};
+			if (e.type !== "mousedown" && isEventInsideOfModal()) {
+				// allows keyboard events inside of the modal
+				return true;
+			}
+			if (e.type === "mousedown" && modal) {
+				if (isEventInsideOfModal()) {
+					modal = false;
+				}
+				if (modal && !$(e.target).is(":input")) {
+					setFocusOnFirstVisibleInput(activeModal);
+				}
 			}
 			return !modal;
 		},
