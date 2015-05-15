@@ -260,7 +260,7 @@
 							}
 						});
 						var sd = j > 0 ? true : false;
-						if (o.stringResult === true || p.datatype === "local" || o.searchOperators === true) {
+						if (o.stringResult) {
 							var ruleGroup = "{\"groupOp\":\"" + o.groupOp + "\",\"rules\":[";
 							var gi = 0;
 							$.each(sdata, function (i, n) {
@@ -342,7 +342,7 @@
 						});
 						var sd = j > 0 ? true : false;
 						p.resetsearch = true;
-						if (o.stringResult === true || p.datatype === "local") {
+						if (o.stringResult) {
 							var ruleGroup = "{\"groupOp\":\"" + o.groupOp + "\",\"rules\":[";
 							var gi = 0;
 							$.each(sdata, function (i, n) {
@@ -457,6 +457,9 @@
 					},
 					timeoutHnd,
 					tr = $("<tr class='ui-search-toolbar' role='row'></tr>");
+
+				if (o.searchOperators || p.datatype === "local") { o.stringResult = true; }
+
 				// create the row
 				$.each(colModel, function (ci) {
 					var cm = this, soptions, mode = "filter", surl, self, select = "", sot, so, i, searchoptions = cm.searchoptions, editoptions = cm.editoptions,
