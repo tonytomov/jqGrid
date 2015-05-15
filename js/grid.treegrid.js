@@ -340,6 +340,8 @@
 					} else if (!$t.grid.hDiv.loading) {
 						rc[expanded] = true;
 						$("div.treeclick", rc1).removeClass(p.treeIcons.plus + " tree-plus").addClass(p.treeIcons.minus + " tree-minus");
+						// set the value which will be used during processing of the server response
+						// in readInput
 						p.treeANode = rc1.rowIndex;
 						p.datatype = p.treedatatype;
 						base.setGridParam.call($($t), {
