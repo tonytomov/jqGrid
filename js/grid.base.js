@@ -3236,7 +3236,7 @@
 					}
 					if (p.gridview === false || isFunction(p.afterInsertRow)) {
 						for (i = 0; i < Math.min(len, rn); i++) {
-							feedback.call(self, "afterInsertRow", ids[i], rd, cellsToDisplay[i]);
+							feedback.call(self, "afterInsertRow", ids[i], items[i], cellsToDisplay[i]);
 						}
 					}
 					p.totaltime = new Date() - startReq;
@@ -5899,7 +5899,7 @@
 							}
 						}
 						if (cssp || attrp) {
-							$td = jgrid.getCell.call(tr, iCol);
+							$td = jgrid.getCell.call($t, tr, iCol);
 							if (cssp) {
 								$td[typeof cssp === "string" ? "addClass" : "css"](cssp);
 							}
