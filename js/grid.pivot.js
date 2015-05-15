@@ -15,49 +15,17 @@
 	// To optimize the search we need custom array filter
 	// This code is taken from
 	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
-	var jgrid = $.jgrid,
-		pivotFilter = function (fn, context) {
-			var i, value, result = [], length = this.length;
-
-			if (typeof fn !== "function" || (fn instanceof RegExp)) {
-				throw new TypeError();
-			}
-
-			for (i = 0; i < length; i++) {
-				if (this.hasOwnProperty(i)) {
-					value = this[i];
-					if (fn.call(context, value, i, this)) {
-						result.push(value);
-						// We need break in order to cancel loop
-						// in case the row is found
-						break;
-					}
-				}
-			}
-			return result;
-		};
-
-	$.assocArraySize = function (obj) {
-		// http://stackoverflow.com/a/6700/11236
-		var size = 0, key;
-		for (key in obj) {
-			if (obj.hasOwnProperty(key)) {
-				size++;
-			}
-		}
-		return size;
-	};
-
+	var jgrid = $.jgrid;
 	jgrid.extend({
 		pivotSetup: function (data, options) {
 			// data should come in json format
 			// The function return the new colModel and the transformed data
 			// again with group setup options which then will be passed to the grid
-			var columns = [],
+			var columns = [], isArray = $.isArray,
 				pivotrows = [],
-				summaries = [],
-				member = [],
-				labels = [],
+				summaries = {},
+				member = {},
+				labels = {},
 				groupOptions = {
 					grouping: true,
 					groupingView: {
@@ -77,40 +45,29 @@
 					frozenStaticCols: false
 				}, options || {});
 			this.each(function () {
-				var row, rowindex, i, rowlen = data.length, xlen, ylen, aggrlen, tmp, newObj, dn, colc, r = 0, groupfields,
-					tree = {}, xValue, yValue, k, kj, current, nm, plen,
-					existing, kk, lastval = [], initColLen, swaplen,
-					/*
-					 * Check if the grouped row column exist (See find)
-					 * If the row is not find in pivot rows retun null,
-					 * otherwise the column
-					 */
-					findGroup = function (item, index) {
-						var j = 0, ret = true, name;
-						for (name in item) {
-							if (item.hasOwnProperty(name)) {
-								if (item[name] != this[j]) {
-									ret = false;
-									break;
-								}
-								j++;
-								if (j >= this.length) {
-									break;
-								}
-							}
-						}
-						if (ret) {
-							rowindex = index;
-						}
-						return ret;
-					};
+				var row, rowindex, i, nRows = data.length, xlen, ylen, aggrlen, tmp, newObj, dn, colc, iRow, groupfields,
+					tree = {}, xValue, yValue, k, kj, current, nm, plen, v,
+					existing, kk, lastval = [], initColLen, swaplen;
 				// utility funcs
 				/*
 				 * Filter the data to a given criteria. Return the first occurrence
 				 */
-				function find(ar, fun, extra) {
-					var res = pivotFilter.call(ar, fun, extra);
-					return res.length > 0 ? res[0] : null;
+				function find(pivotRows) {
+					var j, name, pivotRow, iPivotRows, length = pivotRows.length;
+
+					for (iPivotRows = 0; iPivotRows < length; iPivotRows++) {
+						pivotRow = pivotRows[iPivotRows];
+						for (j = 0; j < xValue.length; j++) {
+							for (name in pivotRow) {
+								if (pivotRow.hasOwnProperty(name)) {
+									if (pivotRow[name] !== xValue[j]) {
+										return iPivotRows;
+									}
+								}
+							}
+						}
+					}
+					return -1;
 				}
 				/*
 				 * Perform calculations of the pivot values.
@@ -155,20 +112,19 @@
 				function agregateFunc(row, aggr, value, curr) {
 					// default is sum
 					var arrln = aggr.length, n, label, j, jv, mainval = "", swapvals = [], tmpmember, vl;
-					if ($.isArray(value)) {
+					if (isArray(value)) {
 						jv = value.length;
 						swapvals = value;
 					} else {
 						jv = 1;
 						swapvals[0] = value;
 					}
-					member = [];
-					labels = [];
-					member.root = 0;
+					labels = {};
+					member = { root: 0 };
 					for (j = 0; j < jv; j++) {
-						tmpmember = [];
+						tmpmember = {};
 						for (n = 0; n < arrln; n++) {
-							if (value == null) {
+							if (value === null) {
 								label = $.trim(aggr[n].member) + "_" + aggr[n].aggregator;
 								vl = label;
 								swapvals[j] = vl;
@@ -199,18 +155,19 @@
 					};
 				}
 				// build initial columns (colModel) from xDimension
-				xlen = $.isArray(o.xDimension) ? o.xDimension.length : 0;
+				xlen = isArray(o.xDimension) ? o.xDimension.length : 0;
 				ylen = o.yDimension.length;
-				aggrlen = $.isArray(o.aggregates) ? o.aggregates.length : 0;
+				aggrlen = isArray(o.aggregates) ? o.aggregates.length : 0;
 				if (xlen === 0 || aggrlen === 0) {
 					throw ("xDimension or aggregates options are not set!");
 				}
 				for (i = 0; i < xlen; i++) {
-					colc = { name: o.xDimension[i].dataName, frozen: o.frozenStaticCols };
-					if (o.xDimension[i].isGroupField == null) {
-						o.xDimension[i].isGroupField = true;
+					current = o.xDimension[i];
+					colc = { name: current.dataName, frozen: o.frozenStaticCols };
+					if (current.isGroupField == null) {
+						current.isGroupField = true;
 					}
-					colc = $.extend(true, colc, o.xDimension[i]);
+					colc = $.extend(true, colc, current);
 					columns.push(colc);
 				}
 				initColLen = columns.length;
@@ -218,65 +175,49 @@
 				groupfields = xlen - 1;
 				//tree = { text: "root", leaf: false, children: [] };
 				//loop over all the source data
-				while (r < rowlen) {
-					row = data[r];
+				for (iRow = 0; iRow < nRows; iRow++) {
+					row = data[iRow];
 					xValue = [];
 					yValue = [];
 					tmp = {};
-					i = 0;
 					// build the data from xDimension
-					do {
-						xValue[i] = $.trim(row[o.xDimension[i].dataName]);
-						tmp[o.xDimension[i].dataName] = xValue[i];
-						i++;
-					} while (i < xlen);
-
-					k = 0;
-					rowindex = -1;
-					// check to see if the row is in our new pivot-row set
-					newObj = find(pivotrows, findGroup, xValue);
-					if (!newObj) {
-						// if the row is not in our set
-						k = 0;
-						// if yDimension is set
-						if (ylen >= 1) {
-							// build the cols set in yDimension
-							for (k = 0; k < ylen; k++) {
-								yValue[k] = $.trim(row[o.yDimension[k].dataName]);
-								// Check to see if we have user defined conditions
-								if (o.yDimension[k].converter && $.isFunction(o.yDimension[k].converter)) {
-									yValue[k] = o.yDimension[k].converter.call(this, yValue[k], xValue, yValue);
-								}
-							}
-							// make the columns based on aggregates definition
-							// and return the members for late calculation
-							tmp = agregateFunc(row, o.aggregates, yValue, tmp);
-						} else if (ylen === 0) {
-							// if not set use direct the aggregates
-							tmp = agregateFunc(row, o.aggregates, null, tmp);
-						}
-						// add the result in pivot rows
-						pivotrows.push(tmp);
-					} else {
-						// the pivot exists
-						if (rowindex >= 0) {
-							k = 0;
-							// make the recalculations
-							if (ylen >= 1) {
-								for (k = 0; k < ylen; k++) {
-									yValue[k] = $.trim(row[o.yDimension[k].dataName]);
-									if (o.yDimension[k].converter && $.isFunction(o.yDimension[k].converter)) {
-										yValue[k] = o.yDimension[k].converter.call(this, yValue[k], xValue, yValue);
-									}
-								}
-								newObj = agregateFunc(row, o.aggregates, yValue, newObj);
-							} else if (ylen === 0) {
-								newObj = agregateFunc(row, o.aggregates, null, newObj);
-							}
-							// update the row
-							pivotrows[rowindex] = newObj;
-						}
+					for (i = 0; i < xlen; i++) {
+						dn = o.xDimension[i].dataName;
+						v = $.trim(row[dn]);
+						xValue.push(v);
+						tmp[dn] = v;
 					}
+
+					rowindex = find(pivotrows);
+					newObj = rowindex >= 0 ? pivotrows[rowindex] : null;
+					// if yDimension is set
+					if (ylen >= 1) {
+						// build the cols set in yDimension
+						for (k = 0; k < ylen; k++) {
+							current = o.yDimension[k];
+							v = $.trim(row[current.dataName]);
+							// Check to see if we have user defined conditions
+							yValue.push(current.converter && $.isFunction(current.converter) ?
+									current.converter.call(this, v, xValue) :
+									v);
+						}
+						// make the columns based on aggregates definition
+						// and return the members for late calculation
+						newObj = agregateFunc(row, o.aggregates, yValue, newObj || tmp);
+					} else {
+						// if not set use direct the aggregates
+						newObj = agregateFunc(row, o.aggregates, null, newObj || tmp);
+					}
+					// the pivot exists
+					if (rowindex >= 0) {
+						// update the row
+						pivotrows[rowindex] = newObj;
+					} else {
+						// if the row is not in our set
+						// add the result in pivot rows
+						pivotrows.push(newObj);
+					}
+
 					kj = 0;
 					current = null;
 					existing = null;
@@ -309,7 +250,6 @@
 							kj++;
 						}
 					}
-					r++;
 				}
 				if (ylen > 0) {
 					headers[ylen - 1] = { useColSpanStyle: false, groupHeaders: [] };
@@ -457,7 +397,17 @@
 
 				function pivot(data) {
 					var gHead, pivotGrid = $($t).jqGrid("pivotSetup", data, pivotOpt),
-						footerrow = $.assocArraySize(pivotGrid.summary) > 0 ? true : false,
+						assocArraySize = function (obj) {
+							// http://stackoverflow.com/a/6700/11236
+							var size = 0, key;
+							for (key in obj) {
+								if (obj.hasOwnProperty(key)) {
+									size++;
+								}
+							}
+							return size;
+						},
+						footerrow = assocArraySize(pivotGrid.summary) > 0 ? true : false,
 						groupingView = pivotGrid.groupOptions.groupingView,
 						query = jgrid.from.call($t, pivotGrid.rows), i;
 					for (i = 0; i < groupingView.groupField.length; i++) {
