@@ -168,7 +168,7 @@
 				if ($.isFunction(afterrestorefunc)) { o.afterrestorefunc = afterrestorefunc; }
 				if ($.isFunction(beforeSaveRow)) { o.beforeSaveRow = beforeSaveRow; }
 			}
-			var getRes = function (path) { $self.jqGrid("getGridRes", path); };
+			var getRes = function (path) { return $self.jqGrid("getGridRes", path); };
 			o = $.extend(true, {
 				successfunc: null,
 				url: null,

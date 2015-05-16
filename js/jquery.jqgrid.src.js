@@ -12864,7 +12864,7 @@
 				if ($.isFunction(afterrestorefunc)) { o.afterrestorefunc = afterrestorefunc; }
 				if ($.isFunction(beforeSaveRow)) { o.beforeSaveRow = beforeSaveRow; }
 			}
-			var getRes = function (path) { $self.jqGrid("getGridRes", path); };
+			var getRes = function (path) { return $self.jqGrid("getGridRes", path); };
 			o = $.extend(true, {
 				successfunc: null,
 				url: null,
@@ -14283,7 +14283,7 @@
 				 * columns from the pivot values and set the group Headers
 				 */
 				function list(items) {
-					var l, j, key, n, col, collen, colpos, l1, ll;
+					var l, j, key, n, col, collen, colpos, l1, ll, header;
 					for (key in items) { // iterate
 						if (items.hasOwnProperty(key)) {
 							// write amount of spaces according to level
@@ -14301,24 +14301,25 @@
 										}
 									}
 									if (lastval[items.level] !== items.text && items.children.length && items.text !== "_r_Totals") {
-										if (items.level > 0) {
-											headers[items.level - 1].groupHeaders.push({
+										if (items.level < ylen && items.level > 0) {
+											header = headers[items.level - 1];
+											header.groupHeaders.push({
 												titleText: items.label,
 												numberOfColumns: 0
 											});
-											collen = headers[items.level - 1].groupHeaders.length - 1;
+											collen = header.groupHeaders.length - 1;
 											colpos = collen === 0 ? swaplen : initColLen + aggrlen;
 											if (items.level - 1 === (o.rowTotals ? 1 : 0)) {
 												if (collen > 0) {
-													l1 = headers[items.level - 1].groupHeaders[collen - 1].numberOfColumns;
+													l1 = header.groupHeaders[collen].numberOfColumns;
 													if (l1) {
 														colpos = l1 + 1 + o.aggregates.length;
 													}
 												}
 											}
-											headers[items.level - 1].groupHeaders[collen].startColumnName = columns[colpos].name;
-											headers[items.level - 1].groupHeaders[collen].numberOfColumns = columns.length - colpos;
-											initColLen = columns.length;
+											header.groupHeaders[collen].startColumnName = columns[colpos].name;
+											header.groupHeaders[collen].numberOfColumns = columns.length - colpos;
+											initColLen = columns.length - 1;
 										}
 									}
 									lastval[items.level] = items.text;
@@ -14327,15 +14328,16 @@
 								if (items.level === ylen && key === "level" && ylen > 0) {
 									if (aggrlen > 1) {
 										ll = 1;
+										header = headers[ylen - 1];
 										for (l in items.fields) {
 											if (items.fields.hasOwnProperty(l)) {
 												if (ll === 1) {
-													headers[ylen - 1].groupHeaders.push({ startColumnName: l, numberOfColumns: 1, titleText: items.label });
+													header.groupHeaders.push({ startColumnName: l, numberOfColumns: 1, titleText: items.label });
 												}
 												ll++;
 											}
 										}
-										headers[ylen - 1].groupHeaders[headers[ylen - 1].groupHeaders.length - 1].numberOfColumns = ll - 1;
+										header.groupHeaders[header.groupHeaders.length - 1].numberOfColumns = ll - 1;
 									} else {
 										headers.splice(ylen - 1, 1);
 									}
@@ -14347,7 +14349,7 @@
 							}
 							// Finally build the coulumns
 							if (key === "level") {
-								if (items.level > 0) {
+								if (items.level === ylen) {
 									j = 0;
 									for (l in items.fields) {
 										if (items.fields.hasOwnProperty(l)) {
