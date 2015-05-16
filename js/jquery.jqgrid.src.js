@@ -1549,7 +1549,7 @@
 							switch (swst) {
 							case "int":
 							case "integer":
-								val = (isNaN(Number(val)) || val === "") ? "0" : val; // To be fixed with more inteligent code
+								val = (isNaN(Number(val)) || val === "") ? "0" : Number(val); // To be fixed with more inteligent code
 								fld = "parseInt(" + fld + ",10)";
 								val = "parseInt(" + val + ",10)";
 								break;
@@ -1557,7 +1557,7 @@
 							case "number":
 							case "numeric":
 								val = String(val).replace(_stripNum, "");
-								val = (isNaN(Number(val)) || val === "") ? "0" : val; // To be fixed with more inteligent code
+								val = (isNaN(Number(val)) || val === "") ? "0" : Number(val); // To be fixed with more inteligent code
 								fld = "parseFloat(" + fld + ")";
 								val = "parseFloat(" + val + ")";
 								break;
