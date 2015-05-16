@@ -14071,7 +14071,7 @@
 			this.each(function () {
 				var row, rowindex, i, nRows = data.length, xlen, ylen, aggrlen, tmp, newObj, dn, colc, iRow, groupfields,
 					tree = {}, xValue, yValue, k, kj, current, nm, plen, v,
-					existing, kk, lastval = [], initColLen, swaplen;
+					existing, kk, lastval = [];
 				// utility funcs
 				/*
 				 * Filter the data to a given criteria. Return the first occurrence
@@ -14194,8 +14194,6 @@
 					colc = $.extend(true, colc, current);
 					columns.push(colc);
 				}
-				initColLen = columns.length;
-				swaplen = initColLen;
 				groupfields = xlen - 1;
 				//tree = { text: "root", leaf: false, children: [] };
 				//loop over all the source data
@@ -14283,7 +14281,7 @@
 				 * columns from the pivot values and set the group Headers
 				 */
 				function list(items) {
-					var l, j, key, n, col, collen, colpos, l1, ll, header;
+					var l, j, key, n, col, collen, colpos, l1, ll, header, initColLen;
 					for (key in items) { // iterate
 						if (items.hasOwnProperty(key)) {
 							// write amount of spaces according to level
@@ -14303,12 +14301,15 @@
 									if (lastval[items.level] !== items.text && items.children.length && items.text !== "_r_Totals") {
 										if (items.level < ylen && items.level > 0) {
 											header = headers[items.level - 1];
+											for (l = 0, initColLen = 0; l < header.groupHeaders.length; l++) {
+												initColLen += header.groupHeaders[l].numberOfColumns;
+											}
 											header.groupHeaders.push({
 												titleText: items.label,
 												numberOfColumns: 0
 											});
 											collen = header.groupHeaders.length - 1;
-											colpos = collen === 0 ? swaplen : initColLen + aggrlen;
+											colpos = initColLen + aggrlen;
 											if (items.level - 1 === (o.rowTotals ? 1 : 0)) {
 												if (collen > 0) {
 													l1 = header.groupHeaders[collen].numberOfColumns;
@@ -14319,7 +14320,6 @@
 											}
 											header.groupHeaders[collen].startColumnName = columns[colpos].name;
 											header.groupHeaders[collen].numberOfColumns = columns.length - colpos;
-											initColLen = columns.length - 1;
 										}
 									}
 									lastval[items.level] = items.text;
