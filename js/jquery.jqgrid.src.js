@@ -6904,8 +6904,7 @@
 	"use strict";
 	var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes"),
 		getGuiStyles = function (path, jqClasses) {
-			var p = this.p, guiStyle = p.guiStyle || jgrid.defaults.guiStyle || "jQueryUI";
-			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[guiStyle], path), jqClasses || "");
+			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], path), jqClasses || "");
 		};
 	$.extend(jgrid, {
 		// Modal functions
@@ -7010,9 +7009,10 @@
 				"ui-jqdialog-titlebar " + (rtlsup ? "ui-jqdialog-titlebar-rtl" : "ui-jqdialog-titlebar-ltr"));
 			mh.id = aIDs.modalhead;
 			$(mh).append("<span class='ui-jqdialog-title'>" + o.caption + "</span>");
-			var ahr = $("<a class='ui-jqdialog-titlebar-close ui-corner-all'></a>")
-					.hover(function () { ahr.addClass("ui-state-hover"); },
-						function () { ahr.removeClass("ui-state-hover"); })
+			var hoverClasses = getGuiStyles.call(this, "states.hover"),
+				ahr = $("<a class='ui-jqdialog-titlebar-close ui-corner-all'></a>")
+					.hover(function () { ahr.addClass(hoverClasses); },
+						function () { ahr.removeClass(hoverClasses); })
 					.append("<span class='" + jgrid.getIconRes(p.iconSet, "form.close") + "'></span>");
 			$(mh).append(ahr);
 			// create "div.ui-jqdialog-content" which hold some HTML content (see input parameter)
@@ -7137,7 +7137,7 @@
 			}
 		},
 		info_dialog: function (caption, content, c_b, modalopt) {
-			var p = this.p, gridjqModal = p != null ? p.jqModal || {} : {},
+			var $t = this, p = $t.p, gridjqModal = p != null ? p.jqModal || {} : {},
 				mopt = $.extend(true,
 					{
 						width: 290,
@@ -7165,19 +7165,22 @@
 
 			if ($.fn.jqm && !jm) { jm = false; }
 			// in case there is no jqModal
-			var buttstr = "", i;
+			var buttstr = "", i, hoverClasses = getGuiStyles.call($t, "states.hover");
 			if (mopt.buttons.length > 0) {
 				for (i = 0; i < mopt.buttons.length; i++) {
 					if (mopt.buttons[i].id === undefined) { mopt.buttons[i].id = "info_button_" + i; }
-					buttstr += "<a id='" + mopt.buttons[i].id + "' class='fm-button ui-state-default ui-corner-all'>" + mopt.buttons[i].text + "</a>";
+					buttstr += jgrid.builderFmButon.call($t, mopt.buttons[i].id, mopt.buttons[i].text);
 				}
 			}
 			var dh = isNaN(mopt.dataheight) ? mopt.dataheight : mopt.dataheight + "px",
 				cn = "text-align:" + mopt.align + ";",
 				cnt = "<div id='info_id'>";
 			cnt += "<div id='infocnt' style='margin:0px;padding-bottom:1em;width:100%;overflow:auto;position:relative;height:" + dh + ";" + cn + "'>" + content + "</div>";
-			cnt += c_b ? "<div class='ui-widget-content ui-helper-clearfix' style='text-align:" + mopt.buttonalign + ";padding-bottom:0.8em;padding-top:0.5em;background-image: none;border-width: 1px 0 0 0;'><a id='closedialog' class='fm-button ui-state-default ui-corner-all'>" + c_b + "</a>" + buttstr + "</div>" :
-					buttstr !== "" ? "<div class='ui-widget-content ui-helper-clearfix' style='text-align:" + mopt.buttonalign + ";padding-bottom:0.8em;padding-top:0.5em;background-image: none;border-width: 1px 0 0 0;'>" + buttstr + "</div>" : "";
+			if (c_b || buttstr !== "") {
+				cnt += "<hr class='ui-widget-content' style='margin:1px'/><div style='text-align:" + mopt.buttonalign +
+					";padding:.8em 0 .5em 0;background-image:none;border-width: 1px 0 0 0;'>" +
+					(c_b ? jgrid.builderFmButon.call($t, "closedialog", c_b) : "") + buttstr + "</div>";
+			}
 			cnt += "</div>";
 
 			try {
@@ -7186,7 +7189,7 @@
 				}
 				$("#info_dialog").remove();
 			} catch (ignore) { }
-			jgrid.createModal.call(this,
+			jgrid.createModal.call($t,
 				{
 					themodal: "info_dialog",
 					modalhead: "info_head",
@@ -7199,7 +7202,7 @@
 			// attach onclick after inserting into the dom
 			if (buttstr) {
 				$.each(mopt.buttons, function (j) {
-					$("#" + jgrid.jqID(this.id), "#info_id").bind("click", function () { mopt.buttons[j].onClick.call($("#info_dialog")); return false; });
+					$("#" + jgrid.jqID($t.id), "#info_id").bind("click", function () { mopt.buttons[j].onClick.call($("#info_dialog")); return false; });
 				});
 			}
 			$("#closedialog", "#info_id").click(function () {
@@ -7211,8 +7214,8 @@
 				return false;
 			});
 			$(".fm-button", "#info_dialog").hover(
-				function () { $(this).addClass("ui-state-hover"); },
-				function () { $(this).removeClass("ui-state-hover"); }
+				function () { $(this).addClass(hoverClasses); },
+				function () { $(this).removeClass(hoverClasses); }
 			);
 			if ($.isFunction(mopt.beforeOpen)) { mopt.beforeOpen(); }
 			jgrid.viewModal("#info_dialog", {
