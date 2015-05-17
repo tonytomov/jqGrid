@@ -275,7 +275,7 @@
 												.replace(getFormaterOption("decimalSeparator", "number"), ".");
 										if (v !== "") {
 											// normalize the strings like "010.01" to "10"
-											v = String(parseInt(v));
+											v = String(parseInt(v, 10));
 										}
 										break;
 									case "number":

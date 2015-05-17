@@ -1552,7 +1552,7 @@
 								val = String(val).replace(_stripNum, "");
 								val = (isNaN(Number(val)) || val === "") ? "0" : Number(val); // To be fixed with more intelligent code
 								fld = "parseInt(" + fld + ",10)";
-								val = String(parseInt(val));
+								val = String(parseInt(val, 10));
 								break;
 							case "float":
 							case "number":
@@ -7935,7 +7935,7 @@
 												.replace(getFormaterOption("decimalSeparator", "number"), ".");
 										if (v !== "") {
 											// normalize the strings like "010.01" to "10"
-											v = String(parseInt(v));
+											v = String(parseInt(v, 10));
 										}
 										break;
 									case "number":
