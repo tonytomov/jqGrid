@@ -1549,17 +1549,19 @@
 							switch (swst) {
 							case "int":
 							case "integer":
-								val = (isNaN(Number(val)) || val === "") ? "0" : Number(val); // To be fixed with more inteligent code
+								val = String(val).replace(_stripNum, "");
+								val = (isNaN(Number(val)) || val === "") ? "0" : Number(val); // To be fixed with more intelligent code
 								fld = "parseInt(" + fld + ",10)";
-								val = "parseInt(" + val + ",10)";
+								val = String(parseInt(val));
 								break;
 							case "float":
 							case "number":
+							case "currency":
 							case "numeric":
 								val = String(val).replace(_stripNum, "");
-								val = (isNaN(Number(val)) || val === "") ? "0" : Number(val); // To be fixed with more inteligent code
+								val = (isNaN(Number(val)) || val === "") ? "0" : Number(val); // To be fixed with more intelligent code
 								fld = "parseFloat(" + fld + ")";
-								val = "parseFloat(" + val + ")";
+								val = String(val);
 								break;
 							case "date":
 							case "datetime":
@@ -7895,18 +7897,77 @@
 					hoverClasses = getGuiStyles.call($t, "states.hover"),
 					highlightClass = getGuiStyles.call($t, "states.select"),
 					triggerToolbar = function () {
-						var sdata = {}, j = 0, v, nm, sopt = {}, so;
+						var sdata = {}, j = 0, sopt = {};
 						$.each(colModel, function () {
-							var cm = this, $elem = $("#gs_" + jqID(cm.name), (cm.frozen === true && p.frozenColumns === true) ? grid.fhDiv : grid.hDiv);
-							nm = cm.index || cm.name;
+							var cm = this, nm = cm.index || cm.name, v, so,
+								$elem = $("#gs_" + jqID(cm.name), (cm.frozen === true && p.frozenColumns === true) ? grid.fhDiv : grid.hDiv),
+								getFormaterOption = function (optionName, formatter) {
+									var formatoptions = cm.formatoptions || {};
+									return formatoptions[optionName] !== undefined ?
+										formatoptions[optionName] :
+										getRes("formatter." + (formatter || cm.formatter) + "." + optionName);
+								},
+								cutThousandsSeparator = function (val) {
+									var separator = getFormaterOption("thousandsSeparator")
+											.replace(/([\.\*\_\'\(\)\{\}\+\?\\])/g, "\\$1");
+									return val.replace(new RegExp(separator, "g"), "");
+								};
+
 							if (o.searchOperators) {
 								so = $elem.parent().prev().children("a").data("soper") || o.defaultSearch;
 							} else {
 								so = (cm.searchoptions && cm.searchoptions.sopt) ? cm.searchoptions.sopt[0] : cm.stype === "select" ? "eq" : o.defaultSearch;
 							}
-							v = cm.stype === "custom" && $.isFunction(cm.searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN" ?
-									cm.searchoptions.custom_value.call($t, $elem.children(".customelement").filter(":first"), "get") :
-									$elem.val();
+							/* the format of element of the searching toolbar if ANOTHER
+							 * as the format of cells in the grid. So one can't use
+							 *     value = $.unformat.call($t, $elem, { colModel: cm }, iCol)
+							 * to get the value. Even the access to the value should be
+							 * $elem.val() instead of $elem.text() used in the common case of
+							 * formatter. So we have to make manual conversion of searching filed
+							 * used for integer/number/currency. The code will be duplicate */
+							if (cm.stype === "custom" && $.isFunction(cm.searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN") {
+								v = cm.searchoptions.custom_value.call($t, $elem.children(".customelement").filter(":first"), "get");
+							} else {
+								v = $.trim($elem.val());
+								switch (cm.formatter) {
+									case "integer":
+										v = cutThousandsSeparator(v)
+												.replace(getFormaterOption("decimalSeparator", "number"), ".");
+										if (v !== "") {
+											// normalize the strings like "010.01" to "10"
+											v = String(parseInt(v));
+										}
+										break;
+									case "number":
+										v = cutThousandsSeparator(v)
+												.replace(getFormaterOption("decimalSeparator"), ".");
+										if (v !== "") {
+											// normalize the strings like "010.00" to "10"
+											// and "010.12" to "10.12"
+											v = String(parseFloat(v));
+										}
+										break;
+									case "currency":
+										var prefix = getFormaterOption("prefix"),
+											suffix = getFormaterOption("suffix");
+										if (prefix && prefix.length) {
+											v = v.substr(prefix.length);
+										}
+										if (suffix && suffix.length) {
+											v = v.substr(0, v.length - suffix.length);
+										}
+										v = cutThousandsSeparator(v)
+												.replace(getFormaterOption("decimalSeparator"), ".");
+										if (v !== "") {
+											// normalize the strings like "010.00" to "10"
+											// and "010.12" to "10.12"
+											v = String(parseFloat(v));
+										}
+										break;
+									default:
+										break;
+								}
+							}
 							if (v || so === "nu" || so === "nn") {
 								sdata[nm] = v;
 								sopt[nm] = so;
@@ -7921,10 +7982,12 @@
 						if (o.stringResult) {
 							var ruleGroup = "{\"groupOp\":\"" + o.groupOp + "\",\"rules\":[";
 							var gi = 0;
-							$.each(sdata, function (i, n) {
+							$.each(sdata, function (cmName, n) {
+								//var iCol = p.iColByName[cmName], cm = p.colModel[iCol],
+								//	value = $.unformat.call($t, $("<span></span>").text(n), { colModel: cm }, iCol);
 								if (gi > 0) { ruleGroup += ","; }
-								ruleGroup += "{\"field\":\"" + i + "\",";
-								ruleGroup += "\"op\":\"" + sopt[i] + "\",";
+								ruleGroup += "{\"field\":\"" + cmName + "\",";
+								ruleGroup += "\"op\":\"" + sopt[cmName] + "\",";
 								n += "";
 								ruleGroup += "\"data\":\"" + n.replace(/\\/g, "\\\\").replace(/\"/g, "\\\"") + "\"}";
 								gi++;
@@ -14045,11 +14108,8 @@
 			// data should come in json format
 			// The function return the new colModel and the transformed data
 			// again with group setup options which then will be passed to the grid
-			var columns = [], isArray = $.isArray,
-				pivotrows = [],
-				summaries = {},
-				member = {},
-				labels = {},
+			var columns = [], pivotrows = [], isArray = $.isArray,
+				summaries = {}, member = {}, labels = {},
 				groupOptions = {
 					grouping: true,
 					groupingView: {
@@ -14067,362 +14127,357 @@
 					groupSummary: true,
 					groupSummaryPos: "header",
 					frozenStaticCols: false
-				}, options || {});
-			this.each(function () {
-				var row, rowindex, i, nRows = data.length, xlen, ylen, aggrlen, tmp, newObj, dn, colc, iRow, groupfields,
-					tree = {}, xValue, yValue, k, kj, current, nm, plen, v,
-					existing, kk, lastval = [];
-				// utility funcs
-				/*
-				 * Filter the data to a given criteria. Return the first occurrence
-				 */
-				function find(pivotRows) {
-					var j, name, pivotRow, iPivotRows, length = pivotRows.length;
+				}, options || {}),
+				row, rowindex, i, nRows = data.length, xlen, ylen, aggrlen, tmp, newObj, dn, colc, iRow, groupfields,
+				tree = {}, xValues, yValues, k, currentLevel, current, nm, plen, v,
+				existing, kk, lastval = [];
 
-					for (iPivotRows = 0; iPivotRows < length; iPivotRows++) {
-						pivotRow = pivotRows[iPivotRows];
-						for (j = 0; j < xValue.length; j++) {
-							for (name in pivotRow) {
-								if (pivotRow.hasOwnProperty(name)) {
-									if (pivotRow[name] !== xValue[j]) {
-										return iPivotRows;
-									}
-								}
-							}
+			/*
+			 * Filter the data to a given criteria. Return the first occurrence
+			 */
+			function findPivotRowByXValues(pivotRows) {
+				var j, pivotRow, iPivotRows, length = pivotRows.length, xValue, isTheSame; // name
+
+				for (iPivotRows = 0; iPivotRows < length; iPivotRows++) {
+					pivotRow = pivotRows[iPivotRows];
+					isTheSame = true;
+					// test ALL xValues with the value of existing pivot row
+					for (j = 0; j < xValues.length; j++) {
+						xValue = xValues[j];
+						if (pivotRow[xValue.name] !== xValue.value) {
+							isTheSame = false;
+							break;
 						}
 					}
-					return -1;
-				}
-				/*
-				 * Perform calculations of the pivot values.
-				 */
-				function calculation(oper, v, field, rc) {
-					var ret;
-					switch (oper) {
-						case "sum":
-							ret = parseFloat(v || 0) + parseFloat((rc[field] || 0));
-							break;
-						case "count":
-							if (v === "" || v == null) {
-								v = 0;
-							}
-							if (rc.hasOwnProperty(field)) {
-								ret = v + 1;
-							} else {
-								ret = 0;
-							}
-							break;
-						case "min":
-							if (v === "" || v == null) {
-								ret = parseFloat(rc[field] || 0);
-							} else {
-								ret = Math.min(parseFloat(v), parseFloat(rc[field] || 0));
-							}
-							break;
-						case "max":
-							if (v === "" || v == null) {
-								ret = parseFloat(rc[field] || 0);
-							} else {
-								ret = Math.max(parseFloat(v), parseFloat(rc[field] || 0));
-							}
-							break;
+					if (isTheSame) {
+						// if no differences found then the row is already exist
+						return iPivotRows;
 					}
-					return ret;
 				}
-				/*
-				 * The function aggregates the values of the pivot grid.
-				 * Return the current row with pivot summary values
-				 */
-				function agregateFunc(row, aggr, value, curr) {
-					// default is sum
-					var arrln = aggr.length, n, label, j, jv, mainval = "", swapvals = [], tmpmember, vl;
-					if (isArray(value)) {
-						jv = value.length;
-						swapvals = value;
-					} else {
-						jv = 1;
-						swapvals[0] = value;
-					}
-					labels = {};
-					member = { root: 0 };
-					for (j = 0; j < jv; j++) {
-						tmpmember = {};
-						for (n = 0; n < arrln; n++) {
-							if (value === null) {
-								label = $.trim(aggr[n].member) + "_" + aggr[n].aggregator;
-								vl = label;
-								swapvals[j] = vl;
-							} else {
-								vl = value[j].replace(/\s+/g, "");
-								try {
-									label = (arrln === 1 ? mainval + vl : mainval + vl + "_" + aggr[n].aggregator + "_" + String(n));
-								} catch (ignore) { }
-							}
-							label = !isNaN(parseInt(label, 10)) ? label + " " : label;
-							curr[label] = tmpmember[label] = calculation(aggr[n].aggregator, curr[label], aggr[n].member, row);
-							if (j <= 1 && vl !== "_r_Totals" && mainval === "") { // this does not fix full the problem
-								mainval = vl;
-							}
+				return -1;
+			}
+			/*
+			 * Perform calculations of the pivot values.
+			 */
+			function calculation(oper, v, field, rc) {
+				var ret;
+				switch (oper) {
+					case "sum":
+						ret = parseFloat(v || 0) + parseFloat((rc[field] || 0));
+						break;
+					case "count":
+						if (v === "" || v == null) {
+							v = 0;
 						}
-						//vl = !isNaN(parseInt(vl,10)) ? vl + " " : vl;
-						member[label] = tmpmember;
-						labels[label] = swapvals[j];
+						ret = rc.hasOwnProperty(field) ? v + 1 : 0;
+						break;
+					case "min":
+						ret = v === "" || v == null ?
+							parseFloat(rc[field] || 0) :
+							Math.min(parseFloat(v), parseFloat(rc[field] || 0));
+						break;
+					case "max":
+						ret = v === "" || v == null ?
+							parseFloat(rc[field] || 0) :
+							Math.max(parseFloat(v), parseFloat(rc[field] || 0));
+						break;
+				}
+				return ret;
+			}
+			/*
+			 * The function aggregates the values of the pivot grid.
+			 * Return the current row with pivot summary values
+			 */
+			function agregateFunc(row, aggr, value, curr) {
+				// default is sum
+				var arrln = aggr.length, n, label, j, jv, mainval = "", swapvals = [], tmpmember, vl;
+				if (isArray(value)) {
+					jv = value.length;
+					swapvals = value;
+				} else {
+					jv = 1;
+					swapvals[0] = value;
+				}
+				labels = {};
+				member = { root: 0 };
+				for (j = 0; j < jv; j++) {
+					tmpmember = {};
+					for (n = 0; n < arrln; n++) {
+						if (value === null) {
+							label = $.trim(aggr[n].member) + "_" + aggr[n].aggregator;
+							vl = label;
+							swapvals[j] = vl;
+						} else {
+							vl = value[j].replace(/\s+/g, "");
+							try {
+								label = (arrln === 1 ? mainval + vl : mainval + vl + "_" + aggr[n].aggregator + "_" + String(n));
+							} catch (ignore) { }
+						}
+						label = !isNaN(parseInt(label, 10)) ? label + " " : label;
+						curr[label] = tmpmember[label] = calculation(aggr[n].aggregator, curr[label], aggr[n].member, row);
+						if (j <= 1 && vl !== "_r_Totals" && mainval === "") { // this does not fix full the problem
+							mainval = vl;
+						}
 					}
-					return curr;
+					//vl = !isNaN(parseInt(vl,10)) ? vl + " " : vl;
+					member[label] = tmpmember;
+					labels[label] = swapvals[j];
 				}
-				// Making the row totals without to add in yDimension
-				if (o.rowTotals && o.yDimension.length > 0) {
-					dn = o.yDimension[0].dataName;
-					o.yDimension.splice(0, 0, { dataName: dn });
-					o.yDimension[0].converter = function () {
-						return "_r_Totals";
-					};
+				return curr;
+			}
+			// Making the row totals without to add in yDimension
+			if (o.rowTotals && o.yDimension.length > 0) {
+				dn = o.yDimension[0].dataName;
+				o.yDimension.splice(0, 0, { dataName: dn });
+				o.yDimension[0].converter = function () {
+					return "_r_Totals";
+				};
+			}
+			// build initial columns (colModel) from xDimension
+			xlen = isArray(o.xDimension) ? o.xDimension.length : 0;
+			ylen = o.yDimension.length;
+			aggrlen = isArray(o.aggregates) ? o.aggregates.length : 0;
+			if (xlen === 0 || aggrlen === 0) {
+				throw ("xDimension or aggregates options are not set!");
+			}
+			for (i = 0; i < xlen; i++) {
+				current = o.xDimension[i];
+				colc = { name: current.dataName, frozen: o.frozenStaticCols };
+				if (current.isGroupField == null) {
+					current.isGroupField = true;
 				}
-				// build initial columns (colModel) from xDimension
-				xlen = isArray(o.xDimension) ? o.xDimension.length : 0;
-				ylen = o.yDimension.length;
-				aggrlen = isArray(o.aggregates) ? o.aggregates.length : 0;
-				if (xlen === 0 || aggrlen === 0) {
-					throw ("xDimension or aggregates options are not set!");
-				}
+				colc = $.extend(true, colc, current);
+				columns.push(colc);
+			}
+			groupfields = xlen - 1;
+			//tree = { text: "root", leaf: false, children: [] };
+			//loop over all the source data
+			for (iRow = 0; iRow < nRows; iRow++) {
+				row = data[iRow];
+				xValues = [];
+				yValues = [];
+				tmp = {};
+				// build the data from xDimension
 				for (i = 0; i < xlen; i++) {
-					current = o.xDimension[i];
-					colc = { name: current.dataName, frozen: o.frozenStaticCols };
-					if (current.isGroupField == null) {
-						current.isGroupField = true;
-					}
-					colc = $.extend(true, colc, current);
-					columns.push(colc);
+					dn = o.xDimension[i].dataName;
+					v = $.trim(row[dn]);
+					xValues.push({name: dn, value: v });
+					tmp[dn] = v;
 				}
-				groupfields = xlen - 1;
-				//tree = { text: "root", leaf: false, children: [] };
-				//loop over all the source data
-				for (iRow = 0; iRow < nRows; iRow++) {
-					row = data[iRow];
-					xValue = [];
-					yValue = [];
-					tmp = {};
-					// build the data from xDimension
-					for (i = 0; i < xlen; i++) {
-						dn = o.xDimension[i].dataName;
-						v = $.trim(row[dn]);
-						xValue.push(v);
-						tmp[dn] = v;
-					}
 
-					rowindex = find(pivotrows);
-					newObj = rowindex >= 0 ? pivotrows[rowindex] : null;
-					// if yDimension is set
-					if (ylen >= 1) {
-						// build the cols set in yDimension
-						for (k = 0; k < ylen; k++) {
-							current = o.yDimension[k];
-							v = $.trim(row[current.dataName]);
-							// Check to see if we have user defined conditions
-							yValue.push(current.converter && $.isFunction(current.converter) ?
-									current.converter.call(this, v, xValue) :
-									v);
-						}
-						// make the columns based on aggregates definition
-						// and return the members for late calculation
-						newObj = agregateFunc(row, o.aggregates, yValue, newObj || tmp);
-					} else {
-						// if not set use direct the aggregates
-						newObj = agregateFunc(row, o.aggregates, null, newObj || tmp);
+				rowindex = findPivotRowByXValues(pivotrows);
+				newObj = rowindex >= 0 ? pivotrows[rowindex] : null;
+				// if yDimension is set
+				if (ylen >= 1) {
+					// build the cols set in yDimension
+					for (k = 0; k < ylen; k++) {
+						current = o.yDimension[k];
+						v = $.trim(row[current.dataName]);
+						// Check to see if we have user defined conditions
+						yValues.push(current.converter && $.isFunction(current.converter) ?
+								current.converter.call(this[0], v, xValues) :
+								v);
 					}
-					// the pivot exists
-					if (rowindex >= 0) {
-						// update the row
-						pivotrows[rowindex] = newObj;
-					} else {
-						// if the row is not in our set
-						// add the result in pivot rows
-						pivotrows.push(newObj);
-					}
+					// make the columns based on aggregates definition
+					// and return the members for late calculation
+					newObj = agregateFunc(row, o.aggregates, yValues, newObj || tmp);
+				} else {
+					// if not set use direct the aggregates
+					newObj = agregateFunc(row, o.aggregates, null, newObj || tmp);
+				}
+				// the pivot exists
+				if (rowindex >= 0) {
+					// update the row
+					pivotrows[rowindex] = newObj;
+				} else {
+					// if the row is not in our set
+					// add the result in pivot rows
+					pivotrows.push(newObj);
+				}
 
-					kj = 0;
-					current = null;
-					existing = null;
-					// Build a JSON tree from the member (see aggregateFunc)
-					// to make later the columns
-					//
-					for (kk in member) {
-						if (member.hasOwnProperty(kk)) {
-							if (kj === 0) {
-								if (!tree.children || tree.children === undefined) {
-									tree = { text: kk, level: 0, children: [], label: kk };
+				current = null;
+				existing = null;
+				// Build a JSON tree from the member (see aggregateFunc)
+				// to make later the columns
+				currentLevel = 0;
+				for (kk in member) {
+					if (member.hasOwnProperty(kk)) {
+						if (currentLevel === 0) {
+							if (!tree.children || tree.children === undefined) {
+								tree = { text: kk, level: 0, children: [], label: kk };
+							}
+							current = tree.children;
+						} else {
+							existing = null;
+							for (i = 0; i < current.length; i++) {
+								if (current[i].text === kk) {
+									//current[i].fields=member[kk];
+									existing = current[i];
+									break;
 								}
-								current = tree.children;
+							}
+							if (existing) {
+								current = existing.children;
 							} else {
-								existing = null;
-								for (i = 0; i < current.length; i++) {
-									if (current[i].text === kk) {
-										//current[i].fields=member[kk];
-										existing = current[i];
-										break;
-									}
-								}
-								if (existing) {
-									current = existing.children;
-								} else {
-									current.push({ children: [], text: kk, level: kj, fields: member[kk], label: labels[kk] });
-									current = current[current.length - 1].children;
-								}
+								current.push({ children: [], text: kk, level: currentLevel, fields: member[kk], label: labels[kk] });
+								current = current[current.length - 1].children;
 							}
-							kj++;
 						}
+						currentLevel++;
 					}
 				}
-				if (ylen > 0) {
-					headers[ylen - 1] = { useColSpanStyle: false, groupHeaders: [] };
-				}
-				/*
-				 * Recursive function which uses the tree to build the
-				 * columns from the pivot values and set the group Headers
-				 */
-				function list(items) {
-					var l, j, key, n, col, collen, colpos, l1, ll, header, initColLen;
-					for (key in items) { // iterate
-						if (items.hasOwnProperty(key)) {
-							// write amount of spaces according to level
-							// and write name and newline
-							if (typeof items[key] !== "object") {
-								// If not a object build the header of the appropriate level
-								if (key === "level") {
-									if (lastval[items.level] === undefined) {
-										lastval[items.level] = "";
-										if (items.level > 0 && items.text !== "_r_Totals") {
-											headers[items.level - 1] = {
-												useColSpanStyle: false,
-												groupHeaders: []
-											};
-										}
-									}
-									if (lastval[items.level] !== items.text && items.children.length && items.text !== "_r_Totals") {
-										if (items.level < ylen && items.level > 0) {
-											header = headers[items.level - 1];
-											for (l = 0, initColLen = 0; l < header.groupHeaders.length; l++) {
-												initColLen += header.groupHeaders[l].numberOfColumns;
-											}
-											header.groupHeaders.push({
-												titleText: items.label,
-												numberOfColumns: 0
-											});
-											collen = header.groupHeaders.length - 1;
-											colpos = initColLen + aggrlen;
-											if (items.level - 1 === (o.rowTotals ? 1 : 0)) {
-												if (collen > 0) {
-													l1 = header.groupHeaders[collen].numberOfColumns;
-													if (l1) {
-														colpos = l1 + 1 + o.aggregates.length;
-													}
-												}
-											}
-											header.groupHeaders[collen].startColumnName = columns[colpos].name;
-											header.groupHeaders[collen].numberOfColumns = columns.length - colpos;
-										}
-									}
-									lastval[items.level] = items.text;
-								}
-								// This is in case when the member contain more than one summary item
-								if (items.level === ylen && key === "level" && ylen > 0) {
-									if (aggrlen > 1) {
-										ll = 1;
-										header = headers[ylen - 1];
-										for (l in items.fields) {
-											if (items.fields.hasOwnProperty(l)) {
-												if (ll === 1) {
-													header.groupHeaders.push({ startColumnName: l, numberOfColumns: 1, titleText: items.label });
-												}
-												ll++;
-											}
-										}
-										header.groupHeaders[header.groupHeaders.length - 1].numberOfColumns = ll - 1;
-									} else {
-										headers.splice(ylen - 1, 1);
-									}
-								}
-							}
-							// if object, call recursively
-							if (items[key] != null && typeof items[key] === "object") {
-								list(items[key]);
-							}
-							// Finally build the coulumns
+			}
+			if (ylen > 0) {
+				headers[ylen - 1] = { useColSpanStyle: false, groupHeaders: [] };
+			}
+			/*
+			 * Recursive function which uses the tree to build the
+			 * columns from the pivot values and set the group Headers
+			 */
+			function list(items) {
+				var l, j, key, n, col, collen, colpos, l1, ll, header, initColLen;
+				for (key in items) { // iterate
+					if (items.hasOwnProperty(key)) {
+						// write amount of spaces according to level
+						// and write name and newline
+						if (typeof items[key] !== "object") {
+							// If not a object build the header of the appropriate level
 							if (key === "level") {
-								if (items.level === ylen) {
-									j = 0;
+								if (lastval[items.level] === undefined) {
+									lastval[items.level] = "";
+									if (items.level > 0 && items.text !== "_r_Totals") {
+										headers[items.level - 1] = {
+											useColSpanStyle: false,
+											groupHeaders: []
+										};
+									}
+								}
+								if (lastval[items.level] !== items.text && items.children.length && items.text !== "_r_Totals") {
+									if (items.level < ylen && items.level > 0) {
+										header = headers[items.level - 1];
+										for (l = 0, initColLen = 0; l < header.groupHeaders.length; l++) {
+											initColLen += header.groupHeaders[l].numberOfColumns;
+										}
+										header.groupHeaders.push({
+											titleText: items.label,
+											numberOfColumns: 0
+										});
+										collen = header.groupHeaders.length - 1;
+										colpos = initColLen + aggrlen;
+										if (items.level - 1 === (o.rowTotals ? 1 : 0)) {
+											if (collen > 0) {
+												l1 = header.groupHeaders[collen].numberOfColumns;
+												if (l1) {
+													colpos = l1 + 1 + o.aggregates.length;
+												}
+											}
+										}
+										header.groupHeaders[collen].startColumnName = columns[colpos].name;
+										header.groupHeaders[collen].numberOfColumns = columns.length - colpos;
+									}
+								}
+								lastval[items.level] = items.text;
+							}
+							// This is in case when the member contain more than one summary item
+							if (items.level === ylen && key === "level" && ylen > 0) {
+								if (aggrlen > 1) {
+									ll = 1;
+									header = headers[ylen - 1];
 									for (l in items.fields) {
 										if (items.fields.hasOwnProperty(l)) {
-											col = {};
-											for (n in o.aggregates[j]) {
-												if (o.aggregates[j].hasOwnProperty(n)) {
-													switch (n) {
-														case "member":
-														case "label":
-														case "aggregator":
-															break;
-														default:
-															col[n] = o.aggregates[j][n];
-													}
+											if (ll === 1) {
+												header.groupHeaders.push({ startColumnName: l, numberOfColumns: 1, titleText: items.label });
+											}
+											ll++;
+										}
+									}
+									header.groupHeaders[header.groupHeaders.length - 1].numberOfColumns = ll - 1;
+								} else {
+									headers.splice(ylen - 1, 1);
+								}
+							}
+						}
+						// if object, call recursively
+						if (items[key] != null && typeof items[key] === "object") {
+							list(items[key]);
+						}
+						// Finally build the coulumns
+						if (key === "level") {
+							if (items.level === ylen) {
+								j = 0;
+								for (l in items.fields) {
+									if (items.fields.hasOwnProperty(l)) {
+										col = {};
+										for (n in o.aggregates[j]) {
+											if (o.aggregates[j].hasOwnProperty(n)) {
+												switch (n) {
+													case "member":
+													case "label":
+													case "aggregator":
+														break;
+													default:
+														col[n] = o.aggregates[j][n];
 												}
 											}
-											if (aggrlen > 1) {
-												col.name = l;
-												col.label = o.aggregates[j].label || items.label;
-											} else {
-												col.name = items.text;
-												col.label = items.text === "_r_Totals" ? o.rowTotalsText : items.label;
-											}
-											columns.push(col);
-											j++;
 										}
+										if (aggrlen > 1) {
+											col.name = l;
+											col.label = o.aggregates[j].label || items.label;
+										} else {
+											col.name = items.text;
+											col.label = items.text === "_r_Totals" ? o.rowTotalsText : items.label;
+										}
+										columns.push(col);
+										j++;
 									}
 								}
 							}
 						}
 					}
 				}
+			}
 
-				list(tree);
-				// loop again trough the pivot rows in order to build grand total
-				if (o.colTotals) {
-					plen = pivotrows.length;
-					while (plen--) {
-						for (i = xlen; i < columns.length; i++) {
-							nm = columns[i].name;
-							if (!summaries[nm]) {
-								summaries[nm] = parseFloat(pivotrows[plen][nm] || 0);
-							} else {
-								summaries[nm] += parseFloat(pivotrows[plen][nm] || 0);
-							}
+			list(tree);
+			// loop again trough the pivot rows in order to build grand total
+			if (o.colTotals) {
+				plen = pivotrows.length;
+				while (plen--) {
+					for (i = xlen; i < columns.length; i++) {
+						nm = columns[i].name;
+						if (!summaries[nm]) {
+							summaries[nm] = parseFloat(pivotrows[plen][nm] || 0);
+						} else {
+							summaries[nm] += parseFloat(pivotrows[plen][nm] || 0);
 						}
 					}
 				}
-				// based on xDimension  levels build grouping
-				if (groupfields > 0) {
-					for (i = 0; i < groupfields; i++) {
-						if (columns[i].isGroupField) {
-							groupOptions.groupingView.groupField.push(columns[i].name);
-							groupOptions.groupingView.groupSummary.push(o.groupSummary);
-							groupOptions.groupingView.groupSummaryPos.push(o.groupSummaryPos);
-						}
+			}
+			// based on xDimension  levels build grouping
+			if (groupfields > 0) {
+				for (i = 0; i < groupfields; i++) {
+					if (columns[i].isGroupField) {
+						groupOptions.groupingView.groupField.push(columns[i].name);
+						groupOptions.groupingView.groupSummary.push(o.groupSummary);
+						groupOptions.groupingView.groupSummaryPos.push(o.groupSummaryPos);
 					}
-				} else {
-					// no grouping is needed
-					groupOptions.grouping = false;
 				}
-				groupOptions.sortname = columns[groupfields].name;
-				groupOptions.groupingView.hideFirstGroupCol = true;
-			});
+			} else {
+				// no grouping is needed
+				groupOptions.grouping = false;
+			}
+			groupOptions.sortname = columns[groupfields].name;
+			groupOptions.groupingView.hideFirstGroupCol = true;
+
 			// return the final result.
-			return { "colModel": columns, "rows": pivotrows, "groupOptions": groupOptions, "groupHeaders": headers, summary: summaries };
+			return { colModel: columns, rows: pivotrows, groupOptions: groupOptions, groupHeaders: headers, summary: summaries };
 		},
 		jqPivot: function (data, pivotOpt, gridOpt, ajaxOpt) {
 			return this.each(function () {
-				var $t = this;
+				var $t = this, $self = $($t), $j = $.fn.jqGrid;
 
 				function pivot(data) {
-					var gHead, pivotGrid = $($t).jqGrid("pivotSetup", data, pivotOpt),
+					var pivotGrid = $j.pivotSetup.call($self, data, pivotOpt),
+						gHead = pivotGrid.groupHeaders,
 						assocArraySize = function (obj) {
 							// http://stackoverflow.com/a/6700/11236
 							var size = 0, key;
@@ -14442,7 +14497,7 @@
 							"text",
 							"");
 					}
-					$($t).jqGrid($.extend(true, {
+					$j.call($self, $.extend(true, {
 						datastr: $.extend(query.select(), footerrow ? { userdata: pivotGrid.summary } : {}),
 						datatype: "jsonstring",
 						footerrow: footerrow,
@@ -14451,16 +14506,15 @@
 						viewrecords: true,
 						sortname: pivotOpt.xDimension[0].dataName // ?????
 					}, pivotGrid.groupOptions, gridOpt || {}));
-					gHead = pivotGrid.groupHeaders;
 					if (gHead.length) {
 						for (i = 0; i < gHead.length; i++) {
 							if (gHead[i] && gHead[i].groupHeaders.length) {
-								$($t).jqGrid("setGroupHeaders", gHead[i]);
+								$j.setGroupHeaders.call($self, gHead[i]);
 							}
 						}
 					}
 					if (pivotOpt.frozenStaticCols) {
-						$($t).jqGrid("setFrozenColumns");
+						$j.setFrozenColumns.call($self);
 					}
 				}
 
