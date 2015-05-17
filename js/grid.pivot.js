@@ -316,7 +316,7 @@
 						}
 						// Finally build the coulumns
 						if (key === "level") {
-							if (items.level === ylen) {
+							if (items.level === ylen || (o.rowTotals && items.text === "_r_Totals")) {
 								j = 0;
 								for (l in items.fields) {
 									if (items.fields.hasOwnProperty(l)) {
