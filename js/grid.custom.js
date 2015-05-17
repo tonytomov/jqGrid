@@ -237,18 +237,77 @@
 					hoverClasses = getGuiStyles.call($t, "states.hover"),
 					highlightClass = getGuiStyles.call($t, "states.select"),
 					triggerToolbar = function () {
-						var sdata = {}, j = 0, v, nm, sopt = {}, so;
+						var sdata = {}, j = 0, sopt = {};
 						$.each(colModel, function () {
-							var cm = this, $elem = $("#gs_" + jqID(cm.name), (cm.frozen === true && p.frozenColumns === true) ? grid.fhDiv : grid.hDiv);
-							nm = cm.index || cm.name;
+							var cm = this, nm = cm.index || cm.name, v, so,
+								$elem = $("#gs_" + jqID(cm.name), (cm.frozen === true && p.frozenColumns === true) ? grid.fhDiv : grid.hDiv),
+								getFormaterOption = function (optionName, formatter) {
+									var formatoptions = cm.formatoptions || {};
+									return formatoptions[optionName] !== undefined ?
+										formatoptions[optionName] :
+										getRes("formatter." + (formatter || cm.formatter) + "." + optionName);
+								},
+								cutThousandsSeparator = function (val) {
+									var separator = getFormaterOption("thousandsSeparator")
+											.replace(/([\.\*\_\'\(\)\{\}\+\?\\])/g, "\\$1");
+									return val.replace(new RegExp(separator, "g"), "");
+								};
+
 							if (o.searchOperators) {
 								so = $elem.parent().prev().children("a").data("soper") || o.defaultSearch;
 							} else {
 								so = (cm.searchoptions && cm.searchoptions.sopt) ? cm.searchoptions.sopt[0] : cm.stype === "select" ? "eq" : o.defaultSearch;
 							}
-							v = cm.stype === "custom" && $.isFunction(cm.searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN" ?
-									cm.searchoptions.custom_value.call($t, $elem.children(".customelement").filter(":first"), "get") :
-									$elem.val();
+							/* the format of element of the searching toolbar if ANOTHER
+							 * as the format of cells in the grid. So one can't use
+							 *     value = $.unformat.call($t, $elem, { colModel: cm }, iCol)
+							 * to get the value. Even the access to the value should be
+							 * $elem.val() instead of $elem.text() used in the common case of
+							 * formatter. So we have to make manual conversion of searching filed
+							 * used for integer/number/currency. The code will be duplicate */
+							if (cm.stype === "custom" && $.isFunction(cm.searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN") {
+								v = cm.searchoptions.custom_value.call($t, $elem.children(".customelement").filter(":first"), "get");
+							} else {
+								v = $.trim($elem.val());
+								switch (cm.formatter) {
+									case "integer":
+										v = cutThousandsSeparator(v)
+												.replace(getFormaterOption("decimalSeparator", "number"), ".");
+										if (v !== "") {
+											// normalize the strings like "010.01" to "10"
+											v = String(parseInt(v));
+										}
+										break;
+									case "number":
+										v = cutThousandsSeparator(v)
+												.replace(getFormaterOption("decimalSeparator"), ".");
+										if (v !== "") {
+											// normalize the strings like "010.00" to "10"
+											// and "010.12" to "10.12"
+											v = String(parseFloat(v));
+										}
+										break;
+									case "currency":
+										var prefix = getFormaterOption("prefix"),
+											suffix = getFormaterOption("suffix");
+										if (prefix && prefix.length) {
+											v = v.substr(prefix.length);
+										}
+										if (suffix && suffix.length) {
+											v = v.substr(0, v.length - suffix.length);
+										}
+										v = cutThousandsSeparator(v)
+												.replace(getFormaterOption("decimalSeparator"), ".");
+										if (v !== "") {
+											// normalize the strings like "010.00" to "10"
+											// and "010.12" to "10.12"
+											v = String(parseFloat(v));
+										}
+										break;
+									default:
+										break;
+								}
+							}
 							if (v || so === "nu" || so === "nn") {
 								sdata[nm] = v;
 								sopt[nm] = so;
@@ -263,10 +322,12 @@
 						if (o.stringResult) {
 							var ruleGroup = "{\"groupOp\":\"" + o.groupOp + "\",\"rules\":[";
 							var gi = 0;
-							$.each(sdata, function (i, n) {
+							$.each(sdata, function (cmName, n) {
+								//var iCol = p.iColByName[cmName], cm = p.colModel[iCol],
+								//	value = $.unformat.call($t, $("<span></span>").text(n), { colModel: cm }, iCol);
 								if (gi > 0) { ruleGroup += ","; }
-								ruleGroup += "{\"field\":\"" + i + "\",";
-								ruleGroup += "\"op\":\"" + sopt[i] + "\",";
+								ruleGroup += "{\"field\":\"" + cmName + "\",";
+								ruleGroup += "\"op\":\"" + sopt[cmName] + "\",";
 								n += "";
 								ruleGroup += "\"data\":\"" + n.replace(/\\/g, "\\\\").replace(/\"/g, "\\\"") + "\"}";
 								gi++;
