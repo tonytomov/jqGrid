@@ -73,26 +73,26 @@
 			 * Perform calculations of the pivot values.
 			 */
 			function calculation(oper, v, field, rc) {
-				var ret;
+				var ret = 0, vOld = parseFloat(v || 0), vNew = parseFloat((rc[field] || 0));
 				switch (oper) {
 					case "sum":
-						ret = parseFloat(v || 0) + parseFloat((rc[field] || 0));
+						ret = vOld + vNew;
 						break;
 					case "count":
 						if (v === "" || v == null) {
 							v = 0;
 						}
-						ret = rc.hasOwnProperty(field) ? v + 1 : 0;
+						ret = rc.hasOwnProperty(field) ? v + 1 : v;
 						break;
 					case "min":
 						ret = v === "" || v == null ?
-							parseFloat(rc[field] || 0) :
-							Math.min(parseFloat(v), parseFloat(rc[field] || 0));
+							vNew :
+							Math.min(vOld, vNew);
 						break;
 					case "max":
 						ret = v === "" || v == null ?
-							parseFloat(rc[field] || 0) :
-							Math.max(parseFloat(v), parseFloat(rc[field] || 0));
+							vNew :
+							Math.max(vOld, vNew);
 						break;
 				}
 				return ret;
@@ -115,16 +115,19 @@
 				member = { root: 0 };
 				for (j = 0; j < jv; j++) {
 					tmpmember = {};
+					vl = value[j].replace(/\s+/g, "");
+					label = mainval !== "" ? mainval + "_" + vl : vl;
 					for (n = 0; n < arrln; n++) {
 						if (value === null) {
 							label = $.trim(aggr[n].member) + "_" + aggr[n].aggregator;
 							vl = label;
 							swapvals[j] = vl;
 						} else {
-							vl = value[j].replace(/\s+/g, "");
-							try {
-								label = (arrln === 1 ? mainval + vl : mainval + vl + "_" + aggr[n].aggregator + "_" + String(n));
-							} catch (ignore) { }
+						    if (arrln !== 1) {
+						        try {
+						            label += "_" + aggr[n].aggregator + "_" + String(n);
+						        } catch (ignore) { }
+						    }
 						}
 						label = !isNaN(parseInt(label, 10)) ? label + " " : label;
 						curr[label] = tmpmember[label] = calculation(aggr[n].aggregator, curr[label], aggr[n].member, row);
@@ -360,6 +363,7 @@
 						if (!summaries[nm]) {
 							summaries[nm] = parseFloat(pivotrows[plen][nm] || 0);
 						} else {
+							// TODO: implement not only SUM in colTotals
 							summaries[nm] += parseFloat(pivotrows[plen][nm] || 0);
 						}
 					}
