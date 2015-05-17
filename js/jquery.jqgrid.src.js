@@ -9020,7 +9020,16 @@
 					groups: []
 				};
 			}
-			var iColumn, len = p.columns.length, cl, isIE = /msie/i.test(navigator.userAgent) && !window.opera;
+			var iColumn, len = p.columns.length, cl, isIE = /msie/i.test(navigator.userAgent) && !window.opera,
+				getGrid = function () {
+					return $("#" + jgrid.jqID(p.id))[0] || null;
+				},
+				getGuiStyles = function (path) {
+					//return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[getGrid().p.guiStyle], path), jqClasses || "");
+					return jgrid.getRes(jgrid.guiStyles[getGrid().p.guiStyle], path);
+				},
+				errorClass = getGuiStyles("states.error"),
+				dialogContentClass = getGuiStyles("dialog.content");
 
 			// translating the options
 			p.initFilter = $.extend(true, {}, p.filter);
@@ -9060,11 +9069,9 @@
 
 			}
 			if (p.showQuery) {
-				$(this).append("<table class='queryresult ui-widget ui-widget-content' style='display:block;max-width:440px;border:0px none;' dir='" + p.direction + "'><tbody><tr><td class='query'></td></tr></tbody></table>");
+				$(this).append("<table class='queryresult " + dialogContentClass +
+				"' style='display:block;max-width:440px;border:0px none;' dir='" + p.direction + "'><tbody><tr><td class='query'></td></tr></tbody></table>");
 			}
-			var getGrid = function () {
-				return $("#" + jgrid.jqID(p.id))[0] || null;
-			};
 			/*
 			 *Perform checking.
 			 *
@@ -9113,16 +9120,16 @@
 			 * @param parentgroup - object
 			 */
 			this.createTableForGroup = function (group, parentgroup) {
-				var that = this, i;
+				var that = this, i, $t = getGrid();
 				// this table will hold all the group (tables) and rules (rows)
-				var table = $("<table class='group ui-widget ui-widget-content' style='border:0px none;'><tbody></tbody></table>"), align = "left";
+				var table = $("<table class='group " + dialogContentClass + "' style='border:0px none;'><tbody></tbody></table>"), align = "left";
 				// create error message row
 				if (p.direction === "rtl") {
 					align = "right";
 					table.attr("dir", "rtl");
 				}
 				if (parentgroup === null) {
-					table.append("<tr class='error' style='display:none;'><th colspan='5' class='ui-state-error' align='" + align + "'></th></tr>");
+					table.append("<tr class='error' style='display:none;'><th colspan='5' class='" + errorClass + "' align='" + align + "'></th></tr>");
 				}
 
 				var tr = $("<tr></tr>");
@@ -9581,11 +9588,11 @@
 				this.onchange();
 			};
 			this.hideError = function () {
-				$("th.ui-state-error", this).html("");
+				$("th." + errorClass, this).html("");
 				$("tr.error", this).hide();
 			};
 			this.showError = function () {
-				$("th.ui-state-error", this).html(p.errmsg);
+				$("th." + errorClass, this).html(p.errmsg);
 				$("tr.error", this).show();
 			};
 			this.toUserFriendlyString = function () {
