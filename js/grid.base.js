@@ -510,6 +510,14 @@
 					rightCorner: "ui-corner-right",
 					defaultCorner: "ui-corner-all"
 				},
+				subgrid: {
+					thSubgrid: "ui-state-default test", // used only with subGridModel
+					rowSubTable: "ui-widget-content", // used only with subGridModel additionally to ui-subtblcell
+					row: "ui-widget-content", // class of the subgrid row, additional to ui-subgrid
+					tdStart: "", // it can be with span over rownumber and multiselect columns
+					tdWithIcon: "ui-widget-content", // class of cell with +- icon, additional to subgrid-cell
+					tdData: "ui-widget-content" // class of main td with span over the grid, additional subgrid-data
+				},
 				grid: "",
 				gridRow: "ui-widget-content",
 				rowNum: "ui-state-default",
@@ -2539,9 +2547,9 @@
 					}
 				};
 			ts.grid = grid;
+			feedback.call(ts, "beforeInitGrid");
 			p.iColByName = buildColNameMap(p.colModel);
 			p.iPropByName = buildAddPropMap(p.additionalProperties);
-			feedback.call(ts, "beforeInitGrid");
 
 			// TODO: replace altclass : "ui-priority-secondary",
 			// set default buttonicon : "ui-icon-newwin" of navButtonAdd: fa-external-link, fa-desktop or other 
@@ -4550,12 +4558,13 @@
 						if ($td.length > 0) {
 							$tr = $td.parent();
 							$table = $tr.parent().parent();
-							if ($table[0] === this || ($table.is("table.ui-jqgrid-btable") && ($table[0].id || "").replace("_frozen", "") === this.id)) {
-								return $td;
+							if ($tr.is(".jqgrow") && ($table[0] === this || ($table.is("table.ui-jqgrid-btable") && ($table[0].id || "").replace("_frozen", "") === this.id))) {
+								break;
 							}
 							target = $td.parent();
 						}
 					} while ($td.length > 0);
+					return $td;
 				};
 			$self0.before(grid.hDiv)
 				.click(function (e) {
@@ -4901,7 +4910,7 @@
 					resDef !== undefined ? resDef : res;
 		},
 		getGuiStyles: function (path, jqClasses) {
-			var $t = this[0];
+			var $t = this instanceof $ && this.length > 0 ? this[0] : this;
 			if (!$t || !$t.grid || !$t.p) { return ""; }
 			var p = $t.p, guiStyle = p.guiStyle || jgrid.defaults.guiStyle || "jQueryUI";
 			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[guiStyle], path), jqClasses || "");
