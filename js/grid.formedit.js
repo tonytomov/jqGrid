@@ -543,7 +543,7 @@
 								rowid: rowid,
 								iCol: i,
 								iRow: ind, // can be false for Add operation
-								name: nm,
+								cmName: nm,
 								cm: cm,
 								mode: mode
 							});
