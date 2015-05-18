@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-05-10
+ * Date: 2015-05-18
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -1037,7 +1037,7 @@
 							rowid: tr.id,
 							iCol: iCol,
 							iRow: iRow,
-							name: nm,
+							cmName: nm,
 							cm: cm,
 							mode: mode,
 							td: td,
@@ -4130,14 +4130,9 @@
 					return ret;
 				},
 				getColumnHeaderIndex = function (th) {
-					var i, headers = ts.grid.headers, ci = getCellIndex(th);
-					for (i = 0; i < headers.length; i++) {
-						if (th === headers[i].el) {
-							ci = i;
-							break;
-						}
-					}
-					return ci;
+					// TODO: adjust the code after adjust the way which generates
+					// ids of frozen columns
+					return p.iColByName[(th.id || "").substring(p.id.length + 1)];
 				},
 				colTemplate;
 
@@ -4454,8 +4449,10 @@
 				.mousedown(function (e) {
 					if ($(e.target).closest("th>span.ui-jqgrid-resize").length !== 1) { return; }
 					var ci = getColumnHeaderIndex(this);
-					if (p.forceFit === true) { p.nv = nextVisible(ci); }
-					grid.dragStart(ci, e, getOffset(ci));
+					if (ci != null) {
+						if (p.forceFit === true) { p.nv = nextVisible(ci); }
+						grid.dragStart(ci, e, getOffset(ci));
+					}
 					return false;
 				})
 				.click(function (e) {
@@ -4471,17 +4468,11 @@
 					}
 					var t = $(e.target).closest(s);
 					if (t.length !== 1) { return; }
-					var ci;
-					if (p.frozenColumns) {// !!! this can be either inside of frozen or non-frozen div !!!
-						var tid = $(this)[0].id.substring(p.id.length + 1);
-						ci = p.iColByName[tid];
-					} else {
-						ci = getColumnHeaderIndex(this);
-					}
 					if (!p.viewsortcols[2]) {
 						r = true;
 						d = t.hasClass("ui-icon-desc") ? "desc" : "asc";
 					}
+					var ci = getColumnHeaderIndex(this);
 					if (ci != null) {
 						sortData.call(ts, $("div", this)[0].id, ci, r, d, this);
 					}
@@ -10259,7 +10250,7 @@
 								rowid: rowid,
 								iCol: i,
 								iRow: ind, // can be false for Add operation
-								name: nm,
+								cmName: nm,
 								cm: cm,
 								mode: mode
 							});
@@ -12862,7 +12853,7 @@
 						} catch (_) {
 							tmp = edittype === "textarea" ? $dataFiled.text() : $dataFiled.html();
 						}
-						svr[nm] = tmp;
+						svr[nm] = tmp; // include only editable fields in svr object
 						$dataFiled.html("");
 						opt = $.extend({}, editoptions, { id: rowid + "_" + nm, name: nm, rowId: rowid, mode: options.mode });
 						if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) { tmp = ""; }
@@ -13156,19 +13147,10 @@
 							$("input.hasDatepicker", "#" + jgrid.jqID(ind.id)).datepicker("hide");
 						} catch (ignore) { }
 					}
+					
 					$.each(p.colModel, function (i) {
-						var isEditable = this.editable, nm = this.name;
-						if ($.isFunction(isEditable)) {
-							isEditable = isEditable.call($t, {
-								rowid: rowid,
-								iCol: i,
-								iRow: ind.rowIndex,
-								name: nm,
-								cm: this,
-								mode: $(ind).hasClass("jqgrid-new-row") ? "add" : "edit"
-							});
-						}
-						if (isEditable === true && p.savedRow[fr].hasOwnProperty(nm)) {
+						var nm = this.name;
+						if (p.savedRow[fr].hasOwnProperty(nm)) {
 							ares[nm] = p.savedRow[fr][nm];
 							if (this.formatter && this.formatter === "date" && (this.formatoptions == null || this.formatoptions.sendFormatted !== true)) {
 								// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
@@ -16146,7 +16128,9 @@
 					var sThousandsSeparator = opts.thousandsSeparator;
 					nDotIndex = sOutput.lastIndexOf(sDecimalSeparator);
 					nDotIndex = (nDotIndex > -1) ? nDotIndex : sOutput.length;
-					var sNewOutput = sOutput.substring(nDotIndex);
+					// we cut the part after the point for integer numbers
+					// it will prevent storing/restoring of wrong numbers during inline editing
+					var sNewOutput = opts.decimalSeparator === undefined ? "" : sOutput.substring(nDotIndex);
 					var nCount = -1, i;
 					for (i = nDotIndex; i > 0; i--) {
 						nCount++;

@@ -181,7 +181,9 @@
 					var sThousandsSeparator = opts.thousandsSeparator;
 					nDotIndex = sOutput.lastIndexOf(sDecimalSeparator);
 					nDotIndex = (nDotIndex > -1) ? nDotIndex : sOutput.length;
-					var sNewOutput = sOutput.substring(nDotIndex);
+					// we cut the part after the point for integer numbers
+					// it will prevent storing/restoring of wrong numbers during inline editing
+					var sNewOutput = opts.decimalSeparator === undefined ? "" : sOutput.substring(nDotIndex);
 					var nCount = -1, i;
 					for (i = nDotIndex; i > 0; i--) {
 						nCount++;
