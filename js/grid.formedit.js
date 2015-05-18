@@ -1872,7 +1872,7 @@
 						var $close = $("#" + jqID(alertIDs.modalhead)).find(".ui-jqdialog-titlebar-close");
 						$close.attr({ tabindex: "0", href: "#", role: "button" });
 						setTimeout(function () {
-							$close.focus();
+							$close.focus(); //$(p.idSel + "_jqg_alrt").focus();
 						}, 50);
 					},
 					hoverClasses = getGuiStateStyles.call($t, "hover"),
@@ -1908,7 +1908,7 @@
 						o.alerttop = o.alerttop / 2 - 25;
 					}
 					createModal.call($t, alertIDs,
-						"<div>" + o.alerttext + "</div><span tabindex='0'><span tabindex='-1' id='jqg_alrt'></span></span>",
+						"<div>" + o.alerttext + "</div><span tabindex='0'><span tabindex='-1' id='" + gridId + "_jqg_alrt'></span></span>",
 						{
 							gbox: gboxSelector,
 							jqModal: o.jqModal,
