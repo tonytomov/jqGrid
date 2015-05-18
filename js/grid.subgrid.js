@@ -12,7 +12,7 @@
 /*jslint eqeq: true, nomen: true, plusplus: true, unparam: true, white: true */
 (function ($) {
 	"use strict";
-	var jgrid = $.jgrid, jqID = jgrid.jqID,
+	var jgrid = $.jgrid, jqID = jgrid.jqID, base = $.fn.jqGrid,
 		subGridFeedback = function () {
 			var args = $.makeArray(arguments);
 			args[0] = "subGrid" + args[0].charAt(0).toUpperCase() + args[0].substring(1);
@@ -53,15 +53,24 @@
 			});
 		},
 		addSubGridCell: function (pos, iRow) {
-			var self = this[0];
-			return self == null || self.p == null || self.p.subGridOptions == null ? "" :
-					"<td role=\"gridcell\" aria-describedby=\"" + self.p.id + "_subgrid\" class=\"ui-sgcollapsed sgcollapsed\" " +
+			var self = this[0], subGridOptions = self.p.subGridOptions;
+			return self == null || self.p == null || subGridOptions == null ? "" :
+					"<td role=\"gridcell\" aria-describedby=\"" + self.p.id +
+					"_subgrid\" class='" + base.getGuiStyles.call(this, "subgrid.tdStart", "ui-sgcollapsed sgcollapsed") + "' " +
 					self.formatCol(pos, iRow) + "><a style='cursor:pointer;'><span class='" +
-					jgrid.mergeCssClasses(self.p.subGridOptions.commonIconClass, self.p.subGridOptions.plusicon) + "'></span></a></td>";
+					jgrid.mergeCssClasses(subGridOptions.commonIconClass, subGridOptions.plusicon) + "'></span></a></td>";
 		},
 		addSubGrid: function (pos, sind) {
 			return this.each(function () {
 				var ts = this, p = ts.p,
+					getSubgridStyle = function (name, calsses) {
+						return base.getGuiStyles.call(ts, "subgrid." + name, calsses || "");
+					},
+					thSubgridClasses = getSubgridStyle("thSubgrid", "ui-th-subgrid ui-th-column ui-th-" + p.direction),
+					rowSubTableClasses = getSubgridStyle("rowSubTable", "ui-subtblcell"),
+					rowClasses = getSubgridStyle("row", "ui-subgrid ui-row-" + p.direction),
+					tdWithIconClasses = getSubgridStyle("tdWithIcon", "subgrid-cell"),
+					tdDataClasses = getSubgridStyle("tdData", "subgrid-data"),
 					subGridCell = function (trdiv, cell, pos) {
 						var tddiv = $("<td align='" + p.subGridModel[0].align[pos] + "'></td>").html(cell);
 						$(trdiv).append(tddiv);
@@ -71,7 +80,7 @@
 							dummy = $("<table" + (jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "") + "><tbody></tbody></table>"),
 							trdiv = $("<tr></tr>");
 						for (i = 0; i < p.subGridModel[0].name.length; i++) {
-							tddiv = $("<th class='ui-state-default ui-th-subgrid ui-th-column ui-th-" + p.direction + "'></th>");
+							tddiv = $("<th class='" + thSubgridClasses + "'></th>");
 							$(tddiv).html(p.subGridModel[0].name[i]);
 							$(tddiv).width(p.subGridModel[0].width[i]);
 							$(trdiv).append(tddiv);
@@ -80,7 +89,7 @@
 						if (sjxml) {
 							sgmap = p.xmlReader.subgrid;
 							$(sgmap.root + " " + sgmap.row, sjxml).each(function () {
-								trdiv = $("<tr class='ui-widget-content ui-subtblcell'></tr>");
+								trdiv = $("<tr class='" + rowSubTableClasses + "'></tr>");
 								if (sgmap.repeatitems === true) {
 									$(sgmap.cell, this).each(function (i) {
 										subGridCell(trdiv, $(this).text() || "&#160;", i);
@@ -106,7 +115,7 @@
 							dummy = $("<table" + (jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "") + "><tbody></tbody></table>"),
 							trdiv = $("<tr></tr>");
 						for (i = 0; i < p.subGridModel[0].name.length; i++) {
-							tddiv = $("<th class='ui-state-default ui-th-subgrid ui-th-column ui-th-" + p.direction + "'></th>");
+							tddiv = $("<th class='" + thSubgridClasses + "'></th>");
 							$(tddiv).html(p.subGridModel[0].name[i]);
 							$(tddiv).width(p.subGridModel[0].width[i]);
 							$(trdiv).append(tddiv);
@@ -118,7 +127,7 @@
 							if (result !== undefined) {
 								for (i = 0; i < result.length; i++) {
 									cur = result[i];
-									trdiv = $("<tr class='ui-widget-content ui-subtblcell'></tr>");
+									trdiv = $("<tr class='" + rowSubTableClasses + "'></tr>");
 									if (sgmap.repeatitems === true) {
 										if (sgmap.cell) {
 											cur = cur[sgmap.cell];
@@ -207,7 +216,9 @@
 								if (!subGridFeedback.call(ts, "beforeExpand", subgridDivId, rowid)) {
 									return;
 								}
-								$(tr).after("<tr role='row' class='ui-widget-content ui-subgrid ui-row-" + p.direction + "'>" + atd + "<td class='ui-widget-content subgrid-cell'><span class='" + iconClass("openicon") + "'></span></td><td colspan='" + parseInt(p.colNames.length - nhc, 10) + "' class='ui-widget-content subgrid-data'><div id=" + subgridDivId + " class='tablediv'></div></td></tr>");
+								$(tr).after("<tr role='row' class='" + rowClasses + "'>" + atd + "<td class='" + tdWithIconClasses +
+									"'><span class='" + iconClass("openicon") + "'></span></td><td colspan='" + parseInt(p.colNames.length - nhc, 10) +
+									"' class='" + tdDataClasses + "'><div id=" + subgridDivId + " class='tablediv'></div></td></tr>");
 								$(ts).triggerHandler("jqGridSubGridRowExpanded", [subgridDivId, rowid]);
 								if ($.isFunction(p.subGridRowExpanded)) {
 									p.subGridRowExpanded.call(ts, subgridDivId, rowid);
