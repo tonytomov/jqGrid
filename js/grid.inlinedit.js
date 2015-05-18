@@ -93,7 +93,7 @@
 						} catch (_) {
 							tmp = edittype === "textarea" ? $dataFiled.text() : $dataFiled.html();
 						}
-						svr[nm] = tmp;
+						svr[nm] = tmp; // include only editable fields in svr object
 						$dataFiled.html("");
 						opt = $.extend({}, editoptions, { id: rowid + "_" + nm, name: nm, rowId: rowid, mode: options.mode });
 						if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) { tmp = ""; }
@@ -387,19 +387,10 @@
 							$("input.hasDatepicker", "#" + jgrid.jqID(ind.id)).datepicker("hide");
 						} catch (ignore) { }
 					}
+					
 					$.each(p.colModel, function (i) {
-						var isEditable = this.editable, nm = this.name;
-						if ($.isFunction(isEditable)) {
-							isEditable = isEditable.call($t, {
-								rowid: rowid,
-								iCol: i,
-								iRow: ind.rowIndex,
-								name: nm,
-								cm: this,
-								mode: $(ind).hasClass("jqgrid-new-row") ? "add" : "edit"
-							});
-						}
-						if (isEditable === true && p.savedRow[fr].hasOwnProperty(nm)) {
+						var nm = this.name;
+						if (p.savedRow[fr].hasOwnProperty(nm)) {
 							ares[nm] = p.savedRow[fr][nm];
 							if (this.formatter && this.formatter === "date" && (this.formatoptions == null || this.formatoptions.sendFormatted !== true)) {
 								// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
