@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-05-18
+ * Date: 2015-05-19
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -551,6 +551,29 @@
 			if (format == null) { format = ""; }
 			return format.replace(/\{(\d+)\}/g, function (m, i) {
 				return args[i];
+			});
+		},
+		template: function (format) { //jqgformat
+			var args = $.makeArray(arguments).slice(1), j, al = args.length;
+			if (format == null) {
+				format = "";
+			}
+			return format.replace(/\{([\w\-]+)(?:\:([\w\.]*)(?:\((\.*?)?\))?)?\}/g, function (m, i) {
+				var nmarr, k;
+				if (!isNaN(parseInt(i, 10))) {
+					return args[parseInt(i, 10)];
+				}
+				for (j = 0; j < al; j++) {
+					if ($.isArray(args[j])) {
+						nmarr = args[j];
+						k = nmarr.length;
+						while (k--) {
+							if (i === nmarr[k].nm) {
+								return nmarr[k].v;
+							}
+						}
+					}
+				}
 			});
 		},
 		msie: navigator.appName === "Microsoft Internet Explorer",
@@ -11988,31 +12011,6 @@
 (function ($) {
 	"use strict";
 	var jgrid = $.jgrid, base = $.fn.jqGrid;
-	$.extend(jgrid, {
-		template: function (format) { //jqgformat
-			var args = $.makeArray(arguments).slice(1), j, al = args.length;
-			if (format == null) {
-				format = "";
-			}
-			return format.replace(/\{([\w\-]+)(?:\:([\w\.]*)(?:\((\.*?)?\))?)?\}/g, function (m, i) {
-				var nmarr, k;
-				if (!isNaN(parseInt(i, 10))) {
-					return args[parseInt(i, 10)];
-				}
-				for (j = 0; j < al; j++) {
-					if ($.isArray(args[j])) {
-						nmarr = args[j];
-						k = nmarr.length;
-						while (k--) {
-							if (i === nmarr[k].nm) {
-								return nmarr[k].v;
-							}
-						}
-					}
-				}
-			});
-		}
-	});
 	jgrid.extend({
 		groupingSetup: function () {
 			return this.each(function () {
@@ -14101,9 +14099,6 @@
 /*jslint eqeq: true, plusplus: true, white: true */
 (function ($) {
 	"use strict";
-	// To optimize the search we need custom array filter
-	// This code is taken from
-	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
 	var jgrid = $.jgrid;
 	jgrid.extend({
 		pivotSetup: function (data, options) {
@@ -14125,6 +14120,7 @@
 					rowTotals: false,
 					rowTotalsText: "Total",
 					// summary columns
+					useColSpanStyle: false,
 					colTotals: false,
 					groupSummary: true,
 					groupSummaryPos: "header",
@@ -14192,7 +14188,7 @@
 			 */
 			function agregateFunc(row, aggr, value, curr) {
 				// default is sum
-				var arrln = aggr.length, n, label, j, jv, mainval = "", swapvals = [], tmpmember, vl;
+				var arrln = aggr.length, n, label, labelWithoutSpaces, j, jv, mainval = "", swapvals = [], tmpmember, vl;
 				if (isArray(value)) {
 					jv = value.length;
 					swapvals = value;
@@ -14219,7 +14215,8 @@
 						    }
 						}
 						label = !isNaN(parseInt(label, 10)) ? label + " " : label;
-						curr[label] = tmpmember[label] = calculation(aggr[n].aggregator, curr[label], aggr[n].member, row);
+						labelWithoutSpaces = label.replace(/\s+/g, "");
+						curr[labelWithoutSpaces] = tmpmember[label] = calculation(aggr[n].aggregator, curr[labelWithoutSpaces], aggr[n].member, row);
 						if (j <= 1 && vl !== "_r_Totals" && mainval === "") { // this does not fix full the problem
 							mainval = vl;
 						}
@@ -14333,16 +14330,17 @@
 				}
 			}
 			if (ylen > 0) {
-				headers[ylen - 1] = { useColSpanStyle: false, groupHeaders: [] };
+				headers[ylen - 1] = { useColSpanStyle: o.useColSpanStyle, groupHeaders: [] };
 			}
 			/*
 			 * Recursive function which uses the tree to build the
 			 * columns from the pivot values and set the group Headers
 			 */
 			function list(items) {
-				var l, j, key, n, col, collen, colpos, l1, ll, header, initColLen;
+				var l, j, key, n, col, collen, colpos, l1, ll, header, initColLen, y;
 				for (key in items) { // iterate
 					if (items.hasOwnProperty(key)) {
+						y = items.level > (o.rowTotals? 1 : 0) ? o.yDimension[items.level - (o.rowTotals? 1 : 0)] : null;
 						// write amount of spaces according to level
 						// and write name and newline
 						if (typeof items[key] !== "object") {
@@ -14350,14 +14348,14 @@
 							if (key === "level") {
 								if (lastval[items.level] === undefined) {
 									lastval[items.level] = "";
-									if (items.level > 0 && items.text !== "_r_Totals") {
+									if (items.level > 0 && items.label !== "_r_Totals") {
 										headers[items.level - 1] = {
-											useColSpanStyle: false,
+											useColSpanStyle: o.useColSpanStyle,
 											groupHeaders: []
 										};
 									}
 								}
-								if (lastval[items.level] !== items.text && items.children.length && items.text !== "_r_Totals") {
+								if (lastval[items.level] !== items.text && items.children.length && items.label !== "_r_Totals") {
 									if (items.level < ylen && items.level > 0) {
 										header = headers[items.level - 1];
 										for (l = 0, initColLen = 0; l < header.groupHeaders.length; l++) {
@@ -14378,7 +14376,7 @@
 											}
 										}
 										header.groupHeaders[collen].startColumnName = columns[colpos].name;
-										header.groupHeaders[collen].numberOfColumns = columns.length - colpos;
+										header.groupHeaders[collen].numberOfColumns = columns.length - colpos + (y != null && y.rowTotals ? 1 : 0);
 									}
 								}
 								lastval[items.level] = items.text;
@@ -14406,9 +14404,11 @@
 						if (items[key] != null && typeof items[key] === "object") {
 							list(items[key]);
 						}
-						// Finally build the coulumns
+						// Finally build the columns
 						if (key === "level") {
-							if (items.level === ylen || (o.rowTotals && items.text === "_r_Totals")) {
+							if (items.level === ylen ||
+									(o.rowTotals && items.label === "_r_Totals") ||// && items.level === 1
+									(items.level < ylen && y != null && y.rowTotals)) {
 								j = 0;
 								for (l in items.fields) {
 									if (items.fields.hasOwnProperty(l)) {
@@ -14425,14 +14425,27 @@
 												}
 											}
 										}
+										l1 = o.rowTotals && items.label === "_r_Totals" ? // && items.level === 1
+												o.rowTotalsText :
+												(items.level < ylen && y != null && y.rowTotals ?
+													($.isFunction(y.rowTotalsText) ?
+														y.rowTotalsText.call(tree, items, o, y, lastval) :
+														jgrid.template(y.rowTotalsText, items.label, items.text) || items.label) :
+													items.label);
 										if (aggrlen > 1) {
-											col.name = l;
-											col.label = o.aggregates[j].label || items.label;
+											col.name = l.replace(/\s+/g, "");
+											col.label = o.aggregates[j].label || l1;
 										} else {
-											col.name = items.text;
-											col.label = items.text === "_r_Totals" ? o.rowTotalsText : items.label;
+											col.name = items.text.replace(/\s+/g, "");
+											col.label = l1;
 										}
 										columns.push(col);
+										if (items.level < ylen && y != null && y.rowTotals) {
+											headers[items.level].groupHeaders.push({
+												titleText: items.label,
+												numberOfColumns: 1
+											});
+										}
 										j++;
 									}
 								}
@@ -14449,12 +14462,7 @@
 				while (plen--) {
 					for (i = xlen; i < columns.length; i++) {
 						nm = columns[i].name;
-						if (!summaries[nm]) {
-							summaries[nm] = parseFloat(pivotrows[plen][nm] || 0);
-						} else {
-							// TODO: implement not only SUM in colTotals
-							summaries[nm] += parseFloat(pivotrows[plen][nm] || 0);
-						}
+						summaries[nm] = calculation(o.colTotalAggregator || "sum", summaries[nm], nm, pivotrows[plen]);
 					}
 				}
 			}
@@ -14514,6 +14522,10 @@
 					}, pivotGrid.groupOptions, gridOpt || {}));
 					if (gHead.length) {
 						for (i = 0; i < gHead.length; i++) {
+							// Multiple calls of setGroupHeaders for one grid are wrong,
+							// but there are produces good results in case of usage
+							// useColSpanStyle: false option. The rowspan values
+							// needed be increased in case of usage useColSpanStyle: true
 							if (gHead[i] && gHead[i].groupHeaders.length) {
 								$j.setGroupHeaders.call($self, gHead[i]);
 							}
