@@ -279,7 +279,7 @@
 											numberOfColumns: 0
 										});
 										collen = header.groupHeaders.length - 1;
-										colpos = initColLen + aggrlen;
+										colpos = initColLen + xlen;
 										if (items.level - 1 === (o.rowTotals ? 1 : 0)) {
 											if (collen > 0) {
 												l1 = header.groupHeaders[collen].numberOfColumns;
