@@ -7806,23 +7806,25 @@
 		},
 		GridUnload: function () {
 			return this.each(function () {
-				var self = this, p = self.p;
+				var self = this, $self = $(self), p = self.p, $j = $.fn.jqGrid;
 				if (!self.grid) { return; }
-				var defgrid = { id: $(self).attr("id"), cl: $(self).attr("class") };
+				$self.removeClass($j.getGuiStyles.call($self, "grid", "ui-jqgrid-btable"));
+				// The multiple removeAttr can be replace to one after dropping of support of old jQuery
 				if (p.pager) {
-					$(p.pager).empty().removeClass("ui-state-default ui-jqgrid-pager ui-corner-bottom");
+					$(p.pager).empty()
+						.removeClass($j.getGuiStyles.call($self, "pagerBottom", "ui-jqgrid-pager"))
+						.removeAttr("style")
+						.removeAttr("dir");
 				}
-				var newtable = document.createElement("table");
-				$(newtable).attr({ id: defgrid.id });
-				newtable.className = defgrid.cl;
-				$(newtable).removeClass("ui-jqgrid-btable");
-				if ($(p.pager).parents(p.gBox).length === 1) {
-					$(newtable).insertBefore(p.gBox).show();
-					$(p.pager).insertBefore(p.gBox);
-				} else {
-					$(newtable).insertBefore(p.gBox).show();
-				}
-				$(self).jqGrid("clearBeforeUnload");
+				$self.jqGrid("clearBeforeUnload");
+				$self.removeAttr("style")
+					.removeAttr("tabindex")
+					.removeAttr("role")
+					.removeAttr("aria-labelledby")
+					.removeAttr("style");
+				$self.empty(); // remove the first line
+				$self.insertBefore(p.gBox).show();
+				$(p.pager).insertBefore(p.gBox).show();
 				$(p.gBox).remove();
 			});
 		},
