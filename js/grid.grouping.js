@@ -5,31 +5,6 @@
 (function ($) {
 	"use strict";
 	var jgrid = $.jgrid, base = $.fn.jqGrid;
-	$.extend(jgrid, {
-		template: function (format) { //jqgformat
-			var args = $.makeArray(arguments).slice(1), j, al = args.length;
-			if (format == null) {
-				format = "";
-			}
-			return format.replace(/\{([\w\-]+)(?:\:([\w\.]*)(?:\((\.*?)?\))?)?\}/g, function (m, i) {
-				var nmarr, k;
-				if (!isNaN(parseInt(i, 10))) {
-					return args[parseInt(i, 10)];
-				}
-				for (j = 0; j < al; j++) {
-					if ($.isArray(args[j])) {
-						nmarr = args[j];
-						k = nmarr.length;
-						while (k--) {
-							if (i === nmarr[k].nm) {
-								return nmarr[k].v;
-							}
-						}
-					}
-				}
-			});
-		}
-	});
 	jgrid.extend({
 		groupingSetup: function () {
 			return this.each(function () {
