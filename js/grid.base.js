@@ -2425,7 +2425,7 @@
 							}
 						}
 						if (!p.autowidth && (p.widthOrg === undefined || p.widthOrg === "auto" || p.widthOrg === "100%") && skipGridAdjustments != true) {
-							$j.setGridWidth.call($bTable, self.newWidth, false);
+							$j.setGridWidth.call($bTable, self.newWidth + p.scrollOffset, false);
 						}
 						if (!skipCallbacks) {
 							feedback.call($bTable[0], "resizeStop", nw, idx);
@@ -4062,7 +4062,7 @@
 					p.lastsort = idxcol;
 					if (p.sortname !== index && idxcol) { p.lastsort = idxcol; }
 				},
-				setColWidth = function () {
+				setInitialColWidth = function () {
 					var initialWidth = 0, borderAndPaddingWidth = jgrid.cell_width ? 0 : intNum(p.cellLayout, 0), numberOfVariableColumns = 0, iLastVariableColumn, scrollbarWidth = intNum(p.scrollOffset, 0), columnWidth, hasScrollbar = false, totalVariableWidth, fixedColumnsWidth = 0, correctur;
 					each(p.colModel, function () {
 						if (this.hidden === undefined) { this.hidden = false; }
@@ -4346,7 +4346,7 @@
 				p.width = pw > 0 ? pw : "nw";
 			}
 			p.widthOrg = p.width;
-			setColWidth();
+			setInitialColWidth();
 			$(eg).css("width", grid.width + "px").append("<div class='ui-jqgrid-resize-mark' id='" + p.rsId + "'>&#160;</div>");
 			$(p.rs)
 				.bind("selectstart", function () {
@@ -5564,8 +5564,7 @@
 					}
 				});
 				if (fndh === true) {
-					if (p.shrinkToFit === true && !isNaN(p.height)) { p.tblwidth += parseInt(p.scrollOffset, 10); }
-					base.setGridWidth.call($self, p.shrinkToFit === true ? p.tblwidth : p.width);
+					base.setGridWidth.call($self, (!p.autowidth && (p.widthOrg === undefined || p.widthOrg === "auto" || p.widthOrg === "100%") ? p.tblwidth : p.width) + parseInt(p.scrollOffset, 10));
 				}
 				if (gh) {
 					base.setGroupHeaders.call($self, p.groupHeader);
