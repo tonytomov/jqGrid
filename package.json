@@ -43,7 +43,7 @@
     "searching"
   ],
   "author": "Oleg Kiriljuk <oleg.kiriljuk@ok-soft-gmbh.com>",
-  "license": "MIT",
+  "license": "(MIT OR GPL-2.0)",
   "bugs": {
     "url": "https://github.com/free-jqgrid/jqGrid/issues"
   },
