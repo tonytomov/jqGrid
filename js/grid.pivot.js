@@ -365,7 +365,7 @@
 											col.label = l1;
 										}
 										columns.push(col);
-										if (items.level < ylen && y != null && y.rowTotals) {
+										if (items.level < ylen && y != null && y.rowTotals && headers[items.level] != null) {
 											// TODO: if aggrlen>1 then such way produce wrong results.
 											// one need to increas 
 											headers[items.level].groupHeaders.push({
