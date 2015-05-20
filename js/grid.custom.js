@@ -1006,7 +1006,7 @@
 						}
 					}
 					grid.fhDiv = $('<div style="position:absolute;left:0;top:' + top + 'px;height:' + hth + 'px;" class="frozen-div ui-state-default ui-jqgrid-hdiv"></div>');
-					grid.fbDiv = $('<div style="position:absolute;left:0;top:' + (parseInt(top, 10) + parseInt(hth, 10) + 1) + 'px;overflow-y:hidden" class="frozen-bdiv ui-jqgrid-bdiv"></div>');
+					grid.fbDiv = $('<div style="position:absolute;left:0;top:' + (parseInt(top, 10) + parseInt(hth, 10) + 1) + 'px;overflow:hidden" class="frozen-bdiv ui-jqgrid-bdiv"></div>');
 					$(p.gView).append(grid.fhDiv);
 					var htbl = $(".ui-jqgrid-htable", p.gView).clone(true);
 					// groupheader support - only if useColSpanstyle is false
@@ -1234,7 +1234,7 @@
 							myResize();
 						}, 50);
 					});
-					$self.bind("jqGridInlineEditRow.setFrozenColumns jqGridAfterEditCell.setFrozenColumns jqGridAfterRestoreCell.setFrozenColumns jqGridInlineAfterRestoreRow.setFrozenColumns jqGridAfterSaveCell.setFrozenColumns jqGridInlineAfterSaveRow.setFrozenColumns jqGridResetFrozenHeights.setFrozenColumns", myResize);
+					$self.bind("jqGridInlineEditRow.setFrozenColumns jqGridAfterEditCell.setFrozenColumns jqGridAfterRestoreCell.setFrozenColumns jqGridInlineAfterRestoreRow.setFrozenColumns jqGridAfterSaveCell.setFrozenColumns jqGridInlineAfterSaveRow.setFrozenColumns jqGridResetFrozenHeights.setFrozenColumns jqGridGroupingClickGroup.setFrozenColumns", myResize);
 					if (!grid.hDiv.loading) {
 						$self.triggerHandler("jqGridAfterGridComplete");
 					}
