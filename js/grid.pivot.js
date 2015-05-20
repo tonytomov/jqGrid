@@ -358,7 +358,7 @@
 														y.rowTotalsText.call(tree, items, agr, iAgr, l, o, y, lastval) :
 														jgrid.template(y.rowTotalsText, items.label, agrName, agrMember, l, iAgr, items.text) || items.label) :
 													items.label);
-										if (aggrlen > 1) {
+										if (aggrlen > 1 && (!o.rowTotals || items.label !== "_r_Totals")) {
 											col.name = l.replace(/\s+/g, "");
 											col.label = $.isFunction(o.aggregates[j].label) ?
 													o.aggregates[j].label.call(tree, items, agr, iAgr, l, o, y, lastval) :

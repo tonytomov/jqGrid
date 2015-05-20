@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-05-19
+ * Date: 2015-05-20
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -14445,7 +14445,7 @@
 														y.rowTotalsText.call(tree, items, agr, iAgr, l, o, y, lastval) :
 														jgrid.template(y.rowTotalsText, items.label, agrName, agrMember, l, iAgr, items.text) || items.label) :
 													items.label);
-										if (aggrlen > 1) {
+										if (aggrlen > 1 && (!o.rowTotals || items.label !== "_r_Totals")) {
 											col.name = l.replace(/\s+/g, "");
 											col.label = $.isFunction(o.aggregates[j].label) ?
 													o.aggregates[j].label.call(tree, items, agr, iAgr, l, o, y, lastval) :
