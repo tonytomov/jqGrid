@@ -14336,7 +14336,7 @@
 			 * columns from the pivot values and set the group Headers
 			 */
 			function list(items) {
-				var l, j, key, n, col, collen, colpos, l1, ll, header, initColLen, y, parts1, parts2, iAgr, agrName, agr;
+				var l, j, key, n, col, collen, colpos, l1, ll, header, initColLen, y, parts1, parts2, iAgr, agrName, agrMember, agr;
 				for (key in items) { // iterate
 					if (items.hasOwnProperty(key)) {
 						y = items.level > (o.rowTotals? 1 : 0) ? o.yDimension[items.level - (o.rowTotals? 1 : 0)] : null;
@@ -14434,19 +14434,22 @@
 											} else {
 												iAgr = 0;
 												agr = o.aggregates[0];
-												agrName = agr.aggregator;
 											}
+											agrName = agr.aggregator;
+											agrMember = agr.member;
 										} catch (ignore) { }
 										l1 = o.rowTotals && items.label === "_r_Totals" ? // && items.level === 1
-												jgrid.template(o.rowTotalsText, agrName, items.label, l, iAgr, items.text) :
+												jgrid.template(o.rowTotalsText, agrName, agrMember, items.label, l, iAgr, items.text) :
 												(items.level < ylen && y != null && y.rowTotals ?
 													($.isFunction(y.rowTotalsText) ?
-														y.rowTotalsText.call(tree, items, agrName, iAgr, agr, l, o, y, lastval) :
-														jgrid.template(y.rowTotalsText, items.label, agrName, l, iAgr, items.text) || items.label) :
+														y.rowTotalsText.call(tree, items, agr, iAgr, l, o, y, lastval) :
+														jgrid.template(y.rowTotalsText, items.label, agrName, agrMember, l, iAgr, items.text) || items.label) :
 													items.label);
 										if (aggrlen > 1) {
 											col.name = l.replace(/\s+/g, "");
-											col.label = o.aggregates[j].label || l1;
+											col.label = $.isFunction(o.aggregates[j].label) ?
+													o.aggregates[j].label.call(tree, items, agr, iAgr, l, o, y, lastval) :
+													jgrid.template(o.aggregates[j].label, agrName, agrMember, items.label, l, iAgr, items.text) || l1;
 										} else {
 											col.name = items.text.replace(/\s+/g, "");
 											col.label = l1;
