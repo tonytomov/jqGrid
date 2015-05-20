@@ -14221,7 +14221,6 @@
 							mainval = vl;
 						}
 					}
-					//vl = !isNaN(parseInt(vl,10)) ? vl + " " : vl;
 					member[label] = tmpmember;
 					labels[label] = swapvals[j];
 				}
@@ -14337,7 +14336,7 @@
 			 * columns from the pivot values and set the group Headers
 			 */
 			function list(items) {
-				var l, j, key, n, col, collen, colpos, l1, ll, header, initColLen, y;
+				var l, j, key, n, col, collen, colpos, l1, ll, header, initColLen, y, parts1, parts2, iAgr, agrName, agr;
 				for (key in items) { // iterate
 					if (items.hasOwnProperty(key)) {
 						y = items.level > (o.rowTotals? 1 : 0) ? o.yDimension[items.level - (o.rowTotals? 1 : 0)] : null;
@@ -14371,12 +14370,12 @@
 											if (collen > 0) {
 												l1 = header.groupHeaders[collen].numberOfColumns;
 												if (l1) {
-													colpos = l1 + 1 + o.aggregates.length;
+													colpos = l1 + 1 + aggrlen;
 												}
 											}
 										}
 										header.groupHeaders[collen].startColumnName = columns[colpos].name;
-										header.groupHeaders[collen].numberOfColumns = columns.length - colpos + (y != null && y.rowTotals ? 1 : 0);
+										header.groupHeaders[collen].numberOfColumns = columns.length - colpos + (y != null && y.rowTotals ? 1 + (aggrlen - 1) : 0);
 									}
 								}
 								lastval[items.level] = items.text;
@@ -14425,12 +14424,25 @@
 												}
 											}
 										}
+										try {
+											if (aggrlen > 1) {
+												parts1 = $.trim(l).split(" ");
+												parts2 = parts1[parts1.length - 1].split("_");
+												iAgr = parts2[parts2.length - 1];
+												agrName = parts2[parts2.length - 2];
+												agr = o.aggregates[iAgr];
+											} else {
+												iAgr = 0;
+												agr = o.aggregates[0];
+												agrName = agr.aggregator;
+											}
+										} catch (ignore) { }
 										l1 = o.rowTotals && items.label === "_r_Totals" ? // && items.level === 1
-												o.rowTotalsText :
+												jgrid.template(o.rowTotalsText, agrName, items.label, l, iAgr, items.text) :
 												(items.level < ylen && y != null && y.rowTotals ?
 													($.isFunction(y.rowTotalsText) ?
-														y.rowTotalsText.call(tree, items, o, y, lastval) :
-														jgrid.template(y.rowTotalsText, items.label, items.text) || items.label) :
+														y.rowTotalsText.call(tree, items, agrName, iAgr, agr, l, o, y, lastval) :
+														jgrid.template(y.rowTotalsText, items.label, agrName, l, iAgr, items.text) || items.label) :
 													items.label);
 										if (aggrlen > 1) {
 											col.name = l.replace(/\s+/g, "");
@@ -14441,8 +14453,10 @@
 										}
 										columns.push(col);
 										if (items.level < ylen && y != null && y.rowTotals) {
+											// TODO: if aggrlen>1 then such way produce wrong results.
+											// one need to increas 
 											headers[items.level].groupHeaders.push({
-												titleText: items.label,
+												titleText: col.name,
 												numberOfColumns: 1
 											});
 										}
