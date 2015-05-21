@@ -4644,6 +4644,9 @@
 							var oldSelRow = p.selrow;
 							setSelection.call($self0, ri, true, e);
 							if (p.singleSelectClickMode === "toggle" && !p.multiselect && oldSelRow === ri) {
+								if (this.grid.fbRows) {
+									$tr = $tr.add(this.grid.fbRows[ri]);
+								}
 								$tr.removeClass(highlightClass).attr({ "aria-selected": "false", "tabindex": "-1" });
 								p.selrow = null;
 							}
