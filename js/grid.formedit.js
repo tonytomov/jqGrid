@@ -14,7 +14,7 @@
 	"use strict";
 	var jgrid = $.jgrid, feedback = jgrid.feedback, fullBoolFeedback = jgrid.fullBoolFeedback, jqID = jgrid.jqID,
 		hideModal = jgrid.hideModal, viewModal = jgrid.viewModal, createModal = jgrid.createModal, infoDialog = jgrid.info_dialog,
-		mergeCssClasses = jgrid.mergeCssClasses, hasOneFromClasses = jgrid.hasOneFromClasses, $j = $.fn.jqGrid,
+		mergeCssClasses = jgrid.mergeCssClasses, hasOneFromClasses = jgrid.hasOneFromClasses,// $j = $.fn.jqGrid,
 		builderFmButon = jgrid.builderFmButon,
 		getCssStyleOrFloat = function ($elem, styleName) {
 			var v = $elem[0].style[styleName];
@@ -596,7 +596,7 @@
 							if (o.checkOnSubmit || o.checkOnUpdate) { o._savedData[nm] = tmp; }
 							$(elc).addClass("FormElement");
 							if ($.inArray(cm.edittype, ["text", "textarea", "password", "select"]) > -1) {
-								$(elc).addClass("ui-widget-content ui-corner-all");
+								$(elc).addClass(getGuiStyles.call($t, "dialog.dataField"));
 							}
 							trdata = $(tb).find("tr[data-rowpos=" + rp + "]");
 							if (frmopt.rowabove) {
@@ -1120,17 +1120,24 @@
 				tms = null;
 				bt = null;
 				$(themodalSelector).keydown(function (e) {
-					var wkey = e.target, $focused, idFocused;
+					var wTagName = (e.target.tagName || "").toUpperCase(), $focused, idFocused;
 					if ($(frmgr).data("disabled") === true) { return false; }//??
-					if (o.savekey[0] === true && e.which === o.savekey[1]) { // save
-						if (wkey.tagName !== "TEXTAREA") {
+					if (e.which === 13) {
+						if (wTagName !== "TEXTAREA") {
 							$focused = $(frmtb2).find(":focus");
 							idFocused = $focused.attr("id");
-							if ($focused.length > 0 && $.inArray(idFocused, ["pData", "nData", "cData"] >= 0)) {
+							if ($focused.length > 0 && $.inArray(idFocused, ["pData", "nData", "cData"]) >= 0) {
 								$focused.trigger("click");
-							} else {
+								return false;
+							} else if (o.savekey[0] === true && o.savekey[1] === 13) {
 								$("#sData", frmtb2).trigger("click");
+								return false;
 							}
+						}
+					}
+					if (o.savekey[0] === true && e.which === o.savekey[1]) { // save
+						if (wTagName !== "TEXTAREA") {
+							$("#sData", frmtb2).trigger("click");
 							return false;
 						}
 					}
@@ -1177,7 +1184,7 @@
 					bC = builderFmButon.call($t, "cNew", o.bExit);
 					var zI = o.zIndex || 999;
 					zI++;
-					$("<div class='" + o.overlayClass + " jqgrid-overlay confirm' style='z-index:" + zI + ";display:none;'>&#160;" + "</div><div class='confirm ui-widget-content ui-jqconfirm' style='z-index:" + (zI + 1) + "'>" + o.saveData + "<br/><br/>" + bS + bN + bC + "</div>").insertAfter(frmgr);
+					$("<div class='" + o.overlayClass + " jqgrid-overlay confirm' style='z-index:" + zI + ";display:none;'>&#160;" + "</div><div class='" + getGuiStyles.call($t, "dialog.content", "confirm ui-jqconfirm") + "' style='z-index:" + (zI + 1) + "'>" + o.saveData + "<br/><br/>" + bS + bN + bC + "</div>").insertAfter(frmgr);
 					$("#sNew", themodalSelector).click(function () {
 						// if the form will be hidden at the first usage and it will be shown at the next usage
 						// then the execution context click handler and all other functions like postIt()
@@ -1361,8 +1368,10 @@
 				}
 				function createData(rowid, tb, maxcols) {
 					var nm, hc, trdata, cnt = 0, tmp, dc, retpos = [], ind = $self.jqGrid("getInd", rowid), i,
-						tdtmpl = "<td class='CaptionTD form-view-label ui-widget-content' width='" + o.labelswidth + "'></td><td class='DataTD form-view-data ui-helper-reset ui-widget-content'></td>", tmpl = "",
-						tdtmpl2 = "<td class='CaptionTD form-view-label ui-widget-content'></td><td class='DataTD form-view-data ui-widget-content'></td>",
+						viewDataClasses = getGuiStyles.call($t, "dialog.viewData", "DataTD form-view-data"),
+						viewLabelClasses = getGuiStyles.call($t, "dialog.viewLabel", "CaptionTD form-view-label"),
+						tdtmpl = "<td class='" + viewLabelClasses + "' width='" + o.labelswidth + "'></td><td class='" + viewDataClasses + " ui-helper-reset'></td>", tmpl = "",
+						tdtmpl2 = "<td class='" + viewLabelClasses + "'></td><td class='" + viewDataClasses + "'></td>",
 						fmtnum = ["integer", "number", "currency"], max1 = 0, max2 = 0, maxw, setme, viewfld;
 					for (i = 1; i <= maxcols; i++) {
 						tmpl += i === 1 ? tdtmpl : tdtmpl2;
@@ -1535,6 +1544,17 @@
 				if (!o.viewPagerButtons) { $("#pData, #nData", frmtb2).hide(); }
 				bt = null;
 				$(themodalSelector).keydown(function (e) {
+					var $focused, idFocused;
+					if ($(frmgr).data("disabled") === true) { return false; }//??
+					if (e.which === 13) {
+						$focused = $(frmtb2).find(":focus");
+						idFocused = $focused.attr("id");
+						if ($focused.length > 0 && $.inArray(idFocused, ["pData", "nData", "cData"]) >= 0) {
+							$focused.trigger("click");
+							return false;
+						}
+					}
+
 					if (e.which === 27) {
 						if (o.closeOnEscape) { hideModal(themodalSelector, { gb: gboxSelector, jqm: o.jqModal, onClose: o.onClose, removemodal: o.removemodal, formprop: !o.recreateForm, form: o.form }); }
 						return false;
@@ -2094,7 +2114,7 @@
 					}
 					// TODO use setWidthOfPagerTdWithPager or remove at all and use div structure with wrapping
 					tdw = $(".ui-jqgrid>.ui-jqgrid-view").css("font-size") || "11px";
-					$("body").append("<div id='testpg2' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:" + tdw + ";visibility:hidden;' ></div>");
+					$("body").append("<div id='testpg2' class='" + getGuiStyles.call($t, "gBox", "ui-jqgrid") + "' style='font-size:" + tdw + ";visibility:hidden;' ></div>");
 					twd = $(navtbl).clone().appendTo("#testpg2").width();
 					$("#testpg2").remove();
 					$(pgid + "_" + o.position, pgid).append(navtbl);

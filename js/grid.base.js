@@ -507,6 +507,9 @@
 					content: "ui-widget-content",
 					hr: "ui-widget-content",
 					fmButton: "ui-state-default",
+					dataField: "ui-widget-content ui-corner-all",
+					viewLabel: "ui-widget-content",
+					viewData: "ui-widget-content",
 					leftCorner: "ui-corner-left",
 					rightCorner: "ui-corner-right",
 					defaultCorner: "ui-corner-all"
@@ -1949,7 +1952,7 @@
 	var clearArray = jgrid.clearArray, jqID = jgrid.jqID,
 		getGridComponentIdSelector = jgrid.getGridComponentIdSelector, getGridComponentId = jgrid.getGridComponentId,
 		getGridComponent = jgrid.getGridComponent, stripPref = jgrid.stripPref, randId = jgrid.randId,
-		getAccessor = jgrid.getAccessor, getCellIndex = jgrid.getCellIndex, convertOnSaveLocally = jgrid.convertOnSaveLocally,
+		getAccessor = jgrid.getAccessor, convertOnSaveLocally = jgrid.convertOnSaveLocally,
 		stripHtml = jgrid.stripHtml, htmlEncode = jgrid.htmlEncode, htmlDecode = jgrid.htmlDecode,
 		mergeCssClasses = jgrid.mergeCssClasses, hasOneFromClasses = jgrid.hasOneFromClasses,
 		feedback = function () {
