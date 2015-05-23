@@ -505,6 +505,7 @@
 					header: "ui-widget-header ui-corner-all ui-helper-clearfix",
 					window: "ui-widget ui-widget-content ui-corner-all ui-front",
 					content: "ui-widget-content",
+					hr: "ui-widget-content",
 					fmButton: "ui-state-default",
 					leftCorner: "ui-corner-left",
 					rightCorner: "ui-corner-right",
@@ -1811,7 +1812,7 @@
 					iconOnLeftOrRight === "right" ?
 							"fm-button-icon-right" :
 							(iconOnLeftOrRight === "left" ? "fm-button-icon-left" : "")
-				) + "'>" +
+				) + "' role='button' tabindex='0'>" +
 				(icon ? "<span class='fm-button-icon " + (jgrid.getIconRes(p.iconSet, icon) || icon) + "'></span>" : "") +
 				(text ? "<span class='fm-button-text'>" + text + "</span>" : "") +
 				"</a>";

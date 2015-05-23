@@ -241,14 +241,14 @@
 		cval = String(cval);
 		cval = String(cval).toLowerCase();
 		var bchk = cval.search(/(false|f|0|no|n|off|undefined)/i) < 0 ? " checked='checked' " : "";
-		return "<input type=\"checkbox\" " + bchk + " value=\"" + cval + "\" offval=\"no\" " + ds + "/>";
+		return "<input type=\"checkbox\" " + bchk + " value=\"" + cval + "\" data-offval=\"no\" " + ds + "/>";
 	};
 	$FnFmatter.checkbox.getCellBuilder = function (opts) {
 		var colModel = opts.colModel, op = $.extend({}, opts.checkbox), tagEnd;
 		if (colModel != null) {
 			op = $.extend({}, op, colModel.formatoptions || {});
 		}
-		tagEnd = "\" offval=\"no\" " + (op.disabled === true ? "disabled=\"disabled\"" : "") + "/>";
+		tagEnd = "\" data-offval=\"no\" " + (op.disabled === true ? "disabled=\"disabled\"" : "") + "/>";
 		return function (cval) {
 			if (fmatter.isEmpty(cval) || cval === undefined) { cval = defaultFormat(cval, op); }
 			cval = String(cval).toLowerCase();
