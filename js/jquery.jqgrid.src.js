@@ -10876,7 +10876,8 @@
 							if ($focused.length > 0 && $.inArray(idFocused, ["pData", "nData", "cData"]) >= 0) {
 								$focused.trigger("click");
 								return false;
-							} else if (o.savekey[0] === true && o.savekey[1] === 13) {
+							}
+							if (o.savekey[0] === true && o.savekey[1] === 13) {
 								$("#sData", frmtb2).trigger("click");
 								return false;
 							}
