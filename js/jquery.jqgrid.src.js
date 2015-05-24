@@ -528,11 +528,13 @@
 				gridFooter: "",
 				rowFooter: "ui-widget-content",
 				gridTitle: "ui-widget-header ui-corner-top ui-helper-clearfix",
+				titleButton: "ui-corner-all",
 				toolbarUpper: "ui-state-default",
 				toolbarBottom: "ui-state-default",
-				topPager: "ui-state-default",
-				pagerBottom: "ui-state-default ui-corner-bottom",
-				pagerButton: "ui-corner-all ui-state-disabled ui-jqgrid-disablePointerEvents"
+				pager: "ui-state-default",
+				pagerButton: "ui-corner-all",
+				top: "ui-corner-top",
+				bottom: "ui-corner-bottom"
 			}
 		},
 		htmlDecode: function (value) {
@@ -3819,17 +3821,20 @@
 					if (p.pginput === true) { pginp = "<td dir='" + dir + "'>" + jgrid.format(getDef("pgtext") || "", "<input class='ui-pg-input' type='text' size='2' maxlength='7' value='0' role='textbox'/>", "<span id='sp_1_" + pgid + "'>0</span>") + "</td>"; }
 					pgid = "#" + jqID(pgid); // modify to id selector
 					if (p.pgbuttons === true) {
-						var po = ["first" + tp, "prev" + tp, "next" + tp, "last" + tp],
-							pgfirst = getDef("pgfirst"),
-							pgprev = getDef("pgprev"),
-							pgnext = getDef("pgnext"),
-							pglast = getDef("pglast");
+						var po = ["first", "prev", "next", "last"],
+							buttonClasses = getGuiStyles("pagerButton", "ui-pg-button"),
+							buildPagerButton = function (buttonName) {
+								var titleText = getDef("pg" + buttonName);
+								return "<td id='" + buttonName + tp + "' class='" + buttonClasses + "' " +
+									(titleText ? "title='" + titleText + "'" : "") + "><span class='" + getIcon("pager." + buttonName) + "'></span></td>";
+							};
 						if (dir === "rtl") { po.reverse(); }
-						pgl += "<td id='" + po[0] + "' class='ui-pg-button ui-corner-all' " + (pgfirst ? "title='" + pgfirst + "'" : "") + "><span class='" + getIcon("pager.first") + "'></span></td>";
-						pgl += "<td id='" + po[1] + "' class='ui-pg-button ui-corner-all' " + (pgprev ? "title='" + pgprev + "'" : "") + "><span class='" + getIcon("pager.prev") + "'></span></td>";
-						pgl += pginp !== "" ? sep + pginp + sep : "";
-						pgl += "<td id='" + po[2] + "' class='ui-pg-button ui-corner-all' " + (pgnext ? "title='" + pgnext + "'" : "") + "><span class='" + getIcon("pager.next") + "'></span></td>";
-						pgl += "<td id='" + po[3] + "' class='ui-pg-button ui-corner-all' " + (pglast ? "title='" + pglast + "'" : "") + "><span class='" + getIcon("pager.last") + "'></span></td>";
+						for (i = 0; i < po.length; i++) {
+							pgl += buildPagerButton(po[i]);
+							if (i === 1) {
+								pgl += pginp !== "" ? sep + pginp + sep : "";
+							}
+						}
 					} else if (pginp !== "") { pgl += pginp; }
 					if (dir === "ltr") { pgl += str; }
 					pgl += "</tr></tbody></table>";
@@ -4529,7 +4534,8 @@
 			firstr = null;
 			var hTable = $("<table class='" + getGuiStyles("hTable", "ui-jqgrid-htable") + "' style='width:" + p.tblwidth + "px' role='presentation' aria-labelledby='gbox_" + p.id + "'" + (isMSIE7 ? " cellspacing='0'" : "") + "></table>").append(ts.tHead),
 				hg = (p.caption && p.hiddengrid === true) ? true : false,
-				hb = $("<div class='ui-jqgrid-hbox" + (dir === "rtl" ? "-rtl" : "") + "'></div>");
+				hb = $("<div class='ui-jqgrid-hbox" + (dir === "rtl" ? "-rtl" : "") + "'></div>"),
+				bottomClasses = getGuiStyles("bottom");
 			grid.hDiv = document.createElement("div");
 			$(grid.hDiv)
 				.css({ width: grid.width + "px" })
@@ -4560,7 +4566,7 @@
 					pagerId = $pager.attr("id");
 				}
 				if ($pager.length > 0) {
-					$pager.css({ width: grid.width + "px" }).addClass(getGuiStyles("pagerBottom", "ui-jqgrid-pager")).appendTo(eg);
+					$pager.css({ width: grid.width + "px" }).addClass(getGuiStyles("pager", "ui-jqgrid-pager" + " " + bottomClasses)).appendTo(eg);
 					if (hg) { $pager.hide(); }
 					setPager.call(ts, pagerId, "");
 					p.pager = "#" + jqID(pagerId); // hold ESCAPED id selector in the pager
@@ -4751,7 +4757,7 @@
 			grid.cDiv = document.createElement("div");
 			var visibleGridIcon = getIcon("gridMinimize.visible"), hiddenGridIcon = getIcon("gridMinimize.hidden"), showhide = getDef("showhide"),
 				arf = p.hidegrid === true ?
-						$("<a role='link' class='ui-jqgrid-titlebar-close ui-corner-all'" + (showhide ? " title='" + showhide + "'" : "") + "/>")
+						$("<a role='link' class='" + getGuiStyles("titleButton", "ui-jqgrid-titlebar-close") + "'" + (showhide ? " title='" + showhide + "'" : "") + "/>")
 							.hover(
 								function () { arf.addClass(hoverStateClasses); },
 								function () { arf.removeClass(hoverStateClasses); }
@@ -4784,7 +4790,7 @@
 			if (p.toppager) {
 				p.toppager = p.id + "_toppager";
 				grid.topDiv = $("<div id='" + p.toppager + "'></div>")[0];
-				$(grid.topDiv).addClass(getGuiStyles("topPager", "ui-jqgrid-toppager")).css({ width: grid.width + "px" }).insertBefore(grid.hDiv);
+				$(grid.topDiv).addClass(getGuiStyles("pager", "ui-jqgrid-toppager")).css({ width: grid.width + "px" }).insertBefore(grid.hDiv);
 				setPager.call(ts, p.toppager, "_t");
 				p.toppager = "#" + jqID(p.toppager); // hold ESCAPED id selector in the toppager option
 			} else if (p.pager === "" && !p.scroll) {
@@ -4823,12 +4829,12 @@
 									$("span", self).removeClass(visibleGridIcon).addClass(hiddenGridIcon);
 									p.gridstate = "hidden";
 									if ($(p.gBox).hasClass("ui-resizable")) { $(".ui-resizable-handle", p.gBox).hide(); }
-									$(grid.cDiv).addClass("ui-corner-bottom");
+									$(grid.cDiv).addClass(bottomClasses);
 									if (!hg) { feedback.call(ts, "onHeaderClick", p.gridstate, e); }
 								}
 							});
 						} else if (p.gridstate === "hidden") {
-							$(grid.cDiv).removeClass("ui-corner-bottom");
+							$(grid.cDiv).removeClass(bottomClasses);
 							$(elems, p.gBox).slideDown("fast", function () {
 								counter--;
 								if (counter === 0) {
@@ -4878,7 +4884,7 @@
 					return false;
 				});
 			if (!p.pager) {
-				$(grid.cDiv).nextAll("div:visible").filter(":last").addClass("ui-corner-bottom"); // set on bottom toolbar or footer (sDiv) or on bDiv
+				$(grid.cDiv).nextAll("div:visible").filter(":last").addClass(bottomClasses); // set on bottom toolbar or footer (sDiv) or on bDiv
 			}
 			$(".ui-jqgrid-labels", grid.hDiv)
 				.bind("selectstart", function () { return false; });
@@ -5860,7 +5866,7 @@
 				self.p.caption = newcap;
 				$("span.ui-jqgrid-title, span.ui-jqgrid-title-rtl", cDiv).html(newcap);
 				$(cDiv).show();
-				$(cDiv).nextAll("div").removeClass("ui-corner-top");
+				$(cDiv).nextAll("div").removeClass(base.getGuiStyles.call(self, "top"));
 				$(this).triggerHandler("jqGridResetFrozenHeights");
 			});
 		},
