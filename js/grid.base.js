@@ -3201,7 +3201,7 @@
 									if (isXML && v != null) {
 										v = v.textContent || v.text;
 									}
-								} else if (typeof colReader[cmName] !== "string") { // isFunction(colReader[cmName])
+								} else if (colReader[cmName] != null && typeof colReader[cmName] !== "string") { // isFunction(colReader[cmName])
 									v = colReader[cmName](cells);
 								} else {
 									v = fieldReader(cells, info.name);
