@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-05-20
+ * Date: 2015-05-24
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -4798,7 +4798,9 @@
 				}
 				if (hg) { $(grid.uDiv).hide(); }
 			}
-			p.datatype = p.datatype.toLowerCase();
+			if (typeof p.datatype === "string") {
+				p.datatype =  p.datatype.toLowerCase();
+			}
 			if (p.toppager) {
 				p.toppager = p.id + "_toppager";
 				grid.topDiv = $("<div id='" + p.toppager + "'></div>")[0];
