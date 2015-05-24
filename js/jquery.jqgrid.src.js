@@ -534,7 +534,8 @@
 				pager: "ui-state-default",
 				pagerButton: "ui-corner-all",
 				top: "ui-corner-top",
-				bottom: "ui-corner-bottom"
+				bottom: "ui-corner-bottom",
+				resizer: "ui-widget-header"
 			}
 		},
 		htmlDecode: function (value) {
@@ -2041,6 +2042,7 @@
 						fixWidthOnShrink: false
 					},
 					doubleClickSensitivity: 250,
+					minResizingWidth: 10,
 					rowTotal: null,
 					records: 0,
 					pager: "",
@@ -2361,6 +2363,11 @@
 						$(this).data("pageX", e.pageX);
 					}
 				},
+				intNum = function (val, defval) {
+					val = parseInt(val, 10);
+					if (isNaN(val)) { return defval || 0; }
+					return val;
+				},
 				grid = {
 					headers: [],
 					cols: [],
@@ -2383,25 +2390,32 @@
 					// timer
 					// prevRowHeight
 					dragStart: function (i, x, y) {
-						var self = this, $bDiv = $(self.bDiv), gridLeftPos = $bDiv.offset().left;
-						self.resizing = { idx: i, startX: x.pageX, sOL: x.pageX - gridLeftPos, moved: false };
+						var self = this, $bDiv = $(self.bDiv), gridOffset = $bDiv.closest(p.gBox).offset(),
+							// it's better to use exact position of the border on the right of the current header
+							startX = $(self.headers[i].el).offset().left + self.headers[i].width + (jgrid.cell_width ? 0 : intNum(p.cellLayout, 0)) - 2;
+						self.resizing = { idx: i, startX: startX, sOL: startX, moved: false, delta: startX - x.pageX };
 						self.hDiv.style.cursor = "col-resize";
-						self.curGbox = $(p.rs, p.gBox);
-						self.curGbox.css({ display: "block", left: x.pageX - gridLeftPos, top: y[1], height: y[2] });
+						self.curGbox = $(p.rs);
+						self.curGbox.prependTo("body"); // change the parent to be able to move over the ranges of the gBox
+						self.curGbox.css({ display: "block", left: startX, top: y[1] + gridOffset.top, height: y[2] });
 						self.curGbox.data("idx", i);
+						self.curGbox.data("delta", startX - x.pageX);
 						myResizerClickHandler.call(this.curGbox, x);
 						feedback.call(getGridComponent(COMPONENT_NAMES.BODY_TABLE, $bDiv), "resizeStart", x, i);
 						document.onselectstart = function () { return false; };
+						$(document).bind("mousemove.jqGrid", function (e) {
+							if (grid.resizing) { grid.dragMove(e); return false; }
+						});
 					},
 					dragMove: function (x) {
 						var self = this, resizing = self.resizing;
 						if (resizing) {
-							var diff = x.pageX - resizing.startX, headers = self.headers, h = headers[resizing.idx],
+							var diff = x.pageX + resizing.delta - resizing.startX, headers = self.headers, h = headers[resizing.idx],
 								newWidth = p.direction === "ltr" ? h.width + diff : h.width - diff, hn, nWn;
 							resizing.moved = true;
-							if (newWidth > 33) {
+							if (newWidth > p.minResizingWidth) {
 								if (self.curGbox == null) {
-									self.curGbox = $(p.rs, p.gBox);
+									self.curGbox = $(p.rs);
 								}
 								self.curGbox.css({ left: resizing.sOL + diff });
 								if (p.forceFit === true) {
@@ -2471,11 +2485,13 @@
 							$(p.rs).removeData("pageX");
 							self.resizing = false;
 							setTimeout(function () {
-								$(p.rs).css("display", "none");
+								$(p.rs).css("display", "none")
+									.prependTo(p.gBox); // restore the parent
 							}, p.doubleClickSensitivity);
 						}
 						self.curGbox = null;
 						document.onselectstart = function () { return true; };
+						$(document).unbind("mousemove.jqGrid");
 					},
 					populateVisible: function () {
 						var self = this, $self = $(self), gridSelf = self.grid, bDiv = gridSelf.bDiv, $bDiv = $(bDiv);
@@ -2645,11 +2661,6 @@
 				},
 				stripGridPrefix = function (rowId) {
 					return stripPref(p.idPrefix, rowId);
-				},
-				intNum = function (val, defval) {
-					val = parseInt(val, 10);
-					if (isNaN(val)) { return defval || 0; }
-					return val;
 				},
 				formatCol = function (pos, rowInd, tv, rawObject, rowId, rdata) {
 					var cm = p.colModel[pos], cellAttrFunc,
@@ -4381,12 +4392,13 @@
 			p.widthOrg = p.width;
 			setInitialColWidth();
 			$(eg).css("width", grid.width + "px")
-				.append("<div class='ui-jqgrid-resize-mark' id='" + p.rsId + "'>&#160;</div>");
+				.append("<div class='" + getGuiStyles("resizer", "ui-jqgrid-resize-mark") + "' id='" + p.rsId + "'>&#160;</div>");
 			$(p.rs)
 				.bind("selectstart", function () {
 					return false;
 				})
-				.click(myResizerClickHandler).dblclick(function (e) {
+				.click(myResizerClickHandler)
+				.dblclick(function (e) {
 					var iColIndex = $(this).data("idx"),
 						pageX = $(this).data("pageX"),
 						cm = p.colModel[iColIndex];
@@ -4854,16 +4866,17 @@
 				$(grid.cDiv).hide();
 				$(grid.cDiv).nextAll("div:visible").first().addClass("ui-corner-top"); // set on top toolbar or toppager or on hDiv
 			}
-			$(grid.hDiv).after(grid.bDiv)
-				.mousemove(function (e) {
+			$(grid.hDiv).after(grid.bDiv);
+				/*.mousemove(function (e) {
 					if (grid.resizing) { grid.dragMove(e); return false; }
-				});
+				});*/
 			$(eg)
 				.click(myResizerClickHandler)
 				.dblclick(function (e) { // it's still needed for Firefox
 					var $resizer = $(p.rs),
 						resizerOffset = $resizer.offset(),
 						iColIndex = $resizer.data("idx"),
+						delta = $resizer.data("delta"),
 						cm = p.colModel[iColIndex],
 						pageX = $(this).data("pageX") || $resizer.data("pageX");
 
@@ -4878,7 +4891,7 @@
 					}
 
 					if (feedback.call(ts, "resizeDblClick", iColIndex, cm) &&
-							(resizerOffset.left - 1 <= e.pageX && e.pageX <= resizerOffset.left + $resizer.outerWidth() + 1) && cm != null && cm.autoResizable) {
+							(resizerOffset.left - 1 <= e.pageX + delta && e.pageX + delta <= resizerOffset.left + $resizer.outerWidth() + 1) && cm != null && cm.autoResizable) {
 						$j.autoResizeColumn.call($self0, iColIndex);
 					}
 					return false;
