@@ -125,7 +125,7 @@
 	height: auto;
 	padding: 0 2px 0 2px;
 }
-.ui-jqgrid .ui-jqgrid-htable th div {
+.ui-jqgrid .ui-jqgrid-htable .ui-jqgrid-labels th div {
 	overflow: hidden;
 	position: relative;
 	height: auto;

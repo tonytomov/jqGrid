@@ -527,8 +527,8 @@
 				$.each(colModel, function (ci) {
 					var cm = this, soptions, mode = "filter", surl, self, select = "", sot, so, i, searchoptions = cm.searchoptions, editoptions = cm.editoptions,
 						th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-" + p.direction + "'></th>"),
-						thd = $("<div style='position:relative;height:auto;padding-right:0.3em;padding-left:0.3em;'></div>"),
-						stbl = $("<table class='ui-search-table'" + (jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "") + "><tr><td class='ui-search-oper'></td><td class='ui-search-input'></td><td class='ui-search-clear'></td></tr></table>");
+						thd = $("<div style='position:relative;height:auto;'></div>"),
+						stbl = $("<table class='ui-search-table'" + (jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "") + "><tr><td class='ui-search-oper'></td><td class='ui-search-input'></td><td class='ui-search-clear' style='width:1px'></td></tr></table>");
 					if (this.hidden === true) { $(th).css("display", "none"); }
 					this.search = this.search === false ? false : true;
 					if (this.stype === undefined) { this.stype = "text"; }
@@ -565,7 +565,7 @@
 						}
 						if (soptions.clearSearch) {
 							var csv = getRes("search.resetTitle") || "Clear Search Value";
-							$("td", stbl).eq(2).append("<a title='" + csv + "' style='padding-right: 0.3em;padding-left: 0.3em;' class='clearsearchclass'>" + o.resetIcon + "</a>");
+							$("td", stbl).eq(2).append("<a title='" + csv + "' style='padding-right: 0.2em;padding-left: 0.3em;' class='clearsearchclass'>" + o.resetIcon + "</a>");
 						} else {
 							$("td", stbl).eq(2).hide();
 						}
