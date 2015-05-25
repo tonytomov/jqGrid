@@ -8382,9 +8382,9 @@
 										$(thd).append(stbl);
 										bindEv.call($t, elem, soptions);
 										$("td", stbl).eq(1).append(elem);
-										jgrid.fullBoolFeedback.call($t, searchoptions.selectFilled, "jqGridSelectFilled", {
+										jgrid.fullBoolFeedback.call($t, soptions.selectFilled, "jqGridSelectFilled", {
 											elem: elem,
-											options: searchoptions,
+											options: searchoptions || editoptions || {},
 											cm: cm,
 											cmName: cm.name,
 											iCol: ci,
