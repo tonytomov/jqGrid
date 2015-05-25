@@ -4643,10 +4643,10 @@
 							ri = $tr[0].rowIndex;
 							try { $j.editCell.call($self0, ri, ci, true); } catch (ignore) { }
 						}
-						return;
+						return false;
 					}
 					if (!cSel) {
-						return;
+						return false;
 					}
 					if (!p.multikey) {
 						if (p.multiselect && p.multiboxonly) {
@@ -4685,6 +4685,7 @@
 							$("#jqg_" + jqID(p.id) + "_" + ri)[propOrAttr]("checked", !scb);
 						}
 					}
+					return false;
 				})
 				.bind("reloadGrid", function (e, opts) {
 				var self = this, gridSelf = self.grid, $self = $(this);
