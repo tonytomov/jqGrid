@@ -502,7 +502,7 @@
 					textOfClickable: "ui-state-default"
 				},
 				dialog: {
-					header: "ui-widget-header ui-corner-all ui-helper-clearfix",
+					header: "ui-widget-header ui-dialog-titlebar ui-corner-all ui-helper-clearfix",
 					window: "ui-widget ui-widget-content ui-corner-all ui-front",
 					content: "ui-widget-content",
 					hr: "ui-widget-content",
@@ -3204,7 +3204,7 @@
 								} else if (colReader[cmName] != null && typeof colReader[cmName] !== "string") { // isFunction(colReader[cmName])
 									v = colReader[cmName](cells);
 								} else {
-									v = fieldReader(cells, info.name);
+									v = fieldReader(cells, typeof colReader[cmName] === "string" ? colReader[cmName] : info.name);
 								}
 								if (info.type === 1) { // additional property
 									addProp = additionalProperties[info.index];
@@ -6221,7 +6221,7 @@
 					h.newWidth = newWidth;
 					grid.newWidth = p.tblwidth + newWidth - h.width;
 					grid.resizeColumn(iCol, !p.frozenColumns, skipGridAdjustments);
-					if (adjustGridWidth !== false || !skipGridAdjustments) {
+					if (adjustGridWidth !== false && !skipGridAdjustments) {
 						self.fixScrollOffsetAndhBoxPadding();
 						base.setGridWidth.call($self, grid.newWidth + p.scrollOffset, false); // adjust grid width too
 					}
