@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-05-20
+ * Date: 2015-05-24
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -502,7 +502,7 @@
 					textOfClickable: "ui-state-default"
 				},
 				dialog: {
-					header: "ui-widget-header ui-corner-all ui-helper-clearfix",
+					header: "ui-widget-header ui-dialog-titlebar ui-corner-all ui-helper-clearfix",
 					window: "ui-widget ui-widget-content ui-corner-all ui-front",
 					content: "ui-widget-content",
 					hr: "ui-widget-content",
@@ -3204,7 +3204,7 @@
 								} else if (colReader[cmName] != null && typeof colReader[cmName] !== "string") { // isFunction(colReader[cmName])
 									v = colReader[cmName](cells);
 								} else {
-									v = fieldReader(cells, info.name);
+									v = fieldReader(cells, typeof colReader[cmName] === "string" ? colReader[cmName] : info.name);
 								}
 								if (info.type === 1) { // additional property
 									addProp = additionalProperties[info.index];
@@ -4798,7 +4798,9 @@
 				}
 				if (hg) { $(grid.uDiv).hide(); }
 			}
-			p.datatype = p.datatype.toLowerCase();
+			if (typeof p.datatype === "string") {
+				p.datatype =  p.datatype.toLowerCase();
+			}
 			if (p.toppager) {
 				p.toppager = p.id + "_toppager";
 				grid.topDiv = $("<div id='" + p.toppager + "'></div>")[0];
@@ -6219,7 +6221,7 @@
 					h.newWidth = newWidth;
 					grid.newWidth = p.tblwidth + newWidth - h.width;
 					grid.resizeColumn(iCol, !p.frozenColumns, skipGridAdjustments);
-					if (adjustGridWidth !== false || !skipGridAdjustments) {
+					if (adjustGridWidth !== false && !skipGridAdjustments) {
 						self.fixScrollOffsetAndhBoxPadding();
 						base.setGridWidth.call($self, grid.newWidth + p.scrollOffset, false); // adjust grid width too
 					}
@@ -6964,6 +6966,10 @@
 		getGuiStyles = function (path, jqClasses) {
 			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], path), jqClasses || "");
 		};
+
+	jgrid.jqModal = jgrid.jqModal || {};
+	$.extend(true, jgrid.jqModal, {toTop: true});
+
 	$.extend(jgrid, {
 		// Modal functions
 		// The methods showModal and closeModal will be used as callback of $.jqm jQuery plugin defined in jqModal.js
@@ -7115,6 +7121,7 @@
 				var parentZ = $(insertSelector).parents("*[role=dialog]").filter(":first").css("z-index");
 				if (parentZ) {
 					o.zIndex = parseInt(parentZ, 10) + 2;
+					o.toTop = true;
 				} else {
 					o.zIndex = 950;
 				}
@@ -7140,7 +7147,9 @@
 			if (o.resize === undefined) { o.resize = true; }
 			if (o.drag) {
 				if ($.fn.jqDrag) {
-					$(mh).addClass("ui-draggable"); //css("cursor","move");
+					// .ui-draggable .ui-dialog-titlebar {cursor: move}
+					//$(mw).addClass("ui-draggable"); //css("cursor","move");
+					$(mh).css("cursor","move");
 					$(mw).jqDrag(mh);
 				} else {
 					try {
@@ -7169,7 +7178,7 @@
 		},
 		viewModal: function (selector, o) {
 			o = $.extend(true, {
-				toTop: false,
+				//toTop: false,
 				overlay: 30,
 				modal: false,
 				overlayClass: "ui-widget-overlay",
@@ -9790,19 +9799,26 @@
 	"use strict";
 	var jgrid = $.jgrid, feedback = jgrid.feedback, fullBoolFeedback = jgrid.fullBoolFeedback, jqID = jgrid.jqID,
 		hideModal = jgrid.hideModal, viewModal = jgrid.viewModal, createModal = jgrid.createModal, infoDialog = jgrid.info_dialog,
-		mergeCssClasses = jgrid.mergeCssClasses, hasOneFromClasses = jgrid.hasOneFromClasses,// $j = $.fn.jqGrid,
+		mergeCssClasses = jgrid.mergeCssClasses, hasOneFromClasses = jgrid.hasOneFromClasses, $j = $.fn.jqGrid,
 		builderFmButon = jgrid.builderFmButon,
 		getCssStyleOrFloat = function ($elem, styleName) {
 			var v = $elem[0].style[styleName];
 			return v.indexOf("px") >= 0 ? parseFloat(v) : v;
 		},
 		savePositionOnHide = function (propName, frmgr, h) {
-			var $w = h.w, $form = $(frmgr);
+			var $w = h.w, $form = $(frmgr), toTop = h.c.toTop, offsetGbox,
+				top = getCssStyleOrFloat($w, "top"),
+				left = getCssStyleOrFloat($w, "left");
 			// we use below .style.height and .style.width to save correctly "auto" and "100%" values
 			// the "px" suffix will be saved too, but it's not a problem 
+			if (toTop) {
+				offsetGbox = $w.closest(".ui-jqgrid").offset();
+				top -= offsetGbox.top;
+				left -= offsetGbox.left;
+			}
 			this.data(propName, {
-				top: getCssStyleOrFloat($w, "top"),                 //parseFloat($w.css("top")),
-				left: getCssStyleOrFloat($w, "left"),               //parseFloat($w.css("left")),
+				top: top,                 //parseFloat($w.css("top")),
+				left: left,               //parseFloat($w.css("left")),
 				width: getCssStyleOrFloat($w, "width"),             //$(h.w).width(),
 				height: getCssStyleOrFloat($w, "height"),           //$(h.w).height(),
 				dataheight: getCssStyleOrFloat($form, "height") || "auto",
@@ -9885,7 +9901,7 @@
 						layer: null,
 						operands: { "eq": "=", "ne": "<>", "lt": "<", "le": "<=", "gt": ">", "ge": ">=", "bw": "LIKE", "bn": "NOT LIKE", "in": "IN", "ni": "NOT IN", "ew": "LIKE", "en": "NOT LIKE", "cn": "LIKE", "nc": "NOT LIKE", "nu": "IS NULL", "nn": "IS NOT NULL" }
 					},
-					$self.jqGrid("getGridRes", "search"),
+					$j.getGridRes.call($self, "search"),
 					jgrid.search || {},
 					p.searching || {},
 					oMuligrid || {});
@@ -10147,7 +10163,7 @@
 				// make new copy of the options oMuligrid and use it for ONE specific grid.
 				// p.formEditing can contains grid specific options
 				// we will don't modify the input options oMuligrid
-				var gridId = p.id,
+				var gridId = p.id, getGridRes = $j.getGridRes, setSelection = $j.setSelection,
 					o = $.extend(true,
 						{
 							top: 0,
@@ -10197,7 +10213,7 @@
 							removemodal: true,
 							form: "edit"
 						},
-						$self.jqGrid("getGridRes", "edit"),
+						getGridRes.call($self, "edit"),
 						jgrid.edit,
 						p.formEditing || {},
 						oMuligrid || {});
@@ -10206,7 +10222,7 @@
 					ids = { themodal: "editmod" + gridId, modalhead: "edithd" + gridId, modalcontent: "editcnt" + gridId, resizeAlso: frmgr },
 					themodalSelector = "#" + jqID(ids.themodal), gboxSelector = p.gBox, propOrAttr = p.propOrAttr, colModel = p.colModel, iColByName = p.iColByName,
 					maxCols = 1, maxRows = 0, postdata, diff, frmoper, commonIconClass = o.commonIconClass,
-					errcap = $self.jqGrid("getGridRes", "errors.errcap"),
+					errcap = getGridRes.call($self, "errors.errcap"),
 					editFeedback = function () {
 						var args = $.makeArray(arguments);
 						args.unshift("");
@@ -10229,8 +10245,11 @@
 					frmoper = "edit";
 				}
 				if (!o.recreateForm) {
-					if ($self.data("formProp")) {
-						$.extend(o, $self.data("formProp"));
+					var formProp = $self.data("formProp");
+					if (formProp) {
+						formProp.top = Math.max(formProp.top, 0);
+						formProp.left = Math.max(formProp.left, 0);
+						$.extend(o, formProp);
 					}
 				}
 				var closeovrl = true;
@@ -10291,7 +10310,7 @@
 										if (iCol !== undefined) {
 											cm = colModel[iCol];
 											formatoptions = cm.formatoptions || {};
-											newformat = formatoptions.newformat || $self.jqGrid("getGridRes", "formatter.date.newformat");
+											newformat = formatoptions.newformat || getGridRes.call($self, "formatter.date.newformat");
 											postdata[nm] = jgrid.parseDate.call($self[0], "Y-m-d", postdata[nm], newformat);
 										}
 									}
@@ -10310,7 +10329,7 @@
 						tmpl += tdtmpl;
 					}
 					if (rowid !== "_empty") {
-						ind = $self.jqGrid("getInd", rowid);
+						ind = $j.getInd.call($self, rowid);
 					}
 					$(colModel).each(function (i) {
 						var cm = this, nm = cm.name, $td, hc, trdata, tmp, dc, elc, editable = cm.editable, disabled = false, readonly = false,
@@ -10457,7 +10476,7 @@
 						$("#id_g", fmid).val(rowid);
 						return;
 					}
-					var tre = $self.jqGrid("getInd", rowid, true);
+					var tre = $j.getInd.call($self, rowid, true);
 					if (!tre) { return; }
 					//$("td[role=gridcell]", tre)
 					$(tre.cells).filter("td[role=gridcell]").each(function (i) {
@@ -10674,14 +10693,14 @@
 											$self.trigger("reloadGrid", reloadGridOptions);
 										} else {
 											if (p.treeGrid === true) {
-												$self.jqGrid("addChildNode", ret[2], selr, postdata);
+												$j.addChildNode.call($self, ret[2], selr, postdata);
 											} else {
-												$self.jqGrid("addRowData", ret[2], postdata, o.addedrow);
+												$j.addRowData.call($self, ret[2], postdata, o.addedrow);
 											}
 										}
 										if (o.closeAfterAdd) {
 											if (p.treeGrid !== true) {
-												$self.jqGrid("setSelection", ret[2]);
+												setSelection.call($self, ret[2]);
 											}
 											hideModal(themodalSelector, { gb: gboxSelector, jqm: o.jqModal, onClose: o.onClose, removemodal: o.removemodal, formprop: !o.recreateForm, form: o.form });
 										} else if (o.clearAfterAdd) {
@@ -10691,12 +10710,12 @@
 										// the action is update
 										if (o.reloadAfterSubmit) {
 											$self.trigger("reloadGrid", reloadGridOptions);
-											if (!o.closeAfterEdit) { setTimeout(function () { $self.jqGrid("setSelection", postdata[idname]); }, 1000); }
+											if (!o.closeAfterEdit) { setTimeout(function () { setSelection.call($self, postdata[idname]); }, 1000); }
 										} else {
 											if (p.treeGrid === true) {
-												$self.jqGrid("setTreeRow", postdata[idname], postdata);
+												$j.setTreeRow.call($self, postdata[idname], postdata);
 											} else {
-												$self.jqGrid("setRowData", postdata[idname], postdata);
+												$j.setRowData.call($self, postdata[idname], postdata);
 											}
 										}
 										if (o.closeAfterEdit) { hideModal(themodalSelector, { gb: gboxSelector, jqm: o.jqModal, onClose: o.onClose, removemodal: o.removemodal, formprop: !o.recreateForm, form: o.form }); }
@@ -10797,10 +10816,10 @@
 					var editingInfo = jgrid.detectRowEditing.call($t, rowid);
 					if (editingInfo != null) {
 						if (editingInfo.mode === "inlineEditing") {
-							$self.jqGrid("restoreRow", rowid);
+							$j.restoreRow.call($self, rowid);
 						} else {
 							var savedRowInfo = editingInfo.savedRow, tr = $t.rows[savedRowInfo.id];
-							$self.jqGrid("restoreCell", savedRowInfo.id, savedRowInfo.ic);
+							$j.restoreCell.call($self, savedRowInfo.id, savedRowInfo.ic);
 							// remove highlighting of the cell
 							$(tr.cells[savedRowInfo.ic]).removeClass("edit-cell " + highlightClass);
 							$(tr).addClass(highlightClass).attr({ "aria-selected": "true", "tabindex": "0" });
@@ -10826,7 +10845,7 @@
 					}
 				}
 				function getCurrPos() {
-					var rowsInGrid = $self.jqGrid("getDataIDs"),
+					var rowsInGrid = $j.getDataIDs.call($self),
 						selrow = $("#id_g", frmtb).val(),
 						pos = $.inArray(selrow, rowsInGrid);
 					return [pos, rowsInGrid];
@@ -11055,7 +11074,7 @@
 					if (npos[0] !== -1 && npos[1][npos[0] + 1]) {
 						if (!editFeedback("onclickPgButtons", "next", $(frmgr), npos[1][npos[0]])) { return false; }
 						fillData(npos[1][npos[0] + 1], frmgr);
-						$self.jqGrid("setSelection", npos[1][npos[0] + 1]);
+						setSelection.call($self, npos[1][npos[0] + 1]);
 						editFeedback("afterclickPgButtons", "next", $(frmgr), npos[1][npos[0] + 1]);
 						updateNav(npos[0] + 1, npos);
 					}
@@ -11069,7 +11088,7 @@
 						if (!editFeedback("onclickPgButtons", "prev", $(frmgr), ppos[1][ppos[0]])) { return false; }
 						if (hasOneFromClasses($("#" + jqID(ppos[1][ppos[0] - 1])), disabledClass)) { return false; }
 						fillData(ppos[1][ppos[0] - 1], frmgr);
-						$self.jqGrid("setSelection", ppos[1][ppos[0] - 1]);
+						setSelection.call($self, ppos[1][ppos[0] - 1]);
 						editFeedback("afterclickPgButtons", "prev", $(frmgr), ppos[1][ppos[0] - 1]);
 						updateNav(ppos[0] - 1, ppos);
 					}
@@ -11113,7 +11132,7 @@
 							removemodal: true,
 							form: "view"
 						},
-						$self.jqGrid("getGridRes", "view"),
+						$j.getGridRes.call($self, "view"),
 						jgrid.view || {},
 						p.formViewing || {},
 						oMuligrid || {});
@@ -11144,7 +11163,7 @@
 					}
 				}
 				function createData(rowid, tb, maxcols) {
-					var nm, hc, trdata, cnt = 0, tmp, dc, retpos = [], ind = $self.jqGrid("getInd", rowid), i,
+					var nm, hc, trdata, cnt = 0, tmp, dc, retpos = [], ind = $j.getInd.call($self, rowid), i,
 						viewDataClasses = getGuiStyles.call($t, "dialog.viewData", "DataTD form-view-data"),
 						viewLabelClasses = getGuiStyles.call($t, "dialog.viewLabel", "CaptionTD form-view-label"),
 						tdtmpl = "<td class='" + viewLabelClasses + "' width='" + o.labelswidth + "'></td><td class='" + viewDataClasses + " ui-helper-reset'></td>", tmpl = "",
@@ -11229,7 +11248,7 @@
 					return retpos;
 				}
 				function fillData(rowid) {
-					var nm, hc, cnt = 0, tmp, trv = $self.jqGrid("getInd", rowid, true), cm;
+					var nm, hc, cnt = 0, tmp, trv = $j.getInd.call($self, rowid, true), cm;
 					if (!trv) { return; }
 					$("td", trv).each(function (i) {
 						cm = colModel[i];
@@ -11274,7 +11293,7 @@
 					}
 				}
 				function getCurrPos() {
-					var rowsInGrid = $self.jqGrid("getDataIDs"),
+					var rowsInGrid = $j.getDataIDs.call($self),
 						selrow = $("#id_g", frmtb).val(),
 						pos = $.inArray(selrow, rowsInGrid);
 					return [pos, rowsInGrid];
@@ -11375,7 +11394,7 @@
 					if (npos[0] !== -1 && npos[1][npos[0] + 1]) {
 						if (!viewFeedback("onclickPgButtons", "next", $(frmgr), npos[1][npos[0]])) { return false; }
 						fillData(npos[1][npos[0] + 1]);
-						$self.jqGrid("setSelection", npos[1][npos[0] + 1]);
+						$j.setSelection.call($self, npos[1][npos[0] + 1]);
 						viewFeedback("afterclickPgButtons", "next", $(frmgr), npos[1][npos[0] + 1]);
 						updateNav(npos[0] + 1, npos);
 					}
@@ -11388,7 +11407,7 @@
 					if (ppos[0] !== -1 && ppos[1][ppos[0] - 1]) {
 						if (!viewFeedback("onclickPgButtons", "prev", $(frmgr), ppos[1][ppos[0]])) { return false; }
 						fillData(ppos[1][ppos[0] - 1]);
-						$self.jqGrid("setSelection", ppos[1][ppos[0] - 1]);
+						$j.setSelection.call($self, ppos[1][ppos[0] - 1]);
 						viewFeedback("afterclickPgButtons", "prev", $(frmgr), ppos[1][ppos[0] - 1]);
 						updateNav(ppos[0] - 1, ppos);
 					}
@@ -11438,7 +11457,7 @@
 							serializeDelData: null,
 							useDataProxy: false
 						},
-						$self.jqGrid("getGridRes", "del"),
+						$j.getGridRes.call($self, "del"),
 						jgrid.del || {},
 						p.formDeleting || {},
 						oMuligrid || {});
@@ -11547,11 +11566,11 @@
 											$self.trigger("reloadGrid", [$.extend({}, o.reloadGridOptions || {})]);
 										} else {
 											if (p.treeGrid === true) {
-												try { $self.jqGrid("delTreeNode", formRowIds[0]); } catch (ignore) { }
+												try { $j.delTreeNode.call($self, formRowIds[0]); } catch (ignore) { }
 											} else {
 												formRowIds = formRowIds.slice(); // make copy for save deleting
 												for (i = 0; i < formRowIds.length; i++) {
-													$self.jqGrid("delRowData", formRowIds[i]);
+													$j.delRowData.call($self, formRowIds[i]);
 												}
 											}
 										}
@@ -11659,11 +11678,12 @@
 							alertheight: "auto",
 							alerttop: null,
 							//alertToTop: false,
+							removemodal: true,
 							alertleft: null,
 							alertzIndex: null,
 							iconsOverText: false
 						},
-						$self.jqGrid("getGridRes", "nav"),
+						$j.getGridRes.call($self, "nav"),
 						jgrid.nav || {},
 						p.navOptions || {},
 						oMuligrid || {}
@@ -11674,6 +11694,43 @@
 				var twd, tdw, gridIdEscaped = p.idSel, gboxSelector = p.gBox, commonIconClass = o.commonIconClass,
 					alertIDs = { themodal: "alertmod_" + gridId, modalhead: "alerthd_" + gridId, modalcontent: "alertcnt_" + gridId },
 					viewModalAlert = function () {
+						var documentElement = document.documentElement, w = window, left, top,
+							offsetGbox = $self.closest(".ui-jqgrid").offset();
+						if ($("#" + jqID(alertIDs.themodal))[0] === undefined) {
+							if (!o.alerttop && !o.alertleft) {
+								if (w.innerWidth !== undefined) {
+									left = w.innerWidth;
+									top = w.innerHeight;
+								} else if (documentElement !== null && documentElement.clientWidth !== undefined && documentElement.clientWidth !== 0) {
+									left = documentElement.clientWidth;
+									top = documentElement.clientHeight;
+								} else {
+									left = 1024;
+									top = 768;
+								}
+								left = left / 2 - parseInt(o.alertwidth, 10) / 2 - offsetGbox.left;
+								top = top / 2 - 25 - offsetGbox.top;
+							}
+							createModal.call($t, alertIDs,
+								"<div>" + o.alerttext + "</div><span tabindex='0'><span tabindex='-1' id='" + gridId + "_jqg_alrt'></span></span>",
+								{
+									gbox: gboxSelector,
+									jqModal: o.jqModal,
+									drag: true,
+									resize: true,
+									caption: o.alertcap,
+									top: o.alerttop != null ? o.alerttop : top,
+									left: o.alertleft != null ? o.alertleft : left,
+									width: o.alertwidth,
+									height: o.alertheight,
+									closeOnEscape: o.closeOnEscape,
+									zIndex: o.alertzIndex,
+									removemodal: o.removemodal
+								},
+								p.gView,
+								$(gboxSelector)[0],
+								false);
+						}
 						viewModal("#" + jqID(alertIDs.themodal), { gbox: gboxSelector, toTop: o.alertToTop, jqm: o.jqModal });
 						var $close = $("#" + jqID(alertIDs.modalhead)).find(".ui-jqdialog-titlebar-close");
 						$close.attr({ tabindex: "0", href: "#", role: "button" });
@@ -11697,42 +11754,6 @@
 					}
 				}
 
-				if ($("#" + jqID(alertIDs.themodal))[0] === undefined) {
-					if (!o.alerttop && !o.alertleft) {
-						var documentElement = document.documentElement, w = window;
-						if (w.innerWidth !== undefined) {
-							o.alertleft = w.innerWidth;
-							o.alerttop = w.innerHeight;
-						} else if (documentElement !== null && documentElement.clientWidth !== undefined && documentElement.clientWidth !== 0) {
-							o.alertleft = documentElement.clientWidth;
-							o.alerttop = documentElement.clientHeight;
-						} else {
-							o.alertleft = 1024;
-							o.alerttop = 768;
-						}
-						o.alertleft = o.alertleft / 2 - parseInt(o.alertwidth, 10) / 2;
-						o.alerttop = o.alerttop / 2 - 25;
-					}
-					createModal.call($t, alertIDs,
-						"<div>" + o.alerttext + "</div><span tabindex='0'><span tabindex='-1' id='" + gridId + "_jqg_alrt'></span></span>",
-						{
-							gbox: gboxSelector,
-							jqModal: o.jqModal,
-							drag: true,
-							resize: true,
-							caption: o.alertcap,
-							top: o.alerttop,
-							left: o.alertleft,
-							width: o.alertwidth,
-							height: o.alertheight,
-							closeOnEscape: o.closeOnEscape,
-							zIndex: o.alertzIndex,
-							removemodal: false
-						},
-						p.gView,
-						$(gboxSelector)[0],
-						false);
-				}
 				var clone = 1, i, tbd, navtbl, pgid, elemids, iPart, pagerTable, $pagerPart, pagerParts = ["left", "center", "right"],
 					sep = "<div class='ui-pg-button " + disabledClass + "'><span class='ui-separator'></span></div>",
 					onHoverIn = function () {
@@ -11748,7 +11769,7 @@
 							if ($.isFunction(o.addfunc)) {
 								o.addfunc.call($t);
 							} else {
-								$self.jqGrid("editGridRow", "new", pAdd);
+								$j.editGridRow.call($self, "new", pAdd);
 							}
 						}
 						return false;
@@ -11760,7 +11781,7 @@
 								if ($.isFunction(func)) {
 									func.call($t, sr);
 								} else {
-									$self.jqGrid(methodName, sr, param);
+									$j[methodName].call($self, sr, param);
 								}
 							} else {
 								viewModalAlert();
@@ -11787,7 +11808,7 @@
 								if ($.isFunction(o.delfunc)) {
 									o.delfunc.call($t, dr);
 								} else {
-									$self.jqGrid("delGridRow", dr, pDel);
+									$j.delGridRow.call($self, dr, pDel);
 								}
 							} else {
 								viewModalAlert();
@@ -11800,7 +11821,7 @@
 							if ($.isFunction(o.searchfunc)) {
 								o.searchfunc.call($t, pSearch);
 							} else {
-								$self.jqGrid("searchGrid", pSearch);
+								$j.searchGrid.call($self, pSearch);
 							}
 						}
 						return false;
@@ -11939,7 +11960,7 @@
 							cursor: "pointer",
 							iconsOverText: false
 						},
-						$($t).jqGrid("getGridRes", "nav"),
+						$j.getGridRes.call($($t), "nav"),
 						jgrid.nav || {},
 						p.navOptions || {},
 						oMuligrid || {}
@@ -11948,7 +11969,7 @@
 					disabledClass = getGuiStateStyles.call($t, "disabled");
 				if (elem === undefined) {
 					if (p.pager) {
-						$($t).jqGrid("navButtonAdd", p.pager, o);
+						$j.navButtonAdd.call($($t), p.pager, o);
 						if (p.toppager) {
 							elem = p.toppager;
 						} else {
@@ -12031,7 +12052,7 @@
 			return this.each(function () {
 				var $t = this, i, $field, iField, $fieldi;
 				if (!$t.grid) { return; }
-				var rowdata = $($t).jqGrid("getRowData", rowid), propOrAttr = $t.p.propOrAttr;
+				var rowdata = $j.getRowData.call($($t), rowid), propOrAttr = $t.p.propOrAttr;
 				if (rowdata) {
 					for (i in rowdata) {
 						if (rowdata.hasOwnProperty(i)) {
@@ -12062,9 +12083,9 @@
 					griddata[field.name] = field.value;
 				});
 				if (mode === "add") {
-					$($t).jqGrid("addRowData", rowid, griddata, position);
+					$j.addRowData.call($($t), rowid, griddata, position);
 				} else if (mode === "set") {
-					$($t).jqGrid("setRowData", rowid, griddata);
+					$j.setRowData.call($($t), rowid, griddata);
 				}
 			});
 		}
@@ -15963,7 +15984,7 @@
 		hash: {},
 		open: function (s, trigger) {
 			var h = jqmHash[s], $overlay, target, url,
-				options = h.c,
+				options = h.c, parentOffset = h.w.parent().offset(), left, top,
 				cc = "." + options.closeClass,
 				z = (parseInt(h.w.css("z-index"), 10));
 			z = (z > 0) ? z : 3000;
@@ -16019,8 +16040,12 @@
 			}
 
 			if (options.toTop && h.o) {
+				parentOffset = h.w.parent().offset();
+				left = parseFloat(h.w.css("left") || 0);
+				top = parseFloat(h.w.css("top") || 0);
 				h.w.before('<span id="jqmP' + h.w[0]._jqm + '"></span>')
 					.insertAfter(h.o);
+				h.w.css({top: parentOffset.top + top, left: parentOffset.left + left});
 			}
 			if (options.onShow) {
 				options.onShow(h);
@@ -16669,7 +16694,10 @@
 			$t = $grid[0],
 			p = $t.p,
 			cm = p.colModel[jgrid.getCellIndex(this)],
-			op = $.extend(true, { extraparam: {} }, jgrid.actionsNav || {},	p.actionsNavOptions || {}, cm.formatoptions || {});
+			op = $.extend(true, { extraparam: {} }, jgrid.actionsNav || {},	p.actionsNavOptions || {}, cm.formatoptions || {}),
+			setTop = function (option) {
+				option.top = $tr.offset().top + $tr.outerHeight() - $grid.closest(".ui-jqgrid").offset().top;
+			};
 
 		if (p.editOptions !== undefined) {
 			op.editOptions = p.editOptions;
@@ -16708,9 +16736,18 @@
 				$grid.jqGrid("restoreRow", rid, op.afterRestore);
 				break;
 			case "del":
+				op.delOptions = op.delOptions || {};
+				if (op.delOptions.top === undefined) {
+					op.delOptions.top = $tr.offset().top + $tr.outerHeight() - $grid.closest(".ui-jqgrid").offset().top;
+				}
 				$grid.jqGrid("delGridRow", rid, op.delOptions);
 				break;
 			case "formedit":
+				op.editOptions = op.editOptions || {};
+				if (op.editOptions.top === undefined) {
+					op.editOptions.top = $tr.offset().top + $tr.outerHeight() - $grid.closest(".ui-jqgrid").offset().top;
+					op.editOptions.recreateForm = true;
+				}
 				$grid.jqGrid("editGridRow", rid, op.editOptions);
 				break;
 			default:

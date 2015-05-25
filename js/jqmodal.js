@@ -152,7 +152,7 @@
 		hash: {},
 		open: function (s, trigger) {
 			var h = jqmHash[s], $overlay, target, url,
-				options = h.c,
+				options = h.c, parentOffset = h.w.parent().offset(), left, top,
 				cc = "." + options.closeClass,
 				z = (parseInt(h.w.css("z-index"), 10));
 			z = (z > 0) ? z : 3000;
@@ -208,8 +208,12 @@
 			}
 
 			if (options.toTop && h.o) {
+				parentOffset = h.w.parent().offset();
+				left = parseFloat(h.w.css("left") || 0);
+				top = parseFloat(h.w.css("top") || 0);
 				h.w.before('<span id="jqmP' + h.w[0]._jqm + '"></span>')
 					.insertAfter(h.o);
+				h.w.css({top: parentOffset.top + top, left: parentOffset.left + left});
 			}
 			if (options.onShow) {
 				options.onShow(h);

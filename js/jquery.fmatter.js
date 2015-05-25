@@ -606,7 +606,10 @@
 			$t = $grid[0],
 			p = $t.p,
 			cm = p.colModel[jgrid.getCellIndex(this)],
-			op = $.extend(true, { extraparam: {} }, jgrid.actionsNav || {},	p.actionsNavOptions || {}, cm.formatoptions || {});
+			op = $.extend(true, { extraparam: {} }, jgrid.actionsNav || {},	p.actionsNavOptions || {}, cm.formatoptions || {}),
+			setTop = function (option) {
+				option.top = $tr.offset().top + $tr.outerHeight() - $grid.closest(".ui-jqgrid").offset().top;
+			};
 
 		if (p.editOptions !== undefined) {
 			op.editOptions = p.editOptions;
@@ -645,9 +648,18 @@
 				$grid.jqGrid("restoreRow", rid, op.afterRestore);
 				break;
 			case "del":
+				op.delOptions = op.delOptions || {};
+				if (op.delOptions.top === undefined) {
+					op.delOptions.top = $tr.offset().top + $tr.outerHeight() - $grid.closest(".ui-jqgrid").offset().top;
+				}
 				$grid.jqGrid("delGridRow", rid, op.delOptions);
 				break;
 			case "formedit":
+				op.editOptions = op.editOptions || {};
+				if (op.editOptions.top === undefined) {
+					op.editOptions.top = $tr.offset().top + $tr.outerHeight() - $grid.closest(".ui-jqgrid").offset().top;
+					op.editOptions.recreateForm = true;
+				}
 				$grid.jqGrid("editGridRow", rid, op.editOptions);
 				break;
 			default:

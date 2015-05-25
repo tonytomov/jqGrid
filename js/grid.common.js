@@ -16,6 +16,10 @@
 		getGuiStyles = function (path, jqClasses) {
 			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], path), jqClasses || "");
 		};
+
+	jgrid.jqModal = jgrid.jqModal || {};
+	$.extend(true, jgrid.jqModal, {toTop: true});
+
 	$.extend(jgrid, {
 		// Modal functions
 		// The methods showModal and closeModal will be used as callback of $.jqm jQuery plugin defined in jqModal.js
@@ -167,6 +171,7 @@
 				var parentZ = $(insertSelector).parents("*[role=dialog]").filter(":first").css("z-index");
 				if (parentZ) {
 					o.zIndex = parseInt(parentZ, 10) + 2;
+					o.toTop = true;
 				} else {
 					o.zIndex = 950;
 				}
@@ -192,7 +197,9 @@
 			if (o.resize === undefined) { o.resize = true; }
 			if (o.drag) {
 				if ($.fn.jqDrag) {
-					$(mh).addClass("ui-draggable"); //css("cursor","move");
+					// .ui-draggable .ui-dialog-titlebar {cursor: move}
+					//$(mw).addClass("ui-draggable"); //css("cursor","move");
+					$(mh).css("cursor","move");
 					$(mw).jqDrag(mh);
 				} else {
 					try {
@@ -221,7 +228,7 @@
 		},
 		viewModal: function (selector, o) {
 			o = $.extend(true, {
-				toTop: false,
+				//toTop: false,
 				overlay: 30,
 				modal: false,
 				overlayClass: "ui-widget-overlay",
