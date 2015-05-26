@@ -527,7 +527,7 @@
 				rowNum: "ui-state-default",
 				gridFooter: "",
 				rowFooter: "ui-widget-content",
-				gridTitle: "ui-widget-header ui-corner-top ui-helper-clearfix",
+				gridTitle: "ui-widget-header ui-corner-top",
 				titleButton: "ui-corner-all",
 				toolbarUpper: "ui-state-default",
 				toolbarBottom: "ui-state-default",
@@ -4382,6 +4382,7 @@
 						}
 					});
 					feedback.call(ts, "onSelectAll", toCheck ? p.selarrrow : emp, toCheck);
+					return false;
 				});
 			}
 
