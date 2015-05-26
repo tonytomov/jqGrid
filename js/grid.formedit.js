@@ -305,7 +305,7 @@
 							}
 						}
 
-						if (o.stringResult) {
+						if (o.stringResult || p.datatype === "local") {
 							try {
 								// xmlJsonClass or JSON.stringify
 								res = xmlJsonClass.toJson(filters, "", "", false);
