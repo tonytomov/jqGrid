@@ -249,7 +249,7 @@
 			 * columns from the pivot values and set the group Headers
 			 */
 			function list(items) {
-				var l, j, key, n, col, collen, colpos, l1, ll, header, initColLen, y, parts1, parts2, iAgr, agrName, agrMember, agr, isTotal;
+				var l, j, key, n, col, collen, colpos, l1, ll, header, initColLen, y, parts1, parts2, iAgr, agrName, agrMember, agr, isTotal, iRowTotal;
 				for (key in items) { // iterate
 					if (items.hasOwnProperty(key)) {
 						y = items.level > (o.rowTotals? 1 : 0) ? o.yDimension[items.level - (o.rowTotals? 1 : 0)] : null;
@@ -258,10 +258,10 @@
 						// and write name and newline
 						if (typeof items[key] !== "object") {
 							// If not a object build the header of the appropriate level
-							if (key === "level") {
+							if (key === "level" && items.level > 0) {
 								if (lastval[items.level] === undefined) {
 									lastval[items.level] = "";
-									if (items.level > 0 && !isTotal) {
+									if (!isTotal && items.level > 0) {
 										headers[items.level - 1] = {
 											useColSpanStyle: o.useColSpanStyle,
 											groupHeaders: []
@@ -293,23 +293,25 @@
 									}
 								}
 								lastval[items.level] = items.text;
-							}
-							// This is in case when the member contain more than one summary item
-							if (items.level === ylen && key === "level" && ylen > 0) {
-								if (aggrlen > 1) {
-									ll = 1;
-									header = headers[ylen - 1];
-									for (l in items.fields) {
-										if (items.fields.hasOwnProperty(l)) {
-											if (ll === 1) {
-												header.groupHeaders.push({ startColumnName: l, numberOfColumns: 1, titleText: items.label });
+
+								// This is in case when the member contain more than one summary item
+								if (items.level === ylen && ylen > 0) {
+									if (aggrlen > 1) {
+										ll = 0;
+										header = headers[ylen - 1];
+										for (l in items.fields) {
+											if (items.fields.hasOwnProperty(l)) {
+												if (ll === 0) {
+													l = l.replace(/\s+/g, "");
+													header.groupHeaders.push({ startColumnName: l, numberOfColumns: 1, titleText: items.label });
+												}
+												ll++;
 											}
-											ll++;
 										}
+										header.groupHeaders[header.groupHeaders.length - 1].numberOfColumns = ll;
+									} else {
+										headers.splice(ylen - 1, 1);
 									}
-									header.groupHeaders[header.groupHeaders.length - 1].numberOfColumns = ll - 1;
-								} else {
-									headers.splice(ylen - 1, 1);
 								}
 							}
 						}
@@ -351,14 +353,15 @@
 											agrName = agr.aggregator;
 											agrMember = agr.member;
 										} catch (ignore) { }
+										iRowTotal = items.level < ylen && y != null && y.rowTotals;
 										l1 = isTotal ? // && items.level === 1
 												jgrid.template(o.rowTotalsText, agrName, agrMember, items.label, l, iAgr, items.text) :
-												(items.level < ylen && y != null && y.rowTotals ?
+												(iRowTotal ?
 													($.isFunction(y.rowTotalsText) ?
 														y.rowTotalsText.call(tree, items, agr, iAgr, l, o, y, lastval) :
 														jgrid.template(y.rowTotalsText, items.label, agrName, agrMember, l, iAgr, items.text) || items.label) :
 													items.label);
-										if (aggrlen > 1 && !isTotal) {
+										if (aggrlen > 1 && !isTotal && !iRowTotal) {
 											col.name = l.replace(/\s+/g, "");
 											col.label = $.isFunction(o.aggregates[j].label) ?
 													o.aggregates[j].label.call(tree, items, agr, iAgr, l, o, y, lastval) :
