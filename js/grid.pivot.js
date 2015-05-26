@@ -256,7 +256,7 @@
 					if (items.hasOwnProperty(key)) {
 						y = items.level > (o.rowTotals? 1 : 0) ? o.yDimension[items.level - (o.rowTotals? 1 : 0)] : null;
 						isTotal = o.rowTotals && items.level === 1 && String(items.label).substring(0,9) === "_r_Totals";
-						iRowTotal = items.level < ylen && y != null && y.rowTotals;
+						iRowTotal = items.level < ylen && y != null && (y.rowTotals || y.rowTotalsText);
 						// write amount of spaces according to level
 						// and write name and newline
 						if (typeof items[key] !== "object") {
@@ -292,7 +292,7 @@
 											}
 										}
 										header.groupHeaders[collen].startColumnName = columns[colpos].name;
-										header.groupHeaders[collen].numberOfColumns = columns.length - colpos + (y != null && y.rowTotals ? 1 + (aggrlen - 1) : 0);
+										header.groupHeaders[collen].numberOfColumns = columns.length - colpos + (iRowTotal ? 1 + (aggrlen - 1) : 0);
 									}
 								}
 								lastval[items.level] = items.text;
@@ -324,8 +324,7 @@
 						}
 						// Finally build the columns
 						if (key === "level") {
-							if (items.level === ylen ||	isTotal ||
-									(items.level < ylen && y != null && y.rowTotals)) {
+							if (items.level === ylen || isTotal || iRowTotal) {
 								j = 0;
 								for (l in items.fields) {
 									if (items.fields.hasOwnProperty(l)) {
@@ -373,7 +372,7 @@
 											col.label = l1;
 										}
 										columns.push(col);
-										if (items.level < ylen && y != null && y.rowTotals && headers[items.level] != null) {
+										if (iRowTotal && headers[items.level] != null) {
 											// TODO: if aggrlen>1 then such way produce wrong results.
 											// one need to increas 
 											headers[items.level].groupHeaders.push({
