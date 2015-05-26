@@ -114,8 +114,8 @@
 				for (j = 0; j < jv; j++) {
 					tmpmember = {};
 					vl = value[j].replace(/\s+/g, "");
-					label = mainval !== "" ? mainval + "_" + vl : vl;
 					for (n = 0; n < arrln; n++) {
+						label = mainval !== "" ? mainval + "_" + vl : vl;
 						if (value === null) {
 							label = $.trim(aggr[n].member) + "_" + aggr[n].aggregator;
 							vl = label;
@@ -251,39 +251,42 @@
 			 * columns from the pivot values and set the group Headers
 			 */
 			function list(items) {
-				var l, j, key, n, col, collen, colpos, l1, ll, header, initColLen, y, parts1, parts2, iAgr, agrName, agrMember, agr, isTotal, iRowTotal;
+				var l, j, key, n, col, collen, colpos, l1, ll, header, initColLen, y, parts1, parts2, iAgr, agrName, agrMember, agr, isTotal, iRowTotal, itemLabel, itemLevel, itemText;
 				for (key in items) { // iterate
 					if (items.hasOwnProperty(key)) {
-						y = items.level > (o.rowTotals? 1 : 0) ? o.yDimension[items.level - (o.rowTotals? 1 : 0)] : null;
-						isTotal = o.rowTotals && items.level === 1 && String(items.label).substring(0,9) === "_r_Totals";
-						iRowTotal = items.level < ylen && y != null && (y.rowTotals || y.rowTotalsText);
+						itemLabel = items.label;
+						itemLevel = items.level;
+						itemText = items.text;
+						y = itemLevel > (o.rowTotals? 1 : 0) ? o.yDimension[itemLevel - (o.rowTotals? 1 : 0)] : null;
+						isTotal = o.rowTotals && itemLevel === 1 && String(itemLabel).substring(0,9) === "_r_Totals";
+						iRowTotal = itemLevel < ylen && y != null && (y.rowTotals || y.rowTotalsText);
 						// write amount of spaces according to level
 						// and write name and newline
 						if (typeof items[key] !== "object") {
 							// If not a object build the header of the appropriate level
-							if (key === "level" && items.level > 0) {
-								if (lastval[items.level] === undefined) {
-									lastval[items.level] = "";
-									if (!isTotal && items.level > 0) {
-										headers[items.level - 1] = {
+							if (key === "level" && itemLevel > 0) {
+								if (lastval[itemLevel] === undefined) {
+									lastval[itemLevel] = "";
+									if (!isTotal && itemLevel > 0) {
+										headers[itemLevel - 1] = {
 											useColSpanStyle: o.useColSpanStyle,
 											groupHeaders: []
 										};
 									}
 								}
-								if (lastval[items.level] !== items.text && items.children.length && !isTotal) {
-									if (items.level < ylen && items.level > 0) {
-										header = headers[items.level - 1];
+								if (lastval[itemLevel] !== itemText && items.children.length && !isTotal) {
+									if (itemLevel < ylen && itemLevel > 0) {
+										header = headers[itemLevel - 1];
 										for (l = 0, initColLen = 0; l < header.groupHeaders.length; l++) {
 											initColLen += header.groupHeaders[l].numberOfColumns;
 										}
 										header.groupHeaders.push({
-											titleText: items.label,
+											titleText: itemLabel,
 											numberOfColumns: 0
 										});
 										collen = header.groupHeaders.length - 1;
 										colpos = initColLen + xlen;
-										if (items.level - 1 === (o.rowTotals ? 1 : 0)) {
+										if (itemLevel - 1 === (o.rowTotals ? 1 : 0)) {
 											if (collen > 0) {
 												l1 = header.groupHeaders[collen].numberOfColumns;
 												if (l1) {
@@ -295,10 +298,10 @@
 										header.groupHeaders[collen].numberOfColumns = columns.length - colpos + (iRowTotal ? 1 + (aggrlen - 1) : 0);
 									}
 								}
-								lastval[items.level] = items.text;
+								lastval[itemLevel] = itemText;
 
 								// This is in case when the member contain more than one summary item
-								if (items.level === ylen && ylen > 0) {
+								if (itemLevel === ylen && ylen > 0) {
 									if (aggrlen > 1) {
 										ll = 0;
 										header = headers[ylen - 1];
@@ -306,7 +309,7 @@
 											if (items.fields.hasOwnProperty(l)) {
 												if (ll === 0) {
 													l = l.replace(/\s+/g, "");
-													header.groupHeaders.push({ startColumnName: l, numberOfColumns: 1, titleText: items.label });
+													header.groupHeaders.push({ startColumnName: l, numberOfColumns: 1, titleText: itemLabel });
 												}
 												ll++;
 											}
@@ -324,7 +327,7 @@
 						}
 						// Finally build the columns
 						if (key === "level") {
-							if (items.level === ylen || isTotal || iRowTotal) {
+							if (itemLevel === ylen || isTotal || iRowTotal) {
 								j = 0;
 								for (l in items.fields) {
 									if (items.fields.hasOwnProperty(l)) {
@@ -345,7 +348,7 @@
 											if (aggrlen > 1) {
 												parts1 = $.trim(l).split(" ");
 												parts2 = parts1[parts1.length - 1].split("_");
-												iAgr = parts2[parts2.length - 1];
+												iAgr = parseInt(parts2[parts2.length - 1], 10);
 												agrName = parts2[parts2.length - 2];
 												agr = o.aggregates[iAgr];
 											} else {
@@ -356,29 +359,37 @@
 											agrMember = agr.member;
 										} catch (ignore) { }
 										l1 = isTotal ? // && items.level === 1
-												jgrid.template(o.rowTotalsText, agrName, agrMember, items.label, l, iAgr, items.text) :
+												jgrid.template(o.rowTotalsText, agrName, agrMember, itemLabel, l, iAgr, itemText) :
 												(iRowTotal ?
 													($.isFunction(y.rowTotalsText) ?
 														y.rowTotalsText.call(tree, items, agr, iAgr, l, o, y, lastval) :
-														jgrid.template(y.rowTotalsText || "{0} {1}", agrName, agrMember, items.label, l, iAgr, items.text) || items.label) :
-													items.label);
+														jgrid.template(y.rowTotalsText || "{0} {1}", agrName, agrMember, itemLabel, l, iAgr, itemText) || itemLabel) :
+													itemLabel);
 										if (aggrlen > 1 && !isTotal && !iRowTotal) {
-											col.name = l.replace(/\s+/g, "");
+											col.name = l;
 											col.label = $.isFunction(o.aggregates[j].label) ?
 													o.aggregates[j].label.call(tree, items, agr, iAgr, l, o, y, lastval) :
-													jgrid.template(o.aggregates[j].label || "{0}", agrName, agrMember, items.label, l, iAgr, items.text) || l1;
+													jgrid.template(o.aggregates[j].label || "{0}", agrName, agrMember, itemLabel, l, iAgr, itemText) || l1;
 										} else {
-											col.name = isTotal || iRowTotal ? l : items.text.replace(/\s+/g, "");
+											col.name = isTotal || iRowTotal ? l : itemText;
 											col.label = l1;
 										}
+										col.name = col.name.replace(/\s+/g, "");
 										columns.push(col);
-										if (iRowTotal && headers[items.level] != null) {
-											// TODO: if aggrlen>1 then such way produce wrong results.
-											// one need to increas 
-											headers[items.level].groupHeaders.push({
-												titleText: col.name,
-												numberOfColumns: 1
-											});
+										if (iRowTotal && headers[itemLevel] != null) {
+											if (iAgr === 0) {
+												headers[itemLevel].groupHeaders.push({
+													startColumnName: col.name,
+													titleText: y != null && y.rowTotalsTitle ?
+															($.isFunction(y.rowTotalsTitle) ?
+																	y.rowTotalsTitle.call(tree, y, items, l, o, lastval) :
+																	jgrid.template(y.rowTotalsTitle, itemLabel)) :
+															"",
+													numberOfColumns: 1
+												});
+											} else {
+												headers[itemLevel].groupHeaders[headers[itemLevel].groupHeaders.length - 1].numberOfColumns++;
+											}
 										}
 										j++;
 									}
