@@ -31,7 +31,7 @@
 				headers = [],
 				o = $.extend({
 					rowTotals: false,
-					rowTotalsText: "Total",
+					rowTotalsText: "{0} {1}",
 					// summary columns
 					useColSpanStyle: false,
 					colTotals: false,
@@ -361,13 +361,13 @@
 												(iRowTotal ?
 													($.isFunction(y.rowTotalsText) ?
 														y.rowTotalsText.call(tree, items, agr, iAgr, l, o, y, lastval) :
-														jgrid.template(y.rowTotalsText, items.label, agrName, agrMember, l, iAgr, items.text) || items.label) :
+														jgrid.template(y.rowTotalsText || "{0} {1}", agrName, agrMember, items.label, l, iAgr, items.text) || items.label) :
 													items.label);
 										if (aggrlen > 1 && !isTotal && !iRowTotal) {
 											col.name = l.replace(/\s+/g, "");
 											col.label = $.isFunction(o.aggregates[j].label) ?
 													o.aggregates[j].label.call(tree, items, agr, iAgr, l, o, y, lastval) :
-													jgrid.template(o.aggregates[j].label, agrName, agrMember, items.label, l, iAgr, items.text) || l1;
+													jgrid.template(o.aggregates[j].label || "{0}", agrName, agrMember, items.label, l, iAgr, items.text) || l1;
 										} else {
 											col.name = isTotal || iRowTotal ? l : items.text.replace(/\s+/g, "");
 											col.label = l1;
