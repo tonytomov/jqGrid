@@ -14363,9 +14363,11 @@
 						current = o.yDimension[k];
 						v = $.trim(row[current.dataName]);
 						// Check to see if we have user defined conditions
-						yValues.push(current.converter && $.isFunction(current.converter) ?
+						yValues.push(
+							current.converter && $.isFunction(current.converter) ?
 								current.converter.call(this[0], v, xValues) :
-								v);
+								v
+						);
 					}
 					// make the columns based on aggregates definition
 					// and return the members for late calculation
@@ -14429,6 +14431,7 @@
 					if (items.hasOwnProperty(key)) {
 						y = items.level > (o.rowTotals? 1 : 0) ? o.yDimension[items.level - (o.rowTotals? 1 : 0)] : null;
 						isTotal = o.rowTotals && items.level === 1 && String(items.label).substring(0,9) === "_r_Totals";
+						iRowTotal = items.level < ylen && y != null && y.rowTotals;
 						// write amount of spaces according to level
 						// and write name and newline
 						if (typeof items[key] !== "object") {
@@ -14528,7 +14531,6 @@
 											agrName = agr.aggregator;
 											agrMember = agr.member;
 										} catch (ignore) { }
-										iRowTotal = items.level < ylen && y != null && y.rowTotals;
 										l1 = isTotal ? // && items.level === 1
 												jgrid.template(o.rowTotalsText, agrName, agrMember, items.label, l, iAgr, items.text) :
 												(iRowTotal ?
@@ -14542,7 +14544,7 @@
 													o.aggregates[j].label.call(tree, items, agr, iAgr, l, o, y, lastval) :
 													jgrid.template(o.aggregates[j].label, agrName, agrMember, items.label, l, iAgr, items.text) || l1;
 										} else {
-											col.name = isTotal ? l : items.text.replace(/\s+/g, "");
+											col.name = isTotal || iRowTotal ? l : items.text.replace(/\s+/g, "");
 											col.label = l1;
 										}
 										columns.push(col);
