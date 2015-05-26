@@ -3,7 +3,7 @@
 
 (function ($) {
     /*
-     * jqGrid OData (WebApi v3/v4) support
+     * OData support for Free-jqGrid
      *
      * Authors:
      *  Mark Babayev (https://github.com/mirik123) markolog@gmail.com
@@ -15,7 +15,7 @@
      *
      *Functions:
      *   odataGenColModel                        - $("#grid").jqGrid('odataGenColModel', {...});
-     *       This function generates jqgrid columns by requesting odata $metadata.
+     *       This function generates jqgrid style columns by requesting odata $metadata.
      *       It is called by odataInit when gencolumns=true.
      *       
      *       Options:
@@ -45,10 +45,11 @@
      *           entityType: null                - required field, odata entityType name
      *           annotations: false              - use odata annotations for getting jqgrid parameters: page,records,count,total
      *           annotationName: "@jqgrid.GridModelAnnotate" - odata annotations class and namespace
+     *           useXmlSerializer                - use XmlSerializer as default serializer for XML data
      *           version                         - odata version, used to set $count=true or $inlinecount=allpages
      *           errorfunc: null                 - error callback
      *           metadatatype: datatype || 'xml' - when gencolumns=true, alternative ajax dataType for $metadata request
-     *           odataverbs: {                   - jqgrid http verbs for using odata services
+     *           odataverbs: {                   - http verbs for odata and their corresponding actions in jqgrid
      *               inlineEditingAdd: 'POST',
      *               inlineEditingEdit: 'PATCH',
      *               formEditingAdd: 'POST',
@@ -73,12 +74,6 @@
      *               var errstring = loadError(jqXHR, textStatus, errorThrown);
      *               errstring = $('#errdialog').html() + errstring;
      *               $('#errdialog').html(errstring).dialog('open');
-     *           },
-     *           odataverbs: {
-     *               inlineEditingAdd: 'POST',
-     *               inlineEditingEdit: 'PATCH',
-     *               formEditingAdd: 'POST',
-     *               formEditingEdit: 'PUT'
      *           }
      *       });
      *    }
@@ -111,8 +106,7 @@
      *        });
      *    }
      * });
-     * 
-     * annotation are not supported by OData v3/4 XML serializer
+     *
      * $("#grid").jqGrid({
      *    ...,
      *    beforeInitGrid: function () {
@@ -121,6 +115,7 @@
      *            datatype: 'xml',
      *            annotations: false,
      *            gencolumns: true,
+     *            useXmlSerializer: false,
      *            entityType: 'ClientModel',
      *            odataurl: 'http://localhost:56216/odata/ODClient',
      *            metadataurl: 'http://localhost:56216/odata/$metadata'
@@ -134,8 +129,8 @@
     String.prototype.format = function () {
         var args = arguments;
         return this.replace(/\{\{|\}\}|\{(\d+)\}/g, function (m, n) {
-            if (m == "{{") { return "{"; }
-            if (m == "}}") { return "}"; }
+            if (m === "{{") { return "{"; }
+            if (m === "}}") { return "}"; }
             return args[n];
         });
     };
@@ -500,8 +495,9 @@
                         });
                     }
 
-                    var root = 'feed';  //'ArrayOf' + o.entityType
-                    var entry = 'entry';   //o.entityType
+                    var root = o.useXmlSerializer ? 'feed' : 'ArrayOf' + o.entityType;
+                    var entry = o.useXmlSerializer ? 'entry' : o.entityType;
+                    var userdata = o.useXmlSerializer ? 'userdata' : 'ArrayOfUserData UserData';
 
                     $.extend(true, p, {
                         xmlReader: {
@@ -520,7 +516,7 @@
                                 return Math.ceil(skip / p.rowNum) + (records > 0 ? 1 : 0);
                             },
                             repeatitems: false,
-                            userdata: "ArrayOfUserData UserData",
+                            userdata: userdata,
                             id: keyName
                         }
                     });
@@ -584,6 +580,7 @@
                     entityType: null,
                     annotations: false,
                     annotationName: "@jqgrid.GridModelAnnotate",
+                    useXmlSerializer: true,
                     odataverbs: {
                         inlineEditingAdd: 'POST',
                         inlineEditingEdit: 'PATCH',
@@ -642,7 +639,7 @@
         odataGenColModel: function (options) {
 
             function parseXmlData(data, entityType) {
-                var cols = [], props, keys, key, name, type, nullable, iskey, namespace, isComplex, partner, isNav;
+                var cols = [], props, keys, key, iskey, namespace, isComplex, isNav, attr = {};
 
                 //var xmldata = $.parseXML(xhr.responseText);
                 namespace = $('Schema', data).attr('Namespace') + '.';
@@ -652,14 +649,13 @@
                 key = keys && keys.length > 0 ? keys.first().attr('Name') : '';
                 if (props) {
                     props.each(function (n, itm) {
-                        name = $(itm).attr('Name');
-                        type = $(itm).attr('Type');
-                        nullable = $(itm).attr('Nullable');
-                        iskey = (name === key);
-                        isComplex = itm.tagName === 'Property' && !!namespace && type.indexOf(namespace) >= 0;
+                        $.each(itm.attributes, function () { attr[this.name] = this.value; });
+
+                        iskey = (attr['Name'] === key);
+                        isComplex = itm.tagName === 'Property' && !!namespace && attr['Type'].indexOf(namespace) >= 0;
                         isNav = itm.tagName === 'NavigationProperty';
 
-                        cols.push({ name: name, type: type, nullable: nullable, iskey: iskey, isComplex: isComplex, isNavigation: isNav });
+                        cols.push($.extend({ iskey: iskey, isComplex: isComplex, isNavigation: isNav }, attr ));
                     });
                 }
 
@@ -667,7 +663,7 @@
             }
 
             function parseJsonData(data, entityType) {
-                var cols = [], props, keys, key, name, type, nullable, iskey, i, isComplex, partner, isNav, namespace;
+                var cols = [], props, keys, key, name, type, nullable, iskey, i, isComplex, isNav, namespace;
 
                 for (i = 0; i < data.SchemaElements.length ; i++) {
                     if (data.SchemaElements[i].Name === entityType) {
@@ -691,7 +687,7 @@
                         isComplex = !!namespace && type.indexOf(namespace) >= 0;
                         isNav = false;
 
-                        cols.push({ name: name, type: type, nullable: nullable, iskey: iskey, isComplex: isComplex, isNavigation: isNav });
+                        cols.push({ Name: name, Type: type, Nullable: nullable, iskey: iskey, isComplex: isComplex, isNavigation: isNav });
                     }
                 }
 
@@ -750,10 +746,10 @@
                             if (newcol === undefined) {
                                 newcol = [];
                                 for (i = 0; i < cols.length; i++) {
-                                    isInt = intTypes.indexOf(cols[i].type) >= 0;
-                                    isNum = numTypes.indexOf(cols[i].type) >= 0;
-                                    isBool = boolTypes.indexOf(cols[i].type) >= 0;
-                                    isDate = cols[i].type && (cols[i].type.indexOf('Edm.') >= 0 && (cols[i].type.indexOf('Date') >= 0 || cols[i].type.indexOf('Time') >= 0));
+                                    isInt = intTypes.indexOf(cols[i].Type) >= 0;
+                                    isNum = numTypes.indexOf(cols[i].Type) >= 0;
+                                    isBool = boolTypes.indexOf(cols[i].Type) >= 0;
+                                    isDate = cols[i].Type && (cols[i].Type.indexOf('Edm.') >= 0 && (cols[i].Type.indexOf('Date') >= 0 || cols[i].Type.indexOf('Time') >= 0));
                                     cmTemplate =
                                         isInt ? 'integerStr' :
                                             isNum ? 'numberStr' :
@@ -763,11 +759,11 @@
                                                             'text';
 
                                     newcol.push($.extend({
-                                        label: cols[i].name,
-                                        name: cols[i].name,
-                                        index: cols[i].name,
+                                        label: cols[i].Name,
+                                        name: cols[i].Name,
+                                        index: cols[i].Name,
                                         editable: !cols[i].isNavigation && !cols[i].iskey,
-                                        searchrules: { integer: isInt, number: isNum, date: isDate, required: !cols[i].nullable },
+                                        searchrules: { integer: isInt, number: isNum, date: isDate, required: !cols[i].Nullable || cols[i].Nullable === 'false' },
                                         editrules: this.searchrules,
                                         searchtype: isInt ? 'integer' : isNum ? 'number' : isDate ? 'datetime' : isBool ? 'checkbox' : 'text',
                                         inputtype: this.searchtype,
