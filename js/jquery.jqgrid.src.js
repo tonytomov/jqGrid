@@ -4382,7 +4382,6 @@
 						}
 					});
 					feedback.call(ts, "onSelectAll", toCheck ? p.selarrrow : emp, toCheck);
-					return false;
 				}).closest("th.ui-th-column").css("padding", "0");
 			}
 
