@@ -6089,79 +6089,71 @@
 				scrollingRows: true
 			}, settings || {});
 			return this.each(function () {
-				var $t = this, p = $t.p, $self = $($t), setSelection = base.setSelection, isFunction = $.isFunction;
+				var $t = this, p = $t.p, $self = $($t);
 				if (!$("body").is("[role]")) { $("body").attr("role", "application"); }
 				p.scrollrows = o.scrollingRows;
 				$self.keydown(function (event) {
-					var target = $(this).find("tr[tabindex=0]")[0], id, r, mind, expanded = p.treeReader.expanded_field;
+					var tr = $(this).find("tr[tabindex=0]")[0],
+						moveVerical = function (siblingProperty) {
+							do {
+								tr = tr[siblingProperty];
+								if (tr === null) { return; }
+							} while ($(tr).is(":hidden") || !$(tr).hasClass("jqgrow"));
+							base.setSelection.call($self, tr.id, true);
+							event.preventDefault();
+						},
+						feedbackKey = function (name, callbackSuffix) {
+							// possible events
+							//    jqGridKeyLeft
+							//    jqGridKeyRight
+							//    jqGridKeyEnter
+							//    jqGridKeySpace
+							// possible callbacks
+							//    onLeftKey
+							//    onRightKey
+							//    onEnter
+							//    onSpace
+							// no onUpKey or onDownKey and the corresponding events
+							var callback = o["on" + name + (callbackSuffix || "")];
+							$self.triggerHandler("jqGridKey" + name, [p.selrow]);
+							if ($.isFunction(callback)) {
+								callback.call($t, p.selrow);
+							}
+						},
+						moveHorizontal = function (stringLeftOrRight) {
+							if (p.treeGrid) {
+								var expanded = p.data[p._index[stripPref(p.idPrefix, tr.id)]][p.treeReader.expanded_field];
+								if (stringLeftOrRight === "Right") { expanded = !expanded; }
+								if (expanded) {
+									$(tr).find("div.treeclick").trigger("click");
+								}
+							}
+							feedbackKey(stringLeftOrRight, "Key");
+						};
+
 					//check for arrow keys
-					if (target) {
-						mind = p._index[stripPref(p.idPrefix, target.id)];
-						if (event.keyCode === 37 || event.keyCode === 38 || event.keyCode === 39 || event.keyCode === 40) {
-							// up key
-							if (event.keyCode === 38) {
-								r = target.previousSibling;
-								id = "";
-								if (r) {
-									if ($(r).is(":hidden")) {
-										while (r) {
-											r = r.previousSibling;
-											if (!$(r).is(":hidden") && $(r).hasClass("jqgrow")) { id = r.id; break; }
-										}
-									} else {
-										id = r.id;
-									}
-								}
-								setSelection.call($self, id, true);
-								event.preventDefault();
-							}
-							//if key is down arrow
-							if (event.keyCode === 40) {
-								r = target.nextSibling;
-								id = "";
-								if (r) {
-									if ($(r).is(":hidden")) {
-										while (r) {
-											r = r.nextSibling;
-											if (!$(r).is(":hidden") && $(r).hasClass("jqgrow")) { id = r.id; break; }
-										}
-									} else {
-										id = r.id;
-									}
-								}
-								setSelection.call($self, id, true);
-								event.preventDefault();
-							}
-							// left
-							if (event.keyCode === 37) {
-								if (p.treeGrid && p.data[mind][expanded]) {
-									$(target).find("div.treeclick").trigger("click");
-								}
-								$self.triggerHandler("jqGridKeyLeft", [p.selrow]);
-								if (isFunction(o.onLeftKey)) {
-									o.onLeftKey.call($t, p.selrow);
-								}
-							}
-							// right
-							if (event.keyCode === 39) {
-								if (p.treeGrid && !p.data[mind][expanded]) {
-									$(target).find("div.treeclick").trigger("click");
-								}
-								$self.triggerHandler("jqGridKeyRight", [p.selrow]);
-								if (isFunction(o.onRightKey)) {
-									o.onRightKey.call($t, p.selrow);
-								}
-							}
-						} else if (event.keyCode === 13) {//check if enter was pressed on a grid or treegrid node
-							$self.triggerHandler("jqGridKeyEnter", [p.selrow]);
-							if (isFunction(o.onEnter)) {
-								o.onEnter.call($t, p.selrow);
-							}
-						} else if (event.keyCode === 32) {
-							$self.triggerHandler("jqGridKeySpace", [p.selrow]);
-							if (isFunction(o.onSpace)) {
-								o.onSpace.call($t, p.selrow);
-							}
+					if (tr) {
+						switch (event.keyCode) {
+							case 38: // up key
+								moveVerical("previousSibling");
+								break;
+							case 40: // down key
+								moveVerical("nextSibling");
+								break;
+							case 37: // left key
+								moveHorizontal("Left");
+								break;
+							case 39: // left key
+								moveHorizontal("Right");
+								break;
+							case 13: // enter key
+								feedbackKey("Enter");
+								break;
+							case 32: // space key
+								feedbackKey("Space");
+								break;
+							default:
+								break;
 						}
 					}
 				});
