@@ -845,7 +845,8 @@
 				var ts = this, i, cmi, skip = 0, $tr, $colHeader, th, $th, thStyle, iCol, cghi, numberOfColumns, titleText, cVisibleColumns,
 					colModel = ts.p.colModel, cml = colModel.length, ths = ts.grid.headers, $theadInTable,
 					$htable = $("table.ui-jqgrid-htable", ts.grid.hDiv),
-					$trLabels = $htable.children("thead").children("tr.ui-jqgrid-labels:last").addClass("jqg-second-row-header"),
+					$trLabels = $htable.children("thead").children("tr.ui-jqgrid-labels"),
+					$trLastWithLabels = $trLabels.last().addClass("jqg-second-row-header"),
 					$thead = $htable.children("thead"),
 					$firstHeaderRow = $htable.find(".jqg-first-row-header");
 				if ($firstHeaderRow[0] === undefined) {
@@ -914,7 +915,7 @@
 						if (skip === 0) {
 							if (o.useColSpanStyle) {
 								// expand the header height to two rows
-								$th.attr("rowspan", "2");
+								$th.attr("rowspan", $trLabels.length + 1);
 							} else {
 								$("<th>", { role: "columnheader" })
 									.addClass("ui-state-default ui-th-column-header ui-th-" + ts.p.direction)
@@ -931,7 +932,7 @@
 				}
 				$theadInTable = $(ts).children("thead");
 				$theadInTable.prepend($firstHeaderRow);
-				$tr.insertAfter($trLabels);
+				$tr.insertAfter($trLastWithLabels);
 				$htable.append($theadInTable);
 
 				if (o.useColSpanStyle) {
