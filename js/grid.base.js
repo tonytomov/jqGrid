@@ -4382,6 +4382,8 @@
 						}
 					});
 					feedback.call(ts, "onSelectAll", toCheck ? p.selarrrow : emp, toCheck);
+					// it's important don't use return false in the event handler
+					// the usage of return false break checking/unchecking
 				}).closest("th.ui-th-column").css("padding", "0");
 			}
 
@@ -4685,6 +4687,8 @@
 							$("#jqg_" + jqID(p.id) + "_" + ri)[propOrAttr]("checked", !scb);
 						}
 					}
+					// it's important don't use return false in the event handler
+					// the usage of return false break checking/uchecking
 				})
 				.bind("reloadGrid", function (e, opts) {
 				var self = this, gridSelf = self.grid, $self = $(this);
