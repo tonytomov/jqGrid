@@ -1173,6 +1173,9 @@ $.fn.jqGrid = function( pin ) {
 				if(p.footerrow) {
 					grid.sDiv.scrollLeft = grid.bDiv.scrollLeft;
 				}
+				if(p.frozenColumns) {
+					$(grid.fbDiv).scrollTop( grid.bDiv.scrollTop );
+				}
 				if( e ) { e.stopPropagation(); }
 			},
 			selectionPreserver : function(ts) {
@@ -4471,9 +4474,19 @@ $.jgrid.extend({
 				// data stuff
 				//TODO support for setRowData
 				$("#gview_"+$.jgrid.jqID($t.p.id)).append($t.grid.fbDiv);
-				$($t.grid.bDiv).scroll(function () {
-					$($t.grid.fbDiv).scrollTop($(this).scrollTop());
+
+				$($t.grid.fbDiv).bind('mousewheel DOMMouseScroll', function (e) {
+					var st = $($t.grid.bDiv).scrollTop();
+					if (e.originalEvent.wheelDelta > 0 || e.originalEvent.detail < 0) {
+						//up
+						$($t.grid.bDiv).scrollTop( st - 25 );
+					} else {
+						//down
+						$($t.grid.bDiv).scrollTop( st + 25 );
+					}
+					e.preventDefault();
 				});
+
 				if($t.p.hoverrows === true) {
 					$("#"+$.jgrid.jqID($t.p.id)).unbind('mouseover').unbind('mouseout');
 				}
