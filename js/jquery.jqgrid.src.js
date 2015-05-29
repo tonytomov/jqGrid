@@ -14172,7 +14172,7 @@
 /**
  * jqGrid pivot functions
  * Tony Tomov tony@trirand.com, http://trirand.com/blog/
- * Changed by Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
+ * Full rewritten by Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
@@ -14202,10 +14202,9 @@
 				o = $.extend({
 					rowTotals: false,
 					rowTotalsText: "{0} {1}",
-					// summary columns
 					useColSpanStyle: false,
 					trimByCollect: true,
-					colTotals: false,
+					footerTotals: false, // old colTotals option
 					groupSummary: true,
 					groupSummaryPos: "header",
 					frozenStaticCols: false,
@@ -14213,16 +14212,12 @@
 					sortByX: false,
 					sortByY: true
 				}, options || {}),
-				row,
-				xDimension = o.xDimension,
-				yDimension = o.yDimension,
-				aggregates = o.aggregates,
+				row, i, nRows = data.length, x, y, cm, iRow,	xValues, yValues, k, nm, v,	iXData, itemXData, isDifferent,
+				xDimension = o.xDimension, yDimension = o.yDimension, aggregates = o.aggregates, aggrContext,
 				isRowTotal = o.totalText || o.rowTotals || o.totalHeader,
-				i, nRows = data.length,
 				xlen = isArray(xDimension) ? xDimension.length : 0,
 				ylen = isArray(yDimension) ? yDimension.length : 0,
 				aggrlen = isArray(aggregates) ? aggregates.length : 0,
-				x, y, cm, iRow,	xValues, yValues, k, nm, v,	iXData, itemXData, isDifferent,
 				// The next array uniqueXData will contains unique vectors (arrays) of xValues
 				// from the input data. The length of vectors (arrays) will be always the same - xlen
 				// (the length of xDimension array)
@@ -14232,14 +14227,15 @@
 				dataIndexByUniqueXData = [], indexesOfDataWithTheSameXValues, converter, iYData, itemYData,
 				uniqueYData = [], uniqueYDataLength = 0,
 				dataIndexToUniqueYData = [], dataIndexByUniqueYData = [], orderY = [], orderX = [],
-				indexesOfDataWithTheSameYValues, iRows, colModel = [], result, count, agr, outputItem, outputItems = [],
-				lastY, headerLevels = ylen - (aggrlen === 1 ? 1 : 0),
+				indexesOfDataWithTheSameYValues, iRows, colModel = [], agr, outputItem, outputItems = [],
+				previousY, headerLevels = ylen - (aggrlen === 1 ? 1 : 0),
 				colHeaders = [], groupHeaders, iRowsY,
 				initAggregation = function (aggregator) {
 					return {
 						result: undefined,
 						count: undefined,
 						aggregator: aggregator,
+						finilized: false,
 						calcAggregate: function (v, fieldName) {
 							var aggr = this;
 							if (v !== undefined) {
@@ -14275,6 +14271,14 @@
 							var aggr = this;
 							if (aggr.aggregator === "avg" && aggr.result !== undefined) {
 								aggr.result = aggr.result/aggr.count;
+							}
+							aggr.finilized = true;
+						},
+						setPropIfDefinedResult: function (obj, propName) {
+							var aggr = this;
+							if (aggr.result !== undefined) {
+								if (!aggr.finilized) { this.finilizeAggregation(); }
+								obj[propName] = aggr.result;
 							}
 						}
 					};
@@ -14466,7 +14470,13 @@
 			// the names of the first columns will be "x"+i. The first column have the name "x0".
 			for (i = 0; i < xlen; i++) {
 				x = xDimension[i];
-				cm = { name: "x" + i, label: xDimension[i].dataName, frozen: o.frozenStaticCols };
+				cm = {
+					name: "x" + i,
+					label: x.label != null ?
+								($.isFunction(x.label) ? x.totalHeader.call(self, x, i, o) : x.label) :
+								x.dataName,
+					frozen: o.frozenStaticCols
+				};
 				if (i < xlen - 1) {
 					// based on xDimension levels build grouping
 					groupingView.groupField.push(cm.name);
@@ -14486,7 +14496,7 @@
 			// fill other columns of colModel based on collected uniqueYData and aggregates options
 			// the names of the first columns will be "y"+i in case of one aggregate and
 			// "y"+i+"a"+k in case of multiple aggregates. The name of the first "y"-column is "y0" or "y0a0"
-			lastY = uniqueYData[orderY[0]];
+			previousY = uniqueYData[orderY[0]];
 			for (iYData = 0; iYData < uniqueYDataLength; iYData++) {
 				itemYData = uniqueYData[orderY[iYData]];
 				// fill first columns of data
@@ -14508,7 +14518,7 @@
 			if (isRowTotal) {
 				for (k = 0; k < aggrlen; k++) {
 					agr = aggregates[k];
-					if (agr.template === undefined && agr.formatter === undefined) {
+					if (agr.template === undefined && agr.formatter === undefined && o.defaultFormatting) {
 						agr.template = agr.aggregator === "count" ? "integer" : "number";
 					}
 					agr = $.extend({}, agr, {
@@ -14525,38 +14535,42 @@
 			// The step 5: build column headers
 			// ********************************
 			// initialize colHeaders
-			lastY = uniqueYData[orderY[0]];
+			previousY = uniqueYData[orderY[0]];
 			for (i = 0; i < headerLevels; i++) {
 				colHeaders.push({
 					useColSpanStyle: o.useColSpanStyle,
 					groupHeaders: [{
-						titleText: lastY[i],
+						titleText: previousY[i],
 						startColumnName: aggrlen === 1 ? "y0" : "y0a0" ,
 						numberOfColumns: aggrlen
 					}]
 				});
 			}
-			for (iYData = 1; iYData < uniqueYDataLength; iYData++) {
-				itemYData = uniqueYData[orderY[iYData]];
-				for (i = 0; i < headerLevels; i++) {
+			for (i = 0; i < headerLevels; i++) {
+				previousY = uniqueYData[orderY[0]];
+				for (iYData = 1; iYData < uniqueYDataLength; iYData++) {
+					itemYData = uniqueYData[orderY[iYData]];
 					groupHeaders = colHeaders[i].groupHeaders;
-					if (itemYData[i] === lastY[i]) {
-						groupHeaders[groupHeaders.length - 1].numberOfColumns += aggrlen;
-					} else {
-						// we found differences bewteen itemYData and lastY
-						// on the i level. Thus we have to insert new groupHeaders
-						// for the level and all lower levels
-						for (k = i; k < headerLevels; k++) {
-							colHeaders[k].groupHeaders.push({
-								titleText: itemYData[k],
-								startColumnName: "y" + iYData + (aggrlen === 1 ? "" :"a0"),
-								numberOfColumns: aggrlen 
-							});
+					isDifferent = false;
+					for (k = 0; k <= i; k++) {
+						// we need to compare all elements of itemYData with previousY
+						// on the current level and on the all hight (top) levels
+						if (itemYData[k] !== previousY[k]) {
+							isDifferent = true;
+							break;
 						}
-						break; // go to the next itemYData
 					}
+					if (isDifferent) {
+						groupHeaders.push({
+							titleText: itemYData[i],
+							startColumnName: "y" + iYData + (aggrlen === 1 ? "" :"a0"),
+							numberOfColumns: aggrlen 
+						});
+					} else {
+						groupHeaders[groupHeaders.length - 1].numberOfColumns += aggrlen;
+					}
+					previousY = itemYData;
 				}
-				lastY = itemYData;
 			}
 			if (isRowTotal) {
 				for (i = 0; i < headerLevels; i++) {
@@ -14571,7 +14585,6 @@
 			// *****************************
 			// The step 6: fill data of grid
 			// *****************************
-			var aggrContext;
 			for (iXData = 0; iXData < uniqueXDataLength; iXData++) {
 				outputItem = {}; // item of output data
 				
@@ -14605,10 +14618,7 @@
 							row =  data[iRows[iRow]];
 							aggrContext.calcAggregate(row[agr.member], agr.member, row);
 						}
-						aggrContext.finilizeAggregation();
-						if (aggrContext.result !== undefined) {
-							outputItem["y" + iYData + (aggrlen === 1 ? "" : "a" + k)] = aggrContext.result;
-						}
+						aggrContext.setPropIfDefinedResult(outputItem, "y" + iYData + (aggrlen === 1 ? "" : "a" + k));
 					}
 				}
 				if (isRowTotal) {
@@ -14618,10 +14628,7 @@
 						for (iYData = 0; iYData < uniqueYDataLength; iYData++) {
 							aggrContext.calcAggregate(outputItem[["y" + iYData + (aggrlen === 1 ? "" : "a" + k)]], agr.member, row);
 						}
-						aggrContext.finilizeAggregation();
-						if (aggrContext.result !== undefined) {
-							outputItem["t" + (aggrlen === 1 ? "" : "a" + k)] = aggrContext.result;
-						}
+						aggrContext.setPropIfDefinedResult(outputItem, "t" + (aggrlen === 1 ? "" : "a" + k));
 					}
 				}
 				outputItems.push(outputItem);
@@ -14640,10 +14647,7 @@
 						outputItem = outputItems[iRow];
 						aggrContext.calcAggregate(outputItem[nm], nm, outputItem);
 					}
-					aggrContext.finilizeAggregation();
-					if (aggrContext.result !== undefined) {
-						summaries[nm] = aggrContext.result;
-					}
+					aggrContext.setPropIfDefinedResult(summaries, nm);
 				}
 			}
 
