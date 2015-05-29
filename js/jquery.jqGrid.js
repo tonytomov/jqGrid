@@ -2466,7 +2466,7 @@ $.fn.jqGrid = function( pin ) {
 		multiSort = function(iCol, obj ) {
 			var cm = ts.p.colModel,
 					selTh = ts.p.frozenColumns ?  obj : ts.grid.headers[iCol].el, so="", sn;
-			$("span.ui-grid-ico-sort",selTh).addClass(disabled);
+			$("span.ui-grid-ico-sort",selTh).addClass("ui-state-disabled");
 			$(selTh).attr("aria-selected","false");
 			sn = cm[iCol].index || cm[iCol].name;
 			if(cm[iCol].lso) {
@@ -2484,7 +2484,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			if( so ) {
 				$("span.s-ico",selTh).show();
-				$("span.ui-icon-"+so,selTh).removeClass(disabled);
+				$("span.ui-icon-"+so,selTh).removeClass("ui-state-disabled");
 				$(selTh).attr("aria-selected","true");
 			} else {
 				if(!ts.p.viewsortcols[0]) {
