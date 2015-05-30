@@ -4691,50 +4691,50 @@
 					// the usage of return false break checking/uchecking
 				})
 				.bind("reloadGrid", function (e, opts) {
-				var self = this, gridSelf = self.grid, $self = $(this);
-				if (p.treeGrid === true) {
-					p.datatype = p.treedatatype;
-				}
-				opts = extend({}, defaults.reloadGridOptions || {}, p.reloadGridOptions || {}, opts || {});
-				if (p.datatype === "local" && p.dataTypeOrg && p.loadonce && opts.fromServer) {
-					p.datatype = p.dataTypeOrg;
-					delete p.dataTypeOrg;
-				}
-				if (opts.current) {
-					gridSelf.selectionPreserver.call(self);
-				}
-				if (p.datatype === "local") {
-					$j.resetSelection.call($self);
-					if (p.data.length) { normalizeData.call(self); refreshIndex(); }
-				} else if (!p.treeGrid) {
-					p.selrow = null;
-					if (p.multiselect) {
-						clearArray(p.selarrrow); // p.selarrrow = [];
-						setHeadCheckBox.call(self, false);
+					var self = this, gridSelf = self.grid, $self = $(this);
+					if (p.treeGrid === true) {
+						p.datatype = p.treedatatype;
 					}
-					clearArray(p.savedRow); // p.savedRow = [];
-				}
-				if (p.scroll) { grid.emptyRows.call(self, true, false); }
-				if (opts.page) {
-					var page = parseInt(opts.page, 10);
-					if (page > p.lastpage) { page = p.lastpage; }
-					if (page < 1) { page = 1; }
-					p.page = page;
-					if (gridSelf.prevRowHeight) {
-						gridSelf.bDiv.scrollTop = (page - 1) * gridSelf.prevRowHeight * p.rowNum;
+					opts = extend({}, defaults.reloadGridOptions || {}, p.reloadGridOptions || {}, opts || {});
+					if (p.datatype === "local" && p.dataTypeOrg && p.loadonce && opts.fromServer) {
+						p.datatype = p.dataTypeOrg;
+						delete p.dataTypeOrg;
+					}
+					if (opts.current) {
+						gridSelf.selectionPreserver.call(self);
+					}
+					if (p.datatype === "local") {
+						$j.resetSelection.call($self);
+						if (p.data.length) { normalizeData.call(self); refreshIndex(); }
+					} else if (!p.treeGrid) {
+						p.selrow = null;
+						if (p.multiselect) {
+							clearArray(p.selarrrow); // p.selarrrow = [];
+							setHeadCheckBox.call(self, false);
+						}
+						clearArray(p.savedRow); // p.savedRow = [];
+					}
+					if (p.scroll) { grid.emptyRows.call(self, true, false); }
+					if (opts.page) {
+						var page = parseInt(opts.page, 10);
+						if (page > p.lastpage) { page = p.lastpage; }
+						if (page < 1) { page = 1; }
+						p.page = page;
+						if (gridSelf.prevRowHeight) {
+							gridSelf.bDiv.scrollTop = (page - 1) * gridSelf.prevRowHeight * p.rowNum;
+						} else {
+							gridSelf.bDiv.scrollTop = 0;
+						}
+					}
+					if (gridSelf.prevRowHeight && p.scroll && opts.page === undefined) {
+						delete p.lastpage;
+						gridSelf.populateVisible.call(self);
 					} else {
-						gridSelf.bDiv.scrollTop = 0;
+						gridSelf.populate.call(self);
 					}
-				}
-				if (gridSelf.prevRowHeight && p.scroll && opts.page === undefined) {
-					delete p.lastpage;
-					gridSelf.populateVisible.call(self);
-				} else {
-					gridSelf.populate.call(self);
-				}
-				if (p._inlinenav === true) { $self.jqGrid("showAddEditButtons", false); }
-				return false;
-			})
+					if (p._inlinenav === true) { $self.jqGrid("showAddEditButtons", false); }
+					return false;
+				})
 				.dblclick(function (e) {
 					var $td = getTdFromTarget.call(this, e.target), $tr = $td.parent();
 					// TODO: replace ts below to method which use $(this) in case of click
