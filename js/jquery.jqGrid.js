@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v4.8.2 - 2015-05-29
+* @license Guriddo jqGrid JS - v4.8.2 - 2015-05-30
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2468,7 +2468,7 @@ $.fn.jqGrid = function( pin ) {
 					selTh = ts.p.frozenColumns ?  obj : ts.grid.headers[iCol].el, so="", sn;
 			$("span.ui-grid-ico-sort",selTh).addClass("ui-state-disabled");
 			$(selTh).attr("aria-selected","false");
-			sn = cm[iCol].index || cm[iCol].name;
+			sn = ts.p.datatype === "local" ?  cm[iCol].name : (cm[iCol].index || cm[iCol].name);
 			if(cm[iCol].lso) {
 				if(cm[iCol].lso==="asc") {
 					cm[iCol].lso += "-desc";
