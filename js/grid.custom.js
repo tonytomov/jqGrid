@@ -909,7 +909,7 @@
 						$th.before($colHeader); // insert new column header before the current
 						$tr.append(th);         // move the current header in the next row
 
-						// set the coumter of headers which will be moved in the next row
+						// set the counter of headers which will be moved in the next row
 						skip = numberOfColumns - 1;
 					} else {
 						if (skip === 0) {
