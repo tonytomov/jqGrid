@@ -14180,7 +14180,7 @@
 
 /*jshint eqeqeq:false */
 /*global jQuery */
-/*jslint eqeq: true, plusplus: true, white: true */
+/*jslint eqeq: true, plusplus: true, continue: true, white: true */
 (function ($) {
 	"use strict";
 	function Aggregation (aggregator, context) {
@@ -14247,7 +14247,7 @@
 		}
 	};
 
-	function SortedArrayOfFieldsets (trimByCollect, caseSensitive, dimension, fieldName) {
+	function ArrayOfFieldsets (trimByCollect, caseSensitive, skipSort, dimension, fieldName) {
 		var iField, dimensionLength = dimension.length, dimensionItem,
 			stringCompare = function (a, b) {
 				var a1 = a, b1 = b; 
@@ -14302,6 +14302,7 @@
 		this.indexesOfSourceData = [];
 		this.trimByCollect = trimByCollect;
 		this.caseSensitive = caseSensitive;
+		this.skipSort = skipSort;
 		this.fieldLength = dimensionLength;
 		this.fieldNames = new Array(dimensionLength);
 		this.fieldCompare = new Array(dimensionLength); // 0 - number, 1 - integer, 2 - string, one can extend for Date and other
@@ -14324,7 +14325,7 @@
 			}
 		}
 	}
-	SortedArrayOfFieldsets.prototype.compareVectorsEx = function (vector1, vector2) {
+	ArrayOfFieldsets.prototype.compareVectorsEx = function (vector1, vector2) {
 		var self = this, fieldLength = self.fieldLength, iField, compareResult;
 		for (iField = 0; iField < fieldLength; iField++) {
 			compareResult = self.fieldCompare[iField](vector1[iField], vector2[iField]);
@@ -14340,90 +14341,98 @@
 			result: 0
 		};
 	};
-	SortedArrayOfFieldsets.prototype.getIndexOfDifferences = function (vector1, vector2) {
+	ArrayOfFieldsets.prototype.getIndexOfDifferences = function (vector1, vector2) {
+		if (vector2 === null || vector1 === null) {
+			return 0;
+		}
 		return this.compareVectorsEx(vector1, vector2).index;
 	};
-	SortedArrayOfFieldsets.prototype.compareVectors = function (vector1, vector2) {
+	ArrayOfFieldsets.prototype.compareVectors = function (vector1, vector2) {
 		return this.compareVectorsEx(vector1, vector2).result;
 	};
-	SortedArrayOfFieldsets.prototype.getItem = function (index) {
+	ArrayOfFieldsets.prototype.getItem = function (index) {
 		return this.items[index];
 	};
-	SortedArrayOfFieldsets.prototype.getIndexLength = function () {
+	ArrayOfFieldsets.prototype.getIndexLength = function () {
 		return this.items.length;
 	};
-	SortedArrayOfFieldsets.prototype.getIndexesOfSourceData = function (index) {
+	ArrayOfFieldsets.prototype.getIndexesOfSourceData = function (index) {
 		return this.indexesOfSourceData[index];
 	};
-	SortedArrayOfFieldsets.prototype.addToIndex = function (data, iData) {
-		var self = this, fieldLength = self.fieldLength, fieldNames = self.fieldNames, items = self.items, i,
-			values = new Array(fieldLength), v, compareResult, item = data[iData],
-			iMin = 0, iMax = items.length - 1, indexesOfSourceData = this.indexesOfSourceData;
+	ArrayOfFieldsets.prototype.createDataIndex = function (data) {
+		var self = this, iRow, nRows = data.length, fieldLength = self.fieldLength, values, v,
+			fieldNames = self.fieldNames, indexesOfSourceData = self.indexesOfSourceData, iField, compareResult, i, item,
+			items = self.items, iMin, iMax;
 
-		// build the set of fields with data of the current item
-		for (i = 0; i < fieldLength; i++) {
-			v = item[fieldNames[i]];
-			if (typeof v === "string" && self.trimByCollect) {
-				v = $.trim(v);
-			}
-			if (v !== undefined) {
-				values[i] = v;
-			}
-		}
-		if (iMax < 0) {
-			items.push(values);
-			indexesOfSourceData.push([iData]);
-			return;
-		}
-		compareResult = self.compareVectors(values, items[iMax]);
-		if (compareResult === 1) {
-			// in case of the empty array this.items or if the values is larger as the
-			// the max (last) element of this.items: append values to the array this.items
-			items.push(values);
-			indexesOfSourceData.push([iData]);
-			return;
-		}
-		if (compareResult === 0) {
-			indexesOfSourceData[iMax].push(iData);
-			return;
-		}
-		compareResult = self.compareVectors(items[0], values);
-		if (compareResult === 1) {
-			// if the min (first) element values is larger as the values:
-			// insert the values as the first element of the array this.items
-			items.unshift(values);
-			indexesOfSourceData.unshift([iData]);
-			return;
-		}
-		if (compareResult === 0) {
-			indexesOfSourceData[0].push(iData);
-			return;
-		}
-		// we are sure that items[iMin] < values < items[iMax]
-		while (true) {
-			if (iMax - iMin < 2) {
-				// no identical items are found we need to insert the item at i index
-				items.splice(iMax, 0, values); // insert after iMin
-				indexesOfSourceData.splice(iMax, 0, [iData]);
-				break;
-			}
-			i = Math.floor((iMin + iMax) / 2); // | 0 means Math.floor, but it’s faster sometimes.
-			compareResult = self.compareVectors(items[i], values);
-			if (compareResult === 0) {
-				indexesOfSourceData[i].push(iData);
-				break;
-			}
-			if (compareResult === 1) {
-				iMax = i;
-			} else {
-				iMin = i;
-			}
-		}
-	};
-	SortedArrayOfFieldsets.prototype.createDataIndex = function (data) {
-		var iRow, nRows = data.length;
 		for (iRow = 0; iRow < nRows; iRow++) {
-			this.addToIndex(data, iRow);
+			item = data[iRow];
+
+			// build the set of fields with data of the current item
+			values = new Array(fieldLength);
+			for (iField = 0; iField < fieldLength; iField++) {
+				v = item[fieldNames[iField]];
+				if (v !== undefined) {
+					if (typeof v === "string" && self.trimByCollect) {
+						v = $.trim(v);
+					}
+					values[iField] = v;
+				}
+			}
+
+			// compare values with items having index iMax and iMin
+			// If we use skipSort:true option then we compare always
+			// with iMax item only.
+			iMin = 0;
+			iMax = items.length - 1;
+			if (iMax < 0) {
+				items.push(values);
+				indexesOfSourceData.push([iRow]);
+				continue;
+			}
+			compareResult = self.compareVectors(values, items[iMax]);
+			if (compareResult === 0) {
+				indexesOfSourceData[iMax].push(iRow);
+				continue;
+			}
+			if (compareResult === 1 || self.skipSort) {
+				// in case of the empty array this.items or if the values is larger as the
+				// the max (last) element of this.items: append values to the array this.items
+				items.push(values);
+				indexesOfSourceData.push([iRow]);
+				continue;
+			}
+			compareResult = self.compareVectors(items[0], values);
+			if (compareResult === 1) {
+				// if the min (first) element values is larger as the values:
+				// insert the values as the first element of the array this.items
+				items.unshift(values);
+				indexesOfSourceData.unshift([iRow]);
+				continue;
+			}
+			if (compareResult === 0) {
+				indexesOfSourceData[0].push(iRow);
+				continue;
+			}
+			// we are sure that items[iMin] < values < items[iMax]
+			while (true) {
+				if (iMax - iMin < 2) {
+					// no identical items are found we need to insert the item at i index
+					items.splice(iMax, 0, values); // insert after iMin
+					indexesOfSourceData.splice(iMax, 0, [iRow]);
+					break;
+				}
+				i = Math.floor((iMin + iMax) / 2); // | 0 means Math.floor, but it's faster sometimes.
+				compareResult = self.compareVectors(items[i], values);
+				if (compareResult === 0) {
+					indexesOfSourceData[i].push(iRow);
+					break;
+				}
+				if (compareResult === 1) {
+					iMax = i;
+				} else {
+					iMin = i;
+				}
+			}
 		}
 	};
 	
@@ -14448,6 +14457,8 @@
 					rowTotalsText: "{0} {1}",
 					useColSpanStyle: false,
 					trimByCollect: true,
+					skipSortByX: false,
+					skipSortByY: false,
 					caseSensitive: false,
 					footerTotals: false, // old colTotals option
 					groupSummary: true,
@@ -14455,7 +14466,7 @@
 					frozenStaticCols: false,
 					defaultFormatting: true
 				}, options || {}),
-				row, i, j, k, nRows = data.length, x, y, cm, iRow, nm, iXData, itemXData,
+				row, i, k, nRows = data.length, x, y, cm, iRow, nm, iXData, itemXData,
 				xDimension = o.xDimension, yDimension = o.yDimension, aggregates = o.aggregates, aggrContext,
 				isRowTotal = o.totalText || o.rowTotals || o.totalHeader,
 				xlen = isArray(xDimension) ? xDimension.length : 0,
@@ -14463,11 +14474,11 @@
 				aggrlen = isArray(aggregates) ? aggregates.length : 0,
 				headerLevels = ylen - (aggrlen === 1 ? 1 : 0),
 				colHeaders = [], hasGroupTotal = [], colModel = [], outputItems = [],
-				aggrContextTotalRows = new Array(aggrlen), aggrContextGroupTotalRows = new Array(aggrlen),
+				aggrContextTotalRows = new Array(aggrlen), aggrContextGroupTotalRows = new Array(ylen),
 				xIndexLength, indexesOfDataWithTheSameXValues, iYData, itemYData, indexesOfDataWithTheSameYValues,
-				iRows, agr, outputItem, previousY, groupHeaders, iRowsY, xIndex, yIndex, yIndexLength, totalHeader,
-				indexDataBy = function (dimension) {
-					var index = new SortedArrayOfFieldsets(o.trimByCollect, o.caseSensitive, dimension);
+				iRows, agr, outputItem, previousY, groupHeaders, iRowsY, xIndex, yIndex, yIndexLength,
+				indexDataBy = function (dimension, skipSort) {
+					var index = new ArrayOfFieldsets(o.trimByCollect, o.caseSensitive, skipSort, dimension);
 					index.createDataIndex(data);
 					return index;
 				},
@@ -14508,25 +14519,70 @@
 						colModel.push(buildColModelItem(colType, aggregate, iAggr, level, iyData));
 					}
 				},
-				addGroupTotalHeaders = function (level, previousY) {
-					var iLevel;
+				addGroupTotalHeaders = function (iyData, level, previousY) {
+					var iLevel, j, totalHeader, headerOnTop;
 					for (iLevel = headerLevels - 1; iLevel >= level; iLevel--) {
 						if (hasGroupTotal[iLevel]) {
 							for (j = 0; j <= iLevel; j++) {
 								groupHeaders = colHeaders[j].groupHeaders;
 								groupHeaders[groupHeaders.length - 1].numberOfColumns += aggrlen;
 							}
-							totalHeader = yDimension[iLevel].totalHeader;
+							y = yDimension[iLevel];
+							totalHeader = y.totalHeader;
+							headerOnTop = y.headerOnTop;
 							for (j = iLevel + 1; j <= headerLevels - 1; j++) {
 								colHeaders[j].groupHeaders.push({
-									titleText: j === headerLevels - 1 ?
+									titleText: ((headerOnTop && j === iLevel + 1) || (!headerOnTop && j === headerLevels - 1)) ?
 											($.isFunction(totalHeader) ?
 													totalHeader.call(self, previousY, iLevel) :
 													jgrid.template.call(self, totalHeader || "", previousY[iLevel], iLevel)) :
 											"",
-									startColumnName: "y" + (iYData - 1) + "t" + iLevel + (aggrlen === 1 ? "" :"a0"),
+									startColumnName: "y" + (iyData - 1) + "t" + iLevel + (aggrlen === 1 ? "" :"a0"),
 									numberOfColumns: aggrlen
 								});
+							}
+						}
+					}
+				},
+				initializeGroupTotals = function () {
+					var iLevel, iAggr;
+					for (iLevel = headerLevels - 1; iLevel >= 0; iLevel--) {
+						if (hasGroupTotal[iLevel]) {
+							if (aggrContextGroupTotalRows[iLevel] == null) {// first call
+								aggrContextGroupTotalRows[iLevel] = new Array(aggrlen);
+							}
+							for (iAggr = 0; iAggr < aggrlen; iAggr++) {
+								aggrContextGroupTotalRows[iLevel][iAggr] = new Aggregation(agr.aggregator === "count" ? "sum" : agr.aggregator, self);
+							}
+						}
+					}
+				},
+				finalizeGroupTotals = function (iyData, itemYData, previousY, iAggr) {
+					var iLevel, level = yIndex.getIndexOfDifferences(itemYData, previousY),	fieldName;
+
+					if (previousY !== null) {
+						// test whether the group is finished and one need to get results
+						level = Math.max(level, 0); // change -1 to 0 for the last call (itemYData === previousY)
+						for (iLevel = headerLevels - 1; iLevel >= level; iLevel--) {
+							fieldName = "y" + iyData + "t" + iLevel + (aggrlen > 1 ? "a" + iAggr : "");
+							if (hasGroupTotal[iLevel] && outputItem[fieldName] === undefined) {
+								aggrContextGroupTotalRows[iLevel][iAggr].getResult(outputItem, fieldName);
+								if (itemYData !== previousY) {
+									aggrContextGroupTotalRows[iLevel][iAggr] = new Aggregation(agr.aggregator === "count" ? "sum" : agr.aggregator, self);
+								}
+							}
+						}
+					}
+				},
+				calculateGroupTotals = function (itemYData, previousY, aggregate, iAggr, row) {
+					// the method will be called at the first time with previousY === null in every output row
+					// and finally with itemYData === previousY for getting results of all aggregation contexts
+					var iLevel;
+
+					if (itemYData !== previousY) { // not the last call in the row
+						for (iLevel = headerLevels - 1; iLevel >= 0; iLevel--) {
+							if (hasGroupTotal[iLevel]) {
+								aggrContextGroupTotalRows[iLevel][iAggr].calc(row[aggregate.member], aggregate.member, row);
 							}
 						}
 					}
@@ -14535,12 +14591,12 @@
 			if (xlen === 0 || aggrlen === 0) {
 				throw ("xDimension or aggregates options are not set!");
 			}
-
+			
 			// ****************************************************************
 			// The step 1: scan input data and build the list of unique indexes
 			// ****************************************************************
-			xIndex = indexDataBy(xDimension);
-			yIndex = indexDataBy(yDimension);
+			xIndex = indexDataBy(xDimension, o.skipSortByX);
+			yIndex = indexDataBy(yDimension, o.skipSortByY);
 			
 			// *******************************************
 			// The step 2: build colModel and groupOptions
@@ -14636,7 +14692,7 @@
 				// We placed QNIQUE data in uniqueYData array.
 				// So we always find a difference on one level
 
-				addGroupTotalHeaders(i, previousY);
+				addGroupTotalHeaders(iYData, i, previousY);
 				// add column headers which corresponds the main data
 				for (k = headerLevels - 1; k >= i; k--) {
 					colHeaders[k].groupHeaders.push({
@@ -14651,7 +14707,7 @@
 				}
 				previousY = itemYData;
 			}
-			addGroupTotalHeaders(0, previousY);
+			addGroupTotalHeaders(yIndexLength, 0, previousY);
 
 			// fill groupHeaders without taking in consideration group total columns
 			if (isRowTotal) {
@@ -14684,17 +14740,19 @@
 				if (isRowTotal) {
 					for (k = 0; k < aggrlen; k++) {
 						agr = aggregates[k];
-						aggrContextTotalRows[k] = new Aggregation(agr.aggregator === "count" ? "sum" : agr.aggregator);
-						if (hasGroupTotal[k]) {
-							aggrContextGroupTotalRows[k] = new Aggregation(agr.aggregator === "count" ? "sum" : agr.aggregator);
-						}
+						aggrContextTotalRows[k] = new Aggregation(agr.aggregator === "count" ? "sum" : agr.aggregator, self);
 					}
 				}
+				previousY = null;
+				initializeGroupTotals();
 				for (iYData = 0; iYData < yIndexLength; iYData++) {
 					itemYData = yIndex.getItem(iYData);
 					indexesOfDataWithTheSameYValues = yIndex.getIndexesOfSourceData(iYData);
 					// we calculate aggregate in every itemYData 
 					for (k = 0; k < aggrlen; k++) {
+						if (previousY !== null) { // empty input data
+							finalizeGroupTotals(iYData - 1, itemYData, previousY, k);
+						}
 						iRows = [];
 						for (i = 0; i < indexesOfDataWithTheSameYValues.length; i++) {
 							iRowsY = indexesOfDataWithTheSameYValues[i];
@@ -14702,18 +14760,27 @@
 								iRows.push(iRowsY);
 							}
 						}
-						// iRows array have all indexes of input data which have both itemXData and itemYData
-						// We need calculate aggregate agr over all the items
-						agr = aggregates[k];
-						aggrContext = new Aggregation(agr.aggregator); // result = undefined; count = undefined;
-						for (iRow = 0; iRow < iRows.length; iRow++) {
-							row = data[iRows[iRow]];
-							aggrContext.calc(row[agr.member], agr.member, row);
-							if (isRowTotal) {
-								aggrContextTotalRows[k].calc(row[agr.member], agr.member, row);
+						if (iRows.length > 0) {
+							// iRows array have all indexes of input data which have both itemXData and itemYData
+							// We need calculate aggregate agr over all the items
+							agr = aggregates[k];
+							aggrContext = new Aggregation(agr.aggregator, self); // result = undefined; count = undefined;
+							for (iRow = 0; iRow < iRows.length; iRow++) {
+								row = data[iRows[iRow]];
+								aggrContext.calc(row[agr.member], agr.member, row);
+								if (isRowTotal) {
+									aggrContextTotalRows[k].calc(row[agr.member], agr.member, row);
+								}
+								calculateGroupTotals(itemYData, previousY, agr, k, row);
 							}
+							aggrContext.getResult(outputItem, "y" + iYData + (aggrlen === 1 ? "" : "a" + k));
 						}
-						aggrContext.getResult(outputItem, "y" + iYData + (aggrlen === 1 ? "" : "a" + k));
+					}
+					previousY = itemYData;
+				}
+				if (previousY !== null) { // if non-empty input data
+					for (k = 0; k < aggrlen; k++) {
+						finalizeGroupTotals(yIndexLength - 1, previousY, previousY, k);
 					}
 				}
 				if (isRowTotal) {
@@ -14734,7 +14801,7 @@
 				}
 				for (i = xlen; i < colModel.length; i++) {
 					nm = colModel[i].name;
-					aggrContext = new Aggregation(o.colTotalAggregator || "sum");
+					aggrContext = new Aggregation(o.colTotalAggregator || "sum", self);
 					for (iRow = 0; iRow < nRows; iRow++) {
 						outputItem = outputItems[iRow];
 						aggrContext.calc(outputItem[nm], nm, outputItem);
