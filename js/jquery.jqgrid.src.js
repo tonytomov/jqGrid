@@ -2099,6 +2099,7 @@
 					caption: "",
 					hidegrid: true,
 					hiddengrid: false,
+					useUnformattedDataForCellAttr: true,
 					postData: {},
 					userData: {},
 					treeGrid: false,
@@ -2663,7 +2664,7 @@
 					return stripPref(p.idPrefix, rowId);
 				},
 				formatCol = function (pos, rowInd, tv, rawObject, rowId, rdata) {
-					var cm = p.colModel[pos], cellAttrFunc,
+					var cm = p.colModel[pos], cellAttrFunc, cellValue = tv, rPrefix,
 						ral = cm.align, result = "style=\"", clas = cm.classes, nm = cm.name, celp, acp = [];
 					if (ral) { result += "text-align:" + ral + ";"; }
 					if (cm.hidden === true) { result += "display:none;"; }
@@ -2671,7 +2672,16 @@
 						result += "width: " + grid.headers[pos].width + "px;";
 					} else if (isFunction(cm.cellattr) || (typeof cm.cellattr === "string" && jgrid.cellattr != null && isFunction(jgrid.cellattr[cm.cellattr]))) {
 						cellAttrFunc = isFunction(cm.cellattr) ? cm.cellattr : jgrid.cellattr[cm.cellattr];
-						celp = cellAttrFunc.call(ts, rowId, tv, rawObject, cm, rdata);
+						if (p.useUnformattedDataForCellAttr) {
+							cellValue = rdata[cm.name];
+						} else if (cm.autoResizable) {
+							// see https://github.com/free-jqgrid/jqGrid/issues/74#issuecomment-107675796
+							// we will cut formatted string like "<span class='ui-jqgrid-cell-wrapper'>193,81</span>"
+							// to substring "193,81". The formatting (comma, point, dollar and so on) still stay.
+							rPrefix = "<span class='" + p.autoResizing.wrapperClassName + "'>";
+							cellValue = tv.substring(rPrefix.length, tv.length - "</span>".length);
+						}
+						celp = cellAttrFunc.call(ts, rowId, cellValue, rawObject, cm, rdata);
 						if (celp && typeof celp === "string") {
 							celp = celp.replace(/style/i, "style").replace(/title/i, "title");
 							if (celp.indexOf("title") > -1) { cm.title = false; }
@@ -2689,7 +2699,7 @@
 						}
 					}
 					if (!acp.length) { acp[0] = ""; result += "\""; }
-					result += (clas !== undefined ? (" class=\"" + clas + "\"") : "") + ((cm.title && tv) ? (" title=\"" + stripHtml(tv) + "\"") : "");
+					result += (clas !== undefined ? (" class=\"" + clas + "\"") : "") + ((cm.title && cellValue) ? (" title=\"" + stripHtml(tv) + "\"") : "");
 					result += " aria-describedby=\"" + p.id + "_" + nm + "\"";
 					return result + acp[0];
 				},
@@ -14833,11 +14843,13 @@
 						footerrow = assocArraySize(pivotGrid.summary) > 0 ? true : false,
 						groupingView = pivotGrid.groupOptions.groupingView,
 						query = jgrid.from.call($t, pivotGrid.rows), i;
-					for (i = 0; i < groupingView.groupField.length; i++) {
-						query.orderBy(groupingView.groupField[i],
-							gridOpt != null && gridOpt.groupingView && gridOpt.groupingView.groupOrder != null && gridOpt.groupingView.groupOrder[i] === "desc" ? "d" : "a",
-							"text",
-							"");
+					if (pivotOpt.skipSortByX) {
+						for (i = 0; i < groupingView.groupField.length; i++) {
+							query.orderBy(groupingView.groupField[i],
+								gridOpt != null && gridOpt.groupingView && gridOpt.groupingView.groupOrder != null && gridOpt.groupingView.groupOrder[i] === "desc" ? "d" : "a",
+								"text",
+								"");
+						}
 					}
 					$j.call($self, $.extend(true, {
 						datastr: $.extend(query.select(), footerrow ? { userdata: pivotGrid.summary } : {}),
