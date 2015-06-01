@@ -331,8 +331,8 @@
 					cmItem = $.extend({}, agr, {
 						name: name + (aggrlen > 1 ? "a" + iAggr : ""),
 						label: $.isFunction(label) ?
-									label.apply(self, colType === 2 ? [agr, k] : [yIndex.getItem(iyData), agr, k, i]) :
-									jgrid.template.apply(self, colType === 2 ? [label, agr.aggregator, agr.member, k] : [label, agr.aggregator, agr.member, yIndex.getItem(iyData)[level], k])
+									label.apply(self, colType === 2 ? [agr, iAggr] : [yIndex.getItem(iyData), agr, iAggr, level]) :
+									jgrid.template.apply(self, colType === 2 ? [label, agr.aggregator, agr.member, iAggr] : [label, agr.aggregator, agr.member, yIndex.getItem(iyData)[level], level])
 					});
 					delete cmItem.member;
 					delete cmItem.aggregator;
