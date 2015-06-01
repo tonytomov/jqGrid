@@ -12,6 +12,250 @@
 /*jslint eqeq: true, plusplus: true, white: true */
 (function ($) {
 	"use strict";
+	function Aggregation (aggregator, context) {
+		if (!(this instanceof Aggregation)) {
+			return new Aggregation(aggregator);
+		}
+		//this.result = undefined;
+		//this.count = undefined;
+		this.aggregator = aggregator;
+		this.finilized = false;
+		this.context = context;
+	}
+	Aggregation.prototype.calc = function (v, fieldName, row) {
+		var self = this;
+		if (v !== undefined) {
+			self.result = self.result || 0; // change undefined to 0
+			v = parseFloat(v);
+			switch(self.aggregator) {
+				case "sum":
+					self.result += v;
+					break;
+				case "count":
+					self.result++;
+					break;
+				case "avg":
+					if (self.finilized) {
+						self.count = self.count || 0; // change undefined to 0
+						self.result = (self.result * self.count + v) / (self.count + 1);
+						self.count++;
+					} else {
+						self.result += v;
+						self.count = self.count || 0; // change undefined to 0
+						self.count++;
+					}
+					break;
+				case "min":
+					self.result = Math.min(self.result, v);
+					break;
+				case "max":
+					self.result = Math.max(self.result, v);
+					break;
+				default:
+					if ($.isFunction(self.aggregator)) {
+						self.result = self.aggregator.call(self.context, self.result, v, fieldName, row);
+					}
+					break;
+			}
+		}
+	};
+	Aggregation.prototype.getResult = function (obj, propName, forceSaving) {
+		var self = this;
+		if (self.result !== undefined || forceSaving) {
+			if (forceSaving) {
+				if (self.result !== undefined) {
+					self.result = 0;
+					self.count = 0;
+				}
+			}
+			if (self.result !== undefined && !self.finilized && self.aggregator === "avg") {
+				self.result = self.result/self.count;
+				self.finilized = true;
+			}
+			obj[propName] = self.result;
+		}
+	};
+
+	function SortedArrayOfFieldsets (trimByCollect, caseSensitive, dimension, fieldName) {
+		var iField, dimensionLength = dimension.length, dimensionItem,
+			stringCompare = function (a, b) {
+				var a1 = a, b1 = b; 
+				if (a1 == null) { a1 = ""; } // we will place undefined and null values as the lowest TOGETHER with ""
+				if (b1 == null) { b1 = ""; }
+				// be sure that we have no other input data (Number, Date and so on)
+				a1 = String(a1);
+				b1 = String(b1);
+				if (!this.caseSensitive) {
+					a1 = a1.toUpperCase();
+					b1 = b1.toUpperCase();
+				}
+				if (a1 === b1) {
+					if (a === b) {//typeof a === typeof b) {
+						return 0;
+					}
+					// either a or b is undefined or null
+					if (a === undefined) { return -1; } // make undefined less as all other
+					if (b === undefined) { return 1; }
+					if (a === null) { return -1; } // make null less as all other with the exception undefined
+					if (b === null) { return 1; }
+				}
+				if (a1 < b1) {
+					return -1;
+				}
+				return 1;
+			},
+			numberCompare = function (a, b) {
+				a = Number(a);
+				b = Number(b);
+				if (a === b) {
+					return 0;
+				}
+				if (a < b) {
+					return -1;
+				}
+				return 1;
+			},
+			integerCompare = function (a, b) {
+				a = Math.floor(Number(a));
+				b = Math.floor(Number(b));
+				if (a === b) {
+					return 0;
+				}
+				if (a < b) {
+					return -1;
+				}
+				return 1;
+			};
+
+		this.items = [];
+		this.indexesOfSourceData = [];
+		this.trimByCollect = trimByCollect;
+		this.caseSensitive = caseSensitive;
+		this.fieldLength = dimensionLength;
+		this.fieldNames = new Array(dimensionLength);
+		this.fieldCompare = new Array(dimensionLength); // 0 - number, 1 - integer, 2 - string, one can extend for Date and other
+		for (iField = 0; iField < dimensionLength; iField++) {
+			dimensionItem = dimension[iField];
+			this.fieldNames[iField] = dimensionItem[fieldName || "dataName"];
+			switch (dimensionItem.sorttype) {
+				case "integer":
+				case "int":
+					this.fieldCompare[iField] = integerCompare;
+					break;
+				case "number":
+				case "currency":
+				case "float":
+					this.fieldCompare[iField] = numberCompare;
+					break;
+				default:
+					this.fieldCompare[iField] = $.isFunction(dimensionItem.compare) ? dimensionItem.compare : stringCompare;
+					break;
+			}
+		}
+	}
+	SortedArrayOfFieldsets.prototype.compareVectorsEx = function (vector1, vector2) {
+		var self = this, fieldLength = self.fieldLength, iField, compareResult;
+		for (iField = 0; iField < fieldLength; iField++) {
+			compareResult = self.fieldCompare[iField](vector1[iField], vector2[iField]);
+			if (compareResult !== 0) {
+				return {
+					index: iField,
+					result: compareResult
+				};
+			}
+		}
+		return {
+			index: -1,
+			result: 0
+		};
+	};
+	SortedArrayOfFieldsets.prototype.getIndexOfDifferences = function (vector1, vector2) {
+		return this.compareVectorsEx(vector1, vector2).index;
+	};
+	SortedArrayOfFieldsets.prototype.compareVectors = function (vector1, vector2) {
+		return this.compareVectorsEx(vector1, vector2).result;
+	};
+	SortedArrayOfFieldsets.prototype.getItem = function (index) {
+		return this.items[index];
+	};
+	SortedArrayOfFieldsets.prototype.getIndexLength = function () {
+		return this.items.length;
+	};
+	SortedArrayOfFieldsets.prototype.getIndexesOfSourceData = function (index) {
+		return this.indexesOfSourceData[index];
+	};
+	SortedArrayOfFieldsets.prototype.addToIndex = function (data, iData) {
+		var self = this, fieldLength = self.fieldLength, fieldNames = self.fieldNames, items = self.items, i,
+			values = new Array(fieldLength), v, compareResult, item = data[iData],
+			iMin = 0, iMax = items.length - 1, indexesOfSourceData = this.indexesOfSourceData;
+
+		// build the set of fields with data of the current item
+		for (i = 0; i < fieldLength; i++) {
+			v = item[fieldNames[i]];
+			if (typeof v === "string" && self.trimByCollect) {
+				v = $.trim(v);
+			}
+			if (v !== undefined) {
+				values[i] = v;
+			}
+		}
+		if (iMax < 0) {
+			items.push(values);
+			indexesOfSourceData.push([iData]);
+			return;
+		}
+		compareResult = self.compareVectors(values, items[iMax]);
+		if (compareResult === 1) {
+			// in case of the empty array this.items or if the values is larger as the
+			// the max (last) element of this.items: append values to the array this.items
+			items.push(values);
+			indexesOfSourceData.push([iData]);
+			return;
+		}
+		if (compareResult === 0) {
+			indexesOfSourceData[iMax].push(iData);
+			return;
+		}
+		compareResult = self.compareVectors(items[0], values);
+		if (compareResult === 1) {
+			// if the min (first) element values is larger as the values:
+			// insert the values as the first element of the array this.items
+			items.unshift(values);
+			indexesOfSourceData.unshift([iData]);
+			return;
+		}
+		if (compareResult === 0) {
+			indexesOfSourceData[0].push(iData);
+			return;
+		}
+		// we are sure that items[iMin] < values < items[iMax]
+		while (true) {
+			if (iMax - iMin < 2) {
+				// no identical items are found we need to insert the item at i index
+				items.splice(iMax, 0, values); // insert after iMin
+				indexesOfSourceData.splice(iMax, 0, [iData]);
+				break;
+			}
+			i = Math.floor((iMin + iMax) / 2); // | 0 means Math.floor, but it’s faster sometimes.
+			compareResult = self.compareVectors(items[i], values);
+			if (compareResult === 0) {
+				indexesOfSourceData[i].push(iData);
+				break;
+			}
+			if (compareResult === 1) {
+				iMax = i;
+			} else {
+				iMin = i;
+			}
+		}
+	};
+	SortedArrayOfFieldsets.prototype.createDataIndex = function (data) {
+		var iRow, nRows = data.length;
+		for (iRow = 0; iRow < nRows; iRow++) {
+			this.addToIndex(data, iRow);
+		}
+	};
+	
 	var jgrid = $.jgrid;
 	jgrid.extend({
 		pivotSetup: function (data, options) {
@@ -33,267 +277,102 @@
 					rowTotalsText: "{0} {1}",
 					useColSpanStyle: false,
 					trimByCollect: true,
+					caseSensitive: false,
 					footerTotals: false, // old colTotals option
 					groupSummary: true,
 					groupSummaryPos: "header",
 					frozenStaticCols: false,
-					defaultFormatting: true,
-					sortByX: false,
-					sortByY: true
+					defaultFormatting: true
 				}, options || {}),
-				row, i, nRows = data.length, x, y, cm, iRow,	xValues, yValues, k, nm, v,	iXData, itemXData, isDifferent,
+				row, i, j, k, nRows = data.length, x, y, cm, iRow, nm, iXData, itemXData,
 				xDimension = o.xDimension, yDimension = o.yDimension, aggregates = o.aggregates, aggrContext,
 				isRowTotal = o.totalText || o.rowTotals || o.totalHeader,
 				xlen = isArray(xDimension) ? xDimension.length : 0,
 				ylen = isArray(yDimension) ? yDimension.length : 0,
 				aggrlen = isArray(aggregates) ? aggregates.length : 0,
-				// The next array uniqueXData will contains unique vectors (arrays) of xValues
-				// from the input data. The length of vectors (arrays) will be always the same - xlen
-				// (the length of xDimension array)
-				uniqueXData = [], uniqueXDataLength = 0, // uniqueXDataLength is uniqueXData.length
-				// The length of the next array will be the same as the length of uniqueXData
-				// the value will be array of indexes in input data array with the same xValues
-				dataIndexByUniqueXData = [], indexesOfDataWithTheSameXValues, converter, iYData, itemYData,
-				uniqueYData = [], uniqueYDataLength = 0,
-				dataIndexToUniqueYData = [], dataIndexByUniqueYData = [], orderY = [], orderX = [],
-				indexesOfDataWithTheSameYValues, iRows, colModel = [], agr, outputItem, outputItems = [],
-				previousY, headerLevels = ylen - (aggrlen === 1 ? 1 : 0),
-				colHeaders = [], groupHeaders, iRowsY,
-				initAggregation = function (aggregator) {
-					return {
-						result: undefined,
-						count: undefined,
-						aggregator: aggregator,
-						finilized: false,
-						calcAggregate: function (v, fieldName) {
-							var aggr = this;
-							if (v !== undefined) {
-								aggr.result = aggr.result || 0; // change undefined to 0
-								v = parseFloat(v);
-								switch(aggr.aggregator) {
-									case "sum":
-										aggr.result += v;
-										break;
-									case "count":
-										aggr.result++;
-										break;
-									case "avg":
-										aggr.result += v;
-										aggr.count = aggr.count || 0; // change undefined to 0
-										aggr.count++;
-										break;
-									case "min":
-										aggr.result = Math.min(aggr.result, v);
-										break;
-									case "max":
-										aggr.result = Math.max(aggr.result, v);
-										break;
-									default:
-										if ($.isFunction(aggr.aggregator)) {
-											aggr.result = aggr.aggregator.call(self, aggr.result, v, fieldName, row);
-										}
-										break;
-								}
+				headerLevels = ylen - (aggrlen === 1 ? 1 : 0),
+				colHeaders = [], hasGroupTotal = [], colModel = [], outputItems = [],
+				aggrContextTotalRows = new Array(aggrlen), aggrContextGroupTotalRows = new Array(aggrlen),
+				xIndexLength, indexesOfDataWithTheSameXValues, iYData, itemYData, indexesOfDataWithTheSameYValues,
+				iRows, agr, outputItem, previousY, groupHeaders, iRowsY, xIndex, yIndex, yIndexLength, totalHeader,
+				indexDataBy = function (dimension) {
+					var index = new SortedArrayOfFieldsets(o.trimByCollect, o.caseSensitive, dimension);
+					index.createDataIndex(data);
+					return index;
+				},
+				buildColModelItem = function (colType, agr, iAggr, level, iyData) {
+					var label, name, cmItem;
+					switch (colType) {
+						case 1: // total group
+							label = yDimension[level].totalText || "{0} {1} {2}";
+							name = "y" + iyData + "t" + level;
+							break;
+						case 2: // grand total
+							label = o.totalText || "{0}";
+							name = "t";
+							break;
+						//case 0: // standard column
+						default:
+							label = aggrlen > 1 ? agr.label || "{0}" : yIndex.getItem(iyData)[level];
+							name = "y" + iyData;
+							break;
+					}
+					cmItem = $.extend({}, agr, {
+						name: name + (aggrlen > 1 ? "a" + iAggr : ""),
+						label: $.isFunction(label) ?
+									label.apply(self, colType === 2 ? [agr, k] : [yIndex.getItem(iyData), agr, k, i]) :
+									jgrid.template.apply(self, colType === 2 ? [label, agr.aggregator, agr.member, k] : [label, agr.aggregator, agr.member, yIndex.getItem(iyData)[level], k])
+					});
+					delete cmItem.member;
+					delete cmItem.aggregator;
+					return cmItem;
+				},
+				addColumnToColModel = function (colType, level, iyData) {
+					var iAggr, aggregate;
+					for (iAggr = 0; iAggr < aggrlen; iAggr++) {
+						aggregate = aggregates[iAggr];
+						if (aggregate.template === undefined && aggregate.formatter === undefined && o.defaultFormatting) {
+							aggregate.template = aggregate.aggregator === "count" ? "integer" : "number";
+						}
+						colModel.push(buildColModelItem(colType, aggregate, iAggr, level, iyData));
+					}
+				},
+				addGroupTotalHeaders = function (level, previousY) {
+					var iLevel;
+					for (iLevel = headerLevels - 1; iLevel >= level; iLevel--) {
+						if (hasGroupTotal[iLevel]) {
+							for (j = 0; j <= iLevel; j++) {
+								groupHeaders = colHeaders[j].groupHeaders;
+								groupHeaders[groupHeaders.length - 1].numberOfColumns += aggrlen;
 							}
-						},
-						finilizeAggregation: function () {
-							var aggr = this;
-							if (aggr.aggregator === "avg" && aggr.result !== undefined) {
-								aggr.result = aggr.result/aggr.count;
-							}
-							aggr.finilized = true;
-						},
-						setPropIfDefinedResult: function (obj, propName) {
-							var aggr = this;
-							if (aggr.result !== undefined) {
-								if (!aggr.finilized) { this.finilizeAggregation(); }
-								obj[propName] = aggr.result;
+							totalHeader = yDimension[iLevel].totalHeader;
+							for (j = iLevel + 1; j <= headerLevels - 1; j++) {
+								colHeaders[j].groupHeaders.push({
+									titleText: j === headerLevels - 1 ?
+											($.isFunction(totalHeader) ?
+													totalHeader.call(self, previousY, iLevel) :
+													jgrid.template.call(self, totalHeader || "", previousY[iLevel], iLevel)) :
+											"",
+									startColumnName: "y" + (iYData - 1) + "t" + iLevel + (aggrlen === 1 ? "" :"a0"),
+									numberOfColumns: aggrlen
+								});
 							}
 						}
-					};
+					}
 				};
-
+			
 			if (xlen === 0 || aggrlen === 0) {
 				throw ("xDimension or aggregates options are not set!");
 			}
 
 			// ****************************************************************
-			// The step 1: scan input data and build the list of unique xValues
+			// The step 1: scan input data and build the list of unique indexes
 			// ****************************************************************
-			// We will build later the array outputItems which will be used as the input data of jqGrid.
-			// Every data item with unique set of xDimension elements build new row of data
-			// (new item in the outputItems array)
-			for (iRow = 0; iRow < nRows; iRow++) {
-				row = data[iRow];
-
-				// build the set of xValues with data of the current row
-				xValues = [];
-				for (i = 0; i < xlen; i++) {
-					v = row[xDimension[i].dataName];
-					if (o.trimByCollect) {
-						v = $.trim(v);
-					}
-					xValues.push(v);
-				}
-
-				// look through uniqueXData and validate whether the current item
-				// have new set of xValues or the same set already was in some previous item
-				isDifferent = true; // it's need be set to add the first item in uniqueXData
-				for (iXData = 0; iXData < uniqueXDataLength; iXData++) {
-					itemXData = uniqueXData[iXData];
-					isDifferent = false;
-					for (i = 0; i < xlen; i++) {
-						v = row[xDimension[i].dataName];
-						if (o.trimByCollect) {
-							v = $.trim(v);
-						}
-						if ($.trim(v) !== itemXData[i]) {
-							// row have one xValue which is different as itemXData. we need try with another item
-							isDifferent = true;
-							break;
-						}
-					}
-					if (!isDifferent) {
-						// we found an item in uniqueXData which is identical by xValues
-						// with the existing item of uniqueXData. The array dataIndexByUniqueXData[iRow]
-						// will hold indexes of all items of the source data array with the xValues
-						dataIndexByUniqueXData[iXData].push(iRow);
-						break;
-					}
-				}
-				if (isDifferent) {
-					dataIndexByUniqueXData.push([iRow]);
-					uniqueXData.push(xValues);
-					uniqueXDataLength++;
-				}
-			}
-			// We know now that the input jqGrid data (the outputItems array) will have uniqueXDataLength rows
-
-			// ****************************************************************
-			// The step 2: scan input data and build the list of unique yValues
-			// ****************************************************************
-			// We will build the columns of outputItems from every row of uniqueXData.
-			// The columns will contains different unique vectors (arrays) of yValues
-			// from the input data for all items.
-			// We will enumerate the input items grouped by the same xValues although it's
-			// not really required. We well scan all input data in any way.
-			for (iXData = 0; iXData < uniqueXDataLength; iXData++) {
-				itemXData = uniqueXData[iXData];
-				indexesOfDataWithTheSameXValues = dataIndexByUniqueXData[iXData];
-				for (i = 0; i < indexesOfDataWithTheSameXValues.length; i++) {
-					iRow = indexesOfDataWithTheSameXValues[i];
-					row = data[iRow];
-
-					// build the set of yValues with data of the current row
-					yValues = [];
-					for (k = 0; k < ylen; k++) {
-						y = yDimension[k];
-						v = row[y.dataName];
-						if (o.trimByCollect) {
-							v = $.trim(v);
-						}
-						converter = y.converter;
-						yValues.push(
-							$.isFunction(converter) ? converter.call(self, v, itemXData, row) : v
-						);
-					}
-					// look through uniqueXData and validate whether the current item
-					// have new set of xValues or the same set already was in some previous item
-					isDifferent = true; // it's need be set to add the first item in uniqueXData
-					for (iYData = 0; iYData < uniqueYDataLength; iYData++) {
-						itemYData = uniqueYData[iYData];
-						isDifferent = false;
-						for (k = 0; k < ylen; k++) {
-							v = row[yDimension[k].dataName];
-							if (o.trimByCollect) {
-								v = $.trim(v);
-							}
-							if (v !== itemYData[k]) {
-								// row have one xValue which is different as itemXData. we need try with another item
-								isDifferent = true;
-								break;
-							}
-						}
-						if (!isDifferent) {
-							// we found an item in uniqueYData which is identical by yValues
-							// with the existing item of uniqueXData. We save the index in
-							// dataIndexToUniqueYData array. Now dataIndexToUniqueYData[iRow]
-							// will 
-							dataIndexToUniqueYData.push(iYData);
-							dataIndexByUniqueYData[iYData].push(iRow);
-							break;
-						}
-					}
-					if (isDifferent) {
-						dataIndexToUniqueYData.push(uniqueYDataLength);
-						dataIndexByUniqueYData.push([iRow]);
-						uniqueYData.push(yValues);
-						uniqueYDataLength++;
-					}
-				}
-			}
-			// We know now that the input jqGrid data the outputItems array) have uniqueXDataLength rows
-			// and uniqueXDataLength+(uniqueYDataLength*aggregates.length) columns.
-			// If we want to have additional totals: true in some yDimension item then
-			// we will have additional columns with totals over every YData + on every Y-level
-			
-			// ********************
-			// the step 3: Ordering
-			// ********************
-			// We have to sort uniqueYData and reorder dataIndexToUniqueYData and dataIndexByUniqueYData
-			// correspond the resorting.
-			for (iYData = 0; iYData < uniqueYDataLength; iYData++) {
-				orderY.push(iYData);
-			}
-			if (o.sortByY) {
-				orderY.sort(function (a, b) {
-					var uniqueYDataA = uniqueYData[a], uniqueYDataB = uniqueYData[b], va, vb;
-					for (k = 0; k < ylen; k++) {
-						va = uniqueYDataA[k];
-						vb = uniqueYDataB[k];
-					    if (yDimension[k].sorttype === "number" && va !== undefined && vb !== undefined) {
-							va = parseFloat(va);
-							vb = parseFloat(vb);
-						}
-						if (va < vb) {
-							return -1;
-						}
-						if (va > vb) {
-							return 1;
-						}
-					}
-					return 0;
-				});
-			}
-			// now we will access uniqueYData not directly, but by using
-			// uniqueYData[orderY[iYData]] to get the order of columns which can be
-			// better grouped in column headers
-
-			// We have to sort uniqueYData and reorder dataIndexToUniqueYData and dataIndexByUniqueYData
-			// correspond the resorting.
-			for (iXData = 0; iXData < uniqueXDataLength; iXData++) {
-				orderX.push(iXData);
-			}
-			if (o.sortByX) {
-				orderX.sort(function (a, b) {
-					var uniqueXDataA = uniqueXData[a], uniqueXDataB = uniqueXData[b];
-					for (i = 0; i < xlen; i++) {
-						if (uniqueXDataA[i] < uniqueXDataB[i]) {
-							return -1;
-						}
-						if (uniqueXDataA[i] > uniqueXDataB[i]) {
-							return 1;
-						}
-					}
-					return 0;
-				});
-			}
-			// now will will access uniqueXData not directly, but by using
-			// uniqueXData[orderX[iXData]] to get the order of columns which can be
-			// better grouped in column headers
+			xIndex = indexDataBy(xDimension);
+			yIndex = indexDataBy(yDimension);
 			
 			// *******************************************
-			// The step 4: build colModel and groupOptions
+			// The step 2: build colModel and groupOptions
 			// *******************************************
 			// fill the first xlen columns of colModel and fill the groupOptions
 			// the names of the first columns will be "x"+i. The first column have the name "x0".
@@ -322,85 +401,88 @@
 			groupOptions.sortname = colModel[xlen - 1].name;
 			groupingView.hideFirstGroupCol = true;
 
+			// Fill hasGroupTotal and groupColumnsPerLevel arrays
+			// The hasGroupTotal just shows whether one need create additional totals for every group.
+			for (i = 0; i < ylen; i++) {
+				y = yDimension[i];
+				hasGroupTotal.push(y.totals || y.rowTotals || y.totalText || y.totalHeader ? true : false);
+			}
+
 			// fill other columns of colModel based on collected uniqueYData and aggregates options
 			// the names of the first columns will be "y"+i in case of one aggregate and
 			// "y"+i+"a"+k in case of multiple aggregates. The name of the first "y"-column is "y0" or "y0a0"
-			previousY = uniqueYData[orderY[0]];
-			for (iYData = 0; iYData < uniqueYDataLength; iYData++) {
-				itemYData = uniqueYData[orderY[iYData]];
-				// fill first columns of data
-				for (k = 0; k < aggrlen; k++) {
-					agr = aggregates[k];
-					if (agr.template === undefined && agr.formatter === undefined && o.defaultFormatting) {
-						agr.template = agr.aggregator === "count" ? "integer" : "number";
+			// The next function build and insert item in colModel
+			// colType: 0 - means standard column, 1 - total group, 2 - grand total
+			previousY = yIndex.getItem(0);
+			addColumnToColModel(0, ylen - 1, 0); // add standard column
+			yIndexLength = yIndex.getIndexLength();
+			for (iYData = 1; iYData < yIndexLength; iYData++) {
+				itemYData = yIndex.getItem(iYData);
+				/*
+				 * find where (on which level) the itemYData have the differences to
+				 * the previous y (previousY). If the level has (totals:true/rowTotals:true) in yDimension
+				 * then one should insert new total columns for all levels starting with the highest one
+				 * (yDimension[yDimension.length-1]) and till the current one.
+				 */
+				i = yIndex.getIndexOfDifferences(itemYData, previousY);
+				for (k = headerLevels - 1; k >= i; k--) {
+					if (hasGroupTotal[k]) {
+						addColumnToColModel(1, k, iYData - 1); // add group total columns
 					}
-					agr = $.extend({}, agr, {
-						name: "y" + iYData + (aggrlen === 1 ? "" : "a" + k),
-						label: $.isFunction(agr.label) ?
-							agr.label.call(self, itemYData, agr, k) :
-							jgrid.template(agr.label || "{0}", agr.aggregator, agr.member, itemYData[ylen - 1], k)
-					});
-					colModel.push(agr);
+				}
+				previousY = itemYData;
+				addColumnToColModel(0, ylen - 1, iYData); // add standard column
+			}
+			// finalize of all totals
+			for (i = headerLevels - 1; i >= 0; i--) {
+				if (hasGroupTotal[i]) {
+					addColumnToColModel(1, i, yIndexLength - 1); // add the last group total columns
 				}
 			}
 			// add total columns calculated over all data of the row
 			if (isRowTotal) {
-				for (k = 0; k < aggrlen; k++) {
-					agr = aggregates[k];
-					if (agr.template === undefined && agr.formatter === undefined && o.defaultFormatting) {
-						agr.template = agr.aggregator === "count" ? "integer" : "number";
-					}
-					agr = $.extend({}, agr, {
-						name: "t" + (aggrlen === 1 ? "" : "a" + k),
-						label: $.isFunction(o.totalText) ?
-							o.totalText.call(self, agr, k) :
-							jgrid.template(o.totalText || "{0}", agr.aggregator, agr.member, k)
-					});
-					colModel.push(agr);
-				}
+				addColumnToColModel(2);
 			}
 
 			// ********************************
-			// The step 5: build column headers
+			// The step 3: build column headers
 			// ********************************
 			// initialize colHeaders
-			previousY = uniqueYData[orderY[0]];
-			for (i = 0; i < headerLevels; i++) {
+			previousY = yIndex.getItem(0);
+			for (k = 0; k < headerLevels; k++) {
 				colHeaders.push({
 					useColSpanStyle: o.useColSpanStyle,
 					groupHeaders: [{
-						titleText: previousY[i],
+						titleText: previousY[k],
 						startColumnName: aggrlen === 1 ? "y0" : "y0a0" ,
 						numberOfColumns: aggrlen
 					}]
 				});
 			}
-			for (i = 0; i < headerLevels; i++) {
-				previousY = uniqueYData[orderY[0]];
-				for (iYData = 1; iYData < uniqueYDataLength; iYData++) {
-					itemYData = uniqueYData[orderY[iYData]];
-					groupHeaders = colHeaders[i].groupHeaders;
-					isDifferent = false;
-					for (k = 0; k <= i; k++) {
-						// we need to compare all elements of itemYData with previousY
-						// on the current level and on the all hight (top) levels
-						if (itemYData[k] !== previousY[k]) {
-							isDifferent = true;
-							break;
-						}
-					}
-					if (isDifferent) {
-						groupHeaders.push({
-							titleText: itemYData[i],
-							startColumnName: "y" + iYData + (aggrlen === 1 ? "" :"a0"),
-							numberOfColumns: aggrlen 
-						});
-					} else {
-						groupHeaders[groupHeaders.length - 1].numberOfColumns += aggrlen;
-					}
-					previousY = itemYData;
+			for (iYData = 1; iYData < yIndexLength; iYData++) {
+				itemYData = yIndex.getItem(iYData);
+				i = yIndex.getIndexOfDifferences(itemYData, previousY);
+				// We placed QNIQUE data in uniqueYData array.
+				// So we always find a difference on one level
+
+				addGroupTotalHeaders(i, previousY);
+				// add column headers which corresponds the main data
+				for (k = headerLevels - 1; k >= i; k--) {
+					colHeaders[k].groupHeaders.push({
+						titleText: itemYData[k],
+						startColumnName: "y" + iYData + (aggrlen === 1 ? "" :"a0"),
+						numberOfColumns: aggrlen
+					});
 				}
+				for (k = 0; k < i; k++) {
+					groupHeaders = colHeaders[k].groupHeaders;
+					groupHeaders[groupHeaders.length - 1].numberOfColumns += aggrlen;
+				}
+				previousY = itemYData;
 			}
+			addGroupTotalHeaders(0, previousY);
+
+			// fill groupHeaders without taking in consideration group total columns
 			if (isRowTotal) {
 				for (i = 0; i < headerLevels; i++) {
 					colHeaders[i].groupHeaders.push({
@@ -412,24 +494,34 @@
 			}
 
 			// *****************************
-			// The step 6: fill data of grid
+			// The step 4: fill data of grid
 			// *****************************
-			for (iXData = 0; iXData < uniqueXDataLength; iXData++) {
+			xIndexLength = xIndex.getIndexLength();
+			for (iXData = 0; iXData < xIndexLength; iXData++) {
 				outputItem = {}; // item of output data
-				
-				itemXData = uniqueXData[orderX[iXData]];
-				// itemXData is the row of data
+
+				itemXData = xIndex.getItem(iXData);
+				// itemXData corresponds to the row of output data
 				for (i = 0; i < xlen; i++) {
 					// fill first columns of data
 					outputItem["x" + i] = itemXData[i];
 				}
 
-				indexesOfDataWithTheSameXValues = dataIndexByUniqueXData[orderX[iXData]];
+				indexesOfDataWithTheSameXValues = xIndex.getIndexesOfSourceData(iXData);
 				// The rows of input data with indexes from indexesOfDataWithTheSameXValues contains itemXData
 				// Now we build columns of itemXData row
-				for (iYData = 0; iYData < uniqueYDataLength; iYData++) {
-					itemYData = uniqueYData[orderY[iYData]];
-					indexesOfDataWithTheSameYValues = dataIndexByUniqueYData[orderY[iYData]];
+				if (isRowTotal) {
+					for (k = 0; k < aggrlen; k++) {
+						agr = aggregates[k];
+						aggrContextTotalRows[k] = new Aggregation(agr.aggregator === "count" ? "sum" : agr.aggregator);
+						if (hasGroupTotal[k]) {
+							aggrContextGroupTotalRows[k] = new Aggregation(agr.aggregator === "count" ? "sum" : agr.aggregator);
+						}
+					}
+				}
+				for (iYData = 0; iYData < yIndexLength; iYData++) {
+					itemYData = yIndex.getItem(iYData);
+					indexesOfDataWithTheSameYValues = yIndex.getIndexesOfSourceData(iYData);
 					// we calculate aggregate in every itemYData 
 					for (k = 0; k < aggrlen; k++) {
 						iRows = [];
@@ -442,28 +534,28 @@
 						// iRows array have all indexes of input data which have both itemXData and itemYData
 						// We need calculate aggregate agr over all the items
 						agr = aggregates[k];
-						aggrContext = initAggregation(agr.aggregator); // result = undefined; count = undefined;
+						aggrContext = new Aggregation(agr.aggregator); // result = undefined; count = undefined;
 						for (iRow = 0; iRow < iRows.length; iRow++) {
-							row =  data[iRows[iRow]];
-							aggrContext.calcAggregate(row[agr.member], agr.member, row);
+							row = data[iRows[iRow]];
+							aggrContext.calc(row[agr.member], agr.member, row);
+							if (isRowTotal) {
+								aggrContextTotalRows[k].calc(row[agr.member], agr.member, row);
+							}
 						}
-						aggrContext.setPropIfDefinedResult(outputItem, "y" + iYData + (aggrlen === 1 ? "" : "a" + k));
+						aggrContext.getResult(outputItem, "y" + iYData + (aggrlen === 1 ? "" : "a" + k));
 					}
 				}
 				if (isRowTotal) {
 					for (k = 0; k < aggrlen; k++) {
-						agr = aggregates[k];
-						aggrContext = initAggregation(agr.aggregator === "count" ? "sum" : agr.aggregator);
-						for (iYData = 0; iYData < uniqueYDataLength; iYData++) {
-							aggrContext.calcAggregate(outputItem[["y" + iYData + (aggrlen === 1 ? "" : "a" + k)]], agr.member, row);
-						}
-						aggrContext.setPropIfDefinedResult(outputItem, "t" + (aggrlen === 1 ? "" : "a" + k));
+						aggrContextTotalRows[k].getResult(outputItem, "t" + (aggrlen === 1 ? "" : "a" + k));
 					}
 				}
 				outputItems.push(outputItem);
 			}
 
-			// loop again trough the pivot rows in order to build grand total
+			// *****************************
+			// The step 5: fill total footer
+			// *****************************
 			if (o.footerTotals || o.colTotals) {
 				nRows = outputItems.length;
 				for (i = 0; i < xlen; i++) {
@@ -471,12 +563,12 @@
 				}
 				for (i = xlen; i < colModel.length; i++) {
 					nm = colModel[i].name;
-					aggrContext = initAggregation(o.colTotalAggregator || "sum"); // result = undefined; count = undefined;
+					aggrContext = new Aggregation(o.colTotalAggregator || "sum");
 					for (iRow = 0; iRow < nRows; iRow++) {
 						outputItem = outputItems[iRow];
-						aggrContext.calcAggregate(outputItem[nm], nm, outputItem);
+						aggrContext.calc(outputItem[nm], nm, outputItem);
 					}
-					aggrContext.setPropIfDefinedResult(summaries, nm);
+					aggrContext.getResult(summaries, nm);
 				}
 			}
 
