@@ -381,7 +381,7 @@
 								aggrContextGroupTotalRows[iLevel] = new Array(aggrlen);
 							}
 							for (iAggr = 0; iAggr < aggrlen; iAggr++) {
-								aggrContextGroupTotalRows[iLevel][iAggr] = new Aggregation(agr.aggregator === "count" ? "sum" : agr.aggregator, self);
+								aggrContextGroupTotalRows[iLevel][iAggr] = new Aggregation(aggregates[iAggr].aggregator === "count" ? "sum" : aggregates[iAggr].aggregator, self);
 							}
 						}
 					}
