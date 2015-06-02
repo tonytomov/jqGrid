@@ -282,14 +282,13 @@
 					groupingView: groupingView
 				},
 				o = $.extend({
-					rowTotals: false,
-					rowTotalsText: "{0} {1}",
+					totals: false, // replacement for rowTotals. totalText and totalHeader can be used additionally
 					useColSpanStyle: false,
 					trimByCollect: true,
 					skipSortByX: false,
 					skipSortByY: false,
 					caseSensitive: false,
-					footerTotals: false, // old colTotals option
+					footerTotals: false, // replacement colTotals. footerAggregator option and totalText properties of xDimension[i] can be used additionally
 					groupSummary: true,
 					groupSummaryPos: "header",
 					frozenStaticCols: false,
@@ -297,7 +296,7 @@
 				}, options || {}),
 				row, i, k, nRows = data.length, x, y, cm, iRow, nm, iXData, itemXData,
 				xDimension = o.xDimension, yDimension = o.yDimension, aggregates = o.aggregates, aggrContext,
-				isRowTotal = o.totalText || o.rowTotals || o.totalHeader,
+				isRowTotal = o.totalText || o.totals || o.rowTotals || o.totalHeader,
 				xlen = isArray(xDimension) ? xDimension.length : 0,
 				ylen = isArray(yDimension) ? yDimension.length : 0,
 				aggrlen = isArray(aggregates) ? aggregates.length : 0,
@@ -426,6 +425,8 @@
 			// ****************************************************************
 			xIndex = indexDataBy(xDimension, o.skipSortByX);
 			yIndex = indexDataBy(yDimension, o.skipSortByY);
+			options.xIndex = xIndex;
+			options.yIndex = yIndex;
 			
 			// *******************************************
 			// The step 2: build colModel and groupOptions
@@ -437,7 +438,7 @@
 				cm = {
 					name: "x" + i,
 					label: x.label != null ?
-								($.isFunction(x.label) ? x.totalHeader.call(self, x, i, o) : x.label) :
+								($.isFunction(x.label) ? x.label.call(self, x, i, o) : x.label) :
 								x.dataName,
 					frozen: o.frozenStaticCols
 				};
@@ -630,7 +631,7 @@
 				}
 				for (i = xlen; i < colModel.length; i++) {
 					nm = colModel[i].name;
-					aggrContext = new Aggregation(o.colTotalAggregator || "sum", self);
+					aggrContext = new Aggregation(o.footerAggregator || "sum", self);
 					for (iRow = 0; iRow < nRows; iRow++) {
 						outputItem = outputItems[iRow];
 						aggrContext.calc(outputItem[nm], nm, outputItem);
