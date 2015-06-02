@@ -2224,12 +2224,11 @@
 				},
 				pin || {}),
 				getRes = function (path) {
-					//return jgrid.getRes(jgrid, path) || jgrid.getRes(locales[locale], path);
 					return getGridRes.call($self0, path);
 				},
 				getDef = function (path) {
-					//return jgrid.getRes(jgrid, path) || jgrid.getRes(locales[locale], "defaults." + path) || jgrid.getRes(locales["en-US"], "defaults." + path);
-					return getGridRes.call($self0, "defaults." + path);
+					var gridParam = jgrid.getRes(p, path);
+					return gridParam !== undefined ? gridParam : getGridRes.call($self0, "defaults." + path);
 				};
 			// set dynamic options
 			p.recordpos = p.recordpos || (p.direction === "rtl" ? "left" : "right");
