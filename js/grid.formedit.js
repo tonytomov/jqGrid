@@ -941,7 +941,7 @@
 											$self.triggerHandler("jqGridAddEditAfterComplete", [copydata, postdata, $(frmgr), frmoper]);
 											o.afterComplete.call($t, copydata, postdata, $(frmgr), frmoper);
 											copydata = null;
-										}, 500);
+										}, 50);
 									}
 									if (o.checkOnSubmit || o.checkOnUpdate) {
 										$(frmgr).data("disabled", false);
@@ -1791,7 +1791,7 @@
 										}
 										setTimeout(function () {
 											deleteFeedback("afterComplete", jqXHR, postdata, $(dtbl));
-										}, 500);
+										}, 50);
 									}
 									o.processing = false;
 									if (ret[0]) { hideModal(themodalSelector, { gb: gboxSelector, jqm: o.jqModal, onClose: o.onClose, removemodal: o.removemodal }); }
