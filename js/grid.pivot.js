@@ -397,7 +397,7 @@
 							if (hasGroupTotal[iLevel] && outputItem[fieldName] === undefined) {
 								aggrContextGroupTotalRows[iLevel][iAggr].getResult(outputItem, fieldName);
 								if (itemYData !== previousY) {
-									aggrContextGroupTotalRows[iLevel][iAggr] = new Aggregation(agr.aggregator === "count" ? "sum" : agr.aggregator, self);
+									aggrContextGroupTotalRows[iLevel][iAggr] = new Aggregation(aggregates[iAggr].aggregator === "count" ? "sum" : aggregates[iAggr].aggregator, self);
 								}
 							}
 						}
