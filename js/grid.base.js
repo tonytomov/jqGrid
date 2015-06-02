@@ -5364,6 +5364,7 @@
 						$row[i % 2 === 0 ? "addClass" : "removeClass"](cn);
 					});
 				}
+				feedback.call($t, "afterDelRow", rowid);
 			});
 			return success;
 		},
@@ -5411,6 +5412,15 @@
 							}
 							lcdata = null;
 						}
+						feedback.call(t, "afterSetRow", {
+							rowid: rowid,
+							inputData: data,
+							iData: pos,
+							iRow: sind,
+							tr: ind,
+							localData: lcdata,
+							cssProp: cssp
+						});
 					} catch (exception) {
 						success = false;
 					}
@@ -5541,7 +5551,15 @@
 						if (p.lastpage === 0) {
 							p.lastpage = 1;
 						}
-						feedback.call(t, "afterInsertRow", rowid, data, data);
+						feedback.call(t, "afterAddRow", {
+							rowid: rowid,
+							inputData: rdata,
+							position: pos,
+							srcRowid: src,
+							iRow: sind,
+							localData: lcdata,
+							iData: p.data.length - 1
+						});
 						k++;
 					}
 					if (p.altRows === true && !aradd) {
