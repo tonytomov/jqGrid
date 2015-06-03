@@ -5415,7 +5415,7 @@
 							rowid: rowid,
 							inputData: data,
 							iData: pos,
-							iRow: sind,
+							iRow: ind.rowIndex,
 							tr: ind,
 							localData: lcdata,
 							cssProp: cssp
