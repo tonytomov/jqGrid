@@ -14210,7 +14210,7 @@
 /*jslint eqeq: true, plusplus: true, continue: true, white: true */
 (function ($) {
 	"use strict";
-	function Aggregation (aggregator, context) {
+	function Aggregation (aggregator, context, pivotOptions) {
 		if (!(this instanceof Aggregation)) {
 			return new Aggregation(aggregator);
 		}
@@ -14219,8 +14219,9 @@
 		this.aggregator = aggregator;
 		this.finilized = false;
 		this.context = context;
+		this.pivotOptions = pivotOptions;
 	}
-	Aggregation.prototype.calc = function (v, fieldName, row) {
+	Aggregation.prototype.calc = function (v, fieldName, row, iRow, rows) {
 		var self = this;
 		if (v !== undefined) {
 			self.result = self.result || 0; // change undefined to 0
@@ -14251,7 +14252,14 @@
 					break;
 				default:
 					if ($.isFunction(self.aggregator)) {
-						self.result = self.aggregator.call(self.context, self.result, v, fieldName, row);
+						self.result = self.aggregator.call(self.context, {
+							previousResult: self.result,
+							value: v,
+							fieldName: fieldName,
+							item: row,
+							iItem: iRow,
+							items: rows
+						});
 					}
 					break;
 			}
@@ -14528,8 +14536,12 @@
 					cmItem = $.extend({}, agr, {
 						name: name + (aggrlen > 1 ? "a" + iAggr : ""),
 						label: $.isFunction(label) ?
-									label.apply(self, colType === 2 ? [agr, iAggr] : [yIndex.getItem(iyData), agr, iAggr, level]) :
-									jgrid.template.apply(self, colType === 2 ? [label, agr.aggregator, agr.member, iAggr] : [label, agr.aggregator, agr.member, yIndex.getItem(iyData)[level], level])
+									(label.call(self, colType === 2 ?
+											{aggregate: agr, iAggregate: iAggr, pivotOptions: o} :
+											{yIndex: yIndex.getItem(iyData), aggregate: agr, iAggregate: iAggr, yLevel: level, pivotOptions: o})) :
+									(jgrid.template.apply(self, colType === 2 ?
+											[label, agr.aggregator, agr.member, iAggr] :
+											[label, agr.aggregator, agr.member, yIndex.getItem(iyData)[level], level]))
 					});
 					delete cmItem.member;
 					delete cmItem.aggregator;
@@ -14578,7 +14590,7 @@
 								aggrContextGroupTotalRows[iLevel] = new Array(aggrlen);
 							}
 							for (iAggr = 0; iAggr < aggrlen; iAggr++) {
-								aggrContextGroupTotalRows[iLevel][iAggr] = new Aggregation(aggregates[iAggr].aggregator === "count" ? "sum" : aggregates[iAggr].aggregator, self);
+								aggrContextGroupTotalRows[iLevel][iAggr] = new Aggregation(aggregates[iAggr].aggregator === "count" ? "sum" : aggregates[iAggr].aggregator, self, options);
 							}
 						}
 					}
@@ -14594,13 +14606,13 @@
 							if (hasGroupTotal[iLevel] && outputItem[fieldName] === undefined) {
 								aggrContextGroupTotalRows[iLevel][iAggr].getResult(outputItem, fieldName);
 								if (itemYData !== previousY) {
-									aggrContextGroupTotalRows[iLevel][iAggr] = new Aggregation(aggregates[iAggr].aggregator === "count" ? "sum" : aggregates[iAggr].aggregator, self);
+									aggrContextGroupTotalRows[iLevel][iAggr] = new Aggregation(aggregates[iAggr].aggregator === "count" ? "sum" : aggregates[iAggr].aggregator, self, options);
 								}
 							}
 						}
 					}
 				},
-				calculateGroupTotals = function (itemYData, previousY, aggregate, iAggr, row) {
+				calculateGroupTotals = function (itemYData, previousY, aggregate, iAggr, row, iRow) {
 					// the method will be called at the first time with previousY === null in every output row
 					// and finally with itemYData === previousY for getting results of all aggregation contexts
 					var iLevel;
@@ -14608,7 +14620,7 @@
 					if (itemYData !== previousY) { // not the last call in the row
 						for (iLevel = headerLevels - 1; iLevel >= 0; iLevel--) {
 							if (hasGroupTotal[iLevel]) {
-								aggrContextGroupTotalRows[iLevel][iAggr].calc(row[aggregate.member], aggregate.member, row);
+								aggrContextGroupTotalRows[iLevel][iAggr].calc(row[aggregate.member], aggregate.member, row, iRow, data);
 							}
 						}
 					}
@@ -14623,6 +14635,8 @@
 			// ****************************************************************
 			xIndex = indexDataBy(xDimension, o.skipSortByX);
 			yIndex = indexDataBy(yDimension, o.skipSortByY);
+			
+			// save to be used probably later
 			options.xIndex = xIndex;
 			options.yIndex = yIndex;
 			
@@ -14768,7 +14782,7 @@
 				if (isRowTotal) {
 					for (k = 0; k < aggrlen; k++) {
 						agr = aggregates[k];
-						aggrContextTotalRows[k] = new Aggregation(agr.aggregator === "count" ? "sum" : agr.aggregator, self);
+						aggrContextTotalRows[k] = new Aggregation(agr.aggregator === "count" ? "sum" : agr.aggregator, self, options);
 					}
 				}
 				previousY = null;
@@ -14792,14 +14806,14 @@
 							// iRows array have all indexes of input data which have both itemXData and itemYData
 							// We need calculate aggregate agr over all the items
 							agr = aggregates[k];
-							aggrContext = new Aggregation(agr.aggregator, self); // result = undefined; count = undefined;
+							aggrContext = new Aggregation(agr.aggregator, self, options); // result = undefined; count = undefined;
 							for (iRow = 0; iRow < iRows.length; iRow++) {
 								row = data[iRows[iRow]];
-								aggrContext.calc(row[agr.member], agr.member, row);
+								aggrContext.calc(row[agr.member], agr.member, row, iRows[iRow], data);
 								if (isRowTotal) {
-									aggrContextTotalRows[k].calc(row[agr.member], agr.member, row);
+									aggrContextTotalRows[k].calc(row[agr.member], agr.member, row, iRows[iRow], data);
 								}
-								calculateGroupTotals(itemYData, previousY, agr, k, row);
+								calculateGroupTotals(itemYData, previousY, agr, k, row, iRows[iRow]);
 							}
 							aggrContext.getResult(outputItem, "y" + iYData + (aggrlen === 1 ? "" : "a" + k));
 						}
@@ -14825,14 +14839,14 @@
 			if (o.footerTotals || o.colTotals) {
 				nRows = outputItems.length;
 				for (i = 0; i < xlen; i++) {
-					summaries["x" + i] = xDimension[i].totalText || "";
+					summaries["x" + i] = xDimension[i].footerText || "";
 				}
 				for (i = xlen; i < colModel.length; i++) {
 					nm = colModel[i].name;
-					aggrContext = new Aggregation(o.footerAggregator || "sum", self);
+					aggrContext = new Aggregation(o.footerAggregator || "sum", self, options);
 					for (iRow = 0; iRow < nRows; iRow++) {
 						outputItem = outputItems[iRow];
-						aggrContext.calc(outputItem[nm], nm, outputItem);
+						aggrContext.calc(outputItem[nm], nm, outputItem, iRow, outputItems);
 					}
 					aggrContext.getResult(summaries, nm);
 				}
@@ -14875,6 +14889,7 @@
 						footerrow: footerrow,
 						userDataOnFooter: footerrow,
 						colModel: pivotGrid.colModel,
+						pivotOptions: pivotOpt,
 						viewrecords: true,
 						sortname: pivotOpt.xDimension[0].dataName // ?????
 					}, pivotGrid.groupOptions, gridOpt || {}));
