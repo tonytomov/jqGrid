@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-05-26
+ * Date: 2015-06-03
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -2389,10 +2389,10 @@
 					// scrollTop
 					// timer
 					// prevRowHeight
-					dragStart: function (i, x, y) {
+					dragStart: function (i, x, y, $th) {
 						var self = this, $bDiv = $(self.bDiv), gridOffset = $bDiv.closest(p.gBox).offset(),
 							// it's better to use exact position of the border on the right of the current header
-							startX = $(self.headers[i].el).offset().left + self.headers[i].width + (jgrid.cell_width ? 0 : intNum(p.cellLayout, 0)) - 2;
+							startX = $th.offset().left + self.headers[i].width + (jgrid.cell_width ? 0 : intNum(p.cellLayout, 0)) - 2;
 						self.resizing = { idx: i, startX: startX, sOL: startX, moved: false, delta: startX - x.pageX };
 						self.hDiv.style.cursor = "col-resize";
 						self.curGbox = $(p.rs);
@@ -2459,10 +2459,8 @@
 							getGridComponent(COMPONENT_NAMES.HEADER_TABLE, $(self.hDiv)).css("width", p.tblwidth + "px");
 							if (skipGridAdjustments !== true) {
 								self.hDiv.scrollLeft = self.bDiv.scrollLeft;
-							}
-							if (p.footerrow) {
-								getGridComponent(COMPONENT_NAMES.FOOTER_TABLE, $(self.sDiv)).css("width", p.tblwidth + "px");
-								if (skipGridAdjustments !== true) {
+								if (p.footerrow) {
+									getGridComponent(COMPONENT_NAMES.FOOTER_TABLE, $(self.sDiv)).css("width", p.tblwidth + "px");
 									self.sDiv.scrollLeft = self.bDiv.scrollLeft;
 								}
 							}
@@ -4181,14 +4179,6 @@
 					}
 					return j - ret;
 				},
-				getOffset = function (iCol) {
-					var $th = $(ts.grid.headers[iCol].el), ret = [$th.position().left + $th.outerWidth()];
-					if (p.direction === "rtl") { ret[0] = p.width - ret[0]; }
-					ret[0] -= ts.grid.bDiv.scrollLeft;
-					ret.push($(ts.grid.hDiv).position().top);
-					ret.push($(ts.grid.bDiv).offset().top - $(ts.grid.hDiv).offset().top + $(ts.grid.bDiv).height());
-					return ret;
-				},
 				getColumnHeaderIndex = function (th) {
 					// TODO: adjust the code after adjust the way which generates
 					// ids of frozen columns
@@ -4513,11 +4503,21 @@
 					if (p.footerrow) { tfoot += "<td role='gridcell' " + formatCol(j, 0, "", null, "", false) + ">&#160;</td>"; }
 				})
 				.mousedown(function (e) {
+					var $th = $(this), isFrozen = $th.closest(".ui-jqgrid-hdiv").hasClass("frozen-div"),
+						getOffset = function (iCol) {
+							var /*$th = $(ts.grid.headers[iCol].el), */ret = [$th.position().left + $th.outerWidth()];
+							if (p.direction === "rtl") { ret[0] = p.width - ret[0]; }
+							ret[0] -= isFrozen ? 0 : ts.grid.bDiv.scrollLeft;
+							ret.push($(ts.grid.hDiv).position().top);
+							ret.push($(ts.grid.bDiv).offset().top - $(ts.grid.hDiv).offset().top + $(ts.grid.bDiv).height());
+							return ret;
+						},
+						ci;
 					if ($(e.target).closest("th>span.ui-jqgrid-resize").length !== 1) { return; }
-					var ci = getColumnHeaderIndex(this);
+					ci = getColumnHeaderIndex(this);
 					if (ci != null) {
 						if (p.forceFit === true) { p.nv = nextVisible(ci); }
-						grid.dragStart(ci, e, getOffset(ci));
+						grid.dragStart(ci, e, getOffset(ci), $th);
 					}
 					return false;
 				})
