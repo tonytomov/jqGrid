@@ -7866,7 +7866,7 @@
 				self.addJSONData = null;
 				self.grid = null;*/
 
-				var propOrMethods = ["formatCol", "sortData", "updatepager", "refreshIndex", "setHeadCheckBox", "constructTr", "formatter", "addXmlData", "addJSONData", "nav", "grid", "p"];
+				var propOrMethods = ["formatCol", "sortData", "updatepager", "refreshIndex", "setHeadCheckBox", "constructTr", "clearToolbar", "fixScrollOffsetAndhBoxPadding", "rebuildRowIndexes", "toggleToolbar", "triggerToolbar", "formatter", "addXmlData", "addJSONData", "ftoolbar", "nav", "grid", "p"];
 				l = propOrMethods.length;
 				for (i = 0; i < l; i++) {
 					if (hasOwnProperty.call(self, propOrMethods[i])) {
