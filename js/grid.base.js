@@ -3256,7 +3256,6 @@
 							p._index[rd[locid]] = p.data.length - 1;
 						}
 					}
-					fillOrClearCellBuilder(true); // clear cellBuilders
 
 					// of rd items plus array cells items (almost the same as drows).
 					// The second loop (from 0 till min(len,rn)) will build rowData from the both arrays
@@ -3264,6 +3263,7 @@
 					// for every inserted row.
 					// Finally one clean up the both arrays
 					var rowData = jgrid.parseDataToHtml.call(self, len, ids, items, cellsToDisplay, rcnt, adjust, readAllInputData);
+					fillOrClearCellBuilder(true); // clear cellBuilders
 					
 					// place the HTML string fragments collected in rowData in the body of grid
 					var fpos = p.treeANode > -1 ? p.treeANode : 0;
