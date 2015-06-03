@@ -1082,15 +1082,6 @@
 						$(ftbl).width(1);
 						$(grid.fsDiv).append(ftbl);
 					}
-					$self.bind("jqGridResizeStop.setFrozenColumns", function (e, w, index) {
-						var rhth = $(".ui-jqgrid-htable", grid.fhDiv);
-						$(rhth[0].rows[0].cells[index]).css("width", w);
-						$(grid.fbRows[0].cells[index]).css("width", w);
-						if (p.footerrow) {
-							var ftd = $(".ui-jqgrid-ftable", grid.fsDiv);
-							$(ftd[0].rows[0].cells[index]).css("width", w);
-						}
-					});
 					// sorting stuff
 					$self.bind("jqGridSortCol.setFrozenColumns", function (e, index, idxcol) {
 						var previousSelectedTh = $("tr.ui-jqgrid-labels:last th:eq(" + p.lastsort + ")", grid.fhDiv), newSelectedTh = $("tr.ui-jqgrid-labels:last th:eq(" + idxcol + ")", grid.fhDiv);
@@ -1235,7 +1226,7 @@
 							myResize();
 						}, 50);
 					});
-					$self.bind("jqGridInlineEditRow.setFrozenColumns jqGridAfterEditCell.setFrozenColumns jqGridAfterRestoreCell.setFrozenColumns jqGridInlineAfterRestoreRow.setFrozenColumns jqGridAfterSaveCell.setFrozenColumns jqGridInlineAfterSaveRow.setFrozenColumns jqGridResetFrozenHeights.setFrozenColumns jqGridGroupingClickGroup.setFrozenColumns", myResize);
+					$self.bind("jqGridInlineEditRow.setFrozenColumns jqGridAfterEditCell.setFrozenColumns jqGridAfterRestoreCell.setFrozenColumns jqGridInlineAfterRestoreRow.setFrozenColumns jqGridAfterSaveCell.setFrozenColumns jqGridInlineAfterSaveRow.setFrozenColumns jqGridResetFrozenHeights.setFrozenColumns jqGridGroupingClickGroup.setFrozenColumns jqGridResizeStop.setFrozenColumns", myResize);
 					if (!grid.hDiv.loading) {
 						$self.triggerHandler("jqGridAfterGridComplete");
 					}
