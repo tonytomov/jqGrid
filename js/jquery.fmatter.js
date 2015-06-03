@@ -194,10 +194,6 @@
 					}
 					sOutput = sNewOutput;
 				}
-				// Prepend prefix
-				sOutput = (opts.prefix) ? opts.prefix + sOutput : sOutput;
-				// Append suffix
-				sOutput = (opts.suffix) ? sOutput + opts.suffix : sOutput;
 				return sOutput;
 
 			}
@@ -431,16 +427,22 @@
 			}
 		}
 	};
-	var numberHelper = function (cellval, opts, formatType) {
-		var colModel = opts.colModel, op = $.extend({}, opts[formatType]);
-		if (colModel != null) {
-			op = $.extend({}, op, colModel.formatoptions || {});
-		}
-		if (fmatter.isEmpty(cellval)) {
-			cellval = op.defaultValue;
-		}
-		return fmatter.NumberFormat(cellval, op);
-	};
+	var insertPrefixAndSuffix = function (sOutput, opts) {
+			// Prepend prefix
+			sOutput = (opts.prefix) ? opts.prefix + sOutput : sOutput;
+			// Append suffix
+			return (opts.suffix) ? sOutput + opts.suffix : sOutput;
+		},
+		numberHelper = function (cellval, opts, formatType) {
+			var colModel = opts.colModel, op = $.extend({}, opts[formatType]);
+			if (colModel != null) {
+				op = $.extend({}, op, colModel.formatoptions || {});
+			}
+			if (fmatter.isEmpty(cellval)) {
+				return insertPrefixAndSuffix(op.defaultValue, op);
+			}
+			return insertPrefixAndSuffix(fmatter.NumberFormat(cellval, op), op);
+		};
 	$FnFmatter.integer = function (cellval, opts) {
 		return numberHelper(cellval, opts, "integer");
 	};
@@ -457,11 +459,11 @@
 			op = $.extend({}, op, colModel.formatoptions || {});
 		}
 		var numberFormat = fmatter.NumberFormat,
-			defaultValue = op.defaultValue;
+			defaultValue = op.defaultValue ? insertPrefixAndSuffix(op.defaultValue, op) : "";
 
 		return function (cellValue) {
-			if (fmatter.isEmpty(cellValue)) { cellValue = defaultValue; }
-			return numberFormat(cellValue, op);
+			if (fmatter.isEmpty(cellValue)) { return defaultValue; }
+			return insertPrefixAndSuffix(numberFormat(cellValue, op), op);
 		};
 	};
 	$FnFmatter.integer.getCellBuilder = function (options) {
@@ -606,10 +608,7 @@
 			$t = $grid[0],
 			p = $t.p,
 			cm = p.colModel[jgrid.getCellIndex(this)],
-			op = $.extend(true, { extraparam: {} }, jgrid.actionsNav || {},	p.actionsNavOptions || {}, cm.formatoptions || {}),
-			setTop = function (option) {
-				option.top = $tr.offset().top + $tr.outerHeight() - $grid.closest(".ui-jqgrid").offset().top;
-			};
+			op = $.extend(true, { extraparam: {} }, jgrid.actionsNav || {},	p.actionsNavOptions || {}, cm.formatoptions || {});
 
 		if (p.editOptions !== undefined) {
 			op.editOptions = p.editOptions;
