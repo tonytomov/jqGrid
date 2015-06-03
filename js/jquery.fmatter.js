@@ -437,7 +437,7 @@
 			op = $.extend({}, op, colModel.formatoptions || {});
 		}
 		if (fmatter.isEmpty(cellval)) {
-			return op.defaultValue;
+			cellval = op.defaultValue;
 		}
 		return fmatter.NumberFormat(cellval, op);
 	};
@@ -460,7 +460,7 @@
 			defaultValue = op.defaultValue;
 
 		return function (cellValue) {
-			if (fmatter.isEmpty(cellValue)) { return defaultValue; }
+			if (fmatter.isEmpty(cellValue)) { cellValue = defaultValue; }
 			return numberFormat(cellValue, op);
 		};
 	};
