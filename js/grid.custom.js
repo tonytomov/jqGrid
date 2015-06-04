@@ -321,7 +321,7 @@
 							}
 						});
 						var sd = j > 0 ? true : false;
-						if (o.stringResult) {
+						if (o.stringResult || o.searchOperators || p.datatype === "local") {
 							var ruleGroup = "{\"groupOp\":\"" + o.groupOp + "\",\"rules\":[";
 							var gi = 0;
 							$.each(sdata, function (cmName, n) {
@@ -405,7 +405,7 @@
 						});
 						var sd = j > 0 ? true : false;
 						p.resetsearch = true;
-						if (o.stringResult) {
+						if (o.stringResult || o.searchOperators || p.datatype === "local") {
 							var ruleGroup = "{\"groupOp\":\"" + o.groupOp + "\",\"rules\":[";
 							var gi = 0;
 							$.each(sdata, function (i, n) {
@@ -520,8 +520,6 @@
 					},
 					timeoutHnd,
 					tr = $("<tr class='ui-search-toolbar' role='row'></tr>");
-
-				if (o.searchOperators || p.datatype === "local") { o.stringResult = true; }
 
 				// create the row
 				$.each(colModel, function (ci) {
