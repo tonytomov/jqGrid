@@ -923,6 +923,10 @@
 				return $p.hasClass("ui-jqgrid-hdiv") ? $p.find(">div>.ui-jqgrid-htable") : $();
 			case COMPONENT_NAMES.FOOTER_TABLE: // footer/summary table from sDiv
 				return $p.hasClass("ui-jqgrid-sdiv") ? $p.find(">div>.ui-jqgrid-ftable") : $();
+			case COMPONENT_NAMES.FROZEN_HEADER_TABLE: // header table from bDiv
+				return $p.hasClass("ui-jqgrid-hdiv") ? $p.children(".ui-jqgrid-htable") : $();
+			case COMPONENT_NAMES.FROZEN_FOOTER_TABLE: // footer/summary table from sDiv
+				return $p.hasClass("ui-jqgrid-sdiv") ? $p.children(".ui-jqgrid-ftable") : $();
 			case COMPONENT_NAMES.BODY_DIV:   // get bDiv of grid (bTable)
 				return $p.hasClass("ui-jqgrid-btable") && p.grid != null ? $(p.grid.bDiv) : $();
 			case COMPONENT_NAMES.HEADER_DIV:   // get hDiv of grid (bTable)
@@ -2434,13 +2438,20 @@
 					},
 					resizeColumn: function (idx, skipCallbacks, skipGridAdjustments) {
 						var self = this, headers = self.headers, footers = self.footers, h = headers[idx], hn, nw = h.newWidth || h.width,
-							$bTable = getGridComponent(COMPONENT_NAMES.BODY_TABLE, $(self.bDiv)), $hTable = getGridComponent(COMPONENT_NAMES.HEADER_TABLE, $(self.hDiv)),
+							$bTable = getGridComponent(COMPONENT_NAMES.BODY_TABLE, self.bDiv), $hTable = getGridComponent(COMPONENT_NAMES.HEADER_TABLE, self.hDiv),
 							hCols = $hTable.children("thead").children("tr").first()[0].cells;
 						nw = parseInt(nw, 10);
 						p.colModel[idx].width = nw;
 						h.width = nw;
 						hCols[idx].style.width = nw + "px";
 						self.cols[idx].style.width = nw + "px";
+						if (self.fbRows) {
+							$(self.fbRows[0].cells[idx]).css("width", nw);		
+							$(getGridComponent(COMPONENT_NAMES.FROZEN_HEADER_TABLE, self.fhDiv)[0].rows[0].cells[idx]).css("width", nw);		
+							if (p.footerrow) {		
+								$(getGridComponent(COMPONENT_NAMES.FROZEN_FOOTER_TABLE, self.fsDiv)[0].rows[0].cells[idx]).css("width", nw);		
+							}
+						}
 						if (footers.length > 0) { footers[idx].style.width = nw + "px"; }
 						if (skipGridAdjustments !== true) {
 							fixScrollOffsetAndhBoxPadding.call($bTable[0]);
@@ -2456,11 +2467,11 @@
 						} else {
 							p.tblwidth = self.newWidth || p.tblwidth;
 							$bTable.css("width", p.tblwidth + "px");
-							getGridComponent(COMPONENT_NAMES.HEADER_TABLE, $(self.hDiv)).css("width", p.tblwidth + "px");
+							getGridComponent(COMPONENT_NAMES.HEADER_TABLE, self.hDiv).css("width", p.tblwidth + "px");
 							if (skipGridAdjustments !== true) {
 								self.hDiv.scrollLeft = self.bDiv.scrollLeft;
 								if (p.footerrow) {
-									getGridComponent(COMPONENT_NAMES.FOOTER_TABLE, $(self.sDiv)).css("width", p.tblwidth + "px");
+									getGridComponent(COMPONENT_NAMES.FOOTER_TABLE, self.sDiv).css("width", p.tblwidth + "px");
 									self.sDiv.scrollLeft = self.bDiv.scrollLeft;
 								}
 							}
@@ -2547,7 +2558,7 @@
 						}
 					},
 					scrollGrid: function (e) { // this must be bDiv
-						var bDiv = this, $bTable = getGridComponent(COMPONENT_NAMES.BODY_TABLE, $(bDiv));
+						var bDiv = this, $bTable = getGridComponent(COMPONENT_NAMES.BODY_TABLE, bDiv);
 						if (e) { e.stopPropagation(); }
 						if ($bTable.length === 0) { return true; }
 						var gridSelf = $bTable[0].grid;
@@ -3536,7 +3547,7 @@
 					base = base * parseInt(p.rowNum, 10);
 					to = base + p.reccount;
 					if (p.scroll) {
-						var rows = $(getGridComponent(COMPONENT_NAMES.BODY_TABLE, $(bDiv))[0].rows).slice(1);//$("tbody:first > tr:gt(0)", bDiv);
+						var rows = $(getGridComponent(COMPONENT_NAMES.BODY_TABLE, bDiv)[0].rows).slice(1);//$("tbody:first > tr:gt(0)", bDiv);
 						base = to - rows.length;
 						p.reccount = rows.length;
 						var rh = rows.outerHeight() || gridSelf.prevRowHeight;
@@ -4505,11 +4516,12 @@
 				.mousedown(function (e) {
 					var $th = $(this), isFrozen = $th.closest(".ui-jqgrid-hdiv").hasClass("frozen-div"),
 						getOffset = function (iCol) {
-							var /*$th = $(ts.grid.headers[iCol].el), */ret = [$th.position().left + $th.outerWidth()];
+							var ret = [$th.position().left + $th.outerWidth()];
 							if (p.direction === "rtl") { ret[0] = p.width - ret[0]; }
-							ret[0] -= isFrozen ? 0 : ts.grid.bDiv.scrollLeft;
-							ret.push($(ts.grid.hDiv).position().top);
-							ret.push($(ts.grid.bDiv).offset().top - $(ts.grid.hDiv).offset().top + $(ts.grid.bDiv).height());
+							ret[0] -= isFrozen ? 0 : grid.bDiv.scrollLeft;
+							ret.push($(grid.hDiv).position().top);
+							ret.push($(grid.bDiv).offset().top - $(grid.hDiv).offset().top + $(grid.bDiv).height() +
+								(grid.sDiv ? $(grid.sDiv).height() : 0));
 							return ret;
 						},
 						ci;
@@ -5868,10 +5880,10 @@
 					p.tblwidth = parseInt(p.tblwidth, 10); // round till integer value of px;
 					newGridWidth = p.tblwidth;
 					$($t).css("width", newGridWidth + "px");
-					getGridComponent(COMPONENT_NAMES.HEADER_TABLE, $(hDiv)).css("width", newGridWidth + "px");
+					getGridComponent(COMPONENT_NAMES.HEADER_TABLE, hDiv).css("width", newGridWidth + "px");
 					hDiv.scrollLeft = bDiv.scrollLeft;
 					if (p.footerrow) {
-						getGridComponent(COMPONENT_NAMES.FOOTER_TABLE, $(sDiv)).css("width", newGridWidth + "px");
+						getGridComponent(COMPONENT_NAMES.FOOTER_TABLE, sDiv).css("width", newGridWidth + "px");
 					}
 					// small fix which origin should be examined more exactly
 					delta = Math.abs(newGridWidth - p.width);
