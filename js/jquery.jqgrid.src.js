@@ -14499,9 +14499,10 @@
 					groupSummary: true,
 					groupSummaryPos: "header",
 					frozenStaticCols: false,
-					defaultFormatting: true
+					defaultFormatting: true,
+					data: data
 				}, options || {}),
-				row, i, k, nRows = data.length, x, y, cm, iRow, nm, iXData, itemXData,
+				row, i, k, nRows = data.length, x, y, cm, iRow, cmName, iXData, itemXData, pivotInfos, rows,
 				xDimension = o.xDimension, yDimension = o.yDimension, aggregates = o.aggregates, aggrContext,
 				isRowTotal = o.totalText || o.totals || o.rowTotals || o.totalHeader,
 				xlen = isArray(xDimension) ? xDimension.length : 0,
@@ -14768,9 +14769,9 @@
 			// *****************************
 			xIndexLength = xIndex.getIndexLength();
 			for (iXData = 0; iXData < xIndexLength; iXData++) {
-				outputItem = {}; // item of output data
-
 				itemXData = xIndex.getItem(iXData);
+				pivotInfos = { iX: iXData, x: itemXData };
+				outputItem = { pivotInfos: pivotInfos }; // item of output data
 				// itemXData corresponds to the row of output data
 				for (i = 0; i < xlen; i++) {
 					// fill first columns of data
@@ -14806,17 +14807,21 @@
 						if (iRows.length > 0) {
 							// iRows array have all indexes of input data which have both itemXData and itemYData
 							// We need calculate aggregate agr over all the items
+							rows = new Array(iRows.length);
 							agr = aggregates[k];
 							aggrContext = new Aggregation(agr.aggregator, self, options); // result = undefined; count = undefined;
 							for (iRow = 0; iRow < iRows.length; iRow++) {
 								row = data[iRows[iRow]];
+								rows[iRow] = row;
 								aggrContext.calc(row[agr.member], agr.member, row, iRows[iRow], data);
 								if (isRowTotal) {
 									aggrContextTotalRows[k].calc(row[agr.member], agr.member, row, iRows[iRow], data);
 								}
 								calculateGroupTotals(itemYData, previousY, agr, k, row, iRows[iRow]);
 							}
+							cmName = "y" + iYData + (aggrlen === 1 ? "" : "a" + k);
 							aggrContext.getResult(outputItem, "y" + iYData + (aggrlen === 1 ? "" : "a" + k));
+							pivotInfos[cmName] = { iY: iYData, y: itemYData, iA: k, a: agr, iRows: iRows, rows: rows };
 						}
 					}
 					previousY = itemYData;
@@ -14843,18 +14848,18 @@
 					summaries["x" + i] = xDimension[i].footerText || "";
 				}
 				for (i = xlen; i < colModel.length; i++) {
-					nm = colModel[i].name;
+					cmName = colModel[i].name;
 					aggrContext = new Aggregation(o.footerAggregator || "sum", self, options);
 					for (iRow = 0; iRow < nRows; iRow++) {
 						outputItem = outputItems[iRow];
-						aggrContext.calc(outputItem[nm], nm, outputItem, iRow, outputItems);
+						aggrContext.calc(outputItem[cmName], cmName, outputItem, iRow, outputItems);
 					}
-					aggrContext.getResult(summaries, nm);
+					aggrContext.getResult(summaries, cmName);
 				}
 			}
 
 			// return the final result.
-			return { colModel: colModel, rows: outputItems, groupOptions: groupOptions, groupHeaders: colHeaders, summary: summaries };
+			return { colModel: colModel, options: options, rows: outputItems, groupOptions: groupOptions, groupHeaders: colHeaders, summary: summaries };
 		},
 		jqPivot: function (data, pivotOpt, gridOpt, ajaxOpt) {
 			return this.each(function () {
@@ -14884,13 +14889,15 @@
 								"");
 						}
 					}
+					pivotOpt.data = data;
 					$j.call($self, $.extend(true, {
 						datastr: $.extend(query.select(), footerrow ? { userdata: pivotGrid.summary } : {}),
 						datatype: "jsonstring",
 						footerrow: footerrow,
 						userDataOnFooter: footerrow,
 						colModel: pivotGrid.colModel,
-						pivotOptions: pivotOpt,
+						pivotOptions: pivotGrid.options,
+						additionalProperties: ["pivotInfos"],
 						viewrecords: true,
 						sortname: pivotOpt.xDimension[0].dataName // ?????
 					}, pivotGrid.groupOptions, gridOpt || {}));
