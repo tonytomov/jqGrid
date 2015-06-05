@@ -3870,7 +3870,7 @@
 							buttonClasses = getGuiStyles("pagerButton", "ui-pg-button"),
 							buildPagerButton = function (buttonName) {
 								var titleText = getDef("pg" + buttonName);
-								return "<td id='" + buttonName + tp + "' class='" + buttonClasses + "' " +
+								return "<td role='button' tabindex='0' id='" + buttonName + tp + "' class='" + buttonClasses + "' " +
 									(titleText ? "title='" + titleText + "'" : "") + "><span class='" + getIcon("pager." + buttonName) + "'></span></td>";
 							};
 						if (dir === "rtl") { po.reverse(); }
@@ -3982,6 +3982,16 @@
 							return this;
 						});
 					}
+					$pagerIn.children(".ui-pg-table").bind("keydown.jqGrid", function (e) {
+						var $focused;
+						if (e.which === 13) {
+							$focused = $pagerIn.find(":focus");
+							if ($focused.length > 0) {
+								$focused.trigger("click");
+								return false;
+							}
+						}
+					});
 				},
 				multiSort = function (iCol, obj) {
 					var splas, sort = "", colModel = p.colModel, cm = colModel[iCol], fs = false, so = "",

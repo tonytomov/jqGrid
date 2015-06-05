@@ -1956,6 +1956,17 @@
 						};
 					},
 					viewModalAlert = createModalAlert(),
+					navtbl,
+					clickOnEnter = function (e) {
+						var $focused;
+						if (e.which === 13 && navtbl instanceof $) {
+							$focused = navtbl.find(":focus");
+							if ($focused.length > 0) {
+								$focused.trigger("click");
+								return false;
+							}
+						}
+					},
 					hoverClasses = getGuiStateStyles.call($t, "hover"),
 					disabledClass = getGuiStateStyles.call($t, "disabled");
 				if (!$t.grid) {
@@ -1974,7 +1985,7 @@
 					}
 				}
 
-				var clone = 1, i, tbd, navtbl, pgid, elemids, iPart, pagerTable, $pagerPart, pagerParts = ["left", "center", "right"],
+				var clone = 1, i, tbd, pgid, elemids, iPart, pagerTable, $pagerPart, pagerParts = ["left", "center", "right"],
 					sep = "<div class='ui-pg-button " + disabledClass + "'><span class='ui-separator'></span></div>",
 					onHoverIn = function () {
 						if (!hasOneFromClasses(this, disabledClass)) {
@@ -2074,7 +2085,7 @@
 						return false;
 					},
 					stdButtonActivation = function (name, id, onClick, navtbl, elemids) {
-						var $button = $("<div class='ui-pg-button ui-corner-all' role='button'></div>"),
+						var $button = $("<div class='ui-pg-button ui-corner-all' tabindex='0' role='button'></div>"),
 							iconClass = o[name + "icon"],
 							iconText = $.trim(o[name + "text"]);
 						$button.append("<div class='ui-pg-div'><span class='" +
@@ -2094,7 +2105,7 @@
 				if (o.cloneToTop && p.toppager) { clone = 2; }
 				for (i = 0; i < clone; i++) {
 					// we can set aria-activedescendant="idOfFirstButton" later
-					navtbl = $("<div" + " class='ui-pg-table navtable' role='toolbar' tabindex='0' style='float:" +
+					navtbl = $("<div" + " class='ui-pg-table navtable' role='toolbar' style='float:" +
 						(p.direction === "rtl" ? "right" : "left") +
 						";table-layout:auto;'></div>");
 					if (i === 0) {
@@ -2159,6 +2170,7 @@
 						p._nvtd[1] = twd;
 					}
 					$t.nav = true;
+					navtbl.bind("keydown.jqGrid", clickOnEnter);
 				}
 				$self.triggerHandler("jqGridResetFrozenHeights");
 			});
@@ -2203,7 +2215,7 @@
 				var findnav = $(".navtable", elem), commonIconClass = o.commonIconClass;
 				if (findnav.length > 0) {
 					if (o.id && findnav.find("#" + jqID(o.id)).length > 0) { return; }
-					var tbd = $("<div role='button'></div>");
+					var tbd = $("<div tabindex='0' role='button'></div>");
 					if (o.buttonicon.toString().toUpperCase() === "NONE") {
 						$(tbd).addClass("ui-pg-button ui-corner-all").append("<div class='ui-pg-div'>" +
 							(o.caption ? "<span class='ui-pg-button-text" + (o.iconsOverText ? " ui-pg-button-icon-over-text" : "") + "'>" + o.caption + "</span>" : "") +
