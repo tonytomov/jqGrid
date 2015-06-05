@@ -2,13 +2,13 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
 /**
- * @license jqGrid  4.9.0-beta1 - free jqGrid
+ * @license jqGrid  4.9.0-beta2 - free jqGrid
  * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com
  * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-06-03
+ * Date: 2015-06-05
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -903,6 +903,12 @@
 			var id = jgrid.getGridComponentId.call(this, componentName);
 			return id ? "#" + jgrid.jqID(id) : "";
 		},
+		isHTMLElement: function (elem) {
+			// see http://stackoverflow.com/a/384380/315935
+			return typeof HTMLElement === "object" ?
+					elem instanceof HTMLElement : //DOM2
+					elem != null && typeof elem === "object" && elem.nodeType === 1 && typeof elem.nodeName === "string";
+		},
 		/**
 		 *  @param {COMPONENT_NAMES} componentName
 		 */
@@ -910,7 +916,7 @@
 			var p;
 			if ($p instanceof $ || $p.length > 0) {
 				p = $p[0];
-			} else if ($p instanceof HTMLElement) {
+			} else if (jgrid.isHTMLElement($p)) {
 				p = $p;
 				$p = $(p);
 			} else {
@@ -1021,7 +1027,7 @@
 			if (tr instanceof $ || tr.length > 0) {
 				tr = tr[0]; // unwrap jQuery object to DOM element
 			}
-			if (!(tr instanceof HTMLTableRowElement) || tr.cells == null) { // the line will be failed in IE7
+			if (!(typeof HTMLTableRowElement === "object" && tr instanceof HTMLTableRowElement) || tr.cells == null) { // the line will be failed in IE7
 				return $(); // return empty jQuery object
 			}
 			$td = $(tr.cells[iCol]);

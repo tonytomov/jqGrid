@@ -576,7 +576,7 @@
 					try {
 						if ($.isFunction(options.custom_element)) {
 							var celm = options.custom_element.call($t, vl, options);
-							if (celm instanceof jQuery || celm instanceof HTMLElement || typeof celm === "string") {
+							if (celm instanceof jQuery || jgrid.isHTMLElement(celm) || typeof celm === "string") {
 								celm = $(celm).addClass("customelement").attr({ id: options.id, name: options.name });
 								$(elem).empty().append(celm);
 							} else {
