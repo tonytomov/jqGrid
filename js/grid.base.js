@@ -905,7 +905,7 @@
 		},
 		isHTMLElement: function (elem) {
 			// see http://stackoverflow.com/a/384380/315935
-			return typeof HTMLElement === "object" ?
+			return (typeof HTMLElement === "object" || typeof HTMLElement === "function") ?
 					elem instanceof HTMLElement : //DOM2
 					elem != null && typeof elem === "object" && elem.nodeType === 1 && typeof elem.nodeName === "string";
 		},
@@ -1027,7 +1027,7 @@
 			if (tr instanceof $ || tr.length > 0) {
 				tr = tr[0]; // unwrap jQuery object to DOM element
 			}
-			if (!(typeof HTMLTableRowElement === "object" && tr instanceof HTMLTableRowElement) || tr.cells == null) { // the line will be failed in IE7
+			if (!((typeof HTMLTableRowElement === "object" || typeof HTMLTableRowElement === "function") && tr instanceof HTMLTableRowElement) || tr.cells == null) { // the line will be failed in IE7
 				return $(); // return empty jQuery object
 			}
 			$td = $(tr.cells[iCol]);
