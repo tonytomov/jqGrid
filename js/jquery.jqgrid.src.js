@@ -8756,11 +8756,10 @@
 					if (cm[i].frozen !== true) {
 						break;
 						//nonFrozenIds.push("#jqgh_" + tid + "_" + jqID(cm[i].name));
-					}// else {
+					}
 					frozen = true;
 					maxfrozen = i;
 					frozenIds.push("#jqgh_" + tid + "_" + jqID(cm[i].name));
-					//}
 				}
 				if (p.sortable) {
 					$colHeaderRow = $(grid.hDiv).find(".ui-jqgrid-htable .ui-jqgrid-labels");
@@ -8788,6 +8787,13 @@
 					grid.fbDiv = $('<div style="position:absolute;left:0;top:' + (parseInt(top, 10) + parseInt(hth, 10) + 1) + 'px;overflow:hidden" class="frozen-bdiv ui-jqgrid-bdiv"></div>');
 					$(p.gView).append(grid.fhDiv);
 					var htbl = $(".ui-jqgrid-htable", p.gView).clone(true);
+					/*if ($t.ftoolbar) {
+						var $filterToolbar = htbl.find(">thead>tr.ui-search-toolbar");
+						// remove tabindex from the filter toolbar
+						for (i = 0; i <= maxfrozen; ) {
+							ui-search-toolbar
+						}
+					}*/
 					// groupheader support - only if useColSpanstyle is false
 					if (p.groupHeader) {
 						// TODO: remove all th which corresponds non-frozen columns. One can identify there by id
@@ -8882,16 +8888,6 @@
 					$(grid.bDiv).scroll(function () {
 						$(grid.fbDiv).scrollTop($(this).scrollTop());
 					});
-					/*if (p.sortable) {
-						$colHeaderRow = $(grid.fhDiv).find(".ui-jqgrid-htable .ui-jqgrid-labels");
-						//$colHeaderRow.sortable("destroy");
-						$self.jqGrid("setGridParam", {sortable: {options: {
-							items: nonFrozenIds.length > 0 ?
-									">th:not(:has(" + nonFrozenIds.join(",") + "),:hidden)" :
-									">th:not(:hidden)"
-						}}});
-						$self.jqGrid("sortableColumns", $colHeaderRow);
-					}*/
 					if (p.hoverrows === true) {
 						$(p.idSel).unbind("mouseover").unbind("mouseout");
 					}
@@ -11784,8 +11780,8 @@
 					navtbl,
 					clickOnEnter = function (e) {
 						var $focused;
-						if (e.which === 13 && navtbl instanceof $) {
-							$focused = navtbl.find(":focus");
+						if (e.which === 13) {
+							$focused = $(this).find(":focus");
 							if ($focused.length > 0) {
 								$focused.trigger("click");
 								return false;
