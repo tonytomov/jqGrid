@@ -1959,8 +1959,8 @@
 					navtbl,
 					clickOnEnter = function (e) {
 						var $focused;
-						if (e.which === 13 && navtbl instanceof $) {
-							$focused = navtbl.find(":focus");
+						if (e.which === 13) {
+							$focused = $(this).find(":focus");
 							if ($focused.length > 0) {
 								$focused.trigger("click");
 								return false;
