@@ -2407,9 +2407,19 @@
 						myResizerClickHandler.call(this.curGbox, x);
 						feedback.call(getGridComponent(COMPONENT_NAMES.BODY_TABLE, $bDiv), "resizeStart", x, i);
 						document.onselectstart = function () { return false; };
-						$(document).bind("mousemove.jqGrid", function (e) {
-							if (grid.resizing) { grid.dragMove(e); return false; }
-						});
+						$(document)
+							.bind("mousemove.jqGrid", function (e) {
+								if (grid.resizing) {
+									grid.dragMove(e);
+									return false;
+								}
+							})
+							.bind("mouseup.jqGrid" + p.id, function () {
+								if (grid.resizing) {
+									grid.dragEnd();
+									return false;
+								}
+							});
 					},
 					dragMove: function (x) {
 						var self = this, resizing = self.resizing;
@@ -2500,7 +2510,7 @@
 						}
 						self.curGbox = null;
 						document.onselectstart = function () { return true; };
-						$(document).unbind("mousemove.jqGrid");
+						$(document).unbind("mousemove.jqGrid").unbind("mouseup.jqGrid" + p.id);
 					},
 					populateVisible: function () {
 						var self = this, $self = $(self), gridSelf = self.grid, bDiv = gridSelf.bDiv, $bDiv = $(bDiv);
@@ -2680,7 +2690,7 @@
 						result += "width: " + grid.headers[pos].width + "px;";
 					} else if (isFunction(cm.cellattr) || (typeof cm.cellattr === "string" && jgrid.cellattr != null && isFunction(jgrid.cellattr[cm.cellattr]))) {
 						cellAttrFunc = isFunction(cm.cellattr) ? cm.cellattr : jgrid.cellattr[cm.cellattr];
-						if (p.useUnformattedDataForCellAttr) {
+						if (p.useUnformattedDataForCellAttr && rdata != null) {
 							cellValue = rdata[cm.name];
 						} else if (cm.autoResizable) {
 							// see https://github.com/free-jqgrid/jqGrid/issues/74#issuecomment-107675796
@@ -4894,9 +4904,6 @@
 				$(grid.cDiv).nextAll("div:visible").first().addClass("ui-corner-top"); // set on top toolbar or toppager or on hDiv
 			}
 			$(grid.hDiv).after(grid.bDiv);
-				/*.mousemove(function (e) {
-					if (grid.resizing) { grid.dragMove(e); return false; }
-				});*/
 			$(eg)
 				.click(myResizerClickHandler)
 				.dblclick(function (e) { // it's still needed for Firefox
@@ -4928,14 +4935,6 @@
 			}
 			$(".ui-jqgrid-labels", grid.hDiv)
 				.bind("selectstart", function () { return false; });
-			$(document)
-				.bind("mouseup.jqGrid" + p.id, function () {
-					if (grid.resizing !== false) {
-						grid.dragEnd();
-						return false;
-					}
-					return true;
-				});
 			ts.formatCol = formatCol;
 			ts.sortData = sortData;
 			ts.updatepager = updatepager;
@@ -6133,7 +6132,7 @@
 				var $t = this, p = $t.p, $self = $($t);
 				if (!$("body").is("[role]")) { $("body").attr("role", "application"); }
 				p.scrollrows = o.scrollingRows;
-				$self.keydown(function (event) {
+				$self.bind("keydown.jqGrid", function (event) {
 					var tr = $(this).find("tr[tabindex=0]")[0],
 						moveVerical = function (siblingProperty) {
 							do {
@@ -6202,7 +6201,7 @@
 		},
 		unbindKeys: function () {
 			return this.each(function () {
-				$(this).unbind("keydown");
+				$(this).unbind("keydown.jqGrid");
 			});
 		},
 		getLocalRow: function (rowid) {
@@ -7878,7 +7877,7 @@
 				self.addJSONData = null;
 				self.grid = null;*/
 
-				var propOrMethods = ["formatCol", "sortData", "updatepager", "refreshIndex", "setHeadCheckBox", "constructTr", "clearToolbar", "fixScrollOffsetAndhBoxPadding", "rebuildRowIndexes", "toggleToolbar", "triggerToolbar", "formatter", "addXmlData", "addJSONData", "ftoolbar", "nav", "grid", "p"];
+				var propOrMethods = ["formatCol", "sortData", "updatepager", "refreshIndex", "setHeadCheckBox", "constructTr", "clearToolbar", "fixScrollOffsetAndhBoxPadding", "rebuildRowIndexes", "toggleToolbar", "triggerToolbar", "formatter", "addXmlData", "addJSONData", "ftoolbar", "_inlinenav", "nav", "grid", "p"];
 				l = propOrMethods.length;
 				for (i = 0; i < l; i++) {
 					if (hasOwnProperty.call(self, propOrMethods[i])) {
@@ -14504,7 +14503,7 @@
 				}, options || {}),
 				row, i, k, nRows = data.length, x, y, cm, iRow, cmName, iXData, itemXData, pivotInfos, rows,
 				xDimension = o.xDimension, yDimension = o.yDimension, aggregates = o.aggregates, aggrContext,
-				isRowTotal = o.totalText || o.totals || o.rowTotals || o.totalHeader,
+				isRowTotal = o.totalText || o.totals || o.rowTotals || o.totalHeader, aggrTotal, gi,
 				xlen = isArray(xDimension) ? xDimension.length : 0,
 				ylen = isArray(yDimension) ? yDimension.length : 0,
 				aggrlen = isArray(aggregates) ? aggregates.length : 0,
@@ -14584,6 +14583,11 @@
 						}
 					}
 				},
+				createTotalAggregation = function (iAggr) {
+					var aggrGroup = new Aggregation(aggregates[iAggr].aggregator === "count" ? "sum" : aggregates[iAggr].aggregator, self, options);
+					aggrGroup.groupInfo = { iRows: [], rows: [], ys: [], iYs: [] };
+					return aggrGroup;
+				},
 				initializeGroupTotals = function () {
 					var iLevel, iAggr;
 					for (iLevel = headerLevels - 1; iLevel >= 0; iLevel--) {
@@ -14592,13 +14596,13 @@
 								aggrContextGroupTotalRows[iLevel] = new Array(aggrlen);
 							}
 							for (iAggr = 0; iAggr < aggrlen; iAggr++) {
-								aggrContextGroupTotalRows[iLevel][iAggr] = new Aggregation(aggregates[iAggr].aggregator === "count" ? "sum" : aggregates[iAggr].aggregator, self, options);
+								aggrContextGroupTotalRows[iLevel][iAggr] = createTotalAggregation(iAggr);
 							}
 						}
 					}
 				},
 				finalizeGroupTotals = function (iyData, itemYData, previousY, iAggr) {
-					var iLevel, level = yIndex.getIndexOfDifferences(itemYData, previousY),	fieldName;
+					var iLevel, level = yIndex.getIndexOfDifferences(itemYData, previousY),	fieldName, aggrGroup;
 
 					if (previousY !== null) {
 						// test whether the group is finished and one need to get results
@@ -14606,23 +14610,44 @@
 						for (iLevel = headerLevels - 1; iLevel >= level; iLevel--) {
 							fieldName = "y" + iyData + "t" + iLevel + (aggrlen > 1 ? "a" + iAggr : "");
 							if (hasGroupTotal[iLevel] && outputItem[fieldName] === undefined) {
-								aggrContextGroupTotalRows[iLevel][iAggr].getResult(outputItem, fieldName);
+								aggrGroup = aggrContextGroupTotalRows[iLevel][iAggr];
+								aggrGroup.getResult(outputItem, fieldName);
+								outputItem.pivotInfos[fieldName] = {
+									colType: 1,
+									iA: iAggr,
+									a: aggregates[iAggr],
+									level: iLevel,
+									iRows: aggrGroup.groupInfo.iRows,
+									rows: aggrGroup.groupInfo.rows,
+									ys: aggrGroup.groupInfo.ys,
+									iYs: aggrGroup.groupInfo.iYs
+								};
 								if (itemYData !== previousY) {
-									aggrContextGroupTotalRows[iLevel][iAggr] = new Aggregation(aggregates[iAggr].aggregator === "count" ? "sum" : aggregates[iAggr].aggregator, self, options);
+									aggrContextGroupTotalRows[iLevel][iAggr] = createTotalAggregation(iAggr);
 								}
 							}
 						}
 					}
 				},
-				calculateGroupTotals = function (itemYData, previousY, aggregate, iAggr, row, iRow) {
+				calculateGroupTotals = function (itemYData, previousY, aggregate, iAggr, row, iRow, iyData) {
 					// the method will be called at the first time with previousY === null in every output row
 					// and finally with itemYData === previousY for getting results of all aggregation contexts
-					var iLevel;
+					var iLevel, aggrGroup, groupInfo;
 
 					if (itemYData !== previousY) { // not the last call in the row
 						for (iLevel = headerLevels - 1; iLevel >= 0; iLevel--) {
 							if (hasGroupTotal[iLevel]) {
-								aggrContextGroupTotalRows[iLevel][iAggr].calc(row[aggregate.member], aggregate.member, row, iRow, data);
+								aggrGroup = aggrContextGroupTotalRows[iLevel][iAggr];
+								aggrGroup.calc(row[aggregate.member], aggregate.member, row, iRow, data);
+								groupInfo = aggrGroup.groupInfo;
+								if ($.inArray(iyData, groupInfo.iYs) < 0) {
+									groupInfo.iYs.push(iyData);
+									groupInfo.ys.push(itemYData);
+								}
+								if ($.inArray(iRow, groupInfo.iRows) < 0) {
+									groupInfo.iRows.push(iRow);
+									groupInfo.rows.push(row);
+								}
 							}
 						}
 					}
@@ -14664,6 +14689,7 @@
 				}
 				cm = $.extend(cm, x);
 				delete cm.dataName;
+				delete cm.footerText;
 				colModel.push(cm);
 			}
 			if (xlen < 2) {
@@ -14783,8 +14809,7 @@
 				// Now we build columns of itemXData row
 				if (isRowTotal) {
 					for (k = 0; k < aggrlen; k++) {
-						agr = aggregates[k];
-						aggrContextTotalRows[k] = new Aggregation(agr.aggregator === "count" ? "sum" : agr.aggregator, self, options);
+						aggrContextTotalRows[k] = createTotalAggregation(k);
 					}
 				}
 				previousY = null;
@@ -14809,19 +14834,38 @@
 							// We need calculate aggregate agr over all the items
 							rows = new Array(iRows.length);
 							agr = aggregates[k];
-							aggrContext = new Aggregation(agr.aggregator, self, options); // result = undefined; count = undefined;
+							aggrContext = new Aggregation(agr.aggregator, self, options);
 							for (iRow = 0; iRow < iRows.length; iRow++) {
-								row = data[iRows[iRow]];
+								i = iRows[iRow];
+								row = data[i];
 								rows[iRow] = row;
-								aggrContext.calc(row[agr.member], agr.member, row, iRows[iRow], data);
+								aggrContext.calc(row[agr.member], agr.member, row, i, data);
 								if (isRowTotal) {
-									aggrContextTotalRows[k].calc(row[agr.member], agr.member, row, iRows[iRow], data);
+									aggrTotal = aggrContextTotalRows[k];
+									aggrTotal.calc(row[agr.member], agr.member, row, i, data);
+									gi = aggrTotal.groupInfo;
+									if ($.inArray(i, gi.iYs) < 0) {
+										gi.iYs.push(iYData);
+										gi.ys.push(itemYData);
+									}
+									if ($.inArray(i, gi.iRows) < 0) {
+										gi.iRows.push(i);
+										gi.rows.push(row);
+									}
 								}
-								calculateGroupTotals(itemYData, previousY, agr, k, row, iRows[iRow]);
+								calculateGroupTotals(itemYData, previousY, agr, k, row, i, iYData);
 							}
 							cmName = "y" + iYData + (aggrlen === 1 ? "" : "a" + k);
-							aggrContext.getResult(outputItem, "y" + iYData + (aggrlen === 1 ? "" : "a" + k));
-							pivotInfos[cmName] = { iY: iYData, y: itemYData, iA: k, a: agr, iRows: iRows, rows: rows };
+							aggrContext.getResult(outputItem, cmName);
+							pivotInfos[cmName] = {
+								colType: 0, // standard row
+								iY: iYData,
+								y: itemYData,
+								iA: k,
+								a: agr,
+								iRows: iRows,
+								rows: rows
+							};
 						}
 					}
 					previousY = itemYData;
@@ -14833,7 +14877,19 @@
 				}
 				if (isRowTotal) {
 					for (k = 0; k < aggrlen; k++) {
-						aggrContextTotalRows[k].getResult(outputItem, "t" + (aggrlen === 1 ? "" : "a" + k));
+						cmName = "t" + (aggrlen === 1 ? "" : "a" + k);
+						aggrTotal = aggrContextTotalRows[k];
+						aggrTotal.getResult(outputItem, cmName);
+						gi = aggrTotal.groupInfo;
+						pivotInfos[cmName] = {
+							colType: 2, // row total
+							iA: k,
+							a: aggregates[k],
+							iRows: gi.iRows,
+							rows: gi.rows,
+							iYs: gi.iYs,
+							ys: gi.ys
+						};
 					}
 				}
 				outputItems.push(outputItem);
