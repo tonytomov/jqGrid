@@ -487,12 +487,7 @@
 						oMuligrid || {}
 					),
 					viewModalAlert = function () {
-						jgrid.viewModal("#alertmod_" + p.id, { gbox: p.gBox, toTop: o.alertToTop, jqm: true });
-						var $close = $("#alerthd_" + p.id).find(".ui-jqdialog-titlebar-close");
-						$close.attr({ tabindex: "0", href: "#", role: "button" });
-						setTimeout(function () {
-							$close.focus();
-						}, 50);
+						$t.modalAlert();
 					};
 
 				if (elem === undefined) {

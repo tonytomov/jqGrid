@@ -1908,56 +1908,61 @@
 
 				var twd, tdw, gridIdEscaped = p.idSel, gboxSelector = p.gBox, commonIconClass = o.commonIconClass,
 					alertIDs = { themodal: "alertmod_" + gridId, modalhead: "alerthd_" + gridId, modalcontent: "alertcnt_" + gridId },
-					viewModalAlert = function () {
-						var documentElement = document.documentElement, w = window, left, top,
-							offsetGbox = $self.closest(".ui-jqgrid").offset();
-						if ($("#" + jqID(alertIDs.themodal))[0] === undefined) {
-							if (!o.alerttop && !o.alertleft) {
-								if (w.innerWidth !== undefined) {
-									left = w.innerWidth;
-									top = w.innerHeight;
-								} else if (documentElement !== null && documentElement.clientWidth !== undefined && documentElement.clientWidth !== 0) {
-									left = documentElement.clientWidth;
-									top = documentElement.clientHeight;
-								} else {
-									left = 1024;
-									top = 768;
+					createModalAlert = function () {
+						return function () {
+							var documentElement = document.documentElement, w = window, left, top,
+								offsetGbox = $self.closest(".ui-jqgrid").offset();
+							if ($("#" + jqID(alertIDs.themodal))[0] === undefined) {
+								if (!o.alerttop && !o.alertleft) {
+									if (w.innerWidth !== undefined) {
+										left = w.innerWidth;
+										top = w.innerHeight;
+									} else if (documentElement !== null && documentElement.clientWidth !== undefined && documentElement.clientWidth !== 0) {
+										left = documentElement.clientWidth;
+										top = documentElement.clientHeight;
+									} else {
+										left = 1024;
+										top = 768;
+									}
+									left = left / 2 - parseInt(o.alertwidth, 10) / 2 - offsetGbox.left;
+									top = top / 2 - 25 - offsetGbox.top;
 								}
-								left = left / 2 - parseInt(o.alertwidth, 10) / 2 - offsetGbox.left;
-								top = top / 2 - 25 - offsetGbox.top;
+								createModal.call($t, alertIDs,
+									"<div>" + o.alerttext + "</div><span tabindex='0'><span tabindex='-1' id='" + gridId + "_jqg_alrt'></span></span>",
+									{
+										gbox: gboxSelector,
+										jqModal: o.jqModal,
+										drag: true,
+										resize: true,
+										caption: o.alertcap,
+										top: o.alerttop != null ? o.alerttop : top,
+										left: o.alertleft != null ? o.alertleft : left,
+										width: o.alertwidth,
+										height: o.alertheight,
+										closeOnEscape: o.closeOnEscape,
+										zIndex: o.alertzIndex,
+										removemodal: o.removemodal
+									},
+									p.gView,
+									$(gboxSelector)[0],
+									false);
 							}
-							createModal.call($t, alertIDs,
-								"<div>" + o.alerttext + "</div><span tabindex='0'><span tabindex='-1' id='" + gridId + "_jqg_alrt'></span></span>",
-								{
-									gbox: gboxSelector,
-									jqModal: o.jqModal,
-									drag: true,
-									resize: true,
-									caption: o.alertcap,
-									top: o.alerttop != null ? o.alerttop : top,
-									left: o.alertleft != null ? o.alertleft : left,
-									width: o.alertwidth,
-									height: o.alertheight,
-									closeOnEscape: o.closeOnEscape,
-									zIndex: o.alertzIndex,
-									removemodal: o.removemodal
-								},
-								p.gView,
-								$(gboxSelector)[0],
-								false);
-						}
-						viewModal("#" + jqID(alertIDs.themodal), { gbox: gboxSelector, toTop: o.alertToTop, jqm: o.jqModal });
-						var $close = $("#" + jqID(alertIDs.modalhead)).find(".ui-jqdialog-titlebar-close");
-						$close.attr({ tabindex: "0", href: "#", role: "button" });
-						setTimeout(function () {
-							$close.focus(); //$(p.idSel + "_jqg_alrt").focus();
-						}, 50);
+							viewModal("#" + jqID(alertIDs.themodal), { gbox: gboxSelector, toTop: o.alertToTop, jqm: o.jqModal });
+							var $close = $("#" + jqID(alertIDs.modalhead)).find(".ui-jqdialog-titlebar-close");
+							$close.attr({ tabindex: "0", href: "#", role: "button" });
+							setTimeout(function () {
+								$close.focus(); //$(p.idSel + "_jqg_alrt").focus();
+							}, 50);
+						};
 					},
+					viewModalAlert = createModalAlert(),
 					hoverClasses = getGuiStateStyles.call($t, "hover"),
 					disabledClass = getGuiStateStyles.call($t, "disabled");
 				if (!$t.grid) {
 					return; // error
 				}
+				// set modalAlert which can be used inside of
+				$t.modalAlert = viewModalAlert;
 				if (elem === undefined) {
 					if (p.pager) {
 						elem = p.pager;
