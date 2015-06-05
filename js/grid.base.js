@@ -2407,9 +2407,19 @@
 						myResizerClickHandler.call(this.curGbox, x);
 						feedback.call(getGridComponent(COMPONENT_NAMES.BODY_TABLE, $bDiv), "resizeStart", x, i);
 						document.onselectstart = function () { return false; };
-						$(document).bind("mousemove.jqGrid", function (e) {
-							if (grid.resizing) { grid.dragMove(e); return false; }
-						});
+						$(document)
+							.bind("mousemove.jqGrid", function (e) {
+								if (grid.resizing) {
+									grid.dragMove(e);
+									return false;
+								}
+							})
+							.bind("mouseup.jqGrid" + p.id, function () {
+								if (grid.resizing) {
+									grid.dragEnd();
+									return false;
+								}
+							});
 					},
 					dragMove: function (x) {
 						var self = this, resizing = self.resizing;
@@ -2500,7 +2510,7 @@
 						}
 						self.curGbox = null;
 						document.onselectstart = function () { return true; };
-						$(document).unbind("mousemove.jqGrid");
+						$(document).unbind("mousemove.jqGrid").unbind("mouseup.jqGrid" + p.id);
 					},
 					populateVisible: function () {
 						var self = this, $self = $(self), gridSelf = self.grid, bDiv = gridSelf.bDiv, $bDiv = $(bDiv);
@@ -2680,7 +2690,7 @@
 						result += "width: " + grid.headers[pos].width + "px;";
 					} else if (isFunction(cm.cellattr) || (typeof cm.cellattr === "string" && jgrid.cellattr != null && isFunction(jgrid.cellattr[cm.cellattr]))) {
 						cellAttrFunc = isFunction(cm.cellattr) ? cm.cellattr : jgrid.cellattr[cm.cellattr];
-						if (p.useUnformattedDataForCellAttr) {
+						if (p.useUnformattedDataForCellAttr && rdata != null) {
 							cellValue = rdata[cm.name];
 						} else if (cm.autoResizable) {
 							// see https://github.com/free-jqgrid/jqGrid/issues/74#issuecomment-107675796
@@ -4894,9 +4904,6 @@
 				$(grid.cDiv).nextAll("div:visible").first().addClass("ui-corner-top"); // set on top toolbar or toppager or on hDiv
 			}
 			$(grid.hDiv).after(grid.bDiv);
-				/*.mousemove(function (e) {
-					if (grid.resizing) { grid.dragMove(e); return false; }
-				});*/
 			$(eg)
 				.click(myResizerClickHandler)
 				.dblclick(function (e) { // it's still needed for Firefox
@@ -4928,14 +4935,6 @@
 			}
 			$(".ui-jqgrid-labels", grid.hDiv)
 				.bind("selectstart", function () { return false; });
-			$(document)
-				.bind("mouseup.jqGrid" + p.id, function () {
-					if (grid.resizing !== false) {
-						grid.dragEnd();
-						return false;
-					}
-					return true;
-				});
 			ts.formatCol = formatCol;
 			ts.sortData = sortData;
 			ts.updatepager = updatepager;
@@ -6133,7 +6132,7 @@
 				var $t = this, p = $t.p, $self = $($t);
 				if (!$("body").is("[role]")) { $("body").attr("role", "application"); }
 				p.scrollrows = o.scrollingRows;
-				$self.keydown(function (event) {
+				$self.bind("keydown.jqGrid", function (event) {
 					var tr = $(this).find("tr[tabindex=0]")[0],
 						moveVerical = function (siblingProperty) {
 							do {
@@ -6202,7 +6201,7 @@
 		},
 		unbindKeys: function () {
 			return this.each(function () {
-				$(this).unbind("keydown");
+				$(this).unbind("keydown.jqGrid");
 			});
 		},
 		getLocalRow: function (rowid) {
