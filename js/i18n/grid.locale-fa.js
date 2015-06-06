@@ -16,11 +16,11 @@
             emptyrecords: "رکوردی یافت نشد",
             loadtext: "بارگزاري...",
             pgtext: "صفحه {0} از {1}",
-            pgfirst : "First Page",
-            pglast : "Last Page",
-            pgnext : "Next Page",
-            pgprev : "Previous Page",
-            pgrecs : "Records per Page",
+            pgfirst : "صفحه اول",
+            pglast : "صفحه آخر",
+            pgnext : "صفحه بعد",
+            pgprev : "صفحه قبل",
+            pgrecs : "رکورد در صفحه",
             showhide: "Toggle Expand Collapse Grid",
             savetext: "در حال ذخیره..."
         },
@@ -28,7 +28,7 @@
             caption: "جستجو...",
             Find: "يافته ها",
             Reset: "از نو",
-            odata: [{ oper:'eq', text:"برابر"},{ oper:'ne', text:"نا برابر"},{ oper:'lt', text:"به"},{ oper:'le', text:"کوچکتر"},{ oper:'gt', text:"از"},{ oper:'ge', text:"بزرگتر"},{ oper:'bw', text:"شروع با"},{ oper:'bn', text:"شروع نشود با"},{ oper:'in', text:"نباشد"},{ oper:'ni', text:"عضو این نباشد"},{ oper:'ew', text:"اتمام با"},{ oper:'en', text:"تمام نشود با"},{ oper:'cn', text:"حاوی"},{ oper:'nc', text:"نباشد حاوی"},{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}],
+            odata: [{ oper: 'eq', text: "برابر" }, { oper: 'ne', text: "نا برابر" }, { oper: 'lt', text: "کوچکتر" }, { oper: 'le', text: "کوچکتر يا مساوي" }, { oper: 'gt', text: "بزرگتر" }, { oper: 'ge', text: "بزرگتر يا مساوي" }, { oper: 'bw', text: "شروع با" }, { oper: 'bn', text: "شروع نشود با" }, { oper: 'in', text: "عضو باشد" }, { oper: 'ni', text: "عضو این نباشد" }, { oper: 'ew', text: "اتمام با" }, { oper: 'en', text: "تمام نشود با" }, { oper: 'cn', text: "حاوی" }, { oper: 'nc', text: "نباشد حاوی" }, { oper: 'nu', text: 'تهی' }, { oper: 'nn', text: 'تهي نباشد' }],
             groupOps: [{
                 op: "AND",
                 text: "کل"
@@ -38,7 +38,7 @@
                 text: "مجموع"
             }],
             operandTitle : "Click to select search operation.",
-            resetTitle : "Reset Search Value"
+            resetTitle: "تنظیم مجدد مقدار جستجو"
         },
         edit: {
             addCaption: "اضافه کردن رکورد",
