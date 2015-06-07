@@ -238,6 +238,7 @@
 					editMsg = getRes("edit.msg"),
 					hoverClasses = getGuiStyles.call($t, "states.hover"),
 					highlightClass = getGuiStyles.call($t, "states.select"),
+					dataFieldClass = getGuiStyles.call($t, "filterToolbar.dataField"),
 					triggerToolbar = function () {
 						var sdata = {}, j = 0, sopt = {};
 						$.each(colModel, function () {
@@ -591,6 +592,7 @@
 											if (soptions.defaultValue !== undefined) { $select.val(soptions.defaultValue); }
 											$select.attr({ name: cm.index || cm.name, id: "gs_" + cm.name });
 											if (soptions.attr) { $select.attr(soptions.attr); }
+											$select.addClass(dataFieldClass);
 											$select.css({ width: "100%" });
 											// preserve autoserch
 											bindEv.call($t, $select[0], soptions);
@@ -647,6 +649,7 @@
 										}
 										if (soptions.defaultValue !== undefined) { $(elem).val(soptions.defaultValue); }
 										if (soptions.attr) { $(elem).attr(soptions.attr); }
+										$(elem).addClass(dataFieldClass);
 										$(thd).append(stbl);
 										bindEv.call($t, elem, soptions);
 										$("td", stbl).eq(1).append(elem);
@@ -670,7 +673,7 @@
 							case "text":
 								var df = soptions.defaultValue !== undefined ? soptions.defaultValue : "";
 
-								$("td", stbl).eq(1).append("<input type='text' role='textbox' style='width:100%;padding:0;' name='" + (cm.index || cm.name) + "' id='gs_" + cm.name + "' value='" + df + "'/>");
+								$("td", stbl).eq(1).append("<input type='text' role='textbox' class='" + dataFieldClass + "' style='width:100%;padding:0;' name='" + (cm.index || cm.name) + "' id='gs_" + cm.name + "' value='" + df + "'/>");
 								$(thd).append(stbl);
 
 								if (soptions.attr) { $("input", thd).attr(soptions.attr); }
@@ -708,7 +711,7 @@
 								}
 								break;
 							case "custom":
-								$("td", stbl).eq(1).append("<span style='width:95%;padding:0;' name='" + (cm.index || cm.name) + "' id='gs_" + cm.name + "'/>");
+								$("td", stbl).eq(1).append("<span style='width:95%;padding:0;' class='" + dataFieldClass + "' name='" + (cm.index || cm.name) + "' id='gs_" + cm.name + "'/>");
 								$(thd).append(stbl);
 								try {
 									if ($.isFunction(soptions.custom_element)) {
@@ -1008,11 +1011,9 @@
 					$(p.gView).append(grid.fhDiv);
 					var htbl = $(".ui-jqgrid-htable", p.gView).clone(true);
 					/*if ($t.ftoolbar) {
-						var $filterToolbar = htbl.find(">thead>tr.ui-search-toolbar");
+						var $fixedSearchingFields = htbl.find(">thead>tr.ui-search-toolbar>th").filter(function (index) { return index <= maxfrozen; } );
 						// remove tabindex from the filter toolbar
-						for (i = 0; i <= maxfrozen; ) {
-							ui-search-toolbar
-						}
+						$fixedSearchingFields.find("input,select,textarea").attr("tabindex","-1");
 					}*/
 					// groupheader support - only if useColSpanstyle is false
 					if (p.groupHeader) {

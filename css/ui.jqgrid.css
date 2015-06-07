@@ -175,7 +175,7 @@
 	height: 21px;
 	width: .3em;
 	position: relative;
-	cursor: e-resize;
+	cursor: col-resize;
 	-webkit-touch-callout: none;
 	-khtml-user-select: none;
 	-ms-user-select: none;
@@ -335,7 +335,6 @@
 body > .ui-jqgrid-resize-mark {
 	width: 0px;
 	left: 0;
-	cursor: e-resize;
 	cursor: col-resize;
 	-webkit-touch-callout: none;
 	-khtml-user-select: none;
@@ -451,7 +450,6 @@ span.ui-jqgrid-cell-wrapper {
 .ui-jqgrid .ui-pg-table .ui-pg-selbox {
 	height: auto;
 	width: auto;
-	font-size: .8em;
 	margin: 0;
 	line-height: inherit;
 }

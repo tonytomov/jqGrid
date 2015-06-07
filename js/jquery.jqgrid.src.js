@@ -2,13 +2,13 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
 /**
- * @license jqGrid  4.9.0-beta2 - free jqGrid
+ * @license jqGrid  4.9.0-rc1 - free jqGrid: https://github.com/free-jqgrid/jqGrid
  * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com
  * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-06-05
+ * Date: 2015-06-07
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -514,6 +514,9 @@
 					rightCorner: "ui-corner-right",
 					defaultCorner: "ui-corner-all"
 				},
+				filterToolbar: {
+					dataField: "ui-widget-content"
+				},
 				subgrid: {
 					thSubgrid: "ui-state-default test", // used only with subGridModel
 					rowSubTable: "ui-widget-content", // used only with subGridModel additionally to ui-subtblcell
@@ -533,6 +536,8 @@
 				toolbarBottom: "ui-state-default",
 				pager: "ui-state-default",
 				pagerButton: "ui-corner-all",
+				pagerInput: "ui-widget-content",
+				pagerSelect: "ui-widget-content",
 				top: "ui-corner-top",
 				bottom: "ui-corner-bottom",
 				resizer: "ui-widget-header"
@@ -2404,7 +2409,6 @@
 							// it's better to use exact position of the border on the right of the current header
 							startX = $th.offset().left + self.headers[i].width + (jgrid.cell_width ? 0 : intNum(p.cellLayout, 0)) - 2;
 						self.resizing = { idx: i, startX: startX, sOL: startX, moved: false, delta: startX - x.pageX };
-						self.hDiv.style.cursor = "col-resize";
 						self.curGbox = $(p.rs);
 						self.curGbox.prependTo("body"); // change the parent to be able to move over the ranges of the gBox
 						self.curGbox.css({ display: "block", left: startX, top: y[1] + gridOffset.top, height: y[2] });
@@ -3851,7 +3855,7 @@
 					if (p.rowList.length > 0) {
 						str = "<td dir='" + dir + "'>";
 						var pgrecs = getDef("pgrecs");
-						str += "<select class='ui-pg-selbox' role='listbox' " + (pgrecs ? "title='" + pgrecs + "'" : "") + ">";
+						str += "<select class='" + getGuiStyles("pagerSelect", "ui-pg-selbox") + "' role='listbox' " + (pgrecs ? "title='" + pgrecs + "'" : "") + ">";
 						var strnm;
 						for (i = 0; i < p.rowList.length; i++) {
 							strnm = p.rowList[i].toString().split(":");
@@ -3863,7 +3867,7 @@
 						str += "</select></td>";
 					}
 					if (dir === "rtl") { pgl += str; }
-					if (p.pginput === true) { pginp = "<td dir='" + dir + "'>" + jgrid.format(getDef("pgtext") || "", "<input class='ui-pg-input' type='text' size='2' maxlength='7' value='0' role='textbox'/>", "<span id='sp_1_" + pgid + "'>0</span>") + "</td>"; }
+					if (p.pginput === true) { pginp = "<td dir='" + dir + "'>" + jgrid.format(getDef("pgtext") || "", "<input class='" + getGuiStyles("pagerInput", "ui-pg-input") + "' type='text' size='2' maxlength='7' value='0' role='textbox'/>", "<span id='sp_1_" + pgid + "'>0</span>") + "</td>"; }
 					pgid = "#" + jqID(pgid); // modify to id selector
 					if (p.pgbuttons === true) {
 						var po = ["first", "prev", "next", "last"],
@@ -8018,6 +8022,7 @@
 					editMsg = getRes("edit.msg"),
 					hoverClasses = getGuiStyles.call($t, "states.hover"),
 					highlightClass = getGuiStyles.call($t, "states.select"),
+					dataFieldClass = getGuiStyles.call($t, "filterToolbar.dataField"),
 					triggerToolbar = function () {
 						var sdata = {}, j = 0, sopt = {};
 						$.each(colModel, function () {
@@ -8371,6 +8376,7 @@
 											if (soptions.defaultValue !== undefined) { $select.val(soptions.defaultValue); }
 											$select.attr({ name: cm.index || cm.name, id: "gs_" + cm.name });
 											if (soptions.attr) { $select.attr(soptions.attr); }
+											$select.addClass(dataFieldClass);
 											$select.css({ width: "100%" });
 											// preserve autoserch
 											bindEv.call($t, $select[0], soptions);
@@ -8427,6 +8433,7 @@
 										}
 										if (soptions.defaultValue !== undefined) { $(elem).val(soptions.defaultValue); }
 										if (soptions.attr) { $(elem).attr(soptions.attr); }
+										$(elem).addClass(dataFieldClass);
 										$(thd).append(stbl);
 										bindEv.call($t, elem, soptions);
 										$("td", stbl).eq(1).append(elem);
@@ -8450,7 +8457,7 @@
 							case "text":
 								var df = soptions.defaultValue !== undefined ? soptions.defaultValue : "";
 
-								$("td", stbl).eq(1).append("<input type='text' role='textbox' style='width:100%;padding:0;' name='" + (cm.index || cm.name) + "' id='gs_" + cm.name + "' value='" + df + "'/>");
+								$("td", stbl).eq(1).append("<input type='text' role='textbox' class='" + dataFieldClass + "' style='width:100%;padding:0;' name='" + (cm.index || cm.name) + "' id='gs_" + cm.name + "' value='" + df + "'/>");
 								$(thd).append(stbl);
 
 								if (soptions.attr) { $("input", thd).attr(soptions.attr); }
@@ -8488,7 +8495,7 @@
 								}
 								break;
 							case "custom":
-								$("td", stbl).eq(1).append("<span style='width:95%;padding:0;' name='" + (cm.index || cm.name) + "' id='gs_" + cm.name + "'/>");
+								$("td", stbl).eq(1).append("<span style='width:95%;padding:0;' class='" + dataFieldClass + "' name='" + (cm.index || cm.name) + "' id='gs_" + cm.name + "'/>");
 								$(thd).append(stbl);
 								try {
 									if ($.isFunction(soptions.custom_element)) {
@@ -8788,11 +8795,9 @@
 					$(p.gView).append(grid.fhDiv);
 					var htbl = $(".ui-jqgrid-htable", p.gView).clone(true);
 					/*if ($t.ftoolbar) {
-						var $filterToolbar = htbl.find(">thead>tr.ui-search-toolbar");
+						var $fixedSearchingFields = htbl.find(">thead>tr.ui-search-toolbar>th").filter(function (index) { return index <= maxfrozen; } );
 						// remove tabindex from the filter toolbar
-						for (i = 0; i <= maxfrozen; ) {
-							ui-search-toolbar
-						}
+						$fixedSearchingFields.find("input,select,textarea").attr("tabindex","-1");
 					}*/
 					// groupheader support - only if useColSpanstyle is false
 					if (p.groupHeader) {
