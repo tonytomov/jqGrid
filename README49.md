@@ -47,11 +47,7 @@ It somebody want to test the *latest* version of free jqGrid one can load it dir
 ```
 
 
-#### Compatibility with old versions of jqGrid ( version <= 4.7.0)
-
-* 
-
-#### The following **new features** are implemented currently
+### The following **new features** are implemented in the version 4.9
 
 * 99% of jQuery UI classes used in free jqGrid will be get now from `$.jgrid.guiStyles.jQueryUI` in the same way like free jqGrid 4.8 uses the icons from `$.jgrid.icons.jQueryUI` by default. There are exist `guiStyles` option with default value `"jQueryUI"` exactly like there are exist `iconSet` option with default value `"jQueryUI"`. Both `guiStyles` and `iconSet` options defines from which part of `$.jgrid.guiStyles` or `$.jgrid.icons` the icons or classes of common GUI elements of the grid will be used. One can extend `$.jgrid.guiStyles` with another set of elements and to use the name of the set as the value of `guiStyles` parameter. One can replace the default jQuery UI classes to the classes of another CSS framework.
 * Internal methods `addXmlData` and `addJSONData` are full rewritten now. There are exist now only one `readInput`. The part of the code is moved in `$.jgrid.parseDataToHtml` which will be used in `addRowData` method too.
@@ -77,3 +73,5 @@ It somebody want to test the *latest* version of free jqGrid one can load it dir
 * The plugin `grid.odata.js`, developed by Mark Babayev (https://github.com/mirik123, markolog@gmail.com), is updated. It provides `odataGenColModel` and `odataInit` methods allows easy usage of free jqGrid with OData services.
 * The new methods `createContexMenuFromNavigatorButtons` and `showHideColumnMenu` are added as plugins `jquery.createcontexmenufromnavigatorbuttons.js` and `jquery.jqgrid.showhidecolumnmenu.js`. There will be moved later in the main code of free jqGrid.
 * The formatting of the source code of free jqGrid is changed to improve reading and debugging of the code.
+
+Many thanks for all who post bug reports and suggestions to improve free jqGrid!
