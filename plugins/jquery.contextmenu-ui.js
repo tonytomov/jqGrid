@@ -183,7 +183,7 @@
             menu.css({
                 left: e[cur.eventPosX],
                 top: e[cur.eventPosY],
-                "white-space": "pre",
+                "white-space": "pre"
             }).show().removeAttr("aria-hidden");
             if (cur.shadow) {
                 shadow.css({
