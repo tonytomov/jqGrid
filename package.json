@@ -12,7 +12,7 @@
         "js/jquery.jqgrid.src.js",
         "js/i18n/*.js",
         "js/i18n/min/*.js",
-        "plugins/*.*"
+        "plugins/*.*",
         "plugins/min/*.*"
       ]
     }
