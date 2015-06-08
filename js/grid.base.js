@@ -6129,6 +6129,10 @@
 				p.selrow = null;
 				clearArray(p.selarrrow); // p.selarrrow= [];
 				clearArray(p.savedRow); // p.savedRow = [];
+				clearArray(p.data); //p.data = [];
+				clearArray(p.lastSelectedData); //p.lastSelectedData = [];
+				p._index = {};
+				p.rowIndexes = {};
 				p.records = 0;
 				p.page = 1;
 				p.lastpage = 0;
