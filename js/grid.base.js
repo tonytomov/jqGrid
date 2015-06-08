@@ -6158,6 +6158,7 @@
 				p.scrollrows = o.scrollingRows;
 				$self.bind("keydown.jqGrid", function (event) {
 					var tr = $(this).find("tr[tabindex=0]")[0],
+						editingInfo = jgrid.detectRowEditing.call($t, $(event.target).closest("tr.jqgrow").attr("id")),
 						moveVerical = function (siblingProperty) {
 							do {
 								tr = tr[siblingProperty];
@@ -6196,7 +6197,7 @@
 						};
 
 					//check for arrow keys
-					if (tr) {
+					if (tr && editingInfo === null) {
 						switch (event.keyCode) {
 							case 38: // up key
 								moveVerical("previousSibling");
