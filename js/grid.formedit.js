@@ -58,6 +58,9 @@
 		},
 		getGuiStateStyles = function (path) {
 			return getGuiStyles.call(this, "states." + path);
+		},
+		isEmptyString = function (htmlStr) {
+			return htmlStr === "&nbsp;" || htmlStr === "&#160;" || (htmlStr.length === 1 && htmlStr.charCodeAt(0) === 160);
 		};
 	jgrid.extend({
 		searchGrid: function (oMuligrid) {
@@ -539,7 +542,7 @@
 				}
 				function createData(rowid, tb, maxcols) {
 					var cnt = 0, retpos = [], ind = false,
-						tdtmpl = "<td class='CaptionTD'></td><td class='DataTD'></td>", tmpl = "", i; //*2
+						tdtmpl = "<td class='CaptionTD'>&#160;</td><td class='DataTD'>&#160;</td>", tmpl = "", i; //*2
 					for (i = 1; i <= maxcols; i++) {
 						tmpl += tdtmpl;
 					}
@@ -589,7 +592,7 @@
 								} catch (_) {
 									tmp = (cm.edittype && cm.edittype === "textarea") ? $td.text() : $td.html();
 								}
-								if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) { tmp = ""; }
+								if (isEmptyString(tmp)) { tmp = ""; }
 							}
 							var opt = $.extend({}, cm.editoptions || {}, { id: nm, name: nm, rowId: rowid, mode: mode }),
 								frmopt = $.extend({}, { elmprefix: "", elmsuffix: "", rowabove: false, rowcontent: "" }, cm.formoptions || {}),
@@ -622,8 +625,8 @@
 							}
 							var $label = $("td:eq(" + (cp - 2) + ")", trdata[0]),
 								$data = $("td:eq(" + (cp - 1) + ")", trdata[0]);
-							$label.html(frmopt.label === undefined ? p.colNames[i] : frmopt.label);
-							$data.html(frmopt.elmprefix).append(elc).append(frmopt.elmsuffix);
+							$label.html(frmopt.label === undefined ? p.colNames[i] : frmopt.label || "&#160;");
+							$data[isEmptyString($data.html()) ? "html" : "append"](frmopt.elmprefix).append(elc).append(frmopt.elmsuffix);
 							if (disabled) {
 								$label.addClass(disabledClass);
 								$data.addClass(disabledClass);
@@ -641,7 +644,7 @@
 						}
 					});
 					if (cnt > 0) {
-						var idrow = $("<tr class='FormData' style='display:none'><td class='CaptionTD'></td><td colspan='" + (maxcols * 2 - 1) + "' class='DataTD'><input class='FormElement' id='id_g' type='text' name='" + gridId + "_id' value='" + rowid + "'/></td></tr>");
+						var idrow = $("<tr class='FormData' style='display:none'><td class='CaptionTD'>&#160;</td><td colspan='" + (maxcols * 2 - 1) + "' class='DataTD'><input class='FormElement' id='id_g' type='text' name='" + gridId + "_id' value='" + rowid + "'/></td></tr>");
 						idrow[0].rp = cnt + 999;
 						$(tb).append(idrow);
 						if (o.checkOnSubmit || o.checkOnUpdate) { o._savedData[gridId + "_id"] = rowid; }
@@ -712,7 +715,7 @@
 								case "button":
 								case "image":
 								case "textarea":
-									if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) { tmp = ""; }
+									if (isEmptyString(tmp)) { tmp = ""; }
 									$(nm, fmid).val(tmp);
 									break;
 								case "select":
@@ -1076,11 +1079,11 @@
 					maxRows = Math.max(maxRows, fmto ? fmto.rowpos || 0 : 0);
 				});
 				$(frm).append(tbl);
-				var flr = $("<tr id='FormError' style='display:none'><td class='" + errorClass + "' colspan='" + (maxCols * 2) + "'></td></tr>");
+				var flr = $("<tr id='FormError' style='display:none'><td class='" + errorClass + "' colspan='" + (maxCols * 2) + "'>&#160;</td></tr>");
 				flr[0].rp = 0;
 				$(tbl).append(flr);
 				//topinfo
-				flr = $("<tr style='display:none' class='tinfo'><td class='topinfo' colspan='" + (maxCols * 2) + "'>" + o.topinfo + "</td></tr>");
+				flr = $("<tr style='display:none' class='tinfo'><td class='topinfo' colspan='" + (maxCols * 2) + "'>" + (o.topinfo || "&#160;") + "</td></tr>");
 				flr[0].rp = 0;
 				$(tbl).append(flr);
 				if (!editFeedback("beforeInitData", frm, frmoper)) { return; }
@@ -1099,7 +1102,7 @@
 					bC = builderFmButon.call($t, "cData", o.bCancel),
 					bt = "<table" + (jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "") + " class='EditTable' id='" + frmtborg + "_2'><tbody><tr><td colspan='2'><hr class='" +
 					getGuiStyles.call($t, "dialog.hr") + "' style='margin:1px'/></td></tr><tr id='Act_Buttons'><td class='navButton navButton-" + p.direction + "'>" + (rtlb ? bN + bP : bP + bN) + "</td><td class='EditButton EditButton-" + p.direction + "'>" + bS + "&#160;" + bC + "</td></tr>";
-				bt += "<tr style='display:none' class='binfo'><td class='bottominfo' colspan='2'>" + o.bottominfo + "</td></tr>";
+				bt += "<tr style='display:none' class='binfo'><td class='bottominfo' colspan='2'>" + (o.bottominfo || "&#160;") + "</td></tr>";
 				bt += "</tbody></table>";
 				if (maxRows > 0) {
 					var sd = [];
@@ -1195,7 +1198,7 @@
 					bC = builderFmButon.call($t, "cNew", o.bExit);
 					var zI = o.zIndex || 999;
 					zI++;
-					$("<div class='" + o.overlayClass + " jqgrid-overlay confirm' style='z-index:" + zI + ";display:none;'>&#160;" + "</div><div class='" + getGuiStyles.call($t, "dialog.content", "confirm ui-jqconfirm") + "' style='z-index:" + (zI + 1) + "'>" + o.saveData + "<br/><br/>" + bS + bN + bC + "</div>").insertAfter(frmgr);
+					$("<div class='" + o.overlayClass + " jqgrid-overlay confirm' style='z-index:" + zI + ";display:none;'>&#160;</div><div class='" + getGuiStyles.call($t, "dialog.content", "confirm ui-jqconfirm") + "' style='z-index:" + (zI + 1) + "'>" + o.saveData + "<br/><br/>" + bS + bN + bC + "</div>").insertAfter(frmgr);
 					$("#sNew", themodalSelector).click(function () {
 						// if the form will be hidden at the first usage and it will be shown at the next usage
 						// then the execution context click handler and all other functions like postIt()
@@ -1381,7 +1384,7 @@
 					var nm, hc, trdata, cnt = 0, tmp, dc, retpos = [], ind = $j.getInd.call($self, rowid), i,
 						viewDataClasses = getGuiStyles.call($t, "dialog.viewData", "DataTD form-view-data"),
 						viewLabelClasses = getGuiStyles.call($t, "dialog.viewLabel", "CaptionTD form-view-label"),
-						tdtmpl = "<td class='" + viewLabelClasses + "' width='" + o.labelswidth + "'></td><td class='" + viewDataClasses + " ui-helper-reset'></td>", tmpl = "",
+						tdtmpl = "<td class='" + viewLabelClasses + "' width='" + o.labelswidth + "'>&#160;</td><td class='" + viewDataClasses + " ui-helper-reset'>&#160;</td>", tmpl = "",
 						tdtmpl2 = "<td class='" + viewLabelClasses + "'></td><td class='" + viewDataClasses + "'></td>",
 						fmtnum = ["integer", "number", "currency"], max1 = 0, max2 = 0, maxw, setme, viewfld;
 					for (i = 1; i <= maxcols; i++) {
@@ -1405,7 +1408,7 @@
 					});
 					maxw = max1 !== 0 ? max1 : max2 !== 0 ? max2 : 0;
 					$(colModel).each(function (i) {
-						var $td, cm = this;
+						var cm = this;
 						nm = cm.name;
 						setme = false;
 						// hidden fields are included in the form
@@ -1417,18 +1420,7 @@
 						dc = hc ? "style='display:none'" : "";
 						viewfld = (typeof cm.viewable !== "boolean") ? true : cm.viewable;
 						if (nm !== "cb" && nm !== "subgrid" && nm !== "rn" && viewfld) {
-							if (ind === false) {
-								tmp = "";
-							} else {
-								$td = $("td:eq(" + i + ")", $t.rows[ind]);
-								if (nm === p.ExpandColumn && p.treeGrid === true) {
-									tmp = $td.text();
-								} else {
-									tmp = cm.autoResizable && $td.length > 0 && $($td[0].firstChild).hasClass(p.autoResizableWrapperClassName) ?
-											$($td[0].firstChild).html() :
-											$td.html();
-								}
-							}
+							tmp = ind === false ? "" : jgrid.getDataFieldOfCell.call($t, $t.rows[ind], i).html();
 							setme = cm.align === "right" && maxw !== 0 ? true : false;
 							var frmopt = $.extend({}, { rowabove: false, rowcontent: "" }, cm.formoptions || {}),
 								rp = parseInt(frmopt.rowpos, 10) || cnt + 1,
@@ -1445,9 +1437,10 @@
 								$(tb).append(trdata);
 								trdata[0].rp = rp;
 							}
-							var labelText = (frmopt.label === undefined ? p.colNames[i] : frmopt.label);
+							var labelText = (frmopt.label === undefined ? p.colNames[i] : frmopt.label),
+								$data = $("td:eq(" + (cp - 1) + ")", trdata[0]);
 							$("td:eq(" + (cp - 2) + ")", trdata[0]).html("<b>" + (labelText || "&nbsp;") + "</b>");
-							$("td:eq(" + (cp - 1) + ")", trdata[0]).html("<span>" + (tmp || "&nbsp;") + "</span>").attr("id", "v_" + nm);
+							$data[isEmptyString($data.html()) ? "html" : "append"]("<span>" + (tmp || "&nbsp;") + "</span>").attr("id", "v_" + nm);
 							if (setme) {
 								$("td:eq(" + (cp - 1) + ") span", trdata[0]).css({ "text-align": "right", width: maxw + "px" });
 							}
@@ -1456,14 +1449,14 @@
 						}
 					});
 					if (cnt > 0) {
-						var idrow = $("<tr class='FormData' style='display:none'><td class='CaptionTD'></td><td colspan='" + (maxcols * 2 - 1) + "' class='DataTD'><input class='FormElement' id='id_g' type='text' name='id' value='" + rowid + "'/></td></tr>");
+						var idrow = $("<tr class='FormData' style='display:none'><td class='CaptionTD'>&#160;</td><td colspan='" + (maxcols * 2 - 1) + "' class='DataTD'><input class='FormElement' id='id_g' type='text' name='id' value='" + rowid + "'/></td></tr>");
 						idrow[0].rp = cnt + 99;
 						$(tb).append(idrow);
 					}
 					return retpos;
 				}
 				function fillData(rowid) {
-					var nm, hc, cnt = 0, tmp, trv = $j.getInd.call($self, rowid, true), cm;
+					var nm, hc, cnt = 0, trv = $j.getInd.call($self, rowid, true), cm;
 					if (!trv) { return; }
 					$("td", trv).each(function (i) {
 						cm = colModel[i];
@@ -1475,15 +1468,8 @@
 							hc = cm.hidden === true ? true : false;
 						}
 						if (nm !== "cb" && nm !== "subgrid" && nm !== "rn") {
-							if (nm === p.ExpandColumn && p.treeGrid === true) {
-								tmp = $(this).text();
-							} else {
-								tmp = cm.autoResizable && $(this.firstChild).hasClass(p.autoResizableWrapperClassName) ?
-										$(this.firstChild).html() :
-										$(this).html();
-							}
 							nm = jqID("v_" + nm);
-							$("#" + nm + " span", frmtb).html(tmp);
+							$("#" + nm + " span", frmtb).html(jgrid.getDataFieldOfCell.call($t, trv, i).html());
 							if (hc) { $("#" + nm, frmtb).parents("tr:first").hide(); }
 							cnt++;
 						}
