@@ -86,7 +86,7 @@
 			this.each(function () {
 				var $t = this, grp = $t.p.groupingView, groups = grp.groups, counters = grp.counters,
 					lastvalues = grp.lastvalues, isInTheSameGroup = grp.isInTheSameGroup, grlen = grp.groupField.length,
-					i, newGroup, newCounter, fieldName,	v, displayName,	displayValue, changed = 0,
+					i, newGroup, newCounter, fieldName, v, displayName, displayValue, changed = 0,
 					groupingCalculationsHandler = base.groupingCalculations.handler,
 					buildSummaryValue = function () {
 						if ($.isFunction(this.st)) {
@@ -359,7 +359,7 @@
 				var grpTextStr = $.isFunction(grp.groupText[n.idx]) ?
 						grp.groupText[n.idx].call($t, gv, n.cnt, n.summary) :
 						jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary),
-					k, colspan = 1, jj, hhdr, kk, ik, offset = 0, sgr, gg, end,
+					colspan = 1, jj, hhdr, kk, ik, offset = 0, sgr, gg, end, // k,
 					leaf = len - 1 === n.idx;
 				if (typeof grpTextStr !== "string" && typeof grpTextStr !== "number") {
 					grpTextStr = gv;
