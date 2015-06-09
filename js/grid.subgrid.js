@@ -19,10 +19,11 @@ $.jgrid.extend({
 setSubGrid : function () {
 	return this.each(function (){
 		var $t = this, cm, i,
+		classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['subgrid'],
 		suboptions = {
-			plusicon : "ui-icon-plus",
-			minusicon : "ui-icon-minus",
-			openicon: "ui-icon-carat-1-sw",
+			plusicon : classes.icon_plus,
+			minusicon : classes.icon_minus,
+			openicon:  classes.icon_open,
 			expandOnLoad:  false,
 			delayOnLoad : 50,
 			selectOnExpand : false,
@@ -40,18 +41,21 @@ setSubGrid : function () {
 	});
 },
 addSubGridCell :function (pos,iRow) {
-	var prp='',ic,sid;
+	var prp='', ic, sid, icb ;
 	this.each(function(){
 		prp = this.formatCol(pos,iRow);
 		sid= this.p.id;
 		ic = this.p.subGridOptions.plusicon;
+		icb = $.jgrid.styleUI[(this.p.styleUI || 'jQueryUI')]['common'];
 	});
-	return "<td role=\"gridcell\" aria-describedby=\""+sid+"_subgrid\" class=\"ui-sgcollapsed sgcollapsed\" "+prp+"><a style='cursor:pointer;'><span class='ui-icon "+ic+"'></span></a></td>";
+	return "<td role=\"gridcell\" aria-describedby=\""+sid+"_subgrid\" class=\"ui-sgcollapsed sgcollapsed\" "+prp+"><a style='cursor:pointer;' class='ui-sghref'><span class='" + icb.icon_base +" "+ic+"'></span></a></td>";
 },
 addSubGrid : function( pos, sind ) {
 	return this.each(function(){
 		var ts = this;
 		if (!ts.grid ) { return; }
+		var base = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')]['base'],
+			common = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')]['common'];
 		//-------------------------
 		var subGridCell = function(trdiv,cell,pos)
 		{
@@ -60,10 +64,10 @@ addSubGrid : function( pos, sind ) {
 		};
 		var subGridXml = function(sjxml, sbid){
 			var tddiv, i,  sgmap,
-			dummy = $("<table cellspacing='0' cellpadding='0' border='0'><tbody></tbody></table>"),
+			dummy = $("<table class='" + base.rowTable + " ui-common-table'><tbody></tbody></table>"),
 			trdiv = $("<tr></tr>");
 			for (i = 0; i<ts.p.subGridModel[0].name.length; i++) {
-				tddiv = $("<th class='ui-state-default ui-th-subgrid ui-th-column ui-th-"+ts.p.direction+"'></th>");
+				tddiv = $("<th class='" + base.headerBox+" ui-th-subgrid ui-th-column ui-th-"+ts.p.direction+"'></th>");
 				$(tddiv).html(ts.p.subGridModel[0].name[i]);
 				$(tddiv).width( ts.p.subGridModel[0].width[i]);
 				$(trdiv).append(tddiv);
@@ -72,7 +76,7 @@ addSubGrid : function( pos, sind ) {
 			if (sjxml){
 				sgmap = ts.p.xmlReader.subgrid;
 				$(sgmap.root+" "+sgmap.row, sjxml).each( function(){
-					trdiv = $("<tr class='ui-widget-content ui-subtblcell'></tr>");
+					trdiv = $("<tr class='" + common.content+" ui-subtblcell'></tr>");
 					if(sgmap.repeatitems === true) {
 						$(sgmap.cell,this).each( function(i) {
 							subGridCell(trdiv, $(this).text() || '&#160;',i);
@@ -96,10 +100,10 @@ addSubGrid : function( pos, sind ) {
 		};
 		var subGridJson = function(sjxml, sbid){
 			var tddiv,result,i,cur, sgmap,j,
-			dummy = $("<table cellspacing='0' cellpadding='0' border='0'><tbody></tbody></table>"),
+			dummy = $("<table class='" + base.rowTable + " ui-common-table'><tbody></tbody></table>"),
 			trdiv = $("<tr></tr>");
 			for (i = 0; i<ts.p.subGridModel[0].name.length; i++) {
-				tddiv = $("<th class='ui-state-default ui-th-subgrid ui-th-column ui-th-"+ts.p.direction+"'></th>");
+				tddiv = $("<th class='" + base.headerBox + " ui-th-subgrid ui-th-column ui-th-"+ts.p.direction+"'></th>");
 				$(tddiv).html(ts.p.subGridModel[0].name[i]);
 				$(tddiv).width( ts.p.subGridModel[0].width[i]);
 				$(trdiv).append(tddiv);
@@ -111,7 +115,7 @@ addSubGrid : function( pos, sind ) {
 				if ( result !== undefined ) {
 					for (i=0;i<result.length;i++) {
 						cur = result[i];
-						trdiv = $("<tr class='ui-widget-content ui-subtblcell'></tr>");
+						trdiv = $("<tr class='" + common.content+" ui-subtblcell'></tr>");
 						if(sgmap.repeatitems === true) {
 							if(sgmap.cell) { cur=cur[sgmap.cell]; }
 							for (j=0;j<cur.length;j++) {
@@ -213,7 +217,7 @@ addSubGrid : function( pos, sind ) {
 
 						if(ts.p.subGridOptions.reloadOnExpand === true || ( ts.p.subGridOptions.reloadOnExpand === false && !$r.hasClass('ui-subgrid') ) ) {
 							atd = pos >=1 ? "<td colspan='"+pos+"'>&#160;</td>":"";
-							$(tr).after( "<tr role='row' id='" + pID + "_" + _id + "_expandedContent" + "' class='ui-subgrid ui-sg-expanded'>"+atd+"<td class='ui-widget-content subgrid-cell'><span class='ui-icon "+ts.p.subGridOptions.openicon+"'></span></td><td colspan='"+parseInt(ts.p.colNames.length-1-nhc,10)+"' class='ui-widget-content subgrid-data'><div id="+pID+"_"+_id+" class='tablediv'></div></td></tr>" );
+							$(tr).after( "<tr role='row' id='" + pID + "_" + _id + "_expandedContent" + "' class='ui-subgrid ui-sg-expanded'>"+atd+"<td class='" + common.content +" subgrid-cell'><span class='" + common.icon_base +" "+ts.p.subGridOptions.openicon+"'></span></td><td colspan='"+parseInt(ts.p.colNames.length-1-nhc,10)+"' class='" + common.content +" subgrid-data'><div id="+pID+"_"+_id+" class='tablediv'></div></td></tr>" );
 							$(ts).triggerHandler("jqGridSubGridRowExpanded", [pID + "_" + _id, _id]);
 							if( $.isFunction(ts.p.subGridRowExpanded)) {
 								ts.p.subGridRowExpanded.call(ts, pID+"_"+ _id,_id);
@@ -223,7 +227,7 @@ addSubGrid : function( pos, sind ) {
 						} else {
 							$r.show().removeClass("ui-sg-collapsed").addClass("ui-sg-expanded");
 						}
-						$(this).html("<a style='cursor:pointer;'><span class='ui-icon "+ts.p.subGridOptions.minusicon+"'></span></a>").removeClass("sgcollapsed").addClass("sgexpanded");
+						$(this).html("<a style='cursor:pointer;' class='ui-sghref'><span class='" + common.icon_base +" "+ts.p.subGridOptions.minusicon+"'></span></a>").removeClass("sgcollapsed").addClass("sgexpanded");
 						if(ts.p.subGridOptions.selectOnExpand) {
 							$(ts).jqGrid('setSelection',_id);
 						}
@@ -239,7 +243,7 @@ addSubGrid : function( pos, sind ) {
 						} else if($r.hasClass('ui-subgrid')) { // incase of dynamic deleting
 							$r.hide().addClass("ui-sg-collapsed").removeClass("ui-sg-expanded");;
 						}
-						$(this).html("<a style='cursor:pointer;'><span class='ui-icon "+ts.p.subGridOptions.plusicon+"'></span></a>").removeClass("sgexpanded").addClass("sgcollapsed");
+						$(this).html("<a style='cursor:pointer;' class='ui-sghref'><span class='"+common.icon_base +" "+ts.p.subGridOptions.plusicon+"'></span></a>").removeClass("sgexpanded").addClass("sgcollapsed");
 						if(ts.p.subGridOptions.selectOnCollapse) {
 							$(ts).jqGrid('setSelection',_id);
 						}

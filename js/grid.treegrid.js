@@ -26,7 +26,8 @@ $.jgrid.extend({
 			level = $t.p.treeReader.level_field,
 			icon = $t.p.treeReader.icon_field,
 			loaded = $t.p.treeReader.loaded,  lft, rgt, curLevel, ident,lftpos, twrap,
-			ldat, lf;
+			ldat, lf,
+			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['common'];
 			while(i<len) {
 				var ind = $.jgrid.stripPref($t.p.idPrefix, $t.rows[i].id), dind = $t.p._index[ind], expan;
 				ldat = $t.p.data[dind];
@@ -52,7 +53,7 @@ $.jgrid.extend({
 					lftpos = curLevel -1;
 				}
 				twrap = "<div class='tree-wrap tree-wrap-"+$t.p.direction+"' style='width:"+(ident*18)+"px;'>";
-				twrap += "<div style='"+($t.p.direction==="rtl" ? "right:" : "left:")+(lftpos*18)+"px;' class='ui-icon ";
+				twrap += "<div style='"+($t.p.direction==="rtl" ? "right:" : "left:")+(lftpos*18)+"px;' class='"+common.icon_base+" ";
 
 
 				if(ldat[loaded] !== undefined) {
@@ -133,7 +134,8 @@ $.jgrid.extend({
 	},
 	setTreeGrid : function() {
 		return this.each(function (){
-			var $t = this, i=0, pico, ecol = false, nm, key, tkey, dupcols=[];
+			var $t = this, i=0, pico, ecol = false, nm, key, tkey, dupcols=[],
+			classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['treegrid'];
 			if(!$t.p.treeGrid) {return;}
 			if(!$t.p.treedatatype ) {$.extend($t.p,{treedatatype: $t.p.datatype});}
 			if($t.p.loadonce) { $t.p.treedatatype = 'local'; }
@@ -143,8 +145,11 @@ $.jgrid.extend({
 			if($t.p.rowTotal === null ) { $t.p.rowNum = 10000; }
 			$t.p.multiselect = false;$t.p.rowList = [];
 			$t.p.expColInd = 0;
-			pico = 'ui-icon-triangle-1-' + ($t.p.direction==="rtl" ? 'w' : 'e');
-			$t.p.treeIcons = $.extend({plus:pico,minus:'ui-icon-triangle-1-s',leaf:'ui-icon-radio-off'},$t.p.treeIcons || {});
+			pico = classes.icon_plus;
+			if($t.p.styleUI === 'jQueryUI') {
+				pico += ($t.p.direction==="rtl" ? 'w' : 'e');
+			}
+			$t.p.treeIcons = $.extend({plus:pico, minus: classes.icon_minus, leaf: classes.icon_leaf},$t.p.treeIcons || {});
 			if($t.p.treeGridModel === 'nested') {
 				$t.p.treeReader = $.extend({
 					level_field: "level",
