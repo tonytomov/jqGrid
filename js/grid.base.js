@@ -5521,7 +5521,7 @@
 								v = convertOnSaveLocally.call(t, data[nm], cm, undefined, id, {}, i);
 								if ($.isFunction(cm.saveLocally)) {
 									cm.saveLocally.call(t, { newValue: v, newItem: lcdata, oldItem: {}, id: id, cm: cm, cmName: nm, iCol: i });
-								} else {
+								} else if (v !== undefined) {
 									lcdata[nm] = v;
 								}
 							}
