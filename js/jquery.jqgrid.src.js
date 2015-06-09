@@ -4605,7 +4605,15 @@
 			$(grid.hDiv)
 				.css({ width: grid.width + "px" })
 				.addClass(getGuiStyles("hDiv", "ui-jqgrid-hdiv"))
-				.append(hb);
+				.append(hb)
+				.scroll(function (e) {
+					// the hDiv can be scrolled because of tab keyboard navigation
+					// we have to sync bDiv and hDiv scrollLeft in the case
+					var bDiv = $(this).next(".ui-jqgrid-bdiv")[0];
+					if (bDiv) {
+						bDiv.scrollLeft = this.scrollLeft;
+					}
+				});
 			$(hb).append(hTable);
 			hTable = null;
 			if (hg) { $(grid.hDiv).hide(); }
@@ -8863,6 +8871,11 @@
 					$(grid.fhDiv).append(htbl)
 						.mousemove(function (e) {
 							if (grid.resizing) { grid.dragMove(e); return false; }
+						})
+						.scroll(function () {
+							// the fhDiv can be scrolled because of tab keyboard navigation
+							// we prevent horizontal scrolling of fhDiv
+							this.scrollLeft = 0;
 						});
 					if (p.footerrow) {
 						var hbd = $(".ui-jqgrid-bdiv", p.gView).height();

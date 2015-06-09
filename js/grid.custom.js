@@ -1074,6 +1074,11 @@
 					$(grid.fhDiv).append(htbl)
 						.mousemove(function (e) {
 							if (grid.resizing) { grid.dragMove(e); return false; }
+						})
+						.scroll(function () {
+							// the fhDiv can be scrolled because of tab keyboard navigation
+							// we prevent horizontal scrolling of fhDiv
+							this.scrollLeft = 0;
 						});
 					if (p.footerrow) {
 						var hbd = $(".ui-jqgrid-bdiv", p.gView).height();

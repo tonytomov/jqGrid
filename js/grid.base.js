@@ -4605,7 +4605,15 @@
 			$(grid.hDiv)
 				.css({ width: grid.width + "px" })
 				.addClass(getGuiStyles("hDiv", "ui-jqgrid-hdiv"))
-				.append(hb);
+				.append(hb)
+				.scroll(function (e) {
+					// the hDiv can be scrolled because of tab keyboard navigation
+					// we have to sync bDiv and hDiv scrollLeft in the case
+					var bDiv = $(this).next(".ui-jqgrid-bdiv")[0];
+					if (bDiv) {
+						bDiv.scrollLeft = this.scrollLeft;
+					}
+				});
 			$(hb).append(hTable);
 			hTable = null;
 			if (hg) { $(grid.hDiv).hide(); }
