@@ -75,4 +75,6 @@ Remark: the above URLs will be available *after* publishing the release of the v
 * The new methods `createContexMenuFromNavigatorButtons` and `showHideColumnMenu` are added as plugins `jquery.createcontexmenufromnavigatorbuttons.js` and `jquery.jqgrid.showhidecolumnmenu.js`. There will be moved later in the main code of free jqGrid.
 * The formatting of the source code of free jqGrid is changed to improve reading and debugging of the code.
 
+[The document](https://github.com/free-jqgrid/jqGrid/blob/master/README48.md) contains the readme of free jqGrid 4.8.
+
 Many thanks to all, who sent bug reports and suggestions to improve free jqGrid!
