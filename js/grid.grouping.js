@@ -19,8 +19,11 @@
 $.jgrid.extend({
 	groupingSetup : function () {
 		return this.each(function (){
-			var $t = this, i, j, cml, cm = $t.p.colModel, grp = $t.p.groupingView;
+			var $t = this, i, j, cml, cm = $t.p.colModel, grp = $t.p.groupingView,
+			classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['grouping'];
 			if(grp !== null && ( (typeof grp === 'object') || $.isFunction(grp) ) ) {
+				if(!grp.plusicon) { grp.plusicon = classes.icon_plus;}
+				if(!grp.minusicon) { grp.minusicon = classes.icon_minus;}
 				if(!grp.groupField.length) {
 					$t.p.grouping = false;
 				} else {
@@ -257,8 +260,11 @@ $.jgrid.extend({
 		return this.each(function(){
 			var $t = this,
 			grp = $t.p.groupingView,
-			str = "", icon = "", hid, clid, pmrtl = grp.groupCollapse ? grp.plusicon : grp.minusicon, gv, cp=[], len =grp.groupField.length;
-			pmrtl += " tree-wrap-"+$t.p.direction; 
+			str = "", icon = "", hid, clid, pmrtl = grp.groupCollapse ? grp.plusicon : grp.minusicon, gv, cp=[], len =grp.groupField.length,
+			//classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['grouping'],
+			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['common'];
+
+			pmrtl = pmrtl+" tree-wrap-"+$t.p.direction; 
 			$.each($t.p.colModel, function (i,n){
 				var ii;
 				for(ii=0;ii<len;ii++) {
@@ -335,7 +341,7 @@ $.jgrid.extend({
 				toEnd++;
 				clid = $t.p.id+"ghead_"+n.idx;
 				hid = clid+"_"+i;
-				icon = "<span style='cursor:pointer;' class='ui-icon "+pmrtl+"' onclick=\"jQuery('#"+$.jgrid.jqID($t.p.id)+"').jqGrid('groupingToggle','"+hid+"');return false;\"></span>";
+				icon = "<span style='cursor:pointer;margin-right:8px;margin-left:5px;' class='" + common.icon_base +" "+pmrtl+"' onclick=\"jQuery('#"+$.jgrid.jqID($t.p.id)+"').jqGrid('groupingToggle','"+hid+"');return false;\"></span>";
 				try {
 					if ($.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
 						n.displayValue = grp.formatDisplayField[n.idx].call($t, n.displayValue, n.value, $t.p.colModel[cp[n.idx]], n.idx, grp);
@@ -356,11 +362,11 @@ $.jgrid.extend({
 					grpTextStr = gv;
 				}
 				if(grp.groupSummaryPos[n.idx] === 'header')  {
-					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\"" + mul +">" + icon+grpTextStr + "</td>";
+					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"" + common.content + " jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\"" + mul +">" + icon+grpTextStr + "</td>";
 					str += buildSummaryTd(i, 0, grp.groups, grp.groupColumnShow[n.idx] === false ? (mul ==="" ? 2 : 3) : ((mul ==="") ? 1 : 2) );
 					str += "</tr>";
 				} else {
-					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"ui-widget-content jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\" colspan=\""+(grp.groupColumnShow[n.idx] === false ? colspans-1 : colspans)+"\">" + icon + grpTextStr + "</td></tr>";
+					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"" + common.content + " jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\" colspan=\""+(grp.groupColumnShow[n.idx] === false ? colspans-1 : colspans)+"\">" + icon + grpTextStr + "</td></tr>";
 				}
 				var leaf = len-1 === n.idx; 
 				if( leaf ) {
@@ -392,7 +398,7 @@ $.jgrid.extend({
 							if(grp.groupCollapse && !grp.showSummaryOnHide) {
 								hhdr = " style=\"display:none;\"";
 							}
-							str += "<tr"+hhdr+" jqfootlevel=\""+(n.idx-ik)+"\" role=\"row\" class=\"ui-widget-content jqfoot ui-row-"+$t.p.direction+"\">";
+							str += "<tr"+hhdr+" jqfootlevel=\""+(n.idx-ik)+"\" role=\"row\" class=\"" + common.content + " jqfoot ui-row-"+$t.p.direction+"\">";
 							str += buildSummaryTd(i, ik, grp.groups, 0);
 							str += "</tr>";
 						}
@@ -532,7 +538,9 @@ $.jgrid.extend({
 			$trLabels = $htable.children("thead").children("tr.ui-jqgrid-labels:last").addClass("jqg-second-row-header"),
 			$thead = $htable.children("thead"),
 			$theadInTable,
-			$firstHeaderRow = $htable.find(".jqg-first-row-header");
+			$firstHeaderRow = $htable.find(".jqg-first-row-header"),
+			//classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['grouping'],
+			base = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')]['base'];
 			if($firstHeaderRow[0] === undefined) {
 				$firstHeaderRow = $('<tr>', {role: "row", "aria-hidden": "true"}).addClass("jqg-first-row-header").css("height", "auto");
 			} else {
@@ -577,7 +585,7 @@ $.jgrid.extend({
 					// in the current row will be placed the new column header with the titleText.
 					// The text will be over the cVisibleColumns columns
 					$colHeader = $('<th>').attr({role: "columnheader"})
-						.addClass("ui-state-default ui-th-column-header ui-th-"+ts.p.direction+" "+className)
+						.addClass(base.headerBox+ " ui-th-column-header ui-th-"+ts.p.direction+" "+className)
 						//.css({'height':'22px', 'border-top': '0 none'})
 						.html(titleText);
 					if(cVisibleColumns > 0) {
@@ -603,7 +611,7 @@ $.jgrid.extend({
 							$th.attr("rowspan", "2");
 						} else {
 							$('<th>', {role: "columnheader"})
-								.addClass("ui-state-default ui-th-column-header ui-th-"+ts.p.direction)
+								.addClass(base.headerBox+" ui-th-column-header ui-th-"+ts.p.direction)
 								.css({"display": cmi.hidden ? 'none' : ''})
 								.insertBefore($th);
 							$tr.append(th);
