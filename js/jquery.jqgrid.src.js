@@ -5521,7 +5521,7 @@
 								v = convertOnSaveLocally.call(t, data[nm], cm, undefined, id, {}, i);
 								if ($.isFunction(cm.saveLocally)) {
 									cm.saveLocally.call(t, { newValue: v, newItem: lcdata, oldItem: {}, id: id, cm: cm, cmName: nm, iCol: i });
-								} else {
+								} else if (v !== undefined) {
 									lcdata[nm] = v;
 								}
 							}
@@ -13354,8 +13354,8 @@
 						}
 					});
 				}
-				$self.jqGrid("addRowData", o.rowID, o.initdata, o.position);
 				o.rowID = p.idPrefix + o.rowID;
+				$self.jqGrid("addRowData", o.rowID, o.initdata, o.position);
 				$("#" + jgrid.jqID(o.rowID), $t).addClass("jqgrid-new-row");
 				if (o.useFormatter) {
 					$("#" + jgrid.jqID(o.rowID) + " .ui-inline-edit", $t).click();
