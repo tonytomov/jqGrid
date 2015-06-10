@@ -34,9 +34,13 @@ $.extend($.jgrid,{
 			if (typeof oncret === 'boolean'  && !oncret ) { return; }
 		}
 		if( o.formprop && thisgrid  && o.form) {
-			var fh = $(selector)[0].style.height;
+			var fh = $(selector)[0].style.height,
+			fw = $(selector)[0].style.width;
 			if(fh.indexOf("px") > -1 ) {
 				fh = parseFloat(fh);
+			}
+			if(fw.indexOf("px") > -1 ) {
+				fw = parseFloat(fw);
 			}
 			var frmgr, frmdata;
 			if(o.form==='edit'){
@@ -49,7 +53,7 @@ $.extend($.jgrid,{
 			$(thisgrid).data(frmdata, {
 				top:parseFloat($(selector).css("top")),
 				left : parseFloat($(selector).css("left")),
-				width : $(selector).width(),
+				width : fw,
 				height : fh,
 				dataheight : $(frmgr).height(),
 				datawidth: $(frmgr).width()
@@ -81,19 +85,23 @@ $.extend($.jgrid,{
 	},
 	createModal : function(aIDs, content, p, insertSelector, posSelector, appendsel, css) {
 		p = $.extend(true, {}, $.jgrid.jqModal || {}, p);
+		var self = this,
+			rtlsup = $(p.gbox).attr("dir") === "rtl" ? true : false,
+			classes = $.jgrid.styleUI[(p.styleUI || 'jQueryUI')]['modal'],
+			common = $.jgrid.styleUI[(p.styleUI || 'jQueryUI')]['common'];
 		var mw  = document.createElement('div'), rtlsup, self = this;
 		css = $.extend({}, css || {});
 		rtlsup = $(p.gbox).attr("dir") === "rtl" ? true : false;
-		mw.className= "ui-widget ui-widget-content ui-corner-all ui-jqdialog";
+		mw.className= "ui-jqdialog " + classes.modal;
 		mw.id = aIDs.themodal;
 		var mh = document.createElement('div');
-		mh.className = "ui-jqdialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix";
+		mh.className = "ui-jqdialog-titlebar " + classes.header;
 		mh.id = aIDs.modalhead;
 		$(mh).append("<span class='ui-jqdialog-title'>"+p.caption+"</span>");
-		var ahr= $("<a class='ui-jqdialog-titlebar-close ui-corner-all'></a>")
-		.hover(function(){ahr.addClass('ui-state-hover');},
-			function(){ahr.removeClass('ui-state-hover');})
-		.append("<span class='ui-icon ui-icon-closethick'></span>");
+		var ahr= $("<a class='ui-jqdialog-titlebar-close "+common.cornerall+"'></a>")
+		.hover(function(){ahr.addClass(common.hover);},
+			function(){ahr.removeClass(common.hover);})
+		.append("<span class='" + common.icon_base+" " + classes.icon_close + "'></span>");
 		$(mh).append(ahr);
 		if(rtlsup) {
 			mw.dir = "rtl";
@@ -105,14 +113,18 @@ $.extend($.jgrid,{
 			$(".ui-jqdialog-titlebar-close",mh).css("right",0.3+"em");
 		}
 		var mc = document.createElement('div');
-		$(mc).addClass("ui-jqdialog-content ui-widget-content").attr("id",aIDs.modalcontent);
+		$(mc).addClass("ui-jqdialog-content " + classes.content).attr("id",aIDs.modalcontent);
 		$(mc).append(content);
 		mw.appendChild(mc);
 		$(mw).prepend(mh);
-		if(appendsel===true) { $('body').append(mw); } //append as first child in body -for alert dialog
+		if(appendsel===true) { 
+			$('body').append(mw); 
+		} //append as first child in body -for alert dialog
 		else if (typeof appendsel === "string") {
 			$(appendsel).append(mw);
-		} else {$(mw).insertBefore(insertSelector);}
+		} else {
+			$(mw).insertBefore(insertSelector);
+		}
 		$(mw).css(css);
 		if(p.jqModal === undefined) {p.jqModal = true;} // internal use
 		var coord = {};
@@ -173,7 +185,7 @@ $.extend($.jgrid,{
 		}
 		if(p.resize) {
 			if($.fn.jqResize) {
-				$(mw).append("<div class='jqResize ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se'></div>");
+				$(mw).append("<div class='jqResize "+classes.resizable+" "+common.icon_base + " " +classes.icon_resizable+"'></div>");
 				$("#"+$.jgrid.jqID(aIDs.themodal)).jqResize(".jqResize",aIDs.scrollelm ? "#"+$.jgrid.jqID(aIDs.scrollelm) : false);
 			} else {
 				try {
@@ -195,7 +207,7 @@ $.extend($.jgrid,{
 			toTop: true,
 			overlay: 10,
 			modal: false,
-			overlayClass : 'ui-widget-overlay',
+			overlayClass : 'ui-widget-overlay', // to be fixed
 			onShow: $.jgrid.showModal,
 			onHide: $.jgrid.closeModal,
 			gbox: '',
@@ -234,22 +246,24 @@ $.extend($.jgrid,{
 		// if the id is not provided we set it like info_button_+ the index in the array - i.e info_button_0,info_button_1...
 		};
 		$.extend(true, mopt, $.jgrid.jqModal || {}, {caption:"<b>"+caption+"</b>"}, modalopt || {});
-		var jm = mopt.jqModal, self = this;
+		var jm = mopt.jqModal, self = this,
+		classes = $.jgrid.styleUI[(mopt.styleUI || 'jQueryUI')]['modal'],
+		common = $.jgrid.styleUI[(mopt.styleUI || 'jQueryUI')]['common'];
 		if($.fn.jqm && !jm) { jm = false; }
 		// in case there is no jqModal
 		var buttstr ="", i;
 		if(mopt.buttons.length > 0) {
 			for(i=0;i<mopt.buttons.length;i++) {
 				if(mopt.buttons[i].id === undefined) { mopt.buttons[i].id = "info_button_"+i; }
-				buttstr += "<a id='"+mopt.buttons[i].id+"' class='fm-button ui-state-default ui-corner-all'>"+mopt.buttons[i].text+"</a>";
+				buttstr += "<a id='"+mopt.buttons[i].id+"' class='fm-button " + common.button+"'>"+mopt.buttons[i].text+"</a>";
 			}
 		}
 		var dh = isNaN(mopt.dataheight) ? mopt.dataheight : mopt.dataheight+"px",
 		cn = "text-align:"+mopt.align+";";
 		var cnt = "<div id='info_id'>";
 		cnt += "<div id='infocnt' style='margin:0px;padding-bottom:1em;width:100%;overflow:auto;position:relative;height:"+dh+";"+cn+"'>"+content+"</div>";
-		cnt += c_b ? "<div class='ui-widget-content ui-helper-clearfix' style='text-align:"+mopt.buttonalign+";padding-bottom:0.8em;padding-top:0.5em;background-image: none;border-width: 1px 0 0 0;'><a id='closedialog' class='fm-button ui-state-default ui-corner-all'>"+c_b+"</a>"+buttstr+"</div>" :
-			buttstr !== ""  ? "<div class='ui-widget-content ui-helper-clearfix' style='text-align:"+mopt.buttonalign+";padding-bottom:0.8em;padding-top:0.5em;background-image: none;border-width: 1px 0 0 0;'>"+buttstr+"</div>" : "";
+		cnt += c_b ? "<div class='" + classes.header + "' style='text-align:"+mopt.buttonalign+";padding-bottom:0.8em;padding-top:0.5em;background-image: none;border-width: 1px 0 0 0;'><a id='closedialog' class='fm-button " + common.button + "'>"+c_b+"</a>"+buttstr+"</div>" :
+			buttstr !== ""  ? "<div class='" + classes.header + "' style='text-align:"+mopt.buttonalign+";padding-bottom:0.8em;padding-top:0.5em;background-image: none;border-width: 1px 0 0 0;'>"+buttstr+"</div>" : "";
 		cnt += "</div>";
 
 		try {
@@ -282,8 +296,8 @@ $.extend($.jgrid,{
 			return false;
 		});
 		$(".fm-button","#info_dialog").hover(
-			function(){$(this).addClass('ui-state-hover');},
-			function(){$(this).removeClass('ui-state-hover');}
+			function(){$(this).addClass(common.hover);},
+			function(){$(this).removeClass(common.hover);}
 		);
 		if($.isFunction(mopt.beforeOpen) ) { mopt.beforeOpen(); }
 		$.jgrid.viewModal("#info_dialog",{
@@ -520,7 +534,7 @@ $.extend($.jgrid,{
 				setAttributes(elem, options);
 				if(eltype !== "button"){
 					if(autowidth) {
-						if(!options.size) { $(elem).css({width:"98%"}); }
+						if(!options.size) { $(elem).css({width:"96%"}); }
 					} else if (!options.size) { options.size = 20; }
 				}
 				$(elem).attr("role",role);
@@ -549,9 +563,9 @@ $.extend($.jgrid,{
 					var errors = $.jgrid.getRegional($t, 'errors'),
 						edit =$.jgrid.getRegional($t, 'edit');
 
-					if (e==="e1") { $.jgrid.info_dialog(errors.errcap,"function 'custom_element' "+edit.msg.nodefined, edit.bClose);}
-					if (e==="e2") { $.jgrid.info_dialog(errors.errcap,"function 'custom_element' "+edit.msg.novalue,edit.bClose);}
-					else { $.jgrid.info_dialog(errors.errcap,typeof e==="string"?e:e.message,edit.bClose); }
+					if (e==="e1") { $.jgrid.info_dialog(errors.errcap,"function 'custom_element' "+edit.msg.nodefined, edit.bClose, {styleUI : $t.p.styleUI });}
+					else if (e==="e2") { $.jgrid.info_dialog(errors.errcap,"function 'custom_element' "+edit.msg.novalue,edit.bClose, {styleUI : $t.p.styleUI });}
+					else { $.jgrid.info_dialog(errors.errcap,typeof e==="string"?e:e.message,edit.bClose, {styleUI : $t.p.styleUI }); }
 				}
 			break;
 		}
