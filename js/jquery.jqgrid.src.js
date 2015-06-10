@@ -14545,8 +14545,11 @@
 				aggrContextTotalRows = new Array(aggrlen), aggrContextGroupTotalRows = new Array(ylen),
 				xIndexLength, indexesOfDataWithTheSameXValues, iYData, itemYData, indexesOfDataWithTheSameYValues,
 				iRows, agr, outputItem, previousY, groupHeaders, iRowsY, xIndex, yIndex, yIndexLength,
-				indexDataBy = function (dimension, skipSort) {
+				indexDataBy = function (dimension, skipSort, compareVectors) {
 					var index = new ArrayOfFieldsets(o.trimByCollect, o.caseSensitive, skipSort, dimension);
+					if ($.isFunction(compareVectors)) {
+						index.compareVectorsEx = compareVectors;
+					}
 					index.createDataIndex(data);
 					return index;
 				},
@@ -14693,8 +14696,8 @@
 			// ****************************************************************
 			// The step 1: scan input data and build the list of unique indexes
 			// ****************************************************************
-			xIndex = indexDataBy(xDimension, o.skipSortByX);
-			yIndex = indexDataBy(yDimension, o.skipSortByY);
+			xIndex = indexDataBy(xDimension, o.skipSortByX, o.compareVectorsByX);
+			yIndex = indexDataBy(yDimension, o.skipSortByY, o.compareVectorsByY);
 			
 			// save to be used probably later
 			options.xIndex = xIndex;
