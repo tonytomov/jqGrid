@@ -126,12 +126,18 @@ $.fn.jqFilter = function( arg ) {
 			}
 
 		}
-		if(this.p.showQuery) {
-			$(this).append("<table class='queryresult ui-widget ui-widget-content' style='display:block;max-width:440px;border:0px none;' dir='"+this.p.direction+"'><tbody><tr><td class='query'></td></tr></tbody></table>");
-		}
 		var getGrid = function () {
 			return $("#" + $.jgrid.jqID(p.id))[0] || null;
-		};
+		},
+		
+		$tg = getGrid(),
+		classes = $.jgrid.styleUI[($tg.p.styleUI || 'jQueryUI')]['filter'],
+		common = $.jgrid.styleUI[($tg.p.styleUI || 'jQueryUI')]['common'];
+
+		
+		if(this.p.showQuery) {
+			$(this).append("<table class='queryresult " + classes.table_widget + "' style='display:block;max-width:440px;border:0px none;' dir='"+this.p.direction+"'><tbody><tr><td class='query'></td></tr></tbody></table>");
+		}
 		/*
 		 *Perform checking.
 		 *
@@ -182,7 +188,7 @@ $.fn.jqFilter = function( arg ) {
 		this.createTableForGroup = function(group, parentgroup) {
 			var that = this,  i;
 			// this table will hold all the group (tables) and rules (rows)
-			var table = $("<table class='group ui-widget ui-widget-content ui-search-table' style='border:0px none;'><tbody></tbody></table>"),
+			var table = $("<table class='group " + classes.table_widget +" ui-search-table' style='border:0px none;'><tbody></tbody></table>"),
 			// create error message row
 			align = "left";
 			if(this.p.direction === "rtl") {
@@ -190,7 +196,7 @@ $.fn.jqFilter = function( arg ) {
 				table.attr("dir","rtl");
 			}
 			if(parentgroup === null) {
-				table.append("<tr class='error' style='display:none;'><th colspan='5' class='ui-state-error' align='"+align+"'></th></tr>");
+				table.append("<tr class='error' style='display:none;'><th colspan='5' class='" + common.error + "' align='"+align+"'></th></tr>");
 			}
 
 			var tr = $("<tr></tr>");
@@ -202,7 +208,7 @@ $.fn.jqFilter = function( arg ) {
 
 			if(this.p.ruleButtons === true) {
 			// dropdown for: choosing group operator type
-			var groupOpSelect = $("<select class='opsel ui-widget-content ui-corner-all'></select>");
+			var groupOpSelect = $("<select class='opsel " + classes.srSelect + "'></select>");
 			th.append(groupOpSelect);
 			// populate dropdown with all posible group operators: or, and
 			var str= "", selected;
@@ -221,7 +227,7 @@ $.fn.jqFilter = function( arg ) {
 			// button for adding a new subgroup
 			var inputAddSubgroup ="<span></span>";
 			if(this.p.groupButton) {
-				inputAddSubgroup = $("<input type='button' value='+ {}' title='Add subgroup' class='add-group ui-widget-content ui-corner-all'/>");
+				inputAddSubgroup = $("<input type='button' value='+ {}' title='Add subgroup' class='add-group " + common.button + "'/>");
 				inputAddSubgroup.bind('click',function() {
 					if (group.groups === undefined ) {
 						group.groups = [];
@@ -242,7 +248,7 @@ $.fn.jqFilter = function( arg ) {
 			th.append(inputAddSubgroup);
 			if(this.p.ruleButtons === true) {
 			// button for adding a new rule
-			var inputAddRule = $("<input type='button' value='+' title='Add rule' class='add-rule ui-add ui-widget-content ui-corner-all'/>"), cm;
+			var inputAddRule = $("<input type='button' value='+' title='Add rule' class='add-rule ui-add " + common.button + "'/>"), cm;
 			inputAddRule.bind('click',function() {
 				//if(!group) { group = {};}
 				if (group.rules === undefined) {
@@ -281,7 +287,7 @@ $.fn.jqFilter = function( arg ) {
 
 			// button for delete the group
 			if (parentgroup !== null) { // ignore the first group
-				var inputDeleteGroup = $("<input type='button' value='-' title='Delete group' class='delete-group ui-widget-content ui-corner-all'/>");
+				var inputDeleteGroup = $("<input type='button' value='-' title='Delete group' class='delete-group " + common.button + "'/>");
 				th.append(inputDeleteGroup);
 				inputDeleteGroup.bind('click',function() {
 				// remove group from parent
@@ -351,7 +357,7 @@ $.fn.jqFilter = function( arg ) {
 
 
 			// dropdown for: choosing field
-			var ruleFieldSelect = $("<select class='ui-widget-content ui-corner-all'></select>"), ina, aoprs = [];
+			var ruleFieldSelect = $("<select class='" + classes.srSelect + "'></select>"), ina, aoprs = [];
 			ruleFieldTd.append(ruleFieldSelect);
 			ruleFieldSelect.bind('change',function() {
 				rule.field = $(ruleFieldSelect).val();
@@ -375,7 +381,7 @@ $.fn.jqFilter = function( arg ) {
 					}
 				}
 				var elm = $.jgrid.createEl.call($t, cm.inputtype,cm.searchoptions, "", true, that.p.ajaxSelectOptions || {}, true);
-				$(elm).addClass("input-elm ui-widget-content ui-corner-all");
+				$(elm).addClass("input-elm " + classes.srInput );
 				//that.createElement(rule, "");
 
 				if( cm.searchoptions.sopt ) {op = cm.searchoptions.sopt;}
@@ -457,7 +463,7 @@ $.fn.jqFilter = function( arg ) {
 				$(ruleDataInput).attr('disabled','true');
 			} //retain the state of disabled text fields in case of null ops
 			// dropdown for: choosing operator
-			var ruleOperatorSelect = $("<select class='selectopts ui-widget-content ui-corner-all'></select>");
+			var ruleOperatorSelect = $("<select class='selectopts " + classes.srSelect + "'></select>");
 			ruleOperatorTd.append(ruleOperatorSelect);
 			ruleOperatorSelect.bind('change',function() {
 				rule.op = $(ruleOperatorSelect).val();
@@ -502,7 +508,7 @@ $.fn.jqFilter = function( arg ) {
 			ruleDataTd.append(ruleDataInput);
 			$.jgrid.bindEv.call($t, ruleDataInput, cm.searchoptions);
 			$(ruleDataInput)
-			.addClass("input-elm ui-widget-content ui-corner-all")
+			.addClass("input-elm " + classes.srInput )
 			.bind('change', function() {
 				rule.data = cm.inputtype === 'custom' ? cm.searchoptions.custom_value.call($t, $(this).children(".customelement:first"),'get') : $(this).val();
 				that.onchange(); // signals that the filter has changed
@@ -514,7 +520,7 @@ $.fn.jqFilter = function( arg ) {
 
 			// create button for: delete rule
 			if(this.p.ruleButtons === true) {
-			var ruleDeleteInput = $("<input type='button' value='-' title='Delete rule' class='delete-rule ui-del ui-widget-content ui-corner-all'/>");
+			var ruleDeleteInput = $("<input type='button' value='-' title='Delete rule' class='delete-rule ui-del " + common.button + "'/>");
 			ruleDeleteTd.append(ruleDeleteInput);
 			//$(ruleDeleteInput).html("").height(20).width(30).button({icons: {  primary: "ui-icon-minus", text:false}});
 			ruleDeleteInput.bind('click',function() {
@@ -599,11 +605,11 @@ $.fn.jqFilter = function( arg ) {
 			this.onchange();
 		};
 		this.hideError = function() {
-			$("th.ui-state-error", this).html("");
+			$("th."+common.error, this).html("");
 			$("tr.error", this).hide();
 		};
 		this.showError = function() {
-			$("th.ui-state-error", this).html(this.p.errmsg);
+			$("th."+common.error, this).html(this.p.errmsg);
 			$("tr.error", this).show();
 		};
 		this.toUserFriendlyString = function() {
@@ -755,7 +761,11 @@ $.jgrid.extend({
 			if($t.p.force_regional) {
 				p = $.extend(p, regional);
 			}
-			var triggerToolbar = function() {
+			var classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['filter'],
+			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['common'],
+			base = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['base'],			
+
+			triggerToolbar = function() {
 				var sdata={}, j=0, v, nm, sopt={},so;
 				$.each($t.p.colModel,function(){
 					var $elem = $("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(this.name), (this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
@@ -913,7 +923,7 @@ $.jgrid.extend({
 				top=parseInt(top,10) + 18;
 
 				var fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
-				var str = '<ul id="sopt_menu" class="ui-search-menu" role="menu" tabindex="0" style="font-size:'+fs+';left:'+left+'px;top:'+top+'px;">',
+				var str = '<ul id="sopt_menu" class="ui-search-menu modal-content" role="menu" tabindex="0" style="font-size:'+fs+';left:'+left+'px;top:'+top+'px;">',
 				selected = $(elem).attr("soper"), selclass,
 				aoprs = [], ina;
 				var i=0, nm =$(elem).attr("colname"),len = $t.p.colModel.length;
@@ -932,16 +942,16 @@ $.jgrid.extend({
 				for ( i = 0 ; i < options.sopt.length; i++) {
 					ina = $.inArray(options.sopt[i],aoprs);
 					if(ina !== -1) {
-						selclass = selected === p.odata[ina].oper ? "ui-state-highlight" : "";
-						str += '<li class="ui-menu-item '+selclass+'" role="presentation"><a class="ui-corner-all g-menu-item" tabindex="0" role="menuitem" value="'+p.odata[ina].oper+'" oper="'+p.operands[p.odata[ina].oper]+'"><table cellspacing="0" cellpadding="0" border="0"><tr><td width="25px">'+p.operands[p.odata[ina].oper]+'</td><td>'+ p.odata[ina].text+'</td></tr></table></a></li>';
+						selclass = selected === p.odata[ina].oper ? common.highlight : "";
+						str += '<li class="ui-menu-item '+selclass+'" role="presentation"><a class="'+ common.corneral+' g-menu-item" tabindex="0" role="menuitem" value="'+p.odata[ina].oper+'" oper="'+p.operands[p.odata[ina].oper]+'"><table class="ui-common-table"><tr><td width="25px">'+p.operands[p.odata[ina].oper]+'</td><td>'+ p.odata[ina].text+'</td></tr></table></a></li>';
 					}
 				}
 				str += "</ul>";
 				$('body').append(str);
-				$("#sopt_menu").addClass("ui-menu ui-widget ui-widget-content ui-corner-all");
+				$("#sopt_menu").addClass("ui-menu " + classes.menu_widget);
 				$("#sopt_menu > li > a").hover(
-					function(){ $(this).addClass("ui-state-hover"); },
-					function(){ $(this).removeClass("ui-state-hover"); }
+					function(){ $(this).addClass(common.hover); },
+					function(){ $(this).removeClass(common.hover); }
 				).click(function() {
 					var v = $(this).attr("value"),
 					oper = $(this).attr("oper");
@@ -961,7 +971,7 @@ $.jgrid.extend({
 			var timeoutHnd;
 			$.each($t.p.colModel,function(ci){
 				var cm=this, soptions, select = "", sot="=", so, i, st, csv, df, elem,
-				th = $("<th role='columnheader' class='ui-state-default ui-th-"+$t.p.direction+"' id='gsh_" + $t.p.id + "_" + cm.name + "' ></th>"),
+				th = $("<th role='columnheader' class='" + base.headerBox+" ui-th-"+$t.p.direction+"' id='gsh_" + $t.p.id + "_" + cm.name + "' ></th>"),
 				thd = $("<div></div>"),
 				stbl = $("<table class='ui-search-table' cellspacing='0'><tr><td class='ui-search-oper' headers=''></td><td class='ui-search-input' headers=''></td><td class='ui-search-clear' headers=''></td></tr></table>");
 				if(this.hidden===true) { $(th).css("display","none");}
@@ -998,7 +1008,7 @@ $.jgrid.extend({
 						df = $.isFunction(soptions.defaultValue) ? soptions.defaultValue.call($t) : soptions.defaultValue;
 					}
 					elem = $.jgrid.createEl.call($t, this.stype, soptions , df, false, $.extend({},$.jgrid.ajaxOptions, $t.p.ajaxSelectOptions || {}));
-					$(elem).css({width: "100%"}).addClass("ui-widget-content ui-corner-all");
+					$(elem).css({width: "100%"}).addClass( classes.srInput );
 					$("td:eq(1)",stbl).append(elem);
 					$(thd).append(stbl);
 					switch (this.stype)
@@ -1172,7 +1182,10 @@ $.jgrid.extend({
 			mustReload = true,
 			IDs = {themodal:'searchmod'+fid,modalhead:'searchhd'+fid,modalcontent:'searchcnt'+fid, scrollelm : fid},
 			defaultFilters  = $t.p.postData[p.sFilter],
-			fl;
+			fl,
+			classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['filter'],
+			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['common'];
+			p.styleUI = $t.p.styleUI;
 			if(typeof defaultFilters === "string") {
 				defaultFilters = $.jgrid.parse( defaultFilters );
 			}
@@ -1206,11 +1219,11 @@ $.jgrid.extend({
 					fil.attr("dir","rtl");
 				}
 				var columns = $.extend([],$t.p.colModel),
-				bS  ="<a id='"+fid+"_search' class='fm-button ui-state-default ui-corner-all fm-button-icon-right ui-reset'><span class='ui-icon ui-icon-search'></span>"+p.Find+"</a>",
-				bC  ="<a id='"+fid+"_reset' class='fm-button ui-state-default ui-corner-all fm-button-icon-left ui-search'><span class='ui-icon ui-icon-arrowreturnthick-1-w'></span>"+p.Reset+"</a>",
+				bS  ="<a id='"+fid+"_search' class='fm-button " + common.button + " fm-button-icon-right ui-search'><span class='" + common.icon_base + " " +classes.icon_search + "'></span>"+p.Find+"</a>",
+				bC  ="<a id='"+fid+"_reset' class='fm-button " + common.button +" fm-button-icon-left ui-reset'><span class='" + common.icon_base + " " +classes.icon_reset + "'></span>"+p.Reset+"</a>",
 				bQ = "", tmpl="", colnm, found = false, bt, cmi=-1;
 				if(p.showQuery) {
-					bQ ="<a id='"+fid+"_query' class='fm-button ui-state-default ui-corner-all fm-button-icon-left'><span class='ui-icon ui-icon-comment'></span>Query</a>";
+					bQ ="<a id='"+fid+"_query' class='fm-button " + common.button + " fm-button-icon-left'><span class='" + common.icon_base + " " +classes.icon_query + "'></span>Query</a>";
 				}
 				if(!p.columns.length) {
 					$.each(columns, function(i,n){
@@ -1256,7 +1269,7 @@ $.jgrid.extend({
 					tmpl += "</select>";
 				}
 
-				bt = "<table class='EditTable' style='border:0px none;margin-top:5px' id='"+fid+"_2'><tbody><tr><td colspan='2'><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='EditButton' style='text-align:"+align+"'>"+bC+tmpl+"</td><td class='EditButton' "+butleft+">"+bQ+bS+"</td></tr></tbody></table>";
+				bt = "<table class='EditTable' style='border:0px none;margin-top:5px' id='"+fid+"_2'><tbody><tr><td colspan='2'><hr class='" + common.content + "' style='margin:1px'/></td></tr><tr><td class='EditButton' style='text-align:"+align+"'>"+bC+tmpl+"</td><td class='EditButton' "+butleft+">"+bQ+bS+"</td></tr></tbody></table>";
 				fid = $.jgrid.jqID( fid);
 				$("#"+fid).jqFilter({
 					columns: columns,
@@ -1413,9 +1426,9 @@ $.jgrid.extend({
 					return false;
 				});
 				showFilter($("#"+fid));
-				$(".fm-button:not(.ui-state-disabled)",fil).hover(
-					function(){$(this).addClass('ui-state-hover');},
-					function(){$(this).removeClass('ui-state-hover');}
+				$(".fm-button:not(."+common.disabled+")",fil).hover(
+					function(){$(this).addClass(common.hover);},
+					function(){$(this).removeClass(common.hover);}
 				);
 			}
 		});
