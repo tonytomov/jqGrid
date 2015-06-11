@@ -6501,8 +6501,7 @@
 				iRow = parseInt(iRow, 10);
 				iCol = parseInt(iCol, 10);
 				var tr = rows[iRow], rowid = tr.id, $tr = $(tr), edittype,
-					iColOld = parseInt(p.iCol, 10), iRowOld = parseInt(p.iRow, 10),
-					$trOld = $(rows[iRowOld]), savedRow = p.savedRow;
+					iColOld = -1, iRowOld = -1, $trOld, savedRow = p.savedRow;
 				// select the row that can be used for other methods
 				p.selrow = rowid;
 				if (!p.knv) {
@@ -6510,6 +6509,9 @@
 				}
 				// check to see if we have already edited cell
 				if (savedRow.length > 0) {
+					iColOld = parseInt(p.iCol, 10);
+					iRowOld = parseInt(p.iRow, 10);
+					$trOld = $(rows[iRowOld]);
 					// prevent second click on that field and enable selects
 					if (ed === true) {
 						if (iRow === iRowOld && iCol === iColOld) {
