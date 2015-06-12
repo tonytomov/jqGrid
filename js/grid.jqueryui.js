@@ -532,6 +532,7 @@
 									}
 									// NULL is interpreted as undefined while null as object
 									$("#" + jqID(this.id)).jqGrid("addRowData", grid, getdata, opts.droppos);
+									getdata[$t.p.localReader.id] = grid;
 								}
 								if (opts.ondrop && $.isFunction(opts.ondrop)) { opts.ondrop.call(this, ev, ui, getdata); }
 							}
@@ -542,8 +543,8 @@
 					beforedrop: null,
 					ondrop: null,
 					drop_opts: {
-						activeClass: "ui-state-active",
-						hoverClass: "ui-state-hover"
+						//activeClass: "ui-state-active",
+						//hoverClass: "ui-state-hover"
 					},
 					drag_opts: {
 						revert: "invalid",
