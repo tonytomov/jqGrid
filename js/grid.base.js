@@ -2127,6 +2127,8 @@
 					forceFit: false,
 					gridstate: "visible",
 					cellEdit: false,
+					iCol: -1,
+					iRow: -1,
 					//cellsubmit: pin.cellurl === undefined ? "clientArray" : "remote",
 					nv: 0,
 					loadui: "enable",
@@ -2831,6 +2833,8 @@
 						p._index = {};
 					}
 					p.rowIndexes = {};
+					p.iRow = -1;
+					p.iCol = -1;
 					//$(self.grid.headers).each(function () { $(this.el).removeData("autoResized"); });
 				},
 				normalizeData = function () {
@@ -4767,6 +4771,8 @@
 						if (p.data.length) { normalizeData.call(self); refreshIndex(); }
 					} else if (!p.treeGrid) {
 						p.selrow = null;
+						p.iRow = -1;
+						p.iCol = -1;
 						if (p.multiselect) {
 							clearArray(p.selarrrow); // p.selarrrow = [];
 							setHeadCheckBox.call(self, false);

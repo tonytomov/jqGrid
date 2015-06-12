@@ -2127,6 +2127,8 @@
 					forceFit: false,
 					gridstate: "visible",
 					cellEdit: false,
+					iCol: -1,
+					iRow: -1,
 					//cellsubmit: pin.cellurl === undefined ? "clientArray" : "remote",
 					nv: 0,
 					loadui: "enable",
@@ -2831,6 +2833,8 @@
 						p._index = {};
 					}
 					p.rowIndexes = {};
+					p.iRow = -1;
+					p.iCol = -1;
 					//$(self.grid.headers).each(function () { $(this.el).removeData("autoResized"); });
 				},
 				normalizeData = function () {
@@ -4767,6 +4771,8 @@
 						if (p.data.length) { normalizeData.call(self); refreshIndex(); }
 					} else if (!p.treeGrid) {
 						p.selrow = null;
+						p.iRow = -1;
+						p.iCol = -1;
 						if (p.multiselect) {
 							clearArray(p.selarrrow); // p.selarrrow = [];
 							setHeadCheckBox.call(self, false);
@@ -14124,6 +14130,7 @@
 									}
 									// NULL is interpreted as undefined while null as object
 									$("#" + jqID(this.id)).jqGrid("addRowData", grid, getdata, opts.droppos);
+									getdata[$t.p.localReader.id] = grid;
 								}
 								if (opts.ondrop && $.isFunction(opts.ondrop)) { opts.ondrop.call(this, ev, ui, getdata); }
 							}
@@ -14134,8 +14141,8 @@
 					beforedrop: null,
 					ondrop: null,
 					drop_opts: {
-						activeClass: "ui-state-active",
-						hoverClass: "ui-state-hover"
+						//activeClass: "ui-state-active",
+						//hoverClass: "ui-state-hover"
 					},
 					drag_opts: {
 						revert: "invalid",
