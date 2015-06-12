@@ -1,7 +1,7 @@
 {
   "name": "free-jqgrid",
   "description": "grid as jQuery plugin - fork of jqGrid before licensing change",
-  "version": "4.8.0",
+  "version": "4.9.0-rc1",
   "main": [
     "js/jquery.jqgrid.min.js",
     "js/jquery.jqgrid.src.js",
