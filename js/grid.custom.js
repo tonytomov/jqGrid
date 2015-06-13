@@ -1155,9 +1155,17 @@
 									posTop = $row.position().top;
 									$frozenRow = $($frozenRows[iRow]);
 									posFrozenTop = $frozenRow.position().top;
-									height = $row.height();
+									if (p.groupHeader != null && p.groupHeader.useColSpanStyle) {
+										height = 0;
+										for (i = 0; i < maxfrozen; i++) { // maxfrozen
+											if ($row[0].cells[i].nodeName.toUpperCase() === "TH") {
+												height = Math.max(height, $($row[0].cells[i]).height());
+											}
+										}
+									} else {
+										height = $row.height();
+									}
 									newHeightFrozen = height + (posTop - tableTop) + (frozenTableTop - posFrozenTop);
-									// the newHeightFrozen will be wrong in case of usage rowspan in some from th/td 
 									safeHeightSet($frozenRow, newHeightFrozen);
 								}
 								safeHeightSet($hDiv, hDivBase.clientHeight);
