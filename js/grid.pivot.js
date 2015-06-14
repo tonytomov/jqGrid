@@ -85,7 +85,7 @@
 	};
 
 	function ArrayOfFieldsets (trimByCollect, caseSensitive, skipSort, dimension, fieldName) {
-		var iField, dimensionLength = dimension.length, dimensionItem,
+		var iField, dimensionLength = dimension.length, dimensionItem, self = this,
 			stringCompare = function (a, b) {
 				var a1 = a, b1 = b; 
 				if (a1 == null) { a1 = ""; } // we will place undefined and null values as the lowest TOGETHER with ""
@@ -135,31 +135,33 @@
 				return 1;
 			};
 
-		this.items = [];
-		this.indexesOfSourceData = [];
-		this.trimByCollect = trimByCollect;
-		this.caseSensitive = caseSensitive;
-		this.skipSort = skipSort;
-		this.fieldLength = dimensionLength;
-		this.fieldNames = new Array(dimensionLength);
-		this.fieldCompare = new Array(dimensionLength); // 0 - number, 1 - integer, 2 - string, one can extend for Date and other
+		self.items = [];
+		self.indexesOfSourceData = [];
+		self.trimByCollect = trimByCollect;
+		self.caseSensitive = caseSensitive;
+		self.skipSort = skipSort;
+		self.fieldLength = dimensionLength;
+		self.fieldNames = new Array(dimensionLength);
+		self.fieldSortDirection = new Array(dimensionLength);
+		self.fieldCompare = new Array(dimensionLength); // 0 - number, 1 - integer, 2 - string, one can extend for Date and other
 		for (iField = 0; iField < dimensionLength; iField++) {
 			dimensionItem = dimension[iField];
-			this.fieldNames[iField] = dimensionItem[fieldName || "dataName"];
+			self.fieldNames[iField] = dimensionItem[fieldName || "dataName"];
 			switch (dimensionItem.sorttype) {
 				case "integer":
 				case "int":
-					this.fieldCompare[iField] = integerCompare;
+					self.fieldCompare[iField] = integerCompare;
 					break;
 				case "number":
 				case "currency":
 				case "float":
-					this.fieldCompare[iField] = numberCompare;
+					self.fieldCompare[iField] = numberCompare;
 					break;
 				default:
-					this.fieldCompare[iField] = $.isFunction(dimensionItem.compare) ? dimensionItem.compare : stringCompare;
+					self.fieldCompare[iField] = $.isFunction(dimensionItem.compare) ? dimensionItem.compare : stringCompare;
 					break;
 			}
+			self.fieldSortDirection[iField] = dimensionItem.sortorder === "desc" ? -1 : 1;
 		}
 	}
 	ArrayOfFieldsets.prototype.compareVectorsEx = function (vector1, vector2) {
@@ -185,7 +187,9 @@
 		return this.compareVectorsEx(vector1, vector2).index;
 	};
 	ArrayOfFieldsets.prototype.compareVectors = function (vector1, vector2) {
-		return this.compareVectorsEx(vector1, vector2).result;
+		var compareRestlts = this.compareVectorsEx(vector1, vector2),
+			sortDirection = compareRestlts.index >= 0 ? this.fieldSortDirection[compareRestlts.index] : 1;
+		return sortDirection > 0 ? compareRestlts.result : -compareRestlts.result;
 	};
 	ArrayOfFieldsets.prototype.getItem = function (index) {
 		return this.items[index];

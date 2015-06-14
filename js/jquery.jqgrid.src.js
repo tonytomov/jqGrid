@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-06-12
+ * Date: 2015-06-14
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -1233,7 +1233,14 @@
 			$testDiv.remove();
 			return Math.abs(testCell - 5) > 0.1;
 		},
-		cell_width: true,
+		isCellClassHidden: function (className) {
+			var $testDiv = $("<div class='ui-jqgrid' style='left:10000px'><div class='ui-jqgrid-view'><div class='ui-jqgrid-bdiv'><table class='ui-jqgrid-btable' style='width:5px;'><tr class='jqgrow'><td style='width:5px;' class='" + (className || "") + "'></td></tr></table></div></div></div>"),
+				isHidden = $testDiv.appendTo("body")
+					.find("td")
+					.is(":hidden");
+			$testDiv.remove();
+			return isHidden;
+		},		cell_width: true,
 		ajaxOptions: {},
 		from: function (source) {
 			// Original Author Hugo Bonacci
@@ -4157,7 +4164,8 @@
 					if (p.sortname !== index && idxcol) { p.lastsort = idxcol; }
 				},
 				setInitialColWidth = function () {
-					var initialWidth = 0, borderAndPaddingWidth = jgrid.cell_width ? 0 : intNum(p.cellLayout, 0), numberOfVariableColumns = 0, iLastVariableColumn, scrollbarWidth = intNum(p.scrollOffset, 0), columnWidth, hasScrollbar = false, totalVariableWidth, fixedColumnsWidth = 0, correctur;
+					var initialWidth = 0, borderAndPaddingWidth = jgrid.cell_width ? 0 : intNum(p.cellLayout, 0), numberOfVariableColumns = 0, iLastVariableColumn, scrollbarWidth = intNum(p.scrollOffset, 0), columnWidth, hasScrollbar = false, totalVariableWidth, fixedColumnsWidth = 0, correctur,
+						isCellClassHidden = jgrid.isCellClassHidden;
 					each(p.colModel, function () {
 						if (this.hidden === undefined) { this.hidden = false; }
 						if (p.grouping && p.autowidth) {
@@ -4167,7 +4175,7 @@
 							}
 						}
 						this.widthOrg = columnWidth = intNum(this.width, 0);
-						if (this.hidden === false) {
+						if (this.hidden === false && !isCellClassHidden(this.classes)) {
 							initialWidth += columnWidth + borderAndPaddingWidth;
 							if (this.fixed) {
 								fixedColumnsWidth += columnWidth + borderAndPaddingWidth;
@@ -4190,7 +4198,7 @@
 						}
 						initialWidth = 0;
 						each(p.colModel, function (i) {
-							if (this.hidden === false && !this.fixed) {
+							if (this.hidden === false && !isCellClassHidden(this.classes) && !this.fixed) {
 								columnWidth = Math.round(totalVariableWidth * this.width / (p.tblwidth - borderAndPaddingWidth * numberOfVariableColumns - fixedColumnsWidth));
 								this.width = columnWidth;
 								initialWidth += columnWidth;
@@ -4328,11 +4336,10 @@
 					}
 				}
 			}
-			var tdc, idn, w, res, sort, cmi, tooltip, labelStyle, ptr, tbody, sortarr = [], sortord = [], sotmp = [],
+			var idn, w, res, sort, cmi, tooltip, labelStyle, ptr, tbody, sortarr = [], sortord = [], sotmp = [],
 				thead = "<thead><tr class='ui-jqgrid-labels' role='row'>",
 				hoverStateClasses = getGuiStyles("states.hover"),
 				disabledStateClasses = getGuiStyles("states.disabled");
-			tdc = isMSIE ? "ui-th-div-ie" : "";
 
 			if (p.multiSort) {
 				sortarr = p.sortname.split(",");
@@ -4346,7 +4353,7 @@
 			for (iCol = 0; iCol < p.colNames.length; iCol++) {
 				cmi = p.colModel[iCol];
 				tooltip = p.headertitles ? (" title=\"" + stripHtml(p.colNames[iCol]) + "\"") : "";
-				thead += "<th id='" + p.id + "_" + cmi.name + "' role='columnheader' class='" + getGuiStyles("colHeaders", "ui-th-column ui-th-" + dir) + "'" + tooltip + ">";
+				thead += "<th id='" + p.id + "_" + cmi.name + "' role='columnheader' class='" + getGuiStyles("colHeaders", "ui-th-column ui-th-" + dir + " " + (cmi.labelClasses || "")) + "'" + tooltip + ">";
 				idn = cmi.index || cmi.name;
 				switch (cmi.labelAlign) {
 				case "left":
@@ -4364,7 +4371,7 @@
 					labelStyle = "";
 				}
 				thead += "<div id='jqgh_" + p.id + "_" + cmi.name + "'" +
-					(tdc === "" && !cmi.labelClasses ? "" : " class='" + (tdc !== "" ? tdc + " " : "") + (cmi.labelClasses || "") + "'") +
+					(isMSIE ? " class='ui-th-div-ie'" : "") +
 					(labelStyle === "" ? "" : " style='" + labelStyle + "'") + ">" +
 					(cmi.autoResizable && cmi.formatter !== "actions" ?
 							"<span class='" + p.autoResizing.wrapperClassName + "'>" + p.colNames[iCol] + "</span>" :
@@ -4497,7 +4504,8 @@
 						$th.css("display", "none");
 						hdcol = "display:none;";
 					}
-					firstr += "<td role='gridcell' style='height:0;width:" + w + "px;" + hdcol + "'></td>";
+					firstr += "<td role='gridcell' " + (cm.classes ? "class='" + cm.classes + "' " : "") +
+						"style='height:0;width:" + w + "px;" + hdcol + "'></td>";
 					grid.headers[j] = { width: w, el: this };
 					sort = cm.sortable;
 					if (typeof sort !== "boolean") { cm.sortable = true; sort = true; }
@@ -5780,7 +5788,8 @@
 		},
 		setGridWidth: function (newGridWidth, shrink) {
 			return this.each(function () {
-				var $t = this, p = $t.p, columnWidth, grid = $t.grid, initialWidth = 0, iLastVariableColumn, numberOfVariableColumns = 0, hasScrollbar = false, totalVariableWidth, fixedColumnsWidth = 0, correctur;
+				var $t = this, p = $t.p, columnWidth, grid = $t.grid, initialWidth = 0, iLastVariableColumn, numberOfVariableColumns = 0, hasScrollbar = false, totalVariableWidth, fixedColumnsWidth = 0, correctur,
+					isCellClassHidden = jgrid.isCellClassHidden;
 				if (!grid || p == null) { return; }
 				$t.fixScrollOffsetAndhBoxPadding();
 				// there are tree categorien of columns important below:
@@ -5826,10 +5835,13 @@
 				newGridWidth = parseInt(newGridWidth, 10); // round till integer value of px
 				setWidthOfAllDivs(newGridWidth);
 				if (shrink === false && p.forceFit === true) { p.forceFit = false; }
+				// TODO: ??? recalculate p.tblwidth in case of shrink===false
 				if (shrink === true) {
 					// calculate initialWidth, fixedColumnsWidth and numberOfVariableColumns
-					$.each(colModel, function () {
-						if (this.hidden === false) {
+					$.each(colModel, function (i) {
+						// the classes property of colModel will be applied to the first
+						// row of the grid (hCols). If the 
+						if (this.hidden === false && !isCellClassHidden(this.classes)) {
 							columnWidth = this.widthOrg;
 							initialWidth += columnWidth + borderAndPaddingWidth;
 							if (this.fixed) {
@@ -5853,7 +5865,7 @@
 					initialWidth = 0;
 					colsExist = cols.length > 0;
 					$.each(colModel, function (i) {
-						if (this.hidden === false && !this.fixed) {
+						if (this.hidden === false && !isCellClassHidden(this.classes) && !this.fixed) {
 							columnWidth = Math.round(this.widthOrg * shrinkFactor);
 							this.width = columnWidth;
 							initialWidth += columnWidth;
@@ -6323,7 +6335,7 @@
 				compact = (cm.autoResizing != null && cm.autoResizable.compact !== undefined) ? cm.autoResizable.compact : p.autoResizing.compact,
 				wrapperClassName = p.autoResizing.wrapperClassName;
 
-			if (cm == null || !cm.autoResizable || $wrapper.length === 0 || cm.hidden || cm.fixed) {
+			if (cm == null || !cm.autoResizable || $wrapper.length === 0 || cm.hidden || jgrid.isCellClassHidden(cm.classes) || cm.fixed) {
 				return -1; // do nothing
 			}
 			if (!compact || $incosDiv.is(":visible") || ($incosDiv.css("display") !== "none")) {  //|| p.viewsortcols[0]
@@ -8029,6 +8041,7 @@
 						defaultSearch: "bw",
 						searchOperators: false,
 						resetIcon: "x",
+						applyLabelClasses: true,
 						operands: { "eq": "==", "ne": "!", "lt": "<", "le": "<=", "gt": ">", "ge": ">=", "bw": "^", "bn": "!^", "in": "=", "ni": "!=", "ew": "|", "en": "!@", "cn": "~", "nc": "!~", "nu": "#", "nn": "!#" }
 					}, jgrid.search, p.searching || {}, oMuligrid || {}),
 					colModel = p.colModel,
@@ -8327,7 +8340,7 @@
 				// create the row
 				$.each(colModel, function (ci) {
 					var cm = this, soptions, mode = "filter", surl, self, select = "", sot, so, i, searchoptions = cm.searchoptions, editoptions = cm.editoptions,
-						th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-" + p.direction + "'></th>"),
+						th = $("<th role='columnheader' class='" + getGuiStyles.call($t, "colHeaders", "ui-th-column ui-th-" + p.direction + " " + (o.applyLabelClasses ? cm.labelClasses || "" : "")) + "'></th>"),
 						thd = $("<div style='position:relative;height:auto;'></div>"),
 						stbl = $("<table class='ui-search-table'" + (jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "") + "><tr><td class='ui-search-oper'></td><td class='ui-search-input'></td><td class='ui-search-clear' style='width:1px'></td></tr></table>");
 					if (this.hidden === true) { $(th).css("display", "none"); }
@@ -8546,7 +8559,7 @@
 						$("td", stbl).eq(0).hide();
 					}
 				});
-				$("table thead", grid.hDiv).append(tr);
+				$(grid.hDiv).find(">div>.ui-jqgrid-htable>thead").append(tr);
 				if (o.searchOperators) {
 					$(".soptclass", tr).click(function (e) {
 						var offset = $(this).offset(),
@@ -8641,13 +8654,14 @@
 		setGroupHeaders: function (o) {
 			o = $.extend({
 				useColSpanStyle: false,
+				applyLabelClasses: true,
 				groupHeaders: []
 			}, o || {});
 			return this.each(function () {
 				this.p.groupHeader = o;
 				var ts = this, i, cmi, skip = 0, $tr, $colHeader, th, $th, thStyle, iCol, cghi, numberOfColumns, titleText, cVisibleColumns,
-					colModel = ts.p.colModel, cml = colModel.length, ths = ts.grid.headers, $theadInTable,
-					$htable = $("table.ui-jqgrid-htable", ts.grid.hDiv),
+					colModel = ts.p.colModel, cml = colModel.length, ths = ts.grid.headers, $theadInTable, thClasses,
+					$htable = $("table.ui-jqgrid-htable", ts.grid.hDiv), isCellClassHidden = jgrid.isCellClassHidden,
 					$trLabels = $htable.children("thead").children("tr.ui-jqgrid-labels"),
 					$trLastWithLabels = $trLabels.last().addClass("jqg-second-row-header"),
 					$thead = $htable.children("thead"),
@@ -8674,10 +8688,12 @@
 					$th = $(th);
 					cmi = colModel[i];
 					// build the next cell for the first header row
+					// ??? cmi.hidden || isCellClassHidden(cmi.classes) || $th.is(":hidden")
 					thStyle = { height: "0", width: ths[i].width + "px", display: (cmi.hidden ? "none" : "") };
-					$("<th>", { role: "gridcell" }).css(thStyle).addClass("ui-first-th-" + ts.p.direction).appendTo($firstHeaderRow);
+					$("<th>", { role: "gridcell" }).css(thStyle).addClass("ui-first-th-" + ts.p.direction + (o.applyLabelClasses ? " " + (cmi.labelClasses || "") : "")).appendTo($firstHeaderRow);
 
 					th.style.width = ""; // remove unneeded style
+					thClasses = getGuiStyles.call(ts, "colHeaders", "ui-th-column-header ui-th-" + ts.p.direction + " " + (o.applyLabelClasses ? cmi.labelClasses || "" : ""));
 					iCol = inColumnHeader(cmi.name, o.groupHeaders);
 					if (iCol >= 0) {
 						cghi = o.groupHeaders[iCol];
@@ -8686,7 +8702,7 @@
 
 						// caclulate the number of visible columns from the next numberOfColumns columns
 						for (cVisibleColumns = 0, iCol = 0; iCol < numberOfColumns && (i + iCol < cml); iCol++) {
-							if (!colModel[i + iCol].hidden) {
+							if (!colModel[i + iCol].hidden && !isCellClassHidden(colModel[i + iCol].classes) && !$(ths[i + iCol].el).is(":hidden")) {
 								cVisibleColumns++;
 							}
 						}
@@ -8695,7 +8711,8 @@
 						// in the current row will be placed the new column header with the titleText.
 						// The text will be over the cVisibleColumns columns
 						$colHeader = $("<th>").attr({ role: "columnheader" })
-							.addClass("ui-state-default ui-th-column-header ui-th-" + ts.p.direction)
+							.addClass(thClasses)
+							//.addClass("ui-state-default ui-th-column-header ui-th-" + ts.p.direction)
 							.css({ "height": "22px", "border-top": "0 none" })
 							.html(titleText);
 						if (cVisibleColumns > 0) {
@@ -8721,7 +8738,7 @@
 								$th.attr("rowspan", $trLabels.length + 1);
 							} else {
 								$("<th>", { role: "columnheader" })
-									.addClass("ui-state-default ui-th-column-header ui-th-" + ts.p.direction)
+									.addClass(thClasses)
 									.css({ "display": cmi.hidden ? "none" : "", "border-top": "0 none" })
 									.insertBefore($th);
 								$tr.append(th);
@@ -8750,7 +8767,7 @@
 					// Set position of the sortable div (the main lable)
 					// with the column header text to the middle of the cell.
 					// One should not do this for hidden headers.
-					$htable.find("div.ui-jqgrid-sortable").each(function () {
+					$htable.find(".ui-th-column>div").each(function () {
 						var $ts = $(this), $parent = $ts.parent();
 						if ($parent.is(":visible") && $parent.is(":has(span.ui-jqgrid-resize)")) {
 							// !!! it seems be wrong now
@@ -8958,8 +8975,15 @@
 									$frozenRow = $($frozenRows[iRow]);
 									posFrozenTop = $frozenRow.position().top;
 									height = $row.height();
+									if (p.groupHeader != null && p.groupHeader.useColSpanStyle && height === 0) {
+										height = 0;
+										for (i = 0; i < maxfrozen; i++) { // maxfrozen
+											if ($row[0].cells[i].nodeName.toUpperCase() === "TH") {
+												height = Math.max(height, $($row[0].cells[i]).height());
+											}
+										}
+									}
 									newHeightFrozen = height + (posTop - tableTop) + (frozenTableTop - posFrozenTop);
-									// the newHeightFrozen will be wrong in case of usage rowspan in some from th/td 
 									safeHeightSet($frozenRow, newHeightFrozen);
 								}
 								safeHeightSet($hDiv, hDivBase.clientHeight);
@@ -14322,7 +14346,7 @@
 	};
 
 	function ArrayOfFieldsets (trimByCollect, caseSensitive, skipSort, dimension, fieldName) {
-		var iField, dimensionLength = dimension.length, dimensionItem,
+		var iField, dimensionLength = dimension.length, dimensionItem, self = this,
 			stringCompare = function (a, b) {
 				var a1 = a, b1 = b; 
 				if (a1 == null) { a1 = ""; } // we will place undefined and null values as the lowest TOGETHER with ""
@@ -14372,31 +14396,33 @@
 				return 1;
 			};
 
-		this.items = [];
-		this.indexesOfSourceData = [];
-		this.trimByCollect = trimByCollect;
-		this.caseSensitive = caseSensitive;
-		this.skipSort = skipSort;
-		this.fieldLength = dimensionLength;
-		this.fieldNames = new Array(dimensionLength);
-		this.fieldCompare = new Array(dimensionLength); // 0 - number, 1 - integer, 2 - string, one can extend for Date and other
+		self.items = [];
+		self.indexesOfSourceData = [];
+		self.trimByCollect = trimByCollect;
+		self.caseSensitive = caseSensitive;
+		self.skipSort = skipSort;
+		self.fieldLength = dimensionLength;
+		self.fieldNames = new Array(dimensionLength);
+		self.fieldSortDirection = new Array(dimensionLength);
+		self.fieldCompare = new Array(dimensionLength); // 0 - number, 1 - integer, 2 - string, one can extend for Date and other
 		for (iField = 0; iField < dimensionLength; iField++) {
 			dimensionItem = dimension[iField];
-			this.fieldNames[iField] = dimensionItem[fieldName || "dataName"];
+			self.fieldNames[iField] = dimensionItem[fieldName || "dataName"];
 			switch (dimensionItem.sorttype) {
 				case "integer":
 				case "int":
-					this.fieldCompare[iField] = integerCompare;
+					self.fieldCompare[iField] = integerCompare;
 					break;
 				case "number":
 				case "currency":
 				case "float":
-					this.fieldCompare[iField] = numberCompare;
+					self.fieldCompare[iField] = numberCompare;
 					break;
 				default:
-					this.fieldCompare[iField] = $.isFunction(dimensionItem.compare) ? dimensionItem.compare : stringCompare;
+					self.fieldCompare[iField] = $.isFunction(dimensionItem.compare) ? dimensionItem.compare : stringCompare;
 					break;
 			}
+			self.fieldSortDirection[iField] = dimensionItem.sortorder === "desc" ? -1 : 1;
 		}
 	}
 	ArrayOfFieldsets.prototype.compareVectorsEx = function (vector1, vector2) {
@@ -14422,7 +14448,9 @@
 		return this.compareVectorsEx(vector1, vector2).index;
 	};
 	ArrayOfFieldsets.prototype.compareVectors = function (vector1, vector2) {
-		return this.compareVectorsEx(vector1, vector2).result;
+		var compareRestlts = this.compareVectorsEx(vector1, vector2),
+			sortDirection = compareRestlts.index >= 0 ? this.fieldSortDirection[compareRestlts.index] : 1;
+		return sortDirection > 0 ? compareRestlts.result : -compareRestlts.result;
 	};
 	ArrayOfFieldsets.prototype.getItem = function (index) {
 		return this.items[index];
