@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-06-12
+ * Date: 2015-06-14
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -1233,7 +1233,14 @@
 			$testDiv.remove();
 			return Math.abs(testCell - 5) > 0.1;
 		},
-		cell_width: true,
+		isCellClassHidden: function (className) {
+			var $testDiv = $("<div class='ui-jqgrid' style='left:10000px'><div class='ui-jqgrid-view'><div class='ui-jqgrid-bdiv'><table class='ui-jqgrid-btable' style='width:5px;'><tr class='jqgrow'><td style='width:5px;' class='" + (className || "") + "'></td></tr></table></div></div></div>"),
+				isHidden = $testDiv.appendTo("body")
+					.find("td")
+					.is(":hidden");
+			$testDiv.remove();
+			return isHidden;
+		},		cell_width: true,
 		ajaxOptions: {},
 		from: function (source) {
 			// Original Author Hugo Bonacci
@@ -4157,7 +4164,8 @@
 					if (p.sortname !== index && idxcol) { p.lastsort = idxcol; }
 				},
 				setInitialColWidth = function () {
-					var initialWidth = 0, borderAndPaddingWidth = jgrid.cell_width ? 0 : intNum(p.cellLayout, 0), numberOfVariableColumns = 0, iLastVariableColumn, scrollbarWidth = intNum(p.scrollOffset, 0), columnWidth, hasScrollbar = false, totalVariableWidth, fixedColumnsWidth = 0, correctur;
+					var initialWidth = 0, borderAndPaddingWidth = jgrid.cell_width ? 0 : intNum(p.cellLayout, 0), numberOfVariableColumns = 0, iLastVariableColumn, scrollbarWidth = intNum(p.scrollOffset, 0), columnWidth, hasScrollbar = false, totalVariableWidth, fixedColumnsWidth = 0, correctur,
+						isCellClassHidden = jgrid.isCellClassHidden;
 					each(p.colModel, function () {
 						if (this.hidden === undefined) { this.hidden = false; }
 						if (p.grouping && p.autowidth) {
@@ -4167,7 +4175,7 @@
 							}
 						}
 						this.widthOrg = columnWidth = intNum(this.width, 0);
-						if (this.hidden === false) {
+						if (this.hidden === false && !isCellClassHidden(this.classes)) {
 							initialWidth += columnWidth + borderAndPaddingWidth;
 							if (this.fixed) {
 								fixedColumnsWidth += columnWidth + borderAndPaddingWidth;
@@ -4190,7 +4198,7 @@
 						}
 						initialWidth = 0;
 						each(p.colModel, function (i) {
-							if (this.hidden === false && !this.fixed) {
+							if (this.hidden === false && !isCellClassHidden(this.classes) && !this.fixed) {
 								columnWidth = Math.round(totalVariableWidth * this.width / (p.tblwidth - borderAndPaddingWidth * numberOfVariableColumns - fixedColumnsWidth));
 								this.width = columnWidth;
 								initialWidth += columnWidth;
@@ -4328,11 +4336,10 @@
 					}
 				}
 			}
-			var tdc, idn, w, res, sort, cmi, tooltip, labelStyle, ptr, tbody, sortarr = [], sortord = [], sotmp = [],
+			var idn, w, res, sort, cmi, tooltip, labelStyle, ptr, tbody, sortarr = [], sortord = [], sotmp = [],
 				thead = "<thead><tr class='ui-jqgrid-labels' role='row'>",
 				hoverStateClasses = getGuiStyles("states.hover"),
 				disabledStateClasses = getGuiStyles("states.disabled");
-			tdc = isMSIE ? "ui-th-div-ie" : "";
 
 			if (p.multiSort) {
 				sortarr = p.sortname.split(",");
@@ -4346,7 +4353,7 @@
 			for (iCol = 0; iCol < p.colNames.length; iCol++) {
 				cmi = p.colModel[iCol];
 				tooltip = p.headertitles ? (" title=\"" + stripHtml(p.colNames[iCol]) + "\"") : "";
-				thead += "<th id='" + p.id + "_" + cmi.name + "' role='columnheader' class='" + getGuiStyles("colHeaders", "ui-th-column ui-th-" + dir) + "'" + tooltip + ">";
+				thead += "<th id='" + p.id + "_" + cmi.name + "' role='columnheader' class='" + getGuiStyles("colHeaders", "ui-th-column ui-th-" + dir + " " + (cmi.labelClasses || "")) + "'" + tooltip + ">";
 				idn = cmi.index || cmi.name;
 				switch (cmi.labelAlign) {
 				case "left":
@@ -4364,7 +4371,7 @@
 					labelStyle = "";
 				}
 				thead += "<div id='jqgh_" + p.id + "_" + cmi.name + "'" +
-					(tdc === "" && !cmi.labelClasses ? "" : " class='" + (tdc !== "" ? tdc + " " : "") + (cmi.labelClasses || "") + "'") +
+					(isMSIE ? " class='ui-th-div-ie'" : "") +
 					(labelStyle === "" ? "" : " style='" + labelStyle + "'") + ">" +
 					(cmi.autoResizable && cmi.formatter !== "actions" ?
 							"<span class='" + p.autoResizing.wrapperClassName + "'>" + p.colNames[iCol] + "</span>" :
@@ -4497,7 +4504,8 @@
 						$th.css("display", "none");
 						hdcol = "display:none;";
 					}
-					firstr += "<td role='gridcell' style='height:0;width:" + w + "px;" + hdcol + "'></td>";
+					firstr += "<td role='gridcell' " + (cm.classes ? "class='" + cm.classes + "' " : "") +
+						"style='height:0;width:" + w + "px;" + hdcol + "'></td>";
 					grid.headers[j] = { width: w, el: this };
 					sort = cm.sortable;
 					if (typeof sort !== "boolean") { cm.sortable = true; sort = true; }
@@ -5780,7 +5788,8 @@
 		},
 		setGridWidth: function (newGridWidth, shrink) {
 			return this.each(function () {
-				var $t = this, p = $t.p, columnWidth, grid = $t.grid, initialWidth = 0, iLastVariableColumn, numberOfVariableColumns = 0, hasScrollbar = false, totalVariableWidth, fixedColumnsWidth = 0, correctur;
+				var $t = this, p = $t.p, columnWidth, grid = $t.grid, initialWidth = 0, iLastVariableColumn, numberOfVariableColumns = 0, hasScrollbar = false, totalVariableWidth, fixedColumnsWidth = 0, correctur,
+					isCellClassHidden = jgrid.isCellClassHidden;
 				if (!grid || p == null) { return; }
 				$t.fixScrollOffsetAndhBoxPadding();
 				// there are tree categorien of columns important below:
@@ -5826,10 +5835,13 @@
 				newGridWidth = parseInt(newGridWidth, 10); // round till integer value of px
 				setWidthOfAllDivs(newGridWidth);
 				if (shrink === false && p.forceFit === true) { p.forceFit = false; }
+				// TODO: ??? recalculate p.tblwidth in case of shrink===false
 				if (shrink === true) {
 					// calculate initialWidth, fixedColumnsWidth and numberOfVariableColumns
-					$.each(colModel, function () {
-						if (this.hidden === false) {
+					$.each(colModel, function (i) {
+						// the classes property of colModel will be applied to the first
+						// row of the grid (hCols). If the 
+						if (this.hidden === false && !isCellClassHidden(this.classes)) {
 							columnWidth = this.widthOrg;
 							initialWidth += columnWidth + borderAndPaddingWidth;
 							if (this.fixed) {
@@ -5853,7 +5865,7 @@
 					initialWidth = 0;
 					colsExist = cols.length > 0;
 					$.each(colModel, function (i) {
-						if (this.hidden === false && !this.fixed) {
+						if (this.hidden === false && !isCellClassHidden(this.classes) && !this.fixed) {
 							columnWidth = Math.round(this.widthOrg * shrinkFactor);
 							this.width = columnWidth;
 							initialWidth += columnWidth;
@@ -6323,7 +6335,7 @@
 				compact = (cm.autoResizing != null && cm.autoResizable.compact !== undefined) ? cm.autoResizable.compact : p.autoResizing.compact,
 				wrapperClassName = p.autoResizing.wrapperClassName;
 
-			if (cm == null || !cm.autoResizable || $wrapper.length === 0 || cm.hidden || cm.fixed) {
+			if (cm == null || !cm.autoResizable || $wrapper.length === 0 || cm.hidden || jgrid.isCellClassHidden(cm.classes) || cm.fixed) {
 				return -1; // do nothing
 			}
 			if (!compact || $incosDiv.is(":visible") || ($incosDiv.css("display") !== "none")) {  //|| p.viewsortcols[0]
