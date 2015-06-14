@@ -227,6 +227,7 @@
 						defaultSearch: "bw",
 						searchOperators: false,
 						resetIcon: "x",
+						applyLabelClasses: true,
 						operands: { "eq": "==", "ne": "!", "lt": "<", "le": "<=", "gt": ">", "ge": ">=", "bw": "^", "bn": "!^", "in": "=", "ni": "!=", "ew": "|", "en": "!@", "cn": "~", "nc": "!~", "nu": "#", "nn": "!#" }
 					}, jgrid.search, p.searching || {}, oMuligrid || {}),
 					colModel = p.colModel,
@@ -525,7 +526,7 @@
 				// create the row
 				$.each(colModel, function (ci) {
 					var cm = this, soptions, mode = "filter", surl, self, select = "", sot, so, i, searchoptions = cm.searchoptions, editoptions = cm.editoptions,
-						th = $("<th role='columnheader' class='ui-state-default ui-th-column ui-th-" + p.direction + "'></th>"),
+						th = $("<th role='columnheader' class='" + getGuiStyles.call($t, "colHeaders", "ui-th-column ui-th-" + p.direction + " " + (o.applyLabelClasses ? cm.labelClasses || "" : "")) + "'></th>"),
 						thd = $("<div style='position:relative;height:auto;'></div>"),
 						stbl = $("<table class='ui-search-table'" + (jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "") + "><tr><td class='ui-search-oper'></td><td class='ui-search-input'></td><td class='ui-search-clear' style='width:1px'></td></tr></table>");
 					if (this.hidden === true) { $(th).css("display", "none"); }
@@ -744,7 +745,7 @@
 						$("td", stbl).eq(0).hide();
 					}
 				});
-				$("table thead", grid.hDiv).append(tr);
+				$(grid.hDiv).find(">div>.ui-jqgrid-htable>thead").append(tr);
 				if (o.searchOperators) {
 					$(".soptclass", tr).click(function (e) {
 						var offset = $(this).offset(),
@@ -839,13 +840,14 @@
 		setGroupHeaders: function (o) {
 			o = $.extend({
 				useColSpanStyle: false,
+				applyLabelClasses: true,
 				groupHeaders: []
 			}, o || {});
 			return this.each(function () {
 				this.p.groupHeader = o;
 				var ts = this, i, cmi, skip = 0, $tr, $colHeader, th, $th, thStyle, iCol, cghi, numberOfColumns, titleText, cVisibleColumns,
-					colModel = ts.p.colModel, cml = colModel.length, ths = ts.grid.headers, $theadInTable,
-					$htable = $("table.ui-jqgrid-htable", ts.grid.hDiv),
+					colModel = ts.p.colModel, cml = colModel.length, ths = ts.grid.headers, $theadInTable, thClasses,
+					$htable = $("table.ui-jqgrid-htable", ts.grid.hDiv), isCellClassHidden = jgrid.isCellClassHidden,
 					$trLabels = $htable.children("thead").children("tr.ui-jqgrid-labels"),
 					$trLastWithLabels = $trLabels.last().addClass("jqg-second-row-header"),
 					$thead = $htable.children("thead"),
@@ -872,10 +874,12 @@
 					$th = $(th);
 					cmi = colModel[i];
 					// build the next cell for the first header row
+					// ??? cmi.hidden || isCellClassHidden(cmi.classes) || $th.is(":hidden")
 					thStyle = { height: "0", width: ths[i].width + "px", display: (cmi.hidden ? "none" : "") };
-					$("<th>", { role: "gridcell" }).css(thStyle).addClass("ui-first-th-" + ts.p.direction).appendTo($firstHeaderRow);
+					$("<th>", { role: "gridcell" }).css(thStyle).addClass("ui-first-th-" + ts.p.direction + (o.applyLabelClasses ? " " + (cmi.labelClasses || "") : "")).appendTo($firstHeaderRow);
 
 					th.style.width = ""; // remove unneeded style
+					thClasses = getGuiStyles.call(ts, "colHeaders", "ui-th-column-header ui-th-" + ts.p.direction + " " + (o.applyLabelClasses ? cmi.labelClasses || "" : ""));
 					iCol = inColumnHeader(cmi.name, o.groupHeaders);
 					if (iCol >= 0) {
 						cghi = o.groupHeaders[iCol];
@@ -884,7 +888,7 @@
 
 						// caclulate the number of visible columns from the next numberOfColumns columns
 						for (cVisibleColumns = 0, iCol = 0; iCol < numberOfColumns && (i + iCol < cml); iCol++) {
-							if (!colModel[i + iCol].hidden) {
+							if (!colModel[i + iCol].hidden && !isCellClassHidden(colModel[i + iCol].classes) && !$(ths[i + iCol].el).is(":hidden")) {
 								cVisibleColumns++;
 							}
 						}
@@ -893,7 +897,7 @@
 						// in the current row will be placed the new column header with the titleText.
 						// The text will be over the cVisibleColumns columns
 						$colHeader = $("<th>").attr({ role: "columnheader" })
-							.addClass("ui-state-default ui-th-column-header ui-th-" + ts.p.direction)
+							.addClass(thClasses)
 							.css({ "height": "22px", "border-top": "0 none" })
 							.html(titleText);
 						if (cVisibleColumns > 0) {
@@ -919,7 +923,7 @@
 								$th.attr("rowspan", $trLabels.length + 1);
 							} else {
 								$("<th>", { role: "columnheader" })
-									.addClass("ui-state-default ui-th-column-header ui-th-" + ts.p.direction)
+									.addClass(thClasses)
 									.css({ "display": cmi.hidden ? "none" : "", "border-top": "0 none" })
 									.insertBefore($th);
 								$tr.append(th);
@@ -948,7 +952,7 @@
 					// Set position of the sortable div (the main lable)
 					// with the column header text to the middle of the cell.
 					// One should not do this for hidden headers.
-					$htable.find("div.ui-jqgrid-sortable").each(function () {
+					$htable.find(".ui-th-column>div").each(function () {
 						var $ts = $(this), $parent = $ts.parent();
 						if ($parent.is(":visible") && $parent.is(":has(span.ui-jqgrid-resize)")) {
 							// !!! it seems be wrong now
@@ -1006,7 +1010,7 @@
 							top = top + $(grid.uDiv).outerHeight();
 						}
 					}
-					grid.fhDiv = $('<div style="position:absolute;left:0;top:' + top + 'px;height:' + hth + 'px;" class="frozen-div ui-state-default ui-jqgrid-hdiv"></div>');
+					grid.fhDiv = $('<div style="position:absolute;left:0;top:' + top + 'px;height:' + hth + 'px;" class="' + getGuiStyles.call($t, "hDiv", "frozen-div ui-jqgrid-hdiv") + '"></div>');
 					grid.fbDiv = $('<div style="position:absolute;left:0;top:' + (parseInt(top, 10) + parseInt(hth, 10) + 1) + 'px;overflow:hidden" class="frozen-bdiv ui-jqgrid-bdiv"></div>');
 					$(p.gView).append(grid.fhDiv);
 					var htbl = $(".ui-jqgrid-htable", p.gView).clone(true);
@@ -1155,15 +1159,14 @@
 									posTop = $row.position().top;
 									$frozenRow = $($frozenRows[iRow]);
 									posFrozenTop = $frozenRow.position().top;
-									if (p.groupHeader != null && p.groupHeader.useColSpanStyle) {
+									height = $row.height();
+									if (p.groupHeader != null && p.groupHeader.useColSpanStyle && height === 0) {
 										height = 0;
 										for (i = 0; i < maxfrozen; i++) { // maxfrozen
 											if ($row[0].cells[i].nodeName.toUpperCase() === "TH") {
 												height = Math.max(height, $($row[0].cells[i]).height());
 											}
 										}
-									} else {
-										height = $row.height();
 									}
 									newHeightFrozen = height + (posTop - tableTop) + (frozenTableTop - posFrozenTop);
 									safeHeightSet($frozenRow, newHeightFrozen);
