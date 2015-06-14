@@ -1,7 +1,7 @@
 {
   "name": "free-jqgrid",
   "description": "grid as jQuery plugin - fork of jqGrid before licensing change",
-  "version": "4.9.0-rc1",
+  "version": "4.9.0",
   "main": [
     "js/jquery.jqgrid.min.js",
     "js/jquery.jqgrid.src.js",
@@ -24,7 +24,7 @@
   ],
   "authors": [
     "Oleg Kiriljuk",
-    "other contributors to jqGrid before version 4.7.1"
+    "other contributors to jqGrid before publishing version 4.7.1"
   ],
   "homepage": "https://github.com/free-jqgrid/jqGrid.git",
   "repository": {
@@ -32,7 +32,7 @@
     "url": "https://github.com/free-jqgrid/jqGrid.git"
   },
   "dependencies": {
-    "jquery": ">=1.7.0"
+    "jquery": ">=1.7.2"
   },
   "license": [
     "MIT",

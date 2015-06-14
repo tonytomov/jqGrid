@@ -2,7 +2,7 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
 /**
- * @license jqGrid 4.9.0-rc1 - free jqGrid: https://github.com/free-jqgrid/jqGrid
+ * @license jqGrid 4.9.0 - free jqGrid: https://github.com/free-jqgrid/jqGrid
  * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com
  * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  * Dual licensed under the MIT and GPL licenses
@@ -8712,7 +8712,6 @@
 						// The text will be over the cVisibleColumns columns
 						$colHeader = $("<th>").attr({ role: "columnheader" })
 							.addClass(thClasses)
-							//.addClass("ui-state-default ui-th-column-header ui-th-" + ts.p.direction)
 							.css({ "height": "22px", "border-top": "0 none" })
 							.html(titleText);
 						if (cVisibleColumns > 0) {
@@ -8825,7 +8824,7 @@
 							top = top + $(grid.uDiv).outerHeight();
 						}
 					}
-					grid.fhDiv = $('<div style="position:absolute;left:0;top:' + top + 'px;height:' + hth + 'px;" class="frozen-div ui-state-default ui-jqgrid-hdiv"></div>');
+					grid.fhDiv = $('<div style="position:absolute;left:0;top:' + top + 'px;height:' + hth + 'px;" class="' + getGuiStyles.call($t, "hDiv", "frozen-div ui-jqgrid-hdiv") + '"></div>');
 					grid.fbDiv = $('<div style="position:absolute;left:0;top:' + (parseInt(top, 10) + parseInt(hth, 10) + 1) + 'px;overflow:hidden" class="frozen-bdiv ui-jqgrid-bdiv"></div>');
 					$(p.gView).append(grid.fhDiv);
 					var htbl = $(".ui-jqgrid-htable", p.gView).clone(true);
