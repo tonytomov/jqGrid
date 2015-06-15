@@ -7481,7 +7481,7 @@
 								var ovm1 = [], elem1 = this.elem, vl2 = this.vl, cm1 = this.cm, iCol1 = this.iCol,
 									options1 = $.extend({}, this.options),
 									msl1 = options1.multiple === true,
-									a = $.isFunction(options1.buildSelect) ? options1.buildSelect.call($t, data, jqXHR) : data;
+									a = $.isFunction(options1.buildSelect) ? options1.buildSelect.call($t, data, jqXHR, cm1, iCol1) : data;
 								if (typeof a === "string") {
 									a = $($.trim(a)).html();
 								}
@@ -8393,30 +8393,32 @@
 									$(self).append(stbl);
 									$.ajax($.extend({
 										url: surl,
+										context: { stbl: stbl, options: soptions, cm: cm, iCol: ci },
 										dataType: "html",
 										success: function (data, textStatus, jqXHR) {
-											if (soptions.buildSelect !== undefined) {
-												var d = soptions.buildSelect(data, jqXHR);
+											var cm1 = this.cm, iCol1 = this.iCol, soptions1 = this.options, $stbl1 = this.stbl, d,
+												$select = $stbl1.find("td.ui-search-input>select");// $stbl1.find(">tbody>tr>td.ui-search-input>select")
+											if (soptions1.buildSelect !== undefined) {
+												d = soptions1.buildSelect.call($t, data, jqXHR, cm1, iCol1);
 												if (d) {
-													$("td", stbl).eq(1).append(d);
+													$("td", $stbl1).eq(1).append(d);
 												}
 											} else {
-												$("td", stbl).eq(1).append(data);
+												$("td", $stbl1).eq(1).append(data);
 											}
-											var $select = stbl.find("td.ui-search-input>select"); // stbl.find(">tbody>tr>td.ui-search-input>select")
-											if (soptions.defaultValue !== undefined) { $select.val(soptions.defaultValue); }
-											$select.attr({ name: cm.index || cm.name, id: "gs_" + cm.name });
-											if (soptions.attr) { $select.attr(soptions.attr); }
+											if (soptions1.defaultValue !== undefined) { $select.val(soptions1.defaultValue); }
+											$select.attr({ name: cm1.index || cm1.name, id: "gs_" + cm1.name });
+											if (soptions1.attr) { $select.attr(soptions1.attr); }
 											$select.addClass(dataFieldClass);
 											$select.css({ width: "100%" });
 											// preserve autoserch
-											bindEv.call($t, $select[0], soptions);
-											jgrid.fullBoolFeedback.call($t, soptions.selectFilled, "jqGridSelectFilled", {
+											bindEv.call($t, $select[0], soptions1);
+											jgrid.fullBoolFeedback.call($t, soptions1.selectFilled, "jqGridSelectFilled", {
 												elem: $select[0],
-												options: soptions,
-												cm: cm,
-												cmName: cm.name,
-												iCol: ci,
+												options: soptions1,
+												cm: cm1,
+												cmName: cm1.name,
+												iCol: iCol1,
 												mode: mode
 											});
 											if (o.autosearch === true) {
