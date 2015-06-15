@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-06-14
+ * Date: 2015-06-15
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -1113,7 +1113,7 @@
 		},
 		getEditedValue: function ($dataFiled, cm, useTextInSelects) {
 			var result, checkBoxValues, newformat, $field, valuesOrTexts, selectMethod = useTextInSelects ? "text" : "val",
-				formatoptions = cm.formatoptions || {}, editoptions = cm.editoptions || {}, customValue = cm.custom_value,
+				formatoptions = cm.formatoptions || {}, editoptions = cm.editoptions || {}, customValue = editoptions.custom_value,
 				nameSelector = "[name=" + jgrid.jqID(cm.name) + "]", $t = this, $self = $($t), info_dialog, getRes, errcap, bClose;
 			switch (cm.edittype) {
 				case "checkbox":
