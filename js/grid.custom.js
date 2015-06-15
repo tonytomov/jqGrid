@@ -243,7 +243,7 @@
 					triggerToolbar = function () {
 						var sdata = {}, j = 0, sopt = {};
 						$.each(colModel, function () {
-							var cm = this, nm = cm.index || cm.name, v, so,
+							var cm = this, nm = cm.index || cm.name, v, so, searchoptions = cm.searchoptions || {},
 								$elem = $("#gs_" + jqID(cm.name), (cm.frozen === true && p.frozenColumns === true) ? grid.fhDiv : grid.hDiv),
 								getFormaterOption = function (optionName, formatter) {
 									var formatoptions = cm.formatoptions || {};
@@ -260,7 +260,7 @@
 							if (o.searchOperators) {
 								so = $elem.parent().prev().children("a").data("soper") || o.defaultSearch;
 							} else {
-								so = (cm.searchoptions && cm.searchoptions.sopt) ? cm.searchoptions.sopt[0] : cm.stype === "select" ? "eq" : o.defaultSearch;
+								so = searchoptions.sopt ? searchoptions.sopt[0] : cm.stype === "select" ? "eq" : o.defaultSearch;
 							}
 							/* the format of element of the searching toolbar if ANOTHER
 							 * as the format of cells in the grid. So one can't use
@@ -269,8 +269,8 @@
 							 * $elem.val() instead of $elem.text() used in the common case of
 							 * formatter. So we have to make manual conversion of searching filed
 							 * used for integer/number/currency. The code will be duplicate */
-							if (cm.stype === "custom" && $.isFunction(cm.searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN") {
-								v = cm.searchoptions.custom_value.call($t, $elem.children(".customelement").filter(":first"), "get");
+							if (cm.stype === "custom" && $.isFunction(searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN") {
+								v = searchoptions.custom_value.call($t, $elem.children(".customelement").filter(":first"), "get");
 							} else {
 								v = $.trim($elem.val());
 								switch (cm.formatter) {
@@ -364,8 +364,8 @@
 						trigger = (typeof trigger !== "boolean") ? true : trigger;
 						$.each(colModel, function () {
 							var v, cm = this, $elem = $("#gs_" + jqID(cm.name), (cm.frozen === true && p.frozenColumns === true) ? grid.fhDiv : grid.hDiv),
-								isSindleSelect;
-							if (cm.searchoptions && cm.searchoptions.defaultValue !== undefined) { v = cm.searchoptions.defaultValue; }
+								isSindleSelect, searchoptions = cm.searchoptions || {};
+							if (searchoptions.defaultValue !== undefined) { v = searchoptions.defaultValue; }
 							nm = cm.index || cm.name;
 							switch (cm.stype) {
 								case "select":
@@ -399,8 +399,8 @@
 									}
 									break;
 								case "custom":
-									if ($.isFunction(cm.searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN") {
-										cm.searchoptions.custom_value.call($t, $elem.children(".customelement").filter(":first"), "set", v || "");
+									if ($.isFunction(searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN") {
+										searchoptions.custom_value.call($t, $elem.children(".customelement").filter(":first"), "set", v || "");
 									}
 									break;
 							}
