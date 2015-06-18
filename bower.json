@@ -1,5 +1,5 @@
 {
-	"name": "jqGrid",
+	"name": "jqgrid",
 	"main": [
 		"js/i18n/grid.locale-en.js",
 		"js/jquery.jqGrid.js",
