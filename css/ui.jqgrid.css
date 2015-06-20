@@ -32,6 +32,8 @@
 .ui-jqgrid > .ui-jqgrid-view *,
 .ui-jqgrid > .ui-jqgrid-view *:before,
 .ui-jqgrid > .ui-jqgrid-view *:after {
+	-webkit-box-sizing: inherit;
+	-moz-box-sizing: inherit;
 	box-sizing: inherit;
 }
 
@@ -333,7 +335,7 @@
 }
 .ui-jqgrid > .ui-jqgrid-resize-mark,
 body > .ui-jqgrid-resize-mark {
-	width: 0px;
+	width: 0;
 	left: 0;
 	cursor: col-resize;
 	-webkit-touch-callout: none;
@@ -417,6 +419,8 @@ span.ui-jqgrid-cell-wrapper {
 .ui-jqgrid > .ui-jqgrid-pager *,
 .ui-jqgrid > .ui-jqgrid-pager *:before,
 .ui-jqgrid > .ui-jqgrid-pager *:after {
+	-webkit-box-sizing: inherit;
+	-moz-box-sizing: inherit;
 	box-sizing: inherit;
 }
 .ui-jqgrid .ui-jqgrid-toppager .ui-pager-control,

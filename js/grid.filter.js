@@ -174,7 +174,7 @@
 			 * @param parentgroup - object
 			 */
 			this.createTableForGroup = function (group, parentgroup) {
-				var that = this, i, $t = getGrid();
+			    var that = this, i;
 				// this table will hold all the group (tables) and rules (rows)
 				var table = $("<table class='group " + dialogContentClass + "' style='border:0px none;'><tbody></tbody></table>"), align = "left";
 				// create error message row

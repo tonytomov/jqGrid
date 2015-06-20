@@ -618,7 +618,7 @@
 			var c = $(cell);
 			if (c.is("tr")) { return -1; }
 			c = (!c.is("td") && !c.is("th") ? c.closest("td,th") : c)[0];
-			if (c === undefined) { return -1; }
+			if (c == null) { return -1; }
 			if (jgrid.msie) { return $.inArray(c, c.parentNode.cells); }
 			return c.cellIndex;
 		},
@@ -917,7 +917,7 @@
 		/**
 		 *  @param {COMPONENT_NAMES} componentName
 		 */
-		getGridComponent: function (componentName, $p, p1) {
+		getGridComponent: function (componentName, $p) {// , p1
 			var p;
 			if ($p instanceof $ || $p.length > 0) {
 				p = $p[0];
@@ -1028,7 +1028,7 @@
 		// one cell of the main grid and another cell with the corresponding cell from the frozen body table
 		getCell: function (tr, iCol) {
 			var grid = this.grid, p = this.p, frozenRows, $td;
-			if (!grid || !p) { return; } // not a grid
+			if (!grid || !p) { return $(); } // not a grid
 			if (tr instanceof $ || tr.length > 0) {
 				tr = tr[0]; // unwrap jQuery object to DOM element
 			}
@@ -1114,7 +1114,7 @@
 		getEditedValue: function ($dataFiled, cm, useTextInSelects) {
 			var result, checkBoxValues, newformat, $field, valuesOrTexts, selectMethod = useTextInSelects ? "text" : "val",
 				formatoptions = cm.formatoptions || {}, editoptions = cm.editoptions || {}, customValue = editoptions.custom_value,
-				nameSelector = "[name=" + jgrid.jqID(cm.name) + "]", $t = this, $self = $($t), info_dialog, getRes, errcap, bClose;
+				nameSelector = "[name=" + jgrid.jqID(cm.name) + "]", $t = this, $self = $($t), infoDialog, getRes, errcap, bClose;
 			switch (cm.edittype) {
 				case "checkbox":
 					checkBoxValues = ["Yes", "No"];
@@ -1138,7 +1138,7 @@
 					$field = $dataFiled.find("select option:selected");
 					if (editoptions.multiple) {
 						valuesOrTexts = [];
-						$field.each(function (i, option) {
+						$field.each(function () {
 							valuesOrTexts.push($(this)[selectMethod]());
 						});
 						result = valuesOrTexts.join(",");
@@ -1157,17 +1157,17 @@
 							throw "e1";
 						}
 					} catch (e) {
-						info_dialog = jgrid.info_dialog;
+						infoDialog = jgrid.info_dialog;
 						getRes = function (path) { $self.jqGrid("getGridRes", path); };
 						errcap = getRes("errors.errcap");
 						bClose = getRes("edit.bClose");
 						if (e === "e1") {
-							info_dialog.call($t, errcap, "function 'custom_value' " + getRes("edit.msg.nodefined"), bClose);
+							infoDialog.call($t, errcap, "function 'custom_value' " + getRes("edit.msg.nodefined"), bClose);
 						}
 						if (e === "e2") {
-							info_dialog.call($t, errcap, "function 'custom_value' " + getRes("edit.msg.novalue"), bClose);
+							infoDialog.call($t, errcap, "function 'custom_value' " + getRes("edit.msg.novalue"), bClose);
 						} else {
-							info_dialog.call($t, errcap, e.message, bClose);
+							infoDialog.call($t, errcap, e.message, bClose);
 						}
 					}
 					break;
@@ -1831,7 +1831,7 @@
 				getDialogGuiStyles = function (name) {
 					return jgrid.getRes(jgrid.guiStyles[p.guiStyle], "dialog." + name);
 				};
-			if (p == null) { return; }
+			if (p == null) { return ""; }
 			
 			return "<a id='" + id + "' class='" +
 				jgrid.mergeCssClasses("fm-button",
@@ -2338,7 +2338,7 @@
 				buildArrayReader = function () {
 					var i, colModel = p.colModel, cmNamesInputOrder = p.cmNamesInputOrder,
 						additionalProperties = p.additionalProperties, n = cmNamesInputOrder.length, arrayReaderInfos,
-						name, index, order = 0;
+						name, index, order;
 					p.arrayReaderInfos = {};
 					arrayReaderInfos = p.arrayReaderInfos;
 					for (order = 0; order < n; order++) {
@@ -2505,7 +2505,7 @@
 								}
 							}
 						}
-						if (!p.autowidth && (p.widthOrg === undefined || p.widthOrg === "auto" || p.widthOrg === "100%") && skipGridAdjustments != true) {
+						if (!p.autowidth && (p.widthOrg === undefined || p.widthOrg === "auto" || p.widthOrg === "100%") && skipGridAdjustments !== true) {
 							$j.setGridWidth.call($bTable, self.newWidth + p.scrollOffset, false);
 						}
 						if (!skipCallbacks) {
@@ -2677,18 +2677,17 @@
 					// The index 0 in the p.remapColumns means the first column after the "rn", "cb", "subgrid"
 					var remapColumns = p.remapColumns, colModel = p.colModel, nCol = colModel.length, cmNames = [], i, remappedCmNames,
 						name;
-					for (iCol = 0; iCol < nCol; iCol++) {
-						name = colModel[iCol].name;
+					for (i = 0; i < nCol; i++) {
+					    name = colModel[i].name;
 						if (inArray(name, p.reservedColumnNames) < 0) {
 							cmNames.push(name);
-							i++;
 						}
 					}
 					
 					// it's important to remark that the numbers in remapColumns or in
 					// jsonReder, localReader, xmlReader are based on the position of column
 					// in colModel BEFORE adding columns "rn", "cb", "subgrid"
-					if (remapColumns == null) {
+					if (remapColumns != null) {
 						// now we should remap items in cmNames corresponds to the indexes from p.remapColumns array
 						remappedCmNames = cmNames.slice(); // make copy of cmNames array
 						for (i = 0; i < remapColumns.length; i++) {
@@ -3083,7 +3082,7 @@
 							};
 						},
 						nodeReader = function (nodeName) {
-							return function (obj) {
+							return function () {
 								// commented code which used getElementsByTagName works
 								// good in new web browsers (Chrome, Firefox, Safari),
 								// but it is slowly in IE10 and especially in IE8.
@@ -4556,7 +4555,7 @@
 				})
 				.mousedown(function (e) {
 					var $th = $(this), isFrozen = $th.closest(".ui-jqgrid-hdiv").hasClass("frozen-div"),
-						getOffset = function (iCol) {
+						getOffset = function () {
 							var ret = [$th.position().left + $th.outerWidth()];
 							if (p.direction === "rtl") { ret[0] = p.width - ret[0]; }
 							ret[0] -= isFrozen ? 0 : grid.bDiv.scrollLeft;
@@ -4570,7 +4569,7 @@
 					ci = getColumnHeaderIndex(this);
 					if (ci != null) {
 						if (p.forceFit === true) { p.nv = nextVisible(ci); }
-						grid.dragStart(ci, e, getOffset(ci), $th);
+						grid.dragStart(ci, e, getOffset(), $th);
 					}
 					return false;
 				})
@@ -4617,7 +4616,7 @@
 				.css({ width: grid.width + "px" })
 				.addClass(getGuiStyles("hDiv", "ui-jqgrid-hdiv"))
 				.append(hb)
-				.scroll(function (e) {
+				.scroll(function () {
 					// the hDiv can be scrolled because of tab keyboard navigation
 					// we have to sync bDiv and hDiv scrollLeft in the case
 					var bDiv = $(this).next(".ui-jqgrid-bdiv")[0];
@@ -5300,7 +5299,7 @@
 						p.selrow = null;
 					}
 				} else {
-					$($t.rows).each(function (i) {
+					$($t.rows).each(function () {
 						var iSel = $.inArray(this.id, p.selarrrow);
 						if (iSel !== -1) {
 							deselectRow(this);
@@ -5688,7 +5687,7 @@
 						});
 						$($t.rows).each(function () {
 							var cell = this.cells[i];
-							if (!$(this).hasClass("jqgroup") || (cell !== undefined && cell.colSpan === 1)) {
+							if (!$(this).hasClass("jqgroup") || (cell != null && cell.colSpan === 1)) {
 								$(cell).css("display", show);
 							}
 							// to follow HTML standards exactly one should probably add hidden column in 
@@ -5838,7 +5837,7 @@
 				// TODO: ??? recalculate p.tblwidth in case of shrink===false
 				if (shrink === true) {
 					// calculate initialWidth, fixedColumnsWidth and numberOfVariableColumns
-					$.each(colModel, function (i) {
+					$.each(colModel, function () {
 						// the classes property of colModel will be applied to the first
 						// row of the grid (hCols). If the 
 						if (this.hidden === false && !isCellClassHidden(this.classes)) {
@@ -5974,7 +5973,7 @@
 		},
 		setLabel: function (colname, nData, prop, attrp) {
 			return this.each(function () {
-				var $t = this, pos = -1, p = $t.p;
+				var $t = this, pos, p = $t.p;
 				if (!$t.grid) { return; }
 				if (isNaN(colname)) {
 					pos = p.iColByName[colname];
@@ -6064,7 +6063,7 @@
 			// TODO: add an additional parameter, which will inform whether the output data should be in formatted or unformatted form
 			var ret = false;
 			this.each(function () {
-				var $t = this, iCol = -1, p = $t.p, tr, $td;
+				var $t = this, iCol, p = $t.p, tr, $td;
 				if (!$t.grid) { return; }
 				iCol = isNaN(colName) ? p.iColByName[colName] : parseInt(colName, 10);
 				if (iCol >= 0) { //isNaN(iCol)>=0 is false and undefined >= 0 is false
@@ -6087,7 +6086,7 @@
 			obj = typeof obj !== "boolean" ? false : obj;
 			if (mathopr === undefined) { mathopr = false; }
 			this.each(function () {
-				var $t = this, iCol = -1, p = $t.p, $td;
+				var $t = this, iCol, p = $t.p, $td;
 				if (!$t.grid) { return; }
 				iCol = isNaN(colName) ? p.iColByName[colName] : parseInt(colName, 10);
 				if (iCol >= 0) { //isNaN(iCol)>=0 is false and undefined >= 0 is false

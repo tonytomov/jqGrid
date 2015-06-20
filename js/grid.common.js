@@ -253,7 +253,7 @@
 				try { $(":input:visible", selector)[0].focus(); } catch (ignore) { }
 			}
 		},
-		info_dialog: function (caption, content, c_b, modalopt) {
+		info_dialog: function (caption, content, closeButtonText, modalopt) {
 			var $t = this, p = $t.p, gridjqModal = p != null ? p.jqModal || {} : {},
 				mopt = $.extend(true,
 					{
@@ -293,10 +293,10 @@
 				cn = "text-align:" + mopt.align + ";",
 				cnt = "<div id='info_id'>";
 			cnt += "<div id='infocnt' style='margin:0px;padding-bottom:1em;width:100%;overflow:auto;position:relative;height:" + dh + ";" + cn + "'>" + content + "</div>";
-			if (c_b || buttstr !== "") {
+			if (closeButtonText || buttstr !== "") {
 				cnt += "<hr class='" + getGuiStyles.call($t, "dialog.hr") + "' style='margin:1px'/><div style='text-align:" + mopt.buttonalign +
 					";padding:.8em 0 .5em 0;background-image:none;border-width: 1px 0 0 0;'>" +
-					(c_b ? jgrid.builderFmButon.call($t, "closedialog", c_b) : "") + buttstr + "</div>";
+					(closeButtonText ? jgrid.builderFmButon.call($t, "closedialog", closeButtonText) : "") + buttstr + "</div>";
 			}
 			cnt += "</div>";
 

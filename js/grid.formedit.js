@@ -1896,19 +1896,16 @@
 					alertIDs = { themodal: "alertmod_" + gridId, modalhead: "alerthd_" + gridId, modalcontent: "alertcnt_" + gridId },
 					createModalAlert = function () {
 						return function () {
-							var documentElement = document.documentElement, w = window, left, top,
+						    var documentElement = document.documentElement, w = window, left = 1024, top = 768,
 								offsetGbox = $self.closest(".ui-jqgrid").offset();
 							if ($("#" + jqID(alertIDs.themodal))[0] === undefined) {
 								if (!o.alerttop && !o.alertleft) {
 									if (w.innerWidth !== undefined) {
 										left = w.innerWidth;
 										top = w.innerHeight;
-									} else if (documentElement !== null && documentElement.clientWidth !== undefined && documentElement.clientWidth !== 0) {
+									} else if (documentElement != null && documentElement.clientWidth !== undefined && documentElement.clientWidth !== 0) {
 										left = documentElement.clientWidth;
 										top = documentElement.clientHeight;
-									} else {
-										left = 1024;
-										top = 768;
 									}
 									left = left / 2 - parseInt(o.alertwidth, 10) / 2 - offsetGbox.left;
 									top = top / 2 - 25 - offsetGbox.top;

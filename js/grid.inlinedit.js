@@ -13,7 +13,7 @@
 	"use strict";
 	var jgrid = $.jgrid, fullBoolFeedback = jgrid.fullBoolFeedback, hasOneFromClasses = jgrid.hasOneFromClasses,
 		enumEditableCells = jgrid.enumEditableCells,
-		info_dialog = jgrid.info_dialog,
+		infoDialog = jgrid.info_dialog,
 		editFeedback = function (o) {
 			var args = $.makeArray(arguments).slice(1);
 			args.unshift("");
@@ -225,7 +225,7 @@
 				if (cv[0] === false) {
 					try {
 						var tr = $self.jqGrid("getGridRowById", rowid), positions = jgrid.findPos(tr);
-						info_dialog.call($t, errcap, cv[1], bClose, { left: positions[0], top: positions[1] + $(tr).outerHeight() });
+						infoDialog.call($t, errcap, cv[1], bClose, { left: positions[0], top: positions[1] + $(tr).outerHeight() });
 					} catch (e) {
 						alert(cv[1]);
 					}
@@ -339,7 +339,7 @@
 							} else {
 								var rT = res.responseText || res.statusText;
 								try {
-									info_dialog.call($t, errcap, '<div class="' + getGuiStateStyles.call($t, "error") + '">' + rT + "</div>", bClose, { buttonalign: "right" });
+									infoDialog.call($t, errcap, '<div class="' + getGuiStateStyles.call($t, "error") + '">' + rT + "</div>", bClose, { buttonalign: "right" });
 								} catch (e) {
 									alert(rT);
 								}
@@ -388,7 +388,7 @@
 						} catch (ignore) { }
 					}
 					
-					$.each(p.colModel, function (i) {
+					$.each(p.colModel, function () {
 						var nm = this.name;
 						if (p.savedRow[fr].hasOwnProperty(nm)) {
 							ares[nm] = p.savedRow[fr][nm];
