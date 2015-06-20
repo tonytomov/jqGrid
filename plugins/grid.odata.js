@@ -293,7 +293,7 @@
                         return $(rowObject).filter(function () {
                             return this.localName && this.localName.toLowerCase() === id;
                         }).text();
-                    })(this.p.xmlReader.id.toLowerCase());
+                    }(this.p.xmlReader.id.toLowerCase()));
                     result = '<a href="{0}({1})/{2}" target="_self" data-id="{1}" data-type="" onclick="">{2}</a>'.format(this.p.url, keyValue, options.colModel.name);
                 }
 
@@ -304,7 +304,7 @@
 
                 return result;
             }
-            else if(options.colModel.odataexpand === 'json') {
+            if(options.colModel.odataexpand === 'json') {
                 if (this.p.datatype === 'xml') {
                     var xmlvalue = $(rowObject).filter(function() {
                         return this.localName.toLowerCase() === options.colModel.name.toLowerCase();
@@ -346,7 +346,7 @@
             }
 
             if (jqXHR.responseJSON) {
-                var odataerr = jqXHR.responseJSON["@odata.error"] || jqXHR.responseJSON["odata.error"] || jqXHR.responseJSON["error"];
+                var odataerr = jqXHR.responseJSON["@odata.error"] || jqXHR.responseJSON["odata.error"] || jqXHR.responseJSON.error;
                 if (odataerr) {
                     if (odataerr.innererror) {
                         if (odataerr.innererror.internalexception) {
@@ -498,11 +498,11 @@
                 if (o.datatype === 'jsonp') { params.$callback = o.callback; }
                 if (!o.version || o.version < 4) {
                     params.$inlinecount = "allpages";
-                    params.$format = o.datatype === 'xml' ? 'atom' : 'application/json;odata=fullmetadata'
+                    params.$format = o.datatype === 'xml' ? 'atom' : 'application/json;odata=fullmetadata';
                 }
                 else {
                     params.$count = true;
-                    params.$format = o.datatype === 'xml' ? 'atom' : 'application/json;odata.metadata=full'
+                    params.$format = o.datatype === 'xml' ? 'atom' : 'application/json;odata.metadata=full';
                 }
 
                 // if we have an order-by clause to use, then we build it.
@@ -560,6 +560,9 @@
                 var i, defaultGetAjaxOptions = {
                     datatype: o.datatype,
                     jsonpCallback: o.callback
+                },
+                subGridRowExpandedFunc = function(subgrid_id, row_id) {
+                    return subgridRowExpanded(p, o, subgrid_id, row_id);
                 };
 
                 $.extend(p, {
@@ -576,7 +579,7 @@
                 for(i=0;i<p.colModel.length;i++) {
                     if (p.colModel[i].odataexpand === 'subgrid') {
                         p.subGrid = true;
-                        p.subGridRowExpanded = function(subgrid_id, row_id) {return subgridRowExpanded(p, o, subgrid_id, row_id);}
+                        p.subGridRowExpanded = subGridRowExpandedFunc;
                         break;
                     }
                 }
@@ -747,7 +750,7 @@
                                     }
 
                                     //data = $.jgrid.odataHelper.resolveJsonReferences(data);
-                                    return data["value"];
+                                    return data.value;
                                 },
                                 repeatitems: true,
                                 records: function (data) { return data["odata.count"] || data["@odata.count"]; },
@@ -847,8 +850,8 @@
                     props.each(function (n, itm) {
                         $.each(itm.attributes, function () { attr[this.name] = this.value; });
 
-                        type = attr['Type'];
-                        iskey = (attr['Name'] === key);
+                        type = attr.Type;
+                        iskey = (attr.Name === key);
                         isComplex = itm.tagName === 'Property' && !!namespace && type.indexOf(namespace) >= 0;
                         isNav = itm.tagName === 'NavigationProperty';
 
@@ -866,8 +869,8 @@
             }
 
             function parseJsonData(data, entityType, subgridCols) {
-                var cols=[], navMetadata, props, keys, key, name, type, nullable, iskey, i, isComplex, isNav, namespace;
-                recurTypes.push(entityType);
+                var cols=[], props, keys, key, name, type, nullable, iskey, i, isComplex, isNav, namespace;
+                //recurTypes.push(entityType); ????
 
                 for (i = 0; i < data.SchemaElements.length ; i++) {
                     if (data.SchemaElements[i].Name === entityType) {
@@ -892,7 +895,7 @@
                         type = props[i].Type.Definition.Namespace + '.' + props[i].Type.Definition.Name;
                         isComplex = !!namespace && type.indexOf(namespace) >= 0;
                         isNav = false;
-                        navMetadata = null;
+                        // navMetadata = null; ???
 
                         if(isNav) {
                             if(type.indexOf('Collection(') === 0) { type = type.replace('Collection(', '').slice(0, -1); }
@@ -905,46 +908,6 @@
                 }
 
                 return cols;
-            }
-
-            function parseColumns(cols) {
-                var i = 0, j = 0, isInt, isNum, isDate, isBool, cmTemplate, newcol = [], navMetadata, searchrules, searchtype;
-                var intTypes = 'Edm.Int16,Edm.Int32,Edm.Int64';
-                var numTypes = 'Edm.Decimal,Edm.Double,Edm.Single';
-                var boolTypes = 'Edm.Byte,Edm.SByte';
-
-                for (i = 0; i < cols.length; i++) {
-                    isInt = intTypes.indexOf(cols[i].Type) >= 0;
-                    isNum = numTypes.indexOf(cols[i].Type) >= 0;
-                    isBool = boolTypes.indexOf(cols[i].Type) >= 0;
-                    isDate = cols[i].Type && (cols[i].Type.indexOf('Edm.') >= 0 && (cols[i].Type.indexOf('Date') >= 0 || cols[i].Type.indexOf('Time') >= 0));
-                    cmTemplate =
-                        cols[i].isComplex ? 'odataComplexType' :
-                            cols[i].isNavigation ? 'odataNavigationProperty' :
-                                isInt ? 'integerStr' :
-                                    isNum ? 'numberStr' :
-                                        isBool ? 'booleanCheckbox' :
-                                            'text';
-
-                    searchrules = { integer: isInt, number: isNum, date: isDate, required: !cols[i].Nullable || cols[i].Nullable === 'false' };
-                    searchtype = isInt ? 'integer' : isNum ? 'number' : isDate ? 'datetime' : isBool ? 'checkbox' : 'text';
-                    newcol.push($.extend({
-                        label: cols[i].Name,
-                        name: cols[i].Name,
-                        index: cols[i].Name,
-                        editable: !cols[i].isNavigation && !cols[i].iskey,
-                        searchrules: searchrules,
-                        editrules: searchrules,
-                        searchtype: searchtype,
-                        inputtype: searchtype,
-                        edittype: searchtype,
-                        key: cols[i].iskey,
-                        odataexpand: (cols[i].isNavigation || cols[i].isComplex) ? o.expandable : null,
-                        type: cols[i].entityType
-                    }, $.jgrid.cmTemplate[cmTemplate]));
-                }
-
-                return newcol;
             }
 
             var $t = this[0], p = $t.p, $self = $($t);
@@ -981,6 +944,46 @@
                 cache: false
             })
             .done(function (data, st, xhr) {
+				function parseColumns(cols) {
+					var i = 0, isInt, isNum, isDate, isBool, cmTemplate, newcol = [], searchrules, searchtype;
+					var intTypes = 'Edm.Int16,Edm.Int32,Edm.Int64';
+					var numTypes = 'Edm.Decimal,Edm.Double,Edm.Single';
+					var boolTypes = 'Edm.Byte,Edm.SByte';
+
+					for (i = 0; i < cols.length; i++) {
+						isInt = intTypes.indexOf(cols[i].Type) >= 0;
+						isNum = numTypes.indexOf(cols[i].Type) >= 0;
+						isBool = boolTypes.indexOf(cols[i].Type) >= 0;
+						isDate = cols[i].Type && (cols[i].Type.indexOf('Edm.') >= 0 && (cols[i].Type.indexOf('Date') >= 0 || cols[i].Type.indexOf('Time') >= 0));
+						cmTemplate =
+							cols[i].isComplex ? 'odataComplexType' :
+								cols[i].isNavigation ? 'odataNavigationProperty' :
+									isInt ? 'integerStr' :
+										isNum ? 'numberStr' :
+											isBool ? 'booleanCheckbox' :
+												'text';
+
+						searchrules = { integer: isInt, number: isNum, date: isDate, required: !cols[i].Nullable || cols[i].Nullable === 'false' };
+						searchtype = isInt ? 'integer' : isNum ? 'number' : isDate ? 'datetime' : isBool ? 'checkbox' : 'text';
+						newcol.push($.extend({
+							label: cols[i].Name,
+							name: cols[i].Name,
+							index: cols[i].Name,
+							editable: !cols[i].isNavigation && !cols[i].iskey,
+							searchrules: searchrules,
+							editrules: searchrules,
+							searchtype: searchtype,
+							inputtype: searchtype,
+							edittype: searchtype,
+							key: cols[i].iskey,
+							odataexpand: (cols[i].isNavigation || cols[i].isComplex) ? o.expandable : null,
+							type: cols[i].entityType
+						}, $.jgrid.cmTemplate[cmTemplate]));
+					}
+
+					return newcol;
+				}
+
                 var i = 0, j = 0, subgridCols = {};
 
                 if (o.metadatatype !== 'xml') { data = $.jgrid.odataHelper.resolveJsonReferences(data); }
@@ -997,7 +1000,9 @@
                         if (newcol === undefined) {
                             newcol = parseColumns(cols);
                             for(i in subgridCols) {
-                                subgridCols[i] = parseColumns(subgridCols[i]);
+								if (subgridCols.hasOwnProperty(i)) {
+									subgridCols[i] = parseColumns(subgridCols[i]);
+								}
                             }
                         }
                     }
