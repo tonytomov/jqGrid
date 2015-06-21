@@ -72,7 +72,8 @@ $.jgrid.extend({
 			overlayClass : commonstyle.overlay,
 			removemodal : true,
 			form: 'edit',
-			template : null
+			template : null,
+			focusField : true
 		}, regional, p || {});
 		rp_ge[$(this)[0].p.id] = p;
 		return this.each(function(){
@@ -864,6 +865,7 @@ $.jgrid.extend({
 				overlay: p.overlay,
 				modal:p.modal, 
 				overlayClass: p.overlayClass,
+				focusField : p.focusField,
 				onHide :  function(h) {
 					var fh = $('#editmod'+gID)[0].style.height,
 						fw = $('#editmod'+gID)[0].style.width;
@@ -1372,7 +1374,7 @@ $.jgrid.extend({
 				tbl += "</tbody></table></div>";
 				var bS  = "<a id='dData' class='fm-button " + commonstyle.button + "'>"+p.bSubmit+"</a>",
 				bC  = "<a id='eData' class='fm-button " + commonstyle.button + "'>"+p.bCancel+"</a>";
-				tbl += "<table border='0' class='EditTable ui-common-table' id='"+dtbl+"_2'><tbody><tr><td><hr class='" + commonstyle.content + "' style='margin:1px'/></td></tr><tr><td class='DelButton EditButton'>"+bS+"&#160;"+bC+"</td></tr></tbody></table>";
+				tbl += "<table class='EditTable ui-common-table' id='"+dtbl+"_2'><tbody><tr><td><hr class='" + commonstyle.content + "' style='margin:1px'/></td></tr><tr><td class='DelButton EditButton'>"+bS+"&#160;"+bC+"</td></tr></tbody></table>";
 				p.gbox = "#gbox_"+$.jgrid.jqID(gID);
 				$.jgrid.createModal(IDs,tbl, rp_ge[$t.p.id] ,"#gview_"+$.jgrid.jqID($t.p.id),$("#gview_"+$.jgrid.jqID($t.p.id))[0]);
 

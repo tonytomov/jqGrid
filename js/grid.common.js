@@ -214,6 +214,15 @@ $.extend($.jgrid,{
 			jqm : true,
 			jqM : true
 		}, o || {});
+		if(o.focusField === undefined) {
+			o.focusField = 0;
+		} else {
+			if(typeof o.focusField === "number" && o.focusField >= 0 ) {
+				o.focusField = parseInt(o.focusField,10);
+			} else {
+				o.focusField = 0;
+			}
+		}
 		if ($.fn.jqm && o.jqm === true) {
 			if(o.jqM) { $(selector).attr("aria-hidden","false").jqm(o).jqmShow(); }
 			else {$(selector).attr("aria-hidden","false").jqmShow();}
@@ -223,7 +232,7 @@ $.extend($.jgrid,{
 				$(selector).data("gbox",o.gbox);
 			}
 			$(selector).show().attr("aria-hidden","false");
-			try{$(':input:visible',selector)[0].focus();}catch(_){}
+			try{$(':input:visible',selector)[o.focusField].focus();}catch(_){}
 		}
 	},
 	info_dialog : function(caption, content,c_b, modalopt) {
