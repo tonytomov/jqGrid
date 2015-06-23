@@ -216,12 +216,14 @@ $.extend($.jgrid,{
 		}, o || {});
 		if(o.focusField === undefined) {
 			o.focusField = 0;
+		}
+		if(typeof o.focusField === "number" && o.focusField >= 0 ) {
+			o.focusField = parseInt(o.focusField,10);
+		}
+		if(typeof o.focusField === "boolean" && !o.focusField) {
+			o.focusField = false;
 		} else {
-			if(typeof o.focusField === "number" && o.focusField >= 0 ) {
-				o.focusField = parseInt(o.focusField,10);
-			} else {
-				o.focusField = 0;
-			}
+			o.focusField = 0;
 		}
 		if ($.fn.jqm && o.jqm === true) {
 			if(o.jqM) { $(selector).attr("aria-hidden","false").jqm(o).jqmShow(); }
@@ -232,7 +234,9 @@ $.extend($.jgrid,{
 				$(selector).data("gbox",o.gbox);
 			}
 			$(selector).show().attr("aria-hidden","false");
-			try{$(':input:visible',selector)[o.focusField].focus();}catch(_){}
+			if(o.focusField >= 0) {
+				try{$(':input:visible',selector)[parseInt(o.focusField,10)].focus();}catch(_){}
+			}
 		}
 	},
 	info_dialog : function(caption, content,c_b, modalopt) {
@@ -531,23 +535,6 @@ $.extend($.jgrid,{
 					setAttributes(elem, options, ['value']);
 				}
 			break;
-			case "text" :
-			case "password" :
-			case "button" :
-				var role;
-				if(eltype==="button") { role = "button"; }
-				else { role = "textbox"; }
-				elem = document.createElement("input");
-				elem.type = eltype;
-				elem.value = vl;
-				setAttributes(elem, options);
-				if(eltype !== "button"){
-					if(autowidth) {
-						if(!options.size) { $(elem).css({width:"96%"}); }
-					} else if (!options.size) { options.size = 20; }
-				}
-				$(elem).attr("role",role);
-			break;
 			case "image" :
 			case "file" :
 				elem = document.createElement("input");
@@ -577,6 +564,20 @@ $.extend($.jgrid,{
 					else { $.jgrid.info_dialog(errors.errcap,typeof e==="string"?e:e.message,edit.bClose, {styleUI : $t.p.styleUI }); }
 				}
 			break;
+			default :
+				var role;
+				if(eltype==="button") { role = "button"; }
+				else { role = "textbox"; } // ???
+				elem = document.createElement("input");
+				elem.type = eltype;
+				elem.value = vl;
+				setAttributes(elem, options);
+				if(eltype !== "button"){
+					if(autowidth) {
+						if(!options.size) { $(elem).css({width:"96%"}); }
+					} else if (!options.size) { options.size = 20; }
+				}
+				$(elem).attr("role",role);
 		}
 		return elem;
 	},
