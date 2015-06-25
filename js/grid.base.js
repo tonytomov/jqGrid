@@ -2701,11 +2701,16 @@
 				},
 				formatCol = function (pos, rowInd, tv, rawObject, rowId, rdata) {
 					var cm = p.colModel[pos], cellAttrFunc, cellValue = tv, rPrefix,
-						ral = cm.align, result = "style=\"", clas = cm.classes, nm = cm.name, celp, acp = [];
-					if (ral) { result += "text-align:" + ral + ";"; }
-					if (cm.hidden === true) { result += "display:none;"; }
+						result = "style='", classes = cm.classes,
+						styleValue = cm.align ? "text-align:" + cm.align + ";" : "",
+						attrStr, matches, value, tilteValue,
+						encodeAttr = function (v) {
+							return v.replace(/\'/g, "&#39;");
+						},
+						rest = " aria-describedby='" + p.id + "_" + cm.name + "'";
+					if (cm.hidden === true) { styleValue += "display:none;"; }
 					if (rowInd === 0) {
-						result += "width: " + grid.headers[pos].width + "px;";
+						styleValue += "width: " + grid.headers[pos].width + "px;";
 					} else if (isFunction(cm.cellattr) || (typeof cm.cellattr === "string" && jgrid.cellattr != null && isFunction(jgrid.cellattr[cm.cellattr]))) {
 						cellAttrFunc = isFunction(cm.cellattr) ? cm.cellattr : jgrid.cellattr[cm.cellattr];
 						if (p.useUnformattedDataForCellAttr && rdata != null) {
@@ -2717,27 +2722,66 @@
 							rPrefix = "<span class='" + p.autoResizing.wrapperClassName + "'>";
 							cellValue = tv.substring(rPrefix.length, tv.length - "</span>".length);
 						}
-						celp = cellAttrFunc.call(ts, rowId, cellValue, rawObject, cm, rdata);
-						if (celp && typeof celp === "string") {
-							celp = celp.replace(/style/i, "style").replace(/title/i, "title");
-							if (celp.indexOf("title") > -1) { cm.title = false; }
-							if (celp.indexOf("class") > -1) { clas = undefined; }
-							acp = celp.replace(/\-style/g, "-sti").split(/style/);
-							if (acp.length === 2) {
-								acp[1] = trim(acp[1].replace(/\-sti/g, "-style").replace("=", ""));
-								if (acp[1].indexOf("'") === 0 || acp[1].indexOf("\"") === 0) {
-									acp[1] = acp[1].substring(1);
+						attrStr = cellAttrFunc.call(ts, rowId, cellValue, rawObject, cm, rdata);
+						if (typeof attrStr === "string") {
+							// ??? probably one can create object with properties from the attrStr
+							// and then to use one common function with constructTr to combin the default
+							// properties with the properties used in cellattr and rowattr.
+							// Probably one could use $.extend with the most attributes. The exception are
+							// only class and style attributes which hold multi-values with " " or ";" as separator
+							attrStr = attrStr.replace(/\n/g, "&#xA;");
+							while (true) {
+								// we have to use ? in the construction ([^\2]*?) to have non-greedy (lazy, minimal) matching
+								// so that we will find the FIRST closing quote instead of default the LAST matching.
+								
+								// TODO: more common regex for the attribute name.
+								// See http://www.w3.org/TR/html-markup/syntax.html#syntax-attributes:
+								//    Attribute names must consist of one or more characters other than the space
+								//    characters, U+0000 NULL, """, "'", ">", "/", "=", the control characters,
+								//    and any characters that are not defined by Unicode.
+								// An important example is attribute name with "-" in the middle: "data-sometext"
+								// An important example is attribute name with "-" in the middle: "data-sometext"
+								matches = /^\s*(\w+[\w|\-]*)\s*=\s*([\"|\'])(.*?)\2(.*)/.exec(attrStr);
+								if (matches === null || matches.length < 5) {
+									if (!tilteValue && cm.title) {
+										tilteValue = cellValue;
+									}
+									return rest + " style='" + encodeAttr(styleValue) + "'" +
+										(classes ? " class='" + encodeAttr(classes) + "'" : "") +
+										(tilteValue ? " title='" + encodeAttr(tilteValue) + "'" : "");
 								}
-								result += acp[1].replace(/'/gi, "\"");
-							} else {
-								result += "\"";
+								value = matches[3];
+								attrStr = matches[4];
+								switch (matches[1].toLowerCase()) { // attribute name
+									case "class":
+										// if some special characters are inside of class value there MUST be escaped
+										// so we can use any quote characters (' or ") around the call value.
+										// So we don't need to save quote used in class attribute
+										if (classes) {
+											classes += " " + value;
+										} else {
+											classes = value;
+										}
+										break;
+									case "title":
+										//quotedTilteValue = quote + value + quote;
+										tilteValue = value;
+										break;
+									case "style":
+										styleValue += value;
+										break;
+									default:
+										// matches[2] is quote
+										rest += " " + matches[1] + "=" + matches[2] + value + matches[2];
+										break;
+								}
 							}
 						}
 					}
-					if (!acp.length) { acp[0] = ""; result += "\""; }
-					result += (clas !== undefined ? (" class=\"" + clas + "\"") : "") + ((cm.title && cellValue) ? (" title=\"" + stripHtml(tv) + "\"") : "");
-					result += " aria-describedby=\"" + p.id + "_" + nm + "\"";
-					return result + acp[0];
+					result += styleValue + "'";
+					result += (classes !== undefined ? (" class='" + classes + "'") : "") + ((cm.title && cellValue) ? (" title=\"" + stripHtml(tv) + "\"") : "");
+					result += rest;
+					return result;
 				},
 				cellVal = function (val) {
 					return val == null || val === "" ? "&#160;" : (p.autoencode ? htmlEncode(val) : String(val));
