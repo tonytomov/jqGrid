@@ -111,7 +111,7 @@
 							p.additionalProperties.push({
 								name: name,
 								convert: function (data) {
-									return data === true || String(data).toLowerCase() === "true" || String(data) === "1" ? true : false;
+									return data === true || String(data).toLowerCase() === "true" || String(data) === "1" ? true : data;
 								}
 							});
 						} else {
@@ -200,9 +200,25 @@
 			return ret;
 		},
 		getNodeParent: function (rc) {
+			// var $t = this instanceof $ && this.length > 0 ? this[0] : this;
 			var $t = this[0];
 			if (!$t || !$t.grid || $t.p == null || !$t.p.treeGrid || rc == null) { return null; }
-			var p = $t.p, parentIdName = p.treeReader.parent_id_field, parentId = rc[parentIdName];
+			var p = $t.p, treeReader = p.treeReader, parentIdName = treeReader.parent_id_field, parentId = rc[parentIdName];
+			if (p.treeGridModel === "nested") {
+				var result = null,
+					lftc = treeReader.left_field,
+					rgtc = treeReader.right_field,
+					levelc = treeReader.level_field,
+					lft = parseInt(rc[lftc], 10), rgt = parseInt(rc[rgtc], 10), level = parseInt(rc[levelc], 10);
+
+				$(p.data).each(function() {
+					if (parseInt(this[levelc], 10) === level - 1 && parseInt(this[lftc], 10) < lft && parseInt(this[rgtc], 10) > rgt) {
+						result = this;
+						return false;
+					}
+				});
+				return result;
+			}
 			if (parentId === null || parentId === "null") { return null; }
 			var iParent = p._index[parentId];
 			return iParent != undefined ? p.data[iParent] : null;

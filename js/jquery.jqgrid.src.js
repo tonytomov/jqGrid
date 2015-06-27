@@ -1816,8 +1816,9 @@
 					);
 				};
 
-			return "<span class='s-ico' style='display:none'><span class='" + getClasses("asc") +
-				"'></span>" + "<span class='" + getClasses("desc") + "'></span></span>";
+			return "<span class='s-ico" + (p.sortIconsBeforeText ? " jqgrid-icons-first" : "") +
+				"' style='display:none'><span class='" + getClasses("asc") +
+				"'></span><span class='" + getClasses("desc") + "'></span></span>";
 		},
 		/**
 		 *  @param {String} id
@@ -2794,6 +2795,11 @@
 						getBool = function (val) {
 							return val === true || val === "true" || val === "1";
 						};
+					if (p.treeGridModel === "nested" && !ldat[isLeaf]) {
+						var lft = parseInt(ldat[treeReader.left_field], 10),
+							rgt = parseInt(ldat[treeReader.right_field], 10);
+						ldat[isLeaf] = (rgt === lft + 1) ? true : false;
+					}
 					if (ldat[loaded] !== undefined) {
 						ldat[loaded] = getBool(ldat[loaded]);
 					}
@@ -2935,7 +2941,7 @@
 								if (info.type === 1) { // additional property
 									addProp = additionalProperties[info.index];
 									if (addProp != null && isFunction(addProp.convert)) {
-										v = addProp.convert(v);
+										v = addProp.convert(v, cells);
 									}
 								}
 								if (v !== undefined) {
@@ -3024,9 +3030,7 @@
 					}
 					if (p.treeGrid) {
 						if (parseInt(rd[p.treeReader.level_field], 10) !== parseInt(p.tree_root_level, 10)) {
-							var parentId = rd[p.treeReader.parent_id_field],
-								iParent = p._index[parentId],
-								pn = iParent != undefined ? p.data[iParent] : null,
+							var pn = $j.getNodeParent.call($(this), rd),
 								expan = pn && pn.hasOwnProperty(p.treeReader.expanded_field) ?
 										pn[p.treeReader.expanded_field] : true;
 							if (!expan && !hide) {
@@ -3301,7 +3305,7 @@
 								if (info.type === 1) { // additional property
 									addProp = additionalProperties[info.index];
 									if (addProp != null && isFunction(addProp.convert)) {
-										v = addProp.convert(v);
+										v = addProp.convert(v, cells);
 									}
 								}
 								if (v !== undefined) {
@@ -3326,6 +3330,8 @@
 						}
 						id = String(id);
 						idr = p.idPrefix + id;
+						
+						if (p.treeGrid) { normalizeTreeGridProperties(rd); }
 						
 						// final steps of reading the row
 						if (i < rn) {
@@ -4380,7 +4386,7 @@
 				}
 			}
 			var idn, w, res, sort, cmi, tooltip, labelStyle, ptr, tbody, sortarr = [], sortord = [], sotmp = [],
-				thead = "<thead><tr class='ui-jqgrid-labels' role='row'>",
+				thead = "<thead><tr class='ui-jqgrid-labels' role='row'>", headerText,
 				hoverStateClasses = getGuiStyles("states.hover"),
 				disabledStateClasses = getGuiStyles("states.disabled");
 
@@ -4413,12 +4419,21 @@
 				default:
 					labelStyle = "";
 				}
+				
 				thead += "<div id='jqgh_" + p.id + "_" + cmi.name + "'" +
 					(isMSIE ? " class='ui-th-div-ie'" : "") +
-					(labelStyle === "" ? "" : " style='" + labelStyle + "'") + ">" +
-					(cmi.autoResizable && cmi.formatter !== "actions" ?
+					(labelStyle === "" ? "" : " style='" + labelStyle + "'") + ">";
+				headerText = cmi.autoResizable && cmi.formatter !== "actions" ?
 							"<span class='" + p.autoResizing.wrapperClassName + "'>" + p.colNames[iCol] + "</span>" :
-							p.colNames[iCol]);
+							p.colNames[iCol];
+				if (p.sortIconsBeforeText) {
+					thead += (p.builderSortIcons || jgrid.builderSortIcons).call(ts, iCol);
+					thead += headerText;
+				} else {
+					thead += headerText;
+					thead += (p.builderSortIcons || jgrid.builderSortIcons).call(ts, iCol);
+				}
+				thead += "</div></th>";
 				cmi.width = cmi.width ? parseInt(cmi.width, 10) : 150;
 				if (typeof cmi.title !== "boolean") { cmi.title = true; }
 				cmi.lso = "";
@@ -4431,7 +4446,6 @@
 						cmi.lso = sortord[sotmp];
 					}
 				}
-				thead += (p.builderSortIcons || jgrid.builderSortIcons).call(ts, iCol) + "</div></th>";
 			}
 			thead += "</tr></thead>";
 			$self0.append(thead);
@@ -15642,7 +15656,7 @@
 							p.additionalProperties.push({
 								name: name,
 								convert: function (data) {
-									return data === true || String(data).toLowerCase() === "true" || String(data) === "1" ? true : false;
+									return data === true || String(data).toLowerCase() === "true" || String(data) === "1" ? true : data;
 								}
 							});
 						} else {
@@ -15731,9 +15745,25 @@
 			return ret;
 		},
 		getNodeParent: function (rc) {
+			// var $t = this instanceof $ && this.length > 0 ? this[0] : this;
 			var $t = this[0];
 			if (!$t || !$t.grid || $t.p == null || !$t.p.treeGrid || rc == null) { return null; }
-			var p = $t.p, parentIdName = p.treeReader.parent_id_field, parentId = rc[parentIdName];
+			var p = $t.p, treeReader = p.treeReader, parentIdName = treeReader.parent_id_field, parentId = rc[parentIdName];
+			if (p.treeGridModel === "nested") {
+				var result = null,
+					lftc = treeReader.left_field,
+					rgtc = treeReader.right_field,
+					levelc = treeReader.level_field,
+					lft = parseInt(rc[lftc], 10), rgt = parseInt(rc[rgtc], 10), level = parseInt(rc[levelc], 10);
+
+				$(p.data).each(function() {
+					if (parseInt(this[levelc], 10) === level - 1 && parseInt(this[lftc], 10) < lft && parseInt(this[rgtc], 10) > rgt) {
+						result = this;
+						return false;
+					}
+				});
+				return result;
+			}
 			if (parentId === null || parentId === "null") { return null; }
 			var iParent = p._index[parentId];
 			return iParent != undefined ? p.data[iParent] : null;
