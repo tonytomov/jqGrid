@@ -83,7 +83,7 @@
      *           version: 4,
      *           gencolumns: true,
      *           expandable: 'json',
-     *		     entitySet: 'Products',
+     *           entitySet: 'Products',
      *           odataurl: "http://services.odata.org/V4/OData/OData.svc/Products",
      *           metadataurl: 'http://services.odata.org/V4/OData/OData.svc/$metadata',
      *           errorfunc: function (jqXHR, parsedError) {
@@ -114,7 +114,7 @@
      *               datatype: 'jsonp',
      *               version: 4,
      *               gencolumns: false,
-     *		         entitySet: 'Products',
+     *               entitySet: 'Products',
      *               odataurl: "http://services.odata.org/V4/OData/OData.svc/Products"
      *            });
      *         }
@@ -483,7 +483,7 @@
                             type = attr.Type;
                             iskey = (attr.Name === key);
                             isNav = itm.tagName === 'NavigationProperty' && type.indexOf('Collection') >= 0;
-                            isComplex = itm.tagName === 'Property' && !!namespace && type.indexOf(namespace) >= 0 || itm.tagName === 'NavigationProperty' && type.indexOf('Collection') < 0;
+                            isComplex = (itm.tagName === 'Property' && !!namespace && type.indexOf(namespace) >= 0) || (itm.tagName === 'NavigationProperty' && type.indexOf('Collection') < 0);
 
                             if (type.indexOf('Collection(') === 0) {
                                 type = type.replace('Collection(', '').slice(0, -1);
@@ -582,7 +582,7 @@
 
                     switch (searchOper) {
                         case "in":  // is in
-                        case "cn":	// contains
+                        case "cn":  // contains
                             //return "substringof(" + searchString + ", " + searchField + ") eq true";
                             return "indexof(" + searchField + ",tolower(" + searchString + ")) gt -1";
                         case "ni": // is not in
@@ -711,7 +711,7 @@
                 //var rowObject = $(this).jqGrid('getRowData', row_id, p.odataActiveEntitySet), result;
                 var rowObject = p.data[p._index[row_id]][p.odataActiveEntitySet], result;
                 if(rowObject && rowObject.length > 0) {rowObject = rowObject[0];}
-                var colModel = p.colModel.filter(function(itm) { return itm.name === p.odataActiveEntitySet })[0];
+                var colModel = p.colModel.filter(function(itm) { return itm.name === p.odataActiveEntitySet; })[0];
 
                 if(p.datatype !== 'xml') {
                     if(rowObject && rowObject[p.odataActiveEntitySet + '@odata.navigationLink']) {
@@ -880,30 +880,31 @@
                                 return data;
                             },
                             row: function (data) {
-                                var innerdata, title, i;
-                                data = $(entry, data);
-
-                                //resolve XML references
-                                for(i=0;i<data.length;i++) {
-                                    $('>link', data[i]).each(function () {
+                                var j,
+                                    resolveXmlReferences = function () {
                                         if ($(this).attr('href').indexOf('$links') >= 0) {
                                             return;
                                         }
-                                        title = $(this).attr('title');
+                                        var title = $(this).attr('title'), innerdata;
                                         if ($(this).html().length > 0) {
                                             innerdata = $(this).find('>inline' + root + entry + cell);
                                             if(innerdata.length === 0) {innerdata = $(this).find('>inline' + entry + cell);}
                                             if(innerdata.length > 0) {
                                                 innerdata = innerdata.get(0).childNodes;
                                             }
-                                            $(cell+' '+title, data[i]).remove();
-                                            $(cell, data[i]).append($('<' + title + '>').append(innerdata).get(0));
+                                            $(cell+' '+title, data[j]).remove();
+                                            $(cell, data[j]).append($('<' + title + '>').append(innerdata).get(0));
                                         }
                                         else {
                                             if ($(this).attr('rel') === 'edit' && $(this).attr('href').length > 0) {title = 'odata.editLink';}
-                                            $(cell, data[i]).append($('<' + title + '>').text($(this).attr('href')).get(0));
+                                            $(cell, data[j]).append($('<' + title + '>').text($(this).attr('href')).get(0));
                                         }
-                                    });
+                                    };
+                                data = $(entry, data);
+
+                                //resolve XML references
+                                for(j=0;j<data.length;j++) {
+                                    $('>link', data[j]).each(resolveXmlReferences);
                                 }
 
                                 return data;
@@ -1096,7 +1097,7 @@
                         if (!coldata) {
                             coldata = {};
                             for(i in mdata) {
-                                if (i && mdata.hasOwnProperty(i)) {
+                                if (mdata.hasOwnProperty(i) && i) {
                                     coldata[i] = $self.jqGrid('parseColumns', mdata[i], o.expandable);
                                 }
                             }
@@ -1106,7 +1107,7 @@
 
                 if (coldata) {
                     for(k in coldata) {
-                        if (k && coldata.hasOwnProperty(k)) {
+                        if (coldata.hasOwnProperty(k) && k) {
                             for (i = 0; i < p.colModel.length; i++) {
                                 for (j = 0; j < coldata[k].length; j++) {
                                     if (coldata[k][j].name === p.colModel[i].name) {
