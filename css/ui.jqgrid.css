@@ -207,23 +207,39 @@
 .ui-state-disabled.ui-grid-ico-sort {
 	cursor: pointer !important;/*to overwrite .ui-state-disabled { cursor: default !important; } from jQuery UI */
 }
-.ui-jqgrid .ui-icon-asc {
-	margin-top: -3px;
-	height: 12px;
+.ui-jqgrid .s-ico {
+	position: relative;
+	width: .87em;
+	height: 1.125em;
+	display: inline-block;
+	vertical-align: middle;
 }
-.ui-jqgrid .ui-icon-desc {
-	margin-top: 3px;
-	height: 12px;
+.ui-jqgrid .s-ico > .ui-grid-ico-sort {
+	display: block;
+	position: relative;
 }
-.ui-jqgrid .ui-i-asc {
-	margin-top: 0;
-	height: 16px;
+.ui-jqgrid .s-ico > .ui-grid-ico-sort.ui-icon {
+	width: 12px;
 }
-.ui-jqgrid .ui-i-desc {
-	margin-top: 0;
-	margin-left: 13px;
-	height: 16px;
+.ui-jqgrid .s-ico > .ui-icon-asc.ui-icon {
+	top: -6px;
 }
+.ui-jqgrid .s-ico > .ui-icon-desc.ui-icon {
+	top: -16px;
+}
+.ui-jqgrid .s-ico > .ui-icon-asc.ui-icon.ui-sort-ltr {
+	margin-left: -3px;
+}
+.ui-jqgrid .s-ico > .ui-icon-desc.ui-icon.ui-sort-ltr {
+	margin-left: -4px;
+}
+.ui-jqgrid .s-ico > .ui-icon-asc.ui-icon.ui-sort-rtl {
+	margin-right: 0;
+}
+.ui-jqgrid .s-ico > .ui-icon-desc.ui-icon.ui-sort-rtl {
+	margin-right: 1px;
+}
+
 .ui-jqgrid .ui-th-column > div {
 	cursor: default;
 }
@@ -929,15 +945,22 @@ a.clearsearchclass {
 .ui-jqdialog-titlebar > .ui-jqdialog-titlebar-close:hover > span.fa {
 	margin-top: 3px;
 }
-.ui-jqgrid .ui-icon-asc.fa {
-	height: auto;
-	margin-top: 0;
+.ui-jqgrid .s-ico > .ui-grid-ico-sort.fa {
+	width: .63em;
 }
-.ui-jqgrid .ui-icon-asc.fa,
-.ui-jqgrid .ui-icon-desc.fa {
-	height: auto;
-	margin-top: 2px;
-	margin-left: 2px;
+.ui-jqgrid .s-ico > .ui-icon-asc.fa {
+	top: 0.07em;
+}
+.ui-jqgrid .s-ico > .ui-icon-desc.fa {
+	top: -0.75em;
+}
+.ui-jqgrid .s-ico > .ui-icon-asc.fa.ui-sort-ltr,
+.ui-jqgrid .s-ico > .ui-icon-desc.fa.ui-sort-ltr {
+	left: 0;
+}
+.ui-jqgrid .s-ico > .ui-icon-asc.fa.ui-sort-rtl,
+.ui-jqgrid .s-ico > .ui-icon-desc.fa.ui-sort-rtl {
+	right: 0;
 }
 .ui-jqgrid .s-ico > .ui-state-disabled.fa {
 	padding: 0;
