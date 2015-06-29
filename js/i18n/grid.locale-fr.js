@@ -23,7 +23,7 @@ var locInfo = {
 		pgnext : "Page Suivante",
 		pgprev : "Page Précédente",
 		pgrecs : "Enregistrements par page",
-		showhide: "Toggle Expand Collapse Grid",
+		showhide: "Afficher/Masquer le tableau",
 		savetext: "Enregistrement..."
 	},
 	search : {
