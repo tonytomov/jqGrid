@@ -2417,7 +2417,7 @@
 					dragStart: function (i, x, y, $th) {
 						var self = this, $bDiv = $(self.bDiv), gridOffset = $bDiv.closest(p.gBox).offset(),
 							// it's better to use exact position of the border on the right of the current header
-							startX = $th.offset().left + self.headers[i].width + (jgrid.cell_width ? 0 : intNum(p.cellLayout, 0)) - 2;
+							startX = $th.offset().left + (p.direction === "rtl" ? 0 : self.headers[i].width + (jgrid.cell_width ? 0 : intNum(p.cellLayout, 0)) - 2);
 						self.resizing = { idx: i, startX: startX, sOL: startX, moved: false, delta: startX - x.pageX };
 						self.curGbox = $(p.rs);
 						self.curGbox.prependTo("body"); // change the parent to be able to move over the ranges of the gBox
@@ -2706,7 +2706,7 @@
 						styleValue = cm.align ? "text-align:" + cm.align + ";" : "",
 						attrStr, matches, value, tilteValue,
 						encodeAttr = function (v) {
-							return v.replace(/\'/g, "&#39;");
+							return typeof v === "string" ? v.replace(/\'/g, "&#39;") : v;
 						},
 						rest = " aria-describedby='" + p.id + "_" + cm.name + "'";
 					if (cm.hidden === true) { styleValue += "display:none;"; }
@@ -8883,8 +8883,8 @@
 							top = top + $(grid.uDiv).outerHeight();
 						}
 					}
-					grid.fhDiv = $('<div style="position:absolute;left:0;top:' + top + 'px;height:' + hth + 'px;" class="' + getGuiStyles.call($t, "hDiv", "frozen-div ui-jqgrid-hdiv") + '"></div>');
-					grid.fbDiv = $('<div style="position:absolute;left:0;top:' + (parseInt(top, 10) + parseInt(hth, 10) + 1) + 'px;overflow:hidden" class="frozen-bdiv ui-jqgrid-bdiv"></div>');
+					grid.fhDiv = $('<div style="position:absolute;overflow:hidden;" + (p.direction === "rtl" ? "right:0;" : "left:0;") + "top:' + top + 'px;height:' + hth + 'px;" class="' + getGuiStyles.call($t, "hDiv", "frozen-div ui-jqgrid-hdiv") + '"></div>');
+					grid.fbDiv = $('<div style="position:absolute;overflow:hidden;" + (p.direction === "rtl" ? "right:0;" : "left:0;") + "top:' + (parseInt(top, 10) + parseInt(hth, 10) + 1) + 'px;overflow:hidden" class="frozen-bdiv ui-jqgrid-bdiv"></div>');
 					$(p.gView).append(grid.fhDiv);
 					var htbl = $(".ui-jqgrid-htable", p.gView).clone(true);
 					/*if ($t.ftoolbar) {
@@ -8960,7 +8960,7 @@
 					if (p.footerrow) {
 						var hbd = $(".ui-jqgrid-bdiv", p.gView).height();
 
-						grid.fsDiv = $('<div style="position:absolute;left:0;top:' + (parseInt(top, 10) + parseInt(hth, 10) + parseInt(hbd, 10) + 1) + 'px;" class="frozen-sdiv ui-jqgrid-sdiv"></div>');
+						grid.fsDiv = $('<div style="position:absolute;" + (p.direction === "rtl" ? "right:0;" : "left:0;") + "top:' + (parseInt(top, 10) + parseInt(hth, 10) + parseInt(hbd, 10) + 1) + 'px;" class="frozen-sdiv ui-jqgrid-sdiv"></div>');
 						$(p.gView).append(grid.fsDiv);
 						var ftbl = $(".ui-jqgrid-ftable", p.gView).clone(true);
 						$("tr", ftbl).each(function () {
@@ -9018,10 +9018,10 @@
 							var iRow, n, $frozenRows, $rows, $row, $frozenRow, posFrozenTop, height, newHeightFrozen,
 								posTop = $(hDivBase).position().top, frozenTableTop, tableTop;
 							if ($hDiv != null && $hDiv.length > 0) {
-								$hDiv.css({
-									top: posTop,
-									left: p.direction === "rtl" ? hDivBase.clientWidth - grid.fhDiv.width() : 0
-								});
+								$hDiv.css(p.direction === "rtl" ?
+									{ top: posTop, right: 0 } :
+									{ top: posTop, left: 0 }
+								);
 								$frozenRows = $hDiv.children("table").children("tbody,thead").children("tr");
 								$rows = $(hDivBase).children("div").children("table").children("tbody,thead").children("tr");
 								n = Math.min($frozenRows.length, $rows.length);

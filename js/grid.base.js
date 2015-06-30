@@ -2417,7 +2417,7 @@
 					dragStart: function (i, x, y, $th) {
 						var self = this, $bDiv = $(self.bDiv), gridOffset = $bDiv.closest(p.gBox).offset(),
 							// it's better to use exact position of the border on the right of the current header
-							startX = $th.offset().left + self.headers[i].width + (jgrid.cell_width ? 0 : intNum(p.cellLayout, 0)) - 2;
+							startX = $th.offset().left + (p.direction === "rtl" ? 0 : self.headers[i].width + (jgrid.cell_width ? 0 : intNum(p.cellLayout, 0)) - 2);
 						self.resizing = { idx: i, startX: startX, sOL: startX, moved: false, delta: startX - x.pageX };
 						self.curGbox = $(p.rs);
 						self.curGbox.prependTo("body"); // change the parent to be able to move over the ranges of the gBox
@@ -2706,7 +2706,7 @@
 						styleValue = cm.align ? "text-align:" + cm.align + ";" : "",
 						attrStr, matches, value, tilteValue,
 						encodeAttr = function (v) {
-							return v.replace(/\'/g, "&#39;");
+							return typeof v === "string" ? v.replace(/\'/g, "&#39;") : v;
 						},
 						rest = " aria-describedby='" + p.id + "_" + cm.name + "'";
 					if (cm.hidden === true) { styleValue += "display:none;"; }
