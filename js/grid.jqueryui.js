@@ -329,8 +329,9 @@
 					}
 					return;
 				}
-				select.append("<option value='" + i + "' " +
-							  (this.hidden ? "" : "selected='selected'") + ">" + colHeader[i] + "</option>");
+				select.append("<option value='" + i + "'" +
+							  (p.headertitles || this.headerTitle ? (" title=\"" + jgrid.stripHtml(typeof this.headerTitle === "string" ? this.headerTitle : colHeader[i]) + "\"") : "") +
+							  (this.hidden ? "" : " selected='selected'") + ">" + colHeader[i] + "</option>");
 			});
 
 			dopts = $.isFunction(opts.dlog_opts) ? opts.dlog_opts.call($self, opts) : opts.dlog_opts;
