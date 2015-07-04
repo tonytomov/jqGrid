@@ -5392,9 +5392,14 @@
 				clearArray(p.savedRow); // p.savedRow = [];
 			});
 		},
-		getRowData: function (rowid) {
+		getRowData: function (rowid, options) {
 			// TODO: add additional parameter, which will inform whether the output data need be in formatted or unformatted form
 			var res = {}, resall;
+			if (typeof rowid === "object") {
+				options = rowid;
+				rowid = undefined;
+			}
+			options = options || {};
 			this.each(function () {
 				var $t = this, p = $t.p, getall = false, ind, len = 2, j = 0, rows = $t.rows, i, $td, cm, nm, td;
 				if (rowid === undefined) {
@@ -5412,7 +5417,7 @@
 						for (i = 0; i < $td.length; i++) {
 							cm = p.colModel[i];
 							nm = cm.name;
-							if (nm !== "cb" && nm !== "subgrid" && nm !== "rn" && cm.formatter !== "actions") {
+							if (nm !== "cb" && nm !== "subgrid" && nm !== "rn" && cm.formatter !== "actions" && (!options.skipHidden || !cm.hidden)) {
 								td = $td[i];
 								if (p.treeGrid === true && nm === p.ExpandColumn) {
 									res[nm] = htmlDecode($("span", td).first().html());
@@ -5424,6 +5429,9 @@
 									}
 								}
 							}
+						}
+						if (options.includeId && (p.keyName === false || res[p.keyName] == null)) {
+							res[p.prmNames.id] = stripPref(p.idPrefix, ind.id);
 						}
 						if (getall) { resall.push(res); res = {}; }
 					}
