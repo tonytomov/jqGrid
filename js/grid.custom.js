@@ -956,7 +956,7 @@
 					// One should not do this for hidden headers.
 					$htable.find(".ui-th-column>div").each(function () {
 						var $ts = $(this), $parent = $ts.parent();
-						if ($parent.is(":visible") && $parent.is(":has(span.ui-jqgrid-resize)")) {
+						if ($parent.is(":visible") && $parent.is(":has(span.ui-jqgrid-resize)") && !($ts.hasClass("ui-jqgrid-rotate") || $ts.hasClass("ui-jqgrid-rotateOldIE"))) {
 							// !!! it seems be wrong now
 							$ts.css("top", ($parent.height() - $ts.outerHeight(true)) / 2 + "px");
 						}
