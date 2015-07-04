@@ -4498,8 +4498,10 @@
 				var pw = Math.floor($(eg).innerWidth());
 				p.width = pw > 0 ? pw : "nw";
 			}
-			if (!isNaN(p.width)) {
+			if (!isNaN(p.width)) { // process values like "500" instead of the number 500.
 				p.width = Number(p.width);
+			} else if (!isNaN(parseFloat(p.width))) { // process values like "500px"
+				p.width = parseFloat(p.width);
 			}
 			p.widthOrg = p.width;
 			setInitialColWidth();
