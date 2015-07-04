@@ -4498,6 +4498,9 @@
 				var pw = Math.floor($(eg).innerWidth());
 				p.width = pw > 0 ? pw : "nw";
 			}
+			if (!isNaN(p.width)) {
+				p.width = Number(p.width);
+			}
 			p.widthOrg = p.width;
 			setInitialColWidth();
 			$(eg).css("width", grid.width + "px")
