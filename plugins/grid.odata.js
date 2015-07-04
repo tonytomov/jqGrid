@@ -322,7 +322,7 @@
 
         parseMetadata: function(rawdata, dataType) {
             function parseXmlData(data) {
-                var cols, props, keys, key, iskey, namespace, isComplex, isNav, type, entityType, attr, mdata={}, entities = {};
+                var cols, props, keys, key, iskey, namespace, isComplex, isNav, entityType, attr, mdata={}, entities = {};
                 namespace = $('Schema', data).attr('Namespace') + '.';
 
                 $('EntityContainer EntitySet', data).each(function (i, itm) {
@@ -343,7 +343,6 @@
                                 attr[this.name] = this.value;
                             });
 
-                            type = attr.Type;
                             iskey = attr.Name === key;
                             isNav = itm.tagName === 'NavigationProperty';
                             isComplex = itm.tagName === 'Property' && $('ComplexType[Name="'+attr.Name+'"]', data).length > 0;
@@ -364,7 +363,7 @@
             }
 
             function parseJsonData(data) {
-                var cols, props, keys, key, name, type, nullable, iskey, i, isComplex, isNav, namespace, mdata={}, entities = {};
+                var cols, props, keys, key, name, type, nullable, iskey, i, isComplex, isNav, namespace, mdata={};
 
                 //TODO
 
@@ -387,10 +386,10 @@
                             isComplex = !!namespace && type.indexOf(namespace) >= 0;
                             isNav = false; //TODO
 
-                            if(isNav) {
+                            /*if(isNav) {
                                 if(type.indexOf('Collection(') === 0) { type = type.replace('Collection(', '').slice(0, -1); }
                                 type = type.replace(namespace, '');
-                            }
+                            }*/
 
                             cols.push({ Name: props[i].Name, Type: type, Nullable: nullable, iskey: iskey, isComplex: isComplex, isNavigation: isNav });
                         }
@@ -471,10 +470,10 @@
             if(!options.colModel.odata.expand || options.colModel.odata.expand === 'link') {
                 return $(this).jqGrid('odataLink', cellvalue, options, rowObject);
             }
-            else if(options.colModel.odata.expand === 'json') {
+            if(options.colModel.odata.expand === 'json') {
                 return $(this).jqGrid('odataJson', cellvalue, options, rowObject);
             }
-            else if(options.colModel.odata.expand === 'subgrid') {
+            if(options.colModel.odata.expand === 'subgrid') {
                 return $(this).jqGrid('odataSubgrid', cellvalue, options, rowObject);
             }
         }
@@ -500,7 +499,7 @@
 
     $.jgrid.extend({
         odataLink: function(cellvalue, options, rowObject) {
-            var i, keyValue, result, $p = this[0].p;
+            var keyValue, result, $p = this[0].p;
             if($p.datatype !== 'xml') {
                 if(rowObject[options.colModel.name + '@odata.navigationLink']) {
                     keyValue = rowObject[options.colModel.name + '@odata.navigationLink'];
@@ -529,7 +528,7 @@
         },
 
         odataJson: function(cellvalue, options, rowObject) {
-            var i, keyValue, result, $p = this[0].p, tmpObj = {};
+            var i, result, $p = this[0].p, tmpObj = {};
             if ($p.datatype === 'xml') {
                 var xmlvalue = $(rowObject).filter(function() {
                     return this.localName.toLowerCase() === options.colModel.name.toLowerCase();
@@ -538,7 +537,7 @@
             }
 
             for(i in cellvalue) {
-                if(i.indexOf('@odata.') < 0 && i.indexOf('@attributes') < 0 && cellvalue.hasOwnProperty(i) && i) {
+                if(cellvalue.hasOwnProperty(i) && i && i.indexOf('@odata.') < 0 && i.indexOf('@attributes') < 0) {
                     tmpObj[i] = cellvalue[i];
                 }
             }
@@ -860,7 +859,7 @@
                 };
 
                 p.inlineEditing = $.extend(true, {
-                    beforeSaveRow: function (options, rowid, frmoper) {
+                    beforeSaveRow: function (options, rowid) {
                         if (options.extraparam.oper === 'edit') {
                             options.url = o.odataurl;
                             options.mtype = o.odataverbs.inlineEditingEdit;
@@ -901,7 +900,7 @@
                 $.extend(p.formDeleting, {
                     url: o.odataurl,
                     mtype: "DELETE",
-                    serializeDelData: function (postdata) {
+                    serializeDelData: function () {
                         return "";
                     },
                     onclickSubmit: function (options, postdata) {
@@ -962,7 +961,7 @@
                             records: function (data) {
                                 return $(root + entry, data).length;    //$('count', data).text()
                             },
-                            page: function (data) {
+                            page: function () {
                                 var skip = p.odata.postData.$skip + p.rowNum;
                                 return Math.ceil(skip / p.rowNum);
                             },
