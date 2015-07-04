@@ -4,7 +4,7 @@
  * Copyright (c) 2014-2015, Mark Babayev (https://github.com/mirik123) markolog@gmail.com
  * License MIT (MIT-LICENSE.txt)
  *
- * insiped by Richard Bennett gist code: jqGrid.ODataExtensions.js
+ * inspired by Richard Bennett gist code: jqGrid.ODataExtensions.js
  * https://gist.github.com/dealproc/6678280
  */
 
@@ -14,8 +14,9 @@
 (function ($) {
     /*
      *Functions:
-     *   parseMetadata                           - $("#grid").jqGrid('parseMetadata', rawdata, dataType)
-     *                                             this function parses $metadata ajax response in xml/json format to plain javascript object.
+     *   parseMetadata                           - $.jgrid.odataHelper.parseMetadata(rawdata, dataType)
+     *                                             this is a generic function that can be used in external packages too, not only in jqGrid.
+     *                                             It parses $metadata ajax response in xml/json format to plain javascript object.
      *
      *   odataGenColModel                        - $("#grid").jqGrid('odataGenColModel', {...});
      *       This function generates jqgrid style columns by requesting odata $metadata.
@@ -60,9 +61,13 @@
      *           }
      *
      *   odata colModel parameters
-     *       odataunformat: function (searchField, searchString, searchOper) - works analogous to xmlmap/jsonmap,
+     *       isnavigation                     - the column type is a NavigationProperty that points to another entity
+     *       iscomplex                        - the column type is a ComplexType
+     *       iscollection                     - the column is a Collection of entities that can be opened in a new subgrid
+     *       nosearch                         - when true, this column is excluded from odata search
+     *       unformat: function (searchField, searchString, searchOper) - works analogous to xmlmap/jsonmap,
      *                              for example the function body can be: { return searchString !== '-1' ? 'cltype/Id' : null; }
-     *       odataexpand: (none|link|json|subgrid) - defines data expansion types for complex amd navigation properties,
+     *       expand: (link|json|subgrid) - defines data expansion types for complex amd navigation properties,
      *                              it works only with custom formatters specified in odata cmTemplates.
      *          link - the link to the property is displayed
      *          json - the property data is displayed in a json string form
@@ -71,6 +76,23 @@
      *   odata column templates (cmTemplate)
      *         odataComplexType                  - column template for odata Complex type.
      *         odataNavigationProperty           - column template for odata Navigation property.
+     *
+     *Plugin allows setting custom cmTemplates for any odata type, for example:
+     *   $.jgrid.cmTemplate["Edm.GeographyPoint"] = {
+     *       editable: false,
+     *       formatter: function(cellvalue, options, rowObject) {
+     *           if (!cellvalue && this.p.datatype === 'xml') {
+     *               var xmlvalue = $(rowObject).filter(function() {
+     *                   return this.localName.toLowerCase() === options.colModel.name.toLowerCase();
+     *               });
+     *               cellvalue = $.jgrid.odataHelper.convertXmlToJson(xmlvalue[0]);
+     *           }
+     *           if(cellvalue.crs && cellvalue.coordinates) {
+     *              return '<div>{0}</div><div>[{1},{2}]</div>'.format(cellvalue.crs.properties.name, cellvalue.coordinates[0], cellvalue.coordinates[1]);
+     *           }
+     *           return '<div>{0}</div>'.format(cellvalue);
+     *       }
+     *   };
      *
      * Example of using standard service from http://www.odata.org/odata-services:
      * $("#grid").jqGrid({
@@ -103,7 +125,7 @@
      *      if(xhr.dataType === 'json' || xhr.dataType === 'jsonp') {
      *          data = $.jgrid.odataHelper.resolveJsonReferences(data);
      *      }
-     *      data = $(this).jqGrid('parseMetadata', data, xhr.dataType);
+     *      data = $.jgrid.odataHelper.parseMetadata(data, xhr.dataType);
      *      var colModel = $(this).jqGrid('parseColumns', data['Product'], 'link');
      *      $("#grid").jqGrid({
      *        colModel: colModel,
@@ -298,58 +320,91 @@
             return $.isEmptyObject(obj) ? null : obj;
         },
 
-        cmTemplateFormatter: function (cellvalue, options, rowObject) {
-            var keyValue, result;
+        parseMetadata: function(rawdata, dataType) {
+            function parseXmlData(data) {
+                var cols, props, keys, key, iskey, namespace, isComplex, isNav, type, entityType, attr, mdata={}, entities = {};
+                namespace = $('Schema', data).attr('Namespace') + '.';
 
-            if(!cellvalue) {return '';}
-            if(!options.colModel.odataexpand || options.colModel.odataexpand === 'link') {
-                if(this.p.datatype !== 'xml') {
-                    if(rowObject['@odata.editLink'] && rowObject[options.colModel.name + '@odata.navigationLink']) {
-                        keyValue = rowObject[options.colModel.name + '@odata.navigationLink'];
-                        result = '<a href="{0}/{1}" target="_self" data-id="{1}">{2}</a>'.format(this.p.odataBaseUrl, keyValue, options.colModel.name);
+                $('EntityContainer EntitySet', data).each(function (i, itm) {
+                    entities[$(itm).attr('EntityType')] = $(itm).attr('Name');
+                });
+
+                $('EntityType, ComplexType', data).each(function () {
+                    props = $(this).find('Property,NavigationProperty');
+                    keys = $('Key PropertyRef', this);
+                    key = keys && keys.length > 0 ? keys.first().attr('Name') : '';
+                    entityType = $(this).attr('Name');
+
+                    if (props) {
+                        cols = [];
+                        props.each(function (n, itm) {
+                            attr = {};
+                            $.each(itm.attributes, function () {
+                                attr[this.name] = this.value;
+                            });
+
+                            type = attr.Type;
+                            iskey = attr.Name === key;
+                            isNav = itm.tagName === 'NavigationProperty';
+                            isComplex = itm.tagName === 'Property' && $('ComplexType[Name="'+attr.Name+'"]', data).length > 0;
+
+                            cols.push($.extend({
+                                iskey: iskey,
+                                isComplex: isComplex,
+                                isNavigation: isNav
+                            }, attr));
+                        });
+
+                        mdata[entities[namespace + entityType]] = cols;
+                        mdata[entityType] = cols;
                     }
-                    else {
-                        keyValue = rowObject[this.p.jsonReader.id];
-                        result = '<a href="{0}({1})/{2}" target="_self" data-id="{1}">{2}</a>'.format(this.p.url, keyValue, options.colModel.name);
+                });
+
+                return mdata;
+            }
+
+            function parseJsonData(data) {
+                var cols, props, keys, key, name, type, nullable, iskey, i, isComplex, isNav, namespace, mdata={}, entities = {};
+
+                //TODO
+
+                for (i = 0; i < data.SchemaElements.length ; i++) {
+                    props = data.SchemaElements[i].DeclaredProperties;
+                    if (data.SchemaElements[i].NavigationProperties) {
+                        props = props.concat(data.SchemaElements[i].NavigationProperties);
+                    }
+                    keys = data.SchemaElements[i].DeclaredKey;
+                    key = keys && keys.length > 0 ? keys[0].Name : '';
+                    namespace = data.SchemaElements[i].Namespace;
+                    name = data.SchemaElements[i].Name;
+
+                    if (props) {
+                        cols=[];
+                        for (i = 0; i < props.length; i++) {
+                            iskey = (props[i].Name === key);
+                            nullable = props[i].Type.IsNullable;
+                            type = props[i].Type.Definition.Namespace + '.' + props[i].Type.Definition.Name;
+                            isComplex = !!namespace && type.indexOf(namespace) >= 0;
+                            isNav = false; //TODO
+
+                            if(isNav) {
+                                if(type.indexOf('Collection(') === 0) { type = type.replace('Collection(', '').slice(0, -1); }
+                                type = type.replace(namespace, '');
+                            }
+
+                            cols.push({ Name: props[i].Name, Type: type, Nullable: nullable, iskey: iskey, isComplex: isComplex, isNavigation: isNav });
+                        }
+
+                        mdata[name] = cols;
                     }
                 }
-                else {
-                    keyValue = (function (id) {
-                        return $(rowObject).filter(function () {
-                            return this.localName && this.localName.toLowerCase() === id;
-                        }).text();
-                    }(this.p.xmlReader.id.toLowerCase()));
-                    result = '<a href="{0}({1})/{2}" target="_self" data-id="{1}">{2}</a>'.format(this.p.url, keyValue, options.colModel.name);
-                }
-            }
-            else if(options.colModel.odataexpand === 'subgrid') {
-                if(this.p.datatype !== 'xml') {
-                    keyValue = rowObject[this.p.jsonReader.id];
-                }
-                else {
-                    keyValue = (function (id) {
-                        return $(rowObject).filter(function () {
-                            return this.localName && this.localName.toLowerCase() === id;
-                        }).text();
-                    }(this.p.xmlReader.id.toLowerCase()));
-                }
 
-                var onclick = '\'$(\"#{2}\").jqGrid(\"setGridParam\", { odataActiveEntitySet: \"{1}\" });$(\"#{2}\").jqGrid(\"expandSubGridRow\", {0});return false;\'';
-                result = '<a style="cursor:pointer" data-id="{0}" onclick='+onclick+'>{1}</a>';
-                result = result.format(keyValue, options.colModel.name, options.gid);
-            }
-            else if(options.colModel.odataexpand === 'json') {
-                if (this.p.datatype === 'xml') {
-                    var xmlvalue = $(rowObject).filter(function() {
-                        return this.localName.toLowerCase() === options.colModel.name.toLowerCase();
-                    });
-                    cellvalue = $.jgrid.odataHelper.convertXmlToJson(xmlvalue[0]);
-                }
-
-                result = JSON.stringify(cellvalue, null ,1);
+                return mdata;
             }
 
-            return result;
+            var mdata = dataType === 'xml' ? parseXmlData(rawdata) : parseJsonData(rawdata);
+
+            return mdata;
         },
 
         loadError: function(jqXHR, textStatus, errorThrown) {
@@ -405,15 +460,119 @@
 
     $.jgrid.cmTemplate.odataComplexType = {
         editable: false,
-        formatter: $.jgrid.odataHelper.cmTemplateFormatter
+        formatter: function(cellvalue, options, rowObject) {
+            return $(this).jqGrid('odataJson', cellvalue, options, rowObject);
+        }
     };
 
     $.jgrid.cmTemplate.odataNavigationProperty = {
         editable: false,
-        formatter: $.jgrid.odataHelper.cmTemplateFormatter
+        formatter: function(cellvalue, options, rowObject) {
+            if(!options.colModel.odata.expand || options.colModel.odata.expand === 'link') {
+                return $(this).jqGrid('odataLink', cellvalue, options, rowObject);
+            }
+            else if(options.colModel.odata.expand === 'json') {
+                return $(this).jqGrid('odataJson', cellvalue, options, rowObject);
+            }
+            else if(options.colModel.odata.expand === 'subgrid') {
+                return $(this).jqGrid('odataSubgrid', cellvalue, options, rowObject);
+            }
+        }
+    };
+
+    $.jgrid.cmTemplate["Edm.GeographyPoint"] = {
+        editable: false,
+        formatter: function(cellvalue, options, rowObject) {
+            if (!cellvalue && this.p.datatype === 'xml') {
+                var xmlvalue = $(rowObject).filter(function() {
+                    return this.localName.toLowerCase() === options.colModel.name.toLowerCase();
+                });
+                cellvalue = $.jgrid.odataHelper.convertXmlToJson(xmlvalue[0]);
+            }
+
+            if(cellvalue.crs && cellvalue.coordinates) {
+                return '<div>{0}</div><div>[{1},{2}]</div>'.format(cellvalue.crs.properties.name, cellvalue.coordinates[0], cellvalue.coordinates[1]);
+            }
+
+            return '<div>{0}</div>'.format(cellvalue);
+        }
     };
 
     $.jgrid.extend({
+        odataLink: function(cellvalue, options, rowObject) {
+            var i, keyValue, result, $p = this[0].p;
+            if($p.datatype !== 'xml') {
+                if(rowObject[options.colModel.name + '@odata.navigationLink']) {
+                    keyValue = rowObject[options.colModel.name + '@odata.navigationLink'];
+                    result = '<a href="{0}/{1}" target="_self">{2}</a>'.format($p.odata.baseUrl, keyValue, options.colModel.name);
+                    return result;
+                }
+
+                keyValue = rowObject[$p.jsonReader.id];
+            }
+            else {
+                keyValue = (function (id) {
+                    return $(rowObject).filter(function () {
+                        return this.localName && this.localName.toLowerCase() === id;
+                    }).text();
+                }($p.xmlReader.id.toLowerCase()));
+            }
+
+            if($p.odata.iscollection) {
+                result = '<a href="{0}({1})/{2}" target="_self">{2}</a>'.format($p.url, keyValue, options.colModel.name);
+            }
+            else {
+                result = '<a href="{0}/{1}" target="_self">{1}</a>'.format($p.url, options.colModel.name);
+            }
+
+            return result;
+        },
+
+        odataJson: function(cellvalue, options, rowObject) {
+            var i, keyValue, result, $p = this[0].p, tmpObj = {};
+            if ($p.datatype === 'xml') {
+                var xmlvalue = $(rowObject).filter(function() {
+                    return this.localName.toLowerCase() === options.colModel.name.toLowerCase();
+                });
+                cellvalue = $.jgrid.odataHelper.convertXmlToJson(xmlvalue[0]);
+            }
+
+            for(i in cellvalue) {
+                if(i.indexOf('@odata.') < 0 && i.indexOf('@attributes') < 0 && cellvalue.hasOwnProperty(i) && i) {
+                    tmpObj[i] = cellvalue[i];
+                }
+            }
+
+            result = JSON.stringify(tmpObj, null ,1);
+            return result;
+        },
+
+        odataSubgrid: function(cellvalue, options, rowObject) {
+            var i, keyValue, result, $p = this[0].p;
+            if($p.datatype !== 'xml') {
+                keyValue = rowObject[$p.jsonReader.id];
+            }
+            else {
+                keyValue = (function (id) {
+                    return $(rowObject).filter(function () {
+                        return this.localName && this.localName.toLowerCase() === id;
+                    }).text();
+                }($p.xmlReader.id.toLowerCase()));
+            }
+
+            for(i in $p._index) {
+                if($p._index.hasOwnProperty(i) && i && keyValue === $p._index[i].toString()) {
+                    keyValue = i;
+                    break;
+                }
+            }
+
+            var onclick = '\'$(\"#{2}\").jqGrid(\"setGridParam\", { odata: {activeEntitySet: \"{1}\" } });$(\"#{2}\").jqGrid(\"expandSubGridRow\", \"{0}\");return false;\'';
+            result = '<a style="cursor:pointer" data-id="{0}" onclick='+onclick+'>{1}</a>';
+            result = result.format(keyValue, options.colModel.name, options.gid);
+            return result;
+        },
+
         parseColumns: function(cols, expandable) {
             var i = 0, isInt, isNum, isDate, isBool, cmTemplate, newcol = [], searchrules, searchtype, label;
             var intTypes = 'Edm.Int16,Edm.Int32,Edm.Int64';
@@ -426,18 +585,19 @@
                 isBool = boolTypes.indexOf(cols[i].Type) >= 0;
                 isDate = cols[i].Type && (cols[i].Type.indexOf('Edm.') >= 0 && (cols[i].Type.indexOf('Date') >= 0 || cols[i].Type.indexOf('Time') >= 0));
                 cmTemplate =
-                    cols[i].isComplex ? 'odataComplexType' :
-                        cols[i].isNavigation ? 'odataNavigationProperty' :
-                            isInt ? 'integerStr' :
-                                isNum ? 'numberStr' :
-                                    isBool ? 'booleanCheckbox' :
-                                        'text';
+                    $.jgrid.cmTemplate[cols[i].Type] ? cols[i].Type :
+                        cols[i].isComplex ? 'odataComplexType' :
+                            cols[i].isNavigation ? 'odataNavigationProperty' :
+                                isInt ? 'integerStr' :
+                                    isNum ? 'numberStr' :
+                                        isBool ? 'booleanCheckbox' :
+                                            'text';
 
                 searchrules = { integer: isInt, number: isNum, date: isDate, required: !cols[i].Nullable || cols[i].Nullable === 'false' };
                 searchtype = isInt ? 'integer' : isNum ? 'number' : isDate ? 'datetime' : isBool ? 'checkbox' : 'text';
                 label = (cols[i].isNavigation || cols[i].isComplex) ?
                     '<span class="ui-icon ui-icon-arrowreturn-1-s" style="display:inline-block;vertical-align:middle;"></span>' + cols[i].Name : cols[i].Name;
-                
+
                 newcol.push($.extend({
                     label: label,
                     name: cols[i].Name,
@@ -449,102 +609,16 @@
                     inputtype: searchtype,
                     edittype: searchtype,
                     key: cols[i].iskey,
-                    odataexpand: (cols[i].isNavigation || cols[i].isComplex) ? expandable : null,
-                    odatatype: cols[i].isNavigation ? 'navigation' : cols[i].isComplex ? 'complex' : 'simple'
+                    odata: {
+                        expand: cols[i].isNavigation ? expandable : cols[i].isComplex ? 'json' : null,
+                        isnavigation: cols[i].isNavigation,
+                        iscomplex: cols[i].isComplex,
+                        iscollection: cols[i].Type.indexOf('Collection') >= 0
+                    }
                 }, $.jgrid.cmTemplate[cmTemplate]));
             }
 
             return newcol;
-        },
-
-        parseMetadata: function(rawdata, dataType) {
-            function parseXmlData(data) {
-                var cols, props, keys, key, iskey, namespace, isComplex, isNav, type, entityType, attr, mdata={}, entities = {};
-                namespace = $('Schema', data).attr('Namespace') + '.';
-
-                $('EntityContainer EntitySet', data).each(function (i, itm) {
-                    entities[$(itm).attr('EntityType')] = $(itm).attr('Name');
-                });
-
-                $('EntityType', data).each(function () {
-                    props = $(this).find('Property,NavigationProperty');
-                    keys = $('Key PropertyRef', this);
-                    key = keys && keys.length > 0 ? keys.first().attr('Name') : '';
-                    entityType = $(this).attr('Name');
-
-                    if (props) {
-                        cols = [];
-                        props.each(function (n, itm) {
-                            attr = {};
-                            $.each(itm.attributes, function () {
-                                attr[this.name] = this.value;
-                            });
-
-                            type = attr.Type;
-                            iskey = (attr.Name === key);
-                            isNav = itm.tagName === 'NavigationProperty' && type.indexOf('Collection') >= 0;
-                            isComplex = (itm.tagName === 'Property' && !!namespace && type.indexOf(namespace) >= 0) || (itm.tagName === 'NavigationProperty' && type.indexOf('Collection') < 0);
-
-                            if (type.indexOf('Collection(') === 0) {
-                                type = type.replace('Collection(', '').slice(0, -1);
-                            }
-                            type = type.replace(namespace, '');
-
-                            cols.push($.extend({
-                                iskey: iskey,
-                                isComplex: isComplex,
-                                isNavigation: isNav
-                            }, attr));
-                        });
-
-                        mdata[entities[namespace + entityType]] = cols;
-                        mdata[entityType] = cols;
-                    }
-                });
-
-                return mdata;
-            }
-
-            function parseJsonData(data) {
-                var cols, props, keys, key, name, type, nullable, iskey, i, isComplex, isNav, namespace, mdata={};
-
-                for (i = 0; i < data.SchemaElements.length ; i++) {
-                    props = data.SchemaElements[i].DeclaredProperties;
-                    if (data.SchemaElements[i].NavigationProperties) {
-                        props = props.concat(data.SchemaElements[i].NavigationProperties);
-                    }
-                    keys = data.SchemaElements[i].DeclaredKey;
-                    key = keys && keys.length > 0 ? keys[0].Name : '';
-                    namespace = data.SchemaElements[i].Namespace;
-                    name = data.SchemaElements[i].Name;
-
-                    if (props) {
-                        cols=[];
-                        for (i = 0; i < props.length; i++) {
-                            iskey = (props[i].Name === key);
-                            nullable = props[i].Type.IsNullable;
-                            type = props[i].Type.Definition.Namespace + '.' + props[i].Type.Definition.Name;
-                            isComplex = !!namespace && type.indexOf(namespace) >= 0;
-                            isNav = false; //TODO
-
-                            if(isNav) {
-                                if(type.indexOf('Collection(') === 0) { type = type.replace('Collection(', '').slice(0, -1); }
-                                type = type.replace(namespace, '');
-                            }
-
-                            cols.push({ Name: props[i].Name, Type: type, Nullable: nullable, iskey: iskey, isComplex: isComplex, isNavigation: isNav });
-                        }
-
-                        mdata[name] = cols;
-                    }
-                }
-
-                return mdata;
-            }
-
-            var mdata = dataType === 'xml' ? parseXmlData(rawdata) : parseJsonData(rawdata);
-
-            return mdata;
         },
 
         odataInit: function (options) {
@@ -561,9 +635,9 @@
                         for (i = 0; i < p.colModel.length; i++) {
                             col = p.colModel[i];
                             if (col.name === searchField) {
-                                if (col.odata === false) { return; }
-                                if (col.odataunformat) {
-                                    searchField = $.isFunction(col.odataunformat) ? col.odataunformat(searchField, searchString, searchOper) : col.odataunformat;
+                                if (col.odata.nosearch) { return; }
+                                if (col.odata.unformat) {
+                                    searchField = $.isFunction(col.odata.unformat) ? col.odata.unformat(searchField, searchString, searchOper) : col.odata.unformat;
                                     if (!searchField) { return; }
                                 }
                                 if (!col.searchrules || (!col.searchrules.integer && !col.searchrules.number && !col.searchrules.date)) {
@@ -571,8 +645,8 @@
                                 }
                                 else if (col.searchrules && col.searchrules.date) {
                                     searchString = (new Date(searchString)).toISOString();
-                                    //v3: postData.searchString = "datetimeoffset'" + postData.searchString + "'";  
-                                    //v2: postData.searchString = "DateTime'" + postData.searchString + "'"; 
+                                    //v3: postData.searchString = "datetimeoffset'" + postData.searchString + "'";
+                                    //v2: postData.searchString = "DateTime'" + postData.searchString + "'";
                                 }
 
                                 break;
@@ -646,8 +720,13 @@
             function setupWebServiceData(p, o, postData) {
                 var params = {};
 
+                //var expandlist = p.colModel.filter(function(itm) { return itm.odata && itm.odata.isnavigation && (itm.odata.expand === 'json' || itm.odata.expand === 'subgrid'); });
+                //if(expandlist.length > 0) {
+                //    params.$expand = expandlist.reduce(function(x,y) { return x+','+ y.name; }, '').substring(1);
+                //}
+
                 //Query options $orderby, $count, $skip and $top cannot be applied to the requested resource
-                if(!o.isQueryApplicable) {
+                if(!p.odata.iscollection) {
                     if (!o.version || o.version < 4) {
                         params.$format = o.datatype === 'xml' ? 'atom' : 'application/json;odata=fullmetadata';
                     }
@@ -662,11 +741,6 @@
                     $top: postData.rows, //- $top removes odata.nextLink parameter
                     $skip: (parseInt(postData.page, 10) - 1) * p.rowNum
                 };
-
-                var expandlist = p.colModel.filter(function(itm) { return itm.odataexpand === 'json' || itm.odataexpand === 'subgrid'; });
-                if(expandlist.length > 0) {
-                    params.$expand = expandlist.reduce(function(x,y) { return x+','+ y.name; }, '').substring(1);
-                }
 
                 if (o.datatype === 'jsonp') { params.$callback = o.callback; }
                 if (!o.version || o.version < 4) {
@@ -708,23 +782,16 @@
             }
 
             function subgridRowExpanded(p, o, subgrid_id, row_id) {
-                //var rowObject = $(this).jqGrid('getRowData', row_id, p.odataActiveEntitySet), result;
-                var rowObject = p.data[p._index[row_id]][p.odataActiveEntitySet], result;
-                if(rowObject && rowObject.length > 0) {rowObject = rowObject[0];}
-                var colModel = p.colModel.filter(function(itm) { return itm.name === p.odataActiveEntitySet; })[0];
+                //var rowObject = $(this).jqGrid('getRowData', row_id, p.odata.activeEntitySet), result;
+                //var rowObject = p.data[p._index[row_id]][p.odata.activeEntitySet], result;
+                var result, colModel = p.colModel.filter(function(itm) { return itm.name === p.odata.activeEntitySet; })[0];
+                row_id = p._index[row_id];
 
-                if(p.datatype !== 'xml') {
-                    if(rowObject && rowObject[p.odataActiveEntitySet + '@odata.navigationLink']) {
-                        var keyValue = rowObject[p.odataActiveEntitySet + '@odata.navigationLink'];
-                        result = '{0}/{1}'.format(p.odataBaseUrl, keyValue);
-                    }
-                    else {
-                        result = '{0}({1})/{2}'.format(p.url, row_id, p.odataActiveEntitySet);
-                    }
+                if(p.odata.iscollection) {
+                    result = '{0}({1})/{2}'.format(p.url, row_id, p.odata.activeEntitySet);
                 }
                 else {
-                    //TODO
-                    result = '{0}({1})/{2}'.format(p.url, row_id, p.odataActiveEntitySet);
+                    result = '{0}/{1}'.format(p.url, p.odata.activeEntitySet);
                 }
 
                 var odatainit = {
@@ -735,14 +802,13 @@
                     odataurl: result,
                     errorfunc: o.errorfunc,
                     annotations: o.annotations,
-                    entitySet: p.odataActiveEntitySet,
-                    isQueryApplicable: colModel.odatatype !== 'complex'
+                    entitySet: p.odata.activeEntitySet
                 };
 
                 $("#" + subgrid_id).html('<table id="' + subgrid_id + '_t" class="scroll"></table>');
                 $("#"+subgrid_id+"_t").jqGrid({
-                    colModel: p.odataSubgridCols[p.odataActiveEntitySet],
-                    odataSubgridCols: p.odataSubgridCols,
+                    colModel: p.odata.subgridCols[p.odata.activeEntitySet],
+                    odata: $.extend({}, p.odata, colModel.odata),
                     loadonce: true,
                     beforeInitGrid: function () {
                         $(this).jqGrid('odataInit', odatainit);
@@ -764,10 +830,12 @@
                         return subgridRowExpanded(p, o, subgrid_id, row_id);
                     };
 
+                if(!p.odata) {p.odata = { iscollection: true }; }
+
                 $.extend(p, {
                     serializeGridData: function (postData) {
                         postData = setupWebServiceData(p, o, postData);
-                        this.p.odataPostData = postData;
+                        this.p.odata.postData = postData;
                         return postData;
                     },
                     ajaxGridOptions: defaultGetAjaxOptions,
@@ -777,12 +845,11 @@
                 }, defaultGetAjaxOptions);
 
                 for(i=0;i<p.colModel.length;i++) {
-                    if (p.colModel[i].odataexpand === 'subgrid') {
+                    if (p.colModel[i].odata && p.colModel[i].odata.expand === 'subgrid') {
                         p.subGrid = true;
                         p.subGridRowExpanded = subGridRowExpandedFunc;
-                        if(!p.odataActiveEntitySet) {
-                            p.odataActiveEntitySet = p.colModel[i].name;
-                        }
+                        p.odata.activeEntitySet = p.colModel[i].name;
+
                         break;
                     }
                 }
@@ -863,48 +930,28 @@
                     $.extend(true, p, {
                         xmlReader: {
                             root: function (data) {
-                                data = $(root, data).get(0);
+                                data = data.childNodes[0];
                                 data.innerHTML = data.innerHTML.replace(/<(\/?)([^:>\s]*:)?([^>]+)>/g, "<$1$3>");
 
                                 var param = $(data).attr('m:context');
                                 if(param) {
-                                    p.odataBaseUrl = param.substring(0, param.indexOf('/$metadata'));
-                                    p.odataEntityType = param.substring(param.indexOf('#') + 1).replace('/$entity', '');
+                                    p.odata.baseUrl = param.substring(0, param.indexOf('/$metadata'));
+                                    p.odata.entityType = param.substring(param.indexOf('#') + 1).replace('/$entity', '');
                                 }
 
                                 param =  $(data).attr('m:type');
                                 if (param) {
-                                    p.odataEntityType = param.replace('#', '');
+                                    p.odata.entityType = param.replace('#', '');
                                 }
 
                                 return data;
                             },
                             row: function (data) {
-                                var j,
-                                    resolveXmlReferences = function () {
-                                        if ($(this).attr('href').indexOf('$links') >= 0) {
-                                            return;
-                                        }
-                                        var title = $(this).attr('title'), innerdata;
-                                        if ($(this).html().length > 0) {
-                                            innerdata = $(this).find('>inline' + root + entry + cell);
-                                            if(innerdata.length === 0) {innerdata = $(this).find('>inline' + entry + cell);}
-                                            if(innerdata.length > 0) {
-                                                innerdata = innerdata.get(0).childNodes;
-                                            }
-                                            $(cell+' '+title, data[j]).remove();
-                                            $(cell, data[j]).append($('<' + title + '>').append(innerdata).get(0));
-                                        }
-                                        else {
-                                            if ($(this).attr('rel') === 'edit' && $(this).attr('href').length > 0) {title = 'odata.editLink';}
-                                            $(cell, data[j]).append($('<' + title + '>').text($(this).attr('href')).get(0));
-                                        }
-                                    };
-                                data = $(entry, data);
-
-                                //resolve XML references
-                                for(j=0;j<data.length;j++) {
-                                    $('>link', data[j]).each(resolveXmlReferences);
+                                if(data.localName === 'entry') {
+                                    data = [data];
+                                }
+                                else {
+                                    data = $(entry, data);
                                 }
 
                                 return data;
@@ -913,15 +960,15 @@
                                 return $(cell, data).get(0).childNodes;
                             },
                             records: function (data) {
-                                return $(root + entry, data).length;
+                                return $(root + entry, data).length;    //$('count', data).text()
                             },
                             page: function (data) {
-                                var skip = p.odataPostData.$skip + p.rowNum;
+                                var skip = p.odata.postData.$skip + p.rowNum;
                                 return Math.ceil(skip / p.rowNum);
                             },
                             total: function (data) {
-                                var records = $(root + entry, data).length;
-                                var skip = p.odataPostData.$skip + p.rowNum;
+                                var records = $(root + entry, data).length;    //$('count', data).text()
+                                var skip = p.odata.postData.$skip + p.rowNum;
                                 return Math.ceil(skip / p.rowNum) + (records > 0 ? 1 : 0);
                             },
                             repeatitems: true,
@@ -936,13 +983,13 @@
                             root: function (data) {
                                 var param = data['@odata.context'];
                                 if (param) {
-                                    p.odataBaseUrl = param.substring(0, param.indexOf('/$metadata'));
-                                    p.odataEntityType = param.substring(param.indexOf('#') + 1).replace('/$entity', '');
+                                    p.odata.baseUrl = param.substring(0, param.indexOf('/$metadata'));
+                                    p.odata.entityType = param.substring(param.indexOf('#') + 1).replace('/$entity', '');
                                 }
 
                                 param = data['@odata.type'];
                                 if (param) {
-                                    p.odataEntityType = param.replace('#', '');
+                                    p.odata.entityType = param.replace('#', '');
                                 }
 
                                 //data = $.jgrid.odataHelper.resolveJsonReferences(data);
@@ -976,7 +1023,7 @@
                                         skip = parseInt(data["odata.nextLink"].split('skip=')[1], 10);
                                     }
                                     else {
-                                        skip = p.odataPostData.$skip + p.rowNum;
+                                        skip = p.odata.postData.$skip + p.rowNum;
                                         var total = data["odata.count"] || data["@odata.count"];
                                         if (skip > total) { skip = total; }
                                     }
@@ -1005,7 +1052,6 @@
                     entitySet: null,
                     annotations: false,
                     annotationName: "@jqgrid.GridModelAnnotate",
-                    isQueryApplicable: true,
                     odataverbs: {
                         inlineEditingAdd: 'POST',
                         inlineEditingEdit: 'PATCH',
@@ -1090,7 +1136,7 @@
                 mdata = $self.triggerHandler("jqGridODataParseMetadata", data);
                 if (!mdata && $.isFunction(o.parsemetadatafunc)) { mdata = o.parsemetadatafunc(data, st, xhr); }
                 if (!mdata) {
-                    mdata = $self.jqGrid('parseMetadata', data, o.metadatatype);
+                    mdata = $.jgrid.odataHelper.parseMetadata(data, o.metadatatype);
                     if (mdata) {
                         coldata = $self.triggerHandler("jqGridODataParseColumns", [o, mdata]);
                         if (!coldata && $.isFunction(o.parsecolfunc)) { coldata = o.parsecolfunc(o, mdata); }
@@ -1120,7 +1166,9 @@
                     }
 
                     p.colModel = coldata[o.entitySet];
-                    p.odataSubgridCols = coldata;
+
+                    if(!p.odata) {p.odata = { iscollection: true }; }
+                    p.odata.subgridCols = coldata;
 
                     if ($.isFunction(o.successfunc)) {
                         o.successfunc();
