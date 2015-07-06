@@ -204,7 +204,7 @@ $.jgrid.extend({
 						//if(tmp === "" && this.edittype == "select") {tmp = $("option:eq(0)",elc).text();}
 						if(this.edittype === "select") {
 							tmp = $(elc).val();
-							if($(elc).get(0).type === 'select-multiple') {
+							if($(elc).get(0).type === 'select-multiple' && tmp) {
 								tmp = tmp.join(",");
 							}
 						}
