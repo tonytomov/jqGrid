@@ -119,10 +119,10 @@ $.jgrid.extend({
 							ret =  false;
 							break;
 						}
-					}
-					j++;
-					if(j>=this.length) {
-						break;
+						j++;
+						if(j>=this.length) {
+							break;
+						}
 					}
 				}
 				if(ret) {
@@ -382,8 +382,8 @@ $.jgrid.extend({
 											if(ll===1) {
 												headers[ylen-1].groupHeaders.push({startColumnName: l, numberOfColumns: 1, titleText: items.text});
 											}
+											ll++;
 										}
-										ll++;
 									}
 									headers[ylen-1].groupHeaders[headers[ylen-1].groupHeaders.length-1].numberOfColumns = ll-1;
 								} else {
