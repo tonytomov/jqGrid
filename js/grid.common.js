@@ -87,11 +87,10 @@ $.extend($.jgrid,{
 		p = $.extend(true, {}, $.jgrid.jqModal || {}, p);
 		var self = this,
 			rtlsup = $(p.gbox).attr("dir") === "rtl" ? true : false,
-			classes = $.jgrid.styleUI[(p.styleUI || 'jQueryUI')]['modal'],
-			common = $.jgrid.styleUI[(p.styleUI || 'jQueryUI')]['common'];
-		var mw  = document.createElement('div'), rtlsup, self = this;
+			classes = $.jgrid.styleUI[(p.styleUI || 'jQueryUI')].modal,
+			common = $.jgrid.styleUI[(p.styleUI || 'jQueryUI')].common,
+			mw  = document.createElement('div');
 		css = $.extend({}, css || {});
-		rtlsup = $(p.gbox).attr("dir") === "rtl" ? true : false;
 		mw.className= "ui-jqdialog " + classes.modal;
 		mw.id = aIDs.themodal;
 		var mh = document.createElement('div');
@@ -260,8 +259,8 @@ $.extend($.jgrid,{
 		};
 		$.extend(true, mopt, $.jgrid.jqModal || {}, {caption:"<b>"+caption+"</b>"}, modalopt || {});
 		var jm = mopt.jqModal, self = this,
-		classes = $.jgrid.styleUI[(mopt.styleUI || 'jQueryUI')]['modal'],
-		common = $.jgrid.styleUI[(mopt.styleUI || 'jQueryUI')]['common'];
+		classes = $.jgrid.styleUI[(mopt.styleUI || 'jQueryUI')].modal,
+		common = $.jgrid.styleUI[(mopt.styleUI || 'jQueryUI')].common;
 		if($.fn.jqm && !jm) { jm = false; }
 		// in case there is no jqModal
 		var buttstr ="", i;
@@ -423,7 +422,7 @@ $.extend($.jgrid,{
 							options = $.extend({},this.options),
 							msl = options.multiple===true,
 							cU = options.cacheUrlData === true,
-							oV ='', txt, vl,
+							oV ='', txt,
 							a = $.isFunction(options.buildSelect) ? options.buildSelect.call($t,data) : data;
 							if(typeof a === 'string') {
 								a = $( $.trim( a ) ).html();
@@ -488,7 +487,7 @@ $.extend($.jgrid,{
 						ovm = $.map(ovm,function(n){return $.trim(n);});
 					}
 					if(typeof options.value === 'function') { options.value = options.value(); }
-					var so,sv, ov, 
+					var so,sv, ov, oSv, key, value,
 					sep = options.separator === undefined ? ":" : options.separator,
 					delim = options.delimiter === undefined ? ";" : options.delimiter;
 					if(typeof options.value === 'string') {
@@ -506,11 +505,12 @@ $.extend($.jgrid,{
 							if (msl && ($.inArray($.trim(sv[1]), ovm)>-1 || $.inArray($.trim(sv[0]), ovm)>-1)) {ov.selected ="selected";}
 						}
 					} else if (Object.prototype.toString.call(options.value) === "[object Array]") {
-						var oSv = options.value;
+						oSv = options.value;
 						// array of arrays [[Key, Value], [Key, Value], ...]
-						for (var i=0; i<oSv.length; i++) {
+						for (i=0; i<oSv.length; i++) {
 							if(oSv[i].length === 2) {
-								var key = oSv[i][0], value = oSv[i][1];
+								key = oSv[i][0]; 
+								value = oSv[i][1];
 								ov = document.createElement("option");
 								ov.setAttribute("role","option");
 								ov.value = key; ov.innerHTML = value;
@@ -520,7 +520,7 @@ $.extend($.jgrid,{
 							}
 						}
 					} else if (typeof options.value === 'object') {
-						var oSv = options.value, key;
+						oSv = options.value;
 						for (key in oSv) {
 							if (oSv.hasOwnProperty(key ) ){
 								ov = document.createElement("option");
