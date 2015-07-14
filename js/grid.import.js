@@ -199,8 +199,8 @@ $.extend($.jgrid,{
 			});
 		}
 		try {
-			window['sessionStorage'].removeItem("jqGrid"+grid.id);
-			window['sessionStorage'].removeItem("jqGrid"+grid.id+"_data");
+			window.sessionStorage.removeItem("jqGrid"+grid.id);
+			window.sessionStorage.removeItem("jqGrid"+grid.id+"_data");
 		} catch (e) {}
 	},
 	jqGridImport : function(jqGridId, o) {

@@ -55,7 +55,7 @@ $.jgrid.extend({
 		// End compatible
 		return this.each(function(){
 			var $t = this, nm, tmp, editable, cnt=0, focus=null, svr={}, ind,cm, bfer,
-			inpclass = $(this).jqGrid('getStyleUI',$t.p.styleUI+".inlinedit",'inputClass', true);;
+			inpclass = $(this).jqGrid('getStyleUI',$t.p.styleUI+".inlinedit",'inputClass', true);
 			if (!$t.grid ) { return; }
 			ind = $($t).jqGrid("getInd",rowid,true);
 			if( ind === false ) {return;}

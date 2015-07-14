@@ -131,8 +131,8 @@ $.fn.jqFilter = function( arg ) {
 		},
 		
 		$tg = getGrid(),
-		classes = $.jgrid.styleUI[($tg.p.styleUI || 'jQueryUI')]['filter'],
-		common = $.jgrid.styleUI[($tg.p.styleUI || 'jQueryUI')]['common'];
+		classes = $.jgrid.styleUI[($tg.p.styleUI || 'jQueryUI')].filter,
+		common = $.jgrid.styleUI[($tg.p.styleUI || 'jQueryUI')].common;
 
 		
 		if(this.p.showQuery) {
@@ -761,9 +761,9 @@ $.jgrid.extend({
 			if($t.p.force_regional) {
 				p = $.extend(p, regional);
 			}
-			var classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['filter'],
-			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['common'],
-			base = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['base'],			
+			var classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].filter,
+			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].common,
+			base = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].base,			
 
 			triggerToolbar = function() {
 				var sdata={}, j=0, v, nm, sopt={},so;
@@ -1183,8 +1183,8 @@ $.jgrid.extend({
 			IDs = {themodal:'searchmod'+fid,modalhead:'searchhd'+fid,modalcontent:'searchcnt'+fid, scrollelm : fid},
 			defaultFilters  = $t.p.postData[p.sFilter],
 			fl,
-			classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['filter'],
-			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['common'];
+			classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].filter,
+			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].common;
 			p.styleUI = $t.p.styleUI;
 			if(typeof defaultFilters === "string") {
 				defaultFilters = $.jgrid.parse( defaultFilters );

@@ -20,7 +20,7 @@ $.jgrid.extend({
 	groupingSetup : function () {
 		return this.each(function (){
 			var $t = this, i, j, cml, cm = $t.p.colModel, grp = $t.p.groupingView,
-			classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['grouping'];
+			classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].grouping;
 			if(grp !== null && ( (typeof grp === 'object') || $.isFunction(grp) ) ) {
 				if(!grp.plusicon) { grp.plusicon = classes.icon_plus;}
 				if(!grp.minusicon) { grp.minusicon = classes.icon_minus;}
@@ -262,7 +262,7 @@ $.jgrid.extend({
 			grp = $t.p.groupingView,
 			str = "", icon = "", hid, clid, pmrtl = grp.groupCollapse ? grp.plusicon : grp.minusicon, gv, cp=[], len =grp.groupField.length,
 			//classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['grouping'],
-			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['common'];
+			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].common;
 
 			pmrtl = pmrtl+" tree-wrap-"+$t.p.direction; 
 			$.each($t.p.colModel, function (i,n){
@@ -540,7 +540,7 @@ $.jgrid.extend({
 			$theadInTable,
 			$firstHeaderRow = $htable.find(".jqg-first-row-header"),
 			//classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['grouping'],
-			base = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')]['base'];
+			base = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].base;
 			if($firstHeaderRow[0] === undefined) {
 				$firstHeaderRow = $('<tr>', {role: "row", "aria-hidden": "true"}).addClass("jqg-first-row-header").css("height", "auto");
 			} else {

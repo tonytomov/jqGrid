@@ -347,8 +347,8 @@
 		var op={keys:false, editbutton:true, delbutton:true, editformbutton: false},
 			rowid=opts.rowId, str="",ocl,
 			nav = $.jgrid.getRegional(this, 'nav'),
-			classes = $.jgrid.styleUI[(opts.styleUI || 'jQueryUI')]['fmatter'],
-			common = $.jgrid.styleUI[(opts.styleUI || 'jQueryUI')]['common'];
+			classes = $.jgrid.styleUI[(opts.styleUI || 'jQueryUI')].fmatter,
+			common = $.jgrid.styleUI[(opts.styleUI || 'jQueryUI')].common;
 		if(opts.colModel.formatoptions !== undefined) {
 			op = $.extend(op,opts.colModel.formatoptions);
 		}
@@ -358,14 +358,14 @@
 			ocl = "id='jEditButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'formedit'); " + hover;
 			str += "<div title='"+nav.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='" + common.icon_base +" "+classes.icon_edit +"'></span></div>";
 		} else if(op.editbutton){
-			ocl = "id='jEditButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'edit'); " + hover
+			ocl = "id='jEditButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'edit'); " + hover;
 			str += "<div title='"+nav.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='" + common.icon_base +" "+classes.icon_edit +"'></span></div>";
 		}
 		if(op.delbutton) {
-			ocl = "id='jDeleteButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'del'); " + hover
+			ocl = "id='jDeleteButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'del'); " + hover;
 			str += "<div title='"+nav.deltitle+"' style='float:left;' class='ui-pg-div ui-inline-del' "+ocl+"><span class='" + common.icon_base +" "+classes.icon_del +"'></span></div>";
 		}
-		ocl = "id='jSaveButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'save'); " + hover
+		ocl = "id='jSaveButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'save'); " + hover;
 		str += "<div title='"+nav.savetitle+"' style='float:left;display:none' class='ui-pg-div ui-inline-save' "+ocl+"><span class='" + common.icon_base +" "+classes.icon_save +"'></span></div>";
 		ocl = "id='jCancelButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'cancel'); " + hover;
 		str += "<div title='"+nav.canceltitle+"' style='float:left;display:none;' class='ui-pg-div ui-inline-cancel' "+ocl+"><span class='" + common.icon_base +" "+classes.icon_cancel +"'></span></div>";

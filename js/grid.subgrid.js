@@ -19,7 +19,7 @@ $.jgrid.extend({
 setSubGrid : function () {
 	return this.each(function (){
 		var $t = this, cm, i,
-		classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['subgrid'],
+		classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].subgrid,
 		suboptions = {
 			plusicon : classes.icon_plus,
 			minusicon : classes.icon_minus,
@@ -46,7 +46,7 @@ addSubGridCell :function (pos,iRow) {
 		prp = this.formatCol(pos,iRow);
 		sid= this.p.id;
 		ic = this.p.subGridOptions.plusicon;
-		icb = $.jgrid.styleUI[(this.p.styleUI || 'jQueryUI')]['common'];
+		icb = $.jgrid.styleUI[(this.p.styleUI || 'jQueryUI')].common;
 	});
 	return "<td role=\"gridcell\" aria-describedby=\""+sid+"_subgrid\" class=\"ui-sgcollapsed sgcollapsed\" "+prp+"><a style='cursor:pointer;' class='ui-sghref'><span class='" + icb.icon_base +" "+ic+"'></span></a></td>";
 },
@@ -54,8 +54,8 @@ addSubGrid : function( pos, sind ) {
 	return this.each(function(){
 		var ts = this;
 		if (!ts.grid ) { return; }
-		var base = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')]['base'],
-			common = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')]['common'];
+		var base = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].base,
+			common = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].common;
 		//-------------------------
 		var subGridCell = function(trdiv,cell,pos)
 		{
@@ -241,7 +241,7 @@ addSubGrid : function( pos, sind ) {
 						if(ts.p.subGridOptions.reloadOnExpand === true) {
 							$r.remove(".ui-subgrid");
 						} else if($r.hasClass('ui-subgrid')) { // incase of dynamic deleting
-							$r.hide().addClass("ui-sg-collapsed").removeClass("ui-sg-expanded");;
+							$r.hide().addClass("ui-sg-collapsed").removeClass("ui-sg-expanded");
 						}
 						$(this).html("<a style='cursor:pointer;' class='ui-sghref'><span class='"+common.icon_base +" "+ts.p.subGridOptions.plusicon+"'></span></a>").removeClass("sgexpanded").addClass("sgcollapsed");
 						if(ts.p.subGridOptions.selectOnCollapse) {
