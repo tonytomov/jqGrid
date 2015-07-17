@@ -189,12 +189,13 @@ $.jgrid.extend({
 						if(value == null) {
 							label = $.trim(aggr[i].member)+"_"+aggr[i].aggregator;
 							vl = label;
-							swapvals[0]= vl;
+							swapvals[0]= aggr[i].label || (aggr[i].aggregator+ " " +$.trim(aggr[i].member));
 						} else {
 							vl = value[j].replace(/\s+/g, '');
 							try {
 								label = (arrln === 1 ? mainval + vl : mainval + vl+"_"+aggr[i].aggregator+"_" + String(i));
 							} catch(e) {}
+							swapvals[j] = value[j];
 						}
 						label = !isNaN(parseInt(label,10)) ? label + " " : label;
 						curr[label] =  tmpmember[label] = calculation( aggr[i].aggregator, curr[label], aggr[i].member, row);
@@ -380,7 +381,7 @@ $.jgrid.extend({
 									for( l in items.fields) {
 										if(items.fields.hasOwnProperty(l)) {
 											if(ll===1) {
-												headers[ylen-1].groupHeaders.push({startColumnName: l, numberOfColumns: 1, titleText: items.text});
+												headers[ylen-1].groupHeaders.push({startColumnName: l, numberOfColumns: 1, titleText: items.label || items.text});
 											}
 											ll++;
 										}
