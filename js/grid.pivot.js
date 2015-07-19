@@ -724,6 +724,7 @@
 			}
 
 			// return the final result.
+			options.colHeaders = colHeaders;
 			return { colModel: colModel, options: options, rows: outputItems, groupOptions: groupOptions, groupHeaders: colHeaders, summary: summaries };
 		},
 		jqPivot: function (data, pivotOpt, gridOpt, ajaxOpt) {

@@ -5781,7 +5781,20 @@
 					base.setGridWidth.call($self, (!p.autowidth && (p.widthOrg === undefined || p.widthOrg === "auto" || p.widthOrg === "100%") ? p.tblwidth : p.width) + parseInt(p.scrollOffset, 10));
 				}
 				if (gh) {
-					base.setGroupHeaders.call($self, p.groupHeader);
+					if (p.pivotOptions != null && p.pivotOptions.colHeaders != null && p.pivotOptions.colHeaders.length > 1) {
+						var i, gHead = p.pivotOptions.colHeaders; 
+						for (i = 0; i < gHead.length; i++) {
+							// Multiple calls of setGroupHeaders for one grid are wrong,
+							// but there are produces good results in case of usage
+							// useColSpanStyle: false option. The rowspan values
+							// needed be increased in case of usage useColSpanStyle: true
+							if (gHead[i] && gHead[i].groupHeaders.length) {
+								base.setGroupHeaders.call($self, gHead[i]);
+							}
+						}
+					} else {
+						base.setGroupHeaders.call($self, p.groupHeader);
+					}
 				}
 			});
 		},
@@ -15056,6 +15069,7 @@
 			}
 
 			// return the final result.
+			options.colHeaders = colHeaders;
 			return { colModel: colModel, options: options, rows: outputItems, groupOptions: groupOptions, groupHeaders: colHeaders, summary: summaries };
 		},
 		jqPivot: function (data, pivotOpt, gridOpt, ajaxOpt) {
