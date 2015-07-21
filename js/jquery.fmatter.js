@@ -212,7 +212,7 @@
 	};
 	$.fn.fmatter = $FnFmatter;
 	$FnFmatter.getCellBuilder = function (formatType, opts, act) {
-		var cellBuilder = $.fn.fmatter[formatType].getCellBuilder;
+		var cellBuilder = $.fn.fmatter[formatType] != null ? $.fn.fmatter[formatType].getCellBuilder : null;
 		return $.isFunction(cellBuilder) ?
 			cellBuilder.call(this, $.extend({}, getGridRes.call($(this), "formatter"), opts), act) :
 			null;
