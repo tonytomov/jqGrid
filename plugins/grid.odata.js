@@ -122,13 +122,23 @@
      *      dataType: xml,
      *      type: 'GET'
      *  }).done(function(data, st, xhr) {
-     *      if(xhr.dataType === 'json' || xhr.dataType === 'jsonp') {
+     *      var dataType = xhr.getResponseHeader('Content-Type').indexOf('json') >= 0 ? 'json' : 'xml';
+     *      if(dataType === 'json') {
      *          data = $.jgrid.odataHelper.resolveJsonReferences(data);
      *      }
-     *      data = $.jgrid.odataHelper.parseMetadata(data, xhr.dataType);
-     *      var colModel = $(this).jqGrid('parseColumns', data['Product'], 'link');
+     *      data = $.jgrid.odataHelper.parseMetadata(data, dataType);
+     *      var colModels = {};
+     *      for (i in data) {
+     *          if (data.hasOwnProperty(i) && i) {
+     *             colModels[i] = $(this).jqGrid('parseColumns', data[i], 'subgrid');
+     *          }
+     *      }
      *      $("#grid").jqGrid({
-     *        colModel: colModel,
+     *        colModel: colModels['Product'],
+     *        odata: {
+     *           iscollection: true,
+     *           subgridCols: colModels
+     *        },
      *        ...,
      *        beforeInitGrid: function () {
      *            $(this).jqGrid('odataInit', {
@@ -309,16 +319,17 @@
         },
 
         parseMetadata: function (rawdata, dataType) {
-            function parseXmlData(data) {
-                var entities = {}, mdata = {};
+            function parseXmlMetadata(data) {
+                var entities = {}, entityValues = [], mdata = {};
                 $('EntityContainer EntitySet', data).each(function (i, itm) {
                     entities[$(itm).attr('EntityType')] = $(itm).attr('Name');
+                    entityValues.push($(itm).attr('Name'));
                 });
 
+                var namespace = $('Schema', data).attr('Namespace') + '.';
                 $('EntityType, ComplexType', data).each(function () {
-                    var cols, props, keys, key, iskey, namespace, isComplex, isNav, entityType, attr;
+                    var cols, props, keys, key, iskey, isComplex, isNav, entityType, attr;
 
-                    namespace = $('Schema', data).attr('Namespace') + '.';
                     props = $(this).find('Property,NavigationProperty');
                     keys = $('Key PropertyRef', this);
                     key = keys && keys.length > 0 ? keys.first().attr('Name') : '';
@@ -339,11 +350,14 @@
                             cols.push($.extend({
                                 iskey: iskey,
                                 isComplex: isComplex,
-                                isNavigation: isNav
+                                isNavigation: isNav,
+                                isCollection: $.inArray(attr.Name, entityValues) >= 0
                             }, attr));
                         });
 
-                        mdata[entities[namespace + entityType]] = cols;
+                        if(entities[namespace + entityType]) {
+                            mdata[entities[namespace + entityType]] = cols;
+                        }
                         mdata[entityType] = cols;
                     }
                 });
@@ -351,11 +365,12 @@
                 return mdata;
             }
 
-            function parseJsonData(data) {
-                var cols, props, keys, key, iskey, i, isComplex, isNav, nullable, namespace, type, entityType, mdata = {}, entities = {};
+            function parseJsonMetadata(data) {
+                var cols, props, keys, key, iskey, i, isComplex, isNav, nullable, type, entityType, mdata = {}, entities = {}, entityValues = [];
 
                 for (i = 0; i < data.EntityContainer.Elements.length; i++) {
                     entities[data.EntityContainer.Elements[i].Type.ElementType.Definition.Name] = data.EntityContainer.Elements[i].Name;
+                    entityValues.push(data.EntityContainer.Elements[i].Name);
                 }
 
                 for (i = 0; i < data.SchemaElements.length ; i++) {
@@ -365,7 +380,7 @@
                     }
                     keys = data.SchemaElements[i].DeclaredKey;
                     key = keys && keys.length > 0 ? keys[0].Name : '';
-                    namespace = data.SchemaElements[i].Namespace + '.';
+                    //namespace = data.SchemaElements[i].Namespace + '.';
                     entityType = data.SchemaElements[i].Name;
 
                     if (props) {
@@ -383,11 +398,14 @@
                                 Nullable: nullable,
                                 iskey: iskey,
                                 isComplex: isComplex,
-                                isNavigation: isNav
+                                isNavigation: isNav,
+                                isCollection: $.inArray(props[i].Name, entityValues) >= 0
                             });
                         }
 
-                        mdata[entities[entityType]] = cols;
+                        if(entities[entityType]) {
+                            mdata[entities[entityType]] = cols;
+                        }
                         mdata[entityType] = cols;
                     }
                 }
@@ -395,7 +413,22 @@
                 return mdata;
             }
 
-            var mdata = dataType === 'xml' ? parseXmlData(rawdata) : parseJsonData(rawdata);
+            function parseDataJSMetadata(data) {
+                //TODO: OData.parseMetadata(data.firstChild.outerHTML);
+            }
+
+            var mdata;
+            switch(dataType) {
+                case 'xml':
+                    mdata =  parseXmlMetadata(rawdata);
+                    break;
+                case 'json':
+                    mdata =  parseJsonMetadata(rawdata);
+                    break;
+                case 'datajs':
+                    mdata =  parseDataJSMetadata(rawdata);
+                    break;
+            }
 
             return mdata;
         },
@@ -606,7 +639,7 @@
                         expand: cols[i].isNavigation ? expandable : cols[i].isComplex ? 'json' : null,
                         isnavigation: cols[i].isNavigation,
                         iscomplex: cols[i].isComplex,
-                        iscollection: cols[i].Type.indexOf('Collection') >= 0
+                        iscollection: cols[i].isCollection
                     }
                 }, $.jgrid.cmTemplate[cmTemplate]));
             }
@@ -846,6 +879,7 @@
                             p.subGrid = true;
                             p.subGridRowExpanded = subGridRowExpandedFunc;
                             p.odata.activeEntitySet = p.colModel[i].name;
+                            p.loadonce = true;
 
                             break;
                         }
@@ -1149,6 +1183,9 @@
                             }
                         }
                     }
+                }
+                else {
+                    coldata = mdata;
                 }
 
                 if (coldata) {
