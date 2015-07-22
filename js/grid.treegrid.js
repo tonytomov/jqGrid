@@ -31,20 +31,21 @@
 				var expanded = p.treeReader.expanded_field,
 					isLeaf = p.treeReader.leaf_field,
 					beforeSelectRow = function (e, rowid, eOrg) {
-						var expendOrCollaps = function (rowid) {
-								var item = p.data[p._index[stripPref(p.idPrefix, rowid)]],
-									collapseOrExpand = item[expanded] ? "collapse" : "expand";
-								if (!item[isLeaf]) {
-									base[collapseOrExpand + "Row"].call($self, item);
-									base[collapseOrExpand + "Node"].call($self, item);
-								}
-							};
 						if (eOrg != null) {
-							var $target = $(eOrg.target);
+							var $target = $(eOrg.target),
+								$td = $target.closest("tr.jqgrow>td"),
+								$tr = $td.parent(),
+								expendOrCollaps = function (rowid) {
+									var item = p.data[p._index[stripPref(p.idPrefix, rowid)]],
+										collapseOrExpand = item[expanded] ? "collapse" : "expand";
+									if (!item[isLeaf]) {
+										base[collapseOrExpand + "Row"].call($self, item, $tr);
+										base[collapseOrExpand + "Node"].call($self, item, $tr);
+									}
+								};
 							if ($target.is("div.treeclick")) {
 								expendOrCollaps(rowid);
 							} else if (p.ExpandColClick) {
-								var $td = $target.closest("tr.jqgrow>td");
 								if ($td.length > 0 && $target.closest("span.ui-jqgrid-cell-wrapper", $td).length > 0) {
 									expendOrCollaps(rowid);
 								}
@@ -350,7 +351,7 @@
 					if (!treeGridFeedback.call($t, "beforeExpandNode", { rowid: id, item: rc })) { return; }
 					var rc1 = $("#" + p.idPrefix + jqID(id), $t.grid.bDiv)[0],
 						position = p._index[id];
-					if (p.datatype === "local" || base.isNodeLoaded.call($($t), p.data[position])) {
+					if (p.treedatatype === "local" || base.isNodeLoaded.call($($t), p.data[position])) {
 						rc[expanded] = true;
 						$("div.treeclick", rc1).removeClass(p.treeIcons.plus + " tree-plus").addClass(p.treeIcons.commonIconClass).addClass(p.treeIcons.minus + " tree-minus");
 					} else if (!$t.grid.hDiv.loading) {
