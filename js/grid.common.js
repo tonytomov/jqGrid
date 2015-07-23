@@ -218,8 +218,7 @@ $.extend($.jgrid,{
 		}
 		if(typeof o.focusField === "number" && o.focusField >= 0 ) {
 			o.focusField = parseInt(o.focusField,10);
-		}
-		if(typeof o.focusField === "boolean" && !o.focusField) {
+		} else if(typeof o.focusField === "boolean" && !o.focusField) {
 			o.focusField = false;
 		} else {
 			o.focusField = 0;
