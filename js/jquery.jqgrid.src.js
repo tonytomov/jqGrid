@@ -2,13 +2,13 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
 /**
- * @license jqGrid 4.9.1 - free jqGrid: https://github.com/free-jqgrid/jqGrid
+ * @license jqGrid 4.9.1-post - free jqGrid: https://github.com/free-jqgrid/jqGrid
  * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com
  * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-07-23
+ * Date: 2015-07-24
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -8479,16 +8479,17 @@
 										context: { stbl: stbl, options: soptions, cm: cm, iCol: ci },
 										dataType: "html",
 										success: function (data, textStatus, jqXHR) {
-											var cm1 = this.cm, iCol1 = this.iCol, soptions1 = this.options, $stbl1 = this.stbl, d,
-												$select = $stbl1.find("td.ui-search-input>select");// $stbl1.find(">tbody>tr>td.ui-search-input>select")
+											var cm1 = this.cm, iCol1 = this.iCol, soptions1 = this.options, d,
+												$td = this.stbl.find(">tbody>tr>td.ui-search-input"), $select;
 											if (soptions1.buildSelect !== undefined) {
 												d = soptions1.buildSelect.call($t, data, jqXHR, cm1, iCol1);
 												if (d) {
-													$("td", $stbl1).eq(1).append(d);
+													$td.append(d);
 												}
 											} else {
-												$("td", $stbl1).eq(1).append(data);
+												$td.append(data);
 											}
+											$select = $td.children("select");
 											if (soptions1.defaultValue !== undefined) { $select.val(soptions1.defaultValue); }
 											$select.attr({ name: cm1.index || cm1.name, id: "gs_" + cm1.name });
 											if (soptions1.attr) { $select.attr(soptions1.attr); }

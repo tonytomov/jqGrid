@@ -582,16 +582,17 @@
 										context: { stbl: stbl, options: soptions, cm: cm, iCol: ci },
 										dataType: "html",
 										success: function (data, textStatus, jqXHR) {
-											var cm1 = this.cm, iCol1 = this.iCol, soptions1 = this.options, $stbl1 = this.stbl, d,
-												$select = $stbl1.find("td.ui-search-input>select");// $stbl1.find(">tbody>tr>td.ui-search-input>select")
+											var cm1 = this.cm, iCol1 = this.iCol, soptions1 = this.options, d,
+												$td = this.stbl.find(">tbody>tr>td.ui-search-input"), $select;
 											if (soptions1.buildSelect !== undefined) {
 												d = soptions1.buildSelect.call($t, data, jqXHR, cm1, iCol1);
 												if (d) {
-													$("td", $stbl1).eq(1).append(d);
+													$td.append(d);
 												}
 											} else {
-												$("td", $stbl1).eq(1).append(data);
+												$td.append(data);
 											}
+											$select = $td.children("select");
 											if (soptions1.defaultValue !== undefined) { $select.val(soptions1.defaultValue); }
 											$select.attr({ name: cm1.index || cm1.name, id: "gs_" + cm1.name });
 											if (soptions1.attr) { $select.attr(soptions1.attr); }
