@@ -14,13 +14,15 @@
 (function ($) {
     /*
      *Functions:
-     *   parseMetadata                           - $.jgrid.odataHelper.parseMetadata(rawdata, dataType)
+     *   parseMetadata                           - $.jgrid.odataHelper.parseMetadata(rawdata, metadatatype)
+     *                                              metadatatype can be: xml,json,datajs.
      *                                             this is a generic function that can be used in external packages too, not only in jqGrid.
      *                                             It parses $metadata ajax response in xml/json format to plain javascript object.
+     *                                             IT can also consume metadata returned from datajs.js method "OData.parseMetadata"
      *
      *   odataGenColModel                        - $("#grid").jqGrid('odataGenColModel', {...});
      *       This function generates jqgrid style columns by requesting odata $metadata.
-     *       It is called by odataInit when gencolumns=true.
+     *       It is automatically called by odataInit when gencolumns=true.
      *       
      *       Options:
      *           metadatatype: 'xml'             - ajax dataType, can be json, jsonp or xml
@@ -318,15 +320,16 @@
             return $.isEmptyObject(obj) ? null : obj;
         },
 
-        parseMetadata: function (rawdata, dataType) {
+        parseMetadata: function (rawdata, metadatatype) {
             function parseXmlMetadata(data) {
                 var entities = {}, entityValues = [], mdata = {};
+                var namespace = $('Schema', data).attr('Namespace') + '.';
+
                 $('EntityContainer EntitySet', data).each(function (i, itm) {
-                    entities[$(itm).attr('EntityType')] = $(itm).attr('Name');
+                    entities[$(itm).attr('EntityType').replace(namespace, '')] = $(itm).attr('Name');
                     entityValues.push($(itm).attr('Name'));
                 });
 
-                var namespace = $('Schema', data).attr('Namespace') + '.';
                 $('EntityType, ComplexType', data).each(function () {
                     var cols, props, keys, key, iskey, isComplex, isNav, entityType, attr;
 
@@ -355,8 +358,8 @@
                             }, attr));
                         });
 
-                        if(entities[namespace + entityType]) {
-                            mdata[entities[namespace + entityType]] = cols;
+                        if(entities[entityType]) {
+                            mdata[entities[entityType]] = cols;
                         }
                         mdata[entityType] = cols;
                     }
@@ -366,7 +369,7 @@
             }
 
             function parseJsonMetadata(data) {
-                var cols, props, keys, key, iskey, i, isComplex, isNav, nullable, type, entityType, mdata = {}, entities = {}, entityValues = [];
+                var cols, props, keys, key, iskey, i, j, isComplex, isNav, nullable, type, entityType, mdata = {}, entities = {}, entityValues = [];
 
                 for (i = 0; i < data.EntityContainer.Elements.length; i++) {
                     entities[data.EntityContainer.Elements[i].Type.ElementType.Definition.Name] = data.EntityContainer.Elements[i].Name;
@@ -374,32 +377,28 @@
                 }
 
                 for (i = 0; i < data.SchemaElements.length ; i++) {
-                    props = data.SchemaElements[i].DeclaredProperties;
-                    if (data.SchemaElements[i].NavigationProperties) {
-                        props = props.concat(data.SchemaElements[i].NavigationProperties);
-                    }
+                    props = Array.prototype.concat(data.SchemaElements[i].DeclaredProperties, data.SchemaElements[i].NavigationProperties).filter(function(itm) {return !!itm;});
                     keys = data.SchemaElements[i].DeclaredKey;
                     key = keys && keys.length > 0 ? keys[0].Name : '';
-                    //namespace = data.SchemaElements[i].Namespace + '.';
                     entityType = data.SchemaElements[i].Name;
 
                     if (props) {
                         cols = [];
-                        for (i = 0; i < props.length; i++) {
-                            iskey = (props[i].Name === key);
-                            nullable = props[i].Type.IsNullable;
-                            type = props[i].Type.Definition.Namespace + props[i].Type.Definition.Name;
-                            isComplex = !!props[i].Type.Definition.DeclaredProperties;
-                            isNav = false; //TODO: locate navigation properties in json metadata
+                        for (j = 0; j < props.length; j++) {
+                            iskey = props[j].Name === key;
+                            nullable = props[j].Type.IsNullable;
+                            type = props[j].Type.Definition.Namespace + props[j].Type.Definition.Name;
+                            isComplex = !!props[j].Type.Definition.DeclaredProperties;
+                            isNav = !isComplex && !props[j].Type;
 
                             cols.push({
-                                Name: props[i].Name,
+                                Name: props[j].Name,
                                 Type: type,
                                 Nullable: nullable,
                                 iskey: iskey,
                                 isComplex: isComplex,
                                 isNavigation: isNav,
-                                isCollection: $.inArray(props[i].Name, entityValues) >= 0
+                                isCollection: $.inArray(props[j].Name, entityValues) >= 0
                             });
                         }
 
@@ -414,11 +413,58 @@
             }
 
             function parseDataJSMetadata(data) {
-                //TODO: OData.parseMetadata(data.firstChild.outerHTML);
+                var cols, props, keys, key, iskey, i, j, isComplex, isNav, nullable, type, entityType, mdata = {}, entities = {}, entityValues = [], entityTypes = [], complexTypes = [];
+                var schema = data.dataServices.schema[0];
+                var namespace = schema.namespace + '.';
+
+                for (i = 0; i < schema.entityContainer[0].entitySet.length; i++) {
+                    entities[schema.entityContainer[0].entitySet[i].entityType.replace(namespace, '')] = schema.entityContainer[0].entitySet[i].name;
+                    entityValues.push(schema.entityContainer[0].entitySet[i].name);
+                }
+
+                for (i = 0; i < schema.complexType.length; i++) {
+                    complexTypes.push(schema.complexType[i].name);
+                }
+
+                entityTypes = Array.prototype.concat(schema.entityType, schema.complexType).filter(function(itm) {return !!itm;});
+                for (i = 0; i < entityTypes.length ; i++) {
+                    props = Array.prototype.concat(entityTypes[i].property, entityTypes[i].navigationProperty).filter(function(itm) {return !!itm;});
+                    keys = entityTypes[i].key;
+                    key = keys && keys.propertyRef.length > 0 ? keys.propertyRef[0].name : '';
+                    entityType = entityTypes[i].name;
+
+                    if (props) {
+                        cols = [];
+                        for (j = 0; j < props.length; j++) {
+                            iskey = props[j].name === key;
+                            nullable = props[j].nullable !== "false";
+                            type = props[j].type;
+                            isComplex = !!props[j].type && $.inArray(props[j].type.replace(namespace, ''), complexTypes) >= 0;
+                            isNav = !props[j].type;
+
+                            cols.push({
+                                Name: props[j].name,
+                                Type: type,
+                                Nullable: nullable,
+                                iskey: iskey,
+                                isComplex: isComplex,
+                                isNavigation: isNav,
+                                isCollection: $.inArray(props[j].name, entityValues) >= 0
+                            });
+                        }
+
+                        if(entities[entityType]) {
+                            mdata[entities[entityType]] = cols;
+                        }
+                        mdata[entityType] = cols;
+                    }
+                }
+
+                return mdata;
             }
 
             var mdata;
-            switch(dataType) {
+            switch(metadatatype) {
                 case 'xml':
                     mdata =  parseXmlMetadata(rawdata);
                     break;
@@ -869,10 +915,6 @@
                     url: o.odataurl
                 }, defaultGetAjaxOptions);
 
-                if(o.gencolumns && !o.async) {
-                    p.loadonce = false;
-                }
-
                 if (p.colModel) {
                     for (i = 0; i < p.colModel.length; i++) {
                         if (p.colModel[i].odata && p.colModel[i].odata.expand === 'subgrid') {
@@ -1076,7 +1118,7 @@
             }
 
             return this.each(function () {
-                var $t = this, $self = $($t), p = $t.p;
+                var $t = this, $self = $(this), p = this.p;
                 if (!$t.grid || !p) { return; }
 
                 var o = $.extend(true, {
@@ -1114,8 +1156,7 @@
                     if (gencol.async) {
                         gencol.successfunc = function () {
                             if ($t.grid.hDiv) { $t.grid.hDiv.loading = false; }
-                            //$t.p.datatype = o.datatype; //datatype=local
-                            $self.trigger('reloadGrid');
+                            $self.jqGrid('setGridParam', { datatype: o.datatype }).trigger('reloadGrid');
                         };
 
                         if ($t.grid.hDiv) { $t.grid.hDiv.loading = true; }
