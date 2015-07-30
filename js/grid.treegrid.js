@@ -54,7 +54,7 @@
 						}
 					};
 
-				$self.unbind("jqGridBeforeSelectRow.setTreeNode", beforeSelectRow);
+				$self.unbind("jqGridBeforeSelectRow.setTreeNode");
 				$self.bind("jqGridBeforeSelectRow.setTreeNode", beforeSelectRow);
 
 			});
