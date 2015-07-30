@@ -1260,16 +1260,16 @@ $.jgrid.extend({
 				found = false;
 				if(p.tmplNames && p.tmplNames.length) {
 					found = true;
-					tmpl = p.tmplLabel;
-					tmpl += "<select class='ui-template'>";
+					tmpl = "<tr><td class='ui-search-label'>"+ p.tmplLabel +"</td>";
+					tmpl += "<td><select class='ui-template " + classes.srSelect + "'>";
 					tmpl += "<option value='default'>Default</option>";
 					$.each(p.tmplNames, function(i,n){
 						tmpl += "<option value='"+i+"'>"+n+"</option>";
 					});
-					tmpl += "</select>";
+					tmpl += "</select></td></tr>";
 				}
 
-				bt = "<table class='EditTable' style='border:0px none;margin-top:5px' id='"+fid+"_2'><tbody><tr><td colspan='2'><hr class='" + common.content + "' style='margin:1px'/></td></tr><tr><td class='EditButton' style='text-align:"+align+"'>"+bC+tmpl+"</td><td class='EditButton' "+butleft+">"+bQ+bS+"</td></tr></tbody></table>";
+				bt = "<table class='EditTable' style='border:0px none;margin-top:5px' id='"+fid+"_2'><tbody><tr><td colspan='2'><hr class='" + common.content + "' style='margin:1px'/></td></tr>"+tmpl+"<tr><td class='EditButton' style='text-align:"+align+"'>"+bC+"</td><td class='EditButton' "+butleft+">"+bQ+bS+"</td></tr></tbody></table>";
 				fid = $.jgrid.jqID( fid);
 				$("#"+fid).jqFilter({
 					columns: columns,
