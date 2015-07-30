@@ -1,6 +1,11 @@
 /*Grid*/
-.ui-jqgrid {position: relative;-moz-box-sizing: content-box; -webkit-box-sizing: content-box; box-sizing: content-box;}
-.ui-jqgrid .ui-jqgrid-view {position: relative;left:0; top: 0; padding: 0; font-size:11px;}
+.ui-jqgrid {
+	position: relative;
+	-moz-box-sizing: content-box; 
+	-webkit-box-sizing: content-box; 
+	box-sizing: content-box;
+}
+.ui-jqgrid .ui-jqgrid-view {position: relative;left:0; top: 0; padding: 0; font-size:11px; z-index:100;}
 .ui-jqgrid .ui-common-table {border-width: 0px; border-style: none; border-spacing: 0px; padding: 0;}
 /* caption*/
 .ui-jqgrid .ui-jqgrid-titlebar {height:19px; padding: .3em .2em .2em .3em; position: relative; font-size: 12px; border-left: 0 none;border-right: 0 none; border-top: 0 none;}
@@ -36,7 +41,7 @@
 .ui-jqgrid tr.ui-search-toolbar td > input { padding-right: 0px;}
 .ui-jqgrid tr.ui-search-toolbar select {}
 /* body */ 
-.ui-jqgrid .ui-jqgrid-bdiv {position: relative; margin: 0; padding:0; overflow: auto; text-align:left;}
+.ui-jqgrid .ui-jqgrid-bdiv {position: relative; margin: 0; padding:0; overflow: auto; text-align:left;z-index: 101;}
 .ui-jqgrid .ui-jqgrid-btable {table-layout:fixed; margin:0; outline-style: none; border-collapse: separate;}
 .ui-jqgrid tr.jqgrow { outline-style: none; }
 .ui-jqgrid tr.jqgroup { outline-style: none; }
@@ -55,7 +60,7 @@
 .ui-jqgrid tr.footrow-ltr td {text-align:left;border-right-width: 1px; border-right-color: inherit; border-right-style: solid;}
 .ui-jqgrid tr.footrow-rtl td {text-align:right;border-left-width: 1px; border-left-color: inherit; border-left-style: solid;}
 /* Pager*/
-.ui-jqgrid .ui-jqgrid-pager { border-left: 0 none !important;border-right: 0 none !important; border-bottom: 0 none !important; border-top: 0 none; margin: 0 !important; padding: 0 !important; position: relative; height: auto; min-height: 28px; white-space: nowrap;overflow: hidden;font-size:11px;}
+.ui-jqgrid .ui-jqgrid-pager { border-left: 0 none !important;border-right: 0 none !important; border-bottom: 0 none !important; border-top: 0 none; margin: 0 !important; padding: 0 !important; position: relative; height: auto; min-height: 28px; white-space: nowrap;overflow: hidden;font-size:11px; z-index:101}
 .ui-jqgrid .ui-jqgrid-toppager .ui-pager-control, .ui-jqgrid .ui-jqgrid-pager .ui-pager-control {position: relative;border-left: 0;border-bottom: 0;border-top: 0; height: 28px;}
 .ui-jqgrid .ui-pg-table {position: relative; padding: 1px 0; width:auto; margin: 0;}
 .ui-jqgrid .ui-pg-table td {font-weight:normal; vertical-align:middle; padding:0px 1px;}
@@ -66,7 +71,11 @@
 .ui-jqgrid .ui-pg-input,.ui-jqgrid .ui-jqgrid-toppager .ui-pg-input { height:14px;width: auto;font-size:.9em; margin:0;line-height: inherit;border: none; padding: 3px 2px}
 .ui-jqgrid .ui-pg-selbox, .ui-jqgrid .ui-jqgrid-toppager .ui-pg-selbox {font-size:.9em; line-height:inherit; display:block; height:19px; margin: 0; padding: 3px 0px; border:none;}
 .ui-jqgrid .ui-separator {height: 18px; border-left: 2px solid #ccc ;}
-.ui-jqgrid .ui-paging-info {font-weight: normal;height:auto; margin-top:3px;margin-right:4px;display: inline;}
+.ui-separator-li {height: 2px; border : none;border-top: 2px solid #ccc ; margin: 0; padding: 0; width:100%}
+.ui-jqgrid  .dropdownmenu {
+	padding: 3px 0 3px 0;
+	margin-left: 4px;
+}
 .ui-jqgrid .ui-jqgrid-pager .ui-pg-div,
 .ui-jqgrid .ui-jqgrid-toppager .ui-pg-div
 {padding:1px 0;float:left;position:relative; line-height: 20px;}
@@ -76,9 +85,31 @@
 .ui-jqgrid .ui-jqgrid-pager .ui-pg-div  span.ui-icon,
 .ui-jqgrid .ui-jqgrid-toppager .ui-pg-div  span.ui-icon
 {float:left;margin: 2px; width:18px;}
-.ui-jqgrid td input, .ui-jqgrid td select, .ui-jqgrid td textarea { margin: 0;}
+.ui-jqgrid td input, .ui-jqgrid td select, .ui-jqgrid td textarea { margin: 0; padding-top:5px;padding-bottom: 5px;}
 .ui-jqgrid td textarea {width:auto;height:auto;}
 .ui-jqgrid .ui-jqgrid-toppager {border-left: 0 none !important;border-right: 0 none !important; border-top: 0 none !important; margin: 0 !important; padding: 0 !important; position: relative;white-space: nowrap;overflow: hidden;}
+.ui-jqgrid .ui-jqgrid-pager .ui-pager-table {
+	width:100%;
+	table-layout:fixed;
+	height:100%;
+}
+.ui-jqgrid .ui-jqgrid-pager .ui-paging-info { 
+	font-weight: normal;
+	height:auto; 
+	margin-top:3px;
+	margin-right:4px;
+	display: inline;
+}
+.ui-jqgrid .ui-jqgrid-pager .ui-paging-pager {
+	table-layout:auto;
+	height:100%;
+}
+.ui-jqgrid .ui-jqgrid-pager .navtable {
+	float:left;
+	table-layout:auto;
+	height:100%;
+}
+
 //.ui-jqgrid .ui-jqgrid-toppager .ui-pg-div {padding:1px 0;float:left;position:relative; line-height: 20px; margin-right:3px;}
 //.ui-jqgrid .ui-jqgrid-toppager .ui-pg-button { cursor:pointer; }
 //.ui-jqgrid .ui-jqgrid-toppager .ui-pg-div  span.ui-icon {float:left;margin: 2px; width:18px;}
@@ -180,11 +211,34 @@
 .ui-jqgrid .tree-wrap-rtl {float: right;}
 .ui-jqgrid .ui-ellipsis {-moz-text-overflow:ellipsis;text-overflow:ellipsis;}
 
-/* Toolbar Search Menu */
-.ui-search-menu { position: absolute; padding: 2px 5px; z-index:99999;}
-.ui-search-menu.ui-menu .ui-menu-item { list-style-image: none; padding-right: 0; padding-left: 0; }
-.ui-search-menu.ui-menu .ui-menu-item a { display: block; }
-.ui-search-menu.ui-menu .ui-menu-item a.g-menu-item:hover { margin: -1px; font-weight: normal; }
+/* Toolbar Search Menu , Nav menu*/
+.ui-search-menu, 
+.ui-nav-menu {
+	position: absolute; 
+	padding: 2px 5px; 
+	z-index:99999;
+	-webkit-box-shadow: 7px 7px 5px 0px rgba(50, 50, 50, 0.75);
+	-moz-box-shadow:    7px 7px 5px 0px rgba(50, 50, 50, 0.75);
+	box-shadow:         7px 7px 5px 0px rgba(50, 50, 50, 0.75);
+}
+.ui-search-menu.ui-menu .ui-menu-item,
+.ui-nav-menu.ui-menu .ui-menu-item
+{ 
+	list-style-image: none; 
+	padding-right: 0; 
+	padding-left: 0; 
+}
+.ui-search-menu.ui-menu .ui-menu-item a, 
+.ui-nav-menu.ui-menu .ui-menu-item a 
+{ 
+	display: block; 
+}
+.ui-search-menu.ui-menu .ui-menu-item a.g-menu-item:hover,
+.ui-nav-menu.ui-menu .ui-menu-item a.g-menu-item:hover 
+{ 
+	margin: -1px; 
+	font-weight: normal; 
+}
 .ui-jqgrid .ui-search-table { padding: 0; border: 0 none; height:20px; width:100%;}
 .ui-jqgrid .ui-search-table .ui-search-oper { width:20px; }
 a.g-menu-item, a.soptclass, a.clearsearchclass { cursor: pointer; } 
