@@ -521,7 +521,6 @@ $.jgrid.extend({
 			groupHeaders: []
 		},o  || {});
 		return this.each(function(){
-			this.p.groupHeader = o;
 			var ts = this,
 			i, cmi, skip = 0, $tr, $colHeader, th, $th, thStyle,
 			iCol,
@@ -541,6 +540,10 @@ $.jgrid.extend({
 			$firstHeaderRow = $htable.find(".jqg-first-row-header"),
 			//classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['grouping'],
 			base = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].base;
+			if(!ts.p.groupHeader) {
+				ts.p.groupHeader = [];
+			}
+			ts.p.groupHeader.push(o);
 			if($firstHeaderRow[0] === undefined) {
 				$firstHeaderRow = $('<tr>', {role: "row", "aria-hidden": "true"}).addClass("jqg-first-row-header").css("height", "auto");
 			} else {
