@@ -52,7 +52,15 @@ $.jgrid.regional["de"] = {
 		pgnext : "nächste Seite",
 		pgprev : "vorherige Seite",
 		pgrecs : "Datensätze pro Seite",
-		showhide: "Toggle erweitern reduzieren"
+		showhide: "Toggle erweitern reduzieren",
+		// mobile
+		pagerCaption : "Grid::Page Settings",
+		pageText : "Page:",
+		recordPage : "Records per Page",
+		nomorerecs : "No more records...",
+		scrollPullup: "Pull up to load more...",
+		scrollPulldown : "Pull down to refresh...",
+		scrollRefresh : "Release to refresh..."
 	},
 	search : {
 		caption: "Suche...",
@@ -116,7 +124,8 @@ $.jgrid.regional["de"] = {
 		savetext: "",
 		savetitle: "Zeile speihern",
 		canceltext: "",
-		canceltitle : "Zeile abbrechen"
+		canceltitle : "Zeile abbrechen",
+		selectcaption : "Actions..."
 	},
 	col : {
 		caption: "Spalten auswählen",

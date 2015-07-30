@@ -31,7 +31,15 @@ $.jgrid.regional["nl"] = {
 			pgnext : "Volgende Pagina",
 			pgprev : "Vorige Pagina",
 			pgrecs : "Records per Pagina",
-			showhide: "Schakelen Uitklappen Inklappen Grid"
+			showhide: "Schakelen Uitklappen Inklappen Grid",
+			// mobile
+			pagerCaption : "Grid::Page Settings",
+			pageText : "Page:",
+			recordPage : "Records per Page",
+			nomorerecs : "No more records...",
+			scrollPullup: "Pull up to load more...",
+			scrollPulldown : "Pull down to refresh...",
+			scrollRefresh : "Release to refresh..."
         },
         search:
         {
@@ -101,8 +109,8 @@ $.jgrid.regional["nl"] = {
 			savetext: "",
 			savetitle: "Save row",
 			canceltext: "",
-			canceltitle : "Cancel row editing"
-
+			canceltitle : "Cancel row editing",
+			selectcaption : "Actions..."
         },
         col:
         {

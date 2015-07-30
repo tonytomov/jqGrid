@@ -30,7 +30,16 @@ $.jgrid.regional["no"] = {
         pgprev: "Previous Page",
         pgrecs: "Records per Page",
         showhide: "Toggle Expand Collapse Grid",
-        emptyrecords: "Ingen poster funnet"
+        emptyrecords: "Ingen poster funnet",
+		// mobile
+		pagerCaption : "Grid::Page Settings",
+		pageText : "Page:",
+		recordPage : "Records per Page",
+		nomorerecs : "No more records...",
+		scrollPullup: "Pull up to load more...",
+		scrollPulldown : "Pull down to refresh...",
+		scrollRefresh : "Release to refresh..."
+
     },
     search : 
 		{caption: "Søk...", Find: "Finn", Reset: "Nullstill", odata: [
@@ -54,7 +63,8 @@ $.jgrid.regional["no"] = {
 		savetext: "",
 		savetitle: "Save row",
 		canceltext: "",
-		canceltitle : "Cancel row editing"
+		canceltitle : "Cancel row editing",
+		selectcaption : "Actions..."
 	},
     col : {caption: "Vis/skjul kolonner", bSubmit: "Utfør", bCancel: "Avbryt"},
     errors : {errcap: "Feil", nourl: "Ingen url er satt", norecords: "Ingen poster å behandle", model: "colNames og colModel har forskjellig lengde!"},

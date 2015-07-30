@@ -39,7 +39,15 @@ $.jgrid.regional["ru"] = {
 		pgnext : "Следующая",
 		pgprev : "Предыдущая",
 		pgrecs : "Записей на стр.",
-		showhide: "Показать/Скрыть таблицу"
+		showhide: "Показать/Скрыть таблицу",
+		// mobile
+		pagerCaption : "Grid::Page Settings",
+		pageText : "Page:",
+		recordPage : "Records per Page",
+		nomorerecs : "No more records...",
+		scrollPullup: "Pull up to load more...",
+		scrollPulldown : "Pull down to refresh...",
+		scrollRefresh : "Release to refresh..."
 	},
 	search : {
 		caption: "Поиск...",
@@ -103,7 +111,8 @@ $.jgrid.regional["ru"] = {
 		savetext: "",
 		savetitle: "Сохранить запись",
 		canceltext: "",
-		canceltitle : "Отмена сохранения"
+		canceltitle : "Отмена сохранения",
+		selectcaption : "Actions..."
 	},
 	col : {
 		caption: "Показать/скрыть столбцы",

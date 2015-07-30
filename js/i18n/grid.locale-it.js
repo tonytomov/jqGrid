@@ -19,7 +19,16 @@ if(!$.jgrid.hasOwnProperty("regional")) {
 	$.jgrid.regional = [];
 }
 $.jgrid.regional["it"] = {
-		defaults:{recordtext:"Visualizzati {0} - {1} di {2}",emptyrecords:"Nessun record da visualizzare",loadtext:"Caricamento...",pgtext:"Pagina {0} di {1}", savetext: "Saving...",pgfirst : "First Page",pglast : "Last Page",pgnext : "Next Page",pgprev : "Previous Page",pgrecs : "Records per Page",showhide: "Toggle Expand Collapse Grid"},
+		defaults:{recordtext:"Visualizzati {0} - {1} di {2}",emptyrecords:"Nessun record da visualizzare",loadtext:"Caricamento...",pgtext:"Pagina {0} di {1}", savetext: "Saving...",pgfirst : "First Page",pglast : "Last Page",pgnext : "Next Page",pgprev : "Previous Page",pgrecs : "Records per Page",		showhide: "Toggle Expand Collapse Grid",
+		// mobile
+		pagerCaption : "Grid::Page Settings",
+		pageText : "Page:",
+		recordPage : "Records per Page",
+		nomorerecs : "No more records...",
+		scrollPullup: "Pull up to load more...",
+		scrollPulldown : "Pull down to refresh...",
+		scrollRefresh : "Release to refresh..."
+},
 		search:{caption:"Ricerca...",Find:"Cerca",Reset:"Pulisci",			odata: [{ oper:'eq', text:"uguale"},{ oper:'ne', text:"diverso"},{ oper:'lt', text:"minore"},{ oper:'le', text:"minore o uguale"},{ oper:'gt', text:"maggiore"},{ oper:'ge', text:"maggiore o uguale"},{ oper:'bw', text:"inizia con"},{ oper:'bn', text:"non inizia con"},{ oper:'in', text:"in"},{ oper:'ni', text:"non in"},{ oper:'ew', text:"termina con"},{ oper:'en', text:"non termina con"},{ oper:'cn', text:"contiene"},{ oper:'nc', text:"non contiene"},{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}],groupOps:[{op:"AND",text:"tutto"},{op:"OR",text:"almeno uno"}],	operandTitle : "Click to select search operation.",resetTitle : "Reset Search Value"},
 		edit:{addCaption:"Aggiungi Record",editCaption:"Modifica Record",bSubmit:"Invia",bCancel:"Chiudi",bClose:"Chiudi",saveData:"Alcuni dati modificati! Salvare i cambiamenti?",bYes:"Si",bNo:"No",bExit:"Esci",msg:{required:"Campo richiesto",number:"Per favore, inserisci un valore valido",minValue:"il valore deve essere maggiore o uguale a ",maxValue:"il valore deve essere minore o uguale a",email:"e-mail non corretta",integer:"Per favore, inserisci un numero intero valido",date:"Per favore, inserisci una data valida",url:"URL non valido. Prefisso richiesto ('http://' or 'https://')",nodefined:" non � definito!",novalue:" valore di ritorno richiesto!",customarray:"La function custon deve tornare un array!",customfcheck:"La function custom deve esistere per il custom checking!"}},
 		view:{caption:"Visualizzazione Record",bClose:"Chiudi"},
@@ -28,7 +37,8 @@ $.jgrid.regional["it"] = {
 		savetext: "",
 		savetitle: "Save row",
 		canceltext: "",
-		canceltitle : "Cancel row editing"		
+		canceltitle : "Cancel row editing",
+		selectcaption : "Actions..."
 		},
 		col:{caption:"Mostra/Nascondi Colonne",bSubmit:"Invia",bCancel:"Annulla"},
 		errors:{errcap:"Errore",nourl:"Url non settata",norecords:"Nessun record da elaborare",model:"Lunghezza di colNames &lt;&gt; colModel!"},

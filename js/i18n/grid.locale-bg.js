@@ -37,8 +37,15 @@ $.jgrid.regional["bg"] = {
 		pgnext : "Следваща Стр.",
 		pgprev : "Предишна Стр.",
 		pgrecs : "Брой записи на Стр.",
-		showhide: "Свиване/Разтягане на таблицата"
-
+		showhide: "Свиване/Разтягане на таблицата",
+		// mobile
+		pagerCaption : "Grid::Page Settings",
+		pageText : "Page:",
+		recordPage : "Records per Page",
+		nomorerecs : "No more records...",
+		scrollPullup: "Pull up to load more...",
+		scrollPulldown : "Pull down to refresh...",
+		scrollRefresh : "Release to refresh..."
 	},
 	search : {
 		caption: "Търсене...",
@@ -102,8 +109,8 @@ $.jgrid.regional["bg"] = {
 		savetext: "",
 		savetitle: "Съхрани запис",
 		canceltext: "",
-		canceltitle : "Отказ редакция"
-
+		canceltitle : "Отказ редакция",
+		selectcaption : "Actions..."
 	},
 	col : {
 		caption: "Избери колони",
