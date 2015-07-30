@@ -335,7 +335,7 @@ $.jgrid.extend({
 			 */
 			function list(items) {
 				var l, j, key, k, col;
-				for (key in items) { // iterate
+				for (key in items) {	 // iterate
 					if (items.hasOwnProperty(key)) {
 					// write amount of spaces according to level
 					// and write name and newline
@@ -361,14 +361,19 @@ $.jgrid.extend({
 										colpos = collen === 0 ? swaplen : initColLen+aggrlen;
 										if(items.level-1=== (o.rowTotals ? 1 : 0)) {
 											if(collen>0) {
-												var l1 = headers[items.level-1].groupHeaders[collen-1].numberOfColumns;
+												var l1=0;
+												for(var kk=0; kk<collen; kk++) { 
+													l1 += headers[items.level-1].groupHeaders[kk].numberOfColumns;
+												}
 												if(l1) {
-													colpos = l1 + 1 + o.aggregates.length;
+													colpos = l1  + xlen;
 												}
 											}
 										}
+										if(columns[colpos]) {
 										headers[items.level-1].groupHeaders[collen].startColumnName = columns[colpos].name;
 										headers[items.level-1].groupHeaders[collen].numberOfColumns = columns.length - colpos;
+										}
 										initColLen = columns.length;
 									}
 								}
@@ -396,12 +401,12 @@ $.jgrid.extend({
 						if (items[key] != null && typeof items[key] === "object") {
 							list(items[key]);
 						}
-						// Finally build the coulumns
+						// Finally build the columns
 						if( key === 'level') {
-							if(items.level >0){
+							if(items.level >0 && items.level === (ylen===0?items.level:ylen)){
 								j=0;
 								for(l in items.fields) {
-									if(items.fields.hasOwnProperty( l )) {
+									if(items.fields.hasOwnProperty( l ) ) {
 										col = {};
 										for(k in o.aggregates[j]) {
 											if(o.aggregates[j].hasOwnProperty(k)) {
