@@ -4448,7 +4448,7 @@
 				}
 			}
 			thead += "</tr></thead>";
-			var hTable = $("<table class='" + getGuiStyles("hTable", "ui-jqgrid-htable") + "' style='width:" + p.tblwidth + "px' role='presentation' aria-labelledby='gbox_" + p.id + "'" + (isMSIE7 ? " cellspacing='0'" : "") + ">" + thead + "</table>");
+			var hTable = $("<table class='" + getGuiStyles("hTable", "ui-jqgrid-htable") + "' style='width:1px' role='presentation' aria-labelledby='gbox_" + p.id + "'" + (isMSIE7 ? " cellspacing='0'" : "") + ">" + thead + "</table>");
 			$(hTable[0].tHead)
 				.children("tr")
 				.children("th")
@@ -4505,6 +4505,7 @@
 			}
 			p.widthOrg = p.width;
 			setInitialColWidth();
+			hTable.css("width", p.tblwidth + "px");
 			$(eg).css("width", grid.width + "px")
 				.append("<div class='" + getGuiStyles("resizer", "ui-jqgrid-resize-mark") + "' id='" + p.rsId + "'>&#160;</div>");
 			$(p.rs)
@@ -4581,7 +4582,7 @@
 						if (p.multiSort) {
 							var notLso = cm.lso === "desc" ? "asc" : "desc";
 							if (p.viewsortcols[0]) {
-								$iconsSpan.show();
+								$iconsSpan.css("display", "");
 								if (cm.lso) {
 									$iconsSpan.children("span.ui-icon-" + cm.lso).removeClass(disabledStateClasses);
 									if (showOneSortIcon) {
@@ -4589,7 +4590,7 @@
 									}
 								}
 							} else if (cm.lso) {
-								$iconsSpan.show();
+								$iconsSpan.css("display", "");
 								$iconsSpan.children("span.ui-icon-" + cm.lso).removeClass(disabledStateClasses);
 								if (showOneSortIcon) {
 									$iconsSpan.children("span.ui-icon-" + notLso).hide();
@@ -4598,7 +4599,7 @@
 						} else {
 							var notSortOrder = p.sortorder === "desc" ? "asc" : "desc";
 							if (p.viewsortcols[0]) {
-								$iconsSpan.show();
+								$iconsSpan.css("display", "");
 								if (j === p.lastsort) {
 									$iconsSpan.children("span.ui-icon-" + p.sortorder).removeClass(disabledStateClasses);
 									if (showOneSortIcon) {
@@ -4606,7 +4607,7 @@
 									}
 								}
 							} else if (j === p.lastsort && p.sortname !== "") {
-								$iconsSpan.show();
+								$iconsSpan.css("display", "");
 								$iconsSpan.children("span.ui-icon-" + p.sortorder).removeClass(disabledStateClasses);
 								if (showOneSortIcon) {
 									$iconsSpan.children("span.ui-icon-" + notSortOrder).hide();
