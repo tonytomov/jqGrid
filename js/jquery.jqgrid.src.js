@@ -4448,8 +4448,8 @@
 				}
 			}
 			thead += "</tr></thead>";
-			$self0.append(thead);
-			$(ts.tHead)
+			var hTable = $("<table class='" + getGuiStyles("hTable", "ui-jqgrid-htable") + "' style='width:" + p.tblwidth + "px' role='presentation' aria-labelledby='gbox_" + p.id + "'" + (isMSIE7 ? " cellspacing='0'" : "") + ">" + thead + "</table>");
+			$(hTable[0].tHead)
 				.children("tr")
 				.children("th")
 				.hover(
@@ -4457,7 +4457,7 @@
 					function () { $(this).removeClass(hoverStateClasses); }
 				);
 			if (p.multiselect) {
-				$(p.cb, ts).bind("click", function () {
+				$(p.cb, hTable).bind("click", function () {
 					clearArray(p.selarrrow); // p.selarrrow = [];
 					var highlightClass = getGuiStyles("states.select"), toCheck, emp = [],
 						iColCb = p.iColByName.cb,
@@ -4537,7 +4537,7 @@
 			if (p.footerrow) { tfoot += "<table role='presentation' style='width:" + p.tblwidth + "px' class='ui-jqgrid-ftable'" + (isMSIE7 ? " cellspacing='0'" : "") + "><tbody><tr role='row' class='" + getGuiStyles("rowFooter", "footrow footrow-" + dir) + "'>"; }
 			var firstr = "<tr class='jqgfirstrow' role='row' style='height:auto'>";
 			p.disableClick = false;
-			$("th", ts.tHead.rows[0])
+			$("th", hTable[0].tHead.rows[0])
 				.each(function (j) {
 					var cm = p.colModel[j], nm = cm.name, $th = $(this),
 						$sortableDiv = $th.children("div"),
@@ -4667,11 +4667,11 @@
 			if (p.footerrow) { tfoot += "</tr></tbody></table>"; }
 			firstr += "</tr>";
 			tbody = document.createElement("tbody");
-			ts.appendChild(tbody);
-			$self0.addClass(getGuiStyles("grid", "ui-jqgrid-btable")).append(firstr);
+			$(tbody).append(firstr);
 			firstr = null;
-			var hTable = $("<table class='" + getGuiStyles("hTable", "ui-jqgrid-htable") + "' style='width:" + p.tblwidth + "px' role='presentation' aria-labelledby='gbox_" + p.id + "'" + (isMSIE7 ? " cellspacing='0'" : "") + "></table>").append(ts.tHead),
-				hg = (p.caption && p.hiddengrid === true) ? true : false,
+			ts.appendChild(tbody);
+			$self0.addClass(getGuiStyles("grid", "ui-jqgrid-btable"));
+			var hg = (p.caption && p.hiddengrid === true) ? true : false,
 				hb = $("<div class='ui-jqgrid-hbox" + (dir === "rtl" ? "-rtl" : "") + "'></div>"),
 				bottomClasses = getGuiStyles("bottom");
 			grid.hDiv = document.createElement("div");
