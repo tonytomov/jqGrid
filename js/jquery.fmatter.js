@@ -704,8 +704,8 @@
 				return mergeCssClasses(op.commonIconClass, op[name + "icon"]);
 			},
 			hoverClass = mergeCssClasses(jgrid.getRes(jgrid.guiStyles[p.guiStyle], "states.hover")),
-			hoverAttributes = "onmouseover=jQuery(this).addClass('" + hoverClass +
-				"'); onmouseout=jQuery(this).removeClass('" + hoverClass + "'); ",
+			hoverAttributes = "onmouseover=\"jQuery(this).addClass('" + hoverClass +
+				"');\" onmouseout=\"jQuery(this).removeClass('" + hoverClass + "');\"",
 			buttonInfos = [
 				{ action: "edit", actionName: "formedit", display: op.editformbutton },
 				{ action: "edit", display: !op.editformbutton && op.editbutton },

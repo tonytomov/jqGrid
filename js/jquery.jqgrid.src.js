@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-07-24
+ * Date: 2015-07-31
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -4322,7 +4322,7 @@
 			}
 			if (p.rownumbers) {
 				p.colNames.unshift("");
-				p.colModel.unshift({ name: "rn", width: jgrid.cell_width ? p.rownumWidth + p.cellLayout : p.rownumWidth, labelClasses: "jqgh_rn", classes: "td_rn", sortable: false, resizable: false, hidedlg: true, search: false, align: "center", fixed: true, frozen: true });
+				p.colModel.unshift({ name: "rn", width: jgrid.cell_width ? p.rownumWidth + p.cellLayout : p.rownumWidth, labelClasses: "jqgh_rn", sortable: false, resizable: false, hidedlg: true, search: false, align: "center", fixed: true, frozen: true });
 			}
 			p.iColByName = buildColNameMap(p.colModel);
 			p.xmlReader = extend(true, {
@@ -17296,8 +17296,8 @@
 				return mergeCssClasses(op.commonIconClass, op[name + "icon"]);
 			},
 			hoverClass = mergeCssClasses(jgrid.getRes(jgrid.guiStyles[p.guiStyle], "states.hover")),
-			hoverAttributes = "onmouseover=jQuery(this).addClass('" + hoverClass +
-				"'); onmouseout=jQuery(this).removeClass('" + hoverClass + "'); ",
+			hoverAttributes = "onmouseover=\"jQuery(this).addClass('" + hoverClass +
+				"');\" onmouseout=\"jQuery(this).removeClass('" + hoverClass + "');\"",
 			buttonInfos = [
 				{ action: "edit", actionName: "formedit", display: op.editformbutton },
 				{ action: "edit", display: !op.editformbutton && op.editbutton },
