@@ -4666,10 +4666,8 @@
 			}
 			if (p.footerrow) { tfoot += "</tr></tbody></table>"; }
 			firstr += "</tr>";
-			tbody = document.createElement("tbody");
-			$(tbody).append(firstr);
-			firstr = null;
-			ts.appendChild(tbody);
+			$(ts).html("<tbody>" + firstr + "</tbody>");
+			//firstr = null;
 			$self0.addClass(getGuiStyles("grid", "ui-jqgrid-btable"));
 			var hg = (p.caption && p.hiddengrid === true) ? true : false,
 				hb = $("<div class='ui-jqgrid-hbox" + (dir === "rtl" ? "-rtl" : "") + "'></div>"),
