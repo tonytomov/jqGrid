@@ -2421,7 +2421,8 @@
 						self.resizing = { idx: i, startX: startX, sOL: startX, moved: false, delta: startX - x.pageX };
 						self.curGbox = $(p.rs);
 						self.curGbox.prependTo("body"); // change the parent to be able to move over the ranges of the gBox
-						self.curGbox.css({ display: "block", left: startX, top: y[1] + gridOffset.top, height: y[2] });
+						self.curGbox.css({ display: "block", left: startX, top: y[1] + gridOffset.top + 1, height: y[2] });
+						self.curGbox.css("height", (y[2] - (self.curGbox.outerHeight() - self.curGbox.height())) + "px");
 						self.curGbox.data("idx", i);
 						self.curGbox.data("delta", startX - x.pageX);
 						myResizerClickHandler.call(this.curGbox, x);
