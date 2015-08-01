@@ -4449,7 +4449,7 @@
 				}
 			}
 			thead += "</tr></thead>";
-			var hTable = $("<table class='" + getGuiStyles("hTable", "ui-jqgrid-htable") + "' style='width:1px' role='presentation' aria-labelledby='gbox_" + p.id + "'" + (isMSIE7 ? " cellspacing='0'" : "") + ">" + thead + "</table>");
+			var hTable = $("<table class='" + getGuiStyles("hTable", "ui-jqgrid-htable") + "' style='width:1px' role='presentation' aria-labelledby='gbox_" + p.id + "'" + (isMSIE7 ? " cellspacing='0'" : "") + ">" + thead + "<tbody><tr><td></td></tr></tbody></table>");
 			$(hTable[0].tHead)
 				.children("tr")
 				.children("th")
