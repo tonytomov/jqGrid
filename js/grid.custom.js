@@ -526,7 +526,7 @@
 				// create the row
 				$.each(colModel, function (ci) {
 					var cm = this, soptions, mode = "filter", surl, self, select = "", sot, so, i, searchoptions = cm.searchoptions, editoptions = cm.editoptions,
-						th = $("<th role='columnheader' class='" + getGuiStyles.call($t, "colHeaders", "ui-th-column ui-th-" + p.direction + " " + (o.applyLabelClasses ? cm.labelClasses || "" : "")) + "'></th>"),
+						th = $("<th class='" + getGuiStyles.call($t, "colHeaders", "ui-th-column ui-th-" + p.direction + " " + (o.applyLabelClasses ? cm.labelClasses || "" : "")) + "'></th>"),
 						thd = $("<div style='position:relative;height:auto;'></div>"),
 						stbl = $("<table class='ui-search-table'" + (jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "") + "><tr><td class='ui-search-oper'></td><td class='ui-search-input'></td><td class='ui-search-clear' style='width:1px'></td></tr></table>");
 					if (this.hidden === true) { $(th).css("display", "none"); }
@@ -630,7 +630,7 @@
 									if (oSv) {
 										var elem = document.createElement("select");
 										elem.style.width = "100%";
-										$(elem).attr({ name: cm.index || cm.name, id: "gs_" + cm.name, role: "listbox" });
+										$(elem).attr({ name: cm.index || cm.name, id: "gs_" + cm.name });
 										var sv, ov, key, k;
 										if (typeof oSv === "string") {
 											so = oSv.split(delim);
@@ -677,7 +677,7 @@
 							case "text":
 								var df = soptions.defaultValue !== undefined ? soptions.defaultValue : "";
 
-								$("td", stbl).eq(1).append("<input type='text' role='textbox' class='" + dataFieldClass + "' style='width:100%;padding:0;' name='" + (cm.index || cm.name) + "' id='gs_" + cm.name + "' value='" + df + "'/>");
+								$("td", stbl).eq(1).append("<input type='text' class='" + dataFieldClass + "' style='width:100%;padding:0;' name='" + (cm.index || cm.name) + "' id='gs_" + cm.name + "' value='" + df + "'/>");
 								$(thd).append(stbl);
 
 								if (soptions.attr) { $("input", thd).attr(soptions.attr); }
@@ -899,7 +899,7 @@
 						// The next numberOfColumns headers will be moved in the next row
 						// in the current row will be placed the new column header with the titleText.
 						// The text will be over the cVisibleColumns columns
-						$colHeader = $("<th>").attr({ role: "columnheader" })
+						$colHeader = $("<th>")
 							.addClass(thClasses)
 							.css({ "height": "22px", "border-top": "0 none" })
 							.html(titleText);
@@ -925,7 +925,7 @@
 								// expand the header height to two rows
 								$th.attr("rowspan", $trLabels.length + 1);
 							} else {
-								$("<th>", { role: "columnheader" })
+								$("<th>")
 									.addClass(thClasses)
 									.css({ "display": cmi.hidden ? "none" : "", "border-top": "0 none" })
 									.insertBefore($th);

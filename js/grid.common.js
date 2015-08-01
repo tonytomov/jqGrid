@@ -419,7 +419,6 @@
 					break;
 				case "select":
 					elem = document.createElement("select");
-					elem.setAttribute("role", "listbox");
 					var msl, ovm = [], cm, iCol;
 					iCol = p.iColByName[options.name];
 					cm = p.colModel[iCol];
@@ -467,7 +466,6 @@
 											//if(i===0) { this.selected = ""; }
 											// fix IE8/IE7 problem with selecting of the first item on multiple=true
 											if (i === 0 && elem1.multiple) { this.selected = false; }
-											$(this).attr("role", "option");
 											if ($.inArray($.trim($(this).text()), ovm1) > -1 || $.inArray($.trim($(this).val()), ovm1) > -1) {
 												this.selected = "selected";
 											}
@@ -505,7 +503,6 @@
 									sv[1] = $.map(sv, mapFunc).join(sep);
 								}
 								ov = document.createElement("option");
-								ov.setAttribute("role", "option");
 								// consider to trim BEFORE filling the options
 								ov.value = sv[0];
 								ov.innerHTML = sv[1];
@@ -524,7 +521,6 @@
 							for (key in oSv) {
 								if (oSv.hasOwnProperty(key)) {
 									ov = document.createElement("option");
-									ov.setAttribute("role", "option");
 									ov.value = key;
 									ov.innerHTML = oSv[key];
 									elem.appendChild(ov);

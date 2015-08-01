@@ -3915,19 +3915,19 @@
 					if (p.rowList.length > 0) {
 						str = "<td dir='" + dir + "'>";
 						var pgrecs = getDef("pgrecs");
-						str += "<select class='" + getGuiStyles("pagerSelect", "ui-pg-selbox") + "' role='listbox' " + (pgrecs ? "title='" + pgrecs + "'" : "") + ">";
+						str += "<select class='" + getGuiStyles("pagerSelect", "ui-pg-selbox") + "' " + (pgrecs ? "title='" + pgrecs + "'" : "") + ">";
 						var strnm;
 						for (i = 0; i < p.rowList.length; i++) {
 							strnm = p.rowList[i].toString().split(":");
 							if (strnm.length === 1) {
 								strnm[1] = strnm[0];
 							}
-							str += "<option role=\"option\" value=\"" + strnm[0] + "\"" + ((intNum(p.rowNum, 0) === intNum(strnm[0], 0)) ? " selected=\"selected\"" : "") + ">" + strnm[1] + "</option>";
+							str += "<option value=\"" + strnm[0] + "\"" + ((intNum(p.rowNum, 0) === intNum(strnm[0], 0)) ? " selected=\"selected\"" : "") + ">" + strnm[1] + "</option>";
 						}
 						str += "</select></td>";
 					}
 					if (dir === "rtl") { pgl += str; }
-					if (p.pginput === true) { pginp = "<td dir='" + dir + "'>" + jgrid.format(getDef("pgtext") || "", "<input class='" + getGuiStyles("pagerInput", "ui-pg-input") + "' type='text' size='2' maxlength='7' value='0' role='textbox'/>", "<span id='sp_1_" + pgid + "'>0</span>") + "</td>"; }
+					if (p.pginput === true) { pginp = "<td dir='" + dir + "'>" + jgrid.format(getDef("pgtext") || "", "<input class='" + getGuiStyles("pagerInput", "ui-pg-input") + "' type='text' size='2' maxlength='7' value='0'/>", "<span id='sp_1_" + pgid + "'>0</span>") + "</td>"; }
 					pgid = "#" + jqID(pgid); // modify to id selector
 					if (p.pgbuttons === true) {
 						var po = ["first", "prev", "next", "last"],
@@ -4402,7 +4402,7 @@
 			for (iCol = 0; iCol < p.colNames.length; iCol++) {
 				cmi = p.colModel[iCol];
 				tooltip = p.headertitles || cmi.headerTitle ? (" title=\"" + stripHtml(typeof cmi.headerTitle === "string" ? cmi.headerTitle : p.colNames[iCol]) + "\"") : "";
-				thead += "<th id='" + p.id + "_" + cmi.name + "' role='columnheader' class='" + getGuiStyles("colHeaders", "ui-th-column ui-th-" + dir + " " + (cmi.labelClasses || "")) + "'" + tooltip + ">";
+				thead += "<th id='" + p.id + "_" + cmi.name + "' class='" + getGuiStyles("colHeaders", "ui-th-column ui-th-" + dir + " " + (cmi.labelClasses || "")) + "'" + tooltip + ">";
 				idn = cmi.index || cmi.name;
 				switch (cmi.labelAlign) {
 				case "left":
@@ -7535,7 +7535,6 @@
 					break;
 				case "select":
 					elem = document.createElement("select");
-					elem.setAttribute("role", "listbox");
 					var msl, ovm = [], cm, iCol;
 					iCol = p.iColByName[options.name];
 					cm = p.colModel[iCol];
@@ -7583,7 +7582,6 @@
 											//if(i===0) { this.selected = ""; }
 											// fix IE8/IE7 problem with selecting of the first item on multiple=true
 											if (i === 0 && elem1.multiple) { this.selected = false; }
-											$(this).attr("role", "option");
 											if ($.inArray($.trim($(this).text()), ovm1) > -1 || $.inArray($.trim($(this).val()), ovm1) > -1) {
 												this.selected = "selected";
 											}
@@ -7621,7 +7619,6 @@
 									sv[1] = $.map(sv, mapFunc).join(sep);
 								}
 								ov = document.createElement("option");
-								ov.setAttribute("role", "option");
 								// consider to trim BEFORE filling the options
 								ov.value = sv[0];
 								ov.innerHTML = sv[1];
@@ -7640,7 +7637,6 @@
 							for (key in oSv) {
 								if (oSv.hasOwnProperty(key)) {
 									ov = document.createElement("option");
-									ov.setAttribute("role", "option");
 									ov.value = key;
 									ov.innerHTML = oSv[key];
 									elem.appendChild(ov);
@@ -8422,7 +8418,7 @@
 				// create the row
 				$.each(colModel, function (ci) {
 					var cm = this, soptions, mode = "filter", surl, self, select = "", sot, so, i, searchoptions = cm.searchoptions, editoptions = cm.editoptions,
-						th = $("<th role='columnheader' class='" + getGuiStyles.call($t, "colHeaders", "ui-th-column ui-th-" + p.direction + " " + (o.applyLabelClasses ? cm.labelClasses || "" : "")) + "'></th>"),
+						th = $("<th class='" + getGuiStyles.call($t, "colHeaders", "ui-th-column ui-th-" + p.direction + " " + (o.applyLabelClasses ? cm.labelClasses || "" : "")) + "'></th>"),
 						thd = $("<div style='position:relative;height:auto;'></div>"),
 						stbl = $("<table class='ui-search-table'" + (jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "") + "><tr><td class='ui-search-oper'></td><td class='ui-search-input'></td><td class='ui-search-clear' style='width:1px'></td></tr></table>");
 					if (this.hidden === true) { $(th).css("display", "none"); }
@@ -8526,7 +8522,7 @@
 									if (oSv) {
 										var elem = document.createElement("select");
 										elem.style.width = "100%";
-										$(elem).attr({ name: cm.index || cm.name, id: "gs_" + cm.name, role: "listbox" });
+										$(elem).attr({ name: cm.index || cm.name, id: "gs_" + cm.name });
 										var sv, ov, key, k;
 										if (typeof oSv === "string") {
 											so = oSv.split(delim);
@@ -8573,7 +8569,7 @@
 							case "text":
 								var df = soptions.defaultValue !== undefined ? soptions.defaultValue : "";
 
-								$("td", stbl).eq(1).append("<input type='text' role='textbox' class='" + dataFieldClass + "' style='width:100%;padding:0;' name='" + (cm.index || cm.name) + "' id='gs_" + cm.name + "' value='" + df + "'/>");
+								$("td", stbl).eq(1).append("<input type='text' class='" + dataFieldClass + "' style='width:100%;padding:0;' name='" + (cm.index || cm.name) + "' id='gs_" + cm.name + "' value='" + df + "'/>");
 								$(thd).append(stbl);
 
 								if (soptions.attr) { $("input", thd).attr(soptions.attr); }
@@ -8795,7 +8791,7 @@
 						// The next numberOfColumns headers will be moved in the next row
 						// in the current row will be placed the new column header with the titleText.
 						// The text will be over the cVisibleColumns columns
-						$colHeader = $("<th>").attr({ role: "columnheader" })
+						$colHeader = $("<th>")
 							.addClass(thClasses)
 							.css({ "height": "22px", "border-top": "0 none" })
 							.html(titleText);
@@ -8821,7 +8817,7 @@
 								// expand the header height to two rows
 								$th.attr("rowspan", $trLabels.length + 1);
 							} else {
-								$("<th>", { role: "columnheader" })
+								$("<th>")
 									.addClass(thClasses)
 									.css({ "display": cmi.hidden ? "none" : "", "border-top": "0 none" })
 									.insertBefore($th);
@@ -16699,7 +16695,7 @@
 			actions: function () {
 				return {
 					formatter: "actions",
-					width: (this.p != null && this.p.fontAwesomeIcons ? 33 : 36) + (jgrid.cellWidth() ? 5 : 0),
+					width: (this.p != null && this.p.fontAwesomeIcons ? 33 : 37) + (jgrid.cellWidth() ? 5 : 0),
 					align: "center",
 					label: "",
 					autoResizable: false,

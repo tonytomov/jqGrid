@@ -3915,19 +3915,19 @@
 					if (p.rowList.length > 0) {
 						str = "<td dir='" + dir + "'>";
 						var pgrecs = getDef("pgrecs");
-						str += "<select class='" + getGuiStyles("pagerSelect", "ui-pg-selbox") + "' role='listbox' " + (pgrecs ? "title='" + pgrecs + "'" : "") + ">";
+						str += "<select class='" + getGuiStyles("pagerSelect", "ui-pg-selbox") + "' " + (pgrecs ? "title='" + pgrecs + "'" : "") + ">";
 						var strnm;
 						for (i = 0; i < p.rowList.length; i++) {
 							strnm = p.rowList[i].toString().split(":");
 							if (strnm.length === 1) {
 								strnm[1] = strnm[0];
 							}
-							str += "<option role=\"option\" value=\"" + strnm[0] + "\"" + ((intNum(p.rowNum, 0) === intNum(strnm[0], 0)) ? " selected=\"selected\"" : "") + ">" + strnm[1] + "</option>";
+							str += "<option value=\"" + strnm[0] + "\"" + ((intNum(p.rowNum, 0) === intNum(strnm[0], 0)) ? " selected=\"selected\"" : "") + ">" + strnm[1] + "</option>";
 						}
 						str += "</select></td>";
 					}
 					if (dir === "rtl") { pgl += str; }
-					if (p.pginput === true) { pginp = "<td dir='" + dir + "'>" + jgrid.format(getDef("pgtext") || "", "<input class='" + getGuiStyles("pagerInput", "ui-pg-input") + "' type='text' size='2' maxlength='7' value='0' role='textbox'/>", "<span id='sp_1_" + pgid + "'>0</span>") + "</td>"; }
+					if (p.pginput === true) { pginp = "<td dir='" + dir + "'>" + jgrid.format(getDef("pgtext") || "", "<input class='" + getGuiStyles("pagerInput", "ui-pg-input") + "' type='text' size='2' maxlength='7' value='0'/>", "<span id='sp_1_" + pgid + "'>0</span>") + "</td>"; }
 					pgid = "#" + jqID(pgid); // modify to id selector
 					if (p.pgbuttons === true) {
 						var po = ["first", "prev", "next", "last"],
@@ -4402,7 +4402,7 @@
 			for (iCol = 0; iCol < p.colNames.length; iCol++) {
 				cmi = p.colModel[iCol];
 				tooltip = p.headertitles || cmi.headerTitle ? (" title=\"" + stripHtml(typeof cmi.headerTitle === "string" ? cmi.headerTitle : p.colNames[iCol]) + "\"") : "";
-				thead += "<th id='" + p.id + "_" + cmi.name + "' role='columnheader' class='" + getGuiStyles("colHeaders", "ui-th-column ui-th-" + dir + " " + (cmi.labelClasses || "")) + "'" + tooltip + ">";
+				thead += "<th id='" + p.id + "_" + cmi.name + "' class='" + getGuiStyles("colHeaders", "ui-th-column ui-th-" + dir + " " + (cmi.labelClasses || "")) + "'" + tooltip + ">";
 				idn = cmi.index || cmi.name;
 				switch (cmi.labelAlign) {
 				case "left":
