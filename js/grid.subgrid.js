@@ -55,8 +55,7 @@
 		addSubGridCell: function (pos, iRow) {
 			var self = this[0], subGridOptions = self.p.subGridOptions;
 			return self == null || self.p == null || subGridOptions == null ? "" :
-					"<td role=\"gridcell\" aria-describedby=\"" + self.p.id +
-					"_subgrid\" class='" + base.getGuiStyles.call(this, "subgrid.tdStart", "ui-sgcollapsed sgcollapsed") + "' " +
+					"<td role=\"gridcell\" class='" + base.getGuiStyles.call(this, "subgrid.tdStart", "ui-sgcollapsed sgcollapsed") + "' " +
 					self.formatCol(pos, iRow) + "><a style='cursor:pointer;'><span class='" +
 					jgrid.mergeCssClasses(subGridOptions.commonIconClass, subGridOptions.plusicon) + "'></span></a></td>";
 		},
@@ -202,7 +201,7 @@
 					onClick = function () {
 						var tr = $(this).parent("tr")[0], r = tr.nextSibling, rowid = tr.id, subgridDivId = p.id + "_" + rowid, atd,
 							iconClass = function (iconName) {
-								return [p.subGridOptions.commonIconClass, p.subGridOptions[iconName]].join(" ");
+								return jgrid.mergeCssClasses(p.subGridOptions.commonIconClass, p.subGridOptions[iconName]);
 							},
 							nhc = 1;
 						$.each(p.colModel, function () {
@@ -218,7 +217,7 @@
 								}
 								$(tr).after("<tr role='row' class='" + rowClasses + "'>" + atd + "<td class='" + tdWithIconClasses +
 									"'><span class='" + iconClass("openicon") + "'></span></td><td colspan='" + parseInt(p.colNames.length - nhc, 10) +
-									"' class='" + tdDataClasses + "'><div id=" + subgridDivId + " class='tablediv'></div></td></tr>");
+									"' class='" + tdDataClasses + "'><div id='" + subgridDivId + "' class='tablediv'></div></td></tr>");
 								$(ts).triggerHandler("jqGridSubGridRowExpanded", [subgridDivId, rowid]);
 								if ($.isFunction(p.subGridRowExpanded)) {
 									p.subGridRowExpanded.call(ts, subgridDivId, rowid);

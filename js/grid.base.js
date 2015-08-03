@@ -2703,7 +2703,7 @@
 				},
 				formatCol = function (pos, rowInd, tv, rawObject, rowId, rdata) {
 					var cm = p.colModel[pos], cellAttrFunc, cellValue = tv, rPrefix,
-						result = "style='", classes = cm.classes,
+						result, classes = cm.classes,
 						styleValue = cm.align ? "text-align:" + cm.align + ";" : "",
 						attrStr, matches, value, tilteValue,
 						encodeAttr = function (v) {
@@ -2780,7 +2780,7 @@
 							}
 						}
 					}
-					result += styleValue + "'";
+					result = styleValue !== "" ? "style='" + styleValue + "'" : "";
 					result += (classes !== undefined ? (" class='" + classes + "'") : "") + ((cm.title && cellValue) ? (" title=\"" + stripHtml(tv) + "\"") : "");
 					result += rest;
 					return result;
