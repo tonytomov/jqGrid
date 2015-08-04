@@ -2426,7 +2426,7 @@
 						self.curGbox.data("idx", i);
 						self.curGbox.data("delta", startX - x.pageX);
 						myResizerClickHandler.call(this.curGbox, x);
-						feedback.call(getGridComponent(COMPONENT_NAMES.BODY_TABLE, $bDiv), "resizeStart", x, i);
+						feedback.call(getGridComponent(COMPONENT_NAMES.BODY_TABLE, $bDiv)[0], "resizeStart", x, i);
 						document.onselectstart = function () { return false; };
 						$(document)
 							.bind("mousemove.jqGrid", function (e) {
