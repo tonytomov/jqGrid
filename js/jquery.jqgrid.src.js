@@ -3190,7 +3190,9 @@
 							if (typeof nameReader === "string" || isFunction(nameReader)) {
 								colReader[cmName] = nameReader;
 							}
-							setSimpleColReaderIfPossible(cmName);
+							if (!isFunction(nameReader)) {
+								setSimpleColReaderIfPossible(cmName);
+							}
 						}
 					}
 					nCol = additionalProperties.length;
