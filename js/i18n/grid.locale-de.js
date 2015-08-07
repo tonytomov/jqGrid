@@ -54,13 +54,13 @@ $.jgrid.regional["de"] = {
 		pgrecs : "Datensätze pro Seite",
 		showhide: "Toggle erweitern reduzieren",
 		// mobile
-		pagerCaption : "Grid::Page Settings",
-		pageText : "Page:",
-		recordPage : "Records per Page",
-		nomorerecs : "No more records...",
-		scrollPullup: "Pull up to load more...",
-		scrollPulldown : "Pull down to refresh...",
-		scrollRefresh : "Release to refresh..."
+		pagerCaption : "Grid::Seite Optionen",
+		pageText : "Seite:",
+		recordPage : "Ergebnisse pro Seite",
+		nomorerecs : "Keine weiteren Datensätze...",
+		scrollPullup: "Ziehen Sie, um mehr zu laden...",
+		scrollPulldown : "Pulldown zu aktualisieren...",
+		scrollRefresh : "Lassen Sie zu aktualisieren..."
 	},
 	search : {
 		caption: "Suche...",
@@ -125,7 +125,7 @@ $.jgrid.regional["de"] = {
 		savetitle: "Zeile speihern",
 		canceltext: "",
 		canceltitle : "Zeile abbrechen",
-		selectcaption : "Actions..."
+		selectcaption : "Aktionen..."
 	},
 	col : {
 		caption: "Spalten auswählen",
