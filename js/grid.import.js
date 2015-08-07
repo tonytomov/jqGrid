@@ -169,17 +169,24 @@ $.extend($.jgrid,{
 		}
 	},
 	setRegional : function( jqGridId , options) {
-		$.jgrid.saveState( jqGridId, {
+		var o = {
 			storageType: "sessionStorage"
-		});
-		$.jgrid.loadState( jqGridId, null, {
-			storageType: "sessionStorage",
-			beforeSetGrid: function(params) {
-				params.regional = options.regional;
-				params.force_regional = true;
-				return params;
-			}
-		});
+		};
+		o =  $.extend(o , options || {});
+		
+		if( !o.regional ) {
+			return;
+		}
+		
+		$.jgrid.saveState( jqGridId, o );
+		
+		o.beforeSetGrid = function(params) {
+			params.regional = o.regional;
+			params.force_regional = true;
+			return params;
+		};
+		
+		$.jgrid.loadState( jqGridId, null, o);
 		// check for formatter actions
 		var grid = $("#"+jqGridId)[0],
 		model = $(grid).jqGrid('getGridParam','colModel'), i=-1, nav = $.jgrid.getRegional(grid, 'nav');
@@ -199,8 +206,8 @@ $.extend($.jgrid,{
 			});
 		}
 		try {
-			window.sessionStorage.removeItem("jqGrid"+grid.id);
-			window.sessionStorage.removeItem("jqGrid"+grid.id+"_data");
+			window[o.storageType].removeItem("jqGrid"+grid.id);
+			window[o.storageType].removeItem("jqGrid"+grid.id+"_data");
 		} catch (e) {}
 	},
 	jqGridImport : function(jqGridId, o) {
