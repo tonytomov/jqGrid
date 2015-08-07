@@ -29,7 +29,15 @@ $.jgrid.regional["en"] = {
 		pgnext : "Pagina Successiva",
 		pgprev : "Pagina Precedente",
 		pgrecs : "Records per Pagina",
-		showhide: "Espandi o collassa griglia"
+		showhide: "Espandi o collassa griglia",
+		// mobile
+		pagerCaption : "Grid::Page Settings",
+		pageText : "Page:",
+		recordPage : "Records per Page",
+		nomorerecs : "No more records...",
+		scrollPullup: "Pull up to load more...",
+		scrollPulldown : "Pull down to refresh...",
+		scrollRefresh : "Release to refresh..."
 	},
 	search : {
 		caption: "Cerca...",
@@ -94,7 +102,8 @@ $.jgrid.regional["en"] = {
 		savetext: "",
 		savetitle: "Salva riga",
 		canceltext: "",
-		canceltitle : "Annulla modifica riga"
+		canceltitle : "Annulla modifica riga",
+		selectcaption : "Actions..."
 	},
 	col : {
 		caption: "Seleziona colonne",
