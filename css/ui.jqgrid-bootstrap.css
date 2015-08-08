@@ -184,7 +184,7 @@ div.tablediv > .table-bordered {
 .ui-jqgrid tr.jqgroup {  
 	outline-style: none; 
 }
-.ui-jqgrid tr.jqgrow td { 
+.ui-jqgrid .ui-jqgrid-btable tbody tr.jqgrow td { 
 	overflow: hidden; 
 	white-space: pre; 
 	padding-right: 2px;
@@ -252,9 +252,9 @@ div.tablediv > .table-bordered {
 { 
 	border-left-width: 0px;
 	border-top: 1px solid #ddd;  
-	padding : 4px 0px;
+	//padding : 4px 0px;
 	position: relative; 
-	height: auto; 
+	//height: auto; 
 	white-space: nowrap;
 	overflow: hidden;
 }
@@ -268,7 +268,7 @@ div.tablediv > .table-bordered {
 	border-left: 0;
 	border-bottom: 0;
 	border-top: 0; 
-	height: 30px;
+	//height: 30px;
 }
 .ui-jqgrid .ui-pg-table {
 	position: relative; 
@@ -279,14 +279,21 @@ div.tablediv > .table-bordered {
 .ui-jqgrid .ui-pg-table td {
 	font-weight:normal; 
 	vertical-align:middle; 
-	padding:0px 6px;
+	//padding:0px 6px;
+}
+.ui-jqgrid .ui-pager-control .ui-pager-table td {
+	border-top : 0px none !important;
+	min-height : 20px !important;
 }
 .ui-jqgrid .ui-pg-button  { 
 	height:auto; 
 }
+.ui-jqgrid  .ui-paging-pager td {
+	padding : 0 5px;
+}
 .ui-jqgrid .ui-pg-button span { 
 	display: block; 
-	margin: 2px; 
+	margin: 0px 2px; 
 	float:left;
 }
 .ui-jqgrid .ui-pg-button:hover {  }
@@ -300,7 +307,7 @@ div.tablediv > .table-bordered {
 	margin:0;
 	line-height: inherit;
 	border: none; 
-	padding: 3px 2px
+	padding: 0px 3px
 }
 .ui-jqgrid .ui-pg-selbox, 
 .ui-jqgrid .ui-jqgrid-toppager .ui-pg-selbox {
@@ -316,6 +323,7 @@ div.tablediv > .table-bordered {
 	height: 18px; 
 	border : none;
 	border-left: 2px solid #ccc ; //default
+	
 }
 .ui-separator-li {
 	height: 2px; 
@@ -376,6 +384,11 @@ div.tablediv > .table-bordered {
 	float:left;
 	table-layout:auto;
 	height:100%;
+}
+.ui-jqgrid .ui-jqgrid-pager .navtable td,
+.ui-jqgrid .ui-jqgrid-toppager .navtable td 
+{ 
+	padding : 0 5px;
 }
 
 /*Subgrid*/
