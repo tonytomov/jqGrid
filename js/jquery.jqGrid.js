@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.0.0 - 2015-08-03
+* @license Guriddo jqGrid JS - v5.0.0 - 2015-08-08
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -930,6 +930,7 @@ $.extend($.jgrid,{
 				scrollBox : "ui-widget-content",
 				multiBox : "cbox",
 				pagerBox : "ui-state-default ui-corner-bottom",
+				pagerTable : "",
 				toppagerBox : "ui-state-default",
 				pgInput : "ui-corner-all",
 				pgSelectBox : "ui-widget-content ui-corner-all",
@@ -1044,6 +1045,7 @@ $.extend($.jgrid,{
 				scrollBox : "",
 				multiBox : "checkbox",
 				pagerBox : "",
+				pagerTable : "table",
 				toppagerBox : "",
 				pgInput : "form-control",
 				pgSelectBox : "form-control",
@@ -2635,7 +2637,7 @@ $.fn.jqGrid = function( pin ) {
 			pgcnt = "pg_"+pgid;
 			lft = pgid+"_left"; cent = pgid+"_center"; rgt = pgid+"_right";
 			$("#"+$.jgrid.jqID(pgid) )
-			.append("<div id='"+pgcnt+"' class='ui-pager-control' role='group'><table class='ui-pg-table ui-common-table ui-pager-table'><tbody><tr><td id='"+lft+"' align='left'></td><td id='"+cent+"' align='center' style='white-space:pre;'></td><td id='"+rgt+"' align='right'></td></tr></tbody></table></div>")
+			.append("<div id='"+pgcnt+"' class='ui-pager-control' role='group'><table " + getstyle(stylemodule, 'pagerTable', false, 'ui-pg-table ui-common-table ui-pager-table') + "><tbody><tr><td id='"+lft+"' align='left'></td><td id='"+cent+"' align='center' style='white-space:pre;'></td><td id='"+rgt+"' align='right'></td></tr></tbody></table></div>")
 			.attr("dir","ltr"); //explicit setting
 			if(ts.p.rowList.length >0){
 				str = "<td dir=\""+dir+"\">";
@@ -10637,17 +10639,24 @@ $.extend($.jgrid,{
 		}
 	},
 	setRegional : function( jqGridId , options) {
-		$.jgrid.saveState( jqGridId, {
+		var o = {
 			storageType: "sessionStorage"
-		});
-		$.jgrid.loadState( jqGridId, null, {
-			storageType: "sessionStorage",
-			beforeSetGrid: function(params) {
-				params.regional = options.regional;
-				params.force_regional = true;
-				return params;
-			}
-		});
+		};
+		o =  $.extend(o , options || {});
+		
+		if( !o.regional ) {
+			return;
+		}
+		
+		$.jgrid.saveState( jqGridId, o );
+		
+		o.beforeSetGrid = function(params) {
+			params.regional = o.regional;
+			params.force_regional = true;
+			return params;
+		};
+		
+		$.jgrid.loadState( jqGridId, null, o);
 		// check for formatter actions
 		var grid = $("#"+jqGridId)[0],
 		model = $(grid).jqGrid('getGridParam','colModel'), i=-1, nav = $.jgrid.getRegional(grid, 'nav');
@@ -10667,8 +10676,8 @@ $.extend($.jgrid,{
 			});
 		}
 		try {
-			window.sessionStorage.removeItem("jqGrid"+grid.id);
-			window.sessionStorage.removeItem("jqGrid"+grid.id+"_data");
+			window[o.storageType].removeItem("jqGrid"+grid.id);
+			window[o.storageType].removeItem("jqGrid"+grid.id+"_data");
 		} catch (e) {}
 	},
 	jqGridImport : function(jqGridId, o) {
