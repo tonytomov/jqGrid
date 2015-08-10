@@ -419,14 +419,20 @@
 					break;
 				case "select":
 					elem = document.createElement("select");
-					var msl, ovm = [], cm, iCol;
-					iCol = p.iColByName[options.name];
-					cm = p.colModel[iCol];
+					var msl, ovm = [], iCol = p.iColByName[options.name], cm = p.colModel[iCol], isSelected;
 					if (options.multiple === true) {
 						msl = true;
 						elem.multiple = "multiple";
 						$(elem).attr("aria-multiselectable", "true");
-					} else { msl = false; }
+						ovm = vl.split(",");
+						ovm = $.map(ovm, function (n) { return $.trim(n); });
+					} else {
+						msl = false;
+						ovm[0] = $.trim(vl);
+					}
+					if (options.size === undefined) {
+						options.size = msl ? 3 : 1;
+					}
 					if (options.dataUrl !== undefined) {
 						var rowid = null, postData = options.postData || ajaxso.postData;
 						try {
@@ -441,35 +447,36 @@
 							type: "GET",
 							dataType: "html",
 							data: $.isFunction(postData) ? postData.call($t, rowid, vl, String(options.name)) : postData,
-							context: { elem: elem, options: options, vl: vl, cm: cm, iCol: iCol },
+							context: { elem: elem, options: options, cm: cm, iCol: iCol, ovm: ovm },
 							success: function (data, textStatus, jqXHR) {
-								var ovm1 = [], elem1 = this.elem, vl2 = this.vl, cm1 = this.cm, iCol1 = this.iCol,
+								var ovm1 = this.ovm, elem1 = this.elem, cm1 = this.cm, iCol1 = this.iCol,
 									options1 = $.extend({}, this.options),
-									msl1 = options1.multiple === true,
 									a = $.isFunction(options1.buildSelect) ? options1.buildSelect.call($t, data, jqXHR, cm1, iCol1) : data;
 								if (typeof a === "string") {
 									a = $($.trim(a)).html();
 								}
 								if (a) {
+									//$(elem1).empty(); // ???
 									$(elem1).append(a);
 									setAttributes(elem1, options1, postData ? ["postData"] : undefined);
-									if (options1.size === undefined) { options1.size = msl1 ? 3 : 1; }
-									if (msl1) {
-										ovm1 = vl2.split(",");
-										ovm1 = $.map(ovm1, function (n) { return $.trim(n); });
-									} else {
-										ovm1[0] = $.trim(vl2);
-									}
-									//$(elem).attr(options);
 									setTimeout(function () {
+										var isSelected1; // undefined
 										$("option", elem1).each(function (i) {
 											//if(i===0) { this.selected = ""; }
 											// fix IE8/IE7 problem with selecting of the first item on multiple=true
 											if (i === 0 && elem1.multiple) { this.selected = false; }
-											if ($.inArray($.trim($(this).text()), ovm1) > -1 || $.inArray($.trim($(this).val()), ovm1) > -1) {
+											if ($.inArray($.trim($(this).val()), ovm1) > -1) {
 												this.selected = "selected";
+												isSelected1 = true;
 											}
 										});
+										if (!isSelected1) {
+											$("option", elem1).each(function (i) {
+												if ($.inArray($.trim($(this).text()), ovm1) > -1) {
+													this.selected = "selected";
+												}
+											});
+										}
 										jgrid.fullBoolFeedback.call($t, options1.selectFilled, "jqGridSelectFilled", {
 											elem: elem1,
 											options: options1,
@@ -482,16 +489,8 @@
 							}
 						}, ajaxso || {}));
 					} else if (options.value) {
-						var i;
-						if (options.size === undefined) {
-							options.size = msl ? 3 : 1;
-						}
-						if (msl) {
-							ovm = vl.split(",");
-							ovm = $.map(ovm, function (n) { return $.trim(n); });
-						}
 						if (typeof options.value === "function") { options.value = options.value(); }
-						var so, sv, ov, svv, svt,
+						var i, so, sv, ov, optionInfos = [], optionInfo,
 							sep = options.separator === undefined ? ":" : options.separator,
 							delim = options.delimiter === undefined ? ";" : options.delimiter,
 							mapFunc = function (n, ii) { if (ii > 0) { return n; } };
@@ -502,30 +501,49 @@
 								if (sv.length > 2) {
 									sv[1] = $.map(sv, mapFunc).join(sep);
 								}
-								ov = document.createElement("option");
-								// consider to trim BEFORE filling the options
-								ov.value = sv[0];
-								ov.innerHTML = sv[1];
-								elem.appendChild(ov);
-								svv = $.trim(sv[0]);
-								svt = $.trim(sv[1]);
-								if (!msl && (svv === $.trim(vl) || svt === $.trim(vl))) {
-									ov.selected = "selected";
-								}
-								if (msl && ($.inArray(svt, ovm) > -1 || $.inArray(svv, ovm) > -1)) {
-									ov.selected = "selected";
-								}
+								optionInfos.push({
+									value: sv[0],
+									innerHtml: sv[1],
+									selectValue: $.trim(sv[0]),
+									selectText: $.trim(sv[1])
+								});
 							}
 						} else if (typeof options.value === "object") {
 							var oSv = options.value, key;
 							for (key in oSv) {
 								if (oSv.hasOwnProperty(key)) {
-									ov = document.createElement("option");
-									ov.value = key;
-									ov.innerHTML = oSv[key];
-									elem.appendChild(ov);
-									if (!msl && ($.trim(key) === $.trim(vl) || $.trim(oSv[key]) === $.trim(vl))) { ov.selected = "selected"; }
-									if (msl && ($.inArray($.trim(oSv[key]), ovm) > -1 || $.inArray($.trim(key), ovm) > -1)) { ov.selected = "selected"; }
+									optionInfos.push({
+										value: key,
+										innerHtml: oSv[key],
+										selectValue: $.trim(key),
+										selectText: $.trim(oSv[key])
+									});
+								}
+							}
+						}
+						//$(elem).empty();
+						for (i = 0; i < optionInfos.length; i++) {
+							optionInfo = optionInfos[i];
+							ov = document.createElement("option");
+							ov.value = optionInfo.value;
+							ov.innerHTML = optionInfo.innerHtml;
+							elem.appendChild(ov);
+							if (!msl && optionInfo.selectValue === $.trim(vl)) {
+								ov.selected = "selected";
+								isSelected = true;
+							}
+							if (msl && $.inArray(optionInfo.selectValue, ovm) > -1) {
+								ov.selected = "selected";
+								isSelected = true;
+							}
+						}
+						if (!isSelected) {
+							for (i = 0; i < optionInfo.length; i++) {
+								if (!msl && optionInfo.selectText === $.trim(vl)) {
+									ov.selected = "selected";
+								}
+								if (msl && $.inArray(optionInfo.selectText, ovm) > -1) {
+									ov.selected = "selected";
 								}
 							}
 						}
