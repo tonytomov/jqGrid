@@ -4388,7 +4388,7 @@
 					}
 				}
 			}
-			var idn, w, res, sort, cmi, tooltip, labelStyle, ptr, tbody, sortarr = [], sortord = [], sotmp = [],
+			var idn, w, res, sort, cmi, tooltip, labelStyle, ptr, sortarr = [], sortord = [], sotmp = [],
 				thead = "<thead><tr class='ui-jqgrid-labels' role='row'>", headerText,
 				hoverStateClasses = getGuiStyles("states.hover"),
 				disabledStateClasses = getGuiStyles("states.disabled");
@@ -4665,7 +4665,7 @@
 				});
 			if (p.sortable && $.fn.sortable) {
 				try {
-					$j.sortableColumns.call($self0, $(ts.tHead.rows[0]));
+					$j.sortableColumns.call($self0, $(hTable[0].tHead.rows[0]));
 				} catch (ignore) { }
 			}
 			if (p.footerrow) { tfoot += "</tr></tbody></table>"; }
