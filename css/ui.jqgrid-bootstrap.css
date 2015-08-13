@@ -1,7 +1,7 @@
 /*Grid*/
 .ui-jqgrid {
 	position: relative; 
-	border: 1px solid #ddd;      //default
+	border: 1px solid #ddd;      /*default*/
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
@@ -21,7 +21,7 @@
 	padding: 4px 8px; 
 	position: relative; 
 	margin-right: 2px;
-	border-bottom: 1px solid #ddd; //default
+	border-bottom: 1px solid #ddd; /*default*/
 
 }
 .ui-jqgrid .ui-jqgrid-caption {
@@ -252,9 +252,9 @@ div.tablediv > .table-bordered {
 { 
 	border-left-width: 0px;
 	border-top: 1px solid #ddd;  
-	//padding : 4px 0px;
+	/*padding : 4px 0px;*/
 	position: relative; 
-	//height: auto; 
+	/*height: auto; */
 	white-space: nowrap;
 	overflow: hidden;
 }
@@ -268,7 +268,7 @@ div.tablediv > .table-bordered {
 	border-left: 0;
 	border-bottom: 0;
 	border-top: 0; 
-	//height: 30px;
+	/*height: 30px;*/
 }
 .ui-jqgrid .ui-pg-table {
 	position: relative; 
@@ -279,7 +279,7 @@ div.tablediv > .table-bordered {
 .ui-jqgrid .ui-pg-table td {
 	font-weight:normal; 
 	vertical-align:middle; 
-	//padding:0px 6px;
+	/*padding:0px 6px;*/
 }
 .ui-jqgrid .ui-pager-control .ui-pager-table td {
 	border-top : 0px none !important;
@@ -322,13 +322,13 @@ div.tablediv > .table-bordered {
 .ui-jqgrid .ui-separator {
 	height: 18px; 
 	border : none;
-	border-left: 2px solid #ccc ; //default
+	border-left: 2px solid #ccc ; /*default*/
 	
 }
 .ui-separator-li {
 	height: 2px; 
 	border : none;
-	border-top: 2px solid #ccc ;  //default
+	border-top: 2px solid #ccc ;  /*default*/
 	margin: 0; padding: 0; width:100%
 }
 .ui-jqgrid .ui-jqgrid-pager .ui-pg-div,
@@ -413,7 +413,7 @@ div.tablediv > .table-bordered {
 }
 .ui-jqgrid a.ui-sghref {
 	text-decoration: none;
-	color : #010101; //default
+	color : #010101; /*default*/
 }
 .ui-jqgrid .ui-th-subgrid {height:20px;}
 .tablediv > .row { margin: 0 0}
@@ -428,7 +428,7 @@ div.tablediv > .table-bordered {
 	margin: 5px;
 	text-align: center;
 	display: none;
-	border: 1px solid #ddd;  //default
+	border: 1px solid #ddd;  /*default*/
 	font-size: 14px;
 	background-color: #d9edf7;
 }
@@ -453,11 +453,11 @@ div.tablediv > .table-bordered {
 	min-height: 32px; 
 }
 .ui-jqgrid .ui-userdata-top {
-	border-left-width: 0px;    //default
+	border-left-width: 0px;    /*default*/
 	border-bottom: 1px solid #ddd;	
 }
 .ui-jqgrid .ui-userdata-bottom {
-	border-left-width: 0px;    //default
+	border-left-width: 0px;    /*default*/
 	border-top: 1px solid #ddd;	
 }
 /*Modal Window */
@@ -466,7 +466,7 @@ div.tablediv > .table-bordered {
 	display: none; 
 	width: 500px; 
 	position: absolute; 
-	//padding: 5px; 
+	/*padding: 5px; */
 	overflow:visible;
 }
 .ui-jqdialog .ui-jqdialog-titlebar {
@@ -726,7 +726,7 @@ a.g-menu-item, a.soptclass, a.clearsearchclass {
 .ui-jqgrid .ui-jqgrid-view select,
 .ui-jqgrid .ui-jqgrid-view textarea,
 .ui-jqgrid .ui-jqgrid-view button {
-    //font-size: 11px
+    /*font-size: 11px*/
 }
 .ui-jqgrid .ui-scroll-popup {
 	width: 100px;
@@ -762,7 +762,7 @@ a.g-menu-item, a.soptclass, a.clearsearchclass {
 	 border-radius: 5px
 }
 .ui-resizable-handle {
-	//position: absolute;
+	/*position: absolute;*/
 	display: block;
 	left :97%;
 }
