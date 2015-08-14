@@ -3821,6 +3821,7 @@
 								//data: $.isFunction(p.serializeGridData)? p.serializeGridData.call(self,p.postData) : p.postData,
 								data: jgrid.serializeFeedback.call(ts, p.serializeGridData, "jqGridSerializeGridData", p.postData),
 								success: function (data, textStatus, jqXHR) {
+									p.jqXhr = null;
 									if (isFunction(p.beforeProcessing)) {
 										if (p.beforeProcessing.call(self, data, textStatus, jqXHR) === false) {
 											endReq.call(self);
@@ -3835,6 +3836,7 @@
 									}
 								},
 								error: function (jqXHR, textStatus, errorThrown) {
+									p.jqXhr = null;
 									if (isFunction(p.loadError)) { p.loadError.call(self, jqXHR, textStatus, errorThrown); }
 									if (npage === 1) { endReq.call(self); }
 								},
@@ -3847,6 +3849,7 @@
 									if (gotoreq === false) {
 										return false;
 									}
+									p.jqXhr = jqXHR;
 									beginReq.call(self);
 								}
 							}, jgrid.ajaxOptions, p.ajaxGridOptions));
@@ -5125,6 +5128,15 @@
 						$.extend(true, self.p, newParams);
 					}
 				}
+			});
+		},
+		abortAjaxRequest: function () {
+			return this.each(function () {
+				var self = this;
+				if (self.p.jqXhr != null) {
+					self.p.jqXhr.abort();
+				}
+				self.grid.endReq();
 			});
 		},
 		getGridRowById: function (rowid) {
