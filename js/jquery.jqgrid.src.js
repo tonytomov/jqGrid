@@ -5136,7 +5136,7 @@
 				if (self.p.jqXhr != null) {
 					self.p.jqXhr.abort();
 				}
-				self.grid.endReq();
+				self.grid.endReq.call(self);
 			});
 		},
 		getGridRowById: function (rowid) {
