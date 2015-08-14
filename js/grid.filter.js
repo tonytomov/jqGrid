@@ -967,10 +967,19 @@ $.jgrid.extend({
 				});
 			};
 			// create the row
-			var tr = $("<tr class='ui-search-toolbar' role='row'></tr>");
-			var timeoutHnd;
+			var tr = $("<tr class='ui-search-toolbar' role='row'></tr>"),
+			timeoutHnd, rules, filterobj;
+			if( p.restoreFromFilters ) {
+				filterobj = $t.p.postData.filters;
+				if(filterobj) {
+					if( typeof filterobj === "string") {
+						filterobj = $.jgrid.parse( filterobj );
+					}
+					rules = filterobj.rules.length ? filterobj.rules : false;
+				}
+			}
 			$.each($t.p.colModel,function(ci){
-				var cm=this, soptions, select = "", sot="=", so, i, st, csv, df, elem,
+				var cm=this, soptions, select = "", sot="=", so, i, st, csv, df, elem, restores,
 				th = $("<th role='columnheader' class='" + base.headerBox+" ui-th-"+$t.p.direction+"' id='gsh_" + $t.p.id + "_" + cm.name + "' ></th>"),
 				thd = $("<div></div>"),
 				stbl = $("<table class='ui-search-table' cellspacing='0'><tr><td class='ui-search-oper' headers=''></td><td class='ui-search-input' headers=''></td><td class='ui-search-clear' headers=''></td></tr></table>");
@@ -979,8 +988,24 @@ $.jgrid.extend({
 				if(this.stype === undefined) {this.stype='text';}
 				soptions = $.extend({},this.searchoptions || {}, {name:cm.index || cm.name, id: "gs_"+$t.p.idPrefix+cm.name, oper:'search'});
 				if(this.search){
+					if( p.restoreFromFilters && rules) {
+						restores = false;
+						for( var is = 0; is < rules.length; is++) {
+							if(rules[is].field ) {
+								var snm = cm.index || cm.name;
+								if( snm === rules[is].field) {
+									restores = rules[is];
+									break;
+								}
+							}
+						}
+					}
 					if(p.searchOperators) {
 						so  = (soptions.sopt) ? soptions.sopt[0] : cm.stype==='select' ?  'eq' : p.defaultSearch;
+						// overwrite  search operators
+						if( p.restoreFromFilters && restores) {
+							so = restores.op;
+						}
 						for(i = 0;i<p.odata.length;i++) {
 							if(p.odata[i].oper === so) {
 								sot = p.operands[so] || "";
@@ -1006,6 +1031,10 @@ $.jgrid.extend({
 					df="";
 					if(soptions.defaultValue ) {
 						df = $.isFunction(soptions.defaultValue) ? soptions.defaultValue.call($t) : soptions.defaultValue;
+					}
+					//overwrite default value if restore from filters
+					if( p.restoreFromFilters && restores) {
+						df = restores.data;
 					}
 					elem = $.jgrid.createEl.call($t, this.stype, soptions , df, false, $.extend({},$.jgrid.ajaxOptions, $t.p.ajaxSelectOptions || {}));
 					$(elem).css({width: "100%"}).addClass( classes.srInput );
