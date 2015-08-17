@@ -10923,6 +10923,7 @@ $.jgrid.extend({
 		}
 		o = $.extend(true, {
 			keys : false,
+			keyevent : "keydown",
 			oneditfunc: null,
 			successfunc: null,
 			url: null,
@@ -11002,7 +11003,7 @@ $.jgrid.extend({
 						},0);
 					}
 					if(o.keys===true) {
-						$(ind).bind("keyup",function(e) {
+						$(ind).bind( o.keyevent ,function(e) {
 							if (e.keyCode === 27) {
 								$($t).jqGrid("restoreRow",rowid, o.afterrestorefunc);
 								if($t.p.inlineNav) {
