@@ -344,14 +344,14 @@ $.jgrid.extend({
 							if( key === 'level') {
 								if(lastval[items.level] === undefined) {
 									lastval[items.level] ='';
-									if(items.level>0 && items.text !== '_r_Totals') {
+									if(items.level>0 && items.text.indexOf('_r_Totals') === -1) {
 										headers[items.level-1] = {
 											useColSpanStyle: false,
 											groupHeaders: []
 										};
 									}
 								}
-								if(lastval[items.level] !== items.text && items.children.length && items.text !== '_r_Totals') {
+								if(lastval[items.level] !== items.text && items.children.length && items.text.indexOf('_r_Totals') === -1 ) {
 									if(items.level>0) {
 										headers[items.level-1].groupHeaders.push({
 											titleText: items.label,
@@ -403,7 +403,7 @@ $.jgrid.extend({
 						}
 						// Finally build the columns
 						if( key === 'level') {
-							if(items.level >0 && items.level === (ylen===0?items.level:ylen)){
+							if( items.level > 0 &&  (items.level === (ylen===0?items.level:ylen) || lastval[items.level].indexOf('_r_Totals') !== -1 ) ){
 								j=0;
 								for(l in items.fields) {
 									if(items.fields.hasOwnProperty( l ) ) {
@@ -420,7 +420,7 @@ $.jgrid.extend({
 												}
 											}
 										}	
-										if(aggrlen>1) {
+										if(aggrlen > 1) {
 											col.name = l;
 											col.label = o.aggregates[j].label || items.label;
 										} else {
