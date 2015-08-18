@@ -10675,6 +10675,7 @@ $.extend($.jgrid,{
 			}
 			if(ret.filterToolbar && fT) {
 				grid.jqGrid('setGridParam', { filterToolbar:false });
+				fT.restoreFromFilters = true;
 				grid.jqGrid('filterToolbar', fT);
 			}
 			grid[0].updatepager(true, true);
