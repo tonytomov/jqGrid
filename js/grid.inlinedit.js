@@ -565,6 +565,7 @@ $.jgrid.extend({
 					title : o.addtitle,
 					buttonicon : o.addicon,
 					id : $t.p.id+"_iladd",
+					internal : true,
 					onClickButton : function () {
 						$($t).jqGrid('addRow', o.addParams);
 						if(!o.addParams.useFormatter) {
@@ -582,6 +583,7 @@ $.jgrid.extend({
 					title : o.edittitle,
 					buttonicon : o.editicon,
 					id : $t.p.id+"_iledit",
+					internal : true,
 					onClickButton : function () {
 						var sr = $($t).jqGrid('getGridParam','selrow');
 						if(sr) {
@@ -602,6 +604,7 @@ $.jgrid.extend({
 					title : o.savetitle || 'Save row',
 					buttonicon : o.saveicon,
 					id : $t.p.id+"_ilsave",
+					internal : true,
 					onClickButton : function () {
 						var sr = $t.p.savedRow[0].id;
 						if(sr) {
@@ -632,6 +635,7 @@ $.jgrid.extend({
 					title : o.canceltitle || 'Cancel row editing',
 					buttonicon : o.cancelicon,
 					id : $t.p.id+"_ilcancel",
+					internal : true,
 					onClickButton : function () {
 						var sr = $t.p.savedRow[0].id, cancelPrm = o.editParams;
 						if(sr) {

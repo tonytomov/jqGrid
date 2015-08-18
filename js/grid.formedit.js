@@ -1821,6 +1821,7 @@ $.jgrid.extend({
 				$t.p.delOptions = pDel;
 				$t.p.searchOptions = pSearch;
 				$t.p.viewOptions = pView;
+				$t.p.navButtons =[];
 			}
 
 		});
@@ -1834,7 +1835,8 @@ $.jgrid.extend({
 			buttonicon : styles.icon_newbutton_nav,
 			onClickButton: null,
 			position : "last",
-			cursor : 'pointer'
+			cursor : 'pointer',
+			internal : false
 		}, p ||{});
 		return this.each(function() {
 			if( !this.grid)  {return;}
@@ -1845,6 +1847,10 @@ $.jgrid.extend({
 			hover = $.jgrid.styleUI[currstyle].common.hover,
 			cornerall = $.jgrid.styleUI[currstyle].common.cornerall,
 			iconbase = $.jgrid.styleUI[currstyle].common.icon_base;
+
+			if ($t.p.storeNavOptions && !p.internal) {
+				$t.p.navButtons.push([elem,p]);
+			}
 
 			if (findnav) {
 				if( p.id && $("#"+$.jgrid.jqID(p.id), findnav)[0] !== undefined )  {return;}
@@ -1926,6 +1932,10 @@ $.jgrid.extend({
 			if( !this.grid)  {return;}
 			if( typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+$.jgrid.jqID(elem);}
 			var findnav = $(".navtable",elem)[0], sep, id;
+			if ( this.p.storeNavOptions ) {
+				this.p.navButtons.push([elem,p]);
+			}
+			
 			if(findnav) {
 				sep = "<td class='ui-pg-button "+ commonstyle.disabled +"' style='width:4px;'><span class='"+p.sepclass+"'></span>"+p.sepcontent+"</td>";
 				if (p.position === 'first') {

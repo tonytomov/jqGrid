@@ -150,6 +150,15 @@ $.extend($.jgrid,{
 			grid.jqGrid( 'setGridParam', prm);
 			if(ret.storeNavOptions) {
 				grid.jqGrid('navGrid', ret.pager, ret.navOptions, ret.editOptions, ret.addOptions, ret.delOptions, ret.searchOptions, ret.viewOptions);
+				if(ret.navButtons && ret.navButtons.length) {
+					for(var b = 0; b < ret.navButtons.length; b++) {
+						if( 'sepclass'  in ret.navButtons[b][1]) {
+							grid.jqGrid('navSeparatorAdd', ret.navButtons[b][0], ret.navButtons[b][1]);
+						} else {
+							grid.jqGrid('navButtonAdd', ret.navButtons[b][0], ret.navButtons[b][1]);
+			}
+					}
+				}
 			}
 			if(ret.inlineNav && iN) {
 				grid.jqGrid('setGridParam', { inlineNav:false });

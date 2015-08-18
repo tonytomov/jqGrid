@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.0.0 - 2015-08-17
+* @license Guriddo jqGrid JS - v5.0.0 - 2015-08-18
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -9471,6 +9471,7 @@ $.jgrid.extend({
 				$t.p.delOptions = pDel;
 				$t.p.searchOptions = pSearch;
 				$t.p.viewOptions = pView;
+				$t.p.navButtons =[];
 			}
 
 		});
@@ -9484,7 +9485,8 @@ $.jgrid.extend({
 			buttonicon : styles.icon_newbutton_nav,
 			onClickButton: null,
 			position : "last",
-			cursor : 'pointer'
+			cursor : 'pointer',
+			internal : false
 		}, p ||{});
 		return this.each(function() {
 			if( !this.grid)  {return;}
@@ -9495,6 +9497,10 @@ $.jgrid.extend({
 			hover = $.jgrid.styleUI[currstyle].common.hover,
 			cornerall = $.jgrid.styleUI[currstyle].common.cornerall,
 			iconbase = $.jgrid.styleUI[currstyle].common.icon_base;
+
+			if ($t.p.storeNavOptions && !p.internal) {
+				$t.p.navButtons.push([elem,p]);
+			}
 
 			if (findnav) {
 				if( p.id && $("#"+$.jgrid.jqID(p.id), findnav)[0] !== undefined )  {return;}
@@ -9576,6 +9582,10 @@ $.jgrid.extend({
 			if( !this.grid)  {return;}
 			if( typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+$.jgrid.jqID(elem);}
 			var findnav = $(".navtable",elem)[0], sep, id;
+			if ( this.p.storeNavOptions ) {
+				this.p.navButtons.push([elem,p]);
+			}
+			
 			if(findnav) {
 				sep = "<td class='ui-pg-button "+ commonstyle.disabled +"' style='width:4px;'><span class='"+p.sepclass+"'></span>"+p.sepcontent+"</td>";
 				if (p.position === 'first') {
@@ -10649,6 +10659,15 @@ $.extend($.jgrid,{
 			grid.jqGrid( 'setGridParam', prm);
 			if(ret.storeNavOptions) {
 				grid.jqGrid('navGrid', ret.pager, ret.navOptions, ret.editOptions, ret.addOptions, ret.delOptions, ret.searchOptions, ret.viewOptions);
+				if(ret.navButtons && ret.navButtons.length) {
+					for(var b = 0; b < ret.navButtons.length; b++) {
+						if( 'sepclass'  in ret.navButtons[b][1]) {
+							grid.jqGrid('navSeparatorAdd', ret.navButtons[b][0], ret.navButtons[b][1]);
+						} else {
+							grid.jqGrid('navButtonAdd', ret.navButtons[b][0], ret.navButtons[b][1]);
+			}
+					}
+				}
 			}
 			if(ret.inlineNav && iN) {
 				grid.jqGrid('setGridParam', { inlineNav:false });
@@ -11448,6 +11467,7 @@ $.jgrid.extend({
 					title : o.addtitle,
 					buttonicon : o.addicon,
 					id : $t.p.id+"_iladd",
+					internal : true,
 					onClickButton : function () {
 						$($t).jqGrid('addRow', o.addParams);
 						if(!o.addParams.useFormatter) {
@@ -11465,6 +11485,7 @@ $.jgrid.extend({
 					title : o.edittitle,
 					buttonicon : o.editicon,
 					id : $t.p.id+"_iledit",
+					internal : true,
 					onClickButton : function () {
 						var sr = $($t).jqGrid('getGridParam','selrow');
 						if(sr) {
@@ -11485,6 +11506,7 @@ $.jgrid.extend({
 					title : o.savetitle || 'Save row',
 					buttonicon : o.saveicon,
 					id : $t.p.id+"_ilsave",
+					internal : true,
 					onClickButton : function () {
 						var sr = $t.p.savedRow[0].id;
 						if(sr) {
@@ -11515,6 +11537,7 @@ $.jgrid.extend({
 					title : o.canceltitle || 'Cancel row editing',
 					buttonicon : o.cancelicon,
 					id : $t.p.id+"_ilcancel",
+					internal : true,
 					onClickButton : function () {
 						var sr = $t.p.savedRow[0].id, cancelPrm = o.editParams;
 						if(sr) {
