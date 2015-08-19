@@ -174,8 +174,9 @@ $.extend($.jgrid,{
 		if(p.resize === undefined) {p.resize=true;}
 		if (p.drag) {
 			$(mh).css('cursor','move');
-			if($.fn.jqDrag) {
-				$(mw).jqDrag(mh);
+			if($.fn.tinyDraggable) {
+				//$(mw).jqDrag(mh);
+				$(mw).tinyDraggable({ handle:"#"+$.jgrid.jqID(mh.id) });
 			} else {
 				try {
 					$(mw).draggable({handle: $("#"+$.jgrid.jqID(mh.id))});
