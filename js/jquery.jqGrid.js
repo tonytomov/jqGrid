@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.0.0 - 2015-08-19
+* @license Guriddo jqGrid JS - v5.0.0 - 2015-08-20
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -10678,6 +10678,10 @@ $.extend($.jgrid,{
 				grid.jqGrid('setGridParam', { filterToolbar:false });
 				fT.restoreFromFilters = true;
 				grid.jqGrid('filterToolbar', fT);
+			}
+			// finally frozenColums
+			if( ret.frozenColumns ) {
+				grid.jqGrid('setFrozenColumns');
 			}
 			grid[0].updatepager(true, true);
 			if(o.clearAfterLoad) {

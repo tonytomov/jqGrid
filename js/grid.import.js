@@ -169,6 +169,10 @@ $.extend($.jgrid,{
 				fT.restoreFromFilters = true;
 				grid.jqGrid('filterToolbar', fT);
 			}
+			// finally frozenColums
+			if( ret.frozenColumns ) {
+				grid.jqGrid('setFrozenColumns');
+			}
 			grid[0].updatepager(true, true);
 			if(o.clearAfterLoad) {
 				window[o.storageType].removeItem("jqGrid"+$t.id);
