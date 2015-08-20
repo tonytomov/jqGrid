@@ -479,9 +479,20 @@ $.jgrid.extend({
 			function pivot( data) {
 				var pivotGrid = jQuery($t).jqGrid('pivotSetup',data, pivotOpt),
 				footerrow = $.assocArraySize(pivotGrid.summary) > 0 ? true : false,
-				query= $.jgrid.from.call($t, pivotGrid.rows), i;
+				query= $.jgrid.from.call($t, pivotGrid.rows), i, so, st, len;
+				if(pivotOpt.ignoreCase) {
+					query = query.ignoreCase();
+				}
 				for(i=0; i< pivotGrid.groupOptions.groupingView.groupField.length; i++) {
-					query.orderBy(pivotGrid.groupOptions.groupingView.groupField[i], "a", 'text', '');
+					so = pivotOpt.xDimension[i].sortorder ? pivotOpt.xDimension[i].sortorder : 'asc';
+					st = pivotOpt.xDimension[i].sorttype ? pivotOpt.xDimension[i].sorttype : 'text';
+					query.orderBy(pivotGrid.groupOptions.groupingView.groupField[i], so, st, '', st);
+				}
+				len = pivotOpt.xDimension.length;
+				if(pivotGrid.groupOptions.sortname && len) {
+					so = pivotOpt.xDimension[len-1].sortorder ? pivotOpt.xDimension[len-1].sortorder : 'asc';
+					st = pivotOpt.xDimension[len-1].sorttype ? pivotOpt.xDimension[len-1].sorttype : 'text';
+					query.orderBy(pivotGrid.groupOptions.sortname, so, st, '', st);					
 				}
 				jQuery($t).jqGrid($.extend(true, {
 					datastr: $.extend(query.select(),footerrow ? {userdata:pivotGrid.summary} : {}),
