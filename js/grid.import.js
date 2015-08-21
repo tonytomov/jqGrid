@@ -81,6 +81,7 @@ $.extend($.jgrid,{
 			storageType : "localStorage",
 			clearAfterLoad: false,  // clears the jqGrid localStorage items aftre load
 			beforeSetGrid : null,
+			afterSetGrid : null,
 			decompression: false,
 			decompressionModule :  'LZString', // object by example gzip, LZString
 			decompressionMethod : 'decompressFromUTF16' // string by example unzip, decompressFromUTF16
@@ -174,6 +175,10 @@ $.extend($.jgrid,{
 				grid.jqGrid('setFrozenColumns');
 			}
 			grid[0].updatepager(true, true);
+			
+			if($.isFunction(o.afterSetGrid)) {
+				o.afterSetGrid( grid );
+			}
 			if(o.clearAfterLoad) {
 				window[o.storageType].removeItem("jqGrid"+$t.id);
 				window[o.storageType].removeItem("jqGrid"+$t.id + "_data");
