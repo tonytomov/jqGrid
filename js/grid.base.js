@@ -2170,9 +2170,10 @@ $.fn.jqGrid = function( pin ) {
 			if(!$.isArray(ts.p.data)) {
 				return;
 			}
-			var grpview = ts.p.grouping ? ts.p.groupingView : false, lengrp, gin;
+			var grpview = ts.p.grouping ? ts.p.groupingView : false, lengrp, gin, si;
 			$.each(ts.p.colModel,function(){
 				sorttype = this.sorttype || "text";
+				si = this.index || this.name;
 				if(sorttype === "date" || sorttype === "datetime") {
 					if(this.formatter && typeof this.formatter === 'string' && this.formatter === 'date') {
 						if(this.formatoptions && this.formatoptions.srcformat) {
@@ -2188,25 +2189,21 @@ $.fn.jqGrid = function( pin ) {
 					} else {
 						srcformat = newformat = this.datefmt || "Y-m-d";
 					}
-					cmtypes[this.name] = {"stype": sorttype, "srcfmt": srcformat,"newfmt":newformat, "sfunc": this.sortfunc || null};
+					cmtypes[si] = {"stype": sorttype, "srcfmt": srcformat,"newfmt":newformat, "sfunc": this.sortfunc || null};
 				} else {
-					cmtypes[this.name] = {"stype": sorttype, "srcfmt":'',"newfmt":'', "sfunc": this.sortfunc || null};
+					cmtypes[si] = {"stype": sorttype, "srcfmt":'',"newfmt":'', "sfunc": this.sortfunc || null};
 				}
 				if(ts.p.grouping ) {
 					for(gin =0, lengrp = grpview.groupField.length; gin< lengrp; gin++) {
 						if( this.name === grpview.groupField[gin]) {
-							var grindex = this.name;
-							if (this.index) {
-								grindex = this.index;
-							}
-							grtypes[gin] = cmtypes[grindex];
-							grindexes[gin]= grindex;
+							grtypes[gin] = cmtypes[si];
+							grindexes[gin]= si;
 						}
 					}
 				}
 				if(!ts.p.multiSort) {
-					if(!fndsort && (this.index === ts.p.sortname || this.name === ts.p.sortname)){
-						st = this.name; // ???
+					if(!fndsort && (si === ts.p.sortname)){
+						st = si; 
 						fndsort = true;
 					}
 				}
@@ -2331,6 +2328,7 @@ $.fn.jqGrid = function( pin ) {
 				});
 			} else {
 				if (st && ts.p.sortorder && fndsort) {
+					// to be fixed in case sortname has more than one field
 					if(ts.p.sortorder.toUpperCase() === "DESC") {
 						query.orderBy(ts.p.sortname, "d", cmtypes[st].stype, cmtypes[st].srcfmt, cmtypes[st].sfunc);
 					} else {
@@ -2777,7 +2775,7 @@ $.fn.jqGrid = function( pin ) {
 					selTh = ts.p.frozenColumns ?  obj : ts.grid.headers[iCol].el, so="", sn;
 			$("span.ui-grid-ico-sort",selTh).addClass(disabled);
 			$(selTh).attr("aria-selected","false");
-			sn = ts.p.datatype === "local" ?  cm[iCol].name : (cm[iCol].index || cm[iCol].name);
+			sn = (cm[iCol].index || cm[iCol].name);
 			if(cm[iCol].lso) {
 				if(cm[iCol].lso==="asc") {
 					cm[iCol].lso += "-desc";
