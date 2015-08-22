@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.0.0 - 2015-08-21
+* @license Guriddo jqGrid JS - v5.0.0 - 2015-08-22
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -9453,7 +9453,7 @@ $.jgrid.extend({
 							navtbl = null;
 							$($t).jqGrid('_buildNavMenu', pgid, elemids, p, pEdit, pAdd, pDel, pSearch, pView );
 						} else {
-							$(pgid+"_"+o.position,pgid).width(twd);
+							$(pgid+"_"+o.position,pgid).append(navtbl).width(twd);
 						}
 						$t.p._nvtd[0] = twd;
 					} else {
