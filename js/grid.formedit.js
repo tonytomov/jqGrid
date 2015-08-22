@@ -1804,7 +1804,7 @@ $.jgrid.extend({
 							navtbl = null;
 							$($t).jqGrid('_buildNavMenu', pgid, elemids, p, pEdit, pAdd, pDel, pSearch, pView );
 						} else {
-							$(pgid+"_"+o.position,pgid).width(twd);
+							$(pgid+"_"+o.position,pgid).append(navtbl).width(twd);
 						}
 						$t.p._nvtd[0] = twd;
 					} else {
