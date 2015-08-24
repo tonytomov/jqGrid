@@ -88,9 +88,6 @@ $.extend($.jgrid,{
 		}, o || {});
 		if(!jqGridId) { return; }
 		var ret, tmp, $t = $("#"+jqGridId)[0], data, iN, fT;
-		if($t.grid) { 
-			$.jgrid.gridUnload( jqGridId ); 
-		}
 		if(o.useStorage) {
 			try {
 				gridstring = window[o.storageType].getItem("jqGrid"+$t.id);
@@ -115,6 +112,9 @@ $.extend($.jgrid,{
 		}
 		ret = jqGridUtils.parse( gridstring );
 		if( ret && $.type(ret) === 'object') {
+			if($t.grid) { 
+				$.jgrid.gridUnload( jqGridId ); 
+			}
 			if($.isFunction(o.beforeSetGrid)) {
 				tmp = o.beforeSetGrid( ret );
 				if(tmp && $.type(tmp) === 'object') {
