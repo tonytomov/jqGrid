@@ -2130,7 +2130,7 @@ $.jgrid.extend({
 				);
 			};
 			_buildMenu();
-			$(".dropdownmenu").on("click", function(){
+			$(".dropdownmenu", elem+"_"+p.position).on("click", function( e ){
 				var offset = $(this).offset(),
 				left = ( offset.left ),
 				top = parseInt( offset.top),
@@ -2139,6 +2139,7 @@ $.jgrid.extend({
 					//_buildMenu();
 				//}
 				$("#"+bid).show().css({"top":top - ($("#"+bid).height() +10)+"px", "left":left+"px"});
+				e.stopPropagation();
 			});
 			$("body").on('click', function(e){
 				if(!$(e.target).hasClass("dropdownmenu")) {

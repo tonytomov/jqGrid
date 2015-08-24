@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.0.0 - 2015-08-22
+* @license Guriddo jqGrid JS - v5.0.0 - 2015-08-24
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -9779,7 +9779,7 @@ $.jgrid.extend({
 				);
 			};
 			_buildMenu();
-			$(".dropdownmenu").on("click", function(){
+			$(".dropdownmenu", elem+"_"+p.position).on("click", function( e ){
 				var offset = $(this).offset(),
 				left = ( offset.left ),
 				top = parseInt( offset.top),
@@ -9788,6 +9788,7 @@ $.jgrid.extend({
 					//_buildMenu();
 				//}
 				$("#"+bid).show().css({"top":top - ($("#"+bid).height() +10)+"px", "left":left+"px"});
+				e.stopPropagation();
 			});
 			$("body").on('click', function(e){
 				if(!$(e.target).hasClass("dropdownmenu")) {
