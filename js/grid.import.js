@@ -187,6 +187,21 @@ $.extend($.jgrid,{
 			alert("can not convert to object");
 		}
 	},
+	isGridInStorage : function ( jqGridId, options ) {
+		var o = {
+			storageType: "localStorage"
+		};
+		o =  $.extend(o , options || {});
+		var ret, gridstring, data;
+		try {
+			gridstring = window[o.storageType].getItem("jqGrid"+jqGridId);
+			data = window[o.storageType].getItem("jqGrid" + jqGridId + "_data");
+			ret = gridstring != null && data != null && typeof gridstring === "string" && typeof data === "string" ;
+		} catch (e) {
+			ret = false;
+		}
+		return ret;
+	},
 	setRegional : function( jqGridId , options) {
 		var o = {
 			storageType: "sessionStorage"
