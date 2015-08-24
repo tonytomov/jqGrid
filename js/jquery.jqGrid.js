@@ -9201,7 +9201,8 @@ $.jgrid.extend({
 			alerttop: null,
 			alertleft: null,
 			alertzIndex : null,
-			dropmenu : false
+			dropmenu : false,
+			navButtonText : ''
 		}, regional, p ||{});
 		return this.each(function() {
 			if(this.p.navGrid) {return;}
@@ -9616,12 +9617,14 @@ $.jgrid.extend({
 		return this.each(function() {
 			var $t = this,
 			//actions = ['add','edit', 'del', 'view', 'search','refresh'],
+			regional =  $.jgrid.getRegional($t, 'nav'),
 			currstyle = $t.p.styleUI,
 			styles = $.jgrid.styleUI[currstyle].navigator,
 			classes = $.jgrid.styleUI[currstyle].filter,
 			commonstyle = $.jgrid.styleUI[currstyle].common,
 			mid = "form_menu_"+$.jgrid.randId(),
-			act = "<button class='dropdownmenu "+commonstyle.button+"' value='"+mid+"'>Actions</button>";
+			bt = p.navButtonText ? p.navButtonText : regional.selectcaption || 'Actions',
+			act = "<button class='dropdownmenu "+commonstyle.button+"' value='"+mid+"'>" + bt +"</button>";
 			$(elem+"_"+p.position, elem).append( act );
 			var alertIDs = {themodal: 'alertmod_' + this.p.id, modalhead: 'alerthd_' + this.p.id,modalcontent: 'alertcnt_' + this.p.id},
 			_buildMenu = function() {
@@ -10597,9 +10600,6 @@ $.extend($.jgrid,{
 		}, o || {});
 		if(!jqGridId) { return; }
 		var ret, tmp, $t = $("#"+jqGridId)[0], data, iN, fT;
-		if($t.grid) { 
-			$.jgrid.gridUnload( jqGridId ); 
-		}
 		if(o.useStorage) {
 			try {
 				gridstring = window[o.storageType].getItem("jqGrid"+$t.id);
@@ -10624,6 +10624,9 @@ $.extend($.jgrid,{
 		}
 		ret = jqGridUtils.parse( gridstring );
 		if( ret && $.type(ret) === 'object') {
+			if($t.grid) { 
+				$.jgrid.gridUnload( jqGridId ); 
+			}
 			if($.isFunction(o.beforeSetGrid)) {
 				tmp = o.beforeSetGrid( ret );
 				if(tmp && $.type(tmp) === 'object') {
@@ -10695,6 +10698,21 @@ $.extend($.jgrid,{
 		} else {
 			alert("can not convert to object");
 		}
+	},
+	isGridInStorage : function ( jqGridId, options ) {
+		var o = {
+			storageType: "localStorage"
+		};
+		o =  $.extend(o , options || {});
+		var ret, gridstring, data;
+		try {
+			gridstring = window[o.storageType].getItem("jqGrid"+jqGridId);
+			data = window[o.storageType].getItem("jqGrid" + jqGridId + "_data");
+			ret = gridstring != null && data != null && typeof gridstring === "string" && typeof data === "string" ;
+		} catch (e) {
+			ret = false;
+		}
+		return ret;
 	},
 	setRegional : function( jqGridId , options) {
 		var o = {
