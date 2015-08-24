@@ -1552,7 +1552,8 @@ $.jgrid.extend({
 			alerttop: null,
 			alertleft: null,
 			alertzIndex : null,
-			dropmenu : false
+			dropmenu : false,
+			navButtonText : ''
 		}, regional, p ||{});
 		return this.each(function() {
 			if(this.p.navGrid) {return;}
@@ -1967,12 +1968,14 @@ $.jgrid.extend({
 		return this.each(function() {
 			var $t = this,
 			//actions = ['add','edit', 'del', 'view', 'search','refresh'],
+			regional =  $.jgrid.getRegional($t, 'nav'),
 			currstyle = $t.p.styleUI,
 			styles = $.jgrid.styleUI[currstyle].navigator,
 			classes = $.jgrid.styleUI[currstyle].filter,
 			commonstyle = $.jgrid.styleUI[currstyle].common,
 			mid = "form_menu_"+$.jgrid.randId(),
-			act = "<button class='dropdownmenu "+commonstyle.button+"' value='"+mid+"'>Actions</button>";
+			bt = p.navButtonText ? p.navButtonText : regional.selectcaption || 'Actions',
+			act = "<button class='dropdownmenu "+commonstyle.button+"' value='"+mid+"'>" + bt +"</button>";
 			$(elem+"_"+p.position, elem).append( act );
 			var alertIDs = {themodal: 'alertmod_' + this.p.id, modalhead: 'alerthd_' + this.p.id,modalcontent: 'alertcnt_' + this.p.id},
 			_buildMenu = function() {
