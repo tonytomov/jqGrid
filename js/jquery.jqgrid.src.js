@@ -870,6 +870,11 @@
 				return flags.hasOwnProperty($0) ? flags[$0] : $0.substring(1);
 			});
 		},
+		parseDateToNumber: function (format, date) {
+			var datetime = jgrid.parseDate.call(this, format, date);
+			// datetime could be the string "&#160;"
+			return datetime instanceof Date ? datetime.getTime() : 0;
+		},
 		jqID: function (sid) {
 			return String(sid).replace(/[!"#$%&'()*+,.\/:; <=>?@\[\\\]\^`{|}~]/g, "\\$&");
 		},
@@ -1444,9 +1449,7 @@
 							};
 						} else if (type === "date" || type === "datetime") {
 							findSortKey = function ($cell) {
-								var datetime = jgrid.parseDate.call(context, dfmt, $cell);
-								// datetime could be the string "&#160;"
-								return datetime instanceof Date ? datetime.getTime() : 0;
+								return jgrid.parseDateToNumber.call(context, dfmt, $cell);
 							};
 						} else if ($.isFunction(type)) {
 							findSortKey = type;
@@ -1627,8 +1630,8 @@
 								break;
 							case "date":
 							case "datetime":
-								val = String(jgrid.parseDate.call(context, t.newfmt || "Y-m-d", val).getTime());
-								fld = "jQuery.jgrid.parseDate.call(jQuery(\"" + context.p.idSel + "\")[0],\"" + t.srcfmt + "\"," + fld + ").getTime()";
+								val = String(jgrid.parseDateToNumber.call(context, t.newfmt || "Y-m-d", val));
+								fld = "jQuery.jgrid.parseDateToNumber.call(jQuery(\"" + context.p.idSel + "\")[0],\"" + t.srcfmt + "\"," + fld + ")";
 								break;
 							default:
 								fld = self._getStr(fld);
