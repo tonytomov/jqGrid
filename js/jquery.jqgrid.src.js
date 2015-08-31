@@ -11936,7 +11936,7 @@
 					clickOnEnter = function (e) {
 						var $focused;
 						if (e.which === 13) {
-							$focused = $(this).find(":focus");
+							$focused = $(this).find(".ui-pg-button").filter(":focus");
 							if ($focused.length > 0) {
 								$focused.trigger("click");
 								return false;
