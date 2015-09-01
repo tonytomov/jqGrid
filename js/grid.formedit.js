@@ -351,7 +351,7 @@
 						if (o.multipleSearch === false) {
 							sdata[o.sField] = sdata[o.sValue] = sdata[o.sOper] = "";
 						} else {
-							sdata[o.sFilter] = "";
+							sdata[o.sFilter] = undefined;
 						}
 						fl1[0].resetFilter();
 						if (found) {

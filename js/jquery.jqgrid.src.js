@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-08-31
+ * Date: 2015-09-01
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -10342,7 +10342,7 @@
 						if (o.multipleSearch === false) {
 							sdata[o.sField] = sdata[o.sValue] = sdata[o.sOper] = "";
 						} else {
-							sdata[o.sFilter] = "";
+							sdata[o.sFilter] = undefined;
 						}
 						fl1[0].resetFilter();
 						if (found) {
