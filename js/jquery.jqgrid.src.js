@@ -10129,7 +10129,7 @@
 						return feedback.apply($t, args);
 					};
 				if (typeof defaultFilters === "string") {
-					defaultFilters = jgrid.parse(defaultFilters);
+					defaultFilters = $.trim(defaultFilters) !== "" ? jgrid.parse(defaultFilters) : undefined;
 				}
 				if (o.recreateFilter === true) {
 					$(themodalSelector).remove();
@@ -10342,7 +10342,7 @@
 						if (o.multipleSearch === false) {
 							sdata[o.sField] = sdata[o.sValue] = sdata[o.sOper] = "";
 						} else {
-							sdata[o.sFilter] = undefined;
+							sdata[o.sFilter] = "";
 						}
 						fl1[0].resetFilter();
 						if (found) {
