@@ -31,6 +31,7 @@
  * cellsubmit (remote,clientArray) (added in grid options)
  * cellurl
  * ajaxCellOptions
+ * restoreCellonFail
 * */
 "use strict";
 //module begin
@@ -252,7 +253,9 @@ $.jgrid.extend({
 												$t.p.savedRow.splice(0,1);
 											} else {
 												$.jgrid.info_dialog(errors.errcap,ret[1],edit.bClose, {styleUI : $t.p.styleUI });
-												$($t).jqGrid("restoreCell",iRow,iCol);
+												if( $t.p.restoreCellonFail) {
+													$($t).jqGrid("restoreCell",iRow,iCol);
+												}
 											}
 										}
 									},
@@ -262,9 +265,10 @@ $.jgrid.extend({
 										$($t).triggerHandler("jqGridErrorCell", [res, stat, err]);
 										if ($.isFunction($t.p.errorCell)) {
 											$t.p.errorCell.call($t, res,stat,err);
-											$($t).jqGrid("restoreCell",iRow,iCol);
 										} else {
 											$.jgrid.info_dialog(errors.errcap,res.status+" : "+res.statusText+"<br/>"+stat, edit.bClose, {styleUI : $t.p.styleUI });
+										}
+										if( $t.p.restoreCellonFail) {
 											$($t).jqGrid("restoreCell",iRow,iCol);
 										}
 									}
@@ -272,7 +276,9 @@ $.jgrid.extend({
 							} else {
 								try {
 									$.jgrid.info_dialog(errors.errcap,errors.nourl, edit.bClose, {styleUI : $t.p.styleUI });
-									$($t).jqGrid("restoreCell",iRow,iCol);
+									if( $t.p.restoreCellonFail) {
+										$($t).jqGrid("restoreCell",iRow,iCol);
+									}
 								} catch (e) {}
 							}
 						}

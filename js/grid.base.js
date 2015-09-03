@@ -1296,7 +1296,8 @@ $.fn.jqGrid = function( pin ) {
 			storeNavOptions: false,
 			regional :  "en",
 			styleUI : "jQueryUI",
-			responsive : false
+			responsive : false,
+			restoreCellonFail : true
 		}, $.jgrid.defaults , pin );
 		if (localData !== undefined) {
 			p.data = localData;
