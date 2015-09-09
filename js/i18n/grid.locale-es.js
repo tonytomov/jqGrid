@@ -46,7 +46,7 @@ $.jgrid.regional["es"] = {
 		recordPage : "Registros por Página",
 		nomorerecs : "No más registros...",
 		scrollPullup: "Arrastrar arriba para cargar más...",
-		scrollPulldown : "Arrastrar arriba para refrescar..."",
+		scrollPulldown : "Arrastrar arriba para refrescar...",
 		scrollRefresh : "Soltar para refrescar..."		
 	},
 	search : {
