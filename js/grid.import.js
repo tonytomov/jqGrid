@@ -136,7 +136,7 @@ $.extend($.jgrid,{
 			ret.data = [];
 			ret.datatype = 'local';
 			ret.grouping = false;
-			ret.navGrid = false;
+			//ret.navGrid = false;
 
 			if(ret.inlineNav) {
 				iN = retfunc( ret._iN );
@@ -149,7 +149,9 @@ $.extend($.jgrid,{
 			var grid = $("#"+jqGridId).jqGrid( ret );
 			grid.append( data );
 			grid.jqGrid( 'setGridParam', prm);
-			if(ret.storeNavOptions) {
+			if(ret.storeNavOptions && ret.navGrid) {
+				// set to false so that nav grid can be run
+				ret.navGrid = false;
 				grid.jqGrid('navGrid', ret.pager, ret.navOptions, ret.editOptions, ret.addOptions, ret.delOptions, ret.searchOptions, ret.viewOptions);
 				if(ret.navButtons && ret.navButtons.length) {
 					for(var b = 0; b < ret.navButtons.length; b++) {
