@@ -151,7 +151,7 @@ $.extend($.jgrid,{
 			grid.jqGrid( 'setGridParam', prm);
 			if(ret.storeNavOptions && ret.navGrid) {
 				// set to false so that nav grid can be run
-				ret.navGrid = false;
+				grid[0].p.navGrid = false;
 				grid.jqGrid('navGrid', ret.pager, ret.navOptions, ret.editOptions, ret.addOptions, ret.delOptions, ret.searchOptions, ret.viewOptions);
 				if(ret.navButtons && ret.navButtons.length) {
 					for(var b = 0; b < ret.navButtons.length; b++) {
