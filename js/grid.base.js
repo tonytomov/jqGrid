@@ -3872,7 +3872,9 @@ $.jgrid.extend({
 				if ($t.p.multiselect && $t.p.selarrrow.length > 0) {
 					$t.p.selrow = $t.p.selarrrow[$t.p.selarrrow.length-1];
 				} else {
-					$t.p.selrow = null;
+					if( $t.p.selrow === rowid ) {
+						$t.p.selrow = null;
+					}
 				}
 			if($t.p.datatype === 'local') {
 				var id = $.jgrid.stripPref($t.p.idPrefix, rowid),
