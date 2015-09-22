@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-09-01
+ * Date: 2015-09-21
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -2082,6 +2082,7 @@
 					rowList: [],
 					colNames: [],
 					sortorder: "asc",
+					threeStateSort: false,
 					//showOneSortIcon: pin.showOneSortIcon !== undefined ? pin.showOneSortIcon :
 					//    pin.iconSet === "fontAwesome" ? true : false, // hide or set ui-state-disabled class on the other icon
 					sortname: "",
@@ -3562,14 +3563,8 @@
 						each(st, function (i) {
 							query.orderBy(this, sto[i], cmtypes[this].stype, cmtypes[this].srcfmt, cmtypes[this].sfunc);
 						});
-					} else {
-						if (st && p.sortorder && fndsort) {
-							if (p.sortorder.toUpperCase() === "DESC") {
-								query.orderBy(p.sortname, "d", cmtypes[st].stype, cmtypes[st].srcfmt, cmtypes[st].sfunc);
-							} else {
-								query.orderBy(p.sortname, "a", cmtypes[st].stype, cmtypes[st].srcfmt, cmtypes[st].sfunc);
-							}
-						}
+					} else if (st && p.sortorder && fndsort) {
+						query.orderBy(p.sortname, p.sortorder.toUpperCase() === "DESC" ? "d" : "a", cmtypes[st].stype, cmtypes[st].srcfmt, cmtypes[st].sfunc);
 					}
 					p.lastSelectedData = query.select();
 					var recordsperpage = parseInt(p.rowNum, 10),
@@ -3999,8 +3994,10 @@
 								last = intNum(p.lastpage, 1), selclick = false,
 								fp = true, pp = true, np = true, lp = true;
 							if (last === 0 || last === 1) {
-								fp = false;
-								pp = false;
+								if (cp <= 1) {
+									fp = false;
+									pp = false;
+								}
 								np = false;
 								lp = false;
 							} else if (last > 1 && cp >= 1) {
@@ -4081,7 +4078,7 @@
 
 					// first set new value of lso:
 					// "asc" -> "asc-desc", new sorting to "desc"
-					// "desc" -> "desc-asc", new sorting to "desc"
+					// "desc" -> "desc-asc", new sorting to "asc"
 					// "asc-desc" or "desc-asc" -> "", no new sorting ""
 					// "" -> cm.firstsortorder || "asc"
 					if (cm.lso) {
@@ -4130,15 +4127,32 @@
 					p.sortname = sort;
 				},
 				sortData = function (index, idxcol, reload, sor, obj) {
-					var self = this, mygrid = self.grid, disabledClasses = getGuiStyles("states.disabled");
-					if (!p.colModel[idxcol].sortable) { return; }
+					var self = this, mygrid = self.grid, cm = p.colModel[idxcol], disabledClasses = getGuiStyles("states.disabled");
+					if (cm == null || !cm.sortable) { return; }
 					if (p.savedRow.length > 0) { return; }
 					if (!reload) {
 						if (p.lastsort === idxcol && p.sortname !== "") {
 							if (p.sortorder === "asc") {
 								p.sortorder = "desc";
-							} else if (p.sortorder === "desc") { p.sortorder = "asc"; }
-						} else { p.sortorder = p.colModel[idxcol].firstsortorder || "asc"; }
+							} else if (p.sortorder === "desc") {
+								p.sortorder = "asc";
+							} else {
+								p.sortorder = cm.firstsortorder || "asc";
+							}
+							if (cm.lso) {
+								if (cm.lso === "asc") {
+									cm.lso += "-desc";
+								} else if (cm.lso === "desc") {
+									cm.lso += "-asc";
+								} else if ((cm.lso === "asc-desc" || cm.lso === "desc-asc") && (p.threeStateSort || p.multiSort)) {
+									cm.lso = "";
+								}
+							} else {
+								cm.lso = cm.firstsortorder || "asc";
+							}
+						} else {
+							cm.lso = p.sortorder = cm.firstsortorder || "asc";
+						}
 						p.page = 1;
 					}
 					if (p.multiSort) {
@@ -4151,21 +4165,17 @@
 						var headers = mygrid.headers, fhDiv = mygrid.fhDiv,
 							$previousSelectedTh = headers[p.lastsort] ? $(headers[p.lastsort].el) : $(),
 							$newSelectedTh = p.frozenColumns ? $(obj) : $(headers[idxcol].el),
-							$iconsSpan = $newSelectedTh.find("span.s-ico"), cm = p.colModel[p.lastsort],
+							$iconsSpan = $newSelectedTh.find("span.s-ico"),
 							$iconsActive = $iconsSpan.children("span.ui-icon-" + p.sortorder),
 							$iconsInictive = $iconsSpan.children("span.ui-icon-" + (p.sortorder === "asc" ? "desc" : "asc"));
 
+						cm = p.colModel[p.lastsort];
 						$previousSelectedTh.find("span.ui-grid-ico-sort").addClass(disabledClasses);
 						$previousSelectedTh.attr("aria-selected", "false");
 						if (p.frozenColumns) {
 							fhDiv.find("span.ui-grid-ico-sort").addClass(disabledClasses);
 							fhDiv.find("th").attr("aria-selected", "false");
 						}
-						$iconsActive.removeClass(disabledClasses).css("display", ""); // show
-						if (p.showOneSortIcon) {
-							$iconsInictive.removeClass(disabledClasses).hide();
-						}
-						$newSelectedTh.attr("aria-selected", "true");
 						if (!p.viewsortcols[0]) {
 							if (p.lastsort !== idxcol) {
 								if (p.frozenColumns) {
@@ -4174,7 +4184,7 @@
 								$previousSelectedTh.find("span.s-ico").hide();
 								$iconsSpan.show();
 							} else if (p.sortname === "") { // if p.lastsort === idxcol but p.sortname === ""
-								$iconsSpan.show();
+								$iconsSpan.show(); // ???
 							}
 						}
 						if (p.lastsort !== idxcol) {
@@ -4185,8 +4195,24 @@
 								p.columnsToReResizing.push(p.lastsort);
 							}
 						}
+						cm = p.colModel[idxcol];
+						$iconsSpan.css("display", ""); // show
+						if (cm.lso !== "") {
+							$iconsActive.removeClass(disabledClasses).css("display", ""); // show
+							if (p.showOneSortIcon) {
+								$iconsInictive.removeClass(disabledClasses).hide();
+							}
+							$newSelectedTh.attr("aria-selected", "true");
+						} else {
+							$newSelectedTh.attr("aria-selected", "false");
+							if (p.threeStateSort) {
+								p.sortorder = "";
+								if (!p.viewsortcols[0]) {
+									$iconsSpan.hide();
+								}
+							}
+						}
 						if (p.lastsort !== idxcol && $newSelectedTh.data("autoResized") === "true") {
-							cm = p.colModel[idxcol];
 							if ((cm != null && cm.autoResizing != null && cm.autoResizing.compact) ||
 									p.autoResizing.compact) {
 								// recalculate the width of the column after removing sort icon
@@ -4195,7 +4221,7 @@
 						}
 						// the index looks like "jqgh_" + p.id + "_" + colIndex (like "jqgh_list_invdate")
 						index = index.substring(5 + p.id.length + 1); // bad to be changed!?!
-						p.sortname = p.colModel[idxcol].index || index;
+						p.sortname = cm.index || index;
 					}
 					if (!feedback.call(self, "onSortCol", p.sortname, idxcol, p.sortorder)) {
 						p.lastsort = idxcol;
@@ -4450,6 +4476,7 @@
 				cmi.lso = "";
 				if (idn === p.sortname) {
 					p.lastsort = iCol;
+					cmi.lso = p.sortorder || cmi.firstsortorder || "asc";
 				}
 				if (p.multiSort) {
 					sotmp = inArray(idn, sortarr);
