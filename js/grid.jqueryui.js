@@ -23,37 +23,35 @@
 	}
 	// requiere load multiselect before grid
 	jgrid._multiselect = false;
-	if ($.ui) {
-		if ($UiMultiselect) {
-			if ($UiMultiselect.prototype._setSelected) {
-				var setSelected = $UiMultiselect.prototype._setSelected;
-				$UiMultiselect.prototype._setSelected = function (item, selected) {
-					var self = this, ret = setSelected.call(self, item, selected);
-					if (selected && self.selectedList) {
-						var elt = self.element;
-						self.selectedList.find("li").each(function () {
-							if ($(self).data("optionLink")) {
-								$(self).data("optionLink").remove().appendTo(elt);
-							}
-						});
-					}
-					return ret;
-				};
-			}
-			if ($UiMultiselect.prototype.destroy) {
-				$UiMultiselect.prototype.destroy = function () {
-					var self = this;
-					self.element.show();
-					self.container.remove();
-					if ($.Widget === undefined) {
-						$.widget.prototype.destroy.apply(self, arguments);
-					} else {
-						$.Widget.prototype.destroy.apply(self, arguments);
-					}
-				};
-			}
-			jgrid._multiselect = true;
+	if ($UiMultiselect) {
+		if ($UiMultiselect.prototype._setSelected) {
+			var setSelected = $UiMultiselect.prototype._setSelected;
+			$UiMultiselect.prototype._setSelected = function (item, selected) {
+				var self = this, ret = setSelected.call(self, item, selected);
+				if (selected && self.selectedList) {
+					var elt = self.element;
+					self.selectedList.find("li").each(function () {
+						if ($(self).data("optionLink")) {
+							$(self).data("optionLink").remove().appendTo(elt);
+						}
+					});
+				}
+				return ret;
+			};
 		}
+		if ($UiMultiselect.prototype.destroy) {
+			$UiMultiselect.prototype.destroy = function () {
+				var self = this;
+				self.element.show();
+				self.container.remove();
+				if ($.Widget === undefined) {
+					$.widget.prototype.destroy.apply(self, arguments);
+				} else {
+					$.Widget.prototype.destroy.apply(self, arguments);
+				}
+			};
+		}
+		jgrid._multiselect = true;
 	}
 
 	jgrid.extend({
