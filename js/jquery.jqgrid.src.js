@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-09-22
+ * Date: 2015-09-23
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -1939,7 +1939,7 @@
 							rowData.push(addMulti(idr, j, i, selr));
 							break;
 						case "subgrid":
-							rowData.push($j.addSubGridCell.call($self, j, i + rcnt));
+							rowData.push($j.addSubGridCell.call($self, j, i + rcnt, idr, rd));
 							break;
 						default:
 							rowData.push(addCell(idr, rd[cmName], j, i + rcnt, cells, rd));
@@ -15256,12 +15256,16 @@
 				}
 			});
 		},
-		addSubGridCell: function (pos, iRow) {
-			var self = this[0], subGridOptions = self.p.subGridOptions;
+		addSubGridCell: function (pos, iRow, rowid, item) {
+			var self = this[0], subGridOptions = self.p.subGridOptions,
+				hasSubgrid = $.isFunction(subGridOptions.hasSubgrid) ?
+					subGridOptions.hasSubgrid.call(self, {rowid: rowid, iRow: iRow, iCol: pos, data: item}) :
+					true;
 			return self == null || self.p == null || subGridOptions == null ? "" :
-					"<td role=\"gridcell\" class='" + base.getGuiStyles.call(this, "subgrid.tdStart", "ui-sgcollapsed sgcollapsed") + "' " +
-					self.formatCol(pos, iRow) + "><a style='cursor:pointer;'><span class='" +
-					jgrid.mergeCssClasses(subGridOptions.commonIconClass, subGridOptions.plusicon) + "'></span></a></td>";
+					"<td role=\"gridcell\" class='" + base.getGuiStyles.call(this, "subgrid.tdStart", hasSubgrid ? "ui-sgcollapsed sgcollapsed" : "") + "' " +
+					self.formatCol(pos, iRow) + ">" +
+					(hasSubgrid ? "<a style='cursor:pointer;'><span class='" + jgrid.mergeCssClasses(subGridOptions.commonIconClass, subGridOptions.plusicon) + "'></span></a>" : "&nbsp;") +
+					"</td>";
 		},
 		addSubGrid: function (pos, sind) {
 			return this.each(function () {
@@ -15452,6 +15456,8 @@
 						return false;
 					},
 					len,
+					tr,
+					$td,
 					iRow = 1;
 
 				if (!ts.grid) {
@@ -15464,11 +15470,15 @@
 					len = sind + 1;
 				}
 				while (iRow < len) {
-					if ($(ts.rows[iRow]).hasClass("jqgrow")) {
-						if (p.scroll) {
-							$(ts.rows[iRow].cells[pos]).unbind("click");
+					tr = ts.rows[iRow];
+					if ($(tr).hasClass("jqgrow")) {
+						$td = $(tr.cells[pos]);
+						if ($td.hasClass("ui-sgcollapsed")) {
+							if (p.scroll) {
+								$td.unbind("click");
+							}
+							$td.bind("click", onClick);
 						}
-						$(ts.rows[iRow].cells[pos]).bind("click", onClick);
 					}
 					iRow++;
 				}

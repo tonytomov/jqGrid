@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-09-22
+ * Date: 2015-09-23
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -1939,7 +1939,7 @@
 							rowData.push(addMulti(idr, j, i, selr));
 							break;
 						case "subgrid":
-							rowData.push($j.addSubGridCell.call($self, j, i + rcnt));
+							rowData.push($j.addSubGridCell.call($self, j, i + rcnt, idr, rd));
 							break;
 						default:
 							rowData.push(addCell(idr, rd[cmName], j, i + rcnt, cells, rd));
