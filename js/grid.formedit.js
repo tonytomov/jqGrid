@@ -2281,7 +2281,7 @@
 								}
 							} else {
 								// this is very slow on big table and form.
-								$field.val(rowdata[i]);
+								$field.val(isEmptyString(rowdata[i]) ? "" : rowdata[i]);
 							}
 						}
 					}
