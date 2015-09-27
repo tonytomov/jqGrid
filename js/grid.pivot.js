@@ -133,7 +133,7 @@ $.jgrid.extend({
 			/*
 			 * Perform calculations of the pivot values.
 			 */
-			function calculation(oper, v, field, rc)  {
+			function calculation(oper, v, field, rc, _cnt)  {
 				var ret;
 				switch (oper) {
 					case  "sum" : 
@@ -163,6 +163,11 @@ $.jgrid.extend({
 							ret = Math.max(parseFloat(v),parseFloat(rc[field]||0));
 						}
 						break;
+					case "avg" : //avg grouping
+						 
+						ret = (parseFloat(v||0) * (_cnt -1) + parseFloat(rc[field]||0) ) /_cnt;
+						 
+						break;	
 				}
 				return ret;
 			}
@@ -183,6 +188,11 @@ $.jgrid.extend({
 				member = [];
 				labels = [];
 				member.root = 0;
+				if(! !!curr._count ){
+					curr._count = 1;
+				}else{
+					curr._count ++;
+				}
 				for(j=0;j<jv;j++) {
 					var  tmpmember = [], vl;
 					for(i=0; i < arrln; i++) {
@@ -198,7 +208,7 @@ $.jgrid.extend({
 							swapvals[j] = value[j];
 						}
 						label = !isNaN(parseInt(label,10)) ? label + " " : label;
-						curr[label] =  tmpmember[label] = calculation( aggr[i].aggregator, curr[label], aggr[i].member, row);
+						curr[label] =  tmpmember[label] = calculation( aggr[i].aggregator, curr[label], aggr[i].member, row, curr._count);
 						if(j<=1 && vl !==  '_r_Totals' && mainval === "") { // this does not fix full the problem
 							mainval = vl;
 						}
