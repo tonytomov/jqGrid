@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.0.0 - 2015-09-28
+* @license Guriddo jqGrid JS - v5.0.0 - 2015-09-30
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5132,7 +5132,9 @@ $.jgrid.extend({
 			if ( $t.p.savedRow.length >= 1) {fr = 0;} else {fr=null;} 
 			if(fr !== null) {
 				var cc = $("td:eq("+iCol+")",$t.rows[iRow]),v,v2,
-				cm = $t.p.colModel[iCol], nm = cm.name, nmjq = $.jgrid.jqID(nm) ;
+				cm = $t.p.colModel[iCol], nm = cm.name, nmjq = $.jgrid.jqID(nm),
+				p = $(cc).offset();
+
 				switch (cm.edittype) {
 					case "select":
 						if(!cm.editoptions.multiple) {
@@ -5275,7 +5277,7 @@ $.jgrid.extend({
 						}
 					} else {
 						try {
-							window.setTimeout(function(){$.jgrid.info_dialog(errors.errcap,v+ " " + cv[1], edit.bClose, {styleUI : $t.p.styleUI });},100);
+							window.setTimeout(function(){$.jgrid.info_dialog(errors.errcap,v+ " " + cv[1], edit.bClose, {styleUI : $t.p.styleUI, top:p.top+40, left:p.left });},100);
 							$($t).jqGrid("restoreCell",iRow,iCol);
 						} catch (e) {}
 					}
