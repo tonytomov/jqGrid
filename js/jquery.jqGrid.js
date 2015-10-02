@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.0.0 - 2015-09-30
+* @license Guriddo jqGrid JS - v5.0.0 - 2015-10-02
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -11832,7 +11832,7 @@ $.jgrid.extend({
 			apply_perm : function() {
 				var perm = [];
 				$('option',select).each(function() {
-					if ($(this).is("[selected]")) {
+					if ($(this).is(":selected")) {
 						self.jqGrid("showCol", colModel[this.value].name);
 					} else {
 						self.jqGrid("hideCol", colModel[this.value].name);

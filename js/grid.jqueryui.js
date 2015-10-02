@@ -238,7 +238,7 @@ $.jgrid.extend({
 			apply_perm : function() {
 				var perm = [];
 				$('option',select).each(function() {
-					if ($(this).is("[selected]")) {
+					if ($(this).is(":selected")) {
 						self.jqGrid("showCol", colModel[this.value].name);
 					} else {
 						self.jqGrid("hideCol", colModel[this.value].name);
