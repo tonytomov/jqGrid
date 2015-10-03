@@ -13,7 +13,6 @@
 	"use strict";
 	var jgrid = $.jgrid, fullBoolFeedback = jgrid.fullBoolFeedback, hasOneFromClasses = jgrid.hasOneFromClasses,
 		enumEditableCells = jgrid.enumEditableCells,
-		infoDialog = jgrid.info_dialog,
 		editFeedback = function (o) {
 			var args = $.makeArray(arguments).slice(1);
 			args.unshift("");
@@ -154,7 +153,7 @@
 		},
 		saveRow: function (rowid, successfunc, url, extraparam, aftersavefunc, errorfunc, afterrestorefunc, beforeSaveRow) {
 			// Compatible mode old versions
-			var args = $.makeArray(arguments).slice(1), o = {}, $t = this[0], $self = $($t), p = $t != null ? $t.p : null, frmoper;
+			var args = $.makeArray(arguments).slice(1), o = {}, $t = this[0], $self = $($t), p = $t != null ? $t.p : null, frmoper, infoDialog = jgrid.info_dialog;
 			if (!$t.grid || p == null) { return; }
 
 			if ($.type(args[0]) === "object") {
