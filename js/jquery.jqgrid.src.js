@@ -8993,8 +8993,8 @@
 							top = top + $(grid.uDiv).outerHeight();
 						}
 					}
-					grid.fhDiv = $('<div style="position:absolute;overflow:hidden;" + (p.direction === "rtl" ? "right:0;" : "left:0;") + "top:' + top + 'px;height:' + hth + 'px;" class="' + getGuiStyles.call($t, "hDiv", "frozen-div ui-jqgrid-hdiv") + '"></div>');
-					grid.fbDiv = $('<div style="position:absolute;overflow:hidden;" + (p.direction === "rtl" ? "right:0;" : "left:0;") + "top:' + (parseInt(top, 10) + parseInt(hth, 10) + 1) + 'px;overflow:hidden" class="frozen-bdiv ui-jqgrid-bdiv"></div>');
+					grid.fhDiv = $("<div style='position:absolute;overflow:hidden;" + (p.direction === "rtl" ? "right:0;" : "left:0;") + "top:" + top + "px;height:" + hth + "px;' class='" + getGuiStyles.call($t, "hDiv", "frozen-div ui-jqgrid-hdiv") + "'></div>");
+					grid.fbDiv = $("<div style='position:absolute;overflow:hidden;" + (p.direction === "rtl" ? "right:0;" : "left:0;") + "top:" + (parseInt(top, 10) + parseInt(hth, 10) + 1) + "px;overflow:hidden;' class='frozen-bdiv ui-jqgrid-bdiv'></div>");
 					$(p.gView).append(grid.fhDiv);
 					var htbl = $(".ui-jqgrid-htable", p.gView).clone(true);
 					/*if ($t.ftoolbar) {
@@ -9125,7 +9125,7 @@
 							}
 						},
 						fixDiv = function ($hDiv, hDivBase) {
-							var iRow, n, $frozenRows, $rows, $row, $frozenRow, posFrozenTop, height, newHeightFrozen,
+							var iRow, n, $frozenRows, $rows, $row, $frozenRow, posFrozenTop, height, newHeightFrozen, td,
 								posTop = $(hDivBase).position().top, frozenTableTop, tableTop;
 							if ($hDiv != null && $hDiv.length > 0) {
 								$hDiv.css(p.direction === "rtl" ?
@@ -9146,8 +9146,9 @@
 									if (p.groupHeader != null && p.groupHeader.useColSpanStyle && height === 0) {
 										height = 0;
 										for (i = 0; i < maxfrozen; i++) { // maxfrozen
-											if ($row[0].cells[i].nodeName.toUpperCase() === "TH") {
-												height = Math.max(height, $($row[0].cells[i]).height());
+											td = $row[0].cells[i];
+											if (td != null && td.nodeName.toUpperCase() === "TH") {
+												height = Math.max(height, $(td).height());
 											}
 										}
 									}
