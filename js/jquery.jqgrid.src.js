@@ -1972,6 +1972,7 @@
 			return rowData;
 		},
 		getMethod: function (name) {
+			// this should be $.jgrid object
 			return this.getAccessor($.fn.jqGrid, name);
 		},
 		extend: function (methods) {
@@ -2180,7 +2181,7 @@
 					maxItemsToJoin: 32768,
 					data: [],
 					lastSelectedData: [],
-					quickEmpty: true,
+					quickEmpty: "quickest", // false, true or "quickest"
 					/** @dict */
 					_index: {},
 					iColByName: {},
@@ -2876,8 +2877,12 @@
 							if (p.deepempty) {
 								if (tableRows) { $(tableRows).slice(1).remove(); }
 							} else if (p.quickEmpty) {
-								while (tableRows.length > 1) {
-									table.deleteRow(tableRows.length-1);
+								if (p.quickEmpty === "quickest") {
+									table.replaceChild(document.createElement("tbody"), table.tBodies[0]);
+								} else {
+									while (tableRows.length > 1) {
+										table.deleteRow(tableRows.length-1);
+									}
 								}
 							} else {
 								firstrow = tableRows[0];
@@ -12619,7 +12624,12 @@
 		groupingRender: function (grdata, colspans, page, rn) {
 			var str = "", $t = this[0], p = $t.p, toEnd = 0, grp = p.groupingView, sumreverse = $.makeArray(grp.groupSummary), gv, cp = [],
 				icon = "", hid, clid, pmrtl = (grp.groupCollapse ? grp.plusicon : grp.minusicon) + " tree-wrap-" + p.direction,
-				len = grp.groupField.length;
+				len = grp.groupField.length,
+				getGridRowStyles = function (classes) {
+					return base.getGuiStyles.call($t, "gridRow", classes);
+				},
+				jqgroupClass = getGridRowStyles("jqgroup ui-row-" + p.direction),
+				jqfootClass = getGridRowStyles("jqfoot ui-row-" + p.direction);
 
 			function findGroupIdx(ind, offset, grp) {
 				var ret = false, i, id;
@@ -12663,13 +12673,13 @@
 							} catch (ef) {
 								vv = summary.v;
 							}
-							tmpdata = "<td " + $t.formatCol(k, 1, "") + ">" + jgrid.format(tplfld, vv) + "</td>";
+							tmpdata = "<td role='gridcell' " + $t.formatCol(k, 1, "") + ">" + jgrid.format(tplfld, vv) + "</td>";
 							return false;
 						}
 					};
 
 				for (k = foffset; k < colspans; k++) {
-					tmpdata = "<td " + $t.formatCol(k, 1, "") + ">&#160;</td>";
+					tmpdata = "<td role='gridcell' " + $t.formatCol(k, 1, "") + ">&#160;</td>";
 					$.each(fdata.summary, processSummary);
 					strTd += tmpdata;
 				}
@@ -12707,7 +12717,8 @@
 				} catch (egv) {
 					gv = n.displayValue;
 				}
-				str += "<tr id=\"" + hid + "\"" + (grp.groupCollapse && n.idx > 0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class=\"ui-widget-content jqgroup ui-row-" + p.direction + " " + clid + "\"><td style=\"padding-left:" + (n.idx * 12) + "px;" + "\"";
+				str += "<tr id='" + hid + "' " + (grp.groupCollapse && n.idx > 0 ? "style='display:none;' " : "") + "role='row' class='" +
+						jqgroupClass + " " + clid + "'><td role='gridcell' style='padding-left:" + (n.idx * 12) + "px;" + "'";
 				var grpTextStr = $.isFunction(grp.groupText[n.idx]) ?
 						grp.groupText[n.idx].call($t, gv, n.cnt, n.summary) :
 						jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary),
@@ -12732,7 +12743,7 @@
 							colspan - 1:
 							colspan);
 				} else {
-					str += " colspan=\"" + (grp.groupColumnShow[n.idx] === false ? colspans - 1 : colspans) + "\"" +
+					str += " colspan='" + (grp.groupColumnShow[n.idx] === false ? colspans - 1 : colspans) + "'" +
 						">" + icon + grpTextStr + "</td>";
 				}
 				str += "</tr>";
@@ -12767,9 +12778,9 @@
 							}
 							hhdr = "";
 							if (grp.groupCollapse && !grp.showSummaryOnHide) {
-								hhdr = " style=\"display:none;\"";
+								hhdr = " style='display:none;'";
 							}
-							str += "<tr" + hhdr + " data-jqfootlevel=\"" + (n.idx - ik) + "\" role=\"row\" class=\"ui-widget-content jqfoot ui-row-" + p.direction + "\">";
+							str += "<tr" + hhdr + " data-jqfootlevel='" + (n.idx - ik) + "' role='row' class='" + jqfootClass + "'>";
 							str += buildSummaryTd(i, ik, grp.groups, 0);
 							str += "</tr>";
 						}

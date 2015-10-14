@@ -1972,6 +1972,7 @@
 			return rowData;
 		},
 		getMethod: function (name) {
+			// this should be $.jgrid object
 			return this.getAccessor($.fn.jqGrid, name);
 		},
 		extend: function (methods) {
@@ -2180,7 +2181,7 @@
 					maxItemsToJoin: 32768,
 					data: [],
 					lastSelectedData: [],
-					quickEmpty: true,
+					quickEmpty: "quickest", // false, true or "quickest"
 					/** @dict */
 					_index: {},
 					iColByName: {},
@@ -2876,8 +2877,12 @@
 							if (p.deepempty) {
 								if (tableRows) { $(tableRows).slice(1).remove(); }
 							} else if (p.quickEmpty) {
-								while (tableRows.length > 1) {
-									table.deleteRow(tableRows.length-1);
+								if (p.quickEmpty === "quickest") {
+									table.replaceChild(document.createElement("tbody"), table.tBodies[0]);
+								} else {
+									while (tableRows.length > 1) {
+										table.deleteRow(tableRows.length-1);
+									}
 								}
 							} else {
 								firstrow = tableRows[0];
