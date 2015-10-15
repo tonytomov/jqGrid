@@ -213,6 +213,7 @@
 	height: 1.125em;
 	display: inline-block;
 	vertical-align: middle;
+	margin: 0 .1em
 }
 .ui-jqgrid .s-ico > .ui-grid-ico-sort {
 	display: block;
