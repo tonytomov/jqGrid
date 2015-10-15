@@ -13253,11 +13253,22 @@
 							}
 							setTimeout(function () {
 								// we want to use ":focusable"
-								var fe = $(ind.cells[focus])
-										.find("input,textarea,select,button,object,*[tabindex]")
-										.filter(":input:visible:not(:disabled)");
-								if (fe.length > 0) {
-									fe.focus();
+								var getFocusable = function (elem) {
+										return $(elem).find("input,textarea,select,button,object,*[tabindex]")
+												.filter(":input:visible:not(:disabled)");
+									},
+									$fe = getFocusable(ind.cells[focus]);
+											
+								if ($fe.length > 0) {
+									$fe.focus();
+								} else if (typeof o.defaultFocusField === "number" || typeof o.defaultFocusField === "string") {
+									$fe = getFocusable(ind.cells[typeof o.defaultFocusField === "number" ? o.defaultFocusField : p.iColByName[o.defaultFocusField]]);
+									if ($fe.length === 0) {
+										$fe = getFocusable(ind).filter(":first");
+									}
+									$fe.focus();
+								} else {
+									getFocusable(ind).filter(":first").focus();
 								}
 							}, 0);
 						}
