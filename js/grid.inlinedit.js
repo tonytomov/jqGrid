@@ -66,7 +66,9 @@
 						focusField: true
 					}, jgrid.inlineEdit, p.inlineEditing || {}, oMuligrid),
 					ind = $self.jqGrid("getInd", rowid, true),
-					focusField = o.focusField;
+					focusField = o.focusField,
+					td = typeof focusField === "object" && focusField != null ?
+						$(focusField.target || focusField).closest("tr.jqgrow>td")[0] : null;
 
 				if (ind === false) { return; }
 
@@ -121,6 +123,8 @@
 								focus = focusField;
 							} else if (typeof focusField === "string") {
 								focus = p.iColByName[focusField];
+							} else if (td != null) {
+								focus = td.cellIndex;
 							}
 							setTimeout(function () {
 								// we want to use ":focusable"
