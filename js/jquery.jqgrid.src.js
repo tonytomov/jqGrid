@@ -6496,12 +6496,13 @@
 				return -1; // do nothing
 			}
 			if (!compact || $incosDiv.is(":visible") || ($incosDiv.css("display") !== "none")) {  //|| p.viewsortcols[0]
-				colWidth = p.autoResizing.widthOfVisiblePartOfSortIcon; // $incosDiv.width() can be grater as the visible part of icon
-				if ($thDiv.css("text-align") === "center") {
-					colWidth += colWidth; // *2
-				}
-				if (p.viewsortcols[1] === "horizontal") {
-					colWidth += colWidth; // *2
+				colWidth = $incosDiv.outerWidth(true);
+				if (!p.sortIconsBeforeText) {
+					colWidth -= p.direction === "rtl" ?
+						parseFloat($incosDiv.css("padding-left") || 0) +
+						parseFloat($incosDiv.css("margin-left") || 0) :
+						parseFloat($incosDiv.css("padding-right") || 0) +
+						parseFloat($incosDiv.css("margin-right") || 0);
 				}
 			}
 			colWidth += wrapperOuterWidth + thPaddingLeft +
