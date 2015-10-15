@@ -2873,19 +2873,19 @@
 							grid.fbDiv.children(".ui-jqgrid-btable")[0] : null,
 						removeRows = function (table) {
 							if (!table) { return; }
-							var tableRows = table.rows, firstrow;
+							var tableRows = table.rows, firstrow = tableRows[0];
 							if (p.deepempty) {
 								if (tableRows) { $(tableRows).slice(1).remove(); }
 							} else if (p.quickEmpty) {
 								if (p.quickEmpty === "quickest") {
 									table.replaceChild(document.createElement("tbody"), table.tBodies[0]);
+									table.firstChild.appendChild(firstrow);
 								} else {
-									while (tableRows.length > 1) {
+									while (tableRows.length > 1) { // skip deliting of the first row
 										table.deleteRow(tableRows.length-1);
 									}
 								}
 							} else {
-								firstrow = tableRows[0];
 								$(table.firstChild).empty().append(firstrow);
 							}
 						};
