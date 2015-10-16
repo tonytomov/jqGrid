@@ -3944,7 +3944,7 @@ $.jgrid.extend({
 		return success;
 	},
 	addRowData : function(rowid,rdata,pos,src) {
-		if(["first", "last", "before", "after"].indexOf(pos) == -1) {pos = "last";}
+		if($.inArray( pos, ["first", "last", "before", "after"] ) === -1) {pos = "last";}
 		var success = false, nm, row, rnc="", msc="", gi, si, ni,sind, i, v, prp="", aradd, cnm, cn, data, cm, id;
 		if(rdata) {
 			if($.isArray(rdata)) {
