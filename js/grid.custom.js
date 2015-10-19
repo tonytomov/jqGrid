@@ -1152,8 +1152,14 @@
 									{ top: posTop, right: 0 } :
 									{ top: posTop, left: 0 }
 								);
-								$frozenRows = $hDiv.children("table").children("tbody,thead").children("tr");
-								$rows = $(hDivBase).children("div").children("table").children("tbody,thead").children("tr");
+								// first try with thead for the hdiv
+								$frozenRows = $hDiv.children("table").children("thead").children("tr");
+								$rows = $(hDivBase).children("div").children("table").children("thead").children("tr");
+								if ($rows.length === 0) {
+									// then use tbody for bdiv
+									$frozenRows = $hDiv.children("table").children("tbody").children("tr");
+									$rows = $(hDivBase).children("div").children("table").children("tbody").children("tr");
+								}
 								n = Math.min($frozenRows.length, $rows.length);
 								frozenTableTop = n > 0 ? $($frozenRows[0]).position().top : 0;
 								tableTop = n > 0 ? $($rows[0]).position().top : 0; // typically 0
@@ -1163,10 +1169,10 @@
 									$frozenRow = $($frozenRows[iRow]);
 									posFrozenTop = $frozenRow.position().top;
 									height = $row.height();
-									if (p.groupHeader != null && p.groupHeader.useColSpanStyle && height === 0) {
-										height = 0;
-										for (i = 0; i < maxfrozen; i++) { // maxfrozen
-											td = $row[0].cells[i];
+									if (p.groupHeader != null && p.groupHeader.useColSpanStyle) {
+										var cells = $row[0].cells;
+										for (i = 0; i < cells.length; i++) { // maxfrozen
+											td = cells[i];
 											if (td != null && td.nodeName.toUpperCase() === "TH") {
 												height = Math.max(height, $(td).height());
 											}
@@ -1214,16 +1220,16 @@
 								}
 							);
 						}
-						fixDiv(grid.fhDiv, grid.hDiv);
 						fixDiv(grid.fbDiv, grid.bDiv);
+						fixDiv(grid.fhDiv, grid.hDiv);
 						if (grid.sDiv) { fixDiv(grid.fsDiv, grid.sDiv); }
 					});
 					var myResize = function () {
 							$(grid.fbDiv).scrollTop($(grid.bDiv).scrollTop());
 							// TODO: the width of all column headers can be changed
 							// so one should recalculate frozenWidth in other way.
-							fixDiv(grid.fhDiv, grid.hDiv);
 							fixDiv(grid.fbDiv, grid.bDiv);
+							fixDiv(grid.fhDiv, grid.hDiv);
 							if (grid.sDiv) { fixDiv(grid.fsDiv, grid.sDiv); }
 							var frozenWidth = grid.fhDiv[0].clientWidth;
 							if (grid.fhDiv != null && grid.fhDiv.length >= 1) {
