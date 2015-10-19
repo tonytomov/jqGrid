@@ -2849,7 +2849,7 @@
 							isExpanded = rdata[p.treeReader.expanded_field],
 							icon = rdata[p.treeReader.icon_field],
 							iconClass = isLeaf ?
-									((icon !== undefined && icon !== "") ? icon : p.treeIcons.leaf) + " tree-leaf" :
+									((icon != null && icon !== "") ? icon : p.treeIcons.leaf) + " tree-leaf" :
 									(isExpanded ? p.treeIcons.minus + " tree-minus" : p.treeIcons.plus + " tree-plus");
 							//normalizeTreeGridProperties(rdata); // ??? don't needed more probably
 
