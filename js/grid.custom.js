@@ -787,6 +787,11 @@
 				$t.triggerToolbar = triggerToolbar;
 				$t.clearToolbar = clearToolbar;
 				$t.toggleToolbar = toggleToolbar;
+				$self.trigger("jqGridResetFrozenHeights");
+				if (p.frozenColumns === true) {
+					$self.jqGrid("destroyFrozenColumns");
+					$self.jqGrid("setFrozenColumns");
+				}
 			});
 		},
 		destroyFilterToolbar: function () {
@@ -800,6 +805,7 @@
 				self.toggleToolbar = null;
 				self.ftoolbar = false;
 				$(self.grid.hDiv).find("table thead tr.ui-search-toolbar").remove();
+				$(self).trigger("jqGridResetFrozenHeights");
 			});
 		},
 		destroyGroupHeader: function (nullHeader) {
@@ -1016,21 +1022,15 @@
 					grid.fhDiv = $("<div style='position:absolute;overflow:hidden;" + (p.direction === "rtl" ? "right:0;" : "left:0;") + "top:" + top + "px;height:" + hth + "px;' class='" + getGuiStyles.call($t, "hDiv", "frozen-div ui-jqgrid-hdiv") + "'></div>");
 					grid.fbDiv = $("<div style='position:absolute;overflow:hidden;" + (p.direction === "rtl" ? "right:0;" : "left:0;") + "top:" + (parseInt(top, 10) + parseInt(hth, 10) + 1) + "px;overflow:hidden;' class='frozen-bdiv ui-jqgrid-bdiv'></div>");
 					$(p.gView).append(grid.fhDiv);
-					var htbl = $(".ui-jqgrid-htable", p.gView).clone(true);
-					/*if ($t.ftoolbar) {
-						var $fixedSearchingFields = htbl.find(">thead>tr.ui-search-toolbar>th").filter(function (index) { return index <= maxfrozen; } );
-						// remove tabindex from the filter toolbar
-						$fixedSearchingFields.find("input,select,textarea").attr("tabindex","-1");
-					}*/
+					var htbl = $(".ui-jqgrid-htable", p.gView).clone(true),
+						tHeadRows = htbl[0].tHead.rows;
 					// groupheader support - only if useColSpanstyle is false
 					if (p.groupHeader) {
 						// TODO: remove all th which corresponds non-frozen columns. One can identify there by id
 						// for example. Consider to use name attribute of th on column headers. It simplifies
 						// identifying of the columns.
-						$("tr.jqg-first-row-header", htbl).each(function () {
-							$("th:gt(" + maxfrozen + ")", this).remove();
-						});
-						$("tr.jqg-third-row-header", htbl).each(function () {
+						$(tHeadRows[0].cells).filter(":gt(" + maxfrozen + ")").remove();
+						$(tHeadRows).filter(".jqg-third-row-header").each(function () {
 							$(this).children("th[id]")
 								.each(function () {
 									var id = $(this).attr("id"), colName;
@@ -1041,11 +1041,10 @@
 										}
 									}
 								});
-							//$("th:gt(" + maxfrozen + ")", this).remove();
 						});
 						var swapfroz = -1, fdel = -1, cs, rs;
 						// TODO: Fix processing of hidden columns 
-						$("tr.jqg-second-row-header th", htbl).each(function () {
+						$(tHeadRows).filter(".jqg-second-row-header").children("th").each(function () {
 							cs = parseInt($(this).attr("colspan") || 1, 10);
 							rs = parseInt($(this).attr("rowspan") || 1, 10);
 							if (rs > 1) {
@@ -1062,12 +1061,12 @@
 						if (swapfroz !== maxfrozen) {
 							fdel = maxfrozen;
 						}
-						$("tr.jqg-second-row-header", htbl).each(function () {
-							$("th:gt(" + fdel + ")", this).remove();
+						$(tHeadRows).filter(".jqg-second-row-header,.ui-search-toolbar").each(function () {
+							$(this).children(":gt(" + fdel + ")").remove();
 						});
 					} else {
-						$("tr", htbl).each(function () {
-							$("th:gt(" + maxfrozen + ")", this).remove();
+						$(tHeadRows).each(function () {
+							$(this).children(":gt(" + maxfrozen + ")").remove();
 						});
 					}
 					// htable, bdiv and ftable uses table-layout:fixed; style
@@ -1146,7 +1145,7 @@
 						},
 						fixDiv = function ($hDiv, hDivBase) {
 							var iRow, n, $frozenRows, $rows, $row, $frozenRow, posFrozenTop, height, newHeightFrozen, td,
-								posTop = $(hDivBase).position().top, frozenTableTop, tableTop;
+								posTop = $(hDivBase).position().top, frozenTableTop, tableTop, cells;
 							if ($hDiv != null && $hDiv.length > 0) {
 								$hDiv.css(p.direction === "rtl" ?
 									{ top: posTop, right: 0 } :
@@ -1170,7 +1169,7 @@
 									posFrozenTop = $frozenRow.position().top;
 									height = $row.height();
 									if (p.groupHeader != null && p.groupHeader.useColSpanStyle) {
-										var cells = $row[0].cells;
+										cells = $row[0].cells;
 										for (i = 0; i < cells.length; i++) { // maxfrozen
 											td = cells[i];
 											if (td != null && td.nodeName.toUpperCase() === "TH") {
@@ -1220,16 +1219,16 @@
 								}
 							);
 						}
-						fixDiv(grid.fbDiv, grid.bDiv);
 						fixDiv(grid.fhDiv, grid.hDiv);
+						fixDiv(grid.fbDiv, grid.bDiv);
 						if (grid.sDiv) { fixDiv(grid.fsDiv, grid.sDiv); }
 					});
 					var myResize = function () {
 							$(grid.fbDiv).scrollTop($(grid.bDiv).scrollTop());
 							// TODO: the width of all column headers can be changed
 							// so one should recalculate frozenWidth in other way.
-							fixDiv(grid.fbDiv, grid.bDiv);
 							fixDiv(grid.fhDiv, grid.hDiv);
+							fixDiv(grid.fbDiv, grid.bDiv);
 							if (grid.sDiv) { fixDiv(grid.fsDiv, grid.sDiv); }
 							var frozenWidth = grid.fhDiv[0].clientWidth;
 							if (grid.fhDiv != null && grid.fhDiv.length >= 1) {
