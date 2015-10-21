@@ -45,7 +45,7 @@ var
 				banner: createBanner( true )
 			},
 			files: {
-				"js/minified/jquery.jqGrid.min.js": "js/jquery.jqGrid.js"
+				"js/jquery.jqGrid.min.js": "js/jquery.jqGrid.js"
 			}
 		}
 	};
