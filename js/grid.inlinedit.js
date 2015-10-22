@@ -127,7 +127,6 @@
 								focus = td.cellIndex;
 							}
 							setTimeout(function () {
-								// we want to use ":focusable"
 								var getFocusable = function (elem) {
 										return $(elem).find("input,textarea,select,button,object,*[tabindex]")
 												.filter(":input:visible:not(:disabled)");
@@ -148,7 +147,11 @@
 							}, 0);
 						}
 						if (o.keys === true) {
-							$(ind).bind("keydown", function (e) {
+							var $ind = $(ind);
+							if (p.frozenColumns) {
+								$ind = $ind.add($t.grid.fbRows[ind.rowIndex]);
+							}
+							$ind.bind("keydown", function (e) {
 								if (e.keyCode === 27) {
 									$self.jqGrid("restoreRow", rowid, o.afterrestorefunc);
 									return false;
