@@ -127,22 +127,33 @@
 								focus = td.cellIndex;
 							}
 							setTimeout(function () {
-								var getFocusable = function (elem) {
+								// we want to use ":focusable"
+								var nFrozenColumns = $self.jqGrid("getNumberOfFrozenColumns"),
+									getTdByColIndex = function (iCol) {
+										return nFrozenColumns > 0 && focus < nFrozenColumns ?
+											$t.grid.fbRows[ind.rowIndex].cells[iCol] :
+											ind.cells[iCol];
+									},
+									getFocusable = function (elem) {
 										return $(elem).find("input,textarea,select,button,object,*[tabindex]")
 												.filter(":input:visible:not(:disabled)");
 									},
-									$fe = getFocusable(ind.cells[focus]);
-											
+									getFirstFocusable = function () {
+										return getFocusable(nFrozenColumns > 0 ? $t.grid.fbRows[ind.rowIndex] :	ind)
+												.filter(":first");
+									},
+									$fe = getFocusable(getTdByColIndex(focus));
+
 								if ($fe.length > 0) {
 									$fe.focus();
 								} else if (typeof o.defaultFocusField === "number" || typeof o.defaultFocusField === "string") {
-									$fe = getFocusable(ind.cells[typeof o.defaultFocusField === "number" ? o.defaultFocusField : p.iColByName[o.defaultFocusField]]);
+									$fe = getFocusable(getTdByColIndex(typeof o.defaultFocusField === "number" ? o.defaultFocusField : p.iColByName[o.defaultFocusField]));
 									if ($fe.length === 0) {
-										$fe = getFocusable(ind).filter(":first");
+										$fe = getFirstFocusable();
 									}
 									$fe.focus();
 								} else {
-									getFocusable(ind).filter(":first").focus();
+									getFirstFocusable().focus();
 								}
 							}, 0);
 						}
