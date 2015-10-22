@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-10-20
+ * Date: 2015-10-22
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -5592,6 +5592,13 @@
 									$dataFiled = $dataFiled.children("span.cell-wrapperleaf,span.cell-wrapper").first();
 								}
 								$dataFiled.html(vl).attr(title);
+								if (p.frozenColumns) {
+									$dataFiled = $(t.grid.fbRows[ind.rowIndex].cells[i]);
+									if (p.treeGrid === true && nm === p.ExpandColumn) {
+										$dataFiled = $dataFiled.children("span.cell-wrapperleaf,span.cell-wrapper").first();
+									}
+									$dataFiled.html(vl).attr(title);
+								}
 							}
 						});
 						if (p.datatype === "local") {
@@ -5622,7 +5629,7 @@
 				}
 				if (success) {
 					if (cp === "string") { $(ind).addClass(cssp); } else if (cssp !== null && cp === "object") { $(ind).css(cssp); }
-					$(t).triggerHandler("jqGridAfterGridComplete");
+					//$(t).triggerHandler("jqGridAfterGridComplete");
 				}
 			});
 			return success;
