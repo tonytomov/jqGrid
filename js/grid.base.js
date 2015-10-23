@@ -982,7 +982,7 @@
 		mergeCssClasses: function () {
 			var args = $.makeArray(arguments), map = {}, i, j, ar, cssClass, classes = [];
 			for (i = 0; i < args.length; i++) {
-				ar = String(args[i]).split(" ");
+				ar = String(args[i]).replace(/[\t\r\n\f]/g, " ").split(" ");
 				for (j = 0; j < ar.length; j++) {
 					cssClass = ar[j];
 					if (cssClass !== "" && !map.hasOwnProperty(cssClass)) {
@@ -994,7 +994,7 @@
 			return classes.join(" ");
 		},
 		hasOneFromClasses: function (elem, classes) {
-			var $elem = $(elem), arClasses = classes.split(" "), i, n = arClasses.length;
+			var $elem = $(elem), arClasses = String(classes).replace(/[\t\r\n\f]/g, " ").split(" "), i, n = arClasses.length;
 			for (i = 0; i < n; i++) {
 				if ($elem.hasClass(arClasses[i])) {
 					return true;
