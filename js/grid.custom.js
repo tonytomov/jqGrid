@@ -1106,7 +1106,7 @@
 					if (p.footerrow) {
 						var hbd = $(".ui-jqgrid-bdiv", p.gView).height();
 
-						grid.fsDiv = $('<div style="position:absolute;" + (p.direction === "rtl" ? "right:0;" : "left:0;") + "top:' + (parseInt(top, 10) + parseInt(hth, 10) + parseInt(hbd, 10) + 1) + 'px;" class="frozen-sdiv ui-jqgrid-sdiv"></div>');
+						grid.fsDiv = $("<div style='position:absolute;" + (p.direction === "rtl" ? "right:0;" : "left:0;") + "top:" + (parseInt(top, 10) + parseInt(hth, 10) + parseInt(hbd, 10) + 1) + "px;' class='frozen-sdiv ui-jqgrid-sdiv'></div>");
 						$(p.gView).append(grid.fsDiv);
 						var ftbl = $(".ui-jqgrid-ftable", p.gView).clone(true);
 						$("tr", ftbl).each(function () {
