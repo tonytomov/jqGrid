@@ -149,7 +149,7 @@
 			});
 			return this;
 		},
-		groupingToggle: function (hid) {
+		groupingToggle: function (hid, clickedElem) {
 			this.each(function () {
 				var $t = this, p = $t.p, jqID = jgrid.jqID,
 					grp = p.groupingView,
@@ -167,6 +167,8 @@
 					strpos = hid.split("_"),
 					num = parseInt(strpos[strpos.length - 2], 10),
 					uid,
+					//iRowStart = r != null ? r.rowIndex || 0 : 0,
+					//iRowEnd = -1, 
 					getGroupingLevelFromClass = function (className) {
 						var nums = $.map(className.split(" "), function (item) {
 							if (item.substring(0, uid.length + 1) === uid + "_") {
@@ -256,11 +258,16 @@
 					}
 					tarspan.removeClass(plus).addClass(minus);
 				}
+				//iRowEnd = r != null ? r.rowIndex || -1 : -1;
+				$($t).triggerHandler("jqGridResetFrozenHeights", [{
+					header: { resizeDiv: false, resizedRows: [0, 0] },
+					resizeFooter: false,
+					body: { resizeDiv: true, resizedRows: [-1, -1]/*[iRowStart, iRowEnd]*/ }
+				}]);
 				$($t).triggerHandler("jqGridGroupingClickGroup", [hid, collapsed]);
 				if ($.isFunction(p.onClickGroup)) {
 					p.onClickGroup.call($t, hid, collapsed);
 				}
-
 			});
 			return false;
 		},
@@ -349,7 +356,7 @@
 				toEnd++;
 				clid = p.id + "ghead_" + n.idx;
 				hid = clid + "_" + i;
-				icon = "<span style='cursor:pointer;' class='" + grp.commonIconClass + " " + pmrtl + "' onclick=\"jQuery('#" + jgrid.jqID(p.id).replace("\\", "\\\\") + "').jqGrid('groupingToggle','" + hid + "');return false;\"></span>";
+				icon = "<span style='cursor:pointer;' class='" + grp.commonIconClass + " " + pmrtl + "' onclick=\"jQuery('#" + jgrid.jqID(p.id).replace("\\", "\\\\") + "').jqGrid('groupingToggle','" + hid + "', this);return false;\"></span>";
 				try {
 					if ($.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
 						n.displayValue = grp.formatDisplayField[n.idx].call($t, n.displayValue, n.value, p.colModel[cp[n.idx]], n.idx, grp);

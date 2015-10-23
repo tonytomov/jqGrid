@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-10-20
+ * Date: 2015-10-22
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -5592,6 +5592,13 @@
 									$dataFiled = $dataFiled.children("span.cell-wrapperleaf,span.cell-wrapper").first();
 								}
 								$dataFiled.html(vl).attr(title);
+								if (p.frozenColumns) {
+									$dataFiled = $(t.grid.fbRows[ind.rowIndex].cells[i]);
+									if (p.treeGrid === true && nm === p.ExpandColumn) {
+										$dataFiled = $dataFiled.children("span.cell-wrapperleaf,span.cell-wrapper").first();
+									}
+									$dataFiled.html(vl).attr(title);
+								}
 							}
 						});
 						if (p.datatype === "local") {
@@ -5622,7 +5629,7 @@
 				}
 				if (success) {
 					if (cp === "string") { $(ind).addClass(cssp); } else if (cssp !== null && cp === "object") { $(ind).css(cssp); }
-					$(t).triggerHandler("jqGridAfterGridComplete");
+					//$(t).triggerHandler("jqGridAfterGridComplete");
 				}
 			});
 			return success;
@@ -8540,7 +8547,7 @@
 							}
 							if (sot === undefined) { sot = "="; }
 							var st = soptions.searchtitle != null ? soptions.searchtitle : getRes("search.operandTitle");
-							select = "<a title='" + st + "' style='padding-right: 0.5em;' data-soper='" + so + "' class='soptclass' data-colname='" + this.name + "'>" + sot + "</a>";
+							select = "<a title='" + st + "' style='padding-right:0.5em;' data-soper='" + so + "' class='soptclass' data-colname='" + this.name + "'>" + sot + "</a>";
 						}
 						$("td", stbl).filter(":first").data("colindex", ci).append(select);
 						if (soptions.sopt == null || soptions.sopt.length === 1) {
@@ -8551,7 +8558,7 @@
 						}
 						if (soptions.clearSearch) {
 							var csv = getRes("search.resetTitle") || "Clear Search Value";
-							$("td", stbl).eq(2).append("<a title='" + csv + "' style='padding-right: 0.2em;padding-left: 0.3em;' class='clearsearchclass'>" + o.resetIcon + "</a>");
+							$("td", stbl).eq(2).append("<a title='" + csv + "' style='padding-right:0.2em;padding-left:0.3em;' class='clearsearchclass'>" + o.resetIcon + "</a>");
 						} else {
 							$("td", stbl).eq(2).hide();
 						}
@@ -8940,7 +8947,7 @@
 					$htable.find("span.ui-jqgrid-resize").each(function () {
 						var $parent = $(this).parent();
 						if ($parent.is(":visible")) {
-							this.style.cssText = "height: " + $parent.height() + "px !important; cursor: col-resize;";
+							this.style.cssText = "height:" + $parent.height() + "px !important;cursor:col-resize;";
 						}
 					});
 
@@ -8957,6 +8964,23 @@
 				}
 				$(ts).triggerHandler("jqGridAfterSetGroupHeaders");
 			});
+		},
+		getNumberOfFrozenColumns: function () {
+			var $t = this;
+			if ($t.length === 0) {
+				return 0;
+			}
+			$t = $t[0];
+			var colModel = $t.p.colModel, len = colModel.length, maxfrozen = -1, i;
+			// get the max index of frozen col
+			for (i = 0; i < len; i++) {
+				// from left, no breaking frozen
+				if (colModel[i].frozen !== true) {
+					break;
+				}
+				maxfrozen = i;
+			}
+			return maxfrozen + 1;
 		},
 		setFrozenColumns: function () {
 			return this.each(function () {
@@ -9029,7 +9053,7 @@
 								});
 						});
 						var swapfroz = -1, fdel = -1, cs, rs;
-						// TODO: Fix processing of hidden columns 
+						// TODO: test carefully processing of hidden columns 
 						$(tHeadRows).filter(".jqg-second-row-header").children("th").each(function () {
 							cs = parseInt($(this).attr("colspan") || 1, 10);
 							rs = parseInt($(this).attr("rowspan") || 1, 10);
@@ -9111,7 +9135,7 @@
 					}
 					var safeHeightSet = function ($elem, newHeight) {
 							var height = $elem.height();
-							if (Math.abs(height - newHeight) >= 1) {
+							if (Math.abs(height - newHeight) >= 1 && newHeight > 0) {
 								$elem.height(newHeight);
 								height = $elem.height();
 								if (Math.abs(newHeight - height) >= 1) {
@@ -9129,9 +9153,11 @@
 								}
 							}
 						},
-						fixDiv = function ($hDiv, hDivBase) {
+						fixDiv = function ($hDiv, hDivBase, resizeInfo) {
 							var iRow, n, $frozenRows, $rows, $row, $frozenRow, posFrozenTop, height, newHeightFrozen, td,
-								posTop = $(hDivBase).position().top, frozenTableTop, tableTop, cells;
+								posTop = $(hDivBase).position().top, frozenTableTop, tableTop, cells,
+								iRowStart = resizeInfo.resizedRows[0],
+								iRowEnd = resizeInfo.resizedRows[1];
 							if ($hDiv != null && $hDiv.length > 0) {
 								$hDiv.css(p.direction === "rtl" ?
 									{ top: posTop, right: 0 } :
@@ -9142,33 +9168,50 @@
 								$rows = $(hDivBase).children("div").children("table").children("thead").children("tr");
 								if ($rows.length === 0) {
 									// then use tbody for bdiv
-									$frozenRows = $hDiv.children("table").children("tbody").children("tr");
-									$rows = $(hDivBase).children("div").children("table").children("tbody").children("tr");
+									$frozenRows = $($hDiv.children("table")[0].rows);
+									$rows = $($(hDivBase).children("div").children("table")[0].rows);
 								}
 								n = Math.min($frozenRows.length, $rows.length);
 								frozenTableTop = n > 0 ? $($frozenRows[0]).position().top : 0;
 								tableTop = n > 0 ? $($rows[0]).position().top : 0; // typically 0
-								for (iRow = 0; iRow < n; iRow++) {
-									$row = $($rows[iRow]);
-									posTop = $row.position().top;
-									$frozenRow = $($frozenRows[iRow]);
-									posFrozenTop = $frozenRow.position().top;
-									height = $row.height();
-									if (p.groupHeader != null && p.groupHeader.useColSpanStyle) {
-										cells = $row[0].cells;
-										for (i = 0; i < cells.length; i++) { // maxfrozen
-											td = cells[i];
-											if (td != null && td.nodeName.toUpperCase() === "TH") {
-												height = Math.max(height, $(td).height());
+								if (iRowStart >= 0) { // negative iRowStart means no changing of the height of individual rows
+									if (iRowEnd >= 0) { // negative iRowEnd means all rows
+										n = Math.min(iRowEnd + 1, n);
+									}
+									for (iRow = iRowStart; iRow < n; iRow++) {
+										$row = $($rows[iRow]);
+										posTop = $row.position().top;
+										$frozenRow = $($frozenRows[iRow]);
+										posFrozenTop = $frozenRow.position().top;
+										height = $row.height();
+										if (p.groupHeader != null && p.groupHeader.useColSpanStyle) {
+											cells = $row[0].cells;
+											for (i = 0; i < cells.length; i++) { // maxfrozen
+												td = cells[i];
+												if (td != null && td.nodeName.toUpperCase() === "TH") {
+													height = Math.max(height, $(td).height());
+												}
 											}
 										}
+										newHeightFrozen = height + (posTop - tableTop) + (frozenTableTop - posFrozenTop);
+										safeHeightSet($frozenRow, newHeightFrozen);
 									}
-									newHeightFrozen = height + (posTop - tableTop) + (frozenTableTop - posFrozenTop);
-									safeHeightSet($frozenRow, newHeightFrozen);
 								}
 								safeHeightSet($hDiv, hDivBase.clientHeight);
 							}
+						},
+						/** @const */
+						resizeAll = {
+							resizeDiv: true,
+							resizedRows: [0, -1] // iRow indexies: from, to. Till -1 means "till the end".
+						},
+						/** @const */
+						fullResize = {
+							header: resizeAll,
+							resizeFooter: true,
+							body: resizeAll
 						};
+
 					$self.bind("jqGridAfterGridComplete.setFrozenColumns", function () {
 						$(p.idSel + "_frozen").remove();
 						$(grid.fbDiv).height(grid.hDiv.clientHeight);
@@ -9178,6 +9221,9 @@
 							rows = $self[0].rows;
 						$(frozenRows).filter("tr[role=row]").each(function () {
 							$(this.cells).filter("td[role=gridcell]:gt(" + maxfrozen + ")").remove();
+							/*if (this.id) {
+								$(this).attr("id", this.id + "_frozen");
+							}*/
 						});
 						grid.fbRows = frozenRows;
 
@@ -9205,34 +9251,61 @@
 								}
 							);
 						}
-						fixDiv(grid.fhDiv, grid.hDiv);
-						fixDiv(grid.fbDiv, grid.bDiv);
-						if (grid.sDiv) { fixDiv(grid.fsDiv, grid.sDiv); }
+						fixDiv(grid.fhDiv, grid.hDiv, resizeAll);
+						fixDiv(grid.fbDiv, grid.bDiv, resizeAll);
+						if (grid.sDiv) { fixDiv(grid.fsDiv, grid.sDiv, resizeAll); }
 					});
-					var myResize = function () {
+					var myResize = function (resizeOptions) {
 							$(grid.fbDiv).scrollTop($(grid.bDiv).scrollTop());
 							// TODO: the width of all column headers can be changed
 							// so one should recalculate frozenWidth in other way.
-							fixDiv(grid.fhDiv, grid.hDiv);
-							fixDiv(grid.fbDiv, grid.bDiv);
-							if (grid.sDiv) { fixDiv(grid.fsDiv, grid.sDiv); }
+							if (resizeOptions.header.resizeDiv) {
+								fixDiv(grid.fhDiv, grid.hDiv, resizeOptions.header);
+							}
+							if (resizeOptions.body.resizeDiv) {
+								fixDiv(grid.fbDiv, grid.bDiv, resizeOptions.body);
+							}
+							if (resizeOptions.resizeFooter && grid.sDiv && resizeOptions.resizeFooter) {
+								fixDiv(grid.fsDiv, grid.sDiv, resizeAll);
+							}
 							var frozenWidth = grid.fhDiv[0].clientWidth;
-							if (grid.fhDiv != null && grid.fhDiv.length >= 1) {
+							if (resizeOptions.header.resizeDiv && grid.fhDiv != null && grid.fhDiv.length >= 1) {
 								safeHeightSet($(grid.fhDiv), grid.hDiv.clientHeight);
 							}
-							if (grid.fbDiv != null && grid.fbDiv.length > 0) {
+							if (resizeOptions.body.resizeDiv && grid.fbDiv != null && grid.fbDiv.length > 0) {
 								safeWidthSet($(grid.fbDiv), frozenWidth);
 							}
-							if (grid.fsDiv != null && grid.fsDiv.length >= 0) {
+							if (resizeOptions.resizeFooter && grid.fsDiv != null && grid.fsDiv.length >= 0) {
 								safeWidthSet($(grid.fsDiv), frozenWidth);
 							}
 						};
 					$(p.gBox).bind("resizestop.setFrozenColumns", function () {
 						setTimeout(function () {
-							myResize();
+							myResize(fullResize);
 						}, 50);
 					});
-					$self.bind("jqGridInlineEditRow.setFrozenColumns jqGridAfterEditCell.setFrozenColumns jqGridAfterRestoreCell.setFrozenColumns jqGridInlineAfterRestoreRow.setFrozenColumns jqGridAfterSaveCell.setFrozenColumns jqGridInlineAfterSaveRow.setFrozenColumns jqGridResetFrozenHeights.setFrozenColumns jqGridGroupingClickGroup.setFrozenColumns jqGridResizeStop.setFrozenColumns", myResize);
+					$self.bind("jqGridInlineEditRow.setFrozenColumns jqGridInlineAfterRestoreRow.setFrozenColumns jqGridInlineAfterSaveRow.setFrozenColumns jqGridAfterEditCell.setFrozenColumns jqGridAfterRestoreCell.setFrozenColumns jqGridAfterSaveCell.setFrozenColumns jqGridResizeStop.setFrozenColumns", function (e, rowid) {
+						// TODO: probably one should handle additional events like afterSetRow
+						// and remove jqGridInlineAfterSaveRow and jqGridInlineAfterRestoreRow
+						var iRow = $self.jqGrid("getInd", rowid);
+						myResize({
+							header: {
+								resizeDiv: false,         // don't recalculate the position and the height of hDiv
+								resizedRows: [-1, -1]     // don't recalculate heights of every row inside of hDiv
+							},
+							resizeFooter: true,           // recalculate the position and the height of sDiv
+							body: {
+								resizeDiv: true,          // recalculate the position and the height of bDiv
+								resizedRows: [iRow, iRow] // recalculate the height of only one row inside of bDiv
+							}
+						});
+					});
+					$self.bind("jqGridResizeStop.setFrozenColumns", function () {
+						myResize(fullResize);
+					});
+					$self.bind("jqGridResetFrozenHeights.setFrozenColumns", function (e, o) {
+						myResize(o || fullResize);
+					});
 					if (!grid.hDiv.loading) {
 						$self.triggerHandler("jqGridAfterGridComplete");
 					}
@@ -12512,7 +12585,7 @@
 			});
 			return this;
 		},
-		groupingToggle: function (hid) {
+		groupingToggle: function (hid, clickedElem) {
 			this.each(function () {
 				var $t = this, p = $t.p, jqID = jgrid.jqID,
 					grp = p.groupingView,
@@ -12530,6 +12603,8 @@
 					strpos = hid.split("_"),
 					num = parseInt(strpos[strpos.length - 2], 10),
 					uid,
+					//iRowStart = r != null ? r.rowIndex || 0 : 0,
+					//iRowEnd = -1, 
 					getGroupingLevelFromClass = function (className) {
 						var nums = $.map(className.split(" "), function (item) {
 							if (item.substring(0, uid.length + 1) === uid + "_") {
@@ -12619,11 +12694,16 @@
 					}
 					tarspan.removeClass(plus).addClass(minus);
 				}
+				//iRowEnd = r != null ? r.rowIndex || -1 : -1;
+				$($t).triggerHandler("jqGridResetFrozenHeights", [{
+					header: { resizeDiv: false, resizedRows: [0, 0] },
+					resizeFooter: false,
+					body: { resizeDiv: true, resizedRows: [-1, -1]/*[iRowStart, iRowEnd]*/ }
+				}]);
 				$($t).triggerHandler("jqGridGroupingClickGroup", [hid, collapsed]);
 				if ($.isFunction(p.onClickGroup)) {
 					p.onClickGroup.call($t, hid, collapsed);
 				}
-
 			});
 			return false;
 		},
@@ -12712,7 +12792,7 @@
 				toEnd++;
 				clid = p.id + "ghead_" + n.idx;
 				hid = clid + "_" + i;
-				icon = "<span style='cursor:pointer;' class='" + grp.commonIconClass + " " + pmrtl + "' onclick=\"jQuery('#" + jgrid.jqID(p.id).replace("\\", "\\\\") + "').jqGrid('groupingToggle','" + hid + "');return false;\"></span>";
+				icon = "<span style='cursor:pointer;' class='" + grp.commonIconClass + " " + pmrtl + "' onclick=\"jQuery('#" + jgrid.jqID(p.id).replace("\\", "\\\\") + "').jqGrid('groupingToggle','" + hid + "', this);return false;\"></span>";
 				try {
 					if ($.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
 						n.displayValue = grp.formatDisplayField[n.idx].call($t, n.displayValue, n.value, p.colModel[cp[n.idx]], n.idx, grp);
@@ -13259,27 +13339,41 @@
 							}
 							setTimeout(function () {
 								// we want to use ":focusable"
-								var getFocusable = function (elem) {
+								var nFrozenColumns = $self.jqGrid("getNumberOfFrozenColumns"),
+									getTdByColIndex = function (iCol) {
+										return nFrozenColumns > 0 && focus < nFrozenColumns ?
+											$t.grid.fbRows[ind.rowIndex].cells[iCol] :
+											ind.cells[iCol];
+									},
+									getFocusable = function (elem) {
 										return $(elem).find("input,textarea,select,button,object,*[tabindex]")
 												.filter(":input:visible:not(:disabled)");
 									},
-									$fe = getFocusable(ind.cells[focus]);
-											
+									getFirstFocusable = function () {
+										return getFocusable(nFrozenColumns > 0 ? $t.grid.fbRows[ind.rowIndex] :	ind)
+												.filter(":first");
+									},
+									$fe = getFocusable(getTdByColIndex(focus));
+
 								if ($fe.length > 0) {
 									$fe.focus();
 								} else if (typeof o.defaultFocusField === "number" || typeof o.defaultFocusField === "string") {
-									$fe = getFocusable(ind.cells[typeof o.defaultFocusField === "number" ? o.defaultFocusField : p.iColByName[o.defaultFocusField]]);
+									$fe = getFocusable(getTdByColIndex(typeof o.defaultFocusField === "number" ? o.defaultFocusField : p.iColByName[o.defaultFocusField]));
 									if ($fe.length === 0) {
-										$fe = getFocusable(ind).filter(":first");
+										$fe = getFirstFocusable();
 									}
 									$fe.focus();
 								} else {
-									getFocusable(ind).filter(":first").focus();
+									getFirstFocusable().focus();
 								}
 							}, 0);
 						}
 						if (o.keys === true) {
-							$(ind).bind("keydown", function (e) {
+							var $ind = $(ind);
+							if (p.frozenColumns) {
+								$ind = $ind.add($t.grid.fbRows[ind.rowIndex]);
+							}
+							$ind.bind("keydown", function (e) {
 								if (e.keyCode === 27) {
 									$self.jqGrid("restoreRow", rowid, o.afterrestorefunc);
 									return false;
