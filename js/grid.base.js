@@ -994,13 +994,34 @@
 			return classes.join(" ");
 		},
 		hasOneFromClasses: function (elem, classes) {
-			var $elem = $(elem), arClasses = String(classes).replace(/[\t\r\n\f]/g, " ").split(" "), i, n = arClasses.length;
+			var $elem = $(elem),
+				arClasses = String(classes).replace(/[\t\r\n\f]/g, " ").split(" "),
+				n = arClasses.length,
+				i;
 			for (i = 0; i < n; i++) {
 				if ($elem.hasClass(arClasses[i])) {
 					return true;
 				}
 			}
 			return false;
+		},
+		hasAllClasses: function (elem, classes) {
+			// the current implementation of jQuery.hasClass can work with multiple classes,
+			// but the classes HAVE TO BE in exact the same order. jQuery.hasClass just
+			// search for classes using indexOf.
+			// (see https://github.com/jquery/jquery/blob/1.11.3/src/attributes/classes.js#L143-L154)
+			// Thus we cant's use it to test whether an element has the list of all the classes
+			// and we introduces the helper method hasAllClasses
+			var $elem = $(elem),
+				arClasses = String(classes).replace(/[\t\r\n\f]/g, " ").split(" "),
+				n = arClasses.length,
+				i;
+			for (i = 0; i < n; i++) {
+				if (!$elem.hasClass(arClasses[i])) {
+					return false;
+				}
+			}
+			return true;
 		},
 		detectRowEditing: function (rowid) {
 			var i, savedRowInfo, tr, self = this, rows = self.rows, p = self.p, isFunction = $.isFunction;
@@ -3772,6 +3793,7 @@
 						extend(p.postData, prm);
 						var rcnt = !p.scroll ? 1 : self.rows.length - 1,
 							fixDisplayingHorizontalScrollbar = function () {
+								fixScrollOffsetAndhBoxPadding.call(self);
 								// if no items are displayed in the btable, but the column header is too wide
 								// the horizontal scrollbar of bDiv will be disabled. The fix set CSS height to 1px
 								// on btable in the case to fix the problem
@@ -3781,6 +3803,9 @@
 									$self.css("height", "1px");
 								} else if (gridCssHeight !== "0" && gridCssHeight !== "0px") {
 									$self.css("height", "");
+								}
+								if (!p.autowidth && (p.widthOrg === undefined || p.widthOrg === "auto" || p.widthOrg === "100%")) {
+									$j.setGridWidth.call($self, p.tblwidth + p.scrollOffset, false);
 								}
 							},
 							resort = function () {
@@ -3802,7 +3827,6 @@
 								endReq.call(self);
 								p.datatype = "local";
 								p.datastr = null;
-								fixScrollOffsetAndhBoxPadding.call(self);
 								fixDisplayingHorizontalScrollbar();
 							},
 							finalReportVirtual = function (data) {
@@ -3812,7 +3836,6 @@
 								$self.triggerHandler("jqGridAfterLoadComplete", [data]);
 								if (pvis) { gridSelf.populateVisible.call(self); }
 								if (npage === 1) { endReq.call(self); }
-								fixScrollOffsetAndhBoxPadding.call(self);
 								fixDisplayingHorizontalScrollbar();
 							};
 						if (!feedback.call(self, "beforeRequest")) { return; }
@@ -4959,6 +4982,9 @@
 				.addClass("ui-jqgrid-bdiv")
 				.css({ height: p.height + (isNaN(p.height) ? "" : "px"), width: (grid.width) + "px" })
 				.scroll(grid.scrollGrid);
+			if (p.maxHeight) {
+				$(grid.bDiv).css("max-height", p.maxHeight + (isNaN(p.maxHeight) ? "" : "px"));
+			}
 			$self0.css({ width: p.tblwidth + "px" });
 			if (!$.support.tbody) { //IE
 				if ($(">tbody", ts).length === 2) { $(">tbody:gt(0)", ts).remove(); }
@@ -6107,7 +6133,17 @@
 					}
 				}
 				$t.fixScrollOffsetAndhBoxPadding();
-				$($t).triggerHandler("jqGridResetFrozenHeights");
+				$($t).triggerHandler("jqGridResetFrozenHeights", [{
+					header: {
+						resizeDiv: true,
+						resizedRows: [shrink ? 0 : -1, -1]
+					},
+					resizeFooter: true,
+					body: {
+						resizeDiv: true,
+						resizedRows: [shrink ? 0 : -1, -1]
+					}
+				}]);
 			});
 		},
 		setGridHeight: function (nh) {
@@ -6477,7 +6513,12 @@
 			});
 		},
 		getAutoResizableWidth: function (iCol) {
-			// the most expensive in below code is getting padding-left
+			// The method get the max-width in the column.
+			// It get in considerations only VISIBLE elements.
+			// For example if some rows with data are hidden (grouping data, tree grid)
+			// then the max-width will see 0 as the width of the elements of the rows.
+			//
+			// The most expensive in below code is getting padding-left.
 			var self = this;
 			if (self.length === 0) {
 				return -1;
