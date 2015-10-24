@@ -947,7 +947,7 @@
 				$theadInTable = $(ts).children("thead");
 				$theadInTable.prepend($firstHeaderRow);
 				$tr.insertAfter($trLastWithLabels);
-				$htable.append($theadInTable);
+				$htable.prepend($theadInTable);
 
 				if (o.useColSpanStyle) {
 					// Increase the height of resizing span of visible headers
@@ -1036,8 +1036,14 @@
 							top = top + $(grid.uDiv).outerHeight();
 						}
 					}
-					grid.fhDiv = $("<div style='position:absolute;overflow:hidden;" + (p.direction === "rtl" ? "right:0;" : "left:0;") + "top:" + top + "px;height:" + hth + "px;' class='" + getGuiStyles.call($t, "hDiv", "frozen-div ui-jqgrid-hdiv") + "'></div>");
-					grid.fbDiv = $("<div style='position:absolute;overflow:hidden;" + (p.direction === "rtl" ? "right:0;" : "left:0;") + "top:" + (parseInt(top, 10) + parseInt(hth, 10) + 1) + "px;overflow:hidden;' class='frozen-bdiv ui-jqgrid-bdiv'></div>");
+					grid.fhDiv = $("<div style='position:absolute;overflow:hidden;" +
+							(p.direction === "rtl" ? "right:0;border-top-left-radius:0;" : "left:0;border-top-right-radius:0;") +
+							"top:" + top + "px;height:" + hth +
+							"px;' class='" + getGuiStyles.call($t, "hDiv", "frozen-div ui-jqgrid-hdiv") + "'></div>");
+					grid.fbDiv = $("<div style='position:absolute;overflow:hidden;" +
+							(p.direction === "rtl" ? "right:0;" : "left:0;") +
+							"top:" + (parseInt(top, 10) + parseInt(hth, 10) + 1) +
+							"px;overflow:hidden;' class='frozen-bdiv ui-jqgrid-bdiv'></div>");
 					$(p.gView).append(grid.fhDiv);
 					var htbl = $(".ui-jqgrid-htable", p.gView).clone(true),
 						tHeadRows = htbl[0].tHead.rows;
@@ -1186,22 +1192,25 @@
 										n = Math.min(iRowEnd + 1, n);
 									}
 									for (iRow = iRowStart; iRow < n; iRow++) {
+										// but after that one have to verify all scenarios
 										$row = $($rows[iRow]);
-										posTop = $row.position().top;
-										$frozenRow = $($frozenRows[iRow]);
-										posFrozenTop = $frozenRow.position().top;
-										height = $row.height();
-										if (p.groupHeader != null && p.groupHeader.useColSpanStyle) {
-											cells = $row[0].cells;
-											for (i = 0; i < cells.length; i++) { // maxfrozen
-												td = cells[i];
-												if (td != null && td.nodeName.toUpperCase() === "TH") {
-													height = Math.max(height, $(td).height());
+										if ($row.css("display") !== "none" && $row.is(":visible")) {
+											posTop = $row.position().top;
+											$frozenRow = $($frozenRows[iRow]);
+											posFrozenTop = $frozenRow.position().top;
+											height = $row.height();
+											if (p.groupHeader != null && p.groupHeader.useColSpanStyle) {
+												cells = $row[0].cells;
+												for (i = 0; i < cells.length; i++) { // maxfrozen
+													td = cells[i];
+													if (td != null && td.nodeName.toUpperCase() === "TH") {
+														height = Math.max(height, $(td).height());
+													}
 												}
 											}
+											newHeightFrozen = height + (posTop - tableTop) + (frozenTableTop - posFrozenTop);
+											safeHeightSet($frozenRow, newHeightFrozen);
 										}
-										newHeightFrozen = height + (posTop - tableTop) + (frozenTableTop - posFrozenTop);
-										safeHeightSet($frozenRow, newHeightFrozen);
 									}
 								}
 								safeHeightSet($hDiv, hDivBase.clientHeight);
