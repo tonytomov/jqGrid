@@ -237,14 +237,20 @@
 				// fix position of elements of frozen divs
 				if (p.frozenColumns) {
 					$($t).triggerHandler("jqGridResetFrozenHeights", [{
-						header: { resizeDiv: false, resizedRows: [-1, -1] },
+						header: {
+							resizeDiv: false,
+							resizedRows: {
+								iRowStart: -1, // -1 means don't recalculate heights or rows
+								iRowEnd: -1
+							}
+						},
 						resizeFooter: false,
 						body: {
 							resizeDiv: true,
-							resizedRows: [
-								iRowStart,
-								$tr.length ? $tr[0].rowIndex - 1 : -1
-							]
+							resizedRows: {
+								iRowStart: iRowStart,
+								iRowEnd: ($tr.length ? $tr[0].rowIndex - 1 : -1)
+							}
 						}
 					}]);
 				}

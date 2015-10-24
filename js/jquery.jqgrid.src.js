@@ -6133,16 +6133,17 @@
 					}
 				}
 				$t.fixScrollOffsetAndhBoxPadding();
+				var whichHeigthToRecalculate = {
+						resizeDiv: true,
+						resizedRows: {
+							iRowStart: (shrink ? 0 : -1), // -1 means don't recalculate heights or rows
+							iRowEnd: -1
+						}
+					};
 				$($t).triggerHandler("jqGridResetFrozenHeights", [{
-					header: {
-						resizeDiv: true,
-						resizedRows: [shrink ? 0 : -1, -1]
-					},
+					header: whichHeigthToRecalculate,
 					resizeFooter: true,
-					body: {
-						resizeDiv: true,
-						resizedRows: [shrink ? 0 : -1, -1]
-					}
+					body: whichHeigthToRecalculate
 				}]);
 			});
 		},
@@ -9200,11 +9201,9 @@
 								}
 							}
 						},
-						fixDiv = function ($hDiv, hDivBase, resizeInfo) {
+						fixDiv = function ($hDiv, hDivBase, iRowStart, iRowEnd) {
 							var iRow, n, $frozenRows, $rows, $row, $frozenRow, posFrozenTop, height, newHeightFrozen, td,
-								posTop = $(hDivBase).position().top, frozenTableTop, tableTop, cells,
-								iRowStart = resizeInfo.resizedRows[0],
-								iRowEnd = resizeInfo.resizedRows[1];
+								posTop = $(hDivBase).position().top, frozenTableTop, tableTop, cells;
 							if ($hDiv != null && $hDiv.length > 0) {
 								$hDiv.css(p.direction === "rtl" ?
 									{ top: posTop, right: 0 } :
@@ -9253,7 +9252,10 @@
 						/** @const */
 						resizeAll = {
 							resizeDiv: true,
-							resizedRows: [0, -1] // iRow indexies: from, to. Till -1 means "till the end".
+							resizedRows: {
+								iRowStart: 0,
+								iRowEnd: -1 // -1 means "till the end"
+							}
 						},
 						/** @const */
 						fullResize = {
@@ -9301,22 +9303,22 @@
 								}
 							);
 						}
-						fixDiv(grid.fhDiv, grid.hDiv, resizeAll);
-						fixDiv(grid.fbDiv, grid.bDiv, resizeAll);
-						if (grid.sDiv) { fixDiv(grid.fsDiv, grid.sDiv, resizeAll); }
+						fixDiv(grid.fhDiv, grid.hDiv, 0, -1);
+						fixDiv(grid.fbDiv, grid.bDiv, 0, -1);
+						if (grid.sDiv) { fixDiv(grid.fsDiv, grid.sDiv, 0, -1); }
 					});
 					var myResize = function (resizeOptions) {
 							$(grid.fbDiv).scrollTop($(grid.bDiv).scrollTop());
 							// TODO: the width of all column headers can be changed
 							// so one should recalculate frozenWidth in other way.
 							if (resizeOptions.header.resizeDiv) {
-								fixDiv(grid.fhDiv, grid.hDiv, resizeOptions.header);
+								fixDiv(grid.fhDiv, grid.hDiv, resizeOptions.header.iRowStart, resizeOptions.header.iRowEnd);
 							}
 							if (resizeOptions.body.resizeDiv) {
-								fixDiv(grid.fbDiv, grid.bDiv, resizeOptions.body);
+								fixDiv(grid.fbDiv, grid.bDiv, resizeOptions.body.iRowStart, resizeOptions.body.iRowEnd);
 							}
 							if (resizeOptions.resizeFooter && grid.sDiv && resizeOptions.resizeFooter) {
-								fixDiv(grid.fsDiv, grid.sDiv, resizeAll);
+								fixDiv(grid.fsDiv, grid.sDiv, 0, -1);
 							}
 							var frozenWidth = grid.fhDiv[0].clientWidth;
 							if (resizeOptions.header.resizeDiv && grid.fhDiv != null && grid.fhDiv.length >= 1) {
@@ -9340,13 +9342,20 @@
 						var iRow = $self.jqGrid("getInd", rowid);
 						myResize({
 							header: {
-								resizeDiv: false,         // don't recalculate the position and the height of hDiv
-								resizedRows: [-1, -1]     // don't recalculate heights of every row inside of hDiv
+								resizeDiv: false,  // don't recalculate the position and the height of hDiv
+								resizedRows: {
+									iRowStart: -1, // -1 means don't recalculate heights or rows
+									iRowEnd: -1
+								}
 							},
-							resizeFooter: true,           // recalculate the position and the height of sDiv
+							resizeFooter: true,    // recalculate the position and the height of sDiv
 							body: {
-								resizeDiv: true,          // recalculate the position and the height of bDiv
-								resizedRows: [iRow, iRow] // recalculate the height of only one row inside of bDiv
+								resizeDiv: true,   // recalculate the position and the height of bDiv
+								resizedRows: {
+									// recalculate the height of only one row inside of bDiv
+									iRowStart: iRow,
+									iRowEnd: iRow
+								}
 							}
 						});
 					});
@@ -12723,14 +12732,20 @@
 				// fix position of elements of frozen divs
 				if (p.frozenColumns) {
 					$($t).triggerHandler("jqGridResetFrozenHeights", [{
-						header: { resizeDiv: false, resizedRows: [-1, -1] },
+						header: {
+							resizeDiv: false,
+							resizedRows: {
+								iRowStart: -1, // -1 means don't recalculate heights or rows
+								iRowEnd: -1
+							}
+						},
 						resizeFooter: false,
 						body: {
 							resizeDiv: true,
-							resizedRows: [
-								iRowStart,
-								$tr.length ? $tr[0].rowIndex - 1 : -1
-							]
+							resizedRows: {
+								iRowStart: iRowStart,
+								iRowEnd: ($tr.length ? $tr[0].rowIndex - 1 : -1)
+							}
 						}
 					}]);
 				}

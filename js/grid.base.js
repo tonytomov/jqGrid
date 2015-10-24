@@ -6133,16 +6133,17 @@
 					}
 				}
 				$t.fixScrollOffsetAndhBoxPadding();
+				var whichHeigthToRecalculate = {
+						resizeDiv: true,
+						resizedRows: {
+							iRowStart: (shrink ? 0 : -1), // -1 means don't recalculate heights or rows
+							iRowEnd: -1
+						}
+					};
 				$($t).triggerHandler("jqGridResetFrozenHeights", [{
-					header: {
-						resizeDiv: true,
-						resizedRows: [shrink ? 0 : -1, -1]
-					},
+					header: whichHeigthToRecalculate,
 					resizeFooter: true,
-					body: {
-						resizeDiv: true,
-						resizedRows: [shrink ? 0 : -1, -1]
-					}
+					body: whichHeigthToRecalculate
 				}]);
 			});
 		},
