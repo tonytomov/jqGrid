@@ -151,119 +151,107 @@
 		},
 		groupingToggle: function (hid, clickedElem) {
 			this.each(function () {
-				var $t = this, p = $t.p, jqID = jgrid.jqID,
-					grp = p.groupingView,
-					minus = grp.minusicon,
-					plus = grp.plusicon,
-					tar = $("#" + jqID(hid)),
-					r = tar.length ? tar[0].nextSibling : null,
-					tarspan = $("#" + jqID(hid) + " span." + "tree-wrap-" + p.direction),
-					itemGroupingLevel,
-					showData,
-					collapsed = false,
-					frz = p.frozenColumns ? p.id + "_frozen" : false,
-					tar2 = frz ? $("#" + jqID(hid), "#" + jqID(frz)) : false,
-					r2 = (tar2 && tar2.length) ? tar2[0].nextSibling : null,
-					strpos = hid.split("_"),
-					num = parseInt(strpos[strpos.length - 2], 10),
-					uid,
-					//iRowStart = r != null ? r.rowIndex || 0 : 0,
-					//iRowEnd = -1, 
-					getGroupingLevelFromClass = function (className) {
-						var nums = $.map(className.split(" "), function (item) {
-							if (item.substring(0, uid.length + 1) === uid + "_") {
-								return parseInt(item.substring(uid.length + 1), 10);
-							}
-						});
-						return nums.length > 0 ? nums[0] : undefined;
-					};
+				var $t = this, p = $t.p, grp = p.groupingView,
+					minusClasses = grp.minusicon, plusClasses = grp.plusicon,
+					$tr = clickedElem ?
+							$(clickedElem).closest("tr.jqgroup") :
+							$("#" + jgrid.jqID(hid)),
+					getGroupHeaderIcon = function ($trElem) {
+						return $trElem.find(">td>span." + "tree-wrap-" + p.direction);
+					},
+					itemGroupingLevel, iRowStart, showDataRowsOnExpending = true,
+					$groupIcon,	collapsed = false, rowsToHideOrShow = [],
+					addToHideOrShow = function ($elem) {
+						var i, l = $elem.length;
+						for (i = 0; i < l; i++) {
+							rowsToHideOrShow.push($elem[i]);
+						}
+					},
+					num = parseInt($tr.data("jqgrouplevel"), 10);
 
-				strpos.splice(strpos.length - 2, 2);
-				uid = strpos.join("_");
-				if (tarspan.hasClass(minus)) {
-					// collapse
-					while (r) {
-						if ($(r).hasClass("jqfoot")) {
-							// hide all till the summary row of the same level.
-							// don't hide the summary row if grp.showSummaryOnHide === true
-							itemGroupingLevel = parseInt($(r).data("jqfootlevel"), 10);
-							if ((!grp.showSummaryOnHide && itemGroupingLevel === num) || itemGroupingLevel > num) {
-								$(r).hide();
-								if (frz) {
-									$(r2).hide();
-								}
-							}
-							if (itemGroupingLevel < num) {
-								// stop hiding of rows if the footer of parent group are found
-								break;
-							}
-						} else {
-							itemGroupingLevel = getGroupingLevelFromClass(r.className);
-							if (itemGroupingLevel !== undefined && itemGroupingLevel <= num) {
-								// stop hiding of rows if the grouping header of the next group of the same (or higher) level are found
-								break;
-							}
-							$(r).hide();
-							if (frz) {
-								$(r2).hide();
-							}
-						}
-						r = r.nextSibling;
-						if (frz) {
-							r2 = r2.nextSibling;
-						}
-					}
-					tarspan.removeClass(minus).addClass(plus);
+				if (p.frozenColumns && $tr.length > 0) {
+					// always get row from non-frozen column
+					iRowStart = $tr[0].rowIndex;
+					$tr = $($t.rows[iRowStart]);
+					$tr = $tr.add($t.grid.fbRows[iRowStart]);
+				}
+				$groupIcon = getGroupHeaderIcon($tr);
+
+				if (jgrid.hasAllClasses($groupIcon, minusClasses)) {
+					$groupIcon.removeClass(minusClasses).addClass(plusClasses);
 					collapsed = true;
 				} else {
-					// expand
-					showData = undefined;
-					while (r) {
-						if ($(r).hasClass("jqfoot")) {
-							itemGroupingLevel = parseInt($(r).data("jqfootlevel"), 10);
+					$groupIcon.removeClass(plusClasses).addClass(minusClasses);
+				}
+				for ($tr = $tr.next(); $tr.length; $tr = $tr.next()) {
+					if ($tr.hasClass("jqfoot")) {
+						itemGroupingLevel = parseInt($tr.data("jqfootlevel"), 10);
+						if (collapsed) {
+							// hide all till the summary row of the same level.
+							// don't hide the summary row if grp.showSummaryOnHide === true
+							itemGroupingLevel = parseInt($tr.data("jqfootlevel"), 10);
+							if ((!grp.showSummaryOnHide && itemGroupingLevel === num) || itemGroupingLevel > num) {
+								addToHideOrShow($tr);
+							}
+							// stop hiding of rows if the footer of parent group are found
+							if (itemGroupingLevel < num) { break; }
+						} else {
 							if (itemGroupingLevel === num || (grp.showSummaryOnHide && itemGroupingLevel === num + 1)) {
-								$(r).show();
-								if (frz) {
-									$(r2).show();
-								}
+								addToHideOrShow($tr);
 							}
-							if (itemGroupingLevel <= num) {
-								break;
-							}
+							if (itemGroupingLevel <= num) { break; }
 						}
-						itemGroupingLevel = getGroupingLevelFromClass(r.className);
-						if (showData === undefined) {
-							showData = itemGroupingLevel === undefined; // if the first row after the opening group is data row then show the data rows
-						}
-						if (itemGroupingLevel !== undefined) {
-							if (itemGroupingLevel <= num) {
-								break;// next grouping header of the same lever are found
-							}
+					} else if ($tr.hasClass("jqgroup")) {
+						itemGroupingLevel = parseInt($tr.data("jqgrouplevel"), 10);
+						if (collapsed) {
+							// stop hiding of rows if the grouping header of the next group
+							// of the same (or higher) level are found
+							if (itemGroupingLevel <= num) { break; }
+
+							addToHideOrShow($tr);
+						} else {
+							// stop next grouping header of the same lever are found
+							if (itemGroupingLevel <= num) { break; }
 							if (itemGroupingLevel === num + 1) {
-								$(r).show().find(">td>span." + "tree-wrap-" + p.direction).removeClass(minus).addClass(plus);
-								if (frz) {
-									$(r2).show().find(">td>span." + "tree-wrap-" + p.direction).removeClass(minus).addClass(plus);
-								}
+								// one should display subgroupes in collaped form
+								getGroupHeaderIcon($tr).removeClass(minusClasses).addClass(plusClasses);
+								addToHideOrShow($tr);
 							}
-						} else if (showData) {
-							$(r).show();
-							if (frz) {
-								$(r2).show();
-							}
+							// one need hide all data if subgroup is found
+							showDataRowsOnExpending = false;
 						}
-						r = r.nextSibling;
-						if (frz) {
-							r2 = r2.nextSibling;
+					} else { // data
+						// we set currently no information about the level of data
+						// se we use showDataRowsOnExpending variable which will be
+						// used during expanding of data
+						if (collapsed || showDataRowsOnExpending) {
+							// grouping data need be displayed only
+							// if the last level group with data (no subgroups)
+							// is expanded
+							addToHideOrShow($tr);
 						}
 					}
-					tarspan.removeClass(plus).addClass(minus);
 				}
-				//iRowEnd = r != null ? r.rowIndex || -1 : -1;
-				$($t).triggerHandler("jqGridResetFrozenHeights", [{
-					header: { resizeDiv: false, resizedRows: [0, 0] },
-					resizeFooter: false,
-					body: { resizeDiv: true, resizedRows: [-1, -1]/*[iRowStart, iRowEnd]*/ }
-				}]);
+				//$(rowsToHideOrShow)[collapsed ? "hide" : "show"]();
+				$(rowsToHideOrShow).css("display", collapsed ? "none" : "");
+				// fix position of elements of frozen divs
+				if (p.frozenColumns) {
+					$($t).triggerHandler("jqGridResetFrozenHeights", [{
+						header: { resizeDiv: false, resizedRows: [-1, -1] },
+						resizeFooter: false,
+						body: {
+							resizeDiv: true,
+							resizedRows: [
+								iRowStart,
+								$tr.length ? $tr[0].rowIndex - 1 : -1
+							]
+						}
+					}]);
+				}
+
+				// recalculate the width because vertical scrollbar can
+				// appears/disappears after expanding/collapsing
+				$t.fixScrollOffsetAndhBoxPadding();
 				$($t).triggerHandler("jqGridGroupingClickGroup", [hid, collapsed]);
 				if ($.isFunction(p.onClickGroup)) {
 					p.onClickGroup.call($t, hid, collapsed);
@@ -367,12 +355,12 @@
 				} catch (egv) {
 					gv = n.displayValue;
 				}
-				str += "<tr id='" + hid + "' " + (grp.groupCollapse && n.idx > 0 ? "style='display:none;' " : "") + "role='row' class='" +
+				str += "<tr id='" + hid + "' data-jqgrouplevel='" + n.idx + "' " + (grp.groupCollapse && n.idx > 0 ? "style='display:none;' " : "") + "role='row' class='" +
 						jqgroupClass + " " + clid + "'><td role='gridcell' style='padding-left:" + (n.idx * 12) + "px;" + "'";
 				var grpTextStr = $.isFunction(grp.groupText[n.idx]) ?
 						grp.groupText[n.idx].call($t, gv, n.cnt, n.summary) :
 						jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary),
-					colspan = 1, jj, hhdr, kk, ik, offset = 0, sgr, gg, end, // k,
+					colspan = 1, jj, kk, ik, offset = 0, sgr, gg, end,
 					leaf = len - 1 === n.idx;
 				if (typeof grpTextStr !== "string" && typeof grpTextStr !== "number") {
 					grpTextStr = gv;
@@ -426,11 +414,9 @@
 							if (!sumreverse[ik]) {
 								continue;
 							}
-							hhdr = "";
-							if (grp.groupCollapse && !grp.showSummaryOnHide) {
-								hhdr = " style='display:none;'";
-							}
-							str += "<tr" + hhdr + " data-jqfootlevel='" + (n.idx - ik) + "' role='row' class='" + jqfootClass + "'>";
+							str += "<tr data-jqfootlevel='" + (n.idx - ik) +
+									(grp.groupCollapse && ((n.idx - ik) > 0 || !grp.showSummaryOnHide) ? "' style='display:none;'" : "'") + 
+									" role='row' class='" + jqfootClass + "'>";
 							str += buildSummaryTd(i, ik, grp.groups, 0);
 							str += "</tr>";
 						}
