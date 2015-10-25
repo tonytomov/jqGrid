@@ -328,7 +328,7 @@
 					return;
 				}
 				select.append("<option value='" + i + "'" +
-							  (p.headertitles || this.headerTitle ? (" title=\"" + jgrid.stripHtml(typeof this.headerTitle === "string" ? this.headerTitle : colHeader[i]) + "\"") : "") +
+							  (p.headertitles || this.headerTitle ? (" title='" + jgrid.stripHtml(typeof this.headerTitle === "string" ? this.headerTitle : colHeader[i]) + "'") : "") +
 							  (this.hidden ? "" : " selected='selected'") + ">" + colHeader[i] + "</option>");
 			});
 

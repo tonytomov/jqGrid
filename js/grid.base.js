@@ -2813,7 +2813,7 @@
 						}
 					}
 					result = styleValue !== "" ? "style='" + styleValue + "'" : "";
-					result += (classes !== undefined ? (" class='" + classes + "'") : "") + ((cm.title && cellValue) ? (" title=\"" + stripHtml(tv) + "\"") : "");
+					result += (classes !== undefined ? (" class='" + classes + "'") : "") + ((cm.title && cellValue) ? (" title='" + stripHtml(tv) + "'") : "");
 					result += rest;
 					return result;
 				},
@@ -3962,7 +3962,7 @@
 							if (strnm.length === 1) {
 								strnm[1] = strnm[0];
 							}
-							str += "<option value=\"" + strnm[0] + "\"" + ((intNum(p.rowNum, 0) === intNum(strnm[0], 0)) ? " selected=\"selected\"" : "") + ">" + strnm[1] + "</option>";
+							str += "<option value='" + strnm[0] + "'" + ((intNum(p.rowNum, 0) === intNum(strnm[0], 0)) ? " selected='selected'" : "") + ">" + strnm[1] + "</option>";
 						}
 						str += "</select></td>";
 					}
@@ -4474,7 +4474,7 @@
 			}
 			for (iCol = 0; iCol < p.colNames.length; iCol++) {
 				cmi = p.colModel[iCol];
-				tooltip = p.headertitles || cmi.headerTitle ? (" title=\"" + stripHtml(typeof cmi.headerTitle === "string" ? cmi.headerTitle : p.colNames[iCol]) + "\"") : "";
+				tooltip = p.headertitles || cmi.headerTitle ? (" title='" + stripHtml(typeof cmi.headerTitle === "string" ? cmi.headerTitle : p.colNames[iCol]) + "'") : "";
 				thead += "<th id='" + p.id + "_" + cmi.name + "' class='" + getGuiStyles("colHeaders", "ui-th-column ui-th-" + dir + " " + (cmi.labelClasses || "")) + "'" + tooltip + ">";
 				idn = cmi.index || cmi.name;
 				switch (cmi.labelAlign) {
@@ -4978,7 +4978,7 @@
 			grid.bDiv = document.createElement("div");
 			if (isMSIE) { if (String(p.height).toLowerCase() === "auto") { p.height = "100%"; } }
 			$(grid.bDiv)
-				.append($("<div style=\"position:relative;" + (isMSIE7 ? "height:0.01%;" : "") + "\"></div>").append("<div></div>").append(ts))
+				.append($("<div style='position:relative;" + (isMSIE7 ? "height:0.01%;" : "") + "'></div>").append("<div></div>").append(ts))
 				.addClass("ui-jqgrid-bdiv")
 				.css({ height: p.height + (isNaN(p.height) ? "" : "px"), width: (grid.width) + "px" })
 				.scroll(grid.scrollGrid);

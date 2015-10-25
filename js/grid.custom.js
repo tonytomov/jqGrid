@@ -324,16 +324,16 @@
 						});
 						var sd = j > 0 ? true : false;
 						if (o.stringResult || o.searchOperators || p.datatype === "local") {
-							var ruleGroup = "{\"groupOp\":\"" + o.groupOp + "\",\"rules\":[";
+							var ruleGroup = '{"groupOp":"' + o.groupOp + '","rules":[';
 							var gi = 0;
 							$.each(sdata, function (cmName, n) {
 								//var iCol = p.iColByName[cmName], cm = p.colModel[iCol],
 								//	value = $.unformat.call($t, $("<span></span>").text(n), { colModel: cm }, iCol);
 								if (gi > 0) { ruleGroup += ","; }
-								ruleGroup += "{\"field\":\"" + cmName + "\",";
-								ruleGroup += "\"op\":\"" + sopt[cmName] + "\",";
+								ruleGroup += '{"field":"' + cmName + '",';
+								ruleGroup += '"op":"' + sopt[cmName] + '",';
 								n += "";
-								ruleGroup += "\"data\":\"" + n.replace(/\\/g, "\\\\").replace(/\"/g, "\\\"") + "\"}";
+								ruleGroup += '"data":"' + n.replace(/\\/g, "\\\\").replace(/\"/g, '\\"') + '"}';
 								gi++;
 							});
 							ruleGroup += "]}";
@@ -408,14 +408,14 @@
 						var sd = j > 0 ? true : false;
 						p.resetsearch = true;
 						if (o.stringResult || o.searchOperators || p.datatype === "local") {
-							var ruleGroup = "{\"groupOp\":\"" + o.groupOp + "\",\"rules\":[";
+							var ruleGroup = '{"groupOp":"' + o.groupOp + '","rules":[';
 							var gi = 0;
 							$.each(sdata, function (i, n) {
 								if (gi > 0) { ruleGroup += ","; }
-								ruleGroup += "{\"field\":\"" + i + "\",";
-								ruleGroup += "\"op\":\"" + "eq" + "\",";
+								ruleGroup += '{"field":"' + i + '",';
+								ruleGroup += '"op":"' + "eq" + '",';
 								n += "";
-								ruleGroup += "\"data\":\"" + n.replace(/\\/g, "\\\\").replace(/\"/g, "\\\"") + "\"}";
+								ruleGroup += '"data":"' + n.replace(/\\/g, "\\\\").replace(/\"/g, '\\"') + '"}';
 								gi++;
 							});
 							ruleGroup += "]}";
@@ -855,7 +855,7 @@
 			return this.each(function () {
 				this.p.groupHeader = o;
 				var ts = this, i, cmi, skip = 0, $tr, $colHeader, th, $th, thStyle, iCol, cghi, numberOfColumns, titleText, cVisibleColumns,
-					colModel = ts.p.colModel, cml = colModel.length, ths = ts.grid.headers, $theadInTable, thClasses,
+					p = ts.p, colModel = p.colModel, cml = colModel.length, ths = ts.grid.headers, $theadInTable, thClasses,
 					$htable = $("table.ui-jqgrid-htable", ts.grid.hDiv), isCellClassHidden = jgrid.isCellClassHidden,
 					$trLabels = $htable.children("thead").children("tr.ui-jqgrid-labels"),
 					$trLastWithLabels = $trLabels.last().addClass("jqg-second-row-header"),
@@ -885,10 +885,10 @@
 					// build the next cell for the first header row
 					// ??? cmi.hidden || isCellClassHidden(cmi.classes) || $th.is(":hidden")
 					thStyle = { height: "0", width: ths[i].width + "px", display: (cmi.hidden ? "none" : "") };
-					$("<th>", { role: "gridcell" }).css(thStyle).addClass("ui-first-th-" + ts.p.direction + (o.applyLabelClasses ? " " + (cmi.labelClasses || "") : "")).appendTo($firstHeaderRow);
+					$("<th>", { role: "gridcell" }).css(thStyle).addClass("ui-first-th-" + p.direction + (o.applyLabelClasses ? " " + (cmi.labelClasses || "") : "")).appendTo($firstHeaderRow);
 
 					th.style.width = ""; // remove unneeded style
-					thClasses = getGuiStyles.call(ts, "colHeaders", "ui-th-column-header ui-th-" + ts.p.direction + " " + (o.applyLabelClasses ? cmi.labelClasses || "" : ""));
+					thClasses = getGuiStyles.call(ts, "colHeaders", "ui-th-column-header ui-th-" + p.direction + " " + (o.applyLabelClasses ? cmi.labelClasses || "" : ""));
 					iCol = inColumnHeader(cmi.name, o.groupHeaders);
 					if (iCol >= 0) {
 						cghi = o.groupHeaders[iCol];
@@ -912,7 +912,7 @@
 						if (cVisibleColumns > 0) {
 							$colHeader.attr("colspan", String(cVisibleColumns));
 						}
-						if (ts.p.headertitles) {
+						if (p.headertitles) {
 							$colHeader.attr("title", $colHeader.text());
 						}
 						// hide if not a visible cols

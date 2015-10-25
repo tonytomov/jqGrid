@@ -63,7 +63,7 @@
 			}
 		},
 		getGuiStyles = function (path, jqClasses) {
-			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], path), jqClasses || "");
+			return mergeCssClasses(jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], path), jqClasses || "");
 		},
 		getGuiStateStyles = function (path) {
 			return getGuiStyles.call(this, "states." + path);
@@ -1706,7 +1706,7 @@
 					// error data
 					tbl += "<tr id='DelError' style='display:none'><td class='" + errorClass + "'></td></tr>";
 					tbl += "<tr id='DelData' style='display:none'><td >" + rowids.join() + "</td></tr>";
-					tbl += "<tr><td class=\"delmsg\" style=\"white-space:pre;\">" + o.msg + "</td></tr><tr><td >&#160;</td></tr>";
+					tbl += "<tr><td class='delmsg' style='white-space:pre;'>" + o.msg + "</td></tr><tr><td >&#160;</td></tr>";
 					// buttons at footer
 					tbl += "</tbody></table></div>";
 					var bS = builderFmButon.call($t, "dData", o.bSubmit),

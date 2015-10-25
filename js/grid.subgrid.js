@@ -58,7 +58,7 @@
 					subGridOptions.hasSubgrid.call(self, {rowid: rowid, iRow: iRow, iCol: pos, data: item}) :
 					true;
 			return self == null || self.p == null || subGridOptions == null ? "" :
-					"<td role=\"gridcell\" class='" + base.getGuiStyles.call(this, "subgrid.tdStart", hasSubgrid ? "ui-sgcollapsed sgcollapsed" : "") + "' " +
+					"<td role='gridcell' class='" + base.getGuiStyles.call(this, "subgrid.tdStart", hasSubgrid ? "ui-sgcollapsed sgcollapsed" : "") + "' " +
 					self.formatCol(pos, iRow) + ">" +
 					(hasSubgrid ? "<a style='cursor:pointer;'><span class='" + jgrid.mergeCssClasses(subGridOptions.commonIconClass, subGridOptions.plusicon) + "'></span></a>" : "&nbsp;") +
 					"</td>";

@@ -632,7 +632,7 @@
 				if ($.inArray(cm.searchtype, numtypes) !== -1 || opC === "nn" || opC === "nu") {
 					ret = rule.field + " " + operand + " " + val;
 				} else {
-					ret = rule.field + " " + operand + " \"" + val + "\"";
+					ret = rule.field + " " + operand + ' "' + val + '"';
 				}
 				return ret;
 			};

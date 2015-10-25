@@ -2813,7 +2813,7 @@
 						}
 					}
 					result = styleValue !== "" ? "style='" + styleValue + "'" : "";
-					result += (classes !== undefined ? (" class='" + classes + "'") : "") + ((cm.title && cellValue) ? (" title=\"" + stripHtml(tv) + "\"") : "");
+					result += (classes !== undefined ? (" class='" + classes + "'") : "") + ((cm.title && cellValue) ? (" title='" + stripHtml(tv) + "'") : "");
 					result += rest;
 					return result;
 				},
@@ -3962,7 +3962,7 @@
 							if (strnm.length === 1) {
 								strnm[1] = strnm[0];
 							}
-							str += "<option value=\"" + strnm[0] + "\"" + ((intNum(p.rowNum, 0) === intNum(strnm[0], 0)) ? " selected=\"selected\"" : "") + ">" + strnm[1] + "</option>";
+							str += "<option value='" + strnm[0] + "'" + ((intNum(p.rowNum, 0) === intNum(strnm[0], 0)) ? " selected='selected'" : "") + ">" + strnm[1] + "</option>";
 						}
 						str += "</select></td>";
 					}
@@ -4474,7 +4474,7 @@
 			}
 			for (iCol = 0; iCol < p.colNames.length; iCol++) {
 				cmi = p.colModel[iCol];
-				tooltip = p.headertitles || cmi.headerTitle ? (" title=\"" + stripHtml(typeof cmi.headerTitle === "string" ? cmi.headerTitle : p.colNames[iCol]) + "\"") : "";
+				tooltip = p.headertitles || cmi.headerTitle ? (" title='" + stripHtml(typeof cmi.headerTitle === "string" ? cmi.headerTitle : p.colNames[iCol]) + "'") : "";
 				thead += "<th id='" + p.id + "_" + cmi.name + "' class='" + getGuiStyles("colHeaders", "ui-th-column ui-th-" + dir + " " + (cmi.labelClasses || "")) + "'" + tooltip + ">";
 				idn = cmi.index || cmi.name;
 				switch (cmi.labelAlign) {
@@ -4978,7 +4978,7 @@
 			grid.bDiv = document.createElement("div");
 			if (isMSIE) { if (String(p.height).toLowerCase() === "auto") { p.height = "100%"; } }
 			$(grid.bDiv)
-				.append($("<div style=\"position:relative;" + (isMSIE7 ? "height:0.01%;" : "") + "\"></div>").append("<div></div>").append(ts))
+				.append($("<div style='position:relative;" + (isMSIE7 ? "height:0.01%;" : "") + "'></div>").append("<div></div>").append(ts))
 				.addClass("ui-jqgrid-bdiv")
 				.css({ height: p.height + (isNaN(p.height) ? "" : "px"), width: (grid.width) + "px" })
 				.scroll(grid.scrollGrid);
@@ -8359,16 +8359,16 @@
 						});
 						var sd = j > 0 ? true : false;
 						if (o.stringResult || o.searchOperators || p.datatype === "local") {
-							var ruleGroup = "{\"groupOp\":\"" + o.groupOp + "\",\"rules\":[";
+							var ruleGroup = '{"groupOp":"' + o.groupOp + '","rules":[';
 							var gi = 0;
 							$.each(sdata, function (cmName, n) {
 								//var iCol = p.iColByName[cmName], cm = p.colModel[iCol],
 								//	value = $.unformat.call($t, $("<span></span>").text(n), { colModel: cm }, iCol);
 								if (gi > 0) { ruleGroup += ","; }
-								ruleGroup += "{\"field\":\"" + cmName + "\",";
-								ruleGroup += "\"op\":\"" + sopt[cmName] + "\",";
+								ruleGroup += '{"field":"' + cmName + '",';
+								ruleGroup += '"op":"' + sopt[cmName] + '",';
 								n += "";
-								ruleGroup += "\"data\":\"" + n.replace(/\\/g, "\\\\").replace(/\"/g, "\\\"") + "\"}";
+								ruleGroup += '"data":"' + n.replace(/\\/g, "\\\\").replace(/\"/g, '\\"') + '"}';
 								gi++;
 							});
 							ruleGroup += "]}";
@@ -8443,14 +8443,14 @@
 						var sd = j > 0 ? true : false;
 						p.resetsearch = true;
 						if (o.stringResult || o.searchOperators || p.datatype === "local") {
-							var ruleGroup = "{\"groupOp\":\"" + o.groupOp + "\",\"rules\":[";
+							var ruleGroup = '{"groupOp":"' + o.groupOp + '","rules":[';
 							var gi = 0;
 							$.each(sdata, function (i, n) {
 								if (gi > 0) { ruleGroup += ","; }
-								ruleGroup += "{\"field\":\"" + i + "\",";
-								ruleGroup += "\"op\":\"" + "eq" + "\",";
+								ruleGroup += '{"field":"' + i + '",';
+								ruleGroup += '"op":"' + "eq" + '",';
 								n += "";
-								ruleGroup += "\"data\":\"" + n.replace(/\\/g, "\\\\").replace(/\"/g, "\\\"") + "\"}";
+								ruleGroup += '"data":"' + n.replace(/\\/g, "\\\\").replace(/\"/g, '\\"') + '"}';
 								gi++;
 							});
 							ruleGroup += "]}";
@@ -8890,7 +8890,7 @@
 			return this.each(function () {
 				this.p.groupHeader = o;
 				var ts = this, i, cmi, skip = 0, $tr, $colHeader, th, $th, thStyle, iCol, cghi, numberOfColumns, titleText, cVisibleColumns,
-					colModel = ts.p.colModel, cml = colModel.length, ths = ts.grid.headers, $theadInTable, thClasses,
+					p = ts.p, colModel = p.colModel, cml = colModel.length, ths = ts.grid.headers, $theadInTable, thClasses,
 					$htable = $("table.ui-jqgrid-htable", ts.grid.hDiv), isCellClassHidden = jgrid.isCellClassHidden,
 					$trLabels = $htable.children("thead").children("tr.ui-jqgrid-labels"),
 					$trLastWithLabels = $trLabels.last().addClass("jqg-second-row-header"),
@@ -8920,10 +8920,10 @@
 					// build the next cell for the first header row
 					// ??? cmi.hidden || isCellClassHidden(cmi.classes) || $th.is(":hidden")
 					thStyle = { height: "0", width: ths[i].width + "px", display: (cmi.hidden ? "none" : "") };
-					$("<th>", { role: "gridcell" }).css(thStyle).addClass("ui-first-th-" + ts.p.direction + (o.applyLabelClasses ? " " + (cmi.labelClasses || "") : "")).appendTo($firstHeaderRow);
+					$("<th>", { role: "gridcell" }).css(thStyle).addClass("ui-first-th-" + p.direction + (o.applyLabelClasses ? " " + (cmi.labelClasses || "") : "")).appendTo($firstHeaderRow);
 
 					th.style.width = ""; // remove unneeded style
-					thClasses = getGuiStyles.call(ts, "colHeaders", "ui-th-column-header ui-th-" + ts.p.direction + " " + (o.applyLabelClasses ? cmi.labelClasses || "" : ""));
+					thClasses = getGuiStyles.call(ts, "colHeaders", "ui-th-column-header ui-th-" + p.direction + " " + (o.applyLabelClasses ? cmi.labelClasses || "" : ""));
 					iCol = inColumnHeader(cmi.name, o.groupHeaders);
 					if (iCol >= 0) {
 						cghi = o.groupHeaders[iCol];
@@ -8947,7 +8947,7 @@
 						if (cVisibleColumns > 0) {
 							$colHeader.attr("colspan", String(cVisibleColumns));
 						}
-						if (ts.p.headertitles) {
+						if (p.headertitles) {
 							$colHeader.attr("title", $colHeader.text());
 						}
 						// hide if not a visible cols
@@ -10047,7 +10047,7 @@
 				if ($.inArray(cm.searchtype, numtypes) !== -1 || opC === "nn" || opC === "nu") {
 					ret = rule.field + " " + operand + " " + val;
 				} else {
-					ret = rule.field + " " + operand + " \"" + val + "\"";
+					ret = rule.field + " " + operand + ' "' + val + '"';
 				}
 				return ret;
 			};
@@ -10248,7 +10248,7 @@
 			}
 		},
 		getGuiStyles = function (path, jqClasses) {
-			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], path), jqClasses || "");
+			return mergeCssClasses(jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], path), jqClasses || "");
 		},
 		getGuiStateStyles = function (path) {
 			return getGuiStyles.call(this, "states." + path);
@@ -11891,7 +11891,7 @@
 					// error data
 					tbl += "<tr id='DelError' style='display:none'><td class='" + errorClass + "'></td></tr>";
 					tbl += "<tr id='DelData' style='display:none'><td >" + rowids.join() + "</td></tr>";
-					tbl += "<tr><td class=\"delmsg\" style=\"white-space:pre;\">" + o.msg + "</td></tr><tr><td >&#160;</td></tr>";
+					tbl += "<tr><td class='delmsg' style='white-space:pre;'>" + o.msg + "</td></tr><tr><td >&#160;</td></tr>";
 					// buttons at footer
 					tbl += "</tbody></table></div>";
 					var bS = builderFmButon.call($t, "dData", o.bSubmit),
@@ -14300,7 +14300,7 @@
 					return;
 				}
 				select.append("<option value='" + i + "'" +
-							  (p.headertitles || this.headerTitle ? (" title=\"" + jgrid.stripHtml(typeof this.headerTitle === "string" ? this.headerTitle : colHeader[i]) + "\"") : "") +
+							  (p.headertitles || this.headerTitle ? (" title='" + jgrid.stripHtml(typeof this.headerTitle === "string" ? this.headerTitle : colHeader[i]) + "'") : "") +
 							  (this.hidden ? "" : " selected='selected'") + ">" + colHeader[i] + "</option>");
 			});
 
@@ -15469,7 +15469,7 @@
 					subGridOptions.hasSubgrid.call(self, {rowid: rowid, iRow: iRow, iCol: pos, data: item}) :
 					true;
 			return self == null || self.p == null || subGridOptions == null ? "" :
-					"<td role=\"gridcell\" class='" + base.getGuiStyles.call(this, "subgrid.tdStart", hasSubgrid ? "ui-sgcollapsed sgcollapsed" : "") + "' " +
+					"<td role='gridcell' class='" + base.getGuiStyles.call(this, "subgrid.tdStart", hasSubgrid ? "ui-sgcollapsed sgcollapsed" : "") + "' " +
 					self.formatCol(pos, iRow) + ">" +
 					(hasSubgrid ? "<a style='cursor:pointer;'><span class='" + jgrid.mergeCssClasses(subGridOptions.commonIconClass, subGridOptions.plusicon) + "'></span></a>" : "&nbsp;") +
 					"</td>";
