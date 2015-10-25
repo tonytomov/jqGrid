@@ -21,12 +21,19 @@
 			return v.indexOf("px") >= 0 ? parseFloat(v) : v;
 		},
 		savePositionOnHide = function (propName, frmgr, h) {
-			var $w = h.w, $form = $(frmgr), toTop = h.c.toTop, offsetGbox, offset, top, left;
+			var $w = h.w, $form = $(frmgr), toTop = h.c.toTop, $gbox, top, left;
 			if (toTop) {
-				offsetGbox = this.closest(".ui-jqgrid").offset();
-				offset = $w.offset();
-				top = offset.top - offsetGbox.top;
-				left = offset.left - offsetGbox.left;
+				$gbox = this.closest(".ui-jqgrid");
+				top = $w.offset().top -
+						($gbox.offsetParent().offset().top +
+						$gbox.offset().top +
+						$gbox.position().top +
+						parseFloat($gbox.css("border-top-width") || 0));
+				left = $w.offset().left -
+						($gbox.offsetParent().offset().left +
+						$gbox.offset().left +
+						$gbox.position().left +
+						parseFloat($gbox.css("border-left-width") || 0));
 			} else {
 				// we use below .style.height and .style.width to save correctly "auto" and "100%" values
 				// the "px" suffix will be saved too, but it's not a problem 
