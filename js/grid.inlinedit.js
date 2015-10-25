@@ -130,7 +130,7 @@
 								// we want to use ":focusable"
 								var nFrozenColumns = $self.jqGrid("getNumberOfFrozenColumns"),
 									getTdByColIndex = function (iCol) {
-										return nFrozenColumns > 0 && focus < nFrozenColumns ?
+										return p.frozenColumns && nFrozenColumns > 0 && focus < nFrozenColumns ?
 											$t.grid.fbRows[ind.rowIndex].cells[iCol] :
 											ind.cells[iCol];
 									},
@@ -139,7 +139,7 @@
 												.filter(":input:visible:not(:disabled)");
 									},
 									getFirstFocusable = function () {
-										return getFocusable(nFrozenColumns > 0 ? $t.grid.fbRows[ind.rowIndex] :	ind)
+										return getFocusable(p.frozenColumns && nFrozenColumns > 0 ? $t.grid.fbRows[ind.rowIndex] : ind)
 												.filter(":first");
 									},
 									$fe = getFocusable(getTdByColIndex(focus));
