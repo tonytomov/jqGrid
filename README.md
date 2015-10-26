@@ -46,16 +46,17 @@ It somebody want to test the *latest* version of free jqGrid one can load it dir
 <script src="//rawgit.com/free-jqgrid/jqGrid/master/js/jquery.jqgrid.src.js"></script>
 ```
 
-Remark: the above URLs will be available *after* publishing the release of the version of 4.10.0
+Remark: the above URLs will be available **after publishing** the release of the version of 4.10.0
 
 ### Main new features and improvements implemented in the version 4.10.0.
 
-* New `abortAjaxRequest` method, which allows to abort pending Ajax request (before receiving the answer from the server)
-* New option `threeStateSort:true` is implemented. It change the default behavior on click on the column header. Instead of toogleing between ascending and descending sorting, it will be changed between three states: ascending, descending and unsorted.
-* New option `multiPageSelection:true` is implemented. It works in combination with `multiselect:true` option. It allows 1) select some rows during loading just by filling the rowids in `selarrrow` parameter 2) the parameter `selarrrow` can hold now selected rows from *multiple pages*. Selection of some rows on one page, changing of the page, selection some rows on another page, returting to the previous page hold all previously selected rows. Sorting don't clear the selection.
-* New option `maxHeight` allows to set `max-height` CSS property on bdiv. The new option can be good combined with default `height: "auto"` option. For example the option `maxHeight: 400` have no influence in case of small number of rows, but it reduces the maximal height of body of the grid (bdiv) to `400px`, the grid get not so many place on the page and the user have to use horizontal scroll bar (created on demand).
-* New options of `editRow` allows easy to implement starting of inline editing inside of `onSelectRow` or `ondblClickRow` and **setting the focus on the cell which the user clicked**.
-* New callback `subGridOptions.hasSubgrid` is implemented. It allows to remove "+" icon of subgrid from some rows which definitively have no subgrids (have empty subgrids).
+* New `abortAjaxRequest` method, which allows to abort pending Ajax request (before receiving the answer from the server). See [the issue](https://github.com/free-jqgrid/jqGrid/issues/131) for more details.
+* New option `threeStateSort:true` is implemented. It change the default behavior on click on the column header. Instead of toogleing between ascending and descending sorting, it will be changed between three states: ascending, descending and unsorted. See [the pull request](https://github.com/free-jqgrid/jqGrid/pull/141) for more details.
+* New option `multiPageSelection:true` is implemented. It works in combination with `multiselect:true` option. It allows 1) select some rows during loading just by filling the rowids in `selarrrow` parameter 2) the parameter `selarrrow` can hold now selected rows from *multiple pages*. Selection of some rows on one page, changing of the page, selection some rows on another page, returting to the previous page hold all previously selected rows. Sorting don't clear the selection. See [the answer](http://stackoverflow.com/a/33021115/315935) for more details.
+* New option `maxHeight` allows to set `max-height` CSS property on bdiv. The new option can be good combined with default `height: "auto"` option. For example the option `maxHeight: 400` have no influence in case of small number of rows, but it reduces the maximal height of body of the grid (bdiv) to `400px`, the grid get not so many place on the page and the user have to use horizontal scroll bar (created on demand). See [the old answer](http://stackoverflow.com/a/5896432/315935) for more details.
+* New option `quickEmpty:"quickest"` is implemented and is default. It improves the performance of rewdrawing the grid. One can use `quickEmpty:true` to switch back to the previous behavior and to use `quickEmpty:false` to get back to the behavior of jqGrid 4.7.
+* New options of `editRow` allows easy to implement starting of inline editing inside of `onSelectRow` or `ondblClickRow` and **setting the focus on the cell which the user clicked**. See [the answer](http://stackoverflow.com/a/33174711/315935) for details.
+* New callback `subGridOptions.hasSubgrid` is implemented. It allows to remove "+" icon of subgrid from some rows which definitively have no subgrids (have empty subgrids). See [the answer](http://stackoverflow.com/a/32744570/315935) for more details.
 * Essential improvement of performance of frozen columns espesially in scenario where the grid have many hidden rows (like data grouping with `groupCollapse: true` option in `groupingView`). The parameters of the event `jqGridResetFrozenHeights` allows to elliminate unneeded work.
 * Essential improvement of performance of `autoResizeColumn` method used in `autoResizeColumn` and `autoResizeAllColumns` methods and in case of usage of `autoresizeOnLoad: true` option.
 
