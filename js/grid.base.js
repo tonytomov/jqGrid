@@ -5731,7 +5731,7 @@
 						row = jgrid.parseDataToHtml.call(t, 1, [rowid], [data]);
 						row = row.join("");
 						if (rows.length === 0) {
-							$("table:first", t.grid.bDiv).append(row);
+							$(t.tBodies[0]).append(row);
 						} else {
 							if (pos === "afterSelected" || pos === "beforeSelected") {
 								if (src === undefined && p.selrow !== null) {

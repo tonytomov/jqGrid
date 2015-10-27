@@ -5731,7 +5731,7 @@
 						row = jgrid.parseDataToHtml.call(t, 1, [rowid], [data]);
 						row = row.join("");
 						if (rows.length === 0) {
-							$("table:first", t.grid.bDiv).append(row);
+							$(t.tBodies[0]).append(row);
 						} else {
 							if (pos === "afterSelected" || pos === "beforeSelected") {
 								if (src === undefined && p.selrow !== null) {
@@ -14379,13 +14379,13 @@
 							opts._update_.apply(this, [ev, ui]);
 						}
 					};
-					$("tbody:first", $t).sortable(opts);
+					$($t.tBodies[0]).sortable(opts);
 					if ($.isFunction($.fn.disableSelection)) {
 						// The method disableSelection exists starting with jQuery UI 1.6,
 						// but it's declared as deprecated since jQuery UI 1.9
 						// see http://jqueryui.com/upgrade-guide/1.9/#deprecated-disableselection-and-enableselection
 						// so we use disableSelection only if it exists
-						$("tbody:first>.jqgrow", $t).disableSelection();
+						$($t.tBodies[0]).children("tr.jqgrow").disableSelection();
 					}
 				}
 			});
@@ -15431,11 +15431,19 @@
 			args.unshift("");
 			args.unshift(this.p);
 			return jgrid.feedback.apply(this, args);
+		},
+		collapseOrExpand = function (rowid, className) {
+			return this.each(function () {
+				if (this.grid && rowid != null && this.p.subGrid === true) {
+					var tr = $(this).jqGrid("getInd", rowid, true);
+					$(tr).find(">td." + className).trigger("click");
+				}
+			});
 		};
 	jgrid.extend({
 		setSubGrid: function () {
 			return this.each(function () {
-				var $t = this, p = $t.p, cm = p.subGridModel[0], i;
+				var p = this.p, cm = p.subGridModel[0], i;
 				p.subGridOptions = $.extend({
 					expandOnLoad: false,
 					delayOnLoad: 50,
@@ -15476,7 +15484,7 @@
 		},
 		addSubGrid: function (pos, sind) {
 			return this.each(function () {
-				var ts = this, p = ts.p,
+				var ts = this, p = ts.p, cm = p.subGridModel[0],
 					getSubgridStyle = function (name, calsses) {
 						return base.getGuiStyles.call(ts, "subgrid." + name, calsses || "");
 					},
@@ -15485,96 +15493,88 @@
 					rowClasses = getSubgridStyle("row", "ui-subgrid ui-row-" + p.direction),
 					tdWithIconClasses = getSubgridStyle("tdWithIcon", "subgrid-cell"),
 					tdDataClasses = getSubgridStyle("tdData", "subgrid-data"),
-					subGridCell = function (trdiv, cell, pos) {
-						var tddiv = $("<td align='" + p.subGridModel[0].align[pos] + "'></td>").html(cell);
-						$(trdiv).append(tddiv);
+					subGridCell = function ($tr, cell, pos) {
+						var $td = $("<td align='" + cm.align[pos] + "'></td>").html(cell);
+						$tr.append($td);
 					},
-					subGridXml = function (sjxml, sbid) {
-						var tddiv, i, sgmap, f,
-							dummy = $("<table" + (jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "") + "><tbody></tbody></table>"),
-							trdiv = $("<tr></tr>");
-						for (i = 0; i < p.subGridModel[0].name.length; i++) {
-							tddiv = $("<th class='" + thSubgridClasses + "'></th>");
-							$(tddiv).html(p.subGridModel[0].name[i]);
-							$(tddiv).width(p.subGridModel[0].width[i]);
-							$(trdiv).append(tddiv);
-						}
-						$(dummy).append(trdiv);
-						if (sjxml) {
-							sgmap = p.xmlReader.subgrid;
-							$(sgmap.root + " " + sgmap.row, sjxml).each(function () {
-								trdiv = $("<tr class='" + rowSubTableClasses + "'></tr>");
-								if (sgmap.repeatitems === true) {
-									$(sgmap.cell, this).each(function (i) {
-										subGridCell(trdiv, $(this).text() || "&#160;", i);
-									});
-								} else {
-									f = p.subGridModel[0].mapping || p.subGridModel[0].name;
-									if (f) {
-										for (i = 0; i < f.length; i++) {
-											subGridCell(trdiv, $(f[i], this).text() || "&#160;", i);
-										}
+					fillXmlBody = function(data, $tbody) {
+						var sgmap = p.xmlReader.subgrid;
+						$(sgmap.root + " " + sgmap.row, data).each(function () {
+							var f, i, $tr = $("<tr class='" + rowSubTableClasses + "'></tr>");
+							if (sgmap.repeatitems === true) {
+								$(sgmap.cell, this).each(function (i) {
+									subGridCell($tr, $(this).text() || "&#160;", i);
+								});
+							} else {
+								f = cm.mapping || cm.name;
+								if (f) {
+									for (i = 0; i < f.length; i++) {
+										subGridCell($tr, $(f[i], this).text() || "&#160;", i);
 									}
-								}
-								$(dummy).append(trdiv);
-							});
-						}
-						$("#" + jqID(p.id + "_" + sbid)).append(dummy);
-						ts.grid.hDiv.loading = false;
-						$("#load_" + jqID(p.id)).hide();
-						return false;
-					},
-					subGridJson = function (sjxml, sbid) {
-						var tddiv, result, i, cur, sgmap, j, f,
-							dummy = $("<table" + (jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "") + "><tbody></tbody></table>"),
-							trdiv = $("<tr></tr>");
-						for (i = 0; i < p.subGridModel[0].name.length; i++) {
-							tddiv = $("<th class='" + thSubgridClasses + "'></th>");
-							$(tddiv).html(p.subGridModel[0].name[i]);
-							$(tddiv).width(p.subGridModel[0].width[i]);
-							$(trdiv).append(tddiv);
-						}
-						$(dummy).append(trdiv);
-						if (sjxml) {
-							sgmap = p.jsonReader.subgrid;
-							result = jgrid.getAccessor(sjxml, sgmap.root);
-							if (result !== undefined) {
-								for (i = 0; i < result.length; i++) {
-									cur = result[i];
-									trdiv = $("<tr class='" + rowSubTableClasses + "'></tr>");
-									if (sgmap.repeatitems === true) {
-										if (sgmap.cell) {
-											cur = cur[sgmap.cell];
-										}
-										for (j = 0; j < cur.length; j++) {
-											subGridCell(trdiv, cur[j] || "&#160;", j);
-										}
-									} else {
-										f = p.subGridModel[0].mapping || p.subGridModel[0].name;
-										if (f.length) {
-											for (j = 0; j < f.length; j++) {
-												subGridCell(trdiv, cur[f[j]] || "&#160;", j);
-											}
-										}
-									}
-									$(dummy).append(trdiv);
 								}
 							}
+							$tbody.append($tr);
+						});
+					},
+					fillJsonBody = function (data, $tbody) {
+						var $tr, i,j, f, cur, sgmap = p.jsonReader.subgrid,
+							result = jgrid.getAccessor(data, sgmap.root);
+						if (result != null) {
+							for (i = 0; i < result.length; i++) {
+								cur = result[i];
+								$tr = $("<tr class='" + rowSubTableClasses + "'></tr>");
+								if (sgmap.repeatitems === true) {
+									if (sgmap.cell) {
+										cur = cur[sgmap.cell];
+									}
+									for (j = 0; j < cur.length; j++) {
+										subGridCell($tr, cur[j] || "&#160;", j);
+									}
+								} else {
+									f = cm.mapping || cm.name;
+									if (f.length) {
+										for (j = 0; j < f.length; j++) {
+											subGridCell($tr, cur[f[j]] || "&#160;", j);
+										}
+									}
+								}
+								$tbody.append($tr);
+							}
 						}
-						$("#" + jqID(p.id + "_" + sbid)).append(dummy);
+					},
+					subGridXmlOrJson = function (sjxml, sbid, fullBody) {
+						var $th, i,
+							$table = $("<table" + (jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "") + "><tbody></tbody></table>"),
+							$tbody = $($table.tBodies[0]),
+							$tr = $("<tr></tr>");
+						for (i = 0; i < cm.name.length; i++) {
+							$th = $("<th class='" + thSubgridClasses + "'></th>")
+									.html(cm.name[i])
+									.width(cm.width[i]);
+							$tr.append($th);
+						}
+						$tbody.append($tr);
+						fullBody(sjxml, $tbody);
+						$("#" + jqID(p.id + "_" + sbid)).append($table);
 						ts.grid.hDiv.loading = false;
 						$("#load_" + jqID(p.id)).hide();
 						return false;
+					},
+					subGridXml = function (sjxml, sbid) {
+						return subGridXmlOrJson(sjxml, sbid, fillXmlBody);
+					},
+					subGridJson = function (sjxml, sbid) {
+						return subGridXmlOrJson(sjxml, sbid, fillJsonBody);
 					},
 					populatesubgrid = function (rd) {
 						var sid = $(rd).attr("id"), dp = { nd_: (new Date().getTime()) }, iCol, j;
 						dp[p.prmNames.subgridid] = sid;
-						if (!p.subGridModel[0]) {
+						if (!cm) {
 							return false;
 						}
-						if (p.subGridModel[0].params) {
-							for (j = 0; j < p.subGridModel[0].params.length; j++) {
-								iCol = p.iColByName[p.subGridModel[0].params[j]];
+						if (cm.params) {
+							for (j = 0; j < cm.params.length; j++) {
+								iCol = p.iColByName[cm.params[j]];
 								if (iCol !== undefined) {
 									dp[p.colModel[iCol].name] = $(rd.cells[iCol]).text().replace(/\&#160\;/ig, "");
 								}
@@ -15703,40 +15703,13 @@
 			});
 		},
 		expandSubGridRow: function (rowid) {
-			return this.each(function () {
-				var $t = this, tr;
-				if (!$t.grid && !rowid) {
-					return;
-				}
-				if ($t.p.subGrid === true) {
-					tr = $(this).jqGrid("getInd", rowid, true);
-					$(tr).find(">td.sgcollapsed").trigger("click");
-				}
-			});
+			return collapseOrExpand.call(this, rowid, "sgcollapsed");
 		},
 		collapseSubGridRow: function (rowid) {
-			return this.each(function () {
-				var $t = this, tr;
-				if (!$t.grid && !rowid) {
-					return;
-				}
-				if ($t.p.subGrid === true) {
-					tr = $(this).jqGrid("getInd", rowid, true);
-					$(tr).find(">td.sgexpanded").trigger("click");
-				}
-			});
+			return collapseOrExpand.call(this, rowid, "sgexpanded");
 		},
 		toggleSubGridRow: function (rowid) {
-			return this.each(function () {
-				var $t = this, tr;
-				if (!$t.grid && !rowid) {
-					return;
-				}
-				if ($t.p.subGrid === true) {
-					tr = $(this).jqGrid("getInd", rowid, true);
-					$(tr).find(">td.ui-sgcollapsed").trigger("click");
-				}
-			});
+			return collapseOrExpand.call(this, rowid, "ui-sgcollapsed");
 		}
 	});
 }(jQuery));
