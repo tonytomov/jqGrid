@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-10-26
+ * Date: 2015-10-27
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -685,13 +685,56 @@
 						if (h !== 12) { h += 12; }
 					}
 					return h;
+				},
+				getDefOptions = function (p, options) {
+					// It could be multiple sources for date properties used below.
+					// Let us we need to use srcformat. The highest priority have
+					// opts.srcformat if it is specified. If the srcformat is not 
+					// specified of if opts is undefined then one should use
+					// $.jgrid.locales.de.formatter.date.srcformat, for example,
+					// where "de" part is an example of the locale of the grid
+					// ($t.p.locale). There as the third important case existing
+					// because of compatibility only. The old place for formatter.date.srcformat
+					// was $.jgrid.formatter.date.srcformat (without "locales.de" part
+					// in the middle). Now such option should be not used, but
+					// because of some code where the old code of jqGrid was customized
+					// using $.jgrid.formatter instead of $.jgrid.locales[locale].formatter,
+					// one have to take in consideration the case. If such setting exist
+					// then one should use it (should use $.jgrid.formatter.date.srcformat)
+					// BEFORE the new default $.jgrid.locales.de.formatter.date.srcformat.
+					// As the result sue should search for all below properties in 3 sources:
+					// first in opts || {}, second in
+					// ($.jgrid.formatter || {}).date || {}
+					// and finally, if $t.p != null && $t.p.locale != null, under
+					// $.jgrid.locales[$t.p.locale].formatter.date
+					// oder (it's the same, just rewritten) under
+					// ((locales[$t.p.locale] || {}).formatter || {}).date
+					var props = ["AmPm", "dayNames", "masks", "monthNames", "userLocalTime", "parseRe", "S", "srcformat"],
+						root1 = options || {},
+						root2 = (jgrid.formatter || {}).date || {},
+						root3 = p == null || p.locale == null ?
+								{} :
+								((locales[p.locale] || {}).formatter || {}).date,
+						iProp, nProps = props.length, result = {}, prop;
+					for (iProp = 0; iProp < nProps; iProp++) {
+						prop = props[iProp];
+						if (root1[prop] !== undefined) { // root1.hasOwnProperty(prop)
+							result[prop] = root1[prop];
+						} else if (root2[prop] !== undefined) {// root2.hasOwnProperty(prop)
+							result[prop] = root2[prop];
+						} else if (root3[prop] !== undefined) {// root3.hasOwnProperty(prop)
+							result[prop] = root3[prop];
+						}
+					}
+					return result;
 				};
 
-			opts = $.extend({}, (jgrid.formatter || {}).date,
-				this.p != null ?
-						jgrid.getRes(locales[this.p.locale], "formatter.date") || {} :
-						{},
-				opts || {});
+			//opts = $.extend({}, (jgrid.formatter || {}).date,
+			//	$t.p != null ?
+			//			jgrid.getRes(locales[$t.p.locale], "formatter.date") || {} :
+			//			{},
+			//	opts || {});
+			opts = getDefOptions(this.p, opts);
 			// old lang files
 			if (opts.parseRe === undefined) {
 				opts.parseRe = /[#%\\\/:_;.,\t\s\-]/;
@@ -5161,20 +5204,20 @@
 			// The problem is the following: there are already exist some properties of $.jgrid which can be used
 			// to set some defaults of jqGrid. It's: $.jgrid.defaults, $.jgrid.search, $.jgrid.edit, $.jgrid.view, $.jgrid.del, $.jgrid.nav
 			// $.jgrid.formatter, $.jgrid.errors, $.jgrid.col
-			// Existing programs could use the objects to set either language specific settings (which are now moved under regional part)
+			// Existing programs could use the objects to set either language specific settings (which are now moved under locales part)
 			// be language independent. Thus one should combine language specific settings with the user's settings and overwrite the settings
 			// with grid specific settings if the settings exist.
 			//
 			// For example:
 			//      p.loadtext (grid option) = "..."
 			//      $.jgrid.defaults.loadtext = "........."
-			//      p.regional = "en-US",
-			//      $.jgrid.regional["en-US"].defaults.loadtext = "Loading...";
+			//      p.locales = "en-US",
+			//      $.jgrid.locales["en-US"].defaults.loadtext = "Loading...";
 			//
 			//      p.edit.addCaption = "Add Invoice"
 			//      $.jgrid.edit.addCaption = "Add"
-			//      p.regional = "en-US",
-			//      $.jgrid.regional["en-US"].edit.addCaption = "Add Record";
+			//      p.locales = "en-US",
+			//      $.jgrid.locales["en-US"].edit.addCaption = "Add Record";
 			//
 			// In the case the grid option p.loadtext = "..." need be used. If p.loadtext is not defined then $.jgrid.defaults.loadtext. If
 			// $.jgrid.defaults.loadtext is not defined explicitly by the user, then language settings will be used
