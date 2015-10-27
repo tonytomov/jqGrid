@@ -3445,27 +3445,29 @@
 					finalizationFormatters.call(self);
 				},
 				addLocalData = function () {
-					var $self = $(this), st = p.multiSort ? [] : "", sto = [], fndsort = false, cmtypes = {}, grtypes = [], grindexes = [], srcformat, sorttype, newformat,
-						dateDefaults = getRes("formatter.date");
+					var $self = $(this), st = p.multiSort ? [] : "", sto = [], fndsort = false, cmtypes = {}, grtypes = [], grindexes = [],
+						defSrcFormat = getRes("formatter.date.srcformat"),
+						defNewFormat = getRes("formatter.date.newformat");
 					if (!isArray(p.data)) {
 						return {};
 					}
 					var grpview = p.grouping ? p.groupingView : false, lengrp, gin;
 					each(p.colModel, function (iCol) {
-						var cm = this, grindex = cm.index || cm.name;
-						sorttype = cm.sorttype || "text";
+						var cm = this, srcformat, newformat,
+							grindex = cm.index || cm.name,
+							sorttype = cm.sorttype || "text";
 						cmtypes[cm.name] = { reader: !p.dataTypeOrg ? cm.jsonmap || cm.name : cm.name, iCol: iCol, stype: sorttype, srcfmt: "", newfmt: "", sfunc: cm.sortfunc || null };
 						if (sorttype === "date" || sorttype === "datetime") {
 							if (cm.formatter && typeof cm.formatter === "string" && cm.formatter === "date") {
 								if (cm.formatoptions && cm.formatoptions.srcformat) {
 									srcformat = cm.formatoptions.srcformat;
 								} else {
-									srcformat = dateDefaults.srcformat;
+									srcformat = defSrcFormat;
 								}
 								if (cm.formatoptions && cm.formatoptions.newformat) {
 									newformat = cm.formatoptions.newformat;
 								} else {
-									newformat = dateDefaults.newformat;
+									newformat = defNewFormat;
 								}
 							} else {
 								srcformat = newformat = cm.datefmt || "Y-m-d";
