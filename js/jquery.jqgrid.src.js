@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-10-27
+ * Date: 2015-10-28
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -15590,7 +15590,7 @@
 					subGridXmlOrJson = function (sjxml, sbid, fullBody) {
 						var $th, i,
 							$table = $("<table" + (jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "") + "><tbody></tbody></table>"),
-							$tbody = $($table.tBodies[0]),
+							$tbody = $($table[0].tBodies[0]),
 							$tr = $("<tr></tr>");
 						for (i = 0; i < cm.name.length; i++) {
 							$th = $("<th class='" + thSubgridClasses + "'></th>")
