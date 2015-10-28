@@ -9256,6 +9256,7 @@
 							var iRow, n, $frozenRows, $rows, $row, $frozenRow, posFrozenTop, height, newHeightFrozen, td,
 								posTop = $(hDivBase).position().top, frozenTableTop, tableTop, cells;
 							if ($hDiv != null && $hDiv.length > 0) {
+								$hDiv[0].scrollTop = hDivBase.scrollTop;
 								$hDiv.css(p.direction === "rtl" ?
 									{ top: posTop, right: 0 } :
 									{ top: posTop, left: 0 }
