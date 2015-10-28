@@ -1,7 +1,9 @@
 /**
  * jqGrid pivot functions
- * Tony Tomov tony@trirand.com, http://trirand.com/blog/
- * Full rewritten by Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
+ * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com, http://trirand.com/blog/
+ * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
+ * The modul is created initially by Tony Tomov and it's full rewritten
+ * for free jqGrid: https://github.com/free-jqgrid/jqGrid by Oleg Kiriljuk
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
