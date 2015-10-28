@@ -457,6 +457,10 @@
 								trow2.hide();
 							}
 						}
+						if (p.frozenColumns === true) {
+							$self.jqGrid("destroyFrozenColumns");
+							$self.jqGrid("setFrozenColumns");
+						}
 					},
 					odata = getRes("search.odata") || [],
 					customSortOperations = p.customSortOperations,
@@ -804,7 +808,10 @@
 				self.toggleToolbar = null;
 				self.ftoolbar = false;
 				$(self.grid.hDiv).find("table thead tr.ui-search-toolbar").remove();
-				$(self).trigger("jqGridResetFrozenHeights");
+				if (p.frozenColumns === true) {
+					$self.jqGrid("destroyFrozenColumns");
+					$self.jqGrid("setFrozenColumns");
+				}
 			});
 		},
 		destroyGroupHeader: function (nullHeader) {
