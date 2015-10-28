@@ -2,7 +2,7 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
 /**
- * @license jqGrid 4.10.0 - free jqGrid: https://github.com/free-jqgrid/jqGrid
+ * @license jqGrid 4.10.1-pre - free jqGrid: https://github.com/free-jqgrid/jqGrid
  * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com
  * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  * Dual licensed under the MIT and GPL licenses
@@ -12643,12 +12643,13 @@
 					i, newGroup, newCounter, fieldName, v, displayName, displayValue, changed = 0,
 					groupingCalculationsHandler = base.groupingCalculations.handler,
 					buildSummaryValue = function () {
-						if ($.isFunction(this.st)) {
-							this.v = this.st.call($t, this.v, this.nm, record);
+						var st = $.isArray(this.st) ? this.st[newGroup.idx] : this.st;
+						if ($.isFunction(st)) {
+							this.v = st.call($t, this.v, this.nm, record, newGroup);
 						} else {
-							this.v = groupingCalculationsHandler.call($($t), this.st, this.v, this.nm, this.sr, this.srt, record);
-							if (this.st.toLowerCase() === "avg" && this.sd) {
-								this.vd = groupingCalculationsHandler.call($($t), this.st, this.vd, this.sd, this.sr, this.srt, record);
+							this.v = groupingCalculationsHandler.call($($t), st, this.v, this.nm, this.sr, this.srt, record);
+							if (st.toLowerCase() === "avg" && this.sd) {
+								this.vd = groupingCalculationsHandler.call($($t), st, this.vd, this.sd, this.sr, this.srt, record);
 							}
 						}
 					};
@@ -12849,14 +12850,15 @@
 				return ret;
 			}
 
-			function buildSummaryTd(i, ik, grp, foffset) {
+			function buildSummaryTd(i, ik, grp, g, foffset) {
 				var fdata = findGroupIdx(i, ik, grp), cm = p.colModel,
-					grlen = fdata.cnt, strTd = "", k, tmpdata, tplfld,
+					grlen = fdata.cnt, strTd = "", k, tmpdata,
 					processSummary = function () {
-						var vv, summary = this;
+						var vv, summary = this,
+							summaryType = $.isArray(summary.st) ? summary.st[g.idx] : summary.st,
+							summaryTpl = ($.isArray(cm[k].summaryTpl) ? cm[k].summaryTpl[g.idx] : cm[k].summaryTpl) || "{0}";
 						if (summary.nm === cm[k].name) {
-							tplfld = cm[k].summaryTpl || "{0}";
-							if (typeof summary.st === "string" && summary.st.toLowerCase() === "avg") {
+							if (typeof summaryType === "string" && summaryType.toLowerCase() === "avg") {
 								if (summary.sd && summary.vd) {
 									summary.v = (summary.v / summary.vd);
 								} else if (summary.v && grlen > 0) {
@@ -12871,7 +12873,7 @@
 							} catch (ef) {
 								vv = summary.v;
 							}
-							tmpdata = "<td role='gridcell' " + $t.formatCol(k, 1, "") + ">" + jgrid.format(tplfld, vv) + "</td>";
+							tmpdata = "<td role='gridcell' " + $t.formatCol(k, 1, "") + ">" + jgrid.format(summaryTpl, vv) + "</td>";
 							return false;
 						}
 					};
@@ -12937,7 +12939,7 @@
 					/*for (k = grp.groupColumnShow[n.idx] === false ? 1 : 2; k < colspan; k++) {
 						str += "<td style='display:none;'></td>";
 					}*/
-					str += buildSummaryTd(i, 0, grp.groups, grp.groupColumnShow[n.idx] === false ?
+					str += buildSummaryTd(i, 0, grp.groups, n, grp.groupColumnShow[n.idx] === false ?
 							colspan - 1:
 							colspan);
 				} else {
@@ -12977,7 +12979,7 @@
 							str += "<tr data-jqfootlevel='" + (n.idx - ik) +
 									(grp.groupCollapse && ((n.idx - ik) > 0 || !grp.showSummaryOnHide) ? "' style='display:none;'" : "'") + 
 									" role='row' class='" + jqfootClass + "'>";
-							str += buildSummaryTd(i, ik, grp.groups, 0);
+							str += buildSummaryTd(i, ik, grp.groups, n, 0);
 							str += "</tr>";
 						}
 						toEnd = jj;
