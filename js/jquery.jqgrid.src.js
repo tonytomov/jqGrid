@@ -8867,7 +8867,6 @@
 				$t.triggerToolbar = triggerToolbar;
 				$t.clearToolbar = clearToolbar;
 				$t.toggleToolbar = toggleToolbar;
-				$self.trigger("jqGridResetFrozenHeights");
 				if (p.frozenColumns === true) {
 					$self.jqGrid("destroyFrozenColumns");
 					$self.jqGrid("setFrozenColumns");
