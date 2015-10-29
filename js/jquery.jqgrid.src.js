@@ -10258,8 +10258,13 @@
 			return v.indexOf("px") >= 0 ? parseFloat(v) : v;
 		},
 		savePositionOnHide = function (propName, frmgr, h) {
-			var $w = h.w, $form = $(frmgr), toTop = h.c.toTop, $gbox, top, left;
-			if (toTop) {
+			var $w = h.w, $form = $(frmgr), $gbox = this.closest(".ui-jqgrid"), top, left;
+			if ($.contains(this.closest(".ui-jqgrid")[0], $w[0])) {
+				// we use below .style.height and .style.width to save correctly "auto" and "100%" values
+				// the "px" suffix will be saved too, but it's not a problem 
+				top = getCssStyleOrFloat($w, "top");
+				left = getCssStyleOrFloat($w, "left");
+			} else {
 				$gbox = this.closest(".ui-jqgrid");
 				top = $w.offset().top -
 						($gbox.offsetParent().offset().top +
@@ -10271,11 +10276,6 @@
 						$gbox.offset().left +
 						$gbox.position().left +
 						parseFloat($gbox.css("border-left-width") || 0));
-			} else {
-				// we use below .style.height and .style.width to save correctly "auto" and "100%" values
-				// the "px" suffix will be saved too, but it's not a problem 
-				top = getCssStyleOrFloat($w, "top");
-				left = getCssStyleOrFloat($w, "left");
 			}
 			this.data(propName, {
 				top: top,                 //parseFloat($w.css("top")),
