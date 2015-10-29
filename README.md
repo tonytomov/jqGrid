@@ -46,6 +46,8 @@ It somebody want to test the *latest* version of free jqGrid one can load it dir
 <script src="//rawgit.com/free-jqgrid/jqGrid/master/js/jquery.jqgrid.src.js"></script>
 ```
 
+The package is published on [WebJars](http://www.webjars.org/) and it's deployed on [Maven Central]((http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22free-jqgrid%22)) too.
+
 Remark: the above URLs will be available **after publishing** the release of the version of 4.10.0
 
 ### Main new features and improvements implemented in the version 4.10.0.
