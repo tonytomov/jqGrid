@@ -55,12 +55,18 @@
 				if (!$t.grid || p.cellEdit !== true || rows == null || rows[iRow] == null) {
 					return;
 				}
-				iRow = parseInt(iRow, 10);
+				iRow = parseInt(iRow, 10); // we change iRow and rows[iRow] can be change too
 				iCol = parseInt(iCol, 10);
-				var tr = rows[iRow], rowid = tr.id, $tr = $(tr), edittype,
+				if (isNaN(iRow) || isNaN(iCol)) {
+					return;
+				}
+				var tr = rows[iRow], rowid = tr != null ? tr.id : null, $tr = $(tr), edittype,
 					iColOld = parseInt(p.iCol, 10), iRowOld = parseInt(p.iRow, 10),
 					$trOld = $(rows[iRowOld]), savedRow = p.savedRow;
 				// select the row that can be used for other methods
+				if (rowid == null) {
+					return;
+				}
 				p.selrow = rowid;
 				if (!p.knv) {
 					$self.jqGrid("GridNav");
