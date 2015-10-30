@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.0.1 - 2015-10-21
+* @license Guriddo jqGrid JS - v5.0.1 - 2015-10-30
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3352,9 +3352,11 @@ $.fn.jqGrid = function( pin ) {
 				if(ts.p.multiselect && scb && cSel){
 					$(ts).jqGrid("setSelection", ri ,true,e);
 				} else if (td.length > 0) {
-					ri = ptr[0].rowIndex;
-					try {$(ts).jqGrid("editCell",ri,ci,true);} catch (_) {}
+					try {
+						$(ts).jqGrid("editCell", ptr[0].rowIndex, ci, true);
+					} catch (_) {}
 				}
+				return;
 			}
 			if (!cSel) {
 				return;
@@ -7247,7 +7249,7 @@ $.jgrid.extend({
 						df = restores.data;
 					}
 					elem = $.jgrid.createEl.call($t, this.stype, soptions , df, false, $.extend({},$.jgrid.ajaxOptions, $t.p.ajaxSelectOptions || {}));
-					$(elem).css({width: "100%"}).addClass( classes.srInput );
+					$(elem).addClass( classes.srInput );
 					$("td:eq(1)",stbl).append(elem);
 					$(thd).append(stbl);
 					switch (this.stype)
