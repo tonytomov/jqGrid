@@ -3357,9 +3357,11 @@ $.fn.jqGrid = function( pin ) {
 				if(ts.p.multiselect && scb && cSel){
 					$(ts).jqGrid("setSelection", ri ,true,e);
 				} else if (td.length > 0) {
-					ri = ptr[0].rowIndex;
-					try {$(ts).jqGrid("editCell",ri,ci,true);} catch (_) {}
+					try {
+						$(ts).jqGrid("editCell", ptr[0].rowIndex, ci, true);
+					} catch (_) {}
 				}
+				return;
 			}
 			if (!cSel) {
 				return;
