@@ -140,7 +140,7 @@
 									},
 									getFirstFocusable = function () {
 										return getFocusable(p.frozenColumns && nFrozenColumns > 0 ? $t.grid.fbRows[ind.rowIndex] : ind)
-												.filter(":first");
+												.first();
 									},
 									$fe = getFocusable(getTdByColIndex(focus));
 

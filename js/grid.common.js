@@ -80,7 +80,7 @@
 				$(selector).attr("aria-hidden", "true").jqmHide();
 			} else {
 				if (o.gb !== "") {
-					try { $(">.jqgrid-overlay", o.gb).filter(":first").hide(); } catch (ignore) { }
+					try { $(">.jqgrid-overlay", o.gb).first().hide(); } catch (ignore) { }
 				}
 				$(selector).hide().attr("aria-hidden", "true");
 			}
@@ -168,7 +168,7 @@
 			if (o.width === 0 || !o.width) { o.width = 300; }
 			if (o.height === 0 || !o.height) { o.height = 200; }
 			if (!o.zIndex) {
-				var parentZ = $(insertSelector).parents("*[role=dialog]").filter(":first").css("z-index");
+				var parentZ = $(insertSelector).parents("*[role=dialog]").first().css("z-index");
 				if (parentZ) {
 					o.zIndex = parseInt(parentZ, 10) + 2;
 					o.toTop = true;
@@ -246,7 +246,7 @@
 				}
 			} else {
 				if (o.gbox !== "") {
-					$(">.jqgrid-overlay", o.gbox).filter(":first").show();
+					$(">.jqgrid-overlay", o.gbox).first().show();
 					$(selector).data("gbox", o.gbox);
 				}
 				$(selector).show().attr("aria-hidden", "false");

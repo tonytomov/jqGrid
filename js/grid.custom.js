@@ -270,7 +270,7 @@
 							 * formatter. So we have to make manual conversion of searching filed
 							 * used for integer/number/currency. The code will be duplicate */
 							if (cm.stype === "custom" && $.isFunction(searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN") {
-								v = searchoptions.custom_value.call($t, $elem.children(".customelement").filter(":first"), "get");
+								v = searchoptions.custom_value.call($t, $elem.children(".customelement").first(), "get");
 							} else {
 								v = $.trim($elem.val());
 								switch (cm.formatter) {
@@ -400,7 +400,7 @@
 									break;
 								case "custom":
 									if ($.isFunction(searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN") {
-										searchoptions.custom_value.call($t, $elem.children(".customelement").filter(":first"), "set", v || "");
+										searchoptions.custom_value.call($t, $elem.children(".customelement").first(), "set", v || "");
 									}
 									break;
 							}
@@ -560,7 +560,7 @@
 							var st = soptions.searchtitle != null ? soptions.searchtitle : getRes("search.operandTitle");
 							select = "<a title='" + st + "' style='padding-right:0.5em;' data-soper='" + so + "' class='soptclass' data-colname='" + this.name + "'>" + sot + "</a>";
 						}
-						$("td", stbl).filter(":first").data("colindex", ci).append(select);
+						$("td", stbl).first().data("colindex", ci).append(select);
 						if (soptions.sopt == null || soptions.sopt.length === 1) {
 							$("td.ui-search-oper", stbl).hide();
 						}
@@ -768,7 +768,7 @@
 					});
 				}
 				$(".clearsearchclass", tr).click(function () {
-					var ptr = $(this).parents("tr").filter(":first"),
+					var ptr = $(this).parents("tr").first(),
 						coli = parseInt($("td.ui-search-oper", ptr).data("colindex"), 10),
 						sval = $.extend({}, colModel[coli].searchoptions || {}),
 						dval = sval.defaultValue || "";

@@ -2224,7 +2224,7 @@
 					}
 					if (o.id) { $(tbd).attr("id", o.id); }
 					if (o.position === "first" && findnav.children("div.ui-pg-button").length > 0) {
-						findnav.children("div.ui-pg-button").filter(":first").before(tbd);
+						findnav.children("div.ui-pg-button").first().before(tbd);
 					} else {
 						findnav.append(tbd);
 					}
@@ -2264,7 +2264,7 @@
 						if ($(">div.ui-pg-button", findnav).length === 0) {
 							findnav.append(sep);
 						} else {
-							$(">div.ui-pg-button", findnav).filter(":first").before(sep);
+							$(">div.ui-pg-button", findnav).first().before(sep);
 						}
 					} else {
 						findnav.append(sep);

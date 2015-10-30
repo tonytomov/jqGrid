@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-10-28
+ * Date: 2015-10-30
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -6767,12 +6767,18 @@
 				if (!$t.grid || p.cellEdit !== true || rows == null || rows[iRow] == null) {
 					return;
 				}
-				iRow = parseInt(iRow, 10);
+				iRow = parseInt(iRow, 10); // we change iRow and rows[iRow] can be change too
 				iCol = parseInt(iCol, 10);
-				var tr = rows[iRow], rowid = tr.id, $tr = $(tr), edittype,
+				if (isNaN(iRow) || isNaN(iCol)) {
+					return;
+				}
+				var tr = rows[iRow], rowid = tr != null ? tr.id : null, $tr = $(tr), edittype,
 					iColOld = parseInt(p.iCol, 10), iRowOld = parseInt(p.iRow, 10),
 					$trOld = $(rows[iRowOld]), savedRow = p.savedRow;
 				// select the row that can be used for other methods
+				if (rowid == null) {
+					return;
+				}
 				p.selrow = rowid;
 				if (!p.knv) {
 					$self.jqGrid("GridNav");
@@ -7366,7 +7372,7 @@
 				$(selector).attr("aria-hidden", "true").jqmHide();
 			} else {
 				if (o.gb !== "") {
-					try { $(">.jqgrid-overlay", o.gb).filter(":first").hide(); } catch (ignore) { }
+					try { $(">.jqgrid-overlay", o.gb).first().hide(); } catch (ignore) { }
 				}
 				$(selector).hide().attr("aria-hidden", "true");
 			}
@@ -7454,7 +7460,7 @@
 			if (o.width === 0 || !o.width) { o.width = 300; }
 			if (o.height === 0 || !o.height) { o.height = 200; }
 			if (!o.zIndex) {
-				var parentZ = $(insertSelector).parents("*[role=dialog]").filter(":first").css("z-index");
+				var parentZ = $(insertSelector).parents("*[role=dialog]").first().css("z-index");
 				if (parentZ) {
 					o.zIndex = parseInt(parentZ, 10) + 2;
 					o.toTop = true;
@@ -7532,7 +7538,7 @@
 				}
 			} else {
 				if (o.gbox !== "") {
-					$(">.jqgrid-overlay", o.gbox).filter(":first").show();
+					$(">.jqgrid-overlay", o.gbox).first().show();
 					$(selector).data("gbox", o.gbox);
 				}
 				$(selector).show().attr("aria-hidden", "false");
@@ -8350,7 +8356,7 @@
 							 * formatter. So we have to make manual conversion of searching filed
 							 * used for integer/number/currency. The code will be duplicate */
 							if (cm.stype === "custom" && $.isFunction(searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN") {
-								v = searchoptions.custom_value.call($t, $elem.children(".customelement").filter(":first"), "get");
+								v = searchoptions.custom_value.call($t, $elem.children(".customelement").first(), "get");
 							} else {
 								v = $.trim($elem.val());
 								switch (cm.formatter) {
@@ -8480,7 +8486,7 @@
 									break;
 								case "custom":
 									if ($.isFunction(searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN") {
-										searchoptions.custom_value.call($t, $elem.children(".customelement").filter(":first"), "set", v || "");
+										searchoptions.custom_value.call($t, $elem.children(".customelement").first(), "set", v || "");
 									}
 									break;
 							}
@@ -8640,7 +8646,7 @@
 							var st = soptions.searchtitle != null ? soptions.searchtitle : getRes("search.operandTitle");
 							select = "<a title='" + st + "' style='padding-right:0.5em;' data-soper='" + so + "' class='soptclass' data-colname='" + this.name + "'>" + sot + "</a>";
 						}
-						$("td", stbl).filter(":first").data("colindex", ci).append(select);
+						$("td", stbl).first().data("colindex", ci).append(select);
 						if (soptions.sopt == null || soptions.sopt.length === 1) {
 							$("td.ui-search-oper", stbl).hide();
 						}
@@ -8848,7 +8854,7 @@
 					});
 				}
 				$(".clearsearchclass", tr).click(function () {
-					var ptr = $(this).parents("tr").filter(":first"),
+					var ptr = $(this).parents("tr").first(),
 						coli = parseInt($("td.ui-search-oper", ptr).data("colindex"), 10),
 						sval = $.extend({}, colModel[coli].searchoptions || {}),
 						dval = sval.defaultValue || "";
@@ -12461,7 +12467,7 @@
 					}
 					if (o.id) { $(tbd).attr("id", o.id); }
 					if (o.position === "first" && findnav.children("div.ui-pg-button").length > 0) {
-						findnav.children("div.ui-pg-button").filter(":first").before(tbd);
+						findnav.children("div.ui-pg-button").first().before(tbd);
 					} else {
 						findnav.append(tbd);
 					}
@@ -12501,7 +12507,7 @@
 						if ($(">div.ui-pg-button", findnav).length === 0) {
 							findnav.append(sep);
 						} else {
-							$(">div.ui-pg-button", findnav).filter(":first").before(sep);
+							$(">div.ui-pg-button", findnav).first().before(sep);
 						}
 					} else {
 						findnav.append(sep);
@@ -13463,7 +13469,7 @@
 									},
 									getFirstFocusable = function () {
 										return getFocusable(p.frozenColumns && nFrozenColumns > 0 ? $t.grid.fbRows[ind.rowIndex] : ind)
-												.filter(":first");
+												.first();
 									},
 									$fe = getFocusable(getTdByColIndex(focus));
 
