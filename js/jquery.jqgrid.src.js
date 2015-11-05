@@ -17514,7 +17514,7 @@
 			op = $.extend(true, { extraparam: {} }, jgrid.actionsNav || {},	p.actionsNavOptions || {}, cm.formatoptions || {});
 
 		if (p.editOptions !== undefined) {
-			op.editOptions = p.editOptions;
+			op.editOptions = $.extend(true, op.editOptions || {}, p.editOptions);
 		}
 		if (p.delOptions !== undefined) {
 			op.delOptions = p.delOptions;
