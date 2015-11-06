@@ -22,13 +22,12 @@
 		},
 		savePositionOnHide = function (propName, frmgr, h) {
 			var $w = h.w, $form = $(frmgr), $gbox = this.closest(".ui-jqgrid"), top, left;
-			if ($.contains(this.closest(".ui-jqgrid")[0], $w[0])) {
+			if ($.contains($gbox[0], $w[0])) {
 				// we use below .style.height and .style.width to save correctly "auto" and "100%" values
 				// the "px" suffix will be saved too, but it's not a problem 
 				top = getCssStyleOrFloat($w, "top");
 				left = getCssStyleOrFloat($w, "left");
 			} else {
-				$gbox = this.closest(".ui-jqgrid");
 				top = $w.offset().top -
 						($gbox.offsetParent().offset().top +
 						$gbox.offset().top +

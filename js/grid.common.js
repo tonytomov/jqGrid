@@ -471,7 +471,7 @@
 											}
 										});
 										if (!isSelected1) {
-											$("option", elem1).each(function (i) {
+											$("option", elem1).each(function () {
 												if ($.inArray($.trim($(this).text()), ovm1) > -1) {
 													this.selected = "selected";
 												}

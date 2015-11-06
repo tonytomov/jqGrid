@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-10-30
+ * Date: 2015-11-06
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -7763,7 +7763,7 @@
 											}
 										});
 										if (!isSelected1) {
-											$("option", elem1).each(function (i) {
+											$("option", elem1).each(function () {
 												if ($.inArray($.trim($(this).text()), ovm1) > -1) {
 													this.selected = "selected";
 												}
@@ -8895,8 +8895,8 @@
 				self.ftoolbar = false;
 				$(self.grid.hDiv).find("table thead tr.ui-search-toolbar").remove();
 				if (p.frozenColumns === true) {
-					$self.jqGrid("destroyFrozenColumns");
-					$self.jqGrid("setFrozenColumns");
+					$(self).jqGrid("destroyFrozenColumns")
+						jqGrid("setFrozenColumns");
 				}
 			});
 		},
@@ -10265,13 +10265,12 @@
 		},
 		savePositionOnHide = function (propName, frmgr, h) {
 			var $w = h.w, $form = $(frmgr), $gbox = this.closest(".ui-jqgrid"), top, left;
-			if ($.contains(this.closest(".ui-jqgrid")[0], $w[0])) {
+			if ($.contains($gbox[0], $w[0])) {
 				// we use below .style.height and .style.width to save correctly "auto" and "100%" values
 				// the "px" suffix will be saved too, but it's not a problem 
 				top = getCssStyleOrFloat($w, "top");
 				left = getCssStyleOrFloat($w, "left");
 			} else {
-				$gbox = this.closest(".ui-jqgrid");
 				top = $w.offset().top -
 						($gbox.offsetParent().offset().top +
 						$gbox.offset().top +
