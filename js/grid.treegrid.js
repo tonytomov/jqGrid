@@ -222,7 +222,7 @@
 			}
 			if (parentId === null || parentId === "null") { return null; }
 			var iParent = p._index[parentId];
-			return iParent != undefined ? p.data[iParent] : null;
+			return iParent !== undefined ? p.data[iParent] : null;
 		},
 		getNodeChildren: function (rc) {
 			var result = [];

@@ -3445,7 +3445,7 @@
 						$(self.rows[fpos]).after(rowData.join(""));
 					} else if (p.scroll) {
 						$tbody.append(rowData.join(""));
-					} else if (self.firstElementChild == null || (document.documentMode != undefined && document.documentMode <= 9)) {
+					} else if (self.firstElementChild == null || (document.documentMode !== undefined && document.documentMode <= 9)) {
 						// for IE8 for example
 						$tbody.html($tbody.html() + rowData.join("")); // append to innerHTML of tbody which contains the first row (.jqgfirstrow)
 						self.grid.cols = self.rows[0].cells; // update cached first row
@@ -16104,7 +16104,7 @@
 			}
 			if (parentId === null || parentId === "null") { return null; }
 			var iParent = p._index[parentId];
-			return iParent != undefined ? p.data[iParent] : null;
+			return iParent !== undefined ? p.data[iParent] : null;
 		},
 		getNodeChildren: function (rc) {
 			var result = [];
