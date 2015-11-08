@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-11-06
+ * Date: 2015-11-08
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -6021,10 +6021,10 @@
 			base.remapColumns.call(this, permutation, updateCells, keepHeader);
 			return this;
 		},
-		setGridWidth: function (newGridWidth, shrink) {
+		setGridWidth: function (newWidth, shrink) {
 			return this.each(function () {
 				var $t = this, p = $t.p, columnWidth, grid = $t.grid, initialWidth = 0, iLastVariableColumn, numberOfVariableColumns = 0, hasScrollbar = false, totalVariableWidth, fixedColumnsWidth = 0, correctur,
-					isCellClassHidden = jgrid.isCellClassHidden;
+					isCellClassHidden = jgrid.isCellClassHidden, newGridWidth = newWidth;
 				if (!grid || p == null) { return; }
 				$t.fixScrollOffsetAndhBoxPadding();
 				// there are tree categorien of columns important below:
@@ -6036,7 +6036,7 @@
 				// There are outer bDiv which could have scroll bars. The p.scrollOffset hold the width or vertical scrollbar if it exists.
 				// grid.width and p.width need be set to the width of bDiv. The width of all other divs should be set to the same value.
 				//
-				// the input parameter newGridWidth specify new value of outer width (the width of bDiv)
+				// the input parameter newWidth specify new value of outer width (the width of bDiv)
 				var colModel = p.colModel, cm, scrollbarWidth = p.scrollOffset, borderAndPaddingWidth = jgrid.cell_width ? 0 : p.cellLayout, thInfo,
 					headers = grid.headers, footers = grid.footers, bDiv = grid.bDiv, hDiv = grid.hDiv, sDiv = grid.sDiv,
 					cols = grid.cols, delta, colsExist, shrinkFactor,
