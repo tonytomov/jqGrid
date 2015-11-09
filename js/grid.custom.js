@@ -808,9 +808,9 @@
 				self.toggleToolbar = null;
 				self.ftoolbar = false;
 				$(self.grid.hDiv).find("table thead tr.ui-search-toolbar").remove();
-				if (p.frozenColumns === true) {
+				if (self.p.frozenColumns === true) {
 					$(self).jqGrid("destroyFrozenColumns")
-						jqGrid("setFrozenColumns");
+						.jqGrid("setFrozenColumns");
 				}
 			});
 		},
