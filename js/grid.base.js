@@ -1317,7 +1317,7 @@
 			var context = this,
 				/**
 				 * @private
-				 * @constructor
+				 * @class
 				 */
 				QueryObject = function (d, q) {
 					var self = this,
