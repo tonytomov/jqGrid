@@ -4909,6 +4909,11 @@
 						return;
 					}
 					if (!cSel) {
+						if (scb) {
+							// selection is not allowed by beforeSelectRow, but the multiselect
+							// checkbox is clicked.
+							$(target).prop("checked", false);
+						}
 						return;
 					}
 					if (!p.multikey) {
