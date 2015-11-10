@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-11-09
+ * Date: 2015-11-10
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -3183,7 +3183,7 @@
 						p._index = {};
 						if (p.grouping && p.groupingView != null) {
 							p.groupingView.groups = [];
-							p.groupingView._locgr = true;
+							p.groupingView._locgr = false;
 						}
 						p.localReader.id = locid; // consider to place the statement in if (p.treeGrid) {...}
 					}
