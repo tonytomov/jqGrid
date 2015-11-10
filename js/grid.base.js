@@ -2963,7 +2963,7 @@
 							bDiv.scrollTop = 0;
 						}
 					}
-					if (locdata === true || p.treeGrid) {
+					if (locdata === true && p.treeGrid) {
 						clearArray(p.data); //p.data = [];
 						clearArray(p.lastSelectedData); //p.lastSelectedData = [];
 						p._index = {};
