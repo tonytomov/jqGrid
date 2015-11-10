@@ -2963,7 +2963,7 @@
 							bDiv.scrollTop = 0;
 						}
 					}
-					if (locdata === true && p.treeGrid) {
+					if (locdata === true || p.treeGrid) {
 						clearArray(p.data); //p.data = [];
 						clearArray(p.lastSelectedData); //p.lastSelectedData = [];
 						p._index = {};
@@ -3181,6 +3181,10 @@
 						clearArray(p.data); //p.data = [];
 						clearArray(p.lastSelectedData); //p.lastSelectedData = [];
 						p._index = {};
+						if (p.grouping && p.groupingView != null) {
+							p.groupingView.groups = [];
+							p.groupingView._locgr = true;
+						}
 						p.localReader.id = locid; // consider to place the statement in if (p.treeGrid) {...}
 					}
 					p.reccount = 0;
