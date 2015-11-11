@@ -1,9 +1,9 @@
 /**
- * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
+ * @license Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2014-11-13-2015-04-06
+ * Date: 2014-11-13, 2015-04-06
  * see https://github.com/tonytomov/jqGrid/issues/650 for more details
  */
 /*global jQuery */
