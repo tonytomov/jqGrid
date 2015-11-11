@@ -2,5 +2,7 @@ compiler.jar
 yuicompressor.jar
 dist
 nbproject
+node_modules
+bower_components
 .gradle
 .DS_Store
