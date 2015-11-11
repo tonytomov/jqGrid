@@ -744,6 +744,9 @@
 				if (!isNaN(date) && String(format).toLowerCase() === "u") {
 					//Unix timestamp
 					timestamp = new Date(parseFloat(date) * 1000);
+				} else if (!isNaN(date) && String(format).toLowerCase() === "u1000") {
+					// Milliseconds since the Unix Epoch (January 1 1970 00:00:00 GMT)
+					timestamp = new Date(parseFloat(date));
 				} else if (date.constructor === Date) {
 					timestamp = date;
 					// Microsoft date format support
