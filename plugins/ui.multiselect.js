@@ -1,5 +1,5 @@
-/*
- * jQuery UI Multiselect
+/**
+ * @license jQuery UI Multiselect
  *
  * Authors:
  *  Michael Aufreiter (quasipartikel.at)
@@ -23,7 +23,6 @@
  *  Make batch actions faster
  *  Implement dynamic insertion through remote calls
  */
-
 
 (function($) {
 

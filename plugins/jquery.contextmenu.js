@@ -1,5 +1,5 @@
-/*
- * ContextMenu - jQuery plugin for right-click context menus
+/**
+ * @license ContextMenu - jQuery plugin for right-click context menus
  *
  * Author: Chris Domigan
  * Contributors: Dan G. Switzer, II
@@ -18,7 +18,7 @@
 
 (function($) {
 
- 	var menu, shadow, content, hash, currentTarget;
+  var menu, shadow, content, hash, currentTarget;
   var defaults = {
     menuStyle: {
       listStyle: 'none',

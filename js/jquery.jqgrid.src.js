@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-11-10
+ * Date: 2015-11-12
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -6722,6 +6722,7 @@
 		}
 	});
 }(jQuery));
+
 /**
  * jqGrid extension for cellediting Grid Data
  * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com, http://trirand.com/blog/
@@ -7302,6 +7303,7 @@
 		/// end  cell editing
 	});
 }(jQuery));
+
 /*
  * jqGrid common function
  * Tony Tomov tony@trirand.com, http://trirand.com/blog/ 
@@ -8096,6 +8098,7 @@
 		}
 	});
 }(jQuery));
+
 /**
  * jqGrid extension for custom methods
  * Tony Tomov tony@trirand.com, http://trirand.com/blog/
@@ -9483,6 +9486,7 @@
 		}
 	});
 }(jQuery));
+
 /*
  * jqFilter  jQuery jqGrid filter addon.
  * Copyright (c) 2011, Tony Tomov, tony@trirand.com
@@ -10253,6 +10257,7 @@
 		}
 	});
 }(jQuery));
+
 /**
  * jqGrid extension for form editing Grid Data
  * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com, http://trirand.com/blog/
@@ -12569,6 +12574,7 @@
 		}
 	});
 }(jQuery));
+
 /*jshint eqeqeq:false, eqnull:true */
 /*global jQuery */
 /*jslint plusplus: true, unparam: true, eqeq: true, nomen: true, continue: true */
@@ -13114,6 +13120,7 @@
 		}
 	});
 }(jQuery));
+
 /*
  * jqGrid extension for constructing Grid Data from external file
  * Tony Tomov tony@trirand.com, http://trirand.com/blog/
@@ -13338,6 +13345,7 @@
 		}
 	});
 }(jQuery));
+
 /**
  * jqGrid extension for manipulating Grid Data
  * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com,  http://trirand.com/blog/
@@ -14041,6 +14049,7 @@
 		//end inline edit
 	});
 }(jQuery));
+
 /*
 **
  * jqGrid addons using jQuery UI
@@ -14680,6 +14689,7 @@
 		}
 	});
 }(jQuery));
+
 /**
  * jqGrid pivot functions
  * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com, http://trirand.com/blog/
@@ -15482,6 +15492,7 @@
 		}
 	});
 }(jQuery));
+
 /**
  * jqGrid extension for SubGrid Data
  * Tony Tomov, tony@trirand.com, http://trirand.com/blog/
@@ -15786,6 +15797,7 @@
 		}
 	});
 }(jQuery));
+
 /*
  Transform a table to a jqGrid.
  Peter Romianowski <peter.romianowski@optivo.de>
@@ -15892,6 +15904,7 @@
 		});
 	};
 }(jQuery));
+
 /**
  * jqGrid extension - Tree Grid
  * Tony Tomov tony@trirand.com, http://trirand.com/blog/
@@ -16501,6 +16514,7 @@
 		}
 	});
 }(jQuery));
+
 /*
  * jqDnR - Minimalistic Drag'n'Resize for jQuery.
  *
@@ -16656,6 +16670,7 @@
 		return init(this, handle, "resize", alsoResize);
 	};
 }(jQuery));
+
 /*
  * jqModal - Minimalist Modaling with jQuery
  *   (http://dev.iceburg.net/jquery/jqmodal/)
@@ -16912,6 +16927,7 @@
 	};
 	jqmHash = $.jqm.hash;
 }(jQuery));
+
 /*
 **
  * formatter for values but most of the values if for jqGrid
@@ -17835,6 +17851,7 @@
 				"";
 	};
 }(jQuery));
+
 /*
 	The below work is licensed under Creative Commons GNU LGPL License.
 
