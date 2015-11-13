@@ -9,68 +9,88 @@
 
 /*jslint white: true */
 /*global jQuery */
-(function($){
+(function ($) {
 "use strict";
 var locInfo = {
 	isRTL: false,
-	defaults : {
+	defaults: {
 		recordtext: "Mostrant {0} - {1} de {2}",
-	    emptyrecords: "Sense registres que mostrar",
+		emptyrecords: "Sense registres que mostrar",
 		loadtext: "Carregant...",
-		pgtext : "Pàgina {0} de {1}",
-		pgfirst : "First Page",
-		pglast : "Last Page",
-		pgnext : "Next Page",
-		pgprev : "Previous Page",
-		pgrecs : "Records per Page",
+		pgtext: "Pàgina {0} de {1}",
+		pgfirst: "First Page",
+		pglast: "Last Page",
+		pgnext: "Next Page",
+		pgprev: "Previous Page",
+		pgrecs: "Records per Page",
 		showhide: "Toggle Expand Collapse Grid",
 		savetext: "S'està desant..."
 	},
-	search : {
+	search: {
 		caption: "Cerca...",
 		Find: "Cercar",
 		Reset: "Buidar",
-	    odata: [{ oper:'eq', text:"equal"},{ oper:'ne', text:"not equal"},{ oper:'lt', text:"less"},{ oper:'le', text:"less or equal"},{ oper:'gt', text:"greater"},{ oper:'ge', text:"greater or equal"},{ oper:'bw', text:"begins with"},{ oper:'bn', text:"does not begin with"},{ oper:'in', text:"is in"},{ oper:'ni', text:"is not in"},{ oper:'ew', text:"ends with"},{ oper:'en', text:"does not end with"},{ oper:'cn', text:"contains"},{ oper:'nc', text:"does not contain"},{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}],
-	    groupOps: [	{ op: "AND", text: "tot" },	{ op: "OR",  text: "qualsevol" }	],
-		operandTitle : "Click to select search operation.",
-		resetTitle : "Reset Search Value"
+		odata: [
+			{ oper: "eq", text: "equal" },
+			{ oper: "ne", text: "not equal" },
+			{ oper: "lt", text: "less" },
+			{ oper: "le", text: "less or equal" },
+			{ oper: "gt", text: "greater" },
+			{ oper: "ge", text: "greater or equal" },
+			{ oper: "bw", text: "begins with" },
+			{ oper: "bn", text: "does not begin with" },
+			{ oper: "in", text: "is in" },
+			{ oper: "ni", text: "is not in" },
+			{ oper: "ew", text: "ends with" },
+			{ oper: "en", text: "does not end with" },
+			{ oper: "cn", text: "contains" },
+			{ oper: "nc", text: "does not contain" },
+			{ oper: "nu", text: "is null" },
+			{ oper: "nn", text: "is not null" }
+		],
+		groupOps: [
+			{ op: "AND", text: "tot" },
+			{ op: "OR",  text: "qualsevol" }
+		],
+		operandTitle: "Click to select search operation.",
+		resetTitle: "Reset Search Value"
 	},
-	edit : {
+	edit: {
 		addCaption: "Afegir registre",
 		editCaption: "Modificar registre",
 		bSubmit: "Guardar",
 		bCancel: "Cancelar",
 		bClose: "Tancar",
 		saveData: "Les dades han canviat. Guardar canvis?",
-		bYes : "Yes",
-		bNo : "No",
-		bExit : "Cancel",
+		bYes: "Yes",
+		bNo: "No",
+		bExit: "Cancel",
 		msg: {
-		    required:"Camp obligatori",
-		    number:"Introdueixi un nombre",
-		    minValue:"El valor ha de ser major o igual que ",
-		    maxValue:"El valor ha de ser menor o igual a ",
-		    email: "no és una direcció de correu vàlida",
-		    integer: "Introdueixi un valor enter",
+			required: "Camp obligatori",
+			number: "Introdueixi un nombre",
+			minValue: "El valor ha de ser major o igual que ",
+			maxValue: "El valor ha de ser menor o igual a ",
+			email: "no és una direcció de correu vàlida",
+			integer: "Introdueixi un valor enter",
 			date: "Introdueixi una data correcta ",
 			url: "no és una URL vàlida. Prefix requerit ('http://' or 'https://')",
-			nodefined : " is not defined!",
-			novalue : " return value is required!",
-			customarray : "Custom function should return array!",
-			customfcheck : "Custom function should be present in case of custom checking!"
+			nodefined: " is not defined!",
+			novalue: " return value is required!",
+			customarray: "Custom function should return array!",
+			customfcheck: "Custom function should be present in case of custom checking!"
 		}
 	},
-	view : {
+	view: {
 		caption: "Veure registre",
 		bClose: "Tancar"
 	},
-	del : {
+	del: {
 		caption: "Eliminar",
 		msg: "¿Desitja eliminar els registres seleccionats?",
 		bSubmit: "Eliminar",
 		bCancel: "Cancelar"
 	},
-	nav : {
+	nav: {
 		edittext: "",
 		edittitle: "Modificar fila seleccionada",
 		addtext: "",
@@ -86,24 +106,24 @@ var locInfo = {
 		viewtext: "",
 		viewtitle: "Veure fila seleccionada"
 	},
-// setcolumns module
-	col : {
+	// setcolumns module
+	col: {
 		caption: "Mostrar/ocultar columnes",
 		bSubmit: "Enviar",
-		bCancel: "Cancelar"	
+		bCancel: "Cancelar"
 	},
-	errors : {
-		errcap : "Error",
-		nourl : "No s'ha especificat una URL",
+	errors: {
+		errcap: "Error",
+		nourl: "No s'ha especificat una URL",
 		norecords: "No hi ha dades per processar",
-		model : "Les columnes de noms són diferents de les columnes del model"
+		model: "Les columnes de noms són diferents de les columnes del model"
 	},
-	formatter : {
-		integer : {thousandsSeparator: ".", defaultValue: '0'},
-		number : {decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, defaultValue: '0,00'},
-		currency : {decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "", suffix:"", defaultValue: '0,00'},
-		date : {
-			dayNames:   [
+	formatter: {
+		integer: { thousandsSeparator: ".", defaultValue: "0" },
+		number: { decimalSeparator: ",", thousandsSeparator: ".", decimalPlaces: 2, defaultValue: "0,00" },
+		currency: { decimalSeparator: ",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "", suffix: "", defaultValue: "0,00" },
+		date: {
+			dayNames: [
 				"Dg", "Dl", "Dt", "Dc", "Dj", "Dv", "Ds",
 				"Diumenge", "Dilluns", "Dimarts", "Dimecres", "Dijous", "Divendres", "Dissabte"
 			],
@@ -111,19 +131,21 @@ var locInfo = {
 				"Gen", "Febr", "Març", "Abr", "Maig", "Juny", "Jul", "Ag", "Set", "Oct", "Nov", "Des",
 				"Gener", "Febrer", "Març", "Abril", "Maig", "Juny", "Juliol", "Agost", "Setembre", "Octubre", "Novembre", "Desembre"
 			],
-			AmPm : ["am","pm","AM","PM"],
-			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th';},
-			srcformat: 'Y-m-d',
-			newformat: 'd-m-Y',
-			masks : {
-		        ShortDate: "n/j/Y",
-		        LongDate: "l, F d, Y",
-		        FullDateTime: "l, F d, Y g:i:s A",
-		        MonthDay: "F d",
-		        ShortTime: "g:i A",
-		        LongTime: "g:i:s A",
-		        YearMonth: "F, Y"
-		    }
+			AmPm: ["am", "pm", "AM", "PM"],
+			S: function (j) {
+				return j < 11 || j > 13 ? ["st", "nd", "rd", "th"][Math.min((j - 1) % 10, 3)] : "th";
+			},
+			srcformat: "Y-m-d",
+			newformat: "d-m-Y",
+			masks: {
+				ShortDate: "n/j/Y",
+				LongDate: "l, F d, Y",
+				FullDateTime: "l, F d, Y g:i:s A",
+				MonthDay: "F d",
+				ShortTime: "g:i A",
+				LongTime: "g:i:s A",
+				YearMonth: "F, Y"
+			}
 		}
 	}
 };

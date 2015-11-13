@@ -3,7 +3,7 @@
  * Łukasz Schab lukasz@freetree.pl
  * http://FreeTree.pl
  *
- * Updated names, abbreviations, currency and date/time formats for Polish norms (also corresponding with CLDR v21.0.1 --> http://cldr.unicode.org/index) 
+ * Updated names, abbreviations, currency and date/time formats for Polish norms (also corresponding with CLDR v21.0.1 --> http://cldr.unicode.org/index)
  * Tomasz Pęczek tpeczek@gmail.com
  * http://tpeczek.blogspot.com; http://tpeczek.codeplex.com
  *
@@ -14,33 +14,53 @@
 
 /*jslint white: true */
 /*global jQuery */
-(function($){
+(function ($) {
 "use strict";
 var locInfo = {
 	isRTL: false,
-	defaults : {
+	defaults: {
 		recordtext: "Pokaż {0} - {1} z {2}",
 		emptyrecords: "Brak rekordów do pokazania",
 		loadtext: "Ładowanie...",
-		pgtext : "Strona {0} z {1}",
-		pgfirst : "First Page",
-		pglast : "Last Page",
-		pgnext : "Next Page",
-		pgprev : "Previous Page",
-		pgrecs : "Records per Page",
+		pgtext: "Strona {0} z {1}",
+		pgfirst: "First Page",
+		pglast: "Last Page",
+		pgnext: "Next Page",
+		pgprev: "Previous Page",
+		pgrecs: "Records per Page",
 		showhide: "Toggle Expand Collapse Grid",
 		savetext: "Trwa zapisywanie..."
 	},
-	search : {
+	search: {
 		caption: "Wyszukiwanie...",
 		Find: "Szukaj",
 		Reset: "Czyść",
-		odata: [{ oper:'eq', text:"dokładnie"},{ oper:'ne', text:"różne od"},{ oper:'lt', text:"mniejsze od"},{ oper:'le', text:"mniejsze lub równe"},{ oper:'gt', text:"większe od"},{ oper:'ge', text:"większe lub równe"},{ oper:'bw', text:"zaczyna się od"},{ oper:'bn', text:"nie zaczyna się od"},{ oper:'in', text:"jest w"},{ oper:'ni', text:"nie jest w"},{ oper:'ew', text:"kończy się na"},{ oper:'en', text:"nie kończy się na"},{ oper:'cn', text:"zawiera"},{ oper:'nc', text:"nie zawiera"},{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}],
-		groupOps: [	{ op: "AND", text: "oraz" },	{ op: "OR",  text: "lub" }	],
-		operandTitle : "Click to select search operation.",
-		resetTitle : "Reset Search Value"
+		odata: [
+			{ oper: "eq", text: "dokładnie" },
+			{ oper: "ne", text: "różne od" },
+			{ oper: "lt", text: "mniejsze od" },
+			{ oper: "le", text: "mniejsze lub równe" },
+			{ oper: "gt", text: "większe od" },
+			{ oper: "ge", text: "większe lub równe" },
+			{ oper: "bw", text: "zaczyna się od" },
+			{ oper: "bn", text: "nie zaczyna się od" },
+			{ oper: "in", text: "jest w" },
+			{ oper: "ni", text: "nie jest w" },
+			{ oper: "ew", text: "kończy się na" },
+			{ oper: "en", text: "nie kończy się na" },
+			{ oper: "cn", text: "zawiera" },
+			{ oper: "nc", text: "nie zawiera" },
+			{ oper: "nu", text: "is null" },
+			{ oper: "nn", text: "is not null" }
+		],
+		groupOps: [
+			{ op: "AND", text: "oraz" },
+			{ op: "OR",  text: "lub" }
+		],
+		operandTitle: "Click to select search operation.",
+		resetTitle: "Reset Search Value"
 	},
-	edit : {
+	edit: {
 		addCaption: "Dodaj rekord",
 		editCaption: "Edytuj rekord",
 		bSubmit: "Zapisz",
@@ -65,17 +85,17 @@ var locInfo = {
 			customfcheck: "Funkcja niestandardowa powinna być obecna w przypadku niestandardowego sprawdzania!"
 		}
 	},
-	view : {
+	view: {
 		caption: "Pokaż rekord",
 		bClose: "Zamknij"
 	},
-	del : {
+	del: {
 		caption: "Usuń",
 		msg: "Czy usunąć wybrany rekord(y)?",
 		bSubmit: "Usuń",
 		bCancel: "Anuluj"
 	},
-	nav : {
+	nav: {
 		edittext: "",
 		edittitle: "Edytuj wybrany wiersz",
 		addtext: "",
@@ -91,22 +111,22 @@ var locInfo = {
 		viewtext: "",
 		viewtitle: "Pokaż wybrany wiersz"
 	},
-	col : {
+	col: {
 		caption: "Pokaż/Ukryj kolumny",
 		bSubmit: "Zatwierdź",
 		bCancel: "Anuluj"
 	},
-	errors : {
+	errors: {
 		errcap: "Błąd",
 		nourl: "Brak adresu url",
 		norecords: "Brak danych",
-		model : "Długość colNames <> colModel!"
+		model: "Długość colNames <> colModel!"
 	},
-	formatter : {
-		integer : {thousandsSeparator: " ", defaultValue: '0'},
-		number : {decimalSeparator:",", thousandsSeparator: " ", decimalPlaces: 2, defaultValue: '0,00'},
-		currency : {decimalSeparator:",", thousandsSeparator: " ", decimalPlaces: 2, prefix: "", suffix:" zł", defaultValue: '0,00'},
-		date : {
+	formatter: {
+		integer: { thousandsSeparator: " ", defaultValue: "0" },
+		number: { decimalSeparator: ",", thousandsSeparator: " ", decimalPlaces: 2, defaultValue: "0,00" },
+		currency: { decimalSeparator: ",", thousandsSeparator: " ", decimalPlaces: 2, prefix: "", suffix: " zł", defaultValue: "0,00" },
+		date: {
 			dayNames:   [
 				"niedz.", "pon.", "wt.", "śr.", "czw.", "pt.", "sob.",
 				"niedziela", "poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota"
@@ -115,11 +135,11 @@ var locInfo = {
 				"sty", "lut", "mar", "kwi", "maj", "cze", "lip", "sie", "wrz", "paź", "lis", "gru",
 				"styczeń", "luty", "marzec", "kwiecień", "maj", "czerwiec", "lipiec", "sierpień", "wrzesień", "październik", "listopad", "grudzień"
 				],
-			AmPm : ["","","",""],
-			S: function () {return '';},
-			srcformat: 'Y-m-d',
-			newformat: 'd.m.Y',
-			masks : {
+			AmPm: ["", "", "", ""],
+			S: function () { return ""; },
+			srcformat: "Y-m-d",
+			newformat: "d.m.Y",
+			masks: {
 				ShortDate: "d.m.y",
 				LongDate: "l, j F Y",
 				FullDateTime: "l, j F Y H:i:s",

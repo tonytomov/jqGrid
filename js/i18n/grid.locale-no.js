@@ -28,17 +28,17 @@
 			Find: "Finn",
 			Reset: "Nullstill",
 			odata: [
-				{ oper: 'eq', text: "lik" },
-				{ oper: 'ne', text: "forskjellig fra" },
-				{ oper: 'lt', text: "mindre enn" },
-				{ oper: 'le', text: "mindre eller lik" },
-				{ oper: 'gt', text: "større enn" },
-				{ oper: 'ge', text: "større eller lik" },
-				{ oper: 'bw', text: "starter med" },
-				{ oper: 'ew', text: "slutter med" },
-				{ oper: 'cn', text: "inneholder" },
-				{ oper: 'nu', text: 'is null' },
-				{ oper: 'nn', text: 'is not null' }
+				{ oper: "eq", text: "lik" },
+				{ oper: "ne", text: "forskjellig fra" },
+				{ oper: "lt", text: "mindre enn" },
+				{ oper: "le", text: "mindre eller lik" },
+				{ oper: "gt", text: "større enn" },
+				{ oper: "ge", text: "større eller lik" },
+				{ oper: "bw", text: "starter med" },
+				{ oper: "ew", text: "slutter med" },
+				{ oper: "cn", text: "inneholder" },
+				{ oper: "nu", text: "is null" },
+				{ oper: "nn", text: "is not null" }
 			],
 			operandTitle: "Click to select search operation.",
 			resetTitle: "Reset Search Value"

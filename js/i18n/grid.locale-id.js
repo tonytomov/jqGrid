@@ -1,7 +1,7 @@
 /**
  * jqGrid Indonesian Translation
  * Tony Tomov tony@trirand.com
- * http://trirand.com/blog/ 
+ * http://trirand.com/blog/
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
@@ -9,72 +9,92 @@
 
 /*jslint white: true */
 /*global jQuery */
-(function($){
+(function ($) {
 "use strict";
 var locInfo = {
 	isRTL: false,
-	defaults : {
+	defaults: {
 		recordtext: "Data {0} - {1} dari {2}",
 		emptyrecords: "Tidak ada data",
 		loadtext: "Memuat...",
-		pgtext : "Halaman {0} dari {1}",
-		pgfirst : "First Page",
-		pglast : "Last Page",
-		pgnext : "Next Page",
-		pgprev : "Previous Page",
-		pgrecs : "Records per Page",
+		pgtext: "Halaman {0} dari {1}",
+		pgfirst: "First Page",
+		pglast: "Last Page",
+		pgnext: "Next Page",
+		pgprev: "Previous Page",
+		pgrecs: "Records per Page",
 		showhide: "Toggle Expand Collapse Grid",
 		savetext: "Menyimpan..."
 	},
-	search : {
+	search: {
 		caption: "Pencarian",
 		Find: "Cari !",
 		Reset: "Segarkan",
-		odata: [{ oper:'eq', text:"sama dengan"},{ oper:'ne', text:"tidak sama dengan"},{ oper:'lt', text:"kurang dari"},{ oper:'le', text:"kurang dari atau sama dengan"},{ oper:'gt', text:"lebih besar"},{ oper:'ge', text:"lebih besar atau sama dengan"},{ oper:'bw', text:"dimulai dengan"},{ oper:'bn', text:"tidak dimulai dengan"},{ oper:'in', text:"di dalam"},{ oper:'ni', text:"tidak di dalam"},{ oper:'ew', text:"diakhiri dengan"},{ oper:'en', text:"tidak diakhiri dengan"},{ oper:'cn', text:"mengandung"},{ oper:'nc', text:"tidak mengandung"},{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}],
-		groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	],
-		operandTitle : "Click to select search operation.",
-		resetTitle : "Reset Search Value"
+		odata: [
+			{ oper: "eq", text: "sama dengan" },
+			{ oper: "ne", text: "tidak sama dengan" },
+			{ oper: "lt", text: "kurang dari" },
+			{ oper: "le", text: "kurang dari atau sama dengan" },
+			{ oper: "gt", text: "lebih besar" },
+			{ oper: "ge", text: "lebih besar atau sama dengan" },
+			{ oper: "bw", text: "dimulai dengan" },
+			{ oper: "bn", text: "tidak dimulai dengan" },
+			{ oper: "in", text: "di dalam" },
+			{ oper: "ni", text: "tidak di dalam" },
+			{ oper: "ew", text: "diakhiri dengan" },
+			{ oper: "en", text: "tidak diakhiri dengan" },
+			{ oper: "cn", text: "mengandung" },
+			{ oper: "nc", text: "tidak mengandung" },
+			{ oper: "nu", text: "is null" },
+			{ oper: "nn", text: "is not null" }
+		],
+		groupOps: [
+			{ op: "AND", text: "all" },
+			{ op: "OR",  text: "any" }
+		],
+		operandTitle: "Click to select search operation.",
+		resetTitle: "Reset Search Value"
 	},
-	edit : {
+	edit: {
 		addCaption: "Tambah Data",
 		editCaption: "Sunting Data",
 		bSubmit: "Submit",
 		bCancel: "Tutup",
 		bClose: "Tutup",
 		saveData: "Data telah berubah! Simpan perubahan?",
-		bYes : "Ya",
-		bNo : "Tidak",
-		bExit : "Tutup",
+		bYes: "Ya",
+		bNo: "Tidak",
+		bExit: "Tutup",
 		msg: {
-			required:"kolom wajib diisi",
-			number:"hanya nomer yang diperbolehkan",
-			minValue:"kolom harus lebih besar dari atau sama dengan",
-			maxValue:"kolom harus lebih kecil atau sama dengan",
+			required: "kolom wajib diisi",
+			number: "hanya nomer yang diperbolehkan",
+			minValue: "kolom harus lebih besar dari atau sama dengan",
+			maxValue: "kolom harus lebih kecil atau sama dengan",
 			email: "alamat e-mail tidak valid",
 			integer: "hanya nilai integer yang diperbolehkan",
 			date: "nilai tanggal tidak valid",
 			url: "Bukan URL yang valid. Harap gunakan ('http://' or 'https://')",
-			nodefined : " belum didefinisikan!",
-			novalue : " return value is required!",
-			customarray : "Custom function should return array!",
-			customfcheck : "Custom function should be present in case of custom checking!"
-			
+			nodefined: " belum didefinisikan!",
+			novalue: " return value is required!",
+			customarray: "Custom function should return array!",
+			customfcheck: "Custom function should be present in case of custom checking!"
+
 		}
 	},
-	view : {
+	view: {
 		caption: "Menampilkan data",
 		bClose: "Tutup"
 	},
-	del : {
+	del: {
 		caption: "Hapus",
 		msg: "Hapus data terpilih?",
 		bSubmit: "Hapus",
 		bCancel: "Batalkan"
 	},
-	nav : {
+	nav: {
 		edittext: "",
 		edittitle: "Sunting data terpilih",
-		addtext:"",
+		addtext: "",
 		addtitle: "Tambah baris baru",
 		deltext: "",
 		deltitle: "Hapus baris terpilih",
@@ -87,22 +107,22 @@ var locInfo = {
 		viewtext: "",
 		viewtitle: "Tampilkan baris terpilih"
 	},
-	col : {
+	col: {
 		caption: "Pilih Kolom",
 		bSubmit: "Ok",
 		bCancel: "Batal"
 	},
-	errors : {
-		errcap : "Error",
-		nourl : "Tidak ada url yang diset",
+	errors: {
+		errcap: "Error",
+		nourl: "Tidak ada url yang diset",
 		norecords: "Tidak ada data untuk diproses",
-		model : "Lebar dari colNames <> colModel!"
+		model: "Lebar dari colNames <> colModel!"
 	},
-	formatter : {
-		integer : {thousandsSeparator: ".", defaultValue: '0'},
-		number : {decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, defaultValue: '0'},
-		currency : {decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "Rp. ", suffix:"", defaultValue: '0'},
-		date : {
+	formatter: {
+		integer: { thousandsSeparator: ".", defaultValue: "0" },
+		number: { decimalSeparator: ",", thousandsSeparator: ".", decimalPlaces: 2, defaultValue: "0" },
+		currency: { decimalSeparator: ",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "Rp. ", suffix: "", defaultValue: "0" },
+		date: {
 			dayNames:   [
 				"Ming", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab",
 				"Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"
@@ -111,11 +131,13 @@ var locInfo = {
 				"Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des",
 				"Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"
 			],
-			AmPm : ["am","pm","AM","PM"],
-			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th';},
-			srcformat: 'Y-m-d',
-			newformat: 'n/j/Y',
-			masks : {
+			AmPm: ["am", "pm", "AM", "PM"],
+			S: function (j) {
+				return j < 11 || j > 13 ? ["st", "nd", "rd", "th"][Math.min((j - 1) % 10, 3)] : "th";
+			},
+			srcformat: "Y-m-d",
+			newformat: "n/j/Y",
+			masks: {
 				// see http://php.net/manual/en/function.date.php for PHP format used in jqGrid
 				// and see http://docs.jquery.com/UI/Datepicker/formatDate
 				// and https://github.com/jquery/globalize#dates for alternative formats used frequently
