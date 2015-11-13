@@ -89,6 +89,7 @@
 					enumEditableCells.call($t, ind, $(ind).hasClass("jqgrid-new-row") ? "add" : "edit", function (options) {
 						var cm = options.cm, $dataFiled = $(options.dataElement), dataWidth = options.dataWidth, tmp, opt, elc,
 							nm = cm.name, edittype = cm.edittype, iCol = options.iCol, editoptions = cm.editoptions || {};
+						if (options.editable === "hidden") { return; }
 						try {
 							tmp = $.unformat.call(this, options.td, { rowId: rowid, colModel: cm }, iCol);
 						} catch (_) {
@@ -231,7 +232,7 @@
 					var cm = options.cm, v, formatter = cm.formatter, editoptions = cm.editoptions || {},
 						formatoptions = cm.formatoptions || {};
 
-					v = jgrid.getEditedValue.call($t, $(options.dataElement), cm, !formatter);
+					v = jgrid.getEditedValue.call($t, $(options.dataElement), cm, !formatter, options.editable);
 					cv = jgrid.checkValues.call($t, v, options.iCol);
 					if (cv[0] === false) {
 						return false;

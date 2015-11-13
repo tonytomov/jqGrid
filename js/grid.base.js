@@ -1176,17 +1176,22 @@
 						isEditable = $.isFunction(isEditable) ?
 								isEditable.call(self, options) :
 								isEditable;
-						if (isEditable === true) {
+						if (isEditable === true || isEditable === "hidden") {
+							options.editable = isEditable;
 							if (callback.call(self, options) === false) { break; }
 						}
 					}
 				}
 			}
 		},
-		getEditedValue: function ($dataFiled, cm, useTextInSelects) {
+		getEditedValue: function ($dataFiled, cm, useTextInSelects, editable) {
 			var result, checkBoxValues, newformat, $field, valuesOrTexts, selectMethod = useTextInSelects ? "text" : "val",
 				formatoptions = cm.formatoptions || {}, editoptions = cm.editoptions || {}, customValue = editoptions.custom_value,
 				nameSelector = "[name=" + jgrid.jqID(cm.name) + "]", $t = this, $self = $($t), infoDialog, getRes, errcap, bClose;
+			if (editable === "hidden") {
+				// the implementation from the next line can be improved
+				return $($t).jqGrid("getCell", $dataFiled.closest("tr.jqgrow").attr("id"), cm.name);
+			}
 			switch (cm.edittype) {
 				case "checkbox":
 					checkBoxValues = ["Yes", "No"];
