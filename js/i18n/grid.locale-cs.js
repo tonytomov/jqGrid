@@ -1,5 +1,5 @@
 /**
- * jqGrid Czech Translation
+ * @license jqGrid Czech Translation
  * Pavel Jirak pavel.jirak@jipas.cz
  * doplnil Thomas Wagner xwagne01@stud.fit.vutbr.cz
  * http://trirand.com/blog/

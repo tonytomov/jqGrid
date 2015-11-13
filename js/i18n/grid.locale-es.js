@@ -1,5 +1,5 @@
 /**
- * jqGrid Spanish Translation
+ * @license jqGrid Spanish Translation
  * Traduccion jqGrid en Español por Yamil Bracho
  * Traduccion corregida y ampliada por Faserline, S.L.
  * http://www.faserline.com

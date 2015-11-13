@@ -1,5 +1,5 @@
 ﻿/**
- * jqGrid Japanese Translation
+ * @license jqGrid Japanese Translation
  * OKADA Yoshitada okada.dev@sth.jp
  * http://trirand.com/blog/
  * Dual licensed under the MIT and GPL licenses:

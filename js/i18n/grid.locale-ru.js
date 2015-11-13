@@ -1,5 +1,5 @@
 /**
- * jqGrid Russian Translation v1.0 02.07.2009 based on translation by Alexey Kanaev, v1.1 21.01.2009 (http://softcore.com.ru) and 07.01.2015 (http://smartcore.ru)
+ * @license jqGrid Russian Translation v1.0 02.07.2009 based on translation by Alexey Kanaev, v1.1 21.01.2009 (http://softcore.com.ru) and 07.01.2015 (http://smartcore.ru)
  * Sergey Dyagovchenko
  * http://d.sumy.ua
  * Dual licensed under the MIT and GPL licenses:

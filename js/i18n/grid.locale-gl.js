@@ -1,5 +1,5 @@
 /**
- * jqGrid Galician Translation
+ * @license jqGrid Galician Translation
  * Translated by Jorge Barreiro <yortx.barry@gmail.com>
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php

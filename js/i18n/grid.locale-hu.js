@@ -1,5 +1,5 @@
 /**
- * jqGrid Hungarian Translation
+ * @license jqGrid Hungarian Translation
  * Őrszigety Ádám udx6bs@freemail.hu
  * http://trirand.com/blog/
  * Dual licensed under the MIT and GPL licenses:

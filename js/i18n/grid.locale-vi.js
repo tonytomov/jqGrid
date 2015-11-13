@@ -1,5 +1,5 @@
 /**
- * jqGrid Vietnamese Translation
+ * @license jqGrid Vietnamese Translation
  * Lê Đình Dũng dungtdc@gmail.com
  * http://trirand.com/blog/
  * Dual licensed under the MIT and GPL licenses:

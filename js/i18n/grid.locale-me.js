@@ -1,5 +1,5 @@
 /**
- * jqGrid Montenegrian Translation
+ * @license jqGrid Montenegrian Translation
  * Bild Studio info@bild-studio.net
  * http://www.bild-studio.com
  * Dual licensed under the MIT and GPL licenses:

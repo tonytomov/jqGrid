@@ -1,5 +1,5 @@
 /**
- * jqGrid Croatian Translation
+ * @license jqGrid Croatian Translation
  * Version 1.0.1 (developed for jQuery Grid 4.4)
  * msajko@gmail.com
  *

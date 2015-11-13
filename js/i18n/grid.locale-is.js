@@ -1,5 +1,5 @@
 /**
- * jqGrid Icelandic Translation
+ * @license jqGrid Icelandic Translation
  * jtm@hi.is Univercity of Iceland
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php

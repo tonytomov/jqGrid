@@ -1,5 +1,5 @@
 /**
- * jqGrid English Translation
+ * @license jqGrid English Translation
  * Tony Tomov tony@trirand.com
  * modified by Oleg Kiriljuk oleg.kiriljuk@ok-soft-gmbh.com
  * http://trirand.com/blog/

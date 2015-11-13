@@ -1,5 +1,5 @@
 /**
- * jqGrid Romanian Translation
+ * @license jqGrid Romanian Translation
  * Alexandru Emil Lupu contact@alecslupu.ro
  * http://www.alecslupu.ro/
  * Dual licensed under the MIT and GPL licenses:

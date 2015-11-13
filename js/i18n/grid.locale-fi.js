@@ -1,5 +1,5 @@
 /**
- * jqGrid (fi) Finnish Translation
+ * @license jqGrid (fi) Finnish Translation
  * Jukka Inkeri  awot.fi  2010-05-19
  * Alex Grönholm  alex.gronholm@nextday.fi  2011-05-18
  * http://awot.fi

@@ -1,5 +1,5 @@
 /**
- * jqGrid Chinese (Taiwan) Translation for v4.2
+ * @license jqGrid Chinese (Taiwan) Translation for v4.2
  * linquize
  * https://github.com/linquize/jqGrid
  * Dual licensed under the MIT and GPL licenses:

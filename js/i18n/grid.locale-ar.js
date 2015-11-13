@@ -1,5 +1,5 @@
 /**
- * jqGrid Arabic Translation
+ * @license jqGrid Arabic Translation
  *
  * http://trirand.com/blog/
  * Dual licensed under the MIT and GPL licenses:

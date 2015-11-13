@@ -1,5 +1,5 @@
 /**
- * jqGrid Danish Translation
+ * @license jqGrid Danish Translation
  * Aesiras A/S
  * http://www.aesiras.dk
  * Dual licensed under the MIT and GPL licenses:

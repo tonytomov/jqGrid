@@ -1,5 +1,5 @@
 /**
- * jqGrid Hebrew Translation
+ * @license jqGrid Hebrew Translation
  * Shuki Shukrun shukrun.shuki@gmail.com
  * http://trirand.com/blog/
  * Dual licensed under the MIT and GPL licenses:

@@ -1,5 +1,5 @@
 ﻿/**
- * jqGrid Serbian Translation
+ * @license jqGrid Serbian Translation
  * Александар Миловац(Aleksandar Milovac) aleksandar.milovac@gmail.com
  * http://trirand.com/blog/
  * Dual licensed under the MIT and GPL licenses:

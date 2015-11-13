@@ -1,5 +1,5 @@
 /**
- * jqGrid Turkish Translation
+ * @license jqGrid Turkish Translation
  * Erhan Gündoğan (erhan@trposta.net)
  * http://blog.zakkum.com
  * Dual licensed under the MIT and GPL licenses:

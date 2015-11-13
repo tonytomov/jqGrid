@@ -1,5 +1,5 @@
 /**
- * jqGrid German Translation
+ * @license jqGrid German Translation
  * Version 1.0.0 (developed for jQuery Grid 3.3.1)
  * Olaf Klöppel opensource@blue-hit.de
  * http://blue-hit.de/

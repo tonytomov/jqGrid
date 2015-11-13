@@ -1,5 +1,5 @@
 /**
- * jqGrid Thai Translation
+ * @license jqGrid Thai Translation
  * Kittituch Manakul m.kittituch@Gmail.com
  * http://trirand.com/blog/
  * Dual licensed under the MIT and GPL licenses:

@@ -1,5 +1,5 @@
 /**
- * jqGrid French Translation
+ * @license jqGrid French Translation
  * Tony Tomov tony@trirand.com with changes by Laurent Rajchenbach.
  * http://trirand.com/blog/
  * Dual licensed under the MIT and GPL licenses:

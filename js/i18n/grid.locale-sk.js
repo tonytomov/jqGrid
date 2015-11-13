@@ -1,5 +1,5 @@
 /**
- * jqGrid Slovak Translation
+ * @license jqGrid Slovak Translation
  * Milan Cibulka
  * http://trirand.com/blog/
  * Dual licensed under the MIT and GPL licenses:

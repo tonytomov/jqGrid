@@ -1,5 +1,5 @@
 /**
- * jqGrid Catalan Translation
+ * @license jqGrid Catalan Translation
  * Traducció jqGrid en Catatà per Faserline, S.L.
  * http://www.faserline.com
  * Dual licensed under the MIT and GPL licenses:

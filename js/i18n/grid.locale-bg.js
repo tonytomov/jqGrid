@@ -1,5 +1,5 @@
 /**
- * jqGrid Bulgarian Translation
+ * @license jqGrid Bulgarian Translation
  * Tony Tomov tony@trirand.com
  * http://trirand.com/blog/
  * Dual licensed under the MIT and GPL licenses:

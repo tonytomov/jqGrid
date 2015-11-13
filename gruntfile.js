@@ -116,6 +116,7 @@
 			options: {
 				//checkModified: true,
 				compilerOpts: {
+					charset: "UTF-8",
 					//create_source_map: null
 					//warning_level: "QUIET",
 					//warning_level: "verbose",

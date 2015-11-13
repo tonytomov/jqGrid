@@ -1,5 +1,5 @@
 /**
- * jqGrid Polish Translation
+ * @license jqGrid Polish Translation
  * Łukasz Schab lukasz@freetree.pl
  * http://FreeTree.pl
  *

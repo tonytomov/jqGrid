@@ -1,5 +1,5 @@
 /**
- * jqGrid Brazilian-Portuguese Translation
+ * @license jqGrid Brazilian-Portuguese Translation
  * Sergio Righi sergio.righi@gmail.com
  * http://curve.com.br
  *

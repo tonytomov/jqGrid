@@ -1,5 +1,5 @@
 /**
- * jqGrid Greek (el) Translation
+ * @license jqGrid Greek (el) Translation
  * Alex Cicovic
  * http://www.alexcicovic.com
  * Dual licensed under the MIT and GPL licenses:

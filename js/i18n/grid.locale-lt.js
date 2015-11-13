@@ -1,5 +1,5 @@
 /**
- * jqGrid Lithuanian Translation
+ * @license jqGrid Lithuanian Translation
  * aur1mas aur1mas@devnet.lt
  * http://aur1mas.devnet.lt
  * Dual licensed under the MIT and GPL licenses:

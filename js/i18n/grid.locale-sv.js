@@ -1,5 +1,5 @@
 /**
- * jqGrid Swedish Translation
+ * @license jqGrid Swedish Translation
  * Harald Normann harald.normann@wts.se, harald.normann@gmail.com
  * http://www.worldteamsoftware.com
  * Dual licensed under the MIT and GPL licenses:
