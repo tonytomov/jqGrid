@@ -88,6 +88,12 @@
 				"node": true
 			}
 		},
+		jscs: {
+			src: ["gruntfile.js", "js/*.js", "!js/*.min.js"],
+			options: {
+				config: ".jscsrc"
+			}
+		},
 		cssmin: {
 			options: {
 				sourceMap: true,
@@ -150,7 +156,7 @@
 		file_append: {
 			default_options: {
 				files: [
-					function() {
+					function () {
 						return {
 							append: "//# sourceMappingURL=jquery.jqgrid.min.map",
 							input: "js/jquery.jqgrid.min.js"
@@ -168,15 +174,15 @@
 					sourceMap: true,
 					sourceMapName: "js/jquery.jqgrid.min.map",
 					report: "min",
-					banner: "/*\n" + 
-						 " jqGrid <%= pkgFreejqGrid.version %> - free jqGrid: https://github.com/free-jqgrid/jqGrid\n" +
-						 " Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com\n" +
-						 " Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com\n" + 
-						 " Dual licensed under the MIT and GPL licenses\n" +
-						 " http://www.opensource.org/licenses/mit-license.php\n" +
-						 " http://www.gnu.org/licenses/gpl-2.0.html\n" +
-						 " Date: <%= grunt.template.today('isoDate') %>\n" +
-						 "*/",
+					banner: "/*\n" +
+						" jqGrid <%= pkgFreejqGrid.version %> - free jqGrid: https://github.com/free-jqgrid/jqGrid\n" +
+						" Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com\n" +
+						" Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com\n" +
+						" Dual licensed under the MIT and GPL licenses\n" +
+						" http://www.opensource.org/licenses/mit-license.php\n" +
+						" http://www.gnu.org/licenses/gpl-2.0.html\n" +
+						" Date: <%= grunt.template.today('isoDate') %>\n" +
+						"*/",
 					compress: {
 						"hoist_funs": false
 					}
@@ -194,6 +200,7 @@
 	grunt.loadNpmTasks("grunt-contrib-cssmin");
 	grunt.loadNpmTasks("grunt-replace");
 	grunt.loadNpmTasks("grunt-file-append");
+	grunt.loadNpmTasks("grunt-jscs");
 
 	var closureCompilerTasks = [],
 		regClosureCompilerTask = function (filePath) {
@@ -212,7 +219,7 @@
 			fileNameMin = fileNameParts.join(".");
 			fileNameParts[fileNameParts.length - 1] = "map";
 			fileNameMap = fileNameParts.join(".");
-			
+
 			filePathParts[filePathParts.length - 1] = fileNameMin;
 			filePathMin = filePathParts.join("\/");
 
@@ -239,12 +246,12 @@
 			fileDirectory += "/";
 
 			var taskName = "closureCompiler_" + filePath.split("\/").join("_");
-			grunt.registerTask(taskName, function(){
+			grunt.registerTask(taskName, function () {
 				// run "closureCompiler" task
 				grunt.config.set("closureCompiler.options.compilerOpts.create_source_map", filePathMap);
 				grunt.config.set("closureCompiler.targetName.src", filePath);
 				grunt.config.set("closureCompiler.targetName.dest", filePathMin);
-				grunt.log.writeln("    compiling '" + filePath + "' to '" + filePathMin +"' with '" + filePathMap + "' by google closure compiler...");
+				grunt.log.writeln("    compiling '" + filePath + "' to '" + filePathMin + "' with '" + filePathMap + "' by google closure compiler...");
 				grunt.task.run("closureCompiler");
 
 				// run "replace" task
@@ -253,14 +260,14 @@
 				grunt.config.set("replace.dist.options.patterns.1.match", regExp1);
 				grunt.config.set("replace.dist.options.patterns.1.replacement", "\"file\":\"" + fileNameMin + "\",");
 				grunt.config.set("replace.dist.files.0.src", [filePathMap]);
-				
+
 				grunt.config.set("replace.dist.files.0.dest", fileDirectory);
 				grunt.log.writeln("    patching 'sources' and 'file' properties of '" + filePathMap + "'");
 				grunt.task.run("replace");
-				
+
 				// run "file_append" task
 				grunt.config.set("file_append.default_options.files", [
-					function() {
+					function () {
 						return {
 							append: "/*\n//# sourceMappingURL=" + fileNameMap + "\n*/",
 							input: filePathMin
@@ -280,12 +287,12 @@
 		"!plugins/*.min.js",
 		"js/i18n/grid.locale-*.js",
 		"!js/i18n/grid.locale-*.min.js"
-	]).forEach(function(path) {
+	]).forEach(function (path) {
 		regClosureCompilerTask(path);
 	});
 
 	grunt.registerTask("closureCompilerAll", closureCompilerTasks);
 
-	grunt.registerTask("all", ["clean", "concat", "jshint", "closureCompilerAll", "cssmin", "copy"]);
-	grunt.registerTask("default", ["concat", "jshint", "closureCompiler_js_jquery.jqgrid.src.js", "cssmin", "copy"]);
+	grunt.registerTask("all", ["clean", "concat", "jshint", "jscs", "closureCompilerAll", "cssmin", "copy"]);
+	grunt.registerTask("default", ["concat", "jshint", "jscs", "closureCompiler_js_jquery.jqgrid.src.js", "cssmin", "copy"]);
 };

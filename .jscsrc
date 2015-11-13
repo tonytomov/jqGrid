@@ -1,0 +1,13 @@
+{
+	"preset": "crockford",
+	"validateIndentation": "\t",
+	"requireMultipleVarDecl": null,
+	"disallowDanglingUnderscores": null,
+	"requireBlocksOnNewline": null,
+	"disallowKeywords": ["with"],
+	"disallowSpaceAfterObjectKeys": true,
+	//"validateQuoteMarks": "\"",
+	"requireSpaceAfterComma": {"allExcept": ["trailing"]},
+	"requireSpacesInsideObjectBrackets": "all",
+	"requireVarDeclFirst": null
+}

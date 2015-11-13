@@ -212,7 +212,7 @@
 					levelc = treeReader.level_field,
 					lft = parseInt(rc[lftc], 10), rgt = parseInt(rc[rgtc], 10), level = parseInt(rc[levelc], 10);
 
-				$(p.data).each(function() {
+				$(p.data).each(function () {
 					if (parseInt(this[levelc], 10) === level - 1 && parseInt(this[lftc], 10) < lft && parseInt(this[rgtc], 10) > rgt) {
 						result = this;
 						return false;
@@ -428,7 +428,7 @@
 				}
 			});
 		},
-		// experimental 
+		// experimental
 		setTreeRow: function (rowid, data) {
 			var success = false;
 			this.each(function () {

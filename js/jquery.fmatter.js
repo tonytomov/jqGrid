@@ -132,7 +132,7 @@
 		},
 		isNumber: function (o) {
 			// probably Number.isFinite can be used instead.
-			return typeof o === "number" && isFinite(o); // return false for +infinity, -infinity, or NaN 
+			return typeof o === "number" && isFinite(o); // return false for +infinity, -infinity, or NaN
 		},
 		isValue: function (o) {
 			return (this.isObject(o) || typeof o === "string" || this.isNumber(o) || typeof o === "boolean");
@@ -339,7 +339,7 @@
 				($.isFunction(op.cellValue) ? getOptionValue(op.cellValue) : cellval) +
 				"</a>";
 		}
-		// the code below will be called typically for undefined cellval or 
+		// the code below will be called typically for undefined cellval or
 		// if cellval have null value or some other unclear value like an object
 		// and no cellValue callback function are defined "to decode" the value
 		return defaultFormat(cellval, op);
@@ -391,7 +391,7 @@
 					($.isFunction(op.cellValue) ? getOptionValue(op.cellValue) : cellval) +
 					"</a>";
 			}
-			// the code below will be called typically for undefined cellval or 
+			// the code below will be called typically for undefined cellval or
 			// if cellval have null value or some other unclear value like an object
 			// and no cellValue callback function are defined "to decode" the value
 			return defaultFormat(cellval, op);
@@ -452,7 +452,7 @@
 	$FnFmatter.currency = function (cellval, opts) {
 		return numberHelper(cellval, opts, "currency");
 	};
-	
+
 	var numberCellBuilder = function (opts, formatType) {
 		var colModel = opts.colModel, op = $.extend({}, opts[formatType]);
 		if (colModel != null) {
@@ -667,7 +667,7 @@
 					for (i = 0; i < n; i++) {
 						customAction = op.custom[i];
 						if (customAction.action === act && $.isFunction(customAction.onClick)) {
-							customAction.onClick.call($t, {rowid: rid, event: e, action: act, options: customAction});
+							customAction.onClick.call($t, { rowid: rid, event: e, action: act, options: customAction });
 						}
 					}
 				}
@@ -716,7 +716,7 @@
 			actionButton = function (options) {
 				var action = options.action, actionName = options.actionName || action,
 					idPrefix = options.idPrefix !== undefined ? options.idPrefix : (action.charAt(0).toUpperCase() + action.substring(1));
-				return "<div title='" + op[action+"title"] +
+				return "<div title='" + op[action + "title"] +
 					(options.hidden ? "' style='display:none;" : "") +
 					"' class='ui-pg-div ui-inline-" + action + "' " +
 					(idPrefix !== null ? "id='j" + idPrefix + "Button_" + rowid : "") +
@@ -730,7 +730,7 @@
 		if ($.isFunction(op.isDisplayButtons)) {
 			try {
 				displayMask = op.isDisplayButtons.call($t, opts, rwd, act) || {};
-			} catch(ignore) {}
+			} catch (ignore) {}
 		}
 		while (n >= 0) {
 			customAction = op.custom[n--];
@@ -739,7 +739,7 @@
 		for (i = 0, n = buttonInfos.length; i < n; i++) {
 			info = $.extend({}, buttonInfos[i], displayMask[buttonInfos[i].action] || {});
 			if (info.display !== false) {
-			    str += actionButton(info);
+				str += actionButton(info);
 			}
 		}
 		return "<div class='ui-jqgrid-actions'>" + str + "</div>";

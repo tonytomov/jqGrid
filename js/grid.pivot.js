@@ -14,7 +14,7 @@
 /*jslint eqeq: true, plusplus: true, continue: true, white: true */
 (function ($) {
 	"use strict";
-	function Aggregation (aggregator, context, pivotOptions) {
+	function Aggregation(aggregator, context, pivotOptions) {
 		if (!(this instanceof Aggregation)) {
 			return new Aggregation(aggregator);
 		}
@@ -30,7 +30,7 @@
 		if (v !== undefined) {
 			self.result = self.result || 0; // change undefined to 0
 			v = parseFloat(v);
-			switch(self.aggregator) {
+			switch (self.aggregator) {
 				case "sum":
 					self.result += v;
 					break;
@@ -79,17 +79,17 @@
 				}
 			}
 			if (self.result !== undefined && !self.finilized && self.aggregator === "avg") {
-				self.result = self.result/self.count;
+				self.result = self.result / self.count;
 				self.finilized = true;
 			}
 			obj[propName] = self.result;
 		}
 	};
 
-	function ArrayOfFieldsets (trimByCollect, caseSensitive, skipSort, dimension, fieldName) {
+	function ArrayOfFieldsets(trimByCollect, caseSensitive, skipSort, dimension, fieldName) {
 		var iField, dimensionLength = dimension.length, dimensionItem, self = this,
 			stringCompare = function (a, b) {
-				var a1 = a, b1 = b; 
+				var a1 = a, b1 = b;
 				if (a1 == null) { a1 = ""; } // we will place undefined and null values as the lowest TOGETHER with ""
 				if (b1 == null) { b1 = ""; }
 				// be sure that we have no other input data (Number, Date and so on)
@@ -278,7 +278,7 @@
 			}
 		}
 	};
-	
+
 	var jgrid = $.jgrid;
 	jgrid.extend({
 		pivotSetup: function (data, options) {
@@ -349,8 +349,8 @@
 						name: name + (aggrlen > 1 ? "a" + iAggr : ""),
 						label: $.isFunction(label) ?
 									(label.call(self, colType === 2 ?
-											{aggregate: agr, iAggregate: iAggr, pivotOptions: o} :
-											{yIndex: yIndex.getItem(iyData), aggregate: agr, iAggregate: iAggr, yLevel: level, pivotOptions: o})) :
+											{ aggregate: agr, iAggregate: iAggr, pivotOptions: o } :
+											{ yIndex: yIndex.getItem(iyData), aggregate: agr, iAggregate: iAggr, yLevel: level, pivotOptions: o })) :
 									(jgrid.template.apply(self, colType === 2 ?
 											[label, agr.aggregator, agr.member, iAggr] :
 											[label, agr.aggregator, agr.member, yIndex.getItem(iyData)[level], level]))
@@ -387,7 +387,7 @@
 													totalHeader.call(self, previousY, iLevel) :
 													jgrid.template.call(self, totalHeader || "", previousY[iLevel], iLevel)) :
 											"",
-									startColumnName: "y" + (iyData - 1) + "t" + iLevel + (aggrlen === 1 ? "" :"a0"),
+									startColumnName: "y" + (iyData - 1) + "t" + iLevel + (aggrlen === 1 ? "" : "a0"),
 									numberOfColumns: aggrlen
 								});
 							}
@@ -463,21 +463,21 @@
 						}
 					}
 				};
-			
+
 			if (xlen === 0 || aggrlen === 0) {
 				throw ("xDimension or aggregates options are not set!");
 			}
-			
+
 			// ****************************************************************
 			// The step 1: scan input data and build the list of unique indexes
 			// ****************************************************************
 			xIndex = indexDataBy(xDimension, o.skipSortByX, o.compareVectorsByX);
 			yIndex = indexDataBy(yDimension, o.skipSortByY, o.compareVectorsByY);
-			
+
 			// save to be used probably later
 			options.xIndex = xIndex;
 			options.yIndex = yIndex;
-			
+
 			// *******************************************
 			// The step 2: build colModel and groupOptions
 			// *******************************************
@@ -562,7 +562,7 @@
 					useColSpanStyle: o.useColSpanStyle,
 					groupHeaders: [{
 						titleText: previousY[k],
-						startColumnName: aggrlen === 1 ? "y0" : "y0a0" ,
+						startColumnName: aggrlen === 1 ? "y0" : "y0a0",
 						numberOfColumns: aggrlen
 					}]
 				});
@@ -578,7 +578,7 @@
 				for (k = headerLevels - 1; k >= i; k--) {
 					colHeaders[k].groupHeaders.push({
 						titleText: itemYData[k],
-						startColumnName: "y" + iYData + (aggrlen === 1 ? "" :"a0"),
+						startColumnName: "y" + iYData + (aggrlen === 1 ? "" : "a0"),
 						numberOfColumns: aggrlen
 					});
 				}
@@ -595,8 +595,8 @@
 				for (i = 0; i < headerLevels; i++) {
 					colHeaders[i].groupHeaders.push({
 						titleText: (i < headerLevels - 1 ? "" : o.totalHeader || ""),
-						startColumnName: "t" + (aggrlen === 1 ? "" :"a0"),
-						numberOfColumns: aggrlen 
+						startColumnName: "t" + (aggrlen === 1 ? "" : "a0"),
+						numberOfColumns: aggrlen
 					});
 				}
 			}
@@ -628,7 +628,7 @@
 				for (iYData = 0; iYData < yIndexLength; iYData++) {
 					itemYData = yIndex.getItem(iYData);
 					indexesOfDataWithTheSameYValues = yIndex.getIndexesOfSourceData(iYData);
-					// we calculate aggregate in every itemYData 
+					// we calculate aggregate in every itemYData
 					for (k = 0; k < aggrlen; k++) {
 						if (previousY !== null) { // empty input data
 							finalizeGroupTotals(iYData - 1, itemYData, previousY, k);

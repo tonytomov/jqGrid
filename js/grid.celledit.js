@@ -199,7 +199,7 @@
 		saveCell: function (iRow, iCol) {
 			return this.each(function () {
 				var $t = this, $self = $($t), p = $t.p, infoDialog = jgrid.info_dialog, jqID = jgrid.jqID;
-					
+
 				if (!$t.grid || p.cellEdit !== true) {
 					return;
 				}

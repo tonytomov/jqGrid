@@ -86,7 +86,7 @@
 				grid.populateVisible = null;
 				grid.scrollGrid = null;
 				grid.selectionPreserver = null;
-	
+
 				grid.bDiv = null;
 				grid.fbRows = null;
 				grid.cDiv = null;
@@ -472,7 +472,7 @@
 
 						var selclass, ina, i = 0, aoprs = [], selected = $(elem).data("soper"), nm = $(elem).data("colname"),
 							fs = $(".ui-jqgrid-view").css("font-size") || "11px",
-							str = '<ul id="sopt_menu" class="ui-search-menu" role="menu" tabindex="0" style="z-index:9999;font-size:' + fs + ";left:" + left + "px;top:" + top + 'px;">';
+							str = "<ul id='sopt_menu' class='ui-search-menu' role='menu' tabindex='0' style='z-index:9999;font-size:" + fs + ";left:" + left + "px;top:" + top + "px;'>";
 						i = p.iColByName[nm];
 						if (i === undefined) { return; }
 						var cm = colModel[i], options = $.extend({}, cm.searchoptions), odataItem, item, itemOper, itemOperand, itemText;
@@ -525,18 +525,18 @@
 						});
 					},
 					timeoutHnd,
-					tr = $("<tr></tr>", {"class": "ui-search-toolbar", role: "row"});
+					tr = $("<tr></tr>", { "class": "ui-search-toolbar", role: "row" });
 
 				// create the row
 				$.each(colModel, function (ci) {
 					var cm = this, soptions, mode = "filter", surl, self, select = "", sot, so, i, searchoptions = cm.searchoptions, editoptions = cm.editoptions,
-						th = $("<th></th>", {"class": getGuiStyles.call($t, "colHeaders", "ui-th-column ui-th-" + p.direction + " " + (o.applyLabelClasses ? cm.labelClasses || "" : ""))}),
+						th = $("<th></th>", { "class": getGuiStyles.call($t, "colHeaders", "ui-th-column ui-th-" + p.direction + " " + (o.applyLabelClasses ? cm.labelClasses || "" : "")) }),
 						thd = $("<div style='position:relative;height:auto;'></div>"),
 						stbl = $("<table class='ui-search-table'" + (jgrid.msie && jgrid.msiever() < 8 ? " cellspacing='0'" : "") + "><tr><td class='ui-search-oper'></td><td class='ui-search-input'></td><td class='ui-search-clear' style='width:1px'></td></tr></table>");
 					if (this.hidden === true) { $(th).css("display", "none"); }
 					this.search = this.search === false ? false : true;
 					if (this.stype === undefined) { this.stype = "text"; }
-					soptions = $.extend({mode: mode}, searchoptions || {});
+					soptions = $.extend({ mode: mode }, searchoptions || {});
 					if (this.search) {
 						if (o.searchOperators) {
 							so = (soptions.sopt) ? soptions.sopt[0] : cm.stype === "select" ? "eq" : o.defaultSearch;
@@ -1023,11 +1023,15 @@
 				if (p.sortable) {
 					$colHeaderRow = $(grid.hDiv).find(".ui-jqgrid-htable .ui-jqgrid-labels");
 					$colHeaderRow.sortable("destroy");
-					$self.jqGrid("setGridParam", {sortable: {options: {
-						items: frozenIds.length > 0 ?
-								">th:not(:has(" + frozenIds.join(",") + "),:hidden)" :
-								">th:not(:hidden)"
-					}}});
+					$self.jqGrid("setGridParam", {
+						sortable: {
+							options: {
+								items: frozenIds.length > 0 ?
+										">th:not(:has(" + frozenIds.join(",") + "),:hidden)" :
+										">th:not(:hidden)"
+							}
+						}
+					});
 					$self.jqGrid("sortableColumns", $colHeaderRow);
 				}
 				if (maxfrozen >= 0 && frozen) {
@@ -1072,7 +1076,7 @@
 								});
 						});
 						var swapfroz = -1, fdel = -1, cs, rs;
-						// TODO: test carefully processing of hidden columns 
+						// TODO: test carefully processing of hidden columns
 						$(tHeadRows).filter(".jqg-second-row-header").children("th").each(function () {
 							cs = parseInt($(this).attr("colspan") || 1, 10);
 							rs = parseInt($(this).attr("rowspan") || 1, 10);
@@ -1375,9 +1379,13 @@
 					if (p.sortable) {
 						var $colHeaderRow = $(grid.hDiv).find(".ui-jqgrid-htable .ui-jqgrid-labels");
 						$colHeaderRow.sortable("destroy");
-						$self.jqGrid("setGridParam", {sortable: {options: {
-							items: ">th:not(:has(#jqgh_" + tid + "_cb" + ",#jqgh_" + tid + "_rn" + ",#jqgh_" + tid + "_subgrid),:hidden)"
-						}}});
+						$self.jqGrid("setGridParam", {
+							sortable: {
+								options: {
+									items: ">th:not(:has(#jqgh_" + tid + "_cb" + ",#jqgh_" + tid + "_rn" + ",#jqgh_" + tid + "_subgrid),:hidden)"
+								}
+							}
+						});
 						$self.jqGrid("sortableColumns", $colHeaderRow);
 					}
 				}

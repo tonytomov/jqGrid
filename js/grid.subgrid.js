@@ -63,7 +63,7 @@
 		addSubGridCell: function (pos, iRow, rowid, item) {
 			var self = this[0], subGridOptions = self.p.subGridOptions,
 				hasSubgrid = $.isFunction(subGridOptions.hasSubgrid) ?
-					subGridOptions.hasSubgrid.call(self, {rowid: rowid, iRow: iRow, iCol: pos, data: item}) :
+					subGridOptions.hasSubgrid.call(self, { rowid: rowid, iRow: iRow, iCol: pos, data: item }) :
 					true;
 			return self == null || self.p == null || subGridOptions == null ? "" :
 					"<td role='gridcell' class='" + base.getGuiStyles.call(this, "subgrid.tdStart", hasSubgrid ? "ui-sgcollapsed sgcollapsed" : "") + "' " +
@@ -86,7 +86,7 @@
 						var $td = $("<td align='" + cm.align[pos] + "'></td>").html(cell);
 						$tr.append($td);
 					},
-					fillXmlBody = function(data, $tbody) {
+					fillXmlBody = function (data, $tbody) {
 						var sgmap = p.xmlReader.subgrid;
 						$(sgmap.root + " " + sgmap.row, data).each(function () {
 							var f, i, $tr = $("<tr class='" + rowSubTableClasses + "'></tr>");
@@ -106,7 +106,7 @@
 						});
 					},
 					fillJsonBody = function (data, $tbody) {
-						var $tr, i,j, f, cur, sgmap = p.jsonReader.subgrid,
+						var $tr, i, j, f, cur, sgmap = p.jsonReader.subgrid,
 							result = jgrid.getAccessor(data, sgmap.root);
 						if (result != null) {
 							for (i = 0; i < result.length; i++) {

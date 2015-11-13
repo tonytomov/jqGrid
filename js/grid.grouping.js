@@ -386,7 +386,7 @@
 						str += "<td style='display:none;'></td>";
 					}*/
 					str += buildSummaryTd(i, 0, grp.groups, n, grp.groupColumnShow[n.idx] === false ?
-							colspan - 1:
+							colspan - 1 :
 							colspan);
 				} else {
 					str += " colspan='" + (grp.groupColumnShow[n.idx] === false ? colspans - 1 : colspans) + "'" +
@@ -423,7 +423,7 @@
 								continue;
 							}
 							str += "<tr data-jqfootlevel='" + (n.idx - ik) +
-									(grp.groupCollapse && ((n.idx - ik) > 0 || !grp.showSummaryOnHide) ? "' style='display:none;'" : "'") + 
+									(grp.groupCollapse && ((n.idx - ik) > 0 || !grp.showSummaryOnHide) ? "' style='display:none;'" : "'") +
 									" role='row' class='" + jqfootClass + "'>";
 							str += buildSummaryTd(i, ik, grp.groups, n, 0);
 							str += "</tr>";

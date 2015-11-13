@@ -36,10 +36,10 @@
 					var isInside = false;
 					$(".jqmID" + activeModal.s).each(function () {
 						var $self = $(this), offset = $self.offset();
-							// mouse event have e.pageX and e.pageY
-							// keyboard event have e.type == "keydown" or "keypress",
-							// e.pageX and e.pageY are undefined and one can use 
-							// $(e.target).offset()
+						// mouse event have e.pageX and e.pageY
+						// keyboard event have e.type == "keydown" or "keypress",
+						// e.pageX and e.pageY are undefined and one can use
+						// $(e.target).offset()
 						if (offset.top <= eY && eY <= offset.top + $self.height() &&
 								offset.left <= eX && eX <= offset.left + $self.width()) {
 							isInside = true;
@@ -213,7 +213,7 @@
 				top = parseFloat(h.w.css("top") || 0);
 				h.w.before('<span id="jqmP' + h.w[0]._jqm + '"></span>')
 					.insertAfter(h.o);
-				h.w.css({top: parentOffset.top + top, left: parentOffset.left + left});
+				h.w.css({ top: parentOffset.top + top, left: parentOffset.left + left });
 			}
 			if (options.onShow) {
 				options.onShow(h);

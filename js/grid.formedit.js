@@ -24,7 +24,7 @@
 			var $w = h.w, $form = $(frmgr), $gbox = this.closest(".ui-jqgrid"), top, left;
 			if ($.contains($gbox[0], $w[0])) {
 				// we use below .style.height and .style.width to save correctly "auto" and "100%" values
-				// the "px" suffix will be saved too, but it's not a problem 
+				// the "px" suffix will be saved too, but it's not a problem
 				top = getCssStyleOrFloat($w, "top");
 				left = getCssStyleOrFloat($w, "left");
 			} else {
@@ -1904,7 +1904,7 @@
 					alertIDs = { themodal: "alertmod_" + gridId, modalhead: "alerthd_" + gridId, modalcontent: "alertcnt_" + gridId },
 					createModalAlert = function () {
 						return function () {
-						    var documentElement = document.documentElement, w = window, left = 1024, top = 768,
+							var documentElement = document.documentElement, w = window, left = 1024, top = 768,
 								offsetGbox = $self.closest(".ui-jqgrid").offset();
 							if ($("#" + jqID(alertIDs.themodal))[0] === undefined) {
 								if (!o.alerttop && !o.alertleft) {

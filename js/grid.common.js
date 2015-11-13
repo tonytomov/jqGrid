@@ -1,6 +1,6 @@
 /*
  * jqGrid common function
- * Tony Tomov tony@trirand.com, http://trirand.com/blog/ 
+ * Tony Tomov tony@trirand.com, http://trirand.com/blog/
  * Changed by Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
@@ -18,7 +18,7 @@
 		};
 
 	jgrid.jqModal = jgrid.jqModal || {};
-	$.extend(true, jgrid.jqModal, {toTop: true});
+	$.extend(true, jgrid.jqModal, { toTop: true });
 
 	$.extend(jgrid, {
 		// Modal functions
@@ -198,8 +198,8 @@
 			if (o.drag) {
 				if ($.fn.jqDrag) {
 					// .ui-draggable .ui-dialog-titlebar {cursor: move}
-					//$(mw).addClass("ui-draggable"); //css("cursor","move");
-					$(mh).css("cursor","move");
+					//$(mw).addClass("ui-draggable"); //css("cursor", "move");
+					$(mh).css("cursor", "move");
 					$(mw).jqDrag(mh);
 				} else {
 					try {
@@ -415,7 +415,7 @@
 						$(elem).data("offval", cbval[1]);
 					}
 					setAttributes(elem, options, ["value"]);
-					$(elem).attr({role: "checkbox", "aria-checked": elem.checked ? "true" : "false"});
+					$(elem).attr({ role: "checkbox", "aria-checked": elem.checked ? "true" : "false" });
 					break;
 				case "select":
 					elem = document.createElement("select");

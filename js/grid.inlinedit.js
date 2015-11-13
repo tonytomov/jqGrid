@@ -415,7 +415,7 @@
 							$("input.hasDatepicker", "#" + jgrid.jqID(ind.id)).datepicker("hide");
 						} catch (ignore) { }
 					}
-					
+
 					$.each(p.colModel, function () {
 						var nm = this.name;
 						if (p.savedRow[fr].hasOwnProperty(nm)) {
