@@ -41,6 +41,8 @@
 							if (!grp.groupSummaryPos[i]) {
 								grp.groupSummaryPos[i] = "footer";
 							}
+							// TODO: allow groupField be from additionalProperties
+							// and not only from colModel
 							cm = colModel[p.iColByName[grp.groupField[i]]];
 							if (grp.groupColumnShow[i] === true) {
 								grp.visibiltyOnNextGrouping[i] = true;
@@ -332,6 +334,8 @@
 				return strTd;
 			}
 
+			// TODO: allow groupField be from additionalProperties
+			// and not only from colModel
 			$.each(p.colModel, function (i, n) {
 				var ii;
 				for (ii = 0; ii < len; ii++) {
@@ -478,7 +482,7 @@
 						}
 					}
 					$("tr.jqgroup, tr.jqfoot", tbody).remove();
-					$("tr.jqgrow:hidden", tbody).show();
+					$("tr.jqgrow", tbody).filter(":hidden").show();
 				} else {
 					$($t).trigger("reloadGrid");
 				}
