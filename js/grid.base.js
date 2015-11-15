@@ -2038,7 +2038,7 @@
 				if (readAllInputData) {
 					p.groupingView._locgr = true;
 				}
-				rowData = [$j.groupingRender.call($self, grpdata, p.colModel.length, p.page, rn)];
+				rowData = [$j.groupingRender.call($self, grpdata, rn)];
 				jgrid.clearArray(grpdata); //grpdata = null;
 			}
 			return rowData;
@@ -4517,6 +4517,7 @@
 			}
 			var idn, w, res, sort, cmi, tooltip, labelStyle, ptr, sortarr = [], sortord = [], sotmp = [],
 				thead = "<thead><tr class='ui-jqgrid-labels' role='row'>", headerText,
+				tbody = "<tbody><tr>",
 				hoverStateClasses = getGuiStyles("states.hover"),
 				disabledStateClasses = getGuiStyles("states.disabled");
 
@@ -4564,6 +4565,7 @@
 					thead += (p.builderSortIcons || jgrid.builderSortIcons).call(ts, iCol);
 				}
 				thead += "</div></th>";
+				tbody += "<td></td>";
 				cmi.width = cmi.width ? parseInt(cmi.width, 10) : 150;
 				if (typeof cmi.title !== "boolean") { cmi.title = true; }
 				cmi.lso = "";
@@ -4579,7 +4581,10 @@
 				}
 			}
 			thead += "</tr></thead>";
-			var hTable = $("<table class='" + getGuiStyles("hTable", "ui-jqgrid-htable") + "' style='width:1px' role='presentation' aria-labelledby='gbox_" + p.id + "'" + (isMSIE7 ? " cellspacing='0'" : "") + ">" + thead + "<tbody><tr><td></td></tr></tbody></table>");
+			tbody += "</tr></tbody>";
+			var hTable = $("<table class='" + getGuiStyles("hTable", "ui-jqgrid-htable") +
+					"' style='width:1px' role='presentation' aria-labelledby='gbox_" + p.id + "'" +
+					(isMSIE7 ? " cellspacing='0'" : "") + ">" + thead + tbody + "</table>");
 			$(hTable[0].tHead)
 				.children("tr")
 				.children("th")
