@@ -153,7 +153,7 @@ var locInfo = {
 				//    d - Day of the month, 2 digits with leading zeros
 				//    m - Numeric representation of a month, with leading zeros
 				//    Y - A full numeric representation of a year, 4 digits
-				ShortDate: "d.m.Y",	// in jQuery UI Datepicker: "dd.MM.yyyy"
+				ShortDate: "d.m.Y", // in jQuery UI Datepicker: "dd.MM.yyyy"
 				// long date:
 				//    l - A full textual representation of the day of the week
 				//    j - Day of the month without leading zeros
