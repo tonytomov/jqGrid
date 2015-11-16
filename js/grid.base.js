@@ -1974,7 +1974,7 @@
 				},
 				addMulti = function (rowid, pos, irow, checked) {
 					return "<td role='gridcell' " + formatCol(pos, irow, "", null, rowid, true) + ">" +
-						"<input role='checkbox' type='checkbox'" + " id='jqg_" + p.id + "_" + rowid +
+						"<input type='checkbox'" + " id='jqg_" + p.id + "_" + rowid +
 						"' class='cbox' name='jqg_" + p.id + "_" + rowid + "'" +
 						(checked ? " checked='checked' aria-checked='true'" : " aria-checked='false'") + "/></td>";
 				},
@@ -2001,7 +2001,7 @@
 					}
 				}
 				iStartTrTag = rowData.length;
-				rowData.push("");
+				rowData.push(""); // it will be replaced. See rowData[iStartTrTag] below
 				for (j = 0; j < p.colModel.length; j++) {
 					cmName = p.colModel[j].name;
 					switch (cmName) {
@@ -2024,6 +2024,11 @@
 				rowIndex++;
 				//TODO: fix p.rowIndexes in case of usage grouping.
 				if (p.grouping) {
+					// we save the rowData in the array grpdata first.
+					// grpdata will collect HTML fragments of all rows of data
+					// of the current group. Later we call groupingRender, which
+					// will insert additional grouping row and concatinate all
+					// the HTML fragments of all rows of the group.
 					grpdata.push(rowData);
 					if (!p.groupingView._locgr) {
 						$j.groupingPrepare.call($self, rd, i);
@@ -2864,7 +2869,7 @@
 						}
 					}
 					result = styleValue !== "" ? "style='" + styleValue + "'" : "";
-					result += (classes !== undefined ? (" class='" + classes + "'") : "") + ((cm.title && cellValue) ? (" title='" + stripHtml(tv) + "'") : "");
+					result += (classes !== undefined ? (" class='" + classes + "'") : "") + ((cm.title && cellValue) ? (" title='" + stripHtml(tv).replace(/\'/g, "&apos;") + "'") : "");
 					result += rest;
 					return result;
 				},
@@ -2925,13 +2930,12 @@
 									(isExpanded ? p.treeIcons.minus + " tree-minus" : p.treeIcons.plus + " tree-plus");
 						//normalizeTreeGridProperties(rdata); // ??? don't needed more probably
 
-						v = "<div class='tree-wrap tree-wrap-" + p.direction +
-							"' style='width:" + ((lftpos + 1) * levelOffset) +
+						v = "<div class='tree-wrap' style='width:" + ((lftpos + 1) * levelOffset) +
 							"px;'><div class='" +
 							mergeCssClasses(p.treeIcons.commonIconClass, iconClass, "treeclick") +
 							"' style='" +
 							(p.ExpandColClick === true ? "cursor:pointer;" : "") +
-							(p.direction === "rtl" ? "right:" : "left:") +
+							(p.direction === "rtl" ? "margin-right:" : "margin-left:") +
 							(lftpos * levelOffset) + "px;'></div></div>" +
 							"<span class='cell-wrapper" + (isLeaf ? "leaf" : "") + "'" +
 							(p.ExpandColClick ? " style='cursor:pointer;'" : "") + ">" +
@@ -4447,7 +4451,7 @@
 			}
 			if (p.multiselect && (p.multiselectPosition === "left" || p.multiselectPosition === "right")) {
 				var insertMethod = p.multiselectPosition === "left" ? "unshift" : "push";
-				p.colNames[insertMethod]("<input role='checkbox' id='" + p.cbId + "' class='cbox' type='checkbox' aria-checked='false'/>");
+				p.colNames[insertMethod]("<input id='" + p.cbId + "' class='cbox' type='checkbox' aria-checked='false'/>");
 				p.colModel[insertMethod]({ name: "cb", width: jgrid.cell_width ? p.multiselectWidth + p.cellLayout : p.multiselectWidth, labelClasses: "jqgh_cbox", classes: "td_cbox", sortable: false, resizable: false, hidedlg: true, search: false, align: "center", fixed: true, frozen: true });
 			}
 			if (p.rownumbers) {
@@ -6447,7 +6451,6 @@
 			}, settings || {});
 			return this.each(function () {
 				var $t = this, p = $t.p, $self = $($t);
-				if (!$("body").is("[role]")) { $("body").attr("role", "application"); }
 				p.scrollrows = o.scrollingRows;
 				$self.bind("keydown.jqGrid", function (event) {
 					var tr = $(this).find("tr[tabindex=0]")[0],

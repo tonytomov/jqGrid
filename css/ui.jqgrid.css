@@ -809,32 +809,17 @@ span.ui-jqgrid-cell-wrapper {
 }
 /* Tree Grid */
 .ui-jqgrid .tree-wrap {
-	float: left;
-	position: relative;
-	height: 18px;
+	display: inline-block;
+	vertical-align: middle;
 	white-space: nowrap;
-	overflow: hidden;
-}
-.ui-jqgrid .tree-minus {
-	position: absolute;
-	height: 18px;
-	width: 18px;
-	overflow: hidden;
-}
-.ui-jqgrid .tree-plus {
-	position: absolute;
-	height: 18px;
-	width: 18px;
-	overflow: hidden;
-}
-.ui-jqgrid .tree-leaf {
-	position: absolute;
-	height: 18px;
-	width: 18px;
 	overflow: hidden;
 }
 .ui-jqgrid .treeclick {
 	cursor: pointer;
+	display: inline-block;
+	vertical-align: middle;
+	width: 18px;
+	overflow: hidden;
 }
 
 /* modal dialog */
@@ -870,11 +855,10 @@ span.ui-jqgrid-cell-wrapper {
 .ui-jqgrid .ui-sort-rtl {
 	left: 0;
 }
-.ui-jqgrid .tree-wrap-ltr {
-	float: left;
-}
-.ui-jqgrid .tree-wrap-rtl {
-	float: right;
+.ui-jqgrid .cell-wrapperleaf,
+.ui-jqgrid .cell-wrapper {
+	display: inline-block;
+	vertical-align: middle;
 }
 .ui-jqgrid .ui-ellipsis {
 	-moz-text-overflow: ellipsis;
