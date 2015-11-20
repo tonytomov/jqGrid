@@ -12935,7 +12935,7 @@
 				pmrtl = (grp.groupCollapse ? grp.plusicon : grp.minusicon) + " tree-wrap",
 				groupLength = grp.groupField.length, groups = grp.groups, colModel = p.colModel,
 				cmLength = colModel.length, page = p.page,
-				eventNames = "jqGridShowHideCol.groupingRender jqGridRemapColumns.groupingRender",
+				eventNames = "jqGridShowHideCol.groupingRender",
 				getGridRowStyles = function (classes) {
 					return base.getGuiStyles.call($t, "gridRow", classes);
 				},
