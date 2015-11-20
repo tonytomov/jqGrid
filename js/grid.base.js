@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-11-12
+ * Date: 2015-11-20
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -544,13 +544,32 @@
 			}
 		},
 		htmlDecode: function (value) {
-			if (value && (value === "&nbsp;" || value === "&#160;" || (value.length === 1 && value.charCodeAt(0) === 160))) {
+			if (value && (value === "&nbsp;" ||
+							value === "&#160;" ||
+							(value.length === 1 && value.charCodeAt(0) === 160))) {
 				return "";
 			}
-			return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, "\"").replace(/&amp;/g, "&");
+			return !value ?
+				value :
+				String(value)
+					.replace(/&gt;/g, ">")
+					.replace(/&lt;/g, "<")
+					.replace(/&#x27;/g, "'")
+					.replace(/&#x2F;/g, "\/")
+					.replace(/&quot;/g, "\"")
+					.replace(/&amp;/g, "&");
 		},
 		htmlEncode: function (value) {
-			return !value ? value : String(value).replace(/&/g, "&amp;").replace(/\"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+			// see https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet#RULE_.231_-_HTML_Escape_Before_Inserting_Untrusted_Data_into_HTML_Element_Content
+			return !value ?
+				value :
+				String(value)
+					.replace(/&/g, "&amp;")
+					.replace(/\"/g, "&quot;")
+					.replace(/\'/g, "&#x27;")
+					.replace(/\//g, "&#x2F;")
+					.replace(/</g, "&lt;")
+					.replace(/>/g, "&gt;");
 		},
 		clearArray: function (ar) {
 			// see http://jsperf.com/empty-javascript-array
@@ -1972,11 +1991,19 @@
 					var v = self.formatter(rowId, cell, pos, srvr, "add", rdata);
 					return "<td role='gridcell' " + formatCol(pos, irow, v, srvr, rowId, rdata) + ">" + v + "</td>";
 				},
-				addMulti = function (rowid, pos, irow, checked) {
+				addMulti = function (rowid, pos, irow, checked, item) {
+					var checkboxHtml = "&nbsp;", hasCbox = true;
+					if ($.isFunction(p.hasMultiselectCheckBox)) {
+						hasCbox = p.hasMultiselectCheckBox.call(self,
+								{ rowid: rowid, iRow: irow, iCol: pos, data: item });
+					}
+					if (hasCbox) {
+						checkboxHtml = "<input type='checkbox'" + " id='jqg_" + p.id + "_" + rowid +
+							"' class='cbox' name='jqg_" + p.id + "_" + rowid + "'" +
+							(checked ? " checked='checked' aria-checked='true'" : " aria-checked='false'") + "/>";
+					}
 					return "<td role='gridcell' " + formatCol(pos, irow, "", null, rowid, true) + ">" +
-						"<input type='checkbox'" + " id='jqg_" + p.id + "_" + rowid +
-						"' class='cbox' name='jqg_" + p.id + "_" + rowid + "'" +
-						(checked ? " checked='checked' aria-checked='true'" : " aria-checked='false'") + "/></td>";
+						checkboxHtml + "</td>";
 				},
 				addRowNum = function (pos, irow, pG, rN) {
 					var v = (parseInt(pG, 10) - 1) * parseInt(rN, 10) + 1 + irow;
@@ -2009,7 +2036,7 @@
 							rowData.push(addRowNum(j, i, p.page, p.rowNum));
 							break;
 						case "cb":
-							rowData.push(addMulti(idr, j, i, selr));
+							rowData.push(addMulti(idr, j, i, selr, rd));
 							break;
 						case "subgrid":
 							rowData.push($j.addSubGridCell.call($self, j, i + rcnt, idr, rd));
