@@ -568,8 +568,8 @@
 					}
 					elem = document.createElement("input");
 					elem.type = eltype;
-					elem.value = vl;
 					setAttributes(elem, options);
+					elem.value = vl;
 					if (eltype !== "button") {
 						if (autowidth) {
 							if (!options.size) { $(elem).css({ width: "100%", "box-sizing": "border-box" }); }
