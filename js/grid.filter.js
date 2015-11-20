@@ -1040,23 +1040,26 @@ $.jgrid.extend({
 					$(elem).addClass( classes.srInput );
 					$("td:eq(1)",stbl).append(elem);
 					$(thd).append(stbl);
+					if(soptions.dataEvents == null ) {
+						soptions.dataEvents = [];
+					}
 					switch (this.stype)
 					{
 					case "select":
 						if(p.autosearch === true) {
-							soptions.dataEvents = [ {
+							soptions.dataEvents.push({
 								type : "change",
 								fn : function() {
 									triggerToolbar();
 									return false;
 								}
-							}];
+							});
 						}
 						break;
 					case "text":
 						if(p.autosearch===true){
 							if(p.searchOnEnter) {
-								soptions.dataEvents = [{
+								soptions.dataEvents.push({
 									type: "keypress",
 									fn : function(e) {
 										var key = e.charCode || e.keyCode || 0;
@@ -1066,9 +1069,9 @@ $.jgrid.extend({
 										}
 										return this;
 									}
-								}];
+								});
 							} else {
-								soptions.dataEvents = [{
+								soptions.dataEvents.push({
 									type: "keydown",
 									fn : function(e) {
 										var key = e.which;
@@ -1088,7 +1091,7 @@ $.jgrid.extend({
 												timeoutHnd = setTimeout(function(){triggerToolbar();}, p.autosearchDelay);
 										}
 									}
-								}];
+								});
 							}
 						}
 						break;
