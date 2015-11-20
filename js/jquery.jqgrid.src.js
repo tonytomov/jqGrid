@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-11-12
+ * Date: 2015-11-20
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -544,13 +544,32 @@
 			}
 		},
 		htmlDecode: function (value) {
-			if (value && (value === "&nbsp;" || value === "&#160;" || (value.length === 1 && value.charCodeAt(0) === 160))) {
+			if (value && (value === "&nbsp;" ||
+							value === "&#160;" ||
+							(value.length === 1 && value.charCodeAt(0) === 160))) {
 				return "";
 			}
-			return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, "\"").replace(/&amp;/g, "&");
+			return !value ?
+				value :
+				String(value)
+					.replace(/&gt;/g, ">")
+					.replace(/&lt;/g, "<")
+					.replace(/&#x27;/g, "'")
+					.replace(/&#x2F;/g, "\/")
+					.replace(/&quot;/g, "\"")
+					.replace(/&amp;/g, "&");
 		},
 		htmlEncode: function (value) {
-			return !value ? value : String(value).replace(/&/g, "&amp;").replace(/\"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+			// see https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet#RULE_.231_-_HTML_Escape_Before_Inserting_Untrusted_Data_into_HTML_Element_Content
+			return !value ?
+				value :
+				String(value)
+					.replace(/&/g, "&amp;")
+					.replace(/\"/g, "&quot;")
+					.replace(/\'/g, "&#x27;")
+					.replace(/\//g, "&#x2F;")
+					.replace(/</g, "&lt;")
+					.replace(/>/g, "&gt;");
 		},
 		clearArray: function (ar) {
 			// see http://jsperf.com/empty-javascript-array
@@ -1972,11 +1991,19 @@
 					var v = self.formatter(rowId, cell, pos, srvr, "add", rdata);
 					return "<td role='gridcell' " + formatCol(pos, irow, v, srvr, rowId, rdata) + ">" + v + "</td>";
 				},
-				addMulti = function (rowid, pos, irow, checked) {
+				addMulti = function (rowid, pos, irow, checked, item) {
+					var checkboxHtml = "&nbsp;", hasCbox = true;
+					if ($.isFunction(p.hasMultiselectCheckBox)) {
+						hasCbox = p.hasMultiselectCheckBox.call(self,
+								{ rowid: rowid, iRow: irow, iCol: pos, data: item });
+					}
+					if (hasCbox) {
+						checkboxHtml = "<input type='checkbox'" + " id='jqg_" + p.id + "_" + rowid +
+							"' class='cbox' name='jqg_" + p.id + "_" + rowid + "'" +
+							(checked ? " checked='checked' aria-checked='true'" : " aria-checked='false'") + "/>";
+					}
 					return "<td role='gridcell' " + formatCol(pos, irow, "", null, rowid, true) + ">" +
-						"<input type='checkbox'" + " id='jqg_" + p.id + "_" + rowid +
-						"' class='cbox' name='jqg_" + p.id + "_" + rowid + "'" +
-						(checked ? " checked='checked' aria-checked='true'" : " aria-checked='false'") + "/></td>";
+						checkboxHtml + "</td>";
 				},
 				addRowNum = function (pos, irow, pG, rN) {
 					var v = (parseInt(pG, 10) - 1) * parseInt(rN, 10) + 1 + irow;
@@ -2009,7 +2036,7 @@
 							rowData.push(addRowNum(j, i, p.page, p.rowNum));
 							break;
 						case "cb":
-							rowData.push(addMulti(idr, j, i, selr));
+							rowData.push(addMulti(idr, j, i, selr, rd));
 							break;
 						case "subgrid":
 							rowData.push($j.addSubGridCell.call($self, j, i + rcnt, idr, rd));
@@ -7887,8 +7914,8 @@
 					}
 					elem = document.createElement("input");
 					elem.type = eltype;
-					elem.value = vl;
 					setAttributes(elem, options);
+					elem.value = vl;
 					if (eltype !== "button") {
 						if (autowidth) {
 							if (!options.size) { $(elem).css({ width: "100%", "box-sizing": "border-box" }); }
@@ -12908,6 +12935,7 @@
 				pmrtl = (grp.groupCollapse ? grp.plusicon : grp.minusicon) + " tree-wrap",
 				groupLength = grp.groupField.length, groups = grp.groups, colModel = p.colModel,
 				cmLength = colModel.length, page = p.page,
+				eventNames = "jqGridShowHideCol.groupingRender jqGridRemapColumns.groupingRender",
 				getGridRowStyles = function (classes) {
 					return base.getGuiStyles.call($t, "gridRow", classes);
 				},
@@ -12972,6 +13000,7 @@
 							// the icon in the column header must be left aligned
 							align = cm.align; // save the original align value
 							cm.align = p.direction === "rtl" ? "right" : "left";
+							grp.iconColumnName = cm.name;
 						}
 					}
 					madeHidden = false;
@@ -13091,13 +13120,43 @@
 							str += "<tr data-jqfootlevel='" + (n.idx - ik) +
 									(grp.groupCollapse && ((n.idx - ik) > 0 || !grp.showSummaryOnHide) ? "' style='display:none;'" : "'") +
 									" role='row' class='" + jqfootClass + "'>";
-							str += buildSummaryTd(i, ik, n, 0);
+							str += buildSummaryTd(i, ik, groups[n.idx - ik], 0);
 							str += "</tr>";
 						}
 						toEnd = jj;
 					}
 				}
 			});
+			this.unbind(eventNames)
+				.bind(eventNames, function () { //e, show, cmName, iColShow) {
+					// TODO fix the code after resorting columns
+					var iCol = p.iColByName[grp.iconColumnName], iRow, row, iColNew, i; //$cellData;
+					if ($.inArray("header", grp.groupSummaryPos) >= 0) {
+						for (i = 0; i < colModel.length; i++) {
+							if (!colModel[i].hidden) {
+								iColNew = i;
+								break;
+							}
+						}
+						if (iColNew === undefined || iCol === iColNew) { return; }
+
+						for (iRow = 0; iRow < $t.rows.length; iRow++) {
+							row = $t.rows[iRow];
+							if ($(row).hasClass("jqgroup")) {
+								/*$cellData = $(row.cells[iCol]).children(".cell-wrapper").detach();
+								$.wrapInner(row.cells[iColNew], function () {//"<span class='cell-wrapper'></span>");
+									return "<span class='cell-wrapper'>" + this.nodeValue + "</span>";
+								});
+								row.cells[iColNew]
+								$cellData = $(row.cells[iCol]).children(".cell-wrapper").detach();
+								$(row.cells[iCol]).html($(row.cells[iCol]).children("").html());*/
+								$(row.cells[iColNew]).html(row.cells[iCol].innerHTML);
+								$(row.cells[iCol]).html("&nbsp;");
+							}
+						}
+						grp.iconColumnName = colModel[iColNew].name;
+					}
+				});
 			return str;
 		},
 		groupingGroupBy: function (name, options) {
