@@ -300,7 +300,7 @@ div.tablediv > .table-bordered {
 .ui-jqgrid .ui-disabled:hover {}
 .ui-jqgrid .ui-pg-input,
 .ui-jqgrid .ui-jqgrid-toppager .ui-pg-input { 
-	display: initial;
+	display: inline-block;
 	height:auto;
 	width: auto;
 	font-size:.9em; 
