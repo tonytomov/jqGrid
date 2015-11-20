@@ -207,12 +207,13 @@ $.jgrid.extend({
 							} catch(e) {}
 							swapvals[j] = value[j];
 						}
+						//if(j<=1 && vl !==  '_r_Totals' && mainval === "") { // this does not fix full the problem
+							//mainval = vl;
+						//}
 						label = !isNaN(parseInt(label,10)) ? label + " " : label;
 						curr[label] =  tmpmember[label] = calculation( aggr[i].aggregator, curr[label], aggr[i].member, row, curr._count);
-						if(j<=1 && vl !==  '_r_Totals' && mainval === "") { // this does not fix full the problem
-							mainval = vl;
-						}
 					}
+					mainval += value[j].replace(/\s+/g, '');
 					//vl = !isNaN(parseInt(vl,10)) ? vl + " " : vl;
 					member[label] = tmpmember;
 					labels[label] = swapvals[j];
@@ -368,7 +369,7 @@ $.jgrid.extend({
 											numberOfColumns : 0
 										});
 										var collen = headers[items.level-1].groupHeaders.length-1,
-										colpos = collen === 0 ? swaplen : initColLen+aggrlen;
+										colpos = collen === 0 ? swaplen : initColLen;//+aggrlen;
 										if(items.level-1=== (o.rowTotals ? 1 : 0)) {
 											if(collen>0) {
 												var l1=0;
@@ -381,8 +382,8 @@ $.jgrid.extend({
 											}
 										}
 										if(columns[colpos]) {
-										headers[items.level-1].groupHeaders[collen].startColumnName = columns[colpos].name;
-										headers[items.level-1].groupHeaders[collen].numberOfColumns = columns.length - colpos;
+											headers[items.level-1].groupHeaders[collen].startColumnName = columns[colpos].name;
+											headers[items.level-1].groupHeaders[collen].numberOfColumns = columns.length - colpos;
 										}
 										initColLen = columns.length;
 									}
