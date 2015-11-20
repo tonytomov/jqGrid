@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.0.1 - 2015-10-30
+* @license Guriddo jqGrid JS - v5.0.1 - 2015-11-20
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -7252,23 +7252,26 @@ $.jgrid.extend({
 					$(elem).addClass( classes.srInput );
 					$("td:eq(1)",stbl).append(elem);
 					$(thd).append(stbl);
+					if(soptions.dataEvents == null ) {
+						soptions.dataEvents = [];
+					}
 					switch (this.stype)
 					{
 					case "select":
 						if(p.autosearch === true) {
-							soptions.dataEvents = [ {
+							soptions.dataEvents.push({
 								type : "change",
 								fn : function() {
 									triggerToolbar();
 									return false;
 								}
-							}];
+							});
 						}
 						break;
 					case "text":
 						if(p.autosearch===true){
 							if(p.searchOnEnter) {
-								soptions.dataEvents = [{
+								soptions.dataEvents.push({
 									type: "keypress",
 									fn : function(e) {
 										var key = e.charCode || e.keyCode || 0;
@@ -7278,9 +7281,9 @@ $.jgrid.extend({
 										}
 										return this;
 									}
-								}];
+								});
 							} else {
-								soptions.dataEvents = [{
+								soptions.dataEvents.push({
 									type: "keydown",
 									fn : function(e) {
 										var key = e.which;
@@ -7300,7 +7303,7 @@ $.jgrid.extend({
 												timeoutHnd = setTimeout(function(){triggerToolbar();}, p.autosearchDelay);
 										}
 									}
-								}];
+								});
 							}
 						}
 						break;
@@ -12374,12 +12377,13 @@ $.jgrid.extend({
 							} catch(e) {}
 							swapvals[j] = value[j];
 						}
+						//if(j<=1 && vl !==  '_r_Totals' && mainval === "") { // this does not fix full the problem
+							//mainval = vl;
+						//}
 						label = !isNaN(parseInt(label,10)) ? label + " " : label;
 						curr[label] =  tmpmember[label] = calculation( aggr[i].aggregator, curr[label], aggr[i].member, row, curr._count);
-						if(j<=1 && vl !==  '_r_Totals' && mainval === "") { // this does not fix full the problem
-							mainval = vl;
-						}
 					}
+					mainval += value[j].replace(/\s+/g, '');
 					//vl = !isNaN(parseInt(vl,10)) ? vl + " " : vl;
 					member[label] = tmpmember;
 					labels[label] = swapvals[j];
@@ -12535,7 +12539,7 @@ $.jgrid.extend({
 											numberOfColumns : 0
 										});
 										var collen = headers[items.level-1].groupHeaders.length-1,
-										colpos = collen === 0 ? swaplen : initColLen+aggrlen;
+										colpos = collen === 0 ? swaplen : initColLen;//+aggrlen;
 										if(items.level-1=== (o.rowTotals ? 1 : 0)) {
 											if(collen>0) {
 												var l1=0;
@@ -12548,8 +12552,8 @@ $.jgrid.extend({
 											}
 										}
 										if(columns[colpos]) {
-										headers[items.level-1].groupHeaders[collen].startColumnName = columns[colpos].name;
-										headers[items.level-1].groupHeaders[collen].numberOfColumns = columns.length - colpos;
+											headers[items.level-1].groupHeaders[collen].startColumnName = columns[colpos].name;
+											headers[items.level-1].groupHeaders[collen].numberOfColumns = columns.length - colpos;
 										}
 										initColLen = columns.length;
 									}
