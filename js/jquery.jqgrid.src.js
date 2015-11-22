@@ -10831,12 +10831,6 @@
 										}
 									);
 									break;
-								case "password":
-								case "text":
-								case "textarea":
-								case "button":
-									postdata[nm] = $(this).val();
-									break;
 								case "date":
 									postdata[nm] = $(this).val();
 									if (String(postdata[nm]).split("-").length === 3) {
