@@ -541,6 +541,9 @@
 										}
 									}
 									break;
+								default:
+									postdata[nm] = $(this).val();
+									break;
 							}
 							// REMARK: to be exactly one should call htmlEncode LATER and to use validation and unformatting of unencoded data!!
 							if (p.autoencode) { postdata[nm] = jgrid.htmlEncode(postdata[nm]); }

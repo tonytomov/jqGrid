@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-11-20
+ * Date: 2015-11-22
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -10848,6 +10848,9 @@
 											postdata[nm] = jgrid.parseDate.call($self[0], "Y-m-d", postdata[nm], newformat);
 										}
 									}
+									break;
+								default:
+									postdata[nm] = $(this).val();
 									break;
 							}
 							// REMARK: to be exactly one should call htmlEncode LATER and to use validation and unformatting of unencoded data!!
