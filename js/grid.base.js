@@ -554,8 +554,8 @@
 				String(value)
 					.replace(/&gt;/g, ">")
 					.replace(/&lt;/g, "<")
-					.replace(/&#x27;/g, "'")
-					.replace(/&#x2F;/g, "\/")
+					//.replace(/&#x27;/g, "'")
+					//.replace(/&#x2F;/g, "\/")
 					.replace(/&quot;/g, "\"")
 					.replace(/&amp;/g, "&");
 		},
@@ -566,8 +566,8 @@
 				String(value)
 					.replace(/&/g, "&amp;")
 					.replace(/\"/g, "&quot;")
-					.replace(/\'/g, "&#x27;")
-					.replace(/\//g, "&#x2F;")
+					//.replace(/\'/g, "&#x27;")
+					//.replace(/\//g, "&#x2F;")
 					.replace(/</g, "&lt;")
 					.replace(/>/g, "&gt;");
 		},
