@@ -539,8 +539,6 @@
 									postdata[nm] = $(this).val();
 									break;
 							}
-							// REMARK: to be exactly one should call htmlEncode LATER and to use validation and unformatting of unencoded data!!
-							if (p.autoencode) { postdata[nm] = jgrid.htmlEncode(postdata[nm]); }
 						}
 					});
 					return true;
@@ -607,7 +605,7 @@
 								tmp = $.isFunction(opt.defaultValue) ? opt.defaultValue.call($t) : opt.defaultValue;
 							}
 							if (!cm.edittype) { cm.edittype = "text"; }
-							if (p.autoencode) { tmp = jgrid.htmlDecode(tmp); }
+							if (p.autoEncodeOnEdit) { tmp = jgrid.oldDecodePostedData(tmp); }
 							elc = jgrid.createEl.call($t, cm.edittype, opt, tmp, false, $.extend({}, jgrid.ajaxOptions, p.ajaxSelectOptions || {}));
 							//if(tmp === "" && cm.edittype == "checkbox") {tmp = $(elc).data("offval");}
 							//if(tmp === "" && cm.edittype == "select") {tmp = $("option:eq(0)",elc).text();}
@@ -711,7 +709,7 @@
 							} catch (_) {
 								tmp = cm[i].edittype === "textarea" ? $(this).text() : $(this).html();
 							}
-							if (p.autoencode) { tmp = jgrid.htmlDecode(tmp); }
+							if (p.autoEncodeOnEdit) { tmp = jgrid.oldDecodePostedData(tmp); }
 							if (o.checkOnSubmit === true || o.checkOnUpdate) { o._savedData[nm] = tmp; }
 							nm = "#" + jqID(nm);
 							switch (cm[i].edittype) {
@@ -861,6 +859,14 @@
 						}
 
 						postdata[idname] = jgrid.stripPref(p.idPrefix, postdata[idname]);
+						if (p.autoEncodeOnEdit) {
+							$.each(postdata, function (n, v) {
+								if (!$.isFunction(v)) {
+									postdata[n] = jgrid.oldEncodePostedData(v);
+								}
+							});
+						}
+
 						var ajaxOptions = $.extend({
 							url: url,
 							type: o.mtype,
@@ -895,9 +901,9 @@
 									$("#FormError>td", frmtb).html(ret[1]);
 									$("#FormError", frmtb).show();
 								} else {
-									if (p.autoencode) {
+									if (p.autoEncodeOnEdit) {
 										$.each(postdata, function (n, v) {
-											postdata[n] = jgrid.htmlDecode(v);
+											postdata[n] = jgrid.oldDecodePostedData(v);
 										});
 									}
 									//o.reloadAfterSubmit = o.reloadAfterSubmit && $t.o.datatype != "local";

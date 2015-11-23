@@ -121,8 +121,8 @@
 					} catch (ex) {
 						tmp = edittype === "textarea" ? cc.text() : cc.html();
 					}
-					if (p.autoencode) {
-						tmp = jgrid.htmlDecode(tmp);
+					if (p.autoEncodeOnEdit) {
+						tmp = jgrid.oldDecodePostedData(tmp);
 					}
 					savedRow.push({ id: iRow, ic: iCol, name: nm, v: tmp });
 					if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) {
@@ -242,14 +242,18 @@
 							if (p.cellsubmit === "remote") {
 								if (p.cellurl) {
 									var postdata = {};
-									if (p.autoencode) {
-										v = jgrid.htmlEncode(v);
-									}
 									postdata[nm] = v;
 									var opers = p.prmNames, idname = opers.id, oper = opers.oper, hDiv = $t.grid.hDiv;
 									postdata[idname] = jgrid.stripPref(p.idPrefix, rowid);
 									postdata[oper] = opers.editoper;
 									postdata = $.extend(addpost, postdata);
+									if (p.autoEncodeOnEdit) {
+										$.each(postdata, function (n, val) {
+											if (!$.isFunction(val)) {
+												postdata[n] = jgrid.oldEncodePostedData(val);
+											}
+										});
+									}
 									$self.jqGrid("progressBar", { method: "show", loadtype: p.loadui, htmlcontent: jgrid.defaults.savetext || "Saving..." });
 									hDiv.loading = true;
 									$.ajax($.extend({

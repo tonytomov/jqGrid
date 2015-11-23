@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-11-22
+ * Date: 2015-11-23
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -554,8 +554,10 @@
 				String(value)
 					.replace(/&gt;/g, ">")
 					.replace(/&lt;/g, "<")
-					//.replace(/&#x27;/g, "'")
-					//.replace(/&#x2F;/g, "\/")
+					.replace(/&#x27;/g, "'")
+					.replace(/&#x2F;/g, "\/")
+					.replace(/&#39;/g, "'")
+					.replace(/&#47;/g, "\/")
 					.replace(/&quot;/g, "\"")
 					.replace(/&amp;/g, "&");
 		},
@@ -566,10 +568,33 @@
 				String(value)
 					.replace(/&/g, "&amp;")
 					.replace(/\"/g, "&quot;")
-					//.replace(/\'/g, "&#x27;")
-					//.replace(/\//g, "&#x2F;")
+					.replace(/\'/g, "&#39;")
+					.replace(/\//g, "&#47;")
 					.replace(/</g, "&lt;")
 					.replace(/>/g, "&gt;");
+		},
+		oldEncodePostedData: function (value) {
+			return !value ?
+				value :
+				String(value)
+					.replace(/&/g, "&amp;")
+					.replace(/\"/g, "&quot;")
+					.replace(/</g, "&lt;")
+					.replace(/>/g, "&gt;");
+		},
+		oldDecodePostedData: function (value) {
+			if (value && (value === "&nbsp;" ||
+							value === "&#160;" ||
+							(value.length === 1 && value.charCodeAt(0) === 160))) {
+				return "";
+			}
+			return !value ?
+				value :
+				String(value)
+					.replace(/&gt;/g, ">")
+					.replace(/&lt;/g, "<")
+					.replace(/&quot;/g, "\"")
+					.replace(/&amp;/g, "&");
 		},
 		clearArray: function (ar) {
 			// see http://jsperf.com/empty-javascript-array
@@ -2275,6 +2300,7 @@
 					viewsortcols: [false, "vertical", true],
 					resizeclass: "",
 					autoencode: false, // true is better for the most cases, but we hold old value to have better backwards compatibility
+					autoEncodeOnEdit: false,
 					remapColumns: [],
 					cmNamesInputOrder: [],
 					ajaxGridOptions: {},
@@ -2610,8 +2636,8 @@
 							p.colModel[idx + p.nv].width = nw;
 						} else {
 							p.tblwidth = self.newWidth || p.tblwidth;
-							$bTable.css("width", p.tblwidth + "px");
-							getGridComponent(COMPONENT_NAMES.HEADER_TABLE, self.hDiv).css("width", p.tblwidth + "px");
+							//$bTable.css("width", p.tblwidth + "px");
+							//getGridComponent(COMPONENT_NAMES.HEADER_TABLE, self.hDiv).css("width", p.tblwidth + "px");
 							if (skipGridAdjustments !== true) {
 								self.hDiv.scrollLeft = self.bDiv.scrollLeft;
 								if (p.footerrow) {
@@ -4683,7 +4709,6 @@
 			}
 			p.widthOrg = p.width;
 			setInitialColWidth();
-			hTable.css("width", p.tblwidth + "px");
 			$(eg).css("width", grid.width + "px")
 				.append("<div class='" + getGuiStyles("resizer", "ui-jqgrid-resize-mark") + "' id='" + p.rsId + "'>&#160;</div>");
 			$(p.rs)
@@ -5083,7 +5108,7 @@
 			if (p.maxHeight) {
 				$(grid.bDiv).css("max-height", p.maxHeight + (isNaN(p.maxHeight) ? "" : "px"));
 			}
-			$self0.css({ width: p.tblwidth + "px" });
+			$self0.css({ width: "1px" });
 			if (!$.support.tbody) { //IE
 				if ($(">tbody", ts).length === 2) { $(">tbody:gt(0)", ts).remove(); }
 			}
@@ -5709,8 +5734,8 @@
 										lcdata[nm] = vl;
 									}
 								}
+								title = cm.title ? { "title": vl } : {};
 								vl = t.formatter(rowid, dval, i, data, "edit");
-								title = cm.title ? { "title": stripHtml(vl) } : {};
 								var $dataFiled = $(ind.cells[i]);//$("td[role=gridcell]:eq(" + i + ")", ind);
 								if (p.treeGrid === true && nm === p.ExpandColumn) {
 									$dataFiled = $dataFiled.children("span.cell-wrapperleaf,span.cell-wrapper").first();
@@ -6211,8 +6236,8 @@
 				if (p.tblwidth) {
 					p.tblwidth = parseInt(p.tblwidth, 10); // round till integer value of px;
 					newGridWidth = p.tblwidth;
-					$($t).css("width", newGridWidth + "px");
-					getGridComponent(COMPONENT_NAMES.HEADER_TABLE, hDiv).css("width", newGridWidth + "px");
+					//$($t).css("width", newGridWidth + "px");
+					//getGridComponent(COMPONENT_NAMES.HEADER_TABLE, hDiv).css("width", newGridWidth + "px");
 					hDiv.scrollLeft = bDiv.scrollLeft;
 					if (p.footerrow) {
 						getGridComponent(COMPONENT_NAMES.FOOTER_TABLE, sDiv).css("width", newGridWidth + "px");

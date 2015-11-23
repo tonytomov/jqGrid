@@ -244,7 +244,6 @@
 					if (cv[0] === false) {
 						return false;
 					}
-					if (isRemoteSave && p.autoencode) { v = jgrid.htmlEncode(v); }
 					if (formatter === "date" && formatoptions.sendFormatted !== true) {
 						// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
 						// Floating point separator for example
@@ -320,6 +319,13 @@
 					$self.jqGrid("progressBar", { method: "show", loadtype: o.saveui, htmlcontent: o.savetext });
 					postData = $.extend({}, tmp, postData);
 					postData[idname] = jgrid.stripPref(p.idPrefix, postData[idname]);
+					if (p.autoEncodeOnEdit) {
+						$.each(postData, function (n, v) {
+							if (!$.isFunction(v)) {
+								postData[n] = jgrid.oldEncodePostedData(v);
+							}
+						});
+					}
 
 					$.ajax($.extend({
 						url: o.url,
@@ -345,9 +351,9 @@
 									ret = sucret;
 								}
 								if (ret === true) {
-									if (p.autoencode) {
+									if (p.autoEncodeOnEdit) {
 										$.each(tmp, function (n, v) {
-											tmp[n] = jgrid.htmlDecode(v);
+											tmp[n] = jgrid.oldDecodePostedData(v);
 										});
 									}
 									tmp = $.extend({}, tmp, tmp2);
