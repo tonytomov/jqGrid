@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-11-23
+ * Date: 2015-11-24
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -4695,7 +4695,7 @@
 					feedback.call(ts, "onSelectAll", toCheck ? p.selarrrow : emp, toCheck);
 					// it's important don't use return false in the event handler
 					// the usage of return false break checking/unchecking
-				}).closest("th.ui-th-column").css("padding", "0");
+				});
 			}
 
 			if (p.autowidth === true) {

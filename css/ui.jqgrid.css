@@ -129,11 +129,17 @@
 	height: auto;
 	padding: 0 2px 0 2px;
 }
+.ui-jqgrid .ui-jqgrid-htable th.jqgh_cbox {
+	padding: 0;
+}
 .ui-jqgrid .ui-jqgrid-htable .ui-jqgrid-labels th div {
 	overflow: hidden;
 	position: relative;
 	height: auto;
 	margin: 2px 2px;
+}
+.ui-jqgrid .ui-jqgrid-htable .ui-jqgrid-labels .jqgh_cbox > div {
+	margin: 0;
 }
 .ui-jqgrid-labels .ui-th-column-header,
 .ui-jqgrid .ui-jqgrid-labels th.ui-th-column {
