@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-11-24
+ * Date: 2015-11-28
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -10775,6 +10775,7 @@
 							viewPagerButtons: true,
 							overlayClass: "ui-widget-overlay",
 							removemodal: true,
+							skipPostTypes: ["image", "file"],
 							form: "edit"
 						},
 						getGridRes.call($self, "edit"),
@@ -10822,7 +10823,7 @@
 				}
 				function getFormData() {
 					$(frmtb + " > tbody > tr > td .FormElement").each(function () {
-						var $celm = $(".customelement", this), nm = this.name, cm, iCol, editoptions, formatoptions, newformat;
+						var $celm = $(".customelement", this), nm = this.name, cm, iCol, editoptions, formatoptions, newformat, type;
 						if ($celm.length) {
 							nm = $celm.attr("name");
 							iCol = iColByName[nm];
@@ -10844,7 +10845,8 @@
 								}
 							}
 						} else {
-							switch ($(this)[0].type) {
+							type = $(this)[0].type;
+							switch (type) {
 								case "checkbox":
 									postdata[nm] = $(this).is(":checked") ? $(this).val() : $(this).data("offval");
 									break;
@@ -10874,7 +10876,9 @@
 									}
 									break;
 								default:
-									postdata[nm] = $(this).val();
+									if (type !== undefined && $.inArray(type, o.skipPostTypes) < 0) {
+										postdata[nm] = $(this).val();
+									}
 									break;
 							}
 						}
