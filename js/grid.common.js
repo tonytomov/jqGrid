@@ -435,7 +435,8 @@
 						options.size = msl ? 3 : 1;
 					}
 					if (options.dataUrl !== undefined) {
-						var rowid = null, postData = options.postData || ajaxso.postData;
+						var rowid = null, postData = options.postData || ajaxso.postData,
+							ajaxContext = { elem: elem, options: options, cm: cm, iCol: iCol, ovm: ovm };
 						try {
 							rowid = options.rowId;
 						} catch (ignore) { }
@@ -444,11 +445,11 @@
 							rowid = jgrid.stripPref(p.idPrefix, rowid);
 						}
 						$.ajax($.extend({
-							url: $.isFunction(options.dataUrl) ? options.dataUrl.call($t, rowid, vl, String(options.name)) : options.dataUrl,
+							url: $.isFunction(options.dataUrl) ? options.dataUrl.call($t, rowid, vl, String(options.name), ajaxContext) : options.dataUrl,
 							type: "GET",
 							dataType: "html",
 							data: $.isFunction(postData) ? postData.call($t, rowid, vl, String(options.name)) : postData,
-							context: { elem: elem, options: options, cm: cm, iCol: iCol, ovm: ovm },
+							context: ajaxContext,
 							success: function (data, textStatus, jqXHR) {
 								var ovm1 = this.ovm, elem1 = this.elem, cm1 = this.cm, iCol1 = this.iCol,
 									options1 = $.extend({}, this.options),
