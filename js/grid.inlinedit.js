@@ -183,7 +183,7 @@
 		},
 		saveRow: function (rowid, successfunc, url, extraparam, aftersavefunc, errorfunc, afterrestorefunc, beforeSaveRow) {
 			// Compatible mode old versions
-			var args = $.makeArray(arguments).slice(1), o = {}, $t = this[0], $self = $($t), p = $t != null ? $t.p : null, frmoper, infoDialog = jgrid.info_dialog;
+			var args = $.makeArray(arguments).slice(1), o = {}, $t = this[0], $self = $($t), p = $t != null ? $t.p : null, editOrAdd, infoDialog = jgrid.info_dialog;
 			if (!$t.grid || p == null) { return; }
 
 			if ($.type(args[0]) === "object") {
@@ -220,9 +220,9 @@
 
 			if (ind === false) { return; }
 
-			frmoper = o.extraparam[opers.oper] === opers.addoper ? "add" : "edit";
+			editOrAdd = o.extraparam[opers.oper] === opers.addoper ? "add" : "edit";
 
-			if (!editFeedback.call($t, o, "beforeSaveRow", o, rowid, frmoper)) { return; }
+			if (!editFeedback.call($t, o, "beforeSaveRow", o, rowid, editOrAdd)) { return; }
 
 			editable = $tr.attr("editable");
 			o.url = o.url || p.editurl;
@@ -328,12 +328,12 @@
 					}
 
 					$.ajax($.extend({
-						url: o.url,
+						url: $.isFunction(o.url) ? o.url.call($t, postData[idname], editOrAdd, postData, o) : o.url,
 						data: jgrid.serializeFeedback.call($t,
 								$.isFunction(o.serializeSaveData) ? o.serializeSaveData : p.serializeRowData,
 								"jqGridInlineSerializeSaveData",
 								postData),
-						type: o.mtype,
+						type: $.isFunction(o.mtype) ? o.mtype.call($t, editOrAdd, o, postData[idname], postData) : o.mtype,
 						complete: function (jqXHR, textStatus) {
 							$self.jqGrid("progressBar", { method: "hide", loadtype: o.saveui, htmlcontent: o.savetext });
 							// textStatus can be "abort", "timeout", "error", "parsererror" or some text from text part of HTTP error occurs

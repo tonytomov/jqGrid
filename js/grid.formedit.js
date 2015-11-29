@@ -448,7 +448,7 @@
 				var frmgr = "FrmGrid_" + gridId, frmgrId = frmgr, frmtborg = "TblGrid_" + gridId, frmtb = "#" + jqID(frmtborg), frmtb2 = frmtb + "_2",
 					ids = { themodal: "editmod" + gridId, modalhead: "edithd" + gridId, modalcontent: "editcnt" + gridId, resizeAlso: frmgr },
 					themodalSelector = "#" + jqID(ids.themodal), gboxSelector = p.gBox, propOrAttr = p.propOrAttr, colModel = p.colModel, iColByName = p.iColByName,
-					maxCols = 1, maxRows = 0, postdata, diff, frmoper, commonIconClass = o.commonIconClass,
+					maxCols = 1, maxRows = 0, postdata, diff, editOrAdd, commonIconClass = o.commonIconClass,
 					errcap = getGridRes.call($self, "errors.errcap"),
 					editFeedback = function () {
 						var args = $.makeArray(arguments);
@@ -465,11 +465,11 @@
 				frmgr = "#" + jqID(frmgr);
 				if (rowid === "new") {
 					rowid = "_empty";
-					frmoper = "add";
+					editOrAdd = "add";
 					o.caption = o.addCaption;
 				} else {
 					o.caption = o.editCaption;
-					frmoper = "edit";
+					editOrAdd = "edit";
 				}
 				if (!o.recreateForm) {
 					var formProp = $self.data("formProp");
@@ -801,11 +801,11 @@
 				function postIt() {
 					var ret = [true, "", ""], onClickSubmitResult = {}, opers = p.prmNames, idname, oper, key, selr, i, url, itm;
 
-					var retvals = $self.triggerHandler("jqGridAddEditBeforeCheckValues", [$(frmgr), frmoper]);
+					var retvals = $self.triggerHandler("jqGridAddEditBeforeCheckValues", [$(frmgr), editOrAdd]);
 					if (retvals && typeof retvals === "object") { postdata = retvals; }
 
 					if ($.isFunction(o.beforeCheckValues)) {
-						retvals = o.beforeCheckValues.call($t, postdata, $(frmgr), frmoper);
+						retvals = o.beforeCheckValues.call($t, postdata, $(frmgr), editOrAdd);
 						if (retvals && typeof retvals === "object") { postdata = retvals; }
 					}
 					for (key in postdata) {
@@ -816,16 +816,16 @@
 					}
 					setNullsOrUnformat();
 					if (ret[0]) {
-						onClickSubmitResult = $self.triggerHandler("jqGridAddEditClickSubmit", [o, postdata, frmoper]);
+						onClickSubmitResult = $self.triggerHandler("jqGridAddEditClickSubmit", [o, postdata, editOrAdd]);
 						if (onClickSubmitResult === undefined && $.isFunction(o.onclickSubmit)) {
-							onClickSubmitResult = o.onclickSubmit.call($t, o, postdata, frmoper) || {};
+							onClickSubmitResult = o.onclickSubmit.call($t, o, postdata, editOrAdd) || {};
 						}
-						ret = $self.triggerHandler("jqGridAddEditBeforeSubmit", [postdata, $(frmgr), frmoper]);
+						ret = $self.triggerHandler("jqGridAddEditBeforeSubmit", [postdata, $(frmgr), editOrAdd]);
 						if (ret === undefined) {
 							ret = [true, "", ""];
 						}
 						if (ret[0] && $.isFunction(o.beforeSubmit)) {
-							ret = o.beforeSubmit.call($t, postdata, $(frmgr), frmoper);
+							ret = o.beforeSubmit.call($t, postdata, $(frmgr), editOrAdd);
 						}
 					}
 
@@ -872,111 +872,111 @@
 						}
 
 						var ajaxOptions = $.extend({
-							url: url,
-							type: o.mtype,
-							//data: $.isFunction(o.serializeEditData) ? o.serializeEditData.call($t,postdata) :  postdata,
-							data: jgrid.serializeFeedback.call($t,
-								$.isFunction(o.serializeEditData) ? o.serializeEditData : p.serializeEditData,
-								"jqGridAddEditSerializeEditData",
-								postdata),
-							complete: function (jqXHR, textStatus) {
-								$("#sData", frmtb2).removeClass(activeClass);
-								postdata[idname] = p.idPrefix + $("#id_g", frmtb).val();
-								if ((jqXHR.status >= 300 && jqXHR.status !== 304) || (jqXHR.status === 0 && jqXHR.readyState === 4)) {
-									ret[0] = false;
-									ret[1] = $self.triggerHandler("jqGridAddEditErrorTextFormat", [jqXHR, frmoper]);
-									if ($.isFunction(o.errorTextFormat)) {
-										ret[1] = o.errorTextFormat.call($t, jqXHR, frmoper);
-									} else {
-										ret[1] = textStatus + " Status: '" + jqXHR.statusText + "'. Error code: " + jqXHR.status;
-									}
-								} else {
-									// data is posted successful
-									// execute aftersubmit with the returned data from server
-									ret = $self.triggerHandler("jqGridAddEditAfterSubmit", [jqXHR, postdata, frmoper]);
-									if (ret === undefined) {
-										ret = [true, "", ""];
-									}
-									if (ret[0] && $.isFunction(o.afterSubmit)) {
-										ret = o.afterSubmit.call($t, jqXHR, postdata, frmoper);
-									}
-								}
-								if (ret[0] === false) {
-									$("#FormError>td", frmtb).html(ret[1]);
-									$("#FormError", frmtb).show();
-								} else {
-									if (p.autoEncodeOnEdit) {
-										$.each(postdata, function (n, v) {
-											postdata[n] = jgrid.oldDecodePostedData(v);
-										});
-									}
-									//o.reloadAfterSubmit = o.reloadAfterSubmit && $t.o.datatype != "local";
-									// the action is add
-									var reloadGridOptions = [$.extend({}, o.reloadGridOptions || {})];
-									if (postdata[oper] === opers.addoper) {
-										//id processing
-										// user not set the id ret[2]
-										if (!ret[2]) { ret[2] = jgrid.randId(); }
-										if (postdata[idname] == null || postdata[idname] === "_empty" || postdata[oper] === opers.addoper) {
-											postdata[idname] = ret[2];
+								url: $.isFunction(url) ? url.call($t, postdata[idname], editOrAdd, postdata, o) : url,
+								type: $.isFunction(o.mtype) ? o.mtype.call($t, editOrAdd, o, postdata[idname], postdata) : o.mtype,
+								//data: $.isFunction(o.serializeEditData) ? o.serializeEditData.call($t,postdata) :  postdata,
+								data: jgrid.serializeFeedback.call($t,
+									$.isFunction(o.serializeEditData) ? o.serializeEditData : p.serializeEditData,
+									"jqGridAddEditSerializeEditData",
+									postdata),
+								complete: function (jqXHR, textStatus) {
+									$("#sData", frmtb2).removeClass(activeClass);
+									postdata[idname] = p.idPrefix + $("#id_g", frmtb).val();
+									if ((jqXHR.status >= 300 && jqXHR.status !== 304) || (jqXHR.status === 0 && jqXHR.readyState === 4)) {
+										ret[0] = false;
+										ret[1] = $self.triggerHandler("jqGridAddEditErrorTextFormat", [jqXHR, editOrAdd]);
+										if ($.isFunction(o.errorTextFormat)) {
+											ret[1] = o.errorTextFormat.call($t, jqXHR, editOrAdd);
 										} else {
-											ret[2] = postdata[idname];
-										}
-										if (o.reloadAfterSubmit) {
-											$self.trigger("reloadGrid", reloadGridOptions);
-										} else {
-											if (p.treeGrid === true) {
-												$j.addChildNode.call($self, ret[2], selr, postdata);
-											} else {
-												$j.addRowData.call($self, ret[2], postdata, o.addedrow);
-											}
-										}
-										if (o.closeAfterAdd) {
-											if (p.treeGrid !== true) {
-												setSelection.call($self, ret[2]);
-											}
-											hideModal(themodalSelector, { gb: gboxSelector, jqm: o.jqModal, onClose: o.onClose, removemodal: o.removemodal, formprop: !o.recreateForm, form: o.form });
-										} else if (o.clearAfterAdd) {
-											fillData("_empty", frmgr);
+											ret[1] = textStatus + " Status: '" + jqXHR.statusText + "'. Error code: " + jqXHR.status;
 										}
 									} else {
-										// the action is update
-										if (o.reloadAfterSubmit) {
-											$self.trigger("reloadGrid", reloadGridOptions);
-											if (!o.closeAfterEdit) { setTimeout(function () { setSelection.call($self, postdata[idname]); }, 1000); }
-										} else {
-											if (p.treeGrid === true) {
-												$j.setTreeRow.call($self, postdata[idname], postdata);
-											} else {
-												$j.setRowData.call($self, postdata[idname], postdata);
-											}
+										// data is posted successful
+										// execute aftersubmit with the returned data from server
+										ret = $self.triggerHandler("jqGridAddEditAfterSubmit", [jqXHR, postdata, editOrAdd]);
+										if (ret === undefined) {
+											ret = [true, "", ""];
 										}
-										if (o.closeAfterEdit) { hideModal(themodalSelector, { gb: gboxSelector, jqm: o.jqModal, onClose: o.onClose, removemodal: o.removemodal, formprop: !o.recreateForm, form: o.form }); }
+										if (ret[0] && $.isFunction(o.afterSubmit)) {
+											ret = o.afterSubmit.call($t, jqXHR, postdata, editOrAdd);
+										}
 									}
-									if ($.isFunction(o.afterComplete)) {
-										var copydata = jqXHR;
-										setTimeout(function () {
-											$self.triggerHandler("jqGridAddEditAfterComplete", [copydata, postdata, $(frmgr), frmoper]);
-											o.afterComplete.call($t, copydata, postdata, $(frmgr), frmoper);
-											copydata = null;
-										}, 50);
-									}
-									if (o.checkOnSubmit || o.checkOnUpdate) {
-										$(frmgr).data("disabled", false);
-										if (o._savedData[gridId + "_id"] !== "_empty") {
-											var key1;
-											for (key1 in o._savedData) {
-												if (o._savedData.hasOwnProperty(key1) && postdata[key1]) {
-													o._savedData[key1] = postdata[key1];
+									if (ret[0] === false) {
+										$("#FormError>td", frmtb).html(ret[1]);
+										$("#FormError", frmtb).show();
+									} else {
+										if (p.autoEncodeOnEdit) {
+											$.each(postdata, function (n, v) {
+												postdata[n] = jgrid.oldDecodePostedData(v);
+											});
+										}
+										//o.reloadAfterSubmit = o.reloadAfterSubmit && $t.o.datatype != "local";
+										// the action is add
+										var reloadGridOptions = [$.extend({}, o.reloadGridOptions || {})];
+										if (postdata[oper] === opers.addoper) {
+											//id processing
+											// user not set the id ret[2]
+											if (!ret[2]) { ret[2] = jgrid.randId(); }
+											if (postdata[idname] == null || postdata[idname] === "_empty" || postdata[oper] === opers.addoper) {
+												postdata[idname] = ret[2];
+											} else {
+												ret[2] = postdata[idname];
+											}
+											if (o.reloadAfterSubmit) {
+												$self.trigger("reloadGrid", reloadGridOptions);
+											} else {
+												if (p.treeGrid === true) {
+													$j.addChildNode.call($self, ret[2], selr, postdata);
+												} else {
+													$j.addRowData.call($self, ret[2], postdata, o.addedrow);
+												}
+											}
+											if (o.closeAfterAdd) {
+												if (p.treeGrid !== true) {
+													setSelection.call($self, ret[2]);
+												}
+												hideModal(themodalSelector, { gb: gboxSelector, jqm: o.jqModal, onClose: o.onClose, removemodal: o.removemodal, formprop: !o.recreateForm, form: o.form });
+											} else if (o.clearAfterAdd) {
+												fillData("_empty", frmgr);
+											}
+										} else {
+											// the action is update
+											if (o.reloadAfterSubmit) {
+												$self.trigger("reloadGrid", reloadGridOptions);
+												if (!o.closeAfterEdit) { setTimeout(function () { setSelection.call($self, postdata[idname]); }, 1000); }
+											} else {
+												if (p.treeGrid === true) {
+													$j.setTreeRow.call($self, postdata[idname], postdata);
+												} else {
+													$j.setRowData.call($self, postdata[idname], postdata);
+												}
+											}
+											if (o.closeAfterEdit) { hideModal(themodalSelector, { gb: gboxSelector, jqm: o.jqModal, onClose: o.onClose, removemodal: o.removemodal, formprop: !o.recreateForm, form: o.form }); }
+										}
+										if ($.isFunction(o.afterComplete)) {
+											var copydata = jqXHR;
+											setTimeout(function () {
+												$self.triggerHandler("jqGridAddEditAfterComplete", [copydata, postdata, $(frmgr), editOrAdd]);
+												o.afterComplete.call($t, copydata, postdata, $(frmgr), editOrAdd);
+												copydata = null;
+											}, 50);
+										}
+										if (o.checkOnSubmit || o.checkOnUpdate) {
+											$(frmgr).data("disabled", false);
+											if (o._savedData[gridId + "_id"] !== "_empty") {
+												var key1;
+												for (key1 in o._savedData) {
+													if (o._savedData.hasOwnProperty(key1) && postdata[key1]) {
+														o._savedData[key1] = postdata[key1];
+													}
 												}
 											}
 										}
 									}
+									o.processing = false;
+									try { $(":input:visible", frmgr)[0].focus(); } catch (ignore) { }
 								}
-								o.processing = false;
-								try { $(":input:visible", frmgr)[0].focus(); } catch (ignore) { }
-							}
-						}, jgrid.ajaxOptions, o.ajaxEditOptions);
+							}, jgrid.ajaxOptions, o.ajaxEditOptions);
 
 						if (!ajaxOptions.url && !o.useDataProxy) {
 							if ($.isFunction(p.dataProxy)) {
@@ -1101,7 +1101,7 @@
 				flr = $("<tr style='display:none' class='tinfo'><td class='topinfo' colspan='" + (maxCols * 2) + "'>" + (o.topinfo || "&#160;") + "</td></tr>");
 				flr[0].rp = 0;
 				$(tbl).append(flr);
-				if (!editFeedback("beforeInitData", frm, frmoper)) { return; }
+				if (!editFeedback("beforeInitData", frm, editOrAdd)) { return; }
 				restoreInline();
 				// set the id.
 				// use carefull only to change here colproperties.
@@ -1241,13 +1241,13 @@
 					});
 				}
 				// here initform - only once
-				editFeedback("onInitializeForm", $(frmgr), frmoper);
+				editFeedback("onInitializeForm", $(frmgr), editOrAdd);
 				if (rowid === "_empty" || !o.viewPagerButtons) {
 					$("#pData,#nData", frmtb2).hide();
 				} else {
 					$("#pData,#nData", frmtb2).show();
 				}
-				editFeedback("beforeShowForm", $(frmgr), frmoper);
+				editFeedback("beforeShowForm", $(frmgr), editOrAdd);
 				$(themodalSelector).data("onClose", o.onClose);
 				viewModal(themodalSelector, {
 					gbox: gboxSelector,
@@ -1327,7 +1327,7 @@
 					}
 					return false;
 				});
-				editFeedback("afterShowForm", $(frmgr), frmoper);
+				editFeedback("afterShowForm", $(frmgr), editOrAdd);
 				var posInit = getCurrPos();
 				updateNav(posInit[0], posInit);
 			});
@@ -1753,51 +1753,51 @@
 							}
 							postd[idname] = postdata.join();
 							$(this).addClass(activeClass);
-							var ajaxOptions = $.extend({
-								url: o.url || p.editurl,
-								type: o.mtype,
-								data: $.isFunction(o.serializeDelData) ? o.serializeDelData.call($t, postd) : postd,
-								complete: function (jqXHR, textStatus) {
-									var i;
-									$("#dData", dtbl + "_2").removeClass(activeClass);
-									if ((jqXHR.status >= 300 && jqXHR.status !== 304) || (jqXHR.status === 0 && jqXHR.readyState === 4)) {
-										ret[0] = false;
-										if ($.isFunction(o.errorTextFormat)) {
-											ret[1] = o.errorTextFormat.call($t, jqXHR);
-										} else {
-											ret[1] = textStatus + " Status: '" + jqXHR.statusText + "'. Error code: " + jqXHR.status;
-										}
-									} else {
-										// data is posted successful
-										// execute aftersubmit with the returned data from server
-										if ($.isFunction(o.afterSubmit)) {
-											ret = o.afterSubmit.call($t, jqXHR, postd);
-										}
-									}
-									if (ret[0] === false) {
-										$("#DelError>td", dtbl).html(ret[1]);
-										$("#DelError", dtbl).show();
-									} else {
-										if (o.reloadAfterSubmit && p.datatype !== "local") {
-											$self.trigger("reloadGrid", [$.extend({}, o.reloadGridOptions || {})]);
-										} else {
-											if (p.treeGrid === true) {
-												try { $j.delTreeNode.call($self, formRowIds[0]); } catch (ignore) { }
+							var url = o.url || p.editurl,
+								ajaxOptions = $.extend({
+									url: $.isFunction(url) ? url.call($t, postd[idname], postd, o) : url,
+									data: $.isFunction(o.serializeDelData) ? o.serializeDelData.call($t, postd) : postd,
+									complete: function (jqXHR, textStatus) {
+										var i;
+										$("#dData", dtbl + "_2").removeClass(activeClass);
+										if ((jqXHR.status >= 300 && jqXHR.status !== 304) || (jqXHR.status === 0 && jqXHR.readyState === 4)) {
+											ret[0] = false;
+											if ($.isFunction(o.errorTextFormat)) {
+												ret[1] = o.errorTextFormat.call($t, jqXHR);
 											} else {
-												formRowIds = formRowIds.slice(); // make copy for save deleting
-												for (i = 0; i < formRowIds.length; i++) {
-													$j.delRowData.call($self, formRowIds[i]);
-												}
+												ret[1] = textStatus + " Status: '" + jqXHR.statusText + "'. Error code: " + jqXHR.status;
+											}
+										} else {
+											// data is posted successful
+											// execute aftersubmit with the returned data from server
+											if ($.isFunction(o.afterSubmit)) {
+												ret = o.afterSubmit.call($t, jqXHR, postd);
 											}
 										}
-										setTimeout(function () {
-											deleteFeedback("afterComplete", jqXHR, postdata, $(dtbl));
-										}, 50);
+										if (ret[0] === false) {
+											$("#DelError>td", dtbl).html(ret[1]);
+											$("#DelError", dtbl).show();
+										} else {
+											if (o.reloadAfterSubmit && p.datatype !== "local") {
+												$self.trigger("reloadGrid", [$.extend({}, o.reloadGridOptions || {})]);
+											} else {
+												if (p.treeGrid === true) {
+													try { $j.delTreeNode.call($self, formRowIds[0]); } catch (ignore) { }
+												} else {
+													formRowIds = formRowIds.slice(); // make copy for save deleting
+													for (i = 0; i < formRowIds.length; i++) {
+														$j.delRowData.call($self, formRowIds[i]);
+													}
+												}
+											}
+											setTimeout(function () {
+												deleteFeedback("afterComplete", jqXHR, postdata, $(dtbl));
+											}, 50);
+										}
+										o.processing = false;
+										if (ret[0]) { hideModal(themodalSelector, { gb: gboxSelector, jqm: o.jqModal, onClose: o.onClose, removemodal: o.removemodal }); }
 									}
-									o.processing = false;
-									if (ret[0]) { hideModal(themodalSelector, { gb: gboxSelector, jqm: o.jqModal, onClose: o.onClose, removemodal: o.removemodal }); }
-								}
-							}, jgrid.ajaxOptions, o.ajaxDelOptions);
+								}, jgrid.ajaxOptions, o.ajaxDelOptions);
 
 
 							if (!ajaxOptions.url && !o.useDataProxy) {
