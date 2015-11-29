@@ -112,7 +112,6 @@
      *           metadataurl: 'http://services.odata.org/V4/OData/OData.svc/$metadata',
      *           errorfunc: function (jqXHR, parsedError) {
      *               jqXHR = jqXHR.xhr || jqXHR;
-     *               jqXHR = jqXHR.xhr || jqXHR;
      *               parsedError = $('#errdialog').html() + parsedError;
      *               $('#errdialog').html(parsedError).dialog('open');
      *          });

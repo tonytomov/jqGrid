@@ -7,7 +7,7 @@ jqGrid was developed mostly by [Tony Tomov](https://github.com/tonytomov) in the
 
 The code from the GitHib repository is the fork of jqGrid 4.7.0 - the latest version available under MIT/GPL-licences. It will be provided under MIT/GPL-licences.
 
-Below you can find short description of new features and bug fixes implemented in free jqGrid 4.10.0 (compared with version 4.9.2). The version is developed by [Oleg Kiriljuk](https://github.com/OlegKi), alias [Oleg](http://stackoverflow.com/users/315935/oleg) on the stackoverflow and [OlegK](http://www.trirand.com/blog/?page_id=393) on trirand forum.
+Below you can find short description of new features and bug fixes implemented in free jqGrid 4.11.0 (compared with version 4.10.0). The version is developed by [Oleg Kiriljuk](https://github.com/OlegKi), alias [Oleg](http://stackoverflow.com/users/315935/oleg) on the stackoverflow and [OlegK](http://www.trirand.com/blog/?page_id=393) on trirand forum.
 
 Read [Wiki](https://github.com/free-jqgrid/jqGrid/wiki) for more detailed information about the features of free-jqGrid.
 
@@ -17,9 +17,9 @@ One can install the package with respect of [bower](http://bower.io/search/?q=fr
 
 Free jqGrid is published on [cdnjs](https://cdnjs.com/libraries/free-jqgrid) and [jsDelivr CDN](http://www.jsdelivr.com/#!free-jqgrid). So one can use it directly from Internet by including for example
 ```html
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.10.0/css/ui.jqgrid.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.10.0/js/i18n/grid.locale-de.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.10.0/js/jquery.jqgrid.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.11.0/css/ui.jqgrid.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.11.0/js/i18n/grid.locale-de.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.11.0/js/jquery.jqgrid.min.js"></script>
 ```
 
 It somebody want to test the *latest* version of free jqGrid, one can load it directly from GitHib using [RawGit](http://rawgit.com/) service:
@@ -32,58 +32,56 @@ All other language files and plugins are avalable from CDN too. See [the wiki ar
 
 The package is published on [WebJars](http://www.webjars.org/) and it's deployed on [Maven Central]((http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22free-jqgrid%22)) too.
 
-Remark: the above URLs will be available **after publishing** the release of the version of 4.10.0
+Remark: the above URLs will be available **after publishing** the release of the version of 4.11.0
 
-### Main new features and improvements implemented in the version 4.10.0.
+### Main new features and improvements implemented in the version 4.11.0.
 
-* New `abortAjaxRequest` method, which allows to abort pending Ajax request (before receiving the answer from the server). See [the issue](https://github.com/free-jqgrid/jqGrid/issues/131) for more details.
-* New option `threeStateSort:true` is implemented. It change the default behavior on click on the column header. Instead of toogleing between ascending and descending sorting, it will be changed between three states: ascending, descending and unsorted. See [the pull request](https://github.com/free-jqgrid/jqGrid/pull/141) and [the demo](http://www.ok-soft-gmbh.com/jqGrid/OK/3stateSort.htm) for more details.
-* New option `multiPageSelection:true` is implemented. It works in combination with `multiselect:true` option. It allows 1) select some rows during loading just by filling the rowids in `selarrrow` parameter 2) the parameter `selarrrow` can hold now selected rows from *multiple pages*. Selection of some rows on one page, changing of the page, selection some rows on another page, returting to the previous page hold all previously selected rows. Sorting don't clear the selection. See [the answer](http://stackoverflow.com/a/33021115/315935) and [the demo](http://www.ok-soft-gmbh.com/jqGrid/OK/multiPageSelection.htm) for more details.* New option `maxHeight` allows to set `max-height` CSS property on bdiv. The new option can be good combined with default `height: "auto"` option. For example the option `maxHeight: 400` have no influence in case of small number of rows, but it reduces the maximal height of body of the grid (bdiv) to `400px`, the grid get not so many place on the page and the user have to use horizontal scroll bar (created on demand). See [the old answer](http://stackoverflow.com/a/5896432/315935) for more details.
-* New option `quickEmpty:"quickest"` is implemented and is default. It improves the performance of rewdrawing the grid. One can use `quickEmpty:true` to switch back to the previous behavior and to use `quickEmpty:false` to get back to the behavior of jqGrid 4.7.
-* New options of `editRow` allows easy to implement starting of inline editing inside of `onSelectRow` or `ondblClickRow` and **setting the focus on the cell which the user clicked**. See [the answer](http://stackoverflow.com/a/33174711/315935) and [the demo](http://www.ok-soft-gmbh.com/jqGrid/OK/focusOfEditRow.htm) for details.
-* New callback `subGridOptions.hasSubgrid` is implemented. It allows to remove "+" icon of subgrid from some rows which definitively have no subgrids (have empty subgrids). See [the answer](http://stackoverflow.com/a/32744570/315935) and [the demo](http://www.ok-soft-gmbh.com/jqGrid/OK/hasSubrgid.htm) for more details.
-* Essential improvement of performance of frozen columns espesially in scenario where the grid have many hidden rows (like data grouping with `groupCollapse: true` option in `groupingView`). The parameters of the event `jqGridResetFrozenHeights` allows to elliminate unneeded work. See discussion [the pull request](https://github.com/free-jqgrid/jqGrid/pull/157) for more details. One can compare the performance of expanding/collapsing in [the demo](http://jsfiddle.net/OlegKi/e3ouywqs/4/) with [the same demo](http://jsfiddle.net/OlegKi/e3ouywqs/7/), but which uses free jqGrid 4.9.2. One can increase the size of rows from 100 to 1000 for example (in `getGridData(100)`) and compare the both demos. One can compare the time for resizing the columns in both grids.
-* Essential improvement of performance of `autoResizeColumn` method used in `autoResizeColumn` and `autoResizeAllColumns` methods and in case of usage of `autoresizeOnLoad: true` option.
+* Remove old plugins from free jqGrid (`grid.addons.js`, `grid.postext.js`, `grid.setcolumns.js`, `jquery.tablednd.js`, `jquery.searchfilter.js`, `searchfilter.css`).
+* Add `@license` to the comment of plugins and locale files to hold the information on minimizing.
+* Including version number of free jqGrid as the comment in `ui.jqgrid.css` file.
+* Use `grunt` instead of `gradle` for building free jqGrid. Minimize css using .map file. Update all .min and .map.
+* Add `"u1000"` date format in addition to existing `"u"` format. See [the answer](http://stackoverflow.com/a/33652984/315935) for more details.
+* Add support of `editable: "hidden"` property in inline editing. It can be used to send the content of non-editable column to the server during row editing.
+* Changes of CSS settings of TreeGrid icons. Many changes in the structure of grouping header.
+* New `hasMultiselectCheckBox` callback allows to remove multiselect checkbox from some rows.
+* Allow to use HTML5 specific values of `type` attribute of `<input>` element created during editing (`number`, `range` and so on). New option `skipPostTypes: ["image", "file"]` allows to minimize side effects of the changes.
+* Changing encoding of data during inline and form editing. No HTML encoding will be used by default if `autoencode: true` option is used. It's important for sending correct (non-encoded) JSON data and still use `autoencode: true` to *display* the information in the grid. New `autoEncodeOnEdit: true` option can be used to simulate the old behavior. The option is important for better compatibility with previous versions of jqGrid.
+* `url` of inline editing, cell editing and form editing (inclusive deleting) can be defined now as function. `mtype` can be function too for inline and form editing methods.
 
-### The below is the full list of changes in the version 4.10.0 compared with 4.9.2.
+### The below is the full list of changes in the version 4.11.0 compared with 4.10.0
 
-* Bug fix in usage of `sortable:true` (`sortableColumns` method)
-* New `abortAjaxRequest` method, which allows to abort pending Ajax request (before receiving the answer from the server)
-* Bug fix in processing of sorting by the date `"0000-00-00"`
-* Bug fix to process of <kbd>Enter</kbd> on navigator buttons only. It can be important in case of usage custom elements in the navigator bar.
-* Bug fix in processing of filters of Advainced Searching after Reset button is previously pressed.
-* Fix of the height of column resizer
-* New option `multiPageSelection:true` is implemented. It works in combination with `multiselect:true` option. It allows 1) select some rows during loading just by filling the rowids in `selarrrow` parameter 2) the parameter `selarrrow` can hold now selected rows from *multiple pages*. Selection of some rows on one page, changing of the page, selection some rows on another page, returting to the previous page hold all previously selected rows. Sorting don't clear the selection.
-* Performance improvements of `$.jgrid.parseDate`
-* New callback `subGridOptions.hasSubgrid` is implemented. It allows to remove "+" icon of subgrid from some rows which definitively have no subgrids (have empty subgrids).
-* Bug fix in `GridToForm` method in parsing of data, which contains `&#160;` symbol
-* Update of `grid.inlinedit.js` to allow overwrite `$.jgrid.info_dialog` method.
-* New option `multiPageSelection:true` is implemented.
-* Bug fixes in frozen columns in creating of hdiv and sdiv
-* New option `quickEmpty:"quickest"` is implemented and is default
-* Allow to use `focusField` as DOM element or Event as option of `editRow`. New option `defaultFocusField` implemented in `editRow`. The new options allow easy to implement starting of inline editing inside of `onSelectRow` or `ondblClickRow` and **setting the focus on the cell which the user clicked**.
-* Add small magrin for sorting icons (between the sorting icon(s) and the text of column header)
-* Bug fix in calculation of the width of column headers in `getAutoResizableWidth`
-* Bug fix of the icon of TreeGrid leaf
-* Improve performance of `autoResizeColumn` method
-* update frozen columns to work better with filter toolbar and `jqPivot`
-* Bug fix in the code of `editRow` to make `keys:true` option correctly work with frozen columns.
-* Improve performance `setRowData` with frozen columns
-* Bug fix to support `focusField` which point to frozen column
-* Improvement of the performance of frozen columns
-* Bug fix of the frozen footer (fsDiv)
-* Add new `$.jgrid.hasAllClasses` method
-* New option `maxHeight` allows to set `max-height` CSS property on bdiv. The new option can be good combined with default `height: "auto"` option. For example the option `maxHeight: 400` have no influence in case of small number of rows, but it reduces the maximal height of body of the grid (bdiv) to `400px`, the grid get not so many place on the page and the user have to use horizontal scroll bar (created on demand).
-* Bug fixes in setting the width of bdiv (in case of vertical scrollbar appears)
-* Bug fixes in `groupingRender` in processing of multi-level grouping with `groupCollapse:true` and `showSummaryOnHide:false`
-* `groupingToggle` method is full rewritten to better support frozen columns and to improve the performance
-* Bug fix in `setGroupHeaders` to set `<thable>` always before `<btable>` in the hdiv
-* `setFrozenColumns` method is changed to improve essentially the performance.
-* The parameters of `jqGridResetFrozenHeights` event is changed to improve performence in `setFrozenColumns`
-* Bug fix in internal `savePositionOnHide` function used in all methods of form editing to save the position of the form on closing. The position of the forms is correctly saved and restored now.
+* Add support of array values for `summaryTpl` and `summaryType`
+* Bug fix (in case of `toTop:true`, and `overlay:close`)
+* Improve validation of input parameters of `editCell`
+* Improve a little the performance by usage of `.first()` instead of `.filter(":first")`
+* Bug fix in processing of editOptions option of `formatter: "actions"`
+* Bug fix in `destroyFilterToolbar`.
+* Bug fix in `setGridWidth` in case of usage one call for multiple grids
+* Remove old plugins from free jqGrid (`grid.addons.js`, `grid.postext.js`, `grid.setcolumns.js`, `jquery.tablednd.js`, `jquery.searchfilter.js`, `searchfilter.css`).
+* Bug fix: checkboxes should be not checked on false return of beforeSelectRow
+* Fix reloading of the grid with grouping which have `loadonce:true` option
+* Add `"u1000"` date format in addition to existing `"u"` format. See [the answer](http://stackoverflow.com/a/33652984/315935) for more details.
+* Add `@license` to the comment of plugins and locale files to hold the information on minimizing.
+* Use `grunt` instead of `gradle` for building free jqGrid. Minimize css using .map file. Update all .min and .map.
+* Add support of `editable: "hidden"` property in inline editing. It can be used to send the content of non-editable column to the server during row editing.
+* Small selector optimization. The usage of `.filter(":hidden")` in `grid.grouping.js` module
+* Fix the number of empty `<td>` in `<htable>`. It improves the compatibility to HTML standards
+* Small optimization of `ui.jqgrid.css`
+* Changes of CSS settings of TreeGrid icons.
+* Many changes in the structure of grouping header.
+* Including version number of free jqGrid as the comment in `ui.jqgrid.css` file.
+* New `hasMultiselectCheckBox` callback allows to remove multiselect checkbox from some rows
+* Bug fix in call of `buildSummaryTd`, use `jqGridShowHideCol`
+* Changing encoding of data during inline and form editing. No HTML encoding will be used by default if `autoencode: true` option is used. It's important for sending correct (non-encoded) JSON data and still use `autoencode: true` to *display* the information in the grid. New `autoEncodeOnEdit: true` option can be used to simulate the old behavior. The option is important for better compatibility with previous versions of jqGrid.
+* Small fix of the width of the grid. Mostly relevant for Chrome
+* Small fixes in `title` which will be set inside of `setRowData` method.
+* Move some multiselect-checkbox settings from JS to CSS. Less inline styles.
+* Bugfix in `hideModal` in case of call for already descroyed modal dialog
+* `url` of inline editing, cell editing and form editing (inclusive deleting) can be defined now as function. `mtype` can be function too for inline and form editing methods.
 
 Other readmes contains the list of the features and bug fixed implemented before:
 
+* [README4.10.0.md](https://github.com/free-jqgrid/jqGrid/blob/master/README4.10.0.md) contains the readme of free jqGrid 4.10.0.
 * [README492.md](https://github.com/free-jqgrid/jqGrid/blob/master/README492.md) contains the readme of free jqGrid 4.9.2.
 * [README491.md](https://github.com/free-jqgrid/jqGrid/blob/master/README491.md) contains the readme of free jqGrid 4.9.1.
 * [README49.md](https://github.com/free-jqgrid/jqGrid/blob/master/README49.md) contains the readme of free jqGrid 4.9.
