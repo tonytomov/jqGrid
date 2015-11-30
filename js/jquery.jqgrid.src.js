@@ -12095,6 +12095,7 @@
 							var url = o.url || p.editurl,
 								ajaxOptions = $.extend({
 									url: $.isFunction(url) ? url.call($t, postd[idname], postd, o) : url,
+									type: o.mtype,
 									data: $.isFunction(o.serializeDelData) ? o.serializeDelData.call($t, postd) : postd,
 									complete: function (jqXHR, textStatus) {
 										var i;
