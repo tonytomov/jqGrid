@@ -7,7 +7,7 @@ jqGrid was developed mostly by [Tony Tomov](https://github.com/tonytomov) in the
 
 The code from the GitHib repository is the fork of jqGrid 4.7.0 - the latest version available under MIT/GPL-licences. It will be provided under MIT/GPL-licences.
 
-Below you can find short description of new features and bug fixes implemented in free jqGrid 4.11.1 (compared with version 4.10.0). The version is developed by [Oleg Kiriljuk](https://github.com/OlegKi), alias [Oleg](http://stackoverflow.com/users/315935/oleg) on the stackoverflow and [OlegK](http://www.trirand.com/blog/?page_id=393) on trirand forum.
+Below you can find short description of new features and bug fixes implemented in free jqGrid 4.11.0 (compared with version 4.10.0). The version is developed by [Oleg Kiriljuk](https://github.com/OlegKi), alias [Oleg](http://stackoverflow.com/users/315935/oleg) on the stackoverflow and [OlegK](http://www.trirand.com/blog/?page_id=393) on trirand forum.
 
 Read [Wiki](https://github.com/free-jqgrid/jqGrid/wiki) for more detailed information about the features of free-jqGrid.
 
@@ -17,9 +17,9 @@ One can install the package with respect of [bower](http://bower.io/search/?q=fr
 
 Free jqGrid is published on [cdnjs](https://cdnjs.com/libraries/free-jqgrid) and [jsDelivr CDN](http://www.jsdelivr.com/#!free-jqgrid). So one can use it directly from Internet by including for example
 ```html
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.11.1/css/ui.jqgrid.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.11.1/js/i18n/grid.locale-de.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.11.1/js/jquery.jqgrid.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.11.0/css/ui.jqgrid.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.11.0/js/i18n/grid.locale-de.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.11.0/js/jquery.jqgrid.min.js"></script>
 ```
 
 It somebody want to test the *latest* version of free jqGrid, one can load it directly from GitHib using [RawGit](http://rawgit.com/) service:
@@ -32,13 +32,9 @@ All other language files and plugins are avalable from CDN too. See [the wiki ar
 
 The package is published on [WebJars](http://www.webjars.org/) and it's deployed on [Maven Central]((http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22free-jqgrid%22)) too.
 
-Remark: the above URLs will be available **after publishing** the release of the version of 4.11.1
+Remark: the above URLs will be available **after publishing** the release of the version of 4.11.0
 
-The only difference between the version 4.11.1 and the version 4.11.0 is [the fix](https://github.com/free-jqgrid/jqGrid/commit/dc8e21edfc1e162f1321950d925b479760360ad0).
-
-* Fix of the bug with `mtype` in `delGridRow`. The line with the code `type: o.mtype,` was accidentally removed in version 4.11.0.
-
-### Main new features and improvements implemented in the version 4.11.1.
+### Main new features and improvements implemented in the version 4.11.0.
 
 * Remove old plugins from free jqGrid (`grid.addons.js`, `grid.postext.js`, `grid.setcolumns.js`, `jquery.tablednd.js`, `jquery.searchfilter.js`, `searchfilter.css`).
 * Add `@license` to the comment of plugins and locale files to hold the information on minimizing.
@@ -52,7 +48,7 @@ The only difference between the version 4.11.1 and the version 4.11.0 is [the fi
 * Changing encoding of data during inline and form editing. No HTML encoding will be used by default if `autoencode: true` option is used. It's important for sending correct (non-encoded) JSON data and still use `autoencode: true` to *display* the information in the grid. New `autoEncodeOnEdit: true` option can be used to simulate the old behavior. The option is important for better compatibility with previous versions of jqGrid.
 * `url` of inline editing, cell editing and form editing (inclusive deleting) can be defined now as function. `mtype` can be function too for inline and form editing methods.
 
-### The below is the full list of changes in the version 4.11.1 compared with 4.10.0
+### The below is the full list of changes in the version 4.11.0 compared with 4.10.0
 
 * Add support of array values for `summaryTpl` and `summaryType`
 * Bug fix (in case of `toTop:true`, and `overlay:close`)
@@ -82,11 +78,9 @@ The only difference between the version 4.11.1 and the version 4.11.0 is [the fi
 * Move some multiselect-checkbox settings from JS to CSS. Less inline styles.
 * Bugfix in `hideModal` in case of call for already descroyed modal dialog
 * `url` of inline editing, cell editing and form editing (inclusive deleting) can be defined now as function. `mtype` can be function too for inline and form editing methods.
-* Fix of the bug with `mtype` in `delGridRow`. The line with the code `type: o.mtype,` was accidentally removed in version 4.11.0.
 
 Other readmes contains the list of the features and bug fixed implemented before:
 
-* [README4.11.0.md](https://github.com/free-jqgrid/jqGrid/blob/master/README4.11.0.md) contains the readme of free jqGrid 4.11.0.
 * [README4.10.0.md](https://github.com/free-jqgrid/jqGrid/blob/master/README4.10.0.md) contains the readme of free jqGrid 4.10.0.
 * [README492.md](https://github.com/free-jqgrid/jqGrid/blob/master/README492.md) contains the readme of free jqGrid 4.9.2.
 * [README491.md](https://github.com/free-jqgrid/jqGrid/blob/master/README491.md) contains the readme of free jqGrid 4.9.1.
