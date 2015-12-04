@@ -1,4 +1,4 @@
-/* jqGrid 4.11.1 - free jqGrid: https://github.com/free-jqgrid/jqGrid */
+/* jqGrid 4.11.1-post - free jqGrid: https://github.com/free-jqgrid/jqGrid */
 
 /*Grid*/
 .ui-jqgrid {
@@ -272,6 +272,7 @@
 
 /* body */ 
 .ui-jqgrid .ui-jqgrid-bdiv {
+	min-height: 1px;
 	position: relative;
 	margin: 0;
 	padding: 0;
