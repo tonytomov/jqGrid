@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.0.1 - 2015-11-24
+* @license Guriddo jqGrid JS - v5.0.1 - 2015-12-07
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -10504,7 +10504,7 @@ $.jgrid.extend({
 
 			$firstRow = $theadInTable.find("tr.jqg-first-row-header");
 			$(ts).bind('jqGridResizeStop.setGroupHeaders', function (e, nw, idx) {
-				$firstRow.find('th').eq(idx).width(nw);
+				$firstRow.find('th').eq(idx)[0].style.width = nw + "px";
 			});
 		});				
 	},
