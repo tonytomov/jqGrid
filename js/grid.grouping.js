@@ -655,7 +655,7 @@ $.jgrid.extend({
 
 			$firstRow = $theadInTable.find("tr.jqg-first-row-header");
 			$(ts).bind('jqGridResizeStop.setGroupHeaders', function (e, nw, idx) {
-				$firstRow.find('th').eq(idx).width(nw);
+				$firstRow.find('th').eq(idx)[0].style.width = nw + "px";
 			});
 		});				
 	},
