@@ -7,7 +7,19 @@
  * http://www.gnu.org/licenses/gpl.html
 **/
 
-(function ($) {
+(function (factory) {
+	"use strict";
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
 "use strict";
 var locInfo = {
 	isRTL: false,
@@ -160,4 +172,4 @@ $.extend(true, $.jgrid, {
 		"th-TH": $.extend({}, locInfo, { name: "ไทย (ไทย)", nameEnglish: "Thai (Thailand)" })
 	}
 });
-}(jQuery));
+}));
