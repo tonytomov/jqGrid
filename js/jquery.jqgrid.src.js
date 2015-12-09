@@ -2,21 +2,34 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
 /**
- * @license jqGrid 4.11.1 - free jqGrid: https://github.com/free-jqgrid/jqGrid
+ * @license jqGrid 4.12.0-pre - free jqGrid: https://github.com/free-jqgrid/jqGrid
  * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com
  * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-12-02
+ * Date: 2015-12-04
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
 /*jslint browser: true, devel: true, eqeq: true, nomen: true, plusplus: true, unparam: true, vars: true, evil: true, regexp: true, white: true, todo: true */
-/*global jQuery, HTMLElement, HTMLTableRowElement */
+/*global jQuery, define, HTMLElement, HTMLTableRowElement */
 
-(function ($) {
+(function (factory) {
 	"use strict";
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
+	"use strict";
+	// begin module grid.base
 	/** @const */
 	var englishLanguageDefaults = {
 		name: "English (United States)",
@@ -332,7 +345,7 @@
 
 	$.extend(true, jgrid, {
 		/** @const */
-		version: "4.11.1",
+		version: "4.12.0-pre",
 		/** @const */
 		productName: "free jqGrid",
 		defaults: {},
@@ -1231,7 +1244,7 @@
 		getEditedValue: function ($dataFiled, cm, useTextInSelects, editable) {
 			var result, checkBoxValues, newformat, $field, valuesOrTexts, selectMethod = useTextInSelects ? "text" : "val",
 				formatoptions = cm.formatoptions || {}, editoptions = cm.editoptions || {}, customValue = editoptions.custom_value,
-				nameSelector = "[name=" + jgrid.jqID(cm.name) + "]", $t = this, $self = $($t), infoDialog, getRes, errcap, bClose;
+				nameSelector = "[name=" + jgrid.jqID(cm.name) + "]", $t = this, $self = $($t);
 			if (editable === "hidden") {
 				// the implementation from the next line can be improved
 				return $($t).jqGrid("getCell", $dataFiled.closest("tr.jqgrow").attr("id"), cm.name);
@@ -1278,17 +1291,22 @@
 							throw "e1";
 						}
 					} catch (e) {
-						infoDialog = jgrid.info_dialog;
-						getRes = function (path) { $self.jqGrid("getGridRes", path); };
-						errcap = getRes("errors.errcap");
-						bClose = getRes("edit.bClose");
-						if (e === "e1") {
-							infoDialog.call($t, errcap, "function 'custom_value' " + getRes("edit.msg.nodefined"), bClose);
+						var errorText, infoDialog = jgrid.info_dialog,
+							getRes = function (path) { $self.jqGrid("getGridRes", path); };
+						switch (String(e)) {
+							case "e1":
+								errorText = "function 'custom_value' " + getRes("edit.msg.nodefined");
+								break;
+							case "e2":
+								break;
+							default:
+								errorText = e.message;
+								break;
 						}
-						if (e === "e2") {
-							infoDialog.call($t, errcap, "function 'custom_value' " + getRes("edit.msg.novalue"), bClose);
+						if (infoDialog && $.isFunction(infoDialog)) {
+							infoDialog.call($t, getRes("errors.errcap"), errorText, getRes("edit.bClose"));
 						} else {
-							infoDialog.call($t, errcap, e.message, bClose);
+							alert(errorText);
 						}
 					}
 					break;
@@ -6786,52 +6804,19 @@
 			});
 		}
 	});
-}(jQuery));
+	// end module grid.base
 
-/**
- * jqGrid extension for cellediting Grid Data
- * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com, http://trirand.com/blog/
- * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl-2.0.html
-**/
+	/**
+	 * jqGrid extension for cellediting Grid Data
+	 * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com, http://trirand.com/blog/
+	 * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
+	 * Dual licensed under the MIT and GPL licenses:
+	 * http://www.opensource.org/licenses/mit-license.php
+	 * http://www.gnu.org/licenses/gpl-2.0.html
+	**/
 
-/**
- * all events and options here are added anonymous and not in the base grid
- * since the array is to big. Here is the order of execution.
- * From this point we use jQuery isFunction
- * formatCell
- * beforeEditCell,
- * onSelectCell (used only for non-editable cells)
- * afterEditCell,
- * beforeSaveCell, (called before validation of values if any)
- * beforeSubmitCell (if cellsubmit remote (Ajax))
- * afterSubmitCell(if cellsubmit remote (Ajax)),
- * afterSaveCell,
- * errorCell,
- * serializeCellData - new
- * Options
- * cellsubmit ("remote","clientArray") (added in grid options)
- * cellurl
- * ajaxCellOptions
-**/
-
-/*jshint eqeqeq:false */
-/*global jQuery */
-/*jslint browser: true, eqeq: true, plusplus: true, vars: true, white: true, todo: true */
-(function ($) {
-	"use strict";
-	var jgrid = $.jgrid,
-		feedback = function () {
-			// short form of $.jgrid.feedback to save usage this.p as the first parameter
-			var args = $.makeArray(arguments);
-			args.unshift("");
-			args.unshift("");
-			args.unshift(this.p);
-			return jgrid.feedback.apply(this, args);
-		},
-		getGuiStateStyles = function (path, moreClasses) {
+	// begin module grid.celledit
+	var getGuiStateStyles = function (path, moreClasses) {
 			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], "states." + path), moreClasses || "");
 		},
 		getTdByColumnIndex = function (tr, iCol) {
@@ -7369,27 +7354,22 @@
 			});
 			return ret;
 		}
-		/// end  cell editing
 	});
-}(jQuery));
+	// end module grid.celledit
+	/**
+	 * jqGrid common function
+	 * Tony Tomov tony@trirand.com, http://trirand.com/blog/
+	 * Changed by Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
+	 * Dual licensed under the MIT and GPL licenses:
+	 * http://www.opensource.org/licenses/mit-license.php
+	 * http://www.gnu.org/licenses/gpl-2.0.html
+	*/
 
-/*
- * jqGrid common function
- * Tony Tomov tony@trirand.com, http://trirand.com/blog/
- * Changed by Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl-2.0.html
-*/
-
-/*jshint eqeqeq:false */
-/*global jQuery, HTMLElement */
-/*jslint browser: true, eqeq: true, plusplus: true, unparam: true, white: true, vars: true */
-(function ($) {
-	"use strict";
-	var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes"),
+	// begin module grid.common
+	var getGridRes = jgrid.getMethod("getGridRes"),
 		getGuiStyles = function (path, jqClasses) {
-			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], path), jqClasses || "");
+			var p = this.p, guiStyle = p.guiStyle || jgrid.defaults.guiStyle || "jQueryUI";
+			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[guiStyle], path), jqClasses || "");
 		};
 
 	jgrid.jqModal = jgrid.jqModal || {};
@@ -8168,29 +8148,19 @@
 			return [true, "", ""];
 		}
 	});
-}(jQuery));
+	// end module grid.common
+	/**
+	 * jqGrid extension for custom methods
+	 * Tony Tomov tony@trirand.com, http://trirand.com/blog/
+	 *
+	 * Wildraid wildraid@mail.ru
+	 * Oleg Kiriljuk oleg.kiriljuk@ok-soft-gmbh.com
+	 * Dual licensed under the MIT and GPL licenses:
+	 * http://www.opensource.org/licenses/mit-license.php
+	 * http://www.gnu.org/licenses/gpl-2.0.html
+	**/
 
-/**
- * jqGrid extension for custom methods
- * Tony Tomov tony@trirand.com, http://trirand.com/blog/
- *
- * Wildraid wildraid@mail.ru
- * Oleg Kiriljuk oleg.kiriljuk@ok-soft-gmbh.com
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl-2.0.html
-**/
-
-/*jshint eqeqeq:false */
-/*jslint browser: true, devel: true, eqeq: true, nomen: true, plusplus: true, vars: true, unparam: true, white: true, todo: true */
-/*global jQuery */
-(function ($) {
-	"use strict";
-	var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes"), jqID = jgrid.jqID,
-		getGuiStyles = function (path, jqClasses) {
-			var p = this.p, guiStyle = p.guiStyle || jgrid.defaults.guiStyle || "jQueryUI";
-			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[guiStyle], path), jqClasses || "");
-		};
+	// begin module grid.custom
 	jgrid.extend({
 		getColProp: function (colname) {
 			var ret = {}, t = this[0], iCol;
@@ -9564,42 +9534,36 @@
 			});
 		}
 	});
-}(jQuery));
+	// end module grid.custom
+	/**
+	 * jqFilter  jQuery jqGrid filter addon.
+	 * Copyright (c) 2011, Tony Tomov, tony@trirand.com
+	 * Dual licensed under the MIT and GPL licenses
+	 * http://www.opensource.org/licenses/mit-license.php
+	 * http://www.gnu.org/licenses/gpl-2.0.html
+	 *
+	 * The work is inspired from this Stefan Pirvu
+	 * http://www.codeproject.com/KB/scripting/json-filtering.aspx
+	 *
+	 * The filter uses JSON entities to hold filter rules and groups. Here is an example of a filter:
 
-/*
- * jqFilter  jQuery jqGrid filter addon.
- * Copyright (c) 2011, Tony Tomov, tony@trirand.com
- * Dual licensed under the MIT and GPL licenses
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl-2.0.html
- *
- * The work is inspired from this Stefan Pirvu
- * http://www.codeproject.com/KB/scripting/json-filtering.aspx
- *
- * The filter uses JSON entities to hold filter rules and groups. Here is an example of a filter:
+	{ "groupOp": "AND",
+		  "groups" : [
+			{ "groupOp": "OR",
+				"rules": [
+					{ "field": "name", "op": "eq", "data": "England" },
+					{ "field": "id", "op": "le", "data": "5"}
+				 ]
+			}
+		  ],
+		  "rules": [
+			{ "field": "name", "op": "eq", "data": "Romania" },
+			{ "field": "id", "op": "le", "data": "1"}
+		  ]
+	}
+	*/
 
-{ "groupOp": "AND",
-	  "groups" : [
-		{ "groupOp": "OR",
-			"rules": [
-				{ "field": "name", "op": "eq", "data": "England" },
-				{ "field": "id", "op": "le", "data": "5"}
-			 ]
-		}
-	  ],
-	  "rules": [
-		{ "field": "name", "op": "eq", "data": "Romania" },
-		{ "field": "id", "op": "le", "data": "1"}
-	  ]
-}
-*/
-/*jshint eqeqeq:false, eqnull:true, devel:true */
-/*jslint browser: true, devel: true, eqeq: true, plusplus: true, vars: true, white: true */
-/*global jQuery */
-
-(function ($) {
-	"use strict";
-	var jgrid = $.jgrid;
+	// begin module grid.filter
 	$.fn.jqFilter = function (arg) {
 		if (typeof arg === "string") {
 			var fn = $.fn.jqFilter[arg];
@@ -10335,25 +10299,318 @@
 			});
 		}
 	});
-}(jQuery));
+	// end module grid.filter
+	/**
+		The below work is licensed under Creative Commons GNU LGPL License.
 
-/**
- * jqGrid extension for form editing Grid Data
- * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com, http://trirand.com/blog/
- * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl-2.0.html
-**/
+		Original work:
 
-/*jshint eqeqeq:false, eqnull:true, devel:true */
-/*jslint browser: true, eqeq: true, plusplus: true, unparam: true, vars: true, nomen: true, continue: true, white: true, todo: true */
-/*global xmlJsonClass, jQuery */
-(function ($) {
-	"use strict";
-	var jgrid = $.jgrid, feedback = jgrid.feedback, fullBoolFeedback = jgrid.fullBoolFeedback, jqID = jgrid.jqID,
+		License:     http://creativecommons.org/licenses/LGPL/2.1/
+		Author:      Stefan Goessner/2006
+		Web:         http://goessner.net/
+
+		Modifications made:
+
+		Version:     0.9-p5
+		Description: Restructured code, JSLint validated (no strict whitespaces),
+					 added handling of empty arrays, empty strings, and int/floats values.
+		Author:      Michael Schøler/2008-01-29
+		Web:         http://michael.hinnerup.net/blog/2008/01/26/converting-json-to-xml-and-xml-to-json/
+
+		Description: json2xml added support to convert functions as CDATA
+					 so it will be easy to write characters that cause some problems when convert
+		Author:      Tony Tomov
+	*/
+
+	// begin module jsonxml
+	var xmlJsonClass = {
+			// Param "xml": Element or document DOM node.
+			// Param "tab": Tab or indent string for pretty output formatting omit or use empty string "" to supress.
+			// Returns:     JSON string
+			xml2json: function (xml, tab) {
+				if (xml.nodeType === 9) {
+					// document node
+					xml = xml.documentElement;
+				}
+				var nws = this.removeWhite(xml),
+					obj = this.toObj(nws),
+					json = this.toJson(obj, xml.nodeName, "\t");
+				return "{\n" + tab + (tab ? json.replace(/\t/g, tab) : json.replace(/\t|\n/g, "")) + "\n}";
+			},
+
+			// Param "o":   JavaScript object
+			// Param "tab": tab or indent string for pretty output formatting omit or use empty string "" to supress.
+			// Returns:     XML string
+			json2xml: function (o, tab) {
+				var toXml = function (v, name, ind) {
+						var xml = "", i, n, sXml, hasChild, m;
+						if (v instanceof Array) {
+							if (v.length === 0) {
+								xml += ind + "<" + name + ">__EMPTY_ARRAY_</" + name + ">\n";
+							} else {
+								for (i = 0, n = v.length; i < n; i += 1) {
+									sXml = ind + toXml(v[i], name, ind + "\t") + "\n";
+									xml += sXml;
+								}
+							}
+						} else if (typeof v === "object") {
+							hasChild = false;
+							xml += ind + "<" + name;
+							for (m in v) {
+								if (v.hasOwnProperty(m)) {
+									if (m.charAt(0) === "@") {
+										xml += " " + m.substr(1) + "=\"" + v[m].toString() + "\"";
+									} else {
+										hasChild = true;
+									}
+								}
+							}
+							xml += hasChild ? ">" : "/>";
+							if (hasChild) {
+								for (m in v) {
+									if (v.hasOwnProperty(m)) {
+										if (m === "#text") {
+											xml += v[m];
+										} else if (m === "#cdata") {
+											xml += "<![CDATA[" + v[m] + "]]>";
+										} else if (m.charAt(0) !== "@") {
+											xml += toXml(v[m], m, ind + "\t");
+										}
+									}
+								}
+								xml += (xml.charAt(xml.length - 1) === "\n" ? ind : "") + "</" + name + ">";
+							}
+						} else if (typeof v === "function") {
+							xml += ind + "<" + name + ">" + "<![CDATA[" + v + "]]>" + "</" + name + ">";
+						} else {
+							if (v === undefined) {
+								v = "";
+							}
+							if (v.toString() === "\"\"" || v.toString().length === 0) {
+								xml += ind + "<" + name + ">__EMPTY_STRING_</" + name + ">";
+							} else {
+								xml += ind + "<" + name + ">" + v.toString() + "</" + name + ">";
+							}
+						}
+						return xml;
+					},
+					xml1 = "",
+					m;
+
+				for (m in o) {
+					if (o.hasOwnProperty(m)) {
+						xml1 += toXml(o[m], m, "");
+					}
+				}
+				return tab ? xml1.replace(/\t/g, tab) : xml1.replace(/\t|\n/g, "");
+			},
+			// Internal methods
+			toObj: function (xml) {
+				var o = {}, funcTest = /function/i, i, textChild = 0, cdataChild = 0, hasElementChild = false, n;
+				if (xml.nodeType === 1) {
+					// element node ..
+					if (xml.attributes.length) {
+						// element with attributes ..
+						for (i = 0; i < xml.attributes.length; i += 1) {
+							o["@" + xml.attributes[i].nodeName] = (xml.attributes[i].nodeValue || "").toString();
+						}
+					}
+					if (xml.firstChild) {
+						// element has child nodes ..
+						for (n = xml.firstChild; n; n = n.nextSibling) {
+							if (n.nodeType === 1) {
+								hasElementChild = true;
+							} else if (n.nodeType === 3 && n.nodeValue.match(/[^ \f\n\r\t\v]/)) {
+								// non-whitespace text
+								textChild += 1;
+							} else if (n.nodeType === 4) {
+								// cdata section node
+								cdataChild += 1;
+							}
+						}
+						if (hasElementChild) {
+							if (textChild < 2 && cdataChild < 2) {
+								// structured element with evtl. a single text or/and cdata node ..
+								this.removeWhite(xml);
+								for (n = xml.firstChild; n; n = n.nextSibling) {
+									if (n.nodeType === 3) {
+										// text node
+										o["#text"] = this.escape(n.nodeValue);
+									} else if (n.nodeType === 4) {
+										// cdata node
+										if (funcTest.test(n.nodeValue)) {
+											o[n.nodeName] = [o[n.nodeName], n.nodeValue];
+										} else {
+											o["#cdata"] = this.escape(n.nodeValue);
+										}
+									} else if (o[n.nodeName]) {
+										// multiple occurence of element ..
+										if (o[n.nodeName] instanceof Array) {
+											o[n.nodeName][o[n.nodeName].length] = this.toObj(n);
+										} else {
+											o[n.nodeName] = [o[n.nodeName], this.toObj(n)];
+										}
+									} else {
+										// first occurence of element ..
+										o[n.nodeName] = this.toObj(n);
+									}
+								}
+							} else {
+								// mixed content
+								if (!xml.attributes.length) {
+									o = this.escape(this.innerXml(xml));
+								} else {
+									o["#text"] = this.escape(this.innerXml(xml));
+								}
+							}
+						} else if (textChild) {
+							// pure text
+							if (!xml.attributes.length) {
+								o = this.escape(this.innerXml(xml));
+								if (o === "__EMPTY_ARRAY_") {
+									o = "[]";
+								} else if (o === "__EMPTY_STRING_") {
+									o = "";
+								}
+							} else {
+								o["#text"] = this.escape(this.innerXml(xml));
+							}
+						} else if (cdataChild) {
+							// cdata
+							if (cdataChild > 1) {
+								o = this.escape(this.innerXml(xml));
+							} else {
+								for (n = xml.firstChild; n; n = n.nextSibling) {
+									if (funcTest.test(xml.firstChild.nodeValue)) {
+										o = xml.firstChild.nodeValue;
+										break;
+									}
+									o["#cdata"] = this.escape(n.nodeValue);
+								}
+							}
+						}
+					}
+					if (!xml.attributes.length && !xml.firstChild) {
+						o = null;
+					}
+				} else if (xml.nodeType === 9) {
+					// document.node
+					o = this.toObj(xml.documentElement);
+				} else {
+					alert("unhandled node type: " + xml.nodeType);
+				}
+				return o;
+			},
+			toJson: function (o, name, ind, wellform) {
+				if (wellform === undefined) {
+					wellform = true;
+				}
+				var json = name ? ("\"" + name + "\"") : "", tab = "\t", newline = "\n", n, i, ar = [], arr = [], m;
+				if (!wellform) {
+					tab = "";
+					newline = "";
+				}
+
+				if (o === "[]") {
+					json += (name ? ":[]" : "[]");
+				} else if (o instanceof Array) {
+					for (i = 0, n = o.length; i < n; i += 1) {
+						ar[i] = this.toJson(o[i], "", ind + tab, wellform);
+					}
+					json += (name ? ":[" : "[") + (ar.length > 1 ? (newline + ind + tab + ar.join("," + newline + ind + tab) + newline + ind) : ar.join("")) + "]";
+				} else if (o === null) {
+					json += (name && ":") + "null";
+				} else if (typeof o === "object") {
+					for (m in o) {
+						if (o.hasOwnProperty(m)) {
+							arr[arr.length] = this.toJson(o[m], m, ind + tab, wellform);
+						}
+					}
+					json += (name ? ":{" : "{") + (arr.length > 1 ? (newline + ind + tab + arr.join("," + newline + ind + tab) + newline + ind) : arr.join("")) + "}";
+				} else if (typeof o === "string") {
+					json += (name && ":") + "\"" + o.replace(/\\/g, "\\\\").replace(/\"/g, '\\"') + "\"";
+				} else {
+					json += (name && ":") +  o.toString();
+				}
+				return json;
+			},
+			innerXml: function (node) {
+				var s = "", child,
+					asXml = function (n) {
+						var str = "", i, c;
+						if (n.nodeType === 1) {
+							str += "<" + n.nodeName;
+							for (i = 0; i < n.attributes.length; i += 1) {
+								str += " " + n.attributes[i].nodeName + "=\"" + (n.attributes[i].nodeValue || "").toString() + "\"";
+							}
+							if (n.firstChild) {
+								str += ">";
+								for (c = n.firstChild; c; c = c.nextSibling) {
+									str += asXml(c);
+								}
+								str += "</" + n.nodeName + ">";
+							} else {
+								str += "/>";
+							}
+						} else if (n.nodeType === 3) {
+							str += n.nodeValue;
+						} else if (n.nodeType === 4) {
+							str += "<![CDATA[" + n.nodeValue + "]]>";
+						}
+						return str;
+					};
+				if (node.hasOwnProperty("innerHTML")) {
+					s = node.innerHTML;
+				} else {
+					for (child = node.firstChild; child; child = child.nextSibling) {
+						s += asXml(child);
+					}
+				}
+				return s;
+			},
+			escape: function (txt) {
+				return txt.replace(/[\\]/g, "\\\\").replace(/[\"]/g, '\\"').replace(/[\n]/g, "\\n").replace(/[\r]/g, "\\r");
+			},
+			removeWhite: function (e) {
+				e.normalize();
+				var n = e.firstChild, nxt;
+				while (n) {
+					if (n.nodeType === 3) {
+						// text node
+						if (!n.nodeValue.match(/[^ \f\n\r\t\v]/)) {
+							// pure whitespace text node
+							nxt = n.nextSibling;
+							e.removeChild(n);
+							n = nxt;
+						} else {
+							n = n.nextSibling;
+						}
+					} else if (n.nodeType === 1) {
+						// element node
+						this.removeWhite(n);
+						n = n.nextSibling;
+					} else {
+						// any other node
+						n = n.nextSibling;
+					}
+				}
+				return e;
+			}
+		};
+	window.xmlJsonClass = xmlJsonClass;
+	// end module jsonxml
+	/**
+	 * jqGrid extension for form editing Grid Data
+	 * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com, http://trirand.com/blog/
+	 * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
+	 * Dual licensed under the MIT and GPL licenses:
+	 * http://www.opensource.org/licenses/mit-license.php
+	 * http://www.gnu.org/licenses/gpl-2.0.html
+	**/
+
+	// begin module grid.formedit
+	var jgridFeedback = jgrid.feedback, fullBoolFeedback = jgrid.fullBoolFeedback,
 		hideModal = jgrid.hideModal, viewModal = jgrid.viewModal, createModal = jgrid.createModal, infoDialog = jgrid.info_dialog,
-		mergeCssClasses = jgrid.mergeCssClasses, hasOneFromClasses = jgrid.hasOneFromClasses, $j = $.fn.jqGrid,
 		builderFmButon = jgrid.builderFmButon,
 		getCssStyleOrFloat = function ($elem, styleName) {
 			var v = $elem[0].style[styleName];
@@ -10399,12 +10656,6 @@
 					$fmButton.addClass("fm-button-icon-left").prepend(iconspan);
 				}
 			}
-		},
-		getGuiStyles = function (path, jqClasses) {
-			return mergeCssClasses(jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], path), jqClasses || "");
-		},
-		getGuiStateStyles = function (path) {
-			return getGuiStyles.call(this, "states." + path);
 		},
 		isEmptyString = function (htmlStr) {
 			return htmlStr === "&nbsp;" || htmlStr === "&#160;" || (htmlStr.length === 1 && htmlStr.charCodeAt(0) === 160);
@@ -10466,7 +10717,7 @@
 						layer: null,
 						operands: { "eq": "=", "ne": "<>", "lt": "<", "le": "<=", "gt": ">", "ge": ">=", "bw": "LIKE", "bn": "NOT LIKE", "in": "IN", "ni": "NOT IN", "ew": "LIKE", "en": "NOT LIKE", "cn": "LIKE", "nc": "NOT LIKE", "nu": "IS NULL", "nn": "IS NOT NULL" }
 					},
-					$j.getGridRes.call($self, "search"),
+					base.getGridRes.call($self, "search"),
 					jgrid.search || {},
 					p.searching || {},
 					oMuligrid || {});
@@ -10480,7 +10731,7 @@
 						args.unshift("Search");
 						args.unshift("Filter");
 						args.unshift(o);
-						return feedback.apply($t, args);
+						return jgridFeedback.apply($t, args);
 					};
 				if (typeof defaultFilters === "string") {
 					defaultFilters = $.trim(defaultFilters) !== "" ? jgrid.parse(defaultFilters) : undefined;
@@ -10728,7 +10979,7 @@
 				// make new copy of the options oMuligrid and use it for ONE specific grid.
 				// p.formEditing can contains grid specific options
 				// we will don't modify the input options oMuligrid
-				var gridId = p.id, getGridRes = $j.getGridRes, setSelection = $j.setSelection,
+				var gridId = p.id, getGridRes = base.getGridRes, setSelection = base.setSelection,
 					o = $.extend(true,
 						{
 							top: 0,
@@ -10794,7 +11045,7 @@
 						args.unshift("");
 						args.unshift("AddEdit");
 						args.unshift(o);
-						return feedback.apply($t, args);
+						return jgridFeedback.apply($t, args);
 					},
 					hoverClasses = getGuiStateStyles.call($t, "hover"),
 					disabledClass = getGuiStateStyles.call($t, "disabled"),
@@ -10893,7 +11144,7 @@
 						tmpl += tdtmpl;
 					}
 					if (rowid !== "_empty") {
-						ind = $j.getInd.call($self, rowid);
+						ind = base.getInd.call($self, rowid);
 					}
 					$(colModel).each(function (i) {
 						var cm = this, nm = cm.name, $td, hc, trdata, tmp, dc, elc, editable = cm.editable, disabled = false, readonly = false,
@@ -11040,7 +11291,7 @@
 						$("#id_g", fmid).val(rowid);
 						return;
 					}
-					var tre = $j.getInd.call($self, rowid, true);
+					var tre = base.getInd.call($self, rowid, true);
 					if (!tre) { return; }
 					//$("td[role=gridcell]", tre)
 					$(tre.cells).filter("td[role=gridcell]").each(function (i) {
@@ -11265,9 +11516,9 @@
 												$self.trigger("reloadGrid", reloadGridOptions);
 											} else {
 												if (p.treeGrid === true) {
-													$j.addChildNode.call($self, ret[2], selr, postdata);
+													base.addChildNode.call($self, ret[2], selr, postdata);
 												} else {
-													$j.addRowData.call($self, ret[2], postdata, o.addedrow);
+													base.addRowData.call($self, ret[2], postdata, o.addedrow);
 												}
 											}
 											if (o.closeAfterAdd) {
@@ -11285,9 +11536,9 @@
 												if (!o.closeAfterEdit) { setTimeout(function () { setSelection.call($self, postdata[idname]); }, 1000); }
 											} else {
 												if (p.treeGrid === true) {
-													$j.setTreeRow.call($self, postdata[idname], postdata);
+													base.setTreeRow.call($self, postdata[idname], postdata);
 												} else {
-													$j.setRowData.call($self, postdata[idname], postdata);
+													base.setRowData.call($self, postdata[idname], postdata);
 												}
 											}
 											if (o.closeAfterEdit) { hideModal(themodalSelector, { gb: gboxSelector, jqm: o.jqModal, onClose: o.onClose, removemodal: o.removemodal, formprop: !o.recreateForm, form: o.form }); }
@@ -11388,10 +11639,10 @@
 					var editingInfo = jgrid.detectRowEditing.call($t, rowid);
 					if (editingInfo != null) {
 						if (editingInfo.mode === "inlineEditing") {
-							$j.restoreRow.call($self, rowid);
+							base.restoreRow.call($self, rowid);
 						} else {
 							var savedRowInfo = editingInfo.savedRow, tr = $t.rows[savedRowInfo.id];
-							$j.restoreCell.call($self, savedRowInfo.id, savedRowInfo.ic);
+							base.restoreCell.call($self, savedRowInfo.id, savedRowInfo.ic);
 							// remove highlighting of the cell
 							$(tr.cells[savedRowInfo.ic]).removeClass("edit-cell " + highlightClass);
 							$(tr).addClass(highlightClass).attr({ "aria-selected": "true", "tabindex": "0" });
@@ -11417,7 +11668,7 @@
 					}
 				}
 				function getCurrPos() {
-					var rowsInGrid = $j.getDataIDs.call($self),
+					var rowsInGrid = base.getDataIDs.call($self),
 						selrow = $("#id_g", frmtb).val(),
 						pos = $.inArray(selrow, rowsInGrid);
 					return [pos, rowsInGrid];
@@ -11704,7 +11955,7 @@
 							removemodal: true,
 							form: "view"
 						},
-						$j.getGridRes.call($self, "view"),
+						base.getGridRes.call($self, "view"),
 						jgrid.view || {},
 						p.formViewing || {},
 						oMuligrid || {});
@@ -11719,7 +11970,7 @@
 						args.unshift("");
 						args.unshift("View");
 						args.unshift(o);
-						return feedback.apply($t, args);
+						return jgridFeedback.apply($t, args);
 					},
 					hoverClasses = getGuiStateStyles.call($t, "hover"),
 					disabledClass = getGuiStateStyles.call($t, "disabled");
@@ -11735,7 +11986,7 @@
 					}
 				}
 				function createData(rowid, tb, maxcols) {
-					var nm, hc, trdata, cnt = 0, tmp, dc, retpos = [], ind = $j.getInd.call($self, rowid), i,
+					var nm, hc, trdata, cnt = 0, tmp, dc, retpos = [], ind = base.getInd.call($self, rowid), i,
 						viewDataClasses = getGuiStyles.call($t, "dialog.viewData", "DataTD form-view-data"),
 						viewLabelClasses = getGuiStyles.call($t, "dialog.viewLabel", "CaptionTD form-view-label"),
 						tdtmpl = "<td class='" + viewLabelClasses + "' width='" + o.labelswidth + "'>&#160;</td><td class='" + viewDataClasses + " ui-helper-reset'>&#160;</td>", tmpl = "",
@@ -11810,7 +12061,7 @@
 					return retpos;
 				}
 				function fillData(rowid) {
-					var nm, hc, cnt = 0, trv = $j.getInd.call($self, rowid, true), cm;
+					var nm, hc, cnt = 0, trv = base.getInd.call($self, rowid, true), cm;
 					if (!trv) { return; }
 					$("td", trv).each(function (i) {
 						cm = colModel[i];
@@ -11848,7 +12099,7 @@
 					}
 				}
 				function getCurrPos() {
-					var rowsInGrid = $j.getDataIDs.call($self),
+					var rowsInGrid = base.getDataIDs.call($self),
 						selrow = $("#id_g", frmtb).val(),
 						pos = $.inArray(selrow, rowsInGrid);
 					return [pos, rowsInGrid];
@@ -11949,7 +12200,7 @@
 					if (npos[0] !== -1 && npos[1][npos[0] + 1]) {
 						if (!viewFeedback("onclickPgButtons", "next", $(frmgr), npos[1][npos[0]])) { return false; }
 						fillData(npos[1][npos[0] + 1]);
-						$j.setSelection.call($self, npos[1][npos[0] + 1]);
+						base.setSelection.call($self, npos[1][npos[0] + 1]);
 						viewFeedback("afterclickPgButtons", "next", $(frmgr), npos[1][npos[0] + 1]);
 						updateNav(npos[0] + 1, npos);
 					}
@@ -11962,7 +12213,7 @@
 					if (ppos[0] !== -1 && ppos[1][ppos[0] - 1]) {
 						if (!viewFeedback("onclickPgButtons", "prev", $(frmgr), ppos[1][ppos[0]])) { return false; }
 						fillData(ppos[1][ppos[0] - 1]);
-						$j.setSelection.call($self, ppos[1][ppos[0] - 1]);
+						base.setSelection.call($self, ppos[1][ppos[0] - 1]);
 						viewFeedback("afterclickPgButtons", "prev", $(frmgr), ppos[1][ppos[0] - 1]);
 						updateNav(ppos[0] - 1, ppos);
 					}
@@ -12012,7 +12263,7 @@
 							serializeDelData: null,
 							useDataProxy: false
 						},
-						$j.getGridRes.call($self, "del"),
+						base.getGridRes.call($self, "del"),
 						jgrid.del || {},
 						p.formDeleting || {},
 						oMuligrid || {});
@@ -12025,7 +12276,7 @@
 						args.unshift("");
 						args.unshift("Delete");
 						args.unshift(o);
-						return feedback.apply($t, args);
+						return jgridFeedback.apply($t, args);
 					},
 					hoverClasses = getGuiStateStyles.call($t, "hover"),
 					activeClass = getGuiStateStyles.call($t, "active"),
@@ -12122,11 +12373,11 @@
 												$self.trigger("reloadGrid", [$.extend({}, o.reloadGridOptions || {})]);
 											} else {
 												if (p.treeGrid === true) {
-													try { $j.delTreeNode.call($self, formRowIds[0]); } catch (ignore) { }
+													try { base.delTreeNode.call($self, formRowIds[0]); } catch (ignore) { }
 												} else {
 													formRowIds = formRowIds.slice(); // make copy for save deleting
 													for (i = 0; i < formRowIds.length; i++) {
-														$j.delRowData.call($self, formRowIds[i]);
+														base.delRowData.call($self, formRowIds[i]);
 													}
 												}
 											}
@@ -12239,7 +12490,7 @@
 							alertzIndex: null,
 							iconsOverText: false
 						},
-						$j.getGridRes.call($self, "nav"),
+						base.getGridRes.call($self, "nav"),
 						jgrid.nav || {},
 						p.navOptions || {},
 						oMuligrid || {}
@@ -12338,7 +12589,7 @@
 							if ($.isFunction(o.addfunc)) {
 								o.addfunc.call($t);
 							} else {
-								$j.editGridRow.call($self, "new", pAdd);
+								base.editGridRow.call($self, "new", pAdd);
 							}
 						}
 						return false;
@@ -12350,7 +12601,7 @@
 								if ($.isFunction(func)) {
 									func.call($t, sr);
 								} else {
-									$j[methodName].call($self, sr, param);
+									base[methodName].call($self, sr, param);
 								}
 							} else {
 								viewModalAlert();
@@ -12377,7 +12628,7 @@
 								if ($.isFunction(o.delfunc)) {
 									o.delfunc.call($t, dr);
 								} else {
-									$j.delGridRow.call($self, dr, pDel);
+									base.delGridRow.call($self, dr, pDel);
 								}
 							} else {
 								viewModalAlert();
@@ -12390,7 +12641,7 @@
 							if ($.isFunction(o.searchfunc)) {
 								o.searchfunc.call($t, pSearch);
 							} else {
-								$j.searchGrid.call($self, pSearch);
+								base.searchGrid.call($self, pSearch);
 							}
 						}
 						return false;
@@ -12530,7 +12781,7 @@
 							cursor: "pointer",
 							iconsOverText: false
 						},
-						$j.getGridRes.call($($t), "nav"),
+						base.getGridRes.call($($t), "nav"),
 						jgrid.nav || {},
 						p.navOptions || {},
 						oMuligrid || {}
@@ -12539,7 +12790,7 @@
 					disabledClass = getGuiStateStyles.call($t, "disabled");
 				if (elem === undefined) {
 					if (p.pager) {
-						$j.navButtonAdd.call($($t), p.pager, o);
+						base.navButtonAdd.call($($t), p.pager, o);
 						if (p.toppager) {
 							elem = p.toppager;
 						} else {
@@ -12622,7 +12873,7 @@
 			return this.each(function () {
 				var $t = this, i, $field, iField, $fieldi;
 				if (!$t.grid) { return; }
-				var rowdata = $j.getRowData.call($($t), rowid), propOrAttr = $t.p.propOrAttr;
+				var rowdata = base.getRowData.call($($t), rowid), propOrAttr = $t.p.propOrAttr;
 				if (rowdata) {
 					for (i in rowdata) {
 						if (rowdata.hasOwnProperty(i)) {
@@ -12653,22 +12904,16 @@
 					griddata[field.name] = field.value;
 				});
 				if (mode === "add") {
-					$j.addRowData.call($($t), rowid, griddata, position);
+					base.addRowData.call($($t), rowid, griddata, position);
 				} else if (mode === "set") {
-					$j.setRowData.call($($t), rowid, griddata);
+					base.setRowData.call($($t), rowid, griddata);
 				}
 			});
 		}
 	});
-}(jQuery));
+	// end module grid.formedit
 
-/*jshint eqeqeq:false, eqnull:true */
-/*global jQuery */
-/*jslint plusplus: true, unparam: true, eqeq: true, nomen: true, todo: true, continue: true */
-// Grouping module
-(function ($) {
-	"use strict";
-	var jgrid = $.jgrid, base = $.fn.jqGrid;
+	// begin module grid.grouping
 	jgrid.extend({
 		groupingSetup: function () {
 			return this.each(function () {
@@ -13305,21 +13550,16 @@
 			}
 		}
 	});
-}(jQuery));
+	// end module grid.grouping
+	/**
+	 * jqGrid extension for constructing Grid Data from external file
+	 * Tony Tomov tony@trirand.com, http://trirand.com/blog/
+	 * Dual licensed under the MIT and GPL licenses:
+	 * http://www.opensource.org/licenses/mit-license.php
+	 * http://www.gnu.org/licenses/gpl-2.0.html
+	**/
 
-/*
- * jqGrid extension for constructing Grid Data from external file
- * Tony Tomov tony@trirand.com, http://trirand.com/blog/
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl-2.0.html
-**/
-
-/*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery, xmlJsonClass */
-/*jslint browser: true, devel: true, white: true */
-(function ($) {
-	"use strict";
+	// begin module grid.import
 	$.jgrid.extend({
 		jqGridImport: function (o) {
 			o = $.extend({
@@ -13530,32 +13770,23 @@
 			});
 		}
 	});
-}(jQuery));
+	// end module grid.import
+	/**
+	 * jqGrid extension for manipulating Grid Data
+	 * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com,  http://trirand.com/blog/
+	 * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
+	 * Dual licensed under the MIT and GPL licenses:
+	 * http://www.opensource.org/licenses/mit-license.php
+	 * http://www.gnu.org/licenses/gpl-2.0.html
+	**/
 
-/**
- * jqGrid extension for manipulating Grid Data
- * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com,  http://trirand.com/blog/
- * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl-2.0.html
-**/
-
-/*jslint browser: true, eqeq: true, nomen: true, vars: true, devel: true, unparam: true, plusplus: true, white: true, todo: true */
-/*global jQuery */
-(function ($) {
-	"use strict";
-	var jgrid = $.jgrid, fullBoolFeedback = jgrid.fullBoolFeedback, hasOneFromClasses = jgrid.hasOneFromClasses,
-		enumEditableCells = jgrid.enumEditableCells,
-		editFeedback = function (o) {
+	// begin module grid.inlinedit
+	var editFeedback = function (o) {
 			var args = $.makeArray(arguments).slice(1);
 			args.unshift("");
 			args.unshift("Inline");
 			args.unshift(o);
 			return jgrid.feedback.apply(this, args);
-		},
-		getGuiStateStyles = function (path) {
-			return jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], "states." + path);
 		};
 	jgrid.inlineEdit = jgrid.inlineEdit || {};
 	jgrid.extend({
@@ -13620,7 +13851,7 @@
 						$(tr.cells[savedRowInfo.ic]).removeClass("edit-cell " + highlightClass);
 						$(tr).addClass(highlightClass).attr({ "aria-selected": "true", "tabindex": "0" });
 					}
-					enumEditableCells.call($t, ind, $(ind).hasClass("jqgrid-new-row") ? "add" : "edit", function (options) {
+					jgrid.enumEditableCells.call($t, ind, $(ind).hasClass("jqgrid-new-row") ? "add" : "edit", function (options) {
 						var cm = options.cm, $dataFiled = $(options.dataElement), dataWidth = options.dataWidth, tmp, opt, elc,
 							nm = cm.name, edittype = cm.edittype, iCol = options.iCol, editoptions = cm.editoptions || {};
 						if (options.editable === "hidden") { return; }
@@ -13762,7 +13993,7 @@
 			o.url = o.url || p.editurl;
 			isRemoteSave = o.url !== "clientArray";
 			if (editable === "1") {
-				enumEditableCells.call($t, ind, $tr.hasClass("jqgrid-new-row") ? "add" : "edit", function (options) {
+				jgrid.enumEditableCells.call($t, ind, $tr.hasClass("jqgrid-new-row") ? "add" : "edit", function (options) {
 					var cm = options.cm, v, formatter = cm.formatter, editoptions = cm.editoptions || {},
 						formatoptions = cm.formatoptions || {};
 
@@ -14246,27 +14477,20 @@
 				$(isEditing ? saveCancel : addEdit).removeClass(disabledClass);
 			});
 		}
-		//end inline edit
 	});
-}(jQuery));
+	// end module grid.inlinedit
+	/**
+	 * jqGrid addons using jQuery UI
+	 * Author: Mark Williams
+	 * Changed by Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
+	 * Dual licensed under the MIT and GPL licenses:
+	 * http://www.opensource.org/licenses/mit-license.php
+	 * http://www.gnu.org/licenses/gpl-2.0.html
+	 * depends on jQuery UI
+	**/
 
-/*
-**
- * jqGrid addons using jQuery UI
- * Author: Mark Williams
- * Changed by Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl-2.0.html
- * depends on jQuery UI
-**/
-
-/*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery */
-/*jslint browser: true, devel: true, eqeq: true, nomen: true, plusplus: true, unparam: true, vars: true, white: true */
-(function ($) {
-	"use strict";
-	var jgrid = $.jgrid, $UiMultiselect = $.ui != null ? $.ui.multiselect : null, jqID = jgrid.jqID;
+	// begin module grid.jqueryui
+	var $UiMultiselect = $.ui != null ? $.ui.multiselect : null;
 	if (jgrid.msie && jgrid.msiever() === 8) {
 		$.expr[":"].hidden = function (elem) {
 			return elem.offsetWidth === 0 || elem.offsetHeight === 0 ||
@@ -14888,24 +15112,19 @@
 			});
 		}
 	});
-}(jQuery));
+	// end module grid.jqueryui
+	/**
+	 * jqGrid pivot functions
+	 * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com, http://trirand.com/blog/
+	 * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
+	 * The modul is created initially by Tony Tomov and it's full rewritten
+	 * for free jqGrid: https://github.com/free-jqgrid/jqGrid by Oleg Kiriljuk
+	 * Dual licensed under the MIT and GPL licenses:
+	 * http://www.opensource.org/licenses/mit-license.php
+	 * http://www.gnu.org/licenses/gpl-2.0.html
+	*/
 
-/**
- * jqGrid pivot functions
- * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com, http://trirand.com/blog/
- * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
- * The modul is created initially by Tony Tomov and it's full rewritten
- * for free jqGrid: https://github.com/free-jqgrid/jqGrid by Oleg Kiriljuk
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl-2.0.html
-*/
-
-/*jshint eqeqeq:false */
-/*global jQuery */
-/*jslint eqeq: true, plusplus: true, continue: true, white: true */
-(function ($) {
-	"use strict";
+	// begin module grid.pivot
 	function Aggregation(aggregator, context, pivotOptions) {
 		if (!(this instanceof Aggregation)) {
 			return new Aggregation(aggregator);
@@ -15171,7 +15390,6 @@
 		}
 	};
 
-	var jgrid = $.jgrid;
 	jgrid.extend({
 		pivotSetup: function (data, options) {
 			// data should come in json format
@@ -15691,24 +15909,18 @@
 			});
 		}
 	});
-}(jQuery));
+	// end module grid.pivot
+	/**
+	 * jqGrid extension for SubGrid Data
+	 * Tony Tomov, tony@trirand.com, http://trirand.com/blog/
+	 * Changed by Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
+	 * Dual licensed under the MIT and GPL licenses:
+	 * http://www.opensource.org/licenses/mit-license.php
+	 * http://www.gnu.org/licenses/gpl-2.0.html
+	**/
 
-/**
- * jqGrid extension for SubGrid Data
- * Tony Tomov, tony@trirand.com, http://trirand.com/blog/
- * Changed by Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl-2.0.html
-**/
-
-/*jshint eqeqeq:false */
-/*global jQuery */
-/*jslint eqeq: true, nomen: true, plusplus: true, unparam: true, white: true */
-(function ($) {
-	"use strict";
-	var jgrid = $.jgrid, jqID = jgrid.jqID, base = $.fn.jqGrid,
-		subGridFeedback = function () {
+	// begin module grid.subgrid
+	var subGridFeedback = function () {
 			var args = $.makeArray(arguments);
 			args[0] = "subGrid" + args[0].charAt(0).toUpperCase() + args[0].substring(1);
 			args.unshift("");
@@ -15996,19 +16208,15 @@
 			return collapseOrExpand.call(this, rowid, "ui-sgcollapsed");
 		}
 	});
-}(jQuery));
+	// end module grid.subgrid
+	/**
+	 Transform a table to a jqGrid.
+	 Peter Romianowski <peter.romianowski@optivo.de>
+	 If the first column of the table contains checkboxes or
+	 radiobuttons then the jqGrid is made selectable.
+	*/
 
-/*
- Transform a table to a jqGrid.
- Peter Romianowski <peter.romianowski@optivo.de>
- If the first column of the table contains checkboxes or
- radiobuttons then the jqGrid is made selectable.
-*/
-/*jslint browser: true, plusplus: true, white: true */
-/*global jQuery */
-// Addition - selector can be a class or id
-(function ($) {
-	"use strict";
+	// begin module grid.tbltogrid
 	window.tableToGrid = function (selector, options) {
 		$(selector).each(function () {
 			var self = this, $self = $(this), w, inputCheckbox, inputRadio, selectMultiple, selectSingle, selectable, a, id,
@@ -16103,24 +16311,18 @@
 			}
 		});
 	};
-}(jQuery));
+	// end module grid.tbltogrid
+	/**
+	 * jqGrid extension - Tree Grid
+	 * Tony Tomov tony@trirand.com, http://trirand.com/blog/
+	 * Changed by Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
+	 * Dual licensed under the MIT and GPL licenses:
+	 * http://www.opensource.org/licenses/mit-license.php
+	 * http://www.gnu.org/licenses/gpl.html
+	**/
 
-/**
- * jqGrid extension - Tree Grid
- * Tony Tomov tony@trirand.com, http://trirand.com/blog/
- * Changed by Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl.html
-**/
-
-/*jshint eqeqeq:false */
-/*jslint browser: true, eqeq: true, plusplus: true, nomen: true, unparam: true, vars: true, white: true, todo: true */
-/*global jQuery */
-(function ($) {
-	"use strict";
-	var jgrid = $.jgrid, getAccessor = jgrid.getAccessor, stripPref = jgrid.stripPref, jqID = jgrid.jqID, base = $.fn.jqGrid,
-		treeGridFeedback = function () {
+	// begin module grid.treegrid
+	var treeGridFeedback = function () {
 			var args = $.makeArray(arguments);
 			args[0] = "treeGrid" + args[0].charAt(0).toUpperCase() + args[0].substring(1);
 			args.unshift("");
@@ -16713,23 +16915,20 @@
 			//});
 		}
 	});
-}(jQuery));
+	// end module grid.treegrid
+	/**
+	 * jqDnR - Minimalistic Drag'n'Resize for jQuery.
+	 *
+	 * Copyright (c) 2007 Brice Burgess <bhb@iceburg.net>, http://www.iceburg.net
+	 * Licensed under the MIT License:
+	 * http://www.opensource.org/licenses/mit-license.php
+	 *
+	 * $Version: 2007.08.19 +r2
+	 * Updated by Oleg Kiriljuk to support touch devices
+	 * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
+	 */
 
-/*
- * jqDnR - Minimalistic Drag'n'Resize for jQuery.
- *
- * Copyright (c) 2007 Brice Burgess <bhb@iceburg.net>, http://www.iceburg.net
- * Licensed under the MIT License:
- * http://www.opensource.org/licenses/mit-license.php
- *
- * $Version: 2007.08.19 +r2
- * Updated by Oleg Kiriljuk to support touch devices
- * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
- */
-/*jslint browser: true, white: true */
-/*global jQuery */
-(function ($) {
-	"use strict";
+	// begin module jqdnr
 	var namespace = ".jqGrid", mouseDown = "mousedown", mouseMove = "mousemove", mouseUp = "mouseup",
 		getMouseCoordinates = function (e) {
 			var orgEvent = e.originalEvent, touches = orgEvent.targetTouches;
@@ -16869,25 +17068,22 @@
 	$.fn.jqResize = function (handle, alsoResize) {
 		return init(this, handle, "resize", alsoResize);
 	};
-}(jQuery));
+	// end module jqdnr
+	/**
+	 * jqModal - Minimalist Modaling with jQuery
+	 *   (http://dev.iceburg.net/jquery/jqmodal/)
+	 *
+	 * Copyright (c) 2007,2008 Brice Burgess <bhb@iceburg.net>
+	 * Dual licensed under the MIT and GPL licenses:
+	 *   http://www.opensource.org/licenses/mit-license.php
+	 *   http://www.gnu.org/licenses/gpl.html
+	 *
+	 * $Version: 07/06/2008 +r13
+	 * Changed by Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
+	 * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
+	 */
 
-/*
- * jqModal - Minimalist Modaling with jQuery
- *   (http://dev.iceburg.net/jquery/jqmodal/)
- *
- * Copyright (c) 2007,2008 Brice Burgess <bhb@iceburg.net>
- * Dual licensed under the MIT and GPL licenses:
- *   http://www.opensource.org/licenses/mit-license.php
- *   http://www.gnu.org/licenses/gpl.html
- *
- * $Version: 07/06/2008 +r13
- * Changed by Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
- * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
- */
-/*jslint browser: true, nomen: true, plusplus: true, white: true */
-/*global jQuery */
-(function ($) {
-	"use strict";
+	// begin module jqmodal
 	var jqmHashLength = 0,
 		jqmHash,
 		createdModals = [],
@@ -17126,32 +17322,25 @@
 		params: {}
 	};
 	jqmHash = $.jqm.hash;
-}(jQuery));
+	// end module jqmodal
+	/**
+	 * formatter for values but most of the values if for jqGrid
+	 * Some of this was inspired and based on how YUI does the table datagrid but in jQuery fashion
+	 * we are trying to keep it as light as possible
+	 * Joshua Burnett josh@9ci.com
+	 * http://www.greenbill.com
+	 *
+	 * Changes from Tony Tomov tony@trirand.com
+	 * Changed by Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
+	 * Dual licensed under the MIT and GPL licenses:
+	 * http://www.opensource.org/licenses/mit-license.php
+	 * http://www.gnu.org/licenses/gpl-2.0.html
+	 *
+	**/
 
-/*
-**
- * formatter for values but most of the values if for jqGrid
- * Some of this was inspired and based on how YUI does the table datagrid but in jQuery fashion
- * we are trying to keep it as light as possible
- * Joshua Burnett josh@9ci.com
- * http://www.greenbill.com
- *
- * Changes from Tony Tomov tony@trirand.com
- * Changed by Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl-2.0.html
- *
-**/
-/*jshint eqeqeq:false */
-/*jslint eqeq: true, plusplus: true, unparam: true, vars: true, regexp: true, white: true, todo: true */
-/*global jQuery */
-
-(function ($) {
-	"use strict";
+	// begin module jquery.fmatter
 	$.fmatter = $.fmatter || {};
-	$.jgrid = $.jgrid || {};
-	var fmatter = $.fmatter, jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes"); // locales = jgrid.locales, getRes = jgrid.getRes
+	var fmatter = $.fmatter;
 	$.extend(true, jgrid, {
 		formatter: { // setting common formatter settings, which are independent from the language and locale
 			date: {
@@ -18050,307 +18239,4 @@
 				jgrid.parseDate.call(this, op.newformat, cellval, op.srcformat, op) :
 				"";
 	};
-}(jQuery));
-
-/*
-	The below work is licensed under Creative Commons GNU LGPL License.
-
-	Original work:
-
-	License:     http://creativecommons.org/licenses/LGPL/2.1/
-	Author:      Stefan Goessner/2006
-	Web:         http://goessner.net/
-
-	Modifications made:
-
-	Version:     0.9-p5
-	Description: Restructured code, JSLint validated (no strict whitespaces),
-				 added handling of empty arrays, empty strings, and int/floats values.
-	Author:      Michael Schøler/2008-01-29
-	Web:         http://michael.hinnerup.net/blog/2008/01/26/converting-json-to-xml-and-xml-to-json/
-
-	Description: json2xml added support to convert functions as CDATA
-				 so it will be easy to write characters that cause some problems when convert
-	Author:      Tony Tomov
-*/
-
-/*global alert */
-/*jslint browser: true, vars: true, regexp: true, white: true */
-
-(function () {
-	"use strict";
-	window.xmlJsonClass = {
-		// Param "xml": Element or document DOM node.
-		// Param "tab": Tab or indent string for pretty output formatting omit or use empty string "" to supress.
-		// Returns:     JSON string
-		xml2json: function (xml, tab) {
-			if (xml.nodeType === 9) {
-				// document node
-				xml = xml.documentElement;
-			}
-			var nws = this.removeWhite(xml),
-				obj = this.toObj(nws),
-				json = this.toJson(obj, xml.nodeName, "\t");
-			return "{\n" + tab + (tab ? json.replace(/\t/g, tab) : json.replace(/\t|\n/g, "")) + "\n}";
-		},
-
-		// Param "o":   JavaScript object
-		// Param "tab": tab or indent string for pretty output formatting omit or use empty string "" to supress.
-		// Returns:     XML string
-		json2xml: function (o, tab) {
-			var toXml = function (v, name, ind) {
-					var xml = "", i, n, sXml, hasChild, m;
-					if (v instanceof Array) {
-						if (v.length === 0) {
-							xml += ind + "<" + name + ">__EMPTY_ARRAY_</" + name + ">\n";
-						} else {
-							for (i = 0, n = v.length; i < n; i += 1) {
-								sXml = ind + toXml(v[i], name, ind + "\t") + "\n";
-								xml += sXml;
-							}
-						}
-					} else if (typeof v === "object") {
-						hasChild = false;
-						xml += ind + "<" + name;
-						for (m in v) {
-							if (v.hasOwnProperty(m)) {
-								if (m.charAt(0) === "@") {
-									xml += " " + m.substr(1) + "=\"" + v[m].toString() + "\"";
-								} else {
-									hasChild = true;
-								}
-							}
-						}
-						xml += hasChild ? ">" : "/>";
-						if (hasChild) {
-							for (m in v) {
-								if (v.hasOwnProperty(m)) {
-									if (m === "#text") {
-										xml += v[m];
-									} else if (m === "#cdata") {
-										xml += "<![CDATA[" + v[m] + "]]>";
-									} else if (m.charAt(0) !== "@") {
-										xml += toXml(v[m], m, ind + "\t");
-									}
-								}
-							}
-							xml += (xml.charAt(xml.length - 1) === "\n" ? ind : "") + "</" + name + ">";
-						}
-					} else if (typeof v === "function") {
-						xml += ind + "<" + name + ">" + "<![CDATA[" + v + "]]>" + "</" + name + ">";
-					} else {
-						if (v === undefined) {
-							v = "";
-						}
-						if (v.toString() === "\"\"" || v.toString().length === 0) {
-							xml += ind + "<" + name + ">__EMPTY_STRING_</" + name + ">";
-						} else {
-							xml += ind + "<" + name + ">" + v.toString() + "</" + name + ">";
-						}
-					}
-					return xml;
-				},
-				xml1 = "",
-				m;
-
-			for (m in o) {
-				if (o.hasOwnProperty(m)) {
-					xml1 += toXml(o[m], m, "");
-				}
-			}
-			return tab ? xml1.replace(/\t/g, tab) : xml1.replace(/\t|\n/g, "");
-		},
-		// Internal methods
-		toObj: function (xml) {
-			var o = {}, funcTest = /function/i, i, textChild = 0, cdataChild = 0, hasElementChild = false, n;
-			if (xml.nodeType === 1) {
-				// element node ..
-				if (xml.attributes.length) {
-					// element with attributes ..
-					for (i = 0; i < xml.attributes.length; i += 1) {
-						o["@" + xml.attributes[i].nodeName] = (xml.attributes[i].nodeValue || "").toString();
-					}
-				}
-				if (xml.firstChild) {
-					// element has child nodes ..
-					for (n = xml.firstChild; n; n = n.nextSibling) {
-						if (n.nodeType === 1) {
-							hasElementChild = true;
-						} else if (n.nodeType === 3 && n.nodeValue.match(/[^ \f\n\r\t\v]/)) {
-							// non-whitespace text
-							textChild += 1;
-						} else if (n.nodeType === 4) {
-							// cdata section node
-							cdataChild += 1;
-						}
-					}
-					if (hasElementChild) {
-						if (textChild < 2 && cdataChild < 2) {
-							// structured element with evtl. a single text or/and cdata node ..
-							this.removeWhite(xml);
-							for (n = xml.firstChild; n; n = n.nextSibling) {
-								if (n.nodeType === 3) {
-									// text node
-									o["#text"] = this.escape(n.nodeValue);
-								} else if (n.nodeType === 4) {
-									// cdata node
-									if (funcTest.test(n.nodeValue)) {
-										o[n.nodeName] = [o[n.nodeName], n.nodeValue];
-									} else {
-										o["#cdata"] = this.escape(n.nodeValue);
-									}
-								} else if (o[n.nodeName]) {
-									// multiple occurence of element ..
-									if (o[n.nodeName] instanceof Array) {
-										o[n.nodeName][o[n.nodeName].length] = this.toObj(n);
-									} else {
-										o[n.nodeName] = [o[n.nodeName], this.toObj(n)];
-									}
-								} else {
-									// first occurence of element ..
-									o[n.nodeName] = this.toObj(n);
-								}
-							}
-						} else {
-							// mixed content
-							if (!xml.attributes.length) {
-								o = this.escape(this.innerXml(xml));
-							} else {
-								o["#text"] = this.escape(this.innerXml(xml));
-							}
-						}
-					} else if (textChild) {
-						// pure text
-						if (!xml.attributes.length) {
-							o = this.escape(this.innerXml(xml));
-							if (o === "__EMPTY_ARRAY_") {
-								o = "[]";
-							} else if (o === "__EMPTY_STRING_") {
-								o = "";
-							}
-						} else {
-							o["#text"] = this.escape(this.innerXml(xml));
-						}
-					} else if (cdataChild) {
-						// cdata
-						if (cdataChild > 1) {
-							o = this.escape(this.innerXml(xml));
-						} else {
-							for (n = xml.firstChild; n; n = n.nextSibling) {
-								if (funcTest.test(xml.firstChild.nodeValue)) {
-									o = xml.firstChild.nodeValue;
-									break;
-								}
-								o["#cdata"] = this.escape(n.nodeValue);
-							}
-						}
-					}
-				}
-				if (!xml.attributes.length && !xml.firstChild) {
-					o = null;
-				}
-			} else if (xml.nodeType === 9) {
-				// document.node
-				o = this.toObj(xml.documentElement);
-			} else {
-				alert("unhandled node type: " + xml.nodeType);
-			}
-			return o;
-		},
-		toJson: function (o, name, ind, wellform) {
-			if (wellform === undefined) {
-				wellform = true;
-			}
-			var json = name ? ("\"" + name + "\"") : "", tab = "\t", newline = "\n", n, i, ar = [], arr = [], m;
-			if (!wellform) {
-				tab = "";
-				newline = "";
-			}
-
-			if (o === "[]") {
-				json += (name ? ":[]" : "[]");
-			} else if (o instanceof Array) {
-				for (i = 0, n = o.length; i < n; i += 1) {
-					ar[i] = this.toJson(o[i], "", ind + tab, wellform);
-				}
-				json += (name ? ":[" : "[") + (ar.length > 1 ? (newline + ind + tab + ar.join("," + newline + ind + tab) + newline + ind) : ar.join("")) + "]";
-			} else if (o === null) {
-				json += (name && ":") + "null";
-			} else if (typeof o === "object") {
-				for (m in o) {
-					if (o.hasOwnProperty(m)) {
-						arr[arr.length] = this.toJson(o[m], m, ind + tab, wellform);
-					}
-				}
-				json += (name ? ":{" : "{") + (arr.length > 1 ? (newline + ind + tab + arr.join("," + newline + ind + tab) + newline + ind) : arr.join("")) + "}";
-			} else if (typeof o === "string") {
-				json += (name && ":") + "\"" + o.replace(/\\/g, "\\\\").replace(/\"/g, '\\"') + "\"";
-			} else {
-				json += (name && ":") +  o.toString();
-			}
-			return json;
-		},
-		innerXml: function (node) {
-			var s = "", child,
-				asXml = function (n) {
-					var str = "", i, c;
-					if (n.nodeType === 1) {
-						str += "<" + n.nodeName;
-						for (i = 0; i < n.attributes.length; i += 1) {
-							str += " " + n.attributes[i].nodeName + "=\"" + (n.attributes[i].nodeValue || "").toString() + "\"";
-						}
-						if (n.firstChild) {
-							str += ">";
-							for (c = n.firstChild; c; c = c.nextSibling) {
-								str += asXml(c);
-							}
-							str += "</" + n.nodeName + ">";
-						} else {
-							str += "/>";
-						}
-					} else if (n.nodeType === 3) {
-						str += n.nodeValue;
-					} else if (n.nodeType === 4) {
-						str += "<![CDATA[" + n.nodeValue + "]]>";
-					}
-					return str;
-				};
-			if (node.hasOwnProperty("innerHTML")) {
-				s = node.innerHTML;
-			} else {
-				for (child = node.firstChild; child; child = child.nextSibling) {
-					s += asXml(child);
-				}
-			}
-			return s;
-		},
-		escape: function (txt) {
-			return txt.replace(/[\\]/g, "\\\\").replace(/[\"]/g, '\\"').replace(/[\n]/g, "\\n").replace(/[\r]/g, "\\r");
-		},
-		removeWhite: function (e) {
-			e.normalize();
-			var n = e.firstChild, nxt;
-			while (n) {
-				if (n.nodeType === 3) {
-					// text node
-					if (!n.nodeValue.match(/[^ \f\n\r\t\v]/)) {
-						// pure whitespace text node
-						nxt = n.nextSibling;
-						e.removeChild(n);
-						n = nxt;
-					} else {
-						n = n.nextSibling;
-					}
-				} else if (n.nodeType === 1) {
-					// element node
-					this.removeWhite(n);
-					n = n.nextSibling;
-				} else {
-					// any other node
-					n = n.nextSibling;
-				}
-			}
-			return e;
-		}
-	};
-}());
+	// end module jquery.fmatter}));

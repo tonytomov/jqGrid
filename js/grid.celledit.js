@@ -28,9 +28,21 @@
 **/
 
 /*jshint eqeqeq:false */
-/*global jQuery */
+/*global jQuery, define */
 /*jslint browser: true, eqeq: true, plusplus: true, vars: true, white: true, todo: true */
-(function ($) {
+(function (factory) {
+	"use strict";
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery", "./grid.base", "./jquery.fmatter", "./grid.common"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
 	"use strict";
 	var jgrid = $.jgrid,
 		feedback = function () {
@@ -40,8 +52,9 @@
 			args.unshift("");
 			args.unshift(this.p);
 			return jgrid.feedback.apply(this, args);
-		},
-		getGuiStateStyles = function (path, moreClasses) {
+		};
+	// begin module grid.celledit
+	var getGuiStateStyles = function (path, moreClasses) {
 			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], "states." + path), moreClasses || "");
 		},
 		getTdByColumnIndex = function (tr, iCol) {
@@ -579,6 +592,6 @@
 			});
 			return ret;
 		}
-		/// end  cell editing
 	});
-}(jQuery));
+	// end module grid.celledit
+}));

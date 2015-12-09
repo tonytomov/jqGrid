@@ -1,4 +1,4 @@
-/*
+/**
  * jqModal - Minimalist Modaling with jQuery
  *   (http://dev.iceburg.net/jquery/jqmodal/)
  *
@@ -12,9 +12,22 @@
  * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  */
 /*jslint browser: true, nomen: true, plusplus: true, white: true */
-/*global jQuery */
-(function ($) {
+/*global jQuery, define */
+(function (factory) {
 	"use strict";
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
+	"use strict";
+	// begin module jqmodal
 	var jqmHashLength = 0,
 		jqmHash,
 		createdModals = [],
@@ -253,4 +266,5 @@
 		params: {}
 	};
 	jqmHash = $.jqm.hash;
-}(jQuery));
+	// end module jqmodal
+}));

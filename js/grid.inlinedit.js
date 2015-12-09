@@ -8,20 +8,32 @@
 **/
 
 /*jslint browser: true, eqeq: true, nomen: true, vars: true, devel: true, unparam: true, plusplus: true, white: true, todo: true */
-/*global jQuery */
-(function ($) {
+/*global jQuery, define */
+(function (factory) {
+	"use strict";
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery", "./grid.base", "./jquery.fmatter", "./grid.common"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
 	"use strict";
 	var jgrid = $.jgrid, fullBoolFeedback = jgrid.fullBoolFeedback, hasOneFromClasses = jgrid.hasOneFromClasses,
-		enumEditableCells = jgrid.enumEditableCells,
-		editFeedback = function (o) {
+		getGuiStateStyles = function (path) {
+			return jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], "states." + path);
+		};
+	// begin module grid.inlinedit
+	var editFeedback = function (o) {
 			var args = $.makeArray(arguments).slice(1);
 			args.unshift("");
 			args.unshift("Inline");
 			args.unshift(o);
 			return jgrid.feedback.apply(this, args);
-		},
-		getGuiStateStyles = function (path) {
-			return jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], "states." + path);
 		};
 	jgrid.inlineEdit = jgrid.inlineEdit || {};
 	jgrid.extend({
@@ -86,7 +98,7 @@
 						$(tr.cells[savedRowInfo.ic]).removeClass("edit-cell " + highlightClass);
 						$(tr).addClass(highlightClass).attr({ "aria-selected": "true", "tabindex": "0" });
 					}
-					enumEditableCells.call($t, ind, $(ind).hasClass("jqgrid-new-row") ? "add" : "edit", function (options) {
+					jgrid.enumEditableCells.call($t, ind, $(ind).hasClass("jqgrid-new-row") ? "add" : "edit", function (options) {
 						var cm = options.cm, $dataFiled = $(options.dataElement), dataWidth = options.dataWidth, tmp, opt, elc,
 							nm = cm.name, edittype = cm.edittype, iCol = options.iCol, editoptions = cm.editoptions || {};
 						if (options.editable === "hidden") { return; }
@@ -228,7 +240,7 @@
 			o.url = o.url || p.editurl;
 			isRemoteSave = o.url !== "clientArray";
 			if (editable === "1") {
-				enumEditableCells.call($t, ind, $tr.hasClass("jqgrid-new-row") ? "add" : "edit", function (options) {
+				jgrid.enumEditableCells.call($t, ind, $tr.hasClass("jqgrid-new-row") ? "add" : "edit", function (options) {
 					var cm = options.cm, v, formatter = cm.formatter, editoptions = cm.editoptions || {},
 						formatoptions = cm.formatoptions || {};
 
@@ -712,6 +724,6 @@
 				$(isEditing ? saveCancel : addEdit).removeClass(disabledClass);
 			});
 		}
-		//end inline edit
 	});
-}(jQuery));
+	// end module grid.inlinedit
+}));

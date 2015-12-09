@@ -1,10 +1,23 @@
 /*jshint eqeqeq:false, eqnull:true */
-/*global jQuery */
+/*global jQuery, define */
 /*jslint plusplus: true, unparam: true, eqeq: true, nomen: true, todo: true, continue: true */
 // Grouping module
-(function ($) {
+(function (factory) {
+	"use strict";
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery", "./grid.base"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
 	"use strict";
 	var jgrid = $.jgrid, base = $.fn.jqGrid;
+	// begin module grid.grouping
 	jgrid.extend({
 		groupingSetup: function () {
 			return this.each(function () {
@@ -641,4 +654,5 @@
 			}
 		}
 	});
-}(jQuery));
+	// end module grid.grouping
+}));

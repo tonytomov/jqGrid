@@ -1,14 +1,27 @@
-/*
+/**
  Transform a table to a jqGrid.
  Peter Romianowski <peter.romianowski@optivo.de>
  If the first column of the table contains checkboxes or
  radiobuttons then the jqGrid is made selectable.
 */
 /*jslint browser: true, plusplus: true, white: true */
-/*global jQuery */
+/*global jQuery, define */
 // Addition - selector can be a class or id
-(function ($) {
+(function (factory) {
 	"use strict";
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery", "./grid.base"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
+	"use strict";
+	// begin module grid.tbltogrid
 	window.tableToGrid = function (selector, options) {
 		$(selector).each(function () {
 			var self = this, $self = $(this), w, inputCheckbox, inputRadio, selectMultiple, selectSingle, selectable, a, id,
@@ -103,4 +116,5 @@
 			}
 		});
 	};
-}(jQuery));
+	// end module grid.tbltogrid
+}));

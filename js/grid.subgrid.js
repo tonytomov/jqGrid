@@ -8,12 +8,25 @@
 **/
 
 /*jshint eqeqeq:false */
-/*global jQuery */
+/*global jQuery, define */
 /*jslint eqeq: true, nomen: true, plusplus: true, unparam: true, white: true */
-(function ($) {
+(function (factory) {
 	"use strict";
-	var jgrid = $.jgrid, jqID = jgrid.jqID, base = $.fn.jqGrid,
-		subGridFeedback = function () {
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery", "./grid.base"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
+	"use strict";
+	var jgrid = $.jgrid, jqID = jgrid.jqID, base = $.fn.jqGrid;
+	// begin module grid.subgrid
+	var subGridFeedback = function () {
 			var args = $.makeArray(arguments);
 			args[0] = "subGrid" + args[0].charAt(0).toUpperCase() + args[0].substring(1);
 			args.unshift("");
@@ -301,4 +314,5 @@
 			return collapseOrExpand.call(this, rowid, "ui-sgcollapsed");
 		}
 	});
-}(jQuery));
+	// end module grid.subgrid
+}));

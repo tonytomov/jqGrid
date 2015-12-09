@@ -1,4 +1,4 @@
-/*
+/**
  * jqGrid extension for constructing Grid Data from external file
  * Tony Tomov tony@trirand.com, http://trirand.com/blog/
  * Dual licensed under the MIT and GPL licenses:
@@ -7,10 +7,23 @@
 **/
 
 /*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery, xmlJsonClass */
+/*global jQuery, define, xmlJsonClass */
 /*jslint browser: true, devel: true, white: true */
-(function ($) {
+(function (factory) {
 	"use strict";
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery", "./jsonxml"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
+	"use strict";
+	// begin module grid.import
 	$.jgrid.extend({
 		jqGridImport: function (o) {
 			o = $.extend({
@@ -221,4 +234,5 @@
 			});
 		}
 	});
-}(jQuery));
+	// end module grid.import
+}));

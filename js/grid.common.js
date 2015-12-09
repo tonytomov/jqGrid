@@ -1,4 +1,4 @@
-/*
+/**
  * jqGrid common function
  * Tony Tomov tony@trirand.com, http://trirand.com/blog/
  * Changed by Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
@@ -8,13 +8,28 @@
 */
 
 /*jshint eqeqeq:false */
-/*global jQuery, HTMLElement */
+/*global jQuery, define, HTMLElement */
 /*jslint browser: true, eqeq: true, plusplus: true, unparam: true, white: true, vars: true */
-(function ($) {
+(function (factory) {
 	"use strict";
-	var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes"),
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery", "./jqdnr", "./jqmodal"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
+	"use strict";
+	var jgrid = $.jgrid;
+	// begin module grid.common
+	var getGridRes = jgrid.getMethod("getGridRes"),
 		getGuiStyles = function (path, jqClasses) {
-			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], path), jqClasses || "");
+			var p = this.p, guiStyle = p.guiStyle || jgrid.defaults.guiStyle || "jQueryUI";
+			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[guiStyle], path), jqClasses || "");
 		};
 
 	jgrid.jqModal = jgrid.jqModal || {};
@@ -793,4 +808,5 @@
 			return [true, "", ""];
 		}
 	});
-}(jQuery));
+	// end module grid.common
+}));

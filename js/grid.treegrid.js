@@ -9,11 +9,25 @@
 
 /*jshint eqeqeq:false */
 /*jslint browser: true, eqeq: true, plusplus: true, nomen: true, unparam: true, vars: true, white: true, todo: true */
-/*global jQuery */
-(function ($) {
+/*global jQuery, define */
+(function (factory) {
 	"use strict";
-	var jgrid = $.jgrid, getAccessor = jgrid.getAccessor, stripPref = jgrid.stripPref, jqID = jgrid.jqID, base = $.fn.jqGrid,
-		treeGridFeedback = function () {
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
+	"use strict";
+	var jgrid = $.jgrid, getAccessor = jgrid.getAccessor, stripPref = jgrid.stripPref,
+		jqID = jgrid.jqID, base = $.fn.jqGrid;
+	// begin module grid.treegrid
+	var treeGridFeedback = function () {
 			var args = $.makeArray(arguments);
 			args[0] = "treeGrid" + args[0].charAt(0).toUpperCase() + args[0].substring(1);
 			args.unshift("");
@@ -606,4 +620,5 @@
 			//});
 		}
 	});
-}(jQuery));
+	// end module grid.treegrid
+}));

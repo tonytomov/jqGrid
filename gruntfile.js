@@ -47,12 +47,49 @@
 		},
 		concat: {
 			all: {
+				options: {
+					process: function (src, filepath) {
+						// see https://github.com/gruntjs/grunt-contrib-concat#custom-process-function
+						grunt.log.writeln("concat begin process the file " + filepath);
+						var iBeginModule = src.indexOf("// begin module "), iLicenseEnd = 0, iBeginModuleStartLine,
+							licenseComment = "", moduleCode = "", iRowStart, iRowEnd, margin = "";
+						if (iBeginModule >= 0) {
+							//grunt.log.writeln("first 3 characters are: '" + src.substring(0, 3) + "'");
+							if (src.substring(0, 3) === "/**") {
+								iLicenseEnd = src.substring(0, iBeginModule).indexOf("*/");
+							}
+							iBeginModuleStartLine = src.lastIndexOf("\n", iBeginModule);
+							margin = src.substring(iBeginModuleStartLine + 1, iBeginModule);
+							//grunt.log.writeln("margin: '" + margin + "'");
+							iBeginModule = iBeginModuleStartLine;
+							if (iLicenseEnd > 0) {
+								iLicenseEnd += 2;
+								for (iRowStart = 0; iRowStart < iLicenseEnd; iRowStart = iRowEnd + 1) {
+									iRowEnd = src.indexOf("\n", iRowStart);
+									licenseComment += (iRowStart + 1 !== iRowEnd ? margin : "") + src.substring(iRowStart, iRowEnd + 1);
+								}
+								//grunt.log.writeln("License:\n" + licenseComment);
+							}
+							var iEndModule = src.lastIndexOf("// end module ");
+							if (iEndModule >= 0) {
+								iEndModule = src.indexOf("\n", iEndModule);
+								moduleCode = licenseComment + src.substring(iBeginModule, iEndModule);
+							}
+						}
+						if (filepath.lastIndexOf("grid.base.js") >= 0) {
+							return src.substring(0, src.indexOf("}));", iEndModule));
+						}
+						return moduleCode;
+					},
+					footer: "}));\n"
+				},
 				src: [
 					"js/grid.base.js",
 					"js/grid.celledit.js",
 					"js/grid.common.js",
 					"js/grid.custom.js",
 					"js/grid.filter.js",
+					"js/jsonxml.js",
 					"js/grid.formedit.js",
 					"js/grid.grouping.js",
 					"js/grid.import.js",
@@ -64,8 +101,7 @@
 					"js/grid.treegrid.js",
 					"js/jqdnr.js",
 					"js/jqmodal.js",
-					"js/jquery.fmatter.js",
-					"js/jsonxml.js"
+					"js/jquery.fmatter.js"
 				],
 				dest: "js/jquery.jqgrid.src.js"
 			}
@@ -165,31 +201,31 @@
 					}
 				]
 			}
-		},
-		uglify: {
-			all: {
-				src: "js/jquery.jqgrid.src.js",
-				dest: "js/jquery.jqgrid.min.js",
-				options: {
-					preserveComments: false,
-					sourceMap: true,
-					sourceMapName: "js/jquery.jqgrid.min.map",
-					report: "min",
-					banner: "/*\n" +
-						" jqGrid <%= pkgFreejqGrid.version %> - free jqGrid: https://github.com/free-jqgrid/jqGrid\n" +
-						" Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com\n" +
-						" Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com\n" +
-						" Dual licensed under the MIT and GPL licenses\n" +
-						" http://www.opensource.org/licenses/mit-license.php\n" +
-						" http://www.gnu.org/licenses/gpl-2.0.html\n" +
-						" Date: <%= grunt.template.today('isoDate') %>\n" +
-						"*/",
-					compress: {
-						"hoist_funs": false
-					}
-				}
-			}
-		}
+		}//,
+		//uglify: {
+		//	all: {
+		//		src: "js/jquery.jqgrid.src.js",
+		//		dest: "js/jquery.jqgrid.min.js",
+		//		options: {
+		//			preserveComments: false,
+		//			sourceMap: true,
+		//			sourceMapName: "js/jquery.jqgrid.min.map",
+		//			report: "min",
+		//			banner: "/*\n" +
+		//				" jqGrid <%= pkgFreejqGrid.version %> - free jqGrid: https://github.com/free-jqgrid/jqGrid\n" +
+		//				" Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com\n" +
+		//				" Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com\n" +
+		//				" Dual licensed under the MIT and GPL licenses\n" +
+		//				" http://www.opensource.org/licenses/mit-license.php\n" +
+		//				" http://www.gnu.org/licenses/gpl-2.0.html\n" +
+		//				" Date: <%= grunt.template.today('isoDate') %>\n" +
+		//				"*/",
+		//			compress: {
+		//				"hoist_funs": false
+		//			}
+		//		}
+		//	}
+		//}
 	});
 
 	grunt.loadNpmTasks("grunt-contrib-clean");
@@ -197,7 +233,7 @@
 	grunt.loadNpmTasks("grunt-contrib-jshint");
 	grunt.loadNpmTasks("grunt-contrib-concat");
 	grunt.loadNpmTasks("grunt-closure-tools");
-	grunt.loadNpmTasks("grunt-contrib-uglify");
+	//grunt.loadNpmTasks("grunt-contrib-uglify");
 	grunt.loadNpmTasks("grunt-contrib-cssmin");
 	grunt.loadNpmTasks("grunt-replace");
 	grunt.loadNpmTasks("grunt-file-append");

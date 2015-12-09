@@ -10,10 +10,24 @@
 */
 
 /*jshint eqeqeq:false */
-/*global jQuery */
+/*global jQuery, define */
 /*jslint eqeq: true, plusplus: true, continue: true, white: true */
-(function ($) {
+(function (factory) {
 	"use strict";
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery", "./grid.grouping"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
+	"use strict";
+	var jgrid = $.jgrid;
+	// begin module grid.pivot
 	function Aggregation(aggregator, context, pivotOptions) {
 		if (!(this instanceof Aggregation)) {
 			return new Aggregation(aggregator);
@@ -279,7 +293,6 @@
 		}
 	};
 
-	var jgrid = $.jgrid;
 	jgrid.extend({
 		pivotSetup: function (data, options) {
 			// data should come in json format
@@ -799,4 +812,5 @@
 			});
 		}
 	});
-}(jQuery));
+	// end module grid.pivot
+}));

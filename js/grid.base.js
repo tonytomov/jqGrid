@@ -2,21 +2,34 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
 /**
- * @license jqGrid 4.11.1 - free jqGrid: https://github.com/free-jqgrid/jqGrid
+ * @license jqGrid 4.12.0-pre - free jqGrid: https://github.com/free-jqgrid/jqGrid
  * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com
  * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-12-02
+ * Date: 2015-12-04
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
 /*jslint browser: true, devel: true, eqeq: true, nomen: true, plusplus: true, unparam: true, vars: true, evil: true, regexp: true, white: true, todo: true */
-/*global jQuery, HTMLElement, HTMLTableRowElement */
+/*global jQuery, define, HTMLElement, HTMLTableRowElement */
 
-(function ($) {
+(function (factory) {
 	"use strict";
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
+	"use strict";
+	// begin module grid.base
 	/** @const */
 	var englishLanguageDefaults = {
 		name: "English (United States)",
@@ -332,7 +345,7 @@
 
 	$.extend(true, jgrid, {
 		/** @const */
-		version: "4.11.1",
+		version: "4.12.0-pre",
 		/** @const */
 		productName: "free jqGrid",
 		defaults: {},
@@ -1231,7 +1244,7 @@
 		getEditedValue: function ($dataFiled, cm, useTextInSelects, editable) {
 			var result, checkBoxValues, newformat, $field, valuesOrTexts, selectMethod = useTextInSelects ? "text" : "val",
 				formatoptions = cm.formatoptions || {}, editoptions = cm.editoptions || {}, customValue = editoptions.custom_value,
-				nameSelector = "[name=" + jgrid.jqID(cm.name) + "]", $t = this, $self = $($t), infoDialog, getRes, errcap, bClose;
+				nameSelector = "[name=" + jgrid.jqID(cm.name) + "]", $t = this, $self = $($t);
 			if (editable === "hidden") {
 				// the implementation from the next line can be improved
 				return $($t).jqGrid("getCell", $dataFiled.closest("tr.jqgrow").attr("id"), cm.name);
@@ -1278,17 +1291,22 @@
 							throw "e1";
 						}
 					} catch (e) {
-						infoDialog = jgrid.info_dialog;
-						getRes = function (path) { $self.jqGrid("getGridRes", path); };
-						errcap = getRes("errors.errcap");
-						bClose = getRes("edit.bClose");
-						if (e === "e1") {
-							infoDialog.call($t, errcap, "function 'custom_value' " + getRes("edit.msg.nodefined"), bClose);
+						var errorText, infoDialog = jgrid.info_dialog,
+							getRes = function (path) { $self.jqGrid("getGridRes", path); };
+						switch (String(e)) {
+							case "e1":
+								errorText = "function 'custom_value' " + getRes("edit.msg.nodefined");
+								break;
+							case "e2":
+								break;
+							default:
+								errorText = e.message;
+								break;
 						}
-						if (e === "e2") {
-							infoDialog.call($t, errcap, "function 'custom_value' " + getRes("edit.msg.novalue"), bClose);
+						if (infoDialog && $.isFunction(infoDialog)) {
+							infoDialog.call($t, getRes("errors.errcap"), errorText, getRes("edit.bClose"));
 						} else {
-							infoDialog.call($t, errcap, e.message, bClose);
+							alert(errorText);
 						}
 					}
 					break;
@@ -6786,4 +6804,5 @@
 			});
 		}
 	});
-}(jQuery));
+	// end module grid.base
+}));

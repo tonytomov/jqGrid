@@ -9,12 +9,33 @@
 
 /*jshint eqeqeq:false, eqnull:true, devel:true */
 /*jslint browser: true, eqeq: true, plusplus: true, unparam: true, vars: true, nomen: true, continue: true, white: true, todo: true */
-/*global xmlJsonClass, jQuery */
-(function ($) {
+/*global jQuery, define, xmlJsonClass */
+(function (factory) {
 	"use strict";
-	var jgrid = $.jgrid, feedback = jgrid.feedback, fullBoolFeedback = jgrid.fullBoolFeedback, jqID = jgrid.jqID,
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery", "./grid.base", "./jquery.fmatter", "./grid.common", "./jsonxml"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
+	"use strict";
+	var jgrid = $.jgrid, jqID = jgrid.jqID, base = $.fn.jqGrid,
+		mergeCssClasses = jgrid.mergeCssClasses, hasOneFromClasses = jgrid.hasOneFromClasses,
+		getGuiStyles = function (path, jqClasses) {
+			return mergeCssClasses(jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], path), jqClasses || "");
+		},
+		getGuiStateStyles = function (path) {
+			return getGuiStyles.call(this, "states." + path);
+		};
+
+	// begin module grid.formedit
+	var jgridFeedback = jgrid.feedback, fullBoolFeedback = jgrid.fullBoolFeedback,
 		hideModal = jgrid.hideModal, viewModal = jgrid.viewModal, createModal = jgrid.createModal, infoDialog = jgrid.info_dialog,
-		mergeCssClasses = jgrid.mergeCssClasses, hasOneFromClasses = jgrid.hasOneFromClasses, $j = $.fn.jqGrid,
 		builderFmButon = jgrid.builderFmButon,
 		getCssStyleOrFloat = function ($elem, styleName) {
 			var v = $elem[0].style[styleName];
@@ -60,12 +81,6 @@
 					$fmButton.addClass("fm-button-icon-left").prepend(iconspan);
 				}
 			}
-		},
-		getGuiStyles = function (path, jqClasses) {
-			return mergeCssClasses(jgrid.getRes(jgrid.guiStyles[this.p.guiStyle], path), jqClasses || "");
-		},
-		getGuiStateStyles = function (path) {
-			return getGuiStyles.call(this, "states." + path);
 		},
 		isEmptyString = function (htmlStr) {
 			return htmlStr === "&nbsp;" || htmlStr === "&#160;" || (htmlStr.length === 1 && htmlStr.charCodeAt(0) === 160);
@@ -127,7 +142,7 @@
 						layer: null,
 						operands: { "eq": "=", "ne": "<>", "lt": "<", "le": "<=", "gt": ">", "ge": ">=", "bw": "LIKE", "bn": "NOT LIKE", "in": "IN", "ni": "NOT IN", "ew": "LIKE", "en": "NOT LIKE", "cn": "LIKE", "nc": "NOT LIKE", "nu": "IS NULL", "nn": "IS NOT NULL" }
 					},
-					$j.getGridRes.call($self, "search"),
+					base.getGridRes.call($self, "search"),
 					jgrid.search || {},
 					p.searching || {},
 					oMuligrid || {});
@@ -141,7 +156,7 @@
 						args.unshift("Search");
 						args.unshift("Filter");
 						args.unshift(o);
-						return feedback.apply($t, args);
+						return jgridFeedback.apply($t, args);
 					};
 				if (typeof defaultFilters === "string") {
 					defaultFilters = $.trim(defaultFilters) !== "" ? jgrid.parse(defaultFilters) : undefined;
@@ -389,7 +404,7 @@
 				// make new copy of the options oMuligrid and use it for ONE specific grid.
 				// p.formEditing can contains grid specific options
 				// we will don't modify the input options oMuligrid
-				var gridId = p.id, getGridRes = $j.getGridRes, setSelection = $j.setSelection,
+				var gridId = p.id, getGridRes = base.getGridRes, setSelection = base.setSelection,
 					o = $.extend(true,
 						{
 							top: 0,
@@ -455,7 +470,7 @@
 						args.unshift("");
 						args.unshift("AddEdit");
 						args.unshift(o);
-						return feedback.apply($t, args);
+						return jgridFeedback.apply($t, args);
 					},
 					hoverClasses = getGuiStateStyles.call($t, "hover"),
 					disabledClass = getGuiStateStyles.call($t, "disabled"),
@@ -554,7 +569,7 @@
 						tmpl += tdtmpl;
 					}
 					if (rowid !== "_empty") {
-						ind = $j.getInd.call($self, rowid);
+						ind = base.getInd.call($self, rowid);
 					}
 					$(colModel).each(function (i) {
 						var cm = this, nm = cm.name, $td, hc, trdata, tmp, dc, elc, editable = cm.editable, disabled = false, readonly = false,
@@ -701,7 +716,7 @@
 						$("#id_g", fmid).val(rowid);
 						return;
 					}
-					var tre = $j.getInd.call($self, rowid, true);
+					var tre = base.getInd.call($self, rowid, true);
 					if (!tre) { return; }
 					//$("td[role=gridcell]", tre)
 					$(tre.cells).filter("td[role=gridcell]").each(function (i) {
@@ -926,9 +941,9 @@
 												$self.trigger("reloadGrid", reloadGridOptions);
 											} else {
 												if (p.treeGrid === true) {
-													$j.addChildNode.call($self, ret[2], selr, postdata);
+													base.addChildNode.call($self, ret[2], selr, postdata);
 												} else {
-													$j.addRowData.call($self, ret[2], postdata, o.addedrow);
+													base.addRowData.call($self, ret[2], postdata, o.addedrow);
 												}
 											}
 											if (o.closeAfterAdd) {
@@ -946,9 +961,9 @@
 												if (!o.closeAfterEdit) { setTimeout(function () { setSelection.call($self, postdata[idname]); }, 1000); }
 											} else {
 												if (p.treeGrid === true) {
-													$j.setTreeRow.call($self, postdata[idname], postdata);
+													base.setTreeRow.call($self, postdata[idname], postdata);
 												} else {
-													$j.setRowData.call($self, postdata[idname], postdata);
+													base.setRowData.call($self, postdata[idname], postdata);
 												}
 											}
 											if (o.closeAfterEdit) { hideModal(themodalSelector, { gb: gboxSelector, jqm: o.jqModal, onClose: o.onClose, removemodal: o.removemodal, formprop: !o.recreateForm, form: o.form }); }
@@ -1049,10 +1064,10 @@
 					var editingInfo = jgrid.detectRowEditing.call($t, rowid);
 					if (editingInfo != null) {
 						if (editingInfo.mode === "inlineEditing") {
-							$j.restoreRow.call($self, rowid);
+							base.restoreRow.call($self, rowid);
 						} else {
 							var savedRowInfo = editingInfo.savedRow, tr = $t.rows[savedRowInfo.id];
-							$j.restoreCell.call($self, savedRowInfo.id, savedRowInfo.ic);
+							base.restoreCell.call($self, savedRowInfo.id, savedRowInfo.ic);
 							// remove highlighting of the cell
 							$(tr.cells[savedRowInfo.ic]).removeClass("edit-cell " + highlightClass);
 							$(tr).addClass(highlightClass).attr({ "aria-selected": "true", "tabindex": "0" });
@@ -1078,7 +1093,7 @@
 					}
 				}
 				function getCurrPos() {
-					var rowsInGrid = $j.getDataIDs.call($self),
+					var rowsInGrid = base.getDataIDs.call($self),
 						selrow = $("#id_g", frmtb).val(),
 						pos = $.inArray(selrow, rowsInGrid);
 					return [pos, rowsInGrid];
@@ -1365,7 +1380,7 @@
 							removemodal: true,
 							form: "view"
 						},
-						$j.getGridRes.call($self, "view"),
+						base.getGridRes.call($self, "view"),
 						jgrid.view || {},
 						p.formViewing || {},
 						oMuligrid || {});
@@ -1380,7 +1395,7 @@
 						args.unshift("");
 						args.unshift("View");
 						args.unshift(o);
-						return feedback.apply($t, args);
+						return jgridFeedback.apply($t, args);
 					},
 					hoverClasses = getGuiStateStyles.call($t, "hover"),
 					disabledClass = getGuiStateStyles.call($t, "disabled");
@@ -1396,7 +1411,7 @@
 					}
 				}
 				function createData(rowid, tb, maxcols) {
-					var nm, hc, trdata, cnt = 0, tmp, dc, retpos = [], ind = $j.getInd.call($self, rowid), i,
+					var nm, hc, trdata, cnt = 0, tmp, dc, retpos = [], ind = base.getInd.call($self, rowid), i,
 						viewDataClasses = getGuiStyles.call($t, "dialog.viewData", "DataTD form-view-data"),
 						viewLabelClasses = getGuiStyles.call($t, "dialog.viewLabel", "CaptionTD form-view-label"),
 						tdtmpl = "<td class='" + viewLabelClasses + "' width='" + o.labelswidth + "'>&#160;</td><td class='" + viewDataClasses + " ui-helper-reset'>&#160;</td>", tmpl = "",
@@ -1471,7 +1486,7 @@
 					return retpos;
 				}
 				function fillData(rowid) {
-					var nm, hc, cnt = 0, trv = $j.getInd.call($self, rowid, true), cm;
+					var nm, hc, cnt = 0, trv = base.getInd.call($self, rowid, true), cm;
 					if (!trv) { return; }
 					$("td", trv).each(function (i) {
 						cm = colModel[i];
@@ -1509,7 +1524,7 @@
 					}
 				}
 				function getCurrPos() {
-					var rowsInGrid = $j.getDataIDs.call($self),
+					var rowsInGrid = base.getDataIDs.call($self),
 						selrow = $("#id_g", frmtb).val(),
 						pos = $.inArray(selrow, rowsInGrid);
 					return [pos, rowsInGrid];
@@ -1610,7 +1625,7 @@
 					if (npos[0] !== -1 && npos[1][npos[0] + 1]) {
 						if (!viewFeedback("onclickPgButtons", "next", $(frmgr), npos[1][npos[0]])) { return false; }
 						fillData(npos[1][npos[0] + 1]);
-						$j.setSelection.call($self, npos[1][npos[0] + 1]);
+						base.setSelection.call($self, npos[1][npos[0] + 1]);
 						viewFeedback("afterclickPgButtons", "next", $(frmgr), npos[1][npos[0] + 1]);
 						updateNav(npos[0] + 1, npos);
 					}
@@ -1623,7 +1638,7 @@
 					if (ppos[0] !== -1 && ppos[1][ppos[0] - 1]) {
 						if (!viewFeedback("onclickPgButtons", "prev", $(frmgr), ppos[1][ppos[0]])) { return false; }
 						fillData(ppos[1][ppos[0] - 1]);
-						$j.setSelection.call($self, ppos[1][ppos[0] - 1]);
+						base.setSelection.call($self, ppos[1][ppos[0] - 1]);
 						viewFeedback("afterclickPgButtons", "prev", $(frmgr), ppos[1][ppos[0] - 1]);
 						updateNav(ppos[0] - 1, ppos);
 					}
@@ -1673,7 +1688,7 @@
 							serializeDelData: null,
 							useDataProxy: false
 						},
-						$j.getGridRes.call($self, "del"),
+						base.getGridRes.call($self, "del"),
 						jgrid.del || {},
 						p.formDeleting || {},
 						oMuligrid || {});
@@ -1686,7 +1701,7 @@
 						args.unshift("");
 						args.unshift("Delete");
 						args.unshift(o);
-						return feedback.apply($t, args);
+						return jgridFeedback.apply($t, args);
 					},
 					hoverClasses = getGuiStateStyles.call($t, "hover"),
 					activeClass = getGuiStateStyles.call($t, "active"),
@@ -1783,11 +1798,11 @@
 												$self.trigger("reloadGrid", [$.extend({}, o.reloadGridOptions || {})]);
 											} else {
 												if (p.treeGrid === true) {
-													try { $j.delTreeNode.call($self, formRowIds[0]); } catch (ignore) { }
+													try { base.delTreeNode.call($self, formRowIds[0]); } catch (ignore) { }
 												} else {
 													formRowIds = formRowIds.slice(); // make copy for save deleting
 													for (i = 0; i < formRowIds.length; i++) {
-														$j.delRowData.call($self, formRowIds[i]);
+														base.delRowData.call($self, formRowIds[i]);
 													}
 												}
 											}
@@ -1900,7 +1915,7 @@
 							alertzIndex: null,
 							iconsOverText: false
 						},
-						$j.getGridRes.call($self, "nav"),
+						base.getGridRes.call($self, "nav"),
 						jgrid.nav || {},
 						p.navOptions || {},
 						oMuligrid || {}
@@ -1999,7 +2014,7 @@
 							if ($.isFunction(o.addfunc)) {
 								o.addfunc.call($t);
 							} else {
-								$j.editGridRow.call($self, "new", pAdd);
+								base.editGridRow.call($self, "new", pAdd);
 							}
 						}
 						return false;
@@ -2011,7 +2026,7 @@
 								if ($.isFunction(func)) {
 									func.call($t, sr);
 								} else {
-									$j[methodName].call($self, sr, param);
+									base[methodName].call($self, sr, param);
 								}
 							} else {
 								viewModalAlert();
@@ -2038,7 +2053,7 @@
 								if ($.isFunction(o.delfunc)) {
 									o.delfunc.call($t, dr);
 								} else {
-									$j.delGridRow.call($self, dr, pDel);
+									base.delGridRow.call($self, dr, pDel);
 								}
 							} else {
 								viewModalAlert();
@@ -2051,7 +2066,7 @@
 							if ($.isFunction(o.searchfunc)) {
 								o.searchfunc.call($t, pSearch);
 							} else {
-								$j.searchGrid.call($self, pSearch);
+								base.searchGrid.call($self, pSearch);
 							}
 						}
 						return false;
@@ -2191,7 +2206,7 @@
 							cursor: "pointer",
 							iconsOverText: false
 						},
-						$j.getGridRes.call($($t), "nav"),
+						base.getGridRes.call($($t), "nav"),
 						jgrid.nav || {},
 						p.navOptions || {},
 						oMuligrid || {}
@@ -2200,7 +2215,7 @@
 					disabledClass = getGuiStateStyles.call($t, "disabled");
 				if (elem === undefined) {
 					if (p.pager) {
-						$j.navButtonAdd.call($($t), p.pager, o);
+						base.navButtonAdd.call($($t), p.pager, o);
 						if (p.toppager) {
 							elem = p.toppager;
 						} else {
@@ -2283,7 +2298,7 @@
 			return this.each(function () {
 				var $t = this, i, $field, iField, $fieldi;
 				if (!$t.grid) { return; }
-				var rowdata = $j.getRowData.call($($t), rowid), propOrAttr = $t.p.propOrAttr;
+				var rowdata = base.getRowData.call($($t), rowid), propOrAttr = $t.p.propOrAttr;
 				if (rowdata) {
 					for (i in rowdata) {
 						if (rowdata.hasOwnProperty(i)) {
@@ -2314,11 +2329,12 @@
 					griddata[field.name] = field.value;
 				});
 				if (mode === "add") {
-					$j.addRowData.call($($t), rowid, griddata, position);
+					base.addRowData.call($($t), rowid, griddata, position);
 				} else if (mode === "set") {
-					$j.setRowData.call($($t), rowid, griddata);
+					base.setRowData.call($($t), rowid, griddata);
 				}
 			});
 		}
 	});
-}(jQuery));
+	// end module grid.formedit
+}));

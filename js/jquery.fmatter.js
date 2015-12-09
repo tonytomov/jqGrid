@@ -1,5 +1,4 @@
-/*
-**
+/**
  * formatter for values but most of the values if for jqGrid
  * Some of this was inspired and based on how YUI does the table datagrid but in jQuery fashion
  * we are trying to keep it as light as possible
@@ -15,13 +14,27 @@
 **/
 /*jshint eqeqeq:false */
 /*jslint eqeq: true, plusplus: true, unparam: true, vars: true, regexp: true, white: true, todo: true */
-/*global jQuery */
+/*global jQuery, define */
 
-(function ($) {
+(function (factory) {
 	"use strict";
-	$.fmatter = $.fmatter || {};
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery", "./grid.base"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
+	"use strict";
 	$.jgrid = $.jgrid || {};
-	var fmatter = $.fmatter, jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes"); // locales = jgrid.locales, getRes = jgrid.getRes
+	var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes");
+	// begin module jquery.fmatter
+	$.fmatter = $.fmatter || {};
+	var fmatter = $.fmatter;
 	$.extend(true, jgrid, {
 		formatter: { // setting common formatter settings, which are independent from the language and locale
 			date: {
@@ -920,4 +933,5 @@
 				jgrid.parseDate.call(this, op.newformat, cellval, op.srcformat, op) :
 				"";
 	};
-}(jQuery));
+	// end module jquery.fmatter
+}));

@@ -11,14 +11,28 @@
 
 /*jshint eqeqeq:false */
 /*jslint browser: true, devel: true, eqeq: true, nomen: true, plusplus: true, vars: true, unparam: true, white: true, todo: true */
-/*global jQuery */
-(function ($) {
+/*global jQuery, define */
+(function (factory) {
 	"use strict";
-	var jgrid = $.jgrid, getGridRes = jgrid.getMethod("getGridRes"), jqID = jgrid.jqID,
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery", "./grid.base", "./jquery.fmatter", "./grid.common"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
+	"use strict";
+	var jgrid = $.jgrid, jqID = jgrid.jqID,
+		getGridRes = jgrid.getMethod("getGridRes"),
 		getGuiStyles = function (path, jqClasses) {
 			var p = this.p, guiStyle = p.guiStyle || jgrid.defaults.guiStyle || "jQueryUI";
 			return jgrid.mergeCssClasses(jgrid.getRes(jgrid.guiStyles[guiStyle], path), jqClasses || "");
 		};
+	// begin module grid.custom
 	jgrid.extend({
 		getColProp: function (colname) {
 			var ret = {}, t = this[0], iCol;
@@ -1392,4 +1406,5 @@
 			});
 		}
 	});
-}(jQuery));
+	// end module grid.custom
+}));

@@ -1,4 +1,4 @@
-/*
+/**
  * jqFilter  jQuery jqGrid filter addon.
  * Copyright (c) 2011, Tony Tomov, tony@trirand.com
  * Dual licensed under the MIT and GPL licenses
@@ -27,11 +27,24 @@
 */
 /*jshint eqeqeq:false, eqnull:true, devel:true */
 /*jslint browser: true, devel: true, eqeq: true, plusplus: true, vars: true, white: true */
-/*global jQuery */
+/*global jQuery, define */
 
-(function ($) {
+(function (factory) {
+	"use strict";
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery", "./grid.base", "./grid.common"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
 	"use strict";
 	var jgrid = $.jgrid;
+	// begin module grid.filter
 	$.fn.jqFilter = function (arg) {
 		if (typeof arg === "string") {
 			var fn = $.fn.jqFilter[arg];
@@ -767,4 +780,5 @@
 			});
 		}
 	});
-}(jQuery));
+	// end module grid.filter
+}));

@@ -1,4 +1,4 @@
-/*
+/**
  * jqDnR - Minimalistic Drag'n'Resize for jQuery.
  *
  * Copyright (c) 2007 Brice Burgess <bhb@iceburg.net>, http://www.iceburg.net
@@ -10,9 +10,22 @@
  * Copyright (c) 2014-2015, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  */
 /*jslint browser: true, white: true */
-/*global jQuery */
-(function ($) {
+/*global jQuery, define */
+(function (factory) {
 	"use strict";
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
+	"use strict";
+	// begin module jqdnr
 	var namespace = ".jqGrid", mouseDown = "mousedown", mouseMove = "mousemove", mouseUp = "mouseup",
 		getMouseCoordinates = function (e) {
 			var orgEvent = e.originalEvent, touches = orgEvent.targetTouches;
@@ -152,4 +165,5 @@
 	$.fn.jqResize = function (handle, alsoResize) {
 		return init(this, handle, "resize", alsoResize);
 	};
-}(jQuery));
+	// end module jqdnr
+}));

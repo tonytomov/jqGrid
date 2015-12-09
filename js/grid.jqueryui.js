@@ -1,5 +1,4 @@
-/*
-**
+/**
  * jqGrid addons using jQuery UI
  * Author: Mark Williams
  * Changed by Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
@@ -10,11 +9,32 @@
 **/
 
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery */
+/*global jQuery, define */
 /*jslint browser: true, devel: true, eqeq: true, nomen: true, plusplus: true, unparam: true, vars: true, white: true */
-(function ($) {
+(function (factory) {
 	"use strict";
-	var jgrid = $.jgrid, $UiMultiselect = $.ui != null ? $.ui.multiselect : null, jqID = jgrid.jqID;
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery",
+			"./grid.base",
+			//"../plugins/ui.multiselect",
+			"jquery-ui/dialog",
+			"jquery-ui/draggable",
+			"jquery-ui/droppable",
+			"jquery-ui/resizable",
+			"jquery-ui/sortable"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
+	"use strict";
+	var jgrid = $.jgrid, jqID = jgrid.jqID;
+	// begin module grid.jqueryui
+	var $UiMultiselect = $.ui != null ? $.ui.multiselect : null;
 	if (jgrid.msie && jgrid.msiever() === 8) {
 		$.expr[":"].hidden = function (elem) {
 			return elem.offsetWidth === 0 || elem.offsetHeight === 0 ||
@@ -636,4 +656,5 @@
 			});
 		}
 	});
-}(jQuery));
+	// end module grid.jqueryui
+}));
