@@ -221,7 +221,7 @@
 					return;
 				}
 				if (o.exptype === "remote") {
-					pdata = $.extend({}, this.p.postData);
+					pdata = $.extend({}, this.p.postData, o.exportOptions);
 					pdata[o.oper] = o.tag;
 					params = jQuery.param(pdata);
 					if (o.url.indexOf("?") !== -1) {
