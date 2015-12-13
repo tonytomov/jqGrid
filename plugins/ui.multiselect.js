@@ -24,7 +24,19 @@
  *  Implement dynamic insertion through remote calls
  */
 
-(function($) {
+(function (factory) {
+	"use strict";
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery", "./jqdnr", "./jqmodal"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function($) {
 
 $.widget("ui.multiselect", {
   options: {
@@ -338,4 +350,4 @@ $.extend($.ui.multiselect, {
 });
 
 
-})(jQuery);
+}));

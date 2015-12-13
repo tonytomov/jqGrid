@@ -6,8 +6,20 @@
  * Date: 2014-11-13, 2015-04-06
  * see https://github.com/tonytomov/jqGrid/issues/650 for more details
  */
-/*global jQuery */
-(function ($) {
+/*global jQuery, define */
+(function (factory) {
+	"use strict";
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery", "./jqdnr", "./jqmodal"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
 	"use strict";
 	$.jgrid = $.jgrid || {};
 	$.extend($.jgrid, {
@@ -166,4 +178,4 @@
 			});
 		}
 	});
-}(jQuery));
+}));

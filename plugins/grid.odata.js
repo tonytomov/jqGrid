@@ -9,9 +9,21 @@
  */
 
 /*jslint continue: true, nomen: true, plusplus: true, unparam: true, todo: true, vars: true, white: true */
-/*global jQuery */
+/*global jQuery, define */
 
-(function ($) {
+(function (factory) {
+	"use strict";
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery", "./jqdnr", "./jqmodal"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
     /*
      *Functions:
      *   parseMetadata                           - $.jgrid.odataHelper.parseMetadata(rawdata, metadatatype)
@@ -1282,4 +1294,4 @@
              });
          }*/
     });
-}(jQuery));
+}));

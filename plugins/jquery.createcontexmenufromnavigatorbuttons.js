@@ -9,8 +9,20 @@
  *             and http://stackoverflow.com/q/29457007/315935
  */
 
-/*global jQuery */
-(function ($) {
+/*global jQuery, define */
+(function (factory) {
+	"use strict";
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery", "./jqdnr", "./jqmodal"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
 	"use strict";
 	/*global $ */
     /*jslint plusplus: true, browser: true, eqeq: true, unparam: true, white: true */
@@ -137,4 +149,4 @@
 			});
 		}
 	});
-}(jQuery));
+}));

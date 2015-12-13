@@ -23,9 +23,21 @@
  * Date: 17 March 2015
  */
 
-/*global jQuery, $, Testportal */
+/*global jQuery, define */
 /*jslint devel: true, browser: true, plusplus: true, eqeq: true */
-(function ($) {
+(function (factory) {
+	"use strict";
+	if (typeof define === "function" && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(["jquery", "./jqdnr", "./jqmodal"], factory);
+	} else if (typeof exports === "object") {
+		// Node/CommonJS
+		factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
     "use strict";
     var menu, shadow, content, hash, currentTarget,
         versionParts = $.ui != null && typeof $.ui.version === "string" ? /^([0-9]+)\.([0-9]+)\.([0-9]+)$/.exec($.ui.version) : [],
@@ -267,4 +279,4 @@
     $(function () {
         $("div.contextMenu").hide().attr("aria-hidden", "true");
     });
-}(jQuery));
+}));
