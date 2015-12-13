@@ -2093,7 +2093,7 @@
 				p.rowIndexes[idr] = rowIndex;
 				rowIndex++;
 				//TODO: fix p.rowIndexes in case of usage grouping.
-				if (p.grouping) {
+				if (p.grouping && $j.groupingPrepare) {
 					// we save the rowData in the array grpdata first.
 					// grpdata will collect HTML fragments of all rows of data
 					// of the current group. Later we call groupingRender, which
@@ -2109,7 +2109,7 @@
 					rowData = [rowData.join("")];
 				}
 			}
-			if (p.grouping) {
+			if (p.grouping && $j.groupingRender) {
 				if (readAllInputData) {
 					p.groupingView._locgr = true;
 				}
@@ -3230,7 +3230,7 @@
 							opt = { colModel: cm, gid: p.id, pos: i };
 							if (cm.formatter === undefined) {
 								cm.cellBuilder = p.autoencode ? autoencodeCellBuilder : simpleCellBuilder;
-							} else if (typeof cm.formatter === "string") {
+							} else if (typeof cm.formatter === "string" && $.fn.fmatter != null && isFunction($.fn.fmatter.getCellBuilder)) {
 								cm.cellBuilder = $.fn.fmatter.getCellBuilder.call(ts, cm.formatter, opt, act || "add");
 							} else if (isFunction(cm.getCellBuilder)) {
 								cm.cellBuilder = cm.getCellBuilder.call(ts, opt, act || "add");
@@ -3907,7 +3907,7 @@
 						} else if (pN.npage !== null) {
 							delete p.postData[pN.npage];
 						}
-						if (p.grouping) {
+						if (p.grouping && $j.groupingSetup) {
 							$j.groupingSetup.call($self);
 							var grp = p.groupingView, gi, gs = "", index, iColumn, cmValue;
 							for (gi = 0; gi < grp.groupField.length; gi++) {

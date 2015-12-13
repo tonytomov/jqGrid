@@ -8,6 +8,7 @@
 			"js/jquery.jqgrid.min.map",
 			"js/jquery.jqgrid.src.js",
 			"js/i18n/min/",
+			"js/min/",
 			"plugins/min/",
 			"dist/",
 			"plugins/*.min.js",
@@ -173,6 +174,14 @@
 						{
 							match: /\"sources\":\[\"js\/jquery\.jqgrid\.src\.js\"\],/,
 							replacement: "\"sources\":[\"jquery.jqgrid.src.js\"],"
+							/*replacement: function (match, offset, string, source, target) {
+								grunt.log.writeln(" !!! replacement: match=" + match);
+								grunt.log.writeln(" !!! replacement: offset=" + offset);
+								grunt.log.writeln(" !!! replacement: string.lenth=" + string.length);
+								grunt.log.writeln(" !!! replacement: source=" + source);
+								grunt.log.writeln(" !!! replacement: target=" + target);
+								return source;
+							}*/
 						},
 						{
 							match: /\"file\":\"js\/jquery\.jqgrid\.min\.js\",/,
@@ -240,16 +249,21 @@
 	grunt.loadNpmTasks("grunt-jscs");
 
 	var closureCompilerTasks = [],
-		regClosureCompilerTask = function (filePath) {
+		regClosureCompilerTask = function (filePath, fileMinDir, fileMapDir) {
 			// build names
 			var filePathParts = filePath.split("\/"), filePathMin, filePathMap,
 				fileName = filePathParts[filePathParts.length - 1], fileNameMin, fileNameMap,
-				fileNameParts = fileName.split("."), regExp0, regExp1;
+				fileNameParts = fileName.split("."), regExp0, regExp1,
+				escapeForMatch = function (path) {
+					return path.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+				};
 
 			if (fileNameParts[fileNameParts.length - 1].toLowerCase() !== "js" || fileNameParts.length < 2) { return; }
 			if (fileNameParts[fileNameParts.length - 2].toLowerCase() !== "src") {
-				fileNameParts[fileNameParts.length - 1] = "min";
-				fileNameParts.push("js");
+				if (fileMinDir == undefined) {
+					fileNameParts[fileNameParts.length - 1] = "min";
+					fileNameParts.push("js");
+				}
 			} else {
 				fileNameParts[fileNameParts.length - 2] = "min";
 			}
@@ -257,21 +271,21 @@
 			fileNameParts[fileNameParts.length - 1] = "map";
 			fileNameMap = fileNameParts.join(".");
 
-			filePathParts[filePathParts.length - 1] = fileNameMin;
+			filePathParts[filePathParts.length - 1] = (fileMinDir || "") + fileNameMin;
 			filePathMin = filePathParts.join("\/");
 
-			filePathParts[filePathParts.length - 1] = fileNameMap;
+			filePathParts[filePathParts.length - 1] = (fileMapDir || "") + fileNameMap;
 			filePathMap = filePathParts.join("\/");
 
 			// build two regex required for running "replace" task
 			// see http://stackoverflow.com/a/6969486/315935 about which characters need be escaped
 			regExp0 = new RegExp("\\\"sources\\\":\\[\\\"" +
 					//filePath.split("\/").join("\\\/") +    // for example "plugins\\\/grid.odata.js" +
-					filePath.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&") +
+					escapeForMatch(filePath) +
 					"\\\"\\],");
 			regExp1 = new RegExp("\\\"file\\\":\\\"" +
 					//filePathMin.split("\/").join("\\\/") + // for example "plugins\\\/grid.odata.min.js" +
-					filePathMin.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&") +
+					escapeForMatch(filePathMin) +
 					"\\\",");
 
 			// build fileDirectory
@@ -292,13 +306,32 @@
 				grunt.task.run("closureCompiler");
 
 				// run "replace" task
+				//grunt.log.writeln(" ### regExp0=" + regExp0);
+				//grunt.log.writeln(" ### replacement0=" + "\"sources\":[\"" +
+				//	escapeForMatch((fileMinDir === undefined ? "" : "js\/") + fileName) +
+				//	"\"],");
+				//grunt.log.writeln(" ### regExp1='" + regExp1 + "'");
+				//grunt.log.writeln(" ### replacement1=" + "\"file\":\"" +
+				//	escapeForMatch((fileMinDir === undefined ? "" : "js\/" + fileMinDir) +	fileNameMin) +
+				//	"\",");
+				//grunt.log.writeln(" ### fileName='" + fileName + "'    ### fileNameMin='" +
+				//				 fileNameMin + "'    ### fileNameMap='" + fileNameMap + "'");
+				//grunt.log.writeln(" ### filePathMap='" + filePathMap + "'");
+				//grunt.log.writeln(" ### fileDirectory='" + fileDirectory + (fileMinDir || "") + "'");
+
+				// "sources":["js/jquery.jqgrid.src.js"],
+				// "sources":["js/grid.base.js"],
 				grunt.config.set("replace.dist.options.patterns.0.match", regExp0);
-				grunt.config.set("replace.dist.options.patterns.0.replacement", "\"sources\":[\"" + fileName + "\"],");
+				grunt.config.set("replace.dist.options.patterns.0.replacement", "\"sources\":[\"" +
+					(fileMinDir === undefined ? "" : "../") + fileName + "\"],");
+
+				// "file":"js/jquery.jqgrid.min.js",
+				// "file":"js/min/grid.base.js",
 				grunt.config.set("replace.dist.options.patterns.1.match", regExp1);
 				grunt.config.set("replace.dist.options.patterns.1.replacement", "\"file\":\"" + fileNameMin + "\",");
 				grunt.config.set("replace.dist.files.0.src", [filePathMap]);
 
-				grunt.config.set("replace.dist.files.0.dest", fileDirectory);
+				grunt.config.set("replace.dist.files.0.dest", fileDirectory + (fileMinDir || ""));
 				grunt.log.writeln("    patching 'sources' and 'file' properties of '" + filePathMap + "'");
 				grunt.task.run("replace");
 
@@ -326,6 +359,15 @@
 		"!js/i18n/grid.locale-*.min.js"
 	]).forEach(function (path) {
 		regClosureCompilerTask(path);
+	});
+
+	grunt.file.expand({ matchBase: true }, [
+		"js/*.js",
+		"!js/*.min.js",
+		"!js/min/*.js",
+		"!js/jquery.jqgrid.*.js"
+	]).forEach(function (path) {
+		regClosureCompilerTask(path, "min\/", "min\/");
 	});
 
 	grunt.registerTask("closureCompilerAll", closureCompilerTasks);
