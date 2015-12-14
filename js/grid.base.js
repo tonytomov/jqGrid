@@ -3289,6 +3289,11 @@
 					var i, cells, len, drows, idName, idIndex, rd = {}, idr,
 						colModel = p.colModel, nCol = colModel.length, cm, cmName,
 						iChild, children, nChildren, child,
+						// TODO: consider to introduce preloadedAttributes in the same way
+						//       like we use to preloadedNodes below and to cache .attributes[i]
+						//       in the same way like one cache .childNodes[i].
+						//       One should measure the performance, to find out whether
+						//       such caching will improve the performance.
 						arrayReaderInfos = p.arrayReaderInfos, info, preloadedNodes = {},
 						attrReader = function (nodeName) {
 							return function (obj) {
@@ -3357,7 +3362,7 @@
 								colReader[cmName] = nameReader;
 							}
 							if (!isFunction(nameReader)) {
-								setSimpleColReaderIfPossible(cmName);
+								setSimpleColReaderIfPossible(nameReader);
 							}
 						}
 					}
@@ -3457,6 +3462,8 @@
 									preloadedNodes[child.nodeName] = child;
 								}
 							}
+							// TODO: one can consider to examine cells.attributes and
+							//       to save all values in preloadedAttributes map.
 						}
 						for (cmName in arrayReaderInfos) {
 							if (arrayReaderInfos.hasOwnProperty(cmName)) {

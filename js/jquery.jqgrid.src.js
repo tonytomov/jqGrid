@@ -3289,6 +3289,11 @@
 					var i, cells, len, drows, idName, idIndex, rd = {}, idr,
 						colModel = p.colModel, nCol = colModel.length, cm, cmName,
 						iChild, children, nChildren, child,
+						// TODO: consider to introduce preloadedAttributes in the same way
+						//       like we use to preloadedNodes below and to cache .attributes[i]
+						//       in the same way like one cache .childNodes[i].
+						//       One should measure the performance, to find out whether
+						//       such caching will improve the performance.
 						arrayReaderInfos = p.arrayReaderInfos, info, preloadedNodes = {},
 						attrReader = function (nodeName) {
 							return function (obj) {
@@ -3357,7 +3362,7 @@
 								colReader[cmName] = nameReader;
 							}
 							if (!isFunction(nameReader)) {
-								setSimpleColReaderIfPossible(cmName);
+								setSimpleColReaderIfPossible(nameReader);
 							}
 						}
 					}
@@ -3457,6 +3462,8 @@
 									preloadedNodes[child.nodeName] = child;
 								}
 							}
+							// TODO: one can consider to examine cells.attributes and
+							//       to save all values in preloadedAttributes map.
 						}
 						for (cmName in arrayReaderInfos) {
 							if (arrayReaderInfos.hasOwnProperty(cmName)) {
@@ -8060,27 +8067,27 @@
 			}
 			return true;
 		},
-		checkValues: function (val, valref, customobject, nam) {
+		checkValues: function (val, iCol, customobject, nam) {
 			var edtrul, nm, dft, g = this, p = g.p, colModel = p.colModel, cm, isEmpty = jgrid.isEmpty,
-				editMsg = getGridRes.call($(g), "edit.msg"),
+				editMsg = getGridRes.call($(g), "edit.msg"), ret,
 				dateMasks = getGridRes.call($(g), "formatter.date.masks");
 			if (customobject === undefined) {
-				if (typeof valref === "string") {
-					valref = p.iColByName[valref];
+				if (typeof iCol === "string") {
+					iCol = p.iColByName[iCol];
 				}
-				if (valref === undefined || valref < 0) {
+				if (iCol === undefined || iCol < 0) {
 					return [true, "", ""];
 				}
-				cm = colModel[valref];
+				cm = colModel[iCol];
 				edtrul = cm.editrules;
 				if (cm.formoptions != null) { nm = cm.formoptions.label; }
 			} else {
 				edtrul = customobject;
 				nm = nam === undefined ? "_" : nam;
-				cm = colModel[valref];
+				cm = colModel[iCol];
 			}
 			if (edtrul) {
-				if (!nm) { nm = p.colNames != null ? p.colNames[valref] : cm.label; }
+				if (!nm) { nm = p.colNames != null ? p.colNames[iCol] : cm.label; }
 				if (edtrul.required === true) {
 					if (isEmpty(val)) { return [false, nm + ": " + editMsg.required, ""]; }
 				}
@@ -8119,7 +8126,7 @@
 								dft = dateMasks[dft];
 							}
 						} else {
-							dft = colModel[valref].datefmt || "Y-m-d";
+							dft = colModel[iCol].datefmt || "Y-m-d";
 						}
 						if (!jgrid.checkDate(dft, val)) { return [false, nm + ": " + editMsg.date + " - " + dft, ""]; }
 					}
@@ -8138,10 +8145,19 @@
 				if (edtrul.custom === true) {
 					if (!(rqfield === false && isEmpty(val))) {
 						if ($.isFunction(edtrul.custom_func)) {
-							var ret = edtrul.custom_func.call(g, val, nm, valref);
+							ret = edtrul.custom_func.call(g, val, nm, iCol);
 							return $.isArray(ret) ? ret : [false, editMsg.customarray, ""];
 						}
 						return [false, editMsg.customfcheck, ""];
+					}
+				} else if ($.isFunction(edtrul.custom)) {
+					if (!(rqfield === false && isEmpty(val))) {
+						ret = edtrul.custom.call(g, {
+									iCol: iCol,
+									newValue: val,
+									name: nm
+								});
+						return $.isArray(ret) ? ret : [false, editMsg.customarray, ""];
 					}
 				}
 			}
