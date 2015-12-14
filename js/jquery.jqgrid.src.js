@@ -3339,12 +3339,12 @@
 					fillOrClearCellBuilder();
 					var colReader = {}, nameReader, isArrayCells, v, addProp, items,
 						additionalProperties = p.additionalProperties,
-						setSimpleColReaderIfPossible = function (nameReaderOrAddProp) {
+						setSimpleColReaderIfPossible = function (propName, nameReaderOrAddProp) {
 							if (isXML && typeof nameReaderOrAddProp === "string") {
 								if (/^\w+$/.test(nameReaderOrAddProp)) {
-									colReader[nameReaderOrAddProp] = nodeReader(nameReaderOrAddProp);
+									colReader[propName] = nodeReader(nameReaderOrAddProp);
 								} else if (/^\[\w+\]$/.test(nameReaderOrAddProp)) {
-									colReader[nameReaderOrAddProp] = attrReader(nameReaderOrAddProp.substring(1, nameReaderOrAddProp.length - 1));
+									colReader[propName] = attrReader(nameReaderOrAddProp.substring(1, nameReaderOrAddProp.length - 1));
 								}
 							}
 						};
@@ -3362,7 +3362,7 @@
 								colReader[cmName] = nameReader;
 							}
 							if (!isFunction(nameReader)) {
-								setSimpleColReaderIfPossible(nameReader);
+								setSimpleColReaderIfPossible(cmName, nameReader);
 							}
 						}
 					}
@@ -3372,7 +3372,7 @@
 						if (typeof addProp === "object" && addProp != null) {
 							addProp = addProp.name;
 						}
-						setSimpleColReaderIfPossible(addProp);
+						setSimpleColReaderIfPossible(addProp, addProp);
 					}
 					// TODO: Consider to allow to specify key:true property in additionalProperties
 					// in the case the item of additionalProperties should looks not like
