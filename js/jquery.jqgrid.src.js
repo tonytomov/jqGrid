@@ -5741,27 +5741,37 @@
 			// TODO: add additional parameter to setRowData which inform that input data is in formatted or unformatted form
 			var success = true;
 			this.each(function () {
-				var t = this, p = t.p, vl, ind, cp = typeof cssp, lcdata = {};
+				var t = this, p = t.p, ind, cp = typeof cssp, lcdata = {};
 				if (!t.grid) { return false; }
 				ind = base.getGridRowById.call($(t), rowid);
 				if (!ind) { return false; }
 				if (data) {
 					try {
-						var id = stripPref(p.idPrefix, rowid), key, pos = p._index[id], oData = pos != null ? p.data[pos] : undefined;
+						var id = stripPref(p.idPrefix, rowid), key, pos = p._index[id], newData = {},
+							oData = pos != null ? p.data[pos] : undefined;
 						$(p.colModel).each(function (i) {
-							var cm = this, nm = cm.name, title, dval = getAccessor(data, nm);
-							if (dval !== undefined) {
+							var cm = this, nm = cm.name, vl = getAccessor(data, nm);
+							if (vl !== undefined) {
 								if (p.datatype === "local" && oData != null) {
-									vl = convertOnSaveLocally.call(t, dval, cm, oData[nm], id, oData, i);
+									vl = convertOnSaveLocally.call(t, vl, cm, oData[nm], id, oData, i);
 									if ($.isFunction(cm.saveLocally)) {
 										cm.saveLocally.call(t, { newValue: vl, newItem: lcdata, oldItem: oData, id: id, cm: cm, cmName: nm, iCol: i });
 									} else {
 										lcdata[nm] = vl;
 									}
 								}
+								newData[nm] = vl;
+							}
+						});
+						$(p.colModel).each(function (i) {
+							var cm = this, nm = cm.name, title, vl = getAccessor(data, nm);
+							if (vl !== undefined) {
+								if (p.datatype === "local" && oData != null) {
+									vl = lcdata[nm];
+								}
 								title = cm.title ? { "title": vl } : {};
-								vl = t.formatter(rowid, dval, i, data, "edit");
-								var $dataFiled = $(ind.cells[i]);//$("td[role=gridcell]:eq(" + i + ")", ind);
+								vl = t.formatter(rowid, vl, i, data, "edit", newData);
+								var $dataFiled = $(ind.cells[i]);
 								if (p.treeGrid === true && nm === p.ExpandColumn) {
 									$dataFiled = $dataFiled.children("span.cell-wrapperleaf,span.cell-wrapper").first();
 								}
@@ -14013,13 +14023,6 @@
 					var cm = options.cm, v, formatter = cm.formatter, editoptions = cm.editoptions || {},
 						formatoptions = cm.formatoptions || {};
 
-					if (!isRemoteSave && options.editable === "hidden") {
-						// skip saving data from editable:"hidden" column
-						// in tmp because it could follow unneeded changes
-						// of local data and probably small modification
-						// because of calling unformatter
-						return;
-					}
 					v = jgrid.getEditedValue.call($t, $(options.dataElement), cm, !formatter, options.editable);
 					cv = jgrid.checkValues.call($t, v, options.iCol);
 					if (cv[0] === false) {
