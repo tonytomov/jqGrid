@@ -244,13 +244,6 @@
 					var cm = options.cm, v, formatter = cm.formatter, editoptions = cm.editoptions || {},
 						formatoptions = cm.formatoptions || {};
 
-					if (!isRemoteSave && options.editable === "hidden") {
-						// skip saving data from editable:"hidden" column
-						// in tmp because it could follow unneeded changes
-						// of local data and probably small modification
-						// because of calling unformatter
-						return;
-					}
 					v = jgrid.getEditedValue.call($t, $(options.dataElement), cm, !formatter, options.editable);
 					cv = jgrid.checkValues.call($t, v, options.iCol);
 					if (cv[0] === false) {
