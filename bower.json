@@ -8,5 +8,6 @@
 	"dependencies": {
 		"jquery": ">=1.7.0",
 		"jquery-ui": ">=1.7.0"
-	}
+	},
+	"license": "CC-BY-NC-3.0"
 }
