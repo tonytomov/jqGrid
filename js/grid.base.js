@@ -3843,6 +3843,7 @@
 							}
 						}
 						if (p.pgbuttons === true) {
+							if (last <= 0) { cp = 0;}
 							if (cp <= 0) { cp = last = 0; }
 							if (cp === 1 || cp === 0) {
 								$("#first" + tspg + ", #prev" + tspg).addClass(disabledClasses).removeClass(hoverClasses);
