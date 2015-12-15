@@ -158,13 +158,13 @@
 									$fe = getFocusable(getTdByColIndex(focus));
 
 								if ($fe.length > 0) {
-									$fe.focus();
+									$fe.first().focus();
 								} else if (typeof o.defaultFocusField === "number" || typeof o.defaultFocusField === "string") {
 									$fe = getFocusable(getTdByColIndex(typeof o.defaultFocusField === "number" ? o.defaultFocusField : p.iColByName[o.defaultFocusField]));
 									if ($fe.length === 0) {
 										$fe = getFirstFocusable();
 									}
-									$fe.focus();
+									$fe.first().focus();
 								} else {
 									getFirstFocusable().focus();
 								}
