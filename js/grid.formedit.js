@@ -814,10 +814,14 @@
 					});
 				}
 				function postIt() {
-					var ret = [true, "", ""], onClickSubmitResult = {}, opers = p.prmNames, idname, oper, key, selr, i, url, itm;
+					var ret = [true, "", ""], onClickSubmitResult = {}, opers = p.prmNames, idname, oper, key, selr, i, url, itm, iCol,
+						iRow = base.getInd.call($self, rowid),
+						tr = iRow === false ? null : $t.rows[iRow],
+						retvals = $self.triggerHandler("jqGridAddEditBeforeCheckValues", [$(frmgr), editOrAdd]);
 
-					var retvals = $self.triggerHandler("jqGridAddEditBeforeCheckValues", [$(frmgr), editOrAdd]);
 					if (retvals && typeof retvals === "object") { postdata = retvals; }
+
+					iRow = iRow === false ? -1 : iRow;
 
 					if ($.isFunction(o.beforeCheckValues)) {
 						retvals = o.beforeCheckValues.call($t, postdata, $(frmgr), editOrAdd);
@@ -825,7 +829,19 @@
 					}
 					for (key in postdata) {
 						if (postdata.hasOwnProperty(key)) {
-							ret = jgrid.checkValues.call($t, postdata[key], key);
+							iCol = p.iColByName[key];
+							ret = jgrid.checkValues.call($t, postdata[key], key, undefined, undefined, {
+								oldValue: rowid === "_empty" ? null : base.getCell.call($self, rowid, iCol),
+								newValue: postdata[key],
+								cmName: key,
+								rowid: rowid,
+								cm: colModel[iCol],
+								iCol: iCol,
+								iRow: iRow,
+								tr: tr,
+								td: tr == null ? null : tr.cells[iCol],
+								mode: rowid === "_empty" ? "addForm" : "editForm"
+							});
 							if (ret[0] === false) { break; }
 						}
 					}

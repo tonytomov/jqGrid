@@ -8,7 +8,7 @@
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2015-12-14
+ * Date: 2015-12-16
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
@@ -7015,7 +7015,19 @@
 								v = vv;
 							}
 						}
-						var cv = jgrid.checkValues.call($t, v, iCol), formatoptions = cm.formatoptions || {};
+						var cv = jgrid.checkValues.call($t, v, iCol, undefined, undefined, {
+								oldValue: savedRow[fr].v,
+								newValue: v,
+								cmName: nm,
+								rowid: rowid,
+								iCol: iCol,
+								iRow: iRow,
+								cm: cm,
+								tr: tr,
+								td: cc,
+								mode: "cell"
+							}),
+							formatoptions = cm.formatoptions || {};
 						if (cv[0] === true) {
 							var addpost = $self.triggerHandler("jqGridBeforeSubmitCell", [rowid, nm, v, iRow, iCol]) || {};
 							if ($.isFunction(p.beforeSubmitCell)) {
@@ -8078,7 +8090,7 @@
 			}
 			return true;
 		},
-		checkValues: function (val, iCol, customobject, nam) {
+		checkValues: function (val, iCol, customobject, nam, options) {
 			var edtrul, nm, dft, g = this, p = g.p, colModel = p.colModel, cm, isEmpty = jgrid.isEmpty,
 				editMsg = getGridRes.call($(g), "edit.msg"), ret,
 				dateMasks = getGridRes.call($(g), "formatter.date.masks");
@@ -8163,11 +8175,7 @@
 					}
 				} else if ($.isFunction(edtrul.custom)) {
 					if (!(rqfield === false && isEmpty(val))) {
-						ret = edtrul.custom.call(g, {
-									iCol: iCol,
-									newValue: val,
-									name: nm
-								});
+						ret = edtrul.custom.call(g, options);
 						return $.isArray(ret) ? ret : [false, editMsg.customarray, ""];
 					}
 				}
@@ -11416,10 +11424,14 @@
 					});
 				}
 				function postIt() {
-					var ret = [true, "", ""], onClickSubmitResult = {}, opers = p.prmNames, idname, oper, key, selr, i, url, itm;
+					var ret = [true, "", ""], onClickSubmitResult = {}, opers = p.prmNames, idname, oper, key, selr, i, url, itm, iCol,
+						iRow = base.getInd.call($self, rowid),
+						tr = iRow === false ? null : $t.rows[iRow],
+						retvals = $self.triggerHandler("jqGridAddEditBeforeCheckValues", [$(frmgr), editOrAdd]);
 
-					var retvals = $self.triggerHandler("jqGridAddEditBeforeCheckValues", [$(frmgr), editOrAdd]);
 					if (retvals && typeof retvals === "object") { postdata = retvals; }
+
+					iRow = iRow === false ? -1 : iRow;
 
 					if ($.isFunction(o.beforeCheckValues)) {
 						retvals = o.beforeCheckValues.call($t, postdata, $(frmgr), editOrAdd);
@@ -11427,7 +11439,19 @@
 					}
 					for (key in postdata) {
 						if (postdata.hasOwnProperty(key)) {
-							ret = jgrid.checkValues.call($t, postdata[key], key);
+							iCol = p.iColByName[key];
+							ret = jgrid.checkValues.call($t, postdata[key], key, undefined, undefined, {
+								oldValue: rowid === "_empty" ? null : base.getCell.call($self, rowid, iCol),
+								newValue: postdata[key],
+								cmName: key,
+								rowid: rowid,
+								cm: colModel[iCol],
+								iCol: iCol,
+								iRow: iRow,
+								tr: tr,
+								td: tr == null ? null : tr.cells[iCol],
+								mode: rowid === "_empty" ? "addForm" : "editForm"
+							});
 							if (ret[0] === false) { break; }
 						}
 					}
@@ -14022,10 +14046,15 @@
 			if (editable === "1") {
 				jgrid.enumEditableCells.call($t, ind, $tr.hasClass("jqgrid-new-row") ? "add" : "edit", function (options) {
 					var cm = options.cm, v, formatter = cm.formatter, editoptions = cm.editoptions || {},
-						formatoptions = cm.formatoptions || {};
+						formatoptions = cm.formatoptions || {},
+						savedRow = ($.jgrid.detectRowEditing.call($t, rowid) || {}).savedRow;
 
 					v = jgrid.getEditedValue.call($t, $(options.dataElement), cm, !formatter, options.editable);
-					cv = jgrid.checkValues.call($t, v, options.iCol);
+					cv = jgrid.checkValues.call($t, v, options.iCol, cm.editrules, undefined,
+							$.extend(options, {
+								oldValue: savedRow != null ? savedRow[cm.name] : null,
+								newValue: v,
+								oldRowData: savedRow }));
 					if (cv[0] === false) {
 						return false;
 					}

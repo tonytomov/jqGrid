@@ -242,10 +242,15 @@
 			if (editable === "1") {
 				jgrid.enumEditableCells.call($t, ind, $tr.hasClass("jqgrid-new-row") ? "add" : "edit", function (options) {
 					var cm = options.cm, v, formatter = cm.formatter, editoptions = cm.editoptions || {},
-						formatoptions = cm.formatoptions || {};
+						formatoptions = cm.formatoptions || {},
+						savedRow = ($.jgrid.detectRowEditing.call($t, rowid) || {}).savedRow;
 
 					v = jgrid.getEditedValue.call($t, $(options.dataElement), cm, !formatter, options.editable);
-					cv = jgrid.checkValues.call($t, v, options.iCol);
+					cv = jgrid.checkValues.call($t, v, options.iCol, cm.editrules, undefined,
+							$.extend(options, {
+								oldValue: savedRow != null ? savedRow[cm.name] : null,
+								newValue: v,
+								oldRowData: savedRow }));
 					if (cv[0] === false) {
 						return false;
 					}

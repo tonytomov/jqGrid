@@ -235,7 +235,19 @@
 								v = vv;
 							}
 						}
-						var cv = jgrid.checkValues.call($t, v, iCol), formatoptions = cm.formatoptions || {};
+						var cv = jgrid.checkValues.call($t, v, iCol, undefined, undefined, {
+								oldValue: savedRow[fr].v,
+								newValue: v,
+								cmName: nm,
+								rowid: rowid,
+								iCol: iCol,
+								iRow: iRow,
+								cm: cm,
+								tr: tr,
+								td: cc,
+								mode: "cell"
+							}),
+							formatoptions = cm.formatoptions || {};
 						if (cv[0] === true) {
 							var addpost = $self.triggerHandler("jqGridBeforeSubmitCell", [rowid, nm, v, iRow, iCol]) || {};
 							if ($.isFunction(p.beforeSubmitCell)) {
