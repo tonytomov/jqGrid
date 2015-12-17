@@ -220,9 +220,10 @@
 					edit = $self.jqGrid("getGridRes", "edit"), bClose = edit.bClose,
 					savedRow = p.savedRow, fr = savedRow.length >= 1 ? 0 : null;
 				if (fr !== null) {
-					var tr = $t.rows[iRow], rowid = tr.id, $tr = $(tr), cm = p.colModel[iCol], nm = cm.name, v, vv,
-						cc = getTdByColumnIndex.call($t, tr, iCol);
-					v = jgrid.getEditedValue.call($t, cc, cm, !cm.formatter);
+					var tr = $t.rows[iRow], rowid = tr.id, $tr = $(tr), cm = p.colModel[iCol], nm = cm.name, vv,
+						cc = getTdByColumnIndex.call($t, tr, iCol), valueText = {},
+						v = jgrid.getEditedValue.call($t, cc, cm, valueText);
+
 					// The common approach is if nothing changed do not do anything
 					if (v !== savedRow[fr].v) {
 						vv = $self.triggerHandler("jqGridBeforeSaveCell", [rowid, nm, v, iRow, iCol]);

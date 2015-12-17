@@ -1241,11 +1241,12 @@
 				}
 			}
 		},
-		getEditedValue: function ($dataFiled, cm, useTextInSelects, editable) {
-			var result, checkBoxValues, newformat, $field, valuesOrTexts, selectMethod = useTextInSelects ? "text" : "val",
-				formatoptions = cm.formatoptions || {}, editoptions = cm.editoptions || {}, customValue = editoptions.custom_value,
+		getEditedValue: function ($dataFiled, cm, editable, valueText) {
+			var result, checkBoxValues, newformat, $field, values, texts,
+				formatoptions = cm.formatoptions || {}, editoptions = cm.editoptions || {},
+				customValue = editoptions.custom_value,
 				nameSelector = "[name=" + jgrid.jqID(cm.name) + "]", $t = this, $self = $($t);
-			if (editable === "hidden") {
+			if (editable === "hidden" || editable === "readonly") {
 				// the implementation from the next line can be improved
 				return $($t).jqGrid("getCell", $dataFiled.closest("tr.jqgrow").attr("id"), cm.name);
 			}
@@ -1271,14 +1272,19 @@
 				case "select":
 					$field = $dataFiled.find("select option:selected");
 					if (editoptions.multiple) {
-						valuesOrTexts = [];
+						values = [];
+						texts = [];
 						$field.each(function () {
-							valuesOrTexts.push($(this)[selectMethod]());
+							values.push($(this).val());
+							texts.push($(this).text());
 						});
-						result = valuesOrTexts.join(",");
+						result = values.join(",");
+						valueText.text = texts.join(",");
 					} else {
-						result = $field[selectMethod]();
+						result = $field.val();
+						valueText.text = $field.text();
 					}
+					valueText.value = result;
 					break;
 				case "custom":
 					try {
@@ -7000,9 +7006,10 @@
 					edit = $self.jqGrid("getGridRes", "edit"), bClose = edit.bClose,
 					savedRow = p.savedRow, fr = savedRow.length >= 1 ? 0 : null;
 				if (fr !== null) {
-					var tr = $t.rows[iRow], rowid = tr.id, $tr = $(tr), cm = p.colModel[iCol], nm = cm.name, v, vv,
-						cc = getTdByColumnIndex.call($t, tr, iCol);
-					v = jgrid.getEditedValue.call($t, cc, cm, !cm.formatter);
+					var tr = $t.rows[iRow], rowid = tr.id, $tr = $(tr), cm = p.colModel[iCol], nm = cm.name, vv,
+						cc = getTdByColumnIndex.call($t, tr, iCol), valueText = {},
+						v = jgrid.getEditedValue.call($t, cc, cm, valueText);
+
 					// The common approach is if nothing changed do not do anything
 					if (v !== savedRow[fr].v) {
 						vv = $self.triggerHandler("jqGridBeforeSaveCell", [rowid, nm, v, iRow, iCol]);
@@ -14045,11 +14052,14 @@
 			isRemoteSave = o.url !== "clientArray";
 			if (editable === "1") {
 				jgrid.enumEditableCells.call($t, ind, $tr.hasClass("jqgrid-new-row") ? "add" : "edit", function (options) {
-					var cm = options.cm, v, formatter = cm.formatter, editoptions = cm.editoptions || {},
-						formatoptions = cm.formatoptions || {},
-						savedRow = ($.jgrid.detectRowEditing.call($t, rowid) || {}).savedRow;
+					var cm = options.cm, formatter = cm.formatter, editoptions = cm.editoptions || {},
+						formatoptions = cm.formatoptions || {}, valueText = {},
+						savedRow = ($.jgrid.detectRowEditing.call($t, rowid) || {}).savedRow,
+						v = jgrid.getEditedValue.call($t, $(options.dataElement), cm, options.editable, valueText);
 
-					v = jgrid.getEditedValue.call($t, $(options.dataElement), cm, !formatter, options.editable);
+					if (cm.edittype === "select" && cm.formatter !== "select") {
+						tmp2[cm.name] = valueText.text;
+					}
 					cv = jgrid.checkValues.call($t, v, options.iCol, cm.editrules, undefined,
 							$.extend(options, {
 								oldValue: savedRow != null ? savedRow[cm.name] : null,

@@ -1241,11 +1241,12 @@
 				}
 			}
 		},
-		getEditedValue: function ($dataFiled, cm, useTextInSelects, editable) {
-			var result, checkBoxValues, newformat, $field, valuesOrTexts, selectMethod = useTextInSelects ? "text" : "val",
-				formatoptions = cm.formatoptions || {}, editoptions = cm.editoptions || {}, customValue = editoptions.custom_value,
+		getEditedValue: function ($dataFiled, cm, editable, valueText) {
+			var result, checkBoxValues, newformat, $field, values, texts,
+				formatoptions = cm.formatoptions || {}, editoptions = cm.editoptions || {},
+				customValue = editoptions.custom_value,
 				nameSelector = "[name=" + jgrid.jqID(cm.name) + "]", $t = this, $self = $($t);
-			if (editable === "hidden") {
+			if (editable === "hidden" || editable === "readonly") {
 				// the implementation from the next line can be improved
 				return $($t).jqGrid("getCell", $dataFiled.closest("tr.jqgrow").attr("id"), cm.name);
 			}
@@ -1271,14 +1272,19 @@
 				case "select":
 					$field = $dataFiled.find("select option:selected");
 					if (editoptions.multiple) {
-						valuesOrTexts = [];
+						values = [];
+						texts = [];
 						$field.each(function () {
-							valuesOrTexts.push($(this)[selectMethod]());
+							values.push($(this).val());
+							texts.push($(this).text());
 						});
-						result = valuesOrTexts.join(",");
+						result = values.join(",");
+						valueText.text = texts.join(",");
 					} else {
-						result = $field[selectMethod]();
+						result = $field.val();
+						valueText.text = $field.text();
 					}
+					valueText.value = result;
 					break;
 				case "custom":
 					try {

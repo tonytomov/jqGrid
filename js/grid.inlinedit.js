@@ -241,11 +241,14 @@
 			isRemoteSave = o.url !== "clientArray";
 			if (editable === "1") {
 				jgrid.enumEditableCells.call($t, ind, $tr.hasClass("jqgrid-new-row") ? "add" : "edit", function (options) {
-					var cm = options.cm, v, formatter = cm.formatter, editoptions = cm.editoptions || {},
-						formatoptions = cm.formatoptions || {},
-						savedRow = ($.jgrid.detectRowEditing.call($t, rowid) || {}).savedRow;
+					var cm = options.cm, formatter = cm.formatter, editoptions = cm.editoptions || {},
+						formatoptions = cm.formatoptions || {}, valueText = {},
+						savedRow = ($.jgrid.detectRowEditing.call($t, rowid) || {}).savedRow,
+						v = jgrid.getEditedValue.call($t, $(options.dataElement), cm, options.editable, valueText);
 
-					v = jgrid.getEditedValue.call($t, $(options.dataElement), cm, !formatter, options.editable);
+					if (cm.edittype === "select" && cm.formatter !== "select") {
+						tmp2[cm.name] = valueText.text;
+					}
 					cv = jgrid.checkValues.call($t, v, options.iCol, cm.editrules, undefined,
 							$.extend(options, {
 								oldValue: savedRow != null ? savedRow[cm.name] : null,
