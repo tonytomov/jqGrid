@@ -294,7 +294,6 @@
 .ui-jqgrid tr.jqgrow > td,
 .ui-jqgrid tr.jqgroup > td,
 .ui-jqgrid tr.jqfoot > td,
-.ui-jqgrid tr.jqfoot > td,
 .ui-jqgrid tr.ui-subgrid > td {
 	overflow: hidden;
 	white-space: pre;
@@ -306,7 +305,6 @@
 }
 .ui-jqgrid tr.jqgrow > td,
 .ui-jqgrid tr.jqgroup > td,
-.ui-jqgrid tr.jqfoot > td,
 .ui-jqgrid tr.jqfoot > td {
 	padding: 0 2px 0 2px;
 }
