@@ -107,6 +107,7 @@ $.jgrid.extend({
 				closeovrl = false;
 			}
 			function getFormData(){
+				var a2 ={}, i;
 				$(frmtb).find(".FormElement").each(function() {
 					var celm = $(".customelement", this);
 					if (celm.length) {
@@ -128,7 +129,7 @@ $.jgrid.extend({
 						case "checkbox":
 							if($(this).is(":checked")) {
 								postdata[this.name]= $(this).val();
-							}else {
+							} else {
 								var ofv = $(this).attr("offval");
 								postdata[this.name]= ofv;
 							}
@@ -152,12 +153,29 @@ $.jgrid.extend({
 						case "textarea":
 						case "button":
 							postdata[this.name] = $(this).val();
-
 						break;
+							case "radio" :
+								if(a2.hasOwnProperty(this.name)) {
+									return true;
+								} else {
+									a2[this.name] = ($(this).attr("offval") === undefined) ? "off" : $(this).attr("offval");
 					}
-					if($t.p.autoencode) {postdata[this.name] = $.jgrid.htmlEncode(postdata[this.name]);}
+								break;
+					}
+						if($t.p.autoencode) {
+							postdata[this.name] = $.jgrid.htmlEncode(postdata[this.name]);
+						}
 					}
 				});
+				for(i in a2 ) {
+					if( a2.hasOwnProperty(i)) {
+						var val = $('input[name="'+i+'"]:checked',frmtb).val();
+						postdata[i] = (val !== undefined) ? val : a2[i];
+						if($t.p.autoencode) {
+							postdata[i] = $.jgrid.htmlEncode(postdata[i]);
+						}
+					}
+				}
 				return true;
 			}
 			function createData(rowid,obj,tb,maxcols){
