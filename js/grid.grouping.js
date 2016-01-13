@@ -62,7 +62,9 @@ $.jgrid.extend({
 					}
 					grp.summary =[];
 					if(grp.hideFirstGroupCol) {
-						grp.formatDisplayField[0] = function (v) { return v;};
+						if($.isArray(grp.formatDisplayField) && !$.isFunction(grp.formatDisplayField[0] ) ) {
+							grp.formatDisplayField[0] = function (v) { return v;};
+						}
 					}
 					for(j=0, cml = cm.length; j < cml; j++) {
 						if(grp.hideFirstGroupCol) {
