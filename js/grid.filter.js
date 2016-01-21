@@ -815,7 +815,7 @@ $.jgrid.extend({
 					// multiselect
 					var filters, rules, k,str, rule, ssdata, group;
 					if(ms) {
-						filters = $.jgrid.parse(ruleGroup);//, rules, k,str, rule, ssdata, group;
+						filters = $.jgrid.parse(ruleGroup);
 						if(filters.rules && filters.rules.length) {
 							rules = filters.rules;
 							for(k=0;k < rules.length; k++) {
@@ -840,8 +840,8 @@ $.jgrid.extend({
 								}
 							}
 						}
-						//ruleGroup = JSON.stringify( filters );
 					}
+					// between detected
 					if(bbt) {
 						if(typeof ruleGroup === 'string') {
 							filters = $.jgrid.parse(ruleGroup);
