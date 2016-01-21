@@ -744,13 +744,15 @@ $.jgrid.extend({
 			afterSearch: null,
 			beforeClear: null,
 			afterClear: null,
+			onClearSearchValue : null,
 			searchurl : '',
 			stringResult: false,
 			groupOp: 'AND',
 			defaultSearch : "bw",
 			searchOperators : false,
 			resetIcon : "x",
-			operands : { "eq" :"==", "ne":"!","lt":"<","le":"<=","gt":">","ge":">=","bw":"^","bn":"!^","in":"=","ni":"!=","ew":"|","en":"!@","cn":"~","nc":"!~","nu":"#","nn":"!#"}
+			groupOpSelect : "OR",
+			operands : { "eq" :"==", "ne":"!","lt":"<","le":"<=","gt":">","ge":">=","bw":"^","bn":"!^","in":"=","ni":"!=","ew":"|","en":"!@","cn":"~","nc":"!~","nu":"#","nn":"!#", "bt":"..."}
 		}, regional , p  || {});
 		return this.each(function(){
 			var $t = this;
@@ -766,18 +768,27 @@ $.jgrid.extend({
 			base = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].base,			
 
 			triggerToolbar = function() {
-				var sdata={}, j=0, v, nm, sopt={},so;
+				var sdata={}, j=0, v, nm, sopt={},so, ms = false, ssfield = [], bbt =false;
 				$.each($t.p.colModel,function(){
 					var $elem = $("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(this.name), (this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
 					nm = this.index || this.name;
 					if(p.searchOperators ) {
 						so = $elem.parent().prev().children("a").attr("soper") || p.defaultSearch;
 					} else {
-						so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : this.stype==='select'?  'eq' : p.defaultSearch;
+						so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : this.stype==='select' ?  'eq' : p.defaultSearch;
 					}
 					v = this.stype === "custom" && $.isFunction(this.searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN" ?
 						this.searchoptions.custom_value.call($t, $elem.children(".customelement:first"), "get") :
 						$elem.val();
+					// detect multiselect
+					if(this.stype === 'select' && this.searchoptions && this.searchoptions.multiple && $.isArray(v) && v.length) {
+						ms = true;
+						ssfield.push(nm);
+						v= v.length === 1 ? v[0] : v;
+					}
+					if(so==="bt") {
+						bbt = true;
+					}
 					if(v || so==="nu" || so==="nn") {
 						sdata[nm] = v;
 						sopt[nm] = so;
@@ -801,6 +812,69 @@ $.jgrid.extend({
 						gi++;
 					});
 					ruleGroup += "]}";
+					// multiselect
+					var filters, rules, k,str, rule, ssdata, group;
+					if(ms) {
+						filters = $.jgrid.parse(ruleGroup);//, rules, k,str, rule, ssdata, group;
+						if(filters.rules && filters.rules.length) {
+							rules = filters.rules;
+							for(k=0;k < rules.length; k++) {
+								rule = rules[k];
+								if($.inArray(rule.filed, ssfield)) {
+									ssdata = rule.data.split(",");
+									if(ssdata.length > 1) {
+										if(filters.groups === undefined) {
+											filters.groups = [];
+										}
+										group = { groupOp: p.groupOpSelect, groups: [], rules: [] };
+										filters.groups.push(group);									
+										$.each(ssdata,function(l) {
+											str = ssdata[l];
+											if (str) {
+												group.rules.push({ data: ssdata[l],	op: rule.op, field: rule.field});
+											}
+										});
+										rules.splice(k, 1);
+										k--;
+									}
+								}
+							}
+						}
+						//ruleGroup = JSON.stringify( filters );
+					}
+					if(bbt) {
+						if(typeof ruleGroup === 'string') {
+							filters = $.jgrid.parse(ruleGroup);
+						}
+						if(filters.rules && filters.rules.length) {
+							rules = filters.rules;
+							for(k=0;k < rules.length; k++) {
+								rule = rules[k];
+								if(rule.op === "bt") {
+									ssdata = rule.data.split("...");
+									if(ssdata.length > 1) {
+										if(filters.groups === undefined) {
+											filters.groups = [];
+										}
+										group = { groupOp: 'AND', groups: [], rules: [] };
+										filters.groups.push(group);									
+										$.each(ssdata,function(l) {
+											var btop = l === 0 ? 'ge' : 'le';
+											str = ssdata[l];
+											if(str) {
+												group.rules.push({ data: ssdata[l],	op: btop, field: rule.field});
+											}
+										});
+										rules.splice(k, 1);
+										k--;
+									}
+								}
+							}
+						}
+					}
+					if(bbt || ms ) {
+						ruleGroup = JSON.stringify( filters );
+					}
 					$.extend($t.p.postData,{filters:ruleGroup});
 					$.each(['searchField', 'searchString', 'searchOper'], function(i, n){
 						if($t.p.postData.hasOwnProperty(n)) { delete $t.p.postData[n];}
@@ -825,7 +899,9 @@ $.jgrid.extend({
 				trigger = (typeof trigger !== 'boolean') ? true : trigger;
 				$.each($t.p.colModel,function(){
 					var v, $elem = $("#gs_"+$t.p.idPrefix+$.jgrid.jqID(this.name),(this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
-					if(this.searchoptions && this.searchoptions.defaultValue !== undefined) { v = this.searchoptions.defaultValue; }
+					if(this.searchoptions && this.searchoptions.defaultValue !== undefined) { 
+						v = this.searchoptions.defaultValue; 
+					}
 					nm = this.index || this.name;
 					switch (this.stype) {
 						case 'select' :
@@ -1124,15 +1200,22 @@ $.jgrid.extend({
 				var ptr = $(this).parents("tr:first"),
 				coli = parseInt($("td.ui-search-oper", ptr).attr('colindex'),10),
 				sval  = $.extend({},$t.p.colModel[coli].searchoptions || {}),
-				dval = sval.defaultValue ? sval.defaultValue : "";
+				dval = sval.defaultValue ? sval.defaultValue : "",
+				elem;
 				if($t.p.colModel[coli].stype === "select") {
+					elem = $("td.ui-search-input select", ptr);
 					if(dval) {
-						$("td.ui-search-input select", ptr).val( dval );
+						elem.val( dval );
 					} else {
-						$("td.ui-search-input select", ptr)[0].selectedIndex = 0;
+						elem[0].selectedIndex = 0;
 					}
 				} else {
-					$("td.ui-search-input input", ptr).val( dval );
+					elem = $("td.ui-search-input input", ptr);
+					elem.val( dval );
+				}
+				$($t).triggerHandler("jqGridToolbarClearVal",[elem[0], coli, sval, dval]);
+				if($.isFunction(p.onClearSearchValue)) {
+					p.onClearSearchValue.call($t, elem[0], coli, sval, dval);
 				}
 				// ToDo custom search type
 				if(p.autosearch===true){
