@@ -53,7 +53,8 @@ $.jgrid.regional["no"] = {
         {oper: 'ew', text: "slutter med"},
         {oper: 'cn', text: "inneholder"},
         { oper: 'nu', text: 'is null'},
-        { oper: 'nn', text: 'is not null'}
+        { oper: 'nn', text: 'is not null'}, 
+		{oper:'bt', text:'between'}
     ], operandTitle: "Click to select search operation.", resetTitle: "Reset Search Value"
 	},
     edit : {addCaption: "Ny rad", editCaption: "Rediger", bSubmit: "Send", bCancel: "Avbryt", bClose: "Lukk", processData: "Laster...", msg: {required: "Felt er obligatorisk", number: "Legg inn et gyldig tall", minValue: "verdi mø vøre større enn eller lik", maxValue: "verdi må være mindre enn eller lik", email: "er ikke en gyldig e-post adresse", integer: "Legg inn et gyldig heltall", date: "Legg inn en gyldig dato", url: "er ikke en gyldig URL. Prefiks påkrevd ('http://' eller 'https://')", nodefined: " er ikke definert!", novalue: " returverdi er påkrevd!", customarray: "Tilpasset funksjon må returnere en tabell!", customfcheck: "Tilpasset funksjon må eksistere!"}},
