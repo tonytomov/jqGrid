@@ -751,6 +751,7 @@ $.jgrid.extend({
 			defaultSearch : "bw",
 			searchOperators : false,
 			resetIcon : "x",
+			splitSelect : ",",
 			groupOpSelect : "OR",
 			operands : { "eq" :"==", "ne":"!","lt":"<","le":"<=","gt":">","ge":">=","bw":"^","bn":"!^","in":"=","ni":"!=","ew":"|","en":"!@","cn":"~","nc":"!~","nu":"#","nn":"!#", "bt":"..."}
 		}, regional , p  || {});
@@ -815,13 +816,13 @@ $.jgrid.extend({
 					// multiselect
 					var filters, rules, k,str, rule, ssdata, group;
 					if(ms) {
-						filters = $.jgrid.parse(ruleGroup);
+						filters = $.jgrid.parse(ruleGroup);//, rules, k,str, rule, ssdata, group;
 						if(filters.rules && filters.rules.length) {
 							rules = filters.rules;
 							for(k=0;k < rules.length; k++) {
 								rule = rules[k];
 								if($.inArray(rule.filed, ssfield)) {
-									ssdata = rule.data.split(",");
+									ssdata = rule.data.split(p.splitSelect);
 									if(ssdata.length > 1) {
 										if(filters.groups === undefined) {
 											filters.groups = [];
@@ -840,10 +841,10 @@ $.jgrid.extend({
 								}
 							}
 						}
+						//ruleGroup = JSON.stringify( filters );
 					}
-					// between detected
 					if(bbt) {
-						if(typeof ruleGroup === 'string') {
+						if(!$.isPlainObject(filters)) {
 							filters = $.jgrid.parse(ruleGroup);
 						}
 						if(filters.rules && filters.rules.length) {

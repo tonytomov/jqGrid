@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.0.2 - 2016-01-21
+* @license Guriddo jqGrid JS - v5.0.2 - 2016-01-22
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -7055,7 +7055,7 @@ $.jgrid.extend({
 											}
 										});
 										rules.splice(k, 1);
-										k--;									
+										k--;
 									}
 								}
 							}
@@ -7063,7 +7063,7 @@ $.jgrid.extend({
 						//ruleGroup = JSON.stringify( filters );
 					}
 					if(bbt) {
-						if(typeof ruleGroup === 'string') {
+						if(!$.isPlainObject(filters)) {
 							filters = $.jgrid.parse(ruleGroup);
 						}
 						if(filters.rules && filters.rules.length) {
@@ -7086,7 +7086,7 @@ $.jgrid.extend({
 											}
 										});
 										rules.splice(k, 1);
-										k--;									
+										k--;
 									}
 								}
 							}
@@ -7094,7 +7094,7 @@ $.jgrid.extend({
 					}
 					if(bbt || ms ) {
 						ruleGroup = JSON.stringify( filters );
-					}					
+					}
 					$.extend($t.p.postData,{filters:ruleGroup});
 					$.each(['searchField', 'searchString', 'searchOper'], function(i, n){
 						if($t.p.postData.hasOwnProperty(n)) { delete $t.p.postData[n];}
