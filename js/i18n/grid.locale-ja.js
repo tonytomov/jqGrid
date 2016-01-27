@@ -31,21 +31,21 @@ $.jgrid.regional["ja"] = {
 	    emptyrecords: "\u8868\u793A\u3059\u308B\u30EC\u30B3\u30FC\u30C9\u304C\u3042\u308A\u307E\u305B\u3093",
 		loadtext: "\u8aad\u307f\u8fbc\u307f\u4e2d...",
 		pgtext : "{1} \u30DA\u30FC\u30B8\u4E2D {0} \u30DA\u30FC\u30B8\u76EE ",
-		savetext: "Saving...",
-		pgfirst : "First Page",
-		pglast : "Last Page",
-		pgnext : "Next Page",
-		pgprev : "Previous Page",
-		pgrecs : "Records per Page",
-		showhide: "Toggle Expand Collapse Grid",
+		savetext: "\u4fdd\u5b58\u4e2d...",
+		pgfirst : "\u6700\u521d\u306e\u30da\u30fc\u30b8\u3078",
+		pglast : "\u6700\u5f8c\u306e\u30da\u30fc\u30b8\u3078",
+		pgnext : "\u6b21\u306e\u30da\u30fc\u30b8",
+		pgprev : "\u524d\u306e\u30da\u30fc\u30b8",
+		pgrecs : "\u30da\u30fc\u30b8\u5358\u4f4d\u306e\u30ec\u30b3\u30fc\u30c9\u6570",
+		showhide: "\u30b0\u30ea\u30c3\u30c9\u306e\u5c55\u958b/\u9589\u3058\u8fbc\u307f",
 		// mobile
-		pagerCaption : "Grid::Page Settings",
-		pageText : "Page:",
-		recordPage : "Records per Page",
-		nomorerecs : "No more records...",
-		scrollPullup: "Pull up to load more...",
-		scrollPulldown : "Pull down to refresh...",
-		scrollRefresh : "Release to refresh..."
+		pagerCaption : "\u30b0\u30ea\u30c3\u30c9::\u30da\u30fc\u30b8\u8a2d\u5b9a",
+		pageText : "\u30da\u30fc\u30b8:",
+		recordPage : "\u30da\u30fc\u30b8\u5358\u4f4d\u306e\u30ec\u30b3\u30fc\u30c9\u6570",
+		nomorerecs : "\u30ec\u30b3\u30fc\u30c9\u304c\u3042\u308a\u307e\u305b\u3093...",
+		scrollPullup: "\u4e0a\u306b\u30b9\u30af\u30ed\u30fc\u30eb\u3057\u3066\u8aad\u307f\u8fbc\u307f...",
+		scrollPulldown : "\u4e0b\u306b\u30b9\u30af\u30ed\u30fc\u30eb\u3057\u3066\u66f4\u65b0...",
+		scrollRefresh : "\u653e\u3057\u3066\u66f4\u65b0..."
 	},
 	search : {
 	    caption: "\u691c\u7d22...",
@@ -67,8 +67,8 @@ $.jgrid.regional["ja"] = {
                 op: "OR",
                 text: "\u3044\u305A\u308C\u304B\u306E"
             }],
-		operandTitle : "Click to select search operation.",
-		resetTitle : "Reset Search Value"
+		operandTitle : "\u30af\u30ea\u30c3\u30af\u3057\u3066\u691c\u7d22\u64cd\u4f5c\u3092\u9078\u629e",
+		resetTitle : "\u691c\u7d22\u5024\u3092\u30ea\u30bb\u30c3\u30c8"
 	},
 	edit : {
 	    addCaption: "\u30ec\u30b3\u30fc\u30c9\u8ffd\u52a0",
@@ -121,10 +121,10 @@ $.jgrid.regional["ja"] = {
       viewtext: "",
       viewtitle: "\u9078\u629E\u3057\u305F\u884C\u3092\u8868\u793A",
 		savetext: "",
-		savetitle: "Save row",
+		savetitle: "\u5217\u3092\u4fdd\u5b58",
 		canceltext: "",
-		canceltitle : "Cancel row editing",
-		selectcaption : "Actions..."
+		canceltitle : "\u5217\u306e\u7de8\u96c6\u3092\u30ad\u30e3\u30f3\u30bb\u30eb",
+		selectcaption : "\u30a2\u30af\u30b7\u30e7\u30f3..."
 	},
 	col : {
 	    caption: "\u5217\u3092\u8868\u793a\uff0f\u96a0\u3059",
