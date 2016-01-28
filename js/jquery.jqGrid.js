@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.0.2 - 2016-01-22
+* @license Guriddo jqGrid JS - v5.0.2 - 2016-01-28
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -7412,7 +7412,7 @@ $.jgrid.extend({
 				});
 				$("body").on('click', function(e){
 					if(e.target.className !== "soptclass") {
-						$("#sopt_menu").hide();
+						$("#sopt_menu").remove();
 					}
 				});
 			}
@@ -7459,6 +7459,71 @@ $.jgrid.extend({
 			this.toggleToolbar = null;
 			this.p.filterToolbar = false;
 			$(this.grid.hDiv).find("table thead tr.ui-search-toolbar").remove();
+		});
+	},
+	refreshFilterToolbar : function ( p ) {
+		p = $.extend(true, {
+			filters : "",
+			onClearVal : null,
+			onSetVal : null
+		}, p || {});
+		return this.each(function () {
+			var $t = this, cm = $t.p.colModel, i, l = $t.p.colModel.length,
+			searchitem, filters, rules, rule, ssfield =[], ia;
+			// clear the values on toolbar.
+			// do not call clearToolbar 
+			if(!$t.p.filterToolbar) {
+				return;
+			}
+			for (i = 0; i < l; i++) {
+				ssfield.push(cm[i].name);
+				searchitem = $("#gs_" +$t.p.idPrefix+ $.jgrid.jqID(cm[i].name));
+				switch (cm[i].stype) {
+					case 'select' :
+					case 'text' :
+						searchitem.val("");
+						break;
+				}
+				if($.isFunction(p.onClearVal)) {
+					p.onClearVal.call($t, searchitem, cm[i].name);
+				}
+			}
+			function setrules (filter) {
+				if(filter && filter.rules) { // condition to exit
+					rules = filter.rules;
+					l = rules.length;
+					for (i = 0; i < l; i++) {
+						rule = rules[i];
+						ia = $.inArray(rule.field, ssfield);
+						if( ia !== -1) {
+							searchitem = $("#gs_" + $t.p.idPrefix + $.jgrid.jqID(cm[ia].name));
+							// problem for between operator
+							if ( searchitem.length > 0) {
+								if (cm[ia].stype === "select") { 
+									searchitem.find("option[value='" + $.jgrid.jqID(rule.data) + "']").prop('selected', true);
+								} else if (cm[ia].stype === "text") {
+									searchitem.val(rule.data);
+								}
+								if($.isFunction(p.onSetVal)) {
+									p.onSetVal.call($t, searchitem, cm[ia].name);
+								}
+							}
+					    }
+					}
+					if(filter.groups) {
+						for(var k=0;k<filter.groups.length;k++) {
+							setrules(filter.groups[k]);
+						}
+					}
+				}
+			}
+			if (typeof (p.filters) === "string" && p.filters.length) {
+				filters = $.jgrid.parse(p.filters);
+				// flat filters only
+			}
+	        if ($.isPlainObject(filters)) {
+				setrules( filters );
+	        }
 		});
 	},
 	searchGrid : function (p) {
