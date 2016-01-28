@@ -290,7 +290,10 @@
 			};
 
 		if (cm.formatoptions !== undefined) {
-			op = $.extend(op,cm.formatoptions);
+			// Deep clone before copying over to op, to avoid creating unintentional references.
+			// Otherwise, the assignment of op.extraparam[p.prmNames.oper] below may persist into the colModel config.
+			var formatoptionsClone = $.extend(true, {}, cm.formatoptions);
+			op = $.extend(op, formatoptionsClone);
 		}
 		if (p.editOptions !== undefined) {
 			op.editOptions = p.editOptions;
