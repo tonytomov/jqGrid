@@ -20,7 +20,7 @@ if(!$.jgrid.hasOwnProperty("regional")) {
 $.jgrid.regional["en"] = {
 	defaults : {
 		recordtext: "Mostra {0} - {1} di {2}",
-		emptyrecords: "Non ci osno record da mostrare",
+		emptyrecords: "Non ci sono record da mostrare",
 		loadtext: "Caricamento...",
 		savetext: "Salvataggio...",
 		pgtext : "Pagina {0} di {1}",
