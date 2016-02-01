@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.0.2 - 2016-01-28
+* @license Guriddo jqGrid JS - v5.0.2 - 2016-02-01
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -6286,6 +6286,7 @@ $.fn.jqFilter = function( arg ) {
 		groupOps : [{ op: "AND", text: "AND" },	{ op: "OR",  text: "OR" }],
 		groupButton : true,
 		ruleButtons : true,
+		uniqueSearchFields : false,
 		direction : "ltr"
 	}, $.jgrid.filter, arg || {});
 	return this.each( function() {
@@ -6343,7 +6344,11 @@ $.fn.jqFilter = function( arg ) {
 			if(!cl.hasOwnProperty('searchrules')) {
 				cl.searchrules = {};
 			}
-
+			if(cl.search === undefined) {
+				cl.inlist = true;
+			} else {
+				cl.inlist = cl.search;
+			}
 		}
 		var getGrid = function () {
 			return $("#" + $.jgrid.jqID(p.id))[0] || null;
@@ -6483,7 +6488,9 @@ $.fn.jqFilter = function( arg ) {
 						break;
 					}
 				}
-				
+				if( !cm ) {
+					return false;
+				}
 				var opr;
 				if( cm.searchoptions.sopt ) {opr = cm.searchoptions.sopt;}
 				else if(that.p.sopt) { opr= that.p.sopt; }
@@ -6543,14 +6550,30 @@ $.fn.jqFilter = function( arg ) {
 			}
 
 			// append rules rows
+			var suni = that.p.ruleButtons && that.p.uniqueSearchFields;
+			if( suni ) {
+				for (var ii = 0; ii < that.p.columns.length; ii++) {
+					if(that.p.columns[ii].inlist) {
+						that.p.columns[ii].search = true;
+					}
+				}
+			}
 			if (group.rules !== undefined) {
 				for (i = 0; i < group.rules.length; i++) {
 					table.append(
                        this.createTableRowForRule(group.rules[i], group)
 					);
+					if( suni ) {
+						var field = group.rules[i].field;
+						for (var ii = 0; ii < that.p.columns.length; ii++) {
+							if(field === that.p.columns[ii].name) {
+								that.p.columns[ii].search = false;
+								break;
+							}
+						}
+					}
 				}
 			}
-
 			return table;
 		};
 		/*
@@ -7680,6 +7703,7 @@ $.jgrid.extend({
 					sopt: p.sopt,
 					groupButton : p.multipleGroup,
 					ruleButtons : p.multipleSearch,
+					uniqueSearchFields : p.uniqueSearchFields,
 					afterRedraw : p.afterRedraw,
 					ops : p.odata,
 					operands : p.operands,
