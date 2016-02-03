@@ -17,7 +17,7 @@ $.jgrid = $.jgrid || {};
 if(!$.jgrid.hasOwnProperty("regional")) {
 	$.jgrid.regional = [];
 }
-$.jgrid.regional["en"] = {
+$.jgrid.regional["it"] = {
 	defaults : {
 		recordtext: "Mostra {0} - {1} di {2}",
 		emptyrecords: "Non ci sono record da mostrare",
