@@ -131,13 +131,13 @@ $.jgrid.regional["it"] = {
 			decimalSeparator:",",
 			thousandsSeparator:".",
 			decimalPlaces:2,
-			prefix:"",
+			prefix:"€ ",
 			suffix:"",
 			defaultValue:"0,00"
 		},
 		date:{
 			dayNames:["Dom","Lun","Mar","Mer","Gio","Ven","Sab","Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"],
-			monthNames:["Gen","Feb","Mar","Apr","Mag","Gui","Lug","Ago","Set","Ott","Nov","Dic","Genneio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Movembre","Dicembre"],
+			monthNames:["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic","Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"],
 			AmPm:["am","pm","AM","PM"],
 			S:function(b){return b<11||b>13?["st","nd","rd","th"][Math.min((b-1)%10,3)]:"th"},
 			srcformat:"Y-m-d",
