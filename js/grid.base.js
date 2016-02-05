@@ -1902,12 +1902,12 @@ $.fn.jqGrid = function( pin ) {
 					ts.grid.cols = ts.rows[0].cells; // update cached first row
 				}
 			}
+			ts.p.totaltime = new Date() - startReq;
+			rowData =null;
 			if(ts.p.subGrid === true ) {
 				try {self.jqGrid("addSubGrid",gi+ni);} catch (_){}
 			}
-			ts.p.totaltime = new Date() - startReq;
 			if(ir>0) { if(ts.p.records===0) { ts.p.records=gl;} }
-			rowData =null;
 			if( ts.p.treeGrid === true) {
 				try {self.jqGrid("setTreeNode", fpos+1, ir+fpos+1);} catch (e) {}
 			}
@@ -2098,14 +2098,14 @@ $.fn.jqGrid = function( pin ) {
 					ts.grid.cols = ts.rows[0].cells;
 				}
 			}
+			ts.p.totaltime = new Date() - startReq;
+			rowData = null;
 			if(ts.p.subGrid === true ) {
 				try { self.jqGrid("addSubGrid",gi+ni);} catch (_){}
 			}
-			ts.p.totaltime = new Date() - startReq;
 			if(ir>0) {
 				if(ts.p.records===0) { ts.p.records=len; }
 			}
-			rowData = null;
 			if( ts.p.treeGrid === true) {
 				try {self.jqGrid("setTreeNode", fpos+1, ir+fpos+1);} catch (e) {}
 			}
