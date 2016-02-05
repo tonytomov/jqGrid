@@ -192,7 +192,7 @@ addSubGrid : function( pos, sind ) {
 				nhc++;
 			}
 		});
-		var len = ts.rows.length, i=1;
+		var len = ts.rows.length, i=1,hsret, ishsg = $.isFunction(ts.p.isHasSubGrid);
 		if( sind !== undefined && sind > 0) {
 			i = sind;
 			len = sind+1;
@@ -202,54 +202,62 @@ addSubGrid : function( pos, sind ) {
 				if(ts.p.scroll) {
 					$(ts.rows[i].cells[pos]).unbind('click');
 				}
-				$(ts.rows[i].cells[pos]).bind('click', function() {
-					var tr = $(this).parent("tr")[0];
-					pID = ts.p.id;
-					_id = tr.id;
-					$r = $("#" + pID + "_" + _id + "_expandedContent");
-					if($(this).hasClass("sgcollapsed")) {
-						bfsc = $(ts).triggerHandler("jqGridSubGridBeforeExpand", [pID + "_" + _id, _id]);
-						bfsc = (bfsc === false || bfsc === 'stop') ? false : true;
-						if(bfsc && $.isFunction(ts.p.subGridBeforeExpand)) {
-							bfsc = ts.p.subGridBeforeExpand.call(ts, pID+"_"+_id,_id);
-						}
-						if(bfsc === false) {return false;}
-
-						if(ts.p.subGridOptions.reloadOnExpand === true || ( ts.p.subGridOptions.reloadOnExpand === false && !$r.hasClass('ui-subgrid') ) ) {
-							atd = pos >=1 ? "<td colspan='"+pos+"'>&#160;</td>":"";
-							$(tr).after( "<tr role='row' id='" + pID + "_" + _id + "_expandedContent" + "' class='ui-subgrid ui-sg-expanded'>"+atd+"<td class='" + common.content +" subgrid-cell'><span class='" + common.icon_base +" "+ts.p.subGridOptions.openicon+"'></span></td><td colspan='"+parseInt(ts.p.colNames.length-1-nhc,10)+"' class='" + common.content +" subgrid-data'><div id="+pID+"_"+_id+" class='tablediv'></div></td></tr>" );
-							$(ts).triggerHandler("jqGridSubGridRowExpanded", [pID + "_" + _id, _id]);
-							if( $.isFunction(ts.p.subGridRowExpanded)) {
-								ts.p.subGridRowExpanded.call(ts, pID+"_"+ _id,_id);
-							} else {
-								populatesubgrid(tr);
+				hsret = null;
+				if(ishsg) {
+					var hsret = ts.p.isHasSubGrid.call(ts, ts.rows[i].id);
+				}
+				if(hsret === false) {
+					ts.rows[i].cells[pos].innerHTML = "";
+				} else {
+					$(ts.rows[i].cells[pos]).bind('click', function() {
+						var tr = $(this).parent("tr")[0];
+						pID = ts.p.id;
+						_id = tr.id;
+						$r = $("#" + pID + "_" + _id + "_expandedContent");
+						if($(this).hasClass("sgcollapsed")) {
+							bfsc = $(ts).triggerHandler("jqGridSubGridBeforeExpand", [pID + "_" + _id, _id]);
+							bfsc = (bfsc === false || bfsc === 'stop') ? false : true;
+							if(bfsc && $.isFunction(ts.p.subGridBeforeExpand)) {
+								bfsc = ts.p.subGridBeforeExpand.call(ts, pID+"_"+_id,_id);
 							}
-						} else {
-							$r.show().removeClass("ui-sg-collapsed").addClass("ui-sg-expanded");
+							if(bfsc === false) {return false;}
+
+							if(ts.p.subGridOptions.reloadOnExpand === true || ( ts.p.subGridOptions.reloadOnExpand === false && !$r.hasClass('ui-subgrid') ) ) {
+								atd = pos >=1 ? "<td colspan='"+pos+"'>&#160;</td>":"";
+								$(tr).after( "<tr role='row' id='" + pID + "_" + _id + "_expandedContent" + "' class='ui-subgrid ui-sg-expanded'>"+atd+"<td class='" + common.content +" subgrid-cell'><span class='" + common.icon_base +" "+ts.p.subGridOptions.openicon+"'></span></td><td colspan='"+parseInt(ts.p.colNames.length-1-nhc,10)+"' class='" + common.content +" subgrid-data'><div id="+pID+"_"+_id+" class='tablediv'></div></td></tr>" );
+								$(ts).triggerHandler("jqGridSubGridRowExpanded", [pID + "_" + _id, _id]);
+								if( $.isFunction(ts.p.subGridRowExpanded)) {
+									ts.p.subGridRowExpanded.call(ts, pID+"_"+ _id,_id);
+								} else {
+									populatesubgrid(tr);
+								}
+							} else {
+								$r.show().removeClass("ui-sg-collapsed").addClass("ui-sg-expanded");
+							}
+							$(this).html("<a style='cursor:pointer;' class='ui-sghref'><span class='" + common.icon_base +" "+ts.p.subGridOptions.minusicon+"'></span></a>").removeClass("sgcollapsed").addClass("sgexpanded");
+							if(ts.p.subGridOptions.selectOnExpand) {
+								$(ts).jqGrid('setSelection',_id);
+							}
+						} else if($(this).hasClass("sgexpanded")) {
+							bfsc = $(ts).triggerHandler("jqGridSubGridRowColapsed", [pID + "_" + _id, _id]);
+							bfsc = (bfsc === false || bfsc === 'stop') ? false : true;
+							if( bfsc &&  $.isFunction(ts.p.subGridRowColapsed)) {
+								bfsc = ts.p.subGridRowColapsed.call(ts, pID+"_"+_id,_id );
+							}
+							if(bfsc===false) {return false;}
+							if(ts.p.subGridOptions.reloadOnExpand === true) {
+								$r.remove(".ui-subgrid");
+							} else if($r.hasClass('ui-subgrid')) { // incase of dynamic deleting
+								$r.hide().addClass("ui-sg-collapsed").removeClass("ui-sg-expanded");
+							}
+							$(this).html("<a style='cursor:pointer;' class='ui-sghref'><span class='"+common.icon_base +" "+ts.p.subGridOptions.plusicon+"'></span></a>").removeClass("sgexpanded").addClass("sgcollapsed");
+							if(ts.p.subGridOptions.selectOnCollapse) {
+								$(ts).jqGrid('setSelection',_id);
+							}
 						}
-						$(this).html("<a style='cursor:pointer;' class='ui-sghref'><span class='" + common.icon_base +" "+ts.p.subGridOptions.minusicon+"'></span></a>").removeClass("sgcollapsed").addClass("sgexpanded");
-						if(ts.p.subGridOptions.selectOnExpand) {
-							$(ts).jqGrid('setSelection',_id);
-						}
-					} else if($(this).hasClass("sgexpanded")) {
-						bfsc = $(ts).triggerHandler("jqGridSubGridRowColapsed", [pID + "_" + _id, _id]);
-						bfsc = (bfsc === false || bfsc === 'stop') ? false : true;
-						if( bfsc &&  $.isFunction(ts.p.subGridRowColapsed)) {
-							bfsc = ts.p.subGridRowColapsed.call(ts, pID+"_"+_id,_id );
-						}
-						if(bfsc===false) {return false;}
-						if(ts.p.subGridOptions.reloadOnExpand === true) {
-							$r.remove(".ui-subgrid");
-						} else if($r.hasClass('ui-subgrid')) { // incase of dynamic deleting
-							$r.hide().addClass("ui-sg-collapsed").removeClass("ui-sg-expanded");
-						}
-						$(this).html("<a style='cursor:pointer;' class='ui-sghref'><span class='"+common.icon_base +" "+ts.p.subGridOptions.plusicon+"'></span></a>").removeClass("sgexpanded").addClass("sgcollapsed");
-						if(ts.p.subGridOptions.selectOnCollapse) {
-							$(ts).jqGrid('setSelection',_id);
-						}
-					}
-					return false;
-				});
+						return false;
+					});
+				}
 			}
 			i++;
 		}
