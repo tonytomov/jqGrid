@@ -950,7 +950,7 @@ $.extend($.jgrid,{
 				icon_caption_close : "ui-icon-circle-triangle-s"
 			},
 			modal : {
-				modal : "ui-widget ui-widget-content ui-corner-all",
+				modal : "ui-widget ui-widget-content ui-corner-all ui-dialog",
 				header : "ui-widget-header ui-corner-all ui-helper-clearfix",
 				content :"ui-widget-content",
 				resizable : "ui-resizable-handle ui-resizable-se",
@@ -1014,6 +1014,20 @@ $.extend($.jgrid,{
 				icon_save : "ui-icon-disk",
 				icon_cancel : "ui-icon-cancel",
 				icon_del : "ui-icon-trash"
+			},
+			colmenu : {
+				menu_widget : 'ui-widget ui-widget-content ui-corner-all',
+				input_checkbox : "ui-widget ui-widget-content",
+				filter_select: "ui-widget-content ui-corner-all",
+				filter_input : "ui-widget-content ui-corner-all",
+				icon_menu : "ui-icon-comment",
+				icon_sort_asc : "ui-icon-arrow-1-n",
+				icon_sort_desc : "ui-icon-arrow-1-s",
+				icon_columns : "ui-icon-extlink",
+				icon_filter : "ui-icon-calculator",
+				icon_group : "ui-icon-grip-solid-horizontal",
+				icon_freeze : "ui-icon-grip-solid-vertical",
+				icon_move: "ui-icon-arrow-4"
 			}
 		},
 		Bootstrap : {
@@ -1130,6 +1144,20 @@ $.extend($.jgrid,{
 				icon_save : "glyphicon-save",
 				icon_cancel : "glyphicon-remove-circle",
 				icon_del : "glyphicon-trash"
+			},
+			colmenu : {
+				menu_widget : '',
+				input_checkbox : "",
+				filter_select: "form-control",
+				filter_input : "form-control",
+				icon_menu : "glyphicon-menu-hamburger",
+				icon_sort_asc : "glyphicon-sort-by-alphabet",
+				icon_sort_desc : "glyphicon-sort-by-alphabet-alt",
+				icon_columns : "glyphicon-list-alt",
+				icon_filter : "glyphicon-filter",
+				icon_group : "glyphicon-align-left",
+				icon_freeze : "glyphicon-object-align-horizontal",
+				icon_move: "glyphicon-move"
 			}
 		}
 	}
@@ -1297,7 +1325,9 @@ $.fn.jqGrid = function( pin ) {
 			regional :  "en",
 			styleUI : "jQueryUI",
 			responsive : false,
-			restoreCellonFail : true
+			restoreCellonFail : true,
+			colFilters : {},
+			colMenu : false
 		}, $.jgrid.defaults , pin );
 		if (localData !== undefined) {
 			p.data = localData;
