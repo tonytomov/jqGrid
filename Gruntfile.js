@@ -19,6 +19,7 @@ var
 		"jqDnR",
 		"jqModal",
 		"jquery.fmatter",
+		"jquery.sortable",
 		"grid.utils"
 	],
 
