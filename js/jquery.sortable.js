@@ -1,8 +1,11 @@
 /*
+ * 
  * HTML5 Sortable jQuery Plugin
- * http://farhadi.ir/projects/html5sortable
+ * 
+ * Original code Copyright 2012 Ali Farhadi.
  *
- * Copyright 2012, Ali Farhadi
+ * This version is maintained by Tony Tomov <tony@trirand.com>
+ * 
  * Released under the MIT license.
  */
 (function($) {
@@ -50,7 +53,7 @@ $.fn.sortable = function(options) {
 			dragging.removeClass('sortable-dragging').show();
 			placeholders.detach();
 			if (index != dragging.index()) {
-				dragging.parent().trigger('sortupdate', {item: dragging});
+				dragging.parent().trigger('sortupdate', {item: dragging, startindex: index, endindex: dragging.index()});
 			}
 			dragging = null;
 		}).not('a[href], img').on('selectstart.h5s', function() {
