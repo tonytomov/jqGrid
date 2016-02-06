@@ -10,7 +10,7 @@
  */
 (function($) {
 var dragging, placeholders = $();
-$.fn.sortable = function(options) {
+$.fn.html5sortable = function(options) {
 	var method = String(options);
 	options = $.extend({
 		connectWith: false
