@@ -17,8 +17,8 @@ $.fn.sortable = function(options) {
 	}, options);
 	return this.each(function() {
 		if (/^enable|disable|destroy$/.test(method)) {
-			var items = $(this).children($(this).data('items')).attr('draggable', method == 'enable');
-			if (method == 'destroy') {
+			var items = $(this).children($(this).data('items')).attr('draggable', method === 'enable');
+			if (method === 'destroy') {
 				items.add(this).removeData('connectWith items')
 					.off('dragstart.h5s dragend.h5s selectstart.h5s dragover.h5s dragenter.h5s drop.h5s');
 			}
@@ -32,7 +32,7 @@ $.fn.sortable = function(options) {
 		}).mouseup(function() {
 			isHandle = false;
 		});
-		$(this).data('items', options.items)
+		$(this).data('items', options.items);
 		placeholders = placeholders.add(placeholder);
 		if (options.connectWith) {
 			$(options.connectWith).add(this).data('connectWith', options.connectWith);
@@ -52,7 +52,7 @@ $.fn.sortable = function(options) {
 			}
 			dragging.removeClass('sortable-dragging').show();
 			placeholders.detach();
-			if (index != dragging.index()) {
+			if (index !== dragging.index()) {
 				dragging.parent().trigger('sortupdate', {item: dragging, startindex: index, endindex: dragging.index()});
 			}
 			dragging = null;
@@ -63,7 +63,7 @@ $.fn.sortable = function(options) {
 			if (!items.is(dragging) && options.connectWith !== $(dragging).parent().data('connectWith')) {
 				return true;
 			}
-			if (e.type == 'drop') {
+			if (e.type === 'drop') {
 				e.stopPropagation();
 				placeholders.filter(':visible').after(dragging);
 				dragging.trigger('dragend.h5s');
