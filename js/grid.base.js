@@ -3650,12 +3650,29 @@ $.fn.jqGrid = function( pin ) {
 			} else {
 				ci = getColumnHeaderIndex(this);
 			}
+			//
+			if($(e.target).hasClass('colmenuspan')) {
+				if($("#column_menu")[0] != null) {
+					$("#column_menu").remove();
+				}
+
+				var colindex = $.jgrid.getCellIndex(e.target);
+				if(colindex === -1) { return;}
+				var offset = $(this).offset(),
+				left = ( offset.left ),
+				top = ( offset.top);
+				buildColMenu(colindex, left, top, t );
+				e.stopPropagation();
+				return;
+			}
+			//
 			if (!ts.p.viewsortcols[2]) { r=true;d=t.attr("sort"); }
 			if(ci != null){
 				sortData( $('div',this)[0].id, ci, r, d, this);
 			}
 			return false;
 		});
+		tmpcm = null;
 		if (ts.p.sortable && $.fn.sortable) {
 			try {
 				$(ts).jqGrid("sortableColumns", thr);
@@ -5201,7 +5218,7 @@ $.jgrid.extend({
 						$("th:gt("+maxfrozen+")",this).remove();
 					});
 				}
-				$(htbl).width(1);
+				$(htbl).width(1).css("height","100%");
 				// resizing stuff
 				$($t.grid.fhDiv).append(htbl)
 				.mousemove(function (e) {
