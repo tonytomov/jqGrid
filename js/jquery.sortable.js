@@ -8,7 +8,22 @@
  * 
  * Released under the MIT license.
  */
-(function($) {
+/*jshint eqeqeq:false */
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+} (function( $ ) {
+"use strict";
+//module begin
 var dragging, placeholders = $();
 $.fn.html5sortable = function(options) {
 	var method = String(options);
@@ -86,4 +101,5 @@ $.fn.html5sortable = function(options) {
 		});
 	});
 };
-})(jQuery);
+//module end
+}));
