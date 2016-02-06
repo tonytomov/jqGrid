@@ -406,13 +406,20 @@ $.jgrid.extend({
 		return result;
 	},	
 	// End NS, adjacency Model
-	getNodeAncestors : function(rc) {
+	getNodeAncestors : function(rc, reverse) {
 		var ancestors = [];
+		if(reverse === undefined ) {
+			reverse = false;
+		}
 		this.each(function(){
 			if(!this.grid || !this.p.treeGrid) {return;}
 			var parent = $(this).jqGrid("getNodeParent",rc);
 			while (parent) {
+				if(reverse) {
+					ancestors.unshift(parent);
+				} else {
 				ancestors.push(parent);
+				}
 				parent = $(this).jqGrid("getNodeParent",parent);	
 			}
 		});
@@ -577,26 +584,37 @@ $.jgrid.extend({
 		});
 	},
 	searchTree : function ( recs ) {
-		var i, len = recs.length || 0, res=[], lid, roots=[], result=[],tid;
+		var i= recs.length || 0, ancestors=[], lid, roots=[], result=[],tid, alen, rlen, j, k;
 		this.each(function(){
-			if(!this.grid || !this.p.treeGrid) {return;}
-
-			if(len) {
+			if(!this.grid || !this.p.treeGrid) {
+				return;
+			}
+			if(i) {
 				lid = this.p.localReader.id;
-				for(i = 0; i < len ; i++) {
-					res = $(this).jqGrid('getNodeAncestors', recs[i]);
-					if(!res.length) { // is root or leaf root
-						res.push(recs[i]);
+				while( i-- ) { // reverse 
+					ancestors = $(this).jqGrid('getNodeAncestors', recs[i], true);
+					//add the searched item
+					ancestors.push(recs[i]);
+					tid = ancestors[0][lid]; 
+					if($.inArray(tid, roots ) !== -1) { // ignore repeated, but add missing
+						for( j = 0, alen = ancestors.length; j < alen; j++) {
+							//$.inArray ?!?
+							var found = false;
+							for( k=0, rlen = result.length; k < rlen; k++) {
+								if(ancestors[j][lid] === result[k][lid]) {
+									found = true;
+									break;
 					}
-						tid = res[res.length-1][lid]; // root node
-						if($.inArray(tid, roots ) !== -1) { // ignore repeated
+							}
+							if(!found) {
+								result.push(ancestors[j]);
+							}
+						}
 							continue;
 						} else {
 							roots.push( tid );
 						}
-					res = $(this).jqGrid('getFullTreeNode', res[res.length-1], true);
-					
-					result = result.concat( res );
+					result = result.concat( ancestors );
 				}	
 			}
 		});
