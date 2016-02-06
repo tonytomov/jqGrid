@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.0.2 - 2016-02-03
+* @license Guriddo jqGrid JS - v5.0.2 - 2016-02-06
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1897,12 +1897,12 @@ $.fn.jqGrid = function( pin ) {
 					ts.grid.cols = ts.rows[0].cells; // update cached first row
 				}
 			}
+			ts.p.totaltime = new Date() - startReq;
+			rowData =null;
 			if(ts.p.subGrid === true ) {
 				try {self.jqGrid("addSubGrid",gi+ni);} catch (_){}
 			}
-			ts.p.totaltime = new Date() - startReq;
 			if(ir>0) { if(ts.p.records===0) { ts.p.records=gl;} }
-			rowData =null;
 			if( ts.p.treeGrid === true) {
 				try {self.jqGrid("setTreeNode", fpos+1, ir+fpos+1);} catch (e) {}
 			}
@@ -2093,14 +2093,14 @@ $.fn.jqGrid = function( pin ) {
 					ts.grid.cols = ts.rows[0].cells;
 				}
 			}
+			ts.p.totaltime = new Date() - startReq;
+			rowData = null;
 			if(ts.p.subGrid === true ) {
 				try { self.jqGrid("addSubGrid",gi+ni);} catch (_){}
 			}
-			ts.p.totaltime = new Date() - startReq;
 			if(ir>0) {
 				if(ts.p.records===0) { ts.p.records=len; }
 			}
-			rowData = null;
 			if( ts.p.treeGrid === true) {
 				try {self.jqGrid("setTreeNode", fpos+1, ir+fpos+1);} catch (e) {}
 			}
@@ -7011,20 +7011,21 @@ $.jgrid.extend({
 			base = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].base,			
 
 			triggerToolbar = function() {
-				var sdata={}, j=0, v, nm, sopt={},so, ms = false, ssfield = [], bbt =false;
+				var sdata={}, j=0, v, nm, sopt={},so, ms = false, ssfield = [], bbt =false, sop;
 				$.each($t.p.colModel,function(){
 					var $elem = $("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(this.name), (this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
 					nm = this.index || this.name;
-					if(p.searchOperators ) {
+					sop = this.searchoptions || {};
+					if(p.searchOperators &&  sop.searchOperMenu) {
 						so = $elem.parent().prev().children("a").attr("soper") || p.defaultSearch;
 					} else {
-						so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : this.stype==='select' ?  'eq' : p.defaultSearch;
+						so  = (sop.sopt) ? sop.sopt[0] : this.stype==='select' ?  'eq' : p.defaultSearch;
 					}
-					v = this.stype === "custom" && $.isFunction(this.searchoptions.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN" ?
-						this.searchoptions.custom_value.call($t, $elem.children(".customelement:first"), "get") :
+					v = this.stype === "custom" && $.isFunction(sop.custom_value) && $elem.length > 0 && $elem[0].nodeName.toUpperCase() === "SPAN" ?
+						sop.custom_value.call($t, $elem.children(".customelement:first"), "get") :
 						$elem.val();
 					// detect multiselect
-					if(this.stype === 'select' && this.searchoptions && this.searchoptions.multiple && $.isArray(v) && v.length) {
+					if(this.stype === 'select' && sop.multiple && $.isArray(v) && v.length) {
 						ms = true;
 						ssfield.push(nm);
 						v= v.length === 1 ? v[0] : v;
@@ -7298,7 +7299,7 @@ $.jgrid.extend({
 				}
 			}
 			$.each($t.p.colModel,function(ci){
-				var cm=this, soptions, select = "", sot="=", so, i, st, csv, df, elem, restores,
+				var cm=this, soptions, select="", sot="=", so, i, st, csv, df, elem, restores,
 				th = $("<th role='columnheader' class='" + base.headerBox+" ui-th-"+$t.p.direction+"' id='gsh_" + $t.p.id + "_" + cm.name + "' ></th>"),
 				thd = $("<div></div>"),
 				stbl = $("<table class='ui-search-table' cellspacing='0'><tr><td class='ui-search-oper' headers=''></td><td class='ui-search-input' headers=''></td><td class='ui-search-clear' headers=''></td></tr></table>");
@@ -7320,6 +7321,9 @@ $.jgrid.extend({
 						}
 					}
 					if(p.searchOperators) {
+						if(soptions.searchOperMenu == null) {
+							soptions.searchOperMenu = true;
+						}
 						so  = (soptions.sopt) ? soptions.sopt[0] : cm.stype==='select' ?  'eq' : p.defaultSearch;
 						// overwrite  search operators
 						if( p.restoreFromFilters && restores) {
@@ -7332,7 +7336,7 @@ $.jgrid.extend({
 							}
 						}
 						st = soptions.searchtitle != null ? soptions.searchtitle : p.operandTitle;
-						select = "<a title='"+st+"' style='padding-right: 0.5em;' soper='"+so+"' class='soptclass' colname='"+this.name+"'>"+sot+"</a>";
+						select = soptions.searchOperMenu ? "<a title='"+st+"' style='padding-right: 0.5em;' soper='"+so+"' class='soptclass' colname='"+this.name+"'>"+sot+"</a>" : "";
 					}
 					$("td:eq(0)",stbl).attr("colindex",ci).append(select);
 					if(soptions.clearSearch === undefined) {
@@ -7420,7 +7424,7 @@ $.jgrid.extend({
 				}
 				$(th).append(thd);
 				$(tr).append(th);
-				if(!p.searchOperators) {
+				if(!p.searchOperators || select === "") {
 					$("td:eq(0)",stbl).hide();
 				}
 			});
@@ -13135,7 +13139,7 @@ addSubGrid : function( pos, sind ) {
 				nhc++;
 			}
 		});
-		var len = ts.rows.length, i=1;
+		var len = ts.rows.length, i=1,hsret, ishsg = $.isFunction(ts.p.isHasSubGrid);
 		if( sind !== undefined && sind > 0) {
 			i = sind;
 			len = sind+1;
@@ -13145,54 +13149,62 @@ addSubGrid : function( pos, sind ) {
 				if(ts.p.scroll) {
 					$(ts.rows[i].cells[pos]).unbind('click');
 				}
-				$(ts.rows[i].cells[pos]).bind('click', function() {
-					var tr = $(this).parent("tr")[0];
-					pID = ts.p.id;
-					_id = tr.id;
-					$r = $("#" + pID + "_" + _id + "_expandedContent");
-					if($(this).hasClass("sgcollapsed")) {
-						bfsc = $(ts).triggerHandler("jqGridSubGridBeforeExpand", [pID + "_" + _id, _id]);
-						bfsc = (bfsc === false || bfsc === 'stop') ? false : true;
-						if(bfsc && $.isFunction(ts.p.subGridBeforeExpand)) {
-							bfsc = ts.p.subGridBeforeExpand.call(ts, pID+"_"+_id,_id);
-						}
-						if(bfsc === false) {return false;}
-
-						if(ts.p.subGridOptions.reloadOnExpand === true || ( ts.p.subGridOptions.reloadOnExpand === false && !$r.hasClass('ui-subgrid') ) ) {
-							atd = pos >=1 ? "<td colspan='"+pos+"'>&#160;</td>":"";
-							$(tr).after( "<tr role='row' id='" + pID + "_" + _id + "_expandedContent" + "' class='ui-subgrid ui-sg-expanded'>"+atd+"<td class='" + common.content +" subgrid-cell'><span class='" + common.icon_base +" "+ts.p.subGridOptions.openicon+"'></span></td><td colspan='"+parseInt(ts.p.colNames.length-1-nhc,10)+"' class='" + common.content +" subgrid-data'><div id="+pID+"_"+_id+" class='tablediv'></div></td></tr>" );
-							$(ts).triggerHandler("jqGridSubGridRowExpanded", [pID + "_" + _id, _id]);
-							if( $.isFunction(ts.p.subGridRowExpanded)) {
-								ts.p.subGridRowExpanded.call(ts, pID+"_"+ _id,_id);
-							} else {
-								populatesubgrid(tr);
+				hsret = null;
+				if(ishsg) {
+					var hsret = ts.p.isHasSubGrid.call(ts, ts.rows[i].id);
+				}
+				if(hsret === false) {
+					ts.rows[i].cells[pos].innerHTML = "";
+				} else {
+					$(ts.rows[i].cells[pos]).bind('click', function() {
+						var tr = $(this).parent("tr")[0];
+						pID = ts.p.id;
+						_id = tr.id;
+						$r = $("#" + pID + "_" + _id + "_expandedContent");
+						if($(this).hasClass("sgcollapsed")) {
+							bfsc = $(ts).triggerHandler("jqGridSubGridBeforeExpand", [pID + "_" + _id, _id]);
+							bfsc = (bfsc === false || bfsc === 'stop') ? false : true;
+							if(bfsc && $.isFunction(ts.p.subGridBeforeExpand)) {
+								bfsc = ts.p.subGridBeforeExpand.call(ts, pID+"_"+_id,_id);
 							}
-						} else {
-							$r.show().removeClass("ui-sg-collapsed").addClass("ui-sg-expanded");
+							if(bfsc === false) {return false;}
+
+							if(ts.p.subGridOptions.reloadOnExpand === true || ( ts.p.subGridOptions.reloadOnExpand === false && !$r.hasClass('ui-subgrid') ) ) {
+								atd = pos >=1 ? "<td colspan='"+pos+"'>&#160;</td>":"";
+								$(tr).after( "<tr role='row' id='" + pID + "_" + _id + "_expandedContent" + "' class='ui-subgrid ui-sg-expanded'>"+atd+"<td class='" + common.content +" subgrid-cell'><span class='" + common.icon_base +" "+ts.p.subGridOptions.openicon+"'></span></td><td colspan='"+parseInt(ts.p.colNames.length-1-nhc,10)+"' class='" + common.content +" subgrid-data'><div id="+pID+"_"+_id+" class='tablediv'></div></td></tr>" );
+								$(ts).triggerHandler("jqGridSubGridRowExpanded", [pID + "_" + _id, _id]);
+								if( $.isFunction(ts.p.subGridRowExpanded)) {
+									ts.p.subGridRowExpanded.call(ts, pID+"_"+ _id,_id);
+								} else {
+									populatesubgrid(tr);
+								}
+							} else {
+								$r.show().removeClass("ui-sg-collapsed").addClass("ui-sg-expanded");
+							}
+							$(this).html("<a style='cursor:pointer;' class='ui-sghref'><span class='" + common.icon_base +" "+ts.p.subGridOptions.minusicon+"'></span></a>").removeClass("sgcollapsed").addClass("sgexpanded");
+							if(ts.p.subGridOptions.selectOnExpand) {
+								$(ts).jqGrid('setSelection',_id);
+							}
+						} else if($(this).hasClass("sgexpanded")) {
+							bfsc = $(ts).triggerHandler("jqGridSubGridRowColapsed", [pID + "_" + _id, _id]);
+							bfsc = (bfsc === false || bfsc === 'stop') ? false : true;
+							if( bfsc &&  $.isFunction(ts.p.subGridRowColapsed)) {
+								bfsc = ts.p.subGridRowColapsed.call(ts, pID+"_"+_id,_id );
+							}
+							if(bfsc===false) {return false;}
+							if(ts.p.subGridOptions.reloadOnExpand === true) {
+								$r.remove(".ui-subgrid");
+							} else if($r.hasClass('ui-subgrid')) { // incase of dynamic deleting
+								$r.hide().addClass("ui-sg-collapsed").removeClass("ui-sg-expanded");
+							}
+							$(this).html("<a style='cursor:pointer;' class='ui-sghref'><span class='"+common.icon_base +" "+ts.p.subGridOptions.plusicon+"'></span></a>").removeClass("sgexpanded").addClass("sgcollapsed");
+							if(ts.p.subGridOptions.selectOnCollapse) {
+								$(ts).jqGrid('setSelection',_id);
+							}
 						}
-						$(this).html("<a style='cursor:pointer;' class='ui-sghref'><span class='" + common.icon_base +" "+ts.p.subGridOptions.minusicon+"'></span></a>").removeClass("sgcollapsed").addClass("sgexpanded");
-						if(ts.p.subGridOptions.selectOnExpand) {
-							$(ts).jqGrid('setSelection',_id);
-						}
-					} else if($(this).hasClass("sgexpanded")) {
-						bfsc = $(ts).triggerHandler("jqGridSubGridRowColapsed", [pID + "_" + _id, _id]);
-						bfsc = (bfsc === false || bfsc === 'stop') ? false : true;
-						if( bfsc &&  $.isFunction(ts.p.subGridRowColapsed)) {
-							bfsc = ts.p.subGridRowColapsed.call(ts, pID+"_"+_id,_id );
-						}
-						if(bfsc===false) {return false;}
-						if(ts.p.subGridOptions.reloadOnExpand === true) {
-							$r.remove(".ui-subgrid");
-						} else if($r.hasClass('ui-subgrid')) { // incase of dynamic deleting
-							$r.hide().addClass("ui-sg-collapsed").removeClass("ui-sg-expanded");
-						}
-						$(this).html("<a style='cursor:pointer;' class='ui-sghref'><span class='"+common.icon_base +" "+ts.p.subGridOptions.plusicon+"'></span></a>").removeClass("sgexpanded").addClass("sgcollapsed");
-						if(ts.p.subGridOptions.selectOnCollapse) {
-							$(ts).jqGrid('setSelection',_id);
-						}
-					}
-					return false;
-				});
+						return false;
+					});
+				}
 			}
 			i++;
 		}
@@ -13649,13 +13661,20 @@ $.jgrid.extend({
 		return result;
 	},	
 	// End NS, adjacency Model
-	getNodeAncestors : function(rc) {
+	getNodeAncestors : function(rc, reverse) {
 		var ancestors = [];
+		if(reverse === undefined ) {
+			reverse = false;
+		}
 		this.each(function(){
 			if(!this.grid || !this.p.treeGrid) {return;}
 			var parent = $(this).jqGrid("getNodeParent",rc);
 			while (parent) {
+				if(reverse) {
+					ancestors.unshift(parent);
+				} else {
 				ancestors.push(parent);
+				}
 				parent = $(this).jqGrid("getNodeParent",parent);	
 			}
 		});
@@ -13820,26 +13839,37 @@ $.jgrid.extend({
 		});
 	},
 	searchTree : function ( recs ) {
-		var i, len = recs.length || 0, res=[], lid, roots=[], result=[],tid;
+		var i= recs.length || 0, ancestors=[], lid, roots=[], result=[],tid, alen, rlen, j, k;
 		this.each(function(){
-			if(!this.grid || !this.p.treeGrid) {return;}
-
-			if(len) {
+			if(!this.grid || !this.p.treeGrid) {
+				return;
+			}
+			if(i) {
 				lid = this.p.localReader.id;
-				for(i = 0; i < len ; i++) {
-					res = $(this).jqGrid('getNodeAncestors', recs[i]);
-					if(!res.length) { // is root or leaf root
-						res.push(recs[i]);
+				while( i-- ) { // reverse 
+					ancestors = $(this).jqGrid('getNodeAncestors', recs[i], true);
+					//add the searched item
+					ancestors.push(recs[i]);
+					tid = ancestors[0][lid]; 
+					if($.inArray(tid, roots ) !== -1) { // ignore repeated, but add missing
+						for( j = 0, alen = ancestors.length; j < alen; j++) {
+							//$.inArray ?!?
+							var found = false;
+							for( k=0, rlen = result.length; k < rlen; k++) {
+								if(ancestors[j][lid] === result[k][lid]) {
+									found = true;
+									break;
 					}
-						tid = res[res.length-1][lid]; // root node
-						if($.inArray(tid, roots ) !== -1) { // ignore repeated
+							}
+							if(!found) {
+								result.push(ancestors[j]);
+							}
+						}
 							continue;
 						} else {
 							roots.push( tid );
 						}
-					res = $(this).jqGrid('getFullTreeNode', res[res.length-1], true);
-					
-					result = result.concat( res );
+					result = result.concat( ancestors );
 				}	
 			}
 		});
