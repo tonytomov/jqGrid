@@ -169,16 +169,16 @@ $.jgrid.regional["bg"] = {
 		idName : 'id'
 	},
 	colmenu : {
-		sortasc : "Sort Ascending",
-		sortdesc : "Sort Descending",
-		columns : "Columns",
-		filter : "Filter",
-		grouping : "Group By",
-		ungrouping : "Ungroup",
-		searchTitle : "Get items with value that:",
-		freeze : "Freeze",
-		unfreeze : "Unfreeze",
-		reorder : "Move to reorder"
+		sortasc : "Сортирай възходящо",
+		sortdesc : "Сортирай низходящо",
+		columns : "Колони",
+		filter : "Филтрирай",
+		grouping : "Групирай по",
+		ungrouping : "Разгрупиране",
+		searchTitle : "Търси данни със стойност, която",
+		freeze : "Неподвижна",
+		unfreeze : "Отмяна неподвижност",
+		reorder : "Премести за пренареждане"
 	}
 };
 }));

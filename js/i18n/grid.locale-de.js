@@ -212,16 +212,16 @@ $.jgrid.regional["de"] = {
 		idName : 'id'
 	},
 	colmenu : {
-		sortasc : "Sort Ascending",
-		sortdesc : "Sort Descending",
-		columns : "Columns",
+		sortasc : "Aufsteigend sortieren",
+		sortdesc : "Absteigend sortieren",
+		columns : "Spalte",
 		filter : "Filter",
-		grouping : "Group By",
-		ungrouping : "Ungroup",
-		searchTitle : "Get items with value that:",
-		freeze : "Freeze",
-		unfreeze : "Unfreeze",
-		reorder : "Move to reorder"
+		grouping : "Gruppiere nach",
+		ungrouping : "Gruppierung aufheben",
+		searchTitle : "Erhalten Sie Artikel mit Wert:",
+		freeze : "Einfrieren",
+		unfreeze : "Freigeben",
+		reorder : "Bewegen neu anordnen"
 	}
 };
 }));

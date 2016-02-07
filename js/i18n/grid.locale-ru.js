@@ -166,16 +166,16 @@ $.jgrid.regional["ru"] = {
 		idName : 'id'
 	},
 	colmenu : {
-		sortasc : "Sort Ascending",
-		sortdesc : "Sort Descending",
-		columns : "Columns",
-		filter : "Filter",
-		grouping : "Group By",
-		ungrouping : "Ungroup",
-		searchTitle : "Get items with value that:",
-		freeze : "Freeze",
-		unfreeze : "Unfreeze",
-		reorder : "Move to reorder"
+		sortasc : "Сортировка по возрастанию",
+		sortdesc : "Сортировка по убыванию",
+		columns : "Колонны",
+		filter : "Филтрировать",
+		grouping : "Группа по",
+		ungrouping : "Разгруппировать",
+		searchTitle : "Строки со значениями",
+		freeze : "Закрепление",
+		unfreeze : "Отмена закрепление",
+		reorder : "Переместить в порядок"
 	}
 };
 }));
