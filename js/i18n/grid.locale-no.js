@@ -71,6 +71,20 @@ $.jgrid.regional["no"] = {
     errors : {errcap: "Feil", nourl: "Ingen url er satt", norecords: "Ingen poster å behandle", model: "colNames og colModel har forskjellig lengde!"},
     formatter : {integer: {thousandsSeparator: " ", defaultValue: 0}, number: {decimalSeparator: ",", thousandsSeparator: " ", decimalPlaces: 2, defaulValue: 0}, currency: {decimalSeparator: ",", thousandsSeparator: " ", decimalPlaces: 2, prefix: "", suffix: "", defaulValue: 0}, date: {dayNames: ["sø.", "ma.", "ti.", "on.", "to.", "fr.", "lø.", "Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"], monthNames: ["jan.", "feb.", "mars", "april", "mai", "juni", "juli", "aug.", "sep.", "okt.", "nov.", "des.", "januar", "februar", "mars", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "desember"], AmPm: ["", "", "", ""], S: function (b) {
         return".";
-    }, srcformat: "Y-m-d H:i:s", newformat: "Y-m-d H:i:s", parseRe: /[#%\\\/:_;.,\t\s-]/, masks: {ISO8601Long: "Y-m-d H:i:s", ISO8601Short: "Y-m-d", ShortDate: "j.n.Y", LongDate: "l j. F Y", FullDateTime: "l j. F Y kl. G.i.s", MonthDay: "j. F", ShortTime: "H:i", LongTime: "H:i:s", SortableDateTime: "Y-m-d\\TH:i:s", UniversalSortableDateTime: "Y-m-d H:i:sO", YearMonth: "F Y"}, reformatAfterEdit: false, userLocalTime: false}, baseLinkUrl: "", showAction: "show", addParam: "", checkbox: {disabled: true}}
+    }, srcformat: "Y-m-d H:i:s", newformat: "Y-m-d H:i:s", parseRe: /[#%\\\/:_;.,\t\s-]/, masks: {ISO8601Long: "Y-m-d H:i:s", ISO8601Short: "Y-m-d", ShortDate: "j.n.Y", LongDate: "l j. F Y", FullDateTime: "l j. F Y kl. G.i.s", MonthDay: "j. F", ShortTime: "H:i", LongTime: "H:i:s", SortableDateTime: "Y-m-d\\TH:i:s", UniversalSortableDateTime: "Y-m-d H:i:sO", YearMonth: "F Y"}, reformatAfterEdit: false, userLocalTime: false}, baseLinkUrl: "", showAction: "show", addParam: "", checkbox: {disabled: true}
+	},
+	colmenu : {
+		sortasc : "Sort Ascending",
+		sortdesc : "Sort Descending",
+		columns : "Columns",
+		filter : "Filter",
+		grouping : "Group By",
+		ungrouping : "Ungroup",
+		searchTitle : "Get items with value that:",
+		freeze : "Freeze",
+		unfreeze : "Unfreeze",
+		reorder : "Move to reorder"
+	}
+
 };
 }));
