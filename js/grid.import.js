@@ -419,18 +419,37 @@ $.extend($.jgrid,{
 				oper: "oper",
 				tag: "excel",
 				beforeExport : null,
+				exporthidden : false,
+				exportgrouping: false,
 				exportOptions : {}
 			}, o || {});
 			return this.each(function(){
 				if(!this.grid) { return;}
 				var url;
 				if(o.exptype === "remote") {
-					var pdata = $.extend({},this.p.postData);
+					var pdata = $.extend({},this.p.postData), expg;
 					pdata[o.oper] = o.tag;
 					if($.isFunction(o.beforeExport)) {
-						var result = o.beforeExport( pdata );
+						var result = o.beforeExport.call(this, pdata );
 						if( $.isPlainObject( result ) ) {
 							pdata = result;
+						}
+					}
+					if(o.exporthidden) {
+						var cm = this.p.colModel, i, len = cm.length, newm=[];
+						for(i=0; i< len; i++) {
+							if(cm[i].hidden === undefined) { cm[i].hidden = false; }
+							newm.push({name:cm[i].name, hidden:cm[i].hidden});
+						}
+						var newm1 = JSON.stringify( newm );
+						if(typeof newm1 === 'string' ) {
+							pdata['colModel'] = newm1;
+						}
+					}
+					if(o.exportgrouping) {
+						expg = JSON.stringify( this.p.groupingView )
+						if(typeof expg === 'string' ) {
+							pdata['groupingView'] = expg;
 						}
 					}
 					var params = jQuery.param(pdata);
