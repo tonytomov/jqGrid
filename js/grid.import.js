@@ -418,6 +418,7 @@ $.extend($.jgrid,{
 				url : null,
 				oper: "oper",
 				tag: "excel",
+				beforeExport : null,
 				exportOptions : {}
 			}, o || {});
 			return this.each(function(){
@@ -426,6 +427,12 @@ $.extend($.jgrid,{
 				if(o.exptype === "remote") {
 					var pdata = $.extend({},this.p.postData);
 					pdata[o.oper] = o.tag;
+					if($.isFunction(o.beforeExport)) {
+						var result = o.beforeExport( pdata );
+						if( $.isPlainObject( result ) ) {
+							pdata = result;
+						}
+					}
 					var params = jQuery.param(pdata);
 					if(o.url.indexOf("?") !== -1) { url = o.url+"&"+params; }
 					else { url = o.url+"?"+params; }
