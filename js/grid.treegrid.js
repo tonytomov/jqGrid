@@ -406,15 +406,25 @@ $.jgrid.extend({
 		return result;
 	},	
 	// End NS, adjacency Model
-	getNodeAncestors : function(rc, reverse) {
+	getNodeAncestors : function(rc, reverse, expanded) {
 		var ancestors = [];
 		if(reverse === undefined ) {
 			reverse = false;
 		}
 		this.each(function(){
 			if(!this.grid || !this.p.treeGrid) {return;}
+			if(expanded === undefined ) {
+				expanded = false;
+			} else {
+				expanded = this.p.treeReader.expanded_field;
+			}
 			var parent = $(this).jqGrid("getNodeParent",rc);
 			while (parent) {
+				if(expanded) {
+					try{
+						parent[expanded] = true;
+					} catch (etn) {}
+				}
 				if(reverse) {
 					ancestors.unshift(parent);
 				} else {
@@ -592,7 +602,7 @@ $.jgrid.extend({
 			if(i) {
 				lid = this.p.localReader.id;
 				while( i-- ) { // reverse 
-					ancestors = $(this).jqGrid('getNodeAncestors', recs[i], true);
+					ancestors = $(this).jqGrid('getNodeAncestors', recs[i], true, true);
 					//add the searched item
 					ancestors.push(recs[i]);
 					tid = ancestors[0][lid]; 
