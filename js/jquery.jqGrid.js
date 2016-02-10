@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.0.2 - 2016-02-07
+* @license Guriddo jqGrid JS - v5.0.2 - 2016-02-10
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -11585,14 +11585,40 @@ $.extend($.jgrid,{
 				url : null,
 				oper: "oper",
 				tag: "excel",
+				beforeExport : null,
+				exporthidden : false,
+				exportgrouping: false,
 				exportOptions : {}
 			}, o || {});
 			return this.each(function(){
 				if(!this.grid) { return;}
 				var url;
 				if(o.exptype === "remote") {
-					var pdata = $.extend({},this.p.postData);
+					var pdata = $.extend({},this.p.postData), expg;
 					pdata[o.oper] = o.tag;
+					if($.isFunction(o.beforeExport)) {
+						var result = o.beforeExport.call(this, pdata );
+						if( $.isPlainObject( result ) ) {
+							pdata = result;
+						}
+					}
+					if(o.exporthidden) {
+						var cm = this.p.colModel, i, len = cm.length, newm=[];
+						for(i=0; i< len; i++) {
+							if(cm[i].hidden === undefined) { cm[i].hidden = false; }
+							newm.push({name:cm[i].name, hidden:cm[i].hidden});
+						}
+						var newm1 = JSON.stringify( newm );
+						if(typeof newm1 === 'string' ) {
+							pdata['colModel'] = newm1;
+						}
+					}
+					if(o.exportgrouping) {
+						expg = JSON.stringify( this.p.groupingView )
+						if(typeof expg === 'string' ) {
+							pdata['groupingView'] = expg;
+						}
+					}
 					var params = jQuery.param(pdata);
 					if(o.url.indexOf("?") !== -1) { url = o.url+"&"+params; }
 					else { url = o.url+"?"+params; }
@@ -14052,15 +14078,25 @@ $.jgrid.extend({
 		return result;
 	},	
 	// End NS, adjacency Model
-	getNodeAncestors : function(rc, reverse) {
+	getNodeAncestors : function(rc, reverse, expanded) {
 		var ancestors = [];
 		if(reverse === undefined ) {
 			reverse = false;
 		}
 		this.each(function(){
 			if(!this.grid || !this.p.treeGrid) {return;}
+			if(expanded === undefined ) {
+				expanded = false;
+			} else {
+				expanded = this.p.treeReader.expanded_field;
+			}
 			var parent = $(this).jqGrid("getNodeParent",rc);
 			while (parent) {
+				if(expanded) {
+					try{
+						parent[expanded] = true;
+					} catch (etn) {}
+				}
 				if(reverse) {
 					ancestors.unshift(parent);
 				} else {
@@ -14238,7 +14274,7 @@ $.jgrid.extend({
 			if(i) {
 				lid = this.p.localReader.id;
 				while( i-- ) { // reverse 
-					ancestors = $(this).jqGrid('getNodeAncestors', recs[i], true);
+					ancestors = $(this).jqGrid('getNodeAncestors', recs[i], true, true);
 					//add the searched item
 					ancestors.push(recs[i]);
 					tid = ancestors[0][lid]; 
