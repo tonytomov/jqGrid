@@ -825,7 +825,8 @@ $.jgrid.extend({
 					}
 				});
 				var sd =  j>0 ? true : false;
-				if(p.stringResult === true || $t.p.datatype === "local" || p.searchOperators === true) {
+				if(p.stringResult === true || $t.p.datatype === "local" || p.searchOperators === true) 
+				{
 					var ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[";
 					var gi=0;
 					$.each(sdata,function(i,n){
@@ -1640,6 +1641,45 @@ $.jgrid.extend({
 					function(){$(this).removeClass(common.hover);}
 				);
 			}
+		});
+	},
+	filterInput : function( val, p) {
+		p = $.extend(true, {
+			defaultSearch : 'cn',
+			groupOp : 'OR',
+			searchAll : false,
+			beforeSearch : null,
+			afterSearch : null
+		}, p || {});
+		return this.each(function(){
+			var $t = this;
+			if(!$t.grid) {return;}
+			var nm, sop,ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[", gi=0, so;
+			val +="";
+			if(!$t.p.datatype === 'local') { return; }
+			$.each($t.p.colModel,function(){
+				nm = this.index || this.name;
+				sop = this.searchoptions || {};
+				so  = p.defaultSearch ? p.defaultSearch : (sop.sopt) ? sop.sopt[0] : p.defaultSearch;
+				this.search = this.search === false ? false : true;
+				if (this.search || p.searchAll) {
+					if (gi > 0) {ruleGroup += ",";}
+					ruleGroup += "{\"field\":\"" + nm + "\",";
+					ruleGroup += "\"op\":\"" + so + "\",";
+					ruleGroup += "\"data\":\"" + val.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"}";
+					gi++;
+	}
+});
+			ruleGroup += "]}";
+			$.extend($t.p.postData,{filters:ruleGroup});
+			$.each(['searchField', 'searchString', 'searchOper'], function(i, n){
+				if($t.p.postData.hasOwnProperty(n)) { delete $t.p.postData[n];}
+			});
+			var bsr = $($t).triggerHandler("jqGridFilterInputBeforeSearch") === 'stop' ? true : false;
+			if(!bsr && $.isFunction(p.beforeSearch)){bsr = p.beforeSearch.call($t);}
+			if(!bsr) { $($t).jqGrid("setGridParam",{search:true}).trigger("reloadGrid",[{page:1}]); }
+			$($t).triggerHandler("jqGridFilterInputAfterSearch");
+			if($.isFunction(p.afterSearch)){p.afterSearch.call($t);}
 		});
 	}
 });
