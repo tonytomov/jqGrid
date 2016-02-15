@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.0.2 - 2016-02-10
+* @license Guriddo jqGrid JS - v5.0.2 - 2016-02-15
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -7435,7 +7435,8 @@ $.jgrid.extend({
 					}
 				});
 				var sd =  j>0 ? true : false;
-				if(p.stringResult === true || $t.p.datatype === "local" || p.searchOperators === true) {
+				if(p.stringResult === true || $t.p.datatype === "local" || p.searchOperators === true) 
+				{
 					var ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[";
 					var gi=0;
 					$.each(sdata,function(i,n){
@@ -8250,6 +8251,45 @@ $.jgrid.extend({
 					function(){$(this).removeClass(common.hover);}
 				);
 			}
+		});
+	},
+	filterInput : function( val, p) {
+		p = $.extend(true, {
+			defaultSearch : 'cn',
+			groupOp : 'OR',
+			searchAll : false,
+			beforeSearch : null,
+			afterSearch : null
+		}, p || {});
+		return this.each(function(){
+			var $t = this;
+			if(!$t.grid) {return;}
+			var nm, sop,ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[", gi=0, so;
+			val +="";
+			if(!$t.p.datatype === 'local') { return; }
+			$.each($t.p.colModel,function(){
+				nm = this.index || this.name;
+				sop = this.searchoptions || {};
+				so  = p.defaultSearch ? p.defaultSearch : (sop.sopt) ? sop.sopt[0] : p.defaultSearch;
+				this.search = this.search === false ? false : true;
+				if (this.search || p.searchAll) {
+					if (gi > 0) {ruleGroup += ",";}
+					ruleGroup += "{\"field\":\"" + nm + "\",";
+					ruleGroup += "\"op\":\"" + so + "\",";
+					ruleGroup += "\"data\":\"" + val.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"}";
+					gi++;
+	}
+});
+			ruleGroup += "]}";
+			$.extend($t.p.postData,{filters:ruleGroup});
+			$.each(['searchField', 'searchString', 'searchOper'], function(i, n){
+				if($t.p.postData.hasOwnProperty(n)) { delete $t.p.postData[n];}
+			});
+			var bsr = $($t).triggerHandler("jqGridFilterInputBeforeSearch") === 'stop' ? true : false;
+			if(!bsr && $.isFunction(p.beforeSearch)){bsr = p.beforeSearch.call($t);}
+			if(!bsr) { $($t).jqGrid("setGridParam",{search:true}).trigger("reloadGrid",[{page:1}]); }
+			$($t).triggerHandler("jqGridFilterInputAfterSearch");
+			if($.isFunction(p.afterSearch)){p.afterSearch.call($t);}
 		});
 	}
 });
@@ -14005,31 +14045,34 @@ $.jgrid.extend({
 		});
 		return result;
 	},
-	getNodeChildren : function(rc) {
+	getNodeChildren : function(rc, currentview) {
 		var result = [];
 		this.each(function(){
 			var $t = this;
 			if(!$t.grid || !$t.p.treeGrid) {return;}
+			var i, len = currentview ? this.rows.length : this.p.data.length, row;
 			switch ($t.p.treeGridModel) {
 				case 'nested' :
 					var lftc = $t.p.treeReader.left_field,
 					rgtc = $t.p.treeReader.right_field,
 					levelc = $t.p.treeReader.level_field,
 					lft = parseInt(rc[lftc],10), rgt = parseInt(rc[rgtc],10), level = parseInt(rc[levelc],10);
-					$(this.p.data).each(function(){
-						if(parseInt(this[levelc],10) === level+1 && parseInt(this[lftc],10) > lft && parseInt(this[rgtc],10) < rgt) {
-							result.push(this);
+					for(i=0; i  < len; i++) {
+						row = currentview ? $t.p.data[$t.p._index[this.rows[i].id]] : $t.p.data[i];
+						if(row && parseInt(row[levelc],10) === level+1 && parseInt(row[lftc],10) > lft && parseInt(row[rgtc],10) < rgt) {
+							result.push(row);
 						}
-					});
+					}
 					break;
 				case 'adjacency' :
 					var parent_id = $t.p.treeReader.parent_id_field,
 					dtid = $t.p.localReader.id;
-					$(this.p.data).each(function(){
-						if(this[parent_id] == $.jgrid.stripPref($t.p.idPrefix, rc[dtid])) {
-							result.push(this);
+					for(i=0; i  < len; i++) {
+						row = currentview ? $t.p.data[$t.p._index[this.rows[i].id]] : $t.p.data[i];
+						if(row && row[parent_id] === $.jgrid.stripPref($t.p.idPrefix, rc[dtid])) {
+							result.push(row);
 						}
-					});
+					}
 					break;
 			}
 		});
@@ -14307,7 +14350,7 @@ $.jgrid.extend({
 			if(!this.grid || !this.p.treeGrid) {return;}
 			var i, len,
 			child, ch, query, children;
-			ch = $(this).jqGrid("getNodeChildren",rec);
+			ch = $(this).jqGrid("getNodeChildren",rec, this.p.search);
 			query = $.jgrid.from.call(this, ch);
 			query.orderBy(sortname, newDir, st, datefmt);
 			children = query.select();
