@@ -333,31 +333,34 @@ $.jgrid.extend({
 		});
 		return result;
 	},
-	getNodeChildren : function(rc) {
+	getNodeChildren : function(rc, currentview) {
 		var result = [];
 		this.each(function(){
 			var $t = this;
 			if(!$t.grid || !$t.p.treeGrid) {return;}
+			var i, len = currentview ? this.rows.length : this.p.data.length, row;
 			switch ($t.p.treeGridModel) {
 				case 'nested' :
 					var lftc = $t.p.treeReader.left_field,
 					rgtc = $t.p.treeReader.right_field,
 					levelc = $t.p.treeReader.level_field,
 					lft = parseInt(rc[lftc],10), rgt = parseInt(rc[rgtc],10), level = parseInt(rc[levelc],10);
-					$(this.p.data).each(function(){
-						if(parseInt(this[levelc],10) === level+1 && parseInt(this[lftc],10) > lft && parseInt(this[rgtc],10) < rgt) {
-							result.push(this);
+					for(i=0; i  < len; i++) {
+						row = currentview ? $t.p.data[$t.p._index[this.rows[i].id]] : $t.p.data[i];
+						if(row && parseInt(row[levelc],10) === level+1 && parseInt(row[lftc],10) > lft && parseInt(row[rgtc],10) < rgt) {
+							result.push(row);
 						}
-					});
+					}
 					break;
 				case 'adjacency' :
 					var parent_id = $t.p.treeReader.parent_id_field,
 					dtid = $t.p.localReader.id;
-					$(this.p.data).each(function(){
-						if(this[parent_id] == $.jgrid.stripPref($t.p.idPrefix, rc[dtid])) {
-							result.push(this);
+					for(i=0; i  < len; i++) {
+						row = currentview ? $t.p.data[$t.p._index[this.rows[i].id]] : $t.p.data[i];
+						if(row && row[parent_id] === $.jgrid.stripPref($t.p.idPrefix, rc[dtid])) {
+							result.push(row);
 						}
-					});
+					}
 					break;
 			}
 		});
@@ -635,7 +638,7 @@ $.jgrid.extend({
 			if(!this.grid || !this.p.treeGrid) {return;}
 			var i, len,
 			child, ch, query, children;
-			ch = $(this).jqGrid("getNodeChildren",rec);
+			ch = $(this).jqGrid("getNodeChildren",rec, this.p.search);
 			query = $.jgrid.from.call(this, ch);
 			query.orderBy(sortname, newDir, st, datefmt);
 			children = query.select();
