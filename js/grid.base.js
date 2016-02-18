@@ -3492,7 +3492,7 @@ $.fn.jqGrid = function( pin ) {
 			thead += imgs;
 			if(ts.p.colMenu && tmpcm.colmenu) {
 				thead += "<a class='colmenu' href='#'><span class='colmenuspan "+iconbase+' '+colmenustyle.icon_menu+"'></span></a>";
-		}
+			}
 			thead += "</div></th>";
 		}
 		thead += "</tr></thead>";
