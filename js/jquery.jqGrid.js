@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.0.2 - 2016-02-15
+* @license Guriddo jqGrid JS - v5.0.2 - 2016-02-29
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3487,7 +3487,7 @@ $.fn.jqGrid = function( pin ) {
 			thead += imgs;
 			if(ts.p.colMenu && tmpcm.colmenu) {
 				thead += "<a class='colmenu' href='#'><span class='colmenuspan "+iconbase+' '+colmenustyle.icon_menu+"'></span></a>";
-		}
+			}
 			thead += "</div></th>";
 		}
 		thead += "</tr></thead>";
@@ -14069,7 +14069,7 @@ $.jgrid.extend({
 					dtid = $t.p.localReader.id;
 					for(i=0; i  < len; i++) {
 						row = currentview ? $t.p.data[$t.p._index[this.rows[i].id]] : $t.p.data[i];
-						if(row && row[parent_id] === $.jgrid.stripPref($t.p.idPrefix, rc[dtid])) {
+						if(row && String(row[parent_id]) === $.jgrid.stripPref($t.p.idPrefix, rc[dtid])) {
 							result.push(row);
 						}
 					}
