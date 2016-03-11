@@ -4732,12 +4732,16 @@ $.jgrid.extend({
 		return this.each(function(){
 			var $t = this, pos=-1;
 			if(!$t.grid) {return;}
-			if(colname !== undefined) {
-				$($t.p.colModel).each(function(i){
-					if (this.name === colname) {
-						pos = i;return false;
-					}
-				});
+			if(colname != null) {
+				if(isNaN(colname)) {
+					$($t.p.colModel).each(function(i){
+						if (this.name === colname) {
+							pos = i;return false;
+						}
+					});
+				} else {
+					pos = parseInt(colname,10);
+				}
 			} else { return; }
 			if(pos>=0) {
 				var thecol = $("tr.ui-jqgrid-labels th:eq("+pos+")",$t.grid.hDiv);

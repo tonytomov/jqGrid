@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.0 - 2016-03-09
+* @license Guriddo jqGrid JS - v5.1.0 - 2016-03-11
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -4727,12 +4727,16 @@ $.jgrid.extend({
 		return this.each(function(){
 			var $t = this, pos=-1;
 			if(!$t.grid) {return;}
-			if(colname !== undefined) {
-				$($t.p.colModel).each(function(i){
-					if (this.name === colname) {
-						pos = i;return false;
-					}
-				});
+			if(colname != null) {
+				if(isNaN(colname)) {
+					$($t.p.colModel).each(function(i){
+						if (this.name === colname) {
+							pos = i;return false;
+						}
+					});
+				} else {
+					pos = parseInt(colname,10);
+				}
 			} else { return; }
 			if(pos>=0) {
 				var thecol = $("tr.ui-jqgrid-labels th:eq("+pos+")",$t.grid.hDiv);
