@@ -407,7 +407,7 @@ $.jgrid.extend({
 									} else {
 										tmp = $("#"+nm, fmid).attr("offval");
 									}
-                                                                        rp_ge[$t.p.id]._savedData[nm] = tmp;
+									rp_ge[$t.p.id]._savedData[nm] = tmp;
 								}
 								break;
 							case 'custom' :

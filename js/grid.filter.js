@@ -1104,7 +1104,7 @@ $.jgrid.extend({
 					}
 					if(p.searchOperators) {
 						if(soptions.searchOperMenu == null) {
-							soptions.searchOperMenu = true;
+							this.searchoptions.searchOperMenu = true;
 						}
 						so  = (soptions.sopt) ? soptions.sopt[0] : cm.stype==='select' ?  'eq' : p.defaultSearch;
 						// overwrite  search operators
@@ -1118,7 +1118,7 @@ $.jgrid.extend({
 							}
 						}
 						st = soptions.searchtitle != null ? soptions.searchtitle : p.operandTitle;
-						select = soptions.searchOperMenu ? "<a title='"+st+"' style='padding-right: 0.5em;' soper='"+so+"' class='soptclass' colname='"+this.name+"'>"+sot+"</a>" : "";
+						select = this.searchoptions.searchOperMenu ? "<a title='"+st+"' style='padding-right: 0.5em;' soper='"+so+"' class='soptclass' colname='"+this.name+"'>"+sot+"</a>" : "";
 					}
 					$("td:eq(0)",stbl).attr("colindex",ci).append(select);
 					if(soptions.clearSearch === undefined) {

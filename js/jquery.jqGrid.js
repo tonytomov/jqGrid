@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.0 - 2016-03-11
+* @license Guriddo jqGrid JS - v5.1.0 - 2016-03-14
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -7718,7 +7718,7 @@ $.jgrid.extend({
 					}
 					if(p.searchOperators) {
 						if(soptions.searchOperMenu == null) {
-							soptions.searchOperMenu = true;
+							this.searchoptions.searchOperMenu = true;
 						}
 						so  = (soptions.sopt) ? soptions.sopt[0] : cm.stype==='select' ?  'eq' : p.defaultSearch;
 						// overwrite  search operators
@@ -7732,7 +7732,7 @@ $.jgrid.extend({
 							}
 						}
 						st = soptions.searchtitle != null ? soptions.searchtitle : p.operandTitle;
-						select = soptions.searchOperMenu ? "<a title='"+st+"' style='padding-right: 0.5em;' soper='"+so+"' class='soptclass' colname='"+this.name+"'>"+sot+"</a>" : "";
+						select = this.searchoptions.searchOperMenu ? "<a title='"+st+"' style='padding-right: 0.5em;' soper='"+so+"' class='soptclass' colname='"+this.name+"'>"+sot+"</a>" : "";
 					}
 					$("td:eq(0)",stbl).attr("colindex",ci).append(select);
 					if(soptions.clearSearch === undefined) {
@@ -8690,7 +8690,7 @@ $.jgrid.extend({
 									} else {
 										tmp = $("#"+nm, fmid).attr("offval");
 									}
-                                                                        rp_ge[$t.p.id]._savedData[nm] = tmp;
+									rp_ge[$t.p.id]._savedData[nm] = tmp;
 								}
 								break;
 							case 'custom' :
