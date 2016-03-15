@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.0 - 2016-03-14
+* @license Guriddo jqGrid JS - v5.1.0 - 2016-03-15
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -7702,7 +7702,11 @@ $.jgrid.extend({
 				if(this.hidden===true) { $(th).css("display","none");}
 				this.search = this.search === false ? false : true;
 				if(this.stype === undefined) {this.stype='text';}
-				soptions = $.extend({},this.searchoptions || {}, {name:cm.index || cm.name, id: "gs_"+$t.p.idPrefix+cm.name, oper:'search'});
+				this.searchoptions = this.searchoptions || {};
+				if(this.searchoptions.searchOperMenu === undefined) {
+					this.searchoptions.searchOperMenu = true;
+				}
+				soptions = $.extend({},this.searchoptions , {name:cm.index || cm.name, id: "gs_"+$t.p.idPrefix+cm.name, oper:'search'});
 				if(this.search){
 					if( p.restoreFromFilters && rules) {
 						restores = false;
@@ -7717,9 +7721,6 @@ $.jgrid.extend({
 						}
 					}
 					if(p.searchOperators) {
-						if(soptions.searchOperMenu == null) {
-							this.searchoptions.searchOperMenu = true;
-						}
 						so  = (soptions.sopt) ? soptions.sopt[0] : cm.stype==='select' ?  'eq' : p.defaultSearch;
 						// overwrite  search operators
 						if( p.restoreFromFilters && restores) {

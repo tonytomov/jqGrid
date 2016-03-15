@@ -1088,7 +1088,11 @@ $.jgrid.extend({
 				if(this.hidden===true) { $(th).css("display","none");}
 				this.search = this.search === false ? false : true;
 				if(this.stype === undefined) {this.stype='text';}
-				soptions = $.extend({},this.searchoptions || {}, {name:cm.index || cm.name, id: "gs_"+$t.p.idPrefix+cm.name, oper:'search'});
+				this.searchoptions = this.searchoptions || {};
+				if(this.searchoptions.searchOperMenu === undefined) {
+					this.searchoptions.searchOperMenu = true;
+				}
+				soptions = $.extend({},this.searchoptions , {name:cm.index || cm.name, id: "gs_"+$t.p.idPrefix+cm.name, oper:'search'});
 				if(this.search){
 					if( p.restoreFromFilters && rules) {
 						restores = false;
@@ -1103,9 +1107,6 @@ $.jgrid.extend({
 						}
 					}
 					if(p.searchOperators) {
-						if(soptions.searchOperMenu == null) {
-							this.searchoptions.searchOperMenu = true;
-						}
 						so  = (soptions.sopt) ? soptions.sopt[0] : cm.stype==='select' ?  'eq' : p.defaultSearch;
 						// overwrite  search operators
 						if( p.restoreFromFilters && restores) {
