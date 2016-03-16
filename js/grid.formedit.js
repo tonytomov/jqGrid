@@ -657,10 +657,14 @@ $.jgrid.extend({
 			}
 			function compareData(nObj, oObj ) {
 				var ret = false,key;
-				for (key in nObj) {
-					if(nObj.hasOwnProperty(key) && nObj[key] != oObj[key]) {
-						ret = true;
-						break;
+				ret = !( $.isPlainObject(nObj) && $.isPlainObject(oObj)
+					&& Object.getOwnPropertyNames(nObj).length === Object.getOwnPropertyNames(oObj).length);
+				if(!ret) {
+					for (key in nObj) {
+						if(nObj.hasOwnProperty(key) && nObj[key] !== oObj[key]) {
+							ret = true;
+							break;
+						}
 					}
 				}
 				return ret;
