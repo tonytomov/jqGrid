@@ -63,7 +63,6 @@ $.jgrid.extend({
 			navkeys: [false,38,40],
 			checkOnSubmit : false,
 			checkOnUpdate : false,
-			_savedData : {},
 			processing : false,
 			onClose : null,
 			ajaxEditOptions : {},
@@ -79,6 +78,7 @@ $.jgrid.extend({
 		return this.each(function(){
 			var $t = this;
 			if (!$t.grid || !rowid) {return;}
+			$t.p.savedData = {};
 			var gID = $t.p.id,
 			frmgr = "FrmGrid_"+gID, frmtborg = "TblGrid_"+gID, frmtb = "#"+$.jgrid.jqID(frmtborg), frmtb2,
 			IDs = {themodal:'editmod'+gID,modalhead:'edithd'+gID,modalcontent:'editcnt'+gID, scrollelm : frmgr},
@@ -237,7 +237,7 @@ $.jgrid.extend({
 							}
 						}
 						if(rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate) {
-							rp_ge[$t.p.id]._savedData[nm] = tmp;
+							$t.p.savedData[nm] = tmp;
 						}
 						$(elc).addClass("FormElement");
 						if( $.inArray(this.edittype, ['text','textarea','password','select']) > -1) {
@@ -283,14 +283,17 @@ $.jgrid.extend({
 					} 
 					//$(tb).append(idrow);
 					if(rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate) {
-						rp_ge[$t.p.id]._savedData[obj.p.id+"_id"] = rowid;
+						$t.p.savedData[obj.p.id+"_id"] = rowid;
 					}
 				}			
 				return retpos;
 			}
 			function fillData(rowid,obj,fmid){
 				var nm,cnt=0,tmp, fld,opt,vl,vlc;
-				if(rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate) {rp_ge[$t.p.id]._savedData = {};rp_ge[$t.p.id]._savedData[obj.p.id+"_id"]=rowid;}
+				if(rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate) { 
+					$t.p.savedData = {};
+					$t.p.savedData[obj.p.id+"_id"]=rowid;
+				}
 				var cm = obj.p.colModel;
 				if(rowid === '_empty') {
 					$(cm).each(function(){
@@ -325,7 +328,9 @@ $.jgrid.extend({
 									fld.val(vl);
 								}
 							}
-							if(rp_ge[$t.p.id].checkOnSubmit===true || rp_ge[$t.p.id].checkOnUpdate) {rp_ge[$t.p.id]._savedData[nm] = vl;}
+							if(rp_ge[$t.p.id].checkOnSubmit===true || rp_ge[$t.p.id].checkOnUpdate) {
+								$t.p.savedData[nm] = vl;
+							}
 						}
 					});
 					$("#id_g",fmid).val(rowid);
@@ -347,7 +352,9 @@ $.jgrid.extend({
 							}
 						}
 						if($t.p.autoencode) {tmp = $.jgrid.htmlDecode(tmp);}
-						if(rp_ge[$t.p.id].checkOnSubmit===true || rp_ge[$t.p.id].checkOnUpdate) {rp_ge[$t.p.id]._savedData[nm] = tmp;}
+						if(rp_ge[$t.p.id].checkOnSubmit===true || rp_ge[$t.p.id].checkOnUpdate) { 
+							$t.p.savedData[nm] = tmp;
+						}
 						nm = $.jgrid.jqID(nm);
 						switch (cm[i].edittype) {
 							case "password":
@@ -379,7 +386,7 @@ $.jgrid.extend({
 									if(cm[i].editoptions.multiple) {
 										tmp = tmp.join(",");
 									}
-									rp_ge[$t.p.id]._savedData[nm] = tmp;
+									$t.p.savedData[nm] = tmp;
 								}
 								break;
 							case "checkbox":
@@ -407,7 +414,7 @@ $.jgrid.extend({
 									} else {
 										tmp = $("#"+nm, fmid).attr("offval");
 									}
-									rp_ge[$t.p.id]._savedData[nm] = tmp;
+									$t.p.savedData[nm] = tmp;
 								}
 								break;
 							case 'custom' :
@@ -427,7 +434,7 @@ $.jgrid.extend({
 				if(cnt>0) {
 					$("#id_g",frmtb).val(rowid);
 					if( rp_ge[$t.p.id].checkOnSubmit===true || rp_ge[$t.p.id].checkOnUpdate ) {
-						rp_ge[$t.p.id]._savedData[obj.p.id+"_id"] = rowid;
+						$t.p.savedData[obj.p.id+"_id"] = rowid;
 					}
 				}
 			}
@@ -593,10 +600,10 @@ $.jgrid.extend({
 								}
 								if(rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate) {
 									$(frmgr).data("disabled",false);
-									if(rp_ge[$t.p.id]._savedData[$t.p.id+"_id"] !== "_empty"){
-										for(key in rp_ge[$t.p.id]._savedData) {
-											if(rp_ge[$t.p.id]._savedData.hasOwnProperty(key) && postdata[key]) {
-												rp_ge[$t.p.id]._savedData[key] = postdata[key];
+									if($t.p.savedData[$t.p.id+"_id"] !== "_empty"){
+										for(key in $t.p.savedData) {
+											if($t.p.savedData.hasOwnProperty(key) && postdata[key]) {
+												$t.p.savedData[key] = postdata[key];
 											}
 										}
 									}
@@ -664,7 +671,7 @@ $.jgrid.extend({
 				if(rp_ge[$t.p.id].checkOnUpdate) {
 					postdata = {};
 					getFormData();
-					diff = compareData(postdata,rp_ge[$t.p.id]._savedData);
+					diff = compareData(postdata, $t.p.savedData);
 					if(diff) {
 						$(frmgr).data("disabled",true);
 						$(".confirm","#"+IDs.themodal).show();
@@ -721,7 +728,7 @@ $.jgrid.extend({
 				if(rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate) {
 
 					var a1=[], a2={};
-					a1 = $.map(rp_ge[$t.p.id]._savedData, function(v, i){
+					a1 = $.map($t.p.savedData, function(v, i){
 						return i;
 					});
 					$(".FormElement", frm ).each(function(){
@@ -740,13 +747,13 @@ $.jgrid.extend({
 									a2[this.name] = ($(this).attr("offval") === undefined) ? "off" : $(this).attr("offval");
 								}
 							}
-							rp_ge[$t.p.id]._savedData[this.name] = tv;
+							$t.p.savedData[this.name] = tv;
 						}
 					});
 					for(var i in a2 ) {
 						if( a2.hasOwnProperty(i)) {
 							var val = $('input[name="'+i+'"]:checked',frm).val();
-							rp_ge[$t.p.id]._savedData[i] = (val !== undefined) ? val : a2[i];
+							$t.p.savedData[i] = (val !== undefined) ? val : a2[i];
 						}
 					}
 				}
@@ -972,7 +979,7 @@ $.jgrid.extend({
 				getFormData();
 				if(postdata[$t.p.id+"_id"] === "_empty")	{postIt();}
 				else if(p.checkOnSubmit===true ) {
-					diff = compareData(postdata,rp_ge[$t.p.id]._savedData);
+					diff = compareData(postdata, $t.p.savedData);
 					if(diff) {
 						$(frmgr).data("disabled",true);
 						$(".confirm","#"+$.jgrid.jqID(IDs.themodal)).show();
