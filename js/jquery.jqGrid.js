@@ -8944,10 +8944,17 @@ $.jgrid.extend({
 				ret = !( $.isPlainObject(nObj) && $.isPlainObject(oObj)
 					&& Object.getOwnPropertyNames(nObj).length === Object.getOwnPropertyNames(oObj).length);
 				if(!ret) {
-					for (key in nObj) {
-						if(nObj.hasOwnProperty(key) && nObj[key] !== oObj[key]) {
-							ret = true;
-							break;
+					for (key in oObj) {
+						if(oObj.hasOwnProperty(key) )  {
+							if(nObj.hasOwnProperty(key) ) {
+								if( nObj[key] !== oObj[key] ) {
+									ret = true;
+									break
+								}
+							} else {
+								ret = true;
+								break;
+							}
 						}
 					}
 				}
