@@ -40,15 +40,16 @@ $.extend($.jgrid,{
 			$($t).jqGrid('setGridParam',{_fT: tmp});
 		}
 		gridstate  =  $($t).jqGrid('jqGridExport', { exptype : "jsonstring", ident:"", root:"" });
-		$($t.grid.bDiv).find(".ui-jqgrid-btable tr:gt(0)").each(function(i,d){
-			data += d.outerHTML;
-		});
+		data = $($t.grid.bDiv).find(".ui-jqgrid-btable tbody:first").html();
+		var firstrow  = data.indexOf("</tr>");
+		data = data.slice(firstrow + 5);
 		if($.isFunction(o.beforeSetItem)) {
 			ret = o.beforeSetItem.call($t, gridstate);
 			if(ret != null) {
 				gridstate = ret;
 			}
 		}
+		
 		if(o.compression) {
 			if(o.compressionModule) {
 				try { 
@@ -162,6 +163,11 @@ $.extend($.jgrid,{
 			}
 					}
 				}
+			}
+			if(ret.subGrid) {
+				var ms = ret.multiselect === 1 ? 1 : 0,
+					rn = ret.rownumbers === true ? 1 :0;
+				grid.jqGrid('addSubGrid', ms + rn);
 			}
 			if(ret.inlineNav && iN) {
 				grid.jqGrid('setGridParam', { inlineNav:false });

@@ -125,43 +125,43 @@ $.jgrid.extend({
 							}
 						});
 					} else {
-					switch ($(this).get(0).type) {
-						case "checkbox":
-							if($(this).is(":checked")) {
-								postdata[this.name]= $(this).val();
-							} else {
-								var ofv = $(this).attr("offval");
-								postdata[this.name]= ofv;
-							}
-						break;
-						case "select-one":
-							postdata[this.name]= $("option:selected",this).val();
-						break;
-						case "select-multiple":
-							postdata[this.name]= $(this).val();
-							if(postdata[this.name]) {postdata[this.name] = postdata[this.name].join(",");}
-							else {postdata[this.name] ="";}
-							var selectedText = [];
-							$("option:selected",this).each(
-								function(i,selected){
-									selectedText[i] = $(selected).text();
+						switch ($(this).get(0).type) {
+							case "checkbox":
+								if($(this).is(":checked")) {
+									postdata[this.name]= $(this).val();
+								} else {
+									var ofv = $(this).attr("offval");
+									postdata[this.name]= ofv;
 								}
-							);
-						break;
-						case "password":
-						case "text":
-						case "textarea":
-						case "button":
-							postdata[this.name] = $(this).val();
-						break;
+							break;
+							case "select-one":
+								postdata[this.name]= $("option:selected",this).val();
+							break;
+							case "select-multiple":
+								postdata[this.name]= $(this).val();
+								if(postdata[this.name]) {postdata[this.name] = postdata[this.name].join(",");}
+								else {postdata[this.name] ="";}
+								var selectedText = [];
+								$("option:selected",this).each(
+									function(i,selected){
+										selectedText[i] = $(selected).text();
+									}
+								);
+							break;
+							case "password":
+							case "text":
+							case "textarea":
+							case "button":
+								postdata[this.name] = $(this).val();
+							break;
 							case "radio" :
 								if(a2.hasOwnProperty(this.name)) {
 									return true;
 								} else {
 									a2[this.name] = ($(this).attr("offval") === undefined) ? "off" : $(this).attr("offval");
-					}
+								}
 								break;
-					}
+						}
 						if($t.p.autoencode) {
 							postdata[this.name] = $.jgrid.htmlEncode(postdata[this.name]);
 						}
