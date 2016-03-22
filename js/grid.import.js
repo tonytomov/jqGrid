@@ -164,11 +164,63 @@ $.extend($.jgrid,{
 					}
 				}
 			}
+			// subgrid
 			if(ret.subGrid) {
 				var ms = ret.multiselect === 1 ? 1 : 0,
 					rn = ret.rownumbers === true ? 1 :0;
 				grid.jqGrid('addSubGrid', ms + rn);
 			}
+			// treegrid
+			if(ret.treeGrid) {
+				var i = 1, len = grid[0].rows.length,
+				expCol = ret.expColInd,
+				isLeaf = ret.treeReader.leaf_field,
+				expanded = ret.treeReader.expanded_field;
+				// optimization of code needed here
+				while(i<len) {
+					$(grid[0].rows[i].cells[expCol])
+						.find("div.treeclick")
+						.bind("click",function(e){
+							var target = e.target || e.srcElement,
+							ind2 =$.jgrid.stripPref(ret.idPrefix,$(target,grid[0].rows).closest("tr.jqgrow")[0].id),
+							pos = ret._index[ind2];
+							if(!ret.data[pos][isLeaf]){
+								if(ret.data[pos][expanded]){
+									grid.jqGrid("collapseRow",ret.data[pos]);
+									grid.jqGrid("collapseNode",ret.data[pos]);
+								} else {
+									grid.jqGrid("expandRow",ret.data[pos]);
+									grid.jqGrid("expandNode",ret.data[pos]);
+								}
+							}
+							return false;
+						});
+					if(ret.ExpandColClick === true) {
+						$(grid[0].rows[i].cells[expCol])
+							.find("span.cell-wrapper")
+							.css("cursor","pointer")
+							.bind("click",function(e) {
+								var target = e.target || e.srcElement,
+								ind2 =$.jgrid.stripPref(ret.idPrefix,$(target,grid[0].rows).closest("tr.jqgrow")[0].id),
+								pos = ret._index[ind2];
+								if(!ret.data[pos][isLeaf]){
+									if(ret.data[pos][expanded]){
+										grid.jqGrid("collapseRow", ret.data[pos]);
+										grid.jqGrid("collapseNode", ret.data[pos]);
+									} else {
+										grid.jqGrid("expandRow", ret.data[pos]);
+										grid.jqGrid("expandNode", ret.data[pos]);
+									}
+								}
+								grid.jqGrid("setSelection",ind2);
+								return false;
+						});
+					}
+					i++;
+				}
+			}
+			// grouping
+			// pivotgrid
 			if(ret.inlineNav && iN) {
 				grid.jqGrid('setGridParam', { inlineNav:false });
 				grid.jqGrid('inlineNav', ret.pager, iN);
