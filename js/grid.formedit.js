@@ -173,7 +173,7 @@ $.jgrid.extend({
 			}
 			function createData(rowid,obj,tb,maxcols){
 				var nm, hc,trdata, cnt=0,tmp, dc,elc, retpos=[], ind=false,
-				tdtmpl = "<td class='CaptionTD'>&#160;</td><td class='DataTD'>&#160;</td>", tmpl="", i; //*2
+				tdtmpl = "<td class='CaptionTD'>&#160;</td><td class='DataTD'>&#160;</td>", tmpl="", i, ffld; //*2
 				for (i =1; i<=maxcols;i++) {
 					tmpl += tdtmpl;
 				}
@@ -229,15 +229,18 @@ $.jgrid.extend({
 								tmp = $(elc).attr("offval");
 							}
 						}
-						if(rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate) {
-							$t.p.savedData[nm] = tmp;
-						}
 						$(elc).addClass("FormElement");
 						if( $.inArray(this.edittype, ['text','textarea','password','select']) > -1) {
 							$(elc).addClass( styles.inputClass );
 						}
+						ffld = true;
 						if(templ) {
-							$(frm).find("#"+nm).replaceWith( elc );
+							var ftmplfld = $(frm).find("#"+nm);
+							if(ftmplfld.length){
+								ftmplfld.replaceWith( elc );
+							} else {
+								ffld = false;
+							}
 						} else {
 							//--------------------
 							trdata = $(tb).find("tr[rowpos="+rp+"]");
@@ -255,6 +258,9 @@ $.jgrid.extend({
 							$("td:eq("+(cp-2)+")",trdata[0]).html("<label for='"+nm+"'>"+ (frmopt.label === undefined ? obj.p.colNames[i]: frmopt.label) + "</label>");
 							$("td:eq("+(cp-1)+")",trdata[0]).append(frmopt.elmprefix).append(elc).append(frmopt.elmsuffix);
 							//-------------------------
+						}
+						if( (rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate) && ffld) {
+							$t.p.savedData[nm] = tmp;
 						}
 						if(this.edittype==='custom' && $.isFunction(opt.custom_value) ) {
 							opt.custom_value.call($t, $("#"+nm, frmgr),'set',tmp);
