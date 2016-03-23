@@ -3313,12 +3313,12 @@ $.fn.jqGrid = function( pin ) {
 					$("#search_menu").remove();
 					if($(this).attr("value") === 'columns') {
 						var left1 = $(this).parent().width()+18,
-						top1 = $(this).parent().offset().top-40;
+						top1 = $(this).parent().position().top - 5;
 						buildColItems(top1, left1, $(this).parent());
 					}
 					if($(this).attr("value") === 'filtering') {
 						var left1 = $(this).parent().width()+18,
-						top1 = $(this).parent().offset().top-40;
+						top1 = $(this).parent().position().top - 5;
 						buildSearchBox(index, top1, left1, $(this).parent());
 					}
 					$(this).addClass(hover); 
