@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.0 - 2016-03-16
+* @license Guriddo jqGrid JS - v5.1.0 - 2016-03-23
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -8409,43 +8409,36 @@ $.jgrid.extend({
 							}
 						});
 					} else {
-					switch ($(this).get(0).type) {
-						case "checkbox":
-							if($(this).is(":checked")) {
-								postdata[this.name]= $(this).val();
-							} else {
-								var ofv = $(this).attr("offval");
-								postdata[this.name]= ofv;
-							}
-						break;
-						case "select-one":
-							postdata[this.name]= $("option:selected",this).val();
-						break;
-						case "select-multiple":
-							postdata[this.name]= $(this).val();
-							if(postdata[this.name]) {postdata[this.name] = postdata[this.name].join(",");}
-							else {postdata[this.name] ="";}
-							var selectedText = [];
-							$("option:selected",this).each(
-								function(i,selected){
-									selectedText[i] = $(selected).text();
+						switch ($(this).get(0).type) {
+							case "checkbox":
+								if($(this).is(":checked")) {
+									postdata[this.name]= $(this).val();
+								} else {
+									var ofv = $(this).attr("offval");
+									postdata[this.name]= ofv;
 								}
-							);
-						break;
-						case "password":
-						case "text":
-						case "textarea":
-						case "button":
-							postdata[this.name] = $(this).val();
-						break;
+							break;
+							case "select-one":
+								postdata[this.name]= $(this).val();
+							break;
+							case "select-multiple":
+								postdata[this.name]= $(this).val();
+								postdata[this.name] = postdata[this.name] ? postdata[this.name].join(",") : "";
+							break;
+							case "password":
+							case "text":
+							case "textarea":
+							case "button":
+								postdata[this.name] = $(this).val();
+							break;
 							case "radio" :
 								if(a2.hasOwnProperty(this.name)) {
 									return true;
 								} else {
 									a2[this.name] = ($(this).attr("offval") === undefined) ? "off" : $(this).attr("offval");
-					}
+								}
 								break;
-					}
+						}
 						if($t.p.autoencode) {
 							postdata[this.name] = $.jgrid.htmlEncode(postdata[this.name]);
 						}
@@ -8464,7 +8457,7 @@ $.jgrid.extend({
 			}
 			function createData(rowid,obj,tb,maxcols){
 				var nm, hc,trdata, cnt=0,tmp, dc,elc, retpos=[], ind=false,
-				tdtmpl = "<td class='CaptionTD'>&#160;</td><td class='DataTD'>&#160;</td>", tmpl="", i; //*2
+				tdtmpl = "<td class='CaptionTD'>&#160;</td><td class='DataTD'>&#160;</td>", tmpl="", i, ffld; //*2
 				for (i =1; i<=maxcols;i++) {
 					tmpl += tdtmpl;
 				}
@@ -8520,15 +8513,18 @@ $.jgrid.extend({
 								tmp = $(elc).attr("offval");
 							}
 						}
-						if(rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate) {
-							$t.p.savedData[nm] = tmp;
-						}
 						$(elc).addClass("FormElement");
 						if( $.inArray(this.edittype, ['text','textarea','password','select']) > -1) {
 							$(elc).addClass( styles.inputClass );
 						}
+						ffld = true;
 						if(templ) {
-							$(frm).find("#"+nm).replaceWith( elc );
+							var ftmplfld = $(frm).find("#"+nm);
+							if(ftmplfld.length){
+								ftmplfld.replaceWith( elc );
+							} else {
+								ffld = false;
+							}
 						} else {
 							//--------------------
 							trdata = $(tb).find("tr[rowpos="+rp+"]");
@@ -8546,6 +8542,9 @@ $.jgrid.extend({
 							$("td:eq("+(cp-2)+")",trdata[0]).html("<label for='"+nm+"'>"+ (frmopt.label === undefined ? obj.p.colNames[i]: frmopt.label) + "</label>");
 							$("td:eq("+(cp-1)+")",trdata[0]).append(frmopt.elmprefix).append(elc).append(frmopt.elmsuffix);
 							//-------------------------
+						}
+						if( (rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate) && ffld) {
+							$t.p.savedData[nm] = tmp;
 						}
 						if(this.edittype==='custom' && $.isFunction(opt.custom_value) ) {
 							opt.custom_value.call($t, $("#"+nm, frmgr),'set',tmp);
@@ -11270,15 +11269,16 @@ $.extend($.jgrid,{
 			$($t).jqGrid('setGridParam',{_fT: tmp});
 		}
 		gridstate  =  $($t).jqGrid('jqGridExport', { exptype : "jsonstring", ident:"", root:"" });
-		$($t.grid.bDiv).find(".ui-jqgrid-btable tr:gt(0)").each(function(i,d){
-			data += d.outerHTML;
-		});
+		data = $($t.grid.bDiv).find(".ui-jqgrid-btable tbody:first").html();
+		var firstrow  = data.indexOf("</tr>");
+		data = data.slice(firstrow + 5);
 		if($.isFunction(o.beforeSetItem)) {
 			ret = o.beforeSetItem.call($t, gridstate);
 			if(ret != null) {
 				gridstate = ret;
 			}
 		}
+		
 		if(o.compression) {
 			if(o.compressionModule) {
 				try { 
@@ -11393,6 +11393,63 @@ $.extend($.jgrid,{
 					}
 				}
 			}
+			// subgrid
+			if(ret.subGrid) {
+				var ms = ret.multiselect === 1 ? 1 : 0,
+					rn = ret.rownumbers === true ? 1 :0;
+				grid.jqGrid('addSubGrid', ms + rn);
+			}
+			// treegrid
+			if(ret.treeGrid) {
+				var i = 1, len = grid[0].rows.length,
+				expCol = ret.expColInd,
+				isLeaf = ret.treeReader.leaf_field,
+				expanded = ret.treeReader.expanded_field;
+				// optimization of code needed here
+				while(i<len) {
+					$(grid[0].rows[i].cells[expCol])
+						.find("div.treeclick")
+						.bind("click",function(e){
+							var target = e.target || e.srcElement,
+							ind2 =$.jgrid.stripPref(ret.idPrefix,$(target,grid[0].rows).closest("tr.jqgrow")[0].id),
+							pos = ret._index[ind2];
+							if(!ret.data[pos][isLeaf]){
+								if(ret.data[pos][expanded]){
+									grid.jqGrid("collapseRow",ret.data[pos]);
+									grid.jqGrid("collapseNode",ret.data[pos]);
+								} else {
+									grid.jqGrid("expandRow",ret.data[pos]);
+									grid.jqGrid("expandNode",ret.data[pos]);
+								}
+							}
+							return false;
+						});
+					if(ret.ExpandColClick === true) {
+						$(grid[0].rows[i].cells[expCol])
+							.find("span.cell-wrapper")
+							.css("cursor","pointer")
+							.bind("click",function(e) {
+								var target = e.target || e.srcElement,
+								ind2 =$.jgrid.stripPref(ret.idPrefix,$(target,grid[0].rows).closest("tr.jqgrow")[0].id),
+								pos = ret._index[ind2];
+								if(!ret.data[pos][isLeaf]){
+									if(ret.data[pos][expanded]){
+										grid.jqGrid("collapseRow", ret.data[pos]);
+										grid.jqGrid("collapseNode", ret.data[pos]);
+									} else {
+										grid.jqGrid("expandRow", ret.data[pos]);
+										grid.jqGrid("expandNode", ret.data[pos]);
+									}
+								}
+								grid.jqGrid("setSelection",ind2);
+								return false;
+						});
+					}
+					i++;
+				}
+			}
+			// grouping
+			// pivotgrid
 			if(ret.inlineNav && iN) {
 				grid.jqGrid('setGridParam', { inlineNav:false });
 				grid.jqGrid('inlineNav', ret.pager, iN);
