@@ -37,7 +37,7 @@ $.jgrid.regional["fr"] = {
 		pgnext : "Page suivante",
 		pgprev : "Page précédente",
 		pgrecs : "Enregistrements par page",
-		showhide: "Réduire/Agrandire la grille",
+		showhide: "Réduire/Agrandir la grille",
 		// mobile
 		pagerCaption : "Grille::Options de pagination",
 		pageText : "Page:",
