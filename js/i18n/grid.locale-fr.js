@@ -30,22 +30,22 @@ $.jgrid.regional["fr"] = {
 		recordtext: "Enregistrements {0} - {1} sur {2}",
 		emptyrecords: "Aucun enregistrement à afficher",
 		loadtext: "Chargement...",
-		savetext: "Saving...",
-		pgtext : "Page {0} sur {1}",
-		pgfirst : "First Page",
-		pglast : "Last Page",
-		pgnext : "Next Page",
-		pgprev : "Previous Page",
-		pgrecs : "Records per Page",
-		showhide: "Toggle Expand Collapse Grid",
+		savetext: "Sauvegarde en cours...",
+		pgtext : "Page {0} de {1}",
+		pgfirst : "Première page",
+		pglast : "Dernière page",
+		pgnext : "Page suivante",
+		pgprev : "Page précédente",
+		pgrecs : "Enregistrements par page",
+		showhide: "Réduire/Agrandire la grille",
 		// mobile
-		pagerCaption : "Grid::Page Settings",
+		pagerCaption : "Grille::Options de pagination",
 		pageText : "Page:",
-		recordPage : "Records per Page",
-		nomorerecs : "No more records...",
-		scrollPullup: "Pull up to load more...",
-		scrollPulldown : "Pull down to refresh...",
-		scrollRefresh : "Release to refresh..."
+		recordPage: "Enregistrements par page",
+		nomorerecs : "Plus de données...",
+		scrollPullup: "Glisser vers le haut pour charger plus de données...",
+		scrollPulldown : "Glisser vers le bas pour rafraîchir...",
+		scrollRefresh : "Relâcher pour rafraîchir..."
 	},
 	search : {
 		caption: "Recherche...",
@@ -53,12 +53,12 @@ $.jgrid.regional["fr"] = {
 		Reset: "Réinitialiser",
 		odata: [{ oper:'eq', text:"égal"},{ oper:'ne', text:"différent"},{ oper:'lt', text:"inférieur"},{ oper:'le', text:"inférieur ou égal"},{ oper:'gt', text:"supérieur"},{ oper:'ge', text:"supérieur ou égal"},{ oper:'bw', text:"commence par"},{ oper:'bn', text:"ne commence pas par"},{ oper:'in', text:"est dans"},{ oper:'ni', text:"n'est pas dans"},{ oper:'ew', text:"finit par"},{ oper:'en', text:"ne finit pas par"},{ oper:'cn', text:"contient"},{ oper:'nc', text:"ne contient pas"},{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}, {oper:'bt', text:'entre'}],
 		groupOps: [	{ op: "AND", text: "tous" },	{ op: "OR",  text: "au moins un" }	],
-		operandTitle : "Click to select search operation.",
-		resetTitle : "Reset Search Value"
+		operandTitle : "Cliquer pour sélectionner l'opérateur.",
+		resetTitle : "Réinitialiser la valeur de recherche"
 	},
 	edit : {
 		addCaption: "Ajouter",
-		editCaption: "Editer",
+		editCaption: "Éditer",
 		bSubmit: "Valider",
 		bCancel: "Annuler",
 		bClose: "Fermer",
@@ -71,9 +71,9 @@ $.jgrid.regional["fr"] = {
 			number: "Saisissez un nombre correct",
 			minValue: "La valeur doit être supérieure ou égale à",
 			maxValue: "La valeur doit être inférieure ou égale à",
-			email: "n'est pas un email correct",
-			integer: "Saisissez un entier correct",
-			url: "n'est pas une adresse correcte. Préfixe requis ('http://' or 'https://')",
+			email: "n'est pas un email valide",
+			integer: "Saisissez un entier valide",
+			url: "n'est pas une adresse valide. Préfixe requis ('http://' or 'https://')",
 			nodefined : " n'est pas défini!",
 			novalue : " la valeur de retour est requise!",
 			customarray : "Une fonction personnalisée devrait retourner un tableau (array)!",
@@ -81,7 +81,7 @@ $.jgrid.regional["fr"] = {
 		}
 	},
 	view : {
-		caption: "Voir les enregistrement",
+		caption: "Voir les enregistrements",
 		bClose: "Fermer"
 	},
 	del : {
@@ -106,9 +106,9 @@ $.jgrid.regional["fr"] = {
 		viewtext: "",
 		viewtitle: "Afficher la ligne sélectionnée",
 		savetext: "",
-		savetitle: "Save row",
+		savetitle: "Sauvegarder la ligne",
 		canceltext: "",
-		canceltitle : "Cancel row editing",
+		canceltitle : "Annuler l'édition de la ligne",
 		selectcaption : "Actions..."
 	},
 	col : {
@@ -163,16 +163,16 @@ $.jgrid.regional["fr"] = {
 		idName : 'id'
 	},
 	colmenu : {
-		sortasc : "Sort Ascending",
-		sortdesc : "Sort Descending",
-		columns : "Columns",
-		filter : "Filter",
-		grouping : "Group By",
-		ungrouping : "Ungroup",
-		searchTitle : "Get items with value that:",
-		freeze : "Freeze",
-		unfreeze : "Unfreeze",
-		reorder : "Move to reorder"
+		sortasc : "Trier en ordre ascendant",
+		sortdesc: "Trier en ordre descendant",
+		columns : "Colonnes",
+		filter : "Filtrer",
+		grouping : "Grouper par",
+		ungrouping : "Séparer",
+		searchTitle : "Prendre les items avec la valeur:",
+		freeze : "Figer",
+		unfreeze : "Relâcher",
+		reorder : "Déplacer pour changer l'ordre"
 	}
 };
 }));
