@@ -135,18 +135,11 @@ $.jgrid.extend({
 								}
 							break;
 							case "select-one":
-								postdata[this.name]= $("option:selected",this).val();
+								postdata[this.name]= $(this).val();
 							break;
 							case "select-multiple":
 								postdata[this.name]= $(this).val();
-								if(postdata[this.name]) {postdata[this.name] = postdata[this.name].join(",");}
-								else {postdata[this.name] ="";}
-								var selectedText = [];
-								$("option:selected",this).each(
-									function(i,selected){
-										selectedText[i] = $(selected).text();
-									}
-								);
+								postdata[this.name] = postdata[this.name] ? postdata[this.name].join(",") : "";
 							break;
 							case "password":
 							case "text":
