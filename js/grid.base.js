@@ -2802,25 +2802,31 @@ $.fn.jqGrid = function( pin ) {
 				});
 			}
 		},
-		multiSort = function(iCol, obj ) {
+		multiSort = function(iCol, obj, sor ) {
 			var cm = ts.p.colModel,
 					selTh = ts.p.frozenColumns ?  obj : ts.grid.headers[iCol].el, so="", sn;
 			$("span.ui-grid-ico-sort",selTh).addClass(disabled);
 			$(selTh).attr("aria-selected","false");
 			sn = (cm[iCol].index || cm[iCol].name);
-			if(cm[iCol].lso) {
-				if(cm[iCol].lso==="asc") {
-					cm[iCol].lso += "-desc";
-					so = "desc";
-				} else if(cm[iCol].lso==="desc") {
-					cm[iCol].lso += "-asc";
-					so = "asc";
-				} else if(cm[iCol].lso==="asc-desc" || cm[iCol].lso==="desc-asc") {
-					cm[iCol].lso="";
+			if ( typeof sor == "undefined" )
+			{
+				if(cm[iCol].lso) {
+					if(cm[iCol].lso==="asc") {
+						cm[iCol].lso += "-desc";
+						so = "desc";
+					} else if(cm[iCol].lso==="desc") {
+						cm[iCol].lso += "-asc";
+						so = "asc";
+					} else if(cm[iCol].lso==="asc-desc" || cm[iCol].lso==="desc-asc") {
+						cm[iCol].lso="";
+					}
+				} else {
+					cm[iCol].lso = so = cm[iCol].firstsortorder || 'asc';
 				}
-			} else {
-				cm[iCol].lso = so = cm[iCol].firstsortorder || 'asc';
 			}
+			else {
+				cm[iCol].lso = so = sor;
+			}	
 			if( so ) {
 				$("span.s-ico",selTh).show();
 				$("span.ui-icon-"+so,selTh).removeClass(disabled);
@@ -2884,7 +2890,7 @@ $.fn.jqGrid = function( pin ) {
 				ts.p.page = 1;
 			}
 			if(ts.p.multiSort) {
-				multiSort( idxcol, obj);
+				multiSort( idxcol, obj, sor);
 			} else {
 				if(sor) {
 					if(ts.p.lastsort === idxcol && ts.p.sortorder === sor && !reload) { return; }

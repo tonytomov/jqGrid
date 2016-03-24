@@ -163,8 +163,8 @@ $.jgrid.regional["fr"] = {
 		idName : 'id'
 	},
 	colmenu : {
-		sortasc : "Trier en ordre ascendant",
-		sortdesc: "Trier en ordre descendant",
+		sortasc : "Trier en ordre croissant",
+		sortdesc: "Trier en ordre décroissant",
 		columns : "Colonnes",
 		filter : "Filtrer",
 		grouping : "Grouper par",
