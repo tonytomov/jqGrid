@@ -27,7 +27,12 @@ $.jgrid.extend({
 			icon = $t.p.treeReader.icon_field,
 			loaded = $t.p.treeReader.loaded,  lft, rgt, curLevel, ident,lftpos, twrap,
 			ldat, lf,
-			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].common;
+			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].common,
+			index = i;
+			$($t).triggerHandler("jqGridBeforeSetTreeNode", [index, len]);			
+			if($.isFunction($t.p.beforeSetTreeNode)) {
+				$t.p.beforeSetTreeNode.call($t, index, len);
+			}
 			while(i<len) {
 				var ind = $.jgrid.stripPref($t.p.idPrefix, $t.rows[i].id), dind = $t.p._index[ind], expan;
 				ldat = $t.p.data[dind];
@@ -129,7 +134,10 @@ $.jgrid.extend({
 				}
 				i++;
 			}
-
+			$($t).triggerHandler("jqGridAfterSetTreeNode", [index, len]);			
+			if($.isFunction($t.p.afterSetTreeNode)) {
+				$t.p.afterSetTreeNode.call($t, index, len);
+			}
 		});
 	},
 	setTreeGrid : function() {
