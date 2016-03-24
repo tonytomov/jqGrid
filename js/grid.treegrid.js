@@ -508,16 +508,37 @@ $.jgrid.extend({
 	reloadNode: function(rc, reloadcurrent) {
 		return this.each(function(){
 			if(!this.grid || !this.p.treeGrid) {return;}
-
 			var rid = this.p.localReader.id,
 			currselection  = this.p.selrow;
 
 			$(this).jqGrid("delChildren", rc[rid]);
 
+			if(reloadcurrent=== undefined) {
+				reloadcurrent = false;
+			}
+			
+			if(!reloadcurrent) {
+				if(!jQuery._data( this, "events" ).jqGridAfterSetTreeNode) {
+					$(this).bind("jqGridAfterSetTreeNode.reloadNode", function(){
+						var isLeaf = this.p.treeReader.leaf_field;
+						if(this.p.reloadnode ) {
+							var rc = this.p.reloadnode,
+							chld = $(this).jqGrid('getNodeChildren', rc);
+							if(rc[isLeaf] && chld.length) {
+								$(this).jqGrid('setLeaf', rc, false);
+							} else if(!rc[isLeaf] && chld.length === 0) {
+								$(this).jqGrid('setLeaf', rc, true);
+							}
+						}
+						this.p.reloadnode = false;
+					});
+				}
+			}
 			var expanded = this.p.treeReader.expanded_field,
 			parent = this.p.treeReader.parent_id_field,
 			loaded = this.p.treeReader.loaded,
 			level = this.p.treeReader.level_field,
+			isLeaf = this.p.treeReader.leaf_field,
 			lft = this.p.treeReader.left_field,
 			rgt = this.p.treeReader.right_field;
 
@@ -525,9 +546,16 @@ $.jgrid.extend({
 			rc1 = $("#"+id,this.grid.bDiv)[0];
 
 			rc[expanded] = true;
+			if(!rc[isLeaf]) {
 			$("div.treeclick",rc1).removeClass(this.p.treeIcons.plus+" tree-plus").addClass(this.p.treeIcons.minus+" tree-minus");
+			}
 			this.p.treeANode = rc1.rowIndex;
 			this.p.datatype = this.p.treedatatype;
+			this.p.reloadnode = rc;
+			if(reloadcurrent) {
+				this.p.treeANode = rc1.rowIndex > 0 ? rc1.rowIndex - 1 : 1;
+				$(this).jqGrid('delRowData', id);
+			}
 			if(this.p.treeGridModel === 'nested') {
 				$(this).jqGrid("setGridParam",{postData:{nodeid:id,n_left:rc[lft],n_right:rc[rgt],n_level:rc[level]}});
 			} else {
