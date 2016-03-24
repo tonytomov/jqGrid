@@ -481,7 +481,31 @@ $.jgrid.extend({
 		});
 		return result;
 	},
-	reloadNode: function(rc) {
+	setLeaf : function (rc, state, collapsed) {
+		return this.each(function(){
+			var id = $.jgrid.getAccessor(rc,this.p.localReader.id),
+			rc1 = $("#"+id,this.grid.bDiv)[0],
+			isLeaf = this.p.treeReader.leaf_field;
+			try {
+				var dr = this.p._index[id];
+				if(dr != null) {
+					this.p.data[dr][isLeaf] = state;
+					console.log(this.p.data[dr]);
+				}
+			} catch(E){}
+			if(state === true) {
+				// set it in data
+				$("div.treeclick",rc1).removeClass(this.p.treeIcons.minus+" tree-minus "+this.p.treeIcons.plus+" tree-plus").addClass(this.p.treeIcons.leaf +" tree-leaf");
+			} else if(state === false) {
+				var ico = this.p.treeIcons.minus+" tree-minus";
+				if(collapsed) {
+					ico = this.p.treeIcons.plus+" tree-plus";
+				}
+				$("div.treeclick",rc1).removeClass(this.p.treeIcons.leaf +" tree-leaf").addClass( ico );
+			}	
+		});
+	},
+	reloadNode: function(rc, reloadcurrent) {
 		return this.each(function(){
 			if(!this.grid || !this.p.treeGrid) {return;}
 
