@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.0 - 2016-03-23
+* @license Guriddo jqGrid JS - v5.1.0 - 2016-03-24
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2797,25 +2797,31 @@ $.fn.jqGrid = function( pin ) {
 				});
 			}
 		},
-		multiSort = function(iCol, obj ) {
+		multiSort = function(iCol, obj, sor ) {
 			var cm = ts.p.colModel,
 					selTh = ts.p.frozenColumns ?  obj : ts.grid.headers[iCol].el, so="", sn;
 			$("span.ui-grid-ico-sort",selTh).addClass(disabled);
 			$(selTh).attr("aria-selected","false");
 			sn = (cm[iCol].index || cm[iCol].name);
-			if(cm[iCol].lso) {
-				if(cm[iCol].lso==="asc") {
-					cm[iCol].lso += "-desc";
-					so = "desc";
-				} else if(cm[iCol].lso==="desc") {
-					cm[iCol].lso += "-asc";
-					so = "asc";
-				} else if(cm[iCol].lso==="asc-desc" || cm[iCol].lso==="desc-asc") {
-					cm[iCol].lso="";
+			if ( typeof sor == "undefined" )
+			{
+				if(cm[iCol].lso) {
+					if(cm[iCol].lso==="asc") {
+						cm[iCol].lso += "-desc";
+						so = "desc";
+					} else if(cm[iCol].lso==="desc") {
+						cm[iCol].lso += "-asc";
+						so = "asc";
+					} else if(cm[iCol].lso==="asc-desc" || cm[iCol].lso==="desc-asc") {
+						cm[iCol].lso="";
+					}
+				} else {
+					cm[iCol].lso = so = cm[iCol].firstsortorder || 'asc';
 				}
-			} else {
-				cm[iCol].lso = so = cm[iCol].firstsortorder || 'asc';
 			}
+			else {
+				cm[iCol].lso = so = sor;
+			}	
 			if( so ) {
 				$("span.s-ico",selTh).show();
 				$("span.ui-icon-"+so,selTh).removeClass(disabled);
@@ -2879,7 +2885,7 @@ $.fn.jqGrid = function( pin ) {
 				ts.p.page = 1;
 			}
 			if(ts.p.multiSort) {
-				multiSort( idxcol, obj);
+				multiSort( idxcol, obj, sor);
 			} else {
 				if(sor) {
 					if(ts.p.lastsort === idxcol && ts.p.sortorder === sor && !reload) { return; }
@@ -13819,7 +13825,12 @@ $.jgrid.extend({
 			icon = $t.p.treeReader.icon_field,
 			loaded = $t.p.treeReader.loaded,  lft, rgt, curLevel, ident,lftpos, twrap,
 			ldat, lf,
-			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].common;
+			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].common,
+			index = i;
+			$($t).triggerHandler("jqGridBeforeSetTreeNode", [index, len]);			
+			if($.isFunction($t.p.beforeSetTreeNode)) {
+				$t.p.beforeSetTreeNode.call($t, index, len);
+			}
 			while(i<len) {
 				var ind = $.jgrid.stripPref($t.p.idPrefix, $t.rows[i].id), dind = $t.p._index[ind], expan;
 				ldat = $t.p.data[dind];
@@ -13921,7 +13932,10 @@ $.jgrid.extend({
 				}
 				i++;
 			}
-
+			$($t).triggerHandler("jqGridAfterSetTreeNode", [index, len]);			
+			if($.isFunction($t.p.afterSetTreeNode)) {
+				$t.p.afterSetTreeNode.call($t, index, len);
+			}
 		});
 	},
 	setTreeGrid : function() {
@@ -14265,19 +14279,64 @@ $.jgrid.extend({
 		});
 		return result;
 	},
-	reloadNode: function(rc) {
+	setLeaf : function (rc, state, collapsed) {
+		return this.each(function(){
+			var id = $.jgrid.getAccessor(rc,this.p.localReader.id),
+			rc1 = $("#"+id,this.grid.bDiv)[0],
+			isLeaf = this.p.treeReader.leaf_field;
+			try {
+				var dr = this.p._index[id];
+				if(dr != null) {
+					this.p.data[dr][isLeaf] = state;
+					console.log(this.p.data[dr]);
+				}
+			} catch(E){}
+			if(state === true) {
+				// set it in data
+				$("div.treeclick",rc1).removeClass(this.p.treeIcons.minus+" tree-minus "+this.p.treeIcons.plus+" tree-plus").addClass(this.p.treeIcons.leaf +" tree-leaf");
+			} else if(state === false) {
+				var ico = this.p.treeIcons.minus+" tree-minus";
+				if(collapsed) {
+					ico = this.p.treeIcons.plus+" tree-plus";
+				}
+				$("div.treeclick",rc1).removeClass(this.p.treeIcons.leaf +" tree-leaf").addClass( ico );
+			}	
+		});
+	},
+	reloadNode: function(rc, reloadcurrent) {
 		return this.each(function(){
 			if(!this.grid || !this.p.treeGrid) {return;}
-
 			var rid = this.p.localReader.id,
 			currselection  = this.p.selrow;
 
 			$(this).jqGrid("delChildren", rc[rid]);
 
+			if(reloadcurrent=== undefined) {
+				reloadcurrent = false;
+			}
+			
+			if(!reloadcurrent) {
+				if(!jQuery._data( this, "events" ).jqGridAfterSetTreeNode) {
+					$(this).bind("jqGridAfterSetTreeNode.reloadNode", function(){
+						var isLeaf = this.p.treeReader.leaf_field;
+						if(this.p.reloadnode ) {
+							var rc = this.p.reloadnode,
+							chld = $(this).jqGrid('getNodeChildren', rc);
+							if(rc[isLeaf] && chld.length) {
+								$(this).jqGrid('setLeaf', rc, false);
+							} else if(!rc[isLeaf] && chld.length === 0) {
+								$(this).jqGrid('setLeaf', rc, true);
+							}
+						}
+						this.p.reloadnode = false;
+					});
+				}
+			}
 			var expanded = this.p.treeReader.expanded_field,
 			parent = this.p.treeReader.parent_id_field,
 			loaded = this.p.treeReader.loaded,
 			level = this.p.treeReader.level_field,
+			isLeaf = this.p.treeReader.leaf_field,
 			lft = this.p.treeReader.left_field,
 			rgt = this.p.treeReader.right_field;
 
@@ -14285,9 +14344,16 @@ $.jgrid.extend({
 			rc1 = $("#"+id,this.grid.bDiv)[0];
 
 			rc[expanded] = true;
+			if(!rc[isLeaf]) {
 			$("div.treeclick",rc1).removeClass(this.p.treeIcons.plus+" tree-plus").addClass(this.p.treeIcons.minus+" tree-minus");
+			}
 			this.p.treeANode = rc1.rowIndex;
 			this.p.datatype = this.p.treedatatype;
+			this.p.reloadnode = rc;
+			if(reloadcurrent) {
+				this.p.treeANode = rc1.rowIndex > 0 ? rc1.rowIndex - 1 : 1;
+				$(this).jqGrid('delRowData', id);
+			}
 			if(this.p.treeGridModel === 'nested') {
 				$(this).jqGrid("setGridParam",{postData:{nodeid:id,n_left:rc[lft],n_right:rc[rgt],n_level:rc[level]}});
 			} else {
