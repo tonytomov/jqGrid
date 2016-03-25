@@ -183,8 +183,8 @@ $.jgrid.extend({
 		if (!$t.grid ) { return success; }
 		ind = $($t).jqGrid("getInd",rowid,true);
 		if(ind === false) {return success;}
-		var errors = $.jgrid.getRegional(this, 'errors'),
-		edit =$.jgrid.getRegional(this, 'edit'),
+		var errors = $.jgrid.getRegional($t, 'errors'),
+		edit =$.jgrid.getRegional($t, 'edit'),
 		bfsr = $.isFunction( o.beforeSaveRow ) ?	o.beforeSaveRow.call($t,o, rowid) :  undefined;
 		if( bfsr === undefined ) {
 			bfsr = true;
