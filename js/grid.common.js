@@ -438,42 +438,42 @@ $.extend($.jgrid,{
 									ovm[0] = $.trim(vl);
 								}
 								//$(elem).attr(options);
-								setTimeout(function(){
-									$("option",elem).each(function(i){
-										txt = $(this).text();
-										vl = $(this).val() || txt;
-										if(cU) {
-											oV += (i!== 0 ? ";": "")+ vl+":"+txt; 
-										}
-										//if(i===0) { this.selected = ""; }
-										// fix IE8/IE7 problem with selecting of the first item on multiple=true
-										if (i === 0 && elem.multiple) { this.selected = false; }
-										$(this).attr("role","option");
-										if($.inArray($.trim(txt),ovm) > -1 || $.inArray($.trim(vl),ovm) > -1 ) {
-											this.selected= "selected";
-										}
-									});
+								//setTimeout(function(){
+								$("option",elem).each(function(i){
+									txt = $(this).text();
+									vl = $(this).val() || txt;
 									if(cU) {
-										if(options.oper === 'edit') {
-											$($t).jqGrid('setColProp',options.name,{ editoptions: {buildSelect: null, dataUrl : null, value : oV} });
-										} else if(options.oper === 'search') {
-											$($t).jqGrid('setColProp',options.name,{ searchoptions: {dataUrl : null, value : oV} });
-										} else if(options.oper ==='filter') {
-											if($("#fbox_"+$t.p.id)[0].p) {
-												var cols = $("#fbox_"+$t.p.id)[0].p.columns, nm;
-												$.each(cols,function(i) {
-													nm  =  this.index || this.name;
-													if(options.name === nm) {
-														this.searchoptions.dataUrl = null;
-														this.searchoptions.value = oV;
-														return false;
-													}
-												});
-											}
+										oV += (i!== 0 ? ";": "")+ vl+":"+txt; 
+									}
+									//if(i===0) { this.selected = ""; }
+									// fix IE8/IE7 problem with selecting of the first item on multiple=true
+									if (i === 0 && elem.multiple) { this.selected = false; }
+									$(this).attr("role","option");
+									if($.inArray($.trim(txt),ovm) > -1 || $.inArray($.trim(vl),ovm) > -1 ) {
+										this.selected= "selected";
+									}
+								});
+								if(cU) {
+									if(options.oper === 'edit') {
+										$($t).jqGrid('setColProp',options.name,{ editoptions: {buildSelect: null, dataUrl : null, value : oV} });
+									} else if(options.oper === 'search') {
+										$($t).jqGrid('setColProp',options.name,{ searchoptions: {dataUrl : null, value : oV} });
+									} else if(options.oper ==='filter') {
+										if($("#fbox_"+$t.p.id)[0].p) {
+											var cols = $("#fbox_"+$t.p.id)[0].p.columns, nm;
+											$.each(cols,function(i) {
+												nm  =  this.index || this.name;
+												if(options.name === nm) {
+													this.searchoptions.dataUrl = null;
+													this.searchoptions.value = oV;
+													return false;
+												}
+											});
 										}
 									}
-									$($t).triggerHandler("jqGridAddEditAfterSelectUrlComplete", [elem]);
-								},0);
+								}
+								$($t).triggerHandler("jqGridAddEditAfterSelectUrlComplete", [elem]);
+								//},0);
 							}
 						}
 					},ajaxso || {}));
