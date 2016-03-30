@@ -4210,11 +4210,11 @@ $.jgrid.extend({
 			if(rowid == null) {
 				getall = true;
 				resall = [];
-				len = $t.rows.length;
+				len = $t.rows.length-1;
 			} else {
 				ind = $($t).jqGrid('getGridRowById', rowid);
 				if(!ind) { return res; }
-				len = 2;
+				len = 1;
 			}
 			if( !(usedata && usedata === true && $t.p.data.length > 0)  ) {
 				usedata = false;
