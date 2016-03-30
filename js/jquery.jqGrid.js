@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.0 - 2016-03-28
+* @license Guriddo jqGrid JS - v5.1.0 - 2016-03-30
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -11411,6 +11411,7 @@ $.extend($.jgrid,{
 				expCol = ret.expColInd,
 				isLeaf = ret.treeReader.leaf_field,
 				expanded = ret.treeReader.expanded_field;
+				grid[0].refreshIndex();
 				// optimization of code needed here
 				while(i<len) {
 					$(grid[0].rows[i].cells[expCol])
@@ -11418,14 +11419,14 @@ $.extend($.jgrid,{
 						.bind("click",function(e){
 							var target = e.target || e.srcElement,
 							ind2 =$.jgrid.stripPref(ret.idPrefix,$(target,grid[0].rows).closest("tr.jqgrow")[0].id),
-							pos = ret._index[ind2];
-							if(!ret.data[pos][isLeaf]){
-								if(ret.data[pos][expanded]){
-									grid.jqGrid("collapseRow",ret.data[pos]);
-									grid.jqGrid("collapseNode",ret.data[pos]);
+							pos = grid[0].p._index[ind2];
+							if(!grid[0].p.data[pos][isLeaf]){
+								if(grid[0].p.data[pos][expanded]){
+									grid.jqGrid("collapseRow",grid[0].p.data[pos]);
+									grid.jqGrid("collapseNode",grid[0].p.data[pos]);
 								} else {
-									grid.jqGrid("expandRow",ret.data[pos]);
-									grid.jqGrid("expandNode",ret.data[pos]);
+									grid.jqGrid("expandRow",grid[0].p.data[pos]);
+									grid.jqGrid("expandNode",grid[0].p.data[pos]);
 								}
 							}
 							return false;
@@ -11437,14 +11438,14 @@ $.extend($.jgrid,{
 							.bind("click",function(e) {
 								var target = e.target || e.srcElement,
 								ind2 =$.jgrid.stripPref(ret.idPrefix,$(target,grid[0].rows).closest("tr.jqgrow")[0].id),
-								pos = ret._index[ind2];
-								if(!ret.data[pos][isLeaf]){
-									if(ret.data[pos][expanded]){
-										grid.jqGrid("collapseRow", ret.data[pos]);
-										grid.jqGrid("collapseNode", ret.data[pos]);
+								pos = grid[0].p._index[ind2];
+								if(!grid[0].p.data[pos][isLeaf]){
+									if(grid[0].p.data[pos][expanded]){
+										grid.jqGrid("collapseRow", grid[0].p.data[pos]);
+										grid.jqGrid("collapseNode", grid[0].p.data[pos]);
 									} else {
-										grid.jqGrid("expandRow", ret.data[pos]);
-										grid.jqGrid("expandNode", ret.data[pos]);
+										grid.jqGrid("expandRow", grid[0].p.data[pos]);
+										grid.jqGrid("expandNode", grid[0].p.data[pos]);
 									}
 								}
 								grid.jqGrid("setSelection",ind2);
