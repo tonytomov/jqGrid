@@ -160,10 +160,12 @@ $.extend($.jgrid,{
 							grid.jqGrid('navSeparatorAdd', ret.navButtons[b][0], ret.navButtons[b][1]);
 						} else {
 							grid.jqGrid('navButtonAdd', ret.navButtons[b][0], ret.navButtons[b][1]);
-			}
+						}
 					}
 				}
 			}
+			// refresh index 
+			grid[0].refreshIndex();
 			// subgrid
 			if(ret.subGrid) {
 				var ms = ret.multiselect === 1 ? 1 : 0,
@@ -176,7 +178,6 @@ $.extend($.jgrid,{
 				expCol = ret.expColInd,
 				isLeaf = ret.treeReader.leaf_field,
 				expanded = ret.treeReader.expanded_field;
-				grid[0].refreshIndex();
 				// optimization of code needed here
 				while(i<len) {
 					$(grid[0].rows[i].cells[expCol])
