@@ -452,14 +452,6 @@ $.extend($.jgrid,{
 					gprm.colModel.splice(0,1);
 				}
 				gprm.knv = null;
-				if(gprm.treeGrid) {
-					for (key in gprm.treeReader) {
-						if(gprm.treeReader.hasOwnProperty(key)) {
-							gprm.colNames.splice(gprm.colNames.length-1);
-							gprm.colModel.splice(gprm.colModel.length-1);
-						}
-					}
-				}
 				switch (o.exptype) {
 					case 'xmlstring' :
 						ret = "<"+o.root+">"+ jqGridUtils.jsonToXML( gprm, {xmlDecl:""} )+"</"+o.root+">";
