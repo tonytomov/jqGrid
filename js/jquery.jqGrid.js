@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.0 - 2016-03-30
+* @license Guriddo jqGrid JS - v5.1.0 - 2016-03-31
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3173,7 +3173,7 @@ $.fn.jqGrid = function( pin ) {
 			} else {
 				df = "";
 			}
-			soptions = $.extend(cm.searchoptions, {name:cm.index || cm.name, id: "sval2_" + ts.p.idPrefix+cm.name, oper:'search'})
+			soptions = $.extend(cm.searchoptions, {name:cm.index || cm.name, id: "sval2_" + ts.p.idPrefix+cm.name, oper:'search'});
 			input = $.jgrid.createEl.call(ts, cm.stype, soptions , df, false, $.extend({},$.jgrid.ajaxOptions, ts.p.ajaxSelectOptions || {}));
 			$(input).addClass( colmenustyle.filter_input );
 			str1 = $('<div></div>').append(input);
@@ -4205,11 +4205,11 @@ $.jgrid.extend({
 			if(rowid == null) {
 				getall = true;
 				resall = [];
-				len = $t.rows.length;
+				len = $t.rows.length-1;
 			} else {
 				ind = $($t).jqGrid('getGridRowById', rowid);
 				if(!ind) { return res; }
-				len = 2;
+				len = 1;
 			}
 			if( !(usedata && usedata === true && $t.p.data.length > 0)  ) {
 				usedata = false;
@@ -10730,34 +10730,17 @@ $.jgrid.extend({
 			tar2 = frz ? $("#"+$.jgrid.jqID(hid), "#"+$.jgrid.jqID(frz) ) : false,
 			r2 = (tar2 && tar2.length) ? tar2[0].nextSibling : null;
 			if( tarspan.hasClass(minus) ) {
-				if(grp.showSummaryOnHide) {
-					if(r){
-						while(r) {
-							itemGroupingLevel = getGroupingLevelFromClass(r.className);
-							if (itemGroupingLevel !== undefined && itemGroupingLevel <= num) {
-								break;
-							}
-							$(r).hide();
-							r = r.nextSibling;
-							if(frz) {
-								$(r2).hide();
-								r2 = r2.nextSibling;
-							}
+				if(r){
+					while(r) {
+						itemGroupingLevel = getGroupingLevelFromClass(r.className);
+						if (itemGroupingLevel !== undefined && itemGroupingLevel <= num) {
+							break;
 						}
-					}
-				} else  {
-					if(r){
-						while(r) {
-							itemGroupingLevel = getGroupingLevelFromClass(r.className);
-							if (itemGroupingLevel !== undefined && itemGroupingLevel <= num) {
-								break;
-							}
-							$(r).hide();
-							r = r.nextSibling;
-							if(frz) {
-								$(r2).hide();
-								r2 = r2.nextSibling;
-							}
+						$(r).hide();
+						r = r.nextSibling;
+						if(frz) {
+							$(r2).hide();
+							r2 = r2.nextSibling;
 						}
 					}
 				}
@@ -11395,10 +11378,12 @@ $.extend($.jgrid,{
 							grid.jqGrid('navSeparatorAdd', ret.navButtons[b][0], ret.navButtons[b][1]);
 						} else {
 							grid.jqGrid('navButtonAdd', ret.navButtons[b][0], ret.navButtons[b][1]);
-			}
+						}
 					}
 				}
 			}
+			// refresh index 
+			grid[0].refreshIndex();
 			// subgrid
 			if(ret.subGrid) {
 				var ms = ret.multiselect === 1 ? 1 : 0,
@@ -11411,7 +11396,6 @@ $.extend($.jgrid,{
 				expCol = ret.expColInd,
 				isLeaf = ret.treeReader.leaf_field,
 				expanded = ret.treeReader.expanded_field;
-				grid[0].refreshIndex();
 				// optimization of code needed here
 				while(i<len) {
 					$(grid[0].rows[i].cells[expCol])
@@ -11686,14 +11670,6 @@ $.extend($.jgrid,{
 					gprm.colModel.splice(0,1);
 				}
 				gprm.knv = null;
-				if(gprm.treeGrid) {
-					for (key in gprm.treeReader) {
-						if(gprm.treeReader.hasOwnProperty(key)) {
-							gprm.colNames.splice(gprm.colNames.length-1);
-							gprm.colModel.splice(gprm.colModel.length-1);
-						}
-					}
-				}
 				switch (o.exptype) {
 					case 'xmlstring' :
 						ret = "<"+o.root+">"+ jqGridUtils.jsonToXML( gprm, {xmlDecl:""} )+"</"+o.root+">";
