@@ -11243,7 +11243,8 @@ $.extend($.jgrid,{
 			beforeSetItem : null,
 			compression: false,
 			compressionModule :  'LZString', // object by example gzip, LZString
-			compressionMethod : 'compressToUTF16' // string by example zip, compressToUTF16
+			compressionMethod : 'compressToUTF16', // string by example zip, compressToUTF16
+			debug : false
 		}, o || {});
 		if(!jqGridId) { return; }
 		var gridstate = "", data = "", ret, $t = $("#"+jqGridId)[0], tmp;
@@ -11267,7 +11268,26 @@ $.extend($.jgrid,{
 				gridstate = ret;
 			}
 		}
-		
+		if(o.debug) {
+			$("#gbox_tree").prepend('<a id="link_save" target="_blank" download="jqGrid_dump.txt">Click to save Dump Data</a>');
+			var temp = [], file, properties = {}, url;
+			temp.push("Grid Options\n");
+			temp.push(gridstate);
+			temp.push("\n");
+			temp.push("GridData\n");
+			temp.push(data);
+			properties.type = 'plain/text;charset=utf-8'; // Specify the file's mime-type.
+			try {
+				file = new File(temp, "jqGrid_dump.txt", properties);
+			} catch (e) {
+				file = new Blob(temp, properties);
+			}
+			//saveAs(file, "jqGrid_dump.txt" );
+			url = URL.createObjectURL(file);
+			$("#link_save").attr("href",url).bind('click',function(){
+				$(this).remove();
+			});
+		}		
 		if(o.compression) {
 			if(o.compressionModule) {
 				try { 
