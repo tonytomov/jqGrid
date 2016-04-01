@@ -5228,7 +5228,8 @@ $.jgrid.extend({
 						$("th:gt("+maxfrozen+")",this).remove();
 					});
 				}
-				$(htbl).width(1).css("height","100%");
+				$(htbl).width(1);
+				if(!$.jgrid.msie) { $(htbl).css("height","100%"); }
 				// resizing stuff
 				$($t.grid.fhDiv).append(htbl)
 				.mousemove(function (e) {
