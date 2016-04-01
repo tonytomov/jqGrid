@@ -88,23 +88,31 @@
 .ui-jqgrid td input, .ui-jqgrid td select, .ui-jqgrid td textarea { margin: 0; padding-top:5px;padding-bottom: 5px;}
 .ui-jqgrid td textarea {width:auto;height:auto;}
 .ui-jqgrid .ui-jqgrid-toppager {border-left: 0 none !important;border-right: 0 none !important; border-top: 0 none !important; margin: 0 !important; padding: 0 !important; position: relative;white-space: nowrap;overflow: hidden;}
-.ui-jqgrid .ui-jqgrid-pager .ui-pager-table {
+.ui-jqgrid .ui-jqgrid-pager .ui-pager-table,
+.ui-jqgrid .ui-jqgrid-toppager .ui-pager-table 
+{
 	width:100%;
 	table-layout:fixed;
 	height:100%;
 }
-.ui-jqgrid .ui-jqgrid-pager .ui-paging-info { 
+.ui-jqgrid .ui-jqgrid-pager .ui-paging-info,
+.ui-jqgrid .ui-jqgrid-toppager .ui-paging-info
+{ 
 	font-weight: normal;
 	height:auto; 
 	margin-top:3px;
 	margin-right:4px;
 	display: inline;
 }
-.ui-jqgrid .ui-jqgrid-pager .ui-paging-pager {
+.ui-jqgrid .ui-jqgrid-pager .ui-paging-pager,
+.ui-jqgrid .ui-jqgrid-toppager .ui-paging-pager
+{
 	table-layout:auto;
 	height:100%;
 }
-.ui-jqgrid .ui-jqgrid-pager .navtable {
+.ui-jqgrid .ui-jqgrid-pager .navtable,
+.ui-jqgrid .ui-jqgrid-toppager .navtable
+{
 	float:left;
 	table-layout:auto;
 	height:100%;
