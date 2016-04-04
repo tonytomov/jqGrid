@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.0 - 2016-04-01
+* @license Guriddo jqGrid JS - v5.1.0 - 2016-04-04
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5404,15 +5404,17 @@ $.jgrid.extend({
 				timeout = 500;
 			}
 			setTimeout(function(){
-				var winwidth = $(window).width(),
-				parentwidth = $("#gbox_"+$.jgrid.jqID($t.p.id)).parent().width(),
-				ww = $t.p.width;
-				if( (winwidth-parentwidth) > 3 ) {
-					ww = parentwidth;
-				} else {
-					ww = winwidth;
-				}
-				$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridWidth', ww);
+				try {
+					var winwidth = $(window).width(),
+					parentwidth = $("#gbox_"+$.jgrid.jqID($t.p.id)).parent().width(),
+					ww = $t.p.width;
+					if( (winwidth-parentwidth) > 3 ) {
+						ww = parentwidth;
+					} else {
+						ww = winwidth;
+					}
+					$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridWidth', ww);
+				} catch(e){}
 			}, timeout);
 		});
 	}
@@ -15413,7 +15415,12 @@ window.jqGridUtils = {
 	parse : function(str) {
 		return JSON.parse(str,function(key, value){
 			if(typeof value === "string" && value.indexOf("function") !== -1) {
-				return  eval('('+value+')');
+				var sv = value.split(" ");
+				if(sv[0].trim() === 'function' && value.trim().slice(-1) === "}") {
+					return  eval('('+value+')');
+				} else {
+					return value;
+				}
 			}
 			return value;
 		});

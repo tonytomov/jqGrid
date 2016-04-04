@@ -24,7 +24,12 @@ window.jqGridUtils = {
 	parse : function(str) {
 		return JSON.parse(str,function(key, value){
 			if(typeof value === "string" && value.indexOf("function") !== -1) {
-				return  eval('('+value+')');
+				var sv = value.split(" ");
+				if(sv[0].trim() === 'function' && value.trim().slice(-1) === "}") {
+					return  eval('('+value+')');
+				} else {
+					return value;
+				}
 			}
 			return value;
 		});
