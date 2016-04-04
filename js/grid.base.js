@@ -5409,15 +5409,17 @@ $.jgrid.extend({
 				timeout = 500;
 			}
 			setTimeout(function(){
-				var winwidth = $(window).width(),
-				parentwidth = $("#gbox_"+$.jgrid.jqID($t.p.id)).parent().width(),
-				ww = $t.p.width;
-				if( (winwidth-parentwidth) > 3 ) {
-					ww = parentwidth;
-				} else {
-					ww = winwidth;
-				}
-				$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridWidth', ww);
+				try {
+					var winwidth = $(window).width(),
+					parentwidth = $("#gbox_"+$.jgrid.jqID($t.p.id)).parent().width(),
+					ww = $t.p.width;
+					if( (winwidth-parentwidth) > 3 ) {
+						ww = parentwidth;
+					} else {
+						ww = winwidth;
+					}
+					$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridWidth', ww);
+				} catch(e){}
 			}, timeout);
 		});
 	}
