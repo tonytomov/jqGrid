@@ -241,6 +241,12 @@ $.extend($.jgrid,{
 					i++;
 				}
 			}
+			// multiselect
+			if(ret.multiselect) {
+				$.each(ret.selarrrow, function(){
+					$("#jqg_" + jqGridId + "_"+this)[ret.useProp ? 'prop': 'attr']("checked", "checked");
+				});
+			}
 			// grouping
 			// pivotgrid
 			if(ret.inlineNav && iN) {
