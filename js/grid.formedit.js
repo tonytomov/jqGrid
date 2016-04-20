@@ -72,7 +72,8 @@ $.jgrid.extend({
 			removemodal : true,
 			form: 'edit',
 			template : null,
-			focusField : true
+			focusField : true,
+			editselected : false
 		}, regional, p || {});
 		rp_ge[$(this)[0].p.id] = p;
 		return this.each(function(){
@@ -720,9 +721,20 @@ $.jgrid.extend({
 				}
 			}
 			function getCurrPos() {
-				var rowsInGrid = $($t).jqGrid("getDataIDs"),
-				selrow = $("#id_g",frmtb).val(),
-				pos = $.inArray(selrow,rowsInGrid);
+				var rowsInGrid =  $($t).jqGrid("getDataIDs"),
+				selrow = $("#id_g",frmtb).val(), pos;
+				if($t.p.multiselect && rp_ge[$t.p.id].editselected) {
+					var arr = [];
+					for(var i=0, len = rowsInGrid.length;i<len;i++) {
+						if($.inArray(rowsInGrid[i],$t.p.selarrrow) !== -1) {
+							arr.push(rowsInGrid[i]);
+						}
+					}
+					pos = $.inArray(selrow,arr);
+					return [pos, arr];
+				} else {
+					pos = $.inArray(selrow,rowsInGrid);
+				}
 				return [pos,rowsInGrid];
 			}
 			function parseTemplate ( template ){
@@ -1020,7 +1032,9 @@ $.jgrid.extend({
 					}
 					if( $("#"+$.jgrid.jqID(npos[1][npos[0]+1])).hasClass( commonstyle.disabled )) {return false;}
 					fillData(npos[1][npos[0]+1],$t,frmgr);
-					$($t).jqGrid("setSelection",npos[1][npos[0]+1]);
+					if(!($t.p.multiselect &&  rp_ge[$t.p.id].editselected)) {
+						$($t).jqGrid("setSelection",npos[1][npos[0]+1]);
+					}
 					$($t).triggerHandler("jqGridAddEditAfterClickPgButtons", ['next',$(frmgr),npos[1][npos[0]]]);
 					if($.isFunction(p.afterclickPgButtons)) {
 						p.afterclickPgButtons.call($t, 'next',$(frmgr),npos[1][npos[0]+1]);
@@ -1043,7 +1057,9 @@ $.jgrid.extend({
 					}
 					if( $("#"+$.jgrid.jqID(ppos[1][ppos[0]-1])).hasClass( commonstyle.disabled )) {return false;}
 					fillData(ppos[1][ppos[0]-1],$t,frmgr);
-					$($t).jqGrid("setSelection",ppos[1][ppos[0]-1]);
+					if(!($t.p.multiselect &&  rp_ge[$t.p.id].editselected)) {
+						$($t).jqGrid("setSelection",ppos[1][ppos[0]-1]);
+					}
 					$($t).triggerHandler("jqGridAddEditAfterClickPgButtons", ['prev',$(frmgr),ppos[1][ppos[0]]]);
 					if($.isFunction(p.afterclickPgButtons)) {
 						p.afterclickPgButtons.call($t, 'prev',$(frmgr),ppos[1][ppos[0]-1]);
