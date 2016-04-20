@@ -1853,7 +1853,7 @@ $.fn.jqGrid = function( pin ) {
 				if (adjust) { rn *= adjust+1; }
 				var afterInsRow = $.isFunction(ts.p.afterInsertRow), hiderow=false, groupingPrepare,
 				rnc = ni ? getstyle(stylemodule, 'rownumBox', false, 'jqgrid-rownum') :"",
-				mlc = gi ? getstyle(stylemodule, 'multiBox', false, 'cbox'):"";
+				mlc = gi ? getstyle(stylemodule, 'multiBox', false, null):"";
 				if(ts.p.grouping)  {
 					hiderow = ts.p.groupingView.groupCollapse === true;
 					groupingPrepare = $.jgrid.getMethod("groupingPrepare");
@@ -2034,7 +2034,7 @@ $.fn.jqGrid = function( pin ) {
 			var afterInsRow = $.isFunction(ts.p.afterInsertRow), grpdata=[],hiderow=false, groupingPrepare,
 			tablebody = $("#"+$.jgrid.jqID(ts.p.id)+" tbody:first"),
 			rnc = ni ? getstyle(stylemodule, 'rownumBox', false, 'jqgrid-rownum') :"",
-			mlc = gi ? getstyle(stylemodule, 'multiBox', false, 'cbox'):"";
+			mlc = gi ? getstyle(stylemodule, 'multiBox', false, null):"";
 			if(ts.p.grouping)  {
 				hiderow = ts.p.groupingView.groupCollapse === true;
 				groupingPrepare = $.jgrid.getMethod("groupingPrepare");
@@ -5393,15 +5393,15 @@ $.jgrid.extend({
 			}
 			switch(stylemod.length) {
 				case 1 :
-					ret += q + gridclass + " " + $.jgrid.styleUI[stylemod[0]][classui] + q;
+					ret += q + $.trim(gridclass + " " + $.jgrid.styleUI[stylemod[0]][classui] + q);
 					break;
 				case 2 :
-					ret += q + gridclass + " " + $.jgrid.styleUI[stylemod[0]][stylemod[1]][classui] + q;
+					ret += q + $.trim(gridclass + " " + $.jgrid.styleUI[stylemod[0]][stylemod[1]][classui] + q);
 			}
 		} catch (cls) {
 			ret = "";
 		}
-		return $.trim( ret );
+		return ret;
 	},
 	resizeGrid : function (timeout) {
 		return this.each(function(){
