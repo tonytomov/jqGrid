@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.0 - 2016-04-20
+* @license Guriddo jqGrid JS - v5.1.0 - 2016-04-26
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3492,7 +3492,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			thead += imgs;
 			if(ts.p.colMenu && tmpcm.colmenu) {
-				thead += "<a class='colmenu' href='#'><span class='colmenuspan "+iconbase+' '+colmenustyle.icon_menu+"'></span></a>";
+				thead += "<a class='colmenu' href='#/'><span class='colmenuspan "+iconbase+' '+colmenustyle.icon_menu+"'></span></a>";
 			}
 			thead += "</div></th>";
 		}
@@ -3726,7 +3726,7 @@ $.fn.jqGrid = function( pin ) {
 			if($(ptr).length === 0 || ptr[0].className.indexOf( disabled ) > -1 || ($(td,ts).closest("table.ui-jqgrid-btable").attr('id') || '').replace("_frozen","") !== ts.id ) {
 				return this;
 			}
-			var scb = $(td).hasClass("cbox"),
+			var scb = $(td).filter(":enabled").hasClass("cbox"),
 			cSel = $(ts).triggerHandler("jqGridBeforeSelectRow", [ptr[0].id, e]);
 			cSel = (cSel === false || cSel === 'stop') ? false : true;
 			if ($.isFunction(ts.p.beforeSelectRow)) {
