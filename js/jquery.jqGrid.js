@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.0 - 2016-04-26
+* @license Guriddo jqGrid JS - v5.1.0 - 2016-05-05
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -928,7 +928,7 @@ $.extend($.jgrid,{
 				loadingBox : "ui-state-default ui-state-active",
 				rownumBox :  "ui-state-default",
 				scrollBox : "ui-widget-content",
-				multiBox : "cbox",
+				multiBox : "",
 				pagerBox : "ui-state-default ui-corner-bottom",
 				pagerTable : "",
 				toppagerBox : "ui-state-default",
@@ -1848,7 +1848,7 @@ $.fn.jqGrid = function( pin ) {
 				if (adjust) { rn *= adjust+1; }
 				var afterInsRow = $.isFunction(ts.p.afterInsertRow), hiderow=false, groupingPrepare,
 				rnc = ni ? getstyle(stylemodule, 'rownumBox', false, 'jqgrid-rownum') :"",
-				mlc = gi ? getstyle(stylemodule, 'multiBox', false, null):"";
+				mlc = gi ? getstyle(stylemodule, 'multiBox', false, 'cbox'):"";
 				if(ts.p.grouping)  {
 					hiderow = ts.p.groupingView.groupCollapse === true;
 					groupingPrepare = $.jgrid.getMethod("groupingPrepare");
@@ -2029,7 +2029,7 @@ $.fn.jqGrid = function( pin ) {
 			var afterInsRow = $.isFunction(ts.p.afterInsertRow), grpdata=[],hiderow=false, groupingPrepare,
 			tablebody = $("#"+$.jgrid.jqID(ts.p.id)+" tbody:first"),
 			rnc = ni ? getstyle(stylemodule, 'rownumBox', false, 'jqgrid-rownum') :"",
-			mlc = gi ? getstyle(stylemodule, 'multiBox', false, null):"";
+			mlc = gi ? getstyle(stylemodule, 'multiBox', false, 'cbox'):"";
 			if(ts.p.grouping)  {
 				hiderow = ts.p.groupingView.groupCollapse === true;
 				groupingPrepare = $.jgrid.getMethod("groupingPrepare");
