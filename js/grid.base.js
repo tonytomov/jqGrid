@@ -91,6 +91,7 @@ $.extend($.jgrid,{
 		}
 		return id;
 	},
+	useJSON : true,
 	parse : function(jsonString) {
 		var js = jsonString;
 		if (js.substr(0,9) === "while(1);") { js = js.substr(9); }
