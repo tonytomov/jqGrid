@@ -490,7 +490,6 @@ $.jgrid.extend({
 				var dr = this.p._index[id];
 				if(dr != null) {
 					this.p.data[dr][isLeaf] = state;
-					console.log(this.p.data[dr]);
 				}
 			} catch(E){}
 			if(state === true) {
