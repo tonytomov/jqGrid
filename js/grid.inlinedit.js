@@ -509,7 +509,8 @@ $.jgrid.extend({
 			cancelicon: icons.icon_cancel_nav,
 			addParams : {addRowParams: {extraparam: {}}},
 			editParams : {},
-			restoreAfterSelect : true
+			restoreAfterSelect : true,
+			saveAfterSelect : false
 		}, regional, o ||{});
 		return this.each(function(){
 			if (!this.grid  || this.p.inlineNav) { return; }
@@ -651,13 +652,17 @@ $.jgrid.extend({
 				});
 				$("#"+gID+"_ilcancel").addClass( disabled );
 			}
-			if(o.restoreAfterSelect === true) {
+			if(o.restoreAfterSelect === true || o.saveAfterSelect === true) {
 				$($t).bind("jqGridBeforeSelectRow.inlineNav", function( event, id ) {
 					if($t.p.savedRow.length > 0 && $t.p.inlineNav===true && ( id !== $t.p.selrow && $t.p.selrow !==null) ) {
 						if($t.p.selrow === o.addParams.rowID ) {
 							$($t).jqGrid('delRowData', $t.p.selrow);
 						} else {
-							$($t).jqGrid('restoreRow', $t.p.selrow, o.editParams);
+							if(o.restoreAfterSelect === true) {
+								$($t).jqGrid('restoreRow', $t.p.selrow, o.editParams);
+							} else {
+								$($t).jqGrid('saveRow', $t.p.selrow, o.editParams);
+							}
 						}
 						$($t).jqGrid('showAddEditButtons');
 					}
