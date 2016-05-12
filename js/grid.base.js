@@ -566,15 +566,11 @@ $.extend($.jgrid,{
 			});
 			if($.isFunction(sfunc)) {
 				_sortData.sort(function(a,b){
-					a = a.vSort;
-					b = b.vSort;
-					return sfunc.call(this,a,b,newDir);
+					return sfunc.call(this,a.vSort, b.vSort, newDir, a, b);
 				});
 			} else {
 				_sortData.sort(function(a,b){
-					a = a.vSort;
-					b = b.vSort;
-					return self._compare(a,b,newDir);
+					return self._compare(a.vSort, b.vSort,newDir);
 				});
 			}
 			j=0;
