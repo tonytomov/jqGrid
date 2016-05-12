@@ -9,7 +9,7 @@
  */
 //jsHint options
 /*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery, window, define */
+/*global jQuery, window, define, navigator, document */
 (function( factory ) {
 	"use strict";
 	if ( typeof define === "function" && define.amd ) {
@@ -56,7 +56,7 @@ $.extend($.jgrid,{
 				}
 			}
 		});
-	},
+	}, 
 	msie : navigator.appName === 'Microsoft Internet Explorer',
 	msiever : function () {
 		var rv = -1;
@@ -1761,7 +1761,7 @@ $.fn.jqGrid = function( pin ) {
 			if( typeof rowAttrObj !== "object" ) {
 				rowAttrObj = $.isFunction(ts.p.rowattr) ? ts.p.rowattr.call(ts, rd, cur, id) :
 					(typeof ts.p.rowattr === "string" && $.jgrid.rowattr != null && $.isFunction($.jgrid.rowattr[ts.p.rowattr]) ?
-					 $.jgrid.rowattr[ts.p.rowattr].call(ts, rd, cur, id) : {});
+					$.jgrid.rowattr[ts.p.rowattr].call(ts, rd, cur, id) : {});
 			}
 			if(!$.isEmptyObject( rowAttrObj )) {
 				if (rowAttrObj.hasOwnProperty("id")) {
@@ -3265,7 +3265,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 		},
 		buildFreeze = function( index, isfreeze ) {
-			var cols = [], i, len = ts.p.colModel.length, lastfrozen = -1, cm = ts.p.colModel;;
+			var cols = [], i, len = ts.p.colModel.length, lastfrozen = -1, cm = ts.p.colModel;
 			for(i=0; i < len; i++) {
 				if(cm[i].frozen) {
 					lastfrozen = i;
@@ -3319,13 +3319,14 @@ $.fn.jqGrid = function( pin ) {
 				function(){
 					$("#col_menu").remove();
 					$("#search_menu").remove();
+					var left1, top1;
 					if($(this).attr("value") === 'columns') {
-						var left1 = $(this).parent().width()+18,
+						left1 = $(this).parent().width()+18,
 						top1 = $(this).parent().position().top - 5;
 						buildColItems(top1, left1, $(this).parent());
 					}
 					if($(this).attr("value") === 'filtering') {
-						var left1 = $(this).parent().width()+18,
+						left1 = $(this).parent().width()+18,
 						top1 = $(this).parent().position().top - 5;
 						buildSearchBox(index, top1, left1, $(this).parent());
 					}
