@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.0 - 2016-05-05
+* @license Guriddo jqGrid JS - v5.1.0 - 2016-05-12
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -86,6 +86,7 @@ $.extend($.jgrid,{
 		}
 		return id;
 	},
+	useJSON : true,
 	parse : function(jsonString) {
 		var js = jsonString;
 		if (js.substr(0,9) === "while(1);") { js = js.substr(9); }
@@ -560,15 +561,11 @@ $.extend($.jgrid,{
 			});
 			if($.isFunction(sfunc)) {
 				_sortData.sort(function(a,b){
-					a = a.vSort;
-					b = b.vSort;
-					return sfunc.call(this,a,b,newDir);
+					return sfunc.call(this,a.vSort, b.vSort, newDir, a, b);
 				});
 			} else {
 				_sortData.sort(function(a,b){
-					a = a.vSort;
-					b = b.vSort;
-					return self._compare(a,b,newDir);
+					return self._compare(a.vSort, b.vSort,newDir);
 				});
 			}
 			j=0;
@@ -14311,7 +14308,6 @@ $.jgrid.extend({
 				var dr = this.p._index[id];
 				if(dr != null) {
 					this.p.data[dr][isLeaf] = state;
-					console.log(this.p.data[dr]);
 				}
 			} catch(E){}
 			if(state === true) {
