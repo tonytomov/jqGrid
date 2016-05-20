@@ -5278,7 +5278,16 @@ $.jgrid.extend({
 				}
 				$($t).bind('jqGridAfterGridComplete.setFrozenColumns', function () {
 					$("#"+$.jgrid.jqID($t.p.id)+"_frozen").remove();
-					$($t.grid.fbDiv).height($($t.grid.bDiv).height()-16);
+					$($t.grid.fbDiv).height($($t.grid.bDiv).height()-14);
+					// find max height
+					var mh = [];
+					$("#"+$.jgrid.jqID($t.p.id) + " tr[role=row].jqgrow").each(function(){
+						var	b = $("td:visible:first", this),
+						b3 = b.height(),
+						b4 = b.outerHeight();
+						mh.push( $(this)[0].scrollHeight - (b4 - b3) );
+					});
+
 					var btbl = $("#"+$.jgrid.jqID($t.p.id)).clone(true);
 					$("tr[role=row]",btbl).each(function(){
 						$("td[role=gridcell]:gt("+maxfrozen+")",this).remove();
@@ -5286,6 +5295,11 @@ $.jgrid.extend({
 
 					$(btbl).width(1).attr("id",$t.p.id+"_frozen");
 					$($t.grid.fbDiv).append(btbl);
+					// set the height
+					$("tr[role=row].jqgrow",btbl).each(function(i, n){
+						$("td:not(.jqgrid-rownum):visible:first", this).height( mh[i] );
+					});
+
 					if($t.p.hoverrows === true) {
 						$("tr.jqgrow", btbl).hover(
 							function(){ $(this).addClass( hover ); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)).addClass( hover ); },
