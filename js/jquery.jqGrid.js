@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.0 - 2016-05-12
+* @license Guriddo jqGrid JS - v5.1.0 - 2016-05-20
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -51,7 +51,7 @@ $.extend($.jgrid,{
 				}
 			}
 		});
-	},
+	}, 
 	msie : navigator.appName === 'Microsoft Internet Explorer',
 	msiever : function () {
 		var rv = -1;
@@ -1756,7 +1756,7 @@ $.fn.jqGrid = function( pin ) {
 			if( typeof rowAttrObj !== "object" ) {
 				rowAttrObj = $.isFunction(ts.p.rowattr) ? ts.p.rowattr.call(ts, rd, cur, id) :
 					(typeof ts.p.rowattr === "string" && $.jgrid.rowattr != null && $.isFunction($.jgrid.rowattr[ts.p.rowattr]) ?
-					 $.jgrid.rowattr[ts.p.rowattr].call(ts, rd, cur, id) : {});
+					$.jgrid.rowattr[ts.p.rowattr].call(ts, rd, cur, id) : {});
 			}
 			if(!$.isEmptyObject( rowAttrObj )) {
 				if (rowAttrObj.hasOwnProperty("id")) {
@@ -3260,7 +3260,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 		},
 		buildFreeze = function( index, isfreeze ) {
-			var cols = [], i, len = ts.p.colModel.length, lastfrozen = -1, cm = ts.p.colModel;;
+			var cols = [], i, len = ts.p.colModel.length, lastfrozen = -1, cm = ts.p.colModel;
 			for(i=0; i < len; i++) {
 				if(cm[i].frozen) {
 					lastfrozen = i;
@@ -3314,13 +3314,14 @@ $.fn.jqGrid = function( pin ) {
 				function(){
 					$("#col_menu").remove();
 					$("#search_menu").remove();
+					var left1, top1;
 					if($(this).attr("value") === 'columns') {
-						var left1 = $(this).parent().width()+18,
+						left1 = $(this).parent().width()+18,
 						top1 = $(this).parent().position().top - 5;
 						buildColItems(top1, left1, $(this).parent());
 					}
 					if($(this).attr("value") === 'filtering') {
-						var left1 = $(this).parent().width()+18,
+						left1 = $(this).parent().width()+18,
 						top1 = $(this).parent().position().top - 5;
 						buildSearchBox(index, top1, left1, $(this).parent());
 					}
@@ -5272,7 +5273,16 @@ $.jgrid.extend({
 				}
 				$($t).bind('jqGridAfterGridComplete.setFrozenColumns', function () {
 					$("#"+$.jgrid.jqID($t.p.id)+"_frozen").remove();
-					$($t.grid.fbDiv).height($($t.grid.bDiv).height()-16);
+					$($t.grid.fbDiv).height($($t.grid.bDiv).height()-14);
+					// find max height
+					var mh = [];
+					$("#"+$.jgrid.jqID($t.p.id) + " tr[role=row].jqgrow").each(function(){
+						var	b = $("td:visible:first", this),
+						b3 = b.height(),
+						b4 = b.outerHeight();
+						mh.push( $(this)[0].scrollHeight - (b4 - b3) );
+					});
+
 					var btbl = $("#"+$.jgrid.jqID($t.p.id)).clone(true);
 					$("tr[role=row]",btbl).each(function(){
 						$("td[role=gridcell]:gt("+maxfrozen+")",this).remove();
@@ -5280,6 +5290,11 @@ $.jgrid.extend({
 
 					$(btbl).width(1).attr("id",$t.p.id+"_frozen");
 					$($t.grid.fbDiv).append(btbl);
+					// set the height
+					$("tr[role=row].jqgrow",btbl).each(function(i, n){
+						$("td:not(.jqgrid-rownum):visible:first", this).height( mh[i] );
+					});
+
 					if($t.p.hoverrows === true) {
 						$("tr.jqgrow", btbl).hover(
 							function(){ $(this).addClass( hover ); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)).addClass( hover ); },
