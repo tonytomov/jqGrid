@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.0 - 2016-05-20
+* @license Guriddo jqGrid JS - v5.1.0 - 2016-05-25
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5277,10 +5277,7 @@ $.jgrid.extend({
 					// find max height
 					var mh = [];
 					$("#"+$.jgrid.jqID($t.p.id) + " tr[role=row].jqgrow").each(function(){
-						var	b = $("td:visible:first", this),
-						b3 = b.height(),
-						b4 = b.outerHeight();
-						mh.push( $(this)[0].scrollHeight - (b4 - b3) );
+						mh.push( $("td:visible:first", this).height() );
 					});
 
 					var btbl = $("#"+$.jgrid.jqID($t.p.id)).clone(true);
