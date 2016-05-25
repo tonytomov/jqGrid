@@ -5282,10 +5282,7 @@ $.jgrid.extend({
 					// find max height
 					var mh = [];
 					$("#"+$.jgrid.jqID($t.p.id) + " tr[role=row].jqgrow").each(function(){
-						var	b = $("td:visible:first", this),
-						b3 = b.height(),
-						b4 = b.outerHeight();
-						mh.push( $(this)[0].scrollHeight - (b4 - b3) );
+						mh.push( $("td:visible:first", this).height() );
 					});
 
 					var btbl = $("#"+$.jgrid.jqID($t.p.id)).clone(true);
