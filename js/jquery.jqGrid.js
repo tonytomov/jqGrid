@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.0 - 2016-05-25
+* @license Guriddo jqGrid JS - v5.1.0 - 2016-05-26
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -52,21 +52,26 @@ $.extend($.jgrid,{
 			}
 		});
 	}, 
-	msie : navigator.appName === 'Microsoft Internet Explorer',
+	msie : function () {
+		return $.jgrid.msiever() > 0;
+	},
 	msiever : function () {
-		var rv = -1;
-		var ua = navigator.userAgent;
-		var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
-		if (re.exec(ua) != null) {
-			rv = parseFloat( RegExp.$1 );
+		var rv =0,
+		sAgent = window.navigator.userAgent,
+		Idx = sAgent.indexOf("MSIE");
+	
+		if (Idx > 0)  {
+			rv = parseInt(sAgent.substring(Idx+ 5, sAgent.indexOf(".", Idx)));
+		} else if ( !!navigator.userAgent.match(/Trident\/7\./) ) {
+			rv = 11;
 		}
-		return rv;
+		return rv;	
 	},
 	getCellIndex : function (cell) {
 		var c = $(cell);
 		if (c.is('tr')) { return -1; }
 		c = (!c.is('td') && !c.is('th') ? c.closest("td,th") : c)[0];
-		if ($.jgrid.msie) { return $.inArray(c, c.parentNode.cells); }
+		if ($.jgrid.msie()) { return $.inArray(c, c.parentNode.cells); }
 		return c.cellIndex;
 	},
 	stripHtml : function(v) {
@@ -1542,7 +1547,7 @@ $.fn.jqGrid = function( pin ) {
 		cornerall = getstyle(stylemodule,'cornerall', true),
 		iconbase = getstyle(stylemodule,'icon_base', true),
 		colmenustyle = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].colmenu,
-		isMSIE = $.jgrid.msie,
+		isMSIE = $.jgrid.msie(),
 		gv, sortarr = [], sortord = [], sotmp=[];
 		stylemodule = ts.p.styleUI + ".base";
 		gv = $("<div "+getstyle(stylemodule, 'viewBox', false, 'ui-jqgrid-view')+" role='grid'></div>");
@@ -3857,7 +3862,7 @@ $.fn.jqGrid = function( pin ) {
 			if( $("tbody",this).length === 2 ) { $("tbody:gt(0)",this).remove();}
 		}
 		if(ts.p.multikey){
-			if( $.jgrid.msie) {
+			if( $.jgrid.msie()) {
 				$(grid.bDiv).bind("selectstart",function(){return false;});
 			} else {
 				$(grid.bDiv).bind("mousedown",function(){return false;});
@@ -5223,7 +5228,7 @@ $.jgrid.extend({
 					});
 				}
 				$(htbl).width(1);
-				if(!$.jgrid.msie) { $(htbl).css("height","100%"); }
+				if(!$.jgrid.msie()) { $(htbl).css("height","100%"); }
 				// resizing stuff
 				$($t.grid.fhDiv).append(htbl)
 				.mousemove(function (e) {
@@ -7060,7 +7065,7 @@ $.fn.jqFilter = function( arg ) {
 				}
 				$(".selectopts",trpar).empty().append( s );
 				$(".selectopts",trpar)[0].selectedIndex = 0;
-				if( $.jgrid.msie && $.jgrid.msiever() < 9) {
+				if( $.jgrid.msie() && $.jgrid.msiever() < 9) {
 					var sw = parseInt($("select.selectopts",trpar)[0].offsetWidth, 10) + 1;
 					$(".selectopts",trpar).width( sw );
 					$(".selectopts",trpar).css("width","auto");
@@ -11869,7 +11874,7 @@ $.jgrid.extend({
 							else { $(this).append(elc); }
 							$.jgrid.bindEv.call($t, elc, opt);
 							//Again IE
-							if(cm[i].edittype === "select" && cm[i].editoptions!==undefined && cm[i].editoptions.multiple===true  && cm[i].editoptions.dataUrl===undefined && $.jgrid.msie) {
+							if(cm[i].edittype === "select" && cm[i].editoptions!==undefined && cm[i].editoptions.multiple===true  && cm[i].editoptions.dataUrl===undefined && $.jgrid.msie()) {
 								$(elc).width($(elc).width());
 							}
 							cnt++;
@@ -12457,7 +12462,7 @@ $.jgrid.extend({
 });
 
 //module begin
-if ($.jgrid.msie && $.jgrid.msiever()===8) {
+if ($.jgrid.msie() && $.jgrid.msiever()===8) {
 	$.expr[":"].hidden = function(elem) {
 		return elem.offsetWidth === 0 || elem.offsetHeight === 0 ||
 			elem.style.display === "none";
