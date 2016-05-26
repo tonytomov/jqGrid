@@ -59,13 +59,13 @@ $.extend($.jgrid,{
 		var rv =0,
 		sAgent = window.navigator.userAgent,
 		Idx = sAgent.indexOf("MSIE");
-	
+
 		if (Idx > 0)  {
 			rv = parseInt(sAgent.substring(Idx+ 5, sAgent.indexOf(".", Idx)));
 		} else if ( !!navigator.userAgent.match(/Trident\/7\./) ) {
 			rv = 11;
 		}
-		return rv;	
+		return rv;
 	},
 	getCellIndex : function (cell) {
 		var c = $(cell);
@@ -7021,6 +7021,16 @@ $.fn.jqFilter = function( arg ) {
 			var ruleFieldSelect = $("<select class='" + classes.srSelect + "'></select>"), ina, aoprs = [];
 			ruleFieldTd.append(ruleFieldSelect);
 			ruleFieldSelect.bind('change',function() {
+				if( that.p.ruleButtons && that.p.uniqueSearchFields ) {
+					var prev = parseInt($(this).data('curr'),10),
+					curr = this.selectedIndex;
+					if(prev >= 0 ) {
+						that.p.columns[prev].search = true;
+						$(this).data('curr', curr);
+						that.p.columns[curr].search = false;
+					}
+				}
+
 				rule.field = $(ruleFieldSelect).val();
 
 				trpar = $(this).parents("tr:first");
@@ -7102,6 +7112,7 @@ $.fn.jqFilter = function( arg ) {
 				}
 			}
 			ruleFieldSelect.append( str );
+			ruleFieldSelect.data('curr', j);
 
 
 			// create operator container
