@@ -281,6 +281,10 @@ a.g-menu-item, a.soptclass, a.clearsearchclass { cursor: pointer; }
 	height:100%;
 	color : black;
 }
+.ui-jqgrid .ui-jqgrid-htable .colmenu-rtl {
+	right:auto;
+	left : 1px;
+}
 .ui-jqgrid .ui-jqgrid-htable .colmenuspan {
 	display:inline-block;
 }
@@ -302,7 +306,8 @@ a.g-menu-item, a.soptclass, a.clearsearchclass { cursor: pointer; }
 }
 .ui-menu-item .ui-common-table .menu_icon {
 	white-space: pre;
-	padding-right: 8px;
+	padding-right: 4px;
+	padding-left: 4px;
 	width : auto;
 }
 .ui-menu-item .ui-common-table .menu_icon .ui-icon {

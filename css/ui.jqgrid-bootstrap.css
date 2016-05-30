@@ -665,7 +665,7 @@ div.ui-jqgrid .selected-row td {
 }
 .ui-jqgrid .ui-jqgrid-hbox-rtl {
 	float: right; 
-	padding-left: 20px;
+	/*padding-left: 20px;*/
 }
 .ui-jqgrid .ui-jqgrid-resize-ltr {
 	float: right;
@@ -876,6 +876,10 @@ ul.ui-search-menu li, ul.ui-nav-menu li {
 	height:100%;
 	color : black;
 }
+.ui-jqgrid .ui-jqgrid-htable .colmenu-rtl {
+	right: auto;
+	left : 1px;
+}
 .ui-jqgrid .ui-jqgrid-htable .colmenuspan {
 	display:inline-block;
 }
@@ -897,6 +901,7 @@ ul.ui-search-menu li, ul.ui-nav-menu li {
 }
 .ui-menu-item .ui-common-table .menu_icon {
 	padding-right: 8px;
+	padding-left: 8px;
 }
 td.menu_text {
 	width: auto;

@@ -3320,6 +3320,10 @@ $.fn.jqGrid = function( pin ) {
 			str += "</ul>";
 			$('body').append( str );
 			$("#column_menu").addClass("ui-menu " + colmenustyle.menu_widget);
+			if(ts.p.direction === "ltr") {
+				var wcm = $("#column_menu").width() + 26;
+				$("#column_menu").css("left", left- wcm);
+			}
 			$("#column_menu > li > a").hover(
 				function(){
 					$("#col_menu").remove();
@@ -3670,6 +3674,9 @@ $.fn.jqGrid = function( pin ) {
 				var offset = $(this).offset(),
 				left = ( offset.left ),
 				top = ( offset.top);
+				if(ts.p.direction === "ltr") {
+					left += $(this).outerWidth();
+				}
 				buildColMenu(colindex, left, top, t );
 				e.stopPropagation();
 				return;
