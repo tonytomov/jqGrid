@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.0 - 2016-05-26
+* @license Guriddo jqGrid JS - v5.1.0 - 2016-05-30
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3315,6 +3315,10 @@ $.fn.jqGrid = function( pin ) {
 			str += "</ul>";
 			$('body').append( str );
 			$("#column_menu").addClass("ui-menu " + colmenustyle.menu_widget);
+			if(ts.p.direction === "ltr") {
+				var wcm = $("#column_menu").width() + 26;
+				$("#column_menu").css("left", left- wcm);
+			}
 			$("#column_menu > li > a").hover(
 				function(){
 					$("#col_menu").remove();
@@ -3665,6 +3669,9 @@ $.fn.jqGrid = function( pin ) {
 				var offset = $(this).offset(),
 				left = ( offset.left ),
 				top = ( offset.top);
+				if(ts.p.direction === "ltr") {
+					left += $(this).outerWidth();
+				}
 				buildColMenu(colindex, left, top, t );
 				e.stopPropagation();
 				return;
@@ -3971,6 +3978,20 @@ $.fn.jqGrid = function( pin ) {
 			if(grid.resizing) {	grid.dragEnd( true ); return false;}
 			return true;
 		});
+		if(ts.p.direction === 'rtl') {
+			$(ts).bind('jqGridAfterGridComplete.setRTLPadding',function(){
+			        var  vScrollWidth = grid.bDiv.offsetWidth - grid.bDiv.clientWidth;
+				    //gridhbox = $("div:first",grid.hDiv);
+					ts.p.scrollOffset = vScrollWidth;
+					// for future implementation
+					//if (gridhbox.hasClass("ui-jqgrid-hbox-rtl")) {
+						$("div:first",grid.hDiv).css({paddingLeft: vScrollWidth + "px"});
+					//} else {
+						//gridhbox.css({paddingRight: vScrollWidth + "px"});
+					//}
+					grid.hDiv.scrollLeft = grid.bDiv.scrollLeft;
+			});
+		}
 		ts.formatCol = formatCol;
 		ts.sortData = sortData;
 		ts.updatepager = updatepager;
