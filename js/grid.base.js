@@ -3976,6 +3976,20 @@ $.fn.jqGrid = function( pin ) {
 			if(grid.resizing) {	grid.dragEnd( true ); return false;}
 			return true;
 		});
+		if(ts.p.direction === 'rtl') {
+			$(ts).bind('jqGridAfterGridComplete.setRTLPadding',function(){
+			        var  vScrollWidth = grid.bDiv.offsetWidth - grid.bDiv.clientWidth;
+				    //gridhbox = $("div:first",grid.hDiv);
+					ts.p.scrollOffset = vScrollWidth;
+					// for future implementation
+					//if (gridhbox.hasClass("ui-jqgrid-hbox-rtl")) {
+						$("div:first",grid.hDiv).css({paddingLeft: vScrollWidth + "px"});
+					//} else {
+						//gridhbox.css({paddingRight: vScrollWidth + "px"});
+					//}
+					grid.hDiv.scrollLeft = grid.bDiv.scrollLeft;
+			});
+		}
 		ts.formatCol = formatCol;
 		ts.sortData = sortData;
 		ts.updatepager = updatepager;
