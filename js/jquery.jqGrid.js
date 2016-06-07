@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.0 - 2016-05-30
+* @license Guriddo jqGrid JS - v5.1.0 - 2016-06-07
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3146,8 +3146,8 @@ $.fn.jqGrid = function( pin ) {
 			if( v1 ) {
 				df = v1;
 			}
-			var soptions = $.extend(cm.searchoptions, {name:cm.index || cm.name, id: "sval1_" + ts.p.idPrefix+cm.name, oper:'search'})
-			var input = $.jgrid.createEl.call(ts, cm.stype, soptions , df, false, $.extend({},$.jgrid.ajaxOptions, ts.p.ajaxSelectOptions || {}));
+			var soptions = $.extend(cm.searchoptions, {name:cm.index || cm.name, id: "sval1_" + ts.p.idPrefix+cm.name, oper:'search'}),
+			input = $.jgrid.createEl.call(ts, cm.stype, soptions , df, false, $.extend({},$.jgrid.ajaxOptions, ts.p.ajaxSelectOptions || {}));
 			$(input).addClass( colmenustyle.filter_input );
 			str1 = $('<div></div>').append(input);
 			elem.append(str1);
@@ -3740,10 +3740,10 @@ $.fn.jqGrid = function( pin ) {
 			cSel = $(ts).triggerHandler("jqGridBeforeSelectRow", [ptr[0].id, e]);
 			cSel = (cSel === false || cSel === 'stop') ? false : true;
 			if ($.isFunction(ts.p.beforeSelectRow)) {
-				 var allowRowSelect = ts.p.beforeSelectRow.call(ts, ptr[0].id, e);
-				 if (allowRowSelect === false || allowRowSelect === 'stop') {
-				 	cSel = false;
-				 }
+				var allowRowSelect = ts.p.beforeSelectRow.call(ts, ptr[0].id, e);
+				if (allowRowSelect === false || allowRowSelect === 'stop') {
+					cSel = false;
+				}
 			}
 			if (td.tagName === 'A' || ((td.tagName === 'INPUT' || td.tagName === 'TEXTAREA' || td.tagName === 'OPTION' || td.tagName === 'SELECT' ) && !scb) ) { return; }
 			ri = ptr[0].id;
@@ -3980,8 +3980,8 @@ $.fn.jqGrid = function( pin ) {
 		});
 		if(ts.p.direction === 'rtl') {
 			$(ts).bind('jqGridAfterGridComplete.setRTLPadding',function(){
-			        var  vScrollWidth = grid.bDiv.offsetWidth - grid.bDiv.clientWidth;
-				    //gridhbox = $("div:first",grid.hDiv);
+					var  vScrollWidth = grid.bDiv.offsetWidth - grid.bDiv.clientWidth;
+					//gridhbox = $("div:first",grid.hDiv);
 					ts.p.scrollOffset = vScrollWidth;
 					// for future implementation
 					//if (gridhbox.hasClass("ui-jqgrid-hbox-rtl")) {
@@ -5288,7 +5288,7 @@ $.jgrid.extend({
 						//up
 						$($t.grid.bDiv).scrollTop( st - 25 );
 					} else {
-				        //down
+						//down
 						$($t.grid.bDiv).scrollTop( st + 25 );
 					}
 					e.preventDefault();
@@ -5412,8 +5412,9 @@ $.jgrid.extend({
 		});
 	},
 	getStyleUI : function( styleui, classui, notclasstag, gridclass) {
+		var ret = "", q = "";
 		try {
-			var ret = "", stylemod = styleui.split("."), q = "";
+			var stylemod = styleui.split(".");
 			if(!notclasstag) {
 				ret = "class=";
 				q = "\"";
@@ -11868,11 +11869,15 @@ $.jgrid.extend({
 			if (!$t.grid ) { return; }
 			ind = $($t).jqGrid("getInd",rowid,true);
 			if( ind === false ) {return;}
+			$t.p.beforeAction = true;
 			bfer = $.isFunction( o.beforeEditRow ) ? o.beforeEditRow.call($t,o, rowid) :  undefined;
 			if( bfer === undefined ) {
 				bfer = true;
 			}
-			if(!bfer) { return; }
+			if(!bfer) { 
+				$t.p.beforeAction = false;
+				return; 
+			}
 			editable = $(ind).attr("editable") || "0";
 			if (editable === "0" && !$(ind).hasClass("not-editable-row")) {
 				cm = $t.p.colModel;
@@ -12273,11 +12278,15 @@ $.jgrid.extend({
 		return this.each(function(){
 			if (!this.grid ) { return; }
 			var $t = this;
+			$t.p.beforeAction = true;
 			var bfar = $.isFunction( p.beforeAddRow ) ?	p.beforeAddRow.call($t,p.addRowParams) :  undefined;
 			if( bfar === undefined ) {
 				bfar = true;
 			}
-			if(!bfar) { return; }
+			if(!bfar) {
+				$t.p.beforeAction = false;
+				return; 
+			}
 			p.rowID = $.isFunction(p.rowID) ? p.rowID.call($t, p) : ( (p.rowID != null) ? p.rowID : $.jgrid.randId());
 			if(p.useDefValues === true) {
 				$($t.p.colModel).each(function(){
@@ -12376,8 +12385,11 @@ $.jgrid.extend({
 					id : $t.p.id+"_iladd",
 					internal : true,
 					onClickButton : function () {
+						if($t.p.beforeAction === undefined) {
+							$t.p.beforeAction = true;
+						}
 						$($t).jqGrid('addRow', o.addParams);
-						if(!o.addParams.useFormatter) {
+						if(!o.addParams.useFormatter && $t.p.beforeAction) {
 							$("#"+gID+"_ilsave").removeClass( disabled );
 							$("#"+gID+"_ilcancel").removeClass( disabled );
 							$("#"+gID+"_iladd").addClass( disabled );
@@ -12396,11 +12408,16 @@ $.jgrid.extend({
 					onClickButton : function () {
 						var sr = $($t).jqGrid('getGridParam','selrow');
 						if(sr) {
+							if($t.p.beforeAction === undefined) {
+								$t.p.beforeAction = true;
+							}
 							$($t).jqGrid('editRow', sr, o.editParams);
-							$("#"+gID+"_ilsave").removeClass( disabled );
-							$("#"+gID+"_ilcancel").removeClass( disabled );
-							$("#"+gID+"_iladd").addClass( disabled );
-							$("#"+gID+"_iledit").addClass( disabled );
+							if($t.p.beforeAction) {
+								$("#"+gID+"_ilsave").removeClass( disabled );
+								$("#"+gID+"_ilcancel").removeClass( disabled );
+								$("#"+gID+"_iladd").addClass( disabled );
+								$("#"+gID+"_iledit").addClass( disabled );
+							}
 						} else {
 							$.jgrid.viewModal("#alertmod_"+gID, {gbox:"#gbox_"+gID,jqm:true});$("#jqg_alrt").focus();							
 						}
