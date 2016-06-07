@@ -3745,10 +3745,10 @@ $.fn.jqGrid = function( pin ) {
 			cSel = $(ts).triggerHandler("jqGridBeforeSelectRow", [ptr[0].id, e]);
 			cSel = (cSel === false || cSel === 'stop') ? false : true;
 			if ($.isFunction(ts.p.beforeSelectRow)) {
-				 var allowRowSelect = ts.p.beforeSelectRow.call(ts, ptr[0].id, e);
-				 if (allowRowSelect === false || allowRowSelect === 'stop') {
-				 	cSel = false;
-				 }
+				var allowRowSelect = ts.p.beforeSelectRow.call(ts, ptr[0].id, e);
+				if (allowRowSelect === false || allowRowSelect === 'stop') {
+					cSel = false;
+				}
 			}
 			if (td.tagName === 'A' || ((td.tagName === 'INPUT' || td.tagName === 'TEXTAREA' || td.tagName === 'OPTION' || td.tagName === 'SELECT' ) && !scb) ) { return; }
 			ri = ptr[0].id;
@@ -3985,8 +3985,8 @@ $.fn.jqGrid = function( pin ) {
 		});
 		if(ts.p.direction === 'rtl') {
 			$(ts).bind('jqGridAfterGridComplete.setRTLPadding',function(){
-			        var  vScrollWidth = grid.bDiv.offsetWidth - grid.bDiv.clientWidth;
-				    //gridhbox = $("div:first",grid.hDiv);
+					var  vScrollWidth = grid.bDiv.offsetWidth - grid.bDiv.clientWidth;
+					//gridhbox = $("div:first",grid.hDiv);
 					ts.p.scrollOffset = vScrollWidth;
 					// for future implementation
 					//if (gridhbox.hasClass("ui-jqgrid-hbox-rtl")) {
@@ -5293,7 +5293,7 @@ $.jgrid.extend({
 						//up
 						$($t.grid.bDiv).scrollTop( st - 25 );
 					} else {
-				        //down
+						//down
 						$($t.grid.bDiv).scrollTop( st + 25 );
 					}
 					e.preventDefault();
@@ -5417,8 +5417,9 @@ $.jgrid.extend({
 		});
 	},
 	getStyleUI : function( styleui, classui, notclasstag, gridclass) {
+		var ret = "", q = "";
 		try {
-			var ret = "", stylemod = styleui.split("."), q = "";
+			var stylemod = styleui.split(".");
 			if(!notclasstag) {
 				ret = "class=";
 				q = "\"";
