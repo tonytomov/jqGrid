@@ -11810,7 +11810,7 @@ $.extend($.jgrid,{
 						}
 					}
 					if(o.exportgrouping) {
-						expg = JSON.stringify( this.p.groupingView )
+						expg = JSON.stringify( this.p.groupingView );
 						if(typeof expg === 'string' ) {
 							pdata['groupingView'] = expg;
 						}
