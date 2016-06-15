@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.1 - 2016-06-08
+* @license Guriddo jqGrid JS - v5.1.1 - 2016-06-15
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -8895,7 +8895,7 @@ $.jgrid.extend({
 									//id processing
 									// user not set the id ret[2]
 									if(!ret[2]) {ret[2] = $.jgrid.randId();}
-									if(postdata[idname] == null || postdata[idname] === "_empty"){
+									if(postdata[idname] == null || postdata[idname] === "_empty" || postdata[idname] == ""){
 										postdata[idname] = ret[2];
 									} else {
 										ret[2] = postdata[idname];
