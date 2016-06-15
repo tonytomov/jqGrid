@@ -3600,13 +3600,13 @@ $.fn.jqGrid = function( pin ) {
 				tmpcm.sortable =  true; 
 				sort=true;
 			}
-			if(sort) {
-				var nm = tmpcm.name;
-				if( !(nm === 'cb' || nm==='subgrid' || nm==='rn') ) {
-					if(ts.p.viewsortcols[2]){
-						$(">div",this).addClass('ui-jqgrid-sortable');
-					}
+			var nm = tmpcm.name;
+			if( !(nm === 'cb' || nm==='subgrid' || nm==='rn') ) {
+				if(ts.p.viewsortcols[2]){
+					$(">div",this).addClass('ui-jqgrid-sortable');
 				}
+			}
+			if(sort) {
 				if(ts.p.multiSort) {
 					if(ts.p.viewsortcols[0]) {
 						$("div span.s-ico",this).show(); 
