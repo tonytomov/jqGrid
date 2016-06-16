@@ -200,7 +200,7 @@ addSubGrid : function( pos, sind ) {
 		while(i < len) {
 			if($(ts.rows[i]).hasClass('jqgrow')) {
 				if(ts.p.scroll) {
-					$(ts.rows[i].cells[pos]).unbind('click');
+					$(ts.rows[i].cells[pos]).off('click');
 				}
 				hsret = null;
 				if(ishsg) {
@@ -209,7 +209,7 @@ addSubGrid : function( pos, sind ) {
 				if(hsret === false) {
 					ts.rows[i].cells[pos].innerHTML = "";
 				} else {
-					$(ts.rows[i].cells[pos]).bind('click', function() {
+					$(ts.rows[i].cells[pos]).on('click', function() {
 						var tr = $(this).parent("tr")[0];
 						pID = ts.p.id;
 						_id = tr.id;
