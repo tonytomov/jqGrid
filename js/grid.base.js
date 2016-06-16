@@ -3724,15 +3724,15 @@ $.fn.jqGrid = function( pin ) {
 			setPager(ts.p.pager,'');
 		}
 		if( ts.p.cellEdit === false && ts.p.hoverrows === true) {
-		$(ts).bind('mouseover',function(e) {
-			ptr = $(e.target).closest("tr.jqgrow");
-			if($(ptr).attr("class") !== "ui-subgrid") {
-				$(ptr).addClass(hover);
-			}
-		}).bind('mouseout',function(e) {
-			ptr = $(e.target).closest("tr.jqgrow");
-			$(ptr).removeClass(hover);
-		});
+			$(ts).bind('mouseover',function(e) {
+				ptr = $(e.target).closest("tr.jqgrow");
+				if($(ptr).attr("class") !== "ui-subgrid") {
+					$(ptr).addClass(hover);
+				}
+			}).bind('mouseout',function(e) {
+				ptr = $(e.target).closest("tr.jqgrow");
+				$(ptr).removeClass(hover);
+			});
 		}
 		var ri,ci, tdHtml;
 		$(ts).before(grid.hDiv).click(function(e) {
