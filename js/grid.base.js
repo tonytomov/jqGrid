@@ -5361,8 +5361,8 @@ $.jgrid.extend({
 					$("#"+$.jgrid.jqID($t.p.id)).bind('mouseover',function(e) {
 						ptr = $(e.target).closest("tr.jqgrow");
 						if($(ptr).attr("class") !== "ui-subgrid") {
-						$(ptr).addClass( hover );
-					}
+							$(ptr).addClass( hover );
+						}
 					}).bind('mouseout',function(e) {
 						ptr = $(e.target).closest("tr.jqgrow");
 						$(ptr).removeClass( hover );
