@@ -296,10 +296,10 @@ $.extend($.jgrid,{
 		// attach onclick after inserting into the dom
 		if(buttstr) {
 			$.each(mopt.buttons,function(i){
-				$("#"+$.jgrid.jqID(this.id),"#info_id").bind('click',function(){mopt.buttons[i].onClick.call($("#info_dialog")); return false;});
+				$("#"+$.jgrid.jqID(this.id),"#info_id").on('click',function(){mopt.buttons[i].onClick.call($("#info_dialog")); return false;});
 			});
 		}
-		$("#closedialog", "#info_id").click(function(){
+		$("#closedialog", "#info_id").on('click',function(){
 			self.hideModal("#info_dialog",{
 				jqm:jm,
 				onClose: $("#info_dialog").data("onClose") || mopt.onClose,
@@ -331,9 +331,9 @@ $.extend($.jgrid,{
 		if(opt.dataEvents) {
 			$.each(opt.dataEvents, function() {
 				if (this.data !== undefined) {
-					$(el).bind(this.type, this.data, this.fn);
+					$(el).on(this.type, this.data, this.fn);
 				} else {
-					$(el).bind(this.type, this.fn);
+					$(el).on(this.type, this.fn);
 				}
 			});
 		}
