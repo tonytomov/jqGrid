@@ -124,7 +124,7 @@ $.jgrid.extend({
 						},0);
 					}
 					if(o.keys===true) {
-						$(ind).bind( o.keyevent ,function(e) {
+						$(ind).on( o.keyevent ,function(e) {
 							if (e.keyCode === 27) {
 								$($t).jqGrid("restoreRow",rowid, o.afterrestorefunc);
 								if($t.p.inlineNav) {
@@ -322,7 +322,7 @@ $.jgrid.extend({
 				$($t).triggerHandler("jqGridInlineAfterSaveRow", [rowid, resp, tmp, o]);
 				if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, resp, tmp, o); }
 				success = true;
-				$(ind).removeClass("jqgrid-new-row").unbind("keydown");
+				$(ind).removeClass("jqgrid-new-row").off("keydown");
 			} else {
 				$($t).jqGrid("progressBar", {method:"show", loadtype : o.saveui, htmlcontent: o.savetext });
 				tmp3 = $.extend({},tmp,tmp3);
@@ -369,7 +369,7 @@ $.jgrid.extend({
 								$($t).triggerHandler("jqGridInlineAfterSaveRow", [rowid, res, tmp, o]);
 								if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, res, tmp, o); }
 								success = true;
-								$(ind).removeClass("jqgrid-new-row").unbind("keydown");
+								$(ind).removeClass("jqgrid-new-row").off("keydown");
 							} else {
 								$($t).triggerHandler("jqGridInlineErrorSaveRow", [rowid, res, stat, null, o]);
 								if($.isFunction(o.errorfunc) ) {
@@ -441,7 +441,7 @@ $.jgrid.extend({
 					}
 				});
 				$($t).jqGrid("setRowData",rowid,ares);
-				$(ind).attr("editable","0").unbind("keydown");
+				$(ind).attr("editable","0").off("keydown");
 				$t.p.savedRow.splice(fr,1);
 				if($("#"+$.jgrid.jqID(rowid), "#"+$.jgrid.jqID($t.p.id)).hasClass("jqgrid-new-row")){
 					setTimeout(function(){
@@ -669,7 +669,7 @@ $.jgrid.extend({
 				$("#"+gID+"_ilcancel").addClass( disabled );
 			}
 			if(o.restoreAfterSelect === true || o.saveAfterSelect === true) {
-				$($t).bind("jqGridBeforeSelectRow.inlineNav", function( event, id ) {
+				$($t).on("jqGridBeforeSelectRow.inlineNav", function( event, id ) {
 					if($t.p.savedRow.length > 0 && $t.p.inlineNav===true && ( id !== $t.p.selrow && $t.p.selrow !==null) ) {
 						if($t.p.selrow === o.addParams.rowID ) {
 							$($t).jqGrid('delRowData', $t.p.selrow);
