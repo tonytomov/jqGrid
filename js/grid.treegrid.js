@@ -96,7 +96,7 @@ $.jgrid.extend({
 				}
 				$($t.rows[i].cells[expCol])
 					.find("div.treeclick")
-					.bind("click",function(e){
+					.on("click",function(e){
 						var target = e.target || e.srcElement,
 						ind2 =$.jgrid.stripPref($t.p.idPrefix,$(target,$t.rows).closest("tr.jqgrow")[0].id),
 						pos = $t.p._index[ind2];
@@ -115,7 +115,7 @@ $.jgrid.extend({
 					$($t.rows[i].cells[expCol])
 						.find("span.cell-wrapper")
 						.css("cursor","pointer")
-						.bind("click",function(e) {
+						.on("click",function(e) {
 							var target = e.target || e.srcElement,
 							ind2 =$.jgrid.stripPref($t.p.idPrefix,$(target,$t.rows).closest("tr.jqgrow")[0].id),
 							pos = $t.p._index[ind2];
@@ -518,7 +518,7 @@ $.jgrid.extend({
 			
 			if(!reloadcurrent) {
 				if(!jQuery._data( this, "events" ).jqGridAfterSetTreeNode) {
-					$(this).bind("jqGridAfterSetTreeNode.reloadNode", function(){
+					$(this).on("jqGridAfterSetTreeNode.reloadNode", function(){
 						var isLeaf = this.p.treeReader.leaf_field;
 						if(this.p.reloadnode ) {
 							var rc = this.p.reloadnode,
