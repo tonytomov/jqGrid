@@ -2424,6 +2424,9 @@ $.fn.jqGrid = function( pin ) {
 			to = base + ts.p.reccount;
 			if (ts.p.scroll) {
 				var rows = $("tbody:first > tr:gt(0)", ts.grid.bDiv);
+				if(to > ts.p.records) {
+					to = ts.p.records;
+				}
 				base = to - rows.length;
 				ts.p.reccount = rows.length;
 				var rh = rows.outerHeight() || ts.grid.prevRowHeight;
