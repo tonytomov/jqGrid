@@ -73,15 +73,8 @@ $.extend($.jgrid,{
 	},
 //Helper functions
 	findPos : function(obj) {
-		var curleft = 0, curtop = 0;
-		if (obj.offsetParent) {
-			do {
-				curleft += obj.offsetLeft;
-				curtop += obj.offsetTop;
-			} while (obj = obj.offsetParent);
-			//do not change obj == obj.offsetParent
-		}
-		return [curleft,curtop];
+		var offset = $(obj).offset();
+		return [offset.left,offset.top];
 	},
 	createModal : function(aIDs, content, p, insertSelector, posSelector, appendsel, css) {
 		p = $.extend(true, {}, $.jgrid.jqModal || {}, p);
