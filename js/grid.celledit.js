@@ -262,7 +262,20 @@ $.jgrid.extend({
 												}
 												$t.p.savedRow.splice(0,1);
 											} else {
-												$.jgrid.info_dialog(errors.errcap,ret[1],edit.bClose, {styleUI : $t.p.styleUI });
+												if ($.isFunction($t.p.errorCell)) {
+													$t.p.errorCell.call($t, result, stat);
+												} else {
+													$.jgrid.info_dialog(errors.errcap, ret[1], edit.bClose, {
+														styleUI : $t.p.styleUI,
+														top:p.top+30, 
+														left:p.left ,
+														onClose : function() {
+															if(!$t.p.restoreCellonFail) {
+																$("#"+iRow+"_"+nmjq,$t.rows[iRow]).focus();
+															}
+														}
+													});
+												}
 												if( $t.p.restoreCellonFail) {
 													$($t).jqGrid("restoreCell",iRow,iCol);
 												}
@@ -276,7 +289,16 @@ $.jgrid.extend({
 										if ($.isFunction($t.p.errorCell)) {
 											$t.p.errorCell.call($t, res,stat,err);
 										} else {
-											$.jgrid.info_dialog(errors.errcap,res.status+" : "+res.statusText+"<br/>"+stat, edit.bClose, {styleUI : $t.p.styleUI });
+											$.jgrid.info_dialog(errors.errcap, res.status+" : "+res.statusText+"<br/>"+stat, edit.bClose, {
+												styleUI : $t.p.styleUI,
+												top:p.top+30, 
+												left:p.left ,
+												onClose : function() {
+													if(!$t.p.restoreCellonFail) {
+														$("#"+iRow+"_"+nmjq,$t.rows[iRow]).focus();
+													}
+												}
+											});
 										}
 										if( $t.p.restoreCellonFail) {
 											$($t).jqGrid("restoreCell",iRow,iCol);
@@ -306,7 +328,7 @@ $.jgrid.extend({
 					} else {
 						try {
 							if( $.isFunction($t.p.validationCell) ) {
-								$t.p.validationCell.call($t, $("#"+iRow+"_"+nmjq,$t.rows[iRow]), iRow, iCol);
+								$t.p.validationCell.call($t, $("#"+iRow+"_"+nmjq,$t.rows[iRow]), cv[1], iRow, iCol);
 							} else {
 								window.setTimeout(function(){
 									$.jgrid.info_dialog(errors.errcap,v+ " " + cv[1], edit.bClose, {
