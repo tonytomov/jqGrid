@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.1 - 2016-06-22
+* @license Guriddo jqGrid JS - v5.1.1 - 2016-06-23
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5742,9 +5742,28 @@ $.jgrid.extend({
 						}
 					} else {
 						try {
-							window.setTimeout(function(){$.jgrid.info_dialog(errors.errcap,v+ " " + cv[1], edit.bClose, {styleUI : $t.p.styleUI, top:p.top+40, left:p.left });},100);
-							$($t).jqGrid("restoreCell",iRow,iCol);
-						} catch (e) {}
+							if( $.isFunction($t.p.validationCell) ) {
+								$t.p.validationCell.call($t, $("#"+iRow+"_"+nmjq,$t.rows[iRow]), iRow, iCol);
+							} else {
+								window.setTimeout(function(){
+									$.jgrid.info_dialog(errors.errcap,v+ " " + cv[1], edit.bClose, {
+										styleUI : $t.p.styleUI, 
+										top:p.top+30, 
+										left:p.left ,
+										onClose : function() {
+											if(!$t.p.restoreCellonFail) {
+												$("#"+iRow+"_"+nmjq,$t.rows[iRow]).focus();
+											}
+										}
+									});
+								},50);
+								if( $t.p.restoreCellonFail) {
+									$($t).jqGrid("restoreCell",iRow,iCol);
+								}
+							}
+						} catch (e) {
+							alert(cv[1]);
+						}
 					}
 				} else {
 					$($t).jqGrid("restoreCell",iRow,iCol);
@@ -12014,7 +12033,7 @@ $.jgrid.extend({
 		editable = $(ind).attr("editable");
 		o.url = o.url || $t.p.editurl;
 		if (editable==="1") {
-			var cm;
+			var cm, index;
 			$('td[role="gridcell"]',ind).each(function(i) {
 				cm = $t.p.colModel[i];
 				nm = cm.name;
@@ -12064,6 +12083,7 @@ $.jgrid.extend({
 					}
 					cv = $.jgrid.checkValues.call($t,tmp[nm],i);
 					if(cv[0] === false) {
+						index = i;
 						return false;
 					}
 					if($t.p.autoencode) { tmp[nm] = $.jgrid.htmlEncode(tmp[nm]); }
@@ -12077,8 +12097,18 @@ $.jgrid.extend({
 			});
 			if (cv[0] === false){
 				try {
-					var tr = $($t).jqGrid('getGridRowById', rowid), positions = $.jgrid.findPos(tr);
-					$.jgrid.info_dialog(errors.errcap,cv[1],edit.bClose,{left:positions[0],top:positions[1]+$(tr).outerHeight(), styleUI : $t.p.styleUI });
+					var tr = $($t).jqGrid('getGridRowById', rowid), 
+						positions = $.jgrid.findPos(tr);
+					$.jgrid.info_dialog(errors.errcap,cv[1],edit.bClose,{
+						left:positions[0],
+						top:positions[1]+$(tr).outerHeight(), 
+						styleUI : $t.p.styleUI, 
+						onClose: function(){
+							if(index >= 0 ) {
+								$("#"+rowid+"_" +$t.p.colModel[index].name).focus();
+							}
+						}
+					});
 				} catch (e) {
 					alert(cv[1]);
 				}
