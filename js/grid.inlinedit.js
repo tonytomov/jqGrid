@@ -197,7 +197,7 @@ $.jgrid.extend({
 		editable = $(ind).attr("editable");
 		o.url = o.url || $t.p.editurl;
 		if (editable==="1") {
-			var cm;
+			var cm, index;
 			$('td[role="gridcell"]',ind).each(function(i) {
 				cm = $t.p.colModel[i];
 				nm = cm.name;
@@ -247,6 +247,7 @@ $.jgrid.extend({
 					}
 					cv = $.jgrid.checkValues.call($t,tmp[nm],i);
 					if(cv[0] === false) {
+						index = i;
 						return false;
 					}
 					if($t.p.autoencode) { tmp[nm] = $.jgrid.htmlEncode(tmp[nm]); }
@@ -260,8 +261,18 @@ $.jgrid.extend({
 			});
 			if (cv[0] === false){
 				try {
-					var tr = $($t).jqGrid('getGridRowById', rowid), positions = $.jgrid.findPos(tr);
-					$.jgrid.info_dialog(errors.errcap,cv[1],edit.bClose,{left:positions[0],top:positions[1]+$(tr).outerHeight(), styleUI : $t.p.styleUI });
+					var tr = $($t).jqGrid('getGridRowById', rowid), 
+						positions = $.jgrid.findPos(tr);
+					$.jgrid.info_dialog(errors.errcap,cv[1],edit.bClose,{
+						left:positions[0],
+						top:positions[1]+$(tr).outerHeight(), 
+						styleUI : $t.p.styleUI, 
+						onClose: function(){
+							if(index >= 0 ) {
+								$("#"+rowid+"_" +$t.p.colModel[index].name).focus();
+							}
+						}
+					});
 				} catch (e) {
 					alert(cv[1]);
 				}
