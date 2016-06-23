@@ -26,6 +26,7 @@
  * afterSubmitCell(if cellsubmit remote (ajax)),
  * afterSaveCell,
  * errorCell,
+ * validationCell
  * serializeCellData - new
  * Options
  * cellsubmit (remote,clientArray) (added in grid options)
@@ -304,9 +305,28 @@ $.jgrid.extend({
 						}
 					} else {
 						try {
-							window.setTimeout(function(){$.jgrid.info_dialog(errors.errcap,v+ " " + cv[1], edit.bClose, {styleUI : $t.p.styleUI, top:p.top+40, left:p.left });},100);
-							$($t).jqGrid("restoreCell",iRow,iCol);
-						} catch (e) {}
+							if( $.isFunction($t.p.validationCell) ) {
+								$t.p.validationCell.call($t, $("#"+iRow+"_"+nmjq,$t.rows[iRow]), iRow, iCol);
+							} else {
+								window.setTimeout(function(){
+									$.jgrid.info_dialog(errors.errcap,v+ " " + cv[1], edit.bClose, {
+										styleUI : $t.p.styleUI, 
+										top:p.top+30, 
+										left:p.left ,
+										onClose : function() {
+											if(!$t.p.restoreCellonFail) {
+												$("#"+iRow+"_"+nmjq,$t.rows[iRow]).focus();
+											}
+										}
+									});
+								},50);
+								if( $t.p.restoreCellonFail) {
+									$($t).jqGrid("restoreCell",iRow,iCol);
+								}
+							}
+						} catch (e) {
+							alert(cv[1]);
+						}
 					}
 				} else {
 					$($t).jqGrid("restoreCell",iRow,iCol);
