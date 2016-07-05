@@ -3708,7 +3708,7 @@ $.fn.jqGrid = function( pin ) {
 		var hTable = $("<table "+getstyle(stylemodule,'headerTable',false,'ui-jqgrid-htable ui-common-table')+" style='width:"+ts.p.tblwidth+"px' role='presentation' aria-labelledby='gbox_"+this.id+"'></table>").append(thead),
 		hg = (ts.p.caption && ts.p.hiddengrid===true) ? true : false,
 		hb = $("<div class='ui-jqgrid-hbox" + (dir==="rtl" ? "-rtl" : "" )+"'></div>"),
-		bstw = ts.p.styleUI === 'Bootstrap' ? 2 : 0;
+		bstw = ts.p.styleUI === 'Bootstrap' && !isNaN(ts.p.height) ? 2 : 0;
 		thead = null;
 		grid.hDiv = document.createElement("div");
 		grid.hDiv.style.width = (grid.width - bstw) + "px";
