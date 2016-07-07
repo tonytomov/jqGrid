@@ -295,7 +295,7 @@ $.extend($.jgrid,{
 	getAccessor : function(obj, expr) {
 		var ret,p,prm = [], i;
 		if( typeof expr === 'function') { return expr(obj); }
-		ret = obj[expr];
+		ret = (typeof object != 'undefined') ? obj[expr] : undefined;
 		if(ret===undefined) {
 			try {
 				if ( typeof expr === 'string' ) {
@@ -11859,7 +11859,7 @@ $.extend($.jgrid,{
 						}
 					}
 					if(o.exportgrouping) {
-						expg = JSON.stringify( this.p.groupingView )
+						expg = JSON.stringify( this.p.groupingView );
 						if(typeof expg === 'string' ) {
 							pdata['groupingView'] = expg;
 						}

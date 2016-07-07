@@ -1,6 +1,6 @@
 /**
  * jqGrid Chinese Translation
- * 咖啡兔 yanhonglei@gmail.com
+ * 咖啡兔 yanhonglei@gmail.com, waiting
  * http://www.kafeitu.me 
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
@@ -30,31 +30,31 @@ $.jgrid.regional["cn"] = {
         recordtext: "{0} - {1}\u3000共 {2} 条", // 共字前是全角空格
         emptyrecords: "无数据显示",
         loadtext: "读取中...",
-		savetext: "Saving...",
+		savetext: "保存中...",
         pgtext : " {0} 共 {1} 页",
-		pgfirst : "First Page",
-		pglast : "Last Page",
-		pgnext : "Next Page",
-		pgprev : "Previous Page",
-		pgrecs : "Records per Page",
-		showhide: "Toggle Expand Collapse Grid",
+		pgfirst : "首页",
+		pglast : "末页",
+		pgnext : "下页",
+		pgprev : "上页",
+		pgrecs : "每页条数",
+		showhide: "切换展开折叠",
 		// mobile
-		pagerCaption : "Grid::Page Settings",
-		pageText : "Page:",
-		recordPage : "Records per Page",
-		nomorerecs : "No more records...",
-		scrollPullup: "Pull up to load more...",
-		scrollPulldown : "Pull down to refresh...",
-		scrollRefresh : "Release to refresh..."
+		pagerCaption : "Grid::页面设定",
+		pageText : "页:",
+		recordPage : "每页条数",
+		nomorerecs : "无更多记录...",
+		scrollPullup: "上拖动加载更多...",
+		scrollPulldown : "下拖动刷新...",
+		scrollRefresh : "释放刷新..."
     },
     search : {
         caption: "搜索...",
         Find: "查找",
         Reset: "重置",
-        odata: [{ oper:'eq', text:'等于\u3000\u3000'},{ oper:'ne', text:'不等\u3000\u3000'},{ oper:'lt', text:'小于\u3000\u3000'},{ oper:'le', text:'小于等于'},{ oper:'gt', text:'大于\u3000\u3000'},{ oper:'ge', text:'大于等于'},{ oper:'bw', text:'开始于'},{ oper:'bn', text:'不开始于'},{ oper:'in', text:'属于\u3000\u3000'},{ oper:'ni', text:'不属于'},{ oper:'ew', text:'结束于'},{ oper:'en', text:'不结束于'},{ oper:'cn', text:'包含\u3000\u3000'},{ oper:'nc', text:'不包含'},{ oper:'nu', text:'不存在'},{ oper:'nn', text:'存在'}, {oper:'bt', text:'between'}],
+        odata: [{ oper:'eq', text:'等于\u3000\u3000'},{ oper:'ne', text:'不等\u3000\u3000'},{ oper:'lt', text:'小于\u3000\u3000'},{ oper:'le', text:'小于等于'},{ oper:'gt', text:'大于\u3000\u3000'},{ oper:'ge', text:'大于等于'},{ oper:'bw', text:'开始于'},{ oper:'bn', text:'不开始于'},{ oper:'in', text:'属于\u3000\u3000'},{ oper:'ni', text:'不属于'},{ oper:'ew', text:'结束于'},{ oper:'en', text:'不结束于'},{ oper:'cn', text:'包含\u3000\u3000'},{ oper:'nc', text:'不包含'},{ oper:'nu', text:'不存在'},{ oper:'nn', text:'存在'}, {oper:'bt', text:'其间'}],
         groupOps: [ { op: "AND", text: "所有" },    { op: "OR",  text: "任一" } ],
-		operandTitle : "Click to select search operation.",
-		resetTitle : "Reset Search Value"
+		operandTitle : "点击选择搜索操作符.",
+		resetTitle : "重置搜索值"
     },
     edit : {
         addCaption: "添加记录",
@@ -107,10 +107,10 @@ $.jgrid.regional["cn"] = {
         viewtext: "",
         viewtitle: "查看所选记录",
 		savetext: "",
-		savetitle: "Save row",
+		savetitle: "保存行",
 		canceltext: "",
-		canceltitle : "Cancel row editing",
-		selectcaption : "Actions..."
+		canceltitle : "取消行编辑",
+		selectcaption : "操作..."
     },
     col : {
         caption: "选择列",
@@ -204,16 +204,16 @@ $.jgrid.regional["cn"] = {
         idName : 'id'
     },
 	colmenu : {
-		sortasc : "Sort Ascending",
-		sortdesc : "Sort Descending",
-		columns : "Columns",
-		filter : "Filter",
-		grouping : "Group By",
-		ungrouping : "Ungroup",
+		sortasc : "升序",
+		sortdesc : "降序",
+		columns : "列",
+		filter : "过滤",
+		grouping : "分组",
+		ungrouping : "无分组",
 		searchTitle : "Get items with value that:",
-		freeze : "Freeze",
-		unfreeze : "Unfreeze",
-		reorder : "Move to reorder"
+		freeze : "冻结",
+		unfreeze : "解冻",
+		reorder : "移动重新排序"
 	}
 };
 }));
