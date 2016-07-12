@@ -4800,6 +4800,40 @@ $.jgrid.extend({
 			}
 		});
 	},
+	setSortIcon : function(colname, position) {
+		return this.each(function(){
+			var $t = this, pos=-1, addpix = 8;
+			if(!$t.grid) {return;}
+			if(colname != null) {
+				if(isNaN(colname)) {
+					$($t.p.colModel).each(function(i){
+						if (this.name === colname) {
+							pos = i;return false;
+						}
+					});
+				} else {
+					pos = parseInt(colname,10);
+				}
+			} else { 
+				return; 
+			}
+			if(pos>=0) {
+				var tw, thecol = $("tr.ui-jqgrid-labels th:eq("+pos+")",$t.grid.hDiv),
+				ttext = $("[id^=jqgh_]",thecol).text(),
+			    fakeEl = $("<span>").hide().appendTo(document.body),
+				iw = $(".ui-grid-ico-sort:visible:first").outerWidth( );
+				tw = fakeEl.text(ttext).css('font-size', thecol.css('font-size')).width();
+				thecol.find(".ui-grid-ico-sort").css("margin-left", "0");
+				if(position === 'left') {
+					if(!iw) { iw = 15;}
+					thecol.find(".ui-grid-ico-sort").css("margin-left","-"+( tw + iw + addpix) + "px");
+				} else {
+					thecol.find(".ui-grid-ico-sort").css("margin-left", "5px")
+				}
+				fakeEl.remove();
+			}
+		});		
+	},
 	setCell : function(rowid,colname,nData,cssp,attrp, forceupd) {
 		return this.each(function(){
 			var $t = this, pos =-1,v, title;
