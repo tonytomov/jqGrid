@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.1 - 2016-06-23
+* @license Guriddo jqGrid JS - v5.1.1 - 2016-07-12
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3703,7 +3703,7 @@ $.fn.jqGrid = function( pin ) {
 		var hTable = $("<table "+getstyle(stylemodule,'headerTable',false,'ui-jqgrid-htable ui-common-table')+" style='width:"+ts.p.tblwidth+"px' role='presentation' aria-labelledby='gbox_"+this.id+"'></table>").append(thead),
 		hg = (ts.p.caption && ts.p.hiddengrid===true) ? true : false,
 		hb = $("<div class='ui-jqgrid-hbox" + (dir==="rtl" ? "-rtl" : "" )+"'></div>"),
-		bstw = ts.p.styleUI === 'Bootstrap' ? 2 : 0;
+		bstw = ts.p.styleUI === 'Bootstrap' && !isNaN(ts.p.height) ? 2 : 0;
 		thead = null;
 		grid.hDiv = document.createElement("div");
 		grid.hDiv.style.width = (grid.width - bstw) + "px";
@@ -4794,6 +4794,40 @@ $.jgrid.extend({
 				if(typeof attrp === 'object') {$(thecol).attr(attrp);}
 			}
 		});
+	},
+	setSortIcon : function(colname, position) {
+		return this.each(function(){
+			var $t = this, pos=-1, addpix = 8;
+			if(!$t.grid) {return;}
+			if(colname != null) {
+				if(isNaN(colname)) {
+					$($t.p.colModel).each(function(i){
+						if (this.name === colname) {
+							pos = i;return false;
+						}
+					});
+				} else {
+					pos = parseInt(colname,10);
+				}
+			} else { 
+				return; 
+			}
+			if(pos>=0) {
+				var tw, thecol = $("tr.ui-jqgrid-labels th:eq("+pos+")",$t.grid.hDiv),
+				ttext = $("[id^=jqgh_]",thecol).text(),
+			    fakeEl = $("<span>").hide().appendTo(document.body),
+				iw = $(".ui-grid-ico-sort:visible:first").outerWidth( );
+				tw = fakeEl.text(ttext).css('font-size', thecol.css('font-size')).width();
+				thecol.find(".ui-grid-ico-sort").css("margin-left", "0");
+				if(position === 'left') {
+					if(!iw) { iw = 15;}
+					thecol.find(".ui-grid-ico-sort").css("margin-left","-"+( tw + iw + addpix) + "px");
+				} else {
+					thecol.find(".ui-grid-ico-sort").css("margin-left", "5px")
+				}
+				fakeEl.remove();
+			}
+		});		
 	},
 	setCell : function(rowid,colname,nData,cssp,attrp, forceupd) {
 		return this.each(function(){
