@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.1 - 2016-07-12
+* @license Guriddo jqGrid JS - v5.1.1 - 2016-07-14
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -4881,23 +4881,31 @@ $.jgrid.extend({
 	getCell : function(rowid,col) {
 		var ret = false;
 		this.each(function(){
-			var $t=this, pos=-1;
+			var $t=this, pos=-1, cnm, ind;
 			if(!$t.grid) {return;}
+			cnm = col;
 			if(isNaN(col)) {
 				$($t.p.colModel).each(function(i){
 					if (this.name === col) {
-						pos = i;return false;
+						cnm = this.name;
+						pos = i;
+						return false;
 					}
 				});
-			} else {pos = parseInt(col,10);}
+			} else {
+				pos = parseInt(col,10);
+			}
 			if(pos>=0) {
-				var ind = $($t).jqGrid('getGridRowById', rowid);
+				ind = $($t).jqGrid('getGridRowById', rowid);
 				if(ind) {
 					try {
 						ret = $.unformat.call($t,$("td:eq("+pos+")",ind),{rowId:ind.id, colModel:$t.p.colModel[pos]},pos);
 					} catch (e){
 						ret = $.jgrid.htmlDecode($("td:eq("+pos+")",ind).html());
 					}
+				}
+				if($t.p.treeGrid && ret && $t.p.ExpandColumn === cnm) {
+					ret = $( "<div>" + ret +"</div>").find("span:first").html();
 				}
 			}
 		});
