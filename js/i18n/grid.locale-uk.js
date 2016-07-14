@@ -54,7 +54,11 @@ $.jgrid.regional["ua"] = {
     odata: [{ oper:'eq', text:"рівно"},{ oper:'ne', text:"не рівно"},{ oper:'lt', text:"менше"},{ oper:'le', text:"менше або рівне"},{ oper:'gt', text:"більше"},{ oper:'ge', text:"більше або рівне"},{ oper:'bw', text:"починається з"},{ oper:'bn', text:"не починається з"},{ oper:'in', text:"знаходиться в"},{ oper:'ni', text:"не знаходиться в"},{ oper:'ew', text:"закінчується на"},{ oper:'en', text:"не закінчується на"},{ oper:'cn', text:"містить"},{ oper:'nc', text:"не містить"},{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}, {oper:'bt', text:'between'}],
     groupOps: [	{ op: "AND", text: "все" },	{ op: "OR",  text: "будь-який" }],
 	operandTitle : "Click to select search operation.",
-	resetTitle : "Reset Search Value"
+	resetTitle : "Reset Search Value",
+	addsubgrup : "Add subgroup",
+	addrule : "Add rule",
+	delgroup : "Delete group",
+	delrule : "Delete rule"
 	},
 	edit : {
     addCaption: "Додати запис",

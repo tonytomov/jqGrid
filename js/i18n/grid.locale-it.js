@@ -46,7 +46,11 @@ $.jgrid.regional["it"] = {
 		odata: [{ oper:'eq', text:'uguale'},{ oper:'ne', text:'diverso'},{ oper:'lt', text:'minore'},{ oper:'le', text:'minore o uguale'},{ oper:'gt', text:'maggiore'},{ oper:'ge', text:'maggiore o uguale'},{ oper:'bw', text:'inizia per'},{ oper:'bn', text:'non inizia per'},{ oper:'in', text:'è in'},{ oper:'ni', text:'non è in'},{ oper:'ew', text:'finisce per'},{ oper:'en', text:'non finisce per'},{ oper:'cn', text:'contiene'},{ oper:'nc', text:'non contiene'},{ oper:'nu', text:'è null'},{ oper:'nn', text:'non è null'}, {oper:'bt', text:'between'}],
 		groupOps: [{ op: "AND", text: "tutti" },{ op: "OR",  text: "ciascuno" }],
 		operandTitle : "Clicca sull'opzione di ricerca scelta.",
-		resetTitle : "Resetta valori di ricerca"
+		resetTitle : "Resetta valori di ricerca",
+		addsubgrup : "Add subgroup",
+		addrule : "Add rule",
+		delgroup : "Delete group",
+		delrule : "Delete rule"
 	},
 	edit : {
 		addCaption: "Aggiungi Record",

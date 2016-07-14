@@ -59,7 +59,11 @@ $.jgrid.regional["fa"] = {
                 text: "مجموع"
             }],
 			operandTitle : "Click to select search operation.",
-			resetTitle : "Reset Search Value"
+			resetTitle : "Reset Search Value",
+			addsubgrup : "Add subgroup",
+			addrule : "Add rule",
+			delgroup : "Delete group",
+			delrule : "Delete rule"
         },
         edit: {
             addCaption: "اضافه کردن رکورد",
