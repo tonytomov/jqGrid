@@ -57,10 +57,10 @@ $.jgrid.regional["ru"] = {
 		groupOps: [	{ op: "AND", text: "все" }, { op: "OR", text: "любой" }],
 		operandTitle : "Выбрать поисковую операцию.",
 		resetTitle : "Сбросить поиск",
-		addsubgrup : "Add subgroup",
-		addrule : "Add rule",
-		delgroup : "Delete group",
-		delrule : "Delete rule"
+		addsubgrup : "Добавить группу",
+		addrule : "Добавить правило",
+		delgroup : "Удалить группу",
+		delrule : "Удалить правило"
 	},
 	edit : {
 		addCaption: "Добавить запись",

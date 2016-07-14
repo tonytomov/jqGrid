@@ -55,10 +55,10 @@ $.jgrid.regional["bg"] = {
 	    groupOps: [	{ op: "AND", text: "&nbsp;И " },	{ op: "OR",  text: "ИЛИ" }	],
 		operandTitle : "Натисни за избор на операнд.",
 		resetTitle : "Изчисти стойността",
-		addsubgrup : "Add subgroup",
-		addrule : "Add rule",
-		delgroup : "Delete group",
-		delrule : "Delete rule"
+		addsubgrup : "Добави група",
+		addrule : "Добави правило",
+		delgroup : "Изтрий група",
+		delrule : "Изтрий правило"
 	},
 	edit : {
 		addCaption: "Нов Запис",
