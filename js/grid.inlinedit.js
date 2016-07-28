@@ -197,10 +197,11 @@ $.jgrid.extend({
 		editable = $(ind).attr("editable");
 		o.url = o.url || $t.p.editurl;
 		if (editable==="1") {
-			var cm, index;
+			var cm, index, elem;
 			$('td[role="gridcell"]',ind).each(function(i) {
 				cm = $t.p.colModel[i];
 				nm = cm.name;
+				elem = "";
 				if ( nm !== 'cb' && nm !== 'subgrid' && cm.editable===true && nm !== 'rn' && !$(this).hasClass('not-editable-cell')) {
 					switch (cm.edittype) {
 						case "checkbox":
@@ -208,13 +209,15 @@ $.jgrid.extend({
 							if(cm.editoptions ) {
 								cbv = cm.editoptions.value.split(":");
 							}
-							tmp[nm]=  $("input",this).is(":checked") ? cbv[0] : cbv[1]; 
+							tmp[nm]=  $("input",this).is(":checked") ? cbv[0] : cbv[1];
+							elem = $("input",this);
 							break;
 						case 'text':
 						case 'password':
 						case 'textarea':
 						case "button" :
 							tmp[nm]=$("input, textarea",this).val();
+							elem = $("input, textarea",this);
 							break;
 						case 'select':
 							if(!cm.editoptions.multiple) {
@@ -232,6 +235,7 @@ $.jgrid.extend({
 								tmp2[nm] = selectedText.join(",");
 							}
 							if(cm.formatter && cm.formatter === 'select') { tmp2={}; }
+							elem = $("select",this);
 							break;
 						case 'custom' :
 							try {
@@ -261,18 +265,22 @@ $.jgrid.extend({
 			});
 			if (cv[0] === false){
 				try {
-					var tr = $($t).jqGrid('getGridRowById', rowid), 
-						positions = $.jgrid.findPos(tr);
-					$.jgrid.info_dialog(errors.errcap,cv[1],edit.bClose,{
-						left:positions[0],
-						top:positions[1]+$(tr).outerHeight(), 
-						styleUI : $t.p.styleUI, 
-						onClose: function(){
-							if(index >= 0 ) {
-								$("#"+rowid+"_" +$t.p.colModel[index].name).focus();
+					if( $.isFunction($t.p.validationCell) ) {
+						$t.p.validationCell.call($t, elem, cv[1], ind.rowIndex, index);
+					} else {
+						var tr = $($t).jqGrid('getGridRowById', rowid), 
+							positions = $.jgrid.findPos(tr);
+						$.jgrid.info_dialog(errors.errcap,cv[1],edit.bClose,{
+							left:positions[0],
+							top:positions[1]+$(tr).outerHeight(), 
+							styleUI : $t.p.styleUI, 
+							onClose: function(){
+								if(index >= 0 ) {
+									$("#"+rowid+"_" +$t.p.colModel[index].name).focus();
+								}
 							}
-						}
-					});
+						});
+					}
 				} catch (e) {
 					alert(cv[1]);
 				}
