@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.1 - 2016-07-28
+* @license Guriddo jqGrid JS - v5.1.1 - 2016-07-29
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -4813,19 +4813,12 @@ $.jgrid.extend({
 				return; 
 			}
 			if(pos>=0) {
-				var tw, thecol = $("tr.ui-jqgrid-labels th:eq("+pos+")",$t.grid.hDiv),
-				ttext = $("[id^=jqgh_]",thecol).text(),
-			    fakeEl = $("<span>").hide().appendTo(document.body),
-				iw = $(".ui-grid-ico-sort:visible:first").outerWidth( );
-				tw = fakeEl.text(ttext).css('font-size', thecol.css('font-size')).width();
-				thecol.find(".ui-grid-ico-sort").css("margin-left", "0");
+				var thecol = $("tr.ui-jqgrid-labels th:eq("+pos+")",$t.grid.hDiv);
 				if(position === 'left') {
-					if(!iw) { iw = 15;}
-					thecol.find(".ui-grid-ico-sort").css("margin-left","-"+( tw + iw + addpix) + "px");
+					thecol.find(".s-ico").css("float", "left");
 				} else {
-					thecol.find(".ui-grid-ico-sort").css("margin-left", "5px")
+					thecol.find(".s-ico").css("float", "none");
 				}
-				fakeEl.remove();
 			}
 		});		
 	},
@@ -5545,7 +5538,11 @@ $.jgrid.extend({
 			cm = $t.p.colModel[iCol];
 			nm = cm.name;
 			if (nm==='subgrid' || nm==='cb' || nm==='rn') {return;}
-			cc = $("td:eq("+iCol+")",$t.rows[iRow]);
+			try {
+				cc = $t.rows[iRow].cells[iCol];
+			} catch(e) {
+				cc = $("td:eq("+iCol+")",$t.rows[iRow]);
+			}
 			if (cm.editable===true && ed===true && !cc.hasClass("not-editable-cell") && (!$.isFunction($t.p.isCellEditable) || $t.p.isCellEditable.call($t,nm,iRow,iCol))) {
 				if(parseInt($t.p.iCol,10)>=0  && parseInt($t.p.iRow,10)>=0) {
 					//$("td:eq("+$t.p.iCol+")",$t.rows[$t.p.iRow]).removeClass("edit-cell " + highlight);
