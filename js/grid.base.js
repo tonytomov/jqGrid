@@ -4818,19 +4818,12 @@ $.jgrid.extend({
 				return; 
 			}
 			if(pos>=0) {
-				var tw, thecol = $("tr.ui-jqgrid-labels th:eq("+pos+")",$t.grid.hDiv),
-				ttext = $("[id^=jqgh_]",thecol).text(),
-			    fakeEl = $("<span>").hide().appendTo(document.body),
-				iw = $(".ui-grid-ico-sort:visible:first").outerWidth( );
-				tw = fakeEl.text(ttext).css('font-size', thecol.css('font-size')).width();
-				thecol.find(".ui-grid-ico-sort").css("margin-left", "0");
+				var thecol = $("tr.ui-jqgrid-labels th:eq("+pos+")",$t.grid.hDiv);
 				if(position === 'left') {
-					if(!iw) { iw = 15;}
-					thecol.find(".ui-grid-ico-sort").css("margin-left","-"+( tw + iw + addpix) + "px");
+					thecol.find(".s-ico").css("float", "left");
 				} else {
-					thecol.find(".ui-grid-ico-sort").css("margin-left", "5px")
+					thecol.find(".s-ico").css("float", "none");
 				}
-				fakeEl.remove();
 			}
 		});		
 	},
