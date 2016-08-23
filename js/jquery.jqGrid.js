@@ -6460,7 +6460,7 @@ $.extend($.jgrid,{
 								//setTimeout(function(){
 								$("option",elem).each(function(i){
 									txt = $(this).text();
-									vl = $(this).val() || txt;
+									vl = $(this).val();
 									if(cU) {
 										oV += (i!== 0 ? ";": "")+ vl+":"+txt; 
 									}
