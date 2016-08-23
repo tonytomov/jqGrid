@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.1 - 2016-07-29
+* @license Guriddo jqGrid JS - v5.1.1 - 2016-08-23
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -13303,39 +13303,41 @@ $.jgrid.extend({
 			 */
 			function calculation(oper, v, field, rc, _cnt)  {
 				var ret;
-				switch (oper) {
-					case  "sum" : 
-						ret = parseFloat(v||0) + parseFloat((rc[field]||0));
-						break;
-					case "count" :
-						if(v==="" || v == null) {
-							v=0;
-						}
-						if(rc.hasOwnProperty(field)) {
-							ret = v+1;
-						} else {
-							ret = 0;
-						}
-						break;
-					case "min" : 
-						if(v==="" || v == null) {
-							ret = parseFloat(rc[field]||0);
-						} else {
-							ret =Math.min(parseFloat(v),parseFloat(rc[field]||0));
-						}
-						break;
-					case "max" : 
-						if(v==="" || v == null) {
-							ret = parseFloat(rc[field]||0);
-						} else {
-							ret = Math.max(parseFloat(v),parseFloat(rc[field]||0));
-						}
-						break;
-					case "avg" : //avg grouping
-						 
-						ret = (parseFloat(v||0) * (_cnt -1) + parseFloat(rc[field]||0) ) /_cnt;
-						 
-						break;	
+				if( $.isFunction(oper)) {
+					ret = oper.call(this, v, field, rc);
+				} else {
+					switch (oper) {
+						case  "sum" : 
+							ret = parseFloat(v||0) + parseFloat((rc[field]||0));
+							break;
+						case "count" :
+							if(v==="" || v == null) {
+								v=0;
+							}
+							if(rc.hasOwnProperty(field)) {
+								ret = v+1;
+							} else {
+								ret = 0;
+							}
+							break;
+						case "min" : 
+							if(v==="" || v == null) {
+								ret = parseFloat(rc[field]||0);
+							} else {
+								ret =Math.min(parseFloat(v),parseFloat(rc[field]||0));
+							}
+							break;
+						case "max" : 
+							if(v==="" || v == null) {
+								ret = parseFloat(rc[field]||0);
+							} else {
+								ret = Math.max(parseFloat(v),parseFloat(rc[field]||0));
+							}
+							break;
+						case "avg" : //avg grouping
+							ret = (parseFloat(v||0) * (_cnt -1) + parseFloat(rc[field]||0) ) /_cnt;
+							break;	
+					}
 				}
 				return ret;
 			}
@@ -13345,7 +13347,7 @@ $.jgrid.extend({
 			 */
 			function agregateFunc ( row, aggr, value, curr) {
 				// default is sum
-				var arrln = aggr.length, i, label, j, jv, mainval="",swapvals=[];
+				var arrln = aggr.length, i, label, j, jv, mainval="",swapvals=[], swapstr;
 				if($.isArray(value)) {
 					jv = value.length;
 					swapvals = value;
@@ -13364,14 +13366,16 @@ $.jgrid.extend({
 				for(j=0;j<jv;j++) {
 					var  tmpmember = [], vl;
 					for(i=0; i < arrln; i++) {
+						swapstr = typeof aggr[i].aggregator === 'string' ? aggr[i].aggregator : 'cust';
+							
 						if(value == null) {
-							label = $.trim(aggr[i].member)+"_"+aggr[i].aggregator;
+							label = $.trim(aggr[i].member)+"_" + swapstr;
 							vl = label;
-							swapvals[0]= aggr[i].label || (aggr[i].aggregator+ " " +$.trim(aggr[i].member));
+							swapvals[0]= aggr[i].label || (swapstr + " " +$.trim(aggr[i].member));
 						} else {
 							vl = value[j].replace(/\s+/g, '');
 							try {
-								label = (arrln === 1 ? mainval + vl : mainval + vl+"_"+aggr[i].aggregator+"_" + String(i));
+								label = (arrln === 1 ? mainval + vl : mainval + vl + "_" + swapstr + "_" + String(i));
 							} catch(e) {}
 							swapvals[j] = value[j];
 						}
