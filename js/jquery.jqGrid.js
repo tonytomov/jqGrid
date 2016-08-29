@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.1 - 2016-08-23
+* @license Guriddo jqGrid JS - v5.1.1 - 2016-08-29
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -13347,7 +13347,7 @@ $.jgrid.extend({
 			 */
 			function agregateFunc ( row, aggr, value, curr) {
 				// default is sum
-				var arrln = aggr.length, i, label, j, jv, mainval="",swapvals=[], swapstr;
+				var arrln = aggr.length, i, label, j, jv, mainval="",swapvals=[], swapstr, _cntavg = 1;
 				if($.isArray(value)) {
 					jv = value.length;
 					swapvals = value;
@@ -13358,11 +13358,6 @@ $.jgrid.extend({
 				member = [];
 				labels = [];
 				member.root = 0;
-				if(! !!curr._count ){
-					curr._count = 1;
-				}else{
-					curr._count ++;
-				}
 				for(j=0;j<jv;j++) {
 					var  tmpmember = [], vl;
 					for(i=0; i < arrln; i++) {
@@ -13383,7 +13378,15 @@ $.jgrid.extend({
 							//mainval = vl;
 						//}
 						label = !isNaN(parseInt(label,10)) ? label + " " : label;
-						curr[label] =  tmpmember[label] = calculation( aggr[i].aggregator, curr[label], aggr[i].member, row, curr._count);
+						if(aggr[i].aggregator === 'avg') {
+							if(!_avg[label]) {
+								_avg[label] = 1;
+							} else {
+								_avg[label]++;
+							}
+							_cntavg = _avg[label];
+						}						
+						curr[label] =  tmpmember[label] = calculation( aggr[i].aggregator, curr[label], aggr[i].member, row, _cntavg);
 					}
 					mainval += value[j].replace(/\s+/g, '');
 					//vl = !isNaN(parseInt(vl,10)) ? vl + " " : vl;
@@ -13414,7 +13417,7 @@ $.jgrid.extend({
 				colc = $.extend(true, colc, o.xDimension[i]);
 				columns.push( colc );
 			}
-			var groupfields = xlen - 1, tree={};
+			var groupfields = xlen - 1, tree={}, _avg=[];
 			//tree = { text: 'root', leaf: false, children: [] };
 			//loop over alll the source data
 			while( r < rowlen ) {
@@ -13660,6 +13663,9 @@ $.jgrid.extend({
 			var $t = this;
 
 			function pivot( data) {
+				if(!$.isArray(data)) {
+					throw "data provides is not an array";
+				}
 				var pivotGrid = jQuery($t).jqGrid('pivotSetup',data, pivotOpt),
 				footerrow = $.assocArraySize(pivotGrid.summary) > 0 ? true : false,
 				query= $.jgrid.from.call($t, pivotGrid.rows), i, so, st, len;
