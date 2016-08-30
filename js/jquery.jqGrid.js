@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.1 - 2016-08-29
+* @license Guriddo jqGrid JS - v5.1.1 - 2016-08-30
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -13348,7 +13348,7 @@ $.jgrid.extend({
 			 */
 			function agregateFunc ( row, aggr, value, curr) {
 				// default is sum
-				var arrln = aggr.length, i, label, j, jv, mainval="",swapvals=[], swapstr, _cntavg = 1;
+				var arrln = aggr.length, i, label, j, jv, mainval="",swapvals=[], swapstr, _cntavg = 1, lbl;
 				if($.isArray(value)) {
 					jv = value.length;
 					swapvals = value;
@@ -13380,12 +13380,13 @@ $.jgrid.extend({
 						//}
 						label = !isNaN(parseInt(label,10)) ? label + " " : label;
 						if(aggr[i].aggregator === 'avg') {
-							if(!_avg[label]) {
-								_avg[label] = 1;
+							lbl = rowindex === -1 ? pivotrows.length+"_"+label : rowindex+"_"+label;
+							if(!_avg[lbl]) {
+								_avg[lbl] = 1;
 							} else {
-								_avg[label]++;
+								_avg[lbl]++;
 							}
-							_cntavg = _avg[label];
+							_cntavg = _avg[lbl];
 						}						
 						curr[label] =  tmpmember[label] = calculation( aggr[i].aggregator, curr[label], aggr[i].member, row, _cntavg);
 					}
@@ -13512,6 +13513,7 @@ $.jgrid.extend({
 				}
 				r++;
 			}
+			_avg = null; // free mem
 			var  lastval=[], initColLen = columns.length, swaplen = initColLen;
 			if(ylen>0) {
 				headers[ylen-1] = {	useColSpanStyle: false,	groupHeaders: []};
