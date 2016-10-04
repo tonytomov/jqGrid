@@ -4258,7 +4258,7 @@ $.jgrid.extend({
 			}
 			while(j<len){
 				if(getall) { 
-					ind = $t.rows[j+1];  // ignore first visible row
+					ind = $t.rows[j+1];  // ignore first not visible row
 				}
 				if( $(ind).hasClass('jqgrow') ) {
 					if(usedata) {
