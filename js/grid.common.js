@@ -640,10 +640,10 @@ $.extend($.jgrid,{
 	},
 	isEmpty : function(val)
 	{
-		if (val.match(/^\s+$/) || val === "")	{
+		if (val === undefined || val.match(/^\s+$/) || val === "")	{
 			return true;
 		}
-			return false;
+		return false;
 	},
 	checkTime : function(time){
 	// checks only hh:ss (and optional am/pm)
