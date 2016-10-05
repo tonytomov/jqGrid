@@ -38,6 +38,6 @@ Include both the files in script tags in the head section
 
 For debugging purposes, I have created a grid.loader.js which does the same
 loading of the files as in previous versions. The location of the file is in
-src directory of the package. In order to use this, the variable pathojsfiles
+src directory of the package. In order to use this, the variable pathtojsfiles
 should be adjusted to point to the appropriate folder - see 3.4.x docs.
 
