@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.1.1 - 2016-10-04
+* @license Guriddo jqGrid JS - v5.1.1 - 2016-10-18
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -13392,7 +13392,7 @@ $.jgrid.extend({
 						}						
 						curr[label] =  tmpmember[label] = calculation( aggr[i].aggregator, curr[label], aggr[i].member, row, _cntavg);
 					}
-					mainval += value[j].replace(/\s+/g, '');
+					mainval += (value && value[j] != null) ? value[j].replace(/\s+/g, '') : ''
 					//vl = !isNaN(parseInt(vl,10)) ? vl + " " : vl;
 					member[label] = tmpmember;
 					labels[label] = swapvals[j];
