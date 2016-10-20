@@ -67,7 +67,7 @@ $.jgrid.extend({
 			nm = cm.name;
 			if (nm==='subgrid' || nm==='cb' || nm==='rn') {return;}
 			try {
-				cc = $t.rows[iRow].cells[iCol];
+				cc = $($t.rows[iRow].cells[iCol]);
 			} catch(e) {
 				cc = $("td:eq("+iCol+")",$t.rows[iRow]);
 			}
@@ -76,12 +76,12 @@ $.jgrid.extend({
 					//$("td:eq("+$t.p.iCol+")",$t.rows[$t.p.iRow]).removeClass("edit-cell " + highlight);
 					$($t.rows[$t.p.iRow]).removeClass("selected-row " + hover).find("td:eq("+$t.p.iCol+")").removeClass("edit-cell " + highlight);
 				}
-				$(cc).addClass("edit-cell " + highlight);
+				cc.addClass("edit-cell " + highlight);
 				$($t.rows[iRow]).addClass("selected-row " + hover);
 				try {
 					tmp =  $.unformat.call($t,cc,{rowId: $t.rows[iRow].id, colModel:cm},iCol);
 				} catch (_) {
-					tmp = ( cm.edittype && cm.edittype === 'textarea' ) ? $(cc).text() : $(cc).html();
+					tmp = ( cm.edittype && cm.edittype === 'textarea' ) ? cc.text() : cc.html();
 				}
 				if($t.p.autoencode) { tmp = $.jgrid.htmlDecode(tmp); }
 				if (!cm.edittype) {cm.edittype = "text";}
@@ -101,7 +101,7 @@ $.jgrid.extend({
 					$(elc).addClass(inpclass);
 				}
 
-				$(cc).html("").append(elc).attr("tabindex","0");
+				cc.html("").append(elc).attr("tabindex","0");
 				$.jgrid.bindEv.call($t, elc, opt);
 				window.setTimeout(function () { $(elc).focus();},1);
 				$("input, select, textarea",cc).on("keydown",function(e) {
