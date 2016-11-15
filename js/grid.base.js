@@ -837,7 +837,7 @@ $.extend($.jgrid,{
 		$(grid.hDiv).off("mousemove"); // TODO add namespace
 		$($t).off();
 		var i, l = grid.headers.length,
-		removevents = ['formatCol','sortData','updatepager','refreshIndex','setHeadCheckBox','constructTr','formatter','addXmlData','addJSONData','grid','p'];
+		removevents = ['formatCol','sortData','updatepager','refreshIndex','setHeadCheckBox','constructTr','formatter','addXmlData','addJSONData','grid','p', 'addLocalData'];
 		for (i = 0; i < l; i++) {
 			grid.headers[i].el = null;
 		}
@@ -2199,7 +2199,7 @@ $.fn.jqGrid = function( pin ) {
 				}
 			}
 		},
-		addLocalData = function() {
+		addLocalData = function( retAll ) {
 			var st = ts.p.multiSort ? [] : "", sto=[], fndsort=false, cmtypes={}, grtypes=[], grindexes=[], srcformat, sorttype, newformat, sfld;
 			if(!$.isArray(ts.p.data)) {
 				return;
@@ -2397,6 +2397,9 @@ $.fn.jqGrid = function( pin ) {
 					}
 					grPrepare.call($(ts),queryResults[j],j, recordsperpage );
 				}
+			}
+			if( retAll ) {
+				return  queryResults;
 			}
 			if(ts.p.treeGrid && ts.p.search) {
 				queryResults = $(ts).jqGrid("searchTree", queryResults);
@@ -2637,7 +2640,7 @@ $.fn.jqGrid = function( pin ) {
 					beginReq();
 					ts.p.datatype = "local";
 					ts.p._ald = true;
-					var req = addLocalData();
+					var req = addLocalData( false );
 					addJSONData(req,rcnt,npage>1,adjust);
 					$(ts).triggerHandler("jqGridLoadComplete", [req]);
 					if(lc) { lc.call(ts,req); }
@@ -4020,6 +4023,7 @@ $.fn.jqGrid = function( pin ) {
 		this.grid = grid;
 		ts.addXmlData = function(d) {addXmlData( d );};
 		ts.addJSONData = function(d) {addJSONData( d );};
+		ts.addLocalData = function(d) { return addLocalData( d );};
 		this.grid.cols = this.rows[0].cells;
 		$(ts).triggerHandler("jqGridInitGrid");
 		if ($.isFunction( ts.p.onInitGrid )) { ts.p.onInitGrid.call(ts); }
