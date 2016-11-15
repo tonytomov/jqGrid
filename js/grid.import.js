@@ -64,7 +64,6 @@ $.extend($.jgrid,{
 			} catch (e) {
 				file = new Blob(temp, properties);
 			}
-			//saveAs(file, "jqGrid_dump.txt" );
 			url = URL.createObjectURL(file);
 			$("#link_save").attr("href",url).on('click',function(){
 				$(this).remove();
@@ -525,7 +524,7 @@ $.extend($.jgrid,{
 						}
 					}
 					if(o.exportgrouping) {
-						expg = JSON.stringify( this.p.groupingView )
+						expg = JSON.stringify( this.p.groupingView );
 						if(typeof expg === 'string' ) {
 							pdata['groupingView'] = expg;
 						}
