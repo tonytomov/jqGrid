@@ -1,4 +1,4 @@
-/*global jQuery, define */
+/*global jQuery, define, URL */
 (function( factory ) {
 	"use strict";
 	if ( typeof define === "function" && define.amd ) {
@@ -258,6 +258,36 @@ window.jqGridUtils = {
 			json = tmp;
 		}
 		return json;
+	},
+	saveAs : function (data, fname, opts) {
+		opts = $.extend(true,{
+			type : 'plain/text;charset=utf-8'
+		}, opts || {});
+
+		var file, url, tmp = []; 
+
+		fname = fname == null || fname === '' ? 'jqGridFile.txt' : fname;
+
+		if(!$.isArray(data) ) {
+			tmp[0]= data ;
+		} else {
+			tmp = data;	
+		}
+		try {
+			file = new File(tmp, fname, opts);
+		} catch (e) {
+			file = new Blob(tmp, opts);
+		}
+		url = URL.createObjectURL(file);
+		var a = document.createElement("a");
+		a.href = url;
+		a.download = fname;
+		document.body.appendChild(a);
+		a.click();
+		setTimeout(function() {
+			document.body.removeChild(a);
+			window.URL.revokeObjectURL(url);  
+		}, 0);	
 	}
 };
 //module end
