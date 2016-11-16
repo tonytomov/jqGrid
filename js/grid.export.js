@@ -587,7 +587,7 @@ $.jgrid.extend({
 					}
 				}
 			}
-			if(p.includeFooter) {
+			if(p.includeFooter && $t.p.footerrow) {
 				// already formated
 				var foot = $(".ui-jqgrid-ftable", this.sDiv);
 				if(foot.length) {
@@ -928,7 +928,7 @@ $.jgrid.extend({
 					addRow( data.body[n], false );
 				}
 			}
-			if ( o.includeFooter ) {
+			if ( o.includeFooter || $t.p.footerrow) {
 				data.footer = $($t).jqGrid('footerData', 'get');
 				for( i in data.footer) {
 					if(data.footer.hasOwnProperty(i)) {
@@ -1168,7 +1168,7 @@ $.jgrid.extend({
 				}
 				obj = { text:  cm[j].label || cm[j].name, style: 'tableHeader' };
 				test.push( obj );
-				def[cm[j].name]  = cm[j].label;
+				def[cm[j].name]  = cm[j].label || cm[j].name;
 				map[i] = j;
 				widths.push(cm[j].width); 
 				align[cm[j].name] = cm[j].align || 'left';
@@ -1229,7 +1229,7 @@ $.jgrid.extend({
 				}
 			}
 			
-			if ( o.includeFooter ) {
+			if ( o.includeFooter && $t.p.footerrow) {
 				var fdata = $($t).jqGrid('footerData', 'get');
 				test=[];
 				for( key in def) {
