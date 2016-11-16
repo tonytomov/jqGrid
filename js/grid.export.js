@@ -560,8 +560,6 @@ $.jgrid.extend({
 				while(--j) {tmp[j]="";}
 				tmp[0] = $.jgrid.formatCellCsv( $t.p.caption, p );
 				cap += tmp.join( p.separator ) + p.newLine;
-				tmp[0] = "";
-				cap += tmp.join( p.separator ) + p.newLine;
 			}
 			if(p.includeGroupHeader) {
 				var thead = $(".ui-jqgrid-htable", this.hDiv)[0].rows, colspan;
