@@ -523,7 +523,7 @@ $.jgrid.extend({
 					n.hidden = true;
 				}
 				if(!n.hidden) {
-					albl.push( $.jgrid.formatCellCsv( n.label, p) );
+					albl.push( $.jgrid.formatCellCsv( n.label || n.name, p) );
 				}
 			});
 			
@@ -667,7 +667,7 @@ $.jgrid.extend({
 				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn') {
 					continue;
 				}
-				obj[ cm[j].name ] = cm[j].label;
+				obj[ cm[j].name ] = cm[j].label || cm[j].name;
 				data.width[ i ] = 5;
 				data.map[i] = j;
 				i++;
@@ -1166,7 +1166,7 @@ $.jgrid.extend({
 				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn') {
 					continue;
 				}
-				obj = { text:  cm[j].label, style: 'tableHeader' };
+				obj = { text:  cm[j].label || cm[j].name, style: 'tableHeader' };
 				test.push( obj );
 				def[cm[j].name]  = cm[j].label;
 				map[i] = j;
