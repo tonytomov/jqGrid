@@ -449,8 +449,7 @@ $.jgrid.extend({
 					toEnd++;
 					try {
 						if ($.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
-							n.displayValue = grp.formatDisplayField[n.idx].call($t, n.displayValue, n.value, $t.p.colModel[cp[n.idx]], n.idx, grp);
-							gv = n.displayValue;
+							gv = grp.formatDisplayField[n.idx].call($t, n.displayValue, n.value, $t.p.colModel[cp[n.idx]], n.idx, grp);
 						} else {
 							gv = $t.formatter('', n.displayValue, cp[n.idx], n.value );
 						}
@@ -1102,8 +1101,7 @@ $.jgrid.extend({
 					toEnd++;
 					try {
 						if ($.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
-							n.displayValue = grp.formatDisplayField[n.idx].call($t, n.displayValue, n.value, $t.p.colModel[cp[n.idx]], n.idx, grp);
-							gv = n.displayValue;
+							gv = grp.formatDisplayField[n.idx].call($t, n.displayValue, n.value, $t.p.colModel[cp[n.idx]], n.idx, grp);
 						} else {
 							gv = $t.formatter('', n.displayValue, cp[n.idx], n.value );
 						}
