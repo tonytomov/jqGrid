@@ -682,22 +682,23 @@ $.jgrid.extend({
 					}
 					// key = cm[i].name;
 					// Concat both the Cell Columns as a letter and the Row of the cell.
-					var cellId = $.jgrid.excelCellPos(i) + '' + currentRow;
-					var cell;
-					if ( row[key] == null ) {
-						row[key] = '';
+					var cellId = $.jgrid.excelCellPos(i) + '' + currentRow,
+					cell,
+					v= row[key];
+					if ( v == null ) {
+						v = '';
 					}
 					if(!header) {
-						row[key] = row[key] !== '' ? $.jgrid.formatCell( row[key], data.map[i], row, cm[data.map[i]], $t) : row[key];
+						v = v !== '' ? $.jgrid.formatCell( v, data.map[i], row, cm[data.map[i]], $t) : v;
 					}
-					data.width[i] = Math.max(data.width[i], Math.min(parseInt(row[key].length,10), o.maxlength) );
+					data.width[i] = Math.max(data.width[i], Math.min(parseInt(v.length,10), o.maxlength) );
 					// Detect numbers - don't match numbers with leading zeros or a negative
 					// anywhere but the start
 					// $.jgrid.formatCell( row[cm[i].name], i, row, cm[i], $t )
-					if ( typeof row[key] === 'number' || (
-							row[key].match &&
-							$.trim(row[key]).match(/^-?\d+(\.\d+)?$/) &&
-							! $.trim(row[key]).match(/^0\d+/) )
+					if ( typeof v === 'number' || (
+							v.match &&
+							$.trim(v).match(/^-?\d+(\.\d+)?$/) &&
+							! $.trim(v).match(/^0\d+/) )
 					) {
 						cell = $.jgrid.makeNode( rels, 'c', {
 							attr: {
@@ -705,14 +706,14 @@ $.jgrid.extend({
 								r: cellId
 							},
 							children: [
-								$.jgrid.makeNode( rels, 'v', { text: row[key] } )
+								$.jgrid.makeNode( rels, 'v', { text: v } )
 							]
 						} );
 					} else {
 						// Replace non standard characters for text output
-						var text = ! row[key].replace ?
-							row[key] :
-							$.jgrid.htmlEncode (row[key] );
+						var text = ! v.replace ?
+							v :
+							$.jgrid.htmlEncode (v );
 							cell = $.jgrid.makeNode( rels, 'c', {
 							attr: {
 								t: 'inlineStr',
