@@ -555,13 +555,13 @@ $.jgrid.extend({
 			data1 = null; // free
 			// get the column length.
 			tmp = new Array(p.collen);
-			if(p.includeCaption) {
+			if(p.includeCaption && $t.p.caption) {
 				j=p.collen;
 				while(--j) {tmp[j]="";}
 				tmp[0] = $.jgrid.formatCellCsv( $t.p.caption, p );
 				cap += tmp.join( p.separator ) + p.newLine;
 			}
-			if(p.includeGroupHeader) {
+			if(p.includeGroupHeader && $t.p.groupHeader && $t.p.groupHeader.length) {
 				var thead = $(".ui-jqgrid-htable", this.hDiv)[0].rows, colspan;
 				if(thead && thead.length > 2) {
 					for(i=1;i<thead.length-1;i++) {
