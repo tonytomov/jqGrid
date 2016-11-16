@@ -20,7 +20,8 @@ var
 		"jqModal",
 		"jquery.fmatter",
 		"jquery.sortable",
-		"grid.utils"
+		"grid.utils",
+		"grid.export"
 	],
 
 	gridFiles = allFiles.map(function( file ) {
