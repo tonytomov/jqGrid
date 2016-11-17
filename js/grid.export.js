@@ -515,7 +515,7 @@ $.jgrid.extend({
 			}
 
 			// end group function
-
+			var def = {}, key;
 			$.each(cm,function(i,n) {
 				if((n.name === 'cb' || n.name === 'rn') && !n.hidden) {
 					restorevis.push(i);
@@ -523,6 +523,7 @@ $.jgrid.extend({
 				}
 				if(!n.hidden) {
 					albl.push( $.jgrid.formatCellCsv( n.label || n.name, p) );
+					def[n.name] = n.label || n.name;					
 				}
 			});
 			
@@ -561,35 +562,31 @@ $.jgrid.extend({
 				cap += tmp.join( p.separator ) + p.newLine;
 			}
 			if(p.includeGroupHeader && $t.p.groupHeader && $t.p.groupHeader.length) {
-				var thead = $(".ui-jqgrid-htable", this.hDiv)[0].rows, colspan;
-				if(thead && thead.length > 2) {
-					for(i=1;i<thead.length-1;i++) {
-						row = thead[i];
-						colspan = 1;
-						j =0;
-						while(j< p.collen) {
-							var cel = row.cells[j];
-							colspan = parseInt( cel.colSpan, 10);
-							for( k= j; k<colspan+j; k++) {
-								if(k===j) {
-									tmp[k] = $.jgrid.formatCellCsv( $(cel).text(), p );
-								} else {
-									tmp[k] = "";
-								}
-							}
-							j = colspan + j;
+				var gh = $t.p.groupHeader;
+				for (i=0;i < gh.length; i++) {
+					var ghdata = gh[i].groupHeaders;
+					j = 0, tmp = [];
+					for(key in def ) {
+						if(!def.hasOwnProperty( key )) {
+							continue;
 						}
-						hdr += tmp.join( p.separator ) + p.newLine;
-						//console.log(tmp);
+						tmp[j] = '';
+						for(var k=0;k<ghdata.length;k++) {
+							if(ghdata[k].startColumnName === key) {
+								tmp[j]= ghdata[k].titleText;
+							}
+						}
+						j++;
 					}
-				}
+					hdr += tmp.join( p.separator ) + p.newLine;
+ 				}
 			}
 			if(p.includeFooter && $t.p.footerrow) {
 				// already formated
 				var foot = $(".ui-jqgrid-ftable", this.sDiv);
 				if(foot.length) {
 					var frows = foot[0].rows[0];
-					i=0;j=0;
+					i=0;j=0, tmp=[];
 					while(i < frows.cells.length){
 						var fc = frows.cells[i],
 						coln = $(fc).attr('aria-describedby').slice(-3);
