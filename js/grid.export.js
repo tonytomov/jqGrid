@@ -39,6 +39,7 @@ $.extend($.jgrid,{
 		return v;
 	},
 	formatCellCsv : function (v, p) {
+		v = v == null ? '' : String(v);
 		try {
 			v = v.replace(p._regexsep ,p.separatorReplace).replace(/\r\n/g, p.replaceNewLine).replace(/\n/g, p.replaceNewLine);
 		} catch (_e) {
@@ -479,7 +480,6 @@ $.jgrid.extend({
 						end = gg !== undefined ?  gg.startRow : grp.groups[i].startRow + grp.groups[i].cnt;
 						for(kk=sgr;kk<end;kk++) {
 							if(!grdata[kk - offset]) { break; }
-							//str += grdata[kk - offset].join('');
 							to = grdata[kk - offset];
 							k = 0;
 							for(ik = 0; ik < cm.length; ik++) {
