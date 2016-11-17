@@ -991,7 +991,7 @@ $.jgrid.extend({
 		}, o || {} );
 		return this.each(function() {
 			var $t = this, rows = [], j, cm = $t.p.colModel, ien, obj = {}, key, 
-			data = $t.addLocalData( true ), def = {}, i=0, map=[], test=[], widths = [], ghl=0, align={};
+			data = $t.addLocalData( true ), def = {}, i=0, map=[], test=[], widths = [],  align={};
 // Group function			
 			function groupToPdf ( grdata ) {
 				var grp = $t.p.groupingView, 
@@ -1193,14 +1193,12 @@ $.jgrid.extend({
 						j++;
 					}
 					rows.push(clone);
-					ghl++;
  				}
 			}
 			
 			if(o.includeLabels) {
 				rows.push( test );
 			}
-			ghl++;
 			if($t.p.grouping) {
 				groupToPdf(data);
 			} else {
