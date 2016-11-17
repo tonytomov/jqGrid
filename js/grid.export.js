@@ -979,7 +979,7 @@ $.jgrid.extend({
 			title: null,
 			orientation: 'portrait',
 			pageSize: 'A4',
-			message: null,
+			description: null,
 			customSettings: null,
 			download: 'download',
 			includeLabels : true,
@@ -1265,23 +1265,23 @@ $.jgrid.extend({
 					tableFooter: {
 						bold: true,
 						fontSize: 11,
-						color: 'white',
-						fillColor: '#2d4154'
+						color: '#2e6e9e',
+						fillColor: '#dfeffc'
 					},
 					title: {
 						alignment: 'center',
 						fontSize: 15
 					},
-					message: {}
+					description: {}
 				},
 				defaultStyle: {
 					fontSize: 10
 				}
 			};
-			if ( o.message ) {
+			if ( o.description ) {
 				doc.content.unshift( {
-					text: o.message,
-					style: 'message',
+					text: o.description,
+					style: 'description',
 					margin: [ 0, 0, 0, 12 ]
 				} );
 			}
