@@ -1015,8 +1015,8 @@ $.jgrid.extend({
 						if(def.hasOwnProperty( key )) {
 							obj = {
 								text: row[key] == null ? '' : (fmt ? $.jgrid.formatCell( row[key] + '', map[k], data[i], cm[map[k]], $t) : row[key]),
-								//style: i % 2 ? 'tableBodyEven' : 'tableBodyOdd',
-								alignment : align[key]
+								alignment : align[key],
+								style : 'tableBody'
 							};
 							test.push(obj);
 							k++;
@@ -1209,7 +1209,8 @@ $.jgrid.extend({
 						if( def.hasOwnProperty( key )) {
 							obj	= {
 								text: row[key] == null ? '' : $.jgrid.formatCell( row[key] + '', map[k], data[i], cm[map[k]], $t),
-								alignment : align[key]
+								alignment : align[key],
+								style : 'tableBody'
 							};
 					
 							test.push(obj);
@@ -1256,6 +1257,9 @@ $.jgrid.extend({
 						color: '#2e6e9e',
 						fillColor: '#dfeffc',
 						alignment: 'center'
+					},
+					tableBody: {
+						fontSize: 10
 					},
 					tableFooter: {
 						bold: true,
