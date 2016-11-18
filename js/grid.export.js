@@ -565,13 +565,13 @@ $.jgrid.extend({
 				var gh = $t.p.groupHeader;
 				for (i=0;i < gh.length; i++) {
 					var ghdata = gh[i].groupHeaders;
-					j = 0, tmp = [];
+					j = 0; tmp = [];
 					for(key in def ) {
 						if(!def.hasOwnProperty( key )) {
 							continue;
 						}
 						tmp[j] = '';
-						for(var k=0;k<ghdata.length;k++) {
+						for(k=0;k<ghdata.length;k++) {
 							if(ghdata[k].startColumnName === key) {
 								tmp[j]= ghdata[k].titleText;
 							}
@@ -586,7 +586,7 @@ $.jgrid.extend({
 				var foot = $(".ui-jqgrid-ftable", this.sDiv);
 				if(foot.length) {
 					var frows = foot[0].rows[0];
-					i=0;j=0, tmp=[];
+					i=0;j=0; tmp=[];
 					while(i < frows.cells.length){
 						var fc = frows.cells[i],
 						coln = $(fc).attr('aria-describedby').slice(-3);
@@ -1167,8 +1167,9 @@ $.jgrid.extend({
 				align[cm[j].name] = cm[j].align || 'left';
 				i++;
 			}
+			var gh;
 			if(o.includeGroupHeader && $t.p.groupHeader && $t.p.groupHeader.length) {
-				var gh = $t.p.groupHeader;
+				gh = $t.p.groupHeader;
 				for (i=0;i < gh.length; i++) {
 					var clone = [],
 					ghdata = gh[i].groupHeaders;
@@ -1230,7 +1231,7 @@ $.jgrid.extend({
 							text : $.jgrid.stripHtml(fdata[key]),
 							style : 'tableFooter',
 							alignment : align[key]
-						}
+						};
 						test.push( obj );
 					}
 				}
