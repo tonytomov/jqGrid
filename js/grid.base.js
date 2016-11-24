@@ -2034,7 +2034,7 @@ $.fn.jqGrid = function( pin ) {
 				selected = true;
 			}
 			var afterInsRow = $.isFunction(ts.p.afterInsertRow), grpdata=[],hiderow=false, groupingPrepare,
-			tablebody = $("#"+$.jgrid.jqID(ts.p.id)+" tbody:first"),
+			tablebody = $("tbody:first", ts),
 			rnc = ni ? getstyle(stylemodule, 'rownumBox', false, 'jqgrid-rownum') :"",
 			mlc = gi ? getstyle(stylemodule, 'multiBox', false, 'cbox'):"";
 			if(ts.p.grouping)  {
