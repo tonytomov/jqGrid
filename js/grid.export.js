@@ -1,5 +1,5 @@
 /*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery, jqGridUtils, JSZip, pdfMake */
+/*global jQuery, jqGridUtils, JSZip, pdfMake, XMLSerializer, define */
 (function( factory ) {
 	"use strict";
 	if ( typeof define === "function" && define.amd ) {
@@ -579,7 +579,7 @@ $.jgrid.extend({
 						j++;
 					}
 					hdr += tmp.join( p.separator ) + p.newLine;
- 				}
+				}
 			}
 			if(p.includeFooter && $t.p.footerrow) {
 				// already formated
@@ -897,7 +897,7 @@ $.jgrid.extend({
 						j++;
 					}
 					addRow( clone, true );
- 				}
+				}
 				var merge = $.jgrid.makeNode( rels, 'mergeCells', {
 					attr : {
 						count : mergecell.length
@@ -1191,7 +1191,7 @@ $.jgrid.extend({
 						j++;
 					}
 					rows.push(clone);
- 				}
+				}
 			}
 			
 			if(o.includeLabels) {
