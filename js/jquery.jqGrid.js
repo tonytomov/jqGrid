@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.0 - 2016-11-21
+* @license Guriddo jqGrid JS - v5.2.0 - 2016-11-27
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -14364,7 +14364,7 @@ $.jgrid.extend({
 					dtid = $t.p.localReader.id,
 					ind = rc[dtid], pos = $t.p._index[ind];
 					while(pos--) {
-						if($t.p.data[pos][dtid] === $.jgrid.stripPref($t.p.idPrefix, rc[parent_id])) {
+						if( String( $t.p.data[pos][dtid]) === String( $.jgrid.stripPref($t.p.idPrefix, rc[parent_id]) ) ) {
 							result = $t.p.data[pos];
 							break;
 						}
@@ -14398,7 +14398,7 @@ $.jgrid.extend({
 					dtid = $t.p.localReader.id;
 					for(i=0; i  < len; i++) {
 						row = currentview ? $t.p.data[$t.p._index[this.rows[i].id]] : $t.p.data[i];
-						if(row && String(row[parent_id]) === $.jgrid.stripPref($t.p.idPrefix, rc[dtid])) {
+						if(row && String(row[parent_id]) === String( $.jgrid.stripPref($t.p.idPrefix, rc[dtid]) ) ) {
 							result.push(row);
 						}
 					}
@@ -14436,7 +14436,7 @@ $.jgrid.extend({
 					$(this.p.data).each(function(i){
 						len = result.length;
 						for (i = 0; i < len; i++) {
-							if ($.jgrid.stripPref($t.p.idPrefix, result[i][dtid]) === this[parent_id]) {
+							if ( String( $.jgrid.stripPref($t.p.idPrefix, result[i][dtid]) ) === String( this[parent_id] ) ) {
 								if(expand) { this[expanded] = true; }
 								result.push(this);
 								break;
@@ -16479,7 +16479,7 @@ $.jgrid.extend({
 						j++;
 					}
 					hdr += tmp.join( p.separator ) + p.newLine;
- 				}
+				}
 			}
 			if(p.includeFooter && $t.p.footerrow) {
 				// already formated
@@ -16797,7 +16797,7 @@ $.jgrid.extend({
 						j++;
 					}
 					addRow( clone, true );
- 				}
+				}
 				var merge = $.jgrid.makeNode( rels, 'mergeCells', {
 					attr : {
 						count : mergecell.length
@@ -17091,7 +17091,7 @@ $.jgrid.extend({
 						j++;
 					}
 					rows.push(clone);
- 				}
+				}
 			}
 			
 			if(o.includeLabels) {
