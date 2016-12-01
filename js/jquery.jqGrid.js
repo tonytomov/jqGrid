@@ -6826,7 +6826,8 @@ $.fn.jqFilter = function( arg ) {
 		addsubgrup : "Add subgroup",
 		addrule : "Add rule",
 		delgroup : "Delete group",
-		delrule : "Delete rule"
+		delrule : "Delete rule",
+		autoencode : false
 	}, $.jgrid.filter, arg || {});
 	return this.each( function() {
 		if (this.filter) {return;}
@@ -7381,7 +7382,7 @@ $.fn.jqFilter = function( arg ) {
 				}
 			}
 			if (cm === undefined) { return ""; }
-			val = rule.data;
+			val = this.p.autoencode ? $.jgrid.htmlEncode(rule.data) : rule.data;
 			if(opC === 'bw' || opC === 'bn') { val = val+"%"; }
 			if(opC === 'ew' || opC === 'en') { val = "%"+val; }
 			if(opC === 'cn' || opC === 'nc') { val = "%"+val+"%"; }
@@ -8269,6 +8270,7 @@ $.jgrid.extend({
 					addrule : p.addrule,
 					delgroup : p.delgroup,
 					delrule : p.delrule,
+					autoencode : $t.p.autoencode,
 					onChange : function() {
 						if(this.p.showQuery) {
 							$('.query',this).html(this.toUserFriendlyString());
@@ -12364,7 +12366,7 @@ $.jgrid.extend({
 					} catch (e) {}
 				}
 				$.each($t.p.colModel, function(){
-					if(this.editable === true && $t.p.savedRow[fr].hasOwnProperty(this.name)) {
+					if( $t.p.savedRow[fr].hasOwnProperty(this.name)) {
 						ares[this.name] = $t.p.savedRow[fr][this.name];
 					}
 				});
@@ -12624,6 +12626,17 @@ $.jgrid.extend({
 			$("#"+gID+"_ilcancel").addClass( disabled );
 			$("#"+gID+"_iladd").removeClass( disabled );
 			$("#"+gID+"_iledit").removeClass( disabled );
+		});
+	},
+	showSaveCancelButtons : function()  {
+		return this.each(function(){
+			if (!this.grid ) { return; }
+			var gID = $.jgrid.jqID(this.p.id),
+			disabled = $.trim( $(this).jqGrid('getStyleUI', this.p.styleUI+'.common', 'disabled', true) );
+			$("#"+gID+"_ilsave").removeClass( disabled );
+			$("#"+gID+"_ilcancel").removeClass( disabled );
+			$("#"+gID+"_iladd").addClass( disabled );
+			$("#"+gID+"_iledit").addClass( disabled );
 		});
 	}
 //end inline edit
