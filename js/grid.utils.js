@@ -278,16 +278,20 @@ window.jqGridUtils = {
 		} catch (e) {
 			file = new Blob(tmp, opts);
 		}
-		url = URL.createObjectURL(file);
-		var a = document.createElement("a");
-		a.href = url;
-		a.download = fname;
-		document.body.appendChild(a);
-		a.click();
-		setTimeout(function() {
-			document.body.removeChild(a);
-			window.URL.revokeObjectURL(url);  
-		}, 0);	
+		if ( window.navigator && window.navigator.msSaveOrOpenBlob) {
+			window.navigator.msSaveOrOpenBlob( file , fname );
+		} else {
+			url = URL.createObjectURL(file);
+			var a = document.createElement("a");
+			a.href = url;
+			a.download = fname;
+			document.body.appendChild(a);
+			a.click();
+			setTimeout(function() {
+				document.body.removeChild(a);
+				window.URL.revokeObjectURL(url);
+			}, 0);
+		}
 	}
 };
 //module end
