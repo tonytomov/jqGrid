@@ -2608,8 +2608,8 @@ $.fn.jqGrid = function( pin ) {
 							if(gotoreq === false) {
 								return false;
 							}
-								beginReq();
-							}
+							beginReq();
+						}
 					},$.jgrid.ajaxOptions, ts.p.ajaxGridOptions));
 				break;
 				case "xmlstring":

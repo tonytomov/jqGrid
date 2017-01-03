@@ -173,7 +173,7 @@ $.extend($.jgrid,{
 					'<workbookView xWindow="0" yWindow="0" windowWidth="25600" windowHeight="19020" tabRatio="500"/>'+
 				'</bookViews>'+
 				'<sheets>'+
-					'<sheet name="" sheetId="1" r:id="rId1"/>'+
+					'<sheet name="Sheet1" sheetId="1" r:id="rId1"/>'+
 				'</sheets>'+
 			'</workbook>',
 
