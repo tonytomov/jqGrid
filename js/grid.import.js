@@ -26,7 +26,8 @@ $.extend($.jgrid,{
 			compression: false,
 			compressionModule :  'LZString', // object by example gzip, LZString
 			compressionMethod : 'compressToUTF16', // string by example zip, compressToUTF16
-			debug : false
+			debug : false,
+			saveData : true
 		}, o || {});
 		if(!jqGridId) { return; }
 		var gridstate = "", data = "", ret, $t = $("#"+jqGridId)[0], tmp;
@@ -41,9 +42,12 @@ $.extend($.jgrid,{
 			$($t).jqGrid('setGridParam',{_fT: tmp});
 		}
 		gridstate  =  $($t).jqGrid('jqGridExport', { exptype : "jsonstring", ident:"", root:"" });
-		data = $($t.grid.bDiv).find(".ui-jqgrid-btable tbody:first").html();
-		var firstrow  = data.indexOf("</tr>");
-		data = data.slice(firstrow + 5);
+		data = '';
+		if( o.saveData ) {
+			data = $($t.grid.bDiv).find(".ui-jqgrid-btable tbody:first").html();
+			var firstrow  = data.indexOf("</tr>");
+			data = data.slice(firstrow + 5);
+		}
 		if($.isFunction(o.beforeSetItem)) {
 			ret = o.beforeSetItem.call($t, gridstate);
 			if(ret != null) {
@@ -104,7 +108,8 @@ $.extend($.jgrid,{
 			afterSetGrid : null,
 			decompression: false,
 			decompressionModule :  'LZString', // object by example gzip, LZString
-			decompressionMethod : 'decompressFromUTF16' // string by example unzip, decompressFromUTF16
+			decompressionMethod : 'decompressFromUTF16', // string by example unzip, decompressFromUTF16
+			restoreData : true
 		}, o || {});
 		if(!jqGridId) { return; }
 		var ret, tmp, $t = $("#"+jqGridId)[0], data, iN, fT;
@@ -167,7 +172,9 @@ $.extend($.jgrid,{
 				ret._fT = null; delete ret._fT; 
 			}
 			var grid = $("#"+jqGridId).jqGrid( ret );
-			grid.append( data );
+			if( o.restoreData && $.trim( data ) !== '') {
+				grid.append( data );
+			}
 			grid.jqGrid( 'setGridParam', prm);
 			if(ret.storeNavOptions && ret.navGrid) {
 				// set to false so that nav grid can be run
