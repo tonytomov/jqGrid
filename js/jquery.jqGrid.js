@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.0 - 2016-12-01
+* @license Guriddo jqGrid JS - v5.2.0 - 2017-01-03
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2603,8 +2603,8 @@ $.fn.jqGrid = function( pin ) {
 							if(gotoreq === false) {
 								return false;
 							}
-								beginReq();
-							}
+							beginReq();
+						}
 					},$.jgrid.ajaxOptions, ts.p.ajaxGridOptions));
 				break;
 				case "xmlstring":
@@ -15381,7 +15381,10 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 			};
 
 		if (cm.formatoptions !== undefined) {
-			op = $.extend(op,cm.formatoptions);
+			// Deep clone before copying over to op, to avoid creating unintentional references.
+			// Otherwise, the assignment of op.extraparam[p.prmNames.oper] below may persist into the colModel config.
+			var formatoptionsClone = $.extend(true, {}, cm.formatoptions);
+			op = $.extend(op, formatoptionsClone);
 		}
 		if (p.editOptions !== undefined) {
 			op.editOptions = p.editOptions;
@@ -15916,16 +15919,20 @@ window.jqGridUtils = {
 		} catch (e) {
 			file = new Blob(tmp, opts);
 		}
-		url = URL.createObjectURL(file);
-		var a = document.createElement("a");
-		a.href = url;
-		a.download = fname;
-		document.body.appendChild(a);
-		a.click();
-		setTimeout(function() {
-			document.body.removeChild(a);
-			window.URL.revokeObjectURL(url);  
-		}, 0);	
+		if ( window.navigator && window.navigator.msSaveOrOpenBlob) {
+			window.navigator.msSaveOrOpenBlob( file , fname );
+		} else {
+			url = URL.createObjectURL(file);
+			var a = document.createElement("a");
+			a.href = url;
+			a.download = fname;
+			document.body.appendChild(a);
+			a.click();
+			setTimeout(function() {
+				document.body.removeChild(a);
+				window.URL.revokeObjectURL(url);
+			}, 0);
+		}
 	}
 };
 
@@ -16086,7 +16093,7 @@ $.extend($.jgrid,{
 					'<workbookView xWindow="0" yWindow="0" windowWidth="25600" windowHeight="19020" tabRatio="500"/>'+
 				'</bookViews>'+
 				'<sheets>'+
-					'<sheet name="" sheetId="1" r:id="rId1"/>'+
+					'<sheet name="Sheet1" sheetId="1" r:id="rId1"/>'+
 				'</sheets>'+
 			'</workbook>',
 
