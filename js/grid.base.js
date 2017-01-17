@@ -3206,7 +3206,7 @@ $.fn.jqGrid = function( pin ) {
 			$(elem).find("#bs_reset").click(function(e){
 				ts.p.colFilters[cm.name] = {};
 				ts.p.postData.filters = buildFilters();
-				ts.p.search = true;
+				ts.p.search = false;
 				$(ts).trigger("reloadGrid");
 				$("#column_menu").remove();
 				return false;
