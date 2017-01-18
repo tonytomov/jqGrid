@@ -3815,18 +3815,30 @@ $.fn.jqGrid = function( pin ) {
 				}
 			},
 			'reloadGrid': function(e,opts) {
-				if(ts.p.treeGrid ===true) {	ts.p.datatype = ts.p.treedatatype;}
+				if(ts.p.treeGrid ===true) {
+					ts.p.datatype = ts.p.treedatatype;
+				}
 				opts = opts || {};
 				if (opts.current) {
 					ts.grid.selectionPreserver(ts);
 				}
-				if(ts.p.datatype==="local"){ $(ts).jqGrid("resetSelection");  if(ts.p.data.length) { normalizeData(); refreshIndex();} }
-				else if(!ts.p.treeGrid) {
+				if(ts.p.datatype==="local"){
+					$(ts).jqGrid("resetSelection");
+					if(ts.p.data.length) {
+						normalizeData();
+						refreshIndex();
+					}
+				} else if(!ts.p.treeGrid) {
 					ts.p.selrow=null;
-					if(ts.p.multiselect) {ts.p.selarrrow =[];setHeadCheckBox(false);}
+					if(ts.p.multiselect) {
+						ts.p.selarrrow =[];
+						setHeadCheckBox(false);
+					}
 					ts.p.savedRow = [];
 				}
-				if(ts.p.scroll) {emptyRows.call(ts, true, false);}
+				if(ts.p.scroll) {
+					emptyRows.call(ts, true, false);
+				}
 				if (opts.page) {
 					var page = opts.page;
 					if (page > ts.p.lastpage) { page = ts.p.lastpage; }
