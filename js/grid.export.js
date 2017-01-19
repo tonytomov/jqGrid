@@ -624,7 +624,8 @@ $.jgrid.extend({
 			includeFooter: true,
 			fileName : "jqGridExport.xlsx",
 			mimetype : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-			maxlength : 40 // maxlength for visible string data 
+			maxlength : 40, // maxlength for visible string data 
+			onBeforeExport : null
 		}, o || {} );
 		this.each(function() {
 			var $t = this,
@@ -946,6 +947,9 @@ $.jgrid.extend({
 						customWidth: 1
 					}
 				} ) );
+			}
+			if($.isFunction( o.onBeforeExport) ) {
+				o.onBeforeExport( xlsx );
 			}
 			data = null; // free memory
 			try {
