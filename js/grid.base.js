@@ -2518,8 +2518,13 @@ $.fn.jqGrid = function( pin ) {
 			}
 			return bfpcr;
 		},
-		afterprocess = function(data) {
-			
+		afterprocess = function(dstr, lcf) {
+			$(ts).triggerHandler("jqGridLoadComplete", [dstr]);
+			if(lcf) {ts.p.loadComplete.call(ts,dstr);}
+			$(ts).triggerHandler("jqGridAfterLoadComplete", [dstr]);
+			ts.p.datatype = "local";
+			ts.p.datastr = null;
+			endReq();
 		},
 		populate = function (npage) {
 			if(!ts.grid.hDiv.loading) {
@@ -2628,6 +2633,7 @@ $.fn.jqGrid = function( pin ) {
 						return;								
 					}					
 					addXmlData(dstr);
+					afterprocess(dstr, lcf);
 				break;
 				case "jsonstring":
 					beginReq();
@@ -2638,12 +2644,7 @@ $.fn.jqGrid = function( pin ) {
 						return;								
 					}					
 					addJSONData(dstr);
-					$(ts).triggerHandler("jqGridLoadComplete", [dstr]);
-					if(lcf) {ts.p.loadComplete.call(ts,dstr);}
-					$(ts).triggerHandler("jqGridAfterLoadComplete", [dstr]);
-					ts.p.datatype = "local";
-					ts.p.datastr = null;
-					endReq();
+					afterprocess(dstr, lcf);
 				break;
 				case "local":
 				case "clientside":
