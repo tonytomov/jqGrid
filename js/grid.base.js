@@ -327,10 +327,10 @@ $.extend($.jgrid,{
 			// examples: "[id]", "rows[page]"
 			return m[1] ? $(m[1], obj).attr(m[2]) : $(obj).attr(m[2]);
 		}
-			ret = $(expr, obj);
-			if (returnObj) { return ret; }
-			//$(expr, obj).filter(':last'); // we use ':last' to be more compatible with old version of jqGrid
-			return ret.length > 0 ? $(ret).text() : undefined;
+		ret = $(expr, obj);
+		if (returnObj) { return ret; }
+		//$(expr, obj).filter(':last'); // we use ':last' to be more compatible with old version of jqGrid
+		return ret.length > 0 ? $(ret).text() : undefined;
 	},
 	cellWidth : function () {
 		var $testDiv = $("<div class='ui-jqgrid' style='left:10000px'><table class='ui-jqgrid-btable ui-common-table' style='width:5px;'><tr class='jqgrow'><td style='width:5px;display:block;'></td></tr></table></div>"),
