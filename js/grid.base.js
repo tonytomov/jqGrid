@@ -2508,6 +2508,19 @@ $.fn.jqGrid = function( pin ) {
 			ts.grid.hDiv.loading = false;
 			$(ts).jqGrid("progressBar", {method:"hide", loadtype : ts.p.loadui });
 		},
+		beforeprocess = function(data, st, xhr) {
+			var bfpcr = $(ts).triggerHandler("jqGridBeforeProcessing", [data,st,xhr]);
+			bfpcr = (bfpcr === undefined || typeof bfpcr !== boolean) ? true : bfpcr;
+			if ($.isFunction(ts.p.beforeProcessing)) {
+				if (ts.p.beforeProcessing.call(ts, data, st, xhr) === false) {
+					bfpcr =  false;
+				}
+			}
+			return bfpcr;
+		},
+		afterprocess = function(data) {
+			
+		},
 		populate = function (npage) {
 			if(!ts.grid.hDiv.loading) {
 				var pvis = ts.p.scroll && npage === false,
@@ -2575,11 +2588,9 @@ $.fn.jqGrid = function( pin ) {
 						dataType: dt ,
 						data: $.isFunction(ts.p.serializeGridData)? ts.p.serializeGridData.call(ts,ts.p.postData) : ts.p.postData,
 						success:function(data,st, xhr) {
-							if ($.isFunction(ts.p.beforeProcessing)) {
-								if (ts.p.beforeProcessing.call(ts, data, st, xhr) === false) {
-									endReq();
-									return;
-								}
+							if(!beforeprocess(data, st,xhr)) {
+								endReq();
+								return;								
 							}
 							if(dt === "xml") { addXmlData(data, rcnt,npage>1,adjust); }
 							else { addJSONData(data, rcnt, npage>1, adjust); }
@@ -2612,18 +2623,20 @@ $.fn.jqGrid = function( pin ) {
 				case "xmlstring":
 					beginReq();
 					dstr = typeof ts.p.datastr !== 'string' ? ts.p.datastr : $.parseXML(ts.p.datastr);
+					if(!beforeprocess(dstr, 200 , null)) {
+						endReq();
+						return;								
+					}					
 					addXmlData(dstr);
-					$(ts).triggerHandler("jqGridLoadComplete", [dstr]);
-					if(lcf) {ts.p.loadComplete.call(ts,dstr);}
-					$(ts).triggerHandler("jqGridAfterLoadComplete", [dstr]);
-					ts.p.datatype = "local";
-					ts.p.datastr = null;
-					endReq();
 				break;
 				case "jsonstring":
 					beginReq();
 					if(typeof ts.p.datastr === 'string') { dstr = $.jgrid.parse(ts.p.datastr); }
 					else { dstr = ts.p.datastr; }
+					if(!beforeprocess(dstr, 200 , null)) {
+						endReq();
+						return;								
+					}					
 					addJSONData(dstr);
 					$(ts).triggerHandler("jqGridLoadComplete", [dstr]);
 					if(lcf) {ts.p.loadComplete.call(ts,dstr);}
@@ -2638,6 +2651,10 @@ $.fn.jqGrid = function( pin ) {
 					ts.p.datatype = "local";
 					ts.p._ald = true;
 					var req = addLocalData( false );
+					if(!beforeprocess(req, 200 , null)) {
+						endReq();
+						return;								
+					}					
 					addJSONData(req,rcnt,npage>1,adjust);
 					$(ts).triggerHandler("jqGridLoadComplete", [req]);
 					if(lc) { lc.call(ts,req); }
