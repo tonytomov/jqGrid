@@ -1850,17 +1850,18 @@ $.fn.jqGrid = function( pin ) {
 			gxml = $.jgrid.getXmlData( gxml, xmlRd.row, true);
 			if (!gxml) { gxml = []; }
 			var gl = gxml.length, j=0, grpdata=[], rn = parseInt(ts.p.rowNum,10), br=ts.p.scroll?$.jgrid.randId():1, 
-				tablebody = $(ts).find("tbody:first");
+				tablebody = $(ts).find("tbody:first"),
+				hiderow=false, groupingPrepare;
+			if(ts.p.grouping)  {
+				hiderow = ts.p.groupingView.groupCollapse === true;
+				groupingPrepare = $.jgrid.getMethod("groupingPrepare");
+			}
 			if (gl > 0 &&  ts.p.page <= 0) { ts.p.page = 1; }
 			if(gxml && gl){
 				if (adjust) { rn *= adjust+1; }
-				var afterInsRow = $.isFunction(ts.p.afterInsertRow), hiderow=false, groupingPrepare,
+				var afterInsRow = $.isFunction(ts.p.afterInsertRow),
 				rnc = ni ? getstyle(stylemodule, 'rownumBox', false, 'jqgrid-rownum') :"",
 				mlc = gi ? getstyle(stylemodule, 'multiBox', false, 'cbox'):"";
-				if(ts.p.grouping)  {
-					hiderow = ts.p.groupingView.groupCollapse === true;
-					groupingPrepare = $.jgrid.getMethod("groupingPrepare");
-				}
 				while (j<gl) {
 					xmlr = gxml[j];
 					rid = getId(xmlr,br+j);
@@ -2510,7 +2511,7 @@ $.fn.jqGrid = function( pin ) {
 		},
 		beforeprocess = function(data, st, xhr) {
 			var bfpcr = $(ts).triggerHandler("jqGridBeforeProcessing", [data,st,xhr]);
-			bfpcr = (bfpcr === undefined || typeof bfpcr !== boolean) ? true : bfpcr;
+			bfpcr = (bfpcr === undefined || typeof(bfpcr) !== 'boolean') ? true : bfpcr;
 			if ($.isFunction(ts.p.beforeProcessing)) {
 				if (ts.p.beforeProcessing.call(ts, data, st, xhr) === false) {
 					bfpcr =  false;
@@ -4443,7 +4444,7 @@ $.jgrid.extend({
 						}
 					}
 				}
-				var k = 0, classes = $(t).jqGrid('getStyleUI',t.p.styleUI+".base",'rowBox', true, 'jqgrow ui-row-'+ t.p.direction), lcdata = {}, classes,
+				var k = 0, classes = $(t).jqGrid('getStyleUI',t.p.styleUI+".base",'rowBox', true, 'jqgrow ui-row-'+ t.p.direction), lcdata = {},
 				air = $.isFunction(t.p.afterInsertRow) ? true : false;
 				if(ni) {
 					rnc = $(t).jqGrid('getStyleUI',t.p.styleUI+".base",'rownumBox', false, 'jqgrid-rownum');
@@ -4826,7 +4827,7 @@ $.jgrid.extend({
 	},
 	setSortIcon : function(colname, position) {
 		return this.each(function(){
-			var $t = this, pos=-1, addpix = 8;
+			var $t = this, pos=-1;
 			if(!$t.grid) {return;}
 			if(colname != null) {
 				if(isNaN(colname)) {
