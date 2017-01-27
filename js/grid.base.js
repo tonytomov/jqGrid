@@ -2572,15 +2572,15 @@ $.fn.jqGrid = function( pin ) {
 				}
 				$.extend(ts.p.postData,prm);
 				var rcnt = !ts.p.scroll ? 1 : ts.rows.length-1;
+				if ($.isFunction(ts.p.datatype)) { 
+					ts.p.datatype.call(ts,ts.p.postData,"load_"+ts.p.id, rcnt, npage, adjust); 
+					return;
+				}
 				var bfr = $(ts).triggerHandler("jqGridBeforeRequest");
 				if (bfr === false || bfr === 'stop') { return; }
 				if ($.isFunction(ts.p.beforeRequest)) {
 					bfr = ts.p.beforeRequest.call(ts);
 					if (bfr === false || bfr === 'stop') { return; }
-				}
-				if ($.isFunction(ts.p.datatype)) { 
-					ts.p.datatype.call(ts,ts.p.postData,"load_"+ts.p.id, rcnt, npage, adjust); 
-					return;
 				}
 				dt = ts.p.datatype.toLowerCase();
 				switch(dt)
