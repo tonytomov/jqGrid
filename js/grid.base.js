@@ -3350,7 +3350,7 @@ $.fn.jqGrid = function( pin ) {
 			$("#column_menu").addClass("ui-menu " + colmenustyle.menu_widget);
 			if(ts.p.direction === "ltr") {
 				var wcm = $("#column_menu").width() + 26;
-				$("#column_menu").css("left", left- wcm);
+				$("#column_menu").css("left", (left- wcm)+'px');
 			}
 			$("#column_menu > li > a").hover(
 				function(){
