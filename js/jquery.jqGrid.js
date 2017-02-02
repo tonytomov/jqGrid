@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.0 - 2017-01-26
+* @license Guriddo jqGrid JS - v5.2.0 - 2017-02-02
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1845,17 +1845,18 @@ $.fn.jqGrid = function( pin ) {
 			gxml = $.jgrid.getXmlData( gxml, xmlRd.row, true);
 			if (!gxml) { gxml = []; }
 			var gl = gxml.length, j=0, grpdata=[], rn = parseInt(ts.p.rowNum,10), br=ts.p.scroll?$.jgrid.randId():1, 
-				tablebody = $(ts).find("tbody:first");
+				tablebody = $(ts).find("tbody:first"),
+				hiderow=false, groupingPrepare;
+			if(ts.p.grouping)  {
+				hiderow = ts.p.groupingView.groupCollapse === true;
+				groupingPrepare = $.jgrid.getMethod("groupingPrepare");
+			}
 			if (gl > 0 &&  ts.p.page <= 0) { ts.p.page = 1; }
 			if(gxml && gl){
 				if (adjust) { rn *= adjust+1; }
-				var afterInsRow = $.isFunction(ts.p.afterInsertRow), hiderow=false, groupingPrepare,
+				var afterInsRow = $.isFunction(ts.p.afterInsertRow),
 				rnc = ni ? getstyle(stylemodule, 'rownumBox', false, 'jqgrid-rownum') :"",
 				mlc = gi ? getstyle(stylemodule, 'multiBox', false, 'cbox'):"";
-				if(ts.p.grouping)  {
-					hiderow = ts.p.groupingView.groupCollapse === true;
-					groupingPrepare = $.jgrid.getMethod("groupingPrepare");
-				}
 				while (j<gl) {
 					xmlr = gxml[j];
 					rid = getId(xmlr,br+j);
@@ -2503,6 +2504,24 @@ $.fn.jqGrid = function( pin ) {
 			ts.grid.hDiv.loading = false;
 			$(ts).jqGrid("progressBar", {method:"hide", loadtype : ts.p.loadui });
 		},
+		beforeprocess = function(data, st, xhr) {
+			var bfpcr = $(ts).triggerHandler("jqGridBeforeProcessing", [data,st,xhr]);
+			bfpcr = (bfpcr === undefined || typeof(bfpcr) !== 'boolean') ? true : bfpcr;
+			if ($.isFunction(ts.p.beforeProcessing)) {
+				if (ts.p.beforeProcessing.call(ts, data, st, xhr) === false) {
+					bfpcr =  false;
+				}
+			}
+			return bfpcr;
+		},
+		afterprocess = function(dstr, lcf) {
+			$(ts).triggerHandler("jqGridLoadComplete", [dstr]);
+			if(lcf) {ts.p.loadComplete.call(ts,dstr);}
+			$(ts).triggerHandler("jqGridAfterLoadComplete", [dstr]);
+			ts.p.datatype = "local";
+			ts.p.datastr = null;
+			endReq();
+		},
 		populate = function (npage) {
 			if(!ts.grid.hDiv.loading) {
 				var pvis = ts.p.scroll && npage === false,
@@ -2549,13 +2568,15 @@ $.fn.jqGrid = function( pin ) {
 				}
 				$.extend(ts.p.postData,prm);
 				var rcnt = !ts.p.scroll ? 1 : ts.rows.length-1;
+				if ($.isFunction(ts.p.datatype)) { 
+					ts.p.datatype.call(ts,ts.p.postData,"load_"+ts.p.id, rcnt, npage, adjust); 
+					return;
+				}
 				var bfr = $(ts).triggerHandler("jqGridBeforeRequest");
 				if (bfr === false || bfr === 'stop') { return; }
-				if ($.isFunction(ts.p.datatype)) { ts.p.datatype.call(ts,ts.p.postData,"load_"+ts.p.id, rcnt, npage, adjust); return;}
 				if ($.isFunction(ts.p.beforeRequest)) {
 					bfr = ts.p.beforeRequest.call(ts);
-					if(bfr === undefined) { bfr = true; }
-					if ( bfr === false ) { return; }
+					if (bfr === false || bfr === 'stop') { return; }
 				}
 				dt = ts.p.datatype.toLowerCase();
 				switch(dt)
@@ -2570,11 +2591,9 @@ $.fn.jqGrid = function( pin ) {
 						dataType: dt ,
 						data: $.isFunction(ts.p.serializeGridData)? ts.p.serializeGridData.call(ts,ts.p.postData) : ts.p.postData,
 						success:function(data,st, xhr) {
-							if ($.isFunction(ts.p.beforeProcessing)) {
-								if (ts.p.beforeProcessing.call(ts, data, st, xhr) === false) {
-									endReq();
-									return;
-								}
+							if(!beforeprocess(data, st,xhr)) {
+								endReq();
+								return;								
 							}
 							if(dt === "xml") { addXmlData(data, rcnt,npage>1,adjust); }
 							else { addJSONData(data, rcnt, npage>1, adjust); }
@@ -2587,12 +2606,14 @@ $.fn.jqGrid = function( pin ) {
 							if (npage === 1) { endReq(); }
 						},
 						error:function(xhr,st,err){
+							$(ts).triggerHandler("jqGridLoadError", [xhr,st,err]);
 							if($.isFunction(ts.p.loadError)) { ts.p.loadError.call(ts,xhr,st,err); }
 							if (npage === 1) { endReq(); }
 							xhr=null;
 						},
 						beforeSend: function(xhr, settings ){
 							var gotoreq = true;
+							gotoreq = $(ts).triggerHandler("jqGridLoadBeforeSend", [xhr,settings]);
 							if($.isFunction(ts.p.loadBeforeSend)) {
 								gotoreq = ts.p.loadBeforeSend.call(ts,xhr, settings); 
 							}
@@ -2607,25 +2628,23 @@ $.fn.jqGrid = function( pin ) {
 				case "xmlstring":
 					beginReq();
 					dstr = typeof ts.p.datastr !== 'string' ? ts.p.datastr : $.parseXML(ts.p.datastr);
+					if(!beforeprocess(dstr, 200 , null)) {
+						endReq();
+						return;								
+					}					
 					addXmlData(dstr);
-					$(ts).triggerHandler("jqGridLoadComplete", [dstr]);
-					if(lcf) {ts.p.loadComplete.call(ts,dstr);}
-					$(ts).triggerHandler("jqGridAfterLoadComplete", [dstr]);
-					ts.p.datatype = "local";
-					ts.p.datastr = null;
-					endReq();
+					afterprocess(dstr, lcf);
 				break;
 				case "jsonstring":
 					beginReq();
 					if(typeof ts.p.datastr === 'string') { dstr = $.jgrid.parse(ts.p.datastr); }
 					else { dstr = ts.p.datastr; }
+					if(!beforeprocess(dstr, 200 , null)) {
+						endReq();
+						return;								
+					}					
 					addJSONData(dstr);
-					$(ts).triggerHandler("jqGridLoadComplete", [dstr]);
-					if(lcf) {ts.p.loadComplete.call(ts,dstr);}
-					$(ts).triggerHandler("jqGridAfterLoadComplete", [dstr]);
-					ts.p.datatype = "local";
-					ts.p.datastr = null;
-					endReq();
+					afterprocess(dstr, lcf);
 				break;
 				case "local":
 				case "clientside":
@@ -2633,6 +2652,10 @@ $.fn.jqGrid = function( pin ) {
 					ts.p.datatype = "local";
 					ts.p._ald = true;
 					var req = addLocalData( false );
+					if(!beforeprocess(req, 200 , null)) {
+						endReq();
+						return;								
+					}					
 					addJSONData(req,rcnt,npage>1,adjust);
 					$(ts).triggerHandler("jqGridLoadComplete", [req]);
 					if(lc) { lc.call(ts,req); }
@@ -2660,6 +2683,8 @@ $.fn.jqGrid = function( pin ) {
 			str="", pgcnt, lft, cent, rgt, twd, tdw, i,
 			clearVals = function(onpaging, thus){
 				var ret;
+				ret = $(ts).triggerHandler("jqGridPaging", [onpaging, thus]);
+				if(ret==='stop') {return false;}
 				if ($.isFunction(ts.p.onPaging) ) { ret = ts.p.onPaging.call(ts,onpaging, thus); }
 				if(ret==='stop') {return false;}
 				ts.p.selrow = null;
@@ -3320,7 +3345,7 @@ $.fn.jqGrid = function( pin ) {
 			$("#column_menu").addClass("ui-menu " + colmenustyle.menu_widget);
 			if(ts.p.direction === "ltr") {
 				var wcm = $("#column_menu").width() + 26;
-				$("#column_menu").css("left", left- wcm);
+				$("#column_menu").css("left", (left- wcm)+'px');
 			}
 			$("#column_menu > li > a").hover(
 				function(){
@@ -4035,7 +4060,6 @@ $.fn.jqGrid = function( pin ) {
 		ts.addJSONData = function(d) {addJSONData( d );};
 		ts.addLocalData = function(d) { return addLocalData( d );};
 		this.grid.cols = this.rows[0].cells;
-		$(ts).triggerHandler("jqGridInitGrid");
 		if ($.isFunction( ts.p.onInitGrid )) { ts.p.onInitGrid.call(ts); }
 		populate();
 		ts.p.hiddengrid=false;
@@ -4415,7 +4439,7 @@ $.jgrid.extend({
 						}
 					}
 				}
-				var k = 0, classes = $(t).jqGrid('getStyleUI',t.p.styleUI+".base",'rowBox', true, 'jqgrow ui-row-'+ t.p.direction), lcdata = {}, classes,
+				var k = 0, classes = $(t).jqGrid('getStyleUI',t.p.styleUI+".base",'rowBox', true, 'jqgrow ui-row-'+ t.p.direction), lcdata = {},
 				air = $.isFunction(t.p.afterInsertRow) ? true : false;
 				if(ni) {
 					rnc = $(t).jqGrid('getStyleUI',t.p.styleUI+".base",'rownumBox', false, 'jqgrid-rownum');
@@ -4798,7 +4822,7 @@ $.jgrid.extend({
 	},
 	setSortIcon : function(colname, position) {
 		return this.each(function(){
-			var $t = this, pos=-1, addpix = 8;
+			var $t = this, pos=-1;
 			if(!$t.grid) {return;}
 			if(colname != null) {
 				if(isNaN(colname)) {
@@ -5146,7 +5170,7 @@ $.jgrid.extend({
 		//do not set width will not work
 		return this.each(function(){
 			if ( this.grid ) {
-				if ( obj ) {
+				if ( $.isPlainObject( obj ) ) {
 					var cM = this.p.colModel, i;
 					for ( i=0;i<cM.length;i++ ) {
 						if ( cM[i].name === colname ) {
