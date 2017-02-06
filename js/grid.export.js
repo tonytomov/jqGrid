@@ -1,5 +1,5 @@
 /*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery, jqGridUtils, JSZip, pdfMake, XMLSerializer, define */
+/*global jQuery, JSZip, pdfMake, XMLSerializer, define */
 (function( factory ) {
 	"use strict";
 	if ( typeof define === "function" && define.amd ) {
@@ -608,7 +608,7 @@ $.jgrid.extend({
 		if (p.returnAsString) {
 			return ret;
 		} else {
-			jqGridUtils.saveAs( ret, p.fileName, { type : p.mimetype });
+			$.jgrid.saveAs( ret, p.fileName, { type : p.mimetype });
 		}
 	},
 	/*
@@ -964,11 +964,11 @@ $.jgrid.extend({
 					zip
 						.generateAsync( zipConfig )
 						.then( function ( blob ) {
-							jqGridUtils.saveAs( blob, o.fileName, { type : o.mimetype } );
+							$.jgrid.saveAs( blob, o.fileName, { type : o.mimetype } );
 						});
 				} else {
 					// JSZip 2.5
-					jqGridUtils.saveAs( zip.generate( zipConfig ), o.fileName, { type : o.mimetype } );				}
+					$.jgrid.saveAs( zip.generate( zipConfig ), o.fileName, { type : o.mimetype } );				}
 			}
 			catch(e) {
 				throw e;
@@ -1306,7 +1306,7 @@ $.jgrid.extend({
 					pdf.open();
 				} else {
 					pdf.getBuffer( function (buffer) {
-						jqGridUtils.saveAs( buffer, o.fileName, {type: o.mimetype } );
+						$.jgrid.saveAs( buffer, o.fileName, {type: o.mimetype } );
 					} );
 				}
 			} catch(e) {

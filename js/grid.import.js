@@ -1,5 +1,5 @@
 /*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery, jqGridUtils, define, URL */
+/*global jQuery, define, URL */
 (function( factory ) {
 	"use strict";
 	if ( typeof define === "function" && define.amd ) {
@@ -135,7 +135,7 @@ $.extend($.jgrid,{
 				}
 			}
 		}
-		ret = jqGridUtils.parse( gridstring );
+		ret = $.jgrid.parseFunc( gridstring );
 		if( ret && $.type(ret) === 'object') {
 			if($t.grid) { 
 				$.jgrid.gridUnload( jqGridId ); 
@@ -359,8 +359,8 @@ $.extend($.jgrid,{
 		var xmlConvert = function (xml,o) {
 			var cnfg = $(o.xmlGrid.config,xml)[0];
 			var xmldata = $(o.xmlGrid.data,xml)[0], jstr, jstr1, key;
-			if(jqGridUtils.xmlToJSON ) {
-				jstr = jqGridUtils.xmlToJSON( cnfg );
+			if($.grid.xmlToJSON ) {
+				jstr = $.jgrid.xmlToJSON( cnfg );
 				//jstr = $.jgrid.parse(jstr);
 				for(key in jstr) {
 					if(jstr.hasOwnProperty(key)) {
@@ -382,7 +382,7 @@ $.extend($.jgrid,{
 		};
 		var jsonConvert = function (jsonstr,o){
 			if (jsonstr && typeof jsonstr === 'string') {
-				var json = jqGridUtils.parse(jsonstr);
+				var json = $.jgrid.parseFunc(jsonstr);
 				var gprm = json[o.jsonGrid.config];
 				var jdata = json[o.jsonGrid.data];
 				if(jdata) {
@@ -468,7 +468,7 @@ $.extend($.jgrid,{
 			var ret = null;
 			this.each(function () {
 				if(!this.grid) { return;}
-				var key, gprm = $.extend(true, {}, $(this).jqGrid("getGridParam"), o.addOptions);
+				var gprm = $.extend(true, {}, $(this).jqGrid("getGridParam"), o.addOptions);
 				// we need to check for:
 				// 1.multiselect, 2.subgrid  3. treegrid and remove the unneded columns from colNames
 				if(gprm.rownumbers) {
@@ -486,10 +486,10 @@ $.extend($.jgrid,{
 				gprm.knv = null;
 				switch (o.exptype) {
 					case 'xmlstring' :
-						ret = "<"+o.root+">"+ jqGridUtils.jsonToXML( gprm, {xmlDecl:""} )+"</"+o.root+">";
+						ret = "<"+o.root+">"+ $.jgrid.jsonToXML( gprm, {xmlDecl:""} )+"</"+o.root+">";
 						break;
 					case 'jsonstring' :
-						ret =  jqGridUtils.stringify( gprm );
+						ret =  $.jgrid.stringify( gprm );
 						if(o.root) { ret = "{"+ o.root +":"+ret+"}"; }
 						break;
 				}

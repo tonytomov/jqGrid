@@ -15,13 +15,14 @@
 }(function() {
 "use strict";
 //module begin
-window.jqGridUtils = {
+$.extend($.jgrid,{
+//window.jqGridUtils = {
 	stringify : function(obj) {
 		return JSON.stringify(obj,function(key, value){
             return (typeof value === 'function' ) ? value.toString() : value;
         });
 	},
-	parse : function(str) {
+	parseFunc : function(str) {
 		return JSON.parse(str,function(key, value){
 			if(typeof value === "string" && value.indexOf("function") !== -1) {
 				var sv = value.split(" ");
@@ -293,8 +294,7 @@ window.jqGridUtils = {
 			}, 0);
 		}
 	}
-};
+})
 //module end
-return window.jqGridUtils;
-
+//return window.jqGridUtils;
 }));
