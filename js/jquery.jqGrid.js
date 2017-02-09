@@ -7573,7 +7573,7 @@ $.jgrid.extend({
 			beforeClear: null,
 			afterClear: null,
 			onClearSearchValue : null,
-			searchurl : '',
+			url : '',
 			stringResult: false,
 			groupOp: 'AND',
 			defaultSearch : "bw",
@@ -7714,9 +7714,9 @@ $.jgrid.extend({
 					$.extend($t.p.postData,sdata);
 				}
 				var saveurl;
-				if($t.p.searchurl) {
+				if(p.url) {
 					saveurl = $t.p.url;
-					$($t).jqGrid("setGridParam",{url:$t.p.searchurl});
+					$($t).jqGrid("setGridParam", { url: p.url });
 				}
 				var bsr = $($t).triggerHandler("jqGridToolbarBeforeSearch") === 'stop' ? true : false;
 				if(!bsr && $.isFunction(p.beforeSearch)){bsr = p.beforeSearch.call($t);}
@@ -7793,9 +7793,9 @@ $.jgrid.extend({
 					$.extend($t.p.postData,sdata);
 				}
 				var saveurl;
-				if($t.p.searchurl) {
+				if(p.url) {
 					saveurl = $t.p.url;
-					$($t).jqGrid("setGridParam",{url:$t.p.searchurl});
+					$($t).jqGrid("setGridParam",{url:p.url});
 				}
 				var bcv = $($t).triggerHandler("jqGridToolbarBeforeClear") === 'stop' ? true : false;
 				if(!bcv && $.isFunction(p.beforeClear)){bcv = p.beforeClear.call($t);}
@@ -8479,8 +8479,8 @@ $.jgrid.extend({
 					ruleGroup += "\"op\":\"" + so + "\",";
 					ruleGroup += "\"data\":\"" + val.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"}";
 					gi++;
-	}
-});
+				}
+			});
 			ruleGroup += "]}";
 			$.extend($t.p.postData,{filters:ruleGroup});
 			$.each(['searchField', 'searchString', 'searchOper'], function(i, n){
@@ -9957,14 +9957,6 @@ $.jgrid.extend({
 				p.gbox = "#gbox_"+$.jgrid.jqID(gID);
 				$.jgrid.createModal(IDs,tbl, rp_ge[$t.p.id] ,"#gview_"+$.jgrid.jqID($t.p.id),$("#gview_"+$.jgrid.jqID($t.p.id))[0]);
 
-				if(onBeforeInit) {
-					showFrm = onBeforeInit.call($t,$(tbl));
-					if(showFrm === undefined) {
-						showFrm = true;
-					}
-				}
-				if(showFrm === false) {return;}
-
 				$(".fm-button","#"+dtbl+"_2").hover(
 					function(){$(this).addClass( commonstyle.hover );},
 					function(){$(this).removeClass( commonstyle.hover );}
@@ -10090,6 +10082,13 @@ $.jgrid.extend({
 					$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:rp_ge[$t.p.id].jqModal, onClose: rp_ge[$t.p.id].onClose});
 					return false;
 				});
+				if(onBeforeInit) {
+					showFrm = onBeforeInit.call($t,$(tbl));
+					if(showFrm === undefined) {
+						showFrm = true;
+					}
+				}
+				if(showFrm === false) {return;}
 				if(onBeforeShow) {rp_ge[$t.p.id].beforeShowForm.call($t,$("#"+dtbl));}
 				$.jgrid.viewModal("#"+$.jgrid.jqID(IDs.themodal),{gbox:"#gbox_"+$.jgrid.jqID(gID),jqm:rp_ge[$t.p.id].jqModal, overlay: rp_ge[$t.p.id].overlay, modal:rp_ge[$t.p.id].modal});
 				if(onAfterShow) {rp_ge[$t.p.id].afterShowForm.call($t,$("#"+dtbl));}
