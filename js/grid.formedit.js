@@ -1477,14 +1477,6 @@ $.jgrid.extend({
 				p.gbox = "#gbox_"+$.jgrid.jqID(gID);
 				$.jgrid.createModal(IDs,tbl, rp_ge[$t.p.id] ,"#gview_"+$.jgrid.jqID($t.p.id),$("#gview_"+$.jgrid.jqID($t.p.id))[0]);
 
-				if(onBeforeInit) {
-					showFrm = onBeforeInit.call($t,$(tbl));
-					if(showFrm === undefined) {
-						showFrm = true;
-					}
-				}
-				if(showFrm === false) {return;}
-
 				$(".fm-button","#"+dtbl+"_2").hover(
 					function(){$(this).addClass( commonstyle.hover );},
 					function(){$(this).removeClass( commonstyle.hover );}
@@ -1610,6 +1602,13 @@ $.jgrid.extend({
 					$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:rp_ge[$t.p.id].jqModal, onClose: rp_ge[$t.p.id].onClose});
 					return false;
 				});
+				if(onBeforeInit) {
+					showFrm = onBeforeInit.call($t,$(tbl));
+					if(showFrm === undefined) {
+						showFrm = true;
+					}
+				}
+				if(showFrm === false) {return;}
 				if(onBeforeShow) {rp_ge[$t.p.id].beforeShowForm.call($t,$("#"+dtbl));}
 				$.jgrid.viewModal("#"+$.jgrid.jqID(IDs.themodal),{gbox:"#gbox_"+$.jgrid.jqID(gID),jqm:rp_ge[$t.p.id].jqModal, overlay: rp_ge[$t.p.id].overlay, modal:rp_ge[$t.p.id].modal});
 				if(onAfterShow) {rp_ge[$t.p.id].afterShowForm.call($t,$("#"+dtbl));}
