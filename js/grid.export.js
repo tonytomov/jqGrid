@@ -365,6 +365,7 @@ $.jgrid.extend({
 			dlen = data1.length,
 			cm = $t.p.colModel,
 			cmlen = cm.length,
+			clbl = $t.p.colNames,
 			i, j=0, row, str = '' , tmp, k,
 			cap = "", hdr = "", ftr="",	lbl="", albl=[], restorevis = [];
 			function groupToCsv (grdata, p) {
@@ -522,8 +523,8 @@ $.jgrid.extend({
 					n.hidden = true;
 				}
 				if(!n.hidden) {
-					albl.push( $.jgrid.formatCellCsv( n.label || n.name, p) );
-					def[n.name] = n.label || n.name;					
+					albl.push( $.jgrid.formatCellCsv( clbl[i], p) );
+					def[n.name] = clbl[i];
 				}
 			});
 			
@@ -662,7 +663,7 @@ $.jgrid.extend({
 				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn') {
 					continue;
 				}
-				obj[ cm[j].name ] = cm[j].label || cm[j].name;
+				obj[ cm[j].name ] = $t.p.colNames[j]; //cm[j].label || cm[j].name;
 				data.width[ i ] = 5;
 				data.map[i] = j;
 				i++;
@@ -1163,9 +1164,9 @@ $.jgrid.extend({
 				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn') {
 					continue;
 				}
-				obj = { text:  cm[j].label || cm[j].name, style: 'tableHeader' };
+				obj = { text:  $t.p.colNames[j], style: 'tableHeader' };
 				test.push( obj );
-				def[cm[j].name]  = cm[j].label || cm[j].name;
+				def[cm[j].name]  = $t.p.colNames[j]; //cm[j].label || cm[j].name;
 				map[i] = j;
 				widths.push(cm[j].width); 
 				align[cm[j].name] = cm[j].align || 'left';
