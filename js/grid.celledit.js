@@ -266,6 +266,7 @@ $.jgrid.extend({
 												}
 												$t.p.savedRow.splice(0,1);
 											} else {
+												$($t).triggerHandler("jqGridErrorCell", [res, stat, err]);
 												if ($.isFunction($t.p.errorCell)) {
 													$t.p.errorCell.call($t, result, stat);
 												} else {
