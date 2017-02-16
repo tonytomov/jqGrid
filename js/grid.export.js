@@ -660,7 +660,10 @@ $.jgrid.extend({
 				map : [] 
 			};
 			for ( j=0, ien=cm.length ; j<ien ; j++ ) {
-				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn') {
+				if(cm[j].export === undefined) {
+					cm[j].export =  true;
+				}
+				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn' || !cm[j].export) {
 					continue;
 				}
 				obj[ cm[j].name ] = $t.p.colNames[j]; //cm[j].label || cm[j].name;
@@ -773,7 +776,7 @@ $.jgrid.extend({
 					//cm = $t.p.colModel,
 					vv, grlen = fdata.cnt, k, retarr = emptyData(data.header[0]);
 					for(k=foffset; k<colspans;k++) {
-						if(cm[k].hidden) {
+						if(cm[k].hidden || cm[k].export) {
 							continue;
 						}
 						var tplfld = "{0}";
@@ -1055,7 +1058,7 @@ $.jgrid.extend({
 					//cm = $t.p.colModel,
 					vv, grlen = fdata.cnt, k, retarr = emptyData(def);
 					for(k=foffset; k<colspans;k++) {
-						if(cm[k].hidden) {
+						if(cm[k].hidden || !cm[k].export) {
 							continue;
 						}
 						var tplfld = "{0}";
@@ -1161,7 +1164,10 @@ $.jgrid.extend({
 //============================================================================			
 			var k;
 			for ( j=0, ien=cm.length ; j<ien ; j++ ) {
-				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn') {
+				if(cm[j].export === undefined ) {
+					cm[j].export = true;
+				}
+				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn' || !cm[j].export) {
 					continue;
 				}
 				obj = { text:  $t.p.colNames[j], style: 'tableHeader' };
