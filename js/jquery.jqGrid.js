@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.0 - 2017-02-09
+* @license Guriddo jqGrid JS - v5.2.0 - 2017-02-16
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3316,6 +3316,7 @@ $.fn.jqGrid = function( pin ) {
 			var str = '<ul id="column_menu" class="ui-search-menu modal-content column-menu" role="menu" tabindex="0" style="font-size:'+fs+';left:'+left+'px;top:'+top+'px;">',
 			cm = ts.p.colModel[index], op = $.extend({sorting:true, columns: true, filtering: true, seraching:true, grouping:true, freeze : true}, cm.coloptions),
 			texts = $.jgrid.getRegional(ts, "colmenu"),
+			label = ts.p.colNames[index],
 			isgroup, isfreeze; // ???
 			// sorting
 			if(op.sorting) {
@@ -3328,17 +3329,17 @@ $.fn.jqGrid = function( pin ) {
 			}
 			if(op.filtering) {
 				str += '<li class="ui-menu-item divider" role="separator"></li>';
-				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" value="filtering"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_filter+'"></span></td><td class="menu_text">'+texts.filter + ' ' +(cm.label || cm.name)+'</td></tr></table></a></li>';			
+				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" value="filtering"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_filter+'"></span></td><td class="menu_text">'+texts.filter + ' ' + label +'</td></tr></table></a></li>';			
 			}
 			if(op.grouping) {
 				isgroup = $.inArray(cm.name, ts.p.groupingView.groupField);
 				str += '<li class="ui-menu-item divider" role="separator"></li>';
-				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" value="grouping"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_group+'"></span></td><td class="menu_text">'+(isgroup !== -1 ?  texts.ungrouping: texts.grouping + ' ' + (cm.label || cm.name))+'</td></tr></table></a></li>';
+				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" value="grouping"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_group+'"></span></td><td class="menu_text">'+(isgroup !== -1 ?  texts.ungrouping: texts.grouping + ' ' + label)+'</td></tr></table></a></li>';
 			}
 			if(op.freeze) {
 				isfreeze = (cm.frozen && ts.p.frozenColumns) ? false : true;
 				str += '<li class="ui-menu-item divider" role="separator"></li>';
-				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" value="freeze"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_freeze+'"></span></td><td class="menu_text">'+(isfreeze ? (texts.freeze + " "+(cm.label || cm.name)) : texts.unfreeze)+'</td></tr></table></a></li>';
+				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" value="freeze"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_freeze+'"></span></td><td class="menu_text">'+(isfreeze ? (texts.freeze + " "+ label) : texts.unfreeze)+'</td></tr></table></a></li>';
 			}
 			str += "</ul>";
 			$('body').append( str );
@@ -5692,7 +5693,7 @@ $.jgrid.extend({
 						break;
 					case "checkbox":
 						var cbv  = ["Yes","No"];
-						if(cm.editoptions){
+						if(cm.editoptions && cm.editoptions.value){
 							cbv = cm.editoptions.value.split(":");
 						}
 						v = $("#"+iRow+"_"+nmjq,$t.rows[iRow]).is(":checked") ? cbv[0] : cbv[1];
@@ -5778,6 +5779,7 @@ $.jgrid.extend({
 												}
 												$t.p.savedRow.splice(0,1);
 											} else {
+												$($t).triggerHandler("jqGridErrorCell", [res, stat, err]);
 												if ($.isFunction($t.p.errorCell)) {
 													$t.p.errorCell.call($t, result, stat);
 												} else {
@@ -12158,7 +12160,7 @@ $.jgrid.extend({
 					switch (cm.edittype) {
 						case "checkbox":
 							var cbv = ["Yes","No"];
-							if(cm.editoptions ) {
+							if(cm.editoptions && editoptions.value) {
 								cbv = cm.editoptions.value.split(":");
 							}
 							tmp[nm]=  $("input",this).is(":checked") ? cbv[0] : cbv[1];
@@ -16327,6 +16329,7 @@ $.jgrid.extend({
 			dlen = data1.length,
 			cm = $t.p.colModel,
 			cmlen = cm.length,
+			clbl = $t.p.colNames,
 			i, j=0, row, str = '' , tmp, k,
 			cap = "", hdr = "", ftr="",	lbl="", albl=[], restorevis = [];
 			function groupToCsv (grdata, p) {
@@ -16484,8 +16487,8 @@ $.jgrid.extend({
 					n.hidden = true;
 				}
 				if(!n.hidden) {
-					albl.push( $.jgrid.formatCellCsv( n.label || n.name, p) );
-					def[n.name] = n.label || n.name;					
+					albl.push( $.jgrid.formatCellCsv( clbl[i], p) );
+					def[n.name] = clbl[i];
 				}
 			});
 			
@@ -16621,10 +16624,13 @@ $.jgrid.extend({
 				map : [] 
 			};
 			for ( j=0, ien=cm.length ; j<ien ; j++ ) {
-				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn') {
+				if(cm[j].export === undefined) {
+					cm[j].export =  true;
+				}
+				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn' || !cm[j].export) {
 					continue;
 				}
-				obj[ cm[j].name ] = cm[j].label || cm[j].name;
+				obj[ cm[j].name ] = $t.p.colNames[j]; //cm[j].label || cm[j].name;
 				data.width[ i ] = 5;
 				data.map[i] = j;
 				i++;
@@ -16734,7 +16740,7 @@ $.jgrid.extend({
 					//cm = $t.p.colModel,
 					vv, grlen = fdata.cnt, k, retarr = emptyData(data.header[0]);
 					for(k=foffset; k<colspans;k++) {
-						if(cm[k].hidden) {
+						if(cm[k].hidden || cm[k].export) {
 							continue;
 						}
 						var tplfld = "{0}";
@@ -17016,7 +17022,7 @@ $.jgrid.extend({
 					//cm = $t.p.colModel,
 					vv, grlen = fdata.cnt, k, retarr = emptyData(def);
 					for(k=foffset; k<colspans;k++) {
-						if(cm[k].hidden) {
+						if(cm[k].hidden || !cm[k].export) {
 							continue;
 						}
 						var tplfld = "{0}";
@@ -17122,12 +17128,15 @@ $.jgrid.extend({
 //============================================================================			
 			var k;
 			for ( j=0, ien=cm.length ; j<ien ; j++ ) {
-				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn') {
+				if(cm[j].export === undefined ) {
+					cm[j].export = true;
+				}
+				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn' || !cm[j].export) {
 					continue;
 				}
-				obj = { text:  cm[j].label || cm[j].name, style: 'tableHeader' };
+				obj = { text:  $t.p.colNames[j], style: 'tableHeader' };
 				test.push( obj );
-				def[cm[j].name]  = cm[j].label || cm[j].name;
+				def[cm[j].name]  = $t.p.colNames[j]; //cm[j].label || cm[j].name;
 				map[i] = j;
 				widths.push(cm[j].width); 
 				align[cm[j].name] = cm[j].align || 'left';
