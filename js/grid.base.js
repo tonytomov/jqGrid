@@ -5264,8 +5264,6 @@ $.jgrid.extend({
 			{
 				return;
 			}
-			if($t.p.rownumbers) { i++; }
-			if($t.p.multiselect) { i++; }
 			
 			// get the max index of frozen col
 			while(i<len)
