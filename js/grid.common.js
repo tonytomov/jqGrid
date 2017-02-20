@@ -227,7 +227,7 @@ $.extend($.jgrid,{
 			}
 			$(selector).show().attr("aria-hidden","false");
 			if(o.focusField >= 0) {
-				try{$(':input:visible',selector)[parseInt(o.focusField,10)].focus();}catch(_){}
+				try{$(':input:visible',selector)[o.focusField].focus();}catch(_){}
 			}
 		}
 	},
