@@ -21,7 +21,7 @@ $.jgrid.extend({
 //Editing
 	editRow : function(rowid,keys,oneditfunc,successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
 		// Compatible mode old versions
-		var o={}, args = $.makeArray(arguments).slice(1);
+		var o={}, args = $.makeArray(arguments).slice(1), $t = this[0];
 
 		if( $.type(args[0]) === "object" ) {
 			o = args[0];
@@ -50,12 +50,14 @@ $.jgrid.extend({
 			afterrestorefunc: null,
 			restoreAfterError: true,
 			mtype: "POST",
-			focusField : true
+			focusField : true,
+			saveui : "enable",
+			savetext : $.jgrid.getRegional($t,'defaults.savetext')			
 		}, $.jgrid.inlineEdit, o );
 
 		// End compatible
 		return this.each(function(){
-			var $t = this, nm, tmp, editable, cnt=0, focus=null, svr={}, ind,cm, bfer,
+			var nm, tmp, editable, cnt=0, focus=null, svr={}, ind,cm, bfer,
 			inpclass = $(this).jqGrid('getStyleUI',$t.p.styleUI+".inlinedit",'inputClass', true);
 			if (!$t.grid ) { return; }
 			ind = $($t).jqGrid("getInd",rowid,true);
