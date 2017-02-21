@@ -1117,7 +1117,6 @@ $.jgrid.extend({
 			frmgr = "ViewGrid_"+$.jgrid.jqID( gID  ), frmtb = "ViewTbl_" + $.jgrid.jqID( gID ),
 			frmgr_id = "ViewGrid_"+gID, frmtb_id = "ViewTbl_"+gID,
 			IDs = {themodal:'viewmod'+gID,modalhead:'viewhd'+gID,modalcontent:'viewcnt'+gID, scrollelm : frmgr},
-			onBeforeInit = $.isFunction(rp_ge[$t.p.id].beforeInitData) ? rp_ge[$t.p.id].beforeInitData : false,
 			showFrm = true,
 			maxCols = 1, maxRows=0;
 			rp_ge[$t.p.id].styleUI = $t.p.styleUI || 'jQueryUI';
@@ -1270,13 +1269,15 @@ $.jgrid.extend({
 			});
 			// set the id.
 			$(frm).append(tbl);
-			if(onBeforeInit) {
-				showFrm = onBeforeInit.call($t, frm );
-				if(showFrm === undefined) {
-					showFrm = true;
-				}
+			showFrm = $($t).triggerHandler("jqGridViewRowBeforeInitData", [frm]);
+			if(showFrm === undefined) {
+				showFrm = true;
+			}
+			if(showFrm && $.isFunction(rp_ge[$t.p.id].beforeInitData)) {
+				showFrm = rp_ge[$t.p.id].beforeInitData.call($t, frm);
 			}
 			if(showFrm === false) {return;}
+
 			createData(rowid, $t, tbl, maxCols);
 			var rtlb = $t.p.direction === "rtl" ? true :false,
 			bp = rtlb ? "nData" : "pData",
@@ -1329,7 +1330,9 @@ $.jgrid.extend({
 				$("#cData","#"+frmtb+"_2").addClass(p.closeicon[1] === "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
 				.append("<span class='" + commonstyle.icon_base+ " " +p.closeicon[2]+"'></span>");
 			}
+			$($t).triggerHandler("jqGridViewRowBeforeShowForm", [$("#"+frmgr)]);
 			if($.isFunction(p.beforeShowForm)) {p.beforeShowForm.call($t,$("#"+frmgr));}
+
 			$.jgrid.viewModal("#"+$.jgrid.jqID(IDs.themodal),{
 				gbox:"#gbox_"+$.jgrid.jqID(gID),
 				jqm:p.jqModal,
@@ -1362,11 +1365,13 @@ $.jgrid.extend({
 				var npos = getCurrPos();
 				npos[0] = parseInt(npos[0],10);
 				if(npos[0] !== -1 && npos[1][npos[0]+1]) {
+					$($t).triggerHandler("jqGridViewRowClickPgButtons", ['next',$("#"+frmgr),npos[1][npos[0]]]);
 					if($.isFunction(p.onclickPgButtons)) {
 						p.onclickPgButtons.call($t,'next',$("#"+frmgr),npos[1][npos[0]]);
 					}
 					fillData(npos[1][npos[0]+1],$t);
 					$($t).jqGrid("setSelection",npos[1][npos[0]+1]);
+					$($t).triggerHandler("jqGridViewRowAfterClickPgButtons", ['next',$("#"+frmgr),npos[1][npos[0]+1]]);
 					if($.isFunction(p.afterclickPgButtons)) {
 						p.afterclickPgButtons.call($t,'next',$("#"+frmgr),npos[1][npos[0]+1]);
 					}
@@ -1379,11 +1384,13 @@ $.jgrid.extend({
 				$("#FormError","#"+frmtb).hide();
 				var ppos = getCurrPos();
 				if(ppos[0] !== -1 && ppos[1][ppos[0]-1]) {
+					$($t).triggerHandler("jqGridViewRowClickPgButtons", ['prev',$("#"+frmgr),npos[1][npos[0]]]);
 					if($.isFunction(p.onclickPgButtons)) {
 						p.onclickPgButtons.call($t,'prev',$("#"+frmgr),ppos[1][ppos[0]]);
 					}
 					fillData(ppos[1][ppos[0]-1],$t);
 					$($t).jqGrid("setSelection",ppos[1][ppos[0]-1]);
+					$($t).triggerHandler("jqGridViewRowAfterClickPgButtons", ['prev',$("#"+frmgr),npos[1][npos[0]-1]]);
 					if($.isFunction(p.afterclickPgButtons)) {
 						p.afterclickPgButtons.call($t,'prev',$("#"+frmgr),ppos[1][ppos[0]-1]);
 					}
