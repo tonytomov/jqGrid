@@ -450,11 +450,11 @@ $.jgrid.extend({
 			function postIt() {
 				var copydata, ret=[true,"",""], onCS = {}, opers = $t.p.prmNames, idname, oper, key, selr, i, url;
 				
-				var retvals = $($t).triggerHandler("jqGridAddEditBeforeCheckValues", [$(frmgr), frmoper]);
+				var retvals = $($t).triggerHandler("jqGridAddEditBeforeCheckValues", [postdata, $(frmgr), frmoper]);
 				if(retvals && typeof retvals === 'object') {postdata = retvals;}
 				
 				if($.isFunction(rp_ge[$t.p.id].beforeCheckValues)) {
-					retvals = rp_ge[$t.p.id].beforeCheckValues.call($t, postdata,$(frmgr),frmoper);
+					retvals = rp_ge[$t.p.id].beforeCheckValues.call($t, postdata, $(frmgr),frmoper);
 					if(retvals && typeof retvals === 'object') {postdata = retvals;}
 				}
 				for( key in postdata ){
