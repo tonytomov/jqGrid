@@ -5390,11 +5390,11 @@ $.jgrid.extend({
 				}
 				$($t).on('jqGridAfterGridComplete.setFrozenColumns', function () {
 					$("#"+$.jgrid.jqID($t.p.id)+"_frozen").remove();
-					$($t.grid.fbDiv).height($($t.grid.bDiv).height()-14);
+					$($t.grid.fbDiv).height($($t.grid.bDiv).height() - 17);
 					// find max height
 					var mh = [];
 					$("#"+$.jgrid.jqID($t.p.id) + " tr[role=row].jqgrow").each(function(){
-						mh.push( $(this).height() );
+						mh.push( $(this).outerHeight() );
 					});
 
 					var btbl = $("#"+$.jgrid.jqID($t.p.id)).clone(true);
