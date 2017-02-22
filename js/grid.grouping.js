@@ -594,8 +594,9 @@ $.jgrid.extend({
 				} else {
 					if (skip === 0) {
 						if (o.useColSpanStyle) {
-							// expand the header height to two rows
-							$th.attr("rowspan", "2");
+							// expand the header height to n rows
+							var rowspan = $th.attr("rowspan") ? parseInt($th.attr("rowspan"),10) + 1 : 2;
+							$th.attr("rowspan", rowspan);
 						} else {
 							$('<th>', {role: "columnheader"})
 								.addClass(base.headerBox+" ui-th-column-header ui-th-"+ts.p.direction)
