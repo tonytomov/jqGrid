@@ -412,7 +412,7 @@ $.jgrid.extend({
 			// show previous hidden groups if they are hidden and weren't removed yet
 			for(i=0;i<grp.groupField.length;i++) {
 				if(!grp.groupColumnShow[i] && grp.visibiltyOnNextGrouping[i]) {
-				$($t).jqGrid('showCol',grp.groupField[i]);
+					$($t).jqGrid('showCol',grp.groupField[i]);
 				}
 			}
 			// set visibility status of current group columns on next grouping
