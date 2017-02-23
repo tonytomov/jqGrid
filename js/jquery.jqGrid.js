@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.0 - 2017-02-22
+* @license Guriddo jqGrid JS - v5.2.0 - 2017-02-23
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -16731,7 +16731,11 @@ $.jgrid.extend({
 						// Replace non standard characters for text output
 						var text = ! v.replace ?
 							v :
-							$.jgrid.htmlEncode (v );
+							//$.jgrid.htmlEncode (v );
+							v.replace(/&(?!amp;)/g, '&amp;')
+							.replace(/</g, '&lt;')
+							.replace(/>/g, '&gt;')
+							.replace(/[\x00-\x09\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, '');						
 							cell = $.jgrid.makeNode( rels, 'c', {
 							attr: {
 								t: 'inlineStr',
