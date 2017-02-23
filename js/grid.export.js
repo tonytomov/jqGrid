@@ -714,7 +714,11 @@ $.jgrid.extend({
 						// Replace non standard characters for text output
 						var text = ! v.replace ?
 							v :
-							$.jgrid.htmlEncode (v );
+							//$.jgrid.htmlEncode (v );
+							v.replace(/&(?!amp;)/g, '&amp;')
+							.replace(/</g, '&lt;')
+							.replace(/>/g, '&gt;')
+							.replace(/[\x00-\x09\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, '');						
 							cell = $.jgrid.makeNode( rels, 'c', {
 							attr: {
 								t: 'inlineStr',
