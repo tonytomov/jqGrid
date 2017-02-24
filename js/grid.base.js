@@ -5260,7 +5260,12 @@ $.jgrid.extend({
 			pixelfix = borderbox ? 1 : 0;
 
 			// TODO treeGrid and grouping  Support
-			if($t.p.subGrid === true || $t.p.treeGrid === true || $t.p.cellEdit === true || $t.p.sortable || $t.p.scroll )
+			if($t.p.subGrid === true ||
+				$t.p.treeGrid === true ||
+				$t.p.cellEdit === true ||
+				$t.p.sortable ||
+				$t.p.scroll ||
+				$t.p.grouping === true)
 			{
 				return;
 			}
