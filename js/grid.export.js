@@ -626,7 +626,8 @@ $.jgrid.extend({
 			fileName : "jqGridExport.xlsx",
 			mimetype : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 			maxlength : 40, // maxlength for visible string data 
-			onBeforeExport : null
+			onBeforeExport : null,
+			replaceStr : null
 		}, o || {} );
 		this.each(function() {
 			var $t = this,
@@ -672,7 +673,13 @@ $.jgrid.extend({
 				i++;
 			}
 			data.header.push( obj );
-			var currentRow, rowNode,
+			function _replStrFunc (v) {
+				return v.replace(/</g, '&lt;')
+						.replace(/>/g, '&gt;')
+						.replace(/[\x00-\x09\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, '');						
+			}
+			var _replStr = $.isFunction(o.replaceStr) ? o.replaceStr : _replStrFunc,
+			currentRow, rowNode,
 			addRow = function ( row, header ) {
 				currentRow = rowPos+1;
 				rowNode = $.jgrid.makeNode( rels, "row", { attr: {r:currentRow} } );
@@ -713,12 +720,8 @@ $.jgrid.extend({
 					} else {
 						// Replace non standard characters for text output
 						var text = ! v.replace ?
-							v :
+							v : _replStr(v);
 							//$.jgrid.htmlEncode (v );
-							v.replace(/&(?!amp;)/g, '&amp;')
-							.replace(/</g, '&lt;')
-							.replace(/>/g, '&gt;')
-							.replace(/[\x00-\x09\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, '');						
 							cell = $.jgrid.makeNode( rels, 'c', {
 							attr: {
 								t: 'inlineStr',
