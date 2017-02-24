@@ -3229,15 +3229,14 @@ $.fn.jqGrid = function( pin ) {
 				$(this).removeClass(hover);
 			});
 
-			$(elem).find("#bs_reset").click(function(e){
+			$("#bs_reset", elem).on('click', function(e){
 				ts.p.colFilters[cm.name] = {};
 				ts.p.postData.filters = buildFilters();
 				ts.p.search = false;
 				$(ts).trigger("reloadGrid");
 				$("#column_menu").remove();
-				return false;
 			});
-			$(elem).find("#bs_search").click( function(e){
+			$("#bs_search", elem).on('click', function(e){
 				ts.p.colFilters[cm.name] = {
 					oper1: $("#oper1","#search_menu").val(),
 					value1: $("#sval1_" + ts.p.idPrefix+cm.name,"#search_menu").val(),
@@ -3249,7 +3248,6 @@ $.fn.jqGrid = function( pin ) {
 				ts.p.search = true;
 				$(ts).trigger("reloadGrid");
 				$("#column_menu").remove();
-				return false;
 			});
 		},
 		buildFilters = function() {
