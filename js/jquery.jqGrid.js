@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.0 - 2017-02-24
+* @license Guriddo jqGrid JS - v5.2.0 - 2017-02-27
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3147,8 +3147,8 @@ $.fn.jqGrid = function( pin ) {
 			} else {
 				so = numopts;
 			}
-			if(cm.searchoptions.operands) {
-				op = cm.searchoptions.operands;
+			if(cm.searchoptions.groupOps) {
+				op = cm.searchoptions.groupOps;
 			} else  {
 				op = texts.groupOps;
 			} 
@@ -12884,6 +12884,19 @@ $.jgrid.extend({
 				fn.apply(obj, $.makeArray(arguments).slice(2));
 			}
 		}
+		function resize_select() {
+
+			var widgetData = getMultiselectWidgetData(select),
+			$thisDialogContent = widgetData.container.closest(".ui-dialog-content");
+			if ($thisDialogContent.length > 0 && typeof $thisDialogContent[0].style === "object") {
+				$thisDialogContent[0].style.width = "";
+			} else {
+				$thisDialogContent.css("width", ""); // or just remove width style
+			}
+
+			widgetData.selectedList.height(Math.max(widgetData.selectedContainer.height() - widgetData.selectedActions.outerHeight() -1, 1));
+			widgetData.availableList.height(Math.max(widgetData.availableContainer.height() - widgetData.availableActions.outerHeight() -1, 1));
+		}
 
 		opts = $.extend({
 			width : 400,
@@ -12931,19 +12944,7 @@ $.jgrid.extend({
 					modal: options.modal || false,
 					resizable: options.resizable || true,
 					width: options.width + 70,
-					resize: function () {
-						var widgetData = getMultiselectWidgetData(select),
-							$thisDialogContent = widgetData.container.closest(".ui-dialog-content");
-
-						if ($thisDialogContent.length > 0 && typeof $thisDialogContent[0].style === "object") {
-							$thisDialogContent[0].style.width = "";
-						} else {
-							$thisDialogContent.css("width", ""); // or just remove width style
-						}
-
-						widgetData.selectedList.height(Math.max(widgetData.selectedContainer.height() - widgetData.selectedActions.outerHeight() - 1, 1));
-						widgetData.availableList.height(Math.max(widgetData.availableContainer.height() - widgetData.availableActions.outerHeight() - 1, 1));
-					}
+					resize: resize_select
 				}, options.dialog_opts || {});
 			},
 			/* Function to get the permutation array, and pass it to the
@@ -13048,6 +13049,8 @@ $.jgrid.extend({
 		listHeight = Math.min(listHeight, $(window).height());
 		multiselectData.selectedList.css("height", listHeight);
 		multiselectData.availableList.css("height", listHeight);
+		
+		resize_select();
 	},
 	sortableRows : function (opts) {
 		// Can accept all sortable options and events
