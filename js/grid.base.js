@@ -3152,8 +3152,8 @@ $.fn.jqGrid = function( pin ) {
 			} else {
 				so = numopts;
 			}
-			if(cm.searchoptions.operands) {
-				op = cm.searchoptions.operands;
+			if(cm.searchoptions.groupOps) {
+				op = cm.searchoptions.groupOps;
 			} else  {
 				op = texts.groupOps;
 			} 
