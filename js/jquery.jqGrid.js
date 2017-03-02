@@ -1825,7 +1825,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			if(xmlRd.repeatitems && ts.p.keyName && isNaN(idn)) {
 				idn = ts.p.keyIndex;
-			}			
+			}
 			if( String(idn).indexOf("[") === -1 ) {
 				if (f.length) {
 					getId = function( trow, k) {return $(idn,trow).text() || k;};
@@ -2024,7 +2024,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			if(dReader.repeatitems && ts.p.keyName && isNaN(idn)) {
 				idn = ts.p.keyIndex;
-			}			
+			}
 			drows = $.jgrid.getAccessor(data,dReader.root);
 			if (drows == null && $.isArray(data)) { drows = data; }
 			if (!drows) { drows = []; }
@@ -16701,10 +16701,10 @@ $.jgrid.extend({
 				map : [] 
 			};
 			for ( j=0, ien=cm.length ; j<ien ; j++ ) {
-				if(cm[j].export === undefined) {
-					cm[j].export =  true;
+				if(cm[j].exportcol === undefined) {
+					cm[j].exportcol =  true;
 				}
-				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn' || !cm[j].export) {
+				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn' || !cm[j].exportcol) {
 					continue;
 				}
 				obj[ cm[j].name ] = $t.p.colNames[j]; //cm[j].label || cm[j].name;
@@ -16823,7 +16823,7 @@ $.jgrid.extend({
 					//cm = $t.p.colModel,
 					vv, grlen = fdata.cnt, k, retarr = emptyData(data.header[0]);
 					for(k=foffset; k<colspans;k++) {
-						if(cm[k].hidden || cm[k].export) {
+						if(cm[k].hidden || cm[k].exportcol) {
 							continue;
 						}
 						var tplfld = "{0}";
@@ -17105,7 +17105,7 @@ $.jgrid.extend({
 					//cm = $t.p.colModel,
 					vv, grlen = fdata.cnt, k, retarr = emptyData(def);
 					for(k=foffset; k<colspans;k++) {
-						if(cm[k].hidden || !cm[k].export) {
+						if(cm[k].hidden || !cm[k].exportcol) {
 							continue;
 						}
 						var tplfld = "{0}";
@@ -17211,10 +17211,10 @@ $.jgrid.extend({
 //============================================================================			
 			var k;
 			for ( j=0, ien=cm.length ; j<ien ; j++ ) {
-				if(cm[j].export === undefined ) {
-					cm[j].export = true;
+				if(cm[j].exportcol === undefined ) {
+					cm[j].exportcol = true;
 				}
-				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn' || !cm[j].export) {
+				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn' || !cm[j].exportcol) {
 					continue;
 				}
 				obj = { text:  $t.p.colNames[j], style: 'tableHeader' };
