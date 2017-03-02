@@ -1651,6 +1651,7 @@ $.fn.jqGrid = function( pin ) {
 					( (datatype==="xml" || datatype === "xmlstring") ? field.xmlmap || field.name : field.jsonmap || field.name );
 					if(ts.p.keyName !== false && field.key===true ) {
 						ts.p.keyName = f[j];
+						ts.p.keyIndex = j;
 					}
 					j++;
 				}
@@ -1822,6 +1823,9 @@ $.fn.jqGrid = function( pin ) {
 			} else {
 				idn = ts.p.keyName;
 			}
+			if(xmlRd.repeatitems && ts.p.keyName && isNaN(idn)) {
+				idn = ts.p.keyIndex;
+			}			
 			if( String(idn).indexOf("[") === -1 ) {
 				if (f.length) {
 					getId = function( trow, k) {return $(idn,trow).text() || k;};
@@ -2018,6 +2022,9 @@ $.fn.jqGrid = function( pin ) {
 			} else {
 				idn = ts.p.keyName;
 			}
+			if(dReader.repeatitems && ts.p.keyName && isNaN(idn)) {
+				idn = ts.p.keyIndex;
+			}			
 			drows = $.jgrid.getAccessor(data,dReader.root);
 			if (drows == null && $.isArray(data)) { drows = data; }
 			if (!drows) { drows = []; }
@@ -3399,6 +3406,7 @@ $.fn.jqGrid = function( pin ) {
 			ts.p.colModel[i] = $.extend(true, {}, ts.p.cmTemplate, colTemplate || {}, ts.p.colModel[i]);
 			if (ts.p.keyName === false && ts.p.colModel[i].key===true) {
 				ts.p.keyName = ts.p.colModel[i].name;
+				ts.p.keyIndex = i;
 			}
 		}
 		ts.p.sortorder = ts.p.sortorder.toLowerCase();
