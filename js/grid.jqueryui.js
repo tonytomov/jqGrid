@@ -75,6 +75,7 @@ $.jgrid.extend({
 		return this.each(function (){
 			var ts = this, tid= $.jgrid.jqID( ts.p.id );
 			function start() {ts.p.disableClick = true;}
+			function stop() {ts.p.disableClick = false;}
 			var sortable_opts = {
 				"tolerance" : "pointer",
 				"axis" : "x",
@@ -110,7 +111,6 @@ $.jgrid.extend({
 					if ($.isFunction(ts.p.sortable.update)) {
 						ts.p.sortable.update(permutation);
 					}
-					setTimeout(function(){ts.p.disableClick=false;}, 50);
 				}
 			};
 			if (ts.p.sortable.options) {
@@ -126,6 +126,15 @@ $.jgrid.extend({
 				};
 			} else {
 				sortable_opts.start = start;
+			}
+			if (sortable_opts.stop) {
+				var st = sortable_opts.stop;
+				sortable_opts.stop = function(e,ui) {
+					stop();
+					st.call(this,e,ui);
+				};
+			} else {
+				sortable_opts.stop = stop;
 			}
 			if (ts.p.sortable.exclude) {
 				sortable_opts.items += ":not("+ts.p.sortable.exclude+")";
