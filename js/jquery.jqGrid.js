@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.0 - 2017-03-02
+* @license Guriddo jqGrid JS - v5.2.0 - 2017-03-06
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5793,7 +5793,7 @@ $.jgrid.extend({
 												}
 												$t.p.savedRow.splice(0,1);
 											} else {
-												$($t).triggerHandler("jqGridErrorCell", [res, stat, err]);
+												$($t).triggerHandler("jqGridErrorCell", [result, stat]);
 												if ($.isFunction($t.p.errorCell)) {
 													$t.p.errorCell.call($t, result, stat);
 												} else {
