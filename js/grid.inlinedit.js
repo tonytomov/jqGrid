@@ -128,7 +128,7 @@ $.jgrid.extend({
 					if(o.keys===true) {
 						$(ind).on( o.keyevent ,function(e) {
 							if (e.keyCode === 27) {
-								$($t).jqGrid("restoreRow",rowid, o.afterrestorefunc);
+								$($t).jqGrid("restoreRow",rowid, o);
 								if($t.p.inlineNav) {
 									try {
 										$($t).jqGrid('showAddEditButtons');
@@ -191,7 +191,7 @@ $.jgrid.extend({
 		if(ind === false) {return success;}
 		var errors = $.jgrid.getRegional($t, 'errors'),
 		edit =$.jgrid.getRegional($t, 'edit'),
-		bfsr = $.isFunction( o.beforeSaveRow ) ?	o.beforeSaveRow.call($t,o, rowid) :  undefined;
+		bfsr = $.isFunction( o.beforeSaveRow ) ? o.beforeSaveRow.call($t,o, rowid) :  undefined;
 		if( bfsr === undefined ) {
 			bfsr = true;
 		}
@@ -359,7 +359,7 @@ $.jgrid.extend({
 							var ret = true, sucret, k;
 							sucret = $($t).triggerHandler("jqGridInlineSuccessSaveRow", [res, rowid, o]);
 							if (!$.isArray(sucret)) {sucret = [true, tmp3];}
-							if (sucret[0] && $.isFunction(o.successfunc)) {sucret = o.successfunc.call($t, res);}							
+							if (sucret[0] && $.isFunction(o.successfunc)) {sucret = o.successfunc.call($t, res);}
 							if($.isArray(sucret)) {
 								// expect array - status, data, rowid
 								ret = sucret[0];
@@ -397,7 +397,7 @@ $.jgrid.extend({
 									o.errorfunc.call($t, rowid, res, stat, null);
 								}
 								if(o.restoreAfterError === true) {
-									$($t).jqGrid("restoreRow",rowid, o.afterrestorefunc);
+									$($t).jqGrid("restoreRow",rowid, o);
 								}
 							}
 						}
@@ -416,7 +416,7 @@ $.jgrid.extend({
 							}
 						}
 						if(o.restoreAfterError === true) {
-							$($t).jqGrid("restoreRow",rowid, o.afterrestorefunc);
+							$($t).jqGrid("restoreRow",rowid, o);
 						}
 					}
 				}, $.jgrid.ajaxOptions, $t.p.ajaxRowOptions || {}));
