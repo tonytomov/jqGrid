@@ -75,7 +75,7 @@ $.jgrid.extend({
 		return this.each(function (){
 			var ts = this, tid= $.jgrid.jqID( ts.p.id );
 			function start() {ts.p.disableClick = true;}
-			function stop() {ts.p.disableClick = false;}
+			function stop() { setTimeout(function () { ts.p.disableClick = false; }, 50); }
 			var sortable_opts = {
 				"tolerance" : "pointer",
 				"axis" : "x",
