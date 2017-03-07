@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.0 - 2017-03-06
+* @license Guriddo jqGrid JS - v5.2.0 - 2017-03-07
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5747,6 +5747,19 @@ $.jgrid.extend({
 						if ($.isFunction($t.p.beforeSubmitCell)) {
 							addpost = $t.p.beforeSubmitCell.call($t, $t.rows[iRow].id,nm, v, iRow,iCol);
 							if (!addpost) {addpost={};}
+						}
+						var retsub = $($t).triggerHandler("jqGridOnSubmitCell", [$t.rows[iRow].id, nm, v, iRow, iCol]);
+						if(retsub === undefined) {
+							retsub = true;
+						}
+						if($.isFunction($t.p.onSubmitCell) ) {
+							retsub = $t.p.onSubmitCell($t.rows[iRow].id, nm, v, iRow, iCol);
+							if( retsub === undefined) {
+								retsub = true;
+							} 
+						}
+						if( retsub === false) {
+							return;
 						}
 						if( $("input.hasDatepicker",cc).length >0) { $("input.hasDatepicker",cc).datepicker('hide'); }
 						if ($t.p.cellsubmit === 'remote') {
@@ -12144,7 +12157,7 @@ $.jgrid.extend({
 					if(o.keys===true) {
 						$(ind).on( o.keyevent ,function(e) {
 							if (e.keyCode === 27) {
-								$($t).jqGrid("restoreRow",rowid, o.afterrestorefunc);
+								$($t).jqGrid("restoreRow",rowid, o);
 								if($t.p.inlineNav) {
 									try {
 										$($t).jqGrid('showAddEditButtons');
@@ -12207,7 +12220,7 @@ $.jgrid.extend({
 		if(ind === false) {return success;}
 		var errors = $.jgrid.getRegional($t, 'errors'),
 		edit =$.jgrid.getRegional($t, 'edit'),
-		bfsr = $.isFunction( o.beforeSaveRow ) ?	o.beforeSaveRow.call($t,o, rowid) :  undefined;
+		bfsr = $.isFunction( o.beforeSaveRow ) ? o.beforeSaveRow.call($t,o, rowid) :  undefined;
 		if( bfsr === undefined ) {
 			bfsr = true;
 		}
@@ -12375,7 +12388,7 @@ $.jgrid.extend({
 							var ret = true, sucret, k;
 							sucret = $($t).triggerHandler("jqGridInlineSuccessSaveRow", [res, rowid, o]);
 							if (!$.isArray(sucret)) {sucret = [true, tmp3];}
-							if (sucret[0] && $.isFunction(o.successfunc)) {sucret = o.successfunc.call($t, res);}							
+							if (sucret[0] && $.isFunction(o.successfunc)) {sucret = o.successfunc.call($t, res);}
 							if($.isArray(sucret)) {
 								// expect array - status, data, rowid
 								ret = sucret[0];
@@ -12413,7 +12426,7 @@ $.jgrid.extend({
 									o.errorfunc.call($t, rowid, res, stat, null);
 								}
 								if(o.restoreAfterError === true) {
-									$($t).jqGrid("restoreRow",rowid, o.afterrestorefunc);
+									$($t).jqGrid("restoreRow",rowid, o);
 								}
 							}
 						}
@@ -12432,7 +12445,7 @@ $.jgrid.extend({
 							}
 						}
 						if(o.restoreAfterError === true) {
-							$($t).jqGrid("restoreRow",rowid, o.afterrestorefunc);
+							$($t).jqGrid("restoreRow",rowid, o);
 						}
 					}
 				}, $.jgrid.ajaxOptions, $t.p.ajaxRowOptions || {}));
@@ -12796,7 +12809,7 @@ $.jgrid.extend({
 		return this.each(function (){
 			var ts = this, tid= $.jgrid.jqID( ts.p.id );
 			function start() {ts.p.disableClick = true;}
-			function stop() {ts.p.disableClick = false;}
+			function stop() { setTimeout(function () { ts.p.disableClick = false; }, 50); }
 			var sortable_opts = {
 				"tolerance" : "pointer",
 				"axis" : "x",
