@@ -23,6 +23,7 @@
  * afterEditCell,
  * beforeSaveCell, (called before validation of values if any)
  * beforeSubmitCell (if cellsubmit remote (ajax))
+ * onSubmitCell
  * afterSubmitCell(if cellsubmit remote (ajax)),
  * afterSaveCell,
  * errorCell,
@@ -220,6 +221,19 @@ $.jgrid.extend({
 						if ($.isFunction($t.p.beforeSubmitCell)) {
 							addpost = $t.p.beforeSubmitCell.call($t, $t.rows[iRow].id,nm, v, iRow,iCol);
 							if (!addpost) {addpost={};}
+						}
+						var retsub = $($t).triggerHandler("jqGridOnSubmitCell", [$t.rows[iRow].id, nm, v, iRow, iCol]);
+						if(retsub === undefined) {
+							retsub = true;
+						}
+						if($.isFunction($t.p.onSubmitCell) ) {
+							retsub = $t.p.onSubmitCell($t.rows[iRow].id, nm, v, iRow, iCol);
+							if( retsub === undefined) {
+								retsub = true;
+							} 
+						}
+						if( retsub === false) {
+							return;
 						}
 						if( $("input.hasDatepicker",cc).length >0) { $("input.hasDatepicker",cc).datepicker('hide'); }
 						if ($t.p.cellsubmit === 'remote') {
