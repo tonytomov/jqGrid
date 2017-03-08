@@ -967,21 +967,19 @@ $.jgrid.extend({
 				var zip = new JSZip();
 				var zipConfig = {
 					type: 'blob',
-					mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+					mimeType: o.mimetype
 				};
 				$.jgrid.xmlToZip( zip, xlsx );
-					if ( zip.generateAsync ) {
+				if ( zip.generateAsync ) {
 					// JSZip 3+
-					zip
-						.generateAsync( zipConfig )
-						.then( function ( blob ) {
-							$.jgrid.saveAs( blob, o.fileName, { type : o.mimetype } );
-						});
+					zip.generateAsync( zipConfig )
+					.then( function ( blob ) {
+						$.jgrid.saveAs( blob, o.fileName, { type : o.mimetype } );
+					});
 				} else {
 					// JSZip 2.5
 					$.jgrid.saveAs( zip.generate( zipConfig ), o.fileName, { type : o.mimetype } );				}
-			}
-			catch(e) {
+			} catch(e) {
 				throw e;
 			}
 		});
@@ -992,7 +990,7 @@ $.jgrid.extend({
 			orientation: 'portrait',
 			pageSize: 'A4',
 			description: null,
-			customSettings: null,
+			onBeforeExport: null,
 			download: 'download',
 			includeLabels : true,
 			includeGroupHeader : true,
@@ -1311,8 +1309,8 @@ $.jgrid.extend({
 					margin: [ 0, 0, 0, 12 ]
 				} );
 			}
-			if( o. customSettings ) {
-				o.customSettings.call($t, doc);
+			if( $.isFunction( o.onBeforeExport ) ) {
+				o.onBeforeExport.call($t, doc);
 			}
 			try {
 				var pdf = pdfMake.createPdf( doc );
