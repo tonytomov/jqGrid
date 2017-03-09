@@ -25,7 +25,6 @@ setSubGrid : function () {
 			minusicon : classes.icon_minus,
 			openicon:  classes.icon_open,
 			expandOnLoad:  false,
-			delayOnLoad : 50,
 			selectOnExpand : false,
 			selectOnCollapse : false,
 			reloadOnExpand : true
@@ -176,7 +175,7 @@ addSubGrid : function( pos, sind ) {
 							if(ts.p.subgridtype === "xml") {
 								subGridXml(sxml.responseXML, sid);
 							} else {
-								subGridJson($.jgrid.parse(sxml.responseText),sid);
+								subGridJson($.jgrid.parse(sxml.responseText), sid);
 							}
 							sxml=null;
 						}
