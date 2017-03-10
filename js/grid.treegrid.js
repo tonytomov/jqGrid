@@ -270,8 +270,8 @@ $.jgrid.extend({
 							if(currentview){
 								result.push($t.p.data[$t.p._index[this[$t.p.keyName]]]);
 							} else {
-							result.push(this);
-						}
+								result.push(this);
+							}
 						}
 					});
 					break;
@@ -397,19 +397,19 @@ $.jgrid.extend({
 					break;
 				case 'adjacency' :
 					if(rc) {
-					result.push(rc);
-					var parent_id = $t.p.treeReader.parent_id_field,
-					dtid = $t.p.localReader.id;
-					$(this.p.data).each(function(i){
-						len = result.length;
-						for (i = 0; i < len; i++) {
-							if ( String( $.jgrid.stripPref($t.p.idPrefix, result[i][dtid]) ) === String( this[parent_id] ) ) {
-								if(expand) { this[expanded] = true; }
-								result.push(this);
-								break;
+						result.push(rc);
+						var parent_id = $t.p.treeReader.parent_id_field,
+						dtid = $t.p.localReader.id;
+						$(this.p.data).each(function(i){
+							len = result.length;
+							for (i = 0; i < len; i++) {
+								if ( String( $.jgrid.stripPref($t.p.idPrefix, result[i][dtid]) ) === String( this[parent_id] ) ) {
+									if(expand) { this[expanded] = true; }
+									result.push(this);
+									break;
+								}
 							}
-						}
-					});
+						});
 					}
 					break;
 			}
@@ -439,7 +439,7 @@ $.jgrid.extend({
 				if(reverse) {
 					ancestors.unshift(parent);
 				} else {
-				ancestors.push(parent);
+					ancestors.push(parent);
 				}
 				parent = $(this).jqGrid("getNodeParent",parent);	
 			}
@@ -546,7 +546,7 @@ $.jgrid.extend({
 
 			rc[expanded] = true;
 			if(!rc[isLeaf]) {
-			$("div.treeclick",rc1).removeClass(this.p.treeIcons.plus+" tree-plus").addClass(this.p.treeIcons.minus+" tree-minus");
+				$("div.treeclick",rc1).removeClass(this.p.treeIcons.plus+" tree-plus").addClass(this.p.treeIcons.minus+" tree-minus");
 			}
 			this.p.treeANode = rc1.rowIndex;
 			this.p.datatype = this.p.treedatatype;
@@ -639,18 +639,18 @@ $.jgrid.extend({
 			rt = $(this).jqGrid("getRootNodes", $t.p.search);
 			// Sorting roots
 			query = $.jgrid.from.call(this, rt);
-			query.orderBy(sortname,newDir,st, datefmt);
+			query.orderBy(sortname, newDir, st, datefmt);
 			roots = query.select();
 
 			// Sorting children
 			for (i = 0, len = roots.length; i < len; i++) {
 				rec = roots[i];
 				records.push(rec);
-				$(this).jqGrid("collectChildrenSortTree",records, rec, sortname, newDir,st, datefmt);
+				$(this).jqGrid("collectChildrenSortTree",records, rec, sortname, newDir, st, datefmt);
 			}
 			$.each(records, function(index) {
-				var id  = $.jgrid.getAccessor(this,$t.p.localReader.id);
-				$('#'+$.jgrid.jqID($t.p.id)+ ' tbody tr:eq('+index+')').after($('tr#'+$.jgrid.jqID(id),$t.grid.bDiv));
+				var id  = $.jgrid.getAccessor(this, $t.p.localReader.id);
+				$('#'+$.jgrid.jqID($t.p.id)+ ' tbody tr:eq('+index+')').after($('tr#'+$.jgrid.jqID(id), $t.grid.bDiv));
 			});
 			query = null;roots=null;records=null;
 		});
@@ -676,16 +676,16 @@ $.jgrid.extend({
 								if(ancestors[j][lid] === result[k][lid]) {
 									found = true;
 									break;
-					}
+								}
 							}
 							if(!found) {
 								result.push(ancestors[j]);
 							}
 						}
 							continue;
-						} else {
-							roots.push( tid );
-						}
+					} else {
+						roots.push( tid );
+					}
 					result = result.concat( ancestors );
 				}	
 			}
@@ -714,7 +714,7 @@ $.jgrid.extend({
 		this.each(function(){
 			var t = this;
 			if(!t.grid || !t.p.treeGrid) {return;}
-			success = $(t).jqGrid("setRowData",rowid,data);
+			success = $(t).jqGrid("setRowData", rowid, data);
 		});
 		return success;
 	},
