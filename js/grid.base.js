@@ -3781,7 +3781,8 @@ $.fn.jqGrid = function( pin ) {
 		var ri,ci, tdHtml;
 		function selectMultiRow(ri, scb) {
 			if((ts.p.multiselect && ts.p.multiboxonly) || ts.p.multimail ) {
-				if(scb){$(ts).jqGrid("setSelection",ri,true,e);}
+				if(scb){
+					$(ts).jqGrid("setSelection",ri,true,e);
 				} else if(  ts.p.multiboxonly && ts.p.multimail) {
 					// do nothing for now
 				}
