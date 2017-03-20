@@ -3782,6 +3782,9 @@ $.fn.jqGrid = function( pin ) {
 		function selectMultiRow(ri, scb) {
 			if((ts.p.multiselect && ts.p.multiboxonly) || ts.p.multimail ) {
 				if(scb){$(ts).jqGrid("setSelection",ri,true,e);}
+				} else if(  ts.p.multiboxonly && ts.p.multimail) {
+					// do nothing for now
+				}
 				else {
 					var frz = ts.p.frozenColumns ? ts.p.id+"_frozen" : "";
 					$(ts.p.selarrrow).each(function(i,n){
