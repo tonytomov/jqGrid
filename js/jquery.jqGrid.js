@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.0 - 2017-03-20
+* @license Guriddo jqGrid JS - v5.2.0 - 2017-03-21
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3776,8 +3776,11 @@ $.fn.jqGrid = function( pin ) {
 		var ri,ci, tdHtml;
 		function selectMultiRow(ri, scb) {
 			if((ts.p.multiselect && ts.p.multiboxonly) || ts.p.multimail ) {
-				if(scb){$(ts).jqGrid("setSelection",ri,true,e);}
-				else {
+				if(scb){
+					$(ts).jqGrid("setSelection", ri, true, e);
+				} else if(  ts.p.multiboxonly && ts.p.multimail) {
+					// do nothing for now
+				} else {
 					var frz = ts.p.frozenColumns ? ts.p.id+"_frozen" : "";
 					$(ts.p.selarrrow).each(function(i,n){
 						var trid = $(ts).jqGrid('getGridRowById',n);
@@ -3791,10 +3794,10 @@ $.fn.jqGrid = function( pin ) {
 						}
 					});
 					ts.p.selarrrow = [];
-					$(ts).jqGrid("setSelection",ri,true,e);
+					$(ts).jqGrid("setSelection", ri, true, e);
 				}
 			} else {
-				$(ts).jqGrid("setSelection",ri,true,e);
+				$(ts).jqGrid("setSelection", ri, true, e);
 			}
 		}
 		$(ts).before(grid.hDiv).on({
@@ -16402,7 +16405,7 @@ $.extend($.jgrid,{
 				'<cellXfs count="2">'+
 				'<xf numFmtId="0" fontId="0" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
 				'<xf numFmtId="0" fontId="1" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
-				'<xf numFmtId="0" fontId="2" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="2" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" /></xf>'+
 				'<xf numFmtId="0" fontId="3" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
 				'<xf numFmtId="0" fontId="4" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
 				'<xf numFmtId="0" fontId="0" fillId="2" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
@@ -16782,7 +16785,7 @@ $.jgrid.extend({
 				"[Content_Types].xml": $.parseXML( es['[Content_Types].xml'])
 			},
 			cm = $t.p.colModel,
-			i=0, j, ien, obj={},
+			i=0, j, ien, //obj={},
 			data = { 
 				body  : $t.addLocalData( true ),
 				header : [],
@@ -16797,12 +16800,11 @@ $.jgrid.extend({
 				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn' || !cm[j].exportcol) {
 					continue;
 				}
-				obj[ cm[j].name ] = $t.p.colNames[j]; //cm[j].label || cm[j].name;
+				data.header[i] = cm[j].name;
 				data.width[ i ] = 5;
 				data.map[i] = j;
 				i++;
 			}
-			data.header.push( obj );
 			function _replStrFunc (v) {
 				return v.replace(/</g, '&lt;')
 						.replace(/>/g, '&gt;')
@@ -16813,16 +16815,12 @@ $.jgrid.extend({
 			addRow = function ( row, header ) {
 				currentRow = rowPos+1;
 				rowNode = $.jgrid.makeNode( rels, "row", { attr: {r:currentRow} } );
-				var i=0;
-				for ( var key  in data.header[0]) {
-					if(!data.header[0].hasOwnProperty( key )) {
-						continue;
-					}
+				for ( var i =0; i < data.header.length; i++) {
 					// key = cm[i].name;
 					// Concat both the Cell Columns as a letter and the Row of the cell.
 					var cellId = $.jgrid.excelCellPos(i) + '' + currentRow,
 					cell,
-					v= row[key];
+					v= ($.isArray(row) && header) ? $t.p.colNames[data.map[i]] : row[  data.header[i] ];
 					if ( v == null ) {
 						v = '';
 					}
@@ -16868,7 +16866,6 @@ $.jgrid.extend({
 							}
 						} );
 					}
-					i++;
 					rowNode.appendChild( cell );
 				}
 				relsGet.appendChild(rowNode);
@@ -16911,7 +16908,7 @@ $.jgrid.extend({
 				function buildSummaryTd(i, ik, grp, foffset) {
 					var fdata = findGroupIdx(i, ik, grp),
 					//cm = $t.p.colModel,
-					vv, grlen = fdata.cnt, k, retarr = emptyData(data.header[0]);
+					vv, grlen = fdata.cnt, k, retarr = emptyData(data.header);
 					for(k=foffset; k<colspans;k++) {
 						if(cm[k].hidden || cm[k].exportcol) {
 							continue;
@@ -16946,10 +16943,8 @@ $.jgrid.extend({
 				}
 				function emptyData ( d ) {
 					var clone = {};
-					for(var key in d ) {
-						if(d.hasOwnProperty(key)) {
-							clone[key] = "";
-						}
+					for(var key=0;key<d.length; key++ ) {
+						clone[ d[key] ] = "";
 					}
 					return clone;
 				}
@@ -16979,7 +16974,7 @@ $.jgrid.extend({
 					if(grp.groupSummaryPos[n.idx] === 'header')  {
 						arr = buildSummaryTd(i, 0, grp.groups, 0 /*grp.groupColumnShow[n.idx] === false ? (mul ==="" ? 2 : 3) : ((mul ==="") ? 1 : 2)*/ );
 					} else {
-						arr = emptyData(data.header[0]);
+						arr = emptyData(data.header);
 					}
 					var fkey = Object.keys(arr);
 					arr[fkey[0]] = $.jgrid.stripHtml( new Array(n.idx*5).join(' ') + grpTextStr );
@@ -17018,17 +17013,15 @@ $.jgrid.extend({
 			
 			$( 'sheets sheet', xlsx.xl['workbook.xml'] ).attr( 'name', o.sheetName );
 			if(o.includeGroupHeader && $t.p.groupHeader && $t.p.groupHeader.length) {
-				var gh = $t.p.groupHeader, mergecell=[];
-				var mrow = 0;
-				for (i=0;i<gh.length;i++) {
-					var ghdata = gh[i].groupHeaders, clone ={};
-					j=0; mrow++;
-					for(var key in data.header[0] ) {
-						if(!data.header[0].hasOwnProperty(key)) {
-							continue;
-						}
+				var gh = $t.p.groupHeader, mergecell=[],
+				mrow = 0, key, l;
+				for (l = 0; l < gh.length; l++) {
+					var ghdata = gh[l].groupHeaders, clone ={};
+					mrow++; j=0;
+					for(j = 0; j < data.header.length; j++  ) {
+						key = data.header[j];
 						clone[key] = "";
-						for(var k=0;k<ghdata.length;k++) {
+						for(var k = 0; k < ghdata.length; k++) {
 							if(ghdata[k].startColumnName === key) {
 								clone[key] = ghdata[k].titleText;
 								var start = $.jgrid.excelCellPos(j) + mrow,
@@ -17036,10 +17029,12 @@ $.jgrid.extend({
 								mergecell.push({ ref: start+":"+end });
 							}
 						}
-						j++;
 					}
 					addRow( clone, true );
 				}
+				
+				$('row c', rels).attr( 's', '2' ); // bold
+				
 				var merge = $.jgrid.makeNode( rels, 'mergeCells', {
 					attr : {
 						count : mergecell.length
@@ -17054,8 +17049,8 @@ $.jgrid.extend({
 			}
 			
 			if ( o.includeLabels ) {
-				addRow( data.header[0], true );
-				$('row c', rels).attr( 's', '2' ); // bold
+				addRow( data.header, true );
+				$('row:last c', rels).attr( 's', '2' ); // bold
 			}
 			if( $t.p.grouping ) {
 				groupToExcel(data.body);
