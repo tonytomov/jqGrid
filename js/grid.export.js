@@ -516,15 +516,24 @@ $.jgrid.extend({
 			}
 
 			// end group function
-			var def = {}, key;
+			var def = [], key, restorexcol=[];
 			$.each(cm,function(i,n) {
+				if(n.exportcol === undefined) {
+					n.exportcol = true;
+				}
 				if((n.name === 'cb' || n.name === 'rn') && !n.hidden) {
 					restorevis.push(i);
 					n.hidden = true;
 				}
-				if(!n.hidden) {
+				if(!n.exportcol) {
+					if(!n.hidden) {
+						restorexcol.push(i);
+						n.hidden = true;
+					}
+				}
+				if(!n.hidden && n.exportcol) {
 					albl.push( $.jgrid.formatCellCsv( clbl[i], p) );
-					def[n.name] = clbl[i];
+					def.push( n.name ); // clbl[i];
 				}
 			});
 			
@@ -567,14 +576,14 @@ $.jgrid.extend({
 				for (i=0;i < gh.length; i++) {
 					var ghdata = gh[i].groupHeaders;
 					j = 0; tmp = [];
-					for(key in def ) {
-						if(!def.hasOwnProperty( key )) {
-							continue;
-						}
+					for(key=0; key<def.length; key++ ) {
+						//if(!def.hasOwnProperty( key )) {
+						//	continue;
+						//}
 						tmp[j] = '';
 						for(k=0;k<ghdata.length;k++) {
-							if(ghdata[k].startColumnName === key) {
-								tmp[j]= ghdata[k].titleText;
+							if(ghdata[k].startColumnName === def[key]) {
+								tmp[j]= $.jgrid.formatCellCsv( ghdata[k].titleText, p);
 							}
 						}
 						j++;
@@ -604,6 +613,9 @@ $.jgrid.extend({
 			
 			for(i=0;i<restorevis.length;i++) {
 				cm[restorevis[i]].hidden = false;
+			}
+			for(i=0;i<restorexcol.length;i++) {
+				cm[restorexcol[i]].hidden = false;
 			}
 		});
 		if (p.returnAsString) {
