@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.0 - 2017-03-21
+* @license Guriddo jqGrid JS - v5.2.0 - 2017-03-22
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -17126,7 +17126,7 @@ $.jgrid.extend({
 		}, o || {} );
 		return this.each(function() {
 			var $t = this, rows = [], j, cm = $t.p.colModel, ien, obj = {}, key, 
-			data = $t.addLocalData( true ), def = {}, i=0, map=[], test=[], widths = [],  align={};
+			data = $t.addLocalData( true ), def = [], i=0, map=[], test=[], widths = [],  align={};
 // Group function			
 			function groupToPdf ( grdata ) {
 				var grp = $t.p.groupingView, 
@@ -17148,17 +17148,14 @@ $.jgrid.extend({
 				function constructRow( row, fmt ) {
 					var k =0, test=[];
 					//row = data[i];
-					for( var key in def ) {
-						//obj = row[key] == null ? '' : $.jgrid.formatCell( row[key] + '', map[k], data[i], cm[map[k]], $t)
-						if(def.hasOwnProperty( key )) {
-							obj = {
-								text: row[key] == null ? '' : (fmt ? $.jgrid.formatCell( row[key] + '', map[k], data[i], cm[map[k]], $t) : row[key]),
-								alignment : align[key],
-								style : 'tableBody'
-							};
-							test.push(obj);
-							k++;
-						}
+					for( var key=0; key < def.length; key++ ) {
+						obj = {
+							text: row[def[key]] == null ? '' : (fmt ? $.jgrid.formatCell( row[def[key]] + '', map[k], data[i], cm[map[k]], $t) : row[def[key]]),
+							alignment : align[key],
+							style : 'tableBody'
+						};
+						test.push(obj);
+						k++;
 					}
 					return test;
 				}
@@ -17222,10 +17219,8 @@ $.jgrid.extend({
 				
 				function emptyData ( d ) {
 					var clone = {};
-					for(var key in d ) {
-						if(d.hasOwnProperty(key)) {
-							clone[key] = "";
-						}
+					for(var key = 0; key< d.length; key++ ) {
+						clone[d[key]] = "";
 					}
 					return clone;
 				}
@@ -17302,7 +17297,7 @@ $.jgrid.extend({
 				}
 				obj = { text:  $t.p.colNames[j], style: 'tableHeader' };
 				test.push( obj );
-				def[cm[j].name]  = $t.p.colNames[j]; //cm[j].label || cm[j].name;
+				def[i]  = cm[j].name;
 				map[i] = j;
 				widths.push(cm[j].width); 
 				align[cm[j].name] = cm[j].align || 'left';
@@ -17314,13 +17309,10 @@ $.jgrid.extend({
 				for (i=0;i < gh.length; i++) {
 					var clone = [],
 					ghdata = gh[i].groupHeaders;
-					for(key in def ) {
-						if(!def.hasOwnProperty( key )) {
-							continue;
-						}
+					for(key=0; key < def.length; key++ ) {
 						obj = {text:'', style: 'tableHeader'};
 						for(k=0;k<ghdata.length;k++) {
-							if(ghdata[k].startColumnName === key) {
+							if(ghdata[k].startColumnName === def[key]) {
 								obj = { 
 									text : ghdata[k].titleText, 
 									colSpan: ghdata[k].numberOfColumns,
@@ -17346,18 +17338,14 @@ $.jgrid.extend({
 					k =0; 
 					test=[];
 					row = data[i];
-					for( key in def ) {
-						//obj = row[key] == null ? '' : $.jgrid.formatCell( row[key] + '', map[k], data[i], cm[map[k]], $t)
-						if( def.hasOwnProperty( key )) {
-							obj	= {
-								text: row[key] == null ? '' : $.jgrid.formatCell( row[key] + '', map[k], data[i], cm[map[k]], $t),
-								alignment : align[key],
-								style : 'tableBody'
-							};
-					
-							test.push(obj);
-							k++;
-						}
+					for( key = 0;key < def.length; key++ ) {
+						obj	= {
+							text: row[def[key]] == null ? '' : $.jgrid.formatCell( row[def[key]] + '', map[k], data[i], cm[map[k]], $t),
+							alignment : align[def[key]],
+							style : 'tableBody'
+						};
+						test.push(obj);
+						k++;
 					}
 					rows.push(test);
 				}
@@ -17366,15 +17354,13 @@ $.jgrid.extend({
 			if ( o.includeFooter && $t.p.footerrow) {
 				var fdata = $($t).jqGrid('footerData', 'get');
 				test=[];
-				for( key in def) {
-					if(def.hasOwnProperty(key) ) {
-						obj  =  {
-							text : $.jgrid.stripHtml(fdata[key]),
-							style : 'tableFooter',
-							alignment : align[key]
-						};
-						test.push( obj );
-					}
+				for( key =0; key< def.length; key++) {
+					obj  =  {
+						text : $.jgrid.stripHtml(fdata[def[key]]),
+						style : 'tableFooter',
+						alignment : align[def[key]]
+					};
+					test.push( obj );
 				}
 				rows.push( test );
 			}
