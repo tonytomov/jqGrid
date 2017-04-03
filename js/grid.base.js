@@ -205,7 +205,7 @@ $.extend($.jgrid,{
 				else if (ty >=0 && ty <=69) {ts.y= 2000+ts.y;}
 				timestamp = new Date(ts.y, ts.m, ts.d, ts.h, ts.i, ts.s, ts.u);
 				//Apply offset to show date as local time.
-				if(offset > 0) {
+				if(offset !== 0) {
 					timestamp.setTime(Number(Number(timestamp) + (offset * 60 * 1000)));
 				}
 			}
@@ -214,7 +214,7 @@ $.extend($.jgrid,{
 		}
 		if(opts.userLocalTime && offset === 0) {
 			offset -= (new Date()).getTimezoneOffset();
-			if( offset > 0 ) {
+			if( offset !== 0 ) {
 				timestamp.setTime(Number(Number(timestamp) + (offset * 60 * 1000)));
 			}
 		}
