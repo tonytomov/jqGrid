@@ -3779,12 +3779,14 @@ $.fn.jqGrid = function( pin ) {
 			});
 		}
 		var ri,ci, tdHtml;
-		function selectMultiRow(ri, scb) {
+		function selectMultiRow(ri, scb, e, selection) {
 			if((ts.p.multiselect && ts.p.multiboxonly) || ts.p.multimail ) {
 				if(scb){
-					$(ts).jqGrid("setSelection", ri, true, e);
+					$(ts).jqGrid("setSelection", ri, selection, e);
 				} else if(  ts.p.multiboxonly && ts.p.multimail) {
-					// do nothing for now
+					// execute onSelectRow
+					$(ts).triggerHandler("jqGridSelectRow", [ri, false, e]);
+					if( ts.p.onSelectRow) { ts.p.onSelectRow.call(ts, ri, false, e); }
 				} else {
 					var frz = ts.p.frozenColumns ? ts.p.id+"_frozen" : "";
 					$(ts.p.selarrrow).each(function(i,n){
@@ -3799,10 +3801,10 @@ $.fn.jqGrid = function( pin ) {
 						}
 					});
 					ts.p.selarrrow = [];
-					$(ts).jqGrid("setSelection", ri, true, e);
+					$(ts).jqGrid("setSelection", ri, selection, e);
 				}
 			} else {
-				$(ts).jqGrid("setSelection", ri, true, e);
+				$(ts).jqGrid("setSelection", ri, selection, e);
 			}
 		}
 		$(ts).before(grid.hDiv).on({
@@ -3845,7 +3847,7 @@ $.fn.jqGrid = function( pin ) {
 				if (!cSel) {
 					return;
 				}
-				if( ts.p.multimail) {
+				if( ts.p.multimail && ts.p.multiselect) {
 					if (e.shiftKey) {
 						if (scb) {
 							var initialRowSelect = $(ts).jqGrid('getGridParam', 'selrow'),
@@ -3889,12 +3891,12 @@ $.fn.jqGrid = function( pin ) {
 						}
 						window.getSelection().removeAllRanges();
 					}
-					selectMultiRow( ri, scb );
+					selectMultiRow( ri, scb, e, false );
 				} else if ( !ts.p.multikey ) {
-					selectMultiRow( ri, scb );
+					selectMultiRow( ri, scb, e, true );
 				} else {
 					if(e[ts.p.multikey]) {
-						$(ts).jqGrid("setSelection",ri,true,e);
+						$(ts).jqGrid("setSelection", ri, true, e);
 					} else if(ts.p.multiselect && scb) {
 						scb = $("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+ri).is(":checked");
 						$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+ri)[ts.p.useProp ? 'prop' : 'attr']("checked", !scb);
