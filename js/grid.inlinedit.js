@@ -208,7 +208,7 @@ $.jgrid.extend({
 					switch (cm.edittype) {
 						case "checkbox":
 							var cbv = ["Yes","No"];
-							if(cm.editoptions && editoptions.value) {
+							if(cm.editoptions && cm.editoptions.value) {
 								cbv = cm.editoptions.value.split(":");
 							}
 							tmp[nm]=  $("input",this).is(":checked") ? cbv[0] : cbv[1];
