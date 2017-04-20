@@ -452,8 +452,14 @@ $.fn.jqFilter = function( arg ) {
 				$.jgrid.bindEv.call($t, elm, cm.searchoptions);
 				$(".input-elm",trpar).on('change',function( e ) {
 					var elem = e.target;
-					rule.data = cm.inputtype === 'custom' && $.isFunction(cm.searchoptions.custom_value) ?
-						cm.searchoptions.custom_value.call($t, $(".customelement", this), 'get') : elem.value;
+					if( cm.inputtype === 'custom' && $.isFunction(cm.searchoptions.custom_value) ) {
+						rule.data =  cm.searchoptions.custom_value.call($t, $(".customelement", this), 'get');
+					} else {
+						rule.data = $(elem).val();
+					}
+					if(cm.inputtype === 'select' && cm.searchoptions.multiple ) {
+						rule.data = rule.data.join(",");
+					}
 					that.onchange(); // signals that the filter has changed
 				});
 				setTimeout(function(){ //IE, Opera, Chrome
