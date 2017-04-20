@@ -1325,6 +1325,7 @@ $.fn.jqGrid = function( pin ) {
 			scrollPopUp : false,
 			scrollTopOffset: 0, // pixel
 			scrollLeftOffset : "100%", //percent
+			scrollMaxBuffer : 0,
 			storeNavOptions: false,
 			regional :  "en",
 			styleUI : "jQueryUI",
@@ -1457,6 +1458,9 @@ $.fn.jqGrid = function( pin ) {
 						grid.timer = setTimeout(grid.populateVisible, p.scrollTimeout);
 					} else {
 						p.page = page;
+						if( p.scrollMaxBuffer > 0 && p.reccount  > (p.scrollMaxBuffer - (rn > 0 ? rn : 0) )  ) {
+							empty = true;
+						}
 						if (empty) {
 							grid.selectionPreserver(table[0]);
 							grid.emptyRows.call(table[0], false, false);
