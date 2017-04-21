@@ -1040,18 +1040,17 @@ $.jgrid.extend({
 				if($.isFunction(p.afterClear)){p.afterClear();}
 			},
 			toggleToolbar = function(){
-				var trow = $("tr.ui-search-toolbar",$t.grid.hDiv),
-				trow2 = $t.p.frozenColumns === true ?  $("tr.ui-search-toolbar",$t.grid.fhDiv) : false;
+				var trow = $("tr.ui-search-toolbar",$t.grid.hDiv);
+				if($t.p.frozenColumns === true) {
+					$($t).jqGrid('destroyFrozenColumns');
+				}
 				if(trow.css("display") === 'none') {
 					trow.show(); 
-					if(trow2) {
-						trow2.show();
-					}
 				} else { 
 					trow.hide(); 
-					if(trow2) {
-						trow2.hide();
-					}
+				}
+				if($t.p.frozenColumns === true) {
+					$($t).jqGrid("setFrozenColumns");
 				}
 			},
 			buildRuleMenu = function( elem, left, top ){
