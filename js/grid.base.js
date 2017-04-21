@@ -1458,8 +1458,13 @@ $.fn.jqGrid = function( pin ) {
 						grid.timer = setTimeout(grid.populateVisible, p.scrollTimeout);
 					} else {
 						p.page = page;
-						if( p.scrollMaxBuffer > 0 && p.reccount  > (p.scrollMaxBuffer - (rn > 0 ? rn : 0) )  ) {
-							empty = true;
+						if( p.scrollMaxBuffer > 0 ) {
+							if( rn > 0 && p.scrollMaxBuffer < rn ) {
+								p.scrollMaxBuffer = rn + 1;
+							}
+							if(p.reccount  > (p.scrollMaxBuffer - (rn > 0 ? rn : 0) )  ) {
+								empty = true;
+							}
 						}
 						if (empty) {
 							grid.selectionPreserver(table[0]);
