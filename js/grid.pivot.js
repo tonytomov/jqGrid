@@ -87,6 +87,7 @@ $.jgrid.extend({
 		this.each(function(){
 
 			var 
+				$t = this,
 				row,
 				rowindex,
 				i,
@@ -136,7 +137,7 @@ $.jgrid.extend({
 			function calculation(oper, v, field, rc, _cnt)  {
 				var ret;
 				if( $.isFunction(oper)) {
-					ret = oper.call(this, v, field, rc);
+					ret = oper.call($t, v, field, rc);
 				} else {
 					switch (oper) {
 						case  "sum" : 
@@ -221,7 +222,7 @@ $.jgrid.extend({
 						}						
 						curr[label] =  tmpmember[label] = calculation( aggr[i].aggregator, curr[label], aggr[i].member, row, _cntavg);
 					}
-					mainval += (value && value[j] != null) ? value[j].replace(/\s+/g, '') : ''
+					mainval += (value && value[j] != null) ? value[j].replace(/\s+/g, '') : '';
 					//vl = !isNaN(parseInt(vl,10)) ? vl + " " : vl;
 					member[label] = tmpmember;
 					labels[label] = swapvals[j];
