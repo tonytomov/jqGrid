@@ -5400,7 +5400,7 @@ $.jgrid.extend({
 					var maxdh=[];
 					$(".ui-jqgrid-htable tr","#gview_"+$.jgrid.jqID($t.p.id)).each(function(i,n){
 						maxdh.push(parseInt($(this).height(),10));
-					})
+					});
 					$("tr",htbl).each(function(){
 						$("th:gt("+maxfrozen+")",this).remove();
 					});
