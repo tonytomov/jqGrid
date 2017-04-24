@@ -554,7 +554,7 @@ $.jgrid.extend({
 									//id processing
 									// user not set the id ret[2]
 									if(!ret[2]) {ret[2] = $.jgrid.randId();}
-									if(postdata[idname] == null || postdata[idname] === "_empty" || postdata[idname] == ""){
+									if(postdata[idname] == null || postdata[idname] === "_empty" || postdata[idname] === ""){
 										postdata[idname] = ret[2];
 									} else {
 										ret[2] = postdata[idname];
@@ -661,15 +661,14 @@ $.jgrid.extend({
 			}
 			function compareData(nObj, oObj ) {
 				var ret = false,key;
-				ret = !( $.isPlainObject(nObj) && $.isPlainObject(oObj)
-					&& Object.getOwnPropertyNames(nObj).length === Object.getOwnPropertyNames(oObj).length);
+				ret = !( $.isPlainObject(nObj) && $.isPlainObject(oObj) && Object.getOwnPropertyNames(nObj).length === Object.getOwnPropertyNames(oObj).length);
 				if(!ret) {
 					for (key in oObj) {
 						if(oObj.hasOwnProperty(key) )  {
 							if(nObj.hasOwnProperty(key) ) {
 								if( nObj[key] !== oObj[key] ) {
 									ret = true;
-									break
+									break;
 								}
 							} else {
 								ret = true;
@@ -1584,7 +1583,7 @@ $.jgrid.extend({
 										$t.p.selarrrow = [];
 									}
 									if($.isFunction(rp_ge[$t.p.id].afterComplete) || $._data( $($t)[0], 'events' ).hasOwnProperty('jqGridDelRowAfterComplete')) {
-										var copydata = data
+										var copydata = data;
 										setTimeout(function(){
 											$($t).triggerHandler("jqGridDelRowAfterComplete", [copydata, postd]);
 											try {
