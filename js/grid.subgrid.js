@@ -203,7 +203,7 @@ addSubGrid : function( pos, sind ) {
 				}
 				hsret = null;
 				if(ishsg) {
-					var hsret = ts.p.isHasSubGrid.call(ts, ts.rows[i].id);
+					hsret = ts.p.isHasSubGrid.call(ts, ts.rows[i].id);
 				}
 				if(hsret === false) {
 					ts.rows[i].cells[pos].innerHTML = "";
