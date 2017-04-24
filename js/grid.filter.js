@@ -336,9 +336,9 @@ $.fn.jqFilter = function( arg ) {
 			}
 
 			// append rules rows
-			var suni = that.p.ruleButtons && that.p.uniqueSearchFields;
+			var suni = that.p.ruleButtons && that.p.uniqueSearchFields, ii;
 			if( suni ) {
-				for (var ii = 0; ii < that.p.columns.length; ii++) {
+				for ( ii = 0; ii < that.p.columns.length; ii++) {
 					if(that.p.columns[ii].inlist) {
 						that.p.columns[ii].search = true;
 					}
@@ -351,7 +351,7 @@ $.fn.jqFilter = function( arg ) {
 					);
 					if( suni ) {
 						var field = group.rules[i].field;
-						for (var ii = 0; ii < that.p.columns.length; ii++) {
+						for ( ii = 0; ii < that.p.columns.length; ii++) {
 							if(field === that.p.columns[ii].name) {
 								that.p.columns[ii].search = false;
 								break;
