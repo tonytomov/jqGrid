@@ -294,7 +294,7 @@ $.extend($.jgrid,{
 			}, 0);
 		}
 	}
-})
+});
 //module end
 //return window.jqGridUtils;
 }));
