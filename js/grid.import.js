@@ -527,13 +527,13 @@ $.extend($.jgrid,{
 						}
 						var newm1 = JSON.stringify( newm );
 						if(typeof newm1 === 'string' ) {
-							pdata['colModel'] = newm1;
+							pdata.colModel = newm1;
 						}
 					}
 					if(o.exportgrouping) {
 						expg = JSON.stringify( this.p.groupingView );
 						if(typeof expg === 'string' ) {
-							pdata['groupingView'] = expg;
+							pdata.groupingView = expg;
 						}
 					}
 					var params = jQuery.param(pdata);
