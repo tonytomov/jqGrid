@@ -31,17 +31,19 @@ $.fn.html5sortable = function(options) {
 		connectWith: false
 	}, options);
 	return this.each(function() {
+		var items;
 		if (/^enable|disable|destroy$/.test(method)) {
-			var items = $(this).children($(this).data('items')).attr('draggable', method === 'enable');
+			items = $(this).children($(this).data('items')).attr('draggable', method === 'enable');
 			if (method === 'destroy') {
 				items.add(this).removeData('connectWith items')
 					.off('dragstart.h5s dragend.h5s selectstart.h5s dragover.h5s dragenter.h5s drop.h5s');
 			}
 			return;
 		}
-		var isHandle, index, items = $(this).children(options.items);
-		var placeholder = $('<' + (/^ul|ol$/i.test(this.tagName) ? 'li' : /^tbody$/i.test(this.tagName) ? 'tr' : 'div')
-            + ' class="sortable-placeholder ' + options.placeholderClass + '">').html('&nbsp;');
+		var isHandle, index; 
+		items = $(this).children(options.items);
+		var placeholder = $('<' + (/^ul|ol$/i.test(this.tagName) ? 'li' : /^tbody$/i.test(this.tagName) ? 'tr' : 'div') +
+            ' class="sortable-placeholder ' + options.placeholderClass + '">').html('&nbsp;');
         items.find(options.handle).mousedown(function() {
 			isHandle = true;
 		}).mouseup(function() {
