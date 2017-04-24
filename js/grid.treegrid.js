@@ -654,7 +654,7 @@ $.jgrid.extend({
 				rc[expanded] = false;
 				if( ret === false ) { return; }
 				$("div.treeclick",rc1).removeClass(this.p.treeIcons.minus+" tree-minus").addClass(this.p.treeIcons.plus+" tree-plus");
-				$($t).triggerHandler("jqGridAfterCollapseTreeGridNode", [id, rc])
+				$($t).triggerHandler("jqGridAfterCollapseTreeGridNode", [id, rc]);
 				if($.isFunction(this.p.afterCollapseTreeGridNode)) {
 					this.p.afterCollapseTreeGridNode.call(this, id, rc );
 				}
