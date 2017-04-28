@@ -3837,11 +3837,6 @@ $.fn.jqGrid = function( pin ) {
 				td = $(td).closest("tr.jqgrow>td");
 				if (td.length > 0) {
 					ci = $.jgrid.getCellIndex(td);
-					tdHtml = $(td).closest("td,th").html();
-					$(ts).triggerHandler("jqGridCellSelect", [ri,ci,tdHtml,e]);
-					if($.isFunction(ts.p.onCellSelect)) {
-						ts.p.onCellSelect.call(ts,ri,ci,tdHtml,e);
-					}
 				}
 				if(ts.p.cellEdit === true) {
 					if(ts.p.multiselect && scb && cSel){
@@ -3852,6 +3847,13 @@ $.fn.jqGrid = function( pin ) {
 						} catch (_) {}
 					}
 					return;
+				}
+				if (td.length > 0) {
+					tdHtml = $(td).closest("td,th").html();
+					$(ts).triggerHandler("jqGridCellSelect", [ri,ci,tdHtml,e]);
+					if($.isFunction(ts.p.onCellSelect)) {
+						ts.p.onCellSelect.call(ts,ri,ci,tdHtml,e);
+					}
 				}
 				if (!cSel) {
 					return;
