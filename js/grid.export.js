@@ -706,7 +706,7 @@ $.jgrid.extend({
 					if(!header) {
 						v = v !== '' ? $.jgrid.formatCell( v, data.map[i], row, cm[data.map[i]], $t) : v;
 					}
-					data.width[i] = Math.max(data.width[i], Math.min(parseInt(v.length,10), o.maxlength) );
+					data.width[i] = Math.max(data.width[i], Math.min(parseInt(v.toString().length,10), o.maxlength) );
 					// Detect numbers - don't match numbers with leading zeros or a negative
 					// anywhere but the start
 					// $.jgrid.formatCell( row[cm[i].name], i, row, cm[i], $t )
