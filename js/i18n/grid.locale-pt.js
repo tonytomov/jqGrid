@@ -50,8 +50,8 @@ $.jgrid.regional["pt"] = {
 	    caption: "Busca...",
 	    Find: "Procurar",
 	    Reset: "Limpar",
-	    odata: [{ oper:'eq', text:'equal'},{ oper:'ne', text:'not equal'},{ oper:'lt', text:'less'},{ oper:'le', text:'less or equal'},{ oper:'gt', text:'greater'},{ oper:'ge', text:'greater or equal'},{ oper:'bw', text:'begins with'},{ oper:'bn', text:'does not begin with'},{ oper:'in', text:'is in'},{ oper:'ni', text:'is not in'},{ oper:'ew', text:'ends with'},{ oper:'en', text:'does not end with'},{ oper:'cn', text:'contains'},{ oper:'nc', text:'does not contain'},{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}, {oper:'bt', text:'between'}],
-	    groupOps: [	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	],
+	    odata: [{ oper:'eq', text:'igual'},{ oper:'ne', text:'desigual'},{oper:'lt', text:'menor'},{ oper:'le', text:'menor ou igual'},{ oper:'gt',text:'maior'},{ oper:'ge', text:'maior ou igual'},{ oper:'bw', text:'comecacom'},{ oper:'bn', text:'nao comeca com'},{ oper:'in', text:'estadentro'},{ oper:'ni', text:'nao esta dentro'},{ oper:'ew', text:'finalizacom'},{ oper:'en', text:'nao finaliza com'},{ oper:'cn', text:'contem'},{oper:'nc', text:'nao contem'}],
+	    groupOps: [ { op: "AND", text: "tudo" }, { op: "OR", text:"qualquer" } ],
 		operandTitle : "Click to select search operation.",
 		resetTitle : "Reset Search Value",
 		addsubgrup : "Add subgroup",
@@ -65,22 +65,23 @@ $.jgrid.regional["pt"] = {
 	    bSubmit: "Submeter",
 	    bCancel: "Cancelar",
 		bClose: "Fechar",
-		saveData: "Data has been changed! Save changes?",
-		bYes : "Yes",
-		bNo : "No",
-		bExit : "Cancel",
+		saveData: "Dados foram alterados. Guardar?",
+		bYes : "Sim",
+		bNo : "Nao",
+		bExit : "Cancelar",
 	    msg: {
-	        required:"Campo obrigat�rio",
+	        required:"Campo obrigatório",
 	        number:"Por favor, introduza um numero",
 	        minValue:"O valor deve ser maior ou igual que",
 	        maxValue:"O valor deve ser menor ou igual a",
-	        email: "N�o � um endere�o de email v�lido",
+	        email: "Não é um email válid",
 	        integer: "Por favor, introduza um numero inteiro",
-			url: "is not a valid URL. Prefix required ('http://' or 'https://')",
-			nodefined : " is not defined!",
-			novalue : " return value is required!",
-			customarray : "Custom function should return array!",
-			customfcheck : "Custom function should be present in case of custom checking!"
+			date: "Introduza una fecha correcta ",
+			url: "nao e um URL valido. Requerido prefixo ('http://' or 'https://')",
+			nodefined : " nao esta definido!",
+			novalue : " valor requerido!",
+			customarray : "Funcao customizada deve entrar!",
+			customfcheck : "Funcao customizada deve estar presente em caso deconfirmar customizacao!"
 		}
 	},
 	view : {
@@ -107,7 +108,7 @@ $.jgrid.regional["pt"] = {
 	    alertcap: "Aviso",
 	    alerttext: "Por favor, seleccione um registo",
 		viewtext: "",
-		viewtitle: "View selected row",
+		viewtitle: "Ver coluna selecionada",
 		savetext: "",
 		savetitle: "Save row",
 		canceltext: "",
@@ -121,8 +122,8 @@ $.jgrid.regional["pt"] = {
 	},
 	errors : {
 		errcap : "Erro",
-		nourl : "N�o especificou um url",
-		norecords: "N�o existem dados para processar",
+		nourl : "Não especificou um url",
+		norecords: "Não existem dados para processar",
 	    model : "Tamanho do colNames <> colModel!"
 	},
 	formatter : {
@@ -132,7 +133,7 @@ $.jgrid.regional["pt"] = {
 		date : {
 			dayNames:   [
 				"Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab",
-				"Domingo", "Segunda-Feira", "Ter�a-Feira", "Quarta-Feira", "Quinta-Feira", "Sexta-Feira", "S�bado"
+				"Domingo", "Segunda-Feira", "Terça-Feira", "Quarta-Feira", "Quinta-Feira", "Sexta-Feira", "Sábado"
 			],
 			monthNames: [
 				"Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez",
