@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.1 - 2017-05-12
+* @license Guriddo jqGrid JS - v5.2.1 - 2017-05-15
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -13911,7 +13911,8 @@ $.jgrid.extend({
 
 			function pivot( data) {
 				if(!$.isArray(data)) {
-					throw "data provides is not an array";
+					//throw "data provides is not an array";
+					data = [];
 				}
 				var pivotGrid = jQuery($t).jqGrid('pivotSetup',data, pivotOpt),
 				footerrow = $.assocArraySize(pivotGrid.summary) > 0 ? true : false,
