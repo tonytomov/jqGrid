@@ -499,7 +499,8 @@ $.jgrid.extend({
 
 			function pivot( data) {
 				if(!$.isArray(data)) {
-					throw "data provides is not an array";
+					//throw "data provides is not an array";
+					data = [];
 				}
 				var pivotGrid = jQuery($t).jqGrid('pivotSetup',data, pivotOpt),
 				footerrow = $.assocArraySize(pivotGrid.summary) > 0 ? true : false,
