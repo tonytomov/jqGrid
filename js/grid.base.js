@@ -2979,7 +2979,12 @@ $.fn.jqGrid = function( pin ) {
 				ts.p.lastsort = idxcol;
 				return;
 			}
-			if($.isFunction(ts.p.onSortCol)) {if (ts.p.onSortCol.call(ts, ts.p.sortname, idxcol, ts.p.sortorder)==='stop') {ts.p.lastsort = idxcol; return;}}
+			if($.isFunction(ts.p.onSortCol)) {
+				if (ts.p.onSortCol.call(ts, ts.p.sortname, idxcol, ts.p.sortorder)==='stop') {
+					ts.p.lastsort = idxcol; 
+					return;
+				}
+			}
 			if(ts.p.datatype === "local") {
 				if(ts.p.deselectAfterSort) {$(ts).jqGrid("resetSelection");}
 			} else {
