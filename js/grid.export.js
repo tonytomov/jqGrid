@@ -22,10 +22,10 @@ $.jgrid = $.jgrid || {};
 
 
 $.extend($.jgrid,{
-	formatCell : function ( cellval , colpos, rwdat, cm, $t){
+	formatCell : function ( cellval , colpos, rwdat, cm, $t, etype){
 		var v;
 		if(cm.formatter !== undefined) {
-			var opts= {rowId: '', colModel:cm, gid: $t.p.id, pos:colpos, styleUI: '' };
+			var opts= {rowId: '', colModel:cm, gid: $t.p.id, pos:colpos, styleUI: '', isExported : true, exporttype : etype };
 			if($.isFunction( cm.formatter ) ) {
 				v = cm.formatter.call($t,cellval,opts,rwdat);
 			} else if($.fmatter){
@@ -486,7 +486,7 @@ $.jgrid.extend({
 							for(ik = 0; ik < cm.length; ik++) {
 								if(!cm[ik].hidden) {
 									arr[k] = $.jgrid.formatCellCsv( 
-										$.jgrid.formatCell( to[cm[ik].name], ik, to, cm[ik], $t ) , p);
+										$.jgrid.formatCell( to[cm[ik].name], ik, to, cm[ik], $t, 'csv' ) , p);
 									k++;
 								}
 							}
@@ -554,7 +554,7 @@ $.jgrid.extend({
 					k =0;
 					for(i = 0; i < cmlen; i++) {
 						if(!cm[i].hidden) {
-							tmp[k] = $.jgrid.formatCellCsv( $.jgrid.formatCell( row[cm[i].name], i, row, cm[i], $t ), p );
+							tmp[k] = $.jgrid.formatCellCsv( $.jgrid.formatCell( row[cm[i].name], i, row, cm[i], $t, 'csv' ), p );
 							k++;
 						}
 					}
@@ -704,7 +704,7 @@ $.jgrid.extend({
 						v = '';
 					}
 					if(!header) {
-						v = v !== '' ? $.jgrid.formatCell( v, data.map[i], row, cm[data.map[i]], $t) : v;
+						v = v !== '' ? $.jgrid.formatCell( v, data.map[i], row, cm[data.map[i]], $t, 'excel') : v;
 					}
 					data.width[i] = Math.max(data.width[i], Math.min(parseInt(v.toString().length,10), o.maxlength) );
 					// Detect numbers - don't match numbers with leading zeros or a negative
@@ -1029,7 +1029,7 @@ $.jgrid.extend({
 					//row = data[i];
 					for( var key=0; key < def.length; key++ ) {
 						obj = {
-							text: row[def[key]] == null ? '' : (fmt ? $.jgrid.formatCell( row[def[key]] + '', map[k], data[i], cm[map[k]], $t) : row[def[key]]),
+							text: row[def[key]] == null ? '' : (fmt ? $.jgrid.formatCell( row[def[key]] + '', map[k], data[i], cm[map[k]], $t, 'pdf') : row[def[key]]),
 							alignment : align[key],
 							style : 'tableBody'
 						};
@@ -1219,7 +1219,7 @@ $.jgrid.extend({
 					row = data[i];
 					for( key = 0;key < def.length; key++ ) {
 						obj	= {
-							text: row[def[key]] == null ? '' : $.jgrid.formatCell( row[def[key]] + '', map[k], data[i], cm[map[k]], $t),
+							text: row[def[key]] == null ? '' : $.jgrid.formatCell( row[def[key]] + '', map[k], data[i], cm[map[k]], $t, 'pdf'),
 							alignment : align[def[key]],
 							style : 'tableBody'
 						};
