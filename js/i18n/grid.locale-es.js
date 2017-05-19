@@ -35,10 +35,10 @@ $.jgrid.regional["es"] = {
 		loadtext: "Cargando...",
 		savetext: "Guardando...",
 		pgtext : "Página {0} de {1}",
-		pgfirst : "Primera página",
-		pglast : "Última página",
-		pgnext : "Siguiente página",
-		pgprev : "Anterior página",
+		pgfirst : "Primera Página",
+		pglast : "Última Página",
+		pgnext : "Página Siguiente",
+		pgprev : "Página Anterior",
 		pgrecs : "Registros por página",
 		showhide: "Alternar Contraer Expandir Grid",
 		// mobile
@@ -171,15 +171,15 @@ $.jgrid.regional["es"] = {
 		idName : 'id'
 	},
 	colmenu : {
-		sortasc : "Ordenar ascendentemente",
-		sortdesc : "Ordenar descendientemente",
+		sortasc : "Orden Ascendente",
+		sortdesc : "Orden Descendente",
 		columns : "Columnas",
 		filter : "Filtrar",
 		grouping : "Agrupar por",
 		ungrouping : "Desagrupar",
 		searchTitle : "Obtener elementos con un valor que:",
-		freeze : "Congelar",
-		unfreeze : "Descongelar",
+		freeze : "Inmovilizar",
+		unfreeze : "Movilizar",
 		reorder : "Mover para reordenar"
 	}
 };
