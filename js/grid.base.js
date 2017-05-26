@@ -4954,9 +4954,9 @@ $.jgrid.extend({
 						v = $t.formatter(rowid, nData, pos, rawdat, 'edit');
 						title = $t.p.colModel[pos].title ? {"title":$.jgrid.stripHtml(v)} : {};
 						if($t.p.treeGrid && $(".tree-wrap",$(tcell)).length>0) {
-							$("span",$(tcell)).html(v).attr(title);
+							$("span",$(tcell)).text(v).attr(title);
 						} else {
-							$(tcell).html(v).attr(title);
+							$(tcell).text(v).attr(title);
 						}
 						if($t.p.datatype === "local") {
 							var cm = $t.p.colModel[pos], index;
