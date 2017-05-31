@@ -1940,7 +1940,7 @@ $.fn.jqGrid = function( pin ) {
 					$(ts.rows[fpos]).after(rowData.join(''));
 				} else {
 					//$("tbody:first",t).append(rowData.join(''));
-					tablebody.append(rowData.join(''));
+					if(typeof tablebody != 'undefined') tablebody.append(rowData.join(''));
 					ts.grid.cols = ts.rows[0].cells; // update cached first row
 				}
 			}
