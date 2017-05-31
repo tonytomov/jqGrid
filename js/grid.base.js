@@ -3667,7 +3667,7 @@ $.fn.jqGrid = function( pin ) {
 				if(ts.p.multiSort) {
 					if(ts.p.viewsortcols[0]) {
 						$("div span.s-ico",this).show(); 
-						if(ts.tmpcm.lso){ 
+						if( tmpcm.lso ){ 
 							$("div span.ui-icon-"+tmpcm.lso,this).removeClass(disabled).css("display","");
 						}
 					} else if( tmpcm.lso) {
