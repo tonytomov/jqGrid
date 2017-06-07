@@ -3659,7 +3659,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			var nm = tmpcm.name;
 			if( !(nm === 'cb' || nm==='subgrid' || nm==='rn') ) {
-				if(ts.p.viewsortcols[2]){
+				if(ts.p.viewsortcols[2] && sort){
 					$(">div",this).addClass('ui-jqgrid-sortable');
 				}
 			}
