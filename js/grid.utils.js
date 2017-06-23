@@ -26,7 +26,12 @@ $.extend($.jgrid,{
 		return JSON.parse(str,function(key, value){
 			if(typeof value === "string" && value.indexOf("function") !== -1) {
 				var sv = value.split(" ");
-				if(sv[0].trim() === 'function' && value.trim().slice(-1) === "}") {
+				sv[0] = $.trim( sv[0] );
+				if( (sv[0] === 'function'  ||
+						sv[0] === 'function(' || 
+						sv[0] === 'function()' 
+					)
+					&& value.trim().slice(-1) === "}") {
 					return  eval('('+value+')');
 				} else {
 					return value;
