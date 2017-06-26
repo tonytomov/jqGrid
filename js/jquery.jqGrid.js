@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.1 - 2017-06-23
+* @license Guriddo jqGrid JS - v5.2.1 - 2017-06-26
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -15931,12 +15931,8 @@ $.extend($.jgrid,{
 		return JSON.parse(str,function(key, value){
 			if(typeof value === "string" && value.indexOf("function") !== -1) {
 				var sv = value.split(" ");
-				sv[0] = $.trim( sv[0] );
-				if( (sv[0] === 'function'  ||
-						sv[0] === 'function(' || 
-						sv[0] === 'function()' 
-					)
-					&& value.trim().slice(-1) === "}") {
+				sv[0] = $.trim( sv[0].toLowerCase() );
+				if( (sv[0].indexOf('function') === 0) && value.trim().slice(-1) === "}") {
 					return  eval('('+value+')');
 				} else {
 					return value;
