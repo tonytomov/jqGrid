@@ -177,6 +177,7 @@ $.jgrid.extend({
 			itemGroupingLevel,
 			showData,
 			collapsed = false,
+			footLevel,
 			skip = false,
 			frz = $t.p.frozenColumns ? $t.p.id+"_frozen" : false,
 			tar2 = frz ? $("#"+$.jgrid.jqID(hid), "#"+$.jgrid.jqID(frz) ) : false,
@@ -188,10 +189,17 @@ $.jgrid.extend({
 						if (itemGroupingLevel !== undefined && itemGroupingLevel <= num) {
 							break;
 						}
-						$(r).hide();
+						footLevel = parseInt($(r).attr("jqfootlevel") ,10);
+						skip = isNaN(footLevel) ? false : 
+						 (grp.showSummaryOnHide && footLevel <= num);
+						if( !skip) {
+							$(r).hide();
+						}
 						r = r.nextSibling;
 						if(frz) {
-							$(r2).hide();
+							if(!skip) {
+								$(r2).hide();
+							}
 							r2 = r2.nextSibling;
 						}
 					}
@@ -306,7 +314,7 @@ $.jgrid.extend({
 							} catch (ef) {
 								vv = this.v;
 							}
-							tmpdata= "<td "+$t.formatCol(k,1,'')+">"+$.jgrid.template(tplfld, vv, fdata.cnt)+ "</td>";
+							tmpdata= "<td "+$t.formatCol(k,1,'')+">"+$.jgrid.template(tplfld, vv, fdata.cnt, fdata.dataIndex, fdata.displayValue)+ "</td>";
 							return false;
 						}
 					});
