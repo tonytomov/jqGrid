@@ -371,6 +371,16 @@ $.extend($.jgrid,{
 		}	
 	},
 	cell_width : true,
+	scrollbarWidth : function() {
+		// http://jdsharp.us/jQuery/minute/calculate-scrollbar-width.php
+		var div = $('<div style="width:50px;height:50px;overflow:hidden;position:absolute;top:-200px;left:-200px;"><div style="height:100px;"></div>');
+		$('body').append(div);
+		var w1 = $('div', div).innerWidth();
+		div.css('overflow-y', 'scroll');
+		var w2 = $('div', div).innerWidth();
+		$(div).remove();
+		return (w1 - w2) < 0 ? 18 : (w1 - w2);
+	},
 	ajaxOptions: {},
 	from : function(source){
 		// Original Author Hugo Bonacci
@@ -1276,7 +1286,7 @@ $.fn.jqGrid = function( pin ) {
 			deselectAfterSort : true,
 			scrollrows : false,
 			autowidth: false,
-			scrollOffset : 18,
+			scrollOffset : $.jgrid.scrollbarWidth() + 3, // one extra for windows
 			cellLayout: 5,
 			subGridWidth: 20,
 			gridview: true,
