@@ -5184,6 +5184,9 @@ $.jgrid.extend({
 					}
 				}
 			});
+			$($t).on('click', function(e) {
+				$(e.target,$t.rows).closest("tr.jqgrow").focus();
+			});
 		});
 	},
 	unbindKeys : function(){
