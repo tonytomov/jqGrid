@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.1 - 2017-07-07
+* @license Guriddo jqGrid JS - v5.2.1 - 2017-07-11
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5082,6 +5082,7 @@ $.jgrid.extend({
 			$t.p.selrow = null; $t.p.selarrrow= []; $t.p.savedRow = [];
 			$t.p.records = 0;$t.p.page=1;$t.p.lastpage=0;$t.p.reccount=0;
 			$t.p.data = []; $t.p._index = {};
+			$t.p.groupingView._locgr = false;
 			$t.updatepager(true,false);
 		});
 	},
@@ -16898,11 +16899,13 @@ $.jgrid.extend({
 			addRow = function ( row, header ) {
 				currentRow = rowPos+1;
 				rowNode = $.jgrid.makeNode( rels, "row", { attr: {r:currentRow} } );
+				var maxieenum = 15;
 				for ( var i =0; i < data.header.length; i++) {
 					// key = cm[i].name;
 					// Concat both the Cell Columns as a letter and the Row of the cell.
 					var cellId = $.jgrid.excelCellPos(i) + '' + currentRow,
 					cell,
+					match,
 					v= ($.isArray(row) && header) ? $t.p.colNames[data.map[i]] : row[  data.header[i] ];
 					if ( v == null ) {
 						v = '';
@@ -16914,10 +16917,12 @@ $.jgrid.extend({
 					// Detect numbers - don't match numbers with leading zeros or a negative
 					// anywhere but the start
 					// $.jgrid.formatCell( row[cm[i].name], i, row, cm[i], $t )
-					if ( typeof v === 'number' || (
-							v.match &&
-							$.trim(v).match(/^-?\d+(\.\d+)?$/) &&
-							! $.trim(v).match(/^0\d+/) )
+					if(v.match) {
+						match = v.match(/^-?([1-9]\d+)(\.(\d+))?$/);
+					}
+					if ( typeof v === 'number' && v.toString().length <= maxieenum || (
+							match &&
+							(match[1].length + (match[2] ? match[3].length : 0) <= maxieenum))
 					) {
 						cell = $.jgrid.makeNode( rels, 'c', {
 							attr: {
