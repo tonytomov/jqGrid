@@ -16920,7 +16920,7 @@ $.jgrid.extend({
 					if(v.match) {
 						match = v.match(/^-?([1-9]\d+)(\.(\d+))?$/);
 					}
-					if ( typeof v === 'number' && v.toString().length <= maxieenum || (
+					if ( (typeof v === 'number' && v.toString().length <= maxieenum) || (
 							match &&
 							(match[1].length + (match[2] ? match[3].length : 0) <= maxieenum))
 					) {
