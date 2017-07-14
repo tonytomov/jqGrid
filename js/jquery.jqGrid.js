@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.1 - 2017-07-11
+* @license Guriddo jqGrid JS - v5.2.1 - 2017-07-14
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1035,7 +1035,8 @@ $.extend($.jgrid,{
 				icon_filter : "ui-icon-calculator",
 				icon_group : "ui-icon-grip-solid-horizontal",
 				icon_freeze : "ui-icon-grip-solid-vertical",
-				icon_move: "ui-icon-arrow-4"
+				icon_move: "ui-icon-arrow-4",
+				icon_new_item : "ui-icon-newwin"
 			}
 		},
 		Bootstrap : {
@@ -1166,7 +1167,8 @@ $.extend($.jgrid,{
 				icon_filter : "glyphicon-filter",
 				icon_group : "glyphicon-align-left",
 				icon_freeze : "glyphicon-object-align-horizontal",
-				icon_move: "glyphicon-move"
+				icon_move: "glyphicon-move",
+				icon_new_item : "glyphicon-new-window"
 			}
 		}
 	}
@@ -1337,7 +1339,8 @@ $.fn.jqGrid = function( pin ) {
 			responsive : false,
 			restoreCellonFail : true,
 			colFilters : {},
-			colMenu : false
+			colMenu : false,
+			colMenuCustom : {}
 		}, $.jgrid.defaults , pin );
 		if (localData !== undefined) {
 			p.data = localData;
@@ -3342,36 +3345,68 @@ $.fn.jqGrid = function( pin ) {
 			left=parseInt(left,10);
 			top=parseInt(top,10) + 25;
 			var fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
-			var str = '<ul id="column_menu" class="ui-search-menu modal-content column-menu" role="menu" tabindex="0" style="font-size:'+fs+';left:'+left+'px;top:'+top+'px;">',
+			var strb = '<ul id="column_menu" class="ui-search-menu modal-content column-menu" role="menu" tabindex="0" style="font-size:'+fs+';left:'+left+'px;top:'+top+'px;">',
+			str = '',
+			stre = "</ul>",
+			strl ='',
 			cm = ts.p.colModel[index], op = $.extend({sorting:true, columns: true, filtering: true, seraching:true, grouping:true, freeze : true}, cm.coloptions),
 			texts = $.jgrid.getRegional(ts, "colmenu"),
 			label = ts.p.colNames[index],
-			isgroup, isfreeze; // ???
+			isgroup, 
+			isfreeze,
+			menuData = [],
+			cname = $.trim(cm.name); // ???
 			// sorting
+			menuData.push( str );
 			if(op.sorting) {
-				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" value="sortasc"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_sort_asc+'"></span></td><td class="menu_text">'+texts.sortasc+'</td></tr></table></a></li>';
+				str = '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" value="sortasc"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_sort_asc+'"></span></td><td class="menu_text">'+texts.sortasc+'</td></tr></table></a></li>';
 				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" value="sortdesc"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_sort_desc+'"></span></td><td class="menu_text">'+texts.sortdesc+'</td></tr></table></a></li>';
+				menuData.push( str );
 			}
 			if(op.columns) {
-				str += '<li class="ui-menu-item divider" role="separator"></li>';
+				str = '<li class="ui-menu-item divider" role="separator"></li>';
 				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" value="columns"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_columns+'"></span></td><td class="menu_text">'+texts.columns+'</td></tr></table></a></li>';
+				menuData.push( str );
 			}
 			if(op.filtering) {
-				str += '<li class="ui-menu-item divider" role="separator"></li>';
+				str = '<li class="ui-menu-item divider" role="separator"></li>';
 				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" value="filtering"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_filter+'"></span></td><td class="menu_text">'+texts.filter + ' ' + label +'</td></tr></table></a></li>';			
+				menuData.push( str );
 			}
 			if(op.grouping) {
 				isgroup = $.inArray(cm.name, ts.p.groupingView.groupField);
-				str += '<li class="ui-menu-item divider" role="separator"></li>';
+				str = '<li class="ui-menu-item divider" role="separator"></li>';
 				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" value="grouping"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_group+'"></span></td><td class="menu_text">'+(isgroup !== -1 ?  texts.ungrouping: texts.grouping + ' ' + label)+'</td></tr></table></a></li>';
+				menuData.push( str );
 			}
 			if(op.freeze) {
 				isfreeze = (cm.frozen && ts.p.frozenColumns) ? false : true;
-				str += '<li class="ui-menu-item divider" role="separator"></li>';
+				str = '<li class="ui-menu-item divider" role="separator"></li>';
 				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" value="freeze"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_freeze+'"></span></td><td class="menu_text">'+(isfreeze ? (texts.freeze + " "+ label) : texts.unfreeze)+'</td></tr></table></a></li>';
+				menuData.push( str );
 			}
-			str += "</ul>";
-			$('body').append( str );
+			for( var key in ts.p.colMenuCustom) {
+				if(ts.p.colMenuCustom.hasOwnProperty(key)) {
+					var menuitem = ts.p.colMenuCustom[key],
+						exclude = menuitem.exclude.split(",");
+					exclude = $.map(exclude, function(item){ return $.trim(item);});
+					if( menuitem.colname === cname  || (menuitem.colname === '_all_' && $.inArray(cname, exclude) === -1)) {
+						strl = '<li class="ui-menu-item divider" role="separator"></li>';
+						str = '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" value="'+menuitem.id+'"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+menuitem.icon+'"></span></td><td class="menu_text">'+menuitem.title+'</td></tr></table></a></li>';
+						if(menuitem.position === 'last') {
+							menuData.push( strl );
+							menuData.push( str );
+						} else if( menuitem.position === 'first') {
+							menuData.unshift( strl );
+							menuData.unshift( str );
+						}
+					}
+				}
+			}
+			menuData.unshift( strb );
+			menuData.push( stre );
+			//str += "</ul>";
+			$('body').append( menuData.join('') );
 			$("#column_menu").addClass("ui-menu " + colmenustyle.menu_widget);
 			if(ts.p.direction === "ltr") {
 				var wcm = $("#column_menu").width() + 26;
@@ -3409,6 +3444,15 @@ $.fn.jqGrid = function( pin ) {
 				}
 				if(v.indexOf('sort') !== -1 || v === 'grouping' || v==='freeze') {
 					$(this).remove();
+				}
+				if(ts.p.colMenuCustom.hasOwnProperty(v)) {
+					var exec = ts.p.colMenuCustom[v];
+					if($.isFunction(exec.funcname)) {
+						exec.funcname.call(ts, cname);
+						if(exec.closeOnRun) {
+							$(this).remove();
+						}
+					}
 				}
 			});
 		},
@@ -5642,7 +5686,34 @@ $.jgrid.extend({
 				} catch(e){}
 			}, timeout);
 		});
+	},
+	colMenuAdd : function (colname, options ) {
+		var	currstyle = this[0].p.styleUI,
+			styles = $.jgrid.styleUI[currstyle].colmenu;
+		options = $.extend({
+			title: 'Item',
+			icon : styles.icon_new_item,
+			funcname: null,
+			position : "last",
+			closeOnRun : true,
+			exclude : "",
+			id : null
+		}, options ||{});
+		return this.each(function(){
+			options.colname = colname === 'all' ? "_all_" : colname;
+			var $t = this;
+			options.id = options.id===null? $.jgrid.randId(): options.id;
+			$t.p.colMenuCustom[options.id] = options;
+		});
+	},
+	colMenuDelete : function ( id ) {
+		return this.each(function(){
+			if(this.p.colMenuCustom.hasOwnProperty( id )) {
+				delete this.p.colMenuCustom[ id ];
+			}
+		});
 	}
+
 });
 
 //module begin
