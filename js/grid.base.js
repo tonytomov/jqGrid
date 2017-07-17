@@ -3364,30 +3364,30 @@ $.fn.jqGrid = function( pin ) {
 			// sorting
 			menuData.push( str );
 			if(op.sorting) {
-				str = '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" value="sortasc"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_sort_asc+'"></span></td><td class="menu_text">'+texts.sortasc+'</td></tr></table></a></li>';
-				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" value="sortdesc"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_sort_desc+'"></span></td><td class="menu_text">'+texts.sortdesc+'</td></tr></table></a></li>';
+				str = '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" data-value="sortasc"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_sort_asc+'"></span></td><td class="menu_text">'+texts.sortasc+'</td></tr></table></a></li>';
+				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" data-value="sortdesc"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_sort_desc+'"></span></td><td class="menu_text">'+texts.sortdesc+'</td></tr></table></a></li>';
 				menuData.push( str );
 			}
 			if(op.columns) {
 				str = '<li class="ui-menu-item divider" role="separator"></li>';
-				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" value="columns"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_columns+'"></span></td><td class="menu_text">'+texts.columns+'</td></tr></table></a></li>';
+				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" data-value="columns"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_columns+'"></span></td><td class="menu_text">'+texts.columns+'</td></tr></table></a></li>';
 				menuData.push( str );
 			}
 			if(op.filtering) {
 				str = '<li class="ui-menu-item divider" role="separator"></li>';
-				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" value="filtering"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_filter+'"></span></td><td class="menu_text">'+texts.filter + ' ' + label +'</td></tr></table></a></li>';			
+				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" data-value="filtering"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_filter+'"></span></td><td class="menu_text">'+texts.filter + ' ' + label +'</td></tr></table></a></li>';			
 				menuData.push( str );
 			}
 			if(op.grouping) {
 				isgroup = $.inArray(cm.name, ts.p.groupingView.groupField);
 				str = '<li class="ui-menu-item divider" role="separator"></li>';
-				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" value="grouping"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_group+'"></span></td><td class="menu_text">'+(isgroup !== -1 ?  texts.ungrouping: texts.grouping + ' ' + label)+'</td></tr></table></a></li>';
+				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" data-value="grouping"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_group+'"></span></td><td class="menu_text">'+(isgroup !== -1 ?  texts.ungrouping: texts.grouping + ' ' + label)+'</td></tr></table></a></li>';
 				menuData.push( str );
 			}
 			if(op.freeze) {
 				isfreeze = (cm.frozen && ts.p.frozenColumns) ? false : true;
 				str = '<li class="ui-menu-item divider" role="separator"></li>';
-				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" value="freeze"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_freeze+'"></span></td><td class="menu_text">'+(isfreeze ? (texts.freeze + " "+ label) : texts.unfreeze)+'</td></tr></table></a></li>';
+				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" data-value="freeze"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_freeze+'"></span></td><td class="menu_text">'+(isfreeze ? (texts.freeze + " "+ label) : texts.unfreeze)+'</td></tr></table></a></li>';
 				menuData.push( str );
 			}
 			for( var key in ts.p.colMenuCustom) {
@@ -3397,7 +3397,7 @@ $.fn.jqGrid = function( pin ) {
 					exclude = $.map(exclude, function(item){ return $.trim(item);});
 					if( menuitem.colname === cname  || (menuitem.colname === '_all_' && $.inArray(cname, exclude) === -1)) {
 						strl = '<li class="ui-menu-item divider" role="separator"></li>';
-						str = '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" value="'+menuitem.id+'"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+menuitem.icon+'"></span></td><td class="menu_text">'+menuitem.title+'</td></tr></table></a></li>';
+						str = '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" data-value="'+menuitem.id+'"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+menuitem.icon+'"></span></td><td class="menu_text">'+menuitem.title+'</td></tr></table></a></li>';
 						if(menuitem.position === 'last') {
 							menuData.push( strl );
 							menuData.push( str );
@@ -3422,12 +3422,12 @@ $.fn.jqGrid = function( pin ) {
 					$("#col_menu").remove();
 					$("#search_menu").remove();
 					var left1, top1;
-					if($(this).attr("value") === 'columns') {
+					if($(this).attr("data-value") === 'columns') {
 						left1 = $(this).parent().width()+18,
 						top1 = $(this).parent().position().top - 5;
 						buildColItems(top1, left1, $(this).parent());
 					}
-					if($(this).attr("value") === 'filtering') {
+					if($(this).attr("data-value") === 'filtering') {
 						left1 = $(this).parent().width()+18,
 						top1 = $(this).parent().position().top - 5;
 						buildSearchBox(index, top1, left1, $(this).parent());
@@ -3436,7 +3436,7 @@ $.fn.jqGrid = function( pin ) {
 				},
 				function(){ $(this).removeClass(hover); }
 			).click(function(){
-				var v = $(this).attr("value"),
+				var v = $(this).attr("data-value"),
 				sobj = ts.grid.headers[index].el;
 				if(v === 'sortasc') {
 					sortData( "jqgh_"+ts.p.id+"_" + cm.name, index, true, 'asc', sobj);
