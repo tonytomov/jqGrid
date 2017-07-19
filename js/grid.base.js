@@ -5179,6 +5179,10 @@ $.jgrid.extend({
 								}
 							}
 							$($t).jqGrid('setSelection', id, true, event);
+							$($t).triggerHandler("jqGridKeyUp", [id, event]);
+							if($.isFunction(o.onUpKey)) {
+								o.onUpKey.call($t, id, event);
+							}
 							event.preventDefault();
 						}
 						//if key is down arrow
@@ -5196,6 +5200,10 @@ $.jgrid.extend({
 								}
 							}
 							$($t).jqGrid('setSelection', id, true, event);
+							$($t).triggerHandler("jqGridKeyDown", [id, event]);
+							if($.isFunction(o.onDownKey)) {
+								o.onDownKey.call($t, id, event);
+							}
 							event.preventDefault();
 						}
 						// left
@@ -5203,9 +5211,9 @@ $.jgrid.extend({
 							if($t.p.treeGrid && $t.p.data[mind][expanded]) {
 								$(target).find("div.treeclick").trigger('click');
 							}
-							$($t).triggerHandler("jqGridKeyLeft", [$t.p.selrow]);
+							$($t).triggerHandler("jqGridKeyLeft", [$t.p.selrow, event]);
 							if($.isFunction(o.onLeftKey)) {
-								o.onLeftKey.call($t, $t.p.selrow);
+								o.onLeftKey.call($t, $t.p.selrow, event);
 							}
 						}
 						// right
@@ -5213,22 +5221,22 @@ $.jgrid.extend({
 							if($t.p.treeGrid && !$t.p.data[mind][expanded]) {
 								$(target).find("div.treeclick").trigger('click');
 							}
-							$($t).triggerHandler("jqGridKeyRight", [$t.p.selrow]);
+							$($t).triggerHandler("jqGridKeyRight", [$t.p.selrow, event]);
 							if($.isFunction(o.onRightKey)) {
-								o.onRightKey.call($t, $t.p.selrow);
+								o.onRightKey.call($t, $t.p.selrow, event);
 							}
 						}
 					}
 					//check if enter was pressed on a grid or treegrid node
 					else if( event.keyCode === 13 ){
-						$($t).triggerHandler("jqGridKeyEnter", [$t.p.selrow]);
+						$($t).triggerHandler("jqGridKeyEnter", [$t.p.selrow, event]);
 						if($.isFunction(o.onEnter)) {
-							o.onEnter.call($t, $t.p.selrow);
+							o.onEnter.call($t, $t.p.selrow, event);
 						}
 					} else if(event.keyCode === 32) {
-						$($t).triggerHandler("jqGridKeySpace", [$t.p.selrow]);
+						$($t).triggerHandler("jqGridKeySpace", [$t.p.selrow, event]);
 						if($.isFunction(o.onSpace)) {
-							o.onSpace.call($t, $t.p.selrow);
+							o.onSpace.call($t, $t.p.selrow, event);
 						}
 					}
 				}
