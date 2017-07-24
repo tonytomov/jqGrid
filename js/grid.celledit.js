@@ -136,9 +136,9 @@ $.jgrid.extend({
 				}
 			} else {
 				tmp = cc.html().replace(/\&#160\;/ig,'');
-				$($t).triggerHandler("jqGridSelectCell", [$t.rows[iRow].id, nm, tmp, iRow, iCol]);
-				if ($.isFunction($t.p.onSelectCell)) {
-					$t.p.onSelectCell.call($t, $t.rows[iRow].id,nm,tmp,iRow,iCol);
+				$($t).triggerHandler("jqGridCellSelect", [$t.rows[iRow].id, nm, tmp, iRow, iCol]);
+				if ($.isFunction($t.p.onCellSelect)) {
+					$t.p.onCellSelect.call($t, $t.rows[iRow].id,nm,tmp,iRow,iCol);
 				}
 			}
 			$t.p.iCol = iCol; $t.p.iRow = iRow; $t.p.iRowId = $t.rows[iRow].id;
