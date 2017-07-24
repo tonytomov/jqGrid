@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.1 - 2017-07-19
+* @license Guriddo jqGrid JS - v5.2.1 - 2017-07-24
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5824,9 +5824,9 @@ $.jgrid.extend({
 				}
 			} else {
 				tmp = cc.html().replace(/\&#160\;/ig,'');
-				$($t).triggerHandler("jqGridSelectCell", [$t.rows[iRow].id, nm, tmp, iRow, iCol]);
-				if ($.isFunction($t.p.onSelectCell)) {
-					$t.p.onSelectCell.call($t, $t.rows[iRow].id,nm,tmp,iRow,iCol);
+				$($t).triggerHandler("jqGridCellSelect", [$t.rows[iRow].id, nm, tmp, iRow, iCol]);
+				if ($.isFunction($t.p.onCellSelect)) {
+					$t.p.onCellSelect.call($t, $t.rows[iRow].id,nm,tmp,iRow,iCol);
 				}
 			}
 			$t.p.iCol = iCol; $t.p.iRow = iRow; $t.p.iRowId = $t.rows[iRow].id;
