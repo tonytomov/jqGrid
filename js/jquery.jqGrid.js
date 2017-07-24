@@ -5157,6 +5157,7 @@ $.jgrid.extend({
 				expanded = $t.p.treeReader.expanded_field;
 				//check for arrow keys
 				if(target) {
+					var previd = $t.p.selrow;
 					mind = $t.p._index[$.jgrid.stripPref($t.p.idPrefix, target.id)];
 					if(event.keyCode === 37 || event.keyCode === 38 || event.keyCode === 39 || event.keyCode === 40){
 						// up key
@@ -5174,9 +5175,9 @@ $.jgrid.extend({
 								}
 							}
 							$($t).jqGrid('setSelection', id, true, event);
-							$($t).triggerHandler("jqGridKeyUp", [id, event]);
+							$($t).triggerHandler("jqGridKeyUp", [id, previd, event]);
 							if($.isFunction(o.onUpKey)) {
-								o.onUpKey.call($t, id, event);
+								o.onUpKey.call($t, id, previd, event);
 							}
 							event.preventDefault();
 						}
@@ -5195,9 +5196,9 @@ $.jgrid.extend({
 								}
 							}
 							$($t).jqGrid('setSelection', id, true, event);
-							$($t).triggerHandler("jqGridKeyDown", [id, event]);
+							$($t).triggerHandler("jqGridKeyDown", [id, previd, event]);
 							if($.isFunction(o.onDownKey)) {
-								o.onDownKey.call($t, id, event);
+								o.onDownKey.call($t, id, previd, event);
 							}
 							event.preventDefault();
 						}
