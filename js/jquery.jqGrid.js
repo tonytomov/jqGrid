@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.1 - 2017-07-24
+* @license Guriddo jqGrid JS - v5.2.1 - 2017-07-25
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5727,7 +5727,7 @@ $.jgrid.extend({
 
 //module begin
 $.jgrid.extend({
-	editCell : function (iRow,iCol, ed){
+	editCell : function (iRow,iCol, ed, event){
 		return this.each(function (){
 			var $t = this, nm, tmp,cc, cm,
 			highlight = $(this).jqGrid('getStyleUI',$t.p.styleUI+'.common','highlight', true),
@@ -5811,8 +5811,8 @@ $.jgrid.extend({
 					} //Enter
 					if (e.keyCode === 9)  {
 						if(!$t.grid.hDiv.loading ) {
-							if (e.shiftKey) {$($t).jqGrid("prevCell",iRow,iCol);} //Shift TAb
-							else {$($t).jqGrid("nextCell",iRow,iCol);} //Tab
+							if (e.shiftKey) {$($t).jqGrid("prevCell", iRow, iCol, e);} //Shift TAb
+							else {$($t).jqGrid("nextCell", iRow, iCol, e);} //Tab
 						} else {
 							return false;
 						}
@@ -5825,9 +5825,9 @@ $.jgrid.extend({
 				}
 			} else {
 				tmp = cc.html().replace(/\&#160\;/ig,'');
-				$($t).triggerHandler("jqGridCellSelect", [$t.rows[iRow].id, nm, tmp, iRow, iCol]);
+				$($t).triggerHandler("jqGridCellSelect", [$t.rows[iRow].id, iCol, tmp, event]);
 				if ($.isFunction($t.p.onCellSelect)) {
-					$t.p.onCellSelect.call($t, $t.rows[iRow].id,nm,tmp,iRow,iCol);
+					$t.p.onCellSelect.call($t, $t.rows[iRow].id, iCol, tmp, event);
 				}
 			}
 			$t.p.iCol = iCol; $t.p.iRow = iRow; $t.p.iRowId = $t.rows[iRow].id;
@@ -6084,7 +6084,7 @@ $.jgrid.extend({
 			window.setTimeout(function () { $("#"+$t.p.knv).attr("tabindex","-1").focus();},0);
 		});
 	},
-	nextCell : function (iRow,iCol) {
+	nextCell : function (iRow, iCol, event) {
 		return this.each(function (){
 			var $t = this, nCol=false, i;
 			if (!$t.grid || $t.p.cellEdit !== true) {return;}
@@ -6095,7 +6095,7 @@ $.jgrid.extend({
 				}
 			}
 			if(nCol !== false) {
-				$($t).jqGrid("editCell",iRow,nCol,true);
+				$($t).jqGrid("editCell", iRow, nCol, true, event);
 			} else {
 				if ($t.p.savedRow.length >0) {
 					$($t).jqGrid("saveCell",iRow,iCol);
@@ -6103,7 +6103,7 @@ $.jgrid.extend({
 			}
 		});
 	},
-	prevCell : function (iRow,iCol) {
+	prevCell : function (iRow, iCol, event) {
 		return this.each(function (){
 			var $t = this, nCol=false, i;
 			if (!$t.grid || $t.p.cellEdit !== true) {return;}
@@ -6114,7 +6114,7 @@ $.jgrid.extend({
 				}
 			}
 			if(nCol !== false) {
-				$($t).jqGrid("editCell",iRow,nCol,true);
+				$($t).jqGrid("editCell", iRow, nCol, true, event);
 			} else {
 				if ($t.p.savedRow.length >0) {
 					$($t).jqGrid("saveCell",iRow,iCol);
@@ -6195,32 +6195,32 @@ $.jgrid.extend({
 					case 38:
 						if ($t.p.iRow-1 >0 ) {
 							scrollGrid($t.p.iRow-1,$t.p.iCol,'vu');
-							$($t).jqGrid("editCell",$t.p.iRow-1,$t.p.iCol,false);
+							$($t).jqGrid("editCell",$t.p.iRow-1,$t.p.iCol,false,e);
 						}
 					break;
 					case 40 :
 						if ($t.p.iRow+1 <=  $t.rows.length-1) {
 							scrollGrid($t.p.iRow+1,$t.p.iCol,'vd');
-							$($t).jqGrid("editCell",$t.p.iRow+1,$t.p.iCol,false);
+							$($t).jqGrid("editCell",$t.p.iRow+1,$t.p.iCol,false,e);
 						}
 					break;
 					case 37 :
 						if ($t.p.iCol -1 >=  0) {
 							i = findNextVisible($t.p.iCol-1,'lft');
 							scrollGrid($t.p.iRow, i,'h');
-							$($t).jqGrid("editCell",$t.p.iRow, i,false);
+							$($t).jqGrid("editCell",$t.p.iRow, i,false,e);
 						}
 					break;
 					case 39 :
 						if ($t.p.iCol +1 <=  $t.p.colModel.length-1) {
 							i = findNextVisible($t.p.iCol+1,'rgt');
 							scrollGrid($t.p.iRow,i,'h');
-							$($t).jqGrid("editCell",$t.p.iRow,i,false);
+							$($t).jqGrid("editCell",$t.p.iRow,i,false,e);
 						}
 					break;
 					case 13:
 						if (parseInt($t.p.iCol,10)>=0 && parseInt($t.p.iRow,10)>=0) {
-							$($t).jqGrid("editCell",$t.p.iRow,$t.p.iCol,true);
+							$($t).jqGrid("editCell",$t.p.iRow,$t.p.iCol,true,e);
 						}
 					break;
 					default :
