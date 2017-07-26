@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.1 - 2017-07-25
+* @license Guriddo jqGrid JS - v5.2.1 - 2017-07-26
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -12569,9 +12569,9 @@ $.jgrid.extend({
 				for(k=0;k<$t.p.savedRow.length;k++) {
 					if( String($t.p.savedRow[k].id) === String(oldRowId)) {fr = k; break;}
 				}
-				if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
 				$($t).triggerHandler("jqGridInlineAfterSaveRow", [rowid, resp, tmp, o]);
 				if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, resp, tmp, o); }
+				if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
 				success = true;
 				$(ind).removeClass("jqgrid-new-row").off("keydown");
 			} else {
@@ -12616,9 +12616,9 @@ $.jgrid.extend({
 								for(k=0;k<$t.p.savedRow.length;k++) {
 									if( String($t.p.savedRow[k].id) === String(rowid)) {fr = k; break;}
 								}
-								if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
 								$($t).triggerHandler("jqGridInlineAfterSaveRow", [rowid, res, tmp, o]);
 								if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, res, tmp, o); }
+								if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
 								success = true;
 								$(ind).removeClass("jqgrid-new-row").off("keydown");
 							} else {
@@ -13404,9 +13404,10 @@ $.jgrid.extend({
 					accept: function(d) {
 						if (!$(d).hasClass('jqgrow')) { return d;}
 						tid = $(d).closest("table.ui-jqgrid-btable");
+						var target = $(this).find('table.ui-jqgrid-btable:first')[0];
 						if(tid.length > 0 && $.data(tid[0],"dnd") !== undefined) {
 							var cn = $.data(tid[0],"dnd").connectWith;
-							return $.inArray('#'+$.jgrid.jqID(this.id),cn) !== -1 ? true : false;
+							return $.inArray('#'+$.jgrid.jqID(target.id),cn) !== -1 ? true : false;
 						}
 						return false;
 					},
@@ -13414,9 +13415,10 @@ $.jgrid.extend({
 						if (!$(ui.draggable).hasClass('jqgrow')) { return; }
 						var accept = $(ui.draggable).attr("id");
 						var getdata = ui.draggable.parent().parent().jqGrid('getRowData',accept);
+						var target = $(this).find('table.ui-jqgrid-btable:first')[0];
 						if(!opts.dropbyname) {
 							var j =0, tmpdata = {}, nm, key;
-							var dropmodel = $("#"+$.jgrid.jqID(this.id)).jqGrid('getGridParam','colModel');
+							var dropmodel = $("#"+$.jgrid.jqID(target.id)).jqGrid('getGridParam','colModel');
 							try {
 								for (key in getdata) {
 									if (getdata.hasOwnProperty(key)) {
@@ -13436,23 +13438,23 @@ $.jgrid.extend({
 						if($.data(tid[0],"dnd").beforedrop && $.isFunction($.data(tid[0],"dnd").beforedrop) ) {
 							//parameters to this callback - event, element, data to be inserted, sender, reciever
 							// should return object which will be inserted into the reciever
-							var datatoinsert = $.data(tid[0],"dnd").beforedrop.call(this,ev,ui,getdata,$(tid[0]),$(this));
+							var datatoinsert = $.data(tid[0],"dnd").beforedrop.call(target,ev,ui,getdata,$(tid[0]),$(target));
 							if (datatoinsert !== undefined && datatoinsert !== null && typeof datatoinsert === "object") { getdata = datatoinsert; }
 						}
 						if(ui.helper.dropped) {
 							var grid;
 							if(opts.autoid) {
 								if($.isFunction(opts.autoid)) {
-									grid = opts.autoid.call(this,getdata);
+									grid = opts.autoid.call(target,getdata);
 								} else {
 									grid = Math.ceil(Math.random()*1000);
 									grid = opts.autoidprefix+grid;
 								}
 							}
 							// NULL is interpreted as undefined while null as object
-							$("#"+$.jgrid.jqID(this.id)).jqGrid('addRowData',grid,getdata,opts.droppos);
+							$("#"+$.jgrid.jqID(target.id)).jqGrid('addRowData',grid,getdata,opts.droppos);
 						}
-						if(opts.ondrop && $.isFunction(opts.ondrop) ) { opts.ondrop.call(this,ev,ui, getdata); }
+						if(opts.ondrop && $.isFunction(opts.ondrop) ) { opts.ondrop.call(target,ev,ui, getdata); }
 					}}, opts.drop_opts || {});
 			},
 			"onstart" : null,
@@ -13461,7 +13463,8 @@ $.jgrid.extend({
 			"ondrop" : null,
 			"drop_opts" : {
 				"activeClass": "ui-state-active",
-				"hoverClass": "ui-state-hover"
+				"hoverClass": "ui-state-hover",
+				"tolerance": "intersect"
 			},
 			"drag_opts" : {
 				"revert": "invalid",
@@ -13488,7 +13491,7 @@ $.jgrid.extend({
 		$t.p.jqgdnd = true;
 		for (i=0;i<opts.connectWith.length;i++){
 			cn =opts.connectWith[i];
-			$(cn).droppable($.isFunction(opts.drop) ? opts.drop.call($($t),opts) : opts.drop);
+			$(cn).closest('.ui-jqgrid-bdiv').droppable($.isFunction(opts.drop) ? opts.drop.call($($t),opts) : opts.drop);
 		}
 		});
 	},
