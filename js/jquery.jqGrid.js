@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.1 - 2017-08-08
+* @license Guriddo jqGrid JS - v5.2.1 - 2017-08-14
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -12271,6 +12271,8 @@ $.jgrid.extend({
 		o = $.extend(true, {
 			keys : false,
 			keyevent : "keydown",
+			onEnter : null,
+			onEscape : null,
 			oneditfunc: null,
 			successfunc: null,
 			url: null,
@@ -12358,6 +12360,10 @@ $.jgrid.extend({
 					if(o.keys===true) {
 						$(ind).on( o.keyevent ,function(e) {
 							if (e.keyCode === 27) {
+								if($.isFunction( o.onEscape )) {
+									o.onEscape.call($t, rowid, o, e);
+									return true;
+								}
 								$($t).jqGrid("restoreRow",rowid, o);
 								if($t.p.inlineNav) {
 									try {
@@ -12367,6 +12373,10 @@ $.jgrid.extend({
 								return false;
 							}
 							if (e.keyCode === 13) {
+								if($.isFunction( o.onEnter )) {
+									o.onEnter.call($t, rowid, o, e);
+									return true;
+								}
 								var ta = e.target;
 								if(ta.tagName === 'TEXTAREA') { return true; }
 								if( $($t).jqGrid("saveRow", rowid, o ) ) {
