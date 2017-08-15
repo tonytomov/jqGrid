@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.1 - 2017-08-14
+* @license Guriddo jqGrid JS - v5.2.1 - 2017-08-15
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1340,7 +1340,8 @@ $.fn.jqGrid = function( pin ) {
 			restoreCellonFail : true,
 			colFilters : {},
 			colMenu : false,
-			colMenuCustom : {}
+			colMenuCustom : {},
+			colMenuDragDone : null
 		}, $.jgrid.defaults , pin );
 		if (localData !== undefined) {
 			p.data = localData;
@@ -3123,6 +3124,9 @@ $.fn.jqGrid = function( pin ) {
 					cols.splice(ui.endindex, 0, ui.startindex);
 					$(ts).jqGrid("destroyFrozenColumns");
 					$(ts).jqGrid("remapColumns", cols, true);
+					if($.isFunction(ts.p.colMenuDragDone)) {
+						ts.p.colMenuDragDone.call( ts, cols);
+					}
 					$(ts).jqGrid("setFrozenColumns");
 					for(i=0;i<len;i++) {
 						cols[i] = i;
