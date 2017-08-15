@@ -1345,7 +1345,8 @@ $.fn.jqGrid = function( pin ) {
 			restoreCellonFail : true,
 			colFilters : {},
 			colMenu : false,
-			colMenuCustom : {}
+			colMenuCustom : {},
+			colMenuDragDone : null
 		}, $.jgrid.defaults , pin );
 		if (localData !== undefined) {
 			p.data = localData;
@@ -3128,6 +3129,9 @@ $.fn.jqGrid = function( pin ) {
 					cols.splice(ui.endindex, 0, ui.startindex);
 					$(ts).jqGrid("destroyFrozenColumns");
 					$(ts).jqGrid("remapColumns", cols, true);
+					if($.isFunction(ts.p.colMenuDragDone)) {
+						ts.p.colMenuDragDone.call( ts, cols);
+					}
 					$(ts).jqGrid("setFrozenColumns");
 					for(i=0;i<len;i++) {
 						cols[i] = i;
