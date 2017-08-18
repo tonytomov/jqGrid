@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.1 - 2017-08-17
+* @license Guriddo jqGrid JS - v5.2.1 - 2017-08-18
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5284,7 +5284,7 @@ $.jgrid.extend({
 					loadDiv.toggle( sh );
 					break;
 				case "block":
-					$("#lui_"+$.jgrid.jqID(this.p.id)).toggle( sh );
+					$("#lui_"+$.jgrid.jqID(this.p.id)).css(sh ? {top: 0,left:0, height: $("#gbox_" + $.jgrid.jqID(this.p.id) ).height(), width:$("#gbox_" + $.jgrid.jqID(this.p.id)).width(), "z-index":10000, position:"absolute"} : {}).toggle( sh );
 					loadDiv.toggle( sh );
 					break;
 			}
@@ -6322,6 +6322,7 @@ $.extend($.jgrid,{
 			if(o.gb !== '') {
 				try {$(".jqgrid-overlay:first",o.gb).hide();} catch (e){}
 			}
+			try { $(".jqgrid-overlay-modal").hide(); } catch (e) {}
 			$(selector).hide().attr("aria-hidden","true");
 		}
 		if( o.removemodal ) {
@@ -6464,6 +6465,14 @@ $.extend($.jgrid,{
 			jqm : true,
 			jqM : true
 		}, o || {});
+		var style="";
+		if(o.gbox) {
+			var grid = $("#"+o.gbox.substring(6))[0];
+			try {
+				style = $(grid).jqGrid('getStyleUI',  grid.p.styleUI+'.common','overlay', false, 'jqgrid-overlay-modal');
+				o.overlayClass = $(grid).jqGrid('getStyleUI',  grid.p.styleUI+'.common','overlay', true);
+			} catch (em){}
+		}
 		if(o.focusField === undefined) {
 			o.focusField = 0;
 		}
@@ -6479,8 +6488,16 @@ $.extend($.jgrid,{
 			else {$(selector).attr("aria-hidden","false").jqmShow();}
 		} else {
 			if(o.gbox !== '') {
-				$(".jqgrid-overlay:first",o.gbox).show();
-				$(selector).data("gbox",o.gbox);
+				var zInd = parseInt($(selector).css("z-index")) - 1;
+				if(o.modal) {
+					if(!$(".jqgrid-overlay-modal")[0] ) {
+						$('body').prepend("<div "+style+"></div>" );
+					}
+					$(".jqgrid-overlay-modal").css("z-index",zInd).show();
+				} else {
+					$(".jqgrid-overlay:first",o.gbox).css("z-index",zInd).show();
+					$(selector).data("gbox",o.gbox);
+				}
 			}
 			$(selector).show().attr("aria-hidden","false");
 			if(o.focusField >= 0) {
@@ -8428,7 +8445,7 @@ $.jgrid.extend({
 					showFrm = p.beforeShowSearch.call($t,_filter);
 				}
 				if(showFrm) {
-					$.jgrid.viewModal("#"+$.jgrid.jqID(IDs.themodal),{gbox:"#gbox_"+$.jgrid.jqID(fid),jqm:p.jqModal, modal:p.modal, overlay: p.overlay, toTop: p.toTop});
+					$.jgrid.viewModal("#"+$.jgrid.jqID(IDs.themodal),{gbox:"#gbox_"+$.jgrid.jqID( $t.p.id ),jqm:p.jqModal, modal:p.modal, overlay: p.overlay, toTop: p.toTop});
 					$($t).triggerHandler("jqGridFilterAfterShow", [_filter]);
 					if($.isFunction(p.afterShowSearch)) {
 						p.afterShowSearch.call($t, _filter);
@@ -8552,7 +8569,7 @@ $.jgrid.extend({
 				}
 				p.gbox = "#gbox_"+fid;
 				if (p.layer) {
-					$.jgrid.createModal(IDs ,fil,p,"#gview_"+$.jgrid.jqID($t.p.id),$("#gbox_"+$.jgrid.jqID($t.p.id))[0], "#"+$.jgrid.jqID(p.layer), {position: "relative"});
+					$.jgrid.createModal(IDs ,fil,p,"#gview_"+$.jgrid.jqID($t.p.id),$("#gbox_"+$.jgrid.jqID($t.p.id))[0], (typeof p.layer ==="string" ? "#"+$.jgrid.jqID(p.layer) : p.layer), (typeof p.layer ==="string" ?  {position: "relative"} :{} ) );
 				} else {
 					$.jgrid.createModal(IDs ,fil,p,"#gview_"+$.jgrid.jqID($t.p.id),$("#gbox_"+$.jgrid.jqID($t.p.id))[0]);
 				}
