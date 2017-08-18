@@ -438,7 +438,6 @@ div.tablediv > .table-bordered {
 }
 .ui-jqgrid .jqgrid-overlay { 
 	display:none;
-	z-index:100;
 }
 /* IE * html .jqgrid-overlay {width: expression(this.parentNode.offsetWidth+'px');height: expression(this.parentNode.offsetHeight+'px');} */
 * .jqgrid-overlay iframe {
@@ -520,6 +519,9 @@ div.tablediv > .table-bordered {
 }
 .ui-jqdialog>.ui-resizable-se { }
 .ui-jqgrid>.ui-resizable-se { }
+.jqgrid-overlay-modal {
+	display : none;
+}
 /* end Modal window*/
 /* Form edit */
 .ui-jqdialog-content .FormGrid { 

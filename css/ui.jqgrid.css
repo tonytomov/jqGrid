@@ -139,7 +139,7 @@
 .ui-jqgrid .ui-th-subgrid {height:20px;}
 /* loading */
 .ui-jqgrid .loading {position: absolute; top: 45%;left: 45%;width: auto;z-index:101;padding: 6px; margin: 5px;text-align: center;font-weight: bold;display: none;border-width: 2px !important; font-size:11px;}
-.ui-jqgrid .jqgrid-overlay {display:none;z-index:100;}
+.ui-jqgrid .jqgrid-overlay {display:none;}
 /* IE * html .jqgrid-overlay {width: expression(this.parentNode.offsetWidth+'px');height: expression(this.parentNode.offsetHeight+'px');} */
 * .jqgrid-overlay iframe {position:absolute;top:0;left:0;z-index:-1;}
 /* IE width: expression(this.parentNode.offsetWidth+'px');height: expression(this.parentNode.offsetHeight+'px');}*/
@@ -159,6 +159,7 @@
 .ui-jqdialog .ui-jqconfirm {padding: .4em 1em; border-width:3px;position:absolute;bottom:10px;right:10px;overflow:visible;display:none;height:80px;width:220px;text-align:center;}
 .ui-jqdialog>.ui-resizable-se { bottom: -3px; right: -3px}
 .ui-jqgrid>.ui-resizable-se { bottom: -3px; right: -3px }
+.jqgrid-overlay-modal {	display : none; }
 /* end Modal window*/
 /* Form edit */
 .ui-jqdialog-content .FormGrid {margin: 0; overflow:auto;position:relative;}
