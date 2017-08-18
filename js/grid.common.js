@@ -65,6 +65,7 @@ $.extend($.jgrid,{
 			if(o.gb !== '') {
 				try {$(".jqgrid-overlay:first",o.gb).hide();} catch (e){}
 			}
+			try { $(".jqgrid-overlay-modal").hide(); } catch (e) {}
 			$(selector).hide().attr("aria-hidden","true");
 		}
 		if( o.removemodal ) {
@@ -207,6 +208,14 @@ $.extend($.jgrid,{
 			jqm : true,
 			jqM : true
 		}, o || {});
+		var style="";
+		if(o.gbox) {
+			var grid = $("#"+o.gbox.substring(6))[0];
+			try {
+				style = $(grid).jqGrid('getStyleUI',  grid.p.styleUI+'.common','overlay', false, 'jqgrid-overlay-modal');
+				o.overlayClass = $(grid).jqGrid('getStyleUI',  grid.p.styleUI+'.common','overlay', true);
+			} catch (em){}
+		}
 		if(o.focusField === undefined) {
 			o.focusField = 0;
 		}
@@ -222,8 +231,16 @@ $.extend($.jgrid,{
 			else {$(selector).attr("aria-hidden","false").jqmShow();}
 		} else {
 			if(o.gbox !== '') {
-				$(".jqgrid-overlay:first",o.gbox).show();
-				$(selector).data("gbox",o.gbox);
+				var zInd = parseInt($(selector).css("z-index")) - 1;
+				if(o.modal) {
+					if(!$(".jqgrid-overlay-modal")[0] ) {
+						$('body').prepend("<div "+style+"></div>" );
+					}
+					$(".jqgrid-overlay-modal").css("z-index",zInd).show();
+				} else {
+					$(".jqgrid-overlay:first",o.gbox).css("z-index",zInd).show();
+					$(selector).data("gbox",o.gbox);
+				}
 			}
 			$(selector).show().attr("aria-hidden","false");
 			if(o.focusField >= 0) {
