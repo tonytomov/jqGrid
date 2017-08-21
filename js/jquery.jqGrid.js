@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.1 - 2017-08-18
+* @license Guriddo jqGrid JS - v5.2.1 - 2017-08-21
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -7070,7 +7070,7 @@ $.fn.jqFilter = function( arg ) {
 		addrule : "Add rule",
 		delgroup : "Delete group",
 		delrule : "Delete rule",
-		autoencode : false
+		autoencode : false,
 	}, $.jgrid.filter, arg || {});
 	return this.each( function() {
 		if (this.filter) {return;}
@@ -7751,13 +7751,15 @@ $.extend($.fn.jqFilter,{
 
 	},
 	getParameter : function (param) {
+		var ret = null;
 		if(param !== undefined) {
-			if (this.p.hasOwnProperty(param) ) {
-				return this.p[param];
-			}
+			this.each(function(i,n){
+				if (n.p.hasOwnProperty(param) ) {
+					ret = n.p[param];
+				}
+			});
 		}
-		return this.p;
-	},
+		return ret ? ret : this[0].p;	},
 	resetFilter: function() {
 		return this.each(function(){
 			this.resetFilter();
@@ -8416,7 +8418,8 @@ $.jgrid.extend({
 			layer: null,
 			splitSelect : ",",
 			groupOpSelect : "OR",
-			operands : { "eq" :"=", "ne":"<>","lt":"<","le":"<=","gt":">","ge":">=","bw":"LIKE","bn":"NOT LIKE","in":"IN","ni":"NOT IN","ew":"LIKE","en":"NOT LIKE","cn":"LIKE","nc":"NOT LIKE","nu":"IS NULL","nn":"ISNOT NULL"}
+			operands : { "eq" :"=", "ne":"<>","lt":"<","le":"<=","gt":">","ge":">=","bw":"LIKE","bn":"NOT LIKE","in":"IN","ni":"NOT IN","ew":"LIKE","en":"NOT LIKE","cn":"LIKE","nc":"NOT LIKE","nu":"IS NULL","nn":"ISNOT NULL"},
+			buttons :[]
 		}, regional,  p || {});
 		return this.each(function() {
 			var $t = this;
@@ -8469,6 +8472,34 @@ $.jgrid.extend({
 				if(p.showQuery) {
 					bQ ="<a id='"+fid+"_query' class='fm-button " + common.button + " fm-button-icon-left'><span class='" + common.icon_base + " " +classes.icon_query + "'></span>Query</a>";
 				}
+				$.each(p.buttons, function(i,n) {
+					// side, position, text, icon, click, id, index
+					if(!n.id) {
+						n.id = $.jgrid.randId();
+					}
+					if(!n.side) {
+						n.side = 'right';
+					}
+					if(!n.position) {
+						n.position = 'last';
+					}
+					var icon = n.icon ? " fm-button-icon-"+n.side+"'><span class='" + common.icon_base + " " +n.icon + "'></span>" : "'>";
+					var str = "<a  data-index='"+i+"' id='"+n.id+"' class='fm-button " + common.button +icon+n.text+"</a>";
+					if(n.side === 'right') {
+						if(n.position === "last" ) {
+							bS = bS + str;
+						} else {
+							bS = str + bS;
+						}
+					} else  {
+						if(n.position === "last" ) {
+							bC = bC + str;
+						} else {
+							bC = str + bC;
+						}
+						
+					}
+				});
 				if(!p.columns.length) {
 					$.each(columns, function(i,n){
 						if(!n.label) {
@@ -8551,6 +8582,14 @@ $.jgrid.extend({
 					id: $t.p.id
 				});
 				fil.append( bt );
+				$("#"+fid+"_2").find("[data-index]").each(function(){
+					var index = parseInt($(this).attr('data-index'),10);
+					if(index >=0 ) {
+						$(this).on('click', function(e) {
+							p.buttons[index].click.call($t, $("#"+fid), p, e);
+						});
+					}
+				});
 				if(found && p.tmplFilters && p.tmplFilters.length) {
 					$(".ui-template", fil).on('change', function(){
 						var curtempl = $(this).val();
