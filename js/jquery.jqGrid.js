@@ -1341,7 +1341,12 @@ $.fn.jqGrid = function( pin ) {
 			colFilters : {},
 			colMenu : false,
 			colMenuCustom : {},
-			colMenuDragDone : null
+			colMenuDragDone : null,
+			// tree pagging
+			treeGrid_bigData: false,
+			treeGrid_rootParams: {otherData:{}},
+			treeGrid_beforeRequest: null,
+			treeGrid_afterLoadComplete: null
 		}, $.jgrid.defaults , pin );
 		if (localData !== undefined) {
 			p.data = localData;
@@ -1818,6 +1823,60 @@ $.fn.jqGrid = function( pin ) {
 			return '<tr role="row" id="' + id + '" tabindex="' + tabindex + '" class="' + classes + '"' +
 				(style === '' ? '' : ' style="' + style + '"') + restAttr + '>';
 		},
+		//bvn13
+		treeGrid_beforeRequest = function() {
+			if (ts.p.treeGrid && ts.p.treeGrid_bigData) {
+				if (	ts.p.postData.nodeid !== undefined
+					&& 	typeof(ts.p.postData.nodeid) === 'string' 
+					&&	(
+							ts.p.postData.nodeid !== ""
+						||	parseInt(ts.p.postData.nodeid,10) > 0
+						)
+				) {
+                    ts.p.postData.rows = 10000;
+                    ts.p.postData.page = 1;
+                    ts.p.treeGrid_rootParams.otherData.nodeid = ts.p.postData.nodeid;
+				}
+			}
+		},
+		treeGrid_afterLoadComplete = function() {
+			if (ts.p.treeGrid && ts.p.treeGrid_bigData) {
+				if (	ts.p.treeGrid_rootParams.otherData.nodeid !== undefined 
+					&& 	typeof(ts.p.treeGrid_rootParams.otherData.nodeid) === 'string' 
+					&&	(
+							ts.p.treeGrid_rootParams.otherData.nodeid !== ""
+						||
+                            parseInt(ts.p.treeGrid_rootParams.otherData.nodeid,10) > 0
+						)
+				) {
+					if (ts.p.treeGrid_rootParams !== undefined && ts.p.treeGrid_rootParams != null) {
+						ts.p.page = ts.p.treeGrid_rootParams.page;
+						ts.p.lastpage = ts.p.treeGrid_rootParams.lastpage;
+
+						ts.p.postData.rows = ts.p.treeGrid_rootParams.postData.rows;
+                        ts.p.postData.totalrows = ts.p.treeGrid_rootParams.postData.totalrows;
+
+                        ts.p.treeGrid_rootParams.otherData.nodeid = "";
+                        ts.updatepager(false,true);
+					}
+				} else {
+					ts.p.treeGrid_rootParams = {
+						page : ts.p.page,
+						lastpage : ts.p.lastpage,
+						postData : {
+                            rows: ts.p.postData.rows,
+                            totalrows: ts.p.postData.totalrows
+                        },
+                        rowNum : ts.p.rowNum,
+                        rowTotal : ts.p.rowTotal,
+                        otherData : {
+                            nodeid : ""
+                        }
+					};
+				}
+			}
+		},
+		//-bvn13
 		addXmlData = function (xml, rcnt, more, adjust) {
 			var startReq = new Date(),
 			locdata = (ts.p.datatype !== "local" && ts.p.loadonce) || ts.p.datatype === "xmlstring",
@@ -2608,6 +2667,11 @@ $.fn.jqGrid = function( pin ) {
 					bfr = ts.p.beforeRequest.call(ts);
 					if (bfr === false || bfr === 'stop') { return; }
 				}
+				//bvn
+				if ($.isFunction(ts.treeGrid_beforeRequest)) {
+					ts.treeGrid_beforeRequest.call(ts);
+				}
+
 				dt = ts.p.datatype.toLowerCase();
 				switch(dt)
 				{
@@ -2631,9 +2695,17 @@ $.fn.jqGrid = function( pin ) {
 							if(lc) { lc.call(ts,data); }
 							$(ts).triggerHandler("jqGridAfterLoadComplete", [data]);
 							if (pvis) { ts.grid.populateVisible(); }
-							if( ts.p.loadonce || ts.p.treeGrid) {ts.p.datatype = "local";}
+							if (!ts.p.treeGrid_bigData) {
+								if( ts.p.loadonce || ts.p.treeGrid) {ts.p.datatype = "local";}
+							} else {
+								if( ts.p.loadonce) {ts.p.datatype = "local";} //bvn13
+							}
 							data=null;
 							if (npage === 1) { endReq(); }
+							// bvn
+							if ($.isFunction(ts.treeGrid_afterLoadComplete)) {
+								ts.treeGrid_afterLoadComplete.call(ts);
+							}
 						},
 						error:function(xhr,st,err){
 							$(ts).triggerHandler("jqGridLoadError", [xhr,st,err]);
@@ -4193,6 +4265,8 @@ $.fn.jqGrid = function( pin ) {
 		ts.addXmlData = function(d) {addXmlData( d );};
 		ts.addJSONData = function(d) {addJSONData( d );};
 		ts.addLocalData = function(d) { return addLocalData( d );};
+		ts.treeGrid_beforeRequest = function() { treeGrid_beforeRequest(); }; //bvn13
+		ts.treeGrid_afterLoadComplete = function() {treeGrid_afterLoadComplete(); };
 		this.grid.cols = this.rows[0].cells;
 		if ($.isFunction( ts.p.onInitGrid )) { ts.p.onInitGrid.call(ts); }
 		populate();
@@ -14604,10 +14678,17 @@ $.jgrid.extend({
 			if(!$t.p.treedatatype ) {$.extend($t.p,{treedatatype: $t.p.datatype});}
 			if($t.p.loadonce) { $t.p.treedatatype = 'local'; }
 			$t.p.subGrid = false;$t.p.altRows =false;
-			$t.p.pgbuttons = false;$t.p.pginput = false;
+			//bvn
+			if (!$t.p.treeGrid_bigData) { 
+				$t.p.pgbuttons = false;
+				$t.p.pginput = false;
+				$t.p.rowList = [];
+			}
 			$t.p.gridview =  true;
-			if($t.p.rowTotal === null ) { $t.p.rowNum = 10000; }
-			$t.p.multiselect = false;$t.p.rowList = [];
+			//bvn
+			if($t.p.rowTotal === null && !$t.p.treeGrid_bigData ) { $t.p.rowNum = 10000; }
+			$t.p.multiselect = false;
+			// $t.p.rowList = [];
 			$t.p.expColInd = 0;
 			pico = classes.icon_plus;
 			if($t.p.styleUI === 'jQueryUI') {
@@ -14663,6 +14744,10 @@ $.jgrid.extend({
 	expandRow: function (record){
 		this.each(function(){
 			var $t = this;
+			//bvn
+			if (!$t.p.treeGrid_bigData) {
+				var $rootpages = $t.p.lastpage;
+			}
 			if(!$t.grid || !$t.p.treeGrid) {return;}
 			var childern = $($t).jqGrid("getNodeChildren",record),
 			//if ($($t).jqGrid("isVisibleNode",record)) {
@@ -14686,6 +14771,10 @@ $.jgrid.extend({
 			$($t).triggerHandler("jqGridAfterExpandTreeGridRow", [rowid, record, childern]);
 			if($.isFunction($t.p.afterExpandTreeGridRow)) {
 				$t.p.afterExpandTreeGridRow.call($t, rowid, record, childern);
+			}
+			//bvn
+			if (!$t.p.treeGrid_bigData) {
+				$t.p.lastpage = $rootpages;
 			}
 			//}
 		});
