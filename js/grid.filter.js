@@ -73,7 +73,8 @@ $.fn.jqFilter = function( arg ) {
 		addrule : "Add rule",
 		delgroup : "Delete group",
 		delrule : "Delete rule",
-		autoencode : false
+		autoencode : false,
+		templates : {}
 	}, $.jgrid.filter, arg || {});
 	return this.each( function() {
 		if (this.filter) {return;}
@@ -1542,6 +1543,7 @@ $.jgrid.extend({
 					delgroup : p.delgroup,
 					delrule : p.delrule,
 					autoencode : $t.p.autoencode,
+					templates : {names : p.tmplNames, filters: p.tmplFilters},
 					onChange : function() {
 						if(this.p.showQuery) {
 							$('.query',this).html(this.toUserFriendlyString());
