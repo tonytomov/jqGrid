@@ -755,13 +755,15 @@ $.extend($.fn.jqFilter,{
 
 	},
 	getParameter : function (param) {
+		var ret = null;
 		if(param !== undefined) {
-			if (this.p.hasOwnProperty(param) ) {
-				return this.p[param];
-			}
+			this.each(function(i,n){
+				if (n.p.hasOwnProperty(param) ) {
+					ret = n.p[param];
+				}
+			});
 		}
-		return this.p;
-	},
+		return ret ? ret : this[0].p;	},
 	resetFilter: function() {
 		return this.each(function(){
 			this.resetFilter();
