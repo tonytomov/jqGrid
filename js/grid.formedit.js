@@ -73,7 +73,8 @@ $.jgrid.extend({
 			form: 'edit',
 			template : null,
 			focusField : true,
-			editselected : false
+			editselected : false,
+			html5Check : false
 		}, regional, p || {});
 		rp_ge[$(this)[0].p.id] = p;
 		return this.each(function(){
@@ -142,12 +143,6 @@ $.jgrid.extend({
 								postdata[this.name]= $(this).val();
 								postdata[this.name] = postdata[this.name] ? postdata[this.name].join(",") : "";
 							break;
-							case "password":
-							case "text":
-							case "textarea":
-							case "button":
-								postdata[this.name] = $(this).val();
-							break;
 							case "radio" :
 								if(a2.hasOwnProperty(this.name)) {
 									return true;
@@ -155,6 +150,8 @@ $.jgrid.extend({
 									a2[this.name] = ($(this).attr("offval") === undefined) ? "off" : $(this).attr("offval");
 								}
 								break;
+							default:
+								postdata[this.name] = $(this).val();
 						}
 						if($t.p.autoencode) {
 							postdata[this.name] = $.jgrid.htmlEncode(postdata[this.name]);
@@ -212,8 +209,12 @@ $.jgrid.extend({
 						if(rowid === "_empty" && opt.defaultValue ) {
 							tmp = $.isFunction(opt.defaultValue) ? opt.defaultValue.call($t) : opt.defaultValue;
 						}
-						if(!this.edittype) {this.edittype = "text";}
-						if($t.p.autoencode) {tmp = $.jgrid.htmlDecode(tmp);}
+						if(!this.edittype) {
+							this.edittype = "text";
+						}
+						if($t.p.autoencode) {
+							tmp = $.jgrid.htmlDecode(tmp);
+						}
 						elc = $.jgrid.createEl.call($t,this.edittype,opt,tmp,false,$.extend({},$.jgrid.ajaxOptions,obj.p.ajaxSelectOptions || {}));
 						//if(tmp === "" && this.edittype == "checkbox") {tmp = $(elc).attr("offval");}
 						//if(tmp === "" && this.edittype == "select") {tmp = $("option:eq(0)",elc).text();}
@@ -231,7 +232,10 @@ $.jgrid.extend({
 							}
 						}
 						$(elc).addClass("FormElement");
-						if( $.inArray(this.edittype, ['text','textarea','password','select']) > -1) {
+						if( $.inArray(this.edittype, 
+							['text','textarea','password','select', 
+							'color', 'date', 'datetime', 'datetime-local','email','month',
+							'number','range', 'search', 'tel', 'time', 'url','week'] ) > -1) {
 							$(elc).addClass( styles.inputClass );
 						}
 						ffld = true;
@@ -357,14 +361,6 @@ $.jgrid.extend({
 						}
 						nm = $.jgrid.jqID(nm);
 						switch (cm[i].edittype) {
-							case "password":
-							case "text":
-							case "button" :
-							case "image":
-							case "textarea":
-								if(tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length===1 && tmp.charCodeAt(0)===160) ) {tmp='';}
-								$("#"+nm,fmid).val(tmp);
-								break;
 							case "select":
 								var opv = tmp.split(",");
 								opv = $.map(opv,function(n){return $.trim(n);});
@@ -427,6 +423,9 @@ $.jgrid.extend({
 									else {$.jgrid.info_dialog(errors.errcap,e.message,$.rp_ge[$(this)[0]].p.bClose, {styleUI : rp_ge[$(this)[0]].p.styleUI });}
 								}
 								break;
+							default :
+								if(tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length===1 && tmp.charCodeAt(0)===160) ) {tmp='';}
+								$("#"+nm,fmid).val(tmp);
 						}
 						cnt++;
 					}
@@ -456,6 +455,11 @@ $.jgrid.extend({
 				if($.isFunction(rp_ge[$t.p.id].beforeCheckValues)) {
 					retvals = rp_ge[$t.p.id].beforeCheckValues.call($t, postdata, $(frmgr),frmoper);
 					if(retvals && typeof retvals === 'object') {postdata = retvals;}
+				}
+				if(rp_ge[$t.p.id].html5Check) {
+					if( !$.jgrid.validateForm(frm[0]) ) {
+						return false;
+					}
 				}
 				for( key in postdata ){
 					if(postdata.hasOwnProperty(key)) {
