@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.1 - 2017-08-21
+* @license Guriddo jqGrid JS - v5.2.1 - 2017-08-22
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1341,7 +1341,7 @@ $.fn.jqGrid = function( pin ) {
 			colFilters : {},
 			colMenu : false,
 			colMenuCustom : {},
-			colMenuDragDone : null,
+			colMenuColumnDone : null,
 			// tree pagging
 			treeGrid_bigData: false,
 			treeGrid_rootParams: {otherData:{}},
@@ -3196,8 +3196,8 @@ $.fn.jqGrid = function( pin ) {
 					cols.splice(ui.endindex, 0, ui.startindex);
 					$(ts).jqGrid("destroyFrozenColumns");
 					$(ts).jqGrid("remapColumns", cols, true);
-					if($.isFunction(ts.p.colMenuDragDone)) {
-						ts.p.colMenuDragDone.call( ts, cols);
+					if($.isFunction(ts.p.colMenuColumnDone)) {
+						ts.p.colMenuColumnDone.call( ts, cols, null, null);
 					}
 					$(ts).jqGrid("setFrozenColumns");
 					for(i=0;i<len;i++) {
@@ -3206,7 +3206,7 @@ $.fn.jqGrid = function( pin ) {
 				});			
 			} // NO jQuery UI 
 			$("#col_menu > li > a").on("click", function(e) {
-				var checked;
+				var checked, col_name;
 				if($(e.target).hasClass('notclick')) {
 					return;
 				}
@@ -3216,11 +3216,17 @@ $.fn.jqGrid = function( pin ) {
 					checked = !$("input", this).is(":checked");
 					$("input", this).prop("checked",checked);
 				}
+				
+				col_name = $("input", this).attr('name');
+				
+				if($.isFunction(ts.p.colMenuColumnDone)) {
+					ts.p.colMenuColumnDone.call( ts, cols, col_name, checked);
+				}
 				if(!checked) {
-					$(ts).jqGrid('hideCol', $("input", this).attr('name'));
+					$(ts).jqGrid('hideCol', col_name);
 					$(this).parent().attr("draggable","false");
 				} else {
-					$(ts).jqGrid('showCol', $("input", this).attr('name'));
+					$(ts).jqGrid('showCol', col_name );
 					$(this).parent().attr("draggable","true");
 				}
 			}).hover(function(){
