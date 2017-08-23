@@ -74,7 +74,8 @@ $.jgrid.extend({
 			template : null,
 			focusField : true,
 			editselected : false,
-			html5Check : false
+			html5Check : false,
+			buttons : []
 		}, regional, p || {});
 		rp_ge[$(this)[0].p.id] = p;
 		return this.each(function(){
@@ -832,8 +833,9 @@ $.jgrid.extend({
 			var bP = "<a id='"+bp+"' class='fm-button " + commonstyle.button + "'><span class='" + commonstyle.icon_base + " " + styles.icon_prev+ "'></span></a>",
 			bN = "<a id='"+bn+"' class='fm-button " + commonstyle.button + "'><span class='" + commonstyle.icon_base + " " + styles.icon_next+ "'></span></a>",
 			bS  ="<a id='sData' class='fm-button " + commonstyle.button + "'>"+p.bSubmit+"</a>",
-			bC  ="<a id='cData' class='fm-button " + commonstyle.button + "'>"+p.bCancel+"</a>";
-			var bt = "<table style='height:auto' class='EditTable ui-common-table' id='"+frmtborg+"_2'><tbody><tr><td colspan='2'><hr class='"+commonstyle.content+"' style='margin:1px'/></td></tr><tr id='Act_Buttons'><td class='navButton'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton'>"+bS+bC+"</td></tr>";
+			bC  ="<a id='cData' class='fm-button " + commonstyle.button + "'>"+p.bCancel+"</a>",
+			user_buttons = ( $.isArray( rp_ge[$t.p.id].buttons ) ? $.jgrid.buildButtons( rp_ge[$t.p.id].buttons, bS + bC, commonstyle ) : bS + bC );
+			var bt = "<table style='height:auto' class='EditTable ui-common-table' id='"+frmtborg+"_2'><tbody><tr><td colspan='2'><hr class='"+commonstyle.content+"' style='margin:1px'/></td></tr><tr id='Act_Buttons'><td class='navButton'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton'>"+ user_buttons +"</td></tr>";
 			//bt += "<tr style='display:none' class='binfo'><td class='bottominfo' colspan='2'>"+rp_ge[$t.p.id].bottominfo+"</td></tr>";
 			bt += "</tbody></table>";
 			if(maxRows >  0) {
@@ -1025,6 +1027,18 @@ $.jgrid.extend({
 				$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal,onClose: rp_ge[$t.p.id].onClose, removemodal: rp_ge[$t.p.id].removemodal, formprop: !rp_ge[$t.p.id].recreateForm, form: rp_ge[$t.p.id].form});
 				return false;
 			});
+			// user buttons bind
+			$(frmtb2).find("[data-index]").each(function(){
+				var index = parseInt($(this).attr('data-index'),10);
+				if(index >=0 ) {
+					if( p.buttons[index].hasOwnProperty('click')) {
+						$(this).on('click', function(e) {
+							p.buttons[index].click.call($t, $(frmgr)[0], rp_ge[$t.p.id], e);
+						});
+					}
+				}
+			});
+
 			$("#nData", frmtb2).click(function(){
 				if(!checkUpdates()) {return false;}
 				$(".FormError",frmgr).hide();
@@ -1110,7 +1124,8 @@ $.jgrid.extend({
 			viewPagerButtons : true,
 			recreateForm : false,
 			removemodal: true,
-			form: 'view'
+			form: 'view',
+			buttons : []
 		}, regional, p || {});
 		rp_ge[$(this)[0].p.id] = p;
 		return this.each(function(){
@@ -1288,7 +1303,8 @@ $.jgrid.extend({
 				// buttons at footer
 			bP = "<a id='"+bp+"' class='fm-button " + commonstyle.button + "'><span class='" + commonstyle.icon_base + " " + styles.icon_prev+ "'></span></a>",
 			bN = "<a id='"+bn+"' class='fm-button " + commonstyle.button + "'><span class='" + commonstyle.icon_base + " " + styles.icon_next+ "'></span></a>",
-			bC  ="<a id='cData' class='fm-button " + commonstyle.button + "'>"+p.bClose+"</a>";
+			bC  ="<a id='cData' class='fm-button " + commonstyle.button + "'>"+p.bClose+"</a>",
+			user_buttons = ( $.isArray( rp_ge[$t.p.id].buttons ) ? $.jgrid.buildButtons( rp_ge[$t.p.id].buttons, bC, commonstyle ) : bC );
 			if(maxRows >  0) {
 				var sd=[];
 				$.each($(tbl)[0].rows,function(i,r){
@@ -1304,7 +1320,7 @@ $.jgrid.extend({
 				});
 			}
 			p.gbox = "#gbox_"+$.jgrid.jqID(gID);
-			var bt = $("<div></div>").append(frm).append("<table border='0' class='EditTable' id='"+frmtb+"_2'><tbody><tr id='Act_Buttons'><td class='navButton' width='"+p.labelswidth+"'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton'>"+bC+"</td></tr></tbody></table>");
+			var bt = $("<div></div>").append(frm).append("<table border='0' class='EditTable' id='"+frmtb+"_2'><tbody><tr id='Act_Buttons'><td class='navButton' width='"+p.labelswidth+"'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton'>"+ user_buttons+"</td></tr></tbody></table>");
 			$.jgrid.createModal(IDs,bt, rp_ge[$(this)[0].p.id],"#gview_"+$.jgrid.jqID($t.p.id),$("#gview_"+$.jgrid.jqID($t.p.id))[0]);
 			if(rtlb) {
 				$("#pData, #nData","#"+frmtb+"_2").css("float","right");
@@ -1363,6 +1379,17 @@ $.jgrid.extend({
 				$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, onClose: p.onClose, removemodal: rp_ge[$t.p.id].removemodal, formprop: !rp_ge[$t.p.id].recreateForm, form: rp_ge[$t.p.id].form});
 				return false;
 			});
+			$("#"+frmtb+"_2").find("[data-index]").each(function(){
+				var index = parseInt($(this).attr('data-index'),10);
+				if(index >=0 ) {
+					if( p.buttons[index].hasOwnProperty('click')) {
+						$(this).on('click', function(e) {
+							p.buttons[index].click.call($t, $("#"+frmgr_id)[0], rp_ge[$t.p.id], e);
+						});
+					}
+				}
+			});
+
 			$("#nData", "#"+frmtb+"_2").click(function(){
 				$("#FormError","#"+frmtb).hide();
 				var npos = getCurrPos();
@@ -1492,8 +1519,10 @@ $.jgrid.extend({
 				// buttons at footer
 				tbl += "</tbody></table></div>";
 				var bS  = "<a id='dData' class='fm-button " + commonstyle.button + "'>"+p.bSubmit+"</a>",
-				bC  = "<a id='eData' class='fm-button " + commonstyle.button + "'>"+p.bCancel+"</a>";
-				tbl += "<table class='EditTable ui-common-table' id='"+dtbl+"_2'><tbody><tr><td><hr class='" + commonstyle.content + "' style='margin:1px'/></td></tr><tr><td class='DelButton EditButton'>"+bS+"&#160;"+bC+"</td></tr></tbody></table>";
+				bC  = "<a id='eData' class='fm-button " + commonstyle.button + "'>"+p.bCancel+"</a>",
+				user_buttons = ( $.isArray( rp_ge[$t.p.id].buttons ) ? $.jgrid.buildButtons( rp_ge[$t.p.id].buttons, bS + bC, commonstyle ) : bS + bC );
+
+				tbl += "<table class='EditTable ui-common-table' id='"+dtbl+"_2'><tbody><tr><td><hr class='" + commonstyle.content + "' style='margin:1px'/></td></tr><tr><td class='DelButton EditButton'>"+ user_buttons +"</td></tr></tbody></table>";
 				p.gbox = "#gbox_"+$.jgrid.jqID(gID);
 				$.jgrid.createModal(IDs,tbl, rp_ge[$t.p.id] ,"#gview_"+$.jgrid.jqID($t.p.id),$("#gview_"+$.jgrid.jqID($t.p.id))[0]);
 
@@ -1645,6 +1674,17 @@ $.jgrid.extend({
 					$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:rp_ge[$t.p.id].jqModal, onClose: rp_ge[$t.p.id].onClose});
 					return false;
 				});
+				$("#"+dtbl+"_2").find("[data-index]").each(function(){
+					var index = parseInt($(this).attr('data-index'),10);
+					if(index >=0 ) {
+						if( p.buttons[index].hasOwnProperty('click')) {
+							$(this).on('click', function(e) {
+								p.buttons[index].click.call($t, $("#"+dtbl_id)[0], rp_ge[$t.p.id], e);
+							});
+						}
+					}
+				});
+
 				showFrm = $($t).triggerHandler("jqGridDelRowBeforeInitData", [$("#"+dtbl)]);
 				if(showFrm === undefined) {
 					showFrm = true;
