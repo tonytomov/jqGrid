@@ -841,6 +841,29 @@ $.extend($.jgrid,{
 		}
 
 		return valid;
+	},
+	buildButtons : function ( buttons, source, commonstyle) {
+		var icon, str;
+		$.each(buttons, function(i,n) {
+			// side, position, text, icon, click, id, index
+			if(!n.id) {
+				n.id = $.jgrid.randId();
+			}
+			if(!n.position) {
+				n.position = 'last';
+			}
+			if(!n.side) {
+				n.side = 'left';
+			}
+			icon = n.icon ? " fm-button-icon-" + n.side + "'><span class='" + commonstyle.icon_base + " " + n.icon + "'></span>" : "'>";
+			str = "<a  data-index='"+i+"' id='" + n.id + "' class='fm-button " + commonstyle.button + icon + n.text+"</a>";
+			if(n.position === "last" ) {
+				source = source + str;
+			} else {
+				source = str + source;
+			}
+		});
+		return source;
 	}
 });
 //module end
