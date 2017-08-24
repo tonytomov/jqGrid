@@ -1475,34 +1475,7 @@ $.jgrid.extend({
 				if(p.showQuery) {
 					bQ ="<a id='"+fid+"_query' class='fm-button " + common.button + " fm-button-icon-left'><span class='" + common.icon_base + " " +classes.icon_query + "'></span>Query</a>";
 				}
-				$.each(p.buttons, function(i,n) {
-					// side, position, text, icon, click, id, index
-					if(!n.id) {
-						n.id = $.jgrid.randId();
-					}
-					if(!n.side) {
-						n.side = 'right';
-					}
-					if(!n.position) {
-						n.position = 'last';
-					}
-					var icon = n.icon ? " fm-button-icon-"+n.side+"'><span class='" + common.icon_base + " " +n.icon + "'></span>" : "'>";
-					var str = "<a  data-index='"+i+"' id='"+n.id+"' class='fm-button " + common.button +icon+n.text+"</a>";
-					if(n.side === 'right') {
-						if(n.position === "last" ) {
-							bS = bS + str;
-						} else {
-							bS = str + bS;
-						}
-					} else  {
-						if(n.position === "last" ) {
-							bC = bC + str;
-						} else {
-							bC = str + bC;
-						}
-						
-					}
-				});
+				var user_buttons = $.jgrid.buildButtons( p.buttons, bQ+ bS, common);
 				if(!p.columns.length) {
 					$.each(columns, function(i,n){
 						if(!n.label) {
@@ -1551,7 +1524,7 @@ $.jgrid.extend({
 					tmpl += "</select></td></tr>";
 				}
 
-				bt = "<table class='EditTable' style='border:0px none;margin-top:5px' id='"+fid+"_2'><tbody><tr><td colspan='2'><hr class='" + common.content + "' style='margin:1px'/></td></tr>"+tmpl+"<tr><td class='EditButton' style='text-align:"+align+"'>"+bC+"</td><td class='EditButton' "+butleft+">"+bQ+bS+"</td></tr></tbody></table>";
+				bt = "<table class='EditTable' style='border:0px none;margin-top:5px' id='"+fid+"_2'><tbody><tr><td colspan='2'><hr class='" + common.content + "' style='margin:1px'/></td></tr>"+tmpl+"<tr><td class='EditButton' style='text-align:"+align+"'>"+bC+"</td><td class='EditButton' "+butleft+">"+ user_buttons +"</td></tr></tbody></table>";
 				fid = $.jgrid.jqID( fid);
 				$("#"+fid).jqFilter({
 					columns: columns,
