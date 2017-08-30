@@ -2024,9 +2024,6 @@ $.fn.jqGrid = function( pin ) {
 			}
 			ts.p.totaltime = new Date() - startReq;
 			rowData =null;
-			if(ts.p.subGrid === true ) {
-				try {self.jqGrid("addSubGrid",gi+ni);} catch (_){}
-			}
 			if(ir>0) { if(ts.p.records===0) { ts.p.records=gl;} }
 			if( ts.p.treeGrid === true) {
 				try {self.jqGrid("setTreeNode", fpos+1, ir+fpos+1);} catch (e) {}
@@ -2074,6 +2071,9 @@ $.fn.jqGrid = function( pin ) {
 					self.jqGrid('groupingRender', grpdata, ts.p.colModel.length, ts.p.page, rn);
 					grpdata = null;
 				}
+			}
+			if(ts.p.subGrid === true ) {
+				try {self.jqGrid("addSubGrid",gi+ni);} catch (_){}
 			}
 		},
 		addJSONData = function(data, rcnt, more, adjust) {
@@ -2220,9 +2220,6 @@ $.fn.jqGrid = function( pin ) {
 			}
 			ts.p.totaltime = new Date() - startReq;
 			rowData = null;
-			if(ts.p.subGrid === true ) {
-				try { self.jqGrid("addSubGrid",gi+ni);} catch (_){}
-			}
 			if(ir>0) {
 				if(ts.p.records===0) { ts.p.records=len; }
 			}
@@ -2284,6 +2281,9 @@ $.fn.jqGrid = function( pin ) {
 					self.jqGrid('groupingRender', grpdata, ts.p.colModel.length, ts.p.page, rn);
 					grpdata = null;
 				}
+			}
+			if(ts.p.subGrid === true ) {
+				try { self.jqGrid("addSubGrid",gi+ni);} catch (_){}
 			}
 		},
 		addLocalData = function( retAll ) {
