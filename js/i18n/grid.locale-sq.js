@@ -17,7 +17,7 @@ $.jgrid = $.jgrid || {};
 if(!$.jgrid.hasOwnProperty("regional")) {
 	$.jgrid.regional = [];
 }
-$.jgrid.regional["en"] = {
+$.jgrid.regional["sq"] = {
 	defaults : {
 		recordtext: "Shfaq {0} - {1}/{2}",
 		emptyrecords: "Nuk ka rreshta për të shfaqur",
