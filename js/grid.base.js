@@ -1385,7 +1385,7 @@ $.fn.jqGrid = function( pin ) {
 						if(p.forceFit===true ){
 							hn = this.headers[this.resizing.idx+p.nv];
 							nWn = p.direction === "ltr" ? hn.width - diff : hn.width + diff;
-							if(nWn > p.minColWidth ) {
+							if(nWn > this.resizing.minW ) {
 								h.newWidth = newWidth;
 								hn.newWidth = nWn;
 							}
