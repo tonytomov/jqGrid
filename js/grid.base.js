@@ -1376,7 +1376,7 @@ $.fn.jqGrid = function( pin ) {
 					var diff = x.pageX-this.resizing.startX,
 					h = this.headers[this.resizing.idx],
 					newWidth = p.direction === "ltr" ? h.width + diff : h.width - diff, hn, nWn;
-					if(newWidth > 33) {
+					if(newWidth > p.minColWidth) {
 						this.curGbox.css({left:this.resizing.sOL+diff});
 						if(p.forceFit===true ){
 							hn = this.headers[this.resizing.idx+p.nv];
