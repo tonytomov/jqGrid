@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.1 - 2017-09-04
+* @license Guriddo jqGrid JS - v5.2.1 - 2017-09-07
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1371,7 +1371,7 @@ $.fn.jqGrid = function( pin ) {
 					var diff = x.pageX-this.resizing.startX,
 					h = this.headers[this.resizing.idx],
 					newWidth = p.direction === "ltr" ? h.width + diff : h.width - diff, hn, nWn;
-					if(newWidth > 33) {
+					if(newWidth > p.minColWidth) {
 						this.curGbox.css({left:this.resizing.sOL+diff});
 						if(p.forceFit===true ){
 							hn = this.headers[this.resizing.idx+p.nv];
