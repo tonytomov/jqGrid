@@ -1357,8 +1357,12 @@ $.fn.jqGrid = function( pin ) {
 			cols:[],
 			footers: [],
 			dragStart: function(i,x,y) {
-				var gridLeftPos = $(this.bDiv).offset().left;
-				this.resizing = { idx: i, startX: x.pageX, sOL : x.pageX - gridLeftPos };
+				var gridLeftPos = $(this.bDiv).offset().left,
+					minW = parseInt( (p.colModel[i].minResizeWidth ? p.colModel[i].minResizeWidth : p.minColWidth), 10);
+				if(isNaN( minW )) {
+					minW = 33;
+				}
+				this.resizing = { idx: i, startX: x.pageX, sOL : x.pageX - gridLeftPos, minW :  minW  };
 				this.hDiv.style.cursor = "col-resize";
 				this.curGbox = $("#rs_m"+$.jgrid.jqID(p.id),"#gbox_"+$.jgrid.jqID(p.id));
 				this.curGbox.css({display:"block",left:x.pageX-gridLeftPos,top:y[1],height:y[2]});
@@ -1371,7 +1375,7 @@ $.fn.jqGrid = function( pin ) {
 					var diff = x.pageX-this.resizing.startX,
 					h = this.headers[this.resizing.idx],
 					newWidth = p.direction === "ltr" ? h.width + diff : h.width - diff, hn, nWn;
-					if(newWidth > p.minColWidth) {
+					if(newWidth > this.resizing.minW) {
 						this.curGbox.css({left:this.resizing.sOL+diff});
 						if(p.forceFit===true ){
 							hn = this.headers[this.resizing.idx+p.nv];
@@ -3891,7 +3895,7 @@ $.fn.jqGrid = function( pin ) {
 		var hTable = $("<table "+getstyle(stylemodule,'headerTable',false,'ui-jqgrid-htable ui-common-table')+" style='width:"+ts.p.tblwidth+"px' role='presentation' aria-labelledby='gbox_"+this.id+"'></table>").append(thead),
 		hg = (ts.p.caption && ts.p.hiddengrid===true) ? true : false,
 		hb = $("<div class='ui-jqgrid-hbox" + (dir==="rtl" ? "-rtl" : "" )+"'></div>"),
-		bstw = ts.p.styleUI === 'Bootstrap' ? 2 : 0;
+		bstw = ts.p.styleUI === 'Bootstrap' && !isNaN(ts.p.height) ? 2 : 0;
 		thead = null;
 		grid.hDiv = document.createElement("div");
 		grid.hDiv.style.width = (grid.width - bstw) + "px";
@@ -4883,7 +4887,7 @@ $.jgrid.extend({
 		return this.each(function(){
 			if (!this.grid ) {return;}
 			var $t = this, cw,
-			initwidth = 0, brd=$.jgrid.cell_width ? 0: $t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0, cr, bstw = $t.p.styleUI === 'Bootstrap' ? 2 : 0;
+			initwidth = 0, brd=$.jgrid.cell_width ? 0: $t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0, cr, bstw = $t.p.styleUI === 'Bootstrap' && !isNaN($t.p.height)? 2 : 0;
 			if(typeof shrink !== 'boolean') {
 				shrink=$t.p.shrinkToFit;
 			}
