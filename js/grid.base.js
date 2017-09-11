@@ -3988,7 +3988,7 @@ $.fn.jqGrid = function( pin ) {
 						$(ts).jqGrid("setSelection", ri ,true,e);
 					} else if (td.length > 0) {
 						try {
-							$(ts).jqGrid("editCell", ptr[0].rowIndex, ci, true);
+							$(ts).jqGrid("editCell", ptr[0].rowIndex, ci, true, e);
 						} catch (_) {}
 					}
 					return;
