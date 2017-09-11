@@ -3144,8 +3144,8 @@ $.fn.jqGrid = function( pin ) {
 					if(grid.width-gw-(initwidth+brd*vc) !== scw){
 						cr = grid.width-gw-(initwidth+brd*vc)-scw;
 					}
-				} else if(!hs && Math.abs(grid.width-gw-(initwidth+brd*vc)) !== 1) {
-					cr = grid.width-gw-(initwidth+brd*vc);
+				} else if(!hs && Math.abs(grid.width-gw-(initwidth+brd*vc)) !== 0) {
+					cr = grid.width-gw-(initwidth+brd*vc) - bstw;
 				}
 				ts.p.colModel[lvc].width += cr;
 				ts.p.tblwidth = initwidth+cr+brd*vc+gw;
@@ -3754,9 +3754,11 @@ $.fn.jqGrid = function( pin ) {
 		}
 
 		if(ts.p.autowidth===true) {
-			var pw = $(eg).innerWidth();
-			ts.p.width = pw > 0?  pw: 'nw';
+			var pw = $(eg).parent().width();
+			tmpcm = $(window).width();
+			ts.p.width = tmpcm - pw > 3 ?  pw: tmpcm;
 		}
+		var tfoot = "", bstw = ts.p.styleUI === 'Bootstrap' ? 2 : 0;
 		setColWidth();
 		$(eg).css("width",grid.width+"px").append("<div class='ui-jqgrid-resize-mark' id='rs_m"+ts.p.id+"'>&#160;</div>");
 		if(ts.p.scrollPopUp) {
@@ -3764,7 +3766,6 @@ $.fn.jqGrid = function( pin ) {
 		}
 		$(gv).css("width",grid.width+"px");
 		thead = $("thead:first",ts).get(0);
-		var	tfoot = "";
 		if(ts.p.footerrow) { tfoot += "<table role='presentation' style='width:"+ts.p.tblwidth+"px' "+getstyle(stylemodule,'footerTable', false, 'ui-jqgrid-ftable ui-common-table')+ "><tbody><tr role='row' "+getstyle(stylemodule,'footerBox', false, 'footrow footrow-'+dir)+">"; }
 		var thr = $("tr:first",thead),
 		firstr = "<tr class='jqgfirstrow' role='row'>";
@@ -3899,8 +3900,7 @@ $.fn.jqGrid = function( pin ) {
 		firstr = null;
 		var hTable = $("<table "+getstyle(stylemodule,'headerTable',false,'ui-jqgrid-htable ui-common-table')+" style='width:"+ts.p.tblwidth+"px' role='presentation' aria-labelledby='gbox_"+this.id+"'></table>").append(thead),
 		hg = (ts.p.caption && ts.p.hiddengrid===true) ? true : false,
-		hb = $("<div class='ui-jqgrid-hbox" + (dir==="rtl" ? "-rtl" : "" )+"'></div>"),
-		bstw = ts.p.styleUI === 'Bootstrap' && !isNaN(ts.p.height) ? 2 : 0;
+		hb = $("<div class='ui-jqgrid-hbox" + (dir==="rtl" ? "-rtl" : "" )+"'></div>");
 		thead = null;
 		grid.hDiv = document.createElement("div");
 		grid.hDiv.style.width = (grid.width - bstw) + "px";
@@ -4892,7 +4892,7 @@ $.jgrid.extend({
 		return this.each(function(){
 			if (!this.grid ) {return;}
 			var $t = this, cw,
-			initwidth = 0, brd=$.jgrid.cell_width ? 0: $t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0, cr, bstw = $t.p.styleUI === 'Bootstrap' && !isNaN($t.p.height)? 2 : 0;
+			initwidth = 0, brd=$.jgrid.cell_width ? 0: $t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0, cr, bstw = $t.p.styleUI === 'Bootstrap' ? 2 : 0;
 			if(typeof shrink !== 'boolean') {
 				shrink=$t.p.shrinkToFit;
 			}
@@ -4962,8 +4962,8 @@ $.jgrid.extend({
 					if(nwidth-gw-(initwidth+brd*vc) !== scw){
 						cr = nwidth-gw-(initwidth+brd*vc)-scw;
 					}
-				} else if( Math.abs(nwidth-gw-(initwidth+brd*vc)) !== 1) {
-					cr = nwidth-gw-(initwidth+brd*vc);
+				} else if( !hs && Math.abs(nwidth-gw-(initwidth+brd*vc)) !== 0) {
+					cr = nwidth-gw-(initwidth+brd*vc) - bstw;
 				}
 				$t.p.colModel[lvc].width += cr;
 				$t.p.tblwidth = initwidth+cr+brd*vc+gw;
