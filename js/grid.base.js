@@ -1041,7 +1041,8 @@ $.extend($.jgrid,{
 				icon_group : "ui-icon-grip-solid-horizontal",
 				icon_freeze : "ui-icon-grip-solid-vertical",
 				icon_move: "ui-icon-arrow-4",
-				icon_new_item : "ui-icon-newwin"
+				icon_new_item : "ui-icon-newwin",
+				icon_toolbar_menu : "ui-icon-document"
 			}
 		},
 		Bootstrap : {
@@ -1173,7 +1174,8 @@ $.extend($.jgrid,{
 				icon_group : "glyphicon-align-left",
 				icon_freeze : "glyphicon-object-align-horizontal",
 				icon_move: "glyphicon-move",
-				icon_new_item : "glyphicon-new-window"
+				icon_new_item : "glyphicon-new-window",
+				icon_toolbar_menu : "glyphicon-menu-hamburger"
 			}
 		}
 	}
@@ -3548,10 +3550,17 @@ $.fn.jqGrid = function( pin ) {
 			});
 		},
 		colTemplate;
-		if(ts.p.colMenu) {
+		if(ts.p.colMenu || ts.p.menubar) {
 			$("body").on('click', function(e){
-				if(!$(e.target).closest(".column-menu").length) {
+				if(!$(e.target).closest("#column_menu").length) {
+					try {
 					$("#column_menu").remove();
+					} catch (e) {}
+				}
+				if(!$(e.target).closest(".ui-jqgrid-menubar").length) {
+					try {
+						$("#"+ts.p.id+"_menubar").hide();
+					} catch (e) {}
 				}
 			});
 		}
@@ -3871,6 +3880,9 @@ $.fn.jqGrid = function( pin ) {
 					left += $(this).outerWidth();
 				}
 				buildColMenu(colindex, left, top, t );
+				if(ts.p.menubar === true) {
+					$("#"+ts.p.id+"_menubar").hide();
+				}
 				e.stopPropagation();
 				return;
 			}
@@ -4163,6 +4175,21 @@ $.fn.jqGrid = function( pin ) {
 		.append("<span class='ui-jqgrid-headlink " + icoo +"'></span>").css((dir==="rtl"?"left":"right"),"0px") : "";
 		$(grid.cDiv).append(arf).append("<span class='ui-jqgrid-title'>"+ts.p.caption+"</span>")
 		.addClass("ui-jqgrid-titlebar ui-jqgrid-caption"+(dir==="rtl" ? "-rtl" :"" )+" "+getstyle(stylemodule,'gridtitleBox',true));
+///// toolbar menu
+		if( ts.p.menubar === true) {
+			var fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
+			var arf1 = '<ul id="'+ts.p.id+'_menubar" class="ui-search-menu modal-content column-menu ui-menu ' + colmenustyle.menu_widget+'" role="menubar" tabindex="0" style="left:5px;top:25px;position:absolute;display:none;font-size:'+fs+'"></ul>';
+			$("body").append(arf1);
+			$(grid.cDiv).append("<a role='link' class='ui-jqgrid-menubar menubar-"+(dir==="rtl" ? "rtl" :"ltr" )+"' style=''><span class='colmenuspan "+iconbase+' '+colmenustyle.icon_toolbar_menu+"'></span></a>");
+			$(".ui-jqgrid-menubar",grid.cDiv).hover(
+					function(){ $(this).addClass(hover);}, 
+					function() {$(this).removeClass(hover);
+			}).on('click',function(e) {
+				var pos = $(e.target).offset();
+				$("#"+ts.p.id+"_menubar").css({left : pos.left - (dir === "rtl" ? $("#"+ts.p.id+"_menubar").width() : 0), top : pos.top+20}).show();
+			});
+		}
+///// end toolbar menu
 		$(grid.cDiv).insertBefore(grid.hDiv);
 		if( ts.p.toolbar[0] ) {
 			var tbstyle = getstyle(stylemodule, 'customtoolbarBox', true, 'ui-userdata');
@@ -5813,6 +5840,66 @@ $.jgrid.extend({
 			if(this.p.colMenuCustom.hasOwnProperty( id )) {
 				delete this.p.colMenuCustom[ id ];
 			}
+		});
+	},
+	menubarAdd : function( items ) {
+		var	currstyle = this[0].p.styleUI,
+			styles = $.jgrid.styleUI[currstyle].common, item, str;
+
+		return this.each(function(){
+			if( $.isArray(items)) {
+				for(var i = 0; i < items.length; i++) {
+					item = items[i];
+					// icon, title, position, id, click
+					if(!item.id ) {
+						item.id = $.jgrid.randId();
+	}
+					var ico = '';
+					if( item.icon) {
+						ico = '<span class="'+styles.icon_base+' ' + item.icon+'"></span>';
+					}
+					if(!item.position) {
+						item.position = 'last';
+					}
+					if(!item.closeoncall) {
+						item.closeoncall = true;
+					}
+					if(item.divider) {
+						str = '<li class="ui-menu-item divider" role="separator"></li>';
+						item.cick = null; 
+					} else {
+					str = '<li id="'+ item.id+'"  class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" ><table class="ui-common-table"><tr><td class="menu_icon">'+ico+'</td><td class="menu_text">'+item.title+'</td></tr></table></a></li>';
+					}
+					if(item.position === 'last') {
+						$("#"+this.p.id+"_menubar").append(str);
+					} else {
+						$("#"+this.p.id+"_menubar").prepend(str);
+					}
+					if($.isFunction(item.click)) {
+						$("#"+item.id, "#"+this.p.id+"_menubar").on('click', function( e ) {
+							item.click.call( this, e );
+							if(item.closeoncall) {
+								$("#"+this.p.id+"_menubar").hide();
+							}
+							e.stopPropagation();
+							return;
+						});
+					}
+				}
+			}
+			$("#" + this.p.id +"_menubar > li > a").hover(
+				function(e){
+					$(this).addClass(styles.hover);
+					e.stopPropagation();
+				},
+				function(e){ $(this).removeClass(styles.hover);}
+			);
+
+});
+	},
+	menubarDelete : function( itemid ) {
+		return this.each(function(){
+			$("#"+itemid, "#"+this.p.id+"_menubar").remove();
 		});
 	}
 

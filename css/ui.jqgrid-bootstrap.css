@@ -30,7 +30,9 @@
 .ui-jqgrid .ui-jqgrid-title { 
 	padding-top: 5px; 
 	vertical-align: middle;
+	position: absolute;
 }
+
 .ui-jqgrid .ui-jqgrid-titlebar-close { 
 	color: inherit; 
 	position: absolute;
@@ -928,4 +930,26 @@ td.menu_text {
 }
 .search_buttons #bs_search {
 	margin-left: 3px;
+}
+/*menubar*/
+.ui-jqgrid .ui-jqgrid-menubar {
+	margin: 5px 5px;
+	width:16px;
+	height:16px;
+}
+.ui-jqgrid a.ui-jqgrid-menubar {
+	text-decoration: none;
+	color : #010101; /*default*/
+}
+.ui-jqgrid .ui-jqgrid-menubar:hover {
+	margin: 5px 5px;
+	background-color: #ddd;
+	text-decoration: none;
+}
+.ui-jqgrid .menubar-rtl {
+	float : right;
+}
+
+.ui-jqgrid .menubar-ltr {
+	float : left;
 }
