@@ -5146,8 +5146,11 @@ $.jgrid.extend({
 			}
 		});
 	},
-	getCell : function(rowid,col) {
-		var ret = false;
+	getCell : function(rowid, col, returnobject) {
+		var ret = false, obj;
+		if(returnobject === undefined) {
+			returnobject = false;
+		}
 		this.each(function(){
 			var $t=this, pos=-1, cnm, ind;
 			if(!$t.grid) {return;}
@@ -5166,14 +5169,19 @@ $.jgrid.extend({
 			if(pos>=0) {
 				ind = $($t).jqGrid('getGridRowById', rowid);
 				if(ind) {
-					try {
-						ret = $.unformat.call($t,$("td:eq("+pos+")",ind),{rowId:ind.id, colModel:$t.p.colModel[pos]},pos);
-					} catch (e){
-						ret = $.jgrid.htmlDecode($("td:eq("+pos+")",ind).html());
+					obj = $("td:eq("+pos+")",ind);
+					if( returnobject ) {
+						ret = obj;
+					} else {
+						try {
+							ret = $.unformat.call($t, obj ,{rowId:ind.id, colModel:$t.p.colModel[pos]},pos);
+						} catch (e){
+							ret = $.jgrid.htmlDecode( obj.html() );
+						}
+						if($t.p.treeGrid && ret && $t.p.ExpandColumn === cnm ) {
+							ret = $( "<div>" + ret +"</div>").find("span:first").html();
+						}					
 					}
-				}
-				if($t.p.treeGrid && ret && $t.p.ExpandColumn === cnm) {
-					ret = $( "<div>" + ret +"</div>").find("span:first").html();
 				}
 			}
 		});
