@@ -73,7 +73,7 @@ $.fn.jqFilter = function( arg ) {
 		addrule : "Add rule",
 		delgroup : "Delete group",
 		delrule : "Delete rule",
-		autoencode : false,
+		autoencode : false
 	}, $.jgrid.filter, arg || {});
 	return this.each( function() {
 		if (this.filter) {return;}
