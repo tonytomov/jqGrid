@@ -6843,9 +6843,10 @@ $.extend($.jgrid,{
 			case "select" :
 				elem = document.createElement("select");
 				elem.setAttribute("role","select");
-				var msl, ovm = [];
+				var msl, ovm = [], multiseparator;
 				if(options.multiple===true) {
 					msl = true;
+					multiseparator = options.multiseparator === undefined ? ",": options.multiseparator;
 					elem.multiple="multiple";
 					$(elem).attr("aria-multiselectable","true");
 				} else { msl = false; }
@@ -6879,7 +6880,7 @@ $.extend($.jgrid,{
 								setAttributes(elem, options, postData ? ['postData'] : undefined );
 								if(options.size === undefined) { options.size =  msl ? 3 : 1;}
 								if(msl) {
-									ovm = vl.split(",");
+									ovm = vl.split(multiseparator);
 									ovm = $.map(ovm,function(n){return $.trim(n);});
 								} else {
 									ovm[0] = $.trim(vl);
@@ -6930,7 +6931,7 @@ $.extend($.jgrid,{
 						options.size = msl ? 3 : 1;
 					}
 					if(msl) {
-						ovm = vl.split(",");
+						ovm = vl.split(multiseparator);
 						ovm = $.map(ovm,function(n){return $.trim(n);});
 					}
 					if(typeof options.value === 'function') { options.value = options.value(); }
@@ -12815,14 +12816,15 @@ $.jgrid.extend({
 								tmp2[nm] = $("select option:selected", this).text();
 							} else {
 								var sel = $("select",this), selectedText = [];
+								var multiseparator = cm.editoptions.multiseparator === undefined ? ",": cm.editoptions.multiseparator;
 								tmp[nm] = $(sel).val();
-								if(tmp[nm]) { tmp[nm]= tmp[nm].join(","); } else { tmp[nm] =""; }
+								if(tmp[nm]) { tmp[nm]= tmp[nm].join(multiseparator); } else { tmp[nm] =""; }
 								$("select option:selected",this).each(
 									function(i,selected){
 										selectedText[i] = $(selected).text();
 									}
 								);
-								tmp2[nm] = selectedText.join(",");
+								tmp2[nm] = selectedText.join(multiseparator);
 							}
 							if(cm.formatter && cm.formatter === 'select') { tmp2={}; }
 							elem = $("select",this);
