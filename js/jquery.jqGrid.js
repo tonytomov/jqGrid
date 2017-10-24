@@ -17076,7 +17076,7 @@ $.jgrid.extend({
 					//cm = $t.p.colModel,
 					vv, grlen = fdata.cnt, k, retarr= new Array(p.collen), j=0;
 					for(k=foffset; k<colspans;k++) {
-						if(cm[k].hidden) {
+						if(cm[k].hidden || !cm[k].exportcol) {
 							continue;
 						}
 						var tplfld = "{0}";
@@ -17114,6 +17114,13 @@ $.jgrid.extend({
 				}
 				var sumreverse = $.makeArray(grp.groupSummary), gv, k;
 				sumreverse.reverse();
+				if($t.p.datatype === 'local') {
+					$($t).jqGrid('groupingSetup');
+					var groupingPrepare = $.jgrid.getMethod("groupingPrepare");
+					for(var ll=0; ll < dlen; ll++) {
+						groupingPrepare.call($($t), data1[ll], ll);
+					}
+				}
 				$.each(grp.groups,function(i,n){
 					toEnd++;
 					try {
@@ -17460,7 +17467,7 @@ $.jgrid.extend({
 					//cm = $t.p.colModel,
 					vv, grlen = fdata.cnt, k, retarr = emptyData(data.header);
 					for(k=foffset; k<colspans;k++) {
-						if(cm[k].hidden || cm[k].exportcol) {
+						if(cm[k].hidden || !cm[k].exportcol) {
 							continue;
 						}
 						var tplfld = "{0}";
@@ -17500,6 +17507,13 @@ $.jgrid.extend({
 				}
 				var sumreverse = $.makeArray(grp.groupSummary), gv;
 				sumreverse.reverse();
+				if($t.p.datatype === 'local') {
+					$($t).jqGrid('groupingSetup');
+					var groupingPrepare = $.jgrid.getMethod("groupingPrepare");
+					for(var ll=0; ll < data.body.length; ll++) {
+						groupingPrepare.call($($t), data.body[ll], ll);
+					}
+				}
 				$.each(grp.groups,function(i,n){
 					toEnd++;
 					try {
@@ -17777,6 +17791,13 @@ $.jgrid.extend({
 
 				var sumreverse = $.makeArray(grp.groupSummary), gv;
 				sumreverse.reverse();
+				if($t.p.datatype === 'local') {
+					$($t).jqGrid('groupingSetup');
+					var groupingPrepare = $.jgrid.getMethod("groupingPrepare");
+					for(var ll=0; ll < data.length; ll++) {
+						groupingPrepare.call($($t), data[ll], ll);
+					}
+				}
 				$.each(grp.groups,function(i,n){
 					toEnd++;
 					try {
