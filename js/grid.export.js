@@ -409,7 +409,7 @@ $.jgrid.extend({
 					//cm = $t.p.colModel,
 					vv, grlen = fdata.cnt, k, retarr= new Array(p.collen), j=0;
 					for(k=foffset; k<colspans;k++) {
-						if(cm[k].hidden) {
+						if(cm[k].hidden || !cm[k].exportcol) {
 							continue;
 						}
 						var tplfld = "{0}";
@@ -793,7 +793,7 @@ $.jgrid.extend({
 					//cm = $t.p.colModel,
 					vv, grlen = fdata.cnt, k, retarr = emptyData(data.header);
 					for(k=foffset; k<colspans;k++) {
-						if(cm[k].hidden || cm[k].exportcol) {
+						if(cm[k].hidden || !cm[k].exportcol) {
 							continue;
 						}
 						var tplfld = "{0}";
