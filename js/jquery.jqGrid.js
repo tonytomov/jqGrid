@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.1 - 2017-10-24
+* @license Guriddo jqGrid JS - v5.2.1 - 2017-10-27
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -17114,7 +17114,7 @@ $.jgrid.extend({
 				}
 				var sumreverse = $.makeArray(grp.groupSummary), gv, k;
 				sumreverse.reverse();
-				if($t.p.datatype === 'local') {
+				if($t.p.datatype === 'local' && !$t.p.loadonce) {
 					$($t).jqGrid('groupingSetup');
 					var groupingPrepare = $.jgrid.getMethod("groupingPrepare");
 					for(var ll=0; ll < dlen; ll++) {
@@ -17507,7 +17507,7 @@ $.jgrid.extend({
 				}
 				var sumreverse = $.makeArray(grp.groupSummary), gv;
 				sumreverse.reverse();
-				if($t.p.datatype === 'local') {
+				if($t.p.datatype === 'local' && !$t.p.loadonce) {
 					$($t).jqGrid('groupingSetup');
 					var groupingPrepare = $.jgrid.getMethod("groupingPrepare");
 					for(var ll=0; ll < data.body.length; ll++) {
@@ -17791,7 +17791,7 @@ $.jgrid.extend({
 
 				var sumreverse = $.makeArray(grp.groupSummary), gv;
 				sumreverse.reverse();
-				if($t.p.datatype === 'local') {
+				if($t.p.datatype === 'local' && !$t.p.loadonce) {
 					$($t).jqGrid('groupingSetup');
 					var groupingPrepare = $.jgrid.getMethod("groupingPrepare");
 					for(var ll=0; ll < data.length; ll++) {
