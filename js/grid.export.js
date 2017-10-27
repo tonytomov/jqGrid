@@ -447,7 +447,7 @@ $.jgrid.extend({
 				}
 				var sumreverse = $.makeArray(grp.groupSummary), gv, k;
 				sumreverse.reverse();
-				if($t.p.datatype === 'local') {
+				if($t.p.datatype === 'local' && !$t.p.loadonce) {
 					$($t).jqGrid('groupingSetup');
 					var groupingPrepare = $.jgrid.getMethod("groupingPrepare");
 					for(var ll=0; ll < dlen; ll++) {
@@ -840,7 +840,7 @@ $.jgrid.extend({
 				}
 				var sumreverse = $.makeArray(grp.groupSummary), gv;
 				sumreverse.reverse();
-				if($t.p.datatype === 'local') {
+				if($t.p.datatype === 'local' && !$t.p.loadonce) {
 					$($t).jqGrid('groupingSetup');
 					var groupingPrepare = $.jgrid.getMethod("groupingPrepare");
 					for(var ll=0; ll < data.body.length; ll++) {
@@ -1124,7 +1124,7 @@ $.jgrid.extend({
 
 				var sumreverse = $.makeArray(grp.groupSummary), gv;
 				sumreverse.reverse();
-				if($t.p.datatype === 'local') {
+				if($t.p.datatype === 'local' && !$t.p.loadonce) {
 					$($t).jqGrid('groupingSetup');
 					var groupingPrepare = $.jgrid.getMethod("groupingPrepare");
 					for(var ll=0; ll < data.length; ll++) {
