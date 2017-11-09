@@ -721,9 +721,13 @@ $.jgrid.extend({
 			};
 			for ( j=0, ien=cm.length ; j<ien ; j++ ) {
 				if(cm[j].exportcol === undefined) {
-					cm[j].exportcol =  true;
+					if(cm[j].hidden) {
+						cm[j].exportcol = false;
+					} else {
+						cm[j].exportcol =  true;
+					}
 				}
-				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn' || !cm[j].exportcol) {
+				if( cm[j].name === 'cb' || cm[j].name === 'rn' || cm[j].name === 'subgrid' || !cm[j].exportcol) {
 					continue;
 				}
 				data.header[i] = cm[j].name;
@@ -875,7 +879,7 @@ $.jgrid.extend({
 					//cm = $t.p.colModel,
 					vv, grlen = fdata.cnt, k, retarr = emptyData(data.header);
 					for(k=foffset; k<colspans;k++) {
-						if(cm[k].hidden || !cm[k].exportcol) {
+						if(!cm[k].exportcol) {
 							continue;
 						}
 						var tplfld = "{0}";
