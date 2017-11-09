@@ -419,7 +419,7 @@ $.jgrid.extend({
 			cmlen = cm.length,
 			clbl = $t.p.colNames,
 			i, j=0, row, str = '' , tmp, k,
-			cap = "", hdr = "", ftr="",	lbl="", albl=[], restorevis = [];
+			cap = "", hdr = "", ftr="",	lbl="", albl=[];
 			function groupToCsv (grdata, p) {
 				var str="",
 				grp = $t.p.groupingView, 
@@ -461,7 +461,7 @@ $.jgrid.extend({
 					//cm = $t.p.colModel,
 					vv, grlen = fdata.cnt, k, retarr= new Array(p.collen), j=0;
 					for(k=foffset; k<colspans;k++) {
-						if(cm[k].hidden || !cm[k].exportcol) {
+						if(!cm[k].exportcol) {
 							continue;
 						}
 						var tplfld = "{0}";
@@ -543,7 +543,7 @@ $.jgrid.extend({
 							to = grdata[kk - offset];
 							k = 0;
 							for(ik = 0; ik < cm.length; ik++) {
-								if(!cm[ik].hidden) {
+								if(cm[ik].exportcol) {
 									arr[k] = $.jgrid.formatCellCsv( 
 										$.jgrid.formatCell( to[cm[ik].name], ik, to, cm[ik], $t, 'csv' ) , p);
 									k++;
@@ -575,22 +575,19 @@ $.jgrid.extend({
 			}
 
 			// end group function
-			var def = [], key, restorexcol=[];
+			var def = [], key;
 			$.each(cm,function(i,n) {
 				if(n.exportcol === undefined) {
-					n.exportcol = true;
-				}
-				if((n.name === 'cb' || n.name === 'rn') && !n.hidden) {
-					restorevis.push(i);
-					n.hidden = true;
-				}
-				if(!n.exportcol) {
-					if(!n.hidden) {
-						restorexcol.push(i);
-						n.hidden = true;
+					if(n.hidden) {
+						n.exportcol = false;
+					} else {
+						n.exportcol = true;
 					}
 				}
-				if(!n.hidden && n.exportcol) {
+				if(n.name === 'cb' || n.name === 'rn' || n.name === 'subgrid') {
+					n.exportcol = false;
+				}
+				if(n.exportcol) {
 					albl.push( $.jgrid.formatCellCsv( clbl[i], p) );
 					def.push( n.name ); // clbl[i];
 				}
@@ -612,7 +609,7 @@ $.jgrid.extend({
 					tmp = [];
 					k =0;
 					for(i = 0; i < cmlen; i++) {
-						if(!cm[i].hidden) {
+						if(cm[i].exportcol) {
 							tmp[k] = $.jgrid.formatCellCsv( $.jgrid.formatCell( row[cm[i].name], i, row, cm[i], $t, 'csv' ), p );
 							k++;
 						}
@@ -654,14 +651,12 @@ $.jgrid.extend({
 				// already formated
 				var foot = $(".ui-jqgrid-ftable", this.sDiv);
 				if(foot.length) {
-					var frows = foot[0].rows[0];
-					i=0;j=0; tmp=[];
-					while(i < frows.cells.length){
-						var fc = frows.cells[i],
-						coln = $(fc).attr('aria-describedby').slice(-3);
-						if(!fc.hidden && coln !== '_cb' && coln !== '_rn' ) {
-							tmp[j] = $.jgrid.formatCellCsv( $(fc).text(), p );
-							j++;
+					var frows = $($t).jqGrid('footerData', 'get');
+					i=0; tmp=[];
+					while(i < p.collen){
+						var fc = def[i];
+						if(frows.hasOwnProperty(fc) ) {
+							tmp.push( $.jgrid.formatCellCsv( frows[fc], p ) );
 						}
 						i++;
 					}
@@ -669,13 +664,6 @@ $.jgrid.extend({
 				}
 			}
 			ret = cap + hdr + lbl + str + ftr;
-			
-			for(i=0;i<restorevis.length;i++) {
-				cm[restorevis[i]].hidden = false;
-			}
-			for(i=0;i<restorexcol.length;i++) {
-				cm[restorexcol[i]].hidden = false;
-			}
 		});
 		if (p.returnAsString) {
 			return ret;
