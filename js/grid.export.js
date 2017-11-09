@@ -656,7 +656,7 @@ $.jgrid.extend({
 					while(i < p.collen){
 						var fc = def[i];
 						if(frows.hasOwnProperty(fc) ) {
-							tmp.push( $.jgrid.formatCellCsv( frows[fc], p ) );
+							tmp.push( $.jgrid.formatCellCsv( $.jgrid.stripHtml( frows[fc] ), p ) );
 						}
 						i++;
 					}
@@ -1161,7 +1161,7 @@ $.jgrid.extend({
 					//cm = $t.p.colModel,
 					vv, grlen = fdata.cnt, k, retarr = emptyData(def);
 					for(k=foffset; k<colspans;k++) {
-						if(cm[k].hidden || !cm[k].exportcol) {
+						if(!cm[k].exportcol) {
 							continue;
 						}
 						var tplfld = "{0}";
@@ -1273,9 +1273,13 @@ $.jgrid.extend({
 			var k;
 			for ( j=0, ien=cm.length ; j<ien ; j++ ) {
 				if(cm[j].exportcol === undefined ) {
-					cm[j].exportcol = true;
+					if(cm[j].hidden) {
+						cm[j].exportcol = false;
+					} else {
+						cm[j].exportcol = true;
+					}
 				}
-				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn' || !cm[j].exportcol) {
+				if(cm[j].name === 'cb' || cm[j].name === 'rn' || cm[j].name === 'subgrid' || !cm[j].exportcol) {
 					continue;
 				}
 				obj = { text:  $t.p.colNames[j], style: 'tableHeader' };
