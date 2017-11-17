@@ -477,24 +477,23 @@ $.jgrid.extend({
 						return false;
 					},
 					drop: function(ev, ui) {
-						if (!$(ui.draggable).hasClass('jqgrow')) { return; }
-						var accept = $(ui.draggable).attr("id");
-						var getdata = ui.draggable.parent().parent().jqGrid('getRowData',accept);
-						var target = $(this).find('table.ui-jqgrid-btable:first')[0];
+						if (!$(ui.draggable).hasClass('jqgrow')) { 
+							return; 
+						}
+						var accept = $(ui.draggable).attr("id"),
+							getdata = ui.draggable.parent().parent().jqGrid('getRowData',accept),
+							target = $(this).find('table.ui-jqgrid-btable:first')[0];
 						if(!opts.dropbyname) {
-							var j =0, tmpdata = {}, nm, key;
+							var j, tmpdata = {}, nm;
 							var dropmodel = $("#"+$.jgrid.jqID(target.id)).jqGrid('getGridParam','colModel');
 							try {
-								for (key in getdata) {
-									if (getdata.hasOwnProperty(key)) {
+								for(j=0;j<dropmodel.length;j++) {
 									nm = dropmodel[j].name;
 									if( !(nm === 'cb' || nm === 'rn' || nm === 'subgrid' )) {
-										if(getdata.hasOwnProperty(key) && dropmodel[j]) {
-											tmpdata[nm] = getdata[key];
+										if (getdata.hasOwnProperty(nm)) {
+											tmpdata[nm] = getdata[nm];
 										}
 									}
-									j++;
-								}
 								}
 								getdata = tmpdata;
 							} catch (e) {}
