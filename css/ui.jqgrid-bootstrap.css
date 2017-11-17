@@ -953,3 +953,27 @@ td.menu_text {
 .ui-jqgrid .menubar-ltr {
 	float : left;
 }
+/*printing*/
+
+.jqgridprint {
+	width : 100%;
+	font-size: 13px;
+}
+
+.jqgridprint th,
+.jqgridprint td {
+	padding: 4px 4px 4px 4px ;
+	text-align: center ;
+}
+.jqgridprint th {
+	border-bottom: 2px solid #333333 ;
+}
+.jqgridprint td {
+	border-bottom: 1px dotted #999999 ;
+}
+
+.jqgridprint tfoot td {
+	border-bottom-width: 0px ;
+	border-top: 2px solid #333333 ;
+	padding-top: 20px ;
+}
