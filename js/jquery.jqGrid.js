@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.1 - 2017-11-09
+* @license Guriddo jqGrid JS - v5.2.1 - 2017-11-17
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -13773,24 +13773,23 @@ $.jgrid.extend({
 						return false;
 					},
 					drop: function(ev, ui) {
-						if (!$(ui.draggable).hasClass('jqgrow')) { return; }
-						var accept = $(ui.draggable).attr("id");
-						var getdata = ui.draggable.parent().parent().jqGrid('getRowData',accept);
-						var target = $(this).find('table.ui-jqgrid-btable:first')[0];
+						if (!$(ui.draggable).hasClass('jqgrow')) { 
+							return; 
+						}
+						var accept = $(ui.draggable).attr("id"),
+							getdata = ui.draggable.parent().parent().jqGrid('getRowData',accept),
+							target = $(this).find('table.ui-jqgrid-btable:first')[0];
 						if(!opts.dropbyname) {
-							var j =0, tmpdata = {}, nm, key;
+							var j, tmpdata = {}, nm;
 							var dropmodel = $("#"+$.jgrid.jqID(target.id)).jqGrid('getGridParam','colModel');
 							try {
-								for (key in getdata) {
-									if (getdata.hasOwnProperty(key)) {
+								for(j=0;j<dropmodel.length;j++) {
 									nm = dropmodel[j].name;
 									if( !(nm === 'cb' || nm === 'rn' || nm === 'subgrid' )) {
-										if(getdata.hasOwnProperty(key) && dropmodel[j]) {
-											tmpdata[nm] = getdata[key];
+										if (getdata.hasOwnProperty(nm)) {
+											tmpdata[nm] = getdata[nm];
 										}
 									}
-									j++;
-								}
 								}
 								getdata = tmpdata;
 							} catch (e) {}
@@ -18090,6 +18089,321 @@ $.jgrid.extend({
 				throw e;
 			}
 		});
+	},
+	exportToHtml : function ( o ) {
+		o = $.extend(true,{
+			title: '',
+			onBeforeExport: null,
+			includeLabels : true,
+			includeGroupHeader : true,
+			includeFooter: true,
+			fileName : "jqGridExport.html",
+			tableClass : 'jqgridprint',
+			autoPrint : false,
+			topText : '',
+			bottomText : '',
+			returnAsString : false
+			
+		}, o || {} );
+		var ret;
+		this.each(function() {
+			var $t = this,
+			cm = $t.p.colModel,
+			i=0, j, ien, //obj={},
+			data = { 
+				body  : $t.addLocalData( true ),
+				header : [],
+				footer : [],
+				width : [],
+				map : [],
+				align:[]
+			};
+			for ( j=0, ien=cm.length ; j<ien ; j++ ) {
+				if(cm[j].exportcol === undefined) {
+					cm[j].exportcol =  true;
+	}
+				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn' || !cm[j].exportcol) {
+					continue;
+				}
+				data.header[i] = cm[j].name;
+				data.width[ i ] = cm[j].width;
+				data.map[i] = j;
+				data.align[i] = cm[j].align || 'left';
+				i++;
+			}
+
+			var _link = document.createElement( 'a' );
+
+			var _styleToAbs = function( el ) {
+				var clone = $(el).clone()[0];
+
+				if ( clone.nodeName.toLowerCase() === 'link' ) {
+					clone.href = _relToAbs( clone.href );
+				}
+
+				return clone.outerHTML;
+			};
+
+			var _relToAbs = function( href ) {
+				// Assign to a link on the original page so the browser will do all the
+				// hard work of figuring out where the file actually is
+				_link.href = href;
+				var linkHost = _link.host;
+
+				// IE doesn't have a trailing slash on the host
+				// Chrome has it on the pathname
+				if ( linkHost.indexOf('/') === -1 && _link.pathname.indexOf('/') !== 0) {
+					linkHost += '/';
+				}
+
+				return _link.protocol+"//"+linkHost+_link.pathname+_link.search;
+			};
+
+			var addRow = function ( d, tag , style ) {
+				var str = '<tr>', stl;
+				for ( var i=0, ien=d.length ; i<ien ; i++ ) {
+					stl = (style === true ? " style=width:"+data.width[i]+"px;":""); 
+					str += '<'+tag+stl+'>'+d[i]+'</'+tag+'>';
+				}
+
+				return str + '</tr>';
+			};
+			var addBodyRow = function ( d, tag, frm, style, colsp) {
+				var str = '<tr>', f, stl; 
+				//style = true;
+
+				for ( var i=0, ien = data.header.length; i< ien; i++ ) {
+					if(colsp) {
+						stl = ' colspan= "'+ (data.header.length) +'"' + " style=text-align:left";
+					} else {
+						stl = (style === true ? " style=width:"+data.width[i]+"px;text-align:"+data.align[i]+";" : " style=text-align:"+data.align[i]+";"); 
+					}
+					f= data.header[i];
+					if (d.hasOwnProperty(f) ) {
+						str += '<'+tag+stl+'>'+ (frm ? $.jgrid.formatCell( d[f], data.map[i], d, cm[data.map[i]], $t, 'html') : d[f])+'</'+tag+'>';
+					}
+					if(colsp) {
+						break;
+					}
+				}
+
+				return str + '</tr>';
+			};
+//=========================================================================			
+			function groupToHtml ( grdata ) {
+				var grp = $t.p.groupingView, 
+				cp=[], len =grp.groupField.length,
+				colspans = cm.length,
+				toEnd = 0, retstr="";
+					$.each(cm, function (i,n){
+					var ii;
+					for(ii=0;ii<len;ii++) {
+						if(grp.groupField[ii] === n.name ) {
+							cp[ii] = i;
+							break;
+						}
+					}
+});
+				function findGroupIdx( ind , offset, grp) {
+					var ret = false, i;
+					if(offset===0) {
+						ret = grp[ind];
+					} else {
+						var id = grp[ind].idx;
+						if(id===0) { 
+							ret = grp[ind]; 
+						}  else {
+							for(i=ind;i >= 0; i--) {
+								if(grp[i].idx === id-offset) {
+									ret = grp[i];
+									break;
+								}
+							}
+						}
+					}
+					return ret;
+				}
+				function buildSummaryTd(i, ik, grp, foffset) {
+					var fdata = findGroupIdx(i, ik, grp),
+					//cm = $t.p.colModel,
+					vv, grlen = fdata.cnt, k, retarr = emptyData(data.header);
+					for(k=foffset; k<colspans;k++) {
+						if(cm[k].hidden || !cm[k].exportcol) {
+							continue;
+						}
+						var tplfld = "{0}";
+						$.each(fdata.summary,function(){
+							if(this.nm === cm[k].name) {
+								if(cm[k].summaryTpl)  {
+									tplfld = cm[k].summaryTpl;
+								}
+								if(typeof this.st === 'string' && this.st.toLowerCase() === 'avg') {
+									if(this.sd && this.vd) { 
+										this.v = (this.v/this.vd);
+									} else if(this.v && grlen > 0) {
+										this.v = (this.v/grlen);
+									}
+								}
+								try {
+									this.groupCount = fdata.cnt;
+									this.groupIndex = fdata.dataIndex;
+									this.groupValue = fdata.value;
+									vv = $t.formatter('', this.v, k, this);
+								} catch (ef) {
+									vv = this.v;
+								}
+								retarr[this.nm] = $.jgrid.stripHtml( $.jgrid.template(tplfld,vv) );
+								return false;
+							}
+						});
+					}
+					return retarr;
+				}
+				function emptyData ( d ) {
+					var clone = {};
+					for(var key=0;key<d.length; key++ ) {
+						clone[ d[key] ] = "";
+					}
+					return clone;
+				}
+				var sumreverse = $.makeArray(grp.groupSummary), gv;
+				sumreverse.reverse();
+				if($t.p.datatype === 'local' && !$t.p.loadonce) {
+					$($t).jqGrid('groupingSetup');
+					var groupingPrepare = $.jgrid.getMethod("groupingPrepare");
+					for(var ll=0; ll < data.body.length; ll++) {
+						groupingPrepare.call($($t), data.body[ll], ll);
+					}
+				}
+				$.each(grp.groups,function(i,n){
+					toEnd++;
+					try {
+						if ($.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
+							gv = grp.formatDisplayField[n.idx].call($t, n.displayValue, n.value, $t.p.colModel[cp[n.idx]], n.idx, grp);
+						} else {
+							gv = $t.formatter('', n.displayValue, cp[n.idx], n.value );
+						}
+					} catch (egv) {
+						gv = n.displayValue;
+					}
+					var grpTextStr = ''; 
+					if($.isFunction(grp.groupText[n.idx])) { 
+						grpTextStr = grp.groupText[n.idx].call($t, gv, n.cnt, n.summary);
+					} else {
+						grpTextStr = $.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary);
+					}
+					if( !(typeof grpTextStr ==='string' || typeof grpTextStr ==='number' ) ) {
+						grpTextStr = gv;
+					}
+					var arr, colSpan = false;
+					if(grp.groupSummaryPos[n.idx] === 'header')  {
+						arr = buildSummaryTd(i, 0, grp.groups, 0 /*grp.groupColumnShow[n.idx] === false ? (mul ==="" ? 2 : 3) : ((mul ==="") ? 1 : 2)*/ );
+					} else {
+						arr = emptyData(data.header);
+						colSpan = true;
+					}
+					var fkey = Object.keys(arr);
+					arr[fkey[0]] =  new Array(n.idx*5).join(' ') + grpTextStr ;
+					retstr += addBodyRow( arr, 'td', false, toEnd === 1, colSpan  );
+					var leaf = len-1 === n.idx; 
+					if( leaf ) {
+						var gg = grp.groups[i+1], kk, ik, offset = 0, sgr = n.startRow,
+						end = gg !== undefined ?  gg.startRow : grp.groups[i].startRow + grp.groups[i].cnt;
+						for(kk=sgr;kk<end;kk++) {
+							if(!grdata[kk - offset]) { break; }
+							var to = grdata[kk - offset];
+							retstr += addBodyRow( to, 'td', false );
+							//addRow( to, false );
+						}
+				
+						if(grp.groupSummaryPos[n.idx] !== 'header') {
+							var jj;
+							if (gg !== undefined) {
+								for (jj = 0; jj < grp.groupField.length; jj++) {
+									if (gg.dataIndex === grp.groupField[jj]) {
+										break;
+									}
+								}
+								toEnd = grp.groupField.length - jj;
+							}
+							for (ik = 0; ik < toEnd; ik++) {
+								if(!sumreverse[ik]) { continue; }
+								arr = buildSummaryTd(i, ik, grp.groups, 0);
+								retstr += addBodyRow( arr, 'td', false );
+								//addRow( arr, true );
+							}
+							toEnd = jj;
+						}
+					}
+				});
+				return retstr;
+			}
+			var html = '<table class="'+o.tableClass+'">';
+
+			if ( o.includeLabels ) {
+				html += '<thead>'+ addRow( data.header, 'th', true ) +'</thead>';
+			}
+
+			html += '<tbody>';
+			if( $t.p.grouping ) {
+				html += groupToHtml(data.body);
+			} else {
+				for ( var i=0, ien=data.body.length ; i<ien ; i++ ) {
+					html += addBodyRow( data.body[i], 'td', true, (i===0?true:false) );
+				}
+			}
+
+			if ( o.includeFooter && $t.p.footerrow ) {
+				data.footer = $($t).jqGrid('footerData', 'get', null, false);
+
+				html += addBodyRow( data.footer, 'td' , false);
+			}
+			html += '</tbody>';
+			html += '</table>';
+			if (o.returnAsString ) {
+				ret = html;
+			} else {
+				// Open a new window for the printable table
+				var win = window.open( '', '' );
+				win.document.close();
+
+				var head = o.title ? '<title>'+o.title+'</title>' : '';
+				$('style, link').each( function () {
+					head += _styleToAbs( this );
+				} );
+
+				try {
+					win.document.head.innerHTML = head; // Work around for Edge
+				}
+				catch (e) {
+					$(win.document.head).html( head ); // Old IE
+				}
+
+				win.document.body.innerHTML =
+					(o.title ? '<h1>'+o.title+'</h1>' : '') +
+					'<div>'+(o.topText || '')+'</div>'+
+					html+
+					'<div>'+(o.bottomText || '')+'</div>';
+
+				$(win.document.body).addClass('html-view');
+
+				$('img', win.document.body).each( function ( i, img ) {
+					img.setAttribute( 'src', _relToAbs( img.getAttribute('src') ) );
+				} );
+
+				if ( o.onBeforeExport ) {
+					o.onBeforeExport( win );
+				}
+
+				setTimeout( function () {
+					if ( o.autoPrint ) {
+						win.print(); 
+						win.close();
+					}
+				}, 1000 );
+			}
+		});
+		return ret;
 	}
 });
 
