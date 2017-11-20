@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.1 - 2017-11-17
+* @license Guriddo jqGrid JS - v5.2.1 - 2017-11-20
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5106,37 +5106,43 @@ $.jgrid.extend({
 			if(pos>=0) {
 				var ind = $($t).jqGrid('getGridRowById', rowid); 
 				if (ind){
-					var tcell = $("td:eq("+pos+")",ind), cl=0, rawdat=[];
-					if(nData !== "" || forceupd === true ) {
-						if(ind.cells !== undefined) {
-							while(cl<ind.cells.length) {
-								// slow down speed
-								rawdat.push(ind.cells[cl].innerHTML);
-								cl++;
+					var tcell, cl=0, rawdat=[];
+					try {
+						tcell = ind.cells[pos];
+					} catch(e){}
+					if(tcell) {
+						if(nData !== "" || forceupd === true ) {
+							if(ind.cells !== undefined) {
+								while(cl<ind.cells.length) {
+									// slow down speed
+									// rawdat should be unformated
+									rawdat.push(ind.cells[cl].innerHTML);
+									cl++;
+								}
+							}
+							v = $t.formatter(rowid, nData, pos, rawdat, 'edit');
+							title = $t.p.colModel[pos].title ? {"title":$.jgrid.stripHtml(v)} : {};
+							if($t.p.treeGrid && $(".tree-wrap",$(tcell)).length>0) {
+								$("span",$(tcell)).html(v).attr(title);
+							} else {
+								$(tcell).html(v).attr(title);
+							}
+							if($t.p.datatype === "local") {
+								var cm = $t.p.colModel[pos], index;
+								nData = cm.formatter && typeof cm.formatter === 'string' && cm.formatter === 'date' ? $.unformat.date.call($t,nData,cm) : nData;
+								index = $t.p._index[$.jgrid.stripPref($t.p.idPrefix, rowid)];
+								if(index !== undefined) {
+									$t.p.data[index][cm.name] = nData;
+								}
 							}
 						}
-						v = $t.formatter(rowid, nData, pos, rawdat, 'edit');
-						title = $t.p.colModel[pos].title ? {"title":$.jgrid.stripHtml(v)} : {};
-						if($t.p.treeGrid && $(".tree-wrap",$(tcell)).length>0) {
-							$("span",$(tcell)).html(v).attr(title);
-						} else {
-							$(tcell).html(v).attr(title);
+						if(typeof cssp === 'string'){
+							$(tcell).addClass(cssp);
+						} else if(cssp) {
+							$(tcell).css(cssp);
 						}
-						if($t.p.datatype === "local") {
-							var cm = $t.p.colModel[pos], index;
-							nData = cm.formatter && typeof cm.formatter === 'string' && cm.formatter === 'date' ? $.unformat.date.call($t,nData,cm) : nData;
-							index = $t.p._index[$.jgrid.stripPref($t.p.idPrefix, rowid)];
-							if(index !== undefined) {
-								$t.p.data[index][cm.name] = nData;
-							}
-						}
+						if(typeof attrp === 'object') {$(tcell).attr(attrp);}
 					}
-					if(typeof cssp === 'string'){
-						$(tcell).addClass(cssp);
-					} else if(cssp) {
-						$(tcell).css(cssp);
-					}
-					if(typeof attrp === 'object') {$(tcell).attr(attrp);}
 				}
 			}
 		});
