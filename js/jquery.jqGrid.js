@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.1 - 2017-11-20
+* @license Guriddo jqGrid JS - v5.2.1 - 2017-11-22
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5112,11 +5112,13 @@ $.jgrid.extend({
 					} catch(e){}
 					if(tcell) {
 						if(nData !== "" || forceupd === true ) {
-							if(ind.cells !== undefined) {
+							if($t.p.datatype === 'local') {
+								rawdat = $($t).jqGrid('getLocalRow', rowid);
+							} else if(ind.cells !== undefined) {
 								while(cl<ind.cells.length) {
 									// slow down speed
-									// rawdat should be unformated
-									rawdat.push(ind.cells[cl].innerHTML);
+									v = $.unformat.call($t,$(ind.cells[cl]),{rowId:ind.id, colModel:$t.p.colModel[cl]},cl);
+									rawdat.push(v);
 									cl++;
 								}
 							}
