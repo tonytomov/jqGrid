@@ -4311,6 +4311,7 @@ $.fn.jqGrid = function( pin ) {
 		ts.treeGrid_afterLoadComplete = function() {treeGrid_afterLoadComplete(); };
 		this.grid.cols = this.rows[0].cells;
 		if ($.isFunction( ts.p.onInitGrid )) { ts.p.onInitGrid.call(ts); }
+		$(ts).triggerHandler("jqGridInitGrid");
 		populate();
 		ts.p.hiddengrid=false;
 		if(ts.p.responsive) {
