@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.2.1 - 2017-11-24
+* @license Guriddo jqGrid JS - v5.2.1 - 2017-11-29
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -906,6 +906,13 @@ $.extend($.jgrid,{
 			$.jgrid.clearBeforeUnload( jqGridId );
 			$("#gbox_"+$.jgrid.jqID(jqGridId)).remove();
 		} catch (_) {}
+	},
+	isElementInViewport : function(el) {
+		var rect = el.getBoundingClientRect();
+		return (
+			rect.left >= 0 && 
+			rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+		);
 	},
 	styleUI : {
 		jQueryUI : {
@@ -3193,6 +3200,9 @@ $.fn.jqGrid = function( pin ) {
 			str1 += "</ul>";
 			$(parent).append(str1);
 			$("#col_menu").addClass("ui-menu " + colmenustyle.menu_widget);
+			if(!$.jgrid.isElementInViewport($("#col_menu")[0])){
+				$("#col_menu").css("left", - parseInt($("#column_menu").innerWidth(),10) +"px");
+			}
 			if($.fn.html5sortable()) {
 				$("#col_menu").html5sortable({
 					handle: 'span',
@@ -3340,6 +3350,11 @@ $.fn.jqGrid = function( pin ) {
 			elem = $('<ul id="search_menu" class="ui-search-menu modal-content" role="menu" tabindex="0" style="left:'+left+'px;top:'+top+'px;"></ul>').append(elem);
 			$(parent).append(elem);
 			$("#search_menu").addClass("ui-menu " + colmenustyle.menu_widget);
+
+			if(!$.jgrid.isElementInViewport($("#search_menu")[0])){
+				$("#search_menu").css("left", -parseInt($("#column_menu").innerWidth(),10) +"px");
+			}
+			
 			$("#bs_reset, #bs_search", "#search_menu").hover(function(){
 				$(this).addClass(hover);
 			},function(){
