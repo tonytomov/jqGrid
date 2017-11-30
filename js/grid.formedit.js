@@ -559,7 +559,7 @@ $.jgrid.extend({
 									//id processing
 									// user not set the id ret[2]
 									if(!ret[2]) {ret[2] = $.jgrid.randId();}
-									if(postdata[idname] == null || postdata[idname] === "_empty" || postdata[idname] === ""){
+									if(postdata[idname] == null || postdata[idname] === ($t.p.idPrefix + "_empty") || postdata[idname] === ""){
 										postdata[idname] = ret[2];
 									} else {
 										ret[2] = postdata[idname];
