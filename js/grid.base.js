@@ -1184,6 +1184,249 @@ $.extend($.jgrid,{
 				icon_new_item : "glyphicon-new-window",
 				icon_toolbar_menu : "glyphicon-menu-hamburger"
 			}
+		},
+		Bootstrap4 : {
+			common : {
+				disabled: "ui-disabled",
+				highlight : "table-success",
+				hover : "table-active",
+				cornerall: "", 
+				cornertop: "",
+				cornerbottom : "",
+				hidden : "",
+				overlay: "ui-overlay",
+				active : "active",
+				error : "alert-danger",
+				button : "btn btn-light",
+				content : ""
+			},
+			base : {
+				entrieBox : "",
+				viewBox : "table-responsive",
+				headerTable : "table table-bordered",
+				headerBox : "",
+				rowTable : "table table-bordered",
+				rowBox : "",
+				stripedTable : "table-striped",
+				footerTable : "table table-bordered",
+				footerBox : "",
+				headerDiv : "",
+				gridtitleBox : "",
+				customtoolbarBox : "",
+				//overlayBox: "ui-overlay",
+				loadingBox : "row",
+				rownumBox :  "active",
+				scrollBox : "",
+				multiBox : "checkbox",
+				pagerBox : "",
+				pagerTable : "table",
+				toppagerBox : "",
+				pgInput : "form-control",
+				pgSelectBox : "form-control",
+				pgButtonBox : ""
+			},
+			modal : {
+				modal : "modal-content",
+				header : "modal-header",
+				title : "modal-title",
+				content :"modal-body",
+				resizable : "ui-resizable-handle ui-resizable-se",
+				icon_close : "oi-circle-x",
+				icon_resizable : ""
+			},
+			celledit : {
+				inputClass : 'form-control'
+			}, 
+			inlinedit : {
+				inputClass : 'form-control'
+			},
+			formedit : {
+				inputClass : "form-control"
+			},
+			navigator : {
+			},
+			grouping : {
+			},
+			filter : {
+				table_widget : 'table table-condensed',
+				srSelect : 'form-control',
+				srInput : 'form-control',
+				menu_widget : '',
+			},
+			subgrid : {
+			},
+			treegrid : {
+			},
+			fmatter : {
+			},
+			colmenu : {
+				menu_widget : '',
+				input_checkbox : "",
+				filter_select: "form-control",
+				filter_input : "form-control"
+			}
+		}
+	},
+	iconSet : {
+		Iconic : {
+			common : {
+				icon_base : "oi"
+			},
+			base : {
+				icon_first : "oi-media-step-backward",
+				icon_prev : "oi-caret-left",
+				icon_next: "oi-caret-right",
+				icon_end: "oi-media-step-forward",
+				icon_asc : "oi-caret-top",
+				icon_desc : "oi-caret-bottom",
+				icon_caption_open : "oi-collapse-up",
+				icon_caption_close : "oi-expand-down"
+			},
+			modal : {
+				icon_close : "oi-circle-x",
+				icon_resizable : ""
+			},
+			inlinedit : {
+				icon_edit_nav : "oi-pencil",
+				icon_add_nav : "oi-plus",
+				icon_save_nav : "oi-check",
+				icon_cancel_nav : "oi-action-undo"
+			},
+			formedit : {
+				icon_prev : "oi-chevron-left",
+				icon_next : "oi-chevron-right",
+				icon_save : "oi-check",
+				icon_close : "oi-ban",
+				icon_del : "oi-delete",
+				icon_cancel : "oi-ban"
+			},
+			navigator : {
+				icon_edit_nav : "oi-pencil",
+				icon_add_nav : "oi-plus",
+				icon_del_nav : "oi-trash",
+				icon_search_nav : "oi-zoom-in",
+				icon_refresh_nav : "oi-reload",
+				icon_view_nav : "oi-browser",
+				icon_newbutton_nav : "oi-book"
+			},
+			grouping : {
+				icon_plus : 'oi-caret-right',
+				icon_minus : 'oi-caret-bottom'
+			},
+			filter : {
+				icon_search : 'oi-magnifying-glass',
+				icon_reset : 'oi-reload',
+				icon_query :'oi-comment-square'
+			},
+			subgrid : {
+				icon_plus : 'oi-chevron-right',
+				icon_minus : 'oi-chevron-bottom',
+				icon_open : 'oi-expand-left'
+			},
+			treegrid : {
+				icon_plus : 'oi-plus',
+				icon_minus : 'oi-minus',
+				icon_leaf : 'oi-media-record'
+			},
+			fmatter : {
+				icon_edit : "oi-pencil",
+				icon_add : "oi-plus",
+				icon_save : "oi-check",
+				icon_cancel : "oi-action-undo",
+				icon_del : "oi-trash"
+			},
+			colmenu : {
+				icon_menu : "oi-list",
+				icon_sort_asc : "oi-sort-ascending",
+				icon_sort_desc : "oi-sort-descending",
+				icon_columns : "oi-project",
+				icon_filter : "oi-magnifying-glass",
+				icon_group : "oi-list-rich",
+				icon_freeze : "oi-spreadsheet",
+				icon_move: "oi-move",
+				icon_new_item : "oi-external-link",
+				icon_toolbar_menu : "oi-menu"
+			}
+		},
+		Octicons : {
+			common : {
+				icon_base : "octicon"
+			},
+			base : {
+				icon_first : "octicon-triangle-left",
+				icon_prev : "octicon-chevron-left",
+				icon_next: "octicon-chevron-right",
+				icon_end: "octicon-triangle-right",
+				icon_asc : "octicon-triangle-up",
+				icon_desc : "octicon-triangle-down",
+				icon_caption_open : "octicon-triangle-up",
+				icon_caption_close : "octicon-triangle-down"
+			},
+			modal : {
+				icon_close : "octicon-x",
+				icon_resizable : ""
+			},
+			inlinedit : {
+				icon_edit_nav : "octicon-pencil",
+				icon_add_nav : "octicon-plus",
+				icon_save_nav : "octicon-check",
+				icon_cancel_nav : "octicon-circle-slash"
+			},
+			formedit : {
+				icon_prev : "octicon-chevron-left",
+				icon_next : "octicon-chevron-right",
+				icon_save : "octicon-check",
+				icon_close : "octicon-x",
+				icon_del : "octicon-trashcan",
+				icon_cancel : "octicon-circle-slash"
+			},
+			navigator : {
+				icon_edit_nav : "octicon-pencil",
+				icon_add_nav : "octicon-plus",
+				icon_del_nav : "octicon-trashcan",
+				icon_search_nav : "octicon-search",
+				icon_refresh_nav : "octicon-sync",
+				icon_view_nav : "octicon-file",
+				icon_newbutton_nav : "octicon-link-external"
+			},
+			grouping : {
+				icon_plus : 'octicon-triangle-right',
+				icon_minus : 'octicon-triangle-down'
+			},
+			filter : {
+				icon_search : 'octicon-search',
+				icon_reset : 'octicon-sync',
+				icon_query :'octicon-file-code'
+			},
+			subgrid : {
+				icon_plus : 'octicon-triangle-right',
+				icon_minus : 'octicon-triangle-down',
+				icon_open : 'octicon-git-merge'
+			},
+			treegrid : {
+				icon_plus : 'octicon-plus',
+				icon_minus : 'octicon-minus',
+				icon_leaf : 'octicon-primitive-dot'
+			},
+			fmatter : {
+				icon_edit : "octicon-pencil",
+				icon_add : "octicon-plus",
+				icon_save : "octicon-check",
+				icon_cancel : "octicon-circle-slash",
+				icon_del : "octicon-trashcan"
+			},
+			colmenu : {
+				icon_menu : "octicon-grabber",
+				icon_sort_asc : "octicon-arrow-down",
+				icon_sort_desc : "octicon-arrow-up",
+				icon_columns : "octicon-repo",
+				icon_filter : "octicon-search",
+				icon_group : "octicon-list-unordered",
+				icon_freeze : "octicon-repo",
+				icon_move: "octicon-git-compare",
+				icon_new_item : "octicon-link-external",
+				icon_toolbar_menu : "octicon-three-bars"
+			}
 		}
 	}
 });
@@ -1350,6 +1593,7 @@ $.fn.jqGrid = function( pin ) {
 			storeNavOptions: false,
 			regional :  "en",
 			styleUI : "jQueryUI",
+			iconSet : "Iconic",
 			responsive : false,
 			restoreCellonFail : true,
 			colFilters : {},
@@ -1586,6 +1830,11 @@ $.fn.jqGrid = function( pin ) {
 		if( this.p.colNames.length !== this.p.colModel.length ) {
 			alert($.jgrid.getRegional(this,"errors.model"));
 			return;
+		}
+		if(ts.p.styleUI === 'Bootstrap4') {
+			if($.jgrid.iconSet.hasOwnProperty(ts.p.iconSet)) {
+				$.extend(true, $.jgrid.styleUI['Bootstrap4'], $.jgrid.iconSet[ts.p.iconSet]);
+			}
 		}
 		var getstyle = $.jgrid.getMethod("getStyleUI"),
 		stylemodule = ts.p.styleUI + ".common",
