@@ -3829,6 +3829,9 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 			});
+			if( parseFloat($("#column_menu").css("left")) < 0 ) {
+				$("#column_menu").css("left", $(ts).css("left") );
+			}
 		},
 		colTemplate;
 		if(ts.p.colMenu || ts.p.menubar) {
