@@ -36,7 +36,7 @@ $.jgrid.extend({
 			if ($.isFunction(afterrestorefunc)) { o.afterrestorefunc = afterrestorefunc; }
 			// last two not as param, but as object (sorry)
 			//if (restoreAfterError !== undefined) { o.restoreAfterError = restoreAfterError; }
-			//if (mtype !== undefined) { o.mtype = mtype || "POST"; }			
+			//if (mtype !== undefined) { o.mtype = mtype || "POST"; }
 		}
 		o = $.extend(true, {
 			keys : false,
@@ -54,7 +54,7 @@ $.jgrid.extend({
 			mtype: "POST",
 			focusField : true,
 			saveui : "enable",
-			savetext : $.jgrid.getRegional($t,'defaults.savetext')			
+			savetext : $.jgrid.getRegional($t,'defaults.savetext')
 		}, $.jgrid.inlineEdit, o );
 
 		// End compatible
@@ -69,9 +69,9 @@ $.jgrid.extend({
 			if( bfer === undefined ) {
 				bfer = true;
 			}
-			if(!bfer) { 
+			if(!bfer) {
 				$t.p.beforeAction = false;
-				return; 
+				return;
 			}
 			editable = $(ind).attr("editable") || "0";
 			if (editable === "0" && !$(ind).hasClass("not-editable-row")) {
@@ -120,8 +120,8 @@ $.jgrid.extend({
 						if(typeof o.focusField === 'number' && parseInt(o.focusField,10) <= cm.length) {
 							focus = o.focusField;
 						}
-						setTimeout(function(){ 
-							var fe = $("td:eq("+focus+") :input:visible",ind).not(":disabled"); 
+						setTimeout(function(){
+							var fe = $("td:eq("+focus+") :input:visible",ind).not(":disabled");
 							if(fe.length > 0) {
 								fe.focus();
 							}
@@ -143,12 +143,12 @@ $.jgrid.extend({
 								return false;
 							}
 							if (e.keyCode === 13) {
+								var ta = e.target;
+								if(ta.tagName === 'TEXTAREA') { return true; }
 								if($.isFunction( o.onEnter )) {
 									o.onEnter.call($t, rowid, o, e);
 									return true;
 								}
-								var ta = e.target;
-								if(ta.tagName === 'TEXTAREA') { return true; }
 								if( $($t).jqGrid("saveRow", rowid, o ) ) {
 									if($t.p.inlineNav) {
 										try {
@@ -280,12 +280,12 @@ $.jgrid.extend({
 					if( $.isFunction($t.p.validationCell) ) {
 						$t.p.validationCell.call($t, elem, cv[1], ind.rowIndex, index);
 					} else {
-						var tr = $($t).jqGrid('getGridRowById', rowid), 
+						var tr = $($t).jqGrid('getGridRowById', rowid),
 							positions = $.jgrid.findPos(tr);
 						$.jgrid.info_dialog(errors.errcap,cv[1],edit.bClose,{
 							left:positions[0],
-							top:positions[1]+$(tr).outerHeight(), 
-							styleUI : $t.p.styleUI, 
+							top:positions[1]+$(tr).outerHeight(),
+							styleUI : $t.p.styleUI,
 							onClose: function(){
 								if(index >= 0 ) {
 									$("#"+rowid+"_" +$t.p.colModel[index].name).focus();
@@ -507,7 +507,7 @@ $.jgrid.extend({
 			}
 			if(!bfar) {
 				$t.p.beforeAction = false;
-				return; 
+				return;
 			}
 			p.rowID = $.isFunction(p.rowID) ? p.rowID.call($t, p) : ( (p.rowID != null) ? p.rowID : $.jgrid.randId());
 			if(p.useDefValues === true) {
@@ -641,7 +641,7 @@ $.jgrid.extend({
 								$("#"+gID+"_iledit").addClass( disabled );
 							}
 						} else {
-							$.jgrid.viewModal("#alertmod_"+gID, {gbox:"#gbox_"+gID,jqm:true});$("#jqg_alrt").focus();							
+							$.jgrid.viewModal("#alertmod_"+gID, {gbox:"#gbox_"+gID,jqm:true});$("#jqg_alrt").focus();
 						}
 					}
 				});
@@ -671,7 +671,7 @@ $.jgrid.extend({
 								$($t).jqGrid('showAddEditButtons');
 							}
 						} else {
-							$.jgrid.viewModal("#alertmod_"+gID, {gbox:"#gbox_"+gID,jqm:true});$("#jqg_alrt").focus();							
+							$.jgrid.viewModal("#alertmod_"+gID, {gbox:"#gbox_"+gID,jqm:true});$("#jqg_alrt").focus();
 						}
 					}
 				});
@@ -693,7 +693,7 @@ $.jgrid.extend({
 							$($t).jqGrid('restoreRow', sr, cancelPrm);
 							$($t).jqGrid('showAddEditButtons');
 						} else {
-							$.jgrid.viewModal("#alertmod",{gbox:"#gbox_"+gID,jqm:true});$("#jqg_alrt").focus();							
+							$.jgrid.viewModal("#alertmod",{gbox:"#gbox_"+gID,jqm:true});$("#jqg_alrt").focus();
 						}
 					}
 				});
