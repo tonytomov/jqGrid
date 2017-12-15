@@ -3,16 +3,16 @@
  * The filter uses JSON entities to hold filter rules and groups. Here is an example of a filter:
 
 { "groupOp": "AND",
-      "groups" : [ 
+      "groups" : [
         { "groupOp": "OR",
             "rules": [
-                { "field": "name", "op": "eq", "data": "England" }, 
+                { "field": "name", "op": "eq", "data": "England" },
                 { "field": "id", "op": "le", "data": "5"}
              ]
-        } 
+        }
       ],
       "rules": [
-        { "field": "name", "op": "eq", "data": "Romania" }, 
+        { "field": "name", "op": "eq", "data": "Romania" },
         { "field": "id", "op": "le", "data": "1"}
       ]
 }
@@ -38,7 +38,7 @@
 //module begin
 $.fn.jqFilter = function( arg ) {
 	if (typeof arg === 'string') {
-		
+
 		var fn = $.fn.jqFilter[arg];
 		if (!fn) {
 			throw ("jqFilter - No such method: " + arg);
@@ -139,12 +139,12 @@ $.fn.jqFilter = function( arg ) {
 		var getGrid = function () {
 			return $("#" + $.jgrid.jqID(p.id))[0] || null;
 		},
-		
+
 		$tg = getGrid(),
 		classes = $.jgrid.styleUI[($tg.p.styleUI || 'jQueryUI')].filter,
 		common = $.jgrid.styleUI[($tg.p.styleUI || 'jQueryUI')].common;
 
-		
+
 		if(this.p.showQuery) {
 			$(this).append("<table class='queryresult " + classes.table_widget + "' style='display:block;max-width:440px;border:0px none;' dir='"+this.p.direction+"'><tbody><tr><td class='query'></td></tr></tbody></table>");
 		}
@@ -173,7 +173,7 @@ $.fn.jqFilter = function( arg ) {
 		*/
 
 		this.onchange = function (  ){
-			// clear any error 
+			// clear any error
 			this.p.error = false;
 			this.p.errmsg="";
 			return $.isFunction(this.p.onChange) ? this.p.onChange.call( this, this.p ) : false;
@@ -412,7 +412,7 @@ $.fn.jqFilter = function( arg ) {
 				cm.searchoptions.id = $.jgrid.randId();
 				cm.searchoptions.name = rule.field;
 				cm.searchoptions.oper = 'filter';
-				
+
 				if(isIE && cm.inputtype === "text") {
 					if(!cm.searchoptions.size) {
 						cm.searchoptions.size = 10;
@@ -809,7 +809,7 @@ $.extend($.jgrid,{
 					}
 				}
 			}
-		} catch(e) {} 
+		} catch(e) {}
 		return filters;
 	}
 });
@@ -846,7 +846,7 @@ $.jgrid.extend({
 			}
 			var classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].filter,
 			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].common,
-			base = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].base,			
+			base = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].base,
 
 			triggerToolbar = function() {
 				var sdata={}, j=0, v, nm, sopt={},so, ms = false, ssfield = [], bbt =false, sop;
@@ -882,7 +882,7 @@ $.jgrid.extend({
 					}
 				});
 				var sd =  j>0 ? true : false;
-				if(p.stringResult === true || $t.p.datatype === "local" || p.searchOperators === true) 
+				if(p.stringResult === true || $t.p.datatype === "local" || p.searchOperators === true)
 				{
 					var ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[";
 					var gi=0;
@@ -921,7 +921,7 @@ $.jgrid.extend({
 											filters.groups = [];
 										}
 										group = { groupOp: 'AND', groups: [], rules: [] };
-										filters.groups.push(group);									
+										filters.groups.push(group);
 										$.each(ssdata,function(l) {
 											var btop = l === 0 ? 'ge' : 'le';
 											str = ssdata[l];
@@ -963,8 +963,8 @@ $.jgrid.extend({
 				trigger = (typeof trigger !== 'boolean') ? true : trigger;
 				$.each($t.p.colModel,function(){
 					var v, $elem = $("#gs_"+$t.p.idPrefix+$.jgrid.jqID(this.name),(this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
-					if(this.searchoptions && this.searchoptions.defaultValue !== undefined) { 
-						v = this.searchoptions.defaultValue; 
+					if(this.searchoptions && this.searchoptions.defaultValue !== undefined) {
+						v = this.searchoptions.defaultValue;
 					}
 					nm = this.index || this.name;
 					switch (this.stype) {
@@ -1047,9 +1047,9 @@ $.jgrid.extend({
 					$($t).jqGrid('destroyFrozenColumns');
 				}
 				if(trow.css("display") === 'none') {
-					trow.show(); 
-				} else { 
-					trow.hide(); 
+					trow.show();
+				} else {
+					trow.hide();
 				}
 				if($t.p.frozenColumns === true) {
 					$($t).jqGrid("setFrozenColumns");
@@ -1239,7 +1239,7 @@ $.jgrid.extend({
 						}
 						break;
 					}
-					
+
 					$.jgrid.bindEv.call($t, elem , soptions);
 				}
 				$(th).append(thd);
@@ -1318,7 +1318,7 @@ $.jgrid.extend({
 			var $t = this, cm = $t.p.colModel, i, l = $t.p.colModel.length,
 			searchitem, filters, rules, rule, ssfield =[], ia;
 			// clear the values on toolbar.
-			// do not call clearToolbar 
+			// do not call clearToolbar
 			if(!$t.p.filterToolbar) {
 				return;
 			}
@@ -1346,7 +1346,7 @@ $.jgrid.extend({
 							searchitem = $("#gs_" + $t.p.idPrefix + $.jgrid.jqID(cm[ia].name));
 							// problem for between operator
 							if ( searchitem.length > 0) {
-								if (cm[ia].stype === "select") { 
+								if (cm[ia].stype === "select") {
 									searchitem.find("option[value='" + $.jgrid.jqID(rule.data) + "']").prop('selected', true);
 								} else if (cm[ia].stype === "text") {
 									searchitem.val(rule.data);
@@ -1462,7 +1462,7 @@ $.jgrid.extend({
 				showFilter($("#fbox_"+$.jgrid.jqID( $t.p.id )));
 			} else {
 				var fil = $("<div><div id='"+fid+"' class='searchFilter' style='overflow:auto'></div></div>").insertBefore("#gview_"+$.jgrid.jqID($t.p.id)),
-				align = "left", butleft =""; 
+				align = "left", butleft ="";
 				if($t.p.direction === "rtl") {
 					align = "right";
 					butleft = " style='text-align:left'";
