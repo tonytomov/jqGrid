@@ -51,7 +51,7 @@ $.extend($.jgrid,{
 		if( v.indexOf(p.separator) === -1 || v.indexOf(p.qoute) === -1) {
 			v = p.quote + v + p.quote;
 		}
-		return v;		
+		return v;
 	},
 
 	excelCellPos : function ( n ){
@@ -90,7 +90,7 @@ $.extend($.jgrid,{
 		var $t = this,
 		xmlserialiser = new XMLSerializer(),
 		// IE >= 9
-		ieExcel = xmlserialiser.serializeToString(	
+		ieExcel = xmlserialiser.serializeToString(
 			$.parseXML( $.jgrid.excelStrings['xl/worksheets/sheet1.xml'] ) )
 			.indexOf( 'xmlns:r' ) === -1,
 		newDir, worksheet, i, ien, attr, attrs = [], str;
@@ -224,7 +224,7 @@ $.extend($.jgrid,{
 					'<fill>'+
 						'<patternFill patternType="none" />'+
 					'</fill>'+
-					'<fill/>'+ 
+					'<fill/>'+
 					'<fill>'+
 						'<patternFill patternType="solid">'+
 							'<fgColor rgb="FFD9D9D9" />'+
@@ -380,9 +380,9 @@ $.extend($.jgrid,{
 		{ match: /^\-?[\d,]+\.\d{2}$/,  style: 64 },  // Numbers with 2 d.p. and thousands separators
 		{ match: /^\d{4}\-\d{2}\-\d{2}$/, style: 67 } // Dates
 	]
-	
+
 });
-/******************************************************************** 
+/********************************************************************
 *
 * due to speed, every export method will have separate module
 * to collect grouped data
@@ -393,8 +393,8 @@ $.jgrid.extend({
 		p = $.extend(true, {
 			separator: ",",
 			separatorReplace : " ",
-			quote : '"', 
-			escquote : '"', 
+			quote : '"',
+			escquote : '"',
 			newLine : "\r\n", // navigator.userAgent.match(/Windows/) ?	'\r\n' : '\n';
 			replaceNewLine : " ",
 			includeCaption : true,
@@ -410,10 +410,10 @@ $.jgrid.extend({
 
 			p._regexsep = new RegExp(p.separator, "g");
 			p._regexquot = new RegExp(p.quote, "g");
-						
+
 			var $t = this,
 			// get the filtered data
-			data1 = this.addLocalData( true ), 
+			data1 = this.addLocalData( true ),
 			dlen = data1.length,
 			cm = $t.p.colModel,
 			cmlen = cm.length,
@@ -422,7 +422,7 @@ $.jgrid.extend({
 			cap = "", hdr = "", ftr="",	lbl="", albl=[];
 			function groupToCsv (grdata, p) {
 				var str="",
-				grp = $t.p.groupingView, 
+				grp = $t.p.groupingView,
 				cp=[], len =grp.groupField.length,
 				cm = $t.p.colModel,
 				colspans = cm.length,
@@ -443,8 +443,8 @@ $.jgrid.extend({
 						ret = grp[ind];
 					} else {
 						var id = grp[ind].idx;
-						if(id===0) { 
-							ret = grp[ind]; 
+						if(id===0) {
+							ret = grp[ind];
 						}  else {
 							for(i=ind;i >= 0; i--) {
 								if(grp[i].idx === id-offset) {
@@ -471,7 +471,7 @@ $.jgrid.extend({
 									tplfld = cm[k].summaryTpl;
 								}
 								if(typeof this.st === 'string' && this.st.toLowerCase() === 'avg') {
-									if(this.sd && this.vd) { 
+									if(this.sd && this.vd) {
 										this.v = (this.v/this.vd);
 									} else if(this.v && grlen > 0) {
 										this.v = (this.v/grlen);
@@ -485,10 +485,10 @@ $.jgrid.extend({
 								} catch (ef) {
 									vv = this.v;
 								}
-								retarr[j] = 
+								retarr[j] =
 									$.jgrid.formatCellCsv(
-									$.jgrid.stripHtml( 
-									$.jgrid.template(tplfld,vv) 
+									$.jgrid.stripHtml(
+									$.jgrid.template(tplfld,vv)
 									), p ) ;
 								return false;
 							}
@@ -517,8 +517,8 @@ $.jgrid.extend({
 					} catch (egv) {
 						gv = n.displayValue;
 					}
-					var grpTextStr = ''; 
-					if($.isFunction(grp.groupText[n.idx])) { 
+					var grpTextStr = '';
+					if($.isFunction(grp.groupText[n.idx])) {
 						grpTextStr = grp.groupText[n.idx].call($t, gv, n.cnt, n.summary);
 					} else {
 						grpTextStr = $.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary);
@@ -534,7 +534,7 @@ $.jgrid.extend({
 					}
 					arr[0] = $.jgrid.formatCellCsv( $.jgrid.stripHtml( grpTextStr ), p);
 					str +=  arr.join( p.separator ) + p.newLine;
-					var leaf = len-1 === n.idx; 
+					var leaf = len-1 === n.idx;
 					if( leaf ) {
 						var gg = grp.groups[i+1], kk, ik, offset = 0, sgr = n.startRow, to,
 						end = gg !== undefined ?  gg.startRow : grp.groups[i].startRow + grp.groups[i].cnt;
@@ -544,14 +544,14 @@ $.jgrid.extend({
 							k = 0;
 							for(ik = 0; ik < cm.length; ik++) {
 								if(cm[ik].exportcol) {
-									arr[k] = $.jgrid.formatCellCsv( 
+									arr[k] = $.jgrid.formatCellCsv(
 										$.jgrid.formatCell( to[cm[ik].name], ik, to, cm[ik], $t, 'csv' ) , p);
 									k++;
 								}
 							}
 							str += arr.join( p.separator ) + p.newLine;
 						}
-						
+
 						if(grp.groupSummaryPos[n.idx] !== 'header') {
 							var jj;
 							if (gg !== undefined) {
@@ -592,17 +592,17 @@ $.jgrid.extend({
 					def.push( n.name ); // clbl[i];
 				}
 			});
-			
+
 			if(p.includeLabels) {
 				lbl = albl.join( p.separator ) + p.newLine;
 			}
-			
+
 			p.collen = albl.length;
-			
+
 			if( $t.p.grouping ) {
-				
+
 				str += groupToCsv(data1, p);
-				
+
 			}  else {
 				while(j < dlen) {
 					row = data1[j];
@@ -672,7 +672,7 @@ $.jgrid.extend({
 		}
 	},
 	/*
-	 * 
+	 *
 	 * @param object o - settings for the export
 	 * @returns excel 2007 document
 	 * The method requiere jsZip lib in order to create excel document
@@ -684,7 +684,7 @@ $.jgrid.extend({
 			includeFooter: true,
 			fileName : "jqGridExport.xlsx",
 			mimetype : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-			maxlength : 40, // maxlength for visible string data 
+			maxlength : 40, // maxlength for visible string data
 			onBeforeExport : null,
 			replaceStr : null
 		}, o || {} );
@@ -712,12 +712,12 @@ $.jgrid.extend({
 			},
 			cm = $t.p.colModel,
 			i=0, j, ien, //obj={},
-			data = { 
+			data = {
 				body  : $t.addLocalData( true ),
 				header : [],
 				footer : [],
 				width : [],
-				map : [] 
+				map : []
 			};
 			for ( j=0, ien=cm.length ; j<ien ; j++ ) {
 				if(cm[j].exportcol === undefined) {
@@ -738,7 +738,7 @@ $.jgrid.extend({
 			function _replStrFunc (v) {
 				return v.replace(/</g, '&lt;')
 						.replace(/>/g, '&gt;')
-						.replace(/[\x00-\x09\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, '');						
+						.replace(/[\x00-\x09\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, '');
 			}
 			var _replStr = $.isFunction(o.replaceStr) ? o.replaceStr : _replStrFunc,
 			currentRow, rowNode,
@@ -775,7 +775,7 @@ $.jgrid.extend({
 							if ( special.fmt ) {
 								v = special.fmt( v );
 							}
-							if(special.style === 67) { //Dates 
+							if(special.style === 67) { //Dates
 								cell = $.jgrid.makeNode( rels, 'c', {
 									attr: {
 										t: 'd',
@@ -785,7 +785,7 @@ $.jgrid.extend({
 									children: [
 										$.jgrid.makeNode( rels, 'v', { text: v } )
 									]
-								} );							
+								} );
 							} else {
 								cell = $.jgrid.makeNode( rels, 'c', {
 									attr: {
@@ -840,9 +840,9 @@ $.jgrid.extend({
 				relsGet.appendChild(rowNode);
 				rowPos++;
 			};
-//=========================================================================			
+//=========================================================================
 			function groupToExcel ( grdata ) {
-				var grp = $t.p.groupingView, 
+				var grp = $t.p.groupingView,
 				cp=[], len =grp.groupField.length,
 				colspans = cm.length,
 				toEnd = 0;
@@ -861,8 +861,8 @@ $.jgrid.extend({
 						ret = grp[ind];
 					} else {
 						var id = grp[ind].idx;
-						if(id===0) { 
-							ret = grp[ind]; 
+						if(id===0) {
+							ret = grp[ind];
 						}  else {
 							for(i=ind;i >= 0; i--) {
 								if(grp[i].idx === id-offset) {
@@ -889,7 +889,7 @@ $.jgrid.extend({
 									tplfld = cm[k].summaryTpl;
 								}
 								if(typeof this.st === 'string' && this.st.toLowerCase() === 'avg') {
-									if(this.sd && this.vd) { 
+									if(this.sd && this.vd) {
 										this.v = (this.v/this.vd);
 									} else if(this.v && grlen > 0) {
 										this.v = (this.v/grlen);
@@ -937,8 +937,8 @@ $.jgrid.extend({
 					} catch (egv) {
 						gv = n.displayValue;
 					}
-					var grpTextStr = ''; 
-					if($.isFunction(grp.groupText[n.idx])) { 
+					var grpTextStr = '';
+					if($.isFunction(grp.groupText[n.idx])) {
 						grpTextStr = grp.groupText[n.idx].call($t, gv, n.cnt, n.summary);
 					} else {
 						grpTextStr = $.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary);
@@ -955,7 +955,7 @@ $.jgrid.extend({
 					var fkey = Object.keys(arr);
 					arr[fkey[0]] = $.jgrid.stripHtml( new Array(n.idx*5).join(' ') + grpTextStr );
 					addRow( arr, true );
-					var leaf = len-1 === n.idx; 
+					var leaf = len-1 === n.idx;
 					if( leaf ) {
 						var gg = grp.groups[i+1], kk, ik, offset = 0, sgr = n.startRow,
 						end = gg !== undefined ?  gg.startRow : grp.groups[i].startRow + grp.groups[i].cnt;
@@ -964,7 +964,7 @@ $.jgrid.extend({
 							var to = grdata[kk - offset];
 							addRow( to, false );
 						}
-				
+
 						if(grp.groupSummaryPos[n.idx] !== 'header') {
 							var jj;
 							if (gg !== undefined) {
@@ -985,8 +985,8 @@ $.jgrid.extend({
 					}
 				});
 			}
-//============================================================================			
-			
+//============================================================================
+
 			$( 'sheets sheet', xlsx.xl['workbook.xml'] ).attr( 'name', o.sheetName );
 			if(o.includeGroupHeader && $t.p.groupHeader && $t.p.groupHeader.length) {
 				var gh = $t.p.groupHeader, mergecell=[],
@@ -1008,9 +1008,9 @@ $.jgrid.extend({
 					}
 					addRow( clone, true );
 				}
-				
+
 				$('row c', rels).attr( 's', '2' ); // bold
-				
+
 				var merge = $.jgrid.makeNode( rels, 'mergeCells', {
 					attr : {
 						count : mergecell.length
@@ -1018,12 +1018,12 @@ $.jgrid.extend({
 				});
 				$('worksheet', rels).append( merge );
 				for(i=0;i<mergecell.length;i++) {
-					merge.appendChild($.jgrid.makeNode(rels, 'mergeCell',{ 
+					merge.appendChild($.jgrid.makeNode(rels, 'mergeCell',{
 						attr:  mergecell[i]
 					}));
-				}	
+				}
 			}
-			
+
 			if ( o.includeLabels ) {
 				addRow( data.header, true );
 				$('row:last c', rels).attr( 's', '2' ); // bold
@@ -1045,7 +1045,7 @@ $.jgrid.extend({
 				addRow( data.footer, true );
 				$('row:last c', rels).attr( 's', '2' ); // bold
 			}
-			
+
 			// Set column widths
 			var cols = $.jgrid.makeNode( rels, 'cols' );
 			$('worksheet', rels).prepend( cols );
@@ -1098,14 +1098,14 @@ $.jgrid.extend({
 			includeFooter: true,
 			fileName : "jqGridExport.pdf",
 			mimetype : "application/pdf"
-			
+
 		}, o || {} );
 		return this.each(function() {
-			var $t = this, rows = [], j, cm = $t.p.colModel, ien, obj = {}, key, 
+			var $t = this, rows = [], j, cm = $t.p.colModel, ien, obj = {}, key,
 			data = $t.addLocalData( true ), def = [], i=0, map=[], test=[], widths = [],  align={};
-// Group function			
+// Group function
 			function groupToPdf ( grdata ) {
-				var grp = $t.p.groupingView, 
+				var grp = $t.p.groupingView,
 				cp=[], len =grp.groupField.length,
 				cm = $t.p.colModel,
 				colspans = cm.length,
@@ -1120,7 +1120,7 @@ $.jgrid.extend({
 						}
 					}
 				});
-				
+
 				function constructRow( row, fmt ) {
 					var k =0, test=[];
 					//row = data[i];
@@ -1135,15 +1135,15 @@ $.jgrid.extend({
 					}
 					return test;
 				}
-				
+
 				function findGroupIdx( ind , offset, grp) {
 					var ret = false, i;
 					if(offset===0) {
 						ret = grp[ind];
 					} else {
 						var id = grp[ind].idx;
-						if(id===0) { 
-							ret = grp[ind]; 
+						if(id===0) {
+							ret = grp[ind];
 						}  else {
 							for(i=ind;i >= 0; i--) {
 								if(grp[i].idx === id-offset) {
@@ -1155,7 +1155,7 @@ $.jgrid.extend({
 					}
 					return ret;
 				}
-				
+
 				function buildSummaryTd(i, ik, grp, foffset) {
 					var fdata = findGroupIdx(i, ik, grp),
 					//cm = $t.p.colModel,
@@ -1171,7 +1171,7 @@ $.jgrid.extend({
 									tplfld = cm[k].summaryTpl;
 								}
 								if(typeof this.st === 'string' && this.st.toLowerCase() === 'avg') {
-									if(this.sd && this.vd) { 
+									if(this.sd && this.vd) {
 										this.v = (this.v/this.vd);
 									} else if(this.v && grlen > 0) {
 										this.v = (this.v/grlen);
@@ -1192,7 +1192,7 @@ $.jgrid.extend({
 					}
 					return retarr;
 				}
-				
+
 				function emptyData ( d ) {
 					var clone = {};
 					for(var key = 0; key< d.length; key++ ) {
@@ -1221,8 +1221,8 @@ $.jgrid.extend({
 					} catch (egv) {
 						gv = n.displayValue;
 					}
-					var grpTextStr = ''; 
-					if($.isFunction(grp.groupText[n.idx])) { 
+					var grpTextStr = '';
+					if($.isFunction(grp.groupText[n.idx])) {
 						grpTextStr = grp.groupText[n.idx].call($t, gv, n.cnt, n.summary);
 					} else {
 						grpTextStr = $.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary);
@@ -1239,7 +1239,7 @@ $.jgrid.extend({
 					var fkey = Object.keys(arr);
 					arr[fkey[0]] = $.jgrid.stripHtml( new Array(n.idx*5).join(' ') + grpTextStr );
 					rows.push( constructRow (arr, false) );
-					var leaf = len-1 === n.idx; 
+					var leaf = len-1 === n.idx;
 					if( leaf ) {
 						var gg = grp.groups[i+1], kk, ik, offset = 0, sgr = n.startRow,
 						end = gg !== undefined ?  gg.startRow : grp.groups[i].startRow + grp.groups[i].cnt;
@@ -1269,7 +1269,7 @@ $.jgrid.extend({
 					}
 				});
 			}
-//============================================================================			
+//============================================================================
 			var k;
 			for ( j=0, ien=cm.length ; j<ien ; j++ ) {
 				if(cm[j].exportcol === undefined ) {
@@ -1286,7 +1286,7 @@ $.jgrid.extend({
 				test.push( obj );
 				def[i]  = cm[j].name;
 				map[i] = j;
-				widths.push(cm[j].width); 
+				widths.push(cm[j].width);
 				align[cm[j].name] = cm[j].align || 'left';
 				i++;
 			}
@@ -1300,8 +1300,8 @@ $.jgrid.extend({
 						obj = {text:'', style: 'tableHeader'};
 						for(k=0;k<ghdata.length;k++) {
 							if(ghdata[k].startColumnName === def[key]) {
-								obj = { 
-									text : ghdata[k].titleText, 
+								obj = {
+									text : ghdata[k].titleText,
 									colSpan: ghdata[k].numberOfColumns,
 									style: 'tableHeader'
 								};
@@ -1313,7 +1313,7 @@ $.jgrid.extend({
 					rows.push(clone);
 				}
 			}
-			
+
 			if(o.includeLabels) {
 				rows.push( test );
 			}
@@ -1322,7 +1322,7 @@ $.jgrid.extend({
 			} else {
 				var row;
 				for ( i=0, ien=data.length ; i<ien ; i++ ) {
-					k =0; 
+					k =0;
 					test=[];
 					row = data[i];
 					for( key = 0;key < def.length; key++ ) {
@@ -1337,7 +1337,7 @@ $.jgrid.extend({
 					rows.push(test);
 				}
 			}
-			
+
 			if ( o.includeFooter && $t.p.footerrow) {
 				var fdata = $($t).jqGrid('footerData', 'get');
 				test=[];
@@ -1431,20 +1431,19 @@ $.jgrid.extend({
 			includeLabels : true,
 			includeGroupHeader : true,
 			includeFooter: true,
-			fileName : "jqGridExport.html",
 			tableClass : 'jqgridprint',
 			autoPrint : false,
 			topText : '',
 			bottomText : '',
 			returnAsString : false
-			
+
 		}, o || {} );
 		var ret;
 		this.each(function() {
 			var $t = this,
 			cm = $t.p.colModel,
 			i=0, j, ien, //obj={},
-			data = { 
+			data = {
 				body  : $t.addLocalData( true ),
 				header : [],
 				footer : [],
@@ -1455,7 +1454,7 @@ $.jgrid.extend({
 			for ( j=0, ien=cm.length ; j<ien ; j++ ) {
 				if(cm[j].exportcol === undefined) {
 					cm[j].exportcol =  true;
-	}
+				}
 				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn' || !cm[j].exportcol) {
 					continue;
 				}
@@ -1496,21 +1495,21 @@ $.jgrid.extend({
 			var addRow = function ( d, tag , style ) {
 				var str = '<tr>', stl;
 				for ( var i=0, ien=d.length ; i<ien ; i++ ) {
-					stl = (style === true ? " style=width:"+data.width[i]+"px;":""); 
+					stl = (style === true ? " style=width:"+data.width[i]+"px;":"");
 					str += '<'+tag+stl+'>'+d[i]+'</'+tag+'>';
 				}
 
 				return str + '</tr>';
 			};
 			var addBodyRow = function ( d, tag, frm, style, colsp) {
-				var str = '<tr>', f, stl; 
+				var str = '<tr>', f, stl;
 				//style = true;
 
 				for ( var i=0, ien = data.header.length; i< ien; i++ ) {
 					if(colsp) {
 						stl = ' colspan= "'+ (data.header.length) +'"' + " style=text-align:left";
 					} else {
-						stl = (style === true ? " style=width:"+data.width[i]+"px;text-align:"+data.align[i]+";" : " style=text-align:"+data.align[i]+";"); 
+						stl = (style === true ? " style=width:"+data.width[i]+"px;text-align:"+data.align[i]+";" : " style=text-align:"+data.align[i]+";");
 					}
 					f= data.header[i];
 					if (d.hasOwnProperty(f) ) {
@@ -1523,13 +1522,13 @@ $.jgrid.extend({
 
 				return str + '</tr>';
 			};
-//=========================================================================			
+//=========================================================================
 			function groupToHtml ( grdata ) {
-				var grp = $t.p.groupingView, 
+				var grp = $t.p.groupingView,
 				cp=[], len =grp.groupField.length,
 				colspans = cm.length,
 				toEnd = 0, retstr="";
-					$.each(cm, function (i,n){
+				$.each(cm, function (i,n){
 					var ii;
 					for(ii=0;ii<len;ii++) {
 						if(grp.groupField[ii] === n.name ) {
@@ -1537,15 +1536,15 @@ $.jgrid.extend({
 							break;
 						}
 					}
-});
+				});
 				function findGroupIdx( ind , offset, grp) {
 					var ret = false, i;
 					if(offset===0) {
 						ret = grp[ind];
 					} else {
 						var id = grp[ind].idx;
-						if(id===0) { 
-							ret = grp[ind]; 
+						if(id===0) {
+							ret = grp[ind];
 						}  else {
 							for(i=ind;i >= 0; i--) {
 								if(grp[i].idx === id-offset) {
@@ -1572,7 +1571,7 @@ $.jgrid.extend({
 									tplfld = cm[k].summaryTpl;
 								}
 								if(typeof this.st === 'string' && this.st.toLowerCase() === 'avg') {
-									if(this.sd && this.vd) { 
+									if(this.sd && this.vd) {
 										this.v = (this.v/this.vd);
 									} else if(this.v && grlen > 0) {
 										this.v = (this.v/grlen);
@@ -1620,8 +1619,8 @@ $.jgrid.extend({
 					} catch (egv) {
 						gv = n.displayValue;
 					}
-					var grpTextStr = ''; 
-					if($.isFunction(grp.groupText[n.idx])) { 
+					var grpTextStr = '';
+					if($.isFunction(grp.groupText[n.idx])) {
 						grpTextStr = grp.groupText[n.idx].call($t, gv, n.cnt, n.summary);
 					} else {
 						grpTextStr = $.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary);
@@ -1639,7 +1638,7 @@ $.jgrid.extend({
 					var fkey = Object.keys(arr);
 					arr[fkey[0]] =  new Array(n.idx*5).join(' ') + grpTextStr ;
 					retstr += addBodyRow( arr, 'td', false, toEnd === 1, colSpan  );
-					var leaf = len-1 === n.idx; 
+					var leaf = len-1 === n.idx;
 					if( leaf ) {
 						var gg = grp.groups[i+1], kk, ik, offset = 0, sgr = n.startRow,
 						end = gg !== undefined ?  gg.startRow : grp.groups[i].startRow + grp.groups[i].cnt;
@@ -1649,7 +1648,7 @@ $.jgrid.extend({
 							retstr += addBodyRow( to, 'td', false );
 							//addRow( to, false );
 						}
-				
+
 						if(grp.groupSummaryPos[n.idx] !== 'header') {
 							var jj;
 							if (gg !== undefined) {
@@ -1731,7 +1730,7 @@ $.jgrid.extend({
 
 				setTimeout( function () {
 					if ( o.autoPrint ) {
-						win.print(); 
+						win.print();
 						win.close();
 					}
 				}, 1000 );
@@ -1740,5 +1739,5 @@ $.jgrid.extend({
 		return ret;
 	}
 });
-//module end	
+//module end
 }));
