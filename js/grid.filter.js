@@ -849,7 +849,8 @@ $.jgrid.extend({
 			base = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].base,
 
 			triggerToolbar = function() {
-				var sdata={}, j=0, v, nm, sopt={},so, ms = false, ssfield = [], bbt =false, sop;
+				var sdata={}, j=0, v, nm, sopt={},so, ms = false, ssfield = [], 
+					bbt =false, sop, ret=[true,"",""], err=false;
 				$.each($t.p.colModel,function(){
 					var $elem = $("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(this.name), (this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
 					nm = this.index || this.name;
@@ -868,6 +869,19 @@ $.jgrid.extend({
 						ssfield.push(nm);
 						v= v.length === 1 ? v[0] : v;
 					}
+					if(this.searchrules) {
+						if($.isFunction( this.searchrules)) {
+							ret = this.searchrules.call($t, v, this)
+						} else if($.jgrid && $.jgrid.checkValues) {
+							ret = $.jgrid.checkValues.call($t, v, -1, this.searchrules, this.label || this.name);
+						}
+						if(ret && ret.length && ret[0] === false ) {
+							if(this.searchrules.hasOwnProperty('validationError') ){
+								err = this.searchrules.validationError;
+							}
+							return false;
+						}
+					}
 					if(so==="bt") {
 						bbt = true;
 					}
@@ -881,6 +895,15 @@ $.jgrid.extend({
 						} catch (z) {}
 					}
 				});
+				if(ret[0] === false ) {
+					if($.isFunction(err)) {
+						err.call($t, ret[1]);
+					} else {
+						var errors = $.jgrid.getRegional($t, 'errors');
+						$.jgrid.info_dialog(errors.errcap, ret[1], '', {styleUI : $t.p.styleUI });
+					}
+					return;
+				}
 				var sd =  j>0 ? true : false;
 				if(p.stringResult === true || $t.p.datatype === "local" || p.searchOperators === true)
 				{
