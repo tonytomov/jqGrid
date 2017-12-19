@@ -686,7 +686,25 @@ $.extend($.jgrid,{
 	},
 	checkValues : function(val, valref, customobject, nam) {
 		var edtrul,i, nm, dft, len, g = this, cm = g.p.colModel,
-		msg = $.jgrid.getRegional(this, 'edit.msg'), fmtdate;
+		msg = $.jgrid.getRegional(this, 'edit.msg'), fmtdate,
+		isNum = function(vn) {
+			var vn = vn.toString();
+			if(vn.length >= 2) {
+				var chkv, dot;
+				if(vn[0] === "-" ) {
+					chkv = vn[1];
+					if(vn[2]) { dot = vn[2];}
+				} else {
+					chkv = vn[0];
+					if(vn[1]) { dot = vn[1];}
+				}
+				if( chkv === "0"  && dot !== ".") {
+					return false; //octal
+				} 
+			}
+			return typeof parseFloat(vn) === 'number' && isFinite(vn); 
+		};
+
 		if(customobject === undefined) {
 			if(typeof valref==='string'){
 				for( i =0, len=cm.length;i<len; i++){
@@ -713,7 +731,7 @@ $.extend($.jgrid,{
 			var rqfield = edtrul.required === false ? false : true;
 			if(edtrul.number === true) {
 				if( !(rqfield === false && $.jgrid.isEmpty(val)) ) {
-					if(isNaN(val)) { return [false,nm+": "+msg.number,""]; }
+					if(!isNum(val)) { return [false,nm+": "+msg.number,""]; }
 				}
 			}
 			if(edtrul.minValue !== undefined && !isNaN(edtrul.minValue)) {
@@ -732,7 +750,7 @@ $.extend($.jgrid,{
 			}
 			if(edtrul.integer === true) {
 				if( !(rqfield === false && $.jgrid.isEmpty(val)) ) {
-					if(isNaN(val)) { return [false,nm+": "+msg.integer,""]; }
+					if(!isNum(val)) { return [false,nm+": "+msg.integer,""]; }
 					if ((val % 1 !== 0) || (val.indexOf('.') !== -1)) { return [false,nm+": "+msg.integer,""];}
 				}
 			}
