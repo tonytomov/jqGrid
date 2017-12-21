@@ -833,6 +833,7 @@ $.jgrid.extend({
 			resetIcon : "x",
 			splitSelect : ",",
 			groupOpSelect : "OR",
+			errorcheck : true,
 			operands : { "eq" :"==", "ne":"!","lt":"<","le":"<=","gt":">","ge":">=","bw":"^","bn":"!^","in":"=","ni":"!=","ew":"|","en":"!@","cn":"~","nc":"!~","nu":"#","nn":"!#", "bt":"..."}
 		}, regional , p  || {});
 		return this.each(function(){
@@ -869,9 +870,9 @@ $.jgrid.extend({
 						ssfield.push(nm);
 						v= v.length === 1 ? v[0] : v;
 					}
-					if(this.searchrules) {
+					if(this.searchrules && p.errorcheck) {
 						if($.isFunction( this.searchrules)) {
-							ret = this.searchrules.call($t, v, this)
+							ret = this.searchrules.call($t, v, this);
 						} else if($.jgrid && $.jgrid.checkValues) {
 							ret = $.jgrid.checkValues.call($t, v, -1, this.searchrules, this.label || this.name);
 						}
