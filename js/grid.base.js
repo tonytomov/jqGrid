@@ -6149,13 +6149,14 @@ $.jgrid.extend({
 			styles = $.jgrid.styleUI[currstyle].common, item, str;
 
 		return this.each(function(){
+			var $t = this;
 			if( $.isArray(items)) {
 				for(var i = 0; i < items.length; i++) {
 					item = items[i];
 					// icon, title, position, id, click
 					if(!item.id ) {
 						item.id = $.jgrid.randId();
-	}
+					}
 					var ico = '';
 					if( item.icon) {
 						ico = '<span class="'+styles.icon_base+' ' + item.icon+'"></span>';
@@ -6177,27 +6178,26 @@ $.jgrid.extend({
 					} else {
 						$("#"+this.p.id+"_menubar").prepend(str);
 					}
-					if($.isFunction(item.click)) {
-						$("#"+item.id, "#"+this.p.id+"_menubar").on('click', function( e ) {
-							item.click.call( this, e );
-							if(item.closeoncall) {
-								$("#"+this.p.id+"_menubar").hide();
-							}
-							e.stopPropagation();
-							return;
-						});
-					}
 				}
 			}
-			$("#" + this.p.id +"_menubar > li > a").hover(
-				function(e){
-					$(this).addClass(styles.hover);
-					e.stopPropagation();
-				},
-				function(e){ $(this).removeClass(styles.hover);}
-			);
-
-});
+			$("li a", "#"+this.p.id+"_menubar").each(function(i,n){
+				$(items).each(function(j,f){
+					if(f.id === n.id && $.isFunction(f.click)) {
+						$(n).on('click', function(e){
+							f.click.call($t, e);
+						});
+						return false;
+					}
+				});
+				$(this).hover(
+					function(e){
+						$(this).addClass(styles.hover);
+						e.stopPropagation();
+					},
+					function(e){ $(this).removeClass(styles.hover);}
+				);
+			});
+		});
 	},
 	menubarDelete : function( itemid ) {
 		return this.each(function(){
