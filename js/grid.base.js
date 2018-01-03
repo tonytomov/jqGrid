@@ -5822,7 +5822,7 @@ $.jgrid.extend({
 			if($t.p.subGrid === true ||
 				$t.p.treeGrid === true ||
 				$t.p.cellEdit === true ||
-				$t.p.sortable ||
+				/*$t.p.sortable ||*/ 
 				$t.p.scroll ||
 				$t.p.grouping === true)
 			{

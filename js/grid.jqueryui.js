@@ -73,9 +73,23 @@ $.jgrid.extend({
 	sortableColumns : function (tblrow)
 	{
 		return this.each(function (){
-			var ts = this, tid= $.jgrid.jqID( ts.p.id );
-			function start() {ts.p.disableClick = true;}
-			function stop() { setTimeout(function () { ts.p.disableClick = false; }, 50); }
+			var ts = this, tid= $.jgrid.jqID( ts.p.id ), frozen = false;
+			function start() {
+				ts.p.disableClick = true;
+				if(ts.p.frozenColumns) {
+					$(ts).jqGrid("destroyFrozenColumns");
+					frozen = true;
+				}
+			}
+			function stop() { 
+				setTimeout(function () { 
+					ts.p.disableClick = false; 
+					if(frozen) {
+						$(ts).jqGrid("setFrozenColumns");
+						frozen = false;
+					}
+				}, 50); 
+			}
 			var sortable_opts = {
 				"tolerance" : "pointer",
 				"axis" : "x",
