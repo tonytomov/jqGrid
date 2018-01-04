@@ -6171,7 +6171,7 @@ $.jgrid.extend({
 						str = '<li class="ui-menu-item divider" role="separator"></li>';
 						item.cick = null;
 					} else {
-					str = '<li id="'+ item.id+'"  class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" ><table class="ui-common-table"><tr><td class="menu_icon">'+ico+'</td><td class="menu_text">'+item.title+'</td></tr></table></a></li>';
+					str = '<li class="ui-menu-item" role="presentation"><a id="'+ item.id+'" class="g-menu-item" tabindex="0" role="menuitem" ><table class="ui-common-table"><tr><td class="menu_icon">'+ico+'</td><td class="menu_text">'+item.title+'</td></tr></table></a></li>';
 					}
 					if(item.position === 'last') {
 						$("#"+this.p.id+"_menubar").append(str);
