@@ -29,7 +29,7 @@ if(!$.jgrid.hasOwnProperty("defaults")) {
 	$.jgrid.defaults = {};
 }
 $.extend($.jgrid,{
-	version : "5.2.1",
+	version : "5.3.0",
 	htmlDecode : function(value){
 		if(value && (value==='&nbsp;' || value==='&#160;' || (value.length===1 && value.charCodeAt(0)===160))) { return "";}
 		return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
