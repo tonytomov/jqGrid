@@ -2572,6 +2572,9 @@ $.fn.jqGrid = function( pin ) {
 			}
 			var grpview = ts.p.grouping ? ts.p.groupingView : false, lengrp, gin, si;
 			$.each(ts.p.colModel,function(){
+                if ( !(this.name !== 'cb' && this.name !== 'subgrid' && this.name !== 'rn') ) {
+                    return true;
+                }
 				sorttype = this.sorttype || "text";
 				si = this.index || this.name;
 				if(sorttype === "date" || sorttype === "datetime") {
