@@ -1604,7 +1604,8 @@ $.fn.jqGrid = function( pin ) {
 			treeGrid_bigData: false,
 			treeGrid_rootParams: {otherData:{}},
 			treeGrid_beforeRequest: null,
-			treeGrid_afterLoadComplete: null
+			treeGrid_afterLoadComplete: null,
+			useNameForSearch : false
 		}, $.jgrid.defaults , pin );
 		if (localData !== undefined) {
 			p.data = localData;
@@ -2566,7 +2567,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 		},
 		addLocalData = function( retAll ) {
-			var st = ts.p.multiSort ? [] : "", sto=[], fndsort=false, cmtypes={}, grtypes=[], grindexes=[], srcformat, sorttype, newformat, sfld;
+			var st = ts.p.multiSort ? [] : "", sto=[], fndsort=false, cmtypes={}, grtypes=[], grindexes=[], srcformat, sorttype, newformat, sfld, indexmap={};
 			if(!$.isArray(ts.p.data)) {
 				return;
 			}
@@ -2596,6 +2597,7 @@ $.fn.jqGrid = function( pin ) {
 				} else {
 					cmtypes[si] = {"stype": sorttype, "srcfmt":'',"newfmt":'', "sfunc": this.sortfunc || null};
 				}
+				if(ts.p.useNameForSearch) { indexmap[this.name] = si; }
 				if(ts.p.grouping ) {
 					for(gin =0, lengrp = grpview.groupField.length; gin< lengrp; gin++) {
 						if( this.name === grpview.groupField[gin]) {
@@ -2671,6 +2673,7 @@ $.fn.jqGrid = function( pin ) {
 						if (ror) {
 							query.orBegin();
 						}
+						var rulefld;
 						for (index = 0; index < group.rules.length; index++) {
 							rule = group.rules[index];
 							opr = group.groupOp.toString().toUpperCase();
@@ -2678,13 +2681,21 @@ $.fn.jqGrid = function( pin ) {
 								if(s > 0 && opr && opr === "OR") {
 									query = query.or();
 								}
-								fld = cmtypes[rule.field];
-								if(fld.stype === 'date') {
-									if(fld.srcfmt && fld.newfmt && fld.srcfmt !== fld.newfmt ) {
-										rule.data = $.jgrid.parseDate.call(ts, fld.newfmt, rule.data, fld.srcfmt);
+								rulefld = rule.field;
+								if( ts.p.useNameForSearch) {
+									if(indexmap.hasOwnProperty(rule.field)) {
+										rulefld = indexmap[rule.field];
 									}
 								}
-								query = compareFnMap[rule.op](query, opr)(rule.field, rule.data, cmtypes[rule.field]);
+								try {
+									fld = cmtypes[rulefld];
+									if(fld.stype === 'date') {
+										if(fld.srcfmt && fld.newfmt && fld.srcfmt !== fld.newfmt ) {
+											rule.data = $.jgrid.parseDate.call(ts, fld.newfmt, rule.data, fld.srcfmt);
+										}
+									}
+									query = compareFnMap[rule.op](query, opr)(rule.field, rule.data, fld);
+								} catch (e) {}
 							}
 							s++;
 						}
