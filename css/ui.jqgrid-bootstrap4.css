@@ -138,7 +138,9 @@
 .ui-jqgrid .ui-jqgrid-sortable {
 	cursor:pointer;
 }
-.ui-jqgrid tr.ui-search-toolbar th { }
+.ui-jqgrid tr.ui-search-toolbar th {
+	padding:  0.4em;
+}
 .ui-jqgrid .ui-search-table td.ui-search-clear { }
 .ui-jqgrid tr.ui-search-toolbar td > input { }
 .ui-jqgrid tr.ui-search-toolbar select {}
@@ -980,4 +982,10 @@ div[id^='searchcnt'] .fm-button .octicon
 	border-bottom-width: 0px ;
 	border-top: 2px solid #333333 ;
 	padding-top: 20px ;
+}
+.ui-jqgrid td.ui-search-input,
+.ui-jqgrid td.ui-search-clear
+{
+	border: 0 none;
+	padding: 0 0;
 }
