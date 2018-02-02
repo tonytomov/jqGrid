@@ -3734,7 +3734,7 @@ $.fn.jqGrid = function( pin ) {
 			left=parseInt(left,10);
 			top=parseInt(top,10) + 25;
 			var fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
-			var strb = '<ul id="column_menu" class="ui-search-menu modal-content column-menu" role="menu" tabindex="0" style="font-size:'+fs+';left:'+left+'px;top:'+top+'px;">',
+			var strb = '<ul id="column_menu" class="ui-search-menu modal-content column-menu" role="menu" tabindex="0" style="font-size:'+fs+';left:'+left+'px;top:'+top+'px;width:auto">',
 			str = '',
 			stre = "</ul>",
 			strl ='',
