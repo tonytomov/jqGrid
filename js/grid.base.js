@@ -2233,7 +2233,7 @@ $.fn.jqGrid = function( pin ) {
 						$.each(F, function (k) {
 							var cell = cells[this];
 							if (!cell) { return false; }
-							v = cell.textContent || cell.text;
+							v = cell.textContent || cell.text || "";
 							rd[ts.p.colModel[k+gi+si+ni].name] = v;
 							rowData.push( addCell(rid,v,k+gi+si+ni,j+rcnt,xmlr, rd) );
 						});
@@ -2311,7 +2311,7 @@ $.fn.jqGrid = function( pin ) {
 						$.each(F, function (k) {
 							var cell = cells2[this];
 							if (!cell) { return false; }
-							v = cell.textContent || cell.text;
+							v = cell.textContent || cell.text || "";
 							rd[ts.p.colModel[k+gi+si+ni].name] = v;
 						});
 					} else {
