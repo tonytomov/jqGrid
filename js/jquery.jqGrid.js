@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.0 - 2018-02-02
+* @license Guriddo jqGrid JS - v5.3.0 - 2018-02-05
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2228,7 +2228,7 @@ $.fn.jqGrid = function( pin ) {
 						$.each(F, function (k) {
 							var cell = cells[this];
 							if (!cell) { return false; }
-							v = cell.textContent || cell.text;
+							v = cell.textContent || cell.text || "";
 							rd[ts.p.colModel[k+gi+si+ni].name] = v;
 							rowData.push( addCell(rid,v,k+gi+si+ni,j+rcnt,xmlr, rd) );
 						});
@@ -2306,7 +2306,7 @@ $.fn.jqGrid = function( pin ) {
 						$.each(F, function (k) {
 							var cell = cells2[this];
 							if (!cell) { return false; }
-							v = cell.textContent || cell.text;
+							v = cell.textContent || cell.text || "";
 							rd[ts.p.colModel[k+gi+si+ni].name] = v;
 						});
 					} else {
