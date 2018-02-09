@@ -1455,7 +1455,7 @@ $.jgrid.extend({
 				if(cm[j].exportcol === undefined) {
 					cm[j].exportcol =  true;
 				}
-				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn' || !cm[j].exportcol) {
+				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn' ||  cm[j].name === 'subgrid' || !cm[j].exportcol) {
 					continue;
 				}
 				data.header[i] = cm[j].name;
