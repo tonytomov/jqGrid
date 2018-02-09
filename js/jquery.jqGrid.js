@@ -18496,7 +18496,7 @@ $.jgrid.extend({
 				if(cm[j].exportcol === undefined) {
 					cm[j].exportcol =  true;
 				}
-				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn' || !cm[j].exportcol) {
+				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn' ||  cm[j].name === 'subgrid' || !cm[j].exportcol) {
 					continue;
 				}
 				data.header[i] = cm[j].name;
@@ -18537,7 +18537,7 @@ $.jgrid.extend({
 				var str = '<tr>', stl;
 				for ( var i=0, ien=d.length ; i<ien ; i++ ) {
 					stl = (style === true ? " style=width:"+data.width[i]+"px;":"");
-					str += '<'+tag+stl+'>'+d[i]+'</'+tag+'>';
+					str += '<'+tag+stl+'>'+$t.p.colNames[data.map[i]]+'</'+tag+'>';
 				}
 
 				return str + '</tr>';
