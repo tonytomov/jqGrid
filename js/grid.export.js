@@ -1496,7 +1496,7 @@ $.jgrid.extend({
 				var str = '<tr>', stl;
 				for ( var i=0, ien=d.length ; i<ien ; i++ ) {
 					stl = (style === true ? " style=width:"+data.width[i]+"px;":"");
-					str += '<'+tag+stl+'>'+d[i]+'</'+tag+'>';
+					str += '<'+tag+stl+'>'+$t.p.colNames[data.map[i]]+'</'+tag+'>';
 				}
 
 				return str + '</tr>';
