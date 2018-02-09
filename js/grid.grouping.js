@@ -287,18 +287,24 @@ $.jgrid.extend({
 				}
 				return ret;
 			}
-			function buildSummaryTd(i, ik, grp, foffset) {
+			function buildSummaryTd(i, ik, grp, foffset, fstr) {
 				var fdata = findGroupIdx(i, ik, grp),
 				cm = $t.p.colModel,
-				vv, grlen = fdata.cnt, str="", k;
+				vv, grlen = fdata.cnt, str="", k , isput = false, tmpdata, tplfld;
 				for(k=foffset; k<colspans;k++) {
-					var tmpdata = "<td "+$t.formatCol(k,1,'')+">&#160;</td>",
-					tplfld = "{0}";
+					if(cm[k].hidden ) {
+						tmpdata = "<td "+$t.formatCol(k,1,'')+">&#160;</td>";
+					} else if(!isput && fstr) {
+						tmpdata = fstr;
+						isput = true;
+					} else {
+						tmpdata = "<td "+$t.formatCol(k,1,'')+">&#160;</td>";
+					}
 					$.each(fdata.summary,function(){
 						if(this.nm === cm[k].name) {
-							if(cm[k].summaryTpl)  {
-								tplfld = cm[k].summaryTpl;
-							}
+							
+							tplfld = (cm[k].summaryTpl) ? cm[k].summaryTpl :  "{0}";
+							
 							if(typeof this.st === 'string' && this.st.toLowerCase() === 'avg') {
 								if(this.sd && this.vd) { 
 									this.v = (this.v/this.vd);
@@ -354,8 +360,8 @@ $.jgrid.extend({
 					grpTextStr = gv;
 				}
 				if(grp.groupSummaryPos[n.idx] === 'header')  {
-					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"" + common.content + " jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\"" + mul +">" + icon+grpTextStr + "</td>";
-					str += buildSummaryTd(i, 0, grp.groups, grp.groupColumnShow[n.idx] === false ? (mul ==="" ? 2 : 3) : ((mul ==="") ? 1 : 2) );
+					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"" + common.content + " jqgroup ui-row-"+$t.p.direction+" "+clid+"\">";
+					str += buildSummaryTd(i, 0, grp.groups, (mul==="" ? 0 : 1), "<td style=\"padding-left:"+(n.idx * 12) + "px;"+"\"" + mul +">" + icon+grpTextStr + "</td>" );
 					str += "</tr>";
 				} else {
 					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"" + common.content + " jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\" colspan=\""+(grp.groupColumnShow[n.idx] === false ? colspans-1 : colspans)+"\">" + icon + grpTextStr + "</td></tr>";
@@ -391,7 +397,7 @@ $.jgrid.extend({
 								hhdr = " style=\"display:none;\"";
 							}
 							str += "<tr"+hhdr+" jqfootlevel=\""+(n.idx-ik)+"\" role=\"row\" class=\"" + common.content + " jqfoot ui-row-"+$t.p.direction+"\">";
-							str += buildSummaryTd(i, ik, grp.groups, 0);
+							str += buildSummaryTd(i, ik, grp.groups, 0, false);
 							str += "</tr>";
 						}
 						toEnd = jj;
