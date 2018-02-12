@@ -1728,12 +1728,19 @@ $.jgrid.extend({
 					o.onBeforeExport( win );
 				}
 
-				setTimeout( function () {
+				if(Boolean(win.chrome)) {
 					if ( o.autoPrint ) {
 						win.print();
 						win.close();
-					}
-				}, 1000 );
+					}					
+				} else {
+					setTimeout( function () {
+						if ( o.autoPrint ) {
+							win.print();
+							win.close();
+						}
+					}, 1000 );
+				}
 			}
 		});
 		return ret;
