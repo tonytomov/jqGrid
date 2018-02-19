@@ -245,6 +245,9 @@ div.tablediv > .table-bordered {
 	padding-right: 2px;
 	border-bottom: 0px none;
 }
+.ui-jqgrid .ui-jqgrid-ftable {
+	border: 0px none;
+}
 .ui-jqgrid tr.footrow-ltr td {
 	text-align:left;
 }
@@ -291,6 +294,7 @@ div.tablediv > .table-bordered {
 	border-top : 0px none !important;
 	min-height : 20px !important;
 }
+
 .ui-jqgrid .ui-pg-button  { 
 	height:auto; 
 }
@@ -309,7 +313,7 @@ div.tablediv > .table-bordered {
 	display: inline-block;
 	height:auto;
 	width: auto;
-	font-size:.9em; 
+	font-size: inherit; 
 	margin:0;
 	line-height: inherit;
 	border: none; 
@@ -317,16 +321,16 @@ div.tablediv > .table-bordered {
 }
 .ui-jqgrid .ui-pg-selbox, 
 .ui-jqgrid .ui-jqgrid-toppager .ui-pg-selbox {
-	font-size:.9em; 
+	font-size: inherit; 
 	line-height:inherit; 
 	display:block; 
-	height:22px; 
 	margin: 0; 
-	padding: 3px 0px 3px 3px; 
+	width : auto;
+	padding: 0px 0px 0px 3px; 
 	border:none;
 }
 .ui-jqgrid .ui-separator {
-	height: 18px; 
+	height: 16px; 
 	border : none;
 	border-left: 2px solid #ccc ; /*default*/
 	
