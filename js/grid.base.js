@@ -3101,7 +3101,7 @@ $.fn.jqGrid = function( pin ) {
 			.attr("dir","ltr"); //explicit setting
 			if(ts.p.rowList.length >0){
 				str = "<td dir=\""+dir+"\">";
-				str +="<select "+getstyle(stylemodule, 'pgSelectBox', false, 'ui-pg-selbox')+" role=\"listbox\" title=\""+($.jgrid.getRegional(ts,"defaults.pgrecs",ts.p.pgrecs) || "")+ "\">";
+				str +="<select "+getstyle(stylemodule, 'pgSelectBox', false, 'ui-pg-selbox')+" size=\"1\" role=\"listbox\" title=\""+($.jgrid.getRegional(ts,"defaults.pgrecs",ts.p.pgrecs) || "")+ "\">";
 				var strnm;
 				for(i=0;i<ts.p.rowList.length;i++){
 					strnm = ts.p.rowList[i].toString().split(":");
@@ -3574,7 +3574,7 @@ $.fn.jqGrid = function( pin ) {
 			//elem = $('<ul id="search_menu" class="ui-search-menu modal-content" role="menu" tabindex="0" style="left:'+left+'px;top:'+top+'px;"></ul>');
 			elem = $('<form></form>');
 			var str1= '<div>'+$.jgrid.getRegional(ts, "colmenu.searchTitle")+'</div>';
-			str1 += '<div><select id="oper1" class="'+colmenustyle.filter_select+'">';
+			str1 += '<div><select size="1" id="oper1" class="'+colmenustyle.filter_select+'">';
 			$.each(texts.odata, function(i, n) {
 				selected = n.oper === o1 ? 'selected="selected"' : '';
 				if($.inArray(n.oper, so) !== -1) {
@@ -3598,7 +3598,7 @@ $.fn.jqGrid = function( pin ) {
 			str1 = $('<div></div>').append(input);
 			elem.append(str1);
 			// and/or
-			str1 ='<div><select id="operand" class="'+colmenustyle.filter_select+'">';
+			str1 ='<div><select size="1" id="operand" class="'+colmenustyle.filter_select+'">';
 			$.each(op, function(i, n){
 				selected = n.op === r1 ? 'selected="selected"' : '';
 				str1 += "<option value='"+n.op+"' "+selected+">"+n.text+"</option>";
@@ -3613,7 +3613,7 @@ $.fn.jqGrid = function( pin ) {
 					repstr += '<option value="'+n.oper+'" '+selected+'>'+n.text+'</option>';
 				}
 			});
-			str1 = '<div><select id="oper2" class="'+colmenustyle.filter_select+'">' + repstr +'</select></div>';
+			str1 = '<div><select size="1" id="oper2" class="'+colmenustyle.filter_select+'">' + repstr +'</select></div>';
 			elem.append(str1);
 			// value2
 			if( v2 ) {
