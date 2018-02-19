@@ -63,7 +63,7 @@
 }
 .ui-jqgrid .ui-jqgrid-htable thead th {
 	overflow : hidden; 
-	/*border-bottom : none;*/
+	border-bottom : none;
 	padding-right: 2px;
 }
 .ui-jqgrid .ui-jqgrid-htable thead th div {
@@ -139,7 +139,7 @@
 	cursor:pointer;
 }
 .ui-jqgrid tr.ui-search-toolbar th {
-	padding:  0.4em;
+	/*padding:  0.4em;*/
 }
 .ui-jqgrid .ui-search-table td.ui-search-clear { }
 .ui-jqgrid tr.ui-search-toolbar td > input { }
@@ -324,7 +324,7 @@ div.tablediv > .table-bordered {
 	font-size: inherit; 
 	line-height:inherit; 
 	display:block; 
-	margin: 0; 
+	margin: 0;
 	width : auto;
 	padding: 0px 0px 0px 3px; 
 	border:none;
@@ -747,7 +747,7 @@ a.g-menu-item, a.soptclass, a.clearsearchclass {
 .ui-search-table select,
 .ui-search-table input 
 {
-	padding: 4px 3px;
+	padding: 0px 0px;
 }
 	
 .ui-disabled {
