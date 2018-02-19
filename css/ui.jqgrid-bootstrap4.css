@@ -269,7 +269,7 @@ div.tablediv > .table-bordered {
 }
 .ui-jqgrid .ui-jqgrid-toppager {
 	border-top-width :0;
-	border-bottom : 1px solid #ddd;
+	/*border-bottom : 1px solid #ddd;*/
 }
 .ui-jqgrid .ui-jqgrid-toppager .ui-pager-control, 
 .ui-jqgrid .ui-jqgrid-pager .ui-pager-control {
