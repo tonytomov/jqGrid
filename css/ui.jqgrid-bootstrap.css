@@ -977,3 +977,12 @@ td.menu_text {
 	border-top: 2px solid #333333 ;
 	padding-top: 20px ;
 }
+.ui-jqgrid .jqgrid-caption-menu 
+{ 
+	left:0;
+	top:30px;
+	position:absolute;
+	display:none;
+	font-size: inherit;
+	width : auto;
+}
