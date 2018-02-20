@@ -888,6 +888,9 @@ ul.ui-search-menu li, ul.ui-nav-menu li {
 .ui-jqgrid .ui-jqgrid-htable .colmenu-rtl {
 	right: auto;
 	left : 1px;
+	position:absolute;
+	height:100%;
+	color : black;
 }
 .ui-jqgrid .ui-jqgrid-htable .colmenuspan {
 	display:inline-block;
@@ -1002,4 +1005,9 @@ div[id^='searchcnt'] .fm-button .octicon
 	display:none;
 	font-size: inherit;
 	width : auto;
+}
+.ui-jqgrid .jqgrid-column-menu
+{
+	font-size:inherit;
+	width:auto
 }

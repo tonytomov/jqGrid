@@ -4471,16 +4471,19 @@ $.fn.jqGrid = function( pin ) {
 		.addClass("ui-jqgrid-titlebar ui-jqgrid-caption"+(dir==="rtl" ? "-rtl" :"" )+" "+getstyle(stylemodule,'gridtitleBox',true));
 ///// toolbar menu
 		if( ts.p.menubar === true) {
-			var fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
-			var arf1 = '<ul id="'+ts.p.id+'_menubar" class="ui-search-menu modal-content column-menu ui-menu ' + colmenustyle.menu_widget+'" role="menubar" tabindex="0" style="left:5px;top:25px;position:absolute;display:none;font-size:'+fs+'"></ul>';
-			$("body").append(arf1);
+			//var fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
+			var arf1 = '<ul id="'+ts.p.id+'_menubar" class="ui-search-menu modal-content column-menu ui-menu jqgrid-caption-menu' + colmenustyle.menu_widget+'" role="menubar" tabindex="0"></ul>';
+			$("#gbox_"+ts.p.id).append(arf1);
 			$(grid.cDiv).append("<a role='link' class='ui-jqgrid-menubar menubar-"+(dir==="rtl" ? "rtl" :"ltr" )+"' style=''><span class='colmenuspan "+iconbase+' '+colmenustyle.icon_toolbar_menu+"'></span></a>");
 			$(".ui-jqgrid-menubar",grid.cDiv).hover(
 					function(){ $(this).addClass(hover);},
 					function() {$(this).removeClass(hover);
 			}).on('click',function(e) {
 				var pos = $(e.target).offset();
-				$("#"+ts.p.id+"_menubar").css({left : pos.left - (dir === "rtl" ? $("#"+ts.p.id+"_menubar").width() : 0), top : pos.top+20}).show();
+				$("#"+ts.p.id+"_menubar").show();
+				if(ts.p.direction==="rtl") {
+					$("#"+ts.p.id+"_menubar").css({left : pos.left - $("#"+ts.p.id+"_menubar").width() - 20 });
+				}
 			});
 		}
 ///// end toolbar menu
