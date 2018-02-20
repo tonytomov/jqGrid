@@ -822,6 +822,7 @@ a.g-menu-item, a.soptclass, a.clearsearchclass {
 }
 ul.ui-search-menu, ul.ui-nav-menu {
 	 list-style-type:  none;
+	 width: auto;
 }
 ul.ui-search-menu li a, 
 ul.ui-nav-menu li a,
@@ -901,7 +902,7 @@ ul.ui-search-menu li, ul.ui-nav-menu li {
 	margin-top:5px;*/
 }
 .column-menu, .ui-search-menu {
-	padding: 10px 15px;
+	padding: 8px 8px;
 }
 .column-menu .divider {
 	background-color: #e5e5e5; 

@@ -3729,7 +3729,7 @@ $.fn.jqGrid = function( pin ) {
 			left=parseInt(left,10);
 			top=parseInt(top,10) + 25;
 			var fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
-			var strb = '<ul id="column_menu" class="ui-search-menu modal-content column-menu" role="menu" tabindex="0" style="font-size:'+fs+';left:'+left+'px;top:'+top+'px;width:auto">',
+			var strb = '<ul id="column_menu" role="menu" tabindex="0">',
 			str = '',
 			stre = "</ul>",
 			strl ='',
@@ -3790,8 +3790,10 @@ $.fn.jqGrid = function( pin ) {
 			menuData.unshift( strb );
 			menuData.push( stre );
 			//str += "</ul>";
-			$('body').append( menuData.join('') );
-			$("#column_menu").addClass("ui-menu " + colmenustyle.menu_widget);
+			$('#gbox_'+ts.p.id).append( menuData.join('') );
+			$("#column_menu")
+				.addClass("ui-search-menu modal-content column-menu jqgrid-column-menu ui-menu " + colmenustyle.menu_widget)
+				.css({"left":left,"top":top});
 			if(ts.p.direction === "ltr") {
 				var wcm = $("#column_menu").width() + 26;
 				$("#column_menu").css("left", (left- wcm)+'px');
@@ -3999,7 +4001,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			thead += imgs;
 			if(ts.p.colMenu && tmpcm.colmenu) {
-				thead += "<a class='colmenu'><span class='colmenuspan "+iconbase+' '+colmenustyle.icon_menu+"'></span></a>";
+				thead += "<a class='"+(ts.p.direction==='ltr' ? "colmenu" : "colmenu-rtl") +"'><span class='colmenuspan "+iconbase+' '+colmenustyle.icon_menu+"'></span></a>";
 			}
 			thead += "</div></th>";
 		}
@@ -4472,7 +4474,7 @@ $.fn.jqGrid = function( pin ) {
 ///// toolbar menu
 		if( ts.p.menubar === true) {
 			//var fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
-			var arf1 = '<ul id="'+ts.p.id+'_menubar" class="ui-search-menu modal-content column-menu ui-menu jqgrid-caption-menu' + colmenustyle.menu_widget+'" role="menubar" tabindex="0"></ul>';
+			var arf1 = '<ul id="'+ts.p.id+'_menubar" class="ui-search-menu modal-content column-menu ui-menu jqgrid-caption-menu ' + colmenustyle.menu_widget+'" role="menubar" tabindex="0"></ul>';
 			$("#gbox_"+ts.p.id).append(arf1);
 			$(grid.cDiv).append("<a role='link' class='ui-jqgrid-menubar menubar-"+(dir==="rtl" ? "rtl" :"ltr" )+"' style=''><span class='colmenuspan "+iconbase+' '+colmenustyle.icon_toolbar_menu+"'></span></a>");
 			$(".ui-jqgrid-menubar",grid.cDiv).hover(
