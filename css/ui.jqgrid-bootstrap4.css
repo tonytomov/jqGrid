@@ -35,7 +35,7 @@
 	color: inherit; 
 	position: absolute;
 	top: 50%; 
-	margin: -10px 7px 0 0; 
+	margin: -10px 7px 0 9px; 
 	padding: 1px; 
 	cursor:pointer;
 }
@@ -992,4 +992,14 @@ div[id^='searchcnt'] .fm-button .octicon
 {
 	border: 0 none;
 	padding: 0 0;
+}
+
+.ui-jqgrid .jqgrid-caption-menu 
+{ 
+	left:0;
+	top:30px;
+	position:absolute;
+	display:none;
+	font-size: inherit;
+	width : auto;
 }
