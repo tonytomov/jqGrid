@@ -912,7 +912,7 @@ ul.ui-search-menu li, ul.ui-nav-menu li {
 	overflow: hidden;
 }
 .ui-menu-item .ui-common-table .menu_icon {
-	padding-right: 8px;
+	padding-right: 2px;
 	padding-left: 8px;
 }
 td.menu_text {
@@ -1011,4 +1011,15 @@ div[id^='searchcnt'] .fm-button .octicon
 {
 	font-size:inherit;
 	width:auto
+}
+.ui-jqgrid .ui-menu-item form
+{
+	margin: 0 8px;
+}
+.ui-jqgrid .ui-menu-item form input,
+.ui-jqgrid .ui-menu-item form select,
+.ui-jqgrid .ui-menu-item form a
+{
+	font-size: inherit;
+	padding : 0.3rem
 }

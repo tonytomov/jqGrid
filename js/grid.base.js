@@ -3474,7 +3474,7 @@ $.fn.jqGrid = function( pin ) {
 		buildColItems = function (top, left, parent) {
 			var cm = ts.p.colModel, len = cm.length, i, cols=[], disp,
 			texts = $.jgrid.getRegional(ts, "colmenu"),
-			str1 = '<ul id="col_menu" class="ui-search-menu  ui-col-menu modal-content" role="menu" tabindex="0" style="left:'+left+'px;top:'+top+'px;">';
+			str1 = '<ul id="col_menu" class="ui-search-menu  ui-col-menu modal-content" role="menu" tabindex="0" style="left:'+left+'px;">';
 			for(i=0;i<len;i++) {
 				//if(!cm[i].hidedlg) { // column chooser
 				var hid = !cm[i].hidden ? "checked" : "", nm = cm[i].name, lb = ts.p.colNames[i];
@@ -3633,7 +3633,7 @@ $.fn.jqGrid = function( pin ) {
 			str1 += "</div>";
 			elem.append(str1);
 			elem = $('<li class="ui-menu-item" role="presentation"></li>').append( elem );
-			elem = $('<ul id="search_menu" class="ui-search-menu modal-content" role="menu" tabindex="0" style="left:'+left+'px;top:'+top+'px;"></ul>').append(elem);
+			elem = $('<ul id="search_menu" class="ui-search-menu modal-content" role="menu" tabindex="0" style="left:'+left+'px;"></ul>').append(elem);
 			$(parent).append(elem);
 			$("#search_menu").addClass("ui-menu " + colmenustyle.menu_widget);
 
