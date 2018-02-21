@@ -172,7 +172,7 @@ $.jgrid.extend({
 			}
 			function createData(rowid,obj,tb,maxcols){
 				var nm, hc,trdata, cnt=0,tmp, dc,elc, retpos=[], ind=false,
-				tdtmpl = "<td class='CaptionTD'>&#160;</td><td class='DataTD'>&#160;</td>", tmpl="", i, ffld; //*2
+				tdtmpl = "<td class='CaptionTD'></td><td class='DataTD'></td>", tmpl="", i, ffld; //*2
 				for (i =1; i<=maxcols;i++) {
 					tmpl += tdtmpl;
 				}
@@ -870,8 +870,8 @@ $.jgrid.extend({
 			}
 			
 			$(frm).append("<div class='binfo topinfo bottominfo'>"+rp_ge[$t.p.id].bottominfo+"</div>");
-
-			$.jgrid.createModal(IDs,tms, rp_ge[$(this)[0].p.id] ,"#gview_"+$.jgrid.jqID($t.p.id),$("#gbox_"+$.jgrid.jqID($t.p.id))[0]);
+			var fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
+			$.jgrid.createModal(IDs, tms, rp_ge[$(this)[0].p.id], "#gview_"+$.jgrid.jqID($t.p.id), $("#gbox_"+$.jgrid.jqID($t.p.id))[0], null, {"font-size": fs});
 
 			if(rtlb) {
 				$("#pData, #nData",frmtb+"_2").css("float","right");
@@ -1150,8 +1150,8 @@ $.jgrid.extend({
 			}
 			function createData(rowid,obj,tb,maxcols){
 				var nm, hc,trdata, cnt=0,tmp, dc, retpos=[], ind=false, i,
-				tdtmpl = "<td class='CaptionTD form-view-label " + commonstyle.content + "' width='"+p.labelswidth+"'>&#160;</td><td class='DataTD form-view-data ui-helper-reset "  + commonstyle.content +"'>&#160;</td>", tmpl="",
-				tdtmpl2 = "<td class='CaptionTD form-view-label " + commonstyle.content +"'>&#160;</td><td class='DataTD form-view-data " + commonstyle.content +"'>&#160;</td>",
+				tdtmpl = "<td class='CaptionTD form-view-label " + commonstyle.content + "' width='"+p.labelswidth+"'></td><td class='DataTD form-view-data ui-helper-reset "  + commonstyle.content +"'></td>", tmpl="",
+				tdtmpl2 = "<td class='CaptionTD form-view-label " + commonstyle.content +"'></td><td class='DataTD form-view-data " + commonstyle.content +"'></td>",
 				fmtnum = ['integer','number','currency'],max1 =0, max2=0 ,maxw,setme, viewfld;
 				for (i=1;i<=maxcols;i++) {
 					tmpl += i === 1 ? tdtmpl : tdtmpl2;
@@ -1320,8 +1320,10 @@ $.jgrid.extend({
 				});
 			}
 			p.gbox = "#gbox_"+$.jgrid.jqID(gID);
-			var bt = $("<div></div>").append(frm).append("<table border='0' class='EditTable' id='"+frmtb+"_2'><tbody><tr id='Act_Buttons'><td class='navButton' width='"+p.labelswidth+"'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton'>"+ user_buttons+"</td></tr></tbody></table>");
-			$.jgrid.createModal(IDs,bt, rp_ge[$(this)[0].p.id],"#gview_"+$.jgrid.jqID($t.p.id),$("#gview_"+$.jgrid.jqID($t.p.id))[0]);
+			var bt = $("<div></div>").append(frm).append("<table border='0' class='EditTable' id='"+frmtb+"_2'><tbody><tr id='Act_Buttons'><td class='navButton' width='"+p.labelswidth+"'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton'>"+ user_buttons+"</td></tr></tbody></table>"),
+			fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
+			
+			$.jgrid.createModal(IDs,bt, rp_ge[$(this)[0].p.id],"#gview_"+$.jgrid.jqID($t.p.id),$("#gview_"+$.jgrid.jqID($t.p.id))[0], null, {"font-size":fs});
 			if(rtlb) {
 				$("#pData, #nData","#"+frmtb+"_2").css("float","right");
 				$(".EditButton","#"+frmtb+"_2").css("text-align","left");
@@ -1520,11 +1522,12 @@ $.jgrid.extend({
 				tbl += "</tbody></table></div>";
 				var bS  = "<a id='dData' class='fm-button " + commonstyle.button + "'>"+p.bSubmit+"</a>",
 				bC  = "<a id='eData' class='fm-button " + commonstyle.button + "'>"+p.bCancel+"</a>",
-				user_buttons = ( $.isArray( rp_ge[$t.p.id].buttons ) ? $.jgrid.buildButtons( rp_ge[$t.p.id].buttons, bS + bC, commonstyle ) : bS + bC );
+				user_buttons = ( $.isArray( rp_ge[$t.p.id].buttons ) ? $.jgrid.buildButtons( rp_ge[$t.p.id].buttons, bS + bC, commonstyle ) : bS + bC ),
+				fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
 
 				tbl += "<table class='EditTable ui-common-table' id='"+dtbl+"_2'><tbody><tr><td><hr class='" + commonstyle.content + "' style='margin:1px'/></td></tr><tr><td class='DelButton EditButton'>"+ user_buttons +"</td></tr></tbody></table>";
 				p.gbox = "#gbox_"+$.jgrid.jqID(gID);
-				$.jgrid.createModal(IDs,tbl, rp_ge[$t.p.id] ,"#gview_"+$.jgrid.jqID($t.p.id),$("#gview_"+$.jgrid.jqID($t.p.id))[0]);
+				$.jgrid.createModal(IDs,tbl, rp_ge[$t.p.id] ,"#gview_"+$.jgrid.jqID($t.p.id),$("#gview_"+$.jgrid.jqID($t.p.id))[0], null, {"font-size": fs});
 
 				$(".fm-button","#"+dtbl+"_2").hover(
 					function(){$(this).addClass( commonstyle.hover );},

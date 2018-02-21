@@ -481,7 +481,7 @@ div.tablediv > .table-bordered {
 }
 .ui-jqdialog .ui-jqdialog-titlebar {
 	padding: .1em .1em; 
-	min-height: 45px; 
+	min-height: 38px; 
 }
 .ui-jqdialog .ui-jqdialog-title { 
 	margin: .3em 0 .2em;  
@@ -547,7 +547,7 @@ div.tablediv > .table-bordered {
 .EditTable td input, 
 .EditTable td select, 
 .EditTable td textarea { 
-	width: 98%; 
+	width: 100%;
 	display: inline-block;
 }
 .EditTable td textarea { 
@@ -559,7 +559,7 @@ div.tablediv > .table-bordered {
 }
 .ui-jqdialog-content td.EditButton {
 	text-align: right; 
-	padding: 5px 5px 5px 0;
+	padding: 1px 1px 1px 0;
 }
 .ui-jqdialog-content td.navButton {
 	text-align: center; 
@@ -571,11 +571,13 @@ div.tablediv > .table-bordered {
 }
 .ui-jqdialog-content input.FormElement {
 	padding: .5em .3em; 
-	margin-bottom: 5px
+	margin-bottom: 5px;
+	font-size: inherit;
 }
 .ui-jqdialog-content select.FormElement {
 	padding:.3em; 
 	margin-bottom: 3px;
+	font-size: inherit;
 }
 .ui-jqdialog-content .data-line {
 	padding-top:.1em;
@@ -589,7 +591,7 @@ div.tablediv > .table-bordered {
 	white-space: nowrap;
 }
 .ui-jqdialog-content .DataTD {
-	padding: 2px; 
+	padding: 2px 5px;
 	border: 0 none; 
 	vertical-align: top;
 }
@@ -1022,4 +1024,15 @@ div[id^='searchcnt'] .fm-button .octicon
 {
 	font-size: inherit;
 	padding : 0.3rem
+}
+.ui-jqdialog-content .EditTable .EditButton a {
+	font-size: inherit;
+	padding: .275rem .375rem
+}
+.ui-jqdialog-content .EditTable .EditButton a > :first-child {
+	padding: 0 4px;
+}
+.ui-jqdialog-content td.navButton a {
+	font-size: inherit;
+	padding: .275rem .375rem
 }

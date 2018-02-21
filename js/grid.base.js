@@ -3808,12 +3808,12 @@ $.fn.jqGrid = function( pin ) {
 					$("#search_menu").remove();
 					var left1, top1;
 					if($(this).attr("data-value") === 'columns') {
-						left1 = $(this).parent().width()+18,
+						left1 = $(this).parent().width()+8,
 						top1 = $(this).parent().position().top - 5;
 						buildColItems(top1, left1, $(this).parent());
 					}
 					if($(this).attr("data-value") === 'filtering') {
-						left1 = $(this).parent().width()+18,
+						left1 = $(this).parent().width()+8,
 						top1 = $(this).parent().position().top - 5;
 						buildSearchBox(index, top1, left1, $(this).parent());
 					}
