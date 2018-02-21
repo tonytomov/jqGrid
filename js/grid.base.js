@@ -2567,7 +2567,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 		},
 		addLocalData = function( retAll ) {
-			var st = ts.p.multiSort ? [] : "", sto=[], fndsort=false, cmtypes={}, grtypes=[], grindexes=[], srcformat, sorttype, newformat, sfld, indexmap={};
+			var st = ts.p.multiSort ? [] : "", sto=[], fndsort=false, cmtypes={}, grtypes=[], grindexes=[], srcformat, sorttype, newformat, sfld;
 			if(!$.isArray(ts.p.data)) {
 				return;
 			}
@@ -2593,11 +2593,10 @@ $.fn.jqGrid = function( pin ) {
 					} else {
 						srcformat = newformat = this.datefmt || "Y-m-d";
 					}
-					cmtypes[si] = {"stype": sorttype, "srcfmt": srcformat,"newfmt":newformat, "sfunc": this.sortfunc || null};
+					cmtypes[si] = {"stype": sorttype, "srcfmt": srcformat,"newfmt":newformat, "sfunc": this.sortfunc || null, name : this.name};
 				} else {
-					cmtypes[si] = {"stype": sorttype, "srcfmt":'',"newfmt":'', "sfunc": this.sortfunc || null};
+					cmtypes[si] = {"stype": sorttype, "srcfmt":'',"newfmt":'', "sfunc": this.sortfunc || null, name : this.name};
 				}
-				if(ts.p.useNameForSearch) { indexmap[this.name] = si; }
 				if(ts.p.grouping ) {
 					for(gin =0, lengrp = grpview.groupField.length; gin< lengrp; gin++) {
 						if( this.name === grpview.groupField[gin]) {
@@ -2683,18 +2682,18 @@ $.fn.jqGrid = function( pin ) {
 								}
 								rulefld = rule.field;
 								if( ts.p.useNameForSearch) {
-									if(indexmap.hasOwnProperty(rule.field)) {
-										rulefld = indexmap[rule.field];
+									if(cmtypes.hasOwnProperty(rule.field)) {
+										rulefld = cmtypes[rule.field].name;
 									}
 								}
 								try {
-									fld = cmtypes[rulefld];
+									fld = cmtypes[rule.field];
 									if(fld.stype === 'date') {
 										if(fld.srcfmt && fld.newfmt && fld.srcfmt !== fld.newfmt ) {
 											rule.data = $.jgrid.parseDate.call(ts, fld.newfmt, rule.data, fld.srcfmt);
 										}
 									}
-									query = compareFnMap[rule.op](query, opr)(rule.field, rule.data, fld);
+									query = compareFnMap[rule.op](query, opr)(rulefld, rule.data, fld);
 								} catch (e) {}
 							}
 							s++;
