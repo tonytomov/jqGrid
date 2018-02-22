@@ -1115,7 +1115,7 @@ $.jgrid.extend({
 			resize: true,
 			jqModal: true,
 			closeOnEscape : false,
-			labelswidth: '30%',
+			labelswidth: 'auto',
 			closeicon: [],
 			navkeys: [false,38,40],
 			onClose: null,

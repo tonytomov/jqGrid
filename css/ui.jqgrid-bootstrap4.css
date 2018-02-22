@@ -139,11 +139,20 @@
 	cursor:pointer;
 }
 .ui-jqgrid tr.ui-search-toolbar th {
-	/*padding:  0.4em;*/
+	padding:  0.45rem;
 }
-.ui-jqgrid .ui-search-table td.ui-search-clear { }
-.ui-jqgrid tr.ui-search-toolbar td > input { }
-.ui-jqgrid tr.ui-search-toolbar select {}
+.ui-jqgrid .ui-search-table td.ui-search-clear 
+{
+	font-size: inherit;
+}
+.ui-jqgrid tr.ui-search-toolbar td > input { 
+	font-size: inherit;
+	padding: 3px 0;
+}
+.ui-jqgrid tr.ui-search-toolbar select {
+	font-size: inherit;
+	padding: 0;
+}
 
 /* Body */ 
 .ui-jqgrid .table-bordered,
@@ -316,7 +325,7 @@ div.tablediv > .table-bordered {
 	font-size: inherit; 
 	margin:0;
 	line-height: inherit;
-	border: none; 
+	/*border: none; */
 	padding: 0px 3px
 }
 .ui-jqgrid .ui-pg-selbox, 
@@ -488,6 +497,7 @@ div.tablediv > .table-bordered {
 	font-weight: bold;
 	padding-left :6px;
 	padding-right:6px;
+	padding-top:6px;
 } 
 .ui-jqdialog .ui-jqdialog-titlebar-close { 
 	position: absolute;  
@@ -559,7 +569,7 @@ div.tablediv > .table-bordered {
 }
 .ui-jqdialog-content td.EditButton {
 	text-align: right; 
-	padding: 1px 1px 1px 0;
+	padding: 3px 1px 3px 0;
 }
 .ui-jqdialog-content td.navButton {
 	text-align: center; 
@@ -593,7 +603,7 @@ div.tablediv > .table-bordered {
 .ui-jqdialog-content .DataTD {
 	padding: 2px 5px;
 	border: 0 none; 
-	vertical-align: top;
+	/*vertical-align: top;*/
 }
 .ui-jqdialog-content .form-view-data {
 	white-space:pre
@@ -707,6 +717,9 @@ div.ui-jqgrid .selected-row td {
 	padding: 2px 5px; 
 	z-index:99999;
 }
+.ui-nav-menu {
+	padding: 8px 8px; 
+}
 .ui-search-menu.ui-menu .ui-menu-item,
 .ui-nav-menu.ui-menu .ui-menu-item
 { 
@@ -810,10 +823,22 @@ a.g-menu-item, a.soptclass, a.clearsearchclass {
 .ui-search-table .columns, .ui-search-table .operators {
 	padding-right: 5px;
 }
-.opsel {
+.ui-search-table .columns select,
+.ui-search-table .operators select,
+.ui-search-table .data select,
+.ui-search-table .data input
+{
+	padding : 5px 2px;
+	font-size: inherit;
+}
+
+
+.ui-search-table .opsel {
 	float :left;
 	width : 100px;
 	margin-right : 5px;
+	padding : 5px 2px;
+	font-size: inherit;
 }
 .add-group, .add-rule, .delete-group {
 	width: 14%;	
@@ -850,6 +875,7 @@ ul.ui-search-menu li, ul.ui-nav-menu li {
 .searchFilter .ui-search-table th
 {
 	border-top: 0px none !important;
+	padding: .45rem;
 }
 
 .searchFilter .queryresult {
@@ -857,6 +883,7 @@ ul.ui-search-menu li, ul.ui-nav-menu li {
 }
 .searchFilter .queryresult tr td{
 	border-top: 0px none;
+	padding : .45rem;
 }
 .ui-search-label { 
 	padding-left: 5px;
@@ -938,9 +965,11 @@ td.menu_text {
 }
 .search_buttons #bs_reset {
 	margin-right: 3px;
+	padding: 0;
 }
 .search_buttons #bs_search {
 	margin-left: 3px;
+	padding: 0;
 }
 div[id^='searchcnt'] .fm-button .oi,
 div[id^='searchcnt'] .fm-button .octicon
@@ -1035,4 +1064,9 @@ div[id^='searchcnt'] .fm-button .octicon
 .ui-jqdialog-content td.navButton a {
 	font-size: inherit;
 	padding: .275rem .375rem
+}
+.ui-jqgrid .dropdownmenu 
+{
+	padding: 0;
+	font-size: inherit;
 }
