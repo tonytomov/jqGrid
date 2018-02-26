@@ -1232,7 +1232,7 @@ $.extend($.jgrid,{
 				content :"modal-body",
 				resizable : "ui-resizable-handle ui-resizable-se",
 				icon_close : "oi-circle-x",
-				icon_resizable : ""
+				icon_resizable : "oi-circle-x"
 			},
 			celledit : {
 				inputClass : 'form-control'
@@ -1284,7 +1284,7 @@ $.extend($.jgrid,{
 			},
 			modal : {
 				icon_close : "oi-circle-x",
-				icon_resizable : ""
+				icon_resizable : "oi-plus"
 			},
 			inlinedit : {
 				icon_edit_nav : "oi-pencil",
@@ -1364,7 +1364,7 @@ $.extend($.jgrid,{
 			},
 			modal : {
 				icon_close : "octicon-x",
-				icon_resizable : ""
+				icon_resizable : "octicon-plus"
 			},
 			inlinedit : {
 				icon_edit_nav : "octicon-pencil",

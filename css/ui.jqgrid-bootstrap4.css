@@ -790,15 +790,16 @@ a.g-menu-item, a.soptclass, a.clearsearchclass {
 	 border-radius: 5px
 }
 .ui-resizable-handle {
-	/*position: absolute;*/
-	display: none;
+	position: absolute;
+	display: block;
 	left :97%;
 }
 .ui-jqdialog .ui-resizable-se {
 	width: 12px;
 	height: 12px;
 	right: -5px;
-	bottom: -5px;
+	bottom: -3px;
+	left : auto;
 	background-position: 16px 16px;
 }
 .ui-resizable-se {
