@@ -1506,6 +1506,7 @@ $.extend($.jgrid,{
 				icon_move: "fa-expand-arrows-alt",
 				icon_new_item : "fa-external-link-alt",
 				icon_toolbar_menu : "fa-list"
+			}
 		}
 	}
 });
