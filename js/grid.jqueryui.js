@@ -342,6 +342,9 @@ $.jgrid.extend({
 
 		// fix height of elements of the multiselect widget
 		$dialogContent = $("#colchooser_" + $.jgrid.jqID(self[0].p.id));
+		// fix fontsize
+		var fs =  $('.ui-jqgrid').css('font-size') || '11px';
+		$dialogContent.parent().css("font-size",fs);
 
 		$dialogContent.css({ margin: "auto" });
 		$dialogContent.find(">div").css({ width: "100%", height: "100%", margin: "auto" });
