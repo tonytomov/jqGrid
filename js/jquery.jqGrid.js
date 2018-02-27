@@ -1422,6 +1422,86 @@ $.extend($.jgrid,{
 				icon_new_item : "octicon-link-external",
 				icon_toolbar_menu : "octicon-three-bars"
 			}
+		},
+		fontAwesome : {
+			common : {
+				icon_base : "fas"
+			},
+			base : {
+				icon_first : "fa-step-backward",
+				icon_prev : "fa-backward",
+				icon_next: "fa-forward",
+				icon_end: "fa-step-forward",
+				icon_asc : "fa-caret-up",
+				icon_desc : "fa-caret-down",
+				icon_caption_open : "fa-caret-square-up",
+				icon_caption_close : "fa-caret-square-down "
+			},
+			modal : {
+				icon_close : "fa-window-close",
+				icon_resizable : "fa-plus"
+			},
+			inlinedit : {
+				icon_edit_nav : "fa-edit",
+				icon_add_nav : "fa-plus",
+				icon_save_nav : "fa-save",
+				icon_cancel_nav : "fa-replay"
+			},
+			formedit : {
+				icon_prev : "fa-chevron-left",
+				icon_next : "fa-chevron-right",
+				icon_save : "fa-save",
+				icon_close : "fa-window-close",
+				icon_del : "fa-trash",
+				icon_cancel : "fa-times"
+			},
+			navigator : {
+				icon_edit_nav : "fa-edit",
+				icon_add_nav : "fa-plus",
+				icon_del_nav : "fa-trash",
+				icon_search_nav : "fa-search",
+				icon_refresh_nav : "fa-sync",
+				icon_view_nav : "fa-sticky-note",
+				icon_newbutton_nav : "fa-external-link-alt"
+			},
+			grouping : {
+				icon_plus : 'fa-caret-right',
+				icon_minus : 'fa-caret-down'
+			},
+			filter : {
+				icon_search : 'fa-search',
+				icon_reset : 'fa-reply',
+				icon_query :'fa-pen-square '
+			},
+			subgrid : {
+				icon_plus : 'fa-arrow-circle-right',
+				icon_minus : 'fa-arrow-circle-down',
+				icon_open : 'fa-ellipsis-v'
+			},
+			treegrid : {
+				icon_plus : 'fa-plus',
+				icon_minus : 'fa-minus',
+				icon_leaf : 'fa-leaf'
+			},
+			fmatter : {
+				icon_edit : "fa-edit",
+				icon_add : "fa-plus",
+				icon_save : "fa-save",
+				icon_cancel : "fa-undo",
+				icon_del : "fa-trash"
+			},
+			colmenu : {
+				icon_menu : "fa-ellipsis-v",
+				icon_sort_asc : "fa-sort-amount-down",
+				icon_sort_desc : "fa-sort-amount-up",
+				icon_columns : "fa-columns",
+				icon_filter : "fa-filter",
+				icon_group : "fa-object-group",
+				icon_freeze : "fa-snowflake",
+				icon_move: "fa-expand-arrows-alt",
+				icon_new_item : "fa-external-link-alt",
+				icon_toolbar_menu : "fa-list"
+			}
 		}
 	}
 });
@@ -3726,7 +3806,7 @@ $.fn.jqGrid = function( pin ) {
 		buildColMenu = function( index, left, top ){
 			//$("#sopt_menu").remove();
 			left=parseInt(left,10);
-			top=parseInt(top,10) + 25;
+			top=parseInt(top,10) + 5;
 			var strb = '<ul id="column_menu" role="menu" tabindex="0">',
 			str = '',
 			stre = "</ul>",
@@ -10231,7 +10311,7 @@ $.jgrid.extend({
 			}
 			
 			$(frm).append("<div class='binfo topinfo bottominfo'>"+rp_ge[$t.p.id].bottominfo+"</div>");
-			var fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
+			var fs =  $('.ui-jqgrid').css('font-size') || '11px';
 			$.jgrid.createModal(IDs, tms, rp_ge[$(this)[0].p.id], "#gview_"+$.jgrid.jqID($t.p.id), $("#gbox_"+$.jgrid.jqID($t.p.id))[0], null, {"font-size": fs});
 
 			if(rtlb) {
@@ -11132,6 +11212,7 @@ $.jgrid.extend({
 					o.alertleft = o.alertleft/2 - parseInt(o.alertwidth,10)/2;
 					o.alerttop = o.alerttop/2-25;
 				}
+				var fs =  $('.ui-jqgrid').css('font-size') || '11px';
 				$.jgrid.createModal(alertIDs,
 					"<div>"+o.alerttext+"</div><span tabindex='0'><span tabindex='-1' id='jqg_alrt'></span></span>",
 					{ 
@@ -11150,7 +11231,8 @@ $.jgrid.extend({
 					},
 					"#gview_"+$.jgrid.jqID($t.p.id),
 					$("#gbox_"+$.jgrid.jqID($t.p.id))[0],
-					true
+					true,
+					{"font-size": fs}
 				);
 			}
 			var clone = 1, i,
@@ -11528,7 +11610,7 @@ $.jgrid.extend({
 			$(elem+"_"+p.position, elem).append( act );
 			var alertIDs = {themodal: 'alertmod_' + this.p.id, modalhead: 'alerthd_' + this.p.id,modalcontent: 'alertcnt_' + this.p.id},
 			_buildMenu = function() {
-				var fs =  $('.ui-jqgrid-view').css('font-size') || '11px',
+				var fs =  $('.ui-jqgrid').css('font-size') || '11px',
 				eid, itm,
 				str = $('<ul id="'+mid+'" class="ui-nav-menu modal-content" role="menu" tabindex="0" style="display:none;font-size:'+fs+'"></ul>');
 				if( p.add ) {
