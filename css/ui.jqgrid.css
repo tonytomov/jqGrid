@@ -186,8 +186,17 @@
 /* toolbar */
 .ui-jqgrid .ui-userdata {border-left: 0 none;    border-right: 0 none;	height : 27px;overflow: hidden;	}
 /*Modal Window */
-.ui-jqdialog { font-size:11px !important; }
-.ui-jqdialog { display: none; width: 300px; position: absolute; padding: .2em; font-size:11px; overflow:visible;}
+.ui-jqdialog { 
+	/*font-size:11px !important; */
+}
+.ui-jqdialog { 
+	display: none; 
+	width: 300px; 
+	position: absolute; 
+	padding: .2em; 
+	/*font-size:11px;*/
+	overflow:visible;
+}
 .ui-jqdialog .ui-jqdialog-titlebar { padding: .3em .2em; position: relative; height:20px;}
 .ui-jqdialog .ui-jqdialog-title { margin: .3em .2em .2em .2em;} 
 .ui-jqdialog .ui-jqdialog-titlebar-close { position: absolute;  top: 50%; width: 19px; margin: -12px 0 0 0; padding: 1px; height: 18px; cursor:pointer;}
@@ -196,7 +205,11 @@
 .ui-jqdialog .ui-jqdialog-titlebar-close:hover, .ui-jqdialog .ui-jqdialog-titlebar-close:focus { padding: 0; }
 .ui-jqdialog-content, .ui-jqdialog .ui-jqdialog-content { border: 0; padding: .3em .2em; background: none; height:auto;}
 .ui-jqdialog .ui-jqconfirm {padding: .4em 1em; border-width:3px;position:absolute;bottom:10px;right:10px;overflow:visible;display:none;height:80px;width:220px;text-align:center;}
-.ui-jqdialog>.ui-resizable-se { bottom: -3px; right: -3px}
+.ui-jqdialog>.ui-resizable-se { 
+	bottom: 2px; 
+	right: 2px;
+	background-position: -64px -224px;
+}
 .ui-jqgrid>.ui-resizable-se { bottom: -3px; right: -3px }
 .jqgrid-overlay-modal {	display : none; }
 /* end Modal window*/
@@ -208,12 +221,24 @@
 .EditTable td textarea { width:auto; height:auto;}
 .ui-jqdialog-content td.EditButton {text-align: right;border-top: 0 none;border-left: 0 none;border-right: 0 none; padding-bottom:5px; padding-top:5px;}
 .ui-jqdialog-content td.navButton {text-align: center; border-left: 0 none;border-top: 0 none;border-right: 0 none; padding-bottom:5px; padding-top:5px;}
-.ui-jqdialog-content input.FormElement {padding: .5em .3em; margin-bottom: 3px}
-.ui-jqdialog-content select.FormElement {padding:.3em; margin-bottom: 3px;}
+.ui-jqdialog-content input.FormElement {
+	padding: .5em .3em; 
+	margin-bottom: 3px;
+	font-size: inherit;
+}
+.ui-jqdialog-content select.FormElement {
+	padding:.3em; 
+	margin-bottom: 3px;
+	font-size: inherit;
+}
 .ui-jqdialog-content .data-line {padding-top:.1em;border: 0 none;}
 
 .ui-jqdialog-content .CaptionTD {vertical-align: middle;border: 0 none; padding: 2px;white-space: nowrap;}
-.ui-jqdialog-content .DataTD {padding: 2px; border: 0 none; vertical-align: top;}
+.ui-jqdialog-content .DataTD {
+	padding: 2px; 
+	border: 0 none; 
+	vertical-align: middle;
+}
 .ui-jqdialog-content .form-view-data {white-space:pre}
 .fm-button { height: 18px; display: inline-block; margin:2px 4px 0 0; padding: .6em .5em .2em .5em; text-decoration:none !important; cursor:pointer; position: relative; text-align: center; zoom: 1; }
 .fm-button-icon-left { padding-left: 1.9em; }
