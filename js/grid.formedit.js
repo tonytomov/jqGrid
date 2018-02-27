@@ -870,7 +870,7 @@ $.jgrid.extend({
 			}
 			
 			$(frm).append("<div class='binfo topinfo bottominfo'>"+rp_ge[$t.p.id].bottominfo+"</div>");
-			var fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
+			var fs =  $('.ui-jqgrid').css('font-size') || '11px';
 			$.jgrid.createModal(IDs, tms, rp_ge[$(this)[0].p.id], "#gview_"+$.jgrid.jqID($t.p.id), $("#gbox_"+$.jgrid.jqID($t.p.id))[0], null, {"font-size": fs});
 
 			if(rtlb) {
@@ -1771,6 +1771,7 @@ $.jgrid.extend({
 					o.alertleft = o.alertleft/2 - parseInt(o.alertwidth,10)/2;
 					o.alerttop = o.alerttop/2-25;
 				}
+				var fs =  $('.ui-jqgrid').css('font-size') || '11px';
 				$.jgrid.createModal(alertIDs,
 					"<div>"+o.alerttext+"</div><span tabindex='0'><span tabindex='-1' id='jqg_alrt'></span></span>",
 					{ 
@@ -1789,7 +1790,8 @@ $.jgrid.extend({
 					},
 					"#gview_"+$.jgrid.jqID($t.p.id),
 					$("#gbox_"+$.jgrid.jqID($t.p.id))[0],
-					true
+					true,
+					{"font-size": fs}
 				);
 			}
 			var clone = 1, i,
@@ -2167,7 +2169,7 @@ $.jgrid.extend({
 			$(elem+"_"+p.position, elem).append( act );
 			var alertIDs = {themodal: 'alertmod_' + this.p.id, modalhead: 'alerthd_' + this.p.id,modalcontent: 'alertcnt_' + this.p.id},
 			_buildMenu = function() {
-				var fs =  $('.ui-jqgrid-view').css('font-size') || '11px',
+				var fs =  $('.ui-jqgrid').css('font-size') || '11px',
 				eid, itm,
 				str = $('<ul id="'+mid+'" class="ui-nav-menu modal-content" role="menu" tabindex="0" style="display:none;font-size:'+fs+'"></ul>');
 				if( p.add ) {
