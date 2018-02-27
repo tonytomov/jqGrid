@@ -986,3 +986,8 @@ td.menu_text {
 	font-size: inherit;
 	width : auto;
 }
+.ui-jqgrid .jqgrid-column-menu
+{
+	font-size:inherit;
+	width:auto
+}

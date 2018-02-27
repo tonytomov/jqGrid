@@ -28,7 +28,7 @@
 	text-align: left;
 }
 .ui-jqgrid .ui-jqgrid-title { 
-	padding-top: 5px; 
+	padding-top: .475rem; 
 	vertical-align: middle;
 }
 .ui-jqgrid .ui-jqgrid-titlebar-close { 
@@ -800,6 +800,7 @@ a.g-menu-item, a.soptclass, a.clearsearchclass {
 	right: -5px;
 	bottom: -3px;
 	left : auto;
+	top: auto;
 	background-position: 16px 16px;
 }
 .ui-resizable-se {
@@ -979,7 +980,7 @@ div[id^='searchcnt'] .fm-button .octicon
 }
 /*menubar*/
 .ui-jqgrid .ui-jqgrid-menubar {
-	margin: 5px 5px;
+	margin: 6px 5px;
 	width:16px;
 	height:16px;
 }
@@ -988,7 +989,7 @@ div[id^='searchcnt'] .fm-button .octicon
 	color : #010101; /*default*/
 }
 .ui-jqgrid .ui-jqgrid-menubar:hover {
-	margin: 5px 5px;
+	margin: 6px 5px;
 	background-color: #ddd;
 	text-decoration: none;
 }
@@ -1028,6 +1029,7 @@ div[id^='searchcnt'] .fm-button .octicon
 {
 	border: 0 none;
 	padding: 0 0;
+	vertical-align: middle;
 }
 
 .ui-jqgrid .jqgrid-caption-menu 
