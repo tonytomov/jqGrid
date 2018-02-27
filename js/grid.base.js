@@ -3732,7 +3732,6 @@ $.fn.jqGrid = function( pin ) {
 			//$("#sopt_menu").remove();
 			left=parseInt(left,10);
 			top=parseInt(top,10) + 25;
-			var fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
 			var strb = '<ul id="column_menu" role="menu" tabindex="0">',
 			str = '',
 			stre = "</ul>",
