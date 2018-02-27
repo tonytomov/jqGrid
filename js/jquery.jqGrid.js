@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.0 - 2018-02-21
+* @license Guriddo jqGrid JS - v5.3.0 - 2018-02-27
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1227,7 +1227,7 @@ $.extend($.jgrid,{
 				content :"modal-body",
 				resizable : "ui-resizable-handle ui-resizable-se",
 				icon_close : "oi-circle-x",
-				icon_resizable : ""
+				icon_resizable : "oi-circle-x"
 			},
 			celledit : {
 				inputClass : 'form-control'
@@ -1279,7 +1279,7 @@ $.extend($.jgrid,{
 			},
 			modal : {
 				icon_close : "oi-circle-x",
-				icon_resizable : ""
+				icon_resizable : "oi-plus"
 			},
 			inlinedit : {
 				icon_edit_nav : "oi-pencil",
@@ -1359,7 +1359,7 @@ $.extend($.jgrid,{
 			},
 			modal : {
 				icon_close : "octicon-x",
-				icon_resizable : ""
+				icon_resizable : "octicon-plus"
 			},
 			inlinedit : {
 				icon_edit_nav : "octicon-pencil",
@@ -9205,10 +9205,11 @@ $.jgrid.extend({
 					p.onInitializeSearch.call($t, $("#"+fid));
 				}
 				p.gbox = "#gbox_"+fid;
+				var fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
 				if (p.layer) {
-					$.jgrid.createModal(IDs ,fil,p,"#gview_"+$.jgrid.jqID($t.p.id),$("#gbox_"+$.jgrid.jqID($t.p.id))[0], (typeof p.layer ==="string" ? "#"+$.jgrid.jqID(p.layer) : p.layer), (typeof p.layer ==="string" ?  {position: "relative"} :{} ) );
+					$.jgrid.createModal(IDs ,fil,p,"#gview_"+$.jgrid.jqID($t.p.id),$("#gbox_"+$.jgrid.jqID($t.p.id))[0], (typeof p.layer ==="string" ? "#"+$.jgrid.jqID(p.layer) : p.layer), (typeof p.layer ==="string" ?  {position: "relative", "font-size":fs} :{ "font-size":fs} ) );
 				} else {
-					$.jgrid.createModal(IDs ,fil,p,"#gview_"+$.jgrid.jqID($t.p.id),$("#gbox_"+$.jgrid.jqID($t.p.id))[0]);
+					$.jgrid.createModal(IDs ,fil,p,"#gview_"+$.jgrid.jqID($t.p.id),$("#gbox_"+$.jgrid.jqID($t.p.id))[0], null, { "font-size":fs});
 				}
 				if (p.searchOnEnter || p.closeOnEscape) {
 					$("#"+$.jgrid.jqID(IDs.themodal)).keydown(function (e) {
@@ -10476,7 +10477,7 @@ $.jgrid.extend({
 			resize: true,
 			jqModal: true,
 			closeOnEscape : false,
-			labelswidth: '30%',
+			labelswidth: 'auto',
 			closeicon: [],
 			navkeys: [false,38,40],
 			onClose: null,
