@@ -3727,7 +3727,6 @@ $.fn.jqGrid = function( pin ) {
 			//$("#sopt_menu").remove();
 			left=parseInt(left,10);
 			top=parseInt(top,10) + 25;
-			var fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
 			var strb = '<ul id="column_menu" role="menu" tabindex="0">',
 			str = '',
 			stre = "</ul>",
@@ -14007,6 +14006,9 @@ $.jgrid.extend({
 
 		// fix height of elements of the multiselect widget
 		$dialogContent = $("#colchooser_" + $.jgrid.jqID(self[0].p.id));
+		// fix fontsize
+		var fs =  $('.ui-jqgrid').css('font-size') || '11px';
+		$dialogContent.parent().css("font-size",fs);
 
 		$dialogContent.css({ margin: "auto" });
 		$dialogContent.find(">div").css({ width: "100%", height: "100%", margin: "auto" });
@@ -14161,17 +14163,22 @@ $.jgrid.extend({
 						}
 						var accept = $(ui.draggable).attr("id"),
 							getdata = ui.draggable.parent().parent().jqGrid('getRowData',accept),
-							target = $(this).find('table.ui-jqgrid-btable:first')[0];
+							keys = [],
+							target = $(this).find('table.ui-jqgrid-btable:first')[0];					
+							if($.isPlainObject( getdata)) {
+								keys = Object.keys(getdata);
+							}
 						if(!opts.dropbyname) {
-							var j, tmpdata = {}, nm;
+							var j, tmpdata = {}, nm, ki;
 							var dropmodel = $("#"+$.jgrid.jqID(target.id)).jqGrid('getGridParam','colModel');
 							try {
 								for(j=0;j<dropmodel.length;j++) {
 									nm = dropmodel[j].name;
 									if( !(nm === 'cb' || nm === 'rn' || nm === 'subgrid' )) {
-										if (getdata.hasOwnProperty(nm)) {
-											tmpdata[nm] = getdata[nm];
+										if (keys[ki] !== undefined) {
+											tmpdata[nm] = getdata[keys[ki]];
 										}
+										ki++;
 									}
 								}
 								getdata = tmpdata;
