@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.0 - 2018-02-27
+* @license Guriddo jqGrid JS - v5.3.0 - 2018-03-01
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -12690,6 +12690,15 @@ $.extend($.jgrid,{
 				var ms = ret.multiselect === 1 ? 1 : 0,
 					rn = ret.rownumbers === true ? 1 :0;
 				grid.jqGrid('addSubGrid', ms + rn);
+				// reopen the sugrid in order to maintain the subgrid state.
+				// currently only one level is supported
+				// todo : supposrt for unlimited  levels
+				$.each(grid[0].rows, function(i, srow){
+					if( $(srow).hasClass('ui-sg-expanded') ) {
+						// reopen the subgrid
+						$(grid[0].rows[i-1]).find('td.sgexpanded').click().click();
+					}
+				});
 			}
 			// treegrid
 			if(ret.treeGrid) {
