@@ -600,7 +600,7 @@ $.jgrid.extend({
 			p.collen = albl.length;
 
 			if( $t.p.grouping ) {
-
+				$t.p.groupingView._locgr = false;
 				str += groupToCsv(data1, p);
 
 			}  else {
@@ -1029,6 +1029,7 @@ $.jgrid.extend({
 				$('row:last c', rels).attr( 's', '2' ); // bold
 			}
 			if( $t.p.grouping ) {
+				$t.p.groupingView._locgr = false;
 				groupToExcel(data.body);
 			} else {
 				for ( var n=0, ie=data.body.length ; n<ie ; n++ ) {
@@ -1318,6 +1319,7 @@ $.jgrid.extend({
 				rows.push( test );
 			}
 			if($t.p.grouping) {
+				$t.p.groupingView._locgr = false;
 				groupToPdf(data);
 			} else {
 				var row;
@@ -1679,6 +1681,7 @@ $.jgrid.extend({
 
 			html += '<tbody>';
 			if( $t.p.grouping ) {
+				$t.p.groupingView._locgr = false;
 				html += groupToHtml(data.body);
 			} else {
 				for ( var i=0, ien=data.body.length ; i<ien ; i++ ) {
