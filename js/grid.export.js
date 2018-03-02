@@ -600,8 +600,10 @@ $.jgrid.extend({
 			p.collen = albl.length;
 
 			if( $t.p.grouping ) {
+				var savlcgr = $t.p.groupingView._locgr ? true : false;
 				$t.p.groupingView._locgr = false;
 				str += groupToCsv(data1, p);
+				$t.p.groupingView._locgr  = savlcgr;
 
 			}  else {
 				while(j < dlen) {
@@ -1029,8 +1031,10 @@ $.jgrid.extend({
 				$('row:last c', rels).attr( 's', '2' ); // bold
 			}
 			if( $t.p.grouping ) {
+				var savlcgr = $t.p.groupingView._locgr ? true : false;
 				$t.p.groupingView._locgr = false;
 				groupToExcel(data.body);
+				$t.p.groupingView._locgr = savlcgr;
 			} else {
 				for ( var n=0, ie=data.body.length ; n<ie ; n++ ) {
 					addRow( data.body[n], false );
@@ -1319,8 +1323,10 @@ $.jgrid.extend({
 				rows.push( test );
 			}
 			if($t.p.grouping) {
+				var savlcgr = $t.p.groupingView._locgr ? true : false;
 				$t.p.groupingView._locgr = false;
 				groupToPdf(data);
+				$t.p.groupingView._locgr = savlcgr;
 			} else {
 				var row;
 				for ( i=0, ien=data.length ; i<ien ; i++ ) {
@@ -1681,8 +1687,10 @@ $.jgrid.extend({
 
 			html += '<tbody>';
 			if( $t.p.grouping ) {
+				var savlcgr = $t.p.groupingView._locgr ? true : false;
 				$t.p.groupingView._locgr = false;
 				html += groupToHtml(data.body);
+				$t.p.groupingView._locgr = savlcgr;
 			} else {
 				for ( var i=0, ien=data.body.length ; i<ien ; i++ ) {
 					html += addBodyRow( data.body[i], 'td', true, (i===0?true:false) );
