@@ -376,8 +376,8 @@ $.extend($.jgrid,{
 				if(!options.rows) { options.rows = 2; }
 				if(vl==='&nbsp;' || vl==='&#160;' || (vl.length===1 && vl.charCodeAt(0)===160)) {vl="";}
 				elem.value = vl;
-				setAttributes(elem, options);
 				$(elem).attr({"role":"textbox","multiline":"true"});
+				setAttributes(elem, options);
 			break;
 			case "checkbox" : //what code for simple checkbox
 				elem = document.createElement("input");
@@ -401,8 +401,8 @@ $.extend($.jgrid,{
 					elem.value = cbval[0];
 					$(elem).attr("offval",cbval[1]);
 				}
-				setAttributes(elem, options, ['value']);
 				$(elem).attr("role","checkbox");
+				setAttributes(elem, options, ['value']);
 			break;
 			case "select" :
 				elem = document.createElement("select");
@@ -582,13 +582,13 @@ $.extend($.jgrid,{
 				elem = document.createElement("input");
 				elem.type = eltype;
 				elem.value = vl;
-				setAttributes(elem, options);
 				if(eltype !== "button"){
 					if(autowidth) {
 						if(!options.size) { $(elem).css({width:"96%"}); }
 					} else if (!options.size) { options.size = 20; }
 				}
 				$(elem).attr("role",role);
+				setAttributes(elem, options);
 		}
 		return elem;
 	},
