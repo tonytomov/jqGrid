@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.0 - 2018-03-02
+* @license Guriddo jqGrid JS - v5.3.0 - 2018-03-03
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -4141,7 +4141,7 @@ $.fn.jqGrid = function( pin ) {
 			tmpcm = $(window).width();
 			ts.p.width = tmpcm - pw > 3 ?  pw: tmpcm;
 		}
-		var tfoot = "", bstw = ts.p.styleUI === 'Bootstrap' ? 2 : 0;
+		var tfoot = "", bstw = ts.p.styleUI.search('Bootstrap') !== -1 ? 2 : 0;
 		setColWidth();
 		$(eg).css("width",grid.width+"px").append("<div class='ui-jqgrid-resize-mark' id='rs_m"+ts.p.id+"'>&#160;</div>");
 		if(ts.p.scrollPopUp) {
@@ -5297,7 +5297,7 @@ $.jgrid.extend({
 		return this.each(function(){
 			if (!this.grid ) {return;}
 			var $t = this, cw,
-			initwidth = 0, brd=$.jgrid.cell_width ? 0: $t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0, cr, bstw = $t.p.styleUI === 'Bootstrap' ? 2 : 0;
+			initwidth = 0, brd=$.jgrid.cell_width ? 0: $t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0, cr, bstw = $t.p.styleUI.search('Bootstrap') !== -1 ? 2 : 0;
 			if(typeof shrink !== 'boolean') {
 				shrink=$t.p.shrinkToFit;
 			}
@@ -7203,8 +7203,8 @@ $.extend($.jgrid,{
 				if(!options.rows) { options.rows = 2; }
 				if(vl==='&nbsp;' || vl==='&#160;' || (vl.length===1 && vl.charCodeAt(0)===160)) {vl="";}
 				elem.value = vl;
-				setAttributes(elem, options);
 				$(elem).attr({"role":"textbox","multiline":"true"});
+				setAttributes(elem, options);
 			break;
 			case "checkbox" : //what code for simple checkbox
 				elem = document.createElement("input");
@@ -7228,8 +7228,8 @@ $.extend($.jgrid,{
 					elem.value = cbval[0];
 					$(elem).attr("offval",cbval[1]);
 				}
-				setAttributes(elem, options, ['value']);
 				$(elem).attr("role","checkbox");
+				setAttributes(elem, options, ['value']);
 			break;
 			case "select" :
 				elem = document.createElement("select");
@@ -7409,13 +7409,13 @@ $.extend($.jgrid,{
 				elem = document.createElement("input");
 				elem.type = eltype;
 				elem.value = vl;
-				setAttributes(elem, options);
 				if(eltype !== "button"){
 					if(autowidth) {
 						if(!options.size) { $(elem).css({width:"96%"}); }
 					} else if (!options.size) { options.size = 20; }
 				}
 				$(elem).attr("role",role);
+				setAttributes(elem, options);
 		}
 		return elem;
 	},
