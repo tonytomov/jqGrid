@@ -60,11 +60,12 @@
 .ui-jqgrid .ui-jqgrid-htable { 
 	margin-bottom: 0; 
 	table-layout: fixed; 
-	border-top:none;
+	border-top: 0 none !important;
 }
 .ui-jqgrid .ui-jqgrid-htable thead th {
 	overflow : hidden; 
-	border-bottom : none;
+	border-bottom : 0 none;
+	border-top: 0 none;
 	padding-right: 2px;
 }
 .ui-jqgrid .ui-jqgrid-htable thead th div {
@@ -94,12 +95,15 @@
 	text-align: center;
 }
 .ui-jqgrid tr.jqg-second-row-header th,
-.ui-jqgrid tr.jqg-third--row-header th
+.ui-jqgrid tr.jqg-third-row-header th
 {
-	border-top:none;
+	/*border-top:none;*/
 	text-align: center;
 }
-
+.ui-jqgrid tr.jqg-third-row-header th
+{
+	border-top: 1px solid #dee2e6;
+}
 .ui-jqgrid .ui-th-div-ie {
 	white-space: nowrap; 
 	zoom :1; 
@@ -141,6 +145,7 @@
 }
 .ui-jqgrid tr.ui-search-toolbar th {
 	padding:  0.45rem;
+	border-top: 1px solid #dee2e6;
 }
 .ui-jqgrid .ui-search-table td.ui-search-clear 
 {
@@ -174,9 +179,16 @@
 div.tablediv > .table-bordered {
 	border-left : 1px solid #ddd !important;
 }
-.ui-jqgrid  .ui-jqgrid-bdiv table.table-bordered td {
+.ui-jqgrid .ui-jqgrid-bdiv table.table-bordered td {
 	border-top: 0px none;
 }
+
+.ui-subgrid .ui-jqgrid .ui-pager-control .ui-pager-table td {
+	border-top: 0px none;
+	border-right: 0px none;
+	border-bottom: 0 none;
+}
+
 .ui-jqgrid .ui-jqgrid-bdiv {
 	position: relative; 
 	margin: 0; 
@@ -412,6 +424,20 @@ div.tablediv > .table-bordered {
 }
 
 /*Subgrid*/
+.ui-jqgrid .ui-jqgrid-btable .ui-sgcollapsed {
+	height: 100%;
+	padding: 0 0;
+}
+
+.ui-jqgrid .ui-sgcollapsed a.ui-sghref span {
+    display: table-cell;
+    text-align:center;
+    vertical-align: middle;
+}
+/*octicons fix*/
+.ui-jqgrid .ui-sgcollapsed a.ui-sghref span.octicon {
+	padding-left: 7px;
+}
 
 .ui-jqgrid .ui-jqgrid-btable .ui-sgcollapsed span {
 	display: block;
@@ -434,6 +460,10 @@ div.tablediv > .table-bordered {
 .ui-jqgrid a.ui-sghref {
 	text-decoration: none;
 	color : #010101; /*default*/
+	display: table;
+    position: relative;
+    height: 100%;
+    width: 100%;
 }
 .ui-jqgrid .ui-th-subgrid {height:20px;}
 .tablediv > .row { margin: 0 0}
