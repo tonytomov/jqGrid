@@ -1404,8 +1404,8 @@ $.extend($.jgrid,{
 				icon_open : 'octicon-git-merge'
 			},
 			treegrid : {
-				icon_plus : 'octicon-plus',
-				icon_minus : 'octicon-minus',
+				icon_plus : 'octicon-triangle-right',
+				icon_minus : 'octicon-triangle-down',
 				icon_leaf : 'octicon-primitive-dot'
 			},
 			fmatter : {
@@ -1486,7 +1486,7 @@ $.extend($.jgrid,{
 			treegrid : {
 				icon_plus : 'fa-plus',
 				icon_minus : 'fa-minus',
-				icon_leaf : 'fa-leaf'
+				icon_leaf : 'fa-circle'
 			},
 			fmatter : {
 				icon_edit : "fa-edit",
