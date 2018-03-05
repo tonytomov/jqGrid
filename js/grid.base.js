@@ -4305,7 +4305,7 @@ $.fn.jqGrid = function( pin ) {
 			// TBD -- escape ts.p.pager here?
 			if(typeof ts.p.pager === "string") {if(ts.p.pager.substr(0,1) !== "#") { ts.p.pager = "#"+ts.p.pager;} }
 			else { ts.p.pager = "#"+ $(ts.p.pager).attr("id");}
-			$(ts.p.pager).css({width: grid.width+"px"}).addClass(getstyle(stylemodule,'pagerBox', true,'ui-jqgrid-pager')).appendTo(eg);
+			$(ts.p.pager).css({width: (grid.width - bstw) +"px"}).addClass(getstyle(stylemodule,'pagerBox', true,'ui-jqgrid-pager')).appendTo(eg);
 			if(hg) {$(ts.p.pager).hide();}
 			setPager(ts.p.pager,'');
 		}
@@ -5314,7 +5314,7 @@ $.jgrid.extend({
 			$($t.grid.bDiv).css("width",(nwidth - bstw) +"px");
 			$($t.grid.hDiv).css("width",(nwidth - bstw) +"px");
 			if($t.p.pager ) {
-				$($t.p.pager).css("width",nwidth+"px");
+				$($t.p.pager).css("width",(nwidth - bstw) +"px");
 			}
 			if($t.p.toppager ) {
 				$($t.p.toppager).css("width",(nwidth - bstw)+"px");
