@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.0 - 2018-03-05
+* @license Guriddo jqGrid JS - v5.3.0 - 2018-03-09
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3806,7 +3806,7 @@ $.fn.jqGrid = function( pin ) {
 		buildColMenu = function( index, left, top ){
 			//$("#sopt_menu").remove();
 			left=parseInt(left,10);
-			top=parseInt(top,10) + 5;
+			top=parseInt(top,10) + 10;
 			var strb = '<ul id="column_menu" role="menu" tabindex="0">',
 			str = '',
 			stre = "</ul>",
@@ -7121,6 +7121,7 @@ $.extend($.jgrid,{
 			}
 			$("#info_dialog").remove();
 		} catch (e){}
+		var fs =  $('.ui-jqgrid').css('font-size') || '11px';
 		$.jgrid.createModal({
 			themodal:'info_dialog',
 			modalhead:'info_head',
@@ -7128,7 +7129,8 @@ $.extend($.jgrid,{
 			scrollelm: 'infocnt'},
 			cnt,
 			mopt,
-			'','',true
+			'','',true, 
+			{ "font-size":fs}
 		);
 		// attach onclick after inserting into the dom
 		if(buttstr) {
@@ -8762,7 +8764,7 @@ $.jgrid.extend({
 				left=parseInt(left,10);
 				top=parseInt(top,10) + 18;
 
-				var fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
+				var fs =  $('.ui-jqgrid').css('font-size') || '11px';
 				var str = '<ul id="sopt_menu" class="ui-search-menu modal-content" role="menu" tabindex="0" style="font-size:'+fs+';left:'+left+'px;top:'+top+'px;">',
 				selected = $(elem).attr("soper"), selclass,
 				aoprs = [], ina;
@@ -9284,7 +9286,7 @@ $.jgrid.extend({
 					p.onInitializeSearch.call($t, $("#"+fid));
 				}
 				p.gbox = "#gbox_"+fid;
-				var fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
+				var fs =  $('.ui-jqgrid').css('font-size') || '11px';
 				if (p.layer) {
 					$.jgrid.createModal(IDs ,fil,p,"#gview_"+$.jgrid.jqID($t.p.id),$("#gbox_"+$.jgrid.jqID($t.p.id))[0], (typeof p.layer ==="string" ? "#"+$.jgrid.jqID(p.layer) : p.layer), (typeof p.layer ==="string" ?  {position: "relative", "font-size":fs} :{ "font-size":fs} ) );
 				} else {
@@ -10762,7 +10764,7 @@ $.jgrid.extend({
 			}
 			p.gbox = "#gbox_"+$.jgrid.jqID(gID);
 			var bt = $("<div></div>").append(frm).append("<table border='0' class='EditTable' id='"+frmtb+"_2'><tbody><tr id='Act_Buttons'><td class='navButton' width='"+p.labelswidth+"'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton'>"+ user_buttons+"</td></tr></tbody></table>"),
-			fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
+			fs =  $('.ui-jqgrid').css('font-size') || '11px';
 			
 			$.jgrid.createModal(IDs,bt, rp_ge[$(this)[0].p.id],"#gview_"+$.jgrid.jqID($t.p.id),$("#gview_"+$.jgrid.jqID($t.p.id))[0], null, {"font-size":fs});
 			if(rtlb) {
@@ -10964,7 +10966,7 @@ $.jgrid.extend({
 				var bS  = "<a id='dData' class='fm-button " + commonstyle.button + "'>"+p.bSubmit+"</a>",
 				bC  = "<a id='eData' class='fm-button " + commonstyle.button + "'>"+p.bCancel+"</a>",
 				user_buttons = ( $.isArray( rp_ge[$t.p.id].buttons ) ? $.jgrid.buildButtons( rp_ge[$t.p.id].buttons, bS + bC, commonstyle ) : bS + bC ),
-				fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
+				fs =  $('.ui-jqgrid').css('font-size') || '11px';
 
 				tbl += "<table class='EditTable ui-common-table' id='"+dtbl+"_2'><tbody><tr><td><hr class='" + commonstyle.content + "' style='margin:1px'/></td></tr><tr><td class='DelButton EditButton'>"+ user_buttons +"</td></tr></tbody></table>";
 				p.gbox = "#gbox_"+$.jgrid.jqID(gID);
@@ -14254,20 +14256,20 @@ $.jgrid.extend({
 						}
 						var accept = $(ui.draggable).attr("id"),
 							getdata = ui.draggable.parent().parent().jqGrid('getRowData',accept),
-							keys = [],
+							keysd = [],
 							target = $(this).find('table.ui-jqgrid-btable:first')[0];					
 							if($.isPlainObject( getdata)) {
-								keys = Object.keys(getdata);
+								keysd = Object.keys(getdata);
 							}
 						if(!opts.dropbyname) {
-							var j, tmpdata = {}, nm, ki;
+							var j, tmpdata = {}, nm, ki=0;
 							var dropmodel = $("#"+$.jgrid.jqID(target.id)).jqGrid('getGridParam','colModel');
 							try {
 								for(j=0;j<dropmodel.length;j++) {
 									nm = dropmodel[j].name;
 									if( !(nm === 'cb' || nm === 'rn' || nm === 'subgrid' )) {
-										if (keys[ki] !== undefined) {
-											tmpdata[nm] = getdata[keys[ki]];
+										if (keysd[ki] !== undefined) {
+											tmpdata[nm] = getdata[keysd[ki]];
 										}
 										ki++;
 									}
