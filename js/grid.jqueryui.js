@@ -499,20 +499,20 @@ $.jgrid.extend({
 						}
 						var accept = $(ui.draggable).attr("id"),
 							getdata = ui.draggable.parent().parent().jqGrid('getRowData',accept),
-							keys = [],
+							keysd = [],
 							target = $(this).find('table.ui-jqgrid-btable:first')[0];					
 							if($.isPlainObject( getdata)) {
-								keys = Object.keys(getdata);
+								keysd = Object.keys(getdata);
 							}
 						if(!opts.dropbyname) {
-							var j, tmpdata = {}, nm, ki;
+							var j, tmpdata = {}, nm, ki=0;
 							var dropmodel = $("#"+$.jgrid.jqID(target.id)).jqGrid('getGridParam','colModel');
 							try {
 								for(j=0;j<dropmodel.length;j++) {
 									nm = dropmodel[j].name;
 									if( !(nm === 'cb' || nm === 'rn' || nm === 'subgrid' )) {
-										if (keys[ki] !== undefined) {
-											tmpdata[nm] = getdata[keys[ki]];
+										if (keysd[ki] !== undefined) {
+											tmpdata[nm] = getdata[keysd[ki]];
 										}
 										ki++;
 									}
