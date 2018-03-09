@@ -1085,7 +1085,7 @@ $.jgrid.extend({
 				left=parseInt(left,10);
 				top=parseInt(top,10) + 18;
 
-				var fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
+				var fs =  $('.ui-jqgrid').css('font-size') || '11px';
 				var str = '<ul id="sopt_menu" class="ui-search-menu modal-content" role="menu" tabindex="0" style="font-size:'+fs+';left:'+left+'px;top:'+top+'px;">',
 				selected = $(elem).attr("soper"), selclass,
 				aoprs = [], ina;
@@ -1607,7 +1607,7 @@ $.jgrid.extend({
 					p.onInitializeSearch.call($t, $("#"+fid));
 				}
 				p.gbox = "#gbox_"+fid;
-				var fs =  $('.ui-jqgrid-view').css('font-size') || '11px';
+				var fs =  $('.ui-jqgrid').css('font-size') || '11px';
 				if (p.layer) {
 					$.jgrid.createModal(IDs ,fil,p,"#gview_"+$.jgrid.jqID($t.p.id),$("#gbox_"+$.jgrid.jqID($t.p.id))[0], (typeof p.layer ==="string" ? "#"+$.jgrid.jqID(p.layer) : p.layer), (typeof p.layer ==="string" ?  {position: "relative", "font-size":fs} :{ "font-size":fs} ) );
 				} else {
