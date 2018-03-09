@@ -294,6 +294,7 @@ $.extend($.jgrid,{
 			}
 			$("#info_dialog").remove();
 		} catch (e){}
+		var fs =  $('.ui-jqgrid').css('font-size') || '11px';
 		$.jgrid.createModal({
 			themodal:'info_dialog',
 			modalhead:'info_head',
@@ -301,7 +302,8 @@ $.extend($.jgrid,{
 			scrollelm: 'infocnt'},
 			cnt,
 			mopt,
-			'','',true
+			'','',true, 
+			{ "font-size":fs}
 		);
 		// attach onclick after inserting into the dom
 		if(buttstr) {
