@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.1 - 2018-03-12
+* @license Guriddo jqGrid JS - v5.3.1 - 2018-03-20
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1542,6 +1542,7 @@ $.fn.jqGrid = function( pin ) {
 			mtype: "GET",
 			altRows: false,
 			selarrrow: [],
+			preserveSelection : false,
 			savedRow: [],
 			shrinkToFit: true,
 			xmlReader: {},
@@ -1885,7 +1886,7 @@ $.fn.jqGrid = function( pin ) {
 				return;
 			}
 		}
-		var i =0, lr, lk, dir;
+		var i =0, lr, lk, dir, spsh;
 		for( lk in $.jgrid.regional ){
 			if($.jgrid.regional.hasOwnProperty(lk)) {
 				if(i===0) { lr = lk; }
@@ -2276,7 +2277,7 @@ $.fn.jqGrid = function( pin ) {
 			if (!gxml) { gxml = []; }
 			var gl = gxml.length, j=0, grpdata=[], rn = parseInt(ts.p.rowNum,10), br=ts.p.scroll?$.jgrid.randId():1,
 				tablebody = $(ts).find("tbody:first"),
-				hiderow=false, groupingPrepare;
+				hiderow=false, groupingPrepare, selr;
 			if(ts.p.grouping)  {
 				hiderow = ts.p.groupingView.groupCollapse === true;
 				groupingPrepare = $.jgrid.getMethod("groupingPrepare");
@@ -2291,13 +2292,21 @@ $.fn.jqGrid = function( pin ) {
 					xmlr = gxml[j];
 					rid = getId(xmlr,br+j);
 					rid  = ts.p.idPrefix + rid;
+					if( ts.p.preserveSelection) {
+						if( ts.p.multiselect) {
+							selr = ts.p.selarrrow.indexOf( rid ) !== -1;
+							spsh = selr ? spsh+1: spsh;
+						} else {
+							selr = (rid === ts.p.selrow);
+						}
+					}
 					var iStartTrTag = rowData.length;
 					rowData.push("");
 					if( ni ) {
 						rowData.push( addRowNum(0, j, ts.p.page, ts.p.rowNum, rnc ) );
 					}
 					if( gi ) {
-						rowData.push( addMulti(rid, ni, j, false, mlc) );
+						rowData.push( addMulti(rid, ni, j, selr, mlc) );
 					}
 					if( si ) {
 						rowData.push( addSubGridCell.call(self, gi+ni, j+rcnt) );
@@ -2345,6 +2354,7 @@ $.fn.jqGrid = function( pin ) {
 					if(ir===rn) {break;}
 				}
 			}
+			spsh =  ts.p.multiselect && ts.p.preserveSelection && ir === spsh;
 			if(ts.p.gridview === true) {
 				fpos = ts.p.treeANode > -1 ? ts.p.treeANode: 0;
 				if(ts.p.grouping) {
@@ -2375,6 +2385,9 @@ $.fn.jqGrid = function( pin ) {
 				ts.p.lastpage = Math.ceil(gl/ rn);
 			}
 			if (!more) { ts.updatepager(false,true); }
+			if(spsh) {
+				setHeadCheckBox( true );
+			}
 			if(locdata) {
 				while (ir<gl) {
 					xmlr = gxml[ir];
@@ -2506,9 +2519,10 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 				idr  = ts.p.idPrefix + idr;
-				if( selected) {
+				if( selected || ts.p.preserveSelection) {
 					if( ts.p.multiselect) {
-						selr = ($.inArray(idr, ts.p.selarrrow) !== -1);
+						selr = ts.p.selarrrow.indexOf( idr ) !== -1;
+						spsh = selr ? spsh+1: spsh;
 					} else {
 						selr = (idr === ts.p.selrow);
 					}
@@ -2559,6 +2573,7 @@ $.fn.jqGrid = function( pin ) {
 				i++;
 				if(ir===rn) { break; }
 			}
+			spsh =  ts.p.multiselect && (ts.p.preserveSelection || selected) && ir === spsh;
 			if(ts.p.gridview === true ) {
 				fpos = ts.p.treeANode > -1 ? ts.p.treeANode: 0;
 				if(ts.p.grouping) {
@@ -2590,6 +2605,9 @@ $.fn.jqGrid = function( pin ) {
 				ts.p.lastpage = Math.ceil(len/ rn);
 			}
 			if (!more) { ts.updatepager(false,true); }
+			if(spsh) {
+				setHeadCheckBox( true );
+			}
 			if(locdata) {
 				while (ir<len && drows[ir]) {
 					cur = drows[ir];
@@ -2987,6 +3005,7 @@ $.fn.jqGrid = function( pin ) {
 			if(!ts.grid.hDiv.loading) {
 				var pvis = ts.p.scroll && npage === false,
 				prm = {}, dt, dstr, pN=ts.p.prmNames;
+				spsh = 0;
 				if(ts.p.page <=0) { ts.p.page = Math.min(1,ts.p.lastpage); }
 				if(pN.search !== null) {prm[pN.search] = ts.p.search;} if(pN.nd !== null) {prm[pN.nd] = new Date().getTime();}
 				if(pN.rows !== null) {prm[pN.rows]= ts.p.rowNum;} if(pN.page !== null) {prm[pN.page]= ts.p.page;}
@@ -3162,7 +3181,12 @@ $.fn.jqGrid = function( pin ) {
 				if ($.isFunction(ts.p.onPaging) ) { ret = ts.p.onPaging.call(ts,onpaging, thus); }
 				if(ret==='stop') {return false;}
 				ts.p.selrow = null;
-				if(ts.p.multiselect) {ts.p.selarrrow =[]; setHeadCheckBox( false );}
+				if(ts.p.multiselect) {
+					if(!ts.p.preserveSelection) {
+						ts.p.selarrrow =[];
+					}
+					setHeadCheckBox( false );
+				}
 				ts.p.savedRow = [];
 				return true;
 			};
@@ -3438,12 +3462,18 @@ $.fn.jqGrid = function( pin ) {
 					return;
 				}
 			}
+			setHeadCheckBox(false);
 			if(ts.p.datatype === "local") {
-				if(ts.p.deselectAfterSort) {$(ts).jqGrid("resetSelection");}
+				if(ts.p.deselectAfterSort && !ts.p.preserveSelection) {
+					$(ts).jqGrid("resetSelection");
+				}
 			} else {
 				ts.p.selrow = null;
-				if(ts.p.multiselect){setHeadCheckBox( false );}
+				if(ts.p.multiselect){
+					if(!ts.p.preserveSelection) {
 				ts.p.selarrrow =[];
+					}
+				}
 				ts.p.savedRow =[];
 			}
 			if(ts.p.scroll) {
@@ -4094,7 +4124,9 @@ $.fn.jqGrid = function( pin ) {
 		if(this.p.multiselect) {
 			var emp=[], chk;
 			$('#cb_'+$.jgrid.jqID(ts.p.id),this).on('click',function(){
+				if(!ts.p.preserveSelection) {
 				ts.p.selarrrow = [];
+				}
 				var froz = ts.p.frozenColumns === true ? ts.p.id + "_frozen" : "";
 				if (this.checked) {
 					$(ts.rows).each(function(i) {
@@ -4102,7 +4134,13 @@ $.fn.jqGrid = function( pin ) {
 							if(!$(this).hasClass("ui-subgrid") && !$(this).hasClass("jqgroup") && !$(this).hasClass(disabled) && !$(this).hasClass("jqfoot")){
 								$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(this.id) )[ts.p.useProp ? 'prop': 'attr']("checked",true);
 								$(this).addClass(highlight).attr("aria-selected","true");
+								if(ts.p.preserveSelection) {
+									if(ts.p.selarrrow.indexOf(this.id) === -1) {
 								ts.p.selarrrow.push(this.id);
+									}
+								} else {
+									ts.p.selarrrow.push(this.id);
+								}
 								ts.p.selrow = this.id;
 								if(froz) {
 									$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(this.id), ts.grid.fbDiv )[ts.p.useProp ? 'prop': 'attr']("checked",true);
@@ -4462,8 +4500,10 @@ $.fn.jqGrid = function( pin ) {
 				} else if(!ts.p.treeGrid) {
 					ts.p.selrow=null;
 					if(ts.p.multiselect) {
+						if(!ts.p.preserveSelection) {
 						ts.p.selarrrow =[];
 						setHeadCheckBox(false);
+					}
 					}
 					ts.p.savedRow = [];
 				}
