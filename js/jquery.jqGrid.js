@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.1 - 2018-03-20
+* @license Guriddo jqGrid JS - v5.3.1 - 2018-03-21
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -16440,8 +16440,10 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 				if($.fmatter.isNumber(opts.decimalPlaces)) {
 					// Round to the correct decimal place
 					var nDecimalPlaces = opts.decimalPlaces;
-					var nDecimal = Math.pow(10, nDecimalPlaces);
-					sOutput = String(Math.round(nData*nDecimal)/nDecimal);
+					//var nDecimal = Math.pow(10, nDecimalPlaces);
+					//sOutput = String(Math.round(nData*nDecimal)/nDecimal);
+					// see http://www.jacklmoore.com/notes/rounding-in-javascript/
+					sOutput = String(Number(Math.round(nData+'e'+nDecimalPlaces)+'e-'+nDecimalPlaces));
 					nDotIndex = sOutput.lastIndexOf(".");
 					if(nDecimalPlaces > 0) {
 					// Add the decimal separator
