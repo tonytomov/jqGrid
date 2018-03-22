@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.1 - 2018-03-21
+* @license Guriddo jqGrid JS - v5.3.1 - 2018-03-22
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1958,12 +1958,13 @@ $.fn.jqGrid = function( pin ) {
 				cellAttrFunc = $.isFunction(cm.cellattr) ? cm.cellattr : $.jgrid.cellattr[cm.cellattr];
 				celp = cellAttrFunc.call(ts, rowId, tv, rawObject, cm, rdata);
 				if(celp && typeof celp === "string") {
-					celp = celp.replace(/style/i,'style').replace(/title/i,'title');
 					if(celp.indexOf('title') > -1) { cm.title=false;}
 					if(celp.indexOf('class') > -1) { clas = undefined;}
-					acp = celp.replace(/\-style/g,'-sti').split(/style/);
+					celp = String(celp).replace(/\s+\=/g, '=');
+					acp = celp.split("style=");
+
 					if(acp.length === 2 ) {
-						acp[1] =  $.trim(acp[1].replace(/\-sti/g,'-style').replace("=",""));
+						acp[1] =  $.trim(acp[1]);
 						if(acp[1].indexOf("'") === 0 || acp[1].indexOf('"') === 0) {
 							acp[1] = acp[1].substring(1);
 						}
@@ -1973,7 +1974,12 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 			}
-			if(!acp.length) { acp[0] = ""; result += "\"";}
+			if(!acp.length ) { 
+				acp[0] = ""; 
+				result += "\"";
+			} else if(acp.length > 2) {
+				acp[0] = ""; 
+			}
 			result += (clas !== undefined ? (" class=\""+clas+"\"") :"") + ((cm.title && tv) ? (" title=\""+$.jgrid.stripHtml(tv)+"\"") :"");
 			result += " aria-describedby=\""+ts.p.id+"_"+nm+"\"";
 			return result + acp[0];
@@ -4953,7 +4959,7 @@ $.jgrid.extend({
 			if(rowid == null) {
 				getall = true;
 				resall = [];
-				len = $t.rows.length-1;
+				len = $t.rows.length;
 			} else {
 				ind = $($t).jqGrid('getGridRowById', rowid);
 				if(!ind) { return res; }
@@ -4964,9 +4970,9 @@ $.jgrid.extend({
 			}
 			while(j<len){
 				if(getall) {
-					ind = $t.rows[j+1];  // ignore first not visible row
+					ind = $t.rows[j];
 				}
-				if( $(ind).hasClass('jqgrow') ) {
+				if( $(ind).hasClass('jqgrow') ) { // ignore first not visible row
 					if(usedata) {
 						res = $t.p.data[$t.p._index[ind.id]];
 					} else {
