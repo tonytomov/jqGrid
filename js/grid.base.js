@@ -5039,7 +5039,7 @@ $.jgrid.extend({
 					$t.refreshIndex();
 				}
 			}
-				});
+		});
 		return success;
 	},
 	setRowData : function(rowid, data, cssp) {
