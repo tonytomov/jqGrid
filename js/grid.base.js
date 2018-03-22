@@ -4958,7 +4958,7 @@ $.jgrid.extend({
 			if(rowid == null) {
 				getall = true;
 				resall = [];
-				len = $t.rows.length-1;
+				len = $t.rows.length;
 			} else {
 				ind = $($t).jqGrid('getGridRowById', rowid);
 				if(!ind) { return res; }
@@ -4969,9 +4969,9 @@ $.jgrid.extend({
 			}
 			while(j<len){
 				if(getall) {
-					ind = $t.rows[j+1];  // ignore first not visible row
+					ind = $t.rows[j];
 				}
-				if( $(ind).hasClass('jqgrow') ) {
+				if( $(ind).hasClass('jqgrow') ) { // ignore first not visible row
 					if(usedata) {
 						res = $t.p.data[$t.p._index[ind.id]];
 					} else {
