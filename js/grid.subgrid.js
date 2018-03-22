@@ -261,8 +261,11 @@ addSubGrid : function( pos, sind ) {
 			i++;
 		}
 		if(ts.p.subGridOptions.expandOnLoad === true) {
+			var offset = 0;
+			if(ts.p.multiselect) { offset++;}
+			if(ts.p.rownumbers) { offset++;}
 			$(ts.rows).filter('.jqgrow').each(function(index,row){
-				$(row.cells[0]).click();
+				$(row.cells[offset]).click();
 			});
 		}
 		ts.subGridXml = function(xml,sid) {subGridXml(xml,sid);};
