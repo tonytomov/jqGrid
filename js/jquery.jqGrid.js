@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.1 - 2018-03-22
+* @license Guriddo jqGrid JS - v5.3.1 - 2018-03-27
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5034,7 +5034,7 @@ $.jgrid.extend({
 					$t.refreshIndex();
 				}
 			}
-				});
+		});
 		return success;
 	},
 	setRowData : function(rowid, data, cssp) {
@@ -9064,13 +9064,14 @@ $.jgrid.extend({
 			onSetVal : null
 		}, p || {});
 		return this.each(function () {
-			var $t = this, cm = $t.p.colModel, i, l = $t.p.colModel.length,
+			var $t = this, cm = $t.p.colModel, i, l = $t.p.colModel.length, params,
 			searchitem, filters, rules, rule, ssfield =[], ia;
 			// clear the values on toolbar.
 			// do not call clearToolbar
 			if(!$t.p.filterToolbar) {
 				return;
 			}
+			params = $($t).data('filterToolbar');
 			for (i = 0; i < l; i++) {
 				ssfield.push(cm[i].name);
 				searchitem = $("#gs_" +$t.p.idPrefix+ $.jgrid.jqID(cm[i].name));
@@ -9102,6 +9103,15 @@ $.jgrid.extend({
 								}
 								if($.isFunction(p.onSetVal)) {
 									p.onSetVal.call($t, searchitem, cm[ia].name);
+								}
+								if( params && params.searchOperators) {
+									var fsi = searchitem.parent().prev();
+									if( fsi.hasClass("ui-search-oper") ) {
+										$(".soptclass", fsi ).attr("soper", rule.op);
+										if(params.operands.hasOwnProperty(rule.op)) {
+											$(".soptclass", fsi ).html( params.operands[rule.op] );
+										}
+									}
 								}
 							}
 					    }
@@ -15226,8 +15236,11 @@ addSubGrid : function( pos, sind ) {
 			i++;
 		}
 		if(ts.p.subGridOptions.expandOnLoad === true) {
+			var offset = 0;
+			if(ts.p.multiselect) { offset++;}
+			if(ts.p.rownumbers) { offset++;}
 			$(ts.rows).filter('.jqgrow').each(function(index,row){
-				$(row.cells[0]).click();
+				$(row.cells[offset]).click();
 			});
 		}
 		ts.subGridXml = function(xml,sid) {subGridXml(xml,sid);};
