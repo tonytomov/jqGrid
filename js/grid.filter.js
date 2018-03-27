@@ -1398,9 +1398,14 @@ $.jgrid.extend({
 					}
 				}
 			}
-			if (typeof (p.filters) === "string" && p.filters.length) {
-				filters = $.jgrid.parse(p.filters);
+			if (typeof (p.filters) === "string") {
+				if(p.filters.length) {
+					filters = p.filters; 
 				// flat filters only
+				} else if( $t.p.postData.hasOwnProperty("filters")) {
+					filters = $t.p.postData.filters; 
+				} 
+				filters = $.jgrid.parse(filters);
 			}
 	        if ($.isPlainObject(filters)) {
 				setrules( filters );
