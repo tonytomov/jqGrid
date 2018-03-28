@@ -107,7 +107,7 @@
 .ui-jqgrid .ui-th-div-ie {
 	white-space: nowrap; 
 	zoom :1; 
-	height:17px;
+	/*height:17px;*/
 }
 .ui-jqgrid .ui-jqgrid-resize {
 	height:20px !important;
@@ -229,7 +229,10 @@ div.tablediv > .table-bordered {
 }
 .ui-jqgrid tr.ui-row-ltr td {}
 .ui-jqgrid tr.ui-row-rtl td {}
-.ui-jqgrid td.jqgrid-rownum { }
+.ui-jqgrid td.jqgrid-rownum {
+	padding-left: 3px;
+	padding-right: 3px !important;
+}
 .ui-jqgrid .ui-jqgrid-resize-mark { 
 	width:2px; 
 	left:0; 
@@ -1118,4 +1121,14 @@ div[id^='searchcnt'] .fm-button .octicon
 {
 	padding: 0;
 	font-size: inherit;
+}
+.ui-jqgrid th.jqgrid-multibox,
+.ui-jqgrid td.jqgrid-multibox
+{
+	padding-left: 7px;
+	padding-right: 7px !important;
+	line-height: normal;
+}
+.ui-jqgrid th.jqgrid-multibox {
+	text-align: center
 }
