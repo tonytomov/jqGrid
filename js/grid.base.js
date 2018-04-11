@@ -3845,9 +3845,20 @@ $.fn.jqGrid = function( pin ) {
 			$(ts).jqGrid("setFrozenColumns");
 		},
 		buildColMenu = function( index, left, top ){
+			var menu_offset = $(grid.hDiv).height() - $(".ui-search-toolbar",grid.hDiv).height();
+			if( !$(grid.cDiv).is(":hidden") ){
+				menu_offset += $(grid.cDiv).outerHeight();
+			}
+			if(ts.p.toolbar[1] && ts.p.toolbar[2] !== "bottom" && $(grid.uDiv) !== null)  {
+				menu_offset += $(grid.uDiv).outerHeight();
+			}
+			if( ts.p.toppager) {
+				menu_offset += $("#"+ts.p.id+"_toppager").outerHeight();
+			}
 			//$("#sopt_menu").remove();
+			
 			left=parseInt(left,10);
-			top=parseInt(top,10) + (ts.p.styleUI.search('Bootstrap') !== -1 ? 40 : 30);;
+			top=parseInt(top,10) + menu_offset;
 			var strb = '<ul id="column_menu" role="menu" tabindex="0">',
 			str = '',
 			stre = "</ul>",
@@ -4610,7 +4621,7 @@ $.fn.jqGrid = function( pin ) {
 					function(){ $(this).addClass(hover);},
 					function() {$(this).removeClass(hover);
 			}).on('click',function(e) {
-				var pos = $(e.target).offset();
+				var pos = $(e.target).position();
 				$("#"+ts.p.id+"_menubar").show();
 				if(ts.p.direction==="rtl") {
 					$("#"+ts.p.id+"_menubar").css({left : pos.left - $("#"+ts.p.id+"_menubar").width() - 20 });

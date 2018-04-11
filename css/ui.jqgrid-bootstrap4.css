@@ -1094,7 +1094,7 @@ div[id^='searchcnt'] .fm-button .octicon
 {
 	font-size:inherit;
 	width:auto;
-	position:fixed;
+	position :absolute;
 }
 .ui-jqgrid .ui-menu-item form
 {

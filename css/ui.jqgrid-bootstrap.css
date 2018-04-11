@@ -990,5 +990,5 @@ td.menu_text {
 {
 	font-size:inherit;
 	width:auto;
-	position: fixed;
+	position :absolute;
 }
