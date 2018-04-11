@@ -287,19 +287,19 @@ $.widget("ui.multiselect", {
 		
 		// make draggable
 		if (this.options.sortable) {
-  		elements.each(function() {
-  			$(this).parent().draggable({
-  	      connectToSortable: that.selectedList,
-  				helper: function() {
-  					var selectedItem = that._cloneWithData($(this)).width($(this).width() - 50);
-  					selectedItem.width($(this).width());
-  					return selectedItem;
-  				},
-  				appendTo: that.container,
-  				containment: that.container,
-  				revert: 'invalid'
-  	    });
-  		});		  
+			elements.each(function() {
+				$(this).parent().draggable({
+					connectToSortable: that.selectedList,
+					helper: function() {
+						var selectedItem = that._cloneWithData($(this)).width($(this).width() - 50);
+						selectedItem.width($(this).width());
+						return selectedItem;
+					},
+					appendTo: that.container,
+					containment: that.container,
+					revert: 'invalid'
+				});
+			});		  
 		}
 	},
 	_registerRemoveEvents: function(elements) {
