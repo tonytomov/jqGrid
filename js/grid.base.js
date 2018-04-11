@@ -3847,7 +3847,7 @@ $.fn.jqGrid = function( pin ) {
 		buildColMenu = function( index, left, top ){
 			//$("#sopt_menu").remove();
 			left=parseInt(left,10);
-			top=parseInt(top,10) + 10;
+			top=parseInt(top,10) + (ts.p.styleUI.search('Bootstrap') !== -1 ? 40 : 30);;
 			var strb = '<ul id="column_menu" role="menu" tabindex="0">',
 			str = '',
 			stre = "</ul>",
