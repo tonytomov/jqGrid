@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.1 - 2018-04-19
+* @license Guriddo jqGrid JS - v5.3.1 - 2018-05-02
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3477,7 +3477,7 @@ $.fn.jqGrid = function( pin ) {
 				ts.p.selrow = null;
 				if(ts.p.multiselect){
 					if(!ts.p.preserveSelection) {
-				ts.p.selarrrow =[];
+						ts.p.selarrrow =[];
 					}
 				}
 				ts.p.savedRow =[];
@@ -4142,7 +4142,7 @@ $.fn.jqGrid = function( pin ) {
 			var emp=[], chk;
 			$('#cb_'+$.jgrid.jqID(ts.p.id),this).on('click',function(){
 				if(!ts.p.preserveSelection) {
-				ts.p.selarrrow = [];
+					ts.p.selarrrow = [];
 				}
 				var froz = ts.p.frozenColumns === true ? ts.p.id + "_frozen" : "";
 				if (this.checked) {
@@ -4153,7 +4153,7 @@ $.fn.jqGrid = function( pin ) {
 								$(this).addClass(highlight).attr("aria-selected","true");
 								if(ts.p.preserveSelection) {
 									if(ts.p.selarrrow.indexOf(this.id) === -1) {
-								ts.p.selarrrow.push(this.id);
+										ts.p.selarrrow.push(this.id);
 									}
 								} else {
 									ts.p.selarrrow.push(this.id);
@@ -4176,6 +4176,12 @@ $.fn.jqGrid = function( pin ) {
 								$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(this.id) )[ts.p.useProp ? 'prop': 'attr']("checked", false);
 								$(this).removeClass(highlight).attr("aria-selected","false");
 								emp.push(this.id);
+								if(ts.p.preserveSelection) {
+									var curind = ts.p.selarrrow.indexOf(this.id);
+									if(curind > -1) {
+										ts.p.selarrrow.splice.push(curind, 1);
+									}
+								}
 								if(froz) {
 									$("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(this.id), ts.grid.fbDiv )[ts.p.useProp ? 'prop': 'attr']("checked",false);
 									$("#"+$.jgrid.jqID(this.id), ts.grid.fbDiv).removeClass(highlight);
@@ -4518,9 +4524,9 @@ $.fn.jqGrid = function( pin ) {
 					ts.p.selrow=null;
 					if(ts.p.multiselect) {
 						if(!ts.p.preserveSelection) {
-						ts.p.selarrrow =[];
-						setHeadCheckBox(false);
-					}
+							ts.p.selarrrow =[];
+							setHeadCheckBox(false);
+						}
 					}
 					ts.p.savedRow = [];
 				}
