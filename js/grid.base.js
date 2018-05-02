@@ -4184,7 +4184,7 @@ $.fn.jqGrid = function( pin ) {
 								if(ts.p.preserveSelection) {
 									var curind = ts.p.selarrrow.indexOf(this.id);
 									if(curind > -1) {
-										ts.p.selarrrow.splice.push(curind, 1);
+										ts.p.selarrrow.splice(curind, 1);
 									}
 								}
 								if(froz) {
