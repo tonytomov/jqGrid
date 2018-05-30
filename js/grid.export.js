@@ -461,7 +461,7 @@ $.jgrid.extend({
 					//cm = $t.p.colModel,
 					vv, grlen = fdata.cnt, k, retarr= new Array(p.collen), j=0;
 					for(k=foffset; k<colspans;k++) {
-						if(!cm[k].exportcol) {
+						if(!cm[k]._excol) {
 							continue;
 						}
 						var tplfld = "{0}";
@@ -543,7 +543,7 @@ $.jgrid.extend({
 							to = grdata[kk - offset];
 							k = 0;
 							for(ik = 0; ik < cm.length; ik++) {
-								if(cm[ik].exportcol) {
+								if(cm[ik]._expcol) {
 									arr[k] = $.jgrid.formatCellCsv(
 										$.jgrid.formatCell( to[cm[ik].name], ik, to, cm[ik], $t, 'csv' ) , p);
 									k++;
@@ -577,17 +577,18 @@ $.jgrid.extend({
 			// end group function
 			var def = [], key;
 			$.each(cm,function(i,n) {
+				n._expcol = true;
 				if(n.exportcol === undefined) {
 					if(n.hidden) {
-						n.exportcol = false;
-					} else {
-						n.exportcol = true;
+						n._expcol = false;
 					}
+				} else {
+					n._expcol = n.exportcol;
 				}
 				if(n.name === 'cb' || n.name === 'rn' || n.name === 'subgrid') {
-					n.exportcol = false;
+					n._expcol = false;
 				}
-				if(n.exportcol) {
+				if(n._expcol) {
 					albl.push( $.jgrid.formatCellCsv( clbl[i], p) );
 					def.push( n.name ); // clbl[i];
 				}
@@ -611,7 +612,7 @@ $.jgrid.extend({
 					tmp = [];
 					k =0;
 					for(i = 0; i < cmlen; i++) {
-						if(cm[i].exportcol) {
+						if(cm[i]._expcol) {
 							tmp[k] = $.jgrid.formatCellCsv( $.jgrid.formatCell( row[cm[i].name], i, row, cm[i], $t, 'csv' ), p );
 							k++;
 						}
@@ -722,14 +723,15 @@ $.jgrid.extend({
 				map : []
 			};
 			for ( j=0, ien=cm.length ; j<ien ; j++ ) {
+				cm[j]._expcol = true;
 				if(cm[j].exportcol === undefined) {
 					if(cm[j].hidden) {
-						cm[j].exportcol = false;
-					} else {
-						cm[j].exportcol =  true;
+						cm[j]._expcol = false;
 					}
+				} else {
+					cm[j]._expcol = cm[j].exportcol;
 				}
-				if( cm[j].name === 'cb' || cm[j].name === 'rn' || cm[j].name === 'subgrid' || !cm[j].exportcol) {
+				if( cm[j].name === 'cb' || cm[j].name === 'rn' || cm[j].name === 'subgrid' || !cm[j]._expcol) {
 					continue;
 				}
 				data.header[i] = cm[j].name;
@@ -881,7 +883,7 @@ $.jgrid.extend({
 					//cm = $t.p.colModel,
 					vv, grlen = fdata.cnt, k, retarr = emptyData(data.header);
 					for(k=foffset; k<colspans;k++) {
-						if(!cm[k].exportcol) {
+						if(!cm[k]._expcol) {
 							continue;
 						}
 						var tplfld = "{0}";
@@ -1166,7 +1168,7 @@ $.jgrid.extend({
 					//cm = $t.p.colModel,
 					vv, grlen = fdata.cnt, k, retarr = emptyData(def);
 					for(k=foffset; k<colspans;k++) {
-						if(!cm[k].exportcol) {
+						if(!cm[k]._expcol) {
 							continue;
 						}
 						var tplfld = "{0}";
@@ -1277,14 +1279,15 @@ $.jgrid.extend({
 //============================================================================
 			var k;
 			for ( j=0, ien=cm.length ; j<ien ; j++ ) {
+				cm[j]._expcol = true;
 				if(cm[j].exportcol === undefined ) {
 					if(cm[j].hidden) {
-						cm[j].exportcol = false;
-					} else {
-						cm[j].exportcol = true;
+						cm[j]._expcol = false;
 					}
+				} else {
+					cm[j]._expcol = cm[j].exportcol;
 				}
-				if(cm[j].name === 'cb' || cm[j].name === 'rn' || cm[j].name === 'subgrid' || !cm[j].exportcol) {
+				if(cm[j].name === 'cb' || cm[j].name === 'rn' || cm[j].name === 'subgrid' || !cm[j]._expcol) {
 					continue;
 				}
 				obj = { text:  $t.p.colNames[j], style: 'tableHeader' };
@@ -1460,10 +1463,15 @@ $.jgrid.extend({
 				align:[]
 			};
 			for ( j=0, ien=cm.length ; j<ien ; j++ ) {
+				cm[j]._expcol = true;
 				if(cm[j].exportcol === undefined) {
-					cm[j].exportcol =  true;
+					if(cm[j].hidden) {
+						cm[j]._expcol = false;
+					}
+				} else {
+					cm[j]._expcol = cm[j].exportcol;
 				}
-				if(cm[j].hidden || cm[j].name === 'cb' || cm[j].name === 'rn' ||  cm[j].name === 'subgrid' || !cm[j].exportcol) {
+				if( cm[j].name === 'cb' || cm[j].name === 'rn' ||  cm[j].name === 'subgrid' || !cm[j]._expcol) {
 					continue;
 				}
 				data.header[i] = cm[j].name;
@@ -1569,7 +1577,7 @@ $.jgrid.extend({
 					//cm = $t.p.colModel,
 					vv, grlen = fdata.cnt, k, retarr = emptyData(data.header);
 					for(k=foffset; k<colspans;k++) {
-						if(cm[k].hidden || !cm[k].exportcol) {
+						if(!cm[k]._expcol) {
 							continue;
 						}
 						var tplfld = "{0}";
