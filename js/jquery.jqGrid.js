@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.1 - 2018-05-30
+* @license Guriddo jqGrid JS - v5.3.1 - 2018-06-08
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1672,6 +1672,7 @@ $.fn.jqGrid = function( pin ) {
 			iconSet : "Iconic",
 			responsive : false,
 			restoreCellonFail : true,
+			editNextRowCell : false,
 			colFilters : {},
 			colMenu : false,
 			colMenuCustom : {},
@@ -6449,7 +6450,15 @@ $.jgrid.extend({
 					if (e.keyCode === 9)  {
 						if(!$t.grid.hDiv.loading ) {
 							if (e.shiftKey) {$($t).jqGrid("prevCell", iRow, iCol, e);} //Shift TAb
-							else {$($t).jqGrid("nextCell", iRow, iCol, e);} //Tab
+							else {
+								var succ = $($t).jqGrid("nextCell", iRow, iCol, e);
+								if(!succ && $t.p.editNextRowCell) {
+									if($t.rows[iRow+1]) {
+										iRow++;
+										$($t).jqGrid("nextCell", iRow, 0, e);
+									}
+								}
+							} //Tab
 						} else {
 							return false;
 						}
@@ -6722,7 +6731,8 @@ $.jgrid.extend({
 		});
 	},
 	nextCell : function (iRow, iCol, event) {
-		return this.each(function (){
+		var ret;
+		this.each(function (){
 			var $t = this, nCol=false, i;
 			if (!$t.grid || $t.p.cellEdit !== true) {return;}
 			// try to find next editable cell
@@ -6732,13 +6742,16 @@ $.jgrid.extend({
 				}
 			}
 			if(nCol !== false) {
+				ret = true;
 				$($t).jqGrid("editCell", iRow, nCol, true, event);
 			} else {
+				ret = false;
 				if ($t.p.savedRow.length >0) {
 					$($t).jqGrid("saveCell",iRow,iCol);
 				}
 			}
 		});
+		return ret;
 	},
 	prevCell : function (iRow, iCol, event) {
 		return this.each(function (){
