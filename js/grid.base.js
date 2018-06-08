@@ -1677,6 +1677,7 @@ $.fn.jqGrid = function( pin ) {
 			iconSet : "Iconic",
 			responsive : false,
 			restoreCellonFail : true,
+			editNextRowCell : false,
 			colFilters : {},
 			colMenu : false,
 			colMenuCustom : {},
