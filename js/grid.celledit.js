@@ -122,8 +122,15 @@ $.jgrid.extend({
 					} //Enter
 					if (e.keyCode === 9)  {
 						if(!$t.grid.hDiv.loading ) {
-							if (e.shiftKey) {$($t).jqGrid("prevCell", iRow, iCol, e);} //Shift TAb
-							else {
+							if (e.shiftKey) { //Shift TAb
+								var succ2 = $($t).jqGrid("prevCell", iRow, iCol, e);
+								if(!succ2 && $t.p.editNextRowCell) {
+									if(iRow-1 > 0 && $t.rows[iRow-1]) {
+										iRow--;
+										$($t).jqGrid("prevCell", iRow, $t.p.colModel.length, e);
+									}
+								}
+							} else {
 								var succ = $($t).jqGrid("nextCell", iRow, iCol, e);
 								if(!succ && $t.p.editNextRowCell) {
 									if($t.rows[iRow+1]) {
@@ -427,23 +434,28 @@ $.jgrid.extend({
 		return ret;
 	},
 	prevCell : function (iRow, iCol, event) {
-		return this.each(function (){
+		var ret;
+		this.each(function (){
 			var $t = this, nCol=false, i;
-			if (!$t.grid || $t.p.cellEdit !== true) {return;}
+			if (!$t.grid || $t.p.cellEdit !== true) {return false;}
 			// try to find next editable cell
 			for (i=iCol-1; i>=0; i--) {
 				if ( $t.p.colModel[i].editable ===true && (!$.isFunction($t.p.isCellEditable) || $t.p.isCellEditable.call($t, $t.p.colModel[i].name, iRow,i))) {
-					nCol = i; break;
+					nCol = i; 
+					break;
 				}
 			}
 			if(nCol !== false) {
+				ret = true;
 				$($t).jqGrid("editCell", iRow, nCol, true, event);
 			} else {
+				ret = false;
 				if ($t.p.savedRow.length >0) {
 					$($t).jqGrid("saveCell",iRow,iCol);
 				}
 			}
 		});
+		return ret;
 	},
 	GridNav : function() {
 		return this.each(function () {
