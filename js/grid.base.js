@@ -5747,7 +5747,7 @@ $.jgrid.extend({
 						if(event.keyCode === 38 ){
 							r = target.previousSibling;
 							id = "";
-							if(r) {
+							if(r && $(r).hasClass('jqgrow')) {
 								if($(r).is(":hidden")) {
 									while(r) {
 										r = r.previousSibling;
@@ -5756,8 +5756,8 @@ $.jgrid.extend({
 								} else {
 									id = r.id;
 								}
+								$($t).jqGrid('setSelection', id, true, event);
 							}
-							$($t).jqGrid('setSelection', id, true, event);
 							$($t).triggerHandler("jqGridKeyUp", [id, previd, event]);
 							if($.isFunction(o.onUpKey)) {
 								o.onUpKey.call($t, id, previd, event);
@@ -5768,7 +5768,7 @@ $.jgrid.extend({
 						if(event.keyCode === 40){
 							r = target.nextSibling;
 							id ="";
-							if(r) {
+							if(r && $(r).hasClass('jqgrow')) {
 								if($(r).is(":hidden")) {
 									while(r) {
 										r = r.nextSibling;
@@ -5777,8 +5777,8 @@ $.jgrid.extend({
 								} else {
 									id = r.id;
 								}
+								$($t).jqGrid('setSelection', id, true, event);
 							}
-							$($t).jqGrid('setSelection', id, true, event);
 							$($t).triggerHandler("jqGridKeyDown", [id, previd, event]);
 							if($.isFunction(o.onDownKey)) {
 								o.onDownKey.call($t, id, previd, event);
