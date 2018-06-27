@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.1 - 2018-06-20
+* @license Guriddo jqGrid JS - v5.3.1 - 2018-06-27
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -4099,7 +4099,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 		}
 		for(i=0;i<this.p.colNames.length;i++){
-			var tooltip = ts.p.headertitles ? (" title=\""+$.jgrid.stripHtml(ts.p.colNames[i])+"\"") :"";
+			var tooltip = ts.p.headertitles ? (" title=\"" + (ts.p.colModel[i].tooltip ? ts.p.colModel[i].tooltip : $.jgrid.stripHtml(ts.p.colNames[i])) + "\"") : "";
 			tmpcm = ts.p.colModel[i];
 			if(!tmpcm.hasOwnProperty('colmenu')) {
 				tmpcm.colmenu = (tmpcm.name === "rn" || tmpcm.name === "cb" || tmpcm.name === "subgrid") ? false : true;
@@ -5742,7 +5742,7 @@ $.jgrid.extend({
 						if(event.keyCode === 38 ){
 							r = target.previousSibling;
 							id = "";
-							if(r) {
+							if(r && $(r).hasClass('jqgrow')) {
 								if($(r).is(":hidden")) {
 									while(r) {
 										r = r.previousSibling;
@@ -5751,8 +5751,8 @@ $.jgrid.extend({
 								} else {
 									id = r.id;
 								}
+								$($t).jqGrid('setSelection', id, true, event);
 							}
-							$($t).jqGrid('setSelection', id, true, event);
 							$($t).triggerHandler("jqGridKeyUp", [id, previd, event]);
 							if($.isFunction(o.onUpKey)) {
 								o.onUpKey.call($t, id, previd, event);
@@ -5763,7 +5763,7 @@ $.jgrid.extend({
 						if(event.keyCode === 40){
 							r = target.nextSibling;
 							id ="";
-							if(r) {
+							if(r && $(r).hasClass('jqgrow')) {
 								if($(r).is(":hidden")) {
 									while(r) {
 										r = r.nextSibling;
@@ -5772,8 +5772,8 @@ $.jgrid.extend({
 								} else {
 									id = r.id;
 								}
+								$($t).jqGrid('setSelection', id, true, event);
 							}
-							$($t).jqGrid('setSelection', id, true, event);
 							$($t).triggerHandler("jqGridKeyDown", [id, previd, event]);
 							if($.isFunction(o.onDownKey)) {
 								o.onDownKey.call($t, id, previd, event);
