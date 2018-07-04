@@ -1068,7 +1068,7 @@ $.jgrid.extend({
 				} ) );
 			}
 			if($.isFunction( o.onBeforeExport) ) {
-				o.onBeforeExport( xlsx );
+				o.onBeforeExport( xlsx, rowPos );
 			}
 			data = null; // free memory
 			try {
