@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.1 - 2018-06-27
+* @license Guriddo jqGrid JS - v5.3.1 - 2018-07-04
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -18325,7 +18325,7 @@ $.jgrid.extend({
 				} ) );
 			}
 			if($.isFunction( o.onBeforeExport) ) {
-				o.onBeforeExport( xlsx );
+				o.onBeforeExport( xlsx, rowPos );
 			}
 			data = null; // free memory
 			try {
