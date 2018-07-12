@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.1 - 2018-07-04
+* @license Guriddo jqGrid JS - v5.3.1 - 2018-07-12
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -8552,7 +8552,7 @@ $.extend($.jgrid,{
 		/*ruleGroup : {}, ssfield:[], splitSelect:",", groupOpSelect:"OR"*/
 		var filters={} /*?*/, rules, k, rule, ssdata, group;
 		try {
-			filters = typeof p.ruleGroudp === "string" ? $.jgrid.parse(p.ruleGroup) : p.ruleGroup;
+			filters = typeof p.ruleGroup === "string" ? $.jgrid.parse(p.ruleGroup) : p.ruleGroup;
 			if(filters.rules && filters.rules.length) {
 				rules = filters.rules;
 				for(k=0; k < rules.length; k++) {
@@ -8689,13 +8689,13 @@ $.jgrid.extend({
 					// multiselect
 					var filters, rules, k,str, rule, ssdata, group;
 					if(ms) {
-						$.jgrid.filterRefactor({
+						filters = $.jgrid.filterRefactor({
 							ruleGroup : ruleGroup,
 							ssfield : ssfield,
 							splitSelect : p.splitSelect,
 							groupOpSelect : p.groupOpSelect
 						});
-						//ruleGroup = JSON.stringify( filters );
+						ruleGroup = JSON.stringify( filters );
 					}
 					if(bbt) {
 						if(!$.isPlainObject(filters)) {
