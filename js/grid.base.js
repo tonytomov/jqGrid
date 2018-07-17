@@ -4316,7 +4316,7 @@ $.fn.jqGrid = function( pin ) {
 				if(colindex === -1) { return;}
 				var offset = $(this).offset(),
 				left = ( offset.left ),
-				top = ( offset.top);
+				top = 0; //( offset.top);
 				if(ts.p.direction === "ltr") {
 					left += $(this).outerWidth();
 				}
