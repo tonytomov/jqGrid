@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.1 - 2018-07-12
+* @license Guriddo jqGrid JS - v5.3.1 - 2018-07-17
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -4311,7 +4311,7 @@ $.fn.jqGrid = function( pin ) {
 				if(colindex === -1) { return;}
 				var offset = $(this).offset(),
 				left = ( offset.left ),
-				top = ( offset.top);
+				top = 0; //( offset.top);
 				if(ts.p.direction === "ltr") {
 					left += $(this).outerWidth();
 				}
