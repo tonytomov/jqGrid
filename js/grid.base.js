@@ -3846,7 +3846,10 @@ $.fn.jqGrid = function( pin ) {
 			$(ts).jqGrid("setFrozenColumns");
 		},
 		buildColMenu = function( index, left, top ){
-			var menu_offset = $(grid.hDiv).height() - $(".ui-search-toolbar",grid.hDiv).height();
+			var menu_offset = $(grid.hDiv).height();
+			if($(".ui-search-toolbar",grid.hDiv)[0] && !isNaN($(".ui-search-toolbar",grid.hDiv).height())) {
+				menu_offset -= $(".ui-search-toolbar",grid.hDiv).height();
+			}
 			if( !$(grid.cDiv).is(":hidden") ){
 				menu_offset += $(grid.cDiv).outerHeight();
 			}
@@ -4314,9 +4317,9 @@ $.fn.jqGrid = function( pin ) {
 
 				var colindex = $.jgrid.getCellIndex(e.target);
 				if(colindex === -1) { return;}
-				var offset = $(this).offset(),
+				var offset = $(this).position(),
 				left = ( offset.left ),
-				top = 0; //( offset.top);
+				top = ( offset.top);
 				if(ts.p.direction === "ltr") {
 					left += $(this).outerWidth();
 				}
