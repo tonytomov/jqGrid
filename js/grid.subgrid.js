@@ -84,7 +84,7 @@ addSubGrid : function( pos, sind ) {
 						var f = ts.p.subGridModel[0].mapping || ts.p.subGridModel[0].name;
 						if (f) {
 							for (i=0;i<f.length;i++) {
-								subGridCell(trdiv, $(f[i],this).text() || '&#160;',i);
+								subGridCell(trdiv, $.jgrid.getXmlData(this, f[i]) || '&#160;',i);
 							}
 						}
 					}
@@ -124,7 +124,7 @@ addSubGrid : function( pos, sind ) {
 							var f = ts.p.subGridModel[0].mapping || ts.p.subGridModel[0].name;
 							if(f.length) {
 								for (j=0;j<f.length;j++) {
-									subGridCell(trdiv, cur[f[j]] || '&#160;',j);
+									subGridCell(trdiv, $.jgrid.getAccessor(cur, f[j] ) || '&#160;',j);
 								}
 							}
 						}
