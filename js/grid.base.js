@@ -5738,7 +5738,7 @@ $.jgrid.extend({
 			var $t = this;
 			if( !$('body').is('[role]') ){$('body').attr('role','application');}
 			$t.p.scrollrows = o.scrollingRows;
-			$($t).keydown(function(event){
+			$($t).on("keydown", function(event){
 				var target = $($t).find('tr[tabindex=0]')[0], id, r, mind,
 				expanded = $t.p.treeReader.expanded_field;
 				//check for arrow keys
@@ -5822,9 +5822,10 @@ $.jgrid.extend({
 						}
 					}
 				}
-			});
-			$($t).on('click', function(e) {
-				$(e.target,$t.rows).closest("tr.jqgrow").focus();
+			}).on('click', function(e) {
+				if( !$(e.target).is("input, textarea, select") ) {
+					$(e.target,$t.rows).closest("tr.jqgrow").focus();
+				}
 			});
 		});
 	},
