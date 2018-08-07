@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.1 - 2018-07-24
+* @license Guriddo jqGrid JS - v5.3.1 - 2018-08-07
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2443,7 +2443,16 @@ $.fn.jqGrid = function( pin ) {
 				} else { rcnt = rcnt > 1 ? rcnt :1; }
 			} else { return; }
 
-			var dReader, locid = "_id_", frd,
+			var dReader, frd;
+			if(ts.p.datatype === "local") {
+				dReader =  ts.p.localReader;
+				frd= 'local';
+			} else {
+				dReader =  ts.p.jsonReader;
+				frd='json';
+			}
+
+			var locid = "_id_",
 				locdata = (ts.p.datatype !== "local" && ts.p.loadonce) || ts.p.datatype === "jsonstring",
 				self = $(ts),
 				ir=0,v,i,j,f=[],cur, addSubGridCell,
@@ -2469,14 +2478,6 @@ $.fn.jqGrid = function( pin ) {
 			}
 
 			ts.p.reccount = 0;
-			if(ts.p.datatype === "local") {
-				dReader =  ts.p.localReader;
-				frd= 'local';
-			} else {
-				dReader =  ts.p.jsonReader;
-				frd='json';
-			}
-
 			ts.p.page = intNum($.jgrid.getAccessor(data,dReader.page), ts.p.page);
 			ts.p.lastpage = intNum($.jgrid.getAccessor(data,dReader.total), 1);
 			ts.p.records = intNum($.jgrid.getAccessor(data,dReader.records));
