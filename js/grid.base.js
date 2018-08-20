@@ -1864,8 +1864,8 @@ $.fn.jqGrid = function( pin ) {
 				left = ts.grid.bDiv.scrollLeft,
 				restoreSelection = function() {
 					var i;
-					p.selrow = null;
-					p.selarrrow = [];
+					//p.selrow = null;
+					//p.selarrrow = [];
 					if(p.multiselect && sra && sra.length>0) {
 						for(i=0;i<sra.length;i++){
 							if (sra[i] !== sr) {
