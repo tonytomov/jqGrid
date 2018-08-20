@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.1 - 2018-08-07
+* @license Guriddo jqGrid JS - v5.3.1 - 2018-08-20
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1859,8 +1859,8 @@ $.fn.jqGrid = function( pin ) {
 				left = ts.grid.bDiv.scrollLeft,
 				restoreSelection = function() {
 					var i;
-					p.selrow = null;
-					p.selarrrow = [];
+					//p.selrow = null;
+					//p.selarrrow = [];
 					if(p.multiselect && sra && sra.length>0) {
 						for(i=0;i<sra.length;i++){
 							if (sra[i] !== sr) {
