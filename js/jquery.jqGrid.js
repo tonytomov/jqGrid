@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.1 - 2018-08-20
+* @license Guriddo jqGrid JS - v5.3.1 - 2018-08-21
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1863,13 +1863,13 @@ $.fn.jqGrid = function( pin ) {
 					//p.selarrrow = [];
 					if(p.multiselect && sra && sra.length>0) {
 						for(i=0;i<sra.length;i++){
-							if (sra[i] !== sr) {
-								$(ts).jqGrid("setSelection",sra[i],false, null);
+							if (sra[i]) {
+								$(ts).jqGrid("setSelection", sra[i], false, "_sp_");
 							}
 						}
 					}
-					if (sr) {
-						$(ts).jqGrid("setSelection",sr,false,null);
+					if (!p.multiselect && sr) {
+						$(ts).jqGrid("setSelection", sr, false, null);
 					}
 					ts.grid.bDiv.scrollLeft = left;
 					$(ts).off('.selectionPreserver', restoreSelection);
@@ -4897,6 +4897,10 @@ $.jgrid.extend({
 					if(pt.className !== "ui-subgrid") { $(pt).addClass(highlight).attr("aria-selected","true");}
 					stat = true;
 					$t.p.selarrrow.push($t.p.selrow);
+				} else if( ia !== -1 && e === "_sp_") { 
+					// selection preserver multiselect
+					if(pt.className !== "ui-subgrid") { $(pt).addClass(highlight).attr("aria-selected","true");}
+					stat = true;					
 				} else {
 					if(pt.className !== "ui-subgrid") { $(pt).removeClass(highlight).attr("aria-selected","false");}
 					stat = false;
