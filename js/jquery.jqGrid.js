@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.1 - 2018-08-21
+* @license Guriddo jqGrid JS - v5.3.1 - 2018-09-19
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -4207,7 +4207,7 @@ $.fn.jqGrid = function( pin ) {
 			tmpcm = $(window).width();
 			ts.p.width = tmpcm - pw > 3 ?  pw: tmpcm;
 		}
-		var tfoot = "", bstw = ts.p.styleUI.search('Bootstrap') !== -1 ? 2 : 0;
+		var tfoot = "", bstw = ts.p.styleUI.search('Bootstrap') !== -1 && !isNaN(ts.p.height) ? 2 : 0;
 		setColWidth();
 		$(eg).css("width",grid.width+"px").append("<div class='ui-jqgrid-resize-mark' id='rs_m"+ts.p.id+"'>&#160;</div>");
 		if(ts.p.scrollPopUp) {
@@ -5369,7 +5369,7 @@ $.jgrid.extend({
 		return this.each(function(){
 			if (!this.grid ) {return;}
 			var $t = this, cw,
-			initwidth = 0, brd=$.jgrid.cell_width ? 0: $t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0, cr, bstw = $t.p.styleUI.search('Bootstrap') !== -1 ? 2 : 0;
+			initwidth = 0, brd=$.jgrid.cell_width ? 0: $t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0, cr, bstw = $t.p.styleUI.search('Bootstrap') !== -1 && !isNaN($t.p.height) ? 2 : 0;
 			if(typeof shrink !== 'boolean') {
 				shrink=$t.p.shrinkToFit;
 			}
@@ -14975,6 +14975,9 @@ $.jgrid.extend({
 			var $t = this;
 
 			function pivot( data) {
+				if( $.isFunction( pivotOpt.onInitPivot ) ) {
+					pivotOpt.onInitPivot.call( $t );
+				}
 				if(!$.isArray(data)) {
 					//throw "data provides is not an array";
 					data = [];
@@ -15028,8 +15031,11 @@ $.jgrid.extend({
 				if(pivotOpt.frozenStaticCols) {
 					jQuery($t).jqGrid("setFrozenColumns");
 				}
+				if( $.isFunction( pivotOpt.onCompletePivot ) ) {
+					pivotOpt.onCompletePivot.call( $t );
+				}
 			}
-
+						
 			if(typeof data === "string") {
 				$.ajax($.extend({
 					url : data,
