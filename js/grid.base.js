@@ -4212,7 +4212,7 @@ $.fn.jqGrid = function( pin ) {
 			tmpcm = $(window).width();
 			ts.p.width = tmpcm - pw > 3 ?  pw: tmpcm;
 		}
-		var tfoot = "", bstw = ts.p.styleUI.search('Bootstrap') !== -1 ? 2 : 0;
+		var tfoot = "", bstw = ts.p.styleUI.search('Bootstrap') !== -1 && !isNaN(ts.p.height) ? 2 : 0;
 		setColWidth();
 		$(eg).css("width",grid.width+"px").append("<div class='ui-jqgrid-resize-mark' id='rs_m"+ts.p.id+"'>&#160;</div>");
 		if(ts.p.scrollPopUp) {
@@ -5374,7 +5374,7 @@ $.jgrid.extend({
 		return this.each(function(){
 			if (!this.grid ) {return;}
 			var $t = this, cw,
-			initwidth = 0, brd=$.jgrid.cell_width ? 0: $t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0, cr, bstw = $t.p.styleUI.search('Bootstrap') !== -1 ? 2 : 0;
+			initwidth = 0, brd=$.jgrid.cell_width ? 0: $t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0, cr, bstw = $t.p.styleUI.search('Bootstrap') !== -1 && !isNaN($t.p.height) ? 2 : 0;
 			if(typeof shrink !== 'boolean') {
 				shrink=$t.p.shrinkToFit;
 			}
