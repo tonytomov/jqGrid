@@ -498,6 +498,9 @@ $.jgrid.extend({
 			var $t = this;
 
 			function pivot( data) {
+				if( $.isFunction( pivotOpt.onInitPivot ) ) {
+					pivotOpt.onInitPivot.call( $t );
+				}
 				if(!$.isArray(data)) {
 					//throw "data provides is not an array";
 					data = [];
@@ -551,8 +554,11 @@ $.jgrid.extend({
 				if(pivotOpt.frozenStaticCols) {
 					jQuery($t).jqGrid("setFrozenColumns");
 				}
+				if( $.isFunction( pivotOpt.onCompletePivot ) ) {
+					pivotOpt.onCompletePivot.call( $t );
+				}
 			}
-
+						
 			if(typeof data === "string") {
 				$.ajax($.extend({
 					url : data,
