@@ -1851,6 +1851,9 @@ $.fn.jqGrid = function( pin ) {
 				if(p.frozenColumns) {
 					$(grid.fbDiv).scrollTop( grid.bDiv.scrollTop );
 				}
+				try {
+					$("#column_menu").remove();
+				} catch (e) {}
 				if( e ) { e.stopPropagation(); }
 			},
 			selectionPreserver : function(ts) {
