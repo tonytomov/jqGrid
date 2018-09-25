@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.1 - 2018-09-19
+* @license Guriddo jqGrid JS - v5.3.1 - 2018-09-25
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -14972,7 +14972,14 @@ $.jgrid.extend({
 	},
 	jqPivot : function( data, pivotOpt, gridOpt, ajaxOpt) {
 		return this.each(function(){
-			var $t = this;
+			var $t = this,
+				regional = gridOpt.regional ? gridOpt.regional : "en";
+			if(pivotOpt.loadMsg === undefined) {
+				pivotOpt.loadMsg = true;
+			}
+			if(pivotOpt.loadMsg) {
+				$("<div class='loading_pivot ui-state-default ui-state-active row'>"+$.jgrid.getRegional($t, "regional."+regional+".defaults.loadtext")+"</div>").insertBefore($t).show();
+			}
 
 			function pivot( data) {
 				if( $.isFunction( pivotOpt.onInitPivot ) ) {
@@ -15033,6 +15040,9 @@ $.jgrid.extend({
 				}
 				if( $.isFunction( pivotOpt.onCompletePivot ) ) {
 					pivotOpt.onCompletePivot.call( $t );
+				}
+				if(pivotOpt.loadMsg) {
+					$(".loading_pivot").remove();
 				}
 			}
 						
