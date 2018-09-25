@@ -483,7 +483,8 @@ div.tablediv > .table-bordered {
 
 
 /* loading */
-.ui-jqgrid .loading {
+.ui-jqgrid .loading,
+.loading_pivot {
 	position: absolute; 
 	top: 45%;
 	left: 45%;

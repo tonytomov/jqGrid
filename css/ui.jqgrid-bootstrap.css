@@ -424,7 +424,8 @@ div.tablediv > .table-bordered {
 .ui-jqgrid .ui-th-subgrid {height:20px;}
 .tablediv > .row { margin: 0 0}
 /* loading */
-.ui-jqgrid .loading {
+.ui-jqgrid .loading,
+.loading_pivot {
 	position: absolute; 
 	top: 45%;
 	left: 45%;

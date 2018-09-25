@@ -164,7 +164,8 @@
 .ui-jqgrid .ui-subgrid td.subgrid-cell {border-width: 0 1px 1px 0;}
 .ui-jqgrid .ui-th-subgrid {height:20px;}
 /* loading */
-.ui-jqgrid .loading {
+.ui-jqgrid .loading,
+.loading_pivot {
 	position: absolute; 
 	top: 45%;
 	left: 45%;
