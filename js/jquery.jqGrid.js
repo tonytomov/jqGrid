@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.2 - 2018-10-15
+* @license Guriddo jqGrid JS - v5.3.2 - 2018-10-31
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -9814,13 +9814,21 @@ $.jgrid.extend({
 								newdata[0].rp = rp;
 							}
 							if ( trdata.length===0 ) {
-								trdata = $("<tr "+dc+" rowpos='"+rp+"'></tr>").addClass("FormData").attr("id","tr_"+nm);
+								if(maxcols > 1) {
+									trdata = $("<tr rowpos='"+rp+"'></tr>").addClass("FormData").attr("id","tr_"+nm);
+								} else {
+									trdata = $("<tr "+dc+" rowpos='"+rp+"'></tr>").addClass("FormData").attr("id","tr_"+nm);
+								}
 								$(trdata).append(tmpl);
 								$(tb).append(trdata);
 								trdata[0].rp = rp;
 							}
 							$("td:eq("+(cp-2)+")",trdata[0]).html("<label for='"+nm+"'>"+ (frmopt.label === undefined ? obj.p.colNames[i]: frmopt.label) + "</label>");
 							$("td:eq("+(cp-1)+")",trdata[0]).append(frmopt.elmprefix).append(elc).append(frmopt.elmsuffix);
+							if( maxcols > 1 && hc) {
+								$("td:eq("+(cp-2)+")",trdata[0]).hide();
+								$("td:eq("+(cp-1)+")",trdata[0]).hide();
+							}
 							//-------------------------
 						}
 						if( (rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate) && ffld) {
