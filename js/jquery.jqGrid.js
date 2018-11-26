@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.2 - 2018-10-31
+* @license Guriddo jqGrid JS - v5.3.2 - 2018-11-26
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3543,7 +3543,7 @@ $.fn.jqGrid = function( pin ) {
 						lvc = i;
 					}
 				});
-				cr =0;
+				cr = bstw === 0 ? -1 :0;
 				if (hs) {
 					if(grid.width-gw-(initwidth+brd*vc) !== scw){
 						cr = grid.width-gw-(initwidth+brd*vc)-scw;
