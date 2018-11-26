@@ -3548,7 +3548,7 @@ $.fn.jqGrid = function( pin ) {
 						lvc = i;
 					}
 				});
-				cr =0;
+				cr = bstw === 0 ? -1 :0;
 				if (hs) {
 					if(grid.width-gw-(initwidth+brd*vc) !== scw){
 						cr = grid.width-gw-(initwidth+brd*vc)-scw;
