@@ -4809,7 +4809,7 @@ $.jgrid.extend({
 			}
 		});
 	},
-	getGridRowById: function ( rowid ) {
+	getGridRowById : function ( rowid ) {
 		var row;
 		this.each( function(){
 			try {
@@ -5037,29 +5037,33 @@ $.jgrid.extend({
 		this.each(function() {
 			var $t = this;
 			rowInd = $($t).jqGrid('getGridRowById', rowid);
-			if(!rowInd) {return false;}
-				if($t.p.subGrid) {
-					nextRow = $(rowInd).next();
-					if(nextRow.hasClass('ui-subgrid')) {
-						nextRow.remove();
-					}
+			if(!rowInd) {
+				return false;
+			} else {
+				rowid = rowInd.id;
+			}
+			if($t.p.subGrid) {
+				nextRow = $(rowInd).next();
+				if(nextRow.hasClass('ui-subgrid')) {
+					nextRow.remove();
 				}
-				$(rowInd).remove();
-				$t.p.records--;
-				$t.p.reccount--;
-				$t.updatepager(true,false);
-				success=true;
-				if($t.p.multiselect) {
-					ia = $.inArray(rowid,$t.p.selarrrow);
-					if(ia !== -1) { $t.p.selarrrow.splice(ia,1);}
+			}
+			$(rowInd).remove();
+			$t.p.records--;
+			$t.p.reccount--;
+			$t.updatepager(true,false);
+			success=true;
+			if($t.p.multiselect) {
+				ia = $.inArray(rowid,$t.p.selarrrow);
+				if(ia !== -1) { $t.p.selarrrow.splice(ia,1);}
+			}
+			if ($t.p.multiselect && $t.p.selarrrow.length > 0) {
+				$t.p.selrow = $t.p.selarrrow[$t.p.selarrrow.length-1];
+			} else {
+				if( $t.p.selrow === rowid ) {
+					$t.p.selrow = null;
 				}
-				if ($t.p.multiselect && $t.p.selarrrow.length > 0) {
-					$t.p.selrow = $t.p.selarrrow[$t.p.selarrrow.length-1];
-				} else {
-					if( $t.p.selrow === rowid ) {
-						$t.p.selrow = null;
-					}
-				}
+			}
 			if($t.p.datatype === 'local') {
 				var id = $.jgrid.stripPref($t.p.idPrefix, rowid),
 				pos = $t.p._index[id];
