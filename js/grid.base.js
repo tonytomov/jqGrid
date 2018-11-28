@@ -3508,7 +3508,8 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.sortname !== index && idxcol) {ts.p.lastsort = idxcol;}
 		},
 		setColWidth = function () {
-			var initwidth = 0, brd=$.jgrid.cell_width? 0: intNum(ts.p.cellLayout,0), vc=0, lvc, scw=intNum(ts.p.scrollOffset,0),cw,hs=false,aw,gw=0,cr;
+			var initwidth = 0, brd=$.jgrid.cell_width? 0: intNum(ts.p.cellLayout,0), vc=0, lvc, 
+					scw=intNum(ts.p.scrollOffset,0),cw,hs=false,aw,gw=0,cr, chrome_fix;
 			$.each(ts.p.colModel, function() {
 				if(this.hidden === undefined) {this.hidden=false;}
 				if(ts.p.grouping && ts.p.autowidth) {
@@ -3548,7 +3549,8 @@ $.fn.jqGrid = function( pin ) {
 						lvc = i;
 					}
 				});
-				cr = bstw === 0 ? -1 :0;
+				cr = 0;
+				chrome_fix = bstw === 0 ? -1 :0;
 				if (hs) {
 					if(grid.width-gw-(initwidth+brd*vc) !== scw){
 						cr = grid.width-gw-(initwidth+brd*vc)-scw;
@@ -3556,7 +3558,7 @@ $.fn.jqGrid = function( pin ) {
 				} else if(!hs && Math.abs(grid.width-gw-(initwidth+brd*vc)) !== 0) {
 					cr = grid.width-gw-(initwidth+brd*vc) - bstw;
 				}
-				ts.p.colModel[lvc].width += cr;
+				ts.p.colModel[lvc].width += cr + chrome_fix;
 				ts.p.tblwidth = initwidth+cr+brd*vc+gw;
 				if(ts.p.tblwidth > ts.p.width) {
 					ts.p.colModel[lvc].width -= (ts.p.tblwidth - parseInt(ts.p.width,10));
