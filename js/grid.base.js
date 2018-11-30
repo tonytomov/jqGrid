@@ -4985,7 +4985,7 @@ $.jgrid.extend({
 					$(t.rows[t.p.iRow]).removeClass("selected-row " + hover );
 				}
 			}
-			t.p.savedRow = [];
+			//t.p.savedRow = [];
 		});
 	},
 	getRowData : function( rowid, usedata ) {
