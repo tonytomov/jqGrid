@@ -5384,7 +5384,7 @@ $.jgrid.extend({
 	setGridWidth : function(nwidth, shrink) {
 		return this.each(function(){
 			if (!this.grid ) {return;}
-			var $t = this, cw,
+			var $t = this, cw, setgr,
 			initwidth = 0, brd=$.jgrid.cell_width ? 0: $t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0, cr, bstw = $t.p.styleUI.search('Bootstrap') !== -1 && !isNaN($t.p.height) ? 2 : 0;
 			if(typeof shrink !== 'boolean') {
 				shrink=$t.p.shrinkToFit;
@@ -5408,6 +5408,11 @@ $.jgrid.extend({
 			}
 			if($t.p.footerrow) {
 				$($t.grid.sDiv).css("width",(nwidth - bstw)+"px");
+			}
+			// if (group_header)
+			setgr = $t.p.groupHeader && ($.isArray($t.p.groupHeader) || $.isFunction($t.p.groupHeader) );
+			if(setgr) { 
+				$($t).jqGrid('destroyGroupHeader', false); 
 			}
 			if(shrink ===false && $t.p.forceFit === true) {$t.p.forceFit=false;}
 			if(shrink===true) {
@@ -5482,6 +5487,14 @@ $.jgrid.extend({
 					$('table:first',$t.grid.sDiv).css("width",$t.p.tblwidth+"px");
 				}
 			}
+			if( setgr )  {
+				var gHead = $.extend([],$t.p.groupHeader);
+				$t.p.groupHeader = null;
+				for(var k =0; k < gHead.length; k++) {
+					$($t).jqGrid('setGroupHeaders', gHead[k]);
+				}
+			}
+
 		});
 	},
 	setGridHeight : function (nh) {
