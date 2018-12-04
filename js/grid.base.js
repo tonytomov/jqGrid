@@ -4736,6 +4736,7 @@ $.fn.jqGrid = function( pin ) {
 			if(grid.resizing) {	grid.dragEnd( true ); return false;}
 			return true;
 		});
+		/*
 		if(ts.p.direction === 'rtl') {
 			$(ts).on('jqGridAfterGridComplete.setRTLPadding',function(){
 					var  vScrollWidth = grid.bDiv.offsetWidth - grid.bDiv.clientWidth;
@@ -4750,6 +4751,7 @@ $.fn.jqGrid = function( pin ) {
 					grid.hDiv.scrollLeft = grid.bDiv.scrollLeft;
 			});
 		}
+						*/
 		ts.formatCol = formatCol;
 		ts.sortData = sortData;
 		ts.updatepager = updatepager;
