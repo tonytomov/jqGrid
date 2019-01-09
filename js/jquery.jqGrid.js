@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.2 - 2018-11-28
+* @license Guriddo jqGrid JS - v5.3.2 - 2019-01-09
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -4731,17 +4731,17 @@ $.fn.jqGrid = function( pin ) {
 			if(grid.resizing) {	grid.dragEnd( true ); return false;}
 			return true;
 		});
+		
 		if(ts.p.direction === 'rtl') {
 			$(ts).on('jqGridAfterGridComplete.setRTLPadding',function(){
-					var  vScrollWidth = grid.bDiv.offsetWidth - grid.bDiv.clientWidth;
-					//gridhbox = $("div:first",grid.hDiv);
-					ts.p.scrollOffset = vScrollWidth;
+					var  vScrollWidth = grid.bDiv.offsetWidth - grid.bDiv.clientWidth,
+					gridhbox = $("div:first",grid.hDiv);
+					//ts.p.scrollOffset = vScrollWidth;
 					// for future implementation
-					//if (gridhbox.hasClass("ui-jqgrid-hbox-rtl")) {
+					if( vScrollWidth > 0 ) vScrollWidth += 2;
+					if (gridhbox.hasClass("ui-jqgrid-hbox-rtl")) {
 						$("div:first",grid.hDiv).css({paddingLeft: vScrollWidth + "px"});
-					//} else {
-						//gridhbox.css({paddingRight: vScrollWidth + "px"});
-					//}
+					}
 					grid.hDiv.scrollLeft = grid.bDiv.scrollLeft;
 			});
 		}
@@ -4980,7 +4980,7 @@ $.jgrid.extend({
 					$(t.rows[t.p.iRow]).removeClass("selected-row " + hover );
 				}
 			}
-			t.p.savedRow = [];
+			//t.p.savedRow = [];
 		});
 	},
 	getRowData : function( rowid, usedata ) {
@@ -5377,7 +5377,7 @@ $.jgrid.extend({
 	setGridWidth : function(nwidth, shrink) {
 		return this.each(function(){
 			if (!this.grid ) {return;}
-			var $t = this, cw,
+			var $t = this, cw, setgr,
 			initwidth = 0, brd=$.jgrid.cell_width ? 0: $t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0, cr, bstw = $t.p.styleUI.search('Bootstrap') !== -1 && !isNaN($t.p.height) ? 2 : 0;
 			if(typeof shrink !== 'boolean') {
 				shrink=$t.p.shrinkToFit;
@@ -5401,6 +5401,11 @@ $.jgrid.extend({
 			}
 			if($t.p.footerrow) {
 				$($t.grid.sDiv).css("width",(nwidth - bstw)+"px");
+			}
+			// if (group_header)
+			setgr = $t.p.groupHeader && ($.isArray($t.p.groupHeader) || $.isFunction($t.p.groupHeader) );
+			if(setgr) { 
+				$($t).jqGrid('destroyGroupHeader', false); 
 			}
 			if(shrink ===false && $t.p.forceFit === true) {$t.p.forceFit=false;}
 			if(shrink===true) {
@@ -5475,6 +5480,15 @@ $.jgrid.extend({
 					$('table:first',$t.grid.sDiv).css("width",$t.p.tblwidth+"px");
 				}
 			}
+			if( setgr )  {
+				var gHead = $.extend([],$t.p.groupHeader);
+				$t.p.groupHeader = null;
+				for(var k =0; k < gHead.length; k++) {
+					$($t).jqGrid('setGroupHeaders', gHead[k]);
+				}
+				$t.grid.hDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
+			}
+
 		});
 	},
 	setGridHeight : function (nh) {
