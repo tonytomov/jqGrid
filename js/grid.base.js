@@ -5491,6 +5491,7 @@ $.jgrid.extend({
 				for(var k =0; k < gHead.length; k++) {
 					$($t).jqGrid('setGroupHeaders', gHead[k]);
 				}
+				$t.grid.hDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
 			}
 
 		});
