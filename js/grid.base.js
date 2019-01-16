@@ -3892,8 +3892,8 @@ $.fn.jqGrid = function( pin ) {
 			}
 			//$("#sopt_menu").remove();
 			
-			left=parseInt(left,10);
-			top=parseInt(top,10) + menu_offset;
+			left = parseInt(left,10);
+			top = menu_offset /* + parseInt(top,10)*/;
 			var strb = '<ul id="column_menu" role="menu" tabindex="0">',
 			str = '',
 			stre = "</ul>",
@@ -4368,8 +4368,7 @@ $.fn.jqGrid = function( pin ) {
 					$("#column_menu").remove();
 				}
 
-				var colindex = $.jgrid.getCellIndex(e.target);
-				if(colindex === -1) { return;}
+				if(ci === undefined) { return; }
 				var offset = $(this).position(),
 				left = ( offset.left ),
 				top = ( offset.top);
