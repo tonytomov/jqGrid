@@ -203,7 +203,7 @@ $.jgrid.extend({
 								if(!tmp || tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length===1 && tmp.charCodeAt(0)===160) ) {tmp='';}
 							}
 						}
-						var opt = $.extend({}, this.editoptions || {} ,{id:nm,name:nm, rowId: rowid, oper:'edit'}),
+						var opt = $.extend({}, this.editoptions || {} ,{id:nm,name:nm, rowId: rowid, oper:'edit', checkUpdate : rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate}),
 						frmopt = $.extend({}, {elmprefix:'',elmsuffix:'',rowabove:false,rowcontent:''}, this.formoptions || {}),
 						rp = parseInt(frmopt.rowpos,10) || cnt+1,
 						cp = parseInt((parseInt(frmopt.colpos,10) || 1)*2,10);
@@ -770,7 +770,7 @@ $.jgrid.extend({
 						return i;
 					});
 					$(".FormElement", frm ).each(function(){
-						if( a1.indexOf(this.name) === -1 ) {
+						if( $.trim(this.name) !== "" && a1.indexOf(this.name) === -1 ) {
 							var tv = $(this).val(), tt = $(this).get(0).type;
 							if( tt === 'checkbox') {
 								if(!$(this).is(":checked")) {

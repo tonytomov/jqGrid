@@ -435,7 +435,7 @@ $.extend($.jgrid,{
 							options = $.extend({},this.options),
 							msl = options.multiple===true,
 							cU = options.cacheUrlData === true,
-							oV ='', txt,
+							oV ='', txt, mss =[],
 							a = $.isFunction(options.buildSelect) ? options.buildSelect.call($t,data) : data;
 							if(typeof a === 'string') {
 								a = $( $.trim( a ) ).html();
@@ -464,8 +464,14 @@ $.extend($.jgrid,{
 									$(this).attr("role","option");
 									if($.inArray($.trim(txt),ovm) > -1 || $.inArray($.trim(vl),ovm) > -1 ) {
 										this.selected= "selected";
+										mss.push(vl);
 									}
 								});
+								if( options.hasOwnProperty('checkUpdate') ) {
+									if (options.checkUpdate) {
+										$t.p.savedData[options.name] = mss.join(",");
+									}
+								}
 								if(cU) {
 									if(options.oper === 'edit') {
 										$($t).jqGrid('setColProp',options.name,{ editoptions: {buildSelect: null, dataUrl : null, value : oV} });
