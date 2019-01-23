@@ -845,6 +845,14 @@ $.jgrid.extend({
 			if($t.p.force_regional) {
 				p = $.extend(p, regional);
 			}
+			if ($t.p.customFilterDef !== undefined) {
+				for(var uskey in $t.p.customFilterDef) {
+					if($t.p.customFilterDef.hasOwnProperty(uskey)  && !p.operands.hasOwnProperty(uskey) ) {
+						p.odata.push({ oper: uskey, text: $t.p.customFilterDef[uskey].text} );
+						p.operands[uskey] = $t.p.customFilterDef[uskey].operand;
+					}
+				}
+			}
 			var classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].filter,
 			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].common,
 			base = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].base,
@@ -1562,7 +1570,14 @@ $.jgrid.extend({
 					});
 					tmpl += "</select></td></tr>";
 				}
-
+				if ($t.p.customFilterDef !== undefined) {
+					for(var uskey in $t.p.customFilterDef) {
+						if($t.p.customFilterDef.hasOwnProperty(uskey)  && !p.operands.hasOwnProperty(uskey) ) {
+							p.odata.push({ oper: uskey, text: $t.p.customFilterDef[uskey].text} );
+							p.operands[uskey] = $t.p.customFilterDef[uskey].operand;
+						}
+					}
+				}
 				bt = "<table class='EditTable' style='border:0px none;margin-top:5px' id='"+fid+"_2'><tbody><tr><td colspan='2'><hr class='" + common.content + "' style='margin:1px'/></td></tr>"+tmpl+"<tr><td class='EditButton' style='text-align:"+align+"'>"+bC+"</td><td class='EditButton' "+butleft+">"+ user_buttons +"</td></tr></tbody></table>";
 				fid = $.jgrid.jqID( fid);
 				$("#"+fid).jqFilter({

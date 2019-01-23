@@ -806,6 +806,12 @@ $.extend($.jgrid,{
 			self._resetNegate();
 			return self;
 		};
+		this.user=function(op, f, v){
+			self._append('$t.p.customFilterDef.' + op + '.action.call($t ,{rowItem:this, searchName:"' + f + '",searchValue:"' + v + '"})');			
+			self._setCommand(self.user,f);
+			self._resetNegate();
+			return self;
+		};
 		this.groupBy=function(by,dir,type, datefmt){
 			if(!self._hasData()){
 				return null;
@@ -2829,6 +2835,8 @@ $.fn.jqGrid = function( pin ) {
 									}
 									query = compareFnMap[rule.op](query, opr)(rulefld, rule.data, fld);
 								} catch (e) {}
+							} else if( ts.p.customFilterDef !== undefined && ts.p.customFilterDef[rule.op] !== undefined  && $.isFunction(ts.p.customFilterDef[rule.op].action)) {
+								query = query.user.call(ts, rule.op, rule.field, rule.data);
 							}
 							s++;
 						}
@@ -2852,7 +2860,11 @@ $.fn.jqGrid = function( pin ) {
 								ts.p.postData.searchString = $.jgrid.parseDate.call(ts, sfld.newfmt, ts.p.postData.searchString, sfld.srcfmt);
 							}
 						}
+ 						if(compareFnMap[ts.p.postData.searchOper]) {
 						query = compareFnMap[ts.p.postData.searchOper](query)(ts.p.postData.searchField, ts.p.postData.searchString,cmtypes[ts.p.postData.searchField]);
+						} else if( ts.p.customFilterDef !== undefined && ts.p.customFilterDef[ts.p.postData.searchOper] !== undefined  && $.isFunction(ts.p.customFilterDef[ts.p.postData.searchOper].action)) {
+							query = query.user.call(ts, ts.p.postData.searchOper, ts.p.postData.searchField, ts.p.postData.searchString);
+						}
 					} catch (se){}
 				}
 			} else {
