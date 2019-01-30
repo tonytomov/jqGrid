@@ -132,7 +132,9 @@ $.extend($.jgrid,{
 				str = str
 					.replace( /<row xmlns="" /g, '<row ' )
 					.replace( /<cols xmlns="">/g, '<cols>' )
-					.replace( /<mergeCells xmlns="" /g, '<mergeCells ' );
+					.replace( /<mergeCells xmlns="" /g, '<mergeCells ' )
+					.replace( /<numFmt xmlns="" /g, '<numFmt ' )
+					.replace( /<xf xmlns="" /g, '<xf ' );
 
 				zip.file( name, str );
 			}
@@ -403,7 +405,8 @@ $.jgrid.extend({
 			includeFooter: true,
 			fileName : "jqGridExport.csv",
 			mimetype : "text/csv;charset=utf-8",
-			returnAsString : false
+			returnAsString : false,
+			loadIndicator : true // can be a function
 		}, p || {});
 		var ret ="";
 		this.each(function(){
@@ -573,7 +576,11 @@ $.jgrid.extend({
 				});
 				return str;
 			}
-
+			if( $.isFunction( p.loadIndicator )) {
+				p.loadIndicator('show');
+			} else if(p.loadIndicator) {
+				$($t).jqGrid("progressBar", {method:"show", loadtype : $t.p.loadui, htmlcontent: $.jgrid.getRegional($t,'defaults.loadtext') });
+			}
 			// end group function
 			var def = [], key;
 			$.each(cm,function(i,n) {
@@ -667,6 +674,11 @@ $.jgrid.extend({
 				}
 			}
 			ret = cap + hdr + lbl + str + ftr;
+			if( $.isFunction( p.loadIndicator )) {
+				p.loadIndicator('hide');
+			} else if(p.loadIndicator) {
+				$($t).jqGrid("progressBar", {method:"hide", loadtype : $t.p.loadui });
+			}
 		});
 		if (p.returnAsString) {
 			return ret;
@@ -689,7 +701,8 @@ $.jgrid.extend({
 			mimetype : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 			maxlength : 40, // maxlength for visible string data
 			onBeforeExport : null,
-			replaceStr : null
+			replaceStr : null,
+			loadIndicator : true // can be a function
 		}, o || {} );
 		this.each(function() {
 			var $t = this,
@@ -1033,7 +1046,11 @@ $.jgrid.extend({
 				});
 			}
 //============================================================================
-
+			if( $.isFunction( o.loadIndicator )) {
+				o.loadIndicator('show');
+			} else if(o.loadIndicator) {
+				$($t).jqGrid("progressBar", {method:"show", loadtype : $t.p.loadui, htmlcontent: $.jgrid.getRegional($t,'defaults.loadtext') });
+			}
 			$( 'sheets sheet', xlsx.xl['workbook.xml'] ).attr( 'name', o.sheetName );
 			if(o.includeGroupHeader && $t.p.groupHeader && $t.p.groupHeader.length) {
 				var gh = $t.p.groupHeader, mergecell=[],
@@ -1132,6 +1149,12 @@ $.jgrid.extend({
 					$.jgrid.saveAs( zip.generate( zipConfig ), o.fileName, { type : o.mimetype } );				}
 			} catch(e) {
 				throw e;
+			} finally {
+				if( $.isFunction( o.loadIndicator )) {
+					o.loadIndicator('hide');
+				} else if(o.loadIndicator) {
+					$($t).jqGrid("progressBar", {method:"hide", loadtype : $t.p.loadui });
+				}
 			}
 		});
 	},
@@ -1147,7 +1170,8 @@ $.jgrid.extend({
 			includeGroupHeader : true,
 			includeFooter: true,
 			fileName : "jqGridExport.pdf",
-			mimetype : "application/pdf"
+			mimetype : "application/pdf",
+			loadIndicator : true // can be a function
 
 		}, o || {} );
 		return this.each(function() {
@@ -1320,6 +1344,11 @@ $.jgrid.extend({
 				});
 			}
 //============================================================================
+			if( $.isFunction( o.loadIndicator )) {
+				o.loadIndicator('show');
+			} else if(o.loadIndicator) {
+				$($t).jqGrid("progressBar", {method:"show", loadtype : $t.p.loadui, htmlcontent: $.jgrid.getRegional($t,'defaults.loadtext') });
+			}
 			var k;
 			for ( j=0, ien=cm.length ; j<ien ; j++ ) {
 				cm[j]._expcol = true;
@@ -1475,6 +1504,12 @@ $.jgrid.extend({
 				}
 			} catch(e) {
 				throw e;
+			} finally {
+				if( $.isFunction( o.loadIndicator )) {
+					o.loadIndicator('hide');
+				} else if(o.loadIndicator) {
+					$($t).jqGrid("progressBar", {method:"hide", loadtype : $t.p.loadui });
+				}
 			}
 		});
 	},
@@ -1489,8 +1524,8 @@ $.jgrid.extend({
 			autoPrint : false,
 			topText : '',
 			bottomText : '',
-			returnAsString : false
-
+			returnAsString : false,
+			loadIndicator : true // can be a function
 		}, o || {} );
 		var ret;
 		this.each(function() {
@@ -1730,6 +1765,12 @@ $.jgrid.extend({
 				});
 				return retstr;
 			}
+			if( $.isFunction( o.loadIndicator )) {
+				o.loadIndicator('show');
+			} else if(o.loadIndicator) {
+				$($t).jqGrid("progressBar", {method:"show", loadtype : $t.p.loadui, htmlcontent: $.jgrid.getRegional($t,'defaults.loadtext') });
+			}
+
 			var html = '<table class="'+o.tableClass+'">';
 
 			if ( o.includeLabels ) {
@@ -1803,6 +1844,11 @@ $.jgrid.extend({
 						}
 					}, 1000 );
 				}
+			}
+			if( $.isFunction( o.loadIndicator )) {
+				o.loadIndicator('hide');
+			} else if(o.loadIndicator) {
+				$($t).jqGrid("progressBar", {method:"hide", loadtype : $t.p.loadui });
 			}
 		});
 		return ret;
