@@ -697,6 +697,12 @@ $.jgrid.extend({
 			rowPos = 0,
 			rels = $.parseXML( es['xl/worksheets/sheet1.xml']),
 			relsGet = rels.getElementsByTagName( "sheetData" )[0],
+			styleSh = $.parseXML( es['xl/styles.xml']), //xlsx.xl["styles.xml"];
+
+			formats = styleSh.getElementsByTagName("numFmts")[0],
+			fmnt = $(formats.getElementsByTagName("numFmt")),
+			celsX = styleSh.getElementsByTagName("cellXfs")[0],
+
 			xlsx = {
 				_rels: {
 					".rels": $.parseXML( es['_rels/.rels'])
@@ -706,7 +712,7 @@ $.jgrid.extend({
 						"workbook.xml.rels": $.parseXML( es['xl/_rels/workbook.xml.rels'])
 					},
 					"workbook.xml": $.parseXML( es['xl/workbook.xml']),
-					"styles.xml": $.parseXML( es['xl/styles.xml']),
+					"styles.xml": styleSh, //$.parseXML( es['xl/styles.xml']),
 					"worksheets": {
 						"sheet1.xml": rels
 					}
@@ -714,13 +720,47 @@ $.jgrid.extend({
 				"[Content_Types].xml": $.parseXML( es['[Content_Types].xml'])
 			},
 			cm = $t.p.colModel,
-			i=0, j, ien, //obj={},
+			i=0, j, ien, 
 			data = {
 				body  : $t.addLocalData( true ),
 				header : [],
 				footer : [],
 				width : [],
-				map : []
+				map : [],
+				parser :[]
+			};
+			var addStyle = function ( eo )  {
+				if( $.isEmptyObject( eo )) {
+					eo.excel_parsers = true;
+				} else if( eo.excel_format && !eo.excel_style){
+					// add the sformatter
+					var count = 0,
+					maxfmtid =0;
+					$.each(fmnt, function(i,n) {
+						count++;
+						maxfmtid = Math.max(maxfmtid,  parseInt( $(n).attr("numFmtId"), 10) );
+					});
+					var mycell = $.jgrid.makeNode( styleSh , "numFmt", {attr: {numFmtId : maxfmtid + 1, formatCode : eo.excel_format} });
+					formats.appendChild( mycell );
+					$(formats).attr("count", count + 1);
+					count = 0;
+					mycell = $.jgrid.makeNode( styleSh , "xf", { attr:{
+						numFmtId : maxfmtid + 1 +"",
+						fontId: "0",
+						fillId: "0",
+						borderId: "0",
+						applyFont:"1",
+						applyFill:"1",
+						applyBorder:"1",
+						xfId:"0",
+						applyNumberFormat:"1"
+					} });
+					celsX.appendChild( mycell );
+					count = parseInt( $(celsX).attr("count"), 10);
+					$(celsX).attr("count", count + 1);
+					eo.excel_style = count+1;
+				}
+				return eo;
 			};
 			for ( j=0, ien=cm.length ; j<ien ; j++ ) {
 				cm[j]._expcol = true;
@@ -737,6 +777,7 @@ $.jgrid.extend({
 				data.header[i] = cm[j].name;
 				data.width[ i ] = 5;
 				data.map[i] = j;
+				data.parser[i] = addStyle( cm[j].hasOwnProperty('exportoptions') ? cm[j].exportoptions : {} );
 				i++;
 			}
 			function _replStrFunc (v) {
@@ -744,12 +785,37 @@ $.jgrid.extend({
 						.replace(/>/g, '&gt;')
 						.replace(/[\x00-\x09\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, '');
 			}
+			function _makeCellSpecial ( p, v ) {
+				return $.jgrid.makeNode(
+						rels,
+						'c',
+						{
+							attr: p,
+							children: [	$.jgrid.makeNode( rels, 'v', { text: v } ) ]
+						});
+			}
+			function _makeCellString ( cellId, text ) {
+				return $.jgrid.makeNode(
+						rels,
+						'c',
+						{
+							attr: { t: 'inlineStr', r: cellId },
+							children:{ row: $.jgrid.makeNode( rels, 'is',
+								{
+									children: {
+										row: $.jgrid.makeNode( rels, 't', {	text: text} )
+									}
+								})
+							}
+						} );
+			}
+			
 			var _replStr = $.isFunction(o.replaceStr) ? o.replaceStr : _replStrFunc,
 			currentRow, rowNode,
 			addRow = function ( row, header ) {
 				currentRow = rowPos+1;
 				rowNode = $.jgrid.makeNode( rels, "row", { attr: {r:currentRow} } );
-				var maxieenum = 15;
+				var maxieenum = 15, text;
 				for ( var i =0; i < data.header.length; i++) {
 					// key = cm[i].name;
 					// Concat both the Cell Columns as a letter and the Row of the cell.
@@ -764,80 +830,57 @@ $.jgrid.extend({
 						v = $.jgrid.formatCell( v, data.map[i], row, cm[data.map[i]], $t, 'excel');
 					}
 					data.width[i] = Math.max(data.width[i], Math.min(parseInt(v.toString().length,10), o.maxlength) );
-					// Detect numbers - don't match numbers with leading zeros or a negative
-					// anywhere but the start
-					// $.jgrid.formatCell( row[cm[i].name], i, row, cm[i], $t )
-					if(v.match) {
-						match = v.match(/^-?([1-9]\d+)(\.(\d+))?$/);
-					}
 					cell = null;
+					var expo = data.parser[data.map[i]];
+					if( expo.excel_parsers === true && !header) {
 					for ( var j=0, jen=$.jgrid.excelParsers.length ; j<jen ; j++ ) {
 						var special = $.jgrid.excelParsers[j];
 
 						if ( v.match && ! v.match(/^0\d+/) && v.match( special.match ) ) {
+							var a = v;
 							v = v.replace(/[^\d\.\-]/g, '');
 							if ( special.fmt ) {
 								v = special.fmt( v );
 							}
 							if(special.style === 67) { //Dates
-								cell = $.jgrid.makeNode( rels, 'c', {
-									attr: {
-										t: 'd',
-										r: cellId,
-										s: special.style
-									},
-									children: [
-										$.jgrid.makeNode( rels, 'v', { text: v } )
-									]
-								} );
+								cell = _makeCellSpecial( { t: 'd', r: cellId, s: special.style }, v);
 							} else {
-								cell = $.jgrid.makeNode( rels, 'c', {
-									attr: {
-										r: cellId,
-										s: special.style
-									},
-									children: [
-										$.jgrid.makeNode( rels, 'v', { text: v } )
-									]
-								} );
-							}
+								if(  $.inArray( special.style, ["63", "64", "65", "66"]) ) { // Numbers
+									
+									if( v.toString().length > maxieenum ) {
+										text = ! a.replace ? a : _replStr(a);
+										cell = _makeCellString( cellId, text);
 							rowNode.appendChild( cell );
 							break;
 						}
 					}
+								cell = _makeCellSpecial( {r: cellId,s: special.style}, v );
+							}
+							rowNode.appendChild( cell );
+						}
+						}
+					} else if( expo.excel_format !== undefined && expo.excel_style !== undefined && !header && !cell) {
+						if(expo.replace_format) {
+							v = expo.replace_format(v);
+						}
+						cell = _makeCellSpecial( {r: cellId,s: expo.excel_style}, v );
+						rowNode.appendChild( cell );
+					}
 					if( ! cell ) {
+						// Detect numbers - don't match numbers with leading zeros or a negative
+						if(v.match) {
+							match = v.match(/^-?([1-9]\d+)(\.(\d+))?$/);
+						}
 						if ( (typeof v === 'number' && v.toString().length <= maxieenum) || (
 								match &&
 								(match[1].length + (match[2] ? match[3].length : 0) <= maxieenum))
 						) {
-							cell = $.jgrid.makeNode( rels, 'c', {
-								attr: {
-									t: 'n',
-									r: cellId
-								},
-								children: [
-									$.jgrid.makeNode( rels, 'v', { text: v } )
-								]
-							} );
+							cell = _makeCellSpecial( {t: 'n', r: cellId }, v );
 						} else {
 							// Replace non standard characters for text output
-							var text = ! v.replace ?
-								v : _replStr(v);
-								//$.jgrid.htmlEncode (v );
-							cell = $.jgrid.makeNode( rels, 'c', {
-								attr: {
-									t: 'inlineStr',
-									r: cellId
-								},
-								children:{
-									row: $.jgrid.makeNode( rels, 'is', {
-										children: {
-										row: $.jgrid.makeNode( rels, 't', {	text: text} )
+							text = ! v.replace ? v : _replStr(v);
+							cell = _makeCellString( cellId, text);
 										}
-									} )
-								}
-							} );
-						}
 						rowNode.appendChild( cell );
 					}
 				}
