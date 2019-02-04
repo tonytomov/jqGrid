@@ -812,6 +812,17 @@ $.extend($.jgrid,{
 			self._resetNegate();
 			return self;
 		};
+		this.inData = function (f, v, t) {
+			var vl =  v === undefined ? "" : self._getStr("\"" + self._toStr(v) + "\"");
+			if( _useProperties ) {
+				self._append(vl + '.split(\''+',' + '\')' + '.indexOf( jQuery.jgrid.getAccessor(this,\''+f+'\') ) > -1');
+			} else {
+				self._append(vl + '.split(\''+',' + '\')' + '.indexOf(this.'+f+') > -1');
+			}
+			self._setCommand(self.inData, f);
+			self._resetNegate();
+			return self;
+		};
 		this.groupBy=function(by,dir,type, datefmt){
 			if(!self._hasData()){
 				return null;
@@ -2773,8 +2784,8 @@ $.fn.jqGrid = function( pin ) {
 				'bn':function(queryObj,op) {return op === "OR" ? queryObj.orNot().startsWith : queryObj.andNot().startsWith;},
 				'en':function(queryObj,op) {return op === "OR" ? queryObj.orNot().endsWith : queryObj.andNot().endsWith;},
 				'ew':function(queryObj) {return queryObj.endsWith;},
-				'ni':function(queryObj,op) {return op === "OR" ? queryObj.orNot().equals : queryObj.andNot().equals;},
-				'in':function(queryObj) {return queryObj.equals;},
+				"ni": function (queryObj, op) { return op === "OR" ? queryObj.orNot().inData : queryObj.andNot().inData; },
+				"in": function (queryObj) { return queryObj.inData; },
 				'nu':function(queryObj) {return queryObj.isNull;},
 				'nn':function(queryObj,op) {return op === "OR" ? queryObj.orNot().isNull : queryObj.andNot().isNull;}
 
