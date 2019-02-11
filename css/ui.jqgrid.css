@@ -77,6 +77,12 @@
 .ui-jqgrid tr.footrow td {font-weight: bold; overflow: hidden; white-space:nowrap; height: 23px;padding: 1px 2px 1px 2px;border-top-width: 1px; border-top-color: inherit; border-top-style: solid;border-bottom: 0 none;}
 .ui-jqgrid tr.footrow-ltr td {text-align:left;border-right-width: 1px; border-right-color: inherit; border-right-style: solid;}
 .ui-jqgrid tr.footrow-rtl td {text-align:right;border-left-width: 1px; border-left-color: inherit; border-left-style: solid;}
+/* headerrow */
+.ui-jqgrid .ui-jqgrid-hrdiv {position: relative; margin: 0;padding: 0; overflow: hidden; border-left: 0 none !important; border-top : 0 none !important; border-right : 0 none !important;}
+.ui-jqgrid .ui-jqgrid-hrtable {table-layout:fixed; margin-bottom:0;border-collapse: separate;}
+.ui-jqgrid tr.hrheadrow td { overflow: hidden; white-space:nowrap; height: 23px;padding: 1px 2px 1px 2px;border-bottom-width: 1px; border-bottom-color: inherit; border-bottom-style: solid;border-top: 0 none;}
+.ui-jqgrid tr.hrheadrow-ltr td {text-align:left;border-right-width: 1px; border-right-color: inherit; border-right-style: solid;}
+.ui-jqgrid tr.hrheadrow-rtl td {text-align:right;border-left-width: 1px; border-left-color: inherit; border-left-style: solid;}
 /* Pager*/
 .ui-jqgrid .ui-jqgrid-pager { 
 	border-left: 0 none !important;
