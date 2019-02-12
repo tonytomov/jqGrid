@@ -464,6 +464,9 @@ $.fn.jqFilter = function( arg ) {
 				});
 				setTimeout(function(){ //IE, Opera, Chrome
 				rule.data = $(elm).val();
+				if(cm.inputtype === 'select' && cm.searchoptions.multiple && $.isArray(rule.data)) {
+					rule.data = rule.data.join(",");
+				}
 				that.onchange();  // signals that the filter has changed
 				}, 0);
 			});
@@ -873,10 +876,14 @@ $.jgrid.extend({
 						sop.custom_value.call($t, $elem, "get") :
 						$elem.val();
 					// detect multiselect
-					if(this.stype === 'select' && sop.multiple && $.isArray(v) && v.length) {
-						ms = true;
-						ssfield.push(nm);
-						v= v.length === 1 ? v[0] : v;
+					if(this.stype === 'select' && sop.multiple && $.isArray(v)) {
+						if(v.length > 0) {
+							ms = true;
+							ssfield.push(nm);
+							v= v.length === 1 ? v[0] : v;
+						} else {
+							v = "";
+						}
 					}
 					if(this.searchrules && p.errorcheck) {
 						if($.isFunction( this.searchrules)) {
