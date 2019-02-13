@@ -2454,6 +2454,7 @@ $.fn.jqGrid = function( pin ) {
 			ts.p.reccount=ir;
 			ts.p.treeANode = -1;
 			if(ts.p.userDataOnFooter) { self.jqGrid("footerData","set",ts.p.userData,true); }
+			if(ts.p.userDataOnHeader) { self.jqGrid("headerData","set",ts.p.userData,true); }
 			if(locdata) {
 				ts.p.records = gl;
 				ts.p.lastpage = Math.ceil(gl/ rn);
@@ -2675,6 +2676,7 @@ $.fn.jqGrid = function( pin ) {
 			ts.p.reccount=ir;
 			ts.p.treeANode = -1;
 			if(ts.p.userDataOnFooter) { self.jqGrid("footerData","set",ts.p.userData,true); }
+			if(ts.p.userDataOnHeader) { self.jqGrid("headerData","set",ts.p.userData,true); }
 			if(locdata) {
 				ts.p.records = len;
 				ts.p.lastpage = Math.ceil(len/ rn);
@@ -5402,6 +5404,39 @@ $.jgrid.extend({
 					}
 				} else if(action === "get") {
 					res[nm] = $("tr.footrow td:eq("+i+")",t.grid.sDiv).html();
+				}
+			});
+		});
+		return action === "get" ? res : success;
+	},
+	headerData : function(action,data, format) {
+		var nm, success=false, res={}, title;
+		function isEmpty(obj) {
+			var i;
+			for(i in obj) {
+				if (obj.hasOwnProperty(i)) { return false; }
+			}
+			return true;
+		}
+		if(action === undefined) { action = "get"; }
+		if(typeof format !== "boolean") { format  = true; }
+		action = action.toLowerCase();
+		this.each(function(){
+			var t = this, vl;
+			if(!t.grid || !t.p.headerrow) {return false;}
+			if(action === "set") { if(isEmpty(data)) { return false; } }
+			success=true;
+			$(this.p.colModel).each(function(i){
+				nm = this.name;
+				if(action === "set") {
+					if( data[nm] !== undefined) {
+						vl = format ? t.formatter( "", data[nm], i, data, 'edit') : data[nm];
+						title = this.title ? {"title":$.jgrid.stripHtml(vl)} : {};
+						$("tr.hrheadrow td:eq("+i+")",t.grid.hrDiv).html(vl).attr(title);
+						success = true;
+					}
+				} else if(action === "get") {
+					res[nm] = $("tr.hrheadrow td:eq("+i+")",t.grid.hrDiv).html();
 				}
 			});
 		});
