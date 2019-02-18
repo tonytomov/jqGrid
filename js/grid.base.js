@@ -1740,6 +1740,7 @@ $.fn.jqGrid = function( pin ) {
 			headers:[],
 			cols:[],
 			footers: [],
+			hrheaders : [],
 			dragStart: function(i,x,y) {
 				var gridLeftPos = $(this.bDiv).offset().left,
 					minW = parseInt( (p.colModel[i].minResizeWidth ? p.colModel[i].minResizeWidth : p.minColWidth), 10);
