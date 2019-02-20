@@ -1824,7 +1824,7 @@ $.jgrid.extend({
 			count_item : true
 		}, o || {} );
 		return this.each(function() {
-			var $t = this, item, sdata;
+			var $t = this, item, sdata="";
 			if( o.field && $t.p.data && $.isArray( $t.p.data )) {
 				var query = $.jgrid.from.call($t, $t.p.data), res, s_cnt,
 				result = query.groupBy( o.field, o.direction, o.stype, o.src_data);
