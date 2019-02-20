@@ -552,6 +552,8 @@ $.extend($.jgrid,{
 						}
 					}
 					setAttributes(elem, options, ['value']);
+				} else {
+					setAttributes(elem, options );
 				}
 			break;
 			case "image" :
