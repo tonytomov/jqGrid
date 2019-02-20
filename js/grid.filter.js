@@ -1827,19 +1827,19 @@ $.jgrid.extend({
 			var $t = this, item, sdata;
 			if( o.field && $t.p.data && $.isArray( $t.p.data )) {
 				var query = $.jgrid.from.call($t, $t.p.data), res, s_cnt,
-				result = query.groupBy( o.field, o.direction, o.stype, o.src_date );
+				result = query.groupBy( o.field, o.direction, o.stype, o.src_data);
 				if(result && result.length) {
 					res =  $("#gsh_"+$t.p.id+"_"+o.field).find("td.ui-search-input > select");
-					for(var i=0, len = result.length; i<len; i++) {
-						if(i===0 && o.allValues) {
-							sdata = "<option value=''>"+ o.allValues +"</option>";
-							res.append(sdata);
-						}
+					var i = result.length;
+					if(i>0 &&  o.allValues) {
+						sdata += "<option value=''>"+ o.allValues +"</option>";
+					}
+					while(i--) {
 						item = result[i];
 						s_cnt = o.count_item ? " (" +item.items.length+")" : "";
-						sdata = "<option value='"+item.unique+"'>"+ item.unique + s_cnt+"</option>";
-						res.append(sdata);
+						sdata += "<option value='"+item.unique+"'>"+ item.unique + s_cnt+"</option>";
 					}
+					res.append(sdata);
 					res.on('change',function(){
 						$t.triggerToolbar();
 					});
