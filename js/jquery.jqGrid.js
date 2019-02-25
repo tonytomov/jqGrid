@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.2 - 2019-02-12
+* @license Guriddo jqGrid JS - v5.3.2 - 2019-02-25
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1735,6 +1735,7 @@ $.fn.jqGrid = function( pin ) {
 			headers:[],
 			cols:[],
 			footers: [],
+			hrheaders : [],
 			dragStart: function(i,x,y) {
 				var gridLeftPos = $(this.bDiv).offset().left,
 					minW = parseInt( (p.colModel[i].minResizeWidth ? p.colModel[i].minResizeWidth : p.minColWidth), 10);
@@ -2449,6 +2450,7 @@ $.fn.jqGrid = function( pin ) {
 			ts.p.reccount=ir;
 			ts.p.treeANode = -1;
 			if(ts.p.userDataOnFooter) { self.jqGrid("footerData","set",ts.p.userData,true); }
+			if(ts.p.userDataOnHeader) { self.jqGrid("headerData","set",ts.p.userData,true); }
 			if(locdata) {
 				ts.p.records = gl;
 				ts.p.lastpage = Math.ceil(gl/ rn);
@@ -2670,6 +2672,7 @@ $.fn.jqGrid = function( pin ) {
 			ts.p.reccount=ir;
 			ts.p.treeANode = -1;
 			if(ts.p.userDataOnFooter) { self.jqGrid("footerData","set",ts.p.userData,true); }
+			if(ts.p.userDataOnHeader) { self.jqGrid("headerData","set",ts.p.userData,true); }
 			if(locdata) {
 				ts.p.records = len;
 				ts.p.lastpage = Math.ceil(len/ rn);
@@ -5402,6 +5405,39 @@ $.jgrid.extend({
 		});
 		return action === "get" ? res : success;
 	},
+	headerData : function(action,data, format) {
+		var nm, success=false, res={}, title;
+		function isEmpty(obj) {
+			var i;
+			for(i in obj) {
+				if (obj.hasOwnProperty(i)) { return false; }
+			}
+			return true;
+		}
+		if(action === undefined) { action = "get"; }
+		if(typeof format !== "boolean") { format  = true; }
+		action = action.toLowerCase();
+		this.each(function(){
+			var t = this, vl;
+			if(!t.grid || !t.p.headerrow) {return false;}
+			if(action === "set") { if(isEmpty(data)) { return false; } }
+			success=true;
+			$(this.p.colModel).each(function(i){
+				nm = this.name;
+				if(action === "set") {
+					if( data[nm] !== undefined) {
+						vl = format ? t.formatter( "", data[nm], i, data, 'edit') : data[nm];
+						title = this.title ? {"title":$.jgrid.stripHtml(vl)} : {};
+						$("tr.hrheadrow td:eq("+i+")",t.grid.hrDiv).html(vl).attr(title);
+						success = true;
+					}
+				} else if(action === "get") {
+					res[nm] = $("tr.hrheadrow td:eq("+i+")",t.grid.hrDiv).html();
+				}
+			});
+		});
+		return action === "get" ? res : success;
+	},
 	showHideCol : function(colname,show) {
 		return this.each(function() {
 			var $t = this, fndh=false, brd=$.jgrid.cell_width ? 0: $t.p.cellLayout, cw;
@@ -7673,6 +7709,8 @@ $.extend($.jgrid,{
 						}
 					}
 					setAttributes(elem, options, ['value']);
+				} else {
+					setAttributes(elem, options );
 				}
 			break;
 			case "image" :
@@ -9792,7 +9830,40 @@ $.jgrid.extend({
 			$($t).triggerHandler("jqGridFilterInputAfterSearch");
 			if($.isFunction(p.afterSearch)){p.afterSearch.call($t);}
 		});
-	}
+	},
+	autoSelect : function (o) {
+		o = $.extend(true,{
+			field : "",
+			direction : "asc",
+			stype : "text",
+			src_date : "Y-m-d",
+			allValues : "All",
+			count_item : true
+		}, o || {} );
+		return this.each(function() {
+			var $t = this, item, sdata="";
+			if( o.field && $t.p.data && $.isArray( $t.p.data )) {
+				var query = $.jgrid.from.call($t, $t.p.data), res, s_cnt,
+				result = query.groupBy( o.field, o.direction, o.stype, o.src_data);
+				if(result && result.length) {
+					res =  $("#gsh_"+$t.p.id+"_"+o.field).find("td.ui-search-input > select");
+					var i = result.length;
+					if(i>0 &&  o.allValues) {
+						sdata += "<option value=''>"+ o.allValues +"</option>";
+					}
+					while(i--) {
+						item = result[i];
+						s_cnt = o.count_item ? " (" +item.items.length+")" : "";
+						sdata += "<option value='"+item.unique+"'>"+ item.unique + s_cnt+"</option>";
+					}
+					res.append(sdata);
+					res.on('change',function(){
+						$t.triggerToolbar();
+					});
+				}
+			}
+		});
+	}	
 });
 
 //module begin
