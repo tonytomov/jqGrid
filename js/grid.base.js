@@ -4944,6 +4944,7 @@ $.jgrid.extend({
 	getGridRowById : function ( rowid ) {
 		var row;
 		this.each( function(){
+			rowid = this.p.idPrefix + rowid;
 			try {
 				//row = this.rows.namedItem( rowid );
 				var i = this.rows.length;
@@ -4954,7 +4955,7 @@ $.jgrid.extend({
 					}
 				}
 			} catch ( e ) {
-				row = $(this.grid.bDiv).find( "#" + $.jgrid.jqID( rowid ));
+				row = $(this.grid.bDiv).find( "#" + $.jgrid.jqID( rowid ))[0];
 			}
 		});
 		return row;
