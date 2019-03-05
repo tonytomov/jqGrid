@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.2 - 2019-02-25
+* @license Guriddo jqGrid JS - v5.3.2 - 2019-03-05
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -4939,6 +4939,7 @@ $.jgrid.extend({
 	getGridRowById : function ( rowid ) {
 		var row;
 		this.each( function(){
+			rowid = this.p.idPrefix + rowid;			
 			try {
 				//row = this.rows.namedItem( rowid );
 				var i = this.rows.length;
@@ -4949,7 +4950,7 @@ $.jgrid.extend({
 					}
 				}
 			} catch ( e ) {
-				row = $(this.grid.bDiv).find( "#" + $.jgrid.jqID( rowid ));
+				row = $(this.grid.bDiv).find( "#" + $.jgrid.jqID( rowid ))[0];
 			}
 		});
 		return row;
