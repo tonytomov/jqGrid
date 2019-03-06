@@ -1889,7 +1889,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 			},
-			scrollGrid: function( e ) {
+			scrollGrid: function() {
 				if(p.scroll) {
 					var scrollTop = grid.bDiv.scrollTop;
 					if(grid.scrollTop === undefined) { grid.scrollTop = 0; }
