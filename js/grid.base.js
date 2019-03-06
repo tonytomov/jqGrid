@@ -4944,7 +4944,6 @@ $.jgrid.extend({
 	getGridRowById : function ( rowid ) {
 		var row;
 		this.each( function(){
-			rowid = this.p.idPrefix + rowid;
 			try {
 				//row = this.rows.namedItem( rowid );
 				var i = this.rows.length;
