@@ -1329,6 +1329,9 @@ $.jgrid.extend({
 				}
 
 			});
+			$($t.grid.hDiv).on("scroll", function(e){
+				$t.grid.bDiv.scrollLeft = $t.grid.hDiv.scrollLeft;
+			});
 			this.p.filterToolbar = true;
 			this.triggerToolbar = triggerToolbar;
 			this.clearToolbar = clearToolbar;
