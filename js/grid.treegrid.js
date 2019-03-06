@@ -769,6 +769,7 @@ $.jgrid.extend({
 			left = $t.p.treeReader.left_field,
 			right = $t.p.treeReader.right_field, myright, width, res, key;
 			if(!$t.grid || !$t.p.treeGrid) {return;}
+			rowid = $.jgrid.stripPref($t.p.idPrefix, rowid);
 			var rc = $t.p._index[rowid];
 			if (rc !== undefined) {
 				// nested
@@ -777,7 +778,7 @@ $.jgrid.extend({
 				var dr = $($t).jqGrid("getFullTreeNode",$t.p.data[rc]);
 				if(dr.length>0){
 					for (i=0;i<dr.length;i++){
-						$($t).jqGrid("delRowData",dr[i][rid]);
+						$($t).jqGrid("delRowData", $t.p.idPrefix + dr[i][rid]);
 					}
 				}
 				if( $t.p.treeGridModel === "nested") {
@@ -812,6 +813,7 @@ $.jgrid.extend({
 			left = $t.p.treeReader.left_field,
 			right = $t.p.treeReader.right_field, myright, width, res, key;
 			if(!$t.grid || !$t.p.treeGrid) {return;}
+			rowid = $.jgrid.stripPref($t.p.idPrefix, rowid);
 			var rc = $t.p._index[rowid];
 			if (rc !== undefined) {
 				// nested
@@ -821,7 +823,7 @@ $.jgrid.extend({
 				if(dr.length>0){
 					for (var i=0;i<dr.length;i++){
 						if(dr[i][rid] !== rowid)
-							$($t).jqGrid("delRowData",dr[i][rid]);
+							$($t).jqGrid("delRowData", $t.p.idPrefix + dr[i][rid]);
 					}
 				}
 				if( $t.p.treeGridModel === "nested") {
@@ -883,7 +885,8 @@ $.jgrid.extend({
 				i = $t.p.data.length+1;
 			} else {
 				method = 'after';
-				parentindex = $t.p._index[parentid];
+				var mid = $.jgrid.stripPref($t.p.idPrefix, parentid);
+				parentindex = $t.p._index[mid];
 				parentdata = $t.p.data[parentindex];
 				parentid = parentdata[$t.p.localReader.id];
 				parentlevel = parseInt(parentdata[level],10)+1;
@@ -892,9 +895,9 @@ $.jgrid.extend({
 				if(childs.length) {
 					i = childs[childs.length-1][$t.p.localReader.id];
 					rowind = i;
-					i = $($t).jqGrid('getInd',rowind)+1;
+					i = $($t).jqGrid('getInd',  $t.p.idPrefix + rowind);
 				} else {
-					i = $($t).jqGrid('getInd', parentid)+1;
+					i = $($t).jqGrid('getInd',  $t.p.idPrefix + parentid);
 				}
 				// if the node is leaf
 				if(parentdata[isLeaf]) {
@@ -907,6 +910,13 @@ $.jgrid.extend({
 						.find("div.tree-leaf").removeClass($t.p.treeIcons.leaf+" tree-leaf").addClass($t.p.treeIcons.minus+" tree-minus");
 					$t.p.data[parentindex][isLeaf] = false;
 					parentdata[loaded] = true;
+				}
+				// incremet th index of child to be inserted
+				if( i === false ) {
+					throw "Parent item with id: " + rowind + " ("+ parentid+") can't be found";
+					return;
+				} else {
+					i++;
 				}
 			}
 			len = i+1;
@@ -965,7 +975,7 @@ $.jgrid.extend({
 				}
 			}
 			if( parentid === null || $($t).jqGrid("isNodeLoaded",parentdata) || leaf ) {
-					$($t).jqGrid('addRowData', nodeid, data, method, rowind);
+					$($t).jqGrid('addRowData', nodeid, data, method, $t.p.idPrefix + rowind);
 					$($t).jqGrid('setTreeNode', i, len);
 			}
 			if(parentdata && !parentdata[expanded] && expandData) {
