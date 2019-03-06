@@ -1912,7 +1912,6 @@ $.fn.jqGrid = function( pin ) {
 				try {
 					$("#column_menu").remove();
 				} catch (e) {}
-				if( e ) { e.stopPropagation(); }
 			},
 			selectionPreserver : function(ts) {
 				var p = ts.p,
