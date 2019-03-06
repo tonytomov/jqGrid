@@ -1884,7 +1884,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 			},
-			scrollGrid: function( e ) {
+			scrollGrid: function() {
 				if(p.scroll) {
 					var scrollTop = grid.bDiv.scrollTop;
 					if(grid.scrollTop === undefined) { grid.scrollTop = 0; }
@@ -1907,7 +1907,6 @@ $.fn.jqGrid = function( pin ) {
 				try {
 					$("#column_menu").remove();
 				} catch (e) {}
-				if( e ) { e.stopPropagation(); }
 			},
 			selectionPreserver : function(ts) {
 				var p = ts.p,
@@ -4697,7 +4696,7 @@ $.fn.jqGrid = function( pin ) {
 			.append($('<div style="position:relative;"></div>').append('<div></div>').append(this))
 			.addClass("ui-jqgrid-bdiv")
 			.css({ height: ts.p.height+(isNaN(ts.p.height)?"":"px"), width: (grid.width - bstw)+"px"})
-			.scroll(grid.scrollGrid);
+			.on("scroll", grid.scrollGrid);
 		$("table:first",grid.bDiv).css({width:ts.p.tblwidth+"px"});
 		if( !$.support.tbody ) { //IE
 			if( $("tbody",this).length === 2 ) { $("tbody:gt(0)",this).remove();}
@@ -9345,6 +9344,9 @@ $.jgrid.extend({
 					triggerToolbar();
 				}
 
+			});
+			$($t.grid.hDiv).on("scroll", function(e){
+				$t.grid.bDiv.scrollLeft = $t.grid.hDiv.scrollLeft;
 			});
 			this.p.filterToolbar = true;
 			this.triggerToolbar = triggerToolbar;
