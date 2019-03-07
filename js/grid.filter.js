@@ -1834,13 +1834,13 @@ $.jgrid.extend({
 				if(result && result.length) {
 					res =  $("#gsh_"+$t.p.id+"_"+o.field).find("td.ui-search-input > select");
 					var i = result.length;
-					if(i>0 &&  o.allValues) {
-						sdata += "<option value=''>"+ o.allValues +"</option>";
-					}
 					while(i--) {
 						item = result[i];
 						s_cnt = o.count_item ? " (" +item.items.length+")" : "";
 						sdata += "<option value='"+item.unique+"'>"+ item.unique + s_cnt+"</option>";
+					}
+					if(i>0 &&  o.allValues) {
+						sdata = "<option value=''>"+ o.allValues +"</option>" + sdata;
 					}
 					res.append(sdata);
 					res.on('change',function(){
