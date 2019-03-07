@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.2 - 2019-03-06
+* @license Guriddo jqGrid JS - v5.3.2 - 2019-03-07
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5134,7 +5134,7 @@ $.jgrid.extend({
 				}
 				if( $(ind).hasClass('jqgrow') ) { // ignore first not visible row
 					if(usedata) {
-						res = $t.p.data[$t.p._index[ind.id]];
+						res = $t.p.data[ $t.p._index[ $.jgrid.stripPref($t.p.idPrefix, ind.id) ] ];
 					} else {
 						$('td[role="gridcell"]',ind).each( function(i) {
 							nm = $t.p.colModel[i].name;
