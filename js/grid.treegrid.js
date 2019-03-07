@@ -278,29 +278,18 @@ $.jgrid.extend({
 		});
 	},
 	// NS ,adjacency models
-	getRootNodes : function(currentview) {
+	getRootNodes : function() {
 		var result = [];
 		this.each(function(){
-			var $t = this, level, parent_id, view;
+			var $t = this, level, parent_id, view = $t.p.data;
 			if(!$t.grid || !$t.p.treeGrid) {return;}
-			if( typeof currentview !== 'boolean') {
-				currentview = false;
-			}
-			if(currentview) {
-				view = $($t).jqGrid('getRowData', null, true);
-			} else {
-				view = $t.p.data;
-			}
+
 			switch ($t.p.treeGridModel) {
 				case 'nested' :
 					level = $t.p.treeReader.level_field;
 					$(view).each(function() {
 						if(parseInt(this[level],10) === parseInt($t.p.tree_root_level,10)) {
-							if(currentview){
-								result.push($t.p.data[$t.p._index[this[$t.p.keyName]]]);
-							} else {
-								result.push(this);
-							}
+							result.push(this);
 						}
 					});
 					break;
@@ -308,11 +297,7 @@ $.jgrid.extend({
 					parent_id = $t.p.treeReader.parent_id_field;
 					$(view).each(function(){
 						if(this[parent_id] === null || String(this[parent_id]).toLowerCase() === "null") {
-							if(currentview){
-								result.push($t.p.data[$t.p._index[this[$t.p.keyName]]]);
-							} else {
-								result.push(this);
-							}
+							result.push(this);
 						}
 					});
 					break;
@@ -370,12 +355,12 @@ $.jgrid.extend({
 		});
 		return result;
 	},
-	getNodeChildren : function(rc, currentview) {
+	getNodeChildren : function(rc ) {
 		var result = [];
 		this.each(function(){
 			var $t = this;
 			if(!$t.grid || !$t.p.treeGrid) {return;}
-			var i, len = currentview ? this.rows.length : this.p.data.length, row;
+			var i, len = this.p.data.length, row;
 			switch ($t.p.treeGridModel) {
 				case 'nested' :
 					var lftc = $t.p.treeReader.left_field,
@@ -383,7 +368,7 @@ $.jgrid.extend({
 					levelc = $t.p.treeReader.level_field,
 					lft = parseInt(rc[lftc],10), rgt = parseInt(rc[rgtc],10), level = parseInt(rc[levelc],10);
 					for(i=0; i  < len; i++) {
-						row = currentview ? $t.p.data[$t.p._index[this.rows[i].id]] : $t.p.data[i];
+						row = $t.p.data[i];
 						if(row && parseInt(row[levelc],10) === level+1 && parseInt(row[lftc],10) > lft && parseInt(row[rgtc],10) < rgt) {
 							result.push(row);
 						}
@@ -393,7 +378,7 @@ $.jgrid.extend({
 					var parent_id = $t.p.treeReader.parent_id_field,
 					dtid = $t.p.localReader.id;
 					for(i=0; i  < len; i++) {
-						row = currentview ? $t.p.data[$t.p._index[this.rows[i].id]] : $t.p.data[i];
+						row = $t.p.data[i];
 						if(row && String(row[parent_id]) === String( $.jgrid.stripPref($t.p.idPrefix, rc[dtid]) ) ) {
 							result.push(row);
 						}
