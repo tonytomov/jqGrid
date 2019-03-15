@@ -683,6 +683,10 @@ $.jgrid.extend({
 		if (p.returnAsString) {
 			return ret;
 		} else {
+			// add BOM fix Excel
+			if(p.mimetype.toUpperCase().indexOf("UTF-8") !== -1) {
+				ret = '\ufeff' + ret;
+			}
 			$.jgrid.saveAs( ret, p.fileName, { type : p.mimetype });
 		}
 	},
