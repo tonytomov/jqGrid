@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.2 - 2019-03-07
+* @license Guriddo jqGrid JS - v5.3.2 - 2019-03-15
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -15946,7 +15946,7 @@ $.jgrid.extend({
 		this.each(function(){
 			var $t = this, level, parent_id, view = $t.p.data;
 			if(!$t.grid || !$t.p.treeGrid) {return;}
-			
+
 			switch ($t.p.treeGridModel) {
 				case 'nested' :
 					level = $t.p.treeReader.level_field;
@@ -18266,6 +18266,10 @@ $.jgrid.extend({
 		if (p.returnAsString) {
 			return ret;
 		} else {
+			// add BOM fix Excel
+			if(p.mimetype.toUpperCase().indexOf("UTF-8") !== -1) {
+				ret = '\ufeff' + ret;
+			}
 			$.jgrid.saveAs( ret, p.fileName, { type : p.mimetype });
 		}
 	},
