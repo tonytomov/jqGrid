@@ -406,6 +406,7 @@ $.jgrid.extend({
 			fileName : "jqGridExport.csv",
 			mimetype : "text/csv;charset=utf-8",
 			returnAsString : false,
+			onBeforeExport : null,
 			loadIndicator : true // can be a function
 		}, p || {});
 		var ret ="";
@@ -686,6 +687,12 @@ $.jgrid.extend({
 			// add BOM fix Excel
 			if(p.mimetype.toUpperCase().indexOf("UTF-8") !== -1) {
 				ret = '\ufeff' + ret;
+			}
+			if($.isFunction( p.onBeforeExport) ) {
+				ret = p.onBeforeExport(ret);
+				if(!ret) {
+					throw "Before export does not return data!";
+				}
 			}
 			$.jgrid.saveAs( ret, p.fileName, { type : p.mimetype });
 		}
