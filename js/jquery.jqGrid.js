@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.2 - 2019-03-15
+* @license Guriddo jqGrid JS - v5.3.2 - 2019-03-29
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -17989,6 +17989,7 @@ $.jgrid.extend({
 			fileName : "jqGridExport.csv",
 			mimetype : "text/csv;charset=utf-8",
 			returnAsString : false,
+			onBeforeExport : null,
 			loadIndicator : true // can be a function
 		}, p || {});
 		var ret ="";
@@ -18270,6 +18271,12 @@ $.jgrid.extend({
 			if(p.mimetype.toUpperCase().indexOf("UTF-8") !== -1) {
 				ret = '\ufeff' + ret;
 			}
+			if($.isFunction( p.onBeforeExport) ) {
+				ret = p.onBeforeExport(ret);
+				if(!ret) {
+					throw "Before export does not return data!";
+				}
+			}
 			$.jgrid.saveAs( ret, p.fileName, { type : p.mimetype });
 		}
 	},
@@ -18377,7 +18384,7 @@ $.jgrid.extend({
 				data.header[i] = cm[j].name;
 				data.width[ i ] = 5;
 				data.map[i] = j;
-				data.parser[i] = addStyle( cm[j].hasOwnProperty('exportoptions') ? cm[j].exportoptions : {} );
+				data.parser[j] = addStyle( cm[j].hasOwnProperty('exportoptions') ? cm[j].exportoptions : {} );
 				i++;
 			}
 			function _replStrFunc (v) {
