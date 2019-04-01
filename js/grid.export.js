@@ -857,31 +857,31 @@ $.jgrid.extend({
 					cell = null;
 					var expo = data.parser[data.map[i]];
 					if( expo.excel_parsers === true && !header) {
-					for ( var j=0, jen=$.jgrid.excelParsers.length ; j<jen ; j++ ) {
-						var special = $.jgrid.excelParsers[j];
+						for ( var j=0, jen=$.jgrid.excelParsers.length ; j<jen ; j++ ) {
+							var special = $.jgrid.excelParsers[j];
 
-						if ( v.match && ! v.match(/^0\d+/) && v.match( special.match ) ) {
-							var a = v;
-							v = v.replace(/[^\d\.\-]/g, '');
-							if ( special.fmt ) {
-								v = special.fmt( v );
+							if ( v.match && ! v.match(/^0\d+/) && v.match( special.match ) ) {
+								var a = v;
+								v = v.replace(/[^\d\.\-]/g, '');
+								if ( special.fmt ) {
+									v = special.fmt( v );
+								}
+								if(special.style === 67) { //Dates
+									cell = _makeCellSpecial( { t: 'd', r: cellId, s: special.style }, v);
+								} else {
+									if(  $.inArray( special.style, ["63", "64", "65", "66"]) ) { // Numbers
+
+										if( v.toString().length > maxieenum ) {
+											text = ! a.replace ? a : _replStr(a);
+											cell = _makeCellString( cellId, text);
+											rowNode.appendChild( cell );
+											break;
+										}
+									}
+									cell = _makeCellSpecial( {r: cellId,s: special.style}, v );
+								}
+								rowNode.appendChild( cell );
 							}
-							if(special.style === 67) { //Dates
-								cell = _makeCellSpecial( { t: 'd', r: cellId, s: special.style }, v);
-							} else {
-								if(  $.inArray( special.style, ["63", "64", "65", "66"]) ) { // Numbers
-									
-									if( v.toString().length > maxieenum ) {
-										text = ! a.replace ? a : _replStr(a);
-										cell = _makeCellString( cellId, text);
-							rowNode.appendChild( cell );
-							break;
-						}
-					}
-								cell = _makeCellSpecial( {r: cellId,s: special.style}, v );
-							}
-							rowNode.appendChild( cell );
-						}
 						}
 					} else if( expo.excel_format !== undefined && expo.excel_style !== undefined && !header && !cell) {
 						if(expo.replace_format) {
