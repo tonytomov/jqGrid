@@ -1197,7 +1197,7 @@ $.jgrid.extend({
 						st = soptions.searchtitle != null ? soptions.searchtitle : p.operandTitle;
 						select = this.searchoptions.searchOperMenu ? "<a title='"+st+"' style='padding-right: 0.5em;' soper='"+so+"' class='soptclass' colname='"+this.name+"'>"+sot+"</a>" : "";
 					}
-					$("td:eq(0)",stbl).attr("colindex",ci).append(select);
+					$("td:eq(0)",stbl).attr("columname", cm.name).append(select);
 					if(soptions.clearSearch === undefined) {
 						soptions.clearSearch = true;
 					}
@@ -1304,8 +1304,14 @@ $.jgrid.extend({
 			}
 			$(".clearsearchclass",tr).click(function() {
 				var ptr = $(this).parents("tr:first"),
-				coli = parseInt($("td.ui-search-oper", ptr).attr('colindex'),10),
-				sval  = $.extend({},$t.p.colModel[coli].searchoptions || {}),
+				colname = $("td.ui-search-oper", ptr).attr('columname'), coli=0, len = $t.p.colModel.lenght;
+				while(coli<len) {
+					if($t.p.colModel[coli].name === colname) {
+						break;
+					}
+					coli++;
+				}				
+				var sval  = $.extend({},$t.p.colModel[coli].searchoptions || {}),
 				dval = sval.defaultValue ? sval.defaultValue : "",
 				elem;
 				if($t.p.colModel[coli].stype === "select") {
