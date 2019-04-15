@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.2 - 2019-03-29
+* @license Guriddo jqGrid JS - v5.3.2 - 2019-04-15
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -9213,7 +9213,7 @@ $.jgrid.extend({
 						st = soptions.searchtitle != null ? soptions.searchtitle : p.operandTitle;
 						select = this.searchoptions.searchOperMenu ? "<a title='"+st+"' style='padding-right: 0.5em;' soper='"+so+"' class='soptclass' colname='"+this.name+"'>"+sot+"</a>" : "";
 					}
-					$("td:eq(0)",stbl).attr("colindex",ci).append(select);
+					$("td:eq(0)",stbl).attr("columname", cm.name).append(select);
 					if(soptions.clearSearch === undefined) {
 						soptions.clearSearch = true;
 					}
@@ -9320,8 +9320,14 @@ $.jgrid.extend({
 			}
 			$(".clearsearchclass",tr).click(function() {
 				var ptr = $(this).parents("tr:first"),
-				coli = parseInt($("td.ui-search-oper", ptr).attr('colindex'),10),
-				sval  = $.extend({},$t.p.colModel[coli].searchoptions || {}),
+				colname = $("td.ui-search-oper", ptr).attr('columname'), coli=0, len = $t.p.colModel.lenght;
+				while(coli<len) {
+					if($t.p.colModel[coli].name === colname) {
+						break;
+					}
+					coli++;
+				}				
+				var sval  = $.extend({},$t.p.colModel[coli].searchoptions || {}),
 				dval = sval.defaultValue ? sval.defaultValue : "",
 				elem;
 				if($t.p.colModel[coli].stype === "select") {
@@ -18440,31 +18446,31 @@ $.jgrid.extend({
 					cell = null;
 					var expo = data.parser[data.map[i]];
 					if( expo.excel_parsers === true && !header) {
-					for ( var j=0, jen=$.jgrid.excelParsers.length ; j<jen ; j++ ) {
-						var special = $.jgrid.excelParsers[j];
+						for ( var j=0, jen=$.jgrid.excelParsers.length ; j<jen ; j++ ) {
+							var special = $.jgrid.excelParsers[j];
 
-						if ( v.match && ! v.match(/^0\d+/) && v.match( special.match ) ) {
-							var a = v;
-							v = v.replace(/[^\d\.\-]/g, '');
-							if ( special.fmt ) {
-								v = special.fmt( v );
+							if ( v.match && ! v.match(/^0\d+/) && v.match( special.match ) ) {
+								var a = v;
+								v = v.replace(/[^\d\.\-]/g, '');
+								if ( special.fmt ) {
+									v = special.fmt( v );
+								}
+								if(special.style === 67) { //Dates
+									cell = _makeCellSpecial( { t: 'd', r: cellId, s: special.style }, v);
+								} else {
+									if(  $.inArray( special.style, ["63", "64", "65", "66"]) ) { // Numbers
+
+										if( v.toString().length > maxieenum ) {
+											text = ! a.replace ? a : _replStr(a);
+											cell = _makeCellString( cellId, text);
+											rowNode.appendChild( cell );
+											break;
+										}
+									}
+									cell = _makeCellSpecial( {r: cellId,s: special.style}, v );
+								}
+								rowNode.appendChild( cell );
 							}
-							if(special.style === 67) { //Dates
-								cell = _makeCellSpecial( { t: 'd', r: cellId, s: special.style }, v);
-							} else {
-								if(  $.inArray( special.style, ["63", "64", "65", "66"]) ) { // Numbers
-									
-									if( v.toString().length > maxieenum ) {
-										text = ! a.replace ? a : _replStr(a);
-										cell = _makeCellString( cellId, text);
-							rowNode.appendChild( cell );
-							break;
-						}
-					}
-								cell = _makeCellSpecial( {r: cellId,s: special.style}, v );
-							}
-							rowNode.appendChild( cell );
-						}
 						}
 					} else if( expo.excel_format !== undefined && expo.excel_style !== undefined && !header && !cell) {
 						if(expo.replace_format) {
