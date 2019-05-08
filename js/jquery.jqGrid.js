@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.2 - 2019-04-18
+* @license Guriddo jqGrid JS - v5.3.2 - 2019-05-08
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -17669,7 +17669,7 @@ $.extend($.jgrid,{
 					currNode.appendChild( value );
 				});
 			}
-			if( options.text ) {
+			if( options.hasOwnProperty('text') ) {
 				currNode.appendChild( root.createTextNode( options.text ) );
 			}
 		}
