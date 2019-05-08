@@ -80,7 +80,7 @@ $.extend($.jgrid,{
 					currNode.appendChild( value );
 				});
 			}
-			if( options.text ) {
+			if( options.hasOwnProperty('text') ) {
 				currNode.appendChild( root.createTextNode( options.text ) );
 			}
 		}
