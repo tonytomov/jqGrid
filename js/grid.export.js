@@ -881,6 +881,7 @@ $.jgrid.extend({
 									cell = _makeCellSpecial( {r: cellId,s: special.style}, v );
 								}
 								rowNode.appendChild( cell );
+								break;
 							}
 						}
 					} else if( expo.excel_format !== undefined && expo.excel_style !== undefined && !header && !cell) {

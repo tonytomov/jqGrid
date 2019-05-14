@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.2 - 2019-05-08
+* @license Guriddo jqGrid JS - v5.3.2 - 2019-05-14
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -18470,6 +18470,7 @@ $.jgrid.extend({
 									cell = _makeCellSpecial( {r: cellId,s: special.style}, v );
 								}
 								rowNode.appendChild( cell );
+								break;
 							}
 						}
 					} else if( expo.excel_format !== undefined && expo.excel_style !== undefined && !header && !cell) {
