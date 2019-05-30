@@ -306,7 +306,7 @@ $.jgrid.extend({
 			$('tr.ui-jqgrid-labels>th:not(:hidden)', htable).attr("tabindex", -1).focus(function(){
 				$(this).addClass('ui-state-highlight').attr("tabindex", "0");
 			}).blur(function(){
-				$(this).removeClass('ui-state-highlight').attr("tabindex", "-1");
+				$(this).removeClass('ui-state-highlight');
 			});			
 		});
 	}
