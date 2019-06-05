@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.2 - 2019-05-14
+* @license Guriddo jqGrid JS - v5.3.2 - 2019-06-05
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -4373,7 +4373,7 @@ $.fn.jqGrid = function( pin ) {
 			if (clicks === 2) {
 				// double click event handler
 				try {
-					if(ts.p.colModel[ci].autosize === true ) {
+					if(ts.p.colModel[ci].autosize === true  && ts.p.autoResizing) {
 						cmax = $(ts).jqGrid('getCol', ci, false, 'maxwidth');
 						$(ts).jqGrid('resizeColumn', ci, cmax);
 					}
