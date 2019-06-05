@@ -142,12 +142,8 @@ $.jgrid.extend({
 				}
 			});
 			$t.p.iRow = 1;
-			for(var i = 0;i<$t.p.colModel.length;i++) {
-				if($t.p.colModel[i].hidden !== true ) {
-					$t.p.iCol = i;
-					break;
-				}
-			}
+			$t.p.iCol = $.jgrid.getFirstVisibleCol( $t );
+
 			var focusRow=0, focusCol=0; // set the dafualt one
 			$($t).on('keydown', function(e) {
 				var key = e.which || e.keyCode, nextCell;
@@ -216,7 +212,7 @@ $.jgrid.extend({
 						return;
 				}
 				var fe;
-				if (!isNaN($t.p.iRow) && !isNaN($t.p.iCol)) {
+				if (!isNaN($t.p.iRow) && !isNaN($t.p.iCol) && $t.p.iCol >= 0) {
 					fe = hasFocusableChild($t.rows[$t.p.iRow].cells[$t.p.iCol]);
 					if( fe ) {
 						$(fe).attr('tabindex', -1);
@@ -308,6 +304,70 @@ $.jgrid.extend({
 			}).blur(function(){
 				$(this).removeClass('ui-state-highlight');
 			});			
+			$t.p.selHeadInd = $.jgrid.getFirstVisibleCol( $t );
+			$($t.grid.headers[$t.p.selHeadInd].el).attr("tabindex","0");
+		});
+	},
+	setupPagerGrid : function () {
+		return this.each( function(){
+			var $t = this;
+			$(".ui-pg-button",$t.p.pager).attr("tabindex","-1").focus(function(){
+				$(this).addClass('ui-state-highlight');
+			}).blur(function(){
+				$(this).removeClass('ui-state-highlight');
+			});
+			var cels = $(".ui-pg-button",$t.p.pager);
+			var len = cels.length;
+			$t.p.navIndex = 0;
+			cels.not('.ui-state-disabled').first().attr("tabindex", "0");
+			$("table.ui-pager-table tr:first", $t.p.pager).on("keydown", function(e) {
+				var key = e.which || e.keyCode;
+				//var currindex = $t.p.navIndex;
+				var indexa = $t.p.navIndex;//currindex;
+				switch (key) {
+					case 37: // left
+						if(indexa-1 >= 0) {
+							indexa--;
+							while( $(cels[indexa]).is('.ui-state-disabled') && indexa-1 >= 0) {
+								indexa--;
+								if(indexa < 0) {
+									break;
+	}
+							}
+							if(indexa >= 0) {
+								$(cels[$t.p.navIndex]).attr("tabindex","-1");
+								$(cels[indexa]).attr("tabindex","0").focus();
+								$t.p.navIndex = indexa;
+							}
+
+							e.preventDefault();
+						}
+						break;
+					case 39: // right
+						if(indexa+1 < len) {
+							indexa++;
+							while( $(cels[indexa]).is('.ui-state-disabled') && indexa+1 < len + 1) {
+								indexa++;
+								if( indexa > len-1) {
+									break;
+								}
+							}
+							if( indexa < len) {
+								$(cels[$t.p.navIndex]).attr("tabindex","-1");
+								$(cels[indexa]).attr("tabindex","0").focus();
+								$t.p.navIndex = indexa;
+							}
+							e.preventDefault();
+						}
+						break;
+					case 13: // enter
+						$(cels[indexa]).trigger('click');
+						e.preventDefault();
+						break;
+					default:
+						return;
+				}
+			});
 		});
 	}
 /// end  aria grid
