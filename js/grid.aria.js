@@ -16,7 +16,7 @@
 "use strict";
 //module begin
 $.jgrid.extend({
-	setupBodyGrid : function () {
+	ariaBodyGrid : function () {
 		return this.each(function (){
 			var $t = this;
 			// basic functions
@@ -246,7 +246,7 @@ $.jgrid.extend({
 			});
 		});
 	},
-	setupHeaderGrid : function() {
+	ariaHeaderGrid : function() {
 		return this.each(function (){
 			var $t = this,
 			htable = $(".ui-jqgrid-hbox>table:first", "#gbox_"+$t.p.id);
@@ -308,7 +308,7 @@ $.jgrid.extend({
 			$($t.grid.headers[$t.p.selHeadInd].el).attr("tabindex","0");
 		});
 	},
-	setupPagerGrid : function () {
+	ariaPagerGrid : function () {
 		return this.each( function(){
 			var $t = this;
 			$(".ui-pg-button",$t.p.pager).attr("tabindex","-1").focus(function(){
