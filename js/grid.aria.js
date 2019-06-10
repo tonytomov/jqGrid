@@ -18,7 +18,10 @@
 $.jgrid.extend({
 	ariaBodyGrid : function () {
 		return this.each(function (){
-			var $t = this;
+			var $t = this,
+			getstyle = $.jgrid.getMethod("getStyleUI"),
+			highlight = getstyle($t.p.styleUI+'.common','highlight', true);
+
 			// basic functions
 			function isValidCell(row, col) {
 				return (
@@ -96,7 +99,7 @@ $.jgrid.extend({
 					}
 				}
 				if( dirY !== 0 ) {
-					$($t).jqGrid('setSelection', $t.rows[nextCell.row].id, false);
+					$($t).jqGrid('setSelection', $t.rows[nextCell.row].id, false, null, false);
 				}
 				
 				return nextCell;
@@ -138,7 +141,10 @@ $.jgrid.extend({
 				//var grid = e.target;
 				$("tbody:first>tr:not(.jqgfirstrow)>td:not(:hidden, :has("+focusableElementsSelector+"))", $t).attr("tabindex", -1);
 				if($t.p.iRow !== undefined && $t.p.iCol !== undefined) {
-					$($t.rows[$t.p.iRow].cells[$t.p.iCol]).attr('tabindex', 0);
+					$($t.rows[$t.p.iRow].cells[$t.p.iCol])
+						.attr('tabindex', 0)
+						.focus( function() { $(this).addClass(highlight);})
+						.blur( function () { $(this).removeClass(highlight);});
 				}
 			});
 			$t.p.iRow = 1;
@@ -223,14 +229,24 @@ $.jgrid.extend({
 				
 				fe = hasFocusableChild($t.rows[focusRow].cells[focusCol]);
 				if( fe ) {
-					$(fe).attr('tabindex', 0).focus();
+					$(fe).attr('tabindex', 0)
+						.addClass(highlight)
+						.focus()
+						.blur( function () {$(this).removeClass(highlight);});
 				}  else {
-					$($t.rows[focusRow].cells[focusCol]).attr('tabindex', 0).focus();
+					$($t.rows[focusRow].cells[focusCol])
+						.attr('tabindex', 0)
+						.addClass(highlight)
+						.focus()
+						.blur(function(){$(this).removeClass(highlight);	});
 				}
 				$t.p.iRow = focusRow;
 				$t.p.iCol = focusCol;
 			});
-			$($t).on('jqGridSelectRow.ariaGridClick', function(el1, id, status, e) {
+			$($t).on('jqGridBeforeSelectRow.ariaGridClick',function() {
+				return false;
+			});
+			$($t).on('jqGridCellSelect.ariaGridClick', function(el1, id, status,tdhtml, e) {
 				var el = e.target;
 				if($t.p.iRow > 0 && $t.p.iCol >=0) {
 					$($t.rows[$t.p.iRow].cells[$t.p.iCol]).attr("tabindex", -1);
@@ -242,13 +258,18 @@ $.jgrid.extend({
 				}
 				var row = $(el).closest("tr.jqgrow");
 				$t.p.iRow = row[0].rowIndex;
-				$(el).attr("tabindex", 0);
+				$(el).attr("tabindex", 0)
+					.addClass(highlight)
+					.focus()
+					.blur(function(){$(this).removeClass(highlight);});
 			});
 		});
 	},
 	ariaHeaderGrid : function() {
 		return this.each(function (){
 			var $t = this,
+			getstyle = $.jgrid.getMethod("getStyleUI"),
+			highlight = getstyle($t.p.styleUI+'.common','highlight', true),
 			htable = $(".ui-jqgrid-hbox>table:first", "#gbox_"+$t.p.id);
 			$('tr.ui-jqgrid-labels', htable).on("keydown", function(e) {
 				var currindex = $t.p.selHeadInd; 
@@ -300,9 +321,9 @@ $.jgrid.extend({
 				}
 			});
 			$('tr.ui-jqgrid-labels>th:not(:hidden)', htable).attr("tabindex", -1).focus(function(){
-				$(this).addClass('ui-state-highlight').attr("tabindex", "0");
+				$(this).addClass(highlight).attr("tabindex", "0");
 			}).blur(function(){
-				$(this).removeClass('ui-state-highlight');
+				$(this).removeClass(highlight);
 			});			
 			$t.p.selHeadInd = $.jgrid.getFirstVisibleCol( $t );
 			$($t.grid.headers[$t.p.selHeadInd].el).attr("tabindex","0");
@@ -310,25 +331,29 @@ $.jgrid.extend({
 	},
 	ariaPagerGrid : function () {
 		return this.each( function(){
-			var $t = this;
+			var $t = this,
+			getstyle = $.jgrid.getMethod("getStyleUI"),
+			highlight = getstyle($t.p.styleUI+'.common','highlight', true),
+			disabled = getstyle($t.p.styleUI+'.common','disabled', true);
+			
 			$(".ui-pg-button",$t.p.pager).attr("tabindex","-1").focus(function(){
-				$(this).addClass('ui-state-highlight');
+				$(this).addClass(highlight);
 			}).blur(function(){
-				$(this).removeClass('ui-state-highlight');
+				$(this).removeClass(highlight);
 			});
 			var cels = $(".ui-pg-button",$t.p.pager);
 			var len = cels.length;
 			$t.p.navIndex = 0;
-			cels.not('.ui-state-disabled').first().attr("tabindex", "0");
+			cels.not(disabled).first().attr("tabindex", "0");
 			$("table.ui-pager-table tr:first", $t.p.pager).on("keydown", function(e) {
 				var key = e.which || e.keyCode;
-				//var currindex = $t.p.navIndex;
+				
 				var indexa = $t.p.navIndex;//currindex;
 				switch (key) {
 					case 37: // left
 						if(indexa-1 >= 0) {
 							indexa--;
-							while( $(cels[indexa]).is('.ui-state-disabled') && indexa-1 >= 0) {
+							while( $(cels[indexa]).is(disabled) && indexa-1 >= 0) {
 								indexa--;
 								if(indexa < 0) {
 									break;
@@ -346,7 +371,7 @@ $.jgrid.extend({
 					case 39: // right
 						if(indexa+1 < len) {
 							indexa++;
-							while( $(cels[indexa]).is('.ui-state-disabled') && indexa+1 < len + 1) {
+							while( $(cels[indexa]).is(disabled) && indexa+1 < len + 1) {
 								indexa++;
 								if( indexa > len-1) {
 									break;
@@ -369,8 +394,26 @@ $.jgrid.extend({
 				}
 			});
 		});
+	},
+	ariaGrid : function ( p ) {
+		var o = $.extend({
+			header : true,
+			body : true,
+			pager : true
+		}, p || {});
+		return this.each(function(){
+			if( o.header ) {
+				$(this).jqGrid('ariaHeaderGrid');
+			}
+			if( o.body ) {
+				$(this).jqGrid('ariaBodyGrid');
+			}
+			if( o.pager ) {
+				$(this).jqGrid('ariaPagerGrid');
+			}
+		});
 	}
-/// end  aria grid
+// end aria grid
 });
 //module end
 }));
