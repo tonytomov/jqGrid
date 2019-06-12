@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.3.2 - 2019-06-05
+* @license Guriddo jqGrid JS - v5.3.2 - 2019-06-12
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2448,8 +2448,8 @@ $.fn.jqGrid = function( pin ) {
 			//if(!ts.p.treeGrid && !ts.p.scroll) {ts.grid.bDiv.scrollTop = 0;}
 			ts.p.reccount=ir;
 			ts.p.treeANode = -1;
-			if(ts.p.userDataOnFooter) { self.jqGrid("footerData","set",ts.p.userData,true); }
-			if(ts.p.userDataOnHeader) { self.jqGrid("headerData","set",ts.p.userData,true); }
+			if(ts.p.userDataOnFooter) { self.jqGrid("footerData","set",ts.p.userData,false); }
+			if(ts.p.userDataOnHeader) { self.jqGrid("headerData","set",ts.p.userData,false); }
 			if(locdata) {
 				ts.p.records = gl;
 				ts.p.lastpage = Math.ceil(gl/ rn);
@@ -2670,8 +2670,8 @@ $.fn.jqGrid = function( pin ) {
 			//if(!ts.p.treeGrid && !ts.p.scroll) {ts.grid.bDiv.scrollTop = 0;}
 			ts.p.reccount=ir;
 			ts.p.treeANode = -1;
-			if(ts.p.userDataOnFooter) { self.jqGrid("footerData","set",ts.p.userData,true); }
-			if(ts.p.userDataOnHeader) { self.jqGrid("headerData","set",ts.p.userData,true); }
+			if(ts.p.userDataOnFooter) { self.jqGrid("footerData","set",ts.p.userData,false); }
+			if(ts.p.userDataOnHeader) { self.jqGrid("headerData","set",ts.p.userData,false); }
 			if(locdata) {
 				ts.p.records = len;
 				ts.p.lastpage = Math.ceil(len/ rn);

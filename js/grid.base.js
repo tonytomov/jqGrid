@@ -2453,8 +2453,8 @@ $.fn.jqGrid = function( pin ) {
 			//if(!ts.p.treeGrid && !ts.p.scroll) {ts.grid.bDiv.scrollTop = 0;}
 			ts.p.reccount=ir;
 			ts.p.treeANode = -1;
-			if(ts.p.userDataOnFooter) { self.jqGrid("footerData","set",ts.p.userData,true); }
-			if(ts.p.userDataOnHeader) { self.jqGrid("headerData","set",ts.p.userData,true); }
+			if(ts.p.userDataOnFooter) { self.jqGrid("footerData","set",ts.p.userData,false); }
+			if(ts.p.userDataOnHeader) { self.jqGrid("headerData","set",ts.p.userData,false); }
 			if(locdata) {
 				ts.p.records = gl;
 				ts.p.lastpage = Math.ceil(gl/ rn);
@@ -2675,8 +2675,8 @@ $.fn.jqGrid = function( pin ) {
 			//if(!ts.p.treeGrid && !ts.p.scroll) {ts.grid.bDiv.scrollTop = 0;}
 			ts.p.reccount=ir;
 			ts.p.treeANode = -1;
-			if(ts.p.userDataOnFooter) { self.jqGrid("footerData","set",ts.p.userData,true); }
-			if(ts.p.userDataOnHeader) { self.jqGrid("headerData","set",ts.p.userData,true); }
+			if(ts.p.userDataOnFooter) { self.jqGrid("footerData","set",ts.p.userData,false); }
+			if(ts.p.userDataOnHeader) { self.jqGrid("headerData","set",ts.p.userData,false); }
 			if(locdata) {
 				ts.p.records = len;
 				ts.p.lastpage = Math.ceil(len/ rn);
