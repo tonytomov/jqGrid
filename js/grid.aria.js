@@ -15,6 +15,21 @@
 }(function( $ ) {
 "use strict";
 //module begin
+$.extend($.jgrid,{
+	focusableElementsList : [
+		'>a[href]',
+		'>button:not([disabled])',
+		'>area[href]',
+		'>input:not([disabled])',
+		'>select:not([disabled])',
+		'>textarea:not([disabled])',
+		'>iframe',
+		'>object',
+		'>embed',
+		'>*[tabindex]',
+		'>*[contenteditable]'
+	]
+});
 $.jgrid.extend({
 	ariaBodyGrid : function () {
 		return this.each(function (){
@@ -119,27 +134,15 @@ $.jgrid.extend({
 				$t.p.page = curpage;
 				$t.grid.populate();
 			}
-			var focusableElementsList = [
-			'>a[href]',
-			'>button:not([disabled])',
-			'>area[href]',
-			'>input:not([disabled])',
-			'>select:not([disabled])',
-			'>textarea:not([disabled])',
-			'>iframe',
-			'>object',
-			'>embed',
-			'>*[tabindex]',
-			'>*[contenteditable]'
-			];
-			
-			var focusableElementsSelector = focusableElementsList.join();
+			var focusableElementsSelector = $.jgrid.focusableElementsList.join();
 			function hasFocusableChild( el) {
 				return $(focusableElementsSelector, el)[0];
 			}
+			$($t).removeAttr("tabindex");
 			$($t).on('jqGridAfterGridComplete.setAriaGrid', function( e ) {
 				//var grid = e.target;
 				$("tbody:first>tr:not(.jqgfirstrow)>td:not(:hidden, :has("+focusableElementsSelector+"))", $t).attr("tabindex", -1);
+				$("tbody:first>tr:not(.jqgfirstrow)", $t).removeAttr("tabindex");
 				if($t.p.iRow !== undefined && $t.p.iCol !== undefined) {
 					$($t.rows[$t.p.iRow].cells[$t.p.iCol])
 						.attr('tabindex', 0)
@@ -334,17 +337,19 @@ $.jgrid.extend({
 			var $t = this,
 			getstyle = $.jgrid.getMethod("getStyleUI"),
 			highlight = getstyle($t.p.styleUI+'.common','highlight', true),
-			disabled = getstyle($t.p.styleUI+'.common','disabled', true);
+				disabled = "."+getstyle($t.p.styleUI+'.common','disabled', true),
+				cels = $(".ui-pg-button",$t.p.pager),
+				len = cels.length;
 			
-			$(".ui-pg-button",$t.p.pager).attr("tabindex","-1").focus(function(){
+			cels.attr("tabindex","-1").focus(function(){
 				$(this).addClass(highlight);
 			}).blur(function(){
 				$(this).removeClass(highlight);
 			});
-			var cels = $(".ui-pg-button",$t.p.pager);
-			var len = cels.length;
+			
 			$t.p.navIndex = 0;
 			cels.not(disabled).first().attr("tabindex", "0");
+			
 			$("table.ui-pager-table tr:first", $t.p.pager).on("keydown", function(e) {
 				var key = e.which || e.keyCode;
 				
@@ -395,7 +400,7 @@ $.jgrid.extend({
 			});
 		});
 	},
-	ariaGrid : function ( p ) {
+	setAriaGrid : function ( p ) {
 		var o = $.extend({
 			header : true,
 			body : true,
@@ -410,6 +415,35 @@ $.jgrid.extend({
 			}
 			if( o.pager ) {
 				$(this).jqGrid('ariaPagerGrid');
+			}
+		});
+	},
+	resetAriaGrid : function( p ) {
+		var o = $.extend({
+			header : true,
+			body : true,
+			pager : true
+		}, p || {});
+		return this.each(function(){
+			var $t = this;
+			if( o.body ) {
+				$($t).attr("tabindex","0")
+					.off('keydown')
+					.off('jqGridBeforeSelectRow.ariaGridClick')
+					.off('jqGridCellSelect.ariaGridClick')
+					.off('jqGridAfterGridComplete.setAriaGrid');
+				var focusableElementsSelector = $.jgrid.focusableElementsList.join();
+				$("tbody:first>tr:not(.jqgfirstrow)>td:not(:hidden, :has("+focusableElementsSelector+"))", $t).removeAttr("tabindex").off("focus");
+				$("tbody:first>tr:not(.jqgfirstrow)", $t).attr("tabindex", -1);
+			}
+			if( o.header ) {
+				var htable = $(".ui-jqgrid-hbox>table:first", "#gbox_"+$t.p.id);
+				$('tr.ui-jqgrid-labels', htable).off("keydown");
+				$('tr.ui-jqgrid-labels>th:not(:hidden)', htable).removeAttr("tabindex").off("focus blur");
+			}
+			if( o.pager ) {
+				$(".ui-pg-button",$t.p.pager).removeAttr("tabindex").off("focus");;
+				$("table.ui-pager-table tr:first", $t.p.pager).off("keydown");
 			}
 		});
 	}
