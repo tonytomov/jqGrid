@@ -954,6 +954,16 @@ $.extend($.jgrid,{
 				getfont.getPropertyValue( 'font-size' ) + 
 				getfont.getPropertyValue( 'font-family');
 	},
+	setSelNavIndex : function ($t,  selelem ) {
+		var cels = $(".ui-pg-button",$t.p.pager);
+		$.each(cels, function(i,n) {
+			if(selelem===n) {
+				$t.p.navIndex = i;
+				return false;
+			}
+		});
+		$(selelem).attr("tabindex","0");		
+	},
 	styleUI : {
 		jQueryUI : {
 			common : {
@@ -3391,6 +3401,7 @@ $.fn.jqGrid = function( pin ) {
 					if(selclick) {
 						populate();
 					}
+					$.jgrid.setSelNavIndex(ts, this);
 					return false;
 				});
 			}
@@ -4437,6 +4448,13 @@ $.fn.jqGrid = function( pin ) {
 			if(ci != null){
 				sortData( $('div',this)[0].id, ci, r, d, this);
 			}
+			// added aria grid
+			if(ts.p.selHeadInd !== undefined) {
+				$(grid.headers[ts.p.selHeadInd].el).attr("tabindex", "-1");
+			}
+			ts.p.selHeadInd = ci;
+			$(this).attr("tabindex", "0");
+			// end aria
 			return false;
 		});
 		tmpcm = null;
@@ -4974,13 +4992,17 @@ $.jgrid.extend({
 		});
 		return ids;
 	},
-	setSelection : function(selection,onsr, e) {
+	setSelection : function(selection,onsr, e, isHight) {
 		return this.each(function(){
 			var $t = this, stat,pt, ner, ia, tpsr, fid, csr,
 			getstyle = $.jgrid.getMethod("getStyleUI"),
 			highlight = getstyle($t.p.styleUI+'.common','highlight', true),
 			disabled = getstyle($t.p.styleUI+'.common','disabled', true);
 			if(selection === undefined) { return; }
+			if(isHight === undefined ) { 
+				isHight = true;
+			}
+			isHight = isHight === false ? false : true; 
 			onsr = onsr === false ? false : true;
 			pt=$($t).jqGrid('getGridRowById', selection);
 			if(!pt || !pt.className || pt.className.indexOf( disabled ) > -1 ) { return; }
@@ -5008,14 +5030,16 @@ $.jgrid.extend({
 			if(!$t.p.multiselect) {
 				if(pt.className !== "ui-subgrid") {
 					if( $t.p.selrow !== pt.id ) {
-						csr = $($t).jqGrid('getGridRowById', $t.p.selrow);
-						if( csr ) {
-							$(  csr ).removeClass(highlight).attr({"aria-selected":"false", "tabindex" : "-1"});
-						}
-						$(pt).addClass(highlight).attr({"aria-selected":"true", "tabindex" : "0"});//.focus();
-						if(fid) {
-							$("#"+$.jgrid.jqID($t.p.selrow), "#"+$.jgrid.jqID(fid)).removeClass(highlight);
-							$("#"+$.jgrid.jqID(selection), "#"+$.jgrid.jqID(fid)).addClass(highlight);
+						if( isHight ) {
+							csr = $($t).jqGrid('getGridRowById', $t.p.selrow);
+							if( csr ) {
+								$(  csr ).removeClass(highlight).attr({"aria-selected":"false" , "tabindex" : "-1"});
+							}
+							$(pt).addClass(highlight).attr({"aria-selected":"true" ,"tabindex" : "0"});//.focus();
+							if(fid) {
+								$("#"+$.jgrid.jqID($t.p.selrow), "#"+$.jgrid.jqID(fid)).removeClass(highlight);
+								$("#"+$.jgrid.jqID(selection), "#"+$.jgrid.jqID(fid)).addClass(highlight);
+							}
 						}
 						stat = true;
 					} else {
@@ -5049,10 +5073,12 @@ $.jgrid.extend({
 				}
 				$("#jqg_"+$.jgrid.jqID($t.p.id)+"_"+$.jgrid.jqID(pt.id))[$t.p.useProp ? 'prop': 'attr']("checked",stat);
 				if(fid) {
-					if(ia === -1) {
-						$("#"+$.jgrid.jqID(selection), "#"+$.jgrid.jqID(fid)).addClass(highlight);
-					} else {
-						$("#"+$.jgrid.jqID(selection), "#"+$.jgrid.jqID(fid)).removeClass(highlight);
+					if(isHight) {
+						if(ia === -1) {
+							$("#"+$.jgrid.jqID(selection), "#"+$.jgrid.jqID(fid)).addClass(highlight);
+						} else {
+							$("#"+$.jgrid.jqID(selection), "#"+$.jgrid.jqID(fid)).removeClass(highlight);
+						}
 					}
 					$("#jqg_"+$.jgrid.jqID($t.p.id)+"_"+$.jgrid.jqID(selection), "#"+$.jgrid.jqID(fid))[$t.p.useProp ? 'prop': 'attr']("checked",stat);
 				}

@@ -1840,6 +1840,7 @@ $.jgrid.extend({
 					.attr({"title":o.addtitle || "",id : pAdd.id || "add_"+elemids})
 					.click(function(){
 						if (!$(this).hasClass( commonstyle.disabled )) {
+							$.jgrid.setSelNavIndex( $t, this);
 							if ($.isFunction( o.addfunc )) {
 								o.addfunc.call($t);
 							} else {
@@ -1861,6 +1862,7 @@ $.jgrid.extend({
 						if (!$(this).hasClass( commonstyle.disabled )) {
 							var sr = $t.p.selrow;
 							if (sr) {
+								$.jgrid.setSelNavIndex( $t, this);
 								if($.isFunction( o.editfunc ) ) {
 									o.editfunc.call($t, sr);
 								} else {
@@ -1886,6 +1888,7 @@ $.jgrid.extend({
 						if (!$(this).hasClass( commonstyle.disabled )) {
 							var sr = $t.p.selrow;
 							if (sr) {
+								$.jgrid.setSelNavIndex( $t, this);
 								if($.isFunction( o.viewfunc ) ) {
 									o.viewfunc.call($t, sr);
 								} else {
@@ -1917,6 +1920,7 @@ $.jgrid.extend({
 								dr = $t.p.selrow;
 							}
 							if(dr){
+								$.jgrid.setSelNavIndex( $t, this);
 								if($.isFunction( o.delfunc )){
 									o.delfunc.call($t, dr);
 								}else{
@@ -1940,6 +1944,7 @@ $.jgrid.extend({
 					.attr({"title":o.searchtitle  || "",id:pSearch.id || "search_"+elemids})
 					.click(function(){
 						if (!$(this).hasClass( commonstyle.disabled )) {
+							$.jgrid.setSelNavIndex( $t, this);
 							if($.isFunction( o.searchfunc )) {
 								o.searchfunc.call($t, pSearch);
 							} else {
@@ -1984,6 +1989,7 @@ $.jgrid.extend({
 									break;
 							}
 							if($.isFunction(o.afterRefresh)) {o.afterRefresh.call($t);}
+							$.jgrid.setSelNavIndex( $t, this);
 						}
 						return false;
 					}).hover(onHoverIn, onHoverOut);
@@ -2073,6 +2079,7 @@ $.jgrid.extend({
 				.attr("title",p.title  || "")
 				.click(function(e){
 					if (!$(this).hasClass(disabled)) {
+						$.jgrid.setSelNavIndex( $t, this);
 						if ($.isFunction(p.onClickButton) ) {p.onClickButton.call($t,e);}
 					}
 					return false;
