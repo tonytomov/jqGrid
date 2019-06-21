@@ -448,7 +448,10 @@
 					sv = so[i].split(sep);
 					if(sv.length > 2 ) {
 						sv[1] = $.map(sv,function(n,i){if(i>0) {return n;}}).join(sep);
-					}					
+					}
+					if(op.decodeValue && op.decodeValue===true) {
+						sv[1] = $.jgrid.htmlDecode(sv[1]);
+					}
 					if(msl) {
 						if($.inArray($.trim(sv[1]),scell)>-1) {
 							ret[j] = sv[0];
