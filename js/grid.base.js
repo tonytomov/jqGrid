@@ -3266,7 +3266,7 @@ $.fn.jqGrid = function( pin ) {
 			var sep = "<td class='ui-pg-button "+disabled+"'><span class='ui-separator'></span></td>",
 			pginp = "",
 			pgl="<table class='ui-pg-table ui-common-table ui-paging-pager'><tbody><tr>",
-			str="", pgcnt, lft, cent, rgt, twd, tdw, i,
+			str="", pgcnt, lft, cent, rgt, twd, tdw, i, removebutt,
 			clearVals = function(onpaging, thus){
 				var ret;
 				ret = $(ts).triggerHandler("jqGridPaging", [onpaging, thus]);
@@ -3339,6 +3339,7 @@ $.fn.jqGrid = function( pin ) {
 			$("#testpg").remove();
 			if(twd > 0) {
 				if(pginp !== "") { twd += 50; } //should be param
+				removebutt = twd > $("td#"+pgid+"_"+ts.p.pagerpos,"#"+pgcnt).innerWidth();
 				$("td#"+pgid+"_"+ts.p.pagerpos,"#"+pgcnt).width(twd);
 			}
 			ts.p._nvtd = [];
@@ -3417,6 +3418,11 @@ $.fn.jqGrid = function( pin ) {
 					}
 					return this;
 				});
+			}
+			if(removebutt && ts.p.responsive) {
+				$("#"+po[0]+",#"+po[3]+",#input"+tp).hide();
+				$(".ui-paging-info", "td#"+pgid+"_"+ts.p.recordpos).hide();
+				$(".ui-pg-selbox","td#"+pgid+"_"+ts.p.pagerpos).hide();
 			}
 		},
 		multiSort = function(iCol, obj, sor ) {
