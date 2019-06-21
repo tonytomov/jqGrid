@@ -27,6 +27,7 @@
 		<fileset file="js/grid.jqueryui.js"/>
 		<fileset file="js/grid.pivot.js"/>
 		<fileset file="js/grid.export.js"/>
+		<fileset file="js/grid.aria.js"/>
         </concat>
     </target>
 

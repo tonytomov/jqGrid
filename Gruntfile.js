@@ -21,7 +21,8 @@ var
 		"jquery.fmatter",
 		"jquery.sortable",
 		"grid.utils",
-		"grid.export"
+		"grid.export",
+		"grid.aria"
 	],
 
 	gridFiles = allFiles.map(function( file ) {
