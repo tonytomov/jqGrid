@@ -861,7 +861,7 @@ $.jgrid.extend({
 			base = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].base,
 
 			triggerToolbar = function() {
-				var sdata={}, j=0, v, nm, sopt={},so, ms = false, ssfield = [], 
+				var sdata={}, j=0, v, nm, sopt={},so, ms = false, ssfield = [],
 					bbt =false, sop, ret=[true,"",""], err=false;
 				$.each($t.p.colModel,function(){
 					var $elem = $("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(this.name), (this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
@@ -1310,7 +1310,7 @@ $.jgrid.extend({
 						break;
 					}
 					coli++;
-				}				
+				}
 				var sval  = $.extend({},$t.p.colModel[coli].searchoptions || {}),
 				dval = sval.defaultValue ? sval.defaultValue : "",
 				elem;
@@ -1424,11 +1424,11 @@ $.jgrid.extend({
 			}
 			if (typeof (p.filters) === "string") {
 				if(p.filters.length) {
-					filters = p.filters; 
+					filters = p.filters;
 				// flat filters only
 				} else if( $t.p.postData.hasOwnProperty("filters")) {
-					filters = $t.p.postData.filters; 
-				} 
+					filters = $t.p.postData.filters;
+				}
 				filters = $.jgrid.parse(filters);
 			}
 	        if ($.isPlainObject(filters)) {
@@ -1836,7 +1836,7 @@ $.jgrid.extend({
 			var $t = this, item, sdata="";
 			if( o.field && $t.p.data && $.isArray( $t.p.data )) {
 				var query = $.jgrid.from.call($t, $t.p.data), res, s_cnt,
-				result = query.groupBy( o.field, o.direction, o.stype, o.src_data);
+				result = query.groupBy( o.field, o.direction, o.stype, o.src_date);
 				if(result && result.length) {
 					res =  $("#gsh_"+$t.p.id+"_"+o.field).find("td.ui-search-input > select");
 					var i = result.length;
@@ -1855,7 +1855,7 @@ $.jgrid.extend({
 				}
 			}
 		});
-	}	
+	}
 });
 //module end
 }));
