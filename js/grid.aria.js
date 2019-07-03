@@ -31,7 +31,11 @@ $.extend($.jgrid,{
 	]
 });
 $.jgrid.extend({
-	ariaBodyGrid : function () {
+	ariaBodyGrid : function ( p ) {
+		var o = $.extend({
+			onEnterCell : null
+		}, p || {});
+
 		return this.each(function (){
 			var $t = this,
 			getstyle = $.jgrid.getMethod("getStyleUI"),
@@ -54,13 +58,13 @@ $.jgrid.extend({
 				var col = $t.p.iCol + dirX; // set the default .................
 				var rowCount = $t.rows.length;
 				var isLeftRight = dirX !== 0;
-				
+
 				if (!rowCount) {
 					return false;
 				}
 				var colCount = $t.p.colModel.length;
 				if (isLeftRight) {
-					if (col < 0) {
+					if (col < 0 && row >= 2) {
 						col = colCount - 1;
 						row--;
 					}
@@ -96,14 +100,14 @@ $.jgrid.extend({
 					};
 				} else {
 					return false;
-				}				
+				}
 			}
 			function getNextVisibleCell(dirX, dirY) {
 				var nextCell = getNextCell( dirX, dirY);
 				if (!nextCell) {
 					return false;
 				}
-				
+
 				while ( $($t.rows[nextCell.row].cells[nextCell.col]).is(":hidden") ) {
 					$t.p.iRow = nextCell.row;
 					$t.p.iCol = nextCell.col;
@@ -116,7 +120,7 @@ $.jgrid.extend({
 				if( dirY !== 0 ) {
 					$($t).jqGrid('setSelection', $t.rows[nextCell.row].id, false, null, false);
 				}
-				
+
 				return nextCell;
 			}
 			function movePage ( dir ) {
@@ -157,19 +161,19 @@ $.jgrid.extend({
 			$($t).on('keydown', function(e) {
 				var key = e.which || e.keyCode, nextCell;
 				switch(key) {
-					case (38) : 
+					case (38) :
 						nextCell = getNextVisibleCell(0, -1);
 						focusRow = nextCell.row;
 						focusCol = nextCell.col;
 						e.preventDefault();
 						break;
-					case (40) : 
+					case (40) :
 						nextCell = getNextVisibleCell(0, 1);
 						focusRow = nextCell.row;
 						focusCol = nextCell.col;
 						e.preventDefault();
 						break;
-					case (37) : 
+					case (37) :
 						nextCell = getNextVisibleCell(-1, 0);
 						focusRow = nextCell.row;
 						focusCol = nextCell.col;
@@ -191,7 +195,7 @@ $.jgrid.extend({
 						e.preventDefault();
 						break;
 					case 35 : //END
-						if(e.ctrlKey) { 
+						if(e.ctrlKey) {
 							focusRow = $t.rows.length - 1;
 						} else {
 							focusRow = $t.p.iRow;
@@ -200,7 +204,7 @@ $.jgrid.extend({
 						e.preventDefault();
 						break;
 					case 33 : // PAGEUP
-						
+
 						movePage( -1 );
 						focusCol = $t.p.iCol;
 						focusRow = $t.p.iRow;
@@ -216,35 +220,17 @@ $.jgrid.extend({
 						}
 						e.preventDefault();
 						break;
-							
+					case 13 : //Enter
+						if( $.isFunction( o.onEnterCell )) {
+							o.onEnterCell.call( $t, $t.rows[$t.p.iRow].id ,$t.p.iRow, $t.p.iCol, e);
+							e.preventDefault();
+						}
+						return;
+
 					default:
 						return;
 				}
-				var fe;
-				if (!isNaN($t.p.iRow) && !isNaN($t.p.iCol) && $t.p.iCol >= 0) {
-					fe = hasFocusableChild($t.rows[$t.p.iRow].cells[$t.p.iCol]);
-					if( fe ) {
-						$(fe).attr('tabindex', -1);
-					} else {
-						$($t.rows[$t.p.iRow].cells[$t.p.iCol]).attr('tabindex', -1);
-					}
-				}
-				
-				fe = hasFocusableChild($t.rows[focusRow].cells[focusCol]);
-				if( fe ) {
-					$(fe).attr('tabindex', 0)
-						.addClass(highlight)
-						.focus()
-						.blur( function () {$(this).removeClass(highlight);});
-				}  else {
-					$($t.rows[focusRow].cells[focusCol])
-						.attr('tabindex', 0)
-						.addClass(highlight)
-						.focus()
-						.blur(function(){$(this).removeClass(highlight);	});
-				}
-				$t.p.iRow = focusRow;
-				$t.p.iCol = focusCol;
+				$($t).jqGrid("focusBodyCell", focusRow, focusCol, getstyle, highlight);
 			});
 			$($t).on('jqGridBeforeSelectRow.ariaGridClick',function() {
 				return false;
@@ -253,7 +239,7 @@ $.jgrid.extend({
 				var el = e.target;
 				if($t.p.iRow > 0 && $t.p.iCol >=0) {
 					$($t.rows[$t.p.iRow].cells[$t.p.iCol]).attr("tabindex", -1);
-				} 
+				}
 				if($(el).is("td") || $(el).is("th")) {
 					$t.p.iCol = el.cellIndex;
 				} else {
@@ -268,6 +254,52 @@ $.jgrid.extend({
 			});
 		});
 	},
+	focusBodyCell : function(focusRow, focusCol, _s, _h) {
+		return this.each(function (){
+			var $t = this,
+			getstyle = !_s ? $.jgrid.getMethod("getStyleUI") : _s,
+			highlight = !_h ? getstyle($t.p.styleUI+'.common','highlight', true) : _h,
+			focusableElementsSelector = $.jgrid.focusableElementsList.join(),
+			fe;
+			function hasFocusableChild( el) {
+				return $(focusableElementsSelector, el)[0];
+			}
+			
+			if(focusRow !== undefined && focusCol !== undefined) {
+				if (!isNaN($t.p.iRow) && !isNaN($t.p.iCol) && $t.p.iCol >= 0) {
+					fe = hasFocusableChild($t.rows[$t.p.iRow].cells[$t.p.iCol]);
+					if( fe ) {
+						$(fe).attr('tabindex', -1);
+					} else {
+						$($t.rows[$t.p.iRow].cells[$t.p.iCol]).attr('tabindex', -1);
+					}
+				}
+				
+			} else  {
+				focusRow = $t.p.iRow;
+				focusCol = $t.p.iCol;
+			}
+			focusRow = parseInt(focusRow, 10);
+			focusCol = parseInt(focusCol, 10);
+			if(focusRow > 0 && focusCol >=0) {
+				fe = hasFocusableChild($t.rows[focusRow].cells[focusCol]);
+				if( fe ) {
+					$(fe).attr('tabindex', 0)
+					.addClass(highlight)
+					.focus()
+					.blur( function () { $(this).removeClass(highlight); });
+				}  else {
+					$($t.rows[focusRow].cells[focusCol])
+						.attr('tabindex', 0)
+						.addClass(highlight)
+						.focus()
+						.blur(function () { $(this).removeClass(highlight); });
+			}
+			$t.p.iRow = focusRow;
+			$t.p.iCol = focusCol;				
+			}	
+		});
+	},
 	ariaHeaderGrid : function() {
 		return this.each(function (){
 			var $t = this,
@@ -275,10 +307,10 @@ $.jgrid.extend({
 			highlight = getstyle($t.p.styleUI+'.common','highlight', true),
 			htable = $(".ui-jqgrid-hbox>table:first", "#gbox_"+$t.p.id);
 			$('tr.ui-jqgrid-labels', htable).on("keydown", function(e) {
-				var currindex = $t.p.selHeadInd; 
+				var currindex = $t.p.selHeadInd;
 				var key = e.which || e.keyCode;
 				var len = $t.grid.headers.length;
-				
+
 				switch (key) {
 					case 37: // left
 						if(currindex-1 >= 0) {
@@ -296,7 +328,7 @@ $.jgrid.extend({
 								e.preventDefault();
 							}
 						}
-						
+
 						break;
 					case 39: // right
 						if(currindex+1 < len) {
@@ -327,7 +359,7 @@ $.jgrid.extend({
 				$(this).addClass(highlight).attr("tabindex", "0");
 			}).blur(function(){
 				$(this).removeClass(highlight);
-			});			
+			});
 			$t.p.selHeadInd = $.jgrid.getFirstVisibleCol( $t );
 			$($t.grid.headers[$t.p.selHeadInd].el).attr("tabindex","0");
 		});
@@ -340,19 +372,19 @@ $.jgrid.extend({
 				disabled = "."+getstyle($t.p.styleUI+'.common','disabled', true),
 				cels = $(".ui-pg-button",$t.p.pager),
 				len = cels.length;
-			
+
 			cels.attr("tabindex","-1").focus(function(){
 				$(this).addClass(highlight);
 			}).blur(function(){
 				$(this).removeClass(highlight);
 			});
-			
+
 			$t.p.navIndex = 0;
 			cels.not(disabled).first().attr("tabindex", "0");
-			
+
 			$("table.ui-pager-table tr:first", $t.p.pager).on("keydown", function(e) {
 				var key = e.which || e.keyCode;
-				
+
 				var indexa = $t.p.navIndex;//currindex;
 				switch (key) {
 					case 37: // left
@@ -404,14 +436,15 @@ $.jgrid.extend({
 		var o = $.extend({
 			header : true,
 			body : true,
-			pager : true
+			pager : true,
+			onEnterCell : null
 		}, p || {});
 		return this.each(function(){
 			if( o.header ) {
 				$(this).jqGrid('ariaHeaderGrid');
 			}
 			if( o.body ) {
-				$(this).jqGrid('ariaBodyGrid');
+				$(this).jqGrid('ariaBodyGrid', {onEnterCell : o.onEnterCell});
 			}
 			if( o.pager ) {
 				$(this).jqGrid('ariaPagerGrid');
