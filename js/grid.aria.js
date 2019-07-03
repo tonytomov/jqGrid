@@ -323,7 +323,7 @@ $.jgrid.extend({
 							}
 							if(currindex >= 0) {
 								$($t.grid.headers[currindex].el).focus();
-								//$($t.grid.headers[$t.p.selHeadInd].el).attr("tabindex", "-1");
+								$($t.grid.headers[$t.p.selHeadInd].el).attr("tabindex", "-1");
 								$t.p.selHeadInd = currindex;
 								e.preventDefault();
 							}
@@ -341,7 +341,7 @@ $.jgrid.extend({
 							}
 							if( currindex < len) {
 								$($t.grid.headers[currindex].el).focus();
-								//$($t.grid.headers[$t.p.selHeadInd].el).attr("tabindex", "-1");
+								$($t.grid.headers[$t.p.selHeadInd].el).attr("tabindex", "-1");
 								$t.p.selHeadInd = currindex;
 								e.preventDefault();
 							}
@@ -362,6 +362,19 @@ $.jgrid.extend({
 			});
 			$t.p.selHeadInd = $.jgrid.getFirstVisibleCol( $t );
 			$($t.grid.headers[$t.p.selHeadInd].el).attr("tabindex","0");
+		});
+	},
+	focusHeaderCell( index) {
+		return this.each( function(){
+			var $t = this;
+			if(index === undefined) {
+				index = $t.p.selHeadInd;
+			}
+			if(index >= 0 && index < $t.p.colModel.length) {
+				$($t.grid.headers[$t.p.selHeadInd].el).attr("tabindex", "-1");
+				$($t.grid.headers[index].el).focus();
+				$t.p.selHeadInd = index;
+			}
 		});
 	},
 	ariaPagerGrid : function () {
@@ -430,6 +443,21 @@ $.jgrid.extend({
 						return;
 				}
 			});
+		});
+	},
+	focusPagerCell( index) {
+		return this.each( function(){
+			var $t = this,
+				cels = $(".ui-pg-button",$t.p.pager),
+				len = cels.length;
+			if(index === undefined) {
+				index = $t.p.navIndex;
+			}
+			if(index >= 0 && index < len) {
+				$(cels[$t.p.navIndex]).attr("tabindex","-1");
+				$(cels[index]).attr("tabindex","0").focus();
+				$t.p.navIndex = index;
+			}
 		});
 	},
 	setAriaGrid : function ( p ) {
