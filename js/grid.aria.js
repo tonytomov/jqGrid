@@ -148,10 +148,12 @@ $.jgrid.extend({
 				$("tbody:first>tr:not(.jqgfirstrow)>td:not(:hidden, :has("+focusableElementsSelector+"))", $t).attr("tabindex", -1);
 				$("tbody:first>tr:not(.jqgfirstrow)", $t).removeAttr("tabindex");
 				if($t.p.iRow !== undefined && $t.p.iCol !== undefined) {
+					if($t.rows[$t.p.iRow]) {
 					$($t.rows[$t.p.iRow].cells[$t.p.iCol])
 						.attr('tabindex', 0)
 						.focus( function() { $(this).addClass(highlight);})
 						.blur( function () { $(this).removeClass(highlight);});
+					}
 				}
 			});
 			$t.p.iRow = 1;
