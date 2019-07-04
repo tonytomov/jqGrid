@@ -266,7 +266,7 @@ $.jgrid.extend({
 			function hasFocusableChild( el) {
 				return $(focusableElementsSelector, el)[0];
 			}
-			
+
 			if(focusRow !== undefined && focusCol !== undefined) {
 				if (!isNaN($t.p.iRow) && !isNaN($t.p.iCol) && $t.p.iCol >= 0) {
 					fe = hasFocusableChild($t.rows[$t.p.iRow].cells[$t.p.iCol]);
@@ -276,7 +276,7 @@ $.jgrid.extend({
 						$($t.rows[$t.p.iRow].cells[$t.p.iCol]).attr('tabindex', -1);
 					}
 				}
-				
+
 			} else  {
 				focusRow = $t.p.iRow;
 				focusCol = $t.p.iCol;
@@ -298,8 +298,8 @@ $.jgrid.extend({
 						.blur(function () { $(this).removeClass(highlight); });
 			}
 			$t.p.iRow = focusRow;
-			$t.p.iCol = focusCol;				
-			}	
+			$t.p.iCol = focusCol;
+			}
 		});
 	},
 	resetAriaBody : function() {
@@ -379,7 +379,7 @@ $.jgrid.extend({
 			$($t.grid.headers[$t.p.selHeadInd].el).attr("tabindex","0");
 		});
 	},
-	focusHeaderCell( index) {
+	focusHeaderCell : function( index) {
 		return this.each( function(){
 			var $t = this;
 			if(index === undefined) {
@@ -392,12 +392,12 @@ $.jgrid.extend({
 			}
 		});
 	},
-	resetAriaHeader() {
+	resetAriaHeader : function() {
 		return this.each(function(){
 			var htable = $(".ui-jqgrid-hbox>table:first", "#gbox_" + this.p.id);
 			$('tr.ui-jqgrid-labels', htable).off("keydown");
 			$('tr.ui-jqgrid-labels>th:not(:hidden)', htable).removeAttr("tabindex").off("focus blur");
-		});		
+		});
 	},
 	ariaPagerGrid : function () {
 		return this.each( function(){
@@ -467,7 +467,7 @@ $.jgrid.extend({
 			});
 		});
 	},
-	focusPagerCell( index) {
+	focusPagerCell : function( index) {
 		return this.each( function(){
 			var $t = this,
 				cels = $(".ui-pg-button",$t.p.pager),
@@ -482,11 +482,11 @@ $.jgrid.extend({
 			}
 		});
 	},
-	resetAriaPager() {
+	resetAriaPager : function() {
 		return this.each(function(){
 			$(".ui-pg-button",this.p.pager).removeAttr("tabindex").off("focus");;
 			$("table.ui-pager-table tr:first", this.p.pager).off("keydown");
-		});		
+		});
 	},
 	setAriaGrid : function ( p ) {
 		var o = $.extend({
