@@ -1827,31 +1827,49 @@ $.jgrid.extend({
 		o = $.extend(true,{
 			field : "",
 			direction : "asc",
-			stype : "text",
 			src_date : "Y-m-d",
 			allValues : "All",
-			count_item : true
+			count_item : true,
+			create_value : true
 		}, o || {} );
 		return this.each(function() {
 			var $t = this, item, sdata="";
 			if( o.field && $t.p.data && $.isArray( $t.p.data )) {
-				var query = $.jgrid.from.call($t, $t.p.data), res, s_cnt,
-				result = query.groupBy( o.field, o.direction, o.stype, o.src_date);
+				var query = $.jgrid.from.call($t, $t.p.data), res, s_cnt, tmp = [], i, cm, len,
+				result = query.groupBy( o.field, o.direction, "text", o.src_date);
 				if(result && result.length) {
 					res =  $("#gsh_"+$t.p.id+"_"+o.field).find("td.ui-search-input > select");
-					var i = result.length;
+					i = result.length;
 					while(i--) {
 						item = result[i];
 						s_cnt = o.count_item ? " (" +item.items.length+")" : "";
 						sdata += "<option value='"+item.unique+"'>"+ item.unique + s_cnt+"</option>";
+						tmp.push(item.unique+":"+item.unique + s_cnt);
 					}
 					if(i>0 &&  o.allValues) {
 						sdata = "<option value=''>"+ o.allValues +"</option>" + sdata;
+						tmp.push(":" + o.allValues);
 					}
 					res.append(sdata);
 					res.on('change',function(){
 						$t.triggerToolbar();
 					});
+					if( o.create_value ) {
+						for(i=0, len = $t.p.colModel.length; i < len; i++ ) {
+							if($t.p.colModel[i].name === o.field) { 
+								cm = $t.p.colModel[i];
+								break;
+							}
+						}
+						if(cm) {
+							if(cm.searchoptions) {
+								$.extend(cm.searchoptions, {value: tmp.join(";")});
+							} else {
+								cm.searchoptions = {};
+								cm.searchoptions.value = tmp.join(";");
+							}
+						}
+					}
 				}
 			}
 		});
