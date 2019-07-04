@@ -1835,20 +1835,28 @@ $.jgrid.extend({
 		return this.each(function() {
 			var $t = this, item, sdata="";
 			if( o.field && $t.p.data && $.isArray( $t.p.data )) {
-				var query = $.jgrid.from.call($t, $t.p.data), res, s_cnt, tmp = [], i, cm, len,
-				result = query.groupBy( o.field, o.direction, "text", o.src_date);
+				var query, res, s_cnt, tmp = [], cm, len,
+				result, i;
+
+				try {
+					query = $.jgrid.from.call($t, $t.p.data);
+					result = query.groupBy( o.field, o.direction, "text", o.src_date);
+					i = result.length;
+				} catch(e) {
+
+				}
 				if(result && result.length) {
 					res =  $("#gsh_"+$t.p.id+"_"+o.field).find("td.ui-search-input > select");
 					i = result.length;
+					if(o.allValues) {
+						sdata = "<option value=''>"+ o.allValues +"</option>";
+						tmp.push(":" + o.allValues);
+					}
 					while(i--) {
 						item = result[i];
 						s_cnt = o.count_item ? " (" +item.items.length+")" : "";
 						sdata += "<option value='"+item.unique+"'>"+ item.unique + s_cnt+"</option>";
 						tmp.push(item.unique+":"+item.unique + s_cnt);
-					}
-					if(i>0 &&  o.allValues) {
-						sdata = "<option value=''>"+ o.allValues +"</option>" + sdata;
-						tmp.push(":" + o.allValues);
 					}
 					res.append(sdata);
 					res.on('change',function(){
