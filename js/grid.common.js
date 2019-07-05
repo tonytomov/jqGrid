@@ -892,7 +892,27 @@ $.extend($.jgrid,{
 			}
 		});
 		return source;
-	}
+	},
+	setSelNavIndex : function ($t,  selelem ) {
+		var cels = $(".ui-pg-button",$t.p.pager);
+		$.each(cels, function(i,n) {
+			if(selelem===n) {
+				$t.p.navIndex = i;
+				return false;
+			}
+		});
+		$(selelem).attr("tabindex","0");		
+	},
+	getFirstVisibleCol : function( $t ) {
+		var ret = -1;
+		for(var i = 0;i<$t.p.colModel.length;i++) {
+			if($t.p.colModel[i].hidden !== true ) {
+				ret = i;
+				break;
+			}
+		}
+		return ret;
+	}	
 });
 //module end
 }));
