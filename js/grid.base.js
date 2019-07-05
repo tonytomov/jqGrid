@@ -2074,7 +2074,7 @@ $.fn.jqGrid = function( pin ) {
 			} else {
 				v = cellVal(cellval);
 			}
-			if(ts.p.autoResizing && cm.autosize) {
+			if(cm.autosize) {
 				if(!cm._maxsize) {
 					cm._maxsize = 0;
 				}
@@ -4395,7 +4395,7 @@ $.fn.jqGrid = function( pin ) {
 			if (clicks === 2) {
 				// double click event handler
 				try {
-					if(ts.p.colModel[ci].autosize === true  && ts.p.autoResizing) {
+					if(ts.p.colModel[ci].autosize === true) {
 						cmax = $(ts).jqGrid('getCol', ci, false, 'maxwidth');
 						$(ts).jqGrid('resizeColumn', ci, cmax);
 					}
