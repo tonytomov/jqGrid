@@ -1507,6 +1507,13 @@ $.jgrid.extend({
 			}
 			try {
 				var pdf = pdfMake.createPdf( doc );
+				pdf.getDataUrl(function(url) { 
+					if( $.isFunction( o.loadIndicator )) {
+						o.loadIndicator('hide');
+					} else if(o.loadIndicator) {
+						$($t).jqGrid("progressBar", {method:"hide", loadtype : $t.p.loadui });
+					}
+				});
 				if ( o.download === 'open' ) {
 					pdf.open();
 				} else {
@@ -1514,14 +1521,9 @@ $.jgrid.extend({
 						$.jgrid.saveAs( buffer, o.fileName, {type: o.mimetype } );
 					} );
 				}
+
 			} catch(e) {
 				throw e;
-			} finally {
-				if( $.isFunction( o.loadIndicator )) {
-					o.loadIndicator('hide');
-				} else if(o.loadIndicator) {
-					$($t).jqGrid("progressBar", {method:"hide", loadtype : $t.p.loadui });
-				}
 			}
 		});
 	},
