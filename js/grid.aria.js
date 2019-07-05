@@ -415,7 +415,9 @@ $.jgrid.extend({
 			});
 
 			$t.p.navIndex = 0;
+			setTimeout( function() { // make another decision here
 			cels.not(disabled).first().attr("tabindex", "0");
+			}, 100);
 
 			$("table.ui-pager-table tr:first", $t.p.pager).on("keydown", function(e) {
 				var key = e.which || e.keyCode;
