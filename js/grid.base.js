@@ -2869,7 +2869,7 @@ $.fn.jqGrid = function( pin ) {
 								try {
 									fld = cmtypes[rule.field];
 									if(fld.stype === 'date') {
-										if(fld.srcfmt && fld.newfmt && fld.srcfmt !== fld.newfmt ) {
+										if(typeof fld.srcfmt === "string" && typeof fld.newfmt === "string" ) {
 											rule.data = $.jgrid.parseDate.call(ts, fld.newfmt, rule.data, fld.srcfmt);
 										}
 									}
