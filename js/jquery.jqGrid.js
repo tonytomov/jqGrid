@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.4.0 - 2019-07-09
+* @license Guriddo jqGrid JS - v5.4.0 - 2019-08-28
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2864,7 +2864,7 @@ $.fn.jqGrid = function( pin ) {
 								try {
 									fld = cmtypes[rule.field];
 									if(fld.stype === 'date') {
-										if(fld.srcfmt && fld.newfmt && fld.srcfmt !== fld.newfmt ) {
+										if(typeof fld.srcfmt === "string" && typeof fld.newfmt === "string" ) {
 											rule.data = $.jgrid.parseDate.call(ts, fld.newfmt, rule.data, fld.srcfmt);
 										}
 									}
@@ -9372,7 +9372,7 @@ $.jgrid.extend({
 			}
 			$(".clearsearchclass",tr).click(function() {
 				var ptr = $(this).parents("tr:first"),
-				colname = $("td.ui-search-oper", ptr).attr('columname'), coli=0, len = $t.p.colModel.lenght;
+				colname = $("td.ui-search-oper", ptr).attr('columname'), coli=0, len = $t.p.colModel.length;
 				while(coli<len) {
 					if($t.p.colModel[coli].name === colname) {
 						break;
