@@ -2978,7 +2978,7 @@ $.fn.jqGrid = function( pin ) {
 		},
 		updatepager = function(rn, dnd) {
 			var cp, last, base, from,to,tot,fmt, pgboxes = "", sppg,
-			pgid = ts.p.pager ? $.jgrid.jqID(ts.p.pager.substr(1)) : "",
+			pgid = ts.p.pager ? ts.p.pager.substring(1) : "",
 			tspg = pgid ? "_"+pgid : "",
 			tspg_t = ts.p.toppager ? "_"+ts.p.toppager.substr(1) : "";
 			base = parseInt(ts.p.page,10)-1;
@@ -3011,9 +3011,9 @@ $.fn.jqGrid = function( pin ) {
 				last = intNum(ts.p.lastpage);
 				$(".selbox",pgboxes)[ this.p.useProp ? 'prop' : 'attr' ]("disabled",false);
 				if(ts.p.pginput===true) {
-					$("#input"+tspg).html($.jgrid.template($.jgrid.getRegional(ts, "defaults.pgtext", ts.p.pgtext) || "","<input "+getstyle(stylemodule, 'pgInput', false, 'ui-pg-input') + " type='text' size='2' maxlength='7' value='0' role='textbox'/>","<span id='sp_1_"+$.jgrid.jqID(pgid)+"'></span>"));
+					$("#input"+tspg).html($.jgrid.template($.jgrid.getRegional(ts, "defaults.pgtext", ts.p.pgtext) || "","<input "+getstyle(stylemodule, 'pgInput', false, 'ui-pg-input') + " type='text' size='2' maxlength='7' value='0' role='textbox'/>","<span id='sp_1_"+pgid+"'></span>"));
 					if(ts.p.toppager) {
-						$("#input_t"+tspg_t).html($.jgrid.template($.jgrid.getRegional(ts, "defaults.pgtext", ts.p.pgtext) || "","<input "+getstyle(stylemodule, 'pgInput', false, 'ui-pg-input') + " type='text' size='2' maxlength='7' value='0' role='textbox'/>","<span id='sp_1_"+$.jgrid.jqID(pgid)+"_toppager'></span>"));
+						$("#input_t"+tspg_t).html($.jgrid.template($.jgrid.getRegional(ts, "defaults.pgtext", ts.p.pgtext) || "","<input "+getstyle(stylemodule, 'pgInput', false, 'ui-pg-input') + " type='text' size='2' maxlength='7' value='0' role='textbox'/>","<span id='sp_1_"+pgid+"_toppager'></span>"));
 					}
 					$('.ui-pg-input',pgboxes).val(ts.p.page);
 					sppg = ts.p.toppager ? '#sp_1'+tspg+",#sp_1"+tspg+"_toppager" : '#sp_1'+tspg;
@@ -3285,7 +3285,7 @@ $.fn.jqGrid = function( pin ) {
 				ts.p.savedRow = [];
 				return true;
 			};
-			pgid = pgid.substr(1);
+			//pgid = pgid.substr(1);
 			tp += "_" + pgid;
 			pgcnt = "pg_"+pgid;
 			lft = pgid+"_left"; cent = pgid+"_center"; rgt = pgid+"_right";
@@ -3331,6 +3331,8 @@ $.fn.jqGrid = function( pin ) {
 				pgl += str;
 			}
 			pgl += "</tr></tbody></table>";
+			pgid = $.jgrid.jqID(pgid);
+			pgcnt = $.jgrid.jqID(pgcnt);
 			if(ts.p.viewrecords===true) {
 				$("td#"+pgid+"_"+ts.p.recordpos,"#"+pgcnt).append("<div dir='"+dir+"' style='text-align:"+ts.p.recordpos+"' class='ui-paging-info'></div>");
 			}
@@ -3352,8 +3354,8 @@ $.fn.jqGrid = function( pin ) {
 				if(!clearVals('records', this)) { return false; }
 				ts.p.page = Math.round(ts.p.rowNum*(ts.p.page-1)/this.value-0.5)+1;
 				ts.p.rowNum = this.value;
-				if(ts.p.pager) { $('.ui-pg-selbox',ts.p.pager).val(this.value); }
-				if(ts.p.toppager) { $('.ui-pg-selbox',ts.p.toppager).val(this.value); }
+				if(ts.p.pager) { $('.ui-pg-selbox', ts.p.pager ).val(this.value); }
+				if(ts.p.toppager) { $('.ui-pg-selbox', ts.p.toppager).val(this.value); }
 				populate();
 				return false;
 			});
@@ -3422,7 +3424,7 @@ $.fn.jqGrid = function( pin ) {
 				});
 			}
 			if(removebutt && ts.p.responsive) {
-				$("#"+po[0]+",#"+po[3]+",#input"+tp).hide();
+				$("#"+po[0]+",#"+po[3]+",#input"+$.jgrid.jqID(tp)).hide();
 				$(".ui-paging-info", "td#"+pgid+"_"+ts.p.recordpos).hide();
 				$(".ui-pg-selbox","td#"+pgid+"_"+ts.p.pagerpos).hide();
 			}
@@ -3949,7 +3951,7 @@ $.fn.jqGrid = function( pin ) {
 				menu_offset += $(grid.uDiv).outerHeight();
 			}
 			if( ts.p.toppager) {
-				menu_offset += $("#"+ts.p.id+"_toppager").outerHeight();
+				menu_offset += $("#"+ $.jgrid.jqID(ts.p.id) +"_toppager").outerHeight();
 			}
 			//$("#sopt_menu").remove();
 			
@@ -4498,11 +4500,14 @@ $.fn.jqGrid = function( pin ) {
 		if(hg) { $(grid.hDiv).hide(); }
 		if(ts.p.pager){
 			// TBD -- escape ts.p.pager here?
-			if(typeof ts.p.pager === "string") {if(ts.p.pager.substr(0,1) !== "#") { ts.p.pager = "#"+ts.p.pager;} }
-			else { ts.p.pager = "#"+ $(ts.p.pager).attr("id");}
-			$(ts.p.pager).css({width: (grid.width - bstw) +"px"}).addClass(getstyle(stylemodule,'pagerBox', true,'ui-jqgrid-pager')).appendTo(eg);
-			if(hg) {$(ts.p.pager).hide();}
+			if(typeof ts.p.pager === "string") {if(ts.p.pager.substr(0,1) === "#") { ts.p.pager = ts.p.pager.substring(1);} }
+			else { ts.p.pager = $(ts.p.pager).attr("id");}
+			$("#"+$.jgrid.jqID(ts.p.pager)).css({width: (grid.width - bstw) +"px"}).addClass(getstyle(stylemodule,'pagerBox', true,'ui-jqgrid-pager')).appendTo(eg);
+			if(hg) {
+				$("#"+$.jgrid.jqID(ts.p.pager)).hide();
+			}
 			setPager(ts.p.pager,'');
+			ts.p.pager = "#" + $.jgrid.jqID(ts.p.pager);
 		}
 		if( ts.p.cellEdit === false && ts.p.hoverrows === true) {
 			$(ts).on({
@@ -4788,9 +4793,9 @@ $.fn.jqGrid = function( pin ) {
 		if(ts.p.toppager) {
 			ts.p.toppager = $.jgrid.jqID(ts.p.id)+"_toppager";
 			grid.topDiv = $("<div id='"+ts.p.toppager+"'></div>")[0];
-			ts.p.toppager = "#"+ts.p.toppager;
 			$(grid.topDiv).addClass(getstyle(stylemodule, 'toppagerBox', true, 'ui-jqgrid-toppager')).width(grid.width - bstw).insertBefore(grid.hDiv);
 			setPager(ts.p.toppager,'_t');
+			ts.p.toppager = "#"+ts.p.toppager;
 		}
 		if(ts.p.footerrow) {
 			grid.sDiv = $("<div class='ui-jqgrid-sdiv'></div>")[0];
@@ -11763,6 +11768,10 @@ $.jgrid.extend({
 				pgid, elemids;
 				if(i===0) {
 					pgid = elem;
+					if(pgid.indexOf("#") === 0 ) {
+						pgid = pgid.substring(1);
+						pgid = "#"+ $.jgrid.jqID( pgid );
+					}
 					elemids = $t.p.id;
 					if(pgid === $t.p.toppager) {
 						elemids += "_top";
@@ -11988,8 +11997,11 @@ $.jgrid.extend({
 			internal : false
 		}, p ||{});
 		return this.each(function() {
-			if( !this.grid)  {return;}
-			if( typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+$.jgrid.jqID(elem);}
+			if(!this.grid || typeof elem !== 'string') {return;}
+			if( elem.indexOf("#") === 0 ) {
+				elem = elem.substring(1);
+			}
+			elem = "#" +  $.jgrid.jqID(elem);
 			var findnav = $(".navtable",elem)[0], $t = this,
 			//getstyle = $.jgrid.getMethod("getStyleUI"),
 			disabled = $.jgrid.styleUI[currstyle].common.disabled,

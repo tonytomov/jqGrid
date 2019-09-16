@@ -1819,6 +1819,10 @@ $.jgrid.extend({
 				pgid, elemids;
 				if(i===0) {
 					pgid = elem;
+					if(pgid.indexOf("#") === 0 ) {
+						pgid = pgid.substring(1);
+						pgid = "#"+ $.jgrid.jqID( pgid );
+					}
 					elemids = $t.p.id;
 					if(pgid === $t.p.toppager) {
 						elemids += "_top";
@@ -2044,8 +2048,11 @@ $.jgrid.extend({
 			internal : false
 		}, p ||{});
 		return this.each(function() {
-			if( !this.grid)  {return;}
-			if( typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+$.jgrid.jqID(elem);}
+			if(!this.grid || typeof elem !== 'string') {return;}
+			if( elem.indexOf("#") === 0 ) {
+				elem = elem.substring(1);
+			}
+			elem = "#" +  $.jgrid.jqID(elem);
 			var findnav = $(".navtable",elem)[0], $t = this,
 			//getstyle = $.jgrid.getMethod("getStyleUI"),
 			disabled = $.jgrid.styleUI[currstyle].common.disabled,
