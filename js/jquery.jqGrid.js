@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.4.0 - 2019-08-28
+* @license Guriddo jqGrid JS - v5.4.0 - 2019-09-16
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3056,6 +3056,13 @@ $.fn.jqGrid = function( pin ) {
 				$(">td.jqgrid-rownum",ts.rows).each(function(i){
 					$(this).html(base+1+i);
 				});
+			}
+			if(ts.p.reccount === 0 ) {
+				var classes = getstyle(stylemodule, 'rowBox', true, 'jqgrow ui-row-'+ ts.p.direction),
+				tstr = constructTr("norecs", false, classes, {}, "");
+				tstr += "<td style='text-align:center' colspan='"+grid.headers.length+"'>"+$.jgrid.getRegional(ts, "defaults.emptyrecords", ts.p.emptyrecords )+"</td>";
+				tstr += "</tr>";
+				$("table:first", grid.bDiv).append(tstr);
 			}
 			if(dnd && ts.p.jqgdnd) { $(ts).jqGrid('gridDnD','updateDnD');}
 			$(ts).triggerHandler("jqGridGridComplete");
