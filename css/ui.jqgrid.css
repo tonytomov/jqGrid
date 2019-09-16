@@ -48,7 +48,7 @@
 .ui-jqgrid .ui-single-sort-asc {margin-top:0;height:18px;}
 .ui-jqgrid .ui-single-sort-desc {margin-top:-1px;height:18px;}
 .ui-jqgrid .ui-jqgrid-sortable {cursor:pointer;height:14px}
-.ui-jqgrid tr.ui-search-toolbar th { }
+.ui-jqgrid tr.ui-search-toolbar th {border-bottom: 0px none}
 .ui-jqgrid .ui-search-table td.ui-search-clear { width:25px;}
 .ui-jqgrid tr.ui-search-toolbar td > input { padding-right: 0px; width: 95%;}
 .ui-jqgrid tr.ui-search-toolbar select {}
