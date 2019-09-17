@@ -430,6 +430,7 @@ div.tablediv > .table-bordered {
 .ui-jqgrid .ui-jqgrid-btable .ui-sgcollapsed {
 	height: 100%;
 	padding: 0 0;
+	padding-right: 0px !important
 }
 
 .ui-jqgrid .ui-sgcollapsed a.ui-sghref span {
