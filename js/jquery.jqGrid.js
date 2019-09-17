@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.4.0 - 2019-09-16
+* @license Guriddo jqGrid JS - v5.4.0 - 2019-09-17
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1724,6 +1724,7 @@ $.fn.jqGrid = function( pin ) {
 			styleUI : "jQueryUI",
 			iconSet : "Iconic",
 			responsive : false,
+			forcePgButtons : false,
 			restoreCellonFail : true,
 			editNextRowCell : false,
 			colFilters : {},
@@ -3423,7 +3424,7 @@ $.fn.jqGrid = function( pin ) {
 					return this;
 				});
 			}
-			if(removebutt && ts.p.responsive) {
+			if(removebutt && ts.p.responsive && !ts.p.forcePgButtons) {
 				$("#"+po[0]+",#"+po[3]+",#input"+$.jgrid.jqID(tp)).hide();
 				$(".ui-paging-info", "td#"+pgid+"_"+ts.p.recordpos).hide();
 				$(".ui-pg-selbox","td#"+pgid+"_"+ts.p.pagerpos).hide();
@@ -3992,10 +3993,12 @@ $.fn.jqGrid = function( pin ) {
 				menuData.push( str );
 			}
 			if(op.freeze) {
-				isfreeze = (cm.frozen && ts.p.frozenColumns) ? false : true;
-				str = '<li class="ui-menu-item divider" role="separator"></li>';
-				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" data-value="freeze"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_freeze+'"></span></td><td class="menu_text">'+(isfreeze ? (texts.freeze + " "+ label) : texts.unfreeze)+'</td></tr></table></a></li>';
-				menuData.push( str );
+				if( !(ts.p.subGrid || ts.p.treeGrid || ts.p.cellEdit) ) {
+					isfreeze = (cm.frozen && ts.p.frozenColumns) ? false : true;
+					str = '<li class="ui-menu-item divider" role="separator"></li>';
+					str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" data-value="freeze"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_freeze+'"></span></td><td class="menu_text">'+(isfreeze ? (texts.freeze + " "+ label) : texts.unfreeze)+'</td></tr></table></a></li>';
+					menuData.push( str );
+				}
 			}
 			for( var key in ts.p.colMenuCustom) {
 				if(ts.p.colMenuCustom.hasOwnProperty(key)) {
