@@ -1729,6 +1729,7 @@ $.fn.jqGrid = function( pin ) {
 			styleUI : "jQueryUI",
 			iconSet : "Iconic",
 			responsive : false,
+			forcePgButtons : false,
 			restoreCellonFail : true,
 			editNextRowCell : false,
 			colFilters : {},
@@ -3428,7 +3429,7 @@ $.fn.jqGrid = function( pin ) {
 					return this;
 				});
 			}
-			if(removebutt && ts.p.responsive) {
+			if(removebutt && ts.p.responsive && !ts.p.forcePgButtons) {
 				$("#"+po[0]+",#"+po[3]+",#input"+$.jgrid.jqID(tp)).hide();
 				$(".ui-paging-info", "td#"+pgid+"_"+ts.p.recordpos).hide();
 				$(".ui-pg-selbox","td#"+pgid+"_"+ts.p.pagerpos).hide();
