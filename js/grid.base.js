@@ -3997,10 +3997,12 @@ $.fn.jqGrid = function( pin ) {
 				menuData.push( str );
 			}
 			if(op.freeze) {
-				isfreeze = (cm.frozen && ts.p.frozenColumns) ? false : true;
-				str = '<li class="ui-menu-item divider" role="separator"></li>';
-				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" data-value="freeze"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_freeze+'"></span></td><td class="menu_text">'+(isfreeze ? (texts.freeze + " "+ label) : texts.unfreeze)+'</td></tr></table></a></li>';
-				menuData.push( str );
+				if( !(ts.p.subGrid || ts.p.treeGrid || ts.p.cellEdit) ) {
+					isfreeze = (cm.frozen && ts.p.frozenColumns) ? false : true;
+					str = '<li class="ui-menu-item divider" role="separator"></li>';
+					str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" data-value="freeze"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_freeze+'"></span></td><td class="menu_text">'+(isfreeze ? (texts.freeze + " "+ label) : texts.unfreeze)+'</td></tr></table></a></li>';
+					menuData.push( str );
+				}
 			}
 			for( var key in ts.p.colMenuCustom) {
 				if(ts.p.colMenuCustom.hasOwnProperty(key)) {
