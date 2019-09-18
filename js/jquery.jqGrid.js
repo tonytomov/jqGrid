@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.4.0 - 2019-09-17
+* @license Guriddo jqGrid JS - v5.4.0 - 2019-09-18
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -4106,6 +4106,16 @@ $.fn.jqGrid = function( pin ) {
 		}
 		ts.p.sortorder = ts.p.sortorder.toLowerCase();
 		$.jgrid.cell_width = $.jgrid.cellWidth();
+		// calculate cellLayout
+		var bstw2 = $("<table style='visibility:hidden'><tr class='jqgrow'><td>1</td></tr></table)").addClass(getstyle(stylemodule,"rowTable", true, 'ui-jqgrid-btable ui-common-table'));
+		$(eg).append(bstw2);
+		ts.p.cellLayout = parseInt( $("td", bstw2).css('padding-left'), 10) + parseInt($("td", bstw2).css('padding-right'), 10) + 1;
+		if(ts.p.cellLayout <=0 ) {
+			ts.p.cellLayout = 5;
+		}
+		$(bstw2).remove();
+		bstw2 = null;
+		
 		if(ts.p.grouping===true) {
 			ts.p.scroll = false;
 			ts.p.rownumbers = false;
@@ -4310,6 +4320,7 @@ $.fn.jqGrid = function( pin ) {
 		}
 		var tfoot = "", trhead="", bstw = ts.p.styleUI.search('Bootstrap') !== -1 && !isNaN(ts.p.height) ? 2 : 0;
 		setColWidth();
+		bstw2 = ts.p.styleUI.search('Bootstrap') !== -1;
 		$(eg).css("width",grid.width+"px").append("<div class='ui-jqgrid-resize-mark' id='rs_m"+ts.p.id+"'>&#160;</div>");
 		if(ts.p.scrollPopUp) {
 			$(eg).append("<div "+ getstyle(stylemodule, 'scrollBox', false, 'loading ui-scroll-popup')+" id='scroll_g"+ts.p.id+"'></div>");
@@ -4404,7 +4415,7 @@ $.fn.jqGrid = function( pin ) {
 				try {
 					if(ts.p.colModel[ci].autosize === true) {
 						cmax = $(ts).jqGrid('getCol', ci, false, 'maxwidth');
-						$(ts).jqGrid('resizeColumn', ci, cmax);
+						$(ts).jqGrid('resizeColumn', ci, cmax + ( bstw2 ? ts.p.cellLayout : 0 ) );
 					}
 				} catch(e) {
 				} finally {
@@ -4905,7 +4916,7 @@ $.fn.jqGrid = function( pin ) {
 				$(ts.p.colModel).each(function(i){
 					if (this.autosize) {
 						if(this._maxsize && this._maxsize > 0) {
-							$(ts).jqGrid('resizeColumn', i, this._maxsize);
+							$(ts).jqGrid('resizeColumn', i, this._maxsize + ( bstw2 ? ts.p.cellLayout : 0 ));
 							this._maxsize = 0;
 						}
 					}
