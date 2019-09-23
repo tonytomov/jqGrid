@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.4.0 - 2019-09-18
+* @license Guriddo jqGrid JS - v5.4.0 - 2019-09-23
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3682,26 +3682,41 @@ $.fn.jqGrid = function( pin ) {
 			}
 			return ci;
 		},
-		buildColItems = function (top, left, parent) {
-			var cm = ts.p.colModel, len = cm.length, i, cols=[], disp,
+		buildColItems = function (top, left, parent, op) {
+			var cm = ts.p.colModel, len = cm.length, i, cols=[], disp, all_visible = true, cols_nm=[],
 			texts = $.jgrid.getRegional(ts, "colmenu"),
 			str1 = '<ul id="col_menu" class="ui-search-menu  ui-col-menu modal-content" role="menu" tabindex="0" style="left:'+left+'px;">';
+			if( op.columns_selectAll ) {
+				str1 += '<li class="ui-menu-item disabled" role="presentation" draggable="false"><a class="g-menu-item" tabindex="0" role="menuitem" ><table class="ui-common-table" ><tr><td class="menu_icon" title="'+texts.reorder+'"><span class="'+iconbase+' '+colmenustyle.icon_move+' notclick" style="visibility:hidden"></span></td><td class="menu_icon"><input id="chk_all" class="'+colmenustyle.input_checkbox+'" type="checkbox" name="check_all"></td><td class="menu_text">Check/Uncheck</td></tr></table></a></li>';
+			}
+
 			for(i=0;i<len;i++) {
 				//if(!cm[i].hidedlg) { // column chooser
-				var hid = !cm[i].hidden ? "checked" : "", nm = cm[i].name, lb = ts.p.colNames[i];
+				var hid = !cm[i].hidden ? "checked" : "", 
+					nm = cm[i].name, 
+					lb = ts.p.colNames[i];
 				disp = (nm === 'cb' || nm==='subgrid' || nm==='rn' || cm[i].hidedlg) ? "style='display:none'" :"";
-				str1 += '<li '+disp+' class="ui-menu-item" role="presentation" draggable="true"><a class="g-menu-item" tabindex="0" role="menuitem" ><table class="ui-common-table" ><tr><td class="menu_icon" title="'+texts.reorder+'"><span class="'+iconbase+' '+colmenustyle.icon_move+' notclick"></span></td><td class="menu_icon"><input class="'+colmenustyle.input_checkbox+'" type="checkbox" name="'+nm+'" '+hid+'></td><td class="menu_text">'+lb+'</td></tr></table></a></li>';
+				str1 += '<li '+disp+' class="ui-menu-item" role="presentation" draggable="true"><a class="g-menu-item" tabindex="0" role="menuitem" ><table class="ui-common-table" ><tr><td class="menu_icon" title="'+texts.reorder+'"><span class="'+iconbase+' '+colmenustyle.icon_move+' notclick"></span></td><td class="menu_icon"><input class="'+colmenustyle.input_checkbox+' chk_selected" type="checkbox" name="'+nm+'" '+hid+'></td><td class="menu_text">'+lb+'</td></tr></table></a></li>';
 				cols.push(i);
+				if( disp === "") {
+					cols_nm.push(nm);
+			}
+				if(all_visible && hid==="") {
+					all_visible = false;
+				}
 			}
 			str1 += "</ul>";
 			$(parent).append(str1);
 			$("#col_menu").addClass("ui-menu " + colmenustyle.menu_widget);
+
+			$("#chk_all", "#col_menu").prop("checked",all_visible);
 			if(!$.jgrid.isElementInViewport($("#col_menu")[0])){
 				$("#col_menu").css("left", - parseInt($("#column_menu").innerWidth(),10) +"px");
 			}
 			if($.fn.html5sortable()) {
 				$("#col_menu").html5sortable({
 					handle: 'span',
+					items: ':not(.disabled)',
 					forcePlaceholderSize: true }
 				).on('sortupdate', function(e, ui) {
 					cols.splice( ui.startindex, 1);
@@ -3731,6 +3746,16 @@ $.fn.jqGrid = function( pin ) {
 				}
 
 				col_name = $("input", this).attr('name');
+
+				if(col_name === "check_all") {
+					if(!checked) {
+						$("input", "#col_menu" ).prop("checked",false);
+						$(ts).jqGrid('hideCol', cols_nm);
+					} else {
+						$("input", "#col_menu" ).prop("checked",true);
+						$(ts).jqGrid('showCol', cols_nm);
+					}
+				} else {
 				$(ts).triggerHandler("jqGridColMenuColumnDone", [cols, col_name, checked]);
 				if($.isFunction(ts.p.colMenuColumnDone)) {
 					ts.p.colMenuColumnDone.call( ts, cols, col_name, checked);
@@ -3741,6 +3766,10 @@ $.fn.jqGrid = function( pin ) {
 				} else {
 					$(ts).jqGrid('showCol', col_name );
 					$(this).parent().attr("draggable","true");
+				}
+					if(op.columns_selectAll) {
+						$("#chk_all", "#col_menu").prop("checked",  $('.chk_selected:checked', "#col_menu").length === $('.chk_selected', "#col_menu").length );
+					}
 				}
 			}).hover(function(){
 				$(this).addClass(hover);
@@ -4037,7 +4066,7 @@ $.fn.jqGrid = function( pin ) {
 					if($(this).attr("data-value") === 'columns') {
 						left1 = $(this).parent().width()+8,
 						top1 = $(this).parent().position().top - 5;
-						buildColItems(top1, left1, $(this).parent());
+						buildColItems(top1, left1, $(this).parent(), op);
 					}
 					if($(this).attr("data-value") === 'filtering') {
 						left1 = $(this).parent().width()+8,
