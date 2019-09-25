@@ -3439,7 +3439,7 @@ $.fn.jqGrid = function( pin ) {
 			var cm = ts.p.colModel,
 					selTh = ts.p.frozenColumns ?  obj : ts.grid.headers[iCol].el, so="", sn;
 			$("span.ui-grid-ico-sort",selTh).addClass(disabled);
-			$(selTh).attr("aria-selected","false");
+			$(selTh).attr({"aria-selected":"false","aria-sort" : "none"});
 			sn = (cm[iCol].index || cm[iCol].name);
 			if ( typeof sor == "undefined" )
 			{
@@ -3463,7 +3463,7 @@ $.fn.jqGrid = function( pin ) {
 			if( so ) {
 				$("span.s-ico",selTh).show();
 				$("span.ui-icon-"+so,selTh).removeClass(disabled);
-				$(selTh).attr("aria-selected","true");
+				$(selTh).attr({"aria-selected":"true","aria-sort" : so+"ending"});
 			} else {
 				if(!ts.p.viewsortcols[0]) {
 					$("span.s-ico",selTh).hide();
@@ -3537,17 +3537,17 @@ $.fn.jqGrid = function( pin ) {
 				if(usehide) {
 					$(tmpicon).css("display","none");
 				}
-				$(previousSelectedTh).attr("aria-selected","false");
+				$(previousSelectedTh).attr({"aria-selected":"false","aria-sort" : "none"});
 				if(ts.p.frozenColumns) {
 					tmpicon = ts.grid.fhDiv.find("span.ui-grid-ico-sort");
 					tmpicon.addClass(disabled);
 					if(usehide) { tmpicon.css("display","none"); }
-					ts.grid.fhDiv.find("th").attr("aria-selected","false");
+					ts.grid.fhDiv.find("th").attr({"aria-selected":"false","aria-sort" : "none"});
 				}
 				tmpicon = $(newSelectedTh).find("span.ui-icon-"+ts.p.sortorder);
 				tmpicon.removeClass(disabled);
 				if(usehide) { tmpicon.css("display",""); }
-				$(newSelectedTh).attr("aria-selected","true");
+				$(newSelectedTh).attr({"aria-selected":"true","aria-sort" : ts.p.sortorder + "ending"});
 				if(!ts.p.viewsortcols[0]) {
 					if(ts.p.lastsort !== idxcol) {
 						if(ts.p.frozenColumns){
