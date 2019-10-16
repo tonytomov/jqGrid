@@ -177,12 +177,12 @@ $.jgrid.extend({
 				},$t.p.treeReader);
 			} else if($t.p.treeGridModel === 'adjacency') {
 				$t.p.treeReader = $.extend({
-						level_field: "level",
-						parent_id_field: "parent",
-						leaf_field: "isLeaf",
-						expanded_field: "expanded",
-						loaded: "loaded",
-						icon_field: "icon"
+					level_field: "level",
+					parent_id_field: "parent",
+					leaf_field: "isLeaf",
+					expanded_field: "expanded",
+					loaded: "loaded",
+					icon_field: "icon"
 				},$t.p.treeReader );
 			}
 			for ( key in $t.p.colModel){
