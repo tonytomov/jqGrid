@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.4.0 - 2019-09-23
+* @license Guriddo jqGrid JS - v5.4.0 - 2019-10-21
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3434,7 +3434,7 @@ $.fn.jqGrid = function( pin ) {
 			var cm = ts.p.colModel,
 					selTh = ts.p.frozenColumns ?  obj : ts.grid.headers[iCol].el, so="", sn;
 			$("span.ui-grid-ico-sort",selTh).addClass(disabled);
-			$(selTh).attr("aria-selected","false");
+			$(selTh).attr({"aria-selected":"false","aria-sort" : "none"});
 			sn = (cm[iCol].index || cm[iCol].name);
 			if ( typeof sor == "undefined" )
 			{
@@ -3458,7 +3458,7 @@ $.fn.jqGrid = function( pin ) {
 			if( so ) {
 				$("span.s-ico",selTh).show();
 				$("span.ui-icon-"+so,selTh).removeClass(disabled);
-				$(selTh).attr("aria-selected","true");
+				$(selTh).attr({"aria-selected":"true","aria-sort" : so+"ending"});
 			} else {
 				if(!ts.p.viewsortcols[0]) {
 					$("span.s-ico",selTh).hide();
@@ -3532,17 +3532,17 @@ $.fn.jqGrid = function( pin ) {
 				if(usehide) {
 					$(tmpicon).css("display","none");
 				}
-				$(previousSelectedTh).attr("aria-selected","false");
+				$(previousSelectedTh).attr({"aria-selected":"false","aria-sort" : "none"});
 				if(ts.p.frozenColumns) {
 					tmpicon = ts.grid.fhDiv.find("span.ui-grid-ico-sort");
 					tmpicon.addClass(disabled);
 					if(usehide) { tmpicon.css("display","none"); }
-					ts.grid.fhDiv.find("th").attr("aria-selected","false");
+					ts.grid.fhDiv.find("th").attr({"aria-selected":"false","aria-sort" : "none"});
 				}
 				tmpicon = $(newSelectedTh).find("span.ui-icon-"+ts.p.sortorder);
 				tmpicon.removeClass(disabled);
 				if(usehide) { tmpicon.css("display",""); }
-				$(newSelectedTh).attr("aria-selected","true");
+				$(newSelectedTh).attr({"aria-selected":"true","aria-sort" : ts.p.sortorder + "ending"});
 				if(!ts.p.viewsortcols[0]) {
 					if(ts.p.lastsort !== idxcol) {
 						if(ts.p.frozenColumns){
@@ -15993,12 +15993,12 @@ $.jgrid.extend({
 				},$t.p.treeReader);
 			} else if($t.p.treeGridModel === 'adjacency') {
 				$t.p.treeReader = $.extend({
-						level_field: "level",
-						parent_id_field: "parent",
-						leaf_field: "isLeaf",
-						expanded_field: "expanded",
-						loaded: "loaded",
-						icon_field: "icon"
+					level_field: "level",
+					parent_id_field: "parent",
+					leaf_field: "isLeaf",
+					expanded_field: "expanded",
+					loaded: "loaded",
+					icon_field: "icon"
 				},$t.p.treeReader );
 			}
 			for ( key in $t.p.colModel){
@@ -16010,6 +16010,9 @@ $.jgrid.extend({
 					}
 					i++;
 					//
+					if( nm === $t.p.treeReader.level_field || nm === $t.p.treeReader.left_field || nm === $t.p.treeReader.right_field) {
+						$t.p.colModel[key].sorttype = "integer";
+					}
 					for(tkey in $t.p.treeReader) {
 						if($t.p.treeReader.hasOwnProperty(tkey) && $t.p.treeReader[tkey] === nm) {
 							dupcols.push(nm);
@@ -16485,34 +16488,48 @@ $.jgrid.extend({
 			rt = $(this).jqGrid("getRootNodes", $t.p.search);
 			// Sorting roots
 			query = $.jgrid.from.call(this, rt);
+			// sort tree by node type
+			if( Boolean($t.p.sortTreeByNodeType)) {
+				var ord = ($t.p.sortTreeNodeOrder && $t.p.sortTreeNodeOrder.toLowerCase() === 'desc') ? 'd' : 'a'; 
+				query.orderBy($t.p.treeReader.leaf_field, ord, st, datefmt);
+			}
 			query.orderBy(sortname, newDir, st, datefmt);
 			roots = query.select();
-
 			// Sorting children
 			for (i = 0, len = roots.length; i < len; i++) {
 				rec = roots[i];
 				records.push(rec);
 				$(this).jqGrid("collectChildrenSortTree",records, rec, sortname, newDir, st, datefmt);
 			}
+			var ids = $(this).jqGrid("getDataIDs"), j=1;
 			$.each(records, function(index) {
 				var id  = $.jgrid.getAccessor(this, $t.p.localReader.id);
-				$('#'+$.jgrid.jqID($t.p.id)+ ' tbody tr:eq('+index+')').after($('tr#'+$.jgrid.jqID(id), $t.grid.bDiv));
+				if($.inArray(id, ids) !== -1) {
+					$('#'+$.jgrid.jqID($t.p.id)+ ' tbody tr:eq('+(j)+')').after($('#'+$.jgrid.jqID($t.p.id)+' tbody tr#'+$.jgrid.jqID(id)));
+					j++;
+				}
 			});
 			query = null;roots=null;records=null;
 		});
 	},
 	searchTree : function ( recs ) {
-		var i= recs.length || 0, ancestors=[], lid, roots=[], result=[],tid, alen, rlen, j, k;
+		var n = recs.length || 0, ancestors=[], lid, roots=[], result=[],tid, alen, rlen, j, k, i;
 		this.each(function(){
 			if(!this.grid || !this.p.treeGrid) {
 				return;
 			}
-			if(i) {
+			if(n) {
 				lid = this.p.localReader.id;
-				while( i-- ) { // reverse 
+				//while( i-- ) { // reverse 
+				for( i=0; i<n; i++ ) {
 					ancestors = $(this).jqGrid('getNodeAncestors', recs[i], true, true);
 					//add the searched item
-					ancestors.push(recs[i]);
+					if( Boolean(this.p.FullTreeSearchResult) ) {
+						var fnode = $(this).jqGrid('getFullTreeNode', recs[i], true);
+						ancestors = ancestors.concat(fnode);
+					} else {
+						ancestors.push(recs[i]);
+					}
 					tid = ancestors[0][lid]; 
 					if($.inArray(tid, roots ) !== -1) { // ignore repeated, but add missing
 						for( j = 0, alen = ancestors.length; j < alen; j++) {
