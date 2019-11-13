@@ -549,7 +549,7 @@ $.jgrid.extend({
 							for(ik = 0; ik < cm.length; ik++) {
 								if(cm[ik]._expcol) {
 									arr[k] = $.jgrid.formatCellCsv(
-										$.jgrid.formatCell( to[cm[ik].name], ik, to, cm[ik], $t, 'csv' ) , p);
+										$.jgrid.formatCell( $.jgrid.getAccessor(to, cm[ik].name), ik, to, cm[ik], $t, 'csv' ) , p);
 									k++;
 								}
 							}
@@ -621,7 +621,7 @@ $.jgrid.extend({
 					k =0;
 					for(i = 0; i < cmlen; i++) {
 						if(cm[i]._expcol) {
-							tmp[k] = $.jgrid.formatCellCsv( $.jgrid.formatCell( row[cm[i].name], i, row, cm[i], $t, 'csv' ), p );
+							tmp[k] = $.jgrid.formatCellCsv( $.jgrid.formatCell( $.jgrid.getAccessor(row, cm[i].name) , i, row, cm[i], $t, 'csv' ), p );
 							k++;
 						}
 					}
@@ -846,7 +846,7 @@ $.jgrid.extend({
 					var cellId = $.jgrid.excelCellPos(i) + '' + currentRow,
 					cell,
 					match,
-					v= ($.isArray(row) && header) ? $t.p.colNames[data.map[i]] : row[  data.header[i] ];
+					v= ($.isArray(row) && header) ? $t.p.colNames[data.map[i]] : $.jgrid.getAccessor( row,  data.header[i] );
 					if ( v == null ) {
 						v = '';
 					}
@@ -1422,7 +1422,7 @@ $.jgrid.extend({
 					row = data[i];
 					for( key = 0;key < def.length; key++ ) {
 						obj	= {
-							text: row[def[key]] == null ? '' : $.jgrid.formatCell( row[def[key]] + '', map[k], data[i], cm[map[k]], $t, 'pdf'),
+							text: row[def[key]] == null ? '' : $.jgrid.formatCell( $.jgrid.getAccessor(row, def[key]) + '', map[k], data[i], cm[map[k]], $t, 'pdf'),
 							alignment : align[def[key]],
 							style : 'tableBody'
 						};
@@ -1438,7 +1438,7 @@ $.jgrid.extend({
 				test=[];
 				for( key =0; key< def.length; key++) {
 					obj  =  {
-						text : $.jgrid.stripHtml(fdata[def[key]]),
+						text : $.jgrid.stripHtml( $.jgrid.getAccessor(fdata, def[key]) ),
 						style : 'tableFooter',
 						alignment : align[def[key]]
 					};
@@ -1621,7 +1621,7 @@ $.jgrid.extend({
 					}
 					f= data.header[i];
 					if (d.hasOwnProperty(f) ) {
-						str += '<'+tag+stl+'>'+ (frm ? $.jgrid.formatCell( d[f], data.map[i], d, cm[data.map[i]], $t, 'html') : d[f])+'</'+tag+'>';
+						str += '<'+tag+stl+'>'+ (frm ? $.jgrid.formatCell( $.jgrid.getAccessor( d, f ), data.map[i], d, cm[data.map[i]], $t, 'html') : d[f])+'</'+tag+'>';
 					}
 					if(colsp) {
 						break;
