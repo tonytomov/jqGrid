@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.4.0 - 2019-11-13
+* @license Guriddo jqGrid JS - v5.4.0 - 2019-11-14
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2903,10 +2903,9 @@ $.fn.jqGrid = function( pin ) {
 						}
 					} catch (se){}
 				}
-			} else {
-				if(ts.p.treeGrid && ts.p.treeGridModel === "nested") {
-					query.orderBy(ts.p.treeReader.left_field, 'asc', 'integer', '', null);
-				}
+			}
+			if(ts.p.treeGrid && ts.p.treeGridModel === "nested") {
+				query.orderBy(ts.p.treeReader.left_field, 'asc', 'integer', '', null);
 			}
 			if(ts.p.treeGrid && ts.p.treeGridModel === "adjacency") {
 				lengrp =0;
@@ -5292,7 +5291,7 @@ $.jgrid.extend({
 		var nm, success=true, title;
 		this.each(function(){
 			if(!this.grid) {return false;}
-			var t = this, vl, ind, cp = typeof cssp, lcdata={};
+			var t = this, vl, ind, cp = typeof cssp, lcdata={}, prp, ohtml, tcell;
 			ind = $(this).jqGrid('getGridRowById', rowid);
 			if(!ind) { return false; }
 			if( data ) {
@@ -5303,11 +5302,14 @@ $.jgrid.extend({
 						if( dval !== undefined) {
 							lcdata[nm] = this.formatter && typeof this.formatter === 'string' && this.formatter === 'date' ? $.unformat.date.call(t,dval,this) : dval;
 							vl = t.formatter( rowid, lcdata[nm], i, data, 'edit');
-							title = this.title ? {"title":$.jgrid.stripHtml(vl)} : {};
-							if(t.p.treeGrid===true && nm === t.p.ExpandColumn) {
-								$("td[role='gridcell']:eq("+i+") > span:first",ind).html(vl).attr(title);
-							} else {
-								$("td[role='gridcell']:eq("+i+")",ind).html(vl).attr(title);
+							
+							prp = t.formatCol( i, ind.rowIndex, vl, data, rowid, data);
+							
+							ohtml = $("<td role=\"gridcell\" "+prp+">"+vl+"</td>")[0];
+							tcell = $("td[role='gridcell']:eq("+i+")",ind);
+							$(tcell).after(ohtml).remove();
+							if(t.p.treeGrid && t.p.ExpandColumn === nm ) {
+								$(t).jqGrid("setTreeNode", ind.rowIndex, ind.rowIndex+1);
 							}
 						}
 					});
@@ -5831,7 +5833,7 @@ $.jgrid.extend({
 	},
 	setCell : function(rowid,colname,nData,cssp,attrp, forceupd) {
 		return this.each(function(){
-			var $t = this, pos =-1,v, title;
+			var $t = this, pos =-1, v, prp, ohtml;
 			if(!$t.grid) {return;}
 			if(isNaN(colname)) {
 				$($t.p.colModel).each(function(i){
@@ -5860,11 +5862,12 @@ $.jgrid.extend({
 								}
 							}
 							v = $t.formatter(rowid, nData, pos, rawdat, 'edit');
-							title = $t.p.colModel[pos].title ? {"title":$.jgrid.stripHtml(v)} : {};
-							if($t.p.treeGrid && $(".tree-wrap",$(tcell)).length>0) {
-								$("span",$(tcell)).html(v).attr(title);
-							} else {
-								$(tcell).html(v).attr(title);
+							prp = $t.formatCol( pos, ind.rowIndex, v, rawdat, rowid, rawdat);
+							
+							ohtml = $("<td role=\"gridcell\" "+prp+">"+v+"</td>")[0];
+							$(tcell).after(ohtml).remove();
+							if($t.p.treeGrid && $t.p.ExpandColumn === colname ) {
+								$($t).jqGrid("setTreeNode", ind.rowIndex, ind.rowIndex+1);
 							}
 							if($t.p.datatype === "local") {
 								var cm = $t.p.colModel[pos], index;
@@ -5876,11 +5879,13 @@ $.jgrid.extend({
 							}
 						}
 						if(typeof cssp === 'string'){
-							$(tcell).addClass(cssp);
+							$(ohtml).addClass(cssp);
 						} else if(cssp) {
-							$(tcell).css(cssp);
+							$(ohtml).css(cssp);
 						}
-						if(typeof attrp === 'object') {$(tcell).attr(attrp);}
+						if(typeof attrp === 'object') {
+							$(ohtml).attr(attrp);
+						}
 					}
 				}
 			}
@@ -9662,7 +9667,41 @@ $.jgrid.extend({
 					bQ ="<a id='"+fid+"_query' class='fm-button " + common.button + " fm-button-icon-left'><span class='" + common.icon_base + " " +classes.icon_query + "'></span>Query</a>";
 				}
 				var user_buttons = $.jgrid.buildButtons( p.buttons, bQ+ bS, common);
+
+				// groupheaders names
+				var groupH = null;
+				if( $t.p.groupHeader && $t.p.groupHeader.length > 0 ) {
+					var htable = $("table.ui-jqgrid-htable", $t.grid.hDiv), 
+					secRow = htable.find(".jqg-second-row-header"),
+					gh_len = $t.p.groupHeader.length;
+					// use the last set one
+					if(secRow[0] !== undefined) {
+						groupH = $t.p.groupHeader[gh_len-1];
+					}
+				}
+
+				var inColumnHeader = function (text, columnHeaders) {
+					var length = columnHeaders.length, i;
+					for (i = 0; i < length; i++) {
+						if (columnHeaders[i].startColumnName === text) {
+							return i;
+						}
+					}
+					return -1;
+				};				
 				if(!p.columns.length) {
+					if(groupH !== null) {
+						for(var ij=0;ij<columns.length; ij++){
+							var iCol = inColumnHeader( columns[ij].name, groupH.groupHeaders);
+							if(iCol>=0) {
+								columns[ij].label = groupH.groupHeaders[iCol].titleText + "::" + $t.p.colNames[ij];
+								for(var jj= 1; jj<= groupH.groupHeaders[iCol].numberOfColumns-1; jj++) {
+									columns[ij+jj].label = groupH.groupHeaders[iCol].titleText + "::"+$t.p.colNames[ij+jj];
+								}
+								ij = ij+groupH.groupHeaders[iCol].numberOfColumns-1;
+							}
+						}
+					}
 					$.each(columns, function(i,n){
 						if(!n.label) {
 							n.label = $t.p.colNames[i];
