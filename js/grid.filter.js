@@ -1539,7 +1539,41 @@ $.jgrid.extend({
 					bQ ="<a id='"+fid+"_query' class='fm-button " + common.button + " fm-button-icon-left'><span class='" + common.icon_base + " " +classes.icon_query + "'></span>Query</a>";
 				}
 				var user_buttons = $.jgrid.buildButtons( p.buttons, bQ+ bS, common);
+
+				// groupheaders names
+				var groupH = null;
+				if( $t.p.groupHeader && $t.p.groupHeader.length > 0 ) {
+					var htable = $("table.ui-jqgrid-htable", $t.grid.hDiv), 
+					secRow = htable.find(".jqg-second-row-header"),
+					gh_len = $t.p.groupHeader.length;
+					// use the last set one
+					if(secRow[0] !== undefined) {
+						groupH = $t.p.groupHeader[gh_len-1];
+					}
+				}
+
+				var inColumnHeader = function (text, columnHeaders) {
+					var length = columnHeaders.length, i;
+					for (i = 0; i < length; i++) {
+						if (columnHeaders[i].startColumnName === text) {
+							return i;
+						}
+					}
+					return -1;
+				};				
 				if(!p.columns.length) {
+					if(groupH !== null) {
+						for(var ij=0;ij<columns.length; ij++){
+							var iCol = inColumnHeader( columns[ij].name, groupH.groupHeaders);
+							if(iCol>=0) {
+								columns[ij].label = groupH.groupHeaders[iCol].titleText + "::" + $t.p.colNames[ij];
+								for(var jj= 1; jj<= groupH.groupHeaders[iCol].numberOfColumns-1; jj++) {
+									columns[ij+jj].label = groupH.groupHeaders[iCol].titleText + "::"+$t.p.colNames[ij+jj];
+								}
+								ij = ij+groupH.groupHeaders[iCol].numberOfColumns-1;
+							}
+						}
+					}
 					$.each(columns, function(i,n){
 						if(!n.label) {
 							n.label = $t.p.colNames[i];
