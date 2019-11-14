@@ -2908,10 +2908,9 @@ $.fn.jqGrid = function( pin ) {
 						}
 					} catch (se){}
 				}
-			} else {
-				if(ts.p.treeGrid && ts.p.treeGridModel === "nested") {
-					query.orderBy(ts.p.treeReader.left_field, 'asc', 'integer', '', null);
-				}
+			}
+			if(ts.p.treeGrid && ts.p.treeGridModel === "nested") {
+				query.orderBy(ts.p.treeReader.left_field, 'asc', 'integer', '', null);
 			}
 			if(ts.p.treeGrid && ts.p.treeGridModel === "adjacency") {
 				lengrp =0;
