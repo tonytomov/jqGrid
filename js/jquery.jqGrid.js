@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.4.0 - 2019-11-14
+* @license Guriddo jqGrid JS - v5.4.0 - 2019-11-19
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2198,11 +2198,7 @@ $.fn.jqGrid = function( pin ) {
 		refreshIndex = function() {
 			var datalen = ts.p.data.length, idname, i, val;
 
-			if(ts.p.keyName === false || ts.p.loadonce === true) {
-				idname = ts.p.localReader.id;
-			} else {
-				idname = ts.p.keyName;
-			}
+			idname =  ts.p.keyName !== false ? ts.p.keyName : idname = ts.p.localReader.id;
 			ts.p._index = [];
 			for(i =0;i < datalen; i++) {
 				val = $.jgrid.getAccessor(ts.p.data[i],idname);
@@ -5287,14 +5283,22 @@ $.jgrid.extend({
 		});
 		return success;
 	},
-	setRowData : function(rowid, data, cssp) {
-		var nm, success=true, title;
+	setRowData : function(rowid, data, cssp, usegetrow) {
+		var nm, success=true;
 		this.each(function(){
 			if(!this.grid) {return false;}
-			var t = this, vl, ind, cp = typeof cssp, lcdata={}, prp, ohtml, tcell;
+			var t = this, vl, ind, lcdata={}, prp, ohtml, tcell, jsondat;
 			ind = $(this).jqGrid('getGridRowById', rowid);
-			if(!ind) { return false; }
+			if(!ind) { 
+				return false; 
+			}
+			if(usegetrow === true) {
+				jsondat = $(t).jqGrid("getRowData", rowid, (t.p.datatype === 'local'));
+			}
 			if( data ) {
+				if(usegetrow) {
+					data = $.extend( jsondat, data);
+				}
 				try {
 					$(this.p.colModel).each(function(i){
 						nm = this.name;
@@ -5333,7 +5337,11 @@ $.jgrid.extend({
 				}
 			}
 			if(success) {
-				if(cp === 'string') {$(ind).addClass(cssp);} else if(cssp !== null && cp === 'object') {$(ind).css(cssp);}
+				if(typeof cssp === 'string') {
+					$(ind).addClass(cssp);
+				} else if(cssp !== null && typeof cssp === 'object') {
+					$(ind).css(cssp);
+				}
 				$(t).triggerHandler("jqGridAfterGridComplete");
 			}
 		});
@@ -5833,7 +5841,7 @@ $.jgrid.extend({
 	},
 	setCell : function(rowid,colname,nData,cssp,attrp, forceupd) {
 		return this.each(function(){
-			var $t = this, pos =-1, v, prp, ohtml;
+			var $t = this, pos =-1, v, prp, ohtml, ind;
 			if(!$t.grid) {return;}
 			if(isNaN(colname)) {
 				$($t.p.colModel).each(function(i){
@@ -5841,26 +5849,20 @@ $.jgrid.extend({
 						pos = i;return false;
 					}
 				});
-			} else {pos = parseInt(colname,10);}
+			} else {
+				pos = parseInt(colname,10);
+			}
 			if(pos>=0) {
-				var ind = $($t).jqGrid('getGridRowById', rowid);
+				ind = $($t).jqGrid('getGridRowById', rowid);
 				if (ind){
-					var tcell, cl=0, rawdat=[];
+					var tcell, cl=0, rawdat={}, nm;
 					try {
 						tcell = ind.cells[pos];
 					} catch(e){}
 					if(tcell) {
 						if(nData !== "" || forceupd === true ) {
-							if($t.p.datatype === 'local') {
-								rawdat = $($t).jqGrid('getLocalRow', rowid);
-							} else if(ind.cells !== undefined) {
-								while(cl<ind.cells.length) {
-									// slow down speed
-									v = $.unformat.call($t,$(ind.cells[cl]),{rowId:ind.id, colModel:$t.p.colModel[cl]},cl);
-									rawdat.push(v);
-									cl++;
-								}
-							}
+							rawdat = $($t).jqGrid("getRowData", rowid, ($t.p.datatype === 'local'));
+							rawdat[$t.p.colModel[pos].name] = nData;
 							v = $t.formatter(rowid, nData, pos, rawdat, 'edit');
 							prp = $t.formatCol( pos, ind.rowIndex, v, rawdat, rowid, rawdat);
 							
