@@ -548,6 +548,7 @@ $.jgrid.extend({
 					userDataOnFooter: footerrow,
 					colModel: pivotGrid.colModel,
 					viewrecords: true,
+					formatFooterData : pivotOpt.colTotals === true ? true : false,
 					sortname: pivotOpt.xDimension[0].dataName // ?????
 				}, pivotGrid.groupOptions, gridOpt || {}));
 				var gHead = pivotGrid.groupHeaders;
