@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.4.0 - 2019-11-26
+* @license Guriddo jqGrid JS - v5.4.0 - 2020-01-14
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5543,8 +5543,13 @@ $.jgrid.extend({
 			if( typeof colname === 'string') {colname=[colname];}
 			show = show !== "none" ? "" : "none";
 			var sw = show === "" ? true :false,
+			gHead = null,
 			gh = $t.p.groupHeader && ($.isArray($t.p.groupHeader) || $.isFunction($t.p.groupHeader) );
-			if(gh) { $($t).jqGrid('destroyGroupHeader', false); }
+			if(gh) { 
+				$($t).jqGrid('destroyGroupHeader', false);
+				gHead = $.extend([],$t.p.groupHeader);
+				$t.p.groupHeader = null;
+			}
 			$(this.p.colModel).each(function(i) {
 				if ($.inArray(this.name,colname) !== -1 && this.hidden === sw) {
 					if($t.p.frozenColumns === true && this.frozen === true) {
@@ -5575,9 +5580,7 @@ $.jgrid.extend({
 				if($t.p.shrinkToFit === true && !isNaN($t.p.height)) { $t.p.tblwidth += parseInt($t.p.scrollOffset,10);}
 				$($t).jqGrid("setGridWidth",$t.p.shrinkToFit === true ? $t.p.tblwidth : $t.p.width );
 			}
-			if( gh )  {
-				var gHead = $.extend([],$t.p.groupHeader);
-				$t.p.groupHeader = null;
+			if( gh && gHead)  {
 				for(var k =0; k < gHead.length; k++) {
 					$($t).jqGrid('setGroupHeaders', gHead[k]);
 				}
