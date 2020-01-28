@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.4.0 - 2020-01-14
+* @license Guriddo jqGrid JS - v5.4.0 - 2020-01-28
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
