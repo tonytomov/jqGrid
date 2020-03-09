@@ -56,6 +56,7 @@
 .ui-jqgrid .ui-i-desc {margin-top:0;margin-left:12px;height:18px;}
 .ui-jqgrid .ui-single-sort-asc {margin-top:-1px;height:18px;}
 .ui-jqgrid .ui-single-sort-desc {margin-top:0;height:18px;}
+.ui-jqgrid .ui-icon-left .s-ico {margin-right: 16px;}
 .ui-jqgrid .ui-jqgrid-sortable {cursor:pointer;height:14px}
 .ui-jqgrid tr.ui-search-toolbar th { border-bottom: 0px none}
 .ui-jqgrid .ui-search-table td.ui-search-clear { width:25px;}

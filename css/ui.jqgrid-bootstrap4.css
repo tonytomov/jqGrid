@@ -158,6 +158,12 @@
 	font-size: inherit;
 	padding: 0;
 }
+.ui-jqgrid .ui-th-column > .ui-th-div  {
+	padding-left: 15px;
+}
+.ui-jqgrid .ui-icon-left .ui-grid-ico-sort {
+	margin-left: -14px;
+}
 
 /* Body */ 
 .ui-jqgrid .table-bordered,

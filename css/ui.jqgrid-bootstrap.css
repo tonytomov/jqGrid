@@ -144,6 +144,14 @@
 .ui-jqgrid tr.ui-search-toolbar td > input { }
 .ui-jqgrid tr.ui-search-toolbar select {}
 
+.ui-jqgrid .ui-th-column > .ui-th-div  {
+	padding-left: 14px;
+}
+.ui-jqgrid .ui-icon-left .ui-grid-ico-sort {
+	margin-left: -14px;
+}
+
+
 /* Body */ 
 .ui-jqgrid .table-bordered,
 .ui-jqgrid .table-bordered td,
