@@ -16,7 +16,16 @@
 }
 .ui-jqgrid .ui-common-table {border-width: 0px; border-style: none; border-spacing: 0px; padding: 0;}
 /* caption*/
-.ui-jqgrid .ui-jqgrid-titlebar {height:19px; padding: .3em .2em .2em .3em; position: relative; font-size: 12px; border-left: 0 none;border-right: 0 none; border-top: 0 none;}
+.ui-jqgrid .ui-jqgrid-titlebar {
+	height:19px; 
+	padding: .3em .2em .2em .3em; 
+	position: relative; 
+	font-size: 12px; 
+	border-left: 0 none;
+	border-right: 0 none; 
+	border-top: 0 none;
+	box-sizing:content-box;
+}
 .ui-jqgrid .ui-jqgrid-caption {text-align: left;}
 .ui-jqgrid .ui-jqgrid-title {
 	padding: .2em .1em .1em;
@@ -45,10 +54,10 @@
 .ui-jqgrid .ui-icon-desc {margin-top:3px;margin-left:-1px;height:12px;}
 .ui-jqgrid .ui-i-asc {margin-top:0;height:18px;}
 .ui-jqgrid .ui-i-desc {margin-top:0;margin-left:12px;height:18px;}
-.ui-jqgrid .ui-single-sort-asc {margin-top:0;height:18px;}
-.ui-jqgrid .ui-single-sort-desc {margin-top:-1px;height:18px;}
+.ui-jqgrid .ui-single-sort-asc {margin-top:-1px;height:18px;}
+.ui-jqgrid .ui-single-sort-desc {margin-top:0;height:18px;}
 .ui-jqgrid .ui-jqgrid-sortable {cursor:pointer;height:14px}
-.ui-jqgrid tr.ui-search-toolbar th {border-bottom: 0px none}
+.ui-jqgrid tr.ui-search-toolbar th { border-bottom: 0px none}
 .ui-jqgrid .ui-search-table td.ui-search-clear { width:25px;}
 .ui-jqgrid tr.ui-search-toolbar td > input { padding-right: 0px; width: 95%;}
 .ui-jqgrid tr.ui-search-toolbar select {}
