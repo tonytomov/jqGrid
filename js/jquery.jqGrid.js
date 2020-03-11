@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.4.0 - 2020-03-10
+* @license Guriddo jqGrid JS - v5.4.0 - 2020-03-11
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2138,8 +2138,9 @@ $.fn.jqGrid = function( pin ) {
 					this.grid.bDiv.scrollTop = 0;
 				}
 			}
-			if(locdata === true && this.p.treeGrid && !this.p.loadonce ) {
-				this.p.data = []; this.p._index = {};
+			if(locdata === true ) { //&& this.p.treeGrid && !this.p.loadonce ) {
+				this.p.data = []; 
+				this.p._index = {};
 			}
 		},
 		normalizeData = function() {
@@ -2312,7 +2313,7 @@ $.fn.jqGrid = function( pin ) {
 			ts.p.reccount = 0;
 			if($.isXMLDoc(xml)) {
 				if(ts.p.treeANode===-1 && !ts.p.scroll) {
-					emptyRows.call(ts, false, true);
+					emptyRows.call(ts, false, false);
 					rcnt=1;
 				} else { rcnt = rcnt > 1 ? rcnt :1; }
 			} else { return; }
@@ -2510,7 +2511,7 @@ $.fn.jqGrid = function( pin ) {
 			var startReq = new Date();
 			if(data) {
 				if(ts.p.treeANode === -1 && !ts.p.scroll) {
-					emptyRows.call(ts, false, true);
+					emptyRows.call(ts, false, false);
 					rcnt=1;
 				} else { rcnt = rcnt > 1 ? rcnt :1; }
 			} else { return; }
@@ -4151,7 +4152,11 @@ $.fn.jqGrid = function( pin ) {
 		}
 		if(this.p.treeGrid === true) {
 			try { $(this).jqGrid("setTreeGrid");} catch (_) {}
-			if(ts.p.datatype !== "local") { ts.p.localReader = {id: "_id_"};	}
+			if(ts.p.datatype !== "local") { 
+				ts.p.localReader = { id: "_id_" };
+			} else if(ts.p.keyName !== false) {
+				ts.p.localReader = { id: ts.p.keyName };
+			}
 		}
 		if(this.p.subGrid) {
 			try { $(ts).jqGrid("setSubGrid");} catch (s){}
