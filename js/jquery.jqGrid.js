@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.4.0 - 2020-01-14
+* @license Guriddo jqGrid JS - v5.4.0 - 2020-03-10
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5817,29 +5817,42 @@ $.jgrid.extend({
 			}
 		});
 	},
-	setSortIcon : function(colname, position) {
+	setSortIcon : function(position, colname) {
 		return this.each(function(){
-			var $t = this, pos=-1;
+			var $t = this, pos=-1, len=1,
+			nm, thecol, htmlcol, ico;
 			if(!$t.grid) {return;}
 			if(colname != null) {
 				if(isNaN(colname)) {
 					$($t.p.colModel).each(function(i){
 						if (this.name === colname) {
-							pos = i;return false;
+							pos = i;
+							return false;
 						}
 					});
 				} else {
 					pos = parseInt(colname,10);
 				}
 			} else {
-				return;
+				len = $t.p.colNames.length;
 			}
+			for(var i =0; i<len; i++) {
 			if(pos>=0) {
-				var thecol = $("tr.ui-jqgrid-labels th:eq("+pos+")",$t.grid.hDiv);
+					i = pos;
+				}
+				
+				nm = $t.p.colModel[i].name;
+				if(nm === 'cb' || nm==='subgrid' || nm==='rn' ) {
+					continue;
+				}
+				thecol = $("tr.ui-jqgrid-labels th:eq("+i+")",$t.grid.hDiv);
+				htmlcol = $t.p.colNames[i];
+				ico = thecol.find(".s-ico");
+
 				if(position === 'left') {
-					thecol.find(".s-ico").css("float", "left");
-				} else {
-					thecol.find(".s-ico").css("float", "none");
+					thecol.find("div.ui-th-div:first").empty().addClass("ui-icon-left").append(ico).append(htmlcol);				
+				} else if(position === 'right') {
+					thecol.find("div.ui-th-div:first").empty().removeClass("ui-icon-left").append(htmlcol).append(ico);
 				}
 			}
 		});
