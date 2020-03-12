@@ -344,6 +344,7 @@ $.jgrid.extend({
 						tmp[n] = $.jgrid.htmlDecode(v);
 					});
 				}
+				tmp = $.isFunction($t.p.serializeRowData) ? $t.p.serializeRowData.call($t, tmp) : tmp;
 				var k, resp = $($t).jqGrid("setRowData",rowid,tmp);
 				$(ind).attr("editable","0");
 				for(k=0;k<$t.p.savedRow.length;k++) {
