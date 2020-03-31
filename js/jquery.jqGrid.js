@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.4.0 - 2020-03-11
+* @license Guriddo jqGrid JS - v5.4.0 - 2020-03-31
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -14018,6 +14018,7 @@ $.jgrid.extend({
 						tmp[n] = $.jgrid.htmlDecode(v);
 					});
 				}
+				tmp = $.isFunction($t.p.serializeRowData) ? $t.p.serializeRowData.call($t, tmp) : tmp;
 				var k, resp = $($t).jqGrid("setRowData",rowid,tmp);
 				$(ind).attr("editable","0");
 				for(k=0;k<$t.p.savedRow.length;k++) {
@@ -18639,6 +18640,15 @@ $.jgrid.extend({
 							children: [	$.jgrid.makeNode( rels, 'v', { text: v } ) ]
 						});
 			}
+			function _makeCellFunction ( p, v ) {
+				return $.jgrid.makeNode(
+						rels,
+						'c',
+						{
+							attr: p,
+							children: [	$.jgrid.makeNode( rels, 'f', { text: v } ) ]
+						});
+			}
 			function _makeCellString ( cellId, text ) {
 				return $.jgrid.makeNode(
 						rels,
@@ -18653,6 +18663,19 @@ $.jgrid.extend({
 								})
 							}
 						} );
+			}
+			function linkParse(strLinkHTML) {
+				var oDiv, oNode;
+			
+				(oDiv = document.createElement('div')).innerHTML = strLinkHTML;
+				var oNode = oDiv.firstChild;
+				if(oNode.nodeName === 'A' ) {
+					return [oNode.href,oNode.text];
+				} else if (oNode.nodeName === '#text') {
+					return [oNode.textContent,oNode.textContent];
+				}
+				return false;
+				
 			}
 			
 			var _replStr = $.isFunction(o.replaceStr) ? o.replaceStr : _replStrFunc,
@@ -18689,6 +18712,13 @@ $.jgrid.extend({
 								}
 								if(special.style === 67) { //Dates
 									cell = _makeCellSpecial( { t: 'd', r: cellId, s: special.style }, v);
+								}  else if(special.style === 4) { // hyperlink
+									v = linkParse (a);
+									if(v) {
+										cell = _makeCellFunction( { t: 'str', r: cellId, s: special.style }, 'HYPERLINK(\"'+v[0]+'\",\"'+v[1]+'\")');
+									} else {
+										cell = _makeCellString( cellId, a);
+									}
 								} else {
 									if(  $.inArray( special.style, ["63", "64", "65", "66"]) ) { // Numbers
 
