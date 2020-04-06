@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.4.0 - 2020-03-31
+* @license Guriddo jqGrid JS - v5.4.0 - 2020-04-06
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -18202,7 +18202,8 @@ $.extend($.jgrid,{
 		{ match: /^\([\d,]+\.\d{2}\)$/, style: 62, fmt: function (d) { return -1 * d.replace(/[\(\)]/g, ''); } },  // Negative numbers indicated by brackets - 2d.p.
 		{ match: /^\-?[\d,]+$/,         style: 63 }, // Numbers with thousand separators
 		{ match: /^\-?[\d,]+\.\d{2}$/,  style: 64 },  // Numbers with 2 d.p. and thousands separators
-		{ match: /^\d{4}\-\d{2}\-\d{2}$/, style: 67 } // Dates
+		{ match: /^\d{4}\-\d{2}\-\d{2}$/, style: 67 }, // Dates
+		{ match: /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi, style : 4} // hyperlink
 	]
 
 });
