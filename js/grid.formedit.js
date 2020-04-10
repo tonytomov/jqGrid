@@ -1016,8 +1016,9 @@ $.jgrid.extend({
 				//ret[1] - msg if not succes
 				//ret[2] - the id  that will be set if reload after submit false
 				getFormData();
-				if(postdata[$t.p.id+"_id"] === "_empty")	{postIt();}
-				else if(p.checkOnSubmit===true ) {
+				if(postdata[$t.p.id+"_id"] === "_empty")	{
+					postIt();
+				} else if(p.checkOnSubmit===true ) {
 					diff = compareData(postdata, $t.p.savedData);
 					if(diff) {
 						$(frmgr).data("disabled",true);
