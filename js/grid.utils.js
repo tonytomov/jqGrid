@@ -10,9 +10,9 @@
 	} else {
 
 	// Browser globals
-		factory();
+		factory( jQuery );
 	}
-}(function() {
+}(function( $ ) {
 "use strict";
 //module begin
 $.extend($.jgrid,{
