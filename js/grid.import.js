@@ -172,6 +172,7 @@ $.extend($.jgrid,{
 				ret._fT = null; delete ret._fT;
 			}
 			var grid = $("#"+jqGridId).jqGrid( ret );
+			grid.jqGrid('delRowData','norecs');
 			if( o.restoreData && $.trim( data ) !== '') {
 				grid.append( data );
 			}
