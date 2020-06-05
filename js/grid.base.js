@@ -4490,8 +4490,9 @@ $.fn.jqGrid = function( pin ) {
 				}
 
 				if(ci === undefined) { return; }
+				var grid_offset = $("#gbox_"+ts.p.id).offset();
 				var offset = $(this).offset(),
-				left = ( offset.left ) - 4,
+				left = ( offset.left ) - (grid_offset.left),
 				top = 0;//( offset.top);
 				if(ts.p.direction === "ltr") {
 					left += $(this).outerWidth();

@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.4.0 - 2020-04-06
+* @license Guriddo jqGrid JS - v5.4.0 - 2020-06-05
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3998,7 +3998,7 @@ $.fn.jqGrid = function( pin ) {
 			cname = $.trim(cm.name); // ???
 			// sorting
 			menuData.push( str );
-			if(op.sorting) {
+			if(cm.sortable && op.sorting) {
 				str = '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" data-value="sortasc"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_sort_asc+'"></span></td><td class="menu_text">'+texts.sortasc+'</td></tr></table></a></li>';
 				str += '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" data-value="sortdesc"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+colmenustyle.icon_sort_desc+'"></span></td><td class="menu_text">'+texts.sortdesc+'</td></tr></table></a></li>';
 				menuData.push( str );
@@ -4485,8 +4485,9 @@ $.fn.jqGrid = function( pin ) {
 				}
 
 				if(ci === undefined) { return; }
+				var grid_offset = $("#gbox_"+ts.p.id).offset();
 				var offset = $(this).offset(),
-				left = ( offset.left ) - 4,
+				left = ( offset.left ) - (grid_offset.left),
 				top = 0;//( offset.top);
 				if(ts.p.direction === "ltr") {
 					left += $(this).outerWidth();
@@ -11072,8 +11073,9 @@ $.jgrid.extend({
 				//ret[1] - msg if not succes
 				//ret[2] - the id  that will be set if reload after submit false
 				getFormData();
-				if(postdata[$t.p.id+"_id"] === "_empty")	{postIt();}
-				else if(p.checkOnSubmit===true ) {
+				if(postdata[$t.p.id+"_id"] === "_empty")	{
+					postIt();
+				} else if(p.checkOnSubmit===true ) {
 					diff = compareData(postdata, $t.p.savedData);
 					if(diff) {
 						$(frmgr).data("disabled",true);
@@ -13302,6 +13304,7 @@ $.extend($.jgrid,{
 				ret._fT = null; delete ret._fT;
 			}
 			var grid = $("#"+jqGridId).jqGrid( ret );
+			grid.jqGrid('delRowData','norecs');
 			if( o.restoreData && $.trim( data ) !== '') {
 				grid.append( data );
 			}
@@ -13770,7 +13773,7 @@ $.jgrid.extend({
 							else { $(this).html(""); }
 							var opt = $.extend({},cm[i].editoptions || {},{id:rowid+"_"+nm,name:nm,rowId:rowid, oper:'edit', module : 'inline'});
 							if(!cm[i].edittype) { cm[i].edittype = "text"; }
-							if(tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length===1 && tmp.charCodeAt(0)===160) ) {tmp='';}
+							if(tmp === "&nbsp;" || tmp === "&#160;" || (tmp !== null && tmp.length===1 && tmp.charCodeAt(0)===160) ) {tmp='';}
 							var elc = $.jgrid.createEl.call($t,cm[i].edittype,opt,tmp,true,$.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions || {}));
 							$(elc).addClass("editable inline-edit-cell");
 							if( $.inArray(cm[i].edittype, ['text','textarea','password','select']) > -1) {
