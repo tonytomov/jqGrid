@@ -1767,18 +1767,11 @@ $.jgrid.extend({
 			}
 			if ($("#"+alertIDs.themodal)[0] === undefined) {
 				if(!o.alerttop && !o.alertleft) {
-					if (window.innerWidth !== undefined) {
-						o.alertleft = window.innerWidth;
-						o.alerttop = window.innerHeight;
-					} else if (document.documentElement !== undefined && document.documentElement.clientWidth !== undefined && document.documentElement.clientWidth !== 0) {
-						o.alertleft = document.documentElement.clientWidth;
-						o.alerttop = document.documentElement.clientHeight;
-					} else {
-						o.alertleft=1024;
-						o.alerttop=768;
-					}
-					o.alertleft = o.alertleft/2 - parseInt(o.alertwidth,10)/2;
-					o.alerttop = o.alerttop/2-25;
+					var pos=$.jgrid.findPos(this);
+					pos[0]=Math.round(pos[0]);
+					pos[1]=Math.round(pos[1]);
+					o.alertleft = pos[0] + (this.p.width/2)-parseInt(o.alertwidth,10)/2;
+					o.alerttop = pos[1] + (this.p.height/2)-25;					
 				}
 				var fs =  $('.ui-jqgrid').css('font-size') || '11px';
 				$.jgrid.createModal(alertIDs,
