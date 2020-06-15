@@ -6474,7 +6474,7 @@ $.jgrid.extend({
 					// find max height
 					var mh = [];
 					$("#"+$.jgrid.jqID($t.p.id) + " tr[role=row].jqgrow").each(function(){
-						mh.push( $(this).outerHeight() );
+						mh.push( $(this).height() );
 					});
 
 					var btbl = $("#"+$.jgrid.jqID($t.p.id)).clone(true);
