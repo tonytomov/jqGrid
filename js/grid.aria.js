@@ -161,6 +161,9 @@ $.jgrid.extend({
 
 			var focusRow=0, focusCol=0; // set the dafualt one
 			$($t).on('keydown', function(e) {
+				if($t.p.navigationDisabled && $t.p.navigationDisabled === true) {
+					return;
+				}
 				var key = e.which || e.keyCode, nextCell;
 				switch(key) {
 					case (38) :
