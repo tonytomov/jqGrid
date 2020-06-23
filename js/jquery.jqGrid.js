@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.4.0 - 2020-06-15
+* @license Guriddo jqGrid JS - v5.4.0 - 2020-06-23
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -6801,6 +6801,10 @@ $.jgrid.extend({
 							$($t).jqGrid("restoreCell",iRow,iCol);
 						}
 					} //ESC
+					if (e.keyCode === 13 && e.altKey && this.nodeName === "TEXTAREA") {
+						this.value = this.value + "\r";
+						return true;
+					}
 					if (e.keyCode === 13 && !e.shiftKey) {
 						$($t).jqGrid("saveCell",iRow,iCol);
 						// Prevent default action
@@ -19864,6 +19868,9 @@ $.jgrid.extend({
 
 			var focusRow=0, focusCol=0; // set the dafualt one
 			$($t).on('keydown', function(e) {
+				if($t.p.navigationDisabled && $t.p.navigationDisabled === true) {
+					return;
+				}
 				var key = e.which || e.keyCode, nextCell;
 				switch(key) {
 					case (38) :
