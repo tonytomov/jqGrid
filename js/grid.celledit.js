@@ -115,6 +115,10 @@ $.jgrid.extend({
 							$($t).jqGrid("restoreCell",iRow,iCol);
 						}
 					} //ESC
+					if (e.keyCode === 13 && e.altKey && this.nodeName === "TEXTAREA") {
+						this.value = this.value + "\r";
+						return true;
+					}
 					if (e.keyCode === 13 && !e.shiftKey) {
 						$($t).jqGrid("saveCell",iRow,iCol);
 						// Prevent default action
