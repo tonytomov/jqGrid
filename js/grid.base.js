@@ -3133,7 +3133,7 @@ $.fn.jqGrid = function( pin ) {
 				}
 				if(ts.p.grouping) {
 					$(ts).jqGrid('groupingSetup');
-					var grp = ts.p.groupingView, gi, gs="";
+					var grp = ts.p.groupingView, gi, gs="", tmpordarr = [];
 					for(gi=0;gi<grp.groupField.length;gi++) {
 						var index = grp.groupField[gi];
 						$.each(ts.p.colModel, function(cmIndex, cmValue) {
@@ -3141,9 +3141,15 @@ $.fn.jqGrid = function( pin ) {
 								index = cmValue.index;
 							}
 						} );
-						gs += index +" "+grp.groupOrder[gi]+", ";
+						tmpordarr.push(index +" "+grp.groupOrder[gi]);
 					}
-					prm[pN.sort] = gs + prm[pN.sort];
+					gs = tmpordarr.join();
+					if( $.trim(prm[pN.sort]) !== "") {
+						prm[pN.sort] = gs + " ,"+prm[pN.sort];
+					} else {
+						prm[pN.sort] = gs;
+						prm[pN.order] = "";
+					}
 				}
 				$.extend(ts.p.postData,prm);
 				var rcnt = !ts.p.scroll ? 1 : ts.rows.length-1;
