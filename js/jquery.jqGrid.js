@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.4.0 - 2020-07-13
+* @license Guriddo jqGrid JS - v5.4.0 - 2020-07-22
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3144,7 +3144,7 @@ $.fn.jqGrid = function( pin ) {
 					} else {
 						prm[pN.sort] = gs;
 						prm[pN.order] = "";
-					}					
+					}
 				}
 				$.extend(ts.p.postData,prm);
 				var rcnt = !ts.p.scroll ? 1 : ts.rows.length-1;
@@ -4959,7 +4959,18 @@ $.fn.jqGrid = function( pin ) {
 						}
 					}
 				});
-
+				var gHead,
+				gh = ts.p.groupHeader && ($.isArray(ts.p.groupHeader) || $.isFunction(ts.p.groupHeader) );
+				if(gh) { 
+					$(ts).jqGrid('destroyGroupHeader', false);
+					gHead = $.extend([],ts.p.groupHeader);
+					ts.p.groupHeader = null;
+				}
+				if( gh && gHead)  {
+					for(var k =0; k < gHead.length; k++) {
+						$(ts).jqGrid('setGroupHeaders', gHead[k]);
+					}
+				}
 			});
 		}
 		ts.formatCol = formatCol;
@@ -6547,8 +6558,9 @@ $.jgrid.extend({
 		});
 	},
 	resizeColumn : function (iCol, newWidth, forceresize) {
-		return this.each(function(){
-			var grid = this.grid, p = this.p, cm = p.colModel, i, cmLen = cm.length, diff, diffnv;
+		var grid = this.grid, p = this.p;
+		return this.each(function() {
+			var  cm = p.colModel, i, cmLen = cm.length, diff, diffnv;
 			if(typeof iCol === "string" ) {
 				for(i = 0; i < cmLen; i++) {
 					if(cm[i].name === iCol) {
