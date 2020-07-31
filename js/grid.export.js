@@ -408,6 +408,7 @@ $.jgrid.extend({
 			mimetype : "text/csv;charset=utf-8",
 			returnAsString : false,
 			onBeforeExport : null,
+			treeindent : ' ',
 			loadIndicator : true // can be a function
 		}, p || {});
 		var ret ="";
@@ -418,7 +419,7 @@ $.jgrid.extend({
 
 			var $t = this,
 			// get the filtered data
-			data1 = this.addLocalData( true ),
+			data1 = $t.p.treeGrid ? $($t).jqGrid('getRowData', null, true, p.treeindent) : $t.addLocalData( true ), //this.addLocalData( true ),
 			dlen = data1.length,
 			cm = $t.p.colModel,
 			cmlen = cm.length,
@@ -714,6 +715,7 @@ $.jgrid.extend({
 			maxlength : 40, // maxlength for visible string data
 			onBeforeExport : null,
 			replaceStr : null,
+			treeindent : ' ',
 			loadIndicator : true // can be a function
 		}, o || {} );
 		this.each(function() {
@@ -747,7 +749,7 @@ $.jgrid.extend({
 			cm = $t.p.colModel,
 			i=0, j, ien, 
 			data = {
-				body  : $t.addLocalData( true ),
+				body  : $t.p.treeGrid ? $($t).jqGrid('getRowData', null, true, o.treeindent) : $t.addLocalData( true ),
 				header : [],
 				footer : [],
 				width : [],
@@ -1213,12 +1215,13 @@ $.jgrid.extend({
 			includeFooter: true,
 			fileName : "jqGridExport.pdf",
 			mimetype : "application/pdf",
+			treeindent : "-",
 			loadIndicator : true // can be a function
 
 		}, o || {} );
 		return this.each(function() {
 			var $t = this, rows = [], j, cm = $t.p.colModel, ien, obj = {}, key,
-			data = $t.addLocalData( true ), def = [], i=0, map=[], test=[], widths = [],  align={};
+			data = $t.p.treeGrid ? $($t).jqGrid('getRowData', null, true, o.treeindent) : $t.addLocalData( true ),  def = [], i=0, map=[], test=[], widths = [],  align={};
 // Group function
 			function groupToPdf ( grdata ) {
 				var grp = $t.p.groupingView,
@@ -1569,6 +1572,7 @@ $.jgrid.extend({
 			topText : '',
 			bottomText : '',
 			returnAsString : false,
+			treeindent : '&nbsp;',
 			loadIndicator : true // can be a function
 		}, o || {} );
 		var ret;
@@ -1577,7 +1581,7 @@ $.jgrid.extend({
 			cm = $t.p.colModel,
 			i=0, j, ien, //obj={},
 			data = {
-				body  : $t.addLocalData( true ),
+				body  : $t.p.treeGrid ? $($t).jqGrid('getRowData', null, true, o.treeindent) : $t.addLocalData( true ),
 				header : [],
 				footer : [],
 				width : [],
