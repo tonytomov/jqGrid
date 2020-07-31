@@ -6563,9 +6563,9 @@ $.jgrid.extend({
 		});
 	},
 	resizeColumn : function (iCol, newWidth, forceresize) {
-		var grid = this.grid, p = this.p;
 		return this.each(function() {
-			var  cm = p.colModel, i, cmLen = cm.length, diff, diffnv;
+			var grid = this.grid, p = this.p,
+				cm = p.colModel, i, cmLen = cm.length, diff, diffnv;
 			if(typeof iCol === "string" ) {
 				for(i = 0; i < cmLen; i++) {
 					if(cm[i].name === iCol) {
