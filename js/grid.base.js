@@ -5224,7 +5224,7 @@ $.jgrid.extend({
 			//t.p.savedRow = [];
 		});
 	},
-	getRowData : function( rowid, usedata ) {
+	getRowData : function( rowid, usedata, treeindent ) {
 		var res = {}, resall, getall=false, len, j=0;
 		this.each(function(){
 			var $t = this,nm,ind;
@@ -5239,6 +5239,9 @@ $.jgrid.extend({
 			}
 			if( !(usedata && usedata === true && $t.p.data.length > 0)  ) {
 				usedata = false;
+			}
+			if(treeindent == null ) {
+				treeindent = false;
 			}
 			while(j<len){
 				if(getall) {
@@ -5263,6 +5266,17 @@ $.jgrid.extend({
 							}
 						});
 					}
+					if($t.p.treeGrid===true && treeindent) {
+						var level = $t.p.treeReader.level_field;
+						treeindent += '';
+						try {
+							level = parseInt(res[level],10);
+						} catch(e_) {
+							level = 0;
+						}
+						res[$t.p.ExpandColumn] = treeindent.repeat( level ) + res[$t.p.ExpandColumn];
+					}
+					
 					if(getall) { resall.push(res); res={}; }
 				}
 				j++;
