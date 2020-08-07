@@ -76,7 +76,7 @@ $.jgrid.extend({
 			editable = $(ind).attr("editable") || "0";
 			if (editable === "0" && !$(ind).hasClass("not-editable-row")) {
 				cm = $t.p.colModel;
-				$('td[role="gridcell"]',ind).each( function(i) {
+				$(ind).children('td[role="gridcell"]').each( function(i) {
 					nm = cm[i].name;
 					var treeg = $t.p.treeGrid===true && nm === $t.p.ExpandColumn;
 					if(treeg) { tmp = $("span:first",this).html();}
@@ -89,8 +89,9 @@ $.jgrid.extend({
 					}
 					if ( nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn') {
 						if($t.p.autoencode) { tmp = $.jgrid.htmlDecode(tmp); }
-						svr[nm]=tmp;
+						//svr[nm]=tmp;
 						if(cm[i].editable===true) {
+							svr[nm]=tmp;
 							if(focus===null) { focus = i; }
 							if (treeg) { $("span:first",this).html(""); }
 							else { $(this).html(""); }
@@ -210,7 +211,7 @@ $.jgrid.extend({
 		o.url = o.url || $t.p.editurl;
 		if (editable==="1") {
 			var cm, index, elem;
-			$('td[role="gridcell"]',ind).each(function(i) {
+			$(ind).children('td[role="gridcell"]').each(function(i) {
 				cm = $t.p.colModel[i];
 				nm = cm.name;
 				elem = "";

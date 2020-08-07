@@ -5251,7 +5251,7 @@ $.jgrid.extend({
 					if(usedata) {
 						res = $t.p.data[ $t.p._index[ $.jgrid.stripPref($t.p.idPrefix, ind.id) ] ];
 					} else {
-						$('td[role="gridcell"]',ind).each( function(i) {
+						$(ind).children('td[role="gridcell"]').each( function(i) {
 							nm = $t.p.colModel[i].name;
 							if ( nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn') {
 								if($t.p.treeGrid===true && nm === $t.p.ExpandColumn) {
