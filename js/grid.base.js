@@ -5354,7 +5354,7 @@ $.jgrid.extend({
 							prp = t.formatCol( i, ind.rowIndex, vl, data, rowid, data);
 							
 							ohtml = $("<td role=\"gridcell\" "+prp+">"+vl+"</td>")[0];
-							tcell = $("td[role='gridcell']:eq("+i+")",ind);
+							tcell = $(ind).children("td[role='gridcell']:eq("+i+")");
 							$(tcell).after(ohtml).remove();
 							if(t.p.treeGrid && t.p.ExpandColumn === nm ) {
 								$(t).jqGrid("setTreeNode", ind.rowIndex, ind.rowIndex+1);
