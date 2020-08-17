@@ -2464,7 +2464,7 @@ $.fn.jqGrid = function( pin ) {
 			ts.p.reccount=ir;
 			ts.p.treeANode = -1;
 			if(ts.p.userDataOnFooter) { self.jqGrid("footerData","set",ts.p.userData, ts.p.formatFooterData); }
-			if(ts.p.userDataOnHeader) { self.jqGrid("headerData","set",ts.p.userData, ts.p.formatheaderData); }
+			if(ts.p.userDataOnHeader) { self.jqGrid("headerData","set",ts.p.userData, ts.p.formatHeaderData); }
 			if(locdata) {
 				ts.p.records = gl;
 				ts.p.lastpage = Math.ceil(gl/ rn);

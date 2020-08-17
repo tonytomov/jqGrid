@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.4.0 - 2020-08-10
+* @license Guriddo jqGrid JS - v5.4.0 - 2020-08-17
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2459,7 +2459,7 @@ $.fn.jqGrid = function( pin ) {
 			ts.p.reccount=ir;
 			ts.p.treeANode = -1;
 			if(ts.p.userDataOnFooter) { self.jqGrid("footerData","set",ts.p.userData, ts.p.formatFooterData); }
-			if(ts.p.userDataOnHeader) { self.jqGrid("headerData","set",ts.p.userData, ts.p.formatheaderData); }
+			if(ts.p.userDataOnHeader) { self.jqGrid("headerData","set",ts.p.userData, ts.p.formatHeaderData); }
 			if(locdata) {
 				ts.p.records = gl;
 				ts.p.lastpage = Math.ceil(gl/ rn);
@@ -17896,7 +17896,7 @@ $.extend($.jgrid,{
 	formatCellCsv : function (v, p) {
 		v = v == null ? '' : String(v);
 		try {
-			v = v.replace(p._regexsep ,p.separatorReplace).replace(/\r\n/g, p.replaceNewLine).replace(/\n/g, p.replaceNewLine);
+			v = $.jgrid.stripHtml( v.replace(p._regexsep ,p.separatorReplace).replace(/\r\n/g, p.replaceNewLine).replace(/\n/g, p.replaceNewLine));
 		} catch (_e) {
 			v="";
 		}
@@ -18259,6 +18259,7 @@ $.jgrid.extend({
 			includeLabels : true,
 			includeGroupHeader : true,
 			includeFooter: true,
+			includeHeader: true,
 			fileName : "jqGridExport.csv",
 			mimetype : "text/csv;charset=utf-8",
 			returnAsString : false,
@@ -18280,7 +18281,7 @@ $.jgrid.extend({
 			cmlen = cm.length,
 			clbl = $t.p.colNames,
 			i, j=0, row, str = '' , tmp, k,
-			cap = "", hdr = "", ftr="",	lbl="", albl=[];
+			cap = "", hdr = "", ftr="",	lbl="", albl=[], htr="";
 			function groupToCsv (grdata, p) {
 				var str="",
 				grp = $t.p.groupingView,
@@ -18531,7 +18532,19 @@ $.jgrid.extend({
 					ftr += tmp.join( p.separator ) + p.newLine;
 				}
 			}
-			ret = cap + hdr + lbl + str + ftr;
+			if(p.includeHeader && $t.p.headerrow) {
+				var hrows = $($t).jqGrid('headerData', 'get');
+				i=0; tmp=[];
+				while(i < p.collen){
+					var hc = def[i];
+					if(hrows.hasOwnProperty(hc) ) {
+						tmp.push( $.jgrid.formatCellCsv( $.jgrid.stripHtml( hrows[hc] ), p ) );
+					}
+					i++;
+				}
+				htr += tmp.join( p.separator ) + p.newLine;
+			}
+			ret = cap + hdr + lbl + htr + str + ftr;
 			if( $.isFunction( p.loadIndicator )) {
 				p.loadIndicator('hide');
 			} else if(p.loadIndicator) {
@@ -18565,6 +18578,7 @@ $.jgrid.extend({
 			includeLabels : true,
 			includeGroupHeader : true,
 			includeFooter: true,
+			includeHeader: true,
 			fileName : "jqGridExport.xlsx",
 			mimetype : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 			maxlength : 40, // maxlength for visible string data
@@ -18991,6 +19005,16 @@ $.jgrid.extend({
 				addRow( data.header, true );
 				$('row:last c', rels).attr( 's', '2' ); // bold
 			}
+			if ( o.includeHeader || $t.p.headerrow) {
+				var hdata = $($t).jqGrid('headerData', 'get');
+				for( i in hdata) {
+					if(hdata.hasOwnProperty(i)) {
+						hdata[i] = $.jgrid.stripHtml(hdata[i]);
+					}
+				}
+				addRow( hdata, true );
+				$('row:last c', rels).attr( 's', '2' ); // bold
+			}
 			if( $t.p.grouping ) {
 				var savlcgr = $t.p.groupingView._locgr ? true : false;
 				$t.p.groupingView._locgr = false;
@@ -19067,7 +19091,8 @@ $.jgrid.extend({
 			download: 'download',
 			includeLabels : true,
 			includeGroupHeader : true,
-			includeFooter: true,
+			includeFooter : true,
+			includeHeader : true,
 			fileName : "jqGridExport.pdf",
 			mimetype : "application/pdf",
 			treeindent : "-",
@@ -19297,6 +19322,19 @@ $.jgrid.extend({
 			if(o.includeLabels) {
 				rows.push( test );
 			}
+			if ( o.includeHeader && $t.p.headerrow) {
+				var hdata = $($t).jqGrid('headerData', 'get');
+				test=[];
+				for( key =0; key< def.length; key++) {
+					obj  =  {
+						text : $.jgrid.stripHtml( $.jgrid.getAccessor(hdata, def[key]) ),
+						style : 'tableFooter',
+						alignment : align[def[key]]
+					};
+					test.push( obj );
+				}
+				rows.push( test );
+			}
 			if($t.p.grouping) {
 				var savlcgr = $t.p.groupingView._locgr ? true : false;
 				$t.p.groupingView._locgr = false;
@@ -19310,7 +19348,7 @@ $.jgrid.extend({
 					row = data[i];
 					for( key = 0;key < def.length; key++ ) {
 						obj	= {
-							text: row[def[key]] == null ? '' : $.jgrid.formatCell( $.jgrid.getAccessor(row, def[key]) + '', map[k], data[i], cm[map[k]], $t, 'pdf'),
+							text: row[def[key]] == null ? '' : $.jgrid.stripHtml($.jgrid.formatCell( $.jgrid.getAccessor(row, def[key]) + '', map[k], data[i], cm[map[k]], $t, 'pdf')),
 							alignment : align[def[key]],
 							style : 'tableBody'
 						};
@@ -19422,6 +19460,7 @@ $.jgrid.extend({
 			includeLabels : true,
 			includeGroupHeader : true,
 			includeFooter: true,
+			includeHeader: true,
 			tableClass : 'jqgridprint',
 			autoPrint : false,
 			topText : '',
@@ -19681,6 +19720,11 @@ $.jgrid.extend({
 			}
 
 			html += '<tbody>';
+			if ( o.includeHeader && $t.p.headerrow ) {
+				var hdata = $($t).jqGrid('headerData', 'get', null, false);
+
+				html += addBodyRow( hdata, 'td' , false);
+			}
 			if( $t.p.grouping ) {
 				var savlcgr = $t.p.groupingView._locgr ? true : false;
 				$t.p.groupingView._locgr = false;
