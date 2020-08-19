@@ -1157,7 +1157,7 @@ $.jgrid.extend({
 						hdata[i] = $.jgrid.stripHtml(hdata[i]);
 					}
 				}
-				addRow( hdata, true );
+				addRow( hdata, false );
 				$('row:last c', rels).attr( 's', '2' ); // bold
 			}
 			if( $t.p.grouping ) {
@@ -1177,7 +1177,7 @@ $.jgrid.extend({
 						data.footer[i] = $.jgrid.stripHtml(data.footer[i]);
 					}
 				}
-				addRow( data.footer, true );
+				addRow( data.footer, false );
 				$('row:last c', rels).attr( 's', '2' ); // bold
 			}
 
