@@ -73,7 +73,8 @@ $.fn.jqFilter = function( arg ) {
 		addrule : "Add rule",
 		delgroup : "Delete group",
 		delrule : "Delete rule",
-		autoencode : false
+		autoencode : false,
+		unaryOperations : []
 	}, $.jgrid.filter, arg || {});
 	return this.each( function() {
 		if (this.filter) {return;}
@@ -464,6 +465,11 @@ $.fn.jqFilter = function( arg ) {
 				});
 				setTimeout(function(){ //IE, Opera, Chrome
 				rule.data = $(elm).val();
+				if(rule.op === 'nu' || rule.op === 'nn' || $.inArray(rule.op, that.p.unaryOperations) >=0 ) {
+					$(elm).attr('readonly','true');
+					$(elm).attr('disabled','true');
+				}
+				
 				if(cm.inputtype === 'select' && cm.searchoptions.multiple && $.isArray(rule.data)) {
 					rule.data = rule.data.join(",");
 				}
@@ -506,7 +512,7 @@ $.fn.jqFilter = function( arg ) {
 			cm.searchoptions.name = rule.field;
 			cm.searchoptions.oper = 'filter';
 			var ruleDataInput = $.jgrid.createEl.call($t, cm.inputtype,cm.searchoptions, rule.data, true, that.p.ajaxSelectOptions || {}, true);
-			if(rule.op === 'nu' || rule.op === 'nn') {
+			if(rule.op === 'nu' || rule.op === 'nn' || $.inArray(rule.op, that.p.unaryOperations) >=0 ) {
 				$(ruleDataInput).attr('readonly','true');
 				$(ruleDataInput).attr('disabled','true');
 			} //retain the state of disabled text fields in case of null ops
@@ -517,7 +523,7 @@ $.fn.jqFilter = function( arg ) {
 				rule.op = $(ruleOperatorSelect).val();
 				trpar = $(this).parents("tr:first");
 				var rd = $(".input-elm",trpar)[0];
-				if (rule.op === "nu" || rule.op === "nn") { // disable for operator "is null" and "is not null"
+				if (rule.op === "nu" || rule.op === "nn" || $.inArray(rule.op, that.p.unaryOperations) >= 0 ) { // disable for operator "is null" and "is not null"
 					rule.data = "";
 					if(rd.tagName.toUpperCase() !== 'SELECT') { rd.value = ""; }
 					rd.setAttribute("readonly", "true");
@@ -643,8 +649,11 @@ $.fn.jqFilter = function( arg ) {
 			if(opC === 'cn' || opC === 'nc') { val = "%"+val+"%"; }
 			if(opC === 'in' || opC === 'ni') { val = " ("+val+")"; }
 			if(p.errorcheck) { checkData(rule.data, cm); }
-			if($.inArray(cm.searchtype, numtypes) !== -1 || opC === 'nn' || opC === 'nu') { ret = rule.field + " " + opUF + " " + val; }
-			else { ret = rule.field + " " + opUF + " \"" + val + "\""; }
+			if($.inArray(cm.searchtype, numtypes) !== -1 || opC === 'nn' || opC === 'nu' || $.inArray(rule.op, this.p.unaryOperations) >= 0 ) { 
+				ret = rule.field + " " + opUF + " " + val; 
+			} else { 
+				ret = rule.field + " " + opUF + " \"" + val + "\""; 
+			}
 			return ret;
 		};
 		this.resetFilter = function () {
@@ -840,7 +849,7 @@ $.jgrid.extend({
 			operands : { "eq" :"==", "ne":"!","lt":"<","le":"<=","gt":">","ge":">=","bw":"^","bn":"!^","in":"=","ni":"!=","ew":"|","en":"!@","cn":"~","nc":"!~","nu":"#","nn":"!#", "bt":"..."}
 		}, regional , p  || {});
 		return this.each(function(){
-			var $t = this;
+			var $t = this, unaryOpers=[];;
 			if($t.p.filterToolbar) { return; }
 			if(!$($t).data('filterToolbar')) {
 				$($t).data('filterToolbar', p);
@@ -853,6 +862,9 @@ $.jgrid.extend({
 					if($t.p.customFilterDef.hasOwnProperty(uskey)  && !p.operands.hasOwnProperty(uskey) ) {
 						p.odata.push({ oper: uskey, text: $t.p.customFilterDef[uskey].text} );
 						p.operands[uskey] = $t.p.customFilterDef[uskey].operand;
+						if($t.p.customFilterDef[uskey].unary === true) {
+							unaryOpers.push(uskey);
+						}
 					}
 				}
 			}
@@ -901,7 +913,7 @@ $.jgrid.extend({
 					if(so==="bt") {
 						bbt = true;
 					}
-					if(v || so==="nu" || so==="nn") {
+					if(v || so==="nu" || so==="nn" || $.inArray(so, unaryOpers) >=0) {
 						sdata[nm] = v;
 						sopt[nm] = so;
 						j++;
@@ -1138,7 +1150,7 @@ $.jgrid.extend({
 					$(elem).text(oper).attr("soper",v);
 					if(p.autosearch===true){
 						var inpelm = $(elem).parent().next().children()[0];
-						if( $(inpelm).val() || v==="nu" || v ==="nn") {
+						if( $(inpelm).val() || v==="nu" || v ==="nn" || $.inArray(v, unaryOpers) >=0) {
 							triggerToolbar();
 						}
 					}
@@ -1304,9 +1316,11 @@ $.jgrid.extend({
 			}
 			$(".clearsearchclass",tr).click(function() {
 				var ptr = $(this).parents("tr:first"),
-				colname = $("td.ui-search-oper", ptr).attr('columname'), coli=0, len = $t.p.colModel.length;
+				colname = $("td.ui-search-oper", ptr).attr('columname'), coli=0, len = $t.p.colModel.length,
+				soper = $("td.ui-search-oper a", ptr).attr('soper'), cm,vv;
 				while(coli<len) {
 					if($t.p.colModel[coli].name === colname) {
+						cm = $t.p.colModel[coli];
 						break;
 					}
 					coli++;
@@ -1329,11 +1343,30 @@ $.jgrid.extend({
 				if($.isFunction(p.onClearSearchValue)) {
 					p.onClearSearchValue.call($t, elem[0], coli, sval, dval);
 				}
+				if(soper==="nu" || soper==="nn" || $.inArray(soper, unaryOpers) >=0) {
+					vv = sval.sopt ?
+							sval.sopt[0] :
+							cm.stype === "select" ?
+								"eq" : 
+								p.defaultSearch;
+						var operText = $t.p.customFilterDef != null && $t.p.customFilterDef[vv] != null ? 
+						$t.p.customFilterDef[vv].operand :
+						p.operands[vv] || "";
+						if(vv === soper) {
+							$("td.ui-search-oper a", ptr).attr('soper', 'dummy').text(operText);
+						} else {
+							$("td.ui-search-oper a", ptr).attr('soper',vv).text(operText);
+						}
+						
+				}
+				
 				// ToDo custom search type
 				if(p.autosearch===true){
 					triggerToolbar();
+					if(vv === soper) { 
+						$("td.ui-search-oper a", ptr).attr('soper',vv).text(operText);
+					}
 				}
-
 			});
 			$($t.grid.hDiv).on("scroll", function(e){
 				$t.grid.bDiv.scrollLeft = $t.grid.hDiv.scrollLeft;
@@ -1496,6 +1529,7 @@ $.jgrid.extend({
 			IDs = {themodal:'searchmod'+fid,modalhead:'searchhd'+fid,modalcontent:'searchcnt'+fid, scrollelm : fid},
 			defaultFilters  = ($.isPlainObject($t.p_savedFilter) && !$.isEmptyObject($t.p_savedFilter ) ) ? $t.p_savedFilter :  $t.p.postData[p.sFilter],
 			fl,
+			unaryOpers = [],
 			classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].filter,
 			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].common;
 			p.styleUI = $t.p.styleUI;
@@ -1625,8 +1659,11 @@ $.jgrid.extend({
 						if($t.p.customFilterDef.hasOwnProperty(uskey)  && !p.operands.hasOwnProperty(uskey) ) {
 							p.odata.push({ oper: uskey, text: $t.p.customFilterDef[uskey].text} );
 							p.operands[uskey] = $t.p.customFilterDef[uskey].operand;
+							if($t.p.customFilterDef[uskey].unary === true) {
+								unaryOpers.push(uskey);
 						}
 					}
+				}
 				}
 				bt = "<table class='EditTable' style='border:0px none;margin-top:5px' id='"+fid+"_2'><tbody><tr><td colspan='2'><hr class='" + common.content + "' style='margin:1px'/></td></tr>"+tmpl+"<tr><td class='EditButton' style='text-align:"+align+"'>"+bC+"</td><td class='EditButton' "+butleft+">"+ user_buttons +"</td></tr></tbody></table>";
 				fid = $.jgrid.jqID( fid);
@@ -1650,6 +1687,7 @@ $.jgrid.extend({
 					delgroup : p.delgroup,
 					delrule : p.delrule,
 					autoencode : $t.p.autoencode,
+					unaryOperations : unaryOpers,
 					onChange : function() {
 						if(this.p.showQuery) {
 							$('.query',this).html(this.toUserFriendlyString());
