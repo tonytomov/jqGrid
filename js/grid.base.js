@@ -5821,6 +5821,47 @@ $.jgrid.extend({
 			if ($t.p.scroll) { $t.grid.populateVisible(); }
 		});
 	},
+	maxGridHeight : function( action, newhgh ) {
+		return this.each(function() {
+			var $t = this;
+			if(!$t.grid) {return;}
+			if( action === 'set' && newhgh > 25) { // row min height
+				$($t).on('jqGridAfterGridComplete.setMaxHeght', function( e ) {
+					var bDiv = $($t.grid.bDiv),
+						id = $.jgrid.jqID($t.p.id),
+						enh = $("#gbox_" + id).outerHeight(),
+						static_height = $($t.grid.hDiv).outerHeight();
+					if($t.p.pager ) {
+						static_height += $($t.p.pager).outerHeight();
+					}
+					if($t.p.toppager ) {
+						static_height += $($t.p.toppager).outerHeight();
+					}
+					if($t.p.toolbar[0] === true){
+						static_height += $($t.grid.uDiv).outerHeight();
+						if($t.p.toolbar[1]==="both") {
+							static_height += $($t.grid.ubDiv).outerHeight();
+						}
+					}
+					if($t.p.footerrow) {
+						static_height += $($t.grid.sDiv).outerHeight();
+					}
+					if($t.p.headerrow) {
+						static_height +=  $($t.grid.hrDiv).outerHeight();
+					}
+					if($t.p.caption) {
+						static_height +=  $($t.grid.cDiv).outerHeight();
+					}
+					if( enh > static_height) { // min row height
+						$($t.grid.bDiv).css("max-height", newhgh-2 ); // 2 pix for the border
+					}
+				});
+			} else if( action === 'remove') {
+				$($t).off('jqGridAfterGridComplete.setMaxHeght');
+				$($t.grid.bDiv).css("max-height", ""); 
+			}
+		});
+	},
 	setCaption : function (newcap){
 		return this.each(function(){
 			var ctop = $(this).jqGrid('getStyleUI',this.p.styleUI+".common",'cornertop', true);
