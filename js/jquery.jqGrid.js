@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.4.0 - 2020-08-19
+* @license Guriddo jqGrid JS - v5.4.0 - 2020-08-26
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5816,6 +5816,47 @@ $.jgrid.extend({
 			if ($t.p.scroll) { $t.grid.populateVisible(); }
 		});
 	},
+	maxGridHeight : function( action, newhgh ) {
+		return this.each(function() {
+			var $t = this;
+			if(!$t.grid) {return;}
+			if( action === 'set' && newhgh > 25) { // row min height
+				$($t).on('jqGridAfterGridComplete.setMaxHeght', function( e ) {
+					var bDiv = $($t.grid.bDiv),
+						id = $.jgrid.jqID($t.p.id),
+						enh = $("#gbox_" + id).outerHeight(),
+						static_height = $($t.grid.hDiv).outerHeight();
+					if($t.p.pager ) {
+						static_height += $($t.p.pager).outerHeight();
+					}
+					if($t.p.toppager ) {
+						static_height += $($t.p.toppager).outerHeight();
+					}
+					if($t.p.toolbar[0] === true){
+						static_height += $($t.grid.uDiv).outerHeight();
+						if($t.p.toolbar[1]==="both") {
+							static_height += $($t.grid.ubDiv).outerHeight();
+						}
+					}
+					if($t.p.footerrow) {
+						static_height += $($t.grid.sDiv).outerHeight();
+					}
+					if($t.p.headerrow) {
+						static_height +=  $($t.grid.hrDiv).outerHeight();
+					}
+					if($t.p.caption) {
+						static_height +=  $($t.grid.cDiv).outerHeight();
+					}
+					if( enh > static_height) { // min row height
+						$($t.grid.bDiv).css("max-height", newhgh-2 ); // 2 pix for the border
+					}
+				});
+			} else if( action === 'remove') {
+				$($t).off('jqGridAfterGridComplete.setMaxHeght');
+				$($t.grid.bDiv).css("max-height", ""); 
+			}
+		});
+	},
 	setCaption : function (newcap){
 		return this.each(function(){
 			var ctop = $(this).jqGrid('getStyleUI',this.p.styleUI+".common",'cornertop', true);
@@ -11410,9 +11451,20 @@ $.jgrid.extend({
 				}
 			}
 			function getCurrPos() {
-				var rowsInGrid = $($t).jqGrid("getDataIDs"),
-				selrow = $("#id_g","#"+frmtb).val(),
-				pos = $.inArray(selrow,rowsInGrid);
+				var rowsInGrid =  $($t).jqGrid("getDataIDs"),
+				selrow = $("#id_g","#"+frmtb).val(), pos;
+				if($t.p.multiselect && rp_ge[$t.p.id].viewselected) {
+					var arr = [];
+					for(var i=0, len = rowsInGrid.length;i<len;i++) {
+						if($.inArray(rowsInGrid[i],$t.p.selarrrow) !== -1) {
+							arr.push(rowsInGrid[i]);
+						}
+					}
+					pos = $.inArray(selrow,arr);
+					return [pos, arr];
+				} else {
+					pos = $.inArray(selrow,rowsInGrid);
+				}
 				return [pos,rowsInGrid];
 			}
 
@@ -11542,7 +11594,9 @@ $.jgrid.extend({
 						p.onclickPgButtons.call($t,'next',$("#"+frmgr),npos[1][npos[0]]);
 					}
 					fillData(npos[1][npos[0]+1],$t);
-					$($t).jqGrid("setSelection",npos[1][npos[0]+1]);
+					if(!($t.p.multiselect &&  rp_ge[$t.p.id].viewselected)) {
+						$($t).jqGrid("setSelection",npos[1][npos[0]+1]);
+					}
 					$($t).triggerHandler("jqGridViewRowAfterClickPgButtons", ['next',$("#"+frmgr),npos[1][npos[0]+1]]);
 					if($.isFunction(p.afterclickPgButtons)) {
 						p.afterclickPgButtons.call($t,'next',$("#"+frmgr),npos[1][npos[0]+1]);
@@ -11561,7 +11615,9 @@ $.jgrid.extend({
 						p.onclickPgButtons.call($t,'prev',$("#"+frmgr),ppos[1][ppos[0]]);
 					}
 					fillData(ppos[1][ppos[0]-1],$t);
-					$($t).jqGrid("setSelection",ppos[1][ppos[0]-1]);
+					if(!($t.p.multiselect &&  rp_ge[$t.p.id].viewselected)) {				
+						$($t).jqGrid("setSelection",ppos[1][ppos[0]-1]);
+					}
 					$($t).triggerHandler("jqGridViewRowAfterClickPgButtons", ['prev',$("#"+frmgr),ppos[1][ppos[0]-1]]);
 					if($.isFunction(p.afterclickPgButtons)) {
 						p.afterclickPgButtons.call($t,'prev',$("#"+frmgr),ppos[1][ppos[0]-1]);
