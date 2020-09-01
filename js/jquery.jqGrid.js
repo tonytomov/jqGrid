@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.4.0 - 2020-08-26
+* @license Guriddo jqGrid JS - v5.5.0 - 2020-09-01
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -24,7 +24,7 @@ if(!$.jgrid.hasOwnProperty("defaults")) {
 	$.jgrid.defaults = {};
 }
 $.extend($.jgrid,{
-	version : "5.4.0",
+	version : "5.5.0",
 	htmlDecode : function(value){
 		if(value && (value==='&nbsp;' || value==='&#160;' || (value.length===1 && value.charCodeAt(0)===160))) { return "";}
 		return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
@@ -11615,7 +11615,7 @@ $.jgrid.extend({
 						p.onclickPgButtons.call($t,'prev',$("#"+frmgr),ppos[1][ppos[0]]);
 					}
 					fillData(ppos[1][ppos[0]-1],$t);
-					if(!($t.p.multiselect &&  rp_ge[$t.p.id].viewselected)) {				
+					if(!($t.p.multiselect &&  rp_ge[$t.p.id].viewselected)) {
 						$($t).jqGrid("setSelection",ppos[1][ppos[0]-1]);
 					}
 					$($t).triggerHandler("jqGridViewRowAfterClickPgButtons", ['prev',$("#"+frmgr),ppos[1][ppos[0]-1]]);
@@ -18710,7 +18710,7 @@ $.jgrid.extend({
 				"[Content_Types].xml": $.parseXML( es['[Content_Types].xml'])
 			},
 			cm = $t.p.colModel,
-			i=0, j, ien, 
+			i=0, j, ien,
 			data = {
 				body  : $t.p.treeGrid ? $($t).jqGrid('getRowData', null, true, o.treeindent) : $t.addLocalData( true ),
 				header : [],
@@ -18810,7 +18810,7 @@ $.jgrid.extend({
 			}
 			function linkParse(strLinkHTML) {
 				var oDiv, oNode;
-			
+
 				(oDiv = document.createElement('div')).innerHTML = strLinkHTML;
 				var oNode = oDiv.firstChild;
 				if(oNode.nodeName === 'A' ) {
@@ -18819,9 +18819,9 @@ $.jgrid.extend({
 					return [oNode.textContent,oNode.textContent];
 				}
 				return false;
-				
+
 			}
-			
+
 			var _replStr = $.isFunction(o.replaceStr) ? o.replaceStr : _replStrFunc,
 			currentRow, rowNode,
 			addRow = function ( row, header ) {
@@ -19527,7 +19527,7 @@ $.jgrid.extend({
 			}
 			try {
 				var pdf = pdfMake.createPdf( doc );
-				pdf.getDataUrl(function(url) { 
+				pdf.getDataUrl(function(url) {
 					if( $.isFunction( o.loadIndicator )) {
 						o.loadIndicator('hide');
 					} else if(o.loadIndicator) {
@@ -19876,7 +19876,7 @@ $.jgrid.extend({
 					if ( o.autoPrint ) {
 						win.print();
 						win.close();
-					}					
+					}
 				} else {
 					setTimeout( function () {
 						if ( o.autoPrint ) {
