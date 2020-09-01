@@ -761,7 +761,7 @@ $.jgrid.extend({
 				"[Content_Types].xml": $.parseXML( es['[Content_Types].xml'])
 			},
 			cm = $t.p.colModel,
-			i=0, j, ien, 
+			i=0, j, ien,
 			data = {
 				body  : $t.p.treeGrid ? $($t).jqGrid('getRowData', null, true, o.treeindent) : $t.addLocalData( true ),
 				header : [],
@@ -861,7 +861,7 @@ $.jgrid.extend({
 			}
 			function linkParse(strLinkHTML) {
 				var oDiv, oNode;
-			
+
 				(oDiv = document.createElement('div')).innerHTML = strLinkHTML;
 				var oNode = oDiv.firstChild;
 				if(oNode.nodeName === 'A' ) {
@@ -870,9 +870,9 @@ $.jgrid.extend({
 					return [oNode.textContent,oNode.textContent];
 				}
 				return false;
-				
+
 			}
-			
+
 			var _replStr = $.isFunction(o.replaceStr) ? o.replaceStr : _replStrFunc,
 			currentRow, rowNode,
 			addRow = function ( row, header ) {
@@ -1578,7 +1578,7 @@ $.jgrid.extend({
 			}
 			try {
 				var pdf = pdfMake.createPdf( doc );
-				pdf.getDataUrl(function(url) { 
+				pdf.getDataUrl(function(url) {
 					if( $.isFunction( o.loadIndicator )) {
 						o.loadIndicator('hide');
 					} else if(o.loadIndicator) {
@@ -1927,7 +1927,7 @@ $.jgrid.extend({
 					if ( o.autoPrint ) {
 						win.print();
 						win.close();
-					}					
+					}
 				} else {
 					setTimeout( function () {
 						if ( o.autoPrint ) {
