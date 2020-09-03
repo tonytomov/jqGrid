@@ -5249,7 +5249,7 @@ $.jgrid.extend({
 				}
 				if( $(ind).hasClass('jqgrow') ) { // ignore first not visible row
 					if(usedata) {
-						res = $t.p.data[ $t.p._index[ $.jgrid.stripPref($t.p.idPrefix, ind.id) ] ];
+						res = res = $.extend( {}, $t.p.data[ $t.p._index[ $.jgrid.stripPref($t.p.idPrefix, ind.id) ] ] );
 					} else {
 						$(ind).children('td[role="gridcell"]').each( function(i) {
 							nm = $t.p.colModel[i].name;
