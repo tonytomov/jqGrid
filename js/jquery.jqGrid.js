@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.0 - 2020-09-03
+* @license Guriddo jqGrid JS - v5.5.0 - 2020-09-15
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2304,6 +2304,7 @@ $.fn.jqGrid = function( pin ) {
 			var startReq = new Date(),
 			locdata = (ts.p.datatype !== "local" && ts.p.loadonce) || ts.p.datatype === "xmlstring",
 			xmlid = "_id_", xmlRd = ts.p.xmlReader,
+			treeadjtmp =[],
 			frd = ts.p.datatype === "local" ? "local" : "xml";
 			if(locdata) {
 				ts.p.data = [];
@@ -2420,6 +2421,9 @@ $.fn.jqGrid = function( pin ) {
 						rd[xmlid] = $.jgrid.stripPref(ts.p.idPrefix, rid);
 						ts.p.data.push(rd);
 						ts.p._index[rd[xmlid]] = ts.p.data.length-1;
+						if(ts.p.treeANode > -1 && ts.p.treeGridModel === 'adjacency') {
+							treeadjtmp.push(rd);
+						}
 					}
 					if(ts.p.gridview === false ) {
 						tablebody.append(rowData.join(''));
@@ -2454,6 +2458,13 @@ $.fn.jqGrid = function( pin ) {
 			if(ir>0) { if(ts.p.records===0) { ts.p.records=gl;} }
 			if( ts.p.treeGrid === true) {
 				try {self.jqGrid("setTreeNode", fpos+1, ir+fpos+1);} catch (e) {}
+				if(ts.p.treeANode > -1 && ts.p.treeGridModel === 'adjacency') {
+					ts.p.data.splice(-(gl), gl);
+					for(i=0; i < gl; i++) {
+						ts.p.data.splice(ts.p.treeANode+i,0,treeadjtmp[i]);
+					}
+					refreshIndex();
+				}				
 			}
 			//if(!ts.p.treeGrid && !ts.p.scroll) {ts.grid.bDiv.scrollTop = 0;}
 			ts.p.reccount=ir;
@@ -2538,6 +2549,7 @@ $.fn.jqGrid = function( pin ) {
 				arrayReader=orderedCols(gi+si+ni),
 				objectReader=reader(frd),
 				rowReader,len,drows,idn,rd={}, fpos, idr,rowData=[],
+				treeadjtmp =[],
 				classes = getstyle(stylemodule, 'rowBox', true, 'jqgrow ui-row-'+ ts.p.direction),
 				afterInsRow = $.isFunction(ts.p.afterInsertRow), grpdata=[],hiderow=false, groupingPrepare,
 				tablebody = $(ts).find("tbody:first"),
@@ -2642,6 +2654,9 @@ $.fn.jqGrid = function( pin ) {
 					rd[locid] = $.jgrid.stripPref(ts.p.idPrefix, idr);
 					ts.p.data.push(rd);
 					ts.p._index[rd[locid]] = ts.p.data.length-1;
+					if(ts.p.treeANode > -1 && ts.p.treeGridModel === 'adjacency') {
+						treeadjtmp.push(rd);
+					}
 				}
 				if(ts.p.gridview === false ) {
 					tablebody.append(rowData.join(''));
@@ -2676,6 +2691,13 @@ $.fn.jqGrid = function( pin ) {
 			}
 			if( ts.p.treeGrid === true) {
 				try {self.jqGrid("setTreeNode", fpos+1, ir+fpos+1);} catch (e) {}
+				if(ts.p.treeANode > -1 && ts.p.treeGridModel === 'adjacency') {
+					ts.p.data.splice(-(len), len);
+					for(i=0; i < len; i++) {
+						ts.p.data.splice(ts.p.treeANode+i,0,treeadjtmp[i]);
+					}
+					refreshIndex();
+				}
 			}
 			//if(!ts.p.treeGrid && !ts.p.scroll) {ts.grid.bDiv.scrollTop = 0;}
 			ts.p.reccount=ir;
