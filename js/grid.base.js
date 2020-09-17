@@ -2464,11 +2464,15 @@ $.fn.jqGrid = function( pin ) {
 			if( ts.p.treeGrid === true) {
 				try {self.jqGrid("setTreeNode", fpos+1, ir+fpos+1);} catch (e) {}
 				if(ts.p.treeANode > -1 && ts.p.treeGridModel === 'adjacency') {
-					ts.p.data.splice(-(gl), gl);
-					for(i=0; i < gl; i++) {
-						ts.p.data.splice(ts.p.treeANode+i,0,treeadjtmp[i]);
+					v = ts.rows[ts.p.treeANode].id;
+					v = ts.p._index[v]+1;
+					if( v >= 1) {
+						ts.p.data.splice(-(gl), gl);
+						for(i=0; i < gl; i++) {
+							ts.p.data.splice(v + i,0,treeadjtmp[i]);
+						}
+						refreshIndex();
 					}
-					refreshIndex();
 				}				
 			}
 			//if(!ts.p.treeGrid && !ts.p.scroll) {ts.grid.bDiv.scrollTop = 0;}
