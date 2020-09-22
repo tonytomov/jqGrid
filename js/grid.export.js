@@ -895,7 +895,7 @@ $.jgrid.extend({
 					data.width[i] = Math.max(data.width[i], Math.min(parseInt(v.toString().length,10), o.maxlength) );
 					cell = null;
 					var expo = data.parser[data.map[i]];
-					if( expo.excel_parsers === true && !header) {
+					if( expo.excel_parsers === true ) {
 						for ( var j=0, jen=$.jgrid.excelParsers.length ; j<jen ; j++ ) {
 							var special = $.jgrid.excelParsers[j];
 
@@ -1157,8 +1157,10 @@ $.jgrid.extend({
 						hdata[i] = $.jgrid.stripHtml(hdata[i]);
 					}
 				}
-				addRow( hdata, false );
-				$('row:last c', rels).attr( 's', '2' ); // bold
+				if(!$.isEmptyObject(hdata)) {
+					addRow( hdata, true );
+					$('row:last c', rels).attr( 's', '2' ); // bold
+				}
 			}
 			if( $t.p.grouping ) {
 				var savlcgr = $t.p.groupingView._locgr ? true : false;
@@ -1177,8 +1179,10 @@ $.jgrid.extend({
 						data.footer[i] = $.jgrid.stripHtml(data.footer[i]);
 					}
 				}
-				addRow( data.footer, false );
-				$('row:last c', rels).attr( 's', '2' ); // bold
+				if(!$.isEmptyObject(data.footer)) {
+					addRow( data.footer, true );
+					$('row:last c', rels).attr( 's', '2' ); // bold
+				}
 			}
 
 			// Set column widths
