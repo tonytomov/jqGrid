@@ -536,6 +536,8 @@ $.jgrid.extend({
 			$thead = $htable.children("thead"),
 			$theadInTable,
 			$firstHeaderRow = $htable.find(".jqg-first-row-header"),
+			$firstRow,
+			$focusElem = false;
 			//classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['grouping'],
 			base = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].base;
 			if(!ts.p.groupHeader) {
@@ -547,7 +549,6 @@ $.jgrid.extend({
 			} else {
 				$firstHeaderRow.empty();
 			}
-			var $firstRow,
 			inColumnHeader = function (text, columnHeaders) {
 				var length = columnHeaders.length, i;
 				for (i = 0; i < length; i++) {
@@ -557,6 +558,10 @@ $.jgrid.extend({
 				}
 				return -1;
 			};
+			if( $(document.activeElement,"#"+this.p.id).is('input') || $(document.activeElement,"#"+this.p.id).is('textarea') ) {
+				$focusElem = document.activeElement;
+			}
+			$(ts).prepend($thead);
 
 			$(ts).prepend($thead);
 			$tr = $('<tr>', {role: "row"}).addClass("ui-jqgrid-labels jqg-third-row-header");
@@ -656,6 +661,9 @@ $.jgrid.extend({
 			$(ts).on('jqGridResizeStop.setGroupHeaders', function (e, nw, idx) {
 				$firstRow.find('th').eq(idx)[0].style.width = nw + "px";
 			});
+			if( $focusElem ) {
+				$($focusElem).focus();
+			}
 		});				
 	},
 	destroyGroupHeader : function(nullHeader) {
