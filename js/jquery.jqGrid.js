@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.1 - 2020-10-12
+* @license Guriddo jqGrid JS - v5.5.1 - 2020-10-23
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1463,8 +1463,8 @@ $.extend($.jgrid,{
 			},
 			colmenu : {
 				icon_menu : "octicon-grabber",
-				icon_sort_asc : "octicon-arrow-down",
-				icon_sort_desc : "octicon-arrow-up",
+				icon_sort_asc : "octicon-arrow-up",
+				icon_sort_desc : "octicon-arrow-down",
 				icon_columns : "octicon-repo",
 				icon_filter : "octicon-search",
 				icon_group : "octicon-list-unordered",
@@ -1543,8 +1543,8 @@ $.extend($.jgrid,{
 			},
 			colmenu : {
 				icon_menu : "fa-ellipsis-v",
-				icon_sort_asc : "fa-sort-amount-down",
-				icon_sort_desc : "fa-sort-amount-up",
+				icon_sort_asc : "fa-sort-amount-up",
+				icon_sort_desc : "fa-sort-amount-down",
 				icon_columns : "fa-columns",
 				icon_filter : "fa-filter",
 				icon_group : "fa-object-group",
