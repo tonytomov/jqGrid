@@ -537,7 +537,7 @@ $.jgrid.extend({
 			$theadInTable,
 			$firstHeaderRow = $htable.find(".jqg-first-row-header"),
 			$firstRow,
-			$focusElem = false;
+			$focusElem = false,
 			//classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['grouping'],
 			base = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].base;
 			if(!ts.p.groupHeader) {
@@ -549,7 +549,7 @@ $.jgrid.extend({
 			} else {
 				$firstHeaderRow.empty();
 			}
-			inColumnHeader = function (text, columnHeaders) {
+			var inColumnHeader = function (text, columnHeaders) {
 				var length = columnHeaders.length, i;
 				for (i = 0; i < length; i++) {
 					if (columnHeaders[i].startColumnName === text) {
@@ -558,7 +558,7 @@ $.jgrid.extend({
 				}
 				return -1;
 			};
-			if( $(document.activeElement,"#"+this.p.id).is('input') || $(document.activeElement,"#"+this.p.id).is('textarea') ) {
+			if( $(document.activeElement).is('input') || $(document.activeElement).is('textarea') ) {
 				$focusElem = document.activeElement;
 			}
 			$(ts).prepend($thead);
@@ -662,7 +662,9 @@ $.jgrid.extend({
 				$firstRow.find('th').eq(idx)[0].style.width = nw + "px";
 			});
 			if( $focusElem ) {
-				$($focusElem).focus();
+				try {
+					$($focusElem).focus();
+				} catch(fe) {}
 			}
 		});				
 	},
