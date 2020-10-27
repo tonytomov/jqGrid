@@ -1141,3 +1141,15 @@ div[id^='searchcnt'] .fm-button .octicon
 .ui-jqgrid th.jqgrid-multibox {
 	text-align: center
 }
+
+.ui-jqgrid-btable tbody tr.table-active:hover,
+.ui-jqgrid-htable thead tr > th.table-active:hover
+{
+  color: #212529;
+  background-color: rgba(0, 0, 0, 0.075);
+}
+
+.ui-jqgrid-btable tbody tr.table-success > td
+{
+  background-color: #b1dfbb !important;
+}
