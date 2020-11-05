@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.1 - 2020-10-27
+* @license Guriddo jqGrid JS - v5.5.1 - 2020-11-05
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -6424,7 +6424,6 @@ $.jgrid.extend({
 			{
 				return;
 			}
-
 			// get the max index of frozen col
 			while(i<len)
 			{
@@ -6499,6 +6498,13 @@ $.jgrid.extend({
 						$(this).height(maxdh[i]);
 					});
 				}
+				if($("tr.jqg-second-row-header th:eq(0)", htbl).children().length === 0) {
+					$("tr.jqg-second-row-header th:eq(0)", htbl).prepend('&nbsp;');
+				}
+				if( $.trim($("tr.jqg-third-row-header th:eq(0)", htbl).text()) === "") {
+					$("tr.jqg-third-row-header th:eq(0) div", htbl).prepend('&nbsp;');
+				}
+				
 				$(htbl).width(1);
 				if(!$.jgrid.msie()) {
 					$(htbl).css("height","100%");
@@ -13276,8 +13282,12 @@ $.jgrid.extend({
 		return this.each(function()
 		{
 			var $t = this, $tr, i, l, headers, $th, $resizing, grid = $t.grid,
-			thead = $("table.ui-jqgrid-htable thead", grid.hDiv), cm = $t.p.colModel, hc;
+			thead = $("table.ui-jqgrid-htable thead", grid.hDiv), cm = $t.p.colModel, hc, frozen = false;
 			if(!grid) { return; }
+			if($t.p.frozenColumns) {
+				$($t).jqGrid("destroyFrozenColumns");
+				frozen = true;
+			}
 
 			$(this).off('.setGroupHeaders');
 			$tr = $("<tr>", {role: "row"}).addClass("ui-jqgrid-labels");
@@ -13285,7 +13295,7 @@ $.jgrid.extend({
 			for (i = 0, l = headers.length; i < l; i++) {
 				hc = cm[i].hidden ? "none" : "";
 				$th = $(headers[i].el)
-					.width(headers[i].width)
+					.width( $('tr.jqg-first-row-header th:eq('+i+')', thead).width() )
 					.css('display',hc);
 				try {
 					$th.removeAttr("rowSpan");
@@ -13301,10 +13311,14 @@ $.jgrid.extend({
 				$th.children("div")[0].style.top = "";
 			}
 			$(thead).children('tr.ui-jqgrid-labels').remove();
-			$(thead).prepend($tr);
+			$(thead).children('tr.jqg-first-row-header').remove();
+			$(thead).append($tr);
 
 			if(nullHeader === true) {
 				$($t).jqGrid('setGridParam',{ 'groupHeader': null});
+			}
+			if(frozen) {
+				$($t).jqGrid("setFrozenColumns");
 			}
 		});
 	}

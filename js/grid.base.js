@@ -6429,7 +6429,6 @@ $.jgrid.extend({
 			{
 				return;
 			}
-
 			// get the max index of frozen col
 			while(i<len)
 			{
@@ -6504,6 +6503,13 @@ $.jgrid.extend({
 						$(this).height(maxdh[i]);
 					});
 				}
+				if($("tr.jqg-second-row-header th:eq(0)", htbl).children().length === 0) {
+					$("tr.jqg-second-row-header th:eq(0)", htbl).prepend('&nbsp;');
+				}
+				if( $.trim($("tr.jqg-third-row-header th:eq(0)", htbl).text()) === "") {
+					$("tr.jqg-third-row-header th:eq(0) div", htbl).prepend('&nbsp;');
+				}
+				
 				$(htbl).width(1);
 				if(!$.jgrid.msie()) {
 					$(htbl).css("height","100%");
