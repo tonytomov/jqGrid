@@ -91,6 +91,7 @@
 	padding-bottom: 0;
 	padding-top: 0;
 	border-bottom: none; 
+	border-left: none;
 	padding-right: 2px;
 	text-align: center;
 }
@@ -947,6 +948,9 @@ ul.ui-search-menu li, ul.ui-nav-menu li {
 
 .frozen-div, .frozen-bdiv {
 	background-color: #fff;
+}
+.frozen-div .ui-jqgrid-htable {
+	border-bottom: 0px none;
 }
 /*
 .ui-jqgrid .ui-jqgrid-caption,
