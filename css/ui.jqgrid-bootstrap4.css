@@ -537,7 +537,7 @@ div.tablediv > .table-bordered {
 /*Modal Window */
 .ui-jqdialog { }
 .ui-jqdialog { 
-	display: none; 
+	display: none !important; 
 	width: 500px; 
 	position: absolute; 
 	/*padding: 5px; */
