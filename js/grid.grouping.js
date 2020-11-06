@@ -705,7 +705,7 @@ $.jgrid.extend({
 			}
 			$(thead).children('tr.ui-jqgrid-labels').remove();
 			$(thead).children('tr.jqg-first-row-header').remove();
-			$(thead).append($tr);
+			$(thead).prepend($tr);
 
 			if(nullHeader === true) {
 				$($t).jqGrid('setGridParam',{ 'groupHeader': null});

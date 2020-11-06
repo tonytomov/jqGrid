@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.1 - 2020-11-05
+* @license Guriddo jqGrid JS - v5.5.1 - 2020-11-06
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -13312,7 +13312,7 @@ $.jgrid.extend({
 			}
 			$(thead).children('tr.ui-jqgrid-labels').remove();
 			$(thead).children('tr.jqg-first-row-header').remove();
-			$(thead).append($tr);
+			$(thead).prepend($tr);
 
 			if(nullHeader === true) {
 				$($t).jqGrid('setGridParam',{ 'groupHeader': null});
