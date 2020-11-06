@@ -5605,13 +5605,17 @@ $.jgrid.extend({
 	},
 	showHideCol : function(colname,show) {
 		return this.each(function() {
-			var $t = this, fndh=false, brd=$.jgrid.cell_width ? 0: $t.p.cellLayout, cw;
+			var $t = this, fndh=false, brd=$.jgrid.cell_width ? 0: $t.p.cellLayout, cw, frozen = false;
 			if (!$t.grid ) {return;}
 			if( typeof colname === 'string') {colname=[colname];}
 			show = show !== "none" ? "" : "none";
 			var sw = show === "" ? true :false,
 			gHead = null,
 			gh = $t.p.groupHeader && ($.isArray($t.p.groupHeader) || $.isFunction($t.p.groupHeader) );
+			if($t.p.frozenColumns) {
+				$($t).jqGrid('destroyFrozenColumns');
+				frozen = true;
+			}
 			if(gh) { 
 				$($t).jqGrid('destroyGroupHeader', false);
 				gHead = $.extend([],$t.p.groupHeader);
@@ -5619,9 +5623,9 @@ $.jgrid.extend({
 			}
 			$(this.p.colModel).each(function(i) {
 				if ($.inArray(this.name,colname) !== -1 && this.hidden === sw) {
-					if($t.p.frozenColumns === true && this.frozen === true) {
-						return true;
-					}
+					//if($t.p.frozenColumns === true && this.frozen === true) {
+					//	return true;
+					//}
 					$("tr[role=row]",$t.grid.hDiv).each(function(){
 						$(this.cells[i]).css("display", show);
 					});
@@ -5651,6 +5655,9 @@ $.jgrid.extend({
 				for(var k =0; k < gHead.length; k++) {
 					$($t).jqGrid('setGroupHeaders', gHead[k]);
 				}
+			}
+			if(frozen) {
+				$($t).jqGrid('setFrozenColumns');
 			}
 		});
 	},
@@ -13272,6 +13279,9 @@ $.jgrid.extend({
 				try {
 					$($focusElem).focus();
 				} catch(fe) {}
+			}
+			if( $.trim($("tr.jqg-second-row-header th:eq(0)").text()) === "" ) {
+				$("tr.jqg-second-row-header th:eq(0)").prepend('&nbsp;');
 			}
 		});				
 	},

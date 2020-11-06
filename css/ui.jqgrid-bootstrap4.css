@@ -768,7 +768,7 @@ div.ui-jqgrid .selected-row td {
 /* Toolbar Search Menu. Nav menu */
 .ui-search-menu, 
 .ui-nav-menu {
-	position: absolute; 
+	position: absolute !important; 
 	padding: 2px 5px; 
 	z-index:99999;
 }

@@ -666,6 +666,9 @@ $.jgrid.extend({
 					$($focusElem).focus();
 				} catch(fe) {}
 			}
+			if( $.trim($("tr.jqg-second-row-header th:eq(0)").text()) === "" ) {
+				$("tr.jqg-second-row-header th:eq(0)").prepend('&nbsp;');
+			}
 		});				
 	},
 	destroyGroupHeader : function(nullHeader) {
