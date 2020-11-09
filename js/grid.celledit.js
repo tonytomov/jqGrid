@@ -286,6 +286,7 @@ $.jgrid.extend({
 												}
 												$(cc).empty();
 												$($t).jqGrid("setCell",$t.p.savedRow[fr].rowId, iCol, v2, false, false, true);
+												cc = $('td:eq('+iCol+')', trow);
 												$(cc).addClass("dirty-cell");
 												$(trow).addClass("edited");
 												$($t).triggerHandler("jqGridAfterSaveCell", [$t.p.savedRow[fr].rowId, nm, v, iRow, iCol]);
@@ -350,6 +351,7 @@ $.jgrid.extend({
 						if ($t.p.cellsubmit === 'clientArray') {
 							$(cc).empty();
 							$($t).jqGrid("setCell", $t.p.savedRow[fr].rowId, iCol, v2, false, false, true);
+							cc = $('td:eq('+iCol+')', trow);
 							$(cc).addClass("dirty-cell");
 							$(trow).addClass("edited");
 							$($t).triggerHandler("jqGridAfterSaveCell", [$t.p.savedRow[fr].rowId, nm, v, iRow, iCol]);
