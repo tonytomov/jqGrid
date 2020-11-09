@@ -535,9 +535,12 @@ div.tablediv > .table-bordered {
 	border-top: 1px solid #ddd;	
 }
 /*Modal Window */
-.ui-jqdialog { }
+.ui-jqdialog.modal-content { 
+	display: none; 
+	position: absolute; 
+}
 .ui-jqdialog { 
-	display: none !important; 
+	display: none; 
 	width: 500px; 
 	position: absolute; 
 	/*padding: 5px; */
