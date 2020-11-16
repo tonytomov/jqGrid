@@ -165,6 +165,12 @@
 	table-layout:auto;
 	height:100%;
 }
+.ui-jqgrid .ui-jqgrid-pager .navtable td,
+.ui-jqgrid .ui-jqgrid-toppager .navtable td 
+{ 
+	overflow: hidden;
+}
+
 
 /*.ui-jqgrid .ui-jqgrid-toppager .ui-pg-div {padding:1px 0;float:left;position:relative; line-height: 20px; margin-right:3px;}
 .ui-jqgrid .ui-jqgrid-toppager .ui-pg-button { cursor:pointer; }
