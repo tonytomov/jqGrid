@@ -93,10 +93,10 @@
 	border-bottom: none; 
 	border-left: none;
 	padding-right: 2px;
-	text-align: center;
+	/*text-align: center;*/
 }
-.ui-jqgrid tr.jqg-second-row-header th,
-.ui-jqgrid tr.jqg-third-row-header th
+.ui-jqgrid tr.jqg-second-row-header th
+/*.ui-jqgrid tr.jqg-third-row-header th*/
 {
 	/*border-top:none;*/
 	text-align: center;
@@ -430,6 +430,7 @@ div.tablediv > .table-bordered {
 .ui-jqgrid .ui-jqgrid-toppager .navtable td 
 { 
 	padding : 0 5px;
+	overflow: hidden;
 }
 
 /*Subgrid*/
@@ -1150,6 +1151,7 @@ div[id^='searchcnt'] .fm-button .octicon
 }
 
 .ui-jqgrid-btable tbody tr.table-active:hover,
+.ui-jqgrid-btable tbody tr.table-active:focus,
 .ui-jqgrid-htable thead tr > th.table-active:hover
 {
   color: #212529;
