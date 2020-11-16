@@ -334,7 +334,7 @@ div.tablediv > .table-bordered {
 }
 .ui-jqgrid .ui-pg-button span { 
 	display: block; 
-	margin: 0px 2px; 
+	margin: 3px 2px; 
 	float:left;
 }
 .ui-jqgrid .ui-pg-button:hover {  }
