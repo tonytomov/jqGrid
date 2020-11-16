@@ -641,7 +641,7 @@ $.jgrid.extend({
 				tmp[0] = $.jgrid.formatCellCsv( $t.p.caption, p );
 				cap += tmp.join( p.separator ) + p.newLine;
 			}
-			if(p.includeGroupHeader && $t.p.groupHeader && $t.p.groupHeader.length) {
+			if(p.includeGroupHeader && ($t).jqGrid('isGroupHeaderOn')) {
 				var gh = $t.p.groupHeader;
 				for (i=0;i < gh.length; i++) {
 					var ghdata = gh[i].groupHeaders;
@@ -1110,7 +1110,7 @@ $.jgrid.extend({
 				$($t).jqGrid("progressBar", {method:"show", loadtype : $t.p.loadui, htmlcontent: $.jgrid.getRegional($t,'defaults.loadtext') });
 			}
 			$( 'sheets sheet', xlsx.xl['workbook.xml'] ).attr( 'name', o.sheetName );
-			if(o.includeGroupHeader && $t.p.groupHeader && $t.p.groupHeader.length) {
+			if(o.includeGroupHeader && ($t).jqGrid('isGroupHeaderOn') ) {
 				var gh = $t.p.groupHeader, mergecell=[],
 				mrow = 0, key, l;
 				for (l = 0; l < gh.length; l++) {
@@ -1445,7 +1445,7 @@ $.jgrid.extend({
 				i++;
 			}
 			var gh;
-			if(o.includeGroupHeader && $t.p.groupHeader && $t.p.groupHeader.length) {
+			if(o.includeGroupHeader && ($t).jqGrid('isGroupHeaderOn') ) {
 				gh = $t.p.groupHeader;
 				for (i=0;i < gh.length; i++) {
 					var clone = [],

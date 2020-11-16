@@ -1576,7 +1576,7 @@ $.jgrid.extend({
 
 				// groupheaders names
 				var groupH = null;
-				if( $t.p.groupHeader && $t.p.groupHeader.length > 0 ) {
+				if( ($t).jqGrid('isGroupHeaderOn') ) {
 					var htable = $("table.ui-jqgrid-htable", $t.grid.hDiv), 
 					secRow = htable.find(".jqg-second-row-header"),
 					gh_len = $t.p.groupHeader.length;

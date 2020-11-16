@@ -544,6 +544,7 @@ $.jgrid.extend({
 				ts.p.groupHeader = [];
 			}
 			ts.p.groupHeader.push(o);
+			ts.p.groupHeaderOn = true;
 			if($firstHeaderRow[0] === undefined) {
 				$firstHeaderRow = $('<tr>', {role: "row", "aria-hidden": "true"}).addClass("jqg-first-row-header").css("height", "auto");
 			} else {
@@ -686,6 +687,7 @@ $.jgrid.extend({
 			}
 
 			$(this).off('.setGroupHeaders');
+			$t.p.groupHeaderOn = false;
 			$tr = $("<tr>", {role: "row"}).addClass("ui-jqgrid-labels");
 			headers = grid.headers;
 			for (i = 0, l = headers.length; i < l; i++) {
@@ -717,6 +719,10 @@ $.jgrid.extend({
 				$($t).jqGrid("setFrozenColumns");
 			}
 		});
+	},
+	isGroupHeaderOn : function () {
+		var $t = this[0];
+		return $t.p.groupHeaderOn === true && $t.p.groupHeader && ($.isArray($t.p.groupHeader) || $.isFunction($t.p.groupHeader) );
 	}
 });
 //module end
