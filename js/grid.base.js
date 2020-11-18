@@ -1830,6 +1830,10 @@ $.fn.jqGrid = function( pin ) {
 						$(ts).triggerHandler("jqGridResizeStop", [nw, idx]);
 						if($.isFunction(p.resizeStop)) { p.resizeStop.call(ts,nw,idx); }
 					}
+					if(p.frozenColumns) {
+						$("#"+$.jgrid.jqID(p.id)).jqGrid("destroyFrozenColumns");
+						$("#"+$.jgrid.jqID(p.id)).jqGrid("setFrozenColumns");		
+					}
 				}
 				this.curGbox = null;
 				document.onselectstart=function(){return true;};
@@ -6481,9 +6485,11 @@ $.jgrid.extend({
 				$t.grid.fhDiv = $('<div style="position:absolute;' + ($t.p.direction === "rtl" ? 'right:0;' : 'left:0;') + 'top:'+top+'px;height:'+(divhth - pixelfix)+'px;" class="frozen-div ' + hd +'"></div>');
 				$t.grid.fbDiv = $('<div style="position:absolute;' + ($t.p.direction === "rtl" ? 'right:0;' : 'left:0;') + 'top:'+ bpos.top +'px;overflow-y:hidden" class="frozen-bdiv ui-jqgrid-bdiv"></div>');
 				$("#gview_"+$.jgrid.jqID($t.p.id)).append($t.grid.fhDiv);
-				var htbl = $(".ui-jqgrid-htable","#gview_"+$.jgrid.jqID($t.p.id)).clone(true);
+				var htbl = $(".ui-jqgrid-htable","#gview_"+$.jgrid.jqID($t.p.id)).clone(true),
+				fthh = null;
 				// groupheader support - only if useColSpanstyle is false
 				if( $($t).jqGrid('isGroupHeaderOn') )  {
+					fthh = $("tr.jqg-third-row-header", $t.grid.hDiv).height();
 					$("tr.jqg-first-row-header, tr.jqg-third-row-header", htbl).each(function(){
 						$("th:gt("+maxfrozen+")",this).remove();
 					});
@@ -6522,13 +6528,15 @@ $.jgrid.extend({
 						$(this).height(maxdh[i]);
 					});
 				}
-				if($("tr.jqg-second-row-header th:eq(0)", htbl).children().length === 0) {
+				if($("tr.jqg-second-row-header th:eq(0)", htbl).text() === 0) {
 					$("tr.jqg-second-row-header th:eq(0)", htbl).prepend('&nbsp;');
 				}
 				if( $.trim($("tr.jqg-third-row-header th:eq(0)", htbl).text()) === "") {
 					$("tr.jqg-third-row-header th:eq(0) div", htbl).prepend('&nbsp;');
 				}
-				
+				if( fthh ) {
+					$("tr.jqg-third-row-header th:eq(0)", htbl).height(fthh);
+				}
 				$(htbl).width(1);
 				if(!$.jgrid.msie()) {
 					$(htbl).css("height","100%");
@@ -6560,19 +6568,6 @@ $.jgrid.extend({
 					$(ftbl).width(1);
 					$($t.grid.fsDiv).append(ftbl);
 				}
-				$($t).on('jqGridResizeStop.setFrozenColumns', function (e, w, index) {
-					var boxwidth = borderbox ? 'outerWidth' : 'width',
-						rhth = $(".ui-jqgrid-htable",$t.grid.fhDiv),
-						btd = $(".ui-jqgrid-btable",$t.grid.fbDiv);
-
-					$("th:eq("+index+")", rhth)[boxwidth]( w );
-					$("tr:first td:eq("+index+")", btd)[boxwidth]( w );
-					if($t.p.footerrow) {
-						var ftd = $(".ui-jqgrid-ftable",$t.grid.fsDiv);
-						$("tr:first td:eq("+index+")", ftd)[boxwidth]( w );
-					}
-				});
-
 				// data stuff
 				//TODO support for setRowData
 				$("#gview_"+$.jgrid.jqID($t.p.id)).append($t.grid.fbDiv);
@@ -6620,7 +6615,7 @@ $.jgrid.extend({
 						$("tr.jqgrow", btbl).hover(
 							function(){ 
 								$(this).addClass( hover ); 
-								$("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)).addClass( hover ).focus(); 
+								$("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)).addClass( hover ); 
 							},function(){ 
 								$(this).removeClass( hover ); 
 								$("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)).removeClass( hover ); 
@@ -6629,8 +6624,13 @@ $.jgrid.extend({
 						$("tr.jqgrow", "#"+$.jgrid.jqID($t.p.id)).hover(
 							function(){ 
 								$(this).addClass( hover ); 
-								$("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)+"_frozen").addClass( hover ).focus();},
-							function(){ $(this).removeClass( hover ); $("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)+"_frozen").removeClass( hover ); }
+								$("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)+"_frozen").addClass( hover );
+							
+							},
+							function(){ 
+								$(this).removeClass( hover );
+								$("#"+$.jgrid.jqID(this.id), "#"+$.jgrid.jqID($t.p.id)+"_frozen").removeClass( hover ); 
+							}
 						);
 					}
 					//btbl=null;

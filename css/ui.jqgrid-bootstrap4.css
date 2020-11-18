@@ -480,7 +480,7 @@ div.tablediv > .table-bordered {
 .ui-jqgrid .ui-th-subgrid {height:20px;}
 .tablediv > .row { margin: 0 0}
 
-/*Table striped fix */
+/*Table striped fix 
 .ui-jqgrid-view .table-striped tbody tr:nth-of-type(2n+1)
 {
     background-color: inherit;
@@ -489,7 +489,7 @@ div.tablediv > .table-bordered {
 .ui-jqgrid-view .table-striped > tbody > tr:nth-child(odd) > th {
   background-color: rgba(0,0,0,.05);
 }
-
+*/
 
 /* loading */
 .ui-jqgrid .loading,
@@ -568,7 +568,8 @@ div.tablediv > .table-bordered {
 
 .ui-jqdialog .ui-jqdialog-titlebar-close span {  }
 .ui-jqdialog .ui-jqdialog-titlebar-close:hover, 
-.ui-jqdialog .ui-jqdialog-titlebar-close:focus { 
+.ui-jqdialog .ui-jqdialog-titlebar-close:focus 
+{ 
 	padding: 8px; 
 }
 .ui-jqdialog-content, .ui-jqdialog .ui-jqdialog-content { 
@@ -1150,8 +1151,7 @@ div[id^='searchcnt'] .fm-button .octicon
 	text-align: center
 }
 
-.ui-jqgrid-btable tbody tr.table-active:hover,
-.ui-jqgrid-btable tbody tr.table-active:focus,
+.ui-jqgrid-btable tbody tr.table-active:hover > td,
 .ui-jqgrid-htable thead tr > th.table-active:hover
 {
   color: #212529;
@@ -1160,5 +1160,10 @@ div[id^='searchcnt'] .fm-button .octicon
 
 .ui-jqgrid-btable tbody tr.table-success > td
 {
-  background-color: #b1dfbb !important;
+  background-color: #c3e6cb !important;
+}
+
+.ui-jqgrid-btable tbody tr.table-success.table-active > td 
+{
+	background-color: rgba(0, 0, 0, 0.075)  !important;
 }
