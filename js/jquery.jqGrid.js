@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.1 - 2020-11-18
+* @license Guriddo jqGrid JS - v5.5.1 - 2020-11-20
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -9175,7 +9175,7 @@ $.jgrid.extend({
 					nm = this.index || this.name;
 					sop = this.searchoptions || {};
 					if(p.searchOperators &&  sop.searchOperMenu) {
-						so = $elem.parent().prev().children("a").attr("soper") || p.defaultSearch;
+						so = $elem.parents("table.ui-search-table").find("td.ui-search-oper").children("a").attr("soper") || p.defaultSearch;
 					} else {
 						so  = (sop.sopt) ? sop.sopt[0] : this.stype==='select' ?  'eq' : p.defaultSearch;
 					}

@@ -880,7 +880,7 @@ $.jgrid.extend({
 					nm = this.index || this.name;
 					sop = this.searchoptions || {};
 					if(p.searchOperators &&  sop.searchOperMenu) {
-						so = $elem.parent().prev().children("a").attr("soper") || p.defaultSearch;
+						so = $elem.parents("table.ui-search-table").find("td.ui-search-oper").children("a").attr("soper") || p.defaultSearch;
 					} else {
 						so  = (sop.sopt) ? sop.sopt[0] : this.stype==='select' ?  'eq' : p.defaultSearch;
 					}
