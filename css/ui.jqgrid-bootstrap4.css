@@ -264,24 +264,30 @@ div.tablediv > .table-bordered {
 	border-top : 0 none !important; 
 	border-right : 0 none !important;
 }
+.ui-jqgrid .ui-jqgrid-hrtable,
 .ui-jqgrid .ui-jqgrid-ftable {
 	table-layout:fixed;
-	margin-bottom:0;
+	margin-bottom:0 !important;
+	border: 0px none;	
 }
-
+.ui-jqgrid tr.hrheadrow td,
 .ui-jqgrid tr.footrow td {
 	font-weight: bold; 
 	overflow: hidden; 
 	white-space:nowrap; 
 	padding-right: 2px;
+}
+.ui-jqgrid tr.footrow td { 
 	border-bottom: 0px none;
 }
-.ui-jqgrid .ui-jqgrid-ftable {
-	border: 0px none;
+.ui-jqgrid tr.hrheadrow td {
+	border-top: 0px none;
 }
+.ui-jqgrid tr.hrheadrow-ltr td,
 .ui-jqgrid tr.footrow-ltr td {
 	text-align:left;
 }
+.ui-jqgrid tr.hrheadrow-rtl td,
 .ui-jqgrid tr.footrow-rtl td {
 	text-align:right;
 }
