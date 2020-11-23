@@ -254,7 +254,8 @@ div.tablediv > .table-bordered {
 	z-index: 99999;
 
 }
-/* Footer */
+/* Footer, Header row*/
+.ui-jqgrid .ui-jqgrid-hrdiv,
 .ui-jqgrid .ui-jqgrid-sdiv {
 	position: relative; 
 	margin: 0;
