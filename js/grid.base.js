@@ -5863,11 +5863,42 @@ $.jgrid.extend({
 			}
 		});
 	},
-	setGridHeight : function (nh) {
+	setGridHeight : function (nh, entrie_grid) {
 		return this.each(function (){
 			var $t = this;
 			if(!$t.grid) {return;}
-			var bDiv = $($t.grid.bDiv);
+			if(!entrie_grid) {
+				entrie_grid = false;
+			}
+			var bDiv = $($t.grid.bDiv),
+			static_height = $($t.grid.hDiv).outerHeight();
+			
+			if(entrie_grid === true) {
+				if($t.p.pager ) {
+					static_height += $($t.p.pager).outerHeight();
+				}
+				if($t.p.toppager ) {
+					static_height += $($t.p.toppager).outerHeight();
+				}
+				if($t.p.toolbar[0] === true){
+					static_height += $($t.grid.uDiv).outerHeight();
+					if($t.p.toolbar[1]==="both") {
+						static_height += $($t.grid.ubDiv).outerHeight();
+					}
+				}
+				if($t.p.footerrow) {
+					static_height += $($t.grid.sDiv).outerHeight();
+				}
+				if($t.p.headerrow) {
+					static_height +=  $($t.grid.hrDiv).outerHeight();
+				}
+				if($t.p.caption) {
+					static_height +=  $($t.grid.cDiv).outerHeight();
+				}
+				if(nh > static_height) { // set it for the body
+					nh = nh - static_height;
+				}
+			}
 			bDiv.css({height: nh+(isNaN(nh)?"":"px")});
 			if($t.p.frozenColumns === true){
 				//follow the original set height to use 16, better scrollbar width detection
