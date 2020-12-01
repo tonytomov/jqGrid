@@ -6798,9 +6798,23 @@ $.jgrid.extend({
 			}
 			setTimeout(function(){
 				try {
-					var winwidth = $(window).width(),
+
+					// height
+					var bstw = $t.p.styleUI.search('Bootstrap') !== -1 && !isNaN($t.p.height) ? 2 : 0,
+					winheight = $(window).height(),
+					parentheight = $("#gbox_"+$.jgrid.jqID($t.p.id)).parent().height(),
+					wh = $t.p.height,
+					winwidth = $(window).width(),
 					parentwidth = $("#gbox_"+$.jgrid.jqID($t.p.id)).parent().width(),
 					ww = $t.p.width;
+
+					if( (winheight-parentheight) > 3 ) {
+						wh = parentheight;
+					} else {
+						wh = winheight;
+					}
+					$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridHeight', wh - bstw, true);
+					// width
 					if( (winwidth-parentwidth) > 3 ) {
 						ww = parentwidth;
 					} else {
