@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.1 - 2020-11-23
+* @license Guriddo jqGrid JS - v5.5.1 - 2020-12-01
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5821,6 +5821,9 @@ $.jgrid.extend({
 					var delta = $t.p.tblwidth - parseInt(nwidth,10);
 					$t.p.tblwidth = nwidth;
 					cw = $t.p.colModel[lvc].width = $t.p.colModel[lvc].width-delta;
+				} else if ($t.p.tblwidth === nwidth){
+					cw = $t.p.colModel[lvc].width = $t.p.colModel[lvc].width-2;
+					$t.p.tblwidth = nwidth - 2;
 				} else {
 					cw= $t.p.colModel[lvc].width;
 				}
@@ -6790,9 +6793,23 @@ $.jgrid.extend({
 			}
 			setTimeout(function(){
 				try {
-					var winwidth = $(window).width(),
+
+					// height
+					var bstw = $t.p.styleUI.search('Bootstrap') !== -1 && !isNaN($t.p.height) ? 2 : 0,
+					winheight = $(window).height(),
+					parentheight = $("#gbox_"+$.jgrid.jqID($t.p.id)).parent().height(),
+					wh = $t.p.height,
+					winwidth = $(window).width(),
 					parentwidth = $("#gbox_"+$.jgrid.jqID($t.p.id)).parent().width(),
 					ww = $t.p.width;
+
+					if( (winheight-parentheight) > 3 ) {
+						wh = parentheight;
+					} else {
+						wh = winheight;
+					}
+					$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridHeight', wh - bstw, true);
+					// width
 					if( (winwidth-parentwidth) > 3 ) {
 						ww = parentwidth;
 					} else {
@@ -9463,7 +9480,7 @@ $.jgrid.extend({
 					ina = $.inArray(options.sopt[i],aoprs);
 					if(ina !== -1) {
 						selclass = selected === p.odata[ina].oper ? common.highlight : "";
-						str += '<li class="ui-menu-item '+selclass+'" role="presentation"><a class="'+ common.cornerall+' g-menu-item" tabindex="0" role="menuitem" value="'+p.odata[ina].oper+'" oper="'+p.operands[p.odata[ina].oper]+'"><table class="ui-common-table"><tr><td width="25px">'+p.operands[p.odata[ina].oper]+'</td><td>'+ p.odata[ina].text+'</td></tr></table></a></li>';
+						str += '<li class="ui-menu-item '+selclass+'" role="presentation"><a class="'+ common.cornerall+' g-menu-item" tabindex="0" role="menuitem" value="'+p.odata[ina].oper+'" oper="'+p.operands[p.odata[ina].oper]+'"><table class="ui-common-table"><tr><td class="opersign">'+p.operands[p.odata[ina].oper]+'</td><td>'+ p.odata[ina].text+'</td></tr></table></a></li>';
 					}
 				}
 				str += "</ul>";
@@ -9537,7 +9554,7 @@ $.jgrid.extend({
 							}
 						}
 						st = soptions.searchtitle != null ? soptions.searchtitle : p.operandTitle;
-						select = this.searchoptions.searchOperMenu ? "<a title='"+st+"' style='padding-right: 0.5em;' soper='"+so+"' class='soptclass' colname='"+this.name+"'>"+sot+"</a>" : "";
+						select = this.searchoptions.searchOperMenu ? "<a title='"+st+"' soper='"+so+"' class='soptclass' colname='"+this.name+"'>"+sot+"</a>" : "";
 					}
 					$("td:eq(0)",stbl).attr("columname", cm.name).append(select);
 					if(soptions.clearSearch === undefined) {
