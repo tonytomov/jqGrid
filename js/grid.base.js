@@ -5826,6 +5826,9 @@ $.jgrid.extend({
 					var delta = $t.p.tblwidth - parseInt(nwidth,10);
 					$t.p.tblwidth = nwidth;
 					cw = $t.p.colModel[lvc].width = $t.p.colModel[lvc].width-delta;
+				} else if ($t.p.tblwidth === nwidth){
+					cw = $t.p.colModel[lvc].width = $t.p.colModel[lvc].width-2;
+					$t.p.tblwidth = nwidth - 2;
 				} else {
 					cw= $t.p.colModel[lvc].width;
 				}
