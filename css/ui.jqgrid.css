@@ -368,6 +368,18 @@ a.g-menu-item, a.soptclass, a.clearsearchclass { cursor: pointer; }
     font-size: inherit;
 }
 
+.ui-search-menu a.soptclass 
+{
+	padding-left: 0.4em;
+	padding-right: 0.4em
+}
+
+.ui-menu-item a.g-menu-item .opersign 
+{
+	width : 20px;
+}
+
+
 .ui-jqgrid .ui-scroll-popup {width: 95px;}
 .ui-search-table select,
 .ui-search-table input 

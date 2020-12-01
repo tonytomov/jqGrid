@@ -813,10 +813,17 @@ div.ui-jqgrid .selected-row td {
 }
 .ui-jqgrid .ui-search-table .ui-search-oper { 
 	width:20px; 
+	text-align: center;
 }
 a.g-menu-item, a.soptclass, a.clearsearchclass { 
 	cursor: pointer; 
 } 
+
+.ui-menu-item a.g-menu-item .opersign 
+{
+	width : 23px;
+}
+
 .ui-jqgrid .ui-jqgrid-view input,
 .ui-jqgrid .ui-jqgrid-view select,
 .ui-jqgrid .ui-jqgrid-view textarea,
@@ -938,6 +945,12 @@ ul.ui-search-menu li, ul.ui-nav-menu li {
 .ui-menu-item hr {
 	margin-bottom: 0px;
 	margin-top:0px;
+}
+
+.ui-search-oper a.soptclass 
+{
+	padding-left: 0.4em !important;
+	padding-right: 0.4em !important;
 }
 
 .searchFilter .ui-search-table td,
@@ -1098,7 +1111,8 @@ div[id^='searchcnt'] .fm-button .octicon
 	padding-top: 20px ;
 }
 .ui-jqgrid td.ui-search-input,
-.ui-jqgrid td.ui-search-clear
+.ui-jqgrid td.ui-search-clear,
+.ui-jqgrid .ui-search-table .ui-search-oper
 {
 	border: 0 none;
 	padding: 0 0;
