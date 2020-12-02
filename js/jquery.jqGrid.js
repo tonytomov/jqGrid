@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.1 - 2020-12-01
+* @license Guriddo jqGrid JS - v5.5.1 - 2020-12-02
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5728,6 +5728,7 @@ $.jgrid.extend({
 			if (!this.grid ) {return;}
 			var $t = this, cw, setgr, frozen = false,
 			initwidth = 0, brd=$.jgrid.cell_width ? 0: $t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0, cr, bstw = $t.p.styleUI.search('Bootstrap') !== -1 && !isNaN($t.p.height) ? 2 : 0;
+
 			if(typeof shrink !== 'boolean') {
 				shrink=$t.p.shrinkToFit;
 			}
@@ -5764,7 +5765,7 @@ $.jgrid.extend({
 				$($t).jqGrid("destroyFrozenColumns");
 				frozen = true;
 			}
-			
+
 			if(shrink ===false && $t.p.forceFit === true) {$t.p.forceFit=false;}
 			if(shrink===true) {
 				$.each($t.p.colModel, function() {
@@ -5815,6 +5816,7 @@ $.jgrid.extend({
 				} else if( !hs && Math.abs(nwidth-gw-(initwidth+brd*vc)) !== 0) {
 					cr = nwidth-gw-(initwidth+brd*vc) - bstw;
 				}
+
 				$t.p.colModel[lvc].width += cr;
 				$t.p.tblwidth = initwidth+cr+brd*vc+gw;
 				if($t.p.tblwidth > nwidth) {
@@ -5827,17 +5829,7 @@ $.jgrid.extend({
 				} else {
 					cw= $t.p.colModel[lvc].width;
 				}
-				$t.grid.headers[lvc].width = cw;
-				$t.grid.headers[lvc].el.style.width=cw+"px";
-				if(cle) { $t.grid.cols[lvc].style.width = cw+"px"; }
-				if($t.p.footerrow) {
-					$t.grid.footers[lvc].style.width = cw+"px";
-				}
-				if($t.p.headerrow) { 
-					$t.grid.hrheaders[lvc].style.width = cw+"px"; 
-				}
-			}
-			if($t.p.tblwidth) {
+
 				$('table:first',$t.grid.bDiv).css("width",$t.p.tblwidth+"px");
 				$('table:first',$t.grid.hDiv).css("width",$t.p.tblwidth+"px");
 				$t.grid.hDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
@@ -5846,6 +5838,19 @@ $.jgrid.extend({
 				}
 				if($t.p.headerrow) {
 					$('table:first',$t.grid.hrDiv).css("width",$t.p.tblwidth+"px");
+				}
+
+				var has_scroll = ($($t.grid.bDiv)[0].scrollWidth > $($t.grid.bDiv).width()) && bstw !==0 ? -1 : 0;
+				cw = $t.p.colModel[lvc].width += has_scroll;
+
+				$t.grid.headers[lvc].width = cw;
+				$t.grid.headers[lvc].el.style.width=cw+"px";
+				if(cle) { $t.grid.cols[lvc].style.width = cw+"px"; }
+				if($t.p.footerrow) {
+					$t.grid.footers[lvc].style.width = cw+"px";
+				}
+				if($t.p.headerrow) {
+					$t.grid.hrheaders[lvc].style.width = cw+"px";
 				}
 			}
 			if( setgr )  {
