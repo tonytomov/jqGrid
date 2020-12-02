@@ -418,6 +418,10 @@ a.g-menu-item, a.soptclass, a.clearsearchclass { cursor: pointer; }
 	height:17px;
 	margin-top:5px;
 }
+th.jqgrid-multibox .ui-th-div {
+	margin-top:2px !important;
+	padding-bottom: 4px;
+}
 .column-menu, .ui-search-menu {
 	padding: 10px 10px;
 }
