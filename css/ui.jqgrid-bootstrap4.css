@@ -124,16 +124,16 @@
 	font-size:12px;
 }
 .ui-jqgrid .ui-icon-asc {
-	margin-top:4px;
+	margin-top:2px;
 }
 .ui-jqgrid .ui-icon-desc {
-	margin-top:10px;
+	margin-top:8px;
 }
 .ui-jqgrid .ui-i-asc {
-	margin-top:6px;
+	margin-top:4px;
 }
 .ui-jqgrid .ui-i-desc {
-	margin-top:6px;
+	margin-top:4px;
 	margin-left:13px;
 }
 .ui-jqgrid .ui-single-sort-asc {
