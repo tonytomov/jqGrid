@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.1 - 2020-12-07
+* @license Guriddo jqGrid JS - v5.5.1 - 2020-12-21
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5532,10 +5532,23 @@ $.jgrid.extend({
 					k++;
 					if(t.p.datatype === 'local') {
 						lcdata[t.p.localReader.id] = id;
-						t.p._index[id] = t.p.data.length;
-						t.p.data.push(lcdata);
-						lcdata = {};
+						switch (pos) {
+							case 'first':
+							t.p.data.unshift(lcdata);
+								break;
+							case 'last':
+							t.p.data.push(lcdata);
+								break;
+							case 'before':
+							case 'after':
+								t.p.data.splice(sind-1, 0, lcdata);
+								break;
+						}
 					}
+					lcdata = {};
+				}
+				if(t.p.datatype === 'local') {
+					t.refreshIndex();
 				}
 				t.updatepager(true,true);
 				success = true;
