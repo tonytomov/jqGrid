@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.1 - 2020-12-21
+* @license Guriddo jqGrid JS - v5.5.1 - 2021-01-04
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5546,6 +5546,12 @@ $.jgrid.extend({
 						}
 					}
 					lcdata = {};
+					if(t.p.reccount === 1) {
+						sind = $(t).jqGrid('getGridRowById', "norecs");
+						if(sind.rowIndex && sind.rowIndex > 0) {
+							$(t.rows[sind.rowIndex]).remove();
+						}
+					}
 				}
 				if(t.p.datatype === 'local') {
 					t.refreshIndex();
@@ -9155,8 +9161,8 @@ $.extend($.fn.jqFilter,{
 			this.onchange();
 		});
 	}
-
 });
+
 $.extend($.jgrid,{
 	filterRefactor : function ( p  )  {
 		/*ruleGroup : {}, ssfield:[], splitSelect:",", groupOpSelect:"OR"*/

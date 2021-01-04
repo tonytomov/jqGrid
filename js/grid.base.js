@@ -5551,6 +5551,12 @@ $.jgrid.extend({
 						}
 					}
 					lcdata = {};
+					if(t.p.reccount === 1) {
+						sind = $(t).jqGrid('getGridRowById', "norecs");
+						if(sind.rowIndex && sind.rowIndex > 0) {
+							$(t.rows[sind.rowIndex]).remove();
+						}
+					}
 				}
 				if(t.p.datatype === 'local') {
 					t.refreshIndex();
