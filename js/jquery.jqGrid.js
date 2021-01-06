@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.1 - 2021-01-04
+* @license Guriddo jqGrid JS - v5.5.2 - 2021-01-06
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -24,7 +24,7 @@ if(!$.jgrid.hasOwnProperty("defaults")) {
 	$.jgrid.defaults = {};
 }
 $.extend($.jgrid,{
-	version : "5.5.1",
+	version : "5.5.2",
 	htmlDecode : function(value){
 		if(value && (value==='&nbsp;' || value==='&#160;' || (value.length===1 && value.charCodeAt(0)===160))) { return "";}
 		return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
@@ -5094,7 +5094,7 @@ $.jgrid.extend({
 			len = this.rows.length;
 			if(len && len>0){
 				while(i<len) {
-					if($(this.rows[i]).hasClass('jqgrow')) {
+					if($(this.rows[i]).hasClass('jqgrow') && this.rows[i].id !== "norecs" ) {
 						ids[j] = this.rows[i].id;
 						j++;
 					}
@@ -9161,8 +9161,8 @@ $.extend($.fn.jqFilter,{
 			this.onchange();
 		});
 	}
-});
 
+});
 $.extend($.jgrid,{
 	filterRefactor : function ( p  )  {
 		/*ruleGroup : {}, ssfield:[], splitSelect:",", groupOpSelect:"OR"*/
