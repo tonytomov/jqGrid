@@ -5099,7 +5099,7 @@ $.jgrid.extend({
 			len = this.rows.length;
 			if(len && len>0){
 				while(i<len) {
-					if($(this.rows[i]).hasClass('jqgrow')) {
+					if($(this.rows[i]).hasClass('jqgrow') && this.rows[i].id !== "norecs" ) {
 						ids[j] = this.rows[i].id;
 						j++;
 					}
