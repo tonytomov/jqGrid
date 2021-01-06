@@ -83,13 +83,13 @@ var
 
 
 	function createBanner( date ) {
-		return "/**\n*\n"+
+		return date === true ? "/**\n*\n"+
 			"* @license Guriddo <%= pkg.name %> JS - v<%= pkg.version %> " +
 			( date ? "- <%= grunt.template.today('isoDate') %>\n" : "\n") +
 			"* Copyright(c) 2008, <%=pkg.author.name%>, <%=pkg.author.email%>\n"+
 			"* \n"+
 			"* License: <%= pkg.licenses[0].url %>\n"+
-			"*/\n";
+			"*/\n" : "";
 	}
 	// grid files min
 	gridFiles.concat( ).forEach(function( file ) {
