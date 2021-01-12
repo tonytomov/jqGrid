@@ -6672,7 +6672,9 @@ $.jgrid.extend({
 					$("tr[role=row].jqgrow",btbl).each(function(i, n){
 						$(this).height( mh[i] );
 					});
-
+					if($t.rows[1].id === 'norecs') {
+						$("#norecs td", btbl).html("");
+					}
 					if($t.p.hoverrows === true) {
 						$("tr.jqgrow", btbl).hover(
 							function(){ 
