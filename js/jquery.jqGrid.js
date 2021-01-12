@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.2 - 2021-01-06
+* @license Guriddo jqGrid JS - v5.5.2 - 2021-01-12
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -4487,7 +4487,8 @@ $.fn.jqGrid = function( pin ) {
 				try {
 					if(ts.p.colModel[ci].autosize === true) {
 						cmax = $(ts).jqGrid('getCol', ci, false, 'maxwidth');
-						$(ts).jqGrid('resizeColumn', ci, cmax + ( bstw2 ? ts.p.cellLayout : 0 ) );
+						$(ts).jqGrid('resizeColumn', ci, cmax + ( bstw2 ? ts.p.cellLayout : 0 ) )
+						.jqGrid('refreshGroupHeaders');
 					}
 				} catch(e) {
 				} finally {
@@ -4994,19 +4995,7 @@ $.fn.jqGrid = function( pin ) {
 						}
 					}
 				});
-				var gHead,
-				gh = $(ts).jqGrid("isGroupHeaderOn");
-						//ts.p.groupHeader && ($.isArray(ts.p.groupHeader) || $.isFunction(ts.p.groupHeader) );
-				if(gh) { 
-					$(ts).jqGrid('destroyGroupHeader', false);
-					gHead = $.extend([],ts.p.groupHeader);
-					ts.p.groupHeader = null;
-				}
-				if( gh && gHead)  {
-					for(var k =0; k < gHead.length; k++) {
-						$(ts).jqGrid('setGroupHeaders', gHead[k]);
-					}
-				}
+				$(ts).jqGrid('refreshGroupHeaders');
 			});
 		}
 		ts.formatCol = formatCol;
@@ -6667,7 +6656,9 @@ $.jgrid.extend({
 					$("tr[role=row].jqgrow",btbl).each(function(i, n){
 						$(this).height( mh[i] );
 					});
-
+					if($t.rows[1].id === 'norecs') {
+						$("#norecs td", btbl).html("");
+					}
 					if($t.p.hoverrows === true) {
 						$("tr.jqgrow", btbl).hover(
 							function(){ 
@@ -13434,6 +13425,24 @@ $.jgrid.extend({
 	isGroupHeaderOn : function () {
 		var $t = this[0];
 		return $t.p.groupHeaderOn === true && $t.p.groupHeader && ($.isArray($t.p.groupHeader) || $.isFunction($t.p.groupHeader) );
+	}, 
+	refreshGroupHeaders : function() {
+		return this.each(function(){
+			var ts = this,
+			gHead,
+			gh = $(ts).jqGrid("isGroupHeaderOn");
+			//ts.p.groupHeader && ($.isArray(ts.p.groupHeader) || $.isFunction(ts.p.groupHeader) );
+			if(gh) { 
+				$(ts).jqGrid('destroyGroupHeader', false);
+				gHead = $.extend([],ts.p.groupHeader);
+				ts.p.groupHeader = null;
+			}
+			if( gh && gHead)  {
+				for(var k =0; k < gHead.length; k++) {
+					$(ts).jqGrid('setGroupHeaders', gHead[k]);
+				}
+			}
+		});
 	}
 });
 
