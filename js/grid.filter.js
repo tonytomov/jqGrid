@@ -990,7 +990,18 @@ $.jgrid.extend({
 					if(bbt || ms ) {
 						ruleGroup = JSON.stringify( filters );
 					}
-					$.extend($t.p.postData,{filters:ruleGroup});
+					if($t.p.mergeSearch === true && $t.p.searchModules.hasOwnProperty('filterToolbar') && $t.p.searchModules.filterToolbar !== false ) {
+						if(gi > 0) {
+							$t.p.searchModules.filterToolbar = ruleGroup;
+						} else {
+							$t.p.searchModules.filterToolbar = null;
+						}
+						sd = true;
+						$.extend($t.p.postData,{filters: $.jgrid.splitSearch($t.p.searchModules)});
+					} else {
+						$.extend($t.p.postData,{filters:ruleGroup});
+					}
+					
 					$.each(['searchField', 'searchString', 'searchOper'], function(i, n){
 						if($t.p.postData.hasOwnProperty(n)) { delete $t.p.postData[n];}
 					});
@@ -1069,7 +1080,18 @@ $.jgrid.extend({
 						gi++;
 					});
 					ruleGroup += "]}";
-					$.extend($t.p.postData,{filters:ruleGroup});
+					if($t.p.mergeSearch === true && $t.p.searchModules.hasOwnProperty('filterToolbar') && $t.p.searchModules.filterToolbar !== false ) {
+						if(gi > 0) {
+							$t.p.searchModules.filterToolbar = ruleGroup;
+						} else {
+							$t.p.searchModules.filterToolbar = null;
+						}
+						sd = true;
+						$.extend($t.p.postData,{filters: $.jgrid.splitSearch($t.p.searchModules)});
+					} else {
+						$.extend($t.p.postData,{filters:ruleGroup});
+					}
+					
 					$.each(['searchField', 'searchString', 'searchOper'], function(i, n){
 						if($t.p.postData.hasOwnProperty(n)) { delete $t.p.postData[n];}
 					});
@@ -1527,12 +1549,19 @@ $.jgrid.extend({
 			showFrm = true,
 			mustReload = true,
 			IDs = {themodal:'searchmod'+fid,modalhead:'searchhd'+fid,modalcontent:'searchcnt'+fid, scrollelm : fid},
-			defaultFilters  = ($.isPlainObject($t.p_savedFilter) && !$.isEmptyObject($t.p_savedFilter ) ) ? $t.p_savedFilter :  $t.p.postData[p.sFilter],
+			defaultFilters,//  = ($.isPlainObject($t.p._savedFilter) && !$.isEmptyObject($t.p._savedFilter ) ) ? $t.p._savedFilter :  $t.p.postData[p.sFilter],
 			fl,
 			unaryOpers = [],
 			classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].filter,
 			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].common;
 			p.styleUI = $t.p.styleUI;
+			if($.isPlainObject($t.p._savedFilter) && !$.isEmptyObject($t.p._savedFilter )) {
+				defaultFilters = $t.p._savedFilter;
+			} else if($t.p.mergeSearch === true && $t.p.searchModules.hasOwnProperty('searchGrid') && $t.p.searchModules.searchGrid !== false ) {
+				defaultFilters = $t.p.searchModules.searchGrid === true ? "" : $t.p.searchModules.searchGrid;
+			} else {
+				defaultFilters = $t.p.postData[p.sFilter];
+			}
 			if(typeof defaultFilters === "string") {
 				defaultFilters = $.jgrid.parse( defaultFilters );
 			}
@@ -1762,14 +1791,14 @@ $.jgrid.extend({
 					fl = $("#"+fid);
 					fl.find(".input-elm:focus").change();
 					if( ms && p.multipleSearch) {
-						$t.p_savedFilter = {};
+						$t.p._savedFilter = {};
 						filters = $.jgrid.filterRefactor({
 							ruleGroup: $.extend(true, {}, fl.jqFilter('filterData')),
 							ssfield : ssfield,
 							splitSelect : p.splitSelect,
 							groupOpSelect : p.groupOpSelect
 						});
-						$t.p_savedFilter = $.extend(true, {}, fl.jqFilter('filterData'));
+						$t.p._savedFilter = $.extend(true, {}, fl.jqFilter('filterData'));
 					} else {
 						filters = fl.jqFilter('filterData');
 					}
@@ -1783,13 +1812,8 @@ $.jgrid.extend({
 					}
 
 					if(p.stringResult) {
-						try {
-							res = JSON.stringify(filters);
-						} catch (e2) { }
-						if(typeof res==="string") {
-							sdata[p.sFilter] = res;
-							$.each([p.sField,p.sValue, p.sOper], function() {sdata[this] = "";});
-						}
+						sdata[p.sFilter] = JSON.stringify( filters );
+						$.each([p.sField,p.sValue, p.sOper], function() {sdata[this] = "";});
 					} else {
 						if(p.multipleSearch) {
 							sdata[p.sFilter] = filters;
@@ -1801,8 +1825,20 @@ $.jgrid.extend({
 							sdata[p.sFilter] = "";
 						}
 					}
+					if(typeof sdata[p.sFilter] !== "string") {
+						sdata[p.sFilter] = JSON.stringify( sdata[p.sFilter] );
+					}
 					$t.p.search = true;
-					$.extend($t.p.postData,sdata);
+					if($t.p.mergeSearch === true && $t.p.searchModules.hasOwnProperty('searchGrid') && $t.p.searchModules.searchGrid !== false ) {
+						if(sdata[p.sFilter] !==  "") {
+							$t.p.searchModules.searchGrid = sdata[p.sFilter];
+						} else {
+							$t.p.searchModules.searchGrid = null;
+						}
+						$.extend($t.p.postData,{filters: $.jgrid.splitSearch($t.p.searchModules)});						
+					} else {
+						$.extend($t.p.postData,sdata);
+					}
 					mustReload = $($t).triggerHandler("jqGridFilterSearch");
 					if( mustReload === undefined) {
 						mustReload = true;
@@ -1832,7 +1868,13 @@ $.jgrid.extend({
 					if(found) {
 						$(".ui-template", fil).val("default");
 					}
-					$.extend($t.p.postData,sdata);
+					if($t.p.mergeSearch === true && $t.p.searchModules.hasOwnProperty('searchGrid') && $t.p.searchModules.searchGrid !== false ) {
+						$t.p.searchModules.searchGrid = null;
+						$.extend($t.p.postData,{filters: $.jgrid.splitSearch($t.p.searchModules)});
+						$t.p.search = true;
+					} else {
+						$.extend($t.p.postData,sdata);
+					}
 					mustReload = $($t).triggerHandler("jqGridFilterReset");
 					if(mustReload === undefined) {
 						mustReload = true;
@@ -1884,7 +1926,16 @@ $.jgrid.extend({
 				}
 			});
 			ruleGroup += "]}";
-			$.extend($t.p.postData,{filters:ruleGroup});
+			if($t.p.mergeSearch === true && $t.p.searchModules.hasOwnProperty('filterInput') && $t.p.searchModules.filterInput !== false  ) {
+				if(gi > 0) {
+					$t.p.searchModules.filterInput = ruleGroup;
+				} else {
+					$t.p.searchModules.filterInput = null;
+				}
+				$.extend($t.p.postData,{filters: $.jgrid.splitSearch($t.p.searchModules)});
+			} else {
+				$.extend($t.p.postData,{filters:ruleGroup});
+			}
 			$.each(['searchField', 'searchString', 'searchOper'], function(i, n){
 				if($t.p.postData.hasOwnProperty(n)) { delete $t.p.postData[n];}
 			});

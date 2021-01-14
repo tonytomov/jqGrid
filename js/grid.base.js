@@ -964,6 +964,28 @@ $.extend($.jgrid,{
 		});
 		$(selelem).attr("tabindex","0");		
 	},
+	splitSearch : function (p) {
+		/*
+		p : {
+			mergeOper : 'OR',
+			filterInput : null,
+			filterToolbar : null,
+			searchGrid : null
+		}
+		 */
+		var rules = "{\"groupOp\":\"" + p.mergeOper + "\",\"rules\":[],\"groups\":[", i=0;
+		for( const property in p) {
+			if(p.hasOwnProperty(property)) {
+				if(property !== 'mergeOper') {
+					rules += p[property] !== null ? p[property] + ",": "";
+					i++;
+				}
+			}
+		}
+		rules = rules.slice(0, -1);
+		rules += "]}";
+		return rules;
+	},
 	styleUI : {
 		jQueryUI : {
 			common : {
@@ -1744,7 +1766,14 @@ $.fn.jqGrid = function( pin ) {
 			treeGrid_afterLoadComplete: null,
 			useNameForSearch : false,
 			formatFooterData : false,
-			formatHeaderData : false
+			formatHeaderData : false,
+			mergeSearch : false,
+			searchModules : {
+				mergeOper : 'AND',
+				filterInput : true,
+				filterToolbar : true,
+				searchGrid : true
+			}
 		}, $.jgrid.defaults , pin );
 		if (localData !== undefined) {
 			p.data = localData;
@@ -2212,7 +2241,7 @@ $.fn.jqGrid = function( pin ) {
 			var datalen = ts.p.data.length, idname, i, val;
 
 			idname =  ts.p.keyName !== false ? ts.p.keyName : idname = ts.p.localReader.id;
-			ts.p._index = [];
+			ts.p._index = {};
 			for(i =0;i < datalen; i++) {
 				val = $.jgrid.getAccessor(ts.p.data[i],idname);
 				if (val === undefined) { val=String(i+1); }
