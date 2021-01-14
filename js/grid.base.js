@@ -974,7 +974,7 @@ $.extend($.jgrid,{
 		}
 		 */
 		var rules = "{\"groupOp\":\"" + p.mergeOper + "\",\"rules\":[],\"groups\":[", i=0;
-		for( const property in p) {
+		for( var property in p) {
 			if(p.hasOwnProperty(property)) {
 				if(property !== 'mergeOper') {
 					rules += p[property] !== null ? p[property] + ",": "";
