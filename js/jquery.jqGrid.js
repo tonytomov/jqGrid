@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.2 - 2021-01-14
+* @license Guriddo jqGrid JS - v5.5.2 - 2021-01-16
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -7662,12 +7662,14 @@ $.extend($.jgrid,{
 			}
 		}
 		var rtlt = 0;
-		if( rtlsup && coord.left && !appendsel) {
-			rtlt = $(p.gbox).width()- (!isNaN(p.width) ? parseInt(p.width,10) :0) - 8; // to do
+		if( rtlsup && coord.hasOwnProperty('left') && !appendsel) {
+			rtlt = $(p.gbox).outerWidth()- (!isNaN(p.width) ? parseInt(p.width,10) :0) + 12;// to do
 		// just in case
 			coord.left = parseInt(coord.left,10) + parseInt(rtlt,10);
 		}
-		if(coord.left) { coord.left += "px"; }
+		if(coord.hasOwnProperty('left')) { 
+			coord.left += "px"; 
+		}
 		$(mw).css($.extend({
 			width: isNaN(p.width) ? "auto": p.width+"px",
 			height:isNaN(p.height) ? "auto" : p.height + "px",
@@ -10144,7 +10146,7 @@ $.jgrid.extend({
 				if($.isFunction(p.onInitializeSearch) ) {
 					p.onInitializeSearch.call($t, $("#"+fid));
 				}
-				p.gbox = "#gbox_"+fid;
+				p.gbox = "#gbox_"+$.jgrid.jqID($t.p.id);//fid;
 				var fs =  $('.ui-jqgrid').css('font-size') || '11px';
 				if (p.layer) {
 					$.jgrid.createModal(IDs ,fil,p,"#gview_"+$.jgrid.jqID($t.p.id),$("#gbox_"+$.jgrid.jqID($t.p.id))[0], (typeof p.layer ==="string" ? "#"+$.jgrid.jqID(p.layer) : p.layer), (typeof p.layer ==="string" ?  {position: "relative", "font-size":fs} :{ "font-size":fs} ) );
@@ -11361,16 +11363,18 @@ $.jgrid.extend({
 				focusField : p.focusField,
 				onHide :  function(h) {
 					var fh = $('#editmod'+gID)[0].style.height,
-						fw = $('#editmod'+gID)[0].style.width;
+						fw = $('#editmod'+gID)[0].style.width,
+						rtlsup = $("#gbox_"+$.jgrid.jqID(gID)).attr("dir") === "rtl" ? true : false;
 					if(fh.indexOf("px") > -1 ) {
 						fh = parseFloat(fh);
 					}
 					if(fw.indexOf("px") > -1 ) {
 						fw = parseFloat(fw);
 					}
+					
 					$($t).data("formProp", {
 						top:parseFloat($(h.w).css("top")),
-						left : parseFloat($(h.w).css("left")),
+						left : rtlsup ? ( $("#gbox_"+$.jgrid.jqID(gID)).outerWidth() - fw - parseFloat($(h.w).css("left")) + 12 ) : parseFloat($(h.w).css("left")),
 						width : fw,
 						height : fh,
 						dataheight : $(frmgr).height(),
@@ -11763,9 +11767,11 @@ $.jgrid.extend({
 				overlay: p.overlay, 
 				modal:p.modal,
 				onHide :  function(h) {
+					var rtlsup = $("#gbox_"+$.jgrid.jqID(gID)).attr("dir") === "rtl" ? true : false,
+						fw = parseFloat($('#viewmod'+gID)[0].style.width);
 					$($t).data("viewProp", {
 						top:parseFloat($(h.w).css("top")),
-						left : parseFloat($(h.w).css("left")),
+						left : rtlsup ? ( $("#gbox_"+$.jgrid.jqID(gID)).outerWidth() - fw - parseFloat($(h.w).css("left")) + 12 ) : parseFloat($(h.w).css("left")),
 						width : $(h.w).width(),
 						height : $(h.w).height(),
 						dataheight : $("#"+frmgr).height(),
