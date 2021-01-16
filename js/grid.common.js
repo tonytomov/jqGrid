@@ -151,12 +151,14 @@ $.extend($.jgrid,{
 			}
 		}
 		var rtlt = 0;
-		if( rtlsup && coord.left && !appendsel) {
-			rtlt = $(p.gbox).width()- (!isNaN(p.width) ? parseInt(p.width,10) :0) - 8; // to do
+		if( rtlsup && coord.hasOwnProperty('left') && !appendsel) {
+			rtlt = $(p.gbox).outerWidth()- (!isNaN(p.width) ? parseInt(p.width,10) :0) + 12;// to do
 		// just in case
 			coord.left = parseInt(coord.left,10) + parseInt(rtlt,10);
 		}
-		if(coord.left) { coord.left += "px"; }
+		if(coord.hasOwnProperty('left')) { 
+			coord.left += "px"; 
+		}
 		$(mw).css($.extend({
 			width: isNaN(p.width) ? "auto": p.width+"px",
 			height:isNaN(p.height) ? "auto" : p.height + "px",

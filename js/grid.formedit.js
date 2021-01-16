@@ -978,16 +978,18 @@ $.jgrid.extend({
 				focusField : p.focusField,
 				onHide :  function(h) {
 					var fh = $('#editmod'+gID)[0].style.height,
-						fw = $('#editmod'+gID)[0].style.width;
+						fw = $('#editmod'+gID)[0].style.width,
+						rtlsup = $("#gbox_"+$.jgrid.jqID(gID)).attr("dir") === "rtl" ? true : false;
 					if(fh.indexOf("px") > -1 ) {
 						fh = parseFloat(fh);
 					}
 					if(fw.indexOf("px") > -1 ) {
 						fw = parseFloat(fw);
 					}
+					
 					$($t).data("formProp", {
 						top:parseFloat($(h.w).css("top")),
-						left : parseFloat($(h.w).css("left")),
+						left : rtlsup ? ( $("#gbox_"+$.jgrid.jqID(gID)).outerWidth() - fw - parseFloat($(h.w).css("left")) + 12 ) : parseFloat($(h.w).css("left")),
 						width : fw,
 						height : fh,
 						dataheight : $(frmgr).height(),
@@ -1380,9 +1382,11 @@ $.jgrid.extend({
 				overlay: p.overlay, 
 				modal:p.modal,
 				onHide :  function(h) {
+					var rtlsup = $("#gbox_"+$.jgrid.jqID(gID)).attr("dir") === "rtl" ? true : false,
+						fw = parseFloat($('#viewmod'+gID)[0].style.width);
 					$($t).data("viewProp", {
 						top:parseFloat($(h.w).css("top")),
-						left : parseFloat($(h.w).css("left")),
+						left : rtlsup ? ( $("#gbox_"+$.jgrid.jqID(gID)).outerWidth() - fw - parseFloat($(h.w).css("left")) + 12 ) : parseFloat($(h.w).css("left")),
 						width : $(h.w).width(),
 						height : $(h.w).height(),
 						dataheight : $("#"+frmgr).height(),
