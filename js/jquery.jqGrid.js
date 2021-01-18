@@ -9239,7 +9239,8 @@ $.jgrid.extend({
 			splitSelect : ",",
 			groupOpSelect : "OR",
 			errorcheck : true,
-			operands : { "eq" :"==", "ne":"!","lt":"<","le":"<=","gt":">","ge":">=","bw":"^","bn":"!^","in":"=","ni":"!=","ew":"|","en":"!@","cn":"~","nc":"!~","nu":"#","nn":"!#", "bt":"..."}
+			operands : { "eq" :"==", "ne":"!","lt":"<","le":"<=","gt":">","ge":">=","bw":"^","bn":"!^","in":"=","ni":"!=","ew":"|","en":"!@","cn":"~","nc":"!~","nu":"#","nn":"!#", "bt":"..."},
+			disabledKeys :  new Set([9, 16, 17,18,19, 20, 33, 34, 35,36,37,38,39,30, 45,112,113,114,115,116,117,118,119,120,121,122,123, 144, 145]),
 		}, regional , p  || {});
 		return this.each(function(){
 			var $t = this, unaryOpers=[];;
@@ -9684,18 +9685,11 @@ $.jgrid.extend({
 									type: "keydown",
 									fn : function(e) {
 										var key = e.which;
-										switch (key) {
-											case 13:
+										if( p.disabledKeys.has(key)) {
+											// do nothing
+										} else if( key === 13 ) {
 												return false;
-											case 9 :
-											case 16:
-											case 37:
-											case 38:
-											case 39:
-											case 40:
-											case 27:
-												break;
-											default :
+										} else {
 												if(timeoutHnd) { clearTimeout(timeoutHnd); }
 												timeoutHnd = setTimeout(function(){triggerToolbar();}, p.autosearchDelay);
 										}
