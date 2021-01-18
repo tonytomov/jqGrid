@@ -2,6 +2,7 @@ dist
 build
 bower_components
 node_modules
+old.node_modules
 nbproject
 compiler.jar
 yuicompressor.jar
