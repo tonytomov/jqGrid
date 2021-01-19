@@ -488,7 +488,8 @@ $.jgrid.extend({
 									this.groupCount = fdata.cnt;
 									this.groupIndex = fdata.dataIndex;
 									this.groupValue = fdata.value;
-									vv = $t.formatter('', this.v, k, this);
+									//vv = $t.formatter('', this.v, k, this);
+									vv = this.v;
 								} catch (ef) {
 									vv = this.v;
 								}
@@ -1017,7 +1018,8 @@ $.jgrid.extend({
 									this.groupCount = fdata.cnt;
 									this.groupIndex = fdata.dataIndex;
 									this.groupValue = fdata.value;
-									vv = $t.formatter('', this.v, k, this);
+									//vv = $t.formatter('', this.v, k, this);
+									vv = this.v;
 								} catch (ef) {
 									vv = this.v;
 								}
@@ -1072,7 +1074,7 @@ $.jgrid.extend({
 					}
 					var fkey = Object.keys(arr);
 					arr[fkey[0]] = $.jgrid.stripHtml( new Array(n.idx*5).join(' ') + grpTextStr );
-					addRow( arr, true );
+					addRow( arr, false );
 					var leaf = len-1 === n.idx;
 					if( leaf ) {
 						var gg = grp.groups[i+1], kk, ik, offset = 0, sgr = n.startRow,
@@ -1096,7 +1098,7 @@ $.jgrid.extend({
 							for (ik = 0; ik < toEnd; ik++) {
 								if(!sumreverse[ik]) { continue; }
 								arr = buildSummaryTd(i, ik, grp.groups, 0);
-								addRow( arr, true );
+								addRow( arr, false );
 							}
 							toEnd = jj;
 						}
@@ -1329,7 +1331,8 @@ $.jgrid.extend({
 									this.groupCount = fdata.cnt;
 									this.groupIndex = fdata.dataIndex;
 									this.groupValue = fdata.value;
-									vv = $t.formatter('', this.v, k, this);
+									//vv = $t.formatter('', this.v, k, this);
+									vv = this.v;
 								} catch (ef) {
 									vv = this.v;
 								}
@@ -1386,7 +1389,7 @@ $.jgrid.extend({
 					}
 					var fkey = Object.keys(arr);
 					arr[fkey[0]] = $.jgrid.stripHtml( new Array(n.idx*5).join(' ') + grpTextStr );
-					rows.push( constructRow (arr, false) );
+					rows.push( constructRow (arr, true) );
 					var leaf = len-1 === n.idx;
 					if( leaf ) {
 						var gg = grp.groups[i+1], kk, ik, offset = 0, sgr = n.startRow,
@@ -1410,7 +1413,7 @@ $.jgrid.extend({
 							for (ik = 0; ik < toEnd; ik++) {
 								if(!sumreverse[ik]) { continue; }
 								arr = buildSummaryTd(i, ik, grp.groups, 0);
-								rows.push( constructRow (arr, false) );
+								rows.push( constructRow (arr, true) );
 							}
 							toEnd = jj;
 						}
@@ -1766,7 +1769,8 @@ $.jgrid.extend({
 									this.groupCount = fdata.cnt;
 									this.groupIndex = fdata.dataIndex;
 									this.groupValue = fdata.value;
-									vv = $t.formatter('', this.v, k, this);
+									//vv = $t.formatter('', this.v, k, this);
+									vv = this.v;
 								} catch (ef) {
 									vv = this.v;
 								}
@@ -1822,7 +1826,7 @@ $.jgrid.extend({
 					}
 					var fkey = Object.keys(arr);
 					arr[fkey[0]] =  new Array(n.idx*5).join(' ') + grpTextStr ;
-					retstr += addBodyRow( arr, 'td', false, toEnd === 1, colSpan  );
+					retstr += addBodyRow( arr, 'td', true, toEnd === 1, colSpan  );
 					var leaf = len-1 === n.idx;
 					if( leaf ) {
 						var gg = grp.groups[i+1], kk, ik, offset = 0, sgr = n.startRow,
@@ -1830,7 +1834,7 @@ $.jgrid.extend({
 						for(kk=sgr;kk<end;kk++) {
 							if(!grdata[kk - offset]) { break; }
 							var to = grdata[kk - offset];
-							retstr += addBodyRow( to, 'td', false );
+							retstr += addBodyRow( to, 'td', true );
 							//addRow( to, false );
 						}
 
@@ -1847,7 +1851,7 @@ $.jgrid.extend({
 							for (ik = 0; ik < toEnd; ik++) {
 								if(!sumreverse[ik]) { continue; }
 								arr = buildSummaryTd(i, ik, grp.groups, 0);
-								retstr += addBodyRow( arr, 'td', false );
+								retstr += addBodyRow( arr, 'td', true );
 								//addRow( arr, true );
 							}
 							toEnd = jj;
