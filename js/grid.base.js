@@ -6834,37 +6834,37 @@ $.jgrid.extend({
 		}
 		return ret;
 	},
-	resizeGrid : function (timeout) {
+	resizeGrid : function (timeout = 500, width = true, height = true) {
 		return this.each(function(){
 			var $t = this;
-			if(timeout === undefined) {
-				timeout = 500;
-			}
 			setTimeout(function(){
 				try {
 
-					// height
-					var bstw = $t.p.styleUI.search('Bootstrap') !== -1 && !isNaN($t.p.height) ? 2 : 0,
-					winheight = $(window).height(),
-					parentheight = $("#gbox_"+$.jgrid.jqID($t.p.id)).parent().height(),
-					wh = $t.p.height,
-					winwidth = $(window).width(),
-					parentwidth = $("#gbox_"+$.jgrid.jqID($t.p.id)).parent().width(),
-					ww = $t.p.width;
+					if(width) {
+						var wh = $t.p.height,
+						winwidth = $(window).width(),
+						parentwidth = $("#gbox_"+$.jgrid.jqID($t.p.id)).parent().width(),
+						ww = $t.p.width;
+						if( (winwidth-parentwidth) > 3 ) {
+							ww = parentwidth;
+						} else {
+							ww = winwidth;
+						}
+						$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridWidth', ww);
+					}
 
-					if( (winheight-parentheight) > 3 ) {
-						wh = parentheight;
-					} else {
-						wh = winheight;
+					if(height) {
+						var bstw = $t.p.styleUI.search('Bootstrap') !== -1 && !isNaN($t.p.height) ? 2 : 0,
+						winheight = $(window).height(),
+						parentheight = $("#gbox_"+$.jgrid.jqID($t.p.id)).parent().height();
+						
+						if( (winheight-parentheight) > 3 ) {
+							wh = parentheight;
+						} else {
+							wh = winheight;
+						}
+						$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridHeight', wh - bstw, true);
 					}
-					$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridHeight', wh - bstw, true);
-					// width
-					if( (winwidth-parentwidth) > 3 ) {
-						ww = parentwidth;
-					} else {
-						ww = winwidth;
-					}
-					$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridWidth', ww);
 				} catch(e){}
 			}, timeout);
 		});
