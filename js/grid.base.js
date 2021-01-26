@@ -5884,17 +5884,6 @@ $.jgrid.extend({
 				} else {
 					cw= $t.p.colModel[lvc].width;
 				}
-
-				$('table:first',$t.grid.bDiv).css("width",$t.p.tblwidth+"px");
-				$('table:first',$t.grid.hDiv).css("width",$t.p.tblwidth+"px");
-				$t.grid.hDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
-				if($t.p.footerrow) {
-					$('table:first',$t.grid.sDiv).css("width",$t.p.tblwidth+"px");
-				}
-				if($t.p.headerrow) {
-					$('table:first',$t.grid.hrDiv).css("width",$t.p.tblwidth+"px");
-				}
-
 				var has_scroll = ($($t.grid.bDiv)[0].scrollWidth > $($t.grid.bDiv).width()) && bstw !==0 ? -1 : 0;
 				cw = $t.p.colModel[lvc].width += has_scroll;
 
@@ -5908,6 +5897,17 @@ $.jgrid.extend({
 					$t.grid.hrheaders[lvc].style.width = cw+"px";
 				}
 			}
+
+			$('table:first',$t.grid.bDiv).css("width",$t.p.tblwidth+"px");
+			$('table:first',$t.grid.hDiv).css("width",$t.p.tblwidth+"px");
+			$t.grid.hDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
+			if($t.p.footerrow) {
+				$('table:first',$t.grid.sDiv).css("width",$t.p.tblwidth+"px");
+			}
+			if($t.p.headerrow) {
+				$('table:first',$t.grid.hrDiv).css("width",$t.p.tblwidth+"px");
+			}
+
 			if( setgr )  {
 				var gHead = $.extend([],$t.p.groupHeader);
 				$t.p.groupHeader = null;

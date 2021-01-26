@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.2 - 2021-01-21
+* @license Guriddo jqGrid JS - v5.5.2 - 2021-01-26
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -125,18 +125,26 @@ $.extend($.jgrid,{
 			opts = $.jgrid.getRegional(this, "formatter.date");//$.jgrid.formatter.date;
 		}
 		// old lang files
+		if(opts === undefined) {
+			opts = {};
+		}
 		if(opts.parseRe === undefined ) {
 			opts.parseRe = /[#%\\\/:_;.,\t\s-]/;
 		}
-		if( opts.masks.hasOwnProperty(format) ) { format = opts.masks[format]; }
+		if(opts.AmPm === undefined ) {
+			opts.AmPm = ["am","pm","AM","PM"];
+		}
+		if( opts.masks && opts.masks.hasOwnProperty(format) ) { format = opts.masks[format]; }
 		if(date && date != null) {
 			if( !isNaN( date - 0 ) && String(format).toLowerCase() === "u") {
 				//Unix timestamp
 				timestamp = new Date( parseFloat(date)*1000 );
+				opts.validate = false;
 			} else if(date.constructor === Date) {
 				timestamp = date;
-				// Microsoft date format support
+				opts.validate = false;
 			} else if( msMatch !== null ) {
+				// Microsoft date format support
 				timestamp = new Date(parseInt(msMatch[1], 10));
 				if (msMatch[3]) {
 					offset = Number(msMatch[5]) * 60 + Number(msMatch[6]);
@@ -144,6 +152,7 @@ $.extend($.jgrid,{
 					offset -= timestamp.getTimezoneOffset();
 					timestamp.setTime(Number(Number(timestamp) + (offset * 60 * 1000)));
 				}
+				opts.validate = false;
 			} else {
 				//Support ISO8601Long that have Z at the end to indicate UTC timezone
 				if(opts.srcformat === 'ISO8601Long' && date.charAt(date.length - 1) === 'Z') {
@@ -207,6 +216,10 @@ $.extend($.jgrid,{
 		} else {
 			timestamp = new Date(ts.y, ts.m, ts.d, ts.h, ts.i, ts.s, ts.u);
 		}
+		if(opts && opts.validate === true ) { // validation
+			const valid_date =  new Date(ts.y, (+ts.m), ts.d, ts.h, ts.i);
+			return (Boolean(+valid_date) && valid_date.getDate() === ts.d && valid_date.getHours() === ts.h && valid_date.getMinutes() === ts.i);
+		}
 		if(opts.userLocalTime && offset === 0) {
 			offset -= (new Date()).getTimezoneOffset();
 			if( offset !== 0 ) {
@@ -216,7 +229,7 @@ $.extend($.jgrid,{
 		if( newformat === undefined ) {
 			return timestamp;
 		}
-		if( opts.masks.hasOwnProperty(newformat) )  {
+		if( opts.masks && opts.masks.hasOwnProperty(newformat) )  {
 			newformat = opts.masks[newformat];
 		} else if ( !newformat ) {
 			newformat = 'Y-m-d';
@@ -5866,17 +5879,6 @@ $.jgrid.extend({
 				} else {
 					cw= $t.p.colModel[lvc].width;
 				}
-
-				$('table:first',$t.grid.bDiv).css("width",$t.p.tblwidth+"px");
-				$('table:first',$t.grid.hDiv).css("width",$t.p.tblwidth+"px");
-				$t.grid.hDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
-				if($t.p.footerrow) {
-					$('table:first',$t.grid.sDiv).css("width",$t.p.tblwidth+"px");
-				}
-				if($t.p.headerrow) {
-					$('table:first',$t.grid.hrDiv).css("width",$t.p.tblwidth+"px");
-				}
-
 				var has_scroll = ($($t.grid.bDiv)[0].scrollWidth > $($t.grid.bDiv).width()) && bstw !==0 ? -1 : 0;
 				cw = $t.p.colModel[lvc].width += has_scroll;
 
@@ -5890,6 +5892,17 @@ $.jgrid.extend({
 					$t.grid.hrheaders[lvc].style.width = cw+"px";
 				}
 			}
+
+			$('table:first',$t.grid.bDiv).css("width",$t.p.tblwidth+"px");
+			$('table:first',$t.grid.hDiv).css("width",$t.p.tblwidth+"px");
+			$t.grid.hDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
+			if($t.p.footerrow) {
+				$('table:first',$t.grid.sDiv).css("width",$t.p.tblwidth+"px");
+			}
+			if($t.p.headerrow) {
+				$('table:first',$t.grid.hrDiv).css("width",$t.p.tblwidth+"px");
+			}
+
 			if( setgr )  {
 				var gHead = $.extend([],$t.p.groupHeader);
 				$t.p.groupHeader = null;
