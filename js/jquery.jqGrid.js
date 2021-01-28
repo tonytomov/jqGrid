@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.2 - 2021-01-26
+* @license Guriddo jqGrid JS - v5.5.2 - 2021-01-28
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -25,6 +25,9 @@ if(!$.jgrid.hasOwnProperty("defaults")) {
 }
 $.extend($.jgrid,{
 	version : "5.5.2",
+	isFunction : function (x){
+		return typeof x === 'function';
+	}, 
 	htmlDecode : function(value){
 		if(value && (value==='&nbsp;' || value==='&#160;' || (value.length===1 && value.charCodeAt(0)===160))) { return "";}
 		return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
@@ -5125,7 +5128,7 @@ $.jgrid.extend({
 			len = this.rows.length;
 			if(len && len>0){
 				while(i<len) {
-					if($(this.rows[i]).hasClass('jqgrow') && this.rows[i].id !== "norecs" ) {
+					if($(this.rows[i]).hasClass('jqgrow') && this.rows[i].id !== "norecs") {
 						ids[j] = this.rows[i].id;
 						j++;
 					}
@@ -5309,7 +5312,7 @@ $.jgrid.extend({
 				if(getall) {
 					ind = $t.rows[j];
 				}
-				if( $(ind).hasClass('jqgrow') ) { // ignore first not visible row
+				if( $(ind).hasClass('jqgrow') && ind.id !== "norecs") { // ignore first not visible row and norecs one
 					if(usedata) {
 						res = res = $.extend( {}, $t.p.data[ $t.p._index[ $.jgrid.stripPref($t.p.idPrefix, ind.id) ] ] );
 					} else {
@@ -6196,7 +6199,7 @@ $.jgrid.extend({
 				var ln = $t.rows.length, i = 0, dlen = 0;
 				if (ln && ln>0){
 					for(; i < ln; i++){
-						if($($t.rows[i]).hasClass('jqgrow')) {
+						if($($t.rows[i]).hasClass('jqgrow') && $t.rows[i].id !== "norecs") {
 
 							if(mathopr === 'maxwidth') {
 								if(max === undefined) { max = 0;}
@@ -6229,7 +6232,7 @@ $.jgrid.extend({
 						switch(mathopr.toLowerCase()){
 							case 'sum': ret =sum; break;
 							case 'avg': ret = sum/dlen; break;
-							case 'count': ret = (ln-1); break;
+							case 'count': ret = dlen; break;
 							case 'min': ret = min; break;
 							case 'max': ret = max; break;
 							case 'maxwidth': ret = max;
