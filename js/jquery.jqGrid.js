@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.2 - 2021-01-28
+* @license Guriddo jqGrid JS - v5.5.2 - 2021-01-29
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2126,7 +2126,10 @@ $.fn.jqGrid = function( pin ) {
 				if(!cm._maxsize) {
 					cm._maxsize = 0;
 				}
-				cm._maxsize = Math.max($.jgrid.getTextWidth(v, grid_font), cm._maxsize);
+				cm._maxsize = Math.max( (!!$.jgrid.isFunction( cm.sizingStringFunc ) ? 
+							cm.sizingStringFunc.call(ts, v, grid_font, opts, rwdat) : 
+							$.jgrid.getTextWidth( v, grid_font ) ), 
+					cm._maxsize );
 			}
 			return v;
 		},

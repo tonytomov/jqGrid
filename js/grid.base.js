@@ -2131,7 +2131,10 @@ $.fn.jqGrid = function( pin ) {
 				if(!cm._maxsize) {
 					cm._maxsize = 0;
 				}
-				cm._maxsize = Math.max($.jgrid.getTextWidth(v, grid_font), cm._maxsize);
+				cm._maxsize = Math.max( (!!$.jgrid.isFunction( cm.sizingStringFunc ) ? 
+							cm.sizingStringFunc.call(ts, v, grid_font, opts, rwdat) : 
+							$.jgrid.getTextWidth( v, grid_font ) ), 
+					cm._maxsize );
 			}
 			return v;
 		},
