@@ -89,7 +89,7 @@ $.extend($.jgrid,{
 			v = v.replace(regexp,"");
 			return (v && v !== '&nbsp;' && v !== '&#160;') ? v.replace(/\"/g,"'") : "";
 		}
-			return v;
+		return v;
 	},
 	stripPref : function (pref, id) {
 		var obj = $.type( pref );
@@ -1340,7 +1340,7 @@ $.extend($.jgrid,{
 				table_widget : 'table table-condensed',
 				srSelect : 'form-control',
 				srInput : 'form-control',
-				menu_widget : '',
+				menu_widget : ''
 			},
 			subgrid : {
 			},
