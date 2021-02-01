@@ -32,7 +32,18 @@ $.extend($.jgrid,{
 	version : "5.5.3",
 	isFunction : function (x){
 		return typeof x === 'function';
-	}, 
+	},
+	type : function (obj, fullClass) {
+		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof
+		if (fullClass) {
+			return (obj === null) ? '[object Null]' : Object.prototype.toString.call(obj);
+		}
+		if (obj == null) { return (obj + '').toLowerCase(); } // implicit toString() conversion
+		var deepType = Object.prototype.toString.call(obj).slice(8,-1).toLowerCase();
+		if (deepType === 'generatorfunction') { return 'function' }
+		return deepType.match(/^(array|bigint|date|error|function|generator|regexp|symbol)$/) ? deepType :
+			(typeof obj === 'object' || typeof obj === 'function') ? 'object' : typeof obj;
+	},	
 	htmlDecode : function(value){
 		if(value && (value==='&nbsp;' || value==='&#160;' || (value.length===1 && value.charCodeAt(0)===160))) { return "";}
 		return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
@@ -92,7 +103,7 @@ $.extend($.jgrid,{
 		return v;
 	},
 	stripPref : function (pref, id) {
-		var obj = $.type( pref );
+		var obj = $.jgrid.type( pref );
 		if( obj === "string" || obj === "number") {
 			pref =  String(pref);
 			id = pref !== "" ? String(id).replace(String(pref), "") : id;

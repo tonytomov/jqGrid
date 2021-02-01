@@ -136,13 +136,13 @@ $.extend($.jgrid,{
 			}
 		}
 		ret = $.jgrid.parseFunc( gridstring );
-		if( ret && $.type(ret) === 'object') {
+		if( ret && $.jgrid.type(ret) === 'object') {
 			if($t.grid) {
 				$.jgrid.gridUnload( jqGridId );
 			}
 			if($.jgrid.isFunction(o.beforeSetGrid)) {
 				tmp = o.beforeSetGrid( ret );
-				if(tmp && $.type(tmp) === 'object') {
+				if(tmp && $.jgrid.type(tmp) === 'object') {
 					ret = tmp;
 				}
 			}

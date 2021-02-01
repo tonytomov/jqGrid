@@ -23,7 +23,7 @@ $.jgrid.extend({
 		// Compatible mode old versions
 		var o={}, args = $.makeArray(arguments).slice(1), $t = this[0];
 
-		if( $.type(args[0]) === "object" ) {
+		if( $.jgrid.type(args[0]) === "object" ) {
 			o = args[0];
 		} else {
 			if (keys !== undefined) { o.keys = keys; }
@@ -171,7 +171,7 @@ $.jgrid.extend({
 		// Compatible mode old versions
 		var args = $.makeArray(arguments).slice(1), o = {}, $t = this[0];
 
-		if( $.type(args[0]) === "object" ) {
+		if( $.jgrid.type(args[0]) === "object" ) {
 			o = args[0];
 		} else {
 			if ($.jgrid.isFunction(successfunc)) { o.successfunc = successfunc; }
@@ -440,7 +440,7 @@ $.jgrid.extend({
 		// Compatible mode old versions
 		var args = $.makeArray(arguments).slice(1), o={};
 
-		if( $.type(args[0]) === "object" ) {
+		if( $.jgrid.type(args[0]) === "object" ) {
 			o = args[0];
 		} else {
 			if ($.jgrid.isFunction(afterrestorefunc)) { o.afterrestorefunc = afterrestorefunc; }
