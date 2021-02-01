@@ -321,7 +321,7 @@ $.jgrid.extend({
 					if ($t.p.selrow === oldRowId) {
 						$t.p.selrow = rowid;
 					}
-					if ($.isArray($t.p.selarrrow)) {
+					if (Array.isArray($t.p.selarrrow)) {
 						var i = $.inArray(oldRowId, $t.p.selarrrow);
 						if (i>=0) {
 							$t.p.selarrrow[i] = rowid;
@@ -370,9 +370,9 @@ $.jgrid.extend({
 						if (stat === "success"){
 							var ret = true, sucret, k;
 							sucret = $($t).triggerHandler("jqGridInlineSuccessSaveRow", [res, rowid, o]);
-							if (!$.isArray(sucret)) {sucret = [true, tmp3];}
+							if ( !Array.isArray(sucret) ) {sucret = [true, tmp3];}
 							if (sucret[0] && $.isFunction(o.successfunc)) {sucret = o.successfunc.call($t, res);}
-							if($.isArray(sucret)) {
+							if( Array.isArray(sucret) ) {
 								// expect array - status, data, rowid
 								ret = sucret[0];
 								tmp = sucret[1] || tmp;

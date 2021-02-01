@@ -517,7 +517,7 @@ $.jgrid.extend({
 				$.each(grp.groups,function(i,n){
 					toEnd++;
 					try {
-						if ($.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
+						if (Array.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
 							gv = grp.formatDisplayField[n.idx].call($t, n.displayValue, n.value, $t.p.colModel[cp[n.idx]], n.idx, grp);
 						} else {
 							gv = $t.formatter('', n.displayValue, cp[n.idx], n.value );
@@ -886,7 +886,7 @@ $.jgrid.extend({
 					var cellId = $.jgrid.excelCellPos(i) + '' + currentRow,
 					cell,
 					match,
-					v= ($.isArray(row) && header) ? $t.p.colNames[data.map[i]] : $.jgrid.getAccessor( row,  data.header[i] );
+					v= (Array.isArray(row) && header) ? $t.p.colNames[data.map[i]] : $.jgrid.getAccessor( row,  data.header[i] );
 					if ( v == null ) {
 						v = '';
 					}
@@ -1049,7 +1049,7 @@ $.jgrid.extend({
 				$.each(grp.groups,function(i,n){
 					toEnd++;
 					try {
-						if ($.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
+						if (Array.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
 							gv = grp.formatDisplayField[n.idx].call($t, n.displayValue, n.value, $t.p.colModel[cp[n.idx]], n.idx, grp);
 						} else {
 							gv = $t.formatter('', n.displayValue, cp[n.idx], n.value );
@@ -1364,7 +1364,7 @@ $.jgrid.extend({
 				$.each(grp.groups,function(i,n){
 					toEnd++;
 					try {
-						if ($.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
+						if (Array.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
 							gv = grp.formatDisplayField[n.idx].call($t, n.displayValue, n.value, $t.p.colModel[cp[n.idx]], n.idx, grp);
 						} else {
 							gv = $t.formatter('', n.displayValue, cp[n.idx], n.value );
@@ -1800,7 +1800,7 @@ $.jgrid.extend({
 				$.each(grp.groups,function(i,n){
 					toEnd++;
 					try {
-						if ($.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
+						if (Array.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
 							gv = grp.formatDisplayField[n.idx].call($t, n.displayValue, n.value, $t.p.colModel[cp[n.idx]], n.idx, grp);
 						} else {
 							gv = $t.formatter('', n.displayValue, cp[n.idx], n.value );

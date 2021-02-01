@@ -270,7 +270,7 @@ $.extend($.jgrid,{
 
 		fname = fname == null || fname === '' ? 'jqGridFile.txt' : fname;
 
-		if(!$.isArray(data) ) {
+		if( !Array.isArray(data) ) {
 			tmp[0]= data ;
 		} else {
 			tmp = data;	

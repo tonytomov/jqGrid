@@ -48,7 +48,7 @@ $.extend($.jgrid,{
 				return args[parseInt(i,10)];
 			}
 			for(j=0; j < al;j++) {
-				if($.isArray(args[j])) {
+				if(Array.isArray(args[j])) {
 					var nmarr = args[ j ],
 					k = nmarr.length;
 					while(k--) {
@@ -893,7 +893,7 @@ $.extend($.jgrid,{
 		// experimental
 		for( i in $t.p) {
 			if($t.p.hasOwnProperty(i)) {
-				$t.p[i] = $.isArray($t.p[i]) ? [] : null;
+				$t.p[i] = Array.isArray($t.p[i]) ? [] : null;
 			}
 		}
 		l = removevents.length;
@@ -2247,7 +2247,7 @@ $.fn.jqGrid = function( pin ) {
 				if (cellName) {
 					cur = $.jgrid.getAccessor(cur, cellName) || cur;
 				}
-				rowReader = $.isArray(cur) ? arrayReader : objectReader;
+				rowReader = Array.isArray(cur) ? arrayReader : objectReader;
 				for (j = 0; j < rowReader.length; j++) {
 					v = $.jgrid.getAccessor(cur, rowReader[j]);
 					rd[colModel[j + iOffset].name] = v;
@@ -2642,7 +2642,7 @@ $.fn.jqGrid = function( pin ) {
 				idn = ts.p.keyIndex;
 			}
 			drows = $.jgrid.getAccessor(data,dReader.root);
-			if (drows == null && $.isArray(data)) { drows = data; }
+			if (drows == null && Array.isArray(data)) { drows = data; }
 			if (!drows) { drows = []; }
 			len = drows.length; i=0;
 			if (len > 0 && ts.p.page <= 0) { ts.p.page = 1; }
@@ -2696,7 +2696,7 @@ $.fn.jqGrid = function( pin ) {
 				rowReader=objectReader;
 				if (dReader.repeatitems) {
 					if(dReader.cell) {cur = $.jgrid.getAccessor(cur,dReader.cell) || cur;}
-					if ($.isArray(cur)) { rowReader=arrayReader; }
+					if (Array.isArray(cur)) { rowReader=arrayReader; }
 				}
 				for (j=0;j<rowReader.length;j++) {
 					v = $.jgrid.getAccessor(cur,rowReader[j]);
@@ -2803,7 +2803,7 @@ $.fn.jqGrid = function( pin ) {
 						rowReader=objectReader;
 						if (dReader.repeatitems) {
 							if(dReader.cell) {cur = $.jgrid.getAccessor(cur,dReader.cell) || cur;}
-							if ($.isArray(cur)) { rowReader=arrayReader; }
+							if (Array.isArray(cur)) { rowReader=arrayReader; }
 						}
 
 						for (j=0;j<rowReader.length;j++) {
@@ -2831,7 +2831,7 @@ $.fn.jqGrid = function( pin ) {
 		},
 		addLocalData = function( retAll ) {
 			var st = ts.p.multiSort ? [] : "", sto=[], fndsort=false, cmtypes={}, grtypes=[], grindexes=[], srcformat, sorttype, newformat, sfld;
-			if(!$.isArray(ts.p.data)) {
+			if(!Array.isArray(ts.p.data)) {
 				return;
 			}
 			var grpview = ts.p.grouping ? ts.p.groupingView : false, lengrp, gin, si;
@@ -5468,7 +5468,7 @@ $.jgrid.extend({
 		if($.inArray( pos, ["first", "last", "before", "after"] ) === -1) {pos = "last";}
 		var success = false, nm, row, rnc="", msc="", gi, si, ni,sind, i, v, prp="", aradd, cnm, data, cm, id;
 		if(rdata) {
-			if($.isArray(rdata)) {
+			if(Array.isArray(rdata)) {
 				aradd=true;
 				//pos = "last";
 				cnm = rowid;
@@ -5679,7 +5679,6 @@ $.jgrid.extend({
 			var sw = show === "" ? true :false,
 			gHead = null,
 			gh = $($t).jqGrid("isGroupHeaderOn");
-			//$t.p.groupHeader && ($.isArray($t.p.groupHeader) || $.isFunction($t.p.groupHeader) );
 			if($t.p.frozenColumns) {
 				$($t).jqGrid('destroyFrozenColumns');
 				frozen = true;
@@ -5818,7 +5817,6 @@ $.jgrid.extend({
 			}
 			// if (group_header)
 			setgr = $($t).jqGrid("isGroupHeaderOn");
-					//$t.p.groupHeader && ($.isArray($t.p.groupHeader) || $.isFunction($t.p.groupHeader) );
 			if(setgr) { 
 				$($t).jqGrid('destroyGroupHeader', false); 
 			}
@@ -6920,7 +6918,7 @@ $.jgrid.extend({
 
 		return this.each(function(){
 			var $t = this;
-			if( $.isArray(items)) {
+			if( Array.isArray(items)) {
 				for(var i = 0; i < items.length; i++) {
 					item = items[i];
 					// icon, title, position, id, click

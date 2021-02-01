@@ -470,7 +470,7 @@ $.fn.jqFilter = function( arg ) {
 					$(elm).attr('disabled','true');
 				}
 				
-				if(cm.inputtype === 'select' && cm.searchoptions.multiple && $.isArray(rule.data)) {
+				if(cm.inputtype === 'select' && cm.searchoptions.multiple && Array.isArray(rule.data)) {
 					rule.data = rule.data.join(",");
 				}
 				that.onchange();  // signals that the filter has changed
@@ -889,7 +889,7 @@ $.jgrid.extend({
 						sop.custom_value.call($t, $elem, "get") :
 						$elem.val();
 					// detect multiselect
-					if(this.stype === 'select' && sop.multiple && $.isArray(v)) {
+					if(this.stype === 'select' && sop.multiple && Array.isArray(v)) {
 						if(v.length > 0) {
 							ms = true;
 							ssfield.push(nm);
@@ -1952,7 +1952,7 @@ $.jgrid.extend({
 		}, o || {} );
 		return this.each(function() {
 			var $t = this, item, sdata="";
-			if( o.field && $t.p.data && $.isArray( $t.p.data )) {
+			if( o.field && $t.p.data && Array.isArray( $t.p.data )) {
 				var query, res, s_cnt, tmp = [], cm, len,
 				result, i;
 

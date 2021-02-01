@@ -181,7 +181,7 @@ $.jgrid.extend({
 			function agregateFunc ( row, aggr, value, curr) {
 				// default is sum
 				var arrln = aggr.length, i, label, j, jv, mainval="",swapvals=[], swapstr, _cntavg = 1, lbl;
-				if($.isArray(value)) {
+				if( Array.isArray(value) ) {
 					jv = value.length;
 					swapvals = value;
 				} else {
@@ -236,9 +236,9 @@ $.jgrid.extend({
 				o.yDimension[0].converter =  function(){ return '_r_Totals'; };
 			}
 			// build initial columns (colModel) from xDimension
-			xlen = $.isArray(o.xDimension) ? o.xDimension.length : 0;
+			xlen = Array.isArray(o.xDimension) ? o.xDimension.length : 0;
 			ylen = o.yDimension.length;
-			aggrlen  = $.isArray(o.aggregates) ? o.aggregates.length : 0;
+			aggrlen  = Array.isArray(o.aggregates) ? o.aggregates.length : 0;
 			if(xlen === 0 || aggrlen === 0) {
 				throw("xDimension or aggregates optiona are not set!");
 			}
@@ -508,7 +508,7 @@ $.jgrid.extend({
 				if( $.isFunction( pivotOpt.onInitPivot ) ) {
 					pivotOpt.onInitPivot.call( $t );
 				}
-				if(!$.isArray(data)) {
+				if( !Array.isArray(data) ) {
 					//throw "data provides is not an array";
 					data = [];
 				}
