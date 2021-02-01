@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.2 - 2021-01-29
+* @license Guriddo jqGrid JS - v5.5.3 - 2021-02-01
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -24,7 +24,7 @@ if(!$.jgrid.hasOwnProperty("defaults")) {
 	$.jgrid.defaults = {};
 }
 $.extend($.jgrid,{
-	version : "5.5.2",
+	version : "5.5.3",
 	isFunction : function (x){
 		return typeof x === 'function';
 	}, 
@@ -84,7 +84,7 @@ $.extend($.jgrid,{
 			v = v.replace(regexp,"");
 			return (v && v !== '&nbsp;' && v !== '&#160;') ? v.replace(/\"/g,"'") : "";
 		}
-			return v;
+		return v;
 	},
 	stripPref : function (pref, id) {
 		var obj = $.type( pref );
@@ -1335,7 +1335,7 @@ $.extend($.jgrid,{
 				table_widget : 'table table-condensed',
 				srSelect : 'form-control',
 				srInput : 'form-control',
-				menu_widget : '',
+				menu_widget : ''
 			},
 			subgrid : {
 			},

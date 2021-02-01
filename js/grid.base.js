@@ -2,7 +2,7 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
 /**
- * @license Guriddo jqGrid JS 5.5.2 (2021-01-06)
+ * @license Guriddo jqGrid JS 5.5.3 (2021-02-01)
  * Copyright (c) 2008, Tony Tomov, tony@trirand.com
  *
  * License: http://guriddo.net/?page_id=103334
@@ -29,7 +29,7 @@ if(!$.jgrid.hasOwnProperty("defaults")) {
 	$.jgrid.defaults = {};
 }
 $.extend($.jgrid,{
-	version : "5.5.2",
+	version : "5.5.3",
 	isFunction : function (x){
 		return typeof x === 'function';
 	}, 
