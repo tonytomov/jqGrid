@@ -226,7 +226,7 @@ $.jgrid.extend({
 						e.preventDefault();
 						break;
 					case 13 : //Enter
-						if( $.isFunction( o.onEnterCell )) {
+						if( $.jgrid.isFunction( o.onEnterCell )) {
 							o.onEnterCell.call( $t, $t.rows[$t.p.iRow].id ,$t.p.iRow, $t.p.iCol, e);
 							e.preventDefault();
 						}

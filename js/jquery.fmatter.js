@@ -38,7 +38,7 @@
 			return typeof o === 'boolean';
 		},
 		isObject : function(o) {
-			return (o && (typeof o === 'object' || $.isFunction(o))) || false;
+			return (o && (typeof o === 'object' || $.jgrid.isFunction(o))) || false;
 		},
 		isString : function(o) {
 			return typeof o === 'string';
@@ -281,12 +281,12 @@
 				extraparam: {}
 			},
 			saverow = function(rowid, res) {
-				if($.isFunction(op.afterSave)) { op.afterSave.call($t, rowid, res); }
+				if($.jgrid.isFunction(op.afterSave)) { op.afterSave.call($t, rowid, res); }
 				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").show();
 				$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").hide();
 			},
 			restorerow = function(rowid) {
-				if($.isFunction(op.afterRestore)) { op.afterRestore.call($t, rowid); }
+				if($.jgrid.isFunction(op.afterRestore)) { op.afterRestore.call($t, rowid); }
 				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").show();
 				$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").hide();
 			};
@@ -382,7 +382,7 @@
 		op =options.colModel.formatoptions || {}, sep,
 		re = /([\.\*\_\'\(\)\{\}\+\?\\])/g,
 		unformatFunc = options.colModel.unformat||($.fn.fmatter[formatType] && $.fn.fmatter[formatType].unformat);
-		if(unformatFunc !== undefined && $.isFunction(unformatFunc) ) {
+		if(unformatFunc !== undefined && $.jgrid.isFunction(unformatFunc) ) {
 			ret = unformatFunc.call(this, $(cellval).text(), options, cellval);
 		} else if(formatType !== undefined && $.fmatter.isString(formatType) ) {
 			var opts = $.jgrid.getRegional(this, 'formatter') || {}, stripTag;

@@ -122,14 +122,14 @@ $.jgrid.extend({
 					});
 	
 					$(ts).jqGrid("remapColumns",permutation, true, true);
-					if ($.isFunction(ts.p.sortable.update)) {
+					if ($.jgrid.isFunction(ts.p.sortable.update)) {
 						ts.p.sortable.update(permutation);
 					}
 				}
 			};
 			if (ts.p.sortable.options) {
 				$.extend(sortable_opts, ts.p.sortable.options);
-			} else if ($.isFunction(ts.p.sortable)) {
+			} else if ($.jgrid.isFunction(ts.p.sortable)) {
 				ts.p.sortable = { "update" : ts.p.sortable };
 			}
 			if (sortable_opts.start) {
@@ -190,7 +190,7 @@ $.jgrid.extend({
 				if ($.fn[fn]) {
 					$.fn[fn].apply(obj, $.makeArray(arguments).slice(2));
 				}
-			} else if ($.isFunction(fn)) {
+			} else if ($.jgrid.isFunction(fn)) {
 				fn.apply(obj, $.makeArray(arguments).slice(2));
 			}
 		}
@@ -335,9 +335,9 @@ $.jgrid.extend({
 						  (this.hidden?"":"selected='selected'")+">"+$.jgrid.stripHtml(colNames[i])+"</option>");
 		});
 
-		dopts = $.isFunction(opts.dlog_opts) ? opts.dlog_opts.call(self, opts) : opts.dlog_opts;
+		dopts = $.jgrid.isFunction(opts.dlog_opts) ? opts.dlog_opts.call(self, opts) : opts.dlog_opts;
 		call(opts.dlog, selector, dopts);
-		mopts = $.isFunction(opts.msel_opts) ? opts.msel_opts.call(self, opts) : opts.msel_opts;
+		mopts = $.jgrid.isFunction(opts.msel_opts) ? opts.msel_opts.call(self, opts) : opts.msel_opts;
 		call(opts.msel, select, mopts);
 
 		// fix height of elements of the multiselect widget
@@ -379,11 +379,11 @@ $.jgrid.extend({
 					"items": " > .jqgrow"
 					},
 				opts || {});
-				if(opts.start && $.isFunction(opts.start)) {
+				if(opts.start && $.jgrid.isFunction(opts.start)) {
 					opts._start_ = opts.start;
 					delete opts.start;
 				} else {opts._start_=false;}
-				if(opts.update && $.isFunction(opts.update)) {
+				if(opts.update && $.jgrid.isFunction(opts.update)) {
 					opts._update_ = opts.update;
 					delete opts.update;
 				} else {opts._update_ = false;}
@@ -428,7 +428,7 @@ $.jgrid.extend({
 		function updateDnD ()
 		{
 			var datadnd = $.data($t,"dnd");
-			$("tr.jqgrow:not(.ui-draggable)",$t).draggable($.isFunction(datadnd.drag) ? datadnd.drag.call($($t),datadnd) : datadnd.drag);
+			$("tr.jqgrow:not(.ui-draggable)",$t).draggable($.jgrid.isFunction(datadnd.drag) ? datadnd.drag.call($($t),datadnd) : datadnd.drag);
 		}
 		var appender = "<table id='jqgrid_dnd' class='ui-jqgrid-dnd'></table>";
 		if($("#jqgrid_dnd")[0] === undefined) {
@@ -464,7 +464,7 @@ $.jgrid.extend({
 						$("td",ui.helper).each(function(i) {
 							this.style.width = $t.grid.headers[i].width+"px";
 						});
-						if(opts.onstart && $.isFunction(opts.onstart) ) { opts.onstart.call($($t),ev,ui); }
+						if(opts.onstart && $.jgrid.isFunction(opts.onstart) ) { opts.onstart.call($($t),ev,ui); }
 					},
 					stop :function(ev,ui) {
 						var i, ids;
@@ -477,7 +477,7 @@ $.jgrid.extend({
 						for (i=0;i<$.data($t,"dnd").connectWith.length;i++){
 							$($.data($t,"dnd").connectWith[i]).jqGrid('delRowData','jqg_empty_row');
 						}
-						if(opts.onstop && $.isFunction(opts.onstop) ) { opts.onstop.call($($t),ev,ui); }
+						if(opts.onstop && $.jgrid.isFunction(opts.onstop) ) { opts.onstop.call($($t),ev,ui); }
 					}
 				},opts.drag_opts || {});
 			},
@@ -521,7 +521,7 @@ $.jgrid.extend({
 							} catch (e) {}
 						}
 						ui.helper.dropped = true;
-						if($.data(tid[0],"dnd").beforedrop && $.isFunction($.data(tid[0],"dnd").beforedrop) ) {
+						if($.data(tid[0],"dnd").beforedrop && $.jgrid.isFunction($.data(tid[0],"dnd").beforedrop) ) {
 							//parameters to this callback - event, element, data to be inserted, sender, reciever
 							// should return object which will be inserted into the reciever
 							var datatoinsert = $.data(tid[0],"dnd").beforedrop.call(target,ev,ui,getdata,$(tid[0]),$(target));
@@ -530,7 +530,7 @@ $.jgrid.extend({
 						if(ui.helper.dropped) {
 							var grid;
 							if(opts.autoid) {
-								if($.isFunction(opts.autoid)) {
+								if($.jgrid.isFunction(opts.autoid)) {
 									grid = opts.autoid.call(target,getdata);
 								} else {
 									grid = Math.ceil(Math.random()*1000);
@@ -540,7 +540,7 @@ $.jgrid.extend({
 							// NULL is interpreted as undefined while null as object
 							$("#"+$.jgrid.jqID(target.id)).jqGrid('addRowData',grid,getdata,opts.droppos);
 						}
-						if(opts.ondrop && $.isFunction(opts.ondrop) ) { opts.ondrop.call(target,ev,ui, getdata); }
+						if(opts.ondrop && $.jgrid.isFunction(opts.ondrop) ) { opts.ondrop.call(target,ev,ui, getdata); }
 					}}, opts.drop_opts || {});
 			},
 			"onstart" : null,
@@ -577,7 +577,7 @@ $.jgrid.extend({
 		$t.p.jqgdnd = true;
 		for (i=0;i<opts.connectWith.length;i++){
 			cn =opts.connectWith[i];
-			$(cn).closest('.ui-jqgrid-bdiv').droppable($.isFunction(opts.drop) ? opts.drop.call($($t),opts) : opts.drop);
+			$(cn).closest('.ui-jqgrid-bdiv').droppable($.jgrid.isFunction(opts.drop) ? opts.drop.call($($t),opts) : opts.drop);
 		}
 		});
 	},
@@ -592,7 +592,7 @@ $.jgrid.extend({
 			} else {
 				opts._alsoResize_ = false;
 			}
-			if(opts.stop && $.isFunction(opts.stop)) {
+			if(opts.stop && $.jgrid.isFunction(opts.stop)) {
 				opts._stop_ = opts.stop;
 				delete opts.stop;
 			} else {

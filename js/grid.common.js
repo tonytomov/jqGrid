@@ -325,7 +325,7 @@ $.extend($.jgrid,{
 			function(){$(this).addClass(common.hover);},
 			function(){$(this).removeClass(common.hover);}
 		);
-		if($.isFunction(mopt.beforeOpen) ) { mopt.beforeOpen(); }
+		if($.jgrid.isFunction(mopt.beforeOpen) ) { mopt.beforeOpen(); }
 		$.jgrid.viewModal("#info_dialog",{
 			onHide: function(h) {
 				h.w.hide().remove();
@@ -334,12 +334,12 @@ $.extend($.jgrid,{
 			modal :mopt.modal,
 			jqm:jm
 		});
-		if($.isFunction(mopt.afterOpen) ) { mopt.afterOpen(); }
+		if($.jgrid.isFunction(mopt.afterOpen) ) { mopt.afterOpen(); }
 		try{ $("#info_dialog").focus();} catch (m){}
 	},
 	bindEv: function  (el, opt) {
 		var $t = this;
-		if($.isFunction(opt.dataInit)) {
+		if($.jgrid.isFunction(opt.dataInit)) {
 			opt.dataInit.call($t,el,opt);
 		}
 		if(opt.dataEvents) {
@@ -427,10 +427,10 @@ $.extend($.jgrid,{
 						rowid = $.jgrid.stripPref($t.p.idPrefix, rowid);
 					}
 					$.ajax($.extend({
-						url: $.isFunction(options.dataUrl) ? options.dataUrl.call($t, rowid, vl, String(options.name)) : options.dataUrl,
+						url: $.jgrid.isFunction(options.dataUrl) ? options.dataUrl.call($t, rowid, vl, String(options.name)) : options.dataUrl,
 						type : "GET",
 						dataType: "html",
-						data: $.isFunction(postData) ? postData.call($t, rowid, vl, String(options.name)) : postData,
+						data: $.jgrid.isFunction(postData) ? postData.call($t, rowid, vl, String(options.name)) : postData,
 						context: {elem:elem, options:options, vl:vl},
 						success: function(data){
 							var ovm = [], elem = this.elem, vl = this.vl,
@@ -438,7 +438,7 @@ $.extend($.jgrid,{
 							msl = options.multiple===true,
 							cU = options.cacheUrlData === true,
 							oV ='', txt, mss =[],
-							a = $.isFunction(options.buildSelect) ? options.buildSelect.call($t,data) : data;
+							a = $.jgrid.isFunction(options.buildSelect) ? options.buildSelect.call($t,data) : data;
 							if(typeof a === 'string') {
 								a = $( $.trim( a ) ).html();
 							}
@@ -567,7 +567,7 @@ $.extend($.jgrid,{
 			case "custom" :
 				elem = document.createElement("span");
 				try {
-					if($.isFunction(options.custom_element)) {
+					if($.jgrid.isFunction(options.custom_element)) {
 						var celm = options.custom_element.call($t,vl,options);
 						if(celm) {
 							celm = $(celm).addClass("customelement").attr({id:options.id,name:options.name});
@@ -793,7 +793,7 @@ $.extend($.jgrid,{
 			}
 			if(edtrul.custom === true) {
 				if( !(rqfield === false && $.jgrid.isEmpty(val)) ) {
-					if($.isFunction(edtrul.custom_func)) {
+					if($.jgrid.isFunction(edtrul.custom_func)) {
 						var ret = edtrul.custom_func.call(g,val,nm,valref);
 						return Array.isArray(ret) ? ret : [false,msg.customarray,""];
 					}

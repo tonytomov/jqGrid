@@ -30,7 +30,7 @@ $.jgrid.extend({
 			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].common,
 			index = i;
 			$($t).triggerHandler("jqGridBeforeSetTreeNode", [index, len]);
-			if($.isFunction($t.p.beforeSetTreeNode)) {
+			if($.jgrid.isFunction($t.p.beforeSetTreeNode)) {
 				$t.p.beforeSetTreeNode.call($t, index, len);
 			}
 			while(i<len) {
@@ -135,7 +135,7 @@ $.jgrid.extend({
 				i++;
 			}
 			$($t).triggerHandler("jqGridAfterSetTreeNode", [index, len]);			
-			if($.isFunction($t.p.afterSetTreeNode)) {
+			if($.jgrid.isFunction($t.p.afterSetTreeNode)) {
 				$t.p.afterSetTreeNode.call($t, index, len);
 			}
 		});
@@ -230,7 +230,7 @@ $.jgrid.extend({
 			if(ret === undefined ) {
 				ret = true;
 			}
-			if(ret && $.isFunction($t.p.beforeExpandTreeGridRow)) {
+			if(ret && $.jgrid.isFunction($t.p.beforeExpandTreeGridRow)) {
 				ret =  $t.p.beforeExpandTreeGridRow.call($t, rowid, record, childern);
 			}
 			if( ret === false ) { return; }
@@ -242,7 +242,7 @@ $.jgrid.extend({
 				}
 			});
 			$($t).triggerHandler("jqGridAfterExpandTreeGridRow", [rowid, record, childern]);
-			if($.isFunction($t.p.afterExpandTreeGridRow)) {
+			if($.jgrid.isFunction($t.p.afterExpandTreeGridRow)) {
 				$t.p.afterExpandTreeGridRow.call($t, rowid, record, childern);
 			}
 			//bvn
@@ -263,7 +263,7 @@ $.jgrid.extend({
 			if(ret === undefined ) {
 				ret = true;
 			}			
-			if(ret &&  $.isFunction($t.p.beforeCollapseTreeGridRow)) { 
+			if(ret &&  $.jgrid.isFunction($t.p.beforeCollapseTreeGridRow)) { 
 				ret = $t.p.beforeCollapseTreeGridRow.call($t, rowid, record, childern);
 			}
 			if( ret === false ) { return; }
@@ -275,7 +275,7 @@ $.jgrid.extend({
 				}
 			});
 			$($t).triggerHandler("jqGridAfterCollapseTreeGridRow", [rowid, record, childern]);
-			if($.isFunction($t.p.afterCollapseTreeGridRow)) {
+			if($.jgrid.isFunction($t.p.afterCollapseTreeGridRow)) {
 				$t.p.afterCollapseTreeGridRow.call($t, rowid, record, childern);
 			}			
 		});
@@ -606,7 +606,7 @@ $.jgrid.extend({
 				if(ret === undefined ) {
 					ret = true;
 				}			
-				if( ret && $.isFunction(this.p.beforeExpandTreeGridNode) ) {
+				if( ret && $.jgrid.isFunction(this.p.beforeExpandTreeGridNode) ) {
 					ret =  this.p.beforeExpandTreeGridNode.call(this, id, rc );
 				}
 				if( ret === false ) { return; }
@@ -633,7 +633,7 @@ $.jgrid.extend({
 					}
 				}
 				$($t).triggerHandler("jqGridAfterExpandTreeGridNode", [id, rc]);
-				if($.isFunction(this.p.afterExpandTreeGridNode)) {
+				if($.jgrid.isFunction(this.p.afterExpandTreeGridNode)) {
 					this.p.afterExpandTreeGridNode.call(this, id, rc );
 				}
 			}
@@ -651,14 +651,14 @@ $.jgrid.extend({
 				if(ret === undefined ) {
 					ret = true;
 				}			
-				if( ret &&  $.isFunction(this.p.beforeCollapseTreeGridNode) ) {
+				if( ret &&  $.jgrid.isFunction(this.p.beforeCollapseTreeGridNode) ) {
 					ret = this.p.beforeCollapseTreeGridNode.call(this, id, rc );
 				}
 				rc[expanded] = false;
 				if( ret === false ) { return; }
 				$("div.treeclick",rc1).removeClass(this.p.treeIcons.minus+" tree-minus").addClass(this.p.treeIcons.plus+" tree-plus");
 				$($t).triggerHandler("jqGridAfterCollapseTreeGridNode", [id, rc]);
-				if($.isFunction(this.p.afterCollapseTreeGridNode)) {
+				if($.jgrid.isFunction(this.p.afterCollapseTreeGridNode)) {
 					this.p.afterCollapseTreeGridNode.call(this, id, rc );
 				}
 			}

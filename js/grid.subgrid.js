@@ -158,7 +158,7 @@ addSubGrid : function( pos, sind ) {
 				ts.grid.hDiv.loading = true;
 				$("#load_"+$.jgrid.jqID(ts.p.id)).show();
 				if(!ts.p.subgridtype) { ts.p.subgridtype = ts.p.datatype; }
-				if($.isFunction(ts.p.subgridtype)) {
+				if($.jgrid.isFunction(ts.p.subgridtype)) {
 					ts.p.subgridtype.call(ts, dp);
 				} else {
 					ts.p.subgridtype = ts.p.subgridtype.toLowerCase();
@@ -168,9 +168,9 @@ addSubGrid : function( pos, sind ) {
 					case "json":
 					$.ajax($.extend({
 						type:ts.p.mtype,
-						url: $.isFunction(ts.p.subGridUrl) ? ts.p.subGridUrl.call(ts, dp) : ts.p.subGridUrl,
+						url: $.jgrid.isFunction(ts.p.subGridUrl) ? ts.p.subGridUrl.call(ts, dp) : ts.p.subGridUrl,
 						dataType:ts.p.subgridtype,
-						data: $.isFunction(ts.p.serializeSubGridData)? ts.p.serializeSubGridData.call(ts, dp) : dp,
+						data: $.jgrid.isFunction(ts.p.serializeSubGridData)? ts.p.serializeSubGridData.call(ts, dp) : dp,
 						complete: function(sxml) {
 							if(ts.p.subgridtype === "xml") {
 								subGridXml(sxml.responseXML, sid);
@@ -191,7 +191,7 @@ addSubGrid : function( pos, sind ) {
 				nhc++;
 			}
 		});
-		var len = ts.rows.length, i=1,hsret, ishsg = $.isFunction(ts.p.isHasSubGrid);
+		var len = ts.rows.length, i=1,hsret, ishsg = $.jgrid.isFunction(ts.p.isHasSubGrid);
 		if( sind !== undefined && sind > 0) {
 			i = sind;
 			len = sind+1;
@@ -216,7 +216,7 @@ addSubGrid : function( pos, sind ) {
 						if($(this).hasClass("sgcollapsed")) {
 							bfsc = $(ts).triggerHandler("jqGridSubGridBeforeExpand", [pID + "_" + _id, _id]);
 							bfsc = (bfsc === false || bfsc === 'stop') ? false : true;
-							if(bfsc && $.isFunction(ts.p.subGridBeforeExpand)) {
+							if(bfsc && $.jgrid.isFunction(ts.p.subGridBeforeExpand)) {
 								bfsc = ts.p.subGridBeforeExpand.call(ts, pID+"_"+_id,_id);
 							}
 							if(bfsc === false) {return false;}
@@ -225,7 +225,7 @@ addSubGrid : function( pos, sind ) {
 								atd = pos >=1 ? "<td colspan='"+pos+"'>&#160;</td>":"";
 								$(tr).after( "<tr role='row' id='" + pID + "_" + _id + "_expandedContent" + "' class='ui-subgrid ui-sg-expanded'>"+atd+"<td class='" + common.content +" subgrid-cell'><span class='" + common.icon_base +" "+ts.p.subGridOptions.openicon+"'></span></td><td colspan='"+parseInt(ts.p.colNames.length-1-nhc,10)+"' class='" + common.content +" subgrid-data'><div id="+pID+"_"+_id+" class='tablediv'></div></td></tr>" );
 								$(ts).triggerHandler("jqGridSubGridRowExpanded", [pID + "_" + _id, _id]);
-								if( $.isFunction(ts.p.subGridRowExpanded)) {
+								if( $.jgrid.isFunction(ts.p.subGridRowExpanded)) {
 									ts.p.subGridRowExpanded.call(ts, pID+"_"+ _id,_id);
 								} else {
 									populatesubgrid(tr);
@@ -240,7 +240,7 @@ addSubGrid : function( pos, sind ) {
 						} else if($(this).hasClass("sgexpanded")) {
 							bfsc = $(ts).triggerHandler("jqGridSubGridRowColapsed", [pID + "_" + _id, _id]);
 							bfsc = (bfsc === false || bfsc === 'stop') ? false : true;
-							if( bfsc &&  $.isFunction(ts.p.subGridRowColapsed)) {
+							if( bfsc &&  $.jgrid.isFunction(ts.p.subGridRowColapsed)) {
 								bfsc = ts.p.subGridRowColapsed.call(ts, pID+"_"+_id,_id );
 							}
 							if(bfsc===false) {return false;}

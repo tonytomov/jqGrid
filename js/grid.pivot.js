@@ -136,7 +136,7 @@ $.jgrid.extend({
 			 */
 			function calculation(oper, v, field, rc, _cnt)  {
 				var ret;
-				if( $.isFunction(oper)) {
+				if( $.jgrid.isFunction(oper)) {
 					ret = oper.call($t, v, field, rc);
 				} else {
 					switch (oper) {
@@ -280,7 +280,7 @@ $.jgrid.extend({
 						for(k=0;k<ylen;k++) {
 							yValue[k] = $.trim(row[o.yDimension[k].dataName]);
 							// Check to see if we have user defined conditions
-							if(o.yDimension[k].converter && $.isFunction(o.yDimension[k].converter)) {
+							if(o.yDimension[k].converter && $.jgrid.isFunction(o.yDimension[k].converter)) {
 								yValue[k] = o.yDimension[k].converter.call(this, yValue[k], xValue, yValue);
 							}
 						}
@@ -301,7 +301,7 @@ $.jgrid.extend({
 						if(ylen>=1) {
 							for(k=0;k<ylen;k++) {
 								yValue[k] = $.trim(row[o.yDimension[k].dataName]);
-								if(o.yDimension[k].converter && $.isFunction(o.yDimension[k].converter)) {
+								if(o.yDimension[k].converter && $.jgrid.isFunction(o.yDimension[k].converter)) {
 									yValue[k] = o.yDimension[k].converter.call(this, yValue[k], xValue, yValue);
 								}
 							}
@@ -505,7 +505,7 @@ $.jgrid.extend({
 			}
 
 			function pivot( data) {
-				if( $.isFunction( pivotOpt.onInitPivot ) ) {
+				if( $.jgrid.isFunction( pivotOpt.onInitPivot ) ) {
 					pivotOpt.onInitPivot.call( $t );
 				}
 				if( !Array.isArray(data) ) {
@@ -562,7 +562,7 @@ $.jgrid.extend({
 				if(pivotOpt.frozenStaticCols) {
 					jQuery($t).jqGrid("setFrozenColumns");
 				}
-				if( $.isFunction( pivotOpt.onCompletePivot ) ) {
+				if( $.jgrid.isFunction( pivotOpt.onCompletePivot ) ) {
 					pivotOpt.onCompletePivot.call( $t );
 				}
 				if(pivotOpt.loadMsg) {

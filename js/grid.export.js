@@ -26,7 +26,7 @@ $.extend($.jgrid,{
 		var v;
 		if(cm.formatter !== undefined) {
 			var opts= {rowId: '', colModel:cm, gid: $t.p.id, pos:colpos, styleUI: '', isExported : true, exporttype : etype };
-			if($.isFunction( cm.formatter ) ) {
+			if($.jgrid.isFunction( cm.formatter ) ) {
 				v = cm.formatter.call($t,cellval,opts,rwdat);
 			} else if($.fmatter){
 				v = $.fn.fmatter.call($t,cm.formatter,cellval,opts,rwdat);
@@ -517,7 +517,7 @@ $.jgrid.extend({
 				$.each(grp.groups,function(i,n){
 					toEnd++;
 					try {
-						if (Array.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
+						if (Array.isArray(grp.formatDisplayField) && $.jgrid.isFunction(grp.formatDisplayField[n.idx])) {
 							gv = grp.formatDisplayField[n.idx].call($t, n.displayValue, n.value, $t.p.colModel[cp[n.idx]], n.idx, grp);
 						} else {
 							gv = $t.formatter('', n.displayValue, cp[n.idx], n.value );
@@ -526,7 +526,7 @@ $.jgrid.extend({
 						gv = n.displayValue;
 					}
 					var grpTextStr = '';
-					if($.isFunction(grp.groupText[n.idx])) {
+					if($.jgrid.isFunction(grp.groupText[n.idx])) {
 						grpTextStr = grp.groupText[n.idx].call($t, gv, n.cnt, n.summary);
 					} else {
 						grpTextStr = $.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary);
@@ -581,7 +581,7 @@ $.jgrid.extend({
 				});
 				return str;
 			}
-			if( $.isFunction( p.loadIndicator )) {
+			if( $.jgrid.isFunction( p.loadIndicator )) {
 				p.loadIndicator('show');
 			} else if(p.loadIndicator) {
 				$($t).jqGrid("progressBar", {method:"show", loadtype : $t.p.loadui, htmlcontent: $.jgrid.getRegional($t,'defaults.loadtext') });
@@ -691,7 +691,7 @@ $.jgrid.extend({
 				htr += tmp.join( p.separator ) + p.newLine;
 			}
 			ret = cap + hdr + lbl + htr + str + ftr;
-			if( $.isFunction( p.loadIndicator )) {
+			if( $.jgrid.isFunction( p.loadIndicator )) {
 				p.loadIndicator('hide');
 			} else if(p.loadIndicator) {
 				$($t).jqGrid("progressBar", {method:"hide", loadtype : $t.p.loadui });
@@ -704,7 +704,7 @@ $.jgrid.extend({
 			if(p.mimetype.toUpperCase().indexOf("UTF-8") !== -1) {
 				ret = '\ufeff' + ret;
 			}
-			if($.isFunction( p.onBeforeExport) ) {
+			if($.jgrid.isFunction( p.onBeforeExport) ) {
 				ret = p.onBeforeExport(ret);
 				if(!ret) {
 					throw "Before export does not return data!";
@@ -874,7 +874,7 @@ $.jgrid.extend({
 
 			}
 
-			var _replStr = $.isFunction(o.replaceStr) ? o.replaceStr : _replStrFunc,
+			var _replStr = $.jgrid.isFunction(o.replaceStr) ? o.replaceStr : _replStrFunc,
 			currentRow, rowNode,
 			addRow = function ( row, header ) {
 				currentRow = rowPos+1;
@@ -1049,7 +1049,7 @@ $.jgrid.extend({
 				$.each(grp.groups,function(i,n){
 					toEnd++;
 					try {
-						if (Array.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
+						if (Array.isArray(grp.formatDisplayField) && $.jgrid.isFunction(grp.formatDisplayField[n.idx])) {
 							gv = grp.formatDisplayField[n.idx].call($t, n.displayValue, n.value, $t.p.colModel[cp[n.idx]], n.idx, grp);
 						} else {
 							gv = $t.formatter('', n.displayValue, cp[n.idx], n.value );
@@ -1058,7 +1058,7 @@ $.jgrid.extend({
 						gv = n.displayValue;
 					}
 					var grpTextStr = '';
-					if($.isFunction(grp.groupText[n.idx])) {
+					if($.jgrid.isFunction(grp.groupText[n.idx])) {
 						grpTextStr = grp.groupText[n.idx].call($t, gv, n.cnt, n.summary);
 					} else {
 						grpTextStr = $.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary);
@@ -1106,7 +1106,7 @@ $.jgrid.extend({
 				});
 			}
 //============================================================================
-			if( $.isFunction( o.loadIndicator )) {
+			if( $.jgrid.isFunction( o.loadIndicator )) {
 				o.loadIndicator('show');
 			} else if(o.loadIndicator) {
 				$($t).jqGrid("progressBar", {method:"show", loadtype : $t.p.loadui, htmlcontent: $.jgrid.getRegional($t,'defaults.loadtext') });
@@ -1201,7 +1201,7 @@ $.jgrid.extend({
 					}
 				} ) );
 			}
-			if($.isFunction( o.onBeforeExport) ) {
+			if($.jgrid.isFunction( o.onBeforeExport) ) {
 				o.onBeforeExport( xlsx, rowPos );
 			}
 			data = null; // free memory
@@ -1224,7 +1224,7 @@ $.jgrid.extend({
 			} catch(e) {
 				throw e;
 			} finally {
-				if( $.isFunction( o.loadIndicator )) {
+				if( $.jgrid.isFunction( o.loadIndicator )) {
 					o.loadIndicator('hide');
 				} else if(o.loadIndicator) {
 					$($t).jqGrid("progressBar", {method:"hide", loadtype : $t.p.loadui });
@@ -1364,7 +1364,7 @@ $.jgrid.extend({
 				$.each(grp.groups,function(i,n){
 					toEnd++;
 					try {
-						if (Array.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
+						if (Array.isArray(grp.formatDisplayField) && $.jgrid.isFunction(grp.formatDisplayField[n.idx])) {
 							gv = grp.formatDisplayField[n.idx].call($t, n.displayValue, n.value, $t.p.colModel[cp[n.idx]], n.idx, grp);
 						} else {
 							gv = $t.formatter('', n.displayValue, cp[n.idx], n.value );
@@ -1373,7 +1373,7 @@ $.jgrid.extend({
 						gv = n.displayValue;
 					}
 					var grpTextStr = '';
-					if($.isFunction(grp.groupText[n.idx])) {
+					if($.jgrid.isFunction(grp.groupText[n.idx])) {
 						grpTextStr = grp.groupText[n.idx].call($t, gv, n.cnt, n.summary);
 					} else {
 						grpTextStr = $.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary);
@@ -1421,7 +1421,7 @@ $.jgrid.extend({
 				});
 			}
 //============================================================================
-			if( $.isFunction( o.loadIndicator )) {
+			if( $.jgrid.isFunction( o.loadIndicator )) {
 				o.loadIndicator('show');
 			} else if(o.loadIndicator) {
 				$($t).jqGrid("progressBar", {method:"show", loadtype : $t.p.loadui, htmlcontent: $.jgrid.getRegional($t,'defaults.loadtext') });
@@ -1580,13 +1580,13 @@ $.jgrid.extend({
 					margin: [ 0, 0, 0, 12 ]
 				} );
 			}
-			if( $.isFunction( o.onBeforeExport ) ) {
+			if( $.jgrid.isFunction( o.onBeforeExport ) ) {
 				o.onBeforeExport.call($t, doc);
 			}
 			try {
 				var pdf = pdfMake.createPdf( doc );
 				pdf.getDataUrl(function(url) {
-					if( $.isFunction( o.loadIndicator )) {
+					if( $.jgrid.isFunction( o.loadIndicator )) {
 						o.loadIndicator('hide');
 					} else if(o.loadIndicator) {
 						$($t).jqGrid("progressBar", {method:"hide", loadtype : $t.p.loadui });
@@ -1800,7 +1800,7 @@ $.jgrid.extend({
 				$.each(grp.groups,function(i,n){
 					toEnd++;
 					try {
-						if (Array.isArray(grp.formatDisplayField) && $.isFunction(grp.formatDisplayField[n.idx])) {
+						if (Array.isArray(grp.formatDisplayField) && $.jgrid.isFunction(grp.formatDisplayField[n.idx])) {
 							gv = grp.formatDisplayField[n.idx].call($t, n.displayValue, n.value, $t.p.colModel[cp[n.idx]], n.idx, grp);
 						} else {
 							gv = $t.formatter('', n.displayValue, cp[n.idx], n.value );
@@ -1809,7 +1809,7 @@ $.jgrid.extend({
 						gv = n.displayValue;
 					}
 					var grpTextStr = '';
-					if($.isFunction(grp.groupText[n.idx])) {
+					if($.jgrid.isFunction(grp.groupText[n.idx])) {
 						grpTextStr = grp.groupText[n.idx].call($t, gv, n.cnt, n.summary);
 					} else {
 						grpTextStr = $.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary);
@@ -1860,7 +1860,7 @@ $.jgrid.extend({
 				});
 				return retstr;
 			}
-			if( $.isFunction( o.loadIndicator )) {
+			if( $.jgrid.isFunction( o.loadIndicator )) {
 				o.loadIndicator('show');
 			} else if(o.loadIndicator) {
 				$($t).jqGrid("progressBar", {method:"show", loadtype : $t.p.loadui, htmlcontent: $.jgrid.getRegional($t,'defaults.loadtext') });
@@ -1945,7 +1945,7 @@ $.jgrid.extend({
 					}, 1000 );
 				}
 			}
-			if( $.isFunction( o.loadIndicator )) {
+			if( $.jgrid.isFunction( o.loadIndicator )) {
 				o.loadIndicator('hide');
 			} else if(o.loadIndicator) {
 				$($t).jqGrid("progressBar", {method:"hide", loadtype : $t.p.loadui });
