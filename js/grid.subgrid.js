@@ -91,7 +91,7 @@ addSubGrid : function( pos, sind ) {
 					$(dummy).append(trdiv);
 				});
 			}
-			var pID = $("table:first",ts.grid.bDiv).attr("id")+"_";
+			var pID = $(ts.grid.bDiv).find("table").first().attr("id")+"_";
 			$("#"+$.jgrid.jqID(pID+sbid)).append(dummy);
 			ts.grid.hDiv.loading = false;
 			$("#load_"+$.jgrid.jqID(ts.p.id)).hide();
@@ -132,7 +132,7 @@ addSubGrid : function( pos, sind ) {
 					}
 				}
 			}
-			var pID = $("table:first",ts.grid.bDiv).attr("id")+"_";
+			var pID = $(ts.grid.bDiv).find("table").first().attr("id")+"_";
 			$("#"+$.jgrid.jqID(pID+sbid)).append(dummy);
 			ts.grid.hDiv.loading = false;
 			$("#load_"+$.jgrid.jqID(ts.p.id)).hide();

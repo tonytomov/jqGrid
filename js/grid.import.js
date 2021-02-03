@@ -44,7 +44,7 @@ $.extend($.jgrid,{
 		gridstate  =  $($t).jqGrid('jqGridExport', { exptype : "jsonstring", ident:"", root:"", data : o.saveData });
 		data = '';
 		if( o.saveData ) {
-			data = $($t.grid.bDiv).find(".ui-jqgrid-btable tbody:first").html();
+			data = $($t.grid.bDiv).find(".ui-jqgrid-btable tbody").first().html();
 			var firstrow  = data.indexOf("</tr>");
 			data = data.slice(firstrow + 5);
 		}

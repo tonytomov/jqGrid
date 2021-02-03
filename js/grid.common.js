@@ -63,7 +63,9 @@ $.extend($.jgrid,{
 			$(selector).attr("aria-hidden","true").jqmHide();
 		} else {
 			if(o.gb !== '') {
-				try {$(".jqgrid-overlay:first",o.gb).hide();} catch (e){}
+				try {
+					$(o.gb).find(".jqgrid-overlay").first().hide();
+				} catch (e){}
 			}
 			try { $(".jqgrid-overlay-modal").hide(); } catch (e) {}
 			$(selector).hide().attr("aria-hidden","true");
@@ -143,7 +145,7 @@ $.extend($.jgrid,{
 		if (p.width === 0 || !p.width) {p.width = 300;}
 		if(p.height === 0 || !p.height) {p.height =200;}
 		if(!p.zIndex) {
-			var parentZ = $(insertSelector).parents("*[role=dialog]").filter(':first').css("z-index");
+			var parentZ = $(insertSelector).parents("*[role=dialog]").first().css("z-index");
 			if(parentZ) {
 				p.zIndex = parseInt(parentZ,10)+2;
 			} else {
@@ -240,7 +242,7 @@ $.extend($.jgrid,{
 					}
 					$(".jqgrid-overlay-modal").css("z-index",zInd).show();
 				} else {
-					$(".jqgrid-overlay:first",o.gbox).css("z-index",zInd).show();
+					$(o.gbox).find(".jqgrid-overlay").first().css("z-index",zInd).show();
 					$(selector).data("gbox",o.gbox);
 				}
 			}

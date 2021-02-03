@@ -79,7 +79,7 @@ $.jgrid.extend({
 				$(ind).children('td[role="gridcell"]').each( function(i) {
 					nm = cm[i].name;
 					var treeg = $t.p.treeGrid===true && nm === $t.p.ExpandColumn;
-					if(treeg) { tmp = $("span:first",this).html();}
+					if(treeg) { tmp = $(this).find("span").first().html();}
 					else {
 						try {
 							tmp = $.unformat.call($t,this,{rowId:rowid, colModel:cm[i]},i);
@@ -93,7 +93,7 @@ $.jgrid.extend({
 						if(cm[i].editable===true) {
 							svr[nm]=tmp;
 							if(focus===null) { focus = i; }
-							if (treeg) { $("span:first",this).html(""); }
+							if (treeg) { $(this).find("span").first().html(""); }
 							else { $(this).html(""); }
 							var opt = $.extend({},cm[i].editoptions || {},{id:rowid+"_"+nm,name:nm,rowId:rowid, oper:'edit', module : 'inline'});
 							if(!cm[i].edittype) { cm[i].edittype = "text"; }
@@ -103,7 +103,7 @@ $.jgrid.extend({
 							if( $.inArray(cm[i].edittype, ['text','textarea','password','select']) > -1) {
 								$(elc).addClass( inpclass );
 							}
-							if(treeg) { $("span:first",this).append(elc); }
+							if(treeg) { $(this).find("span").first().append(elc); }
 							else { $(this).append(elc); }
 							$.jgrid.bindEv.call($t, elc, opt);
 							//Again IE

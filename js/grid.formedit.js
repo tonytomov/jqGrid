@@ -1257,7 +1257,7 @@ $.jgrid.extend({
 						}
 						nm = $.jgrid.jqID("v_"+nm);
 						$("#"+nm+" span","#"+frmtb).html(tmp);
-						if (hc) {$("#"+nm,"#"+frmtb).parents("tr:first").hide();}
+						if (hc) {$("#"+nm,"#"+frmtb).parents("tr").first().hide();}
 						cnt++;
 					}
 				});

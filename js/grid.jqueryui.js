@@ -413,8 +413,8 @@ $.jgrid.extend({
 						opts._update_.apply(this,[ev,ui]);
 					}
 				};
-				$("tbody:first",$t).sortable(opts);
-				$("tbody:first > .jqgrow",$t).disableSelection();
+				$($t).find("tbody").first().sortable(opts);
+				$("tbody",$t).first().find(" > .jqgrow").disableSelection();
 			}
 		});
 	},
@@ -486,7 +486,7 @@ $.jgrid.extend({
 					accept: function(d) {
 						if (!$(d).hasClass('jqgrow')) { return d;}
 						tid = $(d).closest("table.ui-jqgrid-btable");
-						var target = $(this).find('table.ui-jqgrid-btable:first')[0];
+						var target = $(this).find('table.ui-jqgrid-btable').first()[0];
 						if(tid.length > 0 && $.data(tid[0],"dnd") !== undefined) {
 							var cn = $.data(tid[0],"dnd").connectWith;
 							return $.inArray('#'+$.jgrid.jqID(target.id),cn) !== -1 ? true : false;
@@ -500,7 +500,7 @@ $.jgrid.extend({
 						var accept = $(ui.draggable).attr("id"),
 							getdata = ui.draggable.parent().parent().jqGrid('getRowData',accept),
 							keysd = [],
-							target = $(this).find('table.ui-jqgrid-btable:first')[0];					
+							target = $(this).find('table.ui-jqgrid-btable').first()[0];					
 							if($.isPlainObject( getdata)) {
 								keysd = Object.keys(getdata);
 							}

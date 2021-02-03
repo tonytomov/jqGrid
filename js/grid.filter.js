@@ -184,7 +184,7 @@ $.fn.jqFilter = function( arg ) {
 		 * and field is  changed
 		 */
 		this.reDraw = function() {
-			$("table.group:first",this).remove();
+			$(this).find("table.group").first().remove();
 			var t = this.createTableForGroup(p.filter, null);
 			$(this).append(t);
 			if($.jgrid.isFunction(this.p.afterRedraw) ) {
@@ -401,7 +401,7 @@ $.fn.jqFilter = function( arg ) {
 
 				rule.field = $(ruleFieldSelect).val();
 
-				trpar = $(this).parents("tr:first");
+				trpar = $(this).parents("tr").first();
 				$(".data",trpar).empty();
 				for (i=0;i<that.p.columns.length;i++) {
 					if(that.p.columns[i].name ===  rule.field) {
@@ -521,7 +521,7 @@ $.fn.jqFilter = function( arg ) {
 			ruleOperatorTd.append(ruleOperatorSelect);
 			ruleOperatorSelect.on('change',function() {
 				rule.op = $(ruleOperatorSelect).val();
-				trpar = $(this).parents("tr:first");
+				trpar = $(this).parents("tr").first();
 				var rd = $(".input-elm",trpar)[0];
 				if (rule.op === "nu" || rule.op === "nn" || $.inArray(rule.op, that.p.unaryOperations) >= 0 ) { // disable for operator "is null" and "is not null"
 					rule.data = "";
@@ -1332,7 +1332,7 @@ $.jgrid.extend({
 				});
 			}
 			$(".clearsearchclass",tr).click(function() {
-				var ptr = $(this).parents("tr:first"),
+				var ptr = $(this).parents("tr").first(),
 				colname = $("td.ui-search-oper", ptr).attr('columname'), coli=0, len = $t.p.colModel.length,
 				soper = $("td.ui-search-oper a", ptr).attr('soper'), cm,vv;
 				while(coli<len) {
