@@ -6634,11 +6634,13 @@ $.jgrid.extend({
 						$(this).height(maxdh[i]);
 					});
 				}
-				if($("tr.jqg-second-row-header th:eq(0)", htbl).text() === 0) {
-					$("tr.jqg-second-row-header th:eq(0)", htbl).prepend('&nbsp;');
+				var testws = $("tr.jqg-second-row-header th", htbl).filter( function() { return $(this).css("display") !== "none"; }).first();
+				if(testws && $.trim(testws.text()) === "") {
+					testws.html('&nbsp;');
 				}
-				if( $.trim($("tr.jqg-third-row-header th:eq(0)", htbl).text()) === "") {
-					$("tr.jqg-third-row-header th:eq(0) div", htbl).prepend('&nbsp;');
+				testws = $("tr.jqg-third-row-header th", htbl).filter( function() { return $(this).css("display") !== "none"; }).first();
+				if(testws && $.trim(testws.text()) === "") {
+					$("div",testws).prepend('&nbsp;');
 				}
 				if( fthh ) {
 					$("tr.jqg-third-row-header th:eq(0)", htbl).height(fthh);
