@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.3 - 2021-02-03
+* @license Guriddo jqGrid JS - v5.5.3 - 2021-02-04
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5047,9 +5047,9 @@ $.fn.jqGrid = function( pin ) {
 		if(ts.p.autoResizing) {
 			$(ts).on('jqGridAfterGridComplete.setAutoSizeColumns',function(){
 				$(ts.p.colModel).each(function(i){
-					if (this.autosize) {
+					if (this.autosize && !this.hidden) {
 						if(this._maxsize && this._maxsize > 0) {
-							$(ts).jqGrid('resizeColumn', i, this._maxsize + ( bstw2 ? ts.p.cellLayout : 0 ));
+							$(ts).jqGrid('resizeColumn', i, this._maxsize +  ts.p.cellLayout );
 							this._maxsize = 0;
 						}
 					}
@@ -6544,7 +6544,8 @@ $.jgrid.extend({
 			hd= $($t).jqGrid('getStyleUI',$t.p.styleUI+".base",'headerDiv', true, 'ui-jqgrid-hdiv'),
 			hover = $($t).jqGrid('getStyleUI',$t.p.styleUI+".common",'hover', true),
 			borderbox = $("#gbox_"+$.jgrid.jqID($t.p.id)).css("box-sizing") === 'border-box',
-			pixelfix = borderbox ? 1 : 0;
+			pixelfix = borderbox ? 1 : 0, 
+			pixeljqui = borderbox ? 0 : 1;
 			// TODO treeGrid and grouping  Support
 			if($t.p.subGrid === true ||
 				$t.p.treeGrid === true ||
@@ -6569,7 +6570,7 @@ $.jgrid.extend({
 				i++;
 			}
 			if( maxfrozen>=0 && frozen) {
-				var top = $t.p.caption ? $($t.grid.cDiv).outerHeight() : 0,
+				var top = $t.p.caption ? $($t.grid.cDiv).outerHeight() + pixeljqui: 0,
 				hhrh =0,
 				hth = parseInt( $(".ui-jqgrid-htable","#gview_"+$.jgrid.jqID($t.p.id)).height(), 10),
 				divhth = parseInt( $(".ui-jqgrid-hdiv","#gview_"+$.jgrid.jqID($t.p.id)).height(), 10);
