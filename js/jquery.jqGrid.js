@@ -1788,6 +1788,7 @@ $.fn.jqGrid = function( pin ) {
 			colMenu : false,
 			colMenuCustom : {},
 			colMenuColumnDone : null,
+			colMenuBeforeProcess : null,
 			// tree pagging
 			treeGrid_bigData: false,
 			treeGrid_rootParams: {otherData:{}},
@@ -3996,6 +3997,9 @@ $.fn.jqGrid = function( pin ) {
 				ts.p.colFilters[cm.name] = {};
 				ts.p.postData.filters = buildFilters();
 				ts.p.search = false;
+				if( $.jgrid.isFunction( ts.p.colMenuBeforeProcess )) {
+					ts.p.colMenuBeforeProcess.call(ts, { module: 'filtering', action : 'reset', column : cm.name});
+				}
 				$(ts).trigger("reloadGrid");
 				$("#column_menu").remove();
 			});
@@ -4009,6 +4013,9 @@ $.fn.jqGrid = function( pin ) {
 				};
 				ts.p.postData.filters = buildFilters();
 				ts.p.search = true;
+				if( $.jgrid.isFunction( ts.p.colMenuBeforeProcess )) {
+					ts.p.colMenuBeforeProcess.call(ts, { module: 'filtering', action : 'search', column : cm.name});
+				}
 				$(ts).trigger("reloadGrid");
 				$("#column_menu").remove();
 			});
@@ -4052,6 +4059,9 @@ $.fn.jqGrid = function( pin ) {
 			} else {
 				group.groupField.push( cm.name);
 			}
+			if( $.jgrid.isFunction( ts.p.colMenuBeforeProcess )) {
+				ts.p.colMenuBeforeProcess.call(ts, { module: 'grouping', action : (isgroup !== -1? 'ungroup' : 'group'), column : cm.name});
+			}
 			$(ts).jqGrid('groupingGroupBy', group.groupField );
 			if(ts.p.frozenColumns) {
 				$(ts).jqGrid("destroyFrozenColumns");
@@ -4070,6 +4080,9 @@ $.fn.jqGrid = function( pin ) {
 			cols.splice( index, 1);
 			cols.splice(lastfrozen + (isfreeze ? 1 : 0), 0, index);
 			cm[index].frozen = isfreeze;
+			if( $.jgrid.isFunction( ts.p.colMenuBeforeProcess )) {
+				ts.p.colMenuBeforeProcess.call(ts, { module: 'freeze', action : isfreeze ? 'freeze' : 'unfreeze', column : cm.name});
+			}
 			$(ts).jqGrid("destroyFrozenColumns");
 			$(ts).jqGrid("remapColumns", cols, true);
 			$(ts).jqGrid("setFrozenColumns");
@@ -4184,10 +4197,11 @@ $.fn.jqGrid = function( pin ) {
 			).click(function(){
 				var v = $(this).attr("data-value"),
 				sobj = ts.grid.headers[index].el;
-				if(v === 'sortasc') {
-					sortData( "jqgh_"+ts.p.id+"_" + cm.name, index, true, 'asc', sobj);
-				} else if(v === 'sortdesc') {
-					sortData( "jqgh_"+ts.p.id+"_" + cm.name, index, true, 'desc', sobj);
+				if(v === 'sortasc' || v === 'sortdesc') {
+					if( $.jgrid.isFunction( ts.p.colMenuBeforeProcess )) {
+						ts.p.colMenuBeforeProcess.call(ts, { module: 'sorting', action: v === 'sortasc' ? 'asc' : 'desc' , column : cm.name});
+					}
+					sortData( "jqgh_"+ts.p.id+"_" + cm.name, index, true, (v === 'sortasc' ? 'asc' : 'desc'), sobj);
 				} else if (v === 'grouping') {
 					buildGrouping(index, isgroup);
 				} else if( v==='freeze') {
