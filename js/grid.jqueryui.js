@@ -568,7 +568,7 @@ $.jgrid.extend({
 		
 		if(!opts.connectWith) { return; }
 		opts.connectWith = opts.connectWith.split(",");
-		opts.connectWith = $.map(opts.connectWith,function(n){return $.trim(n);});
+		opts.connectWith = $.map(opts.connectWith,function(n){return $.jgrid.trim(n);});
 		$.data($t,"dnd",opts);
 		
 		if($t.p.reccount !== 0 && !$t.p.jqgdnd) {

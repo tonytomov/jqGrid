@@ -372,12 +372,12 @@ $.jgrid.extend({
 						switch (cm[i].edittype) {
 							case "select":
 								var opv = tmp.split(",");
-								opv = $.map(opv,function(n){return $.trim(n);});
+								opv = $.map(opv,function(n){return $.jgrid.trim(n);});
 								$("#"+nm+" option",fmid).each(function(){
-									if (!cm[i].editoptions.multiple && ($.trim(tmp) === $.trim($(this).text()) || opv[0] === $.trim($(this).text()) || opv[0] === $.trim($(this).val())) ){
+									if (!cm[i].editoptions.multiple && ($.jgrid.trim(tmp) === $.jgrid.trim($(this).text()) || opv[0] === $.jgrid.trim($(this).text()) || opv[0] === $.jgrid.trim($(this).val())) ){
 										this.selected= true;
 									} else if (cm[i].editoptions.multiple){
-										if(  $.inArray($.trim($(this).text()), opv ) > -1 || $.inArray($.trim($(this).val()), opv ) > -1  ){
+										if(  $.inArray($.jgrid.trim($(this).text()), opv ) > -1 || $.inArray($.jgrid.trim($(this).val()), opv ) > -1  ){
 											this.selected = true;
 										}else{
 											this.selected = false;
@@ -498,7 +498,7 @@ $.jgrid.extend({
 					oper = opers.oper;
 					idname = url === 'clientArray' ? $t.p.keyName : opers.id;
 					// we add to pos data array the action - the name is oper
-					postdata[oper] = ($.trim(postdata[$t.p.id+"_id"]) === "_empty") ? opers.addoper : opers.editoper;
+					postdata[oper] = ($.jgrid.trim(postdata[$t.p.id+"_id"]) === "_empty") ? opers.addoper : opers.editoper;
 					if(postdata[oper] !== opers.addoper) {
 						postdata[idname] = postdata[$t.p.id+"_id"];
 					} else {
@@ -770,7 +770,7 @@ $.jgrid.extend({
 						return i;
 					});
 					$(".FormElement", frm ).each(function(){
-						if( $.trim(this.name) !== "" && a1.indexOf(this.name) === -1 ) {
+						if( $.jgrid.trim(this.name) !== "" && a1.indexOf(this.name) === -1 ) {
 							var tv = $(this).val(), tt = $(this).get(0).type;
 							if( tt === 'checkbox') {
 								if(!$(this).is(":checked")) {

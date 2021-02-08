@@ -197,9 +197,9 @@ $.jgrid.extend({
 						swapstr = typeof aggr[i].aggregator === 'string' ? aggr[i].aggregator : 'cust';
 							
 						if(value == null) {
-							label = $.trim(aggr[i].member)+"_" + swapstr;
+							label = $.jgrid.trim(aggr[i].member)+"_" + swapstr;
 							vl = label;
-							swapvals[0]= aggr[i].label || (swapstr + " " +$.trim(aggr[i].member));
+							swapvals[0]= aggr[i].label || (swapstr + " " +$.jgrid.trim(aggr[i].member));
 						} else {
 							vl = value[j].replace(/\s+/g, '');
 							try {
@@ -262,7 +262,7 @@ $.jgrid.extend({
 				i = 0;
 				// build the data from xDimension
 				do {
-					xValue[i]  = $.trim(row[o.xDimension[i].dataName]);
+					xValue[i]  = $.jgrid.trim(row[o.xDimension[i].dataName]);
 					tmp[o.xDimension[i].dataName] = xValue[i];
 					i++;
 				} while( i < xlen );
@@ -278,7 +278,7 @@ $.jgrid.extend({
 					if(ylen>=1) {
 						// build the cols set in yDimension
 						for(k=0;k<ylen;k++) {
-							yValue[k] = $.trim(row[o.yDimension[k].dataName]);
+							yValue[k] = $.jgrid.trim(row[o.yDimension[k].dataName]);
 							// Check to see if we have user defined conditions
 							if(o.yDimension[k].converter && $.jgrid.isFunction(o.yDimension[k].converter)) {
 								yValue[k] = o.yDimension[k].converter.call(this, yValue[k], xValue, yValue);
@@ -300,7 +300,7 @@ $.jgrid.extend({
 						// make the recalculations 
 						if(ylen>=1) {
 							for(k=0;k<ylen;k++) {
-								yValue[k] = $.trim(row[o.yDimension[k].dataName]);
+								yValue[k] = $.jgrid.trim(row[o.yDimension[k].dataName]);
 								if(o.yDimension[k].converter && $.jgrid.isFunction(o.yDimension[k].converter)) {
 									yValue[k] = o.yDimension[k].converter.call(this, yValue[k], xValue, yValue);
 								}

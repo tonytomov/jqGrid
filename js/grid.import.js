@@ -173,7 +173,7 @@ $.extend($.jgrid,{
 			}
 			var grid = $("#"+jqGridId).jqGrid( ret );
 			grid.jqGrid('delRowData','norecs');
-			if( o.restoreData && $.trim( data ) !== '') {
+			if( o.restoreData && $.jgrid.trim( data ) !== '') {
 				grid.append( data );
 			}
 			grid.jqGrid( 'setGridParam', prm);
