@@ -70,12 +70,12 @@ $.jgrid.extend({
 			try {
 				cc = $($t.rows[iRow].cells[iCol]);
 			} catch(e) {
-				cc = $("td:eq("+iCol+")",$t.rows[iRow]);
+				cc = $("td",$t.rows[iRow]).eq( iCol );
 			}
 			if(parseInt($t.p.iCol,10)>=0  && parseInt($t.p.iRow,10)>=0 && $t.p.iRowId !== undefined) {
 				var therow = $($t).jqGrid('getGridRowById', $t.p.iRowId);
 				//$("td:eq("+$t.p.iCol+")",$t.rows[$t.p.iRow]).removeClass("edit-cell " + highlight);
-				$(therow).removeClass("selected-row " + hover).find("td:eq("+$t.p.iCol+")").removeClass("edit-cell " + highlight);
+				$(therow).removeClass("selected-row " + hover).find("td").eq( $t.p.iCol ).removeClass("edit-cell " + highlight);
 			}
 			cc.addClass("edit-cell " + highlight);
 			$($t.rows[iRow]).addClass("selected-row " + hover);
@@ -171,7 +171,7 @@ $.jgrid.extend({
 			if (!$t.grid || $t.p.cellEdit !== true) {return;}
 			if(fr !== null) {
 				var trow = $($t).jqGrid("getGridRowById", $t.p.savedRow[0].rowId),
-				cc = $('td:eq('+iCol+')', trow),
+				cc = $('td', trow).eq( iCol ),
 				cm = $t.p.colModel[iCol], nm = cm.name, nmjq = $.jgrid.jqID(nm), v, v2,
 				p = $(cc).offset();
 
@@ -286,7 +286,7 @@ $.jgrid.extend({
 												}
 												$(cc).empty();
 												$($t).jqGrid("setCell",$t.p.savedRow[fr].rowId, iCol, v2, false, false, true);
-												cc = $('td:eq('+iCol+')', trow);
+												cc = $('td', trow).eq( iCol );
 												$(cc).addClass("dirty-cell");
 												$(trow).addClass("edited");
 												$($t).triggerHandler("jqGridAfterSaveCell", [$t.p.savedRow[fr].rowId, nm, v, iRow, iCol]);
@@ -351,7 +351,7 @@ $.jgrid.extend({
 						if ($t.p.cellsubmit === 'clientArray') {
 							$(cc).empty();
 							$($t).jqGrid("setCell", $t.p.savedRow[fr].rowId, iCol, v2, false, false, true);
-							cc = $('td:eq('+iCol+')', trow);
+							cc = $('td', trow).eq( iCol );
 							$(cc).addClass("dirty-cell");
 							$(trow).addClass("edited");
 							$($t).triggerHandler("jqGridAfterSaveCell", [$t.p.savedRow[fr].rowId, nm, v, iRow, iCol]);
@@ -398,7 +398,7 @@ $.jgrid.extend({
 			if (!$t.grid || $t.p.cellEdit !== true ) {return;}
 			if(fr !== null) {
 				var trow = $($t).jqGrid("getGridRowById", $t.p.savedRow[fr].rowId),
-				cc = $('td:eq('+iCol+')', trow);
+				cc = $('td', trow).eq( iCol );
 				// datepicker fix
 				if($.jgrid.isFunction($.fn.datepicker)) {
 					try {

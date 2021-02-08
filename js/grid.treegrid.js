@@ -689,7 +689,7 @@ $.jgrid.extend({
 			$.each(records, function(index) {
 				var id  = $.jgrid.getAccessor(this, $t.p.localReader.id);
 				if($.inArray(id, ids) !== -1) {
-					$('#'+$.jgrid.jqID($t.p.id)+ ' tbody tr:eq('+(j)+')').after($('#'+$.jgrid.jqID($t.p.id)+' tbody tr#'+$.jgrid.jqID(id)));
+					$('#'+$.jgrid.jqID($t.p.id)+ ' tbody tr').eq( j ).after($('#'+$.jgrid.jqID($t.p.id)+' tbody tr#'+$.jgrid.jqID(id)));
 					j++;
 				}
 			});

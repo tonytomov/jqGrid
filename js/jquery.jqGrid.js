@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.3 - 2021-02-04
+* @license Guriddo jqGrid JS - v5.5.3 - 2021-02-05
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5296,7 +5296,7 @@ $.jgrid.extend({
 			}
 			if(t.p.cellEdit === true) {
 				if(parseInt(t.p.iCol,10)>=0  && parseInt(t.p.iRow,10)>=0) {
-					$("td:eq("+t.p.iCol+")",t.rows[t.p.iRow]).removeClass("edit-cell " + highlight );
+					$("td",t.rows[t.p.iRow]).eq(t.p.iCol).removeClass("edit-cell " + highlight );
 					$(t.rows[t.p.iRow]).removeClass("selected-row " + hover );
 				}
 			}
@@ -5433,7 +5433,7 @@ $.jgrid.extend({
 							prp = t.formatCol( i, ind.rowIndex, vl, data, rowid, data);
 							
 							ohtml = $("<td role=\"gridcell\" "+prp+">"+vl+"</td>")[0];
-							tcell = $(ind).children("td[role='gridcell']:eq("+i+")");
+							tcell = $(ind).children("td[role='gridcell']").eq(i);
 							$(tcell).after(ohtml).remove();
 							if(t.p.treeGrid && t.p.ExpandColumn === nm ) {
 								$(t).jqGrid("setTreeNode", ind.rowIndex, ind.rowIndex+1);
@@ -5633,11 +5633,11 @@ $.jgrid.extend({
 					if( data[nm] !== undefined) {
 						vl = format ? t.formatter( "", data[nm], i, data, 'edit') : data[nm];
 						title = this.title ? {"title":$.jgrid.stripHtml(vl)} : {};
-						$("tr.footrow td:eq("+i+")",t.grid.sDiv).html(vl).attr(title);
+						$("tr.footrow td",t.grid.sDiv).eq(i).html(vl).attr(title);
 						success = true;
 					}
 				} else if(action === "get") {
-					res[nm] = $("tr.footrow td:eq("+i+")",t.grid.sDiv).html();
+					res[nm] = $("tr.footrow td",t.grid.sDiv).eq(i).html();
 				}
 			});
 		});
@@ -5666,11 +5666,11 @@ $.jgrid.extend({
 					if( data[nm] !== undefined) {
 						vl = format ? t.formatter( "", data[nm], i, data, 'edit') : data[nm];
 						title = this.title ? {"title":$.jgrid.stripHtml(vl)} : {};
-						$("tr.hrheadrow td:eq("+i+")",t.grid.hrDiv).html(vl).attr(title);
+						$("tr.hrheadrow td",t.grid.hrDiv).eq(i).html(vl).attr(title);
 						success = true;
 					}
 				} else if(action === "get") {
-					res[nm] = $("tr.hrheadrow td:eq("+i+")",t.grid.hrDiv).html();
+					res[nm] = $("tr.hrheadrow td",t.grid.hrDiv).eq(i).html();
 				}
 			});
 		});
@@ -5707,8 +5707,8 @@ $.jgrid.extend({
 							$(this.cells[i]).css("display", show);
 						}
 					});
-					if($t.p.footerrow) { $("tr.footrow td:eq("+i+")", $t.grid.sDiv).css("display", show); }
-					if($t.p.headerrow) { $("tr.hrheadrow td:eq("+i+")", $t.grid.hrDiv).css("display", show); }
+					if($t.p.footerrow) { $("tr.footrow td", $t.grid.sDiv).eq( i ).css("display", show); }
+					if($t.p.headerrow) { $("tr.hrheadrow td", $t.grid.hrDiv).eq( i ).css("display", show); }
 					cw =  parseInt(this.width,10);
 					if(show === "none") {
 						$t.p.tblwidth -= cw+brd;
@@ -6042,7 +6042,7 @@ $.jgrid.extend({
 				}
 			} else { return; }
 			if(pos>=0) {
-				var thecol = $("tr.ui-jqgrid-labels th:eq("+pos+")",$t.grid.hDiv);
+				var thecol = $("tr.ui-jqgrid-labels th",$t.grid.hDiv).eq( pos );
 				if (nData){
 					var ico = $(".s-ico",thecol);
 					$("[id^=jqgh_]",thecol).empty().html(nData).append(ico);
@@ -6083,7 +6083,7 @@ $.jgrid.extend({
 				if(nm === 'cb' || nm==='subgrid' || nm==='rn' ) {
 					continue;
 				}
-				thecol = $("tr.ui-jqgrid-labels th:eq("+i+")",$t.grid.hDiv);
+				thecol = $("tr.ui-jqgrid-labels th", $t.grid.hDiv).eq( i );
 				htmlcol = $t.p.colNames[i];
 				ico = thecol.find(".s-ico");
 
@@ -6172,7 +6172,7 @@ $.jgrid.extend({
 			if(pos>=0) {
 				ind = $($t).jqGrid('getGridRowById', rowid);
 				if(ind) {
-					obj = $("td:eq("+pos+")",ind);
+					obj = $("td",ind).eq( pos );
 					if( returnobject ) {
 						ret = obj;
 					} else {
@@ -6643,7 +6643,7 @@ $.jgrid.extend({
 					$("div",testws).prepend('&nbsp;');
 				}
 				if( fthh ) {
-					$("tr.jqg-third-row-header th:eq(0)", htbl).height(fthh);
+					$("tr.jqg-third-row-header th", htbl).eq(0).height(fthh);
 				}
 				$(htbl).width(1);
 				if(!$.jgrid.msie()) {
@@ -7020,12 +7020,12 @@ $.jgrid.extend({
 			try {
 				cc = $($t.rows[iRow].cells[iCol]);
 			} catch(e) {
-				cc = $("td:eq("+iCol+")",$t.rows[iRow]);
+				cc = $("td",$t.rows[iRow]).eq( iCol );
 			}
 			if(parseInt($t.p.iCol,10)>=0  && parseInt($t.p.iRow,10)>=0 && $t.p.iRowId !== undefined) {
 				var therow = $($t).jqGrid('getGridRowById', $t.p.iRowId);
 				//$("td:eq("+$t.p.iCol+")",$t.rows[$t.p.iRow]).removeClass("edit-cell " + highlight);
-				$(therow).removeClass("selected-row " + hover).find("td:eq("+$t.p.iCol+")").removeClass("edit-cell " + highlight);
+				$(therow).removeClass("selected-row " + hover).find("td").eq( $t.p.iCol ).removeClass("edit-cell " + highlight);
 			}
 			cc.addClass("edit-cell " + highlight);
 			$($t.rows[iRow]).addClass("selected-row " + hover);
@@ -7121,7 +7121,7 @@ $.jgrid.extend({
 			if (!$t.grid || $t.p.cellEdit !== true) {return;}
 			if(fr !== null) {
 				var trow = $($t).jqGrid("getGridRowById", $t.p.savedRow[0].rowId),
-				cc = $('td:eq('+iCol+')', trow),
+				cc = $('td', trow).eq( iCol ),
 				cm = $t.p.colModel[iCol], nm = cm.name, nmjq = $.jgrid.jqID(nm), v, v2,
 				p = $(cc).offset();
 
@@ -7236,7 +7236,7 @@ $.jgrid.extend({
 												}
 												$(cc).empty();
 												$($t).jqGrid("setCell",$t.p.savedRow[fr].rowId, iCol, v2, false, false, true);
-												cc = $('td:eq('+iCol+')', trow);
+												cc = $('td', trow).eq( iCol );
 												$(cc).addClass("dirty-cell");
 												$(trow).addClass("edited");
 												$($t).triggerHandler("jqGridAfterSaveCell", [$t.p.savedRow[fr].rowId, nm, v, iRow, iCol]);
@@ -7301,7 +7301,7 @@ $.jgrid.extend({
 						if ($t.p.cellsubmit === 'clientArray') {
 							$(cc).empty();
 							$($t).jqGrid("setCell", $t.p.savedRow[fr].rowId, iCol, v2, false, false, true);
-							cc = $('td:eq('+iCol+')', trow);
+							cc = $('td', trow).eq( iCol );
 							$(cc).addClass("dirty-cell");
 							$(trow).addClass("edited");
 							$($t).triggerHandler("jqGridAfterSaveCell", [$t.p.savedRow[fr].rowId, nm, v, iRow, iCol]);
@@ -7348,7 +7348,7 @@ $.jgrid.extend({
 			if (!$t.grid || $t.p.cellEdit !== true ) {return;}
 			if(fr !== null) {
 				var trow = $($t).jqGrid("getGridRowById", $t.p.savedRow[fr].rowId),
-				cc = $('td:eq('+iCol+')', trow);
+				cc = $('td', trow).eq( iCol );
 				// datepicker fix
 				if($.jgrid.isFunction($.fn.datepicker)) {
 					try {
@@ -9661,15 +9661,15 @@ $.jgrid.extend({
 						st = soptions.searchtitle != null ? soptions.searchtitle : p.operandTitle;
 						select = this.searchoptions.searchOperMenu ? "<a title='"+st+"' soper='"+so+"' class='soptclass' colname='"+this.name+"'>"+sot+"</a>" : "";
 					}
-					$("td:eq(0)",stbl).attr("columname", cm.name).append(select);
+					$("td",stbl).eq( 0 ).attr("columname", cm.name).append(select);
 					if(soptions.clearSearch === undefined) {
 						soptions.clearSearch = true;
 					}
 					if(soptions.clearSearch) {
 						csv = p.resetTitle || 'Clear Search Value';
-						$("td:eq(2)",stbl).append("<a title='"+csv+"' style='padding-right: 0.3em;padding-left: 0.3em;' class='clearsearchclass'>"+p.resetIcon+"</a>");
+						$("td",stbl).eq( 2 ).append("<a title='"+csv+"' style='padding-right: 0.3em;padding-left: 0.3em;' class='clearsearchclass'>"+p.resetIcon+"</a>");
 					} else {
-						$("td:eq(2)", stbl).hide();
+						$("td", stbl).eq( 2 ).hide();
 					}
 					if(this.surl) {
 						soptions.dataUrl = this.surl;
@@ -9684,7 +9684,7 @@ $.jgrid.extend({
 					}
 					elem = $.jgrid.createEl.call($t, this.stype, soptions , df, false, $.extend({},$.jgrid.ajaxOptions, $t.p.ajaxSelectOptions || {}));
 					$(elem).addClass( classes.srInput );
-					$("td:eq(1)",stbl).append(elem);
+					$("td",stbl).eq( 1 ).append(elem);
 					$(thd).append(stbl);
 					if(soptions.dataEvents == null ) {
 						soptions.dataEvents = [];
@@ -9741,7 +9741,7 @@ $.jgrid.extend({
 				$(th).append(thd);
 				$(tr).append(th);
 				if(!p.searchOperators || select === "") {
-					$("td:eq(0)",stbl).hide();
+					$("td",stbl).eq( 0 ).hide();
 				}
 			});
 			$("table thead",$t.grid.hDiv).append(tr);
@@ -10608,12 +10608,12 @@ $.jgrid.extend({
 							tmp = "";
 						} else {
 							if(nm === obj.p.ExpandColumn && obj.p.treeGrid === true) {
-								tmp = $("td[role='gridcell']:eq("+i+")",obj.rows[ind]).text();
+								tmp = $("td[role='gridcell']",obj.rows[ind]).eq( i ).text();
 							} else {
 								try {
-									tmp =  $.unformat.call(obj, $("td[role='gridcell']:eq("+i+")",obj.rows[ind]),{rowId:rowid, colModel:this},i);
+									tmp =  $.unformat.call(obj, $("td[role='gridcell']",obj.rows[ind]).eq( i ),{rowId:rowid, colModel:this},i);
 								} catch (_) {
-									tmp =  (this.edittype && this.edittype === "textarea") ? $("td[role='gridcell']:eq("+i+")",obj.rows[ind]).text() : $("td[role='gridcell']:eq("+i+")",obj.rows[ind]).html();
+									tmp =  (this.edittype && this.edittype === "textarea") ? $("td[role='gridcell']",obj.rows[ind]).eq( i ).text() : $("td[role='gridcell']",obj.rows[ind]).eq( i ).html();
 								}
 								if(!tmp || tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length===1 && tmp.charCodeAt(0)===160) ) {tmp='';}
 							}
@@ -10680,11 +10680,11 @@ $.jgrid.extend({
 								$(tb).append(trdata);
 								trdata[0].rp = rp;
 							}
-							$("td:eq("+(cp-2)+")",trdata[0]).html("<label for='"+nm+"'>"+ (frmopt.label === undefined ? obj.p.colNames[i]: frmopt.label) + "</label>");
-							$("td:eq("+(cp-1)+")",trdata[0]).append(frmopt.elmprefix).append(elc).append(frmopt.elmsuffix);
+							$("td",trdata[0]).eq( cp-2 ).html("<label for='"+nm+"'>"+ (frmopt.label === undefined ? obj.p.colNames[i]: frmopt.label) + "</label>");
+							$("td",trdata[0]).eq( cp-1 ).append(frmopt.elmprefix).append(elc).append(frmopt.elmsuffix);
 							if( maxcols > 1 && hc) {
-								$("td:eq("+(cp-2)+")",trdata[0]).hide();
-								$("td:eq("+(cp-1)+")",trdata[0]).hide();
+								$("td",trdata[0]).eq( cp-2 ).hide();
+								$("td",trdata[0]).eq( cp-1 ).hide();
 							}
 							//-------------------------
 						}
@@ -11615,9 +11615,9 @@ $.jgrid.extend({
 							tmp = "";
 						} else {
 							if(nm === obj.p.ExpandColumn && obj.p.treeGrid === true) {
-								tmp = $("td:eq("+i+")",obj.rows[ind]).text();
+								tmp = $("td",obj.rows[ind]).eq( i ).text();
 							} else {
-								tmp = $("td:eq("+i+")",obj.rows[ind]).html();
+								tmp = $("td",obj.rows[ind]).eq( i ).html();
 							}
 						}
 						setme = this.align === 'right' && maxw !==0 ? true : false;
@@ -11636,10 +11636,10 @@ $.jgrid.extend({
 							$(tb).append(trdata);
 							trdata[0].rp = rp;
 						}
-						$("td:eq("+(cp-2)+")",trdata[0]).html('<b>'+ (frmopt.label === undefined ? obj.p.colNames[i]: frmopt.label)+'</b>');
-						$("td:eq("+(cp-1)+")",trdata[0]).append("<span>"+tmp+"</span>").attr("id","v_"+nm);
+						$("td",trdata[0]).eq( cp-2 ).html('<b>'+ (frmopt.label === undefined ? obj.p.colNames[i]: frmopt.label)+'</b>');
+						$("td",trdata[0]).eq( cp-1 ).append("<span>"+tmp+"</span>").attr("id","v_"+nm);
 						if(setme){
-							$("td:eq("+(cp-1)+") span",trdata[0]).css({'text-align':'right',width:maxw+"px"});
+							$("td",trdata[0]).eq( cp-1 ).find('span').css({ 'text-align':'right',width:maxw+"px" });
 						}
 						retpos[cnt] = i;
 						cnt++;
@@ -12505,7 +12505,7 @@ $.jgrid.extend({
 					if(findnav.rows[0].cells.length ===0 ) {
 						$("tr",findnav).append(tbd);
 					} else {
-						$("tr td:eq(0)",findnav).before(tbd);
+						$("tr td",findnav).eq( 0 ).before(tbd);
 					}
 				} else {
 					$("tr",findnav).append(tbd);
@@ -12583,7 +12583,7 @@ $.jgrid.extend({
 					if (findnav.rows[0].cells.length === 0) {
 						$("tr", findnav).append(sep);
 					} else {
-						$("tr td:eq(0)", findnav).before(sep);
+						$("tr td", findnav).eq( 0 ).before(sep);
 					}
 				} else {
 					$("tr", findnav).append(sep);
@@ -13485,8 +13485,8 @@ $.jgrid.extend({
 					$($focusElem).focus();
 				} catch(fe) {}
 			}
-			if( $.trim($("tr.jqg-second-row-header th:eq(0)").text()) === "" ) {
-				$("tr.jqg-second-row-header th:eq(0)").prepend('&nbsp;');
+			if( $.trim($("tr.jqg-second-row-header th").eq( 0 ).text()) === "" ) {
+				$("tr.jqg-second-row-header th").eq( 0 ).prepend('&nbsp;');
 			}
 		});				
 	},
@@ -13511,7 +13511,7 @@ $.jgrid.extend({
 			for (i = 0, l = headers.length; i < l; i++) {
 				hc = cm[i].hidden ? "none" : "";
 				$th = $(headers[i].el)
-					.width( $('tr.jqg-first-row-header th:eq('+i+')', thead).width() )
+					.width( $('tr.jqg-first-row-header th', thead).eq( i ).width() )
 					.css('display',hc);
 				try {
 					$th.removeAttr("rowSpan");
@@ -14213,7 +14213,7 @@ $.jgrid.extend({
 							focus = o.focusField;
 						}
 						setTimeout(function(){
-							var fe = $("td:eq("+focus+") :input:visible",ind).not(":disabled");
+							var fe = $("td", ind).eq( focus ).find(":input:visible").not(":disabled");
 							if(fe.length > 0) {
 								fe.focus();
 							}
@@ -16139,7 +16139,7 @@ addSubGrid : function( pos, sind ) {
 				for(j=0; j < ts.p.subGridModel[0].params.length; j++) {
 					for(i=0; i<ts.p.colModel.length; i++) {
 						if(ts.p.colModel[i].name === ts.p.subGridModel[0].params[j]) {
-							dp[ts.p.colModel[i].name]= $("td:eq("+i+")",rd).text().replace(/\&#160\;/ig,'');
+							dp[ts.p.colModel[i].name]= $("td", rd).eq( i ).text().replace(/\&#160\;/ig,'');
 						}
 					}
 				}
@@ -16989,7 +16989,7 @@ $.jgrid.extend({
 			$.each(records, function(index) {
 				var id  = $.jgrid.getAccessor(this, $t.p.localReader.id);
 				if($.inArray(id, ids) !== -1) {
-					$('#'+$.jgrid.jqID($t.p.id)+ ' tbody tr:eq('+(j)+')').after($('#'+$.jgrid.jqID($t.p.id)+' tbody tr#'+$.jgrid.jqID(id)));
+					$('#'+$.jgrid.jqID($t.p.id)+ ' tbody tr').eq( j ).after($('#'+$.jgrid.jqID($t.p.id)+' tbody tr#'+$.jgrid.jqID(id)));
 					j++;
 				}
 			});
@@ -17678,7 +17678,7 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 			$t = $grid[0],
 			p = $t.p,
 			cm = p.colModel[$.jgrid.getCellIndex(this)],
-			$actionsDiv = cm.frozen ? $("tr#"+rid+" td:eq("+$.jgrid.getCellIndex(this)+") > div",$grid) :$(this).parent(),
+			$actionsDiv = cm.frozen ? $("tr#"+rid+" td", $grid).eq( $.jgrid.getCellIndex(this) ).find("> div") :$(this).parent(),
 			op = {
 				extraparam: {}
 			},

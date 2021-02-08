@@ -1233,15 +1233,15 @@ $.jgrid.extend({
 						st = soptions.searchtitle != null ? soptions.searchtitle : p.operandTitle;
 						select = this.searchoptions.searchOperMenu ? "<a title='"+st+"' soper='"+so+"' class='soptclass' colname='"+this.name+"'>"+sot+"</a>" : "";
 					}
-					$("td:eq(0)",stbl).attr("columname", cm.name).append(select);
+					$("td",stbl).eq( 0 ).attr("columname", cm.name).append(select);
 					if(soptions.clearSearch === undefined) {
 						soptions.clearSearch = true;
 					}
 					if(soptions.clearSearch) {
 						csv = p.resetTitle || 'Clear Search Value';
-						$("td:eq(2)",stbl).append("<a title='"+csv+"' style='padding-right: 0.3em;padding-left: 0.3em;' class='clearsearchclass'>"+p.resetIcon+"</a>");
+						$("td",stbl).eq( 2 ).append("<a title='"+csv+"' style='padding-right: 0.3em;padding-left: 0.3em;' class='clearsearchclass'>"+p.resetIcon+"</a>");
 					} else {
-						$("td:eq(2)", stbl).hide();
+						$("td", stbl).eq( 2 ).hide();
 					}
 					if(this.surl) {
 						soptions.dataUrl = this.surl;
@@ -1256,7 +1256,7 @@ $.jgrid.extend({
 					}
 					elem = $.jgrid.createEl.call($t, this.stype, soptions , df, false, $.extend({},$.jgrid.ajaxOptions, $t.p.ajaxSelectOptions || {}));
 					$(elem).addClass( classes.srInput );
-					$("td:eq(1)",stbl).append(elem);
+					$("td",stbl).eq( 1 ).append(elem);
 					$(thd).append(stbl);
 					if(soptions.dataEvents == null ) {
 						soptions.dataEvents = [];
@@ -1313,7 +1313,7 @@ $.jgrid.extend({
 				$(th).append(thd);
 				$(tr).append(th);
 				if(!p.searchOperators || select === "") {
-					$("td:eq(0)",stbl).hide();
+					$("td",stbl).eq( 0 ).hide();
 				}
 			});
 			$("table thead",$t.grid.hDiv).append(tr);

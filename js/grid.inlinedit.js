@@ -122,7 +122,7 @@ $.jgrid.extend({
 							focus = o.focusField;
 						}
 						setTimeout(function(){
-							var fe = $("td:eq("+focus+") :input:visible",ind).not(":disabled");
+							var fe = $("td", ind).eq( focus ).find(":input:visible").not(":disabled");
 							if(fe.length > 0) {
 								fe.focus();
 							}

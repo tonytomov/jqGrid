@@ -149,7 +149,7 @@ addSubGrid : function( pos, sind ) {
 				for(j=0; j < ts.p.subGridModel[0].params.length; j++) {
 					for(i=0; i<ts.p.colModel.length; i++) {
 						if(ts.p.colModel[i].name === ts.p.subGridModel[0].params[j]) {
-							dp[ts.p.colModel[i].name]= $("td:eq("+i+")",rd).text().replace(/\&#160\;/ig,'');
+							dp[ts.p.colModel[i].name]= $("td", rd).eq( i ).text().replace(/\&#160\;/ig,'');
 						}
 					}
 				}

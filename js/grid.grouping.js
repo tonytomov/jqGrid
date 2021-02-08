@@ -667,8 +667,8 @@ $.jgrid.extend({
 					$($focusElem).focus();
 				} catch(fe) {}
 			}
-			if( $.trim($("tr.jqg-second-row-header th:eq(0)").text()) === "" ) {
-				$("tr.jqg-second-row-header th:eq(0)").prepend('&nbsp;');
+			if( $.trim($("tr.jqg-second-row-header th").eq( 0 ).text()) === "" ) {
+				$("tr.jqg-second-row-header th").eq( 0 ).prepend('&nbsp;');
 			}
 		});				
 	},
@@ -693,7 +693,7 @@ $.jgrid.extend({
 			for (i = 0, l = headers.length; i < l; i++) {
 				hc = cm[i].hidden ? "none" : "";
 				$th = $(headers[i].el)
-					.width( $('tr.jqg-first-row-header th:eq('+i+')', thead).width() )
+					.width( $('tr.jqg-first-row-header th', thead).eq( i ).width() )
 					.css('display',hc);
 				try {
 					$th.removeAttr("rowSpan");

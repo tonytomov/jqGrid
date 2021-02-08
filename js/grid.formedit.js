@@ -193,12 +193,12 @@ $.jgrid.extend({
 							tmp = "";
 						} else {
 							if(nm === obj.p.ExpandColumn && obj.p.treeGrid === true) {
-								tmp = $("td[role='gridcell']:eq("+i+")",obj.rows[ind]).text();
+								tmp = $("td[role='gridcell']",obj.rows[ind]).eq( i ).text();
 							} else {
 								try {
-									tmp =  $.unformat.call(obj, $("td[role='gridcell']:eq("+i+")",obj.rows[ind]),{rowId:rowid, colModel:this},i);
+									tmp =  $.unformat.call(obj, $("td[role='gridcell']",obj.rows[ind]).eq( i ),{rowId:rowid, colModel:this},i);
 								} catch (_) {
-									tmp =  (this.edittype && this.edittype === "textarea") ? $("td[role='gridcell']:eq("+i+")",obj.rows[ind]).text() : $("td[role='gridcell']:eq("+i+")",obj.rows[ind]).html();
+									tmp =  (this.edittype && this.edittype === "textarea") ? $("td[role='gridcell']",obj.rows[ind]).eq( i ).text() : $("td[role='gridcell']",obj.rows[ind]).eq( i ).html();
 								}
 								if(!tmp || tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length===1 && tmp.charCodeAt(0)===160) ) {tmp='';}
 							}
@@ -265,11 +265,11 @@ $.jgrid.extend({
 								$(tb).append(trdata);
 								trdata[0].rp = rp;
 							}
-							$("td:eq("+(cp-2)+")",trdata[0]).html("<label for='"+nm+"'>"+ (frmopt.label === undefined ? obj.p.colNames[i]: frmopt.label) + "</label>");
-							$("td:eq("+(cp-1)+")",trdata[0]).append(frmopt.elmprefix).append(elc).append(frmopt.elmsuffix);
+							$("td",trdata[0]).eq( cp-2 ).html("<label for='"+nm+"'>"+ (frmopt.label === undefined ? obj.p.colNames[i]: frmopt.label) + "</label>");
+							$("td",trdata[0]).eq( cp-1 ).append(frmopt.elmprefix).append(elc).append(frmopt.elmsuffix);
 							if( maxcols > 1 && hc) {
-								$("td:eq("+(cp-2)+")",trdata[0]).hide();
-								$("td:eq("+(cp-1)+")",trdata[0]).hide();
+								$("td",trdata[0]).eq( cp-2 ).hide();
+								$("td",trdata[0]).eq( cp-1 ).hide();
 							}
 							//-------------------------
 						}
@@ -1200,9 +1200,9 @@ $.jgrid.extend({
 							tmp = "";
 						} else {
 							if(nm === obj.p.ExpandColumn && obj.p.treeGrid === true) {
-								tmp = $("td:eq("+i+")",obj.rows[ind]).text();
+								tmp = $("td",obj.rows[ind]).eq( i ).text();
 							} else {
-								tmp = $("td:eq("+i+")",obj.rows[ind]).html();
+								tmp = $("td",obj.rows[ind]).eq( i ).html();
 							}
 						}
 						setme = this.align === 'right' && maxw !==0 ? true : false;
@@ -1221,10 +1221,10 @@ $.jgrid.extend({
 							$(tb).append(trdata);
 							trdata[0].rp = rp;
 						}
-						$("td:eq("+(cp-2)+")",trdata[0]).html('<b>'+ (frmopt.label === undefined ? obj.p.colNames[i]: frmopt.label)+'</b>');
-						$("td:eq("+(cp-1)+")",trdata[0]).append("<span>"+tmp+"</span>").attr("id","v_"+nm);
+						$("td",trdata[0]).eq( cp-2 ).html('<b>'+ (frmopt.label === undefined ? obj.p.colNames[i]: frmopt.label)+'</b>');
+						$("td",trdata[0]).eq( cp-1 ).append("<span>"+tmp+"</span>").attr("id","v_"+nm);
 						if(setme){
-							$("td:eq("+(cp-1)+") span",trdata[0]).css({'text-align':'right',width:maxw+"px"});
+							$("td",trdata[0]).eq( cp-1 ).find('span').css({ 'text-align':'right',width:maxw+"px" });
 						}
 						retpos[cnt] = i;
 						cnt++;
@@ -2090,7 +2090,7 @@ $.jgrid.extend({
 					if(findnav.rows[0].cells.length ===0 ) {
 						$("tr",findnav).append(tbd);
 					} else {
-						$("tr td:eq(0)",findnav).before(tbd);
+						$("tr td",findnav).eq( 0 ).before(tbd);
 					}
 				} else {
 					$("tr",findnav).append(tbd);
@@ -2168,7 +2168,7 @@ $.jgrid.extend({
 					if (findnav.rows[0].cells.length === 0) {
 						$("tr", findnav).append(sep);
 					} else {
-						$("tr td:eq(0)", findnav).before(sep);
+						$("tr td", findnav).eq( 0 ).before(sep);
 					}
 				} else {
 					$("tr", findnav).append(sep);

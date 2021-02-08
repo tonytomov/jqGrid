@@ -276,7 +276,7 @@
 			$t = $grid[0],
 			p = $t.p,
 			cm = p.colModel[$.jgrid.getCellIndex(this)],
-			$actionsDiv = cm.frozen ? $("tr#"+rid+" td:eq("+$.jgrid.getCellIndex(this)+") > div",$grid) :$(this).parent(),
+			$actionsDiv = cm.frozen ? $("tr#"+rid+" td", $grid).eq( $.jgrid.getCellIndex(this) ).find("> div") :$(this).parent(),
 			op = {
 				extraparam: {}
 			},
