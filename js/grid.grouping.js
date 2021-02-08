@@ -532,7 +532,7 @@ $.jgrid.extend({
 			cml = colModel.length,
 			ths = ts.grid.headers,
 			$htable = $("table.ui-jqgrid-htable", ts.grid.hDiv),
-			$trLabels = $htable.children("thead").children("tr.ui-jqgrid-labels:last").addClass("jqg-second-row-header"),
+			$trLabels = $htable.children("thead").children("tr.ui-jqgrid-labels").last().addClass("jqg-second-row-header"),
 			$thead = $htable.children("thead"),
 			$theadInTable,
 			$firstHeaderRow = $htable.find(".jqg-first-row-header"),

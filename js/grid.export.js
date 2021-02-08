@@ -1150,7 +1150,7 @@ $.jgrid.extend({
 
 			if ( o.includeLabels ) {
 				addRow( data.header, true );
-				$('row:last c', rels).attr( 's', '2' ); // bold
+				$('row', rels).last().find('c').attr( 's', '2' ); // bold
 			}
 			if ( o.includeHeader || $t.p.headerrow) {
 				var hdata = $($t).jqGrid('headerData', 'get');
@@ -1161,7 +1161,7 @@ $.jgrid.extend({
 				}
 				if(!$.isEmptyObject(hdata)) {
 					addRow( hdata, true );
-					$('row:last c', rels).attr( 's', '2' ); // bold
+					$('row', rels).last().find('c').attr( 's', '2' ); // bold
 				}
 			}
 			if( $t.p.grouping ) {
@@ -1183,7 +1183,7 @@ $.jgrid.extend({
 				}
 				if(!$.isEmptyObject(data.footer)) {
 					addRow( data.footer, true );
-					$('row:last c', rels).attr( 's', '2' ); // bold
+					$('row', rels).last().find('c').attr( 's', '2' ); // bold
 				}
 			}
 
