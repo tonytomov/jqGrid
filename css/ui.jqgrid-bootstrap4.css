@@ -975,7 +975,7 @@ ul.ui-search-menu li, ul.ui-nav-menu li {
 	padding-left: 5px;
 }
 
-.frozen-div, .frozen-bdiv {
+.frozen-div, .frozen-bdiv, .frozen-sdiv, .frozen-hrdiv {
 	background-color: #fff;
 }
 .frozen-div .ui-jqgrid-htable {
