@@ -6606,9 +6606,8 @@ $.jgrid.extend({
 				i++;
 			}
 			if( maxfrozen>=0 && frozen) {
-				var //top = $t.p.caption ? $($t.grid.cDiv).outerHeight() + pixeljqui: 0,
-				divhth = parseInt( $(".ui-jqgrid-hdiv","#gview_"+$.jgrid.jqID($t.p.id)).height(), 10);
-				var bpos = $(".ui-jqgrid-bdiv","#gview_"+$.jgrid.jqID($t.p.id)).position(),
+				var divhth = parseInt( $(".ui-jqgrid-hdiv","#gview_"+$.jgrid.jqID($t.p.id)).height(), 10),
+				bpos = $(".ui-jqgrid-bdiv","#gview_"+$.jgrid.jqID($t.p.id)).position(),
 				bhpos = $(".ui-jqgrid-hdiv","#gview_"+$.jgrid.jqID($t.p.id)).position();
 				
 				$t.grid.fhDiv = $('<div style="position:absolute;' + ($t.p.direction === "rtl" ? 'right:0px;' : 'left:0px;') + 'top:'+bhpos.top+'px;height:'+(divhth - pixelfix)+'px;" class="frozen-div ' + hd +'"></div>');
