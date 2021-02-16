@@ -29,7 +29,7 @@ if(!$.jgrid.hasOwnProperty("defaults")) {
 	$.jgrid.defaults = {};
 }
 $.extend($.jgrid,{
-	version : "5.5.3",
+	version : "5.5.4",
 	trim : function (x) {
 		if(typeof x === "string") {
 			return x.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');

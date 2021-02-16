@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.3 - 2021-02-10
+* @license Guriddo jqGrid JS - v5.5.4 - 2021-02-16
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -24,7 +24,7 @@ if(!$.jgrid.hasOwnProperty("defaults")) {
 	$.jgrid.defaults = {};
 }
 $.extend($.jgrid,{
-	version : "5.5.3",
+	version : "5.5.4",
 	trim : function (x) {
 		if(typeof x === "string") {
 			return x.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
@@ -6601,9 +6601,8 @@ $.jgrid.extend({
 				i++;
 			}
 			if( maxfrozen>=0 && frozen) {
-				var //top = $t.p.caption ? $($t.grid.cDiv).outerHeight() + pixeljqui: 0,
-				divhth = parseInt( $(".ui-jqgrid-hdiv","#gview_"+$.jgrid.jqID($t.p.id)).height(), 10);
-				var bpos = $(".ui-jqgrid-bdiv","#gview_"+$.jgrid.jqID($t.p.id)).position(),
+				var divhth = parseInt( $(".ui-jqgrid-hdiv","#gview_"+$.jgrid.jqID($t.p.id)).height(), 10),
+				bpos = $(".ui-jqgrid-bdiv","#gview_"+$.jgrid.jqID($t.p.id)).position(),
 				bhpos = $(".ui-jqgrid-hdiv","#gview_"+$.jgrid.jqID($t.p.id)).position();
 				
 				$t.grid.fhDiv = $('<div style="position:absolute;' + ($t.p.direction === "rtl" ? 'right:0px;' : 'left:0px;') + 'top:'+bhpos.top+'px;height:'+(divhth - pixelfix)+'px;" class="frozen-div ' + hd +'"></div>');
