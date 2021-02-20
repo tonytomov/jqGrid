@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.4 - 2021-02-16
+* @license Guriddo jqGrid JS - v5.5.4 - 2021-02-20
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -4090,7 +4090,7 @@ $.fn.jqGrid = function( pin ) {
 			cols.splice(lastfrozen + (isfreeze ? 1 : 0), 0, index);
 			cm[index].frozen = isfreeze;
 			if( $.jgrid.isFunction( ts.p.colMenuBeforeProcess )) {
-				ts.p.colMenuBeforeProcess.call(ts, { module: 'freeze', action : isfreeze ? 'freeze' : 'unfreeze', column : cm.name});
+				ts.p.colMenuBeforeProcess.call(ts, { module: 'freeze', action : isfreeze ? 'freeze' : 'unfreeze', column : cm[index].name});
 			}
 			$(ts).jqGrid("destroyFrozenColumns");
 			$(ts).jqGrid("remapColumns", cols, true);

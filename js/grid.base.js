@@ -4095,7 +4095,7 @@ $.fn.jqGrid = function( pin ) {
 			cols.splice(lastfrozen + (isfreeze ? 1 : 0), 0, index);
 			cm[index].frozen = isfreeze;
 			if( $.jgrid.isFunction( ts.p.colMenuBeforeProcess )) {
-				ts.p.colMenuBeforeProcess.call(ts, { module: 'freeze', action : isfreeze ? 'freeze' : 'unfreeze', column : cm.name});
+				ts.p.colMenuBeforeProcess.call(ts, { module: 'freeze', action : isfreeze ? 'freeze' : 'unfreeze', column : cm[index].name});
 			}
 			$(ts).jqGrid("destroyFrozenColumns");
 			$(ts).jqGrid("remapColumns", cols, true);
