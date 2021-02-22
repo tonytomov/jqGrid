@@ -95,6 +95,7 @@ $.jgrid.extend({
 				"axis" : "x",
 				"scrollSensitivity": "1",
 				"items": '>th:not(:has(#jqgh_'+tid+'_cb'+',#jqgh_'+tid+'_rn'+',#jqgh_'+tid+'_subgrid),:hidden)',
+				"cancel": ".sortable-disabled",
 				"placeholder": {
 					element: function(item) {
 						var el = $(document.createElement(item[0].nodeName))

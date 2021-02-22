@@ -6676,6 +6676,10 @@ $.jgrid.extend({
 				.mousemove(function (e) {
 					if($t.grid.resizing){ $t.grid.dragMove(e);return false; }
 				});
+				if ($t.p.sortable && $.fn.sortable) {
+					// disable sortable with mouse on frozen columns
+					$($t.grid.fhDiv).find("tr.ui-jqgrid-labels th").addClass("sortable-disabled");
+				}
 				if($t.p.headerrow) {
 					$t.grid.fhrDiv = $('<div style="position:absolute;' + ($t.p.direction === "rtl" ? 'right:0px;' : 'left:0px;') + 'top:0px;" class="frozen-hrdiv ui-jqgrid-hrdiv "></div>');
 					$("#gview_"+$.jgrid.jqID($t.p.id)).append($t.grid.fhrDiv);

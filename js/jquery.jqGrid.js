@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.4 - 2021-02-20
+* @license Guriddo jqGrid JS - v5.5.4 - 2021-02-22
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -6671,6 +6671,10 @@ $.jgrid.extend({
 				.mousemove(function (e) {
 					if($t.grid.resizing){ $t.grid.dragMove(e);return false; }
 				});
+				if ($t.p.sortable && $.fn.sortable) {
+					// disable sortable with mouse on frozen columns
+					$($t.grid.fhDiv).find("tr.ui-jqgrid-labels th").addClass("sortable-disabled");
+				}
 				if($t.p.headerrow) {
 					$t.grid.fhrDiv = $('<div style="position:absolute;' + ($t.p.direction === "rtl" ? 'right:0px;' : 'left:0px;') + 'top:0px;" class="frozen-hrdiv ui-jqgrid-hrdiv "></div>');
 					$("#gview_"+$.jgrid.jqID($t.p.id)).append($t.grid.fhrDiv);
@@ -14935,6 +14939,7 @@ $.jgrid.extend({
 				"axis" : "x",
 				"scrollSensitivity": "1",
 				"items": '>th:not(:has(#jqgh_'+tid+'_cb'+',#jqgh_'+tid+'_rn'+',#jqgh_'+tid+'_subgrid),:hidden)',
+				"cancel": ".sortable-disabled",
 				"placeholder": {
 					element: function(item) {
 						var el = $(document.createElement(item[0].nodeName))
