@@ -977,21 +977,13 @@ $.jgrid.extend({
 				overlayClass: p.overlayClass,
 				focusField : p.focusField,
 				onHide :  function(h) {
-					var fh = $('#editmod'+gID)[0].style.height,
-						fw = $('#editmod'+gID)[0].style.width,
+					var fw = floatNum( $('#editmod'+gID)[0].style.width ),
 						rtlsup = $("#gbox_"+$.jgrid.jqID(gID)).attr("dir") === "rtl" ? true : false;
-					if(fh.indexOf("px") > -1 ) {
-						fh = parseFloat(fh);
-					}
-					if(fw.indexOf("px") > -1 ) {
-						fw = parseFloat(fw);
-					}
-					
 					$($t).data("formProp", {
-						top:parseFloat($(h.w).css("top")),
+						top: floatNum($(h.w).css("top")),
 						left : rtlsup ? ( $("#gbox_"+$.jgrid.jqID(gID)).outerWidth() - fw - parseFloat($(h.w).css("left")) + 12 ) : parseFloat($(h.w).css("left")),
 						width : fw,
-						height : fh,
+						height : floatNum( $('#editmod'+gID)[0].style.height ),
 						dataheight : $(frmgr).height(),
 						datawidth: $(frmgr).width()
 					});

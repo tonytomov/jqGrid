@@ -34,14 +34,6 @@ $.extend($.jgrid,{
 			if (typeof oncret === 'boolean'  && !oncret ) { return; }
 		}
 		if( o.formprop && thisgrid  && o.form) {
-			var fh = $(selector)[0].style.height,
-			fw = $(selector)[0].style.width;
-			if(fh.indexOf("px") > -1 ) {
-				fh = parseFloat(fh);
-			}
-			if(fw.indexOf("px") > -1 ) {
-				fw = parseFloat(fw);
-			}
 			var frmgr, frmdata;
 			if(o.form==='edit'){
 				frmgr = '#' +$.jgrid.jqID("FrmGrid_"+ o.gb.substr(6));
@@ -51,10 +43,10 @@ $.extend($.jgrid,{
 				frmdata = "viewProp";
 			}
 			$(thisgrid).data(frmdata, {
-				top:parseFloat($(selector).css("top")),
-				left : parseFloat($(selector).css("left")),
-				width : fw,
-				height : fh,
+				top: floatNum($(selector).css("top")),
+				left : floatNum($(selector).css("left")),
+				width : floatNum( $(selector)[0].style.width ),
+				height : floatNum( $(selector)[0].style.height ),
 				dataheight : $(frmgr).height(),
 				datawidth: $(frmgr).width()
 			});
