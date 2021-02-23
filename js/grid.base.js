@@ -2153,7 +2153,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			if(cm.autosize) {
 				if(!cm._maxsize) {
-					cm._maxsize = 0;
+					cm._maxsize = cm.canvas_width;
 				}
 				cm._maxsize = Math.max( (!!$.jgrid.isFunction( cm.sizingStringFunc ) ? 
 							cm.sizingStringFunc.call(ts, v, grid_font, opts, rwdat) : 
@@ -4506,7 +4506,9 @@ $.fn.jqGrid = function( pin ) {
 		}
 		var thr = $(thead).find("tr").first(),
 		firstr = "<tr class='jqgfirstrow' role='row'>",
-		clicks =0;
+		clicks =0,
+		// header font for full autosize
+		hdr_font = $.jgrid.getFont( $("th",thr).first()[0] );
 		ts.p.disableClick=false;
 		$("th",thr).each(function ( j ) {
 			tmpcm = ts.p.colModel[j];
@@ -4542,6 +4544,10 @@ $.fn.jqGrid = function( pin ) {
 					$(">div",this).addClass('ui-jqgrid-sortable');
 				}
 			}
+			tmpcm.canvas_width = tmpcm.autosize_headers ? ($.jgrid.getTextWidth( $("div", this).html(), hdr_font)
+					+ (tmpcm.colmenu ? floatNum( $(".colmenuspan", this).parent().width()) : 0)
+					+ floatNum( $("div", this).css("padding-left")) + floatNum( $("div", this).css("padding-right"))
+					+ floatNum($(".ui-jqgrid-resize", this).width())) : 0;
 			if(sort) {
 				if(ts.p.multiSort) {
 					if(ts.p.viewsortcols[0]) {
@@ -4655,6 +4661,8 @@ $.fn.jqGrid = function( pin ) {
 			return false;
 		});
 		tmpcm = null;
+		// reset font cache
+		jQuery._cacheCanvas = null;
 		if (ts.p.sortable && $.fn.sortable) {
 			try {
 				$(ts).jqGrid("sortableColumns", thr);
@@ -5090,7 +5098,7 @@ $.fn.jqGrid = function( pin ) {
 					if (this.autosize && !this.hidden) {
 						if(this._maxsize && this._maxsize > 0) {
 							$(ts).jqGrid('resizeColumn', i, this._maxsize +  ts.p.cellLayout );
-							this._maxsize = 0;
+							this._maxsize = this.canvas_width;
 						}
 					}
 				});
@@ -6239,10 +6247,10 @@ $.jgrid.extend({
 		var font = $.jgrid.getFont( this[0] );
 
 		this.each(function(){
-			var $t=this, pos=-1;
+			var $t=this, pos=-1, cm = $t.p.colModel;
 			if(!$t.grid) {return;}
 			if(isNaN(col)) {
-				$($t.p.colModel).each(function(i){
+				$(cm).each(function(i){
 					if (this.name === col) {
 						pos = i;
 						return false;
@@ -6256,7 +6264,9 @@ $.jgrid.extend({
 						if($($t.rows[i]).hasClass('jqgrow') && $t.rows[i].id !== "norecs") {
 
 							if(mathopr === 'maxwidth') {
-								if(max === undefined) { max = 0;}
+								if(max === undefined) { 
+									max = cm[pos].autosize_headers ? cm[pos].canvas_width  : 0;
+								}
 								max = Math.max( $.jgrid.getTextWidth($t.rows[i].cells[pos].innerHTML, font), max);
 								continue;
 							}
