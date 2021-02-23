@@ -985,6 +985,8 @@ $.extend($.jgrid,{
 	getFont : function (instance) {
 		var getfont = window.getComputedStyle( instance, null );
 		return getfont.getPropertyValue( 'font-style' ) + " " +
+				getfont.getPropertyValue( 'font-variant' ) + " " +
+				getfont.getPropertyValue( 'font-weight' ) + " " +
 				getfont.getPropertyValue( 'font-size' ) + " " +
 				getfont.getPropertyValue( 'font-family');
 	},
