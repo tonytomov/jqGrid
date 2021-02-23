@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.4 - 2021-02-22
+* @license Guriddo jqGrid JS - v5.5.4 - 2021-02-23
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -980,6 +980,8 @@ $.extend($.jgrid,{
 	getFont : function (instance) {
 		var getfont = window.getComputedStyle( instance, null );
 		return getfont.getPropertyValue( 'font-style' ) + " " +
+				getfont.getPropertyValue( 'font-variant' ) + " " +
+				getfont.getPropertyValue( 'font-weight' ) + " " +
 				getfont.getPropertyValue( 'font-size' ) + " " +
 				getfont.getPropertyValue( 'font-family');
 	},
@@ -2081,10 +2083,13 @@ $.fn.jqGrid = function( pin ) {
 
 		var sortkeys = ["shiftKey","altKey","ctrlKey"],
 		grid_font = $.jgrid.getFont( ts ) ,
-		intNum = function(val,defval) {
+		intNum = function(val, defval = 0) {
 			val = parseInt(val,10);
-			if (isNaN(val)) { return defval || 0;}
-			return val;
+			return !isNaN(val) ? val : defval;
+		},
+		floatNum = function(val, defval = 0) {
+			val = parseFloat(val);
+			return !isNaN(val) ? val : defval;
 		},
 		formatCol = function (pos, rowInd, tv, rawObject, rowId, rdata){
 			var cm = ts.p.colModel[pos], cellAttrFunc,
@@ -2143,7 +2148,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			if(cm.autosize) {
 				if(!cm._maxsize) {
-					cm._maxsize = 0;
+					cm._maxsize = cm.canvas_width;
 				}
 				cm._maxsize = Math.max( (!!$.jgrid.isFunction( cm.sizingStringFunc ) ? 
 							cm.sizingStringFunc.call(ts, v, grid_font, opts, rwdat) : 
@@ -4266,7 +4271,7 @@ $.fn.jqGrid = function( pin ) {
 		// calculate cellLayout
 		var bstw2 = $("<table style='visibility:hidden'><tr class='jqgrow'><td>1</td></tr></table)").addClass(getstyle(stylemodule,"rowTable", true, 'ui-jqgrid-btable ui-common-table'));
 		$(eg).append(bstw2);
-		ts.p.cellLayout = parseInt( $("td", bstw2).css('padding-left'), 10) + parseInt($("td", bstw2).css('padding-right'), 10) + 1;
+		ts.p.cellLayout = floatNum( $("td", bstw2).css('padding-left')) + floatNum($("td", bstw2).css('padding-right'), 10) + 1;
 		if(ts.p.cellLayout <=0 ) {
 			ts.p.cellLayout = 5;
 		}
@@ -4496,7 +4501,9 @@ $.fn.jqGrid = function( pin ) {
 		}
 		var thr = $(thead).find("tr").first(),
 		firstr = "<tr class='jqgfirstrow' role='row'>",
-		clicks =0;
+		clicks =0,
+		// header font for full autosize
+		hdr_font = $.jgrid.getFont( $("th",thr).first()[0] );
 		ts.p.disableClick=false;
 		$("th",thr).each(function ( j ) {
 			tmpcm = ts.p.colModel[j];
@@ -4532,6 +4539,10 @@ $.fn.jqGrid = function( pin ) {
 					$(">div",this).addClass('ui-jqgrid-sortable');
 				}
 			}
+			tmpcm.canvas_width = tmpcm.autosize_headers ? ($.jgrid.getTextWidth( $("div", this).html(), hdr_font)
+					+ (tmpcm.colmenu ? floatNum( $(".colmenuspan", this).parent().width()) : 0)
+					+ floatNum( $("div", this).css("padding-left")) + floatNum( $("div", this).css("padding-right"))
+					+ floatNum($(".ui-jqgrid-resize", this).width())) : 0;
 			if(sort) {
 				if(ts.p.multiSort) {
 					if(ts.p.viewsortcols[0]) {
@@ -4645,6 +4656,8 @@ $.fn.jqGrid = function( pin ) {
 			return false;
 		});
 		tmpcm = null;
+		// reset font cache
+		jQuery._cacheCanvas = null;
 		if (ts.p.sortable && $.fn.sortable) {
 			try {
 				$(ts).jqGrid("sortableColumns", thr);
@@ -5080,7 +5093,7 @@ $.fn.jqGrid = function( pin ) {
 					if (this.autosize && !this.hidden) {
 						if(this._maxsize && this._maxsize > 0) {
 							$(ts).jqGrid('resizeColumn', i, this._maxsize +  ts.p.cellLayout );
-							this._maxsize = 0;
+							this._maxsize = this.canvas_width;
 						}
 					}
 				});
@@ -6229,10 +6242,10 @@ $.jgrid.extend({
 		var font = $.jgrid.getFont( this[0] );
 
 		this.each(function(){
-			var $t=this, pos=-1;
+			var $t=this, pos=-1, cm = $t.p.colModel;
 			if(!$t.grid) {return;}
 			if(isNaN(col)) {
-				$($t.p.colModel).each(function(i){
+				$(cm).each(function(i){
 					if (this.name === col) {
 						pos = i;
 						return false;
@@ -6246,7 +6259,9 @@ $.jgrid.extend({
 						if($($t.rows[i]).hasClass('jqgrow') && $t.rows[i].id !== "norecs") {
 
 							if(mathopr === 'maxwidth') {
-								if(max === undefined) { max = 0;}
+								if(max === undefined) { 
+									max = cm[pos].autosize_headers ? cm[pos].canvas_width  : 0;
+								}
 								max = Math.max( $.jgrid.getTextWidth($t.rows[i].cells[pos].innerHTML, font), max);
 								continue;
 							}
@@ -7611,14 +7626,6 @@ $.extend($.jgrid,{
 			if (typeof oncret === 'boolean'  && !oncret ) { return; }
 		}
 		if( o.formprop && thisgrid  && o.form) {
-			var fh = $(selector)[0].style.height,
-			fw = $(selector)[0].style.width;
-			if(fh.indexOf("px") > -1 ) {
-				fh = parseFloat(fh);
-			}
-			if(fw.indexOf("px") > -1 ) {
-				fw = parseFloat(fw);
-			}
 			var frmgr, frmdata;
 			if(o.form==='edit'){
 				frmgr = '#' +$.jgrid.jqID("FrmGrid_"+ o.gb.substr(6));
@@ -7628,10 +7635,10 @@ $.extend($.jgrid,{
 				frmdata = "viewProp";
 			}
 			$(thisgrid).data(frmdata, {
-				top:parseFloat($(selector).css("top")),
-				left : parseFloat($(selector).css("left")),
-				width : fw,
-				height : fh,
+				top: floatNum($(selector).css("top")),
+				left : floatNum($(selector).css("left")),
+				width : floatNum( $(selector)[0].style.width ),
+				height : floatNum( $(selector)[0].style.height ),
 				dataheight : $(frmgr).height(),
 				datawidth: $(frmgr).width()
 			});
@@ -11425,21 +11432,13 @@ $.jgrid.extend({
 				overlayClass: p.overlayClass,
 				focusField : p.focusField,
 				onHide :  function(h) {
-					var fh = $('#editmod'+gID)[0].style.height,
-						fw = $('#editmod'+gID)[0].style.width,
+					var fw = floatNum( $('#editmod'+gID)[0].style.width ),
 						rtlsup = $("#gbox_"+$.jgrid.jqID(gID)).attr("dir") === "rtl" ? true : false;
-					if(fh.indexOf("px") > -1 ) {
-						fh = parseFloat(fh);
-					}
-					if(fw.indexOf("px") > -1 ) {
-						fw = parseFloat(fw);
-					}
-					
 					$($t).data("formProp", {
-						top:parseFloat($(h.w).css("top")),
+						top: floatNum($(h.w).css("top")),
 						left : rtlsup ? ( $("#gbox_"+$.jgrid.jqID(gID)).outerWidth() - fw - parseFloat($(h.w).css("left")) + 12 ) : parseFloat($(h.w).css("left")),
 						width : fw,
-						height : fh,
+						height : floatNum( $('#editmod'+gID)[0].style.height ),
 						dataheight : $(frmgr).height(),
 						datawidth: $(frmgr).width()
 					});
