@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.4 - 2021-02-23
+* @license Guriddo jqGrid JS - v5.5.4 - 2021-03-01
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -46,6 +46,10 @@ $.extend($.jgrid,{
 		return deepType.match(/^(array|bigint|date|error|function|generator|regexp|symbol)$/) ? deepType :
 			(typeof obj === 'object' || typeof obj === 'function') ? 'object' : typeof obj;
 	},	
+	floatNum : function(val, defval = 0) {
+		val = parseFloat(val);
+		return !isNaN(val) ? val : defval;
+	},
 	htmlDecode : function(value){
 		if(value && (value==='&nbsp;' || value==='&#160;' || (value.length===1 && value.charCodeAt(0)===160))) { return "";}
 		return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
@@ -2085,10 +2089,6 @@ $.fn.jqGrid = function( pin ) {
 		grid_font = $.jgrid.getFont( ts ) ,
 		intNum = function(val, defval = 0) {
 			val = parseInt(val,10);
-			return !isNaN(val) ? val : defval;
-		},
-		floatNum = function(val, defval = 0) {
-			val = parseFloat(val);
 			return !isNaN(val) ? val : defval;
 		},
 		formatCol = function (pos, rowInd, tv, rawObject, rowId, rdata){
@@ -4271,7 +4271,7 @@ $.fn.jqGrid = function( pin ) {
 		// calculate cellLayout
 		var bstw2 = $("<table style='visibility:hidden'><tr class='jqgrow'><td>1</td></tr></table)").addClass(getstyle(stylemodule,"rowTable", true, 'ui-jqgrid-btable ui-common-table'));
 		$(eg).append(bstw2);
-		ts.p.cellLayout = floatNum( $("td", bstw2).css('padding-left')) + floatNum($("td", bstw2).css('padding-right'), 10) + 1;
+		ts.p.cellLayout = $.jgrid.floatNum( $("td", bstw2).css('padding-left')) + $.jgrid.floatNum($("td", bstw2).css('padding-right'), 10) + 1;
 		if(ts.p.cellLayout <=0 ) {
 			ts.p.cellLayout = 5;
 		}
@@ -4540,9 +4540,9 @@ $.fn.jqGrid = function( pin ) {
 				}
 			}
 			tmpcm.canvas_width = tmpcm.autosize_headers ? ($.jgrid.getTextWidth( $("div", this).html(), hdr_font)
-					+ (tmpcm.colmenu ? floatNum( $(".colmenuspan", this).parent().width()) : 0)
-					+ floatNum( $("div", this).css("padding-left")) + floatNum( $("div", this).css("padding-right"))
-					+ floatNum($(".ui-jqgrid-resize", this).width())) : 0;
+					+ (tmpcm.colmenu ? $.jgrid.floatNum( $(".colmenuspan", this).parent().width()) : 0)
+					+ $.jgrid.floatNum( $("div", this).css("padding-left")) + $.jgrid.floatNum( $("div", this).css("padding-right"))
+					+ $.jgrid.floatNum($(".ui-jqgrid-resize", this).width())) : 0;
 			if(sort) {
 				if(ts.p.multiSort) {
 					if(ts.p.viewsortcols[0]) {
@@ -7635,10 +7635,10 @@ $.extend($.jgrid,{
 				frmdata = "viewProp";
 			}
 			$(thisgrid).data(frmdata, {
-				top: floatNum($(selector).css("top")),
-				left : floatNum($(selector).css("left")),
-				width : floatNum( $(selector)[0].style.width ),
-				height : floatNum( $(selector)[0].style.height ),
+				top: $.jgrid.floatNum($(selector).css("top")),
+				left : $.jgrid.floatNum($(selector).css("left")),
+				width : $.jgrid.floatNum( $(selector)[0].style.width ),
+				height : $.jgrid.floatNum( $(selector)[0].style.height ),
 				dataheight : $(frmgr).height(),
 				datawidth: $(frmgr).width()
 			});
@@ -11432,13 +11432,13 @@ $.jgrid.extend({
 				overlayClass: p.overlayClass,
 				focusField : p.focusField,
 				onHide :  function(h) {
-					var fw = floatNum( $('#editmod'+gID)[0].style.width ),
+					var fw = $.jgrid.floatNum( $('#editmod'+gID)[0].style.width ),
 						rtlsup = $("#gbox_"+$.jgrid.jqID(gID)).attr("dir") === "rtl" ? true : false;
 					$($t).data("formProp", {
-						top: floatNum($(h.w).css("top")),
+						top: $.jgrid.floatNum($(h.w).css("top")),
 						left : rtlsup ? ( $("#gbox_"+$.jgrid.jqID(gID)).outerWidth() - fw - parseFloat($(h.w).css("left")) + 12 ) : parseFloat($(h.w).css("left")),
 						width : fw,
-						height : floatNum( $('#editmod'+gID)[0].style.height ),
+						height : $.jgrid.floatNum( $('#editmod'+gID)[0].style.height ),
 						dataheight : $(frmgr).height(),
 						datawidth: $(frmgr).width()
 					});

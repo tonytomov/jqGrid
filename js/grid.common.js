@@ -43,10 +43,10 @@ $.extend($.jgrid,{
 				frmdata = "viewProp";
 			}
 			$(thisgrid).data(frmdata, {
-				top: floatNum($(selector).css("top")),
-				left : floatNum($(selector).css("left")),
-				width : floatNum( $(selector)[0].style.width ),
-				height : floatNum( $(selector)[0].style.height ),
+				top: $.jgrid.floatNum($(selector).css("top")),
+				left : $.jgrid.floatNum($(selector).css("left")),
+				width : $.jgrid.floatNum( $(selector)[0].style.width ),
+				height : $.jgrid.floatNum( $(selector)[0].style.height ),
 				dataheight : $(frmgr).height(),
 				datawidth: $(frmgr).width()
 			});

@@ -51,6 +51,10 @@ $.extend($.jgrid,{
 		return deepType.match(/^(array|bigint|date|error|function|generator|regexp|symbol)$/) ? deepType :
 			(typeof obj === 'object' || typeof obj === 'function') ? 'object' : typeof obj;
 	},	
+	floatNum : function(val, defval = 0) {
+		val = parseFloat(val);
+		return !isNaN(val) ? val : defval;
+	},
 	htmlDecode : function(value){
 		if(value && (value==='&nbsp;' || value==='&#160;' || (value.length===1 && value.charCodeAt(0)===160))) { return "";}
 		return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
@@ -2090,10 +2094,6 @@ $.fn.jqGrid = function( pin ) {
 		grid_font = $.jgrid.getFont( ts ) ,
 		intNum = function(val, defval = 0) {
 			val = parseInt(val,10);
-			return !isNaN(val) ? val : defval;
-		},
-		floatNum = function(val, defval = 0) {
-			val = parseFloat(val);
 			return !isNaN(val) ? val : defval;
 		},
 		formatCol = function (pos, rowInd, tv, rawObject, rowId, rdata){
@@ -4276,7 +4276,7 @@ $.fn.jqGrid = function( pin ) {
 		// calculate cellLayout
 		var bstw2 = $("<table style='visibility:hidden'><tr class='jqgrow'><td>1</td></tr></table)").addClass(getstyle(stylemodule,"rowTable", true, 'ui-jqgrid-btable ui-common-table'));
 		$(eg).append(bstw2);
-		ts.p.cellLayout = floatNum( $("td", bstw2).css('padding-left')) + floatNum($("td", bstw2).css('padding-right'), 10) + 1;
+		ts.p.cellLayout = $.jgrid.floatNum( $("td", bstw2).css('padding-left')) + $.jgrid.floatNum($("td", bstw2).css('padding-right'), 10) + 1;
 		if(ts.p.cellLayout <=0 ) {
 			ts.p.cellLayout = 5;
 		}
@@ -4545,9 +4545,9 @@ $.fn.jqGrid = function( pin ) {
 				}
 			}
 			tmpcm.canvas_width = tmpcm.autosize_headers ? ($.jgrid.getTextWidth( $("div", this).html(), hdr_font)
-					+ (tmpcm.colmenu ? floatNum( $(".colmenuspan", this).parent().width()) : 0)
-					+ floatNum( $("div", this).css("padding-left")) + floatNum( $("div", this).css("padding-right"))
-					+ floatNum($(".ui-jqgrid-resize", this).width())) : 0;
+					+ (tmpcm.colmenu ? $.jgrid.floatNum( $(".colmenuspan", this).parent().width()) : 0)
+					+ $.jgrid.floatNum( $("div", this).css("padding-left")) + $.jgrid.floatNum( $("div", this).css("padding-right"))
+					+ $.jgrid.floatNum($(".ui-jqgrid-resize", this).width())) : 0;
 			if(sort) {
 				if(ts.p.multiSort) {
 					if(ts.p.viewsortcols[0]) {
