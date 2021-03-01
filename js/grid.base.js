@@ -3939,7 +3939,7 @@ $.fn.jqGrid = function( pin ) {
 
 			//elem = $('<ul id="search_menu" class="ui-search-menu modal-content" role="menu" tabindex="0" style="left:'+left+'px;top:'+top+'px;"></ul>');
 			elem = $('<form></form>');
-			var str1 = "<a id='bs_close'><span class='" + iconbase + " " + classes.icon_close + "'></span></a>";
+			var str1 = "<a id='bs_close' aria-label='Close'><span class='" + iconbase + " " + classes.icon_close + "'></span></a>";
 			str1 += '<div>'+$.jgrid.getRegional(ts, "colmenu.searchTitle")+'</div>';
 			str1 += '<div><select size="1" id="oper1" class="'+colmenustyle.filter_select+'">';
 			$.each(texts.odata, function(i, n) {
