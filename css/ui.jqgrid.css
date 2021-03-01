@@ -477,6 +477,13 @@ td.menu_text {
 	display:inline-block;
 	width:50%;
 }
+#search_menu  #bs_close {
+	position: absolute;
+	padding:  0px 0px;
+	top: 8px;
+	right: 19px;
+}
+
 #column_menu.ui-menu .ui-menu-item {
 	position :static;
 }

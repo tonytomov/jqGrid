@@ -1051,6 +1051,13 @@ td.menu_text {
 	width:50%;
 	padding: 3px 3px;
 }
+#search_menu  #bs_close {
+	position: absolute;
+	padding:  0px 0px;
+	top: 0px;
+	right: 0px;
+}
+
 .search_buttons .btn-default:hover {
 	padding-bottom: 6px;
 	padding-top: 6px;

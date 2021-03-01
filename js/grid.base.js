@@ -47,7 +47,7 @@ $.extend($.jgrid,{
 		}
 		if (obj == null) { return (obj + '').toLowerCase(); } // implicit toString() conversion
 		var deepType = Object.prototype.toString.call(obj).slice(8,-1).toLowerCase();
-		if (deepType === 'generatorfunction') { return 'function' }
+		if (deepType === 'generatorfunction') { return 'function'; }
 		return deepType.match(/^(array|bigint|date|error|function|generator|regexp|symbol)$/) ? deepType :
 			(typeof obj === 'object' || typeof obj === 'function') ? 'object' : typeof obj;
 	},	
@@ -3907,7 +3907,8 @@ $.fn.jqGrid = function( pin ) {
 			numopts = ['eq','ne', 'lt', 'le', 'gt', 'ge', 'nu', 'nn', 'in', 'ni'],
 			stropts = ['eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn', 'in', 'ni'],
 			texts = $.jgrid.getRegional(ts, "search"),
-			common = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].common;
+			common = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].common,
+			classes = $.jgrid.styleUI[(p.styleUI || 'jQueryUI')].modal;
 
 			if(!cm ) {
 				return;
@@ -3938,7 +3939,8 @@ $.fn.jqGrid = function( pin ) {
 
 			//elem = $('<ul id="search_menu" class="ui-search-menu modal-content" role="menu" tabindex="0" style="left:'+left+'px;top:'+top+'px;"></ul>');
 			elem = $('<form></form>');
-			var str1= '<div>'+$.jgrid.getRegional(ts, "colmenu.searchTitle")+'</div>';
+			var str1 = "<a id='bs_close'><span class='" + iconbase + " " + classes.icon_close + "'></span></a>";
+			str1 += '<div>'+$.jgrid.getRegional(ts, "colmenu.searchTitle")+'</div>';
 			str1 += '<div><select size="1" id="oper1" class="'+colmenustyle.filter_select+'">';
 			$.each(texts.odata, function(i, n) {
 				selected = n.oper === o1 ? 'selected="selected"' : '';
@@ -4006,7 +4008,7 @@ $.fn.jqGrid = function( pin ) {
 				$("#search_menu").css("left", -parseInt($("#column_menu").innerWidth(),10) +"px");
 			}
 
-			$("#bs_reset, #bs_search", "#search_menu").hover(function(){
+			$("#bs_reset, #bs_search", "#search_menu", "#bs_close").hover(function(){
 				$(this).addClass(hover);
 			},function(){
 				$(this).removeClass(hover);
@@ -4020,7 +4022,7 @@ $.fn.jqGrid = function( pin ) {
 					ts.p.colMenuBeforeProcess.call(ts, { module: 'filtering', action : 'reset', column : cm.name});
 				}
 				$(ts).trigger("reloadGrid");
-				$("#column_menu").remove();
+				//$("#column_menu").remove();
 			});
 			$("#bs_search", elem).on('click', function(e){
 				ts.p.colFilters[cm.name] = {
@@ -4036,6 +4038,9 @@ $.fn.jqGrid = function( pin ) {
 					ts.p.colMenuBeforeProcess.call(ts, { module: 'filtering', action : 'search', column : cm.name});
 				}
 				$(ts).trigger("reloadGrid");
+				$("#column_menu").remove();
+			});
+			$("#bs_close", elem).on('click', function(){
 				$("#column_menu").remove();
 			});
 		},
