@@ -143,6 +143,10 @@ $.extend($.jgrid,{
 			while (value.length < length)  { value = '0' + value; }
 			return value;
 		},
+		insStr = function( value, pos, ch) {
+			value = String(value);
+			return value.slice(0, pos) + ch + value.slice(pos);
+		},
 		ts = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0, u:0},
 		timestamp=0, dM, k,hl,
 		h12to24 = function(ampm, h){
@@ -315,7 +319,7 @@ $.extend($.jgrid,{
 				e: '?',
 				I: '?',
 				O: (o > 0 ? "-" : "+") + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4),
-				P: '?',
+				P: (o > 0 ? "-" : "+") + insStr( pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4), -2, ":"),
 				T: (String(timestamp).match(timezone) || [""]).pop().replace(timezoneClip, ""),
 				Z: '?',
 				// Full Date/Time
