@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.4 - 2021-03-01
+* @license Guriddo jqGrid JS - v5.5.4 - 2021-03-05
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -137,6 +137,10 @@ $.extend($.jgrid,{
 			length = parseInt(length,10) || 2;
 			while (value.length < length)  { value = '0' + value; }
 			return value;
+		},
+		insStr = function( value, pos, ch) {
+			value = String(value);
+			return value.slice(0, pos) + ch + value.slice(pos);
 		},
 		ts = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0, u:0},
 		timestamp=0, dM, k,hl,
@@ -310,7 +314,7 @@ $.extend($.jgrid,{
 				e: '?',
 				I: '?',
 				O: (o > 0 ? "-" : "+") + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4),
-				P: '?',
+				P: (o > 0 ? "-" : "+") + insStr( pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4), -2, ":"),
 				T: (String(timestamp).match(timezone) || [""]).pop().replace(timezoneClip, ""),
 				Z: '?',
 				// Full Date/Time
@@ -9320,7 +9324,7 @@ $.jgrid.extend({
 			groupOpSelect : "OR",
 			errorcheck : true,
 			operands : { "eq" :"==", "ne":"!","lt":"<","le":"<=","gt":">","ge":">=","bw":"^","bn":"!^","in":"=","ni":"!=","ew":"|","en":"!@","cn":"~","nc":"!~","nu":"#","nn":"!#", "bt":"..."},
-			disabledKeys :  [9, 16, 17,18,19, 20, 33, 34, 35,36,37,38,39,30, 45,112,113,114,115,116,117,118,119,120,121,122,123, 144, 145]
+			disabledKeys :  new Set([9, 16, 17,18,19, 20, 33, 34, 35,36,37,38,39,30, 45,112,113,114,115,116,117,118,119,120,121,122,123, 144, 145])
 		}, regional , p  || {});
 		return this.each(function(){
 			var $t = this, unaryOpers=[];;
@@ -9664,7 +9668,7 @@ $.jgrid.extend({
 					rules = filterobj.rules.length ? filterobj.rules : false;
 				}
 			}
-			p.disabledKeys = new Set(p.disabledKeys); // experimental 
+			//p.disabledKeys = new Set(p.disabledKeys); // experimental 
 			$.each($t.p.colModel,function(ci){
 				var cm=this, soptions, select="", sot="=", so, i, st, csv, df, elem, restores,
 				th = $("<th role='columnheader' class='" + base.headerBox+" ui-th-"+$t.p.direction+"' id='gsh_" + $t.p.id + "_" + cm.name + "' ></th>"),
