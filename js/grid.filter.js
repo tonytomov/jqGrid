@@ -847,7 +847,7 @@ $.jgrid.extend({
 			groupOpSelect : "OR",
 			errorcheck : true,
 			operands : { "eq" :"==", "ne":"!","lt":"<","le":"<=","gt":">","ge":">=","bw":"^","bn":"!^","in":"=","ni":"!=","ew":"|","en":"!@","cn":"~","nc":"!~","nu":"#","nn":"!#", "bt":"..."},
-			disabledKeys :  new Set([9, 16, 17,18,19, 20, 33, 34, 35,36,37,38,39,30, 45,112,113,114,115,116,117,118,119,120,121,122,123, 144, 145])
+			disabledKeys :  [9, 16, 17,18,19, 20, 33, 34, 35,36,37,38,39,30, 45,112,113,114,115,116,117,118,119,120,121,122,123, 144, 145]
 		}, regional , p  || {});
 		return this.each(function(){
 			var $t = this, unaryOpers=[];;
@@ -1289,17 +1289,18 @@ $.jgrid.extend({
 									}
 								});
 							} else {
+								var dKeys = new Set(p.disabledKeys);
 								soptions.dataEvents.push({
 									type: "keydown",
 									fn : function(e) {
 										var key = e.which;
-										if( p.disabledKeys.has(key)) {
+										if( dKeys.has(key)) {
 											// do nothing
 										} else if( key === 13 ) {
-												return false;
+											return false;
 										} else {
-												if(timeoutHnd) { clearTimeout(timeoutHnd); }
-												timeoutHnd = setTimeout(function(){triggerToolbar();}, p.autosearchDelay);
+											if(timeoutHnd) { clearTimeout(timeoutHnd); }
+											timeoutHnd = setTimeout(function(){triggerToolbar();}, p.autosearchDelay);
 										}
 									}
 								});
