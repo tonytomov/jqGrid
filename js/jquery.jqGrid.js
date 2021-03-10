@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.4 - 2021-03-08
+* @license Guriddo jqGrid JS - v5.5.4 - 2021-03-09
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -13852,11 +13852,17 @@ $.extend($.jgrid,{
 				});
 			}
 			// grouping
+			if(grid.jqGrid('isGroupHeaderOn')) {
+				grid.jqGrid('refreshGroupHeaders');
+			}
 			// pivotgrid
+			// 
+			// inline navigator
 			if(ret.inlineNav && iN) {
 				grid.jqGrid('setGridParam', { inlineNav:false });
 				grid.jqGrid('inlineNav', ret.pager, iN);
 			}
+			// toolbar filter
 			if(ret.filterToolbar && fT) {
 				grid.jqGrid('setGridParam', { filterToolbar:false });
 				fT.restoreFromFilters = true;

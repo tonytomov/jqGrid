@@ -264,11 +264,17 @@ $.extend($.jgrid,{
 				});
 			}
 			// grouping
+			if(grid.jqGrid('isGroupHeaderOn')) {
+				grid.jqGrid('refreshGroupHeaders');
+			}
 			// pivotgrid
+			// 
+			// inline navigator
 			if(ret.inlineNav && iN) {
 				grid.jqGrid('setGridParam', { inlineNav:false });
 				grid.jqGrid('inlineNav', ret.pager, iN);
 			}
+			// toolbar filter
 			if(ret.filterToolbar && fT) {
 				grid.jqGrid('setGridParam', { filterToolbar:false });
 				fT.restoreFromFilters = true;
