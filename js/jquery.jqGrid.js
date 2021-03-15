@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.4 - 2021-03-09
+* @license Guriddo jqGrid JS - v5.5.4 - 2021-03-15
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -4017,6 +4017,13 @@ $.fn.jqGrid = function( pin ) {
 				ts.p.colFilters[cm.name] = {};
 				ts.p.postData.filters = buildFilters();
 				ts.p.search = false;
+				ts.p.resetsearch =  true;
+				df = "";
+				if(cm.searchoptions.defaultValue ) {
+					df = $.jgrid.isFunction(cm.searchoptions.defaultValue) ? cm.searchoptions.defaultValue.call(ts) : cm.searchoptions.defaultValue;
+				}
+				$("#sval1_" + ts.p.idPrefix+cm.name,"#search_menu").val(df);
+				$("#sval2_" + ts.p.idPrefix+cm.name,"#search_menu").val("");
 				if( $.jgrid.isFunction( ts.p.colMenuBeforeProcess )) {
 					ts.p.colMenuBeforeProcess.call(ts, { module: 'filtering', action : 'reset', column : cm.name});
 				}
@@ -4050,6 +4057,9 @@ $.fn.jqGrid = function( pin ) {
 				if(ts.p.colFilters.hasOwnProperty(item)) {
 					var si = ts.p.colFilters[item];
 					if(!$.isEmptyObject(si)) {
+						if(si.value1==="" && si.value2==="") {
+							break;
+						}
 						if(i>0) {
 							filters += ",";
 						}
