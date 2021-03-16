@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.4 - 2021-03-15
+* @license Guriddo jqGrid JS - v5.5.4 - 2021-03-16
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5472,7 +5472,7 @@ $.jgrid.extend({
 		var nm, success=true;
 		this.each(function(){
 			if(!this.grid) {return false;}
-			var t = this, vl, ind, lcdata={}, prp, ohtml, tcell, jsondat;
+			var t = this, vl, ind, lcdata={}, jsondat, title;
 			ind = $(this).jqGrid('getGridRowById', rowid);
 			if(!ind) { 
 				return false; 
@@ -5489,16 +5489,14 @@ $.jgrid.extend({
 						nm = this.name;
 						var dval =$.jgrid.getAccessor(data,nm);
 						if( dval !== undefined) {
-							lcdata[nm] = this.formatter && typeof this.formatter === 'string' && this.formatter === 'date' ? $.unformat.date.call(t,dval,this) : dval;
+							lcdata[nm] = dval; //this.formatter && typeof this.formatter === 'string' && this.formatter === 'date' ? $.unformat.date.call(t,dval,this) : dval;
 							vl = t.formatter( rowid, lcdata[nm], i, data, 'edit');
+							title = this.title ? {"title":$.jgrid.stripHtml(vl)} : {};
 							
-							prp = t.formatCol( i, ind.rowIndex, vl, data, rowid, data);
-							
-							ohtml = $("<td role=\"gridcell\" "+prp+">"+vl+"</td>")[0];
-							tcell = $(ind).children("td[role='gridcell']").eq(i);
-							$(tcell).after(ohtml).remove();
-							if(t.p.treeGrid && t.p.ExpandColumn === nm ) {
-								$(t).jqGrid("setTreeNode", ind.rowIndex, ind.rowIndex+1);
+							if(t.p.treeGrid===true && nm === t.p.ExpandColumn) {
+								$("td[role='gridcell']:eq("+i+") > span:first",ind).html(vl).attr(title);
+							} else {
+								$("td[role='gridcell']:eq("+i+")",ind).html(vl).attr(title);
 							}
 						}
 					});
@@ -6161,7 +6159,7 @@ $.jgrid.extend({
 	},
 	setCell : function(rowid,colname,nData,cssp,attrp, forceupd) {
 		return this.each(function(){
-			var $t = this, pos =-1, v, prp, ohtml, ind;
+			var $t = this, pos =-1, v, ind;
 			if(!$t.grid) {return;}
 			if(isNaN(colname)) {
 				$($t.p.colModel).each(function(i){
@@ -6175,25 +6173,24 @@ $.jgrid.extend({
 			if(pos>=0) {
 				ind = $($t).jqGrid('getGridRowById', rowid);
 				if (ind){
-					var tcell, cl=0, rawdat={}, nm;
+					var tcell, title, rawdat={}, cm = $t.p.colModel[pos], index;
 					try {
 						tcell = ind.cells[pos];
 					} catch(e){}
 					if(tcell) {
 						if(nData !== "" || forceupd === true ) {
 							rawdat = $($t).jqGrid("getRowData", rowid, ($t.p.datatype === 'local'));
-							rawdat[$t.p.colModel[pos].name] = nData;
+							rawdat[cm.name] = nData;
 							v = $t.formatter(rowid, nData, pos, rawdat, 'edit');
-							prp = $t.formatCol( pos, ind.rowIndex, v, rawdat, rowid, rawdat);
+							title = cm.title ? {"title":$.jgrid.stripHtml(v)} : {};
 							
-							ohtml = $("<td role=\"gridcell\" "+prp+">"+v+"</td>")[0];
-							$(tcell).after(ohtml).remove();
-							if($t.p.treeGrid && $t.p.ExpandColumn === colname ) {
-								$($t).jqGrid("setTreeNode", ind.rowIndex, ind.rowIndex+1);
+							if($t.p.treeGrid && $t.p.ExpandColumn === cm.name ) {
+								$("span",$(tcell)).html(v).attr(title);
+							} else {
+								$(tcell).html(v).attr(title);
 							}
 							if($t.p.datatype === "local") {
-								var cm = $t.p.colModel[pos], index;
-								nData = cm.formatter && typeof cm.formatter === 'string' && cm.formatter === 'date' ? $.unformat.date.call($t,nData,cm) : nData;
+								//nData = cm.formatter && typeof cm.formatter === 'string' && cm.formatter === 'date' ? $.unformat.date.call($t,nData,cm) : nData;
 								index = $t.p._index[$.jgrid.stripPref($t.p.idPrefix, rowid)];
 								if(index !== undefined) {
 									$t.p.data[index][cm.name] = nData;
@@ -6201,12 +6198,12 @@ $.jgrid.extend({
 							}
 						}
 						if(typeof cssp === 'string'){
-							$(ohtml).addClass(cssp);
+							$(tcell).addClass(cssp);
 						} else if(cssp) {
-							$(ohtml).css(cssp);
+							$(tcell).css(cssp);
 						}
 						if(typeof attrp === 'object') {
-							$(ohtml).attr(attrp);
+							$(tcell).attr(attrp);
 						}
 					}
 				}
