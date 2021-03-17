@@ -5117,7 +5117,7 @@ $.fn.jqGrid = function( pin ) {
 					if (this.autosize && !this.hidden) {
 						if(this._maxsize && this._maxsize > 0) {
 							$(ts).jqGrid('resizeColumn', i, this._maxsize +  ts.p.cellLayout );
-							this._maxsize = this.canvas_width;
+							//this._maxsize = this.canvas_width;
 						}
 					}
 				});
@@ -6809,7 +6809,7 @@ $.jgrid.extend({
 					}
 				});
 				if(!$t.grid.hDiv.loading) {
-					$($t).triggerHandler("jqGridAfterGridComplete");
+					$($t).triggerHandler("jqGridAfterGridComplete.setFrozenColumns");
 				}
 				$t.p.frozenColumns = true;
 			}

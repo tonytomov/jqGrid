@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.4 - 2021-03-16
+* @license Guriddo jqGrid JS - v5.5.4 - 2021-03-17
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5112,7 +5112,7 @@ $.fn.jqGrid = function( pin ) {
 					if (this.autosize && !this.hidden) {
 						if(this._maxsize && this._maxsize > 0) {
 							$(ts).jqGrid('resizeColumn', i, this._maxsize +  ts.p.cellLayout );
-							this._maxsize = this.canvas_width;
+							//this._maxsize = this.canvas_width;
 						}
 					}
 				});
@@ -6804,7 +6804,7 @@ $.jgrid.extend({
 					}
 				});
 				if(!$t.grid.hDiv.loading) {
-					$($t).triggerHandler("jqGridAfterGridComplete");
+					$($t).triggerHandler("jqGridAfterGridComplete.setFrozenColumns");
 				}
 				$t.p.frozenColumns = true;
 			}
