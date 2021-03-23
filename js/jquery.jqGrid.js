@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.4 - 2021-03-17
+* @license Guriddo jqGrid JS - v5.5.4 - 2021-03-23
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -9432,7 +9432,7 @@ $.jgrid.extend({
 					});
 					ruleGroup += "]}";
 					// multiselect
-					var filters, rules, k,str, rule, ssdata, group;
+					var filters, rules, k, rule, ssdata, group;
 					if(ms) {
 						filters = $.jgrid.filterRefactor({
 							ruleGroup : ruleGroup,
@@ -9440,7 +9440,7 @@ $.jgrid.extend({
 							splitSelect : p.splitSelect,
 							groupOpSelect : p.groupOpSelect
 						});
-						ruleGroup = JSON.stringify( filters );
+						//ruleGroup = JSON.stringify( filters );
 					}
 					if(bbt) {
 						if(!$.isPlainObject(filters)) {
@@ -9460,9 +9460,8 @@ $.jgrid.extend({
 										filters.groups.push(group);
 										$.each(ssdata,function(l) {
 											var btop = l === 0 ? 'ge' : 'le';
-											str = ssdata[l];
-											if(str) {
-												group.rules.push({ data: ssdata[l],	op: btop, field: rule.field});
+											if(ssdata[l]) {
+												group.rules.push({ data: ssdata[l], op: btop, field: rule.field});
 											}
 										});
 										rules.splice(k, 1);
@@ -9667,7 +9666,11 @@ $.jgrid.extend({
 			var tr = $("<tr class='ui-search-toolbar' role='row'></tr>"),
 			timeoutHnd, rules, filterobj;
 			if( p.restoreFromFilters ) {
-				filterobj = $t.p.postData.filters;
+				if( $t.p.mergeSearch === true && $t.p.searchModules.hasOwnProperty('filterToolbar') && $t.p.searchModules.filterToolbar !== false) {
+					filterobj = $t.p.searchModules.filterToolbar;
+				} else {
+					filterobj = $t.p.postData.filters;
+				}
 				if(filterobj) {
 					if( typeof filterobj === "string") {
 						filterobj = $.jgrid.parse( filterobj );
@@ -9676,6 +9679,7 @@ $.jgrid.extend({
 				}
 			}
 			//p.disabledKeys = new Set(p.disabledKeys); // experimental 
+			var dKeys = new Set(p.disabledKeys);
 			$.each($t.p.colModel,function(ci){
 				var cm=this, soptions, select="", sot="=", so, i, st, csv, df, elem, restores,
 				th = $("<th role='columnheader' class='" + base.headerBox+" ui-th-"+$t.p.direction+"' id='gsh_" + $t.p.id + "_" + cm.name + "' ></th>"),
@@ -9773,7 +9777,6 @@ $.jgrid.extend({
 									}
 								});
 							} else {
-								var dKeys = new Set(p.disabledKeys);
 								soptions.dataEvents.push({
 									type: "keydown",
 									fn : function(e) {

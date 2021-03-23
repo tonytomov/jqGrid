@@ -1182,7 +1182,11 @@ $.jgrid.extend({
 			var tr = $("<tr class='ui-search-toolbar' role='row'></tr>"),
 			timeoutHnd, rules, filterobj;
 			if( p.restoreFromFilters ) {
-				filterobj = $t.p.postData.filters;
+				if( $t.p.mergeSearch === true && $t.p.searchModules.hasOwnProperty('filterToolbar') && $t.p.searchModules.filterToolbar !== false) {
+					filterobj = $t.p.searchModules.filterToolbar;
+				} else {
+					filterobj = $t.p.postData.filters;
+				}
 				if(filterobj) {
 					if( typeof filterobj === "string") {
 						filterobj = $.jgrid.parse( filterobj );
