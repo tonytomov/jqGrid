@@ -802,7 +802,7 @@ $.extend($.jgrid,{
 				rules = filters.rules;
 				for(k=0; k < rules.length; k++) {
 					rule = rules[k];
-					if($.inArray(rule.filed, p.ssfield)) {
+					if($.inArray(rule.filed, p.ssfield) > -1 ) {
 						ssdata = rule.data.split(p.splitSelect);
 						if(ssdata.length > 1) {
 							if(filters.groups === undefined) {
