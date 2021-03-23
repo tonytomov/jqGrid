@@ -1191,7 +1191,7 @@ $.jgrid.extend({
 					if( typeof filterobj === "string") {
 						filterobj = $.jgrid.parse( filterobj );
 					}
-					rules = filterobj.rules.length ? filterobj.rules : false;
+					rules = (filterobj.rules && filterobj.rules.length) ? filterobj.rules : false;
 				}
 			}
 			//p.disabledKeys = new Set(p.disabledKeys); // experimental 

@@ -1016,7 +1016,7 @@ $.extend($.jgrid,{
 		for( var property in p) {
 			if(p.hasOwnProperty(property)) {
 				if(property !== 'mergeOper') {
-					rules += p[property] !== null ? p[property] + ",": "";
+					rules += (p[property] !== null && p[property] !== "") ? p[property] + ",": "";
 					i++;
 				}
 			}
@@ -1812,7 +1812,8 @@ $.fn.jqGrid = function( pin ) {
 				mergeOper : 'AND',
 				filterInput : true,
 				filterToolbar : true,
-				searchGrid : true
+				searchGrid : true,
+				colMenuSearch : true
 			}
 		}, $.jgrid.defaults , pin );
 		if (localData !== undefined) {
@@ -4015,9 +4016,15 @@ $.fn.jqGrid = function( pin ) {
 
 			$("#bs_reset", elem).on('click', function(e){
 				ts.p.colFilters[cm.name] = {};
-				ts.p.postData.filters = buildFilters();
-				ts.p.search = false;
-				ts.p.resetsearch =  true;
+				if(ts.p.mergeSearch === true && ts.p.searchModules.hasOwnProperty('colMenuSearch') && ts.p.searchModules.colMenuSearch !== false ) {
+					ts.p.searchModules.colMenuSearch = buildFilters();
+					$.extend(ts.p.postData,{filters: $.jgrid.splitSearch(ts.p.searchModules)});
+					ts.p.search = true;
+				} else {
+					ts.p.postData.filters = buildFilters();
+					ts.p.search = false;
+					ts.p.resetsearch =  true;
+				}
 				df = "";
 				if(cm.searchoptions.defaultValue ) {
 					df = $.jgrid.isFunction(cm.searchoptions.defaultValue) ? cm.searchoptions.defaultValue.call(ts) : cm.searchoptions.defaultValue;
@@ -4038,7 +4045,12 @@ $.fn.jqGrid = function( pin ) {
 					oper2 : $("#oper2","#search_menu").val(),
 					value2 : $("#sval2_" + ts.p.idPrefix+cm.name,"#search_menu").val()
 				};
-				ts.p.postData.filters = buildFilters();
+				if(ts.p.mergeSearch === true && ts.p.searchModules.hasOwnProperty('colMenuSearch') && ts.p.searchModules.colMenuSearch !== false ) {
+					ts.p.searchModules.colMenuSearch = buildFilters();
+					$.extend(ts.p.postData,{filters: $.jgrid.splitSearch(ts.p.searchModules)});
+				} else {
+					ts.p.postData.filters = buildFilters();
+				}
 				ts.p.search = true;
 				if( $.jgrid.isFunction( ts.p.colMenuBeforeProcess )) {
 					ts.p.colMenuBeforeProcess.call(ts, { module: 'filtering', action : 'search', column : cm.name});
@@ -4082,6 +4094,9 @@ $.fn.jqGrid = function( pin ) {
 				}
 			}
 			filters += "]}";
+			if( i === 0) {
+				filters = "";
+			}
 			return filters;
 		},
 		buildGrouping = function( index, isgroup ) {
@@ -9675,7 +9690,7 @@ $.jgrid.extend({
 					if( typeof filterobj === "string") {
 						filterobj = $.jgrid.parse( filterobj );
 					}
-					rules = filterobj.rules.length ? filterobj.rules : false;
+					rules = (filterobj.rules && filterobj.rules.length) ? filterobj.rules : false;
 				}
 			}
 			//p.disabledKeys = new Set(p.disabledKeys); // experimental 
