@@ -795,14 +795,15 @@ $.extend($.fn.jqFilter,{
 $.extend($.jgrid,{
 	filterRefactor : function ( p  )  {
 		/*ruleGroup : {}, ssfield:[], splitSelect:",", groupOpSelect:"OR"*/
-		var filters={} /*?*/, rules, k, rule, ssdata, group;
+		var filters={} /*?*/, rules, k, rule, ssdata, group, rf;
 		try {
 			filters = typeof p.ruleGroup === "string" ? $.jgrid.parse(p.ruleGroup) : p.ruleGroup;
 			if(filters.rules && filters.rules.length) {
 				rules = filters.rules;
 				for(k=0; k < rules.length; k++) {
 					rule = rules[k];
-					if($.inArray(rule.filed, p.ssfield) > -1 ) {
+					rf = rule.field;
+					if($.inArray(rf, p.ssfield) > -1 ) {
 						ssdata = rule.data.split(p.splitSelect);
 						if(ssdata.length > 1) {
 							if(filters.groups === undefined) {
@@ -874,7 +875,7 @@ $.jgrid.extend({
 			base = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].base,
 
 			triggerToolbar = function() {
-				var sdata={}, j=0, v, nm, sopt={},so, ms = false, ssfield = [],
+				var sdata={}, j=0, v, nm, sopt={},so, ms = false, ssfield = [], msfield = [],
 					bbt =false, sop, ret=[true,"",""], err=false;
 				$.each($t.p.colModel,function(){
 					var $elem = $("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(this.name), (this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
@@ -897,6 +898,8 @@ $.jgrid.extend({
 						} else {
 							v = "";
 						}
+					} else if( so !== "bt" && this.stype === 'text' && sop.splitSearchWord === true) {
+						msfield.push(nm);
 					}
 					if(this.searchrules && p.errorcheck) {
 						if($.jgrid.isFunction( this.searchrules)) {
@@ -987,7 +990,15 @@ $.jgrid.extend({
 							}
 						}
 					}
-					if(bbt || ms ) {
+					if(  msfield.length ) {
+						filters = $.jgrid.filterRefactor({
+							ruleGroup : ruleGroup,
+							ssfield : msfield,
+							splitSelect : sop.splitSearchSeparator || ";",
+							groupOpSelect : "OR"
+						});
+					}
+					if(bbt || ms || msfield.length) {
 						ruleGroup = JSON.stringify( filters );
 					}
 					if($t.p.mergeSearch === true && $t.p.searchModules.hasOwnProperty('filterToolbar') && $t.p.searchModules.filterToolbar !== false ) {
