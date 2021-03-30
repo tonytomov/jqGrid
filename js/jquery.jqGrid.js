@@ -3175,7 +3175,7 @@ $.fn.jqGrid = function( pin ) {
 					: 'jqfirstrow not-editable-row not-editable-cell',
 				tstr = constructTr("norecs", false, classes, {}, "");
 				tstr += ts.p.emptyRecord 
-				? "<td style='text-align:center;' colspan='"+grid.headers.length+"'>"+$.jgrid.getRegional(ts, "defaults.emptyrecords", ts.p.emptyrecords )+"</td>"
+				? "<td style='text-align:center;' colspan='"+grid.headers.length+"'>"+$.jgrid.getRegional(ts, "defaults.emptyrecords", ts.p.emptyrecords )+"</td>" 
 				: "<td style='text-align:center;height:0.1px' colspan='"+grid.headers.length+"'>&nbsp;</td>";
 				tstr += "</tr>";
 				$(grid.bDiv).find("table").first().append(tstr);
