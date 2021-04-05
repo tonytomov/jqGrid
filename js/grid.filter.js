@@ -1270,7 +1270,9 @@ $.jgrid.extend({
 						df = restores.data;
 					}
 					elem = $.jgrid.createEl.call($t, this.stype, soptions , df, false, $.extend({},$.jgrid.ajaxOptions, $t.p.ajaxSelectOptions || {}));
-					$(elem).addClass( classes.srInput );
+					if( this.stype !== 'custom') {
+						$(elem).addClass( classes.srInput );
+					}
 					$("td",stbl).eq( 1 ).append(elem);
 					$(thd).append(stbl);
 					if(soptions.dataEvents == null ) {
@@ -1290,6 +1292,7 @@ $.jgrid.extend({
 						}
 						break;
 					case "text":
+					case "custom":
 						if(p.autosearch===true){
 							if(p.searchOnEnter) {
 								soptions.dataEvents.push({
