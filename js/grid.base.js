@@ -3675,7 +3675,7 @@ $.fn.jqGrid = function( pin ) {
 					if(ts.p.lastsort === idxcol && ts.p.sortorder === sor && !reload) { return; }
 					ts.p.sortorder = sor;
 				}
-				var previousSelectedTh = ts.grid.headers[ts.p.lastsort] ? ts.grid.headers[ts.p.lastsort].el : null, newSelectedTh = ts.p.frozenColumns ?  obj : ts.grid.headers[idxcol].el,
+				var previousSelectedTh = ts.grid.headers[ts.p.lastsort] ? ts.grid.headers[ts.p.lastsort].el : null, newSelectedTh = /*ts.p.frozenColumns ?  obj :*/ ts.grid.headers[idxcol].el,
 						//sortrule = $.trim(ts.p.viewsortcols[1] === 'single' ? hidden : disabled);
 					usehide = ts.p.viewsortcols[1] === 'single' ? true : false, tmpicon;
 				tmpicon = $(previousSelectedTh).find("span.ui-grid-ico-sort");
@@ -4672,11 +4672,7 @@ $.fn.jqGrid = function( pin ) {
 			var ci;
 			if(ts.p.frozenColumns) {
 				var tid =  $(this)[0].id.substring( ts.p.id.length + 1 );
-				$(ts.p.colModel).each(function(i){
-					if (this.name === tid) {
-						ci = i;return false;
-					}
-				});
+				ci = $.jgrid.getElemByAttrVal(ts.p.colModel, 'name', tid, true);
 			} else {
 				ci = getColumnHeaderIndex(this);
 			}
