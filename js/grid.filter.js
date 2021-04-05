@@ -875,20 +875,35 @@ $.jgrid.extend({
 			base = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].base,
 
 			triggerToolbar = function() {
-				var sdata={}, j=0, v, nm, sopt={},so, ms = false, ssfield = [], msfield = [],
+				var sdata={}, j=0, v, nm, sopt={},so, ms = false, ssfield = [], msfield = [], afrcol={}, arcustom=[],
 					bbt =false, sop, ret=[true,"",""], err=false;
 				$.each($t.p.colModel,function(){
-					var $elem = $("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(this.name), (this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
+					var $elem, fcol = false;
 					nm = this.index || this.name;
 					sop = this.searchoptions || {};
+
+					if(this.frozen===true && $t.p.frozenColumns === true) {
+						$elem = $("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(this.name), $t.grid.fhDiv );
+						fcol = true;
+					} else {
+						$elem = $("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(this.name), $t.grid.hDiv);
+					}
+					//var $elem = $("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(this.name),  ?  $t.grid.fhDiv : $t.grid.hDiv);
+					// in case frozen col is outside the rule list
+					if($elem[0] === undefined) {
+						$elem = $("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(this.name), $t.grid.hDiv);
+					}
 					if(p.searchOperators &&  sop.searchOperMenu) {
 						so = $elem.parents("table.ui-search-table").find("td.ui-search-oper").children("a").attr("soper") || p.defaultSearch;
 					} else {
 						so  = (sop.sopt) ? sop.sopt[0] : this.stype==='select' ?  'eq' : p.defaultSearch;
 					}
-					v = this.stype === "custom" && $.jgrid.isFunction(sop.custom_value) && $elem.length > 0 ?
-						sop.custom_value.call($t, $elem, "get") :
-						$elem.val();
+					if( this.stype === "custom" && $.jgrid.isFunction(sop.custom_value) && $elem.length > 0 ) {
+						v = sop.custom_value.call($t, $elem, "get");
+						arcustom.push(nm);
+					} else {
+						v = $elem.val();
+					}
 					// detect multiselect
 					if(this.stype === 'select' && sop.multiple && Array.isArray(v)) {
 						if(v.length > 0) {
@@ -916,6 +931,9 @@ $.jgrid.extend({
 					}
 					if(so==="bt") {
 						bbt = true;
+					}
+					if(fcol && (nm !== 'cb' && nm!== 'rn' && nm !== 'subgrid') ) {
+						afrcol[nm] = v;
 					}
 					if(v || so==="nu" || so==="nn" || $.inArray(so, unaryOpers) >=0) {
 						sdata[nm] = v;
@@ -1030,6 +1048,9 @@ $.jgrid.extend({
 				if(saveurl) {$($t).jqGrid("setGridParam",{url:saveurl});}
 				$($t).triggerHandler("jqGridToolbarAfterSearch");
 				if($.jgrid.isFunction(p.afterSearch)){p.afterSearch.call($t);}
+				if($t.p.frozenColumns) {
+					setToolbarFozenVal(afrcol,sopt,ssfield, arcustom );
+				}
 			},
 			clearToolbar = function(trigger){
 				var sdata={}, j=0, nm;
@@ -1186,6 +1207,38 @@ $.jgrid.extend({
 						if( $(inpelm).val() || v==="nu" || v ==="nn" || $.inArray(v, unaryOpers) >=0) {
 							triggerToolbar();
 						}
+					}
+				});
+			},
+			setToolbarFozenVal = function( ffields, soper, smultiselect, arcustom) {
+				var orgCol = $(".ui-search-toolbar", $t.grid.hDiv),
+					frozenCol = $(".ui-search-toolbar", $t.grid.fhDiv), len= $t.p.colModel.length, j;
+				$.each(ffields, function(i,n){ 
+					// multiselect
+					// operations
+					if(p.searchOperators) {
+						var oper = soper[i];
+						if(oper) {
+							$(".ui-search-table .ui-search-oper [colname='userId']", orgCol).attr({'soper': oper}).text( p.operands[oper]);
+							$(".ui-search-table .ui-search-oper [colname='userId']", frozenCol).attr({'soper': oper}).text( p.operands[oper]);
+						}
+					}
+					// custom element
+					if( $.inArray(i, arcustom) > -1) {
+						var col = $.jgrid.getElemByAttrVal( $t.p.colModel, 'name', i );
+						if ( col && col.searchoptions ) {
+							var soptf = col.searchoptions || {};
+							if( $.jgrid.isFunction( soptf.custom_value ) ) {
+								var $elem = $("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(i), $t.grid.fhDiv ),
+								$elem2 = $("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(i), $t.grid.hDiv);
+
+								soptf.custom_value.call($t, $elem, "set", n);
+								soptf.custom_value.call($t, $elem2, "set", n);
+							}
+ 						}
+					} else {
+						$("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(i), orgCol).val( n );
+						$("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(i), frozenCol).val( n );
 					}
 				});
 			};
