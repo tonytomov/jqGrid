@@ -5149,14 +5149,22 @@ $.fn.jqGrid = function( pin ) {
 		}
 		if(ts.p.autoResizing) {
 			$(ts).on('jqGridAfterGridComplete.setAutoSizeColumns',function(){
+				var arfrozen = false;
+				if(ts.p.frozenColumns === true) {
+					$(ts).jqGrid("destroyFrozenColumns");
+					arfrozen = true;
+				}
 				$(ts.p.colModel).each(function(i){
 					if (this.autosize && !this.hidden) {
 						if(this._maxsize && this._maxsize > 0) {
-							$(ts).jqGrid('resizeColumn', i, this._maxsize +  ts.p.cellLayout );
+							$(ts).jqGrid('resizeColumn', i, this._maxsize +  ts.p.cellLayout, false, false );
 							//this._maxsize = this.canvas_width;
 						}
 					}
 				});
+				if(arfrozen) {
+					$(ts).jqGrid("setFrozenColumns");
+				}
 				$(ts).jqGrid('refreshGroupHeaders');
 			});
 		}
