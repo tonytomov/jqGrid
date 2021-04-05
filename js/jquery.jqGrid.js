@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.4 - 2021-03-30
+* @license Guriddo jqGrid JS - v5.5.4 - 2021-04-05
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1025,6 +1025,19 @@ $.extend($.jgrid,{
 		rules += "]}";
 		return rules;
 	},
+	getElemByAttrVal : function( elem, attr, value) {
+		var len = Array.isArray(elem) ? elem.length : 0, i=0, ret = false;;
+		if( len > 0 ) {
+			while( i < len) {
+				if( elem[i][attr] === value) {
+					ret = elem[i];
+					break;
+				}
+				i++;
+			}
+		}
+		return ret;
+	},
 	styleUI : {
 		jQueryUI : {
 			common : {
@@ -1861,8 +1874,11 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 			},
-			dragEnd: function( events ) {
+			dragEnd: function( events, forceFrozen ) {
 				this.hDiv.style.cursor = "default";
+				if(forceFrozen === undefined) {
+					forceFrozen = true;
+				}
 				if(this.resizing) {
 					var idx = this.resizing.idx,
 					nw = this.headers[idx].newWidth || this.headers[idx].width;
@@ -1901,7 +1917,7 @@ $.fn.jqGrid = function( pin ) {
 						$(ts).triggerHandler("jqGridResizeStop", [nw, idx]);
 						if($.jgrid.isFunction(p.resizeStop)) { p.resizeStop.call(ts,nw,idx); }
 					}
-					if(p.frozenColumns) {
+					if(p.frozenColumns && forceFrozen) {
 						$("#"+$.jgrid.jqID(p.id)).jqGrid("destroyFrozenColumns");
 						$("#"+$.jgrid.jqID(p.id)).jqGrid("setFrozenColumns");		
 					}
@@ -5128,14 +5144,22 @@ $.fn.jqGrid = function( pin ) {
 		}
 		if(ts.p.autoResizing) {
 			$(ts).on('jqGridAfterGridComplete.setAutoSizeColumns',function(){
+				var arfrozen = false;
+				if(ts.p.frozenColumns === true) {
+					$(ts).jqGrid("destroyFrozenColumns");
+					arfrozen = true;
+				}
 				$(ts.p.colModel).each(function(i){
 					if (this.autosize && !this.hidden) {
 						if(this._maxsize && this._maxsize > 0) {
-							$(ts).jqGrid('resizeColumn', i, this._maxsize +  ts.p.cellLayout );
+							$(ts).jqGrid('resizeColumn', i, this._maxsize +  ts.p.cellLayout, false, false );
 							//this._maxsize = this.canvas_width;
 						}
 					}
 				});
+				if(arfrozen) {
+					$(ts).jqGrid("setFrozenColumns");
+				}
 				$(ts).jqGrid('refreshGroupHeaders');
 			});
 		}
@@ -5810,7 +5834,7 @@ $.jgrid.extend({
 				}
 			}
 			if(frozen) {
-				$($t).jqGrid('setFrozenColumns');
+				$($t).jqGrid("setFrozenColumns");
 			}
 		});
 	},
@@ -6007,7 +6031,7 @@ $.jgrid.extend({
 				$t.grid.hDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
 			}
 			if(frozen) {
-				$($t).jqGrid('setFrozenColumns');
+				$($t).jqGrid("setFrozenColumns");
 			}
 		});
 	},
@@ -6867,7 +6891,7 @@ $.jgrid.extend({
 			}
 		});
 	},
-	resizeColumn : function (iCol, newWidth, forceresize) {
+	resizeColumn : function (iCol, newWidth, forceresize = false, setfrozen = true) {
 		return this.each(function() {
 			var grid = this.grid, p = this.p,
 				cm = p.colModel, i, cmLen = cm.length, diff, diffnv;
@@ -6880,9 +6904,6 @@ $.jgrid.extend({
 				}
 			} else {
 				iCol = parseInt( iCol, 10 );
-			}
-			if(forceresize === undefined) {
-				forceresize = false;
 			}
 			if( !cm[iCol].resizable && !forceresize ) {
 				return;
@@ -6914,7 +6935,7 @@ $.jgrid.extend({
 			}
 			grid.newWidth = p.tblwidth + diff;
 			grid.headers[ iCol ].newWidth = newWidth;
-			grid.dragEnd( false );
+			grid.dragEnd( false, setfrozen );
 		});
 	},
 	getStyleUI : function( styleui, classui, notclasstag, gridclass) {
@@ -6975,7 +6996,7 @@ $.jgrid.extend({
 						$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridHeight', wh - bstw, true, false);
 					}
 					if(frozen) {
-						$("#"+$.jgrid.jqID($t.p.id)).jqGrid("setFrozenColumns");
+						$("#"+$.jgrid.jqID($t.p.id)).jqGrid("setFrozenColumns","resizeGrid");
 					}
 				} catch(e){}
 			}, timeout);
@@ -9379,20 +9400,35 @@ $.jgrid.extend({
 			base = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].base,
 
 			triggerToolbar = function() {
-				var sdata={}, j=0, v, nm, sopt={},so, ms = false, ssfield = [], msfield = [],
+				var sdata={}, j=0, v, nm, sopt={},so, ms = false, ssfield = [], msfield = [], afrcol={}, arcustom=[],
 					bbt =false, sop, ret=[true,"",""], err=false;
 				$.each($t.p.colModel,function(){
-					var $elem = $("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(this.name), (this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
+					var $elem, fcol = false;
 					nm = this.index || this.name;
 					sop = this.searchoptions || {};
+
+					if(this.frozen===true && $t.p.frozenColumns === true) {
+						$elem = $("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(this.name), $t.grid.fhDiv );
+						fcol = true;
+					} else {
+						$elem = $("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(this.name), $t.grid.hDiv);
+					}
+					//var $elem = $("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(this.name),  ?  $t.grid.fhDiv : $t.grid.hDiv);
+					// in case frozen col is outside the rule list
+					if($elem[0] === undefined) {
+						$elem = $("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(this.name), $t.grid.hDiv);
+					}
 					if(p.searchOperators &&  sop.searchOperMenu) {
 						so = $elem.parents("table.ui-search-table").find("td.ui-search-oper").children("a").attr("soper") || p.defaultSearch;
 					} else {
 						so  = (sop.sopt) ? sop.sopt[0] : this.stype==='select' ?  'eq' : p.defaultSearch;
 					}
-					v = this.stype === "custom" && $.jgrid.isFunction(sop.custom_value) && $elem.length > 0 ?
-						sop.custom_value.call($t, $elem, "get") :
-						$elem.val();
+					if( this.stype === "custom" && $.jgrid.isFunction(sop.custom_value) && $elem.length > 0 ) {
+						v = sop.custom_value.call($t, $elem, "get");
+						arcustom.push(nm);
+					} else {
+						v = $elem.val();
+					}
 					// detect multiselect
 					if(this.stype === 'select' && sop.multiple && Array.isArray(v)) {
 						if(v.length > 0) {
@@ -9420,6 +9456,9 @@ $.jgrid.extend({
 					}
 					if(so==="bt") {
 						bbt = true;
+					}
+					if(fcol && (nm !== 'cb' && nm!== 'rn' && nm !== 'subgrid') ) {
+						afrcol[nm] = v;
 					}
 					if(v || so==="nu" || so==="nn" || $.inArray(so, unaryOpers) >=0) {
 						sdata[nm] = v;
@@ -9534,6 +9573,9 @@ $.jgrid.extend({
 				if(saveurl) {$($t).jqGrid("setGridParam",{url:saveurl});}
 				$($t).triggerHandler("jqGridToolbarAfterSearch");
 				if($.jgrid.isFunction(p.afterSearch)){p.afterSearch.call($t);}
+				if($t.p.frozenColumns) {
+					setToolbarFozenVal(afrcol,sopt,ssfield, arcustom );
+				}
 			},
 			clearToolbar = function(trigger){
 				var sdata={}, j=0, nm;
@@ -9692,6 +9734,38 @@ $.jgrid.extend({
 						}
 					}
 				});
+			},
+			setToolbarFozenVal = function( ffields, soper, smultiselect, arcustom) {
+				var orgCol = $(".ui-search-toolbar", $t.grid.hDiv),
+					frozenCol = $(".ui-search-toolbar", $t.grid.fhDiv), len= $t.p.colModel.length, j;
+				$.each(ffields, function(i,n){ 
+					// multiselect
+					// operations
+					if(p.searchOperators) {
+						var oper = soper[i];
+						if(oper) {
+							$(".ui-search-table .ui-search-oper [colname='userId']", orgCol).attr({'soper': oper}).text( p.operands[oper]);
+							$(".ui-search-table .ui-search-oper [colname='userId']", frozenCol).attr({'soper': oper}).text( p.operands[oper]);
+						}
+					}
+					// custom element
+					if( $.inArray(i, arcustom) > -1) {
+						var col = $.jgrid.getElemByAttrVal( $t.p.colModel, 'name', i );
+						if ( col && col.searchoptions ) {
+							var soptf = col.searchoptions || {};
+							if( $.jgrid.isFunction( soptf.custom_value ) ) {
+								var $elem = $("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(i), $t.grid.fhDiv ),
+								$elem2 = $("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(i), $t.grid.hDiv);
+
+								soptf.custom_value.call($t, $elem, "set", n);
+								soptf.custom_value.call($t, $elem2, "set", n);
+							}
+ 						}
+					} else {
+						$("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(i), orgCol).val( n );
+						$("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(i), frozenCol).val( n );
+					}
+				});
 			};
 			// create the row
 			var tr = $("<tr class='ui-search-toolbar' role='row'></tr>"),
@@ -9774,7 +9848,9 @@ $.jgrid.extend({
 						df = restores.data;
 					}
 					elem = $.jgrid.createEl.call($t, this.stype, soptions , df, false, $.extend({},$.jgrid.ajaxOptions, $t.p.ajaxSelectOptions || {}));
-					$(elem).addClass( classes.srInput );
+					if( this.stype !== 'custom') {
+						$(elem).addClass( classes.srInput );
+					}
 					$("td",stbl).eq( 1 ).append(elem);
 					$(thd).append(stbl);
 					if(soptions.dataEvents == null ) {
@@ -9794,6 +9870,7 @@ $.jgrid.extend({
 						}
 						break;
 					case "text":
+					case "custom":
 						if(p.autosearch===true){
 							if(p.searchOnEnter) {
 								soptions.dataEvents.push({
