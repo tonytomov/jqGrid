@@ -1030,6 +1030,19 @@ $.extend($.jgrid,{
 		rules += "]}";
 		return rules;
 	},
+	getElemByAttrVal : function( elem, attr, value) {
+		var len = Array.isArray(elem) ? elem.length : 0, i=0, ret = false;;
+		if( len > 0 ) {
+			while( i < len) {
+				if( elem[i][attr] === value) {
+					ret = elem[i];
+					break;
+				}
+				i++;
+			}
+		}
+		return ret;
+	},
 	styleUI : {
 		jQueryUI : {
 			common : {
