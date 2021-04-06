@@ -1260,6 +1260,12 @@ $.jgrid.extend({
 			}
 			//p.disabledKeys = new Set(p.disabledKeys); // experimental 
 			var dKeys = new Set(p.disabledKeys);
+			if(dKeys.size !== p.disabledKeys.length) { // ie11
+				for(var jj=0; jj< p.disabledKeys.length; jj++) {
+					dKeys = new Set();
+					dKeys.add(p.disabledKeys[jj]);
+				}
+			}
 			$.each($t.p.colModel,function(ci){
 				var cm=this, soptions, select="", sot="=", so, i, st, csv, df, elem, restores,
 				th = $("<th role='columnheader' class='" + base.headerBox+" ui-th-"+$t.p.direction+"' id='gsh_" + $t.p.id + "_" + cm.name + "' ></th>"),
