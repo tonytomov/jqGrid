@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.4 - 2021-04-05
+* @license Guriddo jqGrid JS - v5.5.4 - 2021-04-06
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -46,7 +46,10 @@ $.extend($.jgrid,{
 		return deepType.match(/^(array|bigint|date|error|function|generator|regexp|symbol)$/) ? deepType :
 			(typeof obj === 'object' || typeof obj === 'function') ? 'object' : typeof obj;
 	},	
-	floatNum : function(val, defval = 0) {
+	floatNum : function(val, defval) {
+		if( defval === undefined ) {
+			defval = 0;
+		}
 		val = parseFloat(val);
 		return !isNaN(val) ? val : defval;
 	},
@@ -1025,18 +1028,22 @@ $.extend($.jgrid,{
 		rules += "]}";
 		return rules;
 	},
-	getElemByAttrVal : function( elem, attr, value) {
-		var len = Array.isArray(elem) ? elem.length : 0, i=0, ret = false;;
+	getElemByAttrVal : function( elem, attr, value, position) {
+		if( typeof position !== 'boolean' ) {
+			position = false;
+		}
+		var len = Array.isArray(elem) ? elem.length : 0, i=0, ret = {}, pos = -1;
 		if( len > 0 ) {
 			while( i < len) {
 				if( elem[i][attr] === value) {
 					ret = elem[i];
+					pos = i;
 					break;
 				}
 				i++;
 			}
 		}
-		return ret;
+		return position ? pos : ret;
 	},
 	styleUI : {
 		jQueryUI : {
@@ -2109,7 +2116,10 @@ $.fn.jqGrid = function( pin ) {
 
 		var sortkeys = ["shiftKey","altKey","ctrlKey"],
 		grid_font = $.jgrid.getFont( ts ) ,
-		intNum = function(val, defval = 0) {
+		intNum = function(val, defval) {
+			if( defval === undefined ) {
+				defval = 0;
+			}
 			val = parseInt(val,10);
 			return !isNaN(val) ? val : defval;
 		},
@@ -5889,7 +5899,7 @@ $.jgrid.extend({
 		if(ts.p.treeGrid) { ts.p.expColInd = $.inArray(ts.p.expColInd, permutation); }
 		$(ts).triggerHandler("jqGridRemapColumns", [permutation, updateCells, keepHeader]);
 	},
-	setGridWidth : function(nwidth, shrink, usefrozen = true) {
+	setGridWidth : function(nwidth, shrink, usefrozen) {
 		return this.each(function(){
 			if (!this.grid ) {return;}
 			var $t = this, cw, setgr, frozen = false,
@@ -5897,6 +5907,9 @@ $.jgrid.extend({
 
 			if(typeof shrink !== 'boolean') {
 				shrink=$t.p.shrinkToFit;
+			}
+			if( typeof usefrozen !== 'boolean' ) {
+				usefrozen = true;
 			}
 			if(isNaN(nwidth)) {return;}
 			nwidth = parseInt(nwidth,10);
@@ -6031,13 +6044,21 @@ $.jgrid.extend({
 			}
 		});
 	},
-	setGridHeight : function (nh, entrie_grid = false, usefrozen= true) {
+	setGridHeight : function ( nh, entrie_grid, usefrozen ) {
 		return this.each(function (){
 			var $t = this;
 			if(!$t.grid) {return;}
 			var bDiv = $($t.grid.bDiv),
 			static_height = $($t.grid.hDiv).outerHeight(), frozen = false;
-			
+
+			if( typeof entrie_grid !== 'boolean' ) {
+				entrie_grid = false;
+			}
+
+			if( typeof usefrozen !== 'boolean' ) {
+				usefrozen = true;
+			}
+
 			if(entrie_grid === true) {
 				if($t.p.pager ) {
 					static_height += $($t.p.pager).outerHeight();
@@ -6134,21 +6155,22 @@ $.jgrid.extend({
 			if(!$t.grid) {return;}
 			if(colname != null) {
 				if(isNaN(colname)) {
-					$($t.p.colModel).each(function(i){
-						if (this.name === colname) {
-							pos = i;return false;
-						}
-					});
+					pos = $.jgrid.getElemByAttrVal($t.p.colModel, 'name', colname, true);
 				} else {
 					pos = parseInt(colname,10);
 				}
 			} else { return; }
-			if(pos>=0) {
+			if( pos >= 0 ) {
 				var thecol = $("tr.ui-jqgrid-labels th",$t.grid.hDiv).eq( pos );
 				if (nData){
 					var ico = $(".s-ico",thecol);
 					$("[id^=jqgh_]",thecol).empty().html(nData).append(ico);
 					$t.p.colNames[pos] = nData;
+					if($t.p.frozenColumns) {
+						thecol = $("tr.ui-jqgrid-labels th",$t.grid.fhDiv).eq( pos );
+						ico = $(".s-ico",thecol);
+						$("[id^=jqgh_]",thecol).empty().html(nData).append(ico);
+					}
 				}
 				if (prop) {
 					if(typeof prop === 'string') {$(thecol).addClass(prop);} else {$(thecol).css(prop);}
@@ -6164,12 +6186,7 @@ $.jgrid.extend({
 			if(!$t.grid) {return;}
 			if(colname != null) {
 				if(isNaN(colname)) {
-					$($t.p.colModel).each(function(i){
-						if (this.name === colname) {
-							pos = i;
-							return false;
-						}
-					});
+					pos = $.jgrid.getElemByAttrVal($t.p.colModel, 'name', colname, true);
 				} else {
 					pos = parseInt(colname,10);
 				}
@@ -6194,6 +6211,17 @@ $.jgrid.extend({
 				} else if(position === 'right') {
 					thecol.find("div.ui-th-div").first().empty().removeClass("ui-icon-left").append(htmlcol).append(ico);
 				}
+				if($t.p.frozenColumns) {
+					thecol = $("tr.ui-jqgrid-labels th", $t.grid.fhDiv).eq( i );
+					htmlcol = $t.p.colNames[i];
+					ico = thecol.find(".s-ico");
+
+					if(position === 'left') {
+						thecol.find("div.ui-th-div").first().empty().addClass("ui-icon-left").append(ico).append(htmlcol);				
+					} else if(position === 'right') {
+						thecol.find("div.ui-th-div").first().empty().removeClass("ui-icon-left").append(htmlcol).append(ico);
+					}
+				}
 			}
 		});
 	},
@@ -6202,11 +6230,7 @@ $.jgrid.extend({
 			var $t = this, pos =-1, v, ind;
 			if(!$t.grid) {return;}
 			if(isNaN(colname)) {
-				$($t.p.colModel).each(function(i){
-					if (this.name === colname) {
-						pos = i;return false;
-					}
-				});
+				pos = $.jgrid.getElemByAttrVal($t.p.colModel, 'name', colname, true);
 			} else {
 				pos = parseInt(colname,10);
 			}
@@ -6252,21 +6276,14 @@ $.jgrid.extend({
 	},
 	getCell : function(rowid, col, returnobject) {
 		var ret = false, obj;
-		if(returnobject === undefined) {
+		if(typeof returnobject !== 'boolean') {
 			returnobject = false;
 		}
 		this.each(function(){
-			var $t=this, pos=-1, cnm, ind;
+			var $t=this, pos=-1, ind;
 			if(!$t.grid) {return;}
-			cnm = col;
 			if(isNaN(col)) {
-				$($t.p.colModel).each(function(i){
-					if (this.name === col) {
-						cnm = this.name;
-						pos = i;
-						return false;
-					}
-				});
+				pos = $.jgrid.getElemByAttrVal($t.p.colModel, 'name', col, true);
 			} else {
 				pos = parseInt(col,10);
 			}
@@ -6282,7 +6299,7 @@ $.jgrid.extend({
 						} catch (e){
 							ret = $.jgrid.htmlDecode( obj.html() );
 						}
-						if($t.p.treeGrid && ret && $t.p.ExpandColumn === cnm ) {
+						if($t.p.treeGrid && ret && $t.p.ExpandColumn === col ) {
 							ret = $( "<div>" + ret +"</div>").find("span").first().html();
 						}
 					}
@@ -6293,7 +6310,9 @@ $.jgrid.extend({
 	},
 	getCol : function (col, obj, mathopr) {
 		var ret = [], val, sum=0, min, max, v;
-		obj = typeof obj !== 'boolean' ? false : obj;
+		if( typeof obj !== 'boolean') {
+			obj = false;
+		}
 		if(mathopr === undefined) { mathopr = false; }
 		var font = $.jgrid.getFont( this[0] );
 
@@ -6301,14 +6320,11 @@ $.jgrid.extend({
 			var $t=this, pos=-1, cm = $t.p.colModel;
 			if(!$t.grid) {return;}
 			if(isNaN(col)) {
-				$(cm).each(function(i){
-					if (this.name === col) {
-						pos = i;
-						return false;
-					}
-				});
-			} else {pos = parseInt(col,10);}
-			if(pos>=0) {
+				pos = $.jgrid.getElemByAttrVal($t.p.colModel, 'name', col, true);
+			} else {
+				pos = parseInt(col,10);
+			}
+			if( pos >= 0 ) {
 				var ln = $t.rows.length, i = 0, dlen = 0;
 				if (ln && ln>0){
 					for(; i < ln; i++){
@@ -6549,28 +6565,18 @@ $.jgrid.extend({
 		});
 	},
 	getColProp : function(colname){
-		var ret ={}, $t = this[0];
+		var $t = this[0];
 		if ( !$t.grid ) { return false; }
-		var cM = $t.p.colModel, i;
-		for ( i=0;i<cM.length;i++ ) {
-			if ( cM[i].name === colname ) {
-				ret = cM[i];
-				break;
-			}
-		}
-		return ret;
+		return $.jgrid.getElemByAttrVal($t.p.colModel, 'name', colname, false);
 	},
 	setColProp : function(colname, obj){
 		//do not set width will not work
 		return this.each(function(){
 			if ( this.grid ) {
 				if ( $.isPlainObject( obj ) ) {
-					var cM = this.p.colModel, i;
-					for ( i=0;i<cM.length;i++ ) {
-						if ( cM[i].name === colname ) {
-							$.extend(true, this.p.colModel[i],obj);
-							break;
-						}
+					var i = $.jgrid.getElemByAttrVal(this.p.colModel, 'name', colname, true);
+					if ( i >= 0 ) {
+						$.extend(true, this.p.colModel[i],obj);
 					}
 				}
 			}
@@ -6887,10 +6893,17 @@ $.jgrid.extend({
 			}
 		});
 	},
-	resizeColumn : function (iCol, newWidth, forceresize = false, setfrozen = true) {
+	resizeColumn : function ( iCol, newWidth, forceresize, setfrozen ) {
 		return this.each(function() {
 			var grid = this.grid, p = this.p,
 				cm = p.colModel, i, cmLen = cm.length, diff, diffnv;
+
+			if( typeof forceresize !== 'boolean' ) {
+				forceresize = false;
+			}
+			if( typeof setfrozen !== 'boolean' ) {
+				setfrozen = true;
+			}
 			if(typeof iCol === "string" ) {
 				for(i = 0; i < cmLen; i++) {
 					if(cm[i].name === iCol) {
@@ -6957,12 +6970,25 @@ $.jgrid.extend({
 		}
 		return ret;
 	},
-	resizeGrid : function (timeout = 500, width = true, height = true) {
+	resizeGrid : function (timeout, width, height, refreshfrozen) {
 		return this.each(function(){
 			var $t = this, frozen = false;
+			if(timeout === undefined) {
+				timeout = 500;
+			}
+			if( typeof width !== 'boolean' ) {
+				width = true;
+			}
+			if( typeof height !== 'boolean' ) {
+				height = true;
+			}
+			if( typeof refreshfrozen !== 'boolean' ) {
+				refreshfrozen = true;
+			}
+
 			setTimeout(function(){
 				try {
-					if($t.p.frozenColumns) {
+					if($t.p.frozenColumns && refreshfrozen) {
 						$("#"+$.jgrid.jqID($t.p.id)).jqGrid("destroyFrozenColumns");
 						frozen = true;
 					}
