@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.4 - 2021-04-06
+* @license Guriddo jqGrid JS - v5.5.4 - 2021-04-07
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -9713,16 +9713,14 @@ $.jgrid.extend({
 				left=parseInt(left,10);
 				top=parseInt(top,10) + 18;
 
-				var fs =  $('.ui-jqgrid').css('font-size') || '11px';
-				var str = '<ul id="sopt_menu" class="ui-search-menu modal-content" role="menu" tabindex="0" style="font-size:'+fs+';left:'+left+'px;top:'+top+'px;">',
-				selected = $(elem).attr("soper"), selclass,
-				aoprs = [], ina;
-				var i=0, nm =$(elem).attr("colname"),len = $t.p.colModel.length;
-				while(i<len) {
-					if($t.p.colModel[i].name === nm) {
-						break;
-					}
-					i++;
+				var fs =  $('.ui-jqgrid').css('font-size') || '11px',
+					str = '<ul id="sopt_menu" class="ui-search-menu modal-content" role="menu" tabindex="0" style="font-size:'+fs+';left:'+left+'px;top:'+top+'px;">',
+					selected = $(elem).attr("soper"), selclass,
+					aoprs = [], ina,
+					i, nm = $(elem).attr("colname");
+				i = $.jgrid.getElemByAttrVal($t.p.colModel, 'name', nm, true);
+				if( i === -1 ) {
+					return;
 				}
 				var cm = $t.p.colModel[i], options = $.extend({}, cm.searchoptions);
 				if(!options.sopt) {
@@ -9759,7 +9757,7 @@ $.jgrid.extend({
 			},
 			setToolbarFozenVal = function( ffields, soper, smultiselect, arcustom) {
 				var orgCol = $(".ui-search-toolbar", $t.grid.hDiv),
-					frozenCol = $(".ui-search-toolbar", $t.grid.fhDiv), len= $t.p.colModel.length, j;
+					frozenCol = $(".ui-search-toolbar", $t.grid.fhDiv);
 				$.each(ffields, function(i,n){ 
 					// multiselect
 					// operations
@@ -9957,19 +9955,20 @@ $.jgrid.extend({
 			}
 			$(".clearsearchclass",tr).click(function() {
 				var ptr = $(this).parents("tr").first(),
-				colname = $("td.ui-search-oper", ptr).attr('columname'), coli=0, len = $t.p.colModel.length,
-				soper = $("td.ui-search-oper a", ptr).attr('soper'), cm,vv;
-				while(coli<len) {
-					if($t.p.colModel[coli].name === colname) {
-						cm = $t.p.colModel[coli];
-						break;
-					}
-					coli++;
+					colname = $("td.ui-search-oper", ptr).attr('columname'), 
+					coli=0,
+					soper = $("td.ui-search-oper a", ptr).attr('soper'), 
+					cm,
+					vv;
+				coli = $.jgrid.getElemByAttrVal($t.p.colModel, 'name', colname, true);
+				if(coli === -1 ) {
+					return false;
 				}
-				var sval  = $.extend({},$t.p.colModel[coli].searchoptions || {}),
-				dval = sval.defaultValue ? sval.defaultValue : "",
-				elem;
-				if($t.p.colModel[coli].stype === "select") {
+				cm = $t.p.colModel[coli];
+				var sval  = $.extend( {}, cm.searchoptions || {} ),
+					dval = sval.defaultValue ? sval.defaultValue : "",
+					elem;
+				if(cm.stype === "select") {
 					elem = $("td.ui-search-input select", ptr);
 					if(dval) {
 						elem.val( dval );
@@ -10605,14 +10604,9 @@ $.jgrid.extend({
 						$t.triggerToolbar();
 					});
 					if( o.create_value ) {
-						for(i=0, len = $t.p.colModel.length; i < len; i++ ) {
-							if($t.p.colModel[i].name === o.field) { 
-								cm = $t.p.colModel[i];
-								break;
-							}
-						}
-						if(cm) {
-							if(cm.searchoptions) {
+						cm = $.jgrid.getElemByAttrVal($t.p.colModel, 'name', o.field, false);
+						if( !$.isEmptyObject( cm ) ) {
+							if( cm.searchoptions ) {
 								$.extend(cm.searchoptions, {value: tmp.join(";")});
 							} else {
 								cm.searchoptions = {};
