@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.4 - 2021-04-07
+* @license Guriddo jqGrid JS - v5.5.4 - 2021-04-09
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -15585,7 +15585,11 @@ $.jgrid.extend({
 		return this.each(function(){
 			var $t = this, gID = $.jgrid.jqID($t.p.id), req;
 			if(!$t.grid || !$.fn.resizable) { return; }
-			opts = $.extend({}, opts || {});
+			opts = $.extend(
+				{}, 
+				{ resizeclass : "ui-resizable-icon" },
+				opts || {}
+			);
 			if(opts.alsoResize ) {
 				opts._alsoResize_ = opts.alsoResize;
 				delete opts.alsoResize;
@@ -15597,6 +15601,22 @@ $.jgrid.extend({
 				delete opts.stop;
 			} else {
 				opts._stop_ = false;
+			}
+			var class_to_add = opts.resizeclass;
+			if($t.p.styleUI !== "jQueryUI") {
+				if(opts.handles) {
+					if(opts.handles.se) {
+						class_to_add += " " +opts.handles.se.replace(".","");
+					} else {
+						opts.handles.se = "."+class_to_add;
+					}
+				} else {
+					opts.handles = {};
+					opts.handles.se = "."+class_to_add;
+				}
+				class_to_add += " ui-resizable-se ui-resizable-handle";
+			
+				$("#gbox_"+gID).append('<span class="'+class_to_add+'"></span>');
 			}
 			opts.stop = function (ev, ui) {
 				$($t).jqGrid('setGridParam',{height:$("#gview_"+gID+" .ui-jqgrid-bdiv").height()});
