@@ -15612,7 +15612,8 @@ $.jgrid.extend({
 					}
 				} else {
 					opts.handles = {};
-					opts.handles.se = "."+class_to_add;
+					var test = class_to_add.split(' ');
+					opts.handles.se = "."+test[0];
 				}
 				class_to_add += " ui-resizable-se ui-resizable-handle";
 			
