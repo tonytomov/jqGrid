@@ -949,10 +949,14 @@ $.jgrid.extend({
 						) {
 							cell = _makeCellSpecial( {t: 'n', r: cellId }, v );
 						} else {
+							// convert whitespace from formatter to empty string
+							if(v && (v==='&nbsp;' || v==='&#160;' || (v.length===1 && v.charCodeAt(0)===160))) { 
+								v = "";
+							}
 							// Replace non standard characters for text output
 							text = ! v.replace ? v : _replStr(v);
 							cell = _makeCellString( cellId, text);
-										}
+						}
 						rowNode.appendChild( cell );
 					}
 				}
