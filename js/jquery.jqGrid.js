@@ -551,18 +551,12 @@ $.extend($.jgrid,{
 			if(a!==null&&b===null){
 				return -1;
 			}
-			if (toString.call(a) === '[object Date]' && toString.call(b) === '[object Date]') {
-				if (a < b) { return -d; }
-				if (a > b) { return d; }
-				return 0;
+			if( (toString.call(a) === '[object Date]' && toString.call(b) === '[object Date]') || 
+				(typeof a === "number" && typeof b === "number") ) {
+				return a > b ? d : a < b ? -d : 0;
 			}
-			if(!_usecase && typeof a !== "number" && typeof b !== "number" ) {
-				a=String(a);
-				b=String(b);
-			}
-			if(a<b){return -d;}
-			if(a>b){return d;}
-			return 0;
+			var ret = String(a).localeCompare(String(b));
+			return ret < 0 ? -d : ret > 0 ? d : 0;
 		};
 		this._performSort=function(){
 			if(_sorting.length===0){return;}
