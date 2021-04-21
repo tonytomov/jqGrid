@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.4 - 2021-04-09
+* @license Guriddo jqGrid JS - v5.5.4 - 2021-04-21
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -10447,7 +10447,7 @@ $.jgrid.extend({
 						sdata[p.sFilter] = JSON.stringify( sdata[p.sFilter] );
 					}
 					$t.p.search = true;
-					if($t.p.mergeSearch === true && $t.p.searchModules.hasOwnProperty('searchGrid') && $t.p.searchModules.searchGrid !== false ) {
+					if($t.p.mergeSearch === true && $t.p.searchModules.hasOwnProperty('searchGrid') && $t.p.searchModules.searchGrid !== false  && p.multipleSearch) {
 						if(sdata[p.sFilter] !==  "") {
 							$t.p.searchModules.searchGrid = sdata[p.sFilter];
 						} else {
@@ -19342,6 +19342,10 @@ $.jgrid.extend({
 					}
 					if(!header) {
 						v = $.jgrid.formatCell( v, data.map[i], row, cm[data.map[i]], $t, 'excel');
+						// convert whitespace from formatter to empty string
+						if(v && (v==='&nbsp;' || v==='&#160;' || (v.length===1 && v.charCodeAt(0)===160))) { 
+							v = '';
+						}
 					}
 					data.width[i] = Math.max(data.width[i], Math.min(parseInt(v.toString().length,10), o.maxlength) );
 					cell = null;
@@ -19402,7 +19406,7 @@ $.jgrid.extend({
 							// Replace non standard characters for text output
 							text = ! v.replace ? v : _replStr(v);
 							cell = _makeCellString( cellId, text);
-										}
+						}
 						rowNode.appendChild( cell );
 					}
 				}

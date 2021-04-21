@@ -1900,7 +1900,7 @@ $.jgrid.extend({
 						sdata[p.sFilter] = JSON.stringify( sdata[p.sFilter] );
 					}
 					$t.p.search = true;
-					if($t.p.mergeSearch === true && $t.p.searchModules.hasOwnProperty('searchGrid') && $t.p.searchModules.searchGrid !== false ) {
+					if($t.p.mergeSearch === true && $t.p.searchModules.hasOwnProperty('searchGrid') && $t.p.searchModules.searchGrid !== false  && p.multipleSearch) {
 						if(sdata[p.sFilter] !==  "") {
 							$t.p.searchModules.searchGrid = sdata[p.sFilter];
 						} else {
