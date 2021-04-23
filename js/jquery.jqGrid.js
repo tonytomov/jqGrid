@@ -19381,11 +19381,15 @@ $.jgrid.extend({
 								break;
 							}
 						}
-					} else if( expo.excel_format !== undefined && expo.excel_style !== undefined && !header && !cell) {
+					} else if( expo.excel_style !== undefined  && !header && !cell) {
 						if(expo.replace_format) {
 							v = expo.replace_format(v);
 						}
+						if(expo.excel_style === 'text') {
+							cell = _makeCellString( cellId, v);
+						} else {
 						cell = _makeCellSpecial( {r: cellId,s: expo.excel_style}, v );
+						}
 						rowNode.appendChild( cell );
 					}
 					if( ! cell ) {
