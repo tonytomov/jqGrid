@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.4 - 2021-04-21
+* @license Guriddo jqGrid JS - v5.5.4 - 2021-04-23
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -19186,7 +19186,6 @@ $.jgrid.extend({
 			styleSh = $.parseXML( es['xl/styles.xml']), //xlsx.xl["styles.xml"];
 
 			formats = styleSh.getElementsByTagName("numFmts")[0],
-			fmnt = $(formats.getElementsByTagName("numFmt")),
 			celsX = styleSh.getElementsByTagName("cellXfs")[0],
 
 			xlsx = {
@@ -19221,8 +19220,9 @@ $.jgrid.extend({
 				} else if( eo.excel_format && !eo.excel_style){
 					// add the sformatter
 					var count = 0,
-					maxfmtid =0;
-					$.each(fmnt, function(i,n) {
+					maxfmtid =0,
+					fmnt = $(formats.getElementsByTagName("numFmt"));
+					$.each( fmnt, function(i,n) {
 						count++;
 						maxfmtid = Math.max(maxfmtid,  parseInt( $(n).attr("numFmtId"), 10) );
 					});
@@ -19244,7 +19244,9 @@ $.jgrid.extend({
 					celsX.appendChild( mycell );
 					count = parseInt( $(celsX).attr("count"), 10);
 					$(celsX).attr("count", count + 1);
-					eo.excel_style = count+1;
+					if(!eo.excel_style) {
+						eo.excel_style = count+1;
+					}
 				}
 				return eo;
 			};
@@ -19263,7 +19265,7 @@ $.jgrid.extend({
 				data.header[i] = cm[j].name;
 				data.width[ i ] = 5;
 				data.map[i] = j;
-				data.parser[j] = addStyle( cm[j].hasOwnProperty('exportoptions') ? cm[j].exportoptions : {} );
+				data.parser[j] = addStyle( cm[j].hasOwnProperty('exportoptions') ? $.extend( {}, cm[j].exportoptions ) : {} );
 				i++;
 			}
 			function _replStrFunc (v) {
