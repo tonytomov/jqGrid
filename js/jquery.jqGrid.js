@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.4 - 2021-04-23
+* @license Guriddo jqGrid JS - v5.5.4 - 2021-04-26
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -18180,6 +18180,17 @@ $.fn.html5sortable = function(options) {
 //module begin
 $.extend($.jgrid,{
 //window.jqGridUtils = {
+	isJSON : function (mixed) {
+		if (typeof mixed !== 'string') {
+			mixed = JSON.stringify( mixed );
+		}
+		try {
+			JSON.parse( mixed );
+			return true;
+		} catch (e) {
+			return false;
+		}
+	},
 	stringify : function(obj) {
 		return JSON.stringify(obj,function(key, value){
             return (typeof value === 'function' ) ? value.toString() : value;

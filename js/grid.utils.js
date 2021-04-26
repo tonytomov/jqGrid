@@ -17,6 +17,17 @@
 //module begin
 $.extend($.jgrid,{
 //window.jqGridUtils = {
+	isJSON : function (mixed) {
+		if (typeof mixed !== 'string') {
+			mixed = JSON.stringify( mixed );
+		}
+		try {
+			JSON.parse( mixed );
+			return true;
+		} catch (e) {
+			return false;
+		}
+	},
 	stringify : function(obj) {
 		return JSON.stringify(obj,function(key, value){
             return (typeof value === 'function' ) ? value.toString() : value;
