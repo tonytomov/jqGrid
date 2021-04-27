@@ -5197,16 +5197,16 @@ $.fn.jqGrid = function( pin ) {
 	});
 };
 $.jgrid.extend({
-	getGridParam : function(name, module) {
+	getGridParam : function(name, grid_module) {
 		var $t = this[0], ret;
 		if (!$t || !$t.grid) {return;}
-		if(module === undefined && typeof module !== 'string') {
-			module = 'jqGrid'; //$t.p
+		if(grid_module === undefined && typeof grid_module !== 'string') {
+			grid_module = 'jqGrid'; //$t.p
 		}
 		ret = $t.p;
-		if(module !== 'jqGrid') {
+		if(grid_module !== 'jqGrid') {
 			try {
-				ret = $($t).data( module );
+				ret = $($t).data( grid_module );
 			} catch (e) {
 				ret = $t.p;
 			}
