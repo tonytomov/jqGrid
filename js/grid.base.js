@@ -135,6 +135,7 @@ $.extend($.jgrid,{
 			eval('(' + js + ')');
 	},
 	dateToOADate :function  (date) {
+		// Add 1462 in 1904 system (apple)
 		var temp = new Date(date);
 		// Set temp to start of day and get whole days between dates,
 		var days = Math.round((temp.setHours(0,0,0,0) - new Date(1899, 11, 30)) / 8.64e7);
