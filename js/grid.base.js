@@ -134,6 +134,14 @@ $.extend($.jgrid,{
 			JSON.parse(js) :
 			eval('(' + js + ')');
 	},
+	dateToOADate :function  (date) {
+		var temp = new Date(date);
+		// Set temp to start of day and get whole days between dates,
+		var days = Math.round((temp.setHours(0,0,0,0) - new Date(1899, 11, 30)) / 8.64e7);
+		// Get decimal part of day, OADate always assumes 24 hours in day
+		var partDay = (Math.abs((date - temp) % 8.64e7) / 8.64e7).toFixed(10);
+		return days + partDay.substr(1);
+	},
 	parseDate : function(format, date, newformat, opts) {
 		var	token = /\\.|[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]/g,
 		timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,

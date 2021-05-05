@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.4 - 2021-04-27
+* @license Guriddo jqGrid JS - v5.5.4 - 2021-05-05
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -128,6 +128,14 @@ $.extend($.jgrid,{
 		return ($.jgrid.useJSON===true && typeof JSON === 'object' && typeof JSON.parse === 'function') ?
 			JSON.parse(js) :
 			eval('(' + js + ')');
+	},
+	dateToOADate :function  (date) {
+		var temp = new Date(date);
+		// Set temp to start of day and get whole days between dates,
+		var days = Math.round((temp.setHours(0,0,0,0) - new Date(1899, 11, 30)) / 8.64e7);
+		// Get decimal part of day, OADate always assumes 24 hours in day
+		var partDay = (Math.abs((date - temp) % 8.64e7) / 8.64e7).toFixed(10);
+		return days + partDay.substr(1);
 	},
 	parseDate : function(format, date, newformat, opts) {
 		var	token = /\\.|[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]/g,
@@ -5192,16 +5200,16 @@ $.fn.jqGrid = function( pin ) {
 	});
 };
 $.jgrid.extend({
-	getGridParam : function(name, module) {
+	getGridParam : function(name, grid_module) {
 		var $t = this[0], ret;
 		if (!$t || !$t.grid) {return;}
-		if(module === undefined && typeof module !== 'string') {
-			module = 'jqGrid'; //$t.p
+		if(grid_module === undefined && typeof grid_module !== 'string') {
+			grid_module = 'jqGrid'; //$t.p
 		}
 		ret = $t.p;
-		if(module !== 'jqGrid') {
+		if(grid_module !== 'jqGrid') {
 			try {
-				ret = $($t).data( module );
+				ret = $($t).data( grid_module );
 			} catch (e) {
 				ret = $t.p;
 			}
