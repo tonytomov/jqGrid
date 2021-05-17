@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.4 - 2021-05-05
+* @license Guriddo jqGrid JS - v5.5.4 - 2021-05-17
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -130,6 +130,7 @@ $.extend($.jgrid,{
 			eval('(' + js + ')');
 	},
 	dateToOADate :function  (date) {
+		// Add 1462 in 1904 system (apple)
 		var temp = new Date(date);
 		// Set temp to start of day and get whole days between dates,
 		var days = Math.round((temp.setHours(0,0,0,0) - new Date(1899, 11, 30)) / 8.64e7);
@@ -6807,6 +6808,7 @@ $.jgrid.extend({
 					if($t.rows[1].id === 'norecs') {
 						$("#norecs td", btbl).html("");
 					}
+					$($t.grid.fbDiv)[0].scrollTop = $($t.grid.bDiv)[0].scrollTop;
 					if($t.p.hoverrows === true) {
 						$("tr.jqgrow", btbl).hover(
 							function(){ 

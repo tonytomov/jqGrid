@@ -6813,6 +6813,7 @@ $.jgrid.extend({
 					if($t.rows[1].id === 'norecs') {
 						$("#norecs td", btbl).html("");
 					}
+					$($t.grid.fbDiv)[0].scrollTop = $($t.grid.bDiv)[0].scrollTop;
 					if($t.p.hoverrows === true) {
 						$("tr.jqgrow", btbl).hover(
 							function(){ 
