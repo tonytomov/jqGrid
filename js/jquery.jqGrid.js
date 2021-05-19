@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.5 - 2021-05-17
+* @license Guriddo jqGrid JS - v5.5.5 - 2021-05-19
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -13542,6 +13542,7 @@ $.jgrid.extend({
 			$firstHeaderRow = $htable.find(".jqg-first-row-header"),
 			$firstRow,
 			$focusElem = false,
+			frozen = false,
 			//classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['grouping'],
 			base = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].base;
 			if(!ts.p.groupHeader) {
@@ -13563,6 +13564,11 @@ $.jgrid.extend({
 				}
 				return -1;
 			};
+			if(ts.p.frozenColumns) {
+				$(ts).jqGrid("destroyFrozenColumns");
+				frozen = true;
+			}
+			
 			if( $(document.activeElement).is('input') || $(document.activeElement).is('textarea') ) {
 				$focusElem = document.activeElement;
 			}
@@ -13674,6 +13680,9 @@ $.jgrid.extend({
 			if( $.jgrid.trim($("tr.jqg-second-row-header th").eq( 0 ).text()) === "" ) {
 				$("tr.jqg-second-row-header th").eq( 0 ).prepend('&nbsp;');
 			}
+			if(frozen) {
+				$(ts).jqGrid("setFrozenColumns");
+			}			
 		});				
 	},
 	destroyGroupHeader : function(nullHeader) {

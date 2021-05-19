@@ -538,6 +538,7 @@ $.jgrid.extend({
 			$firstHeaderRow = $htable.find(".jqg-first-row-header"),
 			$firstRow,
 			$focusElem = false,
+			frozen = false,
 			//classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['grouping'],
 			base = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].base;
 			if(!ts.p.groupHeader) {
@@ -559,6 +560,11 @@ $.jgrid.extend({
 				}
 				return -1;
 			};
+			if(ts.p.frozenColumns) {
+				$(ts).jqGrid("destroyFrozenColumns");
+				frozen = true;
+			}
+			
 			if( $(document.activeElement).is('input') || $(document.activeElement).is('textarea') ) {
 				$focusElem = document.activeElement;
 			}
@@ -670,6 +676,9 @@ $.jgrid.extend({
 			if( $.jgrid.trim($("tr.jqg-second-row-header th").eq( 0 ).text()) === "" ) {
 				$("tr.jqg-second-row-header th").eq( 0 ).prepend('&nbsp;');
 			}
+			if(frozen) {
+				$(ts).jqGrid("setFrozenColumns");
+			}			
 		});				
 	},
 	destroyGroupHeader : function(nullHeader) {
