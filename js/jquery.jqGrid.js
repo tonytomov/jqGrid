@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.5 - 2021-05-19
+* @license Guriddo jqGrid JS - v5.5.5 - 2021-05-24
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -6782,12 +6782,12 @@ $.jgrid.extend({
 				if($t.p.hoverrows === true) {
 					$("#"+$.jgrid.jqID($t.p.id)).off('mouseover mouseout');
 				}
-				var hasscroll;
+				//var hasscroll;
 				$($t).on('jqGridAfterGridComplete.setFrozenColumns', function () {
 					$("#"+$.jgrid.jqID($t.p.id)+"_frozen").remove();
 					
-				    hasscroll = parseInt($($t.grid.bDiv)[0].scrollWidth,10) > parseInt($($t.grid.bDiv)[0].clientWidth,10);
-					$($t.grid.fbDiv).height( $($t.grid.bDiv)[0].clientHeight - (hasscroll ? 0 : $t.p.scrollOffset-3));
+				   // hasscroll = parseInt($($t.grid.bDiv)[0].scrollWidth,10) > parseInt($($t.grid.bDiv)[0].clientWidth,10);
+					$($t.grid.fbDiv).height( $($t.grid.bDiv)[0].clientHeight ); //- (hasscroll ? 0 : $t.p.scrollOffset-3));
 					// find max height
 					var mh = [];
 					$("#"+$.jgrid.jqID($t.p.id) + " tr[role=row].jqgrow").each(function(){
