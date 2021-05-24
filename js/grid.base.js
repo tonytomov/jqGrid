@@ -6862,6 +6862,7 @@ $.jgrid.extend({
 					$($t).triggerHandler("jqGridAfterGridComplete.setFrozenColumns");
 				}
 				$t.p.frozenColumns = true;
+				$($t).triggerHandler("onFrozenColumnsCall");
 			}
 		});
 	},
