@@ -2128,7 +2128,7 @@ $.fn.jqGrid = function( pin ) {
 		},
 		formatCol = function (pos, rowInd, tv, rawObject, rowId, rdata){
 			var cm = ts.p.colModel[pos], cellAttrFunc,
-			ral = cm.align, result="style=\"", clas = cm.classes, nm = cm.name, celp, acp=[];
+			ral = cm.align, result="style=\"", clas = cm.classes + (cm.classesResponsive !== undefined ? (" "+cm.classesResponsive) :""), nm = cm.name, celp, acp=[];
 			if(ral) { result += "text-align:"+ral+";"; }
 			if(cm.hidden===true) { result += "display:none;"; }
 			if(rowInd===0) {
@@ -4453,7 +4453,7 @@ $.fn.jqGrid = function( pin ) {
 			if(!tmpcm.hasOwnProperty('colmenu')) {
 				tmpcm.colmenu = (tmpcm.name === "rn" || tmpcm.name === "cb" || tmpcm.name === "subgrid") ? false : true;
 			}
-			thead += "<th id='"+ts.p.id+"_" + tmpcm.name+"' role='columnheader' "+getstyle(stylemodule,'headerBox',false, "ui-th-column ui-th-" + dir + ( (tmpcm.name==='cb') ? " jqgrid-multibox" : "")) +" "+ tooltip+">";
+			thead += "<th id='"+ts.p.id+"_" + tmpcm.name+"' role='columnheader' "+getstyle(stylemodule,'headerBox',false, "ui-th-column ui-th-" + dir + ( (tmpcm.name==='cb') ? " jqgrid-multibox" : "")+ " " + tmpcm.classesHeader+ " " + tmpcm.classesResponsive) +" "+ tooltip+">";
 			idn = tmpcm.index || tmpcm.name;
 			thead += "<div class='ui-th-div' id='jqgh_"+ts.p.id+"_"+tmpcm.name+"' "+tdc+">"+ts.p.colNames[i];
 			if(!tmpcm.width)  {
@@ -4594,7 +4594,7 @@ $.fn.jqGrid = function( pin ) {
 				$(this).css("display","none");
 				hdcol = "display:none;";
 			}
-			firstr += "<td role='gridcell' style='height:0px;width:"+w+"px;"+hdcol+"'></td>";
+			firstr += "<td role='gridcell' class='"+tmpcm.classesResponsive+"' style='height:0px;width:"+w+"px;"+hdcol+"'></td>";
 			grid.headers[j] = { width: w, el: this };
 			sort = tmpcm.sortable;
 			if( typeof sort !== 'boolean') {
@@ -9818,7 +9818,7 @@ $.jgrid.extend({
 			}
 			$.each($t.p.colModel,function(ci){
 				var cm=this, soptions, select="", sot="=", so, i, st, csv, df, elem, restores,
-				th = $("<th role='columnheader' class='" + base.headerBox+" ui-th-"+$t.p.direction+"' id='gsh_" + $t.p.id + "_" + cm.name + "' ></th>"),
+				th = $("<th role='columnheader' class='" + base.headerBox+" ui-th-"+$t.p.direction+" " + cm.classesHeader + "  " + cm.classesResponsive + "' id='gsh_" + $t.p.id + "_" + cm.name + "' ></th>"),
 				thd = $("<div></div>"),
 				stbl = $("<table class='ui-search-table' cellspacing='0'><tr><td class='ui-search-oper' headers=''></td><td class='ui-search-input' headers=''></td><td class='ui-search-clear' headers=''></td></tr></table>");
 				if(this.hidden===true) { $(th).css("display","none");}
