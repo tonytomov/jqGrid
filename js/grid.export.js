@@ -848,12 +848,15 @@ $.jgrid.extend({
 							children: [	$.jgrid.makeNode( rels, 'f', { text: v } ) ]
 						});
 			}
-			function _makeCellString ( cellId, text ) {
+			function _makeCellString ( cellId, text, estyle ) {
+				if( estyle === undefined) {
+					estyle = 68;
+				}
 				return $.jgrid.makeNode(
 						rels,
 						'c',
 						{
-							attr: { t: 'inlineStr', r: cellId, s:"68" },
+							attr: { t: 'inlineStr', r: cellId, s: estyle },
 							children:{ row: $.jgrid.makeNode( rels, 'is',
 								{
 									children: {
@@ -944,6 +947,9 @@ $.jgrid.extend({
 						}
 						if(expo.excel_style === 'text') {
 							cell = _makeCellString( cellId, v);
+						} else if (expo.excel_style <= 55) { // cistom
+							cell = _makeCellString( cellId, v, expo.excel_style);
+							//cell = _makeCellSpecial( {r: cellId,s: expo.excel_style}, v );
 						} else {
 						cell = _makeCellSpecial( {r: cellId,s: expo.excel_style}, v );
 						}
