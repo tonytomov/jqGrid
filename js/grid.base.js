@@ -7006,8 +7006,7 @@ $.jgrid.extend({
 						frozen = true;
 					}
 					if(width) {
-						var wh = $t.p.height,
-						winwidth = $(window).width(),
+						var winwidth = $(window).width(),
 						parentwidth = $("#gbox_"+$.jgrid.jqID($t.p.id)).parent().width(),
 						ww = $t.p.width;
 						if( (winwidth-parentwidth) > 3 ) {
@@ -7018,8 +7017,9 @@ $.jgrid.extend({
 						$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridWidth', ww, $t.p.shrinkToFit, false );
 					}
 
-					if(height) {
-						var bstw = $t.p.styleUI.search('Bootstrap') !== -1 && !isNaN($t.p.height) ? 2 : 0,
+					if( !($t.p.height === 'auto' || $t.p.height === '100%') && height) {
+						var wh = $t.p.height,
+						bstw = $t.p.styleUI.search('Bootstrap') !== -1 && !isNaN($t.p.height) ? 2 : 0,
 						winheight = $(window).height(),
 						parentheight = $("#gbox_"+$.jgrid.jqID($t.p.id)).parent().height();
 						
