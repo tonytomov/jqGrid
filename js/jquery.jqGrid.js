@@ -5712,7 +5712,7 @@ $.jgrid.extend({
 					lcdata = {};
 					if(t.p.reccount === 1) {
 						sind = $(t).jqGrid('getGridRowById', "norecs");
-						if(sind.rowIndex && sind.rowIndex > 0) {
+						if(sind && sind.rowIndex && sind.rowIndex > 0) {
 							$(t.rows[sind.rowIndex]).remove();
 						}
 					}
@@ -6808,7 +6808,7 @@ $.jgrid.extend({
 					$("tr[role=row].jqgrow",btbl).each(function(i, n){
 						$(this).height( mh[i] );
 					});
-					if($t.rows[1].id === 'norecs') {
+					if($t.rows[1] && $t.rows[1].id === 'norecs') {
 						$("#norecs td", btbl).html("");
 					}
 					$($t.grid.fbDiv)[0].scrollTop = $($t.grid.bDiv)[0].scrollTop;
