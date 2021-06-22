@@ -43,14 +43,14 @@ $.jgrid.extend({
 			var $t = this, nm, tmp,cc, cm,
 			highlight = $(this).jqGrid('getStyleUI',$t.p.styleUI+'.common','highlight', true),
 			
-			hover = $(this).jqGrid('getStyleUI',$t.p.styleUI+'.common','hover', true),
+			hover = !$t.p.ariaBody ? $(this).jqGrid('getStyleUI',$t.p.styleUI+'.common','hover', true) : "",
 			inpclass = $(this).jqGrid('getStyleUI',$t.p.styleUI+".celledit",'inputClass', true);
 
 			if (!$t.grid || $t.p.cellEdit !== true) {return;}
 			iCol = parseInt(iCol,10);
 			// select the row that can be used for other methods
 			$t.p.selrow = $t.rows[iRow].id;
-			if (!$t.p.knv) {$($t).jqGrid("GridNav");}
+			if (!$t.p.knv && !$t.p.ariaBody) {$($t).jqGrid("GridNav");}
 			// check to see if we have already edited cell
 			if ($t.p.savedRow.length>0) {
 				// prevent second click on that field and enable selects
@@ -389,7 +389,12 @@ $.jgrid.extend({
 					$($t).jqGrid("restoreCell", iRow, iCol);
 				}
 			}
-			window.setTimeout(function () { $("#"+$.jgrid.jqID($t.p.knv)).attr("tabindex","-1").focus();},0);
+			window.setTimeout(function () { 
+				$("#"+$.jgrid.jqID($t.p.knv)).attr("tabindex","-1").focus();
+				if($t.p.ariaBody) {
+					$($t).jqGrid('focusBodyCell', $t.p.iRow, $t.p.iCol);
+				}
+			},0);
 		});
 	},
 	restoreCell : function(iRow, iCol) {
@@ -413,7 +418,12 @@ $.jgrid.extend({
 				}				
 				$t.p.savedRow.splice(0,1);
 			}
-			window.setTimeout(function () { $("#"+$t.p.knv).attr("tabindex","-1").focus();},0);
+			window.setTimeout(function () { 
+				$("#"+$t.p.knv).attr("tabindex","-1").focus();
+				if($t.p.ariaBody) {
+					$($t).jqGrid('focusBodyCell', $t.p.iRow, $t.p.iCol);
+				}
+			},0);
 		});
 	},
 	nextCell : function (iRow, iCol, event) {

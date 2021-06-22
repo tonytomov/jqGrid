@@ -231,7 +231,10 @@ $.jgrid.extend({
 							e.preventDefault();
 						}
 						return;
-
+					case 113 : 
+						try{
+							$($t).jqGrid('editCell', $t.p.iRow, $t.p.iCol, true, e);
+						} catch(e){}
 					default:
 						return;
 				}
@@ -257,6 +260,7 @@ $.jgrid.extend({
 					.focus()
 					.blur(function(){$(this).removeClass(highlight);});
 			});
+			$t.p.ariaBody = true;
 		});
 	},
 	focusBodyCell : function(focusRow, focusCol, _s, _h) {
@@ -308,6 +312,7 @@ $.jgrid.extend({
 	resetAriaBody : function() {
 		return this.each(function(){
 			var $t = this;
+			$t.p.ariaBody = false;
 			$($t).attr("tabindex","0")
 				.off('keydown')
 				.off('jqGridBeforeSelectRow.ariaGridClick')

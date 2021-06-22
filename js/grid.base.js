@@ -1849,7 +1849,8 @@ $.fn.jqGrid = function( pin ) {
 				searchGrid : true,
 				colMenuSearch : true
 			},
-			emptyRecordRow : true
+			emptyRecordRow : true,
+			ariaBody : false
 		}, $.jgrid.defaults , pin );
 		if (localData !== undefined) {
 			p.data = localData;
@@ -4842,7 +4843,7 @@ $.fn.jqGrid = function( pin ) {
 				if (td.length > 0) {
 					ci = $.jgrid.getCellIndex(td);
 				}
-				if(ts.p.cellEdit === true) {
+				if(ts.p.cellEdit === true && !ts.p.ariaBody) {
 					if(ts.p.multiselect && scb && cSel){
 						$(ts).jqGrid("setSelection", ri ,true,e);
 					} else if (td.length > 0) {
