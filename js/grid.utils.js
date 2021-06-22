@@ -39,7 +39,7 @@ $.extend($.jgrid,{
 				var sv = value.split(" ");
 				sv[0] = $.jgrid.trim( sv[0].toLowerCase() );
 				if( (sv[0].indexOf('function') === 0) && value.trim().slice(-1) === "}") {
-					return  eval('('+value+')');
+					return  $.jgrid.runCode( value ); //eval('('+value+')');
 				} else {
 					return value;
 				}
@@ -150,7 +150,7 @@ $.extend($.jgrid,{
 		var addNode = function ( hash, key, cnts, val ) {
 			if(typeof val === 'string') {
 				if( val.indexOf('function') !== -1) {
-					val =  eval( '(' + val +')'); // we need this in our implement
+					val =  $.jgrid.runCode( val ); //eval( '(' + val +')'); // we need this in our implement
 				} else {
 					switch(val) {
 						case '__EMPTY_ARRAY_' :

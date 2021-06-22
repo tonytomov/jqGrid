@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.5 - 2021-06-07
+* @license Guriddo jqGrid JS - v5.5.5 - 2021-06-22
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -120,6 +120,9 @@ $.extend($.jgrid,{
 		return id;
 	},
 	useJSON : true,
+	runCode : function (obj){	
+		return Function('"use strict";return (' + obj + ')')();
+	},
 	parse : function(jsonString) {
 		var js = jsonString;
 		if (js.substr(0,9) === "while(1);") { js = js.substr(9); }
@@ -127,7 +130,8 @@ $.extend($.jgrid,{
 		if(!js) { js = "{}"; }
 		return ($.jgrid.useJSON===true && typeof JSON === 'object' && typeof JSON.parse === 'function') ?
 			JSON.parse(js) :
-			eval('(' + js + ')');
+			$.jgrid.runCode( js );
+			//eval('(' + js + ')');
 	},
 	dateToOADate :function  (date) {
 		// Add 1462 in 1904 system (apple)
@@ -684,7 +688,9 @@ $.extend($.jgrid,{
 				return self;
 			}
 			$.each(_data,function(){
-				if(eval(match)){results.push(this);}
+				if( $.jgrid.runCode( match.replace(/this/g, JSON.stringify(this)) ) ){ //eval(match)
+					results.push(this);
+				}
 			});
 			_data=results;
 			return self;
@@ -7001,8 +7007,7 @@ $.jgrid.extend({
 						frozen = true;
 					}
 					if(width) {
-						var wh = $t.p.height,
-						winwidth = $(window).width(),
+						var winwidth = $(window).width(),
 						parentwidth = $("#gbox_"+$.jgrid.jqID($t.p.id)).parent().width(),
 						ww = $t.p.width;
 						if( (winwidth-parentwidth) > 3 ) {
@@ -7013,8 +7018,9 @@ $.jgrid.extend({
 						$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridWidth', ww, $t.p.shrinkToFit, false );
 					}
 
-					if(height) {
-						var bstw = $t.p.styleUI.search('Bootstrap') !== -1 && !isNaN($t.p.height) ? 2 : 0,
+					if( !($t.p.height === 'auto' || $t.p.height === '100%') && height) {
+						var wh = $t.p.height,
+						bstw = $t.p.styleUI.search('Bootstrap') !== -1 && !isNaN($t.p.height) ? 2 : 0,
 						winheight = $(window).height(),
 						parentheight = $("#gbox_"+$.jgrid.jqID($t.p.id)).parent().height();
 						
@@ -15653,8 +15659,7 @@ $.jgrid.extend({
 				}
 			};
 			if(opts._alsoResize_) {
-				var optstest = "{\'#gview_"+gID+" .ui-jqgrid-bdiv\':true,'" +opts._alsoResize_+"':true}";
-				opts.alsoResize = eval('('+optstest+')'); // the only way that I found to do this
+				opts.alsoResize = "#gview_"+gID+" .ui-jqgrid-bdiv,"+opts._alsoResize_ ;
 			} else {
 				opts.alsoResize = $(".ui-jqgrid-bdiv","#gview_"+gID);
 			}
@@ -18225,7 +18230,7 @@ $.extend($.jgrid,{
 				var sv = value.split(" ");
 				sv[0] = $.jgrid.trim( sv[0].toLowerCase() );
 				if( (sv[0].indexOf('function') === 0) && value.trim().slice(-1) === "}") {
-					return  eval('('+value+')');
+					return  $.jgrid.runCode( value ); //eval('('+value+')');
 				} else {
 					return value;
 				}
@@ -18336,7 +18341,7 @@ $.extend($.jgrid,{
 		var addNode = function ( hash, key, cnts, val ) {
 			if(typeof val === 'string') {
 				if( val.indexOf('function') !== -1) {
-					val =  eval( '(' + val +')'); // we need this in our implement
+					val =  $.jgrid.runCode( val ); //eval( '(' + val +')'); // we need this in our implement
 				} else {
 					switch(val) {
 						case '__EMPTY_ARRAY_' :

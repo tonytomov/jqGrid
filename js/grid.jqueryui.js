@@ -637,8 +637,7 @@ $.jgrid.extend({
 				}
 			};
 			if(opts._alsoResize_) {
-				var optstest = "{\'#gview_"+gID+" .ui-jqgrid-bdiv\':true,'" +opts._alsoResize_+"':true}";
-				opts.alsoResize = eval('('+optstest+')'); // the only way that I found to do this
+				opts.alsoResize = "#gview_"+gID+" .ui-jqgrid-bdiv,"+opts._alsoResize_ ;
 			} else {
 				opts.alsoResize = $(".ui-jqgrid-bdiv","#gview_"+gID);
 			}

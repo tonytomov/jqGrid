@@ -125,6 +125,9 @@ $.extend($.jgrid,{
 		return id;
 	},
 	useJSON : true,
+	runCode : function (obj){	
+		return Function('"use strict";return (' + obj + ')')();
+	},
 	parse : function(jsonString) {
 		var js = jsonString;
 		if (js.substr(0,9) === "while(1);") { js = js.substr(9); }
@@ -132,7 +135,8 @@ $.extend($.jgrid,{
 		if(!js) { js = "{}"; }
 		return ($.jgrid.useJSON===true && typeof JSON === 'object' && typeof JSON.parse === 'function') ?
 			JSON.parse(js) :
-			eval('(' + js + ')');
+			$.jgrid.runCode( js );
+			//eval('(' + js + ')');
 	},
 	dateToOADate :function  (date) {
 		// Add 1462 in 1904 system (apple)
@@ -689,7 +693,9 @@ $.extend($.jgrid,{
 				return self;
 			}
 			$.each(_data,function(){
-				if(eval(match)){results.push(this);}
+				if( $.jgrid.runCode( match.replace(/this/g, JSON.stringify(this)) ) ){ //eval(match)
+					results.push(this);
+				}
 			});
 			_data=results;
 			return self;
