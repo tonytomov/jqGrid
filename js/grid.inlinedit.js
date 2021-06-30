@@ -247,7 +247,7 @@ $.jgrid.extend({
 								);
 								tmp2[nm] = selectedText.join(",");
 							}
-							if(cm.formatter && cm.formatter === 'select') { tmp2={}; }
+							if(cm.formatter) { tmp2={}; }
 							elem = $("select",this);
 							break;
 						case 'custom' :
