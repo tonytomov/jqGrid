@@ -12415,9 +12415,9 @@ $.jgrid.extend({
 					var hg = isNaN(this.p.height) ? $($t.grid.bDiv).height(): this.p.height;
 					if(hg === 0) {
 						hg = 200;
-					}		
+					}
 					o.alertleft = pos[0] + (this.p.width/2)-parseInt(o.alertwidth,10)/2;
-					o.alerttop = pos[1] + (hg/2)-25;					
+					o.alerttop = pos[1] + (hg/2)-25;
 				}
 				var fs =  $('.ui-jqgrid').css('font-size') || '11px';
 				$.jgrid.createModal(alertIDs,
@@ -20617,6 +20617,7 @@ $.jgrid.extend({
 			$t.p.iCol = $.jgrid.getFirstVisibleCol( $t );
 
 			var focusRow=0, focusCol=0; // set the dafualt one
+			var custAct = $.jgrid.isFunction( o.customCellAction ) ? o.customCellAction : false;
 			$($t).on('keydown', function(e) {
 				if($t.p.navigationDisabled && $t.p.navigationDisabled === true) {
 					return;
@@ -20693,6 +20694,9 @@ $.jgrid.extend({
 							$($t).jqGrid('editCell', $t.p.iRow, $t.p.iCol, true, e);
 						} catch(e){}
 					default:
+						if( custAct ) {
+							custAct.call($t, $t.rows[$t.p.iRow].id ,$t.p.iRow, $t.p.iCol, e);
+						}
 						return;
 				}
 				$($t).jqGrid("focusBodyCell", focusRow, focusCol, getstyle, highlight);
@@ -20961,14 +20965,18 @@ $.jgrid.extend({
 			header : true,
 			body : true,
 			pager : true,
-			onEnterCell : null
+			onEnterCell : null,
+			customCellAction : null
 		}, p || {});
 		return this.each(function(){
 			if( o.header ) {
 				$(this).jqGrid('ariaHeaderGrid');
 			}
 			if( o.body ) {
-				$(this).jqGrid('ariaBodyGrid', {onEnterCell : o.onEnterCell});
+				$(this).jqGrid('ariaBodyGrid', {
+					onEnterCell : o.onEnterCell, 
+					customCellAction : o.customCellAction
+				});
 			}
 			if( o.pager ) {
 				$(this).jqGrid('ariaPagerGrid');
