@@ -2035,6 +2035,9 @@ $.fn.jqGrid = function( pin ) {
 					$("#column_menu").remove();
 				} catch (e) {}
 			},
+			scrollHeaderGrid: function(e) {
+				grid.bDiv.scrollLeft = grid.hDiv.scrollLeft;
+			},
 			selectionPreserver : function(ts) {
 				var p = ts.p,
 				sr = p.selrow, sra = p.selarrrow ? $.makeArray(p.selarrrow) : null,
@@ -4758,7 +4761,7 @@ $.fn.jqGrid = function( pin ) {
 		grid.hDiv.style.width = (grid.width - bstw) + "px";
 		grid.hDiv.className = getstyle(stylemodule,'headerDiv', true,'ui-jqgrid-hdiv');
 
-		$(grid.hDiv).append(hb);
+		$(grid.hDiv).append(hb).scroll(grid.scrollHeaderGrid);
 		$(hb).append(hTable);
 		hTable = null;
 		if(hg) { $(grid.hDiv).hide(); }
