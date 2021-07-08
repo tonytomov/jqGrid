@@ -1781,8 +1781,12 @@ $.jgrid.extend({
 					var pos=$.jgrid.findPos(this);
 					pos[0]=Math.round(pos[0]);
 					pos[1]=Math.round(pos[1]);
+					var hg = isNaN(this.p.height) ? $($t.grid.bDiv).height(): this.p.height;
+					if(hg === 0) {
+						hg = 200;
+					}
 					o.alertleft = pos[0] + (this.p.width/2)-parseInt(o.alertwidth,10)/2;
-					o.alerttop = pos[1] + (this.p.height/2)-25;					
+					o.alerttop = pos[1] + (hg/2)-25;
 				}
 				var fs =  $('.ui-jqgrid').css('font-size') || '11px';
 				$.jgrid.createModal(alertIDs,
