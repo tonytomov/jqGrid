@@ -1498,7 +1498,7 @@ $.jgrid.extend({
 			}
 			params = $($t).data('filterToolbar');
 			for (i = 0; i < l; i++) {
-				ssfield.push(cm[i].name);
+				ssfield.push(cm[i].index || cm[i].name);
 				searchitem = $("#gs_" +$t.p.idPrefix+ $.jgrid.jqID(cm[i].name));
 				switch (cm[i].stype) {
 					case 'select' :

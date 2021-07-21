@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.5 - 2021-07-08
+* @license Guriddo jqGrid JS - v5.5.5 - 2021-07-21
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -10071,7 +10071,7 @@ $.jgrid.extend({
 			}
 			params = $($t).data('filterToolbar');
 			for (i = 0; i < l; i++) {
-				ssfield.push(cm[i].name);
+				ssfield.push(cm[i].index || cm[i].name);
 				searchitem = $("#gs_" +$t.p.idPrefix+ $.jgrid.jqID(cm[i].name));
 				switch (cm[i].stype) {
 					case 'select' :
