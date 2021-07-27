@@ -267,7 +267,7 @@ $.extend($.jgrid,{
 			timestamp = new Date(ts.y, ts.m, ts.d, ts.h, ts.i, ts.s, ts.u);
 		}
 		if(opts && opts.validate === true ) { // validation
-			const valid_date =  new Date(ts.y, (+ts.m), ts.d, ts.h, ts.i);
+			var valid_date =  new Date(ts.y, (+ts.m), ts.d, ts.h, ts.i);
 			return (Boolean(+valid_date) && valid_date.getDate() === ts.d && valid_date.getHours() === ts.h && valid_date.getMinutes() === ts.i);
 		}
 		if(opts.userLocalTime && offset === 0) {
@@ -6678,8 +6678,9 @@ $.jgrid.extend({
 				$t.p.treeGrid === true ||
 				$t.p.cellEdit === true ||
 				/*$t.p.sortable ||*/ 
-				$t.p.scroll /*||
-				$t.p.grouping === true*/)
+				$t.p.scroll ||
+				$t.p.frozenColumns
+				/* $t.p.grouping === true*/)
 			{
 				return;
 			}
