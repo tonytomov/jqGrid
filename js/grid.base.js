@@ -6182,8 +6182,11 @@ $.jgrid.extend({
 			if( pos >= 0 ) {
 				var thecol = $("tr.ui-jqgrid-labels th",$t.grid.hDiv).eq( pos );
 				if (nData){
-					var ico = $(".s-ico",thecol);
-					$("[id^=jqgh_]",thecol).empty().html(nData).append(ico);
+					var ico = $(".s-ico",thecol),
+					col_menu = $(".colmenu",thecol);
+					try {
+						$("[id^=jqgh_]",thecol).empty().html(nData).append(ico).append(col_menu);
+					} catch (er) {}
 					$t.p.colNames[pos] = nData;
 					if($t.p.frozenColumns) {
 						thecol = $("tr.ui-jqgrid-labels th",$t.grid.fhDiv).eq( pos );

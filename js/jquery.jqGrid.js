@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.5 - 2021-07-21
+* @license Guriddo jqGrid JS - v5.5.5 - 2021-08-02
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -262,7 +262,7 @@ $.extend($.jgrid,{
 			timestamp = new Date(ts.y, ts.m, ts.d, ts.h, ts.i, ts.s, ts.u);
 		}
 		if(opts && opts.validate === true ) { // validation
-			const valid_date =  new Date(ts.y, (+ts.m), ts.d, ts.h, ts.i);
+			var valid_date =  new Date(ts.y, (+ts.m), ts.d, ts.h, ts.i);
 			return (Boolean(+valid_date) && valid_date.getDate() === ts.d && valid_date.getHours() === ts.h && valid_date.getMinutes() === ts.i);
 		}
 		if(opts.userLocalTime && offset === 0) {
@@ -6177,8 +6177,11 @@ $.jgrid.extend({
 			if( pos >= 0 ) {
 				var thecol = $("tr.ui-jqgrid-labels th",$t.grid.hDiv).eq( pos );
 				if (nData){
-					var ico = $(".s-ico",thecol);
-					$("[id^=jqgh_]",thecol).empty().html(nData).append(ico);
+					var ico = $(".s-ico",thecol),
+					col_menu = $(".colmenu",thecol);
+					try {
+						$("[id^=jqgh_]",thecol).empty().html(nData).append(ico).append(col_menu);
+					} catch (er) {}
 					$t.p.colNames[pos] = nData;
 					if($t.p.frozenColumns) {
 						thecol = $("tr.ui-jqgrid-labels th",$t.grid.fhDiv).eq( pos );
@@ -6673,8 +6676,9 @@ $.jgrid.extend({
 				$t.p.treeGrid === true ||
 				$t.p.cellEdit === true ||
 				/*$t.p.sortable ||*/ 
-				$t.p.scroll /*||
-				$t.p.grouping === true*/)
+				$t.p.scroll ||
+				$t.p.frozenColumns
+				/* $t.p.grouping === true*/)
 			{
 				return;
 			}
