@@ -167,25 +167,25 @@ $.jgrid.extend({
 				}
 				var key = e.which || e.keyCode, nextCell;
 				switch(key) {
-					case (38) :
+					case (38) : // DOWN
 						nextCell = getNextVisibleCell(0, -1);
 						focusRow = nextCell.row;
 						focusCol = nextCell.col;
 						e.preventDefault();
 						break;
-					case (40) :
+					case (40) : // UP
 						nextCell = getNextVisibleCell(0, 1);
 						focusRow = nextCell.row;
 						focusCol = nextCell.col;
 						e.preventDefault();
 						break;
-					case (37) :
+					case (37) : // LEFT
 						nextCell = getNextVisibleCell(-1, 0);
 						focusRow = nextCell.row;
 						focusCol = nextCell.col;
 						e.preventDefault();
 						break;
-					case (39) :
+					case (39) : // RIGHT
 						nextCell = getNextVisibleCell(1, 0);
 						focusRow = nextCell.row;
 						focusCol = nextCell.col;
@@ -200,7 +200,7 @@ $.jgrid.extend({
 						focusCol = 0;
 						e.preventDefault();
 						break;
-					case 35 : //END
+					case 35 : // END
 						if(e.ctrlKey) {
 							focusRow = $t.rows.length - 1;
 						} else {
@@ -226,13 +226,13 @@ $.jgrid.extend({
 						}
 						e.preventDefault();
 						break;
-					case 13 : //Enter
+					case 13 : // Enter
 						if( $.jgrid.isFunction( o.onEnterCell )) {
 							o.onEnterCell.call( $t, $t.rows[$t.p.iRow].id ,$t.p.iRow, $t.p.iCol, e);
 							e.preventDefault();
 						}
 						return;
-					case 113 : 
+					case 113 : // F2
 						try{
 							$($t).jqGrid('editCell', $t.p.iRow, $t.p.iCol, true, e);
 						} catch(e){}
@@ -444,7 +444,7 @@ $.jgrid.extend({
 								indexa--;
 								if(indexa < 0) {
 									break;
-	}
+								}
 							}
 							if(indexa >= 0) {
 								$(cels[$t.p.navIndex]).attr("tabindex","-1");
