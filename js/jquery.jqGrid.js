@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.5 - 2021-08-05
+* @license Guriddo jqGrid JS - v5.5.5 - 2021-08-11
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -4238,8 +4238,11 @@ $.fn.jqGrid = function( pin ) {
 			}
 			for( var key in ts.p.colMenuCustom) {
 				if(ts.p.colMenuCustom.hasOwnProperty(key)) {
-					var menuitem = ts.p.colMenuCustom[key],
-						exclude = menuitem.exclude.split(",");
+					var menuitem = ts.p.colMenuCustom[key];
+					if( $.jgrid.isFunction( ts.p.colMenuBeforeProcess )) {
+						ts.p.colMenuBeforeProcess.call(ts, { module: 'custom', action: menuitem , column : menuitem.colname});
+					}
+					var	exclude = menuitem.exclude.split(",");
 					exclude = $.map(exclude, function(item){ return $.jgrid.trim(item);});
 					if( menuitem.colname === cname  || (menuitem.colname === '_all_' && $.inArray(cname, exclude) === -1)) {
 						strl = '<li class="ui-menu-item divider" role="separator"></li>';
