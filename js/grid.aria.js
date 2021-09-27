@@ -269,7 +269,11 @@ $.jgrid.extend({
 	},
 	excelLikeGrid : function ( p ) {
 		var o = $.extend({
-			beforeDeleteCell : null
+			beforeDeleteCell : null,
+			specialChars : [
+				'~', '!','@', '#', '$','%','^','&','*','(',')','_', '+','{','}', ':', '"', '|','<','>','?',',','.','/',';','\\','[',']' 
+			],
+			addonChars : false // ^[а-я]$/i
 		}, p || {});
 
 		return this.each(function (){
@@ -298,7 +302,7 @@ $.jgrid.extend({
 				if (!rowCount) {
 					return false;
 				}
-				
+
 				var colCount = $t.p.colModel.length;
 				if (isLeftRight) {
 					if (col < collimit ) {
@@ -397,18 +401,16 @@ $.jgrid.extend({
 			$t.p.iRow = 1;
 			$t.p.iCol = $.jgrid.getFirstVisibleCol( $t );
 			$t.p.ariaBody = true;
-			
+
 			var focusRow=0, focusCol=0; // set the dafualt one
 			var custAct = $.jgrid.isFunction( o.customCellAction ) ? o.customCellAction : false;
 			var delCell = $.jgrid.isFunction( o.beforeDeleteCell ) ? o.beforeDeleteCell : false;
-			var aKeys = new Set([
-				'~', '!','@', '#', '$','%','^','&','*','(',')','_', '+','{','}', ':', '"', '|','<','>','?',',','.','/',';','\\','[',']' 
-			]);
-			
+			var aKeys = new Set(o.specialChars);
+
 			//var lastVisibleCol = $.jgrid.getLastVisibleCol( $t );
 			//var firstVisibleCol = $.jgrid.getFirstVisibleCol( $t );
 
-			var paste_to_cell = false; 
+			var paste_to_cell = false;
 			$t.addEventListener('paste', (event) => {
 				if(paste_to_cell) {
 					var paste = (event.clipboardData || window.clipboardData).getData('text');
@@ -424,7 +426,7 @@ $.jgrid.extend({
 				}
 				var key = e.which || e.keyCode, nextCell;
 				var ctrl = e.ctrlKey ? e.ctrlKey : ((key === 17) ? true : false); // ctrl detection
-				
+
 				switch(key) {
 					case (38) : // UP
 						nextCell = getNextVisibleCell(0, -1);
@@ -491,7 +493,7 @@ $.jgrid.extend({
 							nextCell = getNextVisibleCell(-1, 0);
 						} else {
 							nextCell = getNextVisibleCell(1, 0);
-							
+
 						}
 						focusRow = nextCell.row;
 						focusCol = nextCell.col;
@@ -537,10 +539,12 @@ $.jgrid.extend({
 					default:
 						var isLetter = /^[a-z]$/i.test(e.key);
 						var isNumber = /^[0-9]$/i.test(e.key);
-						// var other = /^[а-я]$/i.test(e.key);
-						
-						// To be improved for other languages
-						if(isLetter || isNumber || aKeys.has(e.key) /*|| other*/) {
+						var other = false;
+						if(o.addonChars) {
+							other = o.addonChars.test(e.key);
+						}
+
+						if(isLetter || isNumber || aKeys.has(e.key) || other) {
 							$($t).jqGrid('editCell', $t.p.iRow, $t.p.iCol, true, e, true);
 						}
 						if( custAct ) {
