@@ -6294,6 +6294,10 @@ $.jgrid.extend({
 						if(typeof attrp === 'object') {
 							$(tcell).attr(attrp);
 						}
+						if($t.p.frozenColumns) {
+							var fcell = $(tcell).clone();
+							$("#"+rowid +" td", $.jgrid.jqID("#"+$t.p.id + "_frozen") ).eq($t.p.frozenColCount).replaceWith(fcell);
+						}
 					}
 				}
 			}
@@ -6674,7 +6678,7 @@ $.jgrid.extend({
 	setFrozenColumns : function () {
 		return this.each(function() {
 			if ( !this.grid ) {return;}
-			var $t = this, cm = $t.p.colModel,i=0, len = cm.length, frozen= false,
+			var $t = this, cm = $t.p.colModel,i=0, len = cm.length,
 			hd= $($t).jqGrid('getStyleUI',$t.p.styleUI+".base",'headerDiv', true, 'ui-jqgrid-hdiv'),
 			hover = $($t).jqGrid('getStyleUI',$t.p.styleUI+".common",'hover', true),
 			borderbox = $("#gbox_"+$.jgrid.jqID($t.p.id)).css("box-sizing") === 'border-box',
@@ -6697,14 +6701,13 @@ $.jgrid.extend({
 				// from left, no breaking frozen
 				if(cm[i].frozen === true)
 				{
-					frozen = true;
 					$t.p.frozenColCount = i;
 				} else {
 					break;
 				}
 				i++;
 			}
-			if( $t.p.frozenColCount>=0 && frozen) {
+			if( $t.p.frozenColCount >= 0) {
 				var divhth = parseInt( $(".ui-jqgrid-hdiv","#gview_"+$.jgrid.jqID($t.p.id)).height(), 10),
 				bpos = $(".ui-jqgrid-bdiv","#gview_"+$.jgrid.jqID($t.p.id)).position(),
 				bhpos = $(".ui-jqgrid-hdiv","#gview_"+$.jgrid.jqID($t.p.id)).position();
