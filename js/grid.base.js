@@ -6294,9 +6294,9 @@ $.jgrid.extend({
 						if(typeof attrp === 'object') {
 							$(tcell).attr(attrp);
 						}
-						if($t.p.frozenColumns) {
+						if($t.p.frozenColumns && pos <= $t.p.frozenColCount) {
 							var fcell = $(tcell).clone();
-							$("#"+rowid +" td", "#" + $.jgrid.jqID($t.p.id + "_frozen") ).eq($t.p.frozenColCount).replaceWith(fcell);
+							$("#"+rowid +" td", "#" + $.jgrid.jqID($t.p.id + "_frozen") ).eq( pos ).replaceWith(fcell);
 						}
 					}
 				}
