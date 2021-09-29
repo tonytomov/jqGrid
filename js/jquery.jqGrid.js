@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.5 - 2021-09-28
+* @license Guriddo jqGrid JS - v5.5.5 - 2021-09-29
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -6291,7 +6291,7 @@ $.jgrid.extend({
 						}
 						if($t.p.frozenColumns) {
 							var fcell = $(tcell).clone();
-							$("#"+rowid +" td", $.jgrid.jqID("#"+$t.p.id + "_frozen") ).eq($t.p.frozenColCount).replaceWith(fcell);
+							$("#"+rowid +" td", "#" + $.jgrid.jqID($t.p.id + "_frozen") ).eq($t.p.frozenColCount).replaceWith(fcell);
 						}
 					}
 				}

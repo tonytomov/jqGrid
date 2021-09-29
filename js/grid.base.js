@@ -6296,7 +6296,7 @@ $.jgrid.extend({
 						}
 						if($t.p.frozenColumns) {
 							var fcell = $(tcell).clone();
-							$("#"+rowid +" td", $.jgrid.jqID("#"+$t.p.id + "_frozen") ).eq($t.p.frozenColCount).replaceWith(fcell);
+							$("#"+rowid +" td", "#" + $.jgrid.jqID($t.p.id + "_frozen") ).eq($t.p.frozenColCount).replaceWith(fcell);
 						}
 					}
 				}
