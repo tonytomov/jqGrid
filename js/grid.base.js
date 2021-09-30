@@ -5517,6 +5517,9 @@ $.jgrid.extend({
 			$t.p.reccount--;
 			$t.updatepager(true,false);
 			success=true;
+			if($t.p.frozenColumns) {
+				$("#" + rowid, "#" + $.jgrid.jqID($t.p.id + "_frozen")).remove();
+			}
 			if($t.p.multiselect) {
 				ia = $.inArray(rowid,$t.p.selarrrow);
 				if(ia !== -1) { $t.p.selarrrow.splice(ia,1);}
