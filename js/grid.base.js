@@ -5572,6 +5572,9 @@ $.jgrid.extend({
 							} else {
 								$("td[role='gridcell']",ind).eq(i).html(vl).attr(title);
 							}
+							if(t.p.frozenColumns && i <= t.p.frozenColCount) {
+								$("#"+rowid+" td[role='gridcell']", "#" + $.jgrid.jqID(t.p.id + "_frozen")).eq(i).html(vl).attr(title);
+							}
 						}
 					});
 					if(t.p.datatype === 'local') {
