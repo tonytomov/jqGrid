@@ -17,6 +17,29 @@
 "use strict";
 //module begin
 $.jgrid.extend({
+	groupingInit : function () {
+		return this.each(function (){
+			var $t = this;
+			$.extend ($t.p.groupingView, {
+				groupField :[],
+				groupOrder:[],
+				groupText:[],
+				groupColumnShow:[],
+				groupSummary:[],
+				showSummaryOnHide: false,
+				sortitems:[],
+				sortnames:[],
+				summary:[],
+				summaryval:[],
+				plusicon: '',
+				minusicon: '',
+				displayField: [],
+				groupSummaryPos:[],
+				formatDisplayField : [],
+				_locgr : false
+			}, true);
+		});
+	},
 	groupingSetup : function () {
 		return this.each(function (){
 			var $t = this, i, j, cml, cm = $t.p.colModel, grp = $t.p.groupingView,
@@ -438,11 +461,14 @@ $.jgrid.extend({
 			$($t).trigger("reloadGrid");
 		});
 	},
-	groupingRemove : function (current) {
+	groupingRemove : function (current, grpViewInit) {
 		return this.each(function(){
 			var $t = this;
 			if(current === undefined) {
 				current = true;
+			}
+			if(grpViewInit === undefined) {
+				grpViewInit = false;
 			}
 			$t.p.grouping = false;
 			if(current===true) {
@@ -457,6 +483,9 @@ $.jgrid.extend({
 				$("#"+$.jgrid.jqID($t.p.id)+" tbody").first().find("tr.jqgrow:hidden").show();
 			} else {
 				$($t).trigger("reloadGrid");
+			}
+			if(grpViewInit) {
+				$($t).jqGrid('groupingInit');
 			}
 		});
 	},
