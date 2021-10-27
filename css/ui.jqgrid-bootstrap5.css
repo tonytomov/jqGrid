@@ -33,18 +33,30 @@
 	line-height: 28px;
 }
 .ui-jqgrid .ui-jqgrid-titlebar-close { 
+	/*
 	color: inherit; 
 	position: absolute;
-	top: 50%; 
-	margin: -7px 7px 0 0; 
-	padding: 1px; 
+	top: 50%;
+	margin: -10px 7px 0 0; 
+	padding: 1px;
+	width : 30px;
 	cursor:pointer;
+ */
+	display: block;
+	margin: 5px 0px;
+	float: right;
+	text-decoration: none;
+	color: inherit;
+	padding: 0px 5px;
 }
 .ui-jqgrid .ui-jqgrid-titlebar-close span { 
 	display: block; 
 	margin: 1px; 
 }
-.ui-jqgrid .ui-jqgrid-titlebar-close:hover {  }
+.ui-jqgrid .ui-jqgrid-titlebar-close:hover {  
+	background-color: #ddd;
+	opacity: 1.5;
+}
 
 /* Header*/
 .ui-jqgrid .ui-jqgrid-hdiv {
@@ -125,20 +137,19 @@
 	overflow:hidden;
 	position:absolute;
 	right: auto;
-	font-size:12px;
 }
 .ui-jqgrid .ui-icon-asc {
-	margin-top:2px;
+	margin-top:-2px;
 }
 .ui-jqgrid .ui-icon-desc {
-	margin-top:8px;
+	margin-top:6px;
 }
 .ui-jqgrid .ui-i-asc {
-	margin-top:4px;
+	margin-top:2px;
 }
 .ui-jqgrid .ui-i-desc {
-	margin-top:4px;
-	margin-left:13px;
+	margin-top:2px;
+	margin-left:15px;
 }
 .ui-jqgrid .ui-single-sort-asc {
 	margin-top:0;
@@ -178,8 +189,8 @@
 	border-top-width: 0px;
 }
 .ui-jqgrid .ui-jqgrid-htable tr.ui-jqgrid-labels:last-child th {
-	padding-top: 12px; 
-	padding-bottom: 4px; 
+	padding-top: 8px; 
+	padding-bottom: 8px; 
 }
 
 /* Body */ 
@@ -573,11 +584,11 @@ div.tablediv > .table-bordered {
 	overflow:visible;
 }
 .ui-jqdialog .ui-jqdialog-titlebar {
-	padding: .1em .1em; 
-	min-height: 38px; 
+	padding: 0em 0em; 
+	/*min-height: 38px; */
 }
 .ui-jqdialog .ui-jqdialog-title { 
-	margin: .3em 0 .2em;  
+	margin: .3em 0 .4em;  
 	font-weight: bold;
 	padding-left :6px;
 	padding-right:6px;
@@ -586,9 +597,10 @@ div.tablediv > .table-bordered {
 .ui-jqdialog .ui-jqdialog-titlebar-close { 
 	position: absolute;  
 	top: 0%; 
-	margin: 3px 5px 0 0; 
+	margin: 0px -7px 0 0; 
 	padding: 8px;  
 	cursor:pointer;
+	color :inherit;
 }
 
 .ui-jqdialog .ui-jqdialog-titlebar-close span {  }
@@ -602,6 +614,15 @@ div.tablediv > .table-bordered {
 	padding: .3em .2em; 
 	background: none; 
 	height:auto;
+}
+[id^=alertmod] .ui-jqdialog-content div {
+	text-align: center;
+	margin: 10px 5px;
+}
+[id^=delmod] .ui-jqdialog-content div {
+	text-align: center;
+	margin: 10px 5px 0 5px;
+
 }
 .ui-jqdialog .ui-jqconfirm {
 	padding: .4em 1em; 
@@ -719,7 +740,12 @@ div.ui-jqgrid .selected-row td {
 }
 /* inline edit actions button*/
 .ui-inline-del, .ui-inline-cancel {
-    margin-left: 14px;
+    margin-left: 7px;
+	font-size: 0.9rem;
+}
+.ui-inline-save, .ui-inline-edit {
+    margin-left: 7px;
+	font-size: 0.9rem;
 }
 .ui-jqgrid .inline-edit-cell {}
 /* Tree Grid */
@@ -889,8 +915,8 @@ a.g-menu-item, a.soptclass, a.clearsearchclass {
 .ui-jqdialog .ui-resizable-se {
 	width: 12px;
 	height: 12px;
-	right: -5px;
-	bottom: -3px;
+	right: 0px;
+	bottom: 4px;
 	left : auto;
 	top: auto;
 	background-position: 16px 16px;
@@ -1020,7 +1046,7 @@ ul.ui-search-menu li, ul.ui-nav-menu li {
 	position:absolute;
 	right:1px;
 	height:100%;
-	color : black;
+	color : inherit;
 	width: 16px;
 	/*cursor: context-menu;*/
 }

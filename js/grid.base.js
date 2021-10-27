@@ -1129,10 +1129,12 @@ $.extend($.jgrid,{
 				icon_resizable : "ui-icon-gripsmall-diagonal-se"
 			},
 			celledit : {
-				inputClass : "ui-widget-content ui-corner-all"
+				inputClass : "ui-widget-content ui-corner-all",
+				selectClass: "ui-widget-content ui-corner-all"
 			},
 			inlinedit : {
 				inputClass : "ui-widget-content ui-corner-all",
+				selectClass: "ui-widget-content ui-corner-all",
 				icon_edit_nav : "ui-icon-pencil",
 				icon_add_nav : "ui-icon-plus",
 				icon_save_nav : "ui-icon-disk",
@@ -1140,6 +1142,7 @@ $.extend($.jgrid,{
 			},
 			formedit : {
 				inputClass : "ui-widget-content ui-corner-all",
+				selectClass: "ui-widget-content ui-corner-all",
 				icon_prev : "ui-icon-triangle-1-w",
 				icon_next : "ui-icon-triangle-1-e",
 				icon_save : "ui-icon-disk",
@@ -1264,10 +1267,12 @@ $.extend($.jgrid,{
 				icon_resizable : "glyphicon-import"
 			},
 			celledit : {
-				inputClass : 'form-control'
+				inputClass : 'form-control',
+				selectClass: 'form-control'
 			},
 			inlinedit : {
 				inputClass : 'form-control',
+				selectClass: 'form-control',
 				icon_edit_nav : "glyphicon-edit",
 				icon_add_nav : "glyphicon-plus",
 				icon_save_nav : "glyphicon-save",
@@ -1275,6 +1280,7 @@ $.extend($.jgrid,{
 			},
 			formedit : {
 				inputClass : "form-control",
+				selectClass: 'form-control',
 				icon_prev : "glyphicon-step-backward",
 				icon_next : "glyphicon-step-forward",
 				icon_save : "glyphicon-save",
@@ -1390,13 +1396,16 @@ $.extend($.jgrid,{
 				icon_resizable : "oi-circle-x"
 			},
 			celledit : {
-				inputClass : 'form-control'
+				inputClass : 'form-control',
+				selectClass: 'form-control'
 			},
 			inlinedit : {
-				inputClass : 'form-control'
+				inputClass : 'form-control',
+				selectClass: 'form-control'
 			},
 			formedit : {
-				inputClass : "form-control"
+				inputClass : "form-control",
+				selectClass: 'form-control'
 			},
 			navigator : {
 			},
@@ -1473,13 +1482,16 @@ $.extend($.jgrid,{
 				icon_resizable : "oi-circle-x"
 			},
 			celledit : {
-				inputClass : 'form-control'
+				inputClass : 'form-control',
+				selectClass: 'form-select'
 			},
 			inlinedit : {
-				inputClass : 'form-control'
+				inputClass : 'form-control',
+				selectClass: 'form-select'
 			},
 			formedit : {
-				inputClass : "form-control"
+				inputClass : "form-control",
+				selectClass: 'form-select'
 			},
 			navigator : {
 			},
@@ -1487,7 +1499,7 @@ $.extend($.jgrid,{
 			},
 			filter : {
 				table_widget : 'table table-condensed',
-				srSelect : 'form-control',
+				srSelect : 'form-select',
 				srInput : 'form-control',
 				menu_widget : ''
 			},
@@ -1500,7 +1512,7 @@ $.extend($.jgrid,{
 			colmenu : {
 				menu_widget : '',
 				input_checkbox : "",
-				filter_select: "form-control",
+				filter_select: "form-select",
 				filter_input : "form-control"
 			}
 		}
@@ -1744,6 +1756,86 @@ $.extend($.jgrid,{
 				icon_move: "fa-expand-arrows-alt",
 				icon_new_item : "fa-external-link-alt",
 				icon_toolbar_menu : "fa-list"
+			}
+		},
+		Bootstrap5 : {
+			common : {
+				icon_base : "bi"
+			},
+			base : {
+				icon_first : "bi-chevron-bar-left",
+				icon_prev : "bi-chevron-left",
+				icon_next: "bi-chevron-right",
+				icon_end: "bi-chevron-bar-right",
+				icon_asc : "bi-caret-up-fill",
+				icon_desc : "bi-caret-down-fill",
+				icon_caption_open : "bi-arrows-collapse",
+				icon_caption_close : "bi-arrows-expand"
+			},
+			modal : {
+				icon_close : "bi-x-lg",
+				icon_resizable : "bi-box-arrow-in-down-right"
+			},
+			inlinedit : {
+				icon_edit_nav : "bi-pencil-square",
+				icon_add_nav : "bi-plus-square",
+				icon_save_nav : "bi-save",
+				icon_cancel_nav : "bi-x-square"
+			},
+			formedit : {
+				icon_prev : "bi-chevron-left",
+				icon_next : "bi-chevron-right",
+				icon_save : "bi-save",
+				icon_close : "bi-x-square",
+				icon_del : "bi-trash",
+				icon_cancel : "bi-x-octagon"
+			},
+			navigator : {
+				icon_edit_nav : "bi-pencil-square",
+				icon_add_nav : "bi-plus-square",
+				icon_del_nav : "bi-trash",
+				icon_search_nav : "bi-search",
+				icon_refresh_nav : "bi-arrow-clockwise",
+				icon_view_nav : "bi-view-list",
+				icon_newbutton_nav : "bi-window"
+			},
+			grouping : {
+				icon_plus : 'bi-caret-right',
+				icon_minus : 'bi-caret-down'
+			},
+			filter : {
+				icon_search : 'bi-search',
+				icon_reset : 'bi-arrow-clockwise',
+				icon_query :'bi-journal-code'
+			},
+			subgrid : {
+				icon_plus : 'oi-chevron-right',
+				icon_minus : 'oi-chevron-bottom',
+				icon_open : 'oi-expand-left'
+			},
+			treegrid : {
+				icon_plus : 'oi-plus',
+				icon_minus : 'oi-minus',
+				icon_leaf : 'oi-media-record'
+			},
+			fmatter : {
+				icon_edit : "bi-pencil-square",
+				icon_add : "bi-plus-square",
+				icon_save : "bi-save",
+				icon_cancel : "bi-x-square",
+				icon_del : "bi-trash"
+			},
+			colmenu : {
+				icon_menu : "bi-list",
+				icon_sort_asc : "bi-sort-alpha-down",
+				icon_sort_desc : "bi-sort-alpha-up",
+				icon_columns : "bi-columns",
+				icon_filter : "bi-search",
+				icon_group : "bi-collection-play",
+				icon_freeze : "bi-layout-text-sidebar-reverse",
+				icon_move: "bi-arrows-move",
+				icon_new_item : "bi-window",
+				icon_toolbar_menu : "bi-card-text"
 			}
 		}
 	}
