@@ -1809,14 +1809,14 @@ $.extend($.jgrid,{
 				icon_query :'bi-journal-code'
 			},
 			subgrid : {
-				icon_plus : 'oi-chevron-right',
-				icon_minus : 'oi-chevron-bottom',
-				icon_open : 'oi-expand-left'
+				icon_plus : 'bi-chevron-right',
+				icon_minus : 'bi-chevron-down',
+				icon_open : 'bi-arrow-bar-right'
 			},
 			treegrid : {
-				icon_plus : 'oi-plus',
-				icon_minus : 'oi-minus',
-				icon_leaf : 'oi-media-record'
+				icon_plus : 'bi-plus-square-dotted',
+				icon_minus : 'bi-dash-square-dotted',
+				icon_leaf : 'bi-circle'
 			},
 			fmatter : {
 				icon_edit : "bi-pencil-square",

@@ -1328,7 +1328,11 @@ $.jgrid.extend({
 					}
 					elem = $.jgrid.createEl.call($t, this.stype, soptions , df, false, $.extend({},$.jgrid.ajaxOptions, $t.p.ajaxSelectOptions || {}));
 					if( this.stype !== 'custom') {
-						$(elem).addClass( classes.srInput );
+						if(this.stype==='select') {
+							$(elem).addClass( classes.srSelect );
+						} else  {
+							$(elem).addClass( classes.srInput );
+						}
 					}
 					$("td",stbl).eq( 1 ).append(elem);
 					$(thd).append(stbl);
