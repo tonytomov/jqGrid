@@ -270,6 +270,8 @@ $.jgrid.extend({
 	excelLikeGrid : function ( p ) {
 		var o = $.extend({
 			beforeDeleteCell : null,
+			customCellAction : null,
+			customUndoFunction : null,
 			specialChars : [
 				'~', '!','@', '#', '$','%','^','&','*','(',')','_', '+','{','}', ':', '"', '|','<','>','?',',','.','/',';','\\','[',']' 
 			],
