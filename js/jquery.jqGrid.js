@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.5.5 - 2021-10-30
+* @license Guriddo jqGrid JS - v5.6.0 - 2021-11-03
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -24,7 +24,7 @@ if(!$.jgrid.hasOwnProperty("defaults")) {
 	$.jgrid.defaults = {};
 }
 $.extend($.jgrid,{
-	version : "5.5.5",
+	version : "5.6.0",
 	isNull : function( p, strict_eq) {
 		if(strict_eq && strict_eq === true) {
 			return p === null;
@@ -21077,6 +21077,8 @@ $.jgrid.extend({
 	excelLikeGrid : function ( p ) {
 		var o = $.extend({
 			beforeDeleteCell : null,
+			customCellAction : null,
+			customUndoFunction : null,
 			specialChars : [
 				'~', '!','@', '#', '$','%','^','&','*','(',')','_', '+','{','}', ':', '"', '|','<','>','?',',','.','/',';','\\','[',']' 
 			],
