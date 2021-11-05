@@ -730,6 +730,7 @@ $.jgrid.extend({
 			mimetype : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 			maxlength : 40, // maxlength for visible string data
 			onBeforeExport : null,
+			customizeData : null,
 			replaceStr : null,
 			treeindent : ' ',
 			loadIndicator : true // can be a function
@@ -824,6 +825,9 @@ $.jgrid.extend({
 				data.map[i] = j;
 				data.parser[j] = addStyle( cm[j].hasOwnProperty('exportoptions') ? $.extend( {}, cm[j].exportoptions ) : {} );
 				i++;
+			}
+			if( $.jgrid.isFunction(o.customizeData) ) {
+				o.customizeData.call($t, data);
 			}
 			function _replStrFunc (v) {
 				return v.replace(/</g, '&lt;')
