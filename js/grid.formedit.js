@@ -279,7 +279,7 @@ $.jgrid.extend({
 							$t.p.savedData[nm] = tmp;
 						}
 						if(this.edittype==='custom' && $.jgrid.isFunction(opt.custom_value) ) {
-							opt.custom_value.call($t, $("#"+nm, frmgr),'set',tmp);
+							opt.custom_value.call($t, $("#"+nm, elc),'set',tmp);
 						}
 						$.jgrid.bindEv.call($t, elc, opt);
 						retpos[cnt] = i;

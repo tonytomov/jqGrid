@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.6.0 - 2021-11-05
+* @license Guriddo jqGrid JS - v5.6.0 - 2021-11-23
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -11226,7 +11226,7 @@ $.jgrid.extend({
 							$t.p.savedData[nm] = tmp;
 						}
 						if(this.edittype==='custom' && $.jgrid.isFunction(opt.custom_value) ) {
-							opt.custom_value.call($t, $("#"+nm, frmgr),'set',tmp);
+							opt.custom_value.call($t, $("#"+nm, elc),'set',tmp);
 						}
 						$.jgrid.bindEv.call($t, elc, opt);
 						retpos[cnt] = i;
