@@ -666,7 +666,7 @@ $.fn.jqFilter = function( arg ) {
 			$("tr.error", this).hide();
 		};
 		this.showError = function() {
-			$("th."+common.error, this).html(this.p.errmsg);
+			$("th."+common.error, this).html( $.jgrid.stripScript( this.p.errmsg ));
 			$("tr.error", this).show();
 		};
 		this.toUserFriendlyString = function() {
@@ -1538,7 +1538,7 @@ $.jgrid.extend({
 									if( fsi.hasClass("ui-search-oper") ) {
 										$(".soptclass", fsi ).attr("soper", rule.op);
 										if(params.operands.hasOwnProperty(rule.op)) {
-											$(".soptclass", fsi ).html( params.operands[rule.op] );
+											$(".soptclass", fsi ).html( $.jgrid.stripScript( params.operands[rule.op] ) );
 										}
 									}
 								}
@@ -1794,7 +1794,7 @@ $.jgrid.extend({
 					unaryOperations : unaryOpers,
 					onChange : function() {
 						if(this.p.showQuery) {
-							$('.query',this).html(this.toUserFriendlyString());
+							$('.query',this).text(this.toUserFriendlyString());
 						}
 						if ($.jgrid.isFunction(p.afterChange)) {
 							p.afterChange.call($t, $("#"+fid), p);
