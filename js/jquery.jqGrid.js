@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.6.0 - 2021-11-23
+* @license Guriddo jqGrid JS - v5.6.0 - 2021-12-03
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -127,6 +127,9 @@ $.extend($.jgrid,{
 			id = pref !== "" ? String(id).replace(String(pref), "") : id;
 		}
 		return id;
+	},
+	stripScript : function( v ) {
+		return v.replace(/<script.*>.*<\/script>/ims, " ");
 	},
 	useJSON : true,
 	runCode : function (obj){	
@@ -3484,9 +3487,12 @@ $.fn.jqGrid = function( pin ) {
 						} );
 						tmpordarr.push(index +" "+grp.groupOrder[gi]);
 					}
-					gs = tmpordarr.join();
+					gs = $.jgrid.trim( tmpordarr.join() );
 					if( $.jgrid.trim(prm[pN.sort]) !== "") {
-						prm[pN.sort] = gs + " ,"+prm[pN.sort];
+						if(gs !== "") {
+							gs += " ,";
+						}						
+						prm[pN.sort] = gs + prm[pN.sort];
 					} else {
 						prm[pN.sort] = gs;
 						prm[pN.order] = "";
@@ -9551,7 +9557,7 @@ $.fn.jqFilter = function( arg ) {
 			$("tr.error", this).hide();
 		};
 		this.showError = function() {
-			$("th."+common.error, this).html(this.p.errmsg);
+			$("th."+common.error, this).html( $.jgrid.stripScript( this.p.errmsg ));
 			$("tr.error", this).show();
 		};
 		this.toUserFriendlyString = function() {
@@ -10423,7 +10429,7 @@ $.jgrid.extend({
 									if( fsi.hasClass("ui-search-oper") ) {
 										$(".soptclass", fsi ).attr("soper", rule.op);
 										if(params.operands.hasOwnProperty(rule.op)) {
-											$(".soptclass", fsi ).html( params.operands[rule.op] );
+											$(".soptclass", fsi ).html( $.jgrid.stripScript( params.operands[rule.op] ) );
 										}
 									}
 								}
@@ -10679,7 +10685,7 @@ $.jgrid.extend({
 					unaryOperations : unaryOpers,
 					onChange : function() {
 						if(this.p.showQuery) {
-							$('.query',this).html(this.toUserFriendlyString());
+							$('.query',this).text(this.toUserFriendlyString());
 						}
 						if ($.jgrid.isFunction(p.afterChange)) {
 							p.afterChange.call($t, $("#"+fid), p);
