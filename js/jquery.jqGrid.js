@@ -129,7 +129,7 @@ $.extend($.jgrid,{
 		return id;
 	},
 	stripScript : function( v ) {
-		return v.replace(/<script.*>.*<\/script>/ims, " ");
+		return v.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, " ");
 	},
 	useJSON : true,
 	runCode : function (obj){	
