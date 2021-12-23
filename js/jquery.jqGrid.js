@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.6.0 - 2021-12-03
+* @license Guriddo jqGrid JS - v5.6.0 - 2021-12-23
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3491,7 +3491,7 @@ $.fn.jqGrid = function( pin ) {
 					if( $.jgrid.trim(prm[pN.sort]) !== "") {
 						if(gs !== "") {
 							gs += " ,";
-						}						
+						}
 						prm[pN.sort] = gs + prm[pN.sort];
 					} else {
 						prm[pN.sort] = gs;
@@ -21230,7 +21230,7 @@ $.jgrid.extend({
 			//var firstVisibleCol = $.jgrid.getFirstVisibleCol( $t );
 
 			var paste_to_cell = false;
-			$t.addEventListener('paste', (event) => {
+			$t.addEventListener('paste', function (event) {
 				if(paste_to_cell) {
 					var paste = (event.clipboardData || window.clipboardData).getData('text');
 					$($t).jqGrid('saveCell', $t.p.iRow, $t.p.iCol, paste);
@@ -21460,7 +21460,7 @@ $.jgrid.extend({
 			$("tbody",$t).first().find(">tr:not(.jqgfirstrow)>td:not(:hidden, :has("+focusableElementsSelector+"))").removeAttr("tabindex").off("focus");
 			$("tbody",$t).first().find(">tr:not(.jqgfirstrow)").attr("tabindex", -1);
 			try {
-				$t.removeEventListener('paste', (event) => {
+				$t.removeEventListener('paste', function(event) {
 					if(paste_to_cell) {
 						var paste = (event.clipboardData || window.clipboardData).getData('text');
 						$($t).jqGrid('saveCell', $t.p.iRow, $t.p.iCol, paste);

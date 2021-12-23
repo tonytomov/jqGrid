@@ -413,7 +413,7 @@ $.jgrid.extend({
 			//var firstVisibleCol = $.jgrid.getFirstVisibleCol( $t );
 
 			var paste_to_cell = false;
-			$t.addEventListener('paste', (event) => {
+			$t.addEventListener('paste', function (event) {
 				if(paste_to_cell) {
 					var paste = (event.clipboardData || window.clipboardData).getData('text');
 					$($t).jqGrid('saveCell', $t.p.iRow, $t.p.iCol, paste);
@@ -643,7 +643,7 @@ $.jgrid.extend({
 			$("tbody",$t).first().find(">tr:not(.jqgfirstrow)>td:not(:hidden, :has("+focusableElementsSelector+"))").removeAttr("tabindex").off("focus");
 			$("tbody",$t).first().find(">tr:not(.jqgfirstrow)").attr("tabindex", -1);
 			try {
-				$t.removeEventListener('paste', (event) => {
+				$t.removeEventListener('paste', function(event) {
 					if(paste_to_cell) {
 						var paste = (event.clipboardData || window.clipboardData).getData('text');
 						$($t).jqGrid('saveCell', $t.p.iRow, $t.p.iCol, paste);
