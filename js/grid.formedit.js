@@ -669,6 +669,7 @@ $.jgrid.extend({
 					}
 				}
 				if(ret[0] === false) {
+					$(frmgr).scrollTop(0);
 					$(".FormError",frmgr).html(ret[1]);
 					$(".FormError",frmgr).show();
 					// return;
