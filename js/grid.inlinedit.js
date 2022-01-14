@@ -60,7 +60,8 @@ $.jgrid.extend({
 		// End compatible
 		return this.each(function(){
 			var nm, tmp, editable, cnt=0, focus=null, svr={}, ind,cm, bfer,
-			inpclass = $(this).jqGrid('getStyleUI',$t.p.styleUI+".inlinedit",'inputClass', true);
+			inpclass = $(this).jqGrid('getStyleUI',$t.p.styleUI+".inlinedit",'inputClass', true),
+			selclass = $(this).jqGrid('getStyleUI',$t.p.styleUI+".inlinedit",'selectClass', true);
 			if (!$t.grid ) { return; }
 			ind = $($t).jqGrid("getInd",rowid,true);
 			if( ind === false ) {return;}
@@ -100,8 +101,10 @@ $.jgrid.extend({
 							if(tmp === "&nbsp;" || tmp === "&#160;" || (tmp !== null && tmp.length===1 && tmp.charCodeAt(0)===160) ) {tmp='';}
 							var elc = $.jgrid.createEl.call($t,cm[i].edittype,opt,tmp,true,$.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions || {}));
 							$(elc).addClass("editable inline-edit-cell");
-							if( $.inArray(cm[i].edittype, ['text','textarea','password','select']) > -1) {
+							if( $.inArray(cm[i].edittype, ['text','textarea','password']) > -1) {
 								$(elc).addClass( inpclass );
+							} else if (cm[i].edittype === 'select') {
+								$(elc).addClass( selclass );
 							}
 							if(treeg) { $(this).find("span").first().append(elc); }
 							else { $(this).append(elc); }

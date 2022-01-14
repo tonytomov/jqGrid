@@ -233,8 +233,10 @@ $.jgrid.extend({
 							}
 						}
 						$(elc).addClass("FormElement");
-						if( $.inArray(this.edittype, 
-							['text','textarea','password','select', 
+						if(this.edittype === 'select') {
+							$(elc).addClass( styles.selectClass );
+						} else 	if( $.inArray(this.edittype, 
+							['text','textarea','password', 
 							'color', 'date', 'datetime', 'datetime-local','email','month',
 							'number','range', 'search', 'tel', 'time', 'url','week'] ) > -1) {
 							$(elc).addClass( styles.inputClass );
@@ -277,7 +279,7 @@ $.jgrid.extend({
 							$t.p.savedData[nm] = tmp;
 						}
 						if(this.edittype==='custom' && $.jgrid.isFunction(opt.custom_value) ) {
-							opt.custom_value.call($t, $("#"+nm, frmgr),'set',tmp);
+							opt.custom_value.call($t, $("#"+nm, elc),'set',tmp);
 						}
 						$.jgrid.bindEv.call($t, elc, opt);
 						retpos[cnt] = i;
@@ -667,6 +669,7 @@ $.jgrid.extend({
 					}
 				}
 				if(ret[0] === false) {
+					$(frmgr).scrollTop(0);
 					$(".FormError",frmgr).html(ret[1]);
 					$(".FormError",frmgr).show();
 					// return;
