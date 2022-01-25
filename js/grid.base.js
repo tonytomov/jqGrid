@@ -1071,6 +1071,146 @@ $.extend($.jgrid,{
 		}
 		return position ? pos : ret;
 	},
+	searchColOnEnter : function(gridid, rid, t, e ) {
+		var tb = $("#"+gridid)[0];
+		if(!tb.grid) {
+			return;
+		}
+		var val = t.value, opt = tb.p.searchColOptions, res;
+		if(tb.p.frozenColumns) {
+			$(tb.grid.bDiv).find(".jqgrid-searchcol >input#jqs_"+tb.p.id+"_"+rid).focus().val(val);
+		}
+
+		if(!tb.p._ftsc) {
+			// store originally hidden columns
+			tb.p._ftsc = true;
+			tb.p._fthc = [];
+			tb.p._avc =[];
+			for(var i=0; i<tb.p.colModel.length; i++) {
+				if(tb.p.colModel[i].hidden) {
+					tb.p._fthc.push(tb.p.colModel[i].name);
+				} else {
+					tb.p._avc.push(tb.p.colModel[i].name);
+				}
+			}
+			tb.p._results = {};
+		}// else {
+		//}
+		var _cnth = ['cb', 'rn', 'sc', 'subgrid', 'col_name'], // exclude search here
+				_cnthSet = new Set(_cnth.concat(tb.p._fthc) ); // add hidden columns
+		//$(tb).jqGrid('hideCol',tb.p._avc.filter(x=>!_cnth.includes(x)));
+		$(tb).jqGrid('hideCol',tb.p._avc.filter(function(x) { return !_cnth.includes(x);}));
+		
+		//======================================================================
+		function get_result (id) {
+			var datarow = $(tb).jqGrid('getRowData', id), vall;
+			var _cts =[];
+			if(datarow && val) {
+				for(var key in datarow) {
+					if(!_cnthSet.has(key)) {
+						if(datarow.hasOwnProperty(key)) {
+							vall = val;
+							if(!opt.useCase) {
+								datarow[key] = datarow[key].toLowerCase();
+								vall = val.toLowerCase();
+							} 
+							if(opt.aOperands.includes(opt.operand)) {
+								switch( opt.operand) {
+									case 'cn': // contain
+										res = datarow[key].search(vall) !== -1; // find the column containing the search str
+										break;
+										case 'eq': // equal
+										res = datarow[key] === vall;
+										break;
+									case 'ne': // not equal
+										res = datarow[key] !== vall;
+										break;
+									case 'bw': // startWith
+										res = datarow[key].substring(0, vall.length) === vall;
+										break;
+									case 'ew': // endWith
+										var this_len = datarow[key].length;
+										res = datarow[key].substring(this_len - vall.length, this_len) === vall;
+									break;
+								}
+							}
+							if(res) {
+								_cts.push(key);
+							}
+						}
+					}
+				}
+				tb.p._results[id] = {v:val, r:_cts};
+			} else if(datarow && val==="") {
+				if(tb.p._results[id]) {
+					delete tb.p._results[id];
+				}
+			}
+		}
+		//======================================================================
+		
+		if(tb.grid && (rid === null || rid === undefined) ) { // reload
+			for(var key in tb.p._results) {
+				if(tb.p._results.hasOwnProperty(key)) {
+					val = tb.p._results[key].v;
+					get_result (key);
+				}
+			}
+		} else if(tb.grid && (rid !== null || rid !== undefined)) {
+			get_result (rid);
+		}
+		var to_show = [], count = 0;
+		for(var i in tb.p._results) {
+			if(opt.searchOp.toUpperCase() === "OR") {
+				to_show = [...new Set([...to_show, ...tb.p._results[i].r])]; // use union to meet OR
+			} else if(opt.searchOp.toUpperCase() === "AND") {
+				if(count===0) {
+					to_show = tb.p._results[i].r;
+				} else {
+					//to_show = to_show.filter(x => tb.p._results[i].r.includes(x)); // use intersection
+					to_show = to_show.filter( function(x) { return  tb.p._results[i].r.includes(x); }); // use intersection
+				}
+				count++;
+			}
+		}
+		if($.isEmptyObject(tb.p._results)) { // if nosearch show all
+			to_show = tb.p._avc;
+		}
+		var swap = to_show.concat(_cnth);
+
+		$(tb).jqGrid('showCol',swap);
+		if(tb.p.frozenColumns) {
+			//setTimeout(function(){
+				$(tb.grid.fbDiv).find(".jqgrid-searchcol >input#jqs_"+tb.p.id+"_"+rid).val("").focus().val(val);
+			//}, 60);
+		}
+		/// let intersection = arrA.filter(x => arrB.includes(x));
+		/// let difference = arrA.filter(x => !arrB.includes(x));
+		/// let difference = arrA
+                 //.filter(x => !arrB.includes(x))
+                 //.concat(arrB.filter(x => !arrA.includes(x)));
+				 
+		/// let union = [...new Set([...arrA, ...arrB])];
+	},
+	searchColOnKey : function(gridid, rid, t, e ) {
+		switch(e.key) {
+			case 'ArrowRight':
+			case 'ArrowDown':
+			case 'ArrowUp':
+			case 'ArrowLeft':
+			case 'PageUp':
+			case 'PageDown':
+			case 'Alt':
+			case 'Control':
+			case 'Tab':
+			case 'Escape':
+				return;
+			default :
+		}
+		setTimeout(function() {
+			$.jgrid.searchColOnEnter(gridid, rid, t,e);
+		}, 50);
+	},
 	styleUI : {
 		jQueryUI : {
 			common : {
