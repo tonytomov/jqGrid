@@ -7332,8 +7332,8 @@ $.jgrid.extend({
 	},
 	resizeColumn : function ( iCol, newWidth, forceresize, setfrozen ) {
 		return this.each(function() {
-			var grid = this.grid, p = this.p,
-				cm = p.colModel, i, cmLen = cm.length, diff, diffnv;
+			var tgrid = this.grid, pr = this.p,
+				cm = pr.colModel, i, cmLen = cm.length, diff, diffnv;
 
 			if( typeof forceresize !== 'boolean' ) {
 				forceresize = false;
@@ -7360,28 +7360,28 @@ $.jgrid.extend({
 				return;
 			}
 
-			if( newWidth < p.minColWidth ) { return; }
+			if( newWidth < pr.minColWidth ) { return; }
 
-			if( p.forceFit ) {
-				p.nv = 0;
+			if( pr.forceFit ) {
+				pr.nv = 0;
 				for (i = iCol+1; i < cmLen; i++){
 					if(cm[i].hidden !== true ) {
-						p.nv = i - iCol;
+						pr.nv = i - iCol;
 						break;
 					}
 				}
 			}
 			// use resize stuff
-			grid.resizing = {idx : iCol };
-			diff = newWidth - grid.headers[iCol].width;
-			if(p.forceFit) {
-				diffnv = grid.headers[ iCol + p.nv].width - diff;
-				if(diffnv < p.minColWidth) { return; }
-				grid.headers[ iCol + p.nv].newWidth = grid.headers[ iCol + p.nv].width - diff;
+			tgrid.resizing = {idx : iCol };
+			diff = newWidth - tgrid.headers[iCol].width;
+			if(pr.forceFit) {
+				diffnv = tgrid.headers[ iCol + pr.nv].width - diff;
+				if(diffnv < pr.minColWidth) { return; }
+				tgrid.headers[ iCol + pr.nv].newWidth = tgrid.headers[ iCol + pr.nv].width - diff;
 			}
-			grid.newWidth = p.tblwidth + diff;
-			grid.headers[ iCol ].newWidth = newWidth;
-			grid.dragEnd( false, setfrozen );
+			tgrid.newWidth = pr.tblwidth + diff;
+			tgrid.headers[ iCol ].newWidth = newWidth;
+			tgrid.dragEnd( false, setfrozen );
 		});
 	},
 	getStyleUI : function( styleui, classui, notclasstag, gridclass) {
