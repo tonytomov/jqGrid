@@ -3492,12 +3492,9 @@ $.fn.jqGrid = function( pin ) {
 						} );
 						tmpordarr.push(index +" "+grp.groupOrder[gi]);
 					}
-					gs = $.jgrid.trim( tmpordarr.join() );
+					gs = tmpordarr.join();
 					if( $.jgrid.trim(prm[pN.sort]) !== "") {
-						if(gs !== "") {
-							gs += " ,";
-						}
-						prm[pN.sort] = gs + prm[pN.sort];
+						prm[pN.sort] = gs + " ,"+prm[pN.sort];
 					} else {
 						prm[pN.sort] = gs;
 						prm[pN.order] = "";
