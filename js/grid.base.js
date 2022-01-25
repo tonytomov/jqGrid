@@ -6959,21 +6959,21 @@ $.jgrid.extend({
 		});
 		return ret;
 	},
-	progressBar : function ( p ) {
-		p = $.extend({
+	progressBar : function ( pr ) {
+		pr = $.extend({
 			htmlcontent : "",
 			method : "hide",
 			loadtype : "disable"
-		}, p || {});
+		}, pr || {});
 		return this.each(function(){
-			var sh = p.method==="show" ? true : false,
+			var sh = pr.method==="show" ? true : false,
 			loadDiv = $("#load_"+$.jgrid.jqID(this.p.id)),
 			offsetParent, top,
 			scrollTop = $(window).scrollTop();
-			if(p.htmlcontent !== "") {
-				loadDiv.html( p.htmlcontent );
+			if(pr.htmlcontent !== "") {
+				loadDiv.html( pr.htmlcontent );
 			}
-			switch(p.loadtype) {
+			switch(pr.loadtype) {
 				case "disable":
 					break;
 				case "enable":
