@@ -3799,7 +3799,7 @@ $.fn.jqGrid = function( pin ) {
 		},
 		multiSort = function(iCol, obj, sor ) {
 			var cm = ts.p.colModel,
-					selTh = ts.p.frozenColumns ?  obj : ts.grid.headers[iCol].el, so="", sn;
+					selTh = ts.p.frozenColumns ?  (ts.p.autoResizing ? ts.grid.headers[iCol].el : obj) : ts.grid.headers[iCol].el , so="", sn;
 			$("span.ui-grid-ico-sort",selTh).addClass(disabled);
 			$(selTh).attr({"aria-selected":"false","aria-sort" : "none"});
 			sn = (cm[iCol].index || cm[iCol].name);
