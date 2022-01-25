@@ -2383,6 +2383,9 @@ $.fn.jqGrid = function( pin ) {
 				}
 			},
 			scrollGrid: function() {
+				if(!grid.bScroll) {
+					grid.hScroll  = true;
+
 				if(p.scroll) {
 					var scrollTop = grid.bDiv.scrollTop;
 					if(grid.scrollTop === undefined) { grid.scrollTop = 0; }
@@ -2405,6 +2408,8 @@ $.fn.jqGrid = function( pin ) {
 				try {
 					$("#column_menu").remove();
 				} catch (e) {}
+					grid.bScroll = false;
+				}
 			},
 			selectionPreserver : function(ts) {
 				var p = ts.p,
@@ -2428,7 +2433,9 @@ $.fn.jqGrid = function( pin ) {
 					$(ts).off('.selectionPreserver', restoreSelection);
 				};
 				$(ts).on('jqGridGridComplete.selectionPreserver', restoreSelection);
-			}
+			},
+			hScroll : false,
+			bScroll : false
 		};
 		if( this.tagName.toUpperCase() !== 'TABLE' || $.jgrid.isNull(this.id) ) {
 			alert("Element is not a table or has no id!");
