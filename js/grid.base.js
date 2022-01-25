@@ -7112,7 +7112,7 @@ $.jgrid.extend({
 				i++;
 			}
 			if( $t.p.frozenColCount >= 0) {
-				var divhth = parseInt( $(".ui-jqgrid-hdiv","#gview_"+$.jgrid.jqID($t.p.id)).height(), 10),
+				var divhth =  $(".ui-jqgrid-hdiv","#gview_"+$.jgrid.jqID($t.p.id)).height(),
 				bpos = $(".ui-jqgrid-bdiv","#gview_"+$.jgrid.jqID($t.p.id)).position(),
 				bhpos = $(".ui-jqgrid-hdiv","#gview_"+$.jgrid.jqID($t.p.id)).position();
 				
@@ -7122,6 +7122,8 @@ $.jgrid.extend({
 				var htbl = $(".ui-jqgrid-htable","#gview_"+$.jgrid.jqID($t.p.id)).clone(true),
 				fthh = null;
 				// groupheader support - only if useColSpanstyle is false
+				$(htbl).width(1);
+				$($t.grid.fhDiv).append(htbl);
 				if( $($t).jqGrid('isGroupHeaderOn') )  {
 					fthh = $("tr.jqg-third-row-header", $t.grid.hDiv).height();
 					$("tr.jqg-first-row-header, tr.jqg-third-row-header", htbl).each(function(){
@@ -7152,13 +7154,16 @@ $.jgrid.extend({
 					});
 				} else {
 					var maxdh=[];
-					$(".ui-jqgrid-htable tr","#gview_"+$.jgrid.jqID($t.p.id)).each(function(i,n){
+					$("#gview_"+$.jgrid.jqID($t.p.id) +" .ui-jqgrid-htable > thead >tr").each(function(i,n){
 						maxdh.push(parseInt($(this).height(),10));
 					});
-					$("tr",htbl).each(function(){
+					$("thead >tr",htbl).each(function(){
 						$("th", this).slice( $t.p.frozenColCount + 1 ).remove();
 					});
-					$("tr",htbl).each(function(i){
+					$("thead >tr",htbl).each(function(i){
+						if(i===0) {
+							maxdh[i] -=1;
+						}
 						$(this).height(maxdh[i]);
 					});
 				}
@@ -7171,14 +7176,14 @@ $.jgrid.extend({
 					$("div",testws).prepend('&nbsp;');
 				}
 				if( fthh ) {
-					$("tr.jqg-third-row-header th", htbl).eq(0).height(fthh);
+					//$("tr.jqg-third-row-header th", htbl).eq(0).height(fthh);
 				}
-				$(htbl).width(1);
+				//$(htbl).width(1);
 				if(!$.jgrid.msie()) {
 					$(htbl).css("height","100%");
 				}
 				// resizing stuff
-				$($t.grid.fhDiv).append(htbl)
+				$($t.grid.fhDiv)//.append(htbl)
 				.mousemove(function (e) {
 					if($t.grid.resizing){ $t.grid.dragMove(e);return false; }
 				});
