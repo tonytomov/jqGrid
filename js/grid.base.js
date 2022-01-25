@@ -4770,6 +4770,11 @@ $.fn.jqGrid = function( pin ) {
 		if(this.p.subGrid) {
 			try { $(ts).jqGrid("setSubGrid");} catch (s){}
 		}
+		if(this.p.searchCols) {
+			this.p.colNames.unshift(ts.p.searchColOptions.colName);
+			this.p.colModel.unshift({name:'sc',width: ts.p.searchColOptions.colWidth,sortable:false,hidedlg:true,search:false,align:'left',fixed:true, frozen: true, colmenu: ts.p.searchColOptions.colmenu, classes : "jqgrid-searchcol", labelClasses: "jqgrid-searchcolumn",
+					coloptions : {sorting:false, columns: false, filtering: false, seraching:false, grouping:false, freeze : false}});
+		}
 		if(this.p.multiselect) {
 			this.p.colNames.unshift("<input role='checkbox' id='cb_"+this.p.id+"' class='cbox' type='checkbox'/>");
 			this.p.colModel.unshift({name:'cb',width:$.jgrid.cell_width ? ts.p.multiselectWidth+ts.p.cellLayout : ts.p.multiselectWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center',fixed:true, frozen: true, classes : "jqgrid-multibox", labelClasses: "jqgrid-multibox" });
