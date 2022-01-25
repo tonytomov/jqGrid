@@ -5382,10 +5382,10 @@ $.fn.jqGrid = function( pin ) {
 						}
 					}
 				});
+				$(ts).jqGrid('refreshGroupHeaders');
 				if(arfrozen) {
 					$(ts).jqGrid("setFrozenColumns");
 				}
-				$(ts).jqGrid('refreshGroupHeaders');
 			});
 		}
 		ts.formatCol = formatCol;
