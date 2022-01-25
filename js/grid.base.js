@@ -4633,16 +4633,21 @@ $.fn.jqGrid = function( pin ) {
 					if( $.jgrid.isFunction( ts.p.colMenuBeforeProcess )) {
 						ts.p.colMenuBeforeProcess.call(ts, { module: 'custom', action: menuitem , column : menuitem.colname});
 					}
+					$(ts).triggerHandler("jqGridcolMenuBeforeProcess", [{ module: 'custom', action: menuitem , column : menuitem.colname}]);
 					var	exclude = menuitem.exclude.split(",");
 					exclude = $.map(exclude, function(item){ return $.jgrid.trim(item);});
 					if( menuitem.colname === cname  || (menuitem.colname === '_all_' && $.inArray(cname, exclude) === -1)) {
 						strl = '<li class="ui-menu-item divider" role="separator"></li>';
 						str = '<li class="ui-menu-item" role="presentation"><a class="g-menu-item" tabindex="0" role="menuitem" data-value="'+menuitem.id+'"><table class="ui-common-table"><tr><td class="menu_icon"><span class="'+iconbase+' '+menuitem.icon+'"></span></td><td class="menu_text">'+menuitem.title+'</td></tr></table></a></li>';
 						if(menuitem.position === 'last') {
-							menuData.push( strl );
+							if(menuitem.separator) {
+								menuData.push( strl );
+							}
 							menuData.push( str );
 						} else if( menuitem.position === 'first') {
-							menuData.unshift( strl );
+							if(menuitem.separator) {
+								menuData.unshift( strl );
+							}
 							menuData.unshift( str );
 						}
 					}
