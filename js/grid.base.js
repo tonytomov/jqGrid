@@ -2601,7 +2601,7 @@ $.fn.jqGrid = function( pin ) {
 			var field, f=[], j=0, i;
 			for(i =0; i<ts.p.colModel.length; i++){
 				field = ts.p.colModel[i];
-				if (field.name !== 'cb' && field.name !=='subgrid' && field.name !=='rn') {
+				if (field.name !== 'cb' && field.name !=='subgrid' && field.name !=='rn' && field.name !=='sc') {
 					f[j]= datatype === "local" ?
 					field.name :
 					( (datatype==="xml" || datatype === "xmlstring") ? field.xmlmap || field.name : field.jsonmap || field.name );
@@ -2649,7 +2649,7 @@ $.fn.jqGrid = function( pin ) {
 			localReader = p.localReader,
 			colModel = p.colModel,
 			cellName = localReader.cell,
-			iOffset = (p.multiselect === true ? 1 : 0) + (p.subGrid === true ? 1 : 0) + (p.rownumbers === true ? 1 : 0),
+			iOffset = (p.multiselect === true ? 1 : 0) + (p.subGrid === true ? 1 : 0) + (p.rownumbers === true ? 1 : 0) + (p.searchCols === true ? 1 : 0),
 			br = p.scroll ? $.jgrid.randId() : 1,
 			arrayReader, objectReader, rowReader;
 
@@ -3048,10 +3048,11 @@ $.fn.jqGrid = function( pin ) {
 				gi = ts.p.multiselect ? 1 : 0,
 				si = ts.p.subGrid ===true ? 1 : 0,
 				ni = ts.p.rownumbers ===true ? 1 : 0,
+				sc = ts.p.searchCols ===true ? 1 : 0,
 				br = (ts.p.scroll && ts.p.datatype !== 'local') ? $.jgrid.randId() : 1,
 				rn = parseInt(ts.p.rowNum,10),
 				selected=false, selr,
-				arrayReader=orderedCols(gi+si+ni),
+				arrayReader=orderedCols(gi+si+ni+sc),
 				objectReader=reader(frd),
 				rowReader,len,drows,idn,rd={}, fpos, idr,rowData=[],
 				treeadjtmp =[],
@@ -3059,6 +3060,7 @@ $.fn.jqGrid = function( pin ) {
 				afterInsRow = $.jgrid.isFunction(ts.p.afterInsertRow), grpdata=[],hiderow=false, groupingPrepare,
 				tablebody = $(ts).find("tbody").first(),
 				rnc = ni ? getstyle(stylemodule, 'rownumBox', false, 'jqgrid-rownum') :"",
+				scc = sc ? getstyle(stylemodule, 'searchBox', false, '') :"",
 				mlc = gi ? getstyle(stylemodule, 'multiBox', false, 'cbox'):"";
 
 			if(locdata) {
@@ -3101,9 +3103,9 @@ $.fn.jqGrid = function( pin ) {
 				cur = drows[i];
 				idr = $.jgrid.getAccessor(cur,idn);
 				if(idr === undefined) {
-					if (typeof idn === "number" && !$.jgrid.isNull( ts.p.colModel[idn+gi+si+ni]) ) {
+					if (typeof idn === "number" && !$.jgrid.isNull( ts.p.colModel[idn+gi+si+ni+sc]) ) {
 						// reread id by name
-						idr = $.jgrid.getAccessor(cur,ts.p.colModel[idn+gi+si+ni].name);
+						idr = $.jgrid.getAccessor(cur,ts.p.colModel[idn+gi+si+ni+sc].name);
 					}
 					if(idr === undefined) {
 						idr = br+i;
@@ -3133,8 +3135,11 @@ $.fn.jqGrid = function( pin ) {
 				if( gi ){
 					rowData.push( addMulti(idr, ni, i, selr, mlc) );
 				}
+				if( sc ){
+					rowData.push( addSearch(idr, gi+ni, i, scc) );
+				}
 				if( si ) {
-					rowData.push( addSubGridCell.call(self ,gi+ni,i+rcnt) );
+					rowData.push( addSubGridCell.call(self ,gi+ni+sc,i+rcnt) );
 				}
 				rowReader=objectReader;
 				if (dReader.repeatitems) {
@@ -3143,8 +3148,8 @@ $.fn.jqGrid = function( pin ) {
 				}
 				for (j=0;j<rowReader.length;j++) {
 					v = $.jgrid.getAccessor(cur,rowReader[j]);
-					rd[ts.p.colModel[j+gi+si+ni].name] = v;
-					rowData.push( addCell(idr,v,j+gi+si+ni,i+rcnt,cur, rd) );
+					rd[ts.p.colModel[j+gi+si+ni+sc].name] = v;
+					rowData.push( addCell(idr,v,j+gi+si+ni+sc,i+rcnt,cur, rd) );
 				}
 				rowData[iStartTrTag] = constructTr(idr, hiderow, (selr ? classes + ' ' + highlight : classes), rd, cur);
 				rowData.push( "</tr>" );
@@ -3226,9 +3231,9 @@ $.fn.jqGrid = function( pin ) {
 					cur = drows[ir];
 					idr = $.jgrid.getAccessor(cur,idn);
 					if(idr === undefined) {
-						if (typeof idn === "number" && !$.jgrid.isNull(ts.p.colModel[idn+gi+si+ni])) {
+						if (typeof idn === "number" && !$.jgrid.isNull(ts.p.colModel[idn+gi+si+ni+sc])) {
 							// reread id by name
-							idr = $.jgrid.getAccessor(cur,ts.p.colModel[idn+gi+si+ni].name);
+							idr = $.jgrid.getAccessor(cur,ts.p.colModel[idn+gi+si+ni+sc].name);
 						}
 						if(idr === undefined) {
 							idr = br+ir;
@@ -3250,7 +3255,7 @@ $.fn.jqGrid = function( pin ) {
 						}
 
 						for (j=0;j<rowReader.length;j++) {
-							rd[ts.p.colModel[j+gi+si+ni].name] = $.jgrid.getAccessor(cur,rowReader[j]);
+							rd[ts.p.colModel[j+gi+si+ni+sc].name] = $.jgrid.getAccessor(cur,rowReader[j]);
 						}
 						rd[locid] = $.jgrid.stripPref(ts.p.idPrefix, idr);
 						if(ts.p.grouping) {
@@ -3269,7 +3274,7 @@ $.fn.jqGrid = function( pin ) {
 				}
 			}
 			if(ts.p.subGrid === true ) {
-				try { self.jqGrid("addSubGrid",gi+ni);} catch (_){}
+				try { self.jqGrid("addSubGrid",gi+ni+sc);} catch (_){}
 			}
 		},
 		addLocalData = function( retAll ) {
@@ -3279,7 +3284,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			var grpview = ts.p.grouping ? ts.p.groupingView : false, lengrp, gin, si;
 			$.each(ts.p.colModel,function(){
-                if ( !(this.name !== 'cb' && this.name !== 'subgrid' && this.name !== 'rn') ) {
+                if ( !(this.name !== 'cb' && this.name !== 'subgrid' && this.name !== 'rn' && this.name !== 'sc') ) {
                     return true;
                 }
 				sorttype = this.sorttype || "text";
@@ -3339,8 +3344,8 @@ $.fn.jqGrid = function( pin ) {
 				'bn':function(queryObj,op) {return op === "OR" ? queryObj.orNot().startsWith : queryObj.andNot().startsWith;},
 				'en':function(queryObj,op) {return op === "OR" ? queryObj.orNot().endsWith : queryObj.andNot().endsWith;},
 				'ew':function(queryObj) {return queryObj.endsWith;},
-				"ni": function (queryObj, op) { return op === "OR" ? queryObj.orNot().inData : queryObj.andNot().inData; },
-				"in": function (queryObj) { return queryObj.inData; },
+				"ni":function (queryObj, op) { return op === "OR" ? queryObj.orNot().inData : queryObj.andNot().inData; },
+				"in":function (queryObj) { return queryObj.inData; },
 				'nu':function(queryObj) {return queryObj.isNull;},
 				'nn':function(queryObj,op) {return op === "OR" ? queryObj.orNot().isNull : queryObj.andNot().isNull;}
 
@@ -4247,7 +4252,7 @@ $.fn.jqGrid = function( pin ) {
 				var hid = !cm[i].hidden ? "checked" : "", 
 					nm = cm[i].name, 
 					lb = ts.p.colNames[i];
-				disp = (nm === 'cb' || nm==='subgrid' || nm==='rn' || cm[i].hidedlg) ? "style='display:none'" :"";
+				disp = (nm === 'cb' || nm==='subgrid' || nm==='rn' || nm==='sc' ||  cm[i].hidedlg) ? "style='display:none'" :"";
 				str1 += '<li '+disp+' class="ui-menu-item" role="presentation" draggable="true"><a class="g-menu-item" tabindex="0" role="menuitem" ><table class="ui-common-table" ><tr><td class="menu_icon" title="'+texts.reorder+'"><span class="'+iconbase+' '+colmenustyle.icon_move+' notclick"></span></td><td class="menu_icon"><input class="'+colmenustyle.input_checkbox+' chk_selected" type="checkbox" name="'+nm+'" '+hid+'></td><td class="menu_text">'+lb+'</td></tr></table></a></li>';
 				cols.push(i);
 				if( disp === "") {
@@ -5001,7 +5006,7 @@ $.fn.jqGrid = function( pin ) {
 				sort=true;
 			}
 			var nm = tmpcm.name;
-			if( !(nm === 'cb' || nm==='subgrid' || nm==='rn') ) {
+			if( !(nm === 'cb' || nm==='subgrid' || nm==='rn' || nm==='sc') ) {
 				if(ts.p.viewsortcols[2]){
 					$(">div",this).addClass('ui-jqgrid-sortable');
 				}
@@ -5848,7 +5853,7 @@ $.jgrid.extend({
 					} else {
 						$(ind).children('td[role="gridcell"]').each( function(i) {
 							nm = $t.p.colModel[i].name;
-							if ( nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn') {
+							if ( nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn' && nm !== 'sc') {
 								if($t.p.treeGrid===true && nm === $t.p.ExpandColumn) {
 									res[nm] = $.jgrid.htmlDecode( $(this).find("span").first().html() );
 								} else {
@@ -6613,7 +6618,7 @@ $.jgrid.extend({
 				}
 				
 				nm = $t.p.colModel[i].name;
-				if(nm === 'cb' || nm==='subgrid' || nm==='rn' ) {
+				if(nm === 'cb' || nm==='subgrid' || nm==='rn' || nm !== 'sc') {
 					continue;
 				}
 				thecol = $("tr.ui-jqgrid-labels th", $t.grid.hDiv).eq( i );
@@ -7440,7 +7445,7 @@ $.jgrid.extend({
 						$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridHeight', wh - bstw, true, false);
 					}
 					if(frozen) {
-						$("#"+$.jgrid.jqID($t.p.id)).jqGrid("setFrozenColumns","resizeGrid");
+						$("#"+$.jgrid.jqID($t.p.id)).jqGrid("setFrozenColumns");
 					}
 				} catch(e){}
 			}, timeout);
