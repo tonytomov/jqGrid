@@ -4878,7 +4878,9 @@ $.fn.jqGrid = function( pin ) {
 				}
 				return;
 			} else {
-				if(ts.p.forceFit===true) {ts.p.nv= nextVisible(ci);}
+				if(ts.p.forceFit===true) {
+					ts.p.nv= nextVisible(ci);
+				}
 				grid.dragStart(ci, e, getOffset(ci));
 			}
 			return false;
@@ -4887,7 +4889,7 @@ $.fn.jqGrid = function( pin ) {
 				ts.p.disableClick = false;
 				return false;
 			}
-			var s = "th>div.ui-jqgrid-sortable",r,d;
+			var s = "th>div.ui-th-div",r,d;
 			if (!ts.p.viewsortcols[2]) { s = "th>div>span>span.ui-grid-ico-sort"; }
 			var t = $(e.target).closest(s);
 			if (t.length !== 1) { return; }
