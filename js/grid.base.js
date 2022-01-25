@@ -2205,7 +2205,18 @@ $.fn.jqGrid = function( pin ) {
 				colMenuSearch : true
 			},
 			emptyRecordRow : true,
-			ariaBody : false
+			ariaBody : false,
+			searchCols : false,
+			searchColOptions : {
+				colWidth : 90,
+				searchOp : "OR", //default
+				operand : "cn", // default
+				useCase : false, // for searching
+				colName : "Search Col", // header title 
+				colmenu : true, // not used yet
+				searchOnEnter : true,
+				aOperands : ['cn', 'bw', 'ew', 'eq', 'ne'] // allowed options
+			}
 		}, $.jgrid.defaults , pin );
 		if (localData !== undefined) {
 			p.data = localData;
