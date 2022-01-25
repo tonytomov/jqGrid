@@ -1248,6 +1248,8 @@ $.extend($.jgrid,{
 				rownumBox :  "ui-state-default",
 				scrollBox : "ui-widget-content",
 				multiBox : "",
+				searchBox : "ui-widget-content ui-corner-all",
+				searchSelect : "ui-widget-content ui-corner-all",
 				pagerBox : "ui-state-default ui-corner-bottom",
 				pagerTable : "",
 				toppagerBox : "ui-state-default",
@@ -1338,6 +1340,7 @@ $.extend($.jgrid,{
 				filter_select: "ui-widget-content ui-corner-all",
 				filter_input : "ui-widget-content ui-corner-all",
 				icon_menu : "ui-icon-comment",
+				icon_search_menu : "ui-icon-grip-dotted-vertical",
 				icon_sort_asc : "ui-icon-arrow-1-n",
 				icon_sort_desc : "ui-icon-arrow-1-s",
 				icon_columns : "ui-icon-extlink",
@@ -1346,7 +1349,11 @@ $.extend($.jgrid,{
 				icon_freeze : "ui-icon-grip-solid-vertical",
 				icon_move: "ui-icon-arrow-4",
 				icon_new_item : "ui-icon-newwin",
-				icon_toolbar_menu : "ui-icon-document"
+				icon_toolbar_menu : "ui-icon-document",
+				icon_group_op :"ui-icon-bullet",
+				icon_oper_op : "ui-icon-transfer-e-w",
+				icon_reset : "ui-icon-arrowreturnthick-1-w",
+				icon_close : "ui-icon-close"
 			}
 		},
 		Bootstrap : {
@@ -1522,6 +1529,8 @@ $.extend($.jgrid,{
 				rownumBox :  "active",
 				scrollBox : "",
 				multiBox : "checkbox",
+				searchBox : "form-control",				
+				searchSelect : "form-control form-control-sm",
 				pagerBox : "",
 				pagerTable : "table",
 				toppagerBox : "",
@@ -1608,6 +1617,8 @@ $.extend($.jgrid,{
 				rownumBox :  "active",
 				scrollBox : "",
 				multiBox : "checkbox",
+				searchBox : "form-control",				
+				searchSelect : "form-select",
 				pagerBox : "",
 				pagerTable : "table",
 				toppagerBox : "",
@@ -1738,7 +1749,11 @@ $.extend($.jgrid,{
 				icon_freeze : "oi-spreadsheet",
 				icon_move: "oi-move",
 				icon_new_item : "oi-external-link",
-				icon_toolbar_menu : "oi-menu"
+				icon_toolbar_menu : "oi-menu",
+				icon_group_op :"",
+				icon_oper_op : "",
+				icon_reset : "oi-reload",
+				icon_close : "oi-ban"				
 			}
 		},
 		Octicons : {
@@ -1818,7 +1833,11 @@ $.extend($.jgrid,{
 				icon_freeze : "octicon-repo",
 				icon_move: "octicon-git-compare",
 				icon_new_item : "octicon-link-external",
-				icon_toolbar_menu : "octicon-three-bars"
+				icon_toolbar_menu : "octicon-three-bars",
+				icon_group_op :"",
+				icon_oper_op : "",
+				icon_reset : "octicon-sync",
+				icon_close : "octicon-x"				
 			}
 		},
 		fontAwesome : {
@@ -1898,7 +1917,12 @@ $.extend($.jgrid,{
 				icon_freeze : "fa-snowflake",
 				icon_move: "fa-expand-arrows-alt",
 				icon_new_item : "fa-external-link-alt",
-				icon_toolbar_menu : "fa-list"
+				icon_toolbar_menu : "fa-list",
+				icon_group_op :"",
+				icon_oper_op : "",
+				icon_reset : "fa-reply",
+				icon_close : "fa-window-close"
+				
 			}
 		},
 		Bootstrap5 : {
@@ -1978,7 +2002,11 @@ $.extend($.jgrid,{
 				icon_freeze : "bi-layout-text-sidebar-reverse",
 				icon_move: "bi-arrows-move",
 				icon_new_item : "bi-window",
-				icon_toolbar_menu : "bi-card-text"
+				icon_toolbar_menu : "bi-card-text",
+				icon_group_op :"",
+				icon_oper_op : "",
+				icon_reset : "bi-arrow-clockwise",
+				icon_close : "bi-x-square"				
 			}
 		}
 	}
