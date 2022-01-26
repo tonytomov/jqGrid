@@ -3996,9 +3996,10 @@ $.fn.jqGrid = function( pin ) {
 		},
 		multiSort = function(iCol, obj, sor ) {
 			var cm = ts.p.colModel,
-					selTh = ts.p.frozenColumns ?  (ts.p.autoResizing ? ts.grid.headers[iCol].el : obj) : ts.grid.headers[iCol].el , so="", sn;
-			$("span.ui-grid-ico-sort",selTh).addClass(disabled);
-			$(selTh).attr({"aria-selected":"false","aria-sort" : "none"});
+					selTh = /*ts.p.frozenColumns ?  (ts.p.autoResizing ? ts.grid.headers[iCol].el : obj) :*/ ts.grid.headers[iCol].el , so="", sn,
+					sel2 = ts.p.frozenColumns ? obj : null;
+			$("span.ui-grid-ico-sort",[selTh, sel2]).addClass(disabled);
+			$([selTh,sel2]).attr({"aria-selected":"false","aria-sort" : "none"});
 			sn = (cm[iCol].index || cm[iCol].name);
 			if ( typeof sor === "undefined" )
 			{
@@ -4020,12 +4021,12 @@ $.fn.jqGrid = function( pin ) {
 				cm[iCol].lso = so = sor;
 			}
 			if( so ) {
-				$("span.s-ico",selTh).show();
-				$("span.ui-icon-"+so,selTh).removeClass(disabled);
-				$(selTh).attr({"aria-selected":"true","aria-sort" : so+"ending"});
+				$("span.s-ico",[selTh, sel2]).show();
+				$("span.ui-icon-"+so,[selTh, sel2]).removeClass(disabled);
+				$([selTh, sel2]).attr({"aria-selected":"true","aria-sort" : so+"ending"});
 			} else {
 				if(!ts.p.viewsortcols[0]) {
-					$("span.s-ico",selTh).hide();
+					$("span.s-ico",[selTh, sel2]).hide();
 				}
 			}
 			var isn = sortarr.indexOf( sn );
@@ -4089,6 +4090,7 @@ $.fn.jqGrid = function( pin ) {
 					ts.p.sortorder = sor;
 				}
 				var previousSelectedTh = ts.grid.headers[ts.p.lastsort] ? ts.grid.headers[ts.p.lastsort].el : null, newSelectedTh = /*ts.p.frozenColumns ?  obj :*/ ts.grid.headers[idxcol].el,
+						newSelThFC = ts.p.frozenColumns ?  obj : null,
 						//sortrule = $.trim(ts.p.viewsortcols[1] === 'single' ? hidden : disabled);
 					usehide = ts.p.viewsortcols[1] === 'single' ? true : false, tmpicon;
 				tmpicon = $(previousSelectedTh).find("span.ui-grid-ico-sort");
@@ -4107,6 +4109,13 @@ $.fn.jqGrid = function( pin ) {
 				tmpicon.removeClass(disabled);
 				if(usehide) { tmpicon.css("display",""); }
 				$(newSelectedTh).attr({"aria-selected":"true","aria-sort" : ts.p.sortorder + "ending"});
+				if(ts.p.frozenColumns) {
+					tmpicon = $(newSelThFC).find("span.ui-icon-"+ts.p.sortorder);
+					tmpicon.removeClass(disabled);
+					if(usehide) { tmpicon.css("display",""); }
+					$(newSelThFC).attr({"aria-selected":"true","aria-sort" : ts.p.sortorder + "ending"});
+					
+				}
 				if(!ts.p.viewsortcols[0]) {
 					if(ts.p.lastsort !== idxcol) {
 						if(ts.p.frozenColumns){
@@ -4114,6 +4123,7 @@ $.fn.jqGrid = function( pin ) {
 						}
 						$("span.s-ico",previousSelectedTh).hide();
 						$("span.s-ico",newSelectedTh).show();
+						$("span.s-ico",newSelThFC).show();
 					} else if (ts.p.sortname === "") { // if ts.p.lastsort === idxcol but ts.p.sortname === ""
 						$("span.s-ico",newSelectedTh).show();
 					}
