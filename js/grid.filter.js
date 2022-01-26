@@ -1466,7 +1466,17 @@ $.jgrid.extend({
 				}
 			});
 			$($t.grid.hDiv).on("scroll", function(e){
+				if(!$t.grid.hScroll) {
+					$t.grid.bScroll = true;
 				$t.grid.bDiv.scrollLeft = $t.grid.hDiv.scrollLeft;
+					if($t.p.footerrow) {
+						$t.grid.sDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
+					}
+					if($t.p.headerrow) {
+						$t.grid.hrDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
+					}
+				}
+				$t.grid.hScroll = false;
 			});
 			this.p.filterToolbar = true;
 			this.triggerToolbar = triggerToolbar;
