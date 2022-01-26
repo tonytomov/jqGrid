@@ -932,7 +932,7 @@ $.jgrid.extend({
 					if(so==="bt") {
 						bbt = true;
 					}
-					if(fcol && (nm !== 'cb' && nm!== 'rn' && nm !== 'subgrid') ) {
+					if(fcol && (nm !== 'cb' && nm!== 'rn' && nm !== 'subgrid' && nm !== 'sc') ) {
 						afrcol[nm] = v;
 					}
 					if(v || so==="nu" || so==="nn" || $.inArray(so, unaryOpers) >=0) {
