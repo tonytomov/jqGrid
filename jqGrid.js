@@ -19,8 +19,8 @@ require([
 	"jqgrid/jquery.fmatter",
 	"jqgrid/grid.utils",
 	"jqgrid/addons/ui.multiselect",
-	"jqgrid/addons/grid.aria",
-	"jqgrid/addons/grid.transposed"
+	"jqgrid/grid.aria",
+	"jqgrid/grid.transposed"
 
 ], function ($) {
 	"use strict";
