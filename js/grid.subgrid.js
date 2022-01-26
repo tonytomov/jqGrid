@@ -187,7 +187,7 @@ addSubGrid : function( pos, sind ) {
 		};
 		var _id, pID,atd, nhc=0, bfsc, $r;
 		$.each(ts.p.colModel,function(){
-			if(this.hidden === true || this.name === 'rn' || this.name === 'cb') {
+			if(this.hidden === true || this.name === 'rn' || this.name === 'cb'  || this.name === 'sc' ) {
 				nhc++;
 			}
 		});
