@@ -16,7 +16,7 @@
 "use strict";
 //module begin
 $.jgrid.extend({
-	tranposeSetup : function( data, options ){
+	transposeSetup : function( data, options ){
 		// return the final result.
 		var columns =[], rows=[],  model = false,
 		o = $.extend ( {
@@ -76,7 +76,7 @@ $.jgrid.extend({
 					//throw "data provides is not an array";
 					data = [];
 				}
-				var transpGrid = jQuery($t).jqGrid('tranposeSetup',data, transpOpt);
+				var transpGrid = jQuery($t).jqGrid('transposeSetup',data, transpOpt);
 				if($.jgrid.isFunction(transpOpt.beforeCreateGrid)) {
 					transpOpt.beforeCreateGrid.call($t, transpGrid);
 				}
