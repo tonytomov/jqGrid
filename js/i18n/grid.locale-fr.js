@@ -58,7 +58,10 @@ $.jgrid.regional["fr"] = {
 		addsubgrup : "Add subgroup",
 		addrule : "Add rule",
 		delgroup : "Delete group",
-		delrule : "Delete rule"
+		delrule : "Delete rule",
+		Close : "Close",
+		Operand : "Operand : ",
+		Operation : "Oper : "
 	},
 	edit : {
 		addCaption: "Ajouter",
@@ -176,7 +179,8 @@ $.jgrid.regional["fr"] = {
 		searchTitle : "Prendre les items avec la valeur:",
 		freeze : "Figer",
 		unfreeze : "Relâcher",
-		reorder : "Déplacer pour changer l'ordre"
+		reorder : "Déplacer pour changer l'ordre",
+		hovermenu: "Click for column quick actions"
 	}
 };
 }));

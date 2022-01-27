@@ -73,7 +73,11 @@ $.jgrid.regional["de"] = {
 		addsubgrup : "Gruppe hinzufügen",
 		addrule : "In der Regel",
 		delgroup : "Gruppe löschen",
-		delrule : "Regel löschen"
+		delrule : "Regel löschen",
+		Close : "Close",
+		Operand : "Operand : ",
+		Operation : "Oper : "
+
 	},
 	edit : {
 		addCaption: "Datensatz hinzufügen",
@@ -225,7 +229,8 @@ $.jgrid.regional["de"] = {
 		searchTitle : "Erhalten Sie Artikel mit Wert:",
 		freeze : "Einfrieren",
 		unfreeze : "Freigeben",
-		reorder : "Bewegen neu anordnen"
+		reorder : "Bewegen neu anordnen",
+		hovermenu: "Click for column quick actions"
 	}
 };
 }));

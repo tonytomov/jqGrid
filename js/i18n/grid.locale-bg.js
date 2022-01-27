@@ -58,7 +58,10 @@ $.jgrid.regional["bg"] = {
 		addsubgrup : "Добави група",
 		addrule : "Добави правило",
 		delgroup : "Изтрий група",
-		delrule : "Изтрий правило"
+		delrule : "Изтрий правило",
+		Close : "Затвори",
+		Operand : "Операнд : ",
+		Operation : "Опер. : "
 	},
 	edit : {
 		addCaption: "Нов Запис",
@@ -182,7 +185,8 @@ $.jgrid.regional["bg"] = {
 		searchTitle : "Търси данни със стойност, която",
 		freeze : "Неподвижна",
 		unfreeze : "Отмяна неподвижност",
-		reorder : "Премести за пренареждане"
+		reorder : "Премести за пренареждане",
+		hovermenu: "Щракнете за бързи действия в колоната"
 	}
 };
 }));

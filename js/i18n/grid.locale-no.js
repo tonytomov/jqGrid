@@ -64,7 +64,10 @@ $.jgrid.regional["no"] = {
 		addsubgrup : "Add subgroup",
 		addrule : "Add rule",
 		delgroup : "Delete group",
-		delrule : "Delete rule"
+		delrule : "Delete rule",
+		Close : "Close",
+		Operand : "Operand : ",
+		Operation : "Oper : "
 	},
     edit : {addCaption: "Ny rad", editCaption: "Rediger", bSubmit: "Send", bCancel: "Avbryt", bClose: "Lukk", processData: "Laster...", msg: {required: "Felt er obligatorisk", number: "Legg inn et gyldig tall", minValue: "verdi mø vøre større enn eller lik", maxValue: "verdi må være mindre enn eller lik", email: "er ikke en gyldig e-post adresse", integer: "Legg inn et gyldig heltall", date: "Legg inn en gyldig dato", url: "er ikke en gyldig URL. Prefiks påkrevd ('http://' eller 'https://')", nodefined: " er ikke definert!", novalue: " returverdi er påkrevd!", customarray: "Tilpasset funksjon må returnere en tabell!", customfcheck: "Tilpasset funksjon må eksistere!"}},
     view : {caption: "Åpne post", bClose: "Lukk"},
@@ -92,7 +95,8 @@ $.jgrid.regional["no"] = {
 		searchTitle : "Get items with value that:",
 		freeze : "Freeze",
 		unfreeze : "Unfreeze",
-		reorder : "Move to reorder"
+		reorder : "Move to reorder",
+		hovermenu: "Click for column quick actions"
 	}
 
 };
