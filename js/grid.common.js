@@ -340,9 +340,9 @@ $.extend($.jgrid,{
 			$.each(opt.dataEvents, function() {
 				var tfn = this.fn;
 				if (this.data !== undefined) {
-					$(el).on(this.type, this.data, function(ev) {tfn(ev, opt);});
+					$(el).on(this.type, this.data, function(ev) {tfn.call(this, ev, opt);});
 				} else {
-					$(el).on(this.type, function(ev){ tfn(ev, opt);} );
+					$(el).on(this.type, function(ev){ tfn.call(this, ev, opt);} );
 				}
 			});
 		}
