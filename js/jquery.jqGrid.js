@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.6.0 - 2022-02-03
+* @license Guriddo jqGrid JS - v5.6.0 - 2022-02-04
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -8555,9 +8555,9 @@ $.extend($.jgrid,{
 		if(opt.dataEvents) {
 			$.each(opt.dataEvents, function() {
 				if (this.data !== undefined) {
-					$(el).on(this.type, this.data, this.fn);
+					$(el).on(this.type, this.data, this.fn(event, opt));
 				} else {
-					$(el).on(this.type, this.fn);
+					$(el).on(this.type, this.fn(event, opt));
 				}
 			});
 		}
@@ -11383,7 +11383,7 @@ $.jgrid.extend({
 								if(!tmp || tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length===1 && tmp.charCodeAt(0)===160) ) {tmp='';}
 							}
 						}
-						var opt = $.extend({}, this.editoptions || {} ,{id:nm,name:nm, rowId: rowid, oper:'edit', module : 'form', checkUpdate : rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate}),
+						var opt = $.extend({}, this.editoptions || {} ,{id:nm,name:nm, rowId: rowid, oper:frmoper, module : 'form', checkUpdate : rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate}),
 						frmopt = $.extend({}, {elmprefix:'',elmsuffix:'',rowabove:false,rowcontent:''}, this.formoptions || {}),
 						rp = parseInt(frmopt.rowpos,10) || cnt+1,
 						cp = parseInt((parseInt(frmopt.colpos,10) || 1)*2,10);

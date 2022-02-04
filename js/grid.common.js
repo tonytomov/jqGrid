@@ -339,9 +339,9 @@ $.extend($.jgrid,{
 		if(opt.dataEvents) {
 			$.each(opt.dataEvents, function() {
 				if (this.data !== undefined) {
-					$(el).on(this.type, this.data, this.fn);
+					$(el).on(this.type, this.data, this.fn(event, opt));
 				} else {
-					$(el).on(this.type, this.fn);
+					$(el).on(this.type, this.fn(event, opt));
 				}
 			});
 		}
