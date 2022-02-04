@@ -3991,11 +3991,15 @@ $.fn.jqGrid = function( pin ) {
 			}
 		},
 		multiSort = function(iCol, obj, sor ) {
-			var cm = ts.p.colModel,
-					selTh = /*ts.p.frozenColumns ?  (ts.p.autoResizing ? ts.grid.headers[iCol].el : obj) :*/ ts.grid.headers[iCol].el , so="", sn,
-					sel2 = ts.p.frozenColumns ? obj : null;
-			$("span.ui-grid-ico-sort",[selTh, sel2]).addClass(disabled);
-			$([selTh,sel2]).attr({"aria-selected":"false","aria-sort" : "none"});
+			var cm = ts.p.colModel,selarr =[],
+					/*ts.p.frozenColumns ?  (ts.p.autoResizing ? ts.grid.headers[iCol].el : obj) :*/  so="", sn;
+			selarr.push(ts.grid.headers[iCol].el);
+			if(ts.p.frozenColumns) { 
+				selarr.push(obj);
+			}
+
+			$("span.ui-grid-ico-sort",selarr).addClass(disabled);
+			$(selarr).attr({"aria-selected":"false","aria-sort" : "none"});
 			sn = (cm[iCol].index || cm[iCol].name);
 			if ( typeof sor === "undefined" )
 			{
@@ -4017,12 +4021,12 @@ $.fn.jqGrid = function( pin ) {
 				cm[iCol].lso = so = sor;
 			}
 			if( so ) {
-				$("span.s-ico",[selTh, sel2]).show();
-				$("span.ui-icon-"+so,[selTh, sel2]).removeClass(disabled);
-				$([selTh, sel2]).attr({"aria-selected":"true","aria-sort" : so+"ending"});
+				$("span.s-ico",selarr).show();
+				$("span.ui-icon-"+so,selarr).removeClass(disabled);
+				$(selarr).attr({"aria-selected":"true","aria-sort" : so+"ending"});
 			} else {
 				if(!ts.p.viewsortcols[0]) {
-					$("span.s-ico",[selTh, sel2]).hide();
+					$("span.s-ico",selarr).hide();
 				}
 			}
 			var isn = sortarr.indexOf( sn );
