@@ -5415,6 +5415,9 @@ $.fn.jqGrid = function( pin ) {
 			.addClass("ui-jqgrid-bdiv")
 			.css({ height: ts.p.height+(isNaN(ts.p.height)?"":"px"), width: (grid.width - bstw)+"px"})
 			.on("scroll", grid.scrollGrid);
+		if(ts.p.maxHeight && ["auto", "100%"].includes(String(ts.p.height).toLowerCase())){
+			$(grid.bDiv).css("max-height", ts.p.maxHeight + (isNaN(ts.p.maxHeight) ? "" : "px"));
+		}
 		$(grid.bDiv).find("table").first().css({width:ts.p.tblwidth+"px"});
 		if( !$.support.tbody ) { //IE
 			if( $("tbody",this).length === 2 ) { $("tbody",this).slice( 1 ).remove();}
