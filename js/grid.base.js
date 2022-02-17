@@ -6542,43 +6542,22 @@ $.jgrid.extend({
 			}
 		});
 	},
-	maxGridHeight : function( action, newhgh ) {
+	maxGridHeight : function( action, newhgh, minrh ) {
 		return this.each(function() {
 			var $t = this;
-			if(!$t.grid) {return;}
-			if( action === 'set' && newhgh > 25) { // row min height
-			//$($t).on('jqGridAfterGridComplete.setMaxHeght', function( e ) {
-				var bDiv = $($t.grid.bDiv),
-					id = $.jgrid.jqID($t.p.id),
-					enh = $("#gbox_" + id).outerHeight(),
-					static_height = $($t.grid.hDiv).outerHeight();
-				if($t.p.pager ) {
-					static_height += $($t.p.pager).outerHeight();
+			if(!$t.grid || isNaN(newhgh)) {
+				return;
 				}
-				if($t.p.toppager ) {
-					static_height += $($t.p.toppager).outerHeight();
+			newhgh = parseFloat(newhgh);
+			if(minrh===undefined) {
+				minrh = 25;
 				}
-				if($t.p.toolbar[0] === true){
-					static_height += $($t.grid.uDiv).outerHeight();
-					if($t.p.toolbar[1]==="both") {
-					static_height += bDiv.outerHeight();
+			if( action === 'set') { // row min height
+				var bDiv = $($t.grid.bDiv);
+				if( newhgh > parseFloat(minrh) ) { // min row height
+					bDiv.css("max-height", newhgh ); 
 					}
-				}
-				if($t.p.footerrow) {
-					static_height += $($t.grid.sDiv).outerHeight();
-				}
-				if($t.p.headerrow) {
-					static_height +=  $($t.grid.hrDiv).outerHeight();
-				}
-				if($t.p.caption) {
-					static_height +=  $($t.grid.cDiv).outerHeight();
-				}
-				if( enh > static_height) { // min row height
-					bDiv.css("max-height", newhgh-2 ); // 2 pix for the border
-				}
-				//});
 			} else if( action === 'remove') {
-				//$($t).off('jqGridAfterGridComplete.setMaxHeght');
 				bDiv.css("max-height", "");
 			}
 		});
