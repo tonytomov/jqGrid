@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.6.0 - 2022-02-04
+* @license Guriddo jqGrid JS - v5.6.0 - 2022-02-17
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -6542,39 +6542,39 @@ $.jgrid.extend({
 			var $t = this;
 			if(!$t.grid) {return;}
 			if( action === 'set' && newhgh > 25) { // row min height
-				$($t).on('jqGridAfterGridComplete.setMaxHeght', function( e ) {
-					var bDiv = $($t.grid.bDiv),
-						id = $.jgrid.jqID($t.p.id),
-						enh = $("#gbox_" + id).outerHeight(),
-						static_height = $($t.grid.hDiv).outerHeight();
-					if($t.p.pager ) {
-						static_height += $($t.p.pager).outerHeight();
+			//$($t).on('jqGridAfterGridComplete.setMaxHeght', function( e ) {
+				var bDiv = $($t.grid.bDiv),
+					id = $.jgrid.jqID($t.p.id),
+					enh = $("#gbox_" + id).outerHeight(),
+					static_height = $($t.grid.hDiv).outerHeight();
+				if($t.p.pager ) {
+					static_height += $($t.p.pager).outerHeight();
+				}
+				if($t.p.toppager ) {
+					static_height += $($t.p.toppager).outerHeight();
+				}
+				if($t.p.toolbar[0] === true){
+					static_height += $($t.grid.uDiv).outerHeight();
+					if($t.p.toolbar[1]==="both") {
+					static_height += bDiv.outerHeight();
 					}
-					if($t.p.toppager ) {
-						static_height += $($t.p.toppager).outerHeight();
-					}
-					if($t.p.toolbar[0] === true){
-						static_height += $($t.grid.uDiv).outerHeight();
-						if($t.p.toolbar[1]==="both") {
-							static_height += $($t.grid.ubDiv).outerHeight();
-						}
-					}
-					if($t.p.footerrow) {
-						static_height += $($t.grid.sDiv).outerHeight();
-					}
-					if($t.p.headerrow) {
-						static_height +=  $($t.grid.hrDiv).outerHeight();
-					}
-					if($t.p.caption) {
-						static_height +=  $($t.grid.cDiv).outerHeight();
-					}
-					if( enh > static_height) { // min row height
-						$($t.grid.bDiv).css("max-height", newhgh-2 ); // 2 pix for the border
-					}
-				});
+				}
+				if($t.p.footerrow) {
+					static_height += $($t.grid.sDiv).outerHeight();
+				}
+				if($t.p.headerrow) {
+					static_height +=  $($t.grid.hrDiv).outerHeight();
+				}
+				if($t.p.caption) {
+					static_height +=  $($t.grid.cDiv).outerHeight();
+				}
+				if( enh > static_height) { // min row height
+					bDiv.css("max-height", newhgh-2 ); // 2 pix for the border
+				}
+				//});
 			} else if( action === 'remove') {
-				$($t).off('jqGridAfterGridComplete.setMaxHeght');
-				$($t.grid.bDiv).css("max-height", ""); 
+				//$($t).off('jqGridAfterGridComplete.setMaxHeght');
+				bDiv.css("max-height", ""); 
 			}
 		});
 	},
