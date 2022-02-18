@@ -5150,7 +5150,7 @@ $.fn.jqGrid = function( pin ) {
 			ts.p.selHeadInd = ci;
 			$(this).attr("tabindex", "0");
 			// end aria
-			return false;
+			//return false;
 		});
 		tmpcm = null;
 		// reset font cache

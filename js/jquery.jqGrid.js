@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.6.0 - 2022-02-17
+* @license Guriddo jqGrid JS - v5.6.0 - 2022-02-18
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5145,7 +5145,7 @@ $.fn.jqGrid = function( pin ) {
 			ts.p.selHeadInd = ci;
 			$(this).attr("tabindex", "0");
 			// end aria
-			return false;
+			//return false;
 		});
 		tmpcm = null;
 		// reset font cache
