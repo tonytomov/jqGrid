@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.6.0 - 2022-02-18
+* @license Guriddo jqGrid JS - v5.6.0 - 2022-02-21
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5249,6 +5249,9 @@ $.fn.jqGrid = function( pin ) {
 					if (allowRowSelect === false || allowRowSelect === 'stop') {
 						cSel = false;
 					}
+				}
+				if(scb && cSel === false){
+					$(e.target).prop('checked',!$(e.target).prop('checked'));
 				}
 				if (td.tagName === 'A' || ((td.tagName === 'INPUT' || td.tagName === 'TEXTAREA' || td.tagName === 'OPTION' || td.tagName === 'SELECT' ) && !scb) ) { return; }
 				ri = ptr[0].id;

@@ -5255,6 +5255,9 @@ $.fn.jqGrid = function( pin ) {
 						cSel = false;
 					}
 				}
+				if(scb && cSel === false){
+					$(e.target).prop('checked',!$(e.target).prop('checked'));
+				}
 				if (td.tagName === 'A' || ((td.tagName === 'INPUT' || td.tagName === 'TEXTAREA' || td.tagName === 'OPTION' || td.tagName === 'SELECT' ) && !scb) ) { return; }
 				ri = ptr[0].id;
 				td = $(td).closest("tr.jqgrow>td");
