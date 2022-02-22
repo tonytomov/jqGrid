@@ -252,7 +252,7 @@ $.jgrid.extend({
 				if($t.p.iRow > 0 && $t.p.iCol >=0) {
 					$($t.rows[$t.p.iRow].cells[$t.p.iCol]).attr("tabindex", -1);
 				}
-				if($(el).is("td") || $(el).is("th")) {
+				if($(el).is("td") || $(el).is("th") || el.id.startsWith("jqs_"+$t.p.id)) {
 					$t.p.iCol = el.cellIndex;
 				} else {
 					return;
@@ -564,7 +564,7 @@ $.jgrid.extend({
 				if($t.p.iRow > 0 && $t.p.iCol >=0) {
 					$($t.rows[$t.p.iRow].cells[$t.p.iCol]).attr("tabindex", -1);
 				}
-				if($(el).is("td") || $(el).is("th")) {
+				if($(el).is("td") || $(el).is("th") || el.id.startsWith("jqs_"+$t.p.id)) {
 					$t.p.iCol = el.cellIndex;
 				} else {
 					return;
