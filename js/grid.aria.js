@@ -33,7 +33,8 @@ $.extend($.jgrid,{
 $.jgrid.extend({
 	ariaBodyGrid : function ( p ) {
 		var o = $.extend({
-			onEnterCell : null
+			onEnterCell : null,
+			onKeyCheck : null
 		}, p || {});
 
 		return this.each(function (){
@@ -161,9 +162,18 @@ $.jgrid.extend({
 
 			var focusRow=0, focusCol=0; // set the dafualt one
 			var custAct = $.jgrid.isFunction( o.customCellAction ) ? o.customCellAction : false;
+			var onKeyCheck = $.jgrid.isFunction(o.onKeyCheck) ? o.onKeyCheck : false;
 			$($t).on('keydown', function(e) {
 				if($t.p.navigationDisabled && $t.p.navigationDisabled === true) {
 					return;
+				}
+				if(e.target.id.startsWith("jqs_"+$t.p.id)) {
+					return;
+				}
+				if(onKeyCheck) {
+					if(!onKeyCheck.call($t,e.target) ) {
+						return;
+					}
 				}
 				var key = e.which || e.keyCode, nextCell;
 				switch(key) {
@@ -275,7 +285,8 @@ $.jgrid.extend({
 			specialChars : [
 				'~', '!','@', '#', '$','%','^','&','*','(',')','_', '+','{','}', ':', '"', '|','<','>','?',',','.','/',';','\\','[',']' 
 			],
-			addonChars : false // ^[а-я]$/i
+			addonChars : false, // ^[а-я]$/i
+			onKeyCheck : null
 		}, p || {});
 
 		return this.each(function (){
@@ -421,10 +432,18 @@ $.jgrid.extend({
 				}
 			});
 
-
+			var onKeyCheck = $.jgrid.isFunction(o.onKeyCheck) ? o.onKeyCheck : false;
 			$($t).on('keydown', function(e) {
 				if($t.p.navigationDisabled && $t.p.navigationDisabled === true) {
 					return;
+				}
+				if(e.target.id.startsWith("jqs_"+$t.p.id)) {
+					return;
+				}
+				if(onKeyCheck) {
+					if(!onKeyCheck.call($t,e.target) ) {
+						return;
+					}
 				}
 				var key = e.which || e.keyCode, nextCell;
 				var ctrl = e.ctrlKey ? e.ctrlKey : ((key === 17) ? true : false); // ctrl detection

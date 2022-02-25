@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.6.0 - 2022-02-22
+* @license Guriddo jqGrid JS - v5.6.0 - 2022-02-25
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -21070,7 +21070,8 @@ $.extend($.jgrid,{
 $.jgrid.extend({
 	ariaBodyGrid : function ( p ) {
 		var o = $.extend({
-			onEnterCell : null
+			onEnterCell : null,
+			onKeyCheck : null
 		}, p || {});
 
 		return this.each(function (){
@@ -21198,10 +21199,19 @@ $.jgrid.extend({
 
 			var focusRow=0, focusCol=0; // set the dafualt one
 			var custAct = $.jgrid.isFunction( o.customCellAction ) ? o.customCellAction : false;
+			var onKeyCheck = $.jgrid.isFunction(o.onKeyCheck) ? o.onKeyCheck : false;
 			$($t).on('keydown', function(e) {
 				if($t.p.navigationDisabled && $t.p.navigationDisabled === true) {
 					return;
 				}
+				if(e.target.id.startsWith("jqs_"+$t.p.id)) {
+					return;
+				}
+				if(onKeyCheck) {
+					if(!onKeyCheck.call($t,e.target) ) {
+						return;
+					}
+				}				
 				var key = e.which || e.keyCode, nextCell;
 				switch(key) {
 					case (38) : // DOWN
@@ -21312,7 +21322,8 @@ $.jgrid.extend({
 			specialChars : [
 				'~', '!','@', '#', '$','%','^','&','*','(',')','_', '+','{','}', ':', '"', '|','<','>','?',',','.','/',';','\\','[',']' 
 			],
-			addonChars : false // ^[а-я]$/i
+			addonChars : false, // ^[а-я]$/i
+			onKeyCheck : null
 		}, p || {});
 
 		return this.each(function (){
@@ -21458,10 +21469,18 @@ $.jgrid.extend({
 				}
 			});
 
-
+			var onKeyCheck = $.jgrid.isFunction(o.onKeyCheck) ? o.onKeyCheck : false;
 			$($t).on('keydown', function(e) {
 				if($t.p.navigationDisabled && $t.p.navigationDisabled === true) {
 					return;
+				}
+				if(e.target.id.startsWith("jqs_"+$t.p.id)) {
+					return;
+				}
+				if(onKeyCheck) {
+					if(!onKeyCheck.call($t,e.target) ) {
+						return;
+					}
 				}
 				var key = e.which || e.keyCode, nextCell;
 				var ctrl = e.ctrlKey ? e.ctrlKey : ((key === 17) ? true : false); // ctrl detection
