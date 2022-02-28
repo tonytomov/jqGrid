@@ -5,6 +5,7 @@
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
+	line-height:  normal; /*calc(2px + 1rem + 2px); */        
 }
 .ui-jqgrid .ui-jqgrid-view {
 	position: relative;
@@ -979,7 +980,7 @@ ul.ui-search-menu li, ul.ui-nav-menu li {
 	padding-left: 5px;
 }
 
-.frozen-div, .frozen-bdiv, .frozen-sdiv, .frozen-hrdiv {
+.frozen-div, .frozen-bdiv, .frozen-sdiv, .frozen-hrdiv, .frozen-rdiv {
 	background-color: #fff;
 }
 .frozen-div .ui-jqgrid-htable {
@@ -1202,4 +1203,19 @@ div[id^='searchcnt'] .fm-button .octicon
 .ui-jqgrid-btable tbody tr.table-success.table-active > td 
 {
 	background-color: rgba(0, 0, 0, 0.075)  !important;
+}
+.ui-jqgrid .search-col-input
+{
+	padding: 1px 1px !important;
+}
+.ui-jqgrid .jqgrid-searchcol {
+	padding:  1px 1px;
+}
+
+.jqgrid-searchcol > .form-control {
+	padding:  1px 1px;
+}
+a.colmenu .colmenuspan 
+{
+	cursor: pointer;
 }

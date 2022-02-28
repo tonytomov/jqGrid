@@ -70,7 +70,15 @@
 	{ outline-style: none; }
 .ui-jqgrid tr.jqgrow td,
 .ui-jqgrid tr.jqgroup td
-	{font-weight: normal; overflow: hidden; white-space: pre; height: 23px;padding: 1px 2px 1px 2px;border-bottom-width: 1px; border-bottom-color: inherit; border-bottom-style: solid;}
+{	font-weight: normal; 
+	overflow: hidden; 
+	white-space: pre; 
+	height: 23px;
+	padding: 1px 7px 1px 2px;
+	border-bottom-width: 1px; 
+	border-bottom-color: inherit; 
+	border-bottom-style: solid;
+}
 .ui-jqgrid tr.jqgfirstrow td {padding: 0 2px 0 2px;border-right-width: 1px; border-right-style: solid; height:auto;}
 .ui-jqgrid tr.jqfoot td {font-weight: bold; overflow: hidden; white-space: pre; height: 22px;padding: 0 2px 0 2px;border-bottom-width: 1px; border-bottom-color: inherit; border-bottom-style: solid;}
 .ui-jqgrid tr.ui-row-ltr td {text-align:left;border-right-width: 1px; border-right-color: inherit; border-right-style: solid;}
@@ -239,6 +247,10 @@
 	background-position: -64px -224px;
 }
 .ui-jqgrid>.ui-resizable-se { bottom: -3px; right: -3px }
+.ui-resizable-icon {
+	resize: both;
+	overflow: auto;
+}
 .jqgrid-overlay-modal {	display : none; }
 /* end Modal window*/
 /* Form edit */
@@ -397,23 +409,25 @@ a.g-menu-item, a.soptclass, a.clearsearchclass { cursor: pointer; }
 	margin-right: 3px;
 }
 /* Column menu */
-.ui-jqgrid .ui-jqgrid-htable .colmenu {
+.ui-jqgrid .ui-jqgrid-htable .colmenu
+{
 	position:absolute;
 	right:1px;
 	height:100%;
 	color : black;
 }
-.ui-jqgrid .ui-jqgrid-htable .colmenu-rtl {
+.ui-jqgrid .ui-jqgrid-htable .colmenu-rtl
+{
 	right: auto;
 	left : 1px;
 	position:absolute;
 	height:100%;
 	color : black;
 }
-.ui-jqgrid .ui-jqgrid-htable .colmenuspan {
+.ui-jqgrid .ui-jqgrid-htable .colmenuspan
+{
 	display:inline-block;
 }
-
 .ui-jqgrid .ui-jqgrid-htable .ui-th-div {
 	height:17px;
 	margin-top:5px;
@@ -542,4 +556,13 @@ td.menu_text {
 	font-size:inherit;
 	width:auto;
 	position: absolute;
+}
+
+.ui-jqgrid .search-col-input
+{
+	padding: 3px 2px;
+}
+
+.ui-jqgrid .frozen-rdiv  {
+	z-index: 10000;
 }

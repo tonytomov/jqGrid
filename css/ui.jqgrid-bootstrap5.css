@@ -1,10 +1,14 @@
 /*Grid*/
+:root {
+	--tbl-brd-color: #ddd;
+}
 .ui-jqgrid {
 	position: relative; 
-	border: 1px solid #ddd;      /*default*/
+	border: 1px solid var(--tbl-brd-color, #ddd);      /*default*/
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
+	line-height:  normal; /*calc(2px + 1rem + 2px); */
 }
 .ui-jqgrid .ui-jqgrid-view {
 	position: relative;
@@ -21,7 +25,7 @@
 	padding: 4px 8px; 
 	position: relative; 
 	margin-right: 2px;
-	border-bottom: 1px solid #ddd; /*default*/
+	border-bottom: 1px solid var(--tbl-brd-color, #ddd); /* #ddd default*/
 
 }
 .ui-jqgrid .ui-jqgrid-caption {
@@ -54,7 +58,7 @@
 	margin: 1px; 
 }
 .ui-jqgrid .ui-jqgrid-titlebar-close:hover {  
-	background-color: #ddd;
+	background-color: var(--tbl-brd-color, #ddd); /*#ddd*/
 	opacity: 1.5;
 }
 
@@ -158,6 +162,10 @@
 .ui-jqgrid .ui-jqgrid-sortable {
 	cursor:pointer;
 }
+.ui-jqgrid tr.ui-search-toolbar {
+	border-bottom-color: var(--tbl-brd-color, #ddd);
+	
+}
 .ui-jqgrid tr.ui-search-toolbar th {
 	padding:  0.45rem;
 	border-top: 1px solid #dee2e6;
@@ -187,6 +195,7 @@
 .ui-jqgrid .ui-jqgrid-htable tr.ui-jqgrid-labels 
 {
 	border-top-width: 0px;
+	border-bottom-color: var(--tbl-brd-color, #ddd);
 }
 .ui-jqgrid .ui-jqgrid-htable tr.ui-jqgrid-labels:last-child th {
 	padding-top: 8px; 
@@ -207,10 +216,10 @@
 .ui-jqgrid .table-bordered tr.ui-row-rtl td
 {
 	border-right:0px none !important;
-	border-left: 1px solid #ddd !important;
+	border-left: 1px solid var(--tbl-brd-color, #ddd) !important;
 }
 div.tablediv > .table-bordered {
-	border-left : 1px solid #ddd !important;
+	border-left : 1px solid var(--tbl-brd-color, #ddd) !important;
 }
 .ui-jqgrid .ui-jqgrid-bdiv table.table-bordered td {
 	border-top: 0px none;
@@ -245,6 +254,9 @@ div.tablediv > .table-bordered {
 	overflow: hidden; 
 	white-space: pre; 
 	padding-right: 2px;
+}
+.ui-jqgrid tr.jqgfirstrow {
+	border-top-width: 0px; 
 }
 .ui-jqgrid tr.jqgfirstrow  td {
 	height:auto; 
@@ -326,7 +338,7 @@ div.tablediv > .table-bordered {
 .ui-jqgrid .ui-jqgrid-toppager
 { 
 	border-left-width: 0px;
-	border-top: 1px solid #ddd;  
+	border-top: 1px solid var(--tbl-brd-color, #ddd);  
 	/*padding : 4px 0px;*/
 	position: relative; 
 	/*height: auto; */
@@ -335,7 +347,7 @@ div.tablediv > .table-bordered {
 }
 .ui-jqgrid .ui-jqgrid-toppager {
 	border-top-width :0;
-	border-bottom : 1px solid #ddd;
+	border-bottom : 1px solid var(--tbl-brd-color, #ddd);
 }
 .ui-jqgrid .ui-jqgrid-toppager .ui-pager-control, 
 .ui-jqgrid .ui-jqgrid-pager .ui-pager-control {
@@ -373,6 +385,9 @@ div.tablediv > .table-bordered {
 	margin: 3px 2px; 
 	float:left;
 }
+.ui-pager-control > .ui-pg-table > tbody > tr > td {
+	padding : 0.375rem  0.375rem;
+}
 .ui-jqgrid .ui-pg-button:hover {  }
 .ui-jqgrid .ui-disabled:hover {}
 .ui-jqgrid .ui-pg-input,
@@ -384,7 +399,7 @@ div.tablediv > .table-bordered {
 	margin:0;
 	line-height: inherit;
 	/*border: none; */
-	padding: 0px 3px
+	padding: 2px 3px
 }
 .ui-jqgrid .ui-pg-selbox, 
 .ui-jqgrid .ui-jqgrid-toppager .ui-pg-selbox {
@@ -393,7 +408,7 @@ div.tablediv > .table-bordered {
 	display:block; 
 	margin: 0;
 	width : auto;
-	padding: 0px 15px 0px 3px; 
+	padding: 0px 33px 0px 3px; 
 	border:none;
 }
 .ui-jqgrid .ui-separator {
@@ -539,7 +554,7 @@ div.tablediv > .table-bordered {
 	margin: 5px;
 	text-align: center;
 	display: none;
-	border: 1px solid #ddd;  /*default*/
+	border: 1px solid var(--tbl-brd-color, #ddd);  /*default*/
 	font-size: 14px;
 	background-color: #d9edf7;
 }
@@ -565,11 +580,11 @@ div.tablediv > .table-bordered {
 }
 .ui-jqgrid .ui-userdata-top {
 	border-left-width: 0px;    /*default*/
-	border-bottom: 1px solid #ddd;	
+	border-bottom: 1px solid var(--tbl-brd-color, #ddd);	
 }
 .ui-jqgrid .ui-userdata-bottom {
 	border-left-width: 0px;    /*default*/
-	border-top: 1px solid #ddd;	
+	border-top: 1px solid var(--tbl-brd-color, #ddd);	
 }
 /*Modal Window */
 .ui-jqdialog.modal-content { 
@@ -614,6 +629,10 @@ div.tablediv > .table-bordered {
 	padding: .3em .2em; 
 	background: none; 
 	height:auto;
+}
+.ui-jqdialog-content .ui-search-table td, .ui-jqdialog-content .ui-search-table th  {
+    border-width:  0px;
+    border-style: none;
 }
 [id^=alertmod] .ui-jqdialog-content div {
 	text-align: center;
@@ -902,7 +921,7 @@ a.g-menu-item, a.soptclass, a.clearsearchclass {
 .ui-jqgrid-pager .ui-pg-table .ui-pg-button:hover,
 .ui-jqgrid-toppager .ui-pg-table .ui-pg-button:hover
 {
-	background-color: #ddd;
+	background-color: var(--tbl-brd-color, #ddd);
 }
 .ui-jqgrid-corner  {
 	 border-radius: 5px
@@ -983,7 +1002,7 @@ ul.ui-nav-menu li a,
 	color : #010101;
 }
 ul.ui-search-menu li a:hover, ul.ui-nav-menu li a:hover, a.soptclass:hover, a.clearsearchclass:hover {
-	background-color: #ddd;
+	background-color: var(--tbl-brd-color, #ddd);
 	padding: 1px 1px;
 	text-decoration: none;
 }
@@ -1019,7 +1038,7 @@ ul.ui-search-menu li, ul.ui-nav-menu li {
 	padding-left: 5px;
 }
 
-.frozen-div, .frozen-bdiv, .frozen-sdiv, .frozen-hrdiv {
+.frozen-div, .frozen-bdiv, .frozen-sdiv, .frozen-hrdiv, .frozen-rdiv {
 	background-color: #fff;
 }
 .frozen-div .ui-jqgrid-htable {
@@ -1131,7 +1150,7 @@ div[id^='searchcnt'] .fm-button .octicon
 }
 .ui-jqgrid .ui-jqgrid-menubar:hover {
 	margin: 6px 5px;
-	background-color: #ddd;
+	background-color: var(--tbl-brd-color, #ddd);
 	text-decoration: none;
 }
 .ui-jqgrid .menubar-rtl {
@@ -1243,3 +1262,23 @@ div[id^='searchcnt'] .fm-button .octicon
 {
 	background-color: rgba(0, 0, 0, 0.075)  !important;
 }
+.EditButton a.table-active:hover, .navButton a.table-active:hover  {
+	background-color: rgba(0, 0, 0, 0.075)  !important;
+}
+.ui-jqgrid .search-col-input
+{
+	padding: 2px 3px !important;
+}
+.ui-jqgrid .jqgrid-searchcol {
+	padding:  1px 1px;
+}
+
+.jqgrid-searchcol > .form-control {
+	padding:  3px 3px;
+}
+a.colmenu .colmenuspan 
+{
+	cursor: pointer;
+}
+/*uncomment  this if you use ie11*/
+/* <script>window.MSInputMethodContext && document.documentMode && document.write('<script src="https://cdn.jsdelivr.net/gh/nuxodin/ie11CustomProperties@4.1.0/ie11CustomProperties.min.js"><\/script>');</script>*/
