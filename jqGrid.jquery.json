@@ -12,7 +12,9 @@
 		"grouping",
 		"searching",
 		"aria",
-		"transposed"
+		"transposed",
+		"forzen rows",
+		"frozen columns"
 	],
 	"version": "5.6.0",
 	"author": {

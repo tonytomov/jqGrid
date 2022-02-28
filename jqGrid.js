@@ -20,7 +20,8 @@ require([
 	"jqgrid/grid.utils",
 	"jqgrid/addons/ui.multiselect",
 	"jqgrid/grid.aria",
-	"jqgrid/grid.transposed"
+	"jqgrid/grid.transposed",
+	"jqgrid/grid.frozenrows"
 
 ], function ($) {
 	"use strict";
