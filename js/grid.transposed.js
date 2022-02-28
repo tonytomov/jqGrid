@@ -78,7 +78,7 @@ $.jgrid.extend({
 				}
 				var transpGrid = jQuery($t).jqGrid('transposeSetup',data, transpOpt);
 				if($.jgrid.isFunction(transpOpt.beforeCreateGrid)) {
-					transpOpt.beforeCreateGrid.call($t, transpGrid);
+					transpOpt.beforeCreateGrid.call($t, transpGrid, data);
 				}
 				var query= $.jgrid.from.call($t, transpGrid.rows);
 				jQuery($t).jqGrid($.extend(true, {
