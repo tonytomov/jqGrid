@@ -4123,7 +4123,9 @@ $.fn.jqGrid = function( pin ) {
 						}
 						$("span.s-ico",previousSelectedTh).hide();
 						$("span.s-ico",newSelectedTh).show();
-						$("span.s-ico",newSelThFC).show();
+						if(newSelThFC) { 
+							$("span.s-ico",newSelThFC).show();
+						}
 					} else if (ts.p.sortname === "") { // if ts.p.lastsort === idxcol but ts.p.sortname === ""
 						$("span.s-ico",newSelectedTh).show();
 					}
