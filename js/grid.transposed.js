@@ -19,13 +19,7 @@ $.jgrid.extend({
 	transposeSetup : function( data, options ){
 		// return the final result.
 		var columns =[], rows=[],  model = false,
-		o = $.extend ( {
-			nameprefix : "col",  // prefix for the creted name in colModel + index
-			labelprefix : "value ", // prefix for the colNames titles + index
-			baseindex : 0, // which is the base index from source data to transpose cols to rows
-			beforeCreateGrid : null // even befor creating the jqGrid. passed is a object 
-									// containing colModel and data (rows)
-		}, options || {});
+		o = $.extend ( {}, options || {});
 		this.each(function(){
 			// trnsform data and build colModel
 			var keys = Object.keys(data[o.baseindex]), rowobj, col;
@@ -61,12 +55,18 @@ $.jgrid.extend({
 		return { "colModel" : columns, "rows": rows };
 	},
 	jqTranspose : function( data, transpOpt, gridOpt, ajaxOpt) {
+		transpOpt = $.extend ( {
+			nameprefix : "col",  // prefix for the creted name in colModel + index
+			labelprefix : "value ", // prefix for the colNames titles + index
+			baseindex : 0, // which is the base index from source data to transpose cols to rows
+			beforeCreateGrid : null, // even befor creating the jqGrid. passed is a object 
+									// containing colModel and data (rows)
+			RowAsHeader : 0,
+			loadMsg : false
+		}, transpOpt || {} );
 		return this.each(function(){
 			var $t = this,
 				regional = (gridOpt && gridOpt.regional) ? gridOpt.regional : "en";
-			if(transpOpt.loadMsg === undefined) {
-				transpOpt.loadMsg = true;
-			}
 			if(transpOpt.loadMsg) {
 				$("<div class='loading_pivot ui-state-default ui-state-active row'>"+$.jgrid.getRegional($t, "regional."+regional+".defaults.loadtext")+"</div>").insertBefore($t).show();
 			}
@@ -79,6 +79,20 @@ $.jgrid.extend({
 				var transpGrid = jQuery($t).jqGrid('transposeSetup',data, transpOpt);
 				if($.jgrid.isFunction(transpOpt.beforeCreateGrid)) {
 					transpOpt.beforeCreateGrid.call($t, transpGrid, data);
+				}
+				if(o.RowAsHeader !== false 
+						&& o.RowAsHeader >=0 
+						&& transpGrid.rows.length 
+						&& o.RowAsHeader < transpGrid.rows.length) {
+
+					var labels = transpGrid.rows[o.RowAsHeader], i=0;
+					for(var key in labels) {
+						if(labels.hasOwnProperty(key)) {
+							transpGrid.colModel[i].label = labels[key];
+						}
+						i++;
+					}
+					transpGrid.rows.splice(o.RowAsHeader,1);
 				}
 				var query= $.jgrid.from.call($t, transpGrid.rows);
 				jQuery($t).jqGrid($.extend(true, {
