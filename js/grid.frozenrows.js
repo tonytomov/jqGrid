@@ -37,12 +37,12 @@ $.jgrid.extend({
 				this.p.grouping === true)
 			{
 				return;
-			}			
+			}
 			if(prm.first <= 0 && prm.last <= 0 && prm.rowids.length ===0 ) {
 				return;
 			}
-			
-			
+
+
 			var $t = this, i, j,
 				borderbox = $("#gbox_"+$.jgrid.jqID($t.p.id)).css("box-sizing") === 'border-box',
 				pixelfix = borderbox ? 0 : 1,
@@ -52,11 +52,11 @@ $.jgrid.extend({
 				htw = $(tvid).width(),//Get the width of the content
 				frowms = [],//store frozen rows
 				fbDiv = $('<div style="position:absolute;left:0px;top:'+(hth+pixelfix)+'px;height:0px;overflow-x:hidden;" class="frozen-rdiv ui-jqgrid-rdiv"></div>');
-				
+
 			$(tvid).append(fbDiv);
 			$('.frozen-rdiv', tvid).css('width',htw-($.jgrid.scrollbarWidth()+2));
 			frowms.push($('.jqgfirstrow', tid).clone(true));
-			
+
 			if(prm.rowids.length > 0 ) {
 				for( i =0;i<prm.rowids.length; i++ ) {
 					j = $t.rows.length;
@@ -83,11 +83,11 @@ $.jgrid.extend({
 						prm.rowids.unshift($t.rows[j-1].id);
 					}
 					$($t.rows[j-1]).insertBefore($t.rows[1]);
-				}				
+				}
 			} else {
 				return;
 			}
-			
+
 			fbDiv.css("height", 'auto');
 			var out = $(tid).clone(true);//Get the <table><tbody></tbody></table> tag
 			out.children('tbody').empty();
@@ -99,7 +99,7 @@ $.jgrid.extend({
 			var tfid = $t.p.id +"_fr";
 			$(tid, fbDiv).attr("id", tfid);
 			tfid = '#'+$.jgrid.jqID(tfid);
-	
+
 			/*
 			* Set the events required in freezing
 			* */
@@ -109,14 +109,12 @@ $.jgrid.extend({
 			highlight = getstyle(stylemodule,'highlight', true),
 			hover = getstyle(stylemodule,'hover', true);
 
-	
-	
 			$('.frozen-rdiv', tvid).on('click','tr',function(){//click on the frozen line to add a highlight effect
 				var index = $(this).index();
 				$(this).addClass(highlight).siblings().removeClass(highlight);
 				$('.frozen-rdiv tr').eq(index).addClass(highlight).siblings().removeClass(highlight);
 			});
-			
+
 			$(tfid).on('click',function(){//When the click is a frozen column, the highlighting effect of the frozen column is clear
 				$('.frozen-rdiv tbody').children('tr').each(function(){
 					$(this).removeClass(highlight);
@@ -128,12 +126,11 @@ $.jgrid.extend({
 				var curX = this.scrollLeft;
 				$('.frozen-rdiv').scrollLeft(curX);
 			});
-	
+
 			$('.frozen-rdiv tr').hover(//Set the effect of moving the mouse on the frozen line
 				function(){
 					var index = $(this).index();
 					$('.frozen-rdiv tr').eq(index).addClass(hover);
-			
 				},
 				function(){
 					var index = $(this).index();
@@ -183,7 +180,7 @@ $.jgrid.extend({
 	setFrozenRows : function( options ) {
 		return this.each(function(){
 			$(this).jqGrid("setupFrozenRows", options);
-			
+
 			$(this).on('jqGridAfterGridComplete.setFrozenRows', function () {  
 				if(this.p.frozenRowsPrm) {
 					$(this).jqGrid("destroyFrozenRows");
@@ -207,7 +204,6 @@ $.jgrid.extend({
 			});
 		});
 	}
-	
 });
 //module end
 }));
