@@ -20,7 +20,7 @@ $.jgrid.extend({
 		var prm = $.extend({
 			first : 0,
 			last : 0,
-			rowids :[],
+			//rowids :[],
 			saveFirstLastId : false,
 			classes : ""
 		}, options || {});
@@ -57,7 +57,7 @@ $.jgrid.extend({
 			$('.frozen-rdiv', tvid).css('width',htw-($.jgrid.scrollbarWidth()+2));
 			frowms.push($('.jqgfirstrow', tid).clone(true));
 
-			if(prm.rowids.length > 0 ) {
+			if(prm.rowids && prm.rowids.length > 0 ) {
 				for( i =0;i<prm.rowids.length; i++ ) {
 					j = $t.rows.length;
 					while( j-- ) {
@@ -72,6 +72,9 @@ $.jgrid.extend({
 				for(i = 0; i < prm.first; i++) {
 					frowms.push($($t.rows[i+1]).clone(true));
 					if(prm.saveFirstLastId) {
+						if(!prm.rowids) {
+							prm.rowids =[];
+						}
 						prm.rowids.push($t.rows[i+1].id);
 					}
 				}
@@ -80,6 +83,9 @@ $.jgrid.extend({
 				for(i = 0; i < prm.last; i++) {
 					frowms.splice(1,0,$($t.rows[j-1]).clone(true));
 					if(prm.saveFirstLastId) {
+						if(!prm.rowids) {
+							prm.rowids =[];
+						}
 						prm.rowids.unshift($t.rows[j-1].id);
 					}
 					$($t.rows[j-1]).insertBefore($t.rows[1]);
@@ -93,7 +99,7 @@ $.jgrid.extend({
 			out.children('tbody').empty();
 
 			for(var j = 0 ,len = frowms.length; j <len; j++){//Loop insert the cloned row into the <tbody></tbody> tag
-				frowms[j].appendTo(out);
+				frowms[j].addClass(prm.classes).appendTo(out);
 			}
 			out.appendTo(fbDiv);
 			var tfid = $t.p.id +"_fr";
