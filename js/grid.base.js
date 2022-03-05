@@ -5622,6 +5622,9 @@ $.fn.jqGrid = function( pin ) {
 				}
 			});
 		}
+		if(ts.p.colMenu && ts.p.searchCols && ts.p.searchColOptions.colmenu) {
+			$(ts).jqGrid('addColSearchMenu');
+		}
 		ts.formatCol = formatCol;
 		ts.sortData = sortData;
 		ts.updatepager = updatepager;
@@ -7655,6 +7658,16 @@ $.jgrid.extend({
 					}
 				}
 			});
+		});
+	},
+	disableColMenu : function( colname ) {
+		return this.each(function (){
+			$(this.grid.hDiv).find("tr #jqgh_"+this.p.id+"_"+colname+" > .colmenu").css("display","none");
+		});
+	},
+	enableColMenu : function( colname ) {
+		return this.each(function (){
+			$(this.grid.hDiv).find("tr #jqgh_"+this.p.id+"_"+colname+" > .colmenu").css("display","inline");
 		});
 	}
 });
