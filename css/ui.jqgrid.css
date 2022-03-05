@@ -562,6 +562,9 @@ td.menu_text {
 {
 	padding: 3px 2px;
 }
+.jqgrid-searchcol > input {
+	width : 100%;
+}
 
 .ui-jqgrid .frozen-rdiv  {
 	z-index: 10000;
