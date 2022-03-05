@@ -1280,5 +1280,10 @@ a.colmenu .colmenuspan
 {
 	cursor: pointer;
 }
+.ui-jqgrid td.jqgrid-searchcol  input {
+	width: 100%;
+	overflow: auto;
+}
+
 /*uncomment  this if you use ie11*/
 /* <script>window.MSInputMethodContext && document.documentMode && document.write('<script src="https://cdn.jsdelivr.net/gh/nuxodin/ie11CustomProperties@4.1.0/ie11CustomProperties.min.js"><\/script>');</script>*/

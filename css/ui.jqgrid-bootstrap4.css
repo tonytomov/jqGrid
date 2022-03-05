@@ -1219,3 +1219,7 @@ a.colmenu .colmenuspan
 {
 	cursor: pointer;
 }
+.ui-jqgrid td.jqgrid-searchcol  input {
+	width: 100%;
+	overflow: auto;
+}
