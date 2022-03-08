@@ -1076,7 +1076,12 @@ $.extend($.jgrid,{
 		if(!tb.grid) {
 			return;
 		}
-		var val = t.value, opt = tb.p.searchColOptions, res;
+		var opt = tb.p.searchColOptions, res, val;
+		try {
+			val = t.value;
+		} catch (e){
+			val = "";
+		}
 		if(tb.p.frozenColumns) {
 			$(tb.grid.bDiv).find(".jqgrid-searchcol >input#jqs_"+tb.p.id+"_"+rid).focus().val(val);
 		}
@@ -5399,6 +5404,12 @@ $.fn.jqGrid = function( pin ) {
 					ts.grid.populate();
 				}
 				if(ts.p.inlineNav===true) {$(ts).jqGrid('showAddEditButtons');}
+				if(ts.p.searchCols) {
+					if(!$.isEmptyObject(ts.p._results) ) {
+						ts.p._results ={};
+						$.jgrid.searchColOnEnter( ts.p.id, null );
+					}
+				}
 				return false;
 			},
 			'dblclick' : function(e) {
@@ -5622,8 +5633,24 @@ $.fn.jqGrid = function( pin ) {
 				}
 			});
 		}
-		if(ts.p.colMenu && ts.p.searchCols && ts.p.searchColOptions.colmenu) {
-			$(ts).jqGrid('addColSearchMenu');
+		if(ts.p.searchCols) {
+			$(ts).on("jqGridPaging.searchCols", function() {
+				if(!$.isEmptyObject(ts.p._results) ) {
+					ts.p._results ={};
+					$.jgrid.searchColOnEnter( ts.p.id, null );
+				}
+
+			});
+			$(ts).on("jqGridSortCol.searchCols", function() {
+				if(!$.isEmptyObject(ts.p._results) ) {
+					ts.p._results ={};
+					$.jgrid.searchColOnEnter( ts.p.id, null );
+				}
+
+			});
+			if(ts.p.colMenu && ts.p.searchColOptions.colmenu) {
+				$(ts).jqGrid('addColSearchMenu');
+			}
 		}
 		ts.formatCol = formatCol;
 		ts.sortData = sortData;
