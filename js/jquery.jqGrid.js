@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.6.0 - 2022-02-28
+* @license Guriddo jqGrid JS - v5.6.0 - 2022-03-08
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2208,7 +2208,7 @@ $.fn.jqGrid = function( pin ) {
 				operand : "cn", // default
 				useCase : false, // for searching
 				colName : "Search Col", // header title 
-				colmenu : true, // not used yet
+				colmenu : true, // special colmenu
 				searchOnEnter : true,
 				aOperands : ['cn', 'bw', 'ew', 'eq', 'ne'] // allowed options
 			}
@@ -2821,8 +2821,11 @@ $.fn.jqGrid = function( pin ) {
 					rcnt=1;
 				} else { rcnt = rcnt > 1 ? rcnt :1; }
 			} else { return; }
-			var self= $(ts), i,fpos,ir=0,v,gi=ts.p.multiselect===true?1:0,si=0,addSubGridCell,ni=ts.p.rownumbers===true?1:0,idn, getId,f=[],F,rd ={},
-					xmlr,rid, rowData=[], classes = getstyle(stylemodule, 'rowBox', true, 'jqgrow ui-row-'+ ts.p.direction);
+			var self= $(ts), i,fpos,ir=0,v,si=0,addSubGridCell,idn, getId,f=[],F,rd ={},
+					xmlr,rid, rowData=[], classes = getstyle(stylemodule, 'rowBox', true, 'jqgrow ui-row-'+ ts.p.direction),
+					ni=ts.p.rownumbers===true ? 1 : 0,
+					gi=ts.p.multiselect===true ? 1 : 0,
+					sc = ts.p.searchCols ===true ? 1 : 0;
 			if(ts.p.subGrid===true) {
 				si = 1;
 				addSubGridCell = $.jgrid.getMethod("addSubGridCell");
@@ -2870,6 +2873,7 @@ $.fn.jqGrid = function( pin ) {
 				if (adjust) { rn *= adjust+1; }
 				var afterInsRow = $.jgrid.isFunction(ts.p.afterInsertRow),
 				rnc = ni ? getstyle(stylemodule, 'rownumBox', false, 'jqgrid-rownum') :"",
+				scc = sc ? getstyle(stylemodule, 'searchBox', false, '') :"",
 				mlc = gi ? getstyle(stylemodule, 'multiBox', false, 'cbox'):"";
 				while (j<gl) {
 					xmlr = gxml[j];
@@ -2891,24 +2895,27 @@ $.fn.jqGrid = function( pin ) {
 					if( gi ) {
 						rowData.push( addMulti(rid, ni, j, selr, mlc) );
 					}
+					if( sc ){
+						rowData.push( addSearch(rid, gi+ni, j, scc) );
+					}
 					if( si ) {
-						rowData.push( addSubGridCell.call(self, gi+ni, j+rcnt) );
+						rowData.push( addSubGridCell.call(self, gi+ni+sc, j+rcnt) );
 					}
 					if(xmlRd.repeatitems){
-						if (!F) { F=orderedCols(gi+si+ni); }
+						if (!F) { F=orderedCols(gi+si+ni+sc); }
 						var cells = $.jgrid.getXmlData( xmlr, xmlRd.cell, true);
 						$.each(F, function (k) {
 							var cell = cells[this];
 							if (!cell) { return false; }
 							v = cell.textContent || cell.text || "";
-							rd[ts.p.colModel[k+gi+si+ni].name] = v;
-							rowData.push( addCell(rid,v,k+gi+si+ni,j+rcnt,xmlr, rd) );
+							rd[ts.p.colModel[k+gi+si+ni+sc].name] = v;
+							rowData.push( addCell(rid,v,k+gi+si+ni+sc,j+rcnt,xmlr, rd) );
 						});
 					} else {
 						for(i = 0; i < f.length;i++) {
 							v = $.jgrid.getXmlData( xmlr, f[i]);
-							rd[ts.p.colModel[i+gi+si+ni].name] = v;
-							rowData.push( addCell(rid, v, i+gi+si+ni, j+rcnt, xmlr, rd) );
+							rd[ts.p.colModel[i+gi+si+ni+sc].name] = v;
+							rowData.push( addCell(rid, v, i+gi+si+ni+sc, j+rcnt, xmlr, rd) );
 						}
 					}
 					rowData[iStartTrTag] = constructTr(rid, hiderow, classes, rd, xmlr);
@@ -2992,18 +2999,18 @@ $.fn.jqGrid = function( pin ) {
 					rid = getId(xmlr,ir+br);
 					rid  = ts.p.idPrefix + rid;
 					if(xmlRd.repeatitems){
-						if (!F) { F=orderedCols(gi+si+ni); }
+						if (!F) { F=orderedCols(gi+si+ni+sc); }
 						var cells2 = $.jgrid.getXmlData( xmlr, xmlRd.cell, true);
 						$.each(F, function (k) {
 							var cell = cells2[this];
 							if (!cell) { return false; }
 							v = cell.textContent || cell.text || "";
-							rd[ts.p.colModel[k+gi+si+ni].name] = v;
+							rd[ts.p.colModel[k+gi+si+ni+sc].name] = v;
 						});
 					} else {
 						for(i = 0; i < f.length;i++) {
 							v = $.jgrid.getXmlData( xmlr, f[i]);
-							rd[ts.p.colModel[i+gi+si+ni].name] = v;
+							rd[ts.p.colModel[i+gi+si+ni+sc].name] = v;
 						}
 					}
 					rd[xmlid] = $.jgrid.stripPref(ts.p.idPrefix, rid);
@@ -4118,7 +4125,9 @@ $.fn.jqGrid = function( pin ) {
 						}
 						$("span.s-ico",previousSelectedTh).hide();
 						$("span.s-ico",newSelectedTh).show();
-						$("span.s-ico",newSelThFC).show();
+						if(newSelThFC) { 
+							$("span.s-ico",newSelThFC).show();
+						}
 					} else if (ts.p.sortname === "") { // if ts.p.lastsort === idxcol but ts.p.sortname === ""
 						$("span.s-ico",newSelectedTh).show();
 					}
@@ -5607,6 +5616,9 @@ $.fn.jqGrid = function( pin ) {
 					$(ts).jqGrid("setFrozenColumns");
 				}
 			});
+		}
+		if(ts.p.colMenu && ts.p.searchCols && ts.p.searchColOptions.colmenu) {
+			$(ts).jqGrid('addColSearchMenu');
 		}
 		ts.formatCol = formatCol;
 		ts.sortData = sortData;
@@ -7641,6 +7653,16 @@ $.jgrid.extend({
 					}
 				}
 			});
+		});
+	},
+	disableColMenu : function( colname ) {
+		return this.each(function (){
+			$(this.grid.hDiv).find("tr #jqgh_"+this.p.id+"_"+colname+" > .colmenu").css("display","none");
+		});
+	},
+	enableColMenu : function( colname ) {
+		return this.each(function (){
+			$(this.grid.hDiv).find("tr #jqgh_"+this.p.id+"_"+colname+" > .colmenu").css("display","inline");
 		});
 	}
 });
@@ -10039,7 +10061,7 @@ $.jgrid.extend({
 			groupOpSelect : "OR",
 			errorcheck : true,
 			operands : { "eq" :"==", "ne":"!","lt":"<","le":"<=","gt":">","ge":">=","bw":"^","bn":"!^","in":"=","ni":"!=","ew":"|","en":"!@","cn":"~","nc":"!~","nu":"#","nn":"!#", "bt":"..."},
-			disabledKeys :  [9, 16, 17,18,19, 20, 33, 34, 35,36,37,38,39,30, 45,112,113,114,115,116,117,118,119,120,121,122,123, 144, 145]
+			disabledKeys :  [9, 16, 17,18,19, 20, 33, 34, 35,36,37,38,39,40,30, 45,112,113,114,115,116,117,118,119,120,121,122,123, 144, 145]
 		}, regional , p  || {});
 		return this.each(function(){
 			var $t = this, unaryOpers=[];;
@@ -22028,13 +22050,7 @@ $.jgrid.extend({
 	transposeSetup : function( data, options ){
 		// return the final result.
 		var columns =[], rows=[],  model = false,
-		o = $.extend ( {
-			nameprefix : "col",  // prefix for the creted name in colModel + index
-			labelprefix : "value ", // prefix for the colNames titles + index
-			baseindex : 0, // which is the base index from source data to transpose cols to rows
-			beforeCreateGrid : null // even befor creating the jqGrid. passed is a object 
-									// containing colModel and data (rows)
-		}, options || {});
+		o = $.extend ( {}, options || {});
 		this.each(function(){
 			// trnsform data and build colModel
 			var keys = Object.keys(data[o.baseindex]), rowobj, col;
@@ -22070,12 +22086,18 @@ $.jgrid.extend({
 		return { "colModel" : columns, "rows": rows };
 	},
 	jqTranspose : function( data, transpOpt, gridOpt, ajaxOpt) {
+		transpOpt = $.extend ( {
+			nameprefix : "col",  // prefix for the creted name in colModel + index
+			labelprefix : "value ", // prefix for the colNames titles + index
+			baseindex : 0, // which is the base index from source data to transpose cols to rows
+			beforeCreateGrid : null, // even befor creating the jqGrid. passed is a object 
+									// containing colModel and data (rows)
+			RowAsHeader : 0,
+			loadMsg : false
+		}, transpOpt || {} );
 		return this.each(function(){
 			var $t = this,
 				regional = (gridOpt && gridOpt.regional) ? gridOpt.regional : "en";
-			if(transpOpt.loadMsg === undefined) {
-				transpOpt.loadMsg = true;
-			}
 			if(transpOpt.loadMsg) {
 				$("<div class='loading_pivot ui-state-default ui-state-active row'>"+$.jgrid.getRegional($t, "regional."+regional+".defaults.loadtext")+"</div>").insertBefore($t).show();
 			}
@@ -22087,7 +22109,21 @@ $.jgrid.extend({
 				}
 				var transpGrid = jQuery($t).jqGrid('transposeSetup',data, transpOpt);
 				if($.jgrid.isFunction(transpOpt.beforeCreateGrid)) {
-					transpOpt.beforeCreateGrid.call($t, transpGrid);
+					transpOpt.beforeCreateGrid.call($t, transpGrid, data);
+				}
+				if(o.RowAsHeader !== false 
+						&& o.RowAsHeader >=0 
+						&& transpGrid.rows.length 
+						&& o.RowAsHeader < transpGrid.rows.length) {
+
+					var labels = transpGrid.rows[o.RowAsHeader], i=0;
+					for(var key in labels) {
+						if(labels.hasOwnProperty(key)) {
+							transpGrid.colModel[i].label = labels[key];
+						}
+						i++;
+					}
+					transpGrid.rows.splice(o.RowAsHeader,1);
 				}
 				var query= $.jgrid.from.call($t, transpGrid.rows);
 				jQuery($t).jqGrid($.extend(true, {
@@ -22126,7 +22162,7 @@ $.jgrid.extend({
 		var prm = $.extend({
 			first : 0,
 			last : 0,
-			rowids :[],
+			//rowids :[],
 			saveFirstLastId : false,
 			classes : ""
 		}, options || {});
@@ -22163,7 +22199,7 @@ $.jgrid.extend({
 			$('.frozen-rdiv', tvid).css('width',htw-($.jgrid.scrollbarWidth()+2));
 			frowms.push($('.jqgfirstrow', tid).clone(true));
 
-			if(prm.rowids.length > 0 ) {
+			if(prm.rowids && prm.rowids.length > 0 ) {
 				for( i =0;i<prm.rowids.length; i++ ) {
 					j = $t.rows.length;
 					while( j-- ) {
@@ -22178,6 +22214,9 @@ $.jgrid.extend({
 				for(i = 0; i < prm.first; i++) {
 					frowms.push($($t.rows[i+1]).clone(true));
 					if(prm.saveFirstLastId) {
+						if(!prm.rowids) {
+							prm.rowids =[];
+						}
 						prm.rowids.push($t.rows[i+1].id);
 					}
 				}
@@ -22186,6 +22225,9 @@ $.jgrid.extend({
 				for(i = 0; i < prm.last; i++) {
 					frowms.splice(1,0,$($t.rows[j-1]).clone(true));
 					if(prm.saveFirstLastId) {
+						if(!prm.rowids) {
+							prm.rowids =[];
+						}
 						prm.rowids.unshift($t.rows[j-1].id);
 					}
 					$($t.rows[j-1]).insertBefore($t.rows[1]);
@@ -22199,7 +22241,7 @@ $.jgrid.extend({
 			out.children('tbody').empty();
 
 			for(var j = 0 ,len = frowms.length; j <len; j++){//Loop insert the cloned row into the <tbody></tbody> tag
-				frowms[j].appendTo(out);
+				frowms[j].addClass(prm.classes).appendTo(out);
 			}
 			out.appendTo(fbDiv);
 			var tfid = $t.p.id +"_fr";
@@ -22285,12 +22327,13 @@ $.jgrid.extend({
 	},
 	setFrozenRows : function( options ) {
 		return this.each(function(){
-			$(this).jqGrid("setupFrozenRows", options);
 
 			$(this).on('jqGridAfterGridComplete.setFrozenRows', function () {  
-				if(this.p.frozenRowsPrm) {
+				if(this.p.frozenRowsPrm && !$.isEmptyObject(this.p.frozenRowsPrm)) {
 					$(this).jqGrid("destroyFrozenRows");
 					$(this).jqGrid("setupFrozenRows", this.p.frozenRowsPrm);
+				} else {
+					$(this).jqGrid("setupFrozenRows", options);
 				}
 			});
 			$(this).on('jqGridResizeStop.setFrozenRows', function () {
