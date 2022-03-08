@@ -7488,7 +7488,11 @@ $.jgrid.extend({
 						} else {
 							ww = winwidth;
 						}
-						$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridWidth', ww, $t.p.shrinkToFit, false );
+						if( $($t.grid.bDiv).css("max-height") && ['100%','auto'].includes($t.p.height) && $($t.grid.bDiv).height() < $($t).height())  {
+							$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridWidth', ww+$t.p.scrollOffset-2, false, false );
+						} else {
+							$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridWidth', ww, $t.p.shrinkToFit, false );
+						}
 					}
 
 					if( !($t.p.height === 'auto' || $t.p.height === '100%') && height) {
