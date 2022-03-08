@@ -185,12 +185,13 @@ $.jgrid.extend({
 	},
 	setFrozenRows : function( options ) {
 		return this.each(function(){
-			$(this).jqGrid("setupFrozenRows", options);
 
 			$(this).on('jqGridAfterGridComplete.setFrozenRows', function () {  
-				if(this.p.frozenRowsPrm) {
+				if(this.p.frozenRowsPrm && !$.isEmptyObject(this.p.frozenRowsPrm)) {
 					$(this).jqGrid("destroyFrozenRows");
 					$(this).jqGrid("setupFrozenRows", this.p.frozenRowsPrm);
+				} else {
+					$(this).jqGrid("setupFrozenRows", options);
 				}
 			});
 			$(this).on('jqGridResizeStop.setFrozenRows', function () {
