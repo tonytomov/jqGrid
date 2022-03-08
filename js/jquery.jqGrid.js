@@ -1071,7 +1071,12 @@ $.extend($.jgrid,{
 		if(!tb.grid) {
 			return;
 		}
-		var val = t.value, opt = tb.p.searchColOptions, res;
+		var opt = tb.p.searchColOptions, res, val;
+		try {
+			val = t.value;
+		} catch (e){
+			val = "";
+		}
 		if(tb.p.frozenColumns) {
 			$(tb.grid.bDiv).find(".jqgrid-searchcol >input#jqs_"+tb.p.id+"_"+rid).focus().val(val);
 		}
@@ -5394,6 +5399,12 @@ $.fn.jqGrid = function( pin ) {
 					ts.grid.populate();
 				}
 				if(ts.p.inlineNav===true) {$(ts).jqGrid('showAddEditButtons');}
+				if(ts.p.searchCols) {
+					if(!$.isEmptyObject(ts.p._results) ) {
+						ts.p._results ={};
+						$.jgrid.searchColOnEnter( ts.p.id, null );
+					}
+				}
 				return false;
 			},
 			'dblclick' : function(e) {
@@ -5617,8 +5628,24 @@ $.fn.jqGrid = function( pin ) {
 				}
 			});
 		}
-		if(ts.p.colMenu && ts.p.searchCols && ts.p.searchColOptions.colmenu) {
-			$(ts).jqGrid('addColSearchMenu');
+		if(ts.p.searchCols) {
+			$(ts).on("jqGridPaging.searchCols", function() {
+				if(!$.isEmptyObject(ts.p._results) ) {
+					ts.p._results ={};
+					$.jgrid.searchColOnEnter( ts.p.id, null );
+				}
+
+			});
+			$(ts).on("jqGridSortCol.searchCols", function() {
+				if(!$.isEmptyObject(ts.p._results) ) {
+					ts.p._results ={};
+					$.jgrid.searchColOnEnter( ts.p.id, null );
+				}
+
+			});
+			if(ts.p.colMenu && ts.p.searchColOptions.colmenu) {
+				$(ts).jqGrid('addColSearchMenu');
+			}
 		}
 		ts.formatCol = formatCol;
 		ts.sortData = sortData;
@@ -6288,8 +6315,10 @@ $.jgrid.extend({
 				}
 			});
 			if(fndh===true) {
-				if($t.p.shrinkToFit === true && !isNaN($t.p.height)) { $t.p.tblwidth += parseInt($t.p.scrollOffset,10);}
-				$($t).jqGrid("setGridWidth",$t.p.shrinkToFit === true ? $t.p.tblwidth : $t.p.width );
+				if($t.p.shrinkToFit === true && !isNaN($t.p.height)) { 
+					$t.p.tblwidth += parseInt($t.p.scrollOffset,10);
+				}
+				$($t).jqGrid("setGridWidth",$t.p.shrinkToFit === true ? $t.p.tblwidth - (!isNaN($t.p.height) ? parseInt($t.p.scrollOffset,10) : 0) : $t.p.width );
 			}
 			if( gh && gHead)  {
 				for(var k =0; k < gHead.length; k++) {
@@ -6560,20 +6589,27 @@ $.jgrid.extend({
 	maxGridHeight : function( action, newhgh, minrh ) {
 		return this.each(function() {
 			var $t = this;
-			if(!$t.grid || isNaN(newhgh)) {
+			if(!$t.grid) {
 				return;
-				}
-			newhgh = parseFloat(newhgh);
+			}
 			if(minrh===undefined) {
 				minrh = 25;
-				}
-			if( action === 'set') { // row min height
-				var bDiv = $($t.grid.bDiv);
+			}
+			var bDiv = $($t.grid.bDiv);
+			if( action === 'set' && !isNaN(newhgh)) { // row min height
+				newhgh = parseFloat(newhgh);
 				if( newhgh > parseFloat(minrh) ) { // min row height
 					bDiv.css("max-height", newhgh ); 
+					if( ['100%','auto'].includes($t.p.height) && $($t.grid.bDiv).height() < $($t).height())  {
+						$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridWidth', $t.p.width+$t.p.scrollOffset-2, false, false );
 					}
+				}
 			} else if( action === 'remove') {
+				var test = ['100%','auto'].includes($t.p.height) && $($t.grid.bDiv).height() < $($t).height();
 				bDiv.css("max-height", "");
+				if(test) {
+					$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridWidth', $t.p.width-$t.p.scrollOffset+2, false, false );
+				}
 			}
 		});
 	},
@@ -7454,7 +7490,11 @@ $.jgrid.extend({
 						} else {
 							ww = winwidth;
 						}
-						$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridWidth', ww, $t.p.shrinkToFit, false );
+						if( $($t.grid.bDiv).css("max-height") && ['100%','auto'].includes($t.p.height) && $($t.grid.bDiv).height() < $($t).height())  {
+							$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridWidth', ww+$t.p.scrollOffset-2, false, false );
+						} else {
+							$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridWidth', ww, $t.p.shrinkToFit, false );
+						}
 					}
 
 					if( !($t.p.height === 'auto' || $t.p.height === '100%') && height) {
@@ -22054,7 +22094,11 @@ $.jgrid.extend({
 		this.each(function(){
 			// trnsform data and build colModel
 			var keys = Object.keys(data[o.baseindex]), rowobj, col;
-			
+			if(o.excludeSrcCols.length) {
+				keys = keys.filter(function(item) {
+					return !o.excludeSrcCols.includes(item);
+				});
+			}
 			// for all columns
 			for(var i =0; i<  keys.length; i++) {
 				rowobj = {}, col=0;
@@ -22089,11 +22133,12 @@ $.jgrid.extend({
 		transpOpt = $.extend ( {
 			nameprefix : "col",  // prefix for the creted name in colModel + index
 			labelprefix : "value ", // prefix for the colNames titles + index
-			baseindex : 0, // which is the base index from source data to transpose cols to rows
+			baseindex : 0, // which is the base index from source data to transpose rows to cols
 			beforeCreateGrid : null, // even befor creating the jqGrid. passed is a object 
 									// containing colModel and data (rows)
 			RowAsHeader : 0,
-			loadMsg : false
+			loadMsg : false,
+			excludeSrcCols :[]
 		}, transpOpt || {} );
 		return this.each(function(){
 			var $t = this,
@@ -22146,11 +22191,11 @@ $.jgrid.extend({
 					url : data,
 					dataType: 'json',
 					success : function(response) {
-						transpose($.jgrid.getAccessor(response, ajaxOpt && ajaxOpt.reader ? ajaxOpt.reader: 'rows') );
+						transpose($.jgrid.getAccessor(response, ajaxOpt && ajaxOpt.reader ? ajaxOpt.reader: 'rows'), transpOpt );
 					}
 				}, ajaxOpt || {}) );
 			} else {
-				transpose( data );
+				transpose( data, transpOpt );
 			}
 		});
 	}
