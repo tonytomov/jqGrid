@@ -23,7 +23,11 @@ $.jgrid.extend({
 		this.each(function(){
 			// trnsform data and build colModel
 			var keys = Object.keys(data[o.baseindex]), rowobj, col;
-			
+			if(o.excludeSrcCols.length) {
+				keys = keys.filter(function(item) {
+					return !o.excludeSrcCols.includes(item);
+				});
+			}
 			// for all columns
 			for(var i =0; i<  keys.length; i++) {
 				rowobj = {}, col=0;
@@ -58,11 +62,12 @@ $.jgrid.extend({
 		transpOpt = $.extend ( {
 			nameprefix : "col",  // prefix for the creted name in colModel + index
 			labelprefix : "value ", // prefix for the colNames titles + index
-			baseindex : 0, // which is the base index from source data to transpose cols to rows
+			baseindex : 0, // which is the base index from source data to transpose rows to cols
 			beforeCreateGrid : null, // even befor creating the jqGrid. passed is a object 
 									// containing colModel and data (rows)
 			RowAsHeader : 0,
-			loadMsg : false
+			loadMsg : false,
+			excludeSrcCols :[]
 		}, transpOpt || {} );
 		return this.each(function(){
 			var $t = this,
@@ -115,11 +120,11 @@ $.jgrid.extend({
 					url : data,
 					dataType: 'json',
 					success : function(response) {
-						transpose($.jgrid.getAccessor(response, ajaxOpt && ajaxOpt.reader ? ajaxOpt.reader: 'rows') );
+						transpose($.jgrid.getAccessor(response, ajaxOpt && ajaxOpt.reader ? ajaxOpt.reader: 'rows'), transpOpt );
 					}
 				}, ajaxOpt || {}) );
 			} else {
-				transpose( data );
+				transpose( data, transpOpt );
 			}
 		});
 	}
