@@ -6594,20 +6594,27 @@ $.jgrid.extend({
 	maxGridHeight : function( action, newhgh, minrh ) {
 		return this.each(function() {
 			var $t = this;
-			if(!$t.grid || isNaN(newhgh)) {
+			if(!$t.grid) {
 				return;
-				}
-			newhgh = parseFloat(newhgh);
+			}
 			if(minrh===undefined) {
 				minrh = 25;
-				}
-			if( action === 'set') { // row min height
-				var bDiv = $($t.grid.bDiv);
+			}
+			var bDiv = $($t.grid.bDiv);
+			if( action === 'set' && !isNaN(newhgh)) { // row min height
+				newhgh = parseFloat(newhgh);
 				if( newhgh > parseFloat(minrh) ) { // min row height
 					bDiv.css("max-height", newhgh ); 
+					if( ['100%','auto'].includes($t.p.height) && $($t.grid.bDiv).height() < $($t).height())  {
+						$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridWidth', $t.p.width+$t.p.scrollOffset-2, false, false );
 					}
+				}
 			} else if( action === 'remove') {
+				var test = ['100%','auto'].includes($t.p.height) && $($t.grid.bDiv).height() < $($t).height();
 				bDiv.css("max-height", "");
+				if(test) {
+					$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridWidth', $t.p.width-$t.p.scrollOffset+2, false, false );
+				}
 			}
 		});
 	},
