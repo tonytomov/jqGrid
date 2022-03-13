@@ -50,7 +50,10 @@ $.jgrid.regional["it"] = {
 		addsubgrup : "Aggiungi Sottogruppo",
 		addrule : "Aggiungi Regola",
 		delgroup : "Cancella Sottogruppo",
-		delrule : "Cancella Regola"
+		delrule : "Cancella Regola",
+		Close : "Close",
+		Operand : "Operand : ",
+		Operation : "Oper : "
 	},
 	edit : {
 		addCaption: "Aggiungi Record",
@@ -179,7 +182,8 @@ $.jgrid.regional["it"] = {
 		searchTitle : "Cerca righe con i valori:",
 		freeze : "Blocca",
 		unfreeze : "Sblocca",
-		reorder : "Sposta per riordinare"
+		reorder : "Sposta per riordinare",
+		hovermenu: "Click for column quick actions"
 	}
 };
 }));

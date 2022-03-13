@@ -848,7 +848,7 @@ $.jgrid.extend({
 			groupOpSelect : "OR",
 			errorcheck : true,
 			operands : { "eq" :"==", "ne":"!","lt":"<","le":"<=","gt":">","ge":">=","bw":"^","bn":"!^","in":"=","ni":"!=","ew":"|","en":"!@","cn":"~","nc":"!~","nu":"#","nn":"!#", "bt":"..."},
-			disabledKeys :  [9, 16, 17,18,19, 20, 33, 34, 35,36,37,38,39,30, 45,112,113,114,115,116,117,118,119,120,121,122,123, 144, 145]
+			disabledKeys :  [9, 16, 17,18,19, 20, 33, 34, 35,36,37,38,39,40,30, 45,112,113,114,115,116,117,118,119,120,121,122,123, 144, 145]
 		}, regional , p  || {});
 		return this.each(function(){
 			var $t = this, unaryOpers=[];;
@@ -932,7 +932,7 @@ $.jgrid.extend({
 					if(so==="bt") {
 						bbt = true;
 					}
-					if(fcol && (nm !== 'cb' && nm!== 'rn' && nm !== 'subgrid') ) {
+					if(fcol && (nm !== 'cb' && nm!== 'rn' && nm !== 'subgrid' && nm !== 'sc') ) {
 						afrcol[nm] = v;
 					}
 					if(v || so==="nu" || so==="nn" || $.inArray(so, unaryOpers) >=0) {
@@ -1466,7 +1466,17 @@ $.jgrid.extend({
 				}
 			});
 			$($t.grid.hDiv).on("scroll", function(e){
+				if(!$t.grid.hScroll) {
+					$t.grid.bScroll = true;
 				$t.grid.bDiv.scrollLeft = $t.grid.hDiv.scrollLeft;
+					if($t.p.footerrow) {
+						$t.grid.sDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
+					}
+					if($t.p.headerrow) {
+						$t.grid.hrDiv.scrollLeft = $t.grid.bDiv.scrollLeft;
+					}
+				}
+				$t.grid.hScroll = false;
 			});
 			this.p.filterToolbar = true;
 			this.triggerToolbar = triggerToolbar;

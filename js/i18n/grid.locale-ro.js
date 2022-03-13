@@ -58,7 +58,10 @@ $.jgrid.regional["ro"] = {
 		addsubgrup : "Add subgroup",
 		addrule : "Add rule",
 		delgroup : "Delete group",
-		delrule : "Delete rule"
+		delrule : "Delete rule",
+		Close : "Close",
+		Operand : "Operand : ",
+		Operation : "Oper : "
 	},
 	edit : {
 		addCaption: "Adăugare înregistrare",
@@ -189,7 +192,8 @@ $.jgrid.regional["ro"] = {
 		searchTitle : "Get items with value that:",
 		freeze : "Freeze",
 		unfreeze : "Unfreeze",
-		reorder : "Move to reorder"
+		reorder : "Move to reorder",
+		hovermenu: "Click for column quick actions"
 	}
 };
 }));

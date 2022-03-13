@@ -67,7 +67,7 @@ $.jgrid.extend({
 			}
 			cm = $t.p.colModel[iCol];
 			nm = cm.name;
-			if (nm==='subgrid' || nm==='cb' || nm==='rn') {return;}
+			if (nm==='subgrid' || nm==='cb' || nm==='rn' || nm==='sc') {return;}
 			try {
 				cc = $($t.rows[iRow].cells[iCol]);
 			} catch(e) {
@@ -677,7 +677,7 @@ $.jgrid.extend({
 				if ($(this).hasClass("edited")) {
 					$('td',this).each( function(i) {
 						nm = $t.p.colModel[i].name;
-						if ( nm !== 'cb' && nm !== 'subgrid') {
+						if ( nm !== 'cb' && nm !== 'subgrid' && nm !=='sc') {
 							if (mthd==='dirty') {
 								if ($(this).hasClass('dirty-cell')) {
 									try {

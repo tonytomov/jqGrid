@@ -59,7 +59,10 @@ $.jgrid.regional["tw"] = {
 		addsubgrup : "Add subgroup",
 		addrule : "Add rule",
 		delgroup : "Delete group",
-		delrule : "Delete rule"
+		delrule : "Delete rule",
+		Close : "Close",
+		Operand : "Operand : ",
+		Operation : "Oper : "
 	},
 	edit : {
 		addCaption: "新增記錄",
@@ -179,7 +182,8 @@ $.jgrid.regional["tw"] = {
 		searchTitle : "Get items with value that:",
 		freeze : "Freeze",
 		unfreeze : "Unfreeze",
-		reorder : "Move to reorder"
+		reorder : "Move to reorder",
+		hovermenu: "Click for column quick actions"
 	}
 };
 }));

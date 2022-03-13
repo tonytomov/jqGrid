@@ -61,7 +61,11 @@ $.jgrid.regional["es"] = {
 		addsubgrup : "Agregar subgrupo",
 		addrule : "Agregar regla",
 		delgroup : "Borrar grupo",
-		delrule : "Borrar regla"
+		delrule : "Borrar regla",
+		Close : "Close",
+		Operand : "Operand : ",
+		Operation : "Oper : "
+
 	},
 	edit : {
 	    addCaption: "Agregar registro",
@@ -180,7 +184,8 @@ $.jgrid.regional["es"] = {
 		searchTitle : "Obtener elementos con un valor que:",
 		freeze : "Inmovilizar",
 		unfreeze : "Movilizar",
-		reorder : "Mover para reordenar"
+		reorder : "Mover para reordenar",
+		hovermenu: "Click for column quick actions"
 	}
 };
 }));

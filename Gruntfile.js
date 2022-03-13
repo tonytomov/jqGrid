@@ -22,7 +22,9 @@ var
 		"jquery.sortable",
 		"grid.utils",
 		"grid.export",
-		"grid.aria"
+		"grid.aria",
+		"grid.transposed",
+		"grid.frozenrows"
 	],
 
 	gridFiles = allFiles.map(function( file ) {

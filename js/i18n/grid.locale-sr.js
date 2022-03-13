@@ -58,7 +58,10 @@ $.jgrid.regional["sr"] = {
 		addsubgrup : "Add subgroup",
 		addrule : "Add rule",
 		delgroup : "Delete group",
-		delrule : "Delete rule"		
+		delrule : "Delete rule",
+		Close : "Close",
+		Operand : "Operand : ",
+		Operation : "Oper : "
 	},
 	edit : {
 		addCaption: "Додај запис",
@@ -178,7 +181,8 @@ $.jgrid.regional["sr"] = {
 		searchTitle : "Get items with value that:",
 		freeze : "Freeze",
 		unfreeze : "Unfreeze",
-		reorder : "Move to reorder"
+		reorder : "Move to reorder",
+		hovermenu: "Click for column quick actions"
 	}
 };
 }));

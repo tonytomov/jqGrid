@@ -58,7 +58,10 @@ $.jgrid.regional["sv"] = {
 		addsubgrup : "Add subgroup",
 		addrule : "Add rule",
 		delgroup : "Delete group",
-		delrule : "Delete rule"
+		delrule : "Delete rule",
+		Close : "Close",
+		Operand : "Operand : ",
+		Operation : "Oper : "
 	},
 	edit : {
 		addCaption: "Ny Post",
@@ -177,7 +180,8 @@ $.jgrid.regional["sv"] = {
 		searchTitle : "Get items with value that:",
 		freeze : "Freeze",
 		unfreeze : "Unfreeze",
-		reorder : "Move to reorder"
+		reorder : "Move to reorder",
+		hovermenu: "Click for column quick actions"
 	}
 };
 }));

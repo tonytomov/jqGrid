@@ -511,7 +511,7 @@ $.jgrid.extend({
 							try {
 								for(j=0;j<dropmodel.length;j++) {
 									nm = dropmodel[j].name;
-									if( !(nm === 'cb' || nm === 'rn' || nm === 'subgrid' )) {
+									if( !(nm === 'cb' || nm === 'rn' || nm === 'subgrid' || nm === 'sc' )) {
 										if (keysd[ki] !== undefined) {
 											tmpdata[nm] = getdata[keysd[ki]];
 										}

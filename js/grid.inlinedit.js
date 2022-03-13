@@ -88,7 +88,7 @@ $.jgrid.extend({
 							tmp =  ( cm[i].edittype && cm[i].edittype === 'textarea' ) ? $(this).text() : $(this).html();
 						}
 					}
-					if ( nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn') {
+					if ( nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn' && nm !== 'sc') {
 						if($t.p.autoencode) { tmp = $.jgrid.htmlDecode(tmp); }
 						//svr[nm]=tmp;
 						if(cm[i].editable===true) {
@@ -218,7 +218,7 @@ $.jgrid.extend({
 				cm = $t.p.colModel[i];
 				nm = cm.name;
 				elem = "";
-				if ( nm !== 'cb' && nm !== 'subgrid' && cm.editable===true && nm !== 'rn' && !$(this).hasClass('not-editable-cell')) {
+				if ( nm !== 'cb' && nm !== 'subgrid' && cm.editable===true && nm !== 'rn'  && nm !== 'sc' && !$(this).hasClass('not-editable-cell')) {
 					switch (cm.edittype) {
 						case "checkbox":
 							var cbv = ["Yes","No"];
