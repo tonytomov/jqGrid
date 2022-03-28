@@ -8802,7 +8802,8 @@ $.extend($.jgrid,{
 								setAttributes(elem, options, postData ? ['postData'] : undefined );
 								if(options.size === undefined) { options.size =  msl ? 3 : 1;}
 								if(msl) {
-									ovm = vl.split(",");
+									var multiseparator = options.multiseparator === undefined ? ",": options.multiseparator;
+									ovm = vl.split(multiseparator);									
 									ovm = $.map(ovm,function(n){return $.jgrid.trim(n);});
 								} else {
 									ovm[0] = $.jgrid.trim(vl);
@@ -10127,7 +10128,10 @@ $.jgrid.extend({
 			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].common,
 			base = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].base,
 
-			triggerToolbar = function() {
+			triggerToolbar = function( currentPage) {
+				if(typeof(currentPage) === "undefined"){
+					currentPage = 1;
+				}
 				var sdata={}, j=0, v, nm, sopt={},so, ms = false, ssfield = [], msfield = [], afrcol={}, arcustom=[],
 					bbt =false, sop, ret=[true,"",""], err=false;
 				$.each($t.p.colModel,function(){
@@ -10297,7 +10301,7 @@ $.jgrid.extend({
 				}
 				var bsr = $($t).triggerHandler("jqGridToolbarBeforeSearch") === 'stop' ? true : false;
 				if(!bsr && $.jgrid.isFunction(p.beforeSearch)){bsr = p.beforeSearch.call($t);}
-				if(!bsr) { $($t).jqGrid("setGridParam",{search:sd}).trigger("reloadGrid",[{page:1}]); }
+				if(!bsr) { $($t).jqGrid("setGridParam",{search:sd}).trigger("reloadGrid",[ { page: currentPage } ] ); }
 				if(saveurl) {$($t).jqGrid("setGridParam",{url:saveurl});}
 				$($t).triggerHandler("jqGridToolbarAfterSearch");
 				if($.jgrid.isFunction(p.afterSearch)){p.afterSearch.call($t);}
@@ -10519,7 +10523,7 @@ $.jgrid.extend({
 			}
 			$.each($t.p.colModel,function(ci){
 				var cm=this, soptions, select="", sot="=", so, i, st, csv, df, elem, restores,
-				th = $("<th role='columnheader' class='" + base.headerBox+" ui-th-"+$t.p.direction+" "+(cm.labelClasses || "")+"' id='gsh_" + $t.p.id + "_" + cm.name + "' ></th>"),
+				th = $("<th role='columnheader' class='" + base.headerBox+" ui-th-"+$t.p.direction+" "+(cm.labelClasses || "")+"' id='gsh_" + $t.p.id + "_" + cm.name + "'></th>"),
 				thd = $("<div></div>"),
 				stbl = $("<table class='ui-search-table' cellspacing='0'><tr><td class='ui-search-oper' headers=''></td><td class='ui-search-input' headers=''></td><td class='ui-search-clear' headers=''></td></tr></table>");
 				if(this.hidden===true) { $(th).css("display","none");}
@@ -14363,13 +14367,13 @@ $.jgrid.extend({
 						$(ths[skip+i+1].el).hide();
 						if(numberOfHeadRows > 1) {
 							for(var k=1;k<numberOfHeadRows; k++) {
-								$("tr",$thead).eq(k+1).find("th").eq(i+1).hide();
+								$("tr",$thead).eq(k+1).find("th").eq(i+skip+1).hide();
 							}
 						}
-						i++;
 					}
 				}
 			}
+			
 			if( $focusElem ) {
 				try {
 					$($focusElem).focus();
@@ -14378,6 +14382,7 @@ $.jgrid.extend({
 			if(frozen) {
 				$(ts).jqGrid("setFrozenColumns");
 			}
+
 		});
 	},
 	destroyColSpanHeader : function() {
