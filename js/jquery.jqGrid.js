@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-03-09
+* @license Guriddo jqGrid JS - v5.7.0 - 2022-03-28
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -14269,6 +14269,142 @@ $.jgrid.extend({
 			return res;
 		}	
 	},
+	setColSpanHeader : function( o ) {
+		return this.each(function(){
+			var ts = this,
+			i, cmi, skip = 0, th, $th, thStyle,
+			iCol,
+			cghi,
+			//startColumnName,
+			numberOfColumns,
+			titleText,
+			cVisibleColumns,
+			className,
+			colModel = ts.p.colModel,
+			cml = colModel.length,
+			ths = ts.grid.headers,
+			$htable = $("table.ui-jqgrid-htable", ts.grid.hDiv),
+			$thead = $htable.children("thead"),
+			$firstHeaderRow = $htable.find(".jqg-first-row-header"),
+			$focusElem = false,
+			frozen = false,
+			//classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['grouping'],
+			numberOfHeadRows = $thead.children("tr").length;
+			//base = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].base;
+			ts.p.colSpanHeader = o;
+			if($firstHeaderRow[0] === undefined) {
+				$firstHeaderRow = $('<tr>', {role: "row", "aria-hidden": "true"}).addClass("jqg-first-row-header").css("height", "auto");
+			} else {
+				$firstHeaderRow.empty();
+			}
+			var inColumnHeader = function (text, columnHeaders) {
+				var length = columnHeaders.length, i;
+				for (i = 0; i < length; i++) {
+					if (columnHeaders[i].startColumnName === text) {
+						return i;
+					}
+				}
+				return -1;
+			};
+			if(ts.p.frozenColumns) {
+				$(ts).jqGrid("destroyFrozenColumns");
+				frozen = true;
+			}
+			for (i = 0; i < cml; i++) {
+				th = ths[i].el;
+				$th = $(th);
+				cmi = colModel[i];
+				// build the next cell for the first header row
+				thStyle = { height: '0px', width: ths[i].width + 'px', display: (cmi.hidden ? 'none' : '')};
+				$("<th>", {role: 'gridcell'}).css(thStyle).addClass("ui-first-th-"+ts.p.direction + " " + (cmi.labelClasses || "") ).appendTo($firstHeaderRow);
+			}
+			$thead.prepend($firstHeaderRow);
+
+			//$firstRow = $thead.find("tr.jqg-first-row-header");
+			$(ts).on('jqGridResizeStop.setGroupHeaders', function (e, nw, idx) {
+				$firstHeaderRow.find('th').eq(idx)[0].style.width = nw + "px";
+			});
+			for (i = 0; i < cml; i++) {
+				th = ths[i].el;
+				$th = $(th);
+				cmi = colModel[i];
+				iCol = inColumnHeader(cmi.name, ts.p.colSpanHeader);
+				if (iCol >= 0) {
+					cghi = ts.p.colSpanHeader[iCol];
+					numberOfColumns = cghi.numberOfColumns;
+					titleText = cghi.titleText;
+					className = cghi.className || "";
+					// caclulate the number of visible columns from the next numberOfColumns columns
+					for (cVisibleColumns = 0, iCol = 0; iCol < numberOfColumns && (i + iCol < cml); iCol++) {
+						if (!colModel[i + iCol].hidden) {
+							cVisibleColumns++;
+						}
+					}
+
+					if(cVisibleColumns > 0) {
+						$th.attr("colspan", String(cVisibleColumns));
+						if(numberOfHeadRows > 1) {
+							for(var k=1;k<numberOfHeadRows; k++) {
+								$("tr",$thead).eq(k+1).find("th").eq(i).attr("colspan", String(cVisibleColumns));;
+							}
+						}
+
+					}
+					if (cghi.titleText) {
+						var fl = $th.find("div.ui-th-div")[0].firstChild;
+						cghi.savedLabel = fl.data;
+						cghi.cellInd = i;
+						fl.data = cghi.titleText;
+						if (ts.p.headertitles) {
+							$th.attr("title", cghi.titleText);
+						}
+					}
+					for( skip=0;skip < numberOfColumns-1;skip++) {
+						$(ths[skip+i+1].el).hide();
+						if(numberOfHeadRows > 1) {
+							for(var k=1;k<numberOfHeadRows; k++) {
+								$("tr",$thead).eq(k+1).find("th").eq(i+1).hide();
+							}
+						}
+						i++;
+					}
+				}
+			}
+			if( $focusElem ) {
+				try {
+					$($focusElem).focus();
+				} catch(fe) {}
+			}
+			if(frozen) {
+				$(ts).jqGrid("setFrozenColumns");
+			}
+		});
+	},
+	destroyColSpanHeader : function() {
+		return this.each(function(){
+			var ts = this,
+			$htable = $("table.ui-jqgrid-htable", ts.grid.hDiv),
+			$thead = $htable.children("thead");
+			$("tr.jqg-first-row-header", $thead).remove();
+			if(ts.p.colSpanHeader.length) {
+				for(var j = 0;j<ts.p.colSpanHeader.length;j++) {
+					var clitem = ts.p.colSpanHeader[j];
+					$(">tr", $thead).each(function( i, n) {
+						var itm = $("th",n).eq(clitem.cellInd);
+						$(itm).attr("colspan","");
+						if($(n).hasClass('ui-jqgrid-labels')) {
+							var fl = itm.find("div.ui-th-div")[0].firstChild;
+							fl.data = clitem.savedLabel;
+						}
+						for(var k=1;k<clitem.numberOfColumns;k++) {
+							$("th", n).eq(clitem.cellInd+k).show();
+						}
+					});
+				}
+			}
+			ts.p.colSpanHeader =[];
+		});
+	},
 	setGroupHeaders : function ( o ) {
 		o = $.extend({
 			useColSpanStyle :  false,
@@ -14326,7 +14462,6 @@ $.jgrid.extend({
 			}
 			$(ts).prepend($thead);
 
-			$(ts).prepend($thead);
 			$tr = $('<tr>', {role: "row"}).addClass("ui-jqgrid-labels jqg-third-row-header");
 			for (i = 0; i < cml; i++) {
 				th = ths[i].el;
