@@ -874,7 +874,10 @@ $.jgrid.extend({
 			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].common,
 			base = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].base,
 
-			triggerToolbar = function() {
+			triggerToolbar = function( currentPage) {
+				if(typeof(currentPage) === "undefined"){
+					currentPage = 1;
+				}
 				var sdata={}, j=0, v, nm, sopt={},so, ms = false, ssfield = [], msfield = [], afrcol={}, arcustom=[],
 					bbt =false, sop, ret=[true,"",""], err=false;
 				$.each($t.p.colModel,function(){
