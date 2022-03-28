@@ -636,13 +636,13 @@ $.jgrid.extend({
 						$(ths[skip+i+1].el).hide();
 						if(numberOfHeadRows > 1) {
 							for(var k=1;k<numberOfHeadRows; k++) {
-								$("tr",$thead).eq(k+1).find("th").eq(i+1).hide();
+								$("tr",$thead).eq(k+1).find("th").eq(i+skip+1).hide();
 							}
 						}
-						i++;
 					}
 				}
 			}
+			
 			if( $focusElem ) {
 				try {
 					$($focusElem).focus();
@@ -651,6 +651,7 @@ $.jgrid.extend({
 			if(frozen) {
 				$(ts).jqGrid("setFrozenColumns");
 			}
+
 		});
 	},
 	destroyColSpanHeader : function() {
