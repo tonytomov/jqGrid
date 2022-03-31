@@ -981,12 +981,15 @@ $.jgrid.extend({
 				focusField : p.focusField,
 				onHide :  function(h) {
 					var fw = $.jgrid.floatNum( $('#editmod'+gID)[0].style.width ),
-						rtlsup = $("#gbox_"+$.jgrid.jqID(gID)).attr("dir") === "rtl" ? true : false;
+						rtlsup = $("#gbox_"+$.jgrid.jqID(gID)).attr("dir") === "rtl" ? true : false,
+						mdh = $('#editmod'+gID)[0].style.height;
+						mdh = ['100%','auto'].includes(mdh) ? mdh : $.jgrid.floatNum(mdh, 200);
+						
 					$($t).data("formProp", {
 						top: $.jgrid.floatNum($(h.w).css("top")),
 						left : rtlsup ? ( $("#gbox_"+$.jgrid.jqID(gID)).outerWidth() - fw - parseFloat($(h.w).css("left")) + 12 ) : parseFloat($(h.w).css("left")),
 						width : fw,
-						height : $.jgrid.floatNum( $('#editmod'+gID)[0].style.height ),
+						height :  mdh ,
 						dataheight : $(frmgr).height(),
 						datawidth: $(frmgr).width()
 					});
