@@ -176,7 +176,7 @@
 }
 .ui-jqgrid tr.ui-search-toolbar td input { 
 	font-size: inherit;
-	padding: 3px 0;
+	/*padding: 3px 0;*/
 }
 .ui-jqgrid tr.ui-search-toolbar select {
 	font-size: inherit;

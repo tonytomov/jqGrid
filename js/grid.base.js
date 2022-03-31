@@ -1657,7 +1657,7 @@ $.extend($.jgrid,{
 			grouping : {
 			},
 			filter : {
-				table_widget : 'table table-condensed',
+				table_widget : 'table table-sm',
 				srSelect : 'form-select',
 				srInput : 'form-control',
 				menu_widget : ''

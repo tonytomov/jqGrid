@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-03-30
+* @license Guriddo jqGrid JS - v5.7.0 - 2022-03-31
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1652,7 +1652,7 @@ $.extend($.jgrid,{
 			grouping : {
 			},
 			filter : {
-				table_widget : 'table table-condensed',
+				table_widget : 'table table-sm',
 				srSelect : 'form-select',
 				srInput : 'form-control',
 				menu_widget : ''
