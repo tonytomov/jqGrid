@@ -634,6 +634,7 @@ $.jgrid.extend({
 					}
 					for( skip=0;skip < numberOfColumns-1;skip++) {
 						$(ths[skip+i+1].el).hide();
+						ts.p.colModel[skip+i+1].hidden = true;
 						if(numberOfHeadRows > 1) {
 							for(var k=1;k<numberOfHeadRows; k++) {
 								$("tr",$thead).eq(k+1).find("th").eq(i+skip+1).hide();

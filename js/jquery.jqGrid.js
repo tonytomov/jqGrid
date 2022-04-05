@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-03-31
+* @license Guriddo jqGrid JS - v5.7.0 - 2022-04-05
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1099,7 +1099,9 @@ $.extend($.jgrid,{
 		var _cnth = ['cb', 'rn', 'sc', 'subgrid', 'col_name'], // exclude search here
 				_cnthSet = new Set(_cnth.concat(tb.p._fthc) ); // add hidden columns
 		//$(tb).jqGrid('hideCol',tb.p._avc.filter(x=>!_cnth.includes(x)));
-		$(tb).jqGrid('hideCol',tb.p._avc.filter(function(x) { return !_cnth.includes(x);}));
+		$(tb).jqGrid('hideCol',tb.p._avc.filter(function(x) { 
+			return !_cnth.includes(x);
+		}));
 		
 		//======================================================================
 		function get_result (id) {
@@ -1204,6 +1206,7 @@ $.extend($.jgrid,{
 			case 'Control':
 			case 'Tab':
 			case 'Escape':
+			case 'Shift':
 				return;
 			default :
 		}
@@ -14368,6 +14371,7 @@ $.jgrid.extend({
 					}
 					for( skip=0;skip < numberOfColumns-1;skip++) {
 						$(ths[skip+i+1].el).hide();
+						ts.p.colModel[skip+i+1].hidden = true;
 						if(numberOfHeadRows > 1) {
 							for(var k=1;k<numberOfHeadRows; k++) {
 								$("tr",$thead).eq(k+1).find("th").eq(i+skip+1).hide();

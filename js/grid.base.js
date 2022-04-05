@@ -1104,7 +1104,9 @@ $.extend($.jgrid,{
 		var _cnth = ['cb', 'rn', 'sc', 'subgrid', 'col_name'], // exclude search here
 				_cnthSet = new Set(_cnth.concat(tb.p._fthc) ); // add hidden columns
 		//$(tb).jqGrid('hideCol',tb.p._avc.filter(x=>!_cnth.includes(x)));
-		$(tb).jqGrid('hideCol',tb.p._avc.filter(function(x) { return !_cnth.includes(x);}));
+		$(tb).jqGrid('hideCol',tb.p._avc.filter(function(x) { 
+			return !_cnth.includes(x);
+		}));
 		
 		//======================================================================
 		function get_result (id) {
@@ -1209,6 +1211,7 @@ $.extend($.jgrid,{
 			case 'Control':
 			case 'Tab':
 			case 'Escape':
+			case 'Shift':
 				return;
 			default :
 		}
