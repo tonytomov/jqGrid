@@ -305,7 +305,27 @@ $.extend($.jgrid,{
 				window.URL.revokeObjectURL(url);
 			}, 0);
 		}
+	},
+	csvToArray : function (str, delimiter, linedelim) {
+		if(delimiter === undefined) {delimiter =",";}
+		if(linedelim === undefined) {linedelim = /\r\n|\n/;}
+
+		var rows  = str.split(linedelim),
+			headers =  rows[0].split(delimiter);
+
+		rows.shift();
+		var arr = rows.map(function (row) {
+			var values = row.split(delimiter);
+			var el = headers.reduce(function (object, header, index) {
+			object[header] = values[index];
+				return object;
+			}, {});
+			return el;
+		});
+
+		return arr;
 	}
+	
 });
 //module end
 //return window.jqGridUtils;
