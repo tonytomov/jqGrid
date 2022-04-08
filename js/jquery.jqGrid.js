@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-04-07
+* @license Guriddo jqGrid JS - v5.7.0 - 2022-04-08
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -14401,6 +14401,9 @@ $.jgrid.extend({
 			if(ts.p.colSpanHeader.length) {
 				for(var j = 0;j<ts.p.colSpanHeader.length;j++) {
 					var clitem = ts.p.colSpanHeader[j];
+					for(var k=clitem.cellInd+1; k<clitem.cellInd+clitem.numberOfColumns; k++) {
+						ts.p.colModel[k].hidden=false;
+					}
 					$(">tr", $thead).each(function( i, n) {
 						var itm = $("th",n).eq(clitem.cellInd);
 						$(itm).attr("colspan","");

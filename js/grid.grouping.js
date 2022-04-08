@@ -664,6 +664,9 @@ $.jgrid.extend({
 			if(ts.p.colSpanHeader.length) {
 				for(var j = 0;j<ts.p.colSpanHeader.length;j++) {
 					var clitem = ts.p.colSpanHeader[j];
+					for(var k=clitem.cellInd+1; k<clitem.cellInd+clitem.numberOfColumns; k++) {
+						ts.p.colModel[k].hidden=false;
+					}
 					$(">tr", $thead).each(function( i, n) {
 						var itm = $("th",n).eq(clitem.cellInd);
 						$(itm).attr("colspan","");
