@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-04-08
+* @license Guriddo jqGrid JS - v5.7.0 - 2022-04-12
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -19392,26 +19392,47 @@ $.extend($.jgrid,{
 			}, 0);
 		}
 	},
-	csvToArray : function (str, delimiter, linedelim) {
+	csvToArray : function (str, delimiter) {
 		if(delimiter === undefined) {delimiter =",";}
-		if(linedelim === undefined) {linedelim = /\r\n|\n/;}
+		var headers=[],arrMatches, arr=[], objr = {}, k=0, len, lines=0;
+		var objPattern = new RegExp(
+			(
+			// Delimiters.
+			"(\\" + delimiter + "|\\r?\\n|\\r|^)" +
+			// Quoted fields.
+			"(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
+			// Standard fields.
+			"([^\"\\" + delimiter + "\\r\\n]*))"
+			),
+		"gi");
 
-		var rows  = str.split(linedelim),
-			headers =  rows[0].split(delimiter);
-
-		rows.shift();
-		var arr = rows.map(function (row) {
-			var values = row.split(delimiter);
-			var el = headers.reduce(function (object, header, index) {
-			object[header] = values[index];
-				return object;
-			}, {});
-			return el;
-		});
-
+		while (arrMatches = objPattern.exec(str)) {
+			var strMatchedDelimiter = arrMatches[1];
+			if ( strMatchedDelimiter.length && strMatchedDelimiter !== delimiter ) {
+				lines++;
+				objr = {};
+				k=0;
+			}
+			var strMatchedValue;
+			if (arrMatches[2]) {
+				strMatchedValue = arrMatches[2].replace(new RegExp("\"\"", "g"),"\"");
+			} else {
+				strMatchedValue = arrMatches[3];
+			}
+			if(lines === 0 ) {
+				headers.push(strMatchedValue);
+				len = headers.length;
+			} else {
+				objr[headers[k]] = strMatchedValue;
+				if(k===len-1) {
+					arr.push(objr);
+				} else {
+					k++;
+				}
+			}
+		}
 		return arr;
 	}
-	
 });
 
 //module begin
