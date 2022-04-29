@@ -770,7 +770,8 @@ $.jgrid.extend({
 				footer : [],
 				width : [],
 				map : [],
-				parser :[]
+				parser :[],
+				labels : []
 			};
 			var addStyle = function ( eo )  {
 				if( $.isEmptyObject( eo )) {
@@ -824,7 +825,16 @@ $.jgrid.extend({
 				data.width[ i ] = 5;
 				data.map[i] = j;
 				data.parser[j] = addStyle( cm[j].hasOwnProperty('exportoptions') ? $.extend( {}, cm[j].exportoptions ) : {} );
+				data.labels[i] = $t.p.colNames[j];
 				i++;
+			}
+			if ( o.includeFooter || $t.p.footerrow) {
+				data.footer = $($t).jqGrid('footerData', 'get');
+				for( i in data.footer) {
+					if(data.footer.hasOwnProperty(i)) {
+						data.footer[i] = $.jgrid.stripHtml(data.footer[i]);
+					}
+				}
 			}
 			if( $.jgrid.isFunction(o.customizeData) ) {
 				o.customizeData.call($t, data);
@@ -896,7 +906,7 @@ $.jgrid.extend({
 					var cellId = $.jgrid.excelCellPos(i) + '' + currentRow,
 					cell,
 					match,
-					v= (Array.isArray(row) && header) ? $t.p.colNames[data.map[i]] : $.jgrid.getAccessor( row,  data.header[i] );
+					v= (Array.isArray(row) && header) ? data.labels[data.map[i]] : $.jgrid.getAccessor( row,  data.header[i] );
 					if ( v == null ) {
 						v = '';
 					}
@@ -1196,12 +1206,6 @@ $.jgrid.extend({
 				}
 			}
 			if ( o.includeFooter || $t.p.footerrow) {
-				data.footer = $($t).jqGrid('footerData', 'get');
-				for( i in data.footer) {
-					if(data.footer.hasOwnProperty(i)) {
-						data.footer[i] = $.jgrid.stripHtml(data.footer[i]);
-					}
-				}
 				if(!$.isEmptyObject(data.footer)) {
 					addRow( data.footer, true );
 					$('row', rels).last().find('c').attr( 's', '2' ); // bold
