@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-04-30
+* @license Guriddo jqGrid JS - v5.7.0 - 2022-05-06
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -20380,7 +20380,7 @@ $.jgrid.extend({
 					var cellId = $.jgrid.excelCellPos(i) + '' + currentRow,
 					cell,
 					match,
-					v= (Array.isArray(row) && header) ? data.labels[data.map[i]] : $.jgrid.getAccessor( row,  data.header[i] );
+					v= (Array.isArray(row) && header) ? data.labels[i] : $.jgrid.getAccessor( row,  data.header[i] );
 					if ( v == null ) {
 						v = '';
 					}

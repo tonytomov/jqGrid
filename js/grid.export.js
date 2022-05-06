@@ -961,7 +961,7 @@ $.jgrid.extend({
 					var cellId = $.jgrid.excelCellPos(i) + '' + currentRow,
 					cell,
 					match,
-					v= (Array.isArray(row) && header) ? data.labels[data.map[i]] : $.jgrid.getAccessor( row,  data.header[i] );
+					v= (Array.isArray(row) && header) ? data.labels[i] : $.jgrid.getAccessor( row,  data.header[i] );
 					if ( v == null ) {
 						v = '';
 					}
