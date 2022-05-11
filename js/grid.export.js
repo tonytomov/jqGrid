@@ -874,6 +874,12 @@ $.jgrid.extend({
 						ehf = $.jgrid.addExcelStyle( { excel_header_format : cm[j].exportoptions.excel_header_format, excel_header_style : cm[j].exportoptions.excel_header_style || ""}, {fontId:"2",applyAlignment:"1" },{horizontal:"center"}, styleSh );
 					}
 					data.parser[j] = $.extend (ef,ehf);
+					if(cm[j].exportoptions.replace_format) {
+						data.parser[j].replace_format = cm[j].exportoptions.replace_format;
+					}
+					if(cm[j].exportoptions.replace_header_format) {
+						data.parser[j].replace_header_format = cm[j].exportoptions.replace_header_format;
+					}
 				} else {
 					data.parser[j] =  { excel_parsers : true };
 				}
@@ -976,8 +982,8 @@ $.jgrid.extend({
 					cell = null;
 					var expo = data.parser[data.map[i]];
 					if( header && labels) {
-						if(expo.replace_format) {
-							v = expo.replace_format(v);
+						if(expo.replace_header_format) {
+							v = expo.replace_header_format(v);
 						}
 						if(expo.excel_header_style !== undefined) {
 							if(expo.excel_header_style === 'text') {
