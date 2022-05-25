@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-05-17
+* @license Guriddo jqGrid JS - v5.7.0 - 2022-05-25
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2389,30 +2389,30 @@ $.fn.jqGrid = function( pin ) {
 				if(!grid.bScroll) {
 					grid.hScroll  = true;
 
-				if(p.scroll) {
-					var scrollTop = grid.bDiv.scrollTop;
-					if(grid.scrollTop === undefined) { grid.scrollTop = 0; }
-					if (scrollTop !== grid.scrollTop) {
-						grid.scrollTop = scrollTop;
-						if (grid.timer) { clearTimeout(grid.timer); }
-						grid.timer = setTimeout(grid.populateVisible, p.scrollTimeout);
+					if(p.scroll) {
+						var scrollTop = grid.bDiv.scrollTop;
+						if(grid.scrollTop === undefined) { grid.scrollTop = 0; }
+						if (scrollTop !== grid.scrollTop) {
+							grid.scrollTop = scrollTop;
+							if (grid.timer) { clearTimeout(grid.timer); }
+							grid.timer = setTimeout(grid.populateVisible, p.scrollTimeout);
+						}
 					}
+					grid.hDiv.scrollLeft = grid.bDiv.scrollLeft;
+					if(p.footerrow) {
+						grid.sDiv.scrollLeft = grid.bDiv.scrollLeft;
+					}
+					if(p.headerrow) {
+						grid.hrDiv.scrollLeft = grid.bDiv.scrollLeft;
+					}
+					if(p.frozenColumns) {
+						$(grid.fbDiv).scrollTop( grid.bDiv.scrollTop );
+					}
+					try {
+						$("#column_menu").remove();
+					} catch (e) {}
 				}
-				grid.hDiv.scrollLeft = grid.bDiv.scrollLeft;
-				if(p.footerrow) {
-					grid.sDiv.scrollLeft = grid.bDiv.scrollLeft;
-				}
-				if(p.headerrow) {
-					grid.hrDiv.scrollLeft = grid.bDiv.scrollLeft;
-				}
-				if(p.frozenColumns) {
-					$(grid.fbDiv).scrollTop( grid.bDiv.scrollTop );
-				}
-				try {
-					$("#column_menu").remove();
-				} catch (e) {}
-					grid.bScroll = false;
-				}
+				grid.bScroll = false;
 			},
 			selectionPreserver : function(ts) {
 				var p = ts.p,
