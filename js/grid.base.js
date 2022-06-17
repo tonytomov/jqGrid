@@ -5901,7 +5901,7 @@ $.jgrid.extend({
 			//t.p.savedRow = [];
 		});
 	},
-	getRowData : function( rowid, usedata, treeindent ) {
+	getRowData : function( rowid, usedata, treeindent, visibleTreeNodes ) {
 		var res = {}, resall, getall=false, len, j=0;
 		this.each(function(){
 			var $t = this,nm,ind;
@@ -5920,11 +5920,18 @@ $.jgrid.extend({
 			if( $.jgrid.isNull(treeindent) ) {
 				treeindent = false;
 			}
+			if( $.jgrid.isNull(visibleTreeNodes) ) {
+				visibleTreeNodes = false;
+			}
 			while(j<len){
 				if(getall) {
 					ind = $t.rows[j];
 				}
 				if( $(ind).hasClass('jqgrow') && ind.id !== "norecs") { // ignore first not visible row and norecs one
+					if($t.p.treeGrid===true && visibleTreeNodes===true && $(ind).is(":hidden")) {
+						j++;
+						continue;
+					}
 					if(usedata) {
 						res = res = $.extend( {}, $t.p.data[ $t.p._index[ $.jgrid.stripPref($t.p.idPrefix, ind.id) ] ] );
 					} else {
