@@ -597,6 +597,7 @@ div.tablediv > .table-bordered {
 	position: absolute; 
 	/*padding: 5px; */
 	overflow:visible;
+	background-color:#fff
 }
 .ui-jqdialog .ui-jqdialog-titlebar {
 	padding: 0em 0em; 
