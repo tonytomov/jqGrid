@@ -1076,7 +1076,7 @@ $.extend($.jgrid,{
 		if(!tb.grid) {
 			return;
 		}
-		var opt = tb.p.searchColOptions, res, val;
+		var opt = tb.p.searchColOptions, res, val, frozen= false;
 		try {
 			val = t.value;
 		} catch (e){
@@ -1084,6 +1084,7 @@ $.extend($.jgrid,{
 		}
 		if(tb.p.frozenColumns) {
 			$(tb.grid.bDiv).find(".jqgrid-searchcol >input#jqs_"+tb.p.id+"_"+rid).focus().val(val);
+			frozen = true;
 		}
 
 		if(!tb.p._ftsc) {
@@ -1191,6 +1192,16 @@ $.extend($.jgrid,{
 				$(tb.grid.fbDiv).find(".jqgrid-searchcol >input#jqs_"+tb.p.id+"_"+rid).val("").focus().val(val);
 			//}, 60);
 		}
+		if(tb.p.frozenRows) {
+			if(frozen) { // for future processing
+				tb.p.frozenColumns = false;
+			}
+			$(tb).trigger('jqGridAfterGridComplete.setFrozenRows');
+			if(frozen) { // for future processing
+				tb.p.frozenColumns = true;
+			}
+		}
+		
 		/// let intersection = arrA.filter(x => arrB.includes(x));
 		/// let difference = arrA.filter(x => !arrB.includes(x));
 		/// let difference = arrA
