@@ -214,7 +214,7 @@ $.jgrid.extend({
 						}
 						footLevel = parseInt($(r).attr("jqfootlevel") ,10);
 						skip = isNaN(footLevel) ? false : 
-						 (grp.showSummaryOnHide && footLevel <= num);
+						 (grp.showSummaryOnHide && footLevel >= num);
 						if( !skip) {
 							$(r).hide();
 						}
@@ -234,6 +234,7 @@ $.jgrid.extend({
 					showData = undefined;
 					while(r) {
 						itemGroupingLevel = getGroupingLevelFromClass(r.className);
+						footLevel = parseInt($(r).attr("jqfootlevel") ,10);
 						if (showData === undefined) {
 							showData = itemGroupingLevel === undefined; // if the first row after the opening group is data row then show the data rows
 						}
@@ -256,6 +257,11 @@ $.jgrid.extend({
 								if(frz) {
 									$(r2).show();
 								}
+							}
+						} else if(!isNaN(footLevel) &&  footLevel >=0 &&  footLevel === num) {
+								$(r).show();
+								if(frz) {
+									$(r2).show();
 							}
 						}
 						r = r.nextSibling;
