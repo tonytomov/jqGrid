@@ -1612,7 +1612,7 @@ $.extend($.jgrid,{
 				hidden : "",
 				overlay: "ui-overlay",
 				active : "active",
-				error : "alert-danger",
+				error : "alert alert-danger",
 				button : "btn btn-light",
 				content : ""
 			},
