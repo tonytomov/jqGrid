@@ -605,6 +605,7 @@ div.tablediv > .table-bordered {
 .ui-jqdialog .ui-jqdialog-titlebar {
 	padding: 0em 0em; 
 	/*min-height: 38px; */
+	border-bottom: 1px solid #ddd
 }
 .ui-jqdialog .ui-jqdialog-title { 
 	margin: .3em 0 .4em;  
