@@ -1100,6 +1100,8 @@ ul.ui-search-menu li, ul.ui-nav-menu li {
 }
 .column-menu, .ui-search-menu {
 	padding: 8px 8px;
+	background-color: #fff;
+	border: 1px solid var(--tbl-brd-color, #ddd);;	
 }
 .column-menu .divider {
 	background-color: #e5e5e5; 
