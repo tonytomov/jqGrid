@@ -320,9 +320,15 @@ div.tablediv > .table-bordered {
 }
 .ui-jqgrid tr.footrow td { 
 	border-bottom: 0px none;
+	border-color: var(--tbl-brd-color, #ddd);      /*default*/	
 }
+.ui-jqgrid tr.footrow { 
+	border-color: var(--tbl-brd-color, #ddd);      /*default*/	
+	border-bottom: 0px none;
+}
+
 .ui-jqgrid tr.hrheadrow td {
-	border-top: 0px none;
+	border-top: 0px none var(--tbl-brd-color, #ddd);
 }
 .ui-jqgrid tr.hrheadrow-ltr td,
 .ui-jqgrid tr.footrow-ltr td {
@@ -598,14 +604,14 @@ div.tablediv > .table-bordered {
 	/*padding: 5px; */
 	overflow:visible;
 	background-color:#fff;
-	border: 1px solid #ddd;
+	border: 1px solid var(--tbl-brd-color, #ddd);
 	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 	
 }
 .ui-jqdialog .ui-jqdialog-titlebar {
 	padding: 0em 0em; 
 	/*min-height: 38px; */
-	border-bottom: 1px solid #ddd
+	border-bottom: 1px solid var(--tbl-brd-color, #ddd)
 }
 .ui-jqdialog .ui-jqdialog-title { 
 	margin: .3em 0 .4em;  
@@ -1292,7 +1298,7 @@ a.colmenu .colmenuspan
 	overflow: auto;
 }
 #info_dialog {
-	border: 1px solid #ddd;
+	border: 1px solid var(--tbl-brd-color, #ddd);
 	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 /*uncomment  this if you use ie11*/
