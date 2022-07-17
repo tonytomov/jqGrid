@@ -176,7 +176,7 @@
 }
 .ui-jqgrid tr.ui-search-toolbar td input { 
 	font-size: inherit;
-	padding: 3px 0;
+	/*padding: 3px 0;*/
 }
 .ui-jqgrid tr.ui-search-toolbar select {
 	font-size: inherit;
@@ -320,9 +320,15 @@ div.tablediv > .table-bordered {
 }
 .ui-jqgrid tr.footrow td { 
 	border-bottom: 0px none;
+	border-color: var(--tbl-brd-color, #ddd);      /*default*/	
 }
+.ui-jqgrid tr.footrow { 
+	border-color: var(--tbl-brd-color, #ddd);      /*default*/	
+	border-bottom: 0px none;
+}
+
 .ui-jqgrid tr.hrheadrow td {
-	border-top: 0px none;
+	border-top: 0px none var(--tbl-brd-color, #ddd);
 }
 .ui-jqgrid tr.hrheadrow-ltr td,
 .ui-jqgrid tr.footrow-ltr td {
@@ -597,10 +603,15 @@ div.tablediv > .table-bordered {
 	position: absolute; 
 	/*padding: 5px; */
 	overflow:visible;
+	background-color:#fff;
+	border: 1px solid var(--tbl-brd-color, #ddd);
+	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+	
 }
 .ui-jqdialog .ui-jqdialog-titlebar {
 	padding: 0em 0em; 
 	/*min-height: 38px; */
+	border-bottom: 1px solid var(--tbl-brd-color, #ddd)
 }
 .ui-jqdialog .ui-jqdialog-title { 
 	margin: .3em 0 .4em;  
@@ -759,12 +770,14 @@ div.ui-jqgrid .selected-row td {
 }
 /* inline edit actions button*/
 .ui-inline-del, .ui-inline-cancel {
-    margin-left: 7px;
+    margin: 0 7px;
 	font-size: 0.9rem;
+	cursor : pointer;
 }
 .ui-inline-save, .ui-inline-edit {
-    margin-left: 7px;
+    margin: 0 7px;
 	font-size: 0.9rem;
+	cursor : pointer;
 }
 .ui-jqgrid .inline-edit-cell {}
 /* Tree Grid */
@@ -1087,6 +1100,8 @@ ul.ui-search-menu li, ul.ui-nav-menu li {
 }
 .column-menu, .ui-search-menu {
 	padding: 8px 8px;
+	background-color: #fff;
+	border: 1px solid var(--tbl-brd-color, #ddd);;	
 }
 .column-menu .divider {
 	background-color: #e5e5e5; 
@@ -1284,6 +1299,9 @@ a.colmenu .colmenuspan
 	width: 100%;
 	overflow: auto;
 }
-
+#info_dialog {
+	border: 1px solid var(--tbl-brd-color, #ddd);
+	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
 /*uncomment  this if you use ie11*/
 /* <script>window.MSInputMethodContext && document.documentMode && document.write('<script src="https://cdn.jsdelivr.net/gh/nuxodin/ie11CustomProperties@4.1.0/ie11CustomProperties.min.js"><\/script>');</script>*/

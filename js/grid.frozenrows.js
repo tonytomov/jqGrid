@@ -185,6 +185,10 @@ $.jgrid.extend({
 	},
 	setFrozenRows : function( options ) {
 		return this.each(function(){
+			
+			if( this.p.records > 0 ) {
+				$(this).jqGrid("setupFrozenRows", options);
+			}
 
 			$(this).on('jqGridAfterGridComplete.setFrozenRows', function () {  
 				if(this.p.frozenRowsPrm && !$.isEmptyObject(this.p.frozenRowsPrm)) {

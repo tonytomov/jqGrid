@@ -251,8 +251,8 @@ $.extend($.jgrid,{
 			dataheight: 'auto',
 			drag: true,
 			resize: false,
-			left:250,
-			top:170,
+			left:(window.innerWidth / 2) - 145,
+			top:window.innerHeight / 2 - 150,
 			zIndex : 1000,
 			jqModal : true,
 			modal : false,
@@ -442,7 +442,8 @@ $.extend($.jgrid,{
 								setAttributes(elem, options, postData ? ['postData'] : undefined );
 								if(options.size === undefined) { options.size =  msl ? 3 : 1;}
 								if(msl) {
-									ovm = vl.split(",");
+									var multiseparator = options.multiseparator === undefined ? ",": options.multiseparator;
+									ovm = vl.split(multiseparator);									
 									ovm = $.map(ovm,function(n){return $.jgrid.trim(n);});
 								} else {
 									ovm[0] = $.jgrid.trim(vl);
