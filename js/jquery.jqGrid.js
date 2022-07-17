@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-07-11
+* @license Guriddo jqGrid JS - v5.7.0 - 2022-07-17
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1607,7 +1607,7 @@ $.extend($.jgrid,{
 				hidden : "",
 				overlay: "ui-overlay",
 				active : "active",
-				error : "alert-danger",
+				error : "alert alert-danger",
 				button : "btn btn-light",
 				content : ""
 			},
@@ -8632,8 +8632,8 @@ $.extend($.jgrid,{
 			dataheight: 'auto',
 			drag: true,
 			resize: false,
-			left:250,
-			top:170,
+			left:(window.innerWidth / 2) - 145,
+			top:window.innerHeight / 2 - 150,
 			zIndex : 1000,
 			jqModal : true,
 			modal : false,
