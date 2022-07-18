@@ -3713,7 +3713,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 					gs = tmpordarr.join();
 					if( $.jgrid.trim(prm[pN.sort]) !== "") {
-						prm[pN.sort] = gs + " ,"+prm[pN.sort];
+						prm[pN.sort] = gs!=="" ? gs + " ,"+prm[pN.sort] : prm[pN.sort];
 					} else {
 						prm[pN.sort] = gs;
 						prm[pN.order] = "";
