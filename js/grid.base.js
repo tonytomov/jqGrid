@@ -5025,7 +5025,7 @@ $.fn.jqGrid = function( pin ) {
 			trhead += "<table role='presentation' style='width:"+ts.p.tblwidth+"px' "+getstyle(stylemodule,'headerRowTable', false, 'ui-jqgrid-hrtable ui-common-table')+ "><tbody><tr role='row' "+getstyle(stylemodule,'headerRowBox', false, 'hrheadrow hrheadrow-'+dir)+">"; 
 		}
 		var thr = $(thead).find("tr").first(),
-		firstr = "<tr class='jqgfirstrow' role='row'>",
+		firstr = "<tr class='jqgfirstrow "+ (ts.p.direction === "rtl"? "ui-row-rtl'" :"'") +" role='row'>",
 		clicks =0,
 		// header font for full autosize
 		hdr_font = $.jgrid.getFont( $("th",thr).first()[0] );
