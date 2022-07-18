@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-07-17
+* @license Guriddo jqGrid JS - v5.7.0 - 2022-07-19
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3619,7 +3619,7 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.reccount === 0 ) {
 				var classes = ts.p.emptyRecordRow
 					? getstyle(stylemodule, 'rowBox', true, 'jqgrow ui-row-'+ ts.p.direction+' not-editable-row not-editable-cell '+ disabled)
-					: 'jqfirstrow not-editable-row not-editable-cell',
+					: 'jqgfirstrow not-editable-row not-editable-cell',
 				tstr = constructTr("norecs", false, classes, {}, "");
 				tstr += ts.p.emptyRecordRow
 				? "<td style='text-align:center;' colspan='"+grid.headers.length+"'>"+$.jgrid.getRegional(ts, "defaults.emptyrecords", ts.p.emptyrecords )+"</td>" 
@@ -3708,7 +3708,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 					gs = tmpordarr.join();
 					if( $.jgrid.trim(prm[pN.sort]) !== "") {
-						prm[pN.sort] = gs + " ,"+prm[pN.sort];
+						prm[pN.sort] = gs!=="" ? gs + " ,"+prm[pN.sort] : prm[pN.sort];
 					} else {
 						prm[pN.sort] = gs;
 						prm[pN.order] = "";
@@ -4367,6 +4367,7 @@ $.fn.jqGrid = function( pin ) {
 					if(op.columns_selectAll) {
 						$("#chk_all", "#col_menu").prop("checked",  $('.chk_selected:checked', "#col_menu").length === $('.chk_selected', "#col_menu").length );
 					}
+					$("#column_menu").remove();
 				}
 			}).hover(function(){
 				$(this).addClass(hover);
@@ -4735,7 +4736,7 @@ $.fn.jqGrid = function( pin ) {
 				} else if( v==='freeze') {
 					buildFreeze( index, isfreeze);
 				}
-				if(v.indexOf('sort') !== -1 || v === 'grouping' || v==='freeze') {
+				if(v === 'grouping' || v==='freeze') {
 					$(this).remove();
 				}
 				if(ts.p.colMenuCustom.hasOwnProperty(v)) {
@@ -5019,7 +5020,7 @@ $.fn.jqGrid = function( pin ) {
 			trhead += "<table role='presentation' style='width:"+ts.p.tblwidth+"px' "+getstyle(stylemodule,'headerRowTable', false, 'ui-jqgrid-hrtable ui-common-table')+ "><tbody><tr role='row' "+getstyle(stylemodule,'headerRowBox', false, 'hrheadrow hrheadrow-'+dir)+">"; 
 		}
 		var thr = $(thead).find("tr").first(),
-		firstr = "<tr class='jqgfirstrow' role='row'>",
+		firstr = "<tr class='jqgfirstrow "+ (ts.p.direction === "rtl"? "ui-row-rtl'" :"'") +" role='row'>",
 		clicks =0,
 		// header font for full autosize
 		hdr_font = $.jgrid.getFont( $("th",thr).first()[0] );
