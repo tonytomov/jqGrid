@@ -3624,7 +3624,7 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.reccount === 0 ) {
 				var classes = ts.p.emptyRecordRow
 					? getstyle(stylemodule, 'rowBox', true, 'jqgrow ui-row-'+ ts.p.direction+' not-editable-row not-editable-cell '+ disabled)
-					: 'jqfirstrow not-editable-row not-editable-cell',
+					: 'jqgfirstrow not-editable-row not-editable-cell',
 				tstr = constructTr("norecs", false, classes, {}, "");
 				tstr += ts.p.emptyRecordRow
 				? "<td style='text-align:center;' colspan='"+grid.headers.length+"'>"+$.jgrid.getRegional(ts, "defaults.emptyrecords", ts.p.emptyrecords )+"</td>" 
