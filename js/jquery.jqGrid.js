@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-07-19
+* @license Guriddo jqGrid JS - v5.7.0 - 2022-07-20
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1097,8 +1097,8 @@ $.extend($.jgrid,{
 			tb.p._results = {};
 		}// else {
 		//}
-		var _cnth = ['cb', 'rn', 'sc', 'subgrid', 'col_name'], // exclude search here
-				_cnthSet = new Set(_cnth.concat(tb.p._fthc) ); // add hidden columns
+		var _cnth = [...new Set([...opt._cnth ,...opt.visibleColumns])], // exclude search here
+				_cnthSet = new Set([..._cnth,...tb.p._fthc]); // add hidden columns
 		//$(tb).jqGrid('hideCol',tb.p._avc.filter(x=>!_cnth.includes(x)));
 		$(tb).jqGrid('hideCol',tb.p._avc.filter(function(x) { 
 			return !_cnth.includes(x);
@@ -2229,7 +2229,9 @@ $.fn.jqGrid = function( pin ) {
 				colName : "Search Col", // header title 
 				colmenu : true, // special colmenu
 				searchOnEnter : true,
-				aOperands : ['cn', 'bw', 'ew', 'eq', 'ne'] // allowed options
+				aOperands : ['cn', 'bw', 'ew', 'eq', 'ne'], // allowed options
+				_cnth : ['cb', 'rn', 'sc', 'subgrid', 'col_name'], // internal (just in case)
+				visibleColumns : []
 			}
 		}, $.jgrid.defaults , pin );
 		if (localData !== undefined) {
