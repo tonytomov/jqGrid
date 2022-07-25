@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-07-20
+* @license Guriddo jqGrid JS - v5.7.0 - 2022-07-25
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -21665,7 +21665,7 @@ $.jgrid.extend({
 					return;
 				}
 				if(onKeyCheck) {
-					if(!onKeyCheck.call($t,e.target) ) {
+					if(!onKeyCheck.call($t, $t.rows[$t.p.iRow].id, $t.p.iRow, $t.p.iCol, e) ) {
 						return;
 					}
 				}
@@ -21935,7 +21935,7 @@ $.jgrid.extend({
 					return;
 				}
 				if(onKeyCheck) {
-					if(!onKeyCheck.call($t,e.target) ) {
+					if(!onKeyCheck.call($t, $t.rows[$t.p.iRow].id, $t.p.iRow, $t.p.iCol, e) ) {
 						return;
 					}
 				}
@@ -22194,7 +22194,6 @@ $.jgrid.extend({
 								e.preventDefault();
 							}
 						}
-
 						break;
 					case 39: // right
 						if(currindex+1 < len) {

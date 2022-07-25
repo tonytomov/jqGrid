@@ -171,7 +171,7 @@ $.jgrid.extend({
 					return;
 				}
 				if(onKeyCheck) {
-					if(!onKeyCheck.call($t,e.target) ) {
+					if(!onKeyCheck.call($t, $t.rows[$t.p.iRow].id, $t.p.iRow, $t.p.iCol, e) ) {
 						return;
 					}
 				}
@@ -441,7 +441,7 @@ $.jgrid.extend({
 					return;
 				}
 				if(onKeyCheck) {
-					if(!onKeyCheck.call($t,e.target) ) {
+					if(!onKeyCheck.call($t, $t.rows[$t.p.iRow].id, $t.p.iRow, $t.p.iCol, e) ) {
 						return;
 					}
 				}
@@ -700,7 +700,6 @@ $.jgrid.extend({
 								e.preventDefault();
 							}
 						}
-
 						break;
 					case 39: // right
 						if(currindex+1 < len) {
