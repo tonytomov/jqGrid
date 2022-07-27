@@ -672,17 +672,26 @@ $.jgrid.extend({
 			} catch(e) {}
 		});
 	},
-	ariaHeaderGrid : function() {
+	ariaHeaderGrid : function( p ) {
+		var o = $.extend({
+			onHeaderKeyCheck : null
+		}, p || {});		
 		return this.each(function (){
 			var $t = this,
 			getstyle = $.jgrid.getMethod("getStyleUI"),
 			highlight = getstyle($t.p.styleUI+'.common','highlight', true),
 			htable = $("#gbox_"+$t.p.id).find(".ui-jqgrid-hbox>table").first();
+			var onHeaderKeyCheck = $.jgrid.isFunction(o.onHeaderKeyCheck) ? o.onHeaderKeyCheck : false;
+
 			$('tr.ui-jqgrid-labels', htable).on("keydown", function(e) {
 				var currindex = $t.p.selHeadInd;
 				var key = e.which || e.keyCode;
 				var len = $t.grid.headers.length;
-
+				if(onHeaderKeyCheck) {
+					if(!onHeaderKeyCheck.call($t, currindex, e) ) {
+						return;
+					}
+				}
 				switch (key) {
 					case 37: // left
 						if(currindex-1 >= 0) {
@@ -858,7 +867,7 @@ $.jgrid.extend({
 		}, p || {});
 		return this.each(function(){
 			if( o.header ) {
-				$(this).jqGrid('ariaHeaderGrid');
+				$(this).jqGrid('ariaHeaderGrid', o);
 			}
 			if( o.body ) {
 				if(o.excel) {
