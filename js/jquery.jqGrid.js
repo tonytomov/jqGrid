@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-07-11
+* @license Guriddo jqGrid JS - v5.7.0 - 2022-07-27
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1097,8 +1097,8 @@ $.extend($.jgrid,{
 			tb.p._results = {};
 		}// else {
 		//}
-		var _cnth = ['cb', 'rn', 'sc', 'subgrid', 'col_name'], // exclude search here
-				_cnthSet = new Set(_cnth.concat(tb.p._fthc) ); // add hidden columns
+		var _cnth = [...new Set([...opt._cnth ,...opt.visibleColumns])], // exclude search here
+				_cnthSet = new Set([..._cnth,...tb.p._fthc]); // add hidden columns
 		//$(tb).jqGrid('hideCol',tb.p._avc.filter(x=>!_cnth.includes(x)));
 		$(tb).jqGrid('hideCol',tb.p._avc.filter(function(x) { 
 			return !_cnth.includes(x);
@@ -1607,7 +1607,7 @@ $.extend($.jgrid,{
 				hidden : "",
 				overlay: "ui-overlay",
 				active : "active",
-				error : "alert-danger",
+				error : "alert alert-danger",
 				button : "btn btn-light",
 				content : ""
 			},
@@ -2229,7 +2229,9 @@ $.fn.jqGrid = function( pin ) {
 				colName : "Search Col", // header title 
 				colmenu : true, // special colmenu
 				searchOnEnter : true,
-				aOperands : ['cn', 'bw', 'ew', 'eq', 'ne'] // allowed options
+				aOperands : ['cn', 'bw', 'ew', 'eq', 'ne'], // allowed options
+				_cnth : ['cb', 'rn', 'sc', 'subgrid', 'col_name'], // internal (just in case)
+				visibleColumns : []
 			}
 		}, $.jgrid.defaults , pin );
 		if (localData !== undefined) {
@@ -3619,7 +3621,7 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.reccount === 0 ) {
 				var classes = ts.p.emptyRecordRow
 					? getstyle(stylemodule, 'rowBox', true, 'jqgrow ui-row-'+ ts.p.direction+' not-editable-row not-editable-cell '+ disabled)
-					: 'jqfirstrow not-editable-row not-editable-cell',
+					: 'jqgfirstrow not-editable-row not-editable-cell',
 				tstr = constructTr("norecs", false, classes, {}, "");
 				tstr += ts.p.emptyRecordRow
 				? "<td style='text-align:center;' colspan='"+grid.headers.length+"'>"+$.jgrid.getRegional(ts, "defaults.emptyrecords", ts.p.emptyrecords )+"</td>" 
@@ -3708,7 +3710,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 					gs = tmpordarr.join();
 					if( $.jgrid.trim(prm[pN.sort]) !== "") {
-						prm[pN.sort] = gs + " ,"+prm[pN.sort];
+						prm[pN.sort] = gs!=="" ? gs + " ,"+prm[pN.sort] : prm[pN.sort];
 					} else {
 						prm[pN.sort] = gs;
 						prm[pN.order] = "";
@@ -4367,6 +4369,7 @@ $.fn.jqGrid = function( pin ) {
 					if(op.columns_selectAll) {
 						$("#chk_all", "#col_menu").prop("checked",  $('.chk_selected:checked', "#col_menu").length === $('.chk_selected', "#col_menu").length );
 					}
+					$("#column_menu").remove();
 				}
 			}).hover(function(){
 				$(this).addClass(hover);
@@ -4735,7 +4738,7 @@ $.fn.jqGrid = function( pin ) {
 				} else if( v==='freeze') {
 					buildFreeze( index, isfreeze);
 				}
-				if(v.indexOf('sort') !== -1 || v === 'grouping' || v==='freeze') {
+				if(v === 'grouping' || v==='freeze') {
 					$(this).remove();
 				}
 				if(ts.p.colMenuCustom.hasOwnProperty(v)) {
@@ -5019,7 +5022,7 @@ $.fn.jqGrid = function( pin ) {
 			trhead += "<table role='presentation' style='width:"+ts.p.tblwidth+"px' "+getstyle(stylemodule,'headerRowTable', false, 'ui-jqgrid-hrtable ui-common-table')+ "><tbody><tr role='row' "+getstyle(stylemodule,'headerRowBox', false, 'hrheadrow hrheadrow-'+dir)+">"; 
 		}
 		var thr = $(thead).find("tr").first(),
-		firstr = "<tr class='jqgfirstrow' role='row'>",
+		firstr = "<tr class='jqgfirstrow "+ (ts.p.direction === "rtl"? "ui-row-rtl'" :"'") +" role='row'>",
 		clicks =0,
 		// header font for full autosize
 		hdr_font = $.jgrid.getFont( $("th",thr).first()[0] );
@@ -8632,8 +8635,8 @@ $.extend($.jgrid,{
 			dataheight: 'auto',
 			drag: true,
 			resize: false,
-			left:250,
-			top:170,
+			left:(window.innerWidth / 2) - 145,
+			top:window.innerHeight / 2 - 150,
 			zIndex : 1000,
 			jqModal : true,
 			modal : false,
@@ -21662,7 +21665,7 @@ $.jgrid.extend({
 					return;
 				}
 				if(onKeyCheck) {
-					if(!onKeyCheck.call($t,e.target) ) {
+					if(!onKeyCheck.call($t, $t.rows[$t.p.iRow].id, $t.p.iRow, $t.p.iCol, e) ) {
 						return;
 					}
 				}
@@ -21932,7 +21935,7 @@ $.jgrid.extend({
 					return;
 				}
 				if(onKeyCheck) {
-					if(!onKeyCheck.call($t,e.target) ) {
+					if(!onKeyCheck.call($t, $t.rows[$t.p.iRow].id, $t.p.iRow, $t.p.iCol, e) ) {
 						return;
 					}
 				}
@@ -22163,17 +22166,26 @@ $.jgrid.extend({
 			} catch(e) {}
 		});
 	},
-	ariaHeaderGrid : function() {
+	ariaHeaderGrid : function( p ) {
+		var o = $.extend({
+			onHeaderKeyCheck : null
+		}, p || {});		
 		return this.each(function (){
 			var $t = this,
 			getstyle = $.jgrid.getMethod("getStyleUI"),
 			highlight = getstyle($t.p.styleUI+'.common','highlight', true),
 			htable = $("#gbox_"+$t.p.id).find(".ui-jqgrid-hbox>table").first();
+			var onHeaderKeyCheck = $.jgrid.isFunction(o.onHeaderKeyCheck) ? o.onHeaderKeyCheck : false;
+
 			$('tr.ui-jqgrid-labels', htable).on("keydown", function(e) {
 				var currindex = $t.p.selHeadInd;
 				var key = e.which || e.keyCode;
 				var len = $t.grid.headers.length;
-
+				if(onHeaderKeyCheck) {
+					if(!onHeaderKeyCheck.call($t, currindex, e) ) {
+						return;
+					}
+				}
 				switch (key) {
 					case 37: // left
 						if(currindex-1 >= 0) {
@@ -22191,7 +22203,6 @@ $.jgrid.extend({
 								e.preventDefault();
 							}
 						}
-
 						break;
 					case 39: // right
 						if(currindex+1 < len) {
@@ -22350,7 +22361,7 @@ $.jgrid.extend({
 		}, p || {});
 		return this.each(function(){
 			if( o.header ) {
-				$(this).jqGrid('ariaHeaderGrid');
+				$(this).jqGrid('ariaHeaderGrid', o);
 			}
 			if( o.body ) {
 				if(o.excel) {

@@ -100,7 +100,9 @@
 .ui-th-ltr, .ui-jqgrid .ui-jqgrid-htable th.ui-th-ltr {}
 .ui-th-rtl, .ui-jqgrid .ui-jqgrid-htable th.ui-th-rtl {text-align: center; }
 .ui-first-th-ltr { }
-.ui-first-th-rtl { }
+.ui-first-th-rtl { 
+	
+}
 .ui-jqgrid tr.jqg-first-row-header th {
 	height:auto; 
 	border-top:none; 
@@ -109,6 +111,7 @@
 	border-bottom: none; 
 	border-left: none;
 	padding-right: 2px;
+	
 	/*text-align: center;*/
 }
 .ui-jqgrid tr.jqg-first-row-header {
@@ -176,11 +179,11 @@
 }
 .ui-jqgrid tr.ui-search-toolbar td input { 
 	font-size: inherit;
-	/*padding: 3px 0;*/
+	padding: 3px 0;
 }
 .ui-jqgrid tr.ui-search-toolbar select {
 	font-size: inherit;
-	padding: 0;
+	padding: 3px 0;
 }
 .ui-jqgrid .ui-th-column > .ui-th-div  {
 	padding-left: 7px;
@@ -212,6 +215,7 @@
 .ui-jqgrid .table-bordered th.ui-th-rtl
 {
 	border-right:0px none !important;
+	border-left-color: var(--tbl-brd-color, #ddd);
 }
 .ui-jqgrid .table-bordered tr.ui-row-rtl td
 {
@@ -978,6 +982,7 @@ a.g-menu-item, a.soptclass, a.clearsearchclass {
 }
 .ui-search-table .columns, .ui-search-table .operators {
 	padding-right: 5px;
+	width : 33%;
 }
 .ui-search-table .columns select,
 .ui-search-table .operators select,
@@ -1037,7 +1042,7 @@ ul.ui-search-menu li, ul.ui-nav-menu li {
 .searchFilter .ui-search-table th
 {
 	border-top: 0px none !important;
-	padding: .45rem;
+	/*padding: .45rem;*/
 }
 
 .searchFilter .queryresult {
@@ -1046,6 +1051,7 @@ ul.ui-search-menu li, ul.ui-nav-menu li {
 .searchFilter .queryresult tr td{
 	border-top: 0px none;
 	padding : .45rem;
+	border-color: var(--tbl-brd-color, #ddd);
 }
 .ui-search-label { 
 	padding-left: 5px;
