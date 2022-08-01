@@ -629,15 +629,16 @@ $.jgrid.extend({
 						}
 
 					}
-					if (cghi.titleText) {
+					if (titleText) {
 						var fl = $th.find("div.ui-th-div")[0].firstChild;
 						cghi.savedLabel = fl.data;
 						cghi.cellInd = i;
-						fl.data = cghi.titleText;
+						fl.data = titleText;
 						if (ts.p.headertitles) {
-							$th.attr("title", cghi.titleText);
+							$th.attr("title", titleText);
 						}
 					}
+					$th.addClass(className);
 					for( skip=0;skip < numberOfColumns-1;skip++) {
 						$(ths[skip+i+1].el).hide();
 						ts.p.colModel[skip+i+1].hidden = true;
