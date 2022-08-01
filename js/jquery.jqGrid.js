@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-07-27
+* @license Guriddo jqGrid JS - v5.7.0 - 2022-08-01
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -14387,15 +14387,16 @@ $.jgrid.extend({
 						}
 
 					}
-					if (cghi.titleText) {
+					if (titleText) {
 						var fl = $th.find("div.ui-th-div")[0].firstChild;
 						cghi.savedLabel = fl.data;
 						cghi.cellInd = i;
-						fl.data = cghi.titleText;
+						fl.data = titleText;
 						if (ts.p.headertitles) {
-							$th.attr("title", cghi.titleText);
+							$th.attr("title", titleText);
 						}
 					}
+					$th.addClass(className);
 					for( skip=0;skip < numberOfColumns-1;skip++) {
 						$(ths[skip+i+1].el).hide();
 						ts.p.colModel[skip+i+1].hidden = true;
