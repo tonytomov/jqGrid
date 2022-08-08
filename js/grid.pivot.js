@@ -141,7 +141,7 @@ $.jgrid.extend({
 				} else {
 					switch (oper) {
 						case  "sum" : 
-							ret = parseFloat(v||0) + parseFloat((rc[field]||0));
+							ret = $.jgrid.floatNum(v) + $.jgrid.floatNum(rc[field]);
 							break;
 						case "count" :
 							if(v==="" || v == null) {
@@ -155,20 +155,20 @@ $.jgrid.extend({
 							break;
 						case "min" : 
 							if(v==="" || v == null) {
-								ret = parseFloat(rc[field]||0);
+								ret = $.jgrid.floatNum(rc[field]);
 							} else {
-								ret =Math.min(parseFloat(v),parseFloat(rc[field]||0));
+								ret =Math.min($.jgrid.floatNum(v),$.jgrid.floatNum(rc[field]));
 							}
 							break;
 						case "max" : 
 							if(v==="" || v == null) {
-								ret = parseFloat(rc[field]||0);
+								ret = $.jgrid.floatNum(rc[field]);
 							} else {
-								ret = Math.max(parseFloat(v),parseFloat(rc[field]||0));
+								ret = Math.max($.jgrid.floatNum(v),$.jgrid.floatNum(rc[field]));
 							}
 							break;
 						case "avg" : //avg grouping
-							ret = (parseFloat(v||0) * (_cnt -1) + parseFloat(rc[field]||0) ) /_cnt;
+							ret = ($.jgrid.floatNum(v) * (_cnt -1) + $.jgrid.floatNum(rc[field]) ) /_cnt;
 							break;	
 					}
 				}
@@ -467,9 +467,9 @@ $.jgrid.extend({
 					for(i=xlen;i<columns.length;i++) {
 						nm = columns[i].name;
 						if(!summaries[nm]) {
-							summaries[nm] = parseFloat(pivotrows[plen][nm] || 0);
+							summaries[nm] = $.jgrid.floatNum(pivotrows[plen][nm]);
 						} else {
-							summaries[nm] += parseFloat(pivotrows[plen][nm] || 0);
+							summaries[nm] += $.jgrid.floatNum(pivotrows[plen][nm]);
 						}
 					}
 				}

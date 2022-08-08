@@ -6852,14 +6852,14 @@ $.jgrid.extend({
 								val = $.jgrid.htmlDecode($t.rows[i].cells[pos].innerHTML);
 							}
 							if(mathopr) {
-								v = parseFloat(val);
-								if(!isNaN(v)) {
-									sum += v;
-									if (max === undefined) {max = min = v;}
-									min = Math.min(min, v);
-									max = Math.max(max, v);
-									dlen++;
-								}
+								v = $.jgrid.floatNum(val);
+								//if(!isNaN(v)) {
+								sum += v;
+								if (max === undefined) {max = min = v;}
+								min = Math.min(min, v);
+								max = Math.max(max, v);
+								dlen++;
+								//}
 							} else if(obj) {
 								ret.push( {id:$t.rows[i].id,value:val} );
 							} else {
