@@ -62,8 +62,7 @@ $.extend($.jgrid,{
 		if( defval === undefined ) {
 			defval = 0;
 		}
-		val = parseFloat(val);
-		return !isNaN(val) ? val : defval;
+		return !isNaN(val) ? Number(val) : defval;
 	},
 	htmlDecode : function(value){
 		if(value && (value==='&nbsp;' || value==='&#160;' || (value.length===1 && value.charCodeAt(0)===160))) { return "";}
