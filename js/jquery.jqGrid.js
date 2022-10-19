@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-09-23
+* @license Guriddo jqGrid JS - v5.7.0 - 2022-10-19
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2587,7 +2587,7 @@ $.fn.jqGrid = function( pin ) {
 			} else {
 				v = cellVal(cellval);
 			}
-			if(cm.autosize) {
+			if(cm.autosize && ts.p.autoResizing) {
 				if(!cm._maxsize) {
 					cm._maxsize = cm.canvas_width;
 				}
