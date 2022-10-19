@@ -2587,7 +2587,7 @@ $.fn.jqGrid = function( pin ) {
 			} else {
 				v = cellVal(cellval);
 			}
-			if(cm.autosize && ts.p.autoResizing) {
+			if(ts.p.autoResizing && cm.autosize) {
 				if(!cm._maxsize) {
 					cm._maxsize = cm.canvas_width;
 				}
