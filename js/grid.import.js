@@ -267,6 +267,14 @@ $.extend($.jgrid,{
 			if(grid.jqGrid('isGroupHeaderOn')) {
 				grid.jqGrid('refreshGroupHeaders');
 			}
+			// searchcol
+			if(ret.searchCols) {
+				for(var key in ret._results) {
+					if(ret._results.hasOwnProperty(key)) {
+						$("#jqs_" + jqGridId + "_"+key).val(ret._results[key].v);
+					}
+				}
+			}
 			// pivotgrid
 			// 
 			// inline navigator
@@ -493,6 +501,10 @@ $.extend($.jgrid,{
 					gprm.colModel.splice(0,1);
 				}
 				if(gprm.multiselect) {
+					gprm.colNames.splice(0,1);
+					gprm.colModel.splice(0,1);
+				}
+				if(gprm.searchCols) {
 					gprm.colNames.splice(0,1);
 					gprm.colModel.splice(0,1);
 				}
