@@ -6365,6 +6365,30 @@ $.jgrid.extend({
 	showCol : function(colname) {
 		return this.each(function(){$(this).jqGrid("showHideCol",colname,"");});
 	},
+	hideSearchCol : function(colname) {
+		return this.each(function(){
+			try {
+				var index = this.p._avc.indexOf(colname);
+				if(index > -1 ) {
+					this.p._avc.splice(index, 1);
+					this.p._fthc.push( colname );
+					$(this).jqGrid("showHideCol",colname,"none");
+				}
+			} catch(_e) {} 
+		});
+	},
+	showSearchCol : function(colname) {
+		return this.each(function(){
+			try {
+				var index = this.p._fthc.indexOf(colname);
+				if(index > -1 ) {
+					this.p._fthc.splice(index, 1);
+					this.p._avc.push( colname );
+					$(this).jqGrid("showHideCol",colname,"");
+				}
+			} catch(_e) {} 
+		});
+	},
 	remapColumns : function(permutation, updateCells, keepHeader) {
 		function resortArray(a) {
 			var ac;
