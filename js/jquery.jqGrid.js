@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-10-26
+* @license Guriddo jqGrid JS - v5.7.0 - 2022-10-28
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -700,7 +700,7 @@ $.extend($.jgrid,{
 				return self;
 			}
 			$.each(_data,function(){
-				if( $.jgrid.runCode( match.replace(/this/g, JSON.stringify(this)) ) ){ //eval(match)
+				if($.jgrid.runCode.call($t, match.replace(/this/g, JSON.stringify(this)) ) ){ //eval(match)
 					results.push(this);
 				}
 			});
@@ -868,7 +868,8 @@ $.extend($.jgrid,{
 			return self;
 		};
 		this.user=function(op, f, v){
-			self._append('$t.p.customFilterDef.' + op + '.action.call($t ,{rowItem:this, searchName:"' + f + '",searchValue:"' + v + '"})');			
+			var _a = '$("#'+$t.p.id+'")[0]';
+			self._append(_a + '.p.customFilterDef.' + op + '.action.call('+_a+' ,{rowItem: this, searchName:"' + f + '",searchValue:"' + v + '"})');
 			self._setCommand(self.user,f);
 			self._resetNegate();
 			return self;
