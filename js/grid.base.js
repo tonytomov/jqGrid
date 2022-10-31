@@ -4212,7 +4212,13 @@ $.fn.jqGrid = function( pin ) {
 						this.hidden = !ts.p.groupingView.groupColumnShow[ind];
 					}
 				}
-				this.widthOrg = cw = intNum(this.width,0);
+				this.widthOrg = intNum(this.width,0);
+				// 
+				if(this.maxWidth && intNum(this.width,0) > intNum(this.maxWidth,0) ) {
+					this.width = this.maxWidth;
+				}
+				//
+				cw = intNum(this.width,0);
 				if(this.hidden===false){
 					initwidth += cw+brd;
 					if(this.fixed) {
@@ -4235,16 +4241,33 @@ $.fn.jqGrid = function( pin ) {
 					hs = true;
 				}
 				initwidth =0;
+				var maxwidthcount = 0, diffmaxwidth = 0, notmax = [], notmaxwidth=0;
 				$.each(ts.p.colModel, function(i) {
 					if(this.hidden === false && !this.fixed){
 						cw = Math.round(aw*this.width/(ts.p.tblwidth-brd*vc-gw));
+						if(this.maxWidth && cw > this.maxWidth) {
+							maxwidthcount++;
+							diffmaxwidth += cw;
+							this.width = this.maxWidth;
+						} else {
 						this.width =cw;
-						initwidth += cw;
+							notmaxwidth += cw;
+							notmax.push(i+"");
+						}
+						initwidth += this.width	;
 						lvc = i;
 					}
 				});
 				cr = 0;
 				chrome_fix = bstw === 0 ? -1 :0;
+				initwidth += diffmaxwidth;
+				if(maxwidthcount > 0 && vc > maxwidthcount) {
+					// do recalc
+					for(var nmi=0;nmi<notmax.length; nmi++) {
+						var jj  = parseInt(notmax[nmi],10);
+						ts.p.colModel[jj].width = ts.p.colModel[jj].width + Math.round(ts.p.colModel[jj].width*diffmaxwidth/notmaxwidth);
+					}
+				}
 				if (hs) {
 					if(grid.width-gw-(initwidth+brd*vc) !== scw){
 						cr = grid.width-gw-(initwidth+brd*vc)-scw;
