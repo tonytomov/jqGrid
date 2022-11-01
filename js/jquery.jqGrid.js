@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-10-31
+* @license Guriddo jqGrid JS - v5.7.0 - 2022-11-01
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2047,6 +2047,7 @@ $.fn.jqGrid = function( pin ) {
 		var p = $.extend(true,{
 			url: "",
 			height: 150,
+			defaultColWidth : 150,
 			page: 1,
 			rowNum: 20,
 			rowTotal : null,
@@ -4198,7 +4199,7 @@ $.fn.jqGrid = function( pin ) {
 		},
 		setColWidth = function () {
 			var initwidth = 0, brd=$.jgrid.cell_width? 0: intNum(ts.p.cellLayout,0), vc=0, lvc, 
-					scw=intNum(ts.p.scrollOffset,0),cw,hs=false,aw,gw=0,cr, chrome_fix;
+					scw=intNum(ts.p.scrollOffset,0),cw,hs=false,aw,gw=0,cr, chrome_fix, lvmc;
 			$.each(ts.p.colModel, function() {
 				if(this.hidden === undefined) {this.hidden=false;}
 				if(ts.p.grouping && ts.p.autowidth) {
@@ -4244,6 +4245,7 @@ $.fn.jqGrid = function( pin ) {
 							maxwidthcount++;
 							diffmaxwidth += cw;
 							this.width = this.maxWidth;
+							lvmc = i;
 						} else {
 						this.width =cw;
 							notmaxwidth += cw;
@@ -4256,11 +4258,19 @@ $.fn.jqGrid = function( pin ) {
 				cr = 0;
 				chrome_fix = bstw === 0 ? -1 :0;
 				initwidth += diffmaxwidth;
-				if(maxwidthcount > 0 && vc > maxwidthcount) {
+				var jj = -1;
+				// maxWidth columns available
+				if(maxwidthcount > 0 && vc > 0) {
 					// do recalc
+					var testsum = 0;
 					for(var nmi=0;nmi<notmax.length; nmi++) {
-						var jj  = parseInt(notmax[nmi],10);
+						jj  = parseInt(notmax[nmi],10);
+						testsum += Math.round(ts.p.colModel[jj].width*diffmaxwidth/notmaxwidth);
 						ts.p.colModel[jj].width = ts.p.colModel[jj].width + Math.round(ts.p.colModel[jj].width*diffmaxwidth/notmaxwidth);
+					}
+					// in case recalculated sum diffrent from the remeining sum
+					if(testsum !== diffmaxwidth) {
+						ts.p.colModel[jj].width += diffmaxwidth-testsum;
 					}
 				}
 				if (hs) {
@@ -4270,7 +4280,11 @@ $.fn.jqGrid = function( pin ) {
 				} else if(!hs && Math.abs(grid.width-gw-(initwidth+brd*vc)) !== 0) {
 					cr = grid.width-gw-(initwidth+brd*vc) - bstw;
 				}
+				if(jj >-1 && lvc === lvmc) { // in case last visible = last maxWidth column
+					lvc = jj; // change it
+				}
 				ts.p.colModel[lvc].width += cr + chrome_fix;
+				//}
 				ts.p.tblwidth = initwidth+cr+brd*vc+gw;
 				if(ts.p.tblwidth > ts.p.width) {
 					ts.p.colModel[lvc].width -= (ts.p.tblwidth - parseInt(ts.p.width,10));
@@ -4935,7 +4949,7 @@ $.fn.jqGrid = function( pin ) {
 			idn = tmpcm.index || tmpcm.name;
 			thead += "<div class='ui-th-div' id='jqgh_"+ts.p.id+"_"+tmpcm.name+"' "+tdc+">"+ts.p.colNames[i];
 			if(!tmpcm.width)  {
-				tmpcm.width = 150;
+				tmpcm.width = ts.p.defaultColWidth;
 			} else {
 				tmpcm.width = parseInt(tmpcm.width,10);
 			}
