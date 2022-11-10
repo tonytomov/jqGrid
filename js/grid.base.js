@@ -1,15 +1,5 @@
-// ==ClosureCompiler==
-// @compilation_level SIMPLE_OPTIMIZATIONS
-
-/**
- * @license Guriddo jqGrid JS 5.7.0 (2022-03-09)
- * Copyright (c) 2008, Tony Tomov, tony@trirand.com
- *
- * License: http://guriddo.net/?page_id=103334
- */
-//jsHint options
-/*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery, window, define, navigator, document */
+/*jshint eqeqeq:false */
+/*global jQuery, define */
 (function( factory ) {
 	"use strict";
 	if ( typeof define === "function" && define.amd ) {
