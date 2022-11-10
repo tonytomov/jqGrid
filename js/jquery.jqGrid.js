@@ -1226,6 +1226,85 @@ $.extend($.jgrid,{
 			$.jgrid.searchColOnEnter(gridid, rid, t,e);
 		}, 50);
 	},
+	comboGrid : function ( elemId, opt, gridopt ) {
+		/*
+		opt  = {
+			data : "", // string, array or function
+			return_fld : "", //string or function
+			deaultSearch : "bn"
+		};
+		*/
+		var gridId =  $.jgrid.randId("combo");
+		var divId = "div"+gridId;
+		var save_datatype = gridopt.datatype;
+		gridopt.datatype = 'local';
+		gridopt.onSelectRow = function(id) {
+			var srow = $("#"+gridId).jqGrid('getRowData',id);
+			if(!$.isEmptyObject(srow)) {
+				var ret = $.jgrid.isFunction( opt.return_fld ) ? opt.return_fld.call(this, srow) : srow[opt.return_fld];
+				$("#"+elemId).val( ret );
+				$("#"+divId).hide();
+			}
+		};
+		gridopt.data = [];
+		gridopt.scrollrows = true;
+		$('body').append("<div id='"+divId+"'><table id='"+gridId+"'></table>");
+		if(gridopt.pager) {
+			$('body').append("<div id='"+gridopt.pager+"'></div>");
+		}
+		$('body').append("</div>");
+		$("#"+gridId).jqGrid( gridopt );
+		$("#"+gridId).jqGrid('bindKeys', {onSelectRow : false});
+		var coord = $("#"+elemId).position();
+		$("#"+divId).css({position:"absolute", top:(coord.top+70)+"px", left: (coord.left+10)+"px", zIndex: 20000}).hide();
+		$("#"+elemId).attr("autocomplete","off").on("keyup", function(e){
+			var timer, self = this;
+			e.preventDefault();
+			if($("#"+divId).is(":hidden")) {
+				var coord = $("#"+elemId).position();
+				$("#"+divId).show().css({top:(coord.top+70)+"px", left: (coord.left+10)+"px"});
+			}
+			//timer = null;
+
+			if($.inArray(e.key, ['Enter', 'Escape', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']) > -1) {
+			var eee =  $.Event('keydown'), $t = this;
+
+			switch (e.key) {
+				case 'Enter' :
+					// select the row
+					var srow = $("#"+gridId).jqGrid('getRowData',$("#"+gridId)[0].p.selrow);
+					if(!$.isEmptyObject(srow)) {
+						$t.value = srow.Country;
+						$("#"+divId).hide();
+					}
+					break;
+				case 'Escape' :
+					$("#"+divId).hide();
+					break;
+				case 'ArrowUp' :
+					eee.keyCode = 38;
+					$("#"+gridId).trigger(eee);
+					break;
+				case 'ArrowDown' :
+					//console.log(eee);
+					eee.keyCode = 40;
+					$("#"+gridId).trigger(eee);
+					break;
+			}
+			} else {
+				$("#"+gridId).jqGrid('filterInput', self.value, {defaultSearch: opt.defaultSearch || 'bw', selectFirstFound : true});
+			}
+		});
+		if(opt.data) {
+			if(typeof opt.data === 'string') {
+				$("#"+gridId).jqGrid('setGridParam', {url : opt.data});
+			} else if (Array.isArray(opt.data) ) {
+				$("#"+gridId).jqGrid('setGridParam', {data : opt.data});
+			}
+		}
+		$("#"+gridId).jqGrid('setGridParam', { datatype : save_datatype });
+
+	},
 	styleUI : {
 		jQueryUI : {
 			common : {
