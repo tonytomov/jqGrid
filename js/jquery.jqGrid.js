@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-11-01
+* @license Guriddo jqGrid JS - v5.7.0 - 2022-11-10
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5767,7 +5767,8 @@ $.jgrid.extend({
 		var row;
 		this.each( function(){
 			try {
-				//row = this.rows.namedItem( rowid );
+				row = this.rows.namedItem( rowid );
+				/*
 				var i = this.rows.length;
 				while(i--) {
 					if( rowid.toString() === this.rows[i].id) {
@@ -5775,8 +5776,19 @@ $.jgrid.extend({
 						break;
 					}
 				}
+				*/
 			} catch ( e ) {
 				row = $(this.grid.bDiv).find( "#" + $.jgrid.jqID( rowid ))[0];
+			}
+		});
+		return row;
+	},
+	getGridRowByIndex : function (index) { //first row = 1
+		var row = null;
+		this.each(function(){
+			var i = this.rows.length - 1;
+			if(index >= 1 && i>=1 && index <= i) {
+				row = this.rows[index];
 			}
 		});
 		return row;
@@ -6978,6 +6990,7 @@ $.jgrid.extend({
 			onSpace: null,
 			onLeftKey: null,
 			onRightKey: null,
+			onSelectRow : true,
 			scrollingRows : true
 		},settings || {});
 		return this.each(function(){
@@ -7005,7 +7018,7 @@ $.jgrid.extend({
 								} else {
 									id = r.id;
 								}
-								$($t).jqGrid('setSelection', id, true, event);
+								$($t).jqGrid('setSelection', id, o.onSelectRow, event);
 							}
 							$($t).triggerHandler("jqGridKeyUp", [id, previd, event]);
 							if($.jgrid.isFunction(o.onUpKey)) {
@@ -7026,7 +7039,7 @@ $.jgrid.extend({
 								} else {
 									id = r.id;
 								}
-								$($t).jqGrid('setSelection', id, true, event);
+								$($t).jqGrid('setSelection', id, o.onSelectRow, event);
 							}
 							$($t).triggerHandler("jqGridKeyDown", [id, previd, event]);
 							if($.jgrid.isFunction(o.onDownKey)) {
@@ -11332,7 +11345,9 @@ $.jgrid.extend({
 			groupOp : 'OR',
 			searchAll : false,
 			beforeSearch : null,
-			afterSearch : null
+			afterSearch : null,
+			selectFirstFound : false,
+			firstFoundTimeout : 30
 		}, p || {});
 		return this.each(function(){
 			var $t = this;
@@ -11344,7 +11359,7 @@ $.jgrid.extend({
 				nm = this.index || this.name;
 				sop = this.searchoptions || {};
 				so  = p.defaultSearch ? p.defaultSearch : (sop.sopt) ? sop.sopt[0] : p.defaultSearch;
-				this.search = this.search === false ? false : true;
+				//this.search = this.search == null  ? false : true;
 				if (this.search || p.searchAll) {
 					if (gi > 0) {ruleGroup += ",";}
 					ruleGroup += "{\"field\":\"" + nm + "\",";
@@ -11370,6 +11385,12 @@ $.jgrid.extend({
 			var bsr = $($t).triggerHandler("jqGridFilterInputBeforeSearch") === 'stop' ? true : false;
 			if(!bsr && $.jgrid.isFunction(p.beforeSearch)){bsr = p.beforeSearch.call($t);}
 			if(!bsr) { $($t).jqGrid("setGridParam",{search:true}).trigger("reloadGrid",[{page:1}]); }
+			if(p.selectFirstFound ) {
+				setTimeout(function(){
+					var row = $($t).jqGrid('getGridRowByIndex', 1);
+					$($t).jqGrid("setSelection", row.id, false);
+				}, p.firstFoundTimeout);
+			}
 			$($t).triggerHandler("jqGridFilterInputAfterSearch");
 			if($.jgrid.isFunction(p.afterSearch)){p.afterSearch.call($t);}
 		});
