@@ -6995,6 +6995,7 @@ $.jgrid.extend({
 			onSpace: null,
 			onLeftKey: null,
 			onRightKey: null,
+			onSelectRow : true,
 			scrollingRows : true
 		},settings || {});
 		return this.each(function(){
@@ -7022,7 +7023,7 @@ $.jgrid.extend({
 								} else {
 									id = r.id;
 								}
-								$($t).jqGrid('setSelection', id, true, event);
+								$($t).jqGrid('setSelection', id, o.onSelectRow, event);
 							}
 							$($t).triggerHandler("jqGridKeyUp", [id, previd, event]);
 							if($.jgrid.isFunction(o.onUpKey)) {
@@ -7043,7 +7044,7 @@ $.jgrid.extend({
 								} else {
 									id = r.id;
 								}
-								$($t).jqGrid('setSelection', id, true, event);
+								$($t).jqGrid('setSelection', id, o.onSelectRow, event);
 							}
 							$($t).triggerHandler("jqGridKeyDown", [id, previd, event]);
 							if($.jgrid.isFunction(o.onDownKey)) {
