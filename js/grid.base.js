@@ -1226,7 +1226,7 @@ $.extend($.jgrid,{
 		opt  = {
 			data : "", // string, array or function
 			return_fld : "", //string or function
-			deaultSearch : "bn"
+			deaultSearch : "bw"
 		};
 		*/
 		var gridId =  $.jgrid.randId("combo");
@@ -1250,16 +1250,16 @@ $.extend($.jgrid,{
 		$('body').append("</div>");
 		$("#"+gridId).jqGrid( gridopt );
 		$("#"+gridId).jqGrid('bindKeys', {onSelectRow : false});
-		var coord = $("#"+elemId).position();
+		var coord = $("#"+elemId).attr("autocomplete","off").data("comboGrid", {grid:gridId, divgrid: divId}).position();
 		$("#"+divId).css({position:"absolute", top:(coord.top+70)+"px", left: (coord.left+10)+"px", zIndex: 20000}).hide();
-		$("#"+elemId).attr("autocomplete","off").on("keyup", function(e){
-			var timer, self = this;
+		$("#"+elemId).on("keyup", function(e){
+			var gID = $(this).data("comboGrid").grid, dID=$(this).data("comboGrid").divgrid, self = this;
 			e.preventDefault();
-			if($("#"+divId).is(":hidden")) {
+			if($("#"+dID).is(":hidden")) {
 				var coord = $("#"+elemId).position();
-				$("#"+divId).show().css({top:(coord.top+70)+"px", left: (coord.left+10)+"px"});
+				$("#"+dID).show().css({top:(coord.top+70)+"px", left: (coord.left+10)+"px"});
 			}
-			//timer = null;
+			var timer;
 
 			if($.inArray(e.key, ['Enter', 'Escape', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']) > -1) {
 			var eee =  $.Event('keydown'), $t = this;
@@ -1267,27 +1267,30 @@ $.extend($.jgrid,{
 			switch (e.key) {
 				case 'Enter' :
 					// select the row
-					var srow = $("#"+gridId).jqGrid('getRowData',$("#"+gridId)[0].p.selrow);
+					var srow = $("#"+gID).jqGrid('getRowData',$("#"+gID)[0].p.selrow);
 					if(!$.isEmptyObject(srow)) {
 						$t.value = srow.Country;
-						$("#"+divId).hide();
+						$("#"+dID).hide();
 					}
 					break;
 				case 'Escape' :
-					$("#"+divId).hide();
+					$("#"+dID).hide();
 					break;
 				case 'ArrowUp' :
 					eee.keyCode = 38;
-					$("#"+gridId).trigger(eee);
+					$("#"+gID).trigger(eee);
 					break;
 				case 'ArrowDown' :
 					//console.log(eee);
 					eee.keyCode = 40;
-					$("#"+gridId).trigger(eee);
+					$("#"+gID).trigger(eee);
 					break;
 			}
 			} else {
-				$("#"+gridId).jqGrid('filterInput', self.value, {defaultSearch: opt.defaultSearch || 'bw', selectFirstFound : true});
+				if(timer) { clearTimeout(timer); }
+				timer = setTimeout(function(){ 
+					$("#"+gID).jqGrid('filterInput', self.value, {defaultSearch: opt.defaultSearch || 'bw', selectFirstFound : true});
+				}, 100);
 			}
 		});
 		if(opt.data) {
