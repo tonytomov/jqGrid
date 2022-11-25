@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-11-14
+* @license Guriddo jqGrid JS - v5.7.0 - 2022-11-25
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -20026,7 +20026,7 @@ $.extend($.jgrid,{
 			indent: "0", // indent from left
 			shrinkToFit : "1", //"0"
 			textRotation : "0", // in degree
-			vertical : "middle", // top, bottom
+			vertical : "center", // top, bottom
 			wrapText : "0"
 		}, alignment || {});
 		if( $.isEmptyObject( obj )) {
@@ -20473,7 +20473,7 @@ $.jgrid.extend({
 				parser :[],
 				labels : []
 			};
-			var defaultHeaderStyle = $.jgrid.addExcelStyle( {excel_header_style:""}, {fontId :"2", applyAlignment : "1"} , {horizontal: "center"}, styleSh).excel_header_style;
+			var defaultHeaderStyle = $.jgrid.addExcelStyle( {excel_header_style:""}, {fontId :"2", applyAlignment : "1"} , {horizontal: "center", vertical :"center"}, styleSh).excel_header_style;
 			for ( j=0, ien=cm.length ; j<ien ; j++ ) {
 				cm[j]._expcol = true;
 				if(cm[j].exportcol === undefined) {
@@ -20851,24 +20851,35 @@ $.jgrid.extend({
 				var gh = $t.p.groupHeader, mergecell=[],
 				mrow = 0, key, l;
 				for (l = 0; l < gh.length; l++) {
-					var ghdata = gh[l].groupHeaders, clone ={};
+					var ghdata = gh[l].groupHeaders, clone ={}, colspan = gh[l].useColSpanStyle && gh.length === 1, colToSkip=[];
 					mrow++; j=0;
 					for(j = 0; j < data.header.length; j++  ) {
 						key = data.header[j];
-						clone[key] = "";
+						clone[key] = colspan ? data.labels[j] : "";
+						var start = -1, end = -1;
 						for(var k = 0; k < ghdata.length; k++) {
 							if(ghdata[k].startColumnName === key) {
 								clone[key] = ghdata[k].titleText;
-								var start = $.jgrid.excelCellPos(j) + mrow,
+								start = $.jgrid.excelCellPos(j) + mrow;
 									end = $.jgrid.excelCellPos(j+ghdata[k].numberOfColumns -1) + mrow;
 								mergecell.push({ ref: start+":"+end });
+								if( colspan ) {
+									for(var ck=j+1; ck < j+ghdata[k].numberOfColumns; ck++) {
+										colToSkip.push(ck);
+									}
+								}
 							}
 						}
+						if(start === -1 && end === -1 && colspan && colToSkip.indexOf(j) === -1) {
+							start = $.jgrid.excelCellPos(j) + mrow;
+							end = $.jgrid.excelCellPos(j) + (mrow + 1);
+							mergecell.push({ ref: start+":"+end });
+						}
 					}
-					addRow( clone, true );
+					addRow( clone, true, true );
 				}
 
-				$('row c', rels).attr( 's', '2' ); // bold
+				//$('row c', rels).attr( 's', defaultHeaderStyle ); // bold
 
 				var merge = $.jgrid.makeNode( rels, 'mergeCells', {
 					attr : {
