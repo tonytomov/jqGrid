@@ -1702,20 +1702,10 @@ $.jgrid.extend({
 						groupH = $t.p.groupHeader[gh_len-1];
 					}
 				}
-
-				var inColumnHeader = function (text, columnHeaders) {
-					var length = columnHeaders.length, i;
-					for (i = 0; i < length; i++) {
-						if (columnHeaders[i].startColumnName === text) {
-							return i;
-						}
-					}
-					return -1;
-				};				
 				if(!p.columns.length) {
 					if(groupH !== null) {
 						for(var ij=0;ij<columns.length; ij++){
-							var iCol = inColumnHeader( columns[ij].name, groupH.groupHeaders);
+							var iCol = $.jgrid.inColumnHeader( columns[ij].name, groupH.groupHeaders);
 							if(iCol>=0) {
 								columns[ij].label = groupH.groupHeaders[iCol].titleText + "::" + $t.p.colNames[ij];
 								for(var jj= 1; jj<= groupH.groupHeaders[iCol].numberOfColumns-1; jj++) {

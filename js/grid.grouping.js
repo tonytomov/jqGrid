@@ -576,15 +576,6 @@ $.jgrid.extend({
 			} else {
 				$firstHeaderRow.empty();
 			}
-			var inColumnHeader = function (text, columnHeaders) {
-				var length = columnHeaders.length, i;
-				for (i = 0; i < length; i++) {
-					if (columnHeaders[i].startColumnName === text) {
-						return i;
-					}
-				}
-				return -1;
-			};
 			if(ts.p.frozenColumns) {
 				$(ts).jqGrid("destroyFrozenColumns");
 				frozen = true;
@@ -607,7 +598,7 @@ $.jgrid.extend({
 				th = ths[i].el;
 				$th = $(th);
 				cmi = colModel[i];
-				iCol = inColumnHeader(cmi.name, ts.p.colSpanHeader);
+				iCol = $.jgrid.inColumnHeader(cmi.name, ts.p.colSpanHeader);
 				if (iCol >= 0) {
 					cghi = ts.p.colSpanHeader[iCol];
 					numberOfColumns = cghi.numberOfColumns;
@@ -728,15 +719,6 @@ $.jgrid.extend({
 			} else {
 				$firstHeaderRow.empty();
 			}
-			var inColumnHeader = function (text, columnHeaders) {
-				var length = columnHeaders.length, i;
-				for (i = 0; i < length; i++) {
-					if (columnHeaders[i].startColumnName === text) {
-						return i;
-					}
-				}
-				return -1;
-			};
 			if(ts.p.frozenColumns) {
 				$(ts).jqGrid("destroyFrozenColumns");
 				frozen = true;
@@ -757,7 +739,7 @@ $.jgrid.extend({
 				$("<th>", {role: 'gridcell'}).css(thStyle).addClass("ui-first-th-"+ts.p.direction + " " + (cmi.labelClasses || "") ).appendTo($firstHeaderRow);
 
 				th.style.width = ""; // remove unneeded style
-				iCol = inColumnHeader(cmi.name, o.groupHeaders);
+				iCol = $.jgrid.inColumnHeader(cmi.name, o.groupHeaders);
 				if (iCol >= 0) {
 					cghi = o.groupHeaders[iCol];
 					numberOfColumns = cghi.numberOfColumns;

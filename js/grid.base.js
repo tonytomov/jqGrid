@@ -1303,6 +1303,15 @@ $.extend($.jgrid,{
 		$("#"+gridId).jqGrid('setGridParam', { datatype : save_datatype });
 
 	},
+	inColumnHeader : function (text, columnHeaders) {
+		var length = columnHeaders.length, i;
+		for (i = 0; i < length; i++) {
+			if (columnHeaders[i].startColumnName === text) {
+				return i;
+			}
+		}
+		return -1;
+	},
 	styleUI : {
 		jQueryUI : {
 			common : {
