@@ -1,10 +1,6 @@
 /**
 *
-<<<<<<< HEAD
 * @license Guriddo jqGrid JS - v5.7.0 - 2022-11-25
-=======
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-11-16
->>>>>>> e90efc448138f1c0af255b5bb7ff7d2d80395a8b
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
