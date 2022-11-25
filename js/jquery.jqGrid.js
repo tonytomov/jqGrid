@@ -1308,6 +1308,15 @@ $.extend($.jgrid,{
 		$("#"+gridId).jqGrid('setGridParam', { datatype : save_datatype });
 
 	},
+	inColumnHeader : function (text, columnHeaders) {
+		var length = columnHeaders.length, i;
+		for (i = 0; i < length; i++) {
+			if (columnHeaders[i].startColumnName === text) {
+				return i;
+			}
+		}
+		return -1;
+	},
 	styleUI : {
 		jQueryUI : {
 			common : {
@@ -11137,20 +11146,10 @@ $.jgrid.extend({
 						groupH = $t.p.groupHeader[gh_len-1];
 					}
 				}
-
-				var inColumnHeader = function (text, columnHeaders) {
-					var length = columnHeaders.length, i;
-					for (i = 0; i < length; i++) {
-						if (columnHeaders[i].startColumnName === text) {
-							return i;
-						}
-					}
-					return -1;
-				};				
 				if(!p.columns.length) {
 					if(groupH !== null) {
 						for(var ij=0;ij<columns.length; ij++){
-							var iCol = inColumnHeader( columns[ij].name, groupH.groupHeaders);
+							var iCol = $.jgrid.inColumnHeader( columns[ij].name, groupH.groupHeaders);
 							if(iCol>=0) {
 								columns[ij].label = groupH.groupHeaders[iCol].titleText + "::" + $t.p.colNames[ij];
 								for(var jj= 1; jj<= groupH.groupHeaders[iCol].numberOfColumns-1; jj++) {
@@ -14499,15 +14498,6 @@ $.jgrid.extend({
 			} else {
 				$firstHeaderRow.empty();
 			}
-			var inColumnHeader = function (text, columnHeaders) {
-				var length = columnHeaders.length, i;
-				for (i = 0; i < length; i++) {
-					if (columnHeaders[i].startColumnName === text) {
-						return i;
-					}
-				}
-				return -1;
-			};
 			if(ts.p.frozenColumns) {
 				$(ts).jqGrid("destroyFrozenColumns");
 				frozen = true;
@@ -14530,7 +14520,7 @@ $.jgrid.extend({
 				th = ths[i].el;
 				$th = $(th);
 				cmi = colModel[i];
-				iCol = inColumnHeader(cmi.name, ts.p.colSpanHeader);
+				iCol = $.jgrid.inColumnHeader(cmi.name, ts.p.colSpanHeader);
 				if (iCol >= 0) {
 					cghi = ts.p.colSpanHeader[iCol];
 					numberOfColumns = cghi.numberOfColumns;
@@ -14651,15 +14641,6 @@ $.jgrid.extend({
 			} else {
 				$firstHeaderRow.empty();
 			}
-			var inColumnHeader = function (text, columnHeaders) {
-				var length = columnHeaders.length, i;
-				for (i = 0; i < length; i++) {
-					if (columnHeaders[i].startColumnName === text) {
-						return i;
-					}
-				}
-				return -1;
-			};
 			if(ts.p.frozenColumns) {
 				$(ts).jqGrid("destroyFrozenColumns");
 				frozen = true;
@@ -14680,7 +14661,7 @@ $.jgrid.extend({
 				$("<th>", {role: 'gridcell'}).css(thStyle).addClass("ui-first-th-"+ts.p.direction + " " + (cmi.labelClasses || "") ).appendTo($firstHeaderRow);
 
 				th.style.width = ""; // remove unneeded style
-				iCol = inColumnHeader(cmi.name, o.groupHeaders);
+				iCol = $.jgrid.inColumnHeader(cmi.name, o.groupHeaders);
 				if (iCol >= 0) {
 					cghi = o.groupHeaders[iCol];
 					numberOfColumns = cghi.numberOfColumns;
@@ -16285,7 +16266,7 @@ $.jgrid.extend({
     columnChooser : function(opts) {
 		var self = this, selector, select, colMap = {}, fixedCols = [], dopts, mopts, $dialogContent, multiselectData, listHeight,
 			colModel = self.jqGrid("getGridParam", "colModel"),
-			colNames = self.jqGrid("getGridParam", "colNames"),
+			colNames = $.extend( [], self.jqGrid("getGridParam", "colNames")),
 			getMultiselectWidgetData = function ($elem) {
 				return ($.ui.multiselect.prototype && $elem.data($.ui.multiselect.prototype.widgetFullName || $.ui.multiselect.prototype.widgetName)) ||
 					$elem.data("ui-multiselect") || $elem.data("multiselect");
@@ -16295,7 +16276,6 @@ $.jgrid.extend({
 		if ($("#colchooser_" + $.jgrid.jqID(self[0].p.id)).length) { return; }
 		selector = $('<div id="colchooser_'+self[0].p.id+'" style="position:relative;overflow:hidden"><div><select multiple="multiple"></select></div></div>');
 		select = $('select', selector);
-
 		function insert(perm,i,v) {
 			var a, b;
 			if(i>=0){
@@ -16335,6 +16315,7 @@ $.jgrid.extend({
 			width : 400,
 			height : 240,
 			classname : null,
+			groupHeaders : false,
 			done : function(perm) { if (perm) { self.jqGrid("remapColumns", perm, true); } },
 			/* msel is either the name of a ui widget class that
 			   extends a multiselect, or a function that supports
@@ -16415,7 +16396,9 @@ $.jgrid.extend({
 					opts.done.call(self);
 				}
 			},
-			msel_opts : {}
+			msel_opts : {
+				dividerLocation : 0.5
+			}
 		}, regional, opts || {} );
 		if($.ui) {
 			if ($.ui.multiselect && $.ui.multiselect.defaults) {
@@ -16428,6 +16411,23 @@ $.jgrid.extend({
 				opts.msel_opts = $.extend($.ui.multiselect.defaults, opts.msel_opts);
 			}
 		}
+		if( self.jqGrid('isGroupHeaderOn') && opts.groupHeaders) {
+			var gh_len = self[0].p.groupHeader.length,
+			// use the last set one
+			groupH = self[0].p.groupHeader[gh_len-1];
+			
+			for(var ij=0;ij<colNames.length; ij++){
+				var iCol = $.jgrid.inColumnHeader( colModel[ij].name, groupH.groupHeaders);
+				if(iCol>=0) {
+					colNames[ij] = groupH.groupHeaders[iCol].titleText + "::" + colNames[ij];
+					for(var jj= 1; jj<= groupH.groupHeaders[iCol].numberOfColumns-1; jj++) {
+						colNames[ij+jj] = groupH.groupHeaders[iCol].titleText + "::" + colNames[ij+jj];
+					}
+					ij = ij+groupH.groupHeaders[iCol].numberOfColumns-1;
+				}
+			}
+		}
+
 		if (opts.caption) {
 			selector.attr("title", opts.caption);
 		}
