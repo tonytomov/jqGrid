@@ -1569,9 +1569,14 @@ $.jgrid.extend({
 				gh = $t.p.groupHeader;
 				for (i=0;i < gh.length; i++) {
 					var clone = [],
-					ghdata = gh[i].groupHeaders;
+					ghdata = gh[i].groupHeaders,
+					colSpan = gh[i].useColSpanStyle;
 					for(key=0; key < def.length; key++ ) {
-						obj = {text:'', style: 'tableHeader'};
+						if(colSpan) {
+							obj = {text: $t.p.colNames[key], style: 'tableHeader', rowSpan : 2, verticalAlign : "center"};
+						} else {
+							obj = {text:'', style: 'tableHeader'};
+						}
 						for(k=0;k<ghdata.length;k++) {
 							if(ghdata[k].startColumnName === def[key]) {
 								obj = {
