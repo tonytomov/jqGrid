@@ -1289,6 +1289,7 @@ div[id^='searchcnt'] .fm-button .octicon
 .ui-jqgrid .search-col-input
 {
 	padding: 2px 3px !important;
+	font-size: inherit;
 }
 .ui-jqgrid .jqgrid-searchcol {
 	padding:  1px 1px;
