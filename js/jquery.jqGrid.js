@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-12-06
+* @license Guriddo jqGrid JS - v5.7.0 - 2022-12-13
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -4412,17 +4412,34 @@ $.fn.jqGrid = function( pin ) {
 		},
 		buildColItems = function (top, left, parent, op) {
 			var cm = ts.p.colModel, len = cm.length, i, cols=[], disp, all_visible = true, cols_nm=[],
+			colNm = $.extend([], ts.p.colNames),
 			texts = $.jgrid.getRegional(ts, "colmenu"),
 			str1 = '<ul id="col_menu" class="ui-search-menu  ui-col-menu modal-content" role="menu" tabindex="0" style="left:'+left+'px;">';
 			if( op.columns_selectAll ) {
 				str1 += '<li class="ui-menu-item disabled" role="presentation" draggable="false"><a class="g-menu-item" tabindex="0" role="menuitem" ><table class="ui-common-table" ><tr><td class="menu_icon" title="'+texts.reorder+'"><span class="'+iconbase+' '+colmenustyle.icon_move+' notclick" style="visibility:hidden"></span></td><td class="menu_icon"><input id="chk_all" class="'+colmenustyle.input_checkbox+'" type="checkbox" name="check_all"></td><td class="menu_text">Check/Uncheck</td></tr></table></a></li>';
+			}
+			if( $(ts).jqGrid('isGroupHeaderOn') /*&& opts.groupHeaders*/) {
+				var gh_len = ts.p.groupHeader.length,
+				// use the last set one
+				groupH = ts.p.groupHeader[gh_len-1];
+
+				for(var ij=0;ij<colNm.length; ij++){
+					var iCol = $.jgrid.inColumnHeader( cm[ij].name, groupH.groupHeaders);
+					if(iCol>=0) {
+						colNm[ij] = groupH.groupHeaders[iCol].titleText + "::" + colNm[ij];
+						for(var jj= 1; jj<= groupH.groupHeaders[iCol].numberOfColumns-1; jj++) {
+							colNm[ij+jj] = groupH.groupHeaders[iCol].titleText + "::" + colNm[ij+jj];
+						}
+						ij = ij+groupH.groupHeaders[iCol].numberOfColumns-1;
+					}
+				}
 			}
 
 			for(i=0;i<len;i++) {
 				//if(!cm[i].hidedlg) { // column chooser
 				var hid = !cm[i].hidden ? "checked" : "", 
 					nm = cm[i].name, 
-					lb = ts.p.colNames[i];
+					lb = colNm[i]; //ts.p.colNames[i];
 				disp = (nm === 'cb' || nm==='subgrid' || nm==='rn' || nm==='sc' ||  cm[i].hidedlg) ? "style='display:none'" :"";
 				str1 += '<li '+disp+' class="ui-menu-item" role="presentation" draggable="true"><a class="g-menu-item" tabindex="0" role="menuitem" ><table class="ui-common-table" ><tr><td class="menu_icon" title="'+texts.reorder+'"><span class="'+iconbase+' '+colmenustyle.icon_move+' notclick"></span></td><td class="menu_icon"><input class="'+colmenustyle.input_checkbox+' chk_selected" type="checkbox" name="'+nm+'" '+hid+'></td><td class="menu_text">'+lb+'</td></tr></table></a></li>';
 				cols.push(i);
