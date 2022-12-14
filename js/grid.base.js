@@ -2474,7 +2474,7 @@ $.fn.jqGrid = function( pin ) {
 						}
 						if (empty) {
 							grid.selectionPreserver(table[0]);
-							grid.emptyRows.call(table[0], false, false);
+							grid.emptyRows.call(table[0], true, false);
 						}
 						grid.populate(npage);
 					}

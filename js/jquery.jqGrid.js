@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-12-13
+* @license Guriddo jqGrid JS - v5.7.0 - 2022-12-14
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2479,7 +2479,7 @@ $.fn.jqGrid = function( pin ) {
 						}
 						if (empty) {
 							grid.selectionPreserver(table[0]);
-							grid.emptyRows.call(table[0], false, false);
+							grid.emptyRows.call(table[0], true, false);
 						}
 						grid.populate(npage);
 					}
