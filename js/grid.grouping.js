@@ -623,7 +623,6 @@ $.jgrid.extend({
 					if (titleText) {
 						var fl = $th.find("div.ui-th-div")[0].firstChild;
 						cghi.savedLabel = fl.data;
-						cghi.cellInd = i;
 						fl.data = titleText;
 						if (ts.p.headertitles) {
 							$th.attr("title", titleText);
@@ -632,7 +631,7 @@ $.jgrid.extend({
 					$th.addClass(className);
 					for( skip=0;skip < numberOfColumns-1;skip++) {
 						$(ths[skip+i+1].el).hide();
-						ts.p.colModel[skip+i+1].hidden = true;
+						ts.p.colModel[skip+i+1].hidedlg = true;
 						if(numberOfHeadRows > 1) {
 							for(var k=1;k<numberOfHeadRows; k++) {
 								$("tr",$thead).eq(k+1).find("th").eq(i+skip+1).hide();
@@ -653,32 +652,42 @@ $.jgrid.extend({
 
 		});
 	},
-	destroyColSpanHeader : function() {
+	destroyColSpanHeader : function(emptyColSpan) {
+		if(emptyColSpan === undefined) {
+			emptyColSpan = true;
+		}
 		return this.each(function(){
 			var ts = this,
 			$htable = $("table.ui-jqgrid-htable", ts.grid.hDiv),
+			clitem, fl, k, j, itm, cellInd,
 			$thead = $htable.children("thead");
 			$("tr.jqg-first-row-header", $thead).remove();
 			if(ts.p.colSpanHeader.length) {
-				for(var j = 0;j<ts.p.colSpanHeader.length;j++) {
-					var clitem = ts.p.colSpanHeader[j];
-					for(var k=clitem.cellInd+1; k<clitem.cellInd+clitem.numberOfColumns; k++) {
-						ts.p.colModel[k].hidden=false;
+				for(j = 0;j<ts.p.colSpanHeader.length;j++) {
+					clitem = ts.p.colSpanHeader[j];
+					cellInd = $.jgrid.getElemByAttrVal( ts.p.colModel, 'name', clitem.startColumnName, true);
+					if(cellInd < 0 ) {
+						continue;
+					}
+					for(k = cellInd+1; k < cellInd + clitem.numberOfColumns; k++) {
+						ts.p.colModel[k].hidedlg=false;
 					}
 					$(">tr", $thead).each(function( i, n) {
-						var itm = $("th",n).eq(clitem.cellInd);
+						itm = $("th",n).eq(cellInd);
 						$(itm).attr("colspan","");
 						if($(n).hasClass('ui-jqgrid-labels')) {
-							var fl = itm.find("div.ui-th-div")[0].firstChild;
+							fl = itm.find("div.ui-th-div")[0].firstChild;
 							fl.data = clitem.savedLabel;
 						}
-						for(var k=1;k<clitem.numberOfColumns;k++) {
-							$("th", n).eq(clitem.cellInd+k).show();
+						for(k=1;k<clitem.numberOfColumns;k++) {
+							$("th", n).eq(cellInd+k).show();
 						}
 					});
 				}
 			}
-			ts.p.colSpanHeader =[];
+			if(emptyColSpan) {
+				ts.p.colSpanHeader =[];
+			}
 		});
 	},
 	setGroupHeaders : function ( o ) {

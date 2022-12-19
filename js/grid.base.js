@@ -4407,11 +4407,21 @@ $.fn.jqGrid = function( pin ) {
 		},
 		buildColItems = function (top, left, parent, op) {
 			var cm = ts.p.colModel, len = cm.length, i, cols=[], disp, all_visible = true, cols_nm=[],
-			colNm = $.extend([], ts.p.colNames),
-			texts = $.jgrid.getRegional(ts, "colmenu"),
+			colNm = $.extend([], ts.p.colNames), iCol,
+			texts = $.jgrid.getRegional(ts, "colmenu"), colArr =[],
 			str1 = '<ul id="col_menu" class="ui-search-menu  ui-col-menu modal-content" role="menu" tabindex="0" style="left:'+left+'px;">';
 			if( op.columns_selectAll ) {
 				str1 += '<li class="ui-menu-item disabled" role="presentation" draggable="false"><a class="g-menu-item" tabindex="0" role="menuitem" ><table class="ui-common-table" ><tr><td class="menu_icon" title="'+texts.reorder+'"><span class="'+iconbase+' '+colmenustyle.icon_move+' notclick" style="visibility:hidden"></span></td><td class="menu_icon"><input id="chk_all" class="'+colmenustyle.input_checkbox+'" type="checkbox" name="check_all"></td><td class="menu_text">Check/Uncheck</td></tr></table></a></li>';
+			}
+			if(ts.p.colSpanHeader.length) { // fo future work Currently does not work
+				for(var cj = 0;cj<ts.p.colSpanHeader.length;cj++) {
+					var clitem = ts.p.colSpanHeader[cj];
+					iCol = $.jgrid.getElemByAttrVal( cm, 'name', clitem.startColumnName, true);
+					if(iCol >= 0) {
+						colArr.push(iCol);
+						colNm[iCol] = clitem.titleText;
+					}
+				}
 			}
 			if( $(ts).jqGrid('isGroupHeaderOn') /*&& opts.groupHeaders*/) {
 				var gh_len = ts.p.groupHeader.length,
@@ -4419,7 +4429,7 @@ $.fn.jqGrid = function( pin ) {
 				groupH = ts.p.groupHeader[gh_len-1];
 
 				for(var ij=0;ij<colNm.length; ij++){
-					var iCol = $.jgrid.inColumnHeader( cm[ij].name, groupH.groupHeaders);
+					iCol = $.jgrid.inColumnHeader( cm[ij].name, groupH.groupHeaders);
 					if(iCol>=0) {
 						colNm[ij] = groupH.groupHeaders[iCol].titleText + "::" + colNm[ij];
 						for(var jj= 1; jj<= groupH.groupHeaders[iCol].numberOfColumns-1; jj++) {
@@ -4459,7 +4469,7 @@ $.fn.jqGrid = function( pin ) {
 					items: ':not(.disabled)',
 					forcePlaceholderSize: true }
 				).on('sortupdate', function(e, ui) {
-					cols.splice( ui.startindex, 1);
+					cols.splice( ui.startindex,1);
 					cols.splice(ui.endindex, 0, ui.startindex);
 					$(ts).jqGrid("destroyFrozenColumns");
 					$(ts).jqGrid("remapColumns", cols, true);
@@ -4470,6 +4480,12 @@ $.fn.jqGrid = function( pin ) {
 					$(ts).jqGrid("setFrozenColumns");
 					for(i=0;i<len;i++) {
 						cols[i] = i;
+					}
+					if(1===2 /*colArr.length*/) { // setColSpanis on refresh. For future work
+						$("#col_menu").remove();
+						setTimeout(function(){
+							buildColItems(top, left, parent, op);
+						}, 0);
 					}
 				});
 			} // NO jQuery UI
@@ -6465,6 +6481,9 @@ $.jgrid.extend({
 				gHead = $.extend([],$t.p.groupHeader);
 				$t.p.groupHeader = null;
 			}
+			if($t.p.colSpanHeader.length) {
+				$($t).jqGrid('destroyColSpanHeader', false);
+			}
 			$(this.p.colModel).each(function(i) {
 				if ($.inArray(this.name,colname) !== -1 && this.hidden === sw) {
 					//if($t.p.frozenColumns === true && this.frozen === true) {
@@ -6501,6 +6520,9 @@ $.jgrid.extend({
 				for(var k =0; k < gHead.length; k++) {
 					$($t).jqGrid('setGroupHeaders', gHead[k]);
 				}
+			}
+			if($t.p.colSpanHeader.length) {
+				$($t).jqGrid('setColSpanHeader', $t.p.colSpanHeader);
 			}
 			if(frozen) {
 				$($t).jqGrid("setFrozenColumns");
