@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-12-14
+* @license Guriddo jqGrid JS - v5.7.0 - 2022-12-19
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -4412,11 +4412,21 @@ $.fn.jqGrid = function( pin ) {
 		},
 		buildColItems = function (top, left, parent, op) {
 			var cm = ts.p.colModel, len = cm.length, i, cols=[], disp, all_visible = true, cols_nm=[],
-			colNm = $.extend([], ts.p.colNames),
-			texts = $.jgrid.getRegional(ts, "colmenu"),
+			colNm = $.extend([], ts.p.colNames), iCol,
+			texts = $.jgrid.getRegional(ts, "colmenu"), colArr =[],
 			str1 = '<ul id="col_menu" class="ui-search-menu  ui-col-menu modal-content" role="menu" tabindex="0" style="left:'+left+'px;">';
 			if( op.columns_selectAll ) {
 				str1 += '<li class="ui-menu-item disabled" role="presentation" draggable="false"><a class="g-menu-item" tabindex="0" role="menuitem" ><table class="ui-common-table" ><tr><td class="menu_icon" title="'+texts.reorder+'"><span class="'+iconbase+' '+colmenustyle.icon_move+' notclick" style="visibility:hidden"></span></td><td class="menu_icon"><input id="chk_all" class="'+colmenustyle.input_checkbox+'" type="checkbox" name="check_all"></td><td class="menu_text">Check/Uncheck</td></tr></table></a></li>';
+			}
+			if(ts.p.colSpanHeader.length) { // fo future work Currently does not work
+				for(var cj = 0;cj<ts.p.colSpanHeader.length;cj++) {
+					var clitem = ts.p.colSpanHeader[cj];
+					iCol = $.jgrid.getElemByAttrVal( cm, 'name', clitem.startColumnName, true);
+					if(iCol >= 0) {
+						colArr.push(iCol);
+						colNm[iCol] = clitem.titleText;
+					}
+				}
 			}
 			if( $(ts).jqGrid('isGroupHeaderOn') /*&& opts.groupHeaders*/) {
 				var gh_len = ts.p.groupHeader.length,
@@ -4424,7 +4434,7 @@ $.fn.jqGrid = function( pin ) {
 				groupH = ts.p.groupHeader[gh_len-1];
 
 				for(var ij=0;ij<colNm.length; ij++){
-					var iCol = $.jgrid.inColumnHeader( cm[ij].name, groupH.groupHeaders);
+					iCol = $.jgrid.inColumnHeader( cm[ij].name, groupH.groupHeaders);
 					if(iCol>=0) {
 						colNm[ij] = groupH.groupHeaders[iCol].titleText + "::" + colNm[ij];
 						for(var jj= 1; jj<= groupH.groupHeaders[iCol].numberOfColumns-1; jj++) {
@@ -4464,7 +4474,7 @@ $.fn.jqGrid = function( pin ) {
 					items: ':not(.disabled)',
 					forcePlaceholderSize: true }
 				).on('sortupdate', function(e, ui) {
-					cols.splice( ui.startindex, 1);
+					cols.splice( ui.startindex,1);
 					cols.splice(ui.endindex, 0, ui.startindex);
 					$(ts).jqGrid("destroyFrozenColumns");
 					$(ts).jqGrid("remapColumns", cols, true);
@@ -4475,6 +4485,12 @@ $.fn.jqGrid = function( pin ) {
 					$(ts).jqGrid("setFrozenColumns");
 					for(i=0;i<len;i++) {
 						cols[i] = i;
+					}
+					if(1===2 /*colArr.length*/) { // setColSpanis on refresh. For future work
+						$("#col_menu").remove();
+						setTimeout(function(){
+							buildColItems(top, left, parent, op);
+						}, 0);
 					}
 				});
 			} // NO jQuery UI
@@ -6470,6 +6486,9 @@ $.jgrid.extend({
 				gHead = $.extend([],$t.p.groupHeader);
 				$t.p.groupHeader = null;
 			}
+			if($t.p.colSpanHeader.length) {
+				$($t).jqGrid('destroyColSpanHeader', false);
+			}
 			$(this.p.colModel).each(function(i) {
 				if ($.inArray(this.name,colname) !== -1 && this.hidden === sw) {
 					//if($t.p.frozenColumns === true && this.frozen === true) {
@@ -6506,6 +6525,9 @@ $.jgrid.extend({
 				for(var k =0; k < gHead.length; k++) {
 					$($t).jqGrid('setGroupHeaders', gHead[k]);
 				}
+			}
+			if($t.p.colSpanHeader.length) {
+				$($t).jqGrid('setColSpanHeader', $t.p.colSpanHeader);
 			}
 			if(frozen) {
 				$($t).jqGrid("setFrozenColumns");
@@ -14562,7 +14584,6 @@ $.jgrid.extend({
 					if (titleText) {
 						var fl = $th.find("div.ui-th-div")[0].firstChild;
 						cghi.savedLabel = fl.data;
-						cghi.cellInd = i;
 						fl.data = titleText;
 						if (ts.p.headertitles) {
 							$th.attr("title", titleText);
@@ -14571,7 +14592,7 @@ $.jgrid.extend({
 					$th.addClass(className);
 					for( skip=0;skip < numberOfColumns-1;skip++) {
 						$(ths[skip+i+1].el).hide();
-						ts.p.colModel[skip+i+1].hidden = true;
+						ts.p.colModel[skip+i+1].hidedlg = true;
 						if(numberOfHeadRows > 1) {
 							for(var k=1;k<numberOfHeadRows; k++) {
 								$("tr",$thead).eq(k+1).find("th").eq(i+skip+1).hide();
@@ -14592,32 +14613,42 @@ $.jgrid.extend({
 
 		});
 	},
-	destroyColSpanHeader : function() {
+	destroyColSpanHeader : function(emptyColSpan) {
+		if(emptyColSpan === undefined) {
+			emptyColSpan = true;
+		}
 		return this.each(function(){
 			var ts = this,
 			$htable = $("table.ui-jqgrid-htable", ts.grid.hDiv),
+			clitem, fl, k, j, itm, cellInd,
 			$thead = $htable.children("thead");
 			$("tr.jqg-first-row-header", $thead).remove();
 			if(ts.p.colSpanHeader.length) {
-				for(var j = 0;j<ts.p.colSpanHeader.length;j++) {
-					var clitem = ts.p.colSpanHeader[j];
-					for(var k=clitem.cellInd+1; k<clitem.cellInd+clitem.numberOfColumns; k++) {
-						ts.p.colModel[k].hidden=false;
+				for(j = 0;j<ts.p.colSpanHeader.length;j++) {
+					clitem = ts.p.colSpanHeader[j];
+					cellInd = $.jgrid.getElemByAttrVal( ts.p.colModel, 'name', clitem.startColumnName, true);
+					if(cellInd < 0 ) {
+						continue;
+					}
+					for(k = cellInd+1; k < cellInd + clitem.numberOfColumns; k++) {
+						ts.p.colModel[k].hidedlg=false;
 					}
 					$(">tr", $thead).each(function( i, n) {
-						var itm = $("th",n).eq(clitem.cellInd);
+						itm = $("th",n).eq(cellInd);
 						$(itm).attr("colspan","");
 						if($(n).hasClass('ui-jqgrid-labels')) {
-							var fl = itm.find("div.ui-th-div")[0].firstChild;
+							fl = itm.find("div.ui-th-div")[0].firstChild;
 							fl.data = clitem.savedLabel;
 						}
-						for(var k=1;k<clitem.numberOfColumns;k++) {
-							$("th", n).eq(clitem.cellInd+k).show();
+						for(k=1;k<clitem.numberOfColumns;k++) {
+							$("th", n).eq(cellInd+k).show();
 						}
 					});
 				}
 			}
-			ts.p.colSpanHeader =[];
+			if(emptyColSpan) {
+				ts.p.colSpanHeader =[];
+			}
 		});
 	},
 	setGroupHeaders : function ( o ) {
@@ -21739,7 +21770,8 @@ $.jgrid.extend({
 	ariaBodyGrid : function ( p ) {
 		var o = $.extend({
 			onEnterCell : null,
-			onKeyCheck : null
+			onKeyCheck : null,
+			customCellAction : null
 		}, p || {});
 
 		return this.each(function (){
