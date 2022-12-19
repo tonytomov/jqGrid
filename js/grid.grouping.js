@@ -570,7 +570,9 @@ $.jgrid.extend({
 			//classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['grouping'],
 			numberOfHeadRows = $thead.children("tr").length;
 			//base = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].base;
-			ts.p.colSpanHeader = o;
+			if(Array.isArray( o )) {
+				ts.p.colSpanHeader =  o;
+			}
 			if($firstHeaderRow[0] === undefined) {
 				$firstHeaderRow = $('<tr>', {role: "row", "aria-hidden": "true"}).addClass("jqg-first-row-header").css("height", "auto");
 			} else {
