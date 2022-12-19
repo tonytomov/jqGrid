@@ -674,7 +674,10 @@ $.jgrid.extend({
 					}
 					$(">tr", $thead).each(function( i, n) {
 						itm = $("th",n).eq(cellInd);
-						$(itm).attr("colspan","");
+						if(!itm.className) {
+							itm.className = "";
+						}
+						$(itm).attr("colspan","").removeClass( itm.className );
 						if($(n).hasClass('ui-jqgrid-labels')) {
 							fl = itm.find("div.ui-th-div")[0].firstChild;
 							fl.data = clitem.savedLabel;
