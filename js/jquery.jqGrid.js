@@ -2295,6 +2295,7 @@ $.fn.jqGrid = function( pin ) {
 			colMenuCustom : {},
 			colMenuColumnDone : null,
 			colMenuBeforeProcess : null,
+			colSpanHeader: [],
 			// tree pagging
 			treeGrid_bigData: false,
 			treeGrid_rootParams: {otherData:{}},
