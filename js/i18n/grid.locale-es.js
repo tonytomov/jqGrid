@@ -62,8 +62,8 @@ $.jgrid.regional["es"] = {
 		addrule : "Agregar regla",
 		delgroup : "Borrar grupo",
 		delrule : "Borrar regla",
-		Close : "Close",
-		Operand : "Operand : ",
+		Close : "Cerrar",
+		Operand : "Operador : ",
 		Operation : "Oper : "
 
 	},
@@ -185,7 +185,7 @@ $.jgrid.regional["es"] = {
 		freeze : "Inmovilizar",
 		unfreeze : "Movilizar",
 		reorder : "Mover para reordenar",
-		hovermenu: "Click for column quick actions"
+		hovermenu: "Click para accion rápida de columna"
 	}
 };
 }));
