@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.7.0 - 2022-12-19
+* @license Guriddo jqGrid JS - v5.8.0 - 2022-12-20
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -24,7 +24,7 @@ if(!$.jgrid.hasOwnProperty("defaults")) {
 	$.jgrid.defaults = {};
 }
 $.extend($.jgrid,{
-	version : "5.7.0",
+	version : "5.8.0",
 	isNull : function( p, strict_eq) {
 		if(strict_eq && strict_eq === true) {
 			return p === null;
@@ -14531,7 +14531,9 @@ $.jgrid.extend({
 			//classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['grouping'],
 			numberOfHeadRows = $thead.children("tr").length;
 			//base = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].base;
-			ts.p.colSpanHeader = o;
+			if(Array.isArray( o )) {
+				ts.p.colSpanHeader =  o;
+			}
 			if($firstHeaderRow[0] === undefined) {
 				$firstHeaderRow = $('<tr>', {role: "row", "aria-hidden": "true"}).addClass("jqg-first-row-header").css("height", "auto");
 			} else {
@@ -22706,7 +22708,7 @@ $.jgrid.extend({
 			}
 
 			function transpose( data, o) {
-				if(!$.isArray(data)) {
+				if(!Array.isArray(data)) {
 					//throw "data provides is not an array";
 					data = [];
 				}
