@@ -1310,5 +1310,9 @@ a.colmenu .colmenuspan
 	border: 1px solid var(--tbl-brd-color, #ddd);
 	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
+.ui-col-menu {
+	overflow: auto;
+	height: 17em;
+}
 /*uncomment  this if you use ie11*/
 /* <script>window.MSInputMethodContext && document.documentMode && document.write('<script src="https://cdn.jsdelivr.net/gh/nuxodin/ie11CustomProperties@4.1.0/ie11CustomProperties.min.js"><\/script>');</script>*/

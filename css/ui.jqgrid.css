@@ -570,3 +570,7 @@ td.menu_text {
 .ui-jqgrid .frozen-rdiv  {
 	z-index: 10000;
 }
+.ui-col-menu {
+	overflow: auto;
+	height: 17em;
+}
