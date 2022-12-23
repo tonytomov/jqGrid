@@ -1646,7 +1646,8 @@ $.jgrid.extend({
 			if($.isPlainObject($t.p._savedFilter) && !$.isEmptyObject($t.p._savedFilter )) {
 				defaultFilters = $t.p._savedFilter;
 			} else if($t.p.mergeSearch === true && $t.p.searchModules.hasOwnProperty('searchGrid') && $t.p.searchModules.searchGrid !== false ) {
-				defaultFilters = $t.p.searchModules.searchGrid === true ? "" : $t.p.searchModules.searchGrid;
+				$.extend($t.p.postData,{filters: $.jgrid.splitSearch($t.p.searchModules)});
+				defaultFilters =  $t.p.postData[p.sFilter];
 			} else {
 				defaultFilters = $t.p.postData[p.sFilter];
 			}

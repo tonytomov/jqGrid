@@ -1032,16 +1032,18 @@ $.extend($.jgrid,{
 			searchGrid : null
 		}
 		 */
-		var rules = "{\"groupOp\":\"" + p.mergeOper + "\",\"rules\":[],\"groups\":[", i=0;
+		var rules = "{\"groupOp\":\"" + p.mergeOper + "\",\"groups\":[", i=0; //],\"groups\":[
 		for( var property in p) {
 			if(p.hasOwnProperty(property)) {
 				if(property !== 'mergeOper') {
-					rules += (p[property] !== null && p[property] !== "") ? p[property] + ",": "";
+					rules += (p[property] !== null && p[property] !== "" && typeof p[property] !=='boolean' ) ? p[property] + ",": "";
 					i++;
 				}
 			}
 		}
-		rules = rules.slice(0, -1);
+		if( rules.indexOf("[", rules.length - "[".length)  === -1 ) {
+			rules = rules.slice(0, -1);
+		}
 		rules += "]}";
 		return rules;
 	},
@@ -4539,6 +4541,7 @@ $.fn.jqGrid = function( pin ) {
 			var cm = ts.p.colModel[index], rules, o1='',v1='',r1='',o2='',v2='', so, op, repstr='',selected, elem,
 			numopts = ['eq','ne', 'lt', 'le', 'gt', 'ge', 'nu', 'nn', 'in', 'ni'],
 			stropts = ['eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn', 'in', 'ni'],
+			strarr = ['text', 'string', 'blob'],
 			texts = $.jgrid.getRegional(ts, "search"),
 			common = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].common,
 			classes = $.jgrid.styleUI[(p.styleUI || 'jQueryUI')].modal;
@@ -4559,7 +4562,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			if(cm.searchoptions.sopt) {
 				so = cm.searchoptions.sopt;
-			} else if(cm.sorttype === 'text') {
+			} else if( $.inArray(cm.sorttype, strarr) !== -1 ) {
 				so = stropts;
 			} else {
 				so = numopts;
@@ -4697,7 +4700,7 @@ $.fn.jqGrid = function( pin ) {
 		},
 		buildFilters = function() {
 			var go = "AND",
-			filters ="{\"groupOp\":\"" + go + "\",\"rules\":[], \"groups\" : [", i=0;
+			filters ="", i=0; //{\"groupOp\":\"" + go + "\",\"rules\":[], \"groups\" : [
 			for (var item in ts.p.colFilters) {
 				if(ts.p.colFilters.hasOwnProperty(item)) {
 					var si = ts.p.colFilters[item];
@@ -4708,7 +4711,7 @@ $.fn.jqGrid = function( pin ) {
 						if(i>0) {
 							filters += ",";
 						}
-						filters += "{\"groupOp\": \""+si.rule +"\", \"rules\" : [";
+						filters += "{\"groupOp\":\""+si.rule +"\",\"rules\":[";
 						filters += "{\"field\":\"" + item + "\",";
 						filters += "\"op\":\"" + si.oper1 + "\",";
 						si.value1 +="";
@@ -4719,14 +4722,14 @@ $.fn.jqGrid = function( pin ) {
 							si.value2 +="";
 							filters += "\"data\":\"" + si.value2.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"}";
 						}
-						filters += "]}";
+						filters += "]";
 						i++;
 					} else {
 						//console.log('empty object');
 					}
 				}
 			}
-			filters += "]}";
+			filters += "}";
 			if( i === 0) {
 				filters = "";
 			}
