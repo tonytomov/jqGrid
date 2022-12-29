@@ -34,7 +34,8 @@ $.jgrid.extend({
 	ariaBodyGrid : function ( p ) {
 		var o = $.extend({
 			onEnterCell : null,
-			onKeyCheck : null
+			onKeyCheck : null,
+			customCellAction : null
 		}, p || {});
 
 		return this.each(function (){

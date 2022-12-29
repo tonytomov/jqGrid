@@ -238,7 +238,7 @@ $.fn.jqFilter = function( arg ) {
 			// button for adding a new subgroup
 			var inputAddSubgroup ="<span></span>";
 			if(this.p.groupButton) {
-				inputAddSubgroup = $("<input type='button' value='+ {}' title='" +that.p.subgroup+"' class='add-group " + common.button + "'/>");
+				inputAddSubgroup = $("<input type='button' value='+ {}' title='" +that.p.addsubgrup+"' class='add-group " + common.button + "'/>");
 				inputAddSubgroup.on('click',function() {
 					if (group.groups === undefined ) {
 						group.groups = [];
@@ -1702,20 +1702,10 @@ $.jgrid.extend({
 						groupH = $t.p.groupHeader[gh_len-1];
 					}
 				}
-
-				var inColumnHeader = function (text, columnHeaders) {
-					var length = columnHeaders.length, i;
-					for (i = 0; i < length; i++) {
-						if (columnHeaders[i].startColumnName === text) {
-							return i;
-						}
-					}
-					return -1;
-				};				
 				if(!p.columns.length) {
 					if(groupH !== null) {
 						for(var ij=0;ij<columns.length; ij++){
-							var iCol = inColumnHeader( columns[ij].name, groupH.groupHeaders);
+							var iCol = $.jgrid.inColumnHeader( columns[ij].name, groupH.groupHeaders);
 							if(iCol>=0) {
 								columns[ij].label = groupH.groupHeaders[iCol].titleText + "::" + $t.p.colNames[ij];
 								for(var jj= 1; jj<= groupH.groupHeaders[iCol].numberOfColumns-1; jj++) {
@@ -1992,19 +1982,21 @@ $.jgrid.extend({
 			groupOp : 'OR',
 			searchAll : false,
 			beforeSearch : null,
-			afterSearch : null
+			afterSearch : null,
+			selectFirstFound : false,
+			firstFoundTimeout : 30
 		}, p || {});
 		return this.each(function(){
 			var $t = this;
 			if(!$t.grid) {return;}
 			var nm, sop,ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[", gi=0, so;
 			val +="";
-			if($t.p.datatype !== 'local') { return; }
+			//if($t.p.datatype !== 'local') { return; }
 			$.each($t.p.colModel,function(){
 				nm = this.index || this.name;
 				sop = this.searchoptions || {};
 				so  = p.defaultSearch ? p.defaultSearch : (sop.sopt) ? sop.sopt[0] : p.defaultSearch;
-				this.search = this.search === false ? false : true;
+				//this.search = this.search == null  ? false : true;
 				if (this.search || p.searchAll) {
 					if (gi > 0) {ruleGroup += ",";}
 					ruleGroup += "{\"field\":\"" + nm + "\",";
@@ -2030,6 +2022,12 @@ $.jgrid.extend({
 			var bsr = $($t).triggerHandler("jqGridFilterInputBeforeSearch") === 'stop' ? true : false;
 			if(!bsr && $.jgrid.isFunction(p.beforeSearch)){bsr = p.beforeSearch.call($t);}
 			if(!bsr) { $($t).jqGrid("setGridParam",{search:true}).trigger("reloadGrid",[{page:1}]); }
+			if(p.selectFirstFound ) {
+				setTimeout(function(){
+					var row = $($t).jqGrid('getGridRowByIndex', 1);
+					$($t).jqGrid("setSelection", row.id, false);
+				}, p.firstFoundTimeout);
+			}
 			$($t).triggerHandler("jqGridFilterInputAfterSearch");
 			if($.jgrid.isFunction(p.afterSearch)){p.afterSearch.call($t);}
 		});

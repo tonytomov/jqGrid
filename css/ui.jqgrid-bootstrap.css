@@ -788,6 +788,9 @@ a.g-menu-item, a.soptclass, a.clearsearchclass {
 	right: -5px;
 	bottom: -5px;
 	background-position: 16px 16px;
+	position : absolute;
+	right: 2px;
+	top: 97%;
 }
 .ui-resizable-se {
 	cursor: se-resize;

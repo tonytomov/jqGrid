@@ -77,7 +77,7 @@ $.jgrid.extend({
 			}
 
 			function transpose( data, o) {
-				if(!$.isArray(data)) {
+				if(!Array.isArray(data)) {
 					//throw "data provides is not an array";
 					data = [];
 				}

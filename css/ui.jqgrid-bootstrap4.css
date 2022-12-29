@@ -1223,3 +1223,7 @@ a.colmenu .colmenuspan
 	width: 100%;
 	overflow: auto;
 }
+.ui-col-menu {
+	overflow: auto;
+	height: 17em;
+}
