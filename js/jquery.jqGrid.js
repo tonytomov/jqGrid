@@ -21271,12 +21271,12 @@ $.jgrid.extend({
 				align[cm[j].name] = cm[j].align || 'left';
 				i++;
 			}
-			var gh;
+			var gh, clone;
 			if(o.includeGroupHeader && $($t).jqGrid('isGroupHeaderOn') ) {
 				gh = $t.p.groupHeader;
 				for (i=0;i < gh.length; i++) {
-					var clone = [],
-					ghdata = gh[i].groupHeaders,
+					clone = [];
+					var ghdata = gh[i].groupHeaders,
 					colSpan = gh[i].useColSpanStyle;
 					for(key=0; key < def.length; key++ ) {
 						if(colSpan) {
@@ -21301,7 +21301,28 @@ $.jgrid.extend({
 			}
 
 			if(o.includeLabels) {
+				if($t.p.colSpanHeader.length) {
+					gh = $t.p.colSpanHeader;
+					clone = [];
+					for(key=0; key < def.length; key++ ) {
+						obj = {text: $t.p.colNames[key], style: 'tableHeader', verticalAlign : "center"};
+						for(k=0;k<gh.length;k++) {
+							if(gh[k].startColumnName === def[key]) {
+								obj = {
+									text : gh[k].titleText,
+									colSpan: gh[k].numberOfColumns,
+									style: 'tableHeader'
+								};
+							}
+						}
+								
+						clone.push(obj);
+						j++;
+					}
+					rows.push( clone );
+				} else { 
 				rows.push( test );
+			}
 			}
 			if ( o.includeHeader && $t.p.headerrow) {
 				var hdata = $($t).jqGrid('headerData', 'get');
