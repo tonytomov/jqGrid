@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.0 - 2022-12-20
+* @license Guriddo jqGrid JS - v5.8.0 - 2023-01-09
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1037,16 +1037,18 @@ $.extend($.jgrid,{
 			searchGrid : null
 		}
 		 */
-		var rules = "{\"groupOp\":\"" + p.mergeOper + "\",\"rules\":[],\"groups\":[", i=0;
+		var rules = "{\"groupOp\":\"" + p.mergeOper + "\",\"groups\":[", i=0; //],\"groups\":[
 		for( var property in p) {
 			if(p.hasOwnProperty(property)) {
 				if(property !== 'mergeOper') {
-					rules += (p[property] !== null && p[property] !== "") ? p[property] + ",": "";
+					rules += (p[property] !== null && p[property] !== "" && typeof p[property] !=='boolean' ) ? p[property] + ",": "";
 					i++;
 				}
 			}
 		}
-		rules = rules.slice(0, -1);
+		if( rules.indexOf("[", rules.length - "[".length)  === -1 ) {
+			rules = rules.slice(0, -1);
+		}
 		rules += "]}";
 		return rules;
 	},
@@ -4544,6 +4546,7 @@ $.fn.jqGrid = function( pin ) {
 			var cm = ts.p.colModel[index], rules, o1='',v1='',r1='',o2='',v2='', so, op, repstr='',selected, elem,
 			numopts = ['eq','ne', 'lt', 'le', 'gt', 'ge', 'nu', 'nn', 'in', 'ni'],
 			stropts = ['eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn', 'in', 'ni'],
+			strarr = ['text', 'string', 'blob'],
 			texts = $.jgrid.getRegional(ts, "search"),
 			common = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].common,
 			classes = $.jgrid.styleUI[(p.styleUI || 'jQueryUI')].modal;
@@ -4564,7 +4567,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			if(cm.searchoptions.sopt) {
 				so = cm.searchoptions.sopt;
-			} else if(cm.sorttype === 'text') {
+			} else if( $.inArray(cm.sorttype, strarr) !== -1 ) {
 				so = stropts;
 			} else {
 				so = numopts;
@@ -4702,7 +4705,7 @@ $.fn.jqGrid = function( pin ) {
 		},
 		buildFilters = function() {
 			var go = "AND",
-			filters ="{\"groupOp\":\"" + go + "\",\"rules\":[], \"groups\" : [", i=0;
+			filters ="", i=0; //{\"groupOp\":\"" + go + "\",\"rules\":[], \"groups\" : [
 			for (var item in ts.p.colFilters) {
 				if(ts.p.colFilters.hasOwnProperty(item)) {
 					var si = ts.p.colFilters[item];
@@ -4713,7 +4716,7 @@ $.fn.jqGrid = function( pin ) {
 						if(i>0) {
 							filters += ",";
 						}
-						filters += "{\"groupOp\": \""+si.rule +"\", \"rules\" : [";
+						filters += "{\"groupOp\":\""+si.rule +"\",\"rules\":[";
 						filters += "{\"field\":\"" + item + "\",";
 						filters += "\"op\":\"" + si.oper1 + "\",";
 						si.value1 +="";
@@ -4724,14 +4727,14 @@ $.fn.jqGrid = function( pin ) {
 							si.value2 +="";
 							filters += "\"data\":\"" + si.value2.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"}";
 						}
-						filters += "]}";
+						filters += "]";
 						i++;
 					} else {
 						//console.log('empty object');
 					}
 				}
 			}
-			filters += "]}";
+			filters += "}";
 			if( i === 0) {
 				filters = "";
 			}
@@ -11130,7 +11133,8 @@ $.jgrid.extend({
 			if($.isPlainObject($t.p._savedFilter) && !$.isEmptyObject($t.p._savedFilter )) {
 				defaultFilters = $t.p._savedFilter;
 			} else if($t.p.mergeSearch === true && $t.p.searchModules.hasOwnProperty('searchGrid') && $t.p.searchModules.searchGrid !== false ) {
-				defaultFilters = $t.p.searchModules.searchGrid === true ? "" : $t.p.searchModules.searchGrid;
+				$.extend($t.p.postData,{filters: $.jgrid.splitSearch($t.p.searchModules)});
+				defaultFilters =  $t.p.postData[p.sFilter];
 			} else {
 				defaultFilters = $t.p.postData[p.sFilter];
 			}
@@ -20525,7 +20529,8 @@ $.jgrid.extend({
 				width : [],
 				map : [],
 				parser :[],
-				labels : []
+				labels : [],
+				mergecell:[]
 			};
 			var defaultHeaderStyle = $.jgrid.addExcelStyle( {excel_header_style:""}, {fontId :"2", applyAlignment : "1"} , {horizontal: "center", vertical :"center"}, styleSh).excel_header_style;
 			for ( j=0, ien=cm.length ; j<ien ; j++ ) {
@@ -20901,12 +20906,12 @@ $.jgrid.extend({
 				$($t).jqGrid("progressBar", {method:"show", loadtype : $t.p.loadui, htmlcontent: $.jgrid.getRegional($t,'defaults.loadtext') });
 			}
 			$( 'sheets sheet', xlsx.xl['workbook.xml'] ).attr( 'name', o.sheetName );
+			var mrow =0,  gh , mergecell=[],key, l, clone ={}, j=0;
 			if(o.includeGroupHeader && $($t).jqGrid('isGroupHeaderOn') ) {
-				var gh = $t.p.groupHeader, mergecell=[],
-				mrow = 0, key, l;
+				gh = $t.p.groupHeader;
 				for (l = 0; l < gh.length; l++) {
-					var ghdata = gh[l].groupHeaders, clone ={}, colspan = gh[l].useColSpanStyle && gh.length === 1, colToSkip=[];
-					mrow++; j=0;
+					var ghdata = gh[l].groupHeaders, colspan = gh[l].useColSpanStyle && gh.length === 1, colToSkip=[];
+					mrow++;
 					for(j = 0; j < data.header.length; j++  ) {
 						key = data.header[j];
 						clone[key] = colspan ? data.labels[j] : "";
@@ -20935,6 +20940,35 @@ $.jgrid.extend({
 
 				//$('row c', rels).attr( 's', defaultHeaderStyle ); // bold
 
+					}
+
+			if ( o.includeLabels ) {
+				if($t.p.colSpanHeader.length) {
+					mrow++; gh = $t.p.colSpanHeader, clone ={};
+					for(j = 0; j < data.header.length; j++  ) {
+						key = data.header[j];
+						clone[key] =  data.labels[j];
+						for (l = 0; l < gh.length; l++) {
+							ghdata = gh[l];
+							if(ghdata.startColumnName === key) {
+								clone[key] = ghdata.titleText;
+								start = $.jgrid.excelCellPos(j) + mrow;
+									end = $.jgrid.excelCellPos(j+ghdata.numberOfColumns -1) + mrow;
+								mergecell.push({ ref: start+":"+end });
+							}
+						}
+					}
+					addRow( clone, true, true );
+				} else {
+				addRow( data.header, true, true );
+				}
+			
+				//$('row', rels).last().find('c').attr( 's', '2' ); // bold
+			}
+			if (data.mergecell.length) {
+			  mergecell = mergecell.concat(data.mergecell);
+			}
+			if(mergecell.length) {
 				var merge = $.jgrid.makeNode( rels, 'mergeCells', {
 					attr : {
 						count : mergecell.length
@@ -20946,11 +20980,6 @@ $.jgrid.extend({
 						attr:  mergecell[i]
 					}));
 				}
-			}
-
-			if ( o.includeLabels ) {
-				addRow( data.header, true, true );
-				//$('row', rels).last().find('c').attr( 's', '2' ); // bold
 			}
 			if ( o.includeHeader || $t.p.headerrow) {
 				var hdata = $($t).jqGrid('headerData', 'get');
