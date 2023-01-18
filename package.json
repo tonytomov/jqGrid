@@ -2,7 +2,7 @@
   "name": "jqGrid",
   "title": "Guriddo jqGrid",
   "description": "jqGrid is an Ajax-enabled JavaScript control that provides solutions for representing and manipulating tabular data on the web.",
-  "version": "5.8.0",
+  "version": "5.8.1",
   "author": {
     "name": "Tony Tomov",
     "url": "http://www.guriddo.net",
