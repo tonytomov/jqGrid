@@ -1252,14 +1252,17 @@ $.extend($.jgrid,{
 		$('body').append("</div>");
 		$("#"+gridId).jqGrid( gridopt );
 		$("#"+gridId).jqGrid('bindKeys', {onSelectRow : false});
-		var coord = $("#"+elemId).attr("autocomplete","off").data("comboGrid", {grid:gridId, divgrid: divId}).position();
-		$("#"+divId).css({position:"absolute", top:(coord.top+70)+"px", left: (coord.left+10)+"px", zIndex: 20000}).hide();
-		$("#"+elemId).on("keyup", function(e){
+		$("#"+elemId).attr("autocomplete","off").data("comboGrid", {grid:gridId, divgrid: divId});
+		var coord = document.getElementById(elemId).getBoundingClientRect();
+		
+		$("#"+divId).css({"background-color": "inherit", position:"absolute", top:(coord.top+50)+"px", left: (coord.left+10)+"px", zIndex: 20000}).hide();
+		$("#"+elemId).on("keydown", function(e){
 			var gID = $(this).data("comboGrid").grid, dID=$(this).data("comboGrid").divgrid, self = this;
-			e.preventDefault();
+			//e.preventDefault();
 			if($("#"+dID).is(":hidden")) {
-				var coord = $("#"+elemId).position();
-				$("#"+dID).show().css({top:(coord.top+70)+"px", left: (coord.left+10)+"px"});
+				coord = document.getElementById(elemId).getBoundingClientRect();
+				//var coord = $("#"+elemId).position();
+				$("#"+dID).show().css({top:(coord.top+50)+"px", left: (coord.left+10)+"px"});
 			}
 			var timer;
 
@@ -1271,7 +1274,7 @@ $.extend($.jgrid,{
 					// select the row
 					var srow = $("#"+gID).jqGrid('getRowData',$("#"+gID)[0].p.selrow);
 					if(!$.isEmptyObject(srow)) {
-						$t.value = srow.Country;
+						$t.value = srow[opt.return_fld];
 						$("#"+dID).hide();
 					}
 					break;
