@@ -22821,7 +22821,7 @@ $.jgrid.extend({
 		var prm = $.extend({
 			first : 0,
 			last : 0,
-			//rowids :[],
+			rowids :[],
 			saveFirstLastId : false,
 			classes : ""
 		}, options || {});
