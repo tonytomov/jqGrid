@@ -7453,9 +7453,9 @@ $.jgrid.extend({
 				if(testws && $.jgrid.trim(testws.text()) === "") {
 					$("div",testws).prepend('&nbsp;');
 				}
-				if( fthh ) {
+				//if( fthh ) {
 					//$("tr.jqg-third-row-header th", htbl).eq(0).height(fthh);
-				}
+				//}
 				//$(htbl).width(1);
 				if(!$.jgrid.msie()) {
 					$(htbl).css("height","100%");

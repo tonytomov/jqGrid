@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.1 - 2023-01-18
+* @license Guriddo jqGrid JS - v5.8.1 - 2023-01-19
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -7458,9 +7458,9 @@ $.jgrid.extend({
 				if(testws && $.jgrid.trim(testws.text()) === "") {
 					$("div",testws).prepend('&nbsp;');
 				}
-				if( fthh ) {
+				//if( fthh ) {
 					//$("tr.jqg-third-row-header th", htbl).eq(0).height(fthh);
-				}
+				//}
 				//$(htbl).width(1);
 				if(!$.jgrid.msie()) {
 					$(htbl).css("height","100%");
@@ -18609,7 +18609,7 @@ $.jgrid.extend({
 				// incremet th index of child to be inserted
 				if( i === false ) {
 					throw "Parent item with id: " + rowind + " ("+ parentid+") can't be found";
-					return;
+					//return;
 				} else {
 					i++;
 				}
