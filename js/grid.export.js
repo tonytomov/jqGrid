@@ -1598,7 +1598,7 @@ $.jgrid.extend({
 					colSpan = gh[i].useColSpanStyle;
 					for(key=0; key < def.length; key++ ) {
 						if(colSpan) {
-							obj = {text: $t.p.colNames[key], style: 'tableHeader', rowSpan : 2, verticalAlign : "center"};
+							obj = {text: $t.p.colNames[map[key]], style: 'tableHeader', rowSpan : 2, verticalAlign : "center"};
 						} else {
 							obj = {text:'', style: 'tableHeader'};
 						}
@@ -1612,7 +1612,7 @@ $.jgrid.extend({
 							}
 						}
 						clone.push(obj);
-						j++;
+						//j++;
 					}
 					rows.push(clone);
 				}
