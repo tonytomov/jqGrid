@@ -634,6 +634,7 @@ $.jgrid.extend({
 					for( skip=0;skip < numberOfColumns-1;skip++) {
 						$(ths[skip+i+1].el).hide();
 						ts.p.colModel[skip+i+1].hidedlg = true;
+						ts.p.colModel[skip+i+1]._colspancell = true;
 						if(numberOfHeadRows > 1) {
 							for(var k=1;k<numberOfHeadRows; k++) {
 								$("tr",$thead).eq(k+1).find("th").eq(i+skip+1).hide();
@@ -673,6 +674,7 @@ $.jgrid.extend({
 					}
 					for(k = cellInd+1; k < cellInd + clitem.numberOfColumns; k++) {
 						ts.p.colModel[k].hidedlg=false;
+						ts.p.colModel[k]._colspancell=false;
 					}
 					$(">tr", $thead).each(function( i, n) {
 						itm = $("th",n).eq(cellInd);
@@ -851,6 +853,8 @@ $.jgrid.extend({
 			if(frozen) {
 				$(ts).jqGrid("setFrozenColumns");
 			}			
+			$(ts).triggerHandler("afterSetGroupHandler", [o]);
+			
 		});				
 	},
 	destroyGroupHeader : function(nullHeader) {
@@ -899,6 +903,7 @@ $.jgrid.extend({
 			if(frozen) {
 				$($t).jqGrid("setFrozenColumns");
 			}
+			$($t).off("afterSetGroupHandler");
 		});
 	},
 	isGroupHeaderOn : function () {
