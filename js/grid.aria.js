@@ -320,29 +320,16 @@ $.jgrid.extend({
 				var colCount = $t.p.colModel.length;
 				if (isLeftRight) {
 					if (col < collimit ) {
-						col = collimit;//colCount - 1;
-						//row--;
+						col = collimit;
 					}
 					if (col === colCount) {
 						col = colCount;
-						//row++;
 					}
 				}
 				if (!isLeftRight) {
-					//if (row < 1) {
-						//col--;
-						//row = rowCount - 1;
 						if ($t.rows[row] && col >= 0 && !$t.rows[row].cells[col]) {
-						// Sometimes the bottom row is not completely filled in. In this case,
-						// jump to the next filled in cell.
 							row--;
 						}
-					//}
-					//else if (row >= rowCount || !$t.rows[row].cells[col]) {
-						//row = 1;
-						//col++;
-					//}
-					//console.log(row, col);
 				}
 				if (isValidCell(row, col)) {
 					return {
