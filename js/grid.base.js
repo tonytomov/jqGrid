@@ -1317,6 +1317,9 @@ $.extend($.jgrid,{
 		}
 		return -1;
 	},
+	isServiceCol( name ) {
+		return ['cb', 'rn','subgrid', 'sc'].includes( name );
+	},
 	styleUI : {
 		jQueryUI : {
 			common : {
