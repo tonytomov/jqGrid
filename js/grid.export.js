@@ -848,6 +848,7 @@ $.jgrid.extend({
 				map : [],
 				parser :[],
 				labels : [],
+				hidden : [],
 				mergecell:[]
 			};
 			var defaultHeaderStyle = $.jgrid.addExcelStyle( {excel_header_style:""}, {fontId :"2", applyAlignment : "1"} , {horizontal: "center", vertical :"center"}, styleSh).excel_header_style;
@@ -860,7 +861,11 @@ $.jgrid.extend({
 				} else {
 					cm[j]._expcol = cm[j].exportcol;
 				}
-				if( cm[j].name === 'cb' || cm[j].name === 'rn' || cm[j].name === 'subgrid' || !cm[j]._expcol || cm[j].name === 'sc') {
+				if(cm[j]._colspancell === undefined) {
+					cm[j]._colspancell = false;
+				}
+				if( $.jgrid.isServiceCol(cm[j].name) || !cm[j]._expcol ) {
+					data.hidden.push(cm[j].name);
 					continue;
 				}
 				data.header[i] = cm[j].name;
@@ -1228,38 +1233,87 @@ $.jgrid.extend({
 			if(o.includeGroupHeader && $($t).jqGrid('isGroupHeaderOn') ) {
 				gh = $t.p.groupHeader;
 				for (l = 0; l < gh.length; l++) {
-					var ghdata = gh[l].groupHeaders, colspan = gh[l].useColSpanStyle && gh.length === 1, colToSkip=[];
+					var ghdata = gh[l].groupHeaders, colspan = gh[l].useColSpanStyle && gh.length === 1, colToSkip=[],
+					ghputin = [], colInHeader = [], k, nok, cpos, fk, start, end;
 					mrow++;
-					for(j = 0; j < data.header.length; j++  ) {
-						key = data.header[j];
-						clone[key] = colspan ? data.labels[j] : "";
-						var start = -1, end = -1;
-						for(var k = 0; k < ghdata.length; k++) {
-							if(ghdata[k].startColumnName === key) {
-								clone[key] = ghdata[k].titleText;
-								start = $.jgrid.excelCellPos(j) + mrow;
-									end = $.jgrid.excelCellPos(j+ghdata[k].numberOfColumns -1) + mrow;
-								mergecell.push({ ref: start+":"+end });
-								if( colspan ) {
-									for(var ck=j+1; ck < j+ghdata[k].numberOfColumns; ck++) {
-										colToSkip.push(ck);
-									}
+					// column to skip
+					if(colspan) {
+						for(k = 0; k < ghdata.length; k++) {
+							key = ghdata[k].startColumnName;
+							nok = ghdata[k].numberOfColumns;
+							cpos = $.jgrid.getElemByAttrVal (cm,  'name', key, true) ;
+							for(fk = cpos; fk < cpos + ghdata[k].numberOfColumns;fk++) {
+								colInHeader[cm[fk].name] = key;
+								var ind = data.header.indexOf(cm[fk].name);
+								if(  ind !== -1) {
+									colToSkip.push(ind);
 								}
 							}
 						}
+					}
+					
+					for(j = 0; j < data.header.length; j++  ) {
+						key = data.header[j];
+						clone[key] = colspan ? data.labels[j] : "";
+						start = -1; end = -1;
+						for(k = 0; k < ghdata.length; k++) {
+							if(ghdata[k].startColumnName === key) {
+								ghputin.push(key);
+								clone[key] = ghdata[k].titleText;
+								nok = ghdata[k].numberOfColumns;
+								cpos = $.jgrid.getElemByAttrVal (cm,  'name', key, true) ;
+								for(fk = cpos; fk < cpos + ghdata[k].numberOfColumns;fk++) {
+									if(cm[fk].hidden === true) {
+										nok--;
+									}
+								}
+								start = $.jgrid.excelCellPos(j) + mrow;
+								end = $.jgrid.excelCellPos(j+ nok - 1) + mrow;
+
+								mergecell.push({ ref: start+":"+end });
+									}
+								}
 						if(start === -1 && end === -1 && colspan && colToSkip.indexOf(j) === -1) {
 							start = $.jgrid.excelCellPos(j) + mrow;
 							end = $.jgrid.excelCellPos(j) + (mrow + 1);
 							mergecell.push({ ref: start+":"+end });
 						}
 					}
+					// we are lost - need to find way					
+					if(ghputin.length < ghdata.length) {
+						for(k=0;k < data.hidden.length;k++) {
+							var icol = $.jgrid.inColumnHeader(data.hidden[k], ghdata);
+							// if hidden startColumnName 
+							if(icol >= 0 ) {
+								key = data.hidden[k];
+								for(var key2 in colInHeader) {
+									if(colInHeader[key2] === key) {
+										if(clone[key2]) { // first visible in group
+											clone[key2] = ghdata[icol].titleText;
+											var ind  = data.header.indexOf(key2);
+											nok = ghdata[icol].numberOfColumns;
+											cpos = $.jgrid.getElemByAttrVal (cm,  'name', key, true) ;
+											for(fk = cpos; fk < cpos + ghdata[icol].numberOfColumns;fk++) {
+												if(cm[fk].hidden === true) {
+													nok--;
+												}
+											}
+											start = $.jgrid.excelCellPos(ind) + mrow;
+											end = $.jgrid.excelCellPos(ind+ nok - 1) + mrow;
+											mergecell.push({ ref: start+":"+end });
+											break;
+										}
+									}
+								}
+							}
+						}
+					}					
 					addRow( clone, true, true );
 				}
 
 				//$('row c', rels).attr( 's', defaultHeaderStyle ); // bold
 
 					}
-
 			if ( o.includeLabels ) {
 				if($t.p.colSpanHeader.length) {
 					mrow++; gh = $t.p.colSpanHeader, clone ={};
@@ -1578,7 +1632,7 @@ $.jgrid.extend({
 				} else {
 					cm[j]._expcol = cm[j].exportcol;
 				}
-				if(cm[j].name === 'cb' || cm[j].name === 'rn' || cm[j].name === 'subgrid' || cm[j].name === 'sc' || !cm[j]._expcol ) {
+				if( $.jgrid.isServiceCol(cm[j].name)  || !cm[j]._expcol ) {
 					continue;
 				}
 				obj = { text:  $t.p.colNames[j], style: 'tableHeader' };
@@ -1596,22 +1650,46 @@ $.jgrid.extend({
 					clone = [];
 					var ghdata = gh[i].groupHeaders,
 					colSpan = gh[i].useColSpanStyle;
-					for(key=0; key < def.length; key++ ) {
+					for(key=0; key < cm.length; key++ ) {
+						/*
 						if(colSpan) {
-							obj = {text: $t.p.colNames[map[key]], style: 'tableHeader', rowSpan : 2, verticalAlign : "center"};
+							obj = {text: $t.p.colNames[key], style: 'tableHeader', rowSpan : 2, verticalAlign : "center"};
 						} else {
 							obj = {text:'', style: 'tableHeader'};
 						}
+						*/
+						var put_me = true;
+						if( $.jgrid.isServiceCol( cm[key].name ) || !cm[key]._expcol ) {
+							put_me = false;
+						} else {
+							if(colSpan) {
+								obj = {text: $t.p.colNames[key], style: 'tableHeader', rowSpan : 2, verticalAlign : "center"};
+							} else {
+								obj = {text:'', style: 'tableHeader'};
+							}		
+						}
 						for(k=0;k<ghdata.length;k++) {
-							if(ghdata[k].startColumnName === def[key]) {
+							if(ghdata[k].startColumnName === cm[key].name) {
+								var nok = ghdata[k].numberOfColumns;
+								for(var fk = key; fk<key+ghdata[k].numberOfColumns;fk++) {
+									if(cm[fk].hidden === true) {
+										nok--;
+									}
+								}
 								obj = {
 									text : ghdata[k].titleText,
-									colSpan: ghdata[k].numberOfColumns,
+									colSpan: nok, /*ghdata[k].numberOfColumns,*/
 									style: 'tableHeader'
 								};
+								if(put_me===false && nok >0) {
+									put_me = true;
+									key=key+(ghdata[k].numberOfColumns-nok);
+								}
 							}
 						}
-						clone.push(obj);
+						if(put_me) {
+							clone.push(obj);
+						}
 						//j++;
 					}
 					rows.push(clone);
@@ -1633,7 +1711,6 @@ $.jgrid.extend({
 								};
 							}
 						}
-								
 						clone.push(obj);
 						j++;
 					}
