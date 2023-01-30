@@ -213,7 +213,11 @@ $.jgrid.extend({
 			height : 240,
 			classname : null,
 			groupHeaders : false,
-			done : function(perm) { if (perm) { self.jqGrid("remapColumns", perm, true); } },
+			done : function(perm) { 
+				if (perm) { 
+					self.jqGrid("remapColumns", perm, true); 
+				}
+			},
 			/* msel is either the name of a ui widget class that
 			   extends a multiselect, or a function that supports
 			   creating a multiselect object (with no argument,
@@ -271,8 +275,14 @@ $.jgrid.extend({
 				});
 				
 				//fixedCols.slice(0);
-				$('option[selected]',select).each(function() { perm.push(parseInt(this.value,10)); });
-				$.each(perm, function() { delete colMap[colModel[parseInt(this,10)].name]; });
+				$('option[selected]',select).each(function() {
+					if(this.selected) {
+						perm.push(parseInt(this.value,10)); 
+					}
+				});
+				$.each(perm, function() { 
+					delete colMap[colModel[parseInt(this,10)].name]; 
+				});
 				$.each(colMap, function() {
 					var ti = parseInt(this,10);
 					perm = insert(perm,ti,ti);
