@@ -1990,15 +1990,15 @@ $.jgrid.extend({
 		return this.each(function(){
 			var $t = this;
 			if(!$t.grid) {return;}
-			var nm, sop,ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[", gi=0, so;
+			var nm, sop,ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[", gi=0, so, searchable;
 			val +="";
 			//if($t.p.datatype !== 'local') { return; }
 			$.each($t.p.colModel,function(){
 				nm = this.index || this.name;
 				sop = this.searchoptions || {};
 				so  = p.defaultSearch ? p.defaultSearch : (sop.sopt) ? sop.sopt[0] : p.defaultSearch;
-				//this.search = this.search == null  ? false : true;
-				if (this.search || p.searchAll) {
+				searchable =  this.search === undefined  ? true : this.search;
+				if (searchable || p.searchAll) {
 					if (gi > 0) {ruleGroup += ",";}
 					ruleGroup += "{\"field\":\"" + nm + "\",";
 					ruleGroup += "\"op\":\"" + so + "\",";
