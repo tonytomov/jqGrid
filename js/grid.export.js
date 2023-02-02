@@ -544,7 +544,7 @@ $.jgrid.extend({
 					//cm = $t.p.colModel,
 					vv, grlen = fdata.cnt, k, retarr= new Array(p.collen), j=0;
 					for(k=foffset; k<colspans;k++) {
-						if(!cm[k]._excol) {
+						if(!cm[k]._expcol) {
 							continue;
 						}
 						var tplfld = "{0}";
@@ -565,7 +565,14 @@ $.jgrid.extend({
 									this.groupIndex = fdata.dataIndex;
 									this.groupValue = fdata.value;
 									//vv = $t.formatter('', this.v, k, this);
-									vv = this.v;
+									if(cm[k].formatter 
+										&&  typeof cm[k].formatter === 'string'
+										&&  ['integer','number', 'currency'].includes(cm[k].formatter)
+										&&  typeof this.v === 'number' ) {
+											vv = $t.formatter('', this.v, k, this);
+									} else {
+										vv = this.v;
+									}
 								} catch (ef) {
 									vv = this.v;
 								}
@@ -1136,7 +1143,14 @@ $.jgrid.extend({
 									this.groupIndex = fdata.dataIndex;
 									this.groupValue = fdata.value;
 									//vv = $t.formatter('', this.v, k, this);
-									vv = this.v;
+									if(cm[k].formatter 
+										&&  typeof cm[k].formatter === 'string'
+										&&  ['integer','number', 'currency'].includes(cm[k].formatter)
+										&&  typeof this.v === 'number' ) {
+											vv = $t.formatter('', this.v, k, this);
+									} else {
+										vv = this.v;
+									}
 								} catch (ef) {
 									vv = this.v;
 								}
@@ -1528,7 +1542,14 @@ $.jgrid.extend({
 									this.groupIndex = fdata.dataIndex;
 									this.groupValue = fdata.value;
 									//vv = $t.formatter('', this.v, k, this);
-									vv = this.v;
+									if(cm[k].formatter 
+										&&  typeof cm[k].formatter === 'string'
+										&&  ['integer','number', 'currency'].includes(cm[k].formatter)
+										&&  typeof this.v === 'number' ) {
+											vv = $t.formatter('', this.v, k, this);
+									} else {
+										vv = this.v;
+									}
 								} catch (ef) {
 									vv = this.v;
 								}
