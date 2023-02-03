@@ -564,15 +564,7 @@ $.jgrid.extend({
 									this.groupCount = fdata.cnt;
 									this.groupIndex = fdata.dataIndex;
 									this.groupValue = fdata.value;
-									//vv = $t.formatter('', this.v, k, this);
-									if(cm[k].formatter 
-										&&  typeof cm[k].formatter === 'string'
-										&&  ['integer','number', 'currency'].includes(cm[k].formatter)
-										&&  typeof this.v === 'number' ) {
 											vv = $t.formatter('', this.v, k, this);
-									} else {
-										vv = this.v;
-									}
 								} catch (ef) {
 									vv = this.v;
 								}
@@ -969,13 +961,16 @@ $.jgrid.extend({
 
 			var _replStr = $.jgrid.isFunction(o.replaceStr) ? o.replaceStr : _replStrFunc,
 			currentRow, rowNode,
-			addRow = function ( row, header, labels ) {
+			addRow = function ( row, header, labels, skipfirstcol ) {
 				if(labels===undefined) {
 					labels = false;
 				}
+				if(skipfirstcol===undefined) {
+					skipfirstcol = false;
+				}
 				currentRow = rowPos+1;
 				rowNode = $.jgrid.makeNode( rels, "row", { attr: {r:currentRow} } );
-				var maxieenum = 15, text;
+				var maxieenum = 15, text, omit;
 				for ( var i =0; i < data.header.length; i++) {
 					// key = cm[i].name;
 					// Concat both the Cell Columns as a letter and the Row of the cell.
@@ -987,7 +982,8 @@ $.jgrid.extend({
 						v = '';
 					}
 					if(!header) {
-						v = $.jgrid.formatCell( v, data.map[i], row, cm[data.map[i]], $t, 'excel');
+						omit = (i===0 && skipfirstcol);
+						v = omit || (skipfirstcol && v==='') ? v : $.jgrid.formatCell( v, data.map[i], row, cm[data.map[i]], $t, 'excel');
 						// convert whitespace from formatter to empty string
 						if(v && (v==='&nbsp;' || v==='&#160;' || (v.length===1 && v.charCodeAt(0)===160))) { 
 							v = '';
@@ -1143,14 +1139,7 @@ $.jgrid.extend({
 									this.groupIndex = fdata.dataIndex;
 									this.groupValue = fdata.value;
 									//vv = $t.formatter('', this.v, k, this);
-									if(cm[k].formatter 
-										&&  typeof cm[k].formatter === 'string'
-										&&  ['integer','number', 'currency'].includes(cm[k].formatter)
-										&&  typeof this.v === 'number' ) {
-											vv = $t.formatter('', this.v, k, this);
-									} else {
-										vv = this.v;
-									}
+									vv = this.v;
 								} catch (ef) {
 									vv = this.v;
 								}
@@ -1205,7 +1194,7 @@ $.jgrid.extend({
 					}
 					var fkey = Object.keys(arr);
 					arr[fkey[0]] = $.jgrid.stripHtml( new Array(n.idx*5).join(' ') + grpTextStr );
-					addRow( arr, true );
+					addRow( arr, false, false, true );
 					var leaf = len-1 === n.idx;
 					if( leaf ) {
 						var gg = grp.groups[i+1], kk, ik, offset = 0, sgr = n.startRow,
@@ -1229,7 +1218,7 @@ $.jgrid.extend({
 							for (ik = 0; ik < toEnd; ik++) {
 								if(!sumreverse[ik]) { continue; }
 								arr = buildSummaryTd(i, ik, grp.groups, 0);
-								addRow( arr, false );
+								addRow( arr, false, false, true );
 							}
 							toEnd = jj;
 						}
@@ -1481,12 +1470,17 @@ $.jgrid.extend({
 					}
 				});
 
-				function constructRow( row, fmt ) {
-					var k =0, test=[];
+				function constructRow( row, fmt, skipfirstcol ) {
+					var k =0, test=[], ommit, val;
+					if(skipfirstcol === undefined ) {
+						skipfirstcol = false;
+					}
 					//row = data[i];
 					for( var key=0; key < def.length; key++ ) {
+						ommit = !(key === 0 && skipfirstcol);// ? false : true;
+						val = row[def[key]];
 						obj = {
-							text: row[def[key]] == null ? '' : (fmt ? $.jgrid.formatCell( row[def[key]] + '', map[k], data[i], cm[map[k]], $t, 'pdf') : row[def[key]]),
+							text: val == null || val === '' ? '' : (fmt && ommit ? $.jgrid.formatCell( val + '', map[k], data[i], cm[map[k]], $t, 'pdf') : val),
 							alignment : align[key],
 							style : 'tableBody'
 						};
@@ -1541,15 +1535,7 @@ $.jgrid.extend({
 									this.groupCount = fdata.cnt;
 									this.groupIndex = fdata.dataIndex;
 									this.groupValue = fdata.value;
-									//vv = $t.formatter('', this.v, k, this);
-									if(cm[k].formatter 
-										&&  typeof cm[k].formatter === 'string'
-										&&  ['integer','number', 'currency'].includes(cm[k].formatter)
-										&&  typeof this.v === 'number' ) {
-											vv = $t.formatter('', this.v, k, this);
-									} else {
-										vv = this.v;
-									}
+									vv = this.v;
 								} catch (ef) {
 									vv = this.v;
 								}
@@ -1606,7 +1592,7 @@ $.jgrid.extend({
 					}
 					var fkey = Object.keys(arr);
 					arr[fkey[0]] = $.jgrid.stripHtml( new Array(n.idx*5).join(' ') + grpTextStr );
-					rows.push( constructRow (arr, false) );
+					rows.push( constructRow (arr, true, true) );
 					var leaf = len-1 === n.idx;
 					if( leaf ) {
 						var gg = grp.groups[i+1], kk, ik, offset = 0, sgr = n.startRow,
@@ -1630,7 +1616,7 @@ $.jgrid.extend({
 							for (ik = 0; ik < toEnd; ik++) {
 								if(!sumreverse[ik]) { continue; }
 								arr = buildSummaryTd(i, ik, grp.groups, 0);
-								rows.push( constructRow (arr, true) );
+								rows.push( constructRow (arr, true, true) );
 							}
 							toEnd = jj;
 						}
