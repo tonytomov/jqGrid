@@ -97,8 +97,8 @@ $.fn.jqFilter = function( arg ) {
 		isIE = /msie/i.test(navigator.userAgent) && !window.opera;
 
 		// translating the options
-		//this.p.initFilter = $.extend(true,{},this.p.filter);
-		this.p.initFilter = {};
+		this.p.initFilter = $.extend(true,{},this.p.filter);
+		//this.p.initFilter = {};
 		// set default values for the columns if they are not set
 		if( !len ) {return;}
 		for(i=0; i < len; i++) {
@@ -1056,14 +1056,15 @@ $.jgrid.extend({
 				}
 			},
 			clearToolbar = function(trigger){
-				var sdata={}, j=0, nm;
+				var sdata={}, so={}, j=0, nm, $elem, v;
 				trigger = (typeof trigger !== 'boolean') ? true : trigger;
 				$.each($t.p.colModel,function(){
-					var v, $elem = $("#gs_"+$t.p.idPrefix+$.jgrid.jqID(this.name),(this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
+					$elem = $("#gs_"+$t.p.idPrefix+$.jgrid.jqID(this.name),(this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
 					if(this.searchoptions && this.searchoptions.defaultValue !== undefined) {
 						v = this.searchoptions.defaultValue;
 					}
 					nm = this.index || this.name;
+					so[nm] = this.searchoptions && this.searchoptions.sopt ? this.searchoptions.sopt[0] : p.defaultSearch || 'eq';
 					switch (this.stype) {
 						case 'select' :
 							$elem.find("option").each(function (i){
@@ -1109,10 +1110,14 @@ $.jgrid.extend({
 					$.each(sdata,function(i,n){
 						if (gi > 0) {ruleGroup += ",";}
 						ruleGroup += "{\"field\":\"" + i + "\",";
-						ruleGroup += "\"op\":\"" + "eq" + "\",";
+						ruleGroup += "\"op\":\"" + so[i] + "\",";
 						n+="";
 						ruleGroup += "\"data\":\"" + n.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"}";
 						gi++;
+						if(p.searchOperators) {
+							$elem = $("#gs_"+$t.p.idPrefix+$.jgrid.jqID(i),(this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
+							$elem.parents("table.ui-search-table").find("td.ui-search-oper").children("a").attr("soper", so[i]).html(p.operands[so[i]]);
+						}
 					});
 					ruleGroup += "]}";
 					if($t.p.mergeSearch === true && $t.p.searchModules.hasOwnProperty('filterToolbar') && $t.p.searchModules.filterToolbar !== false ) {
