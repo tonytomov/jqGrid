@@ -109,7 +109,7 @@ $.jgrid.extend({
 								$($t).jqGrid("expandNode",$t.p.data[pos]);
 							}
 						}
-						return false;
+						//return false;
 					});
 				if($t.p.ExpandColClick === true) {
 					$($t.rows[i].cells[expCol])
@@ -129,7 +129,7 @@ $.jgrid.extend({
 								}
 							}
 							$($t).jqGrid("setSelection",ind2);
-							return false;
+							//return false;
 						});
 				}
 				i++;
