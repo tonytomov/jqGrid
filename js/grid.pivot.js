@@ -279,6 +279,10 @@ $.jgrid.extend({
 						// build the cols set in yDimension
 						for(k=0;k<ylen;k++) {
 							yValue[k] = $.jgrid.trim(row[o.yDimension[k].dataName]);
+							if(yValue[k] === undefined) {
+								yValue[k] = null;
+								continue;
+							}
 							// Check to see if we have user defined conditions
 							if(o.yDimension[k].converter && $.jgrid.isFunction(o.yDimension[k].converter)) {
 								yValue[k] = o.yDimension[k].converter.call(this, yValue[k], xValue, yValue);
@@ -301,6 +305,10 @@ $.jgrid.extend({
 						if(ylen>=1) {
 							for(k=0;k<ylen;k++) {
 								yValue[k] = $.jgrid.trim(row[o.yDimension[k].dataName]);
+								if(yValue[k] === undefined) {
+									yValue[k] = null;
+									continue;
+								}				
 								if(o.yDimension[k].converter && $.jgrid.isFunction(o.yDimension[k].converter)) {
 									yValue[k] = o.yDimension[k].converter.call(this, yValue[k], xValue, yValue);
 								}
