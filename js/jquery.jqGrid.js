@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.2 - 2023-02-02
+* @license Guriddo jqGrid JS - v5.8.2 - 2023-02-20
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3679,7 +3679,7 @@ $.fn.jqGrid = function( pin ) {
 				$(".selbox",pgboxes)[ this.p.useProp ? 'prop' : 'attr' ]("disabled",false);
 				if(ts.p.pginput===true) {
 					$('.ui-pg-input',pgboxes)[$('.ui-pg-input',pgboxes).first().is(':input')?'val':'html'](ts.p.page);
-					sppg = ts.p.toppager ? '#sp_1'+tspg+",#sp_1"+tspg+"_toppager" : '#sp_1'+tspg;
+					sppg = ts.p.toppager ? '#sp_1'+tspg+",#sp_1"+tspg_t : '#sp_1'+tspg;
 					$(sppg).html($.fmatter ? $.fmatter.util.NumberFormat(ts.p.lastpage,fmt):ts.p.lastpage);
 				}
 				if (ts.p.viewrecords){
@@ -3817,6 +3817,10 @@ $.fn.jqGrid = function( pin ) {
 						prm[pN.sort] = gs;
 						prm[pN.order] = "";
 					}
+					if(ts.p.datatype==='local' && !grp._locgr) {
+						ts.p.datatype = 'jsonstring';
+						ts.p.datastr = ts.p.data;
+					}
 				}
 				$.extend(ts.p.postData,prm);
 				var rcnt = !ts.p.scroll ? 1 : ts.rows.length-1;
@@ -3909,6 +3913,10 @@ $.fn.jqGrid = function( pin ) {
 						return;
 					}
 					addJSONData(dstr);
+					if(ts.p.grouping && grp._locgr) {
+						// back to original data???
+						ts.p.data = dstr;
+					}
 					afterprocess(dstr, lcf);
 				break;
 				case "local":
@@ -9590,8 +9598,8 @@ $.fn.jqFilter = function( arg ) {
 		isIE = /msie/i.test(navigator.userAgent) && !window.opera;
 
 		// translating the options
-		//this.p.initFilter = $.extend(true,{},this.p.filter);
-		this.p.initFilter = {};
+		this.p.initFilter = $.extend(true,{},this.p.filter);
+		//this.p.initFilter = {};
 		// set default values for the columns if they are not set
 		if( !len ) {return;}
 		for(i=0; i < len; i++) {
@@ -10549,14 +10557,15 @@ $.jgrid.extend({
 				}
 			},
 			clearToolbar = function(trigger){
-				var sdata={}, j=0, nm;
+				var sdata={}, so={}, j=0, nm, $elem, v;
 				trigger = (typeof trigger !== 'boolean') ? true : trigger;
 				$.each($t.p.colModel,function(){
-					var v, $elem = $("#gs_"+$t.p.idPrefix+$.jgrid.jqID(this.name),(this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
+					$elem = $("#gs_"+$t.p.idPrefix+$.jgrid.jqID(this.name),(this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
 					if(this.searchoptions && this.searchoptions.defaultValue !== undefined) {
 						v = this.searchoptions.defaultValue;
 					}
 					nm = this.index || this.name;
+					so[nm] = this.searchoptions && this.searchoptions.sopt ? this.searchoptions.sopt[0] : p.defaultSearch || 'eq';
 					switch (this.stype) {
 						case 'select' :
 							$elem.find("option").each(function (i){
@@ -10602,10 +10611,14 @@ $.jgrid.extend({
 					$.each(sdata,function(i,n){
 						if (gi > 0) {ruleGroup += ",";}
 						ruleGroup += "{\"field\":\"" + i + "\",";
-						ruleGroup += "\"op\":\"" + "eq" + "\",";
+						ruleGroup += "\"op\":\"" + so[i] + "\",";
 						n+="";
 						ruleGroup += "\"data\":\"" + n.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"}";
 						gi++;
+						if(p.searchOperators) {
+							$elem = $("#gs_"+$t.p.idPrefix+$.jgrid.jqID(i),(this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
+							$elem.parents("table.ui-search-table").find("td.ui-search-oper").children("a").attr("soper", so[i]).html(p.operands[so[i]]);
+						}
 					});
 					ruleGroup += "]}";
 					if($t.p.mergeSearch === true && $t.p.searchModules.hasOwnProperty('filterToolbar') && $t.p.searchModules.filterToolbar !== false ) {
@@ -11491,7 +11504,7 @@ $.jgrid.extend({
 				sop = this.searchoptions || {};
 				so  = p.defaultSearch ? p.defaultSearch : (sop.sopt) ? sop.sopt[0] : p.defaultSearch;
 				searchable =  this.search === undefined  ? true : this.search;
-				if (searchable || p.searchAll) {
+				if ((searchable || p.searchAll) && val !== "") {
 					if (gi > 0) {ruleGroup += ",";}
 					ruleGroup += "{\"field\":\"" + nm + "\",";
 					ruleGroup += "\"op\":\"" + so + "\",";
@@ -12670,6 +12683,9 @@ $.jgrid.extend({
 			if($.jgrid.isFunction(rp_ge[$t.p.id].afterShowForm)) { rp_ge[$t.p.id].afterShowForm.call($t, $(frmgr), frmoper); }
 			var posInit =getCurrPos();
 			updateNav(posInit[0],posInit);
+			this.refreshEditForm = function( rowid ) {
+				fillData(rowid, this, frmgr);
+			};						
 		});
 	},
 	viewGridRow : function(rowid, p){
@@ -13026,6 +13042,9 @@ $.jgrid.extend({
 			});
 			var posInit =getCurrPos();
 			updateNav(posInit[0],posInit);
+			this.refreshViewForm = function( rowid ) {
+				fillData(rowid, this);
+			};			
 		});
 	},
 	delGridRow : function(rowids,p) {
@@ -13202,7 +13221,7 @@ $.jgrid.extend({
 										$($t).trigger("reloadGrid");
 									} else {
 										if($t.p.treeGrid===true){
-												try {$($t).jqGrid("delTreeNode",$t.p.idPrefix+postdata[0]);} catch(e){}
+												try {$($t).jqGrid("delTreeNode",$t.p.idPrefix+postdata[0], true);} catch(e){}
 										} else {
 											for(i=0;i<postdata.length;i++) {
 												$($t).jqGrid("delRowData",$t.p.idPrefix+ postdata[i]);
@@ -14294,34 +14313,35 @@ $.jgrid.extend({
 				vv, grlen = fdata.cnt, str="", k , isput = false, tmpdata, tplfld;
 				for(k=foffset; k<colspans;k++) {
 					if(cm[k].hidden ) {
-						tmpdata = "<td "+$t.formatCol(k,1,'')+">&#160;</td>";
+						tmpdata = "<td role=\"gridcell\" "+$t.formatCol(k,1,'')+">&#160;</td>";
 					} else if(!isput && fstr) {
 						tmpdata = fstr;
 						isput = true;
 					} else {
-						tmpdata = "<td "+$t.formatCol(k,1,'')+">&#160;</td>";
+						tmpdata = "<td role=\"gridcell\" "+$t.formatCol(k,1,'')+">&#160;</td>";
 					}
 					$.each(fdata.summary,function(){
 						if(this.nm === cm[k].name) {
 							
 							tplfld = (cm[k].summaryTpl) ? cm[k].summaryTpl :  "{0}";
 							
+							vv = this.v;
 							if(typeof this.st === 'string' && this.st.toLowerCase() === 'avg') {
 								if(this.sd && this.vd) { 
-									this.v = (this.v/this.vd);
+									vv = (this.v/this.vd);
 								} else if(this.v && grlen > 0) {
-									this.v = (this.v/grlen);
+									vv = (this.v/grlen);
 								}
 							}
 							try {
 								this.groupCount = fdata.cnt;
 								this.groupIndex = fdata.dataIndex;
 								this.groupValue = fdata.value;
-								vv = $t.formatter('', this.v, k, this);
+								vv = $t.formatter('', vv, k, this);
 							} catch (ef) {
 								vv = this.v;
 							}
-							tmpdata= "<td "+$t.formatCol(k,1,'')+">"+$.jgrid.template(tplfld, vv, fdata.cnt, fdata.dataIndex, fdata.displayValue, fdata.summary)+ "</td>";
+							tmpdata= "<td role=\"gridcell\" "+$t.formatCol(k,1,'')+">"+$.jgrid.template(tplfld, vv, fdata.cnt, fdata.dataIndex, fdata.displayValue, fdata.summary)+ "</td>";
 							return false;
 						}
 					});
@@ -14362,7 +14382,7 @@ $.jgrid.extend({
 				}
 				if(grp.groupSummaryPos[n.idx] === 'header')  {
 					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"" + common.content + " jqgroup ui-row-"+$t.p.direction+" "+clid+"\">";
-					str += buildSummaryTd(i, 0, grp.groups, (mul==="" ? 0 : 1), "<td style=\"padding-left:"+(n.idx * 12) + "px;"+"\"" + mul +">" + icon+grpTextStr + "</td>" );
+					str += buildSummaryTd(i, 0, grp.groups, (mul==="" ? 0 : 1), "<td role=\"gridcell\" style=\"padding-left:"+(n.idx * 12) + "px;"+"\"" + mul +">" + icon+grpTextStr + "</td>" );
 					str += "</tr>";
 				} else {
 					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"" + common.content + " jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\" colspan=\""+(grp.groupColumnShow[n.idx] === false ? colspans-1 : colspans)+"\">" + icon + grpTextStr + "</td></tr>";
@@ -17109,6 +17129,10 @@ $.jgrid.extend({
 						// build the cols set in yDimension
 						for(k=0;k<ylen;k++) {
 							yValue[k] = $.jgrid.trim(row[o.yDimension[k].dataName]);
+							if(yValue[k] === undefined) {
+								yValue[k] = null;
+								continue;
+							}
 							// Check to see if we have user defined conditions
 							if(o.yDimension[k].converter && $.jgrid.isFunction(o.yDimension[k].converter)) {
 								yValue[k] = o.yDimension[k].converter.call(this, yValue[k], xValue, yValue);
@@ -17131,6 +17155,10 @@ $.jgrid.extend({
 						if(ylen>=1) {
 							for(k=0;k<ylen;k++) {
 								yValue[k] = $.jgrid.trim(row[o.yDimension[k].dataName]);
+								if(yValue[k] === undefined) {
+									yValue[k] = null;
+									continue;
+								}				
 								if(o.yDimension[k].converter && $.jgrid.isFunction(o.yDimension[k].converter)) {
 									yValue[k] = o.yDimension[k].converter.call(this, yValue[k], xValue, yValue);
 								}
@@ -17820,7 +17848,7 @@ $.jgrid.extend({
 								$($t).jqGrid("expandNode",$t.p.data[pos]);
 							}
 						}
-						return false;
+						//return false;
 					});
 				if($t.p.ExpandColClick === true) {
 					$($t.rows[i].cells[expCol])
@@ -17840,7 +17868,7 @@ $.jgrid.extend({
 								}
 							}
 							$($t).jqGrid("setSelection",ind2);
-							return false;
+							//return false;
 						});
 				}
 				i++;
@@ -18476,7 +18504,7 @@ $.jgrid.extend({
 		});
 		return success;
 	},
-	delTreeNode : function (rowid) {
+	delTreeNode : function (rowid, reload) {
 		return this.each(function () {
 			var $t = this, rid = $t.p.localReader.id, i,
 			left = $t.p.treeReader.left_field,
@@ -18484,6 +18512,12 @@ $.jgrid.extend({
 			if(!$t.grid || !$t.p.treeGrid) {return;}
 			rowid = $.jgrid.stripPref($t.p.idPrefix, rowid);
 			var rc = $t.p._index[rowid];
+			if(typeof reload === undefined) {
+				reload = false;
+			}
+			if(reload) {
+				var parent = $(this).jqGrid("getNodeParent",$t.p.data[rc]);
+			}
 			if (rc !== undefined) {
 				// nested
 				myright = parseInt($t.p.data[rc][right],10);
@@ -18515,6 +18549,15 @@ $.jgrid.extend({
 								res[key][right] = parseInt(res[key][right],10) - width ;
 							}
 						}
+					}
+				}
+				if(reload) {
+					var isLeaf = this.p.treeReader.leaf_field;
+					var chld = $(this).jqGrid('getNodeChildren', parent);
+					if(parent[isLeaf] && chld.length) {
+						$(this).jqGrid('setLeaf', parent, false);
+					} else if(!rc[isLeaf] && chld.length === 0) {
+						$(this).jqGrid('setLeaf', parent, true);
 					}
 				}
 			}
@@ -20247,7 +20290,7 @@ $.jgrid.extend({
 					//cm = $t.p.colModel,
 					vv, grlen = fdata.cnt, k, retarr= new Array(p.collen), j=0;
 					for(k=foffset; k<colspans;k++) {
-						if(!cm[k]._excol) {
+						if(!cm[k]._expcol) {
 							continue;
 						}
 						var tplfld = "{0}";
@@ -20256,19 +20299,19 @@ $.jgrid.extend({
 								if(cm[k].summaryTpl)  {
 									tplfld = cm[k].summaryTpl;
 								}
+								vv = this.v;
 								if(typeof this.st === 'string' && this.st.toLowerCase() === 'avg') {
 									if(this.sd && this.vd) {
-										this.v = (this.v/this.vd);
+										vv = (this.v/this.vd);
 									} else if(this.v && grlen > 0) {
-										this.v = (this.v/grlen);
+										vv = (this.v/grlen);
 									}
 								}
 								try {
 									this.groupCount = fdata.cnt;
 									this.groupIndex = fdata.dataIndex;
 									this.groupValue = fdata.value;
-									//vv = $t.formatter('', this.v, k, this);
-									vv = this.v;
+									vv = $t.formatter('', vv, k, this);
 								} catch (ef) {
 									vv = this.v;
 								}
@@ -20665,13 +20708,16 @@ $.jgrid.extend({
 
 			var _replStr = $.jgrid.isFunction(o.replaceStr) ? o.replaceStr : _replStrFunc,
 			currentRow, rowNode,
-			addRow = function ( row, header, labels ) {
+			addRow = function ( row, header, labels, skipfirstcol ) {
 				if(labels===undefined) {
 					labels = false;
 				}
+				if(skipfirstcol===undefined) {
+					skipfirstcol = false;
+				}
 				currentRow = rowPos+1;
 				rowNode = $.jgrid.makeNode( rels, "row", { attr: {r:currentRow} } );
-				var maxieenum = 15, text;
+				var maxieenum = 15, text, omit;
 				for ( var i =0; i < data.header.length; i++) {
 					// key = cm[i].name;
 					// Concat both the Cell Columns as a letter and the Row of the cell.
@@ -20683,7 +20729,8 @@ $.jgrid.extend({
 						v = '';
 					}
 					if(!header) {
-						v = $.jgrid.formatCell( v, data.map[i], row, cm[data.map[i]], $t, 'excel');
+						omit = (i===0 && skipfirstcol);
+						v = omit || (skipfirstcol && v==='') ? v : $.jgrid.formatCell( v, data.map[i], row, cm[data.map[i]], $t, 'excel');
 						// convert whitespace from formatter to empty string
 						if(v && (v==='&nbsp;' || v==='&#160;' || (v.length===1 && v.charCodeAt(0)===160))) { 
 							v = '';
@@ -20827,11 +20874,12 @@ $.jgrid.extend({
 								if(cm[k].summaryTpl)  {
 									tplfld = cm[k].summaryTpl;
 								}
+								vv = this.v;
 								if(typeof this.st === 'string' && this.st.toLowerCase() === 'avg') {
 									if(this.sd && this.vd) {
-										this.v = (this.v/this.vd);
+										vv = (this.v/this.vd);
 									} else if(this.v && grlen > 0) {
-										this.v = (this.v/grlen);
+										vv = (this.v/grlen);
 									}
 								}
 								try {
@@ -20839,7 +20887,7 @@ $.jgrid.extend({
 									this.groupIndex = fdata.dataIndex;
 									this.groupValue = fdata.value;
 									//vv = $t.formatter('', this.v, k, this);
-									vv = this.v;
+									//vv = this.v;
 								} catch (ef) {
 									vv = this.v;
 								}
@@ -20894,7 +20942,7 @@ $.jgrid.extend({
 					}
 					var fkey = Object.keys(arr);
 					arr[fkey[0]] = $.jgrid.stripHtml( new Array(n.idx*5).join(' ') + grpTextStr );
-					addRow( arr, true );
+					addRow( arr, false, false, true );
 					var leaf = len-1 === n.idx;
 					if( leaf ) {
 						var gg = grp.groups[i+1], kk, ik, offset = 0, sgr = n.startRow,
@@ -20918,7 +20966,7 @@ $.jgrid.extend({
 							for (ik = 0; ik < toEnd; ik++) {
 								if(!sumreverse[ik]) { continue; }
 								arr = buildSummaryTd(i, ik, grp.groups, 0);
-								addRow( arr, false );
+								addRow( arr, false, false, true );
 							}
 							toEnd = jj;
 						}
@@ -21170,12 +21218,17 @@ $.jgrid.extend({
 					}
 				});
 
-				function constructRow( row, fmt ) {
-					var k =0, test=[];
+				function constructRow( row, fmt, skipfirstcol ) {
+					var k =0, test=[], ommit, val;
+					if(skipfirstcol === undefined ) {
+						skipfirstcol = false;
+					}
 					//row = data[i];
 					for( var key=0; key < def.length; key++ ) {
+						ommit = !(key === 0 && skipfirstcol);// ? false : true;
+						val = row[def[key]];
 						obj = {
-							text: row[def[key]] == null ? '' : (fmt ? $.jgrid.formatCell( row[def[key]] + '', map[k], data[i], cm[map[k]], $t, 'pdf') : row[def[key]]),
+							text: val == null || val === '' ? '' : (fmt && ommit ? $.jgrid.formatCell( val + '', map[k], data[i], cm[map[k]], $t, 'pdf') : val),
 							alignment : align[key],
 							style : 'tableBody'
 						};
@@ -21219,19 +21272,19 @@ $.jgrid.extend({
 								if(cm[k].summaryTpl)  {
 									tplfld = cm[k].summaryTpl;
 								}
+								vv = this.v;
 								if(typeof this.st === 'string' && this.st.toLowerCase() === 'avg') {
 									if(this.sd && this.vd) {
-										this.v = (this.v/this.vd);
+										vv = (this.v/this.vd);
 									} else if(this.v && grlen > 0) {
-										this.v = (this.v/grlen);
+										vv = (this.v/grlen);
 									}
 								}
 								try {
 									this.groupCount = fdata.cnt;
 									this.groupIndex = fdata.dataIndex;
 									this.groupValue = fdata.value;
-									//vv = $t.formatter('', this.v, k, this);
-									vv = this.v;
+									//vv = this.v;
 								} catch (ef) {
 									vv = this.v;
 								}
@@ -21288,7 +21341,7 @@ $.jgrid.extend({
 					}
 					var fkey = Object.keys(arr);
 					arr[fkey[0]] = $.jgrid.stripHtml( new Array(n.idx*5).join(' ') + grpTextStr );
-					rows.push( constructRow (arr, false) );
+					rows.push( constructRow (arr, true, true) );
 					var leaf = len-1 === n.idx;
 					if( leaf ) {
 						var gg = grp.groups[i+1], kk, ik, offset = 0, sgr = n.startRow,
@@ -21312,7 +21365,7 @@ $.jgrid.extend({
 							for (ik = 0; ik < toEnd; ik++) {
 								if(!sumreverse[ik]) { continue; }
 								arr = buildSummaryTd(i, ik, grp.groups, 0);
-								rows.push( constructRow (arr, true) );
+								rows.push( constructRow (arr, true, true) );
 							}
 							toEnd = jj;
 						}
@@ -21707,11 +21760,12 @@ $.jgrid.extend({
 								if(cm[k].summaryTpl)  {
 									tplfld = cm[k].summaryTpl;
 								}
+								vv = this.v;
 								if(typeof this.st === 'string' && this.st.toLowerCase() === 'avg') {
 									if(this.sd && this.vd) {
-										this.v = (this.v/this.vd);
+										vv = (this.v/this.vd);
 									} else if(this.v && grlen > 0) {
-										this.v = (this.v/grlen);
+										vv = (this.v/grlen);
 									}
 								}
 								try {
@@ -21719,7 +21773,7 @@ $.jgrid.extend({
 									this.groupIndex = fdata.dataIndex;
 									this.groupValue = fdata.value;
 									//vv = $t.formatter('', this.v, k, this);
-									vv = this.v;
+									//vv = this.v;
 								} catch (ef) {
 									vv = this.v;
 								}
