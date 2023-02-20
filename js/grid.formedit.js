@@ -1103,6 +1103,9 @@ $.jgrid.extend({
 			if($.jgrid.isFunction(rp_ge[$t.p.id].afterShowForm)) { rp_ge[$t.p.id].afterShowForm.call($t, $(frmgr), frmoper); }
 			var posInit =getCurrPos();
 			updateNav(posInit[0],posInit);
+			this.refreshEditForm = function( rowid ) {
+				fillData(rowid, this, frmgr);
+			};
 		});
 	},
 	viewGridRow : function(rowid, p){
@@ -1459,6 +1462,9 @@ $.jgrid.extend({
 			});
 			var posInit =getCurrPos();
 			updateNav(posInit[0],posInit);
+			this.refreshViewForm = function( rowid ) {
+				fillData(rowid, this);
+			};
 		});
 	},
 	delGridRow : function(rowids,p) {
