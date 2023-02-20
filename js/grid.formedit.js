@@ -1103,8 +1103,13 @@ $.jgrid.extend({
 			if($.jgrid.isFunction(rp_ge[$t.p.id].afterShowForm)) { rp_ge[$t.p.id].afterShowForm.call($t, $(frmgr), frmoper); }
 			var posInit =getCurrPos();
 			updateNav(posInit[0],posInit);
-			this.refreshEditForm = function( rowid ) {
-				fillData(rowid, this, frmgr);
+			this.refreshEditForm = function( rid, force ) {
+				if ( force === undefined) {
+					force = false;
+				}
+				if( force || rowid === rid) {
+					fillData(rowid, this, frmgr);
+				}
 			};
 		});
 	},
@@ -1462,8 +1467,13 @@ $.jgrid.extend({
 			});
 			var posInit =getCurrPos();
 			updateNav(posInit[0],posInit);
-			this.refreshViewForm = function( rowid ) {
-				fillData(rowid, this);
+			this.refreshViewForm = function( rid, force ) {
+				if ( force === undefined) {
+					force = false;
+				}
+				if( force || rowid === rid) {
+					fillData(rid, this);
+				}
 			};
 		});
 	},
