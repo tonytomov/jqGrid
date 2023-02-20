@@ -12688,7 +12688,10 @@ $.jgrid.extend({
 					force = false;
 				}
 				if( force || rowid === rid) {
-					fillData(rowid, this, frmgr);
+					fillData(rid, this, frmgr);
+				}
+				if(force) {
+					rowid = rid;
 				}
 			};
 		});
@@ -13053,6 +13056,9 @@ $.jgrid.extend({
 				}
 				if( force || rowid === rid) {
 					fillData(rid, this);
+				}
+				if(force) {
+					rowid = rid;
 				}
 			};
 		});
