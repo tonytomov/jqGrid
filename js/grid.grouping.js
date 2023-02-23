@@ -533,7 +533,7 @@ $.jgrid.extend({
 			};
 
 			if(!funcs[fn]) {
-				throw ("jqGrid Grouping No such method: " + fn);
+				throw "jqGrid Grouping No such method: " + fn;
 			}
 			var res = funcs[fn]();
 
@@ -548,6 +548,11 @@ $.jgrid.extend({
 
 			return res;
 		}	
+	},
+	groupingResetCalcs : function () {
+		return this.each(function(){
+			this.p.groupingView.grp._locgr = false;;
+		});
 	},
 	setColSpanHeader : function( o ) {
 		return this.each(function(){

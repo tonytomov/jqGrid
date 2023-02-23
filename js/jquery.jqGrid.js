@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.2 - 2023-02-20
+* @license Guriddo jqGrid JS - v5.8.2 - 2023-02-23
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -14540,7 +14540,7 @@ $.jgrid.extend({
 			};
 
 			if(!funcs[fn]) {
-				throw ("jqGrid Grouping No such method: " + fn);
+				throw "jqGrid Grouping No such method: " + fn;
 			}
 			var res = funcs[fn]();
 
@@ -14555,6 +14555,11 @@ $.jgrid.extend({
 
 			return res;
 		}	
+	},
+	groupingResetCalcs : function () {
+		return this.each(function(){
+			this.p.groupingView.grp._locgr = false;;
+		});
 	},
 	setColSpanHeader : function( o ) {
 		return this.each(function(){
