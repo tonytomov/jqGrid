@@ -551,7 +551,7 @@ $.jgrid.extend({
 	},
 	groupingResetCalcs : function () {
 		return this.each(function(){
-			this.p.groupingView.grp._locgr = false;;
+			this.p.groupingView._locgr = false;;
 		});
 	},
 	setColSpanHeader : function( o ) {
