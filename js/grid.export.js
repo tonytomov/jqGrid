@@ -658,7 +658,7 @@ $.jgrid.extend({
 				return str;
 			}
 			if( $.jgrid.isFunction( p.loadIndicator )) {
-				p.loadIndicator('show');
+				p.loadIndicator.call($t,'show');
 			} else if(p.loadIndicator) {
 				$($t).jqGrid("progressBar", {method:"show", loadtype : $t.p.loadui, htmlcontent: $.jgrid.getRegional($t,'defaults.loadtext') });
 			}
@@ -768,26 +768,26 @@ $.jgrid.extend({
 			}
 			ret = cap + hdr + lbl + htr + str + ftr;
 			if( $.jgrid.isFunction( p.loadIndicator )) {
-				p.loadIndicator('hide');
+				p.loadIndicator.call($t,'hide');
 			} else if(p.loadIndicator) {
 				$($t).jqGrid("progressBar", {method:"hide", loadtype : $t.p.loadui });
 			}
-		});
-		if (p.returnAsString) {
-			return ret;
-		} else {
-			// add BOM fix Excel
-			if(p.mimetype.toUpperCase().indexOf("UTF-8") !== -1) {
-				ret = '\ufeff' + ret;
-			}
 			if($.jgrid.isFunction( p.onBeforeExport) ) {
-				ret = p.onBeforeExport(ret);
+				ret = p.onBeforeExport.call($t,ret);
 				if(!ret) {
 					throw "Before export does not return data!";
 				}
 			}
-			$.jgrid.saveAs( ret, p.fileName, { type : p.mimetype });
-		}
+			if (p.returnAsString) {
+				return ret;
+			} else {
+				// add BOM fix Excel
+				if(p.mimetype.toUpperCase().indexOf("UTF-8") !== -1) {
+					ret = '\ufeff' + ret;
+				}
+				$.jgrid.saveAs( ret, p.fileName, { type : p.mimetype });
+			}
+		});
 	},
 	/*
 	 *
@@ -1229,7 +1229,7 @@ $.jgrid.extend({
 			}
 //============================================================================
 			if( $.jgrid.isFunction( o.loadIndicator )) {
-				o.loadIndicator('show');
+				o.loadIndicator.call($t, 'show');
 			} else if(o.loadIndicator) {
 				$($t).jqGrid("progressBar", {method:"show", loadtype : $t.p.loadui, htmlcontent: $.jgrid.getRegional($t,'defaults.loadtext') });
 			}
@@ -1402,7 +1402,7 @@ $.jgrid.extend({
 				} ) );
 			}
 			if($.jgrid.isFunction( o.onBeforeExport) ) {
-				o.onBeforeExport( xlsx, rowPos );
+				o.onBeforeExport.call($t, xlsx, rowPos );
 			}
 			data = null; // free memory
 			try {
@@ -1425,7 +1425,7 @@ $.jgrid.extend({
 				throw e;
 			} finally {
 				if( $.jgrid.isFunction( o.loadIndicator )) {
-					o.loadIndicator('hide');
+					o.loadIndicator.call($t, 'hide');
 				} else if(o.loadIndicator) {
 					$($t).jqGrid("progressBar", {method:"hide", loadtype : $t.p.loadui });
 				}
@@ -1628,7 +1628,7 @@ $.jgrid.extend({
 			}
 //============================================================================
 			if( $.jgrid.isFunction( o.loadIndicator )) {
-				o.loadIndicator('show');
+				o.loadIndicator.call($t, 'show');
 			} else if(o.loadIndicator) {
 				$($t).jqGrid("progressBar", {method:"show", loadtype : $t.p.loadui, htmlcontent: $.jgrid.getRegional($t,'defaults.loadtext') });
 			}
@@ -1842,7 +1842,7 @@ $.jgrid.extend({
 				var pdf = pdfMake.createPdf( doc );
 				pdf.getDataUrl(function(url) {
 					if( $.jgrid.isFunction( o.loadIndicator )) {
-						o.loadIndicator('hide');
+						o.loadIndicator.call($t, 'hide');
 					} else if(o.loadIndicator) {
 						$($t).jqGrid("progressBar", {method:"hide", loadtype : $t.p.loadui });
 					}
@@ -2118,7 +2118,7 @@ $.jgrid.extend({
 				return retstr;
 			}
 			if( $.jgrid.isFunction( o.loadIndicator )) {
-				o.loadIndicator('show');
+				o.loadIndicator.call($t, 'show');
 			} else if(o.loadIndicator) {
 				$($t).jqGrid("progressBar", {method:"show", loadtype : $t.p.loadui, htmlcontent: $.jgrid.getRegional($t,'defaults.loadtext') });
 			}
@@ -2184,8 +2184,8 @@ $.jgrid.extend({
 					img.setAttribute( 'src', _relToAbs( img.getAttribute('src') ) );
 				} );
 
-				if ( o.onBeforeExport ) {
-					o.onBeforeExport( win );
+				if( $.jgrid.isFunction( o.onBeforeExport ) ) {
+					o.onBeforeExport.call($t, win);
 				}
 
 				if(Boolean(win.chrome)) {
@@ -2203,7 +2203,7 @@ $.jgrid.extend({
 				}
 			}
 			if( $.jgrid.isFunction( o.loadIndicator )) {
-				o.loadIndicator('hide');
+				o.loadIndicator.call($t, 'hide');
 			} else if(o.loadIndicator) {
 				$($t).jqGrid("progressBar", {method:"hide", loadtype : $t.p.loadui });
 			}
