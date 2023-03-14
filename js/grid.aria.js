@@ -54,7 +54,7 @@ $.jgrid.extend({
 					row < $t.rows.length &&
 					col < $t.p.colModel.length
 				);
-			};
+			}
 			function getNextCell( dirX, dirY) {
 				var row = $t.p.iRow + dirY; // set the default one when initialize grid
 				var col = $t.p.iCol + dirX; // set the default .................
@@ -141,9 +141,12 @@ $.jgrid.extend({
 				$t.grid.populate();
 			}
 			var focusableElementsSelector = $.jgrid.focusableElementsList.join();
+			/*
 			function hasFocusableChild( el) {
 				return $(focusableElementsSelector, el)[0];
 			}
+			 * 
+			 */
 			$($t).removeAttr("tabindex");
 			$($t).on('jqGridAfterGridComplete.setAriaGrid', function( e ) {
 				//var grid = e.target;
@@ -246,7 +249,8 @@ $.jgrid.extend({
 					case 113 : // F2
 						try{
 							$($t).jqGrid('editCell', $t.p.iRow, $t.p.iCol, true, e);
-						} catch(e){}
+						} catch(e1){}
+						break;
 					default:
 						if( custAct ) {
 							custAct.call($t, $t.rows[$t.p.iRow].id ,$t.p.iRow, $t.p.iCol, e);
@@ -306,7 +310,7 @@ $.jgrid.extend({
 					row < $t.rows.length &&
 					col < $t.p.colModel.length
 				);
-			};
+			}
 			function getNextCell( dirX, dirY) {
 				var row = $t.p.iRow + dirY; // set the default one when initialize grid
 				var col = $t.p.iCol + dirX; // set the default .................
@@ -382,9 +386,12 @@ $.jgrid.extend({
 				$t.grid.populate();
 			}
 			var focusableElementsSelector = $.jgrid.focusableElementsList.join();
+			/*
 			function hasFocusableChild( el) {
 				return $(focusableElementsSelector, el)[0];
 			}
+			 * 
+			 */
 			$($t).removeAttr("tabindex");
 			$($t).on('jqGridAfterGridComplete.setAriaGrid', function( e ) {
 				//var grid = e.target;
@@ -512,7 +519,7 @@ $.jgrid.extend({
 						try{
 							$($t).jqGrid('editCell', $t.p.iRow, $t.p.iCol, true, e, false);
 							$t.p.F2key = true;
-						} catch(e){}
+						} catch(e1){}
 						break;
 					case 8: // DEL, BACKSPACE
 					case 46:
@@ -528,23 +535,23 @@ $.jgrid.extend({
 						if(ctrl) {
 							paste_to_cell = true;
 							return true;
-							break;
 						}
+						break;
 					case 90:
 						if(ctrl) {
 							var undofunc = true; 
 							if( $.jgrid.isFunction( o.customUndoFunction ) ) {
 								undofunc = o.customUndoFunction.call($t, $t.rows[$t.p.iRow].id ,$t.p.iRow, $t.p.iCol, e);
 							}
-							if( undofunc && $t.p.savedValues
-								    && $($t).jqGrid('getCell', $t.rows[$t.p.iRow].id, $t.p.colModel[$t.p.iCol].name, false)  === $t.p.savedValues.newvalue 
-								    && $t.p.iRow ===  $t.p.savedValues.indexRow) {
+							if( undofunc && $t.p.savedValues &&
+								    $($t).jqGrid('getCell', $t.rows[$t.p.iRow].id, $t.p.colModel[$t.p.iCol].name, false)  === $t.p.savedValues.newvalue &&
+								    $t.p.iRow ===  $t.p.savedValues.indexRow) {
 								// undo
 								$($t).jqGrid('saveCell', $t.p.iRow, $t.p.iCol, $t.p.savedValues.oldvalue);
 							}
 							return true;
-							break;
 						}
+						break;
 					default:
 						var isLetter = /^[a-z]$/i.test(e.key);
 						var isNumber = /^[0-9]$/i.test(e.key);
@@ -639,7 +646,7 @@ $.jgrid.extend({
 	},
 	resetAriaBody : function() {
 		return this.each(function(){
-			var $t = this, paste_to_cell = false;;
+			var $t = this, paste_to_cell = false;
 			$t.p.ariaBody = false;
 			$($t).attr("tabindex","0")
 				.off('keydown')
@@ -840,7 +847,7 @@ $.jgrid.extend({
 	},
 	resetAriaPager : function() {
 		return this.each(function(){
-			$(".ui-pg-button",this.p.pager).removeAttr("tabindex").off("focus");;
+			$(".ui-pg-button",this.p.pager).removeAttr("tabindex").off("focus");
 			$(this.p.pager).find("table.ui-pager-table tr").first().off("keydown");
 		});
 	},
