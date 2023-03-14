@@ -851,7 +851,7 @@ $.jgrid.extend({
 			disabledKeys :  [9, 16, 17,18,19, 20, 33, 34, 35,36,37,38,39,40,30, 45,112,113,114,115,116,117,118,119,120,121,122,123, 144, 145]
 		}, regional , p  || {});
 		return this.each(function(){
-			var $t = this, unaryOpers=[];;
+			var $t = this, unaryOpers=[];
 			if($t.p.filterToolbar) { return; }
 			if(!$($t).data('filterToolbar')) {
 				$($t).data('filterToolbar', p);
@@ -1448,13 +1448,14 @@ $.jgrid.extend({
 				if($.jgrid.isFunction(p.onClearSearchValue)) {
 					p.onClearSearchValue.call($t, elem[0], coli, sval, dval);
 				}
+				var operText = "";
 				if(soper==="nu" || soper==="nn" || $.inArray(soper, unaryOpers) >=0) {
 					vv = sval.sopt ?
 							sval.sopt[0] :
 							cm.stype === "select" ?
 								"eq" : 
 								p.defaultSearch;
-						var operText = $t.p.customFilterDef != null && $t.p.customFilterDef[vv] != null ? 
+						operText = $t.p.customFilterDef != null && $t.p.customFilterDef[vv] != null ? 
 						$t.p.customFilterDef[vv].operand :
 						p.operands[vv] || "";
 						if(vv === soper) {
@@ -1871,7 +1872,7 @@ $.jgrid.extend({
 					p.stringResult = p.multipleSearch;
 				}
 				$("#"+fid+"_search").on('click', function(){
-					var sdata={}, res, filters;
+					var sdata={}, filters;
 					fl = $("#"+fid);
 					fl.find(".input-elm:focus").change();
 					if( ms && p.multipleSearch) {
@@ -2050,7 +2051,7 @@ $.jgrid.extend({
 		return this.each(function() {
 			var $t = this, item, sdata="";
 			if( o.field && $t.p.data && Array.isArray( $t.p.data )) {
-				var query, res, s_cnt, tmp = [], cm, len,
+				var query, res, s_cnt, tmp = [], cm,
 				result, i;
 
 				try {

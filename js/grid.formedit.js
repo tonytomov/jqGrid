@@ -2219,7 +2219,7 @@ $.jgrid.extend({
 			//actions = ['add','edit', 'del', 'view', 'search','refresh'],
 			regional =  $.jgrid.getRegional($t, 'nav'),
 			currstyle = $t.p.styleUI,
-			styles = $.jgrid.styleUI[currstyle].navigator,
+			//styles = $.jgrid.styleUI[currstyle].navigator,
 			classes = $.jgrid.styleUI[currstyle].filter,
 			commonstyle = $.jgrid.styleUI[currstyle].common,
 			mid = "form_menu_"+$.jgrid.randId(),

@@ -216,10 +216,10 @@ $.jgrid.extend({
 	},
 	expandRow: function (record){
 		this.each(function(){
-			var $t = this;
+			var $t = this, $rootpages;
 			//bvn
 			if (!$t.p.treeGrid_bigData) {
-				var $rootpages = $t.p.lastpage;
+				$rootpages = $t.p.lastpage;
 			}
 			if(!$t.grid || !$t.p.treeGrid) {return;}
 			var childern = $($t).jqGrid("getNodeChildren",record),
@@ -768,7 +768,7 @@ $.jgrid.extend({
 	delTreeNode : function (rowid, reload) {
 		return this.each(function () {
 			var $t = this, rid = $t.p.localReader.id, i,
-			left = $t.p.treeReader.left_field,
+			left = $t.p.treeReader.left_field, parent,
 			right = $t.p.treeReader.right_field, myright, width, res, key;
 			if(!$t.grid || !$t.p.treeGrid) {return;}
 			rowid = $.jgrid.stripPref($t.p.idPrefix, rowid);
@@ -777,7 +777,7 @@ $.jgrid.extend({
 				reload = false;
 			}
 			if(reload) {
-				var parent = $(this).jqGrid("getNodeParent",$t.p.data[rc]);
+				parent = $(this).jqGrid("getNodeParent",$t.p.data[rc]);
 			}
 			if (rc !== undefined) {
 				// nested

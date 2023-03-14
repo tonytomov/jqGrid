@@ -248,7 +248,7 @@ $.jgrid.extend({
 				var nmjq = $.jgrid.jqID(nm), v, v2,
 				p = $(cc).offset();
 
-				if( !(over_value !== undefined) ) {
+				if( over_value === undefined ) {
 				switch (cm.edittype) {
 					case "select":
 						if(!cm.editoptions.multiple) {

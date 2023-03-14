@@ -702,7 +702,7 @@ $.extend($.jgrid,{
 		var edtrul,i, nm, dft, len, g = this, cm = g.p.colModel,
 		msg = $.jgrid.getRegional(this, 'edit.msg'), fmtdate,
 		isNum = function(vn) {
-			var vn = vn.toString();
+			vn = vn.toString();
 			if(vn.length >= 2) {
 				var chkv, dot;
 				if(vn[0] === "-" ) {

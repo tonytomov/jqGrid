@@ -43,7 +43,7 @@ $.jgrid.extend({
 			}
 
 
-			var $t = this, i, j,
+			var $t = this, i, j, len,
 				borderbox = $("#gbox_"+$.jgrid.jqID($t.p.id)).css("box-sizing") === 'border-box',
 				pixelfix = borderbox ? 0 : 1,
 				tid = '#'+$.jgrid.jqID($t.p.id),
@@ -98,7 +98,7 @@ $.jgrid.extend({
 			var out = $(tid).clone(true);//Get the <table><tbody></tbody></table> tag
 			out.children('tbody').empty();
 
-			for(var j = 0 ,len = frowms.length; j <len; j++){//Loop insert the cloned row into the <tbody></tbody> tag
+			for(j = 0 ,len = frowms.length; j <len; j++){//Loop insert the cloned row into the <tbody></tbody> tag
 				frowms[j].addClass(prm.classes).appendTo(out);
 			}
 			out.appendTo(fbDiv);

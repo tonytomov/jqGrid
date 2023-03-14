@@ -551,13 +551,13 @@ $.jgrid.extend({
 	},
 	groupingResetCalcs : function () {
 		return this.each(function(){
-			this.p.groupingView._locgr = false;;
+			this.p.groupingView._locgr = false;
 		});
 	},
 	setColSpanHeader : function( o ) {
 		return this.each(function(){
 			var ts = this,
-			i, cmi, skip = 0, th, $th, thStyle,
+			i, cmi, skip = 0, th, $th, thStyle, k,
 			iCol,
 			cghi,
 			//startColumnName,
@@ -622,8 +622,8 @@ $.jgrid.extend({
 					if(cVisibleColumns > 0) {
 						$th.attr("colspan", String(cVisibleColumns));
 						if(numberOfHeadRows > 1) {
-							for(var k=1;k<numberOfHeadRows; k++) {
-								$("tr",$thead).eq(k+1).find("th").eq(i).attr("colspan", String(cVisibleColumns));;
+							for(k=1;k<numberOfHeadRows; k++) {
+								$("tr",$thead).eq(k+1).find("th").eq(i).attr("colspan", String(cVisibleColumns));
 							}
 						}
 
@@ -642,7 +642,7 @@ $.jgrid.extend({
 						ts.p.colModel[skip+i+1].hidedlg = true;
 						ts.p.colModel[skip+i+1]._colspancell = true;
 						if(numberOfHeadRows > 1) {
-							for(var k=1;k<numberOfHeadRows; k++) {
+							for(k=1;k<numberOfHeadRows; k++) {
 								$("tr",$thead).eq(k+1).find("th").eq(i+skip+1).hide();
 							}
 						}

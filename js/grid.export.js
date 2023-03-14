@@ -428,7 +428,7 @@ $.extend($.jgrid,{
 			// add the sformatter
 			var count = 0,
 			maxfmtid =0,
-			fmnt;
+			fmnt, mycell;
 
 			if(format && obj[format]) {
 				fmnt= $(formats.getElementsByTagName("numFmt"));
@@ -436,7 +436,7 @@ $.extend($.jgrid,{
 					count++;
 					maxfmtid = Math.max(maxfmtid,  parseInt( $(n).attr("numFmtId"), 10) );
 				});
-				var mycell = $.jgrid.makeNode( styleSh , "numFmt", {attr: {numFmtId : maxfmtid + 1, formatCode : obj[format] } });
+				mycell = $.jgrid.makeNode( styleSh , "numFmt", {attr: {numFmtId : maxfmtid + 1, formatCode : obj[format] } });
 				formats.appendChild( mycell );
 				$(formats).attr("count", count + 1);
 			}
@@ -819,8 +819,8 @@ $.jgrid.extend({
 			relsGet = rels.getElementsByTagName( "sheetData" )[0],
 			styleSh = $.parseXML( es['xl/styles.xml']), //xlsx.xl["styles.xml"];
 
-			formats = styleSh.getElementsByTagName("numFmts")[0],
-			celsX = styleSh.getElementsByTagName("cellXfs")[0],
+			//= styleSh.getElementsByTagName("numFmts")[0],
+			//celsX = styleSh.getElementsByTagName("cellXfs")[0],
 
 			xlsx = {
 				_rels: {
@@ -950,7 +950,7 @@ $.jgrid.extend({
 				var oDiv, oNode;
 
 				(oDiv = document.createElement('div')).innerHTML = strLinkHTML;
-				var oNode = oDiv.firstChild;
+				oNode = oDiv.firstChild;
 				if(oNode.nodeName === 'A' ) {
 					return [oNode.href,oNode.text];
 				} else if (oNode.nodeName === '#text') {
@@ -1234,12 +1234,13 @@ $.jgrid.extend({
 				$($t).jqGrid("progressBar", {method:"show", loadtype : $t.p.loadui, htmlcontent: $.jgrid.getRegional($t,'defaults.loadtext') });
 			}
 			$( 'sheets sheet', xlsx.xl['workbook.xml'] ).attr( 'name', o.sheetName );
-			var mrow =0,  gh , mergecell=[],key, l, clone ={}, j=0;
+			var mrow =0,  gh , mergecell=[],key, l, clone ={}, ind, ghdata, start, end;
 			if(o.includeGroupHeader && $($t).jqGrid('isGroupHeaderOn') ) {
 				gh = $t.p.groupHeader;
 				for (l = 0; l < gh.length; l++) {
-					var ghdata = gh[l].groupHeaders, colspan = gh[l].useColSpanStyle && gh.length === 1, colToSkip=[],
-					ghputin = [], colInHeader = [], k, nok, cpos, fk, start, end;
+					ghdata = gh[l].groupHeaders;
+					var colspan = gh[l].useColSpanStyle && gh.length === 1, colToSkip=[],
+					ghputin = [], colInHeader = [], k, nok, cpos, fk;
 					mrow++;
 					// column to skip
 					if(colspan) {
@@ -1249,7 +1250,7 @@ $.jgrid.extend({
 							cpos = $.jgrid.getElemByAttrVal (cm,  'name', key, true) ;
 							for(fk = cpos; fk < cpos + ghdata[k].numberOfColumns;fk++) {
 								colInHeader[cm[fk].name] = key;
-								var ind = data.header.indexOf(cm[fk].name);
+								ind = data.header.indexOf(cm[fk].name);
 								if(  ind !== -1) {
 									colToSkip.push(ind);
 								}
@@ -1295,7 +1296,7 @@ $.jgrid.extend({
 									if(colInHeader[key2] === key) {
 										if(clone[key2]) { // first visible in group
 											clone[key2] = ghdata[icol].titleText;
-											var ind  = data.header.indexOf(key2);
+											ind  = data.header.indexOf(key2);
 											nok = ghdata[icol].numberOfColumns;
 											cpos = $.jgrid.getElemByAttrVal (cm,  'name', key, true) ;
 											for(fk = cpos; fk < cpos + ghdata[icol].numberOfColumns;fk++) {
@@ -1321,7 +1322,7 @@ $.jgrid.extend({
 					}
 			if ( o.includeLabels ) {
 				if($t.p.colSpanHeader.length) {
-					mrow++; gh = $t.p.colSpanHeader, clone ={};
+					mrow++; gh = $t.p.colSpanHeader; clone ={};
 					for(j = 0; j < data.header.length; j++  ) {
 						key = data.header[j];
 						clone[key] =  data.labels[j];
@@ -1330,7 +1331,7 @@ $.jgrid.extend({
 							if(ghdata.startColumnName === key) {
 								clone[key] = ghdata.titleText;
 								start = $.jgrid.excelCellPos(j) + mrow;
-									end = $.jgrid.excelCellPos(j+ghdata.numberOfColumns -1) + mrow;
+								end = $.jgrid.excelCellPos(j+ghdata.numberOfColumns -1) + mrow;
 								mergecell.push({ ref: start+":"+end });
 							}
 						}
@@ -2141,7 +2142,7 @@ $.jgrid.extend({
 				html += groupToHtml(data.body);
 				$t.p.groupingView._locgr = savlcgr;
 			} else {
-				for ( var i=0, ien=data.body.length ; i<ien ; i++ ) {
+				for ( i=0, ien=data.body.length ; i<ien ; i++ ) {
 					html += addBodyRow( data.body[i], 'td', true, (i===0?true:false) );
 				}
 			}
