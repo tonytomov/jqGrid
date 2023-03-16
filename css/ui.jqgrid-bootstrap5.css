@@ -721,7 +721,7 @@ div.tablediv > .table-bordered {
 }
 .ui-jqdialog-content input.FormElement {
 	padding: .5em .3em; 
-	margin-bottom: 5px;
+	/*margin-bottom: 5px;*/
 	font-size: inherit;
 }
 .ui-jqdialog-content select.FormElement {
@@ -741,7 +741,7 @@ div.tablediv > .table-bordered {
 	white-space: nowrap;
 }
 .ui-jqdialog-content .DataTD {
-	padding: 2px 5px;
+	padding: 5px 5px;
 	border: 0 none; 
 	/*vertical-align: top;*/
 }
