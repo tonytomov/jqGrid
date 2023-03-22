@@ -322,9 +322,11 @@
 		{
 			case 'edit':
 				$grid.jqGrid('editRow', rid, actop);
-				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").hide();
-				$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").show();
-				$grid.triggerHandler("jqGridAfterGridComplete");
+				if($grid[0].p.beforeAction) {
+					$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").hide();
+					$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").show();
+					$grid.triggerHandler("jqGridAfterGridComplete");
+				}
 				break;
 			case 'save':
 				if ($grid.jqGrid('saveRow', rid, actop)) {
