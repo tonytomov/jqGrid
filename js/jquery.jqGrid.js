@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.2 - 2023-03-22
+* @license Guriddo jqGrid JS - v5.8.2 - 2023-03-27
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -8046,6 +8046,8 @@ $.jgrid.extend({
 						$($t).jqGrid("saveCell",iRow,iCol);
 						if(iRow < $t.rows.length-1 && excel) {
 							$($t).jqGrid('focusBodyCell', iRow + 1 , iCol);
+						} else {
+							setTimeout(function(){ $($t).jqGrid('focusBodyCell', iRow , iCol);},100);
 						}
 						// Prevent default action
 						return false;
@@ -22224,7 +22226,9 @@ $.jgrid.extend({
 						}
 						return;
 				}
-				$($t).jqGrid("focusBodyCell", focusRow, focusCol, getstyle, highlight);
+				setTimeout(function(){
+					$($t).jqGrid("focusBodyCell", focusRow, focusCol, getstyle, highlight);
+				},50);
 			});
 			$($t).on('jqGridBeforeSelectRow.ariaGridClick',function() {
 				return false;
@@ -22535,7 +22539,9 @@ $.jgrid.extend({
 						}
 						return;
 				}
-				$($t).jqGrid("focusBodyCell", focusRow, focusCol, getstyle, highlight);
+				setTimeout(function(){
+					$($t).jqGrid("focusBodyCell", focusRow, focusCol, getstyle, highlight);
+				},50);
 			});
 			$($t).on('jqGridBeforeSelectRow.ariaGridClick',function() {
 				return false;

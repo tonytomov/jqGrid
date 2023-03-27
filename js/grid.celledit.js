@@ -130,6 +130,8 @@ $.jgrid.extend({
 						$($t).jqGrid("saveCell",iRow,iCol);
 						if(iRow < $t.rows.length-1 && excel) {
 							$($t).jqGrid('focusBodyCell', iRow + 1 , iCol);
+						} else {
+							setTimeout(function(){ $($t).jqGrid('focusBodyCell', iRow , iCol);},100);
 						}
 						// Prevent default action
 						return false;

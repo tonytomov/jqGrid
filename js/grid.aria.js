@@ -257,7 +257,9 @@ $.jgrid.extend({
 						}
 						return;
 				}
-				$($t).jqGrid("focusBodyCell", focusRow, focusCol, getstyle, highlight);
+				setTimeout(function(){
+					$($t).jqGrid("focusBodyCell", focusRow, focusCol, getstyle, highlight);
+				},50);
 			});
 			$($t).on('jqGridBeforeSelectRow.ariaGridClick',function() {
 				return false;
@@ -568,7 +570,9 @@ $.jgrid.extend({
 						}
 						return;
 				}
-				$($t).jqGrid("focusBodyCell", focusRow, focusCol, getstyle, highlight);
+				setTimeout(function(){
+					$($t).jqGrid("focusBodyCell", focusRow, focusCol, getstyle, highlight);
+				},50);
 			});
 			$($t).on('jqGridBeforeSelectRow.ariaGridClick',function() {
 				return false;
