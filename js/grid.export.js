@@ -1383,8 +1383,15 @@ $.jgrid.extend({
 			}
 			if ( o.includeFooter || $t.p.footerrow) {
 				if(!$.isEmptyObject(data.footer)) {
-					addRow( data.footer, true );
-					$('row', rels).last().find('c').attr( 's', '2' ); // bold
+					if(Array.isArray(data.footer)) {
+						for(var n=0;n<data.footer.length;n++) {
+							addRow( data.footer[n], true );
+							$('row', rels).last().find('c').attr( 's', '2' ); // bold
+						}
+					} else {
+						addRow( data.footer, true );
+						$('row', rels).last().find('c').attr( 's', '2' ); // bold						
+					}
 				}
 			}
 

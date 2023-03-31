@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.2 - 2023-03-27
+* @license Guriddo jqGrid JS - v5.8.2 - 2023-03-31
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -21153,8 +21153,15 @@ $.jgrid.extend({
 			}
 			if ( o.includeFooter || $t.p.footerrow) {
 				if(!$.isEmptyObject(data.footer)) {
-					addRow( data.footer, true );
-					$('row', rels).last().find('c').attr( 's', '2' ); // bold
+					if(Array.isArray(data.footer)) {
+						for(var n=0;n<data.footer.length;n++) {
+							addRow( data.footer[n], true );
+							$('row', rels).last().find('c').attr( 's', '2' ); // bold
+						}
+					} else {
+						addRow( data.footer, true );
+						$('row', rels).last().find('c').attr( 's', '2' ); // bold						
+					}
 				}
 			}
 
