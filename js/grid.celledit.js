@@ -337,9 +337,9 @@ $.jgrid.extend({
 							return;
 						}
 						if( $("input.hasDatepicker",cc).length >0) { $("input.hasDatepicker",cc).datepicker('hide'); }
+						var postdata = {};
 						if ($t.p.cellsubmit === 'remote') {
 							if ($t.p.cellurl) {
-								var postdata = {};
 								if($t.p.autoencode) { v = $.jgrid.htmlEncode(v); }
 								if(cm.editoptions && cm.editoptions.NullIfEmpty && v === "") {
 									v = 'null';
@@ -446,6 +446,29 @@ $.jgrid.extend({
 								$t.p.afterSaveCell.call($t, $t.p.savedRow[fr].rowId, nm, v, iRow, iCol);
 							}
 							$t.p.savedRow.splice(0,1);
+						} else if($t.p.cellsubmit === 'storage') {
+							postdata = $t.p.savedRow[fr];
+							postdata[nm] = v;
+							postdata[$t.p.keyName] = $.jgrid.stripPref($t.p.idPrefix, $t.p.savedRow[fr].rowId);
+							$($t).jqGrid('updateStorageRecord', postdata)
+							.then(function(e){
+								if(e.type==="complete") {
+									$(cc).empty();
+									$($t).jqGrid("setCell", $t.p.savedRow[fr].rowId, iCol, v2, false, false, true);
+									cc = $('td', trow).eq( iCol );
+									$(cc).addClass("dirty-cell");
+									$(trow).addClass("edited");
+									$($t).triggerHandler("jqGridAfterSaveCell", [$t.p.savedRow[fr].rowId, nm, v, iRow, iCol]);
+									if ($.jgrid.isFunction($t.p.afterSaveCell)) {
+										$t.p.afterSaveCell.call($t, $t.p.savedRow[fr].rowId, nm, v, iRow, iCol);
+						}
+									$t.p.savedRow.splice(0,1);
+									
+								}
+							})
+							.catch(function(e) {
+								$.jgrid.info_dialog("Error",e.target.error.name + " : "+e.target.error.message,'Close');
+							});							
 						}
 					} else {
 						try {
