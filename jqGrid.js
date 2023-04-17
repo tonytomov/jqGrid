@@ -21,7 +21,8 @@ require([
 	"jqgrid/addons/ui.multiselect",
 	"jqgrid/grid.aria",
 	"jqgrid/grid.transposed",
-	"jqgrid/grid.frozenrows"
+	"jqgrid/grid.frozenrows",
+	"jqgrid/grid.database"
 
 ], function ($) {
 	"use strict";
