@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.2 - 2023-03-31
+* @license Guriddo jqGrid JS - v5.8.2 - 2023-04-17
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2333,7 +2333,15 @@ $.fn.jqGrid = function( pin ) {
 				searchOnEnter : true,
 				aOperands : ['cn', 'bw', 'ew', 'eq', 'ne'], // allowed options
 				_cnth : ['cb', 'rn', 'sc', 'subgrid', 'col_name'], // internal (just in case)
-				visibleColumns : []
+				visibleColumns : [],
+				dbconfig: {
+					dbname : "",
+					dbversion : -1,
+					dbtable : "",
+					loadIfExists : false,
+					isKeyInData : false,
+					dataUrl : ""
+				}
 			}
 		}, $.jgrid.defaults , pin );
 		if (localData !== undefined) {
@@ -2488,7 +2496,7 @@ $.fn.jqGrid = function( pin ) {
 						}
 						if (empty) {
 							grid.selectionPreserver(table[0]);
-							grid.emptyRows.call(table[0], true, false);
+							grid.emptyRows.call(table[0], false, false);
 						}
 						grid.populate(npage);
 					}
@@ -2625,6 +2633,9 @@ $.fn.jqGrid = function( pin ) {
 
 		$(this).attr({role:"presentation","aria-multiselectable":!!this.p.multiselect,"aria-labelledby":"gbox_"+this.id});
 
+		if(ts.p.datatype === 'indexeddb') { // datatype in databases
+			$(ts).jqGrid('dbInit',ts.p.datatype );
+		}
 		var sortkeys = ["shiftKey","altKey","ctrlKey"],
 		grid_font = $.jgrid.getFont( ts ) ,
 		intNum = function(val, defval) {
@@ -3406,6 +3417,156 @@ $.fn.jqGrid = function( pin ) {
 				try { self.jqGrid("addSubGrid",gi+ni+sc);} catch (_){}
 			}
 		},
+		addIndexedDBData = async function ( retAll ) {
+			return new Promise(function(resolve, reject){
+			let INDEX_NAME = ts.p.sortname,
+			ORDER = ts.p.sortorder.toLowerCase(),
+			recordsperpage = parseInt(ts.p.rowNum,10),
+			total=0, totalpages,
+			page = parseInt(ts.p.page,10),
+			srules, everyORsome = 'every',
+			range = null;
+			const _usecase = ts.p.ignoreCase;
+			if(retAll) {
+				page = 1;
+				recordsperpage = 1000000;
+			}
+			if (ts.p.search === true) {
+				srules = ts.p.postData.filters;
+				if(srules) {
+					if(typeof srules === "string") { srules = $.jgrid.parse(srules);}
+					if(srules.groupOp === "OR") {
+						everyORsome = 'some';
+					}
+					srules.rules.map(el=>{ 
+						if(_usecase) {
+							el.data = el.data.toLowerCase();
+						}
+						el.type = 'text';
+						let col = $(ts).jqGrid('getColProp', el.field);
+						let type = col.sorttype || col.stype;
+						let conv =  !(el.op === 'bt' || el.op === 'in' || el.op === 'ni');
+						switch(type) {
+							case 'int':
+							case 'integer':
+								if(conv) {
+									el.data = parseInt(el.data,10);
+								}
+								el.type='num';
+								break;
+							case 'float':
+							case 'number':
+							case 'numeric':
+								if(conv) {
+									el.data = parseFloat(el.data);
+								}
+								el.type='num';
+								break;
+						}
+					});
+				}
+			}
+			var compareFnMap = {
+				'eq': function(queryObj, data, _uselwcs) { return (_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field])  === queryObj.data;},
+				'ne': function(queryObj, data, _uselwcs) { return (_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field]) !== queryObj.data;},
+				'lt': function(queryObj, data, _uselwcs) { return (_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field]) < queryObj.data;},
+				'le': function(queryObj, data, _uselwcs) { return (_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field]) <= queryObj.data;},
+				'gt': function(queryObj, data, _uselwcs) { return (_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field]) > queryObj.data;},
+				'ge': function(queryObj, data, _uselwcs) { return (_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field]) >= queryObj.data;},
+				'bw': function(queryObj, data, _uselwcs) { return (_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field]).indexOf(queryObj.data) === 0;},
+				'bn': function(queryObj, data, _uselwcs) { return !((_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field]).indexOf(queryObj.data) === 0);},
+				'ew': function(queryObj, data, _uselwcs) { return (_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field]).endsWith(queryObj.data);},
+				'en': function(queryObj, data, _uselwcs) { return !((_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field]).endsWith(queryObj.data));},
+				'cn': function(queryObj, data, _uselwcs) { return (_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field]).indexOf(queryObj.data) > -1;},
+				'nc': function(queryObj, data, _uselwcs) { return !((_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field])) > -1;},
+				'in': function(queryObj, data, _uselwcs) { return queryObj.data.split(",").map(el=>{return (_uselwcs ? el.trim().toLowerCase() : el.trim());}).indexOf(data[queryObj.field]) > -1;},
+				'ni': function(queryObj, data, _uselwcs) { return queryObj.data.split(",").map(el=>{return (_uselwcs ? el.trim().toLowerCase() : el.trim());}).indexOf(data[queryObj.field].trim()) === -1;},
+				'nu': function(queryObj, data, _uselwcs) { return data[queryObj.field] === null;},
+				'nn': function(queryObj, data, _uselwcs) { return data[queryObj.field] !== null;},
+				'bt': function(queryObj, data, _uselwcs) { 
+					let minmax = queryObj.data.split("...").map(el=>{return  queryObj.type === "num" ? el - 0 : el.trim();}); 
+					try { 
+						let r = _uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field]; 
+						return r >= minmax[0] && r <= minmax[1];
+					} catch(e) { 
+						return false;
+					}
+				}
+			};
+			let startIndex = (page-1)*recordsperpage;
+		    let advanced = startIndex === 0;
+		    let counter = startIndex+1;
+
+			const connection = window.indexedDB.open(ts.p.dbconfig.dbname, ts.p.dbconfig.dbversion);
+			connection.onsuccess = function( e ) {
+				const db = connection.result;
+				const transaction = db.transaction(ts.p.dbconfig.dbtable, 'readonly');
+				let retresult ={};
+				retresult[ts.p.localReader.root] =[];
+			    transaction.oncomplete = function(event) {
+					
+					if(ts.p.search && srules.rules.length ) {
+						retresult[ts.p.localReader.root]= retresult[ts.p.localReader.root].slice( (page-1)*recordsperpage , page*recordsperpage );
+					}
+					totalpages = Math.ceil(total / recordsperpage);
+					retresult[ts.p.localReader.total] = totalpages;
+					retresult[ts.p.localReader.page] = page;
+					retresult[ts.p.localReader.records] = total;
+					retresult[ts.p.localReader.userdata] = ts.p.userData;
+					resolve(retresult);
+				};
+				
+				transaction.onerror = function(event) {
+					endReq();
+					reject(event.target);
+					console.log(event.target);
+				};
+				const store = transaction.objectStore(ts.p.dbconfig.dbtable);
+				const index = store.index( INDEX_NAME );
+				index.count(range).onsuccess = (e) => {
+					//console.log(e);
+					if(ts.p.search && srules.rules.length) {
+						total = 0;
+					} else  {
+						total = e.target.result;
+					}
+				};
+				
+				var res = index.openCursor(range, ORDER === 'desc' ? 'prev': 'next');
+				
+			    res.onsuccess = event => {
+			        const cursor = event.target.result;
+					if (!cursor) {	
+						//console.log(results);
+						return;
+					}
+					if(ts.p.search === true && srules.hasOwnProperty('rules') &&  srules.rules.length) {
+						if(srules.rules[everyORsome](function(c) {
+							return compareFnMap[c.op](c, cursor.value, _usecase && c.type === 'text');}) ) {
+							total++;
+							if(total <= page*recordsperpage) {
+								retresult[ts.p.localReader.root].push(cursor.value);
+							}
+						}
+						cursor.continue();						
+					} else if (advanced) {
+						counter++;
+						retresult[ts.p.localReader.root].push(cursor.value);
+						if (counter > page*recordsperpage) {
+							//console.log(results);
+							return;
+						}
+						cursor.continue();
+					} else {
+						advanced = true;
+						cursor.advance(startIndex);
+					} 
+				};
+				res.onerror = function(event) {
+					console.log(event);
+				};
+			};
+		});},
 		addLocalData = function( retAll ) {
 			var st = ts.p.multiSort ? [] : "", sto=[], fndsort=false, cmtypes={}, grtypes=[], grindexes=[], srcformat, sorttype, newformat, sfld;
 			if(!Array.isArray(ts.p.data)) {
@@ -3935,6 +4096,25 @@ $.fn.jqGrid = function( pin ) {
 					endReq();
 					ts.p._ald = false;
 				break;
+				case "indexeddb":
+					if(!ts.p.dbconfig.ready_req) {
+						return;
+				}
+					beginReq();
+					addIndexedDBData(false).then(function(res) {
+						if(!beforeprocess(res, 200 , null)) {
+							endReq();
+							return;
+						}
+						addJSONData(res, rcnt, npage>1, adjust);
+						$(ts).triggerHandler("jqGridLoadComplete", [res]);
+						if(lc) { lc.call(ts,res); }
+						$(ts).triggerHandler("jqGridAfterLoadComplete", [res]);
+						if (pvis) { ts.grid.populateVisible(); }
+						endReq();
+						ts.p._ald = false;
+					});
+				break;				
 				}
 				ts.p._sort = false;
 			}
@@ -5854,6 +6034,7 @@ $.fn.jqGrid = function( pin ) {
 		ts.addXmlData = function(d) {addXmlData( d );};
 		ts.addJSONData = function(d) {addJSONData( d );};
 		ts.addLocalData = function(d) { return addLocalData( d );};
+		ts.addIndexedDBData = function(d) { return addIndexedDBData( d );};
 		ts.treeGrid_beforeRequest = function() { treeGrid_beforeRequest(); }; //bvn13
 		ts.treeGrid_afterLoadComplete = function() {treeGrid_afterLoadComplete(); };
 		this.grid.cols = this.rows[0].cells;
@@ -8253,9 +8434,9 @@ $.jgrid.extend({
 							return;
 						}
 						if( $("input.hasDatepicker",cc).length >0) { $("input.hasDatepicker",cc).datepicker('hide'); }
+						var postdata = {};
 						if ($t.p.cellsubmit === 'remote') {
 							if ($t.p.cellurl) {
-								var postdata = {};
 								if($t.p.autoencode) { v = $.jgrid.htmlEncode(v); }
 								if(cm.editoptions && cm.editoptions.NullIfEmpty && v === "") {
 									v = 'null';
@@ -8362,6 +8543,29 @@ $.jgrid.extend({
 								$t.p.afterSaveCell.call($t, $t.p.savedRow[fr].rowId, nm, v, iRow, iCol);
 							}
 							$t.p.savedRow.splice(0,1);
+						} else if($t.p.cellsubmit === 'storage') {
+							postdata = $t.p.savedRow[fr];
+							postdata[nm] = v;
+							postdata[$t.p.keyName] = $.jgrid.stripPref($t.p.idPrefix, $t.p.savedRow[fr].rowId);
+							$($t).jqGrid('updateStorageRecord', postdata)
+							.then(function(e){
+								if(e.type==="complete") {
+									$(cc).empty();
+									$($t).jqGrid("setCell", $t.p.savedRow[fr].rowId, iCol, v2, false, false, true);
+									cc = $('td', trow).eq( iCol );
+									$(cc).addClass("dirty-cell");
+									$(trow).addClass("edited");
+									$($t).triggerHandler("jqGridAfterSaveCell", [$t.p.savedRow[fr].rowId, nm, v, iRow, iCol]);
+									if ($.jgrid.isFunction($t.p.afterSaveCell)) {
+										$t.p.afterSaveCell.call($t, $t.p.savedRow[fr].rowId, nm, v, iRow, iCol);
+						}
+									$t.p.savedRow.splice(0,1);
+									
+								}
+							})
+							.catch(function(e) {
+								$.jgrid.info_dialog("Error",e.target.error.name + " : "+e.target.error.message,'Close');
+							});							
 						}
 					} else {
 						try {
@@ -12079,7 +12283,7 @@ $.jgrid.extend({
 					$("#sData", frmtb+"_2").addClass( commonstyle.active );
 					url = rp_ge[$t.p.id].url || $($t).jqGrid('getGridParam','editurl');
 					oper = opers.oper;
-					idname = url === 'clientArray' ? $t.p.keyName : opers.id;
+					idname = (url === 'clientArray' || url==='storage') ? $t.p.keyName : opers.id;
 					// we add to pos data array the action - the name is oper
 					postdata[oper] = ($.jgrid.trim(postdata[$t.p.id+"_id"]) === "_empty") ? opers.addoper : opers.editoper;
 					if(postdata[oper] !== opers.addoper) {
@@ -12112,7 +12316,7 @@ $.jgrid.extend({
 						url: url,
 						type: rp_ge[$t.p.id].mtype,
 						data: $.jgrid.isFunction(rp_ge[$t.p.id].serializeEditData) ? rp_ge[$t.p.id].serializeEditData.call($t,postdata) :  postdata,
-						complete:function(data,status){
+						success:function(res,status,data){
 							var key;
 							$("#sData", frmtb+"_2").removeClass( commonstyle.active );
 							postdata[idname] = $t.p.idPrefix + postdata[idname];
@@ -12229,7 +12433,7 @@ $.jgrid.extend({
 							}
 							if(dpret[0] === false ) {
 								ret[0] = false;
-								ret[1] = dpret[1] || "Error deleting the selected row!" ;
+								ret[1] = dpret[1] || "Error processing the row!" ;
 							} else {
 								if(ajaxOptions.data.oper === opers.addoper && rp_ge[$t.p.id].closeAfterAdd ) {
 									$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, onClose: rp_ge[$t.p.id].onClose, removemodal: rp_ge[$t.p.id].removemodal, formprop: !rp_ge[$t.p.id].recreateForm, form: rp_ge[$t.p.id].form});
@@ -12242,7 +12446,32 @@ $.jgrid.extend({
 							if(ajaxOptions.url === "clientArray") {
 								rp_ge[$t.p.id].reloadAfterSubmit = false;
 								postdata = ajaxOptions.data;
-								ajaxOptions.complete({status:200, statusText:''},'');
+								ajaxOptions.success(postdata,'',{status:200, statusText:''});
+							} else if(ajaxOptions.url === "storage"){
+								if(postdata[oper] === opers.addoper) {
+									if(postdata[idname] === "_empty") {
+										postdata[idname] = "";
+									}
+									$($t).jqGrid('addStorageRecord', postdata)
+									.then(function(e){
+										if(e.type==="complete") {
+											ajaxOptions.success(postdata,'',{status:200, statusText:''});
+										}
+									})
+									.catch(function(e) {
+										$.jgrid.info_dialog("Error",e.target.error.name + " : "+e.target.error.message,'Close');
+									});
+								} else if(postdata[oper] === opers.editoper) {
+									$($t).jqGrid('updateStorageRecord', postdata)
+									.then(function(e){
+										if(e.type==="complete") {
+											ajaxOptions.success(postdata,'',{status:200, statusText:''});
+										}
+									})
+									.catch(function(e) {
+										$.jgrid.info_dialog("Error",e.target.error.name + " : "+e.target.error.message,'Close');
+									});									
+								}
 							} else {
 								$.ajax(ajaxOptions); 
 							}
@@ -13207,7 +13436,7 @@ $.jgrid.extend({
 							url: rp_ge[$t.p.id].url || $($t).jqGrid('getGridParam','editurl'),
 							type: rp_ge[$t.p.id].mtype,
 							data: $.jgrid.isFunction(rp_ge[$t.p.id].serializeDelData) ? rp_ge[$t.p.id].serializeDelData.call($t,postd) : postd,
-							complete:function(data,status){
+							success:function(res, status, data){
 								var i;
 								$("#dData", "#"+dtbl+"_2").removeClass( commonstyle.active );
 								if(data.status >= 300 && data.status !== 304) {
@@ -13288,7 +13517,17 @@ $.jgrid.extend({
 							else {
 								if(ajaxOptions.url === "clientArray") {
 									postd = ajaxOptions.data;
-									ajaxOptions.complete({status:200, statusText:''},'');
+									ajaxOptions.success({status:200, statusText:''},'');
+								} else if( ajaxOptions.url === "storage") {
+									$($t).jqGrid('deleteStorageRecord', postdata)
+									.then(function(e){
+										if(e.type==="complete") {
+											ajaxOptions.success(postdata,'',{status:200, statusText:''});
+										}
+									})
+									.catch(function(e) {
+										$.jgrid.info_dialog("Error",e.target.error.name + " : "+e.target.error.message,'Close');
+									});
 								} else {
 									$.ajax(ajaxOptions); 
 								}
@@ -15799,7 +16038,7 @@ $.jgrid.extend({
 			} else {
 				idname = $t.p.keyName;
 			}
-			if(tmp) {
+			if(!$.isEmptyObject(tmp)) {
 				tmp[opers.oper] = opers.editoper;
 				if (tmp[idname] === undefined || tmp[idname]==="") {
 					tmp[idname] = rowid;
@@ -15850,6 +16089,55 @@ $.jgrid.extend({
 				if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
 				success = true;
 				$(ind).removeClass("jqgrid-new-row").off("keydown");
+			} else if(o.url === 'storage') {
+				tmp = $.extend({},tmp, tmp2);
+				if($t.p.autoencode) {
+					$.each(tmp,function(n,v){
+						tmp[n] = $.jgrid.htmlDecode(v);
+					});
+				}
+				tmp = $.jgrid.isFunction($t.p.serializeRowData) ? $t.p.serializeRowData.call($t, tmp) : tmp;
+				if($(ind).hasClass("jqgrid-new-row")) {
+					$($t).jqGrid('addStorageRecord', tmp)
+					.then(function(e){
+						if(e.type==="complete") {
+							var k, resp = $($t).jqGrid("setRowData",rowid,tmp);
+							$(ind).attr("editable","0");
+							for(k=0;k<$t.p.savedRow.length;k++) {
+								if( String($t.p.savedRow[k].id) === String(oldRowId)) {fr = k; break;}
+							}
+							$($t).triggerHandler("jqGridInlineAfterSaveRow", [rowid, resp, tmp, o]);
+							if( $.jgrid.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, resp, tmp, o); }
+							if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
+							success = true;
+							$(ind).removeClass("jqgrid-new-row").off("keydown");
+							if($t.p.inlineNav===true) {$($t).jqGrid('showAddEditButtons');}
+						}
+					})
+					.catch(function(e) {
+						$.jgrid.info_dialog("Error",e.target.error.name + " : "+e.target.error.message,'Close');
+					});
+			} else {
+					$($t).jqGrid('updateStorageRecord', tmp)
+					.then(function(e){
+						if(e.type==="complete") {
+							var k, resp = $($t).jqGrid("setRowData",rowid,tmp);
+							$(ind).attr("editable","0");
+							for(k=0;k<$t.p.savedRow.length;k++) {
+								if( String($t.p.savedRow[k].id) === String(oldRowId)) {fr = k; break;}
+							}
+							$($t).triggerHandler("jqGridInlineAfterSaveRow", [rowid, resp, tmp, o]);
+							if( $.jgrid.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, resp, tmp, o); }
+							if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
+							success = true;
+							$(ind).off("keydown");
+							if($t.p.inlineNav===true) {$($t).jqGrid('showAddEditButtons');}
+						}
+					})
+					.catch(function(e) {
+						$.jgrid.info_dialog("Error",e.target.error.name + " : "+e.target.error.message,'Close');
+					});			
+				}
 			} else {
 				$($t).jqGrid("progressBar", {method:"show", loadtype : o.saveui, htmlcontent: o.savetext });
 				tmp3 = $.extend({},tmp,tmp3);
@@ -15859,7 +16147,7 @@ $.jgrid.extend({
 					data: $.jgrid.isFunction($t.p.serializeRowData) ? $t.p.serializeRowData.call($t, tmp3) : tmp3,
 					type: o.mtype,
 					async : false, //?!?
-					complete: function(res,stat){
+					success: function(resuly,stat,res){
 						$($t).jqGrid("progressBar", {method:"hide", loadtype : o.saveui, htmlcontent: o.savetext});
 						if (stat === "success"){
 							var ret = true, sucret, k;
@@ -23196,6 +23484,221 @@ $.jgrid.extend({
 			});
 		});
 	}
+});
+
+//module begin
+$.jgrid.extend({
+	dbInit : function (dbtype) {
+		return this.each(function (){
+			switch (dbtype) {
+				case  'indexeddb':
+					$(this).jqGrid('_initIndexedDB_');
+				break;
+			}
+		});
+	},
+	_initIndexedDB_ : function() { 
+	this.each(function(){
+		var ts = this;
+		indexedDB.databases().then(function(r) { 
+			const connection  = indexedDB.open(ts.p.dbconfig.dbname, ts.p.dbconfig.dbversion);
+			connection.onupgradeneeded = (e) => {
+				console.info('Database created: '+ts.p.dbconfig.dbname);
+			};
+			connection.onsuccess = function(e) {
+				const db = e.target.result;
+				var version =  parseInt(db.version),
+				idcol = $.jgrid.getElemByAttrVal(ts.p.colModel, 'key', true);
+
+				async function getIndexedDbData( skipCreate )
+					{
+						var data;
+						if(typeof ts.p.dbconfig.dataUrl === 'string') {
+							let req = await fetch(ts.p.dbconfig.dataUrl);	
+							data = await req.json();
+						} else if(Array.isArray(ts.p.dbconfig.dataUrl)) {
+							data = ts.p.dbconfig.dataUrl;
+						}
+						ts.p.dbconfig.dbversion = version + 1;
+						var secondconn = indexedDB.open(ts.p.dbconfig.dbname, ts.p.dbconfig.dbversion);
+						secondconn.onupgradeneeded = function (e) {
+							var db = e.target.result;
+							if(!skipCreate) {
+								const objectStore = db.createObjectStore(ts.p.dbconfig.dbtable, {keyPath: idcol.name});
+								for(let i =0;i<ts.p.colModel.length; i++) {
+									let cm = ts.p.colModel[i];
+									if(cm.name === idcol.name) {
+										objectStore.createIndex(cm.name, cm.name, { unique: true });
+									} else {
+										objectStore.createIndex(cm.name, cm.name, { unique: false });
+									}
+								}
+							}
+							const transaction = e.target.transaction;
+							const objectStore1 = transaction.objectStore(ts.p.dbconfig.dbtable);
+							objectStore1.transaction.oncomplete = function(e){
+								// data added
+								ts.p.dbconfig.loadIfExists = false;
+							};
+							objectStore1.transaction.onerror = function(e){
+								$.jgrid.info_dialog("Error",e.target.error.name + " : "+e.target.error.message,'Close');
+							};
+							for(var row of data){
+								if(!ts.p.dbconfig.isKeyInData) {
+									row[idcol.name] = Math.random().toString(16).slice(2);
+								}
+								objectStore1.add(row);
+							}
+							ts.p.dbconfig.ready_req = true;
+							ts.grid.populate();
+						};
+						secondconn.onerror =(e) => {
+							$.jgrid.info_dialog("Error",e.target.error.name + " : "+e.target.error.message,'Close');
+						};
+					}
+				if($.isEmptyObject(idcol)) {
+					$.jgrid.info_dialog("Warning","Missed key: No uniquie key is set in colModel. Creating table fail",'Close');
+					return;
+				}
+				db.close();
+				if( !db.objectStoreNames.contains(ts.p.dbconfig.dbtable) ) {
+					getIndexedDbData( false );
+				} else if(ts.p.dbconfig.loadIfExists) {
+					getIndexedDbData( true );
+				} else {
+					ts.p.dbconfig.ready_req = true;
+					ts.grid.populate();
+				}
+			};
+			connection.onerror =(e) => {
+				$.jgrid.info_dialog("Error",e.target.error.name + " : "+e.target.error.message,'Close');
+			};
+		});	
+	});},
+	updateStorageRecord : async function (data, keyName) {
+		let ts = this[0], dbcfg = ts.p.dbconfig, type = ts.p.datatype;
+		return new Promise(function(resolve, reject){
+			if(!Array.isArray(data)) {
+				data = [data];
+			}
+			if(!keyName) {
+				keyName = ts.p.keyName;
+			}
+			switch(type) {
+				case 'indexeddb' :
+					const DBOpenRequest = window.indexedDB.open(dbcfg.dbname, dbcfg.dbversion);
+					DBOpenRequest.onsuccess = (event) => {
+						const db = DBOpenRequest.result;
+						const transaction = db.transaction(dbcfg.dbtable, "readwrite");
+						transaction.oncomplete = (event) => {
+							resolve(event);
+							console.log("Transaction completed succefully");
+						};
+						transaction.onerror = (event) => {
+							reject(event);
+							console.log(event.target.error);
+						};
+						const objectStore = transaction.objectStore(dbcfg.dbtable);
+						for(let i=0;i<data.length;i++) {
+							if(!data[i].hasOwnProperty(keyName) || data[i][keyName] === "") {
+								transaction.abort();
+								break;
+							}
+							const req2 = objectStore.openCursor();
+							req2.onsuccess = (e) => {
+								 const cursor = e.target.result;
+								 if(!cursor) {
+									 return;
+								 }
+								if(cursor.value[keyName] === data[i][keyName]) {
+									const updateRequest = cursor.update(data[i]);
+									return;
+								} else {
+									 cursor.continue();
+								}
+								};
+							req2.onerror = (e) => {
+								console.log(e.target.error);
+							};
+						}
+					};
+				break;
+			} 
+		});
+	},
+	addStorageRecord : async function (data, keyName) {
+		let ts = this[0], dbcfg = ts.p.dbconfig, type = ts.p.datatype;
+		return new Promise(function(resolve, reject){
+			if(!Array.isArray(data)) {
+				data = [data];
+			}
+			if(!keyName) {
+				keyName = ts.p.keyName;
+			}
+			switch(type) {
+				case 'indexeddb' :
+					const DBOpenRequest = window.indexedDB.open(dbcfg.dbname, dbcfg.dbversion);
+					DBOpenRequest.onsuccess = (event) => {
+						const db = DBOpenRequest.result;
+						const transaction = db.transaction(dbcfg.dbtable, "readwrite");
+						transaction.oncomplete = (event) => {
+							resolve(event);
+							console.log("Transaction completed succefully");
+						};
+						transaction.onerror = (event) => {
+							reject(event);
+							console.log(event.target.error);
+						};
+						const objectStore = transaction.objectStore(dbcfg.dbtable);
+						for(let i=0;i<data.length;i++) {
+							if(!data[i].hasOwnProperty(keyName) || data[i][keyName] === "") {
+								data[i][keyName] = Math.random().toString(16).slice(2);
+							}
+							var objectStoreRequest = objectStore.add(data[i]);
+							objectStoreRequest.onsuccess = (event) => {
+								//console.log(event.type, objectStoreRequest.result);
+							};
+						}
+					};
+				break;
+			} 
+		});
+	},
+	deleteStorageRecord : async function (data, keyName) {
+		let ts = this[0], dbcfg = ts.p.dbconfig, type = ts.p.datatype;
+		return new Promise(function(resolve, reject){
+			if(!Array.isArray(data)) {
+				data = [data];
+			}	
+			if(!keyName) {
+				keyName = ts.p.keyName;
+			}
+			switch(type) {
+				case 'indexeddb' :
+					const DBOpenRequest = window.indexedDB.open(dbcfg.dbname, dbcfg.dbversion);
+					DBOpenRequest.onsuccess = (event) => {
+						const db = DBOpenRequest.result;
+						const transaction = db.transaction(dbcfg.dbtable, "readwrite");
+						transaction.oncomplete = (event) => {
+							resolve(event);
+							console.log("Transaction completed succefully");
+						};
+						transaction.onerror = (event) => {
+							reject(event);
+							console.log(event.target.error);
+						};
+						const objectStore = transaction.objectStore(dbcfg.dbtable);
+						for(let i=0;i<data.length;i++) {
+							var objectStoreRequest = objectStore.delete(data[i]);
+							objectStoreRequest.oncomplete = (event) => {
+								//console.log("Record deleted);
+							};
+						}
+					};
+				break;
+			} 
+		});
+	}	
 });
 
 }));
