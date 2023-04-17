@@ -2329,14 +2329,14 @@ $.fn.jqGrid = function( pin ) {
 				aOperands : ['cn', 'bw', 'ew', 'eq', 'ne'], // allowed options
 				_cnth : ['cb', 'rn', 'sc', 'subgrid', 'col_name'], // internal (just in case)
 				visibleColumns : [],
-				dbconfig: {
-					dbname : "",
-					dbversion : -1,
-					dbtable : "",
-					loadIfExists : false,
-					isKeyInData : false,
-					dataUrl : ""
-				}
+			},
+			dbconfig: {
+				dbname : "",
+				dbversion : -1,
+				dbtable : "",
+				loadIfExists : false,
+				isKeyInData : false,
+				dataUrl : ""
 			}
 		}, $.jgrid.defaults , pin );
 		if (localData !== undefined) {
