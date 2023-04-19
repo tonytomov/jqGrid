@@ -3520,21 +3520,42 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 			};
-			let startIndex = (page-1)*recordsperpage;
-		    let advanced = startIndex === 0;
-		    let counter = startIndex+1;
 
-			const connection = window.indexedDB.open(ts.p.dbconfig.dbname, ts.p.dbconfig.dbversion);
+			const connection = window.indexedDB.open(ts.p.dbconfig.dbname);
 			connection.onsuccess = function( e ) {
 				const db = connection.result;
 				const transaction = db.transaction(ts.p.dbconfig.dbtable, 'readonly');
 				let retresult ={};
 				retresult[ts.p.localReader.root] =[];
 			    transaction.oncomplete = function(event) {
-					
-					if(ts.p.search && srules.rules.length ) {
-						retresult[ts.p.localReader.root]= retresult[ts.p.localReader.root].slice( (page-1)*recordsperpage , page*recordsperpage );
+					if(ORDER === 'desc' || ts.p.grouping) { // we need here multi sorting too
+						retresult[ts.p.localReader.root].sort(function(a,b){
+							var low=[], high=[];
+							if(ts.p.grouping) {
+								for(let j =0;j<ts.p.groupingView.groupField.length; j++) {
+									if(ts.p.groupingView.groupOrder[j] === 'asc') {
+										low.push(a[ts.p.groupingView.groupField[j]]);
+										high.push(b[ts.p.groupingView.groupField[j]]);
+									} else {
+										low.push(b[ts.p.groupingView.groupField[j]]);
+										high.push(a[ts.p.groupingView.groupField[j]]);										
+									}
+								}
+								if(ORDER === 'asc') {
+									low.push(a[INDEX_NAME]);
+									high.push(b[INDEX_NAME]);
+								} else {
+									low.push(b[INDEX_NAME]);
+									high.push(a[INDEX_NAME]);										
+								}
+							} else {
+								low = [b[INDEX_NAME]];
+								high = [a[INDEX_NAME]];
+							}
+							return indexedDB.cmp(low,high);
+						});
 					}
+					retresult[ts.p.localReader.root]= retresult[ts.p.localReader.root].slice( (page-1)*recordsperpage , page*recordsperpage );
 					totalpages = Math.ceil(total / recordsperpage);
 					retresult[ts.p.localReader.total] = totalpages;
 					retresult[ts.p.localReader.page] = page;
@@ -3546,7 +3567,7 @@ $.fn.jqGrid = function( pin ) {
 				transaction.onerror = function(event) {
 					endReq();
 					reject(event.target);
-					console.log(event.target);
+					//console.log(event.target);
 				};
 				const store = transaction.objectStore(ts.p.dbconfig.dbtable);
 				const index = store.index( INDEX_NAME );
@@ -3558,36 +3579,26 @@ $.fn.jqGrid = function( pin ) {
 						total = e.target.result;
 					}
 				};
-				
-				var res = index.openCursor(range, ORDER === 'desc' ? 'prev': 'next');
-				
+				var limit = Math.pow(2,32) - 1;
+				if(ts.p.search === false && ORDER === 'asc' && !ts.p.grouping) {
+					limit = page*recordsperpage;
+				}
+				var res = index.getAll(range, limit);
 			    res.onsuccess = event => {
-			        const cursor = event.target.result;
-					if (!cursor) {	
-						//console.log(results);
-						return;
-					}
 					if(ts.p.search === true && srules.hasOwnProperty('rules') &&  srules.rules.length) {
-						if(srules.rules[everyORsome](function(c) {
-							return compareFnMap[c.op](c, cursor.value, _usecase && c.type === 'text');}) ) {
-							total++;
-							if(total <= page*recordsperpage) {
-								retresult[ts.p.localReader.root].push(cursor.value);
+						var lenn = res.result.length, i=0;
+						
+						while(i<lenn) {
+							if(srules.rules[everyORsome](function(c) {
+								return compareFnMap[c.op](c, res.result[i], _usecase && c.type === 'text');}) ) {
+								total++;
+								retresult[ts.p.localReader.root].push(res.result[i]);
 							}
+							i++;
 						}
-						cursor.continue();						
-					} else if (advanced) {
-						counter++;
-						retresult[ts.p.localReader.root].push(cursor.value);
-						if (counter > page*recordsperpage) {
-							//console.log(results);
-							return;
-						}
-						cursor.continue();
-					} else {
-						advanced = true;
-						cursor.advance(startIndex);
-					} 
+					}  else {
+						retresult[ts.p.localReader.root] = res.result;
+					}
 				};
 				res.onerror = function(event) {
 					console.log(event);
