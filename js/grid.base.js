@@ -1317,8 +1317,40 @@ $.extend($.jgrid,{
 		}
 		return -1;
 	},
-	isServiceCol( name ) {
+	isServiceCol : function( name ) {
 		return ['cb', 'rn','subgrid', 'sc'].includes( name );
+	},
+	normalizeDbData : function( input, colModel ) {
+		if(!Array.isArray(input)) {
+			input = [input];
+		}
+		for(let key = 0; key < input.length; key++) {
+			for(let i = 0; i < colModel.length; i++) {
+				let cm = colModel[i];
+				if(!$.jgrid.isServiceCol( cm.name ) && input[key].hasOwnProperty(cm.name)) {
+					let type = cm.sorttype || cm.stype || cm.formatter || 'text';
+					switch(type) 
+					{
+						case 'int':
+						case 'integer':
+							input[key][cm.name] = parseInt(input[key][cm.name],10);
+							break;
+						case 'float':
+						case 'number':
+						case 'numeric':
+						case 'currency':
+							input[key][cm.name] = parseFloat(input[key][cm.name]);
+							break;
+						case 'date': // future development
+						case 'datetime':
+							cm.formatoptions.reformatAfterEdit = true;
+							input[key][cm.name] = $.jgrid.parseDate.call(this, cm.formatoptions.newformat, input[key][cm.name], cm.formatoptions.srcformat || 'Y-m-d');
+							break;
+					}
+				}
+			}
+		}
+		return input;
 	},
 	styleUI : {
 		jQueryUI : {
@@ -2328,7 +2360,7 @@ $.fn.jqGrid = function( pin ) {
 				searchOnEnter : true,
 				aOperands : ['cn', 'bw', 'ew', 'eq', 'ne'], // allowed options
 				_cnth : ['cb', 'rn', 'sc', 'subgrid', 'col_name'], // internal (just in case)
-				visibleColumns : [],
+				visibleColumns : []
 			},
 			dbconfig: {
 				dbname : "",
