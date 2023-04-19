@@ -89,12 +89,14 @@ $.jgrid.extend({
 					$.jgrid.info_dialog("Warning","Missed key: No uniquie key is set in colModel. Creating table fail",'Close');
 					return;
 				}
-				db.close();
 				if( !db.objectStoreNames.contains(ts.p.dbconfig.dbtable) ) {
+					db.close();
 					getIndexedDbData( false );
 				} else if(ts.p.dbconfig.loadIfExists) {
+					db.close();
 					getIndexedDbData( true );
 				} else {
+					db.close();
 					ts.p.dbconfig.ready_req = true;
 					ts.grid.populate();
 				}
@@ -113,6 +115,7 @@ $.jgrid.extend({
 			if(!keyName) {
 				keyName = ts.p.keyName;
 			}
+			data = $.jgrid.normalizeDbData.call(ts, data, ts.p.colModel );
 			switch(type) {
 				case 'indexeddb' :
 					const DBOpenRequest = window.indexedDB.open(dbcfg.dbname, dbcfg.dbversion);
@@ -164,6 +167,7 @@ $.jgrid.extend({
 			if(!keyName) {
 				keyName = ts.p.keyName;
 			}
+			data = $.jgrid.normalizeDbData.call(ts, data, ts.p.colModel );
 			switch(type) {
 				case 'indexeddb' :
 					const DBOpenRequest = window.indexedDB.open(dbcfg.dbname, dbcfg.dbversion);
