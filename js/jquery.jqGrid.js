@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.2 - 2023-04-17
+* @license Guriddo jqGrid JS - v5.8.2 - 2023-05-10
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1322,8 +1322,40 @@ $.extend($.jgrid,{
 		}
 		return -1;
 	},
-	isServiceCol( name ) {
+	isServiceCol : function( name ) {
 		return ['cb', 'rn','subgrid', 'sc'].includes( name );
+	},
+	normalizeDbData : function( input, colModel ) {
+		if(!Array.isArray(input)) {
+			input = [input];
+		}
+		for(let key = 0; key < input.length; key++) {
+			for(let i = 0; i < colModel.length; i++) {
+				let cm = colModel[i];
+				if(!$.jgrid.isServiceCol( cm.name ) && input[key].hasOwnProperty(cm.name)) {
+					let type = cm.sorttype || cm.stype || cm.formatter || 'text';
+					switch(type) 
+					{
+						case 'int':
+						case 'integer':
+							input[key][cm.name] = parseInt(input[key][cm.name],10);
+							break;
+						case 'float':
+						case 'number':
+						case 'numeric':
+						case 'currency':
+							input[key][cm.name] = parseFloat(input[key][cm.name]);
+							break;
+						case 'date': // future development
+						case 'datetime':
+							cm.formatoptions.reformatAfterEdit = true;
+							input[key][cm.name] = $.jgrid.parseDate.call(this, cm.formatoptions.newformat, input[key][cm.name], cm.formatoptions.srcformat || 'Y-m-d');
+							break;
+					}
+				}
+			}
+		}
+		return input;
 	},
 	styleUI : {
 		jQueryUI : {
@@ -2333,7 +2365,7 @@ $.fn.jqGrid = function( pin ) {
 				searchOnEnter : true,
 				aOperands : ['cn', 'bw', 'ew', 'eq', 'ne'], // allowed options
 				_cnth : ['cb', 'rn', 'sc', 'subgrid', 'col_name'], // internal (just in case)
-				visibleColumns : [],
+				visibleColumns : []
 			},
 			dbconfig: {
 				dbname : "",
@@ -3493,21 +3525,42 @@ $.fn.jqGrid = function( pin ) {
 					}
 				}
 			};
-			let startIndex = (page-1)*recordsperpage;
-		    let advanced = startIndex === 0;
-		    let counter = startIndex+1;
 
-			const connection = window.indexedDB.open(ts.p.dbconfig.dbname, ts.p.dbconfig.dbversion);
+			const connection = window.indexedDB.open(ts.p.dbconfig.dbname);
 			connection.onsuccess = function( e ) {
 				const db = connection.result;
 				const transaction = db.transaction(ts.p.dbconfig.dbtable, 'readonly');
 				let retresult ={};
 				retresult[ts.p.localReader.root] =[];
 			    transaction.oncomplete = function(event) {
-					
-					if(ts.p.search && srules.rules.length ) {
-						retresult[ts.p.localReader.root]= retresult[ts.p.localReader.root].slice( (page-1)*recordsperpage , page*recordsperpage );
+					if(ORDER === 'desc' || ts.p.grouping) { // we need here multi sorting too
+						retresult[ts.p.localReader.root].sort(function(a,b){
+							var low=[], high=[];
+							if(ts.p.grouping) {
+								for(let j =0;j<ts.p.groupingView.groupField.length; j++) {
+									if(ts.p.groupingView.groupOrder[j] === 'asc') {
+										low.push(a[ts.p.groupingView.groupField[j]]);
+										high.push(b[ts.p.groupingView.groupField[j]]);
+									} else {
+										low.push(b[ts.p.groupingView.groupField[j]]);
+										high.push(a[ts.p.groupingView.groupField[j]]);										
+									}
+								}
+								if(ORDER === 'asc') {
+									low.push(a[INDEX_NAME]);
+									high.push(b[INDEX_NAME]);
+								} else {
+									low.push(b[INDEX_NAME]);
+									high.push(a[INDEX_NAME]);										
+								}
+							} else {
+								low = [b[INDEX_NAME]];
+								high = [a[INDEX_NAME]];
+							}
+							return indexedDB.cmp(low,high);
+						});
 					}
+					retresult[ts.p.localReader.root]= retresult[ts.p.localReader.root].slice( (page-1)*recordsperpage , page*recordsperpage );
 					totalpages = Math.ceil(total / recordsperpage);
 					retresult[ts.p.localReader.total] = totalpages;
 					retresult[ts.p.localReader.page] = page;
@@ -3519,7 +3572,7 @@ $.fn.jqGrid = function( pin ) {
 				transaction.onerror = function(event) {
 					endReq();
 					reject(event.target);
-					console.log(event.target);
+					//console.log(event.target);
 				};
 				const store = transaction.objectStore(ts.p.dbconfig.dbtable);
 				const index = store.index( INDEX_NAME );
@@ -3531,36 +3584,26 @@ $.fn.jqGrid = function( pin ) {
 						total = e.target.result;
 					}
 				};
-				
-				var res = index.openCursor(range, ORDER === 'desc' ? 'prev': 'next');
-				
+				var limit = Math.pow(2,32) - 1;
+				if(ts.p.search === false && ORDER === 'asc' && !ts.p.grouping) {
+					limit = page*recordsperpage;
+				}
+				var res = index.getAll(range, limit);
 			    res.onsuccess = event => {
-			        const cursor = event.target.result;
-					if (!cursor) {	
-						//console.log(results);
-						return;
-					}
 					if(ts.p.search === true && srules.hasOwnProperty('rules') &&  srules.rules.length) {
-						if(srules.rules[everyORsome](function(c) {
-							return compareFnMap[c.op](c, cursor.value, _usecase && c.type === 'text');}) ) {
-							total++;
-							if(total <= page*recordsperpage) {
-								retresult[ts.p.localReader.root].push(cursor.value);
+						var lenn = res.result.length, i=0;
+						
+						while(i<lenn) {
+							if(srules.rules[everyORsome](function(c) {
+								return compareFnMap[c.op](c, res.result[i], _usecase && c.type === 'text');}) ) {
+								total++;
+								retresult[ts.p.localReader.root].push(res.result[i]);
 							}
+							i++;
 						}
-						cursor.continue();						
-					} else if (advanced) {
-						counter++;
-						retresult[ts.p.localReader.root].push(cursor.value);
-						if (counter > page*recordsperpage) {
-							//console.log(results);
-							return;
-						}
-						cursor.continue();
-					} else {
-						advanced = true;
-						cursor.advance(startIndex);
-					} 
+					}  else {
+						retresult[ts.p.localReader.root] = res.result;
+					}
 				};
 				res.onerror = function(event) {
 					console.log(event);
@@ -4986,7 +5029,7 @@ $.fn.jqGrid = function( pin ) {
 			//$("#sopt_menu").remove();
 			
 			left = parseInt(left,10);
-			top = menu_offset /* + parseInt(top,10)*/;
+			top = menu_offset; /* + parseInt(top,10)*/
 			var strb = '<ul id="column_menu" role="menu" tabindex="0">',
 			str = '',
 			stre = "</ul>",
@@ -5516,7 +5559,7 @@ $.fn.jqGrid = function( pin ) {
 				if(ts.p.direction === "ltr") {
 					left += $(this).outerWidth();
 				}
-				buildColMenu(ci, left, top, t );
+				buildColMenu(ci, left, top);
 				if(ts.p.menubar === true) {
 					$("#"+ts.p.id+"_menubar").hide();
 				}
@@ -5984,8 +6027,9 @@ $.fn.jqGrid = function( pin ) {
 		}
 		if(ts.p.autoResizing) {
 			$(ts).on('jqGridAfterGridComplete.setAutoSizeColumns',function(){
-				var arfrozen = false;
+				var arfrozen = false, focused = false;
 				if(ts.p.frozenColumns === true) {
+					focused = $(':focus', '.frozen-div').attr("id");
 					$(ts).jqGrid("destroyFrozenColumns");
 					arfrozen = true;
 				}
@@ -6000,6 +6044,11 @@ $.fn.jqGrid = function( pin ) {
 				$(ts).jqGrid('refreshGroupHeaders');
 				if(arfrozen) {
 					$(ts).jqGrid("setFrozenColumns");
+					if(focused) {
+						setTimeout(function(){
+							$("#"+focused, '.frozen-div').trigger('focus');
+						},10);
+					}
 				}
 			});
 		}
@@ -21514,6 +21563,7 @@ $.jgrid.extend({
 			mimetype : "application/pdf",
 			treeindent : "-",
 			visibleTreeNodes : false,
+			centerTableOnPage : false,
 			loadIndicator : true // can be a function
 
 		}, o || {} );
@@ -21845,20 +21895,36 @@ $.jgrid.extend({
 				}
 				rows.push( test );
 			}
-
-			var doc = {
-				pageSize: o.pageSize,
-				pageOrientation: o.orientation,
-				content: [
+			var tblcnt = {
+				style : 'tableExample',
+				widths : widths,
+				table: {
+					headerRows: (gh!=null) ? 0 : 1,
+					body: rows
+				}
+			};
+			if(o.centerTableOnPage) {
+				tblcnt = {
+					columns : [
+						{ width: '*', text: '' },
 					{
 						style : 'tableExample',
+							width: 'auto',
 						widths : widths,
 						table: {
 							headerRows: (gh!=null) ? 0 : 1,
 							body: rows
-						}
-					}
-				],
+							},
+							alignment: "center"
+						},
+						{ width: '*', text: '' }
+					]
+				};
+			}
+			var doc = {
+				pageSize: o.pageSize,
+				pageOrientation: o.orientation,
+				content: [ tblcnt ],
 				styles: {
 					tableHeader: {
 						bold: true,
@@ -23560,12 +23626,14 @@ $.jgrid.extend({
 					$.jgrid.info_dialog("Warning","Missed key: No uniquie key is set in colModel. Creating table fail",'Close');
 					return;
 				}
-				db.close();
 				if( !db.objectStoreNames.contains(ts.p.dbconfig.dbtable) ) {
+					db.close();
 					getIndexedDbData( false );
 				} else if(ts.p.dbconfig.loadIfExists) {
+					db.close();
 					getIndexedDbData( true );
 				} else {
+					db.close();
 					ts.p.dbconfig.ready_req = true;
 					ts.grid.populate();
 				}
@@ -23584,6 +23652,7 @@ $.jgrid.extend({
 			if(!keyName) {
 				keyName = ts.p.keyName;
 			}
+			data = $.jgrid.normalizeDbData.call(ts, data, ts.p.colModel );
 			switch(type) {
 				case 'indexeddb' :
 					const DBOpenRequest = window.indexedDB.open(dbcfg.dbname, dbcfg.dbversion);
@@ -23635,6 +23704,7 @@ $.jgrid.extend({
 			if(!keyName) {
 				keyName = ts.p.keyName;
 			}
+			data = $.jgrid.normalizeDbData.call(ts, data, ts.p.colModel );
 			switch(type) {
 				case 'indexeddb' :
 					const DBOpenRequest = window.indexedDB.open(dbcfg.dbname, dbcfg.dbversion);
