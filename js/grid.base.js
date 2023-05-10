@@ -5024,7 +5024,7 @@ $.fn.jqGrid = function( pin ) {
 			//$("#sopt_menu").remove();
 			
 			left = parseInt(left,10);
-			top = menu_offset /* + parseInt(top,10)*/;
+			top = menu_offset; /* + parseInt(top,10)*/
 			var strb = '<ul id="column_menu" role="menu" tabindex="0">',
 			str = '',
 			stre = "</ul>",
@@ -5554,7 +5554,7 @@ $.fn.jqGrid = function( pin ) {
 				if(ts.p.direction === "ltr") {
 					left += $(this).outerWidth();
 				}
-				buildColMenu(ci, left, top, t );
+				buildColMenu(ci, left, top);
 				if(ts.p.menubar === true) {
 					$("#"+ts.p.id+"_menubar").hide();
 				}
@@ -6022,8 +6022,9 @@ $.fn.jqGrid = function( pin ) {
 		}
 		if(ts.p.autoResizing) {
 			$(ts).on('jqGridAfterGridComplete.setAutoSizeColumns',function(){
-				var arfrozen = false;
+				var arfrozen = false, focused = false;
 				if(ts.p.frozenColumns === true) {
+					focused = $(':focus', '.frozen-div').attr("id");
 					$(ts).jqGrid("destroyFrozenColumns");
 					arfrozen = true;
 				}
@@ -6038,6 +6039,11 @@ $.fn.jqGrid = function( pin ) {
 				$(ts).jqGrid('refreshGroupHeaders');
 				if(arfrozen) {
 					$(ts).jqGrid("setFrozenColumns");
+					if(focused) {
+						setTimeout(function(){
+							$("#"+focused, '.frozen-div').trigger('focus');
+						},10);
+					}
 				}
 			});
 		}
