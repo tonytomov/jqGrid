@@ -1284,7 +1284,18 @@ $.jgrid.extend({
 				if(this.searchoptions.searchOperMenu === undefined) {
 					this.searchoptions.searchOperMenu = true;
 				}
-				soptions = $.extend({},this.searchoptions , {name:cm.index || cm.name, id: "gs_"+$t.p.idPrefix+cm.name, oper:'search'});
+				var filterLabel;
+				if ($.jgrid.hasOwnProperty("regional") ) {
+					var lang = Object.keys($.jgrid.regional)[0];
+					filterLabel = $.jgrid.regional[lang].search.filterFor;
+				}
+				var title;
+				if(filterLabel !== undefined){
+					title = filterLabel + " " + $t.p.colNames[ci];
+				} else {
+					title = $t.p.colNames[ci];
+				}
+				soptions = $.extend({},this.searchoptions , {name:cm.index || cm.name, id: "gs_"+$t.p.idPrefix+cm.name, oper:'search', title:title});
 				if(this.search){
 					if( p.restoreFromFilters && rules) {
 						restores = false;
