@@ -2643,7 +2643,7 @@ $.fn.jqGrid = function( pin ) {
 		isMSIE = $.jgrid.msie(),
 		gv, sortarr = [], sortord = [], sotmp=[];
 		stylemodule = ts.p.styleUI + ".base";
-		gv = $("<div "+getstyle(stylemodule, 'viewBox', false, 'ui-jqgrid-view')+" role='grid'></div>");
+		gv = $("<div "+getstyle(stylemodule, 'viewBox', false, 'ui-jqgrid-view')+" ></div>");
 		ts.p.direction = $.jgrid.trim(ts.p.direction.toLowerCase());
 		ts.p._ald = false;
 		if($.inArray(ts.p.direction,["ltr","rtl"]) === -1) { ts.p.direction = "ltr"; }
@@ -2658,7 +2658,7 @@ $.fn.jqGrid = function( pin ) {
 		$("<div "+getstyle(ts.p.styleUI+'.common','overlay', false, 'jqgrid-overlay')+ " id='lui_"+this.id+"'></div>").insertBefore(gv);
 		$("<div "+getstyle(stylemodule,'loadingBox', false, 'loading')+" id='load_"+this.id+"'>"+$.jgrid.getRegional(ts, "defaults.loadtext", this.p.loadtext)+"</div>").insertBefore(gv);
 
-		$(this).attr({role:"presentation","aria-multiselectable":!!this.p.multiselect,"aria-labelledby":"gbox_"+this.id});
+		$(this).attr({role:"grid","aria-multiselectable":!!this.p.multiselect,"aria-labelledby":"gbox_"+this.id});
 
 		if(ts.p.datatype === 'indexeddb') { // datatype in databases
 			$(ts).jqGrid('dbInit',ts.p.datatype );
@@ -5601,7 +5601,7 @@ $.fn.jqGrid = function( pin ) {
 		}
 		//$(firstr).insertAfter(this);
 		firstr = null;
-		var hTable = $("<table "+getstyle(stylemodule,'headerTable',false,'ui-jqgrid-htable ui-common-table')+" style='width:"+ts.p.tblwidth+"px' role='presentation' aria-labelledby='gbox_"+this.id+"'></table>").append(thead),
+		var hTable = $("<table "+getstyle(stylemodule,'headerTable',false,'ui-jqgrid-htable ui-common-table')+" style='width:"+ts.p.tblwidth+"px' role='grid' aria-labelledby='gbox_"+this.id+"'></table>").append(thead),
 		hg = (ts.p.caption && ts.p.hiddengrid===true) ? true : false,
 		hb = $("<div class='ui-jqgrid-hbox" + (dir==="rtl" ? "-rtl" : "" )+"'></div>");
 		thead = null;
