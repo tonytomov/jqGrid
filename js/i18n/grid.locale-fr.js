@@ -45,7 +45,10 @@ $.jgrid.regional["fr"] = {
 		nomorerecs : "Plus de données...",
 		scrollPullup: "Glisser vers le haut pour charger plus de données...",
 		scrollPulldown : "Glisser vers le bas pour rafraîchir...",
-		scrollRefresh : "Relâcher pour rafraîchir..."
+		scrollRefresh : "Relâcher pour rafraîchir...",
+		valueCheckbox : "Case à cocher",
+		valT : "cochée",
+		valF : "décochée"
 	},
 	search : {
 		caption: "Recherche...",

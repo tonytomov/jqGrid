@@ -45,7 +45,10 @@ $.jgrid.regional["en"] = {
 		nomorerecs : "No more records...",
 		scrollPullup: "Pull up to load more...",
 		scrollPulldown : "Pull down to refresh...",
-		scrollRefresh : "Release to refresh..."
+		scrollRefresh : "Release to refresh...",
+		valueCheckbox : "Checkbox",
+		valT : "checked",
+		valF : "unchecked"
 	},
 	search : {
 		caption: "Search...",
