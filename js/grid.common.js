@@ -518,6 +518,9 @@ $.extend($.jgrid,{
 							ov.setAttribute("role","option");
 							ov.value = sv[0]; 
 							ov.innerHTML = sv[1];
+							if (sv[1].length == 0) {
+								ov.setAttribute("aria-label","none");
+							}	
 							elem.appendChild(ov);
 							if (!msl &&  
 									($.jgrid.trim(sv[0]) === $.jgrid.trim(vl) || 
@@ -537,6 +540,9 @@ $.extend($.jgrid,{
 								ov = document.createElement("option");
 								ov.setAttribute("role","option");
 								ov.value = key; ov.innerHTML = value;
+								if (value.length == 0) {
+									ov.setAttribute("aria-label","none");
+								}
 								elem.appendChild(ov);
 								if (!msl &&  ( $.jgrid.trim(key) === $.jgrid.trim(vl) || $.jgrid.trim(value) === $.jgrid.trim(vl)) ) { ov.selected ="selected"; }
 								if (msl && ($.inArray($.jgrid.trim(value),ovm)>-1 || $.inArray($.jgrid.trim(key),ovm)>-1)) { ov.selected ="selected"; }
@@ -549,6 +555,9 @@ $.extend($.jgrid,{
 								ov = document.createElement("option");
 								ov.setAttribute("role","option");
 								ov.value = key; ov.innerHTML = oSv[key];
+								if (oSv[key].length == 0) {
+									ov.setAttribute("aria-label","none");
+								}
 								elem.appendChild(ov);
 								if (!msl &&  ( $.jgrid.trim(key) === $.jgrid.trim(vl) || $.jgrid.trim(oSv[key]) === $.jgrid.trim(vl)) ) { ov.selected ="selected"; }
 								if (msl && ($.inArray($.jgrid.trim(oSv[key]),ovm)>-1 || $.inArray($.jgrid.trim(key),ovm)>-1)) { ov.selected ="selected"; }

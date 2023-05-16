@@ -4202,7 +4202,11 @@ $.fn.jqGrid = function( pin ) {
 					if(strnm.length === 1) {
 						strnm[1] = strnm[0];
 					}
-					str +="<option role=\"option\" value=\""+strnm[0]+"\""+(( intNum(ts.p.rowNum,0) === intNum(strnm[0],0))?" selected=\"selected\"":"")+">"+strnm[1]+"</option>";
+					if (strnm[1].length == 0) {
+						str +="<option role=\"option\" value=\""+strnm[0]+"\""+(( intNum(ts.p.rowNum,0) === intNum(strnm[0],0))?" aria-label=\""+strnm[1]+"\" selected=\"selected\"":"")+">"+strnm[1]+"</option>";
+					} else {
+						str +="<option role=\"option\" value=\""+strnm[0]+"\""+(( intNum(ts.p.rowNum,0) === intNum(strnm[0],0))?" selected=\"selected\"":"")+">"+strnm[1]+"</option>";
+					}
 				}
 				str +="</select></td>";
 			}
@@ -4817,7 +4821,7 @@ $.fn.jqGrid = function( pin ) {
 			$.each(texts.odata, function(i, n) {
 				selected = n.oper === o1 ? 'selected="selected"' : '';
 				if($.inArray(n.oper, so) !== -1) {
-					repstr += '<option value="'+n.oper+'" '+selected+'>'+n.text+'</option>';
+					repstr += '<option value="'+n.oper+'"  aria-label="'+n.text+'" '+selected+'>'+n.text+'</option>';
 				}
 			});
 			str1 += repstr;
