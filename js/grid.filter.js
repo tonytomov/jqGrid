@@ -1330,7 +1330,7 @@ $.jgrid.extend({
 					}
 					if(soptions.clearSearch) {
 						csv = p.resetTitle || 'Clear Search Value';
-						$("td",stbl).eq( 2 ).append("<a title='"+csv+"' style='padding-right: 0.3em;padding-left: 0.3em;' class='clearsearchclass'>"+p.resetIcon+"</a>");
+						$("td",stbl).eq( 2 ).append("<a title='"+csv+"' tabindex='0' style='padding-right: 0.3em;padding-left: 0.3em;' class='clearsearchclass'>"+p.resetIcon+"</a>");
 					} else {
 						$("td", stbl).eq( 2 ).hide();
 					}
@@ -1483,6 +1483,11 @@ $.jgrid.extend({
 					if(vv === soper) { 
 						$("td.ui-search-oper a", ptr).attr('soper',vv).text(operText);
 					}
+				}
+			});
+			$(".clearsearchclass",tr).keydown(function(event) {
+				if (event.keyCode === 13) {
+					$(".clearsearchclass", tr).trigger("click");
 				}
 			});
 			$($t.grid.hDiv).on("scroll", function(e){
