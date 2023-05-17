@@ -48,7 +48,9 @@ $.jgrid.regional["fr"] = {
 		scrollRefresh : "Relâcher pour rafraîchir...",
 		valueCheckbox : "Case à cocher",
 		valT : "cochée",
-		valF : "décochée"
+		valF : "décochée",
+		selectLine : "Sélectionner une ligne",
+		selectAllLines : "Sélectionner toutes les lignes"
 	},
 	search : {
 		caption: "Recherche...",

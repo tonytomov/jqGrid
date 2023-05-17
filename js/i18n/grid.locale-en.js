@@ -48,7 +48,9 @@ $.jgrid.regional["en"] = {
 		scrollRefresh : "Release to refresh...",
 		valueCheckbox : "Checkbox",
 		valT : "checked",
-		valF : "unchecked"
+		valF : "unchecked",
+		selectLine : "Select row",
+		selectAllLines : "Select all rows"
 	},
 	search : {
 		caption: "Search...",
