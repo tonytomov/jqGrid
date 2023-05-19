@@ -825,7 +825,7 @@ $.jgrid.extend({
 						}
 						break;
 					case 13: // enter
-					if($(e.originalEvent.srcElement).not(".ui-pg-input")) {
+					if(!$(e.originalEvent.srcElement).hasClass("ui-pg-input")) {
 						$(cels[indexa]).trigger('click');
 						e.preventDefault();
 					}
