@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.2 - 2023-05-10
+* @license Guriddo jqGrid JS - v5.8.2 - 2023-05-30
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2648,7 +2648,7 @@ $.fn.jqGrid = function( pin ) {
 		isMSIE = $.jgrid.msie(),
 		gv, sortarr = [], sortord = [], sotmp=[];
 		stylemodule = ts.p.styleUI + ".base";
-		gv = $("<div "+getstyle(stylemodule, 'viewBox', false, 'ui-jqgrid-view')+" role='grid'></div>");
+		gv = $("<div "+getstyle(stylemodule, 'viewBox', false, 'ui-jqgrid-view')+" ></div>");
 		ts.p.direction = $.jgrid.trim(ts.p.direction.toLowerCase());
 		ts.p._ald = false;
 		if($.inArray(ts.p.direction,["ltr","rtl"]) === -1) { ts.p.direction = "ltr"; }
@@ -2663,7 +2663,7 @@ $.fn.jqGrid = function( pin ) {
 		$("<div "+getstyle(ts.p.styleUI+'.common','overlay', false, 'jqgrid-overlay')+ " id='lui_"+this.id+"'></div>").insertBefore(gv);
 		$("<div "+getstyle(stylemodule,'loadingBox', false, 'loading')+" id='load_"+this.id+"'>"+$.jgrid.getRegional(ts, "defaults.loadtext", this.p.loadtext)+"</div>").insertBefore(gv);
 
-		$(this).attr({role:"presentation","aria-multiselectable":!!this.p.multiselect,"aria-labelledby":"gbox_"+this.id});
+		$(this).attr({role:"grid","aria-multiselectable":!!this.p.multiselect,"aria-labelledby":"gbox_"+this.id});
 
 		if(ts.p.datatype === 'indexeddb') { // datatype in databases
 			$(ts).jqGrid('dbInit',ts.p.datatype );
@@ -2750,7 +2750,9 @@ $.fn.jqGrid = function( pin ) {
 			return "<td role=\"gridcell\" "+prp+">"+v+"</td>";
 		},
 		addMulti = function(rowid, pos, irow, checked, uiclass){
-			var	v = "<input role=\"checkbox\" type=\"checkbox\""+" id=\"jqg_"+ts.p.id+"_"+rowid+"\" "+uiclass+" name=\"jqg_"+ts.p.id+"_"+rowid+"\"" + (checked ? "checked=\"checked\"" : "")+"/>",
+			var rowSelectTitle=$.jgrid.getRegional(ts, "defaults.selectLine");
+			rowSelectTitle=rowSelectTitle ? rowSelectTitle : $.jgrid.regional['en'].defaults.selectLine;
+			var	v = "<input role=\"checkbox\" title='"+rowSelectTitle+"' type=\"checkbox\""+" id=\"jqg_"+ts.p.id+"_"+rowid+"\" "+uiclass+" name=\"jqg_"+ts.p.id+"_"+rowid+"\"" + (checked ? "checked=\"checked\"" : "")+"/>",
 			prp = formatCol( pos,irow,'',null, rowid, true);
 			return "<td role=\"gridcell\" "+prp+">"+v+"</td>";
 		},
@@ -4207,7 +4209,11 @@ $.fn.jqGrid = function( pin ) {
 					if(strnm.length === 1) {
 						strnm[1] = strnm[0];
 					}
-					str +="<option role=\"option\" value=\""+strnm[0]+"\""+(( intNum(ts.p.rowNum,0) === intNum(strnm[0],0))?" selected=\"selected\"":"")+">"+strnm[1]+"</option>";
+					if (strnm[1].length == 0) {
+						str +="<option role=\"option\" value=\""+strnm[0]+"\""+(( intNum(ts.p.rowNum,0) === intNum(strnm[0],0))?" aria-label=\""+strnm[1]+"\" selected=\"selected\"":"")+">"+strnm[1]+"</option>";
+					} else {
+						str +="<option role=\"option\" value=\""+strnm[0]+"\""+(( intNum(ts.p.rowNum,0) === intNum(strnm[0],0))?" selected=\"selected\"":"")+">"+strnm[1]+"</option>";
+					}
 				}
 				str +="</select></td>";
 			}
@@ -4822,7 +4828,7 @@ $.fn.jqGrid = function( pin ) {
 			$.each(texts.odata, function(i, n) {
 				selected = n.oper === o1 ? 'selected="selected"' : '';
 				if($.inArray(n.oper, so) !== -1) {
-					repstr += '<option value="'+n.oper+'" '+selected+'>'+n.text+'</option>';
+					repstr += '<option value="'+n.oper+'"  aria-label="'+n.text+'" '+selected+'>'+n.text+'</option>';
 				}
 			});
 			str1 += repstr;
@@ -5221,7 +5227,9 @@ $.fn.jqGrid = function( pin ) {
 					coloptions : {sorting:false, columns: false, filtering: false, seraching:false, grouping:false, freeze : false}});
 		}
 		if(this.p.multiselect) {
-			this.p.colNames.unshift("<input role='checkbox' id='cb_"+this.p.id+"' class='cbox' type='checkbox'/>");
+			var allRowsSelectTitle=$.jgrid.getRegional(ts, "defaults.selectAllLines");
+			allRowsSelectTitle=allRowsSelectTitle ? allRowsSelectTitle : $.jgrid.regional['en'].defaults.selectAllLines;
+			this.p.colNames.unshift("<input role='checkbox' id='cb_"+this.p.id+"' class='cbox' type='checkbox' title='"+allRowsSelectTitle+"'/>");
 			this.p.colModel.unshift({name:'cb',width:$.jgrid.cell_width ? ts.p.multiselectWidth+ts.p.cellLayout : ts.p.multiselectWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center',fixed:true, frozen: true, classes : "jqgrid-multibox", labelClasses: "jqgrid-multibox" });
 		}
 		if(this.p.rownumbers) {
@@ -5269,7 +5277,7 @@ $.fn.jqGrid = function( pin ) {
 			normalizeData();
 			refreshIndex();
 		}
-		var thead = "<thead><tr class='ui-jqgrid-labels' role='row'>",
+		var thead = "<thead role='rowgroup'><tr class='ui-jqgrid-labels' role='row'>",
 		tdc, idn, w, res, sort ="",
 		td, ptr, tbody, imgs, iac="", idc="", tmpcm;
 		if(ts.p.shrinkToFit===true && ts.p.forceFit===true) {
@@ -5291,8 +5299,8 @@ $.fn.jqGrid = function( pin ) {
 		}
 		tdc = isMSIE ?  "class='ui-th-div-ie'" :"";
 		imgs = "<span class='s-ico' style='display:none'>";
-		imgs += "<span sort='asc'  class='ui-grid-ico-sort ui-icon-asc"+iac+" ui-sort-"+dir+" "+disabled+" " + iconbase + " " + getstyle(stylemodule, 'icon_asc', true)+ "'" + sort + "></span>";
-		imgs += "<span sort='desc' class='ui-grid-ico-sort ui-icon-desc"+idc+" ui-sort-"+dir+" "+disabled+" " + iconbase + " " + getstyle(stylemodule, 'icon_desc', true)+"'" + sort + "></span></span>";
+		imgs += "<span sort='asc'  class='ui-grid-ico-sort ui-icon-asc"+iac+" ui-sort-"+dir+" "+disabled+" " + iconbase + " " + getstyle(stylemodule, 'icon_asc', true)+ "'" + sort + " aria-label=\"empty\">empty</span>";
+		imgs += "<span sort='desc' class='ui-grid-ico-sort ui-icon-desc"+idc+" ui-sort-"+dir+" "+disabled+" " + iconbase + " " + getstyle(stylemodule, 'icon_desc', true)+"'" + sort + " aria-label=\"empty\">empty</span></span>";
 		if(ts.p.multiSort) {
 			if(ts.p.sortname ) {
 			sortarr = ts.p.sortname.split(",");
@@ -5594,6 +5602,7 @@ $.fn.jqGrid = function( pin ) {
 		firstr += "</tr>";
 		tbody = document.createElement("tbody");
 		//$(this).append(firstr);
+		$(tbody).attr({"role":"rowgroup"});
 		this.appendChild(tbody);
 		$(this).addClass(getstyle(stylemodule,"rowTable", true, 'ui-jqgrid-btable ui-common-table')).append(firstr);
 		if(ts.p.altRows) {
@@ -5601,7 +5610,7 @@ $.fn.jqGrid = function( pin ) {
 		}
 		//$(firstr).insertAfter(this);
 		firstr = null;
-		var hTable = $("<table "+getstyle(stylemodule,'headerTable',false,'ui-jqgrid-htable ui-common-table')+" style='width:"+ts.p.tblwidth+"px' role='presentation' aria-labelledby='gbox_"+this.id+"'></table>").append(thead),
+		var hTable = $("<table "+getstyle(stylemodule,'headerTable',false,'ui-jqgrid-htable ui-common-table')+" style='width:"+ts.p.tblwidth+"px' role='grid' aria-labelledby='gbox_"+this.id+"'></table>").append(thead),
 		hg = (ts.p.caption && ts.p.hiddengrid===true) ? true : false,
 		hb = $("<div class='ui-jqgrid-hbox" + (dir==="rtl" ? "-rtl" : "" )+"'></div>");
 		thead = null;
@@ -9265,7 +9274,7 @@ $.extend($.jgrid,{
 			break;
 			case "select" :
 				elem = document.createElement("select");
-				elem.setAttribute("role","select");
+				elem.setAttribute("role","listbox");
 				var msl, ovm = [];
 				if(options.multiple===true) {
 					msl = true;
@@ -9378,6 +9387,9 @@ $.extend($.jgrid,{
 							ov.setAttribute("role","option");
 							ov.value = sv[0]; 
 							ov.innerHTML = sv[1];
+							if (sv[1].length == 0) {
+								ov.setAttribute("aria-label","none");
+							}	
 							elem.appendChild(ov);
 							if (!msl &&  
 									($.jgrid.trim(sv[0]) === $.jgrid.trim(vl) || 
@@ -9397,6 +9409,9 @@ $.extend($.jgrid,{
 								ov = document.createElement("option");
 								ov.setAttribute("role","option");
 								ov.value = key; ov.innerHTML = value;
+								if (value.length == 0) {
+									ov.setAttribute("aria-label","none");
+								}
 								elem.appendChild(ov);
 								if (!msl &&  ( $.jgrid.trim(key) === $.jgrid.trim(vl) || $.jgrid.trim(value) === $.jgrid.trim(vl)) ) { ov.selected ="selected"; }
 								if (msl && ($.inArray($.jgrid.trim(value),ovm)>-1 || $.inArray($.jgrid.trim(key),ovm)>-1)) { ov.selected ="selected"; }
@@ -9409,6 +9424,9 @@ $.extend($.jgrid,{
 								ov = document.createElement("option");
 								ov.setAttribute("role","option");
 								ov.value = key; ov.innerHTML = oSv[key];
+								if (oSv[key].length == 0) {
+									ov.setAttribute("aria-label","none");
+								}
 								elem.appendChild(ov);
 								if (!msl &&  ( $.jgrid.trim(key) === $.jgrid.trim(vl) || $.jgrid.trim(oSv[key]) === $.jgrid.trim(vl)) ) { ov.selected ="selected"; }
 								if (msl && ($.inArray($.jgrid.trim(oSv[key]),ovm)>-1 || $.inArray($.jgrid.trim(key),ovm)>-1)) { ov.selected ="selected"; }
@@ -11026,10 +11044,15 @@ $.jgrid.extend({
 					dKeys.add(p.disabledKeys[jj]);
 				}
 			}
+			var filterLabel;
+			if (regional.filterFor) {
+				filterLabel = regional.filterFor;
+			}
+			
 			$.each($t.p.colModel,function(ci){
 				var cm=this, soptions, select="", sot="=", so, i, st, csv, df, elem, restores,
 				th = $("<th role='columnheader' class='" + base.headerBox+" ui-th-"+$t.p.direction+" "+(cm.labelClasses || "")+"' id='gsh_" + $t.p.id + "_" + cm.name + "'></th>"),
-				thd = $("<div></div>"),
+				thd = $("<div><span aria-label=\"empty\" style=\"display: none;\">empty</span></div>"),
 				stbl = $("<table class='ui-search-table' cellspacing='0'><tr><td class='ui-search-oper' headers=''></td><td class='ui-search-input' headers=''></td><td class='ui-search-clear' headers=''></td></tr></table>");
 				if(this.hidden===true) { $(th).css("display","none");}
 				this.search = this.search === false ? false : true;
@@ -11038,7 +11061,13 @@ $.jgrid.extend({
 				if(this.searchoptions.searchOperMenu === undefined) {
 					this.searchoptions.searchOperMenu = true;
 				}
-				soptions = $.extend({},this.searchoptions , {name:cm.index || cm.name, id: "gs_"+$t.p.idPrefix+cm.name, oper:'search'});
+				var title;
+				if(filterLabel !== undefined){
+					title = filterLabel + " " + $t.p.colNames[ci];
+				} else {
+					title = $t.p.colNames[ci];
+				}
+				soptions = $.extend({},this.searchoptions , {name:cm.index || cm.name, id: "gs_"+$t.p.idPrefix+cm.name, oper:'search', title:title});
 				if(this.search){
 					if( p.restoreFromFilters && rules) {
 						restores = false;
@@ -11073,7 +11102,7 @@ $.jgrid.extend({
 					}
 					if(soptions.clearSearch) {
 						csv = p.resetTitle || 'Clear Search Value';
-						$("td",stbl).eq( 2 ).append("<a title='"+csv+"' style='padding-right: 0.3em;padding-left: 0.3em;' class='clearsearchclass'>"+p.resetIcon+"</a>");
+						$("td",stbl).eq( 2 ).append("<a title='"+csv+"' tabindex='0' style='padding-right: 0.3em;padding-left: 0.3em;' class='clearsearchclass'>"+p.resetIcon+"</a>");
 					} else {
 						$("td", stbl).eq( 2 ).hide();
 					}
@@ -11226,6 +11255,11 @@ $.jgrid.extend({
 					if(vv === soper) { 
 						$("td.ui-search-oper a", ptr).attr('soper',vv).text(operText);
 					}
+				}
+			});
+			$(".clearsearchclass",tr).keydown(function(event) {
+				if (event.keyCode === 13) {
+					$(".clearsearchclass", tr).trigger("click");
 				}
 			});
 			$($t.grid.hDiv).on("scroll", function(e){
@@ -19355,7 +19389,7 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 		return $.fn.fmatter.defaultFormat(cellval,opts );
 	};
 	$.fn.fmatter.checkbox =function(cval, opts) {
-		var op = $.extend({},opts.checkbox), ds;
+		var op = $.extend({},opts.checkbox), ds, checkboxVal, valtrue, valfalse, lang = Object.keys($.jgrid.regional)[0], title;
 		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
@@ -19364,7 +19398,19 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 		cval=String(cval);
 		cval=(cval+"").toLowerCase();
 		var bchk = cval.search(/(false|f|0|no|n|off|undefined)/i)<0 ? " checked='checked' " : "";
-		return "<input type=\"checkbox\" " + bchk  + " value=\""+ cval+"\" offval=\"no\" "+ds+ "/>";
+		checkboxVal = $.jgrid.regional[lang].defaults.valueCheckbox;
+		valtrue= $.jgrid.regional[lang].defaults.valT;	
+		valfalse= $.jgrid.regional[lang].defaults.valF;
+		if((checkboxVal !== undefined) && (cval==="true")) {
+			title = checkboxVal + " " + valtrue;
+		}
+		else if (checkboxVal !== undefined && cval==="false") {
+			title = checkboxVal+ " " + valfalse;
+		}
+		else {
+			title = cval;
+		}
+		return "<input title=\""+title+"\" type=\"checkbox\" " + bchk  + " value=\""+ cval+"\" offval=\"no\" "+ds+ "/>";
 	};
 	$.fn.fmatter.link = function(cellval, opts) {
 		var op = {target:opts.target};
@@ -23155,8 +23201,10 @@ $.jgrid.extend({
 						}
 						break;
 					case 13: // enter
+					if(!$(e.originalEvent.srcElement).hasClass("ui-pg-input")) {
 						$(cels[indexa]).trigger('click');
 						e.preventDefault();
+					}
 						break;
 					default:
 						return;
