@@ -1275,7 +1275,7 @@ $.jgrid.extend({
 			$.each($t.p.colModel,function(ci){
 				var cm=this, soptions, select="", sot="=", so, i, st, csv, df, elem, restores,
 				th = $("<th role='columnheader' class='" + base.headerBox+" ui-th-"+$t.p.direction+" "+(cm.labelClasses || "")+"' id='gsh_" + $t.p.id + "_" + cm.name + "'></th>"),
-				thd = $("<div></div>"),
+				thd = $("<div><span aria-label=\"empty\" style=\"display: none;\">empty</span></div>"),
 				stbl = $("<table class='ui-search-table' cellspacing='0'><tr><td class='ui-search-oper' headers=''></td><td class='ui-search-input' headers=''></td><td class='ui-search-clear' headers=''></td></tr></table>");
 				if(this.hidden===true) { $(th).css("display","none");}
 				this.search = this.search === false ? false : true;
@@ -1284,7 +1284,18 @@ $.jgrid.extend({
 				if(this.searchoptions.searchOperMenu === undefined) {
 					this.searchoptions.searchOperMenu = true;
 				}
-				soptions = $.extend({},this.searchoptions , {name:cm.index || cm.name, id: "gs_"+$t.p.idPrefix+cm.name, oper:'search'});
+				var filterLabel;
+				if ($.jgrid.hasOwnProperty("regional") ) {
+					var lang = Object.keys($.jgrid.regional)[0];
+					filterLabel = $.jgrid.regional[lang].search.filterFor;
+				}
+				var title;
+				if(filterLabel !== undefined){
+					title = filterLabel + " " + $t.p.colNames[ci];
+				} else {
+					title = $t.p.colNames[ci];
+				}
+				soptions = $.extend({},this.searchoptions , {name:cm.index || cm.name, id: "gs_"+$t.p.idPrefix+cm.name, oper:'search', title:title});
 				if(this.search){
 					if( p.restoreFromFilters && rules) {
 						restores = false;
@@ -1319,7 +1330,7 @@ $.jgrid.extend({
 					}
 					if(soptions.clearSearch) {
 						csv = p.resetTitle || 'Clear Search Value';
-						$("td",stbl).eq( 2 ).append("<a title='"+csv+"' style='padding-right: 0.3em;padding-left: 0.3em;' class='clearsearchclass'>"+p.resetIcon+"</a>");
+						$("td",stbl).eq( 2 ).append("<a title='"+csv+"' tabindex='0' style='padding-right: 0.3em;padding-left: 0.3em;' class='clearsearchclass'>"+p.resetIcon+"</a>");
 					} else {
 						$("td", stbl).eq( 2 ).hide();
 					}
@@ -1472,6 +1483,11 @@ $.jgrid.extend({
 					if(vv === soper) { 
 						$("td.ui-search-oper a", ptr).attr('soper',vv).text(operText);
 					}
+				}
+			});
+			$(".clearsearchclass",tr).keydown(function(event) {
+				if (event.keyCode === 13) {
+					$(".clearsearchclass", tr).trigger("click");
 				}
 			});
 			$($t.grid.hDiv).on("scroll", function(e){

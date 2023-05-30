@@ -45,7 +45,12 @@ $.jgrid.regional["fr"] = {
 		nomorerecs : "Plus de données...",
 		scrollPullup: "Glisser vers le haut pour charger plus de données...",
 		scrollPulldown : "Glisser vers le bas pour rafraîchir...",
-		scrollRefresh : "Relâcher pour rafraîchir..."
+		scrollRefresh : "Relâcher pour rafraîchir...",
+		valueCheckbox : "Case à cocher",
+		valT : "cochée",
+		valF : "décochée",
+		selectLine : "Sélectionner une ligne",
+		selectAllLines : "Sélectionner toutes les lignes"
 	},
 	search : {
 		caption: "Recherche...",
@@ -61,7 +66,8 @@ $.jgrid.regional["fr"] = {
 		delrule : "Delete rule",
 		Close : "Close",
 		Operand : "Operand : ",
-		Operation : "Oper : "
+		Operation : "Oper : ",
+		filterFor : "filtre pour"
 	},
 	edit : {
 		addCaption: "Ajouter",
