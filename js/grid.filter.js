@@ -1272,6 +1272,11 @@ $.jgrid.extend({
 					dKeys.add(p.disabledKeys[jj]);
 				}
 			}
+			var filterLabel;
+			if (regional.filterFor) {
+				filterLabel = regional.filterFor;
+			}
+			
 			$.each($t.p.colModel,function(ci){
 				var cm=this, soptions, select="", sot="=", so, i, st, csv, df, elem, restores,
 				th = $("<th role='columnheader' class='" + base.headerBox+" ui-th-"+$t.p.direction+" "+(cm.labelClasses || "")+"' id='gsh_" + $t.p.id + "_" + cm.name + "'></th>"),
@@ -1283,11 +1288,6 @@ $.jgrid.extend({
 				this.searchoptions = this.searchoptions || {};
 				if(this.searchoptions.searchOperMenu === undefined) {
 					this.searchoptions.searchOperMenu = true;
-				}
-				var filterLabel;
-				if ($.jgrid.hasOwnProperty("regional") ) {
-					var lang = Object.keys($.jgrid.regional)[0];
-					filterLabel = $.jgrid.regional[lang].search.filterFor;
 				}
 				var title;
 				if(filterLabel !== undefined){
