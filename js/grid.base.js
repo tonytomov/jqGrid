@@ -7766,6 +7766,10 @@ $.jgrid.extend({
 					// set the height
 					$("tr[role=row].jqgrow",btbl).each(function(i, n){
 						$(this).height( mh[i] );
+						if( Math.abs($(this).height() - mh[i]) >= 0.3  ) {
+							var tt = $("td:visible", this).first();
+							tt.height(mh[i] - Math.round(parseFloat(tt.css("border-bottom-width")) ));
+						}
 					});
 					if($t.rows[1] && $t.rows[1].id === 'norecs') {
 						$("#norecs td", btbl).html("");
