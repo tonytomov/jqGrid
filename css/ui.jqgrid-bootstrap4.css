@@ -986,6 +986,9 @@ ul.ui-search-menu li, ul.ui-nav-menu li {
 .frozen-div .ui-jqgrid-htable {
 	border-bottom: 0px none;
 }
+.frozen-bdiv {
+   pointer-events: none;
+}
 /*
 .ui-jqgrid .ui-jqgrid-caption,
 .ui-jqgrid .ui-jqgrid-pager,
