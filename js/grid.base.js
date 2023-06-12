@@ -80,6 +80,8 @@ $.extend($.jgrid,{
 							return nmarr[k].v;
 						}
 					}
+				} else if(typeof args[j] === 'object' && args[j][i]) {
+					return $.jgrid.isFunction(args[j][i]) ? args[j][i]() : args[j][i];
 				}
 			}
 		});
