@@ -335,20 +335,13 @@ $.jgrid.extend({
 							tplfld = (cm[k].summaryTpl) ? cm[k].summaryTpl :  "{0}";
 							
 							vv = this.v;
-							if(typeof this.st === 'string' && this.st.toLowerCase() === 'avg') {
-								if(this.sd && this.vd) { 
-									vv = (this.v/this.vd);
-								} else if(this.v && grlen > 0) {
-									vv = (this.v/grlen);
-								}
-							}
 							try {
 								this.groupCount = fdata.cnt;
 								this.groupIndex = fdata.dataIndex;
 								this.groupValue = fdata.value;
-								vv = $t.formatter('', vv, k, this);
+								//vv = $t.formatter('', vv, k, this);
 							} catch (ef) {
-								vv = this.v;
+								//vv = this.v;
 							}
 							tmpdata= "<td role=\"gridcell\" "+$t.formatCol(k,1,'')+">"+$.jgrid.template(tplfld, vv, fdata.cnt, fdata.dataIndex, fdata.displayValue, fdata.summary)+ "</td>";
 							return false;
@@ -381,10 +374,28 @@ $.jgrid.extend({
 					gv = n.displayValue;
 				}
 				var grpTextStr = ''; 
+				// format summary values if formatter
+				for( var kk =0;kk< n.summary.length; kk++) {  
+					var nv = n.summary[kk];
+					var ci = $.jgrid.getElemByAttrVal($t.p.colModel, 'name', nv.nm, true);
+					if(ci>=0) {
+						if(typeof nv.st === 'string' && nv.st.toLowerCase() === 'avg') {
+							if(nv.sd && nv.vd) { 
+								nv.v = (nv.v/nv.vd);
+							} else if(nv.v && n.cnt > 0) {
+								nv.v = (nv.v/n.cnt);
+							}
+						}
+						try {
+							nv.v = $t.formatter('',nv.v, ci, this);
+						} catch (e) {}
+					}
+				}
+				
 				if($.jgrid.isFunction(grp.groupText[n.idx])) { 
 					grpTextStr = grp.groupText[n.idx].call($t, gv, n.cnt, n.summary);
 				} else {
-					grpTextStr = $.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary);
+					grpTextStr = $.jgrid.template.call($t, grp.groupText[n.idx], gv, n.cnt, n.summary);
 				}
 				if( !(typeof grpTextStr ==='string' || typeof grpTextStr ==='number' ) ) {
 					grpTextStr = gv;
