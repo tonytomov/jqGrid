@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.2 - 2023-05-30
+* @license Guriddo jqGrid JS - v5.8.2 - 2023-06-12
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2430,7 +2430,7 @@ $.fn.jqGrid = function( pin ) {
 				if(this.resizing) {
 					var idx = this.resizing.idx,
 					nw = this.headers[idx].newWidth || this.headers[idx].width;
-					nw = parseInt(nw,10);
+					nw = parseFloat(nw);
 					this.resizing = false;
 					$("#rs_m"+$.jgrid.jqID(p.id)).css("display","none");
 					p.colModel[idx].width = nw;
@@ -7773,6 +7773,10 @@ $.jgrid.extend({
 					// set the height
 					$("tr[role=row].jqgrow",btbl).each(function(i, n){
 						$(this).height( mh[i] );
+						if( Math.abs($(this).height() - mh[i]) >= 0.3  ) {
+							var tt = $("td:visible", this).first();
+							tt.height(mh[i] - Math.round(parseFloat(tt.css("border-bottom-width")) ));
+						}
 					});
 					if($t.rows[1] && $t.rows[1].id === 'norecs') {
 						$("#norecs td", btbl).html("");
@@ -7889,16 +7893,18 @@ $.jgrid.extend({
 			} else {
 				iCol = parseInt( iCol, 10 );
 			}
-			if( !cm[iCol].resizable && !forceresize ) {
+			if( !cm[iCol].resizable && !forceresize || cm[iCol].hidden) {
 				return;
 			}
-			newWidth = parseInt( newWidth, 10);
+			newWidth = parseFloat( newWidth );
 			// filters
 			if(typeof iCol !== "number" || iCol < 0 || iCol > cm.length-1 || typeof newWidth !== "number" ) {
 				return;
 			}
 
-			if( newWidth < pr.minColWidth ) { return; }
+			if( newWidth < pr.minColWidth ) { 
+				newWidth = pr.minColWidth;
+			}
 
 			if( pr.forceFit ) {
 				pr.nv = 0;
