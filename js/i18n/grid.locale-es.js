@@ -48,7 +48,12 @@ $.jgrid.regional["es"] = {
 		nomorerecs : "No más registros...",
 		scrollPullup: "Arrastrar arriba para cargar más...",
 		scrollPulldown : "Arrastrar arriba para refrescar...",
-		scrollRefresh : "Soltar para refrescar..."		
+		scrollRefresh : "Soltar para refrescar...",
+		valueCheckbox : "Checkbox",
+                valT : "marcada",
+                valF : "sin marcar",
+                selectLine : "Seleccionar fila",
+                selectAllLines : "Seleccionar todas las filas"
 	},
 	search : {
 	    caption: "Búsqueda...",
@@ -64,8 +69,8 @@ $.jgrid.regional["es"] = {
 		delrule : "Borrar regla",
 		Close : "Cerrar",
 		Operand : "Operador : ",
-		Operation : "Oper : "
-
+		Operation : "Oper : ",
+                filterFor : "filtro para"
 	},
 	edit : {
 	    addCaption: "Agregar registro",
