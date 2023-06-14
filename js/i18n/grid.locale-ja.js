@@ -45,7 +45,11 @@ $.jgrid.regional["ja"] = {
 		nomorerecs : "\u30ec\u30b3\u30fc\u30c9\u304c\u3042\u308a\u307e\u305b\u3093...",
 		scrollPullup: "\u4e0a\u306b\u30b9\u30af\u30ed\u30fc\u30eb\u3057\u3066\u8aad\u307f\u8fbc\u307f...",
 		scrollPulldown : "\u4e0b\u306b\u30b9\u30af\u30ed\u30fc\u30eb\u3057\u3066\u66f4\u65b0...",
-		scrollRefresh : "\u653e\u3057\u3066\u66f4\u65b0..."
+		scrollRefresh : "\u653e\u3057\u3066\u66f4\u65b0...",
+		valT : "checked",
+		valF : "unchecked",
+		selectLine : "Select row",
+		selectAllLines : "Select all rows"
 	},
 	search : {
 	    caption: "\u691c\u7d22...",
@@ -75,7 +79,8 @@ $.jgrid.regional["ja"] = {
 		delrule : "Delete rule",
 		Close : "Close",
 		Operand : "Operand : ",
-		Operation : "Oper : "
+		Operation : "Oper : ",
+		filterFor : "filter for"
 	},
 	edit : {
 	    addCaption: "\u30ec\u30b3\u30fc\u30c9\u8ffd\u52a0",

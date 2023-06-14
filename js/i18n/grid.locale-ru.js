@@ -47,7 +47,11 @@ $.jgrid.regional["ru"] = {
 		nomorerecs : "Нет больше записей...",
 		scrollPullup: "Потяните, чтобы загрузить более...",
 		scrollPulldown : "Потяните вниз чтобы обновить...",
-		scrollRefresh : "Отпустите, чтобы обновить..."
+		scrollRefresh : "Отпустите, чтобы обновить...",
+		valT : "checked",
+		valF : "unchecked",
+		selectLine : "Select row",
+		selectAllLines : "Select all rows"
 	},
 	search : {
 		caption: "Поиск...",
@@ -63,7 +67,8 @@ $.jgrid.regional["ru"] = {
 		delrule : "Удалить правило",
 		Close : "Закрыть",
 		Operand : "Операнд : ",
-		Operation : "Опер. : "
+		Operation : "Опер. : ",
+		filterFor : "filter for"
 	},
 	edit : {
 		addCaption: "Добавить запись",

@@ -39,7 +39,11 @@ $.jgrid.regional["nl"] = {
 			nomorerecs : "No more records...",
 			scrollPullup: "Pull up to load more...",
 			scrollPulldown : "Pull down to refresh...",
-			scrollRefresh : "Release to refresh..."
+			scrollRefresh : "Release to refresh...",
+			valT : "checked",
+			valF : "unchecked",
+			selectLine : "Select row",
+			selectAllLines : "Select all rows"
         },
         search:
         {
@@ -56,7 +60,8 @@ $.jgrid.regional["nl"] = {
 			delrule : "Delete rule",
 			Close : "Close",
 			Operand : "Operand : ",
-			Operation : "Oper : "
+			Operation : "Oper : ",
+			filterFor : "filter for"
         },
         edit:
         {
