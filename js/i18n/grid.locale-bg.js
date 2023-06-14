@@ -45,7 +45,11 @@ $.jgrid.regional["bg"] = {
 		nomorerecs : "Няма повече записи...",
 		scrollPullup: "Издърпайте нагоре за повече...",
 		scrollPulldown : "Дръпнете надолу за опресняване...",
-		scrollRefresh : "Освободете за да опресните..."
+		scrollRefresh : "Освободете за да опресните...",
+		valT : "с отметка",
+		valF : "без отметка",
+		selectLine : "Избери ред",
+		selectAllLines : "Избери всички"
 	},
 	search : {
 		caption: "Търсене...",
@@ -61,7 +65,8 @@ $.jgrid.regional["bg"] = {
 		delrule : "Изтрий правило",
 		Close : "Затвори",
 		Operand : "Операнд : ",
-		Operation : "Опер. : "
+		Operation : "Опер. : ",
+		filterFor : "филтър за"
 	},
 	edit : {
 		addCaption: "Нов Запис",
