@@ -7759,7 +7759,7 @@ $.jgrid.extend({
 					$($t.grid.fbDiv).height( $($t.grid.bDiv)[0].clientHeight ); //- (hasscroll ? 0 : $t.p.scrollOffset-3));
 					// find max height
 					var mh = [];
-					$("#"+$.jgrid.jqID($t.p.id) + " tr[role=row].jqgrow").each(function(){
+					$("#"+$.jgrid.jqID($t.p.id) + " tr[role=row].jqgrow>td:not([rowspan]):visible:first-child").each(function(){
 						mh.push( $(this).height() );
 					});
 
@@ -7772,10 +7772,9 @@ $.jgrid.extend({
 					$($t.grid.fbDiv).append(btbl);
 					// set the height
 					$("tr[role=row].jqgrow",btbl).each(function(i, n){
-						$(this).height( mh[i] );
 						if( Math.abs($(this).height() - mh[i]) >= 0.3  ) {
-							var tt = $("td:visible", this).first();
-							tt.height(mh[i] - Math.round(parseFloat(tt.css("border-bottom-width")) ));
+							var tt = $("td:not([rowspan]):visible", this).first();
+							tt.height(mh[i]);
 						}
 					});
 					if($t.rows[1] && $t.rows[1].id === 'norecs') {
