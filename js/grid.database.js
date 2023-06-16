@@ -30,7 +30,7 @@ $.jgrid.extend({
 	this.each(function(){
 		var ts = this;
 		indexedDB.databases().then(function(r) { 
-			const connection  = indexedDB.open(ts.p.dbconfig.dbname, ts.p.dbconfig.dbversion);
+			const connection  = indexedDB.open(ts.p.dbconfig.dbname /*, ts.p.dbconfig.dbversion*/);
 			connection.onupgradeneeded = (e) => {
 				console.info('Database created: '+ts.p.dbconfig.dbname);
 			};
@@ -49,7 +49,7 @@ $.jgrid.extend({
 							data = ts.p.dbconfig.dataUrl;
 						}
 						ts.p.dbconfig.dbversion = version + 1;
-						var secondconn = indexedDB.open(ts.p.dbconfig.dbname, ts.p.dbconfig.dbversion);
+						var secondconn = indexedDB.open(ts.p.dbconfig.dbname, version + 1/*, ts.p.dbconfig.dbversion*/);
 						secondconn.onupgradeneeded = function (e) {
 							var db = e.target.result;
 							if(!skipCreate) {
@@ -118,7 +118,7 @@ $.jgrid.extend({
 			data = $.jgrid.normalizeDbData.call(ts, data, ts.p.colModel );
 			switch(type) {
 				case 'indexeddb' :
-					const DBOpenRequest = window.indexedDB.open(dbcfg.dbname, dbcfg.dbversion);
+					const DBOpenRequest = window.indexedDB.open(dbcfg.dbname /*, dbcfg.dbversion*/);
 					DBOpenRequest.onsuccess = (event) => {
 						const db = DBOpenRequest.result;
 						const transaction = db.transaction(dbcfg.dbtable, "readwrite");
@@ -170,7 +170,7 @@ $.jgrid.extend({
 			data = $.jgrid.normalizeDbData.call(ts, data, ts.p.colModel );
 			switch(type) {
 				case 'indexeddb' :
-					const DBOpenRequest = window.indexedDB.open(dbcfg.dbname, dbcfg.dbversion);
+					const DBOpenRequest = window.indexedDB.open(dbcfg.dbname /*, dbcfg.dbversion*/);
 					DBOpenRequest.onsuccess = (event) => {
 						const db = DBOpenRequest.result;
 						const transaction = db.transaction(dbcfg.dbtable, "readwrite");
@@ -208,7 +208,7 @@ $.jgrid.extend({
 			}
 			switch(type) {
 				case 'indexeddb' :
-					const DBOpenRequest = window.indexedDB.open(dbcfg.dbname, dbcfg.dbversion);
+					const DBOpenRequest = window.indexedDB.open(dbcfg.dbname /*, dbcfg.dbversion*/);
 					DBOpenRequest.onsuccess = (event) => {
 						const db = DBOpenRequest.result;
 						const transaction = db.transaction(dbcfg.dbtable, "readwrite");
