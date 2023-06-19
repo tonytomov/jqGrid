@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.2 - 2023-06-16
+* @license Guriddo jqGrid JS - v5.8.2 - 2023-06-19
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -8002,6 +8002,9 @@ $.jgrid.extend({
 						}
 						$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridHeight', wh - bstw, true, false);
 					}
+					if($t.p.frozenRows) {
+						$($t).trigger('jqGridAfterGridComplete.setFrozenRows');
+					}		
 					if(frozen) {
 						$("#"+$.jgrid.jqID($t.p.id)).jqGrid("setFrozenColumns");
 					}
@@ -23446,14 +23449,16 @@ $.jgrid.extend({
 
 
 			var $t = this, i, j, len,
-				borderbox = $("#gbox_"+$.jgrid.jqID($t.p.id)).css("box-sizing") === 'border-box',
-				pixelfix = borderbox ? 0 : 1,
+				borderbox = $("#"+$.jgrid.jqID($t.p.id)).css("box-sizing") === 'border-box',
+				pixelfix = borderbox ? 1 : 0,
 				tid = '#'+$.jgrid.jqID($t.p.id),
 				tvid ='#gview_'+$.jgrid.jqID($t.p.id),
-				hth = $(".ui-jqgrid-htable", tvid).height(),//Get the height of the column header to set the top value
+				//hth = $(".ui-jqgrid-htable", tvid).height(),//Get the height of the column header to set the top value
+				hgh = document.getElementById("gbox_"+$t.p.id).getBoundingClientRect().top,
+				hth = document.getElementById($t.p.id).getBoundingClientRect().top,
 				htw = $(tvid).width(),//Get the width of the content
 				frowms = [],//store frozen rows
-				fbDiv = $('<div style="position:absolute;left:0px;top:'+(hth+pixelfix)+'px;height:0px;overflow-x:hidden;" class="frozen-rdiv ui-jqgrid-rdiv"></div>');
+				fbDiv = $('<div style="position:absolute;left:0px;top:'+(hth-hgh-pixelfix)+'px;height:0px;overflow-x:hidden;" class="frozen-rdiv ui-jqgrid-rdiv"></div>');
 
 			$(tvid).append(fbDiv);
 			$('.frozen-rdiv', tvid).css('width',htw-($.jgrid.scrollbarWidth()+2));
@@ -23516,13 +23521,15 @@ $.jgrid.extend({
 			//disabled = getstyle(stylemodule,'disabled', true),
 			highlight = getstyle(stylemodule,'highlight', true),
 			hover = getstyle(stylemodule,'hover', true);
-
 			$('.frozen-rdiv', tvid).on('click','tr',function(){//click on the frozen line to add a highlight effect
+				if($t.p.selrow) {
+					$($t).jqGrid('resetSelection',$t.p.selrow);
+				}
 				var index = $(this).index();
 				$(this).addClass(highlight).siblings().removeClass(highlight);
+				$t.p.selrow = this.id;
 				$('.frozen-rdiv tr').eq(index).addClass(highlight).siblings().removeClass(highlight);
 			});
-
 			$(tfid).on('click',function(){//When the click is a frozen column, the highlighting effect of the frozen column is clear
 				$('.frozen-rdiv tbody').children('tr').each(function(){
 					$(this).removeClass(highlight);
