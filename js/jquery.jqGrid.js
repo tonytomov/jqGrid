@@ -6192,7 +6192,7 @@ $.jgrid.extend({
 	},
 	setSelection : function(selection,onsr, e, isHight) {
 		return this.each(function(){
-			var $t = this, stat,pt, ner, ia, tpsr, fid, csr,
+			var $t = this, stat,pt, ner, ia, tpsr, fid, csr, tfid,
 			getstyle = $.jgrid.getMethod("getStyleUI"),
 			highlight = getstyle($t.p.styleUI+'.common','highlight', true),
 			disabled = getstyle($t.p.styleUI+'.common','disabled', true);
@@ -6225,7 +6225,14 @@ $.jgrid.extend({
 			if($t.p.frozenColumns === true ) {
 				fid = $t.p.id+"_frozen";
 			}
+			if($t.p.frozenRows === true ) {
+				tfid = $t.p.id+"_fr";
+			}
+			
 			if(!$t.p.multiselect) {
+				if(tfid) {
+					$("#"+$.jgrid.jqID($t.p.selrow), "#"+$.jgrid.jqID(tfid)).removeClass(highlight);
+				}
 				if(pt.className !== "ui-subgrid") {
 					if( $t.p.selrow !== pt.id ) {
 						if( isHight ) {
