@@ -116,13 +116,15 @@ $.jgrid.extend({
 			//disabled = getstyle(stylemodule,'disabled', true),
 			highlight = getstyle(stylemodule,'highlight', true),
 			hover = getstyle(stylemodule,'hover', true);
-
 			$('.frozen-rdiv', tvid).on('click','tr',function(){//click on the frozen line to add a highlight effect
+				if($t.p.selrow) {
+					$($t).jqGrid('resetSelection',$t.p.selrow);
+				}
 				var index = $(this).index();
 				$(this).addClass(highlight).siblings().removeClass(highlight);
+				$t.p.selrow = this.id;
 				$('.frozen-rdiv tr').eq(index).addClass(highlight).siblings().removeClass(highlight);
 			});
-
 			$(tfid).on('click',function(){//When the click is a frozen column, the highlighting effect of the frozen column is clear
 				$('.frozen-rdiv tbody').children('tr').each(function(){
 					$(this).removeClass(highlight);
