@@ -7997,6 +7997,9 @@ $.jgrid.extend({
 						}
 						$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridHeight', wh - bstw, true, false);
 					}
+					if($t.p.frozenRows) {
+						$($t).trigger('jqGridAfterGridComplete.setFrozenRows');
+					}		
 					if(frozen) {
 						$("#"+$.jgrid.jqID($t.p.id)).jqGrid("setFrozenColumns");
 					}

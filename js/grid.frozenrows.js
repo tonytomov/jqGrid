@@ -44,14 +44,16 @@ $.jgrid.extend({
 
 
 			var $t = this, i, j, len,
-				borderbox = $("#gbox_"+$.jgrid.jqID($t.p.id)).css("box-sizing") === 'border-box',
-				pixelfix = borderbox ? 0 : 1,
+				borderbox = $("#"+$.jgrid.jqID($t.p.id)).css("box-sizing") === 'border-box',
+				pixelfix = borderbox ? 1 : 0,
 				tid = '#'+$.jgrid.jqID($t.p.id),
 				tvid ='#gview_'+$.jgrid.jqID($t.p.id),
-				hth = $(".ui-jqgrid-htable", tvid).height(),//Get the height of the column header to set the top value
+				//hth = $(".ui-jqgrid-htable", tvid).height(),//Get the height of the column header to set the top value
+				hgh = document.getElementById("gbox_"+$t.p.id).getBoundingClientRect().top,
+				hth = document.getElementById($t.p.id).getBoundingClientRect().top,
 				htw = $(tvid).width(),//Get the width of the content
 				frowms = [],//store frozen rows
-				fbDiv = $('<div style="position:absolute;left:0px;top:'+(hth+pixelfix)+'px;height:0px;overflow-x:hidden;" class="frozen-rdiv ui-jqgrid-rdiv"></div>');
+				fbDiv = $('<div style="position:absolute;left:0px;top:'+(hth-hgh-pixelfix)+'px;height:0px;overflow-x:hidden;" class="frozen-rdiv ui-jqgrid-rdiv"></div>');
 
 			$(tvid).append(fbDiv);
 			$('.frozen-rdiv', tvid).css('width',htw-($.jgrid.scrollbarWidth()+2));
