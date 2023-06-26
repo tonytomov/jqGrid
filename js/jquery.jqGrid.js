@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.3 - 2023-06-24
+* @license Guriddo jqGrid JS - v5.8.3 - 2023-06-26
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2375,7 +2375,9 @@ $.fn.jqGrid = function( pin ) {
 				dbtable : "",
 				loadIfExists : false,
 				isKeyInData : false,
-				dataUrl : ""
+				dataUrl : "",
+				beforeInsertData : null,
+				fetchOptions : {}
 			}
 		}, $.jgrid.defaults , pin );
 		if (localData !== undefined) {
@@ -23657,17 +23659,19 @@ $.jgrid.extend({
 				var version =  parseInt(db.version),
 				idcol = $.jgrid.getElemByAttrVal(ts.p.colModel, 'key', true);
 
-				async function getIndexedDbData( skipCreate )
-					{
-						var data;
-						if(typeof ts.p.dbconfig.dataUrl === 'string') {
-							let req = await fetch(ts.p.dbconfig.dataUrl);	
+				async function getIndexedDbData( skipCreate ) {
+					var data, options = ts.p.dbconfig;
+					if(typeof options.dataUrl === 'string') {
+						let req = await fetch(options.dataUrl, options.fetchOptions);	
 							data = await req.json();
-						} else if(Array.isArray(ts.p.dbconfig.dataUrl)) {
-							data = ts.p.dbconfig.dataUrl;
+						if($.jgrid.isFunction(options.beforeInsertData)) {
+							data = options.beforeInsertData.call(ts, data);
 						}
+					} else if(Array.isArray(options.dataUrl)) {
+						data = options.dataUrl;
+					}
 						ts.p.dbconfig.dbversion = version + 1;
-						var secondconn = indexedDB.open(ts.p.dbconfig.dbname, version + 1/*, ts.p.dbconfig.dbversion*/);
+					var secondconn = indexedDB.open(options.dbname, version + 1/*, ts.p.dbconfig.dbversion*/);
 						secondconn.onupgradeneeded = function (e) {
 							var db = e.target.result;
 							if(!skipCreate) {
@@ -23703,16 +23707,32 @@ $.jgrid.extend({
 							$.jgrid.info_dialog("Error",e.target.error.name + " : "+e.target.error.message,'Close');
 						};
 					}
-				if($.isEmptyObject(idcol)) {
-					$.jgrid.info_dialog("Warning","Missed key: No uniquie key is set in colModel. Creating table fail",'Close');
-					return;
-				}
-				if( !db.objectStoreNames.contains(ts.p.dbconfig.dbtable) ) {
-					db.close();
-					getIndexedDbData( false );
-				} else if(ts.p.dbconfig.loadIfExists) {
-					db.close();
-					getIndexedDbData( true );
+					if($.isEmptyObject(idcol)) {
+						$.jgrid.info_dialog("Warning","Missed key: No uniquie key is set in colModel. Creating table fail",'Close');
+						return;
+					}
+					if( !db.objectStoreNames.contains(ts.p.dbconfig.dbtable) ) {
+						db.close();
+						getIndexedDbData( false );
+					} else if(ts.p.dbconfig.loadIfExists) {
+						const tr = db.transaction(ts.p.dbconfig.dbtable);
+						const oS = tr.objectStore(ts.p.dbconfig.dbtable);
+						const countRequest = oS.count();
+						countRequest.onsuccess = () => {						
+							if(countRequest.result > 0)  {
+								if (confirm("The object store: " + ts.p.dbconfig.dbtable+ " contain data! Would you like to insert new data set one") === true) {
+									db.close();
+									getIndexedDbData( true );
+								} else {
+									db.close();
+									ts.p.dbconfig.ready_req = true;
+									ts.grid.populate();
+								}
+							} else {
+							db.close();
+							getIndexedDbData( true );			
+						}
+					};
 				} else {
 					db.close();
 					ts.p.dbconfig.ready_req = true;
