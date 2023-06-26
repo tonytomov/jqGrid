@@ -2370,7 +2370,9 @@ $.fn.jqGrid = function( pin ) {
 				dbtable : "",
 				loadIfExists : false,
 				isKeyInData : false,
-				dataUrl : ""
+				dataUrl : "",
+				beforeInsertData : null,
+				fetchOptions : {}
 			}
 		}, $.jgrid.defaults , pin );
 		if (localData !== undefined) {
