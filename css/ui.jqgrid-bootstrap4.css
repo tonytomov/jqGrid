@@ -989,6 +989,10 @@ ul.ui-search-menu li, ul.ui-nav-menu li {
 .frozen-bdiv {
    pointer-events: none;
 }
+.frozen-bdiv  input[id^="jqs_"] {
+   pointer-events: auto;
+}
+
 /*
 .ui-jqgrid .ui-jqgrid-caption,
 .ui-jqgrid .ui-jqgrid-pager,

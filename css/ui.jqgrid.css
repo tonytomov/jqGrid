@@ -577,3 +577,6 @@ td.menu_text {
 .frozen-bdiv {
    pointer-events: none;
 }
+.frozen-bdiv  input[id^="jqs_"] {
+   pointer-events: auto;
+}
