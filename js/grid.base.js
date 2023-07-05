@@ -5473,7 +5473,7 @@ $.fn.jqGrid = function( pin ) {
 					$(">div",this).addClass('ui-jqgrid-sortable');
 				}
 			}
-			tmpcm.canvas_width = tmpcm.autosize_headers ? ($.jgrid.getTextWidth( $("div", this).html(), hdr_font) +
+			tmpcm.canvas_width = tmpcm.autosize_headers ? ($.jgrid.getTextWidth( $("div", this)[0].outerText, hdr_font) +
 					(tmpcm.colmenu ? $.jgrid.floatNum( $(".colmenuspan", this).parent().width()) : 0) +
 					$.jgrid.floatNum( $("div", this).css("padding-left")) + $.jgrid.floatNum( $("div", this).css("padding-right")) +
 					$.jgrid.floatNum($(".ui-jqgrid-resize", this).width())) : 0;
@@ -7303,7 +7303,7 @@ $.jgrid.extend({
 								if(max === undefined) { 
 									max = cm[pos].autosize_headers ? cm[pos].canvas_width  : 0;
 								}
-								max = Math.max( $.jgrid.getTextWidth($t.rows[i].cells[pos].innerHTML, font), max);
+								max = Math.max( $.jgrid.getTextWidth($t.rows[i].cells[pos].outerText, font), max);
 								continue;
 							}
 
