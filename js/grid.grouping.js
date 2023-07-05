@@ -386,6 +386,7 @@ $.jgrid.extend({
 								nv.v = (nv.v/n.cnt);
 							}
 						}
+						nv.uv = nv.v;
 						try {
 							nv.v = $t.formatter('',nv.v, ci, this);
 						} catch (e) {}
