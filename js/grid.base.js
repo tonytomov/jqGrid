@@ -7705,11 +7705,11 @@ $.jgrid.extend({
 					});
 				}
 				var testws = $("tr.jqg-second-row-header th", htbl).filter( function() { return $(this).css("display") !== "none"; }).first();
-				if(testws && $.jgrid.trim(testws.text()) === "") {
+				if(testws && $.jgrid.trim(testws[0].outerText) === "") {
 					testws.html('&nbsp;');
 				}
 				testws = $("tr.jqg-third-row-header th", htbl).filter( function() { return $(this).css("display") !== "none"; }).first();
-				if(testws && $.jgrid.trim(testws.text()) === "") {
+				if(testws && $.jgrid.trim(testws[0].outerText) === "") {
 					$("div",testws).prepend('&nbsp;');
 				}
 				//if( fthh ) {
