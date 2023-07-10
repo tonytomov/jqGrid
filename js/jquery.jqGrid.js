@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.4 - 2023-07-07
+* @license Guriddo jqGrid JS - v5.8.4 - 2023-07-10
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -11068,6 +11068,9 @@ $.jgrid.extend({
 			if (regional.filterFor) {
 				filterLabel = regional.filterFor;
 			}
+			if($t.p.colSpanHeader.length) {
+				$($t).jqGrid('destroyColSpanHeader', false);
+			}
 			
 			$.each($t.p.colModel,function(ci){
 				var cm=this, soptions, select="", sot="=", so, i, st, csv, df, elem, restores,
@@ -11295,6 +11298,9 @@ $.jgrid.extend({
 				}
 				$t.grid.hScroll = false;
 			});
+			if($t.p.colSpanHeader.length) {
+				setTimeout(function() { $($t).jqGrid('setColSpanHeader');},0);
+			}			
 			this.p.filterToolbar = true;
 			this.triggerToolbar = triggerToolbar;
 			this.clearToolbar = clearToolbar;
