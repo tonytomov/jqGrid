@@ -1276,6 +1276,9 @@ $.jgrid.extend({
 			if (regional.filterFor) {
 				filterLabel = regional.filterFor;
 			}
+			if($t.p.colSpanHeader.length) {
+				$($t).jqGrid('destroyColSpanHeader', false);
+			}
 			
 			$.each($t.p.colModel,function(ci){
 				var cm=this, soptions, select="", sot="=", so, i, st, csv, df, elem, restores,
@@ -1503,6 +1506,9 @@ $.jgrid.extend({
 				}
 				$t.grid.hScroll = false;
 			});
+			if($t.p.colSpanHeader.length) {
+				setTimeout(function() { $($t).jqGrid('setColSpanHeader');},0);
+			}			
 			this.p.filterToolbar = true;
 			this.triggerToolbar = triggerToolbar;
 			this.clearToolbar = clearToolbar;
