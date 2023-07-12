@@ -6041,6 +6041,9 @@ $.fn.jqGrid = function( pin ) {
 					$(ts).jqGrid("destroyFrozenColumns");
 					arfrozen = true;
 				}
+				if(ts.p.colSpanHeader.length > 0) {
+					$(ts).jqGrid('destroyColSpanHeader');
+				}
 				$(ts.p.colModel).each(function(i){
 					if (this.autosize && !this.hidden) {
 						if(this._maxsize && this._maxsize > 0) {
@@ -6050,6 +6053,9 @@ $.fn.jqGrid = function( pin ) {
 					}
 				});
 				$(ts).jqGrid('refreshGroupHeaders');
+				if(ts.p.colSpanHeader.length > 0) {
+					$(ts).jqGrid('setColSpanHeader');
+				}				
 				if(arfrozen) {
 					$(ts).jqGrid("setFrozenColumns");
 					if(focused) {
