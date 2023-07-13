@@ -7748,15 +7748,10 @@ $.jgrid.extend({
 				$("#gview_"+$.jgrid.jqID($t.p.id)).append($t.grid.fbDiv);
 
 				$($t.grid.fbDiv).on('mousewheel DOMMouseScroll', function (e) {
-					var st = $($t.grid.bDiv).scrollTop();
-					if (e.originalEvent.wheelDelta > 0 || e.originalEvent.detail < 0) {
-						//up
-						$($t.grid.bDiv).scrollTop( st - 25 );
-					} else {
-						//down
-						$($t.grid.bDiv).scrollTop( st + 25 );
-					}
-					e.preventDefault();
+					$t.grid.bDiv.scrollTop += 
+						e.type === "mousewheel" ?
+							-e.originalEvent.wheelDelta / 10 :
+							e.originalEvent.detail * 6;
 				});
 
 				if($t.p.hoverrows === true) {

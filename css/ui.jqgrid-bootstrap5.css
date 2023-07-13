@@ -1063,13 +1063,6 @@ ul.ui-search-menu li, ul.ui-nav-menu li {
 .frozen-div .ui-jqgrid-htable {
 	border-bottom: 0px none;
 }
-.frozen-bdiv {
-   pointer-events: none;
-}
-.frozen-bdiv  input[id^="jqs_"], 
-.frozen-bdiv  div.jqgrid_actions {
-   pointer-events: auto;
-}
 
 /*
 .ui-jqgrid .ui-jqgrid-caption,
