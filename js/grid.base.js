@@ -3978,7 +3978,7 @@ $.fn.jqGrid = function( pin ) {
 				if(!$.jgrid.isNull(pN.page, true) ) {prm[pN.page]= ts.p.page;}
 				if(!$.jgrid.isNull(pN.sort, true) ) {prm[pN.sort]= ts.p.sortname;}
 				if(!$.jgrid.isNull(pN.order, true) ) {prm[pN.order]= ts.p.sortorder;}
-				if( $.jgrid.isNull(ts.p.rowTotal, true) && !$.jgrid.isNull(pN.totalrows, true) ) { prm[pN.totalrows]= ts.p.rowTotal; }
+				if(!$.jgrid.isNull(ts.p.rowTotal, true) && !$.jgrid.isNull(pN.totalrows, true) ) { prm[pN.totalrows]= ts.p.rowTotal; }
 
 				var lcf = $.jgrid.isFunction(ts.p.loadComplete), lc = lcf ? ts.p.loadComplete : null;
 				var adjust = 0;
