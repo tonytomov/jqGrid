@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.4 - 2023-07-13
+* @license Guriddo jqGrid JS - v5.8.4 - 2023-07-14
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5418,7 +5418,7 @@ $.fn.jqGrid = function( pin ) {
 		if(ts.p.autowidth===true) {
 			var pw = $(eg).parent().width();
 			tmpcm = $(window).width();
-			ts.p.width = tmpcm - pw > 3 ?  pw: tmpcm;
+			ts.p.width = tmpcm - pw > 3 ?  pw: tmpcm-1;
 		}
 		var tfoot = "", trhead="", bstw = ts.p.styleUI.search('Bootstrap') !== -1 && !isNaN(ts.p.height) ? 2 : 0;
 		setColWidth();

@@ -5413,7 +5413,7 @@ $.fn.jqGrid = function( pin ) {
 		if(ts.p.autowidth===true) {
 			var pw = $(eg).parent().width();
 			tmpcm = $(window).width();
-			ts.p.width = tmpcm - pw > 3 ?  pw: tmpcm;
+			ts.p.width = tmpcm - pw > 3 ?  pw: tmpcm-1;
 		}
 		var tfoot = "", trhead="", bstw = ts.p.styleUI.search('Bootstrap') !== -1 && !isNaN(ts.p.height) ? 2 : 0;
 		setColWidth();
