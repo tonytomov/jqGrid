@@ -322,34 +322,28 @@ $.jgrid.extend({
 				vv, grlen = fdata.cnt, str="", k , isput = false, tmpdata, tplfld;
 				for(k=foffset; k<colspans;k++) {
 					if(cm[k].hidden ) {
-						tmpdata = "<td "+$t.formatCol(k,1,'')+">&#160;</td>";
+						tmpdata = "<td role=\"gridcell\" "+$t.formatCol(k,1,'')+">&#160;</td>";
 					} else if(!isput && fstr) {
 						tmpdata = fstr;
 						isput = true;
 					} else {
-						tmpdata = "<td "+$t.formatCol(k,1,'')+">&#160;</td>";
+						tmpdata = "<td role=\"gridcell\" "+$t.formatCol(k,1,'')+">&#160;</td>";
 					}
 					$.each(fdata.summary,function(){
 						if(this.nm === cm[k].name) {
 							
 							tplfld = (cm[k].summaryTpl) ? cm[k].summaryTpl :  "{0}";
 							
-							if(typeof this.st === 'string' && this.st.toLowerCase() === 'avg') {
-								if(this.sd && this.vd) { 
-									this.v = (this.v/this.vd);
-								} else if(this.v && grlen > 0) {
-									this.v = (this.v/grlen);
-								}
-							}
+							vv = this.v;
 							try {
 								this.groupCount = fdata.cnt;
 								this.groupIndex = fdata.dataIndex;
 								this.groupValue = fdata.value;
-								vv = $t.formatter('', this.v, k, this);
+								//vv = $t.formatter('', vv, k, this);
 							} catch (ef) {
-								vv = this.v;
+								//vv = this.v;
 							}
-							tmpdata= "<td "+$t.formatCol(k,1,'')+">"+$.jgrid.template(tplfld, vv, fdata.cnt, fdata.dataIndex, fdata.displayValue, fdata.summary)+ "</td>";
+							tmpdata= "<td role=\"gridcell\" "+$t.formatCol(k,1,'')+">"+$.jgrid.template(tplfld, vv, fdata.cnt, fdata.dataIndex, fdata.displayValue, fdata.summary)+ "</td>";
 							return false;
 						}
 					});
@@ -380,17 +374,36 @@ $.jgrid.extend({
 					gv = n.displayValue;
 				}
 				var grpTextStr = ''; 
+				// format summary values if formatter
+				for( var kk =0;kk< n.summary.length; kk++) {  
+					var nv = n.summary[kk];
+					var ci = $.jgrid.getElemByAttrVal($t.p.colModel, 'name', nv.nm, true);
+					if(ci>=0) {
+						if(typeof nv.st === 'string' && nv.st.toLowerCase() === 'avg') {
+							if(nv.sd && nv.vd) { 
+								nv.v = (nv.v/nv.vd);
+							} else if(nv.v && n.cnt > 0) {
+								nv.v = (nv.v/n.cnt);
+							}
+						}
+						nv.uv = nv.v;
+						try {
+							nv.v = $t.formatter('',nv.v, ci, this);
+						} catch (e) {}
+					}
+				}
+				
 				if($.jgrid.isFunction(grp.groupText[n.idx])) { 
 					grpTextStr = grp.groupText[n.idx].call($t, gv, n.cnt, n.summary);
 				} else {
-					grpTextStr = $.jgrid.template(grp.groupText[n.idx], gv, n.cnt, n.summary);
+					grpTextStr = $.jgrid.template.call($t, grp.groupText[n.idx], gv, n.cnt, n.summary);
 				}
 				if( !(typeof grpTextStr ==='string' || typeof grpTextStr ==='number' ) ) {
 					grpTextStr = gv;
 				}
 				if(grp.groupSummaryPos[n.idx] === 'header')  {
 					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"" + common.content + " jqgroup ui-row-"+$t.p.direction+" "+clid+"\">";
-					str += buildSummaryTd(i, 0, grp.groups, (mul==="" ? 0 : 1), "<td style=\"padding-left:"+(n.idx * 12) + "px;"+"\"" + mul +">" + icon+grpTextStr + "</td>" );
+					str += buildSummaryTd(i, 0, grp.groups, (mul==="" ? 0 : 1), "<td role=\"gridcell\" style=\"padding-left:"+(n.idx * 12) + "px;"+"\"" + mul +">" + icon+grpTextStr + "</td>" );
 					str += "</tr>";
 				} else {
 					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"" + common.content + " jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\" colspan=\""+(grp.groupColumnShow[n.idx] === false ? colspans-1 : colspans)+"\">" + icon + grpTextStr + "</td></tr>";
@@ -532,7 +545,7 @@ $.jgrid.extend({
 			};
 
 			if(!funcs[fn]) {
-				throw ("jqGrid Grouping No such method: " + fn);
+				throw "jqGrid Grouping No such method: " + fn;
 			}
 			var res = funcs[fn]();
 
@@ -548,10 +561,15 @@ $.jgrid.extend({
 			return res;
 		}	
 	},
+	groupingResetCalcs : function () {
+		return this.each(function(){
+			this.p.groupingView._locgr = false;
+		});
+	},
 	setColSpanHeader : function( o ) {
 		return this.each(function(){
 			var ts = this,
-			i, cmi, skip = 0, th, $th, thStyle,
+			i, cmi, skip = 0, th, $th, thStyle, k,
 			iCol,
 			cghi,
 			//startColumnName,
@@ -616,8 +634,8 @@ $.jgrid.extend({
 					if(cVisibleColumns > 0) {
 						$th.attr("colspan", String(cVisibleColumns));
 						if(numberOfHeadRows > 1) {
-							for(var k=1;k<numberOfHeadRows; k++) {
-								$("tr",$thead).eq(k+1).find("th").eq(i).attr("colspan", String(cVisibleColumns));;
+							for(k=1;k<numberOfHeadRows; k++) {
+								$("tr",$thead).eq(k+1).find("th").eq(i).attr("colspan", String(cVisibleColumns));
 							}
 						}
 
@@ -634,8 +652,9 @@ $.jgrid.extend({
 					for( skip=0;skip < numberOfColumns-1;skip++) {
 						$(ths[skip+i+1].el).hide();
 						ts.p.colModel[skip+i+1].hidedlg = true;
+						ts.p.colModel[skip+i+1]._colspancell = true;
 						if(numberOfHeadRows > 1) {
-							for(var k=1;k<numberOfHeadRows; k++) {
+							for(k=1;k<numberOfHeadRows; k++) {
 								$("tr",$thead).eq(k+1).find("th").eq(i+skip+1).hide();
 							}
 						}
@@ -673,6 +692,7 @@ $.jgrid.extend({
 					}
 					for(k = cellInd+1; k < cellInd + clitem.numberOfColumns; k++) {
 						ts.p.colModel[k].hidedlg=false;
+						ts.p.colModel[k]._colspancell=false;
 					}
 					$(">tr", $thead).each(function( i, n) {
 						itm = $("th",n).eq(cellInd);
@@ -845,12 +865,15 @@ $.jgrid.extend({
 					$($focusElem).focus();
 				} catch(fe) {}
 			}
-			if( $.jgrid.trim($("tr.jqg-second-row-header th").eq( 0 ).text()) === "" ) {
+			var testws = $("tr.jqg-second-row-header th").eq( 0 );
+			if( $.jgrid.type(testws)==='object' && testws.length && $.jgrid.trim(testws[0].outerText) === "" ) {
 				$("tr.jqg-second-row-header th").eq( 0 ).prepend('&nbsp;');
 			}
 			if(frozen) {
 				$(ts).jqGrid("setFrozenColumns");
 			}			
+			$(ts).triggerHandler("afterSetGroupHandler", [o]);
+			
 		});				
 	},
 	destroyGroupHeader : function(nullHeader) {
@@ -899,6 +922,7 @@ $.jgrid.extend({
 			if(frozen) {
 				$($t).jqGrid("setFrozenColumns");
 			}
+			$($t).off("afterSetGroupHandler");
 		});
 	},
 	isGroupHeaderOn : function () {

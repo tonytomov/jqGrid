@@ -48,7 +48,11 @@ $.jgrid.regional["cn"] = {
 		nomorerecs : "没有更多记录...",
 		scrollPullup: "加载更多...",
 		scrollPulldown : "刷新...",
-		scrollRefresh : "滚动刷新..."
+		scrollRefresh : "滚动刷新...",
+		valT : "checked",
+		valF : "unchecked",
+		selectLine : "Select row",
+		selectAllLines : "Select all rows"
     },
     search : {
         caption: "搜索...",
@@ -64,7 +68,8 @@ $.jgrid.regional["cn"] = {
 		delrule : "删除条件",
 		Close : "Close",
 		Operand : "Operand : ",
-		Operation : "Oper : "
+		Operation : "Oper : ",
+		filterFor : "filter for"
     },
     edit : {
         addCaption: "添加记录",

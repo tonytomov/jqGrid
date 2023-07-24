@@ -37,7 +37,11 @@ $.jgrid.regional["it"] = {
 		nomorerecs : "Non ci sono altri record...",
 		scrollPullup: "Trascina verso l'alto per altri...",
 		scrollPulldown : "Trascina verso il basso per aggiornare...",
-		scrollRefresh : "Rilascia per aggiornare..."
+		scrollRefresh : "Rilascia per aggiornare...",
+		valT : "checked",
+		valF : "unchecked",
+		selectLine : "Select row",
+		selectAllLines : "Select all rows"
 	},
 	search : {
 		caption: "Cerca...",
@@ -53,7 +57,8 @@ $.jgrid.regional["it"] = {
 		delrule : "Cancella Regola",
 		Close : "Close",
 		Operand : "Operand : ",
-		Operation : "Oper : "
+		Operation : "Oper : ",
+		filterFor : "filter for"
 	},
 	edit : {
 		addCaption: "Aggiungi Record",

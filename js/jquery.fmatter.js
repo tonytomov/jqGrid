@@ -140,7 +140,7 @@
 		return $.fn.fmatter.defaultFormat(cellval,opts );
 	};
 	$.fn.fmatter.checkbox =function(cval, opts) {
-		var op = $.extend({},opts.checkbox), ds;
+		var op = $.extend({},opts.checkbox), ds, checkboxVal, valtrue, valfalse, lang = Object.keys($.jgrid.regional)[0], title;
 		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
@@ -149,7 +149,19 @@
 		cval=String(cval);
 		cval=(cval+"").toLowerCase();
 		var bchk = cval.search(/(false|f|0|no|n|off|undefined)/i)<0 ? " checked='checked' " : "";
-		return "<input type=\"checkbox\" " + bchk  + " value=\""+ cval+"\" offval=\"no\" "+ds+ "/>";
+		checkboxVal = $.jgrid.regional[lang].defaults.valueCheckbox;
+		valtrue= $.jgrid.regional[lang].defaults.valT;	
+		valfalse= $.jgrid.regional[lang].defaults.valF;
+		if((checkboxVal !== undefined) && (cval==="true")) {
+			title = checkboxVal + " " + valtrue;
+		}
+		else if (checkboxVal !== undefined && cval==="false") {
+			title = checkboxVal+ " " + valfalse;
+		}
+		else {
+			title = cval;
+		}
+		return "<input title=\""+title+"\" type=\"checkbox\" " + bchk  + " value=\""+ cval+"\" offval=\"no\" "+ds+ "/>";
 	};
 	$.fn.fmatter.link = function(cellval, opts) {
 		var op = {target:opts.target};
@@ -322,9 +334,11 @@
 		{
 			case 'edit':
 				$grid.jqGrid('editRow', rid, actop);
-				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").hide();
-				$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").show();
-				$grid.triggerHandler("jqGridAfterGridComplete");
+				if($grid[0].p.beforeAction) {
+					$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").hide();
+					$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").show();
+					$grid.triggerHandler("jqGridAfterGridComplete");
+				}
 				break;
 			case 'save':
 				if ($grid.jqGrid('saveRow', rid, actop)) {
@@ -374,7 +388,7 @@
 		str += "<div title='"+nav.savetitle+"' style='float:left;display:none' class='ui-pg-div ui-inline-save' "+ocl+"><span class='" + common.icon_base +" "+classes.icon_save +"'></span></div>";
 		ocl = "id='jCancelButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'cancel'); " + hover;
 		str += "<div title='"+nav.canceltitle+"' style='float:left;display:none;' class='ui-pg-div ui-inline-cancel' "+ocl+"><span class='" + common.icon_base +" "+classes.icon_cancel +"'></span></div>";
-		return "<div style='margin-left:8px;'>" + str + "</div>";
+		return "<div  class='jqgrid_actions' style='margin-left:8px;'>" + str + "</div>";
 	};
 	$.unformat = function (cellval,options,pos,cnt) {
 		// specific for jqGrid only

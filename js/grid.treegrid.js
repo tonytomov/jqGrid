@@ -109,7 +109,7 @@ $.jgrid.extend({
 								$($t).jqGrid("expandNode",$t.p.data[pos]);
 							}
 						}
-						return false;
+						//return false;
 					});
 				if($t.p.ExpandColClick === true) {
 					$($t.rows[i].cells[expCol])
@@ -129,7 +129,7 @@ $.jgrid.extend({
 								}
 							}
 							$($t).jqGrid("setSelection",ind2);
-							return false;
+							//return false;
 						});
 				}
 				i++;
@@ -216,10 +216,10 @@ $.jgrid.extend({
 	},
 	expandRow: function (record){
 		this.each(function(){
-			var $t = this;
+			var $t = this, $rootpages;
 			//bvn
 			if (!$t.p.treeGrid_bigData) {
-				var $rootpages = $t.p.lastpage;
+				$rootpages = $t.p.lastpage;
 			}
 			if(!$t.grid || !$t.p.treeGrid) {return;}
 			var childern = $($t).jqGrid("getNodeChildren",record),
@@ -765,14 +765,20 @@ $.jgrid.extend({
 		});
 		return success;
 	},
-	delTreeNode : function (rowid) {
+	delTreeNode : function (rowid, reload) {
 		return this.each(function () {
 			var $t = this, rid = $t.p.localReader.id, i,
-			left = $t.p.treeReader.left_field,
+			left = $t.p.treeReader.left_field, parent,
 			right = $t.p.treeReader.right_field, myright, width, res, key;
 			if(!$t.grid || !$t.p.treeGrid) {return;}
 			rowid = $.jgrid.stripPref($t.p.idPrefix, rowid);
 			var rc = $t.p._index[rowid];
+			if(typeof reload === undefined) {
+				reload = false;
+			}
+			if(reload) {
+				parent = $(this).jqGrid("getNodeParent",$t.p.data[rc]);
+			}
 			if (rc !== undefined) {
 				// nested
 				myright = parseInt($t.p.data[rc][right],10);
@@ -804,6 +810,15 @@ $.jgrid.extend({
 								res[key][right] = parseInt(res[key][right],10) - width ;
 							}
 						}
+					}
+				}
+				if(reload) {
+					var isLeaf = this.p.treeReader.leaf_field;
+					var chld = $(this).jqGrid('getNodeChildren', parent);
+					if(parent[isLeaf] && chld.length) {
+						$(this).jqGrid('setLeaf', parent, false);
+					} else if(!rc[isLeaf] && chld.length === 0) {
+						$(this).jqGrid('setLeaf', parent, true);
 					}
 				}
 			}
@@ -916,7 +931,7 @@ $.jgrid.extend({
 				// incremet th index of child to be inserted
 				if( i === false ) {
 					throw "Parent item with id: " + rowind + " ("+ parentid+") can't be found";
-					return;
+					//return;
 				} else {
 					i++;
 				}

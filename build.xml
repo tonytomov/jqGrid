@@ -30,6 +30,7 @@
 		<fileset file="js/grid.aria.js"/>
 		<fileset file="js/grid.transposed.js"/>
 		<fileset file="js/grid.frozenrows.js"/>
+		<fileset file="js/grid.database.js"/>
         </concat>
     </target>
 

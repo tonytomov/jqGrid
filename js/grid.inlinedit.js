@@ -308,7 +308,7 @@ $.jgrid.extend({
 			} else {
 				idname = $t.p.keyName;
 			}
-			if(tmp) {
+			if(!$.isEmptyObject(tmp)) {
 				tmp[opers.oper] = opers.editoper;
 				if (tmp[idname] === undefined || tmp[idname]==="") {
 					tmp[idname] = rowid;
@@ -359,6 +359,55 @@ $.jgrid.extend({
 				if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
 				success = true;
 				$(ind).removeClass("jqgrid-new-row").off("keydown");
+			} else if(o.url === 'storage') {
+				tmp = $.extend({},tmp, tmp2);
+				if($t.p.autoencode) {
+					$.each(tmp,function(n,v){
+						tmp[n] = $.jgrid.htmlDecode(v);
+					});
+				}
+				tmp = $.jgrid.isFunction($t.p.serializeRowData) ? $t.p.serializeRowData.call($t, tmp) : tmp;
+				if($(ind).hasClass("jqgrid-new-row")) {
+					$($t).jqGrid('addStorageRecord', tmp)
+					.then(function(e){
+						if(e.type==="complete") {
+							var k, resp = $($t).jqGrid("setRowData",rowid,tmp);
+							$(ind).attr("editable","0");
+							for(k=0;k<$t.p.savedRow.length;k++) {
+								if( String($t.p.savedRow[k].id) === String(oldRowId)) {fr = k; break;}
+							}
+							$($t).triggerHandler("jqGridInlineAfterSaveRow", [rowid, resp, tmp, o]);
+							if( $.jgrid.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, resp, tmp, o); }
+							if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
+							success = true;
+							$(ind).removeClass("jqgrid-new-row").off("keydown");
+							if($t.p.inlineNav===true) {$($t).jqGrid('showAddEditButtons');}
+						}
+					})
+					.catch(function(e) {
+						$.jgrid.info_dialog("Error",e.target.error.name + " : "+e.target.error.message,'Close');
+					});
+			} else {
+					$($t).jqGrid('updateStorageRecord', tmp)
+					.then(function(e){
+						if(e.type==="complete") {
+							var k, resp = $($t).jqGrid("setRowData",rowid,tmp);
+							$(ind).attr("editable","0");
+							for(k=0;k<$t.p.savedRow.length;k++) {
+								if( String($t.p.savedRow[k].id) === String(oldRowId)) {fr = k; break;}
+							}
+							$($t).triggerHandler("jqGridInlineAfterSaveRow", [rowid, resp, tmp, o]);
+							if( $.jgrid.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid, resp, tmp, o); }
+							if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
+							success = true;
+							$(ind).off("keydown");
+							if($t.p.inlineNav===true) {$($t).jqGrid('showAddEditButtons');}
+						}
+					})
+					.catch(function(e) {
+						$.jgrid.info_dialog("Error",e.target.error.name + " : "+e.target.error.message,'Close');
+					});			
+				}
 			} else {
 				$($t).jqGrid("progressBar", {method:"show", loadtype : o.saveui, htmlcontent: o.savetext });
 				tmp3 = $.extend({},tmp,tmp3);
@@ -368,7 +417,7 @@ $.jgrid.extend({
 					data: $.jgrid.isFunction($t.p.serializeRowData) ? $t.p.serializeRowData.call($t, tmp3) : tmp3,
 					type: o.mtype,
 					async : false, //?!?
-					complete: function(res,stat){
+					success: function(resuly,stat,res){
 						$($t).jqGrid("progressBar", {method:"hide", loadtype : o.saveui, htmlcontent: o.savetext});
 						if (stat === "success"){
 							var ret = true, sucret, k;

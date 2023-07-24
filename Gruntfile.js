@@ -24,7 +24,8 @@ var
 		"grid.export",
 		"grid.aria",
 		"grid.transposed",
-		"grid.frozenrows"
+		"grid.frozenrows",
+		"grid.database"
 	],
 
 	gridFiles = allFiles.map(function( file ) {

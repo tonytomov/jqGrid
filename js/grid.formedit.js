@@ -498,7 +498,7 @@ $.jgrid.extend({
 					$("#sData", frmtb+"_2").addClass( commonstyle.active );
 					url = rp_ge[$t.p.id].url || $($t).jqGrid('getGridParam','editurl');
 					oper = opers.oper;
-					idname = url === 'clientArray' ? $t.p.keyName : opers.id;
+					idname = (url === 'clientArray' || url==='storage') ? $t.p.keyName : opers.id;
 					// we add to pos data array the action - the name is oper
 					postdata[oper] = ($.jgrid.trim(postdata[$t.p.id+"_id"]) === "_empty") ? opers.addoper : opers.editoper;
 					if(postdata[oper] !== opers.addoper) {
@@ -531,7 +531,7 @@ $.jgrid.extend({
 						url: url,
 						type: rp_ge[$t.p.id].mtype,
 						data: $.jgrid.isFunction(rp_ge[$t.p.id].serializeEditData) ? rp_ge[$t.p.id].serializeEditData.call($t,postdata) :  postdata,
-						complete:function(data,status){
+						success:function(res,status,data){
 							var key;
 							$("#sData", frmtb+"_2").removeClass( commonstyle.active );
 							postdata[idname] = $t.p.idPrefix + postdata[idname];
@@ -648,7 +648,7 @@ $.jgrid.extend({
 							}
 							if(dpret[0] === false ) {
 								ret[0] = false;
-								ret[1] = dpret[1] || "Error deleting the selected row!" ;
+								ret[1] = dpret[1] || "Error processing the row!" ;
 							} else {
 								if(ajaxOptions.data.oper === opers.addoper && rp_ge[$t.p.id].closeAfterAdd ) {
 									$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:p.jqModal, onClose: rp_ge[$t.p.id].onClose, removemodal: rp_ge[$t.p.id].removemodal, formprop: !rp_ge[$t.p.id].recreateForm, form: rp_ge[$t.p.id].form});
@@ -661,7 +661,32 @@ $.jgrid.extend({
 							if(ajaxOptions.url === "clientArray") {
 								rp_ge[$t.p.id].reloadAfterSubmit = false;
 								postdata = ajaxOptions.data;
-								ajaxOptions.complete({status:200, statusText:''},'');
+								ajaxOptions.success(postdata,'',{status:200, statusText:''});
+							} else if(ajaxOptions.url === "storage"){
+								if(postdata[oper] === opers.addoper) {
+									if(postdata[idname] === "_empty") {
+										postdata[idname] = "";
+									}
+									$($t).jqGrid('addStorageRecord', postdata)
+									.then(function(e){
+										if(e.type==="complete") {
+											ajaxOptions.success(postdata,'',{status:200, statusText:''});
+										}
+									})
+									.catch(function(e) {
+										$.jgrid.info_dialog("Error",e.target.error.name + " : "+e.target.error.message,'Close');
+									});
+								} else if(postdata[oper] === opers.editoper) {
+									$($t).jqGrid('updateStorageRecord', postdata)
+									.then(function(e){
+										if(e.type==="complete") {
+											ajaxOptions.success(postdata,'',{status:200, statusText:''});
+										}
+									})
+									.catch(function(e) {
+										$.jgrid.info_dialog("Error",e.target.error.name + " : "+e.target.error.message,'Close');
+									});									
+								}
 							} else {
 								$.ajax(ajaxOptions); 
 							}
@@ -1103,6 +1128,17 @@ $.jgrid.extend({
 			if($.jgrid.isFunction(rp_ge[$t.p.id].afterShowForm)) { rp_ge[$t.p.id].afterShowForm.call($t, $(frmgr), frmoper); }
 			var posInit =getCurrPos();
 			updateNav(posInit[0],posInit);
+			this.refreshEditForm = function( rid, force ) {
+				if ( force === undefined) {
+					force = false;
+				}
+				if( force || rowid === rid) {
+					fillData(rid, this, frmgr);
+				}
+				if(force) {
+					rowid = rid;
+				}
+			};
 		});
 	},
 	viewGridRow : function(rowid, p){
@@ -1459,6 +1495,17 @@ $.jgrid.extend({
 			});
 			var posInit =getCurrPos();
 			updateNav(posInit[0],posInit);
+			this.refreshViewForm = function( rid, force ) {
+				if ( force === undefined) {
+					force = false;
+				}
+				if( force || rowid === rid) {
+					fillData(rid, this);
+				}
+				if(force) {
+					rowid = rid;
+				}
+			};
 		});
 	},
 	delGridRow : function(rowids,p) {
@@ -1604,7 +1651,7 @@ $.jgrid.extend({
 							url: rp_ge[$t.p.id].url || $($t).jqGrid('getGridParam','editurl'),
 							type: rp_ge[$t.p.id].mtype,
 							data: $.jgrid.isFunction(rp_ge[$t.p.id].serializeDelData) ? rp_ge[$t.p.id].serializeDelData.call($t,postd) : postd,
-							complete:function(data,status){
+							success:function(res, status, data){
 								var i;
 								$("#dData", "#"+dtbl+"_2").removeClass( commonstyle.active );
 								if(data.status >= 300 && data.status !== 304) {
@@ -1635,7 +1682,7 @@ $.jgrid.extend({
 										$($t).trigger("reloadGrid");
 									} else {
 										if($t.p.treeGrid===true){
-												try {$($t).jqGrid("delTreeNode",$t.p.idPrefix+postdata[0]);} catch(e){}
+												try {$($t).jqGrid("delTreeNode",$t.p.idPrefix+postdata[0], true);} catch(e){}
 										} else {
 											for(i=0;i<postdata.length;i++) {
 												$($t).jqGrid("delRowData",$t.p.idPrefix+ postdata[i]);
@@ -1685,7 +1732,17 @@ $.jgrid.extend({
 							else {
 								if(ajaxOptions.url === "clientArray") {
 									postd = ajaxOptions.data;
-									ajaxOptions.complete({status:200, statusText:''},'');
+									ajaxOptions.success({status:200, statusText:''},'');
+								} else if( ajaxOptions.url === "storage") {
+									$($t).jqGrid('deleteStorageRecord', postdata)
+									.then(function(e){
+										if(e.type==="complete") {
+											ajaxOptions.success(postdata,'',{status:200, statusText:''});
+										}
+									})
+									.catch(function(e) {
+										$.jgrid.info_dialog("Error",e.target.error.name + " : "+e.target.error.message,'Close');
+									});
 								} else {
 									$.ajax(ajaxOptions); 
 								}
@@ -2197,7 +2254,7 @@ $.jgrid.extend({
 			//actions = ['add','edit', 'del', 'view', 'search','refresh'],
 			regional =  $.jgrid.getRegional($t, 'nav'),
 			currstyle = $t.p.styleUI,
-			styles = $.jgrid.styleUI[currstyle].navigator,
+			//styles = $.jgrid.styleUI[currstyle].navigator,
 			classes = $.jgrid.styleUI[currstyle].filter,
 			commonstyle = $.jgrid.styleUI[currstyle].common,
 			mid = "form_menu_"+$.jgrid.randId(),

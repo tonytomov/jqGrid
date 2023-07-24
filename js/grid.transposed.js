@@ -30,9 +30,9 @@ $.jgrid.extend({
 			}
 			// for all columns
 			for(var i =0; i<  keys.length; i++) {
-				rowobj = {}, col=0;
+				rowobj = {}; col=0;
 				
-				rowobj["col_name"] = keys[i];
+				rowobj.col_name = keys[i];
 				
 				if(!model) {
 					// build colmodel first item
@@ -85,14 +85,15 @@ $.jgrid.extend({
 				if($.jgrid.isFunction(transpOpt.beforeCreateGrid)) {
 					transpOpt.beforeCreateGrid.call($t, transpGrid, data);
 				}
-				if(o.RowAsHeader !== false 
-						&& o.RowAsHeader >=0 
-						&& transpGrid.rows.length 
-						&& o.RowAsHeader < transpGrid.rows.length) {
+				if(o.RowAsHeader !== false &&
+						o.RowAsHeader >=0 &&
+						transpGrid.rows.length &&
+						o.RowAsHeader < transpGrid.rows.length) {
 
 					var labels = transpGrid.rows[o.RowAsHeader], i=0;
 					for(var key in labels) {
-						if(labels.hasOwnProperty(key)) {
+						if( Object.prototype.hasOwnProperty.call(labels, key) ){
+						//labels.hasOwnProperty(key)) {
 							transpGrid.colModel[i].label = labels[key];
 						}
 						i++;

@@ -37,7 +37,11 @@ $.jgrid.regional["sq"] = {
 		nomorerecs : "Nuk ka rreshta të tjerë...",
 		scrollPullup: "Tërhiq për lart për të tjerë...",
 		scrollPulldown : "Tërqiq për poshtë për rifreskim...",
-		scrollRefresh : "Lësho për rifreskim..."
+		scrollRefresh : "Lësho për rifreskim...",
+		valT : "checked",
+		valF : "unchecked",
+		selectLine : "Select row",
+		selectAllLines : "Select all rows"
 	},
 	search : {
 		caption: "Kërko...",
@@ -53,7 +57,8 @@ $.jgrid.regional["sq"] = {
 		delrule : "Delete rule",
 		Close : "Close",
 		Operand : "Operand : ",
-		Operation : "Oper : "
+		Operation : "Oper : ",
+		filterFor : "filter for"
 	},
 	edit : {
 		addCaption: "Shto rresht",

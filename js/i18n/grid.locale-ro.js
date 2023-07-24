@@ -45,7 +45,11 @@ $.jgrid.regional["ro"] = {
 		nomorerecs : "Nu mai există înregistrări...",
 		scrollPullup: "Trageți în sus pentru a încărca mai multe...",
 		scrollPulldown : "Trageți în jos pentru a reîmprospăta...",
-		scrollRefresh : "Eliberați pentru a reîmprospăta..."
+		scrollRefresh : "Eliberați pentru a reîmprospăta...",
+		valT : "checked",
+		valF : "unchecked",
+		selectLine : "Select row",
+		selectAllLines : "Select all rows"
 	},
 	search : {
 		caption: "Caută...",
@@ -61,7 +65,8 @@ $.jgrid.regional["ro"] = {
 		delrule : "Ștergeți regula",
 		Close : "Închide",
 		Operand : "Operand : ",
-		Operation : "Operație : "
+		Operation : "Operație : ",
+		filterFor : "filter for"
 	},
 	edit : {
 		addCaption: "Adăugare înregistrare",
