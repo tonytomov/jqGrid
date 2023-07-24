@@ -121,11 +121,14 @@ $.extend($.jgrid,{
 				pos = $.jgrid.findPos(posSelector);
 				p.left = pos[0] + 4;
 				p.top = pos[1] + 4;
+				if( rtlsup && !appendsel) {
+					p.left = $(p.gbox).outerWidth()- (!isNaN(p.width) ? parseInt(p.width,10) :300);// to do
+				}
 			}
 			coord.top = p.top+"px";
-			coord.left = p.left;
+			coord.left = p.left+"px";			
 		} else if(p.left !==0 || p.top!==0) {
-			coord.left = p.left;
+			coord.left = p.left+"px";
 			coord.top = p.top+"px";
 		}
 		$("a.ui-jqdialog-titlebar-close",mh).click(function(){
@@ -143,15 +146,6 @@ $.extend($.jgrid,{
 			} else {
 				p.zIndex = 950;
 			}
-		}
-		var rtlt = 0;
-		if( rtlsup && coord.hasOwnProperty('left') && !appendsel) {
-			rtlt = $(p.gbox).outerWidth()- (!isNaN(p.width) ? parseInt(p.width,10) :0) + 12;// to do
-		// just in case
-			coord.left = parseInt(coord.left,10) + parseInt(rtlt,10);
-		}
-		if(coord.hasOwnProperty('left')) { 
-			coord.left += "px"; 
 		}
 		$(mw).css($.extend({
 			width: isNaN(p.width) ? "auto": p.width+"px",

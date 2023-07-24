@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.5 - 2023-07-19
+* @license Guriddo jqGrid JS - v5.8.5 - 2023-07-24
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -9012,11 +9012,14 @@ $.extend($.jgrid,{
 				pos = $.jgrid.findPos(posSelector);
 				p.left = pos[0] + 4;
 				p.top = pos[1] + 4;
+				if( rtlsup && !appendsel) {
+					p.left = $(p.gbox).outerWidth()- (!isNaN(p.width) ? parseInt(p.width,10) :300);// to do
+				}
 			}
 			coord.top = p.top+"px";
-			coord.left = p.left;
+			coord.left = p.left+"px";			
 		} else if(p.left !==0 || p.top!==0) {
-			coord.left = p.left;
+			coord.left = p.left+"px";
 			coord.top = p.top+"px";
 		}
 		$("a.ui-jqdialog-titlebar-close",mh).click(function(){
@@ -9034,15 +9037,6 @@ $.extend($.jgrid,{
 			} else {
 				p.zIndex = 950;
 			}
-		}
-		var rtlt = 0;
-		if( rtlsup && coord.hasOwnProperty('left') && !appendsel) {
-			rtlt = $(p.gbox).outerWidth()- (!isNaN(p.width) ? parseInt(p.width,10) :0) + 12;// to do
-		// just in case
-			coord.left = parseInt(coord.left,10) + parseInt(rtlt,10);
-		}
-		if(coord.hasOwnProperty('left')) { 
-			coord.left += "px"; 
 		}
 		$(mw).css($.extend({
 			width: isNaN(p.width) ? "auto": p.width+"px",
@@ -12901,14 +12895,14 @@ $.jgrid.extend({
 				overlayClass: p.overlayClass,
 				focusField : p.focusField,
 				onHide :  function(h) {
-					var fw = $.jgrid.floatNum( $('#editmod'+gID)[0].style.width ),
-						rtlsup = $("#gbox_"+$.jgrid.jqID(gID)).attr("dir") === "rtl" ? true : false,
+					var fw = $('#editmod'+gID)[0].style.width ,
+						//rtlsup = $("#gbox_"+$.jgrid.jqID(gID)).attr("dir") === "rtl" ? true : false,
 						mdh = $('#editmod'+gID)[0].style.height;
 						mdh = ['100%','auto'].includes(mdh) ? mdh : $.jgrid.floatNum(mdh, 200);
-						
+						fw = ['100%','auto'].includes(fw) ? fw : $.jgrid.floatNum(fw, 300);
 					$($t).data("formProp", {
 						top: $.jgrid.floatNum($(h.w).css("top")),
-						left : rtlsup ? ( $("#gbox_"+$.jgrid.jqID(gID)).outerWidth() - fw - parseFloat($(h.w).css("left")) + 12 ) : parseFloat($(h.w).css("left")),
+						left :  parseFloat($(h.w).css("left")),
 						width : fw,
 						height :  mdh ,
 						dataheight : $(frmgr).height(),

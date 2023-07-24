@@ -1005,14 +1005,14 @@ $.jgrid.extend({
 				overlayClass: p.overlayClass,
 				focusField : p.focusField,
 				onHide :  function(h) {
-					var fw = $.jgrid.floatNum( $('#editmod'+gID)[0].style.width ),
-						rtlsup = $("#gbox_"+$.jgrid.jqID(gID)).attr("dir") === "rtl" ? true : false,
+					var fw = $('#editmod'+gID)[0].style.width ,
+						//rtlsup = $("#gbox_"+$.jgrid.jqID(gID)).attr("dir") === "rtl" ? true : false,
 						mdh = $('#editmod'+gID)[0].style.height;
 						mdh = ['100%','auto'].includes(mdh) ? mdh : $.jgrid.floatNum(mdh, 200);
-						
+						fw = ['100%','auto'].includes(fw) ? fw : $.jgrid.floatNum(fw, 300);
 					$($t).data("formProp", {
 						top: $.jgrid.floatNum($(h.w).css("top")),
-						left : rtlsup ? ( $("#gbox_"+$.jgrid.jqID(gID)).outerWidth() - fw - parseFloat($(h.w).css("left")) + 12 ) : parseFloat($(h.w).css("left")),
+						left :  parseFloat($(h.w).css("left")),
 						width : fw,
 						height :  mdh ,
 						dataheight : $(frmgr).height(),
