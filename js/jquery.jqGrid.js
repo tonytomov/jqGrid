@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.5 - 2023-07-24
+* @license Guriddo jqGrid JS - v5.8.5 - 2023-07-25
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -15995,12 +15995,11 @@ $.jgrid.extend({
 								return false;
 							}
 							if (e.keyCode === 13) {
-								var ta = e.target;
-								if(ta.tagName === 'TEXTAREA') { return true; }
 								if($.jgrid.isFunction( o.onEnter )) {
 									o.onEnter.call($t, rowid, o, e);
 									return true;
 								}
+								if(e.target.tagName === 'TEXTAREA') { return true; }
 								if( $($t).jqGrid("saveRow", rowid, o ) ) {
 									if($t.p.inlineNav) {
 										try {

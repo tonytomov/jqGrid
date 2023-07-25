@@ -147,12 +147,11 @@ $.jgrid.extend({
 								return false;
 							}
 							if (e.keyCode === 13) {
-								var ta = e.target;
-								if(ta.tagName === 'TEXTAREA') { return true; }
 								if($.jgrid.isFunction( o.onEnter )) {
 									o.onEnter.call($t, rowid, o, e);
 									return true;
 								}
+								if(e.target.tagName === 'TEXTAREA') { return true; }
 								if( $($t).jqGrid("saveRow", rowid, o ) ) {
 									if($t.p.inlineNav) {
 										try {
