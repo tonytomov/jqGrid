@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.5 - 2023-07-28
+* @license Guriddo jqGrid JS - v5.8.5 - 2023-08-01
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -20966,7 +20966,7 @@ $.jgrid.extend({
 				}
 			}
 			if (p.returnAsString) {
-				return ret;
+				//return ret;
 			} else {
 				// add BOM fix Excel
 				if(p.mimetype.toUpperCase().indexOf("UTF-8") !== -1) {
@@ -20975,6 +20975,7 @@ $.jgrid.extend({
 				$.jgrid.saveAs( ret, p.fileName, { type : p.mimetype });
 			}
 		});
+		return ret;
 	},
 	/*
 	 *
