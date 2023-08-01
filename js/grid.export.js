@@ -779,7 +779,7 @@ $.jgrid.extend({
 				}
 			}
 			if (p.returnAsString) {
-				return ret;
+				//return ret;
 			} else {
 				// add BOM fix Excel
 				if(p.mimetype.toUpperCase().indexOf("UTF-8") !== -1) {
@@ -788,6 +788,7 @@ $.jgrid.extend({
 				$.jgrid.saveAs( ret, p.fileName, { type : p.mimetype });
 			}
 		});
+		return ret;
 	},
 	/*
 	 *
