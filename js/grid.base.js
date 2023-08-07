@@ -7704,12 +7704,14 @@ $.jgrid.extend({
 					$("tr.jqg-second-row-header", htbl).each(function(){
 						$("th", this).slice( fdel + 1 ).remove();
 					});
-					var testws = $("tr.jqg-second-row-header th", htbl).filter( function() { return $(this).css("display") !== "none"; }).first();
-					if($.jgrid.type(testws) === 'object' && testws.length && $.jgrid.trim(testws[0].outerText) === "") {
+					var testws = $("tr.jqg-second-row-header th", htbl).filter( function() { 
+						return $(this).css("display") !== "none"; 
+					}).first();
+					if($.jgrid.type(testws) === 'object' && testws.length && testws.css("visibility") !== 'hidden' && $.jgrid.trim(testws[0].outerText) === "") {
 						testws.html('&nbsp;');
 					}
 					testws = $("tr.jqg-third-row-header th", htbl).filter( function() { return $(this).css("display") !== "none"; }).first();
-					if($.jgrid.type(testws) === 'object' && testws.length && $.jgrid.trim(testws[0].outerText) === "") {
+					if($.jgrid.type(testws) === 'object' && testws.length && testws.css("visibility") !== 'hidden' && $.jgrid.trim(testws[0].outerText) === "") {
 						$("div",testws).prepend('&nbsp;');
 					}
 				} else {
