@@ -272,6 +272,15 @@ $.jgrid.extend({
 				}
 				tarspan.removeClass(plus).addClass(minus);
 			}
+			if(frz && $t.p.height === 'auto'){
+				$t.grid.fbDiv.height($($t).height());
+				if($t.grid.fsDiv) {
+					var hasscroll = $($t.grid.bDiv)[0].scrollWidth > $($t.grid.bDiv)[0].clientWidth,
+					//scrollbar height
+					scrollh = hasscroll ? $.jgrid.scrollbarHeight() : 0;
+					$t.grid.fsDiv.css('top', ($t.grid.fbDiv.position().top + $($t).height()) + scrollh + 'px');
+				}
+			}
 			$($t).triggerHandler("jqGridGroupingClickGroup", [hid , collapsed]);
 			if( $.jgrid.isFunction($t.p.onClickGroup)) { $t.p.onClickGroup.call($t, hid , collapsed); }
 

@@ -443,6 +443,14 @@ $.extend($.jgrid,{
 		$(div).remove();
 		return (w1 - w2) < 0 ? 18 : (w1 - w2);
 	},
+	scrollbarHeight : function() {
+		var div = $('<div style="width:50px;overflow-x:scroll;position:absolute;top:-200px;left:-200px;"<span>1234567890</span></div>');
+		$('body').append(div);
+		var w1 = $(div).outerHeight();
+		var w2 = $(div)[0].scrollHeight;
+		$(div).remove();
+		return (w1 - w2) < 0 ? 18 : (w1 - w2);
+	},
 	ajaxOptions: {},
 	from : function(source){
 		// Original Author Hugo Bonacci
