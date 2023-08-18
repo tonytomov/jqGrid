@@ -7156,6 +7156,14 @@ $.jgrid.extend({
 					if(typeof prop === 'string') {$(thecol).addClass(prop);} else {$(thecol).css(prop);}
 				}
 				if(typeof attrp === 'object') {$(thecol).attr(attrp);}
+				var tmpcm = $t.p.colModel[pos];
+				if( tmpcm.autosize_headers ) {
+					var hdr_font = $.jgrid.getFont( thecol[0]);
+					tmpcm.canvas_width = ($.jgrid.getTextWidth( $("div", thecol)[0].outerText, hdr_font) +
+						(tmpcm.colmenu ? $.jgrid.floatNum( $(".colmenuspan", thecol).parent().width()) : 0) +
+						$.jgrid.floatNum( $("div", thecol).css("padding-left")) + $.jgrid.floatNum( $("div", thecol).css("padding-right")) +	
+						$.jgrid.floatNum($(".ui-jqgrid-resize", thecol).width()));
+				}
 			}
 		});
 	},
