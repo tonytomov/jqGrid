@@ -3472,6 +3472,9 @@ $.fn.jqGrid = function( pin ) {
 				page = 1;
 				recordsperpage = 1000000;
 			}
+			if(!INDEX_NAME) {
+				INDEX_NAME = ts.p.sortname = ts.p.colModel[0].index || ts.p.colModel[0].name;
+			}
 			if (ts.p.search === true) {
 				srules = ts.p.postData.filters;
 				if(srules) {
