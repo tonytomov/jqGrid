@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.5 - 2023-08-18
+* @license Guriddo jqGrid JS - v5.8.5 - 2023-10-02
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3476,6 +3476,9 @@ $.fn.jqGrid = function( pin ) {
 			if(retAll) {
 				page = 1;
 				recordsperpage = 1000000;
+			}
+			if(!INDEX_NAME) {
+				INDEX_NAME = ts.p.sortname = ts.p.colModel[0].index || ts.p.colModel[0].name;
 			}
 			if (ts.p.search === true) {
 				srules = ts.p.postData.filters;
@@ -20493,7 +20496,7 @@ $.extend($.jgrid,{
 				'<cellStyleXfs count="1">'+
 					'<xf numFmtId="0" fontId="0" fillId="0" borderId="0" />'+
 				'</cellStyleXfs>'+
-				'<cellXfs count="68">'+
+				'<cellXfs count="69">'+
 					'<xf numFmtId="0" fontId="0" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
 					'<xf numFmtId="0" fontId="1" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
 					'<xf numFmtId="0" fontId="2" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
@@ -20672,6 +20675,55 @@ $.extend($.jgrid,{
 			obj[style] = count+1;
 		}
 		return obj;
+	},
+	newExcelStyle : function ( xlsx, options ) {
+		options = $.extend(true, {
+			font : { size : 11, name : 'Calibri', options :""}, // options <b/> <i/> <u/>
+			color : { patternType : "solid", fgColor : "FFFFFFF", bgColor : 64 } // bgColor if number 0-64
+		}, options || {});
+		//PatterType can be one of the following
+		/*
+			none, solid,darkDown,darkGray,darkGrid,darkHorizontal,darkTrellis,
+			darkUp,darkVertical,gray0625,gray125,lightDown,lightGray,lightGrid
+			lightHorizontal,lightTrellis,lightUp,lightVertical,mediumGray
+		*/
+		//styleSheet.childNodes[0].childNodes[0] ==> number formats  <numFmts count="6"> </numFmts>
+		//styleSheet.childNodes[0].childNodes[1] ==> fonts           <fonts count="5" x14ac:knownFonts="1"> </fonts>
+		//styleSheet.childNodes[0].childNodes[2] ==> fills           <fills count="6"> </fills>
+		//styleSheet.childNodes[0].childNodes[3] ==> borders         <borders count="2"> </borders>
+		//styleSheet.childNodes[0].childNodes[4] ==> cell style xfs  <cellStyleXfs count="1"> </cellStyleXfs>
+		//styleSheet.childNodes[0].childNodes[5] ==> cell xfs        <cellXfs count="69"> </cellXfs>
+		//on the last line we have the 69 currently built in styles (0 - 68)
+
+		var sSh = xlsx.xl['styles.xml'];
+		var lastXfIndex   = $('cellXfs xf', sSh).length - 1;
+		var lastFontIndex = $('fonts font', sSh).length - 1;
+		var lastFillIndex = $('fills fill', sSh).length - 1;
+
+
+		var font1 =
+        '<font>'+
+                '<sz val="'+options.font.size+'" />'+
+                '<name val="'+options.font.name+'" />'+
+                options.font.options +
+        '</font>';
+		sSh.childNodes[0].childNodes[1].innerHTML += font1; //new font
+		var bgcolor = 'indexed=';
+		if(parseInt(options.color.bgColor,10) >= 0 ) {
+			bgcolor = 'rgb=';
+		}
+		bgcolor += '"'+options.color.bgColor+'"';
+		var color1 = 
+			'<fill>'+
+			'<patternFill patternType="'+options.color.patternType+'">'+
+			'<fgColor rgb="'+options.color.fgColor+'" />'+
+			'<bgColor ' + bgcolor+' />'+
+			'</patternFill>'+
+		'</fill>';		
+		sSh.childNodes[0].childNodes[2].innerHTML += color1; //new color
+        var s1 = '<xf numFmtId="0" fontId="'+(lastFontIndex+1)+'" fillId="'+(lastFillIndex+1)+'" borderId="0" applyFont="1" applyFill="1" applyBorder="1" xfId="0" applyAlignment="1"></xf>';
+		sSh.childNodes[0].childNodes[5].innerHTML += s1;
+		return (lastXfIndex + 1);
 	}
 });
 /********************************************************************
