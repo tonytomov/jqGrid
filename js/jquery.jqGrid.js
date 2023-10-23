@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.5 - 2023-10-02
+* @license Guriddo jqGrid JS - v5.8.5 - 2023-10-23
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1014,9 +1014,9 @@ $.extend($.jgrid,{
 			var docFragment = document.createDocumentFragment();
 			docFragment.appendChild(canvas);
 			jQuery._cacheCanvas = canvas.getContext("2d");
-			if(font) {
-				jQuery._cacheCanvas.font = font;
-			}
+		}
+		if(font) {
+			jQuery._cacheCanvas.font = font;
 		}
 		return jQuery._cacheCanvas.measureText( $.jgrid.stripHtml( text ) ).width;
 	},

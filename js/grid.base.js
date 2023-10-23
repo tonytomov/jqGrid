@@ -1009,9 +1009,9 @@ $.extend($.jgrid,{
 			var docFragment = document.createDocumentFragment();
 			docFragment.appendChild(canvas);
 			jQuery._cacheCanvas = canvas.getContext("2d");
-			if(font) {
-				jQuery._cacheCanvas.font = font;
-			}
+		}
+		if(font) {
+			jQuery._cacheCanvas.font = font;
 		}
 		return jQuery._cacheCanvas.measureText( $.jgrid.stripHtml( text ) ).width;
 	},
