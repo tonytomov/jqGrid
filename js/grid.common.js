@@ -497,7 +497,9 @@ $.extend($.jgrid,{
 						ovm = vl.split(",");
 						ovm = $.map(ovm,function(n){return $.jgrid.trim(n);});
 					}
-					if(typeof options.value === 'function') { options.value = options.value(); }
+					if(typeof options.value === 'function') { 
+						options.value = options.value.call($t, vl, options); 
+					}
 					var so,sv, ov, oSv, key, value,
 					sep = options.separator === undefined ? ":" : options.separator,
 					delim = options.delimiter === undefined ? ";" : options.delimiter;

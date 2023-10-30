@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.5 - 2023-10-23
+* @license Guriddo jqGrid JS - v5.8.5 - 2023-10-30
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -9409,7 +9409,9 @@ $.extend($.jgrid,{
 						ovm = vl.split(",");
 						ovm = $.map(ovm,function(n){return $.jgrid.trim(n);});
 					}
-					if(typeof options.value === 'function') { options.value = options.value(); }
+					if(typeof options.value === 'function') { 
+						options.value = options.value.call($t, vl, options); 
+					}
 					var so,sv, ov, oSv, key, value,
 					sep = options.separator === undefined ? ":" : options.separator,
 					delim = options.delimiter === undefined ? ";" : options.delimiter;
