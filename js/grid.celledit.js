@@ -461,7 +461,7 @@ $.jgrid.extend({
 									$($t).triggerHandler("jqGridAfterSaveCell", [$t.p.savedRow[fr].rowId, nm, v, iRow, iCol]);
 									if ($.jgrid.isFunction($t.p.afterSaveCell)) {
 										$t.p.afterSaveCell.call($t, $t.p.savedRow[fr].rowId, nm, v, iRow, iCol);
-						}
+									}
 									$t.p.savedRow.splice(0,1);
 									
 								}
