@@ -313,7 +313,7 @@ div.tablediv > .table-bordered {
 .ui-jqgrid .ui-jqgrid-ftable {
 	table-layout:fixed;
 	margin-bottom:0 !important;
-	border: 0px none;	
+	/*border: 0 none;	*/
 }
 .ui-jqgrid tr.hrheadrow td,
 .ui-jqgrid tr.footrow td {

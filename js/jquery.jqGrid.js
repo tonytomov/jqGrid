@@ -6716,7 +6716,7 @@ $.jgrid.extend({
 			success=true;
 			if(action === 'addrow') {
 				var test = $(".ui-jqgrid-ftable tr", t.grid.sDiv).eq(0).clone();
-				$("td", test).empty();
+				$("td", test).html("&nbsp;");
 				$(".ui-jqgrid-ftable", t.grid.sDiv ).append(test);
 				if(!isEmpty(data)) {
 					action = 'set';
@@ -6788,7 +6788,7 @@ $.jgrid.extend({
 			success=true;
 			if(action === 'addrow') {
 				var test = $(".ui-jqgrid-hrtable tr", t.grid.hrDiv).eq(0).clone();
-				$("td", test).empty();
+				$("td", test).html("&nbsp;");
 				$(".ui-jqgrid-hrtable", t.grid.hrDiv ).append(test);
 				if(!isEmpty(data)) {
 					action = 'set';
