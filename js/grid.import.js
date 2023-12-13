@@ -538,7 +538,8 @@ $.extend($.jgrid,{
 				beforeExport : null,
 				exporthidden : false,
 				exportgrouping: false,
-				exportOptions : {}
+				exportOptions : {},
+				method : 'GET'
 			}, o || {});
 			return this.each(function(){
 				if(!this.grid) { return;}
@@ -569,10 +570,14 @@ $.extend($.jgrid,{
 							pdata.groupingView = expg;
 						}
 					}
-					var params = jQuery.param(pdata);
-					if(o.url.indexOf("?") !== -1) { url = o.url+"&"+params; }
-					else { url = o.url+"?"+params; }
-					window.location = url;
+					try {
+						$.jgrid.postForm(o.url, pdata, o.method);
+					} catch (e) {
+						var params = jQuery.param(pdata);
+						if(o.url.indexOf("?") !== -1) { url = o.url+"&"+params; }
+						else { url = o.url+"?"+params; }
+						window.location = url;
+					}
 				}
 			});
 		}
