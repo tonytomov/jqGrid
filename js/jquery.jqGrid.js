@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.5 - 2023-11-17
+* @license Guriddo jqGrid JS - v5.8.5 - 2023-12-13
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -9918,9 +9918,31 @@ $.extend($.jgrid,{
 			if($t.p.colModel[i].hidden !== true ) {
 				ret = i;
 				break;
-	}	
+			}	
 		}
 		return ret;
+	},
+	/* post data to server get or post without ajax */
+	postForm : function (path, params, method) {
+		method = method || 'post';
+		
+	    var form = document.createElement('form');
+		form.setAttribute('method', method);
+		form.setAttribute('action', path);
+		for (var key in params) {
+			if (params.hasOwnProperty(key)) {
+				var hiddenField = document.createElement('input');
+				hiddenField.setAttribute('type', 'hidden');
+				hiddenField.setAttribute('name', key);
+				hiddenField.setAttribute('value', params[key]);
+
+				form.appendChild(hiddenField);
+			}
+		}
+
+		document.body.appendChild(form);
+		form.submit();
+		form.parentNode.removeChild(form);
 	}	
 });
 
@@ -15933,7 +15955,8 @@ $.extend($.jgrid,{
 				beforeExport : null,
 				exporthidden : false,
 				exportgrouping: false,
-				exportOptions : {}
+				exportOptions : {},
+				method : 'GET'
 			}, o || {});
 			return this.each(function(){
 				if(!this.grid) { return;}
@@ -15964,10 +15987,14 @@ $.extend($.jgrid,{
 							pdata.groupingView = expg;
 						}
 					}
-					var params = jQuery.param(pdata);
-					if(o.url.indexOf("?") !== -1) { url = o.url+"&"+params; }
-					else { url = o.url+"?"+params; }
-					window.location = url;
+					try {
+						$.jgrid.postForm(o.url, pdata, o.method);
+					} catch (e) {
+						var params = jQuery.param(pdata);
+						if(o.url.indexOf("?") !== -1) { url = o.url+"&"+params; }
+						else { url = o.url+"?"+params; }
+						window.location = url;
+					}
 				}
 			});
 		}
