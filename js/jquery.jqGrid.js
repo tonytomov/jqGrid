@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.5 - 2023-12-13
+* @license Guriddo jqGrid JS - v5.8.5 - 2024-01-03
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -20777,9 +20777,9 @@ $.extend($.jgrid,{
 					attr: options 
 				});
 			celsX.appendChild( mycell );
-			count = parseInt( $(celsX).attr("count"), 10);
-			$(celsX).attr("count", count + 1);
-			obj[style] = count+1;
+			count = $('cellXfs xf', styleSh).length;
+			$(celsX).attr("count", count);
+			obj[style] = count - 1;
 		}
 		return obj;
 	},

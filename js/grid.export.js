@@ -453,9 +453,9 @@ $.extend($.jgrid,{
 					attr: options 
 				});
 			celsX.appendChild( mycell );
-			count = parseInt( $(celsX).attr("count"), 10);
-			$(celsX).attr("count", count + 1);
-			obj[style] = count+1;
+			count = $('cellXfs xf', styleSh).length;
+			$(celsX).attr("count", count);
+			obj[style] = count - 1;
 		}
 		return obj;
 	},
