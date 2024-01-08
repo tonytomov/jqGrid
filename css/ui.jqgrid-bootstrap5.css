@@ -392,7 +392,7 @@ div.tablediv > .table-bordered {
 }
 .ui-jqgrid .ui-pg-button span { 
 	display: block; 
-	margin: 3px 2px; 
+	margin: 0px 3px; 
 	float:left;
 }
 .ui-pager-control > .ui-pg-table > tbody > tr > td {
