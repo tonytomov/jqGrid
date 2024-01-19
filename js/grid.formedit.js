@@ -2269,7 +2269,7 @@ $.jgrid.extend({
 				if( p.add ) {
 					pAdd = pAdd || {};
 					eid = pAdd.id || "add_"+elemids;
-					itm = $('<li class="ui-menu-item" role="presentation"><a class="'+ commonstyle.cornerall+' g-menu-item" tabindex="0" role="menuitem" id="'+eid+'">'+(p.addtext || p.addtitle)+'</a></li>').click(function(){
+					itm = $('<li class="ui-menu-item" role="presentation"><a class="'+ commonstyle.cornerall+' g-menu-item" tabindex="0" role="menuitem" id="'+eid+'">'+(p.addtext.trim() || p.addtitle)+'</a></li>').click(function(){
 						if (!$(this).hasClass( commonstyle.disabled )) {
 							if ($.jgrid.isFunction( p.addfunc )) {
 								p.addfunc.call($t);
@@ -2285,7 +2285,7 @@ $.jgrid.extend({
 				if( p.edit ) {
 					pEdit = pEdit || {};
 					eid = pEdit.id || "edit_"+elemids;
-					itm = $('<li class="ui-menu-item" role="presentation"><a class="'+ commonstyle.cornerall+' g-menu-item" tabindex="0" role="menuitem" id="'+eid+'">'+(p.edittext || p.edittitle)+'</a></li>').click(function(){
+					itm = $('<li class="ui-menu-item" role="presentation"><a class="'+ commonstyle.cornerall+' g-menu-item" tabindex="0" role="menuitem" id="'+eid+'">'+(p.edittext.trim() || p.edittitle)+'</a></li>').click(function(){
 						if (!$(this).hasClass( commonstyle.disabled )) {
 							var sr = $t.p.selrow;
 							if (sr) {
@@ -2307,7 +2307,7 @@ $.jgrid.extend({
 				if( p.view ) {
 					pView = pView || {};
 					eid = pView.id || "view_"+elemids;
-					itm = $('<li class="ui-menu-item" role="presentation"><a class="'+ commonstyle.cornerall+' g-menu-item" tabindex="0" role="menuitem" id="'+eid+'">'+(p.viewtext || p.viewtitle)+'</a></li>').click(function(){
+					itm = $('<li class="ui-menu-item" role="presentation"><a class="'+ commonstyle.cornerall+' g-menu-item" tabindex="0" role="menuitem" id="'+eid+'">'+(p.viewtext.trim() || p.viewtitle)+'</a></li>').click(function(){
 						if (!$(this).hasClass( commonstyle.disabled )) {
 							var sr = $t.p.selrow;
 							if (sr) {
@@ -2329,7 +2329,7 @@ $.jgrid.extend({
 				if( p.del ) {
 					pDel = pDel || {};
 					eid = pDel.id || "del_"+elemids;
-					itm = $('<li class="ui-menu-item" role="presentation"><a class="'+ commonstyle.cornerall+' g-menu-item" tabindex="0" role="menuitem" id="'+eid+'">'+(p.deltext || p.deltitle)+'</a></li>').click(function(){
+					itm = $('<li class="ui-menu-item" role="presentation"><a class="'+ commonstyle.cornerall+' g-menu-item" tabindex="0" role="menuitem" id="'+eid+'">'+(p.deltext.trim() || p.deltitle)+'</a></li>').click(function(){
 						if (!$(this).hasClass( commonstyle.disabled )) {
 							var dr;
 							if($t.p.multiselect) {
@@ -2359,7 +2359,7 @@ $.jgrid.extend({
 				if( p.search ) {
 					pSearch = pSearch || {};
 					eid = pSearch.id || "search_"+elemids;
-					itm = $('<li class="ui-menu-item" role="presentation"><a class="'+ commonstyle.cornerall+' g-menu-item" tabindex="0" role="menuitem" id="'+eid+'">'+(p.searchtext || p.searchtitle)+'</a></li>').click(function(){
+					itm = $('<li class="ui-menu-item" role="presentation"><a class="'+ commonstyle.cornerall+' g-menu-item" tabindex="0" role="menuitem" id="'+eid+'">'+(p.searchtext.trim() || p.searchtitle)+'</a></li>').click(function(){
 						if (!$(this).hasClass( commonstyle.disabled )) {
 							if($.jgrid.isFunction( p.searchfunc )) {
 								p.searchfunc.call($t, pSearch);
