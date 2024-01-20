@@ -2265,7 +2265,7 @@ $.jgrid.extend({
 			_buildMenu = function() {
 				var fs =  $('.ui-jqgrid').css('font-size') || '11px',
 				eid, itm,
-				str = $('<ul id="'+mid+'" class="ui-nav-menu modal-content" role="menu" tabindex="0" style="display:none;font-size:'+fs+'"></ul>');
+				str = $('<ul id="'+mid+'" class="ui-nav-menu modal-content ui-menu column-menu jqgrid-column-menu ' + commonstyle.shadow + '" role="menu" tabindex="0" style="display:none;font-size:'+fs+'"></ul>');
 				if( p.add ) {
 					pAdd = pAdd || {};
 					eid = pAdd.id || "add_"+elemids;

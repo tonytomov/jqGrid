@@ -1377,7 +1377,8 @@ $.extend($.jgrid,{
 				active : "ui-state-active",
 				error : "ui-state-error",
 				button : "ui-state-default ui-corner-all",
-				content : "ui-widget-content"
+				content : "ui-widget-content",
+				shadow : ""
 			},
 			base : {
 				entrieBox : "ui-widget ui-widget-content ui-corner-all", // entrie div  incl everthing
@@ -1521,7 +1522,8 @@ $.extend($.jgrid,{
 				active : "active",
 				error : "bg-danger",
 				button : "btn btn-default",
-				content : ""
+				content : "",
+				shadow : ""
 			},
 			base : {
 				entrieBox : "",
@@ -1658,7 +1660,8 @@ $.extend($.jgrid,{
 				active : "active",
 				error : "alert-danger",
 				button : "btn btn-light",
-				content : ""
+				content : "",
+				shadow : "shadow p-3 mb-5 bg-white rounded"
 			},
 			base : {
 				entrieBox : "",
@@ -1746,7 +1749,8 @@ $.extend($.jgrid,{
 				active : "active",
 				error : "alert alert-danger",
 				button : "btn btn-light",
-				content : ""
+				content : "",
+				shadow : "shadow p-3 mb-5 bg-body rounded"
 			},
 			base : {
 				entrieBox : "",
@@ -4668,8 +4672,9 @@ $.fn.jqGrid = function( pin ) {
 		buildColItems = function (top, left, parent, op) {
 			var cm = ts.p.colModel, len = cm.length, i, cols=[], disp, all_visible = true, cols_nm=[],
 			colNm = $.extend([], ts.p.colNames), iCol,
+			common = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].common,
 			texts = $.jgrid.getRegional(ts, "colmenu"), colArr =[],
-			str1 = '<ul id="col_menu" class="ui-search-menu  ui-col-menu modal-content" role="menu" tabindex="0" style="left:'+left+'px;">';
+			str1 = '<ul id="col_menu" class="ui-search-menu  ui-col-menu modal-content ' + common.shadow + '" role="menu" tabindex="0" style="left:'+left+'px;">';
 			if( op.columns_selectAll ) {
 				str1 += '<li class="ui-menu-item disabled" role="presentation" draggable="false"><a class="g-menu-item" tabindex="0" role="menuitem" ><table class="ui-common-table" ><tr><td class="menu_icon" title="'+texts.reorder+'"><span class="'+iconbase+' '+colmenustyle.icon_move+' notclick" style="visibility:hidden"></span></td><td class="menu_icon"><input id="chk_all" class="'+colmenustyle.input_checkbox+'" type="checkbox" name="check_all"></td><td class="menu_text">Check/Uncheck</td></tr></table></a></li>';
 			}
@@ -4893,7 +4898,7 @@ $.fn.jqGrid = function( pin ) {
 			str1 += "</div>";
 			elem.append(str1);
 			elem = $('<li class="ui-menu-item" role="presentation"></li>').append( elem );
-			elem = $('<ul id="search_menu" class="ui-search-menu modal-content" role="menu" tabindex="0" style="left:'+left+'px;"></ul>').append(elem);
+			elem = $('<ul id="search_menu" class="ui-search-menu modal-content ' + common.shadow + '" role="menu" tabindex="0" style="left:'+left+'px;"></ul>').append(elem);
 			$(parent).append(elem);
 			$("#search_menu").addClass("ui-menu " + colmenustyle.menu_widget);
 
@@ -5051,6 +5056,7 @@ $.fn.jqGrid = function( pin ) {
 			stre = "</ul>",
 			strl ='',
 			cm = ts.p.colModel[index], op = $.extend({sorting:true, columns: true, filtering: true, seraching:true, grouping:true, freeze : true}, cm.coloptions),
+			common = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].common,
 			texts = $.jgrid.getRegional(ts, "colmenu"),
 			label = ts.p.colNames[index],
 			isgroup,
@@ -5119,7 +5125,7 @@ $.fn.jqGrid = function( pin ) {
 			//str += "</ul>";
 			$('#gbox_'+ts.p.id).append( menuData.join('') );
 			$("#column_menu")
-				.addClass("ui-search-menu modal-content column-menu jqgrid-column-menu ui-menu " + colmenustyle.menu_widget)
+				.addClass("ui-search-menu modal-content column-menu jqgrid-column-menu ui-menu "+ common.shadow+ "  " + colmenustyle.menu_widget)
 				.css({"left":left,"top":top});
 			if(ts.p.direction === "ltr") {
 				var wcm = $("#column_menu").width() + 26;
