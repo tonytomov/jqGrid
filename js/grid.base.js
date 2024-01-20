@@ -7064,7 +7064,7 @@ $.jgrid.extend({
 						cr = nwidth-gw-(initwidth+brd*vc)-scw;
 					}
 				} else if( !hs && Math.abs(nwidth-gw-(initwidth+brd*vc)) !== 0) {
-					cr = nwidth-gw-(initwidth+brd*vc) - bstw;
+					cr = nwidth-gw-(initwidth+brd*vc) - bstw - 1; // + 1 pix to remove scroll
 				}
 
 				$t.p.colModel[lvc].width += cr;
