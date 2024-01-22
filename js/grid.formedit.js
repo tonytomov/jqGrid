@@ -267,7 +267,7 @@ $.jgrid.extend({
 								$(tb).append(trdata);
 								trdata[0].rp = rp;
 							}
-							$("td",trdata[0]).eq( cp-2 ).html("<label for='"+nm+"'>"+ (frmopt.label === undefined ? obj.p.colNames[i]: frmopt.label) + "</label>");
+							$("td",trdata[0]).eq( cp-2 ).html("<label for='"+nm+"' class='" + styles.labelClass + "'>"+ (frmopt.label === undefined ? obj.p.colNames[i]: frmopt.label) + "</label>");
 							$("td",trdata[0]).eq( cp-1 ).append(frmopt.elmprefix).append(elc).append(frmopt.elmsuffix);
 							if( maxcols > 1 && hc) {
 								$("td",trdata[0]).eq( cp-2 ).hide();
@@ -2425,7 +2425,7 @@ $.jgrid.extend({
 				//if( $("#"+mid)[0] === undefined)  {
 					//_buildMenu();
 				//}
-				$("#"+bid).show().css({"top":top - ($("#"+bid).height() +10)+"px", "left":left+"px"});
+				$("#"+bid).show().css({"top":top - ($("#"+bid).height() + 35)+"px", "left":left+"px"});
 				e.stopPropagation();
 			});
 			$("body").on('click', function(e){

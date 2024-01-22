@@ -1438,6 +1438,7 @@ $.extend($.jgrid,{
 				icon_cancel_nav : "ui-icon-cancel"
 			},
 			formedit : {
+				labelClass : "",
 				inputClass : "ui-widget-content ui-corner-all",
 				selectClass: "ui-widget-content ui-corner-all",
 				icon_prev : "ui-icon-triangle-1-w",
@@ -1582,6 +1583,7 @@ $.extend($.jgrid,{
 				icon_cancel_nav : "glyphicon-remove-circle"
 			},
 			formedit : {
+				labelClass : "", 
 				inputClass : "form-control",
 				selectClass: 'form-control',
 				icon_prev : "glyphicon-step-backward",
@@ -1710,6 +1712,7 @@ $.extend($.jgrid,{
 				selectClass: 'form-control'
 			},
 			formedit : {
+				labelClass : "form-label", 
 				inputClass : "form-control",
 				selectClass: 'form-control'
 			},
@@ -1799,6 +1802,7 @@ $.extend($.jgrid,{
 				selectClass: 'form-select'
 			},
 			formedit : {
+				labelClass : "form-label", 
 				inputClass : "form-control",
 				selectClass: 'form-select'
 			},
