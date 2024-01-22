@@ -30,6 +30,7 @@
 }
 .ui-jqgrid .ui-jqgrid-caption {
 	text-align: left;
+    background-color: var(--bs-body-bg, #fff);
 }
 .ui-jqgrid .ui-jqgrid-title { 
 	/*padding-top: .475rem; */
@@ -720,9 +721,9 @@ div.tablediv > .table-bordered {
 	padding-top:5px;
 }
 .ui-jqdialog-content input.FormElement {
-	padding: .5em .3em; 
+	/*padding: .5em .3em; */
 	/*margin-bottom: 5px;*/
-	font-size: inherit;
+	/*font-size: inherit;*/
 }
 .ui-jqdialog-content select.FormElement {
 	padding:.3em; 
@@ -735,13 +736,15 @@ div.tablediv > .table-bordered {
 }
 
 .ui-jqdialog-content .CaptionTD {
-	vertical-align: middle;
+/**	vertical-align: middle;
 	border: 0 none; 
 	padding: 2px;
 	white-space: nowrap;
+*/
 }
 .ui-jqdialog-content .DataTD {
-	padding: 5px 5px;
+	
+	padding: 4px 4px;
 	border: 0 none; 
 	/*vertical-align: top;*/
 }
