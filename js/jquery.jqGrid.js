@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.5 - 2024-01-20
+* @license Guriddo jqGrid JS - v5.8.5 - 2024-01-23
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1443,6 +1443,7 @@ $.extend($.jgrid,{
 				icon_cancel_nav : "ui-icon-cancel"
 			},
 			formedit : {
+				labelClass : "",
 				inputClass : "ui-widget-content ui-corner-all",
 				selectClass: "ui-widget-content ui-corner-all",
 				icon_prev : "ui-icon-triangle-1-w",
@@ -1587,6 +1588,7 @@ $.extend($.jgrid,{
 				icon_cancel_nav : "glyphicon-remove-circle"
 			},
 			formedit : {
+				labelClass : "", 
 				inputClass : "form-control",
 				selectClass: 'form-control',
 				icon_prev : "glyphicon-step-backward",
@@ -1715,6 +1717,7 @@ $.extend($.jgrid,{
 				selectClass: 'form-control'
 			},
 			formedit : {
+				labelClass : "form-label", 
 				inputClass : "form-control",
 				selectClass: 'form-control'
 			},
@@ -1804,6 +1807,7 @@ $.extend($.jgrid,{
 				selectClass: 'form-select'
 			},
 			formedit : {
+				labelClass : "form-label", 
 				inputClass : "form-control",
 				selectClass: 'form-select'
 			},
@@ -8371,7 +8375,9 @@ $.jgrid.extend({
 				if($t.p.autoencode) { tmp = $.jgrid.htmlDecode(tmp); }
 				if (!cm.edittype) {cm.edittype = "text";}
 				$t.p.savedRow.push({id:iRow, ic:iCol, name:nm, v:tmp, rowId: $t.rows[iRow].id });
-				if(tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length===1 && tmp.charCodeAt(0)===160) ) {tmp='';}
+				try {
+					if(tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length===1 && tmp.charCodeAt(0)===160) ) {tmp='';}
+				} catch (etmp){}
 				if($.jgrid.isFunction($t.p.formatCell)) {
 					var tmp2 = $t.p.formatCell.call($t, $t.rows[iRow].id,nm,tmp,iRow,iCol);
 					if(tmp2 !== undefined ) {tmp = tmp2;}
@@ -12286,7 +12292,7 @@ $.jgrid.extend({
 								$(tb).append(trdata);
 								trdata[0].rp = rp;
 							}
-							$("td",trdata[0]).eq( cp-2 ).html("<label for='"+nm+"'>"+ (frmopt.label === undefined ? obj.p.colNames[i]: frmopt.label) + "</label>");
+							$("td",trdata[0]).eq( cp-2 ).html("<label for='"+nm+"' class='" + styles.labelClass + "'>"+ (frmopt.label === undefined ? obj.p.colNames[i]: frmopt.label) + "</label>");
 							$("td",trdata[0]).eq( cp-1 ).append(frmopt.elmprefix).append(elc).append(frmopt.elmsuffix);
 							if( maxcols > 1 && hc) {
 								$("td",trdata[0]).eq( cp-2 ).hide();
@@ -14444,7 +14450,7 @@ $.jgrid.extend({
 				//if( $("#"+mid)[0] === undefined)  {
 					//_buildMenu();
 				//}
-				$("#"+bid).show().css({"top":top - ($("#"+bid).height() +10)+"px", "left":left+"px"});
+				$("#"+bid).show().css({"top":top - ($("#"+bid).height() + 35)+"px", "left":left+"px"});
 				e.stopPropagation();
 			});
 			$("body").on('click', function(e){
