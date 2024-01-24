@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.5 - 2024-01-23
+* @license Guriddo jqGrid JS - v5.8.5 - 2024-01-24
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -4615,7 +4615,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 				});
 				cr = 0;
-				chrome_fix = bstw === 0 ? -1 :0;
+				chrome_fix = -1;/*bstw === 0 ? -1 :0;*/
 				initwidth += diffmaxwidth;
 				var jj = -1;
 				// maxWidth columns available
@@ -5204,6 +5204,11 @@ $.fn.jqGrid = function( pin ) {
 			});
 		}
 		this.p.id = this.id;
+		if(ts.p.autowidth===true) {
+			var pw = $(eg).parent().width();
+			tmpcm = $(window).width();
+			ts.p.width = tmpcm - pw > 3 ?  pw: tmpcm-1;
+		}		
 		if ($.inArray(ts.p.multikey,sortkeys) === -1 ) {ts.p.multikey = false;}
 		ts.p.keyName=false;
 		for (i=0; i<ts.p.colModel.length;i++) {
@@ -5436,12 +5441,7 @@ $.fn.jqGrid = function( pin ) {
 			});
 		}
 
-		if(ts.p.autowidth===true) {
-			var pw = $(eg).parent().width();
-			tmpcm = $(window).width();
-			ts.p.width = tmpcm - pw > 3 ?  pw: tmpcm-1;
-		}
-		var tfoot = "", trhead="", bstw = ts.p.styleUI.search('Bootstrap') !== -1 && !isNaN(ts.p.height) ? 2 : 0;
+		var tfoot = "", trhead="", bstw = ts.p.styleUI.search('Bootstrap') !== -1  ? 2 : 0;
 		setColWidth();
 		bstw2 = ts.p.styleUI.search('Bootstrap') !== -1;
 		$(eg).css("width",grid.width+"px").append("<div class='ui-jqgrid-resize-mark' id='rs_m"+ts.p.id+"'>&#160;</div>");
@@ -6989,7 +6989,7 @@ $.jgrid.extend({
 		return this.each(function(){
 			if (!this.grid ) {return;}
 			var $t = this, cw, setgr, frozen = false,
-			initwidth = 0, brd=$.jgrid.cell_width ? 0: $t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0, cr, bstw = $t.p.styleUI.search('Bootstrap') !== -1 && !isNaN($t.p.height) ? 2 : 0;
+			initwidth = 0, brd=$.jgrid.cell_width ? 0: $t.p.cellLayout, lvc, vc=0, hs=false, scw=$t.p.scrollOffset, aw, gw=0, cr, bstw = $t.p.styleUI.search('Bootstrap') !== -1  ? 2 : 0;
 
 			if(typeof shrink !== 'boolean') {
 				shrink=$t.p.shrinkToFit;
@@ -7079,7 +7079,7 @@ $.jgrid.extend({
 						cr = nwidth-gw-(initwidth+brd*vc)-scw;
 					}
 				} else if( !hs && Math.abs(nwidth-gw-(initwidth+brd*vc)) !== 0) {
-					cr = nwidth-gw-(initwidth+brd*vc) - bstw - 1; // + 1 pix to remove scroll
+					cr = nwidth-gw-(initwidth+brd*vc) - bstw; // + 1 pix to remove scroll
 				}
 
 				$t.p.colModel[lvc].width += cr;
