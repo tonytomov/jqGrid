@@ -238,7 +238,7 @@ $.fn.jqFilter = function( arg ) {
 			// button for adding a new subgroup
 			var inputAddSubgroup ="<span></span>";
 			if(this.p.groupButton) {
-				inputAddSubgroup = $("<input type='button' value='+ {}' title='" +that.p.addsubgrup+"' class='add-group " + common.button + "'/>");
+				inputAddSubgroup = $("<input type='button' value='+ {}' title='" +that.p.addsubgrup+"' class='add-group " + common.button + "' name='newsubgroup'/>");
 				inputAddSubgroup.on('click',function() {
 					if (group.groups === undefined ) {
 						group.groups = [];
@@ -259,7 +259,7 @@ $.fn.jqFilter = function( arg ) {
 			th.append(inputAddSubgroup);
 			if(this.p.ruleButtons === true) {
 			// button for adding a new rule
-			var inputAddRule = $("<input type='button' value='+' title='"+that.p.addrule+"' class='add-rule ui-add " + common.button + "'/>"), cm;
+			var inputAddRule = $("<input type='button' value='+' title='"+that.p.addrule+"' class='add-rule ui-add " + common.button + "'/ name='newrule'>"), cm;
 			inputAddRule.on('click',function() {
 				//if(!group) { group = {};}
 				if (group.rules === undefined) {
@@ -300,7 +300,7 @@ $.fn.jqFilter = function( arg ) {
 
 			// button for delete the group
 			if (parentgroup !== null) { // ignore the first group
-				var inputDeleteGroup = $("<input type='button' value='-' title='"+that.p.delgroup+"' class='delete-group " + common.button + "'/>");
+				var inputDeleteGroup = $("<input type='button' value='-' title='"+that.p.delgroup+"' class='delete-group " + common.button + "'/ name='delgroup'>");
 				th.append(inputDeleteGroup);
 				inputDeleteGroup.on('click',function() {
 				// remove group from parent
@@ -574,7 +574,7 @@ $.fn.jqFilter = function( arg ) {
 
 			// create button for: delete rule
 			if(this.p.ruleButtons === true) {
-			var ruleDeleteInput = $("<input type='button' value='-' title='"+that.p.delrule+"' class='delete-rule ui-del " + common.button + "'/>");
+			var ruleDeleteInput = $("<input type='button' value='-' title='"+that.p.delrule+"' class='delete-rule ui-del " + common.button + "'/ name='delrule'>");
 			ruleDeleteTd.append(ruleDeleteInput);
 			//$(ruleDeleteInput).html("").height(20).width(30).button({icons: {  primary: "ui-icon-minus", text:false}});
 			ruleDeleteInput.on('click',function() {
