@@ -2341,6 +2341,7 @@ $.fn.jqGrid = function( pin ) {
 			iconSet : "Iconic",
 			responsive : false,
 			forcePgButtons : false,
+			resizeHeight : true,
 			restoreCellonFail : true,
 			editNextRowCell : false,
 			colFilters : {},
@@ -6131,7 +6132,7 @@ $.fn.jqGrid = function( pin ) {
 			var supportsOrientationChange = "onorientationchange" in window,
 			orientationEvent = supportsOrientationChange ? "orientationchange" : "resize";
 			$(window).on( orientationEvent, function(){
-				$(ts).jqGrid('resizeGrid');
+				$(ts).jqGrid('resizeGrid', 500, true, ts.p.resizeHeight,true);
 			});
 		}
 	});
