@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.5 - 2024-01-25
+* @license Guriddo jqGrid JS - v5.8.5 - 2024-01-29
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2346,6 +2346,7 @@ $.fn.jqGrid = function( pin ) {
 			iconSet : "Iconic",
 			responsive : false,
 			forcePgButtons : false,
+			resizeHeight : true,
 			restoreCellonFail : true,
 			editNextRowCell : false,
 			colFilters : {},
@@ -4245,7 +4246,7 @@ $.fn.jqGrid = function( pin ) {
 				$("#"+rgt).attr("align","left");
 			}
 			if(ts.p.pginput===true) {
-				pginp= "<td id='input"+tp+"' dir='"+dir+"'>"+$.jgrid.template( $.jgrid.getRegional(ts, "defaults.pgtext", ts.p.pgtext) || "","<input "+getstyle(stylemodule, 'pgInput', false, 'ui-pg-input') + " type='text' size='2' maxlength='7' value='0' role='textbox'/>","<span id='sp_1_"+$.jgrid.jqID(pgid)+"'></span>")+"</td>";
+				pginp= "<td id='input"+tp+"' dir='"+dir+"'>"+$.jgrid.template( $.jgrid.getRegional(ts, "defaults.pgtext", ts.p.pgtext) || "","<input "+getstyle(stylemodule, 'pgInput', false, 'ui-pg-input') + " type='text' size='2' maxlength='7' value='0' role='textbox' name='jqgpginput'/>","<span id='sp_1_"+$.jgrid.jqID(pgid)+"'></span>")+"</td>";
 			}
 			var po=["first"+tp,"prev"+tp, "next"+tp,"last"+tp];
 			if(ts.p.pgbuttons===true) {
@@ -6136,7 +6137,7 @@ $.fn.jqGrid = function( pin ) {
 			var supportsOrientationChange = "onorientationchange" in window,
 			orientationEvent = supportsOrientationChange ? "orientationchange" : "resize";
 			$(window).on( orientationEvent, function(){
-				$(ts).jqGrid('resizeGrid');
+				$(ts).jqGrid('resizeGrid', 500, true, ts.p.resizeHeight,true);
 			});
 		}
 	});
@@ -10161,7 +10162,7 @@ $.fn.jqFilter = function( arg ) {
 			// button for adding a new subgroup
 			var inputAddSubgroup ="<span></span>";
 			if(this.p.groupButton) {
-				inputAddSubgroup = $("<input type='button' value='+ {}' title='" +that.p.addsubgrup+"' class='add-group " + common.button + "'/>");
+				inputAddSubgroup = $("<input type='button' value='+ {}' title='" +that.p.addsubgrup+"' class='add-group " + common.button + "' name='newsubgroup'/>");
 				inputAddSubgroup.on('click',function() {
 					if (group.groups === undefined ) {
 						group.groups = [];
@@ -10182,7 +10183,7 @@ $.fn.jqFilter = function( arg ) {
 			th.append(inputAddSubgroup);
 			if(this.p.ruleButtons === true) {
 			// button for adding a new rule
-			var inputAddRule = $("<input type='button' value='+' title='"+that.p.addrule+"' class='add-rule ui-add " + common.button + "'/>"), cm;
+			var inputAddRule = $("<input type='button' value='+' title='"+that.p.addrule+"' class='add-rule ui-add " + common.button + "'/ name='newrule'>"), cm;
 			inputAddRule.on('click',function() {
 				//if(!group) { group = {};}
 				if (group.rules === undefined) {
@@ -10223,7 +10224,7 @@ $.fn.jqFilter = function( arg ) {
 
 			// button for delete the group
 			if (parentgroup !== null) { // ignore the first group
-				var inputDeleteGroup = $("<input type='button' value='-' title='"+that.p.delgroup+"' class='delete-group " + common.button + "'/>");
+				var inputDeleteGroup = $("<input type='button' value='-' title='"+that.p.delgroup+"' class='delete-group " + common.button + "'/ name='delgroup'>");
 				th.append(inputDeleteGroup);
 				inputDeleteGroup.on('click',function() {
 				// remove group from parent
@@ -10497,7 +10498,7 @@ $.fn.jqFilter = function( arg ) {
 
 			// create button for: delete rule
 			if(this.p.ruleButtons === true) {
-			var ruleDeleteInput = $("<input type='button' value='-' title='"+that.p.delrule+"' class='delete-rule ui-del " + common.button + "'/>");
+			var ruleDeleteInput = $("<input type='button' value='-' title='"+that.p.delrule+"' class='delete-rule ui-del " + common.button + "'/ name='delrule'>");
 			ruleDeleteTd.append(ruleDeleteInput);
 			//$(ruleDeleteInput).html("").height(20).width(30).button({icons: {  primary: "ui-icon-minus", text:false}});
 			ruleDeleteInput.on('click',function() {
@@ -13859,8 +13860,7 @@ $.jgrid.extend({
 		}, regional, p ||{});
 		return this.each(function() {
 			if(this.p.navGrid) {return;}
-			var alertIDs = {themodal: 'alertmod_' + this.p.id, modalhead: 'alerthd_' + this.p.id,modalcontent: 'alertcnt_' + this.p.id},
-			$t = this, twd, tdw, o;
+			var $t = this, twd, tdw, o;
 			if(!$t.grid || typeof elem !== 'string') {return;}
 			if(!$($t).data('navGrid')) {
 				$($t).data('navGrid',p);
@@ -13870,41 +13870,32 @@ $.jgrid.extend({
 			if($t.p.force_regional) {
 				o = $.extend(o, regional);
 			}
-			if ($("#"+alertIDs.themodal)[0] === undefined) {
-				if(!o.alerttop && !o.alertleft) {
-					var pos=$.jgrid.findPos(this);
-					pos[0]=Math.round(pos[0]);
-					pos[1]=Math.round(pos[1]);
-					var hg = isNaN(this.p.height) ? $($t.grid.bDiv).height(): this.p.height;
-					if(hg === 0) {
-						hg = 200;
-					}
-					o.alertleft = pos[0] + (this.p.width/2)-parseInt(o.alertwidth,10)/2;
-					o.alerttop = pos[1] + (hg/2)-25;
+			if(!o.alerttop && !o.alertleft) {
+				var pos=$.jgrid.findPos(this);
+				pos[0]=Math.round(pos[0]);
+				pos[1]=Math.round(pos[1]);
+				var hg = isNaN(this.p.height) ? $($t.grid.bDiv).height(): this.p.height;
+				if(hg === 0) {
+					hg = 200;
 				}
-				var fs =  $('.ui-jqgrid').css('font-size') || '11px';
-				$.jgrid.createModal(alertIDs,
-					"<div>"+o.alerttext+"</div><span tabindex='0'><span tabindex='-1' id='jqg_alrt'></span></span>",
-					{ 
-						gbox:"#gbox_"+$.jgrid.jqID($t.p.id),
+				o.alertleft = pos[0] + (this.p.width/2)-parseInt(o.alertwidth,10)/2;
+				o.alerttop = pos[1] + (hg/2)-25;
+			}
+			var alert_info = function(){
+				 $.jgrid.info_dialog(o.alertcap,"<div>"+o.alerttext+"</div><span tabindex='0'><span tabindex='-1' id='jqg_alrt'></span></span>","",{
 						jqModal:true,
 						drag:true,
 						resize:true,
 						caption:o.alertcap,
+					width:o.alertwidth,
+					height: o.alertheight,
 						top:o.alerttop,
 						left:o.alertleft,
-						width:o.alertwidth,
-						height: o.alertheight,
 						closeOnEscape:o.closeOnEscape, 
-						zIndex: o.alertzIndex,
-						styleUI: $t.p.styleUI
-					},
-					"#gview_"+$.jgrid.jqID($t.p.id),
-					$("#gbox_"+$.jgrid.jqID($t.p.id))[0],
-					true,
-					{"font-size": fs}
+					styleUI: $t.p.styleUI,
+					zIndex: o.alertzIndex}
 				);
-			}
+			};
 			var clone = 1, i,
 			onHoverIn = function () {
 				if (!$(this).hasClass(commonstyle.disabled)) {
@@ -13976,7 +13967,7 @@ $.jgrid.extend({
 									$($t).jqGrid("editGridRow",sr,pEdit);
 								}
 							} else {
-								$.jgrid.viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$.jgrid.jqID($t.p.id),jqm:true});
+								alert_info();
 								$("#jqg_alrt").focus();
 							}
 						}
@@ -14002,7 +13993,7 @@ $.jgrid.extend({
 									$($t).jqGrid("viewGridRow",sr,pView);
 								}
 							} else {
-								$.jgrid.viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$.jgrid.jqID($t.p.id),jqm:true});
+								alert_info();
 								$("#jqg_alrt").focus();
 							}
 						}
@@ -14034,7 +14025,7 @@ $.jgrid.extend({
 									$($t).jqGrid("delGridRow",dr,pDel);
 								}
 							} else  {
-								$.jgrid.viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$.jgrid.jqID($t.p.id),jqm:true});$("#jqg_alrt").focus();
+								alert_info();
 							}
 						}
 						return false;
@@ -14110,11 +14101,11 @@ $.jgrid.extend({
 				if($t.p._nvtd) {
 					if(o.dropmenu) {
 						navtbl = null;
-						$($t).jqGrid('_buildNavMenu', pgid, elemids, p, pEdit, pAdd, pDel, pSearch, pView );						
+						$($t).jqGrid('_buildNavMenu', pgid, elemids, $.extend(p,{'ainfo':alert_info}), pEdit, pAdd, pDel, pSearch, pView );						
 					} else if(twd > $t.p._nvtd[0] ) {
 						if($t.p.responsive) {
 							navtbl = null;
-							$($t).jqGrid('_buildNavMenu', pgid, elemids, p, pEdit, pAdd, pDel, pSearch, pView );
+							$($t).jqGrid('_buildNavMenu', pgid, elemids, $.extend(p,{'ainfo':alert_info}), pEdit, pAdd, pDel, pSearch, pView );
 						} else {
 							$(pgid+"_"+o.position,pgid).append(navtbl).width(twd);
 						}
@@ -14292,8 +14283,7 @@ $.jgrid.extend({
 			bt = p.navButtonText ? p.navButtonText : regional.selectcaption || 'Actions',
 			act = "<button class='dropdownmenu "+commonstyle.button+"' value='"+mid+"'>" + bt +"</button>";
 			$(elem+"_"+p.position, elem).append( act );
-			var alertIDs = {themodal: 'alertmod_' + this.p.id, modalhead: 'alerthd_' + this.p.id,modalcontent: 'alertcnt_' + this.p.id},
-			_buildMenu = function() {
+			var _buildMenu = function() {
 				var fs =  $('.ui-jqgrid').css('font-size') || '11px',
 				eid, itm,
 				str = $('<ul id="'+mid+'" class="ui-nav-menu modal-content ui-menu column-menu jqgrid-column-menu ' + commonstyle.shadow + '" role="menu" tabindex="0" style="display:none;font-size:'+fs+'"></ul>');
@@ -14326,7 +14316,7 @@ $.jgrid.extend({
 									$($t).jqGrid("editGridRow",sr,pEdit);
 								}
 							} else {
-								$.jgrid.viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$.jgrid.jqID($t.p.id),jqm:true});
+								p.ainfo();
 								$("#jqg_alrt").focus();
 							}
 							$(str).hide();
@@ -14348,7 +14338,7 @@ $.jgrid.extend({
 									$($t).jqGrid("viewGridRow",sr,pView);
 								}
 							} else {
-								$.jgrid.viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$.jgrid.jqID($t.p.id),jqm:true});
+								p.ainfo();
 								$("#jqg_alrt").focus();
 							}
 							$(str).hide();
@@ -14376,7 +14366,7 @@ $.jgrid.extend({
 									$($t).jqGrid("delGridRow",dr,pDel);
 								}
 							} else  {
-								$.jgrid.viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$.jgrid.jqID($t.p.id),jqm:true});$("#jqg_alrt").focus();
+								p.ainfo();
 							}
 							$(str).hide();
 						}
