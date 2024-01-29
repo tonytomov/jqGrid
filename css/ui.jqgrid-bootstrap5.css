@@ -405,12 +405,12 @@ div.tablediv > .table-bordered {
 .ui-jqgrid .ui-jqgrid-toppager .ui-pg-input { 
 	display: inline-block;
 	height:auto;
-	width: auto;
+	width: 50px;
 	font-size: inherit; 
 	margin:0;
 	line-height: inherit;
 	/*border: none; */
-	padding: 2px 3px
+	padding: 3px 3px
 }
 .ui-jqgrid .ui-pg-selbox, 
 .ui-jqgrid .ui-jqgrid-toppager .ui-pg-selbox {
@@ -418,9 +418,9 @@ div.tablediv > .table-bordered {
 	line-height:inherit; 
 	display:block; 
 	margin: 0;
-	width : auto;
-	padding: 0px 33px 0px 3px; 
-	border:none;
+	width : 55px;
+	padding: 3px 25px 3px 3px; 
+	border:2px 2px solid #ccc;
 }
 .ui-jqgrid .ui-separator {
 	height: 16px; 
