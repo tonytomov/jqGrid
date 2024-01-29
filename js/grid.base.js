@@ -2331,6 +2331,8 @@ $.fn.jqGrid = function( pin ) {
 			idPrefix : "",
 			multiSort :  false,
 			minColWidth : 33,
+			minGridWidth : 100,
+			maxGridWidth : 3000,
 			scrollPopUp : false,
 			scrollTopOffset: 0, // pixel
 			scrollLeftOffset : "100%", //percent
@@ -6995,6 +6997,9 @@ $.jgrid.extend({
 			}
 			if(isNaN(nwidth)) {return;}
 			nwidth = parseInt(nwidth,10);
+			if(nwidth < $t.p.minGridWidth || nwidth > $t.p.maxGridWidth) {
+				return;
+			}
 			$t.grid.width = $t.p.width = nwidth;
 			$("#gbox_"+$.jgrid.jqID($t.p.id)).css("width",nwidth+"px");
 			$("#gview_"+$.jgrid.jqID($t.p.id)).css("width",nwidth+"px");
