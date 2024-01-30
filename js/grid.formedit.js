@@ -1523,7 +1523,7 @@ $.jgrid.extend({
 		p = $.extend(true, {
 			top : 0,
 			left: 0,
-			width: 240,
+			width: 300,
 			height: 'auto',
 			dataheight : 'auto',
 			modal: false,
