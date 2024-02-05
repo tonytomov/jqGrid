@@ -4226,7 +4226,7 @@ $.fn.jqGrid = function( pin ) {
 			.attr("dir", dir); 
 			if(ts.p.rowList.length >0){
 				str = "<td dir=\""+dir+"\">";
-				str +="<select "+getstyle(stylemodule, 'pgSelectBox', false, 'ui-pg-selbox')+" size=\"1\" role=\"listbox\" title=\""+($.jgrid.getRegional(ts,"defaults.pgrecs",ts.p.pgrecs) || "")+ "\">";
+				str +="<select "+getstyle(stylemodule, 'pgSelectBox', false, 'ui-pg-selbox')+" size=\"1\" name=\"pg_sel_box\" role=\"listbox\" title=\""+($.jgrid.getRegional(ts,"defaults.pgrecs",ts.p.pgrecs) || "")+ "\">";
 				var strnm;
 				for(i=0;i<ts.p.rowList.length;i++){
 					strnm = ts.p.rowList[i].toString().split(":");
