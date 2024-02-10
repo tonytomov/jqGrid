@@ -3133,7 +3133,7 @@ $.fn.jqGrid = function( pin ) {
 					if(ir===rn) {break;}
 				}
 			}
-			spsh =  ts.p.multiselect && ts.p.preserveSelection && ir === spsh;
+			spsh =  ir > 0 && ts.p.multiselect && ts.p.preserveSelection && ir === spsh ;
 			if(ts.p.gridview === true) {
 				fpos = ts.p.treeANode > -1 ? ts.p.treeANode: 0;
 				if(ts.p.grouping) {
@@ -3374,7 +3374,7 @@ $.fn.jqGrid = function( pin ) {
 				i++;
 				if(ir===rn) { break; }
 			}
-			spsh =  ts.p.multiselect && (ts.p.preserveSelection || selected) && ir === spsh;
+			spsh =  ir > 0 && ts.p.multiselect && (ts.p.preserveSelection || selected) && ir === spsh;
 			if(ts.p.gridview === true ) {
 				fpos = ts.p.treeANode > -1 ? ts.p.treeANode: 0;
 				if(ts.p.grouping) {
