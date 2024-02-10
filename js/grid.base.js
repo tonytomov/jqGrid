@@ -2245,6 +2245,7 @@ $.fn.jqGrid = function( pin ) {
 			multiboxonly : false,
 			multimail : false,
 			multiselectWidth: 30,
+			onMultiSleect : null,
 			editurl: null,
 			search: false,
 			caption: "",
@@ -4280,7 +4281,7 @@ $.fn.jqGrid = function( pin ) {
 			pgid = $.jgrid.jqID(pgid);
 			pgcnt = $.jgrid.jqID(pgcnt);
 			if(ts.p.viewrecords===true) {
-				$("td#"+pgid+"_"+ts.p.recordpos,"#"+pgcnt).append("<div dir='"+dir+"' style='text-align:"+ts.p.recordpos+"' class='ui-paging-info'></div>");
+				$("td#"+pgid+"_"+ts.p.recordpos,"#"+pgcnt).append("<div dir='"+dir+"' class='ui-paging-info'></div>");
 			}
 			$("td#"+pgid+"_"+ts.p.pagerpos,"#"+pgcnt).append(pgl);
 			tdw = $("#gbox_"+$.jgrid.jqID(ts.p.id)).css("font-size") || "11px";
@@ -5439,6 +5440,8 @@ $.fn.jqGrid = function( pin ) {
 				}
 				$(ts).triggerHandler("jqGridSelectAll", [chk ? ts.p.selarrrow : emp, chk]);
 				if($.jgrid.isFunction(ts.p.onSelectAll)) {ts.p.onSelectAll.call(ts, chk ? ts.p.selarrrow : emp,chk);}
+				if($.jgrid.isFunction(ts.p.onMultiSelect)) {ts.p.onMultiSelect.call(ts, ts.p.selarrrow);}
+				//si
 			});
 		}
 
@@ -6324,6 +6327,9 @@ $.jgrid.extend({
 					$($t).triggerHandler("jqGridSelectRow", [pt.id, stat, e]);
 					if( $t.p.onSelectRow) { $t.p.onSelectRow.call($t, pt.id , stat, e); }
 				}
+				//si
+				if($.jgrid.isFunction($t.p.onMultiSelect)) {$t.p.onMultiSelect.call($t, $t.p.selarrrow);}
+				
 			}
 		});
 	},
@@ -6379,6 +6385,9 @@ $.jgrid.extend({
 				}
 			}
 			//t.p.savedRow = [];
+			//si
+			if($.jgrid.isFunction(t.p.onMultiSelect)) {t.p.onMultiSelect.call(t, t.p.selarrrow);}
+
 		});
 	},
 	getRowData : function( rowid, usedata, treeindent, visibleTreeNodes ) {
