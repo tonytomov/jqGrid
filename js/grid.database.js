@@ -42,8 +42,16 @@ $.jgrid.extend({
 				async function getIndexedDbData( skipCreate ) {
 					var data, options = ts.p.dbconfig;
 					if(typeof options.dataUrl === 'string') {
+						try {
 						let req = await fetch(options.dataUrl, options.fetchOptions);	
 							data = await req.json();
+							if(options.reader !== null) {
+								data = $.jgrid.getAccessor(data, options.reader);
+							}
+						} catch(error) {
+							console.log("Error:" +error);
+							return;
+						}
 						if($.jgrid.isFunction(options.beforeInsertData)) {
 							data = options.beforeInsertData.call(ts, data);
 						}
@@ -69,7 +77,7 @@ $.jgrid.extend({
 							const objectStore1 = transaction.objectStore(ts.p.dbconfig.dbtable);
 							objectStore1.transaction.oncomplete = function(e){
 								// data added
-								ts.p.dbconfig.loadIfExists = false;
+								//ts.p.dbconfig.loadIfExists = false;
 							};
 							objectStore1.transaction.onerror = function(e){
 								$.jgrid.info_dialog("Error",e.target.error.name + " : "+e.target.error.message,'Close');
@@ -78,7 +86,7 @@ $.jgrid.extend({
 								if(!ts.p.dbconfig.isKeyInData) {
 									row[idcol.name] = Math.random().toString(16).slice(2);
 								}
-								objectStore1.add(row);
+								objectStore1.put(row);
 							}
 							ts.p.dbconfig.ready_req = true;
 							ts.grid.populate();
@@ -94,15 +102,27 @@ $.jgrid.extend({
 					if( !db.objectStoreNames.contains(ts.p.dbconfig.dbtable) ) {
 						db.close();
 						getIndexedDbData( false );
-					} else if(ts.p.dbconfig.loadIfExists) {
-						const tr = db.transaction(ts.p.dbconfig.dbtable);
+				} else if(ts.p.dbconfig.loadIfExists || ts.p.dbconfig.deleteIfExists) {
+					const tr = db.transaction(ts.p.dbconfig.dbtable, "readwrite");
 						const oS = tr.objectStore(ts.p.dbconfig.dbtable);
 						const countRequest = oS.count();
 						countRequest.onsuccess = () => {						
 							if(countRequest.result > 0)  {
-								if (confirm("The object store: " + ts.p.dbconfig.dbtable+ " contain data! Would you like to insert new data set one") === true) {
+							if(ts.p.dbconfig.deleteIfExists) {
+								const objectStoreRequest = oS.clear();
+								objectStoreRequest.onsuccess = (event) => {
+									// report the success of our request
+									console.log("All records are cleared");
 									db.close();
 									getIndexedDbData( true );
+								};
+								objectStoreRequest.onerror = (e) => {
+									// report the success of our request
+									$.jgrid.info_dialog("Error",e.target.error.name + " : "+e.target.error.message,'Close');
+								};
+							} else if(ts.p.dbconfig.loadIfExists) {
+								db.close();
+								getIndexedDbData( true );								
 								} else {
 									db.close();
 									ts.p.dbconfig.ready_req = true;
@@ -160,8 +180,11 @@ $.jgrid.extend({
 								 if(!cursor) {
 									 return;
 								 }
-								if(cursor.value[keyName] === data[i][keyName]) {
-									const updateRequest = cursor.update(data[i]);
+								var updateData = cursor.value;
+								if(updateData[keyName] === data[i][keyName]) {
+									delete data[i].oper;
+									updateData = Object.assign(updateData, data[i]);
+									const updateRequest = cursor.update(updateData);
 									return;
 								} else {
 									 cursor.continue();
@@ -219,13 +242,20 @@ $.jgrid.extend({
 		let ts = this[0], dbcfg = ts.p.dbconfig, type = ts.p.datatype;
 		return new Promise(function(resolve, reject){
 			if(!Array.isArray(data)) {
-				data = [data];
+				data = data.split(",");
 			}	
 			if(!keyName) {
 				keyName = ts.p.keyName;
 			}
 			switch(type) {
 				case 'indexeddb' :
+					var test =[], obj={};
+					for (let i=0;i<data.length;i++) {
+						obj[keyName] = data[i];
+						test.push(obj);
+					}
+					// detect keytype
+					test = $.jgrid.normalizeDbData.call(ts, test, ts.p.colModel );			
 					const DBOpenRequest = window.indexedDB.open(dbcfg.dbname /*, dbcfg.dbversion*/);
 					DBOpenRequest.onsuccess = (event) => {
 						const db = DBOpenRequest.result;
@@ -240,10 +270,10 @@ $.jgrid.extend({
 						};
 						const objectStore = transaction.objectStore(dbcfg.dbtable);
 						for(let i=0;i<data.length;i++) {
-							var objectStoreRequest = objectStore.delete(data[i]);
-							objectStoreRequest.oncomplete = (event) => {
-								//console.log("Record deleted);
-							};
+							var objectStoreRequest = objectStore.delete(test[i][keyName]);
+							objectStoreRequest.onsuccess = (event) => {
+								console.log("Deleted record: " + data[i]);
+							};							
 						}
 					};
 				break;
