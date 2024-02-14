@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.5 - 2024-01-29
+* @license Guriddo jqGrid JS - v5.8.5 - 2024-02-14
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -1367,6 +1367,9 @@ $.extend($.jgrid,{
 		}
 		return input;
 	},
+	isVisible : function(e) {
+		return !!( e.offsetWidth || e.offsetHeight || e.getClientRects().length );
+	},
 	styleUI : {
 		jQueryUI : {
 			common : {
@@ -2247,6 +2250,7 @@ $.fn.jqGrid = function( pin ) {
 			multiboxonly : false,
 			multimail : false,
 			multiselectWidth: 30,
+			onMultiSleect : null,
 			editurl: null,
 			search: false,
 			caption: "",
@@ -2336,6 +2340,8 @@ $.fn.jqGrid = function( pin ) {
 			idPrefix : "",
 			multiSort :  false,
 			minColWidth : 33,
+			minGridWidth : 100,
+			maxGridWidth : 3000,
 			scrollPopUp : false,
 			scrollTopOffset: 0, // pixel
 			scrollLeftOffset : "100%", //percent
@@ -2390,9 +2396,11 @@ $.fn.jqGrid = function( pin ) {
 				dbname : "",
 				dbversion : -1,
 				dbtable : "",
+				deleteIfExists : false,
 				loadIfExists : false,
 				isKeyInData : false,
 				dataUrl : "",
+				reader : null,
 				beforeInsertData : null,
 				fetchOptions : {}
 			}
@@ -3133,7 +3141,7 @@ $.fn.jqGrid = function( pin ) {
 					if(ir===rn) {break;}
 				}
 			}
-			spsh =  ts.p.multiselect && ts.p.preserveSelection && ir === spsh;
+			spsh =  ir > 0 && ts.p.multiselect && ts.p.preserveSelection && ir === spsh ;
 			if(ts.p.gridview === true) {
 				fpos = ts.p.treeANode > -1 ? ts.p.treeANode: 0;
 				if(ts.p.grouping) {
@@ -3374,7 +3382,7 @@ $.fn.jqGrid = function( pin ) {
 				i++;
 				if(ir===rn) { break; }
 			}
-			spsh =  ts.p.multiselect && (ts.p.preserveSelection || selected) && ir === spsh;
+			spsh =  ir > 0 && ts.p.multiselect && (ts.p.preserveSelection || selected) && ir === spsh;
 			if(ts.p.gridview === true ) {
 				fpos = ts.p.treeANode > -1 ? ts.p.treeANode: 0;
 				if(ts.p.grouping) {
@@ -4226,7 +4234,7 @@ $.fn.jqGrid = function( pin ) {
 			.attr("dir", dir); 
 			if(ts.p.rowList.length >0){
 				str = "<td dir=\""+dir+"\">";
-				str +="<select "+getstyle(stylemodule, 'pgSelectBox', false, 'ui-pg-selbox')+" size=\"1\" role=\"listbox\" title=\""+($.jgrid.getRegional(ts,"defaults.pgrecs",ts.p.pgrecs) || "")+ "\">";
+				str +="<select "+getstyle(stylemodule, 'pgSelectBox', false, 'ui-pg-selbox')+" size=\"1\" name=\"pg_sel_box\" role=\"listbox\" title=\""+($.jgrid.getRegional(ts,"defaults.pgrecs",ts.p.pgrecs) || "")+ "\">";
 				var strnm;
 				for(i=0;i<ts.p.rowList.length;i++){
 					strnm = ts.p.rowList[i].toString().split(":");
@@ -4280,7 +4288,7 @@ $.fn.jqGrid = function( pin ) {
 			pgid = $.jgrid.jqID(pgid);
 			pgcnt = $.jgrid.jqID(pgcnt);
 			if(ts.p.viewrecords===true) {
-				$("td#"+pgid+"_"+ts.p.recordpos,"#"+pgcnt).append("<div dir='"+dir+"' style='text-align:"+ts.p.recordpos+"' class='ui-paging-info'></div>");
+				$("td#"+pgid+"_"+ts.p.recordpos,"#"+pgcnt).append("<div dir='"+dir+"' class='ui-paging-info'></div>");
 			}
 			$("td#"+pgid+"_"+ts.p.pagerpos,"#"+pgcnt).append(pgl);
 			tdw = $("#gbox_"+$.jgrid.jqID(ts.p.id)).css("font-size") || "11px";
@@ -5439,6 +5447,8 @@ $.fn.jqGrid = function( pin ) {
 				}
 				$(ts).triggerHandler("jqGridSelectAll", [chk ? ts.p.selarrrow : emp, chk]);
 				if($.jgrid.isFunction(ts.p.onSelectAll)) {ts.p.onSelectAll.call(ts, chk ? ts.p.selarrrow : emp,chk);}
+				if($.jgrid.isFunction(ts.p.onMultiSelect)) {ts.p.onMultiSelect.call(ts, ts.p.selarrrow);}
+				//si
 			});
 		}
 
@@ -6137,7 +6147,9 @@ $.fn.jqGrid = function( pin ) {
 			var supportsOrientationChange = "onorientationchange" in window,
 			orientationEvent = supportsOrientationChange ? "orientationchange" : "resize";
 			$(window).on( orientationEvent, function(){
-				$(ts).jqGrid('resizeGrid', 500, true, ts.p.resizeHeight,true);
+				if($.jgrid.isVisible(ts)) {
+					$(ts).jqGrid('resizeGrid', 500, true, ts.p.resizeHeight,true);
+				}
 			});
 		}
 	});
@@ -6322,6 +6334,9 @@ $.jgrid.extend({
 					$($t).triggerHandler("jqGridSelectRow", [pt.id, stat, e]);
 					if( $t.p.onSelectRow) { $t.p.onSelectRow.call($t, pt.id , stat, e); }
 				}
+				//si
+				if($.jgrid.isFunction($t.p.onMultiSelect)) {$t.p.onMultiSelect.call($t, $t.p.selarrrow);}
+				
 			}
 		});
 	},
@@ -6377,6 +6392,9 @@ $.jgrid.extend({
 				}
 			}
 			//t.p.savedRow = [];
+			//si
+			if($.jgrid.isFunction(t.p.onMultiSelect)) {t.p.onMultiSelect.call(t, t.p.selarrrow);}
+
 		});
 	},
 	getRowData : function( rowid, usedata, treeindent, visibleTreeNodes ) {
@@ -7000,6 +7018,9 @@ $.jgrid.extend({
 			}
 			if(isNaN(nwidth)) {return;}
 			nwidth = parseInt(nwidth,10);
+			if(nwidth < $t.p.minGridWidth || nwidth > $t.p.maxGridWidth) {
+				return;
+			}
 			$t.grid.width = $t.p.width = nwidth;
 			$("#gbox_"+$.jgrid.jqID($t.p.id)).css("width",nwidth+"px");
 			$("#gview_"+$.jgrid.jqID($t.p.id)).css("width",nwidth+"px");
@@ -10143,7 +10164,7 @@ $.fn.jqFilter = function( arg ) {
 
 			if(this.p.ruleButtons === true) {
 			// dropdown for: choosing group operator type
-			var groupOpSelect = $("<select size='1' class='opsel " + classes.srSelect + "'></select>");
+			var groupOpSelect = $("<select size='1' name='select_group_op' class='opsel " + classes.srSelect + "'></select>");
 			th.append(groupOpSelect);
 			// populate dropdown with all posible group operators: or, and
 			var str= "", selected;
@@ -10310,7 +10331,7 @@ $.fn.jqFilter = function( arg ) {
 
 
 			// dropdown for: choosing field
-			var ruleFieldSelect = $("<select size='1' class='" + classes.srSelect + "'></select>"), ina, aoprs = [];
+			var ruleFieldSelect = $("<select size='1' name='select_field' class='" + classes.srSelect + "'></select>"), ina, aoprs = [];
 			ruleFieldTd.append(ruleFieldSelect);
 			ruleFieldSelect.on('change',function() {
 				if( that.p.ruleButtons && that.p.uniqueSearchFields ) {
@@ -10441,7 +10462,7 @@ $.fn.jqFilter = function( arg ) {
 				$(ruleDataInput).attr('disabled','true');
 			} //retain the state of disabled text fields in case of null ops
 			// dropdown for: choosing operator
-			var ruleOperatorSelect = $("<select size='1' class='selectopts " + classes.srSelect + "'></select>");
+			var ruleOperatorSelect = $("<select size='1' name='select_oper' class='selectopts " + classes.srSelect + "'></select>");
 			ruleOperatorTd.append(ruleOperatorSelect);
 			ruleOperatorSelect.on('change',function() {
 				rule.op = $(ruleOperatorSelect).val();
@@ -11707,7 +11728,7 @@ $.jgrid.extend({
 				if(p.tmplNames && p.tmplNames.length) {
 					found = true;
 					tmpl = "<tr><td class='ui-search-label'>"+ p.tmplLabel +"</td>";
-					tmpl += "<td><select size='1' class='ui-template " + classes.srSelect + "'>";
+					tmpl += "<td><select size='1' name='select_template' class='ui-template " + classes.srSelect + "'>";
 					tmpl += "<option value='default'>Default</option>";
 					$.each(p.tmplNames, function(i,n){
 						tmpl += "<option value='"+i+"'>"+n+"</option>";
@@ -13549,7 +13570,7 @@ $.jgrid.extend({
 		p = $.extend(true, {
 			top : 0,
 			left: 0,
-			width: 240,
+			width: 300,
 			height: 'auto',
 			dataheight : 'auto',
 			modal: false,
@@ -23889,8 +23910,16 @@ $.jgrid.extend({
 				async function getIndexedDbData( skipCreate ) {
 					var data, options = ts.p.dbconfig;
 					if(typeof options.dataUrl === 'string') {
+						try {
 						let req = await fetch(options.dataUrl, options.fetchOptions);	
 							data = await req.json();
+							if(options.reader !== null) {
+								data = $.jgrid.getAccessor(data, options.reader);
+							}
+						} catch(error) {
+							console.log("Error:" +error);
+							return;
+						}
 						if($.jgrid.isFunction(options.beforeInsertData)) {
 							data = options.beforeInsertData.call(ts, data);
 						}
@@ -23916,7 +23945,7 @@ $.jgrid.extend({
 							const objectStore1 = transaction.objectStore(ts.p.dbconfig.dbtable);
 							objectStore1.transaction.oncomplete = function(e){
 								// data added
-								ts.p.dbconfig.loadIfExists = false;
+								//ts.p.dbconfig.loadIfExists = false;
 							};
 							objectStore1.transaction.onerror = function(e){
 								$.jgrid.info_dialog("Error",e.target.error.name + " : "+e.target.error.message,'Close');
@@ -23925,7 +23954,7 @@ $.jgrid.extend({
 								if(!ts.p.dbconfig.isKeyInData) {
 									row[idcol.name] = Math.random().toString(16).slice(2);
 								}
-								objectStore1.add(row);
+								objectStore1.put(row);
 							}
 							ts.p.dbconfig.ready_req = true;
 							ts.grid.populate();
@@ -23941,15 +23970,27 @@ $.jgrid.extend({
 					if( !db.objectStoreNames.contains(ts.p.dbconfig.dbtable) ) {
 						db.close();
 						getIndexedDbData( false );
-					} else if(ts.p.dbconfig.loadIfExists) {
-						const tr = db.transaction(ts.p.dbconfig.dbtable);
+				} else if(ts.p.dbconfig.loadIfExists || ts.p.dbconfig.deleteIfExists) {
+					const tr = db.transaction(ts.p.dbconfig.dbtable, "readwrite");
 						const oS = tr.objectStore(ts.p.dbconfig.dbtable);
 						const countRequest = oS.count();
 						countRequest.onsuccess = () => {						
 							if(countRequest.result > 0)  {
-								if (confirm("The object store: " + ts.p.dbconfig.dbtable+ " contain data! Would you like to insert new data set one") === true) {
+							if(ts.p.dbconfig.deleteIfExists) {
+								const objectStoreRequest = oS.clear();
+								objectStoreRequest.onsuccess = (event) => {
+									// report the success of our request
+									console.log("All records are cleared");
 									db.close();
 									getIndexedDbData( true );
+								};
+								objectStoreRequest.onerror = (e) => {
+									// report the success of our request
+									$.jgrid.info_dialog("Error",e.target.error.name + " : "+e.target.error.message,'Close');
+								};
+							} else if(ts.p.dbconfig.loadIfExists) {
+								db.close();
+								getIndexedDbData( true );								
 								} else {
 									db.close();
 									ts.p.dbconfig.ready_req = true;
@@ -24007,8 +24048,11 @@ $.jgrid.extend({
 								 if(!cursor) {
 									 return;
 								 }
-								if(cursor.value[keyName] === data[i][keyName]) {
-									const updateRequest = cursor.update(data[i]);
+								var updateData = cursor.value;
+								if(updateData[keyName] === data[i][keyName]) {
+									delete data[i].oper;
+									updateData = Object.assign(updateData, data[i]);
+									const updateRequest = cursor.update(updateData);
 									return;
 								} else {
 									 cursor.continue();
@@ -24066,13 +24110,20 @@ $.jgrid.extend({
 		let ts = this[0], dbcfg = ts.p.dbconfig, type = ts.p.datatype;
 		return new Promise(function(resolve, reject){
 			if(!Array.isArray(data)) {
-				data = [data];
+				data = data.split(",");
 			}	
 			if(!keyName) {
 				keyName = ts.p.keyName;
 			}
 			switch(type) {
 				case 'indexeddb' :
+					var test =[], obj={};
+					for (let i=0;i<data.length;i++) {
+						obj[keyName] = data[i];
+						test.push(obj);
+					}
+					// detect keytype
+					test = $.jgrid.normalizeDbData.call(ts, test, ts.p.colModel );			
 					const DBOpenRequest = window.indexedDB.open(dbcfg.dbname /*, dbcfg.dbversion*/);
 					DBOpenRequest.onsuccess = (event) => {
 						const db = DBOpenRequest.result;
@@ -24087,10 +24138,10 @@ $.jgrid.extend({
 						};
 						const objectStore = transaction.objectStore(dbcfg.dbtable);
 						for(let i=0;i<data.length;i++) {
-							var objectStoreRequest = objectStore.delete(data[i]);
-							objectStoreRequest.oncomplete = (event) => {
-								//console.log("Record deleted);
-							};
+							var objectStoreRequest = objectStore.delete(test[i][keyName]);
+							objectStoreRequest.onsuccess = (event) => {
+								console.log("Deleted record: " + data[i]);
+							};							
 						}
 					};
 				break;
