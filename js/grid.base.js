@@ -2391,9 +2391,11 @@ $.fn.jqGrid = function( pin ) {
 				dbname : "",
 				dbversion : -1,
 				dbtable : "",
+				deleteIfExists : false,
 				loadIfExists : false,
 				isKeyInData : false,
 				dataUrl : "",
+				reader : null,
 				beforeInsertData : null,
 				fetchOptions : {}
 			}
