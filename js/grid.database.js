@@ -166,7 +166,11 @@ $.jgrid.extend({
 						};
 						transaction.onerror = (event) => {
 							reject(event);
-							console.log(event.target.error);
+							try {
+								$.jgrid.info_dialog.call("Error", event.target.error, "Close", {styleUI : ts.p.styleUI});
+							} catch (e) {
+								console.log(event.target.error);
+							}
 						};
 						const objectStore = transaction.objectStore(dbcfg.dbtable);
 						for(let i=0;i<data.length;i++) {
@@ -221,7 +225,11 @@ $.jgrid.extend({
 						};
 						transaction.onerror = (event) => {
 							reject(event);
-							console.log(event.target.error);
+							try {
+								$.jgrid.info_dialog.call("Error", event.target.error, "Close", {styleUI : ts.p.styleUI});
+							} catch (e) {
+								console.log(event.target.error);
+							}
 						};
 						const objectStore = transaction.objectStore(dbcfg.dbtable);
 						for(let i=0;i<data.length;i++) {
@@ -266,7 +274,11 @@ $.jgrid.extend({
 						};
 						transaction.onerror = (event) => {
 							reject(event);
-							console.log(event.target.error);
+							try {
+								$.jgrid.info_dialog.call("Error", event.target.error, "Close", {styleUI : ts.p.styleUI});
+							} catch (e) {
+								console.log(event.target.error);
+							}
 						};
 						const objectStore = transaction.objectStore(dbcfg.dbtable);
 						for(let i=0;i<data.length;i++) {
