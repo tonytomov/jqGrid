@@ -1424,6 +1424,8 @@ $.extend($.jgrid,{
 				modal : "ui-widget ui-widget-content ui-corner-all ui-dialog",
 				header : "ui-widget-header ui-corner-all ui-helper-clearfix",
 				content :"ui-widget-content",
+				body : "ui-widget-content",
+				footer : "ui-widget-content",
 				resizable : "ui-resizable-handle ui-resizable-se",
 				icon_close : "ui-icon-closethick",
 				icon_resizable : "ui-icon-gripsmall-diagonal-se"
@@ -1565,10 +1567,12 @@ $.extend($.jgrid,{
 				icon_caption_close : "glyphicon-circle-arrow-down"
 			},
 			modal : {
-				modal : "modal-content",
+				modal : "modal",
+				content :"modal-content",
 				header : "modal-header",
 				title : "modal-title",
-				content :"modal-body",
+				body :"modal-body",
+				footer :"modal-footer",
 				resizable : "ui-resizable-handle ui-resizable-se",
 				icon_close : "glyphicon-remove-circle",
 				icon_resizable : "glyphicon-import"
@@ -1698,10 +1702,12 @@ $.extend($.jgrid,{
 				pgButtonBox : ""
 			},
 			modal : {
-				modal : "modal-content",
+				modal : "modal",
+				content :"modal-content",
 				header : "modal-header",
 				title : "modal-title",
-				content :"modal-body",
+				body :"modal-body",
+				footer :"modal-footer",				
 				resizable : "ui-resizable-handle ui-resizable-se",
 				icon_close : "oi-circle-x",
 				icon_resizable : "oi-circle-x"
@@ -1788,10 +1794,12 @@ $.extend($.jgrid,{
 				pgButtonBox : ""
 			},
 			modal : {
-				modal : "modal-content",
+				modal : "modal",
 				header : "modal-header",
 				title : "modal-title",
-				content :"modal-body",
+				content :"modal-content",
+				body :"modal-body",
+				footer :"modal-footer",				
 				resizable : "ui-resizable-handle ui-resizable-se",
 				icon_close : "oi-circle-x",
 				icon_resizable : "oi-circle-x"
