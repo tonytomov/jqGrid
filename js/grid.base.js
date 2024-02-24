@@ -5359,7 +5359,7 @@ $.fn.jqGrid = function( pin ) {
 			if(!tmpcm.hasOwnProperty('colmenu')) {
 				tmpcm.colmenu = (tmpcm.name === "rn" || tmpcm.name === "cb" || tmpcm.name === "subgrid") ? false : true;
 			}
-			thead += "<th id='"+ts.p.id+"_" + tmpcm.name+"' role='columnheader' "+getstyle(stylemodule,'headerBox',false, "ui-th-column ui-th-" + dir + " " + ( tmpcm.labelClasses || "") ) +  tooltip+">";
+			thead += "<th id='"+ts.p.id+"_" + tmpcm.name+"' role='columnheader'  scope='col' "+getstyle(stylemodule,'headerBox',false, "ui-th-column ui-th-" + dir + " " + ( tmpcm.labelClasses || "") ) +  tooltip+">";
 			idn = tmpcm.index || tmpcm.name;
 			thead += "<div class='ui-th-div' id='jqgh_"+ts.p.id+"_"+tmpcm.name+"' "+tdc+">"+ts.p.colNames[i];
 			if(!tmpcm.width)  {
