@@ -6775,7 +6775,8 @@ $.jgrid.extend({
 						success = true;
 					}
 				} else if(action === "get") {
-						res[nm] = $("tr.footrow td",t.grid.sDiv).eq(i + len).html();
+					res[nm] = format ? $.unformat.call (t,  $("tr.footrow td",t.grid.sDiv).eq(i + len), { 'colModel' : t.p.colModel[i] }, i) :
+						$("tr.footrow td",t.grid.sDiv).eq(i + len).html();
 				}
 			});
 			}
@@ -6847,7 +6848,8 @@ $.jgrid.extend({
 						success = true;
 					}
 				} else if(action === "get") {
-						res[nm] = $("tr.hrheadrow td",t.grid.hrDiv).eq(i+len).html();
+					res[nm] = format ? $.unformat.call (t,  $("tr.hrheadrow td",t.grid.hrDiv).eq(i+len), { 'colModel' : t.p.colModel[i] }, i) :
+						$("tr.hrheadrow td",t.grid.hrDiv).eq(i+len).html();					
 				}
 			});
 			}
