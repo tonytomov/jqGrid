@@ -27,7 +27,8 @@ setSubGrid : function () {
 			expandOnLoad:  false,
 			selectOnExpand : false,
 			selectOnCollapse : false,
-			reloadOnExpand : true
+			reloadOnExpand : true,
+			onErrorLoadData : null
 		};
 		$t.p.subGridOptions = $.extend(suboptions, $t.p.subGridOptions || {});
 		$t.p.colNames.unshift("");
@@ -54,7 +55,8 @@ addSubGrid : function( pos, sind ) {
 		var ts = this;
 		if (!ts.grid ) { return; }
 		var base = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].base,
-			common = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].common;
+			common = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].common,
+			errors = $.jgrid.getRegional(this, 'errors');
 		//-------------------------
 		var subGridCell = function(trdiv,cell,pos)
 		{
@@ -171,13 +173,25 @@ addSubGrid : function( pos, sind ) {
 						url: $.jgrid.isFunction(ts.p.subGridUrl) ? ts.p.subGridUrl.call(ts, dp) : ts.p.subGridUrl,
 						dataType:ts.p.subgridtype,
 						data: $.jgrid.isFunction(ts.p.serializeSubGridData)? ts.p.serializeSubGridData.call(ts, dp) : dp,
-						complete: function(sxml) {
+						success: function(res, stat, sxml) {
 							if(ts.p.subgridtype === "xml") {
 								subGridXml(sxml.responseXML, sid);
 							} else {
 								subGridJson($.jgrid.parse(sxml.responseText), sid);
 							}
 							sxml=null;
+						}, 
+						error : function(res, stat, err) {
+							if($.jgrid.isFunction(ts.p.subGridOptions.onErrorLoadData) ) {
+								ts.p.subGridOptions.onErrorLoadData.call(ts, rowid, res, stat, err);
+							} else {
+								var rT = res.responseText +" <br/>"+res.statusText;
+								try {
+									$.jgrid.info_dialog(errors.errcap,'<div class="'+common.error+'">'+ rT +'</div>', edit.bClose, {buttonalign:'right', styleUI : ts.p.styleUI });
+								} catch(e) {
+									alert(rT);
+								}
+							}							
 						}
 					}, $.jgrid.ajaxOptions, ts.p.ajaxSubgridOptions || {}));
 					break;
