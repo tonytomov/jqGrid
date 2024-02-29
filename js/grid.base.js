@@ -987,7 +987,7 @@ $.extend($.jgrid,{
 			jqGridId = jqGridId.substring(1);
 		}
 		var $t = $("#"+ $.jgrid.jqID(jqGridId))[0];
-		if ( !$t.grid ) {return;}
+		if ( !$t || !$t.grid ) {return;}
 		if ( $t.p.pager ) { // if not part of grid
 			$($t.p.pager).remove();
 		}
