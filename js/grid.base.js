@@ -2781,11 +2781,15 @@ $.fn.jqGrid = function( pin ) {
 			prp = formatCol( pos,irow, v, srvr, rowId, rdata);
 			return "<td role=\"gridcell\" "+prp+">"+v+"</td>";
 		},
-		addMulti = function(rowid, pos, irow, checked, uiclass){
+		addMulti = function(rowid, pos, irow, checked, uiclass, srvr){
 			var rowSelectTitle=$.jgrid.getRegional(ts, "defaults.selectLine");
 			rowSelectTitle=rowSelectTitle ? rowSelectTitle : $.jgrid.regional['en'].defaults.selectLine;
 			var	v = "<input role=\"checkbox\" title='"+rowSelectTitle+"' type=\"checkbox\""+" id=\"jqg_"+ts.p.id+"_"+rowid+"\" "+uiclass+" name=\"jqg_"+ts.p.id+"_"+rowid+"\"" + (checked ? "checked=\"checked\"" : "")+"/>",
-			prp = formatCol( pos,irow,'',null, rowid, true);
+			cm = ts.p.colModel[pos];
+			if(cm.formatter !== undefined && $.jgrid.isFunction( cm.formatter )) {
+				v = cm.formatter.call(ts,v,{rowId: rowid, colModel:cm, gid:ts.p.id, pos:pos, styleUI: ts.p.styleUI },srvr,'add');
+			}
+			var prp = formatCol( pos,irow, v, srvr, rowid, true);
 			return "<td role=\"gridcell\" "+prp+">"+v+"</td>";
 		},
 		addRowNum = function (pos, irow, pG, rN, uiclass ) {
@@ -3087,13 +3091,13 @@ $.fn.jqGrid = function( pin ) {
 					var iStartTrTag = rowData.length;
 					rowData.push("");
 					if( ni ) {
-						rowData.push( addRowNum(0, j, ts.p.page, ts.p.rowNum, rnc ) );
+						rowData.push( addRowNum(0, j+rcnt, ts.p.page, ts.p.rowNum, rnc ) );
 					}
 					if( gi ) {
-						rowData.push( addMulti(rid, ni, j, selr, mlc) );
+						rowData.push( addMulti(rid, ni, j+rcnt, selr, mlc, xmlr) );
 					}
 					if( sc ){
-						rowData.push( addSearch(rid, gi+ni, j, scc) );
+						rowData.push( addSearch(rid, gi+ni, j+rcnt, scc) );
 					}
 					if( si ) {
 						rowData.push( addSubGridCell.call(self, gi+ni+sc, j+rcnt) );
@@ -3336,13 +3340,13 @@ $.fn.jqGrid = function( pin ) {
 				var iStartTrTag = rowData.length;
 				rowData.push("");
 				if( ni ) {
-					rowData.push( addRowNum(0, i, ts.p.page, ts.p.rowNum, rnc ) );
+					rowData.push( addRowNum(0, i+rcnt, ts.p.page, ts.p.rowNum, rnc ) );
 				}
 				if( gi ){
-					rowData.push( addMulti(idr, ni, i, selr, mlc) );
+					rowData.push( addMulti(idr, ni, i+rcnt, selr, mlc, cur) );
 				}
 				if( sc ){
-					rowData.push( addSearch(idr, gi+ni, i, scc) );
+					rowData.push( addSearch(idr, gi+ni, i+rcnt, scc) );
 				}
 				if( si ) {
 					rowData.push( addSubGridCell.call(self ,gi+ni+sc,i+rcnt) );
