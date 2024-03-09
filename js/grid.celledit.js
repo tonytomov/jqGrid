@@ -127,9 +127,11 @@ $.jgrid.extend({
 					} //ESC
 					if (e.keyCode === 13 && e.altKey && this.nodeName === "TEXTAREA") {
 						this.value = this.value + "\r";
+						e.preventDefault();
 						return true;
 					}
 					if (e.keyCode === 13 && !e.shiftKey) {
+						e.preventDefault();
 						$($t).jqGrid("saveCell",iRow,iCol);
 						if(iRow < $t.rows.length-1 && excel) {
 							$($t).jqGrid('focusBodyCell', iRow + 1 , iCol);
@@ -684,6 +686,7 @@ $.jgrid.extend({
 					break;
 					case 13:
 						if (parseInt($t.p.iCol,10)>=0 && parseInt($t.p.iRow,10)>=0) {
+							e.preventDefault();
 							$($t).jqGrid("editCell",$t.p.iRow,$t.p.iCol,true,e);
 						}
 					break;

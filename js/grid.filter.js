@@ -1383,6 +1383,7 @@ $.jgrid.extend({
 									fn : function(e) {
 										var key = e.charCode || e.keyCode || 0;
 										if(key === 13){
+											e.preventDefault();
 											triggerToolbar();
 											return false;
 										}
@@ -1397,6 +1398,7 @@ $.jgrid.extend({
 										if( dKeys.has(key)) {
 											// do nothing
 										} else if( key === 13 ) {
+											e.preventDefault();
 											return false;
 										} else {
 											if(timeoutHnd) { clearTimeout(timeoutHnd); }
@@ -1490,6 +1492,7 @@ $.jgrid.extend({
 			});
 			$(".clearsearchclass",tr).keydown(function(event) {
 				if (event.keyCode === 13) {
+					event.preventDefault();
 					$(".clearsearchclass", tr).trigger("click");
 				}
 			});
@@ -1874,6 +1877,7 @@ $.jgrid.extend({
 								!$target.hasClass('add-group') && !$target.hasClass('add-rule') &&
 								!$target.hasClass('delete-group') && !$target.hasClass('delete-rule') &&
 								(!$target.hasClass("fm-button") || !$target.is("[id$=_query]"))) {
+							e.preventDefault();
 							$("#"+fid+"_search").click();
 							return false;
 						}

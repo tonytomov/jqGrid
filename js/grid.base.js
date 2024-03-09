@@ -4375,6 +4375,7 @@ $.fn.jqGrid = function( pin ) {
 				$("#"+pgcnt).on('keypress','input.ui-pg-input', function(e) {
 					var key = e.charCode || e.keyCode || 0;
 					if(key === 13) {
+						e.preventDefault();
 						if(!clearVals('user', this)) { return false; }
 						$(this).val( intNum( $(this).val(), 1));
 						ts.p.page = ($(this).val()>0) ? $(this).val():ts.p.page;
@@ -7611,6 +7612,7 @@ $.jgrid.extend({
 					}
 					//check if enter was pressed on a grid or treegrid node
 					else if( event.keyCode === 13 ){
+						event.preventDefault();
 						$($t).triggerHandler("jqGridKeyEnter", [$t.p.selrow, event]);
 						if($.jgrid.isFunction(o.onEnter)) {
 							o.onEnter.call($t, $t.p.selrow, event);

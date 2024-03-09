@@ -147,6 +147,7 @@ $.jgrid.extend({
 								return false;
 							}
 							if (e.keyCode === 13) {
+								e.preventDefault();
 								if($.jgrid.isFunction( o.onEnter )) {
 									o.onEnter.call($t, rowid, o, e);
 									return true;
