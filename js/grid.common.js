@@ -253,7 +253,9 @@ $.extend($.jgrid,{
 			closeOnEscape : true,
 			align: 'center',
 			buttonalign : 'center',
-			buttons : []
+			buttons : [], 
+			overlay : 10,
+			overlayClass : ''
 		// {text:'textbutt', id:"buttid", onClick : function(){...}}
 		// if the id is not provided we set it like info_button_+ the index in the array - i.e info_button_0,info_button_1...
 		};
@@ -261,6 +263,9 @@ $.extend($.jgrid,{
 		var jm = mopt.jqModal, self = this,
 		classes = $.jgrid.styleUI[(mopt.styleUI || 'jQueryUI')].modal,
 		common = $.jgrid.styleUI[(mopt.styleUI || 'jQueryUI')].common;
+		if(!mopt.overlayClass) {
+			mopt.overlayClass = common.overlay;
+		}
 		if($.fn.jqm && !jm) { jm = false; }
 		// in case there is no jqModal
 		var buttstr ="", i;
@@ -320,7 +325,9 @@ $.extend($.jgrid,{
 				if(h.o) { h.o.remove(); }
 			},
 			modal :mopt.modal,
-			jqm:jm
+			jqm:jm,
+			overlay : mopt.overlay,
+			overlayClass : mopt.overlayClass
 		});
 		if($.jgrid.isFunction(mopt.afterOpen) ) { mopt.afterOpen(); }
 		try{ $("#info_dialog").focus();} catch (m){}
