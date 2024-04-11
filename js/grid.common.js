@@ -261,8 +261,8 @@ $.extend($.jgrid,{
 		};
 		$.extend(true, mopt, $.jgrid.jqModal || {}, {caption:"<b>"+caption+"</b>"}, modalopt || {});
 		var jm = mopt.jqModal, self = this,
-		classes = $.jgrid.styleUI[(mopt.styleUI || 'jQueryUI')].modal,
-		common = $.jgrid.styleUI[(mopt.styleUI || 'jQueryUI')].common;
+		classes = $.jgrid.styleUI[(mopt.styleUI || $.jgrid.defaults.styleUI || 'jQueryUI')].modal,
+		common = $.jgrid.styleUI[(mopt.styleUI || $.jgrid.defaults.styleUI || 'jQueryUI')].common;
 		if(!mopt.overlayClass) {
 			mopt.overlayClass = common.overlay;
 		}
