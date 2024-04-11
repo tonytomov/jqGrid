@@ -28,7 +28,7 @@ $.extend($.jgrid,{
 	},
 	hideModal : function (selector,o) {
 		o = $.extend({jqm : true, gb :'', removemodal: false, formprop: false, form : ''}, o || {});
-		var thisgrid = o.gb && typeof o.gb === "string" && o.gb.substr(0,6) === "#gbox_" ? $("#" + o.gb.substr(6))[0] : false;
+		var thisgrid = o.gb && typeof o.gb === "string" && o.gb.slice(0,6) === "#gbox_" ? $("#" + o.gb.slice(6))[0] : false;
 		if(o.onClose) {
 			var oncret = thisgrid ? o.onClose.call(thisgrid, selector) : o.onClose(selector);
 			if (typeof oncret === 'boolean'  && !oncret ) { return; }
@@ -36,10 +36,10 @@ $.extend($.jgrid,{
 		if( o.formprop && thisgrid  && o.form) {
 			var frmgr, frmdata;
 			if(o.form==='edit'){
-				frmgr = '#' +$.jgrid.jqID("FrmGrid_"+ o.gb.substr(6));
+				frmgr = '#' +$.jgrid.jqID("FrmGrid_"+ o.gb.slice(6));
 				frmdata = "formProp";
 			} else if( o.form === 'view') {
-				frmgr = '#' +$.jgrid.jqID("ViewGrid_"+ o.gb.substr(6));
+				frmgr = '#' +$.jgrid.jqID("ViewGrid_"+ o.gb.slice(6));
 				frmdata = "viewProp";
 			}
 			$(thisgrid).data(frmdata, {

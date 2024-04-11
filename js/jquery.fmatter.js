@@ -419,10 +419,10 @@
 					stripTag = new RegExp(sep, "g");
 					ret = $(cellval).text();
 					if (op.prefix && op.prefix.length) {
-						ret = ret.substr(op.prefix.length);
+						ret = ret.slice(op.prefix.length);
 					}
 					if (op.suffix && op.suffix.length) {
-						ret = ret.substr(0, ret.length - op.suffix.length);
+						ret = ret.slice(0, ret.length - op.suffix.length);
 					}
 					ret = ret.replace(stripTag,'').replace(op.decimalSeparator,'.');
 					break;
