@@ -134,8 +134,8 @@ $.extend($.jgrid,{
 	},
 	parse : function(jsonString) {
 		var js = jsonString;
-		if (js.substr(0,9) === "while(1);") { js = js.substr(9); }
-		if (js.substr(0,2) === "/*") { js = js.substr(2,js.length-4); }
+		if (js.slice(0,9) === "while(1);") { js = js.slice(9); }
+		if (js.slice(0,2) === "/*") { js = js.slice(2,js.length-2); }
 		if(!js) { js = "{}"; }
 		return ($.jgrid.useJSON===true && typeof JSON === 'object' && typeof JSON.parse === 'function') ?
 			JSON.parse(js) :
@@ -149,7 +149,7 @@ $.extend($.jgrid,{
 		var days = Math.round((temp.setHours(0,0,0,0) - new Date(1899, 11, 30)) / 8.64e7);
 		// Get decimal part of day, OADate always assumes 24 hours in day
 		var partDay = (Math.abs((date - temp) % 8.64e7) / 8.64e7).toFixed(10);
-		return days + partDay.substr(1);
+		return days + partDay.slice(1);
 	},
 	parseDate : function(format, date, newformat, opts) {
 		var	token = /\\.|[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]/g,
@@ -490,7 +490,7 @@ $.extend($.jgrid,{
 		this._getStr=function(s){
 			var phrase=[];
 			if(_trim){
-				phrase.push("jQuery.trim(");
+				phrase.push("$.jgrid.trim(");
 			}
 			phrase.push("String("+s+")");
 			if(_trim){
@@ -3889,7 +3889,7 @@ $.fn.jqGrid = function( pin ) {
 			var cp, last, base, from,to,tot,fmt, pgboxes = "", sppg,
 			pgid = ts.p.pager ? ts.p.pager.substring(1) : "",
 			tspg = pgid ? "_"+pgid : "",
-			tspg_t = ts.p.toppager ? "_"+ts.p.toppager.substr(1) : "";
+			tspg_t = ts.p.toppager ? "_"+ts.p.toppager.slice(1) : "";
 			base = parseInt(ts.p.page,10)-1;
 			if(base < 0) { base = 0; }
 			base = base*parseInt(ts.p.rowNum,10);
@@ -5668,7 +5668,7 @@ $.fn.jqGrid = function( pin ) {
 		if(hg) { $(grid.hDiv).hide(); }
 		if(ts.p.pager){
 			// TBD -- escape ts.p.pager here?
-			if(typeof ts.p.pager === "string") {if(ts.p.pager.substr(0,1) === "#") { ts.p.pager = ts.p.pager.substring(1);} }
+			if(typeof ts.p.pager === "string") {if(ts.p.pager.slice(0,1) === "#") { ts.p.pager = ts.p.pager.substring(1);} }
 			else { ts.p.pager = $(ts.p.pager).attr("id");}
 			$("#"+$.jgrid.jqID(ts.p.pager)).css({width: (grid.width - bstw) +"px"}).addClass(getstyle(stylemodule,'pagerBox', true,'ui-jqgrid-pager')).appendTo(eg);
 			if(hg) {
