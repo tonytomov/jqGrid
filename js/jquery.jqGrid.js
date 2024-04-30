@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.5 - 2024-03-06
+* @license Guriddo jqGrid JS - v5.8.5 - 2024-04-30
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -139,8 +139,8 @@ $.extend($.jgrid,{
 	},
 	parse : function(jsonString) {
 		var js = jsonString;
-		if (js.substr(0,9) === "while(1);") { js = js.substr(9); }
-		if (js.substr(0,2) === "/*") { js = js.substr(2,js.length-4); }
+		if (js.slice(0,9) === "while(1);") { js = js.slice(9); }
+		if (js.slice(0,2) === "/*") { js = js.slice(2,js.length-2); }
 		if(!js) { js = "{}"; }
 		return ($.jgrid.useJSON===true && typeof JSON === 'object' && typeof JSON.parse === 'function') ?
 			JSON.parse(js) :
@@ -154,7 +154,7 @@ $.extend($.jgrid,{
 		var days = Math.round((temp.setHours(0,0,0,0) - new Date(1899, 11, 30)) / 8.64e7);
 		// Get decimal part of day, OADate always assumes 24 hours in day
 		var partDay = (Math.abs((date - temp) % 8.64e7) / 8.64e7).toFixed(10);
-		return days + partDay.substr(1);
+		return days + partDay.slice(1);
 	},
 	parseDate : function(format, date, newformat, opts) {
 		var	token = /\\.|[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]/g,
@@ -495,7 +495,7 @@ $.extend($.jgrid,{
 		this._getStr=function(s){
 			var phrase=[];
 			if(_trim){
-				phrase.push("jQuery.trim(");
+				phrase.push("$.jgrid.trim(");
 			}
 			phrase.push("String("+s+")");
 			if(_trim){
@@ -844,27 +844,31 @@ $.extend($.jgrid,{
 			return self._compareValues(self.lessOrEquals,f,v,"<=",t);
 		};
 		this.startsWith=function(f,v){
-			var val = $.jgrid.isNull(v) ? f: v,
-			length=_trim ? $.jgrid.trim(val.toString()).length : val.toString().length;
+			//var val = $.jgrid.isNull(v) ? f: v,
+			//length=_trim ? $.jgrid.trim(val.toString()).length : val.toString().length;
 			if(_useProperties){
-				self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(v)+'"'));
+				//self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.slice(0,'+length+') == '+self._getStr('"'+self._toStr(v)+'"'));
+				self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.startsWith('+self._getStr('"'+self._toStr(v)+'"')+')');
 			}else{
-				if ( !$.jgrid.isNull(v) ) { length=_trim?$.jgrid.trim(v.toString()).length:v.toString().length; }
-				self._append(self._getStr('this')+'.substr(0,'+length+') == '+self._getStr('"'+self._toStr(f)+'"'));
+				//if ( !$.jgrid.isNull(v) ) { length=_trim?$.jgrid.trim(v.toString()).length:v.toString().length; }
+				self._append(self._getStr('this')+'.startsWith(' +self._getStr('"'+self._toStr(f)+'"')+')');
 			}
 			self._setCommand(self.startsWith,f);
 			self._resetNegate();
 			return self;
 		};
 		this.endsWith=function(f,v){
-			var val = $.jgrid.isNull(v) ? f: v,
-			length=_trim ? $.jgrid.trim(val.toString()).length:val.toString().length;
+			//var val = $.jgrid.isNull(v) ? f: v,
+			//length=_trim ? $.jgrid.trim(val.toString()).length:val.toString().length;
 			if(_useProperties){
-				self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.substr('+self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.length-'+length+','+length+') == "'+self._toStr(v)+'"');
+				//self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.substr('+self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.length-'+length+','+length+') == "'+self._toStr(v)+'"');
+				self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.endsWith('+self._getStr('"'+self._toStr(v)+'"')+')');
 			} else {
-				self._append(self._getStr('this')+'.substr('+self._getStr('this')+'.length-"'+self._toStr(f)+'".length,"'+self._toStr(f)+'".length) == "'+self._toStr(f)+'"');
+				//self._append(self._getStr('this')+'.substr('+self._getStr('this')+'.length-"'+self._toStr(f)+'".length,"'+self._toStr(f)+'".length) == "'+self._toStr(f)+'"');
+				self._append(self._getStr('this')+'.endsWith(' +self._getStr('"'+self._toStr(f)+'"')+')');
 			}
-			self._setCommand(self.endsWith,f);self._resetNegate();
+			self._setCommand(self.endsWith,f);
+			self._resetNegate();
 			return self;
 		};
 		this.contains=function(f,v){
@@ -3894,7 +3898,7 @@ $.fn.jqGrid = function( pin ) {
 			var cp, last, base, from,to,tot,fmt, pgboxes = "", sppg,
 			pgid = ts.p.pager ? ts.p.pager.substring(1) : "",
 			tspg = pgid ? "_"+pgid : "",
-			tspg_t = ts.p.toppager ? "_"+ts.p.toppager.substr(1) : "";
+			tspg_t = ts.p.toppager ? "_"+ts.p.toppager.slice(1) : "";
 			base = parseInt(ts.p.page,10)-1;
 			if(base < 0) { base = 0; }
 			base = base*parseInt(ts.p.rowNum,10);
@@ -5673,7 +5677,7 @@ $.fn.jqGrid = function( pin ) {
 		if(hg) { $(grid.hDiv).hide(); }
 		if(ts.p.pager){
 			// TBD -- escape ts.p.pager here?
-			if(typeof ts.p.pager === "string") {if(ts.p.pager.substr(0,1) === "#") { ts.p.pager = ts.p.pager.substring(1);} }
+			if(typeof ts.p.pager === "string") {if(ts.p.pager.slice(0,1) === "#") { ts.p.pager = ts.p.pager.substring(1);} }
 			else { ts.p.pager = $(ts.p.pager).attr("id");}
 			$("#"+$.jgrid.jqID(ts.p.pager)).css({width: (grid.width - bstw) +"px"}).addClass(getstyle(stylemodule,'pagerBox', true,'ui-jqgrid-pager')).appendTo(eg);
 			if(hg) {
@@ -8921,7 +8925,7 @@ $.jgrid.extend({
 			var selection = $("<div style='position:fixed;top:0px;width:1px;height:1px;' tabindex='0'><div tabindex='-1' style='width:1px;height:1px;' id='"+$t.p.knv+"'></div></div>"),
 			i, kdir;
 			function scrollGrid(iR, iC, tp){
-				if (tp.substr(0,1)==='v') {
+				if (tp.slice(0,1)==='v') {
 					var ch = $($t.grid.bDiv)[0].clientHeight,
 					st = $($t.grid.bDiv)[0].scrollTop,
 					nROT = $t.rows[iR].offsetTop+$t.rows[iR].clientHeight,
@@ -9072,7 +9076,7 @@ $.extend($.jgrid,{
 	},
 	hideModal : function (selector,o) {
 		o = $.extend({jqm : true, gb :'', removemodal: false, formprop: false, form : ''}, o || {});
-		var thisgrid = o.gb && typeof o.gb === "string" && o.gb.substr(0,6) === "#gbox_" ? $("#" + o.gb.substr(6))[0] : false;
+		var thisgrid = o.gb && typeof o.gb === "string" && o.gb.slice(0,6) === "#gbox_" ? $("#" + o.gb.slice(6))[0] : false;
 		if(o.onClose) {
 			var oncret = thisgrid ? o.onClose.call(thisgrid, selector) : o.onClose(selector);
 			if (typeof oncret === 'boolean'  && !oncret ) { return; }
@@ -9080,10 +9084,10 @@ $.extend($.jgrid,{
 		if( o.formprop && thisgrid  && o.form) {
 			var frmgr, frmdata;
 			if(o.form==='edit'){
-				frmgr = '#' +$.jgrid.jqID("FrmGrid_"+ o.gb.substr(6));
+				frmgr = '#' +$.jgrid.jqID("FrmGrid_"+ o.gb.slice(6));
 				frmdata = "formProp";
 			} else if( o.form === 'view') {
-				frmgr = '#' +$.jgrid.jqID("ViewGrid_"+ o.gb.substr(6));
+				frmgr = '#' +$.jgrid.jqID("ViewGrid_"+ o.gb.slice(6));
 				frmdata = "viewProp";
 			}
 			$(thisgrid).data(frmdata, {
@@ -9297,14 +9301,19 @@ $.extend($.jgrid,{
 			closeOnEscape : true,
 			align: 'center',
 			buttonalign : 'center',
-			buttons : []
+			buttons : [], 
+			overlay : 10,
+			overlayClass : ''
 		// {text:'textbutt', id:"buttid", onClick : function(){...}}
 		// if the id is not provided we set it like info_button_+ the index in the array - i.e info_button_0,info_button_1...
 		};
 		$.extend(true, mopt, $.jgrid.jqModal || {}, {caption:"<b>"+caption+"</b>"}, modalopt || {});
 		var jm = mopt.jqModal, self = this,
-		classes = $.jgrid.styleUI[(mopt.styleUI || 'jQueryUI')].modal,
-		common = $.jgrid.styleUI[(mopt.styleUI || 'jQueryUI')].common;
+		classes = $.jgrid.styleUI[(mopt.styleUI || $.jgrid.defaults.styleUI || 'jQueryUI')].modal,
+		common = $.jgrid.styleUI[(mopt.styleUI || $.jgrid.defaults.styleUI || 'jQueryUI')].common;
+		if(!mopt.overlayClass) {
+			mopt.overlayClass = common.overlay;
+		}
 		if($.fn.jqm && !jm) { jm = false; }
 		// in case there is no jqModal
 		var buttstr ="", i;
@@ -9364,7 +9373,9 @@ $.extend($.jgrid,{
 				if(h.o) { h.o.remove(); }
 			},
 			modal :mopt.modal,
-			jqm:jm
+			jqm:jm,
+			overlay : mopt.overlay,
+			overlayClass : mopt.overlayClass
 		});
 		if($.jgrid.isFunction(mopt.afterOpen) ) { mopt.afterOpen(); }
 		try{ $("#info_dialog").focus();} catch (m){}
@@ -11027,6 +11038,8 @@ $.jgrid.extend({
 					$elem = $("#gs_"+$t.p.idPrefix+$.jgrid.jqID(this.name),(this.frozen===true && $t.p.frozenColumns === true) ?  $t.grid.fhDiv : $t.grid.hDiv);
 					if(this.searchoptions && this.searchoptions.defaultValue !== undefined) {
 						v = this.searchoptions.defaultValue;
+					} else {
+						v = undefined;
 					}
 					nm = this.index || this.name;
 					so[nm] = this.searchoptions && this.searchoptions.sopt ? this.searchoptions.sopt[0] : p.defaultSearch || 'eq';
@@ -12414,7 +12427,7 @@ $.jgrid.extend({
 									fld[0].checked = false;
 									fld[0].defaultChecked = false;
 									vl = $(fld).attr("offval");
-								} else if (fld[0].type && fld[0].type.substr(0,6)==='select') {
+								} else if (fld[0].type && fld[0].type.slice(0,6)==='select') {
 									fld[0].selectedIndex = 0;
 								} else {
 									fld.val(vl);
@@ -19907,10 +19920,10 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 					stripTag = new RegExp(sep, "g");
 					ret = $(cellval).text();
 					if (op.prefix && op.prefix.length) {
-						ret = ret.substr(op.prefix.length);
+						ret = ret.slice(op.prefix.length);
 					}
 					if (op.suffix && op.suffix.length) {
-						ret = ret.substr(0, ret.length - op.suffix.length);
+						ret = ret.slice(0, ret.length - op.suffix.length);
 					}
 					ret = ret.replace(stripTag,'').replace(op.decimalSeparator,'.');
 					break;
