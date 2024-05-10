@@ -737,6 +737,7 @@ $.jgrid.extend({
 			//startColumnName,
 			numberOfColumns,
 			titleText,
+			toolTip,
 			cVisibleColumns,
 			className,
 			colModel = ts.p.colModel,
@@ -787,6 +788,7 @@ $.jgrid.extend({
 					cghi = o.groupHeaders[iCol];
 					numberOfColumns = cghi.numberOfColumns;
 					titleText = cghi.titleText;
+					toolTip = cghi.toolTip || "";
 					className = cghi.className || "";
 					// caclulate the number of visible columns from the next numberOfColumns columns
 					for (cVisibleColumns = 0, iCol = 0; iCol < numberOfColumns && (i + iCol < cml); iCol++) {
@@ -805,7 +807,9 @@ $.jgrid.extend({
 					if(cVisibleColumns > 0) {
 						$colHeader.attr("colspan", String(cVisibleColumns));
 					}
-					if (ts.p.headertitles) {
+					if(typeof toolTip === "string" && toolTip !== "") {
+						$colHeader.attr("title", toolTip);
+					} else if (ts.p.headertitles) {
 						$colHeader.attr("title", $colHeader.text());
 					}
 					// hide if not a visible cols
