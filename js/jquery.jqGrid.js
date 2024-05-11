@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.6 - 2024-05-10
+* @license Guriddo jqGrid JS - v5.8.6 - 2024-05-11
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -15172,6 +15172,7 @@ $.jgrid.extend({
 			//startColumnName,
 			numberOfColumns,
 			titleText,
+                        toolTip,
 			cVisibleColumns,
 			className,
 			colModel = ts.p.colModel,
@@ -15219,8 +15220,9 @@ $.jgrid.extend({
 				if (iCol >= 0) {
 					cghi = ts.p.colSpanHeader[iCol];
 					numberOfColumns = cghi.numberOfColumns;
-					titleText = cghi.titleText;
+					titleText = cghi.titleText || "";
 					className = cghi.className || "";
+					toolTip = cghi.toolTip || "";
 					// caclulate the number of visible columns from the next numberOfColumns columns
 					for (cVisibleColumns = 0, iCol = 0; iCol < numberOfColumns && (i + iCol < cml); iCol++) {
 						if (!colModel[i + iCol].hidden) {
@@ -15235,13 +15237,14 @@ $.jgrid.extend({
 								$("tr",$thead).eq(k+1).find("th").eq(i).attr("colspan", String(cVisibleColumns));
 							}
 						}
-
 					}
 					if (titleText) {
 						var fl = $th.find("div.ui-th-div")[0].firstChild;
 						cghi.savedLabel = fl.data;
 						fl.data = titleText;
-						if (ts.p.headertitles) {
+						if(typeof toolTip === "string" && toolTip !== "") {
+							$th.attr("title", toolTip);
+						} else if (ts.p.headertitles) {
 							$th.attr("title", titleText);
 						}
 					}
