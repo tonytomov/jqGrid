@@ -3080,6 +3080,7 @@ $.fn.jqGrid = function( pin ) {
 				rnc = ni ? getstyle(stylemodule, 'rownumBox', false, 'jqgrid-rownum') :"",
 				scc = sc ? getstyle(stylemodule, 'searchBox', false, '') :"",
 				mlc = gi ? getstyle(stylemodule, 'multiBox', false, 'cbox'):"";
+				var offset = (ts.p.page-1)*rn + 1;
 				while (j<gl) {
 					xmlr = gxml[j];
 					rid = getId(xmlr,br+j);
@@ -3098,13 +3099,13 @@ $.fn.jqGrid = function( pin ) {
 						rowData.push( addRowNum(0, j, ts.p.page, ts.p.rowNum, rnc ) );
 					}
 					if( gi ) {
-						rowData.push( addMulti(rid, ni, j+rcnt, selr, mlc, xmlr) );
+						rowData.push( addMulti(rid, ni, j + offset, selr, mlc, xmlr) );
 					}
 					if( sc ){
-						rowData.push( addSearch(rid, gi+ni, j+rcnt, scc) );
+						rowData.push( addSearch(rid, gi+ni, j + offset, scc) );
 					}
 					if( si ) {
-						rowData.push( addSubGridCell.call(self, gi+ni+sc, j+rcnt) );
+						rowData.push( addSubGridCell.call(self, gi+ni+sc, j + offset) );
 					}
 					if(xmlRd.repeatitems){
 						if (!F) { F=orderedCols(gi+si+ni+sc); }
@@ -3288,7 +3289,7 @@ $.fn.jqGrid = function( pin ) {
 			ts.p.lastpage = intNum($.jgrid.getAccessor(data,dReader.total), 1);
 			ts.p.records = intNum($.jgrid.getAccessor(data,dReader.records));
 			ts.p.userData = $.jgrid.getAccessor(data,dReader.userdata) || {};
-
+			var offset = (ts.p.page-1)*rn + 1;
 			if(si) {
 				addSubGridCell = $.jgrid.getMethod("addSubGridCell");
 			}
@@ -3303,7 +3304,7 @@ $.fn.jqGrid = function( pin ) {
 			drows = $.jgrid.getAccessor(data,dReader.root);
 			if ( $.jgrid.isNull(drows) && Array.isArray(data)) { drows = data; }
 			if (!drows) { drows = []; }
-			len = drows.length; i=0;
+			len = drows.length; i = 0;
 			if (len > 0 && ts.p.page <= 0) { ts.p.page = 1; }
 			if (adjust) { rn *= adjust+1; }
 			if(ts.p.datatype === "local" && !ts.p.deselectAfterSort) {
@@ -3347,13 +3348,13 @@ $.fn.jqGrid = function( pin ) {
 					rowData.push( addRowNum(0, i, ts.p.page, ts.p.rowNum, rnc ) );
 				}
 				if( gi ){
-					rowData.push( addMulti(idr, ni, i+rcnt, selr, mlc, cur) );
+					rowData.push( addMulti(idr, ni, i + offset, selr, mlc, cur) );
 				}
 				if( sc ){
-					rowData.push( addSearch(idr, gi+ni, i+rcnt, scc) );
+					rowData.push( addSearch(idr, gi+ni, i + offset, scc) );
 				}
 				if( si ) {
-					rowData.push( addSubGridCell.call(self ,gi+ni+sc,i+rcnt) );
+					rowData.push( addSubGridCell.call(self ,gi+ni+sc,i + offset) );
 				}
 				rowReader=objectReader;
 				if (dReader.repeatitems) {
