@@ -3085,7 +3085,7 @@ $.fn.jqGrid = function( pin ) {
 				rnc = ni ? getstyle(stylemodule, 'rownumBox', false, 'jqgrid-rownum') :"",
 				scc = sc ? getstyle(stylemodule, 'searchBox', false, '') :"",
 				mlc = gi ? getstyle(stylemodule, 'multiBox', false, 'cbox'):"";
-				var offset = (ts.p.page-1)*rn + 1;
+
 				while (j<gl) {
 					xmlr = gxml[j];
 					rid = getId(xmlr,br+j);
@@ -3104,13 +3104,13 @@ $.fn.jqGrid = function( pin ) {
 						rowData.push( addRowNum(0, j, ts.p.page, ts.p.rowNum, rnc ) );
 					}
 					if( gi ) {
-						rowData.push( addMulti(rid, ni, j + offset, selr, mlc, xmlr) );
+						rowData.push( addMulti(rid, ni, j + 1, selr, mlc, xmlr) );
 					}
 					if( sc ){
-						rowData.push( addSearch(rid, gi+ni, j + offset, scc) );
+						rowData.push( addSearch(rid, gi+ni, j + 1, scc) );
 					}
 					if( si ) {
-						rowData.push( addSubGridCell.call(self, gi+ni+sc, j + offset) );
+						rowData.push( addSubGridCell.call(self, gi+ni+sc, j + 1) );
 					}
 					if(xmlRd.repeatitems){
 						if (!F) { F=orderedCols(gi+si+ni+sc); }
@@ -3294,7 +3294,7 @@ $.fn.jqGrid = function( pin ) {
 			ts.p.lastpage = intNum($.jgrid.getAccessor(data,dReader.total), 1);
 			ts.p.records = intNum($.jgrid.getAccessor(data,dReader.records));
 			ts.p.userData = $.jgrid.getAccessor(data,dReader.userdata) || {};
-			var offset = (ts.p.page-1)*rn + 1;
+			
 			if(si) {
 				addSubGridCell = $.jgrid.getMethod("addSubGridCell");
 			}
@@ -3353,13 +3353,13 @@ $.fn.jqGrid = function( pin ) {
 					rowData.push( addRowNum(0, i, ts.p.page, ts.p.rowNum, rnc ) );
 				}
 				if( gi ){
-					rowData.push( addMulti(idr, ni, i + offset, selr, mlc, cur) );
+					rowData.push( addMulti(idr, ni, i + 1, selr, mlc, cur) );
 				}
 				if( sc ){
-					rowData.push( addSearch(idr, gi+ni, i + offset, scc) );
+					rowData.push( addSearch(idr, gi+ni, i + 1, scc) );
 				}
 				if( si ) {
-					rowData.push( addSubGridCell.call(self ,gi+ni+sc,i + offset) );
+					rowData.push( addSubGridCell.call(self ,gi+ni+sc,i + 1) );
 				}
 				rowReader=objectReader;
 				if (dReader.repeatitems) {
