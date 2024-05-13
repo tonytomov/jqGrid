@@ -2797,7 +2797,7 @@ $.fn.jqGrid = function( pin ) {
 			return "<td role=\"gridcell\" "+prp+">"+v+"</td>";
 		},
 		addRowNum = function (pos, irow, pG, rN, uiclass ) {
-			var v =  (parseInt(pG,10)-1)*parseInt(rN,10)+1+irow,
+			var v =  (parseInt(pG,10)-1)*parseInt(rN,10) + irow,
 			prp = formatCol( pos,irow,v, null, irow, true);
 			return "<td role=\"gridcell\" "+uiclass+" "+prp+">"+v+"</td>";
 		},
