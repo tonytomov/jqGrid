@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.6 - 2024-05-13
+* @license Guriddo jqGrid JS - v5.8.6 - 2024-05-15
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -15241,8 +15241,8 @@ $.jgrid.extend({
 					}
 					if (titleText) {
 						var fl = $th.find("div.ui-th-div")[0].firstChild;
-						cghi.savedLabel = fl.data;
-						fl.data = titleText;
+						cghi.savedLabel = fl.outerHTML;
+						fl.outerHTML = titleText;
 						if(typeof toolTip === "string" && toolTip !== "") {
 							$th.attr("title", toolTip);
 						} else if (ts.p.headertitles) {
@@ -15303,7 +15303,7 @@ $.jgrid.extend({
 						$(itm).attr("colspan","").removeClass( itm.className );
 						if($(n).hasClass('ui-jqgrid-labels')) {
 							fl = itm.find("div.ui-th-div")[0].firstChild;
-							fl.data = clitem.savedLabel;
+							fl.outerHTML = clitem.savedLabel;
 						}
 						for(k=1;k<clitem.numberOfColumns;k++) {
 							$("th", n).eq(cellInd+k).show();
