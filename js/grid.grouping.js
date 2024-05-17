@@ -651,9 +651,9 @@ $.jgrid.extend({
 						}
 					}
 					if (titleText) {
-						var fl = $th.find("div.ui-th-div")[0].firstChild;
-						cghi.savedLabel = fl.outerHTML;
-						fl.outerHTML = titleText;
+						var fl = $th.find("div.ui-th-div")[0];
+						cghi.savedLabel = fl.innerHTML;
+						fl.innerHTML = titleText;
 						if(typeof toolTip === "string" && toolTip !== "") {
 							$th.attr("title", toolTip);
 						} else if (ts.p.headertitles) {
@@ -713,8 +713,8 @@ $.jgrid.extend({
 						}
 						$(itm).attr("colspan","").removeClass( itm.className );
 						if($(n).hasClass('ui-jqgrid-labels')) {
-							fl = itm.find("div.ui-th-div")[0].firstChild;
-							fl.outerHTML = clitem.savedLabel;
+							fl = itm.find("div.ui-th-div")[0];
+							fl.innerHTML = clitem.savedLabel;
 						}
 						for(k=1;k<clitem.numberOfColumns;k++) {
 							$("th", n).eq(cellInd+k).show();
