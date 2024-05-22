@@ -302,7 +302,8 @@ $.jgrid.extend({
 			highlight = getstyle($t.p.styleUI+'.common','highlight', true);
 			$t.p.F2key = false;
 			// basic functions
-			function isValidCell(row, col) {
+			var baseFunc = {
+				isValidCell : function (row, col) {
 				return (
 					!isNaN(row) &&
 					!isNaN(col) &&
@@ -312,8 +313,8 @@ $.jgrid.extend({
 					row < $t.rows.length &&
 					col < $t.p.colModel.length
 				);
-			}
-			function getNextCell( dirX, dirY) {
+				},
+				getNextCell: function ( dirX, dirY) {
 				var row = $t.p.iRow + dirY; // set the default one when initialize grid
 				var col = $t.p.iCol + dirX; // set the default .................
 				var rowCount = $t.rows.length;
@@ -337,12 +338,12 @@ $.jgrid.extend({
 							row--;
 						}
 				}
-				if (isValidCell(row, col)) {
+					if (this.isValidCell(row, col)) {
 					return {
 						row: row,
 						col: col
 					};
-				} else if (isValidCell($t.p.iRow, $t.p.iCol)) {
+					} else if (this.isValidCell($t.p.iRow, $t.p.iCol)) {
 					return {
 						row: $t.p.iRow,
 						col: $t.p.iCol
@@ -350,9 +351,9 @@ $.jgrid.extend({
 				} else {
 					return false;
 				}
-			}
-			function getNextVisibleCell(dirX, dirY) {
-				var nextCell = getNextCell( dirX, dirY);
+				},
+				getNextVisibleCell : function (dirX, dirY) {
+					var nextCell = this.getNextCell( dirX, dirY);
 				if (!nextCell) {
 					return false;
 				}
@@ -360,7 +361,7 @@ $.jgrid.extend({
 				while ( $($t.rows[nextCell.row].cells[nextCell.col]).is(":hidden") ) {
 					$t.p.iRow = nextCell.row;
 					$t.p.iCol = nextCell.col;
-					nextCell = getNextCell(dirX, dirY);
+						nextCell = this.getNextCell(dirX, dirY);
 					if ($t.p.iRow  === nextCell.row && $t.p.iCol  === nextCell.col) {
 						// There are no more cells to try if getNextCell returns the current cell
 						return false;
@@ -371,8 +372,8 @@ $.jgrid.extend({
 				}
 
 				return nextCell;
-			}
-			function movePage ( dir ) {
+				},
+				movePage : function ( dir ) {
 				var curpage = $t.p.page, last =$t.p.lastpage;
 				curpage = curpage + dir;
 				if( curpage <= 0) {
@@ -387,6 +388,7 @@ $.jgrid.extend({
 				$t.p.page = curpage;
 				$t.grid.populate();
 			}
+			};
 			var focusableElementsSelector = $.jgrid.focusableElementsList.join();
 			/*
 			function hasFocusableChild( el) {
@@ -438,7 +440,7 @@ $.jgrid.extend({
 					return;
 				}
 				if(onKeyCheck) {
-					if(!onKeyCheck.call($t, $t.rows[$t.p.iRow].id, $t.p.iRow, $t.p.iCol, e) ) {
+					if(!onKeyCheck.call($t, $t.rows[$t.p.iRow].id, $t.p.iRow, $t.p.iCol, e, baseFunc) ) {
 						return;
 					}
 				}
@@ -447,26 +449,26 @@ $.jgrid.extend({
 
 				switch(key) {
 					case (38) : // UP
-						nextCell = getNextVisibleCell(0, -1);
+						nextCell = baseFunc.getNextVisibleCell(0, -1);
 						focusRow = nextCell.row;
 						focusCol = nextCell.col;
 						e.preventDefault();
 						break;
 					case (40) : // DOWN
 					case 13 : // Enter
-						nextCell = getNextVisibleCell(0, 1);
+						nextCell = baseFunc.getNextVisibleCell(0, 1);
 						focusRow = nextCell.row;
 						focusCol = nextCell.col;
 						e.preventDefault();
 						break;
 					case (37) : // LEFT
-						nextCell = getNextVisibleCell(-1, 0);
+						nextCell = baseFunc.getNextVisibleCell(-1, 0);
 						focusRow = nextCell.row;
 						focusCol = nextCell.col;
 						e.preventDefault();
 						break;
 					case (39) : // RIGHT
-						nextCell = getNextVisibleCell(1, 0);
+						nextCell = baseFunc.getNextVisibleCell(1, 0);
 						focusRow = nextCell.row;
 						focusCol = nextCell.col;
 						e.preventDefault();
@@ -491,13 +493,13 @@ $.jgrid.extend({
 						break;
 					case 33 : // PAGEUP
 
-						movePage( -1 );
+						baseFunc.movePage( -1 );
 						focusCol = $t.p.iCol;
 						focusRow = $t.p.iRow;
 						e.preventDefault();
 						break;
 					case 34 : // PAGEDOWN
-						movePage( 1 );
+						baseFunc.movePage( 1 );
 						focusCol = $t.p.iCol;
 						focusRow = $t.p.iRow;
 						if(focusRow > $t.rows.length-1) {
@@ -508,9 +510,9 @@ $.jgrid.extend({
 						break;
 					case 9 : //TAB
 						if (e.shiftKey) {
-							nextCell = getNextVisibleCell(-1, 0);
+							nextCell = baseFunc.getNextVisibleCell(-1, 0);
 						} else {
-							nextCell = getNextVisibleCell(1, 0);
+							nextCell = baseFunc.getNextVisibleCell(1, 0);
 
 						}
 						focusRow = nextCell.row;
