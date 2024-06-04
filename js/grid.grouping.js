@@ -214,7 +214,7 @@ $.jgrid.extend({
 						}
 						footLevel = parseInt($(r).attr("jqfootlevel") ,10);
 						skip = isNaN(footLevel) ? false : 
-						 (grp.showSummaryOnHide && footLevel >= num);
+						 (grp.showSummaryOnHide && footLevel <= num);
 						if( !skip) {
 							$(r).hide();
 						}

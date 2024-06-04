@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.7 - 2024-06-01
+* @license Guriddo jqGrid JS - v5.8.7 - 2024-06-04
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -14803,7 +14803,7 @@ $.jgrid.extend({
 						}
 						footLevel = parseInt($(r).attr("jqfootlevel") ,10);
 						skip = isNaN(footLevel) ? false : 
-						 (grp.showSummaryOnHide && footLevel >= num);
+						 (grp.showSummaryOnHide && footLevel <= num);
 						if( !skip) {
 							$(r).hide();
 						}
