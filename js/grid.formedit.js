@@ -1857,15 +1857,15 @@ $.jgrid.extend({
 			}
 			var alert_info = function(){
 				 $.jgrid.info_dialog(o.alertcap,"<div>"+o.alerttext+"</div><span tabindex='0'><span tabindex='-1' id='jqg_alrt'></span></span>","",{
-						jqModal:true,
-						drag:true,
-						resize:true,
-						caption:o.alertcap,
+					jqModal:true,
+					drag:true,
+					resize:true,
+					caption:o.alertcap,
 					width:o.alertwidth,
 					height: o.alertheight,
-						top:o.alerttop,
-						left:o.alertleft,
-						closeOnEscape:o.closeOnEscape, 
+					top:o.alerttop,
+					left:o.alertleft,
+					closeOnEscape:o.closeOnEscape, 
 					styleUI: $t.p.styleUI,
 					zIndex: o.alertzIndex}
 				);
