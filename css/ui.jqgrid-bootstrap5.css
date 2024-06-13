@@ -405,7 +405,8 @@ div.tablediv > .table-bordered {
 .ui-jqgrid .ui-jqgrid-toppager .ui-pg-input { 
 	display: inline-block;
 	height:auto;
-	width: 50px;
+	width: auto;
+        max-width: 50px;
 	font-size: inherit; 
 	margin:0;
 	line-height: inherit;
