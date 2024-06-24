@@ -4065,10 +4065,12 @@ $.fn.jqGrid = function( pin ) {
 						prm[pN.sort] = gs;
 						prm[pN.order] = "";
 					}
+					/*
 					if(ts.p.datatype==='local' && !grp._locgr) {
 						ts.p.datatype = 'jsonstring';
 						ts.p.datastr = ts.p.data;
 					}
+					*/
 				}
 				$.extend(ts.p.postData,prm);
 				var rcnt = !ts.p.scroll ? 1 : ts.rows.length-1;
@@ -4161,10 +4163,12 @@ $.fn.jqGrid = function( pin ) {
 						return;
 					}
 					addJSONData(dstr);
+					/*
 					if(ts.p.grouping && ts.p.groupingView._locgr) {
 						// back to original data???
 						ts.p.data = dstr;
 					}
+					*/
 					afterprocess(dstr, lcf);
 				break;
 				case "local":
