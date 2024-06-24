@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.7 - 2024-06-04
+* @license Guriddo jqGrid JS - v5.8.7 - 2024-06-24
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -4070,10 +4070,12 @@ $.fn.jqGrid = function( pin ) {
 						prm[pN.sort] = gs;
 						prm[pN.order] = "";
 					}
+					/*
 					if(ts.p.datatype==='local' && !grp._locgr) {
 						ts.p.datatype = 'jsonstring';
 						ts.p.datastr = ts.p.data;
 					}
+					*/
 				}
 				$.extend(ts.p.postData,prm);
 				var rcnt = !ts.p.scroll ? 1 : ts.rows.length-1;
@@ -4166,10 +4168,12 @@ $.fn.jqGrid = function( pin ) {
 						return;
 					}
 					addJSONData(dstr);
+					/*
 					if(ts.p.grouping && ts.p.groupingView._locgr) {
 						// back to original data???
 						ts.p.data = dstr;
 					}
+					*/
 					afterprocess(dstr, lcf);
 				break;
 				case "local":
@@ -13989,15 +13993,15 @@ $.jgrid.extend({
 			}
 			var alert_info = function(){
 				 $.jgrid.info_dialog(o.alertcap,"<div>"+o.alerttext+"</div><span tabindex='0'><span tabindex='-1' id='jqg_alrt'></span></span>","",{
-						jqModal:true,
-						drag:true,
-						resize:true,
-						caption:o.alertcap,
+					jqModal:true,
+					drag:true,
+					resize:true,
+					caption:o.alertcap,
 					width:o.alertwidth,
 					height: o.alertheight,
-						top:o.alerttop,
-						left:o.alertleft,
-						closeOnEscape:o.closeOnEscape, 
+					top:o.alerttop,
+					left:o.alertleft,
+					closeOnEscape:o.closeOnEscape, 
 					styleUI: $t.p.styleUI,
 					zIndex: o.alertzIndex}
 				);
