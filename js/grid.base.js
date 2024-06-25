@@ -4674,6 +4674,9 @@ $.fn.jqGrid = function( pin ) {
 				if(ts.p.tblwidth > ts.p.width) {
 					ts.p.colModel[lvc].width -= (ts.p.tblwidth - parseInt(ts.p.width,10));
 					ts.p.tblwidth = ts.p.width;
+				} else if(!hs && ts.p.tblwidth === ts.p.width) {
+					ts.p.colModel[lvc].width -= bstw;
+					ts.p.tblwidth -= bstw;
 				}
 			}
 		},

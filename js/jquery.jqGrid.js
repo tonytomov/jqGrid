@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.7 - 2024-06-24
+* @license Guriddo jqGrid JS - v5.8.7 - 2024-06-25
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -4679,6 +4679,9 @@ $.fn.jqGrid = function( pin ) {
 				if(ts.p.tblwidth > ts.p.width) {
 					ts.p.colModel[lvc].width -= (ts.p.tblwidth - parseInt(ts.p.width,10));
 					ts.p.tblwidth = ts.p.width;
+				} else if(!hs && ts.p.tblwidth === ts.p.width) {
+					ts.p.colModel[lvc].width -= bstw;
+					ts.p.tblwidth -= bstw;
 				}
 			}
 		},
