@@ -36,6 +36,7 @@ $.jgrid.extend({
 				displayField: [],
 				groupSummaryPos:[],
 				formatDisplayField : [],
+				prepareGroupField : null,
 				_locgr : false
 			}, true);
 		});
@@ -123,6 +124,7 @@ $.jgrid.extend({
 				}
 			},
 			grlen = grp.groupField.length, 
+			formatVal = $.jgrid.isFunction(grp.prepareGroupField),
 			fieldName,
 			v,
 			displayName,
@@ -133,7 +135,9 @@ $.jgrid.extend({
 				displayName = grp.displayField[i];
 				v = record[fieldName];
 				displayValue = displayName == null ? null : record[displayName];
-
+				if( formatVal ) {
+					v = grp.prepareGroupField(v, fieldName, record);
+				}
 				if( displayValue == null ) {
 					displayValue = v;
 				}
@@ -143,8 +147,6 @@ $.jgrid.extend({
 						grp.groups.push({idx:i,dataIndex:fieldName,value:v, displayValue: displayValue, startRow: irow, cnt:1, summary : [] } );
 						grp.lastvalues[i] = v;
 						grp.counters[i] = {cnt:1, pos:grp.groups.length-1, summary: $.extend(true,[],grp.summary)};
-						$.each(grp.counters[i].summary, sumGroups);
-						grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
 					} else {
 						if (typeof v !== "object" && (Array.isArray(grp.isInTheSameGroup) && $.jgrid.isFunction(grp.isInTheSameGroup[i]) ? ! grp.isInTheSameGroup[i].call($t, grp.lastvalues[i], v, i, grp): grp.lastvalues[i] !== v)) {
 							// This record is not in same group as previous one
@@ -152,24 +154,20 @@ $.jgrid.extend({
 							grp.lastvalues[i] = v;
 							changed = 1;
 							grp.counters[i] = {cnt:1, pos:grp.groups.length-1, summary: $.extend(true,[],grp.summary)};
-							$.each(grp.counters[i].summary, sumGroups);
-							grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
 						} else {
 							if (changed === 1) {
 								// This group has changed because an earlier group changed.
 								grp.groups.push({idx:i,dataIndex:fieldName,value:v, displayValue: displayValue, startRow: irow, cnt:1, summary : [] } );
 								grp.lastvalues[i] = v;
 								grp.counters[i] = {cnt:1, pos:grp.groups.length-1, summary: $.extend(true,[],grp.summary)};
-								$.each(grp.counters[i].summary, sumGroups);
-								grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
 							} else {
 								grp.counters[i].cnt += 1;
 								grp.groups[grp.counters[i].pos].cnt = grp.counters[i].cnt;
-								$.each(grp.counters[i].summary, sumGroups);
-								grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;
 							}
 						}
 					}
+					$.each(grp.counters[i].summary, sumGroups);
+					grp.groups[grp.counters[i].pos].summary = grp.counters[i].summary;					
 				}
 			}
 			//gdata.push( rData );
