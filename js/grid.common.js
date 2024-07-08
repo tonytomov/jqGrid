@@ -30,7 +30,8 @@ $.extend($.jgrid,{
 		o = $.extend({jqm : true, gb :'', removemodal: false, formprop: false, form : ''}, o || {});
 		var thisgrid = o.gb && typeof o.gb === "string" && o.gb.slice(0,6) === "#gbox_" ? $("#" + o.gb.slice(6))[0] : false;
 		if(o.onClose) {
-			var oncret = thisgrid ? o.onClose.call(thisgrid, selector) : o.onClose(selector);
+			var args = thisgrid ? [thisgrid, selector] : [selector];
+			var oncret = $.jgrid.executeEvent(o.onClose, args);
 			if (typeof oncret === 'boolean'  && !oncret ) { return; }
 		}
 		if( o.formprop && thisgrid  && o.form) {

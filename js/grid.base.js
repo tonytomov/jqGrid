@@ -451,6 +451,19 @@ $.extend($.jgrid,{
 		$(div).remove();
 		return (w1 - w2) < 0 ? 18 : (w1 - w2);
 	},
+	executeEvent: function (func, args) {
+		if (typeof func === 'string') {
+			var onFncNameSpaces = func.split('.');
+			var onFunc = onFncNameSpaces.pop();
+			var onFuncContext = window;
+			for (var i = 0; i < onFncNameSpaces.length; i++) {
+				onFuncContext = onFuncContext[onFncNameSpaces[i]];
+			}
+			return onFuncContext[onFunc].apply(onFuncContext, args);
+		} else {
+			return func.call(...args);
+		}
+	},
 	ajaxOptions: {},
 	from : function(source){
 		// Original Author Hugo Bonacci
