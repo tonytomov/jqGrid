@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.8 - 2024-07-08
+* @license Guriddo jqGrid JS - v5.8.8 - 2024-07-17
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -11258,8 +11258,8 @@ $.jgrid.extend({
 					if(p.searchOperators) {
 						var oper = soper[i];
 						if(oper) {
-							$(".ui-search-table .ui-search-oper [colname='userId']", orgCol).attr({'soper': oper}).text( p.operands[oper]);
-							$(".ui-search-table .ui-search-oper [colname='userId']", frozenCol).attr({'soper': oper}).text( p.operands[oper]);
+							$(".ui-search-table .ui-search-oper [colname='"+i+"']", orgCol).attr({'soper': oper}).text( p.operands[oper]);
+							$(".ui-search-table .ui-search-oper [colname='"+i+"']", frozenCol).attr({'soper': oper}).text( p.operands[oper]);
 						}
 					}
 					// custom element
@@ -11277,7 +11277,7 @@ $.jgrid.extend({
  						}
 					} else {
 						$("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(i), orgCol).val( n );
-						$("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(i), frozenCol).val( n );
+						$("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(i), frozenCol).val( n ).focus();
 					}
 				});
 			};

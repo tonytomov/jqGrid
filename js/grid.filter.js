@@ -1227,8 +1227,8 @@ $.jgrid.extend({
 					if(p.searchOperators) {
 						var oper = soper[i];
 						if(oper) {
-							$(".ui-search-table .ui-search-oper [colname='userId']", orgCol).attr({'soper': oper}).text( p.operands[oper]);
-							$(".ui-search-table .ui-search-oper [colname='userId']", frozenCol).attr({'soper': oper}).text( p.operands[oper]);
+							$(".ui-search-table .ui-search-oper [colname='"+i+"']", orgCol).attr({'soper': oper}).text( p.operands[oper]);
+							$(".ui-search-table .ui-search-oper [colname='"+i+"']", frozenCol).attr({'soper': oper}).text( p.operands[oper]);
 						}
 					}
 					// custom element
@@ -1246,7 +1246,7 @@ $.jgrid.extend({
  						}
 					} else {
 						$("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(i), orgCol).val( n );
-						$("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(i), frozenCol).val( n );
+						$("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(i), frozenCol).val( n ).focus();
 					}
 				});
 			};
