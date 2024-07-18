@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.8 - 2024-07-17
+* @license Guriddo jqGrid JS - v5.8.8 - 2024-07-18
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -11241,6 +11241,12 @@ $.jgrid.extend({
 					$($t).triggerHandler("jqGridToolbarSelectOper", [v, oper, elem]);
 					$("#sopt_menu").hide();
 					$(elem).text(oper).attr("soper",v);
+					if($t.p.frozenColumns) {
+						let ind = $(elem).parent("td").index();
+						if(ind >= 0) {
+							$("#gview_"+$.jgrid.jqID($t.p.id)+ " .ui-jqgrid-hdiv .soptclass").eq(ind).text(oper).attr("soper",v);
+						}
+					}
 					if(p.autosearch===true){
 						var inpelm = $(elem).parent().next().children()[0];
 						if( $(inpelm).val() || v==="nu" || v ==="nn" || $.inArray(v, unaryOpers) >=0) {
