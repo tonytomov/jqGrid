@@ -1210,10 +1210,10 @@ $.jgrid.extend({
 					$($t).triggerHandler("jqGridToolbarSelectOper", [v, oper, elem]);
 					$("#sopt_menu").hide();
 					$(elem).text(oper).attr("soper",v);
-					if($t.p.frozenColumns) {
-						let ind = $(elem).parent("td").index();
+					if($t.p.frozenColumns && $(elem).parents('div.frozen-div').length ) {
+						let ind = $(elem).parents("th").index();
 						if(ind >= 0) {
-							$("#gview_"+$.jgrid.jqID($t.p.id)+ " .ui-jqgrid-hdiv .soptclass").eq(ind).text(oper).attr("soper",v);
+							$("#gview_"+$.jgrid.jqID($t.p.id)+ " .ui-jqgrid-hdiv .ui-search-toolbar th").eq(ind).find('a.soptclass').text(oper).attr("soper",v);
 						}
 					}
 					if(p.autosearch===true){
