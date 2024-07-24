@@ -11076,6 +11076,7 @@ $.jgrid.extend({
 					saveurl = $t.p.url;
 					$($t).jqGrid("setGridParam", { url: p.url });
 				}
+				var ae = document.activeElement;
 				var bsr = $($t).triggerHandler("jqGridToolbarBeforeSearch") === 'stop' ? true : false;
 				if(!bsr && $.jgrid.isFunction(p.beforeSearch)){bsr = p.beforeSearch.call($t);}
 				if(!bsr) { $($t).jqGrid("setGridParam",{search:sd}).trigger("reloadGrid",[ { page: currentPage } ] ); }
@@ -11083,7 +11084,7 @@ $.jgrid.extend({
 				$($t).triggerHandler("jqGridToolbarAfterSearch");
 				if($.jgrid.isFunction(p.afterSearch)){p.afterSearch.call($t);}
 				if($t.p.frozenColumns) {
-					setToolbarFozenVal(afrcol,sopt,ssfield, arcustom );
+					setToolbarFrozenVal(afrcol,sopt,ssfield, arcustom, ae );
 				}
 			},
 			clearToolbar = function(trigger){
@@ -11255,7 +11256,7 @@ $.jgrid.extend({
 					}
 				});
 			},
-			setToolbarFozenVal = function( ffields, soper, smultiselect, arcustom) {
+			setToolbarFrozenVal = function( ffields, soper, smultiselect, arcustom, ae) {
 				var orgCol = $(".ui-search-toolbar", $t.grid.hDiv),
 					frozenCol = $(".ui-search-toolbar", $t.grid.fhDiv);
 				$.each(ffields, function(i,n){ 
