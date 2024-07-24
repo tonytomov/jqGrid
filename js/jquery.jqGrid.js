@@ -11282,8 +11282,13 @@ $.jgrid.extend({
 							}
  						}
 					} else {
-						$("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(i), orgCol).val( n );
-						$("#gs_"+ $t.p.idPrefix + $.jgrid.jqID(i), frozenCol).val( n ).focus();
+						let el = "gs_"+ $t.p.idPrefix + $.jgrid.jqID(i);
+						$("#"+el, orgCol).val( n );
+						if (el === ae.id) {
+							$("#"+el, frozenCol).val( n ).focus();
+						} else {
+							$("#"+el, frozenCol).val( n );
+						}
 					}
 				});
 			};
