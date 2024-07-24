@@ -25,7 +25,7 @@ if(!$.jgrid.hasOwnProperty("regional")) {
 }
 $.jgrid.regional["fa"] = {
         defaults: {
-            recordtext: "نمابش {0} - {1} از {2}",
+            recordtext: "نمایش {0} - {1} از {2}",
             emptyrecords: "رکوردی یافت نشد",
             loadtext: "بارگزاري...",
 			savetext: "Saving...",
