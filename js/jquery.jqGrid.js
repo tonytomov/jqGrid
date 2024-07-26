@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.8 - 2024-07-24
+* @license Guriddo jqGrid JS - v5.8.8 - 2024-07-26
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -20563,6 +20563,11 @@ $.extend($.jgrid,{
 		}
 		return currNode;
 	},
+	xmlToString : function (xmlDom) {
+		return (typeof XMLSerializer!=="undefined") ? 
+			(new window.XMLSerializer()).serializeToString(xmlDom) : 
+			xmlDom.xml;
+	},
 	xmlToZip : function ( zip, obj ) {
 		var $t = this,
 		xmlserialiser = new XMLSerializer(),
@@ -20885,6 +20890,12 @@ $.extend($.jgrid,{
 		if( $.isEmptyObject( obj )) {
 			obj.excel_parsers = true;
 		}
+		var checkSt = true;
+		if(styleSh == null) {
+			var es= $.jgrid.excelStrings;
+			styleSh = $.parseXML( es['xl/styles.xml']);
+			checkSt = false;
+		}
 		//var	styleSh = $.parseXML( $.jgrid.excelStrings['xl/styles.xml']), //xlsx.xl["styles.xml"];
 		var formats = styleSh.getElementsByTagName("numFmts")[0],
 		celsX = styleSh.getElementsByTagName("cellXfs")[0];
@@ -20932,7 +20943,10 @@ $.extend($.jgrid,{
 			celsX.appendChild( mycell );
 			count = $('cellXfs xf', styleSh).length;
 			$(celsX).attr("count", count);
-			obj[style] = count - 1;
+			obj[style] = count-1;
+			if(!checkSt) {
+				es['xl/styles.xml'] = $.jgrid.xmlToString( styleSh );
+			}
 		}
 		return obj;
 	},
@@ -21576,7 +21590,7 @@ $.jgrid.extend({
 											break;
 										}
 									}
-									cell = _makeCellSpecial( {r: cellId,s: special.style}, v );
+									cell = _makeCellSpecial( { r: cellId,s: special.style}, v );
 								}
 								rowNode.appendChild( cell );
 								break;
