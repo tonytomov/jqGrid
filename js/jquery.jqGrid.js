@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.8 - 2024-07-26
+* @license Guriddo jqGrid JS - v5.8.8 - 2024-08-05
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5304,7 +5304,7 @@ $.fn.jqGrid = function( pin ) {
 		ts.p.sortorder = ts.p.sortorder.toLowerCase();
 		$.jgrid.cell_width = $.jgrid.cellWidth();
 		// calculate cellLayout
-		var bstw2 = $("<table style='visibility:hidden'><tr class='jqgrow'><td>1</td></tr></table)").addClass(getstyle(stylemodule,"rowTable", true, 'ui-jqgrid-btable ui-common-table'));
+		var bstw2 = $("<table style='visibility:hidden'><tr class='jqgrow'><td>1</td></tr></table>").addClass(getstyle(stylemodule,"rowTable", true, 'ui-jqgrid-btable ui-common-table'));
 		$(eg).append(bstw2);
 		ts.p.cellLayout = $.jgrid.floatNum( $("td", bstw2).css('padding-left')) + $.jgrid.floatNum($("td", bstw2).css('padding-right'), 10) + 1;
 		if(ts.p.cellLayout <=0 ) {
