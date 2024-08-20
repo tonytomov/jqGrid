@@ -226,7 +226,7 @@ addSubGrid : function( pos, sind ) {
 						var tr = $(this).parent("tr")[0];
 						pID = ts.p.id;
 						_id = tr.id;
-						$r = $("#" + pID + "_" + _id + "_expandedContent");
+						$r = $("#" + $.jgrid.jqID( pID + "_" + _id + "_expandedContent" ) );
 						if($(this).hasClass("sgcollapsed")) {
 							bfsc = $(ts).triggerHandler("jqGridSubGridBeforeExpand", [pID + "_" + _id, _id]);
 							bfsc = (bfsc === false || bfsc === 'stop') ? false : true;

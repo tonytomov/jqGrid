@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.8 - 2024-08-05
+* @license Guriddo jqGrid JS - v5.8.8 - 2024-08-20
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -18358,7 +18358,7 @@ addSubGrid : function( pos, sind ) {
 						var tr = $(this).parent("tr")[0];
 						pID = ts.p.id;
 						_id = tr.id;
-						$r = $("#" + pID + "_" + _id + "_expandedContent");
+						$r = $("#" + $.jgrid.jqID( pID + "_" + _id + "_expandedContent" ) );
 						if($(this).hasClass("sgcollapsed")) {
 							bfsc = $(ts).triggerHandler("jqGridSubGridBeforeExpand", [pID + "_" + _id, _id]);
 							bfsc = (bfsc === false || bfsc === 'stop') ? false : true;
