@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.8 - 2024-08-20
+* @license Guriddo jqGrid JS - v5.8.8 - 2024-08-22
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -95,7 +95,7 @@ $.extend($.jgrid,{
 		return $.jgrid.msiever() > 0;
 	},
 	msiever : function () {
-		var rv =0,
+		var rv = 0,
 		sAgent = window.navigator.userAgent,
 		Idx = sAgent.indexOf("MSIE");
 

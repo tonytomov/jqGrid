@@ -90,7 +90,7 @@ $.extend($.jgrid,{
 		return $.jgrid.msiever() > 0;
 	},
 	msiever : function () {
-		var rv =0,
+		var rv = 0,
 		sAgent = window.navigator.userAgent,
 		Idx = sAgent.indexOf("MSIE");
 
