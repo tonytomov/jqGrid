@@ -651,7 +651,9 @@ $.jgrid.extend({
 					if (titleText) {
 						var fl = $th.find("div.ui-th-div")[0];
 						cghi.savedLabel = fl.innerHTML;
+						const savedelm = $(fl).children();
 						fl.innerHTML = titleText;
+						$(fl).append(savedelm);
 						if(typeof toolTip === "string" && toolTip !== "") {
 							$th.attr("title", toolTip);
 						} else if (ts.p.headertitles) {

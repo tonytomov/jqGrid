@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.8 - 2024-08-22
+* @license Guriddo jqGrid JS - v5.8.8 - 2024-09-04
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -15259,7 +15259,9 @@ $.jgrid.extend({
 					if (titleText) {
 						var fl = $th.find("div.ui-th-div")[0];
 						cghi.savedLabel = fl.innerHTML;
+						const savedelm = $(fl).children();
 						fl.innerHTML = titleText;
+						$(fl).append(savedelm);
 						if(typeof toolTip === "string" && toolTip !== "") {
 							$th.attr("title", toolTip);
 						} else if (ts.p.headertitles) {
