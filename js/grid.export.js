@@ -505,9 +505,9 @@ $.extend($.jgrid,{
                 options.font.options +
         '</font>';
 		sSh.childNodes[0].childNodes[1].innerHTML += font1; //new font
-		var bgcolor = 'indexed=';
+		var bgcolor = 'rgb = ';
 		if(parseInt(options.color.bgColor,10) >= 0 ) {
-			bgcolor = 'rgb=';
+			bgcolor = 'indexed = ';
 		}
 		bgcolor += '"'+options.color.bgColor+'"';
 		var color1 = 
