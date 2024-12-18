@@ -20962,13 +20962,21 @@ $.extend($.jgrid,{
 		options = $.extend(true, {
 			font : { size : 11, name : 'Calibri', options :""}, // options <b/> <i/> <u/>
 			color : { patternType : "solid", fgColor : "FFFFFFF", bgColor : 64 }, // bgColor if number 0-64
-			border : {}
+			border : 0 //{leftStyle : 'none', rightStyle:'none', topStyle : 'none', bottomStyle : none, color : 'auto'}
 		}, options || {});
 		//PatterType can be one of the following
 		/*
 			none, solid,darkDown,darkGray,darkGrid,darkHorizontal,darkTrellis,
 			darkUp,darkVertical,gray0625,gray125,lightDown,lightGray,lightGrid
 			lightHorizontal,lightTrellis,lightUp,lightVertical,mediumGray
+		*/
+		// border style values can be
+		/*
+		  dashDot, dashDotDot, dashed, dotted, double, hair, medium, mediumDashDot,
+		  mediumDashDotDot, mediumDashed, none, slantDashDot, thick, thin
+		 */
+		/* color can be
+		  auto or string representing rgb value or number from 0-64
 		*/
 		//styleSheet.childNodes[0].childNodes[0] ==> number formats  <numFmts count="6"> </numFmts>
 		//styleSheet.childNodes[0].childNodes[1] ==> fonts           <fonts count="5" x14ac:knownFonts="1"> </fonts>
@@ -20978,10 +20986,11 @@ $.extend($.jgrid,{
 		//styleSheet.childNodes[0].childNodes[5] ==> cell xfs        <cellXfs count="69"> </cellXfs>
 		//on the last line we have the 69 currently built in styles (0 - 68)
 
-		var sSh = xlsx.xl['styles.xml'];
-		var lastXfIndex   = $('cellXfs xf', sSh).length - 1;
-		var lastFontIndex = $('fonts font', sSh).length - 1;
-		var lastFillIndex = $('fills fill', sSh).length - 1;
+		var sSh = xlsx.xl['styles.xml'],
+		   lastXfIndex   = $('cellXfs xf', sSh).length - 1,
+		   lastFontIndex = $('fonts font', sSh).length - 1,
+		   lastFillIndex = $('fills fill', sSh).length - 1,
+		   lastBorderIndex = $('borders border', sSh).length - 1;
 
 
 		var font1 =
@@ -21004,7 +21013,37 @@ $.extend($.jgrid,{
 			'</patternFill>'+
 		'</fill>';		
 		sSh.childNodes[0].childNodes[2].innerHTML += color1; //new color
-        var s1 = '<xf numFmtId="0" fontId="'+(lastFontIndex+1)+'" fillId="'+(lastFillIndex+1)+'" borderId="0" applyFont="1" applyFill="1" applyBorder="1" xfId="0" applyAlignment="1"></xf>';
+		if($.isPlainObject(options.border)) {
+			options.border = $.extend({leftStyle : 'none', rightStyle:'none', topStyle : 'none', bottomStyle : 'none', color : 'auto'}, options.border || {})
+			var bcolor;
+			if(options.border.color === 'auto') {
+				bcolor = 'auto="1"'; 
+			} else if( $.fmatter.isNumber(options.border.color) ) {
+				bcolor = 'indexed="'+options.border.color+'"';
+			} else if($.fmatter.isString(options.border.color)) {
+				bcolor = 'rgb="'+options.border.color+'"';
+			}
+			var border1 =
+			'<border diagonalUp="false" diagonalDown="false">'+
+				'<left style="'+options.border.leftStyle+'">' +
+					'<color '+bcolor+' />'+
+				'</left>'+
+				'<right style="'+options.border.rightStyle+'">' +
+					'<color '+bcolor+' />'+
+				'</right>'+
+				'<top style="'+options.border.topStyle+'">' +
+					'<color '+bcolor+' />'+
+				'</top>'+
+				'<bottom style="'+options.border.bottomStyle+'">' +
+					'<color '+bcolor+' />'+
+				'</bottom>'+
+				'<diagonal />'+
+			'</border>';
+			sSh.childNodes[0].childNodes[3].innerHTML += border1; //new border
+		} else {
+			lastBorderIndex = parseInt(options.border,10)-1;
+		}
+        var s1 = '<xf numFmtId="0" fontId="'+(lastFontIndex+1)+'" fillId="'+(lastFillIndex+1)+'" borderId="'+(lastBorderIndex+1)+'" applyFont="1" applyFill="1" applyBorder="1" xfId="0" applyAlignment="1"></xf>';
 		sSh.childNodes[0].childNodes[5].innerHTML += s1;
 		return (lastXfIndex + 1);
 	}
