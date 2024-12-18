@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.8 - 2024-09-04
+* @license Guriddo jqGrid JS - v5.8.8 - 2024-12-18
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -20501,21 +20501,27 @@ $.jgrid = $.jgrid || {};
 
 
 $.extend($.jgrid,{
-	formatCell : function ( cellval , colpos, rwdat, cm, $t, etype){
-		var v;
+	formatCell : function ( cellval , colpos, rwdat, cm, $t, etype, adf, acf){
+		var v = cellval;
+		if( adf === undefined ) {
+			adf = true;
+		}
+		if( acf === undefined ) {
+			acf = true;
+		}
 		if(cm.formatter !== undefined) {
 			var opts= {rowId: '', colModel:cm, gid: $t.p.id, pos:colpos, styleUI: '', isExported : true, exporttype : etype };
 			if($.jgrid.isFunction( cm.formatter ) ) {
+				if(acf) {
 				v = cm.formatter.call($t,cellval,opts,rwdat);
+				}
 			} else if($.fmatter){
+				if(adf) {
 				v = $.fn.fmatter.call($t,cm.formatter,cellval,opts,rwdat);
-			} else {
-				v = cellval;
 			}
-		} else {
-			v = cellval;
 		}
-		return v;
+		}
+		return v == null ? '' : v;
 	},
 	formatCellCsv : function (v, p) {
 		v = v == null ? '' : String(v);
@@ -20955,7 +20961,8 @@ $.extend($.jgrid,{
 	newExcelStyle : function ( xlsx, options ) {
 		options = $.extend(true, {
 			font : { size : 11, name : 'Calibri', options :""}, // options <b/> <i/> <u/>
-			color : { patternType : "solid", fgColor : "FFFFFFF", bgColor : 64 } // bgColor if number 0-64
+			color : { patternType : "solid", fgColor : "FFFFFFF", bgColor : 64 }, // bgColor if number 0-64
+			border : {}
 		}, options || {});
 		//PatterType can be one of the following
 		/*
@@ -20984,9 +20991,9 @@ $.extend($.jgrid,{
                 options.font.options +
         '</font>';
 		sSh.childNodes[0].childNodes[1].innerHTML += font1; //new font
-		var bgcolor = 'indexed=';
+		var bgcolor = 'rgb =';
 		if(parseInt(options.color.bgColor,10) >= 0 ) {
-			bgcolor = 'rgb=';
+			bgcolor = 'indexed =';
 		}
 		bgcolor += '"'+options.color.bgColor+'"';
 		var color1 = 
@@ -21028,7 +21035,9 @@ $.jgrid.extend({
 			onBeforeExport : null,
 			treeindent : ' ',
 			visibleTreeNodes : false,
-			loadIndicator : true // can be a function
+			loadIndicator : true, // can be a function
+			applyDefFmt : true,
+			applyCustFmt : true
 		}, p || {});
 		var ret ="";
 		this.each(function(){
@@ -21171,7 +21180,7 @@ $.jgrid.extend({
 							for(ik = 0; ik < cm.length; ik++) {
 								if(cm[ik]._expcol) {
 									arr[k] = $.jgrid.formatCellCsv(
-										$.jgrid.formatCell( $.jgrid.getAccessor(to, cm[ik].name), ik, to, cm[ik], $t, 'csv' ) , p);
+										$.jgrid.formatCell( $.jgrid.getAccessor(to, cm[ik].name), ik, to, cm[ik], $t, 'csv', p.applyDefFmt, p.applyCustFmt ) , p);
 									k++;
 								}
 							}
@@ -21243,7 +21252,7 @@ $.jgrid.extend({
 					k =0;
 					for(i = 0; i < cmlen; i++) {
 						if(cm[i]._expcol) {
-							tmp[k] = $.jgrid.formatCellCsv( $.jgrid.formatCell( $.jgrid.getAccessor(row, cm[i].name) , i, row, cm[i], $t, 'csv' ), p );
+							tmp[k] = $.jgrid.formatCellCsv( $.jgrid.formatCell( $.jgrid.getAccessor(row, cm[i].name) , i, row, cm[i], $t, 'csv', p.applyDefFmt, p.applyCustFmt ), p );
 							k++;
 						}
 					}
@@ -21358,7 +21367,9 @@ $.jgrid.extend({
 			replaceStr : null,
 			treeindent : ' ',
 			visibleTreeNodes : false,
-			loadIndicator : true // can be a function
+			loadIndicator : true, // can be a function
+			applyDefFmt : true,
+			applyCustFmt : true
 		}, o || {} );
 		this.each(function() {
 			var $t = this,
@@ -21537,7 +21548,7 @@ $.jgrid.extend({
 					}
 					if(!header) {
 						omit = (i===0 && skipfirstcol);
-						v = omit || (skipfirstcol && v==='') ? v : $.jgrid.formatCell( v, data.map[i], row, cm[data.map[i]], $t, 'excel');
+						v = omit || (skipfirstcol && v==='') ? v : $.jgrid.formatCell( v, data.map[i], row, cm[data.map[i]], $t, 'excel', o.applyDefFmt, o.applyCustFmt);
 						// convert whitespace from formatter to empty string
 						if(v && (v==='&nbsp;' || v==='&#160;' || (v.length===1 && v.charCodeAt(0)===160))) { 
 							v = '';
@@ -22013,7 +22024,9 @@ $.jgrid.extend({
 			treeindent : "-",
 			visibleTreeNodes : false,
 			centerTableOnPage : false,
-			loadIndicator : true // can be a function
+			loadIndicator : true, // can be a function
+			applyDefFmt : true,
+			applyCustFmt : true
 
 		}, o || {} );
 		return this.each(function() {
@@ -22047,7 +22060,7 @@ $.jgrid.extend({
 						ommit = !(key === 0 && skipfirstcol);// ? false : true;
 						val = row[def[key]];
 						obj = {
-							text: val == null || val === '' ? '' : (fmt && ommit ? $.jgrid.formatCell( val + '', map[k], data[i], cm[map[k]], $t, 'pdf') : val),
+							text: fmt && ommit ? $.jgrid.formatCell( val + '', map[k], data[i], cm[map[k]], $t, 'pdf', o.applyDefFmt, o.applyCustFmt) : val,
 							alignment : align[key],
 							style : 'tableBody'
 						};
@@ -22325,7 +22338,7 @@ $.jgrid.extend({
 					row = data[i];
 					for( key = 0;key < def.length; key++ ) {
 						obj	= {
-							text: row[def[key]] == null ? '' : $.jgrid.stripHtml($.jgrid.formatCell( $.jgrid.getAccessor(row, def[key]) + '', map[k], data[i], cm[map[k]], $t, 'pdf')),
+							text: $.jgrid.stripHtml($.jgrid.formatCell( $.jgrid.getAccessor(row, def[key]) + '', map[k], data[i], cm[map[k]], $t, 'pdf', o.applyDefFmt, o.applyCustFmt)),
 							alignment : align[def[key]],
 							style : 'tableBody'
 						};
@@ -22464,7 +22477,9 @@ $.jgrid.extend({
 			returnAsString : false,
 			treeindent : '&nbsp;',
 			visibleTreeNodes : false,
-			loadIndicator : true // can be a function
+			loadIndicator : true, // can be a function
+			applyDefFmt : true,
+			applyCustFmt : true
 		}, o || {} );
 		var ret;
 		this.each(function() {
@@ -22546,7 +22561,7 @@ $.jgrid.extend({
 					}
 					f= data.header[i];
 					if (d.hasOwnProperty(f) ) {
-						str += '<'+tag+stl+'>'+ (frm ? $.jgrid.formatCell( $.jgrid.getAccessor( d, f ), data.map[i], d, cm[data.map[i]], $t, 'html') : d[f])+'</'+tag+'>';
+						str += '<'+tag+stl+'>'+ (frm ? $.jgrid.formatCell( $.jgrid.getAccessor( d, f ), data.map[i], d, cm[data.map[i]], $t, 'html', o.applyDefFmt, o.applyCustFmt) : d[f])+'</'+tag+'>';
 					}
 					if(colsp) {
 						break;
