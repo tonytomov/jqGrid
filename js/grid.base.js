@@ -6659,7 +6659,7 @@ $.jgrid.extend({
 				gi = t.p.multiselect ===true ? 1 :0;
 				si = t.p.subGrid===true ? 1 :0;
 				if(!aradd) {
-					if(rowid !== undefined) { rowid = String(rowid);}
+					if(rowid != null) { rowid = String(rowid);}
 					else {
 						rowid = $.jgrid.randId();
 						if(t.p.keyName !== false) {
@@ -6668,7 +6668,7 @@ $.jgrid.extend({
 						}
 					}
 				}
-				var k = 0, classes = $(t).jqGrid('getStyleUI',t.p.styleUI+".base",'rowBox', true, 'jqgrow ui-row-'+ t.p.direction), lcdata = {},
+				var k = 0, classes = $(t).jqGrid('getStyleUI',t.p.styleUI+".base",'rowBox', true, 'jqgrow ui-row-'+ t.p.direction) + " " + (addclass || ""), lcdata = {},
 				air = $.jgrid.isFunction(t.p.afterInsertRow) ? true : false;
 				if(ni) {
 					rnc = $(t).jqGrid('getStyleUI',t.p.styleUI+".base",'rownumBox', false, 'jqgrid-rownum');
