@@ -6499,7 +6499,7 @@ $.jgrid.extend({
 					} else {
 						$(ind).children('td[role="gridcell"]').each( function(i) {
 							nm = $t.p.colModel[i].name;
-							if ( nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn' && nm !== 'sc') {
+							if ( !$.jgrid.isServiceCol( nm ) ) {
 								if($t.p.treeGrid===true && nm === $t.p.ExpandColumn) {
 									res[nm] = $.jgrid.htmlDecode( $(this).find("span").first().html() );
 								} else {
@@ -6641,7 +6641,7 @@ $.jgrid.extend({
 		});
 		return success;
 	},
-	addRowData : function(rowid,rdata,pos,src) {
+	addRowData : function(rowid,rdata,pos,src, addclass) {
 		if($.inArray( pos, ["first", "last", "before", "after"] ) === -1) {pos = "last";}
 		var success = false, nm, row, rnc="", msc="", gi, si, ni,sind, i, v, prp="", aradd, cnm, data, cm, id;
 		if(rdata) {
