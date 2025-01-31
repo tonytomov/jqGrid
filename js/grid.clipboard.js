@@ -42,8 +42,8 @@ $.extend($.jgrid,{
 		}
 		return values;
 	},
-	CSVtoObject : function (data, headers, delimiter = ',')  {
-		const rows = data.split('\n'), len = rows.length;
+	CSVtoObject : function (data, headers, delimiter = ',', new_line = '\t')  {
+		const rows = data, /*data.split(new_line),*/ len = rows.length;
 		if(len && rows[len-1] == "") {
 			rows.pop()
 		}
@@ -108,7 +108,7 @@ $.extend($.jgrid,{
 		$.jgrid.copyText( seldata.join( newline ));
 		startCellIndex = null; startRowIndex = null;
 	},
-	pasteRows : function(cm, grid_id, o) {
+	pasteRows : function(cm, grid_id, o, paste_add) {
 		if(startCellIndex === null || startRowIndex === null) {
 			alert("Please click position to paste");
 			return;
@@ -116,8 +116,12 @@ $.extend($.jgrid,{
 		this.getClipboardContents().then((data) => {
 			//console.log(data);
 
-			var delim = $.jgrid.guessDelimiters(data), headers=[];
-			var h_l = $.jgrid.deserializeRow(data.split('\n')[0], delim).length;
+			var delim = o.paste_autodetect_delim  ? $.jgrid.guessDelimiters(data) : o.paste_delimiter, headers=[];
+			data = data.split(o.paste_newline);
+			if(o.paste_header_included) {
+				headers =  $.jgrid.deserializeRow(data.shift(), delim);
+			} else {
+				var h_l = data[0].length;
 			h_l += startCellIndex;
 			if(h_l > cm.length) {
 				h_l = cm.length;
@@ -125,11 +129,12 @@ $.extend($.jgrid,{
 			for (var i = startCellIndex; i< h_l; i++) {
 				headers.push(cm[i].name);
 			}
+			}
 			if($.jgrid.isLocalStorage()) {
 				localStorage.removeItem(grid_id+"_restore");
 			}
-			var rows_to_paste = $.jgrid.CSVtoObject(data, headers, delim);
-			$("#"+grid_id).jqGrid("updateRowsByIndex", startRowIndex, rows_to_paste, o.paste_formatter);
+			var rows_to_paste = $.jgrid.CSVtoObject(data, headers, delim, o.paste_newline);
+			$("#"+grid_id).jqGrid("updateRowsByIndex", startRowIndex, rows_to_paste, o, paste_add);
 			//console.log(rows_to_paste);
 		});
 	},
@@ -141,12 +146,12 @@ $.extend($.jgrid,{
 				for(let i=0;i<data.length; i++) {
 					$("#"+grid_id).jqGrid("setRowData", data[i]["_id_"], data[i]);
 				}
+			}
+		}
 				var rws = $("#"+grid_id);
 				rws.find("tr.frompaste").each(function(i,n) {
 					rws.jqGrid("delRowData", n.id);
 				});
-			}
-		}
 	},
 	guessDelimiters : function  (data, separators = ['\t', ',', ';', '|']) {
 		const idx = separators
@@ -232,7 +237,7 @@ $.jgrid.extend({
 			paste_delimiter : '\t',
 			paste_newline : '\n',
 			paste_autodetect_delim : true,
-			paste_formatter : false
+			paste_header_included : false
 		}, prm || {});
 		
 		return this.each(function(){
@@ -242,13 +247,16 @@ $.jgrid.extend({
 			var menus_copy = new Array(
 				{"id" : "copy_act", "title" : "Copy Selected to Clipboard", "click": function() { $.jgrid.copyRows(this.rows, o.copy_delimiter, o.copy_newline); } },
 				{divider : true},
-				{"id" : "paste_act", "title" : "Paste from Clipboard", "click": function() { $.jgrid.pasteRows(this.p.colModel, this.id, o); } },
+				{"id" : "paste_act", "title" : "Paste Update from Clipboard", "click": function() { $.jgrid.pasteRows(this.p.colModel, this.id, o, false); } },
+				{divider : true},
+				{"id" : "paste_act_add", "title" : "Paste Add from Clipboard", "click": function() { $.jgrid.pasteRows(this.p.colModel, this.id, o, true); } },
 				{divider : true},
 				{"id" : "undo_paste_act", "title" : "Undo pasted rows", "click": function() { $.jgrid.undoPaste( this.id, o); } }
 			);
 			$(this).jqGrid("menubarAdd", menus_copy, "_copypaste");
 			$(this).on('jqGridAfterGridComplete.setBindSelections',function(){
 				$(this).jqGrid('bindSelection');
+				startCellIndex = startRowIndex = null;
 			});
 			$(this).on('jqGridRightClickRow.setBindSelections',function(e, id, iRow, iCol, e1){
 				//console.log(e, id, iRow, iCol, e1);
@@ -264,7 +272,7 @@ $.jgrid.extend({
 	stopClipboard : function() {
 		// to be written
 	},
-	updateRowsByIndex : function(startInd, data, useFormatter) {
+	updateRowsByIndex : function(startInd, data, o, paste_add) {
 		var success = true;
 		this.each(function(){
 			if(Array.isArray(data)) {
@@ -276,13 +284,15 @@ $.jgrid.extend({
 					while(i < datalen) {
 						row = data[i];
 						grow = this.rows[startInd];
-						if(!grow) {
+						if( !grow || paste_add===true) {
 							$(this).jqGrid("addRowData", null, row, "last", null, "frompaste");// perform add
 						} else {
-							var o_row = $(this).jqGrid("getRowData",  grow.id);
+							let o_row = $(this).jqGrid("getRowData",  grow.id);
+							if( !$.isEmptyObject(o_row) ) {
 							o_row["_id_"] = grow.id;
 							storeUpdate.push( o_row );
 							$(this).jqGrid("setRowData",  grow.id, row);
+							}
 							
 						}
 						i++;
