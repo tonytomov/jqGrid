@@ -121,7 +121,7 @@ $.extend($.jgrid,{
 			if(o.paste_header_included) {
 				headers =  $.jgrid.deserializeRow(data.shift(), delim);
 			} else {
-				var h_l = data[0].length;
+				var h_l = data[0].split(delim).length;
 			h_l += startCellIndex;
 			if(h_l > cm.length) {
 				h_l = cm.length;
@@ -280,18 +280,21 @@ $.jgrid.extend({
 					success = false;
 					console.log("not vald start index");
 				}  else {
-					var datalen = data.length, i=0, row, grow, storeUpdate = [];
+					var datalen = data.length, i=0, row, grow, storeUpdate = [], inserted = 0, updated =0;
 					while(i < datalen) {
 						row = data[i];
 						grow = this.rows[startInd];
 						if( !grow || paste_add===true) {
 							$(this).jqGrid("addRowData", null, row, "last", null, "frompaste");// perform add
+							inserted++;
 						} else {
 							let o_row = $(this).jqGrid("getRowData",  grow.id);
 							if( !$.isEmptyObject(o_row) ) {
 							o_row["_id_"] = grow.id;
+								data[i]["_id_"] = grow.id;
 							storeUpdate.push( o_row );
 							$(this).jqGrid("setRowData",  grow.id, row);
+								updated++;
 							}
 							
 						}
@@ -305,6 +308,7 @@ $.jgrid.extend({
 							alert("Local storage not available! Can not store data for undo changes!");
 						}
 					}
+					//$.jgrid.info_dialog("Information",'<p>Total rows: '+datalen +'<p/>'+ '<p>Insered :'+inserted+ '<p/>'+ '<p>Updated :'+updated+'</p>','Close');
 				}
 			} else {
 				success = false; 
