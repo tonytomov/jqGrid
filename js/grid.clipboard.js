@@ -106,10 +106,10 @@ $.extend($.jgrid,{
 		}
 		//console.log(seldata);
 		$.jgrid.copyText( seldata.join( newline ));
-		startCellIndex = null; startRowIndex = null;
+		//startCellIndex = null; startRowIndex = null;
 	},
 	pasteRows : function(cm, grid_id, o, paste_add) {
-		if(startCellIndex === null || startRowIndex === null) {
+		if(o.startCellIndex === null || o.startRowIndex === null) {
 			alert("Please click position to paste");
 			return;
 		}
@@ -122,11 +122,11 @@ $.extend($.jgrid,{
 				headers =  $.jgrid.deserializeRow(data.shift(), delim);
 			} else {
 				var h_l = data[0].split(delim).length;
-			h_l += startCellIndex;
+				h_l += o.startCellIndex;
 			if(h_l > cm.length) {
 				h_l = cm.length;
 			}
-			for (var i = startCellIndex; i< h_l; i++) {
+				for (var i = o.startCellIndex; i< h_l; i++) {
 				headers.push(cm[i].name);
 			}
 			}
@@ -134,7 +134,7 @@ $.extend($.jgrid,{
 				localStorage.removeItem(grid_id+"_restore");
 			}
 			var rows_to_paste = $.jgrid.CSVtoObject(data, headers, delim, o.paste_newline);
-			$("#"+grid_id).jqGrid("updateRowsByIndex", startRowIndex, rows_to_paste, o, paste_add);
+			$("#"+grid_id).jqGrid("updateRowsByIndex", o.startRowIndex, rows_to_paste, o, paste_add);
 			//console.log(rows_to_paste);
 		});
 	},
@@ -163,7 +163,7 @@ $.extend($.jgrid,{
 	}
 });
 $.jgrid.extend({
-	bindSelection : function() {
+	bindSelection : function( o ) {
 		return this.each(function(){
 			var selectTo = function(cell, table) {
 				var row = cell.parent();    
@@ -172,19 +172,19 @@ $.jgrid.extend({
 
 				var rowStart, rowEnd, cellStart, cellEnd;
 
-				if (rowIndex < startRowIndex) {
+				if (rowIndex < o.startRowIndex) {
 					rowStart = rowIndex;
-					rowEnd = startRowIndex;
+					rowEnd = o.startRowIndex;
 				} else {
-					rowStart = startRowIndex;
+					rowStart = o.startRowIndex;
 					rowEnd = rowIndex;
 				}
 
-				if (cellIndex < startCellIndex) {
+				if (cellIndex < o.startCellIndex) {
 					cellStart = cellIndex;
-					cellEnd = startCellIndex;
+					cellEnd = o.startCellIndex;
 				} else {
-					cellStart = startCellIndex;
+					cellStart = o.startCellIndex;
 					cellEnd = cellIndex;
 				}        
 
@@ -199,7 +199,7 @@ $.jgrid.extend({
 			var selected = 'selected-cell',
 				table = $("#"+ $.jgrid.jqID( this.p.id ) ),
 				ts = this;
-			table.find("td").mousedown(function (e) {
+			table.find("td").on('mousedown.jqgselect',function (e) {
 
 				if(e.which === 3) { // right click button for custom copy/paste
 					//console.log(e);
@@ -207,7 +207,7 @@ $.jgrid.extend({
 					$("#"+ts.p.id+"_copypaste").css({left : e.clientX, top: e.clientY}).show();
 					return false;
 				}
-				isMouseDown = true;
+				o.isMouseDown = true;
 				var cell = $(this);
 				table.find("."+selected).removeClass(selected); // deselect everything
 
@@ -215,17 +215,17 @@ $.jgrid.extend({
 					selectTo(cell, table);                
 				} else {
 					cell.addClass(selected);
-					startCellIndex = cell.index();
-					startRowIndex = cell.parent().index();
+					o.startCellIndex = cell.index();
+					o.startRowIndex = cell.parent().index();
 				}
 				return false; // prevent text selection
 			})
-			.mouseover(function () {
-				if (!isMouseDown) return;
+			.on("mouseover.jqgselect",function () {
+				if (!o.isMouseDown) return;
 				table.find("."+ selected).removeClass(selected);
 				selectTo($(this), table);
 			})
-			.bind("selectstart", function () {
+			.on("selectstart.jqgselect", function () {
 				return false;
 			});
 		});
@@ -237,11 +237,14 @@ $.jgrid.extend({
 			paste_delimiter : '\t',
 			paste_newline : '\n',
 			paste_autodetect_delim : true,
-			paste_header_included : false
+			paste_header_included : false,
+			startCellIndex : null,
+			startRowIndex : null,
+			isMouseDown : false
 		}, prm || {});
 		
 		return this.each(function(){
-			var colmenustyle = $.jgrid.styleUI[(this.p.styleUI || 'jQueryUI')].colmenu;
+			var colmenustyle = $.jgrid.styleUI[(this.p.styleUI || 'jQueryUI')].colmenu, $t=this;
 			var arf1 = '<ul id="'+this.id+'_copypaste" class="ui-search-menu modal-content column-menu ui-menu jqgrid-caption-menu ' + colmenustyle.menu_widget+'" role="menubar" tabindex="0"></ul>';
 			$("#gbox_"+this.id).append(arf1);
 			var menus_copy = new Array(
@@ -255,22 +258,45 @@ $.jgrid.extend({
 			);
 			$(this).jqGrid("menubarAdd", menus_copy, "_copypaste");
 			$(this).on('jqGridAfterGridComplete.setBindSelections',function(){
-				$(this).jqGrid('bindSelection');
-				startCellIndex = startRowIndex = null;
+				$(this).jqGrid('bindSelection', o);
+				o.startCellIndex = o.startRowIndex = null;
 			});
 			$(this).on('jqGridRightClickRow.setBindSelections',function(e, id, iRow, iCol, e1){
 				//console.log(e, id, iRow, iCol, e1);
 				//$.jgrid.copyRows(this.rows)
 				return false;
 			});
-			$(document).mouseup(function () {
-				isMouseDown = false;
+			$(document).on("mouseup.jqgclipme", function () {
+				o.isMouseDown = false;
 			});
+			$("body").on('click.jqgclipme', function(e){
+				if(!$(e.target).closest(".ui-jqgrid-menubar").length) {
+					try {
+						$("#"+$t.p.id+"_copypaste").hide();
+					} catch (e1) {}
+				}
+			});			
 			$.jgrid.Permissions();
+			$t.p.isClipboard = true;
 		});
 	},
 	stopClipboard : function() {
-		// to be written
+		// 
+		return this.each(function(){
+			var selected = 'selected-cell';
+			$("#"+this.p.id+"_copypaste").remove();
+			$("body").off("click.jqgclipme");
+			$(document).off("mouseup.jqgclipme");
+			$(this)
+			.off("jqGridAfterGridComplete.setBindSelections")
+			.off("jqGridAfterGridComplete.setBindSelections")
+			.find("td")
+			.removeClass(selected)
+			.off("mousedown.jqgselect")
+			.off("mouseover.jqgselect")
+			.off("selectstart.jqgselect");
+			this.p.isClipboard = false;
+		});
 	},
 	updateRowsByIndex : function(startInd, data, o, paste_add) {
 		var success = true;
@@ -308,7 +334,7 @@ $.jgrid.extend({
 							alert("Local storage not available! Can not store data for undo changes!");
 						}
 					}
-					//$.jgrid.info_dialog("Information",'<p>Total rows: '+datalen +'<p/>'+ '<p>Insered :'+inserted+ '<p/>'+ '<p>Updated :'+updated+'</p>','Close');
+					$.jgrid.info_dialog("Information",'<p>Total rows: '+datalen + '</p><p>Insered :'+inserted+ '</p><p>Updated :'+updated +'</p>','Close');
 				}
 			} else {
 				success = false; 
