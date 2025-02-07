@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.8 - 2024-12-18
+* @license Guriddo jqGrid JS - v5.8.8 - 2025-02-07
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2415,7 +2415,8 @@ $.fn.jqGrid = function( pin ) {
 				reader : null,
 				beforeInsertData : null,
 				fetchOptions : {}
-			}
+			},
+			isClipboard : false,
 		}, $.jgrid.defaults , pin );
 		if (localData !== undefined) {
 			p.data = localData;
@@ -5958,7 +5959,7 @@ $.fn.jqGrid = function( pin ) {
 				td = e.target;
 				ptr = $(td,ts.rows).closest("tr.jqgrow");
 				if($(ptr).length === 0 ){return;}
-				if(!ts.p.multiselect) {	$(ts).jqGrid("setSelection",ptr[0].id,true,e);	}
+				if(!ts.p.multiselect && !ts.p.isClipboard) { $(ts).jqGrid("setSelection",ptr[0].id,true,e);	}
 				ri = ptr[0].rowIndex;
 				ci = $.jgrid.getCellIndex(td);
 				var rcr = $(ts).triggerHandler("jqGridRightClickRow", [$(ptr).attr("id"),ri,ci,e]);
@@ -6504,7 +6505,7 @@ $.jgrid.extend({
 					} else {
 						$(ind).children('td[role="gridcell"]').each( function(i) {
 							nm = $t.p.colModel[i].name;
-							if ( nm !== 'cb' && nm !== 'subgrid' && nm !== 'rn' && nm !== 'sc') {
+							if ( !$.jgrid.isServiceCol( nm ) ) {
 								if($t.p.treeGrid===true && nm === $t.p.ExpandColumn) {
 									res[nm] = $.jgrid.htmlDecode( $(this).find("span").first().html() );
 								} else {
@@ -6646,7 +6647,7 @@ $.jgrid.extend({
 		});
 		return success;
 	},
-	addRowData : function(rowid,rdata,pos,src) {
+	addRowData : function(rowid, rdata, pos, src, addclass) {
 		if($.inArray( pos, ["first", "last", "before", "after"] ) === -1) {pos = "last";}
 		var success = false, nm, row, rnc="", msc="", gi, si, ni,sind, i, v, prp="", aradd, cnm, data, cm, id;
 		if(rdata) {
@@ -6664,16 +6665,19 @@ $.jgrid.extend({
 				gi = t.p.multiselect ===true ? 1 :0;
 				si = t.p.subGrid===true ? 1 :0;
 				if(!aradd) {
-					if(rowid !== undefined) { rowid = String(rowid);}
-					else {
+					if(rowid != null) { 
+						rowid = String(rowid);
+					} else {
 						rowid = $.jgrid.randId();
 						if(t.p.keyName !== false) {
 							cnm = t.p.keyName;
-							if(rdata[0][cnm] !== undefined) { rowid = rdata[0][cnm]; }
+							if(rdata[0][cnm] !== undefined) {
+								rowid = rdata[0][cnm]; 
 						}
 					}
 				}
-				var k = 0, classes = $(t).jqGrid('getStyleUI',t.p.styleUI+".base",'rowBox', true, 'jqgrow ui-row-'+ t.p.direction), lcdata = {},
+				}
+				var k = 0, classes = $(t).jqGrid('getStyleUI',t.p.styleUI+".base",'rowBox', true, 'jqgrow ui-row-'+ t.p.direction) + " " + (addclass || ""), lcdata = {},
 				air = $.jgrid.isFunction(t.p.afterInsertRow) ? true : false;
 				if(ni) {
 					rnc = $(t).jqGrid('getStyleUI',t.p.styleUI+".base",'rownumBox', false, 'jqgrid-rownum');
@@ -6691,11 +6695,13 @@ $.jgrid.extend({
 								rowid = $.jgrid.randId();
 							}
 						}
-						catch (e) {rowid = $.jgrid.randId();}
+						catch (e) {
+							rowid = $.jgrid.randId();
+					}
 					}
 					id = rowid;
 					rowid  = t.p.idPrefix + rowid;
-					if(ni){
+					if(ni) {
 						prp = t.formatCol(0,1,'',null,rowid, true);
 						row[row.length] = "<td role=\"gridcell\" " + rnc +" "+prp+">0</td>";
 					}
@@ -8255,12 +8261,15 @@ $.jgrid.extend({
 			}
 		});
 	},
-	menubarAdd : function( items ) {
+	menubarAdd : function( items, target ) {
 		var	currstyle = this[0].p.styleUI,
 			styles = $.jgrid.styleUI[currstyle].common, item, str;
 
 		return this.each(function(){
 			var $t = this;
+			if(target === undefined) {
+				target = "_menubar";
+			}
 			if( Array.isArray(items)) {
 				for(var i = 0; i < items.length; i++) {
 					item = items[i];
@@ -8285,13 +8294,13 @@ $.jgrid.extend({
 					str = '<li class="ui-menu-item" role="presentation"><a id="'+ item.id+'" class="g-menu-item" tabindex="0" role="menuitem" ><table class="ui-common-table"><tr><td class="menu_icon">'+ico+'</td><td class="menu_text">'+item.title+'</td></tr></table></a></li>';
 					}
 					if(item.position === 'last') {
-						$("#"+this.p.id+"_menubar").append(str);
+						$("#"+this.p.id + target).append(str);
 					} else {
-						$("#"+this.p.id+"_menubar").prepend(str);
+						$("#"+this.p.id + target).prepend(str);
 					}
 				}
 			}
-			$("li a", "#"+this.p.id+"_menubar").each(function(i,n){
+			$("li a", "#"+this.p.id + target).each(function(i,n){
 				$(items).each(function(j,f){
 					if(f.id === n.id && $.jgrid.isFunction(f.click)) {
 						$(n).on('click', function(e){
@@ -8310,9 +8319,12 @@ $.jgrid.extend({
 			});
 		});
 	},
-	menubarDelete : function( itemid ) {
+	menubarDelete : function( itemid, target ) {
 		return this.each(function(){
-			$("#"+itemid, "#"+this.p.id+"_menubar").remove();
+			if(target === undefined) {
+				target = "_menubar";
+			}			
+			$("#"+itemid, "#"+this.p.id + target).remove();
 		});
 	},
 	addColSearchMenu :  function() {

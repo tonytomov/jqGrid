@@ -574,3 +574,7 @@ td.menu_text {
 	overflow: auto;
 	height: 17em;
 }
+
+#infocnt {
+	border-width: 0;
+}
