@@ -6799,7 +6799,7 @@ $.jgrid.extend({
 		if(action === undefined) { action = "get"; }
 		if(typeof format !== "boolean") { format  = true; }
 		if(index === undefined ) { index = 0;}
-		if(destroyFrozen === undefined) { destroyFrozen = true; }
+		if(destroyFrozen === undefined) { destroyFrozen = false; }
 		action = action.toLowerCase();
 		this.each(function(){
 			var t = this, vl, title, len = this.p.colModel.length, frozen = false;
@@ -6872,7 +6872,7 @@ $.jgrid.extend({
 		if(action === undefined) { action = "get"; }
 		if(typeof format !== "boolean") { format  = true; }
 		if(index === undefined ) { index=0;}
-		if(destroyFrozen === undefined) { destroyFrozen = true; }
+		if(destroyFrozen === undefined) { destroyFrozen = false; }
 		action = action.toLowerCase();
 		this.each(function(){
 			var t = this, vl, title,len = this.p.colModel.length, frozen = false;
