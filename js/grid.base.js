@@ -7587,7 +7587,7 @@ $.jgrid.extend({
 								let index = $t.p._index[$.jgrid.stripPref($t.p.idPrefix, $t.rows[i].id)];
 								$t.p.data[index][cm[pos].name] = vl;
 							}
-							vl = $t.formatter( $t.rows[i].id, value, pos, vl, 'edit');
+							vl = $t.formatter( $t.rows[i].id, vl, pos, data, 'edit');
 							title = cm[pos].title ? {"title":$.jgrid.stripHtml(vl)} : {};
 
 							if($t.p.treeGrid===true && nm === $t.p.ExpandColumn) {
