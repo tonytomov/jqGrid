@@ -1227,3 +1227,6 @@ a.colmenu .colmenuspan
 	overflow: auto;
 	height: 17em;
 }
+.ui-jqgrid-btable td.selected-cell {
+    background-color: antiquewhite;
+}

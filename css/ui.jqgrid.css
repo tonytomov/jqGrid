@@ -578,3 +578,7 @@ td.menu_text {
 #infocnt {
 	border-width: 0;
 }
+
+.ui-jqgrid-btable td.selected-cell {
+    background-color: antiquewhite;
+}

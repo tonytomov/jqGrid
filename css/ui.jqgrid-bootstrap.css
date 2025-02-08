@@ -1008,3 +1008,7 @@ td.menu_text {
 	width:auto;
 	position :absolute;
 }
+
+.ui-jqgrid-btable td.selected-cell {
+    background-color: antiquewhite;
+}
