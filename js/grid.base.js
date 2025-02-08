@@ -7558,6 +7558,52 @@ $.jgrid.extend({
 		});
 		return ret;
 	},
+	setCol : function( col, value) {
+		this.each(function(){
+			var $t=this, pos=-1, cm = $t.p.colModel, nm,vl, title;
+			if(!$t.grid) {return;}
+			if(isNaN(col)) {
+				pos = $.jgrid.getElemByAttrVal(cm, 'name', col, true);
+				nm = col;
+			} else {
+				pos = parseInt(col,10);
+				nm = cm[pos].name;
+			}
+			if( pos >= 0 ) {
+				var ln = $t.rows.length, i = 0;
+				if (ln && ln>0){
+					var fval  = $.jgrid.isFunction(value) ? value : function(value, data, rowObj) { return value; },
+					lcd = $t.p.datatype === 'local';
+					for(; i < ln; i++){
+						if($($t.rows[i]).hasClass('jqgrow') && $t.rows[i].id !== "norecs") {
+							var data={};
+							for (let element=0;element<$t.rows[i].cells.length;element++) {
+								if($t.rows[i].cells[element] !== undefined) {
+									data[cm[element].name] = $.unformat.call($t, $t.rows[i].cells[element] ,{rowId:$t.rows[i].id, colModel:cm[pos]},pos);
+								}
+							}
+							vl = fval.call($t, value, data, $t.rows[i]);
+							if(lcd) { // local data
+								let index = $t.p._index[$.jgrid.stripPref($t.p.idPrefix, $t.rows[i].id)];
+								$t.p.data[index][cm[pos].name] = vl;
+							}
+							vl = $t.formatter( $t.rows[i].id, value, pos, vl, 'edit');
+							title = cm[pos].title ? {"title":$.jgrid.stripHtml(vl)} : {};
+
+							if($t.p.treeGrid===true && nm === $t.p.ExpandColumn) {
+								$($t.rows[i].cells[pos]).find("span[class*='cell-wrapper']").html(vl).attr(title);
+							} else {
+								$($t.rows[i].cells[pos]).html(vl).attr(title);
+							}
+							if($t.p.frozenColumns && pos <= $t.p.frozenColCount) { // frozen columns
+								$("#"+$t.rows[i].id+" td[role='gridcell']", "#" + $.jgrid.jqID($t.p.id + "_frozen")).eq(pos).html(vl).attr(title);
+							}
+						}
+					}
+				}
+			}
+		});
+	},
 	clearGridData : function(clearfooter, clearheader) {
 		return this.each(function(){
 			var $t = this;
