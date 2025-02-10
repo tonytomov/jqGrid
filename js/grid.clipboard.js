@@ -87,25 +87,32 @@ $.extend($.jgrid,{
 			console.error('Failed to read clipboard contents: ', err);
 		}
 	},
-	copyRows : function( rows, delimiter='\t', newline ='\n') {
-		var seldata =[];
+	copyRows : function( rows, cm , o) {
+		var seldata =[],header=[], h_s = false;
 		for(var j=0; j<rows.length;j++) {
 			var row = rows[j];
 			var dat = [];
 			if(row.classList.contains("jqgrow")) {
 				for (var i=0;i<row.cells.length; i++) {
 					if(row.cells[i].classList.contains("selected-cell")) {
-						//console.log(row.cells[i].innerText);
+						if(h_s===false) {
+							header.push(cm[i].name);
+						}
 						dat.push(row.cells[i].innerText);
 					}
 				}
+				if(header.length) {
+					h_s = true;
+				}
 				if(dat.length) {
-					seldata.push( dat.join( delimiter ));
+					seldata.push( dat.join( o.copy_delimiter ));
 				}
 			}
 		}
-		//console.log(seldata);
-		$.jgrid.copyText( seldata.join( newline ));
+		if(o.copy_header_included && header.length) {
+			seldata.unshift( header.join( o.copy_delimiter ) );
+		}
+		$.jgrid.copyText( seldata.join( o.copy_newline ));
 		//startCellIndex = null; startRowIndex = null;
 	},
 	pasteRows : function(cm, grid_id, o, paste_add) {
@@ -234,6 +241,7 @@ $.jgrid.extend({
 		var o = $.extend({
 			copy_delimiter : '\t',
 			copy_newline: '\n',
+			copy_header_included : true,
 			paste_delimiter : '\t',
 			paste_newline : '\n',
 			paste_autodetect_delim : true,
@@ -248,7 +256,7 @@ $.jgrid.extend({
 			var arf1 = '<ul id="'+this.id+'_copypaste" class="ui-search-menu modal-content column-menu ui-menu jqgrid-caption-menu ' + colmenustyle.menu_widget+'" role="menubar" tabindex="0"></ul>';
 			$("#gbox_"+this.id).append(arf1);
 			var menus_copy = new Array(
-				{"id" : "copy_act", "title" : "Copy Selected to Clipboard", "click": function() { $.jgrid.copyRows(this.rows, o.copy_delimiter, o.copy_newline); } },
+				{"id" : "copy_act", "title" : "Copy Selected to Clipboard", "click": function() { $.jgrid.copyRows(this.rows,this.p.colModel, o ); } },
 				{divider : true},
 				{"id" : "paste_act", "title" : "Paste Update from Clipboard", "click": function() { $.jgrid.pasteRows(this.p.colModel, this.id, o, false); } },
 				{divider : true},
@@ -278,6 +286,8 @@ $.jgrid.extend({
 			});			
 			$.jgrid.Permissions();
 			$t.p.isClipboard = true;
+			$(this).jqGrid('bindSelection', o);
+			o.startCellIndex = o.startRowIndex = null;
 		});
 	},
 	stopClipboard : function() {
