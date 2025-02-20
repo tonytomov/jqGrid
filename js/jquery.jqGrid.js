@@ -5652,7 +5652,7 @@ $.fn.jqGrid = function( pin ) {
 				ts.p.disableClick = false;
 				return false;
 			}
-			var s = "th>div.ui-th-div",r,d;
+			var s = "th>div.ui-th-div",r,d,sh;
 			if (!ts.p.viewsortcols[2]) { s = "th>div>span>span.ui-grid-ico-sort"; }
 			var t = $(e.target).closest(s);
 			if (t.length !== 1) { return; }
@@ -5686,7 +5686,8 @@ $.fn.jqGrid = function( pin ) {
 			}
 			//
 			if (!ts.p.viewsortcols[2]) { r=true;d=t.attr("sort"); }
-			if( !$.jgrid.isNull(ci) ){
+			sh = $.jgrid.type(ts.p.colModel[ci].sortInHeader) !== 'boolean'? true : ts.p.colModel[ci].sortInHeader
+			if( !$.jgrid.isNull(ci) && sh){
 				sortData( $('div',this)[0].id, ci, r, d, this);
 			}
 			// added aria grid
