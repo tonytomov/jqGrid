@@ -472,6 +472,7 @@ $.extend($.jgrid,{
 		_negate=false,
 		_queuedOperator="",
 		_sorting=[],
+		_this = "a_d_d_t_h_i_s",
 		_useProperties=true;
 		if(typeof d==="object"&&d.push) {
 			if(d.length>0){
@@ -704,8 +705,9 @@ $.extend($.jgrid,{
 			if(match === null){
 				return self;
 			}
+			const re = new RegExp(`${_this}`, 'g');
 			$.each(_data,function(){
-				if($.jgrid.runCode.call($t, match.replace(/this/g, JSON.stringify(this)) ) ){ //eval(match)
+				if($.jgrid.runCode.call($t, match.replace(re, JSON.stringify(this)) ) ){ //eval(match)
 					results.push(this);
 				}
 			});
@@ -771,16 +773,16 @@ $.extend($.jgrid,{
 			return self.is(f);
 		};
 		this.is=function(f){
-			self._append('this.'+f);
+			self._append(_this+"."+f);
 			self._resetNegate();
 			return self;
 		};
 		this._compareValues=function(func,f,v,how,t){
 			var fld;
 			if(_useProperties){
-				fld='jQuery.jgrid.getAccessor(this,\''+f+'\')';
+				fld='jQuery.jgrid.getAccessor('+_this+',\''+f+'\')'; 
 			}else{
-				fld='this';
+				fld=_this; 
 			}
 			if(v===undefined) { v = null; }
 			//var val=v===null?f:v,
@@ -841,12 +843,12 @@ $.extend($.jgrid,{
 		this.startsWith=function(f,v){
 			//var val = $.jgrid.isNull(v) ? f: v,
 			//length=_trim ? $.jgrid.trim(val.toString()).length : val.toString().length;
-			if(_useProperties){
+			if(_useProperties	){ 
 				//self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.slice(0,'+length+') == '+self._getStr('"'+self._toStr(v)+'"'));
-				self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.startsWith('+self._getStr('"'+self._toStr(v)+'"')+')');
+				self._append(self._getStr('jQuery.jgrid.getAccessor('+_this+',\''+f+'\')')+'.startsWith('+self._getStr('"'+self._toStr(v)+'"')+')');
 			}else{
 				//if ( !$.jgrid.isNull(v) ) { length=_trim?$.jgrid.trim(v.toString()).length:v.toString().length; }
-				self._append(self._getStr('this')+'.startsWith(' +self._getStr('"'+self._toStr(f)+'"')+')');
+				self._append(self._getStr(_this)+'.startsWith(' +self._getStr('"'+self._toStr(f)+'"')+')');
 			}
 			self._setCommand(self.startsWith,f);
 			self._resetNegate();
@@ -857,10 +859,10 @@ $.extend($.jgrid,{
 			//length=_trim ? $.jgrid.trim(val.toString()).length:val.toString().length;
 			if(_useProperties){
 				//self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.substr('+self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.length-'+length+','+length+') == "'+self._toStr(v)+'"');
-				self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.endsWith('+self._getStr('"'+self._toStr(v)+'"')+')');
+				self._append(self._getStr('jQuery.jgrid.getAccessor('+_this+',\''+f+'\')')+'.endsWith('+self._getStr('"'+self._toStr(v)+'"')+')');
 			} else {
 				//self._append(self._getStr('this')+'.substr('+self._getStr('this')+'.length-"'+self._toStr(f)+'".length,"'+self._toStr(f)+'".length) == "'+self._toStr(f)+'"');
-				self._append(self._getStr('this')+'.endsWith(' +self._getStr('"'+self._toStr(f)+'"')+')');
+				self._append(self._getStr(_this)+'.endsWith(' +self._getStr('"'+self._toStr(f)+'"')+')');
 			}
 			self._setCommand(self.endsWith,f);
 			self._resetNegate();
@@ -868,9 +870,9 @@ $.extend($.jgrid,{
 		};
 		this.contains=function(f,v){
 			if(_useProperties){
-				self._append(self._getStr('jQuery.jgrid.getAccessor(this,\''+f+'\')')+'.indexOf("'+self._toStr(v)+'",0) > -1');
+				self._append(self._getStr('jQuery.jgrid.getAccessor('+_this+',\''+f+'\')')+'.indexOf("'+self._toStr(v)+'",0) > -1');
 			}else{
-				self._append(self._getStr('this')+'.indexOf("'+self._toStr(f)+'",0) > -1');
+				self._append(self._getStr(_this)+'.indexOf("'+self._toStr(f)+'",0) > -1');
 			}
 			self._setCommand(self.contains,f);
 			self._resetNegate();
@@ -878,7 +880,7 @@ $.extend($.jgrid,{
 		};
 		this.user=function(op, f, v){
 			var _a = '$("#'+$t.p.id+'")[0]';
-			self._append(_a + '.p.customFilterDef.' + op + '.action.call('+_a+' ,{rowItem: this, searchName:"' + f + '",searchValue:"' + v + '"})');
+			self._append(_a + '.p.customFilterDef.' + op + '.action.call('+_a+' ,{rowItem:'+_this+', searchName:"' + f + '",searchValue:"' + v + '"})');
 			self._setCommand(self.user,f);
 			self._resetNegate();
 			return self;
@@ -886,9 +888,9 @@ $.extend($.jgrid,{
 		this.inData = function (f, v, t) {
 			var vl =  v === undefined ? "" : self._getStr("\"" + self._toStr(v) + "\"");
 			if( _useProperties ) {
-				self._append(vl + '.split(\''+',' + '\')' + '.indexOf( jQuery.jgrid.getAccessor(this,\''+f+'\') ) > -1');
+				self._append(vl + '.split(\''+',' + '\')' + '.indexOf( jQuery.jgrid.getAccessor('+_this+',\''+f+'\') ) > -1');
 			} else {
-				self._append(vl + '.split(\''+',' + '\')' + '.indexOf(this.'+f+') > -1');
+				self._append(vl + '.split(\''+',' + '\')' + '.indexOf('+_this+'.'+f+') > -1');
 			}
 			self._setCommand(self.inData, f);
 			self._resetNegate();
