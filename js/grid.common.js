@@ -20,7 +20,7 @@
 $.extend($.jgrid,{
 // Modal functions
 	showModal : function(h) {
-		h.w.show();
+		h.w.show(400,'swing');
 	},
 	closeModal : function(h) {
 		h.w.hide().attr("aria-hidden","true");
@@ -196,7 +196,9 @@ $.extend($.jgrid,{
 			onHide: $.jgrid.closeModal,
 			gbox: '',
 			jqm : true,
-			jqM : true
+			jqM : true, 
+			duration : 400,
+			easing: "swing"
 		}, o || {});
 		var style="";
 		if(o.gbox) {
@@ -226,13 +228,13 @@ $.extend($.jgrid,{
 					if(!$(".jqgrid-overlay-modal")[0] ) {
 						$('body').prepend("<div "+style+"></div>" );
 					}
-					$(".jqgrid-overlay-modal").css("z-index",zInd).show();
+					$(".jqgrid-overlay-modal").css("z-index",zInd).show(o.duration, o.easing);
 				} else {
-					$(o.gbox).find(".jqgrid-overlay").first().css("z-index",zInd).show();
+					$(o.gbox).find(".jqgrid-overlay").first().css("z-index",zInd).show(o.duration, o.easing);
 					$(selector).data("gbox",o.gbox);
 				}
 			}
-			$(selector).show().attr("aria-hidden","false");
+			$(selector).show(o.duration, o.easing).attr("aria-hidden","false");
 			if(o.focusField >= 0) {
 				try{$(':input:visible',selector)[o.focusField].focus();}catch(_){}
 			}
@@ -255,7 +257,10 @@ $.extend($.jgrid,{
 			buttonalign : 'center',
 			buttons : [], 
 			overlay : 10,
-			overlayClass : ''
+			overlayClass : '',
+			autoClose : false,
+			autoCloseTime: 3500,
+			position : ""
 		// {text:'textbutt', id:"buttid", onClick : function(){...}}
 		// if the id is not provided we set it like info_button_+ the index in the array - i.e info_button_0,info_button_1...
 		};
@@ -275,12 +280,12 @@ $.extend($.jgrid,{
 				buttstr += "<a id='"+mopt.buttons[i].id+"' class='fm-button " + common.button+"'>"+mopt.buttons[i].text+"</a>";
 			}
 		}
-		var dh = isNaN(mopt.dataheight) ? mopt.dataheight : mopt.dataheight+"px",
-		cn = "text-align:"+mopt.align+";";
+		var dh = isNaN(mopt.dataheight) ? mopt.dataheight : mopt.dataheight+"px";
+		//cn = "text-align:"+mopt.align+";";
 		var cnt = "<div id='info_id'>";
-		cnt += "<div id='infocnt' class='"+classes.body+"' style='margin:0px;padding-bottom:1em;width:100%;overflow:auto;position:relative;height:"+dh+";"+cn+"'>"+content+"</div>";
-		cnt += c_b ? "<div class='" + classes.footer + "' style='text-align:"+mopt.buttonalign+";padding-bottom:0.8em;padding-top:0.5em;background-image: none;border-width: 1px 0 0 0;'><a id='closedialog' class='fm-button " + common.button + "'>"+c_b+"</a>"+buttstr+"</div>" :
-			buttstr !== ""  ? "<div class='" + classes.footer + "' style='text-align:"+mopt.buttonalign+";padding-bottom:0.8em;padding-top:0.5em;background-image: none;border-width: 1px 0 0 0;'>"+buttstr+"</div>" : "";
+		cnt += "<div id='infocnt' class='info_content "+classes.body+"'>"+content+"</div>";
+		cnt += c_b ? "<div class='info_footer " + classes.footer + "'><a id='closedialog' class='fm-button " + common.button + "'>"+c_b+"</a>"+buttstr+"</div>" :
+			buttstr !== ""  ? "<div class='info_footer " + classes.footer + "'>"+buttstr+"</div>" : "";
 		cnt += "</div>";
 
 		try {
@@ -300,6 +305,43 @@ $.extend($.jgrid,{
 			'','',true, 
 			{ "font-size":fs}
 		);
+		if(mopt.position) {
+			var inf_dlg_pos = mopt.position.split(" "), d_clas;
+			switch (inf_dlg_pos[0].toLowerCase() + " " + inf_dlg_pos[1].toLowerCase() ) 
+			{
+				case  'top left':
+					d_clas = 'top-0 start-0';
+				break;
+				case  'top center':
+					d_clas = 'top-0 start-50 translate-middle-x';
+				break;
+				case  'top right':
+					d_clas = 'top-0 end-0';
+				break;
+				case  'middle left':
+					d_clas = 'top-50 start-0 translate-middle-y';
+				break;
+				case  'middle center':
+					d_clas = 'top-50 start-50 translate-middle';
+				break;
+				case  'middle right':
+					d_clas = 'top-50 end-0 translate-middle-y';
+				break;
+				case  'bottom left':
+					d_clas = 'bottom-0 start-0';
+				break;
+				case  'bottom center':
+					d_clas = 'bottom-0 start-50 translate-middle-x';
+				break;
+				case  'bottom right':
+					d_clas = 'bottom-0 end-0';
+				break;
+				default :
+					d_clas = 'top-50 start-50 translate-middle';
+			}
+			$("#info_dialog").addClass(d_clas).css({"top":"", "left":"", "width":"auto", "max-width": "500px"});
+		}
+		$(".info_content","#info_id").height(dh);
 		// attach onclick after inserting into the dom
 		if(buttstr) {
 			$.each(mopt.buttons,function(i){
@@ -314,23 +356,63 @@ $.extend($.jgrid,{
 			});
 			return false;
 		});
+		if(mopt.autoClose) {
+			setTimeout(function() {
+				$(".ui-jqdialog-titlebar-close", "#info_head").trigger('click');
+			}, mopt.autoCloseTime)
+		}
 		$(".fm-button","#info_dialog").hover(
 			function(){$(this).addClass(common.hover);},
 			function(){$(this).removeClass(common.hover);}
 		);
 		if($.jgrid.isFunction(mopt.beforeOpen) ) { mopt.beforeOpen(); }
+		if(mopt.type && mopt.type !== "default") {
+			$("#info_dialog").addClass("toast-"+mopt.type)
+		}
 		$.jgrid.viewModal("#info_dialog",{
 			onHide: function(h) {
-				h.w.hide().remove();
-				if(h.o) { h.o.remove(); }
+				$.jgrid.closeModal(h);
+				h.w.remove();
+				//if(h.o) { h.o.remove(); }
 			},
 			modal :mopt.modal,
 			jqm:jm,
 			overlay : mopt.overlay,
-			overlayClass : mopt.overlayClass
+			overlayClass : mopt.overlayClass,
+			duration : mopt.duration || 400,
+			easing: mopt.easing || "swing"
 		});
 		if($.jgrid.isFunction(mopt.afterOpen) ) { mopt.afterOpen(); }
 		try{ $("#info_dialog").focus();} catch (m){}
+	},
+	toast : function( o ) {
+		var opt  = {
+			caption : "",
+			text :"",
+			close_icon : true,
+			type: "default", //error, warning, info, success
+			close_button : '',
+			autoClose : true,
+			autoCloseTime : 2000,
+			drag: false,
+			position : "middle center",
+			jqModal:false, 
+			duration:600,
+			removemodal : true
+		};
+		$.extend(true, opt, $.jgrid.jqModal || {}, {caption: opt.caption }, o || {});
+		if(!opt.text) {
+			return;
+		}
+		$.jgrid.info_dialog(opt.header, opt.text, opt.close_button, opt);
+		if(!opt.caption) {
+			$(".ui-jqdialog-titlebar","#info_dialog").hide();
+			if(opt.close_icon) {
+				var close_but = $(".ui-jqdialog-titlebar-close","#info_dialog").clone(true);
+				$(close_but).insertAfter($("#infocnt"));
+				$("#info_id").css({"padding-right": "35px", "padding-left": "20px"});
+			}
+		}
 	},
 	bindEv: function  (el, opt) {
 		var $t = this;

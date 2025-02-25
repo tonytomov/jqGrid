@@ -1315,6 +1315,25 @@ a.colmenu .colmenuspan
 	border: 1px solid var(--tbl-brd-color, #ddd);
 	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
+#info_dialog .info_content {
+	margin:0px;
+	padding: 0.4em 0.4em 0.8em 0.4em;
+	width:100%;
+	overflow:auto;
+	position:relative;
+	text-align: center;
+}
+#info_dialog .info_footer {
+	text-align: center;
+	padding-bottom:0.3em;
+	padding-top:0.3em;
+	background-image: none;
+	border-width: 1px 0 0 0;
+}
+#info_dialog .ui-jqdialog-titlebar-close:hover {
+	background-color :var(--tbl-brd-color, #ddd);
+}
+
 .ui-col-menu {
 	overflow: auto;
 	height: 17em;
@@ -1327,4 +1346,16 @@ a.colmenu .colmenuspan
 
 .ui-jqgrid-btable td.selected-cell {
     background-color: antiquewhite;
+}
+.toast-success {
+	background-color: #e8f6f3 !important;
+}
+.toast-warning {
+	background-color: #fef9e7 !important;
+}
+.toast-info {
+	background-color: #ebf5fb !important;
+}
+.toast-error {
+	background-color: #fadbd8 !important;
 }

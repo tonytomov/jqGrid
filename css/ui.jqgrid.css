@@ -252,6 +252,22 @@
 	overflow: auto;
 }
 .jqgrid-overlay-modal {	display : none; }
+
+#info_dialog .info_content {
+	margin:0px;
+	padding: 0.4em 0.4em 0.8em 0.4em;
+	width:100%;
+	overflow:auto;
+	position:relative;
+	text-align: center;
+}
+#info_dialog .info_footer {
+	text-align: center;
+	padding-bottom:0.3em;
+	padding-top:0.3em;
+	background-image: none;
+	border-width: 1px 0 0 0;
+}
 /* end Modal window*/
 /* Form edit */
 .ui-jqdialog-content .FormGrid {margin: 0; overflow:auto;position:relative;}
@@ -565,7 +581,7 @@ td.menu_text {
 .ui-jqgrid td.jqgrid-searchcol input {
 	width: 100%;
 	overflow: auto;
-}
+} 
 
 .ui-jqgrid .frozen-rdiv  {
 	z-index: 10000;
@@ -581,4 +597,95 @@ td.menu_text {
 
 .ui-jqgrid-btable td.selected-cell {
     background-color: antiquewhite;
+}
+
+.top-0 {
+    top: 0!important
+}
+
+.top-50 {
+    top: 50%!important
+}
+
+.top-100 {
+    top: 100%!important
+}
+
+.bottom-0 {
+    bottom: 0!important;
+	top: auto;
+}
+
+.bottom-50 {
+    bottom: 50%!important
+}
+
+.bottom-100 {
+    bottom: 100%!important
+}
+
+.start-0 {
+    left: 0!important;
+	top: auto;
+}
+
+.start-50 {
+    left: 50%!important;
+	top: auto;
+}
+
+.start-100 {
+    left: 100%!important;
+	top: auto;
+}
+
+.end-0 {
+    right: 0!important;
+	left : auto;
+}
+
+.end-50 {
+    right: 50%!important
+}
+
+.end-100 {
+    right: 100%!important
+}
+.translate-middle {
+    transform: translate(-50%,-50%)!important
+}
+
+.translate-middle-x {
+    transform: translateX(-50%)!important
+}
+
+.translate-middle-y {
+    transform: translateY(-50%)!important
+}
+
+
+.toast-success {
+	background-color: #e8f6f3 !important;
+}
+.toast-success .ui-jqdialog-content .info_content {
+	background: none !important;
+}
+.toast-warning {
+	background-color: #fef9e7 !important;
+}
+.toast-warning .ui-jqdialog-content .info_content {
+	background: none !important;
+}
+.toast-info {
+	background: none !important;
+	background-color: #ebf5fb !important;
+}
+.toast-info .ui-jqdialog-content .info_content {
+	background: none !important;
+}
+.toast-error {
+	background-color: #fadbd8 !important;
+}
+.toast-error .ui-jqdialog-content .info_content {
+	background: none !important;
 }
