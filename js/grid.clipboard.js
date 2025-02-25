@@ -74,21 +74,24 @@ $.extend($.jgrid,{
 		try {
 			await navigator.clipboard.writeText(textValue);
 			console.log('Text copied to clipboard');
+			$.jgrid.toast({text: 'Text copied to clipboard!', position:"top center", header: "", autoClose: true, styleUI: this.p.styleUI, type:"info"});
 		} catch (err) {
+			$.jgrid.toast({text: 'Failed to copy to clipboard!', position:"top center", header: "", autoClose: true, styleUI: this.p.styleUI, type:"error"});
 			console.error('Failed to copy: ', err);
 		}
 	},
-	getClipboardContents : async function () {
+	getClipboardContents : async function ( grid_id ) {
 		try {
 			const text = await navigator.clipboard.readText();
 			//console.log('Pasted content: ', text);
 			return text;
 		} catch (err) {
+			$.jgrid.toast({text: 'Failed to read clipboard contents!', position:"top center", header: "", autoClose: true, styleUI: $("#"+grid_id)[0].p.styleUI, type:"error"});
 			console.error('Failed to read clipboard contents: ', err);
 		}
 	},
 	copyRows : function( rows, cm , o) {
-		var seldata =[],header=[], h_s = false;
+		var seldata =[],header=[], h_s = false, $t = $(rows).parents('table')[0];
 		for(var j=0; j<rows.length;j++) {
 			var row = rows[j];
 			var dat = [];
@@ -98,7 +101,15 @@ $.extend($.jgrid,{
 						if(h_s===false) {
 							header.push(cm[i].name);
 						}
-						dat.push(row.cells[i].innerText);
+						if(o.copy_formated_data === true)  {
+							dat.push( row.cells[i].innerText) ; //? formated data in grid
+						} else {
+							try {
+								dat.push($.unformat.call($t,$(row.cells[i]),{rowId:row.id, colModel:cm[i] }, i ) );
+							} catch(e) {
+								dat.push( $.jgrid.htmlDecode(row.cells[i].innerHTML) ); //as in getCell
+							}
+						}
 					}
 				}
 				if(header.length) {
@@ -112,7 +123,7 @@ $.extend($.jgrid,{
 		if(o.copy_header_included && header.length) {
 			seldata.unshift( header.join( o.copy_delimiter ) );
 		}
-		$.jgrid.copyText( seldata.join( o.copy_newline ));
+		$.jgrid.copyText.call($t, seldata.join( o.copy_newline ));
 		//startCellIndex = null; startRowIndex = null;
 	},
 	pasteRows : function(cm, grid_id, o, paste_add) {
@@ -120,12 +131,12 @@ $.extend($.jgrid,{
 			alert("Please click position to paste");
 			return;
 		}
-		this.getClipboardContents().then((data) => {
+		this.getClipboardContents( grid_id ).then((data) => {
 			//console.log(data);
 
 			var delim = o.paste_autodetect_delim  ? $.jgrid.guessDelimiters(data) : o.paste_delimiter, headers=[];
 			data = data.split(o.paste_newline);
-			if(o.paste_header_included) {
+			if(!o.paste_header_included) {
 				headers =  $.jgrid.deserializeRow(data.shift(), delim);
 			} else {
 				var h_l = data[0].split(delim).length;
@@ -242,10 +253,13 @@ $.jgrid.extend({
 			copy_delimiter : '\t',
 			copy_newline: '\n',
 			copy_header_included : true,
+			copy_formated_data : true,
 			paste_delimiter : '\t',
 			paste_newline : '\n',
 			paste_autodetect_delim : true,
 			paste_header_included : false,
+			paste_skip_formatter : true,
+			show_dialog_after_paste: true,
 			startCellIndex : null,
 			startRowIndex : null,
 			isMouseDown : false
@@ -311,12 +325,14 @@ $.jgrid.extend({
 	updateRowsByIndex : function(startInd, data, o, paste_add) {
 		var success = true;
 		this.each(function(){
+			var locales = $.jgrid.getRegional(this, 'clipboard');
 			if(Array.isArray(data)) {
 				if(startInd < 0 ) {
 					success = false;
 					console.log("not vald start index");
 				}  else {
-					var datalen = data.length, i=0, row, grow, storeUpdate = [], inserted = 0, updated =0;
+					var datalen = data.length, i=0, row, grow, storeUpdate = [], inserted = 0, updated =0,
+					edit =$.jgrid.getRegional(this, 'edit');
 					while(i < datalen) {
 						row = data[i];
 						grow = this.rows[startInd];
@@ -329,7 +345,7 @@ $.jgrid.extend({
 							o_row["_id_"] = grow.id;
 								data[i]["_id_"] = grow.id;
 							storeUpdate.push( o_row );
-							$(this).jqGrid("setRowData",  grow.id, row);
+								$(this).jqGrid("setRowData",  grow.id, row, undefined , false, o.paste_skip_formatter);
 								updated++;
 							}
 							
@@ -344,7 +360,10 @@ $.jgrid.extend({
 							alert("Local storage not available! Can not store data for undo changes!");
 						}
 					}
-					$.jgrid.info_dialog("Information",'<p>Total rows: '+datalen + '</p><p>Insered :'+inserted+ '</p><p>Updated :'+updated +'</p>','Close');
+					if(o.show_dialog_after_paste) {
+						//$.jgrid.toast({text: '<div>Total rows: '+datalen + '</div><div>Insered :'+inserted+ '</div><div>Updated :'+updated +'</div>', position:"top center", header: "", autoClose: true, autoCloseTime:3500, styleUI: this.p.styleUI, type:"info"});
+						$.jgrid.info_dialog("Information",'<div>Total rows : '+datalen + '</div><div>Insered : '+inserted+ '</div><div>Updated : '+updated +'</div>','',{styleUI : this.p.styleUI ,autoClose: true, autoCloseTime:3500,});
+					}
 				}
 			} else {
 				success = false; 
