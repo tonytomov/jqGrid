@@ -74,9 +74,9 @@ $.extend($.jgrid,{
 		try {
 			await navigator.clipboard.writeText(textValue);
 			console.log('Text copied to clipboard');
-			$.jgrid.toast({text: 'Text copied to clipboard!', position:"top center", header: "", autoClose: true, styleUI: this.p.styleUI, type:"info"});
+			$.jgrid.toast({text: 'Text copied to clipboard!', position:"top center", header: "", styleUI: this.p.styleUI, type:"info"});
 		} catch (err) {
-			$.jgrid.toast({text: 'Failed to copy to clipboard!', position:"top center", header: "", autoClose: true, styleUI: this.p.styleUI, type:"error"});
+			$.jgrid.toast({text: 'Failed to copy to clipboard!', position:"top center", header: "", styleUI: this.p.styleUI, type:"error"});
 			console.error('Failed to copy: ', err);
 		}
 	},
@@ -86,7 +86,7 @@ $.extend($.jgrid,{
 			//console.log('Pasted content: ', text);
 			return text;
 		} catch (err) {
-			$.jgrid.toast({text: 'Failed to read clipboard contents!', position:"top center", header: "", autoClose: true, styleUI: $("#"+grid_id)[0].p.styleUI, type:"error"});
+			$.jgrid.toast({text: 'Failed to read clipboard contents!', position:"top center", header: "", styleUI: $("#"+grid_id)[0].p.styleUI, type:"error"});
 			console.error('Failed to read clipboard contents: ', err);
 		}
 	},
@@ -357,16 +357,17 @@ $.jgrid.extend({
 						if($.jgrid.isLocalStorage()) {
 							localStorage.setItem(this.id+"_restore", JSON.stringify(storeUpdate));
 						} else {
-							alert("Local storage not available! Can not store data for undo changes!");
+							$.jgrid.toast({text: 'Local storage not available! Can not store data for undo changes!', position:"top center", header: "", autoCloseTime:3500, styleUI: this.p.styleUI, type:"warning"});
+							//alert("Local storage not available! Can not store data for undo changes!");
 						}
 					}
 					if(o.show_dialog_after_paste) {
-						//$.jgrid.toast({text: '<div>Total rows: '+datalen + '</div><div>Insered :'+inserted+ '</div><div>Updated :'+updated +'</div>', position:"top center", header: "", autoClose: true, autoCloseTime:3500, styleUI: this.p.styleUI, type:"info"});
 						$.jgrid.info_dialog("Information",'<div>Total rows : '+datalen + '</div><div>Insered : '+inserted+ '</div><div>Updated : '+updated +'</div>','',{styleUI : this.p.styleUI ,autoClose: true, autoCloseTime:3500,});
 					}
 				}
 			} else {
 				success = false; 
+				$.jgrid.toast({text: 'Data is not Array!', position:"top center", header: "", autoCloseTime:3500, styleUI: this.p.styleUI, type:"error"});
 				console.log("data is not array");
 			}
 		});
