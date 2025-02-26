@@ -60,34 +60,57 @@ $.extend($.jgrid,{
 		navigator.permissions.query(queryOpts).then((permObj)=>{
 			// state will be 'granted', 'denied' or 'prompt':
 			if( permObj && permObj.state === 'denied') {
-				alert("Copy paste disabled in browser, please enable it");
+				let msg = $.jgrid.getRegional(this, 'clipboard.errors');
+				$.jgrid.toast({ 
+					text: msg.enb_prm, 
+					autoClose : false,
+					styleUI: this.p.styleUI, 
+					type:"warning"
+				});						
 			}
 			// Listen for changes to the permission state
 			// permissionStatus.onchange = () => {
 			//	console.log(permissionStatus.state);
 			// }
 		}).catch((error)=>{
+			// no translation
 			console.log("clipboard-read permission not supported for this browser.")
 		});
 	},
-	copyText: async function (textValue) {
+	copyText: async function (textValue, o) {
 		try {
 			await navigator.clipboard.writeText(textValue);
-			console.log('Text copied to clipboard');
-			$.jgrid.toast({text: 'Text copied to clipboard!', position:"top center", header: "", styleUI: this.p.styleUI, type:"info"});
+			//console.log('Text copied to clipboard');
+			if(o.show_info_after_copy) {
+				let msg = $.jgrid.getRegional(this, 'clipboard.msg');
+				$.jgrid.toast( {
+					text: msg.text_c, 
+					styleUI: this.p.styleUI, 
+					type:"info"
+				});
+			}
 		} catch (err) {
-			$.jgrid.toast({text: 'Failed to copy to clipboard!', position:"top center", header: "", styleUI: this.p.styleUI, type:"error"});
-			console.error('Failed to copy: ', err);
+			let msg = $.jgrid.getRegional(this, 'clipboard.errors');
+			$.jgrid.toast( { 
+				text: msg.copy_err + err, 
+				autoCloseTime: 4500,
+				styleUI: this.p.styleUI, 
+				type:"error"
+			});
 		}
 	},
-	getClipboardContents : async function ( grid_id ) {
+	getClipboardContents : async function ( ) {
 		try {
 			const text = await navigator.clipboard.readText();
-			//console.log('Pasted content: ', text);
 			return text;
 		} catch (err) {
-			$.jgrid.toast({text: 'Failed to read clipboard contents!', position:"top center", header: "", styleUI: $("#"+grid_id)[0].p.styleUI, type:"error"});
-			console.error('Failed to read clipboard contents: ', err);
+			let msg = $.jgrid.getRegional(this, 'clipboard.errors');
+			$.jgrid.toast( {
+				text: msg.read_err + err, 
+				styleUI: this.p.styleUI,
+				autoCloseTime: 4500,
+				type:"error"
+			});
 		}
 	},
 	copyRows : function( rows, cm , o) {
@@ -123,17 +146,34 @@ $.extend($.jgrid,{
 		if(o.copy_header_included && header.length) {
 			seldata.unshift( header.join( o.copy_delimiter ) );
 		}
-		$.jgrid.copyText.call($t, seldata.join( o.copy_newline ));
-		//startCellIndex = null; startRowIndex = null;
+		$.jgrid.copyText.call($t, seldata.join( o.copy_newline), o);
+		o.startCellIndex = null; o.startRowIndex = null;
 	},
-	pasteRows : function(cm, grid_id, o, paste_add) {
+	pasteRows : function(o, paste_add) {
 		if(o.startCellIndex === null || o.startRowIndex === null) {
-			alert("Please click position to paste");
+			let msg = $.jgrid.getRegional(this, 'clipboard.msg');
+			$.jgrid.toast({ 
+				text: msg.select_pos, 
+				position:"middle center", 
+				autoClose : false,
+				styleUI: this.p.styleUI, 
+				type:"warning"
+			});			
 			return;
 		}
-		this.getClipboardContents( grid_id ).then((data) => {
+		var cm = this.p.colModel, grid_id = this.p.id;
+		$.jgrid.getClipboardContents.call(this).then((data) => {
 			//console.log(data);
-
+			if(data === "" || data == null) {
+				let msg = $.jgrid.getRegional(this, 'clipboard.errors');
+				$.jgrid.toast( {
+					text: msg.get_data_err, 
+					styleUI: this.p.styleUI,
+					autoCloseTime: 4500,
+					type:"error"
+				});
+				return;
+			}
 			var delim = o.paste_autodetect_delim  ? $.jgrid.guessDelimiters(data) : o.paste_delimiter, headers=[];
 			data = data.split(o.paste_newline);
 			if(!o.paste_header_included) {
@@ -141,19 +181,18 @@ $.extend($.jgrid,{
 			} else {
 				var h_l = data[0].split(delim).length;
 				h_l += o.startCellIndex;
-			if(h_l > cm.length) {
-				h_l = cm.length;
-			}
+				if(h_l > cm.length) {
+					h_l = cm.length;
+				}
 				for (var i = o.startCellIndex; i< h_l; i++) {
-				headers.push(cm[i].name);
-			}
+					headers.push(cm[i].name);
+				}
 			}
 			if($.jgrid.isLocalStorage()) {
 				localStorage.removeItem(grid_id+"_restore");
 			}
 			var rows_to_paste = $.jgrid.CSVtoObject(data, headers, delim, o.paste_newline);
 			$("#"+grid_id).jqGrid("updateRowsByIndex", o.startRowIndex, rows_to_paste, o, paste_add);
-			//console.log(rows_to_paste);
 		});
 	},
 	undoPaste : function( grid_id ) {
@@ -166,10 +205,10 @@ $.extend($.jgrid,{
 				}
 			}
 		}
-				var rws = $("#"+grid_id);
-				rws.find("tr.frompaste").each(function(i,n) {
-					rws.jqGrid("delRowData", n.id);
-				});
+		var rws = $("#"+grid_id);
+		rws.find("tr.frompaste").each(function(i,n) {
+			rws.jqGrid("delRowData", n.id);
+		});
 	},
 	guessDelimiters : function  (data, separators = ['\t', ',', ';', '|']) {
 		const idx = separators
@@ -220,8 +259,6 @@ $.jgrid.extend({
 			table.find("td").on('mousedown.jqgselect',function (e) {
 
 				if(e.which === 3) { // right click button for custom copy/paste
-					//console.log(e);
-					//var pos = $(e.currentTarget).position();
 					$("#"+ts.p.id+"_copypaste").css({left : e.clientX, top: e.clientY}).show();
 					return false;
 				}
@@ -254,12 +291,17 @@ $.jgrid.extend({
 			copy_newline: '\n',
 			copy_header_included : true,
 			copy_formated_data : true,
+			show_info_after_copy: true,
 			paste_delimiter : '\t',
 			paste_newline : '\n',
 			paste_autodetect_delim : true,
 			paste_header_included : false,
 			paste_skip_formatter : true,
-			show_dialog_after_paste: true,
+			show_info_after_paste: true,
+			beforeCopyData : null,
+			afterCopyData :null,
+			beforePasteData : null,
+			afterPasteData : null,
 			startCellIndex : null,
 			startRowIndex : null,
 			isMouseDown : false
@@ -269,21 +311,22 @@ $.jgrid.extend({
 			var colmenustyle = $.jgrid.styleUI[(this.p.styleUI || 'jQueryUI')].colmenu, $t=this;
 			var arf1 = '<ul id="'+this.id+'_copypaste" class="ui-search-menu modal-content column-menu ui-menu jqgrid-caption-menu ' + colmenustyle.menu_widget+'" role="menubar" tabindex="0"></ul>';
 			$("#gbox_"+this.id).append(arf1);
+			const menus = $.jgrid.getRegional(this, 'clipboard.menus'); 
 			var menus_copy = new Array(
-				{"id" : "copy_act", "title" : "Copy Selected to Clipboard", "click": function() { $.jgrid.copyRows(this.rows,this.p.colModel, o ); } },
+				{"id" : "copy_act", "title" : menus.copy_act, "click": function() { $.jgrid.copyRows(this.rows,this.p.colModel, o ); } },
 				{divider : true},
-				{"id" : "paste_act", "title" : "Paste Update from Clipboard", "click": function() { $.jgrid.pasteRows(this.p.colModel, this.id, o, false); } },
+				{"id" : "paste_act", "title" : menus.paste_act, "click": function() { $.jgrid.pasteRows.call(this, o, false); } },
 				{divider : true},
-				{"id" : "paste_act_add", "title" : "Paste Add from Clipboard", "click": function() { $.jgrid.pasteRows(this.p.colModel, this.id, o, true); } },
+				{"id" : "paste_act_add", "title" : menus.paste_act_add, "click": function() { $.jgrid.pasteRows.call(this, o, true); } },
 				{divider : true},
-				{"id" : "undo_paste_act", "title" : "Undo pasted rows", "click": function() { $.jgrid.undoPaste( this.id, o); } }
+				{"id" : "undo_paste_act", "title" : menus.undo_paste_act, "click": function() { $.jgrid.undoPaste( this.id, o); } }
 			);
 			$(this).jqGrid("menubarAdd", menus_copy, "_copypaste");
 			$(this).on('jqGridAfterGridComplete.setBindSelections',function(){
 				$(this).jqGrid('bindSelection', o);
 				o.startCellIndex = o.startRowIndex = null;
 			});
-			$(this).on('jqGridRightClickRow.setBindSelections',function(e, id, iRow, iCol, e1){
+			$(this).on('jqGridRightClickRow.setBindSelections',function(){
 				//console.log(e, id, iRow, iCol, e1);
 				//$.jgrid.copyRows(this.rows)
 				return false;
@@ -298,7 +341,7 @@ $.jgrid.extend({
 					} catch (e1) {}
 				}
 			});			
-			$.jgrid.Permissions();
+			$.jgrid.Permissions.call(this);
 			$t.p.isClipboard = true;
 			$(this).jqGrid('bindSelection', o);
 			o.startCellIndex = o.startRowIndex = null;
@@ -325,14 +368,21 @@ $.jgrid.extend({
 	updateRowsByIndex : function(startInd, data, o, paste_add) {
 		var success = true;
 		this.each(function(){
-			var locales = $.jgrid.getRegional(this, 'clipboard');
+			const err = $.jgrid.getRegional(this, 'clipboard.errors');
+			const msg = $.jgrid.getRegional(this, 'clipboard.msg');
 			if(Array.isArray(data)) {
+				startInd = parseInt(startInd,10);
 				if(startInd < 0 ) {
 					success = false;
-					console.log("not vald start index");
+					$.jgrid.toast( {
+						text: err.start_ind_err, 
+						styleUI: this.p.styleUI,
+						autoCloseTime: 4500,
+						type:"error"
+					});
+					//console.log("not vald start index");
 				}  else {
-					var datalen = data.length, i=0, row, grow, storeUpdate = [], inserted = 0, updated =0,
-					edit =$.jgrid.getRegional(this, 'edit');
+					var datalen = data.length, i=0, row, grow, storeUpdate = [], inserted = 0, updated =0;
 					while(i < datalen) {
 						row = data[i];
 						grow = this.rows[startInd];
@@ -342,9 +392,9 @@ $.jgrid.extend({
 						} else {
 							let o_row = $(this).jqGrid("getRowData",  grow.id);
 							if( !$.isEmptyObject(o_row) ) {
-							o_row["_id_"] = grow.id;
+								o_row["_id_"] = grow.id;
 								data[i]["_id_"] = grow.id;
-							storeUpdate.push( o_row );
+								storeUpdate.push( o_row );
 								$(this).jqGrid("setRowData",  grow.id, row, undefined , false, o.paste_skip_formatter);
 								updated++;
 							}
@@ -357,18 +407,26 @@ $.jgrid.extend({
 						if($.jgrid.isLocalStorage()) {
 							localStorage.setItem(this.id+"_restore", JSON.stringify(storeUpdate));
 						} else {
-							$.jgrid.toast({text: 'Local storage not available! Can not store data for undo changes!', position:"top center", header: "", autoCloseTime:3500, styleUI: this.p.styleUI, type:"warning"});
-							//alert("Local storage not available! Can not store data for undo changes!");
+							$.jgrid.toast({ 
+								text: err.local_stor_err, 
+								autoCloseTime: 4500, 
+								styleUI: this.p.styleUI, 
+								type:"warning"
+							});
 						}
 					}
-					if(o.show_dialog_after_paste) {
-						$.jgrid.info_dialog("Information",'<div>Total rows : '+datalen + '</div><div>Insered : '+inserted+ '</div><div>Updated : '+updated +'</div>','',{styleUI : this.p.styleUI ,autoClose: true, autoCloseTime:3500,});
+					if(o.show_info_after_paste) {
+						$.jgrid.info_dialog(msg.info_cap,'<div>'+msg.total_row +datalen + '</div><div>'+msg.insert_row  + inserted+ '</div><div>'+msg.update_row + updated +'</div>','',{styleUI : this.p.styleUI ,autoClose: true, autoCloseTime:4500});
 					}
 				}
 			} else {
 				success = false; 
-				$.jgrid.toast({text: 'Data is not Array!', position:"top center", header: "", autoCloseTime:3500, styleUI: this.p.styleUI, type:"error"});
-				console.log("data is not array");
+				$.jgrid.toast({ 
+					text: err.not_array_err, 
+					autoCloseTime:3500, 
+					styleUI: this.p.styleUI, 
+					type:"error"
+				});
 			}
 		});
 		return success;
