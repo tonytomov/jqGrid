@@ -196,9 +196,13 @@ $.extend($.jgrid,{
 		});
 	},
 	undoPaste : function( grid_id ) {
+		if(!$.jgrid.isLocalStorage()) {
+			return;
+		}
 		var data = localStorage.getItem(grid_id+"_restore");
 		if (data) {
 			data = JSON.parse( data );
+			
 			if(Array.isArray(data)) {
 				for(let i=0;i<data.length; i++) {
 					$("#"+grid_id).jqGrid("setRowData", data[i]["_id_"], data[i]);
@@ -217,7 +221,114 @@ $.extend($.jgrid,{
 				prev === -1 || (cur !== -1 && cur < prev) ? cur : prev
 			);
 		return data[idx] || '\t';
+	},
+	repeatRow : function( o ) {
+		var header=[], h_s = false, $t = this;
+		var rows = this.rows, cm = this.p.colModel, source, target, target_ids = [], dat = {}, storeUpdate=[];
+		const err = $.jgrid.getRegional(this, 'clipboard.errors');
+		for(var j=0; j<rows.length;j++) {
+			target = null;
+			var row = rows[j];
+			if(row.classList.contains("jqgrow")) {
+				for (var i=0;i<row.cells.length; i++) {
+					if(row.cells[i].classList.contains("selected-cell")) {
+						if(h_s===false) {
+							header.push(cm[i].name);
+							source = row.id;
+							try {
+								dat[cm[i].name] = $.unformat.call($t,$(row.cells[i]),{rowId:row.id, colModel:cm[i] }, i ) ;
+							} catch(e) {
+								dat[cm[i].name] = $.jgrid.htmlDecode(row.cells[i].innerHTML) ; //as in getCell
 	}
+						} else {
+							target = row.id;
+						}
+					}
+				}
+				if(header.length) {
+					h_s = true;
+				}
+			}
+			if(target !== null ) {
+				var dd = $(this).jqGrid("getRowData",  target);
+				dd["_id_"] = target;
+				storeUpdate.push( dd );
+				target_ids.push(target);
+			}
+		}
+		if($.jgrid.isLocalStorage()) {
+			localStorage.removeItem(this.id + "_restore");
+			localStorage.setItem(this.id + "_restore", JSON.stringify(storeUpdate));
+		} else {
+			$.jgrid.toast({ 
+				text: err.local_stor_err, 
+				autoCloseTime: 4500, 
+				styleUI: this.p.styleUI, 
+				type:"warning"
+			});
+		}
+		for(let j=0;j<target_ids.length;j++) {
+			$(this).jqGrid('setRowData', target_ids[j], dat);
+		}
+		o.startCellIndex = null; o.startRowIndex = null;
+	},
+	repeatCol : function( o ) {
+		var header=[], h_s = false, $t = this;
+		var rows = this.rows, cm = this.p.colModel, target, fcol, target_ids = [], dat = [], storeUpdate=[];
+		const err = $.jgrid.getRegional(this, 'clipboard.errors');
+		for(var j=0; j<rows.length;j++) {
+			target = null; fcol =  null;
+			var row = rows[j];
+			if(row.classList.contains("jqgrow")) {
+				for (var i=0;i<row.cells.length; i++) {
+					if(row.cells[i].classList.contains("selected-cell")) {
+						if(h_s===false) {
+							header.push(cm[i].name);
+						}
+						if(fcol===null) {
+							try {
+								dat.push( $.unformat.call($t,$(row.cells[i]),{rowId:row.id, colModel:cm[i] }, i ) );
+							} catch(e) {
+								dat.push( $.jgrid.htmlDecode(row.cells[i].innerHTML) ); //as in getCell
+							}
+						}
+						fcol = true;
+						target = row.id;
+					}
+				}
+				if(header.length) {
+					h_s = true;
+				}
+			}
+			if(target !== null ) {
+				var dd = $(this).jqGrid("getRowData",  target);
+				dd["_id_"] = target;
+				storeUpdate.push( dd );
+				target_ids.push(target);
+			}
+		}
+		let setme;
+		header.shift();
+		if($.jgrid.isLocalStorage()) {
+			localStorage.removeItem(this.id + "_restore");
+			localStorage.setItem(this.id + "_restore", JSON.stringify(storeUpdate));
+		} else {
+			$.jgrid.toast({ 
+				text: err.local_stor_err, 
+				autoCloseTime: 4500, 
+				styleUI: this.p.styleUI, 
+				type:"warning"
+			});
+		}		
+		for(let j=0; j < target_ids.length; j++) {
+			setme ={};
+			for (let k=0; k < header.length; k++) {
+				setme[header[k]] = dat[j];
+			}
+			$(this).jqGrid('setRowData', target_ids[j], setme);
+		}
+		o.startCellIndex = null; o.startRowIndex = null;
+	}	
 });
 $.jgrid.extend({
 	bindSelection : function( o ) {
@@ -302,6 +413,15 @@ $.jgrid.extend({
 			afterCopyData :null,
 			beforePasteData : null,
 			afterPasteData : null,
+			menuConfig : {
+				copy : true,
+				paste: true,
+				paste_add : true,
+				row_vertical : true,
+				row_horizontal : true,
+				undo : true,
+				cancel : true
+			},
 			startCellIndex : null,
 			startRowIndex : null,
 			isMouseDown : false
@@ -309,18 +429,28 @@ $.jgrid.extend({
 		
 		return this.each(function(){
 			var colmenustyle = $.jgrid.styleUI[(this.p.styleUI || 'jQueryUI')].colmenu, $t=this;
-			var arf1 = '<ul id="'+this.id+'_copypaste" class="ui-search-menu modal-content column-menu ui-menu jqgrid-caption-menu ' + colmenustyle.menu_widget+'" role="menubar" tabindex="0"></ul>';
+			var arf1 = '<ul id="'+this.id+'_copypaste" class="ui-search-menu modal-content column-menu ui-menu jqgrid-caption-menu ' + colmenustyle.menu_widget+'" role="menu" tabindex="0"></ul>';
 			$("#gbox_"+this.id).append(arf1);
 			const menus = $.jgrid.getRegional(this, 'clipboard.menus'); 
-			var menus_copy = new Array(
-				{"id" : "copy_act", "title" : menus.copy_act, "click": function() { $.jgrid.copyRows(this.rows,this.p.colModel, o ); } },
-				{divider : true},
-				{"id" : "paste_act", "title" : menus.paste_act, "click": function() { $.jgrid.pasteRows.call(this, o, false); } },
-				{divider : true},
-				{"id" : "paste_act_add", "title" : menus.paste_act_add, "click": function() { $.jgrid.pasteRows.call(this, o, true); } },
-				{divider : true},
-				{"id" : "undo_paste_act", "title" : menus.undo_paste_act, "click": function() { $.jgrid.undoPaste( this.id, o); } }
-			);
+			var menu = [], menus_copy = [];
+			menu["copy"]= {"id" : "copy_act", "title" : menus.copy_act, "click": function() { $.jgrid.copyRows(this.rows,this.p.colModel, o ); } };
+			menu["paste"] = {"id" : "paste_act", "title" : menus.paste_act, "click": function() { $.jgrid.pasteRows.call(this, o, false); } };
+			menu["paste_add"] = {"id" : "paste_act_add", "title" : menus.paste_act_add, "click": function() { $.jgrid.pasteRows.call(this, o, true); } };
+			menu["row_vertical"] = {"id" : "repeat_act_row", "title" : menus.repeat_act_row, "click": function() { $.jgrid.repeatRow.call( this, o); } };				
+			menu["row_horizontal"] = {"id" : "repeat_act_col", "title" : menus.repeat_act_col, "click": function() { $.jgrid.repeatCol.call( this, o); } };				
+			menu["undo"] = {"id" : "undo_act", "title" : menus.undo_act, "click": function() { $.jgrid.undoPaste( this.id, o); } };
+			menu["cancel"] = {"id" : "cancel_act", "title" : menus.cancel_act, "click": function() { $("#"+$t.p.id+"_copypaste").hide(); } };
+			//return;
+			var cnt =0;
+			for(let key in o.menuConfig) {
+				if(o.menuConfig[key] === true) {
+					cnt++;
+					if(cnt > 1) {
+						menus_copy.push({divider : true});
+					}
+					menus_copy.push(menu[key]);
+				}
+			}
 			$(this).jqGrid("menubarAdd", menus_copy, "_copypaste");
 			$(this).on('jqGridAfterGridComplete.setBindSelections',function(){
 				$(this).jqGrid('bindSelection', o);

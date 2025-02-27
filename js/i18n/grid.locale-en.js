@@ -235,10 +235,10 @@ $.jgrid.regional["en"] = {
 			copy_act : "Copy Selected to Clipboard",
 			paste_act : "Paste Update from Clipboard",
 			paste_act_add: "Paste Add from Clipboard",
-			undo_paste_act : "Undo pasted rows",
-			repeat_row : "Repeat row vertically",
-			repeat_col : "Repeat column horizontally",
-			cancel : "Cancel",
+			undo_act : "Undo",
+			repeat_act_row : "Repeat row vertically",
+			repeat_act_col : "Repeat column horizontally",
+			cancel_act : "Cancel"
 		},
 		msg : {
 			text_c : "Text copied to clipboard.",
