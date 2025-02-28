@@ -80,7 +80,6 @@ $.extend($.jgrid,{
 	copyText: async function (textValue, o) {
 		try {
 			await navigator.clipboard.writeText(textValue);
-			//console.log('Text copied to clipboard');
 			if(o.show_info_after_copy) {
 				let msg = $.jgrid.getRegional(this, 'clipboard.msg');
 				$.jgrid.toast( {
@@ -163,7 +162,6 @@ $.extend($.jgrid,{
 		}
 		var cm = this.p.colModel, grid_id = this.p.id;
 		$.jgrid.getClipboardContents.call(this).then((data) => {
-			//console.log(data);
 			if(data === "" || data == null) {
 				let msg = $.jgrid.getRegional(this, 'clipboard.errors');
 				$.jgrid.toast( {
@@ -370,7 +368,8 @@ $.jgrid.extend({
 			table.find("td").on('mousedown.jqgselect',function (e) {
 
 				if(e.which === 3) { // right click button for custom copy/paste
-					$("#"+ts.p.id+"_copypaste").css({left : e.clientX, top: e.clientY}).show();
+					var rect = $("#gbox_"+ts.id)[0].getBoundingClientRect();
+					$("#"+ts.p.id+"_copypaste").css({left : e.clientX - rect.left, top: e.clientY - rect.top}).show();
 					return false;
 				}
 				o.isMouseDown = true;
@@ -431,15 +430,17 @@ $.jgrid.extend({
 			var colmenustyle = $.jgrid.styleUI[(this.p.styleUI || 'jQueryUI')].colmenu, $t=this;
 			var arf1 = '<ul id="'+this.id+'_copypaste" class="ui-search-menu modal-content column-menu ui-menu jqgrid-caption-menu ' + colmenustyle.menu_widget+'" role="menu" tabindex="0"></ul>';
 			$("#gbox_"+this.id).append(arf1);
-			const menus = $.jgrid.getRegional(this, 'clipboard.menus'); 
+			const menus = $.jgrid.getRegional(this, 'clipboard.menus'),
+			menuicons = $.jgrid.styleUI[(this.p.styleUI || 'jQueryUI')].clipboard,
+			iconbase = $.jgrid.styleUI[(this.p.styleUI || 'jQueryUI')].common.icon_base;
 			var menu = [], menus_copy = [];
-			menu["copy"]= {"id" : "copy_act", "title" : menus.copy_act, "click": function() { $.jgrid.copyRows(this.rows,this.p.colModel, o ); } };
-			menu["paste"] = {"id" : "paste_act", "title" : menus.paste_act, "click": function() { $.jgrid.pasteRows.call(this, o, false); } };
-			menu["paste_add"] = {"id" : "paste_act_add", "title" : menus.paste_act_add, "click": function() { $.jgrid.pasteRows.call(this, o, true); } };
-			menu["row_vertical"] = {"id" : "repeat_act_row", "title" : menus.repeat_act_row, "click": function() { $.jgrid.repeatRow.call( this, o); } };				
-			menu["row_horizontal"] = {"id" : "repeat_act_col", "title" : menus.repeat_act_col, "click": function() { $.jgrid.repeatCol.call( this, o); } };				
-			menu["undo"] = {"id" : "undo_act", "title" : menus.undo_act, "click": function() { $.jgrid.undoPaste( this.id, o); } };
-			menu["cancel"] = {"id" : "cancel_act", "title" : menus.cancel_act, "click": function() { $("#"+$t.p.id+"_copypaste").hide(); } };
+			menu["copy"]= {"id" : "copy_act", icon : iconbase+" "+menuicons.icon_copy ,"title" : menus.copy_act, "click": function() { $.jgrid.copyRows(this.rows,this.p.colModel, o ); } };
+			menu["paste"] = {"id" : "paste_act", icon : iconbase+" "+menuicons.icon_paste, "title" : menus.paste_act, "click": function() { $.jgrid.pasteRows.call(this, o, false); } };
+			menu["paste_add"] = {"id" : "paste_act_add", icon : iconbase+" "+menuicons.icon_paste_add, "title" : menus.paste_act_add, "click": function() { $.jgrid.pasteRows.call(this, o, true); } };
+			menu["row_vertical"] = {"id" : "repeat_act_row", icon : iconbase+" "+menuicons.icon_repeat_row, "title" : menus.repeat_act_row, "click": function() { $.jgrid.repeatRow.call( this, o); } };				
+			menu["row_horizontal"] = {"id" : "repeat_act_col", icon : iconbase+" "+menuicons.icon_repeat_col, "title" : menus.repeat_act_col, "click": function() { $.jgrid.repeatCol.call( this, o); } };				
+			menu["undo"] = {"id" : "undo_act", icon : iconbase+" "+menuicons.icon_undo, "title" : menus.undo_act, "click": function() { $.jgrid.undoPaste( this.id, o); } };
+			menu["cancel"] = {"id" : "cancel_act", icon : iconbase+" "+menuicons.icon_cancel, "title" : menus.cancel_act, "click": function() { $("#"+$t.p.id+"_copypaste").hide(); } };
 			//return;
 			var cnt =0;
 			for(let key in o.menuConfig) {
@@ -458,7 +459,6 @@ $.jgrid.extend({
 			});
 			$(this).on('jqGridRightClickRow.setBindSelections',function(){
 				//console.log(e, id, iRow, iCol, e1);
-				//$.jgrid.copyRows(this.rows)
 				return false;
 			});
 			$(document).on("mouseup.jqgclipme", function () {
@@ -510,7 +510,6 @@ $.jgrid.extend({
 						autoCloseTime: 4500,
 						type:"error"
 					});
-					//console.log("not vald start index");
 				}  else {
 					var datalen = data.length, i=0, row, grow, storeUpdate = [], inserted = 0, updated =0;
 					while(i < datalen) {
