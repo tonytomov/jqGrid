@@ -1518,148 +1518,15 @@ $.extend($.jgrid,{
 				icon_oper_op : "ui-icon-transfer-e-w",
 				icon_reset : "ui-icon-arrowreturnthick-1-w",
 				icon_close : "ui-icon-close"
-			}
 		},
-		Bootstrap : {
-			common : {
-				disabled: "ui-disabled",
-				highlight : "success",
-				hover : "active",
-				cornerall: "",
-				cornertop: "",
-				cornerbottom : "",
-				hidden : "",
-				icon_base : "glyphicon",
-				overlay: "ui-overlay",
-				active : "active",
-				error : "bg-danger",
-				button : "btn btn-default",
-				content : "",
-				shadow : ""
-			},
-			base : {
-				entrieBox : "",
-				viewBox : "table-responsive",
-				headerTable : "table table-bordered",
-				headerBox : "",
-				rowTable : "table table-bordered",
-				rowBox : "",
-				stripedTable : "table-striped",
-				footerTable : "table table-bordered",
-				footerBox : "",
-				headerRowTable : "table table-bordered",
-				headerRowBox : "",
-				headerDiv : "",
-				gridtitleBox : "",
-				customtoolbarBox : "",
-				//overlayBox: "ui-overlay",
-				loadingBox : "row",
-				rownumBox :  "active",
-				scrollBox : "",
-				multiBox : "checkbox",
-				pagerBox : "",
-				pagerTable : "table",
-				toppagerBox : "",
-				pgInput : "form-control",
-				pgSelectBox : "form-control",
-				pgButtonBox : "",
-				icon_first : "glyphicon-step-backward",
-				icon_prev : "glyphicon-backward",
-				icon_next: "glyphicon-forward",
-				icon_end: "glyphicon-step-forward",
-				icon_asc : "glyphicon-triangle-top",
-				icon_desc : "glyphicon-triangle-bottom",
-				icon_caption_open : "glyphicon-circle-arrow-up",
-				icon_caption_close : "glyphicon-circle-arrow-down"
-			},
-			modal : {
-				modal : "modal",
-				content :"modal-content",
-				header : "modal-header",
-				title : "modal-title",
-				body :"modal-body",
-				footer :"modal-footer",
-				resizable : "ui-resizable-handle ui-resizable-se",
-				icon_close : "glyphicon-remove-circle",
-				icon_resizable : "glyphicon-import"
-			},
-			celledit : {
-				inputClass : 'form-control',
-				selectClass: 'form-control'
-			},
-			inlinedit : {
-				inputClass : 'form-control',
-				selectClass: 'form-control',
-				icon_edit_nav : "glyphicon-edit",
-				icon_add_nav : "glyphicon-plus",
-				icon_save_nav : "glyphicon-save",
-				icon_cancel_nav : "glyphicon-remove-circle"
-			},
-			formedit : {
-				labelClass : "", 
-				inputClass : "form-control",
-				selectClass: 'form-control',
-				icon_prev : "glyphicon-step-backward",
-				icon_next : "glyphicon-step-forward",
-				icon_save : "glyphicon-save",
-				icon_close : "glyphicon-remove-circle",
-				icon_del : "glyphicon-trash",
-				icon_cancel : "glyphicon-remove-circle"
-			},
-			navigator : {
-				icon_edit_nav : "glyphicon-edit",
-				icon_add_nav : "glyphicon-plus",
-				icon_del_nav : "glyphicon-trash",
-				icon_search_nav : "glyphicon-search",
-				icon_refresh_nav : "glyphicon-refresh",
-				icon_view_nav : "glyphicon-info-sign",
-				icon_newbutton_nav : "glyphicon-new-window"
-			},
-			grouping : {
-				icon_plus : 'glyphicon-triangle-right',
-				icon_minus : 'glyphicon-triangle-bottom'
-			},
-			filter : {
-				table_widget : 'table table-condensed',
-				srSelect : 'form-control',
-				srInput : 'form-control',
-				menu_widget : '',
-				icon_search : 'glyphicon-search',
-				icon_reset : 'glyphicon-refresh',
-				icon_query :'glyphicon-comment'
-			},
-			subgrid : {
-				icon_plus : 'glyphicon-triangle-right',
-				icon_minus : 'glyphicon-triangle-bottom',
-				icon_open : 'glyphicon-indent-left'
-			},
-			treegrid : {
-				icon_plus : 'glyphicon-triangle-right',
-				icon_minus : 'glyphicon-triangle-bottom',
-				icon_leaf : 'glyphicon-unchecked'
-			},
-			fmatter : {
-				icon_edit : "glyphicon-edit",
-				icon_add : "glyphicon-plus",
-				icon_save : "glyphicon-save",
-				icon_cancel : "glyphicon-remove-circle",
-				icon_del : "glyphicon-trash"
-			},
-			colmenu : {
-				menu_widget : '',
-				input_checkbox : "",
-				filter_select: "form-control",
-				filter_input : "form-control",
-				icon_menu : "glyphicon-menu-hamburger",
-				icon_sort_asc : "glyphicon-sort-by-alphabet",
-				icon_sort_desc : "glyphicon-sort-by-alphabet-alt",
-				icon_columns : "glyphicon-list-alt",
-				icon_filter : "glyphicon-filter",
-				icon_group : "glyphicon-align-left",
-				icon_freeze : "glyphicon-object-align-horizontal",
-				icon_move: "glyphicon-move",
-				icon_new_item : "glyphicon-new-window",
-				icon_toolbar_menu : "glyphicon-menu-hamburger"
+			clipboard : {
+				icon_copy :"ui-icon-copy",
+				icon_paste : "ui-icon-clipboard",
+				icon_paste_add: "ui-icon-plusthick",
+				icon_repeat_row :"ui-icon-arrow-1-s",
+				icon_repeat_col :"ui-icon-arrow-1-e",
+				icon_undo: "ui-icon-arrowreturn-1-w",
+				icon_cancel : "ui-icon-cancel"
 			}
 		},
 		Bootstrap4 : {
@@ -1930,6 +1797,15 @@ $.extend($.jgrid,{
 				icon_oper_op : "",
 				icon_reset : "oi-reload",
 				icon_close : "oi-ban"				
+			},
+			clipboard : {
+				icon_copy :"oi-copy-outline",
+				icon_paste : "oi-clipboard-outline",
+				icon_paste_add: "oi-download-outline",
+				icon_repeat_row :"oi-arrow-down-outline",
+				icon_repeat_col :"oi-arrow-forward-outline",
+				icon_undo: "oi-arrow-undo-outline",
+				icon_cancel : "oi-exit-outline"
 			}
 		},
 		Octicons : {
@@ -2014,6 +1890,15 @@ $.extend($.jgrid,{
 				icon_oper_op : "",
 				icon_reset : "octicon-sync",
 				icon_close : "octicon-x"				
+			},
+			clipboard : {
+				icon_copy :"octicon-copy",
+				icon_paste : "octicon-paste",
+				icon_paste_add: "octicon-north-star",
+				icon_repeat_row :"octicon-move-to-bottom",
+				icon_repeat_col :"octicon-move-to-end",
+				icon_undo: "octicon-undo",
+				icon_cancel : "octicon-x"
 			}
 		},
 		fontAwesome : {
@@ -2099,6 +1984,15 @@ $.extend($.jgrid,{
 				icon_reset : "fa-reply",
 				icon_close : "fa-window-close"
 				
+			},
+			clipboard : {
+				icon_copy :"fa-copy",
+				icon_paste : "fa-paste",
+				icon_paste_add: "fa-plus",
+				icon_repeat_row :"fa-arrow-down",
+				icon_repeat_col :"fa-arrow-right",
+				icon_undo: "fa-rotate-left",
+				icon_cancel : "fa-xmark"
 			}
 		},
 		Bootstrap5 : {
@@ -2183,6 +2077,15 @@ $.extend($.jgrid,{
 				icon_oper_op : "",
 				icon_reset : "bi-arrow-clockwise",
 				icon_close : "bi-x-square"				
+			},
+			clipboard : {
+				icon_copy :"bi-clipboard-fill",
+				icon_paste : "bi-clipboard",
+				icon_paste_add: "bi-clipboard-plus",
+				icon_repeat_row :"bi-arrow-bar-down",
+				icon_repeat_col :"bi-arrow-bar-right",
+				icon_undo: "bi-arrow-counterclockwise",
+				icon_cancel : "bi-x"
 			}
 		}
 	}
