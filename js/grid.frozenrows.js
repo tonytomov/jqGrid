@@ -63,7 +63,7 @@ $.jgrid.extend({
 				for( i =0;i<prm.rowids.length; i++ ) {
 					j = $t.rows.length;
 					while( j-- ) {
-						if($t.rows[j].id === prm.rowids[i]) {
+						if($t.rows[j].id === prm.rowids[i]+"") {
 							frowms.push($($t.rows[j]).clone(true));
 							$($t.rows[j]).insertBefore($t.rows[i+1]);
 							break;
