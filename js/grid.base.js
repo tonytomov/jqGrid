@@ -2199,7 +2199,6 @@ $.fn.jqGrid = function( pin ) {
 			nv:0,
 			loadui: "enable",
 			toolbar: [false,""],
-			scroll: false,
 			deselectAfterSort : true,
 			scrollrows : false,
 			autowidth: false,
@@ -2224,7 +2223,6 @@ $.fn.jqGrid = function( pin ) {
 			direction : "ltr",
 			toppager: false,
 			headertitles: false,
-			scrollTimeout: 40,
 			data : [],
 			_index : {},
 			grouping : false,
@@ -2254,10 +2252,12 @@ $.fn.jqGrid = function( pin ) {
 			minColWidth : 33,
 			minGridWidth : 100,
 			maxGridWidth : 3000,
+			scroll: false,
+			scrollTimeout: 300,
 			scrollPopUp : false,
 			scrollTopOffset: 0, // pixel
 			scrollLeftOffset : "100%", //percent
-			scrollMaxBuffer : 0,
+			scrollMaxBuffer : 1,
 			storeNavOptions: false,
 			regional :  "en",
 			styleUI : "jQueryUI",
@@ -2413,7 +2413,7 @@ $.fn.jqGrid = function( pin ) {
 				this.curGbox = null;
 				document.onselectstart=function(){return true;};
 			},
-			populateVisible: function() {
+			populateVisible : function() {
 				if (grid.timer) { clearTimeout(grid.timer); }
 				grid.timer = null;
 				var dh = $(grid.bDiv).height();
@@ -2440,7 +2440,7 @@ $.fn.jqGrid = function( pin ) {
 					(p.lastpage===undefined||(parseInt((tbot + scrollTop + div - 1) / div,10) || 0) <= p.lastpage))
 				{
 					npage = parseInt((dh - tbot + div - 1) / div,10) || 1;
-					if (tbot >= 0 || npage < 2 || p.scroll === true) {
+					if (tbot >= 0 || npage < 2) {
 						page = ( Math.round((tbot + scrollTop) / div) || 0) + 1;
 						ttop = -1;
 					} else {
@@ -2470,15 +2470,12 @@ $.fn.jqGrid = function( pin ) {
 						}
 						if (empty) {
 							grid.selectionPreserver(table[0]);
-							grid.emptyRows.call(table[0], false, false);
+							grid.emptyRows.call(table[0], true, false);
 						}
 						grid.populate(npage);
 					}
 					if(p.scrollPopUp && !$.jgrid.isNull(p.lastpage)) {
-						$("#scroll_g"+p.id).show().html( $.jgrid.template( $.jgrid.getRegional(ts, "defaults.pgtext", p.pgtext) , p.page, p.lastpage)).css({ "top": p.scrollTopOffset+scrollTop*((parseInt(p.height,10) - 45)/ (parseInt(rh,10)*parseInt(p.records,10))) +"px", "left" : p.scrollLeftOffset});
-						$(this).mouseout(function(){
-							$("#scroll_g"+p.id).hide();
-						});
+						$("#scroll_g"+p.id).html( $.jgrid.template( $.jgrid.getRegional(ts, "defaults.pgtext", p.pgtext) , p.page, p.lastpage)).css({ "top": p.scrollTopOffset+scrollTop*((parseInt(p.height,10) - 45)/ (parseInt(rh,10)*parseInt(p.records,10))) +"px", "left" : p.scrollLeftOffset});
 					}
 				}
 			},
@@ -2493,6 +2490,9 @@ $.fn.jqGrid = function( pin ) {
 							grid.scrollTop = scrollTop;
 							if (grid.timer) { clearTimeout(grid.timer); }
 							grid.timer = setTimeout(grid.populateVisible, p.scrollTimeout);
+						}
+						if(p.scrollPopUp && !$.jgrid.isNull(p.lastpage)) {
+							$("#scroll_g"+p.id).show();
 						}
 					}
 					grid.hDiv.scrollLeft = grid.bDiv.scrollLeft;
@@ -5429,7 +5429,10 @@ $.fn.jqGrid = function( pin ) {
 		bstw2 = ts.p.styleUI.search('Bootstrap') !== -1;
 		$(eg).css("width",grid.width+"px").append("<div class='ui-jqgrid-resize-mark' id='rs_m"+ts.p.id+"'>&#160;</div>");
 		if(ts.p.scrollPopUp) {
-			$(eg).append("<div "+ getstyle(stylemodule, 'scrollBox', false, 'loading ui-scroll-popup')+" id='scroll_g"+ts.p.id+"'></div>");
+			$(eg).append("<div "+ getstyle(stylemodule, 'scrollBox', false, 'loading ui-scroll-popup')+" id='scroll_g"+ts.p.id+"'></div>")
+			.mouseout(function(){
+				$("#scroll_g"+p.id).hide();
+			});
 		}
 		$(gv).css("width",grid.width+"px");
 		thead = $(ts).find("thead").first().get(0);
