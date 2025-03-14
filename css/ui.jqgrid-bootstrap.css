@@ -1021,3 +1021,22 @@ td.menu_text {
     background-color: #fff !important;
 	box-shadow: inset 0px 1px 0  #ddd, inset 0px -1px 0  #ddd !important;
 }
+/* frozen columns */
+.frozen-col-class {
+    z-index: 1;
+    position: sticky;
+	position: -webkit-sticky;
+    background-color: #fff !important;
+	box-shadow: inset -1px 0px 0  #ddd !important;
+}
+.frozen-col-class-rtl {
+    z-index: 1;
+    position: sticky;
+	position: -webkit-sticky;
+    background-color: #fff !important;
+	box-shadow: inset 1px 0px 0  #ddd !important;
+}
+.for-sticky {
+	box-shadow :none !important;
+	border-right-width: 0px !important;
+}
