@@ -1738,7 +1738,7 @@ $.jgrid.extend({
 							else {
 								if(ajaxOptions.url === "clientArray") {
 									postd = ajaxOptions.data;
-									ajaxOptions.success({status:200, statusText:''},'');
+									ajaxOptions.success(postdata,'',{status:200, statusText:''});
 								} else if( ajaxOptions.url === "storage") {
 									$($t).jqGrid('deleteStorageRecord', postdata)
 									.then(function(e){
