@@ -1201,16 +1201,9 @@ $.extend($.jgrid,{
 				$(tb.grid.fbDiv).find(".jqgrid-searchcol >input#jqs_"+tb.p.id+"_"+rid).val("").focus().val(val);
 			//}, 60);
 		}
-		if(tb.p.frozenRows) {
-			if(frozen) { // for future processing
-				tb.p.frozenColumns = false;
-			}
-			$(tb).trigger('jqGridAfterGridComplete.setFrozenRows');
-			if(frozen) { // for future processing
-				tb.p.frozenColumns = true;
-			}
+		if(frozen) { // for future processing
+			$(tb).jqGrid('setFrozenColumns', undefined, 'searchColOnEnter');
 		}
-		
 		/// let intersection = arrA.filter(x => arrB.includes(x));
 		/// let difference = arrA.filter(x => !arrB.includes(x));
 		/// let difference = arrA
@@ -6244,14 +6237,7 @@ $.jgrid.extend({
 			if($t.p.frozenColumns === true ) {
 				fid = $t.p.id+"_frozen";
 			}
-			if($t.p.frozenRows === true ) {
-				tfid = $t.p.id+"_fr";
-			}
-			
 			if(!$t.p.multiselect) {
-				if(tfid) {
-					$("#"+$.jgrid.jqID($t.p.selrow), "#"+$.jgrid.jqID(tfid)).removeClass(highlight);
-				}
 				if(pt.className !== "ui-subgrid") {
 					if( $t.p.selrow !== pt.id ) {
 						if( isHight ) {
@@ -8174,9 +8160,6 @@ $.jgrid.extend({
 						}
 						$("#"+$.jgrid.jqID($t.p.id)).jqGrid('setGridHeight', wh - bstw, true, false);
 					}
-					if($t.p.frozenRows) {
-						$($t).trigger('jqGridAfterGridComplete.setFrozenRows');
-					}		
 					if(frozen) {
 						$("#"+$.jgrid.jqID($t.p.id)).jqGrid("setFrozenColumns");
 					}

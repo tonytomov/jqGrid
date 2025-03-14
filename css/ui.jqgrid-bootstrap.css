@@ -1012,3 +1012,12 @@ td.menu_text {
 .ui-jqgrid-btable td.selected-cell {
     background-color: antiquewhite;
 }
+
+/* frozen rows */
+.frozen-row-class {
+    z-index: 2;
+    position: sticky;
+	position: -webkit-sticky;
+    background-color: #fff !important;
+	box-shadow: inset 0px 1px 0  #ddd, inset 0px -1px 0  #ddd !important;
+}
