@@ -37,6 +37,7 @@ $.jgrid.extend({
 				groupSummaryPos:[],
 				formatDisplayField : [],
 				prepareGroupField : null,
+				groupRowNumbers : false,
 				_locgr : false
 			}, true);
 		});
@@ -76,12 +77,17 @@ $.jgrid.extend({
 						if( !grp.groupSummaryPos[i]) {
 							grp.groupSummaryPos[i] = 'footer';
 						}
+						let vi = $.jgrid.getElemByAttrVal($t.p.colModel, 'name', grp.groupField[i], false).hidden;
 						if(grp.groupColumnShow[i] === true) {
 							grp.visibiltyOnNextGrouping[i] = true;
-							$($t).jqGrid('showCol',grp.groupField[i]);
+							if(vi) {
+								$($t).jqGrid('showCol',grp.groupField[i]);
+							}
 						} else {
 							grp.visibiltyOnNextGrouping[i] = $("#"+$.jgrid.jqID($t.p.id+"_"+grp.groupField[i])).is(":visible");
-							$($t).jqGrid('hideCol',grp.groupField[i]);
+							if(!vi) {
+								$($t).jqGrid('hideCol',grp.groupField[i]);
+							}
 						}
 					}
 					grp.summary =[];
@@ -199,10 +205,7 @@ $.jgrid.extend({
 			showData,
 			collapsed = false,
 			footLevel,
-			skip = false,
-			frz = $t.p.frozenColumns ? $t.p.id+"_frozen" : false,
-			tar2 = frz ? $("#"+$.jgrid.jqID(hid), "#"+$.jgrid.jqID(frz) ) : false,
-			r2 = (tar2 && tar2.length) ? tar2[0].nextSibling : null;
+			skip = false;
 			if( tarspan.hasClass(minus) ) {
 				if(r){
 					while(r) {
@@ -217,12 +220,6 @@ $.jgrid.extend({
 							$(r).hide();
 						}
 						r = r.nextSibling;
-						if(frz) {
-							if(!skip) {
-								$(r2).hide();
-							}
-							r2 = r2.nextSibling;
-						}
 					}
 				}
 				tarspan.removeClass(minus).addClass(plus);
@@ -244,40 +241,19 @@ $.jgrid.extend({
 							if (itemGroupingLevel === num + 1) {
 								if(!skip) {
 									$(r).show().find(">td>span."+"tree-wrap-"+$t.p.direction).removeClass(minus).addClass(plus);
-									if(frz) {
-										$(r2).show().find(">td>span."+"tree-wrap-"+$t.p.direction).removeClass(minus).addClass(plus);
-									}
 								}
 							}
 						} else if (showData) {
 							if(!skip) {
 								$(r).show();
-								if(frz) {
-									$(r2).show();
-								}
 							}
 						} else if(!isNaN(footLevel) &&  footLevel >=0 &&  footLevel === num) {
 								$(r).show();
-								if(frz) {
-									$(r2).show();
-							}
 						}
 						r = r.nextSibling;
-						if(frz) {
-							r2 = r2.nextSibling;
-						}
 					}
 				}
 				tarspan.removeClass(plus).addClass(minus);
-			}
-			if(frz && $t.p.height === 'auto'){
-				$t.grid.fbDiv.height($($t).height());
-				if($t.grid.fsDiv) {
-					var hasscroll = $($t.grid.bDiv)[0].scrollWidth > $($t.grid.bDiv)[0].clientWidth,
-					//scrollbar height
-					scrollh = hasscroll ? $.jgrid.scrollbarHeight() : 0;
-					$t.grid.fsDiv.css('top', ($t.grid.fbDiv.position().top + $($t).height()) + scrollh + 'px');
-				}
 			}
 			$($t).triggerHandler("jqGridGroupingClickGroup", [hid , collapsed]);
 			if( $.jgrid.isFunction($t.p.onClickGroup)) { $t.p.onClickGroup.call($t, hid , collapsed); }
@@ -288,7 +264,7 @@ $.jgrid.extend({
 	groupingRender : function (grdata, colspans, page, rn ) {
 		return this.each(function(){
 			var $t = this,
-			grp = $t.p.groupingView,
+			grp = $t.p.groupingView, crn = $t.p.rownumbers && grp.groupRowNumbers,
 			str = "", icon = "", hid, clid, pmrtl = grp.groupCollapse ? grp.plusicon : grp.minusicon, gv, cp=[], len =grp.groupField.length,
 			//classes = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')]['grouping'],
 			common = $.jgrid.styleUI[($t.p.styleUI || 'jQueryUI')].common;
@@ -326,7 +302,7 @@ $.jgrid.extend({
 			function buildSummaryTd(i, ik, grp, foffset, fstr) {
 				var fdata = findGroupIdx(i, ik, grp),
 				cm = $t.p.colModel,
-				vv, grlen = fdata.cnt, str="", k , isput = false, tmpdata, tplfld;
+				vv, str="", k , isput = false, tmpdata, tplfld;
 				for(k=foffset; k<colspans;k++) {
 					if(cm[k].hidden ) {
 						tmpdata = "<td role=\"gridcell\" "+$t.formatCol(k,1,'')+">&#160;</td>";
@@ -360,7 +336,10 @@ $.jgrid.extend({
 			}
 			var sumreverse = $.makeArray(grp.groupSummary), mul;
 			sumreverse.reverse();
-			mul = $t.p.multiselect ? " colspan=\"2\"" : "";
+			mul = $t.p.multiselect || $t.p.rownumbers ? " colspan=\"2\"" : "";
+			if($t.p.multiselect && $t.p.rownumbers) {
+				mul = " colspan=\"3\"";
+			}
 			$.each(grp.groups,function(i,n){
 				if(grp._locgr) {
 					if( !(n.startRow +n.cnt > (page-1)*rn && n.startRow < page*rn)) {
@@ -410,10 +389,10 @@ $.jgrid.extend({
 				}
 				if(grp.groupSummaryPos[n.idx] === 'header')  {
 					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"" + common.content + " jqgroup ui-row-"+$t.p.direction+" "+clid+"\">";
-					str += buildSummaryTd(i, 0, grp.groups, (mul==="" ? 0 : 1), "<td role=\"gridcell\" style=\"padding-left:"+(n.idx * 12) + "px;"+"\"" + mul +">" + icon+grpTextStr + "</td>" );
+					str += buildSummaryTd(i, 0, grp.groups, (mul==="" ? 0 : 1), "<td role=\"gridcell\" style=\"padding-left:"+(n.idx * 12) + "px;"+"\"" + mul + " "+ $t.formatCol(0,1,'')+">" + icon+grpTextStr + "</td>" );
 					str += "</tr>";
 				} else {
-					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"" + common.content + " jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td style=\"padding-left:"+(n.idx * 12) + "px;"+"\" colspan=\""+(grp.groupColumnShow[n.idx] === false ? colspans-1 : colspans)+"\">" + icon + grpTextStr + "</td></tr>";
+					str += "<tr id=\""+hid+"\"" +(grp.groupCollapse && n.idx>0 ? " style=\"display:none;\" " : " ") + "role=\"row\" class= \"" + common.content + " jqgroup ui-row-"+$t.p.direction+" "+clid+"\"><td class=\"for-sticky\" style=\"padding-left:"+(n.idx * 12) + "px;"+"\">" + icon + grpTextStr + "</td><td colspan=\""+(grp.groupColumnShow[n.idx] === false ? colspans-2 : colspans-1)+"\"></td></tr>";
 				}
 				var leaf = len-1 === n.idx; 
 				if( leaf ) {
@@ -425,8 +404,17 @@ $.jgrid.extend({
 							sgr = offset;
 						}
 					}
+					let rncv = 0;
 					for(kk=sgr;kk<end;kk++) {
 						if(!grdata[kk - offset]) { break; }
+						if(crn) { // rownumbers
+							let rncell = $(grdata[kk - offset][1]);
+							if(rncell.attr('aria-describedby') === $t.id+"_rn" ) {
+								rncv++;
+								rncell.attr("title", rncv+'').text(rncv+'');
+								grdata[kk - offset][1] = rncell.prop('outerHTML');
+							}
+						}
 						str += grdata[kk - offset].join('');
 					}
 					if(grp.groupSummaryPos[n.idx] !== 'header') {
@@ -651,9 +639,7 @@ $.jgrid.extend({
 					if (titleText) {
 						var fl = $th.find("div.ui-th-div")[0];
 						cghi.savedLabel = fl.innerHTML;
-						const savedelm = $(fl).children();
 						fl.innerHTML = titleText;
-						$(fl).append(savedelm);
 						if(typeof toolTip === "string" && toolTip !== "") {
 							$th.attr("title", toolTip);
 						} else if (ts.p.headertitles) {
@@ -803,7 +789,7 @@ $.jgrid.extend({
 					// The next numberOfColumns headers will be moved in the next row
 					// in the current row will be placed the new column header with the titleText.
 					// The text will be over the cVisibleColumns columns
-					$colHeader = $('<th>').attr({role: "columnheader"})
+					$colHeader = $('<th>').attr({role: "columnheader", "data-spname": cmi.name})
 						.addClass(base.headerBox+ " ui-th-column-header ui-th-"+ts.p.direction+" "+className + " "+(cmi.labelClasses || ""))
 						//.css({'height':'22px', 'border-top': '0 none'})
 						.html(titleText);
@@ -835,6 +821,7 @@ $.jgrid.extend({
 							$('<th>', {role: "columnheader"})
 								.addClass(base.headerBox+" ui-th-column-header ui-th-"+ts.p.direction)
 								.css({"display": cmi.hidden ? 'none' : ''})
+								.attr( { "data-spname": cmi.name})
 								.insertBefore($th);
 							$tr.append(th);
 						}
