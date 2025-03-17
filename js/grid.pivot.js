@@ -242,16 +242,19 @@ $.jgrid.extend({
 			if(xlen === 0 || aggrlen === 0) {
 				throw("xDimension or aggregates optiona are not set!");
 			}
-			var colc;
+			var colc, groupfields=[];
 			for(i = 0; i< xlen; i++) {
 				colc = {name:o.xDimension[i].dataName, frozen: o.frozenStaticCols};
 				if(o.xDimension[i].isGroupField == null) {
 					o.xDimension[i].isGroupField =  true;
 				}
+				if(o.xDimension[i].isGroupField) {
+					groupfields.push(o.xDimension[i].dataName);
+				}
 				colc = $.extend(true, colc, o.xDimension[i]);
 				columns.push( colc );
 			}
-			var groupfields = xlen - 1, tree={}, _avg=[];
+			var tree={}, _avg=[];
 			//tree = { text: 'root', leaf: false, children: [] };
 			//loop over alll the source data
 			while( r < rowlen ) {
@@ -483,19 +486,17 @@ $.jgrid.extend({
 				}
 			}
 			// based on xDimension  levels build grouping 
-			if( groupfields > 0) {
-				for(i=0;i<groupfields;i++) {
-					if(columns[i].isGroupField) {
-						groupOptions.groupingView.groupField.push(columns[i].name);
+			if( groupfields.length > 1) {
+				for(i=0;i < groupfields.length - 1; i++) {
+					groupOptions.groupingView.groupField.push(groupfields[i]);
 						groupOptions.groupingView.groupSummary.push(o.groupSummary);
 						groupOptions.groupingView.groupSummaryPos.push(o.groupSummaryPos);
-					}
 				}
+				groupOptions.sortname = groupfields[groupfields.length-1]; //columns[groupfields].name;
 			} else {
 				// no grouping is needed
 				groupOptions.grouping = false;
 			}
-			groupOptions.sortname = columns[groupfields].name;
 			groupOptions.groupingView.hideFirstGroupCol = true;
 		});
 		// return the final result.
