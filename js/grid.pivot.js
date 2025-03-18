@@ -242,8 +242,12 @@ $.jgrid.extend({
 			if(xlen === 0 || aggrlen === 0) {
 				throw("xDimension or aggregates optiona are not set!");
 			}
-			var colc, groupfields=[];
+			var colc, groupfields=[], j=0;
 			for(i = 0; i< xlen; i++) {
+				if(!o.xDimension[i].hasOwnProperty('dataName')) {
+					j++;
+					continue;
+				}
 				colc = {name:o.xDimension[i].dataName, frozen: o.frozenStaticCols};
 				if(o.xDimension[i].isGroupField == null) {
 					o.xDimension[i].isGroupField =  true;
@@ -254,7 +258,8 @@ $.jgrid.extend({
 				colc = $.extend(true, colc, o.xDimension[i]);
 				columns.push( colc );
 			}
-			var tree={}, _avg=[];
+			xlen -= j;
+			var tree={}, _avg=[], grouplen = groupfields.length, xname;
 			//tree = { text: 'root', leaf: false, children: [] };
 			//loop over alll the source data
 			while( r < rowlen ) {
@@ -264,11 +269,13 @@ $.jgrid.extend({
 				tmp = {};
 				i = 0;
 				// build the data from xDimension
-				do {
-					xValue[i]  = $.jgrid.trim(row[o.xDimension[i].dataName]);
-					tmp[o.xDimension[i].dataName] = xValue[i];
-					i++;
-				} while( i < xlen );
+				for(i = 0; i< columns.length; i++) {
+					xname = columns[i].name;
+					if(row.hasOwnProperty(xname)) {
+						xValue.push( $.jgrid.trim(row[xname]) );
+						tmp[xname] = $.jgrid.trim(row[xname]);
+					}
+				}
 				
 				var k = 0;
 				rowindex = -1;
@@ -486,13 +493,13 @@ $.jgrid.extend({
 				}
 			}
 			// based on xDimension  levels build grouping 
-			if( groupfields.length > 1) {
-				for(i=0;i < groupfields.length - 1; i++) {
+			if( grouplen > 0) {
+				for(i=0;i < grouplen; i++) {
 					groupOptions.groupingView.groupField.push(groupfields[i]);
 						groupOptions.groupingView.groupSummary.push(o.groupSummary);
 						groupOptions.groupingView.groupSummaryPos.push(o.groupSummaryPos);
 				}
-				groupOptions.sortname = groupfields[groupfields.length-1]; //columns[groupfields].name;
+				groupOptions.sortname = groupfields[i]; //columns[groupfields].name;
 			} else {
 				// no grouping is needed
 				groupOptions.grouping = false;
@@ -551,8 +558,8 @@ $.jgrid.extend({
 					}
 				}
 				jQuery($t).jqGrid($.extend(true, {
-					datastr: $.extend(query.select(),footerrow ? {userdata:pivotGrid.summary} : {}),
-					datatype: "jsonstring",
+					data: $.extend(query.select(),footerrow ? {userdata:pivotGrid.summary} : {}),
+					datatype: 'local',
 					footerrow : footerrow,
 					userDataOnFooter: footerrow,
 					colModel: pivotGrid.colModel,
