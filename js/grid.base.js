@@ -7695,6 +7695,9 @@ $.jgrid.extend({
 			var elements =[];
 			for(let i=0;i< this.p.frozenColCount+1; i++){
 				// from left direction only for now
+				if(cm[i].hidden) {
+					continue;
+				}
 				var nm = this.p.id+"_"+cm[i].name ;					
 				if(data) {
 					elements.push('.ui-jqgrid-bdiv td[aria-describedby="'+nm+'"]');
