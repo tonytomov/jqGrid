@@ -2700,9 +2700,9 @@ $.fn.jqGrid = function( pin ) {
 		},
 		reader = function (datatype) {
 			var field, f=[], j=0, i;
-			for(i =0; i<ts.p.colModel.length; i++){
+			for(i = 0; i < ts.p.colModel.length; i++){
 				field = ts.p.colModel[i];
-				if (field.name !== 'cb' && field.name !=='subgrid' && field.name !=='rn' && field.name !=='sc') {
+				if ( Object.hasOwn(field, "name") && !$.jgrid.isServiceCol(field.name) ) {
 					f[j]= datatype === "local" ?
 					field.name :
 					( (datatype==="xml" || datatype === "xmlstring") ? field.xmlmap || field.name : field.jsonmap || field.name );
@@ -5974,7 +5974,7 @@ $.fn.jqGrid = function( pin ) {
 					gridhbox = $(grid.hDiv).find("div").first();
 					//ts.p.scrollOffset = vScrollWidth;
 					// for future implementation
-					if( vScrollWidth > 0 ) vScrollWidth += 2;
+					if( vScrollWidth > 0 ) vScrollWidth += 1;
 					if (gridhbox.hasClass("ui-jqgrid-hbox-rtl")) {
 						$(grid.hDiv).find("div").first().css({paddingLeft: vScrollWidth + "px"});
 					}
