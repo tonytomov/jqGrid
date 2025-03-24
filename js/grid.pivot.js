@@ -82,7 +82,8 @@ $.jgrid.extend({
 			colTotals : false,
 			groupSummary : true,
 			groupSummaryPos :  'header',
-			frozenStaticCols : false
+			frozenStaticCols : false,
+			xMeta : []
 		}, options || {});
 		this.each(function(){
 
@@ -306,6 +307,12 @@ $.jgrid.extend({
 						tmp = agregateFunc( row, o.aggregates, null, tmp );
 					}
 					// add the result in pivot rows
+					for(i=0; i < o.xMeta.length; i++) {
+						var meta = o.xMeta[i];
+						if( Object.hasOwn(meta, "dataName") && Object.hasOwn(row, meta.dataName) ) {
+							tmp[meta.dataName] = row[meta.dataName] + "";
+						}
+					}
 					pivotrows.push( tmp );
 				} else {
 					// the pivot exists
@@ -328,6 +335,13 @@ $.jgrid.extend({
 							newObj = agregateFunc( row, o.aggregates, null, newObj );
 						}
 						// update the row
+						for(i=0; i < o.xMeta.length; i++) {
+							var meta = o.xMeta[i];
+							if( Object.hasOwn(meta, "dataName") && Object.hasOwn(row, meta.dataName) ) {
+								var sep = Object.hasOwn(meta, "separator") ? meta.separator : ", "; 
+								newObj[meta.dataName] += sep + row[meta.dataName];
+							}
+						}
 						pivotrows[rowindex] = newObj;
 					}
 				}
