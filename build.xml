@@ -31,6 +31,7 @@
 		<fileset file="js/grid.transposed.js"/>
 		<fileset file="js/grid.frozenrows.js"/>
 		<fileset file="js/grid.database.js"/>
+		<fileset file="js/grid.clipboard.js"/>
         </concat>
     </target>
 

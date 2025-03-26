@@ -14,9 +14,11 @@
 		"aria",
 		"transposed",
 		"forzen rows",
-		"frozen columns"
+		"frozen columns",
+		"clipboard",
+		"indexedDb"
 	],
-	"version": "5.8.8",
+	"version": "5.8.9",
 	"author": {
 		"name": "Tony Tomov",
 		"email": "tony@trirand.com",

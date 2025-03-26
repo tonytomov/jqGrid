@@ -22,8 +22,8 @@ require([
 	"jqgrid/grid.aria",
 	"jqgrid/grid.transposed",
 	"jqgrid/grid.frozenrows",
-	"jqgrid/grid.database"
-
+	"jqgrid/grid.database",
+	"jqgrid/grid.clipboard"
 ], function ($) {
 	"use strict";
 	console.log("jqGrid loaded!");
