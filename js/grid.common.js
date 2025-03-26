@@ -20,7 +20,7 @@
 $.extend($.jgrid,{
 // Modal functions
 	showModal : function(h) {
-		h.w.show(400,'swing');
+		h.w.show();
 	},
 	closeModal : function(h) {
 		h.w.hide().attr("aria-hidden","true");
@@ -196,9 +196,9 @@ $.extend($.jgrid,{
 			onHide: $.jgrid.closeModal,
 			gbox: '',
 			jqm : true,
-			jqM : true, 
-			duration : 400,
-			easing: "swing"
+			jqM : true 
+			//duration : 400,
+			//easing: "swing"
 		}, o || {});
 		var style="";
 		if(o.gbox) {
@@ -228,13 +228,13 @@ $.extend($.jgrid,{
 					if(!$(".jqgrid-overlay-modal")[0] ) {
 						$('body').prepend("<div "+style+"></div>" );
 					}
-					$(".jqgrid-overlay-modal").css("z-index",zInd).show(o.duration, o.easing);
+					$(".jqgrid-overlay-modal").css("z-index",zInd).show();
 				} else {
-					$(o.gbox).find(".jqgrid-overlay").first().css("z-index",zInd).show(o.duration, o.easing);
+					$(o.gbox).find(".jqgrid-overlay").first().css("z-index",zInd).show();
 					$(selector).data("gbox",o.gbox);
 				}
 			}
-			$(selector).show(o.duration, o.easing).attr("aria-hidden","false");
+			$(selector).show().attr("aria-hidden","false");
 			if(o.focusField >= 0) {
 				try{$(':input:visible',selector)[o.focusField].focus();}catch(_){}
 			}
@@ -378,9 +378,9 @@ $.extend($.jgrid,{
 			modal :mopt.modal,
 			jqm:jm,
 			overlay : mopt.overlay,
-			overlayClass : mopt.overlayClass,
-			duration : mopt.duration || 400,
-			easing: mopt.easing || "swing"
+			overlayClass : mopt.overlayClass
+			//duration : mopt.duration || 400,
+			//easing: mopt.easing || "swing"
 		});
 		if($.jgrid.isFunction(mopt.afterOpen) ) { mopt.afterOpen(); }
 		try{ $("#info_dialog").focus();} catch (m){}

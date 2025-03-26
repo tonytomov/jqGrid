@@ -636,6 +636,9 @@ $.jgrid.extend({
 							}
 							rp_ge[$t.p.id].processing=false;
 							try{$(':input:visible',frmgr)[0].focus();} catch (e){}
+						}, 
+						complete : function() {
+							rp_ge[$t.p.id].processing=false;
 						}
 					}, $.jgrid.ajaxOptions, rp_ge[$t.p.id].ajaxEditOptions );
 
