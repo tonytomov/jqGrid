@@ -145,8 +145,14 @@ $.extend($.jgrid,{
 		if(o.copy_header_included && header.length) {
 			seldata.unshift( header.join( o.copy_delimiter ) );
 		}
+		if( $.jgrid.isFunction(o.beforeCopyData)) {
+			o.beforeCopyData.call(this, seldata, o);
+		}
 		$.jgrid.copyText.call($t, seldata.join( o.copy_newline), o);
 		o.startCellIndex = null; o.startRowIndex = null;
+		if( $.jgrid.isFunction(o.afterCopyData)) {
+			o.afterCopyData.call(this, seldata, o);
+		}
 	},
 	pasteRows : function(o, paste_add) {
 		if(o.startCellIndex === null || o.startRowIndex === null) {
@@ -173,6 +179,9 @@ $.extend($.jgrid,{
 				return;
 			}
 			var delim = o.paste_autodetect_delim  ? $.jgrid.guessDelimiters(data) : o.paste_delimiter, headers=[];
+			if( $.jgrid.isFunction(o.beforePasteData)) {
+				o.beforePasteData.call(this, data, delim);
+			}
 			data = data.split(o.paste_newline);
 			if(!o.paste_header_included) {
 				headers =  $.jgrid.deserializeRow(data.shift(), delim);
@@ -191,6 +200,9 @@ $.extend($.jgrid,{
 			}
 			var rows_to_paste = $.jgrid.CSVtoObject(data, headers, delim, o.paste_newline);
 			$("#"+grid_id).jqGrid("updateRowsByIndex", o.startRowIndex, rows_to_paste, o, paste_add);
+			if( $.jgrid.isFunction(o.afterPasteData)) {
+				o.afterPasteData.call(this, data);
+			}
 		});
 	},
 	undoPaste : function( grid_id ) {
@@ -237,7 +249,7 @@ $.extend($.jgrid,{
 								dat[cm[i].name] = $.unformat.call($t,$(row.cells[i]),{rowId:row.id, colModel:cm[i] }, i ) ;
 							} catch(e) {
 								dat[cm[i].name] = $.jgrid.htmlDecode(row.cells[i].innerHTML) ; //as in getCell
-	}
+							}
 						} else {
 							target = row.id;
 						}
