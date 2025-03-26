@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.8 - 2025-03-14
+* @license Guriddo jqGrid JS - v5.8.9 - 2025-03-26
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -24,7 +24,7 @@ if(!$.jgrid.hasOwnProperty("defaults")) {
 	$.jgrid.defaults = {};
 }
 $.extend($.jgrid,{
-	version : "5.8.8",
+	version : "5.8.9",
 	isNull : function( p, strict_eq) {
 		if(strict_eq && strict_eq === true) {
 			return p === null;
@@ -2705,9 +2705,9 @@ $.fn.jqGrid = function( pin ) {
 		},
 		reader = function (datatype) {
 			var field, f=[], j=0, i;
-			for(i =0; i<ts.p.colModel.length; i++){
+			for(i = 0; i < ts.p.colModel.length; i++){
 				field = ts.p.colModel[i];
-				if (field.name !== 'cb' && field.name !=='subgrid' && field.name !=='rn' && field.name !=='sc') {
+				if ( Object.hasOwn(field, "name") && !$.jgrid.isServiceCol(field.name) ) {
 					f[j]= datatype === "local" ?
 					field.name :
 					( (datatype==="xml" || datatype === "xmlstring") ? field.xmlmap || field.name : field.jsonmap || field.name );
@@ -5979,7 +5979,7 @@ $.fn.jqGrid = function( pin ) {
 					gridhbox = $(grid.hDiv).find("div").first();
 					//ts.p.scrollOffset = vScrollWidth;
 					// for future implementation
-					if( vScrollWidth > 0 ) vScrollWidth += 2;
+					if( vScrollWidth > 0 ) vScrollWidth += 1;
 					if (gridhbox.hasClass("ui-jqgrid-hbox-rtl")) {
 						$(grid.hDiv).find("div").first().css({paddingLeft: vScrollWidth + "px"});
 					}
@@ -7700,6 +7700,9 @@ $.jgrid.extend({
 			var elements =[];
 			for(let i=0;i< this.p.frozenColCount+1; i++){
 				// from left direction only for now
+				if(cm[i].hidden) {
+					continue;
+				}
 				var nm = this.p.id+"_"+cm[i].name ;					
 				if(data) {
 					elements.push('.ui-jqgrid-bdiv td[aria-describedby="'+nm+'"]');
@@ -17325,7 +17328,8 @@ $.jgrid.extend({
 			colTotals : false,
 			groupSummary : true,
 			groupSummaryPos :  'header',
-			frozenStaticCols : false
+			frozenStaticCols : false,
+			xMeta : []
 		}, options || {});
 		this.each(function(){
 
@@ -17485,16 +17489,24 @@ $.jgrid.extend({
 			if(xlen === 0 || aggrlen === 0) {
 				throw("xDimension or aggregates optiona are not set!");
 			}
-			var colc;
+			var colc, groupfields=[], j=0;
 			for(i = 0; i< xlen; i++) {
+				if(!o.xDimension[i].hasOwnProperty('dataName')) {
+					j++;
+					continue;
+				}
 				colc = {name:o.xDimension[i].dataName, frozen: o.frozenStaticCols};
 				if(o.xDimension[i].isGroupField == null) {
 					o.xDimension[i].isGroupField =  true;
 				}
+				if(o.xDimension[i].isGroupField) {
+					groupfields.push(o.xDimension[i].dataName);
+				}
 				colc = $.extend(true, colc, o.xDimension[i]);
 				columns.push( colc );
 			}
-			var groupfields = xlen - 1, tree={}, _avg=[];
+			xlen -= j;
+			var tree={}, _avg=[], grouplen = groupfields.length, xname;
 			//tree = { text: 'root', leaf: false, children: [] };
 			//loop over alll the source data
 			while( r < rowlen ) {
@@ -17504,11 +17516,13 @@ $.jgrid.extend({
 				tmp = {};
 				i = 0;
 				// build the data from xDimension
-				do {
-					xValue[i]  = $.jgrid.trim(row[o.xDimension[i].dataName]);
-					tmp[o.xDimension[i].dataName] = xValue[i];
-					i++;
-				} while( i < xlen );
+				for(i = 0; i< columns.length; i++) {
+					xname = columns[i].name;
+					if(row.hasOwnProperty(xname)) {
+						xValue.push( $.jgrid.trim(row[xname]) );
+						tmp[xname] = $.jgrid.trim(row[xname]);
+					}
+				}
 				
 				var k = 0;
 				rowindex = -1;
@@ -17539,6 +17553,12 @@ $.jgrid.extend({
 						tmp = agregateFunc( row, o.aggregates, null, tmp );
 					}
 					// add the result in pivot rows
+					for(i=0; i < o.xMeta.length; i++) {
+						var meta = o.xMeta[i];
+						if( Object.hasOwn(meta, "dataName") && Object.hasOwn(row, meta.dataName) ) {
+							tmp[meta.dataName] = row[meta.dataName] + "";
+						}
+					}
 					pivotrows.push( tmp );
 				} else {
 					// the pivot exists
@@ -17561,6 +17581,13 @@ $.jgrid.extend({
 							newObj = agregateFunc( row, o.aggregates, null, newObj );
 						}
 						// update the row
+						for(i=0; i < o.xMeta.length; i++) {
+							var meta = o.xMeta[i];
+							if( Object.hasOwn(meta, "dataName") && Object.hasOwn(row, meta.dataName) ) {
+								var sep = Object.hasOwn(meta, "separator") ? meta.separator : ", "; 
+								newObj[meta.dataName] += sep + row[meta.dataName];
+							}
+						}
 						pivotrows[rowindex] = newObj;
 					}
 				}
@@ -17726,19 +17753,17 @@ $.jgrid.extend({
 				}
 			}
 			// based on xDimension  levels build grouping 
-			if( groupfields > 0) {
-				for(i=0;i<groupfields;i++) {
-					if(columns[i].isGroupField) {
-						groupOptions.groupingView.groupField.push(columns[i].name);
+			if( grouplen > 0) {
+				for(i=0;i < grouplen; i++) {
+					groupOptions.groupingView.groupField.push(groupfields[i]);
 						groupOptions.groupingView.groupSummary.push(o.groupSummary);
 						groupOptions.groupingView.groupSummaryPos.push(o.groupSummaryPos);
-					}
 				}
+				groupOptions.sortname = groupfields[i]; //columns[groupfields].name;
 			} else {
 				// no grouping is needed
 				groupOptions.grouping = false;
 			}
-			groupOptions.sortname = columns[groupfields].name;
 			groupOptions.groupingView.hideFirstGroupCol = true;
 		});
 		// return the final result.
@@ -17793,8 +17818,8 @@ $.jgrid.extend({
 					}
 				}
 				jQuery($t).jqGrid($.extend(true, {
-					datastr: $.extend(query.select(),footerrow ? {userdata:pivotGrid.summary} : {}),
-					datatype: "jsonstring",
+					data: $.extend(query.select(),footerrow ? {userdata:pivotGrid.summary} : {}),
+					datatype: 'local',
 					footerrow : footerrow,
 					userDataOnFooter: footerrow,
 					colModel: pivotGrid.colModel,
