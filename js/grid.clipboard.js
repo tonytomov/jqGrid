@@ -15,6 +15,7 @@
 }(function( $ ) {
 "use strict";
 //module begin
+// clipboard
 $.extend($.jgrid,{
 	deserializeRow : function  (row, delimiter = ',') {
 		const values = [];
@@ -574,5 +575,6 @@ $.jgrid.extend({
 	}
 // end clipboard grid
 });
+//clipboard
 //module end
 }));
