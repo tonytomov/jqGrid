@@ -25,7 +25,8 @@ var
 		"grid.aria",
 		"grid.transposed",
 		"grid.frozenrows",
-		"grid.database"
+		"grid.database",
+		"grid.clipboard"
 	],
 
 	gridFiles = allFiles.map(function( file ) {
