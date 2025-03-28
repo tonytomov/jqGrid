@@ -86,7 +86,8 @@ $.extend($.jgrid,{
 				$.jgrid.toast( {
 					text: msg.text_c, 
 					styleUI: this.p.styleUI, 
-					type:"info"
+					type:"info",
+					position: o.toastPosition
 				});
 			}
 		} catch (err) {
@@ -434,6 +435,7 @@ $.jgrid.extend({
 				undo : true,
 				cancel : true
 			},
+			toastPosition : "top center",
 			startCellIndex : null,
 			startRowIndex : null,
 			isMouseDown : false
