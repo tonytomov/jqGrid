@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.9 - 2025-03-27
+* @license Guriddo jqGrid JS - v5.8.9 - 2025-03-31
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -24025,7 +24025,8 @@ $.extend($.jgrid,{
 				$.jgrid.toast( {
 					text: msg.text_c, 
 					styleUI: this.p.styleUI, 
-					type:"info"
+					type:"info",
+					position: o.toastPosition
 				});
 			}
 		} catch (err) {
@@ -24373,6 +24374,8 @@ $.jgrid.extend({
 				undo : true,
 				cancel : true
 			},
+			toastPosition : "top center",
+			userMenus : [],
 			startCellIndex : null,
 			startRowIndex : null,
 			isMouseDown : false
@@ -24396,12 +24399,17 @@ $.jgrid.extend({
 			//return;
 			var cnt =0;
 			for(let key in o.menuConfig) {
-				if(o.menuConfig[key] === true) {
+				if(Object.hasOwn(o.menuConfig, key) && o.menuConfig[key] === true) {
 					cnt++;
 					if(cnt > 1) {
 						menus_copy.push({divider : true});
 					}
 					menus_copy.push(menu[key]);
+				}
+			}
+			if(Array.isArray(o.userMenus) ) {
+				for(let i=0; i< o.userMenus.length; i++) {
+					menus_copy.push( o.userMenus[i] );
 				}
 			}
 			$(this).jqGrid("menubarAdd", menus_copy, "_copypaste");
