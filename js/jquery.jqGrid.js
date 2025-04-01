@@ -5177,7 +5177,7 @@ $.fn.jqGrid = function( pin ) {
 		
 		if(ts.p.grouping===true) {
 			ts.p.scroll = false;
-			ts.p.rownumbers = false;
+			//ts.p.rownumbers = false;
 			//ts.p.subGrid = false; expiremental
 			ts.p.treeGrid = false;
 			ts.p.gridview = true;
