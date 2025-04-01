@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.9 - 2025-04-01
+* @license Guriddo jqGrid JS - v5.8.9 - 2025-04-02
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -7678,6 +7678,9 @@ $.jgrid.extend({
 					var pos =0;
 					for(i=0;i<$t.p.frozenColCount+1;i++){
 					// from left
+						if(cm[i].hidden) {
+							continue;
+						}
 						var nm = this.id+"_"+cm[i].name;
 						$("#"+$.jgrid.jqID(this.id) +' td[aria-describedby="'+nm+'"]').addClass(frzclass).css("inset-inline-start", pos+"px");
 						pos = pos +$('.ui-jqgrid-htable th#'+nm, "#gbox_" + $.jgrid.jqID(this.p.id)).outerWidth();
