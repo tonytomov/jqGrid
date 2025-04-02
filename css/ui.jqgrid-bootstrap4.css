@@ -561,6 +561,7 @@ div.tablediv > .table-bordered {
 	position: absolute; 
 	/*padding: 5px; */
 	overflow:visible;
+	background-color: inherit;
 }
 .ui-jqdialog .ui-jqdialog-titlebar {
 	padding: .1em .1em; 
@@ -613,6 +614,9 @@ div.tablediv > .table-bordered {
 .ui-jqgrid>.ui-resizable-se { }
 .jqgrid-overlay-modal {
 	display : none;
+}
+.info_content {
+	text-align: center;
 }
 /* end Modal window*/
 /* Form edit */
