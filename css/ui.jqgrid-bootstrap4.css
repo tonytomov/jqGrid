@@ -1272,8 +1272,8 @@ a.colmenu .colmenuspan
     z-index: 1;
     position: sticky;
 	position: -webkit-sticky;
-    background-color: #fff;
-	box-shadow: inset 1px 0px 0  #ddd !important;
+    background-color: #fff ;
+	box-shadow: inset 1px 0px 0  var(--tbl-brd-color, #ddd) !important;
 }
 .for-sticky {
 	outline: none !important;
