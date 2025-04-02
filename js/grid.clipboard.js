@@ -443,6 +443,9 @@ $.jgrid.extend({
 		}, prm || {});
 		
 		return this.each(function(){
+			if(this.p.isClipboard) {
+				return;
+			}
 			var colmenustyle = $.jgrid.styleUI[(this.p.styleUI || 'jQueryUI')].colmenu, $t=this;
 			var arf1 = '<ul id="'+this.id+'_copypaste" class="ui-search-menu modal-content column-menu ui-menu jqgrid-caption-menu ' + colmenustyle.menu_widget+'" role="menu" tabindex="0"></ul>';
 			$("#gbox_"+this.id).append(arf1);
