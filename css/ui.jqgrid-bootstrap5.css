@@ -202,7 +202,7 @@
 	border-bottom-color: var(--tbl-brd-color, #ddd);
 }
 .ui-jqgrid .ui-jqgrid-htable tr.ui-jqgrid-labels:last-child th {
-	padding-top: 8px; 
+	padding-top: 10px; 
 	padding-bottom: 8px; 
 }
 
