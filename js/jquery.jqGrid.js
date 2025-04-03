@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.9 - 2025-04-02
+* @license Guriddo jqGrid JS - v5.8.10 - 2025-04-03
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -24,7 +24,7 @@ if(!$.jgrid.hasOwnProperty("defaults")) {
 	$.jgrid.defaults = {};
 }
 $.extend($.jgrid,{
-	version : "5.8.9",
+	version : "5.8.10",
 	isNull : function( p, strict_eq) {
 		if(strict_eq && strict_eq === true) {
 			return p === null;
@@ -24385,6 +24385,9 @@ $.jgrid.extend({
 		}, prm || {});
 		
 		return this.each(function(){
+			if(this.p.isClipboard) {
+				return;
+			}
 			var colmenustyle = $.jgrid.styleUI[(this.p.styleUI || 'jQueryUI')].colmenu, $t=this;
 			var arf1 = '<ul id="'+this.id+'_copypaste" class="ui-search-menu modal-content column-menu ui-menu jqgrid-caption-menu ' + colmenustyle.menu_widget+'" role="menu" tabindex="0"></ul>';
 			$("#gbox_"+this.id).append(arf1);
