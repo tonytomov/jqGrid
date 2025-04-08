@@ -327,6 +327,7 @@ $.jgrid.extend({
 								//vv = this.v;
 							}
 							tmpdata= "<td role=\"gridcell\" "+$t.formatCol(k,1,'')+">"+$.jgrid.template(tplfld, vv, fdata.cnt, fdata.dataIndex, fdata.displayValue, fdata.summary)+ "</td>";
+							this.v = this.uv;
 							return false;
 						}
 					});
