@@ -572,8 +572,8 @@ $.jgrid.extend({
 					}
 				}
 				jQuery($t).jqGrid($.extend(true, {
-					data: $.extend(query.select(),footerrow ? {userdata:pivotGrid.summary} : {}),
-					datatype: 'local',
+					datastr: $.extend(query.select(),footerrow ? {userdata:pivotGrid.summary} : {}),
+					datatype: 'jsonstring',
 					footerrow : footerrow,
 					userDataOnFooter: footerrow,
 					colModel: pivotGrid.colModel,
