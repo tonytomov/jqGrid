@@ -1267,6 +1267,7 @@ a.colmenu .colmenuspan
     background-color: #fff;
 	/*outline: 1px solid #ddd !important;*/
 	box-shadow: inset -1px 0px 0  var(--tbl-brd-color, #ddd) !important;
+	border-right: 0 !important;
 }
 .frozen-col-class-rtl {
     z-index: 1;
@@ -1274,6 +1275,7 @@ a.colmenu .colmenuspan
 	position: -webkit-sticky;
     background-color: #fff ;
 	box-shadow: inset 1px 0px 0  var(--tbl-brd-color, #ddd) !important;
+	border-left: 0 !important;
 }
 .for-sticky {
 	outline: none !important;
