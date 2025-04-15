@@ -425,6 +425,10 @@ a.g-menu-item, a.soptclass, a.clearsearchclass { cursor: pointer; }
 	margin-left: 3px;
 	margin-right: 3px;
 }
+.EditTable .ui-template {
+	padding: 4px 0px;
+}
+
 /* Column menu */
 .ui-jqgrid .ui-jqgrid-htable .colmenu
 {
