@@ -669,29 +669,29 @@ td.menu_text {
 }
 
 
-.toast-success {
+.jqgrid-toast-success {
 	background-color: #e8f6f3 !important;
 }
-.toast-success .ui-jqdialog-content .info_content {
+.jqgrid-toast-success .ui-jqdialog-content .info_content {
 	background: none !important;
 }
-.toast-warning {
+.jqgrid-toast-warning {
 	background-color: #fef9e7 !important;
 }
-.toast-warning .ui-jqdialog-content .info_content {
+.jqgrid-toast-warning .ui-jqdialog-content .info_content {
 	background: none !important;
 }
-.toast-info {
+.jqgrid-toast-info {
 	background: none !important;
 	background-color: #ebf5fb !important;
 }
-.toast-info .ui-jqdialog-content .info_content {
+.jqgrid-toast-info .ui-jqdialog-content .info_content {
 	background: none !important;
 }
-.toast-error {
+.jqgrid-toast-error {
 	background-color: #fadbd8 !important;
 }
-.toast-error .ui-jqdialog-content .info_content {
+.jqgrid-toast-error .ui-jqdialog-content .info_content {
 	background: none !important;
 }
 
