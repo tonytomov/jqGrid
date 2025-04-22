@@ -1237,16 +1237,16 @@ a.colmenu .colmenuspan
 .ui-jqgrid-btable td.selected-cell {
     background-color: antiquewhite !important;
 }
-.toast-success {
+.jqgrid-toast-success {
 	background-color: #e8f6f3 !important;
 }
-.toast-warning {
+.jqgrid-toast-warning {
 	background-color: #fef9e7 !important;
 }
-.toast-info {
+.jqgrid-toast-info {
 	background-color: #ebf5fb !important;
 }
-.toast-error {
+.jqgrid-toast-error {
 	background-color: #fadbd8 !important;
 }
 
