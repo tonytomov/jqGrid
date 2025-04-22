@@ -367,7 +367,7 @@ $.extend($.jgrid,{
 		);
 		if($.jgrid.isFunction(mopt.beforeOpen) ) { mopt.beforeOpen(); }
 		if(mopt.type && mopt.type !== "default") {
-			$("#info_dialog").addClass("toast-"+mopt.type)
+			$("#info_dialog").addClass("jqgrid-toast-"+mopt.type)
 		}
 		$.jgrid.viewModal("#info_dialog",{
 			onHide: function(h) {
