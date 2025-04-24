@@ -2037,38 +2037,36 @@ $.jgrid.extend({
 				result, i;
 
 				try {
-					query = $.jgrid.from.call($t, $t.p.data);
-					result = query.groupBy( o.field, o.direction, "text", o.src_date);
-					i = result.length;
+					query = $.jgrid.from($t.p.data);
+					query.orderBy([o.field], [{so:o.direction, stype:'text', srcfmt:'Y-m-d', sfunc:null}]);
+					result = $.jgrid.jLinq().util.group( query.select(), o.field, false);
 				} catch(e) {
 
 				}
-				if(result && result.length) {
-					res =  $("#gsh_"+$t.p.id+"_"+o.field).find("td.ui-search-input > select");
-					i = result.length;
-					if(o.allValues) {
-						sdata = "<option value=''>"+ o.allValues +"</option>";
-						tmp.push(":" + o.allValues);
+				if(o.allValues) {
+					sdata = "<option value=''>"+ o.allValues +"</option>";
+					tmp.push(":" + o.allValues);
+				}
+				for (let key in result) {
+					if( Object.hasOwn(result,key)) {
+						res =  $("#gsh_"+$t.p.id+"_"+o.field).find("td.ui-search-input > select");
+						s_cnt = o.count_item ? " (" +result[key].length+")" : "";
+						sdata += "<option value='"+key+"'>"+ key + s_cnt+"</option>";
+						tmp.push(key+":"+ key + s_cnt);
 					}
-					while(i--) {
-						item = result[i];
-						s_cnt = o.count_item ? " (" +item.items.length+")" : "";
-						sdata += "<option value='"+item.unique+"'>"+ item.unique + s_cnt+"</option>";
-						tmp.push(item.unique+":"+item.unique + s_cnt);
-					}
-					res.append(sdata);
-					res.on('change',function(){
-						$t.triggerToolbar();
-					});
-					if( o.create_value ) {
-						cm = $.jgrid.getElemByAttrVal($t.p.colModel, 'name', o.field, false);
-						if( !$.isEmptyObject( cm ) ) {
-							if( cm.searchoptions ) {
-								$.extend(cm.searchoptions, {value: tmp.join(";")});
-							} else {
-								cm.searchoptions = {};
-								cm.searchoptions.value = tmp.join(";");
-							}
+				}
+				res.append(sdata);
+				res.on('change',function(){
+					$t.triggerToolbar();
+				});
+				if( o.create_value ) {
+					cm = $.jgrid.getElemByAttrVal($t.p.colModel, 'name', o.field, false);
+					if( !$.isEmptyObject( cm ) ) {
+						if( cm.searchoptions ) {
+							$.extend(cm.searchoptions, {value: tmp.join(";")});
+						} else {
+							cm.searchoptions = {};
+							cm.searchoptions.value = tmp.join(";");
 						}
 					}
 				}
