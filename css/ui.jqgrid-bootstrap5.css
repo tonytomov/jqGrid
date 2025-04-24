@@ -262,6 +262,10 @@ div.tablediv > .table-bordered {
 }
 .ui-jqgrid tr.jqgfirstrow {
 	border-top-width: 0px; 
+	border-bottom-width: 0px;
+}
+.ui-jqgrid tr.jqgrow {
+	border-top-width: 0px; 
 }
 .ui-jqgrid tr.jqgfirstrow  td {
 	height:auto; 
@@ -1366,10 +1370,8 @@ a.colmenu .colmenuspan
     position: sticky;
 	position: -webkit-sticky;
     background-color: var(--bs-body-bg, #fff) !important;
-	outline: 1px solid !important;
-	outline-width: thin;
-	outline-color:  var(--tbl-brd-color, #ddd) !important;
-	/*box-shadow: inset 0px 1px 0  var(--tbl-brd-color, #ddd), inset 0px -1px 0  var(--tbl-brd-color, #ddd) !important;*/
+	border: 0 none var(--tbl-brd-color, #ddd) !important;
+	outline: 1px solid var(--tbl-brd-color, #ddd) !important;
 }
 /* frozen columns */
 .frozen-col-class {
@@ -1377,20 +1379,17 @@ a.colmenu .colmenuspan
     position: sticky;
 	position: -webkit-sticky;
     background-color: var(--bs-body-bg, #fff) !important;
-	outline-width: thin;
-	outline: 1px solid !important;
-	outline-color:  var(--tbl-brd-color, #ddd) !important;
-	/*box-shadow: inset -1px 0px 0  var(--tbl-brd-color, #ddd) !important;*/
+	border: 0 none var(--tbl-brd-color, #ddd) !important;
+	outline: 1px solid var(--tbl-brd-color, #ddd) !important;
+	top : 0;
 }
 .frozen-col-class-rtl {
     z-index: 1;
     position: sticky;
 	position: -webkit-sticky;
-    background-color: var(--bs-body-bg, #fff) ;
-	outline: 1px solid !important;
-	outline-width: thin;
-	outline-color:  var(--tbl-brd-color, #ddd) !important;
-	/*box-shadow: inset 1px 0px 0  var(--tbl-brd-color, #ddd) !important;*/
+    background-color: var(--bs-body-bg, #fff) !important;
+	border: 0 none var(--tbl-brd-color, #ddd) !important;
+	outline: 1px solid var(--tbl-brd-color, #ddd) !important;
 }
 .for-sticky {
 	outline: none !important;
