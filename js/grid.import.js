@@ -109,7 +109,8 @@ $.extend($.jgrid,{
 			decompression: false,
 			decompressionModule :  'LZString', // object by example gzip, LZString
 			decompressionMethod : 'decompressFromUTF16', // string by example unzip, decompressFromUTF16
-			restoreData : true
+			restoreData : true,
+			nonce : ""
 		}, o || {});
 		if(!jqGridId) { return; }
 		var ret, tmp, $t = $("#"+jqGridId)[0], data, iN, fT;
@@ -135,7 +136,7 @@ $.extend($.jgrid,{
 				}
 			}
 		}
-		ret = $.jgrid.parseFunc( gridstring );
+		ret = $.jgrid.parseFunc( gridstring, o );
 		if( ret && $.jgrid.type(ret) === 'object') {
 			if($t.grid) {
 				$.jgrid.gridUnload( jqGridId );
@@ -377,19 +378,39 @@ $.extend($.jgrid,{
 				config : "grid",
 				data: "data"
 			},
-			ajaxOptions :{}
+			ajaxOptions :{},
+			nonce : ""
 		}, o || {});
 		var $t = (jqGridId.indexOf("#") === 0 ? "": "#") + $.jgrid.jqID(jqGridId);
 		var xmlConvert = function (xml,o) {
 			var cnfg = $(o.xmlGrid.config,xml)[0];
 			var xmldata = $(o.xmlGrid.data,xml)[0], jstr, jstr1, key;
-			if($.grid.xmlToJSON ) {
-				jstr = $.jgrid.xmlToJSON( cnfg );
-				//jstr = $.jgrid.parse(jstr);
+			if($.jgrid.xmlToJSON ) {
+				var funcreg = {};
+				jstr = $.jgrid.xmlToJSON( cnfg, {}, funcreg );
+				//console.log(testme);
 				for(key in jstr) {
 					if(jstr.hasOwnProperty(key)) {
 						jstr1=jstr[key];
 					}
+				}
+				if(!$.isEmptyObject(funcreg)) {
+					const registryLines = Object.entries(funcreg).map(([id, fnStr]) =>
+					`  "${id}": ${fnStr},`
+					);
+					var rnd = $.jgrid.randId();
+					var functionRegistry = `var functionRegistry_${rnd} = {\n${registryLines.join('\n')}\n};`;
+					//jstr = $.jgrid.parse(jstr);
+					let s = document.createElement("script");
+					// CSP settings to avoid inline script
+					if(o && o.nonce) {
+						s.nonce = o.nonce;
+					}
+					s.text = functionRegistry;
+					document.body.appendChild(s);
+			
+					jstr1 = $.jgrid.resolveFunctions(jstr1, rnd);
+
 				}
 				if(xmldata) {
 				// save the datatype
@@ -406,7 +427,7 @@ $.extend($.jgrid,{
 		};
 		var jsonConvert = function (jsonstr,o){
 			if (jsonstr && typeof jsonstr === 'string') {
-				var json = $.jgrid.parseFunc(jsonstr);
+				var json = $.jgrid.parseFunc(jsonstr, o);
 				var gprm = json[o.jsonGrid.config];
 				var jdata = json[o.jsonGrid.data];
 				if(jdata) {
