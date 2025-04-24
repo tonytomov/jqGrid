@@ -33,19 +33,68 @@ $.extend($.jgrid,{
             return (typeof value === 'function' ) ? value.toString() : value;
         });
 	},
-	parseFunc : function(str) {
-		return JSON.parse(str,function(key, value){
-			if(typeof value === "string" && value.indexOf("function") !== -1) {
-				var sv = value.split(" ");
-				sv[0] = $.jgrid.trim( sv[0].toLowerCase() );
-				if( (sv[0].indexOf('function') === 0) && value.trim().slice(-1) === "}") {
-					return  $.jgrid.runCode( value ); //eval('('+value+')');
-				} else {
-					return value;
+	resolveFunctions : function(obj,rnd) {
+		if (typeof obj === 'string' && obj.startsWith('__fn_')) {
+			const a = 'functionRegistry_'+rnd;
+		    return window[a][obj];
+		} else if (Array.isArray(obj)) {
+			return obj.map($.jgrid.resolveFunctions);
+		} else if (obj && typeof obj === 'object') {
+			const result = {};
+			for (const [key, val] of Object.entries(obj)) {
+				result[key] = $.jgrid.resolveFunctions(val, rnd);
 				}
+			return result;
 			}
-			return value;
-		});
+		return obj;
+	},
+	parseFunc : function( str, options ) {
+		if(!options) {
+			options = {};
+		}
+		const functionMap = {};
+		function traverse(obj) {
+			if (typeof obj === 'string' && obj.trim().startsWith('function')) {
+			  const id = `__fn_${$.jgrid.randId()}__`;
+			  functionMap[id] = obj;
+			  return id;
+			} else if (Array.isArray(obj)) {
+			  return obj.map(traverse);
+			} else if (obj && typeof obj === 'object') {
+			  const result = {};
+			  for (const [key, val] of Object.entries(obj)) {
+				result[key] = traverse(val);
+			  }
+			  return result;
+			}
+			return obj;
+		}
+		let parsed;
+		try {
+			parsed = JSON.parse(str);
+		} catch (e) {
+			alert("Invalid JSON.");
+			return;
+		}
+		const transformedJson = traverse(parsed);
+		if(!$.isEmptyObject(functionMap)) {
+			const registryLines = Object.entries(functionMap).map(([id, fnStr]) =>
+			`  "${id}": ${fnStr},`
+			);
+			var rnd = $.jgrid.randId();
+			var functionRegistry = `var functionRegistry_${rnd} = {\n${registryLines.join('\n')}\n};`;
+			
+			let s = document.createElement("script");
+			// CSP settings to avoid inline script
+			if(options && options.nonce) {
+				s.nonce = options.nonce;
+			}
+			s.text = functionRegistry;
+			document.body.appendChild(s);
+			
+			return $.jgrid.resolveFunctions(transformedJson, rnd);
+		}
+		return transformedJson;
 	},
 	encode : function ( text ) { // repeated, but should not depend on grid
 		return String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -126,7 +175,7 @@ $.extend($.jgrid,{
 		var xml = hashToxml( null, tree );
 		return o.xmlDecl + xml;
 	},
-	xmlToJSON : function ( root, options ) {
+	xmlToJSON : function ( root, options, funcs ) {
 		var o = $.extend ( {
 			force_array : [], //[ "rdf:li", "item", "-xmlns" ];
 			attr_prefix : '-'
@@ -149,8 +198,10 @@ $.extend($.jgrid,{
 		}
 		var addNode = function ( hash, key, cnts, val ) {
 			if(typeof val === 'string') {
-				if( val.indexOf('function') !== -1) {
-					val =  $.jgrid.runCode( val ); //eval( '(' + val +')'); // we need this in our implement
+				if( val.trim().startsWith('function')) {
+					const fk = '__fn__'+$.jgrid.randId();
+					funcs[fk] = val;
+					val =  fk;//$.jgrid.runCode( val ); //eval( '(' + val +')'); // we need this in our implement
 				} else {
 					switch(val) {
 						case '__EMPTY_ARRAY_' :
