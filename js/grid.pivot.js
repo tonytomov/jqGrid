@@ -542,16 +542,21 @@ $.jgrid.extend({
 					//throw "data provides is not an array";
 					data = [];
 				}
+				var fld=[], prm=[];
 				var pivotGrid = jQuery($t).jqGrid('pivotSetup',data, pivotOpt),
 				footerrow = $.assocArraySize(pivotGrid.summary) > 0 ? true : false,
 				query= $.jgrid.from.call($t, pivotGrid.rows), i, so, st, len;
 				if(pivotOpt.ignoreCase) {
 					query = query.ignoreCase();
+				} else {
+					query = query.useCase();
 				}
 				for(i=0; i< pivotGrid.groupOptions.groupingView.groupField.length; i++) {
 					so = pivotOpt.xDimension[i].sortorder ? pivotOpt.xDimension[i].sortorder : 'asc';
 					st = pivotOpt.xDimension[i].sorttype ? pivotOpt.xDimension[i].sorttype : 'text';
-					query.orderBy(pivotGrid.groupOptions.groupingView.groupField[i], so, st, '', st);
+					fld.push(pivotGrid.groupOptions.groupingView.groupField[i]);
+					prm.push({so:so, stype:st, scrfmt:'Y-m-d', sfunc:st})
+					//query.orderBy(pivotGrid.groupOptions.groupingView.groupField[i], so, st, '', st);
 				}
 				len = pivotOpt.xDimension.length;
 				if(gridOpt.sortname) { // should be a part of xDimension
@@ -563,13 +568,20 @@ $.jgrid.extend({
 							break;
 						}
 					}
-					query.orderBy(gridOpt.sortname, so, st, '', st);
+					fld.push(gridOpt.sortname);
+					prm.push({so:so, stype:st, srcfmt:'Y-m-d', sfunc:st});
+					//query.orderBy(gridOpt.sortname, so, st, '', st);
 				} else {
 					if(pivotGrid.groupOptions.sortname && len) {
 						so = pivotOpt.xDimension[len-1].sortorder ? pivotOpt.xDimension[len-1].sortorder : 'asc';
 						st = pivotOpt.xDimension[len-1].sorttype ? pivotOpt.xDimension[len-1].sorttype : 'text';
-						query.orderBy(pivotGrid.groupOptions.sortname, so, st, '', st);					
+						fld.push(pivotGrid.groupOptions.sortname);
+						prm.push({so:so, stype:st, srcfmt:'Y-m-d', sfunc:st});
+						//query.orderBy(pivotGrid.groupOptions.sortname, so, st, '', st);					
 					}
+				}
+				if(fld.length) {
+					query.orderBy(fld, prm);
 				}
 				jQuery($t).jqGrid($.extend(true, {
 					datastr: $.extend(query.select(),footerrow ? {userdata:pivotGrid.summary} : {}),

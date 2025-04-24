@@ -668,16 +668,23 @@ $.jgrid.extend({
 		return this.each(function(){
 			if(!this.grid || !this.p.treeGrid) {return;}
 			var i, len,
-			rec, records = [], $t = this, query, roots,
+			rec, records = [], $t = this, query, roots, fld=[], prm=[],
 			rt = $(this).jqGrid("getRootNodes", $t.p.search);
 			// Sorting roots
 			query = $.jgrid.from.call(this, rt);
 			// sort tree by node type
 			if( Boolean($t.p.sortTreeByNodeType)) {
 				var ord = ($t.p.sortTreeNodeOrder && $t.p.sortTreeNodeOrder.toLowerCase() === 'desc') ? 'd' : 'a'; 
-				query.orderBy($t.p.treeReader.leaf_field, ord, st, datefmt);
+				fld.push($t.p.treeReader.leaf_field);
+				prm.push({so:ord, stype:st, srcfmt: datefmt, sfunc:null})
+				//query.orderBy($t.p.treeReader.leaf_field, ord, st, datefmt);
 			}
-			query.orderBy(sortname, newDir, st, datefmt);
+			fld.push(sortname);
+			prm.push({so:newDir, stype:st, srcfmt:datefmt, sfunc:null});
+			if(fld.length) {
+				query.orderBy(fld, prm);
+			}
+			//query.orderBy(sortname, newDir, st, datefmt);
 			roots = query.select();
 			// Sorting children
 			for (i = 0, len = roots.length; i < len; i++) {
@@ -746,7 +753,8 @@ $.jgrid.extend({
 			child, ch, query, children;
 			ch = $(this).jqGrid("getNodeChildren",rec, this.p.search);
 			query = $.jgrid.from.call(this, ch);
-			query.orderBy(sortname, newDir, st, datefmt);
+			query.orderBy([sortname],[{so:newDir, stype:st, srcfmt: datefmt, sfunc:null}]);
+			//query.orderBy(sortname, newDir, st, datefmt);
 			children = query.select();
 			for (i = 0, len = children.length; i < len; i++) {
 				child = children[i];
