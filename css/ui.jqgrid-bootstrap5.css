@@ -250,7 +250,7 @@ div.tablediv > .table-bordered {
 	margin-bottom: 0px
 }
 .ui-jqgrid tr.jqgrow {  
-	outline-style: none; 
+	/*outline-style: none; */
 }
 .ui-jqgrid tr.jqgroup {  
 	outline-style: none; 
