@@ -129,18 +129,14 @@ $.extend($.jgrid,{
 		return v.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, " ");
 	},
 	useJSON : true,
-	runCode : function (obj){	
-		return Function('"use strict";return (' + obj + ')')();
-	},
 	parse : function(jsonString) {
-		var js = jsonString;
-		if (js.slice(0,9) === "while(1);") { js = js.slice(9); }
-		if (js.slice(0,2) === "/*") { js = js.slice(2,js.length-2); }
-		if(!js) { js = "{}"; }
-		return ($.jgrid.useJSON===true && typeof JSON === 'object' && typeof JSON.parse === 'function') ?
-			JSON.parse(js) :
-			$.jgrid.runCode( js );
-			//eval('(' + js + ')');
+		const js = jsonString.replace(/^while\(1\);/,'').replace(/^\/\*/,'');
+		try {
+			return JSON.parse( js )
+		} catch (exception) {
+			console.log(exception);
+		}
+		return undefined;
 	},
 	dateToOADate :function  (date) {
 		// Add 1462 in 1904 system (apple)
