@@ -1089,14 +1089,14 @@ $.extend($.jgrid,{
 						params = [];
 						for (var i = 0; i < fields.length; i++) {
 							params.push({so: "a", stype: "string", srcfmt: "Y-m_d", sfunc: null})
-			}
-			}
+						}
+					}
 					//get the next field to use
 					var field = fields.splice(0, 1);
 					var param = params.splice(0, 1);
 					if (field.length == 0) {
 						return collection;
-			}
+					}
 					field = field[0];
 
 					//get the name of the field and descending or not
@@ -1108,7 +1108,8 @@ $.extend($.jgrid,{
 
 					param = param[0];
 
-					var stype = param.stype ? param.stype : "string";
+					var stype = param.stype ? ($.jgrid.isFunction(param.stype) ? 'function' : param.stype) : 'string';
+					var funcstype = (stype === 'function') ? param.stype : null;
 					var dfmt = param.srcfmt ? param.srcfmt : "Y-m-d";
 					var sfunc = param.sfunc ? param.sfunc : null;
 
@@ -1142,23 +1143,27 @@ $.extend($.jgrid,{
 						var a = framework.util.findValue(val1, field);
 						var b = framework.util.findValue(val2, field);
 						switch (stype) {
-				case 'int':
-				case 'integer':
+							case 'int':
+							case 'integer':
 								a = parseInt(a, 10);
 								b = parseInt(b, 10);
-					break;
-				case 'float':
-				case 'number':
-				case 'numeric':
+							break;
+							case 'float':
+							case 'number':
+							case 'numeric':
 								a = parseFloat(String(a).replace(/[\$,%]/g, ''));
 								b = parseFloat(String(b).replace(/[\$,%]/g, ''));
-					break;
-				case 'date':
-				case 'datetime':
+								break;
+							case 'date':
+							case 'datetime':
 								a = $.jgrid.parseDate( dfmt, a);
 								b = $.jgrid.parseDate( dfmt, b);
-					break;
-			}
+								break;
+							case 'function' :
+								a = funcstype.call(this, a, val1);
+								b = funcstype.call(this, b, val2);
+								break;
+						}
 						//default to something when null
 						if (a == null && b == null) {
 							a = 0;
@@ -1169,14 +1174,14 @@ $.extend($.jgrid,{
 						} else if (a != null && b == null) {
 							a = 1;
 							b = 0;
-			}
+						}
 						//check for string values
 						else if (ignoreCase &&
 								framework.util.isType(framework.type.string, a) &&
 								framework.util.isType(framework.type.string, b)) {
 							a = a.toLowerCase();
 							b = b.toLowerCase();
-			}
+						}
 						//if there is a length attribute use it instead
 						else if (a.length && b.length) {
 							a = a.length;
@@ -1186,15 +1191,15 @@ $.extend($.jgrid,{
 						//perform the sorting
 						var result = (a < b) ? -1 : (a > b) ? 1 : 0;
 						return dir === "d" ? -result : result;
-		};
+					};
 					if ($.jgrid.isFunction(sfunc)) {
 						collection.sort(function (a, b) {
 							return sfunc.call(this, a, b, dir === "d" ? -1 : 1);
 						});
-			} else {
+					} else {
 						//then perform the sorting
 						collection.sort(sort);
-			}
+					}
 					//check for sub groups if required
 					if (fields.length > 0) {
 						//create the container for the results
@@ -1202,13 +1207,13 @@ $.extend($.jgrid,{
 						var groups = framework.util.group(collection, field, ignoreCase);
 						framework.util.each(groups, function (group) {
 							var listing = fields.slice();
-							var lparams = params.slice()
+							var lparams = params.slice();
 							var records = framework.util._performOrder(group, listing, lparams, ignoreCase);
 							sorted = sorted.concat(records);
 						});
 						//update the main collection
 						collection = sorted;
-			}
+					}
 					//the final results
 					return collection;
 				},
