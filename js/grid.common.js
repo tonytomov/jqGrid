@@ -596,6 +596,9 @@ $.extend($.jgrid,{
 						so = options.value.split(delim);
 						for(i=0; i<so.length;i++){
 							sv = so[i].split(sep);
+							if(sv.length === 1) {
+								sv.unshift("");
+							}
 							if(sv.length > 2 ) {
 								sv[1] = $.map(sv,function(n,ii){if(ii>0) { return n;} }).join(sep);
 							}
