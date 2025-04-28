@@ -282,10 +282,14 @@ $.extend($.jgrid,{
 		}
 		var dh = isNaN(mopt.dataheight) ? mopt.dataheight : mopt.dataheight+"px";
 		//cn = "text-align:"+mopt.align+";";
+		var stylebut ="";
+		if( ["left","centrer", "right"].includes(mopt.buttonalign) ) {
+			stylebut = "style='text-align:"+ mopt.buttonalign+"'";
+		}
 		var cnt = "<div id='info_id'>";
 		cnt += "<div id='infocnt' class='info_content "+classes.body+"'>"+content+"</div>";
-		cnt += c_b ? "<div class='info_footer " + classes.footer + "'><a id='closedialog' class='fm-button " + common.button + "'>"+c_b+"</a>"+buttstr+"</div>" :
-			buttstr !== ""  ? "<div class='info_footer " + classes.footer + "'>"+buttstr+"</div>" : "";
+		cnt += c_b ? "<div class='info_footer " + classes.footer + "' "+stylebut+"><a id='closedialog' class='fm-button " + common.button + "'>"+c_b+"</a>"+buttstr+"</div>" :
+			buttstr !== ""  ? "<div class='info_footer " + classes.footer + "' "+stylebut+">"+buttstr+"</div>" : "";
 		cnt += "</div>";
 
 		try {
