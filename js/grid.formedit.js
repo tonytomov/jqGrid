@@ -121,14 +121,14 @@ $.jgrid.extend({
 									let cvr = this.editoptions.custom_value.call($t, $("#"+$.jgrid.jqID(nm),frmtb),'get');
 									if( cvr === "#ignoreme#") {
 										
-									} else if (crv === undefined) {
+									} else if (cvr === undefined) {
 										throw "e1";
 									} else {
 										postdata[nm] = cvr;
 									}
 								} catch (e) {
-									if (e==="e1") {$.jgrid.info_dialog(errors.errcap,"function 'custom_value' "+rp_ge[$(this)[0]].p.msg.novalue,rp_ge[$(this)[0]].p.bClose, {styleUI : rp_ge[$(this)[0]].p.styleUI });}
-									else {$.jgrid.info_dialog(errors.errcap,e.message,rp_ge[$(this)[0]].p.bClose, {styleUI : rp_ge[$(this)[0]].p.styleUI });}
+									if (e==="e1") {$.jgrid.info_dialog(errors.errcap,"function 'custom_value' "+rp_ge[$t.p.id].msg.novalue,rp_ge[$t.p.id].bClose, {styleUI : rp_ge[$t.p.id].styleUI });}
+									else {$.jgrid.info_dialog(errors.errcap,e.message,rp_ge[$t.p.id].bClose, {styleUI : rp_ge[$t.p.id].styleUI });}
 								}
 								return true;
 							}
