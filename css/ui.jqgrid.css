@@ -17,7 +17,7 @@
 .ui-jqgrid .ui-common-table {border-width: 0px; border-style: none; border-spacing: 0px; padding: 0;}
 /* caption*/
 .ui-jqgrid .ui-jqgrid-titlebar {
-	height:19px; 
+	height:23px; 
 	padding: .3em .2em .2em .3em; 
 	position: relative; 
 	font-size: 12px; 
@@ -29,7 +29,8 @@
 .ui-jqgrid .ui-jqgrid-caption {text-align: left;}
 .ui-jqgrid .ui-jqgrid-title {
 	padding: .2em .1em .1em;
-	/*position: absolute; */
+	position: absolute; 
+	top:17%
 }
 .ui-jqgrid .ui-jqgrid-titlebar-close { position: absolute;top: 50%; width: 19px; margin: -10px 0 0 0; padding: 1px; height:18px; cursor:pointer;}
 .ui-jqgrid .ui-jqgrid-titlebar-close span { display: block; margin: 1px; }
