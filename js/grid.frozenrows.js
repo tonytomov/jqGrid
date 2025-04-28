@@ -22,7 +22,8 @@ $.jgrid.extend({
 			last : 0,
 			rowids :[],
 			//saveFirstLastId : false,
-			classes : "frozen-row-class"
+			classes : "",
+			baseclass : "frozen-row-class"
 		}, options || {});
 
 		return this.each(function(){
@@ -64,7 +65,7 @@ $.jgrid.extend({
 			for(let i = 0; i < len; i++) {
 				row = $t.rows[i+1];
 				if(row.classList.contains("jqgrow")) {
-					$(row).addClass(prm.classes).css("top", pos + "px");
+					$(row).addClass(prm.baseclass + " " + prm.classes).css("top", pos + "px");
 				}
 				pos += $(row).outerHeight();
 			}
