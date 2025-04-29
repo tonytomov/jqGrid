@@ -1395,4 +1395,5 @@ a.colmenu .colmenuspan
 	outline: none !important;
 	box-shadow :none !important;
 	border-right-width: 0px !important;
+	overflow: visible !important;
 }

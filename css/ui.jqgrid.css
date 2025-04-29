@@ -722,4 +722,5 @@ td.menu_text {
 .for-sticky {
 	box-shadow :none !important;
 	border-right-width: 0px !important;
+	overflow: visible !important;
 }

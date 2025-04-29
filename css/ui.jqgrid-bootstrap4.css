@@ -1234,6 +1234,7 @@ a.colmenu .colmenuspan
 	overflow: auto;
 	height: 17em;
 }
+/*toaster*/
 .ui-jqgrid-btable td.selected-cell {
     background-color: antiquewhite !important;
 }
@@ -1248,39 +1249,6 @@ a.colmenu .colmenuspan
 }
 .jqgrid-toast-error {
 	background-color: #fadbd8 !important;
-}
-
-/* frozen rows */
-.frozen-row-class {
-    z-index: 2;
-    position: sticky;
-	position: -webkit-sticky;
-    background-color: #fff;
-	/*outline: 1px solid #ddd !important;*/
-	box-shadow: inset 0px 1px 0  var(--tbl-brd-color, #ddd), inset 0px -1px 0  var(--tbl-brd-color, #ddd) !important;
-}
-/* frozen columns */
-.frozen-col-class {
-    z-index: 1;
-    position: sticky;
-	position: -webkit-sticky;
-    background-color: #fff;
-	/*outline: 1px solid #ddd !important;*/
-	box-shadow: inset -1px 0px 0  var(--tbl-brd-color, #ddd) !important;
-	border-right: 0 !important;
-}
-.frozen-col-class-rtl {
-    z-index: 1;
-    position: sticky;
-	position: -webkit-sticky;
-    background-color: #fff ;
-	box-shadow: inset 1px 0px 0  var(--tbl-brd-color, #ddd) !important;
-	border-left: 0 !important;
-}
-.for-sticky {
-	outline: none !important;
-	box-shadow :none !important;
-	border-right-width: 0px !important;
 }
 
 .top-0 {
@@ -1341,4 +1309,38 @@ a.colmenu .colmenuspan
 
 .translate-middle-y {
     transform: translateY(-50%)!important
+}
+
+/* frozen rows */
+.frozen-row-class {
+    z-index: 2;
+    position: sticky;
+	position: -webkit-sticky;
+    background-color: #fff;
+	/*outline: 1px solid #ddd !important;*/
+	box-shadow: inset 0px 1px 0  var(--tbl-brd-color, #ddd), inset 0px -1px 0  var(--tbl-brd-color, #ddd) !important;
+}
+/* frozen columns */
+.frozen-col-class {
+    z-index: 1;
+    position: sticky;
+	position: -webkit-sticky;
+    background-color: #fff;
+	/*outline: 1px solid #ddd !important;*/
+	box-shadow: inset -1px 0px 0  var(--tbl-brd-color, #ddd) !important;
+	border-right: 0 !important;
+}
+.frozen-col-class-rtl {
+    z-index: 1;
+    position: sticky;
+	position: -webkit-sticky;
+    background-color: #fff ;
+	box-shadow: inset 1px 0px 0  var(--tbl-brd-color, #ddd) !important;
+	border-left: 0 !important;
+}
+.for-sticky {
+	outline: none !important;
+	box-shadow :none !important;
+	border-right-width: 0px !important;
+	overflow: visible !important;
 }
