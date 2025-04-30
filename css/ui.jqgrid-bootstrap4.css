@@ -216,10 +216,10 @@ div.tablediv > .table-bordered {
 	margin-bottom: 0px
 }
 .ui-jqgrid tr.jqgrow {  
-	outline-style: none; 
+	/*outline-style: none; */
 }
 .ui-jqgrid tr.jqgroup {  
-	outline-style: none; 
+	/*outline-style: none; */
 }
 .ui-jqgrid .ui-jqgrid-btable tbody tr.jqgrow td { 
 	overflow: hidden; 
@@ -237,6 +237,7 @@ div.tablediv > .table-bordered {
 }
 .ui-jqgrid tr.jqgroup td { 
 	white-space: nowrap;
+	padding: 0.55rem 0.13rem 0.55rem 0.55rem;
 }
 .ui-jqgrid tr.jqfoot td {
 	white-space: nowrap;
@@ -1339,7 +1340,6 @@ a.colmenu .colmenuspan
 	border-left: 0 !important;
 }
 .for-sticky {
-	outline: none !important;
 	box-shadow :none !important;
 	border-right-width: 0px !important;
 	overflow: visible !important;
