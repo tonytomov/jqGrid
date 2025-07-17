@@ -160,6 +160,9 @@ $.jgrid.extend({
 			$t.p.multiselect = false;
 			// $t.p.rowList = [];
 			$t.p.expColInd = 0;
+			if($t.p.ExpandColumn == null) {
+				$t.p.ExpandColumn = $t.p.colModel[$t.p.expColInd].name
+			}
 			pico = classes.icon_plus;
 			if($t.p.styleUI === 'jQueryUI') {
 				pico += ($t.p.direction==="rtl" ? 'w' : 'e');
