@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.10 - 2025-04-24
+* @license Guriddo jqGrid JS - v5.8.10 - 2025-07-17
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -507,7 +507,7 @@ $.extend($.jgrid,{
 					//convert to an array if not already
 					if (!framework.util.isType(framework.type.array, commands)) {
 						commands = [commands];
-		}
+					}
 					//append each method
 					framework.util.each(commands, function (command) {
 						framework.library.commands[command.name] = command;
@@ -518,7 +518,7 @@ $.extend($.jgrid,{
 					//make sure something is there
 					if (!framework.util.isType(framework.type.array, collection)) {
 						throw "jLinq can only query arrays of objects.";
-				}
+					}
 					//clone the array to prevent changing objects - by default
 					//this is off
 					collection = params && (params.clone || (params.clone == null && jLinq.alwaysClone))
@@ -571,7 +571,7 @@ $.extend($.jgrid,{
 									results.push(record);
 								} else {
 									self.instance.removed.push(record);
-			}
+								}
 							});
 							//update the matching records
 							self.instance.records = results;
@@ -587,8 +587,8 @@ $.extend($.jgrid,{
 								var set = self.commands[command];
 								if (self.evaluateSet(set, state)) {
 									return true;
-		}
-		};
+								}
+							};
 							//since nothing evaluated, return it failed
 							return false;
 						},
@@ -612,11 +612,11 @@ $.extend($.jgrid,{
 									var result = command.method.apply(state, command.args);
 									if (command.not) {
 										result = !result;
-			}
+									}
 									if (!result) {
 										return false;
-			}
-			}
+									}
+								}
 								//errors and exceptions just result in a failed
 								//to evaluate as true
 								catch (e) {
@@ -655,7 +655,7 @@ $.extend($.jgrid,{
 								count: command.method.length,
 								args: args,
 								not: self.not
-		};
+							};
 							//check to see if there is an extra argument which should
 							//be the field name argument
 							if (detail.args.length > command.method.length) {
@@ -663,7 +663,7 @@ $.extend($.jgrid,{
 								detail.field = detail.args[0];
 								detail.args = framework.util.remaining(detail.args, 1);
 								self.instance.lastField = detail.field;
-			}
+							}
 							//get the full path for the field name
 							detail.path = detail.field;
 							//queue the command to the current set
@@ -679,7 +679,7 @@ $.extend($.jgrid,{
 						setNot: function () {
 							self.not = !self.not;
 						}
-		};
+					};
 					//append each of the functions
 					framework.util.each(framework.library.commands, function (command) {
 						//Query methods queue up and are not evaluated until
@@ -689,7 +689,7 @@ $.extend($.jgrid,{
 							var action = function () {
 								self.queue(command, arguments);
 								return self.instance.query;
-		};
+							};
 							//create the default action
 							self.instance.query[command.name] = action;
 							//orCommand
@@ -718,7 +718,7 @@ $.extend($.jgrid,{
 								self.setNot();
 								return action.apply(null, arguments);
 							};
-			}
+						}
 						//Selections commands flush the queue of commands
 						//before they are executed. A selection command
 						//must return something (even if it is the current query)
@@ -730,14 +730,14 @@ $.extend($.jgrid,{
 								var state = self.instance;
 								state.compare = function (value, types) {
 									return framework.util.compare(value, types, state);
-		};
+								};
 								state.when = function (value, types) {
 									return framework.util.when(value, types, state);
-		};
+								};
 								//perform the work
 								return command.method.apply(state, arguments);
 							};
-			}
+						}
 						//actions evaluate immediately then return control to
 						//the query 
 						else if (command.type == framework.command.action) {
@@ -754,25 +754,25 @@ $.extend($.jgrid,{
 								command.method.apply(state, arguments);
 								return self.instance.query;
 							};
-			}
+						}
 					});
 					//causes the next command to be an 'or'
 					self.instance.query.or = function () {
 						self.startNewCommandSet();
 						self.repeat(arguments);
 						return self.instance.query;
-		};
+					};
 					//causes the next command to be an 'and' (which is default)
 					self.instance.query.and = function () {
 						self.repeat(arguments);
 						return self.instance.query;
-		};
+					};
 					//causes the next command to be a 'not'
 					self.instance.query.not = function () {
 						self.setNot();
 						self.repeat(arguments);
 						return self.instance.query;
-		};
+					};
 					//causes the next command to be a 'not'
 					self.instance.query.andNot = function () {
 						self.setNot();
@@ -813,20 +813,20 @@ $.extend($.jgrid,{
 					//for arrays, copy each item
 					if (framework.util.isType(framework.type.array, obj)) {
 						return framework.util.cloneArray(obj);
-			}
+					}
 					//for object check each value
 					else if (framework.util.isType(framework.type.object, obj)) {
 						var clone = {};
 						for (var item in obj) {
 							if (obj.hasOwnProperty(item))
 								clone[item] = framework.util.clone(obj[item]);
-			}
+						}
 						return clone;
-			}
+					}
 					//all other types just return the value
 					else {
 						return obj;
-			}
+					}
 				},
 				//creates an invocation handler for a field
 				//name instead of grabbing values
@@ -849,7 +849,7 @@ $.extend($.jgrid,{
 						return result;
 					} catch (e) {
 						return null;
-			}
+					}
 				},
 				//gets a path from a field name
 				getPath: function (path) {
@@ -861,7 +861,7 @@ $.extend($.jgrid,{
 					//invoke a value on this property
 					if (framework.util.isType(framework.type.array, path)) {
 						return framework.util.invoke(obj, path);
-			}
+					}
 					//if this referring to a field
 					else if (framework.util.isType(framework.type.string, path)) {
 						//get each part of the path
@@ -870,10 +870,10 @@ $.extend($.jgrid,{
 						var index = 0;
 						while (obj != null && index < path.length) {
 							obj = obj[path[index++]];
-			}
+						}
 						//return the final found object
 						return obj;
-			}
+					}
 					//nothing that can be read, just return the value
 					else {
 						return obj;
@@ -894,7 +894,7 @@ $.extend($.jgrid,{
 					//get the string value if needed
 					if (framework.util.isType(framework.type.regex, expression)) {
 						expression = expression.source;
-			}
+					}
 					//create the actual expression and match
 					expression = new RegExp(framework.util.toString(expression), ignoreCase ? "gi" : "g");
 					return framework.util.toString(source).match(expression) != null;
@@ -903,7 +903,7 @@ $.extend($.jgrid,{
 				operatorName: function (name) {
 					return name.replace(/^\w/, function (match) {
 						return match.toUpperCase();
-			});
+					});
 				},
 				//changes a value based on the type
 				compare: function (value, types, state, opt) {
@@ -919,8 +919,8 @@ $.extend($.jgrid,{
 							value = parseInt(value, 10);
 						} else if( ['date', 'datetime'].includes(opt.stype)) {
 							value = $.jgrid.parseDate(opt.srcfmt || 'Y-m-d', value).getTime();
-			}
-			}
+						}
+					}
 					state.value = value;
 					//get the kind of object this is
 					var kind = framework.util.getType(value);
@@ -931,8 +931,8 @@ $.extend($.jgrid,{
 						var type = framework.type[item];
 						if (type == kind) {
 							return types[item].apply(state, [value]);
+						}
 					}
-				}
 					//if there is a fallback comparison
 					if (types.other) {
 						return types.other.apply(state, [value]);
@@ -953,7 +953,7 @@ $.extend($.jgrid,{
 					var list = [];
 					framework.util.each(collection, function (item) {
 						list.push(action(item));
-			});
+					});
 					return list;
 				},
 				//performs an action on each item in a collection
@@ -962,7 +962,7 @@ $.extend($.jgrid,{
 						var result = action(collection[item], item + 1);
 						if (result === true) {
 							return true;
-			}
+						}
 					}
 					return false;
 				},
@@ -997,7 +997,7 @@ $.extend($.jgrid,{
 					for (var item in source) {
 						if (source.hasOwnProperty(item))
 							target[item] = source[item];
-			}
+					}
 					return target;
 				},
 				//performs sorting on a collection of records
@@ -1012,7 +1012,7 @@ $.extend($.jgrid,{
 					var field = fields.splice(0, 1);
 					if (field.length == 0) {
 						return collection;
-				}
+					}
 					field = field[0];
 					//get the name of the field and descending or not
 					var invoked = framework.util.isType(framework.type.array, field);
@@ -1063,7 +1063,7 @@ $.extend($.jgrid,{
 						//perform the sorting
 						var result = (a < b) ? -1 : (a > b) ? 1 : 0;
 						return desc ? -result : result;
-		};
+					};
 					//then perform the sorting
 					collection.sort(sort);
 					//check for sub groups if required
@@ -1075,10 +1075,10 @@ $.extend($.jgrid,{
 							var listing = fields.slice();
 							var records = framework.util._performSort(group, listing, ignoreCase);
 							sorted = sorted.concat(records);
-				});
+						});
 						//update the main collection
 						collection = sorted;
-			}
+					}
 					//the final results
 					return collection;
 				},
@@ -1094,14 +1094,14 @@ $.extend($.jgrid,{
 						params = [];
 						for (var i = 0; i < fields.length; i++) {
 							params.push({so: "a", stype: "string", srcfmt: "Y-m_d", sfunc: null})
-			}
-			}
+						}
+					}
 					//get the next field to use
 					var field = fields.splice(0, 1);
 					var param = params.splice(0, 1);
 					if (field.length == 0) {
 						return collection;
-			}
+					}
 					field = field[0];
 
 					//get the name of the field and descending or not
@@ -1113,7 +1113,8 @@ $.extend($.jgrid,{
 
 					param = param[0];
 
-					var stype = param.stype ? param.stype : "string";
+					var stype = param.stype ? ($.jgrid.isFunction(param.stype) ? 'function' : param.stype) : 'string';
+					var funcstype = (stype === 'function') ? param.stype : null;
 					var dfmt = param.srcfmt ? param.srcfmt : "Y-m-d";
 					var sfunc = param.sfunc ? param.sfunc : null;
 
@@ -1147,23 +1148,27 @@ $.extend($.jgrid,{
 						var a = framework.util.findValue(val1, field);
 						var b = framework.util.findValue(val2, field);
 						switch (stype) {
-				case 'int':
-				case 'integer':
+							case 'int':
+							case 'integer':
 								a = parseInt(a, 10);
 								b = parseInt(b, 10);
-					break;
-				case 'float':
-				case 'number':
-				case 'numeric':
+							break;
+							case 'float':
+							case 'number':
+							case 'numeric':
 								a = parseFloat(String(a).replace(/[\$,%]/g, ''));
 								b = parseFloat(String(b).replace(/[\$,%]/g, ''));
-					break;
-				case 'date':
-				case 'datetime':
+								break;
+							case 'date':
+							case 'datetime':
 								a = $.jgrid.parseDate( dfmt, a);
 								b = $.jgrid.parseDate( dfmt, b);
-					break;
-			}
+								break;
+							case 'function' :
+								a = funcstype.call(this, a, val1);
+								b = funcstype.call(this, b, val2);
+								break;
+						}
 						//default to something when null
 						if (a == null && b == null) {
 							a = 0;
@@ -1174,14 +1179,14 @@ $.extend($.jgrid,{
 						} else if (a != null && b == null) {
 							a = 1;
 							b = 0;
-			}
+						}
 						//check for string values
 						else if (ignoreCase &&
 								framework.util.isType(framework.type.string, a) &&
 								framework.util.isType(framework.type.string, b)) {
 							a = a.toLowerCase();
 							b = b.toLowerCase();
-			}
+						}
 						//if there is a length attribute use it instead
 						else if (a.length && b.length) {
 							a = a.length;
@@ -1191,15 +1196,15 @@ $.extend($.jgrid,{
 						//perform the sorting
 						var result = (a < b) ? -1 : (a > b) ? 1 : 0;
 						return dir === "d" ? -result : result;
-		};
+					};
 					if ($.jgrid.isFunction(sfunc)) {
 						collection.sort(function (a, b) {
 							return sfunc.call(this, a, b, dir === "d" ? -1 : 1);
 						});
-			} else {
+					} else {
 						//then perform the sorting
 						collection.sort(sort);
-			}
+					}
 					//check for sub groups if required
 					if (fields.length > 0) {
 						//create the container for the results
@@ -1207,13 +1212,13 @@ $.extend($.jgrid,{
 						var groups = framework.util.group(collection, field, ignoreCase);
 						framework.util.each(groups, function (group) {
 							var listing = fields.slice();
-							var lparams = params.slice()
+							var lparams = params.slice();
 							var records = framework.util._performOrder(group, listing, lparams, ignoreCase);
 							sorted = sorted.concat(records);
 						});
 						//update the main collection
 						collection = sorted;
-			}
+					}
 					//the final results
 					return collection;
 				},
@@ -1306,14 +1311,14 @@ $.extend($.jgrid,{
 							}
 							//return the created record
 							return create;
-		};
-		};
+						};
+					};
 					//if there is a selection method, use it
 					if (jLinq.util.isType(jLinq.type.method, action)) {
 						for (var i = 0; i < results.length; i++) {
 							var record = results[i];
 							results[i] = action.apply(record, [record]);
-			}
+						}
 					}
 					//return the final set of records
 					return results;
@@ -1384,7 +1389,7 @@ $.extend($.jgrid,{
 							jLinq.util.each(this.records, function (record) {
 								record[field] = action;
 							});
-			}
+						}
 					});
 				}},
 			//joins two sets of records by the key information provided
@@ -1879,7 +1884,7 @@ $.extend($.jgrid,{
 								: command.type == framework.command.query ? "query"
 								: command.type == framework.command.action ? "action"
 								: "unknown"
-		};
+					};
 				});
 			},
 			//helper functions for jLinq
@@ -7450,7 +7455,7 @@ $.jgrid.extend({
 							title = this.title ? {"title":$.jgrid.stripHtml(vl)} : {};
 							
 							if(t.p.treeGrid===true && nm === t.p.ExpandColumn) {
-								$("td[role='gridcell']",ind).eq(i).find("span[class*='cell-wrapper']").html(vl).attr(title);
+								$("td[role='gridcell']",ind).eq(i).attr(title).find("span[class*='cell-wrapper']").html(vl);
 							} else {
 								$("td[role='gridcell']",ind).eq(i).html(vl).attr(title);
 							}
@@ -10100,10 +10105,14 @@ $.extend($.jgrid,{
 		}
 		var dh = isNaN(mopt.dataheight) ? mopt.dataheight : mopt.dataheight+"px";
 		//cn = "text-align:"+mopt.align+";";
+		var stylebut ="";
+		if( ["left","center", "right"].includes(mopt.buttonalign) ) {
+			stylebut = "style='text-align:"+ mopt.buttonalign+"'";
+		}
 		var cnt = "<div id='info_id'>";
 		cnt += "<div id='infocnt' class='info_content "+classes.body+"'>"+content+"</div>";
-		cnt += c_b ? "<div class='info_footer " + classes.footer + "'><a id='closedialog' class='fm-button " + common.button + "'>"+c_b+"</a>"+buttstr+"</div>" :
-			buttstr !== ""  ? "<div class='info_footer " + classes.footer + "'>"+buttstr+"</div>" : "";
+		cnt += c_b ? "<div class='info_footer " + classes.footer + "' "+stylebut+"><a id='closedialog' class='fm-button " + common.button + "'>"+c_b+"</a>"+buttstr+"</div>" :
+			buttstr !== ""  ? "<div class='info_footer " + classes.footer + "' "+stylebut+">"+buttstr+"</div>" : "";
 		cnt += "</div>";
 
 		try {
@@ -10414,6 +10423,9 @@ $.extend($.jgrid,{
 						so = options.value.split(delim);
 						for(i=0; i<so.length;i++){
 							sv = so[i].split(sep);
+							if(sv.length === 1) {
+								sv.unshift("");
+							}
 							if(sv.length > 2 ) {
 								sv[1] = $.map(sv,function(n,ii){if(ii>0) { return n;} }).join(sep);
 							}
@@ -13009,14 +13021,14 @@ $.jgrid.extend({
 									let cvr = this.editoptions.custom_value.call($t, $("#"+$.jgrid.jqID(nm),frmtb),'get');
 									if( cvr === "#ignoreme#") {
 										
-									} else if (crv === undefined) {
+									} else if (cvr === undefined) {
 										throw "e1";
 									} else {
 										postdata[nm] = cvr;
 									}
 								} catch (e) {
-									if (e==="e1") {$.jgrid.info_dialog(errors.errcap,"function 'custom_value' "+rp_ge[$(this)[0]].p.msg.novalue,rp_ge[$(this)[0]].p.bClose, {styleUI : rp_ge[$(this)[0]].p.styleUI });}
-									else {$.jgrid.info_dialog(errors.errcap,e.message,rp_ge[$(this)[0]].p.bClose, {styleUI : rp_ge[$(this)[0]].p.styleUI });}
+									if (e==="e1") {$.jgrid.info_dialog(errors.errcap,"function 'custom_value' "+rp_ge[$t.p.id].msg.novalue,rp_ge[$t.p.id].bClose, {styleUI : rp_ge[$t.p.id].styleUI });}
+									else {$.jgrid.info_dialog(errors.errcap,e.message,rp_ge[$t.p.id].bClose, {styleUI : rp_ge[$t.p.id].styleUI });}
 								}
 								return true;
 							}
@@ -19401,6 +19413,9 @@ $.jgrid.extend({
 			$t.p.multiselect = false;
 			// $t.p.rowList = [];
 			$t.p.expColInd = 0;
+			if($t.p.ExpandColumn == null) {
+				$t.p.ExpandColumn = $t.p.colModel[$t.p.expColInd].name
+			}
 			pico = classes.icon_plus;
 			if($t.p.styleUI === 'jQueryUI') {
 				pico += ($t.p.direction==="rtl" ? 'w' : 'e');
@@ -24722,7 +24737,8 @@ $.jgrid.extend({
 			last : 0,
 			rowids :[],
 			//saveFirstLastId : false,
-			classes : "frozen-row-class"
+			classes : "",
+			baseclass : "frozen-row-class"
 		}, options || {});
 
 		return this.each(function(){
@@ -24764,7 +24780,7 @@ $.jgrid.extend({
 			for(let i = 0; i < len; i++) {
 				row = $t.rows[i+1];
 				if(row.classList.contains("jqgrow")) {
-					$(row).addClass(prm.classes).css("top", pos + "px");
+					$(row).addClass(prm.baseclass + " " + prm.classes).css("top", pos + "px");
 				}
 				pos += $(row).outerHeight();
 			}
