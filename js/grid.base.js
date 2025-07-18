@@ -8684,6 +8684,7 @@ $.jgrid.extend({
 	},
 	setFrozenColumns : function(frzclass='frozen-col-class', callername='') {
 		return this.each(function(){
+			if ( !this.grid ) {return;}
 			//console.trace();
 			if(this.p.direction === "rtl") {
 				frzclass += "-rtl";
@@ -8727,6 +8728,7 @@ $.jgrid.extend({
 	},
 	refreshFrozenColumns : function (data= true, addfrzclass=false, frzclass='frozen-col-class') {
 		return this.each(function(){
+			if ( !this.grid ) {return;}
 			if( this.p.direction === "rtl" && frzclass.slice(-4) !== "-rtl") {
 				frzclass += "-rtl";
 			}
@@ -8768,6 +8770,7 @@ $.jgrid.extend({
 	},
 	destroyFrozenColumns : function(frzclass='frozen-col-class') {
 		return this.each(function() {
+			if ( !this.grid ) {return;}
 			var cm = this.p.colModel;
 			var elements =[];
 			if( this.p.direction === "rtl" && frzclass.slice(-4) !== "-rtl") {
