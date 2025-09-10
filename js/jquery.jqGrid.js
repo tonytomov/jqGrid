@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.10 - 2025-07-23
+* @license Guriddo jqGrid JS - v5.8.10 - 2025-09-10
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5181,7 +5181,7 @@ $.fn.jqGrid = function( pin ) {
 			.attr("dir", dir); 
 			if(ts.p.rowList.length >0){
 				str = "<td dir=\""+dir+"\">";
-				str +="<select "+getstyle(stylemodule, 'pgSelectBox', false, 'ui-pg-selbox')+" size=\"1\" name=\"pg_sel_box\" role=\"listbox\" title=\""+($.jgrid.getRegional(ts,"defaults.pgrecs",ts.p.pgrecs) || "")+ "\">";
+				str +="<select "+getstyle(stylemodule, 'pgSelectBox', false, 'ui-pg-selbox')+" size=\"1\" name=\"pg_sel_box\" arial-label=\""+($.jgrid.getRegional(ts,"defaults.pgrecs",ts.p.pgrecs) || "Records")+"\" title=\""+($.jgrid.getRegional(ts,"defaults.pgrecs",ts.p.pgrecs) || "")+ "\">";
 				var strnm;
 				for(i=0;i<ts.p.rowList.length;i++){
 					strnm = ts.p.rowList[i].toString().split(":");
@@ -5189,9 +5189,9 @@ $.fn.jqGrid = function( pin ) {
 						strnm[1] = strnm[0];
 					}
 					if (strnm[1].length == 0) {
-						str +="<option role=\"option\" value=\""+strnm[0]+"\""+(( intNum(ts.p.rowNum,0) === intNum(strnm[0],0))?" aria-label=\""+strnm[1]+"\" selected=\"selected\"":"")+">"+strnm[1]+"</option>";
+						str +="<option value=\""+strnm[0]+"\""+(( intNum(ts.p.rowNum,0) === intNum(strnm[0],0))?" aria-label=\""+strnm[1]+"\" selected=\"selected\"":"")+">"+strnm[1]+"</option>";
 					} else {
-						str +="<option role=\"option\" value=\""+strnm[0]+"\""+(( intNum(ts.p.rowNum,0) === intNum(strnm[0],0))?" selected=\"selected\"":"")+">"+strnm[1]+"</option>";
+						str +="<option value=\""+strnm[0]+"\""+(( intNum(ts.p.rowNum,0) === intNum(strnm[0],0))?" selected=\"selected\"":"")+">"+strnm[1]+"</option>";
 					}
 				}
 				str +="</select></td>";
@@ -5201,7 +5201,7 @@ $.fn.jqGrid = function( pin ) {
 				$("#"+rgt).attr("align","left");
 			}
 			if(ts.p.pginput===true) {
-				pginp= "<td id='input"+tp+"' dir='"+dir+"'>"+$.jgrid.template( $.jgrid.getRegional(ts, "defaults.pgtext", ts.p.pgtext) || "","<input "+getstyle(stylemodule, 'pgInput', false, 'ui-pg-input') + " type='text' size='2' maxlength='7' value='0' role='textbox' name='jqgpginput'/>","<span id='sp_1_"+$.jgrid.jqID(pgid)+"'></span>")+"</td>";
+				pginp= "<td id='input"+tp+"' dir='"+dir+"'><label for='pginp_"+$.jgrid.jqID(pgid)+"'>"+$.jgrid.template( $.jgrid.getRegional(ts, "defaults.pgtext", ts.p.pgtext) || ".","&nbsp; </label><input "+getstyle(stylemodule, 'pgInput', false, 'ui-pg-input') + " type='text' size='2' maxlength='7' value='0' role='textbox' name='jqgpginput' id='pginp_"+$.jgrid.jqID(pgid)+"'/>","<span id='sp_1_"+$.jgrid.jqID(pgid)+"'></span>")+"</td>";
 			}
 			var po=["first"+tp,"prev"+tp, "next"+tp,"last"+tp];
 			if(ts.p.pgbuttons===true) {
@@ -6308,8 +6308,8 @@ $.fn.jqGrid = function( pin ) {
 		}
 		tdc = isMSIE ?  "class='ui-th-div-ie'" :"";
 		imgs = "<span class='s-ico' style='display:none'>";
-		imgs += "<span sort='asc'  class='ui-grid-ico-sort ui-icon-asc"+iac+" ui-sort-"+dir+" "+disabled+" " + iconbase + " " + getstyle(stylemodule, 'icon_asc', true)+ "'" + sort + " aria-label='empty'><span style='display:none'>empty</span></span>";
-		imgs += "<span sort='desc' class='ui-grid-ico-sort ui-icon-desc"+idc+" ui-sort-"+dir+" "+disabled+" " + iconbase + " " + getstyle(stylemodule, 'icon_desc', true)+"'" + sort + " aria-label='empty'><span style='display:none'>empty</span></span></span>";
+		imgs += "<span sort='asc'  class='ui-grid-ico-sort ui-icon-asc"+iac+" ui-sort-"+dir+" "+disabled+" " + iconbase + " " + getstyle(stylemodule, 'icon_asc', true)+ "'" + sort + " role='img' aria-label='empty' ><span aria-hidden='true' style='display:none'>empty</span></span>";
+		imgs += "<span sort='desc' class='ui-grid-ico-sort ui-icon-desc"+idc+" ui-sort-"+dir+" "+disabled+" " + iconbase + " " + getstyle(stylemodule, 'icon_desc', true)+"'" + sort + " role='img'  aria-label='empty' ><span  aria-hidden='true' style='display:none'>empty</span></span></span>";
 		if(ts.p.multiSort) {
 			if(ts.p.sortname ) {
 			sortarr = ts.p.sortname.split(",");
