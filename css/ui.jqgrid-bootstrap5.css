@@ -356,7 +356,8 @@ div.tablediv > .table-bordered {
 	border-top: 1px solid var(--tbl-brd-color, #ddd);  
 	/*padding : 4px 0px;*/
 	position: relative; 
-	/*height: auto; */
+	height: 38px;
+	min-height: 30px; 
 	white-space: nowrap;
 	overflow: hidden;
 }
