@@ -50,7 +50,10 @@ $.jgrid.regional["en"] = {
 		valT : "checked",
 		valF : "unchecked",
 		selectLine : "Select row",
-		selectAllLines : "Select all rows"
+		selectAllLines : "Select all rows",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand grid",
+		rowNumbers : "Row number information column"
 	},
 	search : {
 		caption: "Search...",

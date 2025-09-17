@@ -6227,18 +6227,18 @@ $.fn.jqGrid = function( pin ) {
 		}
 		if(this.p.searchCols) {
 			this.p.colNames.unshift(ts.p.searchColOptions.colName);
-			this.p.colModel.unshift({name:'sc',width: ts.p.searchColOptions.colWidth,sortable:false,hidedlg:true,search:false,align:'left',fixed:true, frozen: true, colmenu: ts.p.searchColOptions.colmenu, classes : "jqgrid-searchcol", labelClasses: "jqgrid-searchcolumn",
+			this.p.colModel.unshift({name:'sc', tooltip: ($.jgrid.getRegional(ts, "defaults.searchCols") || "Search on columns"), width: ts.p.searchColOptions.colWidth,sortable:false,hidedlg:true,search:false,align:'left',fixed:true, frozen: true, colmenu: ts.p.searchColOptions.colmenu, classes : "jqgrid-searchcol", labelClasses: "jqgrid-searchcolumn",
 					coloptions : {sorting:false, columns: false, filtering: false, seraching:false, grouping:false, freeze : false}});
 		}
 		if(this.p.multiselect) {
-			var allRowsSelectTitle=$.jgrid.getRegional(ts, "defaults.selectAllLines");
-			allRowsSelectTitle=allRowsSelectTitle ? allRowsSelectTitle : $.jgrid.regional['en'].defaults.selectAllLines;
+			var allRowsSelectTitle = $.jgrid.getRegional(ts, "defaults.selectAllLines");
+			allRowsSelectTitle = allRowsSelectTitle ? allRowsSelectTitle : ($.jgrid.regional['en'].defaults.selectAllLines || "Select all rows");
 			this.p.colNames.unshift("<input role='checkbox' id='cb_"+this.p.id+"' class='cbox' type='checkbox' title='"+allRowsSelectTitle+"'/>");
 			this.p.colModel.unshift({name:'cb',width:$.jgrid.cell_width ? ts.p.multiselectWidth+ts.p.cellLayout : ts.p.multiselectWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center',fixed:true, frozen: true, classes : "jqgrid-multibox", labelClasses: "jqgrid-multibox" });
 		}
 		if(this.p.rownumbers) {
 			this.p.colNames.unshift("");
-			this.p.colModel.unshift({name:'rn',width:ts.p.rownumWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center',fixed:true, frozen : true, labelClasses: "jqgrid-rownumber"});
+			this.p.colModel.unshift({name:'rn', tooltip: ($.jgrid.getRegional(ts, "defaults.rowNumbers") || "Row numbers column"), width:ts.p.rownumWidth,sortable:false,resizable:false,hidedlg:true,search:false,align:'center',fixed:true, frozen : true, labelClasses: "jqgrid-rownumber"});
 		}
 		ts.p.xmlReader = $.extend(true,{
 			root: "rows",
@@ -6319,7 +6319,11 @@ $.fn.jqGrid = function( pin ) {
 			var tmpcm = ts.p.colModel[i],
 			tooltip = ts.p.headertitles ? (" title=\"" + (tmpcm.tooltip ? tmpcm.tooltip : $.jgrid.stripHtml(ts.p.colNames[i])) + "\"") : "",
 			arialabel = "";
-
+			// cols without names should have title
+			if($.jgrid.isServiceCol(tmpcm.name) && !ts.p.headertitles || tooltip==="") {
+				tooltip = " title=\""+ (tmpcm.tooltip || "jqGrid service column") + "\""; 
+			}
+			
 			if(!tmpcm.hasOwnProperty('colmenu')) {
 				tmpcm.colmenu = (tmpcm.name === "rn" || tmpcm.name === "cb" || tmpcm.name === "subgrid") ? false : true;
 			}
