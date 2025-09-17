@@ -6321,7 +6321,7 @@ $.fn.jqGrid = function( pin ) {
 			arialabel = "";
 			// cols without names should have title
 			if($.jgrid.isServiceCol(tmpcm.name) && !ts.p.headertitles || tooltip==="") {
-				tooltip = " title=\""+ (tmpcm.tooltip || "jqGrid service column") + "\""; 
+				tooltip = " title=\""+ (tmpcm.tooltip || "") + "\""; 
 			}
 			
 			if(!tmpcm.hasOwnProperty('colmenu')) {
