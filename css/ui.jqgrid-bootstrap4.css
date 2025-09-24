@@ -853,8 +853,8 @@ a.g-menu-item, a.soptclass, a.clearsearchclass {
 }
 	
 .ui-disabled {
-	opacity: .35;
-	filter:Alpha(Opacity=35); /* support: IE8 */
+	opacity: .63;
+	/*filter:Alpha(Opacity=35); support: IE8 */
 	background-image: none;
 }
 .ui-overlay {
