@@ -52,8 +52,10 @@ $.jgrid.regional["en"] = {
 		selectLine : "Select row",
 		selectAllLines : "Select all rows",
 		searchCols : "Search on grid columns",
-		subGrid : "Click on Subgrid cell to expand grid",
-		rowNumbers : "Row number information column"
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid"
 	},
 	search : {
 		caption: "Search...",
