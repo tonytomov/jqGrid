@@ -84,6 +84,8 @@ $.jgrid.regional["en"] = {
 		bYes : "Yes",
 		bNo : "No",
 		bExit : "Cancel",
+		nextRow : "Click to edit next row",
+		prevRow : "Click to edit previous row",
 		msg: {
 			required:"Field is required",
 			number:"Please, enter valid number",
@@ -102,7 +104,9 @@ $.jgrid.regional["en"] = {
 	},
 	view : {
 		caption: "View Record",
-		bClose: "Close"
+		bClose: "Close",
+		nextRow : "Click to view next row",
+		prevRow : "Click to view previous row"
 	},
 	del : {
 		caption: "Delete",
