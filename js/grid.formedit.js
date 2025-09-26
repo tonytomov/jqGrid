@@ -1598,8 +1598,8 @@ $.jgrid.extend({
 				tbl += "<tr><td class=\"delmsg\" style=\"white-space:pre;\">"+rp_ge[$t.p.id].msg+"</td></tr><tr><td >&#160;</td></tr>";
 				// buttons at footer
 				tbl += "</tbody></table></div>";
-				var bS  = "<a id='dData' class='fm-button " + commonstyle.button + "'>"+p.bSubmit+"</a>",
-				bC  = "<a id='eData' class='fm-button " + commonstyle.button + "'>"+p.bCancel+"</a>",
+				var bS  = "<a id='dData' class='fm-button " + commonstyle.button + "' role='button' tabindex='0' href='#' aria-label='Delete grid row(s)'>"+p.bSubmit+"</a>",
+				bC  = "<a id='eData' class='fm-button " + commonstyle.button + "' role='button' tabindex='0' href='#' aria-label='Close the modal dialog'>"+p.bCancel+"</a>",
 				user_buttons = ( Array.isArray( rp_ge[$t.p.id].buttons ) ? $.jgrid.buildButtons( rp_ge[$t.p.id].buttons, bS + bC, commonstyle ) : bS + bC ),
 				fs =  $('.ui-jqgrid').css('font-size') || '11px';
 
