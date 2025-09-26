@@ -584,8 +584,8 @@ $.jgrid.extend({
 					query.orderBy(fld, prm);
 				}
 				jQuery($t).jqGrid($.extend(true, {
-					datastr: $.extend(query.select(),footerrow ? {userdata:pivotGrid.summary} : {}),
-					datatype: 'jsonstring',
+					data: $.extend(query.select(),footerrow ? {userdata:pivotGrid.summary} : {}),
+					datatype: 'local',
 					footerrow : footerrow,
 					userDataOnFooter: footerrow,
 					colModel: pivotGrid.colModel,
