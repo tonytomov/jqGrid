@@ -14709,9 +14709,9 @@ $.jgrid.extend({
 					rp_ge[$t.p.id].afterShowForm.call($t,$("#"+dtbl));
 				}
 			}
-			if(rp_ge[$t.p.id].closeOnEscape===true) {
+			//if(rp_ge[$t.p.id].closeOnEscape===true) {
 				setTimeout(function(){$(".ui-jqdialog-titlebar-close","#"+$.jgrid.jqID(IDs.modalhead)).attr("tabindex","-1").focus();},0);
-			}
+			//}
 		});
 	},
 	navGrid : function (elem, p, pEdit, pAdd, pDel, pSearch, pView) {
