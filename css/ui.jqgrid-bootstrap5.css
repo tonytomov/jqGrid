@@ -1322,11 +1322,11 @@ a.colmenu .colmenuspan
 }
 #info_dialog .info_content {
 	margin:0px;
-	padding: 0.4em 0.4em 0.8em 0.4em;
+	/*padding: 0.4em 0.4em 0.8em 0.4em;*/
 	width:100%;
 	overflow:auto;
 	position:relative;
-	text-align: center;
+	/*text-align: center;*/
 }
 #info_dialog .info_footer {
 	text-align: center;
