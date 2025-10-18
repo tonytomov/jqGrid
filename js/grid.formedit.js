@@ -194,7 +194,7 @@ $.jgrid.extend({
 						hc = this.hidden === true ? true : false;
 					}
 					dc = hc ? "style='display:none'" : "";
-					if ( nm !== 'cb' && nm !== 'subgrid' && this.editable===true && nm !== 'rn' && nm!=='sc') {
+					if ( !$.jgrid.isServiceCol() && this.editable===true ) {
 						if(ind === false) {
 							tmp = "";
 						} else {
@@ -874,7 +874,7 @@ $.jgrid.extend({
 			var bP = "<a id='"+bp+"' class='fm-button " + commonstyle.button + "' role='button' tabindex='0' href='#' title='"+p.prevRow+"'><span class='" + commonstyle.icon_base + " " + styles.icon_prev+ "'></span></a>",
 			bN = "<a id='"+bn+"' class='fm-button " + commonstyle.button + "' role='button' tabindex='0' href='#' title='"+p.nextRow+"'><span class='" + commonstyle.icon_base + " " + styles.icon_next+ "'></span></a>",
 			bS  ="<a id='sData' class='fm-button " + commonstyle.button + "' role='button' tabindex='0' href='#' aria-label='Submit data'>"+p.bSubmit+"</a>",
-			bC  ="<a id='cData' class='fm-button " + commonstyle.button + "' role='button' tabindex='0' href='#' aria-label='Clode modal dialog'>"+p.bCancel+"</a>",
+			bC  ="<a id='cData' class='fm-button " + commonstyle.button + "' role='button' tabindex='0' href='#' aria-label='Close modal dialog'>"+p.bCancel+"</a>",
 			user_buttons = ( Array.isArray( rp_ge[$t.p.id].buttons ) ? $.jgrid.buildButtons( rp_ge[$t.p.id].buttons, bS + bC, commonstyle ) : bS + bC );
 			var bt = "<table style='height:auto' class='EditTable ui-common-table' id='"+frmtborg+"_2'><tbody><tr><td colspan='2'><hr class='"+commonstyle.content+"' style='margin:1px'/></td></tr><tr id='Act_Buttons'><td class='navButton'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton'>"+ user_buttons +"</td></tr>";
 			//bt += "<tr style='display:none' class='binfo'><td class='bottominfo' colspan='2'>"+rp_ge[$t.p.id].bottominfo+"</td></tr>";
