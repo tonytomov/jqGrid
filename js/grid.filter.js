@@ -1306,7 +1306,7 @@ $.jgrid.extend({
 					if( p.restoreFromFilters && restores) {
 						df = restores.data;
 					}
-					soptions["aria-label"]="Enter value to search";
+					soptions["aria-label"]="Enter toolbar search value";
 					elem = $.jgrid.createEl.call($t, this.stype, soptions , df, false, $.extend({},$.jgrid.ajaxOptions, $t.p.ajaxSelectOptions || {}));
 					if( this.stype !== 'custom') {
 						if(this.stype==='select') {

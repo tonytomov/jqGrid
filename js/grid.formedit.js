@@ -218,7 +218,10 @@ $.jgrid.extend({
 						if($t.p.autoencode) {
 							tmp = $.jgrid.htmlDecode(tmp);
 						}
-						elc = $.jgrid.createEl.call($t,this.edittype,opt,tmp,false,$.extend({},$.jgrid.ajaxOptions,obj.p.ajaxSelectOptions || {}));
+						if(!Object.hasOwn(opt, "aria-label")) {
+							opt["aria-label"] = "Edit form value";
+						}
+						elc = $.jgrid.createEl.call($t, this.edittype, opt, tmp, false, $.extend( {}, $.jgrid.ajaxOptions,obj.p.ajaxSelectOptions || {}));
 						//if(tmp === "" && this.edittype == "checkbox") {tmp = $(elc).attr("offval");}
 						//if(tmp === "" && this.edittype == "select") {tmp = $("option:eq(0)",elc).text();}
 						if(this.edittype === "select") {

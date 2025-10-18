@@ -5798,8 +5798,11 @@ $.fn.jqGrid = function( pin ) {
 			if( v1 ) {
 				df = v1;
 			}
-			var soptions = $.extend(cm.searchoptions, {name:cm.index || cm.name, id: "sval1_" + ts.p.idPrefix+cm.name, oper:'search'}),
-			input = $.jgrid.createEl.call(ts, cm.stype, soptions , df, false, $.extend({},$.jgrid.ajaxOptions, ts.p.ajaxSelectOptions || {}));
+			var soptions = $.extend(cm.searchoptions, {name:cm.index || cm.name, id: "sval1_" + ts.p.idPrefix+cm.name, oper:'search'});
+			if(!Object.hasOwn(soptions, "aria-label")) {
+				soptions["aria-label"] = "Enter from value to search";
+			}
+			var input = $.jgrid.createEl.call(ts, cm.stype, soptions , df, false, $.extend({},$.jgrid.ajaxOptions, ts.p.ajaxSelectOptions || {}));
 			$(input).addClass( colmenustyle.filter_input );
 			str1 = $('<div></div>').append(input);
 			elem.append(str1);
@@ -5828,6 +5831,9 @@ $.fn.jqGrid = function( pin ) {
 				df = "";
 			}
 			soptions = $.extend(cm.searchoptions, {name:cm.index || cm.name, id: "sval2_" + ts.p.idPrefix+cm.name, oper:'search'});
+			if(!Object.hasOwn(soptions, "aria-label")) {
+				soptions["aria-label"] = "Enter to value to search";
+			}			
 			input = $.jgrid.createEl.call(ts, cm.stype, soptions , df, false, $.extend({},$.jgrid.ajaxOptions, ts.p.ajaxSelectOptions || {}));
 			$(input).addClass( colmenustyle.filter_input );
 			str1 = $('<div></div>').append(input);

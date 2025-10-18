@@ -99,7 +99,10 @@ $.jgrid.extend({
 							var opt = $.extend({},cm[i].editoptions || {},{id:rowid+"_"+nm,name:nm,rowId:rowid, oper:'edit', module : 'inline'});
 							if(!cm[i].edittype) { cm[i].edittype = "text"; }
 							if(tmp === "&nbsp;" || tmp === "&#160;" || (tmp !== null && tmp.length===1 && tmp.charCodeAt(0)===160) ) {tmp='';}
-							var elc = $.jgrid.createEl.call($t,cm[i].edittype,opt,tmp,true,$.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions || {}));
+							if(!Object.hasOwn(opt, "aria-label")) {
+								opt["aria-label"] = "Enter row value";
+							}
+							var elc = $.jgrid.createEl.call($t, cm[i].edittype, opt, tmp, true, $.extend( {}, $.jgrid.ajaxOptions,$t.p.ajaxSelectOptions || {}));
 							$(elc).addClass("editable inline-edit-cell");
 							if( $.inArray(cm[i].edittype, ['text','textarea','password']) > -1) {
 								$(elc).addClass( inpclass );

@@ -105,7 +105,10 @@ $.jgrid.extend({
 				if (excel) {
 					tmp = event.key;
 				}
-				var elc = $.jgrid.createEl.call($t,cm.edittype,opt,tmp,true,$.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions || {}));
+				if(!Object.hasOwn(opt, "aria-label")) {
+					opt["aria-label"] = "Enter cell value";
+				}
+				var elc = $.jgrid.createEl.call($t, cm.edittype, opt,tmp, true, $.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions || {}));
 				if( $.inArray(cm.edittype, ['text','textarea','password']) > -1) {
 					$(elc).addClass(inpclass);
 				} else if(cm.edittype === 'select') {
