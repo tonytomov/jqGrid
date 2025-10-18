@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.10 - 2025-09-26
+* @license Guriddo jqGrid JS - v5.8.10 - 2025-10-18
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5803,8 +5803,11 @@ $.fn.jqGrid = function( pin ) {
 			if( v1 ) {
 				df = v1;
 			}
-			var soptions = $.extend(cm.searchoptions, {name:cm.index || cm.name, id: "sval1_" + ts.p.idPrefix+cm.name, oper:'search'}),
-			input = $.jgrid.createEl.call(ts, cm.stype, soptions , df, false, $.extend({},$.jgrid.ajaxOptions, ts.p.ajaxSelectOptions || {}));
+			var soptions = $.extend(cm.searchoptions, {name:cm.index || cm.name, id: "sval1_" + ts.p.idPrefix+cm.name, oper:'search'});
+			if(!Object.hasOwn(soptions, "aria-label")) {
+				soptions["aria-label"] = "Enter from value to search";
+			}
+			var input = $.jgrid.createEl.call(ts, cm.stype, soptions , df, false, $.extend({},$.jgrid.ajaxOptions, ts.p.ajaxSelectOptions || {}));
 			$(input).addClass( colmenustyle.filter_input );
 			str1 = $('<div></div>').append(input);
 			elem.append(str1);
@@ -5833,6 +5836,9 @@ $.fn.jqGrid = function( pin ) {
 				df = "";
 			}
 			soptions = $.extend(cm.searchoptions, {name:cm.index || cm.name, id: "sval2_" + ts.p.idPrefix+cm.name, oper:'search'});
+			if(!Object.hasOwn(soptions, "aria-label")) {
+				soptions["aria-label"] = "Enter to value to search";
+			}			
 			input = $.jgrid.createEl.call(ts, cm.stype, soptions , df, false, $.extend({},$.jgrid.ajaxOptions, ts.p.ajaxSelectOptions || {}));
 			$(input).addClass( colmenustyle.filter_input );
 			str1 = $('<div></div>').append(input);
@@ -9220,7 +9226,10 @@ $.jgrid.extend({
 				if (excel) {
 					tmp = event.key;
 				}
-				var elc = $.jgrid.createEl.call($t,cm.edittype,opt,tmp,true,$.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions || {}));
+				if(!Object.hasOwn(opt, "aria-label")) {
+					opt["aria-label"] = "Enter cell value";
+				}
+				var elc = $.jgrid.createEl.call($t, cm.edittype, opt,tmp, true, $.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions || {}));
 				if( $.inArray(cm.edittype, ['text','textarea','password']) > -1) {
 					$(elc).addClass(inpclass);
 				} else if(cm.edittype === 'select') {
@@ -12158,7 +12167,7 @@ $.jgrid.extend({
 					if( p.restoreFromFilters && restores) {
 						df = restores.data;
 					}
-					soptions["aria-label"]="Enter value to search";
+					soptions["aria-label"]="Enter toolbar search value";
 					elem = $.jgrid.createEl.call($t, this.stype, soptions , df, false, $.extend({},$.jgrid.ajaxOptions, $t.p.ajaxSelectOptions || {}));
 					if( this.stype !== 'custom') {
 						if(this.stype==='select') {
@@ -13109,7 +13118,7 @@ $.jgrid.extend({
 						hc = this.hidden === true ? true : false;
 					}
 					dc = hc ? "style='display:none'" : "";
-					if ( nm !== 'cb' && nm !== 'subgrid' && this.editable===true && nm !== 'rn' && nm!=='sc') {
+					if ( !$.jgrid.isServiceCol() && this.editable===true ) {
 						if(ind === false) {
 							tmp = "";
 						} else {
@@ -13133,7 +13142,10 @@ $.jgrid.extend({
 						if($t.p.autoencode) {
 							tmp = $.jgrid.htmlDecode(tmp);
 						}
-						elc = $.jgrid.createEl.call($t,this.edittype,opt,tmp,false,$.extend({},$.jgrid.ajaxOptions,obj.p.ajaxSelectOptions || {}));
+						if(!Object.hasOwn(opt, "aria-label")) {
+							opt["aria-label"] = "Edit form value";
+						}
+						elc = $.jgrid.createEl.call($t, this.edittype, opt, tmp, false, $.extend( {}, $.jgrid.ajaxOptions,obj.p.ajaxSelectOptions || {}));
 						//if(tmp === "" && this.edittype == "checkbox") {tmp = $(elc).attr("offval");}
 						//if(tmp === "" && this.edittype == "select") {tmp = $("option:eq(0)",elc).text();}
 						if(this.edittype === "select") {
@@ -13789,7 +13801,7 @@ $.jgrid.extend({
 			var bP = "<a id='"+bp+"' class='fm-button " + commonstyle.button + "' role='button' tabindex='0' href='#' title='"+p.prevRow+"'><span class='" + commonstyle.icon_base + " " + styles.icon_prev+ "'></span></a>",
 			bN = "<a id='"+bn+"' class='fm-button " + commonstyle.button + "' role='button' tabindex='0' href='#' title='"+p.nextRow+"'><span class='" + commonstyle.icon_base + " " + styles.icon_next+ "'></span></a>",
 			bS  ="<a id='sData' class='fm-button " + commonstyle.button + "' role='button' tabindex='0' href='#' aria-label='Submit data'>"+p.bSubmit+"</a>",
-			bC  ="<a id='cData' class='fm-button " + commonstyle.button + "' role='button' tabindex='0' href='#' aria-label='Clode modal dialog'>"+p.bCancel+"</a>",
+			bC  ="<a id='cData' class='fm-button " + commonstyle.button + "' role='button' tabindex='0' href='#' aria-label='Close modal dialog'>"+p.bCancel+"</a>",
 			user_buttons = ( Array.isArray( rp_ge[$t.p.id].buttons ) ? $.jgrid.buildButtons( rp_ge[$t.p.id].buttons, bS + bC, commonstyle ) : bS + bC );
 			var bt = "<table style='height:auto' class='EditTable ui-common-table' id='"+frmtborg+"_2'><tbody><tr><td colspan='2'><hr class='"+commonstyle.content+"' style='margin:1px'/></td></tr><tr id='Act_Buttons'><td class='navButton'>"+(rtlb ? bN+bP : bP+bN)+"</td><td class='EditButton'>"+ user_buttons +"</td></tr>";
 			//bt += "<tr style='display:none' class='binfo'><td class='bottominfo' colspan='2'>"+rp_ge[$t.p.id].bottominfo+"</td></tr>";
@@ -16996,7 +17008,10 @@ $.jgrid.extend({
 							var opt = $.extend({},cm[i].editoptions || {},{id:rowid+"_"+nm,name:nm,rowId:rowid, oper:'edit', module : 'inline'});
 							if(!cm[i].edittype) { cm[i].edittype = "text"; }
 							if(tmp === "&nbsp;" || tmp === "&#160;" || (tmp !== null && tmp.length===1 && tmp.charCodeAt(0)===160) ) {tmp='';}
-							var elc = $.jgrid.createEl.call($t,cm[i].edittype,opt,tmp,true,$.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions || {}));
+							if(!Object.hasOwn(opt, "aria-label")) {
+								opt["aria-label"] = "Enter row value";
+							}
+							var elc = $.jgrid.createEl.call($t, cm[i].edittype, opt, tmp, true, $.extend( {}, $.jgrid.ajaxOptions,$t.p.ajaxSelectOptions || {}));
 							$(elc).addClass("editable inline-edit-cell");
 							if( $.inArray(cm[i].edittype, ['text','textarea','password']) > -1) {
 								$(elc).addClass( inpclass );
