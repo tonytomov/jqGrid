@@ -48,7 +48,13 @@ $.jgrid.regional["pt"] = {
 		valT : "checked",
 		valF : "unchecked",
 		selectLine : "Select row",
-		selectAllLines : "Select all rows"
+		selectAllLines : "Select all rows",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
 	},
 	search : {
 	    caption: "Busca...",
@@ -78,6 +84,8 @@ $.jgrid.regional["pt"] = {
 		bYes : "Sim",
 		bNo : "Nao",
 		bExit : "Cancelar",
+		nextRow : "Click to edit next row",
+		prevRow : "Click to edit previous row",
 	    msg: {
 	        required:"Campo obrigatório",
 	        number:"Por favor, introduza um numero",
@@ -95,7 +103,9 @@ $.jgrid.regional["pt"] = {
 	},
 	view : {
 	    caption: "View Record",
-	    bClose: "Close"
+	    bClose: "Close",
+		nextRow : "Click to view next row",
+		prevRow : "Click to view previous row"
 	},
 	del : {
 	    caption: "Eliminar",

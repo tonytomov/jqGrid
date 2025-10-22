@@ -47,7 +47,13 @@ $.jgrid.regional["fa"] = {
 		valT : "checked",
 		valF : "unchecked",
 		selectLine : "Select row",
-		selectAllLines : "Select all rows"
+		selectAllLines : "Select all rows",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
         },
         search: {
             caption: "جستجو...",
@@ -83,6 +89,8 @@ $.jgrid.regional["fa"] = {
             bYes: "بله",
             bNo: "خیر",
             bExit: "انصراف",
+			nextRow : "Click to edit next row",
+			prevRow : "Click to edit previous row",
             msg: {
                 required: "فيلدها بايد ختما پر شوند",
                 number: "لطفا عدد وعتبر وارد کنيد",
@@ -100,7 +108,9 @@ $.jgrid.regional["fa"] = {
         },
         view: {
             caption: "نمایش رکورد",
-            bClose: "بستن"
+            bClose: "بستن",
+			nextRow : "Click to view next row",
+			prevRow : "Click to view previous row"
         },
         del: {
             caption: "حذف",

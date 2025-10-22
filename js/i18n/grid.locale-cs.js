@@ -50,7 +50,13 @@ $.jgrid.regional["cs"] = {
 		valT : "checked",
 		valF : "unchecked",
 		selectLine : "Select row",
-		selectAllLines : "Select all rows"
+		selectAllLines : "Select all rows",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
 	},
 	search : {
 		caption: "Vyhledávám...",
@@ -79,6 +85,8 @@ $.jgrid.regional["cs"] = {
 		bYes : "Ano",
 		bNo : "Ne",
 		bExit : "Zrušit",
+		nextRow : "Click to edit next row",
+		prevRow : "Click to edit previous row",
 		msg: {
 		    required:"Pole je vyžadováno",
 		    number:"Prosím, vložte validní číslo",
@@ -96,7 +104,9 @@ $.jgrid.regional["cs"] = {
 	},
 	view : {
 	    caption: "Zobrazit záznam",
-	    bClose: "Zavřít"
+	    bClose: "Zavřít",
+		nextRow : "Click to view next row",
+		prevRow : "Click to view previous row"
 	},
 	del : {
 		caption: "Smazat",

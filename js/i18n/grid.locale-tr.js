@@ -49,7 +49,13 @@ $.jgrid.regional["tr"] = {
 		valT : "checked",
 		valF : "unchecked",
 		selectLine : "Select row",
-		selectAllLines : "Select all rows"
+		selectAllLines : "Select all rows",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
 	},
 	search : {
 	    caption: "Arama...",
@@ -78,6 +84,8 @@ $.jgrid.regional["tr"] = {
 		bYes : "Evet",
 		bNo : "Hayıt",
 		bExit : "İptal",
+		nextRow : "Click to edit next row",
+		prevRow : "Click to edit previous row",
 	    msg: {
 	        required:"Alan gerekli",
 	        number:"Lütfen bir numara giriniz",
@@ -94,7 +102,9 @@ $.jgrid.regional["tr"] = {
 	},
 	view : {
 	    caption: "Kayıt Görüntüle",
-	    bClose: "Kapat"
+	    bClose: "Kapat",
+		nextRow : "Click to view next row",
+		prevRow : "Click to view previous row"
 	},
 	del : {
 	    caption: "Sil",

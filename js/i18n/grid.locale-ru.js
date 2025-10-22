@@ -51,7 +51,13 @@ $.jgrid.regional["ru"] = {
 		valT : "checked",
 		valF : "unchecked",
 		selectLine : "Select row",
-		selectAllLines : "Select all rows"
+		selectAllLines : "Select all rows",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
 	},
 	search : {
 		caption: "Поиск...",
@@ -80,6 +86,8 @@ $.jgrid.regional["ru"] = {
 		bYes : "Да",
 		bNo : "Нет",
 		bExit : "Отмена",
+		nextRow : "Click to edit next row",
+		prevRow : "Click to edit previous row",
 		msg: {
 			required:"Поле является обязательным",
 			number:"Пожалуйста, введите правильное число",
@@ -97,7 +105,9 @@ $.jgrid.regional["ru"] = {
 	},
 	view : {
 		caption: "Просмотр записи",
-		bClose: "Закрыть"
+		bClose: "Закрыть",
+		nextRow : "Click to view next row",
+		prevRow : "Click to view previous row"
 	},
 	del : {
 		caption: "Удалить",

@@ -49,7 +49,13 @@ $.jgrid.regional["th"] = {
 		valT : "checked",
 		valF : "unchecked",
 		selectLine : "Select row",
-		selectAllLines : "Select all rows"
+		selectAllLines : "Select all rows",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
 	},
 	search : {
 		caption: "กำลังค้นหา...",
@@ -78,6 +84,8 @@ $.jgrid.regional["th"] = {
 		bYes : "บันทึก",
 		bNo : "ละทิ้งการแก้ไข",
 		bExit : "ยกเลิก",
+		nextRow : "Click to edit next row",
+		prevRow : "Click to edit previous row",
 		msg: {
 			required:"ข้อมูลนี้จำเป็น",
 			number:"กรุณากรอกหมายเลขให้ถูกต้อง",
@@ -96,7 +104,9 @@ $.jgrid.regional["th"] = {
 	},
 	view : {
 		caption: "เรียกดูข้อมูล",
-		bClose: "ปิด"
+		bClose: "ปิด",
+		nextRow : "Click to view next row",
+		prevRow : "Click to view previous row"
 	},
 	del : {
 		caption: "ลบข้อมูล",

@@ -50,7 +50,13 @@ $.jgrid.regional["fr"] = {
 		valT : "cochée",
 		valF : "décochée",
 		selectLine : "Sélectionner une ligne",
-		selectAllLines : "Sélectionner toutes les lignes"
+		selectAllLines : "Sélectionner toutes les lignes",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
 	},
 	search : {
 		caption: "Recherche...",
@@ -79,6 +85,8 @@ $.jgrid.regional["fr"] = {
 		bYes: "Oui",
 		bNo: "Non",
 		bExit: "Annuler",
+		nextRow : "Click to edit next row",
+		prevRow : "Click to edit previous row",
 		msg: {
 			required: "Champ obligatoire",
 			number: "Saisissez un nombre correct",
@@ -95,7 +103,9 @@ $.jgrid.regional["fr"] = {
 	},
 	view : {
 		caption: "Voir les enregistrements",
-		bClose: "Fermer"
+		bClose: "Fermer",
+		nextRow : "Click to view next row",
+		prevRow : "Click to view previous row"
 	},
 	del : {
 		caption: "Supprimer",

@@ -49,7 +49,14 @@ $.jgrid.regional["dk"] = {
 		valT : "checked",
 		valF : "unchecked",
 		selectLine : "Select row",
-		selectAllLines : "Select all rows"
+		selectAllLines : "Select all rows",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
+
 	},
 	search : {
 	    caption: "Søg...",
@@ -78,6 +85,8 @@ $.jgrid.regional["dk"] = {
 		bYes : "Yes",
 		bNo : "No",
 		bExit : "Cancel",
+		nextRow : "Click to edit next row",
+		prevRow : "Click to edit previous row",
 	    msg: {
 	        required:"Felt er nødvendigt",
 	        number:"Indtast venligst et validt tal",
@@ -95,7 +104,9 @@ $.jgrid.regional["dk"] = {
 	},
 	view : {
 	    caption: "View Record",
-	    bClose: "Close"
+	    bClose: "Close",
+		nextRow : "Click to view next row",
+		prevRow : "Click to view previous row"
 	},
 	del : {
 	    caption: "Slet",

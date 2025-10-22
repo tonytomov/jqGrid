@@ -49,7 +49,13 @@ $.jgrid.regional["vi"] = {
 		valT : "checked",
 		valF : "unchecked",
 		selectLine : "Select row",
-		selectAllLines : "Select all rows"
+		selectAllLines : "Select all rows",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
 	},
 	search : {
 		caption: "Tìm kiếm...",
@@ -78,6 +84,8 @@ $.jgrid.regional["vi"] = {
 		bYes : "Có",
 		bNo : "Không",
 		bExit : "Hủy bỏ",
+		nextRow : "Click to edit next row",
+		prevRow : "Click to edit previous row",
 		msg: {
 			required:"Trường dữ liệu bắt buộc có",
 			number:"Hãy điền đúng số",
@@ -96,7 +104,9 @@ $.jgrid.regional["vi"] = {
 	},
 	view : {
 		caption: "Xem bản ghi",
-		bClose: "Đóng"
+		bClose: "Đóng",
+		nextRow : "Click to view next row",
+		prevRow : "Click to view previous row"
 	},
 	del : {
 		caption: "Xóa",

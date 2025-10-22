@@ -49,7 +49,13 @@ $.jgrid.regional["ua"] = {
 		valT : "checked",
 		valF : "unchecked",
 		selectLine : "Select row",
-		selectAllLines : "Select all rows"
+		selectAllLines : "Select all rows",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
 	},
 	search : {
     caption: "Пошук...",
@@ -95,7 +101,9 @@ $.jgrid.regional["ua"] = {
 	},
 	view : {
 	    caption: "Переглянути запис",
-	    bClose: "Закрити"
+	    bClose: "Закрити",
+		nextRow : "Click to view next row",
+		prevRow : "Click to view previous row"
 	},
 	del : {
 	    caption: "Видалити",

@@ -49,7 +49,13 @@ $.jgrid.regional["ro"] = {
 		valT : "checked",
 		valF : "unchecked",
 		selectLine : "Select row",
-		selectAllLines : "Select all rows"
+		selectAllLines : "Select all rows",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
 	},
 	search : {
 		caption: "Caută...",
@@ -78,6 +84,8 @@ $.jgrid.regional["ro"] = {
 		bYes : "Da",
 		bNo : "Nu",
 		bExit : "Anulare",
+		nextRow : "Click to edit next row",
+		prevRow : "Click to edit previous row",
 		msg: {
 			required:"Câmpul este obligatoriu",
 			number:"Vă rugăm introduceți un număr valid",
@@ -95,7 +103,9 @@ $.jgrid.regional["ro"] = {
 	},
 	view : {
 		caption: "Vizualizare înregistrare",
-		bClose: "Închidere"
+		bClose: "Închidere",
+		nextRow : "Click to view next row",
+		prevRow : "Click to view previous row"
 	},
 	del : {
 		caption: "Ștegere",

@@ -49,7 +49,13 @@ $.jgrid.regional["sk"] = {
 		valT : "checked",
 		valF : "unchecked",
 		selectLine : "Select row",
-		selectAllLines : "Select all rows"
+		selectAllLines : "Select all rows",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
 	},
 	search : {
 		caption: "Vyhľadávam...",
@@ -78,6 +84,8 @@ $.jgrid.regional["sk"] = {
 		bYes : "Ano",
 		bNo : "Nie",
 		bExit : "Zrušiť",
+		nextRow : "Click to edit next row",
+		prevRow : "Click to edit previous row",
 		msg: {
 		    required:"Pole je požadované",
 		    number:"Prosím, vložte valídne číslo",
@@ -95,7 +103,9 @@ $.jgrid.regional["sk"] = {
 	},
 	view : {
 	    caption: "Zobraziť záznam",
-	    bClose: "Zavrieť"
+	    bClose: "Zavrieť",
+		nextRow : "Click to view next row",
+		prevRow : "Click to view previous row"
 	},
 	del : {
 		caption: "Zmazať",

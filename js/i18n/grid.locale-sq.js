@@ -41,7 +41,13 @@ $.jgrid.regional["sq"] = {
 		valT : "checked",
 		valF : "unchecked",
 		selectLine : "Select row",
-		selectAllLines : "Select all rows"
+		selectAllLines : "Select all rows",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
 	},
 	search : {
 		caption: "Kërko...",
@@ -70,6 +76,8 @@ $.jgrid.regional["sq"] = {
 		bYes : "Po",
 		bNo : "Jo",
 		bExit : "Anullo",
+		nextRow : "Click to edit next row",
+		prevRow : "Click to edit previous row",
 		msg: {
 			required:"Kjo fushe eshte e detyrueshme",
 			number:"Ju lutem, vendosni nje numer te vlefshem",
@@ -88,7 +96,9 @@ $.jgrid.regional["sq"] = {
 	},
 	view : {
 		caption: "Shfaq Rreshtin",
-		bClose: "Mbyll"
+		bClose: "Mbyll",
+		nextRow : "Click to view next row",
+		prevRow : "Click to view previous row"
 	},
 	del : {
 		caption: "Fshi",

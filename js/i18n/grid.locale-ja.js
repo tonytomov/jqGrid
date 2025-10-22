@@ -49,7 +49,13 @@ $.jgrid.regional["ja"] = {
 		valT : "checked",
 		valF : "unchecked",
 		selectLine : "Select row",
-		selectAllLines : "Select all rows"
+		selectAllLines : "Select all rows",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
 	},
 	search : {
 	    caption: "\u691c\u7d22...",
@@ -88,10 +94,12 @@ $.jgrid.regional["ja"] = {
 	    bSubmit: "\u9001\u4fe1",
 	    bCancel: "\u30ad\u30e3\u30f3\u30bb\u30eb",
   		bClose: "\u9589\u3058\u308b",
-      saveData: "\u30C7\u30FC\u30BF\u304C\u5909\u66F4\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u4FDD\u5B58\u3057\u307E\u3059\u304B\uFF1F",
-      bYes: "\u306F\u3044",
-      bNo: "\u3044\u3044\u3048",
-      bExit: "\u30AD\u30E3\u30F3\u30BB\u30EB",
+		saveData: "\u30C7\u30FC\u30BF\u304C\u5909\u66F4\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u4FDD\u5B58\u3057\u307E\u3059\u304B\uFF1F",
+		bYes: "\u306F\u3044",
+		bNo: "\u3044\u3044\u3048",
+		bExit: "\u30AD\u30E3\u30F3\u30BB\u30EB",
+		nextRow : "Click to edit next row",
+		prevRow : "Click to edit previous row",
 	    msg: {
 	        required:"\u3053\u306e\u9805\u76ee\u306f\u5fc5\u9808\u3067\u3059\u3002",
 	        number:"\u6b63\u3057\u3044\u6570\u5024\u3092\u5165\u529b\u3057\u3066\u4e0b\u3055\u3044\u3002",
@@ -108,8 +116,10 @@ $.jgrid.regional["ja"] = {
 		}
 	},
 	view : {
-      caption: "\u30EC\u30B3\u30FC\u30C9\u3092\u8868\u793A",
-      bClose: "\u9589\u3058\u308B"
+		caption: "\u30EC\u30B3\u30FC\u30C9\u3092\u8868\u793A",
+		bClose: "\u9589\u3058\u308B",
+		nextRow : "Click to view next row",
+		prevRow : "Click to view previous row"
 	},
 	del : {
 	    caption: "\u524a\u9664",

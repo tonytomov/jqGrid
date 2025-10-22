@@ -54,7 +54,13 @@ $.jgrid.regional["pl"] = {
 		valT : "checked",
 		valF : "unchecked",
 		selectLine : "Select row",
-		selectAllLines : "Select all rows"
+		selectAllLines : "Select all rows",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
 	},
 	search : {
 		caption: "Wyszukiwanie...",
@@ -83,6 +89,8 @@ $.jgrid.regional["pl"] = {
 		bYes: "Tak",
 		bNo: "Nie",
 		bExit: "Anuluj",
+		nextRow : "Click to edit next row",
+		prevRow : "Click to edit previous row",
 		msg: {
 			required: "Pole jest wymagane",
 			number: "Proszę wpisać poprawną liczbę",
@@ -100,7 +108,9 @@ $.jgrid.regional["pl"] = {
 	},
 	view : {
 		caption: "Pokaż rekord",
-		bClose: "Zamknij"
+		bClose: "Zamknij",
+		nextRow : "Click to view next row",
+		prevRow : "Click to view previous row"
 	},
 	del : {
 		caption: "Usuń",

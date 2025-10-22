@@ -49,7 +49,13 @@ $.jgrid.regional["id"] = {
 		valT : "checked",
 		valF : "unchecked",
 		selectLine : "Select row",
-		selectAllLines : "Select all rows"
+		selectAllLines : "Select all rows",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
 	},
 	search : {
 		caption: "Pencarian",
@@ -78,6 +84,8 @@ $.jgrid.regional["id"] = {
 		bYes : "Ya",
 		bNo : "Tidak",
 		bExit : "Tutup",
+		nextRow : "Click to edit next row",
+		prevRow : "Click to edit previous row",
 		msg: {
 			required:"kolom wajib diisi",
 			number:"hanya nomer yang diperbolehkan",
@@ -96,7 +104,9 @@ $.jgrid.regional["id"] = {
 	},
 	view : {
 		caption: "Menampilkan data",
-		bClose: "Tutup"
+		bClose: "Tutup",
+		nextRow : "Click to view next row",
+		prevRow : "Click to view previous row"
 	},
 	del : {
 		caption: "Hapus",

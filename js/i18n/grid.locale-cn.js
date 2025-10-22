@@ -52,7 +52,13 @@ $.jgrid.regional["cn"] = {
 		valT : "checked",
 		valF : "unchecked",
 		selectLine : "Select row",
-		selectAllLines : "Select all rows"
+		selectAllLines : "Select all rows",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
     },
     search : {
         caption: "搜索...",
@@ -81,6 +87,8 @@ $.jgrid.regional["cn"] = {
         bYes : "是",
         bNo : "否",
         bExit : "取消",
+		nextRow : "Click to edit next row",
+		prevRow : "Click to edit previous row",
         msg: {
             required:"此字段必需",
             number:"请输入有效数字",
@@ -98,8 +106,10 @@ $.jgrid.regional["cn"] = {
     },
     view : {
         caption: "查看记录",
-        bClose: "关闭"
-    },
+        bClose: "关闭",
+		nextRow : "Click to view next row",
+		prevRow : "Click to view previous row"
+	},
     del : {
         caption: "删除",
         msg: "删除所选记录？",

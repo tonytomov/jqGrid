@@ -60,7 +60,14 @@ $.jgrid.regional["de"] = {
 		nomorerecs : "Keine weiteren Datensätze...",
 		scrollPullup: "Ziehen Sie, um mehr zu laden...",
 		scrollPulldown : "Pulldown zu aktualisieren...",
-		scrollRefresh : "Lassen Sie zu aktualisieren..."
+		scrollRefresh : "Lassen Sie zu aktualisieren...",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
+
 	},
 	search : {
 		caption: "Suche...",
@@ -89,6 +96,8 @@ $.jgrid.regional["de"] = {
 		bYes : "ja",
 		bNo : "nein",
 		bExit : "abbrechen",
+		nextRow : "Click to edit next row",
+		prevRow : "Click to edit previous row",
 		msg: {
 			required:"Feld ist erforderlich",
 			number: "Bitte geben Sie eine Zahl ein",
@@ -106,7 +115,9 @@ $.jgrid.regional["de"] = {
 	},
 	view : {
 		caption: "Datensatz anzeigen",
-		bClose: "Schließen"
+		bClose: "Schließen",
+		nextRow : "Click to view next row",
+		prevRow : "Click to view previous row"
 	},
 	del : {
 		caption: "Löschen",

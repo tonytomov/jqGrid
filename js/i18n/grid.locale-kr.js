@@ -49,7 +49,13 @@ $.jgrid.regional["kr"] = {
 		valT : "checked",
 		valF : "unchecked",
 		selectLine : "Select row",
-		selectAllLines : "Select all rows"
+		selectAllLines : "Select all rows",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
 	},
 	search : {
 		caption: "검색...",
@@ -78,6 +84,8 @@ $.jgrid.regional["kr"] = {
 		bYes : "예",
 		bNo : "아니오",
 		bExit : "취소",
+		nextRow : "Click to edit next row",
+		prevRow : "Click to edit previous row",
 		msg: {
 			required:"필수항목입니다",
 			number:"유효한 번호를 입력해 주세요",
@@ -96,7 +104,9 @@ $.jgrid.regional["kr"] = {
 	},
 	view : {
 		caption: "행 조회",
-		bClose: "닫기"
+		bClose: "닫기",
+		nextRow : "Click to view next row",
+		prevRow : "Click to view previous row"
 	},
 	del : {
 		caption: "삭제",

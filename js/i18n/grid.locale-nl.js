@@ -43,7 +43,13 @@ $.jgrid.regional["nl"] = {
 			valT : "checked",
 			valF : "unchecked",
 			selectLine : "Select row",
-			selectAllLines : "Select all rows"
+			selectAllLines : "Select all rows",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
         },
         search:
         {
@@ -74,6 +80,8 @@ $.jgrid.regional["nl"] = {
             bYes: "Ja",
             bNo: "Nee",
             bExit: "Sluiten",
+			nextRow : "Click to edit next row",
+			prevRow : "Click to edit previous row",
             msg:
             {
                 required: "Veld is verplicht",
@@ -93,7 +101,9 @@ $.jgrid.regional["nl"] = {
         view:
         {
             caption: "Tonen",
-            bClose: "Sluiten"
+            bClose: "Sluiten",
+			nextRow : "Click to view next row",
+			prevRow : "Click to view previous row"
         },
         del:
         {

@@ -49,7 +49,13 @@ $.jgrid.regional["ar"] = {
 		valT : "checked",
 		valF : "unchecked",
 		selectLine : "Select row",
-		selectAllLines : "Select all rows"
+		selectAllLines : "Select all rows",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
 	},
 	search : {
 		caption: "بحث...",
@@ -78,6 +84,8 @@ $.jgrid.regional["ar"] = {
 		bYes: "نعم",
 		bNo: "لا",
 		bExit: "إلغاء",
+		nextRow : "Click to edit next row",
+		prevRow : "Click to edit previous row",
 		msg: {
 			required: "خانة إجبارية",
 			number: "سجل رقم صحيح",
@@ -94,7 +102,9 @@ $.jgrid.regional["ar"] = {
 	},
 	view : {
 		caption: "رأيت التسجيلات",
-		bClose: "غلق"
+		bClose: "غلق",
+		nextRow : "Click to view next row",
+		prevRow : "Click to view previous row"
 	},
 	del : {
 		caption: "حذف",

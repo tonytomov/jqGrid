@@ -49,7 +49,13 @@ $.jgrid.regional["he"] = {
 		valT : "מסומן",
 		valF : "אינה מסומנת",
 		selectLine : "בחר שורה",
-		selectAllLines : "בחר כל השורות"
+		selectAllLines : "בחר כל השורות",
+		searchCols : "Search on grid columns",
+		subGrid : "Click on Subgrid cell to expand/collapse row",
+		rowNumbers : "Row number information column",
+		subGridExpand : "Click to expand Subgrid",
+		subGridCollapse : "Click to collapse Subgrid",
+		valueCheckbox : "Checkbox"
 	},
 	search : {
 		caption: "מחפש...",
@@ -78,6 +84,8 @@ $.jgrid.regional["he"] = {
 		bYes : "כן",
 		bNo : "לא",
 		bExit : "בטל",
+		nextRow : "Click to edit next row",
+		prevRow : "Click to edit previous row",
 		msg: {
 			required:"שדה חובה",
 			number:"אנא, הכנס מספר תקין",
@@ -95,7 +103,9 @@ $.jgrid.regional["he"] = {
 	},
 	view : {
 		caption: "הצג רשומה",
-		bClose: "סגור"
+		bClose: "סגור",
+		nextRow : "Click to view next row",
+		prevRow : "Click to view previous row"
 	},
 	del : {
 		caption: "מחק",
