@@ -2286,19 +2286,16 @@ $.extend($.jgrid,{
 			}
 			var timer;
 
-			if($.inArray(e.key, ['Enter', 'Escape', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']) > -1) {
+			if($.inArray(e.key, ['Enter', 'Escape', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab']) > -1) {
 			var eee =  $.Event('keydown'), $t = this;
 
 			switch (e.key) {
 				case 'Enter' :
 					// select the row
-					var srow = $("#"+gID).jqGrid('getRowData',$("#"+gID)[0].p.selrow);
-					if(!$.isEmptyObject(srow)) {
-						$t.value = srow[opt.return_fld];
-						$("#"+dID).hide();
-					}
+					$("#"+gridId).jqGrid('setSelection', $("#"+gID)[0].p.selrow, true);
 					break;
 				case 'Escape' :
+				case 'Tab':
 					$("#"+dID).hide();
 					break;
 				case 'ArrowUp' :
@@ -2314,8 +2311,8 @@ $.extend($.jgrid,{
 			} else {
 				if(timer) { clearTimeout(timer); }
 				timer = setTimeout(function(){ 
-					$("#"+gID).jqGrid('filterInput', self.value, {defaultSearch: opt.defaultSearch || 'bw', selectFirstFound : true});
-				}, 100);
+					$("#"+gID).jqGrid('filterInput', self.value, {defaultSearch: opt.defaultSearch || 'bw', selectFirstFound : true, firstFoundTimeout : 100});
+				}, opt.timeout | 500);
 			}
 		});
 		if(opt.data) {
