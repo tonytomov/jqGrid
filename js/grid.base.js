@@ -3253,6 +3253,12 @@ $.fn.jqGrid = function( pin ) {
 			minColWidth : 33,
 			minGridWidth : 100,
 			maxGridWidth : 3000,
+			
+			vScroll : false,
+			scrollMaxCache : 25,
+			scrollRenderWin : 2,
+			scrollAvgRowHeight : 55,
+			
 			scroll: false,
 			scrollTimeout: 300,
 			scrollPopUp : false,
@@ -3323,7 +3329,8 @@ $.fn.jqGrid = function( pin ) {
 			p.data = localData;
 			pin.data = localData;
 		}
-		var ts= this, grid={
+		var ts= this, 
+		grid = {
 			headers:[],
 			cols:[],
 			footers: [],
@@ -3536,6 +3543,7 @@ $.fn.jqGrid = function( pin ) {
 			hScroll : false,
 			bScroll : false
 		};
+
 		if( this.tagName.toUpperCase() !== 'TABLE' || $.jgrid.isNull(this.id) ) {
 			alert("Element is not a table or has no id!");
 			return;
@@ -3754,6 +3762,11 @@ $.fn.jqGrid = function( pin ) {
 					this.grid.bDiv.scrollTop = 0;
 				}
 			}
+			if(scroll && this.p.vScroll) {
+				if (this.grid.bDiv.scrollTop !== 0) {
+					this.grid.bDiv.scrollTop = 0;
+				}				
+			}
 			if(locdata === true ) { //&& this.p.treeGrid && !this.p.loadonce ) {
 				this.p.data = []; 
 				this.p._index = {};
@@ -3765,7 +3778,7 @@ $.fn.jqGrid = function( pin ) {
 			colModel = p.colModel,
 			cellName = localReader.cell,
 			iOffset = (p.multiselect === true ? 1 : 0) + (p.subGrid === true ? 1 : 0) + (p.rownumbers === true ? 1 : 0) + (p.searchCols === true ? 1 : 0),
-			br = p.scroll ? $.jgrid.randId() : 1,
+			br = p.scroll || p.vScroll ? $.jgrid.randId() : 1,
 			arrayReader, objectReader, rowReader;
 
 			if (p.datatype !== "local" || localReader.repeatitems !== true) {
@@ -3851,7 +3864,7 @@ $.fn.jqGrid = function( pin ) {
 					classes += ' ' + rowAttrObj['class'];
 					delete rowAttrObj['class'];
 				}
-				// dot't allow to change role attribute
+				// don't allow to change role attribute
 				try { delete rowAttrObj.role; } catch(ra){}
 				for (attrName in rowAttrObj) {
 					if (rowAttrObj.hasOwnProperty(attrName)) {
@@ -3926,7 +3939,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			ts.p.reccount = 0;
 			if($.isXMLDoc(xml)) {
-				if(ts.p.treeANode===-1 && !ts.p.scroll) {
+				if(ts.p.treeANode===-1 && (!ts.p.scroll || !ts.p.vScroll) ) {
 					emptyRows.call(ts, false, false);
 					rcnt=1;
 				} else { rcnt = rcnt > 1 ? rcnt :1; }
@@ -3971,7 +3984,7 @@ $.fn.jqGrid = function( pin ) {
 			var gxml = $.jgrid.getXmlData( xml, xmlRd.root, true);
 			gxml = $.jgrid.getXmlData( gxml, xmlRd.row, true);
 			if (!gxml) { gxml = []; }
-			var gl = gxml.length, j=0, grpdata=[], rn = parseInt(ts.p.rowNum,10), br=ts.p.scroll?$.jgrid.randId():1,
+			var gl = gxml.length, j=0, grpdata=[], rn = parseInt(ts.p.rowNum,10), br=(ts.p.scroll || ts.p.vScroll) ?$.jgrid.randId():1,
 				tablebody = $(ts).find("tbody").first(),
 				hiderow=false, groupingPrepare, selr;
 			if(ts.p.grouping)  {
@@ -4146,7 +4159,7 @@ $.fn.jqGrid = function( pin ) {
 		addJSONData = function(data, rcnt, more, adjust) {
 			var startReq = new Date();
 			if(data) {
-				if(ts.p.treeANode === -1 && !ts.p.scroll) {
+				if(ts.p.treeANode === -1 && (!ts.p.scroll || !ts.p.vScroll) ) {
 					emptyRows.call(ts, false, false);
 					rcnt=1;
 				} else { rcnt = rcnt > 1 ? rcnt :1; }
@@ -4169,7 +4182,7 @@ $.fn.jqGrid = function( pin ) {
 				si = ts.p.subGrid ===true ? 1 : 0,
 				ni = ts.p.rownumbers ===true ? 1 : 0,
 				sc = ts.p.searchCols ===true ? 1 : 0,
-				br = (ts.p.scroll && ts.p.datatype !== 'local') ? $.jgrid.randId() : 1,
+				br = ((ts.p.scroll || ts.p.vScroll) && ts.p.datatype !== 'local') ? $.jgrid.randId() : 1,
 				rn = parseInt(ts.p.rowNum,10),
 				selected=false, selr,
 				arrayReader=orderedCols(gi+si+ni+sc),
@@ -4824,23 +4837,25 @@ $.fn.jqGrid = function( pin ) {
 			if(base < 0) { base = 0; }
 			base = base*parseInt(ts.p.rowNum,10);
 			to = base + ts.p.reccount;
-			if (ts.p.scroll) {
+			if (ts.p.scroll || ts.p.vScroll) {
 				var rows = $("tbody", ts.grid.bDiv).first().find("> tr").slice( 1 );
 				if(to > ts.p.records) {
 					to = ts.p.records;
 				}
 				base = to - rows.length;
 				ts.p.reccount = rows.length;
-				var rh = rows.outerHeight() || ts.grid.prevRowHeight;
-				if (rh) {
-					var top = base * rh;
-					var height = parseInt(ts.p.records,10) * rh;
-					$(ts.grid.bDiv).find(">div").first().css({height : height}).children("div").first().css({height:top,display:top?"":"none"});
-					if (ts.grid.bDiv.scrollTop === 0 && ts.p.page > 1) {
-						ts.grid.bDiv.scrollTop = ts.p.rowNum * (ts.p.page - 1) * rh;
+				if(ts.p.scroll) { // old behaviour
+					var rh = rows.outerHeight() || ts.grid.prevRowHeight;
+					if (rh) {
+						var top = base * rh;
+						var height = parseInt(ts.p.records,10) * rh;
+						$(ts.grid.bDiv).find(">div").first().css({height : height}).children("div").first().css({height:top,display:top?"":"none"});
+						if (ts.grid.bDiv.scrollTop === 0 && ts.p.page > 1) {
+							ts.grid.bDiv.scrollTop = ts.p.rowNum * (ts.p.page - 1) * rh;
+						}
 					}
+					ts.grid.bDiv.scrollLeft = ts.grid.hDiv.scrollLeft;
 				}
-				ts.grid.bDiv.scrollLeft = ts.grid.hDiv.scrollLeft;
 			}
 			pgboxes = ts.p.pager || "";
 			pgboxes += ts.p.toppager ?  (pgboxes ? "," + ts.p.toppager : ts.p.toppager) : "";
@@ -4942,7 +4957,7 @@ $.fn.jqGrid = function( pin ) {
 				prm = {}, dt, dstr, pN=ts.p.prmNames;
 				spsh = 0;
 				if(ts.p.page <=0) { ts.p.page = Math.min(1,ts.p.lastpage); }
-				if( !$.jgrid.isNull(pN.search, true) ) {prm[pN.search] = ts.p.search;}
+				if(!$.jgrid.isNull(pN.search, true) ) {prm[pN.search] = ts.p.search;}
 				if(!$.jgrid.isNull(pN.nd, true) ) {prm[pN.nd] = new Date().getTime();}
 				if(!$.jgrid.isNull(pN.rows, true) ) {prm[pN.rows]= ts.p.rowNum;}
 				if(!$.jgrid.isNull(pN.page, true) ) {prm[pN.page]= ts.p.page;}
@@ -4998,7 +5013,7 @@ $.fn.jqGrid = function( pin ) {
 					*/
 				}
 				$.extend(ts.p.postData,prm);
-				var rcnt = !ts.p.scroll ? 1 : ts.rows.length-1;
+				var rcnt = (!ts.p.scroll || !ts.p.vScroll) ? 1 : ts.rows.length-1;
 				if ($.jgrid.isFunction(ts.p.datatype)) {
 					ts.p.datatype.call(ts,ts.p.postData,"load_"+ts.p.id, rcnt, npage, adjust);
 					return;
@@ -5467,7 +5482,7 @@ $.fn.jqGrid = function( pin ) {
 				}
 				ts.p.savedRow =[];
 			}
-			if(ts.p.scroll) {
+			if(ts.p.scroll || ts.p.vScroll) {
 				var sscroll = ts.grid.bDiv.scrollLeft;
 				emptyRows.call(ts, true, false);
 				ts.grid.hDiv.scrollLeft = sscroll;
@@ -5478,7 +5493,12 @@ $.fn.jqGrid = function( pin ) {
 				});
 			}
 			ts.p._sort = true;
-			populate();
+			if(ts.p.vScroll) {
+				vGrid.reset();
+				vGrid.update();
+			} else {
+				populate();
+			}
 			ts.p.lastsort = idxcol;
 			if(ts.p.sortname !== index && idxcol) {ts.p.lastsort = idxcol;}
 		},
@@ -6212,6 +6232,7 @@ $.fn.jqGrid = function( pin ) {
 		
 		if(ts.p.grouping===true) {
 			ts.p.scroll = false;
+			ts.p.vScroll = false;
 			//ts.p.rownumbers = false;
 			//ts.p.subGrid = false; expiremental
 			ts.p.treeGrid = false;
@@ -6277,7 +6298,7 @@ $.fn.jqGrid = function( pin ) {
 			userdata: "userdata",
 			subgrid: {root:"rows", repeatitems: true, cell:"cell"}
 		},ts.p.localReader);
-		if(ts.p.scroll){
+		if(ts.p.scroll || ts.p.vScroll){
 			ts.p.pgbuttons = false; ts.p.pginput=false; ts.p.rowList=[];
 		}
 		if(ts.p.data.length) {
@@ -6439,7 +6460,7 @@ $.fn.jqGrid = function( pin ) {
 			trhead += "<table role='presentation' style='width:"+ts.p.tblwidth+"px' "+getstyle(stylemodule,'headerRowTable', false, 'ui-jqgrid-hrtable ui-common-table')+ "><tbody><tr role='row' "+getstyle(stylemodule,'headerRowBox', false, 'hrheadrow hrheadrow-'+dir)+">"; 
 		}
 		var thr = $(thead).find("tr").first(),
-		firstr = "<tr class='jqgfirstrow "+ (ts.p.direction === "rtl"? "ui-row-rtl'" :"'") +" role='row'>",
+		firstr = "<tr class='jqgfirstrow"+ (ts.p.direction === "rtl"? " ui-row-rtl'" :"'") +" role='row'>",
 		clicks =0,
 		// header font for full autosize
 		hdr_font = $.jgrid.getFont( $("th",thr).first()[0] );
@@ -6468,7 +6489,7 @@ $.fn.jqGrid = function( pin ) {
 			if(tmpcm.labelClasses) {
 				clcol = "class='"+tmpcm.labelClasses+"'";
 			}
-			firstr += "<td "+clcol+" role='gridcell' style='height:0px;width:"+w+"px;"+hdcol+"'></td>";
+			firstr += "<td "+clcol+" role='gridcell' style='height:0px;width:"+w+"px;"+hdcol+"' aria-describedby='"+ts.id+"_"+tmpcm.name+"'></td>";
 			grid.headers[j] = { width: w, el: this };
 			sort = tmpcm.sortable;
 			if( typeof sort !== 'boolean') {
@@ -6801,7 +6822,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 					ts.p.savedRow = [];
 				}
-				if(ts.p.scroll) {
+				if(ts.p.scroll || ts.p.vScroll) {
 					emptyRows.call(ts, true, false);
 				}
 				if (opts.page) {
@@ -6861,11 +6882,20 @@ $.fn.jqGrid = function( pin ) {
 		//---
 		grid.bDiv = document.createElement("div");
 		if(isMSIE) { if(String(ts.p.height).toLowerCase() === "auto") { ts.p.height = "100%"; } }
-		$(grid.bDiv)
+		if(ts.p.vScroll) {
+			$(grid.bDiv)
+				.append('<div class="scroll-canvas"></div>').append($("<div class='visible-wrapper'></div>").append(this) )
+				.addClass("ui-jqgrid-bdiv")
+				.css({ height: ts.p.height+(isNaN(ts.p.height)?"":"px"), width: (grid.width - bstw)+"px"});
+				//.on("scroll", grid.scrollGrid);
+			$('tbody',this).addClass('visible-items');
+		} else {
+			$(grid.bDiv)
 			.append($('<div style="position:relative;"></div>').append('<div></div>').append(this))
 			.addClass("ui-jqgrid-bdiv")
 			.css({ height: ts.p.height+(isNaN(ts.p.height)?"":"px"), width: (grid.width - bstw)+"px"})
 			.on("scroll", grid.scrollGrid);
+		}
 		$(grid.bDiv).find("table").first().css({width:ts.p.tblwidth+"px"});
 		if( !$.support.tbody ) { //IE
 			if( $("tbody",this).length === 2 ) { $("tbody",this).slice( 1 ).remove();}
@@ -7087,28 +7117,517 @@ $.fn.jqGrid = function( pin ) {
 		ts.formatter = function ( rowId, cellval , colpos, rwdat, act){return formatter(rowId, cellval , colpos, rwdat, act);};
 		$.extend(grid,{populate : populate, emptyRows: emptyRows, beginReq: beginReq, endReq: endReq});
 		this.grid = grid;
-		ts.addXmlData = function(d) {addXmlData( d );};
-		ts.addJSONData = function(d) {addJSONData( d );};
+		ts.addXmlData = function(a,b,c,d) {addXmlData( a,b,c,d );};
+		ts.addJSONData = function(a,b,c,d) {addJSONData( a,b,c,d );};
 		ts.addLocalData = function(d) { return addLocalData( d );};
 		ts.addIndexedDBData = function(d) { return addIndexedDBData( d );};
 		ts.treeGrid_beforeRequest = function() { treeGrid_beforeRequest(); }; //bvn13
 		ts.treeGrid_afterLoadComplete = function() {treeGrid_afterLoadComplete(); };
 		this.grid.cols = this.rows[0].cells;
 		if ($.jgrid.isFunction( ts.p.onInitGrid )) { ts.p.onInitGrid.call(ts); }
+  
+		const createAdaptiveFetchData = () => {
+			let lastRequestTime = 0;
+			let requestHistory = [];
+			// Future work
+			let scrollState = {
+				isFast: false,
+				velocity: 0,
+				lastUpdate: 0
+			};
+
+			// The actual fetch function
+			const fetchImplementation = async (page, size) => {
+				const requestStart = performance.now();
+
+				// 1. CALCULATE ADAPTIVE DELAY
+				let adaptiveDelay = 0;
+
+				// Check if scroll state is recent
+				//const isRecentScrollState = (performance.now() - scrollState.lastUpdate) < 500;
+				//const currentIsFast = isRecentScrollState ? scrollState.isFast : false;
+
+				if (requestHistory.length > 0) {
+					const recentRequests = requestHistory.slice(-3);
+					var avgResponseTime = recentRequests.reduce((sum, r) => sum + r.duration, 0) / recentRequests.length;
+					//console.log(requestHistory, "avgResponseTime")
+					if (avgResponseTime < 200) {
+						adaptiveDelay = 250; // fast server
+					} else if (avgResponseTime < 300) {
+						adaptiveDelay = 150;  // moderate server
+					}
+				}
+
+				// 2. ENFORCE MINIMUM TIME BETWEEN REQUESTS
+				const timeSinceLastRequest = requestStart - lastRequestTime;
+				const minRequestGap = 150;
+				const gapDelay = Math.max(0, minRequestGap - timeSinceLastRequest);
+
+				// 3. APPLY DELAY
+				const totalDelay = Math.max(adaptiveDelay, gapDelay);
+				if (totalDelay > 0) {
+					await new Promise(resolve => setTimeout(resolve, totalDelay));
+				}
+
+				// 4. MAKE ACTUAL REQUEST (simulated)
+				console.log(`Fetching page ${page} (delay: ${totalDelay}ms)`);
+
+				// Simulated server request - REPLACE WITH YOUR ACTUAL API CALL
+				const response = await mockServerRequest(page, size);
+
+				// 5. TRACK PERFORMANCE
+				const totalDuration = performance.now() - requestStart;
+				requestHistory.push({
+					page,
+					duration: totalDuration,
+					timestamp: requestStart,
+					delayUsed: totalDelay
+				});
+
+				if (requestHistory.length > 10)
+					requestHistory.shift();
+				lastRequestTime = performance.now();
+
+				return response;
+			};
+
+			// Add method to update scroll state
+			fetchImplementation.updateScrollState = (isFast, velocity = 0) => {
+				scrollState.isFast = isFast;
+				scrollState.velocity = velocity;
+				scrollState.lastUpdate = performance.now();
+			};
+
+			return fetchImplementation;
+		};
+
+        //Mock server function
+		async function mockServerRequest(page, size) {
+			// Not any events before and after request
+			var prm = {}, pN = ts.p.prmNames;
+			if (ts.p.page <= 0) {
+				ts.p.page = Math.min(1, ts.p.lastpage);
+			}
+			if (!$.jgrid.isNull(pN.search, true)) {
+				prm[pN.search] = ts.p.search;
+			}
+			if (!$.jgrid.isNull(pN.nd, true)) {
+				prm[pN.nd] = new Date().getTime();
+			}
+			if (!$.jgrid.isNull(pN.rows, true)) {
+				prm[pN.rows] = size;
+			}
+			if (!$.jgrid.isNull(pN.page, true)) {
+				prm[pN.page] = page + 1;
+			}
+			if (!$.jgrid.isNull(pN.sort, true)) {
+				prm[pN.sort] = ts.p.sortname;
+			}
+			if (!$.jgrid.isNull(pN.order, true)) {
+				prm[pN.order] = ts.p.sortorder;
+			}
+			if (!$.jgrid.isNull(ts.p.rowTotal, true) && !$.jgrid.isNull(pN.totalrows, true)) {
+				prm[pN.totalrows] = ts.p.rowTotal;
+			}
+			$.extend(ts.p.postData, prm);
+
+			let options = {
+				method: 'GET',
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json;charset=UTF-8'
+				}
+			};
+			let conc = '?';
+			if (ts.p.url.indexOf('?') !== -1) {
+				conc = '&';
+			}
+			const params = jQuery.jgrid.isFunction(ts.p.serializeGridData) ? ts.p.serializeGridData.call(ts, ts.p.postData) : ts.p.postData;
+			let url = `${ts.p.url}${conc}${new URLSearchParams(params)}`;
+
+			if (ts.p.mtype.toLowerCase() === "post") {
+				options.body = JSON.stringify(params);
+				options.method = 'POST';
+				url = ts.p.url;
+			}
+			try {
+
+				const response = await fetch(url, options);
+				if (!response.ok) {
+					throw new Error(`Response status: ${response.status}`);
+				}
+				const result = await response.json();
+				return {
+					total: result.records,
+					rows: result.rows
+				};
+			} catch (error) {
+				console.error("Virtualizer error: ", error.message);
+			}
+		}
+
+		class jqGridVirtualizer {
+			constructor(options) {
+
+				// DOM Elements
+				this.jqGridId = options.grid; // string the grid id
+				this.el = this.jqGridId.closest(".ui-jqgrid-bdiv"); //options.el 
+				this.canvas = this.el.querySelector('.scroll-canvas');
+				this.wrapper = this.el.querySelector('.visible-wrapper');
+				this.tbody = this.el.querySelector('.visible-items');
+				this.measureEl = null;//document.getElementById('measurement-div');
+				//this.statusEl = document.getElementById('status');
+
+				// Config		
+				this.renderWindow = options.renderWindow || 3;
+				this.maxCache = options.maxCache || 25;
+				this.averageRowHeight = 60;
+				// these are predefined from grid
+				this.fetchData = options.fetchData;
+				this.pageSize = options.pageSize || 20;
+
+				//State
+				this.rowCount = 0;
+				this.pageCache = [];
+				this.dataCache = new Map();//{};
+				this.heightCache = {};
+				this.fetchedPages = new Set();
+				this.loading = false;
+				this.initialized = false;
+				this.lastStartPage = -1;
+				this.rafId = null;
+
+				// Fast scroll properties
+				this.fastScrollMode = false;
+				this.scrollVelocity = 0;
+				this.lastScrollUpdate = 0;
+
+
+				this.init();
+			}
+			init() {
+				// In init():
+				this.measureTable = document.createElement('table');
+				this.measureTable.className = this.jqGridId.classList.value;
+				this.measureTbody = document.createElement('tbody');
+				this.measureTable.appendChild(this.measureTbody);
+
+				this.measurediv = document.createElement('div');
+				this.measurediv.id = "virtual-mes";
+				this.measurediv.className = 'ui-jqgrid';
+				document.body.appendChild(this.measurediv);
+
+				this.measureEl = document.createElement('div');
+				this.measureEl.id = "measurement-div";
+				this.measureEl.className = 'ui-jqgrid-bdiv';
+				this.measurediv.appendChild(this.measureEl);
+
+				this.measureEl.appendChild(this.measureTable);
+
+				// unbind the scroll
+				// this.el.removeEventListener('scroll', this.jqGridId.grid.scrollGrid);
+				this.el.addEventListener('scroll', () => {
+					// rebind
+					this.scrollGrid();
+					const now = Date.now();
+
+					// Update scroll velocity
+
+					if (this.rafId)
+						cancelAnimationFrame(this.rafId);
+					this.rafId = requestAnimationFrame(() => this.update());
+					this.lastScrollUpdate = now;
+				});
+
+				window.addEventListener('resize', () => {
+					// Recalculate heights on resize since table widths change
+					this.heightCache = {};
+					//this.update();
+					this.measureEl.style.width = this.el.clientWidth + 'px'; // Update immediately
+					// Re-measure visible rows
+					if (this.lastStartPage >= 0) {
+						this.measure(
+								this.getStartRow(this.lastStartPage),
+								this.getEndRow(this.lastStartPage + this.renderWindow - 1)
+								);
+						this.render(this.lastStartPage, this.lastStartPage + this.renderWindow);
+					}
+				});
+				this.update();
+			}
+
+			getStartRow(p) {
+				return p * this.pageSize;
+			}
+			getEndRow(p) {
+				return Math.min((p + 1) * this.pageSize, this.rowCount);
+			}
+			reset() {
+				this.pageCache = [];
+				this.dataCache.clear();// {};
+				this.heightCache = {};
+				this.fetchedPages.clear();
+				this.wrapper.style.transform = `translateY(${0}px)`;
+				this.canvas.style.height = `${0}px`;
+				this.initialized = false;
+				this.lastStartPage = -1;
+			}
+			scrollGrid() {
+				let grid = this.jqGridId.grid;
+				let p = this.jqGridId.p;
+				if (!grid.bScroll) {
+					grid.hScroll = true;
+
+					grid.hDiv.scrollLeft = grid.bDiv.scrollLeft;
+					if (p.footerrow) {
+						grid.sDiv.scrollLeft = grid.bDiv.scrollLeft;
+					}
+					if (p.headerrow) {
+						grid.hrDiv.scrollLeft = grid.bDiv.scrollLeft;
+					}
+					try {
+						jQuery("#column_menu").remove();
+					} catch (e) {
+					}
+
+				}
+				grid.bScroll = false;
+			}
+			async update() {
+				this.rafId = null;
+
+				if (!this.initialized) {
+					if (!this.loading)
+						await this.triggerLoad(0);
+					return;
+				}
+
+				const st = this.el.scrollTop;
+				let visiblePageId = this.findPageByScrollTop(st);
+
+				let startP = Math.max(0, Math.min(visiblePageId, this.pageCache.length - this.renderWindow));
+				const endP = Math.min(startP + this.renderWindow, this.pageCache.length);
+
+				for (let p = startP; p < endP; p++) {
+					if (!this.fetchedPages.has(p)) {
+						if (!this.loading)
+							await this.triggerLoad(p);
+						return;
+					}
+				}
+
+				this.clearOldCache(startP);
+				this.measure(this.getStartRow(startP), this.getEndRow(endP - 1));
+
+				if (startP === this.lastStartPage && this.isFullyMeasured(startP, endP))
+					return;
+
+				this.lastStartPage = startP;
+				this.render(startP, endP);
+
+			}
+
+			findPageByScrollTop(st) {
+				let left = 0, right = this.pageCache.length - 1;
+				while (left <= right) {
+					const mid = Math.floor((left + right) / 2);
+					if (this.pageCache[mid].top <= st) {
+						if (mid === this.pageCache.length - 1 || this.pageCache[mid + 1].top > st) {
+							return mid;
+						}
+						left = mid + 1;
+					} else {
+						right = mid - 1;
+					}
+				}
+				return 0;
+			}
+			async triggerLoad(pageId) {
+				//if (this.loading || this.fetchedPages.has(pageId)) return;
+				this.loading = true;
+
+				//this.loading = true;
+				//this.statusEl.textContent = `Fetching Page ${pageId + 1}...`;
+				let ts = this.jqGridId,
+						pgboxes = ts.p.pager || "";
+				pgboxes += ts.p.toppager ? (pgboxes ? "," + ts.p.toppager : ts.p.toppager) : "";
+				$(".ui-paging-info", pgboxes).html(`Fetching Page ${pageId + 1}...`);
+
+				const response = await this.fetchData(pageId, this.pageSize);
+
+				if (!this.initialized)
+					this.setup(response.total);
+
+				response.rows.forEach((row, i) => {
+					this.dataCache.set(this.getStartRow(pageId) + i, row);
+				});
+
+				this.fetchedPages.add(pageId);
+				this.loading = false;
+				this.update();
+			}
+
+			setup(total) {
+				this.rowCount = total;
+				let top = 0;
+				const pageCount = Math.ceil(total / this.pageSize);
+				for (let p = 0; p < pageCount; p++) {
+					const h = (this.getEndRow(p) - this.getStartRow(p)) * this.averageRowHeight;
+					this.pageCache.push({top, height: h, estimated: true});
+					top += h;
+				}
+				this.canvas.style.height = `${top}px`;
+				this.initialized = true;
+			}
+
+			measure(start, end) {
+				const toMeasure = [];
+				for (let i = start; i < end; i++) {
+					if (this.dataCache.get(i) && !(i in this.heightCache))
+						toMeasure.push(i);
+				}
+				if (toMeasure.length === 0)
+					return;
+				// Store which row is currently at top of viewport
+				const scrollTop = this.el.scrollTop;
+				let currentVisibleRow = 0;
+				let accumulated = 0;
+				for (let i = 0; i < this.rowCount; i++) {
+					accumulated += this.heightCache[i] || this.averageRowHeight;
+					if (accumulated > scrollTop) {
+						currentVisibleRow = i;
+						break;
+					}
+				}
+
+				// SYNC: Ensure measurement container matches the scrolling container width
+				const containerWidth = this.el.clientWidth;
+				this.measureEl.style.width = containerWidth + 'px';
+				this.measureTbody.innerHTML = ''; // Clear, don't recreate
+
+				let str = this.jqGridId.rows[0].outerHTML,
+						cm = this.jqGridId.p.colModel;
+				toMeasure.forEach(i => {
+					const row = this.dataCache.get(i);
+					str += "<tr class='jqgrow ui-row-ltr'>";
+					for (let j = 0; j < cm.length; j++) {
+
+						if (row[cm[j].name]) {
+							str += `<td>${row[cm[j].name]}</td>`;
+						} else {
+							str += `<td>${'&nbsp;'}</td>`;
+						}
+					}
+					str += "</tr>";
+				});
+
+				this.measureTbody.innerHTML = str; //this.measureTbody
+				const rows = this.measureTable.querySelectorAll('tr');
+				toMeasure.forEach((idx, i) => {
+					this.heightCache[idx] = rows[i].offsetHeight;
+				});
+				//this.measureEl.innerHTML = '';
+
+				// Reflow the page cache tops based on new heights
+				let currentTop = 0;
+				this.pageCache.forEach((page, p) => {
+					let pageH = 0;
+					for (let r = this.getStartRow(p); r < this.getEndRow(p); r++) {
+						pageH += this.heightCache[r] || this.averageRowHeight;
+					}
+					page.top = currentTop;
+					page.height = pageH;
+					currentTop += pageH;
+				});
+				//////////////////////////////
+				let newPosition = 0;
+				for (let i = 0; i < currentVisibleRow; i++) {
+					newPosition += this.heightCache[i] || this.averageRowHeight;
+				}
+
+				// Only adjust if significantly different
+				if (Math.abs(newPosition - scrollTop) > 5 && end !== this.rowCount) {
+					requestAnimationFrame(() => {
+						this.el.scrollTop = newPosition;
+						this.update(); // Re-render at new position
+					});
+				}
+
+				this.canvas.style.height = `${currentTop}px`;
+			}
+
+			isFullyMeasured(startP, endP) {
+				for (let i = this.getStartRow(startP); i < this.getEndRow(endP - 1); i++) {
+					if (!(i in this.heightCache))
+						return false;
+				}
+				return true;
+			}
+
+			render(startP, endP) {
+				this.wrapper.setAttribute('aria-rowindex', this.getStartRow(startP) + 1);
+				this.wrapper.setAttribute('aria-rowcount', this.rowCount);
+				this.wrapper.style.transform = `translateY(${this.pageCache[startP].top}px)`;
+
+				let ts = this.jqGridId;
+				let retresult = [];
+				retresult[ts.p.localReader.root] = [];
+				for (let i = this.getStartRow(startP); i < this.getEndRow(endP - 1); i++) {
+					const item = this.dataCache.get(i);
+					if (!item)
+						continue;
+					retresult[ts.p.localReader.root].push(item);
+				}
+				retresult[ts.p.localReader.total] = Math.ceil(this.rowCount / this.pageSize);
+				retresult[ts.p.localReader.page] = startP + 1;
+				retresult[ts.p.localReader.records] = this.rowCount;
+				ts.addJSONData(retresult, 1, false, endP - startP);
+
+				//this.statusEl.textContent = `Showing ${this.getStartRow(startP) + 1}-${this.getEndRow(endP - 1)} of ${this.rowCount.toLocaleString()} Data Cache Size: ${this.dataCache.size}`;
+			}
+
+			// Your clearOldCache is good but consider:
+			clearOldCache(currentStart) {
+				if (this.fetchedPages.size <= this.maxCache)
+					return;
+				const sorted = Array.from(this.fetchedPages).sort((a, b) => Math.abs(currentStart - a) - Math.abs(currentStart - b));
+				sorted.slice(this.maxCache).forEach(p => {
+					for (let i = this.getStartRow(p); i < this.getEndRow(p); i++) {
+						this.dataCache.delete(i);
+						delete this.heightCache[i];
+					}
+					this.fetchedPages.delete(p);
+				});
+			}
+
+		}
 		$(ts).triggerHandler("jqGridInitGrid");
+		if (ts.p.vScroll) {
+			var vGrid = new jqGridVirtualizer({
+				grid: document.getElementById($.jgrid.jqID(ts.p.id)),
+				pageSize: ts.p.rowNum,
+				renderWindow: ts.p.scrollRenderWin,
+				maxCache: ts.p.scrollMaxCache,
+				averageRowHeight: ts.p.scrollAvgRowHeight,
+				fetchData: createAdaptiveFetchData()
+			});
+
+		} else {
 		populate();
-		ts.p.hiddengrid=false;
-		if(ts.p.responsive) {
+		}
+		ts.p.hiddengrid = false;
+		if (ts.p.responsive) {
 			var supportsOrientationChange = "onorientationchange" in window,
 			orientationEvent = supportsOrientationChange ? "orientationchange" : "resize";
-			$(window).on( orientationEvent, function(){
-				if($.jgrid.isVisible(ts)) {
-					$(ts).jqGrid('resizeGrid', 500, true, ts.p.resizeHeight,true);
+			$(window).on(orientationEvent, function () {
+				if ($.jgrid.isVisible(ts)) {
+					$(ts).jqGrid('resizeGrid', 500, true, ts.p.resizeHeight, true);
 				}
 			});
 		}
 	});
 };
+
 $.jgrid.extend({
 	getGridParam : function(name, grid_module) {
 		var $t = this[0], ret;

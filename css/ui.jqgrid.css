@@ -65,7 +65,16 @@
 .ui-jqgrid tr.ui-search-toolbar td input { padding-right: 0px; width: 95%;}
 .ui-jqgrid tr.ui-search-toolbar select {}
 /* body */ 
-.ui-jqgrid .ui-jqgrid-bdiv {position: relative; margin: 0; padding:0; overflow: auto; text-align:left;z-index: 101;}
+.ui-jqgrid .ui-jqgrid-bdiv { 
+	position: relative; 
+	margin: 0; 
+	padding:0; 
+	overflow: auto; 
+	text-align:left;
+	z-index: 101;
+	-webkit-overflow-scrolling: touch; /* Better mobile */
+	transform: translateZ(0); /* GPU acceleration */		
+}
 .ui-jqgrid .ui-jqgrid-btable {table-layout:fixed; margin:0; outline-style: none; border-collapse: separate;}
 .ui-jqgrid tr.jqgrow,
 .ui-jqgrid tr.jqgroup 
@@ -723,4 +732,25 @@ td.menu_text {
 	box-shadow :none !important;
 	border-right-width: 0px !important;
 	overflow: visible !important;
+}
+.visible-wrapper {
+	position : absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	will-change: transform;
+	backface-visibility: hidden;
+}
+#measurement-div { 
+	position: absolute;
+	visibility: hidden;
+	height: auto;
+	top: 0px;
+	left: 10000px;
+	pointer-events: none;
+	z-index: -1;
+	overflow: hidden;
+}
+#virtual-mes {
+	border: 0px none !important;
 }
