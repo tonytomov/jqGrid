@@ -7256,11 +7256,8 @@ $.fn.jqGrid = function( pin ) {
 				if (!response.ok) {
 					throw new Error(`Response status: ${response.status}`);
 				}
-				const result = await response.json();
-				return {
-					total: result.records,
-					rows: result.rows
-				};
+				return  await response.json();
+				
 			} catch (error) {
 				console.error("Virtualizer error: ", error.message);
 			}
@@ -7301,7 +7298,7 @@ $.fn.jqGrid = function( pin ) {
 				this.fastScrollMode = false;
 				this.scrollVelocity = 0;
 				this.lastScrollUpdate = 0;
-
+				this.restresponse = {};
 
 				this.init();
 			}
@@ -7456,7 +7453,7 @@ $.fn.jqGrid = function( pin ) {
 				const response = await this.fetchData(pageId, this.pageSize);
 
 				if (!this.initialized)
-					this.setup(response.total);
+					this.setup(response.records);
 
 				response.rows.forEach((row, i) => {
 					this.dataCache.set(this.getStartRow(pageId) + i, row);
@@ -7465,6 +7462,11 @@ $.fn.jqGrid = function( pin ) {
 				this.fetchedPages.add(pageId);
 				this.loading = false;
 				this.update();
+				this.restresponse = {
+					page : response.page,
+					total: response.total,
+					userdata: response.userdata || {}
+				};
 			}
 
 			setup(total) {
@@ -7581,6 +7583,8 @@ $.fn.jqGrid = function( pin ) {
 				retresult[ts.p.localReader.total] = Math.ceil(this.rowCount / this.pageSize);
 				retresult[ts.p.localReader.page] = startP + 1;
 				retresult[ts.p.localReader.records] = this.rowCount;
+				retresult[ts.p.localReader.userdata] = this.restresponse.userdata;
+				
 				ts.addJSONData(retresult, 1, false, endP - startP);
 
 				//this.statusEl.textContent = `Showing ${this.getStartRow(startP) + 1}-${this.getEndRow(endP - 1)} of ${this.rowCount.toLocaleString()} Data Cache Size: ${this.dataCache.size}`;
