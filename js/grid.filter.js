@@ -1642,7 +1642,7 @@ $.jgrid.extend({
 				defaultFilters = $t.p.postData[p.sFilter];
 			}
 			if(typeof defaultFilters === "string") {
-				defaultFilters = $.jgrid.parse( defaultFilters );
+				defaultFilters = $.jgrid.parse( defaultFilters || "{}" );
 			}
 			if(p.recreateFilter === true) {
 				$("#"+$.jgrid.jqID(IDs.themodal)).remove();
