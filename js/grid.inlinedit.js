@@ -419,8 +419,7 @@ $.jgrid.extend({
 					url:o.url,
 					data: $.jgrid.isFunction($t.p.serializeRowData) ? $t.p.serializeRowData.call($t, tmp3) : tmp3,
 					type: o.mtype,
-					async : false, //?!?
-					success: function(resuly,stat,res){
+					success: function(result,stat,res){
 						$($t).jqGrid("progressBar", {method:"hide", loadtype : o.saveui, htmlcontent: o.savetext});
 						if (stat === "success"){
 							var ret = true, sucret, k;
@@ -470,6 +469,7 @@ $.jgrid.extend({
 						}
 					},
 					error:function(res,stat,err){
+						$($t).jqGrid("progressBar", {method:"hide", loadtype : o.saveui, htmlcontent: o.savetext});
 						$("#lui_"+$.jgrid.jqID($t.p.id)).hide();
 						$($t).triggerHandler("jqGridInlineErrorSaveRow", [rowid, res, stat, err, o]);
 						if($.jgrid.isFunction(o.errorfunc) ) {
