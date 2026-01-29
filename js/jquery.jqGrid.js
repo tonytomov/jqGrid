@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.10 - 2025-12-29
+* @license Guriddo jqGrid JS - v5.8.10 - 2026-01-28
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2292,7 +2292,7 @@ $.extend($.jgrid,{
 			var timer;
 
 			if($.inArray(e.key, ['Enter', 'Escape', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab']) > -1) {
-			var eee =  $.Event('keydown'), $t = this;
+			var eee =  $.Event('keydown');//, $t = this;
 
 			switch (e.key) {
 				case 'Enter' :
@@ -4161,7 +4161,7 @@ $.fn.jqGrid = function( pin ) {
 				try {self.jqGrid("addSubGrid",gi+ni);} catch (_){}
 			}
 		},
-		addJSONData = function(data, rcnt, more, adjust) {
+		addJSONData = function(data, rcnt, more, adjust, _vJR) {
 			var startReq = new Date();
 			if(data) {
 				if(ts.p.treeANode === -1 && (!ts.p.scroll || !ts.p.vScroll) ) {
@@ -4175,7 +4175,7 @@ $.fn.jqGrid = function( pin ) {
 				dReader =  ts.p.localReader;
 				frd= 'local';
 			} else {
-				dReader =  ts.p.jsonReader;
+				dReader =  _vJR != null ? _vJR : ts.p.jsonReader;
 				frd='json';
 			}
 
@@ -4636,22 +4636,22 @@ $.fn.jqGrid = function( pin ) {
 				return;
 			}
 			var compareFnMap = {
-				'eq':function(queryObj, op,cop) {return cop == null ? queryObj.equals :  queryObj[cop+"Equals"];},
-				'ne':function(queryObj, op,cop) {return cop == null ? queryObj.notEquals : queryObj[cop+"NotEquals"];},
-				'lt':function(queryObj, op,cop) {return cop == null ? queryObj.less : queryObj[cop+"Less"];},
-				'le':function(queryObj, op,cop) {return cop == null ? queryObj.lessEquals : queryObj[cop+"LessEquals"];},
-				'gt':function(queryObj, op,cop) {return cop == null ? queryObj.greater : queryObj[cop+"Greater"];},
-				'ge':function(queryObj, op,cop) {return cop == null ? queryObj.greaterEquals : queryObj[cop+"GreaterEquals"];},
-				'cn':function(queryObj, op,cop) {return cop == null ? queryObj.contains : queryObj[cop+"Contains"];},
-				'nc':function(queryObj, op,cop) {return cop == null ? queryObj.notContains : queryObj[cop+"NotContains"];},
-				'bw':function(queryObj, op,cop) {return cop == null ? queryObj.starts : queryObj[cop+"Starts"];},
-				'bn':function(queryObj, op,cop) {return cop == null ? queryObj.notStarts : queryObj[cop+"NotStarts"];},
-				'en':function(queryObj, op,cop) {return cop == null ? queryObj.notEnds : queryObj[cop+"NotEnds"];},
-				'ew':function(queryObj, op,cop) {return cop == null ? queryObj.ends : queryObj[cop+"Ends"];},
-				"ni":function(queryObj, op,cop) {return cop == null ? queryObj.notIsIn : queryObj[cop+"NotIsIn"]; },
-				"in":function(queryObj, op,cop) {return cop == null ? queryObj.isIn : queryObj[cop+"IsIn"]; },
-				'nu':function(queryObj, op,cop) {return cop == null ? queryObj.isNull : queryObj[cop+"IsNull"];},
-				'nn':function(queryObj, op,cop) {return cop == null ? queryObj.notIsNull : queryObj[cop+"NotIsNull"];}
+				'eq':function(queryObj, op,cop) {return $.jgrid.isNull(cop) ? queryObj.equals :  queryObj[cop+"Equals"];},
+				'ne':function(queryObj, op,cop) {return $.jgrid.isNull(cop) ? queryObj.notEquals : queryObj[cop+"NotEquals"];},
+				'lt':function(queryObj, op,cop) {return $.jgrid.isNull(cop) ? queryObj.less : queryObj[cop+"Less"];},
+				'le':function(queryObj, op,cop) {return $.jgrid.isNull(cop) ? queryObj.lessEquals : queryObj[cop+"LessEquals"];},
+				'gt':function(queryObj, op,cop) {return $.jgrid.isNull(cop) ? queryObj.greater : queryObj[cop+"Greater"];},
+				'ge':function(queryObj, op,cop) {return $.jgrid.isNull(cop) ? queryObj.greaterEquals : queryObj[cop+"GreaterEquals"];},
+				'cn':function(queryObj, op,cop) {return $.jgrid.isNull(cop) ? queryObj.contains : queryObj[cop+"Contains"];},
+				'nc':function(queryObj, op,cop) {return $.jgrid.isNull(cop) ? queryObj.notContains : queryObj[cop+"NotContains"];},
+				'bw':function(queryObj, op,cop) {return $.jgrid.isNull(cop) ? queryObj.starts : queryObj[cop+"Starts"];},
+				'bn':function(queryObj, op,cop) {return $.jgrid.isNull(cop) ? queryObj.notStarts : queryObj[cop+"NotStarts"];},
+				'en':function(queryObj, op,cop) {return $.jgrid.isNull(cop) ? queryObj.notEnds : queryObj[cop+"NotEnds"];},
+				'ew':function(queryObj, op,cop) {return $.jgrid.isNull(cop) ? queryObj.ends : queryObj[cop+"Ends"];},
+				"ni":function(queryObj, op,cop) {return $.jgrid.isNull(cop) ? queryObj.notIsIn : queryObj[cop+"NotIsIn"]; },
+				"in":function(queryObj, op,cop) {return $.jgrid.isNull(cop) ? queryObj.isIn : queryObj[cop+"IsIn"]; },
+				'nu':function(queryObj, op,cop) {return $.jgrid.isNull(cop) ? queryObj.isNull : queryObj[cop+"IsNull"];},
+				'nn':function(queryObj, op,cop) {return $.jgrid.isNull(cop) ? queryObj.notIsNull : queryObj[cop+"NotIsNull"];}
 
 			};
 			try {
@@ -7123,7 +7123,7 @@ $.fn.jqGrid = function( pin ) {
 		$.extend(grid,{populate : populate, emptyRows: emptyRows, beginReq: beginReq, endReq: endReq});
 		this.grid = grid;
 		ts.addXmlData = function(a,b,c,d) {addXmlData( a,b,c,d );};
-		ts.addJSONData = function(a,b,c,d) {addJSONData( a,b,c,d );};
+		ts.addJSONData = function(a,b,c,d,e) {addJSONData( a,b,c,d,e );};
 		ts.addLocalData = function(d) { return addLocalData( d );};
 		ts.addIndexedDBData = function(d) { return addIndexedDBData( d );};
 		ts.treeGrid_beforeRequest = function() { treeGrid_beforeRequest(); }; //bvn13
@@ -7157,9 +7157,9 @@ $.fn.jqGrid = function( pin ) {
 					var avgResponseTime = recentRequests.reduce((sum, r) => sum + r.duration, 0) / recentRequests.length;
 					//console.log(requestHistory, "avgResponseTime")
 					if (avgResponseTime < 200) {
-						adaptiveDelay = 250; // fast server
+						adaptiveDelay = 150; // fast server
 					} else if (avgResponseTime < 300) {
-						adaptiveDelay = 150;  // moderate server
+						adaptiveDelay = 250;  // moderate server
 					}
 				}
 
@@ -7175,11 +7175,12 @@ $.fn.jqGrid = function( pin ) {
 				}
 
 				// 4. MAKE ACTUAL REQUEST (simulated)
-				console.log(`Fetching page ${page} (delay: ${totalDelay}ms)`);
+				//console.log(`Fetching page ${page} (delay: ${totalDelay}ms)`);
 
 				// Simulated server request - REPLACE WITH YOUR ACTUAL API CALL
 				const response = await mockServerRequest(page, size);
-
+				//const data = $.jgrid.getAccessor(response, ts.p.jsonReader.root);
+				//console.log("fetch=", data);
 				// 5. TRACK PERFORMANCE
 				const totalDuration = performance.now() - requestStart;
 				requestHistory.push({
@@ -7205,7 +7206,20 @@ $.fn.jqGrid = function( pin ) {
 
 			return fetchImplementation;
 		};
+		function vJsonReader( data  ) {
+			let dReader =  ts.p.datatype === 'json' ? ts.p.jsonReader : ts.p.localReader;
 
+			let retdata = {};
+			if(!$.jgrid.isNull( data )) {
+				retdata.page = intNum($.jgrid.getAccessor(data,dReader.page), ts.p.page);
+				retdata.lastpage = intNum($.jgrid.getAccessor(data,dReader.total), 1);
+				retdata.records = intNum($.jgrid.getAccessor(data,dReader.records));			
+				retdata.rows  = $.jgrid.getAccessor(data,dReader.root);
+				retdata.id = $.jgrid.getAccessor(data,dReader.id) || "id";
+				retdata.userdata = $.jgrid.getAccessor(data,dReader.userdata) || {}
+			}
+			return retdata;
+		}
         //Mock server function
 		async function mockServerRequest(page, size) {
 			// Not any events before and after request
@@ -7236,39 +7250,49 @@ $.fn.jqGrid = function( pin ) {
 			}
 			$.extend(ts.p.postData, prm);
 
-			let options = {
-				method: 'GET',
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json;charset=UTF-8'
+			var bfr = $(ts).triggerHandler("jqGridBeforeRequest");
+			if (bfr === false || bfr === 'stop') { return; }
+			if ($.jgrid.isFunction(ts.p.beforeRequest)) {
+				bfr = ts.p.beforeRequest.call(ts);
+				if (bfr === false || bfr === 'stop') { return; }
 				}
-			};
-			let conc = '?';
-			if (ts.p.url.indexOf('?') !== -1) {
-				conc = '&';
+			var response;
+			let dt = ts.p.datatype.toLowerCase();
+			if( dt === 'json' || dt === 'jsonp') {
+				response = await $.ajax($.extend({
+				url:ts.p.url,
+				type:ts.p.mtype,
+				dataType: ts.p.datatype.toLowerCase(),
+				data: $.jgrid.isFunction(ts.p.serializeGridData)? ts.p.serializeGridData.call(ts,ts.p.postData) : ts.p.postData,
+				beforeSend: function(xhr, settings ){
+					var gotoreq = true;
+					gotoreq = $(ts).triggerHandler("jqGridLoadBeforeSend", [xhr,settings]);
+					if($.jgrid.isFunction(ts.p.loadBeforeSend)) {
+						gotoreq = ts.p.loadBeforeSend.call(ts,xhr, settings);
 			}
-			const params = jQuery.jgrid.isFunction(ts.p.serializeGridData) ? ts.p.serializeGridData.call(ts, ts.p.postData) : ts.p.postData;
-			let url = `${ts.p.url}${conc}${new URLSearchParams(params)}`;
-
-			if (ts.p.mtype.toLowerCase() === "post") {
-				options.body = JSON.stringify(params);
-				options.method = 'POST';
-				url = ts.p.url;
+					if(gotoreq === undefined) { gotoreq = true; }
+					if(gotoreq === false) {
+						return false;
 			}
-			try {
-
-				const response = await fetch(url, options);
-				if (!response.ok) {
-					throw new Error(`Response status: ${response.status}`);
+					beginReq();
 				}
-				const result = await response.json();
-				return {
-					total: result.records,
-					rows: result.rows
-				};
-			} catch (error) {
-				console.error("Virtualizer error: ", error.message);
+			},$.jgrid.ajaxOptions, ts.p.ajaxGridOptions))
+			.done(function(resp) {
+				//console.log("success response", resp);
+			})
+			.fail(function(jqXHR, textStatus) {
+				console.log("Request failed: " + textStatus);
+			});
+			} else if(dt === 'local') {
+				ts.p.page = prm[pN.page];
+				response = addLocalData( false );
 			}
+			// localdata
+			if(!beforeprocess(response)) {
+				endReq();
+				return;
+		}
+			return response;
 		}
 
 		class jqGridVirtualizer {
@@ -7306,7 +7330,16 @@ $.fn.jqGrid = function( pin ) {
 				this.fastScrollMode = false;
 				this.scrollVelocity = 0;
 				this.lastScrollUpdate = 0;
-
+				this.restresponse = {};
+				//this.response = null;
+				this.jsonReader = {
+					root: "rows",
+					page: "page",
+					total: "total",
+					records: "records",
+					id: "id",
+					userdata: "userdata"				
+				}
 
 				this.init();
 			}
@@ -7455,21 +7488,23 @@ $.fn.jqGrid = function( pin ) {
 				//this.statusEl.textContent = `Fetching Page ${pageId + 1}...`;
 				let ts = this.jqGridId,
 						pgboxes = ts.p.pager || "";
+	 
 				pgboxes += ts.p.toppager ? (pgboxes ? "," + ts.p.toppager : ts.p.toppager) : "";
 				$(".ui-paging-info", pgboxes).html(`Fetching Page ${pageId + 1}...`);
 
-				const response = await this.fetchData(pageId, this.pageSize);
-
+				this.restresponse = vJsonReader ( await this.fetchData(pageId, this.pageSize) );
 				if (!this.initialized)
-					this.setup(response.total);
+					this.setup(this.restresponse.records);
 
-				response.rows.forEach((row, i) => {
+				this.restresponse.rows.forEach((row, i) => {
 					this.dataCache.set(this.getStartRow(pageId) + i, row);
 				});
 
 				this.fetchedPages.add(pageId);
 				this.loading = false;
 				this.update();
+				// save memory
+				this.restresponse.rows = [];
 			}
 
 			setup(total) {
@@ -7510,19 +7545,26 @@ $.fn.jqGrid = function( pin ) {
 				this.measureEl.style.width = containerWidth + 'px';
 				this.measureTbody.innerHTML = ''; // Clear, don't recreate
 
+				var frd;
+				if(ts.p.datatype === "local") {
+					frd= 'local';
+				} else {
+					frd='json';
+				}
+				let objectReader=reader(frd);
+				
 				let str = this.jqGridId.rows[0].outerHTML,
 						cm = this.jqGridId.p.colModel;
 				toMeasure.forEach(i => {
 					const row = this.dataCache.get(i);
 					str += "<tr class='jqgrow ui-row-ltr'>";
-					for (let j = 0; j < cm.length; j++) {
-
-						if (row[cm[j].name]) {
-							str += `<td>${row[cm[j].name]}</td>`;
-						} else {
-							str += `<td>${'&nbsp;'}</td>`;
+					for (let j = 0; j < objectReader.length; j++) {
+						//if (row[cm[j].name]) {
+							str += `<td>${$.jgrid.getAccessor(row,objectReader[j])}</td>`;
+						//} else {
+							//str += `<td>${'&nbsp;'}</td>`;
+						//}
 						}
-					}
 					str += "</tr>";
 				});
 
@@ -7575,19 +7617,25 @@ $.fn.jqGrid = function( pin ) {
 				this.wrapper.style.transform = `translateY(${this.pageCache[startP].top}px)`;
 
 				let ts = this.jqGridId;
-				let retresult = [];
-				retresult[ts.p.localReader.root] = [];
+				
+				this.restresponse.rows = [];
+				
 				for (let i = this.getStartRow(startP); i < this.getEndRow(endP - 1); i++) {
 					const item = this.dataCache.get(i);
 					if (!item)
 						continue;
-					retresult[ts.p.localReader.root].push(item);
+					this.restresponse.rows.push(item);
 				}
-				retresult[ts.p.localReader.total] = Math.ceil(this.rowCount / this.pageSize);
-				retresult[ts.p.localReader.page] = startP + 1;
-				retresult[ts.p.localReader.records] = this.rowCount;
-				ts.addJSONData(retresult, 1, false, endP - startP);
-
+				// to put here default reader
+				this.restresponse.total = Math.ceil(this.rowCount / this.pageSize);
+				this.restresponse.page = startP + 1;
+				this.restresponse.records = this.rowCount;
+				//retresult[dReader.userdata] = this.restresponse.userdata;
+				ts.addJSONData(this.restresponse, 1, false, endP - startP, this.jsonReader);
+				$(ts).triggerHandler("jqGridLoadComplete", [this.restresponse]);
+				$(ts).triggerHandler("jqGridAfterLoadComplete", [this.restresponse]);
+				endReq();
+				//data=null;
 				//this.statusEl.textContent = `Showing ${this.getStartRow(startP) + 1}-${this.getEndRow(endP - 1)} of ${this.rowCount.toLocaleString()} Data Cache Size: ${this.dataCache.size}`;
 			}
 
@@ -9268,7 +9316,7 @@ $.jgrid.extend({
 			if( this.p.direction === "rtl" && frzclass.slice(-4) !== "-rtl") {
 				frzclass += "-rtl";
 			}
-			console.log("called refresh frozen", frzclass);
+			//console.log("called refresh frozen", frzclass);
 			var pos =0, cm = this.p.colModel;
 			var elements =[];
 			for(let i=0;i< this.p.frozenColCount+1; i++){
@@ -13019,7 +13067,7 @@ $.jgrid.extend({
 				defaultFilters = $t.p.postData[p.sFilter];
 			}
 			if(typeof defaultFilters === "string") {
-				defaultFilters = $.jgrid.parse( defaultFilters );
+				defaultFilters = $.jgrid.parse( defaultFilters || "{}" );
 			}
 			if(p.recreateFilter === true) {
 				$("#"+$.jgrid.jqID(IDs.themodal)).remove();
@@ -17844,8 +17892,7 @@ $.jgrid.extend({
 					url:o.url,
 					data: $.jgrid.isFunction($t.p.serializeRowData) ? $t.p.serializeRowData.call($t, tmp3) : tmp3,
 					type: o.mtype,
-					async : false, //?!?
-					success: function(resuly,stat,res){
+					success: function(result,stat,res){
 						$($t).jqGrid("progressBar", {method:"hide", loadtype : o.saveui, htmlcontent: o.savetext});
 						if (stat === "success"){
 							var ret = true, sucret, k;
@@ -17895,6 +17942,7 @@ $.jgrid.extend({
 						}
 					},
 					error:function(res,stat,err){
+						$($t).jqGrid("progressBar", {method:"hide", loadtype : o.saveui, htmlcontent: o.savetext});
 						$("#lui_"+$.jgrid.jqID($t.p.id)).hide();
 						$($t).triggerHandler("jqGridInlineErrorSaveRow", [rowid, res, stat, err, o]);
 						if($.jgrid.isFunction(o.errorfunc) ) {
