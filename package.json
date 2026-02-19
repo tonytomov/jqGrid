@@ -25,16 +25,4 @@
     "grunt-contrib-jshint": "^3.0.0",
     "grunt-contrib-requirejs": ">0.4.4",
     "grunt-contrib-uglify": "^5.0.0",
-    "ip": "^2.0.1",
-	"glob": ">=11.1.0"
-  },
-  "dependencies": {
-    "grunt-cli": "^1.3.2",
-<<<<<<< HEAD
-    "npm": "^11.6.4",
-=======
-    "npm": "^11.6.2",
->>>>>>> baf5ef773353083470a224d280de14c6cc873a05
-	"glob": ">=11.1.0"
-  }
-}
+	}
