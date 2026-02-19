@@ -24,5 +24,6 @@
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-jshint": "^3.0.0",
     "grunt-contrib-requirejs": ">0.4.4",
-    "grunt-contrib-uglify": "^5.0.0",
+    "grunt-contrib-uglify": "^5.0.0"
 	}
+}
