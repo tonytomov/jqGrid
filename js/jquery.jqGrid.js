@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.10 - 2026-01-28
+* @license Guriddo jqGrid JS - v5.8.11 - 2026-02-21
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -18,13 +18,28 @@
  	}
 }(function( $ ) {
 "use strict";
+/*jshint eqeqeq:false */
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+"use strict";
 //module begin
 $.jgrid = $.jgrid || {};
 if(!$.jgrid.hasOwnProperty("defaults")) {
 	$.jgrid.defaults = {};
 }
 $.extend($.jgrid,{
-	version : "5.8.10",
+	version : "5.8.11",
 	isNull : function( p, strict_eq) {
 		if(strict_eq && strict_eq === true) {
 			return p === null;
@@ -3742,6 +3757,21 @@ $.fn.jqGrid = function( pin ) {
 			}
 			return f;
 		},
+		readerHidden = function() {
+			var field, f=[], j=0, i, hidden;
+			for(i = 0; i < ts.p.colModel.length; i++){
+				field = ts.p.colModel[i];
+				hidden = false;
+				if (Object.hasOwn(field, "hidden")) {
+					hidden = field.hidden;
+				}
+				if ( Object.hasOwn(field, "name") && !$.jgrid.isServiceCol(field.name) ) {
+					f[j]= hidden;
+					j++;
+				}
+			}
+			return f;
+		},
 		orderedCols = function (offset) {
 			var order = ts.p.remapColumns;
 			if (!order || !order.length) {
@@ -7131,207 +7161,322 @@ $.fn.jqGrid = function( pin ) {
 		this.grid.cols = this.rows[0].cells;
 		if ($.jgrid.isFunction( ts.p.onInitGrid )) { ts.p.onInitGrid.call(ts); }
   
-		const createAdaptiveFetchData = () => {
-			let lastRequestTime = 0;
-			let requestHistory = [];
-			// Future work
-			let scrollState = {
+		/**
+		 * Adaptive Fetch Data Manager
+		 * Intelligently delays requests based on server performance and scroll behavior
+		 */
+		class AdaptiveFetchManager {
+			constructor() {
+				this.lastRequestTime = 0;
+				this.requestHistory = [];
+				this.scrollState = {
 				isFast: false,
 				velocity: 0,
 				lastUpdate: 0
 			};
 
-			// The actual fetch function
-			const fetchImplementation = async (page, size) => {
+				// Configuration constants
+				this.HISTORY_SIZE = 10;
+				this.MIN_REQUEST_GAP = 150;
+				this.DELAYS = {
+					FAST: 150, // < 200ms avg response
+					MODERATE: 250 // 200-300ms avg response
+				};
+			}
+
+			/**
+			 * Fetches data with adaptive delay based on server performance
+			 * @param {number} page - Page number to fetch
+			 * @param {number} size - Page size
+			 * @param {Function} mockServerRequest - Server request function
+			 * @returns {Promise<Object>} Server response
+			 */
+			async fetch(page, size, mockServerRequest) {
 				const requestStart = performance.now();
 
-				// 1. CALCULATE ADAPTIVE DELAY
-				let adaptiveDelay = 0;
+				// Calculate adaptive delay based on recent response times
+				const adaptiveDelay = this._calculateAdaptiveDelay();
 
-				// Check if scroll state is recent
-				//const isRecentScrollState = (performance.now() - scrollState.lastUpdate) < 500;
-				//const currentIsFast = isRecentScrollState ? scrollState.isFast : false;
+				// Enforce minimum gap between requests
+				const gapDelay = this._calculateGapDelay(requestStart);
 
-				if (requestHistory.length > 0) {
-					const recentRequests = requestHistory.slice(-3);
-					var avgResponseTime = recentRequests.reduce((sum, r) => sum + r.duration, 0) / recentRequests.length;
-					//console.log(requestHistory, "avgResponseTime")
-					if (avgResponseTime < 200) {
-						adaptiveDelay = 150; // fast server
-					} else if (avgResponseTime < 300) {
-						adaptiveDelay = 250;  // moderate server
-					}
-				}
-
-				// 2. ENFORCE MINIMUM TIME BETWEEN REQUESTS
-				const timeSinceLastRequest = requestStart - lastRequestTime;
-				const minRequestGap = 150;
-				const gapDelay = Math.max(0, minRequestGap - timeSinceLastRequest);
-
-				// 3. APPLY DELAY
+				// Apply the maximum of adaptive and gap delays
 				const totalDelay = Math.max(adaptiveDelay, gapDelay);
 				if (totalDelay > 0) {
-					await new Promise(resolve => setTimeout(resolve, totalDelay));
+					await this._sleep(totalDelay);
+					}
+
+				// Make the actual request
+				const response = await mockServerRequest(page, size);
+
+				// Track performance metrics
+				this._recordRequest(page, requestStart, totalDelay);
+
+				this.lastRequestTime = performance.now();
+				return response;
 				}
 
-				// 4. MAKE ACTUAL REQUEST (simulated)
-				//console.log(`Fetching page ${page} (delay: ${totalDelay}ms)`);
+			/**
+			 * Updates scroll state for future optimizations
+			 * @param {boolean} isFast - Whether scrolling is fast
+			 * @param {number} velocity - Scroll velocity (optional)
+			 */
+			updateScrollState(isFast, velocity = 0) {
+				this.scrollState = {
+					isFast,
+					velocity,
+					lastUpdate: performance.now()
+				};
+			}
 
-				// Simulated server request - REPLACE WITH YOUR ACTUAL API CALL
-				const response = await mockServerRequest(page, size);
-				//const data = $.jgrid.getAccessor(response, ts.p.jsonReader.root);
-				//console.log("fetch=", data);
-				// 5. TRACK PERFORMANCE
+			// Private methods
+			_calculateAdaptiveDelay() {
+				if (this.requestHistory.length === 0)
+					return 0;
+
+				const recentRequests = this.requestHistory.slice(-3);
+				const avgResponseTime = recentRequests.reduce((sum, r) => sum + r.duration, 0) / recentRequests.length;
+
+				if (avgResponseTime < 200)
+					return this.DELAYS.FAST;
+				if (avgResponseTime < 300)
+					return this.DELAYS.MODERATE;
+				return 0;
+				}
+
+			_calculateGapDelay(requestStart) {
+				const timeSinceLastRequest = requestStart - this.lastRequestTime;
+				return Math.max(0, this.MIN_REQUEST_GAP - timeSinceLastRequest);
+			}
+
+			_sleep(ms) {
+				return new Promise(resolve => setTimeout(resolve, ms));
+			}
+
+			_recordRequest(page, requestStart, delayUsed) {
 				const totalDuration = performance.now() - requestStart;
-				requestHistory.push({
+				this.requestHistory.push({
 					page,
 					duration: totalDuration,
 					timestamp: requestStart,
-					delayUsed: totalDelay
+					delayUsed
 				});
 
-				if (requestHistory.length > 10)
-					requestHistory.shift();
-				lastRequestTime = performance.now();
+				if (this.requestHistory.length > this.HISTORY_SIZE) {
+					this.requestHistory.shift();
+				}
+			}
+		}
 
-				return response;
+		/**
+		 * Creates an adaptive fetch function with scroll state tracking
+		 * @returns {Function} Fetch function with updateScrollState method
+		 */
+		function createAdaptiveFetchData() {
+			const manager = new AdaptiveFetchManager();
+
+			const fetchImplementation = async (page, size) => {
+				return manager.fetch(page, size, mockServerRequest);
 			};
 
-			// Add method to update scroll state
-			fetchImplementation.updateScrollState = (isFast, velocity = 0) => {
-				scrollState.isFast = isFast;
-				scrollState.velocity = velocity;
-				scrollState.lastUpdate = performance.now();
+			fetchImplementation.updateScrollState = (isFast, velocity) => {
+				manager.updateScrollState(isFast, velocity);
 			};
 
 			return fetchImplementation;
-		};
-		function vJsonReader( data  ) {
-			let dReader =  ts.p.datatype === 'json' ? ts.p.jsonReader : ts.p.localReader;
+		}
 
-			let retdata = {};
-			if(!$.jgrid.isNull( data )) {
-				retdata.page = intNum($.jgrid.getAccessor(data,dReader.page), ts.p.page);
-				retdata.lastpage = intNum($.jgrid.getAccessor(data,dReader.total), 1);
-				retdata.records = intNum($.jgrid.getAccessor(data,dReader.records));			
-				retdata.rows  = $.jgrid.getAccessor(data,dReader.root);
-				retdata.id = $.jgrid.getAccessor(data,dReader.id) || "id";
-				retdata.userdata = $.jgrid.getAccessor(data,dReader.userdata) || {}
+		/**
+		 * JSON Reader utility for parsing grid data
+		 * @param {Object} data - Response data
+		 * @param {Object} ts - Grid instance
+		 * @returns {Object} Parsed data with page, lastpage, records, rows, id, userdata
+		 */
+		function vJsonReader(data, ts) {
+			const dReader = ts.p.datatype === 'json' ? ts.p.jsonReader : ts.p.localReader;
+			const retdata = {};
+
+			if (!$.jgrid.isNull(data)) {
+				retdata.page = intNum($.jgrid.getAccessor(data, dReader.page), ts.p.page);
+				retdata.lastpage = intNum($.jgrid.getAccessor(data, dReader.total), 1);
+				retdata.records = intNum($.jgrid.getAccessor(data, dReader.records));
+				retdata.rows = $.jgrid.getAccessor(data, dReader.root);
+				retdata.id = $.jgrid.getAccessor(data, dReader.id) || "id";
+				retdata.userdata = $.jgrid.getAccessor(data, dReader.userdata) || {};
 			}
+
 			return retdata;
 		}
-        //Mock server function
+
+		/**
+		 * Mock server request function
+		 * @param {number} page - Page number
+		 * @param {number} size - Page size
+		 * @returns {Promise<Object>} Server response
+		 */
 		async function mockServerRequest(page, size) {
-			// Not any events before and after request
-			var prm = {}, pN = ts.p.prmNames;
+			// Build request parameters
+			const prm = buildRequestParams(page, size);
+
+			// Trigger before request events
+			if (!triggerBeforeRequest(ts, prm)) {
+				return null;
+			}
+
+			// Execute the appropriate request based on datatype
+			const datatype = ts.p.datatype.toLowerCase();
+			let response;
+
+			if (datatype === 'json' || datatype === 'jsonp') {
+				response = await executeAjaxRequest(ts, prm);
+			} else if (datatype === 'local') {
+				ts.p.page = prm[ts.p.prmNames.page];
+				response = addLocalData(false);
+			}
+
+			// Process response
+			if (!beforeprocess(response)) {
+				endReq();
+				return null;
+			}
+
+			return response;
+			}
+
+		/**
+		 * Builds request parameters for the server
+		 */
+		function buildRequestParams(page, size) {
+			const prm = {};
+			const pN = ts.p.prmNames;
+
+			// Validate and set page
 			if (ts.p.page <= 0) {
 				ts.p.page = Math.min(1, ts.p.lastpage);
 			}
-			if (!$.jgrid.isNull(pN.search, true)) {
-				prm[pN.search] = ts.p.search;
-			}
-			if (!$.jgrid.isNull(pN.nd, true)) {
-				prm[pN.nd] = new Date().getTime();
-			}
-			if (!$.jgrid.isNull(pN.rows, true)) {
-				prm[pN.rows] = size;
-			}
-			if (!$.jgrid.isNull(pN.page, true)) {
-				prm[pN.page] = page + 1;
-			}
-			if (!$.jgrid.isNull(pN.sort, true)) {
-				prm[pN.sort] = ts.p.sortname;
-			}
-			if (!$.jgrid.isNull(pN.order, true)) {
-				prm[pN.order] = ts.p.sortorder;
-			}
-			if (!$.jgrid.isNull(ts.p.rowTotal, true) && !$.jgrid.isNull(pN.totalrows, true)) {
-				prm[pN.totalrows] = ts.p.rowTotal;
-			}
-			$.extend(ts.p.postData, prm);
 
-			var bfr = $(ts).triggerHandler("jqGridBeforeRequest");
-			if (bfr === false || bfr === 'stop') { return; }
+			// Add parameters only if they're defined
+			const paramMap = {
+				[pN.search]: ts.p.search,
+				[pN.nd]: new Date().getTime(),
+				[pN.rows]: size,
+				[pN.page]: page + 1,
+				[pN.sort]: ts.p.sortname,
+				[pN.order]: ts.p.sortorder,
+				[pN.totalrows]: ts.p.rowTotal
+			};
+
+			for (const key in paramMap) {
+				if (Object.hasOwn(paramMap, key)) {
+					if(!$.jgrid.isNull(paramMap[key], true)){
+						prm[key] = paramMap[key];
+			}
+			}
+			}
+
+			$.extend(ts.p.postData, prm);
+			return prm;
+		}
+
+		/**
+		 * Triggers before request events and callbacks
+		 */
+		function triggerBeforeRequest(ts, prm) {
+			const bfr = $(ts).triggerHandler("jqGridBeforeRequest");
+			if (bfr === false || bfr === 'stop')
+				return false;
+
 			if ($.jgrid.isFunction(ts.p.beforeRequest)) {
-				bfr = ts.p.beforeRequest.call(ts);
-				if (bfr === false || bfr === 'stop') { return; }
+				const result = ts.p.beforeRequest.call(ts);
+				if (result === false || result === 'stop')
+					return false;
 				}
-			var response;
-			let dt = ts.p.datatype.toLowerCase();
-			if( dt === 'json' || dt === 'jsonp') {
-				response = await $.ajax($.extend({
-				url:ts.p.url,
-				type:ts.p.mtype,
+
+			return true;
+		}
+
+		/**
+		 * Executes AJAX request
+		 */
+		async function executeAjaxRequest(ts, prm) {
+			const ajaxConfig = {
+				url: ts.p.url,
+				type: ts.p.mtype,
 				dataType: ts.p.datatype.toLowerCase(),
-				data: $.jgrid.isFunction(ts.p.serializeGridData)? ts.p.serializeGridData.call(ts,ts.p.postData) : ts.p.postData,
-				beforeSend: function(xhr, settings ){
-					var gotoreq = true;
-					gotoreq = $(ts).triggerHandler("jqGridLoadBeforeSend", [xhr,settings]);
-					if($.jgrid.isFunction(ts.p.loadBeforeSend)) {
-						gotoreq = ts.p.loadBeforeSend.call(ts,xhr, settings);
+				data: $.jgrid.isFunction(ts.p.serializeGridData)
+						  ? ts.p.serializeGridData.call(ts, ts.p.postData)
+						  : ts.p.postData,
+				beforeSend: function (xhr, settings) {
+					let gotoreq = $(ts).triggerHandler("jqGridLoadBeforeSend", [xhr, settings]);
+
+					if ($.jgrid.isFunction(ts.p.loadBeforeSend)) {
+						gotoreq = ts.p.loadBeforeSend.call(ts, xhr, settings);
 			}
-					if(gotoreq === undefined) { gotoreq = true; }
-					if(gotoreq === false) {
+
+					if (gotoreq === undefined)
+						gotoreq = true;
+					if (gotoreq === false)
 						return false;
-			}
+
 					beginReq();
 				}
-			},$.jgrid.ajaxOptions, ts.p.ajaxGridOptions))
-			.done(function(resp) {
-				//console.log("success response", resp);
-			})
-			.fail(function(jqXHR, textStatus) {
-				console.log("Request failed: " + textStatus);
-			});
-			} else if(dt === 'local') {
-				ts.p.page = prm[pN.page];
-				response = addLocalData( false );
+			};
+
+			try {
+				const response = await $.ajax($.extend(ajaxConfig, $.jgrid.ajaxOptions, ts.p.ajaxGridOptions));
+				return response;
+			} catch (error) {
+				console.error("Request failed:", error);
+				throw error;
 			}
-			// localdata
-			if(!beforeprocess(response)) {
-				endReq();
-				return;
-		}
-			return response;
 		}
 
+		/**
+		 * Virtual Scroller for jqGrid
+		 * Implements efficient virtual scrolling with dynamic row height calculation
+		 */
 		class jqGridVirtualizer {
 			constructor(options) {
-
 				// DOM Elements
-				this.jqGridId = options.grid; // string the grid id
-				this.el = this.jqGridId.closest(".ui-jqgrid-bdiv"); //options.el 
+				this.jqGridId = options.grid;
+				this.el = this.jqGridId.closest(".ui-jqgrid-bdiv");
 				this.canvas = this.el.querySelector('.scroll-canvas');
 				this.wrapper = this.el.querySelector('.visible-wrapper');
 				this.tbody = this.el.querySelector('.visible-items');
-				this.measureEl = null;//document.getElementById('measurement-div');
-				//this.statusEl = document.getElementById('status');
 
-				// Config		
-				this.renderWindow = options.renderWindow || 3;
-				this.maxCache = options.maxCache || 25;
-				this.averageRowHeight = 60;
-				// these are predefined from grid
+				// Configuration
+				this.config = {
+					renderWindow: options.renderWindow || 3,
+					maxCache: options.maxCache || 25,
+					averageRowHeight: 60,
+					pageSize: options.pageSize || 20
+				};
+
+				// Data fetching
 				this.fetchData = options.fetchData;
-				this.pageSize = options.pageSize || 20;
 
-				//State
-				this.rowCount = 0;
+				// State management
+				this.state = {
+					rowCount: 0,
+					loading: false,
+					initialized: false,
+					lastStartPage: -1,
+					lastEndPage: -1,
+					fastScrollMode: false,
+					scrollVelocity: 0,
+					lastScrollUpdate: 0,
+					lastScrollTop: 0,
+					scrollDirection: 0 // -1 for up, 1 for down, 0 for stationary
+				};
+
+				// Caches
 				this.pageCache = [];
-				this.dataCache = new Map();//{};
+				this.dataCache = new Map();
 				this.heightCache = {};
 				this.fetchedPages = new Set();
-				this.loading = false;
-				this.initialized = false;
-				this.lastStartPage = -1;
-				this.rafId = null;
 
-				// Fast scroll properties
-				this.fastScrollMode = false;
-				this.scrollVelocity = 0;
-				this.lastScrollUpdate = 0;
+				// Response data
 				this.restresponse = {};
-				//this.response = null;
 				this.jsonReader = {
 					root: "rows",
 					page: "page",
@@ -7339,138 +7484,359 @@ $.fn.jqGrid = function( pin ) {
 					records: "records",
 					id: "id",
 					userdata: "userdata"				
-				}
+				};
+
+				// Animation frame ID
+				this.rafId = null;
+
+				// Flag to prevent update loops during scroll adjustments
+				this._isAdjustingScroll = false;
 
 				this.init();
 			}
+
+			/**
+			 * Initialize the virtualizer
+			 */
 			init() {
-				// In init():
+				this._setupMeasurementElements();
+				this._bindEvents();
+				this.update();
+			}
+
+			/**
+			 * Sets up measurement DOM elements
+			 */
+			_setupMeasurementElements() {
+				// Create measurement table
 				this.measureTable = document.createElement('table');
 				this.measureTable.className = this.jqGridId.classList.value;
+
 				this.measureTbody = document.createElement('tbody');
 				this.measureTable.appendChild(this.measureTbody);
 
+				// Create measurement container
 				this.measurediv = document.createElement('div');
 				this.measurediv.id = "virtual-mes";
 				this.measurediv.className = 'ui-jqgrid';
-				document.body.appendChild(this.measurediv);
 
 				this.measureEl = document.createElement('div');
 				this.measureEl.id = "measurement-div";
 				this.measureEl.className = 'ui-jqgrid-bdiv';
+
 				this.measurediv.appendChild(this.measureEl);
-
 				this.measureEl.appendChild(this.measureTable);
+				document.body.appendChild(this.measurediv);
+				// create object reader and hidden fields reader to skip calc on 
+				this.objectReader = reader( this.jqGridId.p.datatype === "local" ? 'local' : 'json' );
+				this.hiddenReader = readerHidden();			
+			}
 
-				// unbind the scroll
-				// this.el.removeEventListener('scroll', this.jqGridId.grid.scrollGrid);
+			/**
+			 * Binds scroll and resize events
+			 */
+			_bindEvents() {
+				// Scroll event
 				this.el.addEventListener('scroll', () => {
-					// rebind
-					this.scrollGrid();
-					const now = Date.now();
-
-					// Update scroll velocity
-
-					if (this.rafId)
-						cancelAnimationFrame(this.rafId);
-					this.rafId = requestAnimationFrame(() => this.update());
-					this.lastScrollUpdate = now;
-				});
-
-				window.addEventListener('resize', () => {
-					// Recalculate heights on resize since table widths change
-					this.heightCache = {};
-					//this.update();
-					this.measureEl.style.width = this.el.clientWidth + 'px'; // Update immediately
-					// Re-measure visible rows
-					if (this.lastStartPage >= 0) {
-						this.measure(
-								this.getStartRow(this.lastStartPage),
-								this.getEndRow(this.lastStartPage + this.renderWindow - 1)
-								);
-						this.render(this.lastStartPage, this.lastStartPage + this.renderWindow);
+					// Skip if we're programmatically adjusting scroll
+					if (this._isAdjustingScroll) {
+						return;
 					}
+
+					this.scrollGrid();
+
+					// Track scroll direction
+					const currentScrollTop = this.el.scrollTop;
+					if (currentScrollTop > this.state.lastScrollTop) {
+						this.state.scrollDirection = 1; // scrolling down
+					} else if (currentScrollTop < this.state.lastScrollTop) {
+						this.state.scrollDirection = -1; // scrolling up
+					}
+					this.state.lastScrollTop = currentScrollTop;
+
+					if (this.rafId) {
+						cancelAnimationFrame(this.rafId);
+					}
+
+					this.rafId = requestAnimationFrame(() => this.update());
+					this.state.lastScrollUpdate = Date.now();
 				});
-				this.update();
+
+				// Resize event
+				window.addEventListener('resize', () => {
+					this._handleResize();
+				});
 			}
 
-			getStartRow(p) {
-				return p * this.pageSize;
+			/**
+			 * Handles window resize
+			 */
+			_handleResize() {
+					this.heightCache = {};
+				this.measureEl.style.width = this.el.clientWidth + 'px';
+
+					// Re-measure visible rows
+				if (this.state.lastStartPage >= 0) {
+					const startRow = this.getStartRow(this.state.lastStartPage);
+					const endRow = this.getEndRow(this.state.lastStartPage + this.config.renderWindow - 1);
+
+					this.measure(startRow, endRow);
+					this.render(this.state.lastStartPage, this.state.lastStartPage + this.config.renderWindow);
+					}
 			}
-			getEndRow(p) {
-				return Math.min((p + 1) * this.pageSize, this.rowCount);
+
+			/**
+			 * Gets the starting row index for a page
+			 * 
+			 * @param {integer} page
+			 * @returns {Number} 
+			 */
+			getStartRow(page) {
+				return page * this.config.pageSize;
 			}
+
+			/**
+			 * Gets the ending row index for a page
+			 * 
+			 * @param {integer} page
+			 * @returns {Number} 
+			 */
+			getEndRow(page) {
+				return Math.min((page + 1) * this.config.pageSize, this.state.rowCount);
+			}
+
+			/**
+			 * Resets the virtualizer state
+			 */
 			reset() {
 				this.pageCache = [];
-				this.dataCache.clear();// {};
+				this.dataCache.clear();
 				this.heightCache = {};
 				this.fetchedPages.clear();
-				this.wrapper.style.transform = `translateY(${0}px)`;
-				this.canvas.style.height = `${0}px`;
-				this.initialized = false;
-				this.lastStartPage = -1;
+
+				this.wrapper.style.transform = 'translateY(0px)';
+				this.canvas.style.height = '0px';
+
+				this.state.initialized = false;
+				this.state.lastStartPage = -1;
+				this.state.lastEndPage = -1;
 			}
+
+			/**
+			 * Syncs grid horizontal scroll
+			 */
 			scrollGrid() {
-				let grid = this.jqGridId.grid;
-				let p = this.jqGridId.p;
+				const grid = this.jqGridId.grid;
+				const p = this.jqGridId.p;
+
 				if (!grid.bScroll) {
 					grid.hScroll = true;
-
 					grid.hDiv.scrollLeft = grid.bDiv.scrollLeft;
+
 					if (p.footerrow) {
 						grid.sDiv.scrollLeft = grid.bDiv.scrollLeft;
 					}
+
 					if (p.headerrow) {
 						grid.hrDiv.scrollLeft = grid.bDiv.scrollLeft;
 					}
-					try {
-						jQuery("#column_menu").remove();
-					} catch (e) {
-					}
 
+					// Remove column menu if exists
+					try {
+						$("#column_menu").remove();
+					} catch (e) {
+						// Ignore errors
+					}
 				}
+
 				grid.bScroll = false;
 			}
+
+			/**
+			 * Main update loop
+			 */
 			async update() {
 				this.rafId = null;
 
-				if (!this.initialized) {
-					if (!this.loading)
+				// Initial load
+				if (!this.state.initialized) {
+					if (!this.state.loading) {
 						await this.triggerLoad(0);
+					}
 					return;
 				}
 
-				const st = this.el.scrollTop;
-				let visiblePageId = this.findPageByScrollTop(st);
+				// Calculate visible page range
+				const scrollTop = this.el.scrollTop;
+				const visiblePageId = this.findPageByScrollTop(scrollTop);
 
-				let startP = Math.max(0, Math.min(visiblePageId, this.pageCache.length - this.renderWindow));
-				const endP = Math.min(startP + this.renderWindow, this.pageCache.length);
+				// Special handling for renderWindow = 1
+				if (this.config.renderWindow === 1) {
+					await this._updateSinglePageMode(visiblePageId, scrollTop);
+					return;
+				}
 
-				for (let p = startP; p < endP; p++) {
-					if (!this.fetchedPages.has(p)) {
-						if (!this.loading)
-							await this.triggerLoad(p);
-						return;
+				const startPage = Math.max(0, Math.min(visiblePageId, this.pageCache.length - this.config.renderWindow));
+				const endPage = Math.min(startPage + this.config.renderWindow, this.pageCache.length);
+
+				// Load missing pages in order of priority (visible first, then adjacent)
+				const pagesToLoad = [];
+				for (let page = startPage; page < endPage; page++) {
+					if (!this.fetchedPages.has(page)) {
+						pagesToLoad.push(page);
 					}
 				}
 
-				this.clearOldCache(startP);
-				this.measure(this.getStartRow(startP), this.getEndRow(endP - 1));
+				if (pagesToLoad.length > 0) {
+					if (!this.state.loading) {
+						// Load the first missing page in the visible range
+						await this.triggerLoad(pagesToLoad[0]);
+					}
+						return;
+					}
 
-				if (startP === this.lastStartPage && this.isFullyMeasured(startP, endP))
+				// Prefetch adjacent pages if renderWindow is small (helps prevent gaps)
+				if (this.config.renderWindow < 2 && !this.state.loading) {
+					const prefetchPages = [];
+
+					// Prioritize prefetch based on scroll direction
+					if (this.state.scrollDirection >= 0) {
+						// Scrolling down or stationary - prefetch next page first
+						if (endPage < this.pageCache.length && !this.fetchedPages.has(endPage)) {
+							prefetchPages.push(endPage);
+				}
+						if (startPage > 0 && !this.fetchedPages.has(startPage - 1)) {
+							prefetchPages.push(startPage - 1);
+						}
+					} else {
+						// Scrolling up - prefetch previous page first
+						if (startPage > 0 && !this.fetchedPages.has(startPage - 1)) {
+							prefetchPages.push(startPage - 1);
+						}
+						if (endPage < this.pageCache.length && !this.fetchedPages.has(endPage)) {
+							prefetchPages.push(endPage);
+						}
+					}
+
+					if (prefetchPages.length > 0) {
+						// Don't await - let it load in background
+						this.triggerLoad(prefetchPages[0]).catch(err => {
+							console.warn('Prefetch failed:', err);
+						});
+					}
+				}
+
+				// Optimize cache and measure rows
+				this.clearOldCache(startPage);
+				this.measure(this.getStartRow(startPage), this.getEndRow(endPage - 1));
+
+				// Skip re-render if nothing changed
+				if (startPage === this.state.lastStartPage &&
+						  endPage === this.state.lastEndPage &&
+						  this.isFullyMeasured(startPage, endPage)) {
 					return;
+				}
 
-				this.lastStartPage = startP;
-				this.render(startP, endP);
-
+				this.state.lastStartPage = startPage;
+				this.state.lastEndPage = endPage;
+				this.render(startPage, endPage);
 			}
 
-			findPageByScrollTop(st) {
-				let left = 0, right = this.pageCache.length - 1;
+			/**
+			 * Special update logic for renderWindow = 1
+			 * Loads adjacent pages proactively based on scroll position within current page
+			 *
+			 * @param {integer} visiblePageId the visible page
+			 * @param {Number} scrollTop current scroll position
+			 * @returns {Number} 
+			 * 
+			 */
+			async _updateSinglePageMode(visiblePageId, scrollTop) {
+				const currentPage = visiblePageId;
+
+				// Ensure current page is loaded
+				if (!this.fetchedPages.has(currentPage)) {
+					if (!this.state.loading) {
+						await this.triggerLoad(currentPage);
+			}
+					return;
+				}
+
+				// Calculate scroll position within the current page
+				const pageTop = this.pageCache[currentPage].top;
+				const pageHeight = this.pageCache[currentPage].height;
+				const scrollIntoPage = scrollTop - pageTop;
+				const scrollPercentage = scrollIntoPage / pageHeight;
+
+				// Determine which adjacent page to load based on scroll position
+				const LOAD_THRESHOLD = 0.5; // Load next/prev page when 50% through current page
+
+				let pageToLoad = null;
+
+				if (scrollPercentage > LOAD_THRESHOLD && currentPage < this.pageCache.length - 1) {
+					// Past middle scrolling down - load next page
+					pageToLoad = currentPage + 1;
+				} else if (scrollPercentage < (1 - LOAD_THRESHOLD) && currentPage > 0) {
+					// Past middle scrolling up - load previous page
+					pageToLoad = currentPage - 1;
+				}
+
+				// Load the adjacent page if needed
+				if (pageToLoad !== null && !this.fetchedPages.has(pageToLoad)) {
+					if (!this.state.loading) {
+						// Load in background without blocking
+						this.triggerLoad(pageToLoad).catch(err => {
+							console.warn('Adjacent page load failed:', err);
+						});
+					}
+				}
+
+				// Determine which pages to render (always include loaded adjacent pages)
+				let startPage = currentPage;
+				let endPage = currentPage + 1;
+
+				// Expand render window to include adjacent loaded pages
+				if (currentPage > 0 && this.fetchedPages.has(currentPage - 1)) {
+					startPage = currentPage - 1;
+				}
+
+				if (currentPage < this.pageCache.length - 1 && this.fetchedPages.has(currentPage + 1)) {
+					endPage = currentPage + 2;
+				}
+
+				// Clean up cache (keep current and adjacent pages)
+				this.clearOldCache(currentPage);
+
+				// Measure and render
+				this.measure(this.getStartRow(startPage), this.getEndRow(endPage - 1));
+
+				// Render if either start or end page changed, or if not fully measured
+				const pageRangeChanged = startPage !== this.state.lastStartPage ||
+						  endPage !== this.state.lastEndPage;
+				const needsRender = pageRangeChanged || !this.isFullyMeasured(startPage, endPage);
+
+				if (needsRender) {
+					this.state.lastStartPage = startPage;
+					this.state.lastEndPage = endPage;
+					this.render(startPage, endPage);
+				}
+			}
+
+			/**
+			 * Binary search to find page by scroll position
+			 * 
+			 * @param {Number} scrollTop  the current scroll position
+			 * @returns {Number|mid} the related page
+			 */
+			findPageByScrollTop(scrollTop) {
+				let left = 0;
+				let right = this.pageCache.length - 1;
+
 				while (left <= right) {
 					const mid = Math.floor((left + right) / 2);
-					if (this.pageCache[mid].top <= st) {
-						if (mid === this.pageCache.length - 1 || this.pageCache[mid + 1].top > st) {
+
+					if (this.pageCache[mid].top <= scrollTop) {
+						if (mid === this.pageCache.length - 1 || this.pageCache[mid + 1].top > scrollTop) {
 							return mid;
 						}
 						left = mid + 1;
@@ -7478,182 +7844,332 @@ $.fn.jqGrid = function( pin ) {
 						right = mid - 1;
 					}
 				}
+
 				return 0;
 			}
+
+			/**
+			 * Loads data for a specific page
+			 * 
+			 * @param {type} pageId
+			 * @returns {void}
+			 */
 			async triggerLoad(pageId) {
-				//if (this.loading || this.fetchedPages.has(pageId)) return;
-				this.loading = true;
+				this.state.loading = true;
 
-				//this.loading = true;
-				//this.statusEl.textContent = `Fetching Page ${pageId + 1}...`;
-				let ts = this.jqGridId,
-						pgboxes = ts.p.pager || "";
+				// Update status message
+				const ts = this.jqGridId;
+				const pgboxes = [ts.p.pager, ts.p.toppager].filter(Boolean).join(',');
+				$(`.ui-paging-info`, pgboxes).html(`Fetching Page ${pageId + 1}...`);
 	 
-				pgboxes += ts.p.toppager ? (pgboxes ? "," + ts.p.toppager : ts.p.toppager) : "";
-				$(".ui-paging-info", pgboxes).html(`Fetching Page ${pageId + 1}...`);
+				// Fetch data
+				this.restresponse = vJsonReader(await this.fetchData(pageId, this.config.pageSize), ts);
 
-				this.restresponse = vJsonReader ( await this.fetchData(pageId, this.pageSize) );
-				if (!this.initialized)
+				// Initialize if needed
+				if (!this.state.initialized) {
 					this.setup(this.restresponse.records);
+				}
 
+				// Cache the data
 				this.restresponse.rows.forEach((row, i) => {
 					this.dataCache.set(this.getStartRow(pageId) + i, row);
 				});
 
 				this.fetchedPages.add(pageId);
-				this.loading = false;
-				this.update();
-				// save memory
+				this.state.loading = false;
+
+				// Free memory
 				this.restresponse.rows = [];
+
+				// Continue update cycle
+				this.update();
 			}
 
-			setup(total) {
-				this.rowCount = total;
+			/**
+			 * Sets up initial page structure based on total records
+			 *  
+			 * @param {integer} totalRecords
+			 * @returns {void}
+			 */
+			setup(totalRecords) {
+				this.state.rowCount = totalRecords;
 				let top = 0;
-				const pageCount = Math.ceil(total / this.pageSize);
-				for (let p = 0; p < pageCount; p++) {
-					const h = (this.getEndRow(p) - this.getStartRow(p)) * this.averageRowHeight;
-					this.pageCache.push({top, height: h, estimated: true});
-					top += h;
+				const pageCount = Math.ceil(totalRecords / this.config.pageSize);
+
+				for (let page = 0; page < pageCount; page++) {
+					const rowCount = this.getEndRow(page) - this.getStartRow(page);
+					const height = rowCount * this.config.averageRowHeight;
+
+					this.pageCache.push({top, height, estimated: true});
+					top += height;
 				}
+
 				this.canvas.style.height = `${top}px`;
-				this.initialized = true;
+				this.state.initialized = true;
 			}
 
+			/**
+			 * Measures row heights for accurate positioning
+			 * 
+			 * @param {integer} start start row index
+			 * @param {integer} end end row index
+			 * @returns {void}
+			 */
 			measure(start, end) {
 				const toMeasure = [];
+
 				for (let i = start; i < end; i++) {
-					if (this.dataCache.get(i) && !(i in this.heightCache))
+					if (this.dataCache.get(i) && !(i in this.heightCache)) {
 						toMeasure.push(i);
-				}
-				if (toMeasure.length === 0)
-					return;
-				// Store which row is currently at top of viewport
-				const scrollTop = this.el.scrollTop;
-				let currentVisibleRow = 0;
-				let accumulated = 0;
-				for (let i = 0; i < this.rowCount; i++) {
-					accumulated += this.heightCache[i] || this.averageRowHeight;
-					if (accumulated > scrollTop) {
-						currentVisibleRow = i;
-						break;
 					}
 				}
 
-				// SYNC: Ensure measurement container matches the scrolling container width
-				const containerWidth = this.el.clientWidth;
-				this.measureEl.style.width = containerWidth + 'px';
-				this.measureTbody.innerHTML = ''; // Clear, don't recreate
+				if (toMeasure.length === 0)
+					return;
 
-				var frd;
-				if(ts.p.datatype === "local") {
-					frd= 'local';
-				} else {
-					frd='json';
-				}
-				let objectReader=reader(frd);
-				
-				let str = this.jqGridId.rows[0].outerHTML,
-						cm = this.jqGridId.p.colModel;
-				toMeasure.forEach(i => {
-					const row = this.dataCache.get(i);
-					str += "<tr class='jqgrow ui-row-ltr'>";
-					for (let j = 0; j < objectReader.length; j++) {
-						//if (row[cm[j].name]) {
-							str += `<td>${$.jgrid.getAccessor(row,objectReader[j])}</td>`;
-						//} else {
-							//str += `<td>${'&nbsp;'}</td>`;
-						//}
-						}
-					str += "</tr>";
-				});
+				// Identify the reference row (first visible row at top of viewport)
+				const scrollTop = this.el.scrollTop;
+				const referenceRow = this._findFirstVisibleRow(scrollTop);
 
-				this.measureTbody.innerHTML = str; //this.measureTbody
+				// Calculate offset of reference row from top of viewport BEFORE measurement
+				const offsetBeforeMeasure = this._calculateOffsetFromTop(referenceRow, scrollTop);
+
+				// Sync measurement container width
+				this.measureEl.style.width = this.el.clientWidth + 'px';
+				this.measureTbody.innerHTML = '';
+
+				// Build measurement HTML
+				const html = this._buildMeasurementHTML(toMeasure);
+				this.measureTbody.innerHTML = html;
+
+				// Measure heights
 				const rows = this.measureTable.querySelectorAll('tr');
 				toMeasure.forEach((idx, i) => {
 					this.heightCache[idx] = rows[i].offsetHeight;
 				});
-				//this.measureEl.innerHTML = '';
 
-				// Reflow the page cache tops based on new heights
-				let currentTop = 0;
-				this.pageCache.forEach((page, p) => {
-					let pageH = 0;
-					for (let r = this.getStartRow(p); r < this.getEndRow(p); r++) {
-						pageH += this.heightCache[r] || this.averageRowHeight;
+				// Update page cache with new measurements
+				this._updatePageCacheHeights();
+
+				// Restore scroll position to keep the reference row at the same viewport position
+				if (scrollTop > 0 && referenceRow >= 0) {
+					this._preserveScrollPosition(referenceRow, offsetBeforeMeasure);
+				}
+			}
+
+			/**
+			 * Finds the first fully or partially visible row at the top of viewport
+			 *  
+			 * @param {Number} scrollTop - the current scroll position
+			 * @returns {Number}
+			 */
+			_findFirstVisibleRow(scrollTop) {
+				let accumulated = 0;
+
+				for (let i = 0; i < this.state.rowCount; i++) {
+					const rowHeight = this.heightCache[i] || this.config.averageRowHeight;
+
+					// If this row contains or is past the scrollTop, it's our reference
+					if (accumulated + rowHeight > scrollTop) {
+						return i;
 					}
-					page.top = currentTop;
-					page.height = pageH;
-					currentTop += pageH;
-				});
-				//////////////////////////////
-				let newPosition = 0;
-				for (let i = 0; i < currentVisibleRow; i++) {
-					newPosition += this.heightCache[i] || this.averageRowHeight;
+
+					accumulated += rowHeight;
 				}
 
-				// Only adjust if significantly different
-				if (Math.abs(newPosition - scrollTop) > 5 && end !== this.rowCount) {
-					requestAnimationFrame(() => {
-						this.el.scrollTop = newPosition;
-						this.update(); // Re-render at new position
-					});
+				return 0;
+			}
+
+			/**
+			 * Calculates how far into a row the scrollTop is
+			 * 
+			 * @param {integer} rowIndex the row index
+			 * @param {Number} scrollTop the current scroll position
+			 * @returns {Number}
+			 */
+			_calculateOffsetFromTop(rowIndex, scrollTop) {
+				let accumulated = 0;
+
+				for (let i = 0; i < rowIndex; i++) {
+					accumulated += this.heightCache[i] || this.config.averageRowHeight;
 				}
+				
+				// Return how many pixels into the reference row we are
+				return scrollTop - accumulated;
+						}
+
+			/**
+			 * Preserves scroll position by keeping reference row at same viewport offset
+			 * 
+			 * @param {integer} referenceRow
+			 * @param {integer} targetOffset
+			 * @returns {void}
+			 */
+			_preserveScrollPosition(referenceRow, targetOffset) {
+				// Calculate new position of reference row
+				let newPosition = 0;
+
+				for (let i = 0; i < referenceRow; i++) {
+					newPosition += this.heightCache[i] || this.config.averageRowHeight;
+				}
+
+				// Add the offset into the reference row
+				newPosition += targetOffset;
+
+				const currentScroll = this.el.scrollTop;
+				const diff = Math.abs(newPosition - currentScroll);
+
+				// Only adjust if difference is significant
+				if (diff > 1) {
+					this._isAdjustingScroll = true;
+
+					this.el.scrollTop = newPosition;
+
+					// Reset flag after scroll settles
+					requestAnimationFrame(() => {
+						this._isAdjustingScroll = false;
+				});
+				}
+			}
+
+			/**
+			 * Builds HTML for measurement
+			 * 
+			 * @param {integer} indices number of rows
+			 * @returns {string}
+			 */
+			_buildMeasurementHTML(indices) {
+				let html = this.jqGridId.rows[0].outerHTML; 
+				indices.forEach(i => {
+					const row = this.dataCache.get(i);
+					html += "<tr class='jqgrow ui-row-ltr'>";
+
+					this.objectReader.forEach((fieldReader,i)  =>  {
+						if( this.hiddenReader[i] ) { return; }  // skip hidden
+						const value = $.jgrid.getAccessor(row, fieldReader);
+						html += `<td>${value}</td>`;
+				});
+
+					html += "</tr>";
+				});
+
+				return html;
+			}
+
+			/**
+			 * Updates page cache with measured heights
+			 */
+			_updatePageCacheHeights() {
+				let currentTop = 0;
+
+				this.pageCache.forEach((page, p) => {
+					let pageHeight = 0;
+
+					for (let r = this.getStartRow(p); r < this.getEndRow(p); r++) {
+						pageHeight += this.heightCache[r] || this.config.averageRowHeight;
+					}
+
+					page.top = currentTop;
+					page.height = pageHeight;
+					currentTop += pageHeight;
+				});
 
 				this.canvas.style.height = `${currentTop}px`;
 			}
 
-			isFullyMeasured(startP, endP) {
-				for (let i = this.getStartRow(startP); i < this.getEndRow(endP - 1); i++) {
-					if (!(i in this.heightCache))
+			/**
+			 * Checks if all rows in range are measured
+			 * 
+			 * @param {int} startPage from calculated start page
+			 * @param {int} endPage to the calculated endPage
+			 * @returns {boolean}
+			 */
+			isFullyMeasured(startPage, endPage) {
+				for (let i = this.getStartRow(startPage); i < this.getEndRow(endPage - 1); i++) {
+					if (!(i in this.heightCache)) {
 						return false;
+					}
 				}
 				return true;
 			}
 
-			render(startP, endP) {
-				this.wrapper.setAttribute('aria-rowindex', this.getStartRow(startP) + 1);
-				this.wrapper.setAttribute('aria-rowcount', this.rowCount);
-				this.wrapper.style.transform = `translateY(${this.pageCache[startP].top}px)`;
+			/**
+			 * Renders visible rows
+			 * 
+			 * @param {int} startPage from calculated start page
+			 * @param {int} endPage to the calculated endPage
+			 * @returns {void}
+			 */
+			render(startPage, endPage) {
+				const ts = this.jqGridId;
 
-				let ts = this.jqGridId;
+				// Set ARIA attributes
+				this.wrapper.setAttribute('aria-rowindex', this.getStartRow(startPage) + 1);
+				this.wrapper.setAttribute('aria-rowcount', this.state.rowCount);
 				
+				// Position wrapper
+				this.wrapper.style.transform = `translateY(${this.pageCache[startPage].top}px)`;
+
+				// Collect visible rows
 				this.restresponse.rows = [];
 				
-				for (let i = this.getStartRow(startP); i < this.getEndRow(endP - 1); i++) {
+				for (let i = this.getStartRow(startPage); i < this.getEndRow(endPage - 1); i++) {
 					const item = this.dataCache.get(i);
-					if (!item)
-						continue;
+					if (item) {
 					this.restresponse.rows.push(item);
 				}
-				// to put here default reader
-				this.restresponse.total = Math.ceil(this.rowCount / this.pageSize);
-				this.restresponse.page = startP + 1;
-				this.restresponse.records = this.rowCount;
-				//retresult[dReader.userdata] = this.restresponse.userdata;
-				ts.addJSONData(this.restresponse, 1, false, endP - startP, this.jsonReader);
+				}
+
+				// Don't render if no data (prevents empty grid flashing)
+				if (this.restresponse.rows.length === 0) {
+					return;
+				}
+
+				// Update response metadata
+				this.restresponse.total = Math.ceil(this.state.rowCount / this.config.pageSize);
+				this.restresponse.page = startPage + 1;
+				this.restresponse.records = this.state.rowCount;
+
+				// Add data to grid
+				ts.addJSONData(this.restresponse, 1, false, endPage - startPage, this.jsonReader);
+
+				// Trigger events
 				$(ts).triggerHandler("jqGridLoadComplete", [this.restresponse]);
 				$(ts).triggerHandler("jqGridAfterLoadComplete", [this.restresponse]);
+
 				endReq();
-				//data=null;
-				//this.statusEl.textContent = `Showing ${this.getStartRow(startP) + 1}-${this.getEndRow(endP - 1)} of ${this.rowCount.toLocaleString()} Data Cache Size: ${this.dataCache.size}`;
 			}
 
-			// Your clearOldCache is good but consider:
+			/**
+			 * Removes old cached data to save memory
+			 * 
+			 * @param {integer} 
+			 * @returns {void}
+			 */
 			clearOldCache(currentStart) {
-				if (this.fetchedPages.size <= this.maxCache)
+				
+				const maxCacheSize = this.config.maxCache;
+
+				if (this.fetchedPages.size <= maxCacheSize) {
 					return;
-				const sorted = Array.from(this.fetchedPages).sort((a, b) => Math.abs(currentStart - a) - Math.abs(currentStart - b));
-				sorted.slice(this.maxCache).forEach(p => {
-					for (let i = this.getStartRow(p); i < this.getEndRow(p); i++) {
+				}
+
+				// Sort pages by distance from current position
+				const sorted = Array.from(this.fetchedPages).sort(
+						  (a, b) => Math.abs(currentStart - a) - Math.abs(currentStart - b)
+				);
+
+				// Remove furthest pages beyond max cache
+				sorted.slice(maxCacheSize).forEach(page => {
+					for (let i = this.getStartRow(page); i < this.getEndRow(page); i++) {
 						this.dataCache.delete(i);
 						delete this.heightCache[i];
 					}
-					this.fetchedPages.delete(p);
+					this.fetchedPages.delete(page);
 				});
 			}
-
 		}
+
 		$(ts).triggerHandler("jqGridInitGrid");
 		if (ts.p.vScroll) {
 			var vGrid = new jqGridVirtualizer({
@@ -9360,7 +9876,7 @@ $.jgrid.extend({
 			if( this.p.direction === "rtl" && frzclass.slice(-4) !== "-rtl") {
 				frzclass += "-rtl";
 			}
-			console.log("caled unset",frzclass);
+			//console.log("caled unset",frzclass);
 			for(let i=0;i< this.p.frozenColCount+1; i++){
 				// from left direction only for now
 				var nm = this.p.id+"_"+cm[i].name ;					
@@ -9720,7 +10236,47 @@ $.jgrid.extend({
 		});
 	}
 });
+//module end
+}));
 
+/*jshint eqeqeq:false */
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+/**
+ * all events and options here are aded anonynous and not in the base grid
+ * since the array is to big. Here is the order of execution.
+ * From this point we use jQuery isFunction
+ * formatCell
+ * beforeEditCell,
+ * onCellSelect (used only for noneditable cels)
+ * afterEditCell,
+ * beforeSaveCell, (called before validation of values if any)
+ * beforeSubmitCell (if cellsubmit remote (ajax))
+ * onSubmitCell
+ * afterSubmitCell(if cellsubmit remote (ajax)),
+ * afterSaveCell,
+ * errorCell,
+ * validationCell
+ * serializeCellData - new
+ * Options
+ * cellsubmit (remote,clientArray) (added in grid options)
+ * cellurl
+ * ajaxCellOptions
+ * restoreCellonFail
+* */
+"use strict";
 //module begin
 $.jgrid.extend({
 	editCell : function (iRow,iCol, ed, event, excel){
@@ -10423,7 +10979,27 @@ $.jgrid.extend({
 	}
 /// end  cell editing
 });
+//module end
+}));
 
+/*jshint eqeqeq:false */
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base",
+			"./jqModal",
+			"./jqDnR"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+"use strict";
 //module begin
 $.extend($.jgrid,{
 // Modal functions
@@ -11459,7 +12035,46 @@ $.extend($.jgrid,{
 		form.parentNode.removeChild(form);
 	}	
 });
+//module end
+}));
 
+/*
+ *
+ * The filter uses JSON entities to hold filter rules and groups. Here is an example of a filter:
+
+{ "groupOp": "AND",
+      "groups" : [
+        { "groupOp": "OR",
+            "rules": [
+                { "field": "name", "op": "eq", "data": "England" },
+                { "field": "id", "op": "le", "data": "5"}
+             ]
+        }
+      ],
+      "rules": [
+        { "field": "name", "op": "eq", "data": "Romania" },
+        { "field": "id", "op": "le", "data": "1"}
+      ]
+}
+*/
+/*jshint eqeqeq:false, eqnull:true, devel:true */
+/*global jQuery, define */
+
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base",
+			"./grid.common"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+"use strict";
 //module begin
 $.fn.jqFilter = function( arg ) {
 	if (typeof arg === 'string') {
@@ -13502,7 +14117,26 @@ $.jgrid.extend({
 		});
 	}
 });
+//module end
+}));
 
+/*jshint eqeqeq:false, eqnull:true, devel:true */
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base",
+			"./grid.common"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+"use strict";
 //module begin
 var rp_ge = {};
 $.jgrid.extend({
@@ -15961,7 +16595,26 @@ $.jgrid.extend({
 		});
 	}
 });
+//module end
+}));
 
+/*jshint eqeqeq:false, eqnull:true */
+/*global jQuery, define */
+// Grouping module
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+"use strict";
 //module begin
 $.jgrid.extend({
 	groupingInit : function () {
@@ -16898,7 +17551,26 @@ $.jgrid.extend({
 		});
 	}
 });
+//module end
+}));
 
+/*jshint eqeqeq:false, eqnull:true, devel:true */
+/*global jQuery, define, URL */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.utils",
+			"./grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+"use strict";
 //module begin
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
@@ -17487,7 +18159,26 @@ $.extend($.jgrid,{
 			});
 		}
     });
+//module end
+}));
 
+/*jshint eqeqeq:false, eqnull:true, devel:true */
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base",
+			"./grid.common"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+"use strict";
 //module begin
 $.jgrid.inlineEdit = $.jgrid.inlineEdit || {};
 $.jgrid.extend({
@@ -18275,7 +18966,39 @@ $.jgrid.extend({
 	}
 //end inline edit
 });
+//module end
+}));
 
+/*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base",
+			"jquery-ui/dialog",
+			"jquery-ui/draggable",
+			"jquery-ui/droppable",
+			"jquery-ui/resizable",
+			"jquery-ui/sortable",
+			"./addons/ui.multiselect"		
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {/*
+**
+ * jqGrid addons using jQuery UI 
+ * Author: Mark Williams
+ * Dual licensed under the MIT and GPL licenses:
+ * http://www.opensource.org/licenses/mit-license.php
+ * http://www.gnu.org/licenses/gpl-2.0.html
+ * depends on jQuery UI 
+**/
+"use strict";
 //module begin
 if ($.jgrid.msie() && $.jgrid.msiever()===8) {
 	$.expr[":"].hidden = function(elem) {
@@ -18923,7 +19646,29 @@ $.jgrid.extend({
 		});
 	}
 });
+//module end
+}));
 
+/*jshint eqeqeq:false */
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base",
+			"./grid.grouping"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+"use strict";
+// To optimize the search we need custom array filter
+// This code is taken from
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
 //module begin
 function _pivotfilter (fn, context) {
 	/*jshint validthis: true */
@@ -19532,7 +20277,25 @@ $.jgrid.extend({
 		});
 	}
 });
+//module end
+}));
 
+/*jshint eqeqeq:false */
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+"use strict";
 //module begin
 $.jgrid.extend({
 setSubGrid : function () {
@@ -19859,7 +20622,25 @@ toggleSubGridRow : function(rowid) {
 	});
 }
 });
+//module end
+}));
 
+/*jshint eqeqeq:false */
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+"use strict";
 //module begin
 $.jgrid.extend({
 	setTreeNode : function(i, len){
@@ -20861,7 +21642,33 @@ $.jgrid.extend({
 		//});
 	}
 });
+//module end
+}));
 
+/*
+ * jqDnR - Minimalistic Drag'n'Resize for jQuery.
+ *
+ * Copyright (c) 2007 Brice Burgess <bhb@iceburg.net>, http://www.iceburg.net
+ * Licensed under the MIT License:
+ * http://www.opensource.org/licenses/mit-license.php
+ * 
+ * $Version: 2007.08.19 +r2
+ */
+/*jshint eqeqeq:false */
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+} (function( $ ) {
+"use strict";
 //module begin
 $.fn.jqDrag=function(h){return i(this,h,'d');};
 $.fn.jqResize=function(h,ar){return i(this,h,'r',ar);};
@@ -20944,7 +21751,34 @@ $.fn.tinyDraggable = function(options){
 		});
 	});
 };
-
+//module end
+}));
+/*
+ * jqModal - Minimalist Modaling with jQuery
+ *   (http://dev.iceburg.net/jquery/jqmodal/)
+ *
+ * Copyright (c) 2007,2008 Brice Burgess <bhb@iceburg.net>
+ * Dual licensed under the MIT and GPL licenses:
+ *   http://www.opensource.org/licenses/mit-license.php
+ *   http://www.gnu.org/licenses/gpl.html
+ * 
+ * $Version: 07/06/2008 +r13
+ */
+/*jshint eqeqeq:false */
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+} (function( $ ) {
+"use strict";
 //module begin
 $.fn.jqm=function(o){
 var p={
@@ -21002,7 +21836,39 @@ m=function(e){var h=H[A[A.length-1]],r=(!$(e.target).parents('.jqmID'+h.s)[0]);i
 hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function() {
  if(!this[c]){this[c]=[];$(this).click(function(){for(var i in {jqmShow:1,jqmHide:1}){for(var s in this[i]){if(H[this[i][s]]){H[this[i][s]].w[i](this);}}}return F;});}
  this[c].push(s);});});};
+//module end
+}));
+/*
+**
+ * formatter for values but most of the values if for jqGrid
+ * Some of this was inspired and based on how YUI does the table datagrid but in jQuery fashion
+ * we are trying to keep it as light as possible
+ * Joshua Burnett josh@9ci.com	
+ * http://www.greenbill.com
+ *
+ * Changes from Tony Tomov tony@trirand.com
+ * Dual licensed under the MIT and GPL licenses:
+ * http://www.opensource.org/licenses/mit-license.php
+ * http://www.gnu.org/licenses/gpl-2.0.html
+ * 
+**/
+/*jshint eqeqeq:false */
+/*global jQuery, define */
 
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+"use strict";
 //module begin
 	$.fmatter = {};
 	//opts can be id:row id for the row, rowdata:the data for the row, colmodel:the column model for this column
@@ -21477,7 +22343,34 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 		}
 		return $.fn.fmatter.defaultFormat(cellval, opts);
 	};
+//module end
+}));
 
+/*
+ * 
+ * HTML5 Sortable jQuery Plugin
+ * 
+ * Original code Copyright 2012 Ali Farhadi.
+ *
+ * This version is maintained by Tony Tomov <tony@trirand.com>
+ * 
+ * Released under the MIT license.
+ */
+/*jshint eqeqeq:false */
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+} (function( $ ) {
+"use strict";
 //module begin
 var dragging, placeholders = $();
 $.fn.html5sortable = function(options) {
@@ -21558,7 +22451,24 @@ $.fn.html5sortable = function(options) {
 		});
 	});
 };
+//module end
+}));
+/*global jQuery, define, URL */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
 
+	// AMD. Register as an anonymous module.
+		define([
+			"jquery"
+		], factory );
+	} else {
+
+	// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+"use strict";
 //module begin
 $.extend($.jgrid,{
 //window.jqGridUtils = {
@@ -21944,7 +22854,27 @@ $.extend($.jgrid,{
 		return arr;
 	}
 });
-
+//module end
+//return window.jqGridUtils;
+}));
+/*jshint eqeqeq:false, eqnull:true, devel:true */
+/*global jQuery, JSZip, pdfMake, XMLSerializer, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base",
+			"./jquery.fmatter",
+			"./grid.utils"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+"use strict";
 //module begin
 
 $.jgrid = $.jgrid || {};
@@ -24312,7 +25242,25 @@ $.jgrid.extend({
 		return ret;
 	}
 });
+//module end
+}));
 
+/*jshint eqeqeq:false */
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+"use strict";
 //module begin
 $.extend($.jgrid,{
 	focusableElementsList : [
@@ -25204,7 +26152,25 @@ $.jgrid.extend({
 	}
 // end aria grid
 });
+//module end
+}));
 
+/*jshint eqeqeq:false */
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+"use strict";
 //module begin
 $.jgrid.extend({
 	transposeSetup : function( data, options ){
@@ -25321,7 +26287,25 @@ $.jgrid.extend({
 		});
 	}
 });
+//module end
+}));
 
+/*jshint eqeqeq:false */
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+"use strict";
 //module begin
 $.jgrid.extend({
 	setupFrozenRows : function ( options ){
@@ -25408,7 +26392,25 @@ $.jgrid.extend({
 		});
 	}
 });
-
+//module end
+}));
+/*jshint eqeqeq:false, eqnull:true */
+/*global jQuery, define */
+// Grouping module
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+"use strict";
 //module begin
 $.jgrid.extend({
 	dbInit : function (dbtype) {
@@ -25687,7 +26689,25 @@ $.jgrid.extend({
 		});
 	}	
 });
+//module end
+}));
 
+/*jshint eqeqeq:false */
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+"use strict";
 //module begin
 // clipboard
 $.extend($.jgrid,{
@@ -26261,5 +27281,7 @@ $.jgrid.extend({
 // end clipboard grid
 });
 //clipboard
+//module end
+}));
 
 }));
