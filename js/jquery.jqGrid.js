@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.11 - 2026-02-21
+* @license Guriddo jqGrid JS - v5.8.11 - 2026-03-09
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -3273,13 +3273,8 @@ $.fn.jqGrid = function( pin ) {
 			minColWidth : 33,
 			minGridWidth : 100,
 			maxGridWidth : 3000,
-			
-			vScroll : false,
-			scrollMaxCache : 25,
-			scrollRenderWin : 2,
-			scrollAvgRowHeight : 55,
-			
 			scroll: false,
+			vScroll: false,
 			scrollTimeout: 300,
 			scrollPopUp : false,
 			scrollTopOffset: 0, // pixel
@@ -3797,11 +3792,6 @@ $.fn.jqGrid = function( pin ) {
 					this.grid.bDiv.scrollTop = 0;
 				}
 			}
-			if(scroll && this.p.vScroll) {
-				if (this.grid.bDiv.scrollTop !== 0) {
-					this.grid.bDiv.scrollTop = 0;
-				}				
-			}
 			if(locdata === true ) { //&& this.p.treeGrid && !this.p.loadonce ) {
 				this.p.data = []; 
 				this.p._index = {};
@@ -3974,7 +3964,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			ts.p.reccount = 0;
 			if($.isXMLDoc(xml)) {
-				if(ts.p.treeANode===-1 && (!ts.p.scroll || !ts.p.vScroll) ) {
+				if(ts.p.treeANode === -1 && !ts.p.scroll && !ts.p.vScroll) {
 					emptyRows.call(ts, false, false);
 					rcnt=1;
 				} else { rcnt = rcnt > 1 ? rcnt :1; }
@@ -4191,10 +4181,10 @@ $.fn.jqGrid = function( pin ) {
 				try {self.jqGrid("addSubGrid",gi+ni);} catch (_){}
 			}
 		},
-		addJSONData = function(data, rcnt, more, adjust, _vJR) {
+		addJSONData = function(data, rcnt, more, adjust) {
 			var startReq = new Date();
 			if(data) {
-				if(ts.p.treeANode === -1 && (!ts.p.scroll || !ts.p.vScroll) ) {
+				if(ts.p.treeANode === -1 && !ts.p.scroll && !ts.p.vScroll) {
 					emptyRows.call(ts, false, false);
 					rcnt=1;
 				} else { rcnt = rcnt > 1 ? rcnt :1; }
@@ -4205,7 +4195,7 @@ $.fn.jqGrid = function( pin ) {
 				dReader =  ts.p.localReader;
 				frd= 'local';
 			} else {
-				dReader =  _vJR != null ? _vJR : ts.p.jsonReader;
+				dReader =  ts.p.jsonReader;
 				frd='json';
 			}
 
@@ -4872,14 +4862,13 @@ $.fn.jqGrid = function( pin ) {
 			if(base < 0) { base = 0; }
 			base = base*parseInt(ts.p.rowNum,10);
 			to = base + ts.p.reccount;
-			if (ts.p.scroll || ts.p.vScroll) {
+			if (ts.p.scroll && !ts.p.vScroll) {
 				var rows = $("tbody", ts.grid.bDiv).first().find("> tr").slice( 1 );
 				if(to > ts.p.records) {
 					to = ts.p.records;
 				}
 				base = to - rows.length;
 				ts.p.reccount = rows.length;
-				if(ts.p.scroll) { // old behaviour
 					var rh = rows.outerHeight() || ts.grid.prevRowHeight;
 					if (rh) {
 						var top = base * rh;
@@ -4890,7 +4879,6 @@ $.fn.jqGrid = function( pin ) {
 						}
 					}
 					ts.grid.bDiv.scrollLeft = ts.grid.hDiv.scrollLeft;
-				}
 			}
 			pgboxes = ts.p.pager || "";
 			pgboxes += ts.p.toppager ?  (pgboxes ? "," + ts.p.toppager : ts.p.toppager) : "";
@@ -4987,6 +4975,12 @@ $.fn.jqGrid = function( pin ) {
 			endReq();
 		},
 		populate = function (npage) {
+			// If vScroll coordinator is active, hand off to it instead.
+			// ts.grid.populate is overridden by the coordinator to call vsReset().
+			if(ts.p.vScroll && ts.grid && $.jgrid.isFunction(ts.grid.populate)) {
+				ts.grid.populate.call(this);
+				return;
+			}
 			if(!ts.grid.hDiv.loading) {
 				var pvis = ts.p.scroll && npage === false,
 				prm = {}, dt, dstr, pN=ts.p.prmNames;
@@ -5048,7 +5042,7 @@ $.fn.jqGrid = function( pin ) {
 					*/
 				}
 				$.extend(ts.p.postData,prm);
-				var rcnt = (!ts.p.scroll || !ts.p.vScroll) ? 1 : ts.rows.length-1;
+				var rcnt = !ts.p.scroll ? 1 : ts.rows.length-1;
 				if ($.jgrid.isFunction(ts.p.datatype)) {
 					ts.p.datatype.call(ts,ts.p.postData,"load_"+ts.p.id, rcnt, npage, adjust);
 					return;
@@ -5517,7 +5511,7 @@ $.fn.jqGrid = function( pin ) {
 				}
 				ts.p.savedRow =[];
 			}
-			if(ts.p.scroll || ts.p.vScroll) {
+			if(ts.p.scroll) {
 				var sscroll = ts.grid.bDiv.scrollLeft;
 				emptyRows.call(ts, true, false);
 				ts.grid.hDiv.scrollLeft = sscroll;
@@ -5528,12 +5522,7 @@ $.fn.jqGrid = function( pin ) {
 				});
 			}
 			ts.p._sort = true;
-			if(ts.p.vScroll) {
-				vGrid.reset();
-				vGrid.update();
-			} else {
-				populate();
-			}
+			populate();
 			ts.p.lastsort = idxcol;
 			if(ts.p.sortname !== index && idxcol) {ts.p.lastsort = idxcol;}
 		},
@@ -6857,7 +6846,7 @@ $.fn.jqGrid = function( pin ) {
 					}
 					ts.p.savedRow = [];
 				}
-				if(ts.p.scroll || ts.p.vScroll) {
+				if(ts.p.scroll) {
 					emptyRows.call(ts, true, false);
 				}
 				if (opts.page) {
@@ -6917,20 +6906,11 @@ $.fn.jqGrid = function( pin ) {
 		//---
 		grid.bDiv = document.createElement("div");
 		if(isMSIE) { if(String(ts.p.height).toLowerCase() === "auto") { ts.p.height = "100%"; } }
-		if(ts.p.vScroll) {
-			$(grid.bDiv)
-				.append('<div class="scroll-canvas"></div>').append($("<div class='visible-wrapper'></div>").append(this) )
-				.addClass("ui-jqgrid-bdiv")
-				.css({ height: ts.p.height+(isNaN(ts.p.height)?"":"px"), width: (grid.width - bstw)+"px"});
-				//.on("scroll", grid.scrollGrid);
-			$('tbody',this).addClass('visible-items');
-		} else {
 			$(grid.bDiv)
 			.append($('<div style="position:relative;"></div>').append('<div></div>').append(this))
 			.addClass("ui-jqgrid-bdiv")
 			.css({ height: ts.p.height+(isNaN(ts.p.height)?"":"px"), width: (grid.width - bstw)+"px"})
 			.on("scroll", grid.scrollGrid);
-		}
 		$(grid.bDiv).find("table").first().css({width:ts.p.tblwidth+"px"});
 		if( !$.support.tbody ) { //IE
 			if( $("tbody",this).length === 2 ) { $("tbody",this).slice( 1 ).remove();}
@@ -7160,1043 +7140,574 @@ $.fn.jqGrid = function( pin ) {
 		ts.treeGrid_afterLoadComplete = function() {treeGrid_afterLoadComplete(); };
 		this.grid.cols = this.rows[0].cells;
 		if ($.jgrid.isFunction( ts.p.onInitGrid )) { ts.p.onInitGrid.call(ts); }
-  
-		/**
-		 * Adaptive Fetch Data Manager
-		 * Intelligently delays requests based on server performance and scroll behavior
-		 */
-		class AdaptiveFetchManager {
-			constructor() {
-				this.lastRequestTime = 0;
-				this.requestHistory = [];
-				this.scrollState = {
-				isFast: false,
-				velocity: 0,
-				lastUpdate: 0
-			};
-
-				// Configuration constants
-				this.HISTORY_SIZE = 10;
-				this.MIN_REQUEST_GAP = 150;
-				this.DELAYS = {
-					FAST: 150, // < 200ms avg response
-					MODERATE: 250 // 200-300ms avg response
-				};
-			}
-
-			/**
-			 * Fetches data with adaptive delay based on server performance
-			 * @param {number} page - Page number to fetch
-			 * @param {number} size - Page size
-			 * @param {Function} mockServerRequest - Server request function
-			 * @returns {Promise<Object>} Server response
-			 */
-			async fetch(page, size, mockServerRequest) {
-				const requestStart = performance.now();
-
-				// Calculate adaptive delay based on recent response times
-				const adaptiveDelay = this._calculateAdaptiveDelay();
-
-				// Enforce minimum gap between requests
-				const gapDelay = this._calculateGapDelay(requestStart);
-
-				// Apply the maximum of adaptive and gap delays
-				const totalDelay = Math.max(adaptiveDelay, gapDelay);
-				if (totalDelay > 0) {
-					await this._sleep(totalDelay);
-					}
-
-				// Make the actual request
-				const response = await mockServerRequest(page, size);
-
-				// Track performance metrics
-				this._recordRequest(page, requestStart, totalDelay);
-
-				this.lastRequestTime = performance.now();
-				return response;
-				}
-
-			/**
-			 * Updates scroll state for future optimizations
-			 * @param {boolean} isFast - Whether scrolling is fast
-			 * @param {number} velocity - Scroll velocity (optional)
-			 */
-			updateScrollState(isFast, velocity = 0) {
-				this.scrollState = {
-					isFast,
-					velocity,
-					lastUpdate: performance.now()
-				};
-			}
-
-			// Private methods
-			_calculateAdaptiveDelay() {
-				if (this.requestHistory.length === 0)
-					return 0;
-
-				const recentRequests = this.requestHistory.slice(-3);
-				const avgResponseTime = recentRequests.reduce((sum, r) => sum + r.duration, 0) / recentRequests.length;
-
-				if (avgResponseTime < 200)
-					return this.DELAYS.FAST;
-				if (avgResponseTime < 300)
-					return this.DELAYS.MODERATE;
-				return 0;
-				}
-
-			_calculateGapDelay(requestStart) {
-				const timeSinceLastRequest = requestStart - this.lastRequestTime;
-				return Math.max(0, this.MIN_REQUEST_GAP - timeSinceLastRequest);
-			}
-
-			_sleep(ms) {
-				return new Promise(resolve => setTimeout(resolve, ms));
-			}
-
-			_recordRequest(page, requestStart, delayUsed) {
-				const totalDuration = performance.now() - requestStart;
-				this.requestHistory.push({
-					page,
-					duration: totalDuration,
-					timestamp: requestStart,
-					delayUsed
-				});
-
-				if (this.requestHistory.length > this.HISTORY_SIZE) {
-					this.requestHistory.shift();
-				}
-			}
-		}
-
-		/**
-		 * Creates an adaptive fetch function with scroll state tracking
-		 * @returns {Function} Fetch function with updateScrollState method
-		 */
-		function createAdaptiveFetchData() {
-			const manager = new AdaptiveFetchManager();
-
-			const fetchImplementation = async (page, size) => {
-				return manager.fetch(page, size, mockServerRequest);
-			};
-
-			fetchImplementation.updateScrollState = (isFast, velocity) => {
-				manager.updateScrollState(isFast, velocity);
-			};
-
-			return fetchImplementation;
-		}
-
-		/**
-		 * JSON Reader utility for parsing grid data
-		 * @param {Object} data - Response data
-		 * @param {Object} ts - Grid instance
-		 * @returns {Object} Parsed data with page, lastpage, records, rows, id, userdata
-		 */
-		function vJsonReader(data, ts) {
-			const dReader = ts.p.datatype === 'json' ? ts.p.jsonReader : ts.p.localReader;
-			const retdata = {};
-
-			if (!$.jgrid.isNull(data)) {
-				retdata.page = intNum($.jgrid.getAccessor(data, dReader.page), ts.p.page);
-				retdata.lastpage = intNum($.jgrid.getAccessor(data, dReader.total), 1);
-				retdata.records = intNum($.jgrid.getAccessor(data, dReader.records));
-				retdata.rows = $.jgrid.getAccessor(data, dReader.root);
-				retdata.id = $.jgrid.getAccessor(data, dReader.id) || "id";
-				retdata.userdata = $.jgrid.getAccessor(data, dReader.userdata) || {};
-			}
-
-			return retdata;
-		}
-
-		/**
-		 * Mock server request function
-		 * @param {number} page - Page number
-		 * @param {number} size - Page size
-		 * @returns {Promise<Object>} Server response
-		 */
-		async function mockServerRequest(page, size) {
-			// Build request parameters
-			const prm = buildRequestParams(page, size);
-
-			// Trigger before request events
-			if (!triggerBeforeRequest(ts, prm)) {
-				return null;
-			}
-
-			// Execute the appropriate request based on datatype
-			const datatype = ts.p.datatype.toLowerCase();
-			let response;
-
-			if (datatype === 'json' || datatype === 'jsonp') {
-				response = await executeAjaxRequest(ts, prm);
-			} else if (datatype === 'local') {
-				ts.p.page = prm[ts.p.prmNames.page];
-				response = addLocalData(false);
-			}
-
-			// Process response
-			if (!beforeprocess(response)) {
-				endReq();
-				return null;
-			}
-
-			return response;
-			}
-
-		/**
-		 * Builds request parameters for the server
-		 */
-		function buildRequestParams(page, size) {
-			const prm = {};
-			const pN = ts.p.prmNames;
-
-			// Validate and set page
-			if (ts.p.page <= 0) {
-				ts.p.page = Math.min(1, ts.p.lastpage);
-			}
-
-			// Add parameters only if they're defined
-			const paramMap = {
-				[pN.search]: ts.p.search,
-				[pN.nd]: new Date().getTime(),
-				[pN.rows]: size,
-				[pN.page]: page + 1,
-				[pN.sort]: ts.p.sortname,
-				[pN.order]: ts.p.sortorder,
-				[pN.totalrows]: ts.p.rowTotal
-			};
-
-			for (const key in paramMap) {
-				if (Object.hasOwn(paramMap, key)) {
-					if(!$.jgrid.isNull(paramMap[key], true)){
-						prm[key] = paramMap[key];
-			}
-			}
-			}
-
-			$.extend(ts.p.postData, prm);
-			return prm;
-		}
-
-		/**
-		 * Triggers before request events and callbacks
-		 */
-		function triggerBeforeRequest(ts, prm) {
-			const bfr = $(ts).triggerHandler("jqGridBeforeRequest");
-			if (bfr === false || bfr === 'stop')
-				return false;
-
-			if ($.jgrid.isFunction(ts.p.beforeRequest)) {
-				const result = ts.p.beforeRequest.call(ts);
-				if (result === false || result === 'stop')
-					return false;
-				}
-
-			return true;
-		}
-
-		/**
-		 * Executes AJAX request
-		 */
-		async function executeAjaxRequest(ts, prm) {
-			const ajaxConfig = {
-				url: ts.p.url,
-				type: ts.p.mtype,
-				dataType: ts.p.datatype.toLowerCase(),
-				data: $.jgrid.isFunction(ts.p.serializeGridData)
-						  ? ts.p.serializeGridData.call(ts, ts.p.postData)
-						  : ts.p.postData,
-				beforeSend: function (xhr, settings) {
-					let gotoreq = $(ts).triggerHandler("jqGridLoadBeforeSend", [xhr, settings]);
-
-					if ($.jgrid.isFunction(ts.p.loadBeforeSend)) {
-						gotoreq = ts.p.loadBeforeSend.call(ts, xhr, settings);
-			}
-
-					if (gotoreq === undefined)
-						gotoreq = true;
-					if (gotoreq === false)
-						return false;
-
-					beginReq();
-				}
-			};
-
-			try {
-				const response = await $.ajax($.extend(ajaxConfig, $.jgrid.ajaxOptions, ts.p.ajaxGridOptions));
-				return response;
-			} catch (error) {
-				console.error("Request failed:", error);
-				throw error;
-			}
-		}
-
-		/**
-		 * Virtual Scroller for jqGrid
-		 * Implements efficient virtual scrolling with dynamic row height calculation
-		 */
-		class jqGridVirtualizer {
-			constructor(options) {
-				// DOM Elements
-				this.jqGridId = options.grid;
-				this.el = this.jqGridId.closest(".ui-jqgrid-bdiv");
-				this.canvas = this.el.querySelector('.scroll-canvas');
-				this.wrapper = this.el.querySelector('.visible-wrapper');
-				this.tbody = this.el.querySelector('.visible-items');
-
-				// Configuration
-				this.config = {
-					renderWindow: options.renderWindow || 3,
-					maxCache: options.maxCache || 25,
-					averageRowHeight: 60,
-					pageSize: options.pageSize || 20
-				};
-
-				// Data fetching
-				this.fetchData = options.fetchData;
-
-				// State management
-				this.state = {
-					rowCount: 0,
-					loading: false,
-					initialized: false,
-					lastStartPage: -1,
-					lastEndPage: -1,
-					fastScrollMode: false,
-					scrollVelocity: 0,
-					lastScrollUpdate: 0,
-					lastScrollTop: 0,
-					scrollDirection: 0 // -1 for up, 1 for down, 0 for stationary
-				};
-
-				// Caches
-				this.pageCache = [];
-				this.dataCache = new Map();
-				this.heightCache = {};
-				this.fetchedPages = new Set();
-
-				// Response data
-				this.restresponse = {};
-				this.jsonReader = {
-					root: "rows",
-					page: "page",
-					total: "total",
-					records: "records",
-					id: "id",
-					userdata: "userdata"				
-				};
-
-				// Animation frame ID
-				this.rafId = null;
-
-				// Flag to prevent update loops during scroll adjustments
-				this._isAdjustingScroll = false;
-
-				this.init();
-			}
-
-			/**
-			 * Initialize the virtualizer
-			 */
-			init() {
-				this._setupMeasurementElements();
-				this._bindEvents();
-				this.update();
-			}
-
-			/**
-			 * Sets up measurement DOM elements
-			 */
-			_setupMeasurementElements() {
-				// Create measurement table
-				this.measureTable = document.createElement('table');
-				this.measureTable.className = this.jqGridId.classList.value;
-
-				this.measureTbody = document.createElement('tbody');
-				this.measureTable.appendChild(this.measureTbody);
-
-				// Create measurement container
-				this.measurediv = document.createElement('div');
-				this.measurediv.id = "virtual-mes";
-				this.measurediv.className = 'ui-jqgrid';
-
-				this.measureEl = document.createElement('div');
-				this.measureEl.id = "measurement-div";
-				this.measureEl.className = 'ui-jqgrid-bdiv';
-
-				this.measurediv.appendChild(this.measureEl);
-				this.measureEl.appendChild(this.measureTable);
-				document.body.appendChild(this.measurediv);
-				// create object reader and hidden fields reader to skip calc on 
-				this.objectReader = reader( this.jqGridId.p.datatype === "local" ? 'local' : 'json' );
-				this.hiddenReader = readerHidden();			
-			}
-
-			/**
-			 * Binds scroll and resize events
-			 */
-			_bindEvents() {
-				// Scroll event
-				this.el.addEventListener('scroll', () => {
-					// Skip if we're programmatically adjusting scroll
-					if (this._isAdjustingScroll) {
-						return;
-					}
-
-					this.scrollGrid();
-
-					// Track scroll direction
-					const currentScrollTop = this.el.scrollTop;
-					if (currentScrollTop > this.state.lastScrollTop) {
-						this.state.scrollDirection = 1; // scrolling down
-					} else if (currentScrollTop < this.state.lastScrollTop) {
-						this.state.scrollDirection = -1; // scrolling up
-					}
-					this.state.lastScrollTop = currentScrollTop;
-
-					if (this.rafId) {
-						cancelAnimationFrame(this.rafId);
-					}
-
-					this.rafId = requestAnimationFrame(() => this.update());
-					this.state.lastScrollUpdate = Date.now();
-				});
-
-				// Resize event
-				window.addEventListener('resize', () => {
-					this._handleResize();
-				});
-			}
-
-			/**
-			 * Handles window resize
-			 */
-			_handleResize() {
-					this.heightCache = {};
-				this.measureEl.style.width = this.el.clientWidth + 'px';
-
-					// Re-measure visible rows
-				if (this.state.lastStartPage >= 0) {
-					const startRow = this.getStartRow(this.state.lastStartPage);
-					const endRow = this.getEndRow(this.state.lastStartPage + this.config.renderWindow - 1);
-
-					this.measure(startRow, endRow);
-					this.render(this.state.lastStartPage, this.state.lastStartPage + this.config.renderWindow);
-					}
-			}
-
-			/**
-			 * Gets the starting row index for a page
-			 * 
-			 * @param {integer} page
-			 * @returns {Number} 
-			 */
-			getStartRow(page) {
-				return page * this.config.pageSize;
-			}
-
-			/**
-			 * Gets the ending row index for a page
-			 * 
-			 * @param {integer} page
-			 * @returns {Number} 
-			 */
-			getEndRow(page) {
-				return Math.min((page + 1) * this.config.pageSize, this.state.rowCount);
-			}
-
-			/**
-			 * Resets the virtualizer state
-			 */
-			reset() {
-				this.pageCache = [];
-				this.dataCache.clear();
-				this.heightCache = {};
-				this.fetchedPages.clear();
-
-				this.wrapper.style.transform = 'translateY(0px)';
-				this.canvas.style.height = '0px';
-
-				this.state.initialized = false;
-				this.state.lastStartPage = -1;
-				this.state.lastEndPage = -1;
-			}
-
-			/**
-			 * Syncs grid horizontal scroll
-			 */
-			scrollGrid() {
-				const grid = this.jqGridId.grid;
-				const p = this.jqGridId.p;
-
-				if (!grid.bScroll) {
-					grid.hScroll = true;
-					grid.hDiv.scrollLeft = grid.bDiv.scrollLeft;
-
-					if (p.footerrow) {
-						grid.sDiv.scrollLeft = grid.bDiv.scrollLeft;
-					}
-
-					if (p.headerrow) {
-						grid.hrDiv.scrollLeft = grid.bDiv.scrollLeft;
-					}
-
-					// Remove column menu if exists
-					try {
-						$("#column_menu").remove();
-					} catch (e) {
-						// Ignore errors
-					}
-				}
-
-				grid.bScroll = false;
-			}
-
-			/**
-			 * Main update loop
-			 */
-			async update() {
-				this.rafId = null;
-
-				// Initial load
-				if (!this.state.initialized) {
-					if (!this.state.loading) {
-						await this.triggerLoad(0);
-					}
-					return;
-				}
-
-				// Calculate visible page range
-				const scrollTop = this.el.scrollTop;
-				const visiblePageId = this.findPageByScrollTop(scrollTop);
-
-				// Special handling for renderWindow = 1
-				if (this.config.renderWindow === 1) {
-					await this._updateSinglePageMode(visiblePageId, scrollTop);
-					return;
-				}
-
-				const startPage = Math.max(0, Math.min(visiblePageId, this.pageCache.length - this.config.renderWindow));
-				const endPage = Math.min(startPage + this.config.renderWindow, this.pageCache.length);
-
-				// Load missing pages in order of priority (visible first, then adjacent)
-				const pagesToLoad = [];
-				for (let page = startPage; page < endPage; page++) {
-					if (!this.fetchedPages.has(page)) {
-						pagesToLoad.push(page);
-					}
-				}
-
-				if (pagesToLoad.length > 0) {
-					if (!this.state.loading) {
-						// Load the first missing page in the visible range
-						await this.triggerLoad(pagesToLoad[0]);
-					}
-						return;
-					}
-
-				// Prefetch adjacent pages if renderWindow is small (helps prevent gaps)
-				if (this.config.renderWindow < 2 && !this.state.loading) {
-					const prefetchPages = [];
-
-					// Prioritize prefetch based on scroll direction
-					if (this.state.scrollDirection >= 0) {
-						// Scrolling down or stationary - prefetch next page first
-						if (endPage < this.pageCache.length && !this.fetchedPages.has(endPage)) {
-							prefetchPages.push(endPage);
-				}
-						if (startPage > 0 && !this.fetchedPages.has(startPage - 1)) {
-							prefetchPages.push(startPage - 1);
-						}
-					} else {
-						// Scrolling up - prefetch previous page first
-						if (startPage > 0 && !this.fetchedPages.has(startPage - 1)) {
-							prefetchPages.push(startPage - 1);
-						}
-						if (endPage < this.pageCache.length && !this.fetchedPages.has(endPage)) {
-							prefetchPages.push(endPage);
-						}
-					}
-
-					if (prefetchPages.length > 0) {
-						// Don't await - let it load in background
-						this.triggerLoad(prefetchPages[0]).catch(err => {
-							console.warn('Prefetch failed:', err);
-						});
-					}
-				}
-
-				// Optimize cache and measure rows
-				this.clearOldCache(startPage);
-				this.measure(this.getStartRow(startPage), this.getEndRow(endPage - 1));
-
-				// Skip re-render if nothing changed
-				if (startPage === this.state.lastStartPage &&
-						  endPage === this.state.lastEndPage &&
-						  this.isFullyMeasured(startPage, endPage)) {
-					return;
-				}
-
-				this.state.lastStartPage = startPage;
-				this.state.lastEndPage = endPage;
-				this.render(startPage, endPage);
-			}
-
-			/**
-			 * Special update logic for renderWindow = 1
-			 * Loads adjacent pages proactively based on scroll position within current page
-			 *
-			 * @param {integer} visiblePageId the visible page
-			 * @param {Number} scrollTop current scroll position
-			 * @returns {Number} 
-			 * 
-			 */
-			async _updateSinglePageMode(visiblePageId, scrollTop) {
-				const currentPage = visiblePageId;
-
-				// Ensure current page is loaded
-				if (!this.fetchedPages.has(currentPage)) {
-					if (!this.state.loading) {
-						await this.triggerLoad(currentPage);
-			}
-					return;
-				}
-
-				// Calculate scroll position within the current page
-				const pageTop = this.pageCache[currentPage].top;
-				const pageHeight = this.pageCache[currentPage].height;
-				const scrollIntoPage = scrollTop - pageTop;
-				const scrollPercentage = scrollIntoPage / pageHeight;
-
-				// Determine which adjacent page to load based on scroll position
-				const LOAD_THRESHOLD = 0.5; // Load next/prev page when 50% through current page
-
-				let pageToLoad = null;
-
-				if (scrollPercentage > LOAD_THRESHOLD && currentPage < this.pageCache.length - 1) {
-					// Past middle scrolling down - load next page
-					pageToLoad = currentPage + 1;
-				} else if (scrollPercentage < (1 - LOAD_THRESHOLD) && currentPage > 0) {
-					// Past middle scrolling up - load previous page
-					pageToLoad = currentPage - 1;
-				}
-
-				// Load the adjacent page if needed
-				if (pageToLoad !== null && !this.fetchedPages.has(pageToLoad)) {
-					if (!this.state.loading) {
-						// Load in background without blocking
-						this.triggerLoad(pageToLoad).catch(err => {
-							console.warn('Adjacent page load failed:', err);
-						});
-					}
-				}
-
-				// Determine which pages to render (always include loaded adjacent pages)
-				let startPage = currentPage;
-				let endPage = currentPage + 1;
-
-				// Expand render window to include adjacent loaded pages
-				if (currentPage > 0 && this.fetchedPages.has(currentPage - 1)) {
-					startPage = currentPage - 1;
-				}
-
-				if (currentPage < this.pageCache.length - 1 && this.fetchedPages.has(currentPage + 1)) {
-					endPage = currentPage + 2;
-				}
-
-				// Clean up cache (keep current and adjacent pages)
-				this.clearOldCache(currentPage);
-
-				// Measure and render
-				this.measure(this.getStartRow(startPage), this.getEndRow(endPage - 1));
-
-				// Render if either start or end page changed, or if not fully measured
-				const pageRangeChanged = startPage !== this.state.lastStartPage ||
-						  endPage !== this.state.lastEndPage;
-				const needsRender = pageRangeChanged || !this.isFullyMeasured(startPage, endPage);
-
-				if (needsRender) {
-					this.state.lastStartPage = startPage;
-					this.state.lastEndPage = endPage;
-					this.render(startPage, endPage);
-				}
-			}
-
-			/**
-			 * Binary search to find page by scroll position
-			 * 
-			 * @param {Number} scrollTop  the current scroll position
-			 * @returns {Number|mid} the related page
-			 */
-			findPageByScrollTop(scrollTop) {
-				let left = 0;
-				let right = this.pageCache.length - 1;
-
-				while (left <= right) {
-					const mid = Math.floor((left + right) / 2);
-
-					if (this.pageCache[mid].top <= scrollTop) {
-						if (mid === this.pageCache.length - 1 || this.pageCache[mid + 1].top > scrollTop) {
-							return mid;
-						}
-						left = mid + 1;
-					} else {
-						right = mid - 1;
-					}
-				}
-
-				return 0;
-			}
-
-			/**
-			 * Loads data for a specific page
-			 * 
-			 * @param {type} pageId
-			 * @returns {void}
-			 */
-			async triggerLoad(pageId) {
-				this.state.loading = true;
-
-				// Update status message
-				const ts = this.jqGridId;
-				const pgboxes = [ts.p.pager, ts.p.toppager].filter(Boolean).join(',');
-				$(`.ui-paging-info`, pgboxes).html(`Fetching Page ${pageId + 1}...`);
-	 
-				// Fetch data
-				this.restresponse = vJsonReader(await this.fetchData(pageId, this.config.pageSize), ts);
-
-				// Initialize if needed
-				if (!this.state.initialized) {
-					this.setup(this.restresponse.records);
-				}
-
-				// Cache the data
-				this.restresponse.rows.forEach((row, i) => {
-					this.dataCache.set(this.getStartRow(pageId) + i, row);
-				});
-
-				this.fetchedPages.add(pageId);
-				this.state.loading = false;
-
-				// Free memory
-				this.restresponse.rows = [];
-
-				// Continue update cycle
-				this.update();
-			}
-
-			/**
-			 * Sets up initial page structure based on total records
-			 *  
-			 * @param {integer} totalRecords
-			 * @returns {void}
-			 */
-			setup(totalRecords) {
-				this.state.rowCount = totalRecords;
-				let top = 0;
-				const pageCount = Math.ceil(totalRecords / this.config.pageSize);
-
-				for (let page = 0; page < pageCount; page++) {
-					const rowCount = this.getEndRow(page) - this.getStartRow(page);
-					const height = rowCount * this.config.averageRowHeight;
-
-					this.pageCache.push({top, height, estimated: true});
-					top += height;
-				}
-
-				this.canvas.style.height = `${top}px`;
-				this.state.initialized = true;
-			}
-
-			/**
-			 * Measures row heights for accurate positioning
-			 * 
-			 * @param {integer} start start row index
-			 * @param {integer} end end row index
-			 * @returns {void}
-			 */
-			measure(start, end) {
-				const toMeasure = [];
-
-				for (let i = start; i < end; i++) {
-					if (this.dataCache.get(i) && !(i in this.heightCache)) {
-						toMeasure.push(i);
-					}
-				}
-
-				if (toMeasure.length === 0)
-					return;
-
-				// Identify the reference row (first visible row at top of viewport)
-				const scrollTop = this.el.scrollTop;
-				const referenceRow = this._findFirstVisibleRow(scrollTop);
-
-				// Calculate offset of reference row from top of viewport BEFORE measurement
-				const offsetBeforeMeasure = this._calculateOffsetFromTop(referenceRow, scrollTop);
-
-				// Sync measurement container width
-				this.measureEl.style.width = this.el.clientWidth + 'px';
-				this.measureTbody.innerHTML = '';
-
-				// Build measurement HTML
-				const html = this._buildMeasurementHTML(toMeasure);
-				this.measureTbody.innerHTML = html;
-
-				// Measure heights
-				const rows = this.measureTable.querySelectorAll('tr');
-				toMeasure.forEach((idx, i) => {
-					this.heightCache[idx] = rows[i].offsetHeight;
-				});
-
-				// Update page cache with new measurements
-				this._updatePageCacheHeights();
-
-				// Restore scroll position to keep the reference row at the same viewport position
-				if (scrollTop > 0 && referenceRow >= 0) {
-					this._preserveScrollPosition(referenceRow, offsetBeforeMeasure);
-				}
-			}
-
-			/**
-			 * Finds the first fully or partially visible row at the top of viewport
-			 *  
-			 * @param {Number} scrollTop - the current scroll position
-			 * @returns {Number}
-			 */
-			_findFirstVisibleRow(scrollTop) {
-				let accumulated = 0;
-
-				for (let i = 0; i < this.state.rowCount; i++) {
-					const rowHeight = this.heightCache[i] || this.config.averageRowHeight;
-
-					// If this row contains or is past the scrollTop, it's our reference
-					if (accumulated + rowHeight > scrollTop) {
-						return i;
-					}
-
-					accumulated += rowHeight;
-				}
-
-				return 0;
-			}
-
-			/**
-			 * Calculates how far into a row the scrollTop is
-			 * 
-			 * @param {integer} rowIndex the row index
-			 * @param {Number} scrollTop the current scroll position
-			 * @returns {Number}
-			 */
-			_calculateOffsetFromTop(rowIndex, scrollTop) {
-				let accumulated = 0;
-
-				for (let i = 0; i < rowIndex; i++) {
-					accumulated += this.heightCache[i] || this.config.averageRowHeight;
-				}
-				
-				// Return how many pixels into the reference row we are
-				return scrollTop - accumulated;
-						}
-
-			/**
-			 * Preserves scroll position by keeping reference row at same viewport offset
-			 * 
-			 * @param {integer} referenceRow
-			 * @param {integer} targetOffset
-			 * @returns {void}
-			 */
-			_preserveScrollPosition(referenceRow, targetOffset) {
-				// Calculate new position of reference row
-				let newPosition = 0;
-
-				for (let i = 0; i < referenceRow; i++) {
-					newPosition += this.heightCache[i] || this.config.averageRowHeight;
-				}
-
-				// Add the offset into the reference row
-				newPosition += targetOffset;
-
-				const currentScroll = this.el.scrollTop;
-				const diff = Math.abs(newPosition - currentScroll);
-
-				// Only adjust if difference is significant
-				if (diff > 1) {
-					this._isAdjustingScroll = true;
-
-					this.el.scrollTop = newPosition;
-
-					// Reset flag after scroll settles
-					requestAnimationFrame(() => {
-						this._isAdjustingScroll = false;
-				});
-				}
-			}
-
-			/**
-			 * Builds HTML for measurement
-			 * 
-			 * @param {integer} indices number of rows
-			 * @returns {string}
-			 */
-			_buildMeasurementHTML(indices) {
-				let html = this.jqGridId.rows[0].outerHTML; 
-				indices.forEach(i => {
-					const row = this.dataCache.get(i);
-					html += "<tr class='jqgrow ui-row-ltr'>";
-
-					this.objectReader.forEach((fieldReader,i)  =>  {
-						if( this.hiddenReader[i] ) { return; }  // skip hidden
-						const value = $.jgrid.getAccessor(row, fieldReader);
-						html += `<td>${value}</td>`;
-				});
-
-					html += "</tr>";
-				});
-
-				return html;
-			}
-
-			/**
-			 * Updates page cache with measured heights
-			 */
-			_updatePageCacheHeights() {
-				let currentTop = 0;
-
-				this.pageCache.forEach((page, p) => {
-					let pageHeight = 0;
-
-					for (let r = this.getStartRow(p); r < this.getEndRow(p); r++) {
-						pageHeight += this.heightCache[r] || this.config.averageRowHeight;
-					}
-
-					page.top = currentTop;
-					page.height = pageHeight;
-					currentTop += pageHeight;
-				});
-
-				this.canvas.style.height = `${currentTop}px`;
-			}
-
-			/**
-			 * Checks if all rows in range are measured
-			 * 
-			 * @param {int} startPage from calculated start page
-			 * @param {int} endPage to the calculated endPage
-			 * @returns {boolean}
-			 */
-			isFullyMeasured(startPage, endPage) {
-				for (let i = this.getStartRow(startPage); i < this.getEndRow(endPage - 1); i++) {
-					if (!(i in this.heightCache)) {
-						return false;
-					}
-				}
-				return true;
-			}
-
-			/**
-			 * Renders visible rows
-			 * 
-			 * @param {int} startPage from calculated start page
-			 * @param {int} endPage to the calculated endPage
-			 * @returns {void}
-			 */
-			render(startPage, endPage) {
-				const ts = this.jqGridId;
-
-				// Set ARIA attributes
-				this.wrapper.setAttribute('aria-rowindex', this.getStartRow(startPage) + 1);
-				this.wrapper.setAttribute('aria-rowcount', this.state.rowCount);
-				
-				// Position wrapper
-				this.wrapper.style.transform = `translateY(${this.pageCache[startPage].top}px)`;
-
-				// Collect visible rows
-				this.restresponse.rows = [];
-				
-				for (let i = this.getStartRow(startPage); i < this.getEndRow(endPage - 1); i++) {
-					const item = this.dataCache.get(i);
-					if (item) {
-					this.restresponse.rows.push(item);
-				}
-				}
-
-				// Don't render if no data (prevents empty grid flashing)
-				if (this.restresponse.rows.length === 0) {
-					return;
-				}
-
-				// Update response metadata
-				this.restresponse.total = Math.ceil(this.state.rowCount / this.config.pageSize);
-				this.restresponse.page = startPage + 1;
-				this.restresponse.records = this.state.rowCount;
-
-				// Add data to grid
-				ts.addJSONData(this.restresponse, 1, false, endPage - startPage, this.jsonReader);
-
-				// Trigger events
-				$(ts).triggerHandler("jqGridLoadComplete", [this.restresponse]);
-				$(ts).triggerHandler("jqGridAfterLoadComplete", [this.restresponse]);
-
-				endReq();
-			}
-
-			/**
-			 * Removes old cached data to save memory
-			 * 
-			 * @param {integer} 
-			 * @returns {void}
-			 */
-			clearOldCache(currentStart) {
-				
-				const maxCacheSize = this.config.maxCache;
-
-				if (this.fetchedPages.size <= maxCacheSize) {
-					return;
-				}
-
-				// Sort pages by distance from current position
-				const sorted = Array.from(this.fetchedPages).sort(
-						  (a, b) => Math.abs(currentStart - a) - Math.abs(currentStart - b)
-				);
-
-				// Remove furthest pages beyond max cache
-				sorted.slice(maxCacheSize).forEach(page => {
-					for (let i = this.getStartRow(page); i < this.getEndRow(page); i++) {
-						this.dataCache.delete(i);
-						delete this.heightCache[i];
-					}
-					this.fetchedPages.delete(page);
-				});
-			}
-		}
-
 		$(ts).triggerHandler("jqGridInitGrid");
+  
 		if (ts.p.vScroll) {
-			var vGrid = new jqGridVirtualizer({
-				grid: document.getElementById($.jgrid.jqID(ts.p.id)),
-				pageSize: ts.p.rowNum,
-				renderWindow: ts.p.scrollRenderWin,
-				maxCache: ts.p.scrollMaxCache,
-				averageRowHeight: ts.p.scrollAvgRowHeight,
-				fetchData: createAdaptiveFetchData()
-			});
+			// ── vScrollCoordinator ───────────────────────────────────────────────
+			// Spacer-based virtual scroll with 3-page sliding DOM window.
+			//
+			// State tracks firstDomPage + lastDomPage (the actual pages in DOM),
+			// not a single currentPage. This eliminates the scroll-up/down bug
+			// where currentPage drifted and caused wrong pages to be re-requested.
+			//
+			// Scroll DOWN: append new page at back,  evict front page, firstDomPage++
+			// Scroll UP:   prepend new page at front, evict back page, lastDomPage--
+			//   (addJSONData always appends, so prepend = append then DOM-move)
+			// ────────────────────────────────────────────────────────────────────
+			(function() {
+
+				// ── LRU Cache ────────────────────────────────────────────────────
+				function LRUCache(maxSize) {
+					this.maxSize = maxSize || 50;
+					this.map     = {};
+					this.order   = [];
+				}
+				LRUCache.prototype.has = function(page) {
+					return this.map.hasOwnProperty(page);
+				};
+				LRUCache.prototype.get = function(page) {
+					if (!this.has(page)) { return null; }
+					var idx = this.order.indexOf(page);
+					if (idx !== -1) { this.order.splice(idx, 1); }
+					this.order.push(page);
+					return this.map[page];
+				};
+				LRUCache.prototype.set = function(page, data) {
+					if (this.has(page)) {
+						var idx = this.order.indexOf(page);
+						if (idx !== -1) { this.order.splice(idx, 1); }
+					} else if (this.order.length >= this.maxSize) {
+						// Evict oldest non-pinned page (pages 1..3 are always kept)
+						var evicted = false;
+						for (var ei = 0; ei < this.order.length; ei++) {
+							if (this.order[ei] > 3) {
+								var oldest = this.order.splice(ei, 1)[0];
+								delete this.map[oldest];
+								evicted = true;
+								break;
+							}
+						}
+						// If only pinned pages remain (shouldn't happen with maxSize>=50)
+						if (!evicted) {
+							var oldest = this.order.shift();
+							delete this.map[oldest];
+						}
+					}
+					this.map[page] = data;
+					this.order.push(page);
+				};
+
+				// ── State ────────────────────────────────────────────────────────
+				var vs = {
+					defaultRowHeight : ts.p.rowHeight || 30,  // fallback before any measure
+					pageSize         : ts.p.rowNum,
+					totalRecords     : 0,
+					totalPages       : 0,
+					firstDomPage     : 0,
+					lastDomPage      : 0,
+					initialized      : false,
+					xhr              : null,
+					prefetchXhrs     : {},
+					debounceTimer    : null,
+					scrolling        : false,
+					rendering        : false,
+					// pageHeights[p] = measured pixel height of page p's rows (null = unvisited)
+					pageHeights      : {},
+					// pageOffsets[p] = cumulative px offset to the top of page p
+					// Recomputed incrementally whenever a pageHeights entry changes.
+					pageOffsets      : {},
+					cache            : new LRUCache(ts.p.vScrollCacheSize || 50)
+				};
+
+				var DEBOUNCE_MS = ts.p.vScrollDebounce || 150;
+
+				var bDiv   = ts.grid.bDiv;
+				var canvas = bDiv.firstChild;
+				var spacer = canvas.firstChild;
+
+				// ── Height helpers ───────────────────────────────────────────────
+				// estimatedPageHeight(p): measured if visited, else current average
+				function estimatedPageHeight(p) {
+					return vs.pageHeights[p] || vs.defaultRowHeight * vs.pageSize;
+				}
+
+				// currentAvgPageHeight: mean of all measured pages, else default
+				function currentAvgPageHeight() {
+					var keys = Object.keys(vs.pageHeights);
+					if (!keys.length) { return vs.defaultRowHeight * vs.pageSize; }
+					var sum = 0;
+					for (var i = 0; i < keys.length; i++) { sum += vs.pageHeights[keys[i]]; }
+					return sum / keys.length;
+				}
+
+				// recomputeOffsets(fromPage): rebuild pageOffsets[fromPage..totalPages].
+				// pageOffsets[1] = 0 always.
+				// Called whenever a pageHeights entry is set or totalPages changes.
+				function recomputeOffsets(fromPage) {
+					if (!vs.totalPages) { return; }
+					fromPage = fromPage || 1;
+					// Ensure offset for fromPage is available as a base
+					if (fromPage === 1) {
+						vs.pageOffsets[1] = 0;
+					} else if (!vs.pageOffsets[fromPage]) {
+						// Walk forward from page 1 to establish the base — only needed
+						// once; after that fromPage offsets are always kept current.
+						var off = 0;
+						for (var p = 1; p < fromPage; p++) {
+							off += estimatedPageHeight(p);
+						}
+						vs.pageOffsets[fromPage] = off;
+					}
+					// Propagate forward
+					var offset = vs.pageOffsets[fromPage];
+					for (var p = fromPage; p <= vs.totalPages; p++) {
+						vs.pageOffsets[p] = offset;
+						offset += estimatedPageHeight(p);
+					}
+					// Total canvas height stored one past the last page
+					vs.pageOffsets[vs.totalPages + 1] = offset;
+				}
+
+				// offsetOfPage(p): px distance from canvas top to start of page p
+				function offsetOfPage(p) {
+					if (vs.pageOffsets[p] !== undefined) { return vs.pageOffsets[p]; }
+					// Not yet computed — estimate from average
+					return (p - 1) * currentAvgPageHeight();
+				}
+
+				// totalCanvasHeight: sum of all page heights (estimated for unvisited)
+				function totalCanvasHeight() {
+					if (vs.pageOffsets[vs.totalPages + 1] !== undefined) {
+						return vs.pageOffsets[vs.totalPages + 1];
+					}
+					return vs.totalRecords * vs.defaultRowHeight;
+				}
+
+				// Set canvas height and spacer to position the DOM window correctly.
+				function applyLayout() {
+					var sh = offsetOfPage(vs.firstDomPage);
+					var ch = totalCanvasHeight();
+					$(canvas).css({ height: ch + 'px' });
+					$(spacer).css({ height: sh + 'px', display: sh > 0 ? '' : 'none' });
+				}
+
+				// ── Page from scrollTop (for big jumps) ──────────────────────────
+				// Binary search through pageOffsets for the page containing scrollTop.
+				function pageFromScroll(scrollTop) {
+					if (!vs.totalPages) { return 1; }
+					// Binary search
+					var lo = 1, hi = vs.totalPages;
+					while (lo < hi) {
+						var mid = Math.floor((lo + hi + 1) / 2);
+						if (offsetOfPage(mid) <= scrollTop) {
+							lo = mid;
+						} else {
+							hi = mid - 1;
+						}
+					}
+					return Math.max(1, Math.min(lo, vs.totalPages));
+				}
+
+				// ── What page does the viewport need next? ────────────────────────
+				// Returns the page number to load, or 0 if DOM already covers it.
+				function pageNeeded() {
+					if (vs.firstDomPage === 0) { return 1; }  // not yet initialised
+
+					var scrollTop = bDiv.scrollTop;
+					var viewH     = bDiv.clientHeight;
+					var table     = $(canvas).find('table:first');
+					var tableTop  = offsetOfPage(vs.firstDomPage);
+					var tableBot  = tableTop + (table.length ? table.outerHeight() : 0);
+					var lastPage  = vs.totalPages || 1;
+
+					// Big jump — scrollbar dragged far outside DOM window
+					if (scrollTop + viewH < tableTop || scrollTop > tableBot) {
+						return pageFromScroll(scrollTop);
+					}
+
+					// Scroll DOWN: bottom of table within 2 viewports — load next page
+					if (vs.lastDomPage < lastPage && tableBot <= scrollTop + viewH * 2) {
+						return vs.lastDomPage + 1;
+					}
+
+					// Scroll UP: top of table scrolled below viewport top — load prev page
+					if (vs.firstDomPage > 1 && tableTop > scrollTop) {
+						return vs.firstDomPage - 1;
+					}
+
+					return 0;  // DOM window already covers viewport — nothing to do
+				}
+
+				// ── Calibrate height for a rendered page ────────────────────────
+				// Measures the total pixel height of all data rows currently in DOM
+				// for the given page, stores it, and recomputes offsets from that
+				// page forward so subsequent spacer/canvas values are accurate.
+				function calibrateHeight(page) {
+					// Sum heights of exactly pageSize rows starting at offset for this page.
+					// In the sliding window the rows for `page` may not be first in DOM,
+					// so we measure the whole table and divide by row count instead.
+					var rows = $('tbody', bDiv).first().find('> tr:not(.jqgfirstrow)');
+					if (!rows.length) { return; }
+					// Only measure the rows that belong to `page`.
+					// In a fresh render all rows belong to `page`; in a sliding window
+					// rows for page are at a known offset within the table.
+					var pageIndex = page - vs.firstDomPage;  // 0-based index within window
+					var start     = pageIndex * vs.pageSize;
+					var pageRows  = rows.slice(start, start + vs.pageSize);
+					if (!pageRows.length) { pageRows = rows; }  // fallback: measure all
+					var total = 0;
+					pageRows.each(function() { total += $(this).outerHeight(true); });
+					if (total > 0) {
+						var prev = vs.pageHeights[page];
+						vs.pageHeights[page] = total;
+						// Only recompute offsets if the height actually changed
+						if (prev !== total) {
+							recomputeOffsets(page);
+						}
+					}
+				}
+
+				// ── Local data slice ─────────────────────────────────────────────
+				function getLocalPage(page) {
+					var allData = ts.p.data || [];
+					var start   = (page - 1) * vs.pageSize;
+					var end     = Math.min(start + vs.pageSize, allData.length);
+					var lr      = ts.p.localReader;
+					var obj     = {};
+					obj[lr.root]    = allData.slice(start, end);
+					obj[lr.page]    = page;
+					obj[lr.total]   = Math.ceil(allData.length / vs.pageSize);
+					obj[lr.records] = allData.length;
+					return obj;
+				}
+
+				// ── Build AJAX params ────────────────────────────────────────────
+				function buildParams(page) {
+					var pN  = ts.p.prmNames;
+					var prm = {};
+					if (!$.jgrid.isNull(pN.search, true)) { prm[pN.search] = ts.p.search; }
+					if (!$.jgrid.isNull(pN.nd,     true)) { prm[pN.nd]     = new Date().getTime(); }
+					if (!$.jgrid.isNull(pN.rows,   true)) { prm[pN.rows]   = ts.p.rowNum; }
+					if (!$.jgrid.isNull(pN.page,   true)) { prm[pN.page]   = page; }
+					if (!$.jgrid.isNull(pN.sort,   true)) { prm[pN.sort]   = ts.p.sortname; }
+					if (!$.jgrid.isNull(pN.order,  true)) { prm[pN.order]  = ts.p.sortorder; }
+					$.extend(ts.p.postData, prm);
+					return $.jgrid.isFunction(ts.p.serializeGridData)
+						? ts.p.serializeGridData.call(ts, ts.p.postData)
+						: $.extend({}, ts.p.postData);
+				}
+				function _loadComplete(data) {
+					$(ts).triggerHandler("jqGridLoadComplete", [data]);
+					if( $.jgrid.isFunction(ts.p.loadComplete) )  { ts.p.loadComplete.call(ts,data); }
+					$(ts).triggerHandler("jqGridAfterLoadComplete", [data]);						
+				}
+				// ── Render a page into the DOM window ────────────────────────────
+				//
+				// Three cases:
+				//
+				// FRESH (initial load, or page not adjacent to window):
+				//   Clear DOM entirely, addJSONData, firstDomPage = lastDomPage = page
+				//
+				// Scroll DOWN (page === lastDomPage + 1):
+				//   addJSONData appends to back, evict front if > 3 pages
+				//   firstDomPage++, lastDomPage = page
+				//
+				// Scroll UP (page === firstDomPage - 1):
+				//   addJSONData appends, move new rows to front, evict back if > 3 pages
+				//   firstDomPage = page, lastDomPage--
+				function renderPage(page, data) {
+					ts.p.page = page;
+
+					var isAdjDown = (vs.lastDomPage  > 0 && page === vs.lastDomPage  + 1);
+					var isAdjUp   = (vs.firstDomPage > 0 && page === vs.firstDomPage - 1);
+					var isFresh   = !isAdjDown && !isAdjUp;
+
+					if (isFresh) {
+						// Big jump or initial load — clear DOM and start clean
+						emptyRows.call(ts, false, false);
+						addJSONData(data, 1, false, 0);
+						vs.firstDomPage = page;
+						vs.lastDomPage  = page;
+
+					} else if (isAdjDown) {
+						var oldCount = ts.rows.length - 1;
+						addJSONData(data, 1, false, 0);
+						vs.lastDomPage = page;
+						// Evict first page from front if window exceeds 3 pages.
+						// We must NOT change the visual scroll position.
+						// Strategy: measure the evicted page height, remove its rows,
+						// then surgically add that exact height to the spacer —
+						// no full applyLayout, no scrollTop touch needed.
+						if (oldCount >= 3 * vs.pageSize) {
+							// Force a synchronous layout reflow so outerHeight() returns
+							// real values after addJSONData appended rows above.
+							void bDiv.offsetHeight;
+							// Measure height of the page we are about to evict (firstDomPage)
+							var evictedPageH = estimatedPageHeight(vs.firstDomPage);
+							var evictRows = $(ts.rows).slice(1, vs.pageSize + 1);
+							var measuredH = 0;
+							evictRows.each(function() { measuredH += $(this).outerHeight(true); });
+							if (measuredH > 0) { evictedPageH = measuredH; }
+							// Store measured height before removal
+							vs.pageHeights[vs.firstDomPage] = evictedPageH;
+							// Remove the rows
+							evictRows.remove();
+							vs.firstDomPage += 1;
+							// Surgically grow spacer by the evicted page height only —
+							// this keeps total layout height constant, no scrollTop jump.
+							var currentSpacerH = parseInt($(spacer).css('height'), 10) || 0;
+							var newSpacerH = currentSpacerH + evictedPageH;
+							// Update offsets to stay consistent
+							recomputeOffsets(vs.firstDomPage);
+							calibrateHeight(page);
+							vs.rendering = true;
+							// Apply the spacer growth after the browser has painted the row
+							// removal — one rAF is the minimum delay needed to avoid the
+							// browser's scroll-anchor logic fighting both changes at once.
+							requestAnimationFrame(function() {
+								$(spacer).css({ height: newSpacerH + 'px', display: '' });
+								vs.rendering = false;
+								vs.scrolling = false;
+							});
+							_loadComplete(data);
+							return;
+						}
+
+					} else {
+						// isAdjUp: prepend new page at front
+						var oldCount = ts.rows.length - 1;
+						addJSONData(data, 1, false, 0);
+						// Move newly appended rows to front
+						var newRows  = $(ts.rows).slice(oldCount + 1).get();
+						var firstRow = ts.rows[1] || null;
+						if (firstRow && newRows.length) {
+							$(firstRow).before($(newRows));
+						}
+						// Evict last page from back if window exceeds 3 pages.
+						// Shrinking from the back does not affect scrollTop so no
+						// special ordering is needed here.
+						if (oldCount >= 3 * vs.pageSize) {
+							$(ts.rows).slice(-(vs.pageSize)).remove();
+							vs.lastDomPage -= 1;
+						}
+						vs.firstDomPage = page;
+					}
+					_loadComplete(data);
+					calibrateHeight(page);
+
+					// Save/restore scrollTop around applyLayout to prevent browser
+					// compensation jumps when spacer or canvas height changes.
+					var savedScrollTop = bDiv.scrollTop;
+					vs.rendering = true;
+					applyLayout();
+					if (vs.lastDomPage >= vs.totalPages) {
+						// On last page, fix canvas to exact measured height
+						var tableH = $('table:first', bDiv).outerHeight() || 0;
+						$(canvas).css({ height: (offsetOfPage(vs.firstDomPage) + tableH) + 'px' });
+					}
+					bDiv.scrollTop = savedScrollTop;
+					setTimeout(function() {
+						vs.rendering = false;
+						vs.scrolling = false;
+					}, 0);
+				}
+
+				// ── Silent background prefetch ───────────────────────────────────
+				function prefetch(page) {
+					if (page < 1 || (vs.totalPages && page > vs.totalPages)) { return; }
+					if (vs.cache.has(page)) { return; }
+					if (vs.prefetchXhrs[page]) { return; }
+					var isLocal = ts.p.datatype === 'local' || ts.p.datatype === 'jsonstring';
+					if (isLocal) { vs.cache.set(page, getLocalPage(page)); return; }
+					vs.prefetchXhrs[page] = $.ajax($.extend({
+						url      : ts.p.url,
+						type     : ts.p.mtype,
+						dataType : ts.p.datatype.toLowerCase(),
+						data     : buildParams(page),
+						success  : function(response) {
+							delete vs.prefetchXhrs[page];
+							vs.cache.set(page, response);
+							if (!vs.initialized) {
+								var dr = ts.p.jsonReader;
+								vs.totalRecords = intNum($.jgrid.getAccessor(response, dr.records));
+								vs.totalPages   = intNum($.jgrid.getAccessor(response, dr.total), 1);
+								vs.initialized  = true;
+							}
+						},
+						error : function() { delete vs.prefetchXhrs[page]; }
+					}, $.jgrid.ajaxOptions, ts.p.ajaxGridOptions));
+				}
+
+				// ── Refresh window neighbors ─────────────────────────────────────
+				function refreshWindow() {
+					prefetch(vs.firstDomPage - 1);
+					prefetch(vs.lastDomPage  + 1);
+				}
+
+				// ── Fetch and render a page ──────────────────────────────────────
+				// Uses a generation counter: each fetchAndRender call increments
+				// vs.renderGen. The success handler only renders if its generation
+				// is still current — i.e. no newer fetchAndRender has been issued.
+				function fetchAndRender(page) {
+					if (vs.xhr) { vs.xhr.abort(); vs.xhr = null; }
+
+					// Bump generation so any in-flight response knows it is stale
+					vs.renderGen = (vs.renderGen || 0) + 1;
+					var myGen = vs.renderGen;
+
+					// Serve from cache instantly
+					if (vs.cache.has(page)) {
+						renderPage(page, vs.cache.get(page));
+						refreshWindow();
+					return;
+					}
+
+					// Upgrade in-flight prefetch to a render-fetch
+					if (vs.prefetchXhrs[page]) {
+						vs.prefetchXhrs[page].abort();
+						delete vs.prefetchXhrs[page];
+					}
+
+					var isLocal = ts.p.datatype === 'local' || ts.p.datatype === 'jsonstring';
+					if (isLocal) {
+						var localData = getLocalPage(page);
+						vs.cache.set(page, localData);
+						if (!vs.initialized) {
+							var lr = ts.p.localReader;
+							vs.totalRecords = intNum($.jgrid.getAccessor(localData, lr.records));
+							vs.totalPages   = intNum($.jgrid.getAccessor(localData, lr.total), 1);
+							vs.initialized  = true;
+							recomputeOffsets(1);
+						}
+						renderPage(page, localData);
+						refreshWindow();
+						return;
+					}
+
+					vs.xhr = $.ajax($.extend({
+						url      : ts.p.url,
+						type     : ts.p.mtype,
+						dataType : ts.p.datatype.toLowerCase(),
+						data     : buildParams(page),
+						success  : function(data) {
+							vs.xhr = null;
+							vs.cache.set(page, data);
+							if (!vs.initialized) {
+								var dr = ts.p.jsonReader;
+								vs.totalRecords = intNum($.jgrid.getAccessor(data, dr.records));
+								vs.totalPages   = intNum($.jgrid.getAccessor(data, dr.total), 1);
+								vs.initialized  = true;
+								recomputeOffsets(1);
+							}
+							// Only render if no newer fetchAndRender has been issued
+							if (myGen === vs.renderGen) {
+								renderPage(page, data);
+								refreshWindow();
+							}
+						},
+						error : function() { vs.xhr = null; }
+					}, $.jgrid.ajaxOptions, ts.p.ajaxGridOptions));
+				}
+
+				// ── Scroll settled: decide what to render ────────────────────────
+				function onScrollSettled() {
+					vs.scrolling = false;
+					if (!vs.initialized) { return; }
+					var page = pageNeeded();
+					if (page !== 0) {
+						fetchAndRender(page);
+					} else {
+						refreshWindow();
+					}
+				}
+
+				// ── Scroll event ─────────────────────────────────────────────────
+				bDiv.addEventListener('scroll', function() {
+					if (!ts.grid.bScroll) {
+						ts.grid.hScroll = true;
+						ts.grid.hDiv.scrollLeft = bDiv.scrollLeft;
+						if (ts.p.footerrow) { ts.grid.sDiv.scrollLeft = bDiv.scrollLeft; }
+						if (ts.p.headerrow) { ts.grid.hrDiv.scrollLeft = bDiv.scrollLeft; }
+						try { $('#column_menu').remove(); } catch(e) {}
+					}
+					ts.grid.bScroll = false;
+
+					// Always reset the debounce — even during rendering — so the
+					// final scroll position after a fast scroll is never missed.
+					if (vs.debounceTimer) { clearTimeout(vs.debounceTimer); }
+					vs.debounceTimer = setTimeout(onScrollSettled, DEBOUNCE_MS);
+
+					// Prefetch neighbors on first event of a gesture (skip if rendering)
+					if (!vs.rendering && !vs.scrolling) {
+						vs.scrolling = true;
+						if (vs.initialized) { refreshWindow(); }
+					}
+				});
+
+				// ── Reset coordinator state ─────────────────────────────────────
+				// Called whenever data must be fully reloaded (sort, filter, etc).
+				// Aborts any in-flight requests, clears DOM and all cached state,
+				// then loads page 1 fresh.
+				function vsReset() {
+					// Abort in-flight requests
+					if (vs.xhr) { vs.xhr.abort(); vs.xhr = null; }
+					$.each(vs.prefetchXhrs, function(p, xhr) { xhr.abort(); });
+					vs.prefetchXhrs = {};
+					if (vs.debounceTimer) { clearTimeout(vs.debounceTimer); vs.debounceTimer = null; }
+
+					// Reset all state
+					vs.totalRecords  = 0;
+					vs.totalPages    = 0;
+					vs.firstDomPage  = 0;
+					vs.lastDomPage   = 0;
+					vs.initialized   = false;
+					vs.scrolling     = false;
+					vs.rendering     = false;
+					vs.renderGen     = (vs.renderGen || 0) + 1;
+					vs.pageHeights   = {};
+					vs.pageOffsets   = {};
+					vs.cache         = new LRUCache(ts.p.vScrollCacheSize || 50);
+
+					// Clear DOM rows and reset scroll position
+					emptyRows.call(ts, false, false);
+					bDiv.scrollTop = 0;
+
+					// Reset canvas/spacer to defaults
+					$(canvas).css({ height: (vs.defaultRowHeight * ts.p.rowNum) + 'px' });
+					$(spacer).css({ height: '0px', display: 'none' });
+
+					// Load page 1 with new params
+					fetchAndRender(1);
+				}
+
+				// ── Hook populate so sort/filter triggers a clean reset ──────────
+				// The closure-level populate() function checks ts.grid.populate and
+				// defers to it when vScroll is active. So overriding ts.grid.populate
+				// here intercepts ALL internal sort/filter/reload calls.
+				ts.grid.populate = function() {
+					vsReset();
+				};
+
+				// ── Initial load ─────────────────────────────────────────────────
+				fetchAndRender(1);
+
+			})();
 
 		} else {
-		populate();
+			populate();
 		}
-		ts.p.hiddengrid = false;
-		if (ts.p.responsive) {
+		ts.p.hiddengrid=false;
+		if(ts.p.responsive) {
 			var supportsOrientationChange = "onorientationchange" in window,
 			orientationEvent = supportsOrientationChange ? "orientationchange" : "resize";
-			$(window).on(orientationEvent, function () {
-				if ($.jgrid.isVisible(ts)) {
-					$(ts).jqGrid('resizeGrid', 500, true, ts.p.resizeHeight, true);
+			$(window).on( orientationEvent, function(){
+				if($.jgrid.isVisible(ts)) {
+					$(ts).jqGrid('resizeGrid', 500, true, ts.p.resizeHeight,true);
 				}
 			});
 		}
 	});
 };
-
 $.jgrid.extend({
 	getGridParam : function(name, grid_module) {
 		var $t = this[0], ret;
