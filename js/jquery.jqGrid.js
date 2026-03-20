@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.8.11 - 2026-03-09
+* @license Guriddo jqGrid JS - v5.9.0 - 2026-03-20
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -39,7 +39,7 @@ if(!$.jgrid.hasOwnProperty("defaults")) {
 	$.jgrid.defaults = {};
 }
 $.extend($.jgrid,{
-	version : "5.8.11",
+	version : "5.9.0",
 	isNull : function( p, strict_eq) {
 		if(strict_eq && strict_eq === true) {
 			return p === null;
@@ -1947,6 +1947,11 @@ $.extend($.jgrid,{
 		return jLinq;
 	},
 	from : function( source ) {
+		if(this.cleanData && source) {
+			if (this.STRIP_KEYS.some(function(key) { return Object.hasOwn(source, key); })) {
+				source = $.jgrid.dataCleaner( source );
+			}
+		}
 		return $.jgrid.jLinq().from(source);
 		//return ret.from(source);
 	},
@@ -2391,6 +2396,14 @@ $.extend($.jgrid,{
 	},
 	isVisible : function(e) {
 		return !!( e.offsetWidth || e.offsetHeight || e.getClientRects().length );
+	},
+	cleanData : true,
+	STRIP_KEYS : ['_super'],
+	dataCleaner: function(data) {
+		return JSON.parse(JSON.stringify(data, function(key, value) {
+			if ($.jgrid.STRIP_KEYS.indexOf(key) !== -1) return undefined;
+			return value;
+		}));
 	},
 	styleUI : {
 		jQueryUI : {
@@ -7428,6 +7441,7 @@ $.fn.jqGrid = function( pin ) {
 						addJSONData(data, 1, false, 0);
 						vs.firstDomPage = page;
 						vs.lastDomPage  = page;
+						_loadComplete(data);
 
 					} else if (isAdjDown) {
 						var oldCount = ts.rows.length - 1;
@@ -7469,7 +7483,6 @@ $.fn.jqGrid = function( pin ) {
 								vs.rendering = false;
 								vs.scrolling = false;
 							});
-							_loadComplete(data);
 							return;
 						}
 
@@ -7492,7 +7505,6 @@ $.fn.jqGrid = function( pin ) {
 						}
 						vs.firstDomPage = page;
 					}
-					_loadComplete(data);
 					calibrateHeight(page);
 
 					// Save/restore scrollTop around applyLayout to prevent browser
@@ -7518,7 +7530,12 @@ $.fn.jqGrid = function( pin ) {
 					if (vs.cache.has(page)) { return; }
 					if (vs.prefetchXhrs[page]) { return; }
 					var isLocal = ts.p.datatype === 'local' || ts.p.datatype === 'jsonstring';
-					if (isLocal) { vs.cache.set(page, getLocalPage(page)); return; }
+					if (isLocal) { 
+						let ld = getLocalPage(page);
+						if(page !=2 ) _loadComplete( ld );
+						vs.cache.set(page, ld); 
+						return; 
+					}
 					vs.prefetchXhrs[page] = $.ajax($.extend({
 						url      : ts.p.url,
 						type     : ts.p.mtype,
@@ -7533,6 +7550,7 @@ $.fn.jqGrid = function( pin ) {
 								vs.totalPages   = intNum($.jgrid.getAccessor(response, dr.total), 1);
 								vs.initialized  = true;
 							}
+							_loadComplete(response);
 						},
 						error : function() { delete vs.prefetchXhrs[page]; }
 					}, $.jgrid.ajaxOptions, ts.p.ajaxGridOptions));
@@ -7671,7 +7689,9 @@ $.fn.jqGrid = function( pin ) {
 					// Clear DOM rows and reset scroll position
 					emptyRows.call(ts, false, false);
 					bDiv.scrollTop = 0;
-
+					ts.p.selarrrow =[];
+					ts.p.selrow = null;
+					
 					// Reset canvas/spacer to defaults
 					$(canvas).css({ height: (vs.defaultRowHeight * ts.p.rowNum) + 'px' });
 					$(spacer).css({ height: '0px', display: 'none' });

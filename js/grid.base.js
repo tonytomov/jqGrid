@@ -19,7 +19,7 @@ if(!$.jgrid.hasOwnProperty("defaults")) {
 	$.jgrid.defaults = {};
 }
 $.extend($.jgrid,{
-	version : "5.8.11",
+	version : "5.9.0",
 	isNull : function( p, strict_eq) {
 		if(strict_eq && strict_eq === true) {
 			return p === null;
@@ -7669,7 +7669,9 @@ $.fn.jqGrid = function( pin ) {
 					// Clear DOM rows and reset scroll position
 					emptyRows.call(ts, false, false);
 					bDiv.scrollTop = 0;
-
+					ts.p.selarrrow =[];
+					ts.p.selrow = null;
+					
 					// Reset canvas/spacer to defaults
 					$(canvas).css({ height: (vs.defaultRowHeight * ts.p.rowNum) + 'px' });
 					$(spacer).css({ height: '0px', display: 'none' });
