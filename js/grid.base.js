@@ -5554,7 +5554,7 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.shrinkToFit ===false && ts.p.forceFit === true) {ts.p.forceFit=false;}
 			if(ts.p.shrinkToFit===true && vc > 0) {
 				aw = grid.width-brd*vc-gw;
-				if(!isNaN(ts.p.height)) {
+				if( !(ts.p.height == 'auto' || ts.p.height == '100%') ) { // isNaN(ts.p.height)
 					aw -= scw;
 					hs = true;
 				}
@@ -6824,7 +6824,9 @@ $.fn.jqGrid = function( pin ) {
 					ts.grid.selectionPreserver(ts);
 				}
 				if(ts.p.datatype==="local"){
+                    if(!ts.p.preserveSelection) {
 					$(ts).jqGrid("resetSelection");
+                    }
 					if(ts.p.data.length) {
 						normalizeData();
 						refreshIndex();
@@ -7930,6 +7932,10 @@ $.jgrid.extend({
 				getall = true;
 				resall = [];
 				len = $t.rows.length;
+			} else if(rowid === '_selected_') {
+                getsel = true;
+                resall = [];
+                len = $t.p.selarrrow.length;
 			} else {
 				ind = $($t).jqGrid('getGridRowById', rowid);
 				if(!ind) { return res; }
@@ -7947,6 +7953,8 @@ $.jgrid.extend({
 			while(j<len){
 				if(getall) {
 					ind = $t.rows[j];
+				} else if (getsel) {
+                    ind = this.rows.namedItem( $t.p.selarrrow[j] );
 				}
 				if( $(ind).hasClass('jqgrow') && ind.id !== "norecs") { // ignore first not visible row and norecs one
 					if($t.p.treeGrid===true && visibleTreeNodes===true && $(ind).is(":hidden")) {
@@ -7982,7 +7990,7 @@ $.jgrid.extend({
 						res[$t.p.ExpandColumn] = treeindent.repeat( level ) + res[$t.p.ExpandColumn];
 					}
 					
-					if(getall) { resall.push(res); res={}; }
+					if(getall || getsel) { resall.push(res); res={}; }
 				}
 				j++;
 			}
@@ -8584,7 +8592,7 @@ $.jgrid.extend({
 				$t.p.tblwidth = initwidth;
 				aw = nwidth-brd*vc-gw;
 				var norec_row = $("#norecs", "#"+$.jgrid.jqID($t.p.id)).eq(0);
-				if(!isNaN($t.p.height)) {
+				if(!($t.p.height == 'auto' || $t.p.height == '100%')) { // !isNaN($t.p.height)
 					if($($t.grid.bDiv)[0].clientHeight <= $($t.grid.bDiv)[0].scrollHeight || $t.rows.length === (norec_row.length + 1)  || $($t.grid.bDiv).css('overflow-y') === 'scroll'){
 						hs = true;
 						aw -= scw;
