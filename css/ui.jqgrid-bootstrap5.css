@@ -373,6 +373,7 @@ div.tablediv > .table-bordered {
 	border-left: 0;
 	border-bottom: 0;
 	border-top: 0; 
+	height: inherit;
 	/*height: 30px;*/
 }
 .ui-jqgrid .ui-pg-table {
