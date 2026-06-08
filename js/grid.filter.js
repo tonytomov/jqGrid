@@ -1974,9 +1974,11 @@ $.jgrid.extend({
 			groupOp : 'OR',
 			searchAll : false,
 			beforeSearch : null,
+            onRuleSearch : null,
 			afterSearch : null,
 			selectFirstFound : false,
-			firstFoundTimeout : 30
+			firstFoundTimeout : 30,
+            whiteList : null 
 		}, p || {});
 		return this.each(function(){
 			var $t = this;
@@ -1989,7 +1991,15 @@ $.jgrid.extend({
 				sop = this.searchoptions || {};
 				so  = p.defaultSearch ? p.defaultSearch : (sop.sopt) ? sop.sopt[0] : p.defaultSearch;
 				searchable =  this.search === undefined  ? true : this.search;
-				if ((searchable || p.searchAll) && val !== "") {
+                if(p.whiteList != null && Array.isArray( p.whiteList ) ) {
+                    if(p.whiteList.includes( nm ) && val !== "" ) {
+					if (gi > 0) {ruleGroup += ",";}
+					ruleGroup += "{\"field\":\"" + nm + "\",";
+					ruleGroup += "\"op\":\"" + so + "\",";
+					ruleGroup += "\"data\":\"" + val.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"}";
+					gi++;
+				}
+                } else if ((searchable || p.searchAll) && val !== "") {
 					if (gi > 0) {ruleGroup += ",";}
 					ruleGroup += "{\"field\":\"" + nm + "\",";
 					ruleGroup += "\"op\":\"" + so + "\",";
@@ -1998,6 +2008,9 @@ $.jgrid.extend({
 				}
 			});
 			ruleGroup += "]}";
+            if ( $.jgrid.isFunction(p.onRuleSearch) ) {
+                ruleGroup = p.onRuleSearch.call($t, ruleGroup);
+            }
 			if($t.p.mergeSearch === true && $t.p.searchModules.hasOwnProperty('filterInput') && $t.p.searchModules.filterInput !== false  ) {
 				if(gi > 0) {
 					$t.p.searchModules.filterInput = ruleGroup;
