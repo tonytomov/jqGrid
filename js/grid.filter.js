@@ -938,11 +938,11 @@ $.jgrid.extend({
 						sdata[nm] = v;
 						sopt[nm] = so;
 						j++;
-					} else {
-						try {
-							delete $t.p.postData[nm];
-						} catch (z) {}
-					}
+					} //else {
+						//try {
+							//delete $t.p.postData[nm];
+						//} catch (z) {}
+					//}
 				});
 				if(ret[0] === false ) {
 					if($.jgrid.isFunction(err)) {
