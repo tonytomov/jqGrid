@@ -378,11 +378,13 @@ $.extend($.jgrid,{
 	},
 	getXmlData: function (obj, expr, returnObj) {
 		var ret, m = typeof expr === 'string' ? expr.match(/^(.*)\[(\w+)\]$/) : null;
-		if (typeof expr === 'function') { return expr(obj); }
+		if (typeof expr === 'function') { 
+			return expr(obj); 
+		}
 		if (m && m[2]) {
-			// m[2] is the attribute selector
-			// m[1] is an optional element selector
-			// examples: "[id]", "rows[page]"
+			//m[2] is the attribute selector
+			//m[1] is an optional element selector
+			//examples: "[id]", "rows[page]"
 			return m[1] ? $(m[1], obj).attr(m[2]) : $(obj).attr(m[2]);
 		}
 		ret = $(expr, obj);
