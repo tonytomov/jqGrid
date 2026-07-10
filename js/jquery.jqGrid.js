@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.9.0 - 2026-03-20
+* @license Guriddo jqGrid JS - v5.9.0 - 2026-07-10
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -5538,6 +5538,9 @@ $.fn.jqGrid = function( pin ) {
 			populate();
 			ts.p.lastsort = idxcol;
 			if(ts.p.sortname !== index && idxcol) {ts.p.lastsort = idxcol;}
+			if(ts.p.datatype === 'local') {
+				ts.refreshIndex();
+			}
 		},
 		setColWidth = function () {
 			var initwidth = 0, brd=$.jgrid.cell_width? 0: intNum(ts.p.cellLayout,0), vc=0, lvc, 
@@ -5574,7 +5577,7 @@ $.fn.jqGrid = function( pin ) {
 			if(ts.p.shrinkToFit ===false && ts.p.forceFit === true) {ts.p.forceFit=false;}
 			if(ts.p.shrinkToFit===true && vc > 0) {
 				aw = grid.width-brd*vc-gw;
-				if(!isNaN(ts.p.height)) {
+				if( !(ts.p.height == 'auto' || ts.p.height == '100%') ) { // isNaN(ts.p.height)
 					aw -= scw;
 					hs = true;
 				}
@@ -6844,7 +6847,9 @@ $.fn.jqGrid = function( pin ) {
 					ts.grid.selectionPreserver(ts);
 				}
 				if(ts.p.datatype==="local"){
+                    if(!ts.p.preserveSelection) {
 					$(ts).jqGrid("resetSelection");
+                    }
 					if(ts.p.data.length) {
 						normalizeData();
 						refreshIndex();
@@ -7943,13 +7948,17 @@ $.jgrid.extend({
 		});
 	},
 	getRowData : function( rowid, usedata, treeindent, visibleTreeNodes ) {
-		var res = {}, resall, getall=false, len, j=0;
+		var res = {}, resall, getall=false, len, j=0, getsel= false;
 		this.each(function(){
 			var $t = this,nm,ind;
 			if( $.jgrid.isNull(rowid) ) {
 				getall = true;
 				resall = [];
 				len = $t.rows.length;
+			} else if(rowid === '_selected_') {
+                getsel = true;
+                resall = [];
+                len = $t.p.selarrrow.length;
 			} else {
 				ind = $($t).jqGrid('getGridRowById', rowid);
 				if(!ind) { return res; }
@@ -7967,6 +7976,8 @@ $.jgrid.extend({
 			while(j<len){
 				if(getall) {
 					ind = $t.rows[j];
+				} else if (getsel) {
+                    ind = this.rows.namedItem( $t.p.selarrrow[j] );
 				}
 				if( $(ind).hasClass('jqgrow') && ind.id !== "norecs") { // ignore first not visible row and norecs one
 					if($t.p.treeGrid===true && visibleTreeNodes===true && $(ind).is(":hidden")) {
@@ -8002,7 +8013,7 @@ $.jgrid.extend({
 						res[$t.p.ExpandColumn] = treeindent.repeat( level ) + res[$t.p.ExpandColumn];
 					}
 					
-					if(getall) { resall.push(res); res={}; }
+					if(getall || getsel) { resall.push(res); res={}; }
 				}
 				j++;
 			}
@@ -8604,7 +8615,7 @@ $.jgrid.extend({
 				$t.p.tblwidth = initwidth;
 				aw = nwidth-brd*vc-gw;
 				var norec_row = $("#norecs", "#"+$.jgrid.jqID($t.p.id)).eq(0);
-				if(!isNaN($t.p.height)) {
+				if(!($t.p.height == 'auto' || $t.p.height == '100%')) { // !isNaN($t.p.height)
 					if($($t.grid.bDiv)[0].clientHeight <= $($t.grid.bDiv)[0].scrollHeight || $t.rows.length === (norec_row.length + 1)  || $($t.grid.bDiv).css('overflow-y') === 'scroll'){
 						hs = true;
 						aw -= scw;
@@ -8927,6 +8938,37 @@ $.jgrid.extend({
 						if($t.p.treeGrid && ret && $t.p.ExpandColumn === col ) {
 							ret = $( "<div>" + ret +"</div>").find("span").first().html();
 						}
+					}
+				}
+			}
+		});
+		return ret;
+	},
+	getColLocal : function(col, mathopr) {
+		var ret = false, val, sum=0, min, max, v;
+		if(mathopr === undefined) { mathopr = 'count'; }
+		this.each(function(){
+			var $t=this, pos=-1, cm = $t.p.colModel;
+			if(!$t.grid) {return;}
+			pos = $.jgrid.getElemByAttrVal($t.p.colModel, 'name', col, true);
+			if(pos>=0) {
+				var ln = $t.p.data.length, i = 0, dlen = 0;
+				if (ln && ln>0){
+					for(; i < ln; i++){
+						val = $t.p.data[i][col];
+						v = $.jgrid.floatNum(val);
+						sum += v;
+						if (max === undefined) {max = min = v;}
+						min = Math.min(min, v);
+						max = Math.max(max, v);
+						dlen++;						
+					}
+					switch(mathopr.toLowerCase()){
+						case 'sum': ret =sum; break;
+						case 'avg': ret = sum/dlen; break;
+						case 'count': ret = dlen; break;
+						case 'min': ret = min; break;
+						case 'max': ret = max; break;
 					}
 				}
 			}
@@ -10108,7 +10150,7 @@ $.jgrid.extend({
 							retsub = true;
 						}
 						if($.jgrid.isFunction($t.p.onSubmitCell) ) {
-							retsub = $t.p.onSubmitCell($t.p.savedRow[fr].rowId, nm, v, iRow, iCol);
+							retsub = $t.p.onSubmitCell.call($t, $t.p.savedRow[fr].rowId, nm, v, iRow, iCol);
 							if( retsub === undefined) {
 								retsub = true;
 							} 
@@ -12509,11 +12551,11 @@ $.jgrid.extend({
 						sdata[nm] = v;
 						sopt[nm] = so;
 						j++;
-					} else {
-						try {
-							delete $t.p.postData[nm];
-						} catch (z) {}
-					}
+					} //else {
+						//try {
+							//delete $t.p.postData[nm];
+						//} catch (z) {}
+					//}
 				});
 				if(ret[0] === false ) {
 					if($.jgrid.isFunction(err)) {
@@ -13545,9 +13587,11 @@ $.jgrid.extend({
 			groupOp : 'OR',
 			searchAll : false,
 			beforeSearch : null,
+            onRuleSearch : null,
 			afterSearch : null,
 			selectFirstFound : false,
-			firstFoundTimeout : 30
+			firstFoundTimeout : 30,
+            whiteList : null 
 		}, p || {});
 		return this.each(function(){
 			var $t = this;
@@ -13560,7 +13604,15 @@ $.jgrid.extend({
 				sop = this.searchoptions || {};
 				so  = p.defaultSearch ? p.defaultSearch : (sop.sopt) ? sop.sopt[0] : p.defaultSearch;
 				searchable =  this.search === undefined  ? true : this.search;
-				if ((searchable || p.searchAll) && val !== "") {
+                if(p.whiteList != null && Array.isArray( p.whiteList ) ) {
+                    if(p.whiteList.includes( nm ) && val !== "" ) {
+					if (gi > 0) {ruleGroup += ",";}
+					ruleGroup += "{\"field\":\"" + nm + "\",";
+					ruleGroup += "\"op\":\"" + so + "\",";
+					ruleGroup += "\"data\":\"" + val.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"}";
+					gi++;
+				}
+                } else if ((searchable || p.searchAll) && val !== "") {
 					if (gi > 0) {ruleGroup += ",";}
 					ruleGroup += "{\"field\":\"" + nm + "\",";
 					ruleGroup += "\"op\":\"" + so + "\",";
@@ -13569,6 +13621,9 @@ $.jgrid.extend({
 				}
 			});
 			ruleGroup += "]}";
+            if ( $.jgrid.isFunction(p.onRuleSearch) ) {
+                ruleGroup = p.onRuleSearch.call($t, ruleGroup);
+            }
 			if($t.p.mergeSearch === true && $t.p.searchModules.hasOwnProperty('filterInput') && $t.p.searchModules.filterInput !== false  ) {
 				if(gi > 0) {
 					$t.p.searchModules.filterInput = ruleGroup;
@@ -13850,14 +13905,16 @@ $.jgrid.extend({
 					if ( !$.jgrid.isServiceCol() && this.editable===true ) {
 						if(ind === false) {
 							tmp = "";
+						} else if(nm === obj.p.ExpandColumn && obj.p.treeGrid === true) {
+							tmp = $("td[role='gridcell']",obj.rows[ind]).eq( i ).text();
 						} else {
 							try {
 								tmp =  $.unformat.call(obj, $("td[role='gridcell']",obj.rows[ind]).eq( i ),{rowId:rowid, colModel:this},i);
 							} catch (_) {
 								tmp =  (this.edittype && this.edittype === "textarea") ? $("td[role='gridcell']",obj.rows[ind]).eq( i ).text() : $("td[role='gridcell']",obj.rows[ind]).eq( i ).html();
 							}
-							if(!tmp || tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length===1 && tmp.charCodeAt(0)===160) ) {tmp='';}
 						}
+							if(!tmp || tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length===1 && tmp.charCodeAt(0)===160) ) {tmp='';}
 						var opt = $.extend({}, this.editoptions || {} ,{id:nm,name:nm, rowId: rowid, oper:frmoper, module : 'form', checkUpdate : rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate}),
 						frmopt = $.extend({}, {elmprefix:'',elmsuffix:'',rowabove:false,rowcontent:''}, this.formoptions || {}),
 						rp = parseInt(frmopt.rowpos,10) || cnt+1,
@@ -14487,7 +14544,7 @@ $.jgrid.extend({
 			}
 			var dh = isNaN(rp_ge[$(this)[0].p.id].dataheight) ? rp_ge[$(this)[0].p.id].dataheight : rp_ge[$(this)[0].p.id].dataheight+"px",
 			dw = isNaN(rp_ge[$(this)[0].p.id].datawidth) ? rp_ge[$(this)[0].p.id].datawidth : rp_ge[$(this)[0].p.id].datawidth+"px",
-			frm = $("<form name='FormPost' id='"+frmgr+"' class='FormGrid' onSubmit='return false;' style='width:"+dw+";height:"+dh+";'></form>").data("disabled",false),
+			frm = $("<form name='FormPost' id='"+frmgr+"' class='FormGrid' onSubmit='return false;' style='width:"+dw+";height:"+dh+";' autocomplete='off'></form>").data("disabled",false),
 			tbl;
 			if(templ) {
 				tbl = parseTemplate( rp_ge[$(this)[0].p.id].template );
