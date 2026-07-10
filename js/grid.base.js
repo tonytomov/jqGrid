@@ -5518,6 +5518,9 @@ $.fn.jqGrid = function( pin ) {
 			populate();
 			ts.p.lastsort = idxcol;
 			if(ts.p.sortname !== index && idxcol) {ts.p.lastsort = idxcol;}
+			if(ts.p.datatype === 'local') {
+				ts.refreshIndex();
+			}
 		},
 		setColWidth = function () {
 			var initwidth = 0, brd=$.jgrid.cell_width? 0: intNum(ts.p.cellLayout,0), vc=0, lvc, 
@@ -7925,7 +7928,7 @@ $.jgrid.extend({
 		});
 	},
 	getRowData : function( rowid, usedata, treeindent, visibleTreeNodes ) {
-		var res = {}, resall, getall=false, len, j=0;
+		var res = {}, resall, getall=false, len, j=0, getsel= false;
 		this.each(function(){
 			var $t = this,nm,ind;
 			if( $.jgrid.isNull(rowid) ) {
@@ -8915,6 +8918,37 @@ $.jgrid.extend({
 						if($t.p.treeGrid && ret && $t.p.ExpandColumn === col ) {
 							ret = $( "<div>" + ret +"</div>").find("span").first().html();
 						}
+					}
+				}
+			}
+		});
+		return ret;
+	},
+	getColLocal : function(col, mathopr) {
+		var ret = false, val, sum=0, min, max, v;
+		if(mathopr === undefined) { mathopr = 'count'; }
+		this.each(function(){
+			var $t=this, pos=-1, cm = $t.p.colModel;
+			if(!$t.grid) {return;}
+			pos = $.jgrid.getElemByAttrVal($t.p.colModel, 'name', col, true);
+			if(pos>=0) {
+				var ln = $t.p.data.length, i = 0, dlen = 0;
+				if (ln && ln>0){
+					for(; i < ln; i++){
+						val = $t.p.data[i][col];
+						v = $.jgrid.floatNum(val);
+						sum += v;
+						if (max === undefined) {max = min = v;}
+						min = Math.min(min, v);
+						max = Math.max(max, v);
+						dlen++;						
+					}
+					switch(mathopr.toLowerCase()){
+						case 'sum': ret =sum; break;
+						case 'avg': ret = sum/dlen; break;
+						case 'count': ret = dlen; break;
+						case 'min': ret = min; break;
+						case 'max': ret = max; break;
 					}
 				}
 			}
