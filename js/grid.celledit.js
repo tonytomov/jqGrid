@@ -336,7 +336,7 @@ $.jgrid.extend({
 							retsub = true;
 						}
 						if($.jgrid.isFunction($t.p.onSubmitCell) ) {
-							retsub = $t.p.onSubmitCell($t.p.savedRow[fr].rowId, nm, v, iRow, iCol);
+							retsub = $t.p.onSubmitCell.call($t, $t.p.savedRow[fr].rowId, nm, v, iRow, iCol);
 							if( retsub === undefined) {
 								retsub = true;
 							} 
