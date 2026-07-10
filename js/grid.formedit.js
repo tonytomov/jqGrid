@@ -197,14 +197,16 @@ $.jgrid.extend({
 					if ( !$.jgrid.isServiceCol() && this.editable===true ) {
 						if(ind === false) {
 							tmp = "";
+						} else if(nm === obj.p.ExpandColumn && obj.p.treeGrid === true) {
+							tmp = $("td[role='gridcell']",obj.rows[ind]).eq( i ).text();
 						} else {
 							try {
 								tmp =  $.unformat.call(obj, $("td[role='gridcell']",obj.rows[ind]).eq( i ),{rowId:rowid, colModel:this},i);
 							} catch (_) {
 								tmp =  (this.edittype && this.edittype === "textarea") ? $("td[role='gridcell']",obj.rows[ind]).eq( i ).text() : $("td[role='gridcell']",obj.rows[ind]).eq( i ).html();
 							}
-							if(!tmp || tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length===1 && tmp.charCodeAt(0)===160) ) {tmp='';}
 						}
+							if(!tmp || tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length===1 && tmp.charCodeAt(0)===160) ) {tmp='';}
 						var opt = $.extend({}, this.editoptions || {} ,{id:nm,name:nm, rowId: rowid, oper:frmoper, module : 'form', checkUpdate : rp_ge[$t.p.id].checkOnSubmit || rp_ge[$t.p.id].checkOnUpdate}),
 						frmopt = $.extend({}, {elmprefix:'',elmsuffix:'',rowabove:false,rowcontent:''}, this.formoptions || {}),
 						rp = parseInt(frmopt.rowpos,10) || cnt+1,
@@ -834,7 +836,7 @@ $.jgrid.extend({
 			}
 			var dh = isNaN(rp_ge[$(this)[0].p.id].dataheight) ? rp_ge[$(this)[0].p.id].dataheight : rp_ge[$(this)[0].p.id].dataheight+"px",
 			dw = isNaN(rp_ge[$(this)[0].p.id].datawidth) ? rp_ge[$(this)[0].p.id].datawidth : rp_ge[$(this)[0].p.id].datawidth+"px",
-			frm = $("<form name='FormPost' id='"+frmgr+"' class='FormGrid' onSubmit='return false;' style='width:"+dw+";height:"+dh+";'></form>").data("disabled",false),
+			frm = $("<form name='FormPost' id='"+frmgr+"' class='FormGrid' onSubmit='return false;' style='width:"+dw+";height:"+dh+";' autocomplete='off'></form>").data("disabled",false),
 			tbl;
 			if(templ) {
 				tbl = parseTemplate( rp_ge[$(this)[0].p.id].template );
