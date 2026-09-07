@@ -25,5 +25,9 @@
     "grunt-contrib-jshint": "^3.0.0",
     "grunt-contrib-requirejs": ">0.4.4",
     "grunt-contrib-uglify": "^5.0.0"
+  },
+  "dependencies": {
+    "jquery": "^3.7.1",
+    "jsdom": "^30.0.1"
   }
 }

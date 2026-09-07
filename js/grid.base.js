@@ -7220,10 +7220,21 @@ $.fn.jqGrid = function( pin ) {
 				};
 
 				var DEBOUNCE_MS = ts.p.vScrollDebounce || 150;
+				// Number of pages to keep in the DOM window (min 3).
+				// Larger values reduce eviction frequency and flicker at the cost of
+				// slightly more DOM nodes. Configurable via vScrollWindow option.
+				var WIN_PAGES = Math.max(3, ts.p.vScrollWindow || 5);
+				// How many viewport heights ahead to trigger the next page load.
+				// Higher = earlier load, less chance of blank gap during scroll.
+				var LOOKAHEAD = ts.p.vScrollLookahead || 4;
 
 				var bDiv   = ts.grid.bDiv;
 				var canvas = bDiv.firstChild;
 				var spacer = canvas.firstChild;
+				// Disable browser scroll anchoring on the scroll container.
+				// Without this the browser fights our spacer adjustments during
+				// eviction, causing visible jumps even with rAF timing.
+				bDiv.style.overflowAnchor = 'none';
 
 				// ── Height helpers ───────────────────────────────────────────────
 				// estimatedPageHeight(p): measured if visited, else current average
@@ -7326,12 +7337,12 @@ $.fn.jqGrid = function( pin ) {
 					}
 
 					// Scroll DOWN: bottom of table within 2 viewports — load next page
-					if (vs.lastDomPage < lastPage && tableBot <= scrollTop + viewH * 2) {
+					if (vs.lastDomPage < lastPage && tableBot <= scrollTop + viewH * LOOKAHEAD) {
 						return vs.lastDomPage + 1;
 					}
 
 					// Scroll UP: top of table scrolled below viewport top — load prev page
-					if (vs.firstDomPage > 1 && tableTop > scrollTop) {
+					if (vs.firstDomPage > 1 && tableTop > scrollTop - viewH * LOOKAHEAD) {
 						return vs.firstDomPage - 1;
 					}
 
@@ -7369,16 +7380,15 @@ $.fn.jqGrid = function( pin ) {
 
 				// ── Local data slice ─────────────────────────────────────────────
 				function getLocalPage(page) {
-					var allData = ts.p.data || [];
-					var start   = (page - 1) * vs.pageSize;
-					var end     = Math.min(start + vs.pageSize, allData.length);
-					var lr      = ts.p.localReader;
-					var obj     = {};
-					obj[lr.root]    = allData.slice(start, end);
-					obj[lr.page]    = page;
-					obj[lr.total]   = Math.ceil(allData.length / vs.pageSize);
-					obj[lr.records] = allData.length;
-					return obj;
+					// Use jqGrid's own addLocalData so filtering (search) and sorting
+					// are applied consistently — same as the normal non-vScroll path.
+					// We temporarily set ts.p.page to the requested page since
+					// addLocalData reads ts.p.page for its own slicing.
+					var savedPage = ts.p.page;
+					ts.p.page = page;
+					var result = addLocalData(false);
+					ts.p.page = savedPage;
+					return result;
 				}
 
 				// ── Build AJAX params ────────────────────────────────────────────
@@ -7439,7 +7449,7 @@ $.fn.jqGrid = function( pin ) {
 						// Strategy: measure the evicted page height, remove its rows,
 						// then surgically add that exact height to the spacer —
 						// no full applyLayout, no scrollTop touch needed.
-						if (oldCount >= 3 * vs.pageSize) {
+						if (oldCount >= WIN_PAGES * vs.pageSize) {
 							// Force a synchronous layout reflow so outerHeight() returns
 							// real values after addJSONData appended rows above.
 							void bDiv.offsetHeight;
@@ -7458,8 +7468,6 @@ $.fn.jqGrid = function( pin ) {
 							// this keeps total layout height constant, no scrollTop jump.
 							var currentSpacerH = parseInt($(spacer).css('height'), 10) || 0;
 							var newSpacerH = currentSpacerH + evictedPageH;
-							// Update offsets to stay consistent
-							recomputeOffsets(vs.firstDomPage);
 							calibrateHeight(page);
 							vs.rendering = true;
 							// Apply the spacer growth after the browser has painted the row
@@ -7483,10 +7491,10 @@ $.fn.jqGrid = function( pin ) {
 						if (firstRow && newRows.length) {
 							$(firstRow).before($(newRows));
 						}
-						// Evict last page from back if window exceeds 3 pages.
+						// Evict last page from back if window exceeds WIN_PAGES pages.
 						// Shrinking from the back does not affect scrollTop so no
 						// special ordering is needed here.
-						if (oldCount >= 3 * vs.pageSize) {
+						if (oldCount >= WIN_PAGES * vs.pageSize) {
 							$(ts.rows).slice(-(vs.pageSize)).remove();
 							vs.lastDomPage -= 1;
 						}

@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.9.0 - 2026-07-10
+* @license Guriddo jqGrid JS - v5.9.0 - 2026-09-07
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -16,21 +16,6 @@
 		// Browser globals
 		factory( jQuery );
  	}
-}(function( $ ) {
-"use strict";
-/*jshint eqeqeq:false */
-/*global jQuery, define */
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery"
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
 }(function( $ ) {
 "use strict";
 //module begin
@@ -7240,10 +7225,21 @@ $.fn.jqGrid = function( pin ) {
 				};
 
 				var DEBOUNCE_MS = ts.p.vScrollDebounce || 150;
+				// Number of pages to keep in the DOM window (min 3).
+				// Larger values reduce eviction frequency and flicker at the cost of
+				// slightly more DOM nodes. Configurable via vScrollWindow option.
+				var WIN_PAGES = Math.max(3, ts.p.vScrollWindow || 5);
+				// How many viewport heights ahead to trigger the next page load.
+				// Higher = earlier load, less chance of blank gap during scroll.
+				var LOOKAHEAD = ts.p.vScrollLookahead || 4;
 
 				var bDiv   = ts.grid.bDiv;
 				var canvas = bDiv.firstChild;
 				var spacer = canvas.firstChild;
+				// Disable browser scroll anchoring on the scroll container.
+				// Without this the browser fights our spacer adjustments during
+				// eviction, causing visible jumps even with rAF timing.
+				bDiv.style.overflowAnchor = 'none';
 
 				// ── Height helpers ───────────────────────────────────────────────
 				// estimatedPageHeight(p): measured if visited, else current average
@@ -7346,12 +7342,12 @@ $.fn.jqGrid = function( pin ) {
 					}
 
 					// Scroll DOWN: bottom of table within 2 viewports — load next page
-					if (vs.lastDomPage < lastPage && tableBot <= scrollTop + viewH * 2) {
+					if (vs.lastDomPage < lastPage && tableBot <= scrollTop + viewH * LOOKAHEAD) {
 						return vs.lastDomPage + 1;
 					}
 
 					// Scroll UP: top of table scrolled below viewport top — load prev page
-					if (vs.firstDomPage > 1 && tableTop > scrollTop) {
+					if (vs.firstDomPage > 1 && tableTop > scrollTop - viewH * LOOKAHEAD) {
 						return vs.firstDomPage - 1;
 					}
 
@@ -7389,16 +7385,15 @@ $.fn.jqGrid = function( pin ) {
 
 				// ── Local data slice ─────────────────────────────────────────────
 				function getLocalPage(page) {
-					var allData = ts.p.data || [];
-					var start   = (page - 1) * vs.pageSize;
-					var end     = Math.min(start + vs.pageSize, allData.length);
-					var lr      = ts.p.localReader;
-					var obj     = {};
-					obj[lr.root]    = allData.slice(start, end);
-					obj[lr.page]    = page;
-					obj[lr.total]   = Math.ceil(allData.length / vs.pageSize);
-					obj[lr.records] = allData.length;
-					return obj;
+					// Use jqGrid's own addLocalData so filtering (search) and sorting
+					// are applied consistently — same as the normal non-vScroll path.
+					// We temporarily set ts.p.page to the requested page since
+					// addLocalData reads ts.p.page for its own slicing.
+					var savedPage = ts.p.page;
+					ts.p.page = page;
+					var result = addLocalData(false);
+					ts.p.page = savedPage;
+					return result;
 				}
 
 				// ── Build AJAX params ────────────────────────────────────────────
@@ -7459,7 +7454,7 @@ $.fn.jqGrid = function( pin ) {
 						// Strategy: measure the evicted page height, remove its rows,
 						// then surgically add that exact height to the spacer —
 						// no full applyLayout, no scrollTop touch needed.
-						if (oldCount >= 3 * vs.pageSize) {
+						if (oldCount >= WIN_PAGES * vs.pageSize) {
 							// Force a synchronous layout reflow so outerHeight() returns
 							// real values after addJSONData appended rows above.
 							void bDiv.offsetHeight;
@@ -7478,8 +7473,6 @@ $.fn.jqGrid = function( pin ) {
 							// this keeps total layout height constant, no scrollTop jump.
 							var currentSpacerH = parseInt($(spacer).css('height'), 10) || 0;
 							var newSpacerH = currentSpacerH + evictedPageH;
-							// Update offsets to stay consistent
-							recomputeOffsets(vs.firstDomPage);
 							calibrateHeight(page);
 							vs.rendering = true;
 							// Apply the spacer growth after the browser has painted the row
@@ -7503,10 +7496,10 @@ $.fn.jqGrid = function( pin ) {
 						if (firstRow && newRows.length) {
 							$(firstRow).before($(newRows));
 						}
-						// Evict last page from back if window exceeds 3 pages.
+						// Evict last page from back if window exceeds WIN_PAGES pages.
 						// Shrinking from the back does not affect scrollTop so no
 						// special ordering is needed here.
-						if (oldCount >= 3 * vs.pageSize) {
+						if (oldCount >= WIN_PAGES * vs.pageSize) {
 							$(ts.rows).slice(-(vs.pageSize)).remove();
 							vs.lastDomPage -= 1;
 						}
@@ -9811,47 +9804,7 @@ $.jgrid.extend({
 		});
 	}
 });
-//module end
-}));
 
-/*jshint eqeqeq:false */
-/*global jQuery, define */
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery",
-			"./grid.base"
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
-}(function( $ ) {
-/**
- * all events and options here are aded anonynous and not in the base grid
- * since the array is to big. Here is the order of execution.
- * From this point we use jQuery isFunction
- * formatCell
- * beforeEditCell,
- * onCellSelect (used only for noneditable cels)
- * afterEditCell,
- * beforeSaveCell, (called before validation of values if any)
- * beforeSubmitCell (if cellsubmit remote (ajax))
- * onSubmitCell
- * afterSubmitCell(if cellsubmit remote (ajax)),
- * afterSaveCell,
- * errorCell,
- * validationCell
- * serializeCellData - new
- * Options
- * cellsubmit (remote,clientArray) (added in grid options)
- * cellurl
- * ajaxCellOptions
- * restoreCellonFail
-* */
-"use strict";
 //module begin
 $.jgrid.extend({
 	editCell : function (iRow,iCol, ed, event, excel){
@@ -10554,27 +10507,7 @@ $.jgrid.extend({
 	}
 /// end  cell editing
 });
-//module end
-}));
 
-/*jshint eqeqeq:false */
-/*global jQuery, define */
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery",
-			"./grid.base",
-			"./jqModal",
-			"./jqDnR"
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
-}(function( $ ) {
-"use strict";
 //module begin
 $.extend($.jgrid,{
 // Modal functions
@@ -11610,46 +11543,7 @@ $.extend($.jgrid,{
 		form.parentNode.removeChild(form);
 	}	
 });
-//module end
-}));
 
-/*
- *
- * The filter uses JSON entities to hold filter rules and groups. Here is an example of a filter:
-
-{ "groupOp": "AND",
-      "groups" : [
-        { "groupOp": "OR",
-            "rules": [
-                { "field": "name", "op": "eq", "data": "England" },
-                { "field": "id", "op": "le", "data": "5"}
-             ]
-        }
-      ],
-      "rules": [
-        { "field": "name", "op": "eq", "data": "Romania" },
-        { "field": "id", "op": "le", "data": "1"}
-      ]
-}
-*/
-/*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery, define */
-
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery",
-			"./grid.base",
-			"./grid.common"
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
-}(function( $ ) {
-"use strict";
 //module begin
 $.fn.jqFilter = function( arg ) {
 	if (typeof arg === 'string') {
@@ -13705,26 +13599,7 @@ $.jgrid.extend({
 		});
 	}
 });
-//module end
-}));
 
-/*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery, define */
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery",
-			"./grid.base",
-			"./grid.common"
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
-}(function( $ ) {
-"use strict";
 //module begin
 var rp_ge = {};
 $.jgrid.extend({
@@ -16185,26 +16060,7 @@ $.jgrid.extend({
 		});
 	}
 });
-//module end
-}));
 
-/*jshint eqeqeq:false, eqnull:true */
-/*global jQuery, define */
-// Grouping module
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery",
-			"./grid.base"
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
-}(function( $ ) {
-"use strict";
 //module begin
 $.jgrid.extend({
 	groupingInit : function () {
@@ -17141,26 +16997,7 @@ $.jgrid.extend({
 		});
 	}
 });
-//module end
-}));
 
-/*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery, define, URL */
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery",
-			"./grid.utils",
-			"./grid.base"
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
-}(function( $ ) {
-"use strict";
 //module begin
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
@@ -17749,26 +17586,7 @@ $.extend($.jgrid,{
 			});
 		}
     });
-//module end
-}));
 
-/*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery, define */
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery",
-			"./grid.base",
-			"./grid.common"
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
-}(function( $ ) {
-"use strict";
 //module begin
 $.jgrid.inlineEdit = $.jgrid.inlineEdit || {};
 $.jgrid.extend({
@@ -18556,39 +18374,7 @@ $.jgrid.extend({
 	}
 //end inline edit
 });
-//module end
-}));
 
-/*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery, define */
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery",
-			"./grid.base",
-			"jquery-ui/dialog",
-			"jquery-ui/draggable",
-			"jquery-ui/droppable",
-			"jquery-ui/resizable",
-			"jquery-ui/sortable",
-			"./addons/ui.multiselect"		
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
-}(function( $ ) {/*
-**
- * jqGrid addons using jQuery UI 
- * Author: Mark Williams
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl-2.0.html
- * depends on jQuery UI 
-**/
-"use strict";
 //module begin
 if ($.jgrid.msie() && $.jgrid.msiever()===8) {
 	$.expr[":"].hidden = function(elem) {
@@ -19236,29 +19022,7 @@ $.jgrid.extend({
 		});
 	}
 });
-//module end
-}));
 
-/*jshint eqeqeq:false */
-/*global jQuery, define */
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery",
-			"./grid.base",
-			"./grid.grouping"
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
-}(function( $ ) {
-"use strict";
-// To optimize the search we need custom array filter
-// This code is taken from
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
 //module begin
 function _pivotfilter (fn, context) {
 	/*jshint validthis: true */
@@ -19867,25 +19631,7 @@ $.jgrid.extend({
 		});
 	}
 });
-//module end
-}));
 
-/*jshint eqeqeq:false */
-/*global jQuery, define */
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery",
-			"./grid.base"
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
-}(function( $ ) {
-"use strict";
 //module begin
 $.jgrid.extend({
 setSubGrid : function () {
@@ -20212,25 +19958,7 @@ toggleSubGridRow : function(rowid) {
 	});
 }
 });
-//module end
-}));
 
-/*jshint eqeqeq:false */
-/*global jQuery, define */
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery",
-			"./grid.base"
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
-}(function( $ ) {
-"use strict";
 //module begin
 $.jgrid.extend({
 	setTreeNode : function(i, len){
@@ -21232,33 +20960,7 @@ $.jgrid.extend({
 		//});
 	}
 });
-//module end
-}));
 
-/*
- * jqDnR - Minimalistic Drag'n'Resize for jQuery.
- *
- * Copyright (c) 2007 Brice Burgess <bhb@iceburg.net>, http://www.iceburg.net
- * Licensed under the MIT License:
- * http://www.opensource.org/licenses/mit-license.php
- * 
- * $Version: 2007.08.19 +r2
- */
-/*jshint eqeqeq:false */
-/*global jQuery, define */
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery"
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
-} (function( $ ) {
-"use strict";
 //module begin
 $.fn.jqDrag=function(h){return i(this,h,'d');};
 $.fn.jqResize=function(h,ar){return i(this,h,'r',ar);};
@@ -21341,34 +21043,7 @@ $.fn.tinyDraggable = function(options){
 		});
 	});
 };
-//module end
-}));
-/*
- * jqModal - Minimalist Modaling with jQuery
- *   (http://dev.iceburg.net/jquery/jqmodal/)
- *
- * Copyright (c) 2007,2008 Brice Burgess <bhb@iceburg.net>
- * Dual licensed under the MIT and GPL licenses:
- *   http://www.opensource.org/licenses/mit-license.php
- *   http://www.gnu.org/licenses/gpl.html
- * 
- * $Version: 07/06/2008 +r13
- */
-/*jshint eqeqeq:false */
-/*global jQuery, define */
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery"
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
-} (function( $ ) {
-"use strict";
+
 //module begin
 $.fn.jqm=function(o){
 var p={
@@ -21426,39 +21101,7 @@ m=function(e){var h=H[A[A.length-1]],r=(!$(e.target).parents('.jqmID'+h.s)[0]);i
 hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function() {
  if(!this[c]){this[c]=[];$(this).click(function(){for(var i in {jqmShow:1,jqmHide:1}){for(var s in this[i]){if(H[this[i][s]]){H[this[i][s]].w[i](this);}}}return F;});}
  this[c].push(s);});});};
-//module end
-}));
-/*
-**
- * formatter for values but most of the values if for jqGrid
- * Some of this was inspired and based on how YUI does the table datagrid but in jQuery fashion
- * we are trying to keep it as light as possible
- * Joshua Burnett josh@9ci.com	
- * http://www.greenbill.com
- *
- * Changes from Tony Tomov tony@trirand.com
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl-2.0.html
- * 
-**/
-/*jshint eqeqeq:false */
-/*global jQuery, define */
 
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery",
-			"./grid.base"
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
-}(function( $ ) {
-"use strict";
 //module begin
 	$.fmatter = {};
 	//opts can be id:row id for the row, rowdata:the data for the row, colmodel:the column model for this column
@@ -21933,34 +21576,7 @@ hs=function(w,t,c){return w.each(function(){var s=this._jqm;$(t).each(function()
 		}
 		return $.fn.fmatter.defaultFormat(cellval, opts);
 	};
-//module end
-}));
 
-/*
- * 
- * HTML5 Sortable jQuery Plugin
- * 
- * Original code Copyright 2012 Ali Farhadi.
- *
- * This version is maintained by Tony Tomov <tony@trirand.com>
- * 
- * Released under the MIT license.
- */
-/*jshint eqeqeq:false */
-/*global jQuery, define */
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery"
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
-} (function( $ ) {
-"use strict";
 //module begin
 var dragging, placeholders = $();
 $.fn.html5sortable = function(options) {
@@ -22041,24 +21657,7 @@ $.fn.html5sortable = function(options) {
 		});
 	});
 };
-//module end
-}));
-/*global jQuery, define, URL */
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
 
-	// AMD. Register as an anonymous module.
-		define([
-			"jquery"
-		], factory );
-	} else {
-
-	// Browser globals
-		factory( jQuery );
-	}
-}(function( $ ) {
-"use strict";
 //module begin
 $.extend($.jgrid,{
 //window.jqGridUtils = {
@@ -22444,27 +22043,7 @@ $.extend($.jgrid,{
 		return arr;
 	}
 });
-//module end
-//return window.jqGridUtils;
-}));
-/*jshint eqeqeq:false, eqnull:true, devel:true */
-/*global jQuery, JSZip, pdfMake, XMLSerializer, define */
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery",
-			"./grid.base",
-			"./jquery.fmatter",
-			"./grid.utils"
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
-}(function( $ ) {
-"use strict";
+
 //module begin
 
 $.jgrid = $.jgrid || {};
@@ -24832,25 +24411,7 @@ $.jgrid.extend({
 		return ret;
 	}
 });
-//module end
-}));
 
-/*jshint eqeqeq:false */
-/*global jQuery, define */
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery",
-			"./grid.base"
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
-}(function( $ ) {
-"use strict";
 //module begin
 $.extend($.jgrid,{
 	focusableElementsList : [
@@ -25742,25 +25303,7 @@ $.jgrid.extend({
 	}
 // end aria grid
 });
-//module end
-}));
 
-/*jshint eqeqeq:false */
-/*global jQuery, define */
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery",
-			"./grid.base"
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
-}(function( $ ) {
-"use strict";
 //module begin
 $.jgrid.extend({
 	transposeSetup : function( data, options ){
@@ -25877,25 +25420,7 @@ $.jgrid.extend({
 		});
 	}
 });
-//module end
-}));
 
-/*jshint eqeqeq:false */
-/*global jQuery, define */
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery",
-			"./grid.base"
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
-}(function( $ ) {
-"use strict";
 //module begin
 $.jgrid.extend({
 	setupFrozenRows : function ( options ){
@@ -25982,25 +25507,7 @@ $.jgrid.extend({
 		});
 	}
 });
-//module end
-}));
-/*jshint eqeqeq:false, eqnull:true */
-/*global jQuery, define */
-// Grouping module
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery",
-			"./grid.base"
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
-}(function( $ ) {
-"use strict";
+
 //module begin
 $.jgrid.extend({
 	dbInit : function (dbtype) {
@@ -26279,25 +25786,7 @@ $.jgrid.extend({
 		});
 	}	
 });
-//module end
-}));
 
-/*jshint eqeqeq:false */
-/*global jQuery, define */
-(function( factory ) {
-	"use strict";
-	if ( typeof define === "function" && define.amd ) {
-		// AMD. Register as an anonymous module.
-		define([
-			"jquery",
-			"./grid.base"
-		], factory );
-	} else {
-		// Browser globals
-		factory( jQuery );
-	}
-}(function( $ ) {
-"use strict";
 //module begin
 // clipboard
 $.extend($.jgrid,{
@@ -26871,7 +26360,5 @@ $.jgrid.extend({
 // end clipboard grid
 });
 //clipboard
-//module end
-}));
 
 }));
