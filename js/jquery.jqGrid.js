@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.9.0 - 2026-09-07
+* @license Guriddo jqGrid JS - v5.9.0 - 2026-09-09
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -2392,6 +2392,9 @@ $.extend($.jgrid,{
 			return value;
 		}));
 	},
+	compareObjects : function(a, b) {
+		return JSON.stringify(a) === JSON.stringify(b);
+	},
 	styleUI : {
 		jQueryUI : {
 			common : {
@@ -3159,6 +3162,7 @@ $.fn.jqGrid = function( pin ) {
 			reccount: 0,
 			lastpage: 0,
 			lastsort: 0,
+			_lastsortA : [],
 			selrow: null,
 			beforeSelectRow: null,
 			onSelectRow: null,
@@ -4768,10 +4772,11 @@ $.fn.jqGrid = function( pin ) {
 					} catch (se){}
 				}
 			}
-			var fl=[], pr=[];			
+			var fl=[], pr=[], sso =[];			
 			if(ts.p.treeGrid && ts.p.treeGridModel === "nested") {
 				fl.push(ts.p.treeReader.left_field);
-				pr.push({so:"a", stype:"integer", srcfmt:'Y-m-d', sfunc:null})
+				pr.push({so:"a", stype:"integer", srcfmt:'Y-m-d', sfunc:null});
+				sso.push("a");
 				//query_jlinq.orderBy(ts.p.treeReader.left_field, 'asc', 'integer', '', null);
 			}
 			if(ts.p.treeGrid && ts.p.treeGridModel === "adjacency") {
@@ -4783,6 +4788,7 @@ $.fn.jqGrid = function( pin ) {
 					fl.push(grindexes[gin]);
 					pr.push({so:grpview.groupOrder[gin],stype:grtypes[gin].stype, srcfmt: grtypes[gin].srcfmt, sfunc:null});
 					//query_jlinq.orderBy(grindexes[gin], grpview.groupOrder[gin], grtypes[gin].stype, grtypes[gin].srcfmt);
+					sso.push(grpview.groupOrder[gin]);
 				}
 				//query_jlinq.orderBy(fl, pr);
 			}
@@ -4792,15 +4798,18 @@ $.fn.jqGrid = function( pin ) {
 					fl.push(this);
 					pr.push({so:sto[i],stype:cmtypes[this].stype, srcfmt: cmtypes[this].srcfmt, sfunc:cmtypes[this].sfunc});
 					//query_jlinq.orderBy(this, sto[i], cmtypes[this].stype, cmtypes[this].srcfmt, cmtypes[this].sfunc);
+					sso.push(sto[i]);
 				});
 				//query_jlinq.orderBy(fl, pr);
 			} else {
 				if (st && ts.p.sortorder && fndsort) {
 					// to be fixed in case sortname has more than one field
 					fl.push(ts.p.sortname);
-					pr.push({so: (ts.p.sortorder.toUpperCase() === "DESC" ? "d" : "a"), stype:cmtypes[st].stype, srcfmt: cmtypes[st].srcfmt, sfunc: cmtypes[st].sfunc})
+						var lsso = ts.p.sortorder.toUpperCase() === "DESC" ? "d" : "a";
+						pr.push({so: lsso, stype:cmtypes[st].stype, srcfmt: cmtypes[st].srcfmt, sfunc: cmtypes[st].sfunc})
 					//query_jlinq.orderBy([ts.p.sortname], [{so: (ts.p.sortorder.toUpperCase() === "DESC" ? "d" : "a"), stype:cmtypes[st].stype, srcfmt: cmtypes[st].srcfmt, sfunc: cmtypes[st].sfunc}]);
 					//query_jlinq.orderBy(ts.p.sortname, (ts.p.sortorder.toUpperCase() === "DESC" ? "d" : "a"), cmtypes[st].stype, cmtypes[st].srcfmt, cmtypes[st].sfunc);
+						sso.push( lsso );
 					}
 				}
 			if(fl.length) {
@@ -4843,6 +4852,12 @@ $.fn.jqGrid = function( pin ) {
 			} else {
 				queryResults = queryResults.slice( (page-1)*recordsperpage , page*recordsperpage );
 			}
+			// refresh _index when sort changes
+			if( !$.jgrid.compareObjects( ts.p._lastsortA, fl.concat(sso)) ) {
+				ts.refreshIndex();
+			}
+			ts.p._lastsortA = fl.concat(sso);
+			
 			query_jlinq = null;
 			cmtypes = null;
 			retresult[ts.p.localReader.total] = totalpages;
@@ -5155,9 +5170,7 @@ $.fn.jqGrid = function( pin ) {
 					if(lc) { lc.call(ts,req); }
 					$(ts).triggerHandler("jqGridAfterLoadComplete", [req]);
 					if (pvis) { ts.grid.populateVisible(); }
-					if (npage === 1) { 
-					endReq();
-					}
+					if (npage === 1) { endReq(); }
 					ts.p._ald = false;
 				break;
 				case "indexeddb":
@@ -5525,9 +5538,6 @@ $.fn.jqGrid = function( pin ) {
 			populate();
 			ts.p.lastsort = idxcol;
 			if(ts.p.sortname !== index && idxcol) {ts.p.lastsort = idxcol;}
-			if(ts.p.datatype === 'local') {
-				ts.refreshIndex();
-			}
 		},
 		setColWidth = function () {
 			var initwidth = 0, brd=$.jgrid.cell_width? 0: intNum(ts.p.cellLayout,0), vc=0, lvc, 
