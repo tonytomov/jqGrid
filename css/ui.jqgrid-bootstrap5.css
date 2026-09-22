@@ -1422,3 +1422,19 @@ a.colmenu .colmenuspan
 #virtual-mes {
 	border: 0px none !important;
 }
+#column_menu .col_menu_head {
+	list-style-type: none;
+	margin-bottom:5px;
+	margin-left:5px;
+	font-weight: bold;
+}
+
+#column_menu .col_menu_head  span.chart-icon {
+	/*font-style: italic;*/
+	ovewflow:hidden;
+}
+
+#column_menu .col_menu_head  span.chart-icon::before {
+  content: "\1F4CA"; /* Unicode for 📊 */
+  margin-right: 8px; /* Adds space between the icon and text */
+}

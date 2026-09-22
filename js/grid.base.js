@@ -8457,10 +8457,10 @@ $.jgrid.extend({
 				}
 			});
 			if(fndh===true) {
-				if($t.p.shrinkToFit === true && !isNaN($t.p.height)) { 
+				if($t.p.shrinkToFit === true && !['100%','auto'].includes($t.p.height)) { 
 					$t.p.tblwidth += parseInt($t.p.scrollOffset,10);
 				}
-				$($t).jqGrid("setGridWidth",$t.p.shrinkToFit === true ? $t.p.tblwidth : $t.p.width );
+				$($t).jqGrid("setGridWidth",$t.p.shrinkToFit === true ? $t.p.tblwidth  : $t.p.width );
 			}
 			if( gh && gHead)  {
 				for(var k =0; k < gHead.length; k++) {
