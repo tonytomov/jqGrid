@@ -5659,7 +5659,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			return ci;
 		},
-		buildColItems = function (top, left, parent, op) {
+		buildColItems = function (top, left, parent, op, index) {
 			var cm = ts.p.colModel, len = cm.length, i, cols=[], disp, all_visible = true, cols_nm=[],
 			colNm = $.extend([], ts.p.colNames), iCol,
 			common = $.jgrid.styleUI[(ts.p.styleUI || 'jQueryUI')].common,
@@ -5739,7 +5739,7 @@ $.fn.jqGrid = function( pin ) {
 					if(1===2 /*colArr.length*/) { // setColSpanis on refresh. For future work
 						$("#col_menu").remove();
 						setTimeout(function(){
-							buildColItems(top, left, parent, op);
+							buildColItems(top, left, parent, op, index);
 						}, 0);
 					}
 				});
@@ -5771,6 +5771,7 @@ $.fn.jqGrid = function( pin ) {
 				if($.jgrid.isFunction(ts.p.colMenuColumnDone)) {
 					ts.p.colMenuColumnDone.call( ts, cols, col_name, checked);
 				}
+					var ind = $.jgrid.getElemByAttrVal(ts.p.colModel, 'name', col_name, true);
 				if(!checked) {
 					$(ts).jqGrid('hideCol', col_name);
 					$(this).parent().attr("draggable","false");
@@ -5781,7 +5782,9 @@ $.fn.jqGrid = function( pin ) {
 					if(op.columns_selectAll) {
 						$("#chk_all", "#col_menu").prop("checked",  $('.chk_selected:checked', "#col_menu").length === $('.chk_selected', "#col_menu").length );
 					}
-					$("#column_menu").remove();
+					if(ind == index) {
+						$("#column_menu").remove();
+					}
 				}
 			}).hover(function(){
 				$(this).addClass(hover);
@@ -6095,6 +6098,7 @@ $.fn.jqGrid = function( pin ) {
 			isfreeze,
 			menuData = [],
 			cname = $.jgrid.trim(cm.name); // ???
+			str = '<li class="ui-menu-item disabled col_menu_head" role="presentation" draggable="false"><span class="chart-icon">:: '+ label+'</span></li>';
 			// sorting
 			menuData.push( str );
 			if(cm.sortable && op.sorting) {
@@ -6172,7 +6176,7 @@ $.fn.jqGrid = function( pin ) {
 					if($(this).attr("data-value") === 'columns') {
 						left1 = $(this).parent().width()+8;
 						top1 = $(this).parent().position().top - 5;
-						buildColItems(top1, left1, $(this).parent(), op);
+						buildColItems(top1, left1, $(this).parent(), op, index);
 					}
 					if($(this).attr("data-value") === 'filtering') {
 						left1 = $(this).parent().width()+8;
@@ -8456,7 +8460,7 @@ $.jgrid.extend({
 				if($t.p.shrinkToFit === true && !isNaN($t.p.height)) { 
 					$t.p.tblwidth += parseInt($t.p.scrollOffset,10);
 				}
-				$($t).jqGrid("setGridWidth",$t.p.shrinkToFit === true ? $t.p.tblwidth - (!isNaN($t.p.height) ? parseInt($t.p.scrollOffset,10) : 0) : $t.p.width );
+				$($t).jqGrid("setGridWidth",$t.p.shrinkToFit === true ? $t.p.tblwidth : $t.p.width );
 			}
 			if( gh && gHead)  {
 				for(var k =0; k < gHead.length; k++) {
