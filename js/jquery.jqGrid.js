@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.9.0 - 2026-09-22
+* @license Guriddo jqGrid JS - v5.9.0 - 2026-11-04
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -9426,9 +9426,9 @@ $.jgrid.extend({
 				if(data) {
 					elements.push('.ui-jqgrid-bdiv td[aria-describedby="'+nm+'"]');
 				}
-				elements.push('.ui-jqgrid-htable th#'+nm);
+				elements.push('.ui-jqgrid-htable th[id="'+nm+'"]');
 				if(this.p.filterToolbar) {
-					elements.push('.ui-jqgrid-htable th#gsh_'+nm);
+					elements.push('.ui-jqgrid-htable th[id="gsh_'+nm+'"]');
 				}
 				if(this.p.headerrow) {
 					elements.push('.ui-jqgrid-hrtable td[aria-describedby="'+nm+'"]');
@@ -9444,7 +9444,7 @@ $.jgrid.extend({
 				if(addfrzclass) {
 					parseobj.addClass(frzclass);
 				}
-				pos += $('.ui-jqgrid-htable th#'+nm, "#gbox_" + $.jgrid.jqID(this.p.id)).outerWidth();
+				pos += $('.ui-jqgrid-htable th[id="'+nm+'"]', "#gbox_" + $.jgrid.jqID(this.p.id)).outerWidth();
 				elements =[];
 			}
 		});
