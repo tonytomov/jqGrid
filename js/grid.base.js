@@ -66,6 +66,11 @@ $.extend($.jgrid,{
 		}
 		return res;
 	},
+	jsStrAttr : function (v) {
+		// value -> content of a single quoted JS string inside a double quoted HTML attribute
+		return String(v).replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/\r/g, "\\r").replace(/\n/g, "\\n")
+			.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+	},
 	keyName : function (e) {
 		// IE11 / Edge IE mode use the old DOM3 key names - map them to the standard ones
 		var k = e ? (e.key !== undefined ? e.key : (e.originalEvent ? e.originalEvent.key : undefined)) : undefined,
@@ -2286,6 +2291,19 @@ $.extend($.jgrid,{
 				 
 		/// let union = [...new Set([...arrA, ...arrB])];
 	},
+	searchColCommit : function(gridid, rid, t) {
+		// runs the search once per value: Enter and the following "change" (blur) do not search twice
+		if(t._jqsLast === t.value) {
+			return;
+		}
+		t._jqsLast = t.value;
+		$.jgrid.searchColOnEnter(gridid, rid, t);
+	},
+	searchColOnEnterKey : function(gridid, rid, t, e ) {
+		if($.jgrid.keyName(e) === 'Enter' || (e.keyCode || e.which) === 13) {
+			$.jgrid.searchColCommit(gridid, rid, t);
+		}
+	},
 	searchColOnKey : function(gridid, rid, t, e ) {
 		switch($.jgrid.keyName(e)) {
 			case 'ArrowRight':
@@ -3785,7 +3803,12 @@ $.fn.jqGrid = function( pin ) {
 			return "<td role=\"gridcell\" "+uiclass+" "+prp+">"+v+"</td>";
 		},
 		addSearch = function(rowid, pos, irow, uiclass){
-			var searchColEvent = ts.p.searchColOptions.searchOnEnter ? " onchange=\"$.jgrid.searchColOnEnter('"+ts.p.id+"',"+rowid+", this)\"" : " onkeydown=\"$.jgrid.searchColOnKey('"+ts.p.id+"',"+rowid+",this, event)\"";
+			// grid id and row id are passed as quoted JS strings (row ids can be non-numeric, e.g. with idPrefix)
+			var jsArgs = "'" + $.jgrid.jsStrAttr(ts.p.id) + "','" + $.jgrid.jsStrAttr(rowid) + "'",
+			searchColEvent = ts.p.searchColOptions.searchOnEnter ?
+				// IE11 / Edge IE mode fire "change" only on blur, not on Enter - handle Enter explicitly
+				" onchange=\"$.jgrid.searchColCommit("+jsArgs+", this)\" onkeydown=\"$.jgrid.searchColOnEnterKey("+jsArgs+", this, event)\"" :
+				" onkeydown=\"$.jgrid.searchColOnKey("+jsArgs+",this, event)\"";
 			var	v = "<input type=\"text\""+" id=\"jqs_"+ts.p.id+"_"+rowid+"\" name=\"jqs_"+ts.p.id+"_"+rowid+"\" "+uiclass+ searchColEvent +"/>",
 				prp = formatCol( pos,irow,'',null, rowid, true);
 			return "<td role=\"gridcell\" "+prp+">"+v+"</td>";
