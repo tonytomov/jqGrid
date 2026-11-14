@@ -17,16 +17,17 @@
 //module begin
 // clipboard
 $.extend($.jgrid,{
-	deserializeRow : function  (row, delimiter = ',') {
-		const values = [];
-		let index = 0, matchStart = 0, isInsideQuotations = false;
+	deserializeRow : function  (row, delimiter) {
+		if(delimiter === undefined) { delimiter = ','; }
+		var values = [];
+		var index = 0, matchStart = 0, isInsideQuotations = false;
 		while (true) {
 			if (index === row.length) {
 				values.push(row.slice(matchStart, index));
 				break;
 			}
-			const char = row[index];
-			if (char === delimiter && !isInsideQuotations) {
+			var chr = row.charAt(index);
+			if (chr === delimiter && !isInsideQuotations) {
 				values.push(
 					row
 					.slice(matchStart, index)
@@ -36,83 +37,122 @@ $.extend($.jgrid,{
 				);
 				matchStart = index + 1;
 			}
-			if (char === '"')
-				if (row[index + 1] === '"') index += 1;
-				else isInsideQuotations = !isInsideQuotations;
+			if (chr === '"') {
+				if (row.charAt(index + 1) === '"') { index += 1; }
+				else { isInsideQuotations = !isInsideQuotations; }
+			}
 			index += 1;
 		}
 		return values;
 	},
-	CSVtoObject : function (data, headers, delimiter = ',', new_line = '\t')  {
-		const rows = data, /*data.split(new_line),*/ len = rows.length;
+	CSVtoObject : function (data, headers, delimiter, new_line)  {
+		if(delimiter === undefined) { delimiter = ','; }
+		if(new_line === undefined) { new_line = '\t'; }
+		var rows = data, /*data.split(new_line),*/ len = rows.length;
 		if(len && rows[len-1] == "") {
-			rows.pop()
+			rows.pop();
 		}
-		return rows.map((row) => {
-			const values = $.jgrid.deserializeRow(row, delimiter);
-			return headers.reduce((obj, key, index) => {
-				obj[key] = values[index];
-				return obj;
-			}, {});
-		});
-	},
-	Permissions : async function() {
-		const queryOpts = { name: 'clipboard-read', allowWithoutGesture: false };
-		navigator.permissions.query(queryOpts).then((permObj)=>{
-			// state will be 'granted', 'denied' or 'prompt':
-			if( permObj && permObj.state === 'denied') {
-				let msg = $.jgrid.getRegional(this, 'clipboard.errors');
-				$.jgrid.toast({ 
-					text: msg.enb_prm, 
-					autoClose : false,
-					styleUI: this.p.styleUI, 
-					type:"warning"
-				});						
+		return $.map(rows, function (row) {
+			var values = $.jgrid.deserializeRow(row, delimiter);
+			var obj = {};
+			for (var index = 0; index < headers.length; index++) {
+				obj[headers[index]] = values[index];
 			}
-			// Listen for changes to the permission state
-			// permissionStatus.onchange = () => {
-			//	console.log(permissionStatus.state);
-			// }
-		}).catch((error)=>{
-			// no translation
-			console.log("clipboard-read permission not supported for this browser.")
+			return obj;
 		});
 	},
-	copyText: async function (textValue, o) {
+	Permissions : function() {
+		var self = this;
+		// navigator.permissions does not exist in IE11 / Edge IE mode
+		if(!window.navigator || !navigator.permissions || !$.jgrid.isFunction(navigator.permissions.query)) {
+			return;
+		}
+		var queryOpts = { name: 'clipboard-read', allowWithoutGesture: false };
 		try {
-			await navigator.clipboard.writeText(textValue);
+			navigator.permissions.query(queryOpts).then(function(permObj) {
+				// state will be 'granted', 'denied' or 'prompt':
+				if( permObj && permObj.state === 'denied') {
+					var msg = $.jgrid.getRegional(self, 'clipboard.errors');
+					$.jgrid.toast({ 
+						text: msg.enb_prm, 
+						autoClose : false,
+						styleUI: self.p.styleUI, 
+						type:"warning"
+					});						
+				}
+			})["catch"](function() {
+				// no translation
+				console.log("clipboard-read permission not supported for this browser.");
+			});
+		} catch (e) {
+			console.log("clipboard-read permission not supported for this browser.");
+		}
+	},
+	copyText: function (textValue, o) {
+		var self = this,
+		onSuccess = function() {
 			if(o.show_info_after_copy) {
-				let msg = $.jgrid.getRegional(this, 'clipboard.msg');
+				var msg = $.jgrid.getRegional(self, 'clipboard.msg');
 				$.jgrid.toast( {
 					text: msg.text_c, 
-					styleUI: this.p.styleUI, 
+					styleUI: self.p.styleUI, 
 					type:"info",
 					position: o.toastPosition
 				});
 			}
-		} catch (err) {
-			let msg = $.jgrid.getRegional(this, 'clipboard.errors');
+		},
+		onError = function(err) {
+			var msg = $.jgrid.getRegional(self, 'clipboard.errors');
 			$.jgrid.toast( { 
 				text: msg.copy_err + err, 
 				autoCloseTime: 4500,
-				styleUI: this.p.styleUI, 
+				styleUI: self.p.styleUI, 
 				type:"error"
 			});
+		};
+		try {
+			if(window.navigator && navigator.clipboard && $.jgrid.isFunction(navigator.clipboard.writeText)) {
+				navigator.clipboard.writeText(textValue).then(onSuccess, onError);
+			} else if(window.clipboardData && window.clipboardData.setData) {
+				// IE11 / Edge IE mode
+				if(window.clipboardData.setData("Text", textValue)) {
+					onSuccess();
+				} else {
+					onError("");
+				}
+			} else {
+				onError("");
+			}
+		} catch (err) {
+			onError(err);
 		}
 	},
-	getClipboardContents : async function ( ) {
-		try {
-			const text = await navigator.clipboard.readText();
-			return text;
-		} catch (err) {
-			let msg = $.jgrid.getRegional(this, 'clipboard.errors');
+	getClipboardContents : function ( ) {
+		// returns a thenable (jQuery Deferred) - works with and without native Promise
+		var self = this, dfd = $.Deferred(),
+		onError = function(err) {
+			var msg = $.jgrid.getRegional(self, 'clipboard.errors');
 			$.jgrid.toast( {
 				text: msg.read_err + err, 
-				styleUI: this.p.styleUI,
+				styleUI: self.p.styleUI,
 				autoCloseTime: 4500,
 				type:"error"
 			});
+			dfd.resolve(undefined);
+		};
+		try {
+			if(window.navigator && navigator.clipboard && $.jgrid.isFunction(navigator.clipboard.readText)) {
+				navigator.clipboard.readText().then(function(text) { dfd.resolve(text); }, onError);
+			} else if(window.clipboardData && window.clipboardData.getData) {
+				// IE11 / Edge IE mode
+				dfd.resolve(window.clipboardData.getData("Text"));
+			} else {
+				onError("");
+			}
+		} catch (err) {
+			onError(err);
 		}
+		return dfd.promise();
 	},
 	copyRows : function( rows, cm , o) {
 		var seldata =[],header=[], h_s = false, $t = $(rows).parents('table')[0];
@@ -158,7 +198,7 @@ $.extend($.jgrid,{
 	},
 	pasteRows : function(o, paste_add) {
 		if(o.startCellIndex === null || o.startRowIndex === null) {
-			let msg = $.jgrid.getRegional(this, 'clipboard.msg');
+			var msg = $.jgrid.getRegional(this, 'clipboard.msg');
 			$.jgrid.toast({ 
 				text: msg.select_pos, 
 				position:"middle center", 
@@ -169,12 +209,13 @@ $.extend($.jgrid,{
 			return;
 		}
 		var cm = this.p.colModel, grid_id = this.p.id;
-		$.jgrid.getClipboardContents.call(this).then((data) => {
+		var self = this;
+		$.jgrid.getClipboardContents.call(this).then(function(data) {
 			if(data === "" || data == null) {
-				let msg = $.jgrid.getRegional(this, 'clipboard.errors');
+				var msg = $.jgrid.getRegional(self, 'clipboard.errors');
 				$.jgrid.toast( {
 					text: msg.get_data_err, 
-					styleUI: this.p.styleUI,
+					styleUI: self.p.styleUI,
 					autoCloseTime: 4500,
 					type:"error"
 				});
@@ -182,7 +223,7 @@ $.extend($.jgrid,{
 			}
 			var delim = o.paste_autodetect_delim  ? $.jgrid.guessDelimiters(data) : o.paste_delimiter, headers=[];
 			if( $.jgrid.isFunction(o.beforePasteData)) {
-				o.beforePasteData.call(this, data, delim);
+				o.beforePasteData.call(self, data, delim);
 			}
 			data = data.split(o.paste_newline);
 			if(!o.paste_header_included) {
@@ -203,7 +244,7 @@ $.extend($.jgrid,{
 			var rows_to_paste = $.jgrid.CSVtoObject(data, headers, delim, o.paste_newline);
 			$("#"+grid_id).jqGrid("updateRowsByIndex", o.startRowIndex, rows_to_paste, o, paste_add);
 			if( $.jgrid.isFunction(o.afterPasteData)) {
-				o.afterPasteData.call(this, data);
+				o.afterPasteData.call(self, data);
 			}
 		});
 	},
@@ -216,7 +257,7 @@ $.extend($.jgrid,{
 			data = JSON.parse( data );
 			
 			if(Array.isArray(data)) {
-				for(let i=0;i<data.length; i++) {
+				for(var i=0;i<data.length; i++) {
 					$("#"+grid_id).jqGrid("setRowData", data[i]["_id_"], data[i]);
 				}
 			}
@@ -226,18 +267,19 @@ $.extend($.jgrid,{
 			rws.jqGrid("delRowData", n.id);
 		});
 	},
-	guessDelimiters : function  (data, separators = ['\t', ',', ';', '|']) {
-		const idx = separators
-			.map((separator) => data.indexOf(separator))
-		    .reduce((prev, cur) =>
-				prev === -1 || (cur !== -1 && cur < prev) ? cur : prev
-			);
+	guessDelimiters : function  (data, separators) {
+		if(separators === undefined) { separators = ['\t', ',', ';', '|']; }
+		var idx = separators
+			.map(function(separator) { return data.indexOf(separator); })
+			.reduce(function(prev, cur) {
+				return prev === -1 || (cur !== -1 && cur < prev) ? cur : prev;
+			});
 		return data[idx] || '\t';
 	},
 	repeatRow : function( o ) {
 		var header=[], h_s = false, $t = this;
 		var rows = this.rows, cm = this.p.colModel, source, target, target_ids = [], dat = {}, storeUpdate=[];
-		const err = $.jgrid.getRegional(this, 'clipboard.errors');
+		var err = $.jgrid.getRegional(this, 'clipboard.errors');
 		for(var j=0; j<rows.length;j++) {
 			target = null;
 			var row = rows[j];
@@ -279,7 +321,7 @@ $.extend($.jgrid,{
 				type:"warning"
 			});
 		}
-		for(let j=0;j<target_ids.length;j++) {
+		for(var j=0;j<target_ids.length;j++) {
 			$(this).jqGrid('setRowData', target_ids[j], dat);
 		}
 		o.startCellIndex = null; o.startRowIndex = null;
@@ -287,7 +329,7 @@ $.extend($.jgrid,{
 	repeatCol : function( o ) {
 		var header=[], h_s = false, $t = this;
 		var rows = this.rows, cm = this.p.colModel, target, fcol, target_ids = [], dat = [], storeUpdate=[];
-		const err = $.jgrid.getRegional(this, 'clipboard.errors');
+		var err = $.jgrid.getRegional(this, 'clipboard.errors');
 		for(var j=0; j<rows.length;j++) {
 			target = null; fcol =  null;
 			var row = rows[j];
@@ -319,7 +361,7 @@ $.extend($.jgrid,{
 				target_ids.push(target);
 			}
 		}
-		let setme;
+		var setme;
 		header.shift();
 		if($.jgrid.isLocalStorage()) {
 			localStorage.removeItem(this.id + "_restore");
@@ -332,9 +374,9 @@ $.extend($.jgrid,{
 				type:"warning"
 			});
 		}		
-		for(let j=0; j < target_ids.length; j++) {
+		for(var j=0; j < target_ids.length; j++) {
 			setme ={};
-			for (let k=0; k < header.length; k++) {
+			for (var k=0; k < header.length; k++) {
 				setme[header[k]] = dat[j];
 			}
 			$(this).jqGrid('setRowData', target_ids[j], setme);
@@ -449,7 +491,7 @@ $.jgrid.extend({
 			var colmenustyle = $.jgrid.styleUI[(this.p.styleUI || 'jQueryUI')].colmenu, $t=this;
 			var arf1 = '<ul id="'+this.id+'_copypaste" class="ui-search-menu modal-content column-menu ui-menu jqgrid-caption-menu ' + colmenustyle.menu_widget+'" role="menu" tabindex="0"></ul>';
 			$("#gbox_"+this.id).append(arf1);
-			const menus = $.jgrid.getRegional(this, 'clipboard.menus'),
+			var menus = $.jgrid.getRegional(this, 'clipboard.menus'),
 			menuicons = $.jgrid.styleUI[(this.p.styleUI || 'jQueryUI')].clipboard,
 			iconbase = $.jgrid.styleUI[(this.p.styleUI || 'jQueryUI')].common.icon_base;
 			var menu = [], menus_copy = [];
@@ -462,8 +504,8 @@ $.jgrid.extend({
 			menu["cancel"] = {"id" : "cancel_act", icon : iconbase+" "+menuicons.icon_cancel, "title" : menus.cancel_act, "click": function() { $("#"+$t.p.id+"_copypaste").hide(); } };
 			//return;
 			var cnt =0;
-			for(let key in o.menuConfig) {
-				if(Object.hasOwn(o.menuConfig, key) && o.menuConfig[key] === true) {
+			for(var key in o.menuConfig) {
+				if($.jgrid.hasOwn(o.menuConfig, key) && o.menuConfig[key] === true) {
 					cnt++;
 					if(cnt > 1) {
 						menus_copy.push({divider : true});
@@ -472,7 +514,7 @@ $.jgrid.extend({
 				}
 			}
 			if(Array.isArray(o.userMenus) ) {
-				for(let i=0; i< o.userMenus.length; i++) {
+				for(var i=0; i< o.userMenus.length; i++) {
 					menus_copy.push( o.userMenus[i] );
 				}
 			}
@@ -522,8 +564,8 @@ $.jgrid.extend({
 	updateRowsByIndex : function(startInd, data, o, paste_add) {
 		var success = true;
 		this.each(function(){
-			const err = $.jgrid.getRegional(this, 'clipboard.errors');
-			const msg = $.jgrid.getRegional(this, 'clipboard.msg');
+			var err = $.jgrid.getRegional(this, 'clipboard.errors');
+			var msg = $.jgrid.getRegional(this, 'clipboard.msg');
 			if(Array.isArray(data)) {
 				startInd = parseInt(startInd,10);
 				if(startInd < 0 ) {
@@ -543,7 +585,7 @@ $.jgrid.extend({
 							$(this).jqGrid("addRowData", null, row, "last", null, "frompaste");// perform add
 							inserted++;
 						} else {
-							let o_row = $(this).jqGrid("getRowData",  grow.id);
+							var o_row = $(this).jqGrid("getRowData",  grow.id);
 							if( !$.isEmptyObject(o_row) ) {
 								o_row["_id_"] = grow.id;
 								data[i]["_id_"] = grow.id;

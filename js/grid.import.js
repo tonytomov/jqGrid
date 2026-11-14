@@ -395,13 +395,11 @@ $.extend($.jgrid,{
 					}
 				}
 				if(!$.isEmptyObject(funcreg)) {
-					const registryLines = Object.entries(funcreg).map(([id, fnStr]) =>
-					`  "${id}": ${fnStr},`
-					);
+					var registryLines = $.map($.jgrid.objEntries(funcreg), function(ent) { return "  \"" + ent[0] + "\": " + ent[1] + ","; });
 					var rnd = $.jgrid.randId();
-					var functionRegistry = `var functionRegistry_${rnd} = {\n${registryLines.join('\n')}\n};`;
+					var functionRegistry = "var functionRegistry_" + rnd + " = {\n" + registryLines.join("\n") + "\n};";
 					//jstr = $.jgrid.parse(jstr);
-					let s = document.createElement("script");
+					var s = document.createElement("script");
 					// CSP settings to avoid inline script
 					if(o && o.nonce) {
 						s.nonce = o.nonce;

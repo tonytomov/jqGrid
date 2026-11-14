@@ -77,7 +77,7 @@ $.jgrid.extend({
 						if( !grp.groupSummaryPos[i]) {
 							grp.groupSummaryPos[i] = 'footer';
 						}
-						let vi = $.jgrid.getElemByAttrVal($t.p.colModel, 'name', grp.groupField[i], false).hidden;
+						var vi = $.jgrid.getElemByAttrVal($t.p.colModel, 'name', grp.groupField[i], false).hidden;
 						if(grp.groupColumnShow[i] === true) {
 							grp.visibiltyOnNextGrouping[i] = true;
 							if(vi) {
@@ -405,11 +405,11 @@ $.jgrid.extend({
 							sgr = offset;
 						}
 					}
-					let rncv = 0;
+					var rncv = 0;
 					for(kk=sgr;kk<end;kk++) {
 						if(!grdata[kk - offset]) { break; }
 						if(crn) { // rownumbers
-							let rncell = $(grdata[kk - offset][1]);
+							var rncell = $(grdata[kk - offset][1]);
 							if(rncell.attr('aria-describedby') === $t.id+"_rn" ) {
 								rncv++;
 								rncell.attr("title", rncv+'').text(rncv+'');

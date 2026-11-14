@@ -283,7 +283,7 @@ $.extend($.jgrid,{
 		var dh = isNaN(mopt.dataheight) ? mopt.dataheight : mopt.dataheight+"px";
 		//cn = "text-align:"+mopt.align+";";
 		var stylebut ="";
-		if( ["left","center", "right"].includes(mopt.buttonalign) ) {
+		if( $.jgrid.inArr(mopt.buttonalign, ["left","center", "right"]) ) {
 			stylebut = "style='text-align:"+ mopt.buttonalign+"'";
 		}
 		var cnt = "<div id='info_id'>";

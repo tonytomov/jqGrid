@@ -103,9 +103,9 @@ $.jgrid.extend({
 				}
 				var opt = $.extend({}, cm.editoptions || {} ,{id:iRow+"_"+nm,name:nm,rowId: $t.rows[iRow].id, oper:'edit', module : 'cell'});
 				if (excel) {
-					tmp = event.key;
+					tmp = $.jgrid.keyName(event);
 				}
-				if(!Object.hasOwn(opt, "aria-label")) {
+				if(!$.jgrid.hasOwn(opt, "aria-label")) {
 					opt["aria-label"] = "Enter cell value";
 				}
 				var elc = $.jgrid.createEl.call($t, cm.edittype, opt,tmp, true, $.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions || {}));
@@ -119,7 +119,7 @@ $.jgrid.extend({
 				$.jgrid.bindEv.call($t, elc, opt);
 				window.setTimeout(function () { $(elc).focus();},1);
 				$("input, select, textarea",cc).on("keydown",function(e) {
-					var key = e.key;
+					var key = $.jgrid.keyName(e);
 					if (e.keyCode === 27) {
 						if($("input.hasDatepicker",cc).length >0) {
 							if( $(".ui-datepicker").is(":hidden") )  { $($t).jqGrid("restoreCell",iRow,iCol); }

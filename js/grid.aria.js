@@ -171,7 +171,7 @@ $.jgrid.extend({
 				if($t.p.navigationDisabled && $t.p.navigationDisabled === true) {
 					return;
 				}
-				if(e.target.id.startsWith("jqs_"+$t.p.id)) {
+				if($.jgrid.startsWith(e.target.id, "jqs_"+$t.p.id)) {
 					return;
 				}
 				if(onKeyCheck) {
@@ -269,7 +269,7 @@ $.jgrid.extend({
 				if($t.p.iRow > 0 && $t.p.iCol >=0) {
 					$($t.rows[$t.p.iRow].cells[$t.p.iCol]).attr("tabindex", -1);
 				}
-				if($(el).is("td") || $(el).is("th") || el.id.startsWith("jqs_"+$t.p.id)) {
+				if($(el).is("td") || $(el).is("th") || $.jgrid.startsWith(el.id, "jqs_"+$t.p.id)) {
 					$t.p.iCol = el.cellIndex;
 				} else {
 					return;
@@ -417,7 +417,7 @@ $.jgrid.extend({
 			var focusRow=0, focusCol=0; // set the dafualt one
 			var custAct = $.jgrid.isFunction( o.customCellAction ) ? o.customCellAction : false;
 			var delCell = $.jgrid.isFunction( o.beforeDeleteCell ) ? o.beforeDeleteCell : false;
-			var aKeys = new Set(o.specialChars);
+			var aKeys = Array.isArray(o.specialChars) ? o.specialChars : []; // IE11 ignores the iterable argument of new Set()
 
 			//var lastVisibleCol = $.jgrid.getLastVisibleCol( $t );
 			//var firstVisibleCol = $.jgrid.getFirstVisibleCol( $t );
@@ -436,7 +436,7 @@ $.jgrid.extend({
 				if($t.p.navigationDisabled && $t.p.navigationDisabled === true) {
 					return;
 				}
-				if(e.target.id.startsWith("jqs_"+$t.p.id)) {
+				if($.jgrid.startsWith(e.target.id, "jqs_"+$t.p.id)) {
 					return;
 				}
 				if(onKeyCheck) {
@@ -557,14 +557,14 @@ $.jgrid.extend({
 						}
 						break;
 					default:
-						var isLetter = /^[a-z]$/i.test(e.key);
-						var isNumber = /^[0-9]$/i.test(e.key);
+						var isLetter = /^[a-z]$/i.test($.jgrid.keyName(e));
+						var isNumber = /^[0-9]$/i.test($.jgrid.keyName(e));
 						var other = false;
 						if(o.addonChars) {
-							other = o.addonChars.test(e.key);
+							other = o.addonChars.test($.jgrid.keyName(e));
 						}
 
-						if(isLetter || isNumber || aKeys.has(e.key) || other) {
+						if(isLetter || isNumber || $.jgrid.inArr($.jgrid.keyName(e), aKeys) || other) {
 							$($t).jqGrid('editCell', $t.p.iRow, $t.p.iCol, true, e, true);
 						}
 						if( custAct ) {
@@ -584,7 +584,7 @@ $.jgrid.extend({
 				if($t.p.iRow > 0 && $t.p.iCol >=0) {
 					$($t.rows[$t.p.iRow].cells[$t.p.iCol]).attr("tabindex", -1);
 				}
-				if($(el).is("td") || $(el).is("th") || el.id.startsWith("jqs_"+$t.p.id)) {
+				if($(el).is("td") || $(el).is("th") || $.jgrid.startsWith(el.id, "jqs_"+$t.p.id)) {
 					$t.p.iCol = el.cellIndex;
 				} else {
 					return;

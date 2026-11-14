@@ -309,7 +309,7 @@ $.jgrid.extend({
 					// add the result in pivot rows
 					for(i=0; i < o.xMeta.length; i++) {
 						var meta = o.xMeta[i];
-						if( Object.hasOwn(meta, "dataName") && Object.hasOwn(row, meta.dataName) ) {
+						if( $.jgrid.hasOwn(meta, "dataName") && $.jgrid.hasOwn(row, meta.dataName) ) {
 							tmp[meta.dataName] = row[meta.dataName] + "";
 						}
 					}
@@ -337,8 +337,8 @@ $.jgrid.extend({
 						// update the row
 						for(i=0; i < o.xMeta.length; i++) {
 							var meta = o.xMeta[i];
-							if( Object.hasOwn(meta, "dataName") && Object.hasOwn(row, meta.dataName) ) {
-								var sep = Object.hasOwn(meta, "separator") ? meta.separator : ", "; 
+							if( $.jgrid.hasOwn(meta, "dataName") && $.jgrid.hasOwn(row, meta.dataName) ) {
+								var sep = $.jgrid.hasOwn(meta, "separator") ? meta.separator : ", "; 
 								newObj[meta.dataName] += sep + row[meta.dataName];
 							}
 						}

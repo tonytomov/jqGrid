@@ -1223,12 +1223,9 @@ $.jgrid.extend({
 				}
 			}
 			//p.disabledKeys = new Set(p.disabledKeys); // experimental 
-			var dKeys = new Set(p.disabledKeys);
-			if(dKeys.size !== p.disabledKeys.length) { // ie11
-				for(var jj=0; jj< p.disabledKeys.length; jj++) {
-					dKeys = new Set();
-					dKeys.add(p.disabledKeys[jj]);
-				}
+			var dKeys = {}; // plain lookup object - IE11 ignores the iterable argument of new Set()
+			for(var jj=0; jj< p.disabledKeys.length; jj++) {
+				dKeys[p.disabledKeys[jj]] = true;
 			}
 			var filterLabel;
 			if (regional.filterFor) {
@@ -1354,7 +1351,7 @@ $.jgrid.extend({
 									type: "keydown",
 									fn : function(e) {
 										var key = e.which;
-										if( dKeys.has(key)) {
+										if( dKeys.hasOwnProperty(key)) {
 											// do nothing
 										} else if( key === 13 ) {
 											e.preventDefault();
@@ -1992,7 +1989,7 @@ $.jgrid.extend({
 				so  = p.defaultSearch ? p.defaultSearch : (sop.sopt) ? sop.sopt[0] : p.defaultSearch;
 				searchable =  this.search === undefined  ? true : this.search;
                 if(p.whiteList != null && Array.isArray( p.whiteList ) ) {
-                    if(p.whiteList.includes( nm ) && val !== "" ) {
+                    if($.jgrid.inArr(nm, p.whiteList) && val !== "" ) {
 					if (gi > 0) {ruleGroup += ",";}
 					ruleGroup += "{\"field\":\"" + nm + "\",";
 					ruleGroup += "\"op\":\"" + so + "\",";
@@ -2063,8 +2060,8 @@ $.jgrid.extend({
 					sdata = "<option value=''>"+ o.allValues +"</option>";
 					tmp.push(":" + o.allValues);
 				}
-				for (let key in result) {
-					if( Object.hasOwn(result,key)) {
+				for (var key in result) {
+					if( $.jgrid.hasOwn(result,key)) {
 						res =  $("#gsh_"+$t.p.id+"_"+o.field).find("td.ui-search-input > select");
 						s_cnt = o.count_item ? " (" +result[key].length+")" : "";
 						sdata += "<option value='"+key+"'>"+ key + s_cnt+"</option>";

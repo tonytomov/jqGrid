@@ -25,7 +25,7 @@ $.jgrid.extend({
 			var keys = Object.keys(data[o.baseindex]), rowobj, col;
 			if(o.excludeSrcCols.length) {
 				keys = keys.filter(function(item) {
-					return !o.excludeSrcCols.includes(item);
+					return !$.jgrid.inArr(item, o.excludeSrcCols);
 				});
 			}
 			// for all columns

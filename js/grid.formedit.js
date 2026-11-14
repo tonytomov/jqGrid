@@ -118,7 +118,7 @@ $.jgrid.extend({
 						$.each($t.p.colModel, function(){
 							if(this.name === nm && this.editoptions && $.jgrid.isFunction(this.editoptions.custom_value)) {
 								try {
-									let cvr = this.editoptions.custom_value.call($t, $("#"+$.jgrid.jqID(nm),frmtb),'get');
+									var cvr = this.editoptions.custom_value.call($t, $("#"+$.jgrid.jqID(nm),frmtb),'get');
 									if( cvr === "#ignoreme#") {
 										
 									} else if (cvr === undefined) {
@@ -220,7 +220,7 @@ $.jgrid.extend({
 						if($t.p.autoencode) {
 							tmp = $.jgrid.htmlDecode(tmp);
 						}
-						if(!Object.hasOwn(opt, "aria-label")) {
+						if(!$.jgrid.hasOwn(opt, "aria-label")) {
 							opt["aria-label"] = "Edit form value";
 						}
 						elc = $.jgrid.createEl.call($t, this.edittype, opt, tmp, false, $.extend( {}, $.jgrid.ajaxOptions,obj.p.ajaxSelectOptions || {}));
@@ -1018,8 +1018,8 @@ $.jgrid.extend({
 					var fw = $('#editmod'+gID)[0].style.width ,
 						//rtlsup = $("#gbox_"+$.jgrid.jqID(gID)).attr("dir") === "rtl" ? true : false,
 						mdh = $('#editmod'+gID)[0].style.height;
-						mdh = ['100%','auto'].includes(mdh) ? mdh : $.jgrid.floatNum(mdh, 200);
-						fw = ['100%','auto'].includes(fw) ? fw : $.jgrid.floatNum(fw, 300);
+						mdh = $.jgrid.inArr(mdh, ['100%','auto']) ? mdh : $.jgrid.floatNum(mdh, 200);
+						fw = $.jgrid.inArr(fw, ['100%','auto']) ? fw : $.jgrid.floatNum(fw, 300);
 					$($t).data("formProp", {
 						top: $.jgrid.floatNum($(h.w).css("top")),
 						left :  parseFloat($(h.w).css("left")),

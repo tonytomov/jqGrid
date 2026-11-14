@@ -45,6 +45,18 @@ var
 			mangle: {
 				toplevel: true
 			},
+			// uglify-js >= 3.18 defaults to module:true, which rewrites
+			// functions to ES6 arrow functions and breaks IE11 / Edge IE mode.
+			// Keep the minified output ES5.
+			compress: {
+				module: false
+			},
+			output: {
+				module: false
+			},
+			parse: {
+				module: false
+			},
 			sourceMap :  true
 		},
 		main: {

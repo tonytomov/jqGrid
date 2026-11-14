@@ -41,8 +41,8 @@ $.jgrid.extend({
 			}
 			var $t = this, row, pos =0, len =0;
 			if(prm.rowids && prm.rowids.length > 0 ) {
-				for( let i =0;i<prm.rowids.length; i++ ) {
-					let j = $t.rows.length;
+				for( var i =0;i<prm.rowids.length; i++ ) {
+					var j = $t.rows.length;
 					while( j-- ) {
 						if($t.rows[j].id === prm.rowids[i]+"") {
 							$($t.rows[j]).insertBefore($t.rows[i+1]);
@@ -54,15 +54,15 @@ $.jgrid.extend({
 			} else if(prm.first > 0) {
 				len = prm.first
 			} else if(prm.last > 0 ) {
-				let j = $t.rows.length;
+				var j = $t.rows.length;
 				len = prm.last;
-				for(let i=0; i<prm.last; i++) {
+				for(var i=0; i<prm.last; i++) {
 					$($t.rows[j-1]).insertBefore($t.rows[1]);
 				}
 			} else {
 				return;
 			}
-			for(let i = 0; i < len; i++) {
+			for(var i = 0; i < len; i++) {
 				row = $t.rows[i+1];
 				if(row.classList.contains("jqgrow")) {
 					$(row).addClass(prm.baseclass + " " + prm.classes).css("top", pos + "px");
@@ -90,7 +90,7 @@ $.jgrid.extend({
 		}, options || {});
 		return this.each(function(){
 			var $t = this;
-			for(let i=0; i < prm.rowsToScan; i++) {
+			for(var i=0; i < prm.rowsToScan; i++) {
 				if($t.rows[i+1] && $t.rows[i+1].classList.contains(prm.classes) ) {
 					$($t.rows[i+1]).removeClass(prm.classes).css("top","");
 				}

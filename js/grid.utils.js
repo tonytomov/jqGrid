@@ -34,16 +34,18 @@ $.extend($.jgrid,{
         });
 	},
 	resolveFunctions : function(obj,rnd) {
-		if (typeof obj === 'string' && obj.startsWith('__fn_')) {
-			const a = 'functionRegistry_'+rnd;
+		if (typeof obj === 'string' && $.jgrid.startsWith(obj, '__fn_')) {
+			var a = 'functionRegistry_'+rnd;
 		    return window[a][obj];
 		} else if (Array.isArray(obj)) {
-			return obj.map($.jgrid.resolveFunctions);
+			return $.map(obj, function(v) { return [$.jgrid.resolveFunctions(v, rnd)]; });
 		} else if (obj && typeof obj === 'object') {
-			const result = {};
-			for (const [key, val] of Object.entries(obj)) {
-				result[key] = $.jgrid.resolveFunctions(val, rnd);
+			var result = {}, key;
+			for (key in obj) {
+				if (Object.prototype.hasOwnProperty.call(obj, key)) {
+					result[key] = $.jgrid.resolveFunctions(obj[key], rnd);
 				}
+			}
 			return result;
 			}
 		return obj;
@@ -52,39 +54,39 @@ $.extend($.jgrid,{
 		if(!options) {
 			options = {};
 		}
-		const functionMap = {};
+		var functionMap = {};
 		function traverse(obj) {
-			if (typeof obj === 'string' && obj.trim().startsWith('function')) {
-			  const id = `__fn_${$.jgrid.randId()}__`;
+			if (typeof obj === 'string' && $.jgrid.startsWith($.jgrid.trim(obj), 'function')) {
+			  var id = "__fn_" + $.jgrid.randId() + "__";
 			  functionMap[id] = obj;
 			  return id;
 			} else if (Array.isArray(obj)) {
 			  return obj.map(traverse);
 			} else if (obj && typeof obj === 'object') {
-			  const result = {};
-			  for (const [key, val] of Object.entries(obj)) {
-				result[key] = traverse(val);
+			  var result = {}, key;
+			  for (key in obj) {
+				if (Object.prototype.hasOwnProperty.call(obj, key)) {
+					result[key] = traverse(obj[key]);
+				}
 			  }
 			  return result;
 			}
 			return obj;
 		}
-		let parsed;
+		var parsed;
 		try {
 			parsed = JSON.parse(str);
 		} catch (e) {
 			alert("Invalid JSON.");
 			return;
 		}
-		const transformedJson = traverse(parsed);
+		var transformedJson = traverse(parsed);
 		if(!$.isEmptyObject(functionMap)) {
-			const registryLines = Object.entries(functionMap).map(([id, fnStr]) =>
-			`  "${id}": ${fnStr},`
-			);
+			var registryLines = $.map($.jgrid.objEntries(functionMap), function(ent) { return "  \"" + ent[0] + "\": " + ent[1] + ","; });
 			var rnd = $.jgrid.randId();
-			var functionRegistry = `var functionRegistry_${rnd} = {\n${registryLines.join('\n')}\n};`;
+			var functionRegistry = "var functionRegistry_" + rnd + " = {\n" + registryLines.join("\n") + "\n};";
 			
-			let s = document.createElement("script");
+			var s = document.createElement("script");
 			// CSP settings to avoid inline script
 			if(options && options.nonce) {
 				s.nonce = options.nonce;
@@ -198,8 +200,8 @@ $.extend($.jgrid,{
 		}
 		var addNode = function ( hash, key, cnts, val ) {
 			if(typeof val === 'string') {
-				if( val.trim().startsWith('function')) {
-					const fk = '__fn__'+$.jgrid.randId();
+				if( $.jgrid.startsWith($.jgrid.trim(val), 'function')) {
+					var fk = '__fn__'+$.jgrid.randId();
 					funcs[fk] = val;
 					val =  fk;//$.jgrid.runCode( val ); //eval( '(' + val +')'); // we need this in our implement
 				} else {
