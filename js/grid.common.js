@@ -921,7 +921,12 @@ $.extend($.jgrid,{
 					field.setCustomValidity($.jgrid.LegacyValidation(field) ? "" : "error");
 				}
 				// native browser check display error
-				field.reportValidity();
+				if (typeof field.reportValidity === "function") {
+					field.reportValidity();
+				} else if (typeof field.checkValidity === "function") {
+					// IE11 / Edge IE mode: no reportValidity() - validate without the native bubble
+					field.checkValidity();
+				}
 			} else {
 				// native validation not available
 				field.validity = field.validity || {};
@@ -934,6 +939,10 @@ $.extend($.jgrid,{
 				// style field, show error, etc.
 				// form is invalid
 				//var message = field.validationMessage;
+				if (typeof field.reportValidity !== "function") {
+					// no native message in IE11 - at least put the focus on the invalid field
+					try { field.focus(); } catch (e) {}
+				}
 				formvalid = false;
 				break;
 			}
