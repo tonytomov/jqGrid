@@ -27,6 +27,11 @@ $.extend($.jgrid,{
 			return p == null;
 		}
 	},
+	jsStrAttr : function (v) {
+		// value -> content of a single quoted JS string inside a double quoted HTML attribute
+		return String(v).replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/\r/g, "\\r").replace(/\n/g, "\\n")
+			.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+	},
 	trim : function (x) {
 		if(typeof x === "string") {
 			return x.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
@@ -3729,7 +3734,9 @@ $.fn.jqGrid = function( pin ) {
 			return "<td role=\"gridcell\" "+uiclass+" "+prp+">"+v+"</td>";
 		},
 		addSearch = function(rowid, pos, irow, uiclass){
-			var searchColEvent = ts.p.searchColOptions.searchOnEnter ? " onchange=\"$.jgrid.searchColOnEnter('"+ts.p.id+"',"+rowid+", this)\"" : " onkeydown=\"$.jgrid.searchColOnKey('"+ts.p.id+"',"+rowid+",this, event)\"";
+			// ids are passed as quoted JS strings - row ids can be non-numeric (idPrefix, string keys)
+			const jsArgs = `'${$.jgrid.jsStrAttr(ts.p.id)}','${$.jgrid.jsStrAttr(rowid)}'`;
+			var searchColEvent = ts.p.searchColOptions.searchOnEnter ? ` onchange="$.jgrid.searchColOnEnter(${jsArgs}, this)"` : ` onkeydown="$.jgrid.searchColOnKey(${jsArgs},this, event)"`;
 			var	v = "<input type=\"text\""+" id=\"jqs_"+ts.p.id+"_"+rowid+"\" name=\"jqs_"+ts.p.id+"_"+rowid+"\" "+uiclass+ searchColEvent +"/>",
 				prp = formatCol( pos,irow,'',null, rowid, true);
 			return "<td role=\"gridcell\" "+prp+">"+v+"</td>";
@@ -4498,7 +4505,7 @@ $.fn.jqGrid = function( pin ) {
 				'ew': function(queryObj, data, _uselwcs) { return (_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field]).endsWith(queryObj.data);},
 				'en': function(queryObj, data, _uselwcs) { return !((_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field]).endsWith(queryObj.data));},
 				'cn': function(queryObj, data, _uselwcs) { return (_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field]).indexOf(queryObj.data) > -1;},
-				'nc': function(queryObj, data, _uselwcs) { return !((_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field])) > -1;},
+				'nc': function(queryObj, data, _uselwcs) { return (_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field]).indexOf(queryObj.data) === -1;},
 				'in': function(queryObj, data, _uselwcs) { return queryObj.data.split(",").map(el=>{return (_uselwcs ? el.trim().toLowerCase() : el.trim());}).indexOf(data[queryObj.field]) > -1;},
 				'ni': function(queryObj, data, _uselwcs) { return queryObj.data.split(",").map(el=>{return (_uselwcs ? el.trim().toLowerCase() : el.trim());}).indexOf(data[queryObj.field].trim()) === -1;},
 				'nu': function(queryObj, data, _uselwcs) { return data[queryObj.field] === null;},

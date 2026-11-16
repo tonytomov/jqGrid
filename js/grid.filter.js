@@ -2049,8 +2049,21 @@ $.jgrid.extend({
 		return this.each(function() {
 			var $t = this, item, sdata="";
 			if( o.field && $t.p.data && Array.isArray( $t.p.data )) {
-				var query, res, s_cnt, tmp = [], cm,
-				result, i;
+				var query, s_cnt, tmp = [], cm,
+				result, i,
+				res =  $("#gsh_"+$t.p.id+"_"+o.field).find("td.ui-search-input > select");
+				if( !res.length ) {
+					// no select for this field in the search toolbar
+					return;
+				}
+				if( !$t.p.data.length && $t.p.datatype !== "local" ) {
+					// remote data is not loaded yet (e.g. autoSelect called right after the grid is created)
+					// - run again when the data arrives instead of failing
+					$($t).off("jqGridLoadComplete.autoSelect").one("jqGridLoadComplete.autoSelect", function() {
+						$($t).jqGrid("autoSelect", o);
+					});
+					return;
+				}
 
 				try {
 					query = $.jgrid.from($t.p.data);
@@ -2065,14 +2078,13 @@ $.jgrid.extend({
 				}
 				for (let key in result) {
 					if( Object.hasOwn(result,key)) {
-						res =  $("#gsh_"+$t.p.id+"_"+o.field).find("td.ui-search-input > select");
 						s_cnt = o.count_item ? " (" +result[key].length+")" : "";
 						sdata += "<option value='"+key+"'>"+ key + s_cnt+"</option>";
 						tmp.push(key+":"+ key + s_cnt);
 					}
 				}
 				res.append(sdata);
-				res.on('change',function(){
+				res.off('change.autoSelect').on('change.autoSelect',function(){
 					$t.triggerToolbar();
 				});
 				if( o.create_value ) {

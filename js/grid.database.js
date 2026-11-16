@@ -257,10 +257,9 @@ $.jgrid.extend({
 			}
 			switch(type) {
 				case 'indexeddb' :
-					var test =[], obj={};
+					var test =[];
 					for (let i=0;i<data.length;i++) {
-						obj[keyName] = data[i];
-						test.push(obj);
+						test.push({ [keyName]: data[i] });
 					}
 					// detect keytype
 					test = $.jgrid.normalizeDbData.call(ts, test, ts.p.colModel );			

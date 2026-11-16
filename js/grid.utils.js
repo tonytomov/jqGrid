@@ -38,7 +38,7 @@ $.extend($.jgrid,{
 			const a = 'functionRegistry_'+rnd;
 		    return window[a][obj];
 		} else if (Array.isArray(obj)) {
-			return obj.map($.jgrid.resolveFunctions);
+			return obj.map((val) => $.jgrid.resolveFunctions(val, rnd));
 		} else if (obj && typeof obj === 'object') {
 			const result = {};
 			for (const [key, val] of Object.entries(obj)) {
