@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.9.0 - 2026-11-04
+* @license Guriddo jqGrid JS - v5.9.0 - 2026-11-16
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -31,6 +31,11 @@ $.extend($.jgrid,{
 		} else {
 			return p == null;
 		}
+	},
+	jsStrAttr : function (v) {
+		// value -> content of a single quoted JS string inside a double quoted HTML attribute
+		return String(v).replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/\r/g, "\\r").replace(/\n/g, "\\n")
+			.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 	},
 	trim : function (x) {
 		if(typeof x === "string") {
@@ -3734,7 +3739,9 @@ $.fn.jqGrid = function( pin ) {
 			return "<td role=\"gridcell\" "+uiclass+" "+prp+">"+v+"</td>";
 		},
 		addSearch = function(rowid, pos, irow, uiclass){
-			var searchColEvent = ts.p.searchColOptions.searchOnEnter ? " onchange=\"$.jgrid.searchColOnEnter('"+ts.p.id+"',"+rowid+", this)\"" : " onkeydown=\"$.jgrid.searchColOnKey('"+ts.p.id+"',"+rowid+",this, event)\"";
+			// ids are passed as quoted JS strings - row ids can be non-numeric (idPrefix, string keys)
+			const jsArgs = `'${$.jgrid.jsStrAttr(ts.p.id)}','${$.jgrid.jsStrAttr(rowid)}'`;
+			var searchColEvent = ts.p.searchColOptions.searchOnEnter ? ` onchange="$.jgrid.searchColOnEnter(${jsArgs}, this)"` : ` onkeydown="$.jgrid.searchColOnKey(${jsArgs},this, event)"`;
 			var	v = "<input type=\"text\""+" id=\"jqs_"+ts.p.id+"_"+rowid+"\" name=\"jqs_"+ts.p.id+"_"+rowid+"\" "+uiclass+ searchColEvent +"/>",
 				prp = formatCol( pos,irow,'',null, rowid, true);
 			return "<td role=\"gridcell\" "+prp+">"+v+"</td>";
@@ -4503,7 +4510,7 @@ $.fn.jqGrid = function( pin ) {
 				'ew': function(queryObj, data, _uselwcs) { return (_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field]).endsWith(queryObj.data);},
 				'en': function(queryObj, data, _uselwcs) { return !((_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field]).endsWith(queryObj.data));},
 				'cn': function(queryObj, data, _uselwcs) { return (_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field]).indexOf(queryObj.data) > -1;},
-				'nc': function(queryObj, data, _uselwcs) { return !((_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field])) > -1;},
+				'nc': function(queryObj, data, _uselwcs) { return (_uselwcs ? data[queryObj.field].toLowerCase() : data[queryObj.field]).indexOf(queryObj.data) === -1;},
 				'in': function(queryObj, data, _uselwcs) { return queryObj.data.split(",").map(el=>{return (_uselwcs ? el.trim().toLowerCase() : el.trim());}).indexOf(data[queryObj.field]) > -1;},
 				'ni': function(queryObj, data, _uselwcs) { return queryObj.data.split(",").map(el=>{return (_uselwcs ? el.trim().toLowerCase() : el.trim());}).indexOf(data[queryObj.field].trim()) === -1;},
 				'nu': function(queryObj, data, _uselwcs) { return data[queryObj.field] === null;},
@@ -13572,8 +13579,21 @@ $.jgrid.extend({
 		return this.each(function() {
 			var $t = this, item, sdata="";
 			if( o.field && $t.p.data && Array.isArray( $t.p.data )) {
-				var query, res, s_cnt, tmp = [], cm,
-				result, i;
+				var query, s_cnt, tmp = [], cm,
+				result, i,
+				res =  $("#gsh_"+$t.p.id+"_"+o.field).find("td.ui-search-input > select");
+				if( !res.length ) {
+					// no select for this field in the search toolbar
+					return;
+				}
+				if( !$t.p.data.length && $t.p.datatype !== "local" ) {
+					// remote data is not loaded yet (e.g. autoSelect called right after the grid is created)
+					// - run again when the data arrives instead of failing
+					$($t).off("jqGridLoadComplete.autoSelect").one("jqGridLoadComplete.autoSelect", function() {
+						$($t).jqGrid("autoSelect", o);
+					});
+					return;
+				}
 
 				try {
 					query = $.jgrid.from($t.p.data);
@@ -13588,14 +13608,13 @@ $.jgrid.extend({
 				}
 				for (let key in result) {
 					if( Object.hasOwn(result,key)) {
-						res =  $("#gsh_"+$t.p.id+"_"+o.field).find("td.ui-search-input > select");
 						s_cnt = o.count_item ? " (" +result[key].length+")" : "";
 						sdata += "<option value='"+key+"'>"+ key + s_cnt+"</option>";
 						tmp.push(key+":"+ key + s_cnt);
 					}
 				}
 				res.append(sdata);
-				res.on('change',function(){
+				res.off('change.autoSelect').on('change.autoSelect',function(){
 					$t.triggerToolbar();
 				});
 				if( o.create_value ) {
@@ -21696,7 +21715,7 @@ $.extend($.jgrid,{
 			const a = 'functionRegistry_'+rnd;
 		    return window[a][obj];
 		} else if (Array.isArray(obj)) {
-			return obj.map($.jgrid.resolveFunctions);
+			return obj.map((val) => $.jgrid.resolveFunctions(val, rnd));
 		} else if (obj && typeof obj === 'object') {
 			const result = {};
 			for (const [key, val] of Object.entries(obj)) {
@@ -25764,10 +25783,9 @@ $.jgrid.extend({
 			}
 			switch(type) {
 				case 'indexeddb' :
-					var test =[], obj={};
+					var test =[];
 					for (let i=0;i<data.length;i++) {
-						obj[keyName] = data[i];
-						test.push(obj);
+						test.push({ [keyName]: data[i] });
 					}
 					// detect keytype
 					test = $.jgrid.normalizeDbData.call(ts, test, ts.p.colModel );			
