@@ -1,6 +1,6 @@
 /**
 *
-* @license Guriddo jqGrid JS - v5.9.0 - 2026-11-14
+* @license Guriddo jqGrid JS - v5.9.0 - 2026-11-16
 * Copyright(c) 2008, Tony Tomov, tony@trirand.com
 * 
 * License: http://guriddo.net/?page_id=103334
@@ -70,6 +70,11 @@ $.extend($.jgrid,{
 			}
 		}
 		return res;
+	},
+	jsStrAttr : function (v) {
+		// value -> content of a single quoted JS string inside a double quoted HTML attribute
+		return String(v).replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/\r/g, "\\r").replace(/\n/g, "\\n")
+			.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 	},
 	keyName : function (e) {
 		// IE11 / Edge IE mode use the old DOM3 key names - map them to the standard ones
@@ -2291,6 +2296,19 @@ $.extend($.jgrid,{
 				 
 		/// let union = [...new Set([...arrA, ...arrB])];
 	},
+	searchColCommit : function(gridid, rid, t) {
+		// runs the search once per value: Enter and the following "change" (blur) do not search twice
+		if(t._jqsLast === t.value) {
+			return;
+		}
+		t._jqsLast = t.value;
+		$.jgrid.searchColOnEnter(gridid, rid, t);
+	},
+	searchColOnEnterKey : function(gridid, rid, t, e ) {
+		if($.jgrid.keyName(e) === 'Enter' || (e.keyCode || e.which) === 13) {
+			$.jgrid.searchColCommit(gridid, rid, t);
+		}
+	},
 	searchColOnKey : function(gridid, rid, t, e ) {
 		switch($.jgrid.keyName(e)) {
 			case 'ArrowRight':
@@ -3790,7 +3808,12 @@ $.fn.jqGrid = function( pin ) {
 			return "<td role=\"gridcell\" "+uiclass+" "+prp+">"+v+"</td>";
 		},
 		addSearch = function(rowid, pos, irow, uiclass){
-			var searchColEvent = ts.p.searchColOptions.searchOnEnter ? " onchange=\"$.jgrid.searchColOnEnter('"+ts.p.id+"',"+rowid+", this)\"" : " onkeydown=\"$.jgrid.searchColOnKey('"+ts.p.id+"',"+rowid+",this, event)\"";
+			// grid id and row id are passed as quoted JS strings (row ids can be non-numeric, e.g. with idPrefix)
+			var jsArgs = "'" + $.jgrid.jsStrAttr(ts.p.id) + "','" + $.jgrid.jsStrAttr(rowid) + "'",
+			searchColEvent = ts.p.searchColOptions.searchOnEnter ?
+				// IE11 / Edge IE mode fire "change" only on blur, not on Enter - handle Enter explicitly
+				" onchange=\"$.jgrid.searchColCommit("+jsArgs+", this)\" onkeydown=\"$.jgrid.searchColOnEnterKey("+jsArgs+", this, event)\"" :
+				" onkeydown=\"$.jgrid.searchColOnKey("+jsArgs+",this, event)\"";
 			var	v = "<input type=\"text\""+" id=\"jqs_"+ts.p.id+"_"+rowid+"\" name=\"jqs_"+ts.p.id+"_"+rowid+"\" "+uiclass+ searchColEvent +"/>",
 				prp = formatCol( pos,irow,'',null, rowid, true);
 			return "<td role=\"gridcell\" "+prp+">"+v+"</td>";
@@ -11490,7 +11513,12 @@ $.extend($.jgrid,{
 					field.setCustomValidity($.jgrid.LegacyValidation(field) ? "" : "error");
 				}
 				// native browser check display error
-				field.reportValidity();
+				if (typeof field.reportValidity === "function") {
+					field.reportValidity();
+				} else if (typeof field.checkValidity === "function") {
+					// IE11 / Edge IE mode: no reportValidity() - validate without the native bubble
+					field.checkValidity();
+				}
 			} else {
 				// native validation not available
 				field.validity = field.validity || {};
@@ -11503,6 +11531,10 @@ $.extend($.jgrid,{
 				// style field, show error, etc.
 				// form is invalid
 				//var message = field.validationMessage;
+				if (typeof field.reportValidity !== "function") {
+					// no native message in IE11 - at least put the focus on the invalid field
+					try { field.focus(); } catch (e) {}
+				}
 				formvalid = false;
 				break;
 			}
@@ -13632,8 +13664,21 @@ $.jgrid.extend({
 		return this.each(function() {
 			var $t = this, item, sdata="";
 			if( o.field && $t.p.data && Array.isArray( $t.p.data )) {
-				var query, res, s_cnt, tmp = [], cm,
-				result, i;
+				var query, s_cnt, tmp = [], cm,
+				result, i,
+				res =  $("#gsh_"+$t.p.id+"_"+o.field).find("td.ui-search-input > select");
+				if( !res.length ) {
+					// no select for this field in the search toolbar
+					return;
+				}
+				if( !$t.p.data.length && $t.p.datatype !== "local" ) {
+					// remote data is not loaded yet (e.g. autoSelect called right after the grid is created)
+					// - run again when the data arrives instead of failing
+					$($t).off("jqGridLoadComplete.autoSelect").one("jqGridLoadComplete.autoSelect", function() {
+						$($t).jqGrid("autoSelect", o);
+					});
+					return;
+				}
 
 				try {
 					query = $.jgrid.from($t.p.data);
@@ -13648,14 +13693,13 @@ $.jgrid.extend({
 				}
 				for (var key in result) {
 					if( $.jgrid.hasOwn(result,key)) {
-						res =  $("#gsh_"+$t.p.id+"_"+o.field).find("td.ui-search-input > select");
 						s_cnt = o.count_item ? " (" +result[key].length+")" : "";
 						sdata += "<option value='"+key+"'>"+ key + s_cnt+"</option>";
 						tmp.push(key+":"+ key + s_cnt);
 					}
 				}
 				res.append(sdata);
-				res.on('change',function(){
+				res.off('change.autoSelect').on('change.autoSelect',function(){
 					$t.triggerToolbar();
 				});
 				if( o.create_value ) {
